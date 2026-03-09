@@ -34,9 +34,86 @@ games = load_games()
 selected_label = st.sidebar.selectbox("Select Game", list(games.keys()))
 game_id = games[selected_label]
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "Shot Chart", "Defensive Pressure", "Tracking", "Lineup Impact", "Chat"
+tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "Upload Video", "Shot Chart", "Defensive Pressure", "Tracking", "Lineup Impact", "Chat"
 ])
+
+
+# ── Tab 0: Upload Video ───────────────────────────────────────────────────────
+with tab0:
+    st.subheader("Process a Game Video")
+    st.caption("Upload an NBA game video to run the full tracking pipeline.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        home_team = st.text_input("Home Team", placeholder="e.g. Boston Celtics")
+    with col2:
+        away_team = st.text_input("Away Team", placeholder="e.g. Golden State Warriors")
+
+    game_date = st.date_input("Game Date")
+    uploaded = st.file_uploader("Upload Video", type=["mp4", "avi", "mov", "mkv"])
+
+    if uploaded and home_team and away_team:
+        if st.button("Run Pipeline", type="primary"):
+            import tempfile, uuid, subprocess, sys
+            from pathlib import Path
+
+            progress = st.progress(0, text="Saving video...")
+
+            # Save uploaded file to temp location
+            suffix = Path(uploaded.name).suffix
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+            tmp.write(uploaded.read())
+            tmp.close()
+            progress.progress(10, text="Video saved. Creating game record...")
+
+            # Insert game record into DB
+            new_game_id = None
+            try:
+                with get_connection() as conn:
+                    with conn.cursor() as cur:
+                        new_game_id = str(uuid.uuid4())
+                        cur.execute("""
+                            INSERT INTO games (id, home_team, away_team, game_date)
+                            VALUES (%s, %s, %s, %s)
+                            ON CONFLICT DO NOTHING
+                        """, (new_game_id, home_team, away_team, str(game_date)))
+                    conn.commit()
+                progress.progress(20, text="Game record created. Running CV pipeline...")
+            except Exception as e:
+                st.error(f"Database error: {e}")
+                st.stop()
+
+            # Run pipeline
+            result = subprocess.run(
+                [sys.executable, "-m", "pipelines.run_pipeline",
+                 "--video", tmp.name, "--game-id", new_game_id],
+                capture_output=True, text=True,
+                cwd=str(Path(__file__).parent.parent),
+            )
+
+            import os as _os
+            _os.unlink(tmp.name)
+
+            if result.returncode == 0:
+                progress.progress(80, text="Pipeline complete. Running feature extraction...")
+                feat_result = subprocess.run(
+                    [sys.executable, "-m", "features.feature_pipeline",
+                     "--game-id", new_game_id],
+                    capture_output=True, text=True,
+                    cwd=str(Path(__file__).parent.parent),
+                )
+                progress.progress(100, text="Done!")
+                st.success(f"Game processed! ID: `{new_game_id}`")
+                st.caption("Refresh the page and select this game from the sidebar to view results.")
+                if feat_result.returncode != 0:
+                    st.warning(f"Feature extraction had warnings: {feat_result.stderr[:300]}")
+            else:
+                progress.empty()
+                st.error("Pipeline failed:")
+                st.code(result.stderr[-1000:])
+    elif uploaded and not (home_team and away_team):
+        st.info("Fill in team names before running.")
 
 
 # ── Tab 1: Shot Chart ─────────────────────────────────────────────────────────
