@@ -43,8 +43,8 @@
 - [ ] **UI-02**: Streamlit dashboard with defensive pressure heatmaps (spatial coverage visualization)
 - [ ] **UI-03**: Streamlit dashboard with player tracking overlays (movement paths on court diagram)
 - [ ] **UI-04**: Streamlit dashboard with lineup impact graphs (net rating and EPA by lineup)
-- [ ] **API-01**: FastAPI exposes REST endpoints for model predictions (shot probability, win probability, player impact)
-- [ ] **API-02**: FastAPI exposes REST endpoints for analytics queries (shot charts, lineup stats, tracking data)
+- [x] **API-01**: FastAPI exposes REST endpoints for model predictions (shot probability, win probability, player impact)
+- [x] **API-02**: FastAPI exposes REST endpoints for analytics queries (shot charts, lineup stats, tracking data)
 
 ### Conversational AI Interface
 
@@ -116,8 +116,8 @@
 | UI-02 | Phase 4 — Dashboard + API | Pending |
 | UI-03 | Phase 4 — Dashboard + API | Pending |
 | UI-04 | Phase 4 — Dashboard + API | Pending |
-| API-01 | Phase 4 — Dashboard + API | Pending |
-| API-02 | Phase 4 — Dashboard + API | Pending |
+| API-01 | Phase 4 — Dashboard + API | Complete |
+| API-02 | Phase 4 — Dashboard + API | Complete |
 | AI-01 | Phase 5 — Conversational AI | Pending |
 | AI-02 | Phase 5 — Conversational AI | Pending |
 | AI-03 | Phase 5 — Conversational AI | Pending |

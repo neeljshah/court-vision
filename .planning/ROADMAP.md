@@ -84,7 +84,12 @@ Plans:
   2. The dashboard shows defensive pressure heatmaps and player tracking overlays (movement paths on court) and lineup impact graphs with net rating and EPA
   3. FastAPI endpoints return model predictions (shot probability, win probability, player impact) for valid query parameters
   4. FastAPI endpoints return analytics data (shot charts, lineup stats, tracking data) for valid query parameters
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — FastAPI REST layer: prediction endpoints (API-01) + analytics endpoints (API-02)
+- [ ] 04-02-PLAN.md — Streamlit dashboard: shot chart (UI-01) + defensive pressure heatmap (UI-02)
+- [ ] 04-03-PLAN.md — Streamlit dashboard: player tracking overlay (UI-03) + lineup impact graph (UI-04)
 
 ### Phase 5: Conversational AI
 **Goal**: A natural-language interface answers game prediction, player stat, and game explanation queries using live model data
@@ -119,6 +124,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. CV Pipeline + Storage | 4/4 | Complete    | 2026-03-09 |
 | 2. Feature Engineering | 4/4 | Complete    | 2026-03-09 |
 | 3. ML Models | 4/4 | Complete    | 2026-03-09 |
-| 4. Dashboard + API | 0/TBD | Not started | - |
+| 4. Dashboard + API | 1/3 | In Progress|  |
 | 5. Conversational AI | 0/TBD | Not started | - |
 | 6. Automation + Testing | 0/TBD | Not started | - |
