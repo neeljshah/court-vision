@@ -160,9 +160,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.train:
-        from models.training_data import load_shot_data
+        import pandas as pd
 
-        df = load_shot_data()
+        try:
+            from models.training_data import load_shot_data
+            df = load_shot_data()
+        except Exception as exc:
+            print(f"[warn] DB unavailable ({exc}); using synthetic training data.")
+            df = pd.DataFrame()
+
         model = ShotProbabilityModel()
         model.fit(df)
         path = model.save()
