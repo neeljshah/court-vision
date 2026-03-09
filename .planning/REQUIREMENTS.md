@@ -92,21 +92,48 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CV-01 – CV-06 | Phase 1 | Pending |
-| DB-01 – DB-03 | Phase 1 | Pending |
-| FE-01 – FE-06 | Phase 2 | Pending |
-| ML-01 – ML-05 | Phase 3 | Pending |
-| API-01 – API-02 | Phase 4 | Pending |
-| UI-01 – UI-04 | Phase 4 | Pending |
-| AI-01 – AI-04 | Phase 5 | Pending |
-| AUTO-01 – AUTO-04 | Phase 6 | Pending |
-| TEST-01 – TEST-02 | Phase 6 | Pending |
+| CV-01 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-02 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-03 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-04 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-05 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-06 | Phase 1 — CV Pipeline + Storage | Pending |
+| DB-01 | Phase 1 — CV Pipeline + Storage | Pending |
+| DB-02 | Phase 1 — CV Pipeline + Storage | Pending |
+| DB-03 | Phase 1 — CV Pipeline + Storage | Pending |
+| FE-01 | Phase 2 — Feature Engineering | Pending |
+| FE-02 | Phase 2 — Feature Engineering | Pending |
+| FE-03 | Phase 2 — Feature Engineering | Pending |
+| FE-04 | Phase 2 — Feature Engineering | Pending |
+| FE-05 | Phase 2 — Feature Engineering | Pending |
+| FE-06 | Phase 2 — Feature Engineering | Pending |
+| ML-01 | Phase 3 — ML Models | Pending |
+| ML-02 | Phase 3 — ML Models | Pending |
+| ML-03 | Phase 3 — ML Models | Pending |
+| ML-04 | Phase 3 — ML Models | Pending |
+| ML-05 | Phase 3 — ML Models | Pending |
+| UI-01 | Phase 4 — Dashboard + API | Pending |
+| UI-02 | Phase 4 — Dashboard + API | Pending |
+| UI-03 | Phase 4 — Dashboard + API | Pending |
+| UI-04 | Phase 4 — Dashboard + API | Pending |
+| API-01 | Phase 4 — Dashboard + API | Pending |
+| API-02 | Phase 4 — Dashboard + API | Pending |
+| AI-01 | Phase 5 — Conversational AI | Pending |
+| AI-02 | Phase 5 — Conversational AI | Pending |
+| AI-03 | Phase 5 — Conversational AI | Pending |
+| AI-04 | Phase 5 — Conversational AI | Pending |
+| AUTO-01 | Phase 6 — Automation + Testing | Pending |
+| AUTO-02 | Phase 6 — Automation + Testing | Pending |
+| AUTO-03 | Phase 6 — Automation + Testing | Pending |
+| AUTO-04 | Phase 6 — Automation + Testing | Pending |
+| TEST-01 | Phase 6 — Automation + Testing | Pending |
+| TEST-02 | Phase 6 — Automation + Testing | Pending |
 
 **Coverage:**
-- v1 requirements: 34 total
-- Mapped to phases: 34
+- v1 requirements: 36 total
+- Mapped to phases: 36
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-09*
-*Last updated: 2026-03-09 after initial definition*
+*Last updated: 2026-03-09 after roadmap creation*
