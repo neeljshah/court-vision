@@ -49,7 +49,13 @@ Plans:
   3. Off-ball movement events (cuts, screens, drift) are detected and tagged from tracking sequences
   4. Pick-and-roll events are identified and recorded with the players involved
   5. Passing networks are built from possession data showing who passes to whom and at what frequency, and momentum metrics (scoring runs, possession streaks, swing points) are available per game segment
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Feature type contracts, DB schema extensions, scipy/networkx dependencies
+- [ ] 02-02-PLAN.md — Player spacing metrics (convex hull, avg inter-player distance) + defensive pressure (FE-01, FE-02)
+- [ ] 02-03-PLAN.md — Off-ball event detection (cuts, screens, drift) + pick-and-roll detection (FE-03, FE-04)
+- [ ] 02-04-PLAN.md — Passing networks, momentum metrics, feature pipeline CLI (FE-05, FE-06)
 
 ### Phase 3: ML Models
 **Goal**: Five trained models produce betting-relevant predictions from the computed features
@@ -105,7 +111,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. CV Pipeline + Storage | 4/4 | Complete    | 2026-03-09 |
-| 2. Feature Engineering | 0/TBD | Not started | - |
+| 2. Feature Engineering | 0/4 | Not started | - |
 | 3. ML Models | 0/TBD | Not started | - |
 | 4. Dashboard + API | 0/TBD | Not started | - |
 | 5. Conversational AI | 0/TBD | Not started | - |
