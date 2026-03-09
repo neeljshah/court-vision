@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-cv-pipeline-storage-02-PLAN.md
-last_updated: "2026-03-09T18:32:10.521Z"
+stopped_at: Completed 01-cv-pipeline-storage-04-PLAN.md
+last_updated: "2026-03-09T18:48:03.455Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
   percent: 25
 ---
 
@@ -53,6 +53,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 01-cv-pipeline-storage P01 | 2 | 2 tasks | 12 files |
 | Phase 01-cv-pipeline-storage P03 | 3 | 2 tasks | 6 files |
 | Phase 01-cv-pipeline-storage P02 | 5 | 2 tasks | 7 files |
+| Phase 01-cv-pipeline-storage P04 | 9 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Phase 01-cv-pipeline-storage]: YOLOv8n pretrained COCO weights without fine-tuning; NBA-specific accuracy deferred to later phases
 - [Phase 01-cv-pipeline-storage]: ObjectDetector falls back to yolov8n.pt auto-download if weights_path not found on disk
 - [Phase 01-cv-pipeline-storage]: CourtDetector is stateless; designed for periodic calibration (once per game), not per-frame
+- [Phase 01-cv-pipeline-storage]: DeepSort returns track_id as str; coerce to int via int(track.track_id) for consistent dict keys in previous_positions
+- [Phase 01-cv-pipeline-storage]: Nearest-centroid matching preferred over get_det_class() for object_type — more reliable across DeepSort versions
+- [Phase 01-cv-pipeline-storage]: player_id=None for all Phase 1 tracking_coordinates rows — track-to-player mapping deferred to Phase 2
 
 ### Pending Todos
 
@@ -83,6 +87,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T18:32:10.519Z
-Stopped at: Completed 01-cv-pipeline-storage-02-PLAN.md
+Last session: 2026-03-09T18:48:03.453Z
+Stopped at: Completed 01-cv-pipeline-storage-04-PLAN.md
 Resume file: None

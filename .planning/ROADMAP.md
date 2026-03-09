@@ -12,7 +12,7 @@ Six phases deliver the end-to-end pipeline. Phase 1 builds the foundation: video
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: CV Pipeline + Storage** - Ingest NBA footage, detect and track objects frame-by-frame, store coordinates to PostgreSQL
+- [x] **Phase 1: CV Pipeline + Storage** - Ingest NBA footage, detect and track objects frame-by-frame, store coordinates to PostgreSQL (completed 2026-03-09)
 - [ ] **Phase 2: Feature Engineering** - Compute basketball-specific spatial and temporal features from tracking data
 - [ ] **Phase 3: ML Models** - Train shot probability, win probability, momentum, and player impact models
 - [ ] **Phase 4: Dashboard + API** - Expose predictions and analytics through Streamlit dashboard and FastAPI endpoints
@@ -104,7 +104,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CV Pipeline + Storage | 3/4 | In Progress|  |
+| 1. CV Pipeline + Storage | 4/4 | Complete   | 2026-03-09 |
 | 2. Feature Engineering | 0/TBD | Not started | - |
 | 3. ML Models | 0/TBD | Not started | - |
 | 4. Dashboard + API | 0/TBD | Not started | - |

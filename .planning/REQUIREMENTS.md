@@ -10,15 +10,15 @@
 - [x] **CV-01**: System ingests downloaded NBA game footage (local video files) as pipeline input
 - [x] **CV-02**: YOLOv8 detects players and basketball in each frame with bounding boxes and confidence scores
 - [x] **CV-03**: YOLOv8 detects court lines and key zone boundaries (paint, three-point line, half-court)
-- [ ] **CV-04**: DeepSORT assigns and maintains persistent IDs for each detected player and ball across frames
-- [ ] **CV-05**: Pipeline outputs frame-by-frame coordinates, velocities, and movement directions for all tracked objects
-- [ ] **CV-06**: Tracking output is stored to PostgreSQL in the tracking_coordinates table
+- [x] **CV-04**: DeepSORT assigns and maintains persistent IDs for each detected player and ball across frames
+- [x] **CV-05**: Pipeline outputs frame-by-frame coordinates, velocities, and movement directions for all tracked objects
+- [x] **CV-06**: Tracking output is stored to PostgreSQL in the tracking_coordinates table
 
 ### Data Storage
 
 - [x] **DB-01**: PostgreSQL database schema with tables: games, players, tracking_coordinates, possessions, shot_logs
 - [x] **DB-02**: Database maintains historical datasets suitable for ML training (sufficient historical depth)
-- [ ] **DB-03**: Data pipeline writes tracking_coordinates records automatically after processing a video file (Phase 1). Possession and shot event records are written automatically in Phase 2, after feature engineering detects those events from tracking data.
+- [x] **DB-03**: Data pipeline writes tracking_coordinates records automatically after processing a video file (Phase 1). Possession and shot event records are written automatically in Phase 2, after feature engineering detects those events from tracking data.
 
 ### Feature Engineering
 
@@ -95,12 +95,12 @@
 | CV-01 | Phase 1 — CV Pipeline + Storage | Complete |
 | CV-02 | Phase 1 — CV Pipeline + Storage | Complete |
 | CV-03 | Phase 1 — CV Pipeline + Storage | Complete |
-| CV-04 | Phase 1 — CV Pipeline + Storage | Pending |
-| CV-05 | Phase 1 — CV Pipeline + Storage | Pending |
-| CV-06 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-04 | Phase 1 — CV Pipeline + Storage | Complete |
+| CV-05 | Phase 1 — CV Pipeline + Storage | Complete |
+| CV-06 | Phase 1 — CV Pipeline + Storage | Complete |
 | DB-01 | Phase 1 — CV Pipeline + Storage | Complete |
 | DB-02 | Phase 1 — CV Pipeline + Storage | Complete |
-| DB-03 | Phase 1 (tracking_coordinates) + Phase 2 (possessions, shot_logs) | Pending |
+| DB-03 | Phase 1 (tracking_coordinates) + Phase 2 (possessions, shot_logs) | Complete |
 | FE-01 | Phase 2 — Feature Engineering | Pending |
 | FE-02 | Phase 2 — Feature Engineering | Pending |
 | FE-03 | Phase 2 — Feature Engineering | Pending |
