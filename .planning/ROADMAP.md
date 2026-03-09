@@ -104,7 +104,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CV Pipeline + Storage | 0/4 | Planned | - |
+| 1. CV Pipeline + Storage | 1/4 | In Progress|  |
 | 2. Feature Engineering | 0/TBD | Not started | - |
 | 3. ML Models | 0/TBD | Not started | - |
 | 4. Dashboard + API | 0/TBD | Not started | - |

@@ -16,7 +16,7 @@
 
 ### Data Storage
 
-- [ ] **DB-01**: PostgreSQL database schema with tables: games, players, tracking_coordinates, possessions, shot_logs
+- [x] **DB-01**: PostgreSQL database schema with tables: games, players, tracking_coordinates, possessions, shot_logs
 - [ ] **DB-02**: Database maintains historical datasets suitable for ML training (sufficient historical depth)
 - [ ] **DB-03**: Data pipeline writes tracking_coordinates records automatically after processing a video file (Phase 1). Possession and shot event records are written automatically in Phase 2, after feature engineering detects those events from tracking data.
 
@@ -98,7 +98,7 @@
 | CV-04 | Phase 1 — CV Pipeline + Storage | Pending |
 | CV-05 | Phase 1 — CV Pipeline + Storage | Pending |
 | CV-06 | Phase 1 — CV Pipeline + Storage | Pending |
-| DB-01 | Phase 1 — CV Pipeline + Storage | Pending |
+| DB-01 | Phase 1 — CV Pipeline + Storage | Complete |
 | DB-02 | Phase 1 — CV Pipeline + Storage | Pending |
 | DB-03 | Phase 1 (tracking_coordinates) + Phase 2 (possessions, shot_logs) | Pending |
 | FE-01 | Phase 2 — Feature Engineering | Pending |
