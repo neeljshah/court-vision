@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: CV Pipeline + Storage** - Ingest NBA footage, detect and track objects frame-by-frame, store coordinates to PostgreSQL (completed 2026-03-09)
 - [x] **Phase 2: Feature Engineering** - Compute basketball-specific spatial and temporal features from tracking data (completed 2026-03-09)
-- [ ] **Phase 3: ML Models** - Train shot probability, win probability, momentum, and player impact models
+- [x] **Phase 3: ML Models** - Train shot probability, win probability, momentum, and player impact models (completed 2026-03-09)
 - [ ] **Phase 4: Dashboard + API** - Expose predictions and analytics through Streamlit dashboard and FastAPI endpoints
 - [ ] **Phase 5: Conversational AI** - Natural-language interface that answers game and player queries using live model data
 - [ ] **Phase 6: Automation + Testing** - End-to-end pipeline scripts and unit/validation tests for every module
@@ -118,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. CV Pipeline + Storage | 4/4 | Complete    | 2026-03-09 |
 | 2. Feature Engineering | 4/4 | Complete    | 2026-03-09 |
-| 3. ML Models | 3/4 | In Progress|  |
+| 3. ML Models | 4/4 | Complete    | 2026-03-09 |
 | 4. Dashboard + API | 0/TBD | Not started | - |
 | 5. Conversational AI | 0/TBD | Not started | - |
 | 6. Automation + Testing | 0/TBD | Not started | - |

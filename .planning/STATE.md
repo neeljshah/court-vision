@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Completed 03-ml-models-03-PLAN.md
-last_updated: "2026-03-09T20:12:05.690Z"
-last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
+status: completed
+stopped_at: Completed 03-ml-models-04-PLAN.md
+last_updated: "2026-03-09T20:22:41.137Z"
+last_activity: 2026-03-09 — LineupOptimizer (ML-05) implemented and serialized
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 12
-  completed_plans: 11
-  percent: 25
+  completed_plans: 12
+  percent: 33
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-09)
 
 ## Current Position
 
-Phase: 1 of 6 (CV Pipeline + Storage)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-09 — Roadmap created, phases 1-6 defined
+Phase: 3 of 6 (ML Models)
+Plan: 4 of 4 in current phase
+Status: Phase 3 complete
+Last activity: 2026-03-09 — LineupOptimizer (ML-05) implemented and serialized
 
-Progress: [███░░░░░░░] 25%
+Progress: [████░░░░░░] 33%
 
 ## Performance Metrics
 
@@ -61,6 +61,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 03-ml-models P01 | 4 | 2 tasks | 4 files |
 | Phase 03-ml-models P02 | 6 | 2 tasks | 4 files |
 | Phase 03-ml-models P03 | 15 | 2 tasks | 3 files |
+| Phase 03-ml-models P04 | 25 | 1 task (TDD: 2 commits) | 4 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,8 @@ Recent decisions affecting current work:
 - [Phase 03-ml-models]: CLI --train blocks catch DB exceptions and fall back to empty DataFrame, enabling dev use without PostgreSQL
 - [Phase 03-ml-models]: WinProbabilityModel wraps Pipeline(StandardScaler, RandomForestClassifier) for consistent interface; synthetic label uses momentum-correlated rule
 - [Phase 03-ml-models]: PlayerImpactModel is RandomForestRegressor (regression) computing EPA deviation per 100 possessions; rank_players() uses direct regressor call for full aggregated feature vectors
+- [Phase 03-ml-models]: LineupOptimizer is lookup+scoring model (no sklearn estimator) — stores per-player stats dict, computes offensive_gravity + defensive_disruption analytically
+- [Phase 03-ml-models]: joblib artifacts must be saved via module import (not __main__) to preserve correct class module path in pickle namespace
 
 ### Pending Todos
 
@@ -113,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T20:12:05.688Z
-Stopped at: Completed 03-ml-models-03-PLAN.md
+Last session: 2026-03-09T20:40:00.000Z
+Stopped at: Completed 03-ml-models-04-PLAN.md
 Resume file: None

@@ -35,7 +35,7 @@
 - [x] **ML-02**: Win probability model trained on lineup combinations, momentum score, spacing, and efficiency metrics; outputs game win probability updated per possession
 - [x] **ML-03**: Momentum detection model identifies scoring streaks and possession change patterns that signal momentum shifts
 - [x] **ML-04**: Player impact model computes expected points added (EPA) per player per 100 possessions
-- [ ] **ML-05**: Lineup optimization model scores lineup combinations by defensive disruption and offensive gravity
+- [x] **ML-05**: Lineup optimization model scores lineup combinations by defensive disruption and offensive gravity
 
 ### Dashboard & API
 
@@ -111,7 +111,7 @@
 | ML-02 | Phase 3 — ML Models | Complete |
 | ML-03 | Phase 3 — ML Models | Complete |
 | ML-04 | Phase 3 — ML Models | Complete |
-| ML-05 | Phase 3 — ML Models | Pending |
+| ML-05 | Phase 3 — ML Models | Complete |
 | UI-01 | Phase 4 — Dashboard + API | Pending |
 | UI-02 | Phase 4 — Dashboard + API | Pending |
 | UI-03 | Phase 4 — Dashboard + API | Pending |
