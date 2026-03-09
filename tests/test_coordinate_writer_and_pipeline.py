@@ -164,8 +164,10 @@ class TestCoordinateWriterSQL:
         assert "None" in src or "null" in src.lower()
 
     def test_inserts_to_tracking_coordinates_table(self):
+        """tracking_coordinates table name must appear in the class source."""
         from tracking.coordinate_writer import CoordinateWriter
-        src = inspect.getsource(CoordinateWriter._flush_buffer)
+        # SQL may be defined as a class-level constant, so inspect the whole class
+        src = inspect.getsource(CoordinateWriter)
         assert "tracking_coordinates" in src
 
 
