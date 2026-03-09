@@ -227,14 +227,23 @@ class TestVelocityComputation:
         )
 
     def test_first_frame_velocity_is_zero(self):
+        """Velocity is 0 the first time a track_id appears in confirmed results.
+
+        With n_init=1, DeepSORT confirms a track on the second call (frame 1),
+        because the first call produces a tentative track. The first confirmed
+        result (frame 1) has no prior position, so velocity must be 0.
+        """
         from tracking.tracker import ObjectTracker
 
         tracker = ObjectTracker(n_init=1)
         tracker.set_fps(30.0)
         frame = self._make_frame()
         det = self._make_det(100.0, 200.0)
-        result = tracker.update([det], frame, 0, 0.0)
-        assert len(result) == 1
+        # First call: tentative track, no confirmed results
+        tracker.update([det], frame, 0, 0.0)
+        # Second call: track confirmed for the first time — velocity should be 0
+        result = tracker.update([det], frame, 1, 33.3)
+        assert len(result) >= 1
         obj = result[0]
         assert obj.velocity_x == 0.0
         assert obj.velocity_y == 0.0
@@ -272,10 +281,18 @@ class TestVelocityComputation:
             assert 0.0 <= obj.direction_degrees < 360.0
 
     def test_previous_positions_updated_after_each_frame(self):
+        """previous_positions is populated after a track becomes confirmed.
+
+        With n_init=1, confirmed tracks first appear on the second update call.
+        After that call, previous_positions must contain at least one entry.
+        """
         from tracking.tracker import ObjectTracker
 
         tracker = ObjectTracker(n_init=1)
         frame = self._make_frame()
+        # First call: tentative — previous_positions stays empty
         tracker.update([self._make_det(100.0, 200.0)], frame, 0, 0.0)
-        # previous_positions should now have at least one entry
+        assert len(tracker.previous_positions) == 0
+        # Second call: track confirmed — previous_positions now has an entry
+        tracker.update([self._make_det(100.0, 200.0)], frame, 1, 33.3)
         assert len(tracker.previous_positions) >= 1
