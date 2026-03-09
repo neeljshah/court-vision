@@ -124,3 +124,13 @@ None — no database, no external service, no credentials required.
 ---
 *Phase: 02-feature-engineering*
 *Completed: 2026-03-09*
+
+## Self-Check: PASSED
+
+- features/off_ball_events.py: FOUND
+- features/pick_and_roll.py: FOUND
+- tests/test_off_ball_events.py: FOUND
+- tests/test_pick_and_roll.py: FOUND
+- .planning/phases/02-feature-engineering/02-03-SUMMARY.md: FOUND
+- commit 53183d0 (test RED): FOUND
+- commit 34e6718 (feat GREEN): FOUND
