@@ -31,7 +31,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. DeepSORT assigns persistent IDs to each player and ball that remain consistent across frames throughout a sequence
   4. Frame-by-frame coordinates, velocities, and movement directions for all tracked objects are written to the PostgreSQL tracking_coordinates table
   5. The database schema exists with all required tables (games, players, tracking_coordinates, possessions, shot_logs) and contains enough historical data depth to support ML training
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — PostgreSQL schema, Python environment, project package structure
+- [ ] 01-02-PLAN.md — Video ingestion + YOLOv8 player/ball detection + court zone detection
+- [ ] 01-03-PLAN.md — Historical game and player data seeding for ML training depth
+- [ ] 01-04-PLAN.md — DeepSORT tracking + coordinate computation + pipeline CLI + DB write
 
 ### Phase 2: Feature Engineering
 **Goal**: Structured basketball features are computed from tracking coordinates and available for model training
@@ -98,7 +104,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. CV Pipeline + Storage | 0/TBD | Not started | - |
+| 1. CV Pipeline + Storage | 0/4 | Planned | - |
 | 2. Feature Engineering | 0/TBD | Not started | - |
 | 3. ML Models | 0/TBD | Not started | - |
 | 4. Dashboard + API | 0/TBD | Not started | - |

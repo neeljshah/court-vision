@@ -18,7 +18,7 @@
 
 - [ ] **DB-01**: PostgreSQL database schema with tables: games, players, tracking_coordinates, possessions, shot_logs
 - [ ] **DB-02**: Database maintains historical datasets suitable for ML training (sufficient historical depth)
-- [ ] **DB-03**: Data pipeline writes tracking, possession, and shot event records automatically after processing
+- [ ] **DB-03**: Data pipeline writes tracking_coordinates records automatically after processing a video file (Phase 1). Possession and shot event records are written automatically in Phase 2, after feature engineering detects those events from tracking data.
 
 ### Feature Engineering
 
@@ -100,7 +100,7 @@
 | CV-06 | Phase 1 — CV Pipeline + Storage | Pending |
 | DB-01 | Phase 1 — CV Pipeline + Storage | Pending |
 | DB-02 | Phase 1 — CV Pipeline + Storage | Pending |
-| DB-03 | Phase 1 — CV Pipeline + Storage | Pending |
+| DB-03 | Phase 1 (tracking_coordinates) + Phase 2 (possessions, shot_logs) | Pending |
 | FE-01 | Phase 2 — Feature Engineering | Pending |
 | FE-02 | Phase 2 — Feature Engineering | Pending |
 | FE-03 | Phase 2 — Feature Engineering | Pending |
@@ -136,4 +136,4 @@
 
 ---
 *Requirements defined: 2026-03-09*
-*Last updated: 2026-03-09 after roadmap creation*
+*Last updated: 2026-03-09 — DB-03 clarified: Phase 1 covers tracking_coordinates writes; Phase 2 covers possessions and shot_logs writes after event detection feature engineering*
