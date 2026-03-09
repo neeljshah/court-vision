@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-feature-engineering-04-PLAN.md
-last_updated: "2026-03-09T19:41:32.749Z"
+stopped_at: Completed 03-ml-models-01-PLAN.md
+last_updated: "2026-03-09T19:53:20.505Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 12
+  completed_plans: 9
   percent: 25
 ---
 
@@ -58,6 +58,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 02-feature-engineering P02 | 2 | 2 tasks | 4 files |
 | Phase 02-feature-engineering P03 | 3 | 2 tasks | 4 files |
 | Phase 02-feature-engineering P04 | 8 | 2 tasks | 6 files |
+| Phase 03-ml-models P01 | 4 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,10 @@ Recent decisions affecting current work:
 - [Phase 02-feature-engineering]: Passing network edges logged to stdout as JSON lines in Phase 2 — no DB table yet (Phase 5 will consume)
 - [Phase 02-feature-engineering]: Possession boundary heuristic: speed < 20 px/s for 3+ consecutive frames = ball held/reset (DB-03)
 - [Phase 02-feature-engineering]: Shot detection: speed > 400 px/s AND |y - 240| < 60 AND near basket x — completes DB-03
+- [Phase 03-ml-models]: BaseModel uses ABC abstractmethod enforcement — compile-time guarantee subclasses implement fit/predict
+- [Phase 03-ml-models]: ARTIFACTS_DIR resolved relative to base.py via pathlib — portable across environments
+- [Phase 03-ml-models]: load_momentum_data computes lag features via pandas groupby/shift — keeps SQL simple, logic testable
+- [Phase 03-ml-models]: load_possession_data won=0 placeholder documented — real win labels require play-by-play data, deferred to v2
 
 ### Pending Todos
 
@@ -101,6 +106,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T19:33:45.712Z
-Stopped at: Completed 02-feature-engineering-04-PLAN.md
+Last session: 2026-03-09T19:53:20.503Z
+Stopped at: Completed 03-ml-models-01-PLAN.md
 Resume file: None

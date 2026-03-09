@@ -67,7 +67,13 @@ Plans:
   3. The momentum detection model identifies scoring streaks and possession-change patterns that signal momentum shifts in a game
   4. The player impact model outputs expected points added (EPA) per player per 100 possessions
   5. The lineup optimization model scores any lineup combination by defensive disruption and offensive gravity
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Model infrastructure: BaseModel ABC, training data loaders, sklearn/joblib deps
+- [ ] 03-02-PLAN.md — Shot probability model (ML-01) + momentum detection model (ML-03)
+- [ ] 03-03-PLAN.md — Win probability model (ML-02) + player impact model / EPA (ML-04)
+- [ ] 03-04-PLAN.md — Lineup optimization model (ML-05)
 
 ### Phase 4: Dashboard + API
 **Goal**: Model predictions and analytics are accessible through a visual dashboard and REST API
@@ -112,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. CV Pipeline + Storage | 4/4 | Complete    | 2026-03-09 |
 | 2. Feature Engineering | 4/4 | Complete    | 2026-03-09 |
-| 3. ML Models | 0/TBD | Not started | - |
+| 3. ML Models | 1/4 | In Progress|  |
 | 4. Dashboard + API | 0/TBD | Not started | - |
 | 5. Conversational AI | 0/TBD | Not started | - |
 | 6. Automation + Testing | 0/TBD | Not started | - |
