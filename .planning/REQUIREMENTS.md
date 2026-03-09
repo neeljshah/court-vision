@@ -22,12 +22,12 @@
 
 ### Feature Engineering
 
-- [ ] **FE-01**: Player spacing metric computed from tracking coordinates (convex hull area, average inter-player distance)
-- [ ] **FE-02**: Defensive pressure metric computed per player (nearest defender distance, closing speed)
-- [ ] **FE-03**: Off-ball movement patterns detected (cuts, screens, drift)
-- [ ] **FE-04**: Pick-and-roll events detected and tagged from tracking data
-- [ ] **FE-05**: Passing networks built from possession and tracking data (who passes to whom, frequency)
-- [ ] **FE-06**: Momentum metrics computed (scoring runs, possession streaks, swing points)
+- [x] **FE-01**: Player spacing metric computed from tracking coordinates (convex hull area, average inter-player distance)
+- [x] **FE-02**: Defensive pressure metric computed per player (nearest defender distance, closing speed)
+- [x] **FE-03**: Off-ball movement patterns detected (cuts, screens, drift)
+- [x] **FE-04**: Pick-and-roll events detected and tagged from tracking data
+- [x] **FE-05**: Passing networks built from possession and tracking data (who passes to whom, frequency)
+- [x] **FE-06**: Momentum metrics computed (scoring runs, possession streaks, swing points)
 
 ### Machine Learning Models
 
@@ -101,12 +101,12 @@
 | DB-01 | Phase 1 — CV Pipeline + Storage | Complete |
 | DB-02 | Phase 1 — CV Pipeline + Storage | Complete |
 | DB-03 | Phase 1 (tracking_coordinates) + Phase 2 (possessions, shot_logs) | Complete |
-| FE-01 | Phase 2 — Feature Engineering | Pending |
-| FE-02 | Phase 2 — Feature Engineering | Pending |
-| FE-03 | Phase 2 — Feature Engineering | Pending |
-| FE-04 | Phase 2 — Feature Engineering | Pending |
-| FE-05 | Phase 2 — Feature Engineering | Pending |
-| FE-06 | Phase 2 — Feature Engineering | Pending |
+| FE-01 | Phase 2 — Feature Engineering | Complete |
+| FE-02 | Phase 2 — Feature Engineering | Complete |
+| FE-03 | Phase 2 — Feature Engineering | Complete |
+| FE-04 | Phase 2 — Feature Engineering | Complete |
+| FE-05 | Phase 2 — Feature Engineering | Complete |
+| FE-06 | Phase 2 — Feature Engineering | Complete |
 | ML-01 | Phase 3 — ML Models | Pending |
 | ML-02 | Phase 3 — ML Models | Pending |
 | ML-03 | Phase 3 — ML Models | Pending |
