@@ -7,9 +7,9 @@
 
 ### Computer Vision
 
-- [ ] **CV-01**: System ingests downloaded NBA game footage (local video files) as pipeline input
-- [ ] **CV-02**: YOLOv8 detects players and basketball in each frame with bounding boxes and confidence scores
-- [ ] **CV-03**: YOLOv8 detects court lines and key zone boundaries (paint, three-point line, half-court)
+- [x] **CV-01**: System ingests downloaded NBA game footage (local video files) as pipeline input
+- [x] **CV-02**: YOLOv8 detects players and basketball in each frame with bounding boxes and confidence scores
+- [x] **CV-03**: YOLOv8 detects court lines and key zone boundaries (paint, three-point line, half-court)
 - [ ] **CV-04**: DeepSORT assigns and maintains persistent IDs for each detected player and ball across frames
 - [ ] **CV-05**: Pipeline outputs frame-by-frame coordinates, velocities, and movement directions for all tracked objects
 - [ ] **CV-06**: Tracking output is stored to PostgreSQL in the tracking_coordinates table
@@ -92,9 +92,9 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CV-01 | Phase 1 — CV Pipeline + Storage | Pending |
-| CV-02 | Phase 1 — CV Pipeline + Storage | Pending |
-| CV-03 | Phase 1 — CV Pipeline + Storage | Pending |
+| CV-01 | Phase 1 — CV Pipeline + Storage | Complete |
+| CV-02 | Phase 1 — CV Pipeline + Storage | Complete |
+| CV-03 | Phase 1 — CV Pipeline + Storage | Complete |
 | CV-04 | Phase 1 — CV Pipeline + Storage | Pending |
 | CV-05 | Phase 1 — CV Pipeline + Storage | Pending |
 | CV-06 | Phase 1 — CV Pipeline + Storage | Pending |
