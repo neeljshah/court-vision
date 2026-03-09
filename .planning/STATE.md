@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 03-ml-models-01-PLAN.md
-last_updated: "2026-03-09T19:53:20.505Z"
+stopped_at: Completed 03-ml-models-02-PLAN.md
+last_updated: "2026-03-09T20:02:50.690Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 12
-  completed_plans: 9
+  completed_plans: 10
   percent: 25
 ---
 
@@ -59,6 +59,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 02-feature-engineering P03 | 3 | 2 tasks | 4 files |
 | Phase 02-feature-engineering P04 | 8 | 2 tasks | 6 files |
 | Phase 03-ml-models P01 | 4 | 2 tasks | 4 files |
+| Phase 03-ml-models P02 | 6 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,9 @@ Recent decisions affecting current work:
 - [Phase 03-ml-models]: ARTIFACTS_DIR resolved relative to base.py via pathlib — portable across environments
 - [Phase 03-ml-models]: load_momentum_data computes lag features via pandas groupby/shift — keeps SQL simple, logic testable
 - [Phase 03-ml-models]: load_possession_data won=0 placeholder documented — real win labels require play-by-play data, deferred to v2
+- [Phase 03-ml-models]: Synthetic data for ShotProbabilityModel encodes lower defender_dist → higher made rate per plan spec, achieved by splitting rows into close/far halves
+- [Phase 03-ml-models]: MomentumDetector synthetic data uses deterministic rule (|scoring_run|>=6 AND streak_delta>=3) with 10% label noise
+- [Phase 03-ml-models]: CLI --train blocks catch DB exceptions and fall back to empty DataFrame, enabling dev use without PostgreSQL
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T19:53:20.503Z
-Stopped at: Completed 03-ml-models-01-PLAN.md
+Last session: 2026-03-09T20:02:50.688Z
+Stopped at: Completed 03-ml-models-02-PLAN.md
 Resume file: None
