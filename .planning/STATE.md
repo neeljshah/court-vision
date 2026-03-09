@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-feature-engineering-02-PLAN.md
-last_updated: "2026-03-09T19:24:33.220Z"
+stopped_at: Completed 02-feature-engineering-03-PLAN.md
+last_updated: "2026-03-09T19:25:20.397Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 8
-  completed_plans: 6
+  completed_plans: 7
   percent: 25
 ---
 
@@ -56,6 +56,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 01-cv-pipeline-storage P04 | 9 | 2 tasks | 5 files |
 | Phase 02-feature-engineering P01 | 2 | 2 tasks | 5 files |
 | Phase 02-feature-engineering P02 | 2 | 2 tasks | 4 files |
+| Phase 02-feature-engineering P03 | 3 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase 02-feature-engineering]: Schema extensions in separate features/schema_extensions.sql loaded by init_schema() after base schema — preserves schema-as-SQL pattern
 - [Phase 02-feature-engineering]: scipy ConvexHull.volume is 2D area (not .area which is perimeter) — catches silent wrong-value bug
 - [Phase 02-feature-engineering]: QhullError imported from scipy.spatial directly — future-proof for scipy 2.0 (deprecated scipy.spatial.qhull removed)
+- [Phase 02-feature-engineering]: Screen detection requires nearby player to exceed SCREEN_SPEED_THRESHOLD (not just be relatively faster) — prevents mutual slow-player false positives
+- [Phase 02-feature-engineering]: PnR timestamps taken from middle frame of window representing screen contact moment, not setup or separation
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T19:24:33.218Z
-Stopped at: Completed 02-feature-engineering-02-PLAN.md
+Last session: 2026-03-09T19:25:20.395Z
+Stopped at: Completed 02-feature-engineering-03-PLAN.md
 Resume file: None
