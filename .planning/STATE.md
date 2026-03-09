@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 03-ml-models-02-PLAN.md
-last_updated: "2026-03-09T20:02:50.690Z"
+stopped_at: Completed 03-ml-models-03-PLAN.md
+last_updated: "2026-03-09T20:12:05.690Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 25
 ---
 
@@ -60,6 +60,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 02-feature-engineering P04 | 8 | 2 tasks | 6 files |
 | Phase 03-ml-models P01 | 4 | 2 tasks | 4 files |
 | Phase 03-ml-models P02 | 6 | 2 tasks | 4 files |
+| Phase 03-ml-models P03 | 15 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -99,6 +100,8 @@ Recent decisions affecting current work:
 - [Phase 03-ml-models]: Synthetic data for ShotProbabilityModel encodes lower defender_dist → higher made rate per plan spec, achieved by splitting rows into close/far halves
 - [Phase 03-ml-models]: MomentumDetector synthetic data uses deterministic rule (|scoring_run|>=6 AND streak_delta>=3) with 10% label noise
 - [Phase 03-ml-models]: CLI --train blocks catch DB exceptions and fall back to empty DataFrame, enabling dev use without PostgreSQL
+- [Phase 03-ml-models]: WinProbabilityModel wraps Pipeline(StandardScaler, RandomForestClassifier) for consistent interface; synthetic label uses momentum-correlated rule
+- [Phase 03-ml-models]: PlayerImpactModel is RandomForestRegressor (regression) computing EPA deviation per 100 possessions; rank_players() uses direct regressor call for full aggregated feature vectors
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T20:02:50.688Z
-Stopped at: Completed 03-ml-models-02-PLAN.md
+Last session: 2026-03-09T20:12:05.688Z
+Stopped at: Completed 03-ml-models-03-PLAN.md
 Resume file: None

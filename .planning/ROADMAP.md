@@ -118,7 +118,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. CV Pipeline + Storage | 4/4 | Complete    | 2026-03-09 |
 | 2. Feature Engineering | 4/4 | Complete    | 2026-03-09 |
-| 3. ML Models | 2/4 | In Progress|  |
+| 3. ML Models | 3/4 | In Progress|  |
 | 4. Dashboard + API | 0/TBD | Not started | - |
 | 5. Conversational AI | 0/TBD | Not started | - |
 | 6. Automation + Testing | 0/TBD | Not started | - |
