@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 _SCHEMA_PATH = pathlib.Path(__file__).parent / "schema.sql"
+_ROOT = pathlib.Path(__file__).parent.parent
+_SCHEMA_EXT_PATH = _ROOT / "features" / "schema_extensions.sql"
 
 
 def get_connection():
@@ -36,10 +38,12 @@ def init_schema():
     CREATE statement uses IF NOT EXISTS.
     """
     sql = _SCHEMA_PATH.read_text(encoding="utf-8")
+    ext_sql = _SCHEMA_EXT_PATH.read_text(encoding="utf-8")
     conn = get_connection()
     try:
         with conn.cursor() as cur:
             cur.execute(sql)
+            cur.execute(ext_sql)
         conn.commit()
     finally:
         conn.close()
