@@ -32,9 +32,9 @@
 ### Machine Learning Models
 
 - [x] **ML-01**: Shot probability model trained on defender distance, shot angle, fatigue proxy, and court location; outputs probability [0,1] per shot attempt
-- [ ] **ML-02**: Win probability model trained on lineup combinations, momentum score, spacing, and efficiency metrics; outputs game win probability updated per possession
+- [x] **ML-02**: Win probability model trained on lineup combinations, momentum score, spacing, and efficiency metrics; outputs game win probability updated per possession
 - [x] **ML-03**: Momentum detection model identifies scoring streaks and possession change patterns that signal momentum shifts
-- [ ] **ML-04**: Player impact model computes expected points added (EPA) per player per 100 possessions
+- [x] **ML-04**: Player impact model computes expected points added (EPA) per player per 100 possessions
 - [ ] **ML-05**: Lineup optimization model scores lineup combinations by defensive disruption and offensive gravity
 
 ### Dashboard & API
@@ -108,9 +108,9 @@
 | FE-05 | Phase 2 — Feature Engineering | Complete |
 | FE-06 | Phase 2 — Feature Engineering | Complete |
 | ML-01 | Phase 3 — ML Models | Complete |
-| ML-02 | Phase 3 — ML Models | Pending |
+| ML-02 | Phase 3 — ML Models | Complete |
 | ML-03 | Phase 3 — ML Models | Complete |
-| ML-04 | Phase 3 — ML Models | Pending |
+| ML-04 | Phase 3 — ML Models | Complete |
 | ML-05 | Phase 3 — ML Models | Pending |
 | UI-01 | Phase 4 — Dashboard + API | Pending |
 | UI-02 | Phase 4 — Dashboard + API | Pending |
