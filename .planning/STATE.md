@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-feature-engineering-01-PLAN.md
-last_updated: "2026-03-09T19:20:05.837Z"
+stopped_at: Completed 02-feature-engineering-02-PLAN.md
+last_updated: "2026-03-09T19:24:33.220Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
+  completed_plans: 6
   percent: 25
 ---
 
@@ -55,6 +55,7 @@ Progress: [███░░░░░░░] 25%
 | Phase 01-cv-pipeline-storage P02 | 5 | 2 tasks | 7 files |
 | Phase 01-cv-pipeline-storage P04 | 9 | 2 tasks | 5 files |
 | Phase 02-feature-engineering P01 | 2 | 2 tasks | 5 files |
+| Phase 02-feature-engineering P02 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [Phase 01-cv-pipeline-storage]: player_id=None for all Phase 1 tracking_coordinates rows — track-to-player mapping deferred to Phase 2
 - [Phase 02-feature-engineering]: Shared type contracts as stdlib @dataclass in features/types.py — zero extra dependencies for types module
 - [Phase 02-feature-engineering]: Schema extensions in separate features/schema_extensions.sql loaded by init_schema() after base schema — preserves schema-as-SQL pattern
+- [Phase 02-feature-engineering]: scipy ConvexHull.volume is 2D area (not .area which is perimeter) — catches silent wrong-value bug
+- [Phase 02-feature-engineering]: QhullError imported from scipy.spatial directly — future-proof for scipy 2.0 (deprecated scipy.spatial.qhull removed)
 
 ### Pending Todos
 
@@ -90,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T19:20:05.835Z
-Stopped at: Completed 02-feature-engineering-01-PLAN.md
+Last session: 2026-03-09T19:24:33.218Z
+Stopped at: Completed 02-feature-engineering-02-PLAN.md
 Resume file: None
