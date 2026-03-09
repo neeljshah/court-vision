@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-cv-pipeline-storage-01-PLAN.md
-last_updated: "2026-03-09T18:25:34.222Z"
+stopped_at: Completed 01-cv-pipeline-storage-03-PLAN.md
+last_updated: "2026-03-09T18:30:16.705Z"
 last_activity: 2026-03-09 — Roadmap created, phases 1-6 defined
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
   percent: 25
 ---
 
@@ -51,6 +51,7 @@ Progress: [███░░░░░░░] 25%
 
 *Updated after each plan completion*
 | Phase 01-cv-pipeline-storage P01 | 2 | 2 tasks | 12 files |
+| Phase 01-cv-pipeline-storage P03 | 3 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Recent decisions affecting current work:
 - [Phase 01-cv-pipeline-storage]: Used psycopg2-binary (not psycopg2) to avoid requiring libpq headers on host
 - [Phase 01-cv-pipeline-storage]: UUID PKs via gen_random_uuid() (pgcrypto), composite index on tracking_coordinates(game_id, frame_number)
 - [Phase 01-cv-pipeline-storage]: Schema-as-SQL pattern: DDL in schema.sql, init_schema() reads and executes idempotently
+- [Phase 01-cv-pipeline-storage]: Hardcoded UUID strings in seed SQL (gen_random_uuid() requires DB context; plain INSERT files need literal values)
+- [Phase 01-cv-pipeline-storage]: ON CONFLICT (id) DO NOTHING for idempotent seed inserts across games and players dimension tables
 
 ### Pending Todos
 
@@ -76,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-09T18:25:34.220Z
-Stopped at: Completed 01-cv-pipeline-storage-01-PLAN.md
+Last session: 2026-03-09T18:30:16.703Z
+Stopped at: Completed 01-cv-pipeline-storage-03-PLAN.md
 Resume file: None
