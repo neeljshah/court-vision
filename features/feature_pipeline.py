@@ -22,19 +22,32 @@ from features.off_ball_events import detect_off_ball_events
 from features.pick_and_roll import detect_pick_and_roll
 from features.passing_network import build_passing_network, export_network_graph
 from features.momentum import compute_momentum
+from features.play_recognition import detect_plays
+from features.defensive_scheme import analyze_defensive_scheme
+from features.space_control import compute_space_control
+from features.drive_analysis import detect_drives
+from features.shot_creation import classify_shot_creation
+from features.rebound_positioning import estimate_rebound_positioning
+from features.game_flow import compute_game_flow
+from features.micro_timing import compute_micro_timing
+from features.lineup_synergy import compute_lineup_synergy
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Basket geometry constants (standard pixel space)
+# Basket geometry constants (court feet)
+# NBA baskets at x=4.75 and x=89.25, y=25.0
 # ---------------------------------------------------------------------------
-BASKET_Y = 240.0
-BASKET_Y_TOLERANCE = 60.0   # px — ball must be within this of basket y
-LEFT_BASKET_X_MAX = 100.0   # px — left basket region
-RIGHT_BASKET_X_MIN = 820.0  # px — right basket region
-SHOT_SPEED_THRESHOLD = 400.0  # px/s — ball must exceed this speed
-POSSESSION_SPEED_THRESHOLD = 20.0  # px/s — ball held/reset if speed below this
-POSSESSION_HELD_FRAMES = 3  # consecutive slow frames = ball held
+LEFT_BASKET_X_FT   = 4.75
+RIGHT_BASKET_X_FT  = 89.25
+BASKET_Y_FT        = 25.0
+BASKET_ZONE_X_FT   = 12.0   # ball must be within 12ft of baseline to count
+BASKET_ZONE_Y_FT   = 15.0   # ball must be within 15ft of court centerline
+
+# Ball speed in ft/s (Kalman filter tracks in court feet)
+SHOT_SPEED_THRESHOLD       = 8.0   # ft/s — minimum ball speed for a shot attempt
+POSSESSION_SPEED_THRESHOLD = 3.0   # ft/s — ball essentially stationary = possession reset
+POSSESSION_HELD_FRAMES     = 5     # consecutive slow frames = ball held
 
 
 # ---------------------------------------------------------------------------
@@ -61,6 +74,19 @@ def _detect_possession_boundaries(
     """
     if not ball_rows:
         return 0
+
+    # Smooth ball speed with a 5-frame moving average to reduce tracking noise
+    speeds = [r["speed"] for r in ball_rows]
+    window = 5
+    smoothed = []
+    for i in range(len(speeds)):
+        lo = max(0, i - window // 2)
+        hi = min(len(speeds), i + window // 2 + 1)
+        smoothed.append(sum(speeds[lo:hi]) / (hi - lo))
+    for i, row in enumerate(ball_rows):
+        row = dict(row)
+        row["speed"] = smoothed[i]
+        ball_rows[i] = row
 
     # Find "held" frame runs — runs of >= POSSESSION_HELD_FRAMES slow frames
     slow_run_start: int | None = None
@@ -139,61 +165,56 @@ def _detect_shot_events(
         return 0
 
     inserted = 0
+    last_shot_frame = -45  # cooldown: minimum 45 frames (~1.5s) between shots
 
     for row in ball_rows:
         speed = row.get("speed", 0.0) or 0.0
-        bx = row.get("x", 0.0) or 0.0
-        by = row.get("y", 0.0) or 0.0
         frame_number = row.get("frame_number", 0)
         direction_degrees = row.get("direction_degrees")
 
-        # Check speed threshold
+        # All spatial checks in court feet
+        bx_ft = float(row.get("x_ft") or row.get("x") or 0.0)
+        by_ft = float(row.get("y_ft") or row.get("y") or 0.0)
+        bx    = float(row.get("x", bx_ft) or bx_ft)
+        by    = float(row.get("y", by_ft) or by_ft)
+
+        # Speed threshold (ft/s)
         if speed <= SHOT_SPEED_THRESHOLD:
             continue
 
-        # Check proximity to basket y
-        if abs(by - BASKET_Y) > BASKET_Y_TOLERANCE:
+        # Cooldown: skip if a shot was already detected within the last 45 frames
+        if frame_number - last_shot_frame < 45:
             continue
 
-        # Check x is near a basket (left or right side)
-        near_basket = bx < LEFT_BASKET_X_MAX or bx > RIGHT_BASKET_X_MIN
-        if not near_basket:
+        # Ball must be near one of the two baskets
+        near_left  = bx_ft < (LEFT_BASKET_X_FT  + BASKET_ZONE_X_FT)
+        near_right = bx_ft > (RIGHT_BASKET_X_FT - BASKET_ZONE_X_FT)
+        if not (near_left or near_right):
             continue
 
-        # Determine shot type by x position
-        shot_type = "3pt" if (bx < LEFT_BASKET_X_MAX or bx > RIGHT_BASKET_X_MIN) else "2pt"
-        # Refined: if x is between baskets, it's 2pt; if near the baskets it's 2pt too
-        # Simple zone: near-basket shots are 2pt, others 3pt
-        if LEFT_BASKET_X_MAX <= bx <= RIGHT_BASKET_X_MIN:
-            shot_type = "2pt"
-        else:
-            shot_type = "3pt"
+        # Ball must be within court width bounds (not a wildly off-court reading)
+        if not (BASKET_Y_FT - BASKET_ZONE_Y_FT < by_ft < BASKET_Y_FT + BASKET_ZONE_Y_FT):
+            continue
 
-        # Find nearest player at this frame
-        cursor.execute(
-            """
-            SELECT track_id, x, y
-            FROM tracking_coordinates
-            WHERE game_id = %s AND frame_number = %s AND object_type != 'ball'
-            ORDER BY ((x - %s)*(x - %s) + (y - %s)*(y - %s)) ASC
-            LIMIT 1
-            """,
-            (game_id, frame_number, bx, bx, by, by),
-        )
-        player_row = cursor.fetchone()
-        player_id = player_row[0] if player_row else None
+        # Shot type by distance from nearest basket
+        left_dist  = math.sqrt((bx_ft - LEFT_BASKET_X_FT)**2  + (by_ft - BASKET_Y_FT)**2)
+        right_dist = math.sqrt((bx_ft - RIGHT_BASKET_X_FT)**2 + (by_ft - BASKET_Y_FT)**2)
+        basket_dist = min(left_dist, right_dist)
+        shot_type = "3pt" if basket_dist > 22.0 else "2pt"
 
+        # player_id not yet resolved (requires jersey OCR); leave NULL
         cursor.execute(
             """
             INSERT INTO shot_logs
-                (id, game_id, player_id, frame_number, x, y, shot_type, made,
+                (id, game_id, player_id, frame_number, x, y, x_ft, y_ft, shot_type, made,
                  defender_distance, shot_angle)
-            VALUES (gen_random_uuid(), %s, %s, %s, %s, %s, %s, NULL, NULL, %s)
+            VALUES (gen_random_uuid(), %s, NULL, %s, %s, %s, %s, %s, %s, NULL, NULL, %s)
             ON CONFLICT DO NOTHING
             """,
-            (game_id, player_id, frame_number, bx, by, shot_type, direction_degrees),
+            (game_id, frame_number, bx, by, bx_ft, by_ft, shot_type, direction_degrees),
         )
         inserted += 1
+        last_shot_frame = frame_number
 
     return inserted
 
@@ -574,6 +595,16 @@ def _run_momentum_step(game_id: str, cursor) -> int:
 # Main pipeline runner
 # ---------------------------------------------------------------------------
 
+def _check_homography_valid(ball_rows: list[dict]) -> bool:
+    """Return True if x_ft values are within valid NBA court bounds (0-94 ft)."""
+    if not ball_rows:
+        return False
+    ft_vals = [r["x_ft"] for r in ball_rows if r.get("x_ft") is not None]
+    if not ft_vals:
+        return False
+    return -5.0 <= min(ft_vals) and max(ft_vals) <= 99.0
+
+
 def run_feature_pipeline(game_id: str) -> None:
     """Execute the full feature pipeline for a game.
 
@@ -600,7 +631,7 @@ def run_feature_pipeline(game_id: str) -> None:
                 # -----------------------------------------------------------
                 cur.execute(
                     """
-                    SELECT frame_number, timestamp_ms, x, y, speed, direction_degrees
+                    SELECT frame_number, timestamp_ms, x, y, COALESCE(x_ft, x) as x_ft, COALESCE(y_ft, y) as y_ft, speed, direction_degrees
                     FROM tracking_coordinates
                     WHERE game_id = %s AND object_type = 'ball'
                     ORDER BY frame_number
@@ -623,19 +654,26 @@ def run_feature_pipeline(game_id: str) -> None:
                             "timestamp_ms": r[1],
                             "x": r[2],
                             "y": r[3],
-                            "speed": r[4] or 0.0,
-                            "direction_degrees": r[5],
+                            "x_ft": r[4],
+                            "y_ft": r[5],
+                            "speed": r[6] or 0.0,
+                            "direction_degrees": r[7],
                         }
                         for r in ball_rows_raw
                     ]
 
-                poss_count = _detect_possession_boundaries(ball_rows, game_id, cur)
+                homography_valid = _check_homography_valid(ball_rows)
+                if not homography_valid:
+                    print("[Warning] Homography invalid or out of court bounds — "
+                          "shot/drive/possession detection skipped (coordinates not in feet).")
+
+                poss_count = _detect_possession_boundaries(ball_rows, game_id, cur) if homography_valid else 0
                 print(f"[Step 0a] possession boundaries: records_processed={len(ball_rows)}, records_written={poss_count}")
 
                 # -----------------------------------------------------------
                 # Step 0b: Shot event detection
                 # -----------------------------------------------------------
-                shot_count = _detect_shot_events(ball_rows, game_id, cur)
+                shot_count = _detect_shot_events(ball_rows, game_id, cur) if homography_valid else 0
                 print(f"[Step 0b] shot events: records_processed={len(ball_rows)}, records_written={shot_count}")
 
                 # -----------------------------------------------------------
@@ -643,7 +681,8 @@ def run_feature_pipeline(game_id: str) -> None:
                 # -----------------------------------------------------------
                 cur.execute(
                     """
-                    SELECT frame_number, timestamp_ms, x, y,
+                    SELECT frame_number, timestamp_ms,
+                           COALESCE(x_ft, x) AS x, COALESCE(y_ft, y) AS y,
                            velocity_x, velocity_y, speed, direction_degrees,
                            object_type, track_id
                     FROM tracking_coordinates
@@ -663,8 +702,8 @@ def run_feature_pipeline(game_id: str) -> None:
                     row_dict = {
                         "frame_number": r[0],
                         "timestamp_ms": r[1],
-                        "x": r[2],
-                        "y": r[3],
+                        "x": r[2],  # court feet (COALESCE x_ft, x)
+                        "y": r[3],  # court feet (COALESCE y_ft, y)
                         "velocity_x": r[4],
                         "velocity_y": r[5],
                         "speed": r[6] or 0.0,
@@ -678,6 +717,7 @@ def run_feature_pipeline(game_id: str) -> None:
                         ball_by_frame[fn] = {"x": r[2], "y": r[3]}
 
                 total_frames = len(frames_by_number)
+                sorted_frames = sorted(frames_by_number.keys())
                 print(f"[Step 1] loaded tracking data: frames={total_frames}, rows={len(all_rows)}")
 
                 # -----------------------------------------------------------
@@ -717,6 +757,226 @@ def run_feature_pipeline(game_id: str) -> None:
                 # -----------------------------------------------------------
                 momentum_count = _run_momentum_step(game_id, cur)
                 print(f"[Step 7] momentum snapshots: records_processed=N/A, records_written={momentum_count}")
+
+                # -----------------------------------------------------------
+                # Step 8: Play Recognition
+                # -----------------------------------------------------------
+                play_count = 0
+                cur.execute("SELECT id, start_frame, end_frame FROM possessions WHERE game_id = %s ORDER BY start_frame", (game_id,))
+                possession_rows = cur.fetchall()
+                for poss_id, start_f, end_f in possession_rows:
+                    if end_f is None:
+                        continue
+                    plays = detect_plays(frames_by_number, start_f, end_f, game_id)
+                    for play in plays:
+                        cur.execute("""
+                            INSERT INTO play_detections
+                                (game_id, play_type, play_start_frame, play_end_frame,
+                                 primary_track_ids, confidence)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                            ON CONFLICT DO NOTHING
+                        """, (game_id, play.play_type, int(play.play_start_frame),
+                              int(play.play_end_frame),
+                              [int(t) for t in play.primary_track_ids],
+                              float(play.confidence)))
+                        play_count += 1
+                print(f"[Step 8] play recognition: records_written={play_count}")
+
+                # -----------------------------------------------------------
+                # Step 9: Defensive Scheme Detection
+                # -----------------------------------------------------------
+                scheme_count = 0
+                for poss_id, start_f, end_f in possession_rows:
+                    if end_f is None:
+                        continue
+                    poss_fns = [fn for fn in sorted_frames if start_f <= fn <= end_f]
+                    snapshots = analyze_defensive_scheme(frames_by_number, poss_fns)
+                    for snap in snapshots:
+                        cur.execute("""
+                            INSERT INTO defensive_schemes
+                                (game_id, possession_id, frame_number, scheme_label,
+                                 switch_frequency, help_frequency, paint_collapse_frequency,
+                                 weakside_rotation_speed, cohesion_score)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        """, (game_id, str(poss_id), int(snap.frame_number), snap.scheme_label,
+                              float(snap.switch_frequency), float(snap.help_frequency),
+                              float(snap.paint_collapse_frequency),
+                              float(snap.weakside_rotation_speed),
+                              float(snap.cohesion_score)))
+                        scheme_count += 1
+                print(f"[Step 9] defensive schemes: records_written={scheme_count}")
+
+                # -----------------------------------------------------------
+                # Step 10: Drive Analysis
+                # -----------------------------------------------------------
+                drives = detect_drives(frames_by_number, sorted_frames) if homography_valid else []
+                drive_count = 0
+                for drive in drives:
+                    cur.execute("""
+                        INSERT INTO drive_events
+                            (game_id, track_id, start_frame, end_frame,
+                             drive_angle_to_rim, penetration_depth, defender_beaten,
+                             help_arrival_frames, outcome,
+                             blow_by_probability, drive_kick_probability, foul_probability)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (game_id, int(drive.track_id), int(drive.start_frame), int(drive.end_frame),
+                          float(drive.drive_angle_to_rim), float(drive.penetration_depth),
+                          bool(drive.defender_beaten),
+                          int(drive.help_arrival_frames) if drive.help_arrival_frames is not None else None,
+                          drive.outcome,
+                          float(drive.blow_by_probability), float(drive.drive_kick_probability),
+                          float(drive.foul_probability)))
+                    drive_count += 1
+                print(f"[Step 10] drive events: records_written={drive_count}")
+
+                # -----------------------------------------------------------
+                # Step 11: Shot Creation + Rebound Positioning
+                # -----------------------------------------------------------
+                cur.execute("""
+                    SELECT id, frame_number, x_ft, y_ft, player_id
+                    FROM shot_logs WHERE game_id = %s
+                """, (game_id,))
+                shot_rows_full = cur.fetchall()
+
+                creation_count = 0
+                rebound_count = 0
+
+                # Build possession start lookup by frame number
+                poss_by_frame = {}
+                for poss_id, start_f, end_f in possession_rows:
+                    if end_f is None:
+                        continue
+                    for fn in range(start_f, end_f + 1):
+                        poss_by_frame[fn] = (poss_id, start_f)
+
+                for shot_id, shot_fn, sx_ft, sy_ft, _ in shot_rows_full:
+                    if shot_fn not in frames_by_number:
+                        continue
+
+                    # Shot creation
+                    frame_players = [r for r in frames_by_number.get(shot_fn, [])
+                                     if r.get("object_type") == "player"]
+                    if frame_players:
+                        ball = next((r for r in frames_by_number.get(shot_fn, [])
+                                     if r.get("object_type") == "ball"), None)
+                        shooter_id = None
+                        if ball:
+                            bpos = (ball.get("x_ft", ball["x"]), ball.get("y_ft", ball["y"]))
+                            nearest = min(frame_players, key=lambda p: (
+                                (p.get("x_ft", p["x"]) - bpos[0])**2 +
+                                (p.get("y_ft", p["y"]) - bpos[1])**2
+                            ))
+                            shooter_id = nearest["track_id"]
+
+                        if shooter_id is not None:
+                            poss_start = poss_by_frame.get(shot_fn, (None, shot_fn - 90))[1]
+                            creation = classify_shot_creation(
+                                shot_fn, shooter_id, poss_start, frames_by_number
+                            )
+                            cur.execute("""
+                                INSERT INTO shot_creation_events
+                                    (game_id, shot_log_id, creation_type,
+                                     creation_difficulty, creation_space, creation_time)
+                                VALUES (%s, %s, %s, %s, %s, %s)
+                                ON CONFLICT DO NOTHING
+                            """, (game_id, str(shot_id), creation.creation_type,
+                                  float(creation.creation_difficulty),
+                                  float(creation.creation_space),
+                                  float(creation.creation_time)))
+                            creation_count += 1
+
+                    # Rebound positioning
+                    sx = sx_ft if sx_ft else 47.0
+                    sy = sy_ft if sy_ft else 25.0
+                    rebounds = estimate_rebound_positioning(shot_fn, frames_by_number, sx, sy)
+                    for reb in rebounds:
+                        cur.execute("""
+                            INSERT INTO rebound_events
+                                (game_id, frame_number, rebounding_track_id,
+                                 rebound_probability, positioning_advantage,
+                                 boxout_success, offensive_crash)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s)
+                        """, (game_id, int(reb.frame_number), int(reb.track_id),
+                              float(reb.rebound_probability), float(reb.positioning_advantage),
+                              bool(reb.boxout_success), bool(reb.offensive_crash)))
+                        rebound_count += 1
+
+                print(f"[Step 11] shot creation: {creation_count}, rebound events: {rebound_count}")
+
+                # -----------------------------------------------------------
+                # Step 12: Game Flow
+                # -----------------------------------------------------------
+                flow_count = 0
+                possession_outcomes = []
+                for _, start_f, end_f in possession_rows:
+                    if end_f is None:
+                        continue
+                    duration = end_f - start_f
+                    scored = any(
+                        start_f <= s[1] <= end_f for s in shot_rows_full if s[3]
+                    ) if shot_rows_full else False
+                    possession_outcomes.append({"scored": scored, "duration_frames": duration})
+
+                    flow = compute_game_flow(
+                        possession_outcomes, start_f,
+                        possession_number=len(possession_outcomes),
+                    )
+                    cur.execute("""
+                        INSERT INTO game_flow
+                            (game_id, frame_number, momentum_index,
+                             scoring_run_probability, possession_pressure_index,
+                             comeback_probability, offensive_flow_score)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """, (game_id, int(flow.frame_number), float(flow.momentum_index),
+                          float(flow.scoring_run_probability),
+                          float(flow.possession_pressure_index),
+                          float(flow.comeback_probability),
+                          float(flow.offensive_flow_score)))
+                    flow_count += 1
+                print(f"[Step 12] game flow: records_written={flow_count}")
+
+                # -----------------------------------------------------------
+                # Step 13: Micro Timing
+                # -----------------------------------------------------------
+                timing_events = compute_micro_timing(frames_by_number, sorted_frames)
+                timing_count = 0
+                for ev in timing_events:
+                    cur.execute("""
+                        INSERT INTO micro_timing_events
+                            (game_id, track_id, frame_number, event_type,
+                             catch_to_shot_time, catch_to_drive_time, catch_to_pass_time,
+                             screen_to_drive_time, decision_latency)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (game_id,
+                          int(ev.track_id) if ev.track_id is not None else None,
+                          int(ev.frame_number), ev.event_type,
+                          float(ev.catch_to_shot_time) if ev.catch_to_shot_time is not None else None,
+                          float(ev.catch_to_drive_time) if ev.catch_to_drive_time is not None else None,
+                          float(ev.catch_to_pass_time) if ev.catch_to_pass_time is not None else None,
+                          float(ev.screen_to_drive_time) if ev.screen_to_drive_time is not None else None,
+                          float(ev.decision_latency) if ev.decision_latency is not None else None))
+                    timing_count += 1
+                print(f"[Step 13] micro timing: records_written={timing_count}")
+
+                # -----------------------------------------------------------
+                # Step 14: Lineup Synergy
+                # -----------------------------------------------------------
+                synergy_snapshots = compute_lineup_synergy(frames_by_number, sorted_frames)
+                synergy_count = 0
+                for snap in synergy_snapshots:
+                    cur.execute("""
+                        INSERT INTO lineup_synergy
+                            (game_id, frame_number, track_ids,
+                             spacing_quality, ball_movement_score,
+                             defensive_cohesion, offensive_gravity, synergy_index)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                    """, (game_id, int(snap.frame_number),
+                          [int(t) for t in snap.track_ids],
+                          float(snap.spacing_quality), float(snap.ball_movement_score),
+                          float(snap.defensive_cohesion), float(snap.offensive_gravity),
+                          float(snap.synergy_index)))
+                    synergy_count += 1
+                print(f"[Step 14] lineup synergy: records_written={synergy_count}")
 
     finally:
         conn.close()

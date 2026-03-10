@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}NBA AI — Games{% endblock %}
+{% block content %}
+
+<h1>Processed Games</h1>
+<h2>Select a game to view analytics</h2>
+
+{% if games %}
+<div class="game-list">
+  {% for g in games %}
+  <div class="game-item">
+    <div>
+      <div class="game-title">{{ g.home_team }} vs {{ g.away_team }}</div>
+      <div class="game-meta">{{ g.game_date }} &nbsp;·&nbsp; {{ g.season }}
+        &nbsp;·&nbsp; {{ g.total_shots }} shots &nbsp;·&nbsp; {{ g.total_possessions }} possessions
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      {% if g.has_graphs %}
+        <span class="badge ready">Graphs ready</span>
+      {% else %}
+        <form method="post" action="/run/{{ g.game_id }}" style="margin:0;">
+          <button class="btn btn-ghost" type="submit">Generate Graphs</button>
+        </form>
+      {% endif %}
+      <a class="btn" href="/game/{{ g.game_id }}">View →</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+  <p style="font-size:2rem; margin-bottom:12px;">📭</p>
+  <p>No games exported yet.</p>
+  <p style="margin-top:8px; font-size:0.85rem;">
+    Run <code>python -m pipeline.ingest_game --video game.mp4</code> to process a game,<br>
+    then <code>python -m pipeline.export_data --game-id &lt;id&gt;</code> to export.
+  </p>
+</div>
+{% endif %}
+{% endblock %}

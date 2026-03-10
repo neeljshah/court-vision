@@ -9,17 +9,18 @@ import math
 from features.types import OffBallEvent
 
 # ---------------------------------------------------------------------------
-# Detection thresholds
+# Detection thresholds (court-feet units; speed in ft/s)
+# NBA reference: max sprint ~32 ft/s, hard cut ~14+ ft/s, screener ~0-3 ft/s
 # ---------------------------------------------------------------------------
 
-CUT_SPEED_THRESHOLD: float = 200.0    # px/s — minimum speed to classify as cut
-SCREEN_SPEED_THRESHOLD: float = 30.0  # px/s — maximum speed for screener candidate
-SCREEN_PROXIMITY: float = 60.0        # px — maximum distance to a "faster" player for screen
-DRIFT_SPEED_MIN: float = 30.0         # px/s — lower bound for drift speed range
-DRIFT_SPEED_MAX: float = 100.0        # px/s — upper bound for drift speed range
+CUT_SPEED_THRESHOLD: float = 14.0    # ft/s — minimum speed to classify as cut (~9.5 mph)
+SCREEN_SPEED_THRESHOLD: float = 3.0  # ft/s — maximum speed for screener candidate
+SCREEN_PROXIMITY: float = 5.0        # ft — maximum distance to a "faster" player for screen
+DRIFT_SPEED_MIN: float = 4.0         # ft/s — lower bound for drift speed range (~2.7 mph)
+DRIFT_SPEED_MAX: float = 10.0        # ft/s — upper bound for drift speed range (~6.8 mph)
 
-# Right-side basket in standard pixel space; court-calibration deferred to future phase.
-_BASKET_X: float = 470.0
+# Right-side basket in court feet
+_BASKET_X: float = 94.0
 
 
 def _dist(ax: float, ay: float, bx: float, by: float) -> float:

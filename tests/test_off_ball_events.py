@@ -1,7 +1,8 @@
 """Tests for off-ball movement event detection (FE-03).
 
 Tests cover: cut, screen, drift classification plus degenerate cases.
-Uses synthetic frame sequences — no database or numpy required.
+Uses synthetic frame sequences with court-feet coordinates and ft/s speeds.
+NBA reference: max sprint ~32 ft/s, hard cut ~14+ ft/s, screener ~0-3 ft/s.
 """
 
 import pytest
@@ -54,7 +55,7 @@ class TestDegenerateCases:
         assert result == []
 
     def test_empty_frame_sequence_with_ball_pos_returns_empty_list(self):
-        result = detect_off_ball_events([], game_id="g1", ball_pos={"x": 250.0, "y": 150.0})
+        result = detect_off_ball_events([], game_id="g1", ball_pos={"x": 47.0, "y": 25.0})
         assert result == []
 
     def test_frame_with_no_players_returns_empty_list(self):
@@ -63,10 +64,10 @@ class TestDegenerateCases:
         assert result == []
 
     def test_player_with_no_detectable_pattern_emits_no_event(self):
-        # Speed exactly at boundary (not exceeding any threshold) with no screen partner
-        player = make_player(track_id=1, x=200.0, y=150.0, speed=15.0)
+        # Speed above drift max and no positive velocity_x (not a cut); single player (no screen)
+        player = make_player(track_id=1, x=20.0, y=25.0, speed=15.0)
         frame_sequence = [[player]]
-        result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos={"x": 200.0, "y": 150.0})
+        result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos={"x": 20.0, "y": 25.0})
         assert result == []
 
 
@@ -76,10 +77,10 @@ class TestDegenerateCases:
 
 class TestReturnType:
     def test_returns_list_of_off_ball_events(self):
-        # Fast player moving toward basket — cut
+        # Fast player moving toward basket — cut (20 ft/s > CUT_SPEED_THRESHOLD=14)
         player = make_player(
-            track_id=1, x=200.0, y=150.0, speed=250.0,
-            velocity_x=250.0, velocity_y=0.0
+            track_id=1, x=20.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -89,8 +90,8 @@ class TestReturnType:
 
     def test_event_game_id_matches_parameter(self):
         player = make_player(
-            track_id=1, x=200.0, y=150.0, speed=250.0,
-            velocity_x=250.0, velocity_y=0.0
+            track_id=1, x=20.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="test-game-99", ball_pos=None)
@@ -103,40 +104,40 @@ class TestReturnType:
 # ---------------------------------------------------------------------------
 
 class TestCutDetection:
-    def _make_cut_frame_sequence(self, speed=250.0, track_id=1):
-        # Player moving fast to the right (toward basket at x=470)
+    def _make_cut_frame_sequence(self, speed=20.0, track_id=1):
+        # Player moving fast to the right (toward basket); 20 ft/s ≈ 13.6 mph
         player = make_player(
-            track_id=track_id, x=200.0, y=150.0, speed=speed,
+            track_id=track_id, x=20.0, y=25.0, speed=speed,
             velocity_x=speed, velocity_y=0.0,
             frame_number=5, timestamp_ms=5000.0,
         )
         return [[player]]
 
     def test_fast_player_toward_basket_is_tagged_cut(self):
-        frame_sequence = self._make_cut_frame_sequence(speed=250.0)
+        frame_sequence = self._make_cut_frame_sequence(speed=20.0)
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         assert len(result) == 1
         assert result[0].event_type == "cut"
 
     def test_cut_event_has_correct_track_id(self):
-        frame_sequence = self._make_cut_frame_sequence(speed=300.0, track_id=7)
+        frame_sequence = self._make_cut_frame_sequence(speed=25.0, track_id=7)
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         assert result[0].track_id == 7
 
     def test_cut_confidence_is_positive(self):
-        frame_sequence = self._make_cut_frame_sequence(speed=250.0)
+        frame_sequence = self._make_cut_frame_sequence(speed=20.0)
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         assert result[0].confidence > 0.0
 
     def test_cut_confidence_capped_at_1(self):
         # Very high speed should still cap at 1.0
-        frame_sequence = self._make_cut_frame_sequence(speed=10000.0)
+        frame_sequence = self._make_cut_frame_sequence(speed=1000.0)
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         assert result[0].confidence <= 1.0
 
     def test_higher_speed_proportionally_higher_confidence(self):
-        fast = self._make_cut_frame_sequence(speed=400.0)
-        slow = self._make_cut_frame_sequence(speed=210.0)
+        fast = self._make_cut_frame_sequence(speed=28.0)
+        slow = self._make_cut_frame_sequence(speed=15.5)
         r_fast = detect_off_ball_events(fast, game_id="g1", ball_pos=None)
         r_slow = detect_off_ball_events(slow, game_id="g1", ball_pos=None)
         assert r_fast[0].confidence >= r_slow[0].confidence
@@ -150,8 +151,8 @@ class TestCutDetection:
 
     def test_cut_frame_number_from_most_recent_frame(self):
         player = make_player(
-            track_id=1, x=200.0, y=150.0, speed=250.0,
-            velocity_x=250.0, velocity_y=0.0,
+            track_id=1, x=20.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0,
             frame_number=42, timestamp_ms=42000.0
         )
         frame_sequence = [[player]]
@@ -160,10 +161,10 @@ class TestCutDetection:
         assert result[0].timestamp_ms == 42000.0
 
     def test_player_moving_away_from_basket_is_not_a_cut(self):
-        # Moving left (negative x velocity) — away from basket at x=470
+        # Moving left (negative x velocity) — away from basket
         player = make_player(
-            track_id=1, x=400.0, y=150.0, speed=250.0,
-            velocity_x=-250.0, velocity_y=0.0,
+            track_id=1, x=40.0, y=25.0, speed=20.0,
+            velocity_x=-20.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -177,15 +178,15 @@ class TestCutDetection:
 
 class TestScreenDetection:
     def test_slow_player_near_faster_player_is_tagged_screen(self):
-        # Screener: slow, stationary
+        # Screener: nearly stationary (1.5 ft/s < SCREEN_SPEED_THRESHOLD=3 ft/s)
         screener = make_player(
-            track_id=10, x=300.0, y=150.0, speed=10.0,
+            track_id=10, x=30.0, y=25.0, speed=1.5,
             velocity_x=0.0, velocity_y=0.0,
         )
-        # Mover: fast, close by
+        # Mover: fast (20 ft/s), 3 ft away (within SCREEN_PROXIMITY=5 ft)
         mover = make_player(
-            track_id=11, x=330.0, y=150.0, speed=150.0,
-            velocity_x=150.0, velocity_y=0.0,
+            track_id=11, x=33.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0,
         )
         frame_sequence = [[screener, mover]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -196,11 +197,11 @@ class TestScreenDetection:
 
     def test_screen_confidence_is_0_8(self):
         screener = make_player(
-            track_id=10, x=300.0, y=150.0, speed=10.0,
+            track_id=10, x=30.0, y=25.0, speed=1.5,
         )
         mover = make_player(
-            track_id=11, x=330.0, y=150.0, speed=150.0,
-            velocity_x=150.0, velocity_y=0.0,
+            track_id=11, x=33.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0,
         )
         frame_sequence = [[screener, mover]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -210,13 +211,13 @@ class TestScreenDetection:
                 assert e.confidence == 0.8
 
     def test_slow_player_far_from_others_is_not_a_screen(self):
-        # Slow player but no one nearby
+        # Slow player but no one within SCREEN_PROXIMITY (5 ft)
         slow_player = make_player(
-            track_id=10, x=300.0, y=150.0, speed=10.0,
+            track_id=10, x=30.0, y=25.0, speed=1.5,
         )
         far_player = make_player(
-            track_id=11, x=500.0, y=300.0, speed=200.0,
-            velocity_x=200.0, velocity_y=0.0,
+            track_id=11, x=50.0, y=40.0, speed=20.0,  # ~25 ft away
+            velocity_x=20.0, velocity_y=0.0,
         )
         frame_sequence = [[slow_player, far_player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -224,16 +225,16 @@ class TestScreenDetection:
         assert screen_events == []
 
     def test_slow_player_near_equally_slow_player_is_not_a_screen(self):
-        # Both slow — no "faster" player nearby
-        slow1 = make_player(track_id=10, x=300.0, y=150.0, speed=10.0)
-        slow2 = make_player(track_id=11, x=320.0, y=150.0, speed=15.0)
+        # Both slow (below SCREEN_SPEED_THRESHOLD=3 ft/s) — no "faster" player nearby
+        slow1 = make_player(track_id=10, x=30.0, y=25.0, speed=1.5)
+        slow2 = make_player(track_id=11, x=32.0, y=25.0, speed=1.5)
         frame_sequence = [[slow1, slow2]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         screen_events = [e for e in result if e.event_type == "screen"]
         assert screen_events == []
 
     def test_single_player_cannot_be_screener(self):
-        slow_player = make_player(track_id=10, x=300.0, y=150.0, speed=10.0)
+        slow_player = make_player(track_id=10, x=30.0, y=25.0, speed=1.5)
         frame_sequence = [[slow_player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
         assert result == []
@@ -245,15 +246,14 @@ class TestScreenDetection:
 
 class TestDriftDetection:
     def test_medium_speed_player_moving_laterally_away_from_ball_is_tagged_drift(self):
-        # Ball at x=300, y=150. Player at x=300, y=50. Moving in -y direction (away laterally).
-        # Ball-to-player vector: (0, -100). Velocity: (0, -60).
-        # Lateral: velocity perpendicular to ball-player vector = cross product.
-        # To get drift: player moving laterally away. We'll use purely lateral motion.
-        ball_pos = {"x": 300.0, "y": 150.0}
-        # Player below ball, moving further down (away in y axis)
+        # Ball at (47, 25). Player at (47, 10) — directly below ball.
+        # Player velocity: (6, 0) — purely lateral (perpendicular to ball-player vector).
+        # Ball-to-player vector: (0, -15). Cross product = 0*0 - (-15)*6 = 90 → lateral ✓
+        # Speed 6 ft/s is within DRIFT range [4, 10].
+        ball_pos = {"x": 47.0, "y": 25.0}
         player = make_player(
-            track_id=5, x=300.0, y=50.0, speed=60.0,
-            velocity_x=60.0, velocity_y=0.0,  # Moving laterally (perpendicular to ball vector)
+            track_id=5, x=47.0, y=10.0, speed=6.0,
+            velocity_x=6.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=ball_pos)
@@ -262,10 +262,10 @@ class TestDriftDetection:
         assert drift_events[0].track_id == 5
 
     def test_drift_confidence_is_0_6(self):
-        ball_pos = {"x": 300.0, "y": 150.0}
+        ball_pos = {"x": 47.0, "y": 25.0}
         player = make_player(
-            track_id=5, x=300.0, y=50.0, speed=60.0,
-            velocity_x=60.0, velocity_y=0.0,
+            track_id=5, x=47.0, y=10.0, speed=6.0,
+            velocity_x=6.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=ball_pos)
@@ -274,11 +274,11 @@ class TestDriftDetection:
             assert drift_events[0].confidence == pytest.approx(0.6)
 
     def test_player_below_min_drift_speed_not_tagged_drift(self):
-        ball_pos = {"x": 300.0, "y": 150.0}
-        # Speed 20 < DRIFT_SPEED_MIN (30)
+        ball_pos = {"x": 47.0, "y": 25.0}
+        # Speed 3 ft/s < DRIFT_SPEED_MIN (4 ft/s)
         player = make_player(
-            track_id=5, x=300.0, y=50.0, speed=20.0,
-            velocity_x=20.0, velocity_y=0.0,
+            track_id=5, x=47.0, y=10.0, speed=3.0,
+            velocity_x=3.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=ball_pos)
@@ -286,11 +286,11 @@ class TestDriftDetection:
         assert drift_events == []
 
     def test_player_above_max_drift_speed_not_tagged_drift(self):
-        ball_pos = {"x": 300.0, "y": 150.0}
-        # Speed 110 > DRIFT_SPEED_MAX (100)
+        ball_pos = {"x": 47.0, "y": 25.0}
+        # Speed 11 ft/s > DRIFT_SPEED_MAX (10 ft/s)
         player = make_player(
-            track_id=5, x=300.0, y=50.0, speed=110.0,
-            velocity_x=110.0, velocity_y=0.0,
+            track_id=5, x=47.0, y=10.0, speed=11.0,
+            velocity_x=11.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=ball_pos)
@@ -300,8 +300,8 @@ class TestDriftDetection:
     def test_drift_requires_ball_pos(self):
         # Without ball_pos drift cannot be computed — no drift event
         player = make_player(
-            track_id=5, x=300.0, y=50.0, speed=60.0,
-            velocity_x=60.0, velocity_y=0.0,
+            track_id=5, x=47.0, y=10.0, speed=6.0,
+            velocity_x=6.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -315,19 +315,14 @@ class TestDriftDetection:
 
 class TestEventPriority:
     def test_cut_takes_priority_over_screen(self):
-        # Fast player (cut-eligible) that is also slow enough to be screener?
-        # Actually: can't be both cut and screen at same speed. Test: multiple players,
-        # one player could match both — ensure only cut emitted.
-        # Player 1: very fast (cut), also near player 2
+        # Cutter: 20 ft/s toward basket, 3ft from slow player (would trigger screen too)
         cutter = make_player(
-            track_id=1, x=300.0, y=150.0, speed=260.0,
-            velocity_x=260.0, velocity_y=0.0,
+            track_id=1, x=30.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0,
         )
-        # Player 2: nearby, slower (screen candidate for player 1?)
-        # Player 1 is the cutter and also near player 2 who is slow.
-        # Player 2 is slow -> screen candidate
+        # Slow player nearby — screener candidate
         slow_nearby = make_player(
-            track_id=2, x=330.0, y=150.0, speed=15.0,
+            track_id=2, x=33.0, y=25.0, speed=1.5,
         )
         frame_sequence = [[cutter, slow_nearby]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)
@@ -338,22 +333,22 @@ class TestEventPriority:
 
     def test_at_most_one_event_per_player_per_frame(self):
         player = make_player(
-            track_id=1, x=200.0, y=150.0, speed=250.0,
-            velocity_x=250.0, velocity_y=0.0,
+            track_id=1, x=20.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0,
         )
         frame_sequence = [[player]]
-        result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos={"x": 300.0, "y": 150.0})
+        result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos={"x": 47.0, "y": 25.0})
         player1_events = [e for e in result if e.track_id == 1]
         assert len(player1_events) <= 1
 
     def test_multiple_players_can_each_emit_event(self):
         cutter1 = make_player(
-            track_id=1, x=200.0, y=150.0, speed=250.0,
-            velocity_x=250.0, velocity_y=0.0, frame_number=1, timestamp_ms=1000.0
+            track_id=1, x=20.0, y=25.0, speed=20.0,
+            velocity_x=20.0, velocity_y=0.0, frame_number=1, timestamp_ms=1000.0
         )
         cutter2 = make_player(
-            track_id=2, x=100.0, y=200.0, speed=300.0,
-            velocity_x=300.0, velocity_y=0.0, frame_number=1, timestamp_ms=1000.0
+            track_id=2, x=10.0, y=20.0, speed=25.0,
+            velocity_x=25.0, velocity_y=0.0, frame_number=1, timestamp_ms=1000.0
         )
         frame_sequence = [[cutter1, cutter2]]
         result = detect_off_ball_events(frame_sequence, game_id="g1", ball_pos=None)

@@ -75,6 +75,8 @@ class TestCoordinateWriterBuffering:
             object_type="player",
             cx=cx,
             cy=cy,
+            x_ft=10.0,
+            y_ft=20.0,
             bbox=(75.0, 170.0, 125.0, 230.0),
             confidence=0.9,
             frame_number=0,
@@ -83,6 +85,7 @@ class TestCoordinateWriterBuffering:
             velocity_y=0.0,
             speed=0.0,
             direction_degrees=0.0,
+            team="team_a",
         )
 
     @patch("tracking.coordinate_writer.get_connection")

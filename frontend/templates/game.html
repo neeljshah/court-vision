@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ summary.home_team }} vs {{ summary.away_team }} — NBA AI{% endblock %}
+{% block content %}
+
+<div style="display:flex; align-items:baseline; gap:12px; margin-bottom:4px;">
+  <h1>{{ summary.home_team }} vs {{ summary.away_team }}</h1>
+  <span style="color:var(--gray); font-size:0.9rem;">{{ summary.game_date }} · {{ summary.season }}</span>
+</div>
+
+<!-- Metric strip -->
+<div class="metric-grid" style="margin-top:16px;">
+  <div class="metric"><div class="metric-val">{{ "{:,}".format(summary.total_frames or 0) }}</div><div class="metric-lbl">Frames</div></div>
+  <div class="metric"><div class="metric-val">{{ "{:,}".format(summary.total_detections or 0) }}</div><div class="metric-lbl">Detections</div></div>
+  <div class="metric"><div class="metric-val">{{ summary.total_shots or 0 }}</div><div class="metric-lbl">Shots</div></div>
+  <div class="metric"><div class="metric-val">N/A</div><div class="metric-lbl">FG% (no outcome data)</div></div>
+  <div class="metric"><div class="metric-val">{{ summary.total_possessions or 0 }}</div><div class="metric-lbl">Possessions</div></div>
+  <div class="metric"><div class="metric-val">{{ summary.total_drives or 0 }}</div><div class="metric-lbl">Drives</div></div>
+  <div class="metric"><div class="metric-val">{{ summary.total_plays or 0 }}</div><div class="metric-lbl">Plays</div></div>
+</div>
+
+<!-- Tab bar -->
+{% set tab_labels = {
+  "overview":  "Overview",
+  "shots":     "Shots",
+  "movement":  "Movement",
+  "plays":     "Plays",
+  "team":      "Team",
+  "defense":   "Defense"
+} %}
+
+<div class="tabs">
+  {% for tab in tabs %}
+  <button class="tab-btn {% if loop.first %}active{% endif %}"
+          data-tab="{{ tab }}"
+          onclick="showTab('{{ tab }}')">
+    {{ tab_labels.get(tab, tab.title()) }}
+  </button>
+  {% endfor %}
+</div>
+
+<!-- Tab panels -->
+{% for tab in tabs %}
+<div class="tab-panel {% if loop.first %}active{% endif %}" id="tab-{{ tab }}">
+  <div class="graph-grid">
+    {% for g in graphs if g.tab == tab %}
+    <div class="graph-card">
+      <h3>{{ g.title }}</h3>
+      <img src="/graph/{{ summary.game_id }}/{{ g.file }}"
+           alt="{{ g.title }}"
+           loading="lazy">
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+{% if not graphs %}
+<div class="empty">
+  <p>No graphs yet.</p>
+  <form method="post" action="/run/{{ summary.game_id }}" style="margin-top:16px;">
+    <button class="btn" type="submit">Generate Graphs Now</button>
+  </form>
+</div>
+{% endif %}
+
+{% endblock %}

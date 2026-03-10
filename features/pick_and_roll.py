@@ -10,13 +10,14 @@ import math
 from features.types import PickAndRollEvent
 
 # ---------------------------------------------------------------------------
-# Detection constants
+# Detection constants (court-feet units; speed in ft/s)
+# NBA reference: screener nearly stationary ~0-3 ft/s, handler running ~8+ ft/s
 # ---------------------------------------------------------------------------
 
 PNR_WINDOW_FRAMES: int = 5       # minimum frames needed to detect a PnR
-SCREEN_DISTANCE: float = 80.0    # px — handler-screener max proximity at contact
-SCREENER_MAX_SPEED: float = 40.0 # px/s — screener must be slower than this
-HANDLER_MIN_SPEED: float = 80.0  # px/s — ball handler must be faster than this
+SCREEN_DISTANCE: float = 6.0     # ft — handler-screener max proximity at contact
+SCREENER_MAX_SPEED: float = 3.0  # ft/s — screener must be slower than this
+HANDLER_MIN_SPEED: float = 8.0   # ft/s — ball handler must be faster than this
 
 
 def _dist(ax: float, ay: float, bx: float, by: float) -> float:

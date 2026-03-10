@@ -104,13 +104,19 @@ def _make_conn_mock(cursor):
 class TestPossessionBoundaryDetection:
 
     def test_inserts_into_possessions_on_ball_speed_drop(self):
-        """When ball speed drops for 3+ frames, INSERT INTO possessions is called."""
+        """When ball speed drops for POSSESSION_HELD_FRAMES+ frames, INSERT INTO possessions is called.
+
+        POSSESSION_SPEED_THRESHOLD=3.0 ft/s, POSSESSION_HELD_FRAMES=5.
+        Use speed=2.0 ft/s for 'slow/held' frames (< 3.0) and 20.0 ft/s for fast frames.
+        """
         from features.feature_pipeline import _detect_possession_boundaries
 
-        # Ball rows: first 3 have speed < 20 (held), then fast, then 3 slow again
+        # 12 slow frames, then 5 fast, then 12 slow.
+        # The 5-frame moving-average smoothing blurs ~2 frames at each transition edge,
+        # so at least 8 of the 12 slow frames survive below POSSESSION_SPEED_THRESHOLD=3.0 ft/s.
         ball_rows = [
-            {"frame_number": i, "speed": 5.0 if i < 3 or i >= 7 else 200.0}
-            for i in range(10)
+            {"frame_number": i, "speed": 2.0 if i < 12 or i >= 17 else 20.0}
+            for i in range(29)
         ]
         cursor = MagicMock()
         cursor.rowcount = 0
@@ -133,11 +139,15 @@ class TestPossessionBoundaryDetection:
         cursor.execute.assert_not_called()
 
     def test_possession_start_and_end_frame_in_insert(self):
-        """INSERT call includes correct start_frame and end_frame."""
+        """INSERT call includes correct start_frame and end_frame.
+
+        Uses speed=2.0 ft/s for slow frames (< POSSESSION_SPEED_THRESHOLD=3.0),
+        and ensures 5+ consecutive slow frames to trigger POSSESSION_HELD_FRAMES=5.
+        """
         from features.feature_pipeline import _detect_possession_boundaries
 
-        # Frames 0..9 with a clear held period at frames 5,6,7
-        ball_rows = [{"frame_number": i, "speed": 200.0 if i < 5 else 5.0} for i in range(10)]
+        # Frames 0-4: fast (20 ft/s), frames 5-12: slow (2 ft/s, 8 consecutive)
+        ball_rows = [{"frame_number": i, "speed": 20.0 if i < 5 else 2.0} for i in range(13)]
         cursor = MagicMock()
 
         _detect_possession_boundaries(ball_rows, "game-abc", cursor)
@@ -160,15 +170,21 @@ class TestPossessionBoundaryDetection:
 class TestShotEventDetection:
 
     def test_inserts_into_shot_logs_for_fast_ball_near_basket(self):
-        """Ball with speed > 400 and y near basket → INSERT INTO shot_logs."""
+        """Ball with speed > SHOT_SPEED_THRESHOLD and position near basket → INSERT INTO shot_logs.
+
+        Uses court-feet coordinates: left basket at x=5.25 ft, center y=25 ft.
+        SHOT_SPEED_THRESHOLD=8.0 ft/s; use 20.0 ft/s (a real pass/shot speed).
+        """
         from features.feature_pipeline import _detect_shot_events
 
         ball_rows = [
             {
                 "frame_number": 10,
-                "speed": 500.0,        # > threshold
-                "x": 50.0,             # near left basket (x < 100)
-                "y": 240.0,            # exactly at basket_y
+                "speed": 20.0,         # ft/s — above SHOT_SPEED_THRESHOLD=8.0
+                "x": 10.0,             # ft — near left basket (LEFT_BASKET_X_FT=5.25, zone=10ft)
+                "x_ft": 10.0,
+                "y": 25.0,             # ft — at basket centerline (BASKET_Y_FT=25.0)
+                "y_ft": 25.0,
                 "direction_degrees": 45.0,
             }
         ]

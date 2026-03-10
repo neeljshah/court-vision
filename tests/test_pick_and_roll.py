@@ -1,7 +1,8 @@
 """Tests for pick-and-roll detection (FE-04).
 
 Tests cover: PnR setup → screen → separation sequence, deduplication, and edge cases.
-Uses synthetic frame sequences — no database or numpy required.
+Uses court-feet coordinates and ft/s speeds.
+NBA reference: screener ~0-3 ft/s, ball handler ~8+ ft/s, screen contact within 6 ft.
 """
 
 import pytest
@@ -44,19 +45,19 @@ def make_pnr_sequence(
     handler_id: int = 1,
     screener_id: int = 2,
     window: int = None,
-    setup_dist: float = 40.0,   # close in first frames
-    screen_dist: float = 40.0,  # close in middle frame
-    sep_dist: float = 100.0,    # far in last frame
+    setup_dist: float = 4.0,   # ft — close in setup frames
+    screen_dist: float = 4.0,  # ft — close in middle frame (within SCREEN_DISTANCE=6)
+    sep_dist: float = 8.0,     # ft — far in last frame (beyond SCREEN_DISTANCE=6)
 ) -> list[list[dict]]:
-    """Build a canonical PnR frame sequence.
+    """Build a canonical PnR frame sequence using court-feet coordinates.
 
     Args:
-        handler_id: Track ID of the ball handler (fast player).
-        screener_id: Track ID of the screener (slow player).
+        handler_id: Track ID of the ball handler (fast player, 12 ft/s).
+        screener_id: Track ID of the screener (slow player, 2 ft/s).
         window: Number of frames (defaults to PNR_WINDOW_FRAMES).
-        setup_dist: Distance between players in setup frames.
-        screen_dist: Distance in the middle (screen contact) frame.
-        sep_dist: Distance in the final separation frame.
+        setup_dist: Distance between players in setup frames (ft).
+        screen_dist: Distance in the middle (screen contact) frame (ft).
+        sep_dist: Distance in the final separation frame (ft).
     """
     n = window if window is not None else PNR_WINDOW_FRAMES
     frames = []
@@ -70,17 +71,17 @@ def make_pnr_sequence(
 
         handler = make_player(
             track_id=handler_id,
-            x=250.0,
-            y=150.0,
-            speed=100.0,  # fast
+            x=47.0,
+            y=25.0,
+            speed=12.0,  # ft/s — above HANDLER_MIN_SPEED=8 ft/s
             frame_number=i,
             timestamp_ms=float(i * 100),
         )
         screener = make_player(
             track_id=screener_id,
-            x=250.0 + dist,
-            y=150.0,
-            speed=20.0,  # slow
+            x=47.0 + dist,
+            y=25.0,
+            speed=2.0,  # ft/s — below SCREENER_MAX_SPEED=3 ft/s
             frame_number=i,
             timestamp_ms=float(i * 100),
         )
@@ -104,12 +105,12 @@ class TestDegenerateCases:
         assert result == []
 
     def test_single_frame_returns_empty(self):
-        frame = [make_player(1, 250.0, 150.0, 100.0), make_player(2, 270.0, 150.0, 20.0)]
+        frame = [make_player(1, 47.0, 25.0, 12.0), make_player(2, 50.0, 25.0, 2.0)]
         result = detect_pick_and_roll([[frame[0], frame[1]]], game_id="g1")
         assert result == []
 
     def test_single_player_returns_empty(self):
-        frames = [[make_player(1, 250.0, 150.0, 100.0, frame_number=i)] for i in range(PNR_WINDOW_FRAMES)]
+        frames = [[make_player(1, 47.0, 25.0, 12.0, frame_number=i)] for i in range(PNR_WINDOW_FRAMES)]
         result = detect_pick_and_roll(frames, game_id="g1")
         assert result == []
 
@@ -139,7 +140,7 @@ class TestReturnType:
 
 class TestPickAndRollDetection:
     def test_canonical_pnr_detected(self):
-        seq = make_pnr_sequence(handler_id=1, screener_id=2, screen_dist=40.0, sep_dist=100.0)
+        seq = make_pnr_sequence(handler_id=1, screener_id=2, screen_dist=4.0, sep_dist=8.0)
         result = detect_pick_and_roll(seq, game_id="g1")
         assert len(result) >= 1
 
@@ -164,35 +165,35 @@ class TestPickAndRollDetection:
         assert result[0].timestamp_ms == pytest.approx(mid * 100.0)
 
     def test_no_pnr_when_players_never_close_enough(self):
-        # Screen distance always > SCREEN_DISTANCE
-        seq = make_pnr_sequence(screen_dist=SCREEN_DISTANCE + 10.0, sep_dist=SCREEN_DISTANCE + 20.0)
+        # Screen distance always > SCREEN_DISTANCE (6 ft)
+        seq = make_pnr_sequence(screen_dist=SCREEN_DISTANCE + 2.0, sep_dist=SCREEN_DISTANCE + 4.0)
         result = detect_pick_and_roll(seq, game_id="g1")
         assert result == []
 
     def test_no_pnr_when_no_separation_at_end(self):
-        # Players stay close together — no separation in last frame
-        seq = make_pnr_sequence(screen_dist=40.0, sep_dist=30.0)
+        # Players stay close — no separation in last frame (sep_dist <= SCREEN_DISTANCE)
+        seq = make_pnr_sequence(screen_dist=4.0, sep_dist=5.0)
         result = detect_pick_and_roll(seq, game_id="g1")
         assert result == []
 
     def test_no_pnr_when_both_players_fast(self):
-        # Both players fast — no screener
+        # Both players fast (12 ft/s > SCREENER_MAX_SPEED=3) — no screener candidate
         n = PNR_WINDOW_FRAMES
         frames = []
         for i in range(n):
-            p1 = make_player(1, 250.0, 150.0, 100.0, frame_number=i, timestamp_ms=float(i * 100))
-            p2 = make_player(2, 270.0, 150.0, 100.0, frame_number=i, timestamp_ms=float(i * 100))
+            p1 = make_player(1, 47.0, 25.0, 12.0, frame_number=i, timestamp_ms=float(i * 100))
+            p2 = make_player(2, 50.0, 25.0, 12.0, frame_number=i, timestamp_ms=float(i * 100))
             frames.append([p1, p2])
         result = detect_pick_and_roll(frames, game_id="g1")
         assert result == []
 
     def test_no_pnr_when_both_players_slow(self):
-        # Both players slow — no ball handler
+        # Both players slow (2 ft/s < HANDLER_MIN_SPEED=8) — no ball handler candidate
         n = PNR_WINDOW_FRAMES
         frames = []
         for i in range(n):
-            p1 = make_player(1, 250.0, 150.0, 20.0, frame_number=i, timestamp_ms=float(i * 100))
-            p2 = make_player(2, 270.0, 150.0, 20.0, frame_number=i, timestamp_ms=float(i * 100))
+            p1 = make_player(1, 47.0, 25.0, 2.0, frame_number=i, timestamp_ms=float(i * 100))
+            p2 = make_player(2, 50.0, 25.0, 2.0, frame_number=i, timestamp_ms=float(i * 100))
             frames.append([p1, p2])
         result = detect_pick_and_roll(frames, game_id="g1")
         assert result == []
@@ -227,14 +228,14 @@ class TestMultipleScreeners:
         n = PNR_WINDOW_FRAMES
         frames = []
         for i in range(n):
-            handler = make_player(1, 250.0, 150.0, 100.0, frame_number=i, timestamp_ms=float(i * 100))
-            # screener A: 30px away (closer)
-            screener_a = make_player(2, 280.0, 150.0, 20.0, frame_number=i, timestamp_ms=float(i * 100))
-            # screener B: 60px away (farther but within SCREEN_DISTANCE)
-            screener_b = make_player(3, 310.0, 150.0, 20.0, frame_number=i, timestamp_ms=float(i * 100))
+            handler = make_player(1, 47.0, 25.0, 12.0, frame_number=i, timestamp_ms=float(i * 100))
+            # screener A: 3 ft away (closer, within SCREEN_DISTANCE=6)
+            screener_a = make_player(2, 50.0, 25.0, 2.0, frame_number=i, timestamp_ms=float(i * 100))
+            # screener B: 6 ft away (at boundary of SCREEN_DISTANCE=6)
+            screener_b = make_player(3, 53.0, 25.0, 2.0, frame_number=i, timestamp_ms=float(i * 100))
             if i == n - 1:
-                # Separation: move handler far from both screeners
-                handler = make_player(1, 400.0, 150.0, 100.0, frame_number=i, timestamp_ms=float(i * 100))
+                # Separation: move handler 15 ft away from both screeners
+                handler = make_player(1, 60.0, 25.0, 12.0, frame_number=i, timestamp_ms=float(i * 100))
             frames.append([handler, screener_a, screener_b])
         result = detect_pick_and_roll(frames, game_id="g1")
         assert len(result) >= 1

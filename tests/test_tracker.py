@@ -76,6 +76,17 @@ class TestTrackedObjectDataclass:
         fields = {f.name for f in dataclasses.fields(TrackedObject)}
         assert "direction_degrees" in fields
 
+    def test_has_x_ft_y_ft(self):
+        from tracking.tracker import TrackedObject
+        fields = {f.name for f in dataclasses.fields(TrackedObject)}
+        assert "x_ft" in fields
+        assert "y_ft" in fields
+
+    def test_has_team(self):
+        from tracking.tracker import TrackedObject
+        fields = {f.name for f in dataclasses.fields(TrackedObject)}
+        assert "team" in fields
+
     def test_instantiation_with_all_fields(self):
         from tracking.tracker import TrackedObject
         obj = TrackedObject(
@@ -83,6 +94,8 @@ class TestTrackedObjectDataclass:
             object_type="player",
             cx=100.0,
             cy=200.0,
+            x_ft=47.0,
+            y_ft=25.0,
             bbox=(90.0, 190.0, 110.0, 210.0),
             confidence=0.9,
             frame_number=0,
@@ -91,11 +104,14 @@ class TestTrackedObjectDataclass:
             velocity_y=0.0,
             speed=0.0,
             direction_degrees=0.0,
+            team="team_a",
         )
         assert obj.track_id == 1
         assert obj.object_type == "player"
         assert obj.cx == 100.0
         assert obj.cy == 200.0
+        assert obj.x_ft == 47.0
+        assert obj.team == "team_a"
 
 
 # ---------------------------------------------------------------------------
@@ -110,16 +126,15 @@ class TestObjectTrackerInit:
         tracker = ObjectTracker()
         assert tracker is not None
 
-    def test_has_previous_positions(self):
+    def test_has_history(self):
         from tracking.tracker import ObjectTracker
         tracker = ObjectTracker()
-        assert hasattr(tracker, "previous_positions")
-        assert isinstance(tracker.previous_positions, dict)
+        assert hasattr(tracker, "_history")
 
-    def test_previous_positions_initially_empty(self):
+    def test_history_initially_empty(self):
         from tracking.tracker import ObjectTracker
         tracker = ObjectTracker()
-        assert len(tracker.previous_positions) == 0
+        assert len(tracker._history) == 0
 
     def test_has_update_method(self):
         from tracking.tracker import ObjectTracker
@@ -137,7 +152,7 @@ class TestObjectTrackerInit:
         from tracking.tracker import ObjectTracker
         tracker = ObjectTracker()
         tracker.set_fps(25.0)
-        assert tracker.fps == 25.0
+        assert tracker._fps == 25.0
 
     def test_custom_max_age_n_init(self):
         from tracking.tracker import ObjectTracker
@@ -280,19 +295,19 @@ class TestVelocityComputation:
         for obj in result:
             assert 0.0 <= obj.direction_degrees < 360.0
 
-    def test_previous_positions_updated_after_each_frame(self):
-        """previous_positions is populated after a track becomes confirmed.
+    def test_history_updated_after_each_frame(self):
+        """_history is populated after a track becomes confirmed.
 
         With n_init=1, confirmed tracks first appear on the second update call.
-        After that call, previous_positions must contain at least one entry.
+        After that call, _history must contain at least one entry.
         """
         from tracking.tracker import ObjectTracker
 
         tracker = ObjectTracker(n_init=1)
         frame = self._make_frame()
-        # First call: tentative — previous_positions stays empty
+        # First call: tentative — _history stays empty
         tracker.update([self._make_det(100.0, 200.0)], frame, 0, 0.0)
-        assert len(tracker.previous_positions) == 0
-        # Second call: track confirmed — previous_positions now has an entry
+        assert len(tracker._history) == 0
+        # Second call: track confirmed — _history now has an entry
         tracker.update([self._make_det(100.0, 200.0)], frame, 1, 33.3)
-        assert len(tracker.previous_positions) >= 1
+        assert len(tracker._history) >= 1
