@@ -1,23 +1,46 @@
-# NBA AI System
+# 🏀 Project CourtVision: The Autonomous NBA Intelligence Engine
+> **A fully automated AI-driven ecosystem transforming raw tracking data and game footage into proprietary, predictive basketball metrics.**
 
-A computer vision-powered basketball analytics platform that tracks players and the ball in real NBA game footage, computes advanced statistics, and surfaces insights through an interactive dashboard and conversational AI interface.
-
----
-
-## Overview
-
-The system ingests broadcast video, detects and tracks players using YOLOv8 + DeepSORT, maps pixel coordinates to real NBA court feet via homography calibration, and pipelines the data through 14+ analytics modules to produce metrics used by professional NBA analytics teams.
-
-**Key capabilities:**
-- Real-time player & ball tracking at court-foot precision
-- 14 advanced feature modules (spacing, drives, pick-and-roll, passing networks, momentum, and more)
-- ML models for win probability, player impact (EPA), and lineup optimization
-- REST API (FastAPI) + interactive dashboard (Streamlit) + conversational AI chat
-- Full test suite with NBA ground-truth accuracy validation
+![Python](https://img.shields.io/badge/Language-Python_3.10-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Computer Vision](https://img.shields.io/badge/AI-Computer_Vision-red?style=for-the-badge&logo=opencv)
+![LLM](https://img.shields.io/badge/NLP-GenAI_/_RAG-00A67E?style=for-the-badge&logo=openai)
+![Status](https://img.shields.io/badge/Status-Work_In_Progress-orange?style=for-the-badge)
 
 ---
 
-## Architecture
+## 🏗️ Project Vision
+Most NBA analytics are **descriptive** (what happened). CourtVision is built to be **predictive** (what will happen). This system is a self-correcting intelligence engine that pulls raw data, watches game footage via Computer Vision, and engineers proprietary metrics like **Fatigue-Adjusted Performance** and **Real Shot Quality**.
+
+The end goal: A fully autonomous system that rivals million-dollar NBA front-office tools, updating overnight to provide a complete analytical picture every morning.
+
+---
+
+## 🛠️ The System Architecture (The "Triple-Threat" AI)
+
+### 1. The Pattern Finder (Predictive ML) 🧠
+*   **Goal:** Train models on high-volume historical and tracking data to predict game outcomes and point-spread movements.
+*   **Status:** `[||||------] 40% Complete`
+*   **Tech:** XGBoost, LSTMs for time-series momentum, and Bayesian Optimization.
+
+### 2. The Digital Eye (Computer Vision) 👁️
+*   **Goal:** Extract player positioning, velocity, and spacing metrics directly from broadcast footage where raw tracking data is unavailable.
+*   **Status:** `[|||-------] 30% Complete`
+*   **Tech:** OpenCV, MediaPipe for pose estimation, and YOLOv8 for object detection.
+
+### 3. The Analyst Voice (Generative AI Layer) 💬
+*   **Goal:** A natural language interface (RAG) that allows users to query the database in plain English (e.g., *"Show me Curry's efficiency drop-off in the 4th quarter when guarded by a 6'5" wing"*).
+*   **Status:** `[|||||-----] 50% Complete`
+*   **Tech:** LangChain, OpenAI GPT-4o, Vector Databases (ChromaDB).
+
+---
+
+## 📊 Proprietary Metrics Under Construction
+We aren't just using Box Scores. We are engineering the "Secret Sauce":
+*   **Real Shot Quality (RSQ):** Modeling expected value based on defender proximity, shooter fatigue, and spatial history.
+*   **True Defensive Impact (TDI):** Measuring the "Gravity" a defender exerts on offensive flow, even without recording a stat.
+*   **Fatigue-Adjusted Performance (FAP):** Quantifying the decay of shooting mechanics based on distance traveled and speed-burst frequency.
+*   **Momentum Response:** A volatility index measuring a team's statistical resilience during opposing scoring runs
+
 
 ```
 Video Input
