@@ -307,6 +307,192 @@ class TestRosterLookup:
         assert callable(fetch_roster)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Task 02-03 tests — referee filtering (REQ-08)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_SPATIAL_COLS = [
+    "team_spacing",
+    "nearest_opponent",
+    "nearest_teammate",
+    "paint_count_own",
+    "paint_count_opp",
+]
+
+
+def _make_tracking_df(include_referee: bool = True) -> "pd.DataFrame":
+    """Build a minimal tracking DataFrame for spatial feature testing."""
+    import pandas as pd
+    rows = []
+    # Team 0 — 5 players
+    for i in range(5):
+        rows.append({
+            "frame": 1,
+            "player_id": i,
+            "team": "green",
+            "x_position": float(100 + i * 30),
+            "y_position": float(200 + i * 20),
+            "velocity": 1.0,
+            "ball_possession": int(i == 0),
+            "event": "none",
+            "team_spacing": 50000.0,
+            "nearest_opponent": 80.0,
+            "nearest_teammate": 40.0,
+            "paint_count_own": 1,
+            "paint_count_opp": 2,
+        })
+    # Team 1 — 5 players
+    for i in range(5):
+        rows.append({
+            "frame": 1,
+            "player_id": 10 + i,
+            "team": "white",
+            "x_position": float(500 + i * 30),
+            "y_position": float(300 + i * 20),
+            "velocity": 1.5,
+            "ball_possession": 0,
+            "event": "none",
+            "team_spacing": 45000.0,
+            "nearest_opponent": 90.0,
+            "nearest_teammate": 35.0,
+            "paint_count_own": 2,
+            "paint_count_opp": 1,
+        })
+    if include_referee:
+        rows.append({
+            "frame": 1,
+            "player_id": 20,
+            "team": "referee",
+            "x_position": 300.0,
+            "y_position": 250.0,
+            "velocity": 0.5,
+            "ball_possession": 0,
+            "event": "none",
+            "team_spacing": 99999.0,
+            "nearest_opponent": 15.0,
+            "nearest_teammate": 12.0,
+            "paint_count_own": 5,
+            "paint_count_opp": 5,
+        })
+    return pd.DataFrame(rows)
+
+
+class TestRefereeExcludedFromSpacing:
+    """REQ-08: Referee rows must have NaN spatial columns after compute_spatial_features()."""
+
+    def test_referee_excluded_from_spacing(self):
+        """
+        compute_spatial_features() must:
+          1. Keep referee rows in the output DataFrame.
+          2. Set all spatial columns to NaN for referee rows.
+          3. Leave non-referee spatial values unchanged.
+        """
+        import pandas as pd
+        from src.features.feature_engineering import compute_spatial_features
+
+        df = _make_tracking_df(include_referee=True)
+        result = compute_spatial_features(df)
+
+        ref_rows = result[result["team"] == "referee"]
+        assert len(ref_rows) == 1, "Referee row must remain in output"
+
+        for col in _SPATIAL_COLS:
+            if col in result.columns:
+                val = ref_rows.iloc[0][col]
+                assert pd.isna(val), (
+                    f"Expected referee {col} to be NaN, got {val!r}"
+                )
+
+        non_ref = result[result["team"] != "referee"]
+        assert len(non_ref) == 10, "Must still have 10 player rows"
+        for col in _SPATIAL_COLS:
+            if col in result.columns:
+                assert non_ref[col].notna().all(), (
+                    f"Non-referee {col} should not be NaN after filtering"
+                )
+
+    def test_compute_spatial_features_importable(self):
+        """compute_spatial_features must be importable as a public function."""
+        from src.features.feature_engineering import compute_spatial_features
+        assert callable(compute_spatial_features)
+
+    def test_no_referee_no_change(self):
+        """When no referee rows present, spatial columns are unchanged."""
+        import pandas as pd
+        from src.features.feature_engineering import compute_spatial_features
+
+        df = _make_tracking_df(include_referee=False)
+        result = compute_spatial_features(df)
+
+        assert len(result) == 10
+        for col in _SPATIAL_COLS:
+            if col in result.columns and col in df.columns:
+                pd.testing.assert_series_equal(
+                    result[col].reset_index(drop=True),
+                    df[col].reset_index(drop=True),
+                    check_names=False,
+                )
+
+
+class TestRefereeExcludedFromPressure:
+    """REQ-08: shot_quality.run() output must contain no referee rows."""
+
+    def _make_features_csv(self, tmp_path: str, referee_shoots: bool = True) -> str:
+        import pandas as pd
+        rows = [
+            {
+                "frame": 10, "timestamp": 0.33, "player_id": 0,
+                "team": "green", "x_position": 200.0, "y_position": 300.0,
+                "event": "shot", "court_zone": "paint",
+                "handler_isolation": 120.0, "team_spacing": 50000.0, "possession_run": 30,
+            },
+            {
+                "frame": 11, "timestamp": 0.37, "player_id": 1,
+                "team": "white", "x_position": 400.0, "y_position": 300.0,
+                "event": "none", "court_zone": "3pt_arc",
+                "handler_isolation": 60.0, "team_spacing": 40000.0, "possession_run": 10,
+            },
+        ]
+        if referee_shoots:
+            rows.append({
+                "frame": 12, "timestamp": 0.40, "player_id": 20,
+                "team": "referee", "x_position": 300.0, "y_position": 250.0,
+                "event": "shot", "court_zone": "paint",
+                "handler_isolation": 10.0, "team_spacing": 0.0, "possession_run": 5,
+            })
+        df = pd.DataFrame(rows)
+        path = os.path.join(tmp_path, "features.csv")
+        df.to_csv(path, index=False)
+        return path
+
+    def test_referee_excluded_from_pressure(self, tmp_path):
+        """shot_quality.run() output must contain no rows where team == 'referee'."""
+        from src.analytics.shot_quality import run as shot_quality_run
+        import pandas as pd
+
+        csv_path = self._make_features_csv(str(tmp_path), referee_shoots=True)
+        result = shot_quality_run(input_path=csv_path, output_dir=str(tmp_path))
+
+        assert not result.empty, "Should have at least one shot row"
+        if "team" in result.columns:
+            referee_shots = result[result["team"] == "referee"]
+            assert len(referee_shots) == 0, (
+                f"Expected 0 referee rows in shot_quality output, got {len(referee_shots)}"
+            )
+
+    def test_non_referee_shots_unchanged(self, tmp_path):
+        """Non-referee shot rows must remain in output."""
+        from src.analytics.shot_quality import run as shot_quality_run
+
+        csv_path = self._make_features_csv(str(tmp_path), referee_shoots=True)
+        result = shot_quality_run(input_path=csv_path, output_dir=str(tmp_path))
+
+        player_shots = result[result["team"] != "referee"] if "team" in result.columns else result
+        assert len(player_shots) >= 1, "Non-referee shots must be present"
+        assert "shot_quality" in result.columns
+        assert result["shot_quality"].notna().all()
+
+
 def _make_import_patcher(mock_endpoints_module):
     """
     Returns a patched __import__ that intercepts
