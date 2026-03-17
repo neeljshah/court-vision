@@ -1,0 +1,9 @@
+possession_id,team,start_frame,end_frame,duration_frames,duration_sec,avg_spacing,avg_defensive_pressure,avg_vel_toward_basket,drive_attempts,shot_attempted,shot_frame,fast_break,result,outcome_score
+108,green,107,153,47,0.78,94648.9,,70.78,3,0,,0,,
+111,green,156,164,9,0.15,874461.9,,,0,0,,0,,
+114,green,167,176,10,0.17,89054.5,,335.14,3,0,,1,,
+187,green,249,310,62,1.03,6134.4,,,0,0,,0,,
+189,green,312,312,1,0.02,,,,0,0,,0,,
+192,green,315,326,12,0.2,,,,0,0,,0,,
+196,green,330,331,2,0.03,,,,0,0,,0,,
+220,green,355,363,9,0.15,,,107.42,4,0,,0,,

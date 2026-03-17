@@ -1,0 +1,62 @@
+# Claude Code — ignore list
+# Prevents Claude from reading these into context
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+.eggs/
+
+# Large data outputs (don't read CSVs into context)
+data/
+!data/*.md
+
+# Video/binary resources (never needs to be read)
+resources/*.mp4
+resources/*.avi
+resources/*.npy
+resources/*.pkl
+resources/*.pt
+resources/*.pth
+resources/*.weights
+resources/*.bin
+
+# Model checkpoints
+models/
+checkpoints/
+runs/
+
+# Conda / virtual env
+.conda/
+env/
+venv/
+*.egg
+
+# Git
+.git/
+
+# Node (for future frontend)
+node_modules/
+.next/
+dist/
+build/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# NBA API cache (large JSON, not needed in context)
+data/nba/

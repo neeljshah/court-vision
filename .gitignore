@@ -1,0 +1,30 @@
+# Videos — too large for GitHub
+data/videos/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Claude session state
+.claude_session_changes.json
+
+# Environment
+.env
+*.env
+conda-env/
+
+# IDE
+.windsurf/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

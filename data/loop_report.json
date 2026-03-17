@@ -1,0 +1,198 @@
+{
+  "generated_at": "2026-03-15T20:28:27.660094",
+  "run_number": 450,
+  "video": "den_gsw_playoffs.mp4",
+  "video_path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\den_gsw_playoffs.mp4",
+  "overall_score": 70.0,
+  "target_score": 90.0,
+  "passed": false,
+  "trend": "stable",
+  "metrics": {
+    "tracking_data_rows": 613,
+    "total_frames": 500,
+    "avg_players": 1.226,
+    "max_players": 3,
+    "min_players": 1,
+    "pct_frames_10+": 0.0,
+    "possession_pct": 0.0,
+    "shot_events": 5,
+    "shots_per_minute": 18.0,
+    "avg_velocity": 16.7455,
+    "ball_detection_pct": 1.0,
+    "shot_log_count": 5,
+    "unique_players_tracked": 9
+  },
+  "targets": {
+    "avg_players": 9.0,
+    "team_balance_min": 0.44,
+    "team_balance_max": 0.56,
+    "ball_detection_pct": 0.65,
+    "id_switch_rate": 0.005,
+    "shots_per_minute": 1.5,
+    "unique_players_min": 8,
+    "unique_players_max": 16,
+    "passing_score": 90.0
+  },
+  "real_stats": {
+    "clip_label": "den_gsw_playoffs",
+    "team_hint": "DEN",
+    "season": "2023-24",
+    "season_type": "Playoffs",
+    "game_id": "0042300237",
+    "total_fga": 162,
+    "total_players": 16,
+    "avg_fga_per_game": 81.0,
+    "avg_possessions": 100.5,
+    "avg_shots_per_min": 3.38,
+    "expected_players": 16,
+    "home_score": 98,
+    "away_score": 90,
+    "data_source": "nba_api",
+    "note": "Real game data via nba_api (game 0042300237)"
+  },
+  "issues_ranked": [
+    {
+      "rank": 1,
+      "metric": "avg_players",
+      "actual": 1.23,
+      "target": "\u22659.0",
+      "penalty": 30.0,
+      "impact": "HIGH",
+      "description": "Only 1.2 avg players/frame detected (target \u22659.0). YOLO is missing detections \u2014 confidence threshold may be too high or Kalman fill window too short.",
+      "files_to_fix": [
+        "src/tracking/advanced_tracker.py",
+        "src/tracking/player_detection.py",
+        "src/tracking/tracker_config.py"
+      ],
+      "suggested_fix": "In advanced_tracker.py: lower YOLO confidence from 0.5 \u2192 0.4 OR extend Kalman fill window from lost_age \u2264 5 to lost_age \u2264 7."
+    }
+  ],
+  "top_issue": {
+    "rank": 1,
+    "metric": "avg_players",
+    "actual": 1.23,
+    "target": "\u22659.0",
+    "penalty": 30.0,
+    "impact": "HIGH",
+    "description": "Only 1.2 avg players/frame detected (target \u22659.0). YOLO is missing detections \u2014 confidence threshold may be too high or Kalman fill window too short.",
+    "files_to_fix": [
+      "src/tracking/advanced_tracker.py",
+      "src/tracking/player_detection.py",
+      "src/tracking/tracker_config.py"
+    ],
+    "suggested_fix": "In advanced_tracker.py: lower YOLO confidence from 0.5 \u2192 0.4 OR extend Kalman fill window from lost_age \u2264 5 to lost_age \u2264 7."
+  },
+  "next_action": {
+    "description": "ADVANCE CLIP \u2014 max_players=3 < target 9.0 (clip ceiling). No tracker fix can help here.",
+    "type": "advance_clip",
+    "files": [],
+    "approach": "Run: python autonomous_loop.py --next-clip --force-rerun",
+    "reason": "max_players=3 < target 9.0 (clip ceiling)"
+  },
+  "history": [
+    {
+      "timestamp": "2026-03-15T20:06:12.002578",
+      "video": "phi_tor_2025.mp4",
+      "score": 70.0,
+      "metrics": {
+        "tracking_data_rows": 2861,
+        "total_frames": 500,
+        "avg_players": 5.722,
+        "max_players": 7,
+        "min_players": 1,
+        "pct_frames_10+": 0.0,
+        "possession_pct": 0.0,
+        "shot_events": 4,
+        "shots_per_minute": 14.4,
+        "avg_velocity": 0.467,
+        "ball_detection_pct": 1.0,
+        "shot_log_count": 4,
+        "unique_players_tracked": 10
+      }
+    },
+    {
+      "timestamp": "2026-03-15T20:09:01.386691",
+      "video": "okc_dal_2025.mp4",
+      "score": 93.2,
+      "metrics": {
+        "tracking_data_rows": 3477,
+        "total_frames": 455,
+        "avg_players": 7.642,
+        "max_players": 10,
+        "min_players": 1,
+        "pct_frames_10+": 0.275,
+        "possession_pct": 0.0,
+        "shot_events": 4,
+        "shots_per_minute": 15.824,
+        "avg_velocity": 0.73,
+        "ball_detection_pct": 1.0,
+        "shot_log_count": 4,
+        "unique_players_tracked": 10
+      }
+    },
+    {
+      "timestamp": "2026-03-15T20:11:49.009523",
+      "video": "lal_sas_2025.mp4",
+      "score": 70.0,
+      "metrics": {
+        "tracking_data_rows": 1558,
+        "total_frames": 475,
+        "avg_players": 3.28,
+        "max_players": 7,
+        "min_players": 1,
+        "pct_frames_10+": 0.0,
+        "possession_pct": 0.0,
+        "shot_events": 4,
+        "shots_per_minute": 15.158,
+        "avg_velocity": 4.062,
+        "ball_detection_pct": 1.0,
+        "shot_log_count": 4,
+        "unique_players_tracked": 10
+      }
+    },
+    {
+      "timestamp": "2026-03-15T20:14:04.779369",
+      "video": "mem_nop_2025.mp4",
+      "score": 61.0,
+      "metrics": {
+        "tracking_data_rows": 1217,
+        "total_frames": 460,
+        "avg_players": 2.646,
+        "max_players": 5,
+        "min_players": 1,
+        "pct_frames_10+": 0.0,
+        "possession_pct": 0.0,
+        "shot_events": 2,
+        "shots_per_minute": 7.826,
+        "avg_velocity": 1.562,
+        "ball_detection_pct": 1.0,
+        "shot_log_count": 2,
+        "unique_players_tracked": 5
+      }
+    },
+    {
+      "timestamp": "2026-03-15T20:16:39.383280",
+      "video": "atl_ind_2025.mp4",
+      "score": 70.0,
+      "metrics": {
+        "tracking_data_rows": 1201,
+        "total_frames": 406,
+        "avg_players": 2.958,
+        "max_players": 5,
+        "min_players": 1,
+        "pct_frames_10+": 0.0,
+        "possession_pct": 0.0,
+        "shot_events": 2,
+        "shots_per_minute": 8.867,
+        "avg_velocity": 10.869,
+        "ball_detection_pct": 1.0,
+        "shot_log_count": 2,
+        "unique_players_tracked": 8
+      }
+    }
+  ],
+  "fixes_applied": [],
+  "best_score_ever": 100.0,
+  "pipeline_elapsed_s": 660.4619750976562,
+  "pipeline_skipped": false
+}

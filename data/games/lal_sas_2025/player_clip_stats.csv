@@ -1,0 +1,8 @@
+player_id,team,frames_tracked,tracking_pct,total_distance_px,avg_velocity,max_velocity,possession_frames,possession_pct,shots_attempted,drive_attempts,drive_rate,paint_frames,paint_pct,avg_dist_to_basket,avg_nearest_opponent
+1,green,210,0.426,9135.0,43.5,2559.87,126,0.6,0,9,0.0429,6,0.029,633.3,0.0
+2,green,121,0.245,7137.4,58.99,2397.94,1,0.008,0,1,0.0083,0,0.0,1131.6,0.0
+3,green,228,0.462,9135.9,40.07,2729.92,0,0.0,0,0,0.0,10,0.044,898.5,0.0
+4,green,66,0.134,4379.2,66.35,1270.1,0,0.0,0,0,0.0,17,0.258,849.8,0.0
+5,green,158,0.32,2007.2,12.7,391.49,0,0.0,0,0,0.0,5,0.032,674.6,0.0
+6,green,171,0.347,3882.7,22.71,1648.64,0,0.0,0,0,0.0,1,0.006,519.0,0.0
+7,green,11,0.022,401.3,36.48,401.33,0,0.0,0,0,0.0,0,0.0,834.7,0.0

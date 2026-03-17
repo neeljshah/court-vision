@@ -1,0 +1,14 @@
+{
+  "clip_label": "den_phx_2025",
+  "game_id": "0022400909",
+  "team1": "DEN",
+  "team2": "PHX",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 188,
+  "total_players": 18,
+  "shots_per_minute": 3.92,
+  "home_score": 141,
+  "away_score": 149,
+  "data_source": "nba_api"
+}

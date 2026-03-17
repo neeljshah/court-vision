@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "token-optimizer": {
+      "command": "node",
+      "args": ["C:/Users/neelj/AppData/Roaming/npm/node_modules/@ooples/token-optimizer-mcp/dist/server/index.js"]
+    }
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "timestamp": "20260312_183403",
+  "clips": 1,
+  "summary": {
+    "clips_run": 1,
+    "clips_skipped": 0,
+    "mean_fps": 10.2,
+    "mean_players_per_frame": 6.11,
+    "mean_id_switches": 44.0,
+    "mean_track_stability": 0.952,
+    "mean_confidence": 0.9673,
+    "mean_oob_detections": 0.0,
+    "mean_id_switches_corrected": 2.0,
+    "mean_stability_corrected": 0.9978,
+    "total_gaps_filled": 16,
+    "total_jumps_fixed": 54
+  },
+  "results": [
+    {
+      "label": "Short4Mosaicing",
+      "video": "C:\\Users\\neelj\\nba-ai-system\\resources\\Short4Mosaicing.mp4",
+      "frames_processed": 150,
+      "processing_fps": 10.2,
+      "elapsed_secs": 14.7,
+      "raw_metrics": {
+        "self_evaluation": true,
+        "total_frames": 150,
+        "total_detections": 916,
+        "avg_players_per_frame": 6.11,
+        "id_switches_estimated": 44,
+        "position_jumps": 44,
+        "track_stability": 0.952,
+        "mean_confidence": 0.9673,
+        "low_coverage_frames": 0,
+        "oob_detections": 0,
+        "duplicate_detections": 17,
+        "team_imbalance_frames": 3
+      },
+      "corrected_metrics": {
+        "self_evaluation": true,
+        "total_frames": 150,
+        "total_detections": 921,
+        "avg_players_per_frame": 6.14,
+        "id_switches_estimated": 2,
+        "position_jumps": 2,
+        "track_stability": 0.9978,
+        "mean_confidence": 0.9513,
+        "low_coverage_frames": 0,
+        "oob_detections": 0,
+        "duplicate_detections": 0,
+        "team_imbalance_frames": 2
+      },
+      "gaps_filled": 16,
+      "jumps_fixed": 54,
+      "duplicates_removed": 11,
+      "player_stats": [
+        {
+          "key": "green_1",
+          "team": "green",
+          "player_id": 1,
+          "frames_detected": 121,
+          "mean_confidence": 0.956,
+          "possession_frames": 0,
+          "estimated_dist_px": 6304.4
+        },
+        {
+          "key": "green_2",
+          "team": "green",
+          "player_id": 2,
+          "frames_detected": 63,
+          "mean_confidence": 0.95,
+          "possession_frames": 59,
+          "estimated_dist_px": 4093.8
+        },
+        {
+          "key": "green_3",
+          "team": "green",
+          "player_id": 3,
+          "frames_detected": 88,
+          "mean_confidence": 0.948,
+          "possession_frames": 0,
+          "estimated_dist_px": 8817.1
+        },
+        {
+          "key": "green_4",
+          "team": "green",
+          "player_id": 4,
+          "frames_detected": 66,
+          "mean_confidence": 0.975,
+          "possession_frames": 0,
+          "estimated_dist_px": 2636.0
+        },
+        {
+          "key": "referee_0",
+          "team": "referee",
+          "player_id": 0,
+          "frames_detected": 95,
+          "mean_confidence": 0.949,
+          "possession_frames": 0,
+          "estimated_dist_px": 17064.7
+        },
+        {
+          "key": "white_1",
+          "team": "white",
+          "player_id": 1,
+          "frames_detected": 139,
+          "mean_confidence": 0.992,
+          "possession_frames": 0,
+          "estimated_dist_px": 4256.9
+        },
+        {
+          "key": "white_2",
+          "team": "white",
+          "player_id": 2,
+          "frames_detected": 138,
+          "mean_confidence": 0.973,
+          "possession_frames": 0,
+          "estimated_dist_px": 9366.5
+        },
+        {
+          "key": "white_3",
+          "team": "white",
+          "player_id": 3,
+          "frames_detected": 90,
+          "mean_confidence": 0.986,
+          "possession_frames": 0,
+          "estimated_dist_px": 5373.4
+        },
+        {
+          "key": "white_4",
+          "team": "white",
+          "player_id": 4,
+          "frames_detected": 57,
+          "mean_confidence": 0.947,
+          "possession_frames": 0,
+          "estimated_dist_px": 9910.3
+        },
+        {
+          "key": "white_5",
+          "team": "white",
+          "player_id": 5,
+          "frames_detected": 59,
+          "mean_confidence": 0.977,
+          "possession_frames": 29,
+          "estimated_dist_px": 1792.1
+        }
+      ],
+      "error": null,
+      "skipped": false
+    }
+  ],
+  "validation": null
+}

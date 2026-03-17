@@ -1,0 +1,14 @@
+{
+  "clip_label": "den_gsw_playoffs",
+  "game_id": "0042300237",
+  "team1": "DEN",
+  "team2": "GSW",
+  "season": "2023-24",
+  "season_type": "Playoffs",
+  "total_fga": 162,
+  "total_players": 16,
+  "shots_per_minute": 3.38,
+  "home_score": 98,
+  "away_score": 90,
+  "data_source": "nba_api"
+}

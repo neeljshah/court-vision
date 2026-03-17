@@ -1,0 +1,7259 @@
+{
+  "games_processed": 13,
+  "total_player_games": 265,
+  "total_matched": 264,
+  "match_rate": 0.996,
+  "mae": {
+    "pts": 4.624,
+    "reb": 1.92,
+    "ast": 1.294
+  },
+  "over_rate": {
+    "pts": 0.436,
+    "reb": 0.345,
+    "ast": 0.288
+  },
+  "per_game": [
+    {
+      "game_id": "0022400430",
+      "season": "2024-25",
+      "matchup": "CHI vs MIL",
+      "score": "116-111",
+      "players": [
+        {
+          "player_name": "Zach LaVine",
+          "team": "CHI",
+          "min": 34.58,
+          "actual": {
+            "pts": 15,
+            "reb": 6,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 23.3,
+            "reb": 4.26,
+            "ast": 4.19
+          },
+          "error": {
+            "pts": -8.3,
+            "reb": 1.74,
+            "ast": 2.81
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Patrick Williams",
+          "team": "CHI",
+          "min": 28.68,
+          "actual": {
+            "pts": 9,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.98,
+            "reb": 3.76,
+            "ast": 1.97
+          },
+          "error": {
+            "pts": 0.02,
+            "reb": -1.76,
+            "ast": -0.97
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nikola Vu\u010devi\u0107",
+          "team": "CHI",
+          "min": 38.42,
+          "actual": {
+            "pts": 23,
+            "reb": 13,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 18.48,
+            "reb": 10.07,
+            "ast": 3.51
+          },
+          "error": {
+            "pts": 4.52,
+            "reb": 2.93,
+            "ast": 1.49
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Coby White",
+          "team": "CHI",
+          "min": 34.18,
+          "actual": {
+            "pts": 22,
+            "reb": 2,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 20.39,
+            "reb": 3.69,
+            "ast": 4.46
+          },
+          "error": {
+            "pts": 1.61,
+            "reb": -1.69,
+            "ast": -0.46
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Josh Giddey",
+          "team": "CHI",
+          "min": 29.48,
+          "actual": {
+            "pts": 23,
+            "reb": 15,
+            "ast": 10
+          },
+          "predicted": {
+            "pts": 14.6,
+            "reb": 8.09,
+            "ast": 7.19
+          },
+          "error": {
+            "pts": 8.4,
+            "reb": 6.91,
+            "ast": 2.81
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Lonzo Ball",
+          "team": "CHI",
+          "min": 19.48,
+          "actual": {
+            "pts": 9,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 7.63,
+            "reb": 3.37,
+            "ast": 3.29
+          },
+          "error": {
+            "pts": 1.37,
+            "reb": -0.37,
+            "ast": -0.29
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Matas Buzelis",
+          "team": "CHI",
+          "min": 12.97,
+          "actual": {
+            "pts": 2,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 8.6,
+            "reb": 3.48,
+            "ast": 0.99
+          },
+          "error": {
+            "pts": -6.6,
+            "reb": -0.48,
+            "ast": -0.99
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dalen Terry",
+          "team": "CHI",
+          "min": 16.85,
+          "actual": {
+            "pts": 2,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 4.47,
+            "reb": 1.7,
+            "ast": 1.33
+          },
+          "error": {
+            "pts": -2.47,
+            "reb": 1.3,
+            "ast": 0.67
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jevon Carter",
+          "team": "CHI",
+          "min": 6.17,
+          "actual": {
+            "pts": 5,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 4.25,
+            "reb": 1.08,
+            "ast": 1.11
+          },
+          "error": {
+            "pts": 0.75,
+            "reb": -0.08,
+            "ast": -0.11
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Julian Phillips",
+          "team": "CHI",
+          "min": 4.72,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.63,
+            "reb": 2.14,
+            "ast": 0.49
+          },
+          "error": {
+            "pts": -4.63,
+            "reb": -1.14,
+            "ast": -0.49
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Talen Horton-Tucker",
+          "team": "CHI",
+          "min": 3.25,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.53,
+            "reb": 1.72,
+            "ast": 1.43
+          },
+          "error": {
+            "pts": -6.53,
+            "reb": -1.72,
+            "ast": -1.43
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Torrey Craig",
+          "team": "CHI",
+          "min": 11.22,
+          "actual": {
+            "pts": 6,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.15,
+            "reb": 2.81,
+            "ast": 0.65
+          },
+          "error": {
+            "pts": 1.85,
+            "reb": 0.19,
+            "ast": -0.65
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Khris Middleton",
+          "team": "MIL",
+          "min": 27.6,
+          "actual": {
+            "pts": 21,
+            "reb": 6,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 11.89,
+            "reb": 3.7,
+            "ast": 4.05
+          },
+          "error": {
+            "pts": 9.11,
+            "reb": 2.3,
+            "ast": -0.05
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bobby Portis",
+          "team": "MIL",
+          "min": 33.92,
+          "actual": {
+            "pts": 14,
+            "reb": 9,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 13.88,
+            "reb": 8.39,
+            "ast": 2.12
+          },
+          "error": {
+            "pts": 0.12,
+            "reb": 0.61,
+            "ast": 1.88
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Brook Lopez",
+          "team": "MIL",
+          "min": 37.57,
+          "actual": {
+            "pts": 22,
+            "reb": 7,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 13.01,
+            "reb": 5.01,
+            "ast": 1.79
+          },
+          "error": {
+            "pts": 8.99,
+            "reb": 1.99,
+            "ast": 1.21
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Andre Jackson Jr.",
+          "team": "MIL",
+          "min": 22.8,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 3.43,
+            "reb": 2.72,
+            "ast": 1.24
+          },
+          "error": {
+            "pts": -3.43,
+            "reb": -1.72,
+            "ast": -0.24
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Damian Lillard",
+          "team": "MIL",
+          "min": 35.47,
+          "actual": {
+            "pts": 29,
+            "reb": 6,
+            "ast": 12
+          },
+          "predicted": {
+            "pts": 24.95,
+            "reb": 4.69,
+            "ast": 7.07
+          },
+          "error": {
+            "pts": 4.05,
+            "reb": 1.31,
+            "ast": 4.93
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Taurean Prince",
+          "team": "MIL",
+          "min": 20.4,
+          "actual": {
+            "pts": 6,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 8.2,
+            "reb": 3.59,
+            "ast": 1.94
+          },
+          "error": {
+            "pts": -2.2,
+            "reb": -0.59,
+            "ast": -1.94
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "AJ Green",
+          "team": "MIL",
+          "min": 24.4,
+          "actual": {
+            "pts": 5,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 7.41,
+            "reb": 2.38,
+            "ast": 1.48
+          },
+          "error": {
+            "pts": -2.41,
+            "reb": -0.38,
+            "ast": -0.48
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Gary Trent Jr.",
+          "team": "MIL",
+          "min": 16.57,
+          "actual": {
+            "pts": 7,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 11.14,
+            "reb": 2.27,
+            "ast": 1.18
+          },
+          "error": {
+            "pts": -4.14,
+            "reb": -0.27,
+            "ast": -0.18
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ryan Rollins",
+          "team": "MIL",
+          "min": 21.28,
+          "actual": {
+            "pts": 7,
+            "reb": 7,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.23,
+            "reb": 1.93,
+            "ast": 1.86
+          },
+          "error": {
+            "pts": 0.77,
+            "reb": 5.07,
+            "ast": -0.86
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 21,
+        "n_matched": 21,
+        "mae": {
+          "pts": 3.918,
+          "reb": 1.645,
+          "ast": 1.188
+        },
+        "rmse": {
+          "pts": 4.891,
+          "reb": 2.312,
+          "ast": 1.655
+        },
+        "over_rate": {
+          "pts": 0.476,
+          "reb": 0.429,
+          "ast": 0.333
+        }
+      }
+    },
+    {
+      "game_id": "0022400537",
+      "season": "2024-25",
+      "matchup": "LAL vs SAS",
+      "score": "125-109",
+      "players": [
+        {
+          "player_name": "Jordan Goodwin",
+          "team": "LAL",
+          "min": 32.67,
+          "actual": {
+            "pts": 15,
+            "reb": 4,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 5.55,
+            "reb": 3.86,
+            "ast": 1.45
+          },
+          "error": {
+            "pts": 9.45,
+            "reb": 0.14,
+            "ast": 1.55
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dorian Finney-Smith",
+          "team": "LAL",
+          "min": 27.98,
+          "actual": {
+            "pts": 15,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.71,
+            "reb": 3.92,
+            "ast": 1.43
+          },
+          "error": {
+            "pts": 6.29,
+            "reb": -0.92,
+            "ast": -0.43
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaxson Hayes",
+          "team": "LAL",
+          "min": 27.6,
+          "actual": {
+            "pts": 9,
+            "reb": 11,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 6.84,
+            "reb": 4.8,
+            "ast": 1.04
+          },
+          "error": {
+            "pts": 2.16,
+            "reb": 6.2,
+            "ast": 1.96
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Austin Reaves",
+          "team": "LAL",
+          "min": 36.17,
+          "actual": {
+            "pts": 30,
+            "reb": 7,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 20.21,
+            "reb": 4.51,
+            "ast": 5.77
+          },
+          "error": {
+            "pts": 9.79,
+            "reb": 2.49,
+            "ast": 0.23
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Luka Don\u010di\u0107",
+          "team": "LAL",
+          "min": 33.93,
+          "actual": {
+            "pts": 21,
+            "reb": 9,
+            "ast": 14
+          },
+          "predicted": {
+            "pts": 28.16,
+            "reb": 8.18,
+            "ast": 7.66
+          },
+          "error": {
+            "pts": -7.16,
+            "reb": 0.82,
+            "ast": 6.34
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Gabe Vincent",
+          "team": "LAL",
+          "min": 27.97,
+          "actual": {
+            "pts": 11,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.39,
+            "reb": 1.28,
+            "ast": 1.36
+          },
+          "error": {
+            "pts": 4.61,
+            "reb": 0.72,
+            "ast": -0.36
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dalton Knecht",
+          "team": "LAL",
+          "min": 20.4,
+          "actual": {
+            "pts": 13,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 9.05,
+            "reb": 2.77,
+            "ast": 0.85
+          },
+          "error": {
+            "pts": 3.95,
+            "reb": 0.23,
+            "ast": 2.15
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Christian Koloko",
+          "team": "LAL",
+          "min": 8.83,
+          "actual": {
+            "pts": 4,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 2.43,
+            "reb": 2.49,
+            "ast": 0.43
+          },
+          "error": {
+            "pts": 1.57,
+            "reb": -0.49,
+            "ast": 0.57
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jarred Vanderbilt",
+          "team": "LAL",
+          "min": 14.9,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 4.08,
+            "reb": 5.06,
+            "ast": 1.14
+          },
+          "error": {
+            "pts": -2.08,
+            "reb": -4.06,
+            "ast": -0.14
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Shake Milton",
+          "team": "LAL",
+          "min": 7.05,
+          "actual": {
+            "pts": 2,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 5.53,
+            "reb": 1.82,
+            "ast": 1.79
+          },
+          "error": {
+            "pts": -3.53,
+            "reb": -1.82,
+            "ast": -0.79
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bronny James",
+          "team": "LAL",
+          "min": 2.5,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.3,
+            "reb": 0.67,
+            "ast": 0.81
+          },
+          "error": {
+            "pts": 0.7,
+            "reb": -0.67,
+            "ast": -0.81
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Devin Vassell",
+          "team": "SAS",
+          "min": 33.5,
+          "actual": {
+            "pts": 17,
+            "reb": 8,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 16.27,
+            "reb": 3.98,
+            "ast": 2.86
+          },
+          "error": {
+            "pts": 0.73,
+            "reb": 4.02,
+            "ast": -0.86
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Harrison Barnes",
+          "team": "SAS",
+          "min": 19.3,
+          "actual": {
+            "pts": 7,
+            "reb": 2,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 12.33,
+            "reb": 3.78,
+            "ast": 1.66
+          },
+          "error": {
+            "pts": -5.33,
+            "reb": -1.78,
+            "ast": 1.34
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bismack Biyombo",
+          "team": "SAS",
+          "min": 19.85,
+          "actual": {
+            "pts": 4,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 5.14,
+            "reb": 5.64,
+            "ast": 1.11
+          },
+          "error": {
+            "pts": -1.14,
+            "reb": -1.64,
+            "ast": -0.11
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Stephon Castle",
+          "team": "SAS",
+          "min": 27.55,
+          "actual": {
+            "pts": 23,
+            "reb": 8,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 14.69,
+            "reb": 3.67,
+            "ast": 4.1
+          },
+          "error": {
+            "pts": 8.31,
+            "reb": 4.33,
+            "ast": -1.1
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Chris Paul",
+          "team": "SAS",
+          "min": 22.08,
+          "actual": {
+            "pts": 9,
+            "reb": 6,
+            "ast": 8
+          },
+          "predicted": {
+            "pts": 8.82,
+            "reb": 3.61,
+            "ast": 7.38
+          },
+          "error": {
+            "pts": 0.18,
+            "reb": 2.39,
+            "ast": 0.62
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Keldon Johnson",
+          "team": "SAS",
+          "min": 27.98,
+          "actual": {
+            "pts": 11,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 12.71,
+            "reb": 4.82,
+            "ast": 1.62
+          },
+          "error": {
+            "pts": -1.71,
+            "reb": -0.82,
+            "ast": 0.38
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jeremy Sochan",
+          "team": "SAS",
+          "min": 26.1,
+          "actual": {
+            "pts": 15,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 11.43,
+            "reb": 6.52,
+            "ast": 2.37
+          },
+          "error": {
+            "pts": 3.57,
+            "reb": -3.52,
+            "ast": -1.37
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Julian Champagnie",
+          "team": "SAS",
+          "min": 28.52,
+          "actual": {
+            "pts": 6,
+            "reb": 4,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 9.94,
+            "reb": 3.88,
+            "ast": 1.35
+          },
+          "error": {
+            "pts": -3.94,
+            "reb": 0.12,
+            "ast": 3.65
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Sandro Mamukelashvili",
+          "team": "SAS",
+          "min": 12.77,
+          "actual": {
+            "pts": 10,
+            "reb": 2,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.31,
+            "reb": 3.07,
+            "ast": 0.79
+          },
+          "error": {
+            "pts": 3.69,
+            "reb": -1.07,
+            "ast": -0.79
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Blake Wesley",
+          "team": "SAS",
+          "min": 22.35,
+          "actual": {
+            "pts": 7,
+            "reb": 3,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 3.74,
+            "reb": 1.05,
+            "ast": 1.97
+          },
+          "error": {
+            "pts": 3.26,
+            "reb": 1.95,
+            "ast": 3.03
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 21,
+        "n_matched": 21,
+        "mae": {
+          "pts": 3.96,
+          "reb": 1.914,
+          "ast": 1.361
+        },
+        "rmse": {
+          "pts": 4.84,
+          "reb": 2.505,
+          "ast": 1.98
+        },
+        "over_rate": {
+          "pts": 0.619,
+          "reb": 0.381,
+          "ast": 0.429
+        }
+      }
+    },
+    {
+      "game_id": "0022400625",
+      "season": "2024-25",
+      "matchup": "OKC vs DAL",
+      "score": "115-121",
+      "players": [
+        {
+          "player_name": "Luguentz Dort",
+          "team": "OKC",
+          "min": 22.7,
+          "actual": {
+            "pts": 6,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 10.13,
+            "reb": 4.13,
+            "ast": 1.62
+          },
+          "error": {
+            "pts": -4.13,
+            "reb": -0.13,
+            "ast": -0.62
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jalen Williams",
+          "team": "OKC",
+          "min": 39.97,
+          "actual": {
+            "pts": 33,
+            "reb": 4,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 21.59,
+            "reb": 5.35,
+            "ast": 5.13
+          },
+          "error": {
+            "pts": 11.41,
+            "reb": -1.35,
+            "ast": 1.87
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaylin Williams",
+          "team": "OKC",
+          "min": 26.02,
+          "actual": {
+            "pts": 12,
+            "reb": 6,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 5.91,
+            "reb": 5.57,
+            "ast": 2.55
+          },
+          "error": {
+            "pts": 6.09,
+            "reb": 0.43,
+            "ast": -0.55
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Cason Wallace",
+          "team": "OKC",
+          "min": 26.35,
+          "actual": {
+            "pts": 7,
+            "reb": 7,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.35,
+            "reb": 3.37,
+            "ast": 2.54
+          },
+          "error": {
+            "pts": -1.35,
+            "reb": 3.63,
+            "ast": -1.54
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Shai Gilgeous-Alexander",
+          "team": "OKC",
+          "min": 39.8,
+          "actual": {
+            "pts": 31,
+            "reb": 1,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 32.68,
+            "reb": 4.99,
+            "ast": 6.39
+          },
+          "error": {
+            "pts": -1.68,
+            "reb": -3.99,
+            "ast": 0.61
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Aaron Wiggins",
+          "team": "OKC",
+          "min": 27.7,
+          "actual": {
+            "pts": 9,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 12.03,
+            "reb": 3.88,
+            "ast": 1.76
+          },
+          "error": {
+            "pts": -3.03,
+            "reb": -0.88,
+            "ast": -0.76
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Branden Carlson",
+          "team": "OKC",
+          "min": 3.5,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.81,
+            "reb": 1.69,
+            "ast": 0.44
+          },
+          "error": {
+            "pts": -0.81,
+            "reb": -1.69,
+            "ast": -0.44
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kenrich Williams",
+          "team": "OKC",
+          "min": 20.27,
+          "actual": {
+            "pts": 6,
+            "reb": 4,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.32,
+            "reb": 3.49,
+            "ast": 1.41
+          },
+          "error": {
+            "pts": -0.32,
+            "reb": 0.51,
+            "ast": -1.41
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Alex Caruso",
+          "team": "OKC",
+          "min": 21.35,
+          "actual": {
+            "pts": 8,
+            "reb": 3,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 7.07,
+            "reb": 2.94,
+            "ast": 2.54
+          },
+          "error": {
+            "pts": 0.93,
+            "reb": 0.06,
+            "ast": 2.46
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dillon Jones",
+          "team": "OKC",
+          "min": 12.35,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 2.5,
+            "reb": 2.24,
+            "ast": 1.07
+          },
+          "error": {
+            "pts": -2.5,
+            "reb": -1.24,
+            "ast": 0.93
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "P.J. Washington",
+          "team": "DAL",
+          "min": 40.53,
+          "actual": {
+            "pts": 22,
+            "reb": 19,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 14.67,
+            "reb": 7.75,
+            "ast": 2.3
+          },
+          "error": {
+            "pts": 7.33,
+            "reb": 11.25,
+            "ast": 0.7
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kessler Edwards",
+          "team": "DAL",
+          "min": 22.67,
+          "actual": {
+            "pts": 7,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 4.2,
+            "reb": 2.88,
+            "ast": 1.05
+          },
+          "error": {
+            "pts": 2.8,
+            "reb": 1.12,
+            "ast": 0.95
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Daniel Gafford",
+          "team": "DAL",
+          "min": 23.08,
+          "actual": {
+            "pts": 12,
+            "reb": 5,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 12.3,
+            "reb": 6.81,
+            "ast": 1.4
+          },
+          "error": {
+            "pts": -0.3,
+            "reb": -1.81,
+            "ast": 0.6
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Spencer Dinwiddie",
+          "team": "DAL",
+          "min": 34.73,
+          "actual": {
+            "pts": 28,
+            "reb": 1,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 11.04,
+            "reb": 2.65,
+            "ast": 4.42
+          },
+          "error": {
+            "pts": 16.96,
+            "reb": -1.65,
+            "ast": -1.42
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kyrie Irving",
+          "team": "DAL",
+          "min": 39.2,
+          "actual": {
+            "pts": 24,
+            "reb": 3,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 24.68,
+            "reb": 4.8,
+            "ast": 4.62
+          },
+          "error": {
+            "pts": -0.68,
+            "reb": -1.8,
+            "ast": -0.62
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Quentin Grimes",
+          "team": "DAL",
+          "min": 27.12,
+          "actual": {
+            "pts": 9,
+            "reb": 1,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 14.56,
+            "reb": 4.32,
+            "ast": 3.04
+          },
+          "error": {
+            "pts": -5.56,
+            "reb": -3.32,
+            "ast": -0.04
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Maxi Kleber",
+          "team": "DAL",
+          "min": 19.44,
+          "actual": {
+            "pts": 3,
+            "reb": 3,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 3.03,
+            "reb": 2.79,
+            "ast": 1.26
+          },
+          "error": {
+            "pts": -0.03,
+            "reb": 0.21,
+            "ast": 2.74
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Olivier-Maxence Prosper",
+          "team": "DAL",
+          "min": 21.1,
+          "actual": {
+            "pts": 14,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.87,
+            "reb": 2.42,
+            "ast": 0.77
+          },
+          "error": {
+            "pts": 10.13,
+            "reb": 0.58,
+            "ast": -0.77
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Brandon Williams",
+          "team": "DAL",
+          "min": 8.08,
+          "actual": {
+            "pts": 2,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 8.33,
+            "reb": 1.76,
+            "ast": 2.3
+          },
+          "error": {
+            "pts": -6.33,
+            "reb": 1.24,
+            "ast": 0.7
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Markieff Morris",
+          "team": "DAL",
+          "min": 4.05,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 3.73,
+            "reb": 1.53,
+            "ast": 1.4
+          },
+          "error": {
+            "pts": -3.73,
+            "reb": -0.53,
+            "ast": -0.4
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 20,
+        "n_matched": 20,
+        "mae": {
+          "pts": 4.305,
+          "reb": 1.871,
+          "ast": 1.006
+        },
+        "rmse": {
+          "pts": 6.096,
+          "reb": 3.056,
+          "ast": 1.215
+        },
+        "over_rate": {
+          "pts": 0.35,
+          "reb": 0.3,
+          "ast": 0.45
+        }
+      }
+    },
+    {
+      "game_id": "0022400737",
+      "season": "2024-25",
+      "matchup": "BKN vs MIA",
+      "score": "102-86",
+      "players": [
+        {
+          "player_name": "Cameron Johnson",
+          "team": "BKN",
+          "min": 29.98,
+          "actual": {
+            "pts": 18,
+            "reb": 6,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 18.77,
+            "reb": 4.33,
+            "ast": 3.4
+          },
+          "error": {
+            "pts": -0.77,
+            "reb": 1.67,
+            "ast": -0.4
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ziaire Williams",
+          "team": "BKN",
+          "min": 32.47,
+          "actual": {
+            "pts": 8,
+            "reb": 9,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 10.03,
+            "reb": 4.56,
+            "ast": 1.33
+          },
+          "error": {
+            "pts": -2.03,
+            "reb": 4.44,
+            "ast": 1.67
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nic Claxton",
+          "team": "BKN",
+          "min": 30.87,
+          "actual": {
+            "pts": 12,
+            "reb": 10,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 10.34,
+            "reb": 7.36,
+            "ast": 2.24
+          },
+          "error": {
+            "pts": 1.66,
+            "reb": 2.64,
+            "ast": -1.24
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Keon Johnson",
+          "team": "BKN",
+          "min": 23.27,
+          "actual": {
+            "pts": 11,
+            "reb": 8,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 10.62,
+            "reb": 3.76,
+            "ast": 2.22
+          },
+          "error": {
+            "pts": 0.38,
+            "reb": 4.24,
+            "ast": -1.22
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "D'Angelo Russell",
+          "team": "BKN",
+          "min": 26.25,
+          "actual": {
+            "pts": 17,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 12.62,
+            "reb": 2.79,
+            "ast": 5.12
+          },
+          "error": {
+            "pts": 4.38,
+            "reb": -0.79,
+            "ast": -4.12
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Trendon Watford",
+          "team": "BKN",
+          "min": 22.13,
+          "actual": {
+            "pts": 12,
+            "reb": 4,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 10.23,
+            "reb": 3.64,
+            "ast": 2.61
+          },
+          "error": {
+            "pts": 1.77,
+            "reb": 0.36,
+            "ast": 0.39
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jalen Wilson",
+          "team": "BKN",
+          "min": 17.08,
+          "actual": {
+            "pts": 8,
+            "reb": 4,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 9.48,
+            "reb": 3.42,
+            "ast": 1.84
+          },
+          "error": {
+            "pts": -1.48,
+            "reb": 0.58,
+            "ast": -1.84
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tosan Evbuomwan",
+          "team": "BKN",
+          "min": 20.12,
+          "actual": {
+            "pts": 5,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 9.54,
+            "reb": 4.29,
+            "ast": 1.96
+          },
+          "error": {
+            "pts": -4.54,
+            "reb": -1.29,
+            "ast": 0.04
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tyrese Martin",
+          "team": "BKN",
+          "min": 20.7,
+          "actual": {
+            "pts": 2,
+            "reb": 5,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.72,
+            "reb": 3.65,
+            "ast": 2.03
+          },
+          "error": {
+            "pts": -6.72,
+            "reb": 1.35,
+            "ast": -1.03
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Day'Ron Sharpe",
+          "team": "BKN",
+          "min": 17.13,
+          "actual": {
+            "pts": 9,
+            "reb": 6,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 7.94,
+            "reb": 6.6,
+            "ast": 1.82
+          },
+          "error": {
+            "pts": 1.06,
+            "reb": -0.6,
+            "ast": 0.18
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Haywood Highsmith",
+          "team": "MIA",
+          "min": 18.18,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.46,
+            "reb": 3.41,
+            "ast": 1.51
+          },
+          "error": {
+            "pts": -6.46,
+            "reb": -0.41,
+            "ast": -0.51
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bam Adebayo",
+          "team": "MIA",
+          "min": 36.72,
+          "actual": {
+            "pts": 18,
+            "reb": 8,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 18.08,
+            "reb": 9.6,
+            "ast": 4.32
+          },
+          "error": {
+            "pts": -0.08,
+            "reb": -1.6,
+            "ast": -3.32
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kel'el Ware",
+          "team": "MIA",
+          "min": 26.03,
+          "actual": {
+            "pts": 10,
+            "reb": 14,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 9.3,
+            "reb": 7.39,
+            "ast": 0.94
+          },
+          "error": {
+            "pts": 0.7,
+            "reb": 6.61,
+            "ast": 3.06
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Duncan Robinson",
+          "team": "MIA",
+          "min": 29.1,
+          "actual": {
+            "pts": 10,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 11.04,
+            "reb": 2.26,
+            "ast": 2.38
+          },
+          "error": {
+            "pts": -1.04,
+            "reb": -2.26,
+            "ast": -1.38
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tyler Herro",
+          "team": "MIA",
+          "min": 37.78,
+          "actual": {
+            "pts": 15,
+            "reb": 4,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 23.9,
+            "reb": 5.18,
+            "ast": 5.51
+          },
+          "error": {
+            "pts": -8.9,
+            "reb": -1.18,
+            "ast": 0.49
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nikola Jovi\u0107",
+          "team": "MIA",
+          "min": 31.73,
+          "actual": {
+            "pts": 8,
+            "reb": 1,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 10.74,
+            "reb": 3.91,
+            "ast": 2.85
+          },
+          "error": {
+            "pts": -2.74,
+            "reb": -2.91,
+            "ast": 1.15
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaime Jaquez Jr.",
+          "team": "MIA",
+          "min": 18.57,
+          "actual": {
+            "pts": 5,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 8.64,
+            "reb": 4.39,
+            "ast": 2.52
+          },
+          "error": {
+            "pts": -3.64,
+            "reb": -1.39,
+            "ast": 0.48
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Terry Rozier",
+          "team": "MIA",
+          "min": 31.23,
+          "actual": {
+            "pts": 20,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 10.61,
+            "reb": 3.72,
+            "ast": 2.61
+          },
+          "error": {
+            "pts": 9.39,
+            "reb": 0.28,
+            "ast": -0.61
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Pelle Larsson",
+          "team": "MIA",
+          "min": 10.65,
+          "actual": {
+            "pts": 0,
+            "reb": 2,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 4.56,
+            "reb": 1.67,
+            "ast": 1.18
+          },
+          "error": {
+            "pts": -4.56,
+            "reb": 0.33,
+            "ast": -0.18
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 19,
+        "n_matched": 19,
+        "mae": {
+          "pts": 3.279,
+          "reb": 1.838,
+          "ast": 1.227
+        },
+        "rmse": {
+          "pts": 4.3,
+          "reb": 2.47,
+          "ast": 1.66
+        },
+        "over_rate": {
+          "pts": 0.316,
+          "reb": 0.368,
+          "ast": 0.158
+        }
+      }
+    },
+    {
+      "game_id": "0022400852",
+      "season": "2024-25",
+      "matchup": "BOS vs CLE",
+      "score": "116-123",
+      "players": [
+        {
+          "player_name": "Sam Hauser",
+          "team": "BOS",
+          "min": 37.73,
+          "actual": {
+            "pts": 6,
+            "reb": 6,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.52,
+            "reb": 3.15,
+            "ast": 0.9
+          },
+          "error": {
+            "pts": -2.52,
+            "reb": 2.85,
+            "ast": 0.1
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jayson Tatum",
+          "team": "BOS",
+          "min": 40.58,
+          "actual": {
+            "pts": 46,
+            "reb": 16,
+            "ast": 9
+          },
+          "predicted": {
+            "pts": 26.83,
+            "reb": 8.65,
+            "ast": 5.99
+          },
+          "error": {
+            "pts": 19.17,
+            "reb": 7.35,
+            "ast": 3.01
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Al Horford",
+          "team": "BOS",
+          "min": 37.57,
+          "actual": {
+            "pts": 5,
+            "reb": 7,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 8.97,
+            "reb": 6.15,
+            "ast": 2.13
+          },
+          "error": {
+            "pts": -3.97,
+            "reb": 0.85,
+            "ast": -0.13
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaylen Brown",
+          "team": "BOS",
+          "min": 33.92,
+          "actual": {
+            "pts": 37,
+            "reb": 5,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 22.19,
+            "reb": 5.84,
+            "ast": 4.54
+          },
+          "error": {
+            "pts": 14.81,
+            "reb": -0.84,
+            "ast": -2.54
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Derrick White",
+          "team": "BOS",
+          "min": 41.1,
+          "actual": {
+            "pts": 16,
+            "reb": 1,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 16.42,
+            "reb": 4.49,
+            "ast": 4.75
+          },
+          "error": {
+            "pts": -0.42,
+            "reb": -3.49,
+            "ast": 0.25
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Luke Kornet",
+          "team": "BOS",
+          "min": 19.3,
+          "actual": {
+            "pts": 0,
+            "reb": 5,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.04,
+            "reb": 5.32,
+            "ast": 1.6
+          },
+          "error": {
+            "pts": -6.04,
+            "reb": -0.32,
+            "ast": -1.6
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Payton Pritchard",
+          "team": "BOS",
+          "min": 25.4,
+          "actual": {
+            "pts": 6,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 14.3,
+            "reb": 3.84,
+            "ast": 3.49
+          },
+          "error": {
+            "pts": -8.3,
+            "reb": -3.84,
+            "ast": -2.49
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Drew Peterson",
+          "team": "BOS",
+          "min": 1.45,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.16,
+            "reb": 1.6,
+            "ast": 0.52
+          },
+          "error": {
+            "pts": -2.16,
+            "reb": -1.6,
+            "ast": -0.52
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Torrey Craig",
+          "team": "BOS",
+          "min": 2.95,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.15,
+            "reb": 2.81,
+            "ast": 0.65
+          },
+          "error": {
+            "pts": -4.15,
+            "reb": -2.81,
+            "ast": -0.65
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Max Strus",
+          "team": "CLE",
+          "min": 21.62,
+          "actual": {
+            "pts": 2,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 9.42,
+            "reb": 4.34,
+            "ast": 3.16
+          },
+          "error": {
+            "pts": -7.42,
+            "reb": -0.34,
+            "ast": -1.16
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Evan Mobley",
+          "team": "CLE",
+          "min": 28.95,
+          "actual": {
+            "pts": 17,
+            "reb": 12,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 18.54,
+            "reb": 9.28,
+            "ast": 3.18
+          },
+          "error": {
+            "pts": -1.54,
+            "reb": 2.72,
+            "ast": -0.18
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jarrett Allen",
+          "team": "CLE",
+          "min": 23.72,
+          "actual": {
+            "pts": 10,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 13.45,
+            "reb": 9.73,
+            "ast": 1.93
+          },
+          "error": {
+            "pts": -3.45,
+            "reb": -5.73,
+            "ast": -0.93
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Donovan Mitchell",
+          "team": "CLE",
+          "min": 35.13,
+          "actual": {
+            "pts": 41,
+            "reb": 3,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 23.96,
+            "reb": 4.54,
+            "ast": 4.99
+          },
+          "error": {
+            "pts": 17.04,
+            "reb": -1.54,
+            "ast": 0.01
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Darius Garland",
+          "team": "CLE",
+          "min": 31.55,
+          "actual": {
+            "pts": 20,
+            "reb": 3,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 20.59,
+            "reb": 2.85,
+            "ast": 6.75
+          },
+          "error": {
+            "pts": -0.59,
+            "reb": 0.15,
+            "ast": 0.25
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ty Jerome",
+          "team": "CLE",
+          "min": 21.15,
+          "actual": {
+            "pts": 8,
+            "reb": 4,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 12.54,
+            "reb": 2.47,
+            "ast": 3.39
+          },
+          "error": {
+            "pts": -4.54,
+            "reb": 1.53,
+            "ast": -0.39
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "De'Andre Hunter",
+          "team": "CLE",
+          "min": 28.85,
+          "actual": {
+            "pts": 12,
+            "reb": 5,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 17.0,
+            "reb": 4.03,
+            "ast": 1.44
+          },
+          "error": {
+            "pts": -5.0,
+            "reb": 0.97,
+            "ast": -0.44
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Sam Merrill",
+          "team": "CLE",
+          "min": 17.73,
+          "actual": {
+            "pts": 3,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 7.17,
+            "reb": 2.21,
+            "ast": 1.52
+          },
+          "error": {
+            "pts": -4.17,
+            "reb": 0.79,
+            "ast": -1.52
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dean Wade",
+          "team": "CLE",
+          "min": 19.17,
+          "actual": {
+            "pts": 5,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 5.42,
+            "reb": 4.22,
+            "ast": 1.29
+          },
+          "error": {
+            "pts": -0.42,
+            "reb": -1.22,
+            "ast": -0.29
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Isaac Okoro",
+          "team": "CLE",
+          "min": 12.13,
+          "actual": {
+            "pts": 5,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.13,
+            "reb": 2.36,
+            "ast": 1.24
+          },
+          "error": {
+            "pts": -1.13,
+            "reb": 0.64,
+            "ast": -1.24
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 19,
+        "n_matched": 19,
+        "mae": {
+          "pts": 5.623,
+          "reb": 2.083,
+          "ast": 0.932
+        },
+        "rmse": {
+          "pts": 7.817,
+          "reb": 2.806,
+          "ast": 1.29
+        },
+        "over_rate": {
+          "pts": 0.158,
+          "reb": 0.421,
+          "ast": 0.053
+        }
+      }
+    },
+    {
+      "game_id": "0022400909",
+      "season": "2024-25",
+      "matchup": "DEN vs PHX",
+      "score": "149-141",
+      "players": [
+        {
+          "player_name": "Michael Porter Jr.",
+          "team": "DEN",
+          "min": 39.2,
+          "actual": {
+            "pts": 16,
+            "reb": 2,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 18.16,
+            "reb": 7.01,
+            "ast": 2.14
+          },
+          "error": {
+            "pts": -2.16,
+            "reb": -5.01,
+            "ast": 0.86
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Aaron Gordon",
+          "team": "DEN",
+          "min": 38.72,
+          "actual": {
+            "pts": 27,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 14.67,
+            "reb": 4.84,
+            "ast": 3.22
+          },
+          "error": {
+            "pts": 12.33,
+            "reb": -1.84,
+            "ast": -2.22
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nikola Joki\u0107",
+          "team": "DEN",
+          "min": 44.92,
+          "actual": {
+            "pts": 31,
+            "reb": 21,
+            "ast": 22
+          },
+          "predicted": {
+            "pts": 29.59,
+            "reb": 12.74,
+            "ast": 10.23
+          },
+          "error": {
+            "pts": 1.41,
+            "reb": 8.26,
+            "ast": 11.77
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Christian Braun",
+          "team": "DEN",
+          "min": 37.62,
+          "actual": {
+            "pts": 25,
+            "reb": 5,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 15.42,
+            "reb": 5.19,
+            "ast": 2.59
+          },
+          "error": {
+            "pts": 9.58,
+            "reb": -0.19,
+            "ast": 2.41
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jamal Murray",
+          "team": "DEN",
+          "min": 41.58,
+          "actual": {
+            "pts": 19,
+            "reb": 1,
+            "ast": 8
+          },
+          "predicted": {
+            "pts": 21.43,
+            "reb": 3.9,
+            "ast": 6.01
+          },
+          "error": {
+            "pts": -2.43,
+            "reb": -2.9,
+            "ast": 1.99
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Russell Westbrook",
+          "team": "DEN",
+          "min": 25.73,
+          "actual": {
+            "pts": 14,
+            "reb": 3,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 13.25,
+            "reb": 4.93,
+            "ast": 6.09
+          },
+          "error": {
+            "pts": 0.75,
+            "reb": -1.93,
+            "ast": -2.09
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Peyton Watson",
+          "team": "DEN",
+          "min": 23.82,
+          "actual": {
+            "pts": 11,
+            "reb": 2,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 8.1,
+            "reb": 3.43,
+            "ast": 1.38
+          },
+          "error": {
+            "pts": 2.9,
+            "reb": -1.43,
+            "ast": 0.62
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Zeke Nnaji",
+          "team": "DEN",
+          "min": 13.42,
+          "actual": {
+            "pts": 6,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.23,
+            "reb": 1.58,
+            "ast": 0.4
+          },
+          "error": {
+            "pts": 2.77,
+            "reb": -0.58,
+            "ast": -0.4
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kevin Durant",
+          "team": "PHX",
+          "min": 45.83,
+          "actual": {
+            "pts": 29,
+            "reb": 9,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 26.56,
+            "reb": 6.03,
+            "ast": 4.24
+          },
+          "error": {
+            "pts": 2.44,
+            "reb": 2.97,
+            "ast": 0.76
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bol Bol",
+          "team": "PHX",
+          "min": 13.63,
+          "actual": {
+            "pts": 5,
+            "reb": 5,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.78,
+            "reb": 2.89,
+            "ast": 0.61
+          },
+          "error": {
+            "pts": -1.78,
+            "reb": 2.11,
+            "ast": 0.39
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nick Richards",
+          "team": "PHX",
+          "min": 26.32,
+          "actual": {
+            "pts": 18,
+            "reb": 5,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 9.28,
+            "reb": 8.18,
+            "ast": 0.86
+          },
+          "error": {
+            "pts": 8.72,
+            "reb": -3.18,
+            "ast": -0.86
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bradley Beal",
+          "team": "PHX",
+          "min": 40.78,
+          "actual": {
+            "pts": 11,
+            "reb": 1,
+            "ast": 9
+          },
+          "predicted": {
+            "pts": 17.02,
+            "reb": 3.34,
+            "ast": 3.68
+          },
+          "error": {
+            "pts": -6.02,
+            "reb": -2.34,
+            "ast": 5.32
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Devin Booker",
+          "team": "PHX",
+          "min": 43.85,
+          "actual": {
+            "pts": 34,
+            "reb": 6,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 25.64,
+            "reb": 4.07,
+            "ast": 7.05
+          },
+          "error": {
+            "pts": 8.36,
+            "reb": 1.93,
+            "ast": -0.05
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Grayson Allen",
+          "team": "PHX",
+          "min": 29.12,
+          "actual": {
+            "pts": 11,
+            "reb": 0,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 10.62,
+            "reb": 3.03,
+            "ast": 2.14
+          },
+          "error": {
+            "pts": 0.38,
+            "reb": -3.03,
+            "ast": 1.86
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tyus Jones",
+          "team": "PHX",
+          "min": 14.37,
+          "actual": {
+            "pts": 6,
+            "reb": 1,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 10.23,
+            "reb": 2.42,
+            "ast": 5.3
+          },
+          "error": {
+            "pts": -4.23,
+            "reb": -1.42,
+            "ast": -0.3
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Mason Plumlee",
+          "team": "PHX",
+          "min": 26.68,
+          "actual": {
+            "pts": 18,
+            "reb": 11,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.5,
+            "reb": 6.15,
+            "ast": 1.81
+          },
+          "error": {
+            "pts": 13.5,
+            "reb": 4.85,
+            "ast": -1.81
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Royce O'Neale",
+          "team": "PHX",
+          "min": 19.72,
+          "actual": {
+            "pts": 6,
+            "reb": 1,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 9.07,
+            "reb": 4.65,
+            "ast": 2.17
+          },
+          "error": {
+            "pts": -3.07,
+            "reb": -3.65,
+            "ast": 2.83
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Collin Gillespie",
+          "team": "PHX",
+          "min": 4.7,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.88,
+            "reb": 2.36,
+            "ast": 2.36
+          },
+          "error": {
+            "pts": -2.88,
+            "reb": -2.36,
+            "ast": -2.36
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 18,
+        "n_matched": 18,
+        "mae": {
+          "pts": 4.762,
+          "reb": 2.777,
+          "ast": 2.161
+        },
+        "rmse": {
+          "pts": 6.157,
+          "reb": 3.312,
+          "ast": 3.408
+        },
+        "over_rate": {
+          "pts": 0.556,
+          "reb": 0.278,
+          "ast": 0.5
+        }
+      }
+    },
+    {
+      "game_id": "0022400923",
+      "season": "2024-25",
+      "matchup": "NOP vs MEM",
+      "score": "104-107",
+      "players": [
+        {
+          "player_name": "Trey Murphy III",
+          "team": "NOP",
+          "min": 36.7,
+          "actual": {
+            "pts": 27,
+            "reb": 5,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 21.21,
+            "reb": 5.06,
+            "ast": 3.55
+          },
+          "error": {
+            "pts": 5.79,
+            "reb": -0.06,
+            "ast": -1.55
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kelly Olynyk",
+          "team": "NOP",
+          "min": 31.18,
+          "actual": {
+            "pts": 12,
+            "reb": 4,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 8.73,
+            "reb": 4.68,
+            "ast": 2.91
+          },
+          "error": {
+            "pts": 3.27,
+            "reb": -0.68,
+            "ast": 1.09
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Yves Missi",
+          "team": "NOP",
+          "min": 28.07,
+          "actual": {
+            "pts": 10,
+            "reb": 9,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 9.11,
+            "reb": 8.23,
+            "ast": 1.36
+          },
+          "error": {
+            "pts": 0.89,
+            "reb": 0.77,
+            "ast": -1.36
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jordan Hawkins",
+          "team": "NOP",
+          "min": 23.87,
+          "actual": {
+            "pts": 12,
+            "reb": 5,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 10.79,
+            "reb": 2.82,
+            "ast": 1.18
+          },
+          "error": {
+            "pts": 1.21,
+            "reb": 2.18,
+            "ast": -1.18
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jose Alvarado",
+          "team": "NOP",
+          "min": 31.93,
+          "actual": {
+            "pts": 11,
+            "reb": 0,
+            "ast": 11
+          },
+          "predicted": {
+            "pts": 10.34,
+            "reb": 2.43,
+            "ast": 4.62
+          },
+          "error": {
+            "pts": 0.66,
+            "reb": -2.43,
+            "ast": 6.38
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bruce Brown",
+          "team": "NOP",
+          "min": 19.7,
+          "actual": {
+            "pts": 5,
+            "reb": 1,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 8.29,
+            "reb": 4.0,
+            "ast": 2.05
+          },
+          "error": {
+            "pts": -3.29,
+            "reb": -3.0,
+            "ast": -0.05
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Karlo Matkovi\u0107",
+          "team": "NOP",
+          "min": 26.23,
+          "actual": {
+            "pts": 13,
+            "reb": 11,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 7.74,
+            "reb": 4.98,
+            "ast": 1.1
+          },
+          "error": {
+            "pts": 5.26,
+            "reb": 6.02,
+            "ast": -0.1
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jeremiah Robinson-Earl",
+          "team": "NOP",
+          "min": 8.98,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.33,
+            "reb": 4.77,
+            "ast": 1.33
+          },
+          "error": {
+            "pts": -6.33,
+            "reb": -3.77,
+            "ast": -0.33
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Antonio Reeves",
+          "team": "NOP",
+          "min": 22.03,
+          "actual": {
+            "pts": 11,
+            "reb": 2,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 6.93,
+            "reb": 1.43,
+            "ast": 0.89
+          },
+          "error": {
+            "pts": 4.07,
+            "reb": 0.57,
+            "ast": 2.11
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jamal Cain",
+          "team": "NOP",
+          "min": 11.3,
+          "actual": {
+            "pts": 3,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.3,
+            "reb": 2.3,
+            "ast": 0.59
+          },
+          "error": {
+            "pts": -2.3,
+            "reb": -1.3,
+            "ast": -0.59
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaylen Wells",
+          "team": "MEM",
+          "min": 32.65,
+          "actual": {
+            "pts": 9,
+            "reb": 7,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 10.42,
+            "reb": 3.39,
+            "ast": 1.71
+          },
+          "error": {
+            "pts": -1.42,
+            "reb": 3.61,
+            "ast": 0.29
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Vince Williams Jr.",
+          "team": "MEM",
+          "min": 23.97,
+          "actual": {
+            "pts": 7,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 6.63,
+            "reb": 3.63,
+            "ast": 2.04
+          },
+          "error": {
+            "pts": 0.37,
+            "reb": 0.37,
+            "ast": -0.04
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Zach Edey",
+          "team": "MEM",
+          "min": 22.63,
+          "actual": {
+            "pts": 6,
+            "reb": 12,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 9.24,
+            "reb": 8.3,
+            "ast": 0.98
+          },
+          "error": {
+            "pts": -3.24,
+            "reb": 3.7,
+            "ast": 1.02
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Desmond Bane",
+          "team": "MEM",
+          "min": 37.97,
+          "actual": {
+            "pts": 30,
+            "reb": 9,
+            "ast": 8
+          },
+          "predicted": {
+            "pts": 19.23,
+            "reb": 6.06,
+            "ast": 5.35
+          },
+          "error": {
+            "pts": 10.77,
+            "reb": 2.94,
+            "ast": 2.65
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ja Morant",
+          "team": "MEM",
+          "min": 36.58,
+          "actual": {
+            "pts": 32,
+            "reb": 4,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 23.18,
+            "reb": 4.1,
+            "ast": 7.28
+          },
+          "error": {
+            "pts": 8.82,
+            "reb": -0.1,
+            "ast": -1.28
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Scotty Pippen Jr.",
+          "team": "MEM",
+          "min": 28.97,
+          "actual": {
+            "pts": 12,
+            "reb": 6,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 9.86,
+            "reb": 3.28,
+            "ast": 4.39
+          },
+          "error": {
+            "pts": 2.14,
+            "reb": 2.72,
+            "ast": -2.39
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Brandon Clarke",
+          "team": "MEM",
+          "min": 16.73,
+          "actual": {
+            "pts": 2,
+            "reb": 5,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 8.34,
+            "reb": 5.09,
+            "ast": 1.03
+          },
+          "error": {
+            "pts": -6.34,
+            "reb": -0.09,
+            "ast": -1.03
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "GG Jackson",
+          "team": "MEM",
+          "min": 11.7,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 7.21,
+            "reb": 3.17,
+            "ast": 1.0
+          },
+          "error": {
+            "pts": -7.21,
+            "reb": -2.17,
+            "ast": -1.0
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Lamar Stevens",
+          "team": "MEM",
+          "min": 4.43,
+          "actual": {
+            "pts": 1,
+            "reb": 2,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.35,
+            "reb": 2.24,
+            "ast": 0.47
+          },
+          "error": {
+            "pts": -3.35,
+            "reb": -0.24,
+            "ast": -0.47
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "John Konchar",
+          "team": "MEM",
+          "min": 10.02,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.43,
+            "reb": 3.28,
+            "ast": 0.91
+          },
+          "error": {
+            "pts": -2.43,
+            "reb": -0.28,
+            "ast": -0.91
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jay Huff",
+          "team": "MEM",
+          "min": 14.35,
+          "actual": {
+            "pts": 8,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 6.86,
+            "reb": 2.02,
+            "ast": 0.59
+          },
+          "error": {
+            "pts": 1.14,
+            "reb": 1.98,
+            "ast": 1.41
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 21,
+        "n_matched": 21,
+        "mae": {
+          "pts": 3.824,
+          "reb": 1.856,
+          "ast": 1.297
+        },
+        "rmse": {
+          "pts": 4.726,
+          "reb": 2.438,
+          "ast": 1.865
+        },
+        "over_rate": {
+          "pts": 0.524,
+          "reb": 0.429,
+          "ast": 0.286
+        }
+      }
+    },
+    {
+      "game_id": "0022401066",
+      "season": "2024-25",
+      "matchup": "SAC vs POR",
+      "score": "128-107",
+      "players": [
+        {
+          "player_name": "DeMar DeRozan",
+          "team": "SAC",
+          "min": 37.48,
+          "actual": {
+            "pts": 21,
+            "reb": 2,
+            "ast": 10
+          },
+          "predicted": {
+            "pts": 22.21,
+            "reb": 3.87,
+            "ast": 4.44
+          },
+          "error": {
+            "pts": -1.21,
+            "reb": -1.87,
+            "ast": 5.56
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Keegan Murray",
+          "team": "SAC",
+          "min": 33.47,
+          "actual": {
+            "pts": 17,
+            "reb": 7,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 12.39,
+            "reb": 6.67,
+            "ast": 1.43
+          },
+          "error": {
+            "pts": 4.61,
+            "reb": 0.33,
+            "ast": -0.43
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Domantas Sabonis",
+          "team": "SAC",
+          "min": 34.78,
+          "actual": {
+            "pts": 22,
+            "reb": 19,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 19.1,
+            "reb": 13.89,
+            "ast": 6.04
+          },
+          "error": {
+            "pts": 2.9,
+            "reb": 5.11,
+            "ast": -0.04
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Zach LaVine",
+          "team": "SAC",
+          "min": 37.42,
+          "actual": {
+            "pts": 29,
+            "reb": 2,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 23.3,
+            "reb": 4.26,
+            "ast": 4.19
+          },
+          "error": {
+            "pts": 5.7,
+            "reb": -2.26,
+            "ast": -4.19
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Keon Ellis",
+          "team": "SAC",
+          "min": 31.18,
+          "actual": {
+            "pts": 10,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 8.32,
+            "reb": 2.65,
+            "ast": 1.5
+          },
+          "error": {
+            "pts": 1.68,
+            "reb": 0.35,
+            "ast": 0.5
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Malik Monk",
+          "team": "SAC",
+          "min": 17.27,
+          "actual": {
+            "pts": 16,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 17.18,
+            "reb": 3.77,
+            "ast": 5.57
+          },
+          "error": {
+            "pts": -1.18,
+            "reb": -0.77,
+            "ast": -3.57
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Trey Lyles",
+          "team": "SAC",
+          "min": 13.9,
+          "actual": {
+            "pts": 3,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.54,
+            "reb": 4.58,
+            "ast": 1.19
+          },
+          "error": {
+            "pts": -3.54,
+            "reb": -3.58,
+            "ast": -1.19
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jonas Valan\u010di\u016bnas",
+          "team": "SAC",
+          "min": 11.18,
+          "actual": {
+            "pts": 6,
+            "reb": 6,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 10.41,
+            "reb": 7.74,
+            "ast": 2.02
+          },
+          "error": {
+            "pts": -4.41,
+            "reb": -1.74,
+            "ast": -1.02
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Markelle Fultz",
+          "team": "SAC",
+          "min": 15.92,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 2.9,
+            "reb": 0.95,
+            "ast": 1.29
+          },
+          "error": {
+            "pts": -0.9,
+            "reb": 0.05,
+            "ast": -0.29
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Isaac Jones",
+          "team": "SAC",
+          "min": 1.85,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.35,
+            "reb": 1.43,
+            "ast": 0.3
+          },
+          "error": {
+            "pts": -1.35,
+            "reb": -0.43,
+            "ast": -0.3
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Devin Carter",
+          "team": "SAC",
+          "min": 1.85,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.83,
+            "reb": 2.11,
+            "ast": 1.14
+          },
+          "error": {
+            "pts": -3.83,
+            "reb": -2.11,
+            "ast": -1.14
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Isaiah Crawford",
+          "team": "SAC",
+          "min": 1.85,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 0.87,
+            "reb": 0.53,
+            "ast": 0.07
+          },
+          "error": {
+            "pts": -0.87,
+            "reb": -0.53,
+            "ast": -0.07
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Terry Taylor",
+          "team": "SAC",
+          "min": 1.85,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 0.0,
+            "reb": 0.33,
+            "ast": 0.67
+          },
+          "error": {
+            "pts": 0.0,
+            "reb": 0.67,
+            "ast": 0.33
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Deni Avdija",
+          "team": "POR",
+          "min": 32.22,
+          "actual": {
+            "pts": 24,
+            "reb": 9,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 16.93,
+            "reb": 7.25,
+            "ast": 3.9
+          },
+          "error": {
+            "pts": 7.07,
+            "reb": 1.75,
+            "ast": -0.9
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Toumani Camara",
+          "team": "POR",
+          "min": 33.53,
+          "actual": {
+            "pts": 6,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 11.31,
+            "reb": 5.77,
+            "ast": 2.24
+          },
+          "error": {
+            "pts": -5.31,
+            "reb": -1.77,
+            "ast": -1.24
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Donovan Clingan",
+          "team": "POR",
+          "min": 17.53,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.51,
+            "reb": 7.87,
+            "ast": 1.15
+          },
+          "error": {
+            "pts": -6.51,
+            "reb": -4.87,
+            "ast": -0.15
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Shaedon Sharpe",
+          "team": "POR",
+          "min": 31.33,
+          "actual": {
+            "pts": 22,
+            "reb": 7,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 18.54,
+            "reb": 4.5,
+            "ast": 2.75
+          },
+          "error": {
+            "pts": 3.46,
+            "reb": 2.5,
+            "ast": -2.75
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Anfernee Simons",
+          "team": "POR",
+          "min": 37.4,
+          "actual": {
+            "pts": 20,
+            "reb": 1,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 19.26,
+            "reb": 2.7,
+            "ast": 4.81
+          },
+          "error": {
+            "pts": 0.74,
+            "reb": -1.7,
+            "ast": 0.19
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Scoot Henderson",
+          "team": "POR",
+          "min": 23.7,
+          "actual": {
+            "pts": 6,
+            "reb": 0,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 12.68,
+            "reb": 3.0,
+            "ast": 5.08
+          },
+          "error": {
+            "pts": -6.68,
+            "reb": -3.0,
+            "ast": 0.92
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Duop Reath",
+          "team": "POR",
+          "min": 28.48,
+          "actual": {
+            "pts": 17,
+            "reb": 5,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 4.22,
+            "reb": 2.0,
+            "ast": 0.57
+          },
+          "error": {
+            "pts": 12.78,
+            "reb": 3.0,
+            "ast": 0.43
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Matisse Thybulle",
+          "team": "POR",
+          "min": 18.33,
+          "actual": {
+            "pts": 6,
+            "reb": 2,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 7.47,
+            "reb": 3.47,
+            "ast": 1.87
+          },
+          "error": {
+            "pts": -1.47,
+            "reb": -1.47,
+            "ast": 2.13
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dalano Banton",
+          "team": "POR",
+          "min": 5.93,
+          "actual": {
+            "pts": 4,
+            "reb": 0,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 8.34,
+            "reb": 2.01,
+            "ast": 2.39
+          },
+          "error": {
+            "pts": -4.34,
+            "reb": -2.01,
+            "ast": -0.39
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kris Murray",
+          "team": "POR",
+          "min": 5.98,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.16,
+            "reb": 2.64,
+            "ast": 0.99
+          },
+          "error": {
+            "pts": -4.16,
+            "reb": -2.64,
+            "ast": -0.99
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Justin Minaya",
+          "team": "POR",
+          "min": 1.85,
+          "actual": {
+            "pts": 2,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 0.95,
+            "reb": 0.53,
+            "ast": 0.37
+          },
+          "error": {
+            "pts": 1.05,
+            "reb": -0.53,
+            "ast": -0.37
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Rayan Rupert",
+          "team": "POR",
+          "min": 1.85,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.98,
+            "reb": 1.35,
+            "ast": 0.48
+          },
+          "error": {
+            "pts": -2.98,
+            "reb": -1.35,
+            "ast": -0.48
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jabari Walker",
+          "team": "POR",
+          "min": 1.85,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.22,
+            "reb": 3.52,
+            "ast": 0.62
+          },
+          "error": {
+            "pts": -5.22,
+            "reb": -2.52,
+            "ast": -0.62
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 26,
+        "n_matched": 26,
+        "mae": {
+          "pts": 3.613,
+          "reb": 1.881,
+          "ast": 1.161
+        },
+        "rmse": {
+          "pts": 4.534,
+          "reb": 2.282,
+          "ast": 1.788
+        },
+        "over_rate": {
+          "pts": 0.346,
+          "reb": 0.192,
+          "ast": 0.115
+        }
+      }
+    },
+    {
+      "game_id": "0022401087",
+      "season": "2024-25",
+      "matchup": "PHI vs TOR",
+      "score": "109-127",
+      "players": [
+        {
+          "player_name": "Justin Edwards",
+          "team": "PHI",
+          "min": 27.53,
+          "actual": {
+            "pts": 12,
+            "reb": 7,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 10.11,
+            "reb": 3.36,
+            "ast": 1.57
+          },
+          "error": {
+            "pts": 1.89,
+            "reb": 3.64,
+            "ast": 2.43
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ricky Council IV",
+          "team": "PHI",
+          "min": 35.83,
+          "actual": {
+            "pts": 17,
+            "reb": 11,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 7.29,
+            "reb": 2.93,
+            "ast": 1.33
+          },
+          "error": {
+            "pts": 9.71,
+            "reb": 8.07,
+            "ast": 1.67
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Adem Bona",
+          "team": "PHI",
+          "min": 26.93,
+          "actual": {
+            "pts": 14,
+            "reb": 8,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.81,
+            "reb": 4.22,
+            "ast": 0.47
+          },
+          "error": {
+            "pts": 8.19,
+            "reb": 3.78,
+            "ast": -0.47
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Lonnie Walker IV",
+          "team": "PHI",
+          "min": 36.28,
+          "actual": {
+            "pts": 23,
+            "reb": 3,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 12.35,
+            "reb": 3.15,
+            "ast": 2.5
+          },
+          "error": {
+            "pts": 10.65,
+            "reb": -0.15,
+            "ast": 4.5
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jared Butler",
+          "team": "PHI",
+          "min": 26.97,
+          "actual": {
+            "pts": 15,
+            "reb": 1,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 9.02,
+            "reb": 1.83,
+            "ast": 3.67
+          },
+          "error": {
+            "pts": 5.98,
+            "reb": -0.83,
+            "ast": 2.33
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jalen Hood-Schifino",
+          "team": "PHI",
+          "min": 26.77,
+          "actual": {
+            "pts": 18,
+            "reb": 2,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 7.07,
+            "reb": 1.8,
+            "ast": 2.47
+          },
+          "error": {
+            "pts": 10.93,
+            "reb": 0.2,
+            "ast": 2.53
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Marcus Bagley",
+          "team": "PHI",
+          "min": 25.85,
+          "actual": {
+            "pts": 4,
+            "reb": 7,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.7,
+            "reb": 7.0,
+            "ast": 1.0
+          },
+          "error": {
+            "pts": -2.7,
+            "reb": 0.0,
+            "ast": -1.0
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Alex Reese",
+          "team": "PHI",
+          "min": 21.07,
+          "actual": {
+            "pts": 2,
+            "reb": 6,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.07,
+            "reb": 3.13,
+            "ast": 0.27
+          },
+          "error": {
+            "pts": -3.07,
+            "reb": 2.87,
+            "ast": -0.27
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Phillip Wheeler",
+          "team": "PHI",
+          "min": 12.77,
+          "actual": {
+            "pts": 4,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 1.6,
+            "reb": 1.6,
+            "ast": 0.4
+          },
+          "error": {
+            "pts": 2.4,
+            "reb": -0.6,
+            "ast": -0.4
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "RJ Barrett",
+          "team": "TOR",
+          "min": 28.52,
+          "actual": {
+            "pts": 31,
+            "reb": 5,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 21.09,
+            "reb": 6.31,
+            "ast": 5.41
+          },
+          "error": {
+            "pts": 9.91,
+            "reb": -1.31,
+            "ast": -0.41
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Scottie Barnes",
+          "team": "TOR",
+          "min": 27.55,
+          "actual": {
+            "pts": 9,
+            "reb": 5,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 19.26,
+            "reb": 7.72,
+            "ast": 5.82
+          },
+          "error": {
+            "pts": -10.26,
+            "reb": -2.72,
+            "ast": -1.82
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Orlando Robinson",
+          "team": "TOR",
+          "min": 22.88,
+          "actual": {
+            "pts": 13,
+            "reb": 4,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 6.89,
+            "reb": 5.0,
+            "ast": 1.75
+          },
+          "error": {
+            "pts": 6.11,
+            "reb": -1.0,
+            "ast": 2.25
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ja'Kobe Walter",
+          "team": "TOR",
+          "min": 34.17,
+          "actual": {
+            "pts": 17,
+            "reb": 8,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 8.63,
+            "reb": 3.08,
+            "ast": 1.56
+          },
+          "error": {
+            "pts": 8.37,
+            "reb": 4.92,
+            "ast": 2.44
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jamal Shead",
+          "team": "TOR",
+          "min": 27.97,
+          "actual": {
+            "pts": 11,
+            "reb": 2,
+            "ast": 9
+          },
+          "predicted": {
+            "pts": 7.11,
+            "reb": 1.53,
+            "ast": 4.21
+          },
+          "error": {
+            "pts": 3.89,
+            "reb": 0.47,
+            "ast": 4.79
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jonathan Mogbo",
+          "team": "TOR",
+          "min": 25.12,
+          "actual": {
+            "pts": 13,
+            "reb": 5,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 6.17,
+            "reb": 4.94,
+            "ast": 2.32
+          },
+          "error": {
+            "pts": 6.83,
+            "reb": 0.06,
+            "ast": 0.68
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Ochai Agbaji",
+          "team": "TOR",
+          "min": 25.07,
+          "actual": {
+            "pts": 9,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 10.42,
+            "reb": 3.78,
+            "ast": 1.53
+          },
+          "error": {
+            "pts": -1.42,
+            "reb": -0.78,
+            "ast": 0.47
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Cole Swider",
+          "team": "TOR",
+          "min": 18.4,
+          "actual": {
+            "pts": 8,
+            "reb": 4,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.9,
+            "reb": 2.7,
+            "ast": 0.3
+          },
+          "error": {
+            "pts": 2.1,
+            "reb": 1.3,
+            "ast": -0.3
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jamison Battle",
+          "team": "TOR",
+          "min": 25.38,
+          "actual": {
+            "pts": 16,
+            "reb": 7,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 7.1,
+            "reb": 2.68,
+            "ast": 0.9
+          },
+          "error": {
+            "pts": 8.9,
+            "reb": 4.32,
+            "ast": 0.1
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "A.J. Lawson",
+          "team": "TOR",
+          "min": 4.95,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 9.08,
+            "reb": 3.31,
+            "ast": 1.19
+          },
+          "error": {
+            "pts": -9.08,
+            "reb": -0.31,
+            "ast": -1.19
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 19,
+        "n_matched": 19,
+        "mae": {
+          "pts": 6.442,
+          "reb": 1.965,
+          "ast": 1.582
+        },
+        "rmse": {
+          "pts": 7.243,
+          "reb": 2.88,
+          "ast": 2.076
+        },
+        "over_rate": {
+          "pts": 0.737,
+          "reb": 0.368,
+          "ast": 0.474
+        }
+      }
+    },
+    {
+      "game_id": "0022401106",
+      "season": "2024-25",
+      "matchup": "BOS vs MIA",
+      "score": "103-124",
+      "players": [
+        {
+          "player_name": "Sam Hauser",
+          "team": "BOS",
+          "min": 25.63,
+          "actual": {
+            "pts": 6,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 8.52,
+            "reb": 3.15,
+            "ast": 0.9
+          },
+          "error": {
+            "pts": -2.52,
+            "reb": -0.15,
+            "ast": -0.9
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jayson Tatum",
+          "team": "BOS",
+          "min": 31.88,
+          "actual": {
+            "pts": 16,
+            "reb": 3,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 26.83,
+            "reb": 8.65,
+            "ast": 5.99
+          },
+          "error": {
+            "pts": -10.83,
+            "reb": -5.65,
+            "ast": 1.01
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Luke Kornet",
+          "team": "BOS",
+          "min": 21.48,
+          "actual": {
+            "pts": 14,
+            "reb": 6,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 6.04,
+            "reb": 5.32,
+            "ast": 1.6
+          },
+          "error": {
+            "pts": 7.96,
+            "reb": 0.68,
+            "ast": 0.4
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaylen Brown",
+          "team": "BOS",
+          "min": 28.78,
+          "actual": {
+            "pts": 24,
+            "reb": 9,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 22.19,
+            "reb": 5.84,
+            "ast": 4.54
+          },
+          "error": {
+            "pts": 1.81,
+            "reb": 3.16,
+            "ast": -0.54
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Derrick White",
+          "team": "BOS",
+          "min": 31.12,
+          "actual": {
+            "pts": 16,
+            "reb": 4,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 16.42,
+            "reb": 4.49,
+            "ast": 4.75
+          },
+          "error": {
+            "pts": -0.42,
+            "reb": -0.49,
+            "ast": 1.25
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Payton Pritchard",
+          "team": "BOS",
+          "min": 31.28,
+          "actual": {
+            "pts": 10,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 14.3,
+            "reb": 3.84,
+            "ast": 3.49
+          },
+          "error": {
+            "pts": -4.3,
+            "reb": 0.16,
+            "ast": -1.49
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Torrey Craig",
+          "team": "BOS",
+          "min": 19.08,
+          "actual": {
+            "pts": 2,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.15,
+            "reb": 2.81,
+            "ast": 0.65
+          },
+          "error": {
+            "pts": -2.15,
+            "reb": 0.19,
+            "ast": -0.65
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Baylor Scheierman",
+          "team": "BOS",
+          "min": 16.88,
+          "actual": {
+            "pts": 3,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 3.65,
+            "reb": 2.1,
+            "ast": 1.06
+          },
+          "error": {
+            "pts": -0.65,
+            "reb": 0.9,
+            "ast": -1.06
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Neemias Queta",
+          "team": "BOS",
+          "min": 18.75,
+          "actual": {
+            "pts": 7,
+            "reb": 7,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 5.0,
+            "reb": 3.81,
+            "ast": 0.73
+          },
+          "error": {
+            "pts": 2.0,
+            "reb": 3.19,
+            "ast": 1.27
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Drew Peterson",
+          "team": "BOS",
+          "min": 5.03,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.16,
+            "reb": 1.6,
+            "ast": 0.52
+          },
+          "error": {
+            "pts": 0.84,
+            "reb": -1.6,
+            "ast": -0.52
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "JD Davison",
+          "team": "BOS",
+          "min": 5.03,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 2.06,
+            "reb": 0.81,
+            "ast": 0.81
+          },
+          "error": {
+            "pts": -0.06,
+            "reb": 0.19,
+            "ast": 0.19
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jordan Walsh",
+          "team": "BOS",
+          "min": 5.03,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 1.58,
+            "reb": 1.33,
+            "ast": 0.37
+          },
+          "error": {
+            "pts": -1.58,
+            "reb": -1.33,
+            "ast": -0.37
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Pelle Larsson",
+          "team": "MIA",
+          "min": 30.23,
+          "actual": {
+            "pts": 16,
+            "reb": 4,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 4.56,
+            "reb": 1.67,
+            "ast": 1.18
+          },
+          "error": {
+            "pts": 11.44,
+            "reb": 2.33,
+            "ast": 2.82
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bam Adebayo",
+          "team": "MIA",
+          "min": 30.68,
+          "actual": {
+            "pts": 21,
+            "reb": 5,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 18.08,
+            "reb": 9.6,
+            "ast": 4.32
+          },
+          "error": {
+            "pts": 2.92,
+            "reb": -4.6,
+            "ast": 1.68
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kel'el Ware",
+          "team": "MIA",
+          "min": 31.98,
+          "actual": {
+            "pts": 7,
+            "reb": 5,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 9.3,
+            "reb": 7.39,
+            "ast": 0.94
+          },
+          "error": {
+            "pts": -2.3,
+            "reb": -2.39,
+            "ast": -0.94
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Alec Burks",
+          "team": "MIA",
+          "min": 19.2,
+          "actual": {
+            "pts": 10,
+            "reb": 2,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 7.27,
+            "reb": 2.53,
+            "ast": 1.12
+          },
+          "error": {
+            "pts": 2.73,
+            "reb": -0.53,
+            "ast": -1.12
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tyler Herro",
+          "team": "MIA",
+          "min": 38.02,
+          "actual": {
+            "pts": 25,
+            "reb": 6,
+            "ast": 9
+          },
+          "predicted": {
+            "pts": 23.9,
+            "reb": 5.18,
+            "ast": 5.51
+          },
+          "error": {
+            "pts": 1.1,
+            "reb": 0.82,
+            "ast": 3.49
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Haywood Highsmith",
+          "team": "MIA",
+          "min": 25.83,
+          "actual": {
+            "pts": 10,
+            "reb": 4,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.46,
+            "reb": 3.41,
+            "ast": 1.51
+          },
+          "error": {
+            "pts": 3.54,
+            "reb": 0.59,
+            "ast": -1.51
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Davion Mitchell",
+          "team": "MIA",
+          "min": 33.6,
+          "actual": {
+            "pts": 13,
+            "reb": 4,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 7.95,
+            "reb": 2.26,
+            "ast": 4.91
+          },
+          "error": {
+            "pts": 5.05,
+            "reb": 1.74,
+            "ast": 2.09
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kyle Anderson",
+          "team": "MIA",
+          "min": 23.78,
+          "actual": {
+            "pts": 19,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 5.85,
+            "reb": 3.38,
+            "ast": 2.38
+          },
+          "error": {
+            "pts": 13.15,
+            "reb": -2.38,
+            "ast": -1.38
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Isaiah Stevens",
+          "team": "MIA",
+          "min": 1.67,
+          "actual": {
+            "pts": 0,
+            "reb": 2,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 0.0,
+            "reb": 0.67,
+            "ast": 0.0
+          },
+          "error": {
+            "pts": 0.0,
+            "reb": 1.33,
+            "ast": 0.0
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Josh Christopher",
+          "team": "MIA",
+          "min": 1.67,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.0,
+            "reb": 0.64,
+            "ast": 0.57
+          },
+          "error": {
+            "pts": 1.0,
+            "reb": -0.64,
+            "ast": -0.57
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaime Jaquez Jr.",
+          "team": "MIA",
+          "min": 1.67,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.64,
+            "reb": 4.39,
+            "ast": 2.52
+          },
+          "error": {
+            "pts": -8.64,
+            "reb": -3.39,
+            "ast": -1.52
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Keshad Johnson",
+          "team": "MIA",
+          "min": 1.67,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.69,
+            "reb": 1.75,
+            "ast": 0.25
+          },
+          "error": {
+            "pts": -2.69,
+            "reb": -1.75,
+            "ast": -0.25
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 24,
+        "n_matched": 24,
+        "mae": {
+          "pts": 3.737,
+          "reb": 1.674,
+          "ast": 1.126
+        },
+        "rmse": {
+          "pts": 5.277,
+          "reb": 2.209,
+          "ast": 1.385
+        },
+        "over_rate": {
+          "pts": 0.5,
+          "reb": 0.375,
+          "ast": 0.292
+        }
+      }
+    },
+    {
+      "game_id": "0022401117",
+      "season": "2024-25",
+      "matchup": "LAL vs GSW",
+      "score": "116-123",
+      "players": [
+        {
+          "player_name": "Rui Hachimura",
+          "team": "LAL",
+          "min": 33.72,
+          "actual": {
+            "pts": 24,
+            "reb": 6,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 13.14,
+            "reb": 5.0,
+            "ast": 1.41
+          },
+          "error": {
+            "pts": 10.86,
+            "reb": 1.0,
+            "ast": 1.59
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "LeBron James",
+          "team": "LAL",
+          "min": 39.85,
+          "actual": {
+            "pts": 33,
+            "reb": 5,
+            "ast": 9
+          },
+          "predicted": {
+            "pts": 24.43,
+            "reb": 7.8,
+            "ast": 8.21
+          },
+          "error": {
+            "pts": 8.57,
+            "reb": -2.8,
+            "ast": 0.79
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaxson Hayes",
+          "team": "LAL",
+          "min": 14.83,
+          "actual": {
+            "pts": 2,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.84,
+            "reb": 4.8,
+            "ast": 1.04
+          },
+          "error": {
+            "pts": -4.84,
+            "reb": -1.8,
+            "ast": -1.04
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Austin Reaves",
+          "team": "LAL",
+          "min": 40.05,
+          "actual": {
+            "pts": 31,
+            "reb": 6,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 20.21,
+            "reb": 4.51,
+            "ast": 5.77
+          },
+          "error": {
+            "pts": 10.79,
+            "reb": 1.49,
+            "ast": -2.77
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Luka Don\u010di\u0107",
+          "team": "LAL",
+          "min": 37.83,
+          "actual": {
+            "pts": 19,
+            "reb": 8,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 28.16,
+            "reb": 8.18,
+            "ast": 7.66
+          },
+          "error": {
+            "pts": -9.16,
+            "reb": -0.18,
+            "ast": -0.66
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Dorian Finney-Smith",
+          "team": "LAL",
+          "min": 29.38,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.71,
+            "reb": 3.92,
+            "ast": 1.43
+          },
+          "error": {
+            "pts": -6.71,
+            "reb": -2.92,
+            "ast": -0.43
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jarred Vanderbilt",
+          "team": "LAL",
+          "min": 12.65,
+          "actual": {
+            "pts": 2,
+            "reb": 7,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.08,
+            "reb": 5.06,
+            "ast": 1.14
+          },
+          "error": {
+            "pts": -2.08,
+            "reb": 1.94,
+            "ast": -1.14
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Gabe Vincent",
+          "team": "LAL",
+          "min": 17.42,
+          "actual": {
+            "pts": 3,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.39,
+            "reb": 1.28,
+            "ast": 1.36
+          },
+          "error": {
+            "pts": -3.39,
+            "reb": -1.28,
+            "ast": -1.36
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jordan Goodwin",
+          "team": "LAL",
+          "min": 14.27,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.55,
+            "reb": 3.86,
+            "ast": 1.45
+          },
+          "error": {
+            "pts": -5.55,
+            "reb": -0.86,
+            "ast": -1.45
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Moses Moody",
+          "team": "GSW",
+          "min": 28.78,
+          "actual": {
+            "pts": 13,
+            "reb": 2,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 9.78,
+            "reb": 2.55,
+            "ast": 1.3
+          },
+          "error": {
+            "pts": 3.22,
+            "reb": -0.55,
+            "ast": 1.7
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jimmy Butler III",
+          "team": "GSW",
+          "min": 36.0,
+          "actual": {
+            "pts": 11,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 17.53,
+            "reb": 5.38,
+            "ast": 5.42
+          },
+          "error": {
+            "pts": -6.53,
+            "reb": -1.38,
+            "ast": -3.42
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Draymond Green",
+          "team": "GSW",
+          "min": 33.98,
+          "actual": {
+            "pts": 8,
+            "reb": 11,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 9.01,
+            "reb": 6.09,
+            "ast": 5.63
+          },
+          "error": {
+            "pts": -1.01,
+            "reb": 4.91,
+            "ast": -0.63
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Brandin Podziemski",
+          "team": "GSW",
+          "min": 35.57,
+          "actual": {
+            "pts": 28,
+            "reb": 8,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 11.67,
+            "reb": 5.08,
+            "ast": 3.44
+          },
+          "error": {
+            "pts": 16.33,
+            "reb": 2.92,
+            "ast": 2.56
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Stephen Curry",
+          "team": "GSW",
+          "min": 34.27,
+          "actual": {
+            "pts": 37,
+            "reb": 3,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 24.54,
+            "reb": 4.43,
+            "ast": 6.01
+          },
+          "error": {
+            "pts": 12.46,
+            "reb": -1.43,
+            "ast": -0.01
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jonathan Kuminga",
+          "team": "GSW",
+          "min": 25.17,
+          "actual": {
+            "pts": 18,
+            "reb": 9,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 15.3,
+            "reb": 4.62,
+            "ast": 2.21
+          },
+          "error": {
+            "pts": 2.7,
+            "reb": 4.38,
+            "ast": 1.79
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Gui Santos",
+          "team": "GSW",
+          "min": 10.6,
+          "actual": {
+            "pts": 2,
+            "reb": 2,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 4.05,
+            "reb": 3.07,
+            "ast": 1.43
+          },
+          "error": {
+            "pts": -2.05,
+            "reb": -1.07,
+            "ast": 1.57
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Buddy Hield",
+          "team": "GSW",
+          "min": 12.6,
+          "actual": {
+            "pts": 0,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 11.12,
+            "reb": 3.22,
+            "ast": 1.63
+          },
+          "error": {
+            "pts": -11.12,
+            "reb": -0.22,
+            "ast": -1.63
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Quinten Post",
+          "team": "GSW",
+          "min": 14.73,
+          "actual": {
+            "pts": 4,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.1,
+            "reb": 3.52,
+            "ast": 1.33
+          },
+          "error": {
+            "pts": -4.1,
+            "reb": -0.52,
+            "ast": -0.33
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kevon Looney",
+          "team": "GSW",
+          "min": 8.3,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.53,
+            "reb": 6.08,
+            "ast": 1.55
+          },
+          "error": {
+            "pts": -2.53,
+            "reb": -5.08,
+            "ast": -1.55
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 19,
+        "n_matched": 19,
+        "mae": {
+          "pts": 6.526,
+          "reb": 1.933,
+          "ast": 1.391
+        },
+        "rmse": {
+          "pts": 7.75,
+          "reb": 2.432,
+          "ast": 1.625
+        },
+        "over_rate": {
+          "pts": 0.368,
+          "reb": 0.316,
+          "ast": 0.316
+        }
+      }
+    },
+    {
+      "game_id": "0042300105",
+      "season": "2024-25",
+      "matchup": "BOS vs MIA",
+      "score": "118-84",
+      "players": [
+        {
+          "player_name": "Jaylen Brown",
+          "team": "BOS",
+          "min": 26.43,
+          "actual": {
+            "pts": 25,
+            "reb": 6,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 22.19,
+            "reb": 5.84,
+            "ast": 4.54
+          },
+          "error": {
+            "pts": 2.81,
+            "reb": 0.16,
+            "ast": -2.54
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jayson Tatum",
+          "team": "BOS",
+          "min": 32.1,
+          "actual": {
+            "pts": 16,
+            "reb": 12,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 26.83,
+            "reb": 8.65,
+            "ast": 5.99
+          },
+          "error": {
+            "pts": -10.83,
+            "reb": 3.35,
+            "ast": -2.99
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Al Horford",
+          "team": "BOS",
+          "min": 22.68,
+          "actual": {
+            "pts": 8,
+            "reb": 6,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 8.97,
+            "reb": 6.15,
+            "ast": 2.13
+          },
+          "error": {
+            "pts": -0.97,
+            "reb": -0.15,
+            "ast": 0.87
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Derrick White",
+          "team": "BOS",
+          "min": 28.98,
+          "actual": {
+            "pts": 25,
+            "reb": 5,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 16.42,
+            "reb": 4.49,
+            "ast": 4.75
+          },
+          "error": {
+            "pts": 8.58,
+            "reb": 0.51,
+            "ast": -2.75
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jrue Holiday",
+          "team": "BOS",
+          "min": 34.02,
+          "actual": {
+            "pts": 10,
+            "reb": 6,
+            "ast": 5
+          },
+          "predicted": {
+            "pts": 11.06,
+            "reb": 4.27,
+            "ast": 3.85
+          },
+          "error": {
+            "pts": -1.06,
+            "reb": 1.73,
+            "ast": 1.15
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Payton Pritchard",
+          "team": "BOS",
+          "min": 27.02,
+          "actual": {
+            "pts": 7,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 14.3,
+            "reb": 3.84,
+            "ast": 3.49
+          },
+          "error": {
+            "pts": -7.3,
+            "reb": -0.84,
+            "ast": -0.49
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Sam Hauser",
+          "team": "BOS",
+          "min": 20.38,
+          "actual": {
+            "pts": 17,
+            "reb": 5,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.52,
+            "reb": 3.15,
+            "ast": 0.9
+          },
+          "error": {
+            "pts": 8.48,
+            "reb": 1.85,
+            "ast": 0.1
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Luke Kornet",
+          "team": "BOS",
+          "min": 18.22,
+          "actual": {
+            "pts": 2,
+            "reb": 7,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 6.04,
+            "reb": 5.32,
+            "ast": 1.6
+          },
+          "error": {
+            "pts": -4.04,
+            "reb": 1.68,
+            "ast": 0.4
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Svi Mykhailiuk",
+          "team": "BOS",
+          "min": 9.68,
+          "actual": {
+            "pts": 0,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 8.79,
+            "reb": 2.37,
+            "ast": 2.0
+          },
+          "error": {
+            "pts": -8.79,
+            "reb": -1.37,
+            "ast": -1.0
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaden Springer",
+          "team": "BOS",
+          "min": 8.05,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 2.53,
+            "reb": 1.35,
+            "ast": 0.77
+          },
+          "error": {
+            "pts": -0.53,
+            "reb": -0.35,
+            "ast": -0.77
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Xavier Tillman",
+          "team": "BOS",
+          "min": 7.1,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 1.03,
+            "reb": 1.3,
+            "ast": 0.21
+          },
+          "error": {
+            "pts": 0.97,
+            "reb": -0.3,
+            "ast": 0.79
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Oshae Brissett",
+          "team": "BOS",
+          "min": 5.33,
+          "actual": {
+            "pts": 4,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 8.67,
+            "reb": 3.67,
+            "ast": 0.67
+          },
+          "error": {
+            "pts": -4.67,
+            "reb": -0.67,
+            "ast": -0.67
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Caleb Martin",
+          "team": "MIA",
+          "min": 36.27,
+          "actual": {
+            "pts": 10,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 7.91,
+            "reb": 3.93,
+            "ast": 2.11
+          },
+          "error": {
+            "pts": 2.09,
+            "reb": 0.07,
+            "ast": -1.11
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nikola Jovic",
+          "team": "MIA",
+          "min": 27.67,
+          "actual": {
+            "pts": 8,
+            "reb": 7,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 10.74,
+            "reb": 3.91,
+            "ast": 2.85
+          },
+          "error": {
+            "pts": -2.74,
+            "reb": 3.09,
+            "ast": 1.15
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Bam Adebayo",
+          "team": "MIA",
+          "min": 36.0,
+          "actual": {
+            "pts": 23,
+            "reb": 5,
+            "ast": 6
+          },
+          "predicted": {
+            "pts": 18.08,
+            "reb": 9.6,
+            "ast": 4.32
+          },
+          "error": {
+            "pts": 4.92,
+            "reb": -4.6,
+            "ast": 1.68
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Delon Wright",
+          "team": "MIA",
+          "min": 32.48,
+          "actual": {
+            "pts": 8,
+            "reb": 3,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 3.12,
+            "reb": 1.65,
+            "ast": 1.93
+          },
+          "error": {
+            "pts": 4.88,
+            "reb": 1.35,
+            "ast": 0.07
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Tyler Herro",
+          "team": "MIA",
+          "min": 35.02,
+          "actual": {
+            "pts": 15,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 23.9,
+            "reb": 5.18,
+            "ast": 5.51
+          },
+          "error": {
+            "pts": -8.9,
+            "reb": -2.18,
+            "ast": -2.51
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Haywood Highsmith",
+          "team": "MIA",
+          "min": 23.02,
+          "actual": {
+            "pts": 4,
+            "reb": 3,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 6.46,
+            "reb": 3.41,
+            "ast": 1.51
+          },
+          "error": {
+            "pts": -2.46,
+            "reb": -0.41,
+            "ast": -1.51
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Patty Mills",
+          "team": "MIA",
+          "min": 17.48,
+          "actual": {
+            "pts": 2,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 3.83,
+            "reb": 0.76,
+            "ast": 0.9
+          },
+          "error": {
+            "pts": -1.83,
+            "reb": -0.76,
+            "ast": 0.1
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Duncan Robinson",
+          "team": "MIA",
+          "min": 17.47,
+          "actual": {
+            "pts": 2,
+            "reb": 1,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 11.04,
+            "reb": 2.26,
+            "ast": 2.38
+          },
+          "error": {
+            "pts": -9.04,
+            "reb": -1.26,
+            "ast": -0.38
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kevin Love",
+          "team": "MIA",
+          "min": 2.6,
+          "actual": {
+            "pts": 2,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 5.3,
+            "reb": 4.09,
+            "ast": 0.96
+          },
+          "error": {
+            "pts": -3.3,
+            "reb": -4.09,
+            "ast": -0.96
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Thomas Bryant",
+          "team": "MIA",
+          "min": 12.0,
+          "actual": {
+            "pts": 10,
+            "reb": 3,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 6.5,
+            "reb": 3.8,
+            "ast": 0.8
+          },
+          "error": {
+            "pts": 3.5,
+            "reb": -0.8,
+            "ast": 0.2
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 22,
+        "n_matched": 22,
+        "mae": {
+          "pts": 4.668,
+          "reb": 1.435,
+          "ast": 1.1
+        },
+        "rmse": {
+          "pts": 5.625,
+          "reb": 1.919,
+          "ast": 1.401
+        },
+        "over_rate": {
+          "pts": 0.364,
+          "reb": 0.318,
+          "ast": 0.227
+        }
+      }
+    },
+    {
+      "game_id": "0042300237",
+      "season": "2024-25",
+      "matchup": "DEN vs MIN",
+      "score": "90-98",
+      "players": [
+        {
+          "player_name": "Michael Porter Jr.",
+          "team": "DEN",
+          "min": 34.46,
+          "actual": {
+            "pts": 7,
+            "reb": 9,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 18.16,
+            "reb": 7.01,
+            "ast": 2.14
+          },
+          "error": {
+            "pts": -11.16,
+            "reb": 1.99,
+            "ast": -2.14
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Aaron Gordon",
+          "team": "DEN",
+          "min": 42.37,
+          "actual": {
+            "pts": 4,
+            "reb": 4,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 14.67,
+            "reb": 4.84,
+            "ast": 3.22
+          },
+          "error": {
+            "pts": -10.67,
+            "reb": -0.84,
+            "ast": -1.22
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nikola Jokic",
+          "team": "DEN",
+          "min": 46.6,
+          "actual": {
+            "pts": 34,
+            "reb": 19,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 29.59,
+            "reb": 12.74,
+            "ast": 10.23
+          },
+          "error": {
+            "pts": 4.41,
+            "reb": 6.26,
+            "ast": -3.23
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kentavious Caldwell-Pope",
+          "team": "DEN",
+          "min": 39.58,
+          "actual": {
+            "pts": 5,
+            "reb": 6,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 8.74,
+            "reb": 2.19,
+            "ast": 1.77
+          },
+          "error": {
+            "pts": -3.74,
+            "reb": 3.81,
+            "ast": 1.23
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jamal Murray",
+          "team": "DEN",
+          "min": 42.57,
+          "actual": {
+            "pts": 35,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 21.43,
+            "reb": 3.9,
+            "ast": 6.01
+          },
+          "error": {
+            "pts": 13.57,
+            "reb": -0.9,
+            "ast": -3.01
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Justin Holiday",
+          "team": "DEN",
+          "min": 9.22,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "error": {
+            "pts": 0.0,
+            "reb": 0.0,
+            "ast": 0.0
+          },
+          "over_under": {
+            "pts": "push",
+            "reb": "push",
+            "ast": "push"
+          },
+          "matched": false
+        },
+        {
+          "player_name": "Christian Braun",
+          "team": "DEN",
+          "min": 19.77,
+          "actual": {
+            "pts": 5,
+            "reb": 3,
+            "ast": 3
+          },
+          "predicted": {
+            "pts": 15.42,
+            "reb": 5.19,
+            "ast": 2.59
+          },
+          "error": {
+            "pts": -10.42,
+            "reb": -2.19,
+            "ast": 0.41
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Reggie Jackson",
+          "team": "DEN",
+          "min": 5.43,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 0
+          },
+          "predicted": {
+            "pts": 4.39,
+            "reb": 1.35,
+            "ast": 1.45
+          },
+          "error": {
+            "pts": -4.39,
+            "reb": -1.35,
+            "ast": -1.45
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Jaden McDaniels",
+          "team": "MIN",
+          "min": 39.7,
+          "actual": {
+            "pts": 23,
+            "reb": 6,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 12.2,
+            "reb": 5.73,
+            "ast": 1.99
+          },
+          "error": {
+            "pts": 10.8,
+            "reb": 0.27,
+            "ast": -0.99
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "push",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Karl-Anthony Towns",
+          "team": "MIN",
+          "min": 39.13,
+          "actual": {
+            "pts": 23,
+            "reb": 12,
+            "ast": 2
+          },
+          "predicted": {
+            "pts": 24.43,
+            "reb": 12.78,
+            "ast": 3.08
+          },
+          "error": {
+            "pts": -1.43,
+            "reb": -0.78,
+            "ast": -1.08
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Rudy Gobert",
+          "team": "MIN",
+          "min": 35.62,
+          "actual": {
+            "pts": 13,
+            "reb": 9,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 12.03,
+            "reb": 10.9,
+            "ast": 1.76
+          },
+          "error": {
+            "pts": 0.97,
+            "reb": -1.9,
+            "ast": -0.76
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Anthony Edwards",
+          "team": "MIN",
+          "min": 43.78,
+          "actual": {
+            "pts": 16,
+            "reb": 8,
+            "ast": 7
+          },
+          "predicted": {
+            "pts": 27.56,
+            "reb": 5.7,
+            "ast": 4.54
+          },
+          "error": {
+            "pts": -11.56,
+            "reb": 2.3,
+            "ast": 2.46
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "over",
+            "ast": "over"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Mike Conley",
+          "team": "MIN",
+          "min": 38.5,
+          "actual": {
+            "pts": 10,
+            "reb": 8,
+            "ast": 4
+          },
+          "predicted": {
+            "pts": 8.2,
+            "reb": 2.56,
+            "ast": 4.49
+          },
+          "error": {
+            "pts": 1.8,
+            "reb": 5.44,
+            "ast": -0.49
+          },
+          "over_under": {
+            "pts": "over",
+            "reb": "over",
+            "ast": "push"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Nickeil Alexander-Walker",
+          "team": "MIN",
+          "min": 17.25,
+          "actual": {
+            "pts": 0,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 9.43,
+            "reb": 3.23,
+            "ast": 2.72
+          },
+          "error": {
+            "pts": -9.43,
+            "reb": -3.23,
+            "ast": -1.72
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Naz Reid",
+          "team": "MIN",
+          "min": 21.92,
+          "actual": {
+            "pts": 11,
+            "reb": 4,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 14.22,
+            "reb": 6.0,
+            "ast": 2.26
+          },
+          "error": {
+            "pts": -3.22,
+            "reb": -2.0,
+            "ast": -1.26
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        },
+        {
+          "player_name": "Kyle Anderson",
+          "team": "MIN",
+          "min": 4.1,
+          "actual": {
+            "pts": 2,
+            "reb": 0,
+            "ast": 1
+          },
+          "predicted": {
+            "pts": 5.85,
+            "reb": 3.38,
+            "ast": 2.38
+          },
+          "error": {
+            "pts": -3.85,
+            "reb": -3.38,
+            "ast": -1.38
+          },
+          "over_under": {
+            "pts": "under",
+            "reb": "under",
+            "ast": "under"
+          },
+          "matched": true
+        }
+      ],
+      "summary": {
+        "n_total": 16,
+        "n_matched": 15,
+        "mae": {
+          "pts": 6.761,
+          "reb": 2.443,
+          "ast": 1.522
+        },
+        "rmse": {
+          "pts": 7.977,
+          "reb": 2.953,
+          "ast": 1.728
+        },
+        "over_rate": {
+          "pts": 0.333,
+          "reb": 0.333,
+          "ast": 0.133
+        }
+      }
+    }
+  ]
+}

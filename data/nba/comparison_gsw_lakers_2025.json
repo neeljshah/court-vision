@@ -1,0 +1,14 @@
+{
+  "clip_label": "gsw_lakers_2025",
+  "game_id": "0022401117",
+  "team1": "GSW",
+  "team2": "LAL",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 168,
+  "total_players": 19,
+  "shots_per_minute": 3.5,
+  "home_score": 116,
+  "away_score": 123,
+  "data_source": "nba_api"
+}

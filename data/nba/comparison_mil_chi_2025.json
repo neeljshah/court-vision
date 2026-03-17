@@ -1,0 +1,14 @@
+{
+  "clip_label": "mil_chi_2025",
+  "game_id": "0022400430",
+  "team1": "MIL",
+  "team2": "CHI",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 197,
+  "total_players": 21,
+  "shots_per_minute": 4.1,
+  "home_score": 111,
+  "away_score": 116,
+  "data_source": "nba_api"
+}

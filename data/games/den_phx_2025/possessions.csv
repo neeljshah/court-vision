@@ -1,0 +1,3 @@
+possession_id,team,start_frame,end_frame,duration_frames,duration_sec,avg_spacing,avg_defensive_pressure,avg_vel_toward_basket,drive_attempts,shot_attempted,shot_frame,fast_break,result,outcome_score
+3,green,2,478,477,7.96,586207.3,,-5.89,21,0,,1,,
+6,green,481,608,128,2.14,1315934.3,,,0,0,,0,,

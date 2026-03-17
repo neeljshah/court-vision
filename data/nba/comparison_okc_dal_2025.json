@@ -1,0 +1,14 @@
+{
+  "clip_label": "okc_dal_2025",
+  "game_id": "0022400625",
+  "team1": "OKC",
+  "team2": "DAL",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 162,
+  "total_players": 20,
+  "shots_per_minute": 3.38,
+  "home_score": 115,
+  "away_score": 121,
+  "data_source": "nba_api"
+}

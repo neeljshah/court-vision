@@ -1,0 +1,14 @@
+{
+  "clip_label": "mem_nop_2025",
+  "game_id": "0022400923",
+  "team1": "MEM",
+  "team2": "NOP",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 184,
+  "total_players": 21,
+  "shots_per_minute": 3.83,
+  "home_score": 104,
+  "away_score": 107,
+  "data_source": "nba_api"
+}
