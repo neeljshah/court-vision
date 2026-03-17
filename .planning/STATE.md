@@ -4,8 +4,8 @@
 
 **Active Phase**: Phase 3 — NBA API Data Maximization (in progress) + Phase 2.5 active
 **Last Updated**: 2026-03-17
-**Test suite**: 520 passing, 2 skipped
-**Last Completed Plan**: 025-01 — Broadcast Detection Mode (2026-03-17)
+**Test suite**: 646 passing, 2 skipped
+**Last Completed Plan**: 025-03 — Tests: Broadcast Detection + Jersey OCR (2026-03-17)
 
 ---
 
@@ -29,6 +29,7 @@
 
 ### Phase 2.5 — CV Tracker Quality Upgrades 🟡 (in progress)
 - 025-01 ✅ Broadcast detection mode: `broadcast_mode=True` in config, conf_threshold=0.35 in AdvancedFeetDetector, `count_detections_on_frame()` diagnostic helper
+- 025-03 ✅ Test suite: 14 tests for broadcast detection + 3-pass jersey OCR, synthetic images, all green (646 total passing)
 
 ### Phase 3 — NBA API Data Maximization 🟡 (in progress)
 - All 569 players have advanced stats (usg%, TS%, off_rtg, def_rtg, etc.) ✅
