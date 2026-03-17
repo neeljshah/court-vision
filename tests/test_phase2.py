@@ -1147,3 +1147,137 @@ def test_match_team_white_slots_populated():
         f"unmatched_dets={unmatched_dets}. "
         "REQ-02A: white slots must exist in _match_team for white detections to be consumed."
     )
+
+
+# ── REQ-02B/C/D: EventDetector validation ── REQ-02E: clip duration ──────────
+
+def test_clip_duration_validator():
+    """REQ-02E: MIN_CLIP_SECONDS must be defined in run_clip and be a sensible integer >= 30."""
+    import run_clip
+    assert hasattr(run_clip, "MIN_CLIP_SECONDS"), (
+        "MIN_CLIP_SECONDS constant must exist in run_clip.py"
+    )
+    assert isinstance(run_clip.MIN_CLIP_SECONDS, int), (
+        "MIN_CLIP_SECONDS must be an int"
+    )
+    assert run_clip.MIN_CLIP_SECONDS >= 30, (
+        f"MIN_CLIP_SECONDS={run_clip.MIN_CLIP_SECONDS} — must be >= 30 seconds"
+    )
+
+
+def test_event_detector_shot():
+    """REQ-02B: EventDetector.update() returns 'shot' when ball leaves possessor at high velocity toward a basket.
+
+    Setup: player holds ball at (200, 140), releases it moving left toward
+    basket_left at (32, 140). After release the ball is at (100, 140) with
+    pixel_vel=15.0.  nearest basket to (100,140) is basket_left (dist=68).
+    dx_ball=100-200=-100, dx_basket=32-100=-68 — both negative → dot > 0 → shot.
+    """
+    from src.tracking.event_detector import EventDetector
+
+    detector = EventDetector(map_w=500, map_h=280)
+
+    # Frame 1: player 1 has ball at right-of-centre, facing left basket
+    detector.update(
+        1,
+        ball_pos=(200.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    # Frame 2: nobody has ball, ball moved left at high velocity toward basket_left (x=32)
+    result = detector.update(
+        2,
+        ball_pos=(100.0, 140.0),
+        frame_tracks=[],
+        pixel_vel=15.0,
+    )
+
+    assert result == "shot", (
+        f"Expected 'shot' when ball leaves possessor fast toward basket_left, got {result!r}"
+    )
+
+
+def test_event_detector_dribble():
+    """REQ-02C: EventDetector.update() returns 'dribble' when ball is near the handler at low velocity."""
+    from src.tracking.event_detector import EventDetector
+
+    detector = EventDetector(map_w=500, map_h=280)
+
+    # Frame 1: player 1 establishes possession
+    detector.update(
+        1,
+        ball_pos=(250.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 250.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    # Frame 2: player 1 still has ball, ball barely moved (dist < 70, vel < 14)
+    result = detector.update(
+        2,
+        ball_pos=(252.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 250.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    assert result == "dribble", (
+        f"Expected 'dribble' when ball stays near handler at low velocity, got {result!r}"
+    )
+
+
+def test_event_detector_pass():
+    """REQ-02D: EventDetector retroactively marks loss frame as 'pass' when receiver picks up ball."""
+    from src.tracking.event_detector import EventDetector
+
+    detector = EventDetector(map_w=500, map_h=280)
+
+    # Frame 1: player 1 has ball
+    detector.update(
+        1,
+        ball_pos=(200.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    # Frame 2: nobody has ball — player 1 released it. _loss_frame=2 is set.
+    detector.update(
+        2,
+        ball_pos=(210.0, 140.0),
+        frame_tracks=[],
+        pixel_vel=0.0,
+    )
+
+    # Frame 3: player 2 gains ball — pass confirmed retroactively at frame 2.
+    # After _classify sets _pending[2]="pass", return pops frame_idx=3 (not 2),
+    # so _pending[2] remains until consumed by a future call with frame_idx=2.
+    detector.update(
+        3,
+        ball_pos=(220.0, 140.0),
+        frame_tracks=[{"player_id": 2, "team": "green", "x2d": 220.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    assert 2 in detector._pending, (
+        "After player 2 picks up ball, frame 2 should be retroactively marked as 'pass' in _pending"
+    )
+    assert detector._pending[2] == "pass", (
+        f"Expected _pending[2]='pass', got {detector._pending.get(2)!r}"
+    )
+
+
+def test_event_detector_none_without_ball():
+    """EventDetector.update() returns 'none' and does not crash when ball_pos is None."""
+    from src.tracking.event_detector import EventDetector
+
+    detector = EventDetector(map_w=500, map_h=280)
+
+    result = detector.update(
+        0,
+        ball_pos=None,
+        frame_tracks=[],
+        pixel_vel=0.0,
+    )
+
+    assert result == "none", (
+        f"Expected 'none' when ball_pos is None and no tracks, got {result!r}"
+    )
