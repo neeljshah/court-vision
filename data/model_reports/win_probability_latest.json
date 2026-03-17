@@ -1,0 +1,87 @@
+{
+  "model_name": "win_probability",
+  "seasons": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ],
+  "saved_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\win_probability.pkl",
+  "backtest": {
+    "accuracy": 0.6259,
+    "brier": 0.2675,
+    "clv_proxy": 0.0807,
+    "home_baseline": 0.5451,
+    "by_fold": [
+      {
+        "fold": 1,
+        "n": 737,
+        "acc": 0.6282,
+        "brier": 0.2859,
+        "home_baseline": 0.5536
+      },
+      {
+        "fold": 2,
+        "n": 737,
+        "acc": 0.6065,
+        "brier": 0.284,
+        "home_baseline": 0.5468
+      },
+      {
+        "fold": 3,
+        "n": 737,
+        "acc": 0.6649,
+        "brier": 0.2402,
+        "home_baseline": 0.5414
+      },
+      {
+        "fold": 4,
+        "n": 737,
+        "acc": 0.6038,
+        "brier": 0.2598,
+        "home_baseline": 0.5387
+      }
+    ]
+  },
+  "feature_importance": [
+    [
+      "net_rtg_diff",
+      0.12476567178964615
+    ],
+    [
+      "home_net_rtg",
+      0.11170239746570587
+    ],
+    [
+      "away_net_rtg",
+      0.06552731245756149
+    ],
+    [
+      "home_season_win_pct",
+      0.05764823034405708
+    ],
+    [
+      "home_ts_pct",
+      0.054827701300382614
+    ],
+    [
+      "away_season_win_pct",
+      0.0525086484849453
+    ],
+    [
+      "away_off_rtg",
+      0.048840444535017014
+    ],
+    [
+      "away_efg_pct",
+      0.046830710023641586
+    ],
+    [
+      "home_def_rtg",
+      0.046710848808288574
+    ],
+    [
+      "away_ts_pct",
+      0.0466584786772728
+    ]
+  ]
+}

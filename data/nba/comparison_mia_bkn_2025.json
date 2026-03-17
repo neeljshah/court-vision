@@ -1,0 +1,14 @@
+{
+  "clip_label": "mia_bkn_2025",
+  "game_id": "0022400737",
+  "team1": "MIA",
+  "team2": "BKN",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 183,
+  "total_players": 19,
+  "shots_per_minute": 3.81,
+  "home_score": 86,
+  "away_score": 102,
+  "data_source": "nba_api"
+}

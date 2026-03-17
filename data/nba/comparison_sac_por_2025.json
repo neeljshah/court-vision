@@ -1,0 +1,14 @@
+{
+  "clip_label": "sac_por_2025",
+  "game_id": "0022401066",
+  "team1": "SAC",
+  "team2": "POR",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 162,
+  "total_players": 26,
+  "shots_per_minute": 3.38,
+  "home_score": 128,
+  "away_score": 107,
+  "data_source": "nba_api"
+}

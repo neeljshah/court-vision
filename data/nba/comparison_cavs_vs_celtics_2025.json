@@ -1,0 +1,14 @@
+{
+  "clip_label": "cavs_vs_celtics_2025",
+  "game_id": "0022400852",
+  "team1": "CLE",
+  "team2": "BOS",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 183,
+  "total_players": 19,
+  "shots_per_minute": 3.81,
+  "home_score": 123,
+  "away_score": 116,
+  "data_source": "nba_api"
+}

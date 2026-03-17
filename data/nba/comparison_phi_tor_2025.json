@@ -1,0 +1,14 @@
+{
+  "clip_label": "phi_tor_2025",
+  "game_id": "0022401087",
+  "team1": "PHI",
+  "team2": "TOR",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 192,
+  "total_players": 19,
+  "shots_per_minute": 4.0,
+  "home_score": 127,
+  "away_score": 109,
+  "data_source": "nba_api"
+}

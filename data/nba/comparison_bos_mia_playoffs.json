@@ -1,0 +1,14 @@
+{
+  "clip_label": "bos_mia_playoffs",
+  "game_id": "0042300105",
+  "team1": "BOS",
+  "team2": "MIA",
+  "season": "2023-24",
+  "season_type": "Playoffs",
+  "total_fga": 164,
+  "total_players": 22,
+  "shots_per_minute": 3.42,
+  "home_score": 84,
+  "away_score": 118,
+  "data_source": "nba_api"
+}

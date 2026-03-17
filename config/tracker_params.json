@@ -1,0 +1,10 @@
+{
+  "conf_threshold": 0.3,
+  "topcut": 60,
+  "appearance_w": 0.4,
+  "max_lost_frames": 90,
+  "min_gameplay_persons": 5,
+  "reid_threshold": 0.35,
+  "gallery_ttl": 300,
+  "kalman_fill_window": 7
+}

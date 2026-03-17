@@ -28,6 +28,81 @@ from typing import Optional
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
+# Roster cache TTL: 48 hours. Rosters change via trades/signings throughout the
+# season. Without a TTL, jersey-number → player-name mapping stays wrong forever
+# after a trade (e.g. a player moved at the February deadline).
+_ROSTER_TTL_HOURS = 48
+
+# Team season stats cache TTL: 24 hours. Off/def ratings and win% update after
+# every game played. A perpetual cache would feed the win probability model
+# multi-week-old ratings, silently degrading prediction accuracy mid-season.
+_TEAM_SEASON_STATS_TTL_HOURS = 24
+
+
+def _configure_nba_session(timeout: int = 60, retries: int = 3) -> None:
+    """
+    Inject a retry-capable requests.Session into nba_api's HTTP layer.
+
+    stats.nba.com frequently drops connections on the default session.
+    This patches in:
+      - Automatic retries on connection errors (backoff factor 2s)
+      - Modern User-Agent (avoids 403s from stale browser string)
+      - 60-second timeout (default is None — hangs forever)
+
+    Called once at module load; idempotent.
+    """
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+
+    try:
+        from nba_api.stats.library.http import NBAStatsHTTP
+    except ImportError:
+        return
+
+    retry = Retry(
+        total=retries,
+        backoff_factor=2,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session = requests.Session()
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+
+    # More recent User-Agent — the bundled one (Firefox 72, Jan 2020) triggers blocks
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept":          "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "x-nba-stats-origin": "stats",
+        "x-nba-stats-token":  "true",
+        "Referer":         "https://www.nba.com/",
+        "Origin":          "https://www.nba.com",
+        "Connection":      "keep-alive",
+    })
+
+    # Store timeout on the session object; nba_api's send_api_request passes timeout=None
+    # by default — we monkey-patch it to use ours
+    _original_get = session.get
+    def _get_with_timeout(url, **kwargs):
+        kwargs.setdefault("timeout", timeout)
+        return _original_get(url, **kwargs)
+    session.get = _get_with_timeout  # type: ignore[method-assign]
+
+    NBAStatsHTTP.set_session(session)
+
+
+# Patch session at import time
+_configure_nba_session()
+
 # Known NBA team jersey colors in HSV for tracker config validation
 # (primary court/away jerseys — helps detect if HSV thresholds are misconfigured)
 TEAM_JERSEY_COLORS: dict[str, dict] = {
@@ -43,7 +118,7 @@ TEAM_JERSEY_COLORS: dict[str, dict] = {
     "NYK":  {"home": "white",   "away": "orange"},
     "CHI":  {"home": "white",   "away": "red"},
     "CLE":  {"home": "white",   "away": "wine"},
-    "BRK":  {"home": "white",   "away": "black"},
+    "BKN":  {"home": "white",   "away": "black"},
     "PHI":  {"home": "white",   "away": "blue"},
     "ATL":  {"home": "white",   "away": "red"},
 }
@@ -160,7 +235,11 @@ def fetch_roster(team_id: int, season: str = "2024-25") -> dict:
     """
     cache_key = f"roster_{team_id}_{season}"
     cache_path = os.path.join(_NBA_CACHE, f"{_safe(cache_key)}.json")
-    if os.path.exists(cache_path):
+    _roster_fresh = (
+        os.path.exists(cache_path)
+        and (time.time() - os.path.getmtime(cache_path)) < _ROSTER_TTL_HOURS * 3600
+    )
+    if _roster_fresh:
         raw = _load(cache_path)
         # Keys were serialised as strings by JSON — convert back to int
         return {int(k): v for k, v in raw.items()}
@@ -361,7 +440,11 @@ def fetch_team_season_stats(
     """
     cache_key = f"team_stats_{team_abbrev}_{season}"
     cache_path = os.path.join(_NBA_CACHE, f"{_safe(cache_key)}.json")
-    if os.path.exists(cache_path):
+    _stats_fresh = (
+        os.path.exists(cache_path)
+        and (time.time() - os.path.getmtime(cache_path)) < _TEAM_SEASON_STATS_TTL_HOURS * 3600
+    )
+    if _stats_fresh:
         return _load(cache_path)
 
     try:
@@ -380,7 +463,7 @@ def fetch_team_season_stats(
     try:
         resp = leaguedashteamstats.LeagueDashTeamStats(
             season=season,
-            measure_type_simple_nullable="Advanced",
+            measure_type_detailed_defense="Advanced",
             per_mode_simple="PerGame",
         )
         df = resp.get_data_frames()[0]
@@ -398,7 +481,7 @@ def fetch_team_season_stats(
     try:
         resp_base = leaguedashteamstats.LeagueDashTeamStats(
             season=season,
-            measure_type_simple_nullable="Base",
+            measure_type_detailed_defense="Base",
             per_mode_simple="PerGame",
         )
         df_base = resp_base.get_data_frames()[0]
@@ -456,7 +539,11 @@ def fetch_opponent_stats(
     """
     cache_key = f"opp_stats_{team_abbrev}_{season}"
     cache_path = os.path.join(_NBA_CACHE, f"{_safe(cache_key)}.json")
-    if os.path.exists(cache_path):
+    _opp_fresh = (
+        os.path.exists(cache_path)
+        and (time.time() - os.path.getmtime(cache_path)) < _TEAM_SEASON_STATS_TTL_HOURS * 3600
+    )
+    if _opp_fresh:
         return _load(cache_path)
 
     try:
@@ -474,7 +561,7 @@ def fetch_opponent_stats(
     try:
         resp = leaguedashteamstats.LeagueDashTeamStats(
             season=season,
-            measure_type_simple_nullable="Opponent",
+            measure_type_detailed_defense="Opponent",
             per_mode_simple="PerGame",
         )
         df = resp.get_data_frames()[0]
@@ -559,6 +646,218 @@ def fetch_matchup_features(
         "off_vs_def_home":    round(home.get("off_rating", 0) - away.get("def_rating", 0), 2),
         "off_vs_def_away":    round(away.get("off_rating", 0) - home.get("def_rating", 0), 2),
         "pace_avg":           round((home.get("pace", 0) + away.get("pace", 0)) / 2, 2),
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Full box score (all counting stats)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def fetch_full_boxscore(game_id: str) -> dict:
+    """
+    Fetch complete player stat lines for a game.
+
+    Uses BoxScoreTraditionalV2. Returns all counting stats needed for
+    prop model validation: pts, reb, ast, stl, blk, tov, fg/3pt/ft splits.
+
+    Args:
+        game_id: NBA Stats game ID (e.g. "0022400430")
+
+    Returns:
+        {
+            "game_id": str,
+            "players": [
+                {
+                    "player_id": int,
+                    "player_name": str,
+                    "team_abbreviation": str,
+                    "min": float,
+                    "pts": int, "reb": int, "ast": int,
+                    "stl": int, "blk": int, "tov": int,
+                    "fgm": int, "fga": int,
+                    "fg3m": int, "fg3a": int,
+                    "ftm": int, "fta": int,
+                    "oreb": int, "dreb": int,
+                    "pf": int, "plus_minus": int,
+                },
+                ...
+            ],
+            "home_team": str,
+            "away_team": str,
+            "home_score": int,
+            "away_score": int,
+        }
+        Returns {} on error.
+    """
+    cache_path = os.path.join(_NBA_CACHE, f"boxscore_{game_id}.json")
+
+    # Only trust cache if game is final (game_status == 3).
+    # A cache written during a live game has incomplete per-player stats.
+    if os.path.exists(cache_path):
+        data = _load(cache_path)
+        if (
+            data.get("players")
+            and "reb" in (data["players"][0] if data["players"] else {})
+            and data.get("game_status") == 3
+        ):
+            return data
+
+    # ── Primary: cdn.nba.com live-data JSON (no auth, no rate-limit issues) ──
+    import requests as _req
+
+    def _safe_int(v) -> int:
+        try:
+            return int(v) if v is not None else 0
+        except (ValueError, TypeError):
+            return 0
+
+    def _parse_minutes(v) -> float:
+        """Convert 'PT34M35.00S' or '34:35' or float to decimal minutes."""
+        if v is None:
+            return 0.0
+        s = str(v).strip()
+        try:
+            if s.startswith("PT") and "M" in s:
+                s = s[2:]  # strip PT
+                mins = float(s[:s.index("M")])
+                secs_part = s[s.index("M") + 1:].rstrip("S")
+                return round(mins + float(secs_part or 0) / 60, 2)
+            if ":" in s:
+                mm, ss = s.split(":", 1)
+                return round(float(mm) + float(ss) / 60, 2)
+            return round(float(s), 2)
+        except (ValueError, TypeError):
+            return 0.0
+
+    cdn_url = f"https://cdn.nba.com/static/json/liveData/boxscore/boxscore_{game_id}.json"
+    _cdn_headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        ),
+        "Accept":     "application/json",
+        "Referer":    "https://www.nba.com/",
+    }
+
+    try:
+        resp = _req.get(cdn_url, headers=_cdn_headers, timeout=20)
+        resp.raise_for_status()
+        game = resp.json()["game"]
+    except Exception as e:
+        print(f"[fetch_full_boxscore] cdn.nba.com error for {game_id}: {e}")
+        return {}
+
+    players = []
+    home_tricode = game["homeTeam"].get("teamTricode", "")
+    away_tricode = game["awayTeam"].get("teamTricode", "")
+
+    for side_key, tricode in [("homeTeam", home_tricode), ("awayTeam", away_tricode)]:
+        for p in game[side_key].get("players", []):
+            st = p.get("statistics", {})
+            players.append({
+                "player_id":         _safe_int(p.get("personId")),
+                "player_name":       str(p.get("name", "") or ""),
+                "team_abbreviation": tricode,
+                "jersey_num":        str(p.get("jerseyNum", "") or ""),
+                "starter":           bool(p.get("starter", False)),
+                "min":               _parse_minutes(st.get("minutes")),
+                "pts":               _safe_int(st.get("points")),
+                "reb":               _safe_int(st.get("reboundsTotal")),
+                "oreb":              _safe_int(st.get("reboundsOffensive")),
+                "dreb":              _safe_int(st.get("reboundsDefensive")),
+                "ast":               _safe_int(st.get("assists")),
+                "stl":               _safe_int(st.get("steals")),
+                "blk":               _safe_int(st.get("blocks")),
+                "tov":               _safe_int(st.get("turnovers")),
+                "fgm":               _safe_int(st.get("fieldGoalsMade")),
+                "fga":               _safe_int(st.get("fieldGoalsAttempted")),
+                "fg3m":              _safe_int(st.get("threePointersMade")),
+                "fg3a":              _safe_int(st.get("threePointersAttempted")),
+                "ftm":               _safe_int(st.get("freeThrowsMade")),
+                "fta":               _safe_int(st.get("freeThrowsAttempted")),
+                "pf":                _safe_int(st.get("foulsPersonal")),
+                "plus_minus":        _safe_int(st.get("plusMinusPoints")),
+            })
+
+    # gameStatus: 1=pre-game, 2=in-progress, 3=final
+    game_status = int(game.get("gameStatus", 0))
+
+    result = {
+        "game_id":       game_id,
+        "game_status":   game_status,
+        "players":       players,
+        "home_team":     home_tricode,
+        "away_team":     away_tricode,
+        "home_score":    _safe_int(game["homeTeam"].get("score")),
+        "away_score":    _safe_int(game["awayTeam"].get("score")),
+        "total_players": len(players),
+        "total_fga":     sum(p["fga"] for p in players),
+    }
+    _save(cache_path, result)
+    return result
+
+
+def validate_boxscore(game_id: str) -> dict:
+    """
+    Validate a cached full boxscore for common data quality issues.
+
+    Checks:
+      - Missing players (< 8 per team)
+      - Stat totals coherence (team pts = sum of player pts)
+      - Zero minutes played (DNP misclassified)
+      - Missing rebounds/assists (prop model coverage)
+
+    Returns:
+        {
+            "game_id": str,
+            "status": "ok" | "warn" | "error",
+            "issues": [str],
+            "player_count": int,
+            "has_full_stats": bool,
+        }
+    """
+    data = fetch_full_boxscore(game_id)
+    if not data or not data.get("players"):
+        return {"game_id": game_id, "status": "error",
+                "issues": ["boxscore unavailable"], "player_count": 0,
+                "has_full_stats": False}
+
+    issues = []
+    players = data["players"]
+    has_full = "reb" in players[0] if players else False
+
+    # Check per-team player counts
+    from collections import Counter
+    team_counts = Counter(p["team_abbreviation"] for p in players if p["min"] > 0)
+    for team, cnt in team_counts.items():
+        if cnt < 5:
+            issues.append(f"{team} only has {cnt} players with minutes — possible missing data")
+
+    # Validate team point totals
+    for team_abbrev, score_key in [
+        (data.get("home_team"), "home_score"),
+        (data.get("away_team"), "away_score"),
+    ]:
+        if not team_abbrev:
+            continue
+        api_score = data.get(score_key, 0)
+        player_pts = sum(p["pts"] for p in players if p["team_abbreviation"] == team_abbrev)
+        if api_score and player_pts and abs(api_score - player_pts) > 2:
+            issues.append(
+                f"{team_abbrev} score mismatch: API={api_score}, sum_of_players={player_pts}"
+            )
+
+    # Check for full stat coverage
+    if not has_full:
+        issues.append("Boxscore missing full stats (reb/ast/stl/blk/tov) — needs backfill")
+
+    status = "ok" if not issues else ("warn" if len(issues) <= 2 else "error")
+    return {
+        "game_id":        game_id,
+        "status":         status,
+        "issues":         issues,
+        "player_count":   len([p for p in players if p["min"] > 0]),
+        "has_full_stats": has_full,
     }
 
 

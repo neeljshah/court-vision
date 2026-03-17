@@ -1,0 +1,14 @@
+{
+  "clip_label": "lal_sas_2025",
+  "game_id": "0022400537",
+  "team1": "LAL",
+  "team2": "SAS",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 178,
+  "total_players": 21,
+  "shots_per_minute": 3.71,
+  "home_score": 109,
+  "away_score": 125,
+  "data_source": "nba_api"
+}

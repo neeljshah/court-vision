@@ -1,0 +1,14 @@
+{
+  "clip_label": "cavs_broadcast_2025",
+  "game_id": null,
+  "team1": "CLE",
+  "team2": "UNK",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 177,
+  "total_players": 10,
+  "shots_per_minute": 1.84,
+  "home_score": 0,
+  "away_score": 0,
+  "data_source": "league_average"
+}

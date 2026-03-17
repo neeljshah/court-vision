@@ -136,7 +136,10 @@ def add_rolling_features(df: pd.DataFrame, windows: List[int] = None) -> pd.Data
             lambda s, _w=w: s.rolling(_w, min_periods=1).sum().round(1)
         )
         df[f"possession_pct_{w}"] = grp["ball_possession"].transform(
-            lambda s, _w=w: (s.rolling(_w, min_periods=1).sum() / _w).round(3)
+            lambda s, _w=w: (
+                s.rolling(_w, min_periods=1).sum()
+                / s.rolling(_w, min_periods=1).count()
+            ).round(3)
         )
 
     return df
@@ -181,10 +184,18 @@ def add_event_features(df: pd.DataFrame, window: int = _EVENT_WINDOW) -> pd.Data
     frame_ev = frame_ev.merge(frame_poss, on="frame", how="left")
     frame_ev["poss_team"] = frame_ev["poss_team"].fillna("none")
 
+    # "none" frames (no ball possession tracked) are treated as neutral:
+    # the run counter and owning team are carried forward unchanged.
+    # Resetting on "none" would silently zero the highest-weighted momentum
+    # component every time the ball detector misses a frame.
     runs = []
     run_len = 0
     prev_team = None
     for team in frame_ev["poss_team"]:
+        if team == "none":
+            # No ball detected — preserve the current run rather than breaking it
+            runs.append(run_len)
+            continue
         if team == prev_team:
             run_len += 1
         else:
@@ -224,10 +235,10 @@ def add_momentum_features(df: pd.DataFrame) -> pd.DataFrame:
                 "frame":             frame,
                 "team":              row["team"],
                 "team_velocity_mean": round(row["team_vel_mean"], 2),
-                "opp_velocity_mean":  round(opp_vel, 2) if not np.isnan(opp_vel) else "",
+                "opp_velocity_mean":  round(opp_vel, 2) if not np.isnan(opp_vel) else np.nan,
                 "spacing_advantage":  round(
                     row["team_spacing_val"] - opp_spc, 1
-                ) if not np.isnan(opp_spc) else "",
+                ) if not np.isnan(opp_spc) else np.nan,
             })
 
     momentum_df = pd.DataFrame(rows)
@@ -262,7 +273,10 @@ def add_basket_features(df: pd.DataFrame, windows: List[int] = None) -> pd.DataF
             )
         if "drive_flag" in df.columns:
             df[f"drive_rate_{w}"] = grp["drive_flag"].transform(
-                lambda s, _w=w: (s.rolling(_w, min_periods=1).sum() / _w).round(3)
+                lambda s, _w=w: (
+                    s.rolling(_w, min_periods=1).sum()
+                    / s.rolling(_w, min_periods=1).count()
+                ).round(3)
             )
     return df
 
@@ -305,6 +319,20 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
         frame_ev["is_shot"] = (frame_ev["event"] == "shot").astype(int)
         frame_poss = frame_poss.merge(frame_ev[["frame", "is_shot"]], on="frame", how="left")
         frame_poss["is_shot"] = frame_poss["is_shot"].fillna(0).astype(int)
+
+        # Suppress turnover_flag for possession changes that follow a shot within
+        # _SHOT_SUPPRESS possession-frames: those are normal play transitions
+        # (made basket / rebound), not unforced turnovers.
+        _SHOT_SUPPRESS = 30
+        recent_shot = (
+            frame_poss["is_shot"].shift(1, fill_value=0)
+            .rolling(_SHOT_SUPPRESS, min_periods=1).max()
+            .astype(int)
+        )
+        frame_poss["turnover_flag"] = (
+            frame_poss["turnover_flag"] & (recent_shot == 0)
+        ).astype(int)
+
         frame_poss["pace_30"] = (
             (frame_poss["is_shot"] + frame_poss["turnover_flag"])
             .rolling(30, min_periods=1).sum().round(2)

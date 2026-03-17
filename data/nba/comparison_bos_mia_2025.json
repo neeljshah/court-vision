@@ -1,0 +1,14 @@
+{
+  "clip_label": "bos_mia_2025",
+  "game_id": "0022401106",
+  "team1": "BOS",
+  "team2": "MIA",
+  "season": "2024-25",
+  "season_type": "Regular Season",
+  "total_fga": 170,
+  "total_players": 24,
+  "shots_per_minute": 3.54,
+  "home_score": 124,
+  "away_score": 103,
+  "data_source": "nba_api"
+}
