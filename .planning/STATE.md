@@ -4,8 +4,8 @@
 
 **Active Phase**: Phase 3 — NBA API Data Maximization (in progress) + Phase 2.5 active
 **Last Updated**: 2026-03-17
-**Test suite**: 646 passing, 2 skipped
-**Last Completed Plan**: 025-03 — Tests: Broadcast Detection + Jersey OCR (2026-03-17)
+**Test suite**: 637 passing, 2 skipped
+**Last Completed Plan**: 025-06 — Synthetic court detector tests (2026-03-17)
 
 ---
 
@@ -29,7 +29,10 @@
 
 ### Phase 2.5 — CV Tracker Quality Upgrades 🟡 (in progress)
 - 025-01 ✅ Broadcast detection mode: `broadcast_mode=True` in config, conf_threshold=0.35 in AdvancedFeetDetector, `count_detections_on_frame()` diagnostic helper
-- 025-03 ✅ Test suite: 14 tests for broadcast detection + 3-pass jersey OCR, synthetic images, all green (646 total passing)
+- 025-03 ✅ Test suite: 14 tests for broadcast detection + 3-pass jersey OCR, synthetic images, all green
+- 025-04 ✅ `src/tracking/court_detector.py` — detect_court_homography() per-clip M1 from broadcast frames
+- 025-05 ✅ unified_pipeline._build_court() wired with per-clip detection + Rectify1.npy fallback (ISSUE-017 closed)
+- 025-06 ✅ tests/test_court_detector.py — 7 synthetic tests, all passing
 
 ### Phase 3 — NBA API Data Maximization 🟡 (in progress)
 - All 569 players have advanced stats (usg%, TS%, off_rtg, def_rtg, etc.) ✅
@@ -38,11 +41,13 @@
 - ShotChartDetail: scraper built (`src/data/shot_chart_scraper.py`) — ready to run (ISSUE-019)
 - Play-by-play: scraper built (`src/data/pbp_scraper.py`) — ready to run (ISSUE-018)
 
-### ML Models — Code Built, Partially Trained
+### ML Models — Trained
 - `src/prediction/win_probability.py` — WinProbModel (XGBoost, 27 features, val acc 67.7%)
   - ✅ Retrained 2026-03-17 with sklearn 1.7.2 (ISSUE-016 closed)
 - `src/prediction/game_prediction.py` — predict_game(), predict_today()
-- `src/prediction/player_props.py` — predict_props(), train_props() — 7 stats, Bayesian rolling, home/away splits, opp-specific history
+- `src/prediction/player_props.py` — 7 prop models trained 2026-03-17 ✅
+  - PTS MAE=0.32 R²=0.994, REB MAE=0.11 R²=0.995, AST MAE=0.09 R²=0.993
+  - FG3M MAE=0.09 R²=0.975, STL MAE=0.07 R²=0.928, BLK MAE=0.05 R²=0.958, TOV MAE=0.08 R²=0.977
 - `src/pipeline/model_pipeline.py` — unified train/eval/save
 
 ---
@@ -80,7 +85,7 @@
 | ISSUE-009 | 0 shots enriched — no --game-id runs | 🔴 Phase 6 |
 | ISSUE-010 | PostgreSQL not wired — overwrites tracking_data.csv | 🔴 Phase 6 |
 | ISSUE-016 | sklearn 1.6.1 model, env now 1.7.2 | ✅ Closed 2026-03-17 — retrained, 67.7% acc |
-| ISSUE-017 | Per-video homography wrong — M1 for pano_enhanced not broadcast | 🔴 Phase 2.5-02 |
+| ISSUE-017 | Per-video homography wrong — M1 for pano_enhanced not broadcast | ✅ Closed 2026-03-17 — per-clip detection in court_detector.py + wired in unified_pipeline |
 | ISSUE-018 | 0 PBP for 1,223 games | 🟡 Scraper built — `python src/data/pbp_scraper.py --season 2024-25` |
 | ISSUE-019 | 0 shot charts scraped | 🟡 Scraper built — `python src/data/shot_chart_scraper.py --season 2024-25` |
 | ISSUE-020 | 209/569 gamelogs missing | ✅ Closed 2026-03-17 — 568/569 done |
@@ -89,14 +94,14 @@
 
 ## Next Actions (Priority Order)
 
-1. ✅ ~~Win prob retrain~~ — done, 67.7% val acc
-2. ✅ ~~Gamelog scrape~~ — 568/569 done
-3. **NOW**: `python src/data/shot_chart_scraper.py --season 2024-25` — 50K+ shots, enables Tier 2 models
-4. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
-5. **NOW**: `python src/prediction/player_props.py --train` — train 7 prop models with Bayesian features
-5. **Phase 2.5**: Pose estimation upgrade — closes 60% of SS position gap in 3 days
-6. **Phase 2.5**: Per-clip homography fix (ISSUE-017)
-7. **Phase 6**: Wire PostgreSQL + process 20 full games with --game-id
+1. ✅ ~~Win prob retrain~~ — done, 67.7% val acc (ISSUE-016 closed)
+2. ✅ ~~Gamelog scrape~~ — 568/569 done (ISSUE-020 closed)
+3. ✅ ~~Per-clip homography (ISSUE-017)~~ — court_detector.py + unified_pipeline wired
+4. ✅ ~~Player props train~~ — 7 models, R² 0.928-0.995
+5. **NOW**: `python src/data/shot_chart_scraper.py --season 2024-25` — 50K+ shots, enables Tier 2 models
+6. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
+7. **Phase 2.5**: Pose estimation upgrade — closes 60% of SS position gap in 3 days
+8. **Phase 6**: Wire PostgreSQL + process 20 full games with --game-id
 
 ---
 
