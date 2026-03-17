@@ -111,11 +111,16 @@ def detect_court_homography(
             floor_mask = cv2.bitwise_or(floor_mask, mask)
 
         # STEP 4 — Build white-line mask from first frame
+        # White court lines have HSV S~0, V~255 — they are NOT in the floor_mask
+        # (floor_mask requires S:40-160). Use bright threshold directly; the
+        # hardwood floor background (V~180) does not pass the >200 threshold,
+        # so white lines stand out cleanly without needing a floor intersection.
         h, w = sample[0].shape[:2]
         gray = cv2.cvtColor(sample[0], cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         _, bright = cv2.threshold(blurred, 200, 255, cv2.THRESH_BINARY)
-        line_mask = cv2.bitwise_and(bright, floor_mask)
+        # Use bright directly: floor has V~180 (won't pass >200), only white lines do
+        line_mask = bright
 
         # STEP 5 — Hough line detection
         lines = cv2.HoughLinesP(

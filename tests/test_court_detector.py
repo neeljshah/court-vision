@@ -1,137 +1,141 @@
 """
-TDD tests for CourtDetector (plan 01-02, task 2).
-RED phase: these tests must fail before implementation.
+test_court_detector.py — Tests for detect_court_homography().
+
+All tests use synthetic images only — no real video, no yt-dlp, no run_clip.py.
+The synthetic court images mimic hardwood floor colour + white court lines so the
+full detection algorithm (floor mask -> Hough lines -> intersections -> corners) can
+be exercised end-to-end without NBA footage.
 """
-import dataclasses
+from __future__ import annotations
+
+import os
+import sys
+
+import cv2
 import numpy as np
 import pytest
 
-from pipelines.court_detector import CourtDetector, CourtLine, CourtZones
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-class TestCourtLineDataclass:
-    def test_court_line_is_dataclass(self):
-        assert dataclasses.is_dataclass(CourtLine)
+# -- Helpers -------------------------------------------------------------------
 
-    def test_court_line_has_required_fields(self):
-        fields = {f.name for f in dataclasses.fields(CourtLine)}
-        assert "rho" in fields
-        assert "theta" in fields
-        assert "x1" in fields
-        assert "y1" in fields
-        assert "x2" in fields
-        assert "y2" in fields
+def _make_hardwood_frame(width: int = 640, height: int = 480) -> np.ndarray:
+    """
+    Create a BGR frame resembling an NBA hardwood court.
 
-    def test_court_line_instantiation(self):
-        line = CourtLine(rho=1.0, theta=0.5, x1=0, y1=0, x2=100, y2=0)
-        assert line.rho == 1.0
-        assert line.theta == 0.5
-        assert line.x1 == 0
-        assert line.y1 == 0
-        assert line.x2 == 100
-        assert line.y2 == 0
+    - Background: orange-brown (hardwood HSV H=20, S=100, V=180)
+    - 3 horizontal white lines spaced evenly
+    - 3 vertical white lines spaced evenly
 
+    This gives 9 intersections, well above the 4-corner minimum.
+    """
+    # Convert hardwood HSV to BGR
+    hsv_pixel = np.uint8([[[20, 100, 180]]])
+    bgr_pixel = cv2.cvtColor(hsv_pixel, cv2.COLOR_HSV2BGR)[0, 0]
+    frame = np.full((height, width, 3), bgr_pixel.tolist(), dtype=np.uint8)
 
-class TestCourtZonesDataclass:
-    def test_court_zones_is_dataclass(self):
-        assert dataclasses.is_dataclass(CourtZones)
+    # Draw 3 horizontal white lines
+    for frac in [0.2, 0.5, 0.8]:
+        y = int(height * frac)
+        cv2.line(frame, (0, y), (width, y), (255, 255, 255), thickness=4)
 
-    def test_court_zones_has_required_fields(self):
-        fields = {f.name for f in dataclasses.fields(CourtZones)}
-        assert "paint_region" in fields
-        assert "three_point_arc_points" in fields
-        assert "half_court_line" in fields
+    # Draw 3 vertical white lines
+    for frac in [0.2, 0.5, 0.8]:
+        x = int(width * frac)
+        cv2.line(frame, (x, 0), (x, height), (255, 255, 255), thickness=4)
 
-    def test_court_zones_allows_none_fields(self):
-        zones = CourtZones(
-            paint_region=None,
-            three_point_arc_points=None,
-            half_court_line=None,
-        )
-        assert zones.paint_region is None
-        assert zones.three_point_arc_points is None
-        assert zones.half_court_line is None
+    return frame
 
 
-class TestCourtDetectorDetectLines:
-    def setup_method(self):
-        self.cd = CourtDetector()
-        self.blank_frame = np.zeros((720, 1280, 3), dtype=np.uint8)
-
-    def test_detect_lines_returns_list_on_blank_frame(self):
-        result = self.cd.detect_lines(self.blank_frame)
-        assert isinstance(result, list)
-
-    def test_detect_lines_returns_empty_list_on_blank_frame(self):
-        """Blank black frame should produce no lines."""
-        result = self.cd.detect_lines(self.blank_frame)
-        assert result == []
-
-    def test_detect_lines_returns_court_line_objects(self):
-        """Any detected lines must be CourtLine instances."""
-        frame_with_lines = np.zeros((720, 1280, 3), dtype=np.uint8)
-        # Draw white horizontal and vertical lines
-        import cv2
-        cv2.line(frame_with_lines, (100, 360), (1180, 360), (255, 255, 255), 3)
-        cv2.line(frame_with_lines, (640, 100), (640, 620), (255, 255, 255), 3)
-        result = self.cd.detect_lines(frame_with_lines)
-        assert isinstance(result, list)
-        for item in result:
-            assert isinstance(item, CourtLine)
-
-    def test_detect_lines_handles_none_hough_result(self):
-        """Should return [] and not raise if HoughLinesP returns None."""
-        # A completely uniform frame produces no edges -> HoughLinesP returns None
-        uniform_frame = np.full((720, 1280, 3), 128, dtype=np.uint8)
-        result = self.cd.detect_lines(uniform_frame)
-        assert isinstance(result, list)
-
-    def test_court_line_has_numeric_rho_theta(self):
-        """Lines detected from a real frame must have numeric rho and theta."""
-        import cv2
-        frame = np.zeros((720, 1280, 3), dtype=np.uint8)
-        cv2.line(frame, (0, 360), (1280, 360), (255, 255, 255), 5)
-        result = self.cd.detect_lines(frame)
-        for line in result:
-            assert isinstance(line.rho, float)
-            assert isinstance(line.theta, float)
+def _make_blank_frame(width: int = 640, height: int = 480) -> np.ndarray:
+    """Create a uniform dark frame with no court features."""
+    return np.zeros((height, width, 3), dtype=np.uint8)
 
 
-class TestCourtDetectorDetectZones:
-    def setup_method(self):
-        self.cd = CourtDetector()
+def _make_uniform_grey_frame(width: int = 640, height: int = 480) -> np.ndarray:
+    """Create a uniform grey frame -- no hardwood colour, no lines."""
+    return np.full((height, width, 3), 128, dtype=np.uint8)
 
-    def test_detect_zones_returns_court_zones_on_blank(self):
-        blank = np.zeros((720, 1280, 3), dtype=np.uint8)
-        result = self.cd.detect_zones(blank)
-        assert isinstance(result, CourtZones)
 
-    def test_detect_zones_returns_none_fields_on_blank_frame(self):
-        """Blank frame should produce no detectable zones."""
-        blank = np.zeros((720, 1280, 3), dtype=np.uint8)
-        result = self.cd.detect_zones(blank)
-        assert result.paint_region is None
-        assert result.three_point_arc_points is None
-        assert result.half_court_line is None
+# -- Import test ---------------------------------------------------------------
 
-    def test_detect_zones_does_not_crash_on_varied_frames(self):
-        """Must not raise on any valid image input."""
-        import cv2
-        # Random noise frame
-        noisy = np.random.randint(0, 255, (720, 1280, 3), dtype=np.uint8)
-        result = self.cd.detect_zones(noisy)
-        assert isinstance(result, CourtZones)
+def test_detect_court_homography_importable():
+    """detect_court_homography must be importable from court_detector."""
+    from src.tracking.court_detector import detect_court_homography
+    assert callable(detect_court_homography)
 
-    def test_detect_zones_returns_valid_paint_region_type_if_detected(self):
-        """If paint_region is not None, it must be a list."""
-        frame = np.zeros((720, 1280, 3), dtype=np.uint8)
-        result = self.cd.detect_zones(frame)
-        if result.paint_region is not None:
-            assert isinstance(result.paint_region, list)
 
-    def test_detect_zones_returns_valid_half_court_type_if_detected(self):
-        """If half_court_line is not None, it must be a tuple."""
-        frame = np.zeros((720, 1280, 3), dtype=np.uint8)
-        result = self.cd.detect_zones(frame)
-        if result.half_court_line is not None:
-            assert isinstance(result.half_court_line, tuple)
+# -- None-return cases ---------------------------------------------------------
+
+def test_empty_list_returns_none():
+    """Empty frame list must return None without raising."""
+    from src.tracking.court_detector import detect_court_homography
+    result = detect_court_homography([])
+    assert result is None, f"Expected None for empty input, got {result}"
+
+
+def test_single_blank_frame_returns_none():
+    """Single blank frame has no floor/lines -- must return None."""
+    from src.tracking.court_detector import detect_court_homography
+    result = detect_court_homography([_make_blank_frame()])
+    assert result is None, "Blank frame must return None"
+
+
+def test_uniform_grey_frames_return_none():
+    """Uniform grey frames have no hardwood colour -- must return None."""
+    from src.tracking.court_detector import detect_court_homography
+    frames = [_make_uniform_grey_frame() for _ in range(5)]
+    result = detect_court_homography(frames)
+    assert result is None, "Uniform grey frames must return None"
+
+
+# -- Detection cases -----------------------------------------------------------
+
+def test_synthetic_court_returns_matrix():
+    """
+    Synthetic hardwood+lines frame must produce a non-None (3,3) float64 matrix.
+
+    Shape and dtype are asserted here — NOT in separate skip-able tests.
+    If detect_court_homography returns None on this synthetic image it means the
+    floor mask or Hough thresholds did not fire, which is a real bug.
+    Check HSV ranges (H:10-30, S:40-160, V:100-230) and HoughLinesP settings
+    in court_detector.py.
+    """
+    from src.tracking.court_detector import detect_court_homography
+    frames = [_make_hardwood_frame() for _ in range(10)]
+    result = detect_court_homography(frames)
+    assert result is not None, (
+        "Synthetic court with hardwood + white lines must return a matrix. "
+        "Check HSV floor mask range (H:10-30, S:40-160, V:100-230) and "
+        "HoughLinesP threshold settings in court_detector.py."
+    )
+    assert result.shape == (3, 3), (
+        f"Matrix shape must be (3, 3), got {result.shape}"
+    )
+    assert result.dtype == np.float64, (
+        f"Matrix dtype must be float64, got {result.dtype}"
+    )
+
+
+def test_single_hardwood_frame_accepted():
+    """Function accepts a single-element list without crashing."""
+    from src.tracking.court_detector import detect_court_homography
+    frame = _make_hardwood_frame()
+    # May return None or matrix -- just must not raise
+    try:
+        detect_court_homography([frame])
+    except Exception as exc:
+        pytest.fail(f"Single-frame list raised: {exc}")
+
+
+def test_large_frame_list_subsampled():
+    """
+    60-frame list must be handled without crash (subsampling to 10 internally).
+    """
+    from src.tracking.court_detector import detect_court_homography
+    frames = [_make_hardwood_frame() for _ in range(60)]
+    try:
+        detect_court_homography(frames)
+    except Exception as exc:
+        pytest.fail(f"60-frame list raised: {exc}")
