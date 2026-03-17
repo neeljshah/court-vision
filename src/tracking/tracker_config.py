@@ -9,6 +9,7 @@ _CONFIG_PATH = os.path.abspath(
 
 DEFAULTS: Dict[str, Any] = {
     "conf_threshold":        0.3,
+    "broadcast_mode":        True,   # lower conf threshold for distant/small players on broadcast footage
     "topcut":                320,
     "appearance_w":          0.25,
     "max_lost_frames":       90,

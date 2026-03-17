@@ -4,6 +4,8 @@ from operator import itemgetter
 
 from .utils.plot_tools import plt_plot
 
+_yolo_model_cache = None  # module-level YOLO cache for count_detections_on_frame
+
 COLORS = {  # HSV format: [lower], [upper], [representative for BGR conversion]
     # 'green' = any colored (non-white, non-dark) jersey — covers all team colors
     # across any NBA matchup (purple, blue, gold, wine, etc.)
@@ -160,3 +162,32 @@ class FeetDetector:
             except Exception:
                 pass
         return frame, map_2d, map_2d_text
+
+
+def count_detections_on_frame(frame_bgr: np.ndarray, conf: float = 0.35) -> int:
+    """
+    Return how many persons YOLO detects in frame_bgr at the given confidence.
+
+    Used in tests and diagnostics without needing a full tracker instance.
+    Loads YOLOv8n (cached via module-level variable) and runs a single inference.
+
+    Args:
+        frame_bgr: BGR image array (any resolution).
+        conf:      Detection confidence threshold (default 0.35 for broadcast mode).
+
+    Returns:
+        Number of person detections (class=0) above the confidence threshold.
+    """
+    global _yolo_model_cache
+    if _yolo_model_cache is None:
+        try:
+            from ultralytics import YOLO
+            _yolo_model_cache = YOLO("yolov8n.pt")
+        except Exception:
+            return 0
+    try:
+        results = _yolo_model_cache(frame_bgr, classes=[0], conf=conf, verbose=False)
+        boxes = results[0].boxes
+        return int(len(boxes)) if boxes is not None else 0
+    except Exception:
+        return 0
