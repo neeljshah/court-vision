@@ -15,7 +15,7 @@ Every phase must extract the maximum possible data from available sources. NBA A
 
 ## Phase 2 Requirements — Critical Tracker Bug Fixes
 
-- REQ-02A: Team color classification separates players into two distinct teams (team_a / team_b) — NOT all-green. Both teams present in team column of every game output.
+- [x] REQ-02A: Team color classification separates players into two distinct teams (team_a / team_b) — NOT all-green. Both teams present in team column of every game output. ✅ Fixed by 02-06
 - REQ-02B: EventDetector fires shot events — at least 1 shot detected per minute of broadcast footage
 - REQ-02C: EventDetector fires dribble events — ball_pos and possessor_pos not None in 2D mode (ISSUE-011)
 - REQ-02D: Pass events fire correctly on ball possession transfer between players
