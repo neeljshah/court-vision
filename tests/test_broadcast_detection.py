@@ -1,0 +1,273 @@
+"""
+test_broadcast_detection.py — Tests for Phase 2.5 broadcast detection + jersey OCR fixes.
+
+All tests use synthetic images — no real video, no yt-dlp, no run_clip.py.
+"""
+
+import numpy as np
+import pytest
+import cv2
+
+
+# ── Part A: tracker_config broadcast_mode ────────────────────────────────────
+
+class TestBroadcastConfig:
+
+    def test_broadcast_mode_in_defaults(self):
+        """broadcast_mode key must exist in DEFAULTS."""
+        from src.tracking.tracker_config import DEFAULTS
+        assert "broadcast_mode" in DEFAULTS
+
+    def test_broadcast_mode_default_true(self):
+        """broadcast_mode must default to True."""
+        from src.tracking.tracker_config import DEFAULTS
+        assert DEFAULTS["broadcast_mode"] is True
+
+    def test_load_config_includes_broadcast_mode(self):
+        """load_config() must always return broadcast_mode."""
+        from src.tracking.tracker_config import load_config
+        cfg = load_config()
+        assert "broadcast_mode" in cfg
+        assert cfg["broadcast_mode"] is True
+
+
+# ── Part A: AdvancedFeetDetector conf threshold ───────────────────────────────
+
+class TestAdvancedTrackerBroadcastConf:
+    """Verify AdvancedFeetDetector lowers conf to 0.35 in broadcast_mode."""
+
+    def _make_tracker(self, monkeypatch):
+        """Build an AdvancedFeetDetector with YOLO mocked out."""
+        import types
+        import sys
+
+        class _FakeYOLO:
+            def __init__(self, *a, **kw):
+                pass
+
+            def __call__(self, *a, **kw):
+                class R:
+                    boxes = None
+                return [R()]
+
+        # Inject fake ultralytics into sys.modules before any import
+        if "ultralytics" not in sys.modules:
+            fake_ul = types.ModuleType("ultralytics")
+            fake_ul.YOLO = _FakeYOLO
+            sys.modules["ultralytics"] = fake_ul
+        else:
+            monkeypatch.setattr(sys.modules["ultralytics"], "YOLO", _FakeYOLO, raising=False)
+
+        # Patch the YOLO reference inside player_detection after it is imported
+        import src.tracking.player_detection as pd_mod
+        monkeypatch.setattr(pd_mod, "YOLO", _FakeYOLO, raising=False)
+
+        # Patch torch.cuda so the warmup call doesn't crash
+        import src.tracking.advanced_tracker as at_mod
+
+        class _FakeTorch:
+            @staticmethod
+            def cuda_available():
+                return False
+
+        import torch
+        monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
+
+        # FeetDetector.__init__ calls self.model(...) for warmup — patch model attr
+        original_init = at_mod.FeetDetector.__init__
+
+        def _patched_init(self_inner, players):
+            self_inner.model = _FakeYOLO()
+            self_inner._use_half = False
+            self_inner.players = players
+
+        monkeypatch.setattr(at_mod.FeetDetector, "__init__", _patched_init)
+
+        from src.tracking.player import Player
+        # Player(ID, team, color) — color is a BGR tuple
+        players = [
+            Player(i, "green" if i < 5 else "white", (0, 180, 0) if i < 5 else (255, 255, 255))
+            for i in range(10)
+        ]
+        from src.tracking.advanced_tracker import AdvancedFeetDetector
+        return AdvancedFeetDetector(players)
+
+    def test_conf_threshold_is_035_in_broadcast_mode(self, monkeypatch):
+        """With default config (broadcast_mode=True), _conf_threshold must be 0.35."""
+        tracker = self._make_tracker(monkeypatch)
+        assert tracker._conf_threshold == pytest.approx(0.35, abs=1e-6)
+
+
+# ── Part A: count_detections_on_frame ────────────────────────────────────────
+
+class TestCountDetectionsOnFrame:
+
+    def test_importable(self):
+        from src.tracking.player_detection import count_detections_on_frame
+        assert callable(count_detections_on_frame)
+
+    def test_returns_int_on_blank_frame(self, monkeypatch):
+        """count_detections_on_frame returns an int even on blank frame."""
+        import src.tracking.player_detection as pd_mod
+
+        class _FakeYOLO:
+            def __init__(self, *a, **kw):
+                pass
+
+            def __call__(self, *a, **kw):
+                class Boxes:
+                    def __len__(self):
+                        return 0
+
+                class R:
+                    boxes = Boxes()
+
+                return [R()]
+
+        monkeypatch.setattr(pd_mod, "_yolo_model_cache", _FakeYOLO())
+        from src.tracking.player_detection import count_detections_on_frame
+        frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        result = count_detections_on_frame(frame, conf=0.35)
+        assert isinstance(result, int)
+        assert result >= 0
+
+    def test_accepts_different_conf_values(self, monkeypatch):
+        """count_detections_on_frame accepts both 0.35 and 0.50 conf."""
+        import src.tracking.player_detection as pd_mod
+
+        class _FakeYOLO:
+            def __init__(self, *a, **kw):
+                pass
+
+            def __call__(self, *a, **kw):
+                class Boxes:
+                    def __len__(self):
+                        return 3
+
+                class R:
+                    boxes = Boxes()
+
+                return [R()]
+
+        monkeypatch.setattr(pd_mod, "_yolo_model_cache", _FakeYOLO())
+        from src.tracking.player_detection import count_detections_on_frame
+        frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        n35 = count_detections_on_frame(frame, conf=0.35)
+        n50 = count_detections_on_frame(frame, conf=0.50)
+        assert isinstance(n35, int)
+        assert isinstance(n50, int)
+
+
+# ── Part B: Jersey OCR preprocessing ─────────────────────────────────────────
+
+class TestPreprocessCrop:
+
+    def test_returns_2d_array(self):
+        """preprocess_crop returns a 2D uint8 array."""
+        from src.tracking.jersey_ocr import preprocess_crop
+        crop = np.random.randint(0, 255, (120, 60, 3), dtype=np.uint8)
+        result = preprocess_crop(crop)
+        assert result.ndim == 2
+        assert result.dtype == np.uint8
+
+    def test_handles_tiny_crop(self):
+        """preprocess_crop returns blank fallback for very small crops."""
+        from src.tracking.jersey_ocr import preprocess_crop
+        tiny = np.zeros((4, 4, 3), dtype=np.uint8)
+        result = preprocess_crop(tiny)
+        assert result.ndim == 2
+
+    def test_brightness_normalisation_applied(self):
+        """
+        Preprocessing stretches histogram — result should use most of 0-255 range
+        when input has strong contrast (e.g., black digits on white jersey).
+        """
+        from src.tracking.jersey_ocr import preprocess_crop
+        # White jersey (high V) with black number region
+        crop = np.full((100, 50, 3), 200, dtype=np.uint8)
+        crop[30:70, 10:40] = 30  # dark "number" region
+        result = preprocess_crop(crop)
+        # After normalisation, result must span close to 0-255
+        assert int(result.max()) > 200
+
+
+# ── Part B: Jersey OCR synthetic "23" test ───────────────────────────────────
+
+class TestJerseyOCRSynthetic:
+    """
+    Feed a synthetic white-on-black "23" image through the OCR pipeline.
+    EasyOCR is mocked to avoid GPU dependency in CI.
+    """
+
+    def _mock_reader_for_23(self, monkeypatch):
+        """Replace _reader with a stub that returns '23' at confidence 0.95."""
+        import src.tracking.jersey_ocr as ocr_mod
+
+        class _FakeReader:
+            def readtext(self, img, **kwargs):
+                # Return one detection: bbox, text, confidence
+                return [([[0, 0], [10, 0], [10, 10], [0, 10]], "23", 0.95)]
+
+        monkeypatch.setattr(ocr_mod, "_reader", _FakeReader())
+
+    def test_synthetic_23_recognised(self, monkeypatch):
+        """
+        Synthetic white-on-black '23' image → read_jersey_number returns 23.
+        """
+        self._mock_reader_for_23(monkeypatch)
+        from src.tracking.jersey_ocr import read_jersey_number
+
+        # Create a synthetic "23" crop: black background, white digit area
+        crop = np.zeros((100, 50, 3), dtype=np.uint8)
+        cv2.putText(crop, "23", (5, 70), cv2.FONT_HERSHEY_SIMPLEX, 2.0, (255, 255, 255), 3)
+        result = read_jersey_number(crop)
+        assert result == 23, f"Expected 23, got {result}"
+
+    def test_low_confidence_rejected(self, monkeypatch):
+        """OCR result with confidence < _OCR_CONF_MIN must be rejected."""
+        import src.tracking.jersey_ocr as ocr_mod
+
+        class _LowConfReader:
+            def readtext(self, img, **kwargs):
+                return [([[0, 0], [10, 0], [10, 10], [0, 10]], "99", 0.30)]  # below 0.65
+
+        monkeypatch.setattr(ocr_mod, "_reader", _LowConfReader())
+        from src.tracking.jersey_ocr import read_jersey_number
+        crop = np.zeros((100, 50, 3), dtype=np.uint8)
+        result = read_jersey_number(crop)
+        assert result is None, f"Expected None (low conf), got {result}"
+
+    def test_invalid_number_rejected(self, monkeypatch):
+        """OCR result outside 0-99 range must be rejected."""
+        import src.tracking.jersey_ocr as ocr_mod
+
+        class _OutOfRangeReader:
+            def readtext(self, img, **kwargs):
+                return [([[0, 0], [10, 0], [10, 10], [0, 10]], "999", 0.95)]
+
+        monkeypatch.setattr(ocr_mod, "_reader", _OutOfRangeReader())
+        from src.tracking.jersey_ocr import read_jersey_number
+        crop = np.zeros((100, 50, 3), dtype=np.uint8)
+        result = read_jersey_number(crop)
+        assert result is None, f"Expected None (out of range), got {result}"
+
+    def test_three_passes_used(self, monkeypatch):
+        """
+        The 2x-resize 3rd pass is used — verify by checking the reader is called
+        3 times (normal, inverted, 2x-resized).
+        """
+        import src.tracking.jersey_ocr as ocr_mod
+        call_count = {"n": 0}
+
+        class _CountingReader:
+            def readtext(self, img, **kwargs):
+                call_count["n"] += 1
+                return []
+
+        monkeypatch.setattr(ocr_mod, "_reader", _CountingReader())
+        from src.tracking.jersey_ocr import read_jersey_number
+        crop = np.zeros((100, 50, 3), dtype=np.uint8)
+        read_jersey_number(crop)
+        assert call_count["n"] == 3, (
+            f"Expected 3 OCR passes (normal + inverted + 2x), got {call_count['n']}"
+        )
