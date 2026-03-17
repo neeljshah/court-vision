@@ -60,6 +60,8 @@ Ten bugs fixed across the ML data pipeline (Loops 26–40):
 
 ## Key Decisions
 
+- **02-06 Slot layout**: 5+5+1 split (IDs 1-5 green, 6-10 white, 0 referee) — static allocation matching HSV classifier's two output labels; slot count stays 11
+- **02-06 Unification block**: deleted unconditionally — no conditional flag needed since 5+5+1 slot layout makes the block invalid; test_no_all_green_unification guards against regression
 - **02-07 Clip guard**: sys.exit(2) for short clips (distinct from sys.exit(1) for missing file); MIN_CLIP_SECONDS=60 at module level for testability via import
 - **02-07 Test geometry**: EventDetector shot test uses ball moving toward basket_left (x=32) — nearest basket to current ball_pos determines direction, not nearest to shooter position
 - **Detector**: YOLOv8n (migrated from Detectron2 2026-03-12)
@@ -79,7 +81,7 @@ Ten bugs fixed across the ML data pipeline (Loops 26–40):
 | Shots enriched | **0** | Blocked — need `run_clip.py --game-id` per clip |
 | Possessions labeled | 124 | |
 | Videos in data/videos/ | 16 | Broadcast clips |
-| Test suite | **126 tests** | 124 pass, 2 skipped (DB-gated) |
+| Test suite | **161 tests** | 159 pass, 2 skipped (DB-gated) |
 
 **Data milestones**: 20 games → shot quality model, 50 → possession outcome, 100 → lineup chemistry, 200+ → live win probability LSTM
 
