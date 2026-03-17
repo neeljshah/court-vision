@@ -13,7 +13,7 @@ Build the world's best NBA analytics and prediction system — combining compute
 ## Phases
 
 - [x] **Phase 1: Data Infrastructure** — PostgreSQL schema, schedule context, lineup data, NBA stats fetcher
-- [x] **Phase 2: Critical Tracker Bug Fixes** — Fix team-color separation (all-green bug), event detector (0 shots/dribbles), validate clip outputs (completed 2026-03-17)
+- [ ] **Phase 2: Critical Tracker Bug Fixes** — Fix team-color separation (all-green bug), event detector (0 shots/dribbles), validate clip outputs (gap closure plans 02-06 through 02-08 in progress)
 - [ ] **Phase 3: NBA API Data Maximization** — Advanced stats + gamelogs for all 569 players, shot charts (50K+ shots), play-by-play for all 1,225 games, lineup data, referee history
 - [ ] **Phase 4: First ML Models** — Win probability (train now), player props (full data), shot quality from NBA API shot charts, lineup efficiency
 - [ ] **Phase 5: External Factors Scraper** — Injury monitor, referee tracker, line movement, news scraper
@@ -67,7 +67,18 @@ Plans:
 - `event_detector.py`: ball_pos and possessor_pos passed as None when using 2D court coordinates — need to trace call path from unified_pipeline.py to EventDetector.update()
 - `event_detector.py`: shot detection threshold likely too strict for broadcast angle — review velocity/arc/zone thresholds
 
-Plans: TBD
+**Plans**: 9 plans (02-00 through 02-08)
+
+Plans:
+- [x] 02-00-PLAN.md — Wave 0 test infrastructure (pytest.ini, conftest.py, test stubs)
+- [x] 02-01-PLAN.md — Jersey OCR: EasyOCR dual-pass + JerseyVotingBuffer
+- [x] 02-02-PLAN.md — Tracker integration: _jersey_buf per slot, reset_slot() on eviction
+- [x] 02-03-PLAN.md — Referee filtering: NaN sentinel, string label "referee"
+- [x] 02-04-PLAN.md — Player identity persistence: player_identity_map + persist_identity_map()
+- [x] 02-05-PLAN.md — download_batch() in video_fetcher + scripts/loop_processor.py
+- [ ] 02-06-PLAN.md — REQ-02A: Remove all-green unification, 5+5+1 dual-team slot layout (gap closure)
+- [ ] 02-07-PLAN.md — REQ-02B/C/D/E: EventDetector unit tests + clip duration validator (gap closure)
+- [ ] 02-08-PLAN.md — REQ-02F: Re-process 17 clips on GPU machine, update CLAUDE.md (gap closure, human checkpoint)
 
 ---
 

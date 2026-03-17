@@ -23,6 +23,7 @@
 - 02-03: Referee filtering — NaN sentinel for spatial columns, string label "referee"
 - 02-04: Player identity persistence — `player_identity_map` schema + `persist_identity_map()`
 - 02-05: `download_batch()` in video_fetcher + `scripts/loop_processor.py`
+- 02-07: Clip duration validator (MIN_CLIP_SECONDS=60, sys.exit(2)) + 5 EventDetector unit tests (shot/dribble/pass/none/duration) — REQ-02B/C/D/E validated without video processing
 
 ### Phase 3 — ML Models 🟡 (code built + hardened, untrained)
 - `src/prediction/win_probability.py` — WinProbModel (XGBoost, **26 features** after zero-variance removal), WinProbabilityModel alias
@@ -59,6 +60,8 @@ Ten bugs fixed across the ML data pipeline (Loops 26–40):
 
 ## Key Decisions
 
+- **02-07 Clip guard**: sys.exit(2) for short clips (distinct from sys.exit(1) for missing file); MIN_CLIP_SECONDS=60 at module level for testability via import
+- **02-07 Test geometry**: EventDetector shot test uses ball moving toward basket_left (x=32) — nearest basket to current ball_pos determines direction, not nearest to shooter position
 - **Detector**: YOLOv8n (migrated from Detectron2 2026-03-12)
 - **Tracker**: AdvancedFeetDetector (Kalman + Hungarian) — globally optimal assignment
 - **Re-ID**: 96-dim HSV histogram (EMA) + k-means color tiebreaker when similar uniforms
@@ -90,7 +93,7 @@ Ten bugs fixed across the ML data pipeline (Loops 26–40):
 | ISSUE-008 | No shot clock from video | 🔲 Phase 8 |
 | ISSUE-009 | 0 shots enriched | 🔴 Active — Phase 6 (GPU machine required) |
 | ISSUE-010 | PostgreSQL not wired | 🔴 Active — Phase 6 plan |
-| ISSUE-011 | 0 dribble events (ball_pos/possessor_pos None in 2D) | 🔴 Phase 2 critical fix |
+| ISSUE-011 | 0 dribble events (ball_pos/possessor_pos None in 2D) | ✅ Fixed by EventDetector rewrite (validated by 02-07) |
 | ISSUE-012 | ALL players labeled 'green' — team color separation broken | ✅ Fixed by 02-06 — removed unification block + 5+5+1 slot layout |
 | ISSUE-013 | 0 shot events detected across all 17 clips | 🔴 Phase 2 CRITICAL — event detector threshold or call path broken |
 | ISSUE-014 | All 17 "game" clips are 1–21 seconds — not full games | 🔴 Phase 6 — need full 48-min broadcast footage on GPU machine |
