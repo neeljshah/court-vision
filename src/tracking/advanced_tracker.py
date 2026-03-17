@@ -40,6 +40,12 @@ try:
 except ImportError:
     _HAS_VOTING = False
 
+try:
+    from .color_reid import TeamColorTracker as _TeamColorTracker
+    _HAS_COLOR_REID = True
+except ImportError:
+    _HAS_COLOR_REID = False
+
 # ── Tuning constants ──────────────────────────────────────────────────────────
 COST_GATE       = 0.80   # reject any assignment with cost above this
 APPEARANCE_W    = 0.25   # weight of appearance vs IoU in cost matrix
@@ -47,6 +53,7 @@ MAX_LOST        = 90     # frames before evicting a lost track (~3 s at 30 fps)
 GALLERY_TTL     = 300    # frames a gallery entry stays valid (~10 s at 30 fps)
 REID_THRESH     = 0.45   # max appearance distance to accept a re-ID
 REID_TIE_BAND   = 0.05   # appearance-distance window for jersey-number tiebreaker
+SIMILAR_COLORS_JERSEY_W = 0.10  # ISSUE-005: extra jersey-number boost when team colors are similar
 HIST_BINS       = 32     # bins per channel for HSV histogram
 KF_PROC_NOISE   = 5e-2
 KF_MEAS_NOISE   = 1e-1
@@ -213,6 +220,8 @@ class AdvancedFeetDetector(FeetDetector):
         self._gallery_ages: Dict[int, int]              = {}  # slot → frames since archived
         self._kf_pred:      Dict[int, Tuple]            = {}  # predicted bboxes this frame
         self._jersey_buf:   Optional[object]            = None  # set externally after construction
+        # ISSUE-005: per-team color tracker for similar-uniform detection
+        self._color_tracker = _TeamColorTracker() if _HAS_COLOR_REID else None
 
     # ── helpers ───────────────────────────────────────────────────────────
 
@@ -281,6 +290,14 @@ class AdvancedFeetDetector(FeetDetector):
 
         cost = np.ones((len(slots), len(dets)), dtype=np.float32) * 2.0
 
+        # ISSUE-005: when team colors are similar, raise appearance weight so
+        # fine-grained HSV histogram differences matter more than raw IoU overlap.
+        similar = (
+            self._color_tracker is not None
+            and self._color_tracker.similar_colors
+        )
+        app_w = min(0.60, self._appearance_w + (SIMILAR_COLORS_JERSEY_W if similar else 0.0))
+
         for ri, slot in enumerate(slots):
             pred = self._kf_pred.get(slot)
             for ci, di in enumerate(dets):
@@ -291,8 +308,8 @@ class AdvancedFeetDetector(FeetDetector):
                     _compute_appearance(detections[di]["crop_bgr"])
                     if detections[di]["crop_bgr"] is not None else None,
                 )
-                cost[ri, ci] = ((1.0 - iou_val) * (1 - self._appearance_w)
-                                + app_dist * self._appearance_w)
+                cost[ri, ci] = ((1.0 - iou_val) * (1 - app_w)
+                                + app_dist * app_w)
 
         matched, unmatched_slots, unmatched_dets = [], list(range(len(slots))), list(range(len(dets)))
         for ri, ci in _assign(cost):
@@ -346,11 +363,18 @@ class AdvancedFeetDetector(FeetDetector):
         candidates.sort(key=lambda x: x[1])
 
         # Jersey number tiebreaker for ambiguous appearance matches.
-        # When top two candidates are within REID_TIE_BAND, prefer the one whose
-        # confirmed jersey matches the detection's confirmed jersey (RESEARCH.md Pattern 4).
+        # When top two candidates are within REID_TIE_BAND (or REID_TIE_BAND +
+        # SIMILAR_COLORS_JERSEY_W when team colors are similar — ISSUE-005), prefer
+        # the candidate whose confirmed jersey number matches the detection's jersey.
+        similar = (
+            self._color_tracker is not None
+            and self._color_tracker.similar_colors
+        )
+        tie_band = REID_TIE_BAND + (SIMILAR_COLORS_JERSEY_W if similar else 0.0)
+
         if (confirmed_jerseys is not None
                 and len(candidates) >= 2
-                and abs(candidates[0][1] - candidates[1][1]) < REID_TIE_BAND):
+                and abs(candidates[0][1] - candidates[1][1]) < tie_band):
             det_jersey = confirmed_jerseys.get(det_slot) if det_slot is not None else None
             for cand_slot, _dist in candidates[:2]:
                 cand_jersey = confirmed_jerseys.get(cand_slot)
@@ -409,11 +433,6 @@ class AdvancedFeetDetector(FeetDetector):
             if not team:
                 continue
 
-            # Unify all non-referee players into the "green" pool so all 10
-            # unified player slots can be used regardless of jersey color.
-            if team == "white":
-                team = "green"
-
             # 2D court projection
             head_x = (x1c + x2c) // 2
             foot_y = y2c
@@ -427,13 +446,18 @@ class AdvancedFeetDetector(FeetDetector):
             color_bgr = hsv2bgr(COLORS[team][2])
             cv2.circle(frame, (head_x, foot_y), 2, color_bgr, 5)
 
+            det_crop = bgr_crop if bgr_crop.size > 0 else None
             detections.append({
                 "bbox":     bbox,
                 "team":     team,
                 "homo":     homo,
                 "color":    color_bgr,
-                "crop_bgr": bgr_crop if bgr_crop.size > 0 else None,
+                "crop_bgr": det_crop,
             })
+
+            # ISSUE-005: update per-team color signature for similar-color detection
+            if self._color_tracker is not None and det_crop is not None:
+                self._color_tracker.update(det_crop, team)
 
         # ── Step 4: Hungarian matching per team ───────────────────────────
         all_unmatched_dets: List[int] = []

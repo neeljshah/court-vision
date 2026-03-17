@@ -91,7 +91,7 @@ Ten bugs fixed across the ML data pipeline (Loops 26–40):
 | ISSUE-009 | 0 shots enriched | 🔴 Active — Phase 6 (GPU machine required) |
 | ISSUE-010 | PostgreSQL not wired | 🔴 Active — Phase 6 plan |
 | ISSUE-011 | 0 dribble events (ball_pos/possessor_pos None in 2D) | 🔴 Phase 2 critical fix |
-| ISSUE-012 | ALL players labeled 'green' — team color separation broken | 🔴 Phase 2 CRITICAL — makes all 29K tracking rows suspect |
+| ISSUE-012 | ALL players labeled 'green' — team color separation broken | ✅ Fixed by 02-06 — removed unification block + 5+5+1 slot layout |
 | ISSUE-013 | 0 shot events detected across all 17 clips | 🔴 Phase 2 CRITICAL — event detector threshold or call path broken |
 | ISSUE-014 | All 17 "game" clips are 1–21 seconds — not full games | 🔴 Phase 6 — need full 48-min broadcast footage on GPU machine |
 | ISSUE-015 | 0/569 players have advanced stats scraped | 🔴 Phase 3 — run player_scraper.py --loop --max 569 |
