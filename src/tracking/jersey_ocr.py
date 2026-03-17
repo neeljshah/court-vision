@@ -94,6 +94,11 @@ def preprocess_crop(crop_bgr: np.ndarray) -> np.ndarray:
     clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(4, 4))
     enhanced = clahe.apply(gray)
 
+    # Brightness normalisation — histogram stretch to full 0-255 range
+    e_min, e_max = int(enhanced.min()), int(enhanced.max())
+    if e_max > e_min:
+        enhanced = cv2.normalize(enhanced, None, 0, 255, cv2.NORM_MINMAX)
+
     # Adaptive threshold — works on both dark and light jerseys
     binary = cv2.adaptiveThreshold(
         enhanced, 255,
@@ -134,11 +139,16 @@ def read_jersey_number(crop_bgr: np.ndarray) -> Optional[int]:
         results_normal = reader.readtext(preprocessed, **ocr_kwargs)
         results_inverted = reader.readtext(cv2.bitwise_not(preprocessed), **ocr_kwargs)
 
-        # Pick best result across normal and inverted passes
+        # Third pass: 2x upscale — small broadcast crops (< 32px wide) fail at native size
+        h2x, w2x = preprocessed.shape[0] * 2, preprocessed.shape[1] * 2
+        resized_2x = cv2.resize(preprocessed, (w2x, h2x), interpolation=cv2.INTER_CUBIC)
+        results_2x = reader.readtext(resized_2x, **ocr_kwargs)
+
+        # Pick best result across all three passes
         best_number: Optional[int] = None
         best_conf: float = -1.0
 
-        for results in (results_normal, results_inverted):
+        for results in (results_normal, results_inverted, results_2x):
             for (_bbox, text, conf) in results:
                 text = str(text).strip()
                 if (
