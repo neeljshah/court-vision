@@ -29,6 +29,7 @@ from src.tracking import (
     evaluate_tracking,
 )
 from src.tracking.event_detector import EventDetector
+from src.tracking.court_detector import detect_court_homography
 from src.stats_tracker.tracker import StatsTracker
 
 try:
@@ -53,7 +54,11 @@ _H_MIN_INLIERS      = 5      # below this → reject and use last-known good M
 _H_RESET_INLIERS    = 40     # ≥ this → hard-reset EMA (very clean SIFT match)
 _REANCHOR_INTERVAL  = 30     # court-line drift check every N frames
 _REANCHOR_ALIGN_MIN = 0.35   # projected boundary alignment below this → force re-anchor
-_SIFT_INTERVAL      = 5      # run SIFT only every N frames; use cached EMA in between
+_SIFT_INTERVAL      = 15     # run SIFT only every N frames; use cached EMA in between
+                             # Increased from 5: SIFT costs 290ms detect + 150ms FLANN = 440ms/call.
+                             # At 15-frame intervals: 33 calls per 500 frames = 14s vs 44s.
+                             # EMA smoothing (α=0.25) keeps homography stable between updates.
+_SIFT_SCALE         = 0.5   # downsample frame before SIFT detect (4x speedup, minimal quality loss)
 
 # Gameplay detection — skip non-play frames (intro, halftime, timeouts, replays)
 MIN_GAMEPLAY_PERSONS = 5     # YOLO person count below this → skip frame
@@ -151,9 +156,20 @@ class UnifiedPipeline:
         # Build player detector early — reused for gameplay filter
         self.feet_det = AdvancedFeetDetector(self.players)
 
-        pano          = self._load_pano(video_path)
-        self.map_2d, self.M1 = self._build_court(pano)
-        self.pano     = pano
+        pano = self._load_pano(video_path)
+
+        # Collect first 60 frames for per-clip homography detection (ISSUE-017)
+        _startup_cap = cv2.VideoCapture(video_path)
+        _startup_frames: list = []
+        for _ in range(60):
+            _ok, _f = _startup_cap.read()
+            if not _ok:
+                break
+            _startup_frames.append(_f[TOPCUT:])
+        _startup_cap.release()
+
+        self.map_2d, self.M1 = self._build_court(pano, startup_frames=_startup_frames)
+        self.pano = pano
 
         self._gameplay_cache_until: int = 0   # frame index; skip check before this
 
@@ -341,15 +357,42 @@ class UnifiedPipeline:
             return True
         return False
 
-    def _build_court(self, pano):
+    def _build_court(self, pano, startup_frames: list = None):
+        """Build 2D court map and compute homography M1.
+
+        Attempts per-clip homography detection from startup_frames using
+        detect_court_homography(). Falls back to static resources/Rectify1.npy
+        if detection returns None (< 4 court line intersections found).
+
+        Args:
+            pano: Panorama image used for court rectification.
+            startup_frames: Optional list of BGR frames (first ~60) from the
+                            video source. When provided, attempts per-clip M1
+                            detection. When None, skips detection and uses
+                            Rectify1.npy directly.
+
+        Returns:
+            Tuple of (map_2d, M1) where M1 is a 3x3 float64 homography.
+        """
         rect1 = os.path.join(_RESOURCES, "Rectify1.npy")
         map_img = cv2.imread(os.path.join(_RESOURCES, "2d_map.png"))
 
         img = binarize_erode_dilate(pano, plot=False)
         _, corners = rectangularize_court(img, plot=False)
-        rectified  = rectify(pano, corners, plot=False)
-        map_2d     = cv2.resize(map_img, (rectified.shape[1], rectified.shape[0]))
-        M1         = np.load(rect1)
+        rectified = rectify(pano, corners, plot=False)
+        map_2d = cv2.resize(map_img, (rectified.shape[1], rectified.shape[0]))
+
+        # Per-clip homography detection (ISSUE-017 fix)
+        M1 = None
+        if startup_frames:
+            M1 = detect_court_homography(startup_frames)
+
+        if M1 is not None:
+            print("[unified_pipeline] Using per-clip detected homography M1")
+        else:
+            M1 = np.load(rect1)
+            print("[unified_pipeline] Using fallback static homography Rectify1.npy")
+
         return map_2d, M1
 
     def _get_homography(self, frame) -> Optional[np.ndarray]:
@@ -373,9 +416,15 @@ class UnifiedPipeline:
         if self._sift_frame_counter % _SIFT_INTERVAL != 0 and self._M_ema is not None:
             return self._M_ema
 
-        kp2, des2 = self.sift.compute(frame, self.sift.detect(frame))
+        h, w = frame.shape[:2]
+        small = cv2.resize(frame, (int(w * _SIFT_SCALE), int(h * _SIFT_SCALE)))
+        kp2_small, des2 = self.sift.detectAndCompute(small, None)
         if des2 is None or len(des2) < 4:
             return self._M_ema
+        inv_s = 1.0 / _SIFT_SCALE
+        kp2 = [cv2.KeyPoint(kp.pt[0] * inv_s, kp.pt[1] * inv_s,
+                             kp.size * inv_s, kp.angle, kp.response,
+                             kp.octave, kp.class_id) for kp in kp2_small]
 
         matches = FLANN.knnMatch(self.des1, des2, k=2)
         good    = [m for m, n in matches if m.distance < 0.7 * n.distance]
@@ -571,6 +620,16 @@ class UnifiedPipeline:
 
             timestamp_sec = round(frame_idx / fps, 3)
             ball_pos      = self._last_ball_2d
+
+            # Ball position fallback: when Hough/CSRT loses the ball, use the
+            # possessor's 2D court position so EventDetector can still fire
+            # dribble events.  Shot detection needs true ball trajectory so we
+            # only apply this for stable possession (not in-flight).
+            if ball_pos is None:
+                for p in self.players:
+                    if p.has_ball and p.team != "referee" and frame_idx in p.positions:
+                        ball_pos = p.positions[frame_idx]
+                        break
 
             # ── Ball tracking row ─────────────────────────────────────────
             ball_rows.append({
