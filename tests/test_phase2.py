@@ -1092,19 +1092,19 @@ def test_no_all_green_unification():
 
 
 def test_match_team_white_slots_populated():
-    """_match_team('white', ...) must NOT ignore white detections.
+    """_match_team('white', ...) must reach the cost-matrix branch, not short-circuit.
 
-    REQ-02A: after the fix, white player slots exist in AdvancedFeetDetector.
-    A synthetic white detection must be matched (or at least considered) rather
-    than returned as unmatched because no white slots existed.
+    REQ-02A: before the fix all Player objects had team="green", so
+    `[p for p in players if p.team == "white"]` was empty — _match_team returned
+    immediately with unmatched_dets=[0] (detection silently ignored).
 
-    Construction: build a minimal tracker with one white slot and present one
-    white detection.  The unmatched_dets list must be empty (white detection
-    was consumed by a white slot).
+    After the fix white Player slots exist; we seed the first white slot with an
+    identical appearance embedding and a matching Kalman prediction so IoU=1 and
+    appearance_dist≈0 — guaranteeing cost < COST_GATE and a successful match.
     """
     import numpy as np
     from src.tracking.player import Player
-    from src.tracking.advanced_tracker import AdvancedFeetDetector
+    from src.tracking.advanced_tracker import AdvancedFeetDetector, _compute_appearance
     from src.tracking.player_detection import COLORS, hsv2bgr
 
     white_color = hsv2bgr(COLORS["white"][2])
@@ -1127,25 +1127,30 @@ def test_match_team_white_slots_populated():
 
     tracker = AdvancedFeetDetector(players)
 
-    # Synthetic white detection at a valid bbox position
+    # Synthetic crop: solid BGR (255, 0, 255) — within white HSV range
+    crop = np.full((40, 80, 3), (255, 0, 255), dtype=np.uint8)
     bbox = (10, 10, 90, 50)
+
+    # Seed slot index 5 (players[5] == Player(6, "white")) with matching state
+    slot_idx = 5
+    tracker._appearances[slot_idx] = _compute_appearance(crop)
+    tracker._kf_pred[slot_idx]     = bbox   # identical bbox → IoU = 1.0
+    players[5].previous_bb         = bbox
+
     white_det = {
         "bbox":     bbox,
         "team":     "white",
         "homo":     (100, 100),
         "color":    white_color,
-        "crop_bgr": np.zeros((40, 80, 3), dtype=np.uint8),
+        "crop_bgr": crop,
     }
 
-    # Give slot 6 (first white slot) a known previous_bb so it becomes an active slot
-    players[5].previous_bb = (20, 20, 80, 45)  # index 5 → Player(6, "white")
+    matched, _unmatched_slots, unmatched_dets = tracker._match_team("white", [white_det])
 
-    _matched, _unmatched_slots, unmatched_dets = tracker._match_team("white", [white_det])
-
-    assert unmatched_dets == [], (
-        f"White detection was not matched to any white slot — "
-        f"unmatched_dets={unmatched_dets}. "
-        "REQ-02A: white slots must exist in _match_team for white detections to be consumed."
+    assert len(matched) == 1 and unmatched_dets == [], (
+        f"White detection not matched to white slot — "
+        f"matched={matched}, unmatched_dets={unmatched_dets}. "
+        "REQ-02A: white slots must exist and accept white detections in _match_team."
     )
 
 
