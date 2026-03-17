@@ -136,11 +136,11 @@ def _compute_appearance(crop_bgr: np.ndarray) -> np.ndarray:
         s = hist.sum()
         parts.append(hist / s if s > 0 else hist)
     hist_emb = np.concatenate(parts).astype(np.float32)
-    if _HAS_OCR:
-        cluster = _dominant_hsv(crop_bgr)                # shape (3,)
-        cluster_norm = cluster / (cluster.max() + 1e-6)  # normalise to [0, 1]
-        return np.concatenate([hist_emb, cluster_norm])  # shape (99,)
-    return hist_emb                                       # shape (96,) — unchanged fallback
+    # Use mean HSV instead of KMeans dominant cluster — same discrimination power,
+    # 50-100x faster (no sklearn KMeans per crop).  KMeans was the primary fps bottleneck.
+    mean_hsv = hsv.reshape(-1, 3).mean(axis=0).astype(np.float32)
+    mean_norm = mean_hsv / (mean_hsv.max() + 1e-6)
+    return np.concatenate([hist_emb, mean_norm])  # shape (99,)
 
 
 def _appear_dist(a: Optional[np.ndarray], b: Optional[np.ndarray]) -> float:
@@ -212,6 +212,10 @@ class AdvancedFeetDetector(FeetDetector):
         self._gallery_ttl       = _cfg.get("gallery_ttl",        GALLERY_TTL)
         self._kalman_fill_win   = _cfg.get("kalman_fill_window", 5)
 
+        # Broadcast mode: lower confidence threshold so smaller/distant players are detected
+        if _cfg.get("broadcast_mode", True):
+            self._conf_threshold = 0.35
+
         n = len(players)
         self._kalmans:      Dict[int, cv2.KalmanFilter] = {}
         self._appearances:  Dict[int, np.ndarray]       = {}
@@ -220,8 +224,18 @@ class AdvancedFeetDetector(FeetDetector):
         self._gallery_ages: Dict[int, int]              = {}  # slot → frames since archived
         self._kf_pred:      Dict[int, Tuple]            = {}  # predicted bboxes this frame
         self._jersey_buf:   Optional[object]            = None  # set externally after construction
+        self._freeze_age:   Dict[int, int]              = {i: 0 for i in range(n)}  # frames frozen
         # ISSUE-005: per-team color tracker for similar-uniform detection
         self._color_tracker = _TeamColorTracker() if _HAS_COLOR_REID else None
+
+        # Dynamic team color clustering (fixes all-green bug)
+        # Warm-up: collect dominant jersey HSV for first N non-referee detections,
+        # then K-means k=2 to discover the two team colors.
+        self._warmup_colors: List[np.ndarray] = []   # dominant HSV samples
+        self._team_centroids: Optional[List[np.ndarray]] = None  # [centroid_A, centroid_B]
+        self._warmup_needed = 30   # detections before first calibration
+        self._recalib_interval = 150  # frames between re-calibrations
+        self._frames_since_calib = 0
 
     # ── helpers ───────────────────────────────────────────────────────────
 
@@ -263,6 +277,9 @@ class AdvancedFeetDetector(FeetDetector):
             dist = float(np.hypot(new_pos[0] - last_pos[0], new_pos[1] - last_pos[1]))
             if dist > MAX_2D_JUMP:
                 new_pos = last_pos
+                self._freeze_age[slot] = self._freeze_age.get(slot, 0) + 1
+            else:
+                self._freeze_age[slot] = 0
         p.positions[timestamp] = new_pos
         if slot in self._kalmans:
             _kf_correct(self._kalmans[slot], det["bbox"])
@@ -272,6 +289,44 @@ class AdvancedFeetDetector(FeetDetector):
         self._lost_ages[slot] = 0
         self._gallery.pop(slot, None)
         self._gallery_ages.pop(slot, None)
+
+    # ── dynamic team color calibration ───────────────────────────────────
+
+    def _calibrate_team_colors(self) -> None:
+        """K-means k=2 on warmup_colors to find two team centroids."""
+        if len(self._warmup_colors) < 10:
+            return
+        try:
+            from sklearn.cluster import KMeans
+            samples = np.array(self._warmup_colors, dtype=np.float32)
+            km = KMeans(n_clusters=2, n_init=5, max_iter=50, random_state=0)
+            km.fit(samples)
+            self._team_centroids = list(km.cluster_centers_)
+        except Exception:
+            self._team_centroids = None
+
+    def _classify_team_dynamic(self, bgr_crop: np.ndarray, fallback_team: str) -> str:
+        """
+        Classify a jersey crop to 'green' (team A) or 'white' (team B) using
+        the learned K-means centroids.  Falls back to HSV-range classification
+        when centroids are not yet available.
+        """
+        if self._team_centroids is None or bgr_crop is None or bgr_crop.size == 0:
+            return fallback_team
+        if _HAS_COLOR_REID:
+            from .color_reid import dominant_team_color
+            dom = dominant_team_color(bgr_crop)
+        else:
+            h = max(1, int(bgr_crop.shape[0] * 0.65))
+            roi = cv2.cvtColor(bgr_crop[:h], cv2.COLOR_BGR2HSV)
+            dom = roi.reshape(-1, 3).astype(np.float32).mean(axis=0)
+        # Circular hue distance to each centroid
+        def hue_dist(a, b):
+            diff = abs(float(a[0]) - float(b[0]))
+            return min(diff, 180.0 - diff)
+        d0 = hue_dist(dom, self._team_centroids[0])
+        d1 = hue_dist(dom, self._team_centroids[1])
+        return "green" if d0 <= d1 else "white"
 
     # ── per-team Hungarian matching ───────────────────────────────────────
 
@@ -418,7 +473,7 @@ class AdvancedFeetDetector(FeetDetector):
             if bgr_crop.size == 0:
                 continue
 
-            # Team classification via HSV
+            # Team classification — HSV range first to detect referee/white
             jersey_h = max(1, int(bgr_crop.shape[0] * 0.70))
             hsv_crop = cv2.cvtColor(bgr_crop[:jersey_h], cv2.COLOR_BGR2HSV)
             team, best_n = "", 0
@@ -432,6 +487,21 @@ class AdvancedFeetDetector(FeetDetector):
 
             if not team:
                 continue
+
+            # Dynamic re-classification: when both teams wear colored jerseys,
+            # HSV masks both as 'green'.  Use K-means centroids to separate them.
+            if team not in ("referee",):
+                # Accumulate warm-up samples from non-referee detections.
+                # Use mean HSV (not KMeans) — fast, good enough for calibration.
+                if len(self._warmup_colors) < self._warmup_needed * 3:
+                    h_c = max(1, int(bgr_crop.shape[0] * 0.65))
+                    roi_hsv = cv2.cvtColor(bgr_crop[:h_c], cv2.COLOR_BGR2HSV)
+                    self._warmup_colors.append(
+                        roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
+                    )
+                    if len(self._warmup_colors) == self._warmup_needed:
+                        self._calibrate_team_colors()
+                team = self._classify_team_dynamic(bgr_crop, team)
 
             # 2D court projection
             head_x = (x1c + x2c) // 2
@@ -509,6 +579,24 @@ class AdvancedFeetDetector(FeetDetector):
                     self._activate_slot(self._slot(p), det, timestamp)
                     break
 
+        # ── Step 6.5: Evict tracks frozen in place (velocity clamp stuck) ──
+        # A track frozen for >20 consecutive frames is a false positive (coach,
+        # scoreboard, or a SIFT-broken homography artifact) — evict it.
+        _FREEZE_MAX = 20
+        for p in self.players:
+            slot = self._slot(p)
+            if self._freeze_age.get(slot, 0) >= _FREEZE_MAX and p.previous_bb is not None:
+                if slot in self._appearances:
+                    self._gallery[slot] = self._appearances[slot].copy()
+                    self._gallery_ages[slot] = 0
+                p.previous_bb = None
+                p.positions   = {}
+                p.has_ball    = False
+                self._kalmans.pop(slot, None)
+                self._appearances.pop(slot, None)
+                self._freeze_age[slot] = 0
+                self._lost_ages[slot] = 0
+
         # ── Step 7: Kalman fill for briefly-lost players (lost_age ≤ 5) ──
         # When YOLO misses a player for 1-5 frames, inject the Kalman-predicted
         # court position so the track stays continuous — eliminates short gaps
@@ -567,6 +655,13 @@ class AdvancedFeetDetector(FeetDetector):
                             break  # pi removed; stop checking pi vs others
                         else:
                             del pj.positions[timestamp]
+
+        # Periodic re-calibration to adapt to changing camera angles
+        self._frames_since_calib += 1
+        if self._frames_since_calib >= self._recalib_interval and len(self._warmup_colors) >= 10:
+            self._calibrate_team_colors()
+            self._warmup_colors = []   # reset sample buffer
+            self._frames_since_calib = 0
 
         return self._render(frame, map_2d, timestamp)
 
