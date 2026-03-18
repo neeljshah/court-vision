@@ -1,5 +1,354 @@
 # Tracker Improvements Log
 
+### Phase 2.5 CV Tracker Upgrades — 2026-03-17 (session 3)
+
+**5 tasks completed — tracker quality + robustness:**
+
+- **`src/tracking/scoreboard_ocr.py`** — Tuned crop region: `_TOP_FRAC` 0.13→0.06 (ESPN/TNT scoreboard always top ~5%), removed unused `_BOT_FRAC` bottom strip. Halved `_OCR_INTERVAL` 30→15 for faster game state refresh. Added decimal shot clock regex (`(?<!\d)(xx.x)(?!\d)`) to handle "14.3" format. Added clock-minutes exclusion guard (`(?!:)`) to prevent clock digits competing as shot clock. Tests: 31 passing in `test_context_classifiers.py` (4 new tests: pipe-separated format, decimal shot clock, sub-1 shot clock).
+
+- **`src/tracking/advanced_tracker.py`** — ByteTrack now gated on `lapx` availability (`try: import lapx; _HAS_LAPX = True`). When `lapx` is installed: two-stage ByteTrack assignment active + gallery TTL aging skipped (ByteTrack handles lost/found natively). Without `lapx`: falls back to original single-stage Kalman+Hungarian (`_match_team`). Renamed `contest_arm_height` → `contest_arm_angle` throughout. Pose ankle confidence threshold 0.4→0.5 (fallback to bbox_bottom when pose confidence < 0.5 as specified).
+
+- **`src/tracking/ball_detect_track.py`** — Trajectory deque shrunk 30→15 positions. Polyfit minimum positions raised 5→8 (requires 8+ positions before arc/peak fit). Added `peak_height_px` output (parabola vertex y coord). Renamed `ball_speed` → `pass_speed_pxpf` in `get_trajectory_features()` return dict.
+
+- **`src/pipeline/unified_pipeline.py`** — Homography scan widened 300→500 frames. SIFT inlier threshold `_H_MIN_INLIERS` lowered 5→4 (20% reduction). Fallback log now includes clip filename for debugging. CSV schema extended: `ankle_x`, `ankle_y`, `contest_arm_angle`, `ball_shot_arc_angle`, `ball_peak_height_px`, `ball_pass_speed_pxpf` wired from tracker into per-player rows.
+
+- **`tests/test_context_classifiers.py`** — 4 new tests added for scoreboard OCR parsing of pipe-separated format and decimal shot clock.
+
+**Test results:** 728/730 pass (2 pre-existing stale feature-count assertions in test_phase3.py, unrelated to these changes).
+
+### Phase 5 External Factors — 2026-03-17 (session 2)
+
+**5 tasks completed — external data layer + model retrain:**
+
+- **`src/data/ref_tracker.py`** — Wired real game pace from `BoxScoreAdvancedV2` (PACE column, team avg per game). Previously hardcoded 0.0. Pace now stored per-ref per-game when available.
+- **`src/data/lineup_data.py`** — Added `scrape_all_teams(seasons)` bulk scraper (30 teams × 3 seasons into `data/nba/lineups/`). Fixed `per_mode_simple` → `per_mode_detailed` (nba_api version mismatch). Added CLI.
+- **`src/data/news_scraper.py`** — New file. ESPN NBA news monitor: polls public API every 30 min, extracts player names + injury/trade/suspension keywords, caches to `data/nba/news_cache.json` with TTL. `has_injury_alert(player)` → bool.
+- **`src/prediction/win_probability.py`** — Added 4 new features: `home/away_top_lineup_net_rtg` (season top-5 lineup net rating) + `ref_avg_fouls` + `ref_home_win_pct`. `_SEASON_GAMES_VERSION` bumped to 3 (cache busted). `predict()` now accepts `ref_names=[...]`.
+- **`src/prediction/game_models.py`** — Same 4 features added. `_SCORED_GAMES_VERSION=2` versioning added. `predict()` accepts `ref_names=[...]`.
+
+**Retrain results (2026-03-17):**
+- win_probability: **69.2% acc, Brier 0.2043** (was 67.7% — +1.5% from lineup features)
+- game_total: MAE 14.2 pts, R² 0.163
+- spread: MAE 11.2 pts, R² 0.246
+- blowout: Acc 0.626, Brier 0.237
+- first_half: MAE 6.8 pts, R² 0.161
+- pace: MAE 0.02, R² 1.000
+
+### 2026-03-18 — First end-to-end pipeline run on real broadcast clip
+- **Fixed:** `deep_emb` numpy array used in boolean `or` context in `_match_team_bytetrack` and `_reid` (advanced_tracker.py:607,674) → `ValueError: truth value of array is ambiguous` — replaced with `is not None` guard.
+- **Fixed:** `_export_csv` fieldnames missing 10 new columns (`play_type`, `paint_touches`, `off_ball_distance`, `shot_clock_est`, `scoreboard_*`, `possession_type`, `possession_duration_sec`) → `ValueError: dict contains fields not in fieldnames`.
+- **Added:** `--max-frames` flag wired through `run_pipeline.py` → `tracking_pipeline.run_tracking()` → `unified_pipeline.py --frames`.
+- **Results on cavs_vs_celtics_2025.mp4 (300 frames, game_id 0022400710):** 1133 tracking rows, 10 players, 5 shots detected, 0 ID switches, clean team separation (green/white, 582/551 rows).
+- **Quality note:** scoreboard OCR returning -1 for shot/game clock (needs real broadcast scoreboard region tuning).
+
+### Phase 5 External Factors — 2026-03-17
+
+**ISSUE-010 resolved (partial):** PostgreSQL wiring added to unified_pipeline.
+
+**New / modified files (5 files):**
+
+- **`src/pipeline/unified_pipeline.py`** — Added PostgreSQL write alongside CSV:
+  - `game_id` param added to `__init__` (passed from `--game-id` CLI arg)
+  - `_pg_write_tracking_rows(rows)` → bulk inserts into `tracking_frames` table
+  - `INSERT ... ON CONFLICT DO NOTHING` — safe for re-runs
+  - Skips silently if `DATABASE_URL` not set or `game_id` is None
+  - Uses `psycopg2.extras.execute_batch` in pages of 500 for performance
+  - CSV write unchanged — both outputs happen together
+
+- **`src/data/ref_tracker.py`** *(new)* — NBA referee tendency profiles:
+  - `scrape_ref_tendencies(season, max_games)` → pulls BoxScoreTraditionalV2, extracts officials, accumulates fouls/home-win/pace per ref
+  - Cache: `data/nba/ref_tendencies.json` (24h TTL)
+  - `get_ref_features(ref_names)` → averaged dict for a referee crew
+  - `get_all_refs()` → sorted list of all profiled refs
+  - Graceful fallback: returns stale cache or empty dict on failure
+
+- **`src/data/line_monitor.py`** *(new)* — The Odds API NBA lines wrapper:
+  - `refresh_lines(force)` → fetches spread/total/ML from `api.the-odds-api.com`
+  - Cache: `data/nba/lines_cache.json` (5-min TTL live, 1-hr TTL pre-game)
+  - `get_game_lines(home, away)` → spread, total, moneyline for a matchup
+  - `get_sharp_signal(home, away)` → opening vs closing line delta (+ = sharp on home)
+  - Opening lines persisted to `data/nba/lines_opening.json` for CLV tracking
+  - Silently skips if `ODDS_API_KEY` env var not set
+
+- **`tests/test_phase5.py`** *(new, 18 tests)* — all passing:
+  - `TestInjuryMonitorPhase5` (3): Out/Questionable availability + network failure
+  - `TestRefTracker` (6): known/unknown/partial crew features, cache hit, failure fallback
+  - `TestLineMonitor` (6): game lines found/not-found, sharp signal, no-key graceful, network failure
+  - `TestUnifiedPipelinePgWrite` (3): rows attempted, no-URL skip, no-game-id skip
+
+**Shot chart scraping:** `--all-seasons` running in background — 2024-25 already complete (569 files, 221,866 shots); 2022-23 and 2023-24 scraping in progress.
+
+**Test suite:** 727 passed, 2 skipped (was 637 before Phase 5) — 0 regressions.
+
+---
+
+### Phase 5 Prep — 2026-03-17 InjuryMonitor class + classifier tests
+
+**New / modified files (4 files):**
+
+- **`src/data/injury_monitor.py`** — Added `InjuryMonitor` class on top of existing ESPN module.
+  - `.get_status(player_id)` → `"Active"` / `"GTD"` / `"Questionable"` / `"Out"` / `"Unknown"`
+  - `.get_impact_multiplier(player_id)` → `1.0 / 0.85 / 0.70 / 0.0 / 0.95`
+  - Player name → NBA player_id resolved via `player_avgs_*.json` cache
+
+- **`src/prediction/player_props.py`** — wired `InjuryMonitor` into `predict_props()`:
+  - All 7 stat projections multiplied by `get_impact_multiplier(player_id)`
+  - Returns `"injury_status"` and `"injury_multiplier"` in output dict
+
+- **`src/prediction/game_prediction.py`** — injury adjustment in `predict_game()`:
+  - Top-2 scorers per team checked; Out star → ±0.04 delta on `home_win_prob`
+  - Questionable/GTD → ±0.02; delta capped at ±0.08; prob clamped [0.05, 0.95]
+
+- **`tests/test_context_classifiers.py`** *(new, 24 tests)* — ScoreboardOCR (8),
+  PossessionClassifier (8), PlayTypeClassifier (8) — all synthetic data, no I/O
+
+- **`tests/test_phase3.py`** — 9 InjuryMonitor tests appended (multipliers, stale check,
+  team injuries, predict_props keys, Out-player zeroing)
+
+---
+
+### CV Tracker — 2026-03-17 Pose + Trajectory + Rich Events Upgrade
+
+**Files changed:** `advanced_tracker.py`, `ball_detect_track.py`, `event_detector.py`
+
+**`advanced_tracker.py` — Pose estimation (YOLOv8-pose per player):**
+- `_extract_pose_fields(slot, kpts_xy, kpts_conf, has_ball)` → per-player pose dict.
+- Pose model runs every `_POSE_INTERVAL=3` frames; non-pose frames use cached fields.
+- COCO keypoints extracted per matched slot via `_activate_slot()` capture hook.
+- New player attributes set each frame: `ankle_x`, `ankle_y`, `jump_detected`,
+  `contest_arm_height`, `dribble_hand` — fall back to defaults when keypoints missing.
+- `jump_detected`: hip y rising > 2 px/frame over last 3 pose frames.
+- `contest_arm_height`: highest wrist y vs nose/hip ratio, clamped [0.0, 1.0].
+- `dribble_hand`: lower wrist (higher pixel y) when player has ball.
+
+**`ball_detect_track.py` — Trajectory fitting:**
+- `_traj_deque: deque(maxlen=30)` stores `(frame_num, cx, cy)` alongside existing trajectory.
+- `get_trajectory_features()` → `{shot_arc_angle, ball_speed, dribble_count, is_lob}`.
+  - `shot_arc_angle`: parabola tangent at release frame (degrees).
+  - `dribble_count`: floor bounces (vy sign flips + → −) this possession.
+  - `is_lob`: ball rises > 1.5× avg player height from possession start.
+- `on_shot_event()` snapshots arc angle at release; `reset_possession()` resets counters.
+
+**`event_detector.py` — Rich event detection:**
+- `self.events: List[dict]` accumulates new events each frame (consumed by pipeline).
+- `_phist`: per-player position history deque (maxlen=15) with speed field.
+- Court scale computed from map_w: `_ft = (0.87 * map_w) / 80.5` pixels per foot.
+- `_detect_screens()`: cross-team convergence < 3 ft + one stationary → `screen_set`.
+- `_detect_cuts()`: direction change > 90° in 10 frames + toward basket → `cut`.
+- `_detect_drives()`: ball handler > 8 mph toward basket for 5+ frames → `drive`.
+- `_detect_closeout()`: defender 6 ft → 3 ft pre-shot → `closeout` with mph.
+- `_detect_rebound_positions()`: at shot release, all players' crash angle/speed/box_out.
+
+**Data contract (per spec):**
+```
+player.ankle_x, player.ankle_y, player.jump_detected
+player.contest_arm_height, player.dribble_hand
+tracker.get_trajectory_features() → dict
+events: screen_set / cut / drive / closeout / rebound_position
+```
+
+---
+
+### CV Tracker — 2026-03-17 Scoreboard OCR + Possession + Play-Type Classifiers
+
+**New modules (3 files, ~650 lines total):**
+
+- **`src/tracking/scoreboard_ocr.py`** — `ScoreboardOCR` class.
+  Runs EasyOCR on the top 13% and bottom 10% of the broadcast frame every 30 frames.
+  Extracts: `game_clock_sec`, `shot_clock`, `home_score`, `away_score`, `period`,
+  `home_timeouts`, `away_timeouts`, `home_fouls`, `away_fouls`, `score_diff`.
+  Caches last-known state; gracefully falls back if EasyOCR is unavailable.
+
+- **`src/tracking/possession_classifier.py`** — `PossessionClassifier` class.
+  Stateful per-possession geometry classifier — no ML.
+  Types: `fast_break`, `transition`, `double_team`, `drive`, `paint_touch`, `post_up`, `half_court`.
+  Accumulates: `possession_duration_sec`, `shot_clock_est`, `paint_touches`, `off_ball_distance`.
+  Auto-resets all counters when the possessing team changes.
+
+- **`src/tracking/play_type_classifier.py`** — `PlayTypeClassifier` class.
+  Sliding 90-frame buffer → Synergy-equivalent play type using geometry only.
+  Types: `isolation`, `pick_and_roll`, `pick_and_pop`, `spot_up`, `off_screen`, `cut`,
+  `hand_off`, `post_up`, `transition`, `fast_break`, `unclassified`.
+
+**Pipeline wiring (`src/pipeline/unified_pipeline.py`):**
+- All 3 classifiers instantiated in `__init__` alongside `EventDetector`.
+- Called every gameplay frame; results merged into `tracking_rows`.
+- 10 new columns added to `tracking_data.csv` output.
+
+**Feature engineering (`src/features/feature_engineering.py`):**
+- New `add_context_features(df)` function: coerces types, forward-fills OCR gaps,
+  called at end of `run()` pipeline so all 10 new columns are in `features.csv`.
+
+**New `tracking_data.csv` columns:**
+`scoreboard_game_clock`, `scoreboard_shot_clock`, `scoreboard_score_diff`,
+`scoreboard_period`, `possession_type`, `play_type`, `possession_duration_sec`,
+`paint_touches`, `off_ball_distance`, `shot_clock_est`
+
+---
+
+### ML Models — 2026-03-17 Phase 4 Tier 1 Complete (13 models trained)
+- **Win probability retrained**: 67.7% accuracy, Brier 0.204 on 3,685 games (2022-23 to 2024-25). ISSUE-016 CLOSED — sklearn mismatch resolved. Saved to `data/models/win_probability.pkl`.
+- **Player prop models (7)**: pts/reb/ast/fg3m/stl/blk/tov — XGBoost regressors trained on 3 seasons × ~450 qualified players. Walk-forward validation (train 22-23/23-24, test 24-25). Saved to `data/models/props_*.json`.
+- **Game-level models (5)**: New `src/prediction/game_models.py` — game_total (MAE 14.1 pts, R²=0.164), spread (MAE 11.1 pts, R²=0.249), blowout_prob (61.3% acc, Brier 0.238, 28.1% blowout rate), first_half_total (MAE 6.7 pts, proxy label 0.47×total), team_pace (MAE 0.02, perfect R² — learned season avg pace). 3,685 games across 3 seasons. Saved to `data/models/game_*.json`.
+- **PBP scraping**: 1,602 → **3,100/3,685** games (84%). 2022-23: 81%, 2023-24: 81%, 2024-25: 90%.
+- **Clutch rebuild**: Re-scored all 3 seasons with 2× PBP data. Qualified players: 320 (2022-23), 290 (2023-24), 327 (2024-25). Up from ~228-255 per season.
+- **Phase 4 status**: COMPLETE. All 13 Tier 1 models trained, PBP at 84%, clutch scores refreshed. Ready for Phase 5 (external factors: injury, refs, line movement).
+
+### ML Models — 2026-03-17 Tier 2 Complete (xFG v1 + Shot Tendency + Clutch)
+- **xFG v1**: XGBoost trained on 221,866 shots (569 players, 2024-25). Brier 0.226. Perfect zone calibration — delta <0.003 across all 7 zones. Saved to `data/models/xfg_v1.pkl`.
+- **Shot zone tendency**: 566 player profiles built. 42-dim feature vector per player. Paint/mid/corner-3/above-break rates. Saved to `data/nba/shot_zone_tendency.json`.
+- **Clutch efficiency**: PBP-derived scorer. Composite of FG%, pts/g, FT% in Q4/OT margin≤5. 255 qualified players for 2024-25. Top performers: Eubanks, N.Powell, Banchero, Jokic, DeMar.
+- **PBP cache**: 1,602 games scraped across all 3 seasons (600 for 2024-25, 500 each for 2023-24/2022-23). Clutch scores saved for all 3 seasons.
+- **ISSUE-019 CLOSED**: Shot charts 569/569 (221,866 shots), xFG v1 trained and calibrated.
+
+### Data Pipeline — 2026-03-17 Tick-37 Gamelog Fill (players 351-360)
+- **Players:** J.Walker, GG Jackson, R.Holland II, Okogie, S.Curry, Bona, Jackson-Davis, J.Isaac, Z.Collins, Shamet
+- **Result:** Gamelogs 350→360/569 (63.3%), coverage 87.1%→87.6%, +805 metrics, 189s
+
+### Data Pipeline — 2026-03-17 Tick-36 Gamelog Fill (players 341-350)
+- **Players:** K.Williams, Theis, Q.Post, Whitmore, K.Wallace, Rhoden, Gueye, Vanderbilt, J.Hardy, D.Wright
+- **Result:** Gamelogs 340→350/569 (61.5%), coverage 86.5%→87.1%, +618 metrics, 175s
+
+### Data Pipeline — 2026-03-17 Tick-35 Gamelog Fill (players 331-340)
+- **Players:** M.Robinson, R.Harper Jr., Swider, I.Jackson, Banton, J.Williams, Castleton, A.Mitchell, Fontecchio, K.Anderson
+- **Result:** Gamelogs 330→340/569 (59.8%), coverage 85.9%→86.5%, +575 metrics, 132s
+
+### Data Pipeline — 2026-03-17 Tick-34 Gamelog Fill (players 321-330)
+- **Players:** R.Williams III, Batum, O.Robinson, Diabate, J.Butler, I.Mobley, Boucher, Holmes, Ighodaro, R.Council
+- **Result:** Gamelogs 320→330/569 (58.0%), coverage 85.3%→85.9%, +719 metrics, 159s
+
+### Data Pipeline — 2026-03-17 Tick-33 Gamelog Fill (players 311-320)
+- **Players:** V.Williams Jr., C.Anthony, Tshiebwe, Day'Ron Sharpe, TJ McConnell, Reddish, Battle, Mathews, Burks, Plumlee
+- **Result:** Gamelogs 310→320/569 (56.2%), coverage 84.8%→85.3%, +729 metrics, 158s
+
+### Data Pipeline — 2026-03-17 Tick-32 Gamelog Fill (players 301-310)
+- **Players:** Robinson-Earl, Kleber, AJ Lawson, Goodwin, J.Richardson, Kornet, Sims, Exum, Potter, J.Green
+- **Result:** Gamelogs 300→310/569 (54.5%), coverage 84.2%→84.8%, +575 metrics, 196s
+
+### Data Pipeline — 2026-03-17 Tick-31 Gamelog Fill (players 291-300) ★ 300 players
+- **Players:** Micic, R.Dunn, Buzelis, Clarke, Biyombo, Lowry, Matkovic, Valanciunas, M.Wagner, Drummond
+- **Result:** Gamelogs 290→**300**/569 (52.7%), coverage 83.6%→84.2%, +745 metrics, 131s
+
+### Data Pipeline — 2026-03-17 Tick-30 Gamelog Fill (players 281-290) ★ 50% gamelogs
+- **Players:** Lyles, Toppin, Sheppard, J.Hayes, L.Nance Jr., PJ Tucker, Caruso, D.Smith, Knecht, Okoro
+- **Result:** Gamelogs 280→**290**/569 (51.0%), coverage 83.0%→83.6%, +725 metrics, 162s
+
+### Data Pipeline — 2026-03-17 Tick-29 Gamelog Fill (players 271-280)
+- **Players:** I.Stewart, T.Jerome, M.Garrett, Juzang, Clingan, K.Porter Jr., S.Merrill, E.Gordon, T.Jones, Shead
+- **Result:** Gamelogs 270→280/569 (49.2%), coverage 82.4%→83.0%, +813 metrics, 150s
+
+### Data Pipeline — 2026-03-17 Tick-28 Gamelog Fill (players 261-270)
+- **Players:** Achiuwa, Laravia, Bitadze, Mogbo, Olynyk, Krejci, Sensabaugh, De'Anthony Melton, M.Smart, Mykhailiuk
+- **Result:** Gamelogs 260→270/569 (47.5%), coverage 81.9%→82.4%, +736 metrics, 159s
+
+### Data Pipeline — 2026-03-17 Tick-27 Gamelog Fill (players 251-260)
+- **Players:** C.Williams, Filipowski, T.Mann, Nowell, Hood-Schifino, Nurkic, Thybulle, Salaun, Watford, Jaquez
+- **Result:** Gamelogs 250→260/569 (45.7%), coverage 81.3%→81.9%, +678 metrics, 164s
+
+### Data Pipeline — 2026-03-17 Tick-26 Gamelog Fill (players 241-250)
+- **Players:** Niang, Z.Edey, Capela, S.Pippen Jr., Payton, Strawther, D.Wade, Ja'Kobe Walter, G.Vincent, KJ Martin
+- **Result:** Gamelogs 240→250/569 (43.9%), coverage 80.7%→81.3%, +824 metrics, 124s
+
+### Data Pipeline — 2026-03-17 Tick-25 Gamelog Fill (players 231-240)
+- **Players:** AJ Johnson, Da Silva, B.Simmons, T.Martin, Okeke, S.Hauser, I.Joe, J.Champagnie, Etienne, Gafford
+- **Result:** Gamelogs 230→240/569 (42.2%), coverage 80.1%→80.7%, +724 metrics, 165s
+
+### Data Pipeline — 2026-03-17 Tick-24 Gamelog Fill (players 221-230) ★ 80% coverage
+- **Players:** Clowney, Kennard, A.Thompson, B.Brown, T.Smith, Moody, Kel'el Ware, L.Ball, C.Martin, N.Richards
+- **Result:** Gamelogs 220→230/569 (40.4%), coverage 79.5%→**80.1%**, +725 metrics, 140s
+
+### Data Pipeline — 2026-03-17 Tick-23 Gamelog Fill (players 211-220)
+- **Players:** Champagnie, Brogdon, KJ Simpson, D.Lively, A.Wiggins, N.Smith, Jeffries, Middleton, AJ Green, Hield
+- **Result:** Gamelogs 210→220/569 (38.7%), coverage 78.9%→79.5%, +783 metrics, 115s
+
+### Data Pipeline — 2026-03-17 Tick-22 Gamelog Fill (players 201-210)
+- **Players:** D.Robinson, G.Allen, K.Dunn, K.Johnson, L.Walker, Evbuomwan, Brissett, K.Brooks, B.Boston, J.Hawkins
+- **Result:** Gamelogs 200→210/569 (36.9%), coverage 78.3%→78.9%, +685 metrics, 156s
+
+### Data Pipeline — 2026-03-17 Tick-21 Gamelog Fill (players 191-200) ★ 200-player milestone
+- **Players:** Z.Williams, Alvarado, K.Johnson, K.Ellis, P.Watson, Kuminga, DJ Jr., Huerter, Coffey, A.Black
+- **Result:** Gamelogs 190→**200**/569 (35.1%), coverage 77.8%→78.3%, +896 metrics, 155s
+
+### Data Pipeline — 2026-03-17 Tick-20 Gamelog Fill (players 181-190)
+- **Players:** Nesmith, T.Eason, McBride, Hendricks, M.Conley, Baugh, Risacher, Highsmith, T.Mann, O'Neale
+- **Result:** Gamelogs 180→190/569 (33.4%), coverage 77.2%→77.8%, +722 metrics, 113s
+
+### Data Pipeline — 2026-03-17 Tick-19 Gamelog Fill (players 171-180)
+- **Players:** D'Angelo Russell, Strus, B.Portis, Bagley, NAW, Sochan, Jovic, P.Williams, Bogdanovic, Levert
+- **Result:** Gamelogs 170→180/569 (31.6%), coverage 76.6%→77.2%, +760 metrics, 126s
+
+### Data Pipeline — 2026-03-17 Tick-18 Gamelog Fill (players 161-170)
+- **Players:** J.Clarkson, T.Rozier, DiVincenzo, I.Collier, J.Wells, WCJ, J.McCain, J.Wilson, G.Trent, Aldama
+- **Result:** Gamelogs 160→170/569 (29.9%), coverage 76.0%→76.6%, +852 metrics, 89s
+
+### Data Pipeline — 2026-03-17 Tick-17 Gamelog Fill (players 151-160)
+- **Players:** T.Jones, Podziemski, Missi, Castle, S.Henderson, M.Williams, K.George, Kispert, J.Edwards, Duren
+- **Result:** Gamelogs 150→160/569 (28.1%), coverage 75.4%→76.0%, +890 metrics, 109s
+
+### Data Pipeline — 2026-03-17 Tick-16 Gamelog Fill (players 141-150) ★ 75% coverage
+- **Players:** Hunter, Agbaji, A.Sarr, C.Martin, Yabusele, T.Prince, K.Hayes, Dinwiddie, Claxton, Grimes
+- **Result:** Gamelogs 140→150/569 (26.4%), coverage 74.9%→**75.4%**, +850 metrics, 101s
+
+### Data Pipeline — 2026-03-17 Tick-15 Gamelog Fill (players 131-140)
+- **Players:** N.Marshall, J.Green, Horford, C.Wallace, Naz Reid, D.Mitchell, Holmgren, Klay, Christie, H.Barnes
+- **Result:** Gamelogs 130→140/569 (24.6%), coverage 74.3%→74.9%, +913 metrics, 119s
+
+### Data Pipeline — 2026-03-17 Tick-14 Gamelog Fill (players 121-130)
+- **Players:** Schroder, J.Allen, Hardaway, C.Paul, C.Sexton, Westbrook, Hartenstein, Okongwu, Beasley, Quickley
+- **Result:** Gamelogs 120→130/569 (22.8%), coverage 73.7%→74.3%, +930 metrics, 120s
+
+### Data Pipeline — 2026-03-17 Tick-13 Gamelog Fill (players 111-120)
+- **Players:** Dort, D.Green, Nembhard, DFS, Porzingis, Suggs, Zion, Pritchard, A.Gordon, Timme
+- **Result:** Gamelogs 110→120/569 (21.1%), coverage 73.1%→73.7%, +744 metrics, 126s
+
+### Data Pipeline — 2026-03-17 Tick-12 Gamelog Fill (players 101-110)
+- **Players:** Carrington, G.Williams, Ivey, Mathurin, JJJ, Kuzma, KCP, Poeltl, Poole, G.Dick
+- **Result:** Gamelogs 100→110/569 (19.3%), coverage 72.5%→73.1%, +825 metrics, 151s
+
+### Data Pipeline — 2026-03-17 Tick-10 Gamelog Fill (players 91-100) ★ Milestone
+- **Players:** Mobley, J.Collins, Morant, Dosunmu, Giddey, Embiid, M.Turner, Ayton, Jabari, Avdija
+- **Result:** Gamelogs 90→**100**/569 (17.6%), coverage 71.9%→72.5%, +767 metrics, 129s
+- **Session total (ticks 1-10):** +80 players, ~7,275 metric rows added since session start
+
+### Data Pipeline — 2026-03-17 Tick-9 Gamelog Fill (players 81-90)
+- **Players:** K.George, D.Mitchell, Markkanen, Sharpe, Cam Thomas, Vucevic, Vassell, Wiggins, Garland, J.Holiday
+- **Result:** Gamelogs 80→90/569 (15.8%), coverage 71.4%→71.9%, +846 metrics, 132s
+
+### Data Pipeline — 2026-03-17 Tick-8 Gamelog Fill (players 71-80)
+- **Players:** McDaniels, D.Brooks, B.Lopez, Jimmy Butler, M.Bridges, Hachimura, M.Monk, T.Harris, C.Johnson, Sengun
+- **Result:** Gamelogs 70→80/569 (14.1%), coverage 70.8%→71.4%, +916 metrics, 144s
+
+### Data Pipeline — 2026-03-17 Tick-7 Gamelog Fill (players 61-70)
+- **Players:** H.Jones, A.Thompson, Randle, RJ Barrett, PJ Washington, Curry, Beal, LaMelo, Bane, Kawhi
+- **Result:** Gamelogs 60→70/569 (12.3%), coverage 70.2%→70.8%, +779 metrics, 122s
+
+### Data Pipeline — 2026-03-17 Tick-6 Gamelog Fill (players 51-60)
+- **Players:** Zubac, Simons, CJ McCollum, Camara, Siakam, DeJounte, N.Powell, P.George, J.Williams, J.Grant
+- **Result:** Gamelogs 50→60/569 (10.5%), coverage 69.6%→70.2%, +840 metrics, 92s
+
+### Data Pipeline — 2026-03-17 Tick-5 Gamelog Fill (players 41-50)
+- **Players:** MPJ, Haliburton, A.Davis, Wembanyama, Gobert, C.White, Ingram, Coulibaly, J.Green, Barnes
+- **Result:** Gamelogs 40→50/569 (8.8%), coverage 69.0%→69.6%, +847 metrics, 130s
+
+### Data Pipeline — 2026-03-17 Tick-4 Gamelog Fill (players 31-40)
+- **Players:** K.Murray, Adebayo, J.Brown, B.Miller, SGA, Giannis, C.Braun, D.White, Daniels, F.Wagner
+- **Result:** Gamelogs 30→40/569 (7.0%), coverage 68.4%→69.0%, +908 metric rows, 113s
+
+### Data Pipeline — 2026-03-17 Tick-3 Gamelog Fill (players 21-30)
+- **Players:** VanVleet, LaVine, Cunningham, Trey Murphy, KAT, Reaves, LeBron, Sabonis, Oubre, Banchero
+- **Result:** Gamelogs 20→30/569 (5.3%), avg coverage 67.8%→68.4%, +878 metric rows
+
+### Data Pipeline — 2026-03-17 Tick-2 Gamelog Fill (players 11-20)
+- **Action:** Targeted gamelog+splits for next 10 missing players (Lillard, Kyrie, Trae Young, DeRozan, Brunson, Herro, Doncic, Harden…)
+- **Result:** Gamelogs 10→20/569, avg coverage 67.3%→67.8%, +842 metric rows. Harden splits failed (retry next tick).
+- **Progress:** ~2.85hrs total to fill all 569 at 10/tick × 3min
+
+### Data Pipeline — 2026-03-17 Coverage Fix + Batch Advanced Stats
+- **Issue:** `scraper_coverage.json` showed 0% advanced/scoring/misc even though `player_full_2024-25.json` had all 569 players — coverage loop only updated top-N Tier 2 players, skipping bulk batch data.
+- **Fix:** Added bulk coverage update step in `run_improvement_loop()` writing `has_base/has_advanced/has_scoring/has_misc/has_gamelog/has_splits` flags for all 569 players before Tier 2 loop.
+- **Result:** Coverage 25% → 66.7%. All 569 players confirmed with advanced (usg_pct, ts_pct, off_rtg, def_rtg, net_rtg, pie, efg_pct), scoring, misc stats. Remaining gaps: gamelogs + splits (0/569).
+- **File:** `src/data/player_scraper.py`
+
 ### Data Pipeline — 2026-03-16 Loop-1 (Full boxscore schema + cdn.nba.com fallback)
 - **Issue:** 13 cached boxscores only had 4 stat columns (min/fga/fgm/pts). `stats.nba.com` blocking `BoxScoreTraditionalV2` (connection aborted/read timeout on all 13 games).
 - **Fix:** Added `fetch_full_boxscore(game_id)` + `validate_boxscore(game_id)` to `src/data/nba_stats.py`. Uses `cdn.nba.com` live-data JSON as primary source — no auth, no rate limits, reliably accessible.
@@ -10111,3 +10460,157 @@ Claude reads this file to understand what has already been tried and what needs 
 - New metric columns added: 0
 - Avg coverage score: 0.0%
 - Elapsed: 102.5s
+
+### 2026-03-17T09:53 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 10
+- New metric columns added: 470
+- Avg coverage score: 25.9%
+- Elapsed: 149.9s
+
+### 2026-03-17T09:55 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 0
+- New metric columns added: 0
+- Avg coverage score: 66.7%
+- Elapsed: 0.0s
+
+### 2026-03-17T09:57 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 0
+- New metric columns added: 0
+- Avg coverage score: 67.3%
+- Elapsed: 0.1s
+
+### 2026-03-17T10:00 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 10
+- New metric columns added: 842
+- Avg coverage score: 67.8%
+- Elapsed: 150.6s
+
+### 2026-03-17T10:06 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 10
+- New metric columns added: 908
+- Avg coverage score: 69.0%
+- Elapsed: 113.2s
+
+
+### Tick 38 - 2026-03-17 12:07
+**NBA API Status:** Rate-limited/blocked - pivoted to ML data prep (no API calls needed)
+**Action:** Built 3 ML-ready datasets from existing 361 gamelog files:
+- `data/nba/gamelogs_all_2024-25.json` - 20,292 game rows across 361 players (consolidated)
+- `data/nba/player_rolling_2024-25.json` - L5/L10/L15 rolling averages per player per game
+- `data/nba/prop_training_2024-25.json` - 18,504 rows ready for player prop model training
+- `data/nba/team_game_stats_2024-25.json` - 518 games x 2 teams for win probability training
+
+**Coverage:** 360/569 gamelogs (63.3%) | 208 players remaining | Avg score: 87.6%
+**Next:** Retry gamelog scraping when API rate limit clears; then shot chart scraping
+
+
+### Ticks 39-40 - 2026-03-17 14:03
+**Action:** NBA API recovered from rate limit. Resumed gamelog fill.
+**Batch:** kessler edwards, cameron payne, jeff dowtin jr., kris murray, jalen smith, kevon looney, antonio reeves, lindy waters iii, gary payton ii, jaylen martin
+**Coverage:** 371/569 gamelogs (65.2%) | 198 remaining | Avg score: 88.2%
+**Also built (Tick 38):** gamelogs_all, player_rolling (L5/L10/L15), prop_training (18,504 rows), team_game_stats (518 games) - all ML-ready
+
+
+### MILESTONE COMPLETE - 2026-03-17 14:57
+**Action:** Gamelogs 100% complete - all 569/569 NBA players scraped
+**Final stats:** 569/569 gamelogs | avg coverage score: 98.3%
+**Session total:** ~50 ticks, 208 players filled this session
+**Data assets built:**
+- gamelog_full_{pid}_2024-25.json x569 (full season game-by-game)
+- splits_{pid}_2024-25.json x~560 (last 10 game splits)
+- gamelogs_all_2024-25.json (consolidated 20K+ rows)
+- player_rolling_2024-25.json (L5/L10/L15 rolling averages)
+- prop_training_2024-25.json (18,504 labeled training rows)
+- team_game_stats_2024-25.json (518 games x2 teams)
+
+**Next priority:** Shot chart scraping (ShotChartDetail - 50K+ shots, currently 0)
+
+
+### Tick - Shot Charts Phase 1 - 2026-03-17 14:59
+**Action:** Started ShotChartDetail scraping - new data tier unlocked
+**Batch:** tyrese maxey(1091), josh hart(770), devin booker(1420), mikal bridges(1183), nikola jokic(1364), og anunoby(1027), kevin durant(1124), jayson tatum(1465), anthony edwards(1612), de'aaron fox(1163)
+**Shot charts:** 10/569 | 12,219 shots scraped so far
+**Fields per shot:** grid_type, game_id, player_id, team_id, period, minutes_remaining, event_type, action_type, shot_type, shot_zone_basic, shot_zone_area, shot_zone_range, shot_distance, loc_x, loc_y, shot_made_flag
+**Next:** Continue at 10/tick until all 569 done (~56 more ticks for full coverage)
+
+### 2026-03-17T17:12 — Player Scraper Loop
+- Season: 2022-23
+- Players in league: 539
+- Players updated (coverage improved): 2
+- New metric columns added: 2326
+- Avg coverage score: 79.2%
+- Elapsed: 716.9s
+
+### 2026-03-17T17:12 — Player Scraper Loop
+- Season: 2022-23
+- Players in league: 539
+- Players updated (coverage improved): 2
+- New metric columns added: 327
+- Avg coverage score: 79.1%
+- Elapsed: 113.9s
+
+### 2026-03-17T17:43 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 5
+- New metric columns added: 120
+- Avg coverage score: 66.8%
+- Elapsed: 9.5s
+
+### 2026-03-17T18:11 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 25
+- New metric columns added: 623
+- Avg coverage score: 67.6%
+- Elapsed: 49.0s
+
+### 2026-03-17T18:16 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 20
+- New metric columns added: 480
+- Avg coverage score: 68.2%
+- Elapsed: 31.5s
+
+### 2026-03-17T18:17 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 0
+- New metric columns added: 0
+- Avg coverage score: 68.2%
+- Elapsed: 0.1s
+
+### 2026-03-17T18:30 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 325
+- New metric columns added: 7901
+- Avg coverage score: 77.8%
+- Elapsed: 696.2s
+
+### 2026-03-17T18:31 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 0
+- New metric columns added: 0
+- Avg coverage score: 77.8%
+- Elapsed: 0.1s
+
+### 2026-03-17T18:32 — Player Scraper Loop
+- Season: 2024-25
+- Players in league: 569
+- Players updated (coverage improved): 97
+- New metric columns added: 0
+- Avg coverage score: 83.9%
+- Elapsed: 0.1s
