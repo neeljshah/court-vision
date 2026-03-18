@@ -384,6 +384,120 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_per100_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add pace-adjusted per-100-possession normalizations.
+
+    Uses possession_run changes to estimate possession count per frame window,
+    then normalizes event counts and distance stats to per-100-possession rates.
+
+    New columns:
+      possessions_est          — cumulative possession count up to this frame
+      shots_per100             — shots_90 normalized to per-100-possessions
+      passes_per100            — passes_90 normalized
+      dribbles_per100          — dribbles_90 normalized
+      dist_per100_{W}          — dist_traveled_{W} normalized
+    """
+    df = df.copy()
+
+    # Estimate possession count: each time possession_run resets to 1 = new possession.
+    if "possession_run" in df.columns:
+        # Aggregate to one row per frame (possession_run is frame-level)
+        frame_pr = (
+            df.groupby("frame")["possession_run"]
+            .first()
+            .reset_index()
+            .sort_values("frame")
+        )
+        # New possession starts when possession_run == 1 (reset)
+        frame_pr["new_poss"] = (frame_pr["possession_run"] == 1).astype(int)
+        frame_pr["possessions_est"] = frame_pr["new_poss"].cumsum().clip(lower=1)
+
+        poss_map = frame_pr.set_index("frame")["possessions_est"].to_dict()
+        df["possessions_est"] = df["frame"].map(poss_map).fillna(1)
+
+        # Per-100 normalized event rates (use 90-frame window cols if available)
+        _event_win = 90
+        for evt in ("shots", "passes", "dribbles"):
+            col = f"{evt}_{_event_win}"
+            if col in df.columns:
+                # per-100 = (events_in_window / possessions_in_window) * 100
+                # Approximate possessions in window as possessions_est rolling change
+                # Use simple ratio: clip_events / total_possessions * 100
+                df[f"{evt}_per100"] = (
+                    (df[col] / df["possessions_est"].clip(lower=1)) * 100
+                ).round(1)
+
+        # Per-100 normalized distance traveled
+        for w in _WINDOWS:
+            dcol = f"dist_traveled_{w}"
+            if dcol in df.columns:
+                df[f"dist_per100_{w}"] = (
+                    df.groupby("player_id", group_keys=False).apply(
+                        lambda g: (
+                            g[dcol] / g["possessions_est"].clip(lower=1) * 100
+                        ).round(1)
+                    )
+                )
+    return df
+
+
+def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Normalise and propagate scoreboard / possession / play-type columns that
+    are written by the unified pipeline into tracking_data.csv.
+
+    New columns (already present if pipeline ran with the new classifiers;
+    silently skipped if absent so old CSVs remain compatible):
+      scoreboard_game_clock  — float, seconds remaining in period
+      scoreboard_shot_clock  — float, shot clock value
+      scoreboard_score_diff  — int, home minus away score
+      scoreboard_period      — int, 1-4 or 5 for OT
+      possession_type        — categorical string
+      play_type              — categorical string
+      possession_duration_sec — float
+      paint_touches          — int
+      off_ball_distance      — float
+      shot_clock_est         — float, 24 minus possession duration
+
+    Args:
+        df: Tracking DataFrame (may or may not contain the new columns).
+
+    Returns:
+        DataFrame with context columns coerced to correct dtypes.
+    """
+    df = df.copy()
+
+    _float_cols = [
+        "scoreboard_game_clock", "scoreboard_shot_clock",
+        "possession_duration_sec", "off_ball_distance", "shot_clock_est",
+    ]
+    _int_cols = [
+        "scoreboard_score_diff", "scoreboard_period", "paint_touches",
+    ]
+    _str_cols = ["possession_type", "play_type"]
+
+    for col in _float_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    for col in _int_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+
+    for col in _str_cols:
+        if col in df.columns:
+            df[col] = df[col].fillna("unknown").astype(str)
+
+    # Forward-fill scoreboard values within each frame group — they are
+    # written once per 30-frame OCR window, so non-OCR frames are empty.
+    for col in _float_cols + _int_cols:
+        if col in df.columns:
+            df[col] = df[col].ffill().bfill()
+
+    return df
+
+
 def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     """
     Full feature engineering pipeline.
@@ -401,6 +515,8 @@ def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     df = add_momentum_features(df)
     df = add_basket_features(df)
     df = add_game_flow_features(df)
+    df = add_per100_features(df)
+    df = add_context_features(df)
     df = df.sort_values(["frame", "player_id"]).reset_index(drop=True)
 
     if output_path is None:

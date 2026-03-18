@@ -157,5 +157,96 @@ def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     return out
 
 
+def scoring_run_length(scored_teams: list[str]) -> int:
+    """
+    Length of the current consecutive scoring run by one team.
+
+    Args:
+        scored_teams: Ordered list of team labels that scored on each possession
+                      (e.g. ["A","A","B","A","A","A"]).  Non-scoring possessions
+                      should be omitted or handled upstream.
+
+    Returns:
+        Length of the trailing consecutive run by the same team.
+        0 if the list is empty.
+    """
+    if not scored_teams:
+        return 0
+    current = scored_teams[-1]
+    run = 0
+    for t in reversed(scored_teams):
+        if t == current:
+            run += 1
+        else:
+            break
+    return run
+
+
+def momentum_shift_flag(
+    scores_a: list[int],
+    scores_b: list[int],
+    window: int = 10,
+    swing_threshold: int = 5,
+) -> int:
+    """
+    Return 1 when a 5+ point swing has occurred within the last `window` possessions.
+
+    Compares cumulative score of team A vs team B across the last `window`
+    entries; if |Δ(cumA - cumB)| >= swing_threshold the flag is set.
+
+    Args:
+        scores_a:        List of points scored by team A per possession (0 or 2/3).
+        scores_b:        List of points scored by team B per possession (0 or 2/3).
+        window:          Lookback possession count (default 10).
+        swing_threshold: Point swing that triggers the flag (default 5).
+
+    Returns:
+        1 if swing occurred, 0 otherwise.
+    """
+    if not scores_a or not scores_b:
+        return 0
+    # Use the last `window` entries from both lists
+    recent_a = scores_a[-window:]
+    recent_b = scores_b[-window:]
+    swing = abs(sum(recent_a) - sum(recent_b))
+    return 1 if swing >= swing_threshold else 0
+
+
+def pressure_trend(
+    pressure_values: list[float],
+    window: int = 30,
+) -> float:
+    """
+    Rolling slope of defensive pressure values over the last `window` frames.
+
+    A positive slope means pressure is rising; negative means easing.
+
+    Args:
+        pressure_values: Ordered list of defensive pressure scores (0–1).
+        window:          Lookback window in frames (default 30).
+
+    Returns:
+        Slope (float) of the linear trend across the window.
+        0.0 if fewer than 2 data points are available.
+    """
+    if not pressure_values or len(pressure_values) < 2:
+        return 0.0
+    recent = pressure_values[-window:]
+    if len(recent) < 2:
+        return 0.0
+    n = len(recent)
+    x = np.arange(n, dtype=float)
+    y = np.array(recent, dtype=float)
+    # Slope via least-squares formula: (n*Σxy - Σx*Σy) / (n*Σx² - (Σx)²)
+    sx = x.sum()
+    sy = y.sum()
+    sxy = (x * y).sum()
+    sx2 = (x ** 2).sum()
+    denom = n * sx2 - sx ** 2
+    if denom == 0:
+        return 0.0
+    return float((n * sxy - sx * sy) / denom)
+
+
 if __name__ == "__main__":
     run()

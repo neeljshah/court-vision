@@ -18,6 +18,8 @@ DEFAULTS: Dict[str, Any] = {
     "reid_threshold":        0.45,   # max appearance distance to accept re-ID
     "gallery_ttl":           300,    # frames a gallery entry stays valid
     "kalman_fill_window":    5,      # Kalman gap-fill: fill if lost_age <= this
+    # OSNet pre-trained weights (optional — skip load if file not found)
+    "osnet_weights_path":    "data/models/osnet_x0_25_imagenet.pth",
 }
 
 

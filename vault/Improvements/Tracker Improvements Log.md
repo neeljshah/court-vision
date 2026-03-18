@@ -1,5 +1,13 @@
 # Tracker Improvements Log
 
+### Speed + Bug Fix — 2026-03-17 (session 4)
+
+**Benchmark: 5.1 fps → 5.7 fps (+12%) on RTX 4060 · cavs_vs_celtics_2025.mp4 · 300 frames**
+
+- **`imgsz=1280 → 640`** on detection model (`advanced_tracker.py` line 746): ~3.5x faster YOLO inference per frame; gameplay detection at 640 already confirmed working via `_is_gameplay` check. Pose model kept at 1280 for keypoint resolution. Tests: 78 pass.
+- **Bug fix — 256 vs 99-dim embedding crash** (`_match_team`): when lapx is absent, `_match_team` was calling `_compute_appearance` (99-dim HSV) against slots that stored OSNet embeddings (256-dim from `_update_appearance`). Fixed by pre-computing detection embeddings before cost loop, using `det["deep_emb"]` if available (matching `_match_team_bytetrack` pattern). Also caches appearance per-det (O(n_dets) not O(n_slots×n_dets)).
+- **Full 2016 Finals Game 7 started**: 1.79h clip, game_id=0022400188, writing to `data/full_game_run.log`. ETA ~5-7h at 5.7fps.
+
 ### Phase 2.5 CV Tracker Upgrades — 2026-03-17 (session 3)
 
 **5 tasks completed — tracker quality + robustness:**
@@ -76,7 +84,7 @@
   - `TestLineMonitor` (6): game lines found/not-found, sharp signal, no-key graceful, network failure
   - `TestUnifiedPipelinePgWrite` (3): rows attempted, no-URL skip, no-game-id skip
 
-**Shot chart scraping:** `--all-seasons` running in background — 2024-25 already complete (569 files, 221,866 shots); 2022-23 and 2023-24 scraping in progress.
+**Shot chart scraping:** ✅ COMPLETE — 1,707 files across all 3 seasons (569 × 3), 0 failures. Enables Tier 2 model retraining with 3-season shot quality features.
 
 **Test suite:** 727 passed, 2 skipped (was 637 before Phase 5) — 0 regressions.
 

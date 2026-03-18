@@ -1286,3 +1286,278 @@ def test_event_detector_none_without_ball():
     assert result == "none", (
         f"Expected 'none' when ball_pos is None and no tracks, got {result!r}"
     )
+
+
+# ── ByteTrack / pose / optical-flow additions ─────────────────────────────────
+
+def _make_players_11():
+    """Helper: build the standard 5-green / 5-white / 1-ref player list."""
+    import numpy as np
+    from src.tracking.player import Player
+    from src.tracking.player_detection import COLORS, hsv2bgr
+
+    wc = hsv2bgr(COLORS["white"][2])
+    gc = hsv2bgr(COLORS["green"][2])
+    rc = hsv2bgr(COLORS["referee"][2])
+    return [
+        Player(1, "green",   gc), Player(2, "green",   gc),
+        Player(3, "green",   gc), Player(4, "green",   gc),
+        Player(5, "green",   gc), Player(6, "white",   wc),
+        Player(7, "white",   wc), Player(8, "white",   wc),
+        Player(9, "white",   wc), Player(10, "white",  wc),
+        Player(0, "referee", rc),
+    ]
+
+
+def test_bytetrack_high_conf_det_matched():
+    """ByteTrack Stage-1: high-confidence detection (score=0.9) must be matched."""
+    import numpy as np
+    from src.tracking.advanced_tracker import AdvancedFeetDetector, _compute_appearance
+    from src.tracking.player_detection import COLORS, hsv2bgr
+
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+
+    crop    = np.full((40, 80, 3), (255, 0, 255), dtype=np.uint8)
+    bbox    = (10, 10, 90, 50)
+    slot_w  = 5  # first white slot
+
+    tracker._appearances[slot_w] = _compute_appearance(crop)
+    tracker._kf_pred[slot_w]     = bbox
+    players[5].previous_bb       = bbox
+
+    det = {
+        "bbox":     bbox,
+        "team":     "white",
+        "homo":     (100, 100),
+        "color":    hsv2bgr(COLORS["white"][2]),
+        "crop_bgr": crop,
+        "score":    0.90,          # high-confidence
+    }
+    matched, _u_slots, unmatched_dets = tracker._match_team_bytetrack("white", [det])
+    assert len(matched) == 1 and unmatched_dets == [], (
+        f"High-conf det not matched in Stage-1: matched={matched}, "
+        f"unmatched_dets={unmatched_dets}"
+    )
+
+
+def test_bytetrack_low_conf_det_matched_via_stage2():
+    """ByteTrack Stage-2: low-conf det (score=0.38) must match via IoU when IoU>0.5."""
+    import numpy as np
+    from src.tracking.advanced_tracker import AdvancedFeetDetector
+    from src.tracking.player_detection import COLORS, hsv2bgr
+
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+
+    bbox   = (10, 10, 90, 50)
+    slot_w = 5
+    # No appearance seeded — Stage-1 will not match; Stage-2 should match on IoU
+    tracker._kf_pred[slot_w] = bbox   # Kalman prediction == det bbox → IoU = 1.0
+    players[5].previous_bb   = bbox
+
+    det = {
+        "bbox":     bbox,
+        "team":     "white",
+        "homo":     (100, 100),
+        "color":    hsv2bgr(COLORS["white"][2]),
+        "crop_bgr": np.full((40, 80, 3), (200, 200, 200), dtype=np.uint8),
+        "score":    0.38,           # below BT_HIGH_THRESH=0.50 → byte detection
+    }
+    matched, _u_slots, unmatched_dets = tracker._match_team_bytetrack("white", [det])
+    assert len(matched) == 1 and unmatched_dets == [], (
+        f"Low-conf byte detection not matched in Stage-2: matched={matched}, "
+        f"unmatched_dets={unmatched_dets}"
+    )
+
+
+def test_bytetrack_no_score_key_falls_back_to_high_conf():
+    """_match_team_bytetrack must handle dets without 'score' key (legacy dicts)."""
+    import numpy as np
+    from src.tracking.advanced_tracker import AdvancedFeetDetector, _compute_appearance
+    from src.tracking.player_detection import COLORS, hsv2bgr
+
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+
+    crop   = np.full((40, 80, 3), (255, 0, 255), dtype=np.uint8)
+    bbox   = (10, 10, 90, 50)
+    slot_w = 5
+
+    tracker._appearances[slot_w] = _compute_appearance(crop)
+    tracker._kf_pred[slot_w]     = bbox
+    players[5].previous_bb       = bbox
+
+    det_no_score = {           # no 'score' key — must default to 1.0 (high-conf)
+        "bbox":     bbox,
+        "team":     "white",
+        "homo":     (100, 100),
+        "color":    hsv2bgr(COLORS["white"][2]),
+        "crop_bgr": crop,
+    }
+    matched, _u_slots, unmatched_dets = tracker._match_team_bytetrack(
+        "white", [det_no_score]
+    )
+    assert len(matched) == 1, (
+        "Legacy det without 'score' key not treated as high-conf in ByteTrack"
+    )
+
+
+def test_tracker_has_pose_attributes():
+    """AdvancedFeetDetector must expose _use_pose and _pose_model attributes."""
+    from src.tracking.advanced_tracker import AdvancedFeetDetector
+
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+    assert hasattr(tracker, "_use_pose"), "_use_pose attribute missing"
+    assert hasattr(tracker, "_pose_model"), "_pose_model attribute missing"
+    assert isinstance(tracker._use_pose, bool), "_use_pose must be a bool"
+
+
+def test_tracker_has_optical_flow_attributes():
+    """AdvancedFeetDetector must expose _prev_gray and _flow_pts for optical flow."""
+    from src.tracking.advanced_tracker import AdvancedFeetDetector
+
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+    assert hasattr(tracker, "_prev_gray"), "_prev_gray attribute missing"
+    assert hasattr(tracker, "_flow_pts"), "_flow_pts attribute missing"
+    assert isinstance(tracker._flow_pts, dict), "_flow_pts must be a dict"
+
+
+def test_optical_flow_constants_defined():
+    """OF_WIN_SIZE, OF_MAX_LEVEL, OF_MAX_AGE must be defined in advanced_tracker."""
+    import src.tracking.advanced_tracker as at
+    assert hasattr(at, "OF_WIN_SIZE"),   "OF_WIN_SIZE constant missing"
+    assert hasattr(at, "OF_MAX_LEVEL"),  "OF_MAX_LEVEL constant missing"
+    assert hasattr(at, "OF_MAX_AGE"),    "OF_MAX_AGE constant missing"
+    assert at.OF_MAX_AGE >= 1,           "OF_MAX_AGE must be a positive int"
+
+
+def test_activate_slot_sets_flow_pts():
+    """_activate_slot must store foot_xy in _flow_pts when det includes it."""
+    import numpy as np
+    from src.tracking.player import Player
+    from src.tracking.advanced_tracker import AdvancedFeetDetector
+    from src.tracking.player_detection import COLORS, hsv2bgr
+
+    wc = hsv2bgr(COLORS["white"][2])
+    gc = hsv2bgr(COLORS["green"][2])
+    rc = hsv2bgr(COLORS["referee"][2])
+    players = [
+        Player(1, "green",   gc), Player(2, "white",   wc),
+        Player(0, "referee", rc),
+    ]
+    tracker = AdvancedFeetDetector(players)
+
+    det = {
+        "bbox":     (10, 10, 50, 40),
+        "team":     "green",
+        "homo":     (100, 100),
+        "color":    gc,
+        "crop_bgr": np.full((30, 30, 3), 128, dtype=np.uint8),
+        "foot_xy":  (25, 45),
+    }
+    tracker._activate_slot(0, det, timestamp=1)
+    assert 0 in tracker._flow_pts, "_flow_pts not updated after _activate_slot"
+    fx, fy = tracker._flow_pts[0][0]
+    assert (int(fx), int(fy)) == (25, 45), (
+        f"_flow_pts not set to foot_xy: got ({fx}, {fy})"
+    )
+
+
+def test_bytetrack_constants_defined():
+    """BT_HIGH_THRESH and BT_SECOND_IOUGATE must be defined."""
+    import src.tracking.advanced_tracker as at
+    assert hasattr(at, "BT_HIGH_THRESH"),    "BT_HIGH_THRESH constant missing"
+    assert hasattr(at, "BT_SECOND_IOUGATE"), "BT_SECOND_IOUGATE constant missing"
+    assert 0 < at.BT_HIGH_THRESH  <= 1.0
+    assert 0 < at.BT_SECOND_IOUGATE <= 1.0
+
+
+# ── OSNet deep re-ID tests ─────────────────────────────────────────────────────
+
+def test_osnet_x025_forward_pass():
+    """OSNetX025 must produce (1, embed_dim) L2-normalised output."""
+    try:
+        import torch
+        from src.tracking.osnet_reid import OSNetX025, _EMBED_DIM
+    except ImportError:
+        import pytest; pytest.skip("torch or osnet_reid not available")
+
+    model  = OSNetX025(embed_dim=_EMBED_DIM).eval()
+    x      = torch.zeros(1, 3, 256, 128)
+    with torch.no_grad():
+        out = model(x)
+    assert out.shape == (1, _EMBED_DIM), (
+        f"Expected (1, {_EMBED_DIM}) output, got {out.shape}"
+    )
+    norms = out.norm(dim=1)
+    assert abs(float(norms[0]) - 1.0) < 1e-5, "Output must be L2-normalised"
+
+
+def test_osnet_batch_forward():
+    """OSNetX025 must handle batch size > 1."""
+    try:
+        import torch
+        from src.tracking.osnet_reid import OSNetX025, _EMBED_DIM
+    except ImportError:
+        import pytest; pytest.skip("torch not available")
+
+    model = OSNetX025().eval()
+    x     = torch.rand(4, 3, 256, 128)
+    with torch.no_grad():
+        out = model(x)
+    assert out.shape == (4, _EMBED_DIM), f"Batch output shape wrong: {out.shape}"
+
+
+def test_deep_extractor_available_and_returns_correct_shape():
+    """DeepAppearanceExtractor.batch_extract must return (N, embed_dim) embeddings."""
+    import numpy as np
+    try:
+        from src.tracking.osnet_reid import DeepAppearanceExtractor, _EMBED_DIM
+    except ImportError:
+        import pytest; pytest.skip("osnet_reid not available")
+
+    ext = DeepAppearanceExtractor(device="cpu")
+    if not ext.available:
+        import pytest; pytest.skip("DeepAppearanceExtractor not available on this system")
+
+    crops = [np.random.randint(0, 255, (60, 30, 3), dtype=np.uint8) for _ in range(3)]
+    embs  = ext.batch_extract(crops)
+    assert len(embs) == 3, f"Expected 3 embeddings, got {len(embs)}"
+    assert embs[0].shape == (_EMBED_DIM,), (
+        f"Expected ({_EMBED_DIM},) embedding, got {embs[0].shape}"
+    )
+    # L2-norm should be 1.0 (model normalises output)
+    norms = [float(np.linalg.norm(e)) for e in embs]
+    for n in norms:
+        assert abs(n - 1.0) < 1e-4, f"Embedding not L2-normalised: norm={n}"
+
+
+def test_deep_extractor_handles_none_crop():
+    """batch_extract must not crash when a crop is None."""
+    import numpy as np
+    try:
+        from src.tracking.osnet_reid import DeepAppearanceExtractor, _EMBED_DIM
+    except ImportError:
+        import pytest; pytest.skip("osnet_reid not available")
+
+    ext = DeepAppearanceExtractor(device="cpu")
+    if not ext.available:
+        import pytest; pytest.skip("DeepAppearanceExtractor not available")
+
+    crop = np.random.randint(0, 255, (60, 30, 3), dtype=np.uint8)
+    embs = ext.batch_extract([crop, None])
+    # Should return 2 entries (None crop gets zero vector)
+    assert len(embs) == 2
+
+
+def test_tracker_has_deep_reid_attributes():
+    """AdvancedFeetDetector must expose _use_deep and _deep_extractor attributes."""
+    from src.tracking.advanced_tracker import AdvancedFeetDetector
+    players = _make_players_11()
+    tracker = AdvancedFeetDetector(players)
+    assert hasattr(tracker, "_use_deep"),        "_use_deep attribute missing"
+    assert hasattr(tracker, "_deep_extractor"),  "_deep_extractor attribute missing"
+    assert isinstance(tracker._use_deep, bool),  "_use_deep must be a bool"

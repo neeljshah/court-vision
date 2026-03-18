@@ -512,9 +512,37 @@ def run_improvement_loop(
 
     print(f"  [scraper] {len(merged)} players in merged batch data")
 
-    # ── Step 2: Load old coverage ──
+    # ── Step 2: Load old coverage + bulk-update batch tier coverage for all players ──
     old_coverage = _load_coverage()
     new_coverage = dict(old_coverage)
+
+    # Update coverage for all players in merged (batch tiers already fetched above)
+    for name, data in merged.items():
+        player_id = data.get("player_id")
+        if not player_id:
+            continue
+        prev = old_coverage.get(str(player_id), {})
+        # Carry forward gamelog/splits info from existing coverage or cache files
+        gamelog_cache = os.path.join(_NBA_CACHE, f"gamelog_full_{player_id}_{season}.json")
+        if prev.get("has_gamelog") or (os.path.exists(gamelog_cache) and os.path.getsize(gamelog_cache) > 2):
+            data.setdefault("gamelog_rows", 1)
+        if prev.get("has_splits") or prev.get("splits_last10_pts") is not None:
+            data.setdefault("splits_last10_pts", prev.get("splits_last10_pts", 0))
+        score = _coverage_score(data)
+        new_coverage[str(player_id)] = {
+            "name":         name,
+            "team":         data.get("team", ""),
+            "min":          data.get("min", 0),
+            "score":        score,
+            "has_base":     any(v in data for v in _BATCH_TIERS["base"]["cols"].values()),
+            "has_advanced": any(v in data for v in _BATCH_TIERS["advanced"]["cols"].values()),
+            "has_scoring":  any(v in data for v in _BATCH_TIERS["scoring"]["cols"].values()),
+            "has_misc":     any(v in data for v in _BATCH_TIERS["misc"]["cols"].values()),
+            "has_gamelog":  "gamelog_rows" in data,
+            "has_splits":   "splits_last10_pts" in data,
+            "has_shotchart": prev.get("has_shotchart", False),
+            "updated":      datetime.now().isoformat()[:16],
+        }
 
     # ── Step 3: Tier 2 — pick top players by minutes, fill gamelog + splits ──
     # Sort by minutes descending to prioritise starters
@@ -561,13 +589,21 @@ def run_improvement_loop(
                 new_metrics += len(splits["last10"])
                 time.sleep(delay)
 
+        prev_entry = old_coverage.get(str(player_id), {})
         score = _coverage_score(data)
         new_coverage[str(player_id)] = {
-            "name":    name,
-            "team":    data.get("team", ""),
-            "min":     data.get("min", 0),
-            "score":   score,
-            "updated": datetime.now().isoformat()[:16],
+            "name":         name,
+            "team":         data.get("team", ""),
+            "min":          data.get("min", 0),
+            "score":        score,
+            "has_base":     any(v in data for v in _BATCH_TIERS["base"]["cols"].values()),
+            "has_advanced": any(v in data for v in _BATCH_TIERS["advanced"]["cols"].values()),
+            "has_scoring":  any(v in data for v in _BATCH_TIERS["scoring"]["cols"].values()),
+            "has_misc":     any(v in data for v in _BATCH_TIERS["misc"]["cols"].values()),
+            "has_gamelog":  "gamelog_rows" in data,
+            "has_splits":   "splits_last10_pts" in data,
+            "has_shotchart": prev_entry.get("has_shotchart", False),
+            "updated":      datetime.now().isoformat()[:16],
         }
         if score > prev_score:
             players_updated += 1

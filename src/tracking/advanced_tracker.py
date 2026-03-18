@@ -535,16 +535,23 @@ class AdvancedFeetDetector(FeetDetector):
         )
         app_w = min(0.60, self._appearance_w + (SIMILAR_COLORS_JERSEY_W if similar else 0.0))
 
+        # Pre-compute detection embeddings once (O(n_dets) not O(n_slots*n_dets))
+        # Use deep embedding if available (batch-computed by OSNet), else HSV.
+        det_embs = []
+        for di in dets:
+            _deep = detections[di].get("deep_emb")
+            det_embs.append(
+                _deep if _deep is not None
+                else (_compute_appearance(detections[di]["crop_bgr"])
+                      if detections[di]["crop_bgr"] is not None else None)
+            )
+
         for ri, slot in enumerate(slots):
             pred = self._kf_pred.get(slot)
             for ci, di in enumerate(dets):
                 det_bbox = detections[di]["bbox"]
                 iou_val  = _iou(pred, det_bbox) if pred is not None else 0.0
-                app_dist = _appear_dist(
-                    self._appearances.get(slot),
-                    _compute_appearance(detections[di]["crop_bgr"])
-                    if detections[di]["crop_bgr"] is not None else None,
-                )
+                app_dist = _appear_dist(self._appearances.get(slot), det_embs[ci])
                 cost[ri, ci] = ((1.0 - iou_val) * (1 - app_w)
                                 + app_dist * app_w)
 
