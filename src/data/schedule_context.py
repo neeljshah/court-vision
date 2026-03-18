@@ -16,12 +16,12 @@ Public API
 
 from __future__ import annotations
 
-import json
 import math
 import os
-import time
 from datetime import datetime, timedelta
 from typing import Optional
+
+from src.data.cache_utils import cache_is_fresh, load_json_cache, save_json_cache
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _CACHE_DIR = os.path.join(PROJECT_DIR, "data", "nba", "schedule")
@@ -104,28 +104,14 @@ def _cache_path(key: str) -> str:
 
 
 def _load_cache(key: str, ttl_hours: Optional[float] = None) -> Optional[dict]:
-    """Load cached data if it exists and is within the TTL window.
-
-    Args:
-        key:       Cache key string.
-        ttl_hours: If provided, discard cache files older than this many hours.
-                   None means no expiry (cache lives forever).
-    """
-    path = _cache_path(key)
-    if not os.path.exists(path):
-        return None
-    if ttl_hours is not None:
-        age_hours = (time.time() - os.path.getmtime(path)) / 3600
-        if age_hours > ttl_hours:
-            return None
-    with open(path, "r") as f:
-        return json.load(f)
+    """Load cached data if it exists and is within the TTL window."""
+    ttl_sec = ttl_hours * 3600 if ttl_hours is not None else None
+    return load_json_cache(_cache_path(key), ttl_seconds=ttl_sec)
 
 
 def _save_cache(key: str, data: dict) -> None:
     """Save data to cache."""
-    with open(_cache_path(key), "w") as f:
-        json.dump(data, f, indent=2)
+    save_json_cache(_cache_path(key), data)
 
 
 def get_season_schedule(team_abbrev: str, season: str = "2024-25") -> list[dict]:
