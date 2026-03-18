@@ -10,6 +10,12 @@ Factors:
   - Team spacing of offense                       — available relief valves
   - Number of offensive players covered           — overall defensive coverage
 
+Extra metrics (callable independently):
+  - help_rotation_latency(drive_frames, help_frames)
+      Frames elapsed between a drive event and a help defender arriving.
+  - coverage_completeness(drives_df, help_spots=3)
+      Fraction of drives where all `help_spots` help positions were filled.
+
 Output: data/defense_pressure.csv
         (one row per frame: frame, attacking_team, defending_team, pressure)
 
@@ -137,6 +143,64 @@ def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     out.to_csv(output_path, index=False)
     print(f"Defense pressure → {output_path}  ({len(out)} frames)")
     return out
+
+
+def help_rotation_latency(
+    drive_frames: list[int],
+    help_arrival_frames: list[int],
+) -> float:
+    """
+    Compute average frames elapsed from a drive start to help defender arrival.
+
+    Args:
+        drive_frames:        Frame numbers when each drive was detected.
+        help_arrival_frames: Frame numbers when the help defender first arrived
+                             in the help zone for the corresponding drive.
+                             Must be the same length as drive_frames.
+                             Use None or a negative value for drives where help
+                             never arrived (those drives are excluded).
+
+    Returns:
+        Mean latency in frames across paired drives, or 0.0 if no valid pairs.
+    """
+    if not drive_frames or not help_arrival_frames:
+        return 0.0
+
+    latencies = []
+    for d, h in zip(drive_frames, help_arrival_frames):
+        if h is None or h < 0:
+            continue
+        diff = h - d
+        if diff >= 0:
+            latencies.append(diff)
+    return float(np.mean(latencies)) if latencies else 0.0
+
+
+def coverage_completeness(
+    drives_df: "pd.DataFrame",
+    help_spots: int = 3,
+    help_col: str = "help_defenders_present",
+) -> float:
+    """
+    Fraction of drives where all `help_spots` help positions were filled.
+
+    Args:
+        drives_df:   DataFrame with one row per drive; must contain a column
+                     `help_col` (int) counting how many help defenders were
+                     present during the drive.
+        help_spots:  Number of help spots that constitute full coverage (default 3).
+        help_col:    Column name for help defender count (default 'help_defenders_present').
+
+    Returns:
+        Fraction [0.0, 1.0].  0.0 if drives_df is empty or column is missing.
+    """
+    if drives_df is None or len(drives_df) == 0:
+        return 0.0
+    if help_col not in drives_df.columns:
+        return 0.0
+    total = len(drives_df)
+    fully_covered = int((drives_df[help_col] >= help_spots).sum())
+    return fully_covered / total
 
 
 if __name__ == "__main__":

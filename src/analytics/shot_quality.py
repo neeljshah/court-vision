@@ -141,6 +141,56 @@ def run(input_path: str = None, output_dir: str = None) -> pd.DataFrame:
     return out
 
 
+def shot_clock_pressure_score(
+    possession_run: int,
+    max_possession_run: int = 150,
+) -> float:
+    """
+    Quality decay metric as possession_run grows (shot-clock pressure proxy).
+
+    Returns a score in [0, 1]:
+      - 1.0 at possession_run == 0  (fresh possession, plenty of clock)
+      - 0.0 at possession_run >= max_possession_run  (possession near expiry)
+
+    Args:
+        possession_run:     Consecutive frames team has held the ball.
+        max_possession_run: Frame count corresponding to shot-clock expiry (default 150).
+    """
+    run_clamped = max(0, min(int(possession_run or 0), max_possession_run))
+    return round(1.0 - run_clamped / max(1, max_possession_run), 4)
+
+
+def fatigue_penalty(
+    velocity_mean_90: float,
+    velocity_mean_150: float,
+    base_score: float,
+) -> float:
+    """
+    Reduce shot quality score when recent velocity is well below the longer window.
+
+    A player whose average speed over the last 90 frames is below 80 % of their
+    150-frame average is considered fatigued; their shot quality is penalised.
+
+    Args:
+        velocity_mean_90:  Mean velocity over last 90 frames (court px/frame).
+        velocity_mean_150: Mean velocity over last 150 frames (court px/frame).
+        base_score:        Shot quality score before fatigue adjustment.
+
+    Returns:
+        Adjusted score in [0, 1].
+    """
+    threshold = 0.8
+    if velocity_mean_150 <= 0:
+        return round(float(np.clip(base_score, 0.0, 1.0)), 4)
+    ratio = velocity_mean_90 / velocity_mean_150
+    if ratio < threshold:
+        # Linear penalty: at ratio=0 → full 20% reduction; at ratio=0.8 → no reduction
+        penalty_fraction = (threshold - ratio) / threshold   # 0..1
+        adjusted = base_score * (1.0 - 0.20 * penalty_fraction)
+        return round(float(np.clip(adjusted, 0.0, 1.0)), 4)
+    return round(float(np.clip(base_score, 0.0, 1.0)), 4)
+
+
 def _write_heatmap(shots: pd.DataFrame, output_dir: str) -> None:
     """Write shot_heatmap.json — per-zone frequency and avg quality."""
     if "court_zone" not in shots.columns:

@@ -1,32 +1,28 @@
 # NBA AI System — Home
-*Auto-updated: 2026-03-16 22:35*
+*Auto-updated: 2026-03-17 22:26*
 
 ---
 
 ## Pick Up Here Next Session
-1. Run `python src/prediction/win_probability.py --train` — immediate win
-2. Find NBA game IDs for the 16 videos and re-run enrichment
-3. Wire PostgreSQL writes into run_clip.py
-4. Start Phase 3.5: injury_monitor.py first (highest prediction impact)
+**Priority order for next session:**
+1. `python src/prediction/win_probability.py --train` — retrain with sklearn 1.7.2 (2 min)
+2. Wire PostgreSQL writes — fix ISSUE-018 before processing more games
+3. Scrape ShotChartDetail — 50K+ shots, unlocks shot quality v1 model
+4. Finish gamelog scrape — 209 players remaining (run scraper --loop --max 569)
+5. Fix per-video homography (ISSUE-017) — needs per-clip M1 calibration
+
+
+---
+*Session note auto-created by new_session.py*
 
 ---
 
 ---
 
-## Last Session Changes (2026-03-16)
-- `C:/Users/neelj/nba-ai-system/.planning/phases/02-tracking-improvements/02-06-PLAN.md`
-- `C:/Users/neelj/nba-ai-system/.planning/phases/02-tracking-improvements/02-07-PLAN.md`
-- `C:/Users/neelj/nba-ai-system/.planning/phases/02-tracking-improvements/02-08-PLAN.md`
-- `C:/Users/neelj/nba-ai-system/.planning/ROADMAP.md`
-- `C:/Users/neelj/nba-ai-system/run_clip.py`
-- `C:/Users/neelj/nba-ai-system/tests/test_phase2.py`
-- `C:/Users/neelj/nba-ai-system/src/tracking/advanced_tracker.py`
-- `C:/Users/neelj/nba-ai-system/src/pipeline/unified_pipeline.py`
+## Last Session Changes (2026-03-17)
+- `C:/Users/neelj/nba-ai-system/vault/Project Vision.md`
 - `C:/Users/neelj/nba-ai-system/CLAUDE.md`
-- `C:/Users/neelj/nba-ai-system/.planning/STATE.md`
-- `C:/Users/neelj/nba-ai-system/.planning/phases/02-tracking-improvements/02-07-SUMMARY.md`
-- `C:/Users/neelj/nba-ai-system/.planning/phases/02-tracking-improvements/02-06-SUMMARY.md`
-- `C:/Users/neelj/nba-ai-system/.planning/REQUIREMENTS.md`
+- `C:/Users/neelj/nba-ai-system/.planning/ROADMAP.md`
 
 ---
 
@@ -46,34 +42,44 @@
 | Ball tracking (Hough + CSRT) | ✅ |
 | Court rectification (homography) | ✅ |
 | Video processing loop | ✅ |
+| Betting Edge | ✅ |
 | Defense Pressure | ✅ |
 | Momentum | ✅ |
 | Shot Quality | ✅ |
 | Db | ✅ |
 | Game Matcher | ✅ |
 | Injury Monitor | ✅ |
+| Line Monitor | ✅ |
 | Lineup Data | ✅ |
 | Nba Enricher | ✅ |
 | Nba Stats | ✅ |
+| News Scraper | ✅ |
+| Pbp Scraper | ✅ |
 | Player Identity | ✅ |
 | Player Scraper | ✅ |
 | Prop Validator | ✅ |
+| Ref Tracker | ✅ |
 | Schedule Context | ✅ |
+| Shot Chart Scraper | ✅ |
 | Video Fetcher | ✅ |
 | Detection Model | ✅ |
 | Classes | 🔲 |
 | Inference | ✅ |
 | Train | ✅ |
 | Feature Engineering | ✅ |
-| Data Loader | 🔲 |
-| Feature Pipeline | 🔲 |
+| Data Loader | ✅ |
+| Feature Pipeline | ✅ |
 | Model Pipeline | ✅ |
-| Run Pipeline | 🔲 |
-| Tracking Pipeline | 🔲 |
+| Run Pipeline | ✅ |
+| Tracking Pipeline | ✅ |
 | Unified Pipeline | ✅ |
+| Clutch Efficiency | ✅ |
+| Game Models | ✅ |
 | Game Prediction | ✅ |
 | Player Props | ✅ |
+| Shot Zone Tendency | ✅ |
 | Win Probability | ✅ |
+| Xfg Model | ✅ |
 | Download Data | ✅ |
 | Model | ✅ |
 | Cbam | ✅ |
@@ -86,37 +92,39 @@
 | Advanced Tracker | ✅ |
 | Ball Detect Track | ✅ |
 | Color Reid | ✅ |
+| Court Detector | ✅ |
 | Evaluate | ✅ |
 | Event Detector | ✅ |
 | Jersey Ocr | ✅ |
+| Osnet Reid | ✅ |
+| Play Type Classifier | ✅ |
 | Player | ✅ |
 | Player Detection | ✅ |
 | Player Identity | ✅ |
+| Possession Classifier | ✅ |
 | Rectify Court | ✅ |
+| Scoreboard Ocr | ✅ |
 | Tracker Config | ✅ |
 | Plot Tools | ✅ |
 | Video Handler | ✅ |
-|   Init    | 🔲 |
 | Bbox Crop | ✅ |
 | Frame | ✅ |
 | Visualize | ✅ |
-| Analytics Dashboard | 🔲 |
-| Tracking Dashboard | 🔲 |
 
 ---
 
 ## Recent Sessions
+- [[Sessions/Session-2026-03-17]]
 - [[Sessions/Session-2026-03-16]]
 - [[Sessions/Session-2026-03-16-loops]]
 - [[Sessions/Session-2026-03-15]]
 - [[Sessions/Session-2026-03-12]]
-- [[Sessions/Session-2026-03-11]]
 
 ---
 
 ## Quick Links
 - [[Improvements/Tracker Improvements Log]] — all issues & fixes
-- [[Sessions/Session-2026-03-16]] — today's session
+- [[Sessions/Session-2026-03-17]] — today's session
 - [[Pipeline/System Architecture]] — how everything connects
 
 ---

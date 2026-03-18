@@ -15,7 +15,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 _env = os.environ.get("CONDA_DEFAULT_ENV", "")
-if _env != "basketball_ai":
+if _env != "basketball_ai" and __name__ == "__main__":
     print(
         f"ERROR: wrong environment ('{_env}').\n"
         "Run with:\n"
