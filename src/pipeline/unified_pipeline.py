@@ -14,6 +14,7 @@ import csv
 import json
 import os
 import sys
+import uuid
 from typing import Optional, List, Dict
 
 import cv2
@@ -63,9 +64,24 @@ _SIFT_INTERVAL      = 15     # run SIFT only every N frames; use cached EMA in b
                              # EMA smoothing (α=0.25) keeps homography stable between updates.
 _SIFT_SCALE         = 0.5   # downsample frame before SIFT detect (4x speedup, minimal quality loss)
 
+# Checkpoint — flush tracking rows to CSV every N frames so a crash doesn't lose all data
+_CHECKPOINT_INTERVAL = 2000  # ~6 min of gameplay at 5.7fps
+
+# Frame stride — process every Nth frame on long clips to cut compute on broadcast footage
+_FRAME_STRIDE       = 2      # process every 2nd frame when clip is > 3000 frames (~50 s at 60fps)
+
 # Gameplay detection — skip non-play frames (intro, halftime, timeouts, replays)
 MIN_GAMEPLAY_PERSONS = 5     # YOLO person count below this → skip frame
 _GAMEPLAY_CACHE_FRAMES = 30  # once gameplay confirmed, trust it for N frames (~1 sec)
+
+# Shot-clock non-live filter — suppresses ball tracking during replays / halftime.
+# When OCR runs (_OCR_INTERVAL=15 frames) and finds no shot clock for this many
+# consecutive scans, ball tracking is suspended until the clock reappears.
+# Guard: suspension only fires if the clock was seen at least once on this clip
+# (safety net for clips where ScoreboardOCR can't read the broadcast font at all).
+# 40 scans × 15 frames = 600 frames ≈ 20 s — catches timeouts, replays, halftime;
+# tight enough not to suppress live play on short OCR gaps (made baskets, etc.).
+_SHOT_CLOCK_ABSENT_THRESHOLD = 40
 _PANO_SCAN_INTERVAL  = 150   # check every N frames when scanning for gameplay (5s @ 30fps)
 _PANO_STITCH_FRAMES  = 30    # consecutive frames to stitch into panorama
 
@@ -154,6 +170,7 @@ class UnifiedPipeline:
         self.show              = show
         self.output_video_path = output_video_path
         self.game_id           = game_id
+        self.clip_id           = str(uuid.uuid4())  # unique per pipeline run
 
         self.yolo    = YoloDetector(yolo_weight_path)
         self.players = self._build_players()
@@ -164,15 +181,20 @@ class UnifiedPipeline:
         pano = self._load_pano(video_path)
 
         # Collect frames for per-clip homography detection (ISSUE-017).
-        # Sample 500 frames spread across the first 3 minutes (5400 frames at 30fps)
-        # rather than just the first 60, so we capture frames after pre-game
-        # intro footage and reach actual gameplay where the court is visible.
+        # Cap at 60 frames evenly sampled from the first 3600 frames (60 s at 60fps).
+        # Raised from 1800: gameplay starts at frame ~1400 on most broadcast clips,
+        # leaving only ~14 court frames at 1800 — not enough for detect_court_homography.
+        # At 3600 and step=60, we get ~35 gameplay frames which is sufficient.
+        _STARTUP_MAX_FRAMES = 60
+        _STARTUP_SCAN_END   = 3600   # 60 s at 60fps
         _startup_cap = cv2.VideoCapture(video_path)
         _total = int(_startup_cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        _scan_end = min(_total, 5400)   # first 3 min at 30fps
-        _step = max(1, _scan_end // 500)
+        _scan_end = min(_total, _STARTUP_SCAN_END)
+        _step = max(1, _scan_end // _STARTUP_MAX_FRAMES)
         _startup_frames: list = []
         for _idx in range(0, _scan_end, _step):
+            if len(_startup_frames) >= _STARTUP_MAX_FRAMES:
+                break
             _startup_cap.set(cv2.CAP_PROP_POS_FRAMES, _idx)
             _ok, _f = _startup_cap.read()
             if not _ok:
@@ -181,13 +203,21 @@ class UnifiedPipeline:
         _startup_cap.release()
 
         # M1 recovery state — updated by _build_court and _try_recover_court_M1
-        self._last_good_M1:    Optional[np.ndarray] = None
-        self._M1_stale_frames: int                  = 0
+        self._last_good_M1:        Optional[np.ndarray] = None
+        self._M1_stale_frames:     int                  = 0
+        self._M1_failed_attempts:  int                  = 0  # consecutive detection failures
+        # Rolling frame buffer for mid-run court re-detection (5 frames gives more
+        # line candidates than a single frame, improving detect_court_homography success rate)
+        from collections import deque as _deque
+        self._recover_frame_buf: _deque = _deque(maxlen=5)
 
         self.map_2d, self.M1 = self._build_court(pano, startup_frames=_startup_frames)
         self.pano = pano
 
         self._gameplay_cache_until: int = 0   # frame index; skip check before this
+        self._sc_absent_streak:     int = 0     # consecutive OCR runs with no shot clock
+        self._sc_ever_seen:         bool = False  # True once OCR reads a valid shot clock
+        self._ball_track_suspended: bool = False  # True during replay / halftime sequences
 
         self.ball_det = BallDetectTrack(self.players)  # Hough fallback
 
@@ -408,23 +438,23 @@ class UnifiedPipeline:
         rectified = rectify(pano, corners, plot=False)
         map_2d = cv2.resize(map_img, (rectified.shape[1], rectified.shape[0]))
 
-        # Per-clip homography detection (ISSUE-017 fix)
-        M1 = None
-        if startup_frames:
-            M1 = detect_court_homography(startup_frames)
-
-        if M1 is not None:
-            self._last_good_M1 = M1
-            self._M1_stale_frames = 0
-            print("[unified_pipeline] Using per-clip detected homography M1")
-        elif self._last_good_M1 is not None:
+        # Per-clip homography detection (ISSUE-017 fix).
+        # NOTE: detect_court_homography returns M1 mapping frame→940×500 directly.
+        # The pipeline applies M1 @ (M @ x) where M maps frame→pano, so M1 must
+        # map pano→court.  The correct adjustment (M1_adjusted = M1_raw @ inv(M_ema))
+        # requires M_ema (SIFT EMA) which is NOT available at __init__ time.
+        # Therefore, startup detection is SKIPPED here; _try_recover_court_M1
+        # performs the same detection during gameplay with M_ema available so it
+        # can compute the proper inverse-adjusted M1.  Meanwhile, use Rectify1.npy
+        # as the initial fallback (calibrated for pano_enhanced, 3698×500px).
+        if self._last_good_M1 is not None:
             M1 = self._last_good_M1
             clip = os.path.basename(getattr(self, "video_path", "unknown"))
-            print(f"[unified_pipeline] detect_court_homography returned None for '{clip}' — using last good M1")
+            print(f"[unified_pipeline] Reusing last good M1 for '{clip}'")
         else:
             M1 = np.load(rect1)
             clip = os.path.basename(getattr(self, "video_path", "unknown"))
-            print(f"[unified_pipeline] Homography fallback triggered for '{clip}' — using static Rectify1.npy")
+            print(f"[unified_pipeline] Using static Rectify1.npy for '{clip}' — per-clip M1 will be updated during gameplay")
 
         return map_2d, M1
 
@@ -432,20 +462,52 @@ class UnifiedPipeline:
         """Attempt to re-detect court homography after camera cuts / zooms.
 
         Called every gameplay frame in run(). Increments a staleness counter each
-        frame. Once the counter exceeds 150 consecutive frames with no successful
+        frame. Once the counter exceeds 30 consecutive frames with no successful
         per-clip detection, retries detect_court_homography on the current frame.
+        Lowered from 150→30 (2026-03-18) so clips where startup scan fails get
+        a valid per-clip M1 within the first ~5s of gameplay rather than ~25s.
         Updates self.M1 and self._last_good_M1 on success and resets the counter.
 
         Args:
             frame: Current BGR frame (already cropped by TOPCUT).
         """
+        # Maintain a rolling buffer; detect_court_homography works better with
+        # multiple frames (accumulates hardwood mask, more line candidates).
+        self._recover_frame_buf.append(frame)
+
         self._M1_stale_frames += 1
-        if self._M1_stale_frames > 150:
-            new_M1 = detect_court_homography([frame])
-            if new_M1 is not None:
+        # Threshold logic:
+        # - Initial fallback (M1 never found): 30-frame window for fast first recovery.
+        # - After recovery: 150-frame window to avoid disrupting arc polyfit.
+        # - After 5 consecutive failed detection attempts: back off to 500-frame window
+        #   so clips where court detection never works don't burn CPU on every 30 frames.
+        if self._last_good_M1 is None:
+            threshold = 500 if self._M1_failed_attempts >= 5 else 30
+        else:
+            threshold = 150
+        if self._M1_stale_frames > threshold:
+            new_M1_raw = detect_court_homography(list(self._recover_frame_buf))
+            if new_M1_raw is not None:
+                # detect_court_homography returns M1 mapping frame→940×500 court.
+                # The pipeline applies M1 @ (M @ x) where M maps frame→pano.
+                # To be correct, M1 must map pano→court so that:
+                #   M1 @ M @ x  =  (pano→court) @ (frame→pano) @ x  =  frame→court
+                # Adjust: M1_adjusted = M1_raw @ inv(M_ema)
+                #   M1_adjusted @ M_ema  =  M1_raw @ I  =  M1_raw  (correct)
+                new_M1 = new_M1_raw
+                if self._M_ema is not None:
+                    try:
+                        import numpy as _np
+                        new_M1 = new_M1_raw @ _np.linalg.inv(self._M_ema)
+                    except (np.linalg.LinAlgError, AttributeError):
+                        pass  # M_ema singular or unavailable — use raw M1
                 self.M1 = new_M1
                 self._last_good_M1 = new_M1
                 self._M1_stale_frames = 0
+                self._M1_failed_attempts = 0
+            else:
+                self._M1_failed_attempts += 1
+                self._M1_stale_frames = 0  # reset so we wait another threshold period
 
     def _get_homography(self, frame) -> Optional[np.ndarray]:
         """
@@ -605,6 +667,8 @@ class UnifiedPipeline:
         cap    = cv2.VideoCapture(self.video_path)
         fps    = cap.get(cv2.CAP_PROP_FPS) or 25.0
         map_h, map_w = self.map_2d.shape[:2]
+        total_video_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        _use_stride = total_video_frames > 3000
         if self.start_frame > 0:
             cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame)
         writer = self._make_writer(cap)
@@ -615,6 +679,7 @@ class UnifiedPipeline:
         player_stats:     dict       = {}
         possession_rows:  List[dict] = []
         shot_log_rows:    List[dict] = []
+        suspended_frame_count: int   = 0  # frames where ball tracking was suspended
         frame_idx    = 0  # absolute frame counter (for position keys, CSV timestamps)
         gameplay_frames = 0  # gameplay frames actually processed (for max_frames check)
         prev_pos:    Dict[int, tuple] = {}   # player_id → (x2d, y2d)
@@ -634,6 +699,11 @@ class UnifiedPipeline:
             ok, frame = cap.read()
             if not ok or (self.max_frames and gameplay_frames >= self.max_frames):
                 break
+
+            # Skip odd frames on long clips to halve compute without affecting short benchmarks
+            if _use_stride and frame_idx % _FRAME_STRIDE != 0:
+                frame_idx += 1
+                continue
 
             frame = frame[TOPCUT:]
 
@@ -655,12 +725,37 @@ class UnifiedPipeline:
 
             # ── Player tracking ───────────────────────────────────────────
             frame, map_snap, map_txt = self.feet_det.get_players_pos(
-                M, self.M1, frame, frame_idx, map_snap
+                M, self.M1, frame, frame_idx, map_snap,
+                skip_jersey_ocr=self._ball_track_suspended,
             )
 
+            # ── Scoreboard OCR (before ball tracking — drives non-live filter) ──
+            sb_state = self.scoreboard_ocr.read(frame)
+            _sc_result = self.scoreboard_ocr.current_scan_result  # None|True|False
+            if _sc_result is not None:   # an actual OCR scan ran this frame
+                if _sc_result:
+                    self._sc_absent_streak     = 0
+                    self._sc_ever_seen         = True
+                    self._ball_track_suspended = False
+                elif self._sc_ever_seen:
+                    # Only count absence once we know OCR can read this clip's clock.
+                    # Prevents spurious suspension on clips where ScoreboardOCR never
+                    # successfully reads the broadcast font (would suspend after 40×15=600
+                    # frames even on live gameplay).
+                    self._sc_absent_streak += 1
+                    if self._sc_absent_streak >= _SHOT_CLOCK_ABSENT_THRESHOLD:
+                        self._ball_track_suspended = True
+
             # ── Ball + event detection ────────────────────────────────────
+            # Skip Hough/CSRT during confirmed non-live sequences (replays,
+            # halftime, warmups) — the shot clock is absent there and the ball
+            # can't be reliably located.  Player tracking above still runs so
+            # lineup and position data accumulate.
             yolo_results = self.yolo.predict(frame) if self.yolo.available else []
-            if yolo_results:
+            if self._ball_track_suspended:
+                self._last_ball_2d = None   # clear stale position
+                suspended_frame_count += 1
+            elif yolo_results:
                 frame, map_snap = self._apply_yolo(
                     frame, map_snap, map_txt, yolo_results, M, frame_idx
                 )
@@ -670,7 +765,7 @@ class UnifiedPipeline:
                 )
                 self._last_ball_2d = self.ball_det.last_2d_pos
 
-            if yolo_results and self.yolo.available:
+            if yolo_results and self.yolo.available and not self._ball_track_suspended:
                 self._update_stats(frame, yolo_results, player_stats, frame_idx)
 
             timestamp_sec = round(frame_idx / fps, 3)
@@ -759,15 +854,14 @@ class UnifiedPipeline:
             event = self.event_det.update(
                 frame_idx, ball_pos, frame_tracks,
                 pixel_vel=self.ball_det.pixel_vel,
+                ball_y_pixel=self.ball_det._prev_cy,
+                frame_height=frame.shape[0],
             )
 
             # ── Ball trajectory features (computed once per frame) ─────────
             _ball_traj = self.ball_det.get_trajectory_features()
 
             spatial = self._frame_spatial(frame_tracks, ball_pos, map_w, map_h)
-
-            # ── Scoreboard OCR (every 30 frames, cached otherwise) ────────
-            sb_state = self.scoreboard_ocr.read(frame)
 
             # ── Possession classification ─────────────────────────────────
             # Build simplified player list expected by PossessionClassifier
@@ -1002,6 +1096,11 @@ class UnifiedPipeline:
             frame_idx += 1
             print(f"\r Frame {frame_idx}...", end="", flush=True)
 
+            # Periodic checkpoint — flush rows to CSV so a crash doesn't lose everything
+            if frame_idx % _CHECKPOINT_INTERVAL == 0 and tracking_rows:
+                self._checkpoint_csv(tracking_rows)
+                tracking_rows.clear()
+
         cap.release()
         if writer:
             writer.release()
@@ -1027,11 +1126,13 @@ class UnifiedPipeline:
 
         metrics = evaluate_tracking(predictions)
         return {
-            "predictions":  predictions,
-            "stats":        player_stats,
-            "id_switches":  metrics.get("id_switches_estimated", 0),
-            "stability":    metrics.get("track_stability", 0),
-            "total_frames": frame_idx,
+            "predictions":    predictions,
+            "stats":          player_stats,
+            "id_switches":    metrics.get("id_switches_estimated", 0),
+            "stability":      metrics.get("track_stability", 0),
+            "total_frames":   frame_idx,
+            "jump_resets":      self.ball_det._jump_resets,
+            "suspended_frames": suspended_frame_count,
         }
 
     # ── YOLO integration ──────────────────────────────────────────────────
@@ -1426,7 +1527,9 @@ class UnifiedPipeline:
         """
         Write tracking rows to the tracking_frames PostgreSQL table.
 
-        Silently skips if DATABASE_URL is not set or if game_id is None.
+        Silently skips if DATABASE_URL is not set.
+        Works with or without game_id — when game_id is absent the column is
+        NULL (requires migration 001_tracking_nullable_game_id.sql applied first).
         Uses INSERT ... ON CONFLICT DO NOTHING so re-runs are safe.
 
         Args:
@@ -1436,22 +1539,25 @@ class UnifiedPipeline:
         if not _os.environ.get("DATABASE_URL"):
             print("[pg] DATABASE_URL not set — skipping PostgreSQL write")
             return
-        if not self.game_id:
-            print("[pg] No game_id — skipping PostgreSQL write (pass --game-id to enable)")
+        if not rows:
             return
+        game_id = self.game_id or None   # NULL when --game-id not passed
+        if game_id is None:
+            print("[pg] No game_id — rows written with NULL game_id "
+                  "(pass --game-id to link to a game record)")
         try:
             from src.data.db import get_connection
             conn = get_connection()
             cur  = conn.cursor()
             insert_sql = """
                 INSERT INTO tracking_frames (
-                    game_id, frame_number, timestamp_sec,
+                    game_id, clip_id, frame_number, timestamp_sec,
                     tracker_player_id, x_pos, y_pos,
                     speed, acceleration, ball_possession,
                     event, confidence, team_spacing,
                     paint_count_own, paint_count_opp, tracker_version
                 ) VALUES (
-                    %(game_id)s, %(frame_number)s, %(timestamp_sec)s,
+                    %(game_id)s, %(clip_id)s::uuid, %(frame_number)s, %(timestamp_sec)s,
                     %(tracker_player_id)s, %(x_pos)s, %(y_pos)s,
                     %(speed)s, %(acceleration)s, %(ball_possession)s,
                     %(event)s, %(confidence)s, %(team_spacing)s,
@@ -1461,7 +1567,8 @@ class UnifiedPipeline:
             """
             pg_rows = [
                 {
-                    "game_id":           self.game_id,
+                    "game_id":           game_id,
+                    "clip_id":           self.clip_id,
                     "frame_number":      r.get("frame"),
                     "timestamp_sec":     r.get("timestamp"),
                     "tracker_player_id": r.get("player_id"),
@@ -1484,16 +1591,29 @@ class UnifiedPipeline:
             conn.commit()
             cur.close()
             conn.close()
-            print(f"[pg] tracking_frames ← {len(pg_rows)} rows (game_id={self.game_id})")
+            print(f"[pg] tracking_frames ← {len(pg_rows)} rows "
+                  f"(game_id={game_id}, clip_id={self.clip_id[:8]}…)")
         except Exception as e:
             print(f"[pg] WARNING: PostgreSQL write failed — {e}")
 
-    def _export_csv(self, rows: List[dict]):
+    def _checkpoint_csv(self, rows: List[dict]) -> None:
+        """Flush rows to CSV mid-run so a crash doesn't lose all data."""
         if not rows:
             return
         os.makedirs(_DATA, exist_ok=True)
-        path   = os.path.join(_DATA, "tracking_data.csv")
-        fields = [
+        path = os.path.join(_DATA, "tracking_data.csv")
+        file_exists = os.path.exists(path) and os.path.getsize(path) > 0
+        fields = self._tracking_csv_fields()
+        with open(path, "a", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+            if not file_exists:
+                w.writeheader()
+            w.writerows(rows)
+        print(f"\n[checkpoint] flushed {len(rows)} rows → {path}")
+
+    @staticmethod
+    def _tracking_csv_fields() -> List[str]:
+        return [
             "frame", "timestamp", "player_id", "team",
             "x_position", "y_position",
             "velocity", "acceleration", "direction_deg",
@@ -1510,22 +1630,21 @@ class UnifiedPipeline:
             "drive_flag", "fast_break_flag",
             "possession_id", "possession_duration",
             "confidence",
-            # Extended fields from scoreboard OCR + possession classifier
             "play_type", "paint_touches", "off_ball_distance", "shot_clock_est",
             "scoreboard_shot_clock", "scoreboard_game_clock",
             "scoreboard_period", "scoreboard_score_diff",
             "possession_duration_sec", "possession_type",
-            # Pose estimation fields (ankle keypoints + contest arm)
             "ankle_x", "ankle_y", "contest_arm_angle",
-            # Ball trajectory features
             "ball_shot_arc_angle", "ball_peak_height_px", "ball_pass_speed_pxpf",
         ]
-        with open(path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=fields)
-            w.writeheader()
-            w.writerows(rows)
-        print(f"Tracking data → {path}  ({len(rows)} rows)")
+
+    def _export_csv(self, rows: List[dict]):
+        """Write any remaining rows not yet flushed by _checkpoint_csv."""
+        if not rows:
+            return
+        self._checkpoint_csv(rows)
         self._pg_write_tracking_rows(rows)
+        print(f"Tracking data → data/tracking_data.csv  (clip_id={self.clip_id})")
 
     def _export_ball_csv(self, rows: List[dict]):
         if not rows:
