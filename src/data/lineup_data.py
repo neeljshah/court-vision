@@ -18,10 +18,10 @@ Public API
 
 from __future__ import annotations
 
-import json
 import os
-import time
 from typing import Optional
+
+from src.data.cache_utils import load_json_cache, save_json_cache
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _CACHE_DIR = os.path.join(PROJECT_DIR, "data", "nba", "lineups")
@@ -46,16 +46,11 @@ def _cache_path(key: str) -> str:
 
 
 def _load_cache(key: str) -> Optional[list | dict]:
-    path = _cache_path(key)
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            return json.load(f)
-    return None
+    return load_json_cache(_cache_path(key))
 
 
 def _save_cache(key: str, data: list | dict) -> None:
-    with open(_cache_path(key), "w") as f:
-        json.dump(data, f, indent=2)
+    save_json_cache(_cache_path(key), data)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
