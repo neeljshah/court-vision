@@ -218,6 +218,10 @@ class UnifiedPipeline:
         self._sc_absent_streak:     int = 0     # consecutive OCR runs with no shot clock
         self._sc_ever_seen:         bool = False  # True once OCR reads a valid shot clock
         self._ball_track_suspended: bool = False  # True during replay / halftime sequences
+        # Vision-based non-live fallback: counts consecutive frames where ball is absent
+        # and fewer than 8 persons are visible, to detect warmups / ad breaks / halftime
+        # on clips where ScoreboardOCR never fires (no readable shot clock font).
+        self._no_ball_vision_streak: int = 0
 
         self.ball_det = BallDetectTrack(self.players)  # Hough fallback
 
@@ -746,12 +750,22 @@ class UnifiedPipeline:
                     if self._sc_absent_streak >= _SHOT_CLOCK_ABSENT_THRESHOLD:
                         self._ball_track_suspended = True
 
+            # Vision-based fallback: if shot clock OCR never fired on this clip,
+            # use YOLO person count + ball-absent streak as a proxy non-live signal.
+            # Fires when: clock never seen + ball absent 20+ consecutive gameplay frames
+            # + fewer than 8 persons visible (warmup / between-period / ad break).
+            yolo_results = self.yolo.predict(frame) if self.yolo.available else []
+            if (not self._sc_ever_seen
+                    and not self._ball_track_suspended
+                    and self._no_ball_vision_streak >= 20
+                    and len(yolo_results) < 8):
+                self._ball_track_suspended = True
+
             # ── Ball + event detection ────────────────────────────────────
             # Skip Hough/CSRT during confirmed non-live sequences (replays,
             # halftime, warmups) — the shot clock is absent there and the ball
             # can't be reliably located.  Player tracking above still runs so
             # lineup and position data accumulate.
-            yolo_results = self.yolo.predict(frame) if self.yolo.available else []
             if self._ball_track_suspended:
                 self._last_ball_2d = None   # clear stale position
                 suspended_frame_count += 1
@@ -767,6 +781,13 @@ class UnifiedPipeline:
 
             if yolo_results and self.yolo.available and not self._ball_track_suspended:
                 self._update_stats(frame, yolo_results, player_stats, frame_idx)
+
+            # Update vision-based no-ball streak for non-live fallback.
+            # Increment when ball is absent; reset when ball is found.
+            if self._last_ball_2d is None and not self._ball_track_suspended:
+                self._no_ball_vision_streak += 1
+            else:
+                self._no_ball_vision_streak = 0
 
             timestamp_sec = round(frame_idx / fps, 3)
             ball_pos      = self._last_ball_2d
