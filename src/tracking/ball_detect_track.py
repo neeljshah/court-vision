@@ -10,7 +10,9 @@ Improvements over baseline:
 """
 
 import os
+from collections import deque
 from operator import itemgetter
+from typing import Optional
 
 import cv2
 import numpy as np
@@ -52,6 +54,26 @@ class BallDetectTrack:
 
         # Last known bbox (x, y, w, h) for re-detection window
         self._last_bbox    = None
+
+        # Consecutive frames with no ball detected — reset CSRT when it hits 30
+        self._no_ball_streak: int = 0
+
+        # ── Trajectory deque for parabola fitting ─────────────────────────
+        # Stores (frame_num, cx, cy) for each frame the ball is detected.
+        self._traj_deque: deque = deque(maxlen=15)
+        self._frame_num: int = 0          # incremented each ball_tracker() call
+
+        # ── Per-possession trajectory features ────────────────────────────
+        self._shot_arc_angle: Optional[float] = None
+        self._dribble_count: int = 0
+        self._is_lob: bool = False
+
+        # Signed y-velocity tracking for dribble bounce counting
+        self._prev_cy: Optional[float] = None
+        self._prev_vy_sign: int = 0       # +1 = falling, -1 = rising, 0 = unknown
+
+        # Approximate player height in pixels (updated each frame from bboxes)
+        self._avg_player_height_px: float = 100.0
 
         # Load templates once at init
         self._templates = self._load_templates()
@@ -235,6 +257,42 @@ class BallDetectTrack:
                     else:
                         self.do_detection = True
 
+        # ── Validate bbox before updating state ───────────────────────────
+        if bbox is not None:
+            _cx_new = int(bbox[0] + bbox[2] / 2)
+            _cy_new = int(bbox[1] + bbox[3] / 2)
+            _h_fr, _w_fr = frame.shape[:2]
+
+            # Guard 1: reject out-of-bounds center (CSRT drifted outside frame)
+            if not (0 <= _cx_new < _w_fr and 0 <= _cy_new < _h_fr):
+                bbox = None
+                self.do_detection = True
+            # Guard 2: reject >200px position jump (camera cut or tracker error)
+            elif self._trajectory and (
+                np.hypot(_cx_new - self._trajectory[-1][0],
+                         _cy_new - self._trajectory[-1][1]) > 200
+            ):
+                bbox = None
+                self.do_detection = True
+                self.tracker    = self._make_csrt()
+                self._flow_active = False
+                self._flow_age    = 0
+                self._flow_point  = None
+
+        # Guard 3: no-ball streak — reset stale CSRT after 30 consecutive misses
+        if bbox is None:
+            self._no_ball_streak += 1
+            if self._no_ball_streak >= 30:
+                self.do_detection  = True
+                self.tracker       = self._make_csrt()
+                self._flow_active  = False
+                self._flow_age     = 0
+                self._trajectory   = []
+                self._flow_point   = None
+                self._no_ball_streak = 0
+        else:
+            self._no_ball_streak = 0
+
         # ── Update state ──────────────────────────────────────────────────
         if bbox is not None:
             self._last_bbox = bbox
@@ -249,6 +307,36 @@ class BallDetectTrack:
             self._trajectory.append((cx, cy))
             if len(self._trajectory) > 30:
                 self._trajectory.pop(0)
+
+            # ── Trajectory deque + per-possession features ────────────────
+            self._traj_deque.append((self._frame_num, cx, cy))
+
+            # Dribble count: each time ball vy flips from + (falling) to - (rising)
+            # in pixel space = one floor bounce.
+            if self._prev_cy is not None:
+                vy_now = cy - self._prev_cy
+                if abs(vy_now) > 1.0:
+                    sign_now = 1 if vy_now > 0 else -1
+                    if self._prev_vy_sign == 1 and sign_now == -1:
+                        self._dribble_count += 1
+                    self._prev_vy_sign = sign_now
+            self._prev_cy = float(cy)
+
+            # Is-lob: ball rises > 1.5× avg player height above its starting position
+            if self._traj_deque:
+                ball_ys = [t[2] for t in self._traj_deque]
+                rise = self._traj_deque[0][2] - min(ball_ys)  # pixel-upward = positive
+                if rise > 1.5 * self._avg_player_height_px:
+                    self._is_lob = True
+
+            # Update average player height estimate from live bboxes
+            heights = [
+                p.previous_bb[2] - p.previous_bb[0]
+                for p in self.players
+                if p.previous_bb is not None and p.team != "referee"
+            ]
+            if heights:
+                self._avg_player_height_px = float(np.mean(heights))
 
             p1 = (int(bbox[0]), int(bbox[1]))
             p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
@@ -309,7 +397,72 @@ class BallDetectTrack:
                 self.do_detection = (found is None)
 
         self._prev_gray = gray
+        self._frame_num += 1
         return frame, map_2d if bbox is not None else None
+
+    # ── Trajectory feature API ─────────────────────────────────────────────
+
+    def get_trajectory_features(self) -> dict:
+        """Return trajectory-derived features for the current possession.
+
+        Fits a degree-2 parabola to the last 15 tracked ball positions on demand
+        when 8 or more positions are available.
+
+        Returns:
+            dict with keys:
+                shot_arc_angle (float | None): release angle in degrees above
+                    horizontal, derived from parabola tangent at first tracked point.
+                peak_height_px (float | None): pixel y of the parabola vertex
+                    (smallest y = highest screen position).
+                pass_speed_pxpf (float): current ball speed in pixels per frame.
+                dribble_count (int): floor bounces detected this possession.
+                is_lob (bool): True if ball rose > 1.5× avg player height.
+        """
+        arc: Optional[float] = self._shot_arc_angle
+        peak_height_px: Optional[float] = None
+        if len(self._traj_deque) >= 8:
+            try:
+                frames = np.array([t[0] for t in self._traj_deque], dtype=np.float64)
+                ys = np.array([t[2] for t in self._traj_deque], dtype=np.float64)
+                a, b, c = np.polyfit(frames, ys, 2)
+                t0 = frames[0]
+                slope = 2.0 * a * t0 + b   # dy/dframe at release
+                # Negative slope = ball going up (pixel y decreasing) = positive angle
+                arc = float(np.degrees(np.arctan(-slope)))
+                # Parabola vertex: t_peak = -b / (2a); y_peak = c - b²/(4a)
+                if abs(a) > 1e-9:
+                    t_peak = -b / (2.0 * a)
+                    y_peak = a * t_peak ** 2 + b * t_peak + c
+                    peak_height_px = float(y_peak)
+            except (np.linalg.LinAlgError, ValueError):
+                arc = None
+        return {
+            "shot_arc_angle": arc,
+            "peak_height_px": peak_height_px,
+            "pass_speed_pxpf": float(self.pixel_vel),
+            "dribble_count": self._dribble_count,
+            "is_lob": self._is_lob,
+        }
+
+    def on_shot_event(self) -> None:
+        """Call when a shot event is detected to snapshot the arc angle.
+
+        Fits the parabola immediately so the angle is computed from the
+        trajectory at release rather than after the ball may have deviated.
+        """
+        features = self.get_trajectory_features()
+        self._shot_arc_angle = features.get("shot_arc_angle")
+
+    def reset_possession(self) -> None:
+        """Reset per-possession counters at the start of a new possession.
+
+        Should be called by the pipeline when possession changes.
+        """
+        self._shot_arc_angle = None
+        self._dribble_count = 0
+        self._is_lob = False
+        self._prev_vy_sign = 0
+        self._prev_cy = None
 
     @property
     def ball_padding(self):
