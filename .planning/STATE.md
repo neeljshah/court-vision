@@ -34,6 +34,14 @@
 - 025-05 ✅ unified_pipeline._build_court() wired with per-clip detection + Rectify1.npy fallback (ISSUE-017 closed)
 - 025-06 ✅ tests/test_court_detector.py — 7 synthetic tests, all passing
 
+### Phase 5 — External Factors 🟡 (in progress, 2026-03-17)
+- `src/data/ref_tracker.py` ✅ — referee tendencies (fouls/game, home win%, pace), `data/nba/ref_tendencies.json` cache
+- `src/data/line_monitor.py` ✅ — The Odds API wrapper, sharp signal (opening vs closing), `data/nba/lines_cache.json`
+- `src/data/injury_monitor.py` ✅ — ESPN injury report (built prior session), InjuryMonitor class wired into props
+- `src/pipeline/unified_pipeline.py` ✅ — PostgreSQL writes added (`_pg_write_tracking_rows`), `game_id` param wired
+- `tests/test_phase5.py` ✅ — 18 tests (3 injury, 6 ref, 6 lines, 3 pg_write), 0 failures
+- **Pending:** `ref_tracker` real data scrape (needs nba_api officials endpoint), `ODDS_API_KEY` setup for live lines
+
 ### Phase 3 — NBA API Data Maximization 🟡 (in progress)
 - All 569 players have advanced stats (usg%, TS%, off_rtg, def_rtg, etc.) ✅
 - 568/569 player gamelogs scraped ✅ (ISSUE-020 closed — 99.8% done)
@@ -71,9 +79,11 @@
 | Team stats | 30 × 3 seasons | All advanced metrics |
 | Player advanced stats | 569/569 | ✅ Complete |
 | Player gamelogs | 568/569 | ✅ ISSUE-020 closed |
-| Shot charts | 0 | ⚠️ Scraper built — run: `python src/data/shot_chart_scraper.py` |
-| Play-by-play | 2/1,225 | ⚠️ Scraper built — run: `python src/data/pbp_scraper.py` |
+| Shot charts | 1,707 files | 2022-23: 569/569 ✅, 2023-24: 569/569 ✅, 2024-25: 569/569 ✅ — COMPLETE |
+| Play-by-play | 3,102 files | ✅ ~84% complete (3,102/3,685) — ISSUE-018 closed |
 | Boxscores | 13 games | |
+| Lineup on/off splits | 0 | No CLI in lineup_data.py — needs entry point before bulk scrape |
+| Coverage score | 0% avg | coverage_score field unpopulated in scraper_coverage.json |
 | Win prob model | ✅ Retrained | 67.7% val acc, sklearn 1.7.2, ISSUE-016 closed |
 
 ---
@@ -83,11 +93,11 @@
 | ID | Issue | Status |
 |---|---|---|
 | ISSUE-009 | 0 shots enriched — no --game-id runs | 🔴 Phase 6 |
-| ISSUE-010 | PostgreSQL not wired — overwrites tracking_data.csv | 🔴 Phase 6 |
+| ISSUE-010 | PostgreSQL not wired — overwrites tracking_data.csv | 🟡 Wired 2026-03-17 — `_pg_write_tracking_rows` added; fires when DATABASE_URL + game_id set |
 | ISSUE-016 | sklearn 1.6.1 model, env now 1.7.2 | ✅ Closed 2026-03-17 — retrained, 67.7% acc |
 | ISSUE-017 | Per-video homography wrong — M1 for pano_enhanced not broadcast | ✅ Closed 2026-03-17 — per-clip detection in court_detector.py + wired in unified_pipeline |
 | ISSUE-018 | 0 PBP for 1,223 games | 🟡 Scraper built — `python src/data/pbp_scraper.py --season 2024-25` |
-| ISSUE-019 | 0 shot charts scraped | 🟡 Scraper built — `python src/data/shot_chart_scraper.py --season 2024-25` |
+| ISSUE-019 | 0 shot charts scraped | ✅ Closed 2026-03-17 — 1,707 files across 3 seasons (569 × 3) |
 | ISSUE-020 | 209/569 gamelogs missing | ✅ Closed 2026-03-17 — 568/569 done |
 
 ---
@@ -98,10 +108,10 @@
 2. ✅ ~~Gamelog scrape~~ — 568/569 done (ISSUE-020 closed)
 3. ✅ ~~Per-clip homography (ISSUE-017)~~ — court_detector.py + unified_pipeline wired
 4. ✅ ~~Player props train~~ — 7 models, R² 0.928-0.995
-5. **NOW**: `python src/data/shot_chart_scraper.py --season 2024-25` — 50K+ shots, enables Tier 2 models
-6. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
-7. **Phase 2.5**: Pose estimation upgrade — closes 60% of SS position gap in 3 days
-8. **Phase 6**: Wire PostgreSQL + process 20 full games with --game-id
+5. ✅ ~~Phase 5 external factors~~ — ref_tracker.py + line_monitor.py built; injury_monitor wired; pg writes added
+6. ✅ ~~Shot charts 2024-25~~ — 569 files, 221,866 shots; 2022-23/2023-24 scraping in background
+7. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
+8. **Phase 6**: Process 20 full games with `--game-id` → PostgreSQL will auto-write tracking_frames
 
 ---
 

@@ -7,7 +7,7 @@ Pass events fire retroactively on the frame the ball left the passer
 (once the receiver picks it up and confirms the pass).
 """
 
-from collections import deque
+from collections import defaultdict, deque
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -58,6 +58,31 @@ class EventDetector:
         # Written when a pass is confirmed by the receiver picking up the ball.
         self._pending: Dict[int, str] = {}
 
+        # ── Rich event accumulator (screen/cut/drive/closeout/rebound) ────
+        # Append-only; consumer should read and clear `events` each frame.
+        self.events: List[dict] = []
+
+        # Per-player position history: player_id → deque of (frame, x, y, speed)
+        self._phist: Dict[int, deque] = defaultdict(lambda: deque(maxlen=15))
+
+        # Drive streak: player_id → consecutive frames above drive speed
+        self._drive_streak: Dict[int, int] = defaultdict(int)
+        self._drive_start:  Dict[int, Tuple[float, float]] = {}
+
+        # Screen debounce: (pid_a, pid_b) → last frame a screen was logged
+        self._screen_last: Dict[Tuple[int, int], int] = {}
+
+        # Court scale (pixels per foot, approximate from basket span)
+        _span = 0.87 * map_w            # ~80.5 ft between baskets in pixels
+        self._ft: float = _span / 80.5  # px per foot
+
+        # Distance thresholds in court pixels
+        self._SCREEN_DIST    = 3.0 * self._ft   # 3 ft
+        self._CLOSEOUT_FAR   = 6.0 * self._ft   # 6 ft
+        self._CLOSEOUT_NEAR  = 3.0 * self._ft   # 3 ft
+        # 8 mph → ft/s → ft/frame (30fps) → px/frame
+        self._DRIVE_SPEED    = (8.0 * 5280.0 / 3600.0 / 30.0) * self._ft
+
     def update(
         self,
         frame_idx: int,
@@ -100,10 +125,29 @@ class EventDetector:
         if self._pixel_vel_used:
             self._ball_vel = pixel_vel
 
+        # Update player position history before classification
+        self._update_player_hist(frame_idx, frame_tracks)
+
         event = self._classify(frame_idx, ball_pos, possessor_id, possessor_pos)
+
+        # Shot-triggered rich events (use self._possessor = shooter before update)
+        if event == "shot":
+            self._detect_closeout(frame_idx, frame_tracks)
+            self._detect_rebound_positions(frame_idx, frame_tracks)
 
         self._prev_ball = ball_pos
         self._possessor = possessor_id
+
+        # Per-frame rich events (run after possessor update)
+        self._detect_screens(frame_idx, frame_tracks)
+        self._detect_cuts(frame_idx, frame_tracks)
+        self._detect_drives(frame_idx, frame_tracks)
+
+        # Prune stale _pending entries (retroactive writes whose target frame has
+        # already been consumed). Prevents unbounded growth on long game sequences.
+        _stale_cutoff = frame_idx - _PASS_MAX_FRAMES - 1
+        for _k in [k for k in self._pending if k < _stale_cutoff]:
+            del self._pending[_k]
 
         return self._pending.pop(frame_idx, event)
 
@@ -206,3 +250,225 @@ class EventDetector:
         if dx_ball * dx_basket + dy_ball * dy_basket > 0:
             return "shot"
         return "none"
+
+    # ── Rich event helpers ────────────────────────────────────────────────
+
+    def _update_player_hist(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Append each player's current position + speed to their history deque."""
+        for t in frame_tracks:
+            if t.get("team") == "referee":
+                continue
+            pid = t["player_id"]
+            x, y = float(t.get("x2d", 0)), float(t.get("y2d", 0))
+            hist = self._phist[pid]
+            speed = (
+                float(np.hypot(x - hist[-1][1], y - hist[-1][2]))
+                if hist else 0.0
+            )
+            hist.append((frame_idx, x, y, speed))
+
+    def _nearest_basket(self, x: float, y: float) -> Tuple[int, int]:
+        """Return the basket (x, y) nearest to the given court position."""
+        return min(self._baskets, key=lambda b: np.hypot(x - b[0], y - b[1]))
+
+    def _toward_basket(
+        self, dx: float, dy: float, x: float, y: float
+    ) -> bool:
+        """Return True if velocity (dx, dy) from (x, y) is directed toward nearest basket."""
+        bx, by = self._nearest_basket(x, y)
+        return (dx * (bx - x) + dy * (by - y)) > 0.0
+
+    def _detect_screens(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Log screen_set when a cross-team pair converges and one stays stationary.
+
+        Fires when two players from different teams are within SCREEN_DIST and one
+        has near-zero speed while the other is still moving.
+        """
+        STATIONARY = 1.5   # px/frame
+        MOVING     = 3.0   # px/frame
+        DEBOUNCE   = 30    # min frames between screen events for same pair
+
+        for i, ti in enumerate(frame_tracks):
+            if ti.get("team") == "referee":
+                continue
+            hi = self._phist.get(ti["player_id"])
+            if not hi:
+                continue
+            xi, yi, si = hi[-1][1], hi[-1][2], hi[-1][3]
+
+            for tj in frame_tracks[i + 1:]:
+                if tj.get("team") == "referee" or tj.get("team") == ti.get("team"):
+                    continue
+                hj = self._phist.get(tj["player_id"])
+                if not hj:
+                    continue
+                xj, yj, sj = hj[-1][1], hj[-1][2], hj[-1][3]
+
+                if float(np.hypot(xi - xj, yi - yj)) > self._SCREEN_DIST:
+                    continue
+
+                key = (min(ti["player_id"], tj["player_id"]),
+                       max(ti["player_id"], tj["player_id"]))
+                if frame_idx - self._screen_last.get(key, -999) < DEBOUNCE:
+                    continue
+
+                if si < STATIONARY and sj > MOVING:
+                    self.events.append(
+                        {"type": "screen_set", "x": xi, "y": yi, "frame": frame_idx}
+                    )
+                    self._screen_last[key] = frame_idx
+                elif sj < STATIONARY and si > MOVING:
+                    self.events.append(
+                        {"type": "screen_set", "x": xj, "y": yj, "frame": frame_idx}
+                    )
+                    self._screen_last[key] = frame_idx
+
+    def _detect_cuts(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Log cut when a player without the ball changes direction >90° toward basket.
+
+        Compares direction over frames [-10..-5] versus [-5..0].  Minimum speed
+        filter avoids false positives from stationary jitter.
+        """
+        possessors = {t["player_id"] for t in frame_tracks if t.get("has_ball")}
+        MIN_DISP = 4.0  # min displacement magnitude per 5-frame window (px)
+
+        for t in frame_tracks:
+            if t.get("team") == "referee" or t["player_id"] in possessors:
+                continue
+            hist = self._phist.get(t["player_id"])
+            if not hist or len(hist) < 10:
+                continue
+            pts = list(hist)
+            v1x = pts[-5][1] - pts[-10][1]
+            v1y = pts[-5][2] - pts[-10][2]
+            v2x = pts[-1][1] - pts[-5][1]
+            v2y = pts[-1][2] - pts[-5][2]
+            if np.hypot(v1x, v1y) < MIN_DISP or np.hypot(v2x, v2y) < MIN_DISP:
+                continue
+            cos_a = float(np.clip(
+                (v1x * v2x + v1y * v2y)
+                / (np.hypot(v1x, v1y) * np.hypot(v2x, v2y) + 1e-9),
+                -1.0, 1.0,
+            ))
+            if cos_a < 0.0 and self._toward_basket(v2x, v2y, pts[-1][1], pts[-1][2]):
+                self.events.append(
+                    {"type": "cut", "player_id": t["player_id"], "frame": frame_idx}
+                )
+
+    def _detect_drives(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Log drive when ball handler exceeds drive speed toward basket for 5+ frames."""
+        for t in frame_tracks:
+            if not t.get("has_ball") or t.get("team") == "referee":
+                continue
+            pid = t["player_id"]
+            hist = self._phist.get(pid)
+            if not hist or len(hist) < 2:
+                continue
+            x, y = hist[-1][1], hist[-1][2]
+            speed = hist[-1][3]
+            vx, vy = x - hist[-2][1], y - hist[-2][2]
+            if speed >= self._DRIVE_SPEED and self._toward_basket(vx, vy, x, y):
+                if self._drive_streak[pid] == 0:
+                    self._drive_start[pid] = (x, y)
+                self._drive_streak[pid] += 1
+            else:
+                if self._drive_streak.get(pid, 0) >= 5:
+                    sx, _ = self._drive_start.get(pid, (x, x))
+                    self.events.append({
+                        "type": "drive", "player_id": pid,
+                        "start_x": float(sx), "end_x": float(x),
+                    })
+                self._drive_streak[pid] = 0
+
+    def _detect_closeout(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Log closeout when a defender accelerates from >6ft to <3ft of shooter.
+
+        Called immediately after a shot is classified, before self._possessor is
+        updated — so self._possessor is the player who released the ball.
+        """
+        shooter_id = self._possessor
+        if shooter_id is None:
+            return
+        shooter_team = next(
+            (t.get("team") for t in frame_tracks if t["player_id"] == shooter_id),
+            None,
+        )
+        if shooter_team is None:
+            return
+        shist = self._phist.get(shooter_id)
+        if not shist:
+            return
+        sx, sy = shist[-1][1], shist[-1][2]
+
+        for t in frame_tracks:
+            if t.get("team") == shooter_team or t.get("team") == "referee":
+                continue
+            def_id = t["player_id"]
+            dhist = self._phist.get(def_id)
+            if not dhist or len(dhist) < 5:
+                continue
+            pts = list(dhist)
+            dist_now  = float(np.hypot(pts[-1][1] - sx, pts[-1][2] - sy))
+            dist_then = float(np.hypot(pts[-min(10, len(pts))][1] - sx,
+                                       pts[-min(10, len(pts))][2] - sy))
+            if dist_then > self._CLOSEOUT_FAR and dist_now < self._CLOSEOUT_NEAR:
+                avg_speed = float(np.mean([pts[-i][3]
+                                           for i in range(1, min(6, len(pts) + 1))]))
+                # Convert px/frame → mph
+                mph = (avg_speed / max(1.0, self._ft)) * 30.0 * 3600.0 / 5280.0
+                self.events.append({
+                    "type": "closeout",
+                    "defender_id": def_id,
+                    "closeout_speed": round(mph, 2),
+                })
+
+    def _detect_rebound_positions(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Record crash angle, crash speed, and box-out status at shot release.
+
+        Called at the moment of shot detection so positions reflect pre-shot state.
+        """
+        bref = self._prev_ball if self._prev_ball is not None else (
+            self.map_w / 2, self.map_h / 2
+        )
+        bx, by = self._nearest_basket(float(bref[0]), float(bref[1]))
+
+        for t in frame_tracks:
+            if t.get("team") == "referee":
+                continue
+            pid = t["player_id"]
+            hist = self._phist.get(pid)
+            if not hist or len(hist) < 2:
+                continue
+            x, y     = hist[-1][1], hist[-1][2]
+            vx, vy   = x - hist[-2][1], y - hist[-2][2]
+            crash_angle = float(np.degrees(np.arctan2(vy, vx))) if (vx or vy) else 0.0
+            crash_speed = hist[-1][3]
+            p_team = t.get("team", "")
+            p_dist = float(np.hypot(x - bx, y - by))
+            # box_out: player between an opponent and the basket
+            box_out = any(
+                float(np.hypot(s.get("x2d", x) - bx, s.get("y2d", y) - by)) > p_dist
+                for s in frame_tracks
+                if s.get("team") not in (p_team, "referee")
+                and float(np.hypot(s.get("x2d", 0) - x,
+                                   s.get("y2d", 0) - y)) < self._SCREEN_DIST * 2
+            )
+            self.events.append({
+                "type": "rebound_position",
+                "player_id": pid,
+                "crash_angle": round(crash_angle, 1),
+                "crash_speed": round(crash_speed, 2),
+                "box_out": bool(box_out and self._toward_basket(vx, vy, x, y)),
+            })
