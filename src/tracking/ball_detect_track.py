@@ -19,7 +19,19 @@ import numpy as np
 
 from .player_detection import FeetDetector
 
-MAX_TRACK       = 10      # frames of CSRT tracking before forced re-detection check
+# Orange color guard: NBA basketball HSV range (OpenCV 0-180 hue scale)
+# Rejects CSRT bbox if the center 3×3 patch median is not basketball-orange.
+# Prevents CSRT from latching onto scoreboards, crowd, or court markings.
+_BALL_H_LO, _BALL_H_HI = 8,  25   # hue: orange-amber range
+_BALL_S_MIN             = 80        # saturation: must be saturated (not grey/white)
+_BALL_V_MIN             = 80        # value: not too dark
+
+MAX_TRACK       = 20      # frames of CSRT tracking before forced re-detection check
+_CSRT_FAIL_THRESH  = 3   # consecutive CSRT ok=False before forcing re-detection
+_REENTRY_ATTEMPTS  = 3   # frames to use wider Hough radius after a forced reset
+_REENTRY_MAX_R     = 28  # wider Hough maxRadius for re-entry (vs normal 18)
+                          # (raised from 10: halves premature local-check resets; drift
+                          # and negative-coord guards catch bad projections instead)
 FLOW_MAX_FRAMES = 8       # frames to keep optical flow active during blur
 IOU_BALL_PAD    = 35      # IoU box half-size for possession detection
 PREDICT_FRAMES  = 6       # frames of history used for trajectory prediction
@@ -58,6 +70,23 @@ class BallDetectTrack:
         # Consecutive frames with no ball detected — reset CSRT when it hits 30
         self._no_ball_streak: int = 0
 
+        # CSRT consecutive failure counter — triggers immediate re-detection at
+        # threshold=3 instead of waiting for the 30-frame no-ball-streak.
+        # Each CSRT ok=False increments; ok=True resets; at 3 → do_detection=True.
+        self._csrt_consecutive_fails: int = 0
+
+        # Re-entry mode: use wider Hough search radius (maxRadius=28) for the
+        # first _REENTRY_ATTEMPTS frames after a forced detection reset, then
+        # revert to normal (maxRadius=18).  Ball is more likely to be large or
+        # at steep angle immediately after the tracker loses it.
+        self._reentry_mode:   bool = False
+        self._reentry_frames: int  = 0
+
+        # Guard 2 jump-reset counter — incremented every time a >200px position
+        # jump triggers a forced CSRT reset.  High values indicate CSRT is
+        # latching onto crowd/scoreboard objects rather than the ball.
+        self._jump_resets: int = 0
+
         # ── Trajectory deque for parabola fitting ─────────────────────────
         # Stores (frame_num, cx, cy) for each frame the ball is detected.
         self._traj_deque: deque = deque(maxlen=15)
@@ -91,6 +120,30 @@ class BallDetectTrack:
             "  pip install opencv-contrib-python"
         )
 
+    # ── Orange color check ────────────────────────────────────────────────
+
+    @staticmethod
+    def _is_ball_orange(frame: np.ndarray, cx: int, cy: int) -> bool:
+        """Return True if the 3×3 patch around (cx, cy) is basketball-orange.
+
+        NBA basketball color in OpenCV HSV (0-180 H scale):
+          H ≈ 8-25, S ≥ 80 (saturated), V ≥ 80 (not dark).
+        Uses median over a 3×3 neighbourhood to reduce single-pixel noise.
+        Returns True (accept) on out-of-bounds coords to avoid spurious rejects.
+        """
+        h, w = frame.shape[:2]
+        if not (0 <= cx < w and 0 <= cy < h):
+            return True   # boundary case — let other guards handle it
+        x1, x2 = max(0, cx - 1), min(w, cx + 2)
+        y1, y2 = max(0, cy - 1), min(h, cy + 2)
+        patch = frame[y1:y2, x1:x2]
+        if patch.size == 0:
+            return True
+        hsv = cv2.cvtColor(patch, cv2.COLOR_BGR2HSV)
+        med = np.median(hsv.reshape(-1, 3), axis=0).astype(int)
+        h_v, s_v, v_v = int(med[0]), int(med[1]), int(med[2])
+        return (_BALL_H_LO <= h_v <= _BALL_H_HI) and (s_v >= _BALL_S_MIN) and (v_v >= _BALL_V_MIN)
+
     # ── Template loading ──────────────────────────────────────────────────
 
     def _load_templates(self):
@@ -106,11 +159,19 @@ class BallDetectTrack:
     # ── Circle detection ──────────────────────────────────────────────────
 
     @staticmethod
-    def circle_detect(img):
+    def circle_detect(img, max_radius: int = 18):
+        """Run Hough circle detection on a grayscale image.
+
+        Args:
+            img:        Grayscale image (any size).
+            max_radius: Upper radius bound for Hough circles.  Normal ops use 18;
+                        re-entry mode uses _REENTRY_MAX_R (28) to catch balls at
+                        steep angles or partially out-of-frame.
+        """
         blurred = cv2.medianBlur(img, 5)
         circles = cv2.HoughCircles(
             blurred, cv2.HOUGH_GRADIENT, 1, 20,
-            param1=50, param2=25, minRadius=5, maxRadius=18
+            param1=50, param2=25, minRadius=5, maxRadius=max_radius
         )
         if circles is not None:
             return np.uint16(np.around(circles)).reshape(-1, 3)
@@ -118,9 +179,9 @@ class BallDetectTrack:
 
     # ── Template match in a region ───────────────────────────────────────
 
-    def _template_match(self, gray_roi, threshold=DETECT_THRESHOLD):
+    def _template_match(self, gray_roi, threshold=DETECT_THRESHOLD, max_radius: int = 18):
         """Check if any ball template matches inside gray_roi. Returns (x,y,w,h) or None."""
-        centers = self.circle_detect(gray_roi)
+        centers = self.circle_detect(gray_roi, max_radius)
         if centers is None:
             return None
         af = 8
@@ -138,10 +199,10 @@ class BallDetectTrack:
                         return (tl[0], tl[1], br[0] - tl[0], br[1] - tl[1])
         return None
 
-    def ball_detection(self, frame, threshold=DETECT_THRESHOLD):
+    def ball_detection(self, frame, threshold=DETECT_THRESHOLD, max_radius: int = 18):
         """Full-frame ball detection. Returns (x,y,w,h) or None."""
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        return self._template_match(gray, threshold)
+        return self._template_match(gray, threshold, max_radius)
 
     # ── Optical flow tracking ─────────────────────────────────────────────
 
@@ -195,23 +256,41 @@ class BallDetectTrack:
     def ball_tracker(self, M, M1, frame, map_2d, map_2d_text, timestamp):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         bbox = None
+        _bbox_from_hough = False  # True when Hough/template detection set bbox
 
         # ── Detection mode ────────────────────────────────────────────────
         if self.do_detection:
-            bbox = self.ball_detection(frame, DETECT_THRESHOLD)
+            _max_r = _REENTRY_MAX_R if self._reentry_mode else 18
+            bbox = self.ball_detection(frame, DETECT_THRESHOLD, max_radius=_max_r)
             if bbox is not None:
+                _bbox_from_hough = True
                 self.tracker = self._make_csrt()
                 self.tracker.init(frame, bbox)
-                self.do_detection  = False
-                self.check_track   = MAX_TRACK
-                self._flow_active  = False
-                self._flow_age     = 0
+                self.do_detection    = False
+                self.check_track     = MAX_TRACK
+                self._flow_active    = False
+                self._flow_age       = 0
+                self._reentry_mode   = False
+                self._reentry_frames = 0
+            elif self._reentry_mode:
+                self._reentry_frames += 1
+                if self._reentry_frames >= _REENTRY_ATTEMPTS:
+                    self._reentry_mode   = False
+                    self._reentry_frames = 0
 
         # ── CSRT tracking mode ────────────────────────────────────────────
         else:
             res, bbox = self.tracker.update(frame)
-            if not res:
+            if res:
+                self._csrt_consecutive_fails = 0
+            else:
                 bbox = None
+                self._csrt_consecutive_fails += 1
+                if self._csrt_consecutive_fails >= _CSRT_FAIL_THRESH:
+                    self.do_detection            = True
+                    self._reentry_mode           = True
+                    self._reentry_frames         = 0
+                    self._csrt_consecutive_fails = 0
 
             # CSRT lost ball — try optical flow
             if bbox is None and self._flow_point is not None:
@@ -227,16 +306,19 @@ class BallDetectTrack:
                     if self._flow_age > FLOW_MAX_FRAMES:
                         # Optical flow drifted too long — force re-detection
                         bbox = None
-                        self._flow_active = False
-                        self._flow_age    = 0
-                        self.do_detection = True
+                        self._flow_active    = False
+                        self._flow_age       = 0
+                        self.do_detection    = True
+                        self._reentry_mode   = True
+                        self._reentry_frames = 0
 
             # Both CSRT and flow failed — try trajectory prediction
             if bbox is None:
                 pred = self._predict_center()
                 if pred is not None:
                     cx, cy = pred
-                    pad    = 60  # larger search window around prediction
+                    pad    = 120  # raised 60→120: fast ball can travel >60px/frame
+                              # so 60px radius missed it; 120px catches faster passes
                     w_size = self._last_bbox[2] if self._last_bbox else 30
                     h_size = self._last_bbox[3] if self._last_bbox else 30
                     x1 = max(0, int(cx - pad))
@@ -248,6 +330,7 @@ class BallDetectTrack:
                     if found is not None:
                         fx, fy, fw, fh = found
                         bbox = (x1 + fx, y1 + fy, fw, fh)
+                        _bbox_from_hough = True   # template match = Hough-like detection
                         # Re-init CSRT at found position
                         self.tracker = self._make_csrt()
                         self.tracker.init(frame, bbox)
@@ -255,7 +338,9 @@ class BallDetectTrack:
                         self._flow_active = False
                         self._flow_age    = 0
                     else:
-                        self.do_detection = True
+                        self.do_detection    = True
+                        self._reentry_mode   = True
+                        self._reentry_frames = 0
 
         # ── Validate bbox before updating state ───────────────────────────
         if bbox is not None:
@@ -266,29 +351,55 @@ class BallDetectTrack:
             # Guard 1: reject out-of-bounds center (CSRT drifted outside frame)
             if not (0 <= _cx_new < _w_fr and 0 <= _cy_new < _h_fr):
                 bbox = None
-                self.do_detection = True
-            # Guard 2: reject >200px position jump (camera cut or tracker error)
-            elif self._trajectory and (
-                np.hypot(_cx_new - self._trajectory[-1][0],
-                         _cy_new - self._trajectory[-1][1]) > 200
+                self.do_detection    = True
+                self._reentry_mode   = True
+                self._reentry_frames = 0
+            # Guard 2: reject >200px position jump (camera cut or tracker error).
+            # Skipped for fresh Hough/template re-detections — Hough independently
+            # found a new circle; the "jump" is the ball moving while CSRT was
+            # tracking the wrong object, not a real CSRT drift error.
+            elif (not _bbox_from_hough
+                  and self._trajectory
+                  and (np.hypot(_cx_new - self._trajectory[-1][0],
+                                _cy_new - self._trajectory[-1][1]) > 200)
             ):
                 bbox = None
-                self.do_detection = True
-                self.tracker    = self._make_csrt()
-                self._flow_active = False
-                self._flow_age    = 0
-                self._flow_point  = None
+                self._jump_resets   += 1
+                self.do_detection    = True
+                self._reentry_mode   = True
+                self._reentry_frames = 0
+                self.tracker         = self._make_csrt()
+                self._flow_active    = False
+                self._flow_age       = 0
+                self._flow_point     = None
+            # Guard 3: reject CSRT-tracked bbox whose center patch is not
+            # basketball-orange (prevents CSRT from latching onto scoreboards,
+            # court text, or crowd). Skipped for fresh Hough/template detections
+            # (circularity already validated) to avoid false negatives caused by
+            # motion blur, shadow, or broadcast colour grading.
+            elif (not _bbox_from_hough
+                  and not self._is_ball_orange(frame, _cx_new, _cy_new)):
+                bbox = None
+                self.do_detection    = True
+                self._reentry_mode   = True
+                self._reentry_frames = 0
+                self.tracker         = self._make_csrt()
+                self._flow_active    = False
+                self._flow_age       = 0
+                self._flow_point     = None
 
         # Guard 3: no-ball streak — reset stale CSRT after 30 consecutive misses
         if bbox is None:
             self._no_ball_streak += 1
             if self._no_ball_streak >= 30:
-                self.do_detection  = True
-                self.tracker       = self._make_csrt()
-                self._flow_active  = False
-                self._flow_age     = 0
-                self._trajectory   = []
-                self._flow_point   = None
+                self.do_detection    = True
+                self._reentry_mode   = True
+                self._reentry_frames = 0
+                self.tracker         = self._make_csrt()
+                self._flow_active    = False
+                self._flow_age       = 0
+                self._trajectory     = []
+                self._flow_point     = None
                 self._no_ball_streak = 0
         else:
             self._no_ball_streak = 0
@@ -378,7 +489,52 @@ class BallDetectTrack:
             if self.check_track > 0:
                 homo = M1 @ (M @ ball_center.reshape(3, -1))
                 homo = np.int32(homo / homo[-1]).ravel()
-                self.last_2d_pos = (int(homo[0]), int(homo[1]))
+                ball_2d = (int(homo[0]), int(homo[1]))
+                # Reject projections with negative coordinates — these are
+                # always wrong (off-court, outside pano) and occur when M or
+                # M1 is stale/misaligned.  The drift guard below only fires
+                # when player positions are available; this check is
+                # unconditional and catches the -1018/-57940 values seen when
+                # SIFT inliers are few and M_ema is noisy.
+                if ball_2d[0] < 0 or ball_2d[1] < 0:
+                    self.last_2d_pos = None
+                else:
+                    # Guard against CSRT drift: if the projected ball is far
+                    # from any tracked player, CSRT has latched onto the wrong
+                    # object.  Threshold is 1200px — roughly 30ft on the 3698px
+                    # pano court (94ft total).  400px was too tight: a ball in
+                    # flight at 30ft from the nearest player = ~1180px in pano
+                    # coords, causing valid airborne detections to be discarded.
+                    # Prefer the possessor's court pos; fall back to
+                    # the nearest non-referee player when no possessor is set
+                    # (ball-in-air guard may have cleared has_ball even though
+                    # CSRT is still running on a drifted object).
+                    possessor_2d = next(
+                        (p.positions[timestamp] for p in self.players
+                         if p.has_ball and timestamp in p.positions),
+                        None,
+                    )
+                    if possessor_2d is None:
+                        # No explicit possessor — find nearest tracked player
+                        candidates = [
+                            p.positions[timestamp] for p in self.players
+                            if p.team != "referee" and timestamp in p.positions
+                        ]
+                        if candidates:
+                            possessor_2d = min(
+                                candidates,
+                                key=lambda pos: np.hypot(ball_2d[0] - pos[0],
+                                                         ball_2d[1] - pos[1]),
+                            )
+                    if (possessor_2d is not None
+                            and float(np.hypot(ball_2d[0] - possessor_2d[0],
+                                               ball_2d[1] - possessor_2d[1])) > 1200):
+                        self.last_2d_pos = None   # 2D projection out of range — discard
+                        # Do NOT clear pixel_vel here: CSRT is still tracking the ball
+                        # pixel-space (it's legitimately airborne during shot arc).
+                        # Clearing pixel_vel here silenced shot detection for no-stride clips.
+                    else:
+                        self.last_2d_pos = ball_2d
                 color = (0, 165, 255) if self._flow_active else (255, 0, 0)
                 cv2.rectangle(frame, p1, p2, color, 2, 1)
                 cv2.circle(map_2d, (homo[0], homo[1]), 10, (0, 0, 255), 5)
