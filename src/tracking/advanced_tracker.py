@@ -14,7 +14,7 @@ Drop-in replacement: AdvancedFeetDetector has the same interface as FeetDetector
 from __future__ import annotations
 
 import os
-from collections import defaultdict
+from collections import defaultdict, deque
 from typing import Dict, List, Optional, Tuple
 
 import cv2
@@ -46,6 +46,18 @@ try:
 except ImportError:
     _HAS_COLOR_REID = False
 
+try:
+    from .osnet_reid import DeepAppearanceExtractor as _DeepAppearanceExtractor
+    _HAS_OSNET = True
+except ImportError:
+    _HAS_OSNET = False
+
+try:
+    import lapx as _lapx  # noqa: F401  — faster Hungarian for ByteTrack
+    _HAS_LAPX = True
+except ImportError:
+    _HAS_LAPX = False
+
 # ── Tuning constants ──────────────────────────────────────────────────────────
 COST_GATE       = 0.80   # reject any assignment with cost above this
 APPEARANCE_W    = 0.25   # weight of appearance vs IoU in cost matrix
@@ -59,6 +71,18 @@ KF_PROC_NOISE   = 5e-2
 KF_MEAS_NOISE   = 1e-1
 APPEAR_ALPHA    = 0.7    # EMA weight for appearance update (higher = more stable)
 MAX_2D_JUMP     = 250    # max court pixels a player can move between frames (~2× court width/sec at 30fps)
+
+# ── ByteTrack constants ───────────────────────────────────────────────────────
+BT_HIGH_THRESH    = 0.50   # Stage-1: high-confidence detections matched with IoU+appearance
+BT_SECOND_IOUGATE = 0.50   # Stage-2: minimum IoU required for low-conf "byte" match
+
+# ── Optical flow constants ────────────────────────────────────────────────────
+OF_WIN_SIZE  = (15, 15)   # Lucas-Kanade search window
+OF_MAX_LEVEL = 2          # pyramid levels
+OF_MAX_AGE   = 8          # max lost frames before stopping optical flow propagation
+
+# ── Pose cadence ──────────────────────────────────────────────────────────────
+_POSE_INTERVAL = 3        # run pose model every N frames; reuse cached fields on others
 
 
 # ── Kalman filter helpers ─────────────────────────────────────────────────────
@@ -237,13 +261,71 @@ class AdvancedFeetDetector(FeetDetector):
         self._recalib_interval = 150  # frames between re-calibrations
         self._frames_since_calib = 0
 
+        # ── Pose estimation (ankle keypoints) ─────────────────────────────
+        # Replace bbox_bottom heuristic with YOLOv8-pose ankle keypoints.
+        # Falls back to bbox_bottom when keypoints are not detected.
+        self._pose_model = None
+        self._use_pose   = False
+        try:
+            from ultralytics import YOLO as _YOLO
+            _pm = _YOLO("yolov8n-pose.pt")
+            if _cfg.get("broadcast_mode", True):
+                _pm.overrides["half"] = getattr(self, "_use_half", False)
+            self._pose_model = _pm
+            self._use_pose   = True
+        except Exception:
+            pass  # pose model unavailable — fall back to bbox_bottom
+
+        # Pose cadence state and per-slot caches
+        self._pose_frame_counter: int = 0
+        self._pose_state: Dict[int, dict] = {}         # slot → latest pose fields dict
+        self._hip_y_history: Dict[int, deque] = {}     # slot → recent hip pixel-y values
+        # Kpts captured by _activate_slot this frame (cleared at start of each frame)
+        self._matched_kpts_this_frame: Dict[int, Tuple] = {}  # slot → (kpts_xy, kpts_conf)
+
+        # ── Optical flow gap-fill ──────────────────────────────────────────
+        # When YOLO misses a tracked player, propagate their pixel position
+        # using Lucas-Kanade optical flow for OF_MAX_AGE frames before
+        # handing off to pure Kalman prediction.
+        self._prev_gray: Optional[np.ndarray] = None          # grayscale prev frame
+        self._flow_pts:  Dict[int, np.ndarray] = {}           # slot → [[x,y]] float32
+
+        # ── OSNet deep re-ID extractor (optional) ─────────────────────────
+        # When available, replaces HSV histogram embeddings with 256-dim
+        # L2-normalised deep features from OSNet-x0.25.  Falls back to HSV
+        # if OSNet is not importable or model init fails.
+        self._deep_extractor = None
+        self._use_deep       = False
+        if _HAS_OSNET:
+            try:
+                self._deep_extractor = _DeepAppearanceExtractor()
+                self._use_deep       = self._deep_extractor.available
+                # Auto-load pre-trained weights if path is configured and file exists.
+                # Silently skip when file is absent — OSNet stays in random-weights mode.
+                _weights_path = _cfg.get("osnet_weights_path", "")
+                if _weights_path and os.path.exists(_weights_path):
+                    self._deep_extractor.load_weights(_weights_path)
+            except Exception:
+                pass
+
     # ── helpers ───────────────────────────────────────────────────────────
 
     def _slot(self, player) -> int:
         return self.players.index(player)
 
-    def _update_appearance(self, slot: int, crop_bgr: np.ndarray):
-        emb = _compute_appearance(crop_bgr)
+    def _update_appearance(
+        self,
+        slot: int,
+        crop_bgr: np.ndarray,
+        deep_emb: Optional[np.ndarray] = None,
+    ):
+        """Update the per-slot appearance embedding using EMA.
+
+        When a deep embedding (from OSNet) is provided it replaces the HSV
+        histogram.  Falls back to ``_compute_appearance`` (HSV) otherwise.
+        """
+        emb = deep_emb if (deep_emb is not None and deep_emb.size > 0) \
+              else _compute_appearance(crop_bgr)
         if slot in self._appearances:
             self._appearances[slot] = (APPEAR_ALPHA * self._appearances[slot]
                                        + (1 - APPEAR_ALPHA) * emb)
@@ -285,10 +367,20 @@ class AdvancedFeetDetector(FeetDetector):
             _kf_correct(self._kalmans[slot], det["bbox"])
         else:
             self._kalmans[slot] = _make_kf(det["bbox"])
-        self._update_appearance(slot, det["crop_bgr"])
+        self._update_appearance(
+            slot, det["crop_bgr"], deep_emb=det.get("deep_emb")
+        )
         self._lost_ages[slot] = 0
         self._gallery.pop(slot, None)
         self._gallery_ages.pop(slot, None)
+        # Update optical flow anchor point for this slot
+        if "foot_xy" in det:
+            fx, fy = det["foot_xy"]
+            self._flow_pts[slot] = np.array([[fx, fy]], dtype=np.float32)
+        # Capture keypoints for this frame's pose extraction pass
+        kpts_xy = det.get("kpts_xy")
+        if kpts_xy is not None:
+            self._matched_kpts_this_frame[slot] = (kpts_xy, det.get("kpts_conf"))
 
     # ── dynamic team color calibration ───────────────────────────────────
 
@@ -327,6 +419,96 @@ class AdvancedFeetDetector(FeetDetector):
         d0 = hue_dist(dom, self._team_centroids[0])
         d1 = hue_dist(dom, self._team_centroids[1])
         return "green" if d0 <= d1 else "white"
+
+    # ── pose field extraction ─────────────────────────────────────────────
+
+    def _extract_pose_fields(
+        self,
+        slot: int,
+        kpts_xy: Optional[np.ndarray],
+        kpts_conf: Optional[np.ndarray],
+        has_ball: bool,
+    ) -> dict:
+        """Extract per-player pose features from COCO 17-keypoint output.
+
+        COCO indices used:
+            0  = nose (head proxy)
+            9  = left wrist,  10 = right wrist
+            11 = left hip,    12 = right hip
+            15 = left ankle,  16 = right ankle
+
+        Falls back to empty/default values when keypoints are missing or
+        below confidence threshold.
+
+        Args:
+            slot: Tracker slot index (for hip y history lookup).
+            kpts_xy: (17, 2) keypoint pixel coordinates, or None.
+            kpts_conf: (17,) per-keypoint confidence, or None.
+            has_ball: Whether this player currently holds the ball.
+
+        Returns:
+            dict with ankle_x, ankle_y, jump_detected, contest_arm_height,
+            dribble_hand.
+        """
+        _CONF_MIN = 0.5
+        result: dict = {
+            "ankle_x": None, "ankle_y": None,
+            "jump_detected": False,
+            "contest_arm_angle": 0.0,
+            "dribble_hand": "unknown",
+        }
+        if kpts_xy is None or len(kpts_xy) < 17:
+            return result
+
+        conf = kpts_conf if kpts_conf is not None else np.ones(17, dtype=np.float32)
+
+        def valid(idx: int) -> bool:
+            return bool(conf[idx] >= _CONF_MIN)
+
+        def kxy(idx: int) -> Tuple[float, float]:
+            return float(kpts_xy[idx, 0]), float(kpts_xy[idx, 1])
+
+        # ── Ankle keypoints (COCO 15=left ankle, 16=right ankle) ──────────
+        ankle_ids = [i for i in (15, 16) if valid(i)]
+        if ankle_ids:
+            result["ankle_x"] = float(np.mean([kpts_xy[i, 0] for i in ankle_ids]))
+            result["ankle_y"] = float(np.mean([kpts_xy[i, 1] for i in ankle_ids]))
+
+        # ── Jump detection: hip keypoints rising faster than 2 px/frame ───
+        hip_ids = [i for i in (11, 12) if valid(i)]
+        if hip_ids:
+            hip_y_now = float(np.mean([kpts_xy[i, 1] for i in hip_ids]))
+            hip_hist  = self._hip_y_history.setdefault(slot, deque(maxlen=6))
+            hip_hist.append(hip_y_now)
+            if len(hip_hist) >= 3:
+                ys  = np.array(hip_hist, dtype=np.float32)
+                vel = float(np.diff(ys).mean())
+                result["jump_detected"] = bool(vel < -2.0)  # y decreasing = rising
+
+        # ── Contest arm height: highest wrist vs nose and hip ─────────────
+        wrist_ids = [i for i in (9, 10) if valid(i)]
+        if valid(0) and wrist_ids and hip_ids:
+            nose_y   = kxy(0)[1]
+            hip_y    = float(np.mean([kpts_xy[i, 1] for i in hip_ids]))
+            wrist_y  = float(min(kpts_xy[i, 1] for i in wrist_ids))  # highest wrist
+            body_h   = abs(hip_y - nose_y) + 1e-6
+            # 0.0 = wrist at hip level; 1.0 = wrist at nose level (or above)
+            result["contest_arm_angle"] = float(
+                np.clip((hip_y - wrist_y) / body_h, 0.0, 1.0)
+            )
+
+        # ── Dribble hand: lower wrist (higher pixel y) when possessing ball ─
+        if has_ball:
+            if valid(9) and valid(10):
+                _, ly = kxy(9)
+                _, ry = kxy(10)
+                result["dribble_hand"] = "left" if ly > ry else "right"
+            elif valid(9):
+                result["dribble_hand"] = "left"
+            elif valid(10):
+                result["dribble_hand"] = "right"
+
+        return result
 
     # ── per-team Hungarian matching ───────────────────────────────────────
 
@@ -375,6 +557,99 @@ class AdvancedFeetDetector(FeetDetector):
 
         return matched, [slots[i] for i in unmatched_slots], [dets[i] for i in unmatched_dets]
 
+    # ── ByteTrack two-stage assignment ────────────────────────────────────
+
+    def _match_team_bytetrack(
+        self, team: str, detections: List[dict]
+    ) -> Tuple[List[Tuple[int, int]], List[int], List[int]]:
+        """
+        ByteTrack two-stage assignment for one team.
+
+        Stage 1: High-confidence detections (score ≥ BT_HIGH_THRESH) matched
+                 against all active tracked slots using IoU + appearance cost,
+                 identical to the original ``_match_team``.
+        Stage 2: Low-confidence ("byte") detections matched against the slots
+                 that went unmatched in Stage 1, using IoU only (no appearance,
+                 since low-conf crops are less reliable).  Only accepted when
+                 IoU > BT_SECOND_IOUGATE.
+
+        Falls back gracefully: when detection dicts have no ``score`` key
+        (e.g. in legacy unit tests) all detections are treated as high-confidence.
+
+        Returns:
+            (matched pairs [(slot, det_idx), ...],
+             unmatched slot indices,
+             unmatched det indices)
+        """
+        slots     = [self._slot(p) for p in self.players if p.team == team]
+        team_dets = [i for i, d in enumerate(detections) if d["team"] == team]
+
+        if not slots or not team_dets:
+            return [], slots, team_dets
+
+        high_dets = [i for i in team_dets
+                     if detections[i].get("score", 1.0) >= BT_HIGH_THRESH]
+        low_dets  = [i for i in team_dets
+                     if detections[i].get("score", 1.0) <  BT_HIGH_THRESH]
+
+        similar = (self._color_tracker is not None
+                   and self._color_tracker.similar_colors)
+        app_w = min(0.60, self._appearance_w
+                    + (SIMILAR_COLORS_JERSEY_W if similar else 0.0))
+
+        matched:          List[Tuple[int, int]] = []
+        matched_slot_idx: set                   = set()   # indices into `slots`
+        matched_det_set:  set                   = set()   # global det indices
+
+        # ── Stage 1: high-conf dets vs all tracks ─────────────────────────
+        if high_dets:
+            cost1 = np.ones((len(slots), len(high_dets)), dtype=np.float32) * 2.0
+            for ri, slot in enumerate(slots):
+                pred = self._kf_pred.get(slot)
+                for ci, di in enumerate(high_dets):
+                    det_bbox = detections[di]["bbox"]
+                    iou_val  = _iou(pred, det_bbox) if pred is not None else 0.0
+                    # Use pre-computed deep embedding when available, else HSV
+                    _deep = detections[di].get("deep_emb")
+                    det_emb = (_deep if _deep is not None
+                               else (_compute_appearance(detections[di]["crop_bgr"])
+                                     if detections[di]["crop_bgr"] is not None else None))
+                    app_dist = _appear_dist(self._appearances.get(slot), det_emb)
+                    cost1[ri, ci] = (1.0 - iou_val) * (1 - app_w) + app_dist * app_w
+
+            for ri, ci in _assign(cost1):
+                if cost1[ri, ci] <= COST_GATE:
+                    matched.append((slots[ri], high_dets[ci]))
+                    matched_slot_idx.add(ri)
+                    matched_det_set.add(high_dets[ci])
+
+        # ── Stage 2: low-conf dets vs unmatched tracks (IoU only) ─────────
+        if low_dets:
+            remaining_slots = [slots[ri] for ri in range(len(slots))
+                               if ri not in matched_slot_idx]
+            if remaining_slots:
+                cost2 = np.ones(
+                    (len(remaining_slots), len(low_dets)), dtype=np.float32
+                ) * 2.0
+                for ri, slot in enumerate(remaining_slots):
+                    pred = self._kf_pred.get(slot)
+                    for ci, di in enumerate(low_dets):
+                        det_bbox = detections[di]["bbox"]
+                        iou_val  = _iou(pred, det_bbox) if pred is not None else 0.0
+                        cost2[ri, ci] = 1.0 - iou_val
+
+                for ri, ci in _assign(cost2):
+                    if cost2[ri, ci] < (1.0 - BT_SECOND_IOUGATE):
+                        slot = remaining_slots[ri]
+                        matched.append((slot, low_dets[ci]))
+                        matched_slot_idx.add(slots.index(slot))
+                        matched_det_set.add(low_dets[ci])
+
+        unmatched_slots = [slots[ri] for ri in range(len(slots))
+                           if ri not in matched_slot_idx]
+        unmatched_dets  = [di for di in team_dets if di not in matched_det_set]
+        return matched, unmatched_slots, unmatched_dets
+
     # ── re-ID from gallery ────────────────────────────────────────────────
 
     def _reid(
@@ -401,8 +676,11 @@ class AdvancedFeetDetector(FeetDetector):
         Returns:
             Gallery slot index if re-ID succeeds, else None.
         """
-        det_app = (_compute_appearance(det["crop_bgr"])
-                   if det["crop_bgr"] is not None else None)
+        # Use pre-computed deep embedding when available, else HSV histogram
+        _deep_app = det.get("deep_emb")
+        det_app = (_deep_app if _deep_app is not None
+                   else (_compute_appearance(det["crop_bgr"])
+                         if det["crop_bgr"] is not None else None))
 
         # Build sorted candidate list: [(slot, dist), ...] ascending by dist
         candidates = []
@@ -444,6 +722,9 @@ class AdvancedFeetDetector(FeetDetector):
     # ── main override ─────────────────────────────────────────────────────
 
     def get_players_pos(self, M, M1, frame, timestamp, map_2d):
+        # Clear per-frame kpts capture dict
+        self._matched_kpts_this_frame = {}
+
         # ── Step 1: Advance all Kalman filters → store predictions ────────
         self._kf_pred = {}
         for slot, kf in self._kalmans.items():
@@ -452,19 +733,55 @@ class AdvancedFeetDetector(FeetDetector):
             if self.players[slot].previous_bb is not None:
                 self.players[slot].previous_bb = self._kf_pred[slot]
 
-        # ── Step 2: YOLOv8 inference ──────────────────────────────────────
-        yolo_results = self.model(frame, classes=[0], conf=self._conf_threshold, verbose=False, imgsz=1280, half=self._use_half)
+        # ── Step 2: YOLOv8 inference (pose every N frames, else detection) ─
+        _run_pose = (
+            self._use_pose
+            and self._pose_model is not None
+            and self._pose_frame_counter % _POSE_INTERVAL == 0
+        )
+        self._pose_frame_counter += 1
+
+        if _run_pose:
+            yolo_results = self._pose_model(
+                frame, classes=[0], conf=self._conf_threshold,
+                verbose=False, imgsz=1280
+            )
+        else:
+            yolo_results = self.model(
+                frame, classes=[0], conf=self._conf_threshold,
+                verbose=False, imgsz=640, half=self._use_half
+            )
         boxes_xyxy   = (yolo_results[0].boxes.xyxy.cpu().numpy()
                         if yolo_results[0].boxes is not None else [])
+        scores_conf  = (yolo_results[0].boxes.conf.cpu().numpy()
+                        if yolo_results[0].boxes is not None else [])
+
+        # Extract ankle keypoints when pose model is active.
+        # COCO keypoint indices: 15 = left ankle, 16 = right ankle.
+        # Shape: (N_persons, N_keypoints, 2 or 3) — xy or xyconf.
+        _kpts_xy   = None  # (N, 17, 2) pixel coords
+        _kpts_conf = None  # (N, 17)    per-kpt confidence
+        if (_run_pose
+                and yolo_results[0].keypoints is not None
+                and yolo_results[0].keypoints.xy is not None):
+            try:
+                _kpts_xy = yolo_results[0].keypoints.xy.cpu().numpy()   # (N, 17, 2)
+                if yolo_results[0].keypoints.conf is not None:
+                    _kpts_conf = yolo_results[0].keypoints.conf.cpu().numpy()  # (N, 17)
+            except Exception:
+                _kpts_xy = _kpts_conf = None
 
         if len(boxes_xyxy) == 0:
             self._age_all(timestamp)
+            # Update optical flow state for next frame even on empty detections
+            self._prev_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            self._flow_pts  = {}
             return self._render(frame, map_2d, timestamp)
 
         # ── Step 3: Build detection list (bbox, team, crop, court pos) ────
         adaptive_colors = _adaptive_colors(frame)
         detections: List[dict] = []
-        for box in boxes_xyxy:
+        for box_i, box in enumerate(boxes_xyxy):
             x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
             y1c = max(0, y1);  y2c = min(frame.shape[0], y2)
             x1c = max(0, x1);  x2c = min(frame.shape[1], x2)
@@ -503,9 +820,23 @@ class AdvancedFeetDetector(FeetDetector):
                         self._calibrate_team_colors()
                 team = self._classify_team_dynamic(bgr_crop, team)
 
-            # 2D court projection
+            # ── Foot position: ankle keypoints (pose) or bbox_bottom ──────
             head_x = (x1c + x2c) // 2
-            foot_y = y2c
+            foot_y = y2c  # fallback: bbox bottom
+            if _kpts_xy is not None and box_i < len(_kpts_xy):
+                ankles_xy   = _kpts_xy[box_i, 15:17, :]   # left/right ankle (2,2)
+                ankle_confs = (
+                    _kpts_conf[box_i, 15:17]
+                    if _kpts_conf is not None else np.ones(2)
+                )
+                # Accept ankle kpts with confidence > 0.5 (fallback to bbox_bottom below)
+                valid = ankle_confs > 0.5
+                if valid.any():
+                    foot_y = int(ankles_xy[valid, 1].mean())
+                    # head_x: midpoint of visible ankles gives better horizontal pos
+                    head_x = int(ankles_xy[valid, 0].mean())
+
+            # 2D court projection
             kpt  = np.array([head_x, foot_y, 1])
             homo = M1 @ (M @ kpt.reshape(3, 1))
             homo = np.int32(homo / homo[-1]).ravel()
@@ -517,23 +848,58 @@ class AdvancedFeetDetector(FeetDetector):
             cv2.circle(frame, (head_x, foot_y), 2, color_bgr, 5)
 
             det_crop = bgr_crop if bgr_crop.size > 0 else None
+            score    = float(scores_conf[box_i]) if box_i < len(scores_conf) else 1.0
+            # Store full keypoints per detection for downstream pose extraction
+            det_kpts_xy   = (_kpts_xy[box_i]
+                             if _kpts_xy is not None and box_i < len(_kpts_xy)
+                             else None)
+            det_kpts_conf = (_kpts_conf[box_i]
+                             if _kpts_conf is not None and box_i < len(_kpts_conf)
+                             else None)
             detections.append({
-                "bbox":     bbox,
-                "team":     team,
-                "homo":     homo,
-                "color":    color_bgr,
-                "crop_bgr": det_crop,
+                "bbox":      bbox,
+                "team":      team,
+                "homo":      homo,
+                "color":     color_bgr,
+                "crop_bgr":  det_crop,
+                "score":     score,
+                "foot_xy":   (head_x, foot_y),  # pixel foot position for optical flow
+                "kpts_xy":   det_kpts_xy,        # (17,2) COCO keypoints or None
+                "kpts_conf": det_kpts_conf,       # (17,) per-kpt confidence or None
             })
 
             # ISSUE-005: update per-team color signature for similar-color detection
             if self._color_tracker is not None and det_crop is not None:
                 self._color_tracker.update(det_crop, team)
 
-        # ── Step 4: Hungarian matching per team ───────────────────────────
+        # ── Step 3.5: Deep appearance embeddings (OSNet batch inference) ──
+        # Batch all detection crops through OSNet once per frame for efficiency.
+        # Results stored as det["deep_emb"] and used downstream in place of HSV.
+        if self._use_deep and self._deep_extractor is not None and detections:
+            crops_for_deep = [d["crop_bgr"] for d in detections]
+            try:
+                deep_embs = self._deep_extractor.batch_extract(crops_for_deep)
+                for d, emb in zip(detections, deep_embs):
+                    d["deep_emb"] = emb
+            except Exception:
+                pass  # fall back to HSV per-det in downstream code
+
+        # ── Step 4: Assignment — ByteTrack (lapx) or Hungarian fallback ─────
+        # ByteTrack two-stage is active only when lapx is installed (faster
+        # linear assignment).  Without lapx we fall back to the original
+        # single-stage Kalman+Hungarian matcher (_match_team).
+        _use_bytetrack = _HAS_LAPX
         all_unmatched_dets: List[int] = []
 
         for team in ("green", "white", "referee"):
-            matched, unmatched_slots, unmatched_dets = self._match_team(team, detections)
+            if _use_bytetrack:
+                matched, unmatched_slots, unmatched_dets = self._match_team_bytetrack(
+                    team, detections
+                )
+            else:
+                matched, unmatched_slots, unmatched_dets = self._match_team(
+                    team, detections
+                )
 
             for slot, di in matched:
                 self._activate_slot(slot, detections[di], timestamp)
@@ -556,11 +922,14 @@ class AdvancedFeetDetector(FeetDetector):
             all_unmatched_dets.extend(unmatched_dets)
 
         # ── Age gallery entries and evict stale ones ──────────────────────
-        for slot in list(self._gallery_ages.keys()):
-            self._gallery_ages[slot] += 1
-            if self._gallery_ages[slot] >= self._gallery_ttl:
-                self._gallery.pop(slot, None)
-                self._gallery_ages.pop(slot, None)
+        # ByteTrack handles lost/found tracks natively via two-stage matching,
+        # so gallery TTL aging is unnecessary and wastes compute when active.
+        if not _use_bytetrack:
+            for slot in list(self._gallery_ages.keys()):
+                self._gallery_ages[slot] += 1
+                if self._gallery_ages[slot] >= self._gallery_ttl:
+                    self._gallery.pop(slot, None)
+                    self._gallery_ages.pop(slot, None)
 
         # ── Step 5: Re-ID unmatched detections from lost-track gallery ────
         truly_new: List[int] = []
@@ -624,6 +993,48 @@ class AdvancedFeetDetector(FeetDetector):
                     except Exception:
                         pass
 
+        # ── Step 7.5: Optical flow gap-fill ───────────────────────────────
+        # For players missed by YOLO (lost_age 1..OF_MAX_AGE), propagate their
+        # last known pixel position using Lucas-Kanade optical flow.  This gives
+        # smoother court-position estimates than pure Kalman prediction,
+        # especially when a player is partially occluded.
+        gray_now = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if self._prev_gray is not None:
+            for p in self.players:
+                slot     = self._slot(p)
+                lost_age = self._lost_ages.get(slot, 0)
+                if (0 < lost_age <= OF_MAX_AGE
+                        and slot in self._flow_pts
+                        and p.previous_bb is not None
+                        and timestamp not in p.positions):
+                    prev_pt = self._flow_pts[slot]  # shape (1, 2) float32
+                    try:
+                        new_pt, status, _ = cv2.calcOpticalFlowPyrLK(
+                            self._prev_gray, gray_now, prev_pt, None,
+                            winSize=OF_WIN_SIZE,
+                            maxLevel=OF_MAX_LEVEL,
+                            criteria=(
+                                cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+                                10, 0.03,
+                            ),
+                        )
+                        if status is not None and status[0, 0] == 1:
+                            fx, fy = int(new_pt[0, 0]), int(new_pt[0, 1])
+                            if (0 <= fx < frame.shape[1]
+                                    and 0 <= fy < frame.shape[0]):
+                                kpt  = np.array([fx, fy, 1], dtype=np.float64)
+                                homo = M1 @ (M @ kpt.reshape(3, 1))
+                                if abs(homo[2, 0]) > 1e-6:
+                                    homo = np.int32(homo / homo[2, 0]).ravel()
+                                    if (0 <= homo[0] < map_2d.shape[1]
+                                            and 0 <= homo[1] < map_2d.shape[0]):
+                                        p.positions[timestamp] = (homo[0], homo[1])
+                                        # Advance flow anchor for next frame
+                                        self._flow_pts[slot] = new_pt
+                    except Exception:
+                        pass
+        self._prev_gray = gray_now
+
         # ── Step 8: Same-team duplicate suppression ───────────────────────
         # If two players on the same team project to within DUPLICATE_DIST of
         # each other, the lower-confidence track (higher lost_age) is likely
@@ -663,6 +1074,26 @@ class AdvancedFeetDetector(FeetDetector):
             self._warmup_colors = []   # reset sample buffer
             self._frames_since_calib = 0
 
+        # ── Pose field extraction and player attribute update ──────────────
+        # For every slot that received a matched detection with keypoints this
+        # frame, run the full pose extraction and cache the result.  On frames
+        # where pose did not run (_run_pose=False), _matched_kpts_this_frame is
+        # empty so only previously cached pose fields are applied.
+        for slot, (kxy, kconf) in self._matched_kpts_this_frame.items():
+            pose = self._extract_pose_fields(
+                slot, kxy, kconf, self.players[slot].has_ball
+            )
+            self._pose_state[slot] = pose
+
+        for p in self.players:
+            slot = self._slot(p)
+            pose = self._pose_state.get(slot, {})
+            p.ankle_x            = pose.get("ankle_x")
+            p.ankle_y            = pose.get("ankle_y")
+            p.jump_detected      = pose.get("jump_detected", False)
+            p.contest_arm_angle  = pose.get("contest_arm_angle", 0.0)
+            p.dribble_hand       = pose.get("dribble_hand", "unknown")
+
         return self._render(frame, map_2d, timestamp)
 
     # ── housekeeping ──────────────────────────────────────────────────────
@@ -680,6 +1111,7 @@ class AdvancedFeetDetector(FeetDetector):
                     p.positions   = {}
                     p.has_ball    = False
                     self._kalmans.pop(i, None)
+                    self._flow_pts.pop(i, None)
                     self._lost_ages[i] = 0
         for slot in list(self._gallery_ages.keys()):
             self._gallery_ages[slot] += 1
@@ -752,11 +1184,12 @@ def visualize_tracking(
                 c = tuple(int(v * alpha) for v in color)
                 cv2.line(frame, pts[i - 1], pts[i], c, 2)
 
-        cv2.imshow("Advanced Tracker — Debug", frame)
+        if output_path:  # only show window when writing output video
+            cv2.imshow("Advanced Tracker — Debug", frame)
+            if cv2.waitKey(1) & 0xFF == 27:
+                break
         if writer:
             writer.write(frame)
-        if cv2.waitKey(1) & 0xFF == 27:
-            break
         frame_idx += 1
 
     cap.release()
