@@ -31,7 +31,7 @@ import csv
 import json
 import os
 import time
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _DATA       = os.path.join(PROJECT_DIR, "data")
@@ -128,6 +128,97 @@ def _parse_score_margin(margin_str: str) -> Optional[int]:
         return int(margin_str)
     except (ValueError, TypeError):
         return None
+
+
+# ── Live mask builder ─────────────────────────────────────────────────────────
+
+def build_live_mask(game_id: str, video_fps: float = 30.0) -> Dict[int, str]:
+    """Build a frame-level live/dead-ball mask from cached PBP data.
+
+    Loads data/nba/pbp_{game_id}.json (bulk NBA API raw format).
+    Converts game-clock timestamps to approximate video frame numbers.
+    Returns {frame_idx: "live" | "dead_ball" | "unknown"}.
+
+    Classification rules:
+      - "live":      frame is within 5s (±150 frames at 30fps) of a live-play event
+                     (EVENTMSGTYPE in {1, 2, 3, 4, 5, 6})
+      - "dead_ball": frame is >30s gap between consecutive live events
+      - "unknown":   everything else (transitions, near dead-ball boundaries)
+
+    Game-clock to frame mapping:
+      Each period is 12 minutes (720 seconds). Period N starts at (N-1)*720*fps frames.
+      game_clock_sec within a period = 720 - (remaining seconds from PCTIMESTRING).
+      Frame ≈ (period_start_sec + game_clock_sec) * fps.
+
+    Falls back to empty dict {} if cache file not found.
+
+    Args:
+        game_id:   NBA game ID (e.g. "0022200001").
+        video_fps: Video frame rate (default 30.0 fps).
+
+    Returns:
+        Dict mapping frame_idx (int) to "live", "dead_ball", or "unknown".
+        Returns {} if cache file not found or no events could be parsed.
+    """
+    cache_path = os.path.join(_NBA_CACHE, f"pbp_{game_id}.json")
+    if not os.path.exists(cache_path):
+        return {}
+
+    with open(cache_path) as f:
+        raw = json.load(f)
+
+    # Parse events — handle bulk NBA API raw format (EVENTMSGTYPE, PERIOD, PCTIMESTRING)
+    _LIVE_EVENT_TYPES = {1, 2, 3, 4, 5, 6}
+    events: List[tuple] = []  # list of (frame_idx, is_live: bool)
+
+    for row in raw:
+        evt_type  = int(row.get("EVENTMSGTYPE", 0) or 0)
+        period    = int(row.get("PERIOD", 1) or 1)
+        clock_str = str(row.get("PCTIMESTRING", "12:00") or "12:00")
+
+        try:
+            mm, ss = clock_str.split(":")
+            remaining_sec = int(mm) * 60 + int(ss)
+        except (ValueError, AttributeError):
+            continue
+
+        elapsed_in_period = 720 - remaining_sec   # seconds elapsed this period
+        total_elapsed_sec = (period - 1) * 720 + elapsed_in_period
+        frame_idx         = int(total_elapsed_sec * video_fps)
+
+        events.append((frame_idx, evt_type in _LIVE_EVENT_TYPES))
+
+    if not events:
+        return {}
+
+    events.sort(key=lambda x: x[0])
+
+    # Build frame mask — mark ±150 frames around live events as "live"
+    _LIVE_RADIUS_FRAMES = int(5 * video_fps)   # 5 seconds
+    _DEAD_GAP_FRAMES    = int(30 * video_fps)  # 30-second gap → dead_ball
+
+    mask: Dict[int, str] = {}
+
+    # Mark live zones around each live-play event
+    for frame_idx, is_live in events:
+        if is_live:
+            for f in range(max(0, frame_idx - _LIVE_RADIUS_FRAMES),
+                           frame_idx + _LIVE_RADIUS_FRAMES + 1):
+                mask[f] = "live"
+
+    # Mark dead_ball zones in large gaps between consecutive live events
+    live_frames = sorted(fi for fi, il in events if il)
+    for i in range(len(live_frames) - 1):
+        gap = live_frames[i + 1] - live_frames[i]
+        if gap > _DEAD_GAP_FRAMES:
+            gap_start = live_frames[i] + _LIVE_RADIUS_FRAMES
+            gap_end   = live_frames[i + 1] - _LIVE_RADIUS_FRAMES
+            for f in range(gap_start, gap_end):
+                if f not in mask:
+                    mask[f] = "dead_ball"
+
+    # Everything else is "unknown" — caller uses mask.get(frame_idx, "unknown")
+    return mask
 
 
 # ── Main enrichment functions ─────────────────────────────────────────────────
