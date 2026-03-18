@@ -244,3 +244,201 @@ _ESPN_NAME_TO_ABBREV: dict[str, str] = {
 def _espn_team_to_abbrev(team_id: str, team_name: str) -> str:
     """Map ESPN team name to NBA abbreviation."""
     return _ESPN_NAME_TO_ABBREV.get(team_name, team_name[:3].upper())
+
+
+# ── InjuryMonitor class ───────────────────────────────────────────────────────
+# Maps player names → NBA player_id and exposes multiplier-based API
+# for the prop and game prediction models.
+
+_NBA_CACHE_DIR = os.path.join(PROJECT_DIR, "data", "nba")
+
+# Map cached ESPN status strings → standardised model-facing labels
+_MODEL_STATUS_MAP: dict = {
+    "out":          "Out",
+    "doubtful":     "Out",
+    "questionable": "Questionable",
+    "day-to-day":   "GTD",
+    "dtd":          "GTD",
+    "probable":     "GTD",
+    "available":    "Active",
+    "active":       "Active",
+    "healthy":      "Active",
+}
+
+_IMPACT_MULTIPLIERS: dict = {
+    "Active":       1.0,
+    "GTD":          0.85,
+    "Questionable": 0.70,
+    "Out":          0.0,
+    "Unknown":      0.95,
+}
+
+
+class InjuryMonitor:
+    """
+    Player injury status cache and prop-model multiplier provider.
+
+    Wraps the module-level ESPN refresh pipeline and adds player_id-based
+    lookups using the season player averages cache.  The in-memory state is
+    refreshed lazily whenever is_stale() is True.
+
+    Args:
+        cache_path:   Path to the ESPN-format injury JSON.
+                      Defaults to data/nba/injury_report.json.
+        ttl_minutes:  Minutes before the in-memory data is considered stale.
+    """
+
+    def __init__(
+        self,
+        cache_path: Optional[str] = None,
+        ttl_minutes: int = 30,
+    ) -> None:
+        self.cache_path  = cache_path or _CACHE_PATH
+        self.ttl_minutes = ttl_minutes
+
+        self._data:       dict       = {}   # {player_id (int): record dict}
+        self._name_index: dict       = {}   # {norm_name: player_id}
+        self._team_index: dict       = {}   # {team_abbr: [player_id, ...]}
+        self._fetched_at: Optional[datetime] = None
+
+    # ── public ────────────────────────────────────────────────────────────────
+
+    def refresh(self) -> dict:
+        """
+        Reload the injury report from the on-disk cache.
+
+        Falls back to an empty result if the cache file is missing or unreadable.
+        Attempts to map player names to NBA player IDs using the player averages
+        cache (2024-25 → 2023-24 → 2022-23).
+
+        Returns:
+            Dict mapping int player_id to:
+            {"status": str, "reason": str, "updated_at": str,
+             "team_abbr": str, "player_name": str}
+        """
+        id_lookup = self._build_id_lookup()
+        raw_list  = self._load_injuries_from_disk()
+
+        self._data.clear()
+        self._name_index.clear()
+        self._team_index.clear()
+
+        for rec in raw_list:
+            name    = rec.get("player_name", "")
+            raw_st  = str(rec.get("status", "")).lower()
+            status  = _MODEL_STATUS_MAP.get(raw_st) or "Active"
+            reason  = rec.get("short_comment", rec.get("injury_type", ""))
+            updated = rec.get("injury_date", "")
+            team    = str(rec.get("team_abbrev", "")).upper()
+
+            pid = id_lookup.get(_norm_name(name))
+            if pid is None:
+                continue
+
+            self._data[pid] = {
+                "status":      status,
+                "reason":      str(reason)[:250],
+                "updated_at":  updated,
+                "team_abbr":   team,
+                "player_name": name,
+            }
+            self._name_index[_norm_name(name)] = pid
+            self._team_index.setdefault(team, []).append(pid)
+
+        self._fetched_at = datetime.now(timezone.utc)
+        return dict(self._data)
+
+    def get_status(self, player_id: int) -> str:
+        """
+        Return the standardised injury status for a player.
+
+        Lazily refreshes on first call and when is_stale() is True.
+
+        Args:
+            player_id: NBA player ID.
+
+        Returns:
+            One of "Active", "Questionable", "Out", "GTD", "Unknown".
+        """
+        if not self._data or self.is_stale():
+            self.refresh()
+        rec = self._data.get(int(player_id))
+        return rec["status"] if rec else "Unknown"
+
+    def get_impact_multiplier(self, player_id: int) -> float:
+        """
+        Return a [0.0, 1.0] multiplier for scaling a player's prop projection.
+
+        Active → 1.0 | GTD → 0.85 | Questionable → 0.70 | Out → 0.0 | Unknown → 0.95
+
+        Args:
+            player_id: NBA player ID.
+
+        Returns:
+            Float multiplier in [0.0, 1.0].
+        """
+        status = self.get_status(int(player_id))
+        return _IMPACT_MULTIPLIERS.get(status, _IMPACT_MULTIPLIERS["Unknown"])
+
+    def is_stale(self) -> bool:
+        """
+        Return True if in-memory data has never been loaded or TTL has expired.
+
+        Returns:
+            bool
+        """
+        if self._fetched_at is None:
+            return True
+        age_min = (datetime.now(timezone.utc) - self._fetched_at).total_seconds() / 60
+        return age_min > self.ttl_minutes
+
+    def get_team_injuries(self, team_abbr: str) -> list:
+        """
+        Return all injury records for players on a team.
+
+        Args:
+            team_abbr: Three-letter team abbreviation (e.g. "BOS").
+
+        Returns:
+            List of injury dicts.  Each has: player_name, status, reason,
+            updated_at, team_abbr.
+        """
+        if not self._data or self.is_stale():
+            self.refresh()
+        pids = self._team_index.get(team_abbr.upper(), [])
+        return [self._data[p] for p in pids if p in self._data]
+
+    # ── internal helpers ──────────────────────────────────────────────────────
+
+    def _load_injuries_from_disk(self) -> list:
+        """Read the ESPN-format cache file and return the injuries list."""
+        if not os.path.exists(self.cache_path):
+            return []
+        try:
+            with open(self.cache_path, encoding="utf-8") as f:
+                raw = json.load(f)
+            return raw.get("injuries", []) if isinstance(raw, dict) else []
+        except Exception:
+            return []
+
+    def _build_id_lookup(self) -> dict:
+        """
+        Build {norm_name: player_id} from the player averages cache.
+
+        Tries 2024-25 → 2023-24 → 2022-23; returns empty dict if all fail.
+        """
+        for season in ("2024-25", "2023-24", "2022-23"):
+            path = os.path.join(_NBA_CACHE_DIR, f"player_avgs_{season}.json")
+            if not os.path.exists(path):
+                continue
+            try:
+                with open(path) as f:
+                    avgs = json.load(f)
+                return {
+                    _norm_name(name): int(info["player_id"])
+                    for name, info in avgs.items()
+                    if isinstance(info, dict) and "player_id" in info
+                }
+            except Exception:
+                continue
+        return {}

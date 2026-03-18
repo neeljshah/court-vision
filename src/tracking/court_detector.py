@@ -68,9 +68,9 @@ def _classify_lines(
     for line in lines:
         x1, y1, x2, y2 = line[0]
         angle = abs(math.degrees(math.atan2(y2 - y1, x2 - x1)))
-        if angle < 15 or angle > 165:
+        if angle < 25 or angle > 155:
             horizontal_lines.append((x1, y1, x2, y2))
-        elif 75 < angle < 105:
+        elif 65 < angle < 115:
             vertical_lines.append((x1, y1, x2, y2))
 
     return horizontal_lines, vertical_lines
@@ -98,44 +98,60 @@ def detect_court_homography(
         return None
 
     try:
-        # STEP 2 — Sample frames: up to 10 evenly spaced
-        sample = frames[::max(1, len(frames) // 10)][:10]
+        h_all, w_all = frames[0].shape[:2]
+
+        # STEP 2 — Filter to frames that actually show the hardwood court.
+        # Broadcast clips often begin with pre-game intros, crowd shots, and
+        # arena flyovers. We scan all supplied frames and keep only those where
+        # the hardwood floor mask covers >12% of the frame, ensuring detection
+        # runs on actual gameplay frames rather than intro footage.
+        # HSV range covers light and dark hardwood (H:8-35, S:30-200, V:80-240).
+        court_frames: List[np.ndarray] = []
+        for frame in frames:
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            mask = cv2.inRange(hsv, (8, 30, 80), (35, 200, 240))
+            if mask.sum() / 255 > 0.12 * h_all * w_all:
+                court_frames.append(frame)
+
+        # Fall back to all frames if none pass the court filter (e.g. non-hardwood arena)
+        if len(court_frames) < 3:
+            court_frames = frames
+
+        # STEP 3 — Sample up to 10 evenly-spaced court frames
+        sample = court_frames[::max(1, len(court_frames) // 10)][:10]
         if not sample:
             return None
-
-        # STEP 3 — Accumulate floor mask across sampled frames
-        floor_mask = np.zeros(sample[0].shape[:2], dtype=np.uint8)
-        for frame in sample:
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            mask = cv2.inRange(hsv, (10, 40, 100), (30, 160, 230))
-            floor_mask = cv2.bitwise_or(floor_mask, mask)
-
-        # STEP 4 — Build white-line mask from first frame
-        # White court lines have HSV S~0, V~255 — they are NOT in the floor_mask
-        # (floor_mask requires S:40-160). Use bright threshold directly; the
-        # hardwood floor background (V~180) does not pass the >200 threshold,
-        # so white lines stand out cleanly without needing a floor intersection.
         h, w = sample[0].shape[:2]
+
+        # STEP 4 — Build white-line mask using adaptive threshold.
+        # Try thresholds from 200 down to 160; use the first that yields
+        # enough Hough lines (≥4). Broadcast video compression can reduce
+        # white line intensity below 200, so we try progressively lower values.
         gray = cv2.cvtColor(sample[0], cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        _, bright = cv2.threshold(blurred, 200, 255, cv2.THRESH_BINARY)
-        # Use bright directly: floor has V~180 (won't pass >200), only white lines do
-        line_mask = bright
 
-        # STEP 5 — Hough line detection
-        lines = cv2.HoughLinesP(
-            line_mask, rho=1, theta=np.pi / 180,
-            threshold=50, minLineLength=60, maxLineGap=20,
-        )
+        lines = None
+        for thresh in (200, 180, 160):
+            _, bright = cv2.threshold(blurred, thresh, 255, cv2.THRESH_BINARY)
+            candidate = cv2.HoughLinesP(
+                bright, rho=1, theta=np.pi / 180,
+                threshold=40, minLineLength=40, maxLineGap=30,
+            )
+            if candidate is not None and len(candidate) >= 4:
+                lines = candidate
+                break
+
         if lines is None or len(lines) < 4:
             return None
 
-        # STEP 6 — Classify lines into horizontal and vertical
+        # STEP 5 — Classify lines into horizontal and vertical.
+        # Use wider 25° tolerance (vs original 15°) to handle perspective
+        # distortion in broadcast frames where sidelines run slightly angled.
         h_lines, v_lines = _classify_lines(lines, w, h)
         if len(h_lines) < 2 or len(v_lines) < 2:
             return None
 
-        # STEP 7 — Compute all h x v intersections, keep those within frame bounds
+        # STEP 6 — Compute all h × v intersections, keep those within frame bounds
         intersections = []
         for hl in h_lines:
             for vl in v_lines:
@@ -148,30 +164,42 @@ def detect_court_homography(
         if len(intersections) < 4:
             return None
 
-        # STEP 8 — Bin intersections into 4 quadrants (TL, TR, BL, BR)
+        # STEP 7 — Bin intersections into 4 quadrants (TL, TR, BL, BR)
         mid_x, mid_y = w / 2, h / 2
         quadrants: dict = {"TL": [], "TR": [], "BL": [], "BR": []}
         for ix, iy in intersections:
             key = ("T" if iy < mid_y else "B") + ("L" if ix < mid_x else "R")
             quadrants[key].append((ix, iy))
 
-        # STEP 9 — Pick one representative per quadrant (closest to its frame corner)
-        corners_map = {"TL": (0, 0), "TR": (w, 0), "BL": (0, h), "BR": (w, h)}
+        # STEP 8 — Pick one representative per quadrant.
+        # Use the point FARTHEST from the image centre in each quadrant — this
+        # selects boundary line intersections (sidelines × baselines) rather
+        # than interior lines (free-throw × 3-point arc, etc.).
+        cx_img, cy_img = w / 2, h / 2
         src_pts = []
-        for quad, corner in corners_map.items():
+        for quad in ("TL", "TR", "BL", "BR"):
             pts = quadrants[quad]
             if not pts:
                 return None
-            cx, cy = corner
-            best = min(pts, key=lambda p: (p[0] - cx) ** 2 + (p[1] - cy) ** 2)
+            best = max(pts, key=lambda p: (p[0] - cx_img) ** 2 + (p[1] - cy_img) ** 2)
             src_pts.append(best)
-        # src_pts is ordered [TL, TR, BL, BR]
+        # src_pts ordered [TL, TR, BL, BR]
 
-        # STEP 10 — Compute perspective transform to 940x500 court space
+        # STEP 9 — Validate corners span a reasonable fraction of the frame
+        # (at least 30% width and 25% height) before committing.
+        xs = [p[0] for p in src_pts]
+        ys = [p[1] for p in src_pts]
+        if (max(xs) - min(xs)) < 0.30 * w or (max(ys) - min(ys)) < 0.25 * h:
+            return None
+
+        # STEP 10 — Compute perspective transform to 940×500 court space
         dst_pts = np.float32([[0, 0], [940, 0], [0, 500], [940, 500]])
         src_np = np.float32(src_pts)
         M1 = cv2.getPerspectiveTransform(src_np, dst_pts)
-        print(f"[court_detector] detected per-clip homography from {len(frames)} frames")
+        print(
+            f"[court_detector] detected per-clip homography from "
+            f"{len(court_frames)} court frames ({len(frames)} supplied)"
+        )
         return M1.astype(np.float64)
 
     except Exception:

@@ -29,6 +29,12 @@ os.makedirs(_CACHE_DIR, exist_ok=True)
 
 _API_DELAY = 0.6  # seconds between NBA API calls
 
+_ALL_TEAMS = [
+    "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GSW",
+    "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK",
+    "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS",
+]
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Cache helpers
@@ -121,7 +127,7 @@ def get_lineup_splits(
             season=season,
             team_id_nullable=team_id_val,
             measure_type_detailed_defense="Advanced",
-            per_mode_simple="Per100Possessions",
+            per_mode_detailed="Per100Possessions",
         )
         df = resp.get_data_frames()[0]
     except Exception as e:
@@ -238,6 +244,62 @@ def get_player_on_off(player_id: int, season: str = "2024-25") -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Bulk scraper — all 30 teams × N seasons
+# ─────────────────────────────────────────────────────────────────────────────
+
+def scrape_all_teams(
+    seasons: Optional[list] = None,
+    min_minutes: float = 5.0,
+    force: bool = False,
+) -> dict:
+    """
+    Scrape lineup splits for all 30 NBA teams across multiple seasons.
+
+    Results are cached per-team/season by get_lineup_splits().  This function
+    iterates the full 30×N matrix, skipping teams whose cache is already
+    fresh (unless force=True).
+
+    Args:
+        seasons:     List of season strings (default: 3 most recent).
+        min_minutes: Min minutes threshold forwarded to get_lineup_splits.
+        force:       If True, delete existing caches and re-fetch.
+
+    Returns:
+        Dict mapping "TEAM_SEASON" → list of lineup dicts.
+        e.g. {"GSW_2024-25": [...], ...}
+    """
+    if seasons is None:
+        seasons = ["2022-23", "2023-24", "2024-25"]
+
+    results: dict = {}
+    total = len(_ALL_TEAMS) * len(seasons)
+    done = 0
+
+    for season in seasons:
+        for team in _ALL_TEAMS:
+            key = f"{team}_{season}"
+            if force:
+                cache_file = _cache_path(f"lineup_splits_{team}_{season}")
+                if os.path.exists(cache_file):
+                    os.remove(cache_file)
+
+            try:
+                lineups = get_lineup_splits(team, season, min_minutes=min_minutes)
+                results[key] = lineups
+            except Exception as e:
+                print(f"[lineup_data] {key} failed: {e}")
+                results[key] = []
+
+            done += 1
+            if done % 10 == 0:
+                print(f"[lineup_data] {done}/{total} team-seasons scraped")
+
+    print(f"[lineup_data] Done — {len(results)} team-seasons, "
+          f"{sum(len(v) for v in results.values())} total lineups")
+    return results
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Game-level lineup summary
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -321,3 +383,28 @@ def lineup_net_rating_lookup(
         if lu_set == target_set:
             return lu["net_rating"]
     return None
+
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(description="NBA Lineup Data Scraper")
+    ap.add_argument("--scrape-all", action="store_true",
+                    help="Scrape all 30 teams × 3 seasons into data/nba/lineups/")
+    ap.add_argument("--team", default=None, help="Single team abbreviation (e.g. GSW)")
+    ap.add_argument("--season", default="2024-25")
+    ap.add_argument("--seasons", nargs="+", default=["2022-23", "2023-24", "2024-25"])
+    ap.add_argument("--force", action="store_true", help="Delete existing cache and re-fetch")
+    args = ap.parse_args()
+
+    if args.scrape_all:
+        scrape_all_teams(seasons=args.seasons, force=args.force)
+    elif args.team:
+        splits = get_lineup_splits(args.team, args.season)
+        print(f"{args.team} {args.season} — {len(splits)} lineups")
+        for lu in splits[:5]:
+            print(f"  {' / '.join(lu['lineup'])} | net_rtg={lu['net_rating']} | min={lu['minutes']}")
+    else:
+        ap.print_help()

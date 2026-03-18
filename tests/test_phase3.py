@@ -567,11 +567,12 @@ def test_predict_with_models_rolling_fallback(tmp_path, monkeypatch):
         "pts_roll": 22.5,   "reb_roll": 5.5,   "ast_roll": 4.5,   "min_roll": 31.0,
         "opp_def_rtg": 113.0, "fg_pct": 0.48,
     }
-    pts, reb, ast, conf = pp._predict_with_models(feats)
+    predictions, conf = pp._predict_with_models(feats)
     assert conf == "rolling"
-    assert pts == round(feats["pts_roll"], 1)
-    assert reb == round(feats["reb_roll"], 1)
-    assert ast == round(feats["ast_roll"], 1)
+    # Fallback uses pts_roll (no pts_bayes in this feats dict)
+    assert predictions["pts"] == round(feats["pts_roll"], 1)
+    assert predictions["reb"] == round(feats["reb_roll"], 1)
+    assert predictions["ast"] == round(feats["ast_roll"], 1)
 
 
 def test_recent_form_cache_sorted_by_game_date(tmp_path, monkeypatch):
@@ -1828,3 +1829,171 @@ def test_get_all_player_avgs_ttl_in_source():
     assert "_PLAYER_AVGS_TTL_HOURS" in src_text, (
         "_get_all_player_avgs must use _PLAYER_AVGS_TTL_HOURS to check cache freshness"
     )
+
+
+# ── InjuryMonitor ─────────────────────────────────────────────────────────────
+
+def test_injury_monitor_impact_multiplier_active():
+    """get_impact_multiplier returns 1.0 for 'Active' status."""
+    from src.data.injury_monitor import InjuryMonitor
+    mon = InjuryMonitor()
+    mon._data[999] = {"status": "Active",  "reason": "", "updated_at": "",
+                      "team_abbr": "GSW", "player_name": "Test Player"}
+    from datetime import datetime, timezone
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    assert mon.get_impact_multiplier(999) == 1.0
+
+
+def test_injury_monitor_impact_multiplier_gtd():
+    """get_impact_multiplier returns 0.85 for 'GTD' status."""
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    mon = InjuryMonitor()
+    mon._data[100] = {"status": "GTD", "reason": "", "updated_at": "",
+                      "team_abbr": "BOS", "player_name": "GTD Player"}
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    assert mon.get_impact_multiplier(100) == pytest.approx(0.85)
+
+
+def test_injury_monitor_impact_multiplier_questionable():
+    """get_impact_multiplier returns 0.70 for 'Questionable' status."""
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    mon = InjuryMonitor()
+    mon._data[101] = {"status": "Questionable", "reason": "", "updated_at": "",
+                      "team_abbr": "LAL", "player_name": "Q Player"}
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    assert mon.get_impact_multiplier(101) == pytest.approx(0.70)
+
+
+def test_injury_monitor_impact_multiplier_out():
+    """get_impact_multiplier returns 0.0 for 'Out' status."""
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    mon = InjuryMonitor()
+    mon._data[102] = {"status": "Out", "reason": "", "updated_at": "",
+                      "team_abbr": "MIA", "player_name": "Out Player"}
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    assert mon.get_impact_multiplier(102) == pytest.approx(0.0)
+
+
+def test_injury_monitor_impact_multiplier_unknown():
+    """get_impact_multiplier returns 0.95 for player not in injury data."""
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    mon = InjuryMonitor()
+    mon._data.clear()
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    assert mon.get_impact_multiplier(99999) == pytest.approx(0.95)
+
+
+def test_injury_monitor_is_stale_before_refresh():
+    """is_stale() returns True on a freshly constructed monitor."""
+    from src.data.injury_monitor import InjuryMonitor
+    mon = InjuryMonitor()
+    assert mon.is_stale() is True
+
+
+def test_injury_monitor_not_stale_after_refresh(monkeypatch):
+    """is_stale() returns False immediately after refresh() completes."""
+    from src.data.injury_monitor import InjuryMonitor
+    mon = InjuryMonitor()
+    monkeypatch.setattr(mon, "_load_injuries_from_disk", lambda: [])
+    monkeypatch.setattr(mon, "_build_id_lookup", lambda: {})
+    mon.refresh()
+    assert mon.is_stale() is False
+
+
+def test_injury_monitor_get_team_injuries(monkeypatch):
+    """get_team_injuries returns only records matching the given team_abbr."""
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    mon = InjuryMonitor()
+    monkeypatch.setattr(mon, "_load_injuries_from_disk", lambda: [])
+    monkeypatch.setattr(mon, "_build_id_lookup", lambda: {})
+    # Pre-populate internal state so no disk I/O is triggered
+    mon._data = {
+        1: {"status": "Out",    "reason": "knee", "updated_at": "", "team_abbr": "BOS", "player_name": "Player A"},
+        2: {"status": "Active", "reason": "",      "updated_at": "", "team_abbr": "BOS", "player_name": "Player B"},
+        3: {"status": "GTD",    "reason": "ankle", "updated_at": "", "team_abbr": "LAL", "player_name": "Player C"},
+    }
+    mon._team_index = {"BOS": [1, 2], "LAL": [3]}
+    mon._fetched_at = datetime.now(tz=timezone.utc)
+    bos = mon.get_team_injuries("BOS")
+    assert len(bos) == 2
+    lal = mon.get_team_injuries("LAL")
+    assert len(lal) == 1
+    assert lal[0]["status"] == "GTD"
+
+
+def test_predict_props_includes_injury_status(monkeypatch):
+    """predict_props() output dict contains 'injury_status' and 'injury_multiplier' keys."""
+    import src.prediction.player_props as pp
+
+    fake_feats = {
+        "player_id":    9999,
+        "team":         "GSW",
+        "season_pts":   25.0, "season_reb": 5.0, "season_ast": 6.0,
+        "season_min":   35.0, "season_fg3m": 2.0, "season_stl": 1.0,
+        "season_blk":   0.5,  "season_tov":  2.0,
+        "pts_roll":     25.0, "reb_roll": 5.0, "ast_roll": 6.0, "min_roll": 35.0,
+        "pts_bayes":    25.0, "reb_bayes": 5.0, "ast_bayes": 6.0,
+        "fg3m_bayes":   2.0,  "stl_bayes": 1.0, "blk_bayes": 0.5, "tov_bayes": 2.0,
+        "opp_def_rtg":  113.0, "fg_pct": 0.52,
+        "home_pts_avg": 25.0, "away_pts_avg": 24.0,
+        "home_reb_avg": 5.0,  "away_reb_avg": 4.5,
+        "home_ast_avg": 6.0,  "away_ast_avg": 5.5,
+        "pts_vs_opp":   24.0, "reb_vs_opp": 5.0, "ast_vs_opp": 6.0,
+        "clutch_fg_pct": 0.0, "clutch_pts_pg": 0.0, "foul_drawn_rate": 0.0,
+        "n_games_form": 10,
+    }
+    monkeypatch.setattr(pp, "_build_player_features", lambda *a, **kw: fake_feats)
+    monkeypatch.setattr(pp, "_compute_blowout_prob", lambda *a, **kw: 0.0)
+    # Make injury monitor return "Active" without hitting disk
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    pp._injury_monitor._data  = {9999: {"status": "Active", "reason": "", "updated_at": "",
+                                        "team_abbr": "GSW", "player_name": "Test"}}
+    pp._injury_monitor._fetched_at = datetime.now(tz=timezone.utc)
+
+    result = pp.predict_props("Test Player", "BOS")
+    assert "injury_status"     in result, "predict_props must return 'injury_status'"
+    assert "injury_multiplier" in result, "predict_props must return 'injury_multiplier'"
+    assert result["injury_status"]     == "Active"
+    assert result["injury_multiplier"] == pytest.approx(1.0)
+
+
+def test_predict_props_injury_multiplier_scales_stats(monkeypatch):
+    """Out player's projected stats are multiplied by 0.0 (result = 0)."""
+    import src.prediction.player_props as pp
+
+    fake_feats = {
+        "player_id":    8888,
+        "team":         "BOS",
+        "season_pts":   20.0, "season_reb": 4.0, "season_ast": 5.0,
+        "season_min":   30.0, "season_fg3m": 1.5, "season_stl": 0.8,
+        "season_blk":   0.3,  "season_tov":  1.5,
+        "pts_roll":     20.0, "reb_roll": 4.0, "ast_roll": 5.0, "min_roll": 30.0,
+        "pts_bayes":    20.0, "reb_bayes": 4.0, "ast_bayes": 5.0,
+        "fg3m_bayes":   1.5,  "stl_bayes": 0.8, "blk_bayes": 0.3, "tov_bayes": 1.5,
+        "opp_def_rtg":  113.0, "fg_pct": 0.48,
+        "home_pts_avg": 20.0, "away_pts_avg": 19.0,
+        "home_reb_avg": 4.0,  "away_reb_avg": 3.5,
+        "home_ast_avg": 5.0,  "away_ast_avg": 4.5,
+        "pts_vs_opp":   19.0, "reb_vs_opp": 4.0, "ast_vs_opp": 5.0,
+        "clutch_fg_pct": 0.0, "clutch_pts_pg": 0.0, "foul_drawn_rate": 0.0,
+        "n_games_form": 10,
+    }
+    monkeypatch.setattr(pp, "_build_player_features", lambda *a, **kw: fake_feats)
+    monkeypatch.setattr(pp, "_compute_blowout_prob", lambda *a, **kw: 0.0)
+    from src.data.injury_monitor import InjuryMonitor
+    from datetime import datetime, timezone
+    pp._injury_monitor._data  = {8888: {"status": "Out", "reason": "ankle",
+                                        "updated_at": "", "team_abbr": "BOS",
+                                        "player_name": "Out Star"}}
+    pp._injury_monitor._fetched_at = datetime.now(tz=timezone.utc)
+
+    result = pp.predict_props("Out Star", "MIA")
+    assert result["injury_status"]     == "Out"
+    assert result["injury_multiplier"] == pytest.approx(0.0)
+    assert result["pts"]               == pytest.approx(0.0)

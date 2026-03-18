@@ -33,15 +33,21 @@ _DEFAULT_RES = os.path.join(PROJECT_DIR, "resources")
 # Use broadcast/arena-cam angle queries — side-court is best for our tracker.
 CURATED_CLIPS: dict[str, str] = {
     # Label                   Search query (prefixed with ytsearch:)
-    # Targets side-court broadcast angles from 2024-25 season — best for tracker
-    "nba_gsw_full_2024":    "ytsearch:Golden State Warriors full game highlights 2024-25 broadcast",
-    "nba_bos_full_2024":    "ytsearch:Boston Celtics full game broadcast highlights 2024-25",
-    "nba_lakers_full_2024": "ytsearch:LA Lakers vs full game 2024-25 NBA broadcast",
-    "nba_okc_full_2024":    "ytsearch:Oklahoma City Thunder full game highlights 2024-25",
-    "nba_den_full_2024":    "ytsearch:Denver Nuggets full game broadcast 2024-25 NBA",
-    "nba_mia_full_2024":    "ytsearch:Miami Heat full game highlights broadcast 2024-25",
-    "nba_mil_full_2024":    "ytsearch:Milwaukee Bucks full game highlights 2024-25 broadcast",
-    "nba_phx_full_2024":    "ytsearch:Phoenix Suns full game broadcast highlights 2024-25",
+    # NOTE: "full game replay" targets 2-3 hour videos, not highlight reels.
+    # These channels reliably post full game replays: NBA (official), House of Highlights,
+    # and various fan channels. All need --max-filesize raised to 3000m.
+    "nba_gsw_full_2024":    "ytsearch:Golden State Warriors full game replay 2024-25 NBA",
+    "nba_bos_full_2024":    "ytsearch:Boston Celtics full game replay 2024-25 NBA",
+    "nba_lakers_full_2024": "ytsearch:Los Angeles Lakers full game replay 2024-25 NBA",
+    "nba_okc_full_2024":    "ytsearch:Oklahoma City Thunder full game replay 2024-25 NBA",
+    "nba_den_full_2024":    "ytsearch:Denver Nuggets full game replay 2024-25 NBA",
+    "nba_mia_full_2024":    "ytsearch:Miami Heat full game replay 2024-25 NBA",
+    "nba_mil_full_2024":    "ytsearch:Milwaukee Bucks full game replay 2024-25 NBA",
+    "nba_phx_full_2024":    "ytsearch:Phoenix Suns full game replay 2024-25 NBA",
+    # Condensed replays (~45 min, no timeouts/dead balls) — more practical for tracker
+    "nba_gsw_condensed_2024":    "ytsearch:Golden State Warriors condensed game replay 2024-25",
+    "nba_bos_condensed_2024":    "ytsearch:Boston Celtics condensed game replay 2024-25",
+    "nba_lakers_condensed_2024": "ytsearch:Los Angeles Lakers condensed game replay 2024-25",
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -102,7 +108,7 @@ def download_clip(
     cmd = [
         "yt-dlp",
         "--format", fmt,
-        "--max-filesize", "500m",
+        "--max-filesize", "4000m",   # full game replay ~2-4 GB at 720p
         "--output", out_tmpl,
         "--print", "after_move:filepath",
         "--no-playlist",

@@ -19,17 +19,20 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 |---|---|---|
 | Phase 1 — Data Infrastructure | ✅ Done | PostgreSQL, schedule context, lineup data, NBA stats |
 | Phase 2 — Tracker Bug Fixes | ✅ Done | Team color, event detector, test suite |
-| Phase 2.5 — CV Tracker Upgrades | 🔲 Next | Pose estimation, ByteTrack, per-clip homography, optical flow |
-| Phase 3 — NBA API Data Maximization | 🟡 Active | All 569 gamelogs, 50K shot charts, 1225 PBP games |
-| Phase 4 — Tier 1 ML Models | 🔲 | 13 models from NBA API data only |
-| Phase 5 — External Factors | 🔲 | Injury monitor, ref tracker, line movement |
+| Phase 2.5 — CV Tracker Upgrades | 🟡 Active | Pose estimation, ByteTrack, per-clip homography |
+| Phase 3 — NBA API Data Maximization | ✅ Done | 568/569 gamelogs, 221K shots, 3,102 PBP games |
+| Phase 3.5 — Expanded Data Collection | 🔲 | BBRef + untapped nba_api + betting market + news |
+| Phase 4 — Tier 1 ML Models | ✅ Done | 13 models trained: win prob + all props + game models |
+| Phase 4.5 — Betting + Lifecycle Models | 🔲 | Sharp detector, CLV, correlation matrix, DNP predictor |
+| Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor wired |
 | Phase 6 — Full Game Processing | 🔲 | 20+ full games, PostgreSQL wired, shots enriched |
-| Phase 7 — Tier 2-3 ML Models | 🔲 | xFG v1+v2, play type, defensive pressure, spacing |
-| Phase 8 — Possession Simulator v1 | 🔲 | Play type + xFG + turnover + rebound chain |
-| Phase 9 — Automated Feedback Loop | 🔲 | Nightly processing, auto-retrain, dataset versioning |
+| Phase 7 — Tier 2-3 ML Models | 🔲 | xFG v2 (CV), play type, defensive pressure, spacing |
+| Phase 8 — Possession Simulator v1 | 🔲 | 7-model chain, 10K Monte Carlo |
+| Phase 9 — Feedback Loop + NLP | 🔲 | Nightly processing, auto-retrain, NLP injury models |
 | Phase 10 — Tier 4-5 ML Models | 🔲 | Fatigue curve, lineup chemistry, matchup matrix |
-| Phase 11 — Betting Infrastructure | 🔲 | Odds API, Kelly sizing, CLV backtesting |
-| Phase 12 — Full Monte Carlo Simulator | 🔲 | 10,000 simulations/game, full stat distributions |
+| Phase 10.5 — Advanced CV Signals | 🔲 | Coverage type, shot arc, biomechanics, audio |
+| Phase 11 — Betting Infrastructure + Live | 🔲 | Live models, CLV backtesting, Kelly+correlation |
+| Phase 12 — Full Monte Carlo (90 models) | 🔲 | All 90 models in simulator, full stat distributions |
 | Phase 13 — FastAPI Backend | 🔲 | 12 endpoints, Redis caching, async |
 | Phase 14 — Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
 | Phase 15 — AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
@@ -134,7 +137,7 @@ Plans:
 
 ### Phase 3: NBA API Data Maximization
 **Goal**: Exhaust every NBA API endpoint. No video needed. Unlocks Tier 1-2 models.
-**Status**: 🟡 Active — 360/569 gamelogs done, all 569 advanced stats done
+**Status**: ✅ COMPLETE 2026-03-17 — 568/569 gamelogs, 221,866 shots, 3,102 PBP games
 **Depends on**: Phase 1
 
 **Remaining work:**
@@ -154,8 +157,63 @@ Plans:
 
 ---
 
+### Phase 3.5: Expanded Data Collection
+**Goal**: Pull all untapped free data sources. No video needed. Unlocks 10 additional models immediately.
+**Depends on**: Phase 3
+**Status**: 🔲
+
+**3.5-A — Untapped nba_api Endpoints (1-2 days)**
+- `BoxScorePlayerTrackV2` → speed (mph), distance (mi), touches, paint touches per game
+- `PlayerDashPtShots` → contested%, C+S%, pull-up%, touch time, dribbles before shot
+- `LeagueDashPtDefend` → FG% allowed by zone per defender
+- `MatchupsRollup` → who guards whom, time, pts/100
+- `LeagueHustleStatsPlayer` → deflections, screen assists, contested shots, loose balls
+- `SynergyPlayTypes` → pts/possession by play type (ISO/PnR/Post/C+S/Cut/Transition) — GROUND TRUTH for play type classifier
+- `LeaguePlayerOnDetails` → net rtg with player on vs off
+- `VideoEvents` → free labeled video clips for CV play type classifier training
+
+**3.5-B — Basketball Reference Scraper (3 days)**
+- BPM / VORP / Win Shares — advanced impact metrics not in nba_api
+- Historical game availability per player (injury log)
+- Coaching records: wins/losses, tenure, system tendencies
+- Player contracts: salary, years remaining (contract year motivation)
+- Transactions: every trade/signing/waiver date (chemistry disruption clock)
+- Draft history + college stats (player development curves)
+- Arena altitude (Denver/Utah elevated — quantifiable fatigue effect)
+- Historical Vegas lines ~2008+ (CLV backtesting without paid data)
+
+**3.5-C — Betting Market Scrapers (1-2 days)**
+- Action Network: public bet% + money% per game/prop → sharp vs public signal
+- OddsPortal: historical closing lines 15 years → CLV backtesting ground truth
+- Pinnacle: sharpest opening lines → steam detection, market benchmark
+- DraftKings/FanDuel: current player props → soft book lag detection
+
+**3.5-D — Expanded News/Injury Pipeline (1 day)**
+- NBA official injury report PDF (~5pm ET daily) → faster than ESPN by 30-60min
+- RotoWire RSS feed (feedparser) → injury/lineup news
+- Reddit r/nba API (praw package) → injury threads, lineup news, sentiment
+- HoopsHype/Spotrac scraper → contracts, cap data, transaction history
+
+**3.5-E — Context Data (2 hours)**
+- Arena altitude lookup table (static)
+- TimeZoneDB API (free) → timezone shift per road trip
+- Travel distance calculator (arena coordinates)
+
+**Models Unlocked by 3.5:**
+M19-M28: defensive effort, ball movement quality, screen ROI, touch dependency, play type efficiency (Synergy), defender zone xFG, age curve, injury recurrence, coaching adjustment, ref tendency extended
+
+**Success Criteria:**
+1. All nba_api tracking/hustle/synergy endpoints pulled and cached
+2. BBRef scraper producing BPM/injury history/coaching records for all active players
+3. Action Network public %s available for all games
+4. OddsPortal historical lines for 3 seasons available for CLV backtesting
+5. Official injury PDF being parsed within 5 minutes of publication
+
+---
+
 ### Phase 4: Tier 1 ML Models (NBA API Only)
 **Goal**: Train all 13 models that need only NBA API data. No CV required.
+**Status**: ✅ COMPLETE 2026-03-17
 **Depends on**: Phase 3
 
 **Models to train:**
@@ -179,6 +237,35 @@ Plans:
 3. Shot quality v1 AUC > 0.65 (NBA API location only)
 4. All models saved to data/models/ with SHAP importance
 5. Backtesting: CLV proxy, Brier score, ROI at 3 edge thresholds
+
+---
+
+### Phase 4.5: Betting Market Models + Player Lifecycle Models
+**Goal**: Build the 12 models that require betting market data and player availability data. No CV needed.
+**Depends on**: Phase 3.5 (betting market scrapers + BBRef injuries)
+**Status**: 🔲
+
+**Betting Market Models (M29-M34):**
+1. **Sharp money detector** — reverse line movement: line moves against public bet% = sharp action
+2. **CLV predictor** — will this line improve by closing? (opening vs current vs Pinnacle historical close)
+3. **Public fade model** — when public% > 75% one side + historical fade ROI → fade signal
+4. **Prop correlation matrix** — P(A over) given P(B over): 3-season joint gamelog distributions
+5. **Same-game parlay optimizer** — correlation-adjusted true probability vs book's independence assumption
+6. **Soft book lag model** — minutes until DraftKings/FanDuel adjusts after Pinnacle moves (time-based edge)
+
+**Player Lifecycle Models (M35-M40):**
+1. **DNP predictor** — P(player sits tonight): coach B2B history × player workload × schedule × team record
+2. **Load management predictor** — P(star rests on B2B): coach-specific patterns
+3. **Return-from-injury curve** — efficiency at game 1/2/3/5/10 post-return by injury type
+4. **Injury risk model** — P(injury next 7 days): CV speed decline + B2Bs + historical pattern
+5. **Breakout predictor** — sustained usage increase signal: trend + efficiency + roster opportunity
+6. **Contract year model** — last year of deal: historical performance lift, quantified per position
+
+**Success Criteria:**
+1. Prop correlation matrix covers all 569-player pair combinations
+2. DNP predictor backtests at > 75% accuracy on historical data
+3. CLV predictor identifies +2% CLV edges on validation set
+4. Return-from-injury curve has enough historical samples per injury type (≥30)
 
 ---
 
@@ -282,11 +369,11 @@ Plans:
 
 ---
 
-### Phase 9: Automated Feedback Loop
-**Goal**: Every game processed automatically improves every model. The system gets better without manual work.
+### Phase 9: Automated Feedback Loop + NLP Models
+**Goal**: Every game processed automatically improves every model. The system gets better without manual work. Add NLP models for injury and sentiment signals.
 **Depends on**: Phase 6, Phase 8
 
-**Pipeline:**
+**Feedback Loop Pipeline:**
 ```
 New game detected → download clip → process with tracker →
 enrich with NBA API game-id → label possessions →
@@ -294,12 +381,22 @@ update training data → retrain affected models →
 run simulator on tomorrow's games → flag edges
 ```
 
+**NLP Models (M66-M69) — add in this phase:**
+1. **Injury report severity NLP (M66)** — BERT classifier on injury report text: "questionable (ankle)" → severity score. Feeds DNP predictor.
+2. **Injury news lag model (M67)** — timestamp: beat reporter tweet → Pinnacle line move → book adjustment. Quantifies your reaction window.
+3. **Team chemistry sentiment (M68)** — rolling sentiment on post-game interviews + Reddit r/nba thread sentiment. Detects morale shifts.
+4. **Beat reporter credibility ranker (M69)** — historical accuracy of each reporter's injury news vs official timeline. Weight their signals by track record.
+
+**Data sources needed for NLP:** Reddit r/nba (praw), RotoWire RSS, official injury PDF (all in Phase 3.5)
+
 **Success Criteria:**
 1. Nightly cron detects new clips, queues processing
 2. Model retraining triggers automatically at data milestones
 3. Dataset versioned — every output tagged with tracker_version + date
 4. CLI dashboard: games processed, shots labeled, model accuracy trend
 5. Feedback loop closes: game outcome → model update → next prediction
+6. Injury NLP classifier achieves >80% severity accuracy on holdout
+7. Injury lag model identifies 15-60 min window consistently
 
 ---
 
@@ -333,29 +430,82 @@ run simulator on tomorrow's games → flag edges
 
 ---
 
-### Phase 11: Betting Infrastructure
-**Goal**: Turn simulator output into actionable, sized bets.
-**Depends on**: Phase 8 (simulator), Phase 5 (live lines)
+### Phase 10.5: Advanced CV Signal Extraction
+**Goal**: Extract the remaining high-value CV signals from broadcast video. These feed the Tier 4-5 models and close the gap with Second Spectrum.
+**Depends on**: Phase 10 (enough games for training)
+**Status**: 🔲
 
-**Components:**
-- The Odds API integration — spread, ML, totals, player props
+**10.5-A — Defensive Scheme Recognition**
+- Pick-and-roll coverage classifier: drop / hedge / switch / ICE / blitz — from help defender movement when screen is set
+- Zone vs man detection — from off-ball defender positioning patterns
+- Double team detection — two defenders converging on one player
+- Help rotation angle — degrees/frame of nearest off-ball defender closing on drive
+
+**10.5-B — Ball Trajectory**
+- Shot arc — fit parabola to ball tracked positions in air (→ low arc = lower make rate)
+- Release speed — distance / frames from last possession contact to airborne
+- Pass speed — ball distance / frames in air between passer and receiver
+- Dribble rhythm — time between ball-ground contacts (changes under pressure)
+
+**10.5-C — Player Biomechanics (Injury + Fatigue)**
+- Movement asymmetry — left vs right leg favor across 50+ frames per possession (sub-clinical injury signal)
+- Speed vs season baseline — is player 20% slower than their normal? Real-time fatigue before box score shows it
+- Jump frequency — how often player leaves ground per possession. Declines measurably in Q4 B2B
+
+**10.5-D — Audio Signals**
+- Crowd noise level — audio RMS amplitude per possession → momentum swing proxy
+- Announcer keyword detection — speech-to-text: "AND ONE", "FLAGRANT", "TIMEOUT", "TECHNICAL" → faster event labeling
+
+**Models Unlocked:**
+- Shot arc quality model (does this player's arc predict makes better than zone alone?)
+- Crowd momentum model (does crowd noise predict next possession outcome?)
+- Injury risk model update (M38) — CV asymmetry + speed decline as inputs
+- Coverage type classifier → feeds Play Type Selector (M43) in simulator
+
+**Success Criteria:**
+1. Coverage type classifier accuracy > 80% on labeled test set
+2. Shot arc extraction working on ≥90% of tracked shot trajectories
+3. Movement asymmetry flags correlate with subsequent injury reports
+4. Audio events match video events within 2-frame tolerance
+
+---
+
+### Phase 11: Betting Infrastructure + Live Models
+**Goal**: Turn simulator output into actionable, sized bets. Add live in-game models.
+**Depends on**: Phase 8 (simulator), Phase 5 (live lines), Phase 3.5 (market data)
+
+**Betting Infrastructure:**
+- The Odds API integration — spread, ML, totals, player props (already built)
 - betting_edge.py — edge = model_prob − implied_prob, star ratings 1-3★
-- Kelly criterion bet sizing (fractional Kelly)
-- CLV backtesting — edge retention vs closing lines
+- Kelly criterion bet sizing: fractional Kelly + correlation adjustment (M32 prop correlation)
+- CLV backtesting — edge retention vs OddsPortal closing lines
+- Sharp money integration — Action Network public% + Pinnacle line movement
 - Historical edge log for drift detection
 - Book limit tracker — flag accounts getting limited
 
-**Target markets (highest edge, laziest pricing):**
-1. Role player props (minutes, rebounds)
-2. Live total adjustments
-3. Injury news reaction window
-4. Back-to-back fatigue props
+**Live In-Game Models (M70-M75) — build in this phase:**
+1. **Live prop updater (M70)** — Bayesian update: pre-game sim prior + halftime box score → full game projection. Exploits book's slow live prop adjustment
+2. **Comeback probability (M71)** — P(team trailing by X with Y minutes recovers) → live spread edge
+3. **Garbage time predictor (M72)** — P(game decided, starters pulled in Q4) → kills prop bets when game is a blowout. Don't count garbage time stats
+4. **Foul trouble model (M73)** — Markov chain: P(player fouls out given N fouls at halftime) → affects lineup + usage
+5. **Q4 star usage model (M74)** — does coach increase usage in close 4th? Historical by coach + player
+6. **Momentum run detector (M75)** — P(team goes on 8-0 run from this state) → live totals edge
+
+**Target markets (highest edge):**
+1. Role player props — spatial model vs lazy book pricing
+2. Injury reaction window — 15-60 min lag exploit
+3. Same-game parlays — correlation matrix vs independence assumption
+4. Back-to-back fatigue props — player-specific curves
+5. Live halftime props — M70 live updater vs slow book
+6. DFS lineup optimization — projection quality vs free tools
 
 **Success Criteria:**
 1. Live lines available for all major books within 60 seconds
 2. Edge computed and star-rated for every prop + game
-3. Kelly sizing respects bankroll % cap
-4. Backtesting shows positive CLV on flagged edges
+3. Kelly sizing accounts for correlated bets (M32)
+4. CLV backtesting shows positive edge retention on flagged bets
+5. Live prop updater runs within 3 seconds of halftime box score available
+6. Garbage time predictor accuracy > 85% on holdout
 
 ---
 
@@ -574,14 +724,76 @@ Gap remaining:   ~5% on prediction accuracy — closeable with data volume
 
 ---
 
+## Complete Model Count — 90 Models
+
+| Tier | Count | Models | Requirement | Status |
+|---|---|---|---|---|
+| 1 | 13 | Win prob, game total, spread, blowout, first half, pace, pts/reb/ast/3pm/stl/blk/tov props | NBA API (3 seasons) | ✅ Trained |
+| 2 | 5 | xFG v1, zone tendency, shot volume, clutch efficiency, shot creation type | 221K shot charts | ✅ Trained |
+| 2B | 6 | Defensive effort, ball movement, screen ROI, touch dependency, play type efficiency, defender zone xFG | Untapped nba_api endpoints | 🔲 Phase 3.5 |
+| 3 | 4 | Age curve, injury recurrence, coaching adjustment, ref tendency extended | Basketball Reference | 🔲 Phase 3.5 |
+| 4 | 6 | Sharp money detector, CLV predictor, public fade, prop correlation, SGP optimizer, soft book lag | Betting market scrapers | 🔲 Phase 4.5 |
+| 5 | 6 | DNP predictor, load management, return-from-injury, injury risk, breakout predictor, contract year | BBRef injuries + schedule | 🔲 Phase 4.5 |
+| 6 | 10 | xFG v2, shot selection quality, play type classifier, defensive pressure, spacing, drive frequency, open shot rate, transition, off-ball movement, possession value | 20 CV full games | 🔲 Phase 7 |
+| 7 | 8 | Fatigue curve, rebound positioning, late-game efficiency, closeout quality, help defense, ball stagnation, screen effectiveness, turnover under pressure | 50 CV full games | 🔲 Phase 10 |
+| 8 | 7 | Lineup chemistry, matchup matrix, substitution timing, momentum, foul drawing rate, second chance, pace per lineup | 100 CV full games | 🔲 Phase 10 |
+| 8B | 4 | Injury NLP, injury lag, team chemistry sentiment, reporter credibility | Reddit + Twitter + RotoWire | 🔲 Phase 9 |
+| 9 | 6 | Live prop updater, comeback probability, garbage time, foul trouble, Q4 usage, momentum run | Live data feed | 🔲 Phase 11 |
+| 10 | 7 | Full simulator, live LSTM, true player impact, lineup optimizer, prop pricing engine, regression detector, injury impact | 200 CV full games | 🔲 Phase 12/16 |
+| **Total** | **82** | | | |
+
+Plus 8 Tier 0 computed schedule features = **90 total model outputs**
+
+---
+
 ## Data Volume Milestones
 
-| Games | Models Unlocked | Key Capability |
+| Games / Data | Models Unlocked | Key Capability Added |
 |---|---|---|
-| 0 (now) | Tier 1 (13 models) | Win prob + props from NBA API |
-| 0 + shot charts | Tier 2 (5 models) | xFG v1, shot quality from location |
-| 20 games | Tier 3 (10 models) | xFG v2 with defender, play type |
-| 50 games | Tier 4 (8 models) | Fatigue curve, rebound positioning |
-| 100 games | Tier 5 (7 models) | Lineup chemistry, matchup matrix |
-| 200 games | Tier 6 (7 models) | Full simulator, live LSTM |
-| 1,000 games | Quality closes | Noise averages out, ~66% xFG corr |
+| Phase 3 ✅ (NBA API complete) | Tiers 1+2 (18 models) | Win prob + props + xFG v1 |
+| Phase 3.5 (untapped APIs + BBRef) | Tiers 2B+3+4+5 (22 models) | Sharp signal, lifecycle, play type efficiency |
+| Phase 6 (20 full CV games) | Tier 6 (10 models) | xFG v2 with defender, play type, spacing |
+| Phase 9 (NLP live) | Tier 8B (4 models) | Injury lag, sentiment |
+| Phase 10 (50-100 CV games) | Tiers 7+8 (15 models) | Fatigue curves, lineup chemistry, matchup matrix |
+| Phase 11 (live feed) | Tier 9 (6 models) | Live props, garbage time, comeback |
+| Phase 12 (all models) | Tier 10 — simulator | Full 90-model Monte Carlo |
+| Phase 16 (200+ CV games) | Tier 10 final | Live LSTM, prop pricing engine |
+| 1,000 CV games | Quality converges | Noise averages out, xFG ~66% correlation |
+
+---
+
+## The Master Prediction Formula
+
+> Full detail: `vault/Concepts/Prediction Pipeline.md`
+
+Every prediction runs through 6 layers in sequence:
+
+```
+LAYER 1 — GAME CONTEXT
+Win prob + pace + total + ref tendency + altitude + schedule + line movement + sharp signal
+    ↓
+LAYER 2 — PLAYER CONTEXT
+Rolling form + zone tendency + usage + matchup history + clutch + DNP risk + contract year
+    ↓
+LAYER 3 — SPATIAL CONTEXT (Phase 6+)
+xFG v2 per zone vs tonight's defense + defensive pressure + spacing + fatigue vs baseline
+    ↓
+LAYER 4 — EXTERNAL FACTORS
+Injury cascade (who's out → who's up) + ref foul tendency + line movement signal + NLP sentiment
+    ↓
+LAYER 5 — MONTE CARLO SIMULATION
+7-model possession chain × 10,000 = full stat distribution per player
+    ↓
+LAYER 6 — MARKET COMPARISON
+Model P(over) vs book implied P(over) = edge
+Prop correlation matrix → correlated leg adjustment
+Kelly sizing → bankroll fraction
+Sharp confirmation (Action Network) → confidence modifier
+→ Final: bet/no-bet, size, which book, star rating
+```
+
+**Prediction accuracy by phase:**
+- Phase 4 (today): ~55-58% props vs 52-54% implied. Small edge on role player props.
+- Phase 6 (20 games): ~58-62% with CV spatial. Real consistent edge.
+- Phase 10 (100 games): ~60-65% with lineup chemistry + matchup matrix.
+- Phase 12 (full stack): ~63-67% on targeted props. +8-12% edge on best bets.

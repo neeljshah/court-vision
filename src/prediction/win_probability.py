@@ -32,7 +32,7 @@ _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
 # Bump this whenever the season_games cache schema changes (new fields, etc.)
 # Cached files with a different or absent version are automatically re-fetched.
-_SEASON_GAMES_VERSION = 2
+_SEASON_GAMES_VERSION = 3
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
 # NET_RATING, PACE, etc.) reflect the current season, not an early-season snapshot.
@@ -54,6 +54,10 @@ FEATURE_COLS = [
     "away_rest_days", "away_back_to_back", "away_travel_miles",
     "away_last5_wins", "away_season_win_pct",
     "net_rtg_diff", "pace_diff", "home_advantage",
+    # Lineup quality (season-level top-5 lineup net rating)
+    "home_top_lineup_net_rtg", "away_top_lineup_net_rtg",
+    # Referee crew tendencies (default=league avg during training)
+    "ref_avg_fouls", "ref_home_win_pct",
 ]
 
 
@@ -76,6 +80,7 @@ class WinProbModel:
         away_team: str,
         season: str = "2024-25",
         game_date: Optional[str] = None,
+        ref_names: Optional[List[str]] = None,
     ) -> dict:
         """
         Predict pre-game win probability.
@@ -85,6 +90,7 @@ class WinProbModel:
             away_team:  Team abbreviation ('BOS').
             season:     NBA season string ('2024-25').
             game_date:  ISO date for rest/travel context (optional).
+            ref_names:  List of referee names for the game (optional).
 
         Returns:
             Dict with home_win_prob, away_win_prob, predicted_winner, margin_est, features.
@@ -92,7 +98,7 @@ class WinProbModel:
         if self.model is None:
             raise RuntimeError("Model not trained — call train() or load() first")
 
-        feats = _build_features(home_team, away_team, season, game_date)
+        feats = _build_features(home_team, away_team, season, game_date, ref_names)
         X     = np.array([[feats[c] for c in FEATURE_COLS]], dtype=np.float32)
         prob  = float(self.model.predict_proba(X)[0][1])
 
@@ -334,11 +340,24 @@ def _get_injury_warnings(home_team: str, away_team: str) -> dict:
     }
 
 
+def _get_top_lineup_net_rtg(team_abbrev: str, season: str) -> float:
+    """Return the top 5-man lineup net rating (>= 30 min) for a team/season, or 0.0."""
+    try:
+        from src.data.lineup_data import get_top_lineups
+        lineups = get_top_lineups(team_abbrev, season, n=1, min_minutes=30.0)
+        if lineups:
+            return float(lineups[0]["net_rating"])
+    except Exception:
+        pass
+    return 0.0
+
+
 def _build_features(
     home_team: str,
     away_team: str,
     season: str,
     game_date: Optional[str],
+    ref_names: Optional[List[str]] = None,
 ) -> dict:
     """
     Build a single-game feature dict using cached team season stats.
@@ -360,6 +379,24 @@ def _build_features(
 
     h_ctx = _get_schedule_context(home_team, game_date, season)
     a_ctx = _get_schedule_context(away_team, game_date, season)
+
+    # Lineup quality — season-level top 5-man net rating
+    h_lineup_nr = _get_top_lineup_net_rtg(home_team, season)
+    a_lineup_nr = _get_top_lineup_net_rtg(away_team, season)
+
+    # Ref features — use actual crew if provided, else league-avg defaults
+    ref_avg_fouls   = 42.0   # NBA league avg total fouls/game (home+away)
+    ref_home_win_pct = 0.5
+    if ref_names:
+        try:
+            from src.data.ref_tracker import get_ref_features
+            rf = get_ref_features(ref_names)
+            if rf.get("avg_fouls_per_game") is not None:
+                ref_avg_fouls = float(rf["avg_fouls_per_game"])
+            if rf.get("home_win_pct") is not None:
+                ref_home_win_pct = float(rf["home_win_pct"])
+        except Exception:
+            pass
 
     return {
         "home_off_rtg":        ht["off_rtg"],
@@ -389,6 +426,10 @@ def _build_features(
         "net_rtg_diff":        ht["net_rtg"] - at["net_rtg"],
         "pace_diff":           ht["pace"]    - at["pace"],
         "home_advantage":      1.0,
+        "home_top_lineup_net_rtg": h_lineup_nr,
+        "away_top_lineup_net_rtg": a_lineup_nr,
+        "ref_avg_fouls":       ref_avg_fouls,
+        "ref_home_win_pct":    ref_home_win_pct,
     }
 
 
@@ -655,6 +696,16 @@ def _fetch_season_games(season: str) -> List[dict]:
             "net_rtg_diff":   ht["net_rtg"] - at["net_rtg"],
             "pace_diff":      ht["pace"]    - at["pace"],
             "home_advantage": 1.0,
+            # Lineup quality (season-level; same value for all games in same season)
+            "home_top_lineup_net_rtg": _get_top_lineup_net_rtg(
+                h["TEAM_ABBREVIATION"], season
+            ),
+            "away_top_lineup_net_rtg": _get_top_lineup_net_rtg(
+                a["TEAM_ABBREVIATION"], season
+            ),
+            # Ref crew tendencies — unknown per historical game; use league averages
+            "ref_avg_fouls":    42.0,
+            "ref_home_win_pct": 0.5,
         })
 
     with open(cache_path, "w") as f:
