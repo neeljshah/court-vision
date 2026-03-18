@@ -110,8 +110,9 @@
 4. ✅ ~~Player props train~~ — 7 models, R² 0.928-0.995
 5. ✅ ~~Phase 5 external factors~~ — ref_tracker.py + line_monitor.py built; injury_monitor wired; pg writes added
 6. ✅ ~~Shot charts 2024-25~~ — 569 files, 221,866 shots; 2022-23/2023-24 scraping in background
-7. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
-8. **Phase 6**: Process 20 full games with `--game-id` → PostgreSQL will auto-write tracking_frames
+7. ✅ ~~Quick task 1~~ — build_live_mask() in nba_enricher + live/dead bench split + Guard 2/3 verified + vision fallback (2026-03-18)
+8. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
+9. **Phase 6**: Process 20 full games with `--game-id` → PostgreSQL will auto-write tracking_frames
 
 ---
 
