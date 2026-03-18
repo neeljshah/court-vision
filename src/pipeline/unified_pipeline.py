@@ -30,6 +30,9 @@ from src.tracking import (
 )
 from src.tracking.event_detector import EventDetector
 from src.tracking.court_detector import detect_court_homography
+from src.tracking.scoreboard_ocr import ScoreboardOCR
+from src.tracking.possession_classifier import PossessionClassifier
+from src.tracking.play_type_classifier import PlayTypeClassifier
 from src.stats_tracker.tracker import StatsTracker
 
 try:
@@ -47,9 +50,9 @@ FLANN = cv2.FlannBasedMatcher(dict(algorithm=1, trees=5), dict(checks=50))
 _H_EMA_ALPHA        = 0.25   # 0 = heavy smooth, 1 = raw (no memory)
                              # Reduced from 0.35: low-inlier broadcast matches (5-7) add noise;
                              # heavier smoothing averages out per-frame jitter.
-_H_MIN_INLIERS      = 5      # below this → reject and use last-known good M
-                             # Broadcast NBA frames match pano_enhanced.png with 5-7 inliers
-                             # (Short4Mosaicing pano doesn't share enough features for ≥8).
+_H_MIN_INLIERS      = 4      # below this → reject and use last-known good M
+                             # Lowered from 5 by 20%: broadcast NBA frames sometimes yield
+                             # 4 good inliers when the court is partially visible.
                              # EMA smoothing compensates for noisy low-inlier estimates.
 _H_RESET_INLIERS    = 40     # ≥ this → hard-reset EMA (very clean SIFT match)
 _REANCHOR_INTERVAL  = 30     # court-line drift check every N frames
@@ -143,12 +146,14 @@ class UnifiedPipeline:
         start_frame: int = 0,
         show: bool = True,
         output_video_path: str = None,
+        game_id: str = None,
     ):
         self.video_path        = video_path
         self.max_frames        = max_frames
         self.start_frame       = start_frame
         self.show              = show
         self.output_video_path = output_video_path
+        self.game_id           = game_id
 
         self.yolo    = YoloDetector(yolo_weight_path)
         self.players = self._build_players()
@@ -158,15 +163,26 @@ class UnifiedPipeline:
 
         pano = self._load_pano(video_path)
 
-        # Collect first 60 frames for per-clip homography detection (ISSUE-017)
+        # Collect frames for per-clip homography detection (ISSUE-017).
+        # Sample 500 frames spread across the first 3 minutes (5400 frames at 30fps)
+        # rather than just the first 60, so we capture frames after pre-game
+        # intro footage and reach actual gameplay where the court is visible.
         _startup_cap = cv2.VideoCapture(video_path)
+        _total = int(_startup_cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        _scan_end = min(_total, 5400)   # first 3 min at 30fps
+        _step = max(1, _scan_end // 500)
         _startup_frames: list = []
-        for _ in range(60):
+        for _idx in range(0, _scan_end, _step):
+            _startup_cap.set(cv2.CAP_PROP_POS_FRAMES, _idx)
             _ok, _f = _startup_cap.read()
             if not _ok:
                 break
             _startup_frames.append(_f[TOPCUT:])
         _startup_cap.release()
+
+        # M1 recovery state — updated by _build_court and _try_recover_court_M1
+        self._last_good_M1:    Optional[np.ndarray] = None
+        self._M1_stale_frames: int                  = 0
 
         self.map_2d, self.M1 = self._build_court(pano, startup_frames=_startup_frames)
         self.pano = pano
@@ -191,6 +207,16 @@ class UnifiedPipeline:
 
         self.event_det = EventDetector(map_w=self.map_2d.shape[1],
                                        map_h=self.map_2d.shape[0])
+
+        # ── Context classifiers ───────────────────────────────────────────
+        _fw, _fh = w, h   # frame dims captured above for StatsTracker
+        self.scoreboard_ocr = ScoreboardOCR(frame_width=_fw, frame_height=_fh)
+        self.poss_cls = PossessionClassifier(
+            fps=fps,
+            map_w=self.map_2d.shape[1],
+            map_h=self.map_2d.shape[0],
+        )
+        self.play_cls = PlayTypeClassifier()
 
     # ── setup helpers ─────────────────────────────────────────────────────
 
@@ -388,12 +414,38 @@ class UnifiedPipeline:
             M1 = detect_court_homography(startup_frames)
 
         if M1 is not None:
+            self._last_good_M1 = M1
+            self._M1_stale_frames = 0
             print("[unified_pipeline] Using per-clip detected homography M1")
+        elif self._last_good_M1 is not None:
+            M1 = self._last_good_M1
+            clip = os.path.basename(getattr(self, "video_path", "unknown"))
+            print(f"[unified_pipeline] detect_court_homography returned None for '{clip}' — using last good M1")
         else:
             M1 = np.load(rect1)
-            print("[unified_pipeline] Using fallback static homography Rectify1.npy")
+            clip = os.path.basename(getattr(self, "video_path", "unknown"))
+            print(f"[unified_pipeline] Homography fallback triggered for '{clip}' — using static Rectify1.npy")
 
         return map_2d, M1
+
+    def _try_recover_court_M1(self, frame: np.ndarray) -> None:
+        """Attempt to re-detect court homography after camera cuts / zooms.
+
+        Called every gameplay frame in run(). Increments a staleness counter each
+        frame. Once the counter exceeds 150 consecutive frames with no successful
+        per-clip detection, retries detect_court_homography on the current frame.
+        Updates self.M1 and self._last_good_M1 on success and resets the counter.
+
+        Args:
+            frame: Current BGR frame (already cropped by TOPCUT).
+        """
+        self._M1_stale_frames += 1
+        if self._M1_stale_frames > 150:
+            new_M1 = detect_court_homography([frame])
+            if new_M1 is not None:
+                self.M1 = new_M1
+                self._last_good_M1 = new_M1
+                self._M1_stale_frames = 0
 
     def _get_homography(self, frame) -> Optional[np.ndarray]:
         """
@@ -590,6 +642,9 @@ class UnifiedPipeline:
                 frame_idx += 1
                 continue
 
+            # Periodically re-detect court homography to recover from camera cuts.
+            self._try_recover_court_M1(frame)
+
             M = self._get_homography(frame)
             if M is None:
                 frame_idx += 1
@@ -666,13 +721,16 @@ class UnifiedPipeline:
                 conf     = max(0.0, 1.0 - self.feet_det._lost_ages.get(slot, 0) / 15)
                 team_pos[p.ID] = (p.team, int(x2d), int(y2d))
                 frame_tracks.append({
-                    "player_id":  p.ID,
-                    "team":       p.team,
-                    "bbox":       p.previous_bb,
-                    "x2d":        int(x2d),
-                    "y2d":        int(y2d),
-                    "confidence": round(conf, 3),
-                    "has_ball":   p.has_ball,
+                    "player_id":        p.ID,
+                    "team":             p.team,
+                    "bbox":             p.previous_bb,
+                    "x2d":              int(x2d),
+                    "y2d":              int(y2d),
+                    "confidence":       round(conf, 3),
+                    "has_ball":         p.has_ball,
+                    "ankle_x":          getattr(p, "ankle_x", None),
+                    "ankle_y":          getattr(p, "ankle_y", None),
+                    "contest_arm_angle": getattr(p, "contest_arm_angle", 0.0),
                 })
 
             # ── Post-clamp duplicate suppression ──────────────────────────
@@ -703,7 +761,41 @@ class UnifiedPipeline:
                 pixel_vel=self.ball_det.pixel_vel,
             )
 
+            # ── Ball trajectory features (computed once per frame) ─────────
+            _ball_traj = self.ball_det.get_trajectory_features()
+
             spatial = self._frame_spatial(frame_tracks, ball_pos, map_w, map_h)
+
+            # ── Scoreboard OCR (every 30 frames, cached otherwise) ────────
+            sb_state = self.scoreboard_ocr.read(frame)
+
+            # ── Possession classification ─────────────────────────────────
+            # Build simplified player list expected by PossessionClassifier
+            _players_simple = [
+                {
+                    "player_id": t["player_id"],
+                    "x":         float(t["x2d"]),
+                    "y":         float(t["y2d"]),
+                    "speed":     float(
+                        round(float(np.hypot(
+                            t["x2d"] - prev_pos[t["player_id"]][0],
+                            t["y2d"] - prev_pos[t["player_id"]][1],
+                        )), 2) if t["player_id"] in prev_pos else 0.0
+                    ),
+                    "team":      t["team"],
+                    "has_ball":  t["has_ball"],
+                }
+                for t in frame_tracks
+            ]
+            poss_ctx = self.poss_cls.update(_players_simple, ball_pos, frame_idx)
+
+            # ── Play type classification (uses predictions buffer) ─────────
+            play_type = self.play_cls.update(
+                [{"frame": frame_idx, "tracks": [
+                    {**t, "event": event} for t in frame_tracks
+                ]}],
+                poss_ctx["possession_type"],
+            )
 
             # ── Possession duration + possession ID ───────────────────────
             handler_now = next((t for t in frame_tracks if t.get("has_ball")), None)
@@ -872,8 +964,28 @@ class UnifiedPipeline:
                     "vel_toward_basket":  vtb,
                     "drive_flag":         drv_flg,
                     "fast_break_flag":    fast_break,
-                    "possession_id":      possession_id,
+                    "possession_id":       possession_id,
                     "possession_duration": possession_dur,
+                    # ── Scoreboard context ─────────────────────────────────
+                    "scoreboard_game_clock":  sb_state.get("game_clock_sec", ""),
+                    "scoreboard_shot_clock":  sb_state.get("shot_clock", ""),
+                    "scoreboard_score_diff":  sb_state.get("score_diff", ""),
+                    "scoreboard_period":      sb_state.get("period", ""),
+                    # ── Possession + play-type context ─────────────────────
+                    "possession_type":         poss_ctx.get("possession_type", "half_court"),
+                    "play_type":               play_type,
+                    "possession_duration_sec": poss_ctx.get("possession_duration_sec", 0.0),
+                    "paint_touches":           poss_ctx.get("paint_touches", 0),
+                    "off_ball_distance":       poss_ctx.get("off_ball_distance", 0.0),
+                    "shot_clock_est":          poss_ctx.get("shot_clock_est", 24.0),
+                    # ── Pose estimation fields ─────────────────────────────
+                    "ankle_x":            track.get("ankle_x", ""),
+                    "ankle_y":            track.get("ankle_y", ""),
+                    "contest_arm_angle":  track.get("contest_arm_angle", ""),
+                    # ── Ball trajectory features ───────────────────────────
+                    "ball_shot_arc_angle":  _ball_traj.get("shot_arc_angle", ""),
+                    "ball_peak_height_px":  _ball_traj.get("peak_height_px", ""),
+                    "ball_pass_speed_pxpf": _ball_traj.get("pass_speed_pxpf", ""),
                 })
 
             # ── Visualise ─────────────────────────────────────────────────
@@ -1310,6 +1422,72 @@ class UnifiedPipeline:
             w.writerows(rows)
         print(f"Player stats    → {path}  ({len(rows)} players)")
 
+    def _pg_write_tracking_rows(self, rows: List[dict]) -> None:
+        """
+        Write tracking rows to the tracking_frames PostgreSQL table.
+
+        Silently skips if DATABASE_URL is not set or if game_id is None.
+        Uses INSERT ... ON CONFLICT DO NOTHING so re-runs are safe.
+
+        Args:
+            rows: List of tracking row dicts (same as CSV output).
+        """
+        import os as _os
+        if not _os.environ.get("DATABASE_URL"):
+            print("[pg] DATABASE_URL not set — skipping PostgreSQL write")
+            return
+        if not self.game_id:
+            print("[pg] No game_id — skipping PostgreSQL write (pass --game-id to enable)")
+            return
+        try:
+            from src.data.db import get_connection
+            conn = get_connection()
+            cur  = conn.cursor()
+            insert_sql = """
+                INSERT INTO tracking_frames (
+                    game_id, frame_number, timestamp_sec,
+                    tracker_player_id, x_pos, y_pos,
+                    speed, acceleration, ball_possession,
+                    event, confidence, team_spacing,
+                    paint_count_own, paint_count_opp, tracker_version
+                ) VALUES (
+                    %(game_id)s, %(frame_number)s, %(timestamp_sec)s,
+                    %(tracker_player_id)s, %(x_pos)s, %(y_pos)s,
+                    %(speed)s, %(acceleration)s, %(ball_possession)s,
+                    %(event)s, %(confidence)s, %(team_spacing)s,
+                    %(paint_count_own)s, %(paint_count_opp)s, %(tracker_version)s
+                )
+                ON CONFLICT DO NOTHING
+            """
+            pg_rows = [
+                {
+                    "game_id":           self.game_id,
+                    "frame_number":      r.get("frame"),
+                    "timestamp_sec":     r.get("timestamp"),
+                    "tracker_player_id": r.get("player_id"),
+                    "x_pos":             r.get("x_position"),
+                    "y_pos":             r.get("y_position"),
+                    "speed":             r.get("velocity"),
+                    "acceleration":      r.get("acceleration"),
+                    "ball_possession":   r.get("ball_possession"),
+                    "event":             r.get("event"),
+                    "confidence":        r.get("confidence"),
+                    "team_spacing":      r.get("team_spacing"),
+                    "paint_count_own":   r.get("paint_count_own"),
+                    "paint_count_opp":   r.get("paint_count_opp"),
+                    "tracker_version":   "v1",
+                }
+                for r in rows
+            ]
+            import psycopg2.extras as _extras
+            _extras.execute_batch(cur, insert_sql, pg_rows, page_size=500)
+            conn.commit()
+            cur.close()
+            conn.close()
+            print(f"[pg] tracking_frames ← {len(pg_rows)} rows (game_id={self.game_id})")
+        except Exception as e:
+            print(f"[pg] WARNING: PostgreSQL write failed — {e}")
+
     def _export_csv(self, rows: List[dict]):
         if not rows:
             return
@@ -1332,12 +1510,22 @@ class UnifiedPipeline:
             "drive_flag", "fast_break_flag",
             "possession_id", "possession_duration",
             "confidence",
+            # Extended fields from scoreboard OCR + possession classifier
+            "play_type", "paint_touches", "off_ball_distance", "shot_clock_est",
+            "scoreboard_shot_clock", "scoreboard_game_clock",
+            "scoreboard_period", "scoreboard_score_diff",
+            "possession_duration_sec", "possession_type",
+            # Pose estimation fields (ankle keypoints + contest arm)
+            "ankle_x", "ankle_y", "contest_arm_angle",
+            # Ball trajectory features
+            "ball_shot_arc_angle", "ball_peak_height_px", "ball_pass_speed_pxpf",
         ]
         with open(path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields)
             w.writeheader()
             w.writerows(rows)
         print(f"Tracking data → {path}  ({len(rows)} rows)")
+        self._pg_write_tracking_rows(rows)
 
     def _export_ball_csv(self, rows: List[dict]):
         if not rows:
@@ -1372,3 +1560,27 @@ class _ReIdStub:
 
     def hard_voting(self, *a, **kw):
         return {}
+
+
+if __name__ == "__main__":
+    import argparse
+
+    ap = argparse.ArgumentParser(description="NBA AI — unified tracking pipeline")
+    ap.add_argument("--video",    required=True, help="Path to input video (.mp4)")
+    ap.add_argument("--game-id",  default=None,  help="NBA Stats game ID for enrichment")
+    ap.add_argument("--output",   default=None,  help="Output CSV path (default: data/tracking_data.csv)")
+    ap.add_argument("--frames",   type=int, default=None, help="Max frames to process")
+    ap.add_argument("--start-frame", type=int, default=0, help="Frame to start from")
+    ap.add_argument("--no-show",  action="store_true", help="Disable live preview window")
+    ap.add_argument("--yolo",     default=None, help="Path to YOLO-NAS weights (.pth)")
+    args = ap.parse_args()
+
+    pipeline = UnifiedPipeline(
+        video_path=args.video,
+        yolo_weight_path=args.yolo,
+        max_frames=args.frames,
+        start_frame=args.start_frame,
+        show=not args.no_show,
+        game_id=args.game_id,
+    )
+    pipeline.run()
