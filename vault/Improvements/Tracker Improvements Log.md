@@ -1,5 +1,56 @@
 # Tracker Improvements Log
 
+### Pre-Phase 6 Enrichment — 2026-03-18
+
+**Tests: 850/856 pass (6 pre-existing test_models_router.py failures)**
+
+**PBP Features (Track 1)**
+- Built `src/data/pbp_features.py` — processes 3,627 PBP files across 3 seasons
+- New features (5): q4_shot_rate, q4_pts_share, fta_rate_pbp, foul_drawn_rate_pbp, comeback_pts_pg
+- Output: 1187/1266/1303 players per season, data/nba/pbp_features_*.json
+
+**Shot Zone Features (Track 2)**
+- Already built (shot_tendency_features.json existed with 566 players, 25 features)
+- Selected 5 most predictive: paint_rate, above_break_3_rate, corner_3_rate, mid_rate, fg_pct_restricted_area
+- Wired into _build_player_features() + _get_all_player_avgs()
+- Added _load_shot_tendency() helper to player_props.py
+
+**BBRef VORP/WS48 (Track 4 partial)**
+- Extended get_player_bpm() usage to also extract vorp + ws_per_48 from cached bbref_advanced_*.json
+- Added bbref_vorp, bbref_ws_per_48 to _ALL_FEATS and _get_all_player_avgs() training rows
+- BBRef data already in data/external/bbref_advanced_*.json (736/736/680 players x 3 seasons)
+
+**Props retrained (52 features, was 42):**
+- pts MAE: 0.32 -> 0.308 (improved)
+- reb MAE: 0.11 -> 0.113 (marginal, within noise)
+- ast MAE: 0.09 -> 0.093 (marginal, within noise)
+- fg3m/stl/blk/tov: stable
+
+**Win probability retrained:**
+- 67.7% -> 69.1% accuracy (after prior Phase 4.6 features were also included)
+- Brier: 0.204 -> 0.203
+
+**Phase 4.5: DNP Predictor (Track 3A)**
+- Built `src/prediction/dnp_predictor.py` — logistic regression on gamelog DNP labels
+- Training: 26,648 rows from 571 players, DNP rate 0.3%, ROC-AUC: 0.979
+- Wired into predict_props() with 0.4 threshold and 30% max reduction scaling
+- Note: DNP rate low because gamelog_full files only contain played games (not absences); model captures load management patterns from minute trends
+
+**Phase 4.5: Prop Correlations (Track 3B)**
+- Built `src/analytics/prop_correlation.py` — 508 player correlations, 3,447 lineup pairs
+- get_correlation_penalty() wired into betting_edge.py
+- Outputs: data/nba/prop_correlations.json, data/nba/lineup_correlations.json
+
+**Phase 4.5: Sharp Detector (Track 3C)**
+- Enhanced compute_clv() in betting_edge.py with sharp signal confidence adjustment
+- 20% spread reduction when sharp money opposes model direction (>0.3 pts movement)
+- Returns new adjusted_model_spread key alongside original model_spread
+
+**New tests: 47 added**
+- test_pbp_features.py (17 tests), test_dnp_predictor.py (14 tests), test_prop_correlation.py (16 tests)
+
+---
+
 ### Phase 4.6: Untapped Signal Wiring — 2026-03-18
 
 **Tests: 803/809 pass (6 pre-existing test_models_router.py failures unrelated to Phase 4.6)**
@@ -11053,3 +11104,9 @@ Stab:1.000 IDsw:0 FPS:11.3 Shots:2076 | no fix needed — all metrics within tar
 
 ### BENCH-20260318_220824 — sac_por_2025 — 2026-03-18 22:19
 Stab:1.000 IDsw:0 FPS:14.4 Shots:2112 | no fix needed — all metrics within target range
+
+### BENCH-20260318_222320 — den_gsw_playoffs — 2026-03-18 22:34
+Stab:1.000 IDsw:0 FPS:14.2 Shots:2255 | no fix needed — all metrics within target range
+
+### BENCH-20260318_223640 — den_gsw_playoffs — 2026-03-18 22:49
+Stab:1.000 IDsw:0 FPS:13.1 Shots:2475 | no fix needed — all metrics within target range
