@@ -79,9 +79,10 @@ _GAMEPLAY_CACHE_FRAMES = 30  # once gameplay confirmed, trust it for N frames (~
 # consecutive scans, ball tracking is suspended until the clock reappears.
 # Guard: suspension only fires if the clock was seen at least once on this clip
 # (safety net for clips where ScoreboardOCR can't read the broadcast font at all).
-# 40 scans × 15 frames = 600 frames ≈ 20 s — catches timeouts, replays, halftime;
-# tight enough not to suppress live play on short OCR gaps (made baskets, etc.).
-_SHOT_CLOCK_ABSENT_THRESHOLD = 40
+# Raised from 40→200 (200×15=3000 frames≈100s): older broadcast fonts (2022 playoffs)
+# cause OCR to miss the shot clock for 30-40s stretches; 40-scan threshold was
+# triggering permanent suspension on live play.
+_SHOT_CLOCK_ABSENT_THRESHOLD = 200
 _PANO_SCAN_INTERVAL  = 150   # check every N frames when scanning for gameplay (5s @ 30fps)
 _PANO_STITCH_FRAMES  = 30    # consecutive frames to stitch into panorama
 
@@ -758,8 +759,8 @@ class UnifiedPipeline:
             if (self.yolo.available
                     and not self._sc_ever_seen
                     and not self._ball_track_suspended
-                    and self._no_ball_vision_streak >= 20
-                    and len(yolo_results) < 8):
+                    and self._no_ball_vision_streak >= 50
+                    and len(yolo_results) < 4):
                 self._ball_track_suspended = True
 
             # ── Ball + event detection ────────────────────────────────────
