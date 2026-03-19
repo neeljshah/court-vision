@@ -1,0 +1,3050 @@
+{
+  "101108": {
+    "pts_reb_r": 0.3061,
+    "pts_ast_r": 0.2513,
+    "reb_ast_r": 0.3481,
+    "n_games": 82
+  },
+  "1626145": {
+    "pts_reb_r": 0.1925,
+    "pts_ast_r": 0.1226,
+    "reb_ast_r": 0.2459,
+    "n_games": 81
+  },
+  "1626153": {
+    "pts_reb_r": 0.4914,
+    "pts_ast_r": 0.4067,
+    "reb_ast_r": 0.494,
+    "n_games": 40
+  },
+  "1626156": {
+    "pts_reb_r": 0.3231,
+    "pts_ast_r": 0.3887,
+    "reb_ast_r": 0.1861,
+    "n_games": 58
+  },
+  "1626157": {
+    "pts_reb_r": 0.1558,
+    "pts_ast_r": 0.0909,
+    "reb_ast_r": 0.0463,
+    "n_games": 72
+  },
+  "1626158": {
+    "pts_reb_r": 0.3631,
+    "pts_ast_r": 0.4385,
+    "reb_ast_r": 0.4817,
+    "n_games": 31
+  },
+  "1626162": {
+    "pts_reb_r": 0.0912,
+    "pts_ast_r": 0.2186,
+    "reb_ast_r": 0.1234,
+    "n_games": 60
+  },
+  "1626164": {
+    "pts_reb_r": 0.2276,
+    "pts_ast_r": -0.0516,
+    "reb_ast_r": 0.085,
+    "n_games": 128
+  },
+  "1626166": {
+    "pts_reb_r": 0.2857,
+    "pts_ast_r": 0.1576,
+    "reb_ast_r": 0.1979,
+    "n_games": 72
+  },
+  "1626167": {
+    "pts_reb_r": 0.2147,
+    "pts_ast_r": -0.0017,
+    "reb_ast_r": 0.102,
+    "n_games": 72
+  },
+  "1626168": {
+    "pts_reb_r": 0.4082,
+    "pts_ast_r": 0.3816,
+    "reb_ast_r": 0.4131,
+    "n_games": 69
+  },
+  "1626171": {
+    "pts_reb_r": 0.3512,
+    "pts_ast_r": 0.4327,
+    "reb_ast_r": 0.3459,
+    "n_games": 49
+  },
+  "1626172": {
+    "pts_reb_r": 0.329,
+    "pts_ast_r": 0.0913,
+    "reb_ast_r": 0.4028,
+    "n_games": 76
+  },
+  "1626179": {
+    "pts_reb_r": 0.277,
+    "pts_ast_r": 0.4585,
+    "reb_ast_r": 0.1167,
+    "n_games": 127
+  },
+  "1626181": {
+    "pts_reb_r": 0.3491,
+    "pts_ast_r": 0.1179,
+    "reb_ast_r": 0.045,
+    "n_games": 60
+  },
+  "1626192": {
+    "pts_reb_r": 0.6419,
+    "pts_ast_r": 0.4248,
+    "reb_ast_r": 0.4678,
+    "n_games": 41
+  },
+  "1626204": {
+    "pts_reb_r": 0.3301,
+    "pts_ast_r": 0.4107,
+    "reb_ast_r": 0.1588,
+    "n_games": 24
+  },
+  "1626220": {
+    "pts_reb_r": 0.1514,
+    "pts_ast_r": 0.106,
+    "reb_ast_r": 0.1901,
+    "n_games": 75
+  },
+  "1627732": {
+    "pts_reb_r": 0.502,
+    "pts_ast_r": 0.5264,
+    "reb_ast_r": 0.4044,
+    "n_games": 51
+  },
+  "1627734": {
+    "pts_reb_r": 0.2051,
+    "pts_ast_r": -0.0778,
+    "reb_ast_r": 0.122,
+    "n_games": 149
+  },
+  "1627736": {
+    "pts_reb_r": 0.2246,
+    "pts_ast_r": 0.1059,
+    "reb_ast_r": 0.2034,
+    "n_games": 82
+  },
+  "1627739": {
+    "pts_reb_r": 0.2147,
+    "pts_ast_r": 0.2495,
+    "reb_ast_r": 0.0741,
+    "n_games": 74
+  },
+  "1627741": {
+    "pts_reb_r": 0.3265,
+    "pts_ast_r": 0.2964,
+    "reb_ast_r": 0.176,
+    "n_games": 82
+  },
+  "1627742": {
+    "pts_reb_r": 0.3747,
+    "pts_ast_r": 0.1198,
+    "reb_ast_r": 0.128,
+    "n_games": 63
+  },
+  "1627747": {
+    "pts_reb_r": 0.1784,
+    "pts_ast_r": 0.2592,
+    "reb_ast_r": 0.1317,
+    "n_games": 64
+  },
+  "1627749": {
+    "pts_reb_r": 0.079,
+    "pts_ast_r": 0.1127,
+    "reb_ast_r": 0.2955,
+    "n_games": 105
+  },
+  "1627750": {
+    "pts_reb_r": -0.0045,
+    "pts_ast_r": 0.0684,
+    "reb_ast_r": 0.1739,
+    "n_games": 67
+  },
+  "1627751": {
+    "pts_reb_r": 0.3062,
+    "pts_ast_r": 0.0194,
+    "reb_ast_r": 0.0185,
+    "n_games": 57
+  },
+  "1627752": {
+    "pts_reb_r": 0.2716,
+    "pts_ast_r": 0.2043,
+    "reb_ast_r": 0.1491,
+    "n_games": 80
+  },
+  "1627759": {
+    "pts_reb_r": 0.2145,
+    "pts_ast_r": -0.1198,
+    "reb_ast_r": 0.0972,
+    "n_games": 130
+  },
+  "1627763": {
+    "pts_reb_r": 0.37,
+    "pts_ast_r": 0.3922,
+    "reb_ast_r": -0.1055,
+    "n_games": 24
+  },
+  "1627777": {
+    "pts_reb_r": 0.2728,
+    "pts_ast_r": 0.1358,
+    "reb_ast_r": 0.0925,
+    "n_games": 79
+  },
+  "1627780": {
+    "pts_reb_r": 0.3083,
+    "pts_ast_r": 0.2293,
+    "reb_ast_r": 0.3682,
+    "n_games": 62
+  },
+  "1627783": {
+    "pts_reb_r": 0.2099,
+    "pts_ast_r": 0.2479,
+    "reb_ast_r": 0.0859,
+    "n_games": 149
+  },
+  "1627814": {
+    "pts_reb_r": 0.122,
+    "pts_ast_r": 0.1068,
+    "reb_ast_r": 0.4291,
+    "n_games": 25
+  },
+  "1627824": {
+    "pts_reb_r": 0.2241,
+    "pts_ast_r": 0.2675,
+    "reb_ast_r": 0.2139,
+    "n_games": 70
+  },
+  "1627826": {
+    "pts_reb_r": 0.4055,
+    "pts_ast_r": 0.0767,
+    "reb_ast_r": 0.1749,
+    "n_games": 80
+  },
+  "1627827": {
+    "pts_reb_r": 0.1147,
+    "pts_ast_r": 0.1165,
+    "reb_ast_r": 0.0128,
+    "n_games": 63
+  },
+  "1627832": {
+    "pts_reb_r": 0.1315,
+    "pts_ast_r": 0.1288,
+    "reb_ast_r": 0.1204,
+    "n_games": 129
+  },
+  "1627884": {
+    "pts_reb_r": 0.2153,
+    "pts_ast_r": 0.4118,
+    "reb_ast_r": 0.2942,
+    "n_games": 77
+  },
+  "1627936": {
+    "pts_reb_r": 0.1271,
+    "pts_ast_r": 0.1099,
+    "reb_ast_r": 0.3259,
+    "n_games": 54
+  },
+  "1628365": {
+    "pts_reb_r": 0.2302,
+    "pts_ast_r": 0.6004,
+    "reb_ast_r": 0.4304,
+    "n_games": 21
+  },
+  "1628366": {
+    "pts_reb_r": 0.0582,
+    "pts_ast_r": 0.0232,
+    "reb_ast_r": 0.0888,
+    "n_games": 35
+  },
+  "1628368": {
+    "pts_reb_r": 0.0308,
+    "pts_ast_r": 0.0136,
+    "reb_ast_r": 0.0966,
+    "n_games": 62
+  },
+  "1628369": {
+    "pts_reb_r": 0.1545,
+    "pts_ast_r": -0.1799,
+    "reb_ast_r": 0.0956,
+    "n_games": 146
+  },
+  "1628370": {
+    "pts_reb_r": 0.0888,
+    "pts_ast_r": 0.391,
+    "reb_ast_r": 0.2981,
+    "n_games": 65
+  },
+  "1628371": {
+    "pts_reb_r": 0.4949,
+    "pts_ast_r": 0.099,
+    "reb_ast_r": 0.2335,
+    "n_games": 71
+  },
+  "1628374": {
+    "pts_reb_r": 0.2695,
+    "pts_ast_r": -0.0468,
+    "reb_ast_r": 0.0364,
+    "n_games": 113
+  },
+  "1628378": {
+    "pts_reb_r": 0.2318,
+    "pts_ast_r": 0.0965,
+    "reb_ast_r": 0.2724,
+    "n_games": 139
+  },
+  "1628379": {
+    "pts_reb_r": 0.3419,
+    "pts_ast_r": 0.2186,
+    "reb_ast_r": 0.1777,
+    "n_games": 65
+  },
+  "1628380": {
+    "pts_reb_r": 0.617,
+    "pts_ast_r": 0.3312,
+    "reb_ast_r": 0.4971,
+    "n_games": 64
+  },
+  "1628381": {
+    "pts_reb_r": 0.3185,
+    "pts_ast_r": 0.2003,
+    "reb_ast_r": 0.0747,
+    "n_games": 40
+  },
+  "1628384": {
+    "pts_reb_r": 0.1759,
+    "pts_ast_r": 0.2584,
+    "reb_ast_r": 0.0008,
+    "n_games": 141
+  },
+  "1628386": {
+    "pts_reb_r": 0.4808,
+    "pts_ast_r": 0.1342,
+    "reb_ast_r": 0.198,
+    "n_games": 82
+  },
+  "1628389": {
+    "pts_reb_r": 0.211,
+    "pts_ast_r": -0.0051,
+    "reb_ast_r": 0.1583,
+    "n_games": 153
+  },
+  "1628392": {
+    "pts_reb_r": 0.0028,
+    "pts_ast_r": -0.0588,
+    "reb_ast_r": 0.138,
+    "n_games": 57
+  },
+  "1628396": {
+    "pts_reb_r": 0.9141,
+    "pts_ast_r": 0.7872,
+    "reb_ast_r": 0.7816,
+    "n_games": 13
+  },
+  "1628398": {
+    "pts_reb_r": 0.2609,
+    "pts_ast_r": 0.2295,
+    "reb_ast_r": 0.3275,
+    "n_games": 129
+  },
+  "1628401": {
+    "pts_reb_r": 0.0779,
+    "pts_ast_r": -0.083,
+    "reb_ast_r": 0.2027,
+    "n_games": 76
+  },
+  "1628404": {
+    "pts_reb_r": 0.0855,
+    "pts_ast_r": -0.001,
+    "reb_ast_r": 0.368,
+    "n_games": 77
+  },
+  "1628415": {
+    "pts_reb_r": 0.2843,
+    "pts_ast_r": 0.0157,
+    "reb_ast_r": 0.3204,
+    "n_games": 75
+  },
+  "1628418": {
+    "pts_reb_r": 0.5524,
+    "pts_ast_r": 0.4378,
+    "reb_ast_r": 0.534,
+    "n_games": 66
+  },
+  "1628420": {
+    "pts_reb_r": 0.2428,
+    "pts_ast_r": 0.1903,
+    "reb_ast_r": 0.2859,
+    "n_games": 45
+  },
+  "1628427": {
+    "pts_reb_r": 0.5377,
+    "pts_ast_r": 0.4429,
+    "reb_ast_r": 0.6426,
+    "n_games": 13
+  },
+  "1628436": {
+    "pts_reb_r": 0.4459,
+    "pts_ast_r": 0.3138,
+    "reb_ast_r": 0.346,
+    "n_games": 73
+  },
+  "1628449": {
+    "pts_reb_r": 0.1594,
+    "pts_ast_r": 0.0518,
+    "reb_ast_r": -0.0147,
+    "n_games": 50
+  },
+  "1628464": {
+    "pts_reb_r": 0.3927,
+    "pts_ast_r": 0.2698,
+    "reb_ast_r": 0.537,
+    "n_games": 38
+  },
+  "1628467": {
+    "pts_reb_r": 0.2095,
+    "pts_ast_r": 0.2358,
+    "reb_ast_r": 0.1498,
+    "n_games": 34
+  },
+  "1628470": {
+    "pts_reb_r": 0.406,
+    "pts_ast_r": 0.3074,
+    "reb_ast_r": 0.5701,
+    "n_games": 26
+  },
+  "1628960": {
+    "pts_reb_r": 0.2169,
+    "pts_ast_r": 0.1978,
+    "reb_ast_r": 0.1805,
+    "n_games": 64
+  },
+  "1628963": {
+    "pts_reb_r": 0.8613,
+    "pts_ast_r": 0.659,
+    "reb_ast_r": 0.6472,
+    "n_games": 31
+  },
+  "1628964": {
+    "pts_reb_r": 0.5685,
+    "pts_ast_r": 0.0322,
+    "reb_ast_r": 0.1889,
+    "n_games": 32
+  },
+  "1628969": {
+    "pts_reb_r": 0.215,
+    "pts_ast_r": 0.0722,
+    "reb_ast_r": 0.1241,
+    "n_games": 165
+  },
+  "1628970": {
+    "pts_reb_r": 0.3099,
+    "pts_ast_r": 0.0911,
+    "reb_ast_r": 0.3446,
+    "n_games": 64
+  },
+  "1628971": {
+    "pts_reb_r": 0.403,
+    "pts_ast_r": 0.476,
+    "reb_ast_r": 0.2784,
+    "n_games": 41
+  },
+  "1628973": {
+    "pts_reb_r": 0.1575,
+    "pts_ast_r": 0.0586,
+    "reb_ast_r": 0.0944,
+    "n_games": 133
+  },
+  "1628975": {
+    "pts_reb_r": 0.5889,
+    "pts_ast_r": 0.6466,
+    "reb_ast_r": 0.495,
+    "n_games": 36
+  },
+  "1628976": {
+    "pts_reb_r": 0.2759,
+    "pts_ast_r": 0.0653,
+    "reb_ast_r": 0.2091,
+    "n_games": 68
+  },
+  "1628978": {
+    "pts_reb_r": 0.2819,
+    "pts_ast_r": 0.1599,
+    "reb_ast_r": 0.1613,
+    "n_games": 62
+  },
+  "1628981": {
+    "pts_reb_r": 0.6058,
+    "pts_ast_r": 0.6884,
+    "reb_ast_r": 0.2951,
+    "n_games": 17
+  },
+  "1628983": {
+    "pts_reb_r": 0.1451,
+    "pts_ast_r": 0.0048,
+    "reb_ast_r": -0.0519,
+    "n_games": 144
+  },
+  "1628988": {
+    "pts_reb_r": 0.5762,
+    "pts_ast_r": 0.4391,
+    "reb_ast_r": 0.2961,
+    "n_games": 62
+  },
+  "1628989": {
+    "pts_reb_r": 0.3272,
+    "pts_ast_r": 0.4842,
+    "reb_ast_r": 0.2696,
+    "n_games": 69
+  },
+  "1628991": {
+    "pts_reb_r": 0.3076,
+    "pts_ast_r": 0.1616,
+    "reb_ast_r": 0.098,
+    "n_games": 74
+  },
+  "1628995": {
+    "pts_reb_r": 0.8454,
+    "pts_ast_r": 0.7609,
+    "reb_ast_r": 0.871,
+    "n_games": 14
+  },
+  "1628997": {
+    "pts_reb_r": 0.311,
+    "pts_ast_r": 0.177,
+    "reb_ast_r": 0.1146,
+    "n_games": 45
+  },
+  "1628998": {
+    "pts_reb_r": 0.0524,
+    "pts_ast_r": 0.1756,
+    "reb_ast_r": 0.5659,
+    "n_games": 53
+  },
+  "1629003": {
+    "pts_reb_r": 0.5236,
+    "pts_ast_r": 0.5114,
+    "reb_ast_r": 0.3355,
+    "n_games": 57
+  },
+  "1629004": {
+    "pts_reb_r": 0.3882,
+    "pts_ast_r": 0.3269,
+    "reb_ast_r": 0.4277,
+    "n_games": 38
+  },
+  "1629006": {
+    "pts_reb_r": 0.5873,
+    "pts_ast_r": 0.4459,
+    "reb_ast_r": 0.3621,
+    "n_games": 40
+  },
+  "1629008": {
+    "pts_reb_r": 0.1788,
+    "pts_ast_r": 0.1322,
+    "reb_ast_r": -0.0241,
+    "n_games": 77
+  },
+  "1629011": {
+    "pts_reb_r": 0.7836,
+    "pts_ast_r": -0.31,
+    "reb_ast_r": -0.1745,
+    "n_games": 17
+  },
+  "1629012": {
+    "pts_reb_r": 0.2886,
+    "pts_ast_r": 0.3081,
+    "reb_ast_r": 0.2951,
+    "n_games": 63
+  },
+  "1629013": {
+    "pts_reb_r": 0.3979,
+    "pts_ast_r": 0.1957,
+    "reb_ast_r": -0.0825,
+    "n_games": 50
+  },
+  "1629014": {
+    "pts_reb_r": 0.0759,
+    "pts_ast_r": 0.0651,
+    "reb_ast_r": 0.1619,
+    "n_games": 132
+  },
+  "1629018": {
+    "pts_reb_r": 0.2391,
+    "pts_ast_r": 0.2477,
+    "reb_ast_r": 0.1228,
+    "n_games": 74
+  },
+  "1629020": {
+    "pts_reb_r": 0.3075,
+    "pts_ast_r": 0.2668,
+    "reb_ast_r": 0.2591,
+    "n_games": 36
+  },
+  "1629021": {
+    "pts_reb_r": 0.3002,
+    "pts_ast_r": 0.2857,
+    "reb_ast_r": 0.2663,
+    "n_games": 30
+  },
+  "1629022": {
+    "pts_reb_r": 0.2881,
+    "pts_ast_r": 0.4625,
+    "reb_ast_r": 0.5855,
+    "n_games": 20
+  },
+  "1629023": {
+    "pts_reb_r": 0.3574,
+    "pts_ast_r": 0.1003,
+    "reb_ast_r": 0.1444,
+    "n_games": 57
+  },
+  "1629026": {
+    "pts_reb_r": 0.497,
+    "pts_ast_r": 0.3227,
+    "reb_ast_r": 0.3564,
+    "n_games": 69
+  },
+  "1629027": {
+    "pts_reb_r": 0.0734,
+    "pts_ast_r": -0.0952,
+    "reb_ast_r": 0.0472,
+    "n_games": 149
+  },
+  "1629028": {
+    "pts_reb_r": 0.3274,
+    "pts_ast_r": 0.2966,
+    "reb_ast_r": 0.1316,
+    "n_games": 40
+  },
+  "1629029": {
+    "pts_reb_r": 0.3265,
+    "pts_ast_r": 0.1916,
+    "reb_ast_r": 0.2163,
+    "n_games": 116
+  },
+  "1629048": {
+    "pts_reb_r": 0.673,
+    "pts_ast_r": 0.4542,
+    "reb_ast_r": 0.4433,
+    "n_games": 70
+  },
+  "1629057": {
+    "pts_reb_r": 0.2557,
+    "pts_ast_r": 0.4742,
+    "reb_ast_r": 0.2488,
+    "n_games": 20
+  },
+  "1629060": {
+    "pts_reb_r": 0.1968,
+    "pts_ast_r": 0.0871,
+    "reb_ast_r": 0.0544,
+    "n_games": 59
+  },
+  "1629111": {
+    "pts_reb_r": 0.5563,
+    "pts_ast_r": 0.2713,
+    "reb_ast_r": 0.4387,
+    "n_games": 42
+  },
+  "1629130": {
+    "pts_reb_r": 0.3844,
+    "pts_ast_r": 0.2002,
+    "reb_ast_r": 0.1648,
+    "n_games": 74
+  },
+  "1629162": {
+    "pts_reb_r": 0.4865,
+    "pts_ast_r": 0.5231,
+    "reb_ast_r": 0.4999,
+    "n_games": 45
+  },
+  "1629216": {
+    "pts_reb_r": 0.2308,
+    "pts_ast_r": 0.4694,
+    "reb_ast_r": 0.1574,
+    "n_games": 72
+  },
+  "1629234": {
+    "pts_reb_r": 0.4751,
+    "pts_ast_r": 0.3696,
+    "reb_ast_r": 0.4571,
+    "n_games": 60
+  },
+  "1629312": {
+    "pts_reb_r": 0.2791,
+    "pts_ast_r": 0.1863,
+    "reb_ast_r": 0.4215,
+    "n_games": 74
+  },
+  "1629599": {
+    "pts_reb_r": 0.4265,
+    "pts_ast_r": 0.2419,
+    "reb_ast_r": 0.2517,
+    "n_games": 72
+  },
+  "1629610": {
+    "pts_reb_r": 0.2515,
+    "pts_ast_r": -0.0055,
+    "reb_ast_r": 0.2475,
+    "n_games": 47
+  },
+  "1629611": {
+    "pts_reb_r": 0.2833,
+    "pts_ast_r": 0.184,
+    "reb_ast_r": 0.3141,
+    "n_games": 67
+  },
+  "1629614": {
+    "pts_reb_r": 0.2767,
+    "pts_ast_r": 0.2083,
+    "reb_ast_r": 0.1888,
+    "n_games": 65
+  },
+  "1629618": {
+    "pts_reb_r": 0.5322,
+    "pts_ast_r": 0.6769,
+    "reb_ast_r": 0.7085,
+    "n_games": 48
+  },
+  "1629622": {
+    "pts_reb_r": 0.1207,
+    "pts_ast_r": 0.0526,
+    "reb_ast_r": -0.0533,
+    "n_games": 50
+  },
+  "1629626": {
+    "pts_reb_r": 0.6309,
+    "pts_ast_r": 0.4938,
+    "reb_ast_r": 0.6355,
+    "n_games": 36
+  },
+  "1629627": {
+    "pts_reb_r": -0.1261,
+    "pts_ast_r": 0.096,
+    "reb_ast_r": 0.1279,
+    "n_games": 30
+  },
+  "1629628": {
+    "pts_reb_r": 0.3652,
+    "pts_ast_r": 0.3482,
+    "reb_ast_r": 0.3219,
+    "n_games": 131
+  },
+  "1629629": {
+    "pts_reb_r": 0.4793,
+    "pts_ast_r": 0.3396,
+    "reb_ast_r": -0.0155,
+    "n_games": 33
+  },
+  "1629630": {
+    "pts_reb_r": 0.1808,
+    "pts_ast_r": -0.0245,
+    "reb_ast_r": 0.2745,
+    "n_games": 50
+  },
+  "1629631": {
+    "pts_reb_r": 0.0594,
+    "pts_ast_r": -0.0458,
+    "reb_ast_r": 0.3365,
+    "n_games": 64
+  },
+  "1629632": {
+    "pts_reb_r": 0.1121,
+    "pts_ast_r": 0.1115,
+    "reb_ast_r": 0.1213,
+    "n_games": 74
+  },
+  "1629634": {
+    "pts_reb_r": 0.5402,
+    "pts_ast_r": 0.403,
+    "reb_ast_r": 0.2677,
+    "n_games": 64
+  },
+  "1629636": {
+    "pts_reb_r": 0.075,
+    "pts_ast_r": 0.0395,
+    "reb_ast_r": 0.1237,
+    "n_games": 144
+  },
+  "1629637": {
+    "pts_reb_r": 0.3562,
+    "pts_ast_r": 0.2518,
+    "reb_ast_r": 0.1519,
+    "n_games": 56
+  },
+  "1629638": {
+    "pts_reb_r": 0.1849,
+    "pts_ast_r": 0.1732,
+    "reb_ast_r": 0.1463,
+    "n_games": 82
+  },
+  "1629639": {
+    "pts_reb_r": 0.2008,
+    "pts_ast_r": 0.1304,
+    "reb_ast_r": 0.1259,
+    "n_games": 144
+  },
+  "1629640": {
+    "pts_reb_r": 0.3856,
+    "pts_ast_r": 0.0245,
+    "reb_ast_r": -0.0517,
+    "n_games": 77
+  },
+  "1629645": {
+    "pts_reb_r": 0.3949,
+    "pts_ast_r": 0.3735,
+    "reb_ast_r": 0.5293,
+    "n_games": 134
+  },
+  "1629646": {
+    "pts_reb_r": 0.8077,
+    "pts_ast_r": -0.0628,
+    "reb_ast_r": 0.0304,
+    "n_games": 34
+  },
+  "1629650": {
+    "pts_reb_r": 0.8793,
+    "pts_ast_r": -0.1853,
+    "reb_ast_r": 0.0289,
+    "n_games": 12
+  },
+  "1629651": {
+    "pts_reb_r": 0.2299,
+    "pts_ast_r": 0.0972,
+    "reb_ast_r": 0.1735,
+    "n_games": 70
+  },
+  "1629652": {
+    "pts_reb_r": 0.1276,
+    "pts_ast_r": -0.2268,
+    "reb_ast_r": 0.112,
+    "n_games": 71
+  },
+  "1629655": {
+    "pts_reb_r": 0.5352,
+    "pts_ast_r": 0.2708,
+    "reb_ast_r": 0.447,
+    "n_games": 57
+  },
+  "1629656": {
+    "pts_reb_r": 0.3574,
+    "pts_ast_r": 0.427,
+    "reb_ast_r": 0.3215,
+    "n_games": 75
+  },
+  "1629659": {
+    "pts_reb_r": 0.4838,
+    "pts_ast_r": 0.5466,
+    "reb_ast_r": 0.4813,
+    "n_games": 58
+  },
+  "1629660": {
+    "pts_reb_r": 0.2104,
+    "pts_ast_r": 0.3101,
+    "reb_ast_r": 0.0477,
+    "n_games": 70
+  },
+  "1629661": {
+    "pts_reb_r": 0.1196,
+    "pts_ast_r": 0.0232,
+    "reb_ast_r": 0.2695,
+    "n_games": 57
+  },
+  "1629673": {
+    "pts_reb_r": 0.2386,
+    "pts_ast_r": 0.188,
+    "reb_ast_r": 0.1173,
+    "n_games": 68
+  },
+  "1629674": {
+    "pts_reb_r": 0.5033,
+    "pts_ast_r": 0.181,
+    "reb_ast_r": 0.3225,
+    "n_games": 60
+  },
+  "1629675": {
+    "pts_reb_r": 0.3093,
+    "pts_ast_r": 0.1958,
+    "reb_ast_r": 0.3555,
+    "n_games": 80
+  },
+  "1629680": {
+    "pts_reb_r": 0.3973,
+    "pts_ast_r": 0.2798,
+    "reb_ast_r": 0.2413,
+    "n_games": 15
+  },
+  "1629684": {
+    "pts_reb_r": 0.0142,
+    "pts_ast_r": 0.3247,
+    "reb_ast_r": 0.0249,
+    "n_games": 16
+  },
+  "1629723": {
+    "pts_reb_r": 0.5957,
+    "pts_ast_r": 0.4675,
+    "reb_ast_r": 0.5243,
+    "n_games": 45
+  },
+  "1629726": {
+    "pts_reb_r": 0.2789,
+    "pts_ast_r": 0.2221,
+    "reb_ast_r": 0.0913,
+    "n_games": 47
+  },
+  "1629731": {
+    "pts_reb_r": 0.1611,
+    "pts_ast_r": 0.1858,
+    "reb_ast_r": -0.0603,
+    "n_games": 59
+  },
+  "1629750": {
+    "pts_reb_r": 0.5103,
+    "pts_ast_r": 0.0903,
+    "reb_ast_r": 0.5065,
+    "n_games": 68
+  },
+  "1630162": {
+    "pts_reb_r": 0.1021,
+    "pts_ast_r": 0.0958,
+    "reb_ast_r": 0.1134,
+    "n_games": 158
+  },
+  "1630163": {
+    "pts_reb_r": 0.264,
+    "pts_ast_r": 0.2398,
+    "reb_ast_r": 0.1431,
+    "n_games": 83
+  },
+  "1630166": {
+    "pts_reb_r": 0.5729,
+    "pts_ast_r": 0.5024,
+    "reb_ast_r": 0.4903,
+    "n_games": 72
+  },
+  "1630167": {
+    "pts_reb_r": 0.5945,
+    "pts_ast_r": 0.1376,
+    "reb_ast_r": 0.1124,
+    "n_games": 79
+  },
+  "1630168": {
+    "pts_reb_r": 0.5822,
+    "pts_ast_r": 0.1916,
+    "reb_ast_r": 0.1684,
+    "n_games": 74
+  },
+  "1630169": {
+    "pts_reb_r": 0.0405,
+    "pts_ast_r": 0.187,
+    "reb_ast_r": -0.0597,
+    "n_games": 129
+  },
+  "1630170": {
+    "pts_reb_r": 0.3414,
+    "pts_ast_r": 0.2581,
+    "reb_ast_r": 0.2723,
+    "n_games": 64
+  },
+  "1630171": {
+    "pts_reb_r": 0.3376,
+    "pts_ast_r": 0.1914,
+    "reb_ast_r": 0.1613,
+    "n_games": 55
+  },
+  "1630172": {
+    "pts_reb_r": 0.1381,
+    "pts_ast_r": 0.3672,
+    "reb_ast_r": 0.2862,
+    "n_games": 63
+  },
+  "1630173": {
+    "pts_reb_r": 0.4137,
+    "pts_ast_r": 0.2752,
+    "reb_ast_r": 0.4392,
+    "n_games": 57
+  },
+  "1630174": {
+    "pts_reb_r": 0.3537,
+    "pts_ast_r": -0.1519,
+    "reb_ast_r": -0.007,
+    "n_games": 45
+  },
+  "1630175": {
+    "pts_reb_r": 0.6331,
+    "pts_ast_r": 0.3489,
+    "reb_ast_r": 0.3957,
+    "n_games": 67
+  },
+  "1630178": {
+    "pts_reb_r": 0.1779,
+    "pts_ast_r": 0.2164,
+    "reb_ast_r": 0.3529,
+    "n_games": 52
+  },
+  "1630182": {
+    "pts_reb_r": -0.0586,
+    "pts_ast_r": 0.1935,
+    "reb_ast_r": 0.0801,
+    "n_games": 68
+  },
+  "1630183": {
+    "pts_reb_r": 0.5124,
+    "pts_ast_r": 0.3197,
+    "reb_ast_r": 0.1597,
+    "n_games": 82
+  },
+  "1630188": {
+    "pts_reb_r": 0.3433,
+    "pts_ast_r": 0.125,
+    "reb_ast_r": 0.2823,
+    "n_games": 64
+  },
+  "1630191": {
+    "pts_reb_r": 0.3008,
+    "pts_ast_r": 0.2284,
+    "reb_ast_r": 0.3767,
+    "n_games": 72
+  },
+  "1630192": {
+    "pts_reb_r": 0.5738,
+    "pts_ast_r": 0.3198,
+    "reb_ast_r": 0.2438,
+    "n_games": 57
+  },
+  "1630193": {
+    "pts_reb_r": 0.27,
+    "pts_ast_r": -0.0633,
+    "reb_ast_r": 0.1036,
+    "n_games": 33
+  },
+  "1630194": {
+    "pts_reb_r": 0.6033,
+    "pts_ast_r": 0.1633,
+    "reb_ast_r": 0.2764,
+    "n_games": 45
+  },
+  "1630198": {
+    "pts_reb_r": 0.3193,
+    "pts_ast_r": 0.3504,
+    "reb_ast_r": 0.2624,
+    "n_games": 74
+  },
+  "1630200": {
+    "pts_reb_r": 0.2992,
+    "pts_ast_r": 0.3517,
+    "reb_ast_r": 0.3623,
+    "n_games": 46
+  },
+  "1630202": {
+    "pts_reb_r": 0.3493,
+    "pts_ast_r": 0.2751,
+    "reb_ast_r": 0.3539,
+    "n_games": 80
+  },
+  "1630205": {
+    "pts_reb_r": 0.6368,
+    "pts_ast_r": 0.887,
+    "reb_ast_r": 0.6405,
+    "n_games": 16
+  },
+  "1630208": {
+    "pts_reb_r": 0.5451,
+    "pts_ast_r": 0.2707,
+    "reb_ast_r": 0.1925,
+    "n_games": 57
+  },
+  "1630214": {
+    "pts_reb_r": 0.1747,
+    "pts_ast_r": 0.3491,
+    "reb_ast_r": 0.5468,
+    "n_games": 32
+  },
+  "1630215": {
+    "pts_reb_r": 0.439,
+    "pts_ast_r": 0.5918,
+    "reb_ast_r": 0.3378,
+    "n_games": 60
+  },
+  "1630217": {
+    "pts_reb_r": 0.1913,
+    "pts_ast_r": 0.174,
+    "reb_ast_r": -0.025,
+    "n_games": 69
+  },
+  "1630222": {
+    "pts_reb_r": 0.0838,
+    "pts_ast_r": -0.3123,
+    "reb_ast_r": 0.4815,
+    "n_games": 10
+  },
+  "1630224": {
+    "pts_reb_r": 0.1841,
+    "pts_ast_r": 0.0878,
+    "reb_ast_r": 0.0672,
+    "n_games": 158
+  },
+  "1630228": {
+    "pts_reb_r": 0.6421,
+    "pts_ast_r": 0.3933,
+    "reb_ast_r": 0.2886,
+    "n_games": 47
+  },
+  "1630230": {
+    "pts_reb_r": 0.4104,
+    "pts_ast_r": 0.0617,
+    "reb_ast_r": 0.0117,
+    "n_games": 69
+  },
+  "1630231": {
+    "pts_reb_r": 0.5317,
+    "pts_ast_r": 0.3176,
+    "reb_ast_r": 0.322,
+    "n_games": 43
+  },
+  "1630241": {
+    "pts_reb_r": 0.0535,
+    "pts_ast_r": 0.075,
+    "reb_ast_r": 0.0956,
+    "n_games": 71
+  },
+  "1630243": {
+    "pts_reb_r": 0.4671,
+    "pts_ast_r": 0.7679,
+    "reb_ast_r": 0.5635,
+    "n_games": 30
+  },
+  "1630245": {
+    "pts_reb_r": 0.1091,
+    "pts_ast_r": 0.2355,
+    "reb_ast_r": 0.2405,
+    "n_games": 46
+  },
+  "1630249": {
+    "pts_reb_r": 0.4066,
+    "pts_ast_r": 0.4861,
+    "reb_ast_r": 0.4189,
+    "n_games": 57
+  },
+  "1630256": {
+    "pts_reb_r": 0.4039,
+    "pts_ast_r": 0.0943,
+    "reb_ast_r": 0.1183,
+    "n_games": 52
+  },
+  "1630264": {
+    "pts_reb_r": 0.614,
+    "pts_ast_r": 0.3376,
+    "reb_ast_r": 0.2648,
+    "n_games": 47
+  },
+  "1630283": {
+    "pts_reb_r": 0.8001,
+    "pts_ast_r": 0.4827,
+    "reb_ast_r": 0.682,
+    "n_games": 11
+  },
+  "1630288": {
+    "pts_reb_r": 0.4868,
+    "pts_ast_r": 0.453,
+    "reb_ast_r": 0.4598,
+    "n_games": 41
+  },
+  "1630311": {
+    "pts_reb_r": 0.5298,
+    "pts_ast_r": 0.2446,
+    "reb_ast_r": 0.2719,
+    "n_games": 39
+  },
+  "1630314": {
+    "pts_reb_r": 0.6014,
+    "pts_ast_r": 0.5774,
+    "reb_ast_r": 0.6619,
+    "n_games": 33
+  },
+  "1630322": {
+    "pts_reb_r": 0.5701,
+    "pts_ast_r": 0.2682,
+    "reb_ast_r": 0.358,
+    "n_games": 52
+  },
+  "1630346": {
+    "pts_reb_r": 0.5496,
+    "pts_ast_r": 0.0665,
+    "reb_ast_r": 0.3793,
+    "n_games": 19
+  },
+  "1630526": {
+    "pts_reb_r": 0.4196,
+    "pts_ast_r": 0.3172,
+    "reb_ast_r": 0.5437,
+    "n_games": 66
+  },
+  "1630527": {
+    "pts_reb_r": 0.2927,
+    "pts_ast_r": 0.2037,
+    "reb_ast_r": 0.5586,
+    "n_games": 42
+  },
+  "1630528": {
+    "pts_reb_r": 0.6518,
+    "pts_ast_r": 0.8027,
+    "reb_ast_r": 0.3693,
+    "n_games": 14
+  },
+  "1630529": {
+    "pts_reb_r": 0.0918,
+    "pts_ast_r": 0.1821,
+    "reb_ast_r": 0.5595,
+    "n_games": 20
+  },
+  "1630530": {
+    "pts_reb_r": 0.1428,
+    "pts_ast_r": 0.0742,
+    "reb_ast_r": 0.1807,
+    "n_games": 53
+  },
+  "1630531": {
+    "pts_reb_r": 0.333,
+    "pts_ast_r": 0.4998,
+    "reb_ast_r": 0.4678,
+    "n_games": 39
+  },
+  "1630532": {
+    "pts_reb_r": 0.2789,
+    "pts_ast_r": 0.1857,
+    "reb_ast_r": 0.101,
+    "n_games": 60
+  },
+  "1630533": {
+    "pts_reb_r": 0.3185,
+    "pts_ast_r": 0.3051,
+    "reb_ast_r": 0.2663,
+    "n_games": 63
+  },
+  "1630534": {
+    "pts_reb_r": 0.3482,
+    "pts_ast_r": 0.094,
+    "reb_ast_r": 0.1901,
+    "n_games": 64
+  },
+  "1630537": {
+    "pts_reb_r": 0.3743,
+    "pts_ast_r": 0.2563,
+    "reb_ast_r": 0.511,
+    "n_games": 17
+  },
+  "1630538": {
+    "pts_reb_r": 0.5474,
+    "pts_ast_r": 0.4967,
+    "reb_ast_r": 0.5461,
+    "n_games": 24
+  },
+  "1630539": {
+    "pts_reb_r": 0.8804,
+    "pts_ast_r": 0.3906,
+    "reb_ast_r": 0.4692,
+    "n_games": 40
+  },
+  "1630540": {
+    "pts_reb_r": 0.4403,
+    "pts_ast_r": 0.4358,
+    "reb_ast_r": 0.3558,
+    "n_games": 64
+  },
+  "1630541": {
+    "pts_reb_r": 0.2236,
+    "pts_ast_r": 0.4411,
+    "reb_ast_r": 0.2912,
+    "n_games": 74
+  },
+  "1630542": {
+    "pts_reb_r": 0.6222,
+    "pts_ast_r": 0.8064,
+    "reb_ast_r": 0.3925,
+    "n_games": 10
+  },
+  "1630544": {
+    "pts_reb_r": 0.3233,
+    "pts_ast_r": 0.4509,
+    "reb_ast_r": 0.1555,
+    "n_games": 13
+  },
+  "1630545": {
+    "pts_reb_r": 0.78,
+    "pts_ast_r": 0.5087,
+    "reb_ast_r": 0.4237,
+    "n_games": 32
+  },
+  "1630548": {
+    "pts_reb_r": 0.3354,
+    "pts_ast_r": 0.2508,
+    "reb_ast_r": 0.1296,
+    "n_games": 64
+  },
+  "1630549": {
+    "pts_reb_r": 0.5324,
+    "pts_ast_r": 0.3556,
+    "reb_ast_r": 0.4669,
+    "n_games": 50
+  },
+  "1630550": {
+    "pts_reb_r": 0.3607,
+    "pts_ast_r": 0.2337,
+    "reb_ast_r": 0.1764,
+    "n_games": 20
+  },
+  "1630551": {
+    "pts_reb_r": 0.5706,
+    "pts_ast_r": 0.1855,
+    "reb_ast_r": 0.359,
+    "n_games": 62
+  },
+  "1630552": {
+    "pts_reb_r": 0.3468,
+    "pts_ast_r": 0.2218,
+    "reb_ast_r": 0.1358,
+    "n_games": 36
+  },
+  "1630553": {
+    "pts_reb_r": 0.2804,
+    "pts_ast_r": 0.4152,
+    "reb_ast_r": 0.2716,
+    "n_games": 79
+  },
+  "1630556": {
+    "pts_reb_r": 0.684,
+    "pts_ast_r": 0.4652,
+    "reb_ast_r": 0.5099,
+    "n_games": 39
+  },
+  "1630557": {
+    "pts_reb_r": 0.1563,
+    "pts_ast_r": 0.1557,
+    "reb_ast_r": 0.3019,
+    "n_games": 61
+  },
+  "1630558": {
+    "pts_reb_r": 0.1235,
+    "pts_ast_r": 0.2018,
+    "reb_ast_r": 0.3184,
+    "n_games": 74
+  },
+  "1630559": {
+    "pts_reb_r": 0.2212,
+    "pts_ast_r": 0.3122,
+    "reb_ast_r": 0.2431,
+    "n_games": 73
+  },
+  "1630560": {
+    "pts_reb_r": -0.0531,
+    "pts_ast_r": -0.0277,
+    "reb_ast_r": -0.0285,
+    "n_games": 25
+  },
+  "1630567": {
+    "pts_reb_r": 0.3457,
+    "pts_ast_r": 0.268,
+    "reb_ast_r": 0.1841,
+    "n_games": 142
+  },
+  "1630568": {
+    "pts_reb_r": 0.3467,
+    "pts_ast_r": 0.0597,
+    "reb_ast_r": 0.1741,
+    "n_games": 38
+  },
+  "1630570": {
+    "pts_reb_r": 0.1372,
+    "pts_ast_r": 0.2448,
+    "reb_ast_r": 0.2372,
+    "n_games": 44
+  },
+  "1630572": {
+    "pts_reb_r": 0.6182,
+    "pts_ast_r": 0.3828,
+    "reb_ast_r": 0.4997,
+    "n_games": 60
+  },
+  "1630573": {
+    "pts_reb_r": 0.306,
+    "pts_ast_r": -0.0368,
+    "reb_ast_r": -0.0778,
+    "n_games": 71
+  },
+  "1630574": {
+    "pts_reb_r": 0.2793,
+    "pts_ast_r": 0.7031,
+    "reb_ast_r": 0.3475,
+    "n_games": 25
+  },
+  "1630577": {
+    "pts_reb_r": 0.4317,
+    "pts_ast_r": 0.2179,
+    "reb_ast_r": 0.1261,
+    "n_games": 82
+  },
+  "1630578": {
+    "pts_reb_r": 0.194,
+    "pts_ast_r": -0.0138,
+    "reb_ast_r": 0.0664,
+    "n_games": 76
+  },
+  "1630579": {
+    "pts_reb_r": 0.5415,
+    "pts_ast_r": -0.0041,
+    "reb_ast_r": 0.4869,
+    "n_games": 51
+  },
+  "1630581": {
+    "pts_reb_r": 0.4708,
+    "pts_ast_r": 0.3047,
+    "reb_ast_r": 0.3576,
+    "n_games": 70
+  },
+  "1630583": {
+    "pts_reb_r": 0.4022,
+    "pts_ast_r": 0.1346,
+    "reb_ast_r": 0.1775,
+    "n_games": 65
+  },
+  "1630590": {
+    "pts_reb_r": 0.3676,
+    "pts_ast_r": 0.3873,
+    "reb_ast_r": 0.3095,
+    "n_games": 79
+  },
+  "1630591": {
+    "pts_reb_r": 0.4692,
+    "pts_ast_r": 0.2461,
+    "reb_ast_r": 0.259,
+    "n_games": 35
+  },
+  "1630592": {
+    "pts_reb_r": 0.2345,
+    "pts_ast_r": 0.2479,
+    "reb_ast_r": 0.2976,
+    "n_games": 79
+  },
+  "1630595": {
+    "pts_reb_r": -0.1709,
+    "pts_ast_r": -0.0531,
+    "reb_ast_r": 0.3392,
+    "n_games": 70
+  },
+  "1630596": {
+    "pts_reb_r": 0.2485,
+    "pts_ast_r": 0.1709,
+    "reb_ast_r": 0.2306,
+    "n_games": 150
+  },
+  "1630598": {
+    "pts_reb_r": 0.5392,
+    "pts_ast_r": 0.3591,
+    "reb_ast_r": 0.2578,
+    "n_games": 76
+  },
+  "1630604": {
+    "pts_reb_r": 0.6523,
+    "pts_ast_r": 0.6312,
+    "reb_ast_r": 0.6198,
+    "n_games": 12
+  },
+  "1630611": {
+    "pts_reb_r": 0.4786,
+    "pts_ast_r": 0.242,
+    "reb_ast_r": 0.388,
+    "n_games": 56
+  },
+  "1630625": {
+    "pts_reb_r": 0.4557,
+    "pts_ast_r": 0.39,
+    "reb_ast_r": 0.3265,
+    "n_games": 67
+  },
+  "1630631": {
+    "pts_reb_r": 0.3288,
+    "pts_ast_r": 0.3338,
+    "reb_ast_r": 0.3322,
+    "n_games": 56
+  },
+  "1630639": {
+    "pts_reb_r": 0.6733,
+    "pts_ast_r": 0.3195,
+    "reb_ast_r": 0.4448,
+    "n_games": 26
+  },
+  "1630643": {
+    "pts_reb_r": 0.5957,
+    "pts_ast_r": 0.3866,
+    "reb_ast_r": 0.3701,
+    "n_games": 64
+  },
+  "1630649": {
+    "pts_reb_r": 0.1008,
+    "pts_ast_r": -0.281,
+    "reb_ast_r": 0.3608,
+    "n_games": 22
+  },
+  "1630658": {
+    "pts_reb_r": 0.4905,
+    "pts_ast_r": 0.078,
+    "reb_ast_r": 0.5441,
+    "n_games": 26
+  },
+  "1630692": {
+    "pts_reb_r": 0.5791,
+    "pts_ast_r": 0.2726,
+    "reb_ast_r": 0.5364,
+    "n_games": 29
+  },
+  "1630695": {
+    "pts_reb_r": 0.5037,
+    "pts_ast_r": 0.4377,
+    "reb_ast_r": 0.3722,
+    "n_games": 38
+  },
+  "1630696": {
+    "pts_reb_r": 0.3682,
+    "pts_ast_r": 0.4876,
+    "reb_ast_r": -0.0046,
+    "n_games": 14
+  },
+  "1630699": {
+    "pts_reb_r": 0.6021,
+    "pts_ast_r": 0.4818,
+    "reb_ast_r": 0.7143,
+    "n_games": 35
+  },
+  "1630700": {
+    "pts_reb_r": -0.0597,
+    "pts_ast_r": 0.2593,
+    "reb_ast_r": 0.1642,
+    "n_games": 76
+  },
+  "1630702": {
+    "pts_reb_r": 0.5008,
+    "pts_ast_r": 0.3718,
+    "reb_ast_r": 0.4117,
+    "n_games": 57
+  },
+  "1630703": {
+    "pts_reb_r": 0.4173,
+    "pts_ast_r": 0.0409,
+    "reb_ast_r": -0.0517,
+    "n_games": 66
+  },
+  "1630811": {
+    "pts_reb_r": 0.6865,
+    "pts_ast_r": 0.57,
+    "reb_ast_r": 0.8077,
+    "n_games": 31
+  },
+  "1631093": {
+    "pts_reb_r": 0.1322,
+    "pts_ast_r": 0.3865,
+    "reb_ast_r": 0.2936,
+    "n_games": 30
+  },
+  "1631094": {
+    "pts_reb_r": 0.3072,
+    "pts_ast_r": 0.1216,
+    "reb_ast_r": 0.174,
+    "n_games": 118
+  },
+  "1631095": {
+    "pts_reb_r": 0.3519,
+    "pts_ast_r": 0.295,
+    "reb_ast_r": 0.165,
+    "n_games": 57
+  },
+  "1631096": {
+    "pts_reb_r": 0.4147,
+    "pts_ast_r": 0.2235,
+    "reb_ast_r": 0.3837,
+    "n_games": 32
+  },
+  "1631097": {
+    "pts_reb_r": 0.4907,
+    "pts_ast_r": 0.2143,
+    "reb_ast_r": 0.3572,
+    "n_games": 72
+  },
+  "1631098": {
+    "pts_reb_r": 0.7109,
+    "pts_ast_r": 0.4331,
+    "reb_ast_r": 0.5732,
+    "n_games": 34
+  },
+  "1631099": {
+    "pts_reb_r": 0.3084,
+    "pts_ast_r": 0.0232,
+    "reb_ast_r": 0.2984,
+    "n_games": 76
+  },
+  "1631101": {
+    "pts_reb_r": 0.4056,
+    "pts_ast_r": 0.243,
+    "reb_ast_r": 0.3237,
+    "n_games": 72
+  },
+  "1631102": {
+    "pts_reb_r": 0.7829,
+    "pts_ast_r": 0.5905,
+    "reb_ast_r": 0.6738,
+    "n_games": 16
+  },
+  "1631103": {
+    "pts_reb_r": 0.4534,
+    "pts_ast_r": 0.4595,
+    "reb_ast_r": 0.3178,
+    "n_games": 46
+  },
+  "1631104": {
+    "pts_reb_r": 0.4238,
+    "pts_ast_r": 0.5501,
+    "reb_ast_r": 0.2283,
+    "n_games": 57
+  },
+  "1631105": {
+    "pts_reb_r": 0.5811,
+    "pts_ast_r": 0.0612,
+    "reb_ast_r": 0.0659,
+    "n_games": 78
+  },
+  "1631106": {
+    "pts_reb_r": 0.3803,
+    "pts_ast_r": 0.297,
+    "reb_ast_r": 0.1198,
+    "n_games": 57
+  },
+  "1631107": {
+    "pts_reb_r": 0.4485,
+    "pts_ast_r": 0.4546,
+    "reb_ast_r": 0.303,
+    "n_games": 46
+  },
+  "1631108": {
+    "pts_reb_r": 0.368,
+    "pts_ast_r": 0.3002,
+    "reb_ast_r": 0.2978,
+    "n_games": 78
+  },
+  "1631109": {
+    "pts_reb_r": 0.5391,
+    "pts_ast_r": 0.2484,
+    "reb_ast_r": 0.2546,
+    "n_games": 44
+  },
+  "1631110": {
+    "pts_reb_r": 0.5217,
+    "pts_ast_r": 0.48,
+    "reb_ast_r": 0.2729,
+    "n_games": 54
+  },
+  "1631111": {
+    "pts_reb_r": 0.7379,
+    "pts_ast_r": 0.1496,
+    "reb_ast_r": 0.3778,
+    "n_games": 36
+  },
+  "1631114": {
+    "pts_reb_r": 0.1112,
+    "pts_ast_r": 0.0978,
+    "reb_ast_r": 0.1659,
+    "n_games": 69
+  },
+  "1631115": {
+    "pts_reb_r": 0.6841,
+    "pts_ast_r": 0.6931,
+    "reb_ast_r": 0.4856,
+    "n_games": 44
+  },
+  "1631116": {
+    "pts_reb_r": 0.1826,
+    "pts_ast_r": 0.0225,
+    "reb_ast_r": 0.3091,
+    "n_games": 24
+  },
+  "1631117": {
+    "pts_reb_r": 0.3245,
+    "pts_ast_r": 0.0067,
+    "reb_ast_r": 0.0578,
+    "n_games": 58
+  },
+  "1631119": {
+    "pts_reb_r": 0.5109,
+    "pts_ast_r": 0.5336,
+    "reb_ast_r": 0.6806,
+    "n_games": 47
+  },
+  "1631120": {
+    "pts_reb_r": -0.0392,
+    "pts_ast_r": 0.5049,
+    "reb_ast_r": 0.2686,
+    "n_games": 15
+  },
+  "1631121": {
+    "pts_reb_r": -0.3732,
+    "pts_ast_r": -0.0,
+    "reb_ast_r": -0.2335,
+    "n_games": 13
+  },
+  "1631124": {
+    "pts_reb_r": 0.2439,
+    "pts_ast_r": 0.2137,
+    "reb_ast_r": 0.222,
+    "n_games": 65
+  },
+  "1631128": {
+    "pts_reb_r": 0.2755,
+    "pts_ast_r": 0.1229,
+    "reb_ast_r": 0.2414,
+    "n_games": 79
+  },
+  "1631131": {
+    "pts_reb_r": 0.5946,
+    "pts_ast_r": 0.1325,
+    "reb_ast_r": 0.1449,
+    "n_games": 14
+  },
+  "1631132": {
+    "pts_reb_r": 0.579,
+    "pts_ast_r": 0.5214,
+    "reb_ast_r": 0.2961,
+    "n_games": 36
+  },
+  "1631133": {
+    "pts_reb_r": 0.6749,
+    "pts_ast_r": 0.1612,
+    "reb_ast_r": 0.3135,
+    "n_games": 60
+  },
+  "1631157": {
+    "pts_reb_r": 0.5194,
+    "pts_ast_r": 0.5022,
+    "reb_ast_r": 0.5946,
+    "n_games": 55
+  },
+  "1631159": {
+    "pts_reb_r": 0.4134,
+    "pts_ast_r": 0.0,
+    "reb_ast_r": 0.0,
+    "n_games": 13
+  },
+  "1631165": {
+    "pts_reb_r": 0.4564,
+    "pts_ast_r": 0.3702,
+    "reb_ast_r": 0.2144,
+    "n_games": 80
+  },
+  "1631169": {
+    "pts_reb_r": 0.5932,
+    "pts_ast_r": 0.4942,
+    "reb_ast_r": 0.6653,
+    "n_games": 45
+  },
+  "1631170": {
+    "pts_reb_r": 0.5727,
+    "pts_ast_r": 0.4672,
+    "reb_ast_r": 0.4016,
+    "n_games": 66
+  },
+  "1631172": {
+    "pts_reb_r": 0.6452,
+    "pts_ast_r": 0.5251,
+    "reb_ast_r": 0.6978,
+    "n_games": 37
+  },
+  "1631197": {
+    "pts_reb_r": 0.8434,
+    "pts_ast_r": 0.7799,
+    "reb_ast_r": 0.8242,
+    "n_games": 14
+  },
+  "1631200": {
+    "pts_reb_r": 0.5079,
+    "pts_ast_r": 0.4749,
+    "reb_ast_r": 0.5897,
+    "n_games": 69
+  },
+  "1631204": {
+    "pts_reb_r": 0.2969,
+    "pts_ast_r": 0.3052,
+    "reb_ast_r": 0.1409,
+    "n_games": 57
+  },
+  "1631207": {
+    "pts_reb_r": 0.4793,
+    "pts_ast_r": 0.4305,
+    "reb_ast_r": 0.2473,
+    "n_games": 73
+  },
+  "1631209": {
+    "pts_reb_r": 0.0894,
+    "pts_ast_r": 0.1614,
+    "reb_ast_r": 0.4975,
+    "n_games": 20
+  },
+  "1631210": {
+    "pts_reb_r": 0.7901,
+    "pts_ast_r": 0.6045,
+    "reb_ast_r": 0.5373,
+    "n_games": 17
+  },
+  "1631212": {
+    "pts_reb_r": 0.3794,
+    "pts_ast_r": -0.0612,
+    "reb_ast_r": 0.3064,
+    "n_games": 68
+  },
+  "1631213": {
+    "pts_reb_r": 0.3731,
+    "pts_ast_r": 0.0617,
+    "reb_ast_r": 0.208,
+    "n_games": 60
+  },
+  "1631216": {
+    "pts_reb_r": 0.3483,
+    "pts_ast_r": 0.5501,
+    "reb_ast_r": 0.6193,
+    "n_games": 58
+  },
+  "1631217": {
+    "pts_reb_r": 0.4066,
+    "pts_ast_r": 0.1746,
+    "reb_ast_r": 0.4348,
+    "n_games": 71
+  },
+  "1631218": {
+    "pts_reb_r": 0.6863,
+    "pts_ast_r": 0.3449,
+    "reb_ast_r": 0.4119,
+    "n_games": 62
+  },
+  "1631221": {
+    "pts_reb_r": 0.3643,
+    "pts_ast_r": 0.5542,
+    "reb_ast_r": 0.6327,
+    "n_games": 32
+  },
+  "1631222": {
+    "pts_reb_r": 0.2864,
+    "pts_ast_r": 0.3981,
+    "reb_ast_r": 0.3967,
+    "n_games": 66
+  },
+  "1631223": {
+    "pts_reb_r": 0.3998,
+    "pts_ast_r": 0.4429,
+    "reb_ast_r": 0.7483,
+    "n_games": 33
+  },
+  "1631230": {
+    "pts_reb_r": 0.7496,
+    "pts_ast_r": 0.3922,
+    "reb_ast_r": 0.5663,
+    "n_games": 35
+  },
+  "1631232": {
+    "pts_reb_r": 0.6721,
+    "pts_ast_r": 0.1309,
+    "reb_ast_r": 0.4282,
+    "n_games": 14
+  },
+  "1631243": {
+    "pts_reb_r": 0.5044,
+    "pts_ast_r": 0.3673,
+    "reb_ast_r": 0.1186,
+    "n_games": 33
+  },
+  "1631245": {
+    "pts_reb_r": 0.5144,
+    "pts_ast_r": 0.3465,
+    "reb_ast_r": 0.465,
+    "n_games": 28
+  },
+  "1631246": {
+    "pts_reb_r": 0.2508,
+    "pts_ast_r": 0.1076,
+    "reb_ast_r": 0.2936,
+    "n_games": 27
+  },
+  "1631247": {
+    "pts_reb_r": 0.6312,
+    "pts_ast_r": 0.9366,
+    "reb_ast_r": 0.4814,
+    "n_games": 12
+  },
+  "1631248": {
+    "pts_reb_r": 0.5568,
+    "pts_ast_r": 0.4882,
+    "reb_ast_r": 0.3864,
+    "n_games": 31
+  },
+  "1631250": {
+    "pts_reb_r": 0.7448,
+    "pts_ast_r": 0.8978,
+    "reb_ast_r": 0.8771,
+    "n_games": 13
+  },
+  "1631255": {
+    "pts_reb_r": 0.5839,
+    "pts_ast_r": 0.3018,
+    "reb_ast_r": 0.2439,
+    "n_games": 42
+  },
+  "1631260": {
+    "pts_reb_r": 0.3069,
+    "pts_ast_r": 0.0573,
+    "reb_ast_r": 0.1035,
+    "n_games": 73
+  },
+  "1631288": {
+    "pts_reb_r": 0.5154,
+    "pts_ast_r": 0.3521,
+    "reb_ast_r": 0.424,
+    "n_games": 36
+  },
+  "1631303": {
+    "pts_reb_r": 0.2795,
+    "pts_ast_r": 0.5422,
+    "reb_ast_r": 0.6984,
+    "n_games": 19
+  },
+  "1631306": {
+    "pts_reb_r": 0.8155,
+    "pts_ast_r": -0.0628,
+    "reb_ast_r": -0.0725,
+    "n_games": 10
+  },
+  "1631311": {
+    "pts_reb_r": 0.7575,
+    "pts_ast_r": 0.8423,
+    "reb_ast_r": 0.8634,
+    "n_games": 13
+  },
+  "1631321": {
+    "pts_reb_r": 0.2668,
+    "pts_ast_r": 0.5361,
+    "reb_ast_r": 0.7888,
+    "n_games": 20
+  },
+  "1631323": {
+    "pts_reb_r": 0.2608,
+    "pts_ast_r": 0.0738,
+    "reb_ast_r": 0.247,
+    "n_games": 75
+  },
+  "1631466": {
+    "pts_reb_r": 0.5969,
+    "pts_ast_r": 0.7052,
+    "reb_ast_r": 0.6525,
+    "n_games": 20
+  },
+  "1641705": {
+    "pts_reb_r": -0.0045,
+    "pts_ast_r": 0.2251,
+    "reb_ast_r": 0.0982,
+    "n_games": 46
+  },
+  "1641706": {
+    "pts_reb_r": 0.5016,
+    "pts_ast_r": -0.043,
+    "reb_ast_r": 0.1026,
+    "n_games": 27
+  },
+  "1641708": {
+    "pts_reb_r": 0.488,
+    "pts_ast_r": 0.1975,
+    "reb_ast_r": 0.2781,
+    "n_games": 69
+  },
+  "1641709": {
+    "pts_reb_r": 0.3684,
+    "pts_ast_r": 0.4243,
+    "reb_ast_r": 0.0805,
+    "n_games": 59
+  },
+  "1641710": {
+    "pts_reb_r": 0.2883,
+    "pts_ast_r": 0.3292,
+    "reb_ast_r": 0.1466,
+    "n_games": 78
+  },
+  "1641711": {
+    "pts_reb_r": 0.1131,
+    "pts_ast_r": 0.2186,
+    "reb_ast_r": -0.1846,
+    "n_games": 54
+  },
+  "1641712": {
+    "pts_reb_r": 0.5896,
+    "pts_ast_r": 0.2712,
+    "reb_ast_r": 0.2008,
+    "n_games": 52
+  },
+  "1641713": {
+    "pts_reb_r": 0.5061,
+    "pts_ast_r": 0.2676,
+    "reb_ast_r": 0.4553,
+    "n_games": 29
+  },
+  "1641715": {
+    "pts_reb_r": 0.6226,
+    "pts_ast_r": 0.2369,
+    "reb_ast_r": 0.3622,
+    "n_games": 51
+  },
+  "1641716": {
+    "pts_reb_r": 0.4474,
+    "pts_ast_r": 0.3288,
+    "reb_ast_r": 0.3196,
+    "n_games": 75
+  },
+  "1641717": {
+    "pts_reb_r": 0.1595,
+    "pts_ast_r": 0.2591,
+    "reb_ast_r": 0.042,
+    "n_games": 68
+  },
+  "1641718": {
+    "pts_reb_r": 0.0476,
+    "pts_ast_r": -0.1453,
+    "reb_ast_r": 0.2683,
+    "n_games": 67
+  },
+  "1641720": {
+    "pts_reb_r": 0.3106,
+    "pts_ast_r": 0.1511,
+    "reb_ast_r": 0.4475,
+    "n_games": 15
+  },
+  "1641721": {
+    "pts_reb_r": 0.5532,
+    "pts_ast_r": 0.6558,
+    "reb_ast_r": 0.4758,
+    "n_games": 27
+  },
+  "1641722": {
+    "pts_reb_r": 0.2972,
+    "pts_ast_r": 0.2747,
+    "reb_ast_r": 0.2259,
+    "n_games": 56
+  },
+  "1641723": {
+    "pts_reb_r": 0.4383,
+    "pts_ast_r": -0.0264,
+    "reb_ast_r": 0.0751,
+    "n_games": 10
+  },
+  "1641724": {
+    "pts_reb_r": 0.2889,
+    "pts_ast_r": 0.2726,
+    "reb_ast_r": 0.419,
+    "n_games": 60
+  },
+  "1641725": {
+    "pts_reb_r": 0.4742,
+    "pts_ast_r": 0.2101,
+    "reb_ast_r": 0.0188,
+    "n_games": 23
+  },
+  "1641726": {
+    "pts_reb_r": 0.5536,
+    "pts_ast_r": 0.2495,
+    "reb_ast_r": 0.2887,
+    "n_games": 36
+  },
+  "1641727": {
+    "pts_reb_r": 0.5007,
+    "pts_ast_r": 0.6012,
+    "reb_ast_r": 0.7183,
+    "n_games": 18
+  },
+  "1641729": {
+    "pts_reb_r": 0.3334,
+    "pts_ast_r": 0.3853,
+    "reb_ast_r": 0.1549,
+    "n_games": 71
+  },
+  "1641730": {
+    "pts_reb_r": 0.2627,
+    "pts_ast_r": 0.2247,
+    "reb_ast_r": 0.2683,
+    "n_games": 46
+  },
+  "1641731": {
+    "pts_reb_r": 0.3928,
+    "pts_ast_r": -0.0001,
+    "reb_ast_r": 0.2591,
+    "n_games": 59
+  },
+  "1641732": {
+    "pts_reb_r": 0.4902,
+    "pts_ast_r": 0.6339,
+    "reb_ast_r": 0.7388,
+    "n_games": 37
+  },
+  "1641733": {
+    "pts_reb_r": 0.5582,
+    "pts_ast_r": 0.4449,
+    "reb_ast_r": 0.4269,
+    "n_games": 60
+  },
+  "1641734": {
+    "pts_reb_r": 0.9799,
+    "pts_ast_r": 0.4183,
+    "reb_ast_r": 0.4098,
+    "n_games": 10
+  },
+  "1641736": {
+    "pts_reb_r": 0.3929,
+    "pts_ast_r": 0.1184,
+    "reb_ast_r": 0.6292,
+    "n_games": 35
+  },
+  "1641737": {
+    "pts_reb_r": 0.6724,
+    "pts_ast_r": 0.144,
+    "reb_ast_r": 0.3295,
+    "n_games": 58
+  },
+  "1641738": {
+    "pts_reb_r": 0.4906,
+    "pts_ast_r": 0.0717,
+    "reb_ast_r": 0.3859,
+    "n_games": 38
+  },
+  "1641739": {
+    "pts_reb_r": 0.0735,
+    "pts_ast_r": 0.3144,
+    "reb_ast_r": -0.0324,
+    "n_games": 78
+  },
+  "1641740": {
+    "pts_reb_r": 0.5012,
+    "pts_ast_r": 0.1445,
+    "reb_ast_r": 0.2754,
+    "n_games": 40
+  },
+  "1641741": {
+    "pts_reb_r": 0.687,
+    "pts_ast_r": 0.3196,
+    "reb_ast_r": 0.4072,
+    "n_games": 73
+  },
+  "1641744": {
+    "pts_reb_r": 0.3723,
+    "pts_ast_r": 0.2046,
+    "reb_ast_r": 0.3661,
+    "n_games": 66
+  },
+  "1641745": {
+    "pts_reb_r": 0.6615,
+    "pts_ast_r": 0.6788,
+    "reb_ast_r": 0.7802,
+    "n_games": 34
+  },
+  "1641748": {
+    "pts_reb_r": 0.2273,
+    "pts_ast_r": 0.371,
+    "reb_ast_r": 0.4521,
+    "n_games": 64
+  },
+  "1641753": {
+    "pts_reb_r": 0.7279,
+    "pts_ast_r": 0.2891,
+    "reb_ast_r": 0.4771,
+    "n_games": 21
+  },
+  "1641757": {
+    "pts_reb_r": 0.6266,
+    "pts_ast_r": 0.5039,
+    "reb_ast_r": 0.546,
+    "n_games": 37
+  },
+  "1641763": {
+    "pts_reb_r": 0.561,
+    "pts_ast_r": 0.3278,
+    "reb_ast_r": 0.3539,
+    "n_games": 79
+  },
+  "1641764": {
+    "pts_reb_r": 0.4035,
+    "pts_ast_r": 0.4539,
+    "reb_ast_r": 0.1681,
+    "n_games": 64
+  },
+  "1641765": {
+    "pts_reb_r": 0.497,
+    "pts_ast_r": 0.2388,
+    "reb_ast_r": 0.3952,
+    "n_games": 52
+  },
+  "1641767": {
+    "pts_reb_r": 0.0066,
+    "pts_ast_r": 0.1041,
+    "reb_ast_r": 0.2995,
+    "n_games": 63
+  },
+  "1641774": {
+    "pts_reb_r": 0.8184,
+    "pts_ast_r": 0.6088,
+    "reb_ast_r": 0.6195,
+    "n_games": 35
+  },
+  "1641775": {
+    "pts_reb_r": 0.5121,
+    "pts_ast_r": 0.5327,
+    "reb_ast_r": 0.4655,
+    "n_games": 50
+  },
+  "1641783": {
+    "pts_reb_r": 0.411,
+    "pts_ast_r": 0.36,
+    "reb_ast_r": 0.4711,
+    "n_games": 74
+  },
+  "1641787": {
+    "pts_reb_r": 0.5878,
+    "pts_ast_r": -0.0945,
+    "reb_ast_r": 0.0366,
+    "n_games": 28
+  },
+  "1641789": {
+    "pts_reb_r": 0.6128,
+    "pts_ast_r": 0.681,
+    "reb_ast_r": 0.5589,
+    "n_games": 16
+  },
+  "1641790": {
+    "pts_reb_r": 0.4274,
+    "pts_ast_r": 0.2657,
+    "reb_ast_r": 0.1789,
+    "n_games": 19
+  },
+  "1641794": {
+    "pts_reb_r": 0.5363,
+    "pts_ast_r": 0.5712,
+    "reb_ast_r": 0.479,
+    "n_games": 54
+  },
+  "1641796": {
+    "pts_reb_r": 0.5798,
+    "pts_ast_r": 0.5592,
+    "reb_ast_r": 0.6168,
+    "n_games": 54
+  },
+  "1641798": {
+    "pts_reb_r": 0.889,
+    "pts_ast_r": 0.8424,
+    "reb_ast_r": 0.719,
+    "n_games": 16
+  },
+  "1641809": {
+    "pts_reb_r": 0.6804,
+    "pts_ast_r": 0.2936,
+    "reb_ast_r": 0.3081,
+    "n_games": 24
+  },
+  "1641810": {
+    "pts_reb_r": 0.6223,
+    "pts_ast_r": 0.5372,
+    "reb_ast_r": 0.5336,
+    "n_games": 44
+  },
+  "1641816": {
+    "pts_reb_r": 0.575,
+    "pts_ast_r": 0.2421,
+    "reb_ast_r": 0.3957,
+    "n_games": 50
+  },
+  "1641824": {
+    "pts_reb_r": 0.5223,
+    "pts_ast_r": 0.5329,
+    "reb_ast_r": 0.3416,
+    "n_games": 80
+  },
+  "1641842": {
+    "pts_reb_r": 0.233,
+    "pts_ast_r": 0.2573,
+    "reb_ast_r": 0.1199,
+    "n_games": 81
+  },
+  "1641854": {
+    "pts_reb_r": 0.6767,
+    "pts_ast_r": 0.4901,
+    "reb_ast_r": 0.5821,
+    "n_games": 51
+  },
+  "1641857": {
+    "pts_reb_r": 0.2096,
+    "pts_ast_r": -0.0827,
+    "reb_ast_r": 0.4606,
+    "n_games": 13
+  },
+  "1641871": {
+    "pts_reb_r": 0.7487,
+    "pts_ast_r": 0.5367,
+    "reb_ast_r": 0.4954,
+    "n_games": 46
+  },
+  "1641878": {
+    "pts_reb_r": 0.1851,
+    "pts_ast_r": 0.4032,
+    "reb_ast_r": 0.1663,
+    "n_games": 15
+  },
+  "1641890": {
+    "pts_reb_r": 0.7605,
+    "pts_ast_r": 0.3423,
+    "reb_ast_r": 0.7906,
+    "n_games": 23
+  },
+  "1641989": {
+    "pts_reb_r": 0.2344,
+    "pts_ast_r": 0.8446,
+    "reb_ast_r": 0.3289,
+    "n_games": 10
+  },
+  "1641998": {
+    "pts_reb_r": 0.3824,
+    "pts_ast_r": 0.336,
+    "reb_ast_r": 0.4516,
+    "n_games": 38
+  },
+  "1642024": {
+    "pts_reb_r": 0.2915,
+    "pts_ast_r": 0.3699,
+    "reb_ast_r": -0.0373,
+    "n_games": 15
+  },
+  "1642258": {
+    "pts_reb_r": 0.2732,
+    "pts_ast_r": 0.1822,
+    "reb_ast_r": 0.2137,
+    "n_games": 75
+  },
+  "1642259": {
+    "pts_reb_r": 0.1899,
+    "pts_ast_r": 0.2355,
+    "reb_ast_r": 0.0841,
+    "n_games": 67
+  },
+  "1642261": {
+    "pts_reb_r": 0.4601,
+    "pts_ast_r": 0.2362,
+    "reb_ast_r": 0.2886,
+    "n_games": 78
+  },
+  "1642262": {
+    "pts_reb_r": 0.2495,
+    "pts_ast_r": 0.2336,
+    "reb_ast_r": 0.253,
+    "n_games": 50
+  },
+  "1642263": {
+    "pts_reb_r": 0.5237,
+    "pts_ast_r": 0.3734,
+    "reb_ast_r": 0.2759,
+    "n_games": 52
+  },
+  "1642264": {
+    "pts_reb_r": 0.3835,
+    "pts_ast_r": 0.2446,
+    "reb_ast_r": 0.3301,
+    "n_games": 81
+  },
+  "1642265": {
+    "pts_reb_r": 0.4279,
+    "pts_ast_r": 0.6264,
+    "reb_ast_r": 0.4906,
+    "n_games": 49
+  },
+  "1642266": {
+    "pts_reb_r": 0.1916,
+    "pts_ast_r": 0.3606,
+    "reb_ast_r": 0.3752,
+    "n_games": 52
+  },
+  "1642267": {
+    "pts_reb_r": 0.3417,
+    "pts_ast_r": 0.3324,
+    "reb_ast_r": 0.3839,
+    "n_games": 82
+  },
+  "1642268": {
+    "pts_reb_r": 0.4035,
+    "pts_ast_r": 0.5532,
+    "reb_ast_r": 0.4856,
+    "n_games": 71
+  },
+  "1642269": {
+    "pts_reb_r": 0.5574,
+    "pts_ast_r": 0.5439,
+    "reb_ast_r": 0.4952,
+    "n_games": 36
+  },
+  "1642270": {
+    "pts_reb_r": 0.4285,
+    "pts_ast_r": 0.2908,
+    "reb_ast_r": 0.2954,
+    "n_games": 67
+  },
+  "1642271": {
+    "pts_reb_r": 0.5532,
+    "pts_ast_r": 0.2712,
+    "reb_ast_r": 0.1421,
+    "n_games": 72
+  },
+  "1642272": {
+    "pts_reb_r": 0.3394,
+    "pts_ast_r": 0.6196,
+    "reb_ast_r": -0.1408,
+    "n_games": 23
+  },
+  "1642273": {
+    "pts_reb_r": 0.3399,
+    "pts_ast_r": 0.2682,
+    "reb_ast_r": 0.1262,
+    "n_games": 68
+  },
+  "1642274": {
+    "pts_reb_r": 0.3087,
+    "pts_ast_r": -0.0696,
+    "reb_ast_r": -0.0633,
+    "n_games": 73
+  },
+  "1642275": {
+    "pts_reb_r": 0.4084,
+    "pts_ast_r": 0.1331,
+    "reb_ast_r": 0.2938,
+    "n_games": 60
+  },
+  "1642276": {
+    "pts_reb_r": 0.4998,
+    "pts_ast_r": 0.098,
+    "reb_ast_r": 0.2729,
+    "n_games": 64
+  },
+  "1642277": {
+    "pts_reb_r": 0.6504,
+    "pts_ast_r": 0.6094,
+    "reb_ast_r": 0.6448,
+    "n_games": 49
+  },
+  "1642278": {
+    "pts_reb_r": 0.4863,
+    "pts_ast_r": 0.3759,
+    "reb_ast_r": 0.4249,
+    "n_games": 41
+  },
+  "1642281": {
+    "pts_reb_r": 0.7378,
+    "pts_ast_r": 0.6223,
+    "reb_ast_r": 0.7205,
+    "n_games": 47
+  },
+  "1642285": {
+    "pts_reb_r": 0.5807,
+    "pts_ast_r": 0.7547,
+    "reb_ast_r": 0.6976,
+    "n_games": 25
+  },
+  "1642345": {
+    "pts_reb_r": 0.5785,
+    "pts_ast_r": 0.4086,
+    "reb_ast_r": 0.448,
+    "n_games": 61
+  },
+  "1642346": {
+    "pts_reb_r": 0.5534,
+    "pts_ast_r": 0.1684,
+    "reb_ast_r": 0.305,
+    "n_games": 74
+  },
+  "1642347": {
+    "pts_reb_r": 0.3857,
+    "pts_ast_r": 0.4305,
+    "reb_ast_r": 0.5227,
+    "n_games": 75
+  },
+  "1642348": {
+    "pts_reb_r": 0.4976,
+    "pts_ast_r": 0.535,
+    "reb_ast_r": 0.305,
+    "n_games": 44
+  },
+  "1642349": {
+    "pts_reb_r": 0.3753,
+    "pts_ast_r": 0.3926,
+    "reb_ast_r": 0.1318,
+    "n_games": 36
+  },
+  "1642352": {
+    "pts_reb_r": 0.8311,
+    "pts_ast_r": 0.5589,
+    "reb_ast_r": 0.7605,
+    "n_games": 16
+  },
+  "1642353": {
+    "pts_reb_r": 0.4896,
+    "pts_ast_r": -0.3072,
+    "reb_ast_r": 0.0,
+    "n_games": 12
+  },
+  "1642354": {
+    "pts_reb_r": 0.2636,
+    "pts_ast_r": 0.4036,
+    "reb_ast_r": 0.3711,
+    "n_games": 36
+  },
+  "1642355": {
+    "pts_reb_r": 0.4938,
+    "pts_ast_r": 0.6229,
+    "reb_ast_r": 0.6482,
+    "n_games": 26
+  },
+  "1642358": {
+    "pts_reb_r": 0.3472,
+    "pts_ast_r": 0.5994,
+    "reb_ast_r": 0.3121,
+    "n_games": 29
+  },
+  "1642359": {
+    "pts_reb_r": 0.7097,
+    "pts_ast_r": 0.3525,
+    "reb_ast_r": 0.2312,
+    "n_games": 18
+  },
+  "1642366": {
+    "pts_reb_r": 0.4708,
+    "pts_ast_r": 0.3565,
+    "reb_ast_r": 0.3642,
+    "n_games": 42
+  },
+  "1642367": {
+    "pts_reb_r": 0.4316,
+    "pts_ast_r": 0.443,
+    "reb_ast_r": 0.6598,
+    "n_games": 63
+  },
+  "1642377": {
+    "pts_reb_r": 0.1991,
+    "pts_ast_r": 0.1374,
+    "reb_ast_r": 0.1081,
+    "n_games": 79
+  },
+  "1642382": {
+    "pts_reb_r": 0.8604,
+    "pts_ast_r": 0.5063,
+    "reb_ast_r": 0.617,
+    "n_games": 30
+  },
+  "1642384": {
+    "pts_reb_r": 0.6372,
+    "pts_ast_r": -0.169,
+    "reb_ast_r": -0.2176,
+    "n_games": 14
+  },
+  "1642402": {
+    "pts_reb_r": 0.7432,
+    "pts_ast_r": 0.2962,
+    "reb_ast_r": 0.3895,
+    "n_games": 21
+  },
+  "1642403": {
+    "pts_reb_r": 0.6992,
+    "pts_ast_r": 0.3668,
+    "reb_ast_r": 0.5729,
+    "n_games": 40
+  },
+  "1642419": {
+    "pts_reb_r": 0.4803,
+    "pts_ast_r": 0.3463,
+    "reb_ast_r": 0.0762,
+    "n_games": 59
+  },
+  "1642461": {
+    "pts_reb_r": 0.5449,
+    "pts_ast_r": 0.2698,
+    "reb_ast_r": 0.5791,
+    "n_games": 18
+  },
+  "1642484": {
+    "pts_reb_r": 0.6766,
+    "pts_ast_r": 0.8587,
+    "reb_ast_r": 0.9037,
+    "n_games": 11
+  },
+  "1642505": {
+    "pts_reb_r": 0.2655,
+    "pts_ast_r": 0.3414,
+    "reb_ast_r": 0.4061,
+    "n_games": 21
+  },
+  "1642530": {
+    "pts_reb_r": 0.8749,
+    "pts_ast_r": 0.7665,
+    "reb_ast_r": 0.7473,
+    "n_games": 21
+  },
+  "200768": {
+    "pts_reb_r": 0.4217,
+    "pts_ast_r": 0.5273,
+    "reb_ast_r": 0.4744,
+    "n_games": 35
+  },
+  "201142": {
+    "pts_reb_r": 0.0162,
+    "pts_ast_r": 0.1845,
+    "reb_ast_r": 0.1644,
+    "n_games": 109
+  },
+  "201143": {
+    "pts_reb_r": 0.3639,
+    "pts_ast_r": -0.007,
+    "reb_ast_r": 0.0962,
+    "n_games": 60
+  },
+  "201144": {
+    "pts_reb_r": 0.1729,
+    "pts_ast_r": 0.1056,
+    "reb_ast_r": 0.2597,
+    "n_games": 71
+  },
+  "201145": {
+    "pts_reb_r": 0.4998,
+    "pts_ast_r": 0.2977,
+    "reb_ast_r": 0.2473,
+    "n_games": 32
+  },
+  "201566": {
+    "pts_reb_r": 0.2263,
+    "pts_ast_r": -0.0074,
+    "reb_ast_r": 0.3481,
+    "n_games": 75
+  },
+  "201567": {
+    "pts_reb_r": 0.4921,
+    "pts_ast_r": 0.5966,
+    "reb_ast_r": 0.2964,
+    "n_games": 23
+  },
+  "201569": {
+    "pts_reb_r": 0.2199,
+    "pts_ast_r": 0.1877,
+    "reb_ast_r": 0.0423,
+    "n_games": 39
+  },
+  "201572": {
+    "pts_reb_r": 0.3253,
+    "pts_ast_r": 0.1744,
+    "reb_ast_r": 0.1479,
+    "n_games": 80
+  },
+  "201587": {
+    "pts_reb_r": 0.206,
+    "pts_ast_r": -0.0726,
+    "reb_ast_r": 0.2874,
+    "n_games": 78
+  },
+  "201599": {
+    "pts_reb_r": 0.5426,
+    "pts_ast_r": 0.3756,
+    "reb_ast_r": 0.4775,
+    "n_games": 56
+  },
+  "201935": {
+    "pts_reb_r": 0.0121,
+    "pts_ast_r": -0.0409,
+    "reb_ast_r": 0.2085,
+    "n_games": 137
+  },
+  "201939": {
+    "pts_reb_r": 0.1653,
+    "pts_ast_r": 0.0653,
+    "reb_ast_r": 0.1628,
+    "n_games": 126
+  },
+  "201942": {
+    "pts_reb_r": 0.2685,
+    "pts_ast_r": 0.1127,
+    "reb_ast_r": 0.1826,
+    "n_games": 151
+  },
+  "201949": {
+    "pts_reb_r": -0.0,
+    "pts_ast_r": 0.189,
+    "reb_ast_r": 0.6944,
+    "n_games": 12
+  },
+  "201950": {
+    "pts_reb_r": 0.0677,
+    "pts_ast_r": 0.0359,
+    "reb_ast_r": 0.1239,
+    "n_games": 62
+  },
+  "201959": {
+    "pts_reb_r": 0.451,
+    "pts_ast_r": -0.1005,
+    "reb_ast_r": 0.0755,
+    "n_games": 37
+  },
+  "201988": {
+    "pts_reb_r": -0.0483,
+    "pts_ast_r": 0.0821,
+    "reb_ast_r": 0.0462,
+    "n_games": 29
+  },
+  "202066": {
+    "pts_reb_r": 0.5701,
+    "pts_ast_r": 0.6111,
+    "reb_ast_r": 0.4846,
+    "n_games": 27
+  },
+  "202331": {
+    "pts_reb_r": 0.1955,
+    "pts_ast_r": 0.1974,
+    "reb_ast_r": 0.181,
+    "n_games": 97
+  },
+  "202681": {
+    "pts_reb_r": 0.2024,
+    "pts_ast_r": 0.0943,
+    "reb_ast_r": 0.0063,
+    "n_games": 110
+  },
+  "202684": {
+    "pts_reb_r": 0.3154,
+    "pts_ast_r": 0.1076,
+    "reb_ast_r": 0.4657,
+    "n_games": 40
+  },
+  "202685": {
+    "pts_reb_r": 0.5113,
+    "pts_ast_r": 0.3708,
+    "reb_ast_r": 0.3541,
+    "n_games": 81
+  },
+  "202687": {
+    "pts_reb_r": 0.5186,
+    "pts_ast_r": 0.0225,
+    "reb_ast_r": 0.1765,
+    "n_games": 28
+  },
+  "202691": {
+    "pts_reb_r": 0.2118,
+    "pts_ast_r": 0.1139,
+    "reb_ast_r": 0.1921,
+    "n_games": 72
+  },
+  "202692": {
+    "pts_reb_r": 0.4983,
+    "pts_ast_r": 0.2,
+    "reb_ast_r": 0.2442,
+    "n_games": 49
+  },
+  "202693": {
+    "pts_reb_r": 0.6919,
+    "pts_ast_r": 0.7273,
+    "reb_ast_r": 0.6393,
+    "n_games": 15
+  },
+  "202695": {
+    "pts_reb_r": 0.2384,
+    "pts_ast_r": 0.2001,
+    "reb_ast_r": 0.1135,
+    "n_games": 89
+  },
+  "202696": {
+    "pts_reb_r": 0.2243,
+    "pts_ast_r": 0.1849,
+    "reb_ast_r": 0.2832,
+    "n_games": 73
+  },
+  "202699": {
+    "pts_reb_r": 0.2084,
+    "pts_ast_r": -0.0406,
+    "reb_ast_r": 0.0714,
+    "n_games": 73
+  },
+  "202704": {
+    "pts_reb_r": 0.421,
+    "pts_ast_r": 0.2123,
+    "reb_ast_r": 0.3046,
+    "n_games": 31
+  },
+  "202709": {
+    "pts_reb_r": 0.4282,
+    "pts_ast_r": 0.3721,
+    "reb_ast_r": 0.4843,
+    "n_games": 50
+  },
+  "202710": {
+    "pts_reb_r": 0.3745,
+    "pts_ast_r": 0.3834,
+    "reb_ast_r": 0.3774,
+    "n_games": 55
+  },
+  "203076": {
+    "pts_reb_r": 0.338,
+    "pts_ast_r": -0.0908,
+    "reb_ast_r": 0.0832,
+    "n_games": 107
+  },
+  "203078": {
+    "pts_reb_r": 0.2547,
+    "pts_ast_r": 0.0237,
+    "reb_ast_r": 0.0624,
+    "n_games": 53
+  },
+  "203081": {
+    "pts_reb_r": 0.2285,
+    "pts_ast_r": -0.0587,
+    "reb_ast_r": 0.2151,
+    "n_games": 116
+  },
+  "203083": {
+    "pts_reb_r": 0.6446,
+    "pts_ast_r": -0.0385,
+    "reb_ast_r": 0.1585,
+    "n_games": 40
+  },
+  "203084": {
+    "pts_reb_r": 0.3691,
+    "pts_ast_r": -0.0267,
+    "reb_ast_r": 0.0883,
+    "n_games": 82
+  },
+  "203110": {
+    "pts_reb_r": 0.2412,
+    "pts_ast_r": 0.1313,
+    "reb_ast_r": 0.3659,
+    "n_games": 68
+  },
+  "203114": {
+    "pts_reb_r": 0.1946,
+    "pts_ast_r": 0.2985,
+    "reb_ast_r": 0.3623,
+    "n_games": 37
+  },
+  "203458": {
+    "pts_reb_r": 0.7189,
+    "pts_ast_r": 0.2017,
+    "reb_ast_r": 0.2213,
+    "n_games": 44
+  },
+  "203468": {
+    "pts_reb_r": 0.2538,
+    "pts_ast_r": 0.0247,
+    "reb_ast_r": 0.1432,
+    "n_games": 131
+  },
+  "203471": {
+    "pts_reb_r": 0.1745,
+    "pts_ast_r": 0.4433,
+    "reb_ast_r": 0.2977,
+    "n_games": 75
+  },
+  "203482": {
+    "pts_reb_r": 0.4404,
+    "pts_ast_r": 0.2361,
+    "reb_ast_r": 0.3237,
+    "n_games": 44
+  },
+  "203484": {
+    "pts_reb_r": 0.0048,
+    "pts_ast_r": 0.2967,
+    "reb_ast_r": 0.0037,
+    "n_games": 77
+  },
+  "203486": {
+    "pts_reb_r": 0.3285,
+    "pts_ast_r": 0.1098,
+    "reb_ast_r": 0.4262,
+    "n_games": 74
+  },
+  "203497": {
+    "pts_reb_r": 0.4348,
+    "pts_ast_r": 0.0974,
+    "reb_ast_r": 0.0102,
+    "n_games": 72
+  },
+  "203500": {
+    "pts_reb_r": 0.4846,
+    "pts_ast_r": 0.1282,
+    "reb_ast_r": 0.1912,
+    "n_games": 56
+  },
+  "203501": {
+    "pts_reb_r": -0.1068,
+    "pts_ast_r": -0.0522,
+    "reb_ast_r": 0.2101,
+    "n_games": 77
+  },
+  "203507": {
+    "pts_reb_r": 0.076,
+    "pts_ast_r": -0.0444,
+    "reb_ast_r": 0.1255,
+    "n_games": 67
+  },
+  "203552": {
+    "pts_reb_r": 0.4876,
+    "pts_ast_r": 0.2785,
+    "reb_ast_r": 0.4378,
+    "n_games": 68
+  },
+  "203897": {
+    "pts_reb_r": 0.0442,
+    "pts_ast_r": -0.0583,
+    "reb_ast_r": 0.1477,
+    "n_games": 151
+  },
+  "203901": {
+    "pts_reb_r": 0.5789,
+    "pts_ast_r": 0.5136,
+    "reb_ast_r": 0.6196,
+    "n_games": 24
+  },
+  "203903": {
+    "pts_reb_r": 0.4465,
+    "pts_ast_r": 0.0256,
+    "reb_ast_r": 0.3338,
+    "n_games": 37
+  },
+  "203914": {
+    "pts_reb_r": 0.0523,
+    "pts_ast_r": 0.1149,
+    "reb_ast_r": 0.5604,
+    "n_games": 48
+  },
+  "203915": {
+    "pts_reb_r": 0.311,
+    "pts_ast_r": 0.2636,
+    "reb_ast_r": 0.4372,
+    "n_games": 158
+  },
+  "203924": {
+    "pts_reb_r": 0.1718,
+    "pts_ast_r": 0.0635,
+    "reb_ast_r": 0.1605,
+    "n_games": 110
+  },
+  "203926": {
+    "pts_reb_r": 0.0334,
+    "pts_ast_r": 0.2186,
+    "reb_ast_r": 0.3852,
+    "n_games": 42
+  },
+  "203932": {
+    "pts_reb_r": 0.4286,
+    "pts_ast_r": -0.1143,
+    "reb_ast_r": 0.0079,
+    "n_games": 51
+  },
+  "203935": {
+    "pts_reb_r": 0.4737,
+    "pts_ast_r": 0.2085,
+    "reb_ast_r": 0.3575,
+    "n_games": 34
+  },
+  "203937": {
+    "pts_reb_r": 0.4355,
+    "pts_ast_r": 0.3336,
+    "reb_ast_r": 0.5945,
+    "n_games": 61
+  },
+  "203939": {
+    "pts_reb_r": 0.5491,
+    "pts_ast_r": 0.2935,
+    "reb_ast_r": 0.495,
+    "n_games": 55
+  },
+  "203944": {
+    "pts_reb_r": 0.1885,
+    "pts_ast_r": -0.0157,
+    "reb_ast_r": 0.2525,
+    "n_games": 146
+  },
+  "203952": {
+    "pts_reb_r": 0.098,
+    "pts_ast_r": 0.1055,
+    "reb_ast_r": 0.3507,
+    "n_games": 60
+  },
+  "203954": {
+    "pts_reb_r": 0.3298,
+    "pts_ast_r": 0.0056,
+    "reb_ast_r": 0.0218,
+    "n_games": 85
+  },
+  "203957": {
+    "pts_reb_r": 0.3728,
+    "pts_ast_r": 0.2997,
+    "reb_ast_r": -0.1306,
+    "n_games": 20
+  },
+  "203967": {
+    "pts_reb_r": 0.8424,
+    "pts_ast_r": 0.5994,
+    "reb_ast_r": 0.5524,
+    "n_games": 16
+  },
+  "203991": {
+    "pts_reb_r": 0.1683,
+    "pts_ast_r": 0.0412,
+    "reb_ast_r": 0.2586,
+    "n_games": 55
+  },
+  "203992": {
+    "pts_reb_r": 0.2405,
+    "pts_ast_r": 0.2951,
+    "reb_ast_r": 0.1627,
+    "n_games": 54
+  },
+  "203994": {
+    "pts_reb_r": 0.3577,
+    "pts_ast_r": 0.0828,
+    "reb_ast_r": 0.2191,
+    "n_games": 51
+  },
+  "203995": {
+    "pts_reb_r": 0.2841,
+    "pts_ast_r": 0.656,
+    "reb_ast_r": 0.3148,
+    "n_games": 41
+  },
+  "203999": {
+    "pts_reb_r": 0.131,
+    "pts_ast_r": -0.0626,
+    "reb_ast_r": 0.355,
+    "n_games": 139
+  },
+  "204001": {
+    "pts_reb_r": 0.4294,
+    "pts_ast_r": 0.1152,
+    "reb_ast_r": 0.0874,
+    "n_games": 42
+  },
+  "204060": {
+    "pts_reb_r": 0.357,
+    "pts_ast_r": 0.4482,
+    "reb_ast_r": 0.6257,
+    "n_games": 14
+  },
+  "204456": {
+    "pts_reb_r": 0.069,
+    "pts_ast_r": 0.182,
+    "reb_ast_r": 0.2641,
+    "n_games": 79
+  },
+  "2544": {
+    "pts_reb_r": 0.0636,
+    "pts_ast_r": -0.0523,
+    "reb_ast_r": 0.0137,
+    "n_games": 125
+  }
+}
