@@ -1,19 +1,22 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-18 22:40
+## Resume From Here — Last Updated: 2026-03-18 (evening)
 
 ### Pick Up Where We Left Off
-*(Fill in '## What's Next' in today's session note before closing)*
+Multi-clip tracker loop ran Phase 0 + Phase 1 baseline + Fix A (1 of 8 iters).
+Fix B (in-flight threshold) was written but NOT benchmarked — re-apply next session.
 
 ### This Session — Files Changed
-- `c:/Users/neelj/nba-ai-system/src/pipeline/unified_pipeline.py`
+- `src/data/nba_enricher.py` — build_live_mask reads per-period PBP cache (Phase 0)
+- `_bench_run.py` — game IDs for all 5 target clips + enrich() call post-pipeline (Phase 0)
+- `src/pipeline/unified_pipeline.py` — Fix A: suspension threshold 40→200, vision guard 20→50 (committed 1e11359)
 
 ### Open Priority Issues
-- 1. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
-- 2. 🔴 Analytics + tracking dashboards (not built yet)
-- 3. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
-- 4. 🔴 Real game clip needed — tracker has plateaued on Short4Mosaicing calibration clip; need actual NBA broadcast footage to benchmark further
-- 5. 🟢 Pano validation + fallback — fixed 2026-03-12
+- 1. 🔴 Tracker loop incomplete — 7 iterations remaining. phi_tor_2025=51%, bos_mia_playoffs=76% still below 80% target. Next: Fix B (ball_detect_track.py pixel_vel threshold)
+- 2. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
+- 3. 🔴 Analytics + tracking dashboards (not built yet)
+- 4. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
+- 5. 🔴 Wire PostgreSQL — fix ISSUE-010 (every run overwrites tracking_data.csv)
 
 ### Analytics Module Status (src/)
 - ✅ `src/analytics/betting_edge.py`
@@ -30,6 +33,7 @@
 - ✅ `src/analytics/pick_and_roll.py`
 - ✅ `src/analytics/play_recognition.py`
 - ✅ `src/analytics/player_defensive_pressure.py`
+- ✅ `src/analytics/prop_correlation.py`
 - ✅ `src/analytics/rebound_positioning.py`
 - ✅ `src/analytics/shot_creation.py`
 - ✅ `src/analytics/shot_quality.py`
@@ -49,6 +53,7 @@
 - ✅ `src/data/nba_tracking_stats.py`
 - ✅ `src/data/news_scraper.py`
 - ✅ `src/data/odds_scraper.py`
+- ✅ `src/data/pbp_features.py`
 - ✅ `src/data/pbp_scraper.py`
 - ✅ `src/data/player_identity.py`
 - ✅ `src/data/player_scraper.py`
@@ -70,6 +75,7 @@
 - ✅ `src/pipeline/tracking_pipeline.py`
 - ✅ `src/pipeline/unified_pipeline.py`
 - ✅ `src/prediction/clutch_efficiency.py`
+- ✅ `src/prediction/dnp_predictor.py`
 - ✅ `src/prediction/game_models.py`
 - ✅ `src/prediction/game_prediction.py`
 - ✅ `src/prediction/matchup_model.py`
