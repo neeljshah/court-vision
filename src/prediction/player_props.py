@@ -530,13 +530,18 @@ def _build_player_features(
     opp_hist = _get_opp_pts_vs_team(pid, opp_team, season)
     clutch = _load_clutch_stats(season).get(str(pid), {})
 
-    # External: BBRef BPM (0.0 fallback when cache not yet populated)
+    # External: BBRef BPM + VORP + WS/48 (0.0 fallbacks when cache not yet populated)
+    bbref_bpm = 0.0
+    bbref_vorp = 0.0
+    bbref_ws_per_48 = 0.0
     try:
         from src.data.bbref_scraper import get_player_bpm as _get_bpm
         _bpm_data = _get_bpm(player_name, season)
         bbref_bpm = float(_bpm_data.get("bpm", 0.0))
+        bbref_vorp = float(_bpm_data.get("vorp", 0.0))
+        bbref_ws_per_48 = float(_bpm_data.get("ws_per_48", 0.0))
     except Exception:
-        bbref_bpm = 0.0
+        pass
 
     # External: contract-year flag (0/1)
     try:
@@ -597,8 +602,10 @@ def _build_player_features(
         "clutch_pts_pg":    float(clutch.get("clutch_pts_pg",   0.0)),
         "foul_drawn_rate":  float(clutch.get("foul_drawn_rate", 0.0)),
         # External factors
-        "bbref_bpm":    bbref_bpm,
-        "contract_year": contract_year,
+        "bbref_bpm":       bbref_bpm,
+        "bbref_vorp":      bbref_vorp,
+        "bbref_ws_per_48": bbref_ws_per_48,
+        "contract_year":   contract_year,
         # Rolling window size (used for Bayesian weighting in predict_props)
         "n_games_form": ng,
     }
@@ -786,12 +793,28 @@ def predict_props(
             if stat in predictions:
                 predictions[stat] = round(predictions[stat] * injury_mult, 1)
 
+    # ── DNP risk adjustment ───────────────────────────────────────────────────
+    dnp_risk = 0.0
+    try:
+        from src.prediction.dnp_predictor import predict_dnp as _predict_dnp
+        dnp_risk = _predict_dnp(player_name, season)
+    except Exception:
+        pass
+
+    if dnp_risk > 0.4:
+        # Scale predictions down: 30% max reduction at 100% DNP probability
+        scale = 1.0 - 0.3 * dnp_risk
+        for stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
+            if stat in predictions:
+                predictions[stat] = round(predictions[stat] * scale, 1)
+
     return {
         "player":            player_name,
         "opp_team":          opp_team,
         **predictions,
         "minutes_proj":      minutes_proj,
         "blowout_prob":      blowout_prob,
+        "dnp_risk":          round(dnp_risk, 4),
         "confidence":        confidence,
         "injury_status":     injury_status,
         "injury_multiplier": injury_mult,
@@ -819,7 +842,7 @@ _ALL_FEATS = [
     # Clutch stats (optional — 0.0 fallback when unavailable)
     "clutch_fg_pct", "clutch_pts_pg", "foul_drawn_rate",
     # External factors (Phase 5)
-    "bbref_bpm", "contract_year",
+    "bbref_bpm", "bbref_vorp", "bbref_ws_per_48", "contract_year",
     # Phase 4.6: hustle stats
     "deflections_pg", "contested_shots_pg", "screen_assists_pg",
     "charges_per_game", "box_outs_pg",
@@ -1090,6 +1113,21 @@ def _get_all_player_avgs(season: str) -> list:
     except Exception:
         pass
 
+    # BBRef advanced stats: build name->record lookup
+    import unicodedata as _ud
+    def _norm_name(s: str) -> str:
+        return _ud.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
+
+    bbref_by_name: dict = {}
+    ext_cache = os.path.join(PROJECT_DIR, "data", "external")
+    bbref_path = os.path.join(ext_cache, f"bbref_advanced_{season}.json")
+    try:
+        for r in json.load(open(bbref_path)):
+            if isinstance(r, dict) and r.get("player_name"):
+                bbref_by_name[_norm_name(r["player_name"])] = r
+    except Exception:
+        pass
+
     # Build team→synergy lookups (team_abbr → synergy dict)
     syn_off_cache: dict = {}
     syn_def_cache: dict = {}
@@ -1121,6 +1159,7 @@ def _get_all_player_avgs(season: str) -> list:
         # Pre-Phase 6: PBP + shot zone per player
         pbp_r = pbp_by_pid.get(str(pid), {})
         szt_r = szt_all.get(str(pid), {})
+        bbref_r = bbref_by_name.get(_norm_name(name), {})
 
         rows.append({
             "season_pts":  a.get("pts", 0),
@@ -1142,8 +1181,10 @@ def _get_all_player_avgs(season: str) -> list:
             "clutch_fg_pct":    float(c.get("clutch_fg_pct",   0.0)),
             "clutch_pts_pg":    float(c.get("clutch_pts_pg",   0.0)),
             "foul_drawn_rate":  float(c.get("foul_drawn_rate", 0.0)),
-            # External factors
-            "bbref_bpm":        0.0,
+            # External factors (BBRef values when available, else 0.0)
+            "bbref_bpm":        float(bbref_r.get("bpm", 0.0) or 0.0),
+            "bbref_vorp":       float(bbref_r.get("vorp", 0.0) or 0.0),
+            "bbref_ws_per_48":  float(bbref_r.get("ws_per_48", 0.0) or 0.0),
             "contract_year":    0.0,
             # Phase 4.6: hustle stats (per-game values from cache)
             "deflections_pg":       float(h.get("deflections_pg", 0.0) or 0.0),
