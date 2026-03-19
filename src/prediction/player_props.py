@@ -423,6 +423,26 @@ def _load_synergy_def(opp_team_abbr: str, season: str) -> dict:
         return {}
 
 
+def _load_pbp_features(player_id: int, season: str) -> dict:
+    """Load PBP-derived per-game features. Returns {} on miss."""
+    path = os.path.join(_NBA_CACHE, f"pbp_features_{season}.json")
+    try:
+        d = json.load(open(path))
+        return d.get(str(player_id), {})
+    except Exception:
+        return {}
+
+
+def _load_shot_tendency(player_id: int) -> dict:
+    """Load shot zone tendency features for a player. Returns {} on miss."""
+    path = os.path.join(_NBA_CACHE, "shot_tendency_features.json")
+    try:
+        d = json.load(open(path))
+        return d.get(str(player_id), {})
+    except Exception:
+        return {}
+
+
 def _get_schedule_context_player(team_abbr: str, season: str) -> dict:
     """Compute rest_days and games_in_last_14 from schedule cache.
     Uses today's date as reference. Returns {rest_days: 1, games_in_last_14: 0} on miss.
@@ -621,6 +641,26 @@ def _build_player_features(
         "games_in_last_14": float(sched.get("games_in_last_14", 0)),
     })
 
+    # ── Pre-Phase 6: PBP features ─────────────────────────────────────────────
+    pbp = _load_pbp_features(pid, season)
+    feats.update({
+        "q4_shot_rate":         float(pbp.get("q4_shot_rate", 0.0)),
+        "q4_pts_share":         float(pbp.get("q4_pts_share", 0.0)),
+        "fta_rate_pbp":         float(pbp.get("fta_rate_pbp", 0.0)),
+        "foul_drawn_rate_pbp":  float(pbp.get("foul_drawn_rate_pbp", 0.0)),
+        "comeback_pts_pg":      float(pbp.get("comeback_pts_pg", 0.0)),
+    })
+
+    # ── Pre-Phase 6: shot zone tendency features ──────────────────────────────
+    szt = _load_shot_tendency(pid)
+    feats.update({
+        "paint_rate":               float(szt.get("paint_rate", 0.0)),
+        "above_break_3_rate":       float(szt.get("above_break_3_rate", 0.0)),
+        "corner_3_rate":            float(szt.get("corner_3_rate", 0.0)),
+        "mid_rate":                 float(szt.get("mid_rate", 0.0)),
+        "fg_pct_restricted_area":   float(szt.get("fg_pct_restricted_area", 0.0)),
+    })
+
     return feats
 
 
@@ -790,6 +830,10 @@ _ALL_FEATS = [
     "opp_def_iso_ppp", "opp_def_prbh_ppp",
     # Phase 4.6: schedule context
     "rest_days", "games_in_last_14",
+    # Pre-Phase 6: PBP features
+    "q4_shot_rate", "q4_pts_share", "fta_rate_pbp", "foul_drawn_rate_pbp", "comeback_pts_pg",
+    # Pre-Phase 6: shot zone tendency
+    "paint_rate", "above_break_3_rate", "corner_3_rate", "mid_rate", "fg_pct_restricted_area",
 ]
 
 # Stats modelled by XGBoost (each model excludes its own season_{stat} feature)
@@ -1031,6 +1075,21 @@ def _get_all_player_avgs(season: str) -> list:
     except Exception:
         pass
 
+    # Pre-Phase 6: PBP feature cache
+    pbp_path = os.path.join(_NBA_CACHE, f"pbp_features_{season}.json")
+    pbp_by_pid: dict = {}
+    try:
+        pbp_by_pid = json.load(open(pbp_path))
+    except Exception:
+        pass
+
+    # Pre-Phase 6: shot zone tendency cache
+    szt_all: dict = {}
+    try:
+        szt_all = json.load(open(os.path.join(_NBA_CACHE, "shot_tendency_features.json")))
+    except Exception:
+        pass
+
     # Build team→synergy lookups (team_abbr → synergy dict)
     syn_off_cache: dict = {}
     syn_def_cache: dict = {}
@@ -1058,6 +1117,10 @@ def _get_all_player_avgs(season: str) -> list:
             # Use empty for training (no per-row opp_team during batch training)
             syn_def_cache[team] = {}
         s_off = syn_off_cache.get(team, {})
+
+        # Pre-Phase 6: PBP + shot zone per player
+        pbp_r = pbp_by_pid.get(str(pid), {})
+        szt_r = szt_all.get(str(pid), {})
 
         rows.append({
             "season_pts":  a.get("pts", 0),
@@ -1100,6 +1163,18 @@ def _get_all_player_avgs(season: str) -> list:
             # Phase 4.6: schedule context (0.0 during training; real values at inference)
             "rest_days":            1.0,
             "games_in_last_14":     5.0,    # mid-season neutral
+            # Pre-Phase 6: PBP features (real values from pbp_features cache)
+            "q4_shot_rate":         float(pbp_r.get("q4_shot_rate", 0.0)),
+            "q4_pts_share":         float(pbp_r.get("q4_pts_share", 0.0)),
+            "fta_rate_pbp":         float(pbp_r.get("fta_rate_pbp", 0.0)),
+            "foul_drawn_rate_pbp":  float(pbp_r.get("foul_drawn_rate_pbp", 0.0)),
+            "comeback_pts_pg":      float(pbp_r.get("comeback_pts_pg", 0.0)),
+            # Pre-Phase 6: shot zone tendency
+            "paint_rate":               float(szt_r.get("paint_rate", 0.0)),
+            "above_break_3_rate":       float(szt_r.get("above_break_3_rate", 0.0)),
+            "corner_3_rate":            float(szt_r.get("corner_3_rate", 0.0)),
+            "mid_rate":                 float(szt_r.get("mid_rate", 0.0)),
+            "fg_pct_restricted_area":   float(szt_r.get("fg_pct_restricted_area", 0.0)),
         })
     return rows
 
