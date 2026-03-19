@@ -1,5 +1,125 @@
 # Tracker Improvements Log
 
+### Priority 2 — External Feature Wiring (player_props + betting_edge) — 2026-03-18
+
+**Tests: 104/104 test_phase3.py + 23/23 test_data_sources.py pass**
+
+| Deliverable | File | Details |
+|---|---|---|
+| BBRef BPM feature | `src/prediction/player_props.py` | `_build_player_features()` calls `bbref_scraper.get_player_bpm(player_name, season)` → `bbref_bpm` added to XGBoost feature vector; 0.0 fallback until cache populated |
+| Contract-year feature | `src/prediction/player_props.py` | `contracts_scraper.is_contract_year(player_name, season)` → `contract_year` (0/1) added to XGBoost feature vector; 0.0 fallback until cache populated |
+| `_ALL_FEATS` updated | `src/prediction/player_props.py` | `bbref_bpm` + `contract_year` appended — models will use these after `--train` |
+| Training rows updated | `src/prediction/player_props.py` | `_get_all_player_avgs()` includes `bbref_bpm=0.0, contract_year=0.0` defaults for training rows (improved once scrapers run) |
+| CLV computation | `src/analytics/betting_edge.py` | `compute_clv(home_team, away_team, model_spread)` → calls `line_monitor.get_game_lines()` + `get_sharp_signal()` → returns `{clv, sharp_signal, closing_spread, model_spread, found}` |
+| Stale test fixed | `tests/test_phase3.py` | `FEATURE_COLS` count updated 26→30 in 2 assertions (lineup + ref features added since original test) |
+
+**What remains to unlock full accuracy gain:**
+1. Run scrapers (Priority 1) to seed data/external/ caches
+2. Run `python src/prediction/player_props.py --train` — XGBoost will pick up bbref_bpm + contract_year
+3. Run `--backtest` to compare old MAE vs new MAE
+
+**What's already wired (no changes needed):**
+- InjuryMonitor → `player_props.py` injury_mult + status ✅ (was wired in prior session)
+- Ref features (`ref_avg_fouls`, `ref_home_win_pct`) → `win_probability.py` FEATURE_COLS + `_build_features()` ✅ (was wired in prior session)
+
+### Phase 3.5 Data Expansion — 2026-03-18
+
+**Tests: 23/23 test_data_sources.py pass**
+
+| Deliverable | File | Details |
+|---|---|---|
+| 8 NBA API endpoints | `src/data/nba_tracking_stats.py` | PlayerTracking, ShotDashboard, DefenderZone, Matchups, HustleStats, SynergyPlayTypes, OnOffSplits, VideoEvents — all cached 24h TTL |
+| BBRef scraper | `src/data/bbref_scraper.py` | BPM/VORP/WS/WS48/PER + injury history (games missed); 48h TTL, 1.5s delay |
+| Historical lines | `src/data/odds_scraper.py` | OddsPortal closing spread+total; 7d TTL, 2s delay |
+| Current props | `src/data/props_scraper.py` | DraftKings + FanDuel public endpoints; 15min TTL, over/under merger |
+| Contracts | `src/data/contracts_scraper.py` | HoopsHype salary/cap_hit/years_remaining/contract_year; 7d TTL |
+| RotoWire RSS | `src/data/injury_monitor.py` | `refresh_rotowire()` — feedparser, 30min TTL, status heuristic |
+| NBA official injury | `src/data/injury_monitor.py` | `refresh_nba_official_injury()` → NBA CDN JSON, 6h TTL |
+| 20 new features | `src/features/feature_engineering.py` | `add_external_player_features()`: bbref_bpm/vorp/ws, hustle_deflections_pg, on_off_diff, synergy PPP (iso/pnr/spotup), injury_status_multiplier, contract_year_flag, cap_hit_pct, contested_shot_pct, catch_and_shoot_pct, pull_up_pct, avg_defender_dist |
+
+**Rate limits honored:** NBA API 0.8s, BBRef 1.5s, OddsPortal 2s, DK/FD 15min TTL
+
+### Ball Valid Diagnostic + Homography Fixes — 2026-03-18 (benchmark loop, session 2)
+
+**Tests: 36/36 hardening pass**
+
+**Clips benchmarked: bos_mia_playoffs (21%→44%→46%), den_gsw_playoffs (30%→31%)**
+
+| Fix | File | Problem | Solution | Impact |
+|-----|------|---------|----------|--------|
+| 1 — _build_court per-clip detection disabled | `unified_pipeline.py` | `detect_court_homography` returns frame→940×500 M1; used as pano→court without inv(M_ema) adjustment → ball projects to large negative coords | Skip per-clip detection at init (M_ema unavailable); `_try_recover_court_M1` adjusts with `M1_raw @ inv(M_ema)` during gameplay | bos_mia: 21%→44% |
+| 2 — Negative-coordinate projection guard | `ball_detect_track.py` | Ball projected to x2d=-1018, -36009 etc. when CSRT tracks but M or M1 is noisy; drift guard only fires when player positions available; bad coords slipped through when no players tracked | Explicitly reject ball_2d when x2d<0 or y2d<0 (off-court, always wrong) before drift guard | Eliminated 130/391 bad entries; ball_valid now 0% negative |
+| 3 — MAX_TRACK 10→20 | `ball_detect_track.py` | Local re-detection check every 10 frames forces CSRT abandon when template match fails | Raise to 20 frames — halves check frequency; drift/negative guards backstop bad positions | Minimal (+1pp) — CSRT loss is the real bottleneck |
+| 4 — Prediction search radius 60→120px | `ball_detect_track.py` | Fast balls (passes) move >60px/frame; trajectory prediction search missed them | Raise pad from 60 to 120 so 120×120px window catches fast passes | Minimal — den_gsw gaps are video-content gaps, not algo failures |
+| 5 — Test updates | `tests/test_hardening.py` | `test_build_court_stores_last_good_m1` tested removed behavior; `_make_mock_pipeline` missing `_M_ema=None` | Updated test to verify skip-at-init behavior; added `_M_ema=None` to mock | 36/36 pass |
+
+**Key finding — video content gap analysis (bos_mia, den_gsw):**
+- den_gsw_playoffs: Only 2 no-detection runs (261 + 152 frames). Ball not detectable in 68% of first 600 frames due to replays/dead balls/timeout. Detection is 187/187 = 100% on frames where ball IS present.
+- bos_mia_playoffs: 8 runs avg 45 frames. 2 large (213, 70 frames) = replays/dead ball. Smaller gaps (31, 29 frames) = camera cuts where CSRT re-acquires.
+- **Conclusion**: `ball_valid_pct` is bounded by video content (replays/timeouts), not algorithm quality. Further improvements need replay detection / non-gameplay frame classification.
+
+### Full-Game Pipeline Hardening — 2026-03-18 (4 targeted fixes)
+
+**Tests: 30/30 hardening pass**
+
+| Fix | File | Problem | Solution |
+|-----|------|---------|----------|
+| 1 — Startup scan cap | `unified_pipeline.py` | Startup frame scan read the full video (57 939-frame games → multi-minute wait before frame 1) | Cap to 60 frames evenly sampled from first 1 800 frames (30 s at 60 fps); stop as soon as 60 collected |
+| 2 — Frame stride | `unified_pipeline.py` | Every frame decoded at 60 fps broadcast rate — wasteful on full games | `_FRAME_STRIDE = 2`: process every 2nd frame when clip > 3 000 frames; short benchmark clips unaffected |
+| 3 — Pixel-space shot fallback | `event_detector.py` | `shots_detected = 0` on most clips — court-px velocity unreliable when M1 homography wrong | Secondary check in `_evaluate_shot`: if `pixel_vel > 18.0` AND ball in upper half of frame, classify as shot even when court-coord direction check fails |
+| 4 — CSV append mode | `unified_pipeline.py` | ISSUE-010: every run deleted and rewrote `tracking_data.csv`, losing prior game data | Removed the `os.remove()` block; `_checkpoint_csv` already appends and writes header only on first write |
+
+- **Files changed:** `src/pipeline/unified_pipeline.py`, `src/tracking/event_detector.py`, `tests/test_hardening.py` (+5 tests)
+- **Expected impact:** startup latency: minutes → seconds on full-game clips; ~2× more frames/sec on full-game runs; shot detection fires on pixel-velocity even with drifted homography; tracking history preserved across game runs
+
+### CSRT Drift Guard — Nearest-Player Fallback — 2026-03-18 (benchmark loop)
+
+**Benchmark: lal_sas_2025.mp4 · 300 frames · 11.1 fps**
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Dribbles detected | 0 | **18** |
+| Shots detected | 0 | **1** |
+| FPS | 4.6 | **11.1** |
+
+- **Root cause:** Ball-in-air guard at line 370 sets `best = None` when ball pixel center > 150px from all players. This means `has_ball = False` on all players. The CSRT drift guard (line 391) required `possessor_2d is not None` — which was always False — so drifted ball positions (y≈66, 431px from nearest player) passed through unconditionally.
+- **Fix:** When `possessor_2d is None`, find nearest non-referee player in court-2D space and use that as the reference. Same 400px threshold. If ball is >400px from even the nearest player, it's CSRT drift → discard `last_2d_pos = None`.
+- **Files changed:** `src/tracking/ball_detect_track.py` (lines 382–411, ~15 lines)
+- **Tests:** 23/23 hardening pass
+
+### M1 Two-Threshold Recovery — 2026-03-18 (benchmark loop)
+
+**Benchmark: den_phx_2025.mp4 · 300 frames · 4.6 fps**
+
+- **Root cause:** After 150→30 fix, court detection fired every 30 frames even post-recovery → disrupted arc polyfit (8+ stable positions needed) → shots=0 + FPS 6.0→4.6.
+- **Fix:** `threshold = 30 if _last_good_M1 is None else 150`. Fast initial recovery (30 frames) + stable arc tracking after (150 frames).
+- **Files:** `src/pipeline/unified_pipeline.py`, `tests/test_hardening.py`
+- **Tests:** 23/23 hardening pass
+
+### M1 Stale Threshold 150→30 — 2026-03-18 (benchmark loop)
+
+**Benchmark: okc_dal_2025.mp4 · 300 frames · 6.0 fps**
+
+- **Root cause:** pano stitching fails for okc_dal (1045×710 ratio 1.47). Static Rectify1.npy used, wrong 2D positions → dribble/pass detection fails. Per-clip M1 only recovered at frame 762 (after 155 bad frames).
+- **Fix:** `_try_recover_court_M1` staleness threshold **150→30** in `src/pipeline/unified_pipeline.py`. Court homography re-detected within first 30 gameplay frames (~5s) vs 150 (~25s). Dribble/pass detection should recover on next okc_dal run.
+- **Files:** `src/pipeline/unified_pipeline.py`, `tests/test_hardening.py`
+- **Tests:** 730/734 pass (4 pre-existing)
+
+### CSRT Drift Guard — 2026-03-18 (benchmark loop)
+
+**Benchmark: bos_mia_2025.mp4 · 300 frames · 5.7 fps**
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Dribbles detected | 0 | **92** |
+| Passes detected | 10 | **34** |
+| Shots detected | 0 | **5** |
+| Total events | 10 | **131** |
+
+- **Bug fixed: CSRT drift in `ball_detect_track.py`** — Hough+CSRT ball tracker latches onto wrong objects (player heads, scoreboards) after initial detection. The 2D court projection of the drifted position was 400–4000px away from the possessor, making EventDetector's 70px dribble threshold impossible to reach. Added drift guard: when possessor has ball AND projected ball position >400px from possessor court coords, discard `last_2d_pos = None` and zero `pixel_vel = 0.0`. This causes the possessor-position fallback in `unified_pipeline.py` to kick in, giving EventDetector correct proximity data and zero velocity, enabling dribble detection.
+- **Files changed:** `src/tracking/ball_detect_track.py` (lines 381–396, ~15 lines)
+- **Tests:** 129/129 pass (ball/event/shot tests)
+
 ### Speed + Bug Fix — 2026-03-17 (session 4)
 
 **Benchmark: 5.1 fps → 5.7 fps (+12%) on RTX 4060 · cavs_vs_celtics_2025.mp4 · 300 frames**
@@ -10622,3 +10742,263 @@ Claude reads this file to understand what has already been tried and what needs 
 - New metric columns added: 0
 - Avg coverage score: 83.9%
 - Elapsed: 0.1s
+
+### BENCH-20260318_100426 — okc_dal_2025 — 2026-03-18 10:07
+Stab:1.000 IDsw:0 FPS:6.0 Shots:9 | no fix needed — all metrics within target range
+
+### BENCH-20260318_101129 — mil_chi_2025 — 2026-03-18 10:14
+Stab:1.000 IDsw:0 FPS:11.5 Shots:0 | no fix needed — all metrics within target range
+
+### BENCH-20260318_101418 — den_phx_2025 — 2026-03-18 10:17
+Stab:1.000 IDsw:0 FPS:4.6 Shots:0 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_101939 — lal_sas_2025 — 2026-03-18 10:21
+Stab:1.000 IDsw:0 FPS:10.8 Shots:0 | no fix needed — all metrics within target range
+
+### BENCH-20260318_103124 — lal_sas_2025 — 2026-03-18 10:33
+Stab:1.000 IDsw:0 FPS:11.1 Shots:1 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_103434 — atl_ind_2025 — 2026-03-18 10:37
+Stab:1.000 IDsw:0 FPS:2.8 Shots:0 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_104100 — atl_ind_2025 — 2026-03-18 10:44
+Stab:1.000 IDsw:0 FPS:2.9 Shots:0 | FPS < 4 — check GPU utilization; imgsz=640 already set. Consider reducing YOLO confidence threshold to skip post-proc on low-conf frames.
+
+### BENCH-20260318_105559 — atl_ind_2025 — 2026-03-18 10:58
+Stab:1.000 IDsw:0 FPS:6.8 Shots:0 | no fix needed — all metrics within target range
+
+### BENCH-20260318_105825 — atl_ind_2025 — 2026-03-18 11:00
+Stab:1.000 IDsw:0 FPS:7.2 Shots:0 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_110741 — atl_ind_2025 — 2026-03-18 11:10
+Stab:1.000 IDsw:0 FPS:16.7 Shots:0 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_111303 — atl_ind_2025 — 2026-03-18 11:16
+Stab:1.000 IDsw:0 FPS:15.9 Shots:0 | no fix applied — shot count low but arc threshold not found to tune
+
+### BENCH-20260318_111621 — atl_ind_2025 — 2026-03-18 11:19
+Stab:1.000 IDsw:0 FPS:16.5 Shots:13 | no fix needed — all metrics within target range
+
+### BENCH-20260318_112308 — atl_ind_2025 — 2026-03-18 11:26
+Stab:1.000 IDsw:0 FPS:16.9 Shots:25 | no fix needed — all metrics within target range
+
+### BENCH-20260318_112622 — mem_nop_2025 — 2026-03-18 11:29
+Stab:1.000 IDsw:0 FPS:8.2 Shots:25 | no fix needed — all metrics within target range
+
+### BENCH-20260318_112954 � mia_bkn_2025 � 2026-03-18 11:35
+Stab:1.000 IDsw:0 FPS:6.9 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_113529 � phi_tor_2025 � 2026-03-18 11:39
+Stab:1.000 IDsw:0 FPS:5.9 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_114124 � phi_tor_2025 � 2026-03-18 11:45
+Stab:1.000 IDsw:0 FPS:6.0 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_114743 � sac_por_2025 � 2026-03-18 11:51
+Stab:1.000 IDsw:0 FPS:14.0 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_115347 � sac_por_2025 � 2026-03-18 11:57
+Stab:1.000 IDsw:0 FPS:13.9 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_120411 � sac_por_2025 � 2026-03-18 12:07
+Stab:1.000 IDsw:0 FPS:13.9 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_120903 � sac_por_2025 � 2026-03-18 12:12
+Stab:1.000 IDsw:0 FPS:13.9 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_121602 � sac_por_2025 � 2026-03-18 12:19
+Stab:1.000 IDsw:0 FPS:13.6 Shots:37 | no fix needed � all metrics within target range
+
+### BENCH-20260318_122651 — bos_mia_playoffs — 2026-03-18 12:30
+Stab:1.000 IDsw:0 FPS:18.8 Shots:38 | no fix needed — all metrics within target range
+
+### BENCH-20260318_123938 — bos_mia_playoffs — 2026-03-18 12:43
+Stab:1.000 IDsw:0 FPS:19.1 Shots:48 | no fix needed — all metrics within target range
+
+### BENCH-20260318_125329 — bos_mia_playoffs — 2026-03-18 12:56
+Stab:1.000 IDsw:0 FPS:18.6 Shots:48 | no fix needed — all metrics within target range
+
+### BENCH-20260318_125706 — bos_mia_playoffs — 2026-03-18 13:00
+Stab:1.000 IDsw:0 FPS:18.6 Shots:48 | no fix needed — all metrics within target range
+
+### BENCH-20260318_130356 — bos_mia_playoffs — 2026-03-18 13:06
+Stab:1.000 IDsw:0 FPS:21.9 Shots:48 | no fix needed — all metrics within target range
+
+### BENCH-20260318_131321 — bos_mia_playoffs — 2026-03-18 13:16
+Stab:1.000 IDsw:0 FPS:20.6 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_131716 — den_gsw_playoffs — 2026-03-18 13:19
+Stab:1.000 IDsw:0 FPS:21.1 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_131956 — den_gsw_playoffs — 2026-03-18 13:22
+Stab:1.000 IDsw:0 FPS:21.1 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_132432 — den_gsw_playoffs — 2026-03-18 13:27
+Stab:1.000 IDsw:0 FPS:21.5 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_133014 — den_gsw_playoffs — 2026-03-18 13:32
+Stab:1.000 IDsw:0 FPS:22.0 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_133340 — bos_mia_playoffs — 2026-03-18 13:36
+Stab:1.000 IDsw:0 FPS:21.7 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_133739 — cavs_vs_celtics_2025 — 2026-03-18 13:40
+Stab:1.000 IDsw:0 FPS:20.8 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_134054 — cavs_vs_celtics_2025 — 2026-03-18 13:43
+Stab:1.000 IDsw:0 FPS:20.8 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_134357 — cavs_vs_celtics_2025 — 2026-03-18 13:46
+Stab:1.000 IDsw:0 FPS:20.9 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_134700 — cavs_vs_celtics_2025 — 2026-03-18 13:49
+Stab:1.000 IDsw:0 FPS:21.0 Shots:66 | no fix needed — all metrics within target range
+
+### BENCH-20260318_135012 — cavs_broadcast_2025 — 2026-03-18 13:52
+Stab:1.000 IDsw:0 FPS:26.6 Shots:67 | no fix needed — all metrics within target range
+
+### BENCH-20260318_135552 — gsw_lakers_2025 — 2026-03-18 13:58
+Stab:1.000 IDsw:0 FPS:14.2 Shots:84 | no fix needed — all metrics within target range
+
+### BENCH-20260318_135900 — gsw_lakers_2025 — 2026-03-18 14:01
+Stab:1.000 IDsw:0 FPS:14.7 Shots:106 | no fix needed — all metrics within target range
+
+### BENCH-20260318_140201 — gsw_lakers_2025 — 2026-03-18 14:04
+Stab:1.000 IDsw:0 FPS:14.5 Shots:114 | no fix needed — all metrics within target range
+
+### BENCH-20260318_140518 — gsw_lakers_2025 — 2026-03-18 14:06
+Stab:1.000 IDsw:0 FPS:12.1 Shots:114 | no fix needed — all metrics within target range
+
+### BENCH-20260318_140754 — mil_chi_2025 — 2026-03-18 14:10
+Stab:1.000 IDsw:0 FPS:23.4 Shots:122 | no fix needed — all metrics within target range
+
+### BENCH-20260318_141036 — mia_bkn_2025 — 2026-03-18 14:13
+Stab:1.000 IDsw:0 FPS:10.8 Shots:122 | no fix needed — all metrics within target range
+
+### BENCH-20260318_141405 — mia_bkn_2025 — 2026-03-18 14:17
+Stab:1.000 IDsw:0 FPS:10.8 Shots:133 | no fix needed — all metrics within target range
+
+### BENCH-20260318_141732 — mia_bkn_2025 — 2026-03-18 14:20
+Stab:1.000 IDsw:0 FPS:10.9 Shots:133 | no fix needed — all metrics within target range
+
+### BENCH-20260318_142158 — mem_nop_2025 — 2026-03-18 14:25
+Stab:1.000 IDsw:0 FPS:7.2 Shots:133 | no fix needed — all metrics within target range
+
+### BENCH-20260318_142610 — mem_nop_2025 — 2026-03-18 14:28
+Stab:1.000 IDsw:0 FPS:8.5 Shots:138 | no fix needed — all metrics within target range
+
+### BENCH-20260318_142820 — mem_nop_2025 — 2026-03-18 14:30
+Stab:1.000 IDsw:0 FPS:8.4 Shots:143 | no fix needed — all metrics within target range
+
+### BENCH-20260318_170343 — cavs_broadcast_2025 — 2026-03-18 17:06
+Stab:1.000 IDsw:0 FPS:29.3 Shots:143 | no fix needed — all metrics within target range
+
+### BENCH-20260318_170622 — cavs_broadcast_2025 — 2026-03-18 17:08
+Stab:1.000 IDsw:0 FPS:29.5 Shots:143 | no fix needed — all metrics within target range
+
+### BENCH-20260318_170857 � cavs_broadcast_2025 � 2026-03-18 17:11
+Stab:1.000 IDsw:0 FPS:29.1 Shots:146 | no fix needed � all metrics within target range
+
+### BENCH-20260318_171218 � gsw_lakers_2025 � 2026-03-18 17:15
+Stab:1.000 IDsw:0 FPS:12.7 Shots:146 | no fix needed � all metrics within target range
+
+### BENCH-20260318_171218 � bos_mia_playoffs � 2026-03-18 17:15
+Stab:1.000 IDsw:0 FPS:18.6 Shots:146 | no fix needed � all metrics within target range
+
+### BENCH-20260318_171218 � mia_bkn_2025 � 2026-03-18 17:16
+Stab:1.000 IDsw:0 FPS:9.5 Shots:147 | no fix needed � all metrics within target range
+
+### BENCH-20260318_171923 � cavs_broadcast_2025 � 2026-03-18 17:22
+Stab:1.000 IDsw:0 FPS:27.6 Shots:147 | no fix needed � all metrics within target range
+
+### BENCH-20260318_172226 � gsw_lakers_2025 � 2026-03-18 17:25
+Stab:1.000 IDsw:0 FPS:14.9 Shots:153 | no fix needed � all metrics within target range
+
+### BENCH-20260318_172546 � bos_mia_playoffs � 2026-03-18 17:28
+Stab:1.000 IDsw:0 FPS:21.7 Shots:162 | no fix needed � all metrics within target range
+
+### BENCH-20260318_172853 � mia_bkn_2025 � 2026-03-18 17:32
+Stab:1.000 IDsw:0 FPS:10.9 Shots:166 | no fix needed � all metrics within target range
+
+### BENCH-20260318_173529 � cavs_broadcast_2025 � 2026-03-18 17:38
+Stab:1.000 IDsw:0 FPS:26.1 Shots:166 | no fix needed � all metrics within target range
+
+### BENCH-20260318_173817 � bos_mia_playoffs � 2026-03-18 17:41
+Stab:1.000 IDsw:0 FPS:21.4 Shots:167 | no fix needed � all metrics within target range
+
+### BENCH-20260318_174123 � gsw_lakers_2025 � 2026-03-18 17:44
+Stab:1.000 IDsw:0 FPS:14.9 Shots:167 | no fix needed � all metrics within target range
+
+### BENCH-20260318_174416 � mia_bkn_2025 � 2026-03-18 17:47
+Stab:1.000 IDsw:0 FPS:10.4 Shots:167 | no fix needed � all metrics within target range
+
+### BENCH-20260318_174949 � cavs_broadcast_2025 � 2026-03-18 17:52
+Stab:1.000 IDsw:0 FPS:26.4 Shots:174 | no fix needed � all metrics within target range
+
+### BENCH-20260318_175235 � bos_mia_playoffs � 2026-03-18 17:55
+Stab:1.000 IDsw:0 FPS:21.2 Shots:176 | no fix needed � all metrics within target range
+
+### BENCH-20260318_175544 � gsw_lakers_2025 � 2026-03-18 17:58
+Stab:1.000 IDsw:0 FPS:14.3 Shots:184 | no fix needed � all metrics within target range
+
+### BENCH-20260318_175844 � mia_bkn_2025 � 2026-03-18 18:02
+Stab:1.000 IDsw:0 FPS:10.1 Shots:210 | no fix needed � all metrics within target range
+
+### BENCH-20260318_184429 — gsw_lakers_2025 — 2026-03-18 18:55
+Stab:1.000 IDsw:0 FPS:14.6 Shots:254 | no fix needed — all metrics within target range
+
+### BENCH-20260318_185600 — gsw_lakers_2025 — 2026-03-18 19:08
+Stab:1.000 IDsw:0 FPS:13.2 Shots:256 | no fix needed — all metrics within target range
+
+### BENCH-20260318_191315 — gsw_lakers_2025 — 2026-03-18 19:27
+Stab:1.000 IDsw:0 FPS:11.7 Shots:309 | no fix needed — all metrics within target range
+
+### Vision-Suspension YOLO Guard — 2026-03-18 (self-improving loop iter 1)
+
+**Benchmark: gsw_lakers_2025 · 3600 frames**
+
+| Metric | Before | After |
+|--------|--------|-------|
+| ball_valid | 19.5% | **85.3%** (+65.8pp) |
+| suspended_frames% | 29.8% | **0%** |
+| possessions detected | 8 | **59** |
+| shots detected | 256 | **309** |
+
+- **Root cause:** Vision-based non-live suspension (`_ball_track_suspended=True`) fired when YOLO weights absent because `len([])<8` is always True. After firing (triggered by 20 consecutive ball-miss frames), the state never reset since both OCR and vision reset paths require their respective detectors. Ball tracking suspended for 2856/3600 frames.
+- **Fix:** Added `self.yolo.available and` guard to vision-based suspension condition — when YOLO is absent, person-count is always 0 and the check is meaningless.
+- **File:** `src/pipeline/unified_pipeline.py` line 758 (+1 line)
+- **Tests:** 150/150 pass
+
+### BENCH-20260318_193616 — gsw_lakers_2025 — 2026-03-18 19:50
+Stab:1.000 IDsw:0 FPS:11.7 Shots:365 | no fix needed — all metrics within target range
+
+### BENCH-20260318_195654 — gsw_lakers_2025 — 2026-03-18 20:09
+Stab:1.000 IDsw:0 FPS:12.8 Shots:370 | no fix needed — all metrics within target range
+
+### BENCH-20260318_201537 — bos_mia_playoffs — 2026-03-18 20:29
+Stab:1.000 IDsw:0 FPS:13.8 Shots:876 | no fix needed — all metrics within target range
+
+### BENCH-20260318_203213 — den_gsw_playoffs — 2026-03-18 20:43
+Stab:1.000 IDsw:0 FPS:14.5 Shots:928 | no fix needed — all metrics within target range
+
+### Self-Improving Loop Run #1 — 2026-03-18 — gsw_lakers_2025 — COMPLETE
+
+**3 iterations attempted · 1 committed · before→after on gsw_lakers_2025 (3600 frames)**
+
+| Metric | Baseline | Final | Δ |
+|--------|----------|-------|---|
+| ball_valid | 19.5% | **85.3%** | **+65.8pp** ✅ |
+| suspended_frames% | 79.3% | **0%** | **−79.3pp** ✅ |
+| jump_resets/100f | 0.0 | 0.0 | — |
+| id_switches/100f | 0 | 0 | — |
+| team_acc (confidence) | 92.5% | 92.1% | −0.4pp |
+
+**Iter 1 — COMMITTED:** `unified_pipeline.py` — `self.yolo.available and` guard on vision-suspension. Root cause: when YOLO weights absent `len([]) < 8` always True → permanent suspension, no reset path. Fix: skip the check entirely when YOLO not available. +65.8pp ball_valid, −79.3pp suspended_pct.
+
+**Iter 2 — REVERTED:** `ball_detect_track.py` FLOW_MAX_FRAMES 8→12. Only +1.2pp (below 2pp threshold).
+
+**Iter 3a — REVERTED:** HSV orange-guard H 8-25/S≥80 → H 5-30/S≥65. Caused −7.3pp regression on bos_mia_playoffs (CSRT tracked orange court elements). Risk: widening S_MIN allows low-saturation non-ball objects through Guard 3.
+
+**Iter 3b — REVERTED:** REENTRY_ATTEMPTS 3→8. Benchmark ran different clip (den_gsw_playoffs); clip has yolo-available suspension bug causing 56.8% ball_valid. Cannot compare — reverted.
+
+**Open (den_gsw_playoffs):** suspension still fires when YOLO IS available but <8 players visible for 20 frames. The yolo.available guard doesn't help here — needs a `len(players_visible) < 4` floor or a longer no-ball streak threshold.
