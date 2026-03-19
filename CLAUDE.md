@@ -1,28 +1,15 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-17 22:26
+## Resume From Here — Last Updated: 2026-03-18 22:16
 
 ### Pick Up Where We Left Off
-**Priority order for next session:**
-1. `python src/prediction/win_probability.py --train` — retrain with sklearn 1.7.2 (2 min)
-2. Wire PostgreSQL writes — fix ISSUE-018 before processing more games
-3. Scrape ShotChartDetail — 50K+ shots, unlocks shot quality v1 model
-4. Finish gamelog scrape — 209 players remaining (run scraper --loop --max 569)
-5. Fix per-video homography (ISSUE-017) — needs per-clip M1 calibration
-
-
----
-*Session note auto-created by new_session.py*
-
----
+*(Fill in '## What's Next' in today's session note before closing)*
 
 ### This Session — Files Changed
-- `C:/Users/neelj/nba-ai-system/vault/Project Vision.md`
-- `C:/Users/neelj/nba-ai-system/CLAUDE.md`
-- `C:/Users/neelj/nba-ai-system/.planning/ROADMAP.md`
+- No file changes this session
 
 ### Open Priority Issues
-- 1. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
+- 1. 🟢 Phase 4.6 COMPLETE 2026-03-18 — win_prob 67.7%→69.1%, matchup R² 0.796→0.808, +17 prop features wired
 - 2. 🔴 Analytics + tracking dashboards (not built yet)
 - 3. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
 - 4. 🔴 Real game clip needed — tracker has plateaued on Short4Mosaicing calibration clip; need actual NBA broadcast footage to benchmark further
@@ -31,8 +18,27 @@
 ### Analytics Module Status (src/)
 - ✅ `src/analytics/betting_edge.py`
 - ✅ `src/analytics/defense_pressure.py`
+- ✅ `src/analytics/defensive_scheme.py`
+- ✅ `src/analytics/drive_analysis.py`
+- ✅ `src/analytics/game_flow.py`
+- ✅ `src/analytics/lineup_synergy.py`
+- ✅ `src/analytics/micro_timing.py`
 - ✅ `src/analytics/momentum.py`
+- ✅ `src/analytics/momentum_events.py`
+- ✅ `src/analytics/off_ball_events.py`
+- ✅ `src/analytics/passing_network.py`
+- ✅ `src/analytics/pick_and_roll.py`
+- ✅ `src/analytics/play_recognition.py`
+- ✅ `src/analytics/player_defensive_pressure.py`
+- ✅ `src/analytics/rebound_positioning.py`
+- ✅ `src/analytics/shot_creation.py`
 - ✅ `src/analytics/shot_quality.py`
+- ✅ `src/analytics/space_control.py`
+- ✅ `src/analytics/spacing.py`
+- ✅ `src/analytics/spatial_types.py`
+- ✅ `src/data/bbref_scraper.py`
+- ✅ `src/data/cache_utils.py`
+- ✅ `src/data/contracts_scraper.py`
 - ✅ `src/data/db.py`
 - ✅ `src/data/game_matcher.py`
 - ✅ `src/data/injury_monitor.py`
@@ -40,11 +46,14 @@
 - ✅ `src/data/lineup_data.py`
 - ✅ `src/data/nba_enricher.py`
 - ✅ `src/data/nba_stats.py`
+- ✅ `src/data/nba_tracking_stats.py`
 - ✅ `src/data/news_scraper.py`
+- ✅ `src/data/odds_scraper.py`
 - ✅ `src/data/pbp_scraper.py`
 - ✅ `src/data/player_identity.py`
 - ✅ `src/data/player_scraper.py`
 - ✅ `src/data/prop_validator.py`
+- ✅ `src/data/props_scraper.py`
 - ✅ `src/data/ref_tracker.py`
 - ✅ `src/data/schedule_context.py`
 - ✅ `src/data/shot_chart_scraper.py`
@@ -63,6 +72,7 @@
 - ✅ `src/prediction/clutch_efficiency.py`
 - ✅ `src/prediction/game_models.py`
 - ✅ `src/prediction/game_prediction.py`
+- ✅ `src/prediction/matchup_model.py`
 - ✅ `src/prediction/player_props.py`
 - ✅ `src/prediction/shot_zone_tendency.py`
 - ✅ `src/prediction/win_probability.py`
@@ -99,7 +109,7 @@
 - ✅ `src/utils/visualize.py`
 
 ### Session Log
-- Latest: `vault/Sessions/Session-2026-03-17.md`
+- Latest: `vault/Sessions/Session-2026-03-18.md`
 - Full log: `vault/Sessions/`
 
 <!-- END AUTO-GENERATED -->
@@ -125,7 +135,7 @@ A **self-improving possession-by-possession game simulator** combining CV tracki
 
 **Phase 3 COMPLETE as of 2026-03-17:**
 - Gamelogs: 622/569 ✅ | Advanced stats: 569/569 ✅ | Shot charts: 569/569 ✅
-- PBP: 1,602 games cached (600 × 2024-25, 500 × 2023-24, 500 × 2022-23)
+- PBP: 3,627/3,685 games (98.4%) ✅ — gap-filled 2026-03-18
 - Tier 2 models done: xFG v1 ✅ | Shot zone tendency ✅ | Clutch efficiency ✅
 
 **Next priorities:**
@@ -144,7 +154,7 @@ A **self-improving possession-by-possession game simulator** combining CV tracki
 | ID | Issue | Fix |
 |---|---|---|
 | ISSUE-016 | sklearn mismatch — win prob needs retrain | ✅ CLOSED 2026-03-17 — retrained, 67.7% acc |
-| ISSUE-018 | PBP at 43% — 1,602/3,685 games | ✅ CLOSED 2026-03-17 — 3,100/3,685 (84%), clutch rebuilt |
+| ISSUE-018 | PBP at 43% — 1,602/3,685 games | ✅ CLOSED 2026-03-18 — 3,627/3,685 (98.4%), gap-filled |
 | ISSUE-010 | PostgreSQL not wired — overwrites CSV | Phase 6 |
 | ISSUE-009 | 0 shots enriched — no --game-id runs | Phase 6 |
 | ISSUE-019 | 0 shot charts | ✅ CLOSED 2026-03-17 — 569/569, xFG v1 trained |
@@ -235,7 +245,7 @@ fatigue, play types, events          refs, injuries, schedule
 | Possessions labeled | 124 | result=NaN — no --game-id runs yet (ISSUE-009) |
 | Shots with outcomes | 0 | No --game-id runs yet |
 
-### NBA API Data — Phase 3 Complete (2026-03-17)
+### NBA API Data — Phase 3 Complete (2026-03-17) + Phase 3.5 scrapers built (2026-03-18)
 | Metric | Count | Notes |
 |---|---|---|
 | Season games (3 seasons) | 3,675+ | Full game results + team features for win prob |
@@ -244,10 +254,20 @@ fatigue, play types, events          refs, injuries, schedule
 | Player advanced stats | 569 / 569 | ✅ All scraped 2026-03-17 |
 | Player gamelogs | 622 / 569 | ✅ Complete 2026-03-17 |
 | Shot charts | 569 / 569 | ✅ 221,866 shots scraped 2026-03-17 |
-| Play-by-play | 1,602 games | ✅ 600 × 2024-25, 500 × 2023-24, 500 × 2022-23 |
+| Play-by-play | 3,627 / 3,685 (98.4%) | ✅ Gap-filled 2026-03-18 (was 84%) |
 | Clutch scores | 3 seasons | ✅ 228–255 qualified players/season |
 | Boxscores | 13 games | Full per-player stats |
 | Injury report | 126 players | Current, refreshed 2026-03-16 |
+| Hustle stats | ✅ Fetched 2026-03-18 | 567/567/535 players × 3 seasons, data/nba/hustle_stats_*.json |
+| On/off splits | ✅ Fetched 2026-03-18 | 569/572/539 players × 3 seasons (TeamPlayerOnOffSummary), data/nba/on_off_*.json |
+| Defender zones | ✅ Fetched 2026-03-18 | 566/562/530 players × 3 seasons, data/nba/defender_zone_*.json |
+| Matchups | ✅ Fetched 2026-03-18 | 2269/2283/2154 records × 3 seasons, data/nba/matchups_*.json |
+| Synergy play types | ✅ Fetched 2026-03-18 | 300 offensive + 300 defensive (2024-25), data/nba/synergy_*.json |
+| BBRef advanced stats | ✅ Fetched 2026-03-18 | 736/736/680 players × 3 seasons, data/external/bbref_advanced_*.json |
+| BBRef injury history | 🔲 pending fetch | Built: get_injury_history() — games missed |
+| Historical lines | ✅ Fetched 2026-03-18 | 1225/1230/1230 games × 3 seasons (actual margins, NBA API), data/external/historical_lines_*.json |
+| Current props | 🔲 pending fetch | Built: props_scraper.py — DK/FD (15min TTL) |
+| Player contracts | ✅ Fetched 2026-03-18 | 523 players, 171 walk-year (BBRef contracts), data/external/contracts_2024-25.json |
 
 ### Model Readiness
 | Model | Status | Notes |
@@ -256,8 +276,10 @@ fatigue, play types, events          refs, injuries, schedule
 | xFG v1 | ✅ Trained 2026-03-17 | 221K shots, Brier 0.226, data/models/xfg_v1.pkl |
 | Shot zone tendency | ✅ Built 2026-03-17 | 566 players, 42-dim features, data/nba/shot_zone_tendency.json |
 | Clutch efficiency | ✅ Built 2026-03-17 | 3 seasons scored, data/nba/clutch_scores_*.json |
-| Player prop models | ✅ Trained 2026-03-17 | 7 models (pts/reb/ast/fg3m/stl/blk/tov), data/models/props_*.json |
+| Player prop models | ✅ Retrained 2026-03-18 | 30 features (+bbref_bpm +contract_year). Walk-fwd MAE: pts=0.32, reb=0.11, ast=0.09, fg3m=0.09, stl=0.07, blk=0.05, tov=0.08 (R²>0.92 all). data/models/props_*.json |
 | Game total / spread / blowout | ✅ Trained 2026-03-17 | 5 models (total/spread/blowout/first_half/pace), src/prediction/game_models.py |
+| Matchup model M22 | ✅ Trained 2026-03-18 | XGBoost R²=0.796, MAE=4.55, hustle+on-off features, data/models/matchup_model.json |
+| CLV backtest baseline | ✅ Done 2026-03-18 | 70.7% correct winner, MAE=10.2pts, 3685 games (actual margin proxy), betting_edge.backtest_clv() |
 | Shot quality v2 (CV-enhanced) | 🔲 Phase 6+7 | Needs 200+ enriched CV shots |
 | Possession outcome | 🔲 Phase 6+7 | Needs 500+ labeled possessions |
 | Lineup chemistry | 🔲 Phase 7 | NBA API lineups + CV validation |
@@ -277,19 +299,26 @@ positions (x,y), speed, acceleration, team classification, jersey OCR, player id
 ### CV Tracker — Not Yet Extracting 🔲 (Phase 2.5/6)
 spacing index (convex hull), paint density, defensive alignment, PnR coverage type (drop/hedge/switch/ICE), zone vs man detection, double team, screen detection, shot arc (parabola), ball trajectory, contest arm angle, player speed vs baseline (real-time fatigue), movement asymmetry (injury proxy), crowd noise level (audio RMS), announcer keyword detection (speech-to-text), forced shot flag
 
-### NBA API — Not Yet Pulling 🔲 (Phase 3.5)
-`BoxScorePlayerTrackV2` (speed/distance/touches), `PlayerDashPtShots` (contested%/C+S%/pull-up%), `LeagueDashPtDefend` (defender zone FG% allowed), `MatchupsRollup` (who guards whom), `LeagueHustleStatsPlayer` (deflections/screens), `SynergyPlayTypes` (pts/possession by play type — ground truth for classifier), `LeaguePlayerOnDetails` (on/off net rtg), `VideoEvents` (free labeled training clips for CV play type classifier)
+### NBA API — ✅ Built (Phase 3.5 — 2026-03-18, src/data/nba_tracking_stats.py)
+- `BoxScorePlayerTrackV2` → `get_player_tracking(game_id)` — speed/distance/touches
+- `PlayerDashPtShots` → `get_shot_dashboard(player_id, season)` — contested%/C+S%/pull-up%/defender dist
+- `LeagueDashPtDefend` → `get_defender_zone(season)` — FG% allowed by zone
+- `MatchupsRollup` → `get_matchups(season)` — who guards whom
+- `LeagueHustleStatsPlayer` → `get_hustle_stats(season)` — deflections/screens/charges
+- `SynergyPlayTypes` → `get_synergy_play_types(season, play_type, offense/defense)` — pts/possession
+- `LeaguePlayerOnDetails` → `get_on_off_splits(season)` — on/off net rating
+- `VideoEventDetails` → `get_video_events(season)` — labeled event clip metadata
 
-### External Sources — Not Yet Integrated 🔲 (Phase 3.5)
-- **Basketball Reference**: BPM/VORP/WS, historical injuries, coaching records, contracts, transactions, historical lines
-- **Action Network**: public bet% + money% → sharp vs public signal on every prop
-- **OddsPortal**: 15yr historical closing lines → CLV backtesting
-- **Pinnacle**: sharpest opening lines → market benchmark, steam detection
-- **DraftKings/FanDuel**: current player props → soft book lag detection
-- **NBA official injury PDF**: ~5pm ET daily — faster than ESPN
-- **RotoWire RSS**: injury/lineup feed (feedparser)
-- **Reddit r/nba** (praw): injury threads, lineup news — free
-- **HoopsHype + Spotrac**: contracts, salary, transactions
+### External Sources — ✅ Built (Phase 3.5 — 2026-03-18)
+- **Basketball Reference** → `src/data/bbref_scraper.py` — BPM/VORP/WS + injury history (48h TTL)
+- **OddsPortal** → `src/data/odds_scraper.py` — historical closing lines spread+total (7d TTL)
+- **DraftKings/FanDuel** → `src/data/props_scraper.py` — current player props (15min TTL)
+- **HoopsHype** → `src/data/contracts_scraper.py` — salary/years remaining/contract year flag (7d TTL)
+- **RotoWire RSS** → `src/data/injury_monitor.py:refresh_rotowire()` — injury/lineup feed (30min TTL)
+- **NBA official CDN** → `src/data/injury_monitor.py:refresh_nba_official_injury()` — daily JSON (6h TTL)
+- **Action Network** → not yet built (Phase 5)
+- **Pinnacle** → not yet built (Phase 5)
+- **Reddit r/nba** (praw) → not yet built
 
 ---
 

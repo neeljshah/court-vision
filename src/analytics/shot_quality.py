@@ -48,6 +48,8 @@ def score_shot(
     team_spacing: float,
     possession_run: int,
     max_possession_run: int = 150,
+    velocity_mean_90: float = 0.0,
+    velocity_mean_150: float = 0.0,
 ) -> float:
     """
     Compute shot quality in [0, 1]. Higher = better look.
@@ -58,6 +60,8 @@ def score_shot(
         team_spacing:       Convex hull area of offensive team (px²).
         possession_run:     Consecutive frames team has held the ball.
         max_possession_run: Normalisation ceiling for possession depth.
+        velocity_mean_90:   Mean velocity over last 90 frames (for fatigue penalty).
+        velocity_mean_150:  Mean velocity over last 150 frames (for fatigue penalty).
     """
     z_score = _ZONE_QUALITY.get(zone, 0.3)
 
@@ -70,17 +74,22 @@ def score_shot(
     sp      = max(0.0, float(team_spacing or 0))
     s_score = float(np.clip(sp / _MAX_SPACING, 0.0, 1.0))
 
-    # Deep into possession → defense is set → penalise slightly
-    p_raw   = float(np.clip(possession_run / max(1, max_possession_run), 0.0, 1.0))
-    p_score = 1.0 - p_raw
+    # Shot-clock pressure: use dedicated function (auto-called — Phase 4.6)
+    p_score = shot_clock_pressure_score(possession_run, max_possession_run)
 
-    return round(
+    base = round(
         _W_ZONE * z_score
         + _W_DEFENDER * d_score
         + _W_SPACING * s_score
         + _W_POSSESSION * p_score,
         4,
     )
+
+    # Fatigue penalty: auto-applied when velocity data is available (Phase 4.6)
+    if velocity_mean_150 > 0:
+        base = fatigue_penalty(velocity_mean_90, velocity_mean_150, base)
+
+    return base
 
 
 def run(input_path: str = None, output_dir: str = None) -> pd.DataFrame:
@@ -114,6 +123,9 @@ def run(input_path: str = None, output_dir: str = None) -> pd.DataFrame:
 
     max_run = int(df["possession_run"].max()) if "possession_run" in df.columns else 150
 
+    # Phase 4.6: pass velocity cols if available so fatigue_penalty auto-fires
+    _has_vel = ("velocity_mean_90" in shots.columns and "velocity_mean_150" in shots.columns)
+
     shots["shot_quality"] = shots.apply(
         lambda r: score_shot(
             zone=str(r.get("court_zone", "backcourt")),
@@ -121,6 +133,8 @@ def run(input_path: str = None, output_dir: str = None) -> pd.DataFrame:
             team_spacing=r.get("team_spacing", 0),
             possession_run=int(r.get("possession_run", 0)),
             max_possession_run=max_run,
+            velocity_mean_90=float(r.get("velocity_mean_90", 0.0)) if _has_vel else 0.0,
+            velocity_mean_150=float(r.get("velocity_mean_150", 0.0)) if _has_vel else 0.0,
         ),
         axis=1,
     )
