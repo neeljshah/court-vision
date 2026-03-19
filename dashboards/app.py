@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from tracking.database import get_connection
+from src.data.db import get_connection
 from dashboards.charts import (
     shot_chart, player_tracks, speed_heatmap, drive_map,
     ball_speed_timeline, spacing_timeline, play_type_chart,

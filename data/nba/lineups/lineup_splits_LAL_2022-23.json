@@ -1,0 +1,382 @@
+[
+  {
+    "lineup": [
+      "P. Beverley",
+      "A. Davis",
+      "T. Brown Jr.",
+      "L. Walker IV",
+      "A. Reaves"
+    ],
+    "minutes": 38.0,
+    "net_rating": 25.6,
+    "off_rating": 102.5,
+    "def_rating": 76.9,
+    "pace": 99.59,
+    "efg_pct": 0.492,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.206,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "D. Russell",
+      "J. Vanderbilt",
+      "A. Reaves"
+    ],
+    "minutes": 77.0,
+    "net_rating": 20.6,
+    "off_rating": 123.5,
+    "def_rating": 103.0,
+    "pace": 105.38,
+    "efg_pct": 0.63,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "P. Beverley",
+      "D. Schroder",
+      "T. Bryant",
+      "T. Brown Jr."
+    ],
+    "minutes": 120.0,
+    "net_rating": 18.9,
+    "off_rating": 130.4,
+    "def_rating": 111.6,
+    "pace": 101.16,
+    "efg_pct": 0.627,
+    "tov_pct": 0.087,
+    "oreb_pct": 0.277,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Schroder",
+      "D. Russell",
+      "T. Brown Jr.",
+      "R. Hachimura"
+    ],
+    "minutes": 39.0,
+    "net_rating": 18.9,
+    "off_rating": 110.7,
+    "def_rating": 91.8,
+    "pace": 105.26,
+    "efg_pct": 0.535,
+    "tov_pct": 0.06,
+    "oreb_pct": 0.158,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "R. Westbrook",
+      "T. Brown Jr.",
+      "W. Gabriel",
+      "A. Reaves"
+    ],
+    "minutes": 31.0,
+    "net_rating": 18.8,
+    "off_rating": 113.0,
+    "def_rating": 94.2,
+    "pace": 105.42,
+    "efg_pct": 0.538,
+    "tov_pct": 0.188,
+    "oreb_pct": 0.417,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Schroder",
+      "T. Brown Jr.",
+      "R. Hachimura",
+      "A. Reaves"
+    ],
+    "minutes": 32.0,
+    "net_rating": 14.4,
+    "off_rating": 117.1,
+    "def_rating": 102.7,
+    "pace": 107.64,
+    "efg_pct": 0.517,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.364,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "P. Beverley",
+      "A. Davis",
+      "D. Schroder",
+      "R. Hachimura"
+    ],
+    "minutes": 38.0,
+    "net_rating": 9.5,
+    "off_rating": 122.6,
+    "def_rating": 113.1,
+    "pace": 105.53,
+    "efg_pct": 0.596,
+    "tov_pct": 0.155,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schroder",
+      "D. Russell",
+      "R. Hachimura",
+      "W. Gabriel",
+      "A. Reaves"
+    ],
+    "minutes": 30.0,
+    "net_rating": 9.5,
+    "off_rating": 115.9,
+    "def_rating": 106.3,
+    "pace": 101.58,
+    "efg_pct": 0.518,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.375,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Westbrook",
+      "P. Beverley",
+      "A. Davis",
+      "L. Walker IV",
+      "A. Reaves"
+    ],
+    "minutes": 53.0,
+    "net_rating": 7.8,
+    "off_rating": 116.4,
+    "def_rating": 108.6,
+    "pace": 105.58,
+    "efg_pct": 0.526,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.315,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "D. Schroder",
+      "T. Brown Jr.",
+      "L. Walker IV"
+    ],
+    "minutes": 31.0,
+    "net_rating": 5.8,
+    "off_rating": 121.2,
+    "def_rating": 115.4,
+    "pace": 100.13,
+    "efg_pct": 0.612,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Schroder",
+      "M. Beasley",
+      "T. Brown Jr.",
+      "J. Vanderbilt"
+    ],
+    "minutes": 54.0,
+    "net_rating": 5.1,
+    "off_rating": 105.1,
+    "def_rating": 100.0,
+    "pace": 105.53,
+    "efg_pct": 0.495,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.233,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "R. Westbrook",
+      "A. Davis",
+      "L. Walker IV",
+      "A. Reaves"
+    ],
+    "minutes": 50.0,
+    "net_rating": 2.7,
+    "off_rating": 123.0,
+    "def_rating": 120.4,
+    "pace": 108.23,
+    "efg_pct": 0.618,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "P. Beverley",
+      "A. Davis",
+      "D. Schroder",
+      "L. Walker IV"
+    ],
+    "minutes": 59.0,
+    "net_rating": -2.3,
+    "off_rating": 103.2,
+    "def_rating": 105.5,
+    "pace": 103.32,
+    "efg_pct": 0.553,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.14,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Russell",
+      "T. Brown Jr.",
+      "J. Vanderbilt",
+      "A. Reaves"
+    ],
+    "minutes": 44.0,
+    "net_rating": -4.5,
+    "off_rating": 115.5,
+    "def_rating": 120.0,
+    "pace": 103.84,
+    "efg_pct": 0.549,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "R. Westbrook",
+      "P. Beverley",
+      "A. Davis",
+      "L. Walker IV"
+    ],
+    "minutes": 42.0,
+    "net_rating": -7.6,
+    "off_rating": 86.2,
+    "def_rating": 93.8,
+    "pace": 108.28,
+    "efg_pct": 0.4,
+    "tov_pct": 0.096,
+    "oreb_pct": 0.135,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "P. Beverley",
+      "D. Schroder",
+      "T. Bryant",
+      "L. Walker IV"
+    ],
+    "minutes": 75.0,
+    "net_rating": -8.5,
+    "off_rating": 101.9,
+    "def_rating": 110.4,
+    "pace": 103.77,
+    "efg_pct": 0.544,
+    "tov_pct": 0.173,
+    "oreb_pct": 0.203,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Schroder",
+      "T. Brown Jr.",
+      "J. Vanderbilt",
+      "A. Reaves"
+    ],
+    "minutes": 33.0,
+    "net_rating": -10.8,
+    "off_rating": 112.7,
+    "def_rating": 123.5,
+    "pace": 94.92,
+    "efg_pct": 0.482,
+    "tov_pct": 0.175,
+    "oreb_pct": 0.382,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Russell",
+      "M. Beasley",
+      "T. Brown Jr.",
+      "J. Vanderbilt"
+    ],
+    "minutes": 86.0,
+    "net_rating": -15.5,
+    "off_rating": 101.7,
+    "def_rating": 117.1,
+    "pace": 100.27,
+    "efg_pct": 0.5,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Westbrook",
+      "A. Davis",
+      "T. Brown Jr.",
+      "L. Walker IV",
+      "A. Reaves"
+    ],
+    "minutes": 31.0,
+    "net_rating": -15.8,
+    "off_rating": 85.5,
+    "def_rating": 101.4,
+    "pace": 116.05,
+    "efg_pct": 0.451,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.263,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "P. Beverley",
+      "A. Davis",
+      "T. Brown Jr.",
+      "L. Walker IV"
+    ],
+    "minutes": 42.0,
+    "net_rating": -23.9,
+    "off_rating": 119.1,
+    "def_rating": 143.0,
+    "pace": 99.06,
+    "efg_pct": 0.523,
+    "tov_pct": 0.045,
+    "oreb_pct": 0.227,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

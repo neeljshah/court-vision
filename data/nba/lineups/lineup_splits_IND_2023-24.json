@@ -1,0 +1,401 @@
+[
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Brown",
+      "T. Haliburton",
+      "A. Nesmith",
+      "J. Smith"
+    ],
+    "minutes": 35.0,
+    "net_rating": 39.6,
+    "off_rating": 143.4,
+    "def_rating": 103.8,
+    "pace": 105.14,
+    "efg_pct": 0.758,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.238,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Hield",
+      "P. Siakam",
+      "T. Haliburton",
+      "A. Nesmith"
+    ],
+    "minutes": 45.0,
+    "net_rating": 30.8,
+    "off_rating": 143.8,
+    "def_rating": 113.0,
+    "pace": 105.34,
+    "efg_pct": 0.667,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.37,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. McDermott",
+      "T. McConnell",
+      "O. Toppin",
+      "I. Jackson",
+      "B. Sheppard"
+    ],
+    "minutes": 44.0,
+    "net_rating": 30.1,
+    "off_rating": 129.0,
+    "def_rating": 98.9,
+    "pace": 101.19,
+    "efg_pct": 0.6,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.383,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. Siakam",
+      "A. Nembhard",
+      "T. Haliburton",
+      "A. Nesmith",
+      "I. Jackson"
+    ],
+    "minutes": 32.0,
+    "net_rating": 28.6,
+    "off_rating": 134.4,
+    "def_rating": 105.8,
+    "pace": 101.19,
+    "efg_pct": 0.64,
+    "tov_pct": 0.063,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. McConnell",
+      "O. Toppin",
+      "T. Haliburton",
+      "J. Smith",
+      "B. Sheppard"
+    ],
+    "minutes": 33.0,
+    "net_rating": 28.1,
+    "off_rating": 131.9,
+    "def_rating": 103.8,
+    "pace": 110.88,
+    "efg_pct": 0.644,
+    "tov_pct": 0.153,
+    "oreb_pct": 0.367,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. McDermott",
+      "T. McConnell",
+      "O. Toppin",
+      "J. Smith",
+      "B. Sheppard"
+    ],
+    "minutes": 45.0,
+    "net_rating": 22.9,
+    "off_rating": 130.6,
+    "def_rating": 107.6,
+    "pace": 112.64,
+    "efg_pct": 0.634,
+    "tov_pct": 0.102,
+    "oreb_pct": 0.373,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Hield",
+      "B. Brown",
+      "O. Toppin",
+      "T. Haliburton"
+    ],
+    "minutes": 171.0,
+    "net_rating": 19.9,
+    "off_rating": 134.0,
+    "def_rating": 114.1,
+    "pace": 106.04,
+    "efg_pct": 0.643,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.275,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "A. Nembhard",
+      "O. Toppin",
+      "T. Haliburton",
+      "A. Nesmith"
+    ],
+    "minutes": 36.0,
+    "net_rating": 19.3,
+    "off_rating": 124.3,
+    "def_rating": 105.1,
+    "pace": 101.85,
+    "efg_pct": 0.614,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Hield",
+      "B. Brown",
+      "T. Haliburton",
+      "A. Nesmith"
+    ],
+    "minutes": 55.0,
+    "net_rating": 15.6,
+    "off_rating": 136.7,
+    "def_rating": 121.1,
+    "pace": 111.95,
+    "efg_pct": 0.665,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Hield",
+      "T. Haliburton",
+      "A. Nesmith",
+      "B. Mathurin"
+    ],
+    "minutes": 33.0,
+    "net_rating": 15.6,
+    "off_rating": 112.9,
+    "def_rating": 97.3,
+    "pace": 103.81,
+    "efg_pct": 0.485,
+    "tov_pct": 0.071,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. McConnell",
+      "O. Toppin",
+      "J. Smith",
+      "B. Mathurin",
+      "B. Sheppard"
+    ],
+    "minutes": 37.0,
+    "net_rating": 14.8,
+    "off_rating": 124.7,
+    "def_rating": 109.9,
+    "pace": 102.56,
+    "efg_pct": 0.572,
+    "tov_pct": 0.091,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. McConnell",
+      "B. Hield",
+      "O. Toppin",
+      "I. Jackson",
+      "B. Mathurin"
+    ],
+    "minutes": 72.0,
+    "net_rating": 13.5,
+    "off_rating": 126.5,
+    "def_rating": 112.9,
+    "pace": 102.92,
+    "efg_pct": 0.668,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.327,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Hield",
+      "A. Nembhard",
+      "A. Nesmith",
+      "J. Smith",
+      "B. Mathurin"
+    ],
+    "minutes": 31.0,
+    "net_rating": 12.8,
+    "off_rating": 114.3,
+    "def_rating": 101.4,
+    "pace": 108.69,
+    "efg_pct": 0.673,
+    "tov_pct": 0.229,
+    "oreb_pct": 0.36,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "P. Siakam",
+      "A. Nembhard",
+      "T. Haliburton",
+      "A. Nesmith"
+    ],
+    "minutes": 444.0,
+    "net_rating": 6.4,
+    "off_rating": 113.6,
+    "def_rating": 107.2,
+    "pace": 102.35,
+    "efg_pct": 0.571,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Hield",
+      "P. Siakam",
+      "A. Nembhard",
+      "A. Nesmith"
+    ],
+    "minutes": 52.0,
+    "net_rating": 3.4,
+    "off_rating": 130.3,
+    "def_rating": 126.9,
+    "pace": 100.96,
+    "efg_pct": 0.651,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.35,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "P. Siakam",
+      "A. Nembhard",
+      "T. Haliburton",
+      "B. Mathurin"
+    ],
+    "minutes": 104.0,
+    "net_rating": 0.2,
+    "off_rating": 108.4,
+    "def_rating": 108.3,
+    "pace": 105.51,
+    "efg_pct": 0.51,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Brown",
+      "O. Toppin",
+      "T. Haliburton",
+      "B. Mathurin"
+    ],
+    "minutes": 148.0,
+    "net_rating": -4.0,
+    "off_rating": 118.6,
+    "def_rating": 122.6,
+    "pace": 106.41,
+    "efg_pct": 0.558,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "A. Nembhard",
+      "T. Haliburton",
+      "A. Nesmith",
+      "J. Smith"
+    ],
+    "minutes": 35.0,
+    "net_rating": -4.6,
+    "off_rating": 116.2,
+    "def_rating": 120.8,
+    "pace": 103.44,
+    "efg_pct": 0.623,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.121,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. Siakam",
+      "A. Nembhard",
+      "T. Haliburton",
+      "A. Nesmith",
+      "J. Smith"
+    ],
+    "minutes": 39.0,
+    "net_rating": -6.1,
+    "off_rating": 115.1,
+    "def_rating": 121.2,
+    "pace": 105.5,
+    "efg_pct": 0.506,
+    "tov_pct": 0.081,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "B. Brown",
+      "T. Haliburton",
+      "A. Nesmith",
+      "B. Mathurin"
+    ],
+    "minutes": 55.0,
+    "net_rating": -7.3,
+    "off_rating": 116.4,
+    "def_rating": 123.7,
+    "pace": 101.25,
+    "efg_pct": 0.566,
+    "tov_pct": 0.112,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Turner",
+      "P. Siakam",
+      "A. Nembhard",
+      "T. Haliburton",
+      "B. Sheppard"
+    ],
+    "minutes": 35.0,
+    "net_rating": -11.4,
+    "off_rating": 125.4,
+    "def_rating": 136.7,
+    "pace": 103.45,
+    "efg_pct": 0.567,
+    "tov_pct": 0.042,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

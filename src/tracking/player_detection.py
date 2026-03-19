@@ -75,7 +75,7 @@ class FeetDetector:
         return iou
 
     def get_players_pos(self, M, M1, frame, timestamp, map_2d):
-        results = self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=1280, half=self._use_half)
+        results = self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=640, half=self._use_half)
         boxes   = results[0].boxes.xyxy.cpu().numpy() if results[0].boxes is not None else []
 
         adaptive_colors = _adaptive_colors(frame)

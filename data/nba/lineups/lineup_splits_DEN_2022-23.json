@@ -1,0 +1,192 @@
+[
+  {
+    "lineup": [
+      "A. Gordon",
+      "N. Jokic",
+      "J. Murray",
+      "B. Brown",
+      "M. Porter Jr."
+    ],
+    "minutes": 60.0,
+    "net_rating": 30.9,
+    "off_rating": 127.6,
+    "def_rating": 96.7,
+    "pace": 97.75,
+    "efg_pct": 0.665,
+    "tov_pct": 0.163,
+    "oreb_pct": 0.34,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Joki\u0107",
+      "B. Brown",
+      "C. Braun"
+    ],
+    "minutes": 64.0,
+    "net_rating": 30.1,
+    "off_rating": 117.5,
+    "def_rating": 87.3,
+    "pace": 109.7,
+    "efg_pct": 0.637,
+    "tov_pct": 0.189,
+    "oreb_pct": 0.327,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "V. Cancar",
+      "B. Brown",
+      "M. Porter Jr."
+    ],
+    "minutes": 79.0,
+    "net_rating": 18.9,
+    "off_rating": 127.4,
+    "def_rating": 108.4,
+    "pace": 100.88,
+    "efg_pct": 0.618,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.243,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Joki\u0107",
+      "B. Brown",
+      "M. Porter Jr."
+    ],
+    "minutes": 224.0,
+    "net_rating": 13.9,
+    "off_rating": 122.1,
+    "def_rating": 108.1,
+    "pace": 105.46,
+    "efg_pct": 0.603,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.245,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "J. Murray",
+      "M. Porter Jr."
+    ],
+    "minutes": 706.0,
+    "net_rating": 13.1,
+    "off_rating": 124.3,
+    "def_rating": 111.2,
+    "pace": 101.2,
+    "efg_pct": 0.613,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.283,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "J. Murray",
+      "V. Cancar",
+      "M. Porter Jr."
+    ],
+    "minutes": 69.0,
+    "net_rating": 9.0,
+    "off_rating": 117.8,
+    "def_rating": 108.8,
+    "pace": 102.33,
+    "efg_pct": 0.569,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.264,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "J. Murray",
+      "B. Brown"
+    ],
+    "minutes": 326.0,
+    "net_rating": 8.5,
+    "off_rating": 118.4,
+    "def_rating": 109.9,
+    "pace": 101.6,
+    "efg_pct": 0.598,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Murray",
+      "V. Cancar",
+      "B. Brown",
+      "Z. Nnaji",
+      "B. Hyland"
+    ],
+    "minutes": 59.0,
+    "net_rating": -0.5,
+    "off_rating": 110.7,
+    "def_rating": 111.3,
+    "pace": 99.28,
+    "efg_pct": 0.491,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.37,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "D. Jordan",
+      "J. Murray",
+      "B. Hyland",
+      "C. Braun"
+    ],
+    "minutes": 30.0,
+    "net_rating": -4.4,
+    "off_rating": 119.3,
+    "def_rating": 123.7,
+    "pace": 93.99,
+    "efg_pct": 0.527,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.345,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "J. Murray",
+      "B. Brown",
+      "Z. Nnaji",
+      "C. Braun"
+    ],
+    "minutes": 48.0,
+    "net_rating": -8.9,
+    "off_rating": 105.1,
+    "def_rating": 114.0,
+    "pace": 99.14,
+    "efg_pct": 0.539,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

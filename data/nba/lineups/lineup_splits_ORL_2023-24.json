@@ -1,0 +1,477 @@
+[
+  {
+    "lineup": [
+      "J. Ingles",
+      "M. Fultz",
+      "J. Isaac",
+      "W. Carter Jr.",
+      "C. Anthony"
+    ],
+    "minutes": 35.0,
+    "net_rating": 42.6,
+    "off_rating": 127.8,
+    "def_rating": 85.1,
+    "pace": 100.7,
+    "efg_pct": 0.615,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Ingles",
+      "G. Bitadze",
+      "J. Suggs",
+      "P. Banchero",
+      "A. Black"
+    ],
+    "minutes": 40.0,
+    "net_rating": 28.5,
+    "off_rating": 122.5,
+    "def_rating": 94.0,
+    "pace": 104.2,
+    "efg_pct": 0.586,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.342,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Ingles",
+      "J. Isaac",
+      "M. Wagner",
+      "C. Anthony",
+      "F. Wagner"
+    ],
+    "minutes": 74.0,
+    "net_rating": 21.2,
+    "off_rating": 125.9,
+    "def_rating": 104.6,
+    "pace": 96.54,
+    "efg_pct": 0.626,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Isaac",
+      "M. Wagner",
+      "C. Anthony",
+      "F. Wagner"
+    ],
+    "minutes": 81.0,
+    "net_rating": 21.1,
+    "off_rating": 111.4,
+    "def_rating": 90.3,
+    "pace": 96.12,
+    "efg_pct": 0.504,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.338,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Ingles",
+      "J. Isaac",
+      "M. Wagner",
+      "C. Anthony",
+      "A. Black"
+    ],
+    "minutes": 88.0,
+    "net_rating": 19.1,
+    "off_rating": 127.5,
+    "def_rating": 108.4,
+    "pace": 97.54,
+    "efg_pct": 0.626,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.351,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Carter Jr.",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero",
+      "C. Houstan"
+    ],
+    "minutes": 41.0,
+    "net_rating": 18.1,
+    "off_rating": 120.5,
+    "def_rating": 102.4,
+    "pace": 97.25,
+    "efg_pct": 0.606,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.211,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Ingles",
+      "W. Carter Jr.",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 30.0,
+    "net_rating": 17.0,
+    "off_rating": 121.9,
+    "def_rating": 104.8,
+    "pace": 100.33,
+    "efg_pct": 0.684,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "W. Carter Jr.",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 300.0,
+    "net_rating": 12.5,
+    "off_rating": 114.7,
+    "def_rating": 102.1,
+    "pace": 98.3,
+    "efg_pct": 0.583,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.226,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Bitadze",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero",
+      "A. Black"
+    ],
+    "minutes": 274.0,
+    "net_rating": 9.2,
+    "off_rating": 113.3,
+    "def_rating": 104.1,
+    "pace": 102.65,
+    "efg_pct": 0.55,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.318,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Isaac",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 44.0,
+    "net_rating": 5.2,
+    "off_rating": 106.2,
+    "def_rating": 101.0,
+    "pace": 106.89,
+    "efg_pct": 0.473,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.358,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Fultz",
+      "W. Carter Jr.",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 280.0,
+    "net_rating": 4.6,
+    "off_rating": 110.1,
+    "def_rating": 105.5,
+    "pace": 99.77,
+    "efg_pct": 0.537,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Ingles",
+      "M. Fultz",
+      "J. Isaac",
+      "M. Wagner",
+      "C. Anthony"
+    ],
+    "minutes": 80.0,
+    "net_rating": 4.3,
+    "off_rating": 105.5,
+    "def_rating": 101.3,
+    "pace": 96.7,
+    "efg_pct": 0.543,
+    "tov_pct": 0.184,
+    "oreb_pct": 0.315,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Ingles",
+      "J. Isaac",
+      "M. Wagner",
+      "C. Anthony"
+    ],
+    "minutes": 102.0,
+    "net_rating": 4.0,
+    "off_rating": 105.8,
+    "def_rating": 101.8,
+    "pace": 104.97,
+    "efg_pct": 0.542,
+    "tov_pct": 0.174,
+    "oreb_pct": 0.384,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Carter Jr.",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero",
+      "A. Black"
+    ],
+    "minutes": 63.0,
+    "net_rating": 1.5,
+    "off_rating": 105.2,
+    "def_rating": 103.7,
+    "pace": 102.58,
+    "efg_pct": 0.537,
+    "tov_pct": 0.157,
+    "oreb_pct": 0.226,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Bitadze",
+      "C. Okeke",
+      "J. Suggs",
+      "P. Banchero",
+      "C. Houstan"
+    ],
+    "minutes": 101.0,
+    "net_rating": -0.8,
+    "off_rating": 112.4,
+    "def_rating": 113.2,
+    "pace": 92.59,
+    "efg_pct": 0.503,
+    "tov_pct": 0.098,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "G. Bitadze",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 44.0,
+    "net_rating": -1.1,
+    "off_rating": 119.6,
+    "def_rating": 120.7,
+    "pace": 99.66,
+    "efg_pct": 0.617,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.211,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "M. Wagner",
+      "C. Anthony",
+      "F. Wagner",
+      "P. Banchero"
+    ],
+    "minutes": 37.0,
+    "net_rating": -2.4,
+    "off_rating": 102.3,
+    "def_rating": 104.7,
+    "pace": 110.56,
+    "efg_pct": 0.514,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Bitadze",
+      "C. Anthony",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 36.0,
+    "net_rating": -2.4,
+    "off_rating": 121.3,
+    "def_rating": 123.7,
+    "pace": 103.54,
+    "efg_pct": 0.575,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.4,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "G. Bitadze",
+      "F. Wagner",
+      "P. Banchero",
+      "A. Black"
+    ],
+    "minutes": 55.0,
+    "net_rating": -3.7,
+    "off_rating": 100.9,
+    "def_rating": 104.5,
+    "pace": 96.31,
+    "efg_pct": 0.484,
+    "tov_pct": 0.214,
+    "oreb_pct": 0.364,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Ingles",
+      "M. Wagner",
+      "C. Anthony",
+      "F. Wagner"
+    ],
+    "minutes": 54.0,
+    "net_rating": -8.8,
+    "off_rating": 111.2,
+    "def_rating": 120.0,
+    "pace": 100.92,
+    "efg_pct": 0.515,
+    "tov_pct": 0.069,
+    "oreb_pct": 0.259,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Wagner",
+      "C. Anthony",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 38.0,
+    "net_rating": -12.3,
+    "off_rating": 90.2,
+    "def_rating": 102.5,
+    "pace": 101.87,
+    "efg_pct": 0.459,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Carter Jr.",
+      "C. Anthony",
+      "F. Wagner",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 37.0,
+    "net_rating": -16.8,
+    "off_rating": 93.9,
+    "def_rating": 110.7,
+    "pace": 102.67,
+    "efg_pct": 0.508,
+    "tov_pct": 0.232,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "M. Fultz",
+      "W. Carter Jr.",
+      "J. Suggs",
+      "P. Banchero"
+    ],
+    "minutes": 49.0,
+    "net_rating": -32.6,
+    "off_rating": 96.1,
+    "def_rating": 128.7,
+    "pace": 100.63,
+    "efg_pct": 0.435,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.328,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "W. Carter Jr.",
+      "F. Wagner",
+      "P. Banchero",
+      "A. Black"
+    ],
+    "minutes": 47.0,
+    "net_rating": -36.8,
+    "off_rating": 85.9,
+    "def_rating": 122.7,
+    "pace": 97.41,
+    "efg_pct": 0.372,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.245,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Harris",
+      "J. Ingles",
+      "M. Wagner",
+      "C. Anthony",
+      "P. Banchero"
+    ],
+    "minutes": 37.0,
+    "net_rating": -42.9,
+    "off_rating": 92.4,
+    "def_rating": 135.3,
+    "pace": 105.06,
+    "efg_pct": 0.454,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.19,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

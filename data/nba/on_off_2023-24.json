@@ -1,0 +1,5150 @@
+[
+  {
+    "player_id": 1630180,
+    "player_name": "Bey, Saddiq",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -0.4,
+    "off_court_plus_minus": -4.0,
+    "on_off_diff": 3.6,
+    "minutes_on": 2062.0
+  },
+  {
+    "player_id": 203992,
+    "player_name": "Bogdanovi\u0107, Bogdan",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": 2.5,
+    "off_court_plus_minus": -9.4,
+    "on_off_diff": 11.9,
+    "minutes_on": 2401.0
+  },
+  {
+    "player_id": 1641723,
+    "player_name": "Bufkin, Kobe",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -8.6,
+    "off_court_plus_minus": -1.8,
+    "on_off_diff": -6.8,
+    "minutes_on": 196.0
+  },
+  {
+    "player_id": 203991,
+    "player_name": "Capela, Clint",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -0.4,
+    "off_court_plus_minus": -3.7,
+    "on_off_diff": 3.3,
+    "minutes_on": 1883.0
+  },
+  {
+    "player_id": 1628981,
+    "player_name": "Fernando, Bruno",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -6.8,
+    "off_court_plus_minus": -1.2,
+    "on_off_diff": -5.6,
+    "minutes_on": 682.0
+  },
+  {
+    "player_id": 1630235,
+    "player_name": "Forrest, Trent",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -10.9,
+    "off_court_plus_minus": -1.1,
+    "on_off_diff": -9.8,
+    "minutes_on": 414.0
+  },
+  {
+    "player_id": 1631100,
+    "player_name": "Griffin, AJ",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -14.3,
+    "off_court_plus_minus": -1.6,
+    "on_off_diff": -12.7,
+    "minutes_on": 171.0
+  },
+  {
+    "player_id": 1631243,
+    "player_name": "Gueye, Mouhamed",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -27.0,
+    "off_court_plus_minus": -1.7,
+    "on_off_diff": -25.3,
+    "minutes_on": 73.0
+  },
+  {
+    "player_id": 1629631,
+    "player_name": "Hunter, De'Andre",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -1.4,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": 1.3,
+    "minutes_on": 1681.0
+  },
+  {
+    "player_id": 1630552,
+    "player_name": "Johnson, Jalen",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -1.9,
+    "off_court_plus_minus": -2.4,
+    "on_off_diff": 0.5,
+    "minutes_on": 1889.0
+  },
+  {
+    "player_id": 1630249,
+    "player_name": "Krej\u010d\u00ed, V\u00edt",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": 0.1,
+    "off_court_plus_minus": -4.2,
+    "on_off_diff": 4.3,
+    "minutes_on": 541.0
+  },
+  {
+    "player_id": 1641754,
+    "player_name": "Lundy, Seth",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -12.0,
+    "off_court_plus_minus": -2.0,
+    "on_off_diff": -10.0,
+    "minutes_on": 52.0
+  },
+  {
+    "player_id": 1629726,
+    "player_name": "Mathews, Garrison",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -4.7,
+    "off_court_plus_minus": -1.3,
+    "on_off_diff": -3.4,
+    "minutes_on": 992.0
+  },
+  {
+    "player_id": 202083,
+    "player_name": "Matthews, Wesley",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -8.0,
+    "off_court_plus_minus": -1.5,
+    "on_off_diff": -6.5,
+    "minutes_on": 413.0
+  },
+  {
+    "player_id": 201988,
+    "player_name": "Mills, Patty",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -9.3,
+    "off_court_plus_minus": -1.1,
+    "on_off_diff": -8.2,
+    "minutes_on": 202.0
+  },
+  {
+    "player_id": 1627749,
+    "player_name": "Murray, Dejounte",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -2.7,
+    "off_court_plus_minus": -1.0,
+    "on_off_diff": -1.7,
+    "minutes_on": 2783.0
+  },
+  {
+    "player_id": 1630168,
+    "player_name": "Okongwu, Onyeka",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -1.2,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": 1.5,
+    "minutes_on": 1405.0
+  },
+  {
+    "player_id": 1629685,
+    "player_name": "Windler, Dylan",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -15.1,
+    "off_court_plus_minus": -0.9,
+    "on_off_diff": -14.2,
+    "minutes_on": 73.0
+  },
+  {
+    "player_id": 1629027,
+    "player_name": "Young, Trae",
+    "team_abbreviation": "ATL",
+    "on_court_plus_minus": -2.9,
+    "off_court_plus_minus": -1.5,
+    "on_off_diff": -1.4,
+    "minutes_on": 1942.0
+  },
+  {
+    "player_id": 1630625,
+    "player_name": "Banton, Dalano",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 5.6,
+    "off_court_plus_minus": 9.8,
+    "on_off_diff": -4.2,
+    "minutes_on": 171.0
+  },
+  {
+    "player_id": 1629052,
+    "player_name": "Brissett, Oshae",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 8.7,
+    "off_court_plus_minus": 11.7,
+    "on_off_diff": -3.0,
+    "minutes_on": 630.0
+  },
+  {
+    "player_id": 1627759,
+    "player_name": "Brown, Jaylen",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 8.5,
+    "off_court_plus_minus": 15.3,
+    "on_off_diff": -6.8,
+    "minutes_on": 2343.0
+  },
+  {
+    "player_id": 1631120,
+    "player_name": "Davison, JD",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 28.3,
+    "off_court_plus_minus": 11.1,
+    "on_off_diff": 17.2,
+    "minutes_on": 39.0
+  },
+  {
+    "player_id": 1630573,
+    "player_name": "Hauser, Sam",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 13.6,
+    "off_court_plus_minus": 9.4,
+    "on_off_diff": 4.2,
+    "minutes_on": 1741.0
+  },
+  {
+    "player_id": 201950,
+    "player_name": "Holiday, Jrue",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 9.1,
+    "off_court_plus_minus": 14.2,
+    "on_off_diff": -5.1,
+    "minutes_on": 2263.0
+  },
+  {
+    "player_id": 201143,
+    "player_name": "Horford, Al",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 11.6,
+    "off_court_plus_minus": 11.0,
+    "on_off_diff": 0.6,
+    "minutes_on": 1740.0
+  },
+  {
+    "player_id": 1628436,
+    "player_name": "Kornet, Luke",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 10.6,
+    "off_court_plus_minus": 11.5,
+    "on_off_diff": -0.9,
+    "minutes_on": 983.0
+  },
+  {
+    "player_id": 1629004,
+    "player_name": "Mykhailiuk, Svi",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 17.3,
+    "off_court_plus_minus": 10.6,
+    "on_off_diff": 6.7,
+    "minutes_on": 413.0
+  },
+  {
+    "player_id": 1641809,
+    "player_name": "Peterson, Drew",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 16.9,
+    "off_court_plus_minus": 12.3,
+    "on_off_diff": 4.6,
+    "minutes_on": 23.0
+  },
+  {
+    "player_id": 204001,
+    "player_name": "Porzi\u0146\u0123is, Kristaps",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 11.8,
+    "off_court_plus_minus": 10.8,
+    "on_off_diff": 1.0,
+    "minutes_on": 1690.0
+  },
+  {
+    "player_id": 1630202,
+    "player_name": "Pritchard, Payton",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 11.8,
+    "off_court_plus_minus": 10.8,
+    "on_off_diff": 1.0,
+    "minutes_on": 1826.0
+  },
+  {
+    "player_id": 1629674,
+    "player_name": "Queta, Neemias",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 19.4,
+    "off_court_plus_minus": 10.5,
+    "on_off_diff": 8.9,
+    "minutes_on": 333.0
+  },
+  {
+    "player_id": 1630531,
+    "player_name": "Springer, Jaden",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 14.1,
+    "off_court_plus_minus": 14.2,
+    "on_off_diff": -0.1,
+    "minutes_on": 130.0
+  },
+  {
+    "player_id": 1630205,
+    "player_name": "Stevens, Lamar",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 9.8,
+    "on_off_diff": -5.9,
+    "minutes_on": 122.0
+  },
+  {
+    "player_id": 1628369,
+    "player_name": "Tatum, Jayson",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 11.0,
+    "off_court_plus_minus": 11.7,
+    "on_off_diff": -0.7,
+    "minutes_on": 2645.0
+  },
+  {
+    "player_id": 1630214,
+    "player_name": "Tillman, Xavier",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 7.3,
+    "off_court_plus_minus": 15.7,
+    "on_off_diff": -8.4,
+    "minutes_on": 274.0
+  },
+  {
+    "player_id": 1641775,
+    "player_name": "Walsh, Jordan",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 27.0,
+    "off_court_plus_minus": 10.9,
+    "on_off_diff": 16.1,
+    "minutes_on": 83.0
+  },
+  {
+    "player_id": 1628401,
+    "player_name": "White, Derrick",
+    "team_abbreviation": "BOS",
+    "on_court_plus_minus": 12.5,
+    "off_court_plus_minus": 9.4,
+    "on_off_diff": 3.1,
+    "minutes_on": 2381.0
+  },
+  {
+    "player_id": 1628386,
+    "player_name": "Allen, Jarrett",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 4.0,
+    "off_court_plus_minus": -0.1,
+    "on_off_diff": 4.1,
+    "minutes_on": 2442.0
+  },
+  {
+    "player_id": 1641734,
+    "player_name": "Bates, Emoni",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -30.4,
+    "off_court_plus_minus": 3.5,
+    "on_off_diff": -33.9,
+    "minutes_on": 133.0
+  },
+  {
+    "player_id": 1629636,
+    "player_name": "Garland, Darius",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 2.8,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": 0.8,
+    "minutes_on": 1900.0
+  },
+  {
+    "player_id": 1629660,
+    "player_name": "Jerome, Ty",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -45.4,
+    "off_court_plus_minus": 2.6,
+    "on_off_diff": -48.0,
+    "minutes_on": 15.0
+  },
+  {
+    "player_id": 1627745,
+    "player_name": "Jones, Damian",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -16.2,
+    "off_court_plus_minus": 3.8,
+    "on_off_diff": -20.0,
+    "minutes_on": 270.0
+  },
+  {
+    "player_id": 1627747,
+    "player_name": "LeVert, Caris",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 2.9,
+    "off_court_plus_minus": 1.9,
+    "on_off_diff": 1.0,
+    "minutes_on": 1958.0
+  },
+  {
+    "player_id": 1630241,
+    "player_name": "Merrill, Sam",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 1.3,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -1.5,
+    "minutes_on": 1069.0
+  },
+  {
+    "player_id": 1628378,
+    "player_name": "Mitchell, Donovan",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 8.0,
+    "off_court_plus_minus": -3.0,
+    "on_off_diff": 11.0,
+    "minutes_on": 1943.0
+  },
+  {
+    "player_id": 1630596,
+    "player_name": "Mobley, Evan",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 1.0,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": -2.3,
+    "minutes_on": 1532.0
+  },
+  {
+    "player_id": 1630600,
+    "player_name": "Mobley, Isaiah",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -20.0,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -22.8,
+    "minutes_on": 72.0
+  },
+  {
+    "player_id": 202694,
+    "player_name": "Morris Sr., Marcus",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -13.6,
+    "off_court_plus_minus": -2.0,
+    "on_off_diff": -11.6,
+    "minutes_on": 180.0
+  },
+  {
+    "player_id": 1631250,
+    "player_name": "Nance, Pete",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -40.4,
+    "off_court_plus_minus": -0.9,
+    "on_off_diff": -39.5,
+    "minutes_on": 27.0
+  },
+  {
+    "player_id": 1627777,
+    "player_name": "Niang, Georges",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 0.8,
+    "off_court_plus_minus": 3.8,
+    "on_off_diff": -3.0,
+    "minutes_on": 1831.0
+  },
+  {
+    "player_id": 1630171,
+    "player_name": "Okoro, Isaac",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 1.0,
+    "off_court_plus_minus": 3.7,
+    "on_off_diff": -2.7,
+    "minutes_on": 1887.0
+  },
+  {
+    "player_id": 1641854,
+    "player_name": "Porter Jr., Craig",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -1.8,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -5.0,
+    "minutes_on": 649.0
+  },
+  {
+    "player_id": 1629622,
+    "player_name": "Strus, Max",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 5.4,
+    "off_court_plus_minus": -1.6,
+    "on_off_diff": 7.0,
+    "minutes_on": 2239.0
+  },
+  {
+    "player_id": 202684,
+    "player_name": "Thompson, Tristan",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": -1.1,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -4.1,
+    "minutes_on": 549.0
+  },
+  {
+    "player_id": 1629731,
+    "player_name": "Wade, Dean",
+    "team_abbreviation": "CLE",
+    "on_court_plus_minus": 7.7,
+    "off_court_plus_minus": 0.4,
+    "on_off_diff": 7.3,
+    "minutes_on": 1108.0
+  },
+  {
+    "player_id": 1630631,
+    "player_name": "Alvarado, Jose",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 11.2,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": 9.2,
+    "minutes_on": 1028.0
+  },
+  {
+    "player_id": 1631167,
+    "player_name": "Brockington, Izaiah",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 42.6,
+    "off_court_plus_minus": 20.1,
+    "on_off_diff": 22.5,
+    "minutes_on": 3.0
+  },
+  {
+    "player_id": 1630622,
+    "player_name": "Crutcher, Jalen",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 18.1,
+    "off_court_plus_minus": 7.2,
+    "on_off_diff": 10.9,
+    "minutes_on": 3.0
+  },
+  {
+    "player_id": 1630700,
+    "player_name": "Daniels, Dyson",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 2.5,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": -2.9,
+    "minutes_on": 1359.0
+  },
+  {
+    "player_id": 1629232,
+    "player_name": "Gates, Kaiser",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": -12.9,
+    "off_court_plus_minus": 0.6,
+    "on_off_diff": -13.5,
+    "minutes_on": 7.0
+  },
+  {
+    "player_id": 1641722,
+    "player_name": "Hawkins, Jordan",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 0.5,
+    "off_court_plus_minus": 6.0,
+    "on_off_diff": -5.5,
+    "minutes_on": 1161.0
+  },
+  {
+    "player_id": 1627742,
+    "player_name": "Ingram, Brandon",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 4.0,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": -0.9,
+    "minutes_on": 2103.0
+  },
+  {
+    "player_id": 1630529,
+    "player_name": "Jones, Herbert",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 4.8,
+    "off_court_plus_minus": 3.9,
+    "on_off_diff": 0.9,
+    "minutes_on": 2321.0
+  },
+  {
+    "player_id": 1630184,
+    "player_name": "Lewis Jr., Kira",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": -6.4,
+    "off_court_plus_minus": 5.7,
+    "on_off_diff": -12.1,
+    "minutes_on": 144.0
+  },
+  {
+    "player_id": 1630604,
+    "player_name": "Liddell, E.J.",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": -8.3,
+    "off_court_plus_minus": 4.5,
+    "on_off_diff": -12.8,
+    "minutes_on": 23.0
+  },
+  {
+    "player_id": 1630230,
+    "player_name": "Marshall, Naji",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 7.8,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": 5.0,
+    "minutes_on": 1257.0
+  },
+  {
+    "player_id": 203468,
+    "player_name": "McCollum, CJ",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 4.3,
+    "off_court_plus_minus": 4.5,
+    "on_off_diff": -0.2,
+    "minutes_on": 2159.0
+  },
+  {
+    "player_id": 1630530,
+    "player_name": "Murphy III, Trey",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 7.5,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": 5.4,
+    "minutes_on": 1690.0
+  },
+  {
+    "player_id": 1626204,
+    "player_name": "Nance Jr., Larry",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 2.8,
+    "off_court_plus_minus": 5.1,
+    "on_off_diff": -2.3,
+    "minutes_on": 1216.0
+  },
+  {
+    "player_id": 1630526,
+    "player_name": "Robinson-Earl, Jeremiah",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": -3.2,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -8.7,
+    "minutes_on": 334.0
+  },
+  {
+    "player_id": 1630346,
+    "player_name": "Ryan, Matt",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 1.6,
+    "off_court_plus_minus": 4.7,
+    "on_off_diff": -3.1,
+    "minutes_on": 390.0
+  },
+  {
+    "player_id": 1631220,
+    "player_name": "Seabron, Dereon",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 24.4,
+    "off_court_plus_minus": 4.1,
+    "on_off_diff": 20.3,
+    "minutes_on": 55.0
+  },
+  {
+    "player_id": 202685,
+    "player_name": "Valan\u010di\u016bnas, Jonas",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": -1.0,
+    "minutes_on": 1925.0
+  },
+  {
+    "player_id": 1629627,
+    "player_name": "Williamson, Zion",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 3.1,
+    "off_court_plus_minus": 6.1,
+    "on_off_diff": -3.0,
+    "minutes_on": 2207.0
+  },
+  {
+    "player_id": 203469,
+    "player_name": "Zeller, Cody",
+    "team_abbreviation": "NOP",
+    "on_court_plus_minus": 6.9,
+    "off_court_plus_minus": 4.2,
+    "on_off_diff": 2.7,
+    "minutes_on": 320.0
+  },
+  {
+    "player_id": 1641931,
+    "player_name": "Bitim, Onuralp",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -8.1,
+    "off_court_plus_minus": -0.9,
+    "on_off_diff": -7.2,
+    "minutes_on": 268.0
+  },
+  {
+    "player_id": 1628975,
+    "player_name": "Carter, Jevon",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 1.3,
+    "off_court_plus_minus": -2.3,
+    "on_off_diff": 3.6,
+    "minutes_on": 1004.0
+  },
+  {
+    "player_id": 1627936,
+    "player_name": "Caruso, Alex",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 0.1,
+    "off_court_plus_minus": -3.0,
+    "on_off_diff": 3.1,
+    "minutes_on": 2040.0
+  },
+  {
+    "player_id": 1628470,
+    "player_name": "Craig, Torrey",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -8.3,
+    "off_court_plus_minus": 1.0,
+    "on_off_diff": -9.3,
+    "minutes_on": 1049.0
+  },
+  {
+    "player_id": 201942,
+    "player_name": "DeRozan, DeMar",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -1.0,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": 1.7,
+    "minutes_on": 2989.0
+  },
+  {
+    "player_id": 1630245,
+    "player_name": "Dosunmu, Ayo",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -3.4,
+    "off_court_plus_minus": 1.1,
+    "on_off_diff": -4.5,
+    "minutes_on": 2212.0
+  },
+  {
+    "player_id": 1630929,
+    "player_name": "Drell, Henri",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 9.6,
+    "off_court_plus_minus": -0.5,
+    "on_off_diff": 10.1,
+    "minutes_on": 30.0
+  },
+  {
+    "player_id": 203083,
+    "player_name": "Drummond, Andre",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 0.9,
+    "off_court_plus_minus": -2.6,
+    "on_off_diff": 3.5,
+    "minutes_on": 1351.0
+  },
+  {
+    "player_id": 1641847,
+    "player_name": "Funk, Andrew",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 14.3,
+    "off_court_plus_minus": -1.6,
+    "on_off_diff": 15.9,
+    "minutes_on": 13.0
+  },
+  {
+    "player_id": 1629750,
+    "player_name": "Green, Javonte",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 5.8,
+    "off_court_plus_minus": -4.2,
+    "on_off_diff": 10.0,
+    "minutes_on": 230.0
+  },
+  {
+    "player_id": 203897,
+    "player_name": "LaVine, Zach",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -5.1,
+    "off_court_plus_minus": -0.4,
+    "on_off_diff": -4.7,
+    "minutes_on": 872.0
+  },
+  {
+    "player_id": 1641763,
+    "player_name": "Phillips, Julian",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -1.5,
+    "on_off_diff": 0.9,
+    "minutes_on": 323.0
+  },
+  {
+    "player_id": 1641766,
+    "player_name": "Sanogo, Adama",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 24.8,
+    "off_court_plus_minus": -1.9,
+    "on_off_diff": 26.7,
+    "minutes_on": 66.0
+  },
+  {
+    "player_id": 1630678,
+    "player_name": "Taylor, Terry",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 4.1,
+    "off_court_plus_minus": -1.9,
+    "on_off_diff": 6.0,
+    "minutes_on": 188.0
+  },
+  {
+    "player_id": 1631207,
+    "player_name": "Terry, Dalen",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": 2.5,
+    "off_court_plus_minus": -2.2,
+    "on_off_diff": 4.7,
+    "minutes_on": 681.0
+  },
+  {
+    "player_id": 202696,
+    "player_name": "Vu\u010devi\u0107, Nikola",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -3.3,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": -5.4,
+    "minutes_on": 2610.0
+  },
+  {
+    "player_id": 1629632,
+    "player_name": "White, Coby",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -3.6,
+    "on_off_diff": 3.0,
+    "minutes_on": 2881.0
+  },
+  {
+    "player_id": 1630172,
+    "player_name": "Williams, Patrick",
+    "team_abbreviation": "CHI",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -1.8,
+    "on_off_diff": 1.2,
+    "minutes_on": 1174.0
+  },
+  {
+    "player_id": 1630535,
+    "player_name": "Brown III, Greg",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -10.9,
+    "off_court_plus_minus": 2.3,
+    "on_off_diff": -13.2,
+    "minutes_on": 40.0
+  },
+  {
+    "player_id": 203552,
+    "player_name": "Curry, Seth",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 8.9,
+    "off_court_plus_minus": -1.7,
+    "on_off_diff": 10.6,
+    "minutes_on": 457.0
+  },
+  {
+    "player_id": 1641926,
+    "player_name": "Dennis, Dexter",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -14.5,
+    "off_court_plus_minus": 1.7,
+    "on_off_diff": -16.2,
+    "minutes_on": 30.0
+  },
+  {
+    "player_id": 1629029,
+    "player_name": "Don\u010di\u0107, Luka",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 5.8,
+    "off_court_plus_minus": -5.0,
+    "on_off_diff": 10.8,
+    "minutes_on": 2624.0
+  },
+  {
+    "player_id": 203957,
+    "player_name": "Exum, Dant\u00e9",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 10.5,
+    "off_court_plus_minus": -1.0,
+    "on_off_diff": 11.5,
+    "minutes_on": 1088.0
+  },
+  {
+    "player_id": 1641788,
+    "player_name": "Fudge, Alex",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -35.4,
+    "off_court_plus_minus": 7.6,
+    "on_off_diff": -43.0,
+    "minutes_on": 26.0
+  },
+  {
+    "player_id": 1629655,
+    "player_name": "Gafford, Daniel",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 6.6,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": 1.7,
+    "minutes_on": 623.0
+  },
+  {
+    "player_id": 1630182,
+    "player_name": "Green, Josh",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -3.2,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -8.7,
+    "minutes_on": 1505.0
+  },
+  {
+    "player_id": 203501,
+    "player_name": "Hardaway Jr., Tim",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 0.3,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -4.1,
+    "minutes_on": 2120.0
+  },
+  {
+    "player_id": 1630702,
+    "player_name": "Hardy, Jaden",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -6.1,
+    "off_court_plus_minus": 5.0,
+    "on_off_diff": -11.1,
+    "minutes_on": 989.0
+  },
+  {
+    "player_id": 1626158,
+    "player_name": "Holmes, Richaun",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -6.9,
+    "off_court_plus_minus": 1.0,
+    "on_off_diff": -7.9,
+    "minutes_on": 237.0
+  },
+  {
+    "player_id": 202681,
+    "player_name": "Irving, Kyrie",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 6.6,
+    "off_court_plus_minus": -2.4,
+    "on_off_diff": 9.0,
+    "minutes_on": 2030.0
+  },
+  {
+    "player_id": 1627884,
+    "player_name": "Jones Jr., Derrick",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 1.5,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -1.3,
+    "minutes_on": 1783.0
+  },
+  {
+    "player_id": 1628467,
+    "player_name": "Kleber, Maxi",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 6.8,
+    "off_court_plus_minus": 0.9,
+    "on_off_diff": 5.9,
+    "minutes_on": 871.0
+  },
+  {
+    "player_id": 1630639,
+    "player_name": "Lawson, A.J.",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 2.8,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": 0.6,
+    "minutes_on": 311.0
+  },
+  {
+    "player_id": 1641726,
+    "player_name": "Lively II, Dereck",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 5.3,
+    "off_court_plus_minus": 0.7,
+    "on_off_diff": 4.6,
+    "minutes_on": 1294.0
+  },
+  {
+    "player_id": 202693,
+    "player_name": "Morris, Markieff",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -12.6,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -15.7,
+    "minutes_on": 216.0
+  },
+  {
+    "player_id": 203939,
+    "player_name": "Powell, Dwight",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -2.6,
+    "minutes_on": 836.0
+  },
+  {
+    "player_id": 1641765,
+    "player_name": "Prosper, Olivier-Maxence",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -12.3,
+    "off_court_plus_minus": 3.6,
+    "on_off_diff": -15.9,
+    "minutes_on": 336.0
+  },
+  {
+    "player_id": 1629023,
+    "player_name": "Washington, P.J.",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": 8.0,
+    "off_court_plus_minus": 1.2,
+    "on_off_diff": 6.8,
+    "minutes_on": 935.0
+  },
+  {
+    "player_id": 1630314,
+    "player_name": "Williams, Brandon",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -24.2,
+    "off_court_plus_minus": 4.0,
+    "on_off_diff": -28.2,
+    "minutes_on": 113.0
+  },
+  {
+    "player_id": 1629684,
+    "player_name": "Williams, Grant",
+    "team_abbreviation": "DAL",
+    "on_court_plus_minus": -4.5,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": -9.4,
+    "minutes_on": 1242.0
+  },
+  {
+    "player_id": 1631128,
+    "player_name": "Braun, Christian",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -0.4,
+    "off_court_plus_minus": 9.3,
+    "on_off_diff": -9.7,
+    "minutes_on": 1656.0
+  },
+  {
+    "player_id": 203484,
+    "player_name": "Caldwell-Pope, Kentavious",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 11.4,
+    "off_court_plus_minus": -4.4,
+    "on_off_diff": 15.8,
+    "minutes_on": 2402.0
+  },
+  {
+    "player_id": 1631221,
+    "player_name": "Gillespie, Collin",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 3.2,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": -2.2,
+    "minutes_on": 225.0
+  },
+  {
+    "player_id": 203932,
+    "player_name": "Gordon, Aaron",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 8.8,
+    "off_court_plus_minus": 0.2,
+    "on_off_diff": 8.6,
+    "minutes_on": 2297.0
+  },
+  {
+    "player_id": 203200,
+    "player_name": "Holiday, Justin",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 3.1,
+    "off_court_plus_minus": 5.9,
+    "on_off_diff": -2.8,
+    "minutes_on": 862.0
+  },
+  {
+    "player_id": 1630643,
+    "player_name": "Huff, Jay",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -8.8,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": -14.2,
+    "minutes_on": 49.0
+  },
+  {
+    "player_id": 202704,
+    "player_name": "Jackson, Reggie",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 2.1,
+    "off_court_plus_minus": 8.0,
+    "on_off_diff": -5.9,
+    "minutes_on": 1817.0
+  },
+  {
+    "player_id": 203999,
+    "player_name": "Joki\u0107, Nikola",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 12.0,
+    "off_court_plus_minus": -10.0,
+    "on_off_diff": 22.0,
+    "minutes_on": 2737.0
+  },
+  {
+    "player_id": 201599,
+    "player_name": "Jordan, DeAndre",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -10.7,
+    "off_court_plus_minus": 7.0,
+    "on_off_diff": -17.7,
+    "minutes_on": 396.0
+  },
+  {
+    "player_id": 1630296,
+    "player_name": "Key, Braxton",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -8.8,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -14.3,
+    "minutes_on": 60.0
+  },
+  {
+    "player_id": 1627750,
+    "player_name": "Murray, Jamal",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 8.0,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": 5.2,
+    "minutes_on": 1861.0
+  },
+  {
+    "player_id": 1630192,
+    "player_name": "Nnaji, Zeke",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -14.0,
+    "off_court_plus_minus": 8.5,
+    "on_off_diff": -22.5,
+    "minutes_on": 576.0
+  },
+  {
+    "player_id": 1629618,
+    "player_name": "Pickett, Jalen",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -0.4,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": -5.8,
+    "minutes_on": 122.0
+  },
+  {
+    "player_id": 1629008,
+    "player_name": "Porter Jr., Michael",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 8.8,
+    "off_court_plus_minus": -1.4,
+    "on_off_diff": 10.2,
+    "minutes_on": 2565.0
+  },
+  {
+    "player_id": 1631124,
+    "player_name": "Strawther, Julian",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -9.1,
+    "off_court_plus_minus": 7.5,
+    "on_off_diff": -16.6,
+    "minutes_on": 545.0
+  },
+  {
+    "player_id": 1641816,
+    "player_name": "Tyson, Hunter",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": 8.0,
+    "off_court_plus_minus": 5.2,
+    "on_off_diff": 2.8,
+    "minutes_on": 48.0
+  },
+  {
+    "player_id": 1631212,
+    "player_name": "Watson, Peyton",
+    "team_abbreviation": "DEN",
+    "on_court_plus_minus": -2.2,
+    "off_court_plus_minus": 9.8,
+    "on_off_diff": -12.0,
+    "minutes_on": 1488.0
+  },
+  {
+    "player_id": 201939,
+    "player_name": "Curry, Stephen",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 3.7,
+    "off_court_plus_minus": 0.8,
+    "on_off_diff": 2.9,
+    "minutes_on": 2422.0
+  },
+  {
+    "player_id": 1630586,
+    "player_name": "Garuba, Usman",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": -29.7,
+    "off_court_plus_minus": 2.7,
+    "on_off_diff": -32.4,
+    "minutes_on": 18.0
+  },
+  {
+    "player_id": 203110,
+    "player_name": "Green, Draymond",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 5.5,
+    "off_court_plus_minus": 0.8,
+    "on_off_diff": 4.7,
+    "minutes_on": 1490.0
+  },
+  {
+    "player_id": 1631218,
+    "player_name": "Jackson-Davis, Trayce",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 1.4,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -1.7,
+    "minutes_on": 1130.0
+  },
+  {
+    "player_id": 202709,
+    "player_name": "Joseph, Cory",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": -1.9,
+    "off_court_plus_minus": 1.2,
+    "on_off_diff": -3.1,
+    "minutes_on": 296.0
+  },
+  {
+    "player_id": 1630228,
+    "player_name": "Kuminga, Jonathan",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 3.1,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": 1.0,
+    "minutes_on": 1950.0
+  },
+  {
+    "player_id": 1626172,
+    "player_name": "Looney, Kevon",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 1.5,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -1.5,
+    "minutes_on": 1194.0
+  },
+  {
+    "player_id": 1630541,
+    "player_name": "Moody, Moses",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 4.1,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": 2.1,
+    "minutes_on": 1156.0
+  },
+  {
+    "player_id": 101108,
+    "player_name": "Paul, Chris",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 3.4,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": 1.3,
+    "minutes_on": 1531.0
+  },
+  {
+    "player_id": 1627780,
+    "player_name": "Payton II, Gary",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 5.9,
+    "off_court_plus_minus": 1.9,
+    "on_off_diff": 4.0,
+    "minutes_on": 680.0
+  },
+  {
+    "player_id": 1641764,
+    "player_name": "Podziemski, Brandin",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 6.4,
+    "off_court_plus_minus": -1.2,
+    "on_off_diff": 7.6,
+    "minutes_on": 1968.0
+  },
+  {
+    "player_id": 1631311,
+    "player_name": "Quinones, Lester",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 2.1,
+    "off_court_plus_minus": 2.6,
+    "on_off_diff": -0.5,
+    "minutes_on": 394.0
+  },
+  {
+    "player_id": 1629010,
+    "player_name": "Robinson, Jerome",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 16.1,
+    "off_court_plus_minus": 2.3,
+    "on_off_diff": 13.8,
+    "minutes_on": 81.0
+  },
+  {
+    "player_id": 1630611,
+    "player_name": "Santos, Gui",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 4.0,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": 1.8,
+    "minutes_on": 192.0
+  },
+  {
+    "player_id": 1630311,
+    "player_name": "Spencer, Pat",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": -11.2,
+    "off_court_plus_minus": 4.8,
+    "on_off_diff": -16.0,
+    "minutes_on": 26.0
+  },
+  {
+    "player_id": 202691,
+    "player_name": "Thompson, Klay",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": 0.1,
+    "off_court_plus_minus": 5.9,
+    "on_off_diff": -5.8,
+    "minutes_on": 2284.0
+  },
+  {
+    "player_id": 203952,
+    "player_name": "Wiggins, Andrew",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": -1.4,
+    "off_court_plus_minus": 6.4,
+    "on_off_diff": -7.8,
+    "minutes_on": 1920.0
+  },
+  {
+    "player_id": 203967,
+    "player_name": "\u0160ari\u0107, Dario",
+    "team_abbreviation": "GSW",
+    "on_court_plus_minus": -0.9,
+    "off_court_plus_minus": 3.9,
+    "on_off_diff": -4.8,
+    "minutes_on": 1098.0
+  },
+  {
+    "player_id": 1628415,
+    "player_name": "Brooks, Dillon",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -0.5,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -3.6,
+    "minutes_on": 2227.0
+  },
+  {
+    "player_id": 203493,
+    "player_name": "Bullock Jr., Reggie",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -6.1,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": -8.1,
+    "minutes_on": 417.0
+  },
+  {
+    "player_id": 1631106,
+    "player_name": "Eason, Tari",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 8.8,
+    "off_court_plus_minus": 0.1,
+    "on_off_diff": 8.7,
+    "minutes_on": 480.0
+  },
+  {
+    "player_id": 1630224,
+    "player_name": "Green, Jalen",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 0.6,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": -1.5,
+    "minutes_on": 2601.0
+  },
+  {
+    "player_id": 201145,
+    "player_name": "Green, Jeff",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -2.8,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -5.8,
+    "minutes_on": 1307.0
+  },
+  {
+    "player_id": 1630207,
+    "player_name": "Hinton, Nate",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 8.4,
+    "off_court_plus_minus": 1.0,
+    "on_off_diff": 7.4,
+    "minutes_on": 75.0
+  },
+  {
+    "player_id": 1628988,
+    "player_name": "Holiday, Aaron",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 3.2,
+    "off_court_plus_minus": 0.1,
+    "on_off_diff": 3.1,
+    "minutes_on": 1269.0
+  },
+  {
+    "player_id": 1629111,
+    "player_name": "Landale, Jock",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 10.1,
+    "off_court_plus_minus": -1.0,
+    "on_off_diff": 11.1,
+    "minutes_on": 763.0
+  },
+  {
+    "player_id": 1626246,
+    "player_name": "Marjanovic, Boban",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -13.5,
+    "off_court_plus_minus": 1.4,
+    "on_off_diff": -14.9,
+    "minutes_on": 71.0
+  },
+  {
+    "player_id": 1631257,
+    "player_name": "Samuels Jr., Jermaine",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -10.4,
+    "off_court_plus_minus": 1.3,
+    "on_off_diff": -11.7,
+    "minutes_on": 60.0
+  },
+  {
+    "player_id": 1630578,
+    "player_name": "Sengun, Alperen",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 1.1,
+    "off_court_plus_minus": 1.1,
+    "on_off_diff": 0.0,
+    "minutes_on": 2046.0
+  },
+  {
+    "player_id": 1631095,
+    "player_name": "Smith Jr., Jabari",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -1.7,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -7.2,
+    "minutes_on": 2424.0
+  },
+  {
+    "player_id": 1630256,
+    "player_name": "Tate, Jae'Sean",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": 0.2,
+    "on_off_diff": 3.4,
+    "minutes_on": 1031.0
+  },
+  {
+    "player_id": 1641708,
+    "player_name": "Thompson, Amen",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 1.6,
+    "off_court_plus_minus": 0.9,
+    "on_off_diff": 0.7,
+    "minutes_on": 1389.0
+  },
+  {
+    "player_id": 1627832,
+    "player_name": "VanVleet, Fred",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": -3.4,
+    "on_off_diff": 6.7,
+    "minutes_on": 2684.0
+  },
+  {
+    "player_id": 1641715,
+    "player_name": "Whitmore, Cam",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": -1.5,
+    "off_court_plus_minus": 1.9,
+    "on_off_diff": -3.4,
+    "minutes_on": 880.0
+  },
+  {
+    "player_id": 1631466,
+    "player_name": "Williams, Nate",
+    "team_abbreviation": "HOU",
+    "on_court_plus_minus": 8.5,
+    "off_court_plus_minus": 0.9,
+    "on_off_diff": 7.6,
+    "minutes_on": 129.0
+  },
+  {
+    "player_id": 201587,
+    "player_name": "Batum, Nicolas",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 23.0,
+    "on_off_diff": -23.0,
+    "minutes_on": 54.0
+  },
+  {
+    "player_id": 1630527,
+    "player_name": "Boston, Brandon",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -15.4,
+    "off_court_plus_minus": 5.1,
+    "on_off_diff": -20.5,
+    "minutes_on": 345.0
+  },
+  {
+    "player_id": 1641738,
+    "player_name": "Brown, Kobe",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -11.2,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": -16.1,
+    "minutes_on": 394.0
+  },
+  {
+    "player_id": 1629599,
+    "player_name": "Coffey, Amir",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -3.0,
+    "off_court_plus_minus": 7.0,
+    "on_off_diff": -10.0,
+    "minutes_on": 1461.0
+  },
+  {
+    "player_id": 203496,
+    "player_name": "Covington, Robert",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 31.2,
+    "off_court_plus_minus": 8.2,
+    "on_off_diff": 23.0,
+    "minutes_on": 69.0
+  },
+  {
+    "player_id": 1631217,
+    "player_name": "Diabat\u00e9, Moussa",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -1.5,
+    "off_court_plus_minus": 3.4,
+    "on_off_diff": -4.9,
+    "minutes_on": 64.0
+  },
+  {
+    "player_id": 202331,
+    "player_name": "George, Paul",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 8.8,
+    "off_court_plus_minus": -6.4,
+    "on_off_diff": 15.2,
+    "minutes_on": 2502.0
+  },
+  {
+    "player_id": 201935,
+    "player_name": "Harden, James",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 5.7,
+    "off_court_plus_minus": -3.3,
+    "on_off_diff": 9.0,
+    "minutes_on": 2470.0
+  },
+  {
+    "player_id": 1630538,
+    "player_name": "Hyland, Bones",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -5.8,
+    "off_court_plus_minus": 4.7,
+    "on_off_diff": -10.5,
+    "minutes_on": 540.0
+  },
+  {
+    "player_id": 202695,
+    "player_name": "Leonard, Kawhi",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 8.1,
+    "off_court_plus_minus": -3.7,
+    "on_off_diff": 11.8,
+    "minutes_on": 2330.0
+  },
+  {
+    "player_id": 1629611,
+    "player_name": "Mann, Terance",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 1.3,
+    "off_court_plus_minus": 5.0,
+    "on_off_diff": -3.7,
+    "minutes_on": 1873.0
+  },
+  {
+    "player_id": 1630231,
+    "player_name": "Martin, KJ",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -6.1,
+    "off_court_plus_minus": 20.9,
+    "on_off_diff": -27.0,
+    "minutes_on": 31.0
+  },
+  {
+    "player_id": 1641757,
+    "player_name": "Miller, Jordan",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -22.1,
+    "off_court_plus_minus": 3.5,
+    "on_off_diff": -25.6,
+    "minutes_on": 28.0
+  },
+  {
+    "player_id": 1629875,
+    "player_name": "Moon, Xavier",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -14.9,
+    "off_court_plus_minus": 4.2,
+    "on_off_diff": -19.1,
+    "minutes_on": 119.0
+  },
+  {
+    "player_id": 203486,
+    "player_name": "Plumlee, Mason",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 0.8,
+    "off_court_plus_minus": 3.8,
+    "on_off_diff": -3.0,
+    "minutes_on": 674.0
+  },
+  {
+    "player_id": 1626181,
+    "player_name": "Powell, Norman",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 5.1,
+    "off_court_plus_minus": 1.4,
+    "on_off_diff": 3.7,
+    "minutes_on": 1990.0
+  },
+  {
+    "player_id": 1630563,
+    "player_name": "Primo, Joshua",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -4.7,
+    "off_court_plus_minus": 3.5,
+    "on_off_diff": -8.2,
+    "minutes_on": 10.0
+  },
+  {
+    "player_id": 1628464,
+    "player_name": "Theis, Daniel",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 3.0,
+    "off_court_plus_minus": 3.8,
+    "on_off_diff": -0.8,
+    "minutes_on": 1006.0
+  },
+  {
+    "player_id": 200782,
+    "player_name": "Tucker, P.J.",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": -5.9,
+    "off_court_plus_minus": 3.7,
+    "on_off_diff": -9.6,
+    "minutes_on": 420.0
+  },
+  {
+    "player_id": 201566,
+    "player_name": "Westbrook, Russell",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": 0.0,
+    "minutes_on": 1529.0
+  },
+  {
+    "player_id": 1627826,
+    "player_name": "Zubac, Ivica",
+    "team_abbreviation": "LAC",
+    "on_court_plus_minus": 4.9,
+    "off_court_plus_minus": 1.9,
+    "on_off_diff": 3.0,
+    "minutes_on": 1794.0
+  },
+  {
+    "player_id": 1630658,
+    "player_name": "Castleton, Colin",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -35.7,
+    "off_court_plus_minus": 1.1,
+    "on_off_diff": -36.8,
+    "minutes_on": 59.0
+  },
+  {
+    "player_id": 1631108,
+    "player_name": "Christie, Max",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -0.9,
+    "off_court_plus_minus": 1.0,
+    "on_off_diff": -1.9,
+    "minutes_on": 944.0
+  },
+  {
+    "player_id": 203076,
+    "player_name": "Davis, Anthony",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 2.7,
+    "off_court_plus_minus": -3.9,
+    "on_off_diff": 6.6,
+    "minutes_on": 2700.0
+  },
+  {
+    "player_id": 203915,
+    "player_name": "Dinwiddie, Spencer",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 6.7,
+    "off_court_plus_minus": -0.6,
+    "on_off_diff": 7.3,
+    "minutes_on": 678.0
+  },
+  {
+    "player_id": 1628385,
+    "player_name": "Giles III, Harry",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -84.8,
+    "off_court_plus_minus": 5.8,
+    "on_off_diff": -90.6,
+    "minutes_on": 19.0
+  },
+  {
+    "player_id": 1629060,
+    "player_name": "Hachimura, Rui",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 3.2,
+    "off_court_plus_minus": -1.7,
+    "on_off_diff": 4.9,
+    "minutes_on": 1825.0
+  },
+  {
+    "player_id": 1629637,
+    "player_name": "Hayes, Jaxson",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -5.9,
+    "off_court_plus_minus": 2.4,
+    "on_off_diff": -8.3,
+    "minutes_on": 877.0
+  },
+  {
+    "player_id": 1641793,
+    "player_name": "Hodge, D'Moi",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -40.7,
+    "off_court_plus_minus": -0.3,
+    "on_off_diff": -40.4,
+    "minutes_on": 41.0
+  },
+  {
+    "player_id": 1641720,
+    "player_name": "Hood-Schifino, Jalen",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -23.8,
+    "off_court_plus_minus": 1.3,
+    "on_off_diff": -25.1,
+    "minutes_on": 109.0
+  },
+  {
+    "player_id": 2544,
+    "player_name": "James, LeBron",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 4.2,
+    "off_court_plus_minus": -5.5,
+    "on_off_diff": 9.7,
+    "minutes_on": 2504.0
+  },
+  {
+    "player_id": 1641721,
+    "player_name": "Lewis, Maxwell",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -34.1,
+    "off_court_plus_minus": 1.5,
+    "on_off_diff": -35.6,
+    "minutes_on": 103.0
+  },
+  {
+    "player_id": 1630219,
+    "player_name": "Mays, Skylar",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -5.6,
+    "off_court_plus_minus": 2.3,
+    "on_off_diff": -7.9,
+    "minutes_on": 77.0
+  },
+  {
+    "player_id": 1627752,
+    "player_name": "Prince, Taurean",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -2.7,
+    "off_court_plus_minus": 4.3,
+    "on_off_diff": -7.0,
+    "minutes_on": 2108.0
+  },
+  {
+    "player_id": 1630559,
+    "player_name": "Reaves, Austin",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -0.7,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -3.9,
+    "minutes_on": 2629.0
+  },
+  {
+    "player_id": 1629629,
+    "player_name": "Reddish, Cam",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": -2.4,
+    "off_court_plus_minus": 1.6,
+    "on_off_diff": -4.0,
+    "minutes_on": 984.0
+  },
+  {
+    "player_id": 1626156,
+    "player_name": "Russell, D'Angelo",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": -4.4,
+    "on_off_diff": 8.0,
+    "minutes_on": 2484.0
+  },
+  {
+    "player_id": 1629020,
+    "player_name": "Vanderbilt, Jarred",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": 0.1,
+    "on_off_diff": 3.5,
+    "minutes_on": 581.0
+  },
+  {
+    "player_id": 1629216,
+    "player_name": "Vincent, Gabe",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 6.8,
+    "off_court_plus_minus": 0.2,
+    "on_off_diff": 6.6,
+    "minutes_on": 218.0
+  },
+  {
+    "player_id": 1626174,
+    "player_name": "Wood, Christian",
+    "team_abbreviation": "LAL",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": 0.7,
+    "on_off_diff": -0.5,
+    "minutes_on": 872.0
+  },
+  {
+    "player_id": 1628389,
+    "player_name": "Adebayo, Bam",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.0,
+    "off_court_plus_minus": 2.9,
+    "on_off_diff": -1.9,
+    "minutes_on": 2416.0
+  },
+  {
+    "player_id": 1628418,
+    "player_name": "Bryant, Thomas",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.2,
+    "off_court_plus_minus": 1.8,
+    "on_off_diff": -0.6,
+    "minutes_on": 441.0
+  },
+  {
+    "player_id": 202710,
+    "player_name": "Butler III, Jimmy",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 5.1,
+    "off_court_plus_minus": -1.8,
+    "on_off_diff": 6.9,
+    "minutes_on": 2042.0
+  },
+  {
+    "player_id": 1631288,
+    "player_name": "Cain, Jamal",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": -5.0,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": -7.2,
+    "minutes_on": 259.0
+  },
+  {
+    "player_id": 1630181,
+    "player_name": "Hampton, R.J.",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 13.3,
+    "off_court_plus_minus": -0.7,
+    "on_off_diff": 14.0,
+    "minutes_on": 76.0
+  },
+  {
+    "player_id": 1629639,
+    "player_name": "Herro, Tyler",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.1,
+    "off_court_plus_minus": 2.1,
+    "on_off_diff": -1.0,
+    "minutes_on": 1407.0
+  },
+  {
+    "player_id": 1629312,
+    "player_name": "Highsmith, Haywood",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": 2.5,
+    "on_off_diff": -2.3,
+    "minutes_on": 1366.0
+  },
+  {
+    "player_id": 1631170,
+    "player_name": "Jaquez Jr., Jaime",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 2.5,
+    "off_court_plus_minus": 0.9,
+    "on_off_diff": 1.6,
+    "minutes_on": 2113.0
+  },
+  {
+    "player_id": 1631107,
+    "player_name": "Jovi\u0107, Nikola",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 8.0,
+    "off_court_plus_minus": -0.1,
+    "on_off_diff": 8.1,
+    "minutes_on": 896.0
+  },
+  {
+    "player_id": 201567,
+    "player_name": "Love, Kevin",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 5.7,
+    "off_court_plus_minus": 0.6,
+    "on_off_diff": 5.1,
+    "minutes_on": 924.0
+  },
+  {
+    "player_id": 200768,
+    "player_name": "Lowry, Kyle",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 0.6,
+    "off_court_plus_minus": -0.2,
+    "on_off_diff": 0.8,
+    "minutes_on": 1037.0
+  },
+  {
+    "player_id": 1628997,
+    "player_name": "Martin, Caleb",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.8,
+    "off_court_plus_minus": 1.7,
+    "on_off_diff": 0.1,
+    "minutes_on": 1757.0
+  },
+  {
+    "player_id": 1626196,
+    "player_name": "Richardson, Josh",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": -4.7,
+    "off_court_plus_minus": 4.2,
+    "on_off_diff": -8.9,
+    "minutes_on": 1103.0
+  },
+  {
+    "player_id": 1629130,
+    "player_name": "Robinson, Duncan",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.0,
+    "off_court_plus_minus": 2.5,
+    "on_off_diff": -1.5,
+    "minutes_on": 1905.0
+  },
+  {
+    "player_id": 1631115,
+    "player_name": "Robinson, Orlando",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 1.9,
+    "off_court_plus_minus": 1.7,
+    "on_off_diff": 0.2,
+    "minutes_on": 304.0
+  },
+  {
+    "player_id": 1626179,
+    "player_name": "Rozier, Terry",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 7.2,
+    "on_off_diff": -7.2,
+    "minutes_on": 975.0
+  },
+  {
+    "player_id": 1630696,
+    "player_name": "Smith, Dru",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": -15.8,
+    "off_court_plus_minus": 1.6,
+    "on_off_diff": -17.4,
+    "minutes_on": 131.0
+  },
+  {
+    "player_id": 1631306,
+    "player_name": "Swider, Cole",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": -11.1,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": -13.1,
+    "minutes_on": 87.0
+  },
+  {
+    "player_id": 1631214,
+    "player_name": "Williams, Alondes",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": -61.6,
+    "off_court_plus_minus": 6.0,
+    "on_off_diff": -67.6,
+    "minutes_on": 16.0
+  },
+  {
+    "player_id": 1626153,
+    "player_name": "Wright, Delon",
+    "team_abbreviation": "MIA",
+    "on_court_plus_minus": 10.4,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": 7.1,
+    "minutes_on": 286.0
+  },
+  {
+    "player_id": 203507,
+    "player_name": "Antetokounmpo, Giannis",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 6.3,
+    "off_court_plus_minus": -4.3,
+    "on_off_diff": 10.6,
+    "minutes_on": 2567.0
+  },
+  {
+    "player_id": 203648,
+    "player_name": "Antetokounmpo, Thanasis",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -12.4,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -15.6,
+    "minutes_on": 155.0
+  },
+  {
+    "player_id": 1627736,
+    "player_name": "Beasley, Malik",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 6.0,
+    "off_court_plus_minus": -2.2,
+    "on_off_diff": 8.2,
+    "minutes_on": 2337.0
+  },
+  {
+    "player_id": 1630699,
+    "player_name": "Beauchamp, MarJon",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -0.9,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -4.1,
+    "minutes_on": 608.0
+  },
+  {
+    "player_id": 201976,
+    "player_name": "Beverley, Patrick",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -4.1,
+    "off_court_plus_minus": 5.7,
+    "on_off_diff": -9.8,
+    "minutes_on": 543.0
+  },
+  {
+    "player_id": 1629716,
+    "player_name": "Bolden, Marques",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 129.6,
+    "off_court_plus_minus": 4.5,
+    "on_off_diff": 125.1,
+    "minutes_on": 3.0
+  },
+  {
+    "player_id": 1626192,
+    "player_name": "Connaughton, Pat",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -0.4,
+    "off_court_plus_minus": 4.8,
+    "on_off_diff": -5.2,
+    "minutes_on": 1676.0
+  },
+  {
+    "player_id": 203109,
+    "player_name": "Crowder, Jae",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -2.9,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": -7.8,
+    "minutes_on": 1156.0
+  },
+  {
+    "player_id": 201568,
+    "player_name": "Gallinari, Danilo",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -14.9,
+    "off_court_plus_minus": 3.7,
+    "on_off_diff": -18.6,
+    "minutes_on": 155.0
+  },
+  {
+    "player_id": 1631260,
+    "player_name": "Green, AJ",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 2.4,
+    "on_off_diff": 1.5,
+    "minutes_on": 614.0
+  },
+  {
+    "player_id": 1641748,
+    "player_name": "Jackson Jr., Andre",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -7.5,
+    "off_court_plus_minus": 4.3,
+    "on_off_diff": -11.8,
+    "minutes_on": 572.0
+  },
+  {
+    "player_id": 203081,
+    "player_name": "Lillard, Damian",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 7.2,
+    "off_court_plus_minus": -6.0,
+    "on_off_diff": 13.2,
+    "minutes_on": 2578.0
+  },
+  {
+    "player_id": 1641753,
+    "player_name": "Livingston, Chris",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -14.3,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -17.3,
+    "minutes_on": 91.0
+  },
+  {
+    "player_id": 201572,
+    "player_name": "Lopez, Brook",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 5.5,
+    "off_court_plus_minus": -2.0,
+    "on_off_diff": 7.5,
+    "minutes_on": 2411.0
+  },
+  {
+    "player_id": 201577,
+    "player_name": "Lopez, Robin",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -17.1,
+    "off_court_plus_minus": 3.5,
+    "on_off_diff": -20.6,
+    "minutes_on": 65.0
+  },
+  {
+    "player_id": 203114,
+    "player_name": "Middleton, Khris",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 4.0,
+    "off_court_plus_minus": 1.7,
+    "on_off_diff": 2.3,
+    "minutes_on": 1487.0
+  },
+  {
+    "player_id": 1626166,
+    "player_name": "Payne, Cameron",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -1.0,
+    "off_court_plus_minus": 4.5,
+    "on_off_diff": -5.5,
+    "minutes_on": 702.0
+  },
+  {
+    "player_id": 1626171,
+    "player_name": "Portis, Bobby",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -0.1,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": -5.5,
+    "minutes_on": 2008.0
+  },
+  {
+    "player_id": 1631157,
+    "player_name": "Rollins, Ryan",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": 20.1,
+    "off_court_plus_minus": 1.2,
+    "on_off_diff": 18.9,
+    "minutes_on": 12.0
+  },
+  {
+    "player_id": 1631102,
+    "player_name": "Washington Jr., TyTy",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -11.2,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -14.0,
+    "minutes_on": 56.0
+  },
+  {
+    "player_id": 1629623,
+    "player_name": "Wigginton, Lindell",
+    "team_abbreviation": "MIL",
+    "on_court_plus_minus": -62.9,
+    "off_court_plus_minus": 5.0,
+    "on_off_diff": -67.9,
+    "minutes_on": 8.0
+  },
+  {
+    "player_id": 1629638,
+    "player_name": "Alexander-Walker, Nickeil",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 7.8,
+    "off_court_plus_minus": 5.1,
+    "on_off_diff": 2.7,
+    "minutes_on": 1921.0
+  },
+  {
+    "player_id": 203937,
+    "player_name": "Anderson, Kyle",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 4.5,
+    "off_court_plus_minus": 8.0,
+    "on_off_diff": -3.5,
+    "minutes_on": 1782.0
+  },
+  {
+    "player_id": 1628972,
+    "player_name": "Brown Jr., Troy",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 0.1,
+    "off_court_plus_minus": 7.5,
+    "on_off_diff": -7.4,
+    "minutes_on": 410.0
+  },
+  {
+    "player_id": 201144,
+    "player_name": "Conley, Mike",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 6.0,
+    "off_court_plus_minus": 6.9,
+    "on_off_diff": -0.9,
+    "minutes_on": 2193.0
+  },
+  {
+    "player_id": 1630162,
+    "player_name": "Edwards, Anthony",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 7.5,
+    "off_court_plus_minus": 3.9,
+    "on_off_diff": 3.6,
+    "minutes_on": 2770.0
+  },
+  {
+    "player_id": 1630568,
+    "player_name": "Garza, Luka",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 2.8,
+    "off_court_plus_minus": 6.5,
+    "on_off_diff": -3.7,
+    "minutes_on": 122.0
+  },
+  {
+    "player_id": 203497,
+    "player_name": "Gobert, Rudy",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 7.6,
+    "off_court_plus_minus": 4.1,
+    "on_off_diff": 3.5,
+    "minutes_on": 2593.0
+  },
+  {
+    "player_id": 1628382,
+    "player_name": "Jackson, Justin",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 4.7,
+    "on_off_diff": -4.7,
+    "minutes_on": 1.0
+  },
+  {
+    "player_id": 1630183,
+    "player_name": "McDaniels, Jaden",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": 9.6,
+    "on_off_diff": -6.0,
+    "minutes_on": 2105.0
+  },
+  {
+    "player_id": 1629162,
+    "player_name": "McLaughlin, Jordan",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 11.9,
+    "off_court_plus_minus": 5.4,
+    "on_off_diff": 6.5,
+    "minutes_on": 626.0
+  },
+  {
+    "player_id": 1631159,
+    "player_name": "Miller, Leonard",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 7.3,
+    "off_court_plus_minus": 6.4,
+    "on_off_diff": 0.9,
+    "minutes_on": 52.0
+  },
+  {
+    "player_id": 1629003,
+    "player_name": "Milton, Shake",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": -2.7,
+    "off_court_plus_minus": 8.5,
+    "on_off_diff": -11.2,
+    "minutes_on": 491.0
+  },
+  {
+    "player_id": 1631169,
+    "player_name": "Minott, Josh",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 10.5,
+    "off_court_plus_minus": 6.3,
+    "on_off_diff": 4.2,
+    "minutes_on": 91.0
+  },
+  {
+    "player_id": 1631111,
+    "player_name": "Moore Jr., Wendell",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": -3.8,
+    "off_court_plus_minus": 6.6,
+    "on_off_diff": -10.4,
+    "minutes_on": 75.0
+  },
+  {
+    "player_id": 1628420,
+    "player_name": "Morris, Monte",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 10.4,
+    "off_court_plus_minus": 5.2,
+    "on_off_diff": 5.2,
+    "minutes_on": 408.0
+  },
+  {
+    "player_id": 1630227,
+    "player_name": "Nix, Daishen",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 27.0,
+    "off_court_plus_minus": 6.1,
+    "on_off_diff": 20.9,
+    "minutes_on": 50.0
+  },
+  {
+    "player_id": 1629675,
+    "player_name": "Reid, Naz",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 6.1,
+    "off_court_plus_minus": 6.8,
+    "on_off_diff": -0.7,
+    "minutes_on": 1964.0
+  },
+  {
+    "player_id": 1626157,
+    "player_name": "Towns, Karl-Anthony",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 7.6,
+    "off_court_plus_minus": 5.2,
+    "on_off_diff": 2.4,
+    "minutes_on": 2026.0
+  },
+  {
+    "player_id": 203933,
+    "player_name": "Warren, T.J.",
+    "team_abbreviation": "MIN",
+    "on_court_plus_minus": 19.6,
+    "off_court_plus_minus": 2.9,
+    "on_off_diff": 16.7,
+    "minutes_on": 125.0
+  },
+  {
+    "player_id": 1628966,
+    "player_name": "Bates-Diop, Keita",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -9.2,
+    "off_court_plus_minus": -4.7,
+    "on_off_diff": -4.5,
+    "minutes_on": 68.0
+  },
+  {
+    "player_id": 1628969,
+    "player_name": "Bridges, Mikal",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -3.1,
+    "off_court_plus_minus": -2.3,
+    "on_off_diff": -0.8,
+    "minutes_on": 2854.0
+  },
+  {
+    "player_id": 1629717,
+    "player_name": "Brooks, Armoni",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": 12.9,
+    "off_court_plus_minus": -2.4,
+    "on_off_diff": 15.3,
+    "minutes_on": 104.0
+  },
+  {
+    "player_id": 1629651,
+    "player_name": "Claxton, Nic",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -6.3,
+    "off_court_plus_minus": 1.1,
+    "on_off_diff": -7.4,
+    "minutes_on": 2116.0
+  },
+  {
+    "player_id": 1641730,
+    "player_name": "Clowney, Noah",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -7.0,
+    "off_court_plus_minus": -2.4,
+    "on_off_diff": -4.6,
+    "minutes_on": 370.0
+  },
+  {
+    "player_id": 1627827,
+    "player_name": "Finney-Smith, Dorian",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -2.7,
+    "off_court_plus_minus": -3.1,
+    "on_off_diff": 0.4,
+    "minutes_on": 1935.0
+  },
+  {
+    "player_id": 1631367,
+    "player_name": "Gilyard, Jacob",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -17.2,
+    "off_court_plus_minus": -3.6,
+    "on_off_diff": -13.6,
+    "minutes_on": 45.0
+  },
+  {
+    "player_id": 1629661,
+    "player_name": "Johnson, Cameron",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -2.3,
+    "off_court_plus_minus": -3.3,
+    "on_off_diff": 1.0,
+    "minutes_on": 1599.0
+  },
+  {
+    "player_id": 1630553,
+    "player_name": "Johnson, Keon",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -19.5,
+    "off_court_plus_minus": -2.8,
+    "on_off_diff": -16.7,
+    "minutes_on": 61.0
+  },
+  {
+    "player_id": 1626220,
+    "player_name": "O'Neale, Royce",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -0.9,
+    "off_court_plus_minus": -2.4,
+    "on_off_diff": 1.5,
+    "minutes_on": 1202.0
+  },
+  {
+    "player_id": 203471,
+    "player_name": "Schr\u00f6der, Dennis",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -5.0,
+    "off_court_plus_minus": -6.1,
+    "on_off_diff": 1.1,
+    "minutes_on": 927.0
+  },
+  {
+    "player_id": 1630549,
+    "player_name": "Sharpe, Day'Ron",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": -4.8,
+    "on_off_diff": 8.1,
+    "minutes_on": 921.0
+  },
+  {
+    "player_id": 1627732,
+    "player_name": "Simmons, Ben",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -5.1,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": -2.4,
+    "minutes_on": 359.0
+  },
+  {
+    "player_id": 1628372,
+    "player_name": "Smith Jr., Dennis",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -1.6,
+    "off_court_plus_minus": -3.3,
+    "on_off_diff": 1.7,
+    "minutes_on": 1059.0
+  },
+  {
+    "player_id": 1630560,
+    "player_name": "Thomas, Cam",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -4.6,
+    "off_court_plus_minus": -0.9,
+    "on_off_diff": -3.7,
+    "minutes_on": 2075.0
+  },
+  {
+    "player_id": 1629022,
+    "player_name": "Walker IV, Lonnie",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": -3.9,
+    "on_off_diff": 4.1,
+    "minutes_on": 1011.0
+  },
+  {
+    "player_id": 1630570,
+    "player_name": "Watford, Trendon",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -4.1,
+    "off_court_plus_minus": -2.5,
+    "on_off_diff": -1.6,
+    "minutes_on": 857.0
+  },
+  {
+    "player_id": 1641727,
+    "player_name": "Whitehead, Dariq",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -44.0,
+    "off_court_plus_minus": -2.6,
+    "on_off_diff": -41.4,
+    "minutes_on": 24.0
+  },
+  {
+    "player_id": 1630592,
+    "player_name": "Wilson, Jalen",
+    "team_abbreviation": "BKN",
+    "on_court_plus_minus": -0.3,
+    "off_court_plus_minus": -3.4,
+    "on_off_diff": 3.1,
+    "minutes_on": 665.0
+  },
+  {
+    "player_id": 1630173,
+    "player_name": "Achiuwa, Precious",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": 11.7,
+    "on_off_diff": -11.5,
+    "minutes_on": 1187.0
+  },
+  {
+    "player_id": 1628384,
+    "player_name": "Anunoby, OG",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 21.1,
+    "off_court_plus_minus": -1.1,
+    "on_off_diff": 22.2,
+    "minutes_on": 802.0
+  },
+  {
+    "player_id": 1627853,
+    "player_name": "Arcidiacono, Ryan",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 2.1,
+    "off_court_plus_minus": 5.9,
+    "on_off_diff": -3.8,
+    "minutes_on": 45.0
+  },
+  {
+    "player_id": 1629628,
+    "player_name": "Barrett, RJ",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -1.1,
+    "off_court_plus_minus": 5.1,
+    "on_off_diff": -6.2,
+    "minutes_on": 767.0
+  },
+  {
+    "player_id": 202711,
+    "player_name": "Bogdanovic, Bojan",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -8.2,
+    "off_court_plus_minus": 8.8,
+    "on_off_diff": -17.0,
+    "minutes_on": 557.0
+  },
+  {
+    "player_id": 1629718,
+    "player_name": "Brown Jr., Charlie",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -7.7,
+    "off_court_plus_minus": 4.7,
+    "on_off_diff": -12.4,
+    "minutes_on": 37.0
+  },
+  {
+    "player_id": 1628973,
+    "player_name": "Brunson, Jalen",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 9.0,
+    "off_court_plus_minus": -5.4,
+    "on_off_diff": 14.4,
+    "minutes_on": 2726.0
+  },
+  {
+    "player_id": 202692,
+    "player_name": "Burks, Alec",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -10.8,
+    "off_court_plus_minus": 6.0,
+    "on_off_diff": -16.8,
+    "minutes_on": 311.0
+  },
+  {
+    "player_id": 1628978,
+    "player_name": "DiVincenzo, Donte",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": 6.5,
+    "on_off_diff": -3.2,
+    "minutes_on": 2360.0
+  },
+  {
+    "player_id": 1629603,
+    "player_name": "Diakite, Mamadi",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -11.3,
+    "off_court_plus_minus": 7.2,
+    "on_off_diff": -18.5,
+    "minutes_on": 8.0
+  },
+  {
+    "player_id": 1630201,
+    "player_name": "Flynn, Malachi",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -3.2,
+    "off_court_plus_minus": 12.9,
+    "on_off_diff": -16.1,
+    "minutes_on": 61.0
+  },
+  {
+    "player_id": 203095,
+    "player_name": "Fournier, Evan",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -13.7,
+    "off_court_plus_minus": 6.2,
+    "on_off_diff": -19.9,
+    "minutes_on": 39.0
+  },
+  {
+    "player_id": 201959,
+    "player_name": "Gibson, Taj",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -7.0,
+    "off_court_plus_minus": 2.6,
+    "on_off_diff": -9.6,
+    "minutes_on": 165.0
+  },
+  {
+    "player_id": 1629656,
+    "player_name": "Grimes, Quentin",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 0.3,
+    "off_court_plus_minus": 9.1,
+    "on_off_diff": -8.8,
+    "minutes_on": 910.0
+  },
+  {
+    "player_id": 1628404,
+    "player_name": "Hart, Josh",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 6.1,
+    "off_court_plus_minus": 1.2,
+    "on_off_diff": 4.9,
+    "minutes_on": 2707.0
+  },
+  {
+    "player_id": 1628392,
+    "player_name": "Hartenstein, Isaiah",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 10.3,
+    "off_court_plus_minus": -0.7,
+    "on_off_diff": 11.0,
+    "minutes_on": 1896.0
+  },
+  {
+    "player_id": 1629610,
+    "player_name": "Jeffries, DaQuan",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -10.4,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -13.2,
+    "minutes_on": 46.0
+  },
+  {
+    "player_id": 1630540,
+    "player_name": "McBride, Miles",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": 7.2,
+    "on_off_diff": -7.8,
+    "minutes_on": 1328.0
+  },
+  {
+    "player_id": 1630193,
+    "player_name": "Quickley, Immanuel",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 8.1,
+    "off_court_plus_minus": -3.8,
+    "on_off_diff": 11.9,
+    "minutes_on": 720.0
+  },
+  {
+    "player_id": 203944,
+    "player_name": "Randle, Julius",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 6.4,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": 3.1,
+    "minutes_on": 1630.0
+  },
+  {
+    "player_id": 1629011,
+    "player_name": "Robinson, Mitchell",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 0.8,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -4.7,
+    "minutes_on": 768.0
+  },
+  {
+    "player_id": 1630579,
+    "player_name": "Sims, Jericho",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -0.8,
+    "off_court_plus_minus": 5.5,
+    "on_off_diff": -6.3,
+    "minutes_on": 585.0
+  },
+  {
+    "player_id": 1631376,
+    "player_name": "Skapintsev, Dmytro",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": -6.4,
+    "on_off_diff": 6.4,
+    "minutes_on": 2.0
+  },
+  {
+    "player_id": 1631210,
+    "player_name": "Toppin, Jacob",
+    "team_abbreviation": "NYK",
+    "on_court_plus_minus": -20.1,
+    "off_court_plus_minus": 4.8,
+    "on_off_diff": -24.9,
+    "minutes_on": 38.0
+  },
+  {
+    "player_id": 1630175,
+    "player_name": "Anthony, Cole",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 2.9,
+    "off_court_plus_minus": 1.3,
+    "on_off_diff": 1.6,
+    "minutes_on": 1817.0
+  },
+  {
+    "player_id": 1631094,
+    "player_name": "Banchero, Paolo",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 6.8,
+    "on_off_diff": -6.8,
+    "minutes_on": 2799.0
+  },
+  {
+    "player_id": 1629048,
+    "player_name": "Bitadze, Goga",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 1.3,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": -0.9,
+    "minutes_on": 957.0
+  },
+  {
+    "player_id": 1641710,
+    "player_name": "Black, Anthony",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": -1.4,
+    "off_court_plus_minus": 3.4,
+    "on_off_diff": -4.8,
+    "minutes_on": 1164.0
+  },
+  {
+    "player_id": 1628976,
+    "player_name": "Carter Jr., Wendell",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 1.7,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": -0.5,
+    "minutes_on": 1406.0
+  },
+  {
+    "player_id": 1628365,
+    "player_name": "Fultz, Markelle",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 0.7,
+    "off_court_plus_minus": 2.4,
+    "on_off_diff": -1.7,
+    "minutes_on": 910.0
+  },
+  {
+    "player_id": 203914,
+    "player_name": "Harris, Gary",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 3.4,
+    "off_court_plus_minus": 1.4,
+    "on_off_diff": 2.0,
+    "minutes_on": 1297.0
+  },
+  {
+    "player_id": 1630284,
+    "player_name": "Harris, Kevon",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": -2.0,
+    "minutes_on": 6.0
+  },
+  {
+    "player_id": 1631216,
+    "player_name": "Houstan, Caleb",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": -1.8,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -4.8,
+    "minutes_on": 815.0
+  },
+  {
+    "player_id": 1641724,
+    "player_name": "Howard, Jett",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 2.9,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": 0.9,
+    "minutes_on": 67.0
+  },
+  {
+    "player_id": 204060,
+    "player_name": "Ingles, Joe",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 6.8,
+    "off_court_plus_minus": 0.0,
+    "on_off_diff": 6.8,
+    "minutes_on": 1169.0
+  },
+  {
+    "player_id": 1628371,
+    "player_name": "Isaac, Jonathan",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 9.6,
+    "off_court_plus_minus": -0.3,
+    "on_off_diff": 9.9,
+    "minutes_on": 915.0
+  },
+  {
+    "player_id": 1629643,
+    "player_name": "Okeke, Chuma",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": -7.8,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -11.0,
+    "minutes_on": 432.0
+  },
+  {
+    "player_id": 1630243,
+    "player_name": "Queen, Trevelin",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": -2.6,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": -4.8,
+    "minutes_on": 165.0
+  },
+  {
+    "player_id": 1629678,
+    "player_name": "Schofield, Admiral",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": -7.4,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": -9.6,
+    "minutes_on": 84.0
+  },
+  {
+    "player_id": 1630591,
+    "player_name": "Suggs, Jalen",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 1.1,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -1.9,
+    "minutes_on": 2025.0
+  },
+  {
+    "player_id": 1630532,
+    "player_name": "Wagner, Franz",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 4.2,
+    "off_court_plus_minus": -1.1,
+    "on_off_diff": 5.3,
+    "minutes_on": 2337.0
+  },
+  {
+    "player_id": 1629021,
+    "player_name": "Wagner, Moritz",
+    "team_abbreviation": "ORL",
+    "on_court_plus_minus": 3.2,
+    "off_court_plus_minus": 1.4,
+    "on_off_diff": 1.8,
+    "minutes_on": 1415.0
+  },
+  {
+    "player_id": 1628971,
+    "player_name": "Brown, Bruce",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 0.3,
+    "on_off_diff": 3.6,
+    "minutes_on": 981.0
+  },
+  {
+    "player_id": 1631112,
+    "player_name": "Brown, Kendall",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": -18.4,
+    "off_court_plus_minus": 3.4,
+    "on_off_diff": -21.8,
+    "minutes_on": 63.0
+  },
+  {
+    "player_id": 1630169,
+    "player_name": "Haliburton, Tyrese",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 6.3,
+    "off_court_plus_minus": -1.2,
+    "on_off_diff": 7.5,
+    "minutes_on": 2224.0
+  },
+  {
+    "player_id": 1627741,
+    "player_name": "Hield, Buddy",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": -0.7,
+    "on_off_diff": 4.0,
+    "minutes_on": 1336.0
+  },
+  {
+    "player_id": 1630543,
+    "player_name": "Jackson, Isaiah",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 1.8,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": -1.5,
+    "minutes_on": 771.0
+  },
+  {
+    "player_id": 1631245,
+    "player_name": "Jackson, Quenton",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 8.6,
+    "on_off_diff": -8.6,
+    "minutes_on": 11.0
+  },
+  {
+    "player_id": 201949,
+    "player_name": "Johnson, James",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 5.1,
+    "off_court_plus_minus": 3.5,
+    "on_off_diff": 1.6,
+    "minutes_on": 47.0
+  },
+  {
+    "player_id": 1631097,
+    "player_name": "Mathurin, Bennedict",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": -2.9,
+    "off_court_plus_minus": 6.8,
+    "on_off_diff": -9.7,
+    "minutes_on": 1538.0
+  },
+  {
+    "player_id": 204456,
+    "player_name": "McConnell, T.J.",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.5,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": 0.7,
+    "minutes_on": 1291.0
+  },
+  {
+    "player_id": 203926,
+    "player_name": "McDermott, Doug",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.1,
+    "off_court_plus_minus": 6.6,
+    "on_off_diff": -3.5,
+    "minutes_on": 204.0
+  },
+  {
+    "player_id": 1629614,
+    "player_name": "Nembhard, Andrew",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 1.8,
+    "off_court_plus_minus": 4.0,
+    "on_off_diff": -2.2,
+    "minutes_on": 1697.0
+  },
+  {
+    "player_id": 1630174,
+    "player_name": "Nesmith, Aaron",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 2.2,
+    "on_off_diff": 1.7,
+    "minutes_on": 1995.0
+  },
+  {
+    "player_id": 1629670,
+    "player_name": "Nwora, Jordan",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": -4.2,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": -7.0,
+    "minutes_on": 183.0
+  },
+  {
+    "player_id": 1641767,
+    "player_name": "Sheppard, Ben",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 4.1,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": 1.3,
+    "minutes_on": 814.0
+  },
+  {
+    "player_id": 1627783,
+    "player_name": "Siakam, Pascal",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.8,
+    "off_court_plus_minus": 4.0,
+    "on_off_diff": -0.2,
+    "minutes_on": 1303.0
+  },
+  {
+    "player_id": 1630188,
+    "player_name": "Smith, Jalen",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -5.0,
+    "minutes_on": 1047.0
+  },
+  {
+    "player_id": 1630167,
+    "player_name": "Toppin, Obi",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 2.4,
+    "on_off_diff": 1.5,
+    "minutes_on": 1731.0
+  },
+  {
+    "player_id": 1631131,
+    "player_name": "Tshiebwe, Oscar",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 16.0,
+    "off_court_plus_minus": 2.9,
+    "on_off_diff": 13.1,
+    "minutes_on": 42.0
+  },
+  {
+    "player_id": 1626167,
+    "player_name": "Turner, Myles",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 5.1,
+    "off_court_plus_minus": 0.8,
+    "on_off_diff": 4.3,
+    "minutes_on": 2076.0
+  },
+  {
+    "player_id": 1641716,
+    "player_name": "Walker, Jarace",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": 2.7,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -0.4,
+    "minutes_on": 340.0
+  },
+  {
+    "player_id": 1631209,
+    "player_name": "Wong, Isaiah",
+    "team_abbreviation": "IND",
+    "on_court_plus_minus": -56.0,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -59.1,
+    "minutes_on": 4.0
+  },
+  {
+    "player_id": 1628964,
+    "player_name": "Bamba, Mo",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -3.0,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -7.4,
+    "minutes_on": 740.0
+  },
+  {
+    "player_id": 1629647,
+    "player_name": "Bazley, Darius",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -4.9,
+    "off_court_plus_minus": -11.9,
+    "on_off_diff": 7.0,
+    "minutes_on": 10.0
+  },
+  {
+    "player_id": 1641741,
+    "player_name": "Council IV, Ricky",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 2.0,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -1.1,
+    "minutes_on": 289.0
+  },
+  {
+    "player_id": 1630288,
+    "player_name": "Dowtin Jr., Jeff",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 7.1,
+    "off_court_plus_minus": 1.5,
+    "on_off_diff": 5.6,
+    "minutes_on": 142.0
+  },
+  {
+    "player_id": 203954,
+    "player_name": "Embiid, Joel",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 9.8,
+    "off_court_plus_minus": -0.3,
+    "on_off_diff": 10.1,
+    "minutes_on": 1309.0
+  },
+  {
+    "player_id": 201980,
+    "player_name": "Green, Danny",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 13.0,
+    "on_off_diff": -13.0,
+    "minutes_on": 18.0
+  },
+  {
+    "player_id": 202699,
+    "player_name": "Harris, Tobias",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 4.5,
+    "off_court_plus_minus": 0.8,
+    "on_off_diff": 3.7,
+    "minutes_on": 2368.0
+  },
+  {
+    "player_id": 1627863,
+    "player_name": "House Jr., Danuel",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 1.9,
+    "off_court_plus_minus": 5.6,
+    "on_off_diff": -3.7,
+    "minutes_on": 509.0
+  },
+  {
+    "player_id": 1627788,
+    "player_name": "Korkmaz, Furkan",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 7.2,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": 2.8,
+    "minutes_on": 300.0
+  },
+  {
+    "player_id": 1631254,
+    "player_name": "Lofton Jr., Kenneth",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -76.2,
+    "off_court_plus_minus": -3.4,
+    "on_off_diff": -72.8,
+    "minutes_on": 9.0
+  },
+  {
+    "player_id": 1630178,
+    "player_name": "Maxey, Tyrese",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 5.5,
+    "off_court_plus_minus": -1.9,
+    "on_off_diff": 7.4,
+    "minutes_on": 2626.0
+  },
+  {
+    "player_id": 1629001,
+    "player_name": "Melton, De'Anthony",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 10.2,
+    "off_court_plus_minus": 0.5,
+    "on_off_diff": 9.7,
+    "minutes_on": 1023.0
+  },
+  {
+    "player_id": 1626162,
+    "player_name": "Oubre Jr., Kelly",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": 6.9,
+    "on_off_diff": -7.5,
+    "minutes_on": 2055.0
+  },
+  {
+    "player_id": 1630196,
+    "player_name": "Petrusev, Filip",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 53.7,
+    "off_court_plus_minus": 10.5,
+    "on_off_diff": 43.2,
+    "minutes_on": 3.0
+  },
+  {
+    "player_id": 1630194,
+    "player_name": "Reed, Paul",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 2.9,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -0.2,
+    "minutes_on": 1590.0
+  },
+  {
+    "player_id": 1630606,
+    "player_name": "Smart, Javonte",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -216.0,
+    "off_court_plus_minus": 11.4,
+    "on_off_diff": -227.4,
+    "minutes_on": 1.0
+  },
+  {
+    "player_id": 1631173,
+    "player_name": "Smith, Terquavion",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": -4.0,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -7.2,
+    "minutes_on": 84.0
+  },
+  {
+    "player_id": 1628391,
+    "player_name": "Wilson, D.J.",
+    "team_abbreviation": "PHI",
+    "on_court_plus_minus": 6.2,
+    "off_court_plus_minus": 2.6,
+    "on_off_diff": 3.6,
+    "minutes_on": 15.0
+  },
+  {
+    "player_id": 1628960,
+    "player_name": "Allen, Grayson",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 5.0,
+    "off_court_plus_minus": -0.4,
+    "on_off_diff": 5.4,
+    "minutes_on": 2513.0
+  },
+  {
+    "player_id": 1628962,
+    "player_name": "Azubuike, Udoka",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -20.4,
+    "off_court_plus_minus": 3.7,
+    "on_off_diff": -24.1,
+    "minutes_on": 113.0
+  },
+  {
+    "player_id": 203078,
+    "player_name": "Beal, Bradley",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 2.9,
+    "off_court_plus_minus": 3.2,
+    "on_off_diff": -0.3,
+    "minutes_on": 1767.0
+  },
+  {
+    "player_id": 1629626,
+    "player_name": "Bol, Bol",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 1.3,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": -2.0,
+    "minutes_on": 469.0
+  },
+  {
+    "player_id": 1626164,
+    "player_name": "Booker, Devin",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 6.2,
+    "off_court_plus_minus": -2.1,
+    "on_off_diff": 8.3,
+    "minutes_on": 2447.0
+  },
+  {
+    "player_id": 201142,
+    "player_name": "Durant, Kevin",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 5.0,
+    "off_court_plus_minus": -1.6,
+    "on_off_diff": 6.6,
+    "minutes_on": 2791.0
+  },
+  {
+    "player_id": 1629234,
+    "player_name": "Eubanks, Drew",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -4.4,
+    "off_court_plus_minus": 6.1,
+    "on_off_diff": -10.5,
+    "minutes_on": 1169.0
+  },
+  {
+    "player_id": 1630692,
+    "player_name": "Goodwin, Jordan",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -1.9,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -6.3,
+    "minutes_on": 559.0
+  },
+  {
+    "player_id": 201569,
+    "player_name": "Gordon, Eric",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 3.3,
+    "off_court_plus_minus": 2.8,
+    "on_off_diff": 0.5,
+    "minutes_on": 1893.0
+  },
+  {
+    "player_id": 1630240,
+    "player_name": "Lee, Saben",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 3.9,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": 0.9,
+    "minutes_on": 185.0
+  },
+  {
+    "player_id": 1629642,
+    "player_name": "Little, Nassir",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -9.2,
+    "off_court_plus_minus": 4.7,
+    "on_off_diff": -13.9,
+    "minutes_on": 458.0
+  },
+  {
+    "player_id": 1630177,
+    "player_name": "Maledon, Theo",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -29.3,
+    "off_court_plus_minus": 4.0,
+    "on_off_diff": -33.3,
+    "minutes_on": 13.0
+  },
+  {
+    "player_id": 1629002,
+    "player_name": "Metu, Chimezie",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -4.0,
+    "off_court_plus_minus": 4.6,
+    "on_off_diff": -8.6,
+    "minutes_on": 448.0
+  },
+  {
+    "player_id": 203994,
+    "player_name": "Nurki\u0107, Jusuf",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 9.3,
+    "off_court_plus_minus": -3.9,
+    "on_off_diff": 13.2,
+    "minutes_on": 2078.0
+  },
+  {
+    "player_id": 1629006,
+    "player_name": "Okogie, Josh",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": 0.3,
+    "off_court_plus_minus": 3.9,
+    "on_off_diff": -3.6,
+    "minutes_on": 960.0
+  },
+  {
+    "player_id": 1631223,
+    "player_name": "Roddy, David",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -9.9,
+    "off_court_plus_minus": 3.6,
+    "on_off_diff": -13.5,
+    "minutes_on": 63.0
+  },
+  {
+    "player_id": 202738,
+    "player_name": "Thomas, Isaiah",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -34.7,
+    "off_court_plus_minus": 7.6,
+    "on_off_diff": -42.3,
+    "minutes_on": 19.0
+  },
+  {
+    "player_id": 1630688,
+    "player_name": "Wainright, Ish",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -11.6,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -16.0,
+    "minutes_on": 17.0
+  },
+  {
+    "player_id": 1629139,
+    "player_name": "Watanabe, Yuta",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -4.5,
+    "off_court_plus_minus": 4.4,
+    "on_off_diff": -8.9,
+    "minutes_on": 382.0
+  },
+  {
+    "player_id": 201152,
+    "player_name": "Young, Thaddeus",
+    "team_abbreviation": "PHX",
+    "on_court_plus_minus": -5.9,
+    "off_court_plus_minus": 3.3,
+    "on_off_diff": -9.2,
+    "minutes_on": 89.0
+  },
+  {
+    "player_id": 1629028,
+    "player_name": "Ayton, Deandre",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -8.6,
+    "off_court_plus_minus": -9.2,
+    "on_off_diff": 0.6,
+    "minutes_on": 1783.0
+  },
+  {
+    "player_id": 1630641,
+    "player_name": "Badji, Ibou",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -19.1,
+    "off_court_plus_minus": -7.9,
+    "on_off_diff": -11.2,
+    "minutes_on": 226.0
+  },
+  {
+    "player_id": 1631123,
+    "player_name": "Bouyea, Jamaree",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -18.5,
+    "off_court_plus_minus": -17.1,
+    "on_off_diff": -1.4,
+    "minutes_on": 57.0
+  },
+  {
+    "player_id": 1627763,
+    "player_name": "Brogdon, Malcolm",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -3.5,
+    "off_court_plus_minus": -11.1,
+    "on_off_diff": 7.6,
+    "minutes_on": 1121.0
+  },
+  {
+    "player_id": 1629650,
+    "player_name": "Brown, Moses",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -14.2,
+    "off_court_plus_minus": -8.7,
+    "on_off_diff": -5.5,
+    "minutes_on": 200.0
+  },
+  {
+    "player_id": 1641739,
+    "player_name": "Camara, Toumani",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -5.2,
+    "off_court_plus_minus": -11.8,
+    "on_off_diff": 6.6,
+    "minutes_on": 1739.0
+  },
+  {
+    "player_id": 203924,
+    "player_name": "Grant, Jerami",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -9.2,
+    "off_court_plus_minus": -8.7,
+    "on_off_diff": -0.5,
+    "minutes_on": 1830.0
+  },
+  {
+    "player_id": 1630204,
+    "player_name": "Hagans, Ashton",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -12.5,
+    "on_off_diff": 11.9,
+    "minutes_on": 316.0
+  },
+  {
+    "player_id": 1630703,
+    "player_name": "Henderson, Scoot",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -13.5,
+    "off_court_plus_minus": -5.3,
+    "on_off_diff": -8.2,
+    "minutes_on": 1765.0
+  },
+  {
+    "player_id": 1631303,
+    "player_name": "Minaya, Justin",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -10.2,
+    "off_court_plus_minus": -8.8,
+    "on_off_diff": -1.4,
+    "minutes_on": 381.0
+  },
+  {
+    "player_id": 1631386,
+    "player_name": "Moore, Taze",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -26.2,
+    "off_court_plus_minus": -5.6,
+    "on_off_diff": -20.6,
+    "minutes_on": 40.0
+  },
+  {
+    "player_id": 1631200,
+    "player_name": "Murray, Kris",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -5.8,
+    "off_court_plus_minus": -10.5,
+    "on_off_diff": 4.7,
+    "minutes_on": 1348.0
+  },
+  {
+    "player_id": 1641871,
+    "player_name": "Reath, Duop",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -7.4,
+    "off_court_plus_minus": -9.6,
+    "on_off_diff": 2.2,
+    "minutes_on": 1214.0
+  },
+  {
+    "player_id": 1641712,
+    "player_name": "Rupert, Rayan",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -9.4,
+    "off_court_plus_minus": -8.8,
+    "on_off_diff": -0.6,
+    "minutes_on": 633.0
+  },
+  {
+    "player_id": 1631101,
+    "player_name": "Sharpe, Shaedon",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -11.1,
+    "off_court_plus_minus": -8.1,
+    "on_off_diff": -3.0,
+    "minutes_on": 1059.0
+  },
+  {
+    "player_id": 1629014,
+    "player_name": "Simons, Anfernee",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -10.0,
+    "off_court_plus_minus": -8.2,
+    "on_off_diff": -1.8,
+    "minutes_on": 1582.0
+  },
+  {
+    "player_id": 1629680,
+    "player_name": "Thybulle, Matisse",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -7.5,
+    "off_court_plus_minus": -9.8,
+    "on_off_diff": 2.3,
+    "minutes_on": 1487.0
+  },
+  {
+    "player_id": 1631133,
+    "player_name": "Walker, Jabari",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -9.5,
+    "off_court_plus_minus": -8.5,
+    "on_off_diff": -1.0,
+    "minutes_on": 1701.0
+  },
+  {
+    "player_id": 1629057,
+    "player_name": "Williams III, Robert",
+    "team_abbreviation": "POR",
+    "on_court_plus_minus": -12.1,
+    "off_court_plus_minus": -8.8,
+    "on_off_diff": -3.3,
+    "minutes_on": 119.0
+  },
+  {
+    "player_id": 203084,
+    "player_name": "Barnes, Harrison",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -1.6,
+    "off_court_plus_minus": 6.7,
+    "on_off_diff": -8.3,
+    "minutes_on": 2381.0
+  },
+  {
+    "player_id": 1630537,
+    "player_name": "Duarte, Chris",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -4.5,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -7.6,
+    "minutes_on": 720.0
+  },
+  {
+    "player_id": 1630556,
+    "player_name": "Edwards, Kessler",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -7.9,
+    "off_court_plus_minus": 2.4,
+    "on_off_diff": -10.3,
+    "minutes_on": 275.0
+  },
+  {
+    "player_id": 1631165,
+    "player_name": "Ellis, Keon",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 4.6,
+    "off_court_plus_minus": 0.8,
+    "on_off_diff": 3.8,
+    "minutes_on": 978.0
+  },
+  {
+    "player_id": 1630259,
+    "player_name": "Ford, Jordan",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 30.8,
+    "off_court_plus_minus": 1.6,
+    "on_off_diff": 29.2,
+    "minutes_on": 22.0
+  },
+  {
+    "player_id": 1628368,
+    "player_name": "Fox, De'Aaron",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 4.2,
+    "off_court_plus_minus": -3.3,
+    "on_off_diff": 7.5,
+    "minutes_on": 2659.0
+  },
+  {
+    "player_id": 1628989,
+    "player_name": "Huerter, Kevin",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 2.3,
+    "off_court_plus_minus": 1.4,
+    "on_off_diff": 0.9,
+    "minutes_on": 1562.0
+  },
+  {
+    "player_id": 1641732,
+    "player_name": "Jones, Colby",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 2.3,
+    "off_court_plus_minus": 1.7,
+    "on_off_diff": 0.6,
+    "minutes_on": 192.0
+  },
+  {
+    "player_id": 1630222,
+    "player_name": "Jones, Mason",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -12.1,
+    "off_court_plus_minus": 3.6,
+    "on_off_diff": -15.7,
+    "minutes_on": 28.0
+  },
+  {
+    "player_id": 203458,
+    "player_name": "Len, Alex",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 15.3,
+    "off_court_plus_minus": 0.0,
+    "on_off_diff": 15.3,
+    "minutes_on": 444.0
+  },
+  {
+    "player_id": 1626168,
+    "player_name": "Lyles, Trey",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 7.4,
+    "off_court_plus_minus": -0.6,
+    "on_off_diff": 8.0,
+    "minutes_on": 1158.0
+  },
+  {
+    "player_id": 201580,
+    "player_name": "McGee, JaVale",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 1.0,
+    "off_court_plus_minus": 1.8,
+    "on_off_diff": -0.8,
+    "minutes_on": 339.0
+  },
+  {
+    "player_id": 1630558,
+    "player_name": "Mitchell, Davion",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -2.0,
+    "off_court_plus_minus": 3.1,
+    "on_off_diff": -5.1,
+    "minutes_on": 1101.0
+  },
+  {
+    "player_id": 1628370,
+    "player_name": "Monk, Malik",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 0.3,
+    "off_court_plus_minus": 3.0,
+    "on_off_diff": -2.7,
+    "minutes_on": 1872.0
+  },
+  {
+    "player_id": 1631099,
+    "player_name": "Murray, Keegan",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 2.6,
+    "off_court_plus_minus": 0.2,
+    "on_off_diff": 2.4,
+    "minutes_on": 2589.0
+  },
+  {
+    "player_id": 1627734,
+    "player_name": "Sabonis, Domantas",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 1.1,
+    "off_court_plus_minus": 3.4,
+    "on_off_diff": -2.3,
+    "minutes_on": 2928.0
+  },
+  {
+    "player_id": 1641771,
+    "player_name": "Slawson, Jalen",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -7.8,
+    "off_court_plus_minus": 1.8,
+    "on_off_diff": -9.6,
+    "minutes_on": 37.0
+  },
+  {
+    "player_id": 1629308,
+    "player_name": "Toscano-Anderson, Juan",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": -8.2,
+    "off_court_plus_minus": 1.6,
+    "on_off_diff": -9.8,
+    "minutes_on": 53.0
+  },
+  {
+    "player_id": 1628426,
+    "player_name": "Vezenkov, Sasha",
+    "team_abbreviation": "SAC",
+    "on_court_plus_minus": 0.2,
+    "off_court_plus_minus": 2.0,
+    "on_off_diff": -1.8,
+    "minutes_on": 511.0
+  },
+  {
+    "player_id": 1631230,
+    "player_name": "Barlow, Dominick",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -3.7,
+    "off_court_plus_minus": -6.8,
+    "on_off_diff": 3.1,
+    "minutes_on": 420.0
+  },
+  {
+    "player_id": 1629646,
+    "player_name": "Bassey, Charles",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -10.8,
+    "off_court_plus_minus": -6.2,
+    "on_off_diff": -4.6,
+    "minutes_on": 205.0
+  },
+  {
+    "player_id": 1631103,
+    "player_name": "Branham, Malaki",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -11.2,
+    "off_court_plus_minus": -3.2,
+    "on_off_diff": -8.0,
+    "minutes_on": 1594.0
+  },
+  {
+    "player_id": 1630577,
+    "player_name": "Champagnie, Julian",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -4.6,
+    "off_court_plus_minus": -7.5,
+    "on_off_diff": 2.9,
+    "minutes_on": 1468.0
+  },
+  {
+    "player_id": 1631321,
+    "player_name": "Cissoko, Sidy",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": 8.5,
+    "off_court_plus_minus": -7.0,
+    "on_off_diff": 15.5,
+    "minutes_on": 141.0
+  },
+  {
+    "player_id": 1628380,
+    "player_name": "Collins, Zach",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -12.4,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": -9.7,
+    "minutes_on": 1526.0
+  },
+  {
+    "player_id": 1630561,
+    "player_name": "Duke Jr., David",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": 5.6,
+    "off_court_plus_minus": -4.6,
+    "on_off_diff": 10.2,
+    "minutes_on": 51.0
+  },
+  {
+    "player_id": 1628984,
+    "player_name": "Graham, Devonte'",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": 3.5,
+    "off_court_plus_minus": -7.3,
+    "on_off_diff": 10.8,
+    "minutes_on": 313.0
+  },
+  {
+    "player_id": 1630564,
+    "player_name": "Gray, RaiQuan",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": 17.2,
+    "off_court_plus_minus": -2.2,
+    "on_off_diff": 19.4,
+    "minutes_on": 39.0
+  },
+  {
+    "player_id": 1629640,
+    "player_name": "Johnson, Keldon",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -8.2,
+    "off_court_plus_minus": -4.6,
+    "on_off_diff": -3.6,
+    "minutes_on": 2038.0
+  },
+  {
+    "player_id": 1630200,
+    "player_name": "Jones, Tre",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -0.5,
+    "off_court_plus_minus": -13.4,
+    "on_off_diff": 12.9,
+    "minutes_on": 2138.0
+  },
+  {
+    "player_id": 1630572,
+    "player_name": "Mamukelashvili, Sandro",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": 4.8,
+    "off_court_plus_minus": -7.9,
+    "on_off_diff": 12.7,
+    "minutes_on": 451.0
+  },
+  {
+    "player_id": 1626224,
+    "player_name": "Osman, Cedi",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -13.4,
+    "off_court_plus_minus": -3.2,
+    "on_off_diff": -10.2,
+    "minutes_on": 1269.0
+  },
+  {
+    "player_id": 1631110,
+    "player_name": "Sochan, Jeremy",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -7.5,
+    "off_court_plus_minus": -5.1,
+    "on_off_diff": -2.4,
+    "minutes_on": 2193.0
+  },
+  {
+    "player_id": 1630170,
+    "player_name": "Vassell, Devin",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -6.2,
+    "off_court_plus_minus": -6.7,
+    "on_off_diff": 0.5,
+    "minutes_on": 2248.0
+  },
+  {
+    "player_id": 1641705,
+    "player_name": "Wembanyama, Victor",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -3.3,
+    "off_court_plus_minus": -10.0,
+    "on_off_diff": 6.7,
+    "minutes_on": 2106.0
+  },
+  {
+    "player_id": 1631104,
+    "player_name": "Wesley, Blake",
+    "team_abbreviation": "SAS",
+    "on_court_plus_minus": -7.9,
+    "off_court_plus_minus": -6.0,
+    "on_off_diff": -1.9,
+    "minutes_on": 876.0
+  },
+  {
+    "player_id": 202722,
+    "player_name": "Bertans, Davis",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 12.6,
+    "off_court_plus_minus": 7.5,
+    "on_off_diff": 5.1,
+    "minutes_on": 91.0
+  },
+  {
+    "player_id": 202687,
+    "player_name": "Biyombo, Bismack",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -2.0,
+    "off_court_plus_minus": 8.8,
+    "on_off_diff": -10.8,
+    "minutes_on": 73.0
+  },
+  {
+    "player_id": 1631172,
+    "player_name": "Dieng, Ousmane",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 0.1,
+    "off_court_plus_minus": 8.1,
+    "on_off_diff": -8.0,
+    "minutes_on": 365.0
+  },
+  {
+    "player_id": 1629652,
+    "player_name": "Dort, Luguentz",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 7.4,
+    "off_court_plus_minus": 7.3,
+    "on_off_diff": 0.1,
+    "minutes_on": 2246.0
+  },
+  {
+    "player_id": 1641745,
+    "player_name": "Flagler, Adam",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 0.0,
+    "off_court_plus_minus": 8.1,
+    "on_off_diff": -8.1,
+    "minutes_on": 14.0
+  },
+  {
+    "player_id": 1630581,
+    "player_name": "Giddey, Josh",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 9.0,
+    "off_court_plus_minus": 5.7,
+    "on_off_diff": 3.3,
+    "minutes_on": 2012.0
+  },
+  {
+    "player_id": 1628983,
+    "player_name": "Gilgeous-Alexander, Shai",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 11.5,
+    "off_court_plus_minus": -0.2,
+    "on_off_diff": 11.7,
+    "minutes_on": 2553.0
+  },
+  {
+    "player_id": 202330,
+    "player_name": "Hayward, Gordon",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -0.1,
+    "off_court_plus_minus": 9.8,
+    "on_off_diff": -9.9,
+    "minutes_on": 447.0
+  },
+  {
+    "player_id": 1631096,
+    "player_name": "Holmgren, Chet",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 8.4,
+    "off_court_plus_minus": 5.7,
+    "on_off_diff": 2.7,
+    "minutes_on": 2413.0
+  },
+  {
+    "player_id": 1630198,
+    "player_name": "Joe, Isaiah",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 11.7,
+    "off_court_plus_minus": 4.9,
+    "on_off_diff": 6.8,
+    "minutes_on": 1445.0
+  },
+  {
+    "player_id": 1641749,
+    "player_name": "Johnson, Keyontae",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -5.1,
+    "off_court_plus_minus": 7.6,
+    "on_off_diff": -12.7,
+    "minutes_on": 66.0
+  },
+  {
+    "player_id": 1630544,
+    "player_name": "Mann, Tre",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -2.0,
+    "off_court_plus_minus": 8.2,
+    "on_off_diff": -10.2,
+    "minutes_on": 119.0
+  },
+  {
+    "player_id": 203995,
+    "player_name": "Micic, Vasilije",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 14.6,
+    "off_court_plus_minus": 6.5,
+    "on_off_diff": 8.1,
+    "minutes_on": 361.0
+  },
+  {
+    "player_id": 203488,
+    "player_name": "Muscala, Mike",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -1.1,
+    "off_court_plus_minus": 6.7,
+    "on_off_diff": -7.8,
+    "minutes_on": 91.0
+  },
+  {
+    "player_id": 1630197,
+    "player_name": "Pokusevski, Aleksej",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -27.0,
+    "off_court_plus_minus": 8.2,
+    "on_off_diff": -35.2,
+    "minutes_on": 60.0
+  },
+  {
+    "player_id": 1630846,
+    "player_name": "Sarr, Olivier",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 0.5,
+    "off_court_plus_minus": 7.5,
+    "on_off_diff": -7.0,
+    "minutes_on": 98.0
+  },
+  {
+    "player_id": 1641717,
+    "player_name": "Wallace, Cason",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": 10.2,
+    "on_off_diff": -6.6,
+    "minutes_on": 1692.0
+  },
+  {
+    "player_id": 1630322,
+    "player_name": "Waters III, Lindy",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": -6.0,
+    "off_court_plus_minus": 8.4,
+    "on_off_diff": -14.4,
+    "minutes_on": 280.0
+  },
+  {
+    "player_id": 1630598,
+    "player_name": "Wiggins, Aaron",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 3.7,
+    "off_court_plus_minus": 9.0,
+    "on_off_diff": -5.3,
+    "minutes_on": 1228.0
+  },
+  {
+    "player_id": 1631114,
+    "player_name": "Williams, Jalen",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 8.3,
+    "off_court_plus_minus": 6.2,
+    "on_off_diff": 2.1,
+    "minutes_on": 2224.0
+  },
+  {
+    "player_id": 1631119,
+    "player_name": "Williams, Jaylin",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 6.6,
+    "off_court_plus_minus": 7.6,
+    "on_off_diff": -1.0,
+    "minutes_on": 897.0
+  },
+  {
+    "player_id": 1629026,
+    "player_name": "Williams, Kenrich",
+    "team_abbreviation": "OKC",
+    "on_court_plus_minus": 7.1,
+    "off_court_plus_minus": 7.5,
+    "on_off_diff": -0.4,
+    "minutes_on": 1029.0
+  },
+  {
+    "player_id": 1630534,
+    "player_name": "Agbaji, Ochai",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -9.7,
+    "off_court_plus_minus": -13.0,
+    "on_off_diff": 3.3,
+    "minutes_on": 638.0
+  },
+  {
+    "player_id": 1630567,
+    "player_name": "Barnes, Scottie",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -3.3,
+    "off_court_plus_minus": -9.9,
+    "on_off_diff": 6.6,
+    "minutes_on": 2094.0
+  },
+  {
+    "player_id": 1628449,
+    "player_name": "Boucher, Chris",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": 1.9,
+    "off_court_plus_minus": -8.2,
+    "on_off_diff": 10.1,
+    "minutes_on": 705.0
+  },
+  {
+    "player_id": 1630618,
+    "player_name": "Carton, D.J.",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -41.9,
+    "off_court_plus_minus": -10.7,
+    "on_off_diff": -31.2,
+    "minutes_on": 36.0
+  },
+  {
+    "player_id": 1641711,
+    "player_name": "Dick, Gradey",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -14.3,
+    "off_court_plus_minus": -2.7,
+    "on_off_diff": -11.6,
+    "minutes_on": 1268.0
+  },
+  {
+    "player_id": 1631241,
+    "player_name": "Freeman-Liberty, Javon",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -18.9,
+    "off_court_plus_minus": -5.0,
+    "on_off_diff": -13.9,
+    "minutes_on": 403.0
+  },
+  {
+    "player_id": 1631338,
+    "player_name": "Gueye, Mouhamadou",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -32.0,
+    "off_court_plus_minus": -13.9,
+    "on_off_diff": -18.1,
+    "minutes_on": 120.0
+  },
+  {
+    "player_id": 1631199,
+    "player_name": "Harper Jr., Ron",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -118.4,
+    "off_court_plus_minus": -1.2,
+    "on_off_diff": -117.2,
+    "minutes_on": 4.0
+  },
+  {
+    "player_id": 1629667,
+    "player_name": "McDaniels, Jalen",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -14.5,
+    "off_court_plus_minus": -5.1,
+    "on_off_diff": -9.4,
+    "minutes_on": 538.0
+  },
+  {
+    "player_id": 1641806,
+    "player_name": "Nowell, Markquis",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": 54.6,
+    "off_court_plus_minus": -3.3,
+    "on_off_diff": 57.9,
+    "minutes_on": 4.0
+  },
+  {
+    "player_id": 203482,
+    "player_name": "Olynyk, Kelly",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -13.2,
+    "off_court_plus_minus": -10.0,
+    "on_off_diff": -3.2,
+    "minutes_on": 739.0
+  },
+  {
+    "player_id": 1627751,
+    "player_name": "Poeltl, Jakob",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -9.3,
+    "on_off_diff": 8.7,
+    "minutes_on": 1319.0
+  },
+  {
+    "player_id": 203490,
+    "player_name": "Porter Jr., Otto",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": 6.1,
+    "off_court_plus_minus": -4.0,
+    "on_off_diff": 10.1,
+    "minutes_on": 174.0
+  },
+  {
+    "player_id": 1629007,
+    "player_name": "Porter, Jontay",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -9.6,
+    "off_court_plus_minus": -7.9,
+    "on_off_diff": -1.7,
+    "minutes_on": 360.0
+  },
+  {
+    "player_id": 1630186,
+    "player_name": "Ramsey, Jahmi'us",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -11.1,
+    "off_court_plus_minus": -16.8,
+    "on_off_diff": 5.7,
+    "minutes_on": 121.0
+  },
+  {
+    "player_id": 1628424,
+    "player_name": "Simmons, Kobi",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -22.1,
+    "off_court_plus_minus": -20.4,
+    "on_off_diff": -1.7,
+    "minutes_on": 67.0
+  },
+  {
+    "player_id": 202066,
+    "player_name": "Temple, Garrett",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -13.1,
+    "off_court_plus_minus": -5.9,
+    "on_off_diff": -7.2,
+    "minutes_on": 289.0
+  },
+  {
+    "player_id": 1629018,
+    "player_name": "Trent Jr., Gary",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -4.7,
+    "off_court_plus_minus": -8.1,
+    "on_off_diff": 3.4,
+    "minutes_on": 1994.0
+  },
+  {
+    "player_id": 1642013,
+    "player_name": "Williams, Malik",
+    "team_abbreviation": "TOR",
+    "on_court_plus_minus": -25.2,
+    "off_court_plus_minus": -7.5,
+    "on_off_diff": -17.7,
+    "minutes_on": 107.0
+  },
+  {
+    "player_id": 203903,
+    "player_name": "Clarkson, Jordan",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -5.4,
+    "off_court_plus_minus": -4.4,
+    "on_off_diff": -1.0,
+    "minutes_on": 1682.0
+  },
+  {
+    "player_id": 1628381,
+    "player_name": "Collins, John",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -7.8,
+    "off_court_plus_minus": -2.2,
+    "on_off_diff": -5.6,
+    "minutes_on": 1901.0
+  },
+  {
+    "player_id": 1627739,
+    "player_name": "Dunn, Kris",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": 0.5,
+    "off_court_plus_minus": -7.3,
+    "on_off_diff": 7.8,
+    "minutes_on": 1249.0
+  },
+  {
+    "player_id": 1631323,
+    "player_name": "Fontecchio, Simone",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": 0.4,
+    "off_court_plus_minus": -3.7,
+    "on_off_diff": 4.1,
+    "minutes_on": 1160.0
+  },
+  {
+    "player_id": 1641718,
+    "player_name": "George, Keyonte",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -8.9,
+    "off_court_plus_minus": -0.7,
+    "on_off_diff": -8.2,
+    "minutes_on": 2023.0
+  },
+  {
+    "player_id": 1641707,
+    "player_name": "Hendricks, Taylor",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -8.4,
+    "off_court_plus_minus": -3.9,
+    "on_off_diff": -4.5,
+    "minutes_on": 856.0
+  },
+  {
+    "player_id": 1629659,
+    "player_name": "Horton-Tucker, Talen",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -5.1,
+    "off_court_plus_minus": -4.8,
+    "on_off_diff": -0.3,
+    "minutes_on": 1009.0
+  },
+  {
+    "player_id": 1630548,
+    "player_name": "Juzang, Johnny",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -1.0,
+    "off_court_plus_minus": -5.3,
+    "on_off_diff": 4.3,
+    "minutes_on": 372.0
+  },
+  {
+    "player_id": 1631117,
+    "player_name": "Kessler, Walker",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -4.8,
+    "off_court_plus_minus": -4.9,
+    "on_off_diff": 0.1,
+    "minutes_on": 1493.0
+  },
+  {
+    "player_id": 1628374,
+    "player_name": "Markkanen, Lauri",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": 0.6,
+    "off_court_plus_minus": -9.5,
+    "on_off_diff": 10.1,
+    "minutes_on": 1820.0
+  },
+  {
+    "player_id": 1630695,
+    "player_name": "Potter, Micah",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -7.2,
+    "off_court_plus_minus": -4.7,
+    "on_off_diff": -2.5,
+    "minutes_on": 186.0
+  },
+  {
+    "player_id": 1630554,
+    "player_name": "Preston, Jason",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": 15.5,
+    "off_court_plus_minus": -6.7,
+    "on_off_diff": 22.2,
+    "minutes_on": 71.0
+  },
+  {
+    "player_id": 1629677,
+    "player_name": "Samanic, Luka",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -6.1,
+    "off_court_plus_minus": -4.7,
+    "on_off_diff": -1.4,
+    "minutes_on": 404.0
+  },
+  {
+    "player_id": 1641729,
+    "player_name": "Sensabaugh, Brice",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -14.2,
+    "off_court_plus_minus": -3.2,
+    "on_off_diff": -11.0,
+    "minutes_on": 584.0
+  },
+  {
+    "player_id": 1629012,
+    "player_name": "Sexton, Collin",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -3.3,
+    "off_court_plus_minus": -6.6,
+    "on_off_diff": 3.3,
+    "minutes_on": 2075.0
+  },
+  {
+    "player_id": 1630209,
+    "player_name": "Yurtseven, Omer",
+    "team_abbreviation": "UTA",
+    "on_court_plus_minus": -11.7,
+    "off_court_plus_minus": -3.8,
+    "on_off_diff": -7.9,
+    "minutes_on": 545.0
+  },
+  {
+    "player_id": 1630583,
+    "player_name": "Aldama, Santi",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -8.2,
+    "off_court_plus_minus": -6.1,
+    "on_off_diff": -2.1,
+    "minutes_on": 1618.0
+  },
+  {
+    "player_id": 1641851,
+    "player_name": "Allen, Timmy",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -24.9,
+    "off_court_plus_minus": 0.0,
+    "on_off_diff": -24.9,
+    "minutes_on": 125.0
+  },
+  {
+    "player_id": 1630217,
+    "player_name": "Bane, Desmond",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -6.7,
+    "off_court_plus_minus": -7.1,
+    "on_off_diff": 0.4,
+    "minutes_on": 1443.0
+  },
+  {
+    "player_id": 1629634,
+    "player_name": "Clarke, Brandon",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -2.9,
+    "off_court_plus_minus": -7.1,
+    "on_off_diff": 4.2,
+    "minutes_on": 134.0
+  },
+  {
+    "player_id": 1641787,
+    "player_name": "Evbuomwan, Tosan",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -18.2,
+    "off_court_plus_minus": -16.5,
+    "on_off_diff": -1.7,
+    "minutes_on": 74.0
+  },
+  {
+    "player_id": 1629117,
+    "player_name": "Gabriel, Wenyen",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -9.5,
+    "off_court_plus_minus": -8.5,
+    "on_off_diff": -1.0,
+    "minutes_on": 81.0
+  },
+  {
+    "player_id": 1627885,
+    "player_name": "Harrison, Shaquille",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -88.5,
+    "off_court_plus_minus": -2.3,
+    "on_off_diff": -86.2,
+    "minutes_on": 6.0
+  },
+  {
+    "player_id": 1630562,
+    "player_name": "Hurt, Matt",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -5.1,
+    "off_court_plus_minus": -15.4,
+    "on_off_diff": 10.3,
+    "minutes_on": 113.0
+  },
+  {
+    "player_id": 1628991,
+    "player_name": "Jackson Jr., Jaren",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -7.7,
+    "off_court_plus_minus": -6.1,
+    "on_off_diff": -1.6,
+    "minutes_on": 2124.0
+  },
+  {
+    "player_id": 1641713,
+    "player_name": "Jackson, GG",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -7.6,
+    "off_court_plus_minus": -6.7,
+    "on_off_diff": -0.9,
+    "minutes_on": 1233.0
+  },
+  {
+    "player_id": 1630610,
+    "player_name": "Jarreau, DeJon",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -7.7,
+    "off_court_plus_minus": -13.2,
+    "on_off_diff": 5.5,
+    "minutes_on": 150.0
+  },
+  {
+    "player_id": 1641998,
+    "player_name": "Jemison III, Trey",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -9.5,
+    "off_court_plus_minus": -9.5,
+    "on_off_diff": 0.0,
+    "minutes_on": 572.0
+  },
+  {
+    "player_id": 1628379,
+    "player_name": "Kennard, Luke",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -9.0,
+    "off_court_plus_minus": -6.3,
+    "on_off_diff": -2.7,
+    "minutes_on": 999.0
+  },
+  {
+    "player_id": 1629723,
+    "player_name": "Konchar, John",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -6.2,
+    "off_court_plus_minus": -7.3,
+    "on_off_diff": 1.1,
+    "minutes_on": 1174.0
+  },
+  {
+    "player_id": 1631222,
+    "player_name": "LaRavia, Jake",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -6.8,
+    "off_court_plus_minus": -7.0,
+    "on_off_diff": 0.2,
+    "minutes_on": 806.0
+  },
+  {
+    "player_id": 1629630,
+    "player_name": "Morant, Ja",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": 1.7,
+    "off_court_plus_minus": -7.7,
+    "on_off_diff": 9.4,
+    "minutes_on": 318.0
+  },
+  {
+    "player_id": 1629669,
+    "player_name": "Nowell, Jaylen",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -0.6,
+    "off_court_plus_minus": -8.7,
+    "on_off_diff": 8.1,
+    "minutes_on": 156.0
+  },
+  {
+    "player_id": 1641970,
+    "player_name": "Pereira, Maozinha",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": 3.6,
+    "off_court_plus_minus": -13.1,
+    "on_off_diff": 16.7,
+    "minutes_on": 122.0
+  },
+  {
+    "player_id": 1630590,
+    "player_name": "Pippen Jr., Scotty",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -6.6,
+    "off_court_plus_minus": -9.7,
+    "on_off_diff": 3.1,
+    "minutes_on": 527.0
+  },
+  {
+    "player_id": 201565,
+    "player_name": "Rose, Derrick",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -4.0,
+    "off_court_plus_minus": -7.3,
+    "on_off_diff": 3.3,
+    "minutes_on": 399.0
+  },
+  {
+    "player_id": 1630285,
+    "player_name": "Simpson, Zavier",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -8.6,
+    "off_court_plus_minus": -6.4,
+    "on_off_diff": -2.2,
+    "minutes_on": 161.0
+  },
+  {
+    "player_id": 203935,
+    "player_name": "Smart, Marcus",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -1.6,
+    "off_court_plus_minus": -7.9,
+    "on_off_diff": 6.3,
+    "minutes_on": 605.0
+  },
+  {
+    "player_id": 1631298,
+    "player_name": "White, Jack",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -21.1,
+    "off_court_plus_minus": -6.4,
+    "on_off_diff": -14.7,
+    "minutes_on": 64.0
+  },
+  {
+    "player_id": 1631246,
+    "player_name": "Williams Jr., Vince",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -3.0,
+    "off_court_plus_minus": -9.2,
+    "on_off_diff": 6.2,
+    "minutes_on": 1437.0
+  },
+  {
+    "player_id": 1630533,
+    "player_name": "Williams, Ziaire",
+    "team_abbreviation": "MEM",
+    "on_court_plus_minus": -11.4,
+    "off_court_plus_minus": -5.4,
+    "on_off_diff": -6.0,
+    "minutes_on": 1038.0
+  },
+  {
+    "player_id": 1630166,
+    "player_name": "Avdija, Deni",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -7.0,
+    "off_court_plus_minus": -12.3,
+    "on_off_diff": 5.3,
+    "minutes_on": 2257.0
+  },
+  {
+    "player_id": 1628963,
+    "player_name": "Bagley III, Marvin",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -5.3,
+    "off_court_plus_minus": -10.2,
+    "on_off_diff": 4.9,
+    "minutes_on": 575.0
+  },
+  {
+    "player_id": 1631116,
+    "player_name": "Baldwin Jr., Patrick",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -2.2,
+    "off_court_plus_minus": -10.3,
+    "on_off_diff": 8.1,
+    "minutes_on": 494.0
+  },
+  {
+    "player_id": 1631262,
+    "player_name": "Bernard, Jules",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": 8.4,
+    "off_court_plus_minus": -10.6,
+    "on_off_diff": 19.0,
+    "minutes_on": 149.0
+  },
+  {
+    "player_id": 1630215,
+    "player_name": "Butler, Jared",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -4.1,
+    "off_court_plus_minus": -10.1,
+    "on_off_diff": 6.0,
+    "minutes_on": 566.0
+  },
+  {
+    "player_id": 1630551,
+    "player_name": "Champagnie, Justin",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -12.1,
+    "off_court_plus_minus": -9.1,
+    "on_off_diff": -3.0,
+    "minutes_on": 235.0
+  },
+  {
+    "player_id": 1641731,
+    "player_name": "Coulibaly, Bilal",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -11.7,
+    "off_court_plus_minus": -7.4,
+    "on_off_diff": -4.3,
+    "minutes_on": 1715.0
+  },
+  {
+    "player_id": 1631098,
+    "player_name": "Davis, Johnny",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -11.7,
+    "off_court_plus_minus": -8.8,
+    "on_off_diff": -2.9,
+    "minutes_on": 613.0
+  },
+  {
+    "player_id": 1628977,
+    "player_name": "Diallo, Hamidou",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": 40.4,
+    "off_court_plus_minus": 0.0,
+    "on_off_diff": 40.4,
+    "minutes_on": 5.0
+  },
+  {
+    "player_id": 1630264,
+    "player_name": "Gill, Anthony",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": 0.5,
+    "off_court_plus_minus": -10.6,
+    "on_off_diff": 11.1,
+    "minutes_on": 466.0
+  },
+  {
+    "player_id": 1626145,
+    "player_name": "Jones, Tyus",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -12.3,
+    "off_court_plus_minus": -6.3,
+    "on_off_diff": -6.0,
+    "minutes_on": 1933.0
+  },
+  {
+    "player_id": 1630557,
+    "player_name": "Kispert, Corey",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -10.3,
+    "off_court_plus_minus": -8.1,
+    "on_off_diff": -2.2,
+    "minutes_on": 2067.0
+  },
+  {
+    "player_id": 1628398,
+    "player_name": "Kuzma, Kyle",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -11.8,
+    "off_court_plus_minus": -5.8,
+    "on_off_diff": -6.0,
+    "minutes_on": 2281.0
+  },
+  {
+    "player_id": 1630647,
+    "player_name": "Omoruyi, Eugene",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -16.8,
+    "off_court_plus_minus": -8.4,
+    "on_off_diff": -8.4,
+    "minutes_on": 393.0
+  },
+  {
+    "player_id": 1629673,
+    "player_name": "Poole, Jordan",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -11.3,
+    "off_court_plus_minus": -6.3,
+    "on_off_diff": -5.0,
+    "minutes_on": 2346.0
+  },
+  {
+    "player_id": 1629013,
+    "player_name": "Shamet, Landry",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": -9.8,
+    "off_court_plus_minus": -9.1,
+    "on_off_diff": -0.7,
+    "minutes_on": 726.0
+  },
+  {
+    "player_id": 1641774,
+    "player_name": "Vukcevic, Tristan",
+    "team_abbreviation": "WAS",
+    "on_court_plus_minus": 10.0,
+    "off_court_plus_minus": -12.5,
+    "on_off_diff": 22.5,
+    "minutes_on": 153.0
+  },
+  {
+    "player_id": 1631205,
+    "player_name": "Boeheim, Buddy",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": 12.0,
+    "off_court_plus_minus": -10.3,
+    "on_off_diff": 22.3,
+    "minutes_on": 84.0
+  },
+  {
+    "player_id": 1630608,
+    "player_name": "Cazalon, Malcolm",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": 92.9,
+    "off_court_plus_minus": -9.2,
+    "on_off_diff": 102.1,
+    "minutes_on": 3.0
+  },
+  {
+    "player_id": 1630595,
+    "player_name": "Cunningham, Cade",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -8.1,
+    "off_court_plus_minus": -10.2,
+    "on_off_diff": 2.1,
+    "minutes_on": 2074.0
+  },
+  {
+    "player_id": 1631105,
+    "player_name": "Duren, Jalen",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -8.4,
+    "off_court_plus_minus": -9.6,
+    "on_off_diff": 1.2,
+    "minutes_on": 1777.0
+  },
+  {
+    "player_id": 203925,
+    "player_name": "Harris, Joe",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -13.6,
+    "off_court_plus_minus": -8.9,
+    "on_off_diff": -4.7,
+    "minutes_on": 170.0
+  },
+  {
+    "player_id": 1630165,
+    "player_name": "Hayes, Killian",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -11.6,
+    "off_court_plus_minus": -7.5,
+    "on_off_diff": -4.1,
+    "minutes_on": 1008.0
+  },
+  {
+    "player_id": 1631093,
+    "player_name": "Ivey, Jaden",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -7.6,
+    "off_court_plus_minus": -11.0,
+    "on_off_diff": 3.4,
+    "minutes_on": 2217.0
+  },
+  {
+    "player_id": 1628995,
+    "player_name": "Knox II, Kevin",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -7.3,
+    "off_court_plus_minus": -11.5,
+    "on_off_diff": 4.2,
+    "minutes_on": 560.0
+  },
+  {
+    "player_id": 1630587,
+    "player_name": "Livers, Isaiah",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -20.3,
+    "off_court_plus_minus": -8.4,
+    "on_off_diff": -11.9,
+    "minutes_on": 469.0
+  },
+  {
+    "player_id": 1631197,
+    "player_name": "Rhoden, Jared",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -7.6,
+    "off_court_plus_minus": -9.2,
+    "on_off_diff": 1.6,
+    "minutes_on": 245.0
+  },
+  {
+    "player_id": 1631204,
+    "player_name": "Sasser, Marcus",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -8.9,
+    "off_court_plus_minus": -9.2,
+    "on_off_diff": 0.3,
+    "minutes_on": 1351.0
+  },
+  {
+    "player_id": 1630191,
+    "player_name": "Stewart, Isaiah",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -4.5,
+    "off_court_plus_minus": -11.7,
+    "on_off_diff": 7.2,
+    "minutes_on": 1423.0
+  },
+  {
+    "player_id": 1641709,
+    "player_name": "Thompson, Ausar",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -7.0,
+    "off_court_plus_minus": -10.5,
+    "on_off_diff": 3.5,
+    "minutes_on": 1583.0
+  },
+  {
+    "player_id": 1630649,
+    "player_name": "Umude, Stanley",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -11.7,
+    "off_court_plus_minus": -8.9,
+    "on_off_diff": -2.8,
+    "minutes_on": 307.0
+  },
+  {
+    "player_id": 1630164,
+    "player_name": "Wiseman, James",
+    "team_abbreviation": "DET",
+    "on_court_plus_minus": -14.3,
+    "off_court_plus_minus": -7.1,
+    "on_off_diff": -7.2,
+    "minutes_on": 1091.0
+  },
+  {
+    "player_id": 1641735,
+    "player_name": "Bailey, Amari",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": 3.7,
+    "off_court_plus_minus": -10.4,
+    "on_off_diff": 14.1,
+    "minutes_on": 65.0
+  },
+  {
+    "player_id": 1630163,
+    "player_name": "Ball, LaMelo",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -9.4,
+    "off_court_plus_minus": -10.4,
+    "on_off_diff": 1.0,
+    "minutes_on": 711.0
+  },
+  {
+    "player_id": 1641778,
+    "player_name": "Black, Leaky",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -4.6,
+    "off_court_plus_minus": -10.7,
+    "on_off_diff": 6.1,
+    "minutes_on": 284.0
+  },
+  {
+    "player_id": 1630547,
+    "player_name": "Bouknight, James",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -6.5,
+    "off_court_plus_minus": -11.8,
+    "on_off_diff": 5.3,
+    "minutes_on": 81.0
+  },
+  {
+    "player_id": 1628970,
+    "player_name": "Bridges, Miles",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -11.8,
+    "off_court_plus_minus": -7.3,
+    "on_off_diff": -4.5,
+    "minutes_on": 2581.0
+  },
+  {
+    "player_id": 1628998,
+    "player_name": "Martin, Cody",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -10.0,
+    "off_court_plus_minus": -10.3,
+    "on_off_diff": 0.3,
+    "minutes_on": 753.0
+  },
+  {
+    "player_id": 1631121,
+    "player_name": "McGowens, Bryce",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -12.5,
+    "off_court_plus_minus": -9.6,
+    "on_off_diff": -2.9,
+    "minutes_on": 882.0
+  },
+  {
+    "player_id": 1641877,
+    "player_name": "Mensah, Nathan",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -20.8,
+    "off_court_plus_minus": -10.2,
+    "on_off_diff": -10.6,
+    "minutes_on": 307.0
+  },
+  {
+    "player_id": 1641706,
+    "player_name": "Miller, Brandon",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -10.3,
+    "off_court_plus_minus": -10.1,
+    "on_off_diff": -0.2,
+    "minutes_on": 2383.0
+  },
+  {
+    "player_id": 1628373,
+    "player_name": "Ntilikina, Frank",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -1.1,
+    "off_court_plus_minus": -11.8,
+    "on_off_diff": 10.7,
+    "minutes_on": 43.0
+  },
+  {
+    "player_id": 1630208,
+    "player_name": "Richards, Nick",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -11.7,
+    "off_court_plus_minus": -9.0,
+    "on_off_diff": -2.7,
+    "minutes_on": 1759.0
+  },
+  {
+    "player_id": 1641733,
+    "player_name": "Smith Jr., Nick",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -12.8,
+    "off_court_plus_minus": -9.6,
+    "on_off_diff": -3.2,
+    "minutes_on": 729.0
+  },
+  {
+    "player_id": 202397,
+    "player_name": "Smith, Ish",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -18.1,
+    "off_court_plus_minus": -8.8,
+    "on_off_diff": -9.3,
+    "minutes_on": 741.0
+  },
+  {
+    "player_id": 1630550,
+    "player_name": "Thor, JT",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -3.0,
+    "off_court_plus_minus": -12.0,
+    "on_off_diff": 9.0,
+    "minutes_on": 781.0
+  },
+  {
+    "player_id": 1631109,
+    "player_name": "Williams, Mark",
+    "team_abbreviation": "CHA",
+    "on_court_plus_minus": -2.0,
+    "off_court_plus_minus": -11.4,
+    "on_off_diff": 9.4,
+    "minutes_on": 508.0
+  }
+]

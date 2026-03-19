@@ -1,0 +1,230 @@
+[
+  {
+    "lineup": [
+      "S. Curry",
+      "J. Harris",
+      "R. O'Neale",
+      "N. Claxton",
+      "C. Johnson"
+    ],
+    "minutes": 39.0,
+    "net_rating": 20.7,
+    "off_rating": 118.2,
+    "def_rating": 97.5,
+    "pace": 97.7,
+    "efg_pct": 0.593,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.27,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Dinwiddie",
+      "R. O'Neale",
+      "D. Finney-Smith",
+      "M. Bridges",
+      "C. Johnson"
+    ],
+    "minutes": 55.0,
+    "net_rating": 13.5,
+    "off_rating": 115.3,
+    "def_rating": 101.7,
+    "pace": 102.54,
+    "efg_pct": 0.54,
+    "tov_pct": 0.102,
+    "oreb_pct": 0.271,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "J. Harris",
+      "R. O'Neale",
+      "B. Simmons",
+      "N. Claxton"
+    ],
+    "minutes": 68.0,
+    "net_rating": 9.5,
+    "off_rating": 121.6,
+    "def_rating": 112.1,
+    "pace": 98.99,
+    "efg_pct": 0.639,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.172,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "K. Irving",
+      "J. Harris",
+      "R. O'Neale",
+      "B. Simmons"
+    ],
+    "minutes": 47.0,
+    "net_rating": 8.8,
+    "off_rating": 120.8,
+    "def_rating": 111.9,
+    "pace": 110.24,
+    "efg_pct": 0.733,
+    "tov_pct": 0.236,
+    "oreb_pct": 0.103,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Dinwiddie",
+      "R. O'Neale",
+      "M. Bridges",
+      "N. Claxton",
+      "C. Johnson"
+    ],
+    "minutes": 64.0,
+    "net_rating": 8.2,
+    "off_rating": 109.0,
+    "def_rating": 100.8,
+    "pace": 99.54,
+    "efg_pct": 0.585,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "K. Irving",
+      "J. Harris",
+      "R. O'Neale",
+      "N. Claxton"
+    ],
+    "minutes": 118.0,
+    "net_rating": 7.8,
+    "off_rating": 103.2,
+    "def_rating": 95.3,
+    "pace": 103.78,
+    "efg_pct": 0.546,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.157,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "S. Curry",
+      "J. Harris",
+      "R. O'Neale",
+      "N. Claxton"
+    ],
+    "minutes": 110.0,
+    "net_rating": 5.6,
+    "off_rating": 116.0,
+    "def_rating": 110.4,
+    "pace": 100.29,
+    "efg_pct": 0.589,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.198,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "K. Irving",
+      "R. O'Neale",
+      "B. Simmons",
+      "N. Claxton"
+    ],
+    "minutes": 251.0,
+    "net_rating": 4.2,
+    "off_rating": 115.4,
+    "def_rating": 111.2,
+    "pace": 97.2,
+    "efg_pct": 0.61,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.215,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Dinwiddie",
+      "D. Finney-Smith",
+      "M. Bridges",
+      "N. Claxton",
+      "C. Johnson"
+    ],
+    "minutes": 328.0,
+    "net_rating": 3.1,
+    "off_rating": 111.3,
+    "def_rating": 108.2,
+    "pace": 98.41,
+    "efg_pct": 0.534,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.239,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "K. Irving",
+      "S. Curry",
+      "R. O'Neale",
+      "B. Simmons"
+    ],
+    "minutes": 30.0,
+    "net_rating": 3.0,
+    "off_rating": 103.0,
+    "def_rating": 100.0,
+    "pace": 107.13,
+    "efg_pct": 0.565,
+    "tov_pct": 0.164,
+    "oreb_pct": 0.185,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "J. Harris",
+      "R. O'Neale",
+      "E. Sumner",
+      "N. Claxton"
+    ],
+    "minutes": 98.0,
+    "net_rating": 1.9,
+    "off_rating": 106.4,
+    "def_rating": 104.5,
+    "pace": 98.53,
+    "efg_pct": 0.534,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.221,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "S. Curry",
+      "J. Harris",
+      "R. O'Neale",
+      "B. Simmons"
+    ],
+    "minutes": 38.0,
+    "net_rating": -15.5,
+    "off_rating": 98.6,
+    "def_rating": 114.1,
+    "pace": 95.41,
+    "efg_pct": 0.525,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.083,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

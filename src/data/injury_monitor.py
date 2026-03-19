@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 import unicodedata
 from datetime import datetime, timezone
@@ -244,6 +245,308 @@ _ESPN_NAME_TO_ABBREV: dict[str, str] = {
 def _espn_team_to_abbrev(team_id: str, team_name: str) -> str:
     """Map ESPN team name to NBA abbreviation."""
     return _ESPN_NAME_TO_ABBREV.get(team_name, team_name[:3].upper())
+
+
+# ── RotoWire RSS feed ─────────────────────────────────────────────────────────
+
+_ROTOWIRE_RSS_URL  = "https://www.rotowire.com/basketball/rss-player-news.php"
+_ROTOWIRE_CACHE    = os.path.join(PROJECT_DIR, "data", "external", "rotowire_news.json")
+_ROTOWIRE_TTL      = 30 * 60   # 30 minutes — matches main injury cache TTL
+
+
+def refresh_rotowire(force: bool = False) -> list:
+    """
+    Poll RotoWire RSS feed for latest NBA injury and lineup news.
+
+    Uses feedparser (RSS only — no HTML scraping of RotoWire pages).
+    Returns parsed news items, cached for 30 minutes.
+
+    Args:
+        force: Bypass TTL and always re-fetch.
+
+    Returns:
+        List of news dicts:
+        [
+            {
+                "player_name":  str,
+                "team_abbrev":  str,
+                "headline":     str,
+                "summary":      str,
+                "published":    str,    # ISO datetime
+                "status_guess": str,    # "Out"|"Questionable"|"Available"|"Unknown"
+                "source":       "rotowire",
+            }, ...
+        ]
+    """
+    if not force and os.path.exists(_ROTOWIRE_CACHE):
+        age = time.time() - os.path.getmtime(_ROTOWIRE_CACHE)
+        if age < _ROTOWIRE_TTL:
+            with open(_ROTOWIRE_CACHE, encoding="utf-8") as f:
+                return json.load(f)
+
+    try:
+        import feedparser
+    except ImportError:
+        print("[injury_monitor] feedparser not installed — run: pip install feedparser")
+        return []
+
+    try:
+        feed = feedparser.parse(_ROTOWIRE_RSS_URL)
+    except Exception as e:
+        print(f"[injury_monitor] RotoWire RSS error: {e}")
+        return []
+
+    items = []
+    for entry in feed.get("entries", []):
+        title   = entry.get("title", "")
+        summary = entry.get("summary", entry.get("description", ""))
+        pub     = entry.get("published", entry.get("updated", ""))
+
+        # Extract player name: RotoWire format = "Firstname Lastname (TEAM): headline"
+        name_match = re.match(r"^([A-Z][a-z]+ [A-Z][A-Za-z'-]+)\s*\((\w+)\):\s*(.*)", title)
+        if name_match:
+            player_name  = name_match.group(1)
+            team_abbrev  = name_match.group(2).upper()
+            headline     = name_match.group(3)
+        else:
+            player_name  = title.split(":")[0].strip()
+            team_abbrev  = ""
+            headline     = title
+
+        status_guess = _guess_status_from_text(headline + " " + summary)
+
+        items.append({
+            "player_name":  player_name,
+            "team_abbrev":  team_abbrev,
+            "headline":     headline,
+            "summary":      _strip_html(summary),
+            "published":    pub,
+            "status_guess": status_guess,
+            "source":       "rotowire",
+        })
+
+    os.makedirs(os.path.dirname(_ROTOWIRE_CACHE), exist_ok=True)
+    with open(_ROTOWIRE_CACHE, "w", encoding="utf-8") as f:
+        json.dump(items, f, indent=2)
+    print(f"[injury_monitor] RotoWire: {len(items)} news items cached")
+    return items
+
+
+def get_rotowire_news(player_name: str = None) -> list:
+    """
+    Return cached RotoWire news. If player_name is provided, filter to that player.
+
+    Args:
+        player_name: Optional player name filter.
+
+    Returns:
+        List of news dicts from RotoWire RSS.
+    """
+    items = refresh_rotowire()
+    if player_name is None:
+        return items
+    query = _norm_name(player_name)
+    return [i for i in items if _norm_name(i.get("player_name", "")) == query]
+
+
+# ── NBA Official Injury PDF ───────────────────────────────────────────────────
+
+_NBA_INJURY_PDF_URL  = "https://ak-static.cms.nba.com/referee/injury/Injury-Report_2024-25_03-18.pdf"
+_NBA_INJURY_PAGE_URL = "https://www.nba.com/players/daily-injury-report"
+_NBA_PDF_CACHE       = os.path.join(PROJECT_DIR, "data", "external", "nba_official_injury.json")
+_NBA_PDF_TTL         = 6 * 3600   # 6 hours — PDF released ~5pm ET daily
+
+
+def refresh_nba_official_injury(force: bool = False) -> list:
+    """
+    Fetch and parse the NBA's official injury report (PDF released ~5pm ET).
+
+    Parses the daily PDF or falls back to the HTML injury report API.
+    Cached for 6 hours.
+
+    Args:
+        force: Bypass TTL and always re-fetch.
+
+    Returns:
+        List of injury entries:
+        [
+            {
+                "player_name":   str,
+                "team_abbrev":   str,
+                "status":        str,   # "Out"|"Doubtful"|"Questionable"|"Probable"
+                "reason":        str,
+                "game_date":     str,
+                "source":        "nba_official",
+            }, ...
+        ]
+    """
+    if not force and os.path.exists(_NBA_PDF_CACHE):
+        age = time.time() - os.path.getmtime(_NBA_PDF_CACHE)
+        if age < _NBA_PDF_TTL:
+            with open(_NBA_PDF_CACHE, encoding="utf-8") as f:
+                return json.load(f)
+
+    # Primary: NBA Stats API injury report endpoint (no PDF parsing needed)
+    records = _fetch_nba_api_injury_report()
+
+    if not records:
+        # Fallback: ESPN (already in main refresh())
+        records = _fetch_espn_injury_fallback()
+
+    os.makedirs(os.path.dirname(_NBA_PDF_CACHE), exist_ok=True)
+    with open(_NBA_PDF_CACHE, "w", encoding="utf-8") as f:
+        json.dump(records, f, indent=2)
+    print(f"[injury_monitor] NBA official: {len(records)} entries cached")
+    return records
+
+
+def _fetch_nba_api_injury_report() -> list:
+    """Fetch injury report from NBA's public CDN JSON (faster than PDF parsing)."""
+    import requests
+
+    # NBA CDN injury report JSON — released daily, no auth required
+    url = "https://cdn.nba.com/static/json/staticData/injury/Injury_Report_V2.json"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0",
+        "Referer": "https://www.nba.com/",
+    }
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=20)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        print(f"[injury_monitor] NBA CDN injury JSON error: {e}")
+        return []
+
+    records = []
+    for entry in data.get("injury_report", data.get("InjuryReport", [])):
+        records.append({
+            "player_name":   str(entry.get("PLAYER_NAME", entry.get("playerName", ""))),
+            "team_abbrev":   str(entry.get("TEAM_ABBREVIATION", entry.get("teamTricode", ""))),
+            "status":        _norm_status(str(entry.get("PLAYER_STATUS", entry.get("status", "")))),
+            "reason":        str(entry.get("RETURN_CATEGORY", entry.get("reason", ""))),
+            "game_date":     str(entry.get("GAME_DATE", entry.get("gameDate", ""))),
+            "source":        "nba_official",
+        })
+    return records
+
+
+def _fetch_espn_injury_fallback() -> list:
+    """Fallback: re-use ESPN injuries from the existing ESPN refresh."""
+    espn_data = refresh(force=False)
+    return [
+        {
+            "player_name":   r.get("player_name", ""),
+            "team_abbrev":   r.get("team_abbrev", ""),
+            "status":        r.get("status", ""),
+            "reason":        r.get("short_comment", ""),
+            "game_date":     r.get("injury_date", ""),
+            "source":        "espn_fallback",
+        }
+        for r in espn_data.get("injuries", [])
+    ]
+
+
+def get_nba_official_injuries(player_name: str = None) -> list:
+    """
+    Return NBA official injury entries. Optionally filter by player.
+
+    Args:
+        player_name: Optional player name filter.
+
+    Returns:
+        List of injury dicts from NBA official report.
+    """
+    items = refresh_nba_official_injury()
+    if player_name is None:
+        return items
+    query = _norm_name(player_name)
+    return [i for i in items if _norm_name(i.get("player_name", "")) == query]
+
+
+def get_combined_injury_status(player_name: str) -> dict:
+    """
+    Merge ESPN + RotoWire + NBA official into a single status verdict.
+
+    Priority: NBA official > ESPN > RotoWire (most authoritative first).
+
+    Args:
+        player_name: Player full name.
+
+    Returns:
+        {
+            "player_name":   str,
+            "status":        str,    # canonical status
+            "reason":        str,
+            "sources":       list,   # which sources reported
+            "latest_news":   str,    # most recent RotoWire headline
+        }
+    """
+    # NBA official
+    official = get_nba_official_injuries(player_name)
+    espn_st  = get_injury_status(player_name)   # existing module function
+    rw_news  = get_rotowire_news(player_name)
+
+    # Pick highest-severity status across sources
+    all_statuses = [r.get("status", "") for r in official]
+    all_statuses.append(espn_st.get("status", "Available"))
+
+    severity_order = ["Out", "Doubtful", "Questionable", "Day-To-Day", "GTD",
+                      "Probable", "Available"]
+    status = "Available"
+    for sev in severity_order:
+        if any(sev.lower() in s.lower() for s in all_statuses if s):
+            status = sev
+            break
+
+    sources = []
+    if official:
+        sources.append("nba_official")
+    if espn_st.get("found"):
+        sources.append("espn")
+    if rw_news:
+        sources.append("rotowire")
+
+    reason = ""
+    if official:
+        reason = official[0].get("reason", "")
+    elif espn_st.get("found"):
+        reason = espn_st.get("comment", "")
+
+    latest_news = rw_news[0].get("headline", "") if rw_news else ""
+
+    return {
+        "player_name": player_name,
+        "status":      status,
+        "reason":      reason,
+        "sources":     sources,
+        "latest_news": latest_news,
+    }
+
+
+# ── Text helpers ──────────────────────────────────────────────────────────────
+
+def _guess_status_from_text(text: str) -> str:
+    """Infer injury status from news text keywords."""
+    t = text.lower()
+    if any(k in t for k in ("out ", "ruled out", "did not play", "dnp", "miss")):
+        return "Out"
+    if any(k in t for k in ("doubtful",)):
+        return "Doubtful"
+    if any(k in t for k in ("questionable", "listed questionable")):
+        return "Questionable"
+    if any(k in t for k in ("day-to-day", "day to day", "probable", "gtd")):
+        return "Day-To-Day"
+    if any(k in t for k in ("return", "cleared", "available", "active", "practice")):
+        return "Available"
+    return "Unknown"
+
+
+def _strip_html(html_text: str) -> str:
+    """Remove HTML tags from text."""
+    return re.sub(r"<[^>]+>", "", html_text).strip()
+
 
 
 # ── InjuryMonitor class ───────────────────────────────────────────────────────

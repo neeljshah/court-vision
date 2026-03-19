@@ -1,0 +1,439 @@
+[
+  {
+    "lineup": [
+      "P. Mills",
+      "J. Butler",
+      "T. Rozier",
+      "B. Adebayo",
+      "N. Jovic"
+    ],
+    "minutes": 40.0,
+    "net_rating": 56.5,
+    "off_rating": 125.6,
+    "def_rating": 69.1,
+    "pace": 98.7,
+    "efg_pct": 0.643,
+    "tov_pct": 0.098,
+    "oreb_pct": 0.129,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Adebayo",
+      "C. Martin",
+      "H. Highsmith",
+      "T. Herro",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 32.0,
+    "net_rating": 37.2,
+    "off_rating": 117.5,
+    "def_rating": 80.3,
+    "pace": 97.53,
+    "efg_pct": 0.535,
+    "tov_pct": 0.032,
+    "oreb_pct": 0.233,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Love",
+      "J. Butler",
+      "J. Richardson",
+      "D. Robinson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 39.0,
+    "net_rating": 24.2,
+    "off_rating": 119.3,
+    "def_rating": 95.1,
+    "pace": 102.37,
+    "efg_pct": 0.591,
+    "tov_pct": 0.096,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "K. Love",
+      "J. Butler",
+      "B. Adebayo",
+      "T. Herro"
+    ],
+    "minutes": 38.0,
+    "net_rating": 21.5,
+    "off_rating": 124.1,
+    "def_rating": 102.5,
+    "pace": 100.24,
+    "efg_pct": 0.525,
+    "tov_pct": 0.089,
+    "oreb_pct": 0.375,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Richardson",
+      "C. Martin",
+      "D. Robinson",
+      "O. Robinson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 43.0,
+    "net_rating": 19.9,
+    "off_rating": 113.2,
+    "def_rating": 93.3,
+    "pace": 101.44,
+    "efg_pct": 0.538,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "K. Love",
+      "J. Butler",
+      "J. Richardson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 43.0,
+    "net_rating": 17.6,
+    "off_rating": 125.9,
+    "def_rating": 108.2,
+    "pace": 95.02,
+    "efg_pct": 0.623,
+    "tov_pct": 0.106,
+    "oreb_pct": 0.216,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "T. Rozier",
+      "B. Adebayo",
+      "C. Martin",
+      "T. Herro"
+    ],
+    "minutes": 46.0,
+    "net_rating": 14.7,
+    "off_rating": 121.9,
+    "def_rating": 107.2,
+    "pace": 101.35,
+    "efg_pct": 0.646,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.186,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "J. Butler",
+      "B. Adebayo",
+      "D. Robinson",
+      "H. Highsmith"
+    ],
+    "minutes": 79.0,
+    "net_rating": 10.8,
+    "off_rating": 122.0,
+    "def_rating": 111.1,
+    "pace": 98.6,
+    "efg_pct": 0.58,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.261,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Love",
+      "J. Richardson",
+      "B. Adebayo",
+      "D. Robinson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 43.0,
+    "net_rating": 9.8,
+    "off_rating": 114.6,
+    "def_rating": 104.8,
+    "pace": 96.53,
+    "efg_pct": 0.562,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.22,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "J. Butler",
+      "B. Adebayo",
+      "H. Highsmith",
+      "T. Herro"
+    ],
+    "minutes": 42.0,
+    "net_rating": 8.3,
+    "off_rating": 130.7,
+    "def_rating": 122.4,
+    "pace": 99.24,
+    "efg_pct": 0.638,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.257,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Richardson",
+      "B. Adebayo",
+      "C. Martin",
+      "T. Herro",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 34.0,
+    "net_rating": 7.6,
+    "off_rating": 104.6,
+    "def_rating": 97.0,
+    "pace": 93.53,
+    "efg_pct": 0.5,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "B. Adebayo",
+      "T. Herro",
+      "N. Jovic",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 55.0,
+    "net_rating": 5.2,
+    "off_rating": 103.5,
+    "def_rating": 98.3,
+    "pace": 100.03,
+    "efg_pct": 0.5,
+    "tov_pct": 0.149,
+    "oreb_pct": 0.242,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "K. Love",
+      "J. Butler",
+      "C. Martin",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 59.0,
+    "net_rating": 3.8,
+    "off_rating": 123.8,
+    "def_rating": 120.0,
+    "pace": 97.92,
+    "efg_pct": 0.579,
+    "tov_pct": 0.082,
+    "oreb_pct": 0.309,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "B. Adebayo",
+      "C. Martin",
+      "T. Herro",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 32.0,
+    "net_rating": 3.0,
+    "off_rating": 100.0,
+    "def_rating": 97.0,
+    "pace": 101.17,
+    "efg_pct": 0.54,
+    "tov_pct": 0.179,
+    "oreb_pct": 0.185,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "J. Butler",
+      "C. Martin",
+      "D. Robinson",
+      "O. Robinson"
+    ],
+    "minutes": 78.0,
+    "net_rating": 2.8,
+    "off_rating": 112.5,
+    "def_rating": 109.7,
+    "pace": 93.93,
+    "efg_pct": 0.536,
+    "tov_pct": 0.184,
+    "oreb_pct": 0.354,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "T. Rozier",
+      "B. Adebayo",
+      "C. Martin",
+      "D. Robinson"
+    ],
+    "minutes": 48.0,
+    "net_rating": 2.7,
+    "off_rating": 107.9,
+    "def_rating": 105.3,
+    "pace": 97.19,
+    "efg_pct": 0.489,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Rozier",
+      "B. Adebayo",
+      "D. Robinson",
+      "H. Highsmith",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 41.0,
+    "net_rating": 2.3,
+    "off_rating": 103.5,
+    "def_rating": 101.2,
+    "pace": 99.09,
+    "efg_pct": 0.586,
+    "tov_pct": 0.174,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "B. Adebayo",
+      "C. Martin",
+      "T. Herro",
+      "N. Jovic"
+    ],
+    "minutes": 109.0,
+    "net_rating": 1.9,
+    "off_rating": 115.9,
+    "def_rating": 114.0,
+    "pace": 95.23,
+    "efg_pct": 0.553,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.228,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Richardson",
+      "B. Adebayo",
+      "C. Martin",
+      "D. Robinson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 62.0,
+    "net_rating": -4.6,
+    "off_rating": 115.6,
+    "def_rating": 120.2,
+    "pace": 94.79,
+    "efg_pct": 0.596,
+    "tov_pct": 0.131,
+    "oreb_pct": 0.226,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "T. Rozier",
+      "B. Adebayo",
+      "H. Highsmith",
+      "T. Herro"
+    ],
+    "minutes": 59.0,
+    "net_rating": -5.6,
+    "off_rating": 114.0,
+    "def_rating": 119.7,
+    "pace": 98.74,
+    "efg_pct": 0.548,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.175,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "T. Rozier",
+      "B. Adebayo",
+      "D. Robinson",
+      "N. Jovic"
+    ],
+    "minutes": 181.0,
+    "net_rating": -6.8,
+    "off_rating": 109.1,
+    "def_rating": 115.8,
+    "pace": 99.3,
+    "efg_pct": 0.561,
+    "tov_pct": 0.112,
+    "oreb_pct": 0.14,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Richardson",
+      "B. Adebayo",
+      "D. Robinson",
+      "H. Highsmith",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 43.0,
+    "net_rating": -10.1,
+    "off_rating": 100.0,
+    "def_rating": 110.1,
+    "pace": 101.74,
+    "efg_pct": 0.513,
+    "tov_pct": 0.174,
+    "oreb_pct": 0.326,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Rozier",
+      "B. Adebayo",
+      "C. Martin",
+      "D. Robinson",
+      "J. Jaquez Jr."
+    ],
+    "minutes": 47.0,
+    "net_rating": -16.6,
+    "off_rating": 90.7,
+    "def_rating": 107.4,
+    "pace": 98.25,
+    "efg_pct": 0.5,
+    "tov_pct": 0.155,
+    "oreb_pct": 0.239,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

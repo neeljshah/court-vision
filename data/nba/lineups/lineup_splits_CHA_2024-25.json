@@ -1,0 +1,268 @@
+[
+  {
+    "lineup": [
+      "C. Martin",
+      "G. Williams",
+      "L. Ball",
+      "M. Diabate",
+      "B. Miller"
+    ],
+    "minutes": 30.0,
+    "net_rating": 38.7,
+    "off_rating": 122.6,
+    "def_rating": 83.9,
+    "pace": 100.35,
+    "efg_pct": 0.553,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.394,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "V. Mici\u0107",
+      "C. Martin",
+      "J. Green",
+      "N. Richards",
+      "B. Miller"
+    ],
+    "minutes": 33.0,
+    "net_rating": 22.9,
+    "off_rating": 113.8,
+    "def_rating": 90.9,
+    "pace": 95.32,
+    "efg_pct": 0.557,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "D. Jeffries",
+      "L. Ball",
+      "J. Green",
+      "M. Williams"
+    ],
+    "minutes": 76.0,
+    "net_rating": 18.9,
+    "off_rating": 132.5,
+    "def_rating": 113.6,
+    "pace": 100.64,
+    "efg_pct": 0.619,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Williams",
+      "L. Ball",
+      "J. Green",
+      "M. Diabate",
+      "B. Miller"
+    ],
+    "minutes": 31.0,
+    "net_rating": 6.9,
+    "off_rating": 126.6,
+    "def_rating": 119.7,
+    "pace": 101.03,
+    "efg_pct": 0.658,
+    "tov_pct": 0.219,
+    "oreb_pct": 0.346,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "L. Ball",
+      "J. Green",
+      "M. Williams",
+      "B. Miller"
+    ],
+    "minutes": 77.0,
+    "net_rating": 6.1,
+    "off_rating": 117.8,
+    "def_rating": 111.7,
+    "pace": 101.8,
+    "efg_pct": 0.55,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "V. Mici\u0107",
+      "M. Bridges",
+      "J. Green",
+      "M. Williams"
+    ],
+    "minutes": 57.0,
+    "net_rating": -1.0,
+    "off_rating": 107.4,
+    "def_rating": 108.4,
+    "pace": 101.82,
+    "efg_pct": 0.518,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.206,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "M. Bridges",
+      "C. Martin",
+      "L. Ball",
+      "N. Richards"
+    ],
+    "minutes": 32.0,
+    "net_rating": -4.3,
+    "off_rating": 100.0,
+    "def_rating": 104.3,
+    "pace": 104.69,
+    "efg_pct": 0.5,
+    "tov_pct": 0.243,
+    "oreb_pct": 0.382,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "V. Mici\u0107",
+      "M. Bridges",
+      "J. Green",
+      "M. Williams",
+      "N. Smith Jr."
+    ],
+    "minutes": 35.0,
+    "net_rating": -5.4,
+    "off_rating": 100.0,
+    "def_rating": 105.4,
+    "pace": 104.59,
+    "efg_pct": 0.463,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.282,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "G. Williams",
+      "L. Ball",
+      "J. Green",
+      "B. Miller"
+    ],
+    "minutes": 60.0,
+    "net_rating": -6.0,
+    "off_rating": 127.6,
+    "def_rating": 133.6,
+    "pace": 101.05,
+    "efg_pct": 0.686,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.18,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "D. Jeffries",
+      "L. Ball",
+      "M. Williams",
+      "N. Smith Jr."
+    ],
+    "minutes": 31.0,
+    "net_rating": -6.5,
+    "off_rating": 119.7,
+    "def_rating": 126.2,
+    "pace": 101.47,
+    "efg_pct": 0.593,
+    "tov_pct": 0.106,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "L. Ball",
+      "J. Green",
+      "M. Williams",
+      "N. Smith Jr."
+    ],
+    "minutes": 119.0,
+    "net_rating": -14.1,
+    "off_rating": 101.5,
+    "def_rating": 115.6,
+    "pace": 106.05,
+    "efg_pct": 0.483,
+    "tov_pct": 0.15,
+    "oreb_pct": 0.281,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "V. Mici\u0107",
+      "J. Green",
+      "M. Diabate",
+      "B. Miller",
+      "T. Sala\u00fcn"
+    ],
+    "minutes": 43.0,
+    "net_rating": -16.9,
+    "off_rating": 90.2,
+    "def_rating": 107.1,
+    "pace": 92.01,
+    "efg_pct": 0.442,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.288,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bridges",
+      "J. Green",
+      "M. Williams",
+      "N. Smith Jr.",
+      "K. Simpson"
+    ],
+    "minutes": 65.0,
+    "net_rating": -20.2,
+    "off_rating": 90.8,
+    "def_rating": 111.0,
+    "pace": 105.84,
+    "efg_pct": 0.419,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.213,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Gibson",
+      "L. Ball",
+      "J. Green",
+      "B. Miller",
+      "T. Sala\u00fcn"
+    ],
+    "minutes": 30.0,
+    "net_rating": -25.6,
+    "off_rating": 89.7,
+    "def_rating": 115.3,
+    "pace": 92.93,
+    "efg_pct": 0.43,
+    "tov_pct": 0.224,
+    "oreb_pct": 0.432,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

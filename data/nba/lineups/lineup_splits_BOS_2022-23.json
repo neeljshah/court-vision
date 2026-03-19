@@ -1,0 +1,477 @@
+[
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "M. Brogdon",
+      "J. Tatum",
+      "G. Williams"
+    ],
+    "minutes": 36.0,
+    "net_rating": 48.7,
+    "off_rating": 144.7,
+    "def_rating": 96.0,
+    "pace": 100.02,
+    "efg_pct": 0.697,
+    "tov_pct": 0.079,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "J. Tatum",
+      "D. White",
+      "R. Williams III"
+    ],
+    "minutes": 69.0,
+    "net_rating": 44.9,
+    "off_rating": 121.2,
+    "def_rating": 76.4,
+    "pace": 101.95,
+    "efg_pct": 0.608,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.233,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Tatum",
+      "D. White",
+      "R. Williams III",
+      "S. Hauser"
+    ],
+    "minutes": 45.0,
+    "net_rating": 33.1,
+    "off_rating": 123.3,
+    "def_rating": 90.2,
+    "pace": 97.96,
+    "efg_pct": 0.574,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.349,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Griffin",
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 68.0,
+    "net_rating": 28.0,
+    "off_rating": 123.3,
+    "def_rating": 95.3,
+    "pace": 103.88,
+    "efg_pct": 0.595,
+    "tov_pct": 0.068,
+    "oreb_pct": 0.143,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "D. White",
+      "G. Williams"
+    ],
+    "minutes": 71.0,
+    "net_rating": 21.0,
+    "off_rating": 116.6,
+    "def_rating": 95.6,
+    "pace": 104.91,
+    "efg_pct": 0.635,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.103,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Brown",
+      "M. Brogdon",
+      "D. White",
+      "R. Williams III",
+      "G. Williams"
+    ],
+    "minutes": 39.0,
+    "net_rating": 20.0,
+    "off_rating": 118.8,
+    "def_rating": 98.8,
+    "pace": 100.48,
+    "efg_pct": 0.637,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.229,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "M. Brogdon",
+      "D. White",
+      "G. Williams"
+    ],
+    "minutes": 30.0,
+    "net_rating": 16.8,
+    "off_rating": 109.4,
+    "def_rating": 92.5,
+    "pace": 106.23,
+    "efg_pct": 0.537,
+    "tov_pct": 0.078,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Brogdon",
+      "J. Tatum",
+      "D. White",
+      "R. Williams III",
+      "G. Williams"
+    ],
+    "minutes": 36.0,
+    "net_rating": 16.7,
+    "off_rating": 116.7,
+    "def_rating": 100.0,
+    "pace": 106.2,
+    "efg_pct": 0.538,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "M. Brogdon",
+      "J. Tatum",
+      "G. Williams"
+    ],
+    "minutes": 46.0,
+    "net_rating": 15.7,
+    "off_rating": 121.1,
+    "def_rating": 105.4,
+    "pace": 95.55,
+    "efg_pct": 0.56,
+    "tov_pct": 0.056,
+    "oreb_pct": 0.227,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "J. Tatum",
+      "D. White",
+      "G. Williams"
+    ],
+    "minutes": 117.0,
+    "net_rating": 13.1,
+    "off_rating": 114.8,
+    "def_rating": 101.7,
+    "pace": 99.37,
+    "efg_pct": 0.546,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.282,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Griffin",
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "G. Williams"
+    ],
+    "minutes": 43.0,
+    "net_rating": 12.5,
+    "off_rating": 107.2,
+    "def_rating": 94.7,
+    "pace": 106.41,
+    "efg_pct": 0.512,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.224,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 432.0,
+    "net_rating": 12.2,
+    "off_rating": 124.0,
+    "def_rating": 111.8,
+    "pace": 102.34,
+    "efg_pct": 0.615,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.174,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "M. Brogdon",
+      "D. White"
+    ],
+    "minutes": 37.0,
+    "net_rating": 8.4,
+    "off_rating": 113.1,
+    "def_rating": 104.7,
+    "pace": 110.42,
+    "efg_pct": 0.5,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Smart",
+      "J. Brown",
+      "M. Brogdon",
+      "J. Tatum",
+      "G. Williams"
+    ],
+    "minutes": 31.0,
+    "net_rating": 7.2,
+    "off_rating": 107.2,
+    "def_rating": 100.0,
+    "pace": 105.68,
+    "efg_pct": 0.517,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Brogdon",
+      "J. Tatum",
+      "L. Kornet",
+      "G. Williams",
+      "S. Hauser"
+    ],
+    "minutes": 69.0,
+    "net_rating": 6.7,
+    "off_rating": 121.8,
+    "def_rating": 115.1,
+    "pace": 101.66,
+    "efg_pct": 0.549,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.329,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Brogdon",
+      "J. Tatum",
+      "D. White",
+      "L. Kornet",
+      "S. Hauser"
+    ],
+    "minutes": 34.0,
+    "net_rating": 4.1,
+    "off_rating": 117.1,
+    "def_rating": 113.0,
+    "pace": 107.85,
+    "efg_pct": 0.585,
+    "tov_pct": 0.079,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Brown",
+      "M. Brogdon",
+      "R. Williams III",
+      "G. Williams",
+      "S. Hauser"
+    ],
+    "minutes": 32.0,
+    "net_rating": 3.6,
+    "off_rating": 125.4,
+    "def_rating": 121.7,
+    "pace": 104.24,
+    "efg_pct": 0.597,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.351,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "M. Brogdon",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 48.0,
+    "net_rating": 2.0,
+    "off_rating": 109.2,
+    "def_rating": 107.2,
+    "pace": 110.81,
+    "efg_pct": 0.576,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.111,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Tatum",
+      "D. White",
+      "G. Williams"
+    ],
+    "minutes": 34.0,
+    "net_rating": 1.9,
+    "off_rating": 111.6,
+    "def_rating": 109.7,
+    "pace": 98.1,
+    "efg_pct": 0.515,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "G. Williams"
+    ],
+    "minutes": 179.0,
+    "net_rating": 1.0,
+    "off_rating": 110.8,
+    "def_rating": 109.8,
+    "pace": 100.44,
+    "efg_pct": 0.543,
+    "tov_pct": 0.102,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Tatum",
+      "D. White",
+      "R. Williams III"
+    ],
+    "minutes": 43.0,
+    "net_rating": 1.0,
+    "off_rating": 122.1,
+    "def_rating": 121.1,
+    "pace": 98.31,
+    "efg_pct": 0.583,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "D. White",
+      "G. Williams"
+    ],
+    "minutes": 36.0,
+    "net_rating": -1.3,
+    "off_rating": 123.1,
+    "def_rating": 124.4,
+    "pace": 102.91,
+    "efg_pct": 0.55,
+    "tov_pct": 0.064,
+    "oreb_pct": 0.206,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "M. Brogdon",
+      "J. Tatum"
+    ],
+    "minutes": 110.0,
+    "net_rating": -4.2,
+    "off_rating": 110.5,
+    "def_rating": 114.7,
+    "pace": 105.42,
+    "efg_pct": 0.573,
+    "tov_pct": 0.197,
+    "oreb_pct": 0.309,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "J. Tatum",
+      "R. Williams III"
+    ],
+    "minutes": 81.0,
+    "net_rating": -12.4,
+    "off_rating": 106.7,
+    "def_rating": 119.0,
+    "pace": 108.03,
+    "efg_pct": 0.51,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.274,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "M. Smart",
+      "J. Brown",
+      "M. Brogdon",
+      "G. Williams"
+    ],
+    "minutes": 37.0,
+    "net_rating": -39.0,
+    "off_rating": 94.7,
+    "def_rating": 133.8,
+    "pace": 98.96,
+    "efg_pct": 0.47,
+    "tov_pct": 0.158,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

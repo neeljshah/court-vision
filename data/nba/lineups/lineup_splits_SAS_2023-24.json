@@ -1,0 +1,382 @@
+[
+  {
+    "lineup": [
+      "K. Johnson",
+      "D. Vassell",
+      "T. Jones",
+      "J. Champagnie",
+      "V. Wembanyama"
+    ],
+    "minutes": 33.0,
+    "net_rating": 32.0,
+    "off_rating": 115.1,
+    "def_rating": 83.1,
+    "pace": 104.6,
+    "efg_pct": 0.559,
+    "tov_pct": 0.096,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Johnson",
+      "D. Vassell",
+      "T. Jones",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 142.0,
+    "net_rating": 20.8,
+    "off_rating": 117.4,
+    "def_rating": 96.6,
+    "pace": 108.96,
+    "efg_pct": 0.565,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.349,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "S. Mamukelashvili",
+      "J. Champagnie",
+      "M. Branham",
+      "V. Wembanyama"
+    ],
+    "minutes": 44.0,
+    "net_rating": 19.9,
+    "off_rating": 114.7,
+    "def_rating": 94.8,
+    "pace": 103.09,
+    "efg_pct": 0.525,
+    "tov_pct": 0.084,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "J. Champagnie",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 34.0,
+    "net_rating": 6.1,
+    "off_rating": 114.7,
+    "def_rating": 108.6,
+    "pace": 98.77,
+    "efg_pct": 0.549,
+    "tov_pct": 0.176,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Vassell",
+      "T. Jones",
+      "J. Champagnie",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 404.0,
+    "net_rating": 3.3,
+    "off_rating": 113.8,
+    "def_rating": 110.5,
+    "pace": 103.29,
+    "efg_pct": 0.569,
+    "tov_pct": 0.148,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Osman",
+      "K. Johnson",
+      "T. Jones",
+      "M. Branham",
+      "V. Wembanyama"
+    ],
+    "minutes": 37.0,
+    "net_rating": 2.6,
+    "off_rating": 114.5,
+    "def_rating": 111.9,
+    "pace": 107.84,
+    "efg_pct": 0.685,
+    "tov_pct": 0.229,
+    "oreb_pct": 0.357,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. McDermott",
+      "D. Vassell",
+      "T. Jones",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 35.0,
+    "net_rating": 0.1,
+    "off_rating": 98.7,
+    "def_rating": 98.6,
+    "pace": 103.21,
+    "efg_pct": 0.585,
+    "tov_pct": 0.192,
+    "oreb_pct": 0.31,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Osman",
+      "T. Jones",
+      "J. Champagnie",
+      "M. Branham",
+      "V. Wembanyama"
+    ],
+    "minutes": 35.0,
+    "net_rating": -1.3,
+    "off_rating": 124.4,
+    "def_rating": 125.6,
+    "pace": 106.62,
+    "efg_pct": 0.585,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Johnson",
+      "D. Vassell",
+      "M. Branham",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 103.0,
+    "net_rating": -2.6,
+    "off_rating": 101.3,
+    "def_rating": 103.9,
+    "pace": 106.87,
+    "efg_pct": 0.518,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "D. Vassell",
+      "T. Jones",
+      "J. Champagnie",
+      "J. Sochan"
+    ],
+    "minutes": 69.0,
+    "net_rating": -3.3,
+    "off_rating": 92.7,
+    "def_rating": 96.0,
+    "pace": 103.59,
+    "efg_pct": 0.533,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.154,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Osman",
+      "K. Johnson",
+      "M. Branham",
+      "B. Wesley",
+      "V. Wembanyama"
+    ],
+    "minutes": 75.0,
+    "net_rating": -4.2,
+    "off_rating": 95.2,
+    "def_rating": 99.4,
+    "pace": 105.42,
+    "efg_pct": 0.493,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.247,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "T. Jones",
+      "J. Sochan"
+    ],
+    "minutes": 98.0,
+    "net_rating": -5.4,
+    "off_rating": 107.1,
+    "def_rating": 112.6,
+    "pace": 103.98,
+    "efg_pct": 0.578,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Osman",
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "T. Jones"
+    ],
+    "minutes": 32.0,
+    "net_rating": -7.1,
+    "off_rating": 109.3,
+    "def_rating": 116.4,
+    "pace": 110.37,
+    "efg_pct": 0.515,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.368,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "B. Wesley",
+      "J. Sochan"
+    ],
+    "minutes": 50.0,
+    "net_rating": -7.2,
+    "off_rating": 105.4,
+    "def_rating": 112.6,
+    "pace": 107.05,
+    "efg_pct": 0.505,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.351,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Osman",
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "B. Wesley"
+    ],
+    "minutes": 37.0,
+    "net_rating": -9.4,
+    "off_rating": 109.9,
+    "def_rating": 119.3,
+    "pace": 105.88,
+    "efg_pct": 0.537,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Vassell",
+      "J. Champagnie",
+      "M. Branham",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 44.0,
+    "net_rating": -10.7,
+    "off_rating": 110.0,
+    "def_rating": 120.7,
+    "pace": 99.9,
+    "efg_pct": 0.593,
+    "tov_pct": 0.144,
+    "oreb_pct": 0.179,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "M. Branham",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 84.0,
+    "net_rating": -15.7,
+    "off_rating": 110.6,
+    "def_rating": 126.3,
+    "pace": 102.9,
+    "efg_pct": 0.562,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "J. Sochan",
+      "V. Wembanyama"
+    ],
+    "minutes": 88.0,
+    "net_rating": -17.1,
+    "off_rating": 93.8,
+    "def_rating": 110.8,
+    "pace": 104.76,
+    "efg_pct": 0.478,
+    "tov_pct": 0.182,
+    "oreb_pct": 0.292,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. McDermott",
+      "C. Osman",
+      "K. Johnson",
+      "T. Jones",
+      "V. Wembanyama"
+    ],
+    "minutes": 39.0,
+    "net_rating": -18.1,
+    "off_rating": 91.0,
+    "def_rating": 109.1,
+    "pace": 107.96,
+    "efg_pct": 0.46,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.261,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "K. Johnson",
+      "D. Vassell",
+      "M. Branham",
+      "J. Sochan"
+    ],
+    "minutes": 65.0,
+    "net_rating": -33.6,
+    "off_rating": 89.4,
+    "def_rating": 123.0,
+    "pace": 110.58,
+    "efg_pct": 0.434,
+    "tov_pct": 0.192,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

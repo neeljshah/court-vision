@@ -1,0 +1,439 @@
+[
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "D. Murray",
+      "O. Okongwu",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 39.0,
+    "net_rating": 34.6,
+    "off_rating": 128.0,
+    "def_rating": 93.3,
+    "pace": 111.99,
+    "efg_pct": 0.648,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "T. Young",
+      "G. Mathews",
+      "O. Okongwu",
+      "S. Bey"
+    ],
+    "minutes": 61.0,
+    "net_rating": 24.7,
+    "off_rating": 131.5,
+    "def_rating": 106.9,
+    "pace": 103.37,
+    "efg_pct": 0.642,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.339,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "D. Murray",
+      "D. Hunter",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 36.0,
+    "net_rating": 16.4,
+    "off_rating": 127.4,
+    "def_rating": 111.0,
+    "pace": 97.74,
+    "efg_pct": 0.581,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.364,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "T. Young",
+      "O. Okongwu",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 136.0,
+    "net_rating": 13.7,
+    "off_rating": 123.0,
+    "def_rating": 109.3,
+    "pace": 105.65,
+    "efg_pct": 0.595,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "D. Murray",
+      "D. Hunter",
+      "G. Mathews",
+      "V. Krejci"
+    ],
+    "minutes": 32.0,
+    "net_rating": 10.9,
+    "off_rating": 130.9,
+    "def_rating": 120.0,
+    "pace": 104.64,
+    "efg_pct": 0.677,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "B. Bogdanovic",
+      "D. Murray",
+      "D. Hunter",
+      "V. Krejci"
+    ],
+    "minutes": 158.0,
+    "net_rating": 10.5,
+    "off_rating": 117.7,
+    "def_rating": 107.2,
+    "pace": 96.62,
+    "efg_pct": 0.546,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.341,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "D. Murray",
+      "D. Hunter",
+      "O. Okongwu",
+      "S. Bey"
+    ],
+    "minutes": 82.0,
+    "net_rating": 9.8,
+    "off_rating": 132.8,
+    "def_rating": 123.0,
+    "pace": 103.74,
+    "efg_pct": 0.645,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.347,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Matthews",
+      "B. Bogdanovic",
+      "T. Young",
+      "O. Okongwu",
+      "S. Bey"
+    ],
+    "minutes": 63.0,
+    "net_rating": 7.9,
+    "off_rating": 121.2,
+    "def_rating": 113.3,
+    "pace": 102.36,
+    "efg_pct": 0.534,
+    "tov_pct": 0.091,
+    "oreb_pct": 0.338,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "B. Bogdanovic",
+      "D. Murray",
+      "T. Young",
+      "S. Bey"
+    ],
+    "minutes": 64.0,
+    "net_rating": 7.0,
+    "off_rating": 120.0,
+    "def_rating": 113.0,
+    "pace": 104.69,
+    "efg_pct": 0.539,
+    "tov_pct": 0.136,
+    "oreb_pct": 0.432,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "B. Bogdanovic",
+      "D. Murray",
+      "D. Hunter",
+      "S. Bey"
+    ],
+    "minutes": 77.0,
+    "net_rating": 6.8,
+    "off_rating": 118.2,
+    "def_rating": 111.4,
+    "pace": 100.13,
+    "efg_pct": 0.548,
+    "tov_pct": 0.164,
+    "oreb_pct": 0.435,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "T. Young",
+      "G. Mathews",
+      "O. Okongwu",
+      "J. Johnson"
+    ],
+    "minutes": 83.0,
+    "net_rating": 5.4,
+    "off_rating": 108.6,
+    "def_rating": 103.2,
+    "pace": 107.17,
+    "efg_pct": 0.529,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.253,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "D. Murray",
+      "T. Young",
+      "D. Hunter",
+      "S. Bey"
+    ],
+    "minutes": 177.0,
+    "net_rating": 2.9,
+    "off_rating": 118.4,
+    "def_rating": 115.5,
+    "pace": 106.49,
+    "efg_pct": 0.539,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.354,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Murray",
+      "T. Young",
+      "O. Okongwu",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 103.0,
+    "net_rating": 0.5,
+    "off_rating": 119.9,
+    "def_rating": 119.4,
+    "pace": 105.09,
+    "efg_pct": 0.536,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.318,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Murray",
+      "B. Fernando",
+      "D. Hunter",
+      "G. Mathews",
+      "V. Krejci"
+    ],
+    "minutes": 62.0,
+    "net_rating": -0.9,
+    "off_rating": 120.6,
+    "def_rating": 121.5,
+    "pace": 101.72,
+    "efg_pct": 0.707,
+    "tov_pct": 0.176,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "B. Bogdanovic",
+      "D. Murray",
+      "D. Hunter",
+      "J. Johnson"
+    ],
+    "minutes": 135.0,
+    "net_rating": -2.6,
+    "off_rating": 104.3,
+    "def_rating": 107.0,
+    "pace": 106.58,
+    "efg_pct": 0.546,
+    "tov_pct": 0.163,
+    "oreb_pct": 0.246,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "D. Murray",
+      "T. Young",
+      "D. Hunter",
+      "J. Johnson"
+    ],
+    "minutes": 172.0,
+    "net_rating": -6.1,
+    "off_rating": 113.0,
+    "def_rating": 119.0,
+    "pace": 103.97,
+    "efg_pct": 0.53,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.287,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "B. Bogdanovic",
+      "D. Murray",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 149.0,
+    "net_rating": -6.7,
+    "off_rating": 107.0,
+    "def_rating": 113.7,
+    "pace": 101.43,
+    "efg_pct": 0.473,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.367,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "B. Fernando",
+      "D. Hunter",
+      "J. Johnson",
+      "K. Bufkin"
+    ],
+    "minutes": 31.0,
+    "net_rating": -9.2,
+    "off_rating": 95.5,
+    "def_rating": 104.8,
+    "pace": 101.57,
+    "efg_pct": 0.446,
+    "tov_pct": 0.09,
+    "oreb_pct": 0.265,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "D. Murray",
+      "T. Young",
+      "S. Bey",
+      "J. Johnson"
+    ],
+    "minutes": 289.0,
+    "net_rating": -12.4,
+    "off_rating": 108.4,
+    "def_rating": 120.7,
+    "pace": 105.92,
+    "efg_pct": 0.503,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.344,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "D. Murray",
+      "O. Okongwu",
+      "S. Bey",
+      "T. Forrest"
+    ],
+    "minutes": 34.0,
+    "net_rating": -14.3,
+    "off_rating": 115.1,
+    "def_rating": 129.4,
+    "pace": 100.91,
+    "efg_pct": 0.493,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.357,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Capela",
+      "D. Murray",
+      "T. Young",
+      "G. Mathews",
+      "S. Bey"
+    ],
+    "minutes": 36.0,
+    "net_rating": -15.1,
+    "off_rating": 115.1,
+    "def_rating": 130.1,
+    "pace": 98.15,
+    "efg_pct": 0.581,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Murray",
+      "B. Fernando",
+      "D. Hunter",
+      "G. Mathews",
+      "S. Bey"
+    ],
+    "minutes": 38.0,
+    "net_rating": -22.8,
+    "off_rating": 91.4,
+    "def_rating": 114.1,
+    "pace": 104.98,
+    "efg_pct": 0.478,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.238,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Murray",
+      "T. Young",
+      "D. Hunter",
+      "O. Okongwu",
+      "S. Bey"
+    ],
+    "minutes": 38.0,
+    "net_rating": -44.7,
+    "off_rating": 95.7,
+    "def_rating": 140.4,
+    "pace": 114.65,
+    "efg_pct": 0.554,
+    "tov_pct": 0.223,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

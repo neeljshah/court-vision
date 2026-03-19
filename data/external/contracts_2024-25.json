@@ -1,0 +1,5232 @@
+[
+  {
+    "player_name": "Stephen Curry",
+    "team": "GSW",
+    "current_salary": 59606817,
+    "years_remaining": 1,
+    "cap_hit": 59606817,
+    "cap_hit_pct": 0.4227,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Joel Embiid",
+    "team": "PHI",
+    "current_salary": 55224526,
+    "years_remaining": 3,
+    "cap_hit": 55224526,
+    "cap_hit_pct": 0.3917,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nikola Joki\u00c4\u0087",
+    "team": "DEN",
+    "current_salary": 55224526,
+    "years_remaining": 2,
+    "cap_hit": 55224526,
+    "cap_hit_pct": 0.3917,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kevin Durant",
+    "team": "HOU",
+    "current_salary": 54708609,
+    "years_remaining": 2,
+    "cap_hit": 54708609,
+    "cap_hit_pct": 0.388,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jayson Tatum",
+    "team": "BOS",
+    "current_salary": 54126450,
+    "years_remaining": 4,
+    "cap_hit": 54126450,
+    "cap_hit_pct": 0.3839,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Anthony Davis",
+    "team": "WAS",
+    "current_salary": 54126450,
+    "years_remaining": 2,
+    "cap_hit": 54126450,
+    "cap_hit_pct": 0.3839,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Giannis Antetokounmpo",
+    "team": "MIL",
+    "current_salary": 54126450,
+    "years_remaining": 2,
+    "cap_hit": 54126450,
+    "cap_hit_pct": 0.3839,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jimmy Butler",
+    "team": "GSW",
+    "current_salary": 54126450,
+    "years_remaining": 1,
+    "cap_hit": 54126450,
+    "cap_hit_pct": 0.3839,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaylen Brown",
+    "team": "BOS",
+    "current_salary": 53142264,
+    "years_remaining": 3,
+    "cap_hit": 53142264,
+    "cap_hit_pct": 0.3769,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Devin Booker",
+    "team": "PHO",
+    "current_salary": 53142264,
+    "years_remaining": 4,
+    "cap_hit": 53142264,
+    "cap_hit_pct": 0.3769,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Karl-Anthony Towns",
+    "team": "NYK",
+    "current_salary": 53142264,
+    "years_remaining": 2,
+    "cap_hit": 53142264,
+    "cap_hit_pct": 0.3769,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "LeBron James",
+    "team": "LAL",
+    "current_salary": 52627153,
+    "years_remaining": 0,
+    "cap_hit": 52627153,
+    "cap_hit_pct": 0.3732,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Paul George",
+    "team": "PHI",
+    "current_salary": 51666090,
+    "years_remaining": 2,
+    "cap_hit": 51666090,
+    "cap_hit_pct": 0.3664,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kawhi Leonard",
+    "team": "LAC",
+    "current_salary": 50000000,
+    "years_remaining": 1,
+    "cap_hit": 50000000,
+    "cap_hit_pct": 0.3546,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Zach LaVine",
+    "team": "SAC",
+    "current_salary": 47499660,
+    "years_remaining": 1,
+    "cap_hit": 47499660,
+    "cap_hit_pct": 0.3369,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cade Cunningham",
+    "team": "DET",
+    "current_salary": 46394100,
+    "years_remaining": 4,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Evan Mobley",
+    "team": "CLE",
+    "current_salary": 46394100,
+    "years_remaining": 4,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jamal Murray",
+    "team": "DEN",
+    "current_salary": 46394100,
+    "years_remaining": 3,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Lauri Markkanen",
+    "team": "UTA",
+    "current_salary": 46394100,
+    "years_remaining": 3,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Donovan Mitchell",
+    "team": "CLE",
+    "current_salary": 46394100,
+    "years_remaining": 2,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Trae Young",
+    "team": "WAS",
+    "current_salary": 46394100,
+    "years_remaining": 1,
+    "cap_hit": 46394100,
+    "cap_hit_pct": 0.329,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Luka Don\u00c4\u008di\u00c4\u0087",
+    "team": "LAL",
+    "current_salary": 45999660,
+    "years_remaining": 3,
+    "cap_hit": 45999660,
+    "cap_hit_pct": 0.3262,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Anthony Edwards",
+    "team": "MIN",
+    "current_salary": 45550512,
+    "years_remaining": 3,
+    "cap_hit": 45550512,
+    "cap_hit_pct": 0.3231,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyrese Haliburton",
+    "team": "IND",
+    "current_salary": 45550512,
+    "years_remaining": 3,
+    "cap_hit": 45550512,
+    "cap_hit_pct": 0.3231,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Pascal Siakam",
+    "team": "IND",
+    "current_salary": 45550512,
+    "years_remaining": 2,
+    "cap_hit": 45550512,
+    "cap_hit_pct": 0.3231,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Domantas Sabonis",
+    "team": "SAC",
+    "current_salary": 42336000,
+    "years_remaining": 2,
+    "cap_hit": 42336000,
+    "cap_hit_pct": 0.3003,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "OG Anunoby",
+    "team": "NYK",
+    "current_salary": 39568966,
+    "years_remaining": 3,
+    "cap_hit": 39568966,
+    "cap_hit_pct": 0.2806,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Zion Williamson",
+    "team": "NOP",
+    "current_salary": 39446090,
+    "years_remaining": 2,
+    "cap_hit": 39446090,
+    "cap_hit_pct": 0.2798,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ja Morant",
+    "team": "MEM",
+    "current_salary": 39446090,
+    "years_remaining": 2,
+    "cap_hit": 39446090,
+    "cap_hit_pct": 0.2798,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Darius Garland",
+    "team": "LAC",
+    "current_salary": 39446090,
+    "years_remaining": 2,
+    "cap_hit": 39446090,
+    "cap_hit_pct": 0.2798,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "James Harden",
+    "team": "CLE",
+    "current_salary": 39182693,
+    "years_remaining": 1,
+    "cap_hit": 39182693,
+    "cap_hit_pct": 0.2779,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Scottie Barnes",
+    "team": "TOR",
+    "current_salary": 38661750,
+    "years_remaining": 4,
+    "cap_hit": 38661750,
+    "cap_hit_pct": 0.2742,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Franz Wagner",
+    "team": "ORL",
+    "current_salary": 38661750,
+    "years_remaining": 4,
+    "cap_hit": 38661750,
+    "cap_hit_pct": 0.2742,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Shai Gilgeous-Alexander",
+    "team": "OKC",
+    "current_salary": 38333050,
+    "years_remaining": 4,
+    "cap_hit": 38333050,
+    "cap_hit_pct": 0.2719,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Michael Porter Jr.",
+    "team": "BRK",
+    "current_salary": 38333050,
+    "years_remaining": 1,
+    "cap_hit": 38333050,
+    "cap_hit_pct": 0.2719,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Brandon Ingram",
+    "team": "TOR",
+    "current_salary": 38095238,
+    "years_remaining": 2,
+    "cap_hit": 38095238,
+    "cap_hit_pct": 0.2702,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyrese Maxey",
+    "team": "PHI",
+    "current_salary": 37958760,
+    "years_remaining": 3,
+    "cap_hit": 37958760,
+    "cap_hit_pct": 0.2692,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "LaMelo Ball",
+    "team": "CHO",
+    "current_salary": 37958760,
+    "years_remaining": 3,
+    "cap_hit": 37958760,
+    "cap_hit_pct": 0.2692,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "De'Aaron Fox",
+    "team": "SAS",
+    "current_salary": 37096620,
+    "years_remaining": 4,
+    "cap_hit": 37096620,
+    "cap_hit_pct": 0.2631,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bam Adebayo",
+    "team": "MIA",
+    "current_salary": 37096620,
+    "years_remaining": 3,
+    "cap_hit": 37096620,
+    "cap_hit_pct": 0.2631,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Desmond Bane",
+    "team": "ORL",
+    "current_salary": 36725670,
+    "years_remaining": 3,
+    "cap_hit": 36725670,
+    "cap_hit_pct": 0.2605,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kyrie Irving",
+    "team": "DAL",
+    "current_salary": 36566002,
+    "years_remaining": 2,
+    "cap_hit": 36566002,
+    "cap_hit_pct": 0.2593,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaren Jackson Jr.",
+    "team": "UTA",
+    "current_salary": 35000000,
+    "years_remaining": 4,
+    "cap_hit": 35000000,
+    "cap_hit_pct": 0.2482,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jalen Suggs",
+    "team": "ORL",
+    "current_salary": 35000000,
+    "years_remaining": 4,
+    "cap_hit": 35000000,
+    "cap_hit_pct": 0.2482,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Rudy Gobert",
+    "team": "MIN",
+    "current_salary": 35000000,
+    "years_remaining": 2,
+    "cap_hit": 35000000,
+    "cap_hit_pct": 0.2482,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jalen Brunson",
+    "team": "NYK",
+    "current_salary": 34944001,
+    "years_remaining": 3,
+    "cap_hit": 34944001,
+    "cap_hit_pct": 0.2478,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Alperen \u00c5\u009eeng\u00c3\u00bcn",
+    "team": "HOU",
+    "current_salary": 33944954,
+    "years_remaining": 4,
+    "cap_hit": 33944954,
+    "cap_hit_pct": 0.2407,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jalen Green",
+    "team": "PHO",
+    "current_salary": 33584499,
+    "years_remaining": 2,
+    "cap_hit": 33584499,
+    "cap_hit_pct": 0.2382,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Khris Middleton",
+    "team": "DAL",
+    "current_salary": 33296296,
+    "years_remaining": 0,
+    "cap_hit": 33296296,
+    "cap_hit_pct": 0.2361,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Immanuel Quickley",
+    "team": "TOR",
+    "current_salary": 32500000,
+    "years_remaining": 3,
+    "cap_hit": 32500000,
+    "cap_hit_pct": 0.2305,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jrue Holiday",
+    "team": "POR",
+    "current_salary": 32400000,
+    "years_remaining": 2,
+    "cap_hit": 32400000,
+    "cap_hit_pct": 0.2298,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jerami Grant",
+    "team": "POR",
+    "current_salary": 32000001,
+    "years_remaining": 2,
+    "cap_hit": 32000001,
+    "cap_hit_pct": 0.227,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jordan Poole",
+    "team": "NOP",
+    "current_salary": 31848215,
+    "years_remaining": 1,
+    "cap_hit": 31848215,
+    "cap_hit_pct": 0.2259,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyler Herro",
+    "team": "MIA",
+    "current_salary": 31000000,
+    "years_remaining": 1,
+    "cap_hit": 31000000,
+    "cap_hit_pct": 0.2199,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Julius Randle",
+    "team": "MIN",
+    "current_salary": 30864198,
+    "years_remaining": 2,
+    "cap_hit": 30864198,
+    "cap_hit_pct": 0.2189,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dejounte Murray",
+    "team": "NOP",
+    "current_salary": 30801103,
+    "years_remaining": 2,
+    "cap_hit": 30801103,
+    "cap_hit_pct": 0.2184,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kristaps Porzi\u00c5\u0086\u00c4\u00a3is",
+    "team": "GSW",
+    "current_salary": 30731707,
+    "years_remaining": 0,
+    "cap_hit": 30731707,
+    "cap_hit_pct": 0.218,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "CJ McCollum",
+    "team": "ATL",
+    "current_salary": 30666666,
+    "years_remaining": 0,
+    "cap_hit": 30666666,
+    "cap_hit_pct": 0.2175,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jalen Johnson",
+    "team": "ATL",
+    "current_salary": 30000000,
+    "years_remaining": 4,
+    "cap_hit": 30000000,
+    "cap_hit_pct": 0.2128,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaiah Hartenstein",
+    "team": "OKC",
+    "current_salary": 28500000,
+    "years_remaining": 1,
+    "cap_hit": 28500000,
+    "cap_hit_pct": 0.2021,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Andrew Wiggins",
+    "team": "MIA",
+    "current_salary": 28223215,
+    "years_remaining": 1,
+    "cap_hit": 28223215,
+    "cap_hit_pct": 0.2002,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Derrick White",
+    "team": "BOS",
+    "current_salary": 28100000,
+    "years_remaining": 3,
+    "cap_hit": 28100000,
+    "cap_hit_pct": 0.1993,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "RJ Barrett",
+    "team": "TOR",
+    "current_salary": 27705357,
+    "years_remaining": 1,
+    "cap_hit": 27705357,
+    "cap_hit_pct": 0.1965,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Anfernee Simons",
+    "team": "CHI",
+    "current_salary": 27678571,
+    "years_remaining": 0,
+    "cap_hit": 27678571,
+    "cap_hit_pct": 0.1963,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Devin Vassell",
+    "team": "SAS",
+    "current_salary": 27000000,
+    "years_remaining": 3,
+    "cap_hit": 27000000,
+    "cap_hit_pct": 0.1915,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Terry Rozier",
+    "team": "MIA",
+    "current_salary": 26643031,
+    "years_remaining": 0,
+    "cap_hit": 26643031,
+    "cap_hit_pct": 0.189,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tobias Harris",
+    "team": "DET",
+    "current_salary": 26634146,
+    "years_remaining": 0,
+    "cap_hit": 26634146,
+    "cap_hit_pct": 0.1889,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "John Collins",
+    "team": "LAC",
+    "current_salary": 26580000,
+    "years_remaining": 0,
+    "cap_hit": 26580000,
+    "cap_hit_pct": 0.1885,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Draymond Green",
+    "team": "GSW",
+    "current_salary": 25892857,
+    "years_remaining": 1,
+    "cap_hit": 25892857,
+    "cap_hit_pct": 0.1836,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Deandre Ayton",
+    "team": "POR",
+    "current_salary": 33654814,
+    "years_remaining": 1,
+    "cap_hit": 33654814,
+    "cap_hit_pct": 0.2387,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nic Claxton",
+    "team": "BRK",
+    "current_salary": 25352272,
+    "years_remaining": 2,
+    "cap_hit": 25352272,
+    "cap_hit_pct": 0.1798,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Myles Turner",
+    "team": "MIL",
+    "current_salary": 25318251,
+    "years_remaining": 3,
+    "cap_hit": 25318251,
+    "cap_hit_pct": 0.1796,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Trey Murphy III",
+    "team": "NOP",
+    "current_salary": 25000000,
+    "years_remaining": 3,
+    "cap_hit": 25000000,
+    "cap_hit_pct": 0.1773,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Josh Giddey",
+    "team": "CHI",
+    "current_salary": 25000000,
+    "years_remaining": 3,
+    "cap_hit": 25000000,
+    "cap_hit_pct": 0.1773,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Miles Bridges",
+    "team": "CHO",
+    "current_salary": 25000000,
+    "years_remaining": 1,
+    "cap_hit": 25000000,
+    "cap_hit_pct": 0.1773,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Fred VanVleet",
+    "team": "HOU",
+    "current_salary": 25000000,
+    "years_remaining": 1,
+    "cap_hit": 25000000,
+    "cap_hit_pct": 0.1773,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mikal Bridges",
+    "team": "NYK",
+    "current_salary": 24900000,
+    "years_remaining": 4,
+    "cap_hit": 24900000,
+    "cap_hit_pct": 0.1766,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "DeMar DeRozan",
+    "team": "SAC",
+    "current_salary": 24570000,
+    "years_remaining": 1,
+    "cap_hit": 24570000,
+    "cap_hit_pct": 0.1743,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaden McDaniels",
+    "team": "MIN",
+    "current_salary": 24393104,
+    "years_remaining": 3,
+    "cap_hit": 24393104,
+    "cap_hit_pct": 0.173,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jonathan Kuminga",
+    "team": "ATL",
+    "current_salary": 23799569,
+    "years_remaining": 1,
+    "cap_hit": 23799569,
+    "cap_hit_pct": 0.1688,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "De'Andre Hunter",
+    "team": "SAC",
+    "current_salary": 23303571,
+    "years_remaining": 1,
+    "cap_hit": 23303571,
+    "cap_hit_pct": 0.1653,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Aaron Gordon",
+    "team": "DEN",
+    "current_salary": 22841455,
+    "years_remaining": 3,
+    "cap_hit": 22841455,
+    "cap_hit_pct": 0.162,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Damian Lillard",
+    "team": "MIL",
+    "current_salary": 36620603,
+    "years_remaining": 4,
+    "cap_hit": 36620603,
+    "cap_hit_pct": 0.2597,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kyle Kuzma",
+    "team": "MIL",
+    "current_salary": 22410605,
+    "years_remaining": 1,
+    "cap_hit": 22410605,
+    "cap_hit_pct": 0.1589,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kentavious Caldwell-Pope",
+    "team": "MEM",
+    "current_salary": 21621500,
+    "years_remaining": 1,
+    "cap_hit": 21621500,
+    "cap_hit_pct": 0.1533,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Naz Reid",
+    "team": "MIN",
+    "current_salary": 21551724,
+    "years_remaining": 4,
+    "cap_hit": 21551724,
+    "cap_hit_pct": 0.1528,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nikola Vu\u00c4\u008devi\u00c4\u0087",
+    "team": "BOS",
+    "current_salary": 21481481,
+    "years_remaining": 0,
+    "cap_hit": 21481481,
+    "cap_hit_pct": 0.1524,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dillon Brooks",
+    "team": "PHO",
+    "current_salary": 21124110,
+    "years_remaining": 1,
+    "cap_hit": 21124110,
+    "cap_hit_pct": 0.1498,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cameron Johnson",
+    "team": "DEN",
+    "current_salary": 21057065,
+    "years_remaining": 1,
+    "cap_hit": 21057065,
+    "cap_hit_pct": 0.1493,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Norman Powell",
+    "team": "MIA",
+    "current_salary": 20482758,
+    "years_remaining": 0,
+    "cap_hit": 20482758,
+    "cap_hit_pct": 0.1453,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jarrett Allen",
+    "team": "CLE",
+    "current_salary": 20000000,
+    "years_remaining": 3,
+    "cap_hit": 20000000,
+    "cap_hit_pct": 0.1418,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jakob Poeltl",
+    "team": "TOR",
+    "current_salary": 19500000,
+    "years_remaining": 4,
+    "cap_hit": 19500000,
+    "cap_hit_pct": 0.1383,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Josh Hart",
+    "team": "NYK",
+    "current_salary": 19472240,
+    "years_remaining": 2,
+    "cap_hit": 19472240,
+    "cap_hit_pct": 0.1381,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bradley Beal",
+    "team": "PHO",
+    "current_salary": 24737010,
+    "years_remaining": 4,
+    "cap_hit": 24737010,
+    "cap_hit_pct": 0.1754,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jusuf Nurki\u00c4\u0087",
+    "team": "UTA",
+    "current_salary": 19375000,
+    "years_remaining": 0,
+    "cap_hit": 19375000,
+    "cap_hit_pct": 0.1374,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Harrison Barnes",
+    "team": "SAS",
+    "current_salary": 19000000,
+    "years_remaining": 0,
+    "cap_hit": 19000000,
+    "cap_hit_pct": 0.1348,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Collin Sexton",
+    "team": "CHI",
+    "current_salary": 18975000,
+    "years_remaining": 0,
+    "cap_hit": 18975000,
+    "cap_hit_pct": 0.1346,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Ivica Zubac",
+    "team": "IND",
+    "current_salary": 18893980,
+    "years_remaining": 2,
+    "cap_hit": 18893980,
+    "cap_hit_pct": 0.134,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Malik Monk",
+    "team": "SAC",
+    "current_salary": 18797619,
+    "years_remaining": 2,
+    "cap_hit": 18797619,
+    "cap_hit_pct": 0.1333,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Santi Aldama",
+    "team": "MEM",
+    "current_salary": 18485916,
+    "years_remaining": 2,
+    "cap_hit": 18485916,
+    "cap_hit_pct": 0.1311,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Rui Hachimura",
+    "team": "LAL",
+    "current_salary": 18259259,
+    "years_remaining": 0,
+    "cap_hit": 18259259,
+    "cap_hit_pct": 0.1295,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Luguentz Dort",
+    "team": "OKC",
+    "current_salary": 18222222,
+    "years_remaining": 1,
+    "cap_hit": 18222222,
+    "cap_hit_pct": 0.1292,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Alex Caruso",
+    "team": "OKC",
+    "current_salary": 18102000,
+    "years_remaining": 3,
+    "cap_hit": 18102000,
+    "cap_hit_pct": 0.1284,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Andrew Nembhard",
+    "team": "IND",
+    "current_salary": 18102000,
+    "years_remaining": 2,
+    "cap_hit": 18102000,
+    "cap_hit_pct": 0.1284,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Zach Collins",
+    "team": "CHI",
+    "current_salary": 18080496,
+    "years_remaining": 0,
+    "cap_hit": 18080496,
+    "cap_hit_pct": 0.1282,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Patrick Williams",
+    "team": "CHI",
+    "current_salary": 18000000,
+    "years_remaining": 3,
+    "cap_hit": 18000000,
+    "cap_hit_pct": 0.1277,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kevin Huerter",
+    "team": "DET",
+    "current_salary": 17991071,
+    "years_remaining": 0,
+    "cap_hit": 17991071,
+    "cap_hit_pct": 0.1276,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keldon Johnson",
+    "team": "SAS",
+    "current_salary": 17500000,
+    "years_remaining": 1,
+    "cap_hit": 17500000,
+    "cap_hit_pct": 0.1241,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Grayson Allen",
+    "team": "PHO",
+    "current_salary": 16875000,
+    "years_remaining": 2,
+    "cap_hit": 16875000,
+    "cap_hit_pct": 0.1197,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Duncan Robinson",
+    "team": "DET",
+    "current_salary": 16834692,
+    "years_remaining": 2,
+    "cap_hit": 16834692,
+    "cap_hit_pct": 0.1194,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Klay Thompson",
+    "team": "DAL",
+    "current_salary": 16666667,
+    "years_remaining": 1,
+    "cap_hit": 16666667,
+    "cap_hit_pct": 0.1182,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bogdan Bogdanovi\u00c4\u0087",
+    "team": "LAC",
+    "current_salary": 16020000,
+    "years_remaining": 1,
+    "cap_hit": 16020000,
+    "cap_hit_pct": 0.1136,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Max Strus",
+    "team": "CLE",
+    "current_salary": 15936452,
+    "years_remaining": 1,
+    "cap_hit": 15936452,
+    "cap_hit_pct": 0.113,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Terance Mann",
+    "team": "BRK",
+    "current_salary": 15500000,
+    "years_remaining": 2,
+    "cap_hit": 15500000,
+    "cap_hit_pct": 0.1099,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Paolo Banchero",
+    "team": "ORL",
+    "current_salary": 15334769,
+    "years_remaining": 4,
+    "cap_hit": 15334769,
+    "cap_hit_pct": 0.1088,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nickeil Alexander-Walker",
+    "team": "ATL",
+    "current_salary": 15161800,
+    "years_remaining": 3,
+    "cap_hit": 15161800,
+    "cap_hit_pct": 0.1075,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Onyeka Okongwu",
+    "team": "ATL",
+    "current_salary": 15000000,
+    "years_remaining": 2,
+    "cap_hit": 15000000,
+    "cap_hit_pct": 0.1064,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jonathan Isaac",
+    "team": "ORL",
+    "current_salary": 15000000,
+    "years_remaining": 3,
+    "cap_hit": 15000000,
+    "cap_hit_pct": 0.1064,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaiah Stewart",
+    "team": "DET",
+    "current_salary": 15000000,
+    "years_remaining": 2,
+    "cap_hit": 15000000,
+    "cap_hit_pct": 0.1064,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Marcus Smart",
+    "team": "WAS",
+    "current_salary": 19920855,
+    "years_remaining": 1,
+    "cap_hit": 19920855,
+    "cap_hit_pct": 0.1413,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Daniel Gafford",
+    "team": "DAL",
+    "current_salary": 14386320,
+    "years_remaining": 3,
+    "cap_hit": 14386320,
+    "cap_hit_pct": 0.102,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Deni Avdija",
+    "team": "POR",
+    "current_salary": 14375000,
+    "years_remaining": 2,
+    "cap_hit": 14375000,
+    "cap_hit_pct": 0.102,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "P.J. Washington",
+    "team": "DAL",
+    "current_salary": 14152174,
+    "years_remaining": 4,
+    "cap_hit": 14152174,
+    "cap_hit_pct": 0.1004,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Steven Adams",
+    "team": "HOU",
+    "current_salary": 14130434,
+    "years_remaining": 2,
+    "cap_hit": 14130434,
+    "cap_hit_pct": 0.1002,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Caris LeVert",
+    "team": "DET",
+    "current_salary": 14104000,
+    "years_remaining": 1,
+    "cap_hit": 14104000,
+    "cap_hit_pct": 0.1,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dennis Schr\u00c3\u00b6der",
+    "team": "CLE",
+    "current_salary": 14104000,
+    "years_remaining": 2,
+    "cap_hit": 14104000,
+    "cap_hit_pct": 0.1,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Damian Lillard",
+    "team": "POR",
+    "current_salary": 36620603,
+    "years_remaining": 4,
+    "cap_hit": 36620603,
+    "cap_hit_pct": 0.2597,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Obi Toppin",
+    "team": "IND",
+    "current_salary": 14000000,
+    "years_remaining": 2,
+    "cap_hit": 14000000,
+    "cap_hit_pct": 0.0993,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Corey Kispert",
+    "team": "ATL",
+    "current_salary": 13975000,
+    "years_remaining": 3,
+    "cap_hit": 13975000,
+    "cap_hit_pct": 0.0991,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Herbert Jones",
+    "team": "NOP",
+    "current_salary": 13937574,
+    "years_remaining": 4,
+    "cap_hit": 13937574,
+    "cap_hit_pct": 0.0988,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Austin Reaves",
+    "team": "LAL",
+    "current_salary": 13937574,
+    "years_remaining": 1,
+    "cap_hit": 13937574,
+    "cap_hit_pct": 0.0988,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cooper Flagg",
+    "team": "DAL",
+    "current_salary": 13825920,
+    "years_remaining": 3,
+    "cap_hit": 13825920,
+    "cap_hit_pct": 0.0981,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Chet Holmgren",
+    "team": "OKC",
+    "current_salary": 13731368,
+    "years_remaining": 4,
+    "cap_hit": 13731368,
+    "cap_hit_pct": 0.0974,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Josh Green",
+    "team": "CHO",
+    "current_salary": 13666667,
+    "years_remaining": 1,
+    "cap_hit": 13666667,
+    "cap_hit_pct": 0.0969,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Grant Williams",
+    "team": "CHO",
+    "current_salary": 13645500,
+    "years_remaining": 1,
+    "cap_hit": 13645500,
+    "cap_hit_pct": 0.0968,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bobby Portis",
+    "team": "MIL",
+    "current_salary": 13445754,
+    "years_remaining": 2,
+    "cap_hit": 13445754,
+    "cap_hit_pct": 0.0954,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kelly Olynyk",
+    "team": "SAS",
+    "current_salary": 13445122,
+    "years_remaining": 0,
+    "cap_hit": 13445122,
+    "cap_hit_pct": 0.0954,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Victor Wembanyama",
+    "team": "SAS",
+    "current_salary": 13376880,
+    "years_remaining": 1,
+    "cap_hit": 13376880,
+    "cap_hit_pct": 0.0949,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Robert Williams",
+    "team": "POR",
+    "current_salary": 13285713,
+    "years_remaining": 0,
+    "cap_hit": 13285713,
+    "cap_hit_pct": 0.0942,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Zaccharie Risacher",
+    "team": "ATL",
+    "current_salary": 13197720,
+    "years_remaining": 2,
+    "cap_hit": 13197720,
+    "cap_hit_pct": 0.0936,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mitchell Robinson",
+    "team": "NYK",
+    "current_salary": 12954546,
+    "years_remaining": 0,
+    "cap_hit": 12954546,
+    "cap_hit_pct": 0.0919,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Coby White",
+    "team": "CHO",
+    "current_salary": 12888889,
+    "years_remaining": 0,
+    "cap_hit": 12888889,
+    "cap_hit_pct": 0.0914,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dorian Finney-Smith",
+    "team": "HOU",
+    "current_salary": 12700000,
+    "years_remaining": 3,
+    "cap_hit": 12700000,
+    "cap_hit_pct": 0.0901,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Brandon Clarke",
+    "team": "MEM",
+    "current_salary": 12500000,
+    "years_remaining": 1,
+    "cap_hit": 12500000,
+    "cap_hit_pct": 0.0887,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dylan Harper",
+    "team": "SAS",
+    "current_salary": 12370320,
+    "years_remaining": 3,
+    "cap_hit": 12370320,
+    "cap_hit_pct": 0.0877,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaiah Joe",
+    "team": "OKC",
+    "current_salary": 12362338,
+    "years_remaining": 2,
+    "cap_hit": 12362338,
+    "cap_hit_pct": 0.0877,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jabari Smith Jr.",
+    "team": "HOU",
+    "current_salary": 12350392,
+    "years_remaining": 4,
+    "cap_hit": 12350392,
+    "cap_hit_pct": 0.0876,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Donte DiVincenzo",
+    "team": "MIN",
+    "current_salary": 11990000,
+    "years_remaining": 1,
+    "cap_hit": 11990000,
+    "cap_hit_pct": 0.085,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Brandon Miller",
+    "team": "CHO",
+    "current_salary": 11968800,
+    "years_remaining": 1,
+    "cap_hit": 11968800,
+    "cap_hit_pct": 0.0849,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Alex Sarr",
+    "team": "WAS",
+    "current_salary": 11808240,
+    "years_remaining": 2,
+    "cap_hit": 11808240,
+    "cap_hit_pct": 0.0837,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Davion Mitchell",
+    "team": "MIA",
+    "current_salary": 11600000,
+    "years_remaining": 1,
+    "cap_hit": 11600000,
+    "cap_hit_pct": 0.0823,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Moses Moody",
+    "team": "GSW",
+    "current_salary": 11574075,
+    "years_remaining": 2,
+    "cap_hit": 11574075,
+    "cap_hit_pct": 0.0821,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jarred Vanderbilt",
+    "team": "LAL",
+    "current_salary": 11571429,
+    "years_remaining": 2,
+    "cap_hit": 11571429,
+    "cap_hit_pct": 0.0821,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Matisse Thybulle",
+    "team": "POR",
+    "current_salary": 11550000,
+    "years_remaining": 0,
+    "cap_hit": 11550000,
+    "cap_hit_pct": 0.0819,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Gabe Vincent",
+    "team": "ATL",
+    "current_salary": 11500000,
+    "years_remaining": 0,
+    "cap_hit": 11500000,
+    "cap_hit_pct": 0.0816,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keegan Murray",
+    "team": "SAC",
+    "current_salary": 11144093,
+    "years_remaining": 4,
+    "cap_hit": 11144093,
+    "cap_hit_pct": 0.079,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "VJ Edgecombe",
+    "team": "PHI",
+    "current_salary": 11108880,
+    "years_remaining": 3,
+    "cap_hit": 11108880,
+    "cap_hit_pct": 0.0788,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Aaron Nesmith",
+    "team": "IND",
+    "current_salary": 11000000,
+    "years_remaining": 3,
+    "cap_hit": 11000000,
+    "cap_hit_pct": 0.078,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Luke Kornet",
+    "team": "SAS",
+    "current_salary": 11000000,
+    "years_remaining": 3,
+    "cap_hit": 11000000,
+    "cap_hit_pct": 0.078,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaac Okoro",
+    "team": "CHI",
+    "current_salary": 11000000,
+    "years_remaining": 1,
+    "cap_hit": 11000000,
+    "cap_hit_pct": 0.078,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Luke Kennard",
+    "team": "LAL",
+    "current_salary": 11000000,
+    "years_remaining": 0,
+    "cap_hit": 11000000,
+    "cap_hit_pct": 0.078,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Maxi Kleber",
+    "team": "LAL",
+    "current_salary": 11000000,
+    "years_remaining": 0,
+    "cap_hit": 11000000,
+    "cap_hit_pct": 0.078,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Wendell Carter Jr.",
+    "team": "ORL",
+    "current_salary": 10850000,
+    "years_remaining": 3,
+    "cap_hit": 10850000,
+    "cap_hit_pct": 0.077,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mike Conley",
+    "team": "CHO",
+    "current_salary": 11499872,
+    "years_remaining": 0,
+    "cap_hit": 11499872,
+    "cap_hit_pct": 0.0816,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Scoot Henderson",
+    "team": "POR",
+    "current_salary": 10748040,
+    "years_remaining": 1,
+    "cap_hit": 10748040,
+    "cap_hit_pct": 0.0762,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jordan Clarkson",
+    "team": "UTA",
+    "current_salary": 12947835,
+    "years_remaining": 0,
+    "cap_hit": 12947835,
+    "cap_hit_pct": 0.0918,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Reed Sheppard",
+    "team": "HOU",
+    "current_salary": 10603560,
+    "years_remaining": 2,
+    "cap_hit": 10603560,
+    "cap_hit_pct": 0.0752,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jonas Valan\u00c4\u008di\u00c5\u00abnas",
+    "team": "DEN",
+    "current_salary": 10395000,
+    "years_remaining": 1,
+    "cap_hit": 10395000,
+    "cap_hit_pct": 0.0737,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "T.J. McConnell",
+    "team": "IND",
+    "current_salary": 10200000,
+    "years_remaining": 3,
+    "cap_hit": 10200000,
+    "cap_hit_pct": 0.0723,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Royce O'Neale",
+    "team": "PHO",
+    "current_salary": 10125000,
+    "years_remaining": 2,
+    "cap_hit": 10125000,
+    "cap_hit_pct": 0.0718,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaden Ivey",
+    "team": "CHI",
+    "current_salary": 10107163,
+    "years_remaining": 0,
+    "cap_hit": 10107163,
+    "cap_hit_pct": 0.0717,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Aaron Wiggins",
+    "team": "OKC",
+    "current_salary": 10102803,
+    "years_remaining": 3,
+    "cap_hit": 10102803,
+    "cap_hit_pct": 0.0717,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Sam Hauser",
+    "team": "BOS",
+    "current_salary": 10044644,
+    "years_remaining": 3,
+    "cap_hit": 10044644,
+    "cap_hit_pct": 0.0712,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kon Knueppel",
+    "team": "CHO",
+    "current_salary": 10015680,
+    "years_remaining": 3,
+    "cap_hit": 10015680,
+    "cap_hit_pct": 0.071,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Derrick Jones Jr.",
+    "team": "LAC",
+    "current_salary": 10000000,
+    "years_remaining": 1,
+    "cap_hit": 10000000,
+    "cap_hit_pct": 0.0709,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Lonzo Ball",
+    "team": "UTA",
+    "current_salary": 10000000,
+    "years_remaining": 0,
+    "cap_hit": 10000000,
+    "cap_hit_pct": 0.0709,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Amen Thompson",
+    "team": "HOU",
+    "current_salary": 9690600,
+    "years_remaining": 1,
+    "cap_hit": 9690600,
+    "cap_hit_pct": 0.0687,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Caleb Martin",
+    "team": "DAL",
+    "current_salary": 9594044,
+    "years_remaining": 2,
+    "cap_hit": 9594044,
+    "cap_hit_pct": 0.068,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Stephon Castle",
+    "team": "SAS",
+    "current_salary": 9560520,
+    "years_remaining": 2,
+    "cap_hit": 9560520,
+    "cap_hit_pct": 0.0678,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Pat Connaughton",
+    "team": "CHO",
+    "current_salary": 10739683,
+    "years_remaining": 1,
+    "cap_hit": 10739683,
+    "cap_hit_pct": 0.0762,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Buddy Hield",
+    "team": "ATL",
+    "current_salary": 9219512,
+    "years_remaining": 2,
+    "cap_hit": 9219512,
+    "cap_hit_pct": 0.0654,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kyle Anderson",
+    "team": "MEM",
+    "current_salary": 9219512,
+    "years_remaining": 0,
+    "cap_hit": 9219512,
+    "cap_hit_pct": 0.0654,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bennedict Mathurin",
+    "team": "LAC",
+    "current_salary": 9187573,
+    "years_remaining": 0,
+    "cap_hit": 9187573,
+    "cap_hit_pct": 0.0652,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Ace Bailey",
+    "team": "UTA",
+    "current_salary": 9069840,
+    "years_remaining": 3,
+    "cap_hit": 9069840,
+    "cap_hit_pct": 0.0643,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Naji Marshall",
+    "team": "DAL",
+    "current_salary": 9000000,
+    "years_remaining": 1,
+    "cap_hit": 9000000,
+    "cap_hit_pct": 0.0638,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jalen Smith",
+    "team": "CHI",
+    "current_salary": 9000000,
+    "years_remaining": 1,
+    "cap_hit": 9000000,
+    "cap_hit_pct": 0.0638,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ty Jerome",
+    "team": "MEM",
+    "current_salary": 8781000,
+    "years_remaining": 2,
+    "cap_hit": 8781000,
+    "cap_hit_pct": 0.0623,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ausar Thompson",
+    "team": "DET",
+    "current_salary": 8775000,
+    "years_remaining": 1,
+    "cap_hit": 8775000,
+    "cap_hit_pct": 0.0622,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Brook Lopez",
+    "team": "LAC",
+    "current_salary": 8750000,
+    "years_remaining": 1,
+    "cap_hit": 8750000,
+    "cap_hit_pct": 0.0621,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Quentin Grimes",
+    "team": "PHI",
+    "current_salary": 8741209,
+    "years_remaining": 0,
+    "cap_hit": 8741209,
+    "cap_hit_pct": 0.062,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Ron Holland",
+    "team": "DET",
+    "current_salary": 8657280,
+    "years_remaining": 2,
+    "cap_hit": 8657280,
+    "cap_hit_pct": 0.0614,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Sam Merrill",
+    "team": "CLE",
+    "current_salary": 8482144,
+    "years_remaining": 3,
+    "cap_hit": 8482144,
+    "cap_hit_pct": 0.0602,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaylin Williams",
+    "team": "OKC",
+    "current_salary": 8450704,
+    "years_remaining": 2,
+    "cap_hit": 8450704,
+    "cap_hit_pct": 0.0599,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Shaedon Sharpe",
+    "team": "POR",
+    "current_salary": 8399983,
+    "years_remaining": 4,
+    "cap_hit": 8399983,
+    "cap_hit_pct": 0.0596,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kelly Oubre Jr.",
+    "team": "PHI",
+    "current_salary": 8382150,
+    "years_remaining": 0,
+    "cap_hit": 8382150,
+    "cap_hit_pct": 0.0594,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Goga Bitadze",
+    "team": "ORL",
+    "current_salary": 8333333,
+    "years_remaining": 1,
+    "cap_hit": 8333333,
+    "cap_hit_pct": 0.0591,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Simone Fontecchio",
+    "team": "MIA",
+    "current_salary": 8307692,
+    "years_remaining": 0,
+    "cap_hit": 8307692,
+    "cap_hit_pct": 0.0589,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tre Johnson",
+    "team": "WAS",
+    "current_salary": 8237640,
+    "years_remaining": 3,
+    "cap_hit": 8237640,
+    "cap_hit_pct": 0.0584,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Georges Niang",
+    "team": "MEM",
+    "current_salary": 8200000,
+    "years_remaining": 0,
+    "cap_hit": 8200000,
+    "cap_hit_pct": 0.0582,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Zeke Nnaji",
+    "team": "DEN",
+    "current_salary": 8177778,
+    "years_remaining": 2,
+    "cap_hit": 8177778,
+    "cap_hit_pct": 0.058,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Deandre Ayton",
+    "team": "LAL",
+    "current_salary": 33654814,
+    "years_remaining": 1,
+    "cap_hit": 33654814,
+    "cap_hit_pct": 0.2387,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tre Mann",
+    "team": "CHO",
+    "current_salary": 8000000,
+    "years_remaining": 2,
+    "cap_hit": 8000000,
+    "cap_hit_pct": 0.0567,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tre Jones",
+    "team": "CHI",
+    "current_salary": 8000000,
+    "years_remaining": 2,
+    "cap_hit": 8000000,
+    "cap_hit_pct": 0.0567,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kevon Looney",
+    "team": "NOP",
+    "current_salary": 8000000,
+    "years_remaining": 1,
+    "cap_hit": 8000000,
+    "cap_hit_pct": 0.0567,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Anthony Black",
+    "team": "ORL",
+    "current_salary": 7970280,
+    "years_remaining": 1,
+    "cap_hit": 7970280,
+    "cap_hit_pct": 0.0565,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tidjane Sala\u00c3\u00bcn",
+    "team": "CHO",
+    "current_salary": 7863240,
+    "years_remaining": 2,
+    "cap_hit": 7863240,
+    "cap_hit_pct": 0.0558,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Max Christie",
+    "team": "DAL",
+    "current_salary": 7714286,
+    "years_remaining": 2,
+    "cap_hit": 7714286,
+    "cap_hit_pct": 0.0547,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dyson Daniels",
+    "team": "ATL",
+    "current_salary": 7707709,
+    "years_remaining": 4,
+    "cap_hit": 7707709,
+    "cap_hit_pct": 0.0547,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaiah Jackson",
+    "team": "LAC",
+    "current_salary": 7600000,
+    "years_remaining": 2,
+    "cap_hit": 7600000,
+    "cap_hit_pct": 0.0539,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jeremiah Fears",
+    "team": "NOP",
+    "current_salary": 7520040,
+    "years_remaining": 3,
+    "cap_hit": 7520040,
+    "cap_hit_pct": 0.0533,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ayo Dosunmu",
+    "team": "MIN",
+    "current_salary": 7518518,
+    "years_remaining": 0,
+    "cap_hit": 7518518,
+    "cap_hit_pct": 0.0533,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bilal Coulibaly",
+    "team": "WAS",
+    "current_salary": 7275600,
+    "years_remaining": 1,
+    "cap_hit": 7275600,
+    "cap_hit_pct": 0.0516,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Payton Pritchard",
+    "team": "BOS",
+    "current_salary": 7232143,
+    "years_remaining": 2,
+    "cap_hit": 7232143,
+    "cap_hit_pct": 0.0513,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Donovan Clingan",
+    "team": "POR",
+    "current_salary": 7178400,
+    "years_remaining": 2,
+    "cap_hit": 7178400,
+    "cap_hit_pct": 0.0509,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kenrich Williams",
+    "team": "OKC",
+    "current_salary": 7163000,
+    "years_remaining": 1,
+    "cap_hit": 7163000,
+    "cap_hit_pct": 0.0508,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jeremy Sochan",
+    "team": "SAS",
+    "current_salary": 7874853,
+    "years_remaining": 0,
+    "cap_hit": 7874853,
+    "cap_hit_pct": 0.0559,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tyus Jones",
+    "team": "DAL",
+    "current_salary": 7000000,
+    "years_remaining": 0,
+    "cap_hit": 7000000,
+    "cap_hit_pct": 0.0496,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Egor D\u00d1\u0091min",
+    "team": "BRK",
+    "current_salary": 6889200,
+    "years_remaining": 3,
+    "cap_hit": 6889200,
+    "cap_hit_pct": 0.0489,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jevon Carter",
+    "team": "CHI",
+    "current_salary": 7680524,
+    "years_remaining": 0,
+    "cap_hit": 7680524,
+    "cap_hit_pct": 0.0545,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Clint Capela",
+    "team": "HOU",
+    "current_salary": 6700000,
+    "years_remaining": 2,
+    "cap_hit": 6700000,
+    "cap_hit_pct": 0.0475,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ousmane Dieng",
+    "team": "MIL",
+    "current_salary": 6670882,
+    "years_remaining": 0,
+    "cap_hit": 6670882,
+    "cap_hit_pct": 0.0473,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jarace Walker",
+    "team": "IND",
+    "current_salary": 6665520,
+    "years_remaining": 1,
+    "cap_hit": 6665520,
+    "cap_hit_pct": 0.0473,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dean Wade",
+    "team": "CLE",
+    "current_salary": 6623456,
+    "years_remaining": 0,
+    "cap_hit": 6623456,
+    "cap_hit_pct": 0.047,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jalen Williams",
+    "team": "OKC",
+    "current_salary": 6580997,
+    "years_remaining": 4,
+    "cap_hit": 6580997,
+    "cap_hit_pct": 0.0467,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Rob Dillingham",
+    "team": "CHI",
+    "current_salary": 6576120,
+    "years_remaining": 2,
+    "cap_hit": 6576120,
+    "cap_hit_pct": 0.0466,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jalen Duren",
+    "team": "DET",
+    "current_salary": 6483144,
+    "years_remaining": 0,
+    "cap_hit": 6483144,
+    "cap_hit_pct": 0.046,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Ochai Agbaji",
+    "team": "BRK",
+    "current_salary": 6383525,
+    "years_remaining": 0,
+    "cap_hit": 6383525,
+    "cap_hit_pct": 0.0453,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Collin Murray-Boyles",
+    "team": "TOR",
+    "current_salary": 6332520,
+    "years_remaining": 3,
+    "cap_hit": 6332520,
+    "cap_hit_pct": 0.0449,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mark Williams",
+    "team": "PHO",
+    "current_salary": 6276531,
+    "years_remaining": 0,
+    "cap_hit": 6276531,
+    "cap_hit_pct": 0.0445,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Day'Ron Sharpe",
+    "team": "BRK",
+    "current_salary": 6250000,
+    "years_remaining": 1,
+    "cap_hit": 6250000,
+    "cap_hit_pct": 0.0443,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ziaire Williams",
+    "team": "BRK",
+    "current_salary": 6250000,
+    "years_remaining": 1,
+    "cap_hit": 6250000,
+    "cap_hit_pct": 0.0443,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "John Konchar",
+    "team": "UTA",
+    "current_salary": 6165000,
+    "years_remaining": 1,
+    "cap_hit": 6165000,
+    "cap_hit_pct": 0.0437,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Taylor Hendricks",
+    "team": "MEM",
+    "current_salary": 6127080,
+    "years_remaining": 1,
+    "cap_hit": 6127080,
+    "cap_hit_pct": 0.0435,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Saddiq Bey",
+    "team": "NOP",
+    "current_salary": 6118644,
+    "years_remaining": 1,
+    "cap_hit": 6118644,
+    "cap_hit_pct": 0.0434,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Zach Edey",
+    "team": "MEM",
+    "current_salary": 6045000,
+    "years_remaining": 2,
+    "cap_hit": 6045000,
+    "cap_hit_pct": 0.0429,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Khaman Maluach",
+    "team": "PHO",
+    "current_salary": 6016080,
+    "years_remaining": 3,
+    "cap_hit": 6016080,
+    "cap_hit_pct": 0.0427,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaden Hardy",
+    "team": "WAS",
+    "current_salary": 6000000,
+    "years_remaining": 2,
+    "cap_hit": 6000000,
+    "cap_hit_pct": 0.0426,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jake LaRavia",
+    "team": "LAL",
+    "current_salary": 6000000,
+    "years_remaining": 1,
+    "cap_hit": 6000000,
+    "cap_hit_pct": 0.0426,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cam Thomas",
+    "team": "BRK",
+    "current_salary": 6837779,
+    "years_remaining": 0,
+    "cap_hit": 6837779,
+    "cap_hit_pct": 0.0485,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Cason Wallace",
+    "team": "OKC",
+    "current_salary": 5820240,
+    "years_remaining": 1,
+    "cap_hit": 5820240,
+    "cap_hit_pct": 0.0413,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cody Williams",
+    "team": "UTA",
+    "current_salary": 5742480,
+    "years_remaining": 2,
+    "cap_hit": 5742480,
+    "cap_hit_pct": 0.0407,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cedric Coward",
+    "team": "MEM",
+    "current_salary": 5715120,
+    "years_remaining": 3,
+    "cap_hit": 5715120,
+    "cap_hit_pct": 0.0405,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "D'Angelo Russell",
+    "team": "WAS",
+    "current_salary": 5685000,
+    "years_remaining": 1,
+    "cap_hit": 5685000,
+    "cap_hit_pct": 0.0403,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Al Horford",
+    "team": "GSW",
+    "current_salary": 5685000,
+    "years_remaining": 1,
+    "cap_hit": 5685000,
+    "cap_hit_pct": 0.0403,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tari Eason",
+    "team": "HOU",
+    "current_salary": 5675766,
+    "years_remaining": 0,
+    "cap_hit": 5675766,
+    "cap_hit_pct": 0.0403,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Haywood Highsmith",
+    "team": "BRK",
+    "current_salary": 6443984,
+    "years_remaining": 1,
+    "cap_hit": 6443984,
+    "cap_hit_pct": 0.0457,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nicolas Batum",
+    "team": "LAC",
+    "current_salary": 5601600,
+    "years_remaining": 1,
+    "cap_hit": 5601600,
+    "cap_hit_pct": 0.0397,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jett Howard",
+    "team": "ORL",
+    "current_salary": 5529720,
+    "years_remaining": 1,
+    "cap_hit": 5529720,
+    "cap_hit_pct": 0.0392,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Guerschon Yabusele",
+    "team": "CHI",
+    "current_salary": 5500000,
+    "years_remaining": 0,
+    "cap_hit": 5500000,
+    "cap_hit_pct": 0.039,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Matas Buzelis",
+    "team": "CHI",
+    "current_salary": 5455560,
+    "years_remaining": 2,
+    "cap_hit": 5455560,
+    "cap_hit_pct": 0.0387,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Noa Essengue",
+    "team": "CHI",
+    "current_salary": 5429520,
+    "years_remaining": 3,
+    "cap_hit": 5429520,
+    "cap_hit_pct": 0.0385,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kris Dunn",
+    "team": "LAC",
+    "current_salary": 5426400,
+    "years_remaining": 1,
+    "cap_hit": 5426400,
+    "cap_hit_pct": 0.0385,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dario \u00c5\u00a0ari\u00c4\u0087",
+    "team": "DET",
+    "current_salary": 5426400,
+    "years_remaining": 0,
+    "cap_hit": 5426400,
+    "cap_hit_pct": 0.0385,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dalen Terry",
+    "team": "NOP",
+    "current_salary": 5399118,
+    "years_remaining": 0,
+    "cap_hit": 5399118,
+    "cap_hit_pct": 0.0383,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bradley Beal",
+    "team": "LAC",
+    "current_salary": 24737010,
+    "years_remaining": 4,
+    "cap_hit": 24737010,
+    "cap_hit_pct": 0.1754,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Paul Reed",
+    "team": "DET",
+    "current_salary": 5335894,
+    "years_remaining": 1,
+    "cap_hit": 5335894,
+    "cap_hit_pct": 0.0378,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dereck Lively II",
+    "team": "DAL",
+    "current_salary": 5253360,
+    "years_remaining": 1,
+    "cap_hit": 5253360,
+    "cap_hit_pct": 0.0373,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nikola Topi\u00c4\u0087",
+    "team": "OKC",
+    "current_salary": 5182920,
+    "years_remaining": 2,
+    "cap_hit": 5182920,
+    "cap_hit_pct": 0.0368,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Derik Queen",
+    "team": "NOP",
+    "current_salary": 5157960,
+    "years_remaining": 3,
+    "cap_hit": 5157960,
+    "cap_hit_pct": 0.0366,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kevin Porter Jr.",
+    "team": "MIL",
+    "current_salary": 5134000,
+    "years_remaining": 1,
+    "cap_hit": 5134000,
+    "cap_hit_pct": 0.0364,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Marcus Smart",
+    "team": "LAL",
+    "current_salary": 19920855,
+    "years_remaining": 1,
+    "cap_hit": 19920855,
+    "cap_hit_pct": 0.1413,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Andre Drummond",
+    "team": "PHI",
+    "current_salary": 5000000,
+    "years_remaining": 0,
+    "cap_hit": 5000000,
+    "cap_hit_pct": 0.0355,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Moritz Wagner",
+    "team": "ORL",
+    "current_salary": 5000000,
+    "years_remaining": 0,
+    "cap_hit": 5000000,
+    "cap_hit_pct": 0.0355,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Nick Richards",
+    "team": "CHI",
+    "current_salary": 5000000,
+    "years_remaining": 0,
+    "cap_hit": 5000000,
+    "cap_hit_pct": 0.0355,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Gradey Dick",
+    "team": "TOR",
+    "current_salary": 4990560,
+    "years_remaining": 1,
+    "cap_hit": 4990560,
+    "cap_hit_pct": 0.0354,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Malaki Branham",
+    "team": "CHO",
+    "current_salary": 4962033,
+    "years_remaining": 0,
+    "cap_hit": 4962033,
+    "cap_hit_pct": 0.0352,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Devin Carter",
+    "team": "SAC",
+    "current_salary": 4923720,
+    "years_remaining": 2,
+    "cap_hit": 4923720,
+    "cap_hit_pct": 0.0349,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Christian Braun",
+    "team": "DEN",
+    "current_salary": 4921797,
+    "years_remaining": 4,
+    "cap_hit": 4921797,
+    "cap_hit_pct": 0.0349,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Carter Bryant",
+    "team": "SAS",
+    "current_salary": 4900320,
+    "years_remaining": 3,
+    "cap_hit": 4900320,
+    "cap_hit_pct": 0.0348,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Walker Kessler",
+    "team": "UTA",
+    "current_salary": 4878938,
+    "years_remaining": 0,
+    "cap_hit": 4878938,
+    "cap_hit_pct": 0.0346,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jordan Hawkins",
+    "team": "NOP",
+    "current_salary": 4741320,
+    "years_remaining": 1,
+    "cap_hit": 4741320,
+    "cap_hit_pct": 0.0336,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bub Carrington",
+    "team": "WAS",
+    "current_salary": 4677600,
+    "years_remaining": 2,
+    "cap_hit": 4677600,
+    "cap_hit_pct": 0.0332,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Thomas Sorber",
+    "team": "OKC",
+    "current_salary": 4655040,
+    "years_remaining": 3,
+    "cap_hit": 4655040,
+    "cap_hit_pct": 0.033,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kobe Bufkin",
+    "team": "BRK",
+    "current_salary": 5480297,
+    "years_remaining": 1,
+    "cap_hit": 5480297,
+    "cap_hit_pct": 0.0389,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jose Alvarado",
+    "team": "NYK",
+    "current_salary": 4500000,
+    "years_remaining": 1,
+    "cap_hit": 4500000,
+    "cap_hit_pct": 0.0319,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nikola Jovi\u00c4\u0087",
+    "team": "MIA",
+    "current_salary": 4445417,
+    "years_remaining": 4,
+    "cap_hit": 4445417,
+    "cap_hit_pct": 0.0315,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kel'el Ware",
+    "team": "MIA",
+    "current_salary": 4443360,
+    "years_remaining": 2,
+    "cap_hit": 4443360,
+    "cap_hit_pct": 0.0315,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Yang Hansen",
+    "team": "POR",
+    "current_salary": 4422360,
+    "years_remaining": 3,
+    "cap_hit": 4422360,
+    "cap_hit_pct": 0.0314,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Peyton Watson",
+    "team": "DEN",
+    "current_salary": 4356476,
+    "years_remaining": 0,
+    "cap_hit": 4356476,
+    "cap_hit_pct": 0.0309,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Miles McBride",
+    "team": "NYK",
+    "current_salary": 4333333,
+    "years_remaining": 1,
+    "cap_hit": 4333333,
+    "cap_hit_pct": 0.0307,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Keyonte George",
+    "team": "UTA",
+    "current_salary": 4278960,
+    "years_remaining": 1,
+    "cap_hit": 4278960,
+    "cap_hit_pct": 0.0303,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jared McCain",
+    "team": "OKC",
+    "current_salary": 4221360,
+    "years_remaining": 2,
+    "cap_hit": 4221360,
+    "cap_hit_pct": 0.0299,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Joan Beringer",
+    "team": "MIN",
+    "current_salary": 4201080,
+    "years_remaining": 3,
+    "cap_hit": 4201080,
+    "cap_hit_pct": 0.0298,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kevin Love",
+    "team": "UTA",
+    "current_salary": 4150000,
+    "years_remaining": 0,
+    "cap_hit": 4150000,
+    "cap_hit_pct": 0.0294,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dalton Knecht",
+    "team": "LAL",
+    "current_salary": 4010160,
+    "years_remaining": 2,
+    "cap_hit": 4010160,
+    "cap_hit_pct": 0.0284,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ryan Rollins",
+    "team": "MIL",
+    "current_salary": 4000000,
+    "years_remaining": 2,
+    "cap_hit": 4000000,
+    "cap_hit_pct": 0.0284,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dwight Powell",
+    "team": "DAL",
+    "current_salary": 4000000,
+    "years_remaining": 0,
+    "cap_hit": 4000000,
+    "cap_hit_pct": 0.0284,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Walter Clayton",
+    "team": "MEM",
+    "current_salary": 3991320,
+    "years_remaining": 3,
+    "cap_hit": 3991320,
+    "cap_hit_pct": 0.0283,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaime Jaquez Jr.",
+    "team": "MIA",
+    "current_salary": 3861600,
+    "years_remaining": 1,
+    "cap_hit": 3861600,
+    "cap_hit_pct": 0.0274,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nolan Traor\u00c3\u00a9",
+    "team": "BRK",
+    "current_salary": 3811560,
+    "years_remaining": 3,
+    "cap_hit": 3811560,
+    "cap_hit_pct": 0.027,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Daniss Jenkins",
+    "team": "DET",
+    "current_salary": 3809524,
+    "years_remaining": 1,
+    "cap_hit": 3809524,
+    "cap_hit_pct": 0.027,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tristan Da Silva",
+    "team": "ORL",
+    "current_salary": 3809520,
+    "years_remaining": 2,
+    "cap_hit": 3809520,
+    "cap_hit_pct": 0.027,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cole Anthony",
+    "team": "MEM",
+    "current_salary": 5996274,
+    "years_remaining": 2,
+    "cap_hit": 5996274,
+    "cap_hit_pct": 0.0425,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Gary Trent Jr.",
+    "team": "MIL",
+    "current_salary": 3697105,
+    "years_remaining": 1,
+    "cap_hit": 3697105,
+    "cap_hit_pct": 0.0262,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Brandin Podziemski",
+    "team": "GSW",
+    "current_salary": 3687960,
+    "years_remaining": 1,
+    "cap_hit": 3687960,
+    "cap_hit_pct": 0.0262,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Svi Mykhailiuk",
+    "team": "UTA",
+    "current_salary": 3675000,
+    "years_remaining": 2,
+    "cap_hit": 3675000,
+    "cap_hit_pct": 0.0261,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kasparas Jaku\u00c4\u008dionis",
+    "team": "MIA",
+    "current_salary": 3658800,
+    "years_remaining": 3,
+    "cap_hit": 3658800,
+    "cap_hit_pct": 0.0259,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ja'Kobe Walter",
+    "team": "TOR",
+    "current_salary": 3638160,
+    "years_remaining": 2,
+    "cap_hit": 3638160,
+    "cap_hit_pct": 0.0258,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Gary Harris",
+    "team": "MIL",
+    "current_salary": 3634153,
+    "years_remaining": 1,
+    "cap_hit": 3634153,
+    "cap_hit_pct": 0.0258,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cam Whitmore",
+    "team": "WAS",
+    "current_salary": 3539760,
+    "years_remaining": 1,
+    "cap_hit": 3539760,
+    "cap_hit_pct": 0.0251,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Will Riley",
+    "team": "WAS",
+    "current_salary": 3512520,
+    "years_remaining": 3,
+    "cap_hit": 3512520,
+    "cap_hit_pct": 0.0249,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaylon Tyson",
+    "team": "CLE",
+    "current_salary": 3492480,
+    "years_remaining": 2,
+    "cap_hit": 3492480,
+    "cap_hit_pct": 0.0248,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaxson Hayes",
+    "team": "LAL",
+    "current_salary": 3449323,
+    "years_remaining": 0,
+    "cap_hit": 3449323,
+    "cap_hit_pct": 0.0245,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dominick Barlow",
+    "team": "PHI",
+    "current_salary": 3415000,
+    "years_remaining": 1,
+    "cap_hit": 3415000,
+    "cap_hit_pct": 0.0242,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Noah Clowney",
+    "team": "BRK",
+    "current_salary": 3398640,
+    "years_remaining": 1,
+    "cap_hit": 3398640,
+    "cap_hit_pct": 0.0241,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Drake Powell",
+    "team": "BRK",
+    "current_salary": 3372240,
+    "years_remaining": 3,
+    "cap_hit": 3372240,
+    "cap_hit_pct": 0.0239,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Yves Missi",
+    "team": "NOP",
+    "current_salary": 3353040,
+    "years_remaining": 2,
+    "cap_hit": 3353040,
+    "cap_hit_pct": 0.0238,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Blake Wesley",
+    "team": "WAS",
+    "current_salary": 5643732,
+    "years_remaining": 0,
+    "cap_hit": 5643732,
+    "cap_hit_pct": 0.04,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Taurean Prince",
+    "team": "MIL",
+    "current_salary": 3303774,
+    "years_remaining": 1,
+    "cap_hit": 3303774,
+    "cap_hit_pct": 0.0234,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dariq Whitehead",
+    "team": "BRK",
+    "current_salary": 3262560,
+    "years_remaining": 0,
+    "cap_hit": 3262560,
+    "cap_hit_pct": 0.0231,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Asa Newell",
+    "team": "ATL",
+    "current_salary": 3237480,
+    "years_remaining": 3,
+    "cap_hit": 3237480,
+    "cap_hit_pct": 0.023,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "DaRon Holmes",
+    "team": "DEN",
+    "current_salary": 3218760,
+    "years_remaining": 2,
+    "cap_hit": 3218760,
+    "cap_hit_pct": 0.0228,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kris Murray",
+    "team": "POR",
+    "current_salary": 3132000,
+    "years_remaining": 1,
+    "cap_hit": 3132000,
+    "cap_hit_pct": 0.0222,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nique Clifford",
+    "team": "SAC",
+    "current_salary": 3108120,
+    "years_remaining": 3,
+    "cap_hit": 3108120,
+    "cap_hit_pct": 0.022,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nassir Little",
+    "team": "PHO",
+    "current_salary": 3107143,
+    "years_remaining": 3,
+    "cap_hit": 3107143,
+    "cap_hit_pct": 0.022,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "AJ Johnson",
+    "team": "DAL",
+    "current_salary": 3090480,
+    "years_remaining": 2,
+    "cap_hit": 3090480,
+    "cap_hit_pct": 0.0219,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "De'Anthony Melton",
+    "team": "GSW",
+    "current_salary": 3080921,
+    "years_remaining": 1,
+    "cap_hit": 3080921,
+    "cap_hit_pct": 0.0219,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kyle Filipowski",
+    "team": "UTA",
+    "current_salary": 3000000,
+    "years_remaining": 2,
+    "cap_hit": 3000000,
+    "cap_hit_pct": 0.0213,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ajay Mitchell",
+    "team": "OKC",
+    "current_salary": 3000000,
+    "years_remaining": 2,
+    "cap_hit": 3000000,
+    "cap_hit_pct": 0.0213,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Julian Champagnie",
+    "team": "SAS",
+    "current_salary": 3000000,
+    "years_remaining": 1,
+    "cap_hit": 3000000,
+    "cap_hit_pct": 0.0213,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jase Richardson",
+    "team": "ORL",
+    "current_salary": 2983320,
+    "years_remaining": 3,
+    "cap_hit": 2983320,
+    "cap_hit_pct": 0.0212,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kyshawn George",
+    "team": "WAS",
+    "current_salary": 2966760,
+    "years_remaining": 2,
+    "cap_hit": 2966760,
+    "cap_hit_pct": 0.021,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tony Bradley",
+    "team": "IND",
+    "current_salary": 3204816,
+    "years_remaining": 0,
+    "cap_hit": 3204816,
+    "cap_hit_pct": 0.0227,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Marcus Sasser",
+    "team": "DET",
+    "current_salary": 2886720,
+    "years_remaining": 1,
+    "cap_hit": 2886720,
+    "cap_hit_pct": 0.0205,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ben Saraf",
+    "team": "BRK",
+    "current_salary": 2884560,
+    "years_remaining": 3,
+    "cap_hit": 2884560,
+    "cap_hit_pct": 0.0205,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Pac\u00c3\u00b4me Dadiet",
+    "team": "NYK",
+    "current_salary": 2847600,
+    "years_remaining": 2,
+    "cap_hit": 2847600,
+    "cap_hit_pct": 0.0202,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Danny Wolf",
+    "team": "BRK",
+    "current_salary": 2801280,
+    "years_remaining": 3,
+    "cap_hit": 2801280,
+    "cap_hit_pct": 0.0199,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ben Sheppard",
+    "team": "IND",
+    "current_salary": 2790720,
+    "years_remaining": 1,
+    "cap_hit": 2790720,
+    "cap_hit_pct": 0.0198,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Hugo Gonz\u00c3\u00a1lez",
+    "team": "BOS",
+    "current_salary": 2783880,
+    "years_remaining": 3,
+    "cap_hit": 2783880,
+    "cap_hit_pct": 0.0197,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Liam McNeeley",
+    "team": "CHO",
+    "current_salary": 2763960,
+    "years_remaining": 3,
+    "cap_hit": 2763960,
+    "cap_hit_pct": 0.0196,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dillon Jones",
+    "team": "WAS",
+    "current_salary": 2753280,
+    "years_remaining": 0,
+    "cap_hit": 2753280,
+    "cap_hit_pct": 0.0195,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Yanic Konan Niederh\u00c3\u00a4user",
+    "team": "LAC",
+    "current_salary": 2743800,
+    "years_remaining": 3,
+    "cap_hit": 2743800,
+    "cap_hit_pct": 0.0195,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nick Smith Jr.",
+    "team": "CHO",
+    "current_salary": 2710680,
+    "years_remaining": 0,
+    "cap_hit": 2710680,
+    "cap_hit_pct": 0.0192,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Brice Sensabaugh",
+    "team": "UTA",
+    "current_salary": 2693760,
+    "years_remaining": 1,
+    "cap_hit": 2693760,
+    "cap_hit_pct": 0.0191,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Julian Strawther",
+    "team": "DEN",
+    "current_salary": 2674200,
+    "years_remaining": 1,
+    "cap_hit": 2674200,
+    "cap_hit_pct": 0.019,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Terrence Shannon Jr.",
+    "team": "MIN",
+    "current_salary": 2674080,
+    "years_remaining": 2,
+    "cap_hit": 2674080,
+    "cap_hit_pct": 0.019,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ryan Dunn",
+    "team": "PHO",
+    "current_salary": 2657760,
+    "years_remaining": 2,
+    "cap_hit": 2657760,
+    "cap_hit_pct": 0.0188,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kobe Brown",
+    "team": "IND",
+    "current_salary": 2654880,
+    "years_remaining": 1,
+    "cap_hit": 2654880,
+    "cap_hit_pct": 0.0188,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Isaiah Collier",
+    "team": "UTA",
+    "current_salary": 2638200,
+    "years_remaining": 2,
+    "cap_hit": 2638200,
+    "cap_hit_pct": 0.0187,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Baylor Scheierman",
+    "team": "BOS",
+    "current_salary": 2619000,
+    "years_remaining": 2,
+    "cap_hit": 2619000,
+    "cap_hit_pct": 0.0186,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Xavier Tillman Sr.",
+    "team": "CHO",
+    "current_salary": 2546675,
+    "years_remaining": 0,
+    "cap_hit": 2546675,
+    "cap_hit_pct": 0.0181,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Cam Spencer",
+    "team": "MEM",
+    "current_salary": 2537989,
+    "years_remaining": 3,
+    "cap_hit": 2537989,
+    "cap_hit_pct": 0.018,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Luka Garza",
+    "team": "BOS",
+    "current_salary": 2461463,
+    "years_remaining": 1,
+    "cap_hit": 2461463,
+    "cap_hit_pct": 0.0175,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Sandro Mamukelashvili",
+    "team": "TOR",
+    "current_salary": 2461463,
+    "years_remaining": 1,
+    "cap_hit": 2461463,
+    "cap_hit_pct": 0.0175,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Trendon Watford",
+    "team": "PHI",
+    "current_salary": 2461463,
+    "years_remaining": 1,
+    "cap_hit": 2461463,
+    "cap_hit_pct": 0.0175,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jericho Sims",
+    "team": "MIL",
+    "current_salary": 2461463,
+    "years_remaining": 1,
+    "cap_hit": 2461463,
+    "cap_hit_pct": 0.0175,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dru Smith",
+    "team": "MIA",
+    "current_salary": 2378870,
+    "years_remaining": 2,
+    "cap_hit": 2378870,
+    "cap_hit_pct": 0.0169,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Josh Minott",
+    "team": "BRK",
+    "current_salary": 2378870,
+    "years_remaining": 1,
+    "cap_hit": 2378870,
+    "cap_hit_pct": 0.0169,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Justin Champagnie",
+    "team": "WAS",
+    "current_salary": 2349578,
+    "years_remaining": 2,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jordan Goodwin",
+    "team": "PHO",
+    "current_salary": 2349578,
+    "years_remaining": 0,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jay Huff",
+    "team": "IND",
+    "current_salary": 2349578,
+    "years_remaining": 2,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Keon Johnson",
+    "team": "BRK",
+    "current_salary": 2349578,
+    "years_remaining": 0,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "V\u00c3\u00adt Krej\u00c4\u008d\u00c3\u00ad",
+    "team": "POR",
+    "current_salary": 2349578,
+    "years_remaining": 2,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Neemias Queta",
+    "team": "BOS",
+    "current_salary": 2349578,
+    "years_remaining": 1,
+    "cap_hit": 2349578,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "A.J. Green",
+    "team": "MIL",
+    "current_salary": 2301587,
+    "years_remaining": 4,
+    "cap_hit": 2301587,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Vince Williams Jr.",
+    "team": "UTA",
+    "current_salary": 2301587,
+    "years_remaining": 0,
+    "cap_hit": 2301587,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keon Ellis",
+    "team": "CLE",
+    "current_salary": 2301587,
+    "years_remaining": 0,
+    "cap_hit": 2301587,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Ryan Kalkbrenner",
+    "team": "CHO",
+    "current_salary": 2296274,
+    "years_remaining": 3,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Sion James",
+    "team": "CHO",
+    "current_salary": 2296274,
+    "years_remaining": 3,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Dant\u00c3\u00a9 Exum",
+    "team": "WAS",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Anthony Gill",
+    "team": "WAS",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Chris Boucher",
+    "team": "UTA",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Chris Paul",
+    "team": "TOR",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Garrett Temple",
+    "team": "TOR",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bismack Biyombo",
+    "team": "SAS",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Lindy Waters III",
+    "team": "SAS",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jordan McLaughlin",
+    "team": "SAS",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Russell Westbrook",
+    "team": "SAC",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Doug McDermott",
+    "team": "SAC",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Drew Eubanks",
+    "team": "SAC",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Blake Wesley",
+    "team": "POR",
+    "current_salary": 5643732,
+    "years_remaining": 0,
+    "cap_hit": 5643732,
+    "cap_hit_pct": 0.04,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Cole Anthony",
+    "team": "PHO",
+    "current_salary": 5996274,
+    "years_remaining": 2,
+    "cap_hit": 5996274,
+    "cap_hit_pct": 0.0425,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Amir Coffey",
+    "team": "PHO",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Collin Gillespie",
+    "team": "PHO",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kyle Lowry",
+    "team": "PHI",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mason Plumlee",
+    "team": "OKC",
+    "current_salary": 3022108,
+    "years_remaining": 0,
+    "cap_hit": 3022108,
+    "cap_hit_pct": 0.0214,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Landry Shamet",
+    "team": "NYK",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jordan Clarkson",
+    "team": "NYK",
+    "current_salary": 12947835,
+    "years_remaining": 0,
+    "cap_hit": 12947835,
+    "cap_hit_pct": 0.0918,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bones Hyland",
+    "team": "MIN",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Joe Ingles",
+    "team": "MIN",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Chris Livingston",
+    "team": "MIL",
+    "current_salary": null,
+    "years_remaining": 0,
+    "cap_hit": null,
+    "cap_hit_pct": 0.0,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Thanasis Antetokounmpo",
+    "team": "MIL",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Eric Gordon",
+    "team": "MEM",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Josh Okogie",
+    "team": "HOU",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jeff Green",
+    "team": "HOU",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Aaron Holiday",
+    "team": "HOU",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jae'Sean Tate",
+    "team": "HOU",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Gary Payton II",
+    "team": "GSW",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Javonte Green",
+    "team": "DET",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tim Hardaway Jr.",
+    "team": "DEN",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bruce Brown",
+    "team": "DEN",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Marvin Bagley III",
+    "team": "DAL",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Thomas Bryant",
+    "team": "CLE",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Larry Nance Jr.",
+    "team": "CLE",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keaton Wallace",
+    "team": "ATL",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jock Landale",
+    "team": "ATL",
+    "current_salary": 2296274,
+    "years_remaining": 0,
+    "cap_hit": 2296274,
+    "cap_hit_pct": 0.0163,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Scotty Pippen Jr.",
+    "team": "MEM",
+    "current_salary": 2270735,
+    "years_remaining": 2,
+    "cap_hit": 2270735,
+    "cap_hit_pct": 0.0161,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "JD Davison",
+    "team": "BOS",
+    "current_salary": 2270735,
+    "years_remaining": 0,
+    "cap_hit": 2270735,
+    "cap_hit_pct": 0.0161,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Brandon Williams",
+    "team": "DAL",
+    "current_salary": 2270735,
+    "years_remaining": 0,
+    "cap_hit": 2270735,
+    "cap_hit_pct": 0.0161,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Moussa Diabat\u00c3\u00a9",
+    "team": "CHO",
+    "current_salary": 2270735,
+    "years_remaining": 1,
+    "cap_hit": 2270735,
+    "cap_hit_pct": 0.0161,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "DeAndre Jordan",
+    "team": "NOP",
+    "current_salary": 2269880,
+    "years_remaining": 0,
+    "cap_hit": 2269880,
+    "cap_hit_pct": 0.0161,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Toumani Camara",
+    "team": "POR",
+    "current_salary": 2221677,
+    "years_remaining": 4,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Rayan Rupert",
+    "team": "POR",
+    "current_salary": 2353647,
+    "years_remaining": 0,
+    "cap_hit": 2353647,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Julian Phillips",
+    "team": "MIN",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "GG Jackson II",
+    "team": "MEM",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Gui Santos",
+    "team": "GSW",
+    "current_salary": 2221677,
+    "years_remaining": 0,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jalen Pickett",
+    "team": "DEN",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Hunter Tyson",
+    "team": "BRK",
+    "current_salary": 2221677,
+    "years_remaining": 0,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jalen Wilson",
+    "team": "BRK",
+    "current_salary": 2221677,
+    "years_remaining": 0,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jordan Walsh",
+    "team": "BOS",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Trayce Jackson-Davis",
+    "team": "TOR",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Andre Jackson Jr.",
+    "team": "MIL",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Craig Porter Jr.",
+    "team": "CLE",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Leonard Miller",
+    "team": "CHI",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Duop Reath",
+    "team": "ATL",
+    "current_salary": 2221677,
+    "years_remaining": 0,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mouhamed Gueye",
+    "team": "ATL",
+    "current_salary": 2221677,
+    "years_remaining": 1,
+    "cap_hit": 2221677,
+    "cap_hit_pct": 0.0158,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "JaVale McGee",
+    "team": "DAL",
+    "current_salary": 2208856,
+    "years_remaining": 2,
+    "cap_hit": 2208856,
+    "cap_hit_pct": 0.0157,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyler Kolek",
+    "team": "NYK",
+    "current_salary": 2191897,
+    "years_remaining": 2,
+    "cap_hit": 2191897,
+    "cap_hit_pct": 0.0155,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jaylen Clark",
+    "team": "MIN",
+    "current_salary": 2191897,
+    "years_remaining": 0,
+    "cap_hit": 2191897,
+    "cap_hit_pct": 0.0155,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tyrese Martin",
+    "team": "BRK",
+    "current_salary": 2191897,
+    "years_remaining": 0,
+    "cap_hit": 2191897,
+    "cap_hit_pct": 0.0155,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Precious Achiuwa",
+    "team": "SAC",
+    "current_salary": 2111516,
+    "years_remaining": 0,
+    "cap_hit": 2111516,
+    "cap_hit_pct": 0.015,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Justin Edwards",
+    "team": "PHI",
+    "current_salary": 2048494,
+    "years_remaining": 2,
+    "cap_hit": 2048494,
+    "cap_hit_pct": 0.0145,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nigel Hayes-Davis",
+    "team": "MIL",
+    "current_salary": 2048494,
+    "years_remaining": 0,
+    "cap_hit": 2048494,
+    "cap_hit_pct": 0.0145,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "N'Faly Dante",
+    "team": "ATL",
+    "current_salary": 2048494,
+    "years_remaining": 0,
+    "cap_hit": 2048494,
+    "cap_hit_pct": 0.0145,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Johnny Furphy",
+    "team": "IND",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jonathan Mogbo",
+    "team": "TOR",
+    "current_salary": 1955377,
+    "years_remaining": 1,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jamal Shead",
+    "team": "TOR",
+    "current_salary": 1955377,
+    "years_remaining": 1,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Oso Ighodaro",
+    "team": "PHO",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ariel Hukporti",
+    "team": "NYK",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Karlo Matkovi\u00c4\u0087",
+    "team": "NOP",
+    "current_salary": 1955377,
+    "years_remaining": 1,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyler Smith",
+    "team": "MIL",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keshad Johnson",
+    "team": "MIA",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jaylen Wells",
+    "team": "MEM",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Bronny James",
+    "team": "LAL",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cam Christie",
+    "team": "LAC",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Quinten Post",
+    "team": "GSW",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Isaac Jones",
+    "team": "DET",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bobi Klintman",
+    "team": "DET",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Drew Timme",
+    "team": "BRK",
+    "current_salary": 1955377,
+    "years_remaining": 0,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jamison Battle",
+    "team": "TOR",
+    "current_salary": 1955377,
+    "years_remaining": 1,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Adem Bona",
+    "team": "PHI",
+    "current_salary": 1955377,
+    "years_remaining": 2,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Pelle Larsson",
+    "team": "MIA",
+    "current_salary": 1955377,
+    "years_remaining": 1,
+    "cap_hit": 1955377,
+    "cap_hit_pct": 0.0139,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Seth Curry",
+    "team": "GSW",
+    "current_salary": 1755198,
+    "years_remaining": 0,
+    "cap_hit": 1755198,
+    "cap_hit_pct": 0.0124,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Micah Potter",
+    "team": "IND",
+    "current_salary": 1527805,
+    "years_remaining": 1,
+    "cap_hit": 1527805,
+    "cap_hit_pct": 0.0108,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Chaz Lanier",
+    "team": "DET",
+    "current_salary": 1372870,
+    "years_remaining": 3,
+    "cap_hit": 1372870,
+    "cap_hit_pct": 0.0097,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Pat Connaughton",
+    "team": "CHO",
+    "current_salary": 10739683,
+    "years_remaining": 1,
+    "cap_hit": 10739683,
+    "cap_hit_pct": 0.0762,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Rasheer Fleming",
+    "team": "PHO",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Maxime Raynaud",
+    "team": "SAC",
+    "current_salary": 1272870,
+    "years_remaining": 2,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Johni Broome",
+    "team": "PHI",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Noah Penda",
+    "team": "ORL",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Micah Peavy",
+    "team": "NOP",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Adou Thiero",
+    "team": "LAL",
+    "current_salary": 1272870,
+    "years_remaining": 2,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Will Richard",
+    "team": "GSW",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tyrese Proctor",
+    "team": "CLE",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mohamed Diawara",
+    "team": "NYK",
+    "current_salary": 1272870,
+    "years_remaining": 0,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kam Jones",
+    "team": "IND",
+    "current_salary": 1272870,
+    "years_remaining": 3,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nikola Djurisic",
+    "team": "ATL",
+    "current_salary": 1272870,
+    "years_remaining": 0,
+    "cap_hit": 1272870,
+    "cap_hit_pct": 0.009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Olivier-Maxence Prosper",
+    "team": "DAL",
+    "current_salary": 1002360,
+    "years_remaining": 2,
+    "cap_hit": 1002360,
+    "cap_hit_pct": 0.0071,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "James Wiseman",
+    "team": "IND",
+    "current_salary": 1131970,
+    "years_remaining": 0,
+    "cap_hit": 1131970,
+    "cap_hit_pct": 0.008,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jevon Carter",
+    "team": "ORL",
+    "current_salary": 7680524,
+    "years_remaining": 0,
+    "cap_hit": 7680524,
+    "cap_hit_pct": 0.0545,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Pat Spencer",
+    "team": "GSW",
+    "current_salary": 857804,
+    "years_remaining": 0,
+    "cap_hit": 857804,
+    "cap_hit_pct": 0.0061,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kobe Bufkin",
+    "team": "LAL",
+    "current_salary": 5480297,
+    "years_remaining": 1,
+    "cap_hit": 5480297,
+    "cap_hit_pct": 0.0389,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cam Thomas",
+    "team": "MIL",
+    "current_salary": 6837779,
+    "years_remaining": 0,
+    "cap_hit": 6837779,
+    "cap_hit_pct": 0.0485,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Haywood Highsmith",
+    "team": "PHO",
+    "current_salary": 6443984,
+    "years_remaining": 1,
+    "cap_hit": 6443984,
+    "cap_hit_pct": 0.0457,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jeremy Sochan",
+    "team": "NYK",
+    "current_salary": 7874853,
+    "years_remaining": 0,
+    "cap_hit": 7874853,
+    "cap_hit_pct": 0.0559,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mike Conley",
+    "team": "MIN",
+    "current_salary": 11499872,
+    "years_remaining": 0,
+    "cap_hit": 11499872,
+    "cap_hit_pct": 0.0816,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Bryce McGowens",
+    "team": "NOP",
+    "current_salary": 724598,
+    "years_remaining": 2,
+    "cap_hit": 724598,
+    "cap_hit_pct": 0.0051,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jabari Walker",
+    "team": "PHI",
+    "current_salary": 724598,
+    "years_remaining": 1,
+    "cap_hit": 724598,
+    "cap_hit_pct": 0.0051,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Nae'Qwan Tomlin",
+    "team": "CLE",
+    "current_salary": 718150,
+    "years_remaining": 1,
+    "cap_hit": 718150,
+    "cap_hit_pct": 0.0051,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jordan Miller",
+    "team": "LAC",
+    "current_salary": 712637,
+    "years_remaining": 1,
+    "cap_hit": 712637,
+    "cap_hit_pct": 0.0051,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Cameron Payne",
+    "team": "PHI",
+    "current_salary": 712637,
+    "years_remaining": 0,
+    "cap_hit": 712637,
+    "cap_hit_pct": 0.0051,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "E.J. Liddell",
+    "team": "PHO",
+    "current_salary": 706898,
+    "years_remaining": 1,
+    "cap_hit": 706898,
+    "cap_hit_pct": 0.005,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Caleb Houstan",
+    "team": "ATL",
+    "current_salary": 699440,
+    "years_remaining": 0,
+    "cap_hit": 699440,
+    "cap_hit_pct": 0.005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Sidy Cissoko",
+    "team": "POR",
+    "current_salary": 686243,
+    "years_remaining": 1,
+    "cap_hit": 686243,
+    "cap_hit_pct": 0.0049,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Vasilije Mici\u00c4\u0087",
+    "team": "MIL",
+    "current_salary": 666667,
+    "years_remaining": 2,
+    "cap_hit": 666667,
+    "cap_hit_pct": 0.0047,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Spencer Jones",
+    "team": "DEN",
+    "current_salary": 623967,
+    "years_remaining": 0,
+    "cap_hit": 623967,
+    "cap_hit_pct": 0.0044,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mason Plumlee",
+    "team": "SAS",
+    "current_salary": 3022108,
+    "years_remaining": 0,
+    "cap_hit": 3022108,
+    "cap_hit_pct": 0.0214,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Amari Williams",
+    "team": "BOS",
+    "current_salary": 490128,
+    "years_remaining": 1,
+    "cap_hit": 490128,
+    "cap_hit_pct": 0.0035,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Kobe Sanders",
+    "team": "LAC",
+    "current_salary": 475497,
+    "years_remaining": 1,
+    "cap_hit": 475497,
+    "cap_hit_pct": 0.0034,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mamadi Diakite",
+    "team": "MEM",
+    "current_salary": 464050,
+    "years_remaining": 1,
+    "cap_hit": 464050,
+    "cap_hit_pct": 0.0033,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Ricky Rubio",
+    "team": "CLE",
+    "current_salary": 424672,
+    "years_remaining": 1,
+    "cap_hit": 424672,
+    "cap_hit_pct": 0.003,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Myron Gardner",
+    "team": "MIA",
+    "current_salary": 395029,
+    "years_remaining": 2,
+    "cap_hit": 395029,
+    "cap_hit_pct": 0.0028,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Jeremiah Robinson-Earl",
+    "team": "IND",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Monte Morris",
+    "team": "IND",
+    "current_salary": 321184,
+    "years_remaining": 0,
+    "cap_hit": 321184,
+    "cap_hit_pct": 0.0023,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Garrison Mathews",
+    "team": "IND",
+    "current_salary": 429325,
+    "years_remaining": 0,
+    "cap_hit": 429325,
+    "cap_hit_pct": 0.003,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Didi Louzada",
+    "team": "POR",
+    "current_salary": 268032,
+    "years_remaining": 3,
+    "cap_hit": 268032,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Mo Bamba",
+    "team": "TOR",
+    "current_salary": 458711,
+    "years_remaining": 0,
+    "cap_hit": 458711,
+    "cap_hit_pct": 0.0033,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mac McClung",
+    "team": "IND",
+    "current_salary": 164060,
+    "years_remaining": 0,
+    "cap_hit": 164060,
+    "cap_hit_pct": 0.0012,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kobe Bufkin",
+    "team": "LAL",
+    "current_salary": 5480297,
+    "years_remaining": 1,
+    "cap_hit": 5480297,
+    "cap_hit_pct": 0.0389,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Tony Bradley",
+    "team": "IND",
+    "current_salary": 3204816,
+    "years_remaining": 0,
+    "cap_hit": 3204816,
+    "cap_hit_pct": 0.0227,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Tony Bradley",
+    "team": "IND",
+    "current_salary": 3204816,
+    "years_remaining": 0,
+    "cap_hit": 3204816,
+    "cap_hit_pct": 0.0227,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "James Wiseman",
+    "team": "IND",
+    "current_salary": 1131970,
+    "years_remaining": 0,
+    "cap_hit": 1131970,
+    "cap_hit_pct": 0.008,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mason Plumlee",
+    "team": "SAS",
+    "current_salary": 3022108,
+    "years_remaining": 0,
+    "cap_hit": 3022108,
+    "cap_hit_pct": 0.0214,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jeremiah Robinson-Earl",
+    "team": "IND",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jeremiah Robinson-Earl",
+    "team": "IND",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Garrison Mathews",
+    "team": "IND",
+    "current_salary": 429325,
+    "years_remaining": 0,
+    "cap_hit": 429325,
+    "cap_hit_pct": 0.003,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Garrison Mathews",
+    "team": "IND",
+    "current_salary": 429325,
+    "years_remaining": 0,
+    "cap_hit": 429325,
+    "cap_hit_pct": 0.003,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mo Bamba",
+    "team": "UTA",
+    "current_salary": 458711,
+    "years_remaining": 0,
+    "cap_hit": 458711,
+    "cap_hit_pct": 0.0033,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Mo Bamba",
+    "team": "UTA",
+    "current_salary": 458711,
+    "years_remaining": 0,
+    "cap_hit": 458711,
+    "cap_hit_pct": 0.0033,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Killian Hayes",
+    "team": "SAC",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Killian Hayes",
+    "team": "SAC",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Charles Bassey",
+    "team": "PHI",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Charles Bassey",
+    "team": "PHI",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Christian Koloko",
+    "team": "MEM",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Christian Koloko",
+    "team": "MEM",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Alondes Williams",
+    "team": "WAS",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Skal Labissi\u00c3\u00a8re",
+    "team": "WAS",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Patrick Baldwin Jr.",
+    "team": "PHI",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Rayan Rupert",
+    "team": "MEM",
+    "current_salary": 2353647,
+    "years_remaining": 0,
+    "cap_hit": 2353647,
+    "cap_hit_pct": 0.0167,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kobe Bufkin",
+    "team": "MEM",
+    "current_salary": 5480297,
+    "years_remaining": 1,
+    "cap_hit": 5480297,
+    "cap_hit_pct": 0.0389,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  },
+  {
+    "player_name": "Charles Bassey",
+    "team": "MEM",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dalano Banton",
+    "team": "LAC",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Patrick Baldwin Jr.",
+    "team": "LAC",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jeremiah Robinson-Earl",
+    "team": "DAL",
+    "current_salary": 131970,
+    "years_remaining": 0,
+    "cap_hit": 131970,
+    "cap_hit_pct": 0.0009,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Dalano Banton",
+    "team": "BOS",
+    "current_salary": 263940,
+    "years_remaining": 0,
+    "cap_hit": 263940,
+    "cap_hit_pct": 0.0019,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Lawson Lovering",
+    "team": "MEM",
+    "current_salary": 87784,
+    "years_remaining": 0,
+    "cap_hit": 87784,
+    "cap_hit_pct": 0.0006,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Kadary Richmond",
+    "team": "WAS",
+    "current_salary": 73153,
+    "years_remaining": 0,
+    "cap_hit": 73153,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Keshon Gilbert",
+    "team": "WAS",
+    "current_salary": 73153,
+    "years_remaining": 0,
+    "cap_hit": 73153,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Gabe McGlothan",
+    "team": "IND",
+    "current_salary": 73153,
+    "years_remaining": 0,
+    "cap_hit": 73153,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Grant Nelson",
+    "team": "BRK",
+    "current_salary": 73153,
+    "years_remaining": 0,
+    "cap_hit": 73153,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "John Tonje",
+    "team": "BOS",
+    "current_salary": 73153,
+    "years_remaining": 0,
+    "cap_hit": 73153,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Jaden Springer",
+    "team": "NOP",
+    "current_salary": 70732,
+    "years_remaining": 0,
+    "cap_hit": 70732,
+    "cap_hit_pct": 0.0005,
+    "contract_type": "guaranteed",
+    "contract_year": true
+  },
+  {
+    "player_name": "Malachi Smith",
+    "team": "BRK",
+    "current_salary": null,
+    "years_remaining": 0,
+    "cap_hit": null,
+    "cap_hit_pct": 0.0,
+    "contract_type": "guaranteed",
+    "contract_year": false
+  }
+]
