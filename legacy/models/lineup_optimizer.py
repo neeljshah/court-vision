@@ -20,7 +20,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from models.base import BaseModel
+from legacy.models.base import BaseModel
 
 logger = logging.getLogger(__name__)
 

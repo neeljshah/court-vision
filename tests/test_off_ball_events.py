@@ -6,7 +6,7 @@ NBA reference: max sprint ~32 ft/s, hard cut ~14+ ft/s, screener ~0-3 ft/s.
 """
 
 import pytest
-from features.off_ball_events import (
+from legacy.features.off_ball_events import (
     detect_off_ball_events,
     CUT_SPEED_THRESHOLD,
     SCREEN_SPEED_THRESHOLD,
@@ -14,7 +14,7 @@ from features.off_ball_events import (
     DRIFT_SPEED_MIN,
     DRIFT_SPEED_MAX,
 )
-from features.types import OffBallEvent
+from legacy.features.types import OffBallEvent
 
 
 # ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@ import os
 import json
 import anthropic
 
-from tracking.database import get_connection
+from legacy.tracking.database import get_connection
 
 
 _client: anthropic.Anthropic | None = None

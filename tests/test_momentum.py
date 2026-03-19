@@ -10,8 +10,8 @@ Tests cover:
 
 import math
 import pytest
-from features.momentum import compute_momentum
-from features.types import MomentumSnapshot
+from legacy.features.momentum import compute_momentum
+from legacy.features.types import MomentumSnapshot
 
 
 GAME_ID = "game-bbb"

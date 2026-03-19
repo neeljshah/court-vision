@@ -9,7 +9,7 @@ import pathlib
 import pandas as pd
 import pytest
 
-from models.shot_probability import ShotProbabilityModel
+from legacy.models.shot_probability import ShotProbabilityModel
 
 
 PAINT_FEATURES = {

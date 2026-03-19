@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
 
-from models.base import BaseModel
+from legacy.models.base import BaseModel
 
 _FEATURES = ["scoring_run", "possession_streak", "scoring_run_prev", "streak_delta"]
 

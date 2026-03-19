@@ -19,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from models.base import BaseModel
+from legacy.models.base import BaseModel
 
 _FEATURES = [
     "convex_hull_area",

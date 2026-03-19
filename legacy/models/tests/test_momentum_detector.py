@@ -7,7 +7,7 @@ Run after implementing models/momentum_detector.py to verify GREEN.
 import pandas as pd
 import pytest
 
-from models.momentum_detector import MomentumDetector
+from legacy.models.momentum_detector import MomentumDetector
 
 
 HIGH_MOMENTUM = {

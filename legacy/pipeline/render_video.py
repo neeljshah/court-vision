@@ -21,7 +21,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from tracking.database import get_connection
+from legacy.tracking.database import get_connection
 
 # Colors: BGR
 _TEAM_A  = (219, 100,  45)   # blue

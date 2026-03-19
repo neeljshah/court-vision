@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tracking.database import get_connection
+from legacy.tracking.database import get_connection
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 

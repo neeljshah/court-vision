@@ -15,9 +15,9 @@ import faiss.contrib.torch_utils
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-from data.download_data import config
-from models.model import *
-from module.loss import quadruplet_loss
+from src.re_id.data.download_data import config
+from src.re_id.models.model import *
+from src.re_id.module.loss import quadruplet_loss
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
 
