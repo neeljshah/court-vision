@@ -354,6 +354,125 @@ def _load_clutch_stats(season: str) -> dict:
         return {}
 
 
+# ── Phase 4.6 cache loaders ────────────────────────────────────────────────────
+
+def _load_hustle_player(player_id: int, season: str) -> dict:
+    """Load hustle stats for a single player by player_id. Returns {} on miss."""
+    path = os.path.join(_NBA_CACHE, f"hustle_stats_{season}.json")
+    try:
+        records = json.load(open(path))
+        # Records is a list of dicts with 'player_id' field (int)
+        for r in records:
+            if r.get("player_id") == player_id:
+                return r
+        return {}
+    except Exception:
+        return {}
+
+
+def _load_on_off_player(player_id: int, season: str) -> dict:
+    """Load on/off split record for a single player by player_id. Returns {} on miss."""
+    path = os.path.join(_NBA_CACHE, f"on_off_{season}.json")
+    try:
+        records = json.load(open(path))
+        for r in records:
+            if r.get("player_id") == player_id:
+                return r
+        return {}
+    except Exception:
+        return {}
+
+
+def _load_synergy_off(team_abbr: str, season: str) -> dict:
+    """Load team offensive synergy, pivot by play_type → {team_iso_ppp, team_spotup_ppp, team_prbh_freq}.
+    Returns {} on miss. Exact play_type values from cache: 'Isolation', 'Spotup', 'PRBallHandler'."""
+    path = os.path.join(_NBA_CACHE, f"synergy_offensive_all_{season}.json")
+    try:
+        rows = json.load(open(path))
+        team_rows = [r for r in rows if r.get("team_abbreviation", "").upper() == team_abbr.upper()]
+        result = {}
+        for r in team_rows:
+            pt = r.get("play_type", "")
+            if pt == "Isolation":
+                result["team_iso_ppp"] = float(r.get("ppp", 0.0))
+            elif pt == "Spotup":
+                result["team_spotup_ppp"] = float(r.get("ppp", 0.0))
+            elif pt == "PRBallHandler":
+                result["team_prbh_freq"] = float(r.get("freq_pct", 0.0))
+        return result
+    except Exception:
+        return {}
+
+
+def _load_synergy_def(opp_team_abbr: str, season: str) -> dict:
+    """Load opponent team defensive synergy. Returns {} on miss.
+    Exact play_type values: 'Isolation', 'PRBallHandler'."""
+    path = os.path.join(_NBA_CACHE, f"synergy_defensive_all_{season}.json")
+    try:
+        rows = json.load(open(path))
+        team_rows = [r for r in rows if r.get("team_abbreviation", "").upper() == opp_team_abbr.upper()]
+        result = {}
+        for r in team_rows:
+            pt = r.get("play_type", "")
+            if pt == "Isolation":
+                result["opp_def_iso_ppp"] = float(r.get("ppp", 0.0))
+            elif pt == "PRBallHandler":
+                result["opp_def_prbh_ppp"] = float(r.get("ppp", 0.0))
+        return result
+    except Exception:
+        return {}
+
+
+def _get_schedule_context_player(team_abbr: str, season: str) -> dict:
+    """Compute rest_days and games_in_last_14 from schedule cache.
+    Uses today's date as reference. Returns {rest_days: 1, games_in_last_14: 0} on miss.
+    Schedule items have 'date' (ISO) and 'rest_days' (99 = season opener)."""
+    import datetime
+    _DEFAULT = {"rest_days": 1, "games_in_last_14": 0}
+    try:
+        # Try _v2 first, then plain
+        for suffix in ("_v2", ""):
+            path = os.path.join(_NBA_CACHE, "schedule",
+                                f"schedule_{team_abbr}_{season}{suffix}.json")
+            if os.path.exists(path):
+                break
+        else:
+            return _DEFAULT
+
+        schedule = json.load(open(path))
+        if not isinstance(schedule, list):
+            return _DEFAULT
+
+        today = datetime.date.today()
+        past_dates = []
+        for g in schedule:
+            raw_date = g.get("date", "")
+            if not raw_date:
+                continue
+            try:
+                d = datetime.date.fromisoformat(str(raw_date)[:10])
+            except Exception:
+                continue
+            if d < today:
+                past_dates.append(d)
+
+        past_dates.sort(reverse=True)
+        if not past_dates:
+            return _DEFAULT
+
+        # rest_days: days since last game (cap at 10 to match win_probability)
+        raw_rest = (today - past_dates[0]).days
+        rest_days = min(raw_rest, 10)
+
+        # games_in_last_14
+        cutoff = today - datetime.timedelta(days=14)
+        games_in_last_14 = sum(1 for d in past_dates if d >= cutoff)
+
+        return {"rest_days": rest_days, "games_in_last_14": games_in_last_14}
+    except Exception:
+        return _DEFAULT
+
+
 # ── Feature builder ────────────────────────────────────────────────────────────
 
 def _build_player_features(
@@ -390,6 +509,21 @@ def _build_player_features(
     opp_def = _get_opp_def_rating(opp_team, season)
     opp_hist = _get_opp_pts_vs_team(pid, opp_team, season)
     clutch = _load_clutch_stats(season).get(str(pid), {})
+
+    # External: BBRef BPM (0.0 fallback when cache not yet populated)
+    try:
+        from src.data.bbref_scraper import get_player_bpm as _get_bpm
+        _bpm_data = _get_bpm(player_name, season)
+        bbref_bpm = float(_bpm_data.get("bpm", 0.0))
+    except Exception:
+        bbref_bpm = 0.0
+
+    # External: contract-year flag (0/1)
+    try:
+        from src.data.contracts_scraper import is_contract_year as _is_cy
+        contract_year = 1.0 if _is_cy(player_name, season) else 0.0
+    except Exception:
+        contract_year = 0.0
 
     ng = form["n_games"] if form else 0
     k = _BAYES_K
@@ -442,9 +576,51 @@ def _build_player_features(
         "clutch_fg_pct":    float(clutch.get("clutch_fg_pct",   0.0)),
         "clutch_pts_pg":    float(clutch.get("clutch_pts_pg",   0.0)),
         "foul_drawn_rate":  float(clutch.get("foul_drawn_rate", 0.0)),
+        # External factors
+        "bbref_bpm":    bbref_bpm,
+        "contract_year": contract_year,
         # Rolling window size (used for Bayesian weighting in predict_props)
         "n_games_form": ng,
     }
+
+    # ── Phase 4.6: hustle stats ───────────────────────────────────────────────
+    hustle = _load_hustle_player(pid, season)
+    gp_hustle = max(float(hustle.get("games_played", 1) or 1), 1.0)
+    # 'deflections_pg' is already per-game in cache; 'deflections' is total/game avg
+    feats.update({
+        "deflections_pg":       float(hustle.get("deflections_pg", 0.0) or 0.0),
+        "contested_shots_pg":   float(hustle.get("contested_shots", 0.0) or 0.0),
+        "screen_assists_pg":    float(hustle.get("screen_assists", 0.0) or 0.0),
+        "charges_per_game":     float(hustle.get("charges_per_game", 0.0) or 0.0),
+        "box_outs_pg":          float(hustle.get("box_outs", 0.0) or 0.0),
+    })
+
+    # ── Phase 4.6: on/off splits ─────────────────────────────────────────────
+    on_off = _load_on_off_player(pid, season)
+    feats.update({
+        "on_off_diff":          float(on_off.get("on_off_diff", 0.0) or 0.0),
+        "on_court_plus_minus":  float(on_off.get("on_court_plus_minus", 0.0) or 0.0),
+    })
+
+    # ── Phase 4.6: synergy ───────────────────────────────────────────────────
+    team_abbr = avgs.get("team", "")
+    syn_off = _load_synergy_off(team_abbr, season)
+    syn_def = _load_synergy_def(opp_team, season)
+    feats.update({
+        "team_iso_ppp":     syn_off.get("team_iso_ppp",     0.0),
+        "team_spotup_ppp":  syn_off.get("team_spotup_ppp",  0.0),
+        "team_prbh_freq":   syn_off.get("team_prbh_freq",   0.0),
+        "opp_def_iso_ppp":  syn_def.get("opp_def_iso_ppp",  0.0),
+        "opp_def_prbh_ppp": syn_def.get("opp_def_prbh_ppp", 0.0),
+    })
+
+    # ── Phase 4.6: schedule context ──────────────────────────────────────────
+    sched = _get_schedule_context_player(team_abbr, season)
+    feats.update({
+        "rest_days":        float(sched.get("rest_days", 1)),
+        "games_in_last_14": float(sched.get("games_in_last_14", 0)),
+    })
+
     return feats
 
 
@@ -602,6 +778,18 @@ _ALL_FEATS = [
     "pts_vs_opp", "reb_vs_opp", "ast_vs_opp",
     # Clutch stats (optional — 0.0 fallback when unavailable)
     "clutch_fg_pct", "clutch_pts_pg", "foul_drawn_rate",
+    # External factors (Phase 5)
+    "bbref_bpm", "contract_year",
+    # Phase 4.6: hustle stats
+    "deflections_pg", "contested_shots_pg", "screen_assists_pg",
+    "charges_per_game", "box_outs_pg",
+    # Phase 4.6: on/off splits
+    "on_off_diff", "on_court_plus_minus",
+    # Phase 4.6: synergy play types
+    "team_iso_ppp", "team_spotup_ppp", "team_prbh_freq",
+    "opp_def_iso_ppp", "opp_def_prbh_ppp",
+    # Phase 4.6: schedule context
+    "rest_days", "games_in_last_14",
 ]
 
 # Stats modelled by XGBoost (each model excludes its own season_{stat} feature)
@@ -804,7 +992,7 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
 def _get_all_player_avgs(season: str) -> list:
     """
     Return list of feature dicts for all players in a season.
-    Uses LeagueDashPlayerStats (cached).
+    Uses LeagueDashPlayerStats (cached). Phase 4.6: includes hustle, on/off, synergy.
     """
     cache_path = os.path.join(_NBA_CACHE, f"player_avgs_{season}.json")
     avgs_map = {}
@@ -826,12 +1014,51 @@ def _get_all_player_avgs(season: str) -> list:
 
     clutch_map = _load_clutch_stats(season)
 
+    # Phase 4.6: build lookup dicts once per season for efficiency
+    hustle_path = os.path.join(_NBA_CACHE, f"hustle_stats_{season}.json")
+    hustle_by_pid: dict = {}
+    try:
+        for r in json.load(open(hustle_path)):
+            hustle_by_pid[r["player_id"]] = r
+    except Exception:
+        pass
+
+    on_off_path = os.path.join(_NBA_CACHE, f"on_off_{season}.json")
+    on_off_by_pid: dict = {}
+    try:
+        for r in json.load(open(on_off_path)):
+            on_off_by_pid[r["player_id"]] = r
+    except Exception:
+        pass
+
+    # Build team→synergy lookups (team_abbr → synergy dict)
+    syn_off_cache: dict = {}
+    syn_def_cache: dict = {}
+
     rows = []
     for name, a in avgs_map.items():
         if a.get("gp", 0) < 10:
             continue
-        pid_str = str(a.get("player_id", ""))
+        pid = a.get("player_id")
+        pid_str = str(pid) if pid else ""
         c = clutch_map.get(pid_str, {})
+
+        # Phase 4.6: hustle
+        h = hustle_by_pid.get(pid, {})
+        h_gp = max(float(h.get("games_played", 1) or 1), 1.0)
+
+        # Phase 4.6: on/off
+        oo = on_off_by_pid.get(pid, {})
+
+        # Phase 4.6: synergy (lazy per-team)
+        team = a.get("team", "")
+        if team and team not in syn_off_cache:
+            syn_off_cache[team] = _load_synergy_off(team, season)
+        if team and team not in syn_def_cache:
+            # Use empty for training (no per-row opp_team during batch training)
+            syn_def_cache[team] = {}
+        s_off = syn_off_cache.get(team, {})
+
         rows.append({
             "season_pts":  a.get("pts", 0),
             "season_reb":  a.get("reb", 0),
@@ -852,6 +1079,27 @@ def _get_all_player_avgs(season: str) -> list:
             "clutch_fg_pct":    float(c.get("clutch_fg_pct",   0.0)),
             "clutch_pts_pg":    float(c.get("clutch_pts_pg",   0.0)),
             "foul_drawn_rate":  float(c.get("foul_drawn_rate", 0.0)),
+            # External factors
+            "bbref_bpm":        0.0,
+            "contract_year":    0.0,
+            # Phase 4.6: hustle stats (per-game values from cache)
+            "deflections_pg":       float(h.get("deflections_pg", 0.0) or 0.0),
+            "contested_shots_pg":   float(h.get("contested_shots", 0.0) or 0.0),
+            "screen_assists_pg":    float(h.get("screen_assists", 0.0) or 0.0),
+            "charges_per_game":     float(h.get("charges_per_game", 0.0) or 0.0),
+            "box_outs_pg":          float(h.get("box_outs", 0.0) or 0.0),
+            # Phase 4.6: on/off splits
+            "on_off_diff":          float(oo.get("on_off_diff", 0.0) or 0.0),
+            "on_court_plus_minus":  float(oo.get("on_court_plus_minus", 0.0) or 0.0),
+            # Phase 4.6: synergy (team offensive only; def unknown during training)
+            "team_iso_ppp":         s_off.get("team_iso_ppp", 0.0),
+            "team_spotup_ppp":      s_off.get("team_spotup_ppp", 0.0),
+            "team_prbh_freq":       s_off.get("team_prbh_freq", 0.0),
+            "opp_def_iso_ppp":      0.0,    # unknown per-row during training
+            "opp_def_prbh_ppp":     0.0,
+            # Phase 4.6: schedule context (0.0 during training; real values at inference)
+            "rest_days":            1.0,
+            "games_in_last_14":     5.0,    # mid-season neutral
         })
     return rows
 

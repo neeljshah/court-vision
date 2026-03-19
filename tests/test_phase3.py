@@ -520,9 +520,9 @@ def test_player_props_import():
 
 
 def test_feature_cols_count():
-    """FEATURE_COLS has 26 features (home_travel_miles removed — zero variance)."""
+    """FEATURE_COLS has 32 features (includes lineup net_rtg + ref + Phase 4.6 synergy/fta columns)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 26
+    assert len(FEATURE_COLS) == 32
 
 
 # ── player_props fallback behaviour ───────────────────────────────────────────
@@ -1001,10 +1001,10 @@ def test_home_travel_miles_removed_from_feature_cols():
 
 
 def test_feature_cols_length():
-    """FEATURE_COLS should have 26 features after dropping home_travel_miles."""
+    """FEATURE_COLS should have 32 features (Phase 4.6: +iso_matchup_edge +ref_fta_tendency)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 26, (
-        f"Expected 26 features (was 27 before removing home_travel_miles), got {len(FEATURE_COLS)}"
+    assert len(FEATURE_COLS) == 32, (
+        f"Expected 32 features (lineup + ref + Phase 4.6 columns added), got {len(FEATURE_COLS)}"
     )
 
 

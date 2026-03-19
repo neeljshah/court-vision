@@ -1,5 +1,35 @@
 # Tracker Improvements Log
 
+### Phase 4.6: Untapped Signal Wiring — 2026-03-18
+
+**Tests: 803/809 pass (6 pre-existing test_models_router.py failures unrelated to Phase 4.6)**
+
+| Deliverable | File | Metric |
+|---|---|---|
+| +17 features to player_props | `src/prediction/player_props.py` | pts MAE 0.32→0.321 (stable), reb MAE 0.11→0.113, ast MAE 0.09→0.091, BLK MAE 0.05→0.044, STL 0.07→0.066 |
+| hustle signals (5) | `player_props.py` | deflections_pg, contested_shots_pg, screen_assists_pg, charges_per_game, box_outs_pg |
+| on/off splits (2) | `player_props.py` | on_off_diff, on_court_plus_minus |
+| synergy play types (5) | `player_props.py` | team_iso_ppp, team_spotup_ppp, team_prbh_freq, opp_def_iso_ppp, opp_def_prbh_ppp |
+| schedule context (2) | `player_props.py` | rest_days, games_in_last_14 |
+| win_probability: +iso_matchup_edge + ref_fta_tendency | `src/prediction/win_probability.py` | accuracy 67.7%→69.1%, Brier 0.204→0.203 |
+| matchup_model: +team_synergy_def_ppp | `src/prediction/matchup_model.py` | R²=0.796→0.808, MAE=4.55→4.466 |
+| shot_quality auto-call fix | `src/analytics/shot_quality.py` | shot_clock_pressure_score + fatigue_penalty now auto-called in score_shot() on every shot |
+| _SEASON_GAMES_VERSION 3→4 | `win_probability.py` | Forces cache rebuild to include new columns |
+| Test count updated | `tests/test_phase3.py` | FEATURE_COLS count 30→32 in 2 assertions |
+
+**New loaders added to player_props.py:**
+- `_load_hustle_player(player_id, season)` — reads list-format hustle cache, O(n) lookup
+- `_load_on_off_player(player_id, season)` — reads list-format on/off cache, O(n) lookup
+- `_load_synergy_off(team_abbr, season)` — pivots synergy_offensive_all by play_type
+- `_load_synergy_def(opp_team_abbr, season)` — pivots synergy_defensive_all by play_type
+- `_get_schedule_context_player(team_abbr, season)` — computes rest_days + games_in_last_14
+
+**Key data structure findings (cache inspection):**
+- hustle/on-off: list of dicts (not keyed dict), player_id is int
+- synergy play_type exact values: 'Isolation', 'Spotup', 'PRBallHandler', 'Cut', etc.
+- schedule: list with 'date' (ISO), 'rest_days' (99=season opener), 'back_to_back'
+- defender_zone: only has player_name — no zone data yet (skipped)
+
 ### Priority 2 — External Feature Wiring (player_props + betting_edge) — 2026-03-18
 
 **Tests: 104/104 test_phase3.py + 23/23 test_data_sources.py pass**
@@ -11002,3 +11032,24 @@ Stab:1.000 IDsw:0 FPS:14.5 Shots:928 | no fix needed — all metrics within targ
 **Iter 3b — REVERTED:** REENTRY_ATTEMPTS 3→8. Benchmark ran different clip (den_gsw_playoffs); clip has yolo-available suspension bug causing 56.8% ball_valid. Cannot compare — reverted.
 
 **Open (den_gsw_playoffs):** suspension still fires when YOLO IS available but <8 players visible for 20 frames. The yolo.available guard doesn't help here — needs a `len(players_visible) < 4` floor or a longer no-ball streak threshold.
+
+### BENCH-20260318_205807 — cavs_vs_celtics_2025 — 2026-03-18 21:11
+Stab:1.000 IDsw:0 FPS:12.8 Shots:1582 | no fix needed — all metrics within target range
+
+### BENCH-20260318_210815 — cavs_broadcast_2025 — 2026-03-18 21:20
+Stab:1.000 IDsw:0 FPS:14.9 Shots:1732 | no fix needed — all metrics within target range
+
+### BENCH-20260318_212032 — gsw_lakers_2025 — 2026-03-18 21:32
+Stab:1.000 IDsw:0 FPS:13.9 Shots:1743 | no fix needed — all metrics within target range
+
+### BENCH-20260318_213234 — bos_mia_playoffs — 2026-03-18 21:45
+Stab:1.000 IDsw:0 FPS:15.3 Shots:1774 | no fix needed — all metrics within target range
+
+### BENCH-20260318_214515 — den_gsw_playoffs — 2026-03-18 21:56
+Stab:1.000 IDsw:0 FPS:14.5 Shots:1931 | no fix needed — all metrics within target range
+
+### BENCH-20260318_215633 — phi_tor_2025 — 2026-03-18 22:08
+Stab:1.000 IDsw:0 FPS:11.3 Shots:2076 | no fix needed — all metrics within target range
+
+### BENCH-20260318_220824 — sac_por_2025 — 2026-03-18 22:19
+Stab:1.000 IDsw:0 FPS:14.4 Shots:2112 | no fix needed — all metrics within target range

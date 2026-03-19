@@ -1,0 +1,23 @@
+{
+  "mae": 4.466,
+  "r2": 0.808,
+  "n_train": 1111,
+  "n_test": 569,
+  "features": [
+    "deflections_pg",
+    "screen_assists_pg",
+    "contested_shots_pg",
+    "charges_pg",
+    "box_outs_pg",
+    "on_court_pm",
+    "minutes_on",
+    "matchup_poss",
+    "team_synergy_def_ppp"
+  ],
+  "target": "on_off_diff",
+  "seasons_trained": [
+    "2022-23",
+    "2023-24",
+    "2024-25"
+  ]
+}
