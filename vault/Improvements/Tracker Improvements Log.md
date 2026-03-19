@@ -11110,3 +11110,49 @@ Stab:1.000 IDsw:0 FPS:14.2 Shots:2255 | no fix needed — all metrics within tar
 
 ### BENCH-20260318_223640 — den_gsw_playoffs — 2026-03-18 22:49
 Stab:1.000 IDsw:0 FPS:13.1 Shots:2475 | no fix needed — all metrics within target range
+
+### BENCH-20260318_224646 — gsw_lakers_2025 — 2026-03-18 23:00
+Stab:1.000 IDsw:0 FPS:12.4 Shots:2554 | no fix needed — all metrics within target range
+
+---
+
+### Multi-clip tracker loop — 2026-03-18 (evening)
+
+**Commits:** 0e1643b (Phase 0), 1e11359 (Fix A)
+**Tests after loop:** 803 passed, 6 pre-existing failures (test_models_router — unrelated)
+
+**Phase 0 — Measurement fix**
+- `build_live_mask` rewritten to read per-period PBP cache files (`pbp_{game_id}_p{N}.json`)
+  instead of bulk file which lacks PCTIMESTRING → bulk was mapping all events to frame 0
+- `_bench_run.py` CLIP_MAP: added game IDs for bos_mia_playoffs/den_gsw_playoffs/phi_tor_2025/sac_por_2025
+- `_bench_run.py`: added `enrich()` call post-pipeline when game_id present → creates per-period cache + enables ball_valid_live/dead metrics
+
+**Phase 1 — Per-clip baseline (3600 frames)**
+| Clip | ball_valid | suspended_pct | FPS |
+|------|-----------|---------------|-----|
+| gsw_lakers_2025 | 87% | 0% | 13.9 |
+| bos_mia_playoffs | 76% | 0% | 15.3 |
+| den_gsw_playoffs | 57% | 14% | 14.5 |
+| phi_tor_2025 | 51% | 0% | 11.3 |
+| sac_por_2025 | 76% | 0% | 14.4 |
+
+**Fix A — Suspension threshold (unified_pipeline.py)**
+- `_SHOT_CLOCK_ABSENT_THRESHOLD`: 40 → 200 (primary fix — 40×15=600 frames too tight for 2022 playoff fonts)
+- `_no_ball_vision_streak` vision path: 20 → 50, `len(yolo_results) < 8` → `< 4`
+- **Result:** den_gsw_playoffs: suspended 14% → 0%, ball_valid 57% → 87% ✅ COMMITTED
+- gsw_lakers_2025: unchanged at 87% (no regression) ✅
+
+**Fix B — in-flight detection (ball_detect_track.py)** — REVERTED (not benchmarked)
+- Would use `REDET_THRESHOLD` when `pixel_vel > 40` and extend `FLOW_MAX_FRAMES` to 15
+- Next session: re-apply and benchmark on phi_tor_2025 (51%) and bos_mia_playoffs (76%)
+
+**Post-loop standings:**
+| Clip | Before | After Fix A |
+|------|--------|-------------|
+| gsw_lakers_2025 | 87% | 87% |
+| bos_mia_playoffs | 76% | 76% (untested) |
+| den_gsw_playoffs | 57% / 14% susp | **87% / 0%** |
+| phi_tor_2025 | 51% | 51% (untested) |
+| sac_por_2025 | 76% | 76% (untested) |
+
+**Next iteration targets:** phi_tor_2025 51% and bos_mia_playoffs 76% → apply Fix B
