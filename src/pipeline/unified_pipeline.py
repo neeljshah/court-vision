@@ -755,7 +755,8 @@ class UnifiedPipeline:
             # Fires when: clock never seen + ball absent 20+ consecutive gameplay frames
             # + fewer than 8 persons visible (warmup / between-period / ad break).
             yolo_results = self.yolo.predict(frame) if self.yolo.available else []
-            if (not self._sc_ever_seen
+            if (self.yolo.available
+                    and not self._sc_ever_seen
                     and not self._ball_track_suspended
                     and self._no_ball_vision_streak >= 20
                     and len(yolo_results) < 8):
