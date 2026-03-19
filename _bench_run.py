@@ -34,10 +34,10 @@ CLIP_MAP = {
     "atl_ind_2025":       None,
     "mem_nop_2025":       None,
     "mia_bkn_2025":       None,
-    "phi_tor_2025":       None,
-    "sac_por_2025":       None,
-    "bos_mia_playoffs":   None,
-    "den_gsw_playoffs":   None,
+    "phi_tor_2025":       "0022401050",
+    "sac_por_2025":       "0022401000",
+    "bos_mia_playoffs":   "0022300849",
+    "den_gsw_playoffs":   "0042200201",
     "cavs_vs_celtics_2025": "0022400710",
     "cavs_broadcast_2025": None,
 }
@@ -113,6 +113,16 @@ def run_pipeline(video_path: str, game_id: str, max_frames: int):
         )
     except Exception:
         pass
+
+    # L4 enrichment — fetch per-period PBP (creates pbp_{game_id}_p{N}.json cache)
+    # and enrich shot_log.csv so shots_enriched > 0 and build_live_mask() works.
+    if game_id:
+        try:
+            from src.data.nba_enricher import enrich
+            enrich(game_id=game_id, period=1, clip_start_sec=0.0,
+                   fps=results.get("fps", 30.0) or 30.0, data_dir=data_dir)
+        except Exception:
+            pass
 
     return results, fps, None
 

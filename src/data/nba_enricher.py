@@ -160,33 +160,53 @@ def build_live_mask(game_id: str, video_fps: float = 30.0) -> Dict[int, str]:
         Dict mapping frame_idx (int) to "live", "dead_ball", or "unknown".
         Returns {} if cache file not found or no events could be parsed.
     """
-    cache_path = os.path.join(_NBA_CACHE, f"pbp_{game_id}.json")
-    if not os.path.exists(cache_path):
-        return {}
-
-    with open(cache_path) as f:
-        raw = json.load(f)
-
-    # Parse events — handle bulk NBA API raw format (EVENTMSGTYPE, PERIOD, PCTIMESTRING)
     _LIVE_EVENT_TYPES = {1, 2, 3, 4, 5, 6}
     events: List[tuple] = []  # list of (frame_idx, is_live: bool)
 
-    for row in raw:
-        evt_type  = int(row.get("EVENTMSGTYPE", 0) or 0)
-        period    = int(row.get("PERIOD", 1) or 1)
-        clock_str = str(row.get("PCTIMESTRING", "12:00") or "12:00")
-
-        try:
-            mm, ss = clock_str.split(":")
-            remaining_sec = int(mm) * 60 + int(ss)
-        except (ValueError, AttributeError):
+    # Prefer per-period cache files (data/nba/pbp_{game_id}_p{N}.json).
+    # These are created by fetch_playbyplay() and already have game_clock_sec parsed.
+    # Bulk files (pbp_{game_id}.json) from the PBP scraper lack PCTIMESTRING so
+    # every event maps to frame 0, making the mask useless.
+    found_any_period = False
+    for period in range(1, 5):
+        period_cache = _cache_path(f"pbp_{game_id}_p{period}")
+        if not os.path.exists(period_cache):
             continue
+        try:
+            rows = _load_json(period_cache)
+        except Exception:
+            continue
+        found_any_period = True
+        for row in rows:
+            evt_type  = int(row.get("event_type", 0) or 0)
+            p         = int(row.get("period", period) or period)
+            gc_sec    = int(row.get("game_clock_sec", 0) or 0)
+            total_sec = (p - 1) * 720 + gc_sec
+            events.append((int(total_sec * video_fps), evt_type in _LIVE_EVENT_TYPES))
 
-        elapsed_in_period = 720 - remaining_sec   # seconds elapsed this period
-        total_elapsed_sec = (period - 1) * 720 + elapsed_in_period
-        frame_idx         = int(total_elapsed_sec * video_fps)
-
-        events.append((frame_idx, evt_type in _LIVE_EVENT_TYPES))
+    if not found_any_period:
+        # Fall back to bulk file — only works if it contains PCTIMESTRING
+        cache_path = os.path.join(_NBA_CACHE, f"pbp_{game_id}.json")
+        if not os.path.exists(cache_path):
+            return {}
+        try:
+            raw = _load_json(cache_path)
+        except Exception:
+            return {}
+        for row in raw:
+            evt_type  = int(row.get("EVENTMSGTYPE", 0) or 0)
+            period    = int(row.get("PERIOD", 1) or 1)
+            clock_str = str(row.get("PCTIMESTRING", "") or "")
+            if not clock_str or ":" not in clock_str:
+                continue
+            try:
+                mm, ss = clock_str.split(":")
+                remaining_sec = int(mm) * 60 + int(ss)
+            except (ValueError, AttributeError):
+                continue
+            elapsed_in_period = 720 - remaining_sec
+            total_elapsed_sec = (period - 1) * 720 + elapsed_in_period
+            events.append((int(total_elapsed_sec * video_fps), evt_type in _LIVE_EVENT_TYPES))
 
     if not events:
         return {}
