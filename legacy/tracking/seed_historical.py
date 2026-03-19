@@ -13,7 +13,7 @@ game footage. This script only seeds the reference dimension tables (games, play
 import pathlib
 import sys
 
-from tracking.database import get_connection
+from legacy.tracking.database import get_connection
 
 _SEEDS_DIR = pathlib.Path(__file__).parent.parent / "data" / "seeds"
 _SEED_GAMES_SQL = _SEEDS_DIR / "seed_games.sql"

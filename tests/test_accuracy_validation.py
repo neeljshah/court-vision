@@ -20,9 +20,9 @@ Ground truth sources:
 import math
 import pytest
 
-from features.spacing import compute_spacing
-from features.defensive_pressure import compute_defensive_pressure
-from features.off_ball_events import (
+from legacy.features.spacing import compute_spacing
+from legacy.features.defensive_pressure import compute_defensive_pressure
+from legacy.features.off_ball_events import (
     detect_off_ball_events,
     CUT_SPEED_THRESHOLD,
     SCREEN_SPEED_THRESHOLD,
@@ -30,15 +30,15 @@ from features.off_ball_events import (
     DRIFT_SPEED_MIN,
     DRIFT_SPEED_MAX,
 )
-from features.pick_and_roll import (
+from legacy.features.pick_and_roll import (
     detect_pick_and_roll,
     SCREEN_DISTANCE,
     SCREENER_MAX_SPEED,
     HANDLER_MIN_SPEED,
     PNR_WINDOW_FRAMES,
 )
-from features.momentum import compute_momentum
-from features.passing_network import build_passing_network
+from legacy.features.momentum import compute_momentum
+from legacy.features.passing_network import build_passing_network
 
 
 # ---------------------------------------------------------------------------

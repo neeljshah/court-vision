@@ -1,6 +1,6 @@
 """Tests for shared dataclass type contracts used by all Phase 2 feature modules."""
 
-from features.types import (
+from legacy.features.types import (
     SpacingMetrics,
     DefensivePressure,
     OffBallEvent,

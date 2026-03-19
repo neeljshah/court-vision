@@ -6,8 +6,8 @@ Stores both pixel coordinates (x, y) and court-feet coordinates (x_ft, y_ft).
 """
 from typing import List
 
-from tracking.database import get_connection
-from tracking.tracker import TrackedObject
+from legacy.tracking.database import get_connection
+from legacy.tracking.tracker import TrackedObject
 
 
 class CoordinateWriter:

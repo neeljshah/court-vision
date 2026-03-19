@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 
-from models.base import BaseModel
+from legacy.models.base import BaseModel
 
 _AGG_FEATURES = [
     "made_rate",

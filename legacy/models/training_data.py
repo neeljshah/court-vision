@@ -13,7 +13,7 @@ import math
 
 import pandas as pd
 
-from tracking.database import get_connection
+from legacy.tracking.database import get_connection
 
 logger = logging.getLogger(__name__)
 
