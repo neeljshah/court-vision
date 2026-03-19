@@ -1,0 +1,439 @@
+[
+  {
+    "lineup": [
+      "M. Brogdon",
+      "M. Thybulle",
+      "S. Henderson",
+      "J. Walker",
+      "D. Reath"
+    ],
+    "minutes": 42.0,
+    "net_rating": 21.7,
+    "off_rating": 130.8,
+    "def_rating": 109.1,
+    "pace": 101.32,
+    "efg_pct": 0.601,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.357,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Simons",
+      "M. Thybulle",
+      "S. Henderson",
+      "J. Walker",
+      "D. Reath"
+    ],
+    "minutes": 31.0,
+    "net_rating": 20.1,
+    "off_rating": 142.9,
+    "def_rating": 122.7,
+    "pace": 99.02,
+    "efg_pct": 0.614,
+    "tov_pct": 0.175,
+    "oreb_pct": 0.594,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Simons",
+      "D. Ayton",
+      "D. Banton",
+      "K. Murray",
+      "T. Camara"
+    ],
+    "minutes": 52.0,
+    "net_rating": 10.9,
+    "off_rating": 120.7,
+    "def_rating": 109.8,
+    "pace": 102.35,
+    "efg_pct": 0.607,
+    "tov_pct": 0.162,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "A. Simons",
+      "D. Ayton",
+      "M. Thybulle",
+      "S. Henderson"
+    ],
+    "minutes": 34.0,
+    "net_rating": 8.0,
+    "off_rating": 128.6,
+    "def_rating": 120.6,
+    "pace": 97.17,
+    "efg_pct": 0.591,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.389,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Simons",
+      "D. Ayton",
+      "M. Thybulle",
+      "K. Murray",
+      "T. Camara"
+    ],
+    "minutes": 30.0,
+    "net_rating": 3.1,
+    "off_rating": 100.0,
+    "def_rating": 96.9,
+    "pace": 104.89,
+    "efg_pct": 0.5,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "D. Ayton",
+      "S. Mays",
+      "S. Sharpe",
+      "T. Camara"
+    ],
+    "minutes": 73.0,
+    "net_rating": 2.0,
+    "off_rating": 110.1,
+    "def_rating": 108.1,
+    "pace": 97.4,
+    "efg_pct": 0.54,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.311,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "A. Simons",
+      "D. Ayton",
+      "S. Henderson",
+      "T. Camara"
+    ],
+    "minutes": 51.0,
+    "net_rating": 1.3,
+    "off_rating": 119.6,
+    "def_rating": 118.3,
+    "pace": 101.69,
+    "efg_pct": 0.542,
+    "tov_pct": 0.093,
+    "oreb_pct": 0.275,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "A. Simons",
+      "D. Ayton",
+      "K. Murray",
+      "T. Camara"
+    ],
+    "minutes": 43.0,
+    "net_rating": -0.1,
+    "off_rating": 109.1,
+    "def_rating": 109.2,
+    "pace": 96.92,
+    "efg_pct": 0.525,
+    "tov_pct": 0.216,
+    "oreb_pct": 0.4,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Simons",
+      "D. Ayton",
+      "S. Henderson",
+      "K. Murray",
+      "T. Camara"
+    ],
+    "minutes": 30.0,
+    "net_rating": -1.6,
+    "off_rating": 98.4,
+    "def_rating": 100.0,
+    "pace": 98.04,
+    "efg_pct": 0.483,
+    "tov_pct": 0.18,
+    "oreb_pct": 0.353,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "M. Brogdon",
+      "A. Simons",
+      "D. Ayton",
+      "M. Thybulle"
+    ],
+    "minutes": 32.0,
+    "net_rating": -1.7,
+    "off_rating": 111.9,
+    "def_rating": 113.6,
+    "pace": 99.41,
+    "efg_pct": 0.526,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.343,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "M. Brogdon",
+      "A. Simons",
+      "D. Ayton",
+      "J. Walker"
+    ],
+    "minutes": 89.0,
+    "net_rating": -3.8,
+    "off_rating": 109.0,
+    "def_rating": 112.8,
+    "pace": 96.99,
+    "efg_pct": 0.532,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.271,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "M. Brogdon",
+      "D. Ayton",
+      "M. Thybulle",
+      "S. Sharpe"
+    ],
+    "minutes": 49.0,
+    "net_rating": -6.1,
+    "off_rating": 105.4,
+    "def_rating": 111.4,
+    "pace": 105.41,
+    "efg_pct": 0.559,
+    "tov_pct": 0.179,
+    "oreb_pct": 0.205,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "M. Brogdon",
+      "D. Ayton",
+      "S. Sharpe",
+      "T. Camara"
+    ],
+    "minutes": 113.0,
+    "net_rating": -6.7,
+    "off_rating": 106.8,
+    "def_rating": 113.4,
+    "pace": 101.05,
+    "efg_pct": 0.49,
+    "tov_pct": 0.157,
+    "oreb_pct": 0.288,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "M. Brogdon",
+      "A. Simons",
+      "D. Ayton",
+      "T. Camara"
+    ],
+    "minutes": 52.0,
+    "net_rating": -6.9,
+    "off_rating": 113.9,
+    "def_rating": 120.8,
+    "pace": 98.16,
+    "efg_pct": 0.57,
+    "tov_pct": 0.148,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Simons",
+      "M. Thybulle",
+      "S. Sharpe",
+      "T. Camara",
+      "D. Reath"
+    ],
+    "minutes": 38.0,
+    "net_rating": -8.8,
+    "off_rating": 111.7,
+    "def_rating": 120.5,
+    "pace": 98.87,
+    "efg_pct": 0.533,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.318,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "A. Simons",
+      "D. Ayton",
+      "S. Sharpe",
+      "T. Camara"
+    ],
+    "minutes": 33.0,
+    "net_rating": -8.8,
+    "off_rating": 109.6,
+    "def_rating": 118.4,
+    "pace": 107.66,
+    "efg_pct": 0.563,
+    "tov_pct": 0.151,
+    "oreb_pct": 0.226,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Ayton",
+      "S. Henderson",
+      "J. Walker",
+      "K. Murray",
+      "R. Rupert"
+    ],
+    "minutes": 97.0,
+    "net_rating": -13.1,
+    "off_rating": 100.5,
+    "def_rating": 113.6,
+    "pace": 98.6,
+    "efg_pct": 0.474,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "D. Ayton",
+      "M. Thybulle",
+      "S. Mays",
+      "S. Sharpe"
+    ],
+    "minutes": 33.0,
+    "net_rating": -14.0,
+    "off_rating": 105.7,
+    "def_rating": 119.7,
+    "pace": 101.72,
+    "efg_pct": 0.589,
+    "tov_pct": 0.171,
+    "oreb_pct": 0.154,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Ayton",
+      "D. Banton",
+      "S. Henderson",
+      "J. Walker",
+      "K. Murray"
+    ],
+    "minutes": 41.0,
+    "net_rating": -19.5,
+    "off_rating": 89.9,
+    "def_rating": 109.4,
+    "pace": 101.0,
+    "efg_pct": 0.479,
+    "tov_pct": 0.225,
+    "oreb_pct": 0.317,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "D. Ayton",
+      "M. Thybulle",
+      "S. Henderson",
+      "S. Sharpe"
+    ],
+    "minutes": 61.0,
+    "net_rating": -25.1,
+    "off_rating": 89.8,
+    "def_rating": 114.8,
+    "pace": 100.19,
+    "efg_pct": 0.455,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.172,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Ayton",
+      "D. Banton",
+      "S. Henderson",
+      "J. Walker",
+      "R. Rupert"
+    ],
+    "minutes": 30.0,
+    "net_rating": -37.8,
+    "off_rating": 90.8,
+    "def_rating": 128.6,
+    "pace": 101.15,
+    "efg_pct": 0.5,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.344,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Banton",
+      "S. Henderson",
+      "J. Walker",
+      "R. Rupert",
+      "D. Reath"
+    ],
+    "minutes": 32.0,
+    "net_rating": -47.5,
+    "off_rating": 107.7,
+    "def_rating": 155.2,
+    "pace": 98.08,
+    "efg_pct": 0.538,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "A. Simons",
+      "S. Henderson",
+      "T. Camara",
+      "D. Reath"
+    ],
+    "minutes": 67.0,
+    "net_rating": -47.8,
+    "off_rating": 84.6,
+    "def_rating": 132.4,
+    "pace": 101.71,
+    "efg_pct": 0.4,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

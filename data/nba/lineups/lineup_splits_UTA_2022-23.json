@@ -1,0 +1,344 @@
+[
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "C. Sexton"
+    ],
+    "minutes": 30.0,
+    "net_rating": 30.4,
+    "off_rating": 133.3,
+    "def_rating": 102.9,
+    "pace": 107.49,
+    "efg_pct": 0.573,
+    "tov_pct": 0.136,
+    "oreb_pct": 0.4,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "T. Horton-Tucker",
+      "W. Kessler"
+    ],
+    "minutes": 41.0,
+    "net_rating": 18.4,
+    "off_rating": 118.4,
+    "def_rating": 100.0,
+    "pace": 102.5,
+    "efg_pct": 0.606,
+    "tov_pct": 0.195,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gay",
+      "M. Beasley",
+      "C. Sexton",
+      "T. Horton-Tucker",
+      "W. Kessler"
+    ],
+    "minutes": 36.0,
+    "net_rating": 16.1,
+    "off_rating": 102.3,
+    "def_rating": 86.2,
+    "pace": 115.24,
+    "efg_pct": 0.521,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "C. Sexton",
+      "J. Vanderbilt"
+    ],
+    "minutes": 133.0,
+    "net_rating": 15.7,
+    "off_rating": 133.8,
+    "def_rating": 118.1,
+    "pace": 99.65,
+    "efg_pct": 0.674,
+    "tov_pct": 0.171,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Olynyk",
+      "M. Beasley",
+      "L. Markkanen",
+      "C. Sexton"
+    ],
+    "minutes": 34.0,
+    "net_rating": 13.7,
+    "off_rating": 126.4,
+    "def_rating": 112.7,
+    "pace": 100.94,
+    "efg_pct": 0.64,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "L. Markkanen",
+      "T. Horton-Tucker",
+      "O. Agbaji",
+      "W. Kessler"
+    ],
+    "minutes": 147.0,
+    "net_rating": 11.3,
+    "off_rating": 122.7,
+    "def_rating": 111.4,
+    "pace": 100.34,
+    "efg_pct": 0.574,
+    "tov_pct": 0.178,
+    "oreb_pct": 0.456,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "J. Clarkson",
+      "M. Beasley",
+      "L. Markkanen",
+      "W. Kessler"
+    ],
+    "minutes": 90.0,
+    "net_rating": 11.3,
+    "off_rating": 116.0,
+    "def_rating": 104.8,
+    "pace": 100.31,
+    "efg_pct": 0.545,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.353,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "W. Kessler"
+    ],
+    "minutes": 74.0,
+    "net_rating": 6.8,
+    "off_rating": 113.3,
+    "def_rating": 106.5,
+    "pace": 101.18,
+    "efg_pct": 0.549,
+    "tov_pct": 0.158,
+    "oreb_pct": 0.361,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "J. Clarkson",
+      "M. Beasley",
+      "L. Markkanen",
+      "J. Vanderbilt"
+    ],
+    "minutes": 61.0,
+    "net_rating": 3.4,
+    "off_rating": 126.0,
+    "def_rating": 122.6,
+    "pace": 103.35,
+    "efg_pct": 0.534,
+    "tov_pct": 0.084,
+    "oreb_pct": 0.357,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "J. Clarkson",
+      "L. Markkanen",
+      "J. Vanderbilt",
+      "W. Kessler"
+    ],
+    "minutes": 36.0,
+    "net_rating": 1.5,
+    "off_rating": 132.4,
+    "def_rating": 130.9,
+    "pace": 91.43,
+    "efg_pct": 0.6,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.303,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "C. Sexton",
+      "W. Kessler"
+    ],
+    "minutes": 79.0,
+    "net_rating": -0.1,
+    "off_rating": 117.3,
+    "def_rating": 117.4,
+    "pace": 99.83,
+    "efg_pct": 0.507,
+    "tov_pct": 0.105,
+    "oreb_pct": 0.372,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gay",
+      "M. Beasley",
+      "L. Markkanen",
+      "N. Alexander-Walker",
+      "W. Kessler"
+    ],
+    "minutes": 35.0,
+    "net_rating": -0.2,
+    "off_rating": 104.0,
+    "def_rating": 104.2,
+    "pace": 99.82,
+    "efg_pct": 0.531,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.257,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Olynyk",
+      "J. Clarkson",
+      "L. Markkanen",
+      "J. Vanderbilt"
+    ],
+    "minutes": 303.0,
+    "net_rating": -1.0,
+    "off_rating": 112.0,
+    "def_rating": 113.0,
+    "pace": 100.89,
+    "efg_pct": 0.546,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.307,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Olynyk",
+      "J. Clarkson",
+      "M. Beasley",
+      "L. Markkanen"
+    ],
+    "minutes": 47.0,
+    "net_rating": -3.2,
+    "off_rating": 131.4,
+    "def_rating": 134.7,
+    "pace": 104.62,
+    "efg_pct": 0.645,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.277,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "J. Clarkson",
+      "M. Beasley",
+      "L. Markkanen",
+      "C. Sexton"
+    ],
+    "minutes": 37.0,
+    "net_rating": -3.8,
+    "off_rating": 115.2,
+    "def_rating": 119.0,
+    "pace": 103.17,
+    "efg_pct": 0.543,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.216,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "J. Clarkson",
+      "T. Horton-Tucker",
+      "O. Agbaji",
+      "W. Kessler"
+    ],
+    "minutes": 41.0,
+    "net_rating": -12.2,
+    "off_rating": 96.7,
+    "def_rating": 108.9,
+    "pace": 105.3,
+    "efg_pct": 0.514,
+    "tov_pct": 0.222,
+    "oreb_pct": 0.22,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "T. Horton-Tucker",
+      "O. Agbaji",
+      "W. Kessler",
+      "S. Fontecchio"
+    ],
+    "minutes": 88.0,
+    "net_rating": -15.3,
+    "off_rating": 110.7,
+    "def_rating": 126.0,
+    "pace": 103.3,
+    "efg_pct": 0.533,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Olynyk",
+      "K. Dunn",
+      "U. Azubuike",
+      "L. Samanic",
+      "O. Agbaji"
+    ],
+    "minutes": 31.0,
+    "net_rating": -23.2,
+    "off_rating": 102.9,
+    "def_rating": 126.1,
+    "pace": 106.47,
+    "efg_pct": 0.54,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.103,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

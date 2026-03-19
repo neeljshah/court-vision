@@ -1,0 +1,19 @@
+{
+  "game_id": "0022400710",
+  "season": "2024-25",
+  "video_path": "data/videos/cavs_vs_celtics_2025.mp4",
+  "status": "error",
+  "error": "Tracking failed: unified_pipeline exit 1: [ WARN:0@8.564] global shadow_sift.hpp:15 cv::xfeatures2d::SIFT_create DEPRECATED: cv.xfeatures2d.SIFT_create() is deprecated due SIFT tranfer to the main repository. https://github.com/opencv/opencv/issues/16736\nTraceback (most recent call last):\r\n  File \"C:\\Users\\neelj\\nba-ai-system\\src\\pipeline\\unified_pipeline.py\", line 1561, in <module>\r\n    pipeline.run()\r\n  File \"C:\\Users\\neelj\\nba-ai-syste",
+  "tracking": {
+    "rows": 0,
+    "frames": 0,
+    "players": 0,
+    "status": "error"
+  },
+  "features": {},
+  "shot_quality": {},
+  "defense": {},
+  "momentum": {},
+  "output_path": "C:\\Users\\neelj\\nba-ai-system\\data\\game_results\\0022400710_summary.json",
+  "timestamp": "2026-03-18T01:20:30.504214+00:00"
+}

@@ -1,1 +1,0 @@
-from .models.detection_model import Yolo_Nas_L

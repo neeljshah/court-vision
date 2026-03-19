@@ -1,0 +1,439 @@
+[
+  {
+    "lineup": [
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "J. Morant",
+      "B. Clarke",
+      "D. Bane"
+    ],
+    "minutes": 54.0,
+    "net_rating": 26.8,
+    "off_rating": 122.7,
+    "def_rating": 95.9,
+    "pace": 107.39,
+    "efg_pct": 0.514,
+    "tov_pct": 0.084,
+    "oreb_pct": 0.328,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "J. Morant",
+      "J. Konchar",
+      "D. Bane",
+      "S. Aldama"
+    ],
+    "minutes": 57.0,
+    "net_rating": 25.2,
+    "off_rating": 130.7,
+    "def_rating": 105.6,
+    "pace": 105.77,
+    "efg_pct": 0.601,
+    "tov_pct": 0.094,
+    "oreb_pct": 0.298,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "B. Clarke",
+      "D. Bane",
+      "S. Aldama",
+      "J. LaRavia"
+    ],
+    "minutes": 37.0,
+    "net_rating": 18.2,
+    "off_rating": 129.6,
+    "def_rating": 111.4,
+    "pace": 104.97,
+    "efg_pct": 0.653,
+    "tov_pct": 0.086,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "J. Jackson Jr.",
+      "X. Tillman",
+      "D. Bane",
+      "D. Roddy"
+    ],
+    "minutes": 32.0,
+    "net_rating": 16.8,
+    "off_rating": 130.4,
+    "def_rating": 113.6,
+    "pace": 101.42,
+    "efg_pct": 0.649,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Brooks",
+      "J. Morant",
+      "B. Clarke",
+      "D. Bane",
+      "S. Aldama"
+    ],
+    "minutes": 31.0,
+    "net_rating": 15.5,
+    "off_rating": 122.7,
+    "def_rating": 107.2,
+    "pace": 105.45,
+    "efg_pct": 0.603,
+    "tov_pct": 0.076,
+    "oreb_pct": 0.207,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "D. Brooks",
+      "J. Morant",
+      "J. Konchar",
+      "S. Aldama"
+    ],
+    "minutes": 73.0,
+    "net_rating": 15.4,
+    "off_rating": 114.2,
+    "def_rating": 98.8,
+    "pace": 110.14,
+    "efg_pct": 0.546,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.364,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "J. Morant",
+      "D. Bane"
+    ],
+    "minutes": 128.0,
+    "net_rating": 13.0,
+    "off_rating": 114.7,
+    "def_rating": 101.8,
+    "pace": 104.29,
+    "efg_pct": 0.491,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.369,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "B. Clarke",
+      "Z. Williams"
+    ],
+    "minutes": 33.0,
+    "net_rating": 12.4,
+    "off_rating": 101.4,
+    "def_rating": 89.0,
+    "pace": 102.86,
+    "efg_pct": 0.524,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.111,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "D. Brooks",
+      "J. Morant",
+      "D. Bane",
+      "S. Aldama"
+    ],
+    "minutes": 100.0,
+    "net_rating": 11.4,
+    "off_rating": 113.3,
+    "def_rating": 101.9,
+    "pace": 100.83,
+    "efg_pct": 0.507,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.431,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "J. Morant",
+      "J. Konchar"
+    ],
+    "minutes": 162.0,
+    "net_rating": 10.7,
+    "off_rating": 115.3,
+    "def_rating": 104.6,
+    "pace": 104.18,
+    "efg_pct": 0.557,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.317,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "T. Jones",
+      "D. Brooks",
+      "J. Konchar",
+      "S. Aldama"
+    ],
+    "minutes": 34.0,
+    "net_rating": 6.5,
+    "off_rating": 113.2,
+    "def_rating": 106.7,
+    "pace": 107.85,
+    "efg_pct": 0.574,
+    "tov_pct": 0.158,
+    "oreb_pct": 0.389,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Brooks",
+      "J. Morant",
+      "X. Tillman",
+      "D. Bane",
+      "S. Aldama"
+    ],
+    "minutes": 39.0,
+    "net_rating": 6.2,
+    "off_rating": 108.6,
+    "def_rating": 102.4,
+    "pace": 101.48,
+    "efg_pct": 0.543,
+    "tov_pct": 0.136,
+    "oreb_pct": 0.282,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "J. Jackson Jr.",
+      "B. Clarke",
+      "J. Konchar",
+      "D. Bane"
+    ],
+    "minutes": 58.0,
+    "net_rating": 4.8,
+    "off_rating": 114.5,
+    "def_rating": 109.7,
+    "pace": 103.31,
+    "efg_pct": 0.525,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.343,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "X. Tillman",
+      "D. Bane"
+    ],
+    "minutes": 148.0,
+    "net_rating": 4.2,
+    "off_rating": 116.7,
+    "def_rating": 112.5,
+    "pace": 103.93,
+    "efg_pct": 0.58,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.199,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "J. Morant",
+      "X. Tillman",
+      "D. Bane"
+    ],
+    "minutes": 142.0,
+    "net_rating": 3.9,
+    "off_rating": 107.4,
+    "def_rating": 103.5,
+    "pace": 104.82,
+    "efg_pct": 0.528,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.224,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "L. Kennard",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "S. Aldama"
+    ],
+    "minutes": 32.0,
+    "net_rating": 3.5,
+    "off_rating": 116.9,
+    "def_rating": 113.4,
+    "pace": 98.44,
+    "efg_pct": 0.568,
+    "tov_pct": 0.062,
+    "oreb_pct": 0.129,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "T. Jones",
+      "D. Brooks",
+      "S. Aldama",
+      "D. Roddy"
+    ],
+    "minutes": 31.0,
+    "net_rating": -6.2,
+    "off_rating": 106.2,
+    "def_rating": 112.3,
+    "pace": 100.38,
+    "efg_pct": 0.559,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.267,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Kennard",
+      "D. Brooks",
+      "J. Morant",
+      "X. Tillman",
+      "S. Aldama"
+    ],
+    "minutes": 54.0,
+    "net_rating": -7.6,
+    "off_rating": 100.0,
+    "def_rating": 107.6,
+    "pace": 105.71,
+    "efg_pct": 0.485,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.172,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "J. Morant",
+      "J. Konchar",
+      "S. Aldama",
+      "D. Roddy"
+    ],
+    "minutes": 39.0,
+    "net_rating": -9.3,
+    "off_rating": 120.0,
+    "def_rating": 129.3,
+    "pace": 100.75,
+    "efg_pct": 0.5,
+    "tov_pct": 0.15,
+    "oreb_pct": 0.463,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "B. Clarke",
+      "J. LaRavia"
+    ],
+    "minutes": 34.0,
+    "net_rating": -13.6,
+    "off_rating": 111.4,
+    "def_rating": 125.0,
+    "pace": 100.77,
+    "efg_pct": 0.552,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.219,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Adams",
+      "D. Brooks",
+      "J. Morant",
+      "Z. Williams",
+      "S. Aldama"
+    ],
+    "minutes": 46.0,
+    "net_rating": -20.0,
+    "off_rating": 119.8,
+    "def_rating": 139.8,
+    "pace": 102.22,
+    "efg_pct": 0.622,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "D. Bane",
+      "D. Roddy"
+    ],
+    "minutes": 30.0,
+    "net_rating": -20.1,
+    "off_rating": 104.9,
+    "def_rating": 125.0,
+    "pace": 98.36,
+    "efg_pct": 0.511,
+    "tov_pct": 0.148,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Brooks",
+      "J. Jackson Jr.",
+      "B. Clarke",
+      "D. Roddy"
+    ],
+    "minutes": 31.0,
+    "net_rating": -25.7,
+    "off_rating": 92.6,
+    "def_rating": 118.3,
+    "pace": 107.06,
+    "efg_pct": 0.518,
+    "tov_pct": 0.191,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

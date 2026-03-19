@@ -17,6 +17,12 @@ _PASS_MIN_VEL     = 6.0   # min 2D ball velocity (px/frame) to call a pass
 _SHOT_MIN_VEL     = 5.0   # min ball velocity to call a shot attempt
 _DRIBBLE_MAX_VEL  = 14.0  # ball velocity below this near handler = dribble
 _DRIBBLE_MAX_DIST = 70    # max ball-to-handler 2D distance (px) for dribble
+# Pixel-space shot fallback: fire when pixel_vel exceeds this threshold AND
+# ball is in upper half of frame.  8.0 px/frame ≈ a shot at ~18+ ft/s at
+# broadcast zoom on non-strided clips; strided clips (2× velocity) fire at
+# 4+ real px/frame.  Lowered 18.0→12.0→8.0 — passes detection gate
+# (possession-loss + upper-half) keeps false-positive rate low.
+_PIXEL_SHOT_VEL   = 8.0
 
 
 class EventDetector:
@@ -51,6 +57,8 @@ class EventDetector:
         self._ball_vel:         float = 0.0
         self._pixel_vel_used:   bool  = False
         self._possessor:        Optional[int] = None   # player_id currently holding ball
+        self._last_ball_y_pixel: Optional[float] = None   # raw image-space y coord of ball
+        self._last_frame_height: Optional[int]   = None   # raw frame height in pixels
         self._loss_frame: Optional[int] = None   # frame at which possession was lost
         self._ball_buf:   deque = deque(maxlen=30)
 
@@ -89,6 +97,8 @@ class EventDetector:
         ball_pos: Optional[Tuple[float, float]],
         frame_tracks: List[dict],
         pixel_vel: float = 0.0,
+        ball_y_pixel: Optional[float] = None,
+        frame_height: Optional[int] = None,
     ) -> str:
         """
         Process one frame and return the event label.
@@ -98,9 +108,14 @@ class EventDetector:
             ball_pos:     (x2d, y2d) of ball in 2D court coords, or None.
             frame_tracks: List of player dicts with keys:
                           player_id, team, x2d, y2d, has_ball (bool).
+            pixel_vel:    Ball velocity in raw image pixels/frame (from ball tracker).
+            ball_y_pixel: Ball y-coordinate in raw image space (for upper-half check).
+            frame_height: Raw frame height in pixels (for upper-half check).
         Returns:
             Event string: "shot" | "pass" | "dribble" | "none"
         """
+        self._last_ball_y_pixel = ball_y_pixel
+        self._last_frame_height = frame_height
         if ball_pos is not None and self._prev_ball is not None:
             self._ball_vel = float(np.hypot(
                 ball_pos[0] - self._prev_ball[0],
@@ -213,8 +228,22 @@ class EventDetector:
         as shots), we use the last 3 frames of the court-coordinate trajectory
         buffer to compute a more stable direction vector.
         """
-        if ball_pos is None or self._ball_vel < _SHOT_MIN_VEL:
+        if self._ball_vel < _SHOT_MIN_VEL:
             return "none"
+
+        # When 2D court position is unavailable (Hough/CSRT lost ball during
+        # the shot arc), use pixel-space velocity + vertical position as the
+        # sole indicator.  This fires BEFORE the court-coord path so that a
+        # dropped ball doesn't silently kill shot detection.
+        if ball_pos is None:
+            if (self._pixel_vel_used
+                    and self._ball_vel > _PIXEL_SHOT_VEL
+                    and self._last_ball_y_pixel is not None
+                    and self._last_frame_height is not None
+                    and self._last_ball_y_pixel < self._last_frame_height * 0.75):
+                return "shot"
+            return "none"
+
         if self._prev_ball is None:
             return "none"
 
@@ -249,6 +278,19 @@ class EventDetector:
 
         if dx_ball * dx_basket + dy_ball * dy_basket > 0:
             return "shot"
+
+        # Pixel-space fallback: if ball is moving fast in image space and is not
+        # in the bottom quarter of the frame (floor level), count as a shot even
+        # when the court-coord direction check fails (homography noise, broadcast
+        # clips).  0.75 threshold allows hand/waist-level releases (y ≈ 50-70%
+        # of frame height) while excluding floor-level bounces and dribbles.
+        if (self._pixel_vel_used
+                and self._ball_vel > _PIXEL_SHOT_VEL
+                and self._last_ball_y_pixel is not None
+                and self._last_frame_height is not None
+                and self._last_ball_y_pixel < self._last_frame_height * 0.75):
+            return "shot"
+
         return "none"
 
     # ── Rich event helpers ────────────────────────────────────────────────

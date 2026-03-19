@@ -1,0 +1,553 @@
+[
+  {
+    "lineup": [
+      "K. Durant",
+      "M. Plumlee",
+      "T. Jones",
+      "R. O'Neale",
+      "G. Allen"
+    ],
+    "minutes": 53.0,
+    "net_rating": 36.9,
+    "off_rating": 140.4,
+    "def_rating": 103.4,
+    "pace": 103.21,
+    "efg_pct": 0.769,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "J. Nurki\u0107",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale"
+    ],
+    "minutes": 74.0,
+    "net_rating": 30.5,
+    "off_rating": 122.3,
+    "def_rating": 91.8,
+    "pace": 102.03,
+    "efg_pct": 0.659,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.145,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "R. Dunn"
+    ],
+    "minutes": 89.0,
+    "net_rating": 27.7,
+    "off_rating": 115.5,
+    "def_rating": 87.8,
+    "pace": 101.1,
+    "efg_pct": 0.537,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.287,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "C. Martin",
+      "O. Ighodaro"
+    ],
+    "minutes": 35.0,
+    "net_rating": 27.0,
+    "off_rating": 121.4,
+    "def_rating": 94.4,
+    "pace": 96.14,
+    "efg_pct": 0.604,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "T. Jones",
+      "R. O'Neale",
+      "C. Martin",
+      "O. Ighodaro"
+    ],
+    "minutes": 31.0,
+    "net_rating": 17.3,
+    "off_rating": 123.0,
+    "def_rating": 105.7,
+    "pace": 111.98,
+    "efg_pct": 0.574,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.303,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "M. Plumlee",
+      "D. Booker",
+      "R. O'Neale",
+      "G. Allen"
+    ],
+    "minutes": 45.0,
+    "net_rating": 17.2,
+    "off_rating": 125.0,
+    "def_rating": 107.8,
+    "pace": 99.72,
+    "efg_pct": 0.638,
+    "tov_pct": 0.094,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "M. Plumlee",
+      "D. Booker",
+      "R. O'Neale"
+    ],
+    "minutes": 44.0,
+    "net_rating": 11.2,
+    "off_rating": 100.0,
+    "def_rating": 88.8,
+    "pace": 97.62,
+    "efg_pct": 0.534,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.366,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "T. Jones",
+      "D. Booker",
+      "B. Bol",
+      "N. Richards"
+    ],
+    "minutes": 62.0,
+    "net_rating": 10.3,
+    "off_rating": 134.9,
+    "def_rating": 124.6,
+    "pace": 97.81,
+    "efg_pct": 0.665,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.278,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "D. Booker",
+      "R. O'Neale",
+      "N. Richards"
+    ],
+    "minutes": 52.0,
+    "net_rating": 9.1,
+    "off_rating": 112.7,
+    "def_rating": 103.6,
+    "pace": 101.97,
+    "efg_pct": 0.546,
+    "tov_pct": 0.064,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "T. Jones",
+      "D. Booker",
+      "O. Ighodaro",
+      "R. Dunn"
+    ],
+    "minutes": 31.0,
+    "net_rating": 6.7,
+    "off_rating": 111.3,
+    "def_rating": 104.5,
+    "pace": 98.66,
+    "efg_pct": 0.526,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "R. Dunn"
+    ],
+    "minutes": 35.0,
+    "net_rating": 2.7,
+    "off_rating": 106.9,
+    "def_rating": 104.3,
+    "pace": 98.02,
+    "efg_pct": 0.585,
+    "tov_pct": 0.153,
+    "oreb_pct": 0.267,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "M. Plumlee",
+      "D. Booker",
+      "G. Allen"
+    ],
+    "minutes": 53.0,
+    "net_rating": -2.0,
+    "off_rating": 120.5,
+    "def_rating": 122.5,
+    "pace": 104.21,
+    "efg_pct": 0.657,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.171,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "T. Jones",
+      "D. Booker",
+      "N. Richards",
+      "R. Dunn"
+    ],
+    "minutes": 75.0,
+    "net_rating": -3.4,
+    "off_rating": 114.6,
+    "def_rating": 118.0,
+    "pace": 95.91,
+    "efg_pct": 0.578,
+    "tov_pct": 0.172,
+    "oreb_pct": 0.358,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "G. Allen"
+    ],
+    "minutes": 60.0,
+    "net_rating": -3.5,
+    "off_rating": 116.9,
+    "def_rating": 120.5,
+    "pace": 102.25,
+    "efg_pct": 0.557,
+    "tov_pct": 0.092,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "D. Booker",
+      "N. Richards",
+      "C. Gillespie",
+      "R. Dunn"
+    ],
+    "minutes": 82.0,
+    "net_rating": -4.6,
+    "off_rating": 125.3,
+    "def_rating": 129.9,
+    "pace": 92.84,
+    "efg_pct": 0.593,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.41,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "O. Ighodaro"
+    ],
+    "minutes": 42.0,
+    "net_rating": -6.3,
+    "off_rating": 102.3,
+    "def_rating": 108.5,
+    "pace": 97.74,
+    "efg_pct": 0.526,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.227,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "D. Booker",
+      "G. Allen",
+      "N. Richards"
+    ],
+    "minutes": 30.0,
+    "net_rating": -6.4,
+    "off_rating": 111.8,
+    "def_rating": 118.2,
+    "pace": 107.74,
+    "efg_pct": 0.707,
+    "tov_pct": 0.25,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "G. Allen",
+      "R. Dunn"
+    ],
+    "minutes": 41.0,
+    "net_rating": -11.4,
+    "off_rating": 97.8,
+    "def_rating": 109.2,
+    "pace": 105.63,
+    "efg_pct": 0.481,
+    "tov_pct": 0.087,
+    "oreb_pct": 0.271,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "D. Booker",
+      "B. Bol",
+      "N. Richards"
+    ],
+    "minutes": 63.0,
+    "net_rating": -11.9,
+    "off_rating": 111.1,
+    "def_rating": 123.0,
+    "pace": 105.19,
+    "efg_pct": 0.612,
+    "tov_pct": 0.178,
+    "oreb_pct": 0.164,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale"
+    ],
+    "minutes": 42.0,
+    "net_rating": -13.6,
+    "off_rating": 107.3,
+    "def_rating": 120.9,
+    "pace": 107.35,
+    "efg_pct": 0.566,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.205,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "J. Nurki\u0107",
+      "T. Jones",
+      "D. Booker"
+    ],
+    "minutes": 119.0,
+    "net_rating": -17.1,
+    "off_rating": 103.9,
+    "def_rating": 120.9,
+    "pace": 103.83,
+    "efg_pct": 0.576,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.104,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "G. Allen",
+      "N. Richards"
+    ],
+    "minutes": 37.0,
+    "net_rating": -18.5,
+    "off_rating": 109.0,
+    "def_rating": 127.5,
+    "pace": 102.58,
+    "efg_pct": 0.529,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "G. Allen"
+    ],
+    "minutes": 30.0,
+    "net_rating": -18.9,
+    "off_rating": 110.8,
+    "def_rating": 129.7,
+    "pace": 102.74,
+    "efg_pct": 0.649,
+    "tov_pct": 0.092,
+    "oreb_pct": 0.04,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "D. Booker",
+      "R. O'Neale",
+      "G. Allen"
+    ],
+    "minutes": 46.0,
+    "net_rating": -19.1,
+    "off_rating": 110.1,
+    "def_rating": 129.2,
+    "pace": 102.75,
+    "efg_pct": 0.539,
+    "tov_pct": 0.061,
+    "oreb_pct": 0.133,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "J. Nurki\u0107",
+      "T. Jones",
+      "R. O'Neale"
+    ],
+    "minutes": 45.0,
+    "net_rating": -21.0,
+    "off_rating": 109.8,
+    "def_rating": 130.8,
+    "pace": 97.0,
+    "efg_pct": 0.61,
+    "tov_pct": 0.174,
+    "oreb_pct": 0.194,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Nurki\u0107",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "R. Dunn"
+    ],
+    "minutes": 34.0,
+    "net_rating": -22.2,
+    "off_rating": 89.6,
+    "def_rating": 111.8,
+    "pace": 106.64,
+    "efg_pct": 0.397,
+    "tov_pct": 0.078,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale",
+      "N. Richards"
+    ],
+    "minutes": 51.0,
+    "net_rating": -26.7,
+    "off_rating": 105.7,
+    "def_rating": 132.4,
+    "pace": 98.33,
+    "efg_pct": 0.544,
+    "tov_pct": 0.16,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Durant",
+      "B. Beal",
+      "M. Plumlee",
+      "R. O'Neale",
+      "G. Allen"
+    ],
+    "minutes": 42.0,
+    "net_rating": -26.8,
+    "off_rating": 107.3,
+    "def_rating": 134.1,
+    "pace": 105.67,
+    "efg_pct": 0.62,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "M. Plumlee",
+      "T. Jones",
+      "D. Booker",
+      "R. O'Neale"
+    ],
+    "minutes": 56.0,
+    "net_rating": -31.9,
+    "off_rating": 106.7,
+    "def_rating": 138.6,
+    "pace": 99.36,
+    "efg_pct": 0.563,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

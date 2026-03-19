@@ -1,0 +1,439 @@
+[
+  {
+    "lineup": [
+      "J. Poole",
+      "C. Kispert",
+      "B. Coulibaly",
+      "A. Sarr",
+      "K. George"
+    ],
+    "minutes": 53.0,
+    "net_rating": 10.1,
+    "off_rating": 115.1,
+    "def_rating": 105.0,
+    "pace": 111.7,
+    "efg_pct": 0.612,
+    "tov_pct": 0.175,
+    "oreb_pct": 0.245,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "J. Poole",
+      "C. Kispert",
+      "B. Coulibaly",
+      "K. George"
+    ],
+    "minutes": 89.0,
+    "net_rating": 4.3,
+    "off_rating": 117.4,
+    "def_rating": 113.1,
+    "pace": 104.35,
+    "efg_pct": 0.571,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Middleton",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 53.0,
+    "net_rating": 4.2,
+    "off_rating": 113.7,
+    "def_rating": 109.5,
+    "pace": 104.75,
+    "efg_pct": 0.555,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.218,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poole",
+      "C. Kispert",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington"
+    ],
+    "minutes": 36.0,
+    "net_rating": 4.2,
+    "off_rating": 116.0,
+    "def_rating": 111.8,
+    "pace": 101.65,
+    "efg_pct": 0.645,
+    "tov_pct": 0.08,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Brogdon",
+      "J. Champagnie",
+      "B. Coulibaly",
+      "A. Sarr",
+      "C. Carrington"
+    ],
+    "minutes": 32.0,
+    "net_rating": 2.3,
+    "off_rating": 111.6,
+    "def_rating": 109.3,
+    "pace": 107.23,
+    "efg_pct": 0.588,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.152,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Middleton",
+      "J. Poole",
+      "B. Coulibaly",
+      "A. Sarr",
+      "K. George"
+    ],
+    "minutes": 43.0,
+    "net_rating": -1.0,
+    "off_rating": 96.8,
+    "def_rating": 97.9,
+    "pace": 106.55,
+    "efg_pct": 0.448,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.309,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poole",
+      "J. Champagnie",
+      "A. Sarr",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 47.0,
+    "net_rating": -1.9,
+    "off_rating": 100.0,
+    "def_rating": 101.9,
+    "pace": 106.44,
+    "efg_pct": 0.5,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poole",
+      "J. Champagnie",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington"
+    ],
+    "minutes": 88.0,
+    "net_rating": -5.3,
+    "off_rating": 109.8,
+    "def_rating": 115.1,
+    "pace": 105.01,
+    "efg_pct": 0.576,
+    "tov_pct": 0.165,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "M. Brogdon",
+      "C. Kispert",
+      "C. Carrington",
+      "K. George"
+    ],
+    "minutes": 73.0,
+    "net_rating": -8.8,
+    "off_rating": 107.8,
+    "def_rating": 116.6,
+    "pace": 100.29,
+    "efg_pct": 0.547,
+    "tov_pct": 0.162,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poole",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 107.0,
+    "net_rating": -9.0,
+    "off_rating": 101.8,
+    "def_rating": 110.8,
+    "pace": 103.65,
+    "efg_pct": 0.485,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.23,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Holmes",
+      "J. Poole",
+      "B. Coulibaly",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 55.0,
+    "net_rating": -9.6,
+    "off_rating": 107.0,
+    "def_rating": 116.5,
+    "pace": 101.19,
+    "efg_pct": 0.569,
+    "tov_pct": 0.148,
+    "oreb_pct": 0.224,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Smart",
+      "R. Holmes",
+      "J. Champagnie",
+      "C. Kispert",
+      "B. Carrington"
+    ],
+    "minutes": 36.0,
+    "net_rating": -17.0,
+    "off_rating": 105.1,
+    "def_rating": 122.1,
+    "pace": 102.86,
+    "efg_pct": 0.5,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. Kispert",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 57.0,
+    "net_rating": -17.2,
+    "off_rating": 109.3,
+    "def_rating": 126.5,
+    "pace": 111.24,
+    "efg_pct": 0.592,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poole",
+      "J. Champagnie",
+      "A. Sarr",
+      "B. Carrington",
+      "A. Johnson"
+    ],
+    "minutes": 79.0,
+    "net_rating": -18.5,
+    "off_rating": 107.9,
+    "def_rating": 126.3,
+    "pace": 100.63,
+    "efg_pct": 0.535,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.173,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "C. Kispert",
+      "B. Coulibaly",
+      "C. Carrington",
+      "K. George"
+    ],
+    "minutes": 53.0,
+    "net_rating": -18.8,
+    "off_rating": 109.7,
+    "def_rating": 128.6,
+    "pace": 101.76,
+    "efg_pct": 0.607,
+    "tov_pct": 0.195,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "K. Kuzma",
+      "C. Kispert",
+      "B. Carrington",
+      "K. George"
+    ],
+    "minutes": 91.0,
+    "net_rating": -24.3,
+    "off_rating": 106.7,
+    "def_rating": 131.1,
+    "pace": 100.74,
+    "efg_pct": 0.571,
+    "tov_pct": 0.181,
+    "oreb_pct": 0.279,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "J. Poole",
+      "J. Champagnie",
+      "B. Coulibaly",
+      "B. Carrington"
+    ],
+    "minutes": 43.0,
+    "net_rating": -24.5,
+    "off_rating": 102.1,
+    "def_rating": 126.5,
+    "pace": 109.16,
+    "efg_pct": 0.466,
+    "tov_pct": 0.186,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Champagnie",
+      "A. Sarr",
+      "B. Carrington",
+      "K. George",
+      "A. Johnson"
+    ],
+    "minutes": 34.0,
+    "net_rating": -26.6,
+    "off_rating": 97.3,
+    "def_rating": 123.9,
+    "pace": 101.8,
+    "efg_pct": 0.476,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.211,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Middleton",
+      "J. Poole",
+      "J. Champagnie",
+      "A. Sarr",
+      "K. George"
+    ],
+    "minutes": 55.0,
+    "net_rating": -27.7,
+    "off_rating": 100.8,
+    "def_rating": 128.6,
+    "pace": 103.73,
+    "efg_pct": 0.491,
+    "tov_pct": 0.144,
+    "oreb_pct": 0.254,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Kuzma",
+      "C. Kispert",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington"
+    ],
+    "minutes": 33.0,
+    "net_rating": -29.7,
+    "off_rating": 93.2,
+    "def_rating": 122.9,
+    "pace": 105.3,
+    "efg_pct": 0.546,
+    "tov_pct": 0.247,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "K. Kuzma",
+      "J. Poole",
+      "B. Coulibaly",
+      "K. George"
+    ],
+    "minutes": 63.0,
+    "net_rating": -30.6,
+    "off_rating": 87.9,
+    "def_rating": 118.5,
+    "pace": 100.36,
+    "efg_pct": 0.39,
+    "tov_pct": 0.152,
+    "oreb_pct": 0.259,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Kuzma",
+      "J. Poole",
+      "B. Coulibaly",
+      "A. Sarr",
+      "B. Carrington"
+    ],
+    "minutes": 208.0,
+    "net_rating": -33.5,
+    "off_rating": 86.7,
+    "def_rating": 120.3,
+    "pace": 108.15,
+    "efg_pct": 0.444,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.185,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "J. Poole",
+      "C. Kispert",
+      "B. Coulibaly",
+      "B. Carrington"
+    ],
+    "minutes": 37.0,
+    "net_rating": -43.0,
+    "off_rating": 86.1,
+    "def_rating": 129.1,
+    "pace": 102.62,
+    "efg_pct": 0.483,
+    "tov_pct": 0.19,
+    "oreb_pct": 0.229,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

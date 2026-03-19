@@ -1,0 +1,306 @@
+[
+  {
+    "lineup": [
+      "A. Burks",
+      "B. Bogdanovic",
+      "K. Hayes",
+      "S. Bey",
+      "J. Duren"
+    ],
+    "minutes": 30.0,
+    "net_rating": 38.6,
+    "off_rating": 129.4,
+    "def_rating": 90.8,
+    "pace": 107.28,
+    "efg_pct": 0.55,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.387,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "C. Joseph",
+      "H. Diallo",
+      "K. Knox II",
+      "J. Duren"
+    ],
+    "minutes": 41.0,
+    "net_rating": 21.3,
+    "off_rating": 127.4,
+    "def_rating": 106.1,
+    "pace": 96.35,
+    "efg_pct": 0.582,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.452,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "B. Bogdanovic",
+      "K. Hayes",
+      "S. Bey",
+      "I. Stewart"
+    ],
+    "minutes": 30.0,
+    "net_rating": 3.1,
+    "off_rating": 120.0,
+    "def_rating": 116.9,
+    "pace": 104.41,
+    "efg_pct": 0.523,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.474,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "B. Bogdanovic",
+      "S. Bey",
+      "J. Ivey",
+      "J. Duren"
+    ],
+    "minutes": 84.0,
+    "net_rating": 0.5,
+    "off_rating": 119.7,
+    "def_rating": 119.2,
+    "pace": 101.58,
+    "efg_pct": 0.577,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "C. Joseph",
+      "M. Bagley III",
+      "K. Knox II",
+      "S. Bey"
+    ],
+    "minutes": 75.0,
+    "net_rating": -5.1,
+    "off_rating": 121.8,
+    "def_rating": 126.9,
+    "pace": 100.82,
+    "efg_pct": 0.585,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "S. Bey",
+      "I. Stewart",
+      "C. Cunningham",
+      "J. Ivey"
+    ],
+    "minutes": 215.0,
+    "net_rating": -6.0,
+    "off_rating": 113.6,
+    "def_rating": 119.6,
+    "pace": 103.72,
+    "efg_pct": 0.52,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.296,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "C. Joseph",
+      "K. Knox II",
+      "S. Bey",
+      "J. Duren"
+    ],
+    "minutes": 54.0,
+    "net_rating": -7.8,
+    "off_rating": 98.3,
+    "def_rating": 106.1,
+    "pace": 103.62,
+    "efg_pct": 0.466,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.277,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "M. Bagley III",
+      "K. Hayes",
+      "I. Livers",
+      "J. Ivey"
+    ],
+    "minutes": 44.0,
+    "net_rating": -7.9,
+    "off_rating": 118.0,
+    "def_rating": 125.8,
+    "pace": 96.91,
+    "efg_pct": 0.585,
+    "tov_pct": 0.157,
+    "oreb_pct": 0.275,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "K. Hayes",
+      "S. Bey",
+      "I. Stewart",
+      "J. Ivey"
+    ],
+    "minutes": 74.0,
+    "net_rating": -10.3,
+    "off_rating": 105.8,
+    "def_rating": 116.1,
+    "pace": 100.24,
+    "efg_pct": 0.483,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Burks",
+      "B. Bogdanovic",
+      "I. Stewart",
+      "J. Ivey",
+      "J. Duren"
+    ],
+    "minutes": 50.0,
+    "net_rating": -12.1,
+    "off_rating": 100.9,
+    "def_rating": 113.1,
+    "pace": 103.44,
+    "efg_pct": 0.516,
+    "tov_pct": 0.15,
+    "oreb_pct": 0.196,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "K. Hayes",
+      "S. Bey",
+      "J. Ivey",
+      "J. Duren"
+    ],
+    "minutes": 36.0,
+    "net_rating": -13.2,
+    "off_rating": 105.2,
+    "def_rating": 118.4,
+    "pace": 102.26,
+    "efg_pct": 0.448,
+    "tov_pct": 0.117,
+    "oreb_pct": 0.362,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "K. Hayes",
+      "I. Stewart",
+      "J. Ivey",
+      "J. Duren"
+    ],
+    "minutes": 249.0,
+    "net_rating": -16.3,
+    "off_rating": 108.0,
+    "def_rating": 124.2,
+    "pace": 99.44,
+    "efg_pct": 0.513,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.307,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "M. Bagley III",
+      "K. Hayes",
+      "S. Bey",
+      "J. Ivey"
+    ],
+    "minutes": 36.0,
+    "net_rating": -23.6,
+    "off_rating": 87.3,
+    "def_rating": 111.0,
+    "pace": 96.94,
+    "efg_pct": 0.393,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "M. Bagley III",
+      "K. Hayes",
+      "I. Stewart",
+      "J. Ivey"
+    ],
+    "minutes": 89.0,
+    "net_rating": -26.0,
+    "off_rating": 83.6,
+    "def_rating": 109.6,
+    "pace": 101.93,
+    "efg_pct": 0.438,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.216,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Bagley III",
+      "J. Wiseman",
+      "K. Hayes",
+      "I. Livers",
+      "J. Ivey"
+    ],
+    "minutes": 65.0,
+    "net_rating": -32.9,
+    "off_rating": 96.2,
+    "def_rating": 129.1,
+    "pace": 99.32,
+    "efg_pct": 0.509,
+    "tov_pct": 0.158,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Bogdanovic",
+      "S. Bey",
+      "I. Stewart",
+      "J. Ivey",
+      "J. Duren"
+    ],
+    "minutes": 47.0,
+    "net_rating": -40.9,
+    "off_rating": 93.1,
+    "def_rating": 134.0,
+    "pace": 102.31,
+    "efg_pct": 0.506,
+    "tov_pct": 0.235,
+    "oreb_pct": 0.386,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

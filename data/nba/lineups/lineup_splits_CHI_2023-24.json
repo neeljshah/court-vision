@@ -1,0 +1,420 @@
+[
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Drummond",
+      "A. Caruso",
+      "C. White"
+    ],
+    "minutes": 39.0,
+    "net_rating": 30.8,
+    "off_rating": 132.0,
+    "def_rating": 101.3,
+    "pace": 95.25,
+    "efg_pct": 0.6,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.438,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "C. White",
+      "P. Williams",
+      "A. Dosunmu"
+    ],
+    "minutes": 139.0,
+    "net_rating": 17.5,
+    "off_rating": 118.2,
+    "def_rating": 100.7,
+    "pace": 99.33,
+    "efg_pct": 0.549,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.264,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Caruso",
+      "T. Craig",
+      "C. White"
+    ],
+    "minutes": 32.0,
+    "net_rating": 15.8,
+    "off_rating": 131.7,
+    "def_rating": 115.9,
+    "pace": 92.08,
+    "efg_pct": 0.527,
+    "tov_pct": 0.083,
+    "oreb_pct": 0.406,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "J. Carter",
+      "A. Dosunmu"
+    ],
+    "minutes": 32.0,
+    "net_rating": 9.6,
+    "off_rating": 119.1,
+    "def_rating": 109.5,
+    "pace": 98.6,
+    "efg_pct": 0.618,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vucevic",
+      "Z. LaVine",
+      "T. Craig",
+      "C. White",
+      "P. Williams"
+    ],
+    "minutes": 40.0,
+    "net_rating": 9.2,
+    "off_rating": 102.3,
+    "def_rating": 93.1,
+    "pace": 104.92,
+    "efg_pct": 0.471,
+    "tov_pct": 0.093,
+    "oreb_pct": 0.146,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "J. Carter",
+      "P. Williams",
+      "A. Dosunmu"
+    ],
+    "minutes": 30.0,
+    "net_rating": 8.9,
+    "off_rating": 135.6,
+    "def_rating": 126.7,
+    "pace": 95.73,
+    "efg_pct": 0.516,
+    "tov_pct": 0.085,
+    "oreb_pct": 0.514,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "J. Carter",
+      "D. Terry"
+    ],
+    "minutes": 33.0,
+    "net_rating": 7.9,
+    "off_rating": 112.2,
+    "def_rating": 104.2,
+    "pace": 105.12,
+    "efg_pct": 0.559,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.344,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "J. Carter",
+      "C. White"
+    ],
+    "minutes": 39.0,
+    "net_rating": 5.2,
+    "off_rating": 101.2,
+    "def_rating": 96.1,
+    "pace": 97.94,
+    "efg_pct": 0.486,
+    "tov_pct": 0.085,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "J. Carter",
+      "P. Williams"
+    ],
+    "minutes": 33.0,
+    "net_rating": 3.0,
+    "off_rating": 109.1,
+    "def_rating": 106.1,
+    "pace": 96.34,
+    "efg_pct": 0.558,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.367,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Caruso",
+      "C. White",
+      "P. Williams"
+    ],
+    "minutes": 153.0,
+    "net_rating": 1.0,
+    "off_rating": 113.3,
+    "def_rating": 112.3,
+    "pace": 99.59,
+    "efg_pct": 0.549,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.24,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "C. White",
+      "A. Dosunmu"
+    ],
+    "minutes": 62.0,
+    "net_rating": 0.7,
+    "off_rating": 112.4,
+    "def_rating": 111.7,
+    "pace": 99.84,
+    "efg_pct": 0.491,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.456,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "A. Dosunmu",
+      "D. Terry"
+    ],
+    "minutes": 31.0,
+    "net_rating": -0.1,
+    "off_rating": 94.4,
+    "def_rating": 94.5,
+    "pace": 112.17,
+    "efg_pct": 0.508,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Caruso",
+      "C. White",
+      "J. Green"
+    ],
+    "minutes": 67.0,
+    "net_rating": -2.0,
+    "off_rating": 123.2,
+    "def_rating": 125.2,
+    "pace": 97.94,
+    "efg_pct": 0.627,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Caruso",
+      "C. White",
+      "A. Dosunmu"
+    ],
+    "minutes": 433.0,
+    "net_rating": -2.8,
+    "off_rating": 105.7,
+    "def_rating": 108.5,
+    "pace": 100.63,
+    "efg_pct": 0.52,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.199,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "Z. LaVine",
+      "A. Caruso",
+      "C. White"
+    ],
+    "minutes": 227.0,
+    "net_rating": -2.9,
+    "off_rating": 106.6,
+    "def_rating": 109.4,
+    "pace": 100.39,
+    "efg_pct": 0.544,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.169,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "A. Caruso",
+      "C. White",
+      "P. Williams"
+    ],
+    "minutes": 60.0,
+    "net_rating": -5.1,
+    "off_rating": 105.6,
+    "def_rating": 110.7,
+    "pace": 98.64,
+    "efg_pct": 0.514,
+    "tov_pct": 0.192,
+    "oreb_pct": 0.367,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "Z. LaVine",
+      "C. White",
+      "P. Williams"
+    ],
+    "minutes": 122.0,
+    "net_rating": -5.5,
+    "off_rating": 115.9,
+    "def_rating": 121.4,
+    "pace": 98.57,
+    "efg_pct": 0.572,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.202,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Drummond",
+      "C. White",
+      "A. Dosunmu"
+    ],
+    "minutes": 71.0,
+    "net_rating": -5.5,
+    "off_rating": 108.1,
+    "def_rating": 113.6,
+    "pace": 99.1,
+    "efg_pct": 0.493,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.375,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "T. Craig",
+      "C. White",
+      "A. Dosunmu"
+    ],
+    "minutes": 85.0,
+    "net_rating": -9.9,
+    "off_rating": 111.5,
+    "def_rating": 121.4,
+    "pace": 103.86,
+    "efg_pct": 0.521,
+    "tov_pct": 0.088,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "A. Caruso",
+      "T. Craig",
+      "A. Dosunmu"
+    ],
+    "minutes": 61.0,
+    "net_rating": -11.0,
+    "off_rating": 114.2,
+    "def_rating": 125.2,
+    "pace": 97.89,
+    "efg_pct": 0.599,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.173,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "A. Drummond",
+      "T. Craig",
+      "J. Carter",
+      "A. Dosunmu"
+    ],
+    "minutes": 56.0,
+    "net_rating": -29.7,
+    "off_rating": 82.8,
+    "def_rating": 112.5,
+    "pace": 106.54,
+    "efg_pct": 0.394,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.236,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "N. Vucevic",
+      "Z. LaVine",
+      "T. Craig",
+      "C. White"
+    ],
+    "minutes": 98.0,
+    "net_rating": -34.2,
+    "off_rating": 95.6,
+    "def_rating": 129.8,
+    "pace": 100.28,
+    "efg_pct": 0.452,
+    "tov_pct": 0.084,
+    "oreb_pct": 0.233,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

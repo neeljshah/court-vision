@@ -1,0 +1,268 @@
+[
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "O. Agbaji",
+      "D. Mitchell",
+      "S. Barnes"
+    ],
+    "minutes": 55.0,
+    "net_rating": 25.8,
+    "off_rating": 110.0,
+    "def_rating": 84.2,
+    "pace": 102.36,
+    "efg_pct": 0.589,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "O. Agbaji",
+      "S. Barnes",
+      "J. Walter"
+    ],
+    "minutes": 63.0,
+    "net_rating": 22.1,
+    "off_rating": 122.8,
+    "def_rating": 100.7,
+    "pace": 103.98,
+    "efg_pct": 0.629,
+    "tov_pct": 0.162,
+    "oreb_pct": 0.339,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "I. Quickley",
+      "O. Agbaji",
+      "S. Barnes",
+      "G. Dick",
+      "J. Mogbo"
+    ],
+    "minutes": 39.0,
+    "net_rating": 19.4,
+    "off_rating": 107.3,
+    "def_rating": 88.0,
+    "pace": 102.11,
+    "efg_pct": 0.536,
+    "tov_pct": 0.098,
+    "oreb_pct": 0.146,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "I. Quickley",
+      "O. Agbaji",
+      "S. Barnes",
+      "G. Dick"
+    ],
+    "minutes": 46.0,
+    "net_rating": 10.9,
+    "off_rating": 120.0,
+    "def_rating": 109.1,
+    "pace": 104.3,
+    "efg_pct": 0.594,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.275,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Barrett",
+      "S. Barnes",
+      "O. Robinson",
+      "J. Walter",
+      "J. Shead"
+    ],
+    "minutes": 34.0,
+    "net_rating": 8.7,
+    "off_rating": 117.1,
+    "def_rating": 108.5,
+    "pace": 100.76,
+    "efg_pct": 0.507,
+    "tov_pct": 0.029,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "O. Agbaji",
+      "D. Mitchell",
+      "G. Dick"
+    ],
+    "minutes": 167.0,
+    "net_rating": 3.6,
+    "off_rating": 116.7,
+    "def_rating": 113.1,
+    "pace": 102.46,
+    "efg_pct": 0.532,
+    "tov_pct": 0.105,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "C. Boucher",
+      "O. Agbaji",
+      "D. Mitchell",
+      "G. Dick"
+    ],
+    "minutes": 33.0,
+    "net_rating": 2.7,
+    "off_rating": 112.3,
+    "def_rating": 109.6,
+    "pace": 106.48,
+    "efg_pct": 0.571,
+    "tov_pct": 0.151,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Barrett",
+      "I. Quickley",
+      "S. Barnes",
+      "O. Robinson",
+      "G. Dick"
+    ],
+    "minutes": 35.0,
+    "net_rating": -3.1,
+    "off_rating": 111.0,
+    "def_rating": 114.1,
+    "pace": 98.49,
+    "efg_pct": 0.525,
+    "tov_pct": 0.205,
+    "oreb_pct": 0.4,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "O. Agbaji",
+      "D. Mitchell",
+      "S. Barnes",
+      "G. Dick"
+    ],
+    "minutes": 52.0,
+    "net_rating": -3.3,
+    "off_rating": 105.7,
+    "def_rating": 109.0,
+    "pace": 99.62,
+    "efg_pct": 0.521,
+    "tov_pct": 0.198,
+    "oreb_pct": 0.352,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "D. Mitchell",
+      "S. Barnes",
+      "G. Dick"
+    ],
+    "minutes": 126.0,
+    "net_rating": -8.0,
+    "off_rating": 105.1,
+    "def_rating": 113.2,
+    "pace": 102.92,
+    "efg_pct": 0.551,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.279,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "I. Quickley",
+      "S. Barnes",
+      "G. Dick"
+    ],
+    "minutes": 107.0,
+    "net_rating": -9.2,
+    "off_rating": 99.6,
+    "def_rating": 108.8,
+    "pace": 103.36,
+    "efg_pct": 0.517,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "I. Quickley",
+      "O. Agbaji",
+      "G. Dick"
+    ],
+    "minutes": 39.0,
+    "net_rating": -14.9,
+    "off_rating": 107.1,
+    "def_rating": 122.0,
+    "pace": 102.73,
+    "efg_pct": 0.522,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Poeltl",
+      "R. Barrett",
+      "O. Agbaji",
+      "S. Barnes",
+      "G. Dick"
+    ],
+    "minutes": 61.0,
+    "net_rating": -16.3,
+    "off_rating": 99.2,
+    "def_rating": 115.6,
+    "pace": 105.5,
+    "efg_pct": 0.565,
+    "tov_pct": 0.212,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Barrett",
+      "I. Quickley",
+      "S. Barnes",
+      "G. Dick",
+      "J. Mogbo"
+    ],
+    "minutes": 37.0,
+    "net_rating": -38.1,
+    "off_rating": 97.4,
+    "def_rating": 135.5,
+    "pace": 99.94,
+    "efg_pct": 0.508,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.194,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

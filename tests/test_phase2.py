@@ -120,6 +120,135 @@ def test_player_identity_persist(temp_db_url, mock_roster_dict):
     assert result is True
 
 
+# ── ISSUE-010: PostgreSQL tracking_frames writes ─────────────────────────────
+
+def _make_tracking_rows(n: int = 3) -> list:
+    """Return n minimal tracking row dicts matching the CSV field layout."""
+    return [
+        {
+            "frame": i, "timestamp": i * 0.033, "player_id": i % 10,
+            "x_position": float(i * 10), "y_position": float(i * 5),
+            "velocity": 1.5, "acceleration": 0.1, "ball_possession": False,
+            "event": "none", "confidence": 0.9,
+            "team_spacing": 120.0, "paint_count_own": 1, "paint_count_opp": 0,
+        }
+        for i in range(n)
+    ]
+
+
+def test_pg_write_skips_without_database_url(monkeypatch):
+    """ISSUE-010: _pg_write_tracking_rows never calls get_connection when DATABASE_URL is unset."""
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+
+    import types, uuid as _uuid
+    pipeline = types.SimpleNamespace(game_id="0022400001", clip_id=str(_uuid.uuid4()))
+
+    connect_called = []
+    monkeypatch.setattr("src.data.db.get_connection", lambda: connect_called.append(1))
+
+    from src.pipeline.unified_pipeline import UnifiedPipeline
+    UnifiedPipeline._pg_write_tracking_rows(pipeline, _make_tracking_rows())
+
+    assert connect_called == [], "get_connection must not be called when DATABASE_URL is absent"
+
+
+def test_pg_write_skips_without_game_id(monkeypatch, tmp_path):
+    """ISSUE-010: _pg_write_tracking_rows skips when game_id is None."""
+    monkeypatch.setenv("DATABASE_URL", "postgresql://fake/db")
+
+    import types, uuid as _uuid
+    pipeline = types.SimpleNamespace(game_id=None, clip_id=str(_uuid.uuid4()))
+
+    from src.pipeline.unified_pipeline import UnifiedPipeline
+    # Should return early — no attempt to import psycopg2 / call get_connection
+    # We verify no exception is raised and nothing is written
+    UnifiedPipeline._pg_write_tracking_rows(pipeline, _make_tracking_rows())
+    # If we get here without error the guard worked
+
+
+def test_pg_write_maps_rows_to_correct_columns(monkeypatch):
+    """ISSUE-010: _pg_write_tracking_rows maps CSV keys → tracking_frames columns."""
+    monkeypatch.setenv("DATABASE_URL", "postgresql://fake/db")
+
+    import types, uuid as _uuid
+
+    captured: dict = {}
+
+    # Fake psycopg2 cursor / connection
+    class _FakeCursor:
+        def execute(self, *a, **kw): pass
+        def close(self): pass
+
+    class _FakeConn:
+        def cursor(self): return _FakeCursor()
+        def commit(self): pass
+        def close(self): pass
+
+    def _fake_execute_batch(cur, sql, rows, page_size=500):
+        captured["sql"]  = sql
+        captured["rows"] = rows
+
+    monkeypatch.setattr("src.data.db.get_connection", lambda: _FakeConn())
+
+    import psycopg2.extras as _extras
+    monkeypatch.setattr(_extras, "execute_batch", _fake_execute_batch)
+
+    from src.pipeline.unified_pipeline import UnifiedPipeline
+
+    clip = str(_uuid.uuid4())
+    pipeline = types.SimpleNamespace(game_id="0022400001", clip_id=clip)
+    source_rows = _make_tracking_rows(2)
+    UnifiedPipeline._pg_write_tracking_rows(pipeline, source_rows)
+
+    assert "rows" in captured, "execute_batch was never called"
+    pg_row = captured["rows"][0]
+
+    assert pg_row["game_id"]           == "0022400001"
+    assert pg_row["clip_id"]           == clip
+    assert pg_row["frame_number"]      == source_rows[0]["frame"]
+    assert pg_row["timestamp_sec"]     == source_rows[0]["timestamp"]
+    assert pg_row["tracker_player_id"] == source_rows[0]["player_id"]
+    assert pg_row["x_pos"]             == source_rows[0]["x_position"]
+    assert pg_row["y_pos"]             == source_rows[0]["y_position"]
+    assert pg_row["speed"]             == source_rows[0]["velocity"]
+    assert pg_row["tracker_version"]   == "v1"
+    assert "clip_id" in captured["sql"], "INSERT SQL must include clip_id column"
+
+
+def test_csv_appends_not_overwrites(tmp_path, monkeypatch):
+    """ISSUE-010: _export_csv must append rows across calls, not overwrite."""
+    import types, uuid as _uuid
+
+    # Redirect _DATA to tmp_path so no real files are touched
+    monkeypatch.setattr("src.pipeline.unified_pipeline._DATA", str(tmp_path))
+
+    from src.pipeline.unified_pipeline import UnifiedPipeline
+
+    clip = str(_uuid.uuid4())
+    pipeline = types.SimpleNamespace(game_id=None, clip_id=clip)
+    # Bind methods so _export_csv can delegate to them on a SimpleNamespace
+    pipeline._checkpoint_csv      = lambda rows: UnifiedPipeline._checkpoint_csv(pipeline, rows)
+    pipeline._tracking_csv_fields = UnifiedPipeline._tracking_csv_fields
+    pipeline._pg_write_tracking_rows = lambda rows: None
+
+    rows_a = _make_tracking_rows(5)
+    rows_b = _make_tracking_rows(3)
+
+    UnifiedPipeline._export_csv(pipeline, rows_a)
+    UnifiedPipeline._export_csv(pipeline, rows_b)
+
+    import csv as _csv
+    csv_path = tmp_path / "tracking_data.csv"
+    with open(csv_path, newline="") as f:
+        reader = _csv.DictReader(f)
+        all_rows = list(reader)
+
+    assert len(all_rows) == 8, (
+        f"Expected 8 appended rows (5+3), got {len(all_rows)}. "
+        "CSV is being overwritten instead of appended."
+    )
+
+
 # ── REQ-07: re-ID tiebreaker ──────────────────────────────────────────────────
 def test_reid_with_jersey_tiebreaker():
     """REQ-07: advanced_tracker has REID_TIE_BAND constant."""

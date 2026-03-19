@@ -1,0 +1,344 @@
+[
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "B. Ingram",
+      "Z. Williamson",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 35.0,
+    "net_rating": 32.6,
+    "off_rating": 116.7,
+    "def_rating": 84.1,
+    "pace": 96.25,
+    "efg_pct": 0.576,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Nance Jr.",
+      "Z. Williamson",
+      "N. Marshall",
+      "T. Murphy III",
+      "J. Alvarado"
+    ],
+    "minutes": 78.0,
+    "net_rating": 29.4,
+    "off_rating": 119.3,
+    "def_rating": 89.9,
+    "pace": 103.99,
+    "efg_pct": 0.607,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.263,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. McCollum",
+      "L. Nance Jr.",
+      "B. Ingram",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 69.0,
+    "net_rating": 24.3,
+    "off_rating": 117.8,
+    "def_rating": 93.5,
+    "pace": 99.19,
+    "efg_pct": 0.71,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.087,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "B. Ingram",
+      "Z. Williamson",
+      "H. Jones",
+      "D. Daniels"
+    ],
+    "minutes": 89.0,
+    "net_rating": 20.7,
+    "off_rating": 134.6,
+    "def_rating": 113.9,
+    "pace": 99.83,
+    "efg_pct": 0.659,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. McCollum",
+      "Z. Williamson",
+      "H. Jones",
+      "T. Murphy III",
+      "D. Daniels"
+    ],
+    "minutes": 30.0,
+    "net_rating": 16.3,
+    "off_rating": 117.9,
+    "def_rating": 101.6,
+    "pace": 102.79,
+    "efg_pct": 0.526,
+    "tov_pct": 0.045,
+    "oreb_pct": 0.206,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "C. McCollum",
+      "B. Ingram",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 108.0,
+    "net_rating": 15.7,
+    "off_rating": 112.2,
+    "def_rating": 96.4,
+    "pace": 100.49,
+    "efg_pct": 0.57,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.229,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. McCollum",
+      "L. Nance Jr.",
+      "Z. Williamson",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 100.0,
+    "net_rating": 15.5,
+    "off_rating": 124.2,
+    "def_rating": 108.8,
+    "pace": 96.46,
+    "efg_pct": 0.576,
+    "tov_pct": 0.096,
+    "oreb_pct": 0.245,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "B. Ingram",
+      "Z. Williamson",
+      "D. Daniels",
+      "J. Hawkins"
+    ],
+    "minutes": 32.0,
+    "net_rating": 15.1,
+    "off_rating": 131.7,
+    "def_rating": 116.7,
+    "pace": 98.24,
+    "efg_pct": 0.652,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.259,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Nance Jr.",
+      "B. Ingram",
+      "N. Marshall",
+      "T. Murphy III",
+      "J. Alvarado"
+    ],
+    "minutes": 30.0,
+    "net_rating": 1.7,
+    "off_rating": 109.2,
+    "def_rating": 107.6,
+    "pace": 103.23,
+    "efg_pct": 0.582,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.269,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "C. McCollum",
+      "B. Ingram",
+      "Z. Williamson",
+      "T. Murphy III"
+    ],
+    "minutes": 48.0,
+    "net_rating": 1.6,
+    "off_rating": 120.8,
+    "def_rating": 119.2,
+    "pace": 99.63,
+    "efg_pct": 0.587,
+    "tov_pct": 0.099,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "C. McCollum",
+      "Z. Williamson",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 148.0,
+    "net_rating": 1.0,
+    "off_rating": 110.1,
+    "def_rating": 109.1,
+    "pace": 103.49,
+    "efg_pct": 0.529,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.227,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valan\u010di\u016bnas",
+      "C. McCollum",
+      "B. Ingram",
+      "Z. Williamson",
+      "H. Jones"
+    ],
+    "minutes": 424.0,
+    "net_rating": -1.1,
+    "off_rating": 115.2,
+    "def_rating": 116.2,
+    "pace": 102.78,
+    "efg_pct": 0.574,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.282,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "C. McCollum",
+      "H. Jones",
+      "T. Murphy III",
+      "D. Daniels"
+    ],
+    "minutes": 38.0,
+    "net_rating": -1.2,
+    "off_rating": 106.7,
+    "def_rating": 107.9,
+    "pace": 95.81,
+    "efg_pct": 0.507,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "C. McCollum",
+      "M. Ryan",
+      "H. Jones",
+      "J. Hawkins"
+    ],
+    "minutes": 41.0,
+    "net_rating": -2.1,
+    "off_rating": 108.2,
+    "def_rating": 110.3,
+    "pace": 101.09,
+    "efg_pct": 0.577,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. McCollum",
+      "L. Nance Jr.",
+      "B. Ingram",
+      "Z. Williamson",
+      "H. Jones"
+    ],
+    "minutes": 150.0,
+    "net_rating": -4.4,
+    "off_rating": 106.5,
+    "def_rating": 110.9,
+    "pace": 99.77,
+    "efg_pct": 0.527,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.255,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "B. Ingram",
+      "H. Jones",
+      "D. Daniels",
+      "J. Hawkins"
+    ],
+    "minutes": 38.0,
+    "net_rating": -7.5,
+    "off_rating": 101.3,
+    "def_rating": 108.8,
+    "pace": 101.13,
+    "efg_pct": 0.473,
+    "tov_pct": 0.089,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Valanciunas",
+      "B. Ingram",
+      "N. Marshall",
+      "T. Murphy III",
+      "J. Alvarado"
+    ],
+    "minutes": 37.0,
+    "net_rating": -8.4,
+    "off_rating": 95.2,
+    "def_rating": 103.6,
+    "pace": 107.77,
+    "efg_pct": 0.573,
+    "tov_pct": 0.217,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. McCollum",
+      "B. Ingram",
+      "Z. Williamson",
+      "H. Jones",
+      "T. Murphy III"
+    ],
+    "minutes": 34.0,
+    "net_rating": -22.6,
+    "off_rating": 87.0,
+    "def_rating": 109.6,
+    "pace": 105.71,
+    "efg_pct": 0.433,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.263,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

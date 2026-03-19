@@ -1,0 +1,325 @@
+[
+  {
+    "lineup": [
+      "J. Butler III",
+      "K. Looney",
+      "B. Hield",
+      "G. Santos",
+      "B. Podziemski"
+    ],
+    "minutes": 31.0,
+    "net_rating": 47.1,
+    "off_rating": 131.3,
+    "def_rating": 84.1,
+    "pace": 98.26,
+    "efg_pct": 0.549,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.412,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler III",
+      "D. Green",
+      "B. Hield",
+      "B. Podziemski",
+      "Q. Post"
+    ],
+    "minutes": 42.0,
+    "net_rating": 34.2,
+    "off_rating": 124.4,
+    "def_rating": 90.2,
+    "pace": 95.07,
+    "efg_pct": 0.629,
+    "tov_pct": 0.151,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler III",
+      "D. Green",
+      "G. Payton II",
+      "M. Moody",
+      "Q. Post"
+    ],
+    "minutes": 30.0,
+    "net_rating": 21.7,
+    "off_rating": 126.8,
+    "def_rating": 105.1,
+    "pace": 92.41,
+    "efg_pct": 0.622,
+    "tov_pct": 0.071,
+    "oreb_pct": 0.16,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "K. Looney",
+      "B. Hield",
+      "G. Payton II",
+      "J. Kuminga"
+    ],
+    "minutes": 53.0,
+    "net_rating": 21.2,
+    "off_rating": 119.5,
+    "def_rating": 98.3,
+    "pace": 106.77,
+    "efg_pct": 0.604,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.254,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "D. Green",
+      "B. Hield",
+      "G. Payton II",
+      "J. Kuminga"
+    ],
+    "minutes": 38.0,
+    "net_rating": 21.0,
+    "off_rating": 122.2,
+    "def_rating": 101.2,
+    "pace": 104.94,
+    "efg_pct": 0.65,
+    "tov_pct": 0.173,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "K. Looney",
+      "B. Hield",
+      "J. Kuminga",
+      "G. Santos"
+    ],
+    "minutes": 36.0,
+    "net_rating": 16.5,
+    "off_rating": 115.2,
+    "def_rating": 98.7,
+    "pace": 103.76,
+    "efg_pct": 0.515,
+    "tov_pct": 0.165,
+    "oreb_pct": 0.436,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "J. Butler III",
+      "D. Green",
+      "M. Moody",
+      "B. Podziemski"
+    ],
+    "minutes": 211.0,
+    "net_rating": 16.4,
+    "off_rating": 120.6,
+    "def_rating": 104.2,
+    "pace": 103.88,
+    "efg_pct": 0.592,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.26,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler III",
+      "D. Green",
+      "M. Moody",
+      "B. Podziemski",
+      "Q. Post"
+    ],
+    "minutes": 125.0,
+    "net_rating": 16.0,
+    "off_rating": 109.6,
+    "def_rating": 93.6,
+    "pace": 95.99,
+    "efg_pct": 0.536,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.252,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "K. Looney",
+      "B. Hield",
+      "G. Payton II",
+      "M. Moody"
+    ],
+    "minutes": 31.0,
+    "net_rating": 10.9,
+    "off_rating": 126.9,
+    "def_rating": 115.9,
+    "pace": 106.43,
+    "efg_pct": 0.667,
+    "tov_pct": 0.075,
+    "oreb_pct": 0.217,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "K. Looney",
+      "B. Hield",
+      "G. Payton II",
+      "G. Santos"
+    ],
+    "minutes": 38.0,
+    "net_rating": 10.2,
+    "off_rating": 132.6,
+    "def_rating": 122.4,
+    "pace": 106.88,
+    "efg_pct": 0.689,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.344,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "D. Green",
+      "A. Wiggins",
+      "L. Waters III",
+      "T. Jackson-Davis"
+    ],
+    "minutes": 76.0,
+    "net_rating": 6.7,
+    "off_rating": 124.1,
+    "def_rating": 117.4,
+    "pace": 102.3,
+    "efg_pct": 0.628,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Looney",
+      "B. Hield",
+      "J. Kuminga",
+      "M. Moody",
+      "B. Podziemski"
+    ],
+    "minutes": 31.0,
+    "net_rating": 4.5,
+    "off_rating": 95.6,
+    "def_rating": 91.0,
+    "pace": 105.19,
+    "efg_pct": 0.444,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.31,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "D. Green",
+      "A. Wiggins",
+      "B. Hield",
+      "J. Kuminga"
+    ],
+    "minutes": 36.0,
+    "net_rating": 3.8,
+    "off_rating": 107.4,
+    "def_rating": 103.6,
+    "pace": 109.89,
+    "efg_pct": 0.596,
+    "tov_pct": 0.16,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "D. Green",
+      "A. Wiggins",
+      "J. Kuminga",
+      "T. Jackson-Davis"
+    ],
+    "minutes": 34.0,
+    "net_rating": -2.6,
+    "off_rating": 111.5,
+    "def_rating": 114.1,
+    "pace": 109.15,
+    "efg_pct": 0.567,
+    "tov_pct": 0.218,
+    "oreb_pct": 0.324,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "D. Green",
+      "D. Schr\u00f6der",
+      "A. Wiggins",
+      "T. Jackson-Davis"
+    ],
+    "minutes": 74.0,
+    "net_rating": -8.2,
+    "off_rating": 97.4,
+    "def_rating": 105.7,
+    "pace": 102.76,
+    "efg_pct": 0.504,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "J. Butler III",
+      "D. Green",
+      "B. Hield",
+      "M. Moody"
+    ],
+    "minutes": 33.0,
+    "net_rating": -8.3,
+    "off_rating": 122.2,
+    "def_rating": 130.6,
+    "pace": 104.17,
+    "efg_pct": 0.621,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Curry",
+      "J. Butler III",
+      "D. Green",
+      "M. Moody",
+      "Q. Post"
+    ],
+    "minutes": 44.0,
+    "net_rating": -19.1,
+    "off_rating": 97.9,
+    "def_rating": 117.0,
+    "pace": 104.77,
+    "efg_pct": 0.519,
+    "tov_pct": 0.144,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

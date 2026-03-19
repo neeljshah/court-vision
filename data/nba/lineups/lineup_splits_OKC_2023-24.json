@@ -1,0 +1,363 @@
+[
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "I. Joe",
+      "J. Giddey",
+      "C. Holmgren"
+    ],
+    "minutes": 40.0,
+    "net_rating": 53.2,
+    "off_rating": 131.8,
+    "def_rating": 78.7,
+    "pace": 105.08,
+    "efg_pct": 0.627,
+    "tov_pct": 0.148,
+    "oreb_pct": 0.382,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Hayward",
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "I. Joe",
+      "C. Wallace"
+    ],
+    "minutes": 30.0,
+    "net_rating": 46.6,
+    "off_rating": 144.8,
+    "def_rating": 98.3,
+    "pace": 91.57,
+    "efg_pct": 0.616,
+    "tov_pct": 0.069,
+    "oreb_pct": 0.448,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "I. Joe",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 55.0,
+    "net_rating": 35.6,
+    "off_rating": 124.0,
+    "def_rating": 88.3,
+    "pace": 105.68,
+    "efg_pct": 0.612,
+    "tov_pct": 0.124,
+    "oreb_pct": 0.26,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Dort",
+      "J. Giddey",
+      "A. Wiggins",
+      "C. Holmgren",
+      "J. Williams"
+    ],
+    "minutes": 33.0,
+    "net_rating": 33.1,
+    "off_rating": 140.9,
+    "def_rating": 107.8,
+    "pace": 95.71,
+    "efg_pct": 0.667,
+    "tov_pct": 0.076,
+    "oreb_pct": 0.36,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "I. Joe",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 32.0,
+    "net_rating": 31.1,
+    "off_rating": 135.1,
+    "def_rating": 104.1,
+    "pace": 111.64,
+    "efg_pct": 0.718,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.12,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "I. Joe",
+      "C. Holmgren",
+      "C. Wallace"
+    ],
+    "minutes": 31.0,
+    "net_rating": 28.6,
+    "off_rating": 135.3,
+    "def_rating": 106.7,
+    "pace": 111.98,
+    "efg_pct": 0.741,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.208,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "A. Wiggins",
+      "C. Holmgren",
+      "J. Williams"
+    ],
+    "minutes": 34.0,
+    "net_rating": 20.2,
+    "off_rating": 111.0,
+    "def_rating": 90.8,
+    "pace": 113.76,
+    "efg_pct": 0.563,
+    "tov_pct": 0.055,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "J. Giddey",
+      "C. Holmgren",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 71.0,
+    "net_rating": 16.2,
+    "off_rating": 115.0,
+    "def_rating": 98.8,
+    "pace": 111.39,
+    "efg_pct": 0.575,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "I. Joe",
+      "C. Holmgren",
+      "J. Williams"
+    ],
+    "minutes": 101.0,
+    "net_rating": 16.0,
+    "off_rating": 122.3,
+    "def_rating": 106.3,
+    "pace": 110.04,
+    "efg_pct": 0.57,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.248,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "V. Micic",
+      "A. Wiggins",
+      "C. Holmgren",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 62.0,
+    "net_rating": 15.7,
+    "off_rating": 115.7,
+    "def_rating": 100.0,
+    "pace": 98.79,
+    "efg_pct": 0.598,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "L. Dort",
+      "J. Giddey",
+      "J. Williams"
+    ],
+    "minutes": 31.0,
+    "net_rating": 14.7,
+    "off_rating": 118.8,
+    "def_rating": 104.2,
+    "pace": 110.05,
+    "efg_pct": 0.556,
+    "tov_pct": 0.058,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "I. Joe",
+      "A. Wiggins",
+      "C. Wallace"
+    ],
+    "minutes": 37.0,
+    "net_rating": 11.8,
+    "off_rating": 107.1,
+    "def_rating": 95.3,
+    "pace": 108.49,
+    "efg_pct": 0.537,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Giddey",
+      "C. Holmgren",
+      "J. Williams"
+    ],
+    "minutes": 799.0,
+    "net_rating": 10.2,
+    "off_rating": 119.8,
+    "def_rating": 109.5,
+    "pace": 103.48,
+    "efg_pct": 0.589,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.217,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "I. Joe",
+      "A. Wiggins",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 42.0,
+    "net_rating": 5.8,
+    "off_rating": 123.3,
+    "def_rating": 117.6,
+    "pace": 104.05,
+    "efg_pct": 0.596,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Giddey",
+      "C. Holmgren",
+      "C. Wallace"
+    ],
+    "minutes": 60.0,
+    "net_rating": 4.0,
+    "off_rating": 124.6,
+    "def_rating": 120.6,
+    "pace": 102.68,
+    "efg_pct": 0.634,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.226,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Giddey",
+      "A. Wiggins",
+      "C. Holmgren",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 86.0,
+    "net_rating": 2.9,
+    "off_rating": 121.2,
+    "def_rating": 118.3,
+    "pace": 99.84,
+    "efg_pct": 0.649,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Giddey",
+      "J. Williams",
+      "J. Williams"
+    ],
+    "minutes": 32.0,
+    "net_rating": -2.5,
+    "off_rating": 113.5,
+    "def_rating": 116.0,
+    "pace": 111.5,
+    "efg_pct": 0.544,
+    "tov_pct": 0.081,
+    "oreb_pct": 0.243,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "C. Holmgren",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 35.0,
+    "net_rating": -3.4,
+    "off_rating": 107.6,
+    "def_rating": 111.0,
+    "pace": 111.5,
+    "efg_pct": 0.578,
+    "tov_pct": 0.089,
+    "oreb_pct": 0.219,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Dort",
+      "J. Giddey",
+      "C. Holmgren",
+      "J. Williams",
+      "C. Wallace"
+    ],
+    "minutes": 32.0,
+    "net_rating": -6.7,
+    "off_rating": 113.0,
+    "def_rating": 119.7,
+    "pace": 105.54,
+    "efg_pct": 0.652,
+    "tov_pct": 0.217,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

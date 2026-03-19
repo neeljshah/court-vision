@@ -15,22 +15,22 @@ import math
 import sys
 import uuid
 
-from tracking.database import get_connection
-from features.spacing import compute_spacing
-from features.defensive_pressure import compute_defensive_pressure
-from features.off_ball_events import detect_off_ball_events
-from features.pick_and_roll import detect_pick_and_roll
-from features.passing_network import build_passing_network, export_network_graph
-from features.momentum import compute_momentum
-from features.play_recognition import detect_plays
-from features.defensive_scheme import analyze_defensive_scheme
-from features.space_control import compute_space_control
-from features.drive_analysis import detect_drives
-from features.shot_creation import classify_shot_creation
-from features.rebound_positioning import estimate_rebound_positioning
-from features.game_flow import compute_game_flow
-from features.micro_timing import compute_micro_timing
-from features.lineup_synergy import compute_lineup_synergy
+from src.data.db import get_connection
+from src.analytics.spacing import compute_spacing
+from src.analytics.player_defensive_pressure import compute_player_defensive_pressure as compute_defensive_pressure
+from src.analytics.off_ball_events import detect_off_ball_events
+from src.analytics.pick_and_roll import detect_pick_and_roll
+from src.analytics.passing_network import build_passing_network, export_network_graph
+from src.analytics.momentum_events import compute_momentum
+from src.analytics.play_recognition import detect_plays
+from src.analytics.defensive_scheme import analyze_defensive_scheme
+from src.analytics.space_control import compute_space_control
+from src.analytics.drive_analysis import detect_drives
+from src.analytics.shot_creation import classify_shot_creation
+from src.analytics.rebound_positioning import estimate_rebound_positioning
+from src.analytics.game_flow import compute_game_flow
+from src.analytics.micro_timing import compute_micro_timing
+from src.analytics.lineup_synergy import compute_lineup_synergy
 
 logger = logging.getLogger(__name__)
 

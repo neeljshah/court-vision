@@ -1,5 +1,12 @@
+"""Analytics API router — queries PostgreSQL tracking database."""
+import os
+import sys
+
 from fastapi import APIRouter, HTTPException, Query
-from tracking.database import get_connection
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.data.db import get_connection
 
 router = APIRouter()
 
@@ -30,24 +37,13 @@ def shot_chart(game_id: str = Query(..., description="Game UUID")):
 
 @router.get("/lineup-stats")
 def lineup_stats(
-    track_ids: str = Query(..., description="Comma-separated list of 5 track IDs, e.g. '1,2,3,4,5'"),
+    track_ids: str = Query(..., description="Comma-separated list of 5 track IDs"),
 ):
-    """Score a 5-player lineup by EPA and closing speed."""
-    from models.lineup_optimizer import LineupOptimizer
-    try:
-        lineup = [int(t.strip()) for t in track_ids.split(",")]
-        if len(lineup) != 5:
-            raise HTTPException(status_code=422, detail="Exactly 5 track_ids required")
-        model = LineupOptimizer.load("lineup_optimizer")
-        result = model.predict({"lineup": lineup})
-        result["lineup"] = lineup
-        return result
-    except HTTPException:
-        raise
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=f"Model artifact missing: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    """Score a 5-player lineup. NOTE: Lineup optimizer requires Phase 6 CV data."""
+    raise HTTPException(
+        status_code=503,
+        detail="Lineup optimizer not yet available. Requires 20+ full games of CV data (Phase 6)."
+    )
 
 
 @router.get("/tracking")

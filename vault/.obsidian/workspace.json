@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Sessions/Session-2026-03-15.md",
+                "file": "Concepts/Prediction Pipeline.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Session-2026-03-15"
+              "title": "Prediction Pipeline"
             }
           }
         ]
@@ -182,7 +182,12 @@
   },
   "active": "83f430a9b9dc0808",
   "lastOpenFiles": [
+    "Concepts/Key Metrics.md",
+    "Concepts/Complete Model Catalog.md",
+    "Concepts/Complete Data Sources.md",
+    "Sessions/Session-2026-03-18.md",
     "00 - Home.md",
+    "Sessions/Session-2026-03-15.md",
     "Roadmap.md",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773616952632",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773616395598",
@@ -194,12 +199,10 @@
     "Improvements/Tracker Improvements Log.md.tmp.55244.1773613492882",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773612747250",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773612236669",
-    "Sessions/Session-2026-03-15.md",
     "Project Vision.md",
     "Sessions/Session-2026-03-10.md",
     "Pipeline/System Architecture.md",
     "Improvements/Tracker Improvements Log.md",
-    "Concepts/Key Metrics.md",
     "Concepts/Basketball CV Concepts.md",
     "Sessions/Session-2026-03-12.md",
     "Sessions/Session-2026-03-11.md",

@@ -1,0 +1,268 @@
+[
+  {
+    "lineup": [
+      "F. VanVleet",
+      "J. Green",
+      "A. Sengun",
+      "J. Smith Jr.",
+      "C. Whitmore"
+    ],
+    "minutes": 31.0,
+    "net_rating": 13.5,
+    "off_rating": 111.9,
+    "def_rating": 98.4,
+    "pace": 102.17,
+    "efg_pct": 0.516,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "F. VanVleet",
+      "D. Brooks",
+      "A. Holiday",
+      "J. Tate",
+      "A. Sengun"
+    ],
+    "minutes": 34.0,
+    "net_rating": 8.1,
+    "off_rating": 93.6,
+    "def_rating": 85.5,
+    "pace": 107.18,
+    "efg_pct": 0.478,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Green",
+      "A. Sengun"
+    ],
+    "minutes": 77.0,
+    "net_rating": 5.0,
+    "off_rating": 120.9,
+    "def_rating": 115.9,
+    "pace": 101.95,
+    "efg_pct": 0.541,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.179,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Green",
+      "J. Smith Jr.",
+      "A. Thompson"
+    ],
+    "minutes": 183.0,
+    "net_rating": 4.8,
+    "off_rating": 122.3,
+    "def_rating": 117.5,
+    "pace": 100.46,
+    "efg_pct": 0.594,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.251,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Landale",
+      "J. Green",
+      "A. Thompson"
+    ],
+    "minutes": 65.0,
+    "net_rating": 1.5,
+    "off_rating": 106.2,
+    "def_rating": 104.7,
+    "pace": 109.23,
+    "efg_pct": 0.525,
+    "tov_pct": 0.171,
+    "oreb_pct": 0.318,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Green",
+      "A. Sengun",
+      "J. Smith Jr."
+    ],
+    "minutes": 754.0,
+    "net_rating": 0.4,
+    "off_rating": 112.2,
+    "def_rating": 111.7,
+    "pace": 100.16,
+    "efg_pct": 0.541,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.256,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "F. VanVleet",
+      "J. Green",
+      "J. Tate",
+      "A. Sengun",
+      "J. Smith Jr."
+    ],
+    "minutes": 175.0,
+    "net_rating": -2.5,
+    "off_rating": 110.6,
+    "def_rating": 113.2,
+    "pace": 99.19,
+    "efg_pct": 0.537,
+    "tov_pct": 0.106,
+    "oreb_pct": 0.199,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "A. Holiday",
+      "J. Green",
+      "J. Tate",
+      "T. Eason"
+    ],
+    "minutes": 40.0,
+    "net_rating": -5.6,
+    "off_rating": 98.9,
+    "def_rating": 104.5,
+    "pace": 106.33,
+    "efg_pct": 0.528,
+    "tov_pct": 0.165,
+    "oreb_pct": 0.357,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "F. VanVleet",
+      "J. Green",
+      "J. Tate",
+      "A. Sengun"
+    ],
+    "minutes": 32.0,
+    "net_rating": -6.2,
+    "off_rating": 130.8,
+    "def_rating": 136.9,
+    "pace": 98.24,
+    "efg_pct": 0.759,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Smith Jr.",
+      "T. Eason"
+    ],
+    "minutes": 35.0,
+    "net_rating": -9.0,
+    "off_rating": 104.1,
+    "def_rating": 113.2,
+    "pace": 102.14,
+    "efg_pct": 0.536,
+    "tov_pct": 0.178,
+    "oreb_pct": 0.355,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Brooks",
+      "J. Green",
+      "A. Sengun",
+      "J. Smith Jr.",
+      "A. Thompson"
+    ],
+    "minutes": 80.0,
+    "net_rating": -12.2,
+    "off_rating": 115.0,
+    "def_rating": 127.2,
+    "pace": 99.31,
+    "efg_pct": 0.506,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.36,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "A. Holiday",
+      "J. Smith Jr.",
+      "A. Thompson",
+      "C. Whitmore"
+    ],
+    "minutes": 79.0,
+    "net_rating": -12.3,
+    "off_rating": 100.0,
+    "def_rating": 112.3,
+    "pace": 104.15,
+    "efg_pct": 0.444,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.283,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Brooks",
+      "A. Holiday",
+      "J. Green",
+      "A. Sengun",
+      "J. Smith Jr."
+    ],
+    "minutes": 34.0,
+    "net_rating": -12.9,
+    "off_rating": 124.6,
+    "def_rating": 137.5,
+    "pace": 98.55,
+    "efg_pct": 0.594,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.242,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Green",
+      "F. VanVleet",
+      "D. Brooks",
+      "J. Green",
+      "J. Smith Jr."
+    ],
+    "minutes": 62.0,
+    "net_rating": -20.9,
+    "off_rating": 99.2,
+    "def_rating": 120.2,
+    "pace": 101.82,
+    "efg_pct": 0.461,
+    "tov_pct": 0.105,
+    "oreb_pct": 0.288,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

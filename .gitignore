@@ -28,3 +28,30 @@ conda-env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Debug / temp images
+data/frame_*.png
+data/debug_*.png
+data/tracking_check.png
+
+# Runtime logs and state
+data/*.log
+data/*.jsonl
+data/loop_*.json
+data/smart_loop_log.jsonl
+
+# YOLO model weights (large binaries)
+models/weights/*.pt
+models/weights/*.onnx
+*.pt
+*.onnx
+
+# IDE
+.windsurf/
+
+# Misc
+install_log.txt
+python
+
+# Benchmark run reports
+data/benchmarks/report_*.json

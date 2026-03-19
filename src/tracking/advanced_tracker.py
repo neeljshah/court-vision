@@ -728,7 +728,16 @@ class AdvancedFeetDetector(FeetDetector):
 
     # ── main override ─────────────────────────────────────────────────────
 
-    def get_players_pos(self, M, M1, frame, timestamp, map_2d):
+    def get_players_pos(self, M, M1, frame, timestamp, map_2d,
+                        skip_jersey_ocr: bool = False):
+        """Track players in one frame and return annotated frame + map images.
+
+        Args:
+            skip_jersey_ocr: When True, suppress EasyOCR jersey reads for this
+                frame.  Set True by the pipeline during confirmed non-live sequences
+                (replays, halftime) when _ball_track_suspended is active — saves
+                ~20-30% compute on replay-heavy clips with no identity benefit.
+        """
         # Clear per-frame kpts capture dict
         self._matched_kpts_this_frame = {}
 
