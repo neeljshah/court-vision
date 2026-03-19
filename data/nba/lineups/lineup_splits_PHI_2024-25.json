@@ -1,0 +1,344 @@
+[
+  {
+    "lineup": [
+      "P. George",
+      "J. Embiid",
+      "K. Oubre Jr.",
+      "T. Maxey",
+      "K. Martin"
+    ],
+    "minutes": 32.0,
+    "net_rating": 29.1,
+    "off_rating": 125.8,
+    "def_rating": 96.7,
+    "pace": 92.54,
+    "efg_pct": 0.58,
+    "tov_pct": 0.081,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "C. Martin",
+      "T. Maxey"
+    ],
+    "minutes": 72.0,
+    "net_rating": 24.7,
+    "off_rating": 128.7,
+    "def_rating": 103.9,
+    "pace": 100.5,
+    "efg_pct": 0.575,
+    "tov_pct": 0.093,
+    "oreb_pct": 0.318,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey",
+      "R. Council IV",
+      "J. Edwards"
+    ],
+    "minutes": 47.0,
+    "net_rating": 20.3,
+    "off_rating": 129.9,
+    "def_rating": 109.6,
+    "pace": 97.24,
+    "efg_pct": 0.658,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey",
+      "K. Martin"
+    ],
+    "minutes": 32.0,
+    "net_rating": 15.7,
+    "off_rating": 123.8,
+    "def_rating": 108.1,
+    "pace": 95.04,
+    "efg_pct": 0.585,
+    "tov_pct": 0.048,
+    "oreb_pct": 0.241,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "E. Gordon",
+      "P. George",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey"
+    ],
+    "minutes": 70.0,
+    "net_rating": -1.5,
+    "off_rating": 114.1,
+    "def_rating": 115.6,
+    "pace": 97.21,
+    "efg_pct": 0.583,
+    "tov_pct": 0.176,
+    "oreb_pct": 0.21,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Walker IV",
+      "Q. Grimes",
+      "J. Butler",
+      "M. Bagley",
+      "A. Bona"
+    ],
+    "minutes": 51.0,
+    "net_rating": -1.8,
+    "off_rating": 111.8,
+    "def_rating": 113.6,
+    "pace": 104.21,
+    "efg_pct": 0.582,
+    "tov_pct": 0.155,
+    "oreb_pct": 0.271,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey",
+      "K. Martin",
+      "J. McCain"
+    ],
+    "minutes": 30.0,
+    "net_rating": -2.2,
+    "off_rating": 112.1,
+    "def_rating": 114.3,
+    "pace": 92.64,
+    "efg_pct": 0.564,
+    "tov_pct": 0.19,
+    "oreb_pct": 0.414,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey",
+      "J. Edwards"
+    ],
+    "minutes": 47.0,
+    "net_rating": -3.2,
+    "off_rating": 115.8,
+    "def_rating": 119.0,
+    "pace": 102.46,
+    "efg_pct": 0.538,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.255,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "J. Embiid",
+      "K. Oubre Jr.",
+      "Q. Grimes",
+      "T. Maxey"
+    ],
+    "minutes": 45.0,
+    "net_rating": -5.2,
+    "off_rating": 103.2,
+    "def_rating": 108.3,
+    "pace": 102.55,
+    "efg_pct": 0.449,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.296,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "J. Embiid",
+      "K. Oubre Jr.",
+      "C. Martin",
+      "T. Maxey"
+    ],
+    "minutes": 54.0,
+    "net_rating": -6.0,
+    "off_rating": 101.7,
+    "def_rating": 107.7,
+    "pace": 104.23,
+    "efg_pct": 0.478,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.204,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "P. George",
+      "J. Embiid",
+      "C. Martin",
+      "J. McCain"
+    ],
+    "minutes": 36.0,
+    "net_rating": -9.3,
+    "off_rating": 96.1,
+    "def_rating": 105.4,
+    "pace": 100.18,
+    "efg_pct": 0.5,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.139,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "E. Gordon",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "T. Maxey",
+      "J. Edwards"
+    ],
+    "minutes": 70.0,
+    "net_rating": -12.6,
+    "off_rating": 109.4,
+    "def_rating": 122.0,
+    "pace": 101.92,
+    "efg_pct": 0.556,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.203,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "A. Drummond",
+      "K. Oubre Jr.",
+      "C. Martin",
+      "T. Maxey"
+    ],
+    "minutes": 47.0,
+    "net_rating": -15.6,
+    "off_rating": 90.5,
+    "def_rating": 106.1,
+    "pace": 97.76,
+    "efg_pct": 0.448,
+    "tov_pct": 0.2,
+    "oreb_pct": 0.269,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Lowry",
+      "P. George",
+      "A. Drummond",
+      "K. Oubre Jr.",
+      "C. Martin"
+    ],
+    "minutes": 31.0,
+    "net_rating": -18.5,
+    "off_rating": 83.1,
+    "def_rating": 101.5,
+    "pace": 100.75,
+    "efg_pct": 0.445,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.162,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "J. Embiid",
+      "K. Oubre Jr.",
+      "T. Maxey",
+      "J. Edwards"
+    ],
+    "minutes": 36.0,
+    "net_rating": -18.7,
+    "off_rating": 113.3,
+    "def_rating": 132.1,
+    "pace": 100.74,
+    "efg_pct": 0.595,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.176,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "E. Gordon",
+      "A. Drummond",
+      "K. Oubre Jr.",
+      "C. Martin",
+      "T. Maxey"
+    ],
+    "minutes": 34.0,
+    "net_rating": -19.7,
+    "off_rating": 97.2,
+    "def_rating": 116.9,
+    "pace": 100.56,
+    "efg_pct": 0.429,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "K. Oubre Jr.",
+      "G. Yabusele",
+      "Q. Grimes",
+      "T. Maxey"
+    ],
+    "minutes": 31.0,
+    "net_rating": -20.7,
+    "off_rating": 108.8,
+    "def_rating": 129.5,
+    "pace": 100.16,
+    "efg_pct": 0.58,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.267,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "A. Drummond",
+      "K. Oubre Jr.",
+      "Q. Grimes",
+      "T. Maxey"
+    ],
+    "minutes": 36.0,
+    "net_rating": -28.8,
+    "off_rating": 103.7,
+    "def_rating": 132.5,
+    "pace": 106.69,
+    "efg_pct": 0.521,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

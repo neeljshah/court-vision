@@ -1,0 +1,420 @@
+[
+  {
+    "lineup": [
+      "R. Jackson",
+      "J. Holiday",
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "M. Porter Jr."
+    ],
+    "minutes": 42.0,
+    "net_rating": 41.9,
+    "off_rating": 160.5,
+    "def_rating": 118.6,
+    "pace": 97.15,
+    "efg_pct": 0.778,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.379,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "J. Murray",
+      "M. Porter Jr.",
+      "C. Braun"
+    ],
+    "minutes": 35.0,
+    "net_rating": 38.2,
+    "off_rating": 146.6,
+    "def_rating": 108.3,
+    "pace": 98.21,
+    "efg_pct": 0.692,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "C. Braun"
+    ],
+    "minutes": 48.0,
+    "net_rating": 34.9,
+    "off_rating": 117.6,
+    "def_rating": 82.7,
+    "pace": 105.38,
+    "efg_pct": 0.649,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "M. Porter Jr.",
+      "C. Gillespie"
+    ],
+    "minutes": 53.0,
+    "net_rating": 32.0,
+    "off_rating": 131.1,
+    "def_rating": 99.1,
+    "pace": 96.29,
+    "efg_pct": 0.581,
+    "tov_pct": 0.068,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "N. Jokic",
+      "J. Murray",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 30.0,
+    "net_rating": 23.2,
+    "off_rating": 102.9,
+    "def_rating": 79.7,
+    "pace": 110.54,
+    "efg_pct": 0.525,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.353,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "J. Holiday",
+      "N. Jokic",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 50.0,
+    "net_rating": 15.0,
+    "off_rating": 109.3,
+    "def_rating": 94.4,
+    "pace": 102.2,
+    "efg_pct": 0.543,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.415,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "J. Murray",
+      "M. Porter Jr."
+    ],
+    "minutes": 958.0,
+    "net_rating": 13.6,
+    "off_rating": 125.9,
+    "def_rating": 112.3,
+    "pace": 97.39,
+    "efg_pct": 0.597,
+    "tov_pct": 0.117,
+    "oreb_pct": 0.32,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Holiday",
+      "A. Gordon",
+      "N. Jokic",
+      "J. Murray",
+      "M. Porter Jr."
+    ],
+    "minutes": 66.0,
+    "net_rating": 12.0,
+    "off_rating": 116.5,
+    "def_rating": 104.5,
+    "pace": 98.87,
+    "efg_pct": 0.543,
+    "tov_pct": 0.086,
+    "oreb_pct": 0.303,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "M. Porter Jr."
+    ],
+    "minutes": 444.0,
+    "net_rating": 5.8,
+    "off_rating": 111.1,
+    "def_rating": 105.3,
+    "pace": 104.85,
+    "efg_pct": 0.548,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.264,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "J. Murray",
+      "M. Porter Jr.",
+      "P. Watson"
+    ],
+    "minutes": 64.0,
+    "net_rating": 3.6,
+    "off_rating": 117.3,
+    "def_rating": 113.6,
+    "pace": 101.1,
+    "efg_pct": 0.662,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.18,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "M. Porter Jr.",
+      "Z. Nnaji",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 32.0,
+    "net_rating": 1.6,
+    "off_rating": 114.5,
+    "def_rating": 112.9,
+    "pace": 94.33,
+    "efg_pct": 0.524,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 90.0,
+    "net_rating": -1.4,
+    "off_rating": 102.6,
+    "def_rating": 104.0,
+    "pace": 103.83,
+    "efg_pct": 0.57,
+    "tov_pct": 0.188,
+    "oreb_pct": 0.192,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "M. Porter Jr.",
+      "C. Braun"
+    ],
+    "minutes": 32.0,
+    "net_rating": -2.3,
+    "off_rating": 110.0,
+    "def_rating": 112.3,
+    "pace": 101.77,
+    "efg_pct": 0.534,
+    "tov_pct": 0.157,
+    "oreb_pct": 0.344,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "J. Murray",
+      "Z. Nnaji",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 63.0,
+    "net_rating": -3.5,
+    "off_rating": 93.4,
+    "def_rating": 96.9,
+    "pace": 96.67,
+    "efg_pct": 0.5,
+    "tov_pct": 0.205,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Holiday",
+      "J. Murray",
+      "Z. Nnaji",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 57.0,
+    "net_rating": -4.4,
+    "off_rating": 117.0,
+    "def_rating": 121.4,
+    "pace": 95.72,
+    "efg_pct": 0.582,
+    "tov_pct": 0.089,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Caldwell-Pope",
+      "A. Gordon",
+      "N. Jokic",
+      "M. Porter Jr.",
+      "C. Braun"
+    ],
+    "minutes": 73.0,
+    "net_rating": -5.0,
+    "off_rating": 93.7,
+    "def_rating": 98.7,
+    "pace": 103.81,
+    "efg_pct": 0.447,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.319,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Jordan",
+      "R. Jackson",
+      "J. Murray",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 81.0,
+    "net_rating": -6.2,
+    "off_rating": 111.4,
+    "def_rating": 117.6,
+    "pace": 99.12,
+    "efg_pct": 0.583,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Jordan",
+      "R. Jackson",
+      "J. Strawther",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 43.0,
+    "net_rating": -11.9,
+    "off_rating": 103.3,
+    "def_rating": 115.1,
+    "pace": 99.45,
+    "efg_pct": 0.494,
+    "tov_pct": 0.098,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "J. Holiday",
+      "A. Gordon",
+      "N. Jokic",
+      "M. Porter Jr."
+    ],
+    "minutes": 39.0,
+    "net_rating": -14.6,
+    "off_rating": 112.2,
+    "def_rating": 126.8,
+    "pace": 99.79,
+    "efg_pct": 0.556,
+    "tov_pct": 0.073,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "Z. Nnaji",
+      "J. Strawther",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 86.0,
+    "net_rating": -16.3,
+    "off_rating": 98.4,
+    "def_rating": 114.7,
+    "pace": 102.53,
+    "efg_pct": 0.491,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "J. Holiday",
+      "Z. Nnaji",
+      "C. Braun",
+      "P. Watson"
+    ],
+    "minutes": 38.0,
+    "net_rating": -18.2,
+    "off_rating": 102.6,
+    "def_rating": 120.8,
+    "pace": 98.16,
+    "efg_pct": 0.473,
+    "tov_pct": 0.077,
+    "oreb_pct": 0.273,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Jackson",
+      "K. Caldwell-Pope",
+      "N. Jokic",
+      "M. Porter Jr.",
+      "P. Watson"
+    ],
+    "minutes": 30.0,
+    "net_rating": -19.4,
+    "off_rating": 101.5,
+    "def_rating": 120.9,
+    "pace": 106.03,
+    "efg_pct": 0.482,
+    "tov_pct": 0.09,
+    "oreb_pct": 0.265,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

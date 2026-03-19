@@ -82,12 +82,30 @@ class ScoreboardOCR:
         self.fh = frame_height
         self._frame_counter = 0
         self._last_state: Dict = dict(_DEFAULT_STATE)
+        # current_scan_result: None when no OCR ran this call (cached return),
+        # True when OCR ran and found a shot clock, False when OCR ran but didn't.
+        # Callers poll this after read() to drive non-live detection.
+        self._current_scan_result: Optional[bool] = None
+
+    @property
+    def current_scan_result(self) -> Optional[bool]:
+        """
+        Whether the most recent actual OCR scan found a shot clock.
+
+        Returns:
+            None  — no OCR ran on this frame (cached return).
+            True  — OCR ran and found a shot clock value.
+            False — OCR ran but found no shot clock (possible non-live frame).
+        """
+        return self._current_scan_result
 
     def read(self, frame: np.ndarray) -> Dict:
         """
         Return game-state dict for this frame.
 
         Runs OCR every _OCR_INTERVAL frames; returns cached state otherwise.
+        After each call, current_scan_result is set to None (cached) or
+        True/False (actual scan result).
 
         Args:
             frame: BGR frame (already cropped by TOPCUT).
@@ -97,9 +115,13 @@ class ScoreboardOCR:
         """
         self._frame_counter += 1
         if self._frame_counter % _OCR_INTERVAL != 0:
+            self._current_scan_result = None   # no OCR ran this call
             return dict(self._last_state)
 
         parsed = self._ocr_frame(frame)
+        # Track whether this scan found a shot clock (before merging into cache)
+        self._current_scan_result = (parsed.get("shot_clock", -1.0) != -1.0)
+
         # Merge — only overwrite fields that were successfully read this frame
         for k, v in parsed.items():
             if v not in (-1, -1.0):

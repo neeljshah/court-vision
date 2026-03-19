@@ -1,0 +1,268 @@
+[
+  {
+    "lineup": [
+      "C. Johnson",
+      "K. Hayes",
+      "Z. Williams",
+      "D. Sharpe",
+      "K. Johnson"
+    ],
+    "minutes": 31.0,
+    "net_rating": 34.0,
+    "off_rating": 154.5,
+    "def_rating": 120.6,
+    "pace": 104.67,
+    "efg_pct": 0.689,
+    "tov_pct": 0.091,
+    "oreb_pct": 0.414,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Claxton",
+      "C. Johnson",
+      "K. Johnson",
+      "J. Wilson",
+      "T. Martin"
+    ],
+    "minutes": 39.0,
+    "net_rating": 23.9,
+    "off_rating": 132.2,
+    "def_rating": 108.2,
+    "pace": 104.94,
+    "efg_pct": 0.705,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schr\u00f6der",
+      "D. Finney-Smith",
+      "N. Claxton",
+      "C. Johnson",
+      "C. Thomas"
+    ],
+    "minutes": 106.0,
+    "net_rating": 12.0,
+    "off_rating": 116.2,
+    "def_rating": 104.2,
+    "pace": 97.34,
+    "efg_pct": 0.566,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.284,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Simmons",
+      "N. Claxton",
+      "Z. Williams",
+      "K. Johnson",
+      "N. Clowney"
+    ],
+    "minutes": 30.0,
+    "net_rating": 6.6,
+    "off_rating": 123.8,
+    "def_rating": 117.2,
+    "pace": 100.65,
+    "efg_pct": 0.629,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.269,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Russell",
+      "D. Sharpe",
+      "J. Wilson",
+      "T. Martin",
+      "T. Evbuomwan"
+    ],
+    "minutes": 36.0,
+    "net_rating": 2.8,
+    "off_rating": 120.8,
+    "def_rating": 118.1,
+    "pace": 96.92,
+    "efg_pct": 0.5,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.591,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schr\u00f6der",
+      "N. Claxton",
+      "Z. Williams",
+      "J. Wilson",
+      "N. Clowney"
+    ],
+    "minutes": 43.0,
+    "net_rating": 2.3,
+    "off_rating": 101.1,
+    "def_rating": 98.8,
+    "pace": 96.93,
+    "efg_pct": 0.487,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schr\u00f6der",
+      "B. Simmons",
+      "D. Finney-Smith",
+      "C. Johnson",
+      "C. Thomas"
+    ],
+    "minutes": 95.0,
+    "net_rating": -3.4,
+    "off_rating": 109.3,
+    "def_rating": 112.7,
+    "pace": 103.4,
+    "efg_pct": 0.573,
+    "tov_pct": 0.171,
+    "oreb_pct": 0.163,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schr\u00f6der",
+      "N. Claxton",
+      "C. Johnson",
+      "Z. Williams",
+      "C. Thomas"
+    ],
+    "minutes": 40.0,
+    "net_rating": -7.7,
+    "off_rating": 111.5,
+    "def_rating": 119.3,
+    "pace": 97.3,
+    "efg_pct": 0.523,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.257,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Russell",
+      "N. Claxton",
+      "Z. Williams",
+      "K. Johnson",
+      "J. Wilson"
+    ],
+    "minutes": 87.0,
+    "net_rating": -8.0,
+    "off_rating": 103.9,
+    "def_rating": 111.9,
+    "pace": 98.47,
+    "efg_pct": 0.532,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.215,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Schr\u00f6der",
+      "D. Finney-Smith",
+      "N. Claxton",
+      "C. Johnson",
+      "K. Johnson"
+    ],
+    "minutes": 30.0,
+    "net_rating": -13.1,
+    "off_rating": 112.3,
+    "def_rating": 125.4,
+    "pace": 105.71,
+    "efg_pct": 0.602,
+    "tov_pct": 0.2,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Simmons",
+      "N. Claxton",
+      "C. Johnson",
+      "K. Johnson",
+      "N. Clowney"
+    ],
+    "minutes": 61.0,
+    "net_rating": -17.4,
+    "off_rating": 107.2,
+    "def_rating": 124.6,
+    "pace": 97.09,
+    "efg_pct": 0.523,
+    "tov_pct": 0.176,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Claxton",
+      "C. Johnson",
+      "K. Hayes",
+      "Z. Williams",
+      "K. Johnson"
+    ],
+    "minutes": 48.0,
+    "net_rating": -21.2,
+    "off_rating": 97.0,
+    "def_rating": 118.2,
+    "pace": 99.99,
+    "efg_pct": 0.471,
+    "tov_pct": 0.18,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Russell",
+      "N. Claxton",
+      "C. Johnson",
+      "Z. Williams",
+      "K. Johnson"
+    ],
+    "minutes": 104.0,
+    "net_rating": -22.8,
+    "off_rating": 88.1,
+    "def_rating": 110.9,
+    "pace": 100.99,
+    "efg_pct": 0.431,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.232,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Claxton",
+      "Z. Williams",
+      "K. Johnson",
+      "T. Martin",
+      "N. Clowney"
+    ],
+    "minutes": 44.0,
+    "net_rating": -44.7,
+    "off_rating": 79.8,
+    "def_rating": 124.5,
+    "pace": 103.51,
+    "efg_pct": 0.422,
+    "tov_pct": 0.202,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

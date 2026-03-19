@@ -1,0 +1,325 @@
+[
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Winslow",
+      "J. Hart",
+      "D. Eubanks"
+    ],
+    "minutes": 39.0,
+    "net_rating": 47.7,
+    "off_rating": 142.9,
+    "def_rating": 95.1,
+    "pace": 97.5,
+    "efg_pct": 0.633,
+    "tov_pct": 0.117,
+    "oreb_pct": 0.486,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Hart",
+      "D. Eubanks",
+      "S. Sharpe"
+    ],
+    "minutes": 41.0,
+    "net_rating": 38.9,
+    "off_rating": 152.8,
+    "def_rating": 114.0,
+    "pace": 102.55,
+    "efg_pct": 0.75,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.321,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Hart",
+      "A. Simons",
+      "T. Watford"
+    ],
+    "minutes": 32.0,
+    "net_rating": 30.1,
+    "off_rating": 124.7,
+    "def_rating": 94.5,
+    "pace": 108.11,
+    "efg_pct": 0.648,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.115,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Nurkic",
+      "J. Winslow",
+      "J. Hart"
+    ],
+    "minutes": 33.0,
+    "net_rating": 25.8,
+    "off_rating": 121.6,
+    "def_rating": 95.8,
+    "pace": 104.87,
+    "efg_pct": 0.638,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.241,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "J. Nurkic",
+      "J. Winslow",
+      "J. Hart",
+      "A. Simons"
+    ],
+    "minutes": 96.0,
+    "net_rating": 8.2,
+    "off_rating": 117.1,
+    "def_rating": 108.9,
+    "pace": 95.58,
+    "efg_pct": 0.569,
+    "tov_pct": 0.114,
+    "oreb_pct": 0.281,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "D. Eubanks",
+      "C. Reddish",
+      "M. Thybulle"
+    ],
+    "minutes": 79.0,
+    "net_rating": 4.2,
+    "off_rating": 114.7,
+    "def_rating": 110.5,
+    "pace": 103.57,
+    "efg_pct": 0.554,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.193,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Hart",
+      "A. Simons",
+      "D. Eubanks"
+    ],
+    "minutes": 263.0,
+    "net_rating": 0.6,
+    "off_rating": 116.2,
+    "def_rating": 115.7,
+    "pace": 101.16,
+    "efg_pct": 0.551,
+    "tov_pct": 0.099,
+    "oreb_pct": 0.234,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "J. Winslow",
+      "J. Hart",
+      "A. Simons",
+      "D. Eubanks"
+    ],
+    "minutes": 47.0,
+    "net_rating": 0.1,
+    "off_rating": 105.0,
+    "def_rating": 104.9,
+    "pace": 103.11,
+    "efg_pct": 0.506,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.264,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "J. Nurkic",
+      "J. Hart",
+      "A. Simons"
+    ],
+    "minutes": 541.0,
+    "net_rating": -0.5,
+    "off_rating": 115.0,
+    "def_rating": 115.5,
+    "pace": 100.46,
+    "efg_pct": 0.577,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Nurkic",
+      "A. Simons",
+      "M. Thybulle",
+      "T. Watford"
+    ],
+    "minutes": 40.0,
+    "net_rating": -2.0,
+    "off_rating": 109.5,
+    "def_rating": 111.5,
+    "pace": 101.96,
+    "efg_pct": 0.488,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.269,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "C. Reddish",
+      "M. Thybulle",
+      "T. Watford"
+    ],
+    "minutes": 48.0,
+    "net_rating": -4.1,
+    "off_rating": 106.9,
+    "def_rating": 111.0,
+    "pace": 101.19,
+    "efg_pct": 0.519,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.234,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "J. Winslow",
+      "A. Simons",
+      "D. Eubanks",
+      "S. Sharpe"
+    ],
+    "minutes": 31.0,
+    "net_rating": -7.2,
+    "off_rating": 109.0,
+    "def_rating": 116.1,
+    "pace": 100.59,
+    "efg_pct": 0.57,
+    "tov_pct": 0.149,
+    "oreb_pct": 0.29,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "J. Nurkic",
+      "J. Winslow",
+      "A. Simons",
+      "T. Watford"
+    ],
+    "minutes": 34.0,
+    "net_rating": -10.4,
+    "off_rating": 106.9,
+    "def_rating": 117.4,
+    "pace": 100.55,
+    "efg_pct": 0.527,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.281,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Grant",
+      "J. Nurkic",
+      "J. Hart",
+      "A. Simons",
+      "S. Sharpe"
+    ],
+    "minutes": 54.0,
+    "net_rating": -11.9,
+    "off_rating": 99.1,
+    "def_rating": 111.0,
+    "pace": 104.32,
+    "efg_pct": 0.53,
+    "tov_pct": 0.155,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Eubanks",
+      "M. Thybulle",
+      "S. Mays",
+      "T. Watford",
+      "S. Sharpe"
+    ],
+    "minutes": 33.0,
+    "net_rating": -13.7,
+    "off_rating": 101.4,
+    "def_rating": 115.1,
+    "pace": 103.63,
+    "efg_pct": 0.492,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.257,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Brown III",
+      "K. Johnson",
+      "T. Watford",
+      "S. Sharpe",
+      "J. Walker"
+    ],
+    "minutes": 32.0,
+    "net_rating": -19.4,
+    "off_rating": 86.6,
+    "def_rating": 106.0,
+    "pace": 101.72,
+    "efg_pct": 0.442,
+    "tov_pct": 0.179,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "J. Grant",
+      "A. Simons",
+      "D. Eubanks",
+      "N. Little"
+    ],
+    "minutes": 37.0,
+    "net_rating": -26.1,
+    "off_rating": 120.0,
+    "def_rating": 146.1,
+    "pace": 98.38,
+    "efg_pct": 0.653,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.185,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

@@ -1,0 +1,496 @@
+[
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "C. Wood",
+      "D. Finney-Smith",
+      "L. Doncic",
+      "J. Green"
+    ],
+    "minutes": 35.0,
+    "net_rating": 43.4,
+    "off_rating": 129.7,
+    "def_rating": 86.3,
+    "pace": 101.82,
+    "efg_pct": 0.621,
+    "tov_pct": 0.081,
+    "oreb_pct": 0.31,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "D. Powell",
+      "L. Doncic"
+    ],
+    "minutes": 30.0,
+    "net_rating": 30.2,
+    "off_rating": 128.8,
+    "def_rating": 98.6,
+    "pace": 108.72,
+    "efg_pct": 0.704,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.174,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "D. Powell",
+      "C. Wood",
+      "L. Doncic"
+    ],
+    "minutes": 41.0,
+    "net_rating": 27.7,
+    "off_rating": 138.6,
+    "def_rating": 110.8,
+    "pace": 97.23,
+    "efg_pct": 0.662,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.364,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "D. Powell",
+      "L. Doncic",
+      "J. Green"
+    ],
+    "minutes": 30.0,
+    "net_rating": 26.1,
+    "off_rating": 126.1,
+    "def_rating": 100.0,
+    "pace": 106.58,
+    "efg_pct": 0.67,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "D. Powell",
+      "J. Green",
+      "J. Hardy"
+    ],
+    "minutes": 33.0,
+    "net_rating": 25.0,
+    "off_rating": 123.6,
+    "def_rating": 98.6,
+    "pace": 102.19,
+    "efg_pct": 0.563,
+    "tov_pct": 0.083,
+    "oreb_pct": 0.278,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Walker",
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "C. Wood",
+      "D. Finney-Smith"
+    ],
+    "minutes": 30.0,
+    "net_rating": 21.8,
+    "off_rating": 118.2,
+    "def_rating": 96.4,
+    "pace": 89.37,
+    "efg_pct": 0.617,
+    "tov_pct": 0.055,
+    "oreb_pct": 0.042,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "C. Wood",
+      "M. Kleber",
+      "L. Doncic",
+      "J. Green"
+    ],
+    "minutes": 57.0,
+    "net_rating": 21.4,
+    "off_rating": 130.2,
+    "def_rating": 108.9,
+    "pace": 106.03,
+    "efg_pct": 0.663,
+    "tov_pct": 0.093,
+    "oreb_pct": 0.292,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "D. Powell",
+      "J. Green"
+    ],
+    "minutes": 35.0,
+    "net_rating": 20.3,
+    "off_rating": 138.2,
+    "def_rating": 117.9,
+    "pace": 92.39,
+    "efg_pct": 0.7,
+    "tov_pct": 0.088,
+    "oreb_pct": 0.179,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "C. Wood",
+      "M. Kleber",
+      "L. Doncic",
+      "J. Green"
+    ],
+    "minutes": 38.0,
+    "net_rating": 19.3,
+    "off_rating": 115.9,
+    "def_rating": 96.6,
+    "pace": 111.97,
+    "efg_pct": 0.621,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.237,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "D. Powell",
+      "L. Doncic"
+    ],
+    "minutes": 73.0,
+    "net_rating": 14.6,
+    "off_rating": 132.2,
+    "def_rating": 117.6,
+    "pace": 99.77,
+    "efg_pct": 0.699,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.169,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "C. Wood",
+      "F. Ntilikina",
+      "L. Doncic"
+    ],
+    "minutes": 30.0,
+    "net_rating": 9.5,
+    "off_rating": 131.1,
+    "def_rating": 121.7,
+    "pace": 97.43,
+    "efg_pct": 0.67,
+    "tov_pct": 0.131,
+    "oreb_pct": 0.259,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "S. Dinwiddie",
+      "D. Powell",
+      "D. Finney-Smith",
+      "L. Doncic"
+    ],
+    "minutes": 162.0,
+    "net_rating": 9.0,
+    "off_rating": 115.6,
+    "def_rating": 106.6,
+    "pace": 95.2,
+    "efg_pct": 0.575,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "C. Wood",
+      "M. Kleber",
+      "J. Green"
+    ],
+    "minutes": 51.0,
+    "net_rating": 5.7,
+    "off_rating": 94.1,
+    "def_rating": 88.3,
+    "pace": 96.7,
+    "efg_pct": 0.487,
+    "tov_pct": 0.178,
+    "oreb_pct": 0.154,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "D. Powell",
+      "D. Finney-Smith",
+      "L. Doncic"
+    ],
+    "minutes": 171.0,
+    "net_rating": 4.9,
+    "off_rating": 126.4,
+    "def_rating": 121.5,
+    "pace": 96.83,
+    "efg_pct": 0.617,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "R. Bullock",
+      "D. Powell",
+      "L. Doncic",
+      "J. Green"
+    ],
+    "minutes": 90.0,
+    "net_rating": 3.9,
+    "off_rating": 120.5,
+    "def_rating": 116.6,
+    "pace": 102.36,
+    "efg_pct": 0.602,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.145,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "C. Wood",
+      "D. Finney-Smith",
+      "M. Kleber",
+      "L. Doncic"
+    ],
+    "minutes": 40.0,
+    "net_rating": -2.1,
+    "off_rating": 105.0,
+    "def_rating": 107.1,
+    "pace": 99.09,
+    "efg_pct": 0.53,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.211,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "M. Kleber",
+      "L. Doncic"
+    ],
+    "minutes": 49.0,
+    "net_rating": -2.7,
+    "off_rating": 114.3,
+    "def_rating": 117.0,
+    "pace": 96.88,
+    "efg_pct": 0.576,
+    "tov_pct": 0.102,
+    "oreb_pct": 0.133,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "C. Wood",
+      "L. Doncic"
+    ],
+    "minutes": 198.0,
+    "net_rating": -3.5,
+    "off_rating": 114.0,
+    "def_rating": 117.5,
+    "pace": 93.24,
+    "efg_pct": 0.57,
+    "tov_pct": 0.088,
+    "oreb_pct": 0.122,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Irving",
+      "J. Holiday",
+      "R. Bullock",
+      "D. Powell",
+      "L. Doncic"
+    ],
+    "minutes": 30.0,
+    "net_rating": -5.6,
+    "off_rating": 111.1,
+    "def_rating": 116.7,
+    "pace": 98.29,
+    "efg_pct": 0.528,
+    "tov_pct": 0.175,
+    "oreb_pct": 0.281,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "C. Wood",
+      "D. Finney-Smith",
+      "L. Doncic"
+    ],
+    "minutes": 34.0,
+    "net_rating": -5.7,
+    "off_rating": 115.2,
+    "def_rating": 120.9,
+    "pace": 94.6,
+    "efg_pct": 0.523,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.412,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "S. Dinwiddie",
+      "C. Wood",
+      "M. Kleber",
+      "J. Green"
+    ],
+    "minutes": 42.0,
+    "net_rating": -8.0,
+    "off_rating": 90.9,
+    "def_rating": 98.9,
+    "pace": 101.8,
+    "efg_pct": 0.443,
+    "tov_pct": 0.182,
+    "oreb_pct": 0.209,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. McGee",
+      "R. Bullock",
+      "S. Dinwiddie",
+      "D. Finney-Smith",
+      "L. Doncic"
+    ],
+    "minutes": 67.0,
+    "net_rating": -10.7,
+    "off_rating": 101.4,
+    "def_rating": 112.1,
+    "pace": 99.47,
+    "efg_pct": 0.504,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.191,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "D. Finney-Smith",
+      "J. Green"
+    ],
+    "minutes": 31.0,
+    "net_rating": -16.9,
+    "off_rating": 107.7,
+    "def_rating": 124.6,
+    "pace": 97.34,
+    "efg_pct": 0.509,
+    "tov_pct": 0.077,
+    "oreb_pct": 0.143,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Hardaway Jr.",
+      "S. Dinwiddie",
+      "D. Powell",
+      "D. Finney-Smith",
+      "J. Green"
+    ],
+    "minutes": 32.0,
+    "net_rating": -20.3,
+    "off_rating": 96.9,
+    "def_rating": 117.2,
+    "pace": 95.35,
+    "efg_pct": 0.491,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "S. Dinwiddie",
+      "C. Wood",
+      "D. Finney-Smith",
+      "L. Doncic"
+    ],
+    "minutes": 61.0,
+    "net_rating": -29.4,
+    "off_rating": 98.4,
+    "def_rating": 127.8,
+    "pace": 98.92,
+    "efg_pct": 0.5,
+    "tov_pct": 0.173,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Bullock",
+      "S. Dinwiddie",
+      "D. Finney-Smith",
+      "M. Kleber",
+      "L. Doncic"
+    ],
+    "minutes": 47.0,
+    "net_rating": -31.7,
+    "off_rating": 94.1,
+    "def_rating": 125.8,
+    "pace": 99.7,
+    "efg_pct": 0.493,
+    "tov_pct": 0.149,
+    "oreb_pct": 0.224,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

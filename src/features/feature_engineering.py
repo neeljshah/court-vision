@@ -498,6 +498,202 @@ def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def add_external_player_features(
+    df: pd.DataFrame,
+    season: str = "2024-25",
+) -> pd.DataFrame:
+    """
+    Enrich per-player rows with pre-game context features from external data sources.
+
+    Sources used (all optional — gracefully skipped if cache unavailable):
+      - Basketball Reference: BPM, VORP, Win Shares (bbref_scraper)
+      - NBA Tracking API: hustle stats, on/off splits (nba_tracking_stats)
+      - Synergy play types: pts/possession by play type (nba_tracking_stats)
+      - Injury monitor: combined ESPN + RotoWire + NBA official (injury_monitor)
+      - HoopsHype contracts: contract year flag, salary tier (contracts_scraper)
+      - Shot dashboard: contested%, C+S%, pull-up%, defender dist (nba_tracking_stats)
+
+    New columns (all per-player constant within a game, merged on player_name):
+      bbref_bpm, bbref_vorp, bbref_ws, bbref_ws_per_48
+      hustle_deflections_pg, hustle_charges_pg, hustle_contested_shots
+      on_off_diff, on_court_net_rtg
+      synergy_iso_ppp, synergy_pnr_ppp, synergy_spotup_ppp
+      injury_status_multiplier
+      contract_year_flag, cap_hit_pct
+      contested_shot_pct, catch_and_shoot_pct, pull_up_pct, avg_defender_dist
+
+    Args:
+        df: Tracking DataFrame with a ``player_name`` column.
+        season: Season for cache lookups (e.g. "2024-25").
+
+    Returns:
+        DataFrame with external feature columns added. Rows without a matching
+        player_name get NaN / 0 defaults.
+    """
+    if "player_name" not in df.columns:
+        return df
+
+    df = df.copy()
+    player_names = df["player_name"].dropna().unique().tolist()
+
+    # ── Basketball Reference: BPM / VORP / Win Shares ──────────────────────
+    bbref_lookup: dict = {}
+    try:
+        from src.data.bbref_scraper import get_advanced_stats
+        adv = get_advanced_stats(season)
+        for r in adv:
+            name = r.get("player_name", "").lower()
+            if name:
+                bbref_lookup[name] = r
+    except Exception:
+        pass
+
+    # ── Hustle Stats ────────────────────────────────────────────────────────
+    hustle_lookup: dict = {}
+    try:
+        from src.data.nba_tracking_stats import get_hustle_stats
+        hustle = get_hustle_stats(season)
+        for r in hustle:
+            name = r.get("player_name", "").lower()
+            if name:
+                hustle_lookup[name] = r
+    except Exception:
+        pass
+
+    # ── On/Off Splits ───────────────────────────────────────────────────────
+    on_off_lookup: dict = {}
+    try:
+        from src.data.nba_tracking_stats import get_on_off_splits
+        on_off = get_on_off_splits(season)
+        for r in on_off:
+            name = r.get("player_name", "").lower()
+            if name:
+                on_off_lookup[name] = r
+    except Exception:
+        pass
+
+    # ── Synergy Play Types ──────────────────────────────────────────────────
+    synergy_lookup: dict = {}
+    try:
+        import os as _os
+        import json as _json
+        for pt in ("offensive_Isolation", "offensive_PRBallHandler", "offensive_Spotup"):
+            key = f"synergy_offensive_{pt.split('_', 1)[1]}_*" if "_" in pt else pt
+            cache_dir = _os.path.join(_DATA_DIR, "..", "data", "nba")
+            # Try loading cached synergy files directly
+            for s_key in [f"synergy_offensive_{pt.split('_')[1]}_{season.replace('-', '_')}"]:
+                s_path = _os.path.join(cache_dir, f"{s_key}.json")
+                if _os.path.exists(s_path):
+                    with open(s_path) as _f:
+                        for r in _json.load(_f):
+                            pname = r.get("player_name", "").lower()
+                            play  = r.get("play_type", "").lower()
+                            synergy_lookup.setdefault(pname, {})[play] = r.get("ppp", 0.0)
+    except Exception:
+        pass
+
+    # ── Injury Status Multipliers ───────────────────────────────────────────
+    injury_lookup: dict = {}
+    try:
+        from src.data.injury_monitor import get_combined_injury_status
+        _INJURY_MULT = {"Out": 0.0, "Doubtful": 0.0, "Questionable": 0.70,
+                        "Day-To-Day": 0.85, "GTD": 0.85, "Probable": 0.95,
+                        "Available": 1.0, "Unknown": 0.95}
+        for name in player_names:
+            if not name or name == "unknown":
+                continue
+            try:
+                status = get_combined_injury_status(name).get("status", "Unknown")
+                injury_lookup[name.lower()] = _INJURY_MULT.get(status, 0.95)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    # ── Contract Features ────────────────────────────────────────────────────
+    contract_lookup: dict = {}
+    try:
+        from src.data.contracts_scraper import fetch_salary_index
+        contract_lookup = fetch_salary_index(season)
+    except Exception:
+        pass
+
+    # ── Shot Dashboard ───────────────────────────────────────────────────────
+    shot_dash_lookup: dict = {}
+    try:
+        import json as _json, os as _os
+        sd_all_path = _os.path.join(_DATA_DIR, "..", "data", "nba",
+                                    f"shot_dashboard_all_{season.replace('-', '_')}.json")
+        if _os.path.exists(sd_all_path):
+            with open(sd_all_path) as _f:
+                sd_all = _json.load(_f)
+            for pid_str, rec in sd_all.items():
+                name = None
+                # We need player_name — look up from player avgs
+                avgs_path = _os.path.join(_DATA_DIR, "..", "data", "nba",
+                                          f"player_avgs_{season}.json")
+                if _os.path.exists(avgs_path):
+                    with open(avgs_path) as _f2:
+                        avgs = _json.load(_f2)
+                    for pname, info in avgs.items():
+                        if str(info.get("player_id", "")) == pid_str:
+                            name = pname.lower()
+                            break
+                if name:
+                    shot_dash_lookup[name] = rec
+    except Exception:
+        pass
+
+    # ── Build per-player feature rows ────────────────────────────────────────
+    def _ext_features(player_name: str) -> dict:
+        key = (player_name or "").lower()
+        bb  = bbref_lookup.get(key, {})
+        hu  = hustle_lookup.get(key, {})
+        oo  = on_off_lookup.get(key, {})
+        syn = synergy_lookup.get(key, {})
+        con = contract_lookup.get(key, {})
+        sd  = shot_dash_lookup.get(key, {})
+
+        return {
+            # BBRef
+            "bbref_bpm":             float(bb.get("bpm", 0.0) or 0.0),
+            "bbref_vorp":            float(bb.get("vorp", 0.0) or 0.0),
+            "bbref_ws":              float(bb.get("win_shares", 0.0) or 0.0),
+            "bbref_ws_per_48":       float(bb.get("ws_per_48", 0.0) or 0.0),
+            # Hustle
+            "hustle_deflections_pg": float(hu.get("deflections_pg", 0.0) or 0.0),
+            "hustle_charges_pg":     float(hu.get("charges_per_game", 0.0) or 0.0),
+            "hustle_contested_shots":int(hu.get("contested_shots", 0) or 0),
+            # On/off
+            "on_off_diff":           float(oo.get("on_off_diff", 0.0) or 0.0),
+            "on_court_net_rtg":      float(oo.get("on_court_net_rtg", 0.0) or 0.0),
+            # Synergy
+            "synergy_iso_ppp":       float(syn.get("isolation", 0.0) or 0.0),
+            "synergy_pnr_ppp":       float(syn.get("prbballhandler", 0.0) or 0.0),
+            "synergy_spotup_ppp":    float(syn.get("spotup", 0.0) or 0.0),
+            # Injury
+            "injury_status_multiplier": float(injury_lookup.get(key, 1.0)),
+            # Contract
+            "contract_year_flag":    int(bool(con.get("contract_year", False))),
+            "cap_hit_pct":           float(con.get("cap_hit_pct", 0.0) or 0.0),
+            # Shot dashboard
+            "contested_shot_pct":    float(sd.get("contested_pct", 0.0) or 0.0),
+            "catch_and_shoot_pct":   float(sd.get("catch_and_shoot_pct", 0.0) or 0.0),
+            "pull_up_pct":           float(sd.get("pull_up_pct", 0.0) or 0.0),
+            "avg_defender_dist":     float(sd.get("avg_defender_dist_contested", 0.0) or 0.0),
+        }
+
+    # Vectorized: build feature df and merge
+    feature_rows = [_ext_features(n) for n in df["player_name"]]
+    feat_df = pd.DataFrame(feature_rows, index=df.index)
+
+    # Attach columns
+    for col in feat_df.columns:
+        df[col] = feat_df[col]
+
+    return df
+
+
 def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     """
     Full feature engineering pipeline.
@@ -517,6 +713,7 @@ def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     df = add_game_flow_features(df)
     df = add_per100_features(df)
     df = add_context_features(df)
+    df = add_external_player_features(df)
     df = df.sort_values(["frame", "player_id"]).reset_index(drop=True)
 
     if output_path is None:

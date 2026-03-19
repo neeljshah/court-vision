@@ -1,0 +1,287 @@
+[
+  {
+    "lineup": [
+      "Z. LaVine",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 34.0,
+    "net_rating": 25.1,
+    "off_rating": 117.1,
+    "def_rating": 92.0,
+    "pace": 106.12,
+    "efg_pct": 0.615,
+    "tov_pct": 0.158,
+    "oreb_pct": 0.379,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 80.0,
+    "net_rating": 20.4,
+    "off_rating": 130.2,
+    "def_rating": 109.8,
+    "pace": 97.01,
+    "efg_pct": 0.602,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.377,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Huerter",
+      "K. Ellis"
+    ],
+    "minutes": 48.0,
+    "net_rating": 19.3,
+    "off_rating": 122.2,
+    "def_rating": 102.9,
+    "pace": 104.96,
+    "efg_pct": 0.563,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "D. Fox",
+      "M. Monk",
+      "K. Ellis"
+    ],
+    "minutes": 69.0,
+    "net_rating": 17.3,
+    "off_rating": 130.4,
+    "def_rating": 113.1,
+    "pace": 104.09,
+    "efg_pct": 0.623,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.213,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 201.0,
+    "net_rating": 17.1,
+    "off_rating": 119.3,
+    "def_rating": 102.2,
+    "pace": 99.3,
+    "efg_pct": 0.562,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.299,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "J. Valan\u010di\u016bnas",
+      "M. Monk",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 37.0,
+    "net_rating": 14.4,
+    "off_rating": 119.2,
+    "def_rating": 104.9,
+    "pace": 104.34,
+    "efg_pct": 0.566,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "J. Valan\u010di\u016bnas",
+      "Z. LaVine",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 92.0,
+    "net_rating": 14.3,
+    "off_rating": 125.4,
+    "def_rating": 111.1,
+    "pace": 98.36,
+    "efg_pct": 0.608,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "T. Lyles",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Ellis"
+    ],
+    "minutes": 36.0,
+    "net_rating": 13.2,
+    "off_rating": 110.7,
+    "def_rating": 97.6,
+    "pace": 110.51,
+    "efg_pct": 0.543,
+    "tov_pct": 0.107,
+    "oreb_pct": 0.268,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Huerter",
+      "K. Murray"
+    ],
+    "minutes": 184.0,
+    "net_rating": 9.5,
+    "off_rating": 115.0,
+    "def_rating": 105.5,
+    "pace": 100.71,
+    "efg_pct": 0.579,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "J. Valan\u010di\u016bnas",
+      "Z. LaVine",
+      "M. Monk",
+      "K. Murray"
+    ],
+    "minutes": 58.0,
+    "net_rating": 2.8,
+    "off_rating": 114.0,
+    "def_rating": 111.2,
+    "pace": 101.14,
+    "efg_pct": 0.6,
+    "tov_pct": 0.157,
+    "oreb_pct": 0.208,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "D. Sabonis",
+      "D. Fox",
+      "M. Monk",
+      "K. Murray"
+    ],
+    "minutes": 431.0,
+    "net_rating": 0.2,
+    "off_rating": 114.9,
+    "def_rating": 114.7,
+    "pace": 103.63,
+    "efg_pct": 0.542,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "Z. LaVine",
+      "D. Sabonis",
+      "K. Murray",
+      "K. Ellis"
+    ],
+    "minutes": 220.0,
+    "net_rating": -0.9,
+    "off_rating": 112.6,
+    "def_rating": 113.5,
+    "pace": 97.31,
+    "efg_pct": 0.574,
+    "tov_pct": 0.126,
+    "oreb_pct": 0.191,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "Z. LaVine",
+      "T. Lyles",
+      "D. Sabonis",
+      "K. Ellis"
+    ],
+    "minutes": 88.0,
+    "net_rating": -2.4,
+    "off_rating": 127.1,
+    "def_rating": 129.4,
+    "pace": 93.14,
+    "efg_pct": 0.618,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.297,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Huerter",
+      "K. Ellis"
+    ],
+    "minutes": 53.0,
+    "net_rating": -7.1,
+    "off_rating": 116.4,
+    "def_rating": 123.5,
+    "pace": 102.05,
+    "efg_pct": 0.528,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. DeRozan",
+      "Z. LaVine",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Murray"
+    ],
+    "minutes": 196.0,
+    "net_rating": -8.4,
+    "off_rating": 114.6,
+    "def_rating": 123.0,
+    "pace": 102.73,
+    "efg_pct": 0.56,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

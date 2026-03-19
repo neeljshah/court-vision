@@ -1,28 +1,15 @@
 # NBA AI System — Home
-*Auto-updated: 2026-03-17 22:26*
+*Auto-updated: 2026-03-19 01:03*
 
 ---
 
 ## Pick Up Here Next Session
-**Priority order for next session:**
-1. `python src/prediction/win_probability.py --train` — retrain with sklearn 1.7.2 (2 min)
-2. Wire PostgreSQL writes — fix ISSUE-018 before processing more games
-3. Scrape ShotChartDetail — 50K+ shots, unlocks shot quality v1 model
-4. Finish gamelog scrape — 209 players remaining (run scraper --loop --max 569)
-5. Fix per-video homography (ISSUE-017) — needs per-clip M1 calibration
-
-
----
-*Session note auto-created by new_session.py*
+*(fill in 'What's Next' in today's session note)*
 
 ---
 
----
-
-## Last Session Changes (2026-03-17)
-- `C:/Users/neelj/nba-ai-system/vault/Project Vision.md`
-- `C:/Users/neelj/nba-ai-system/CLAUDE.md`
-- `C:/Users/neelj/nba-ai-system/.planning/ROADMAP.md`
+## Last Session Changes (2026-03-19)
+- no file changes
 
 ---
 
@@ -43,9 +30,30 @@
 | Court rectification (homography) | ✅ |
 | Video processing loop | ✅ |
 | Betting Edge | ✅ |
+| Chat | ✅ |
 | Defense Pressure | ✅ |
+| Defensive Scheme | ✅ |
+| Drive Analysis | ✅ |
+| Game Flow | ✅ |
+| Lineup Synergy | ✅ |
+| Micro Timing | ✅ |
 | Momentum | ✅ |
+| Momentum Events | ✅ |
+| Off Ball Events | ✅ |
+| Passing Network | ✅ |
+| Pick And Roll | ✅ |
+| Play Recognition | ✅ |
+| Player Defensive Pressure | ✅ |
+| Prop Correlation | ✅ |
+| Rebound Positioning | ✅ |
+| Shot Creation | ✅ |
 | Shot Quality | ✅ |
+| Space Control | ✅ |
+| Spacing | ✅ |
+| Spatial Types | ✅ |
+| Bbref Scraper | ✅ |
+| Cache Utils | ✅ |
+| Contracts Scraper | ✅ |
 | Db | ✅ |
 | Game Matcher | ✅ |
 | Injury Monitor | ✅ |
@@ -53,11 +61,15 @@
 | Lineup Data | ✅ |
 | Nba Enricher | ✅ |
 | Nba Stats | ✅ |
+| Nba Tracking Stats | ✅ |
 | News Scraper | ✅ |
+| Odds Scraper | ✅ |
+| Pbp Features | ✅ |
 | Pbp Scraper | ✅ |
 | Player Identity | ✅ |
 | Player Scraper | ✅ |
 | Prop Validator | ✅ |
+| Props Scraper | ✅ |
 | Ref Tracker | ✅ |
 | Schedule Context | ✅ |
 | Shot Chart Scraper | ✅ |
@@ -74,8 +86,10 @@
 | Tracking Pipeline | ✅ |
 | Unified Pipeline | ✅ |
 | Clutch Efficiency | ✅ |
+| Dnp Predictor | ✅ |
 | Game Models | ✅ |
 | Game Prediction | ✅ |
+| Matchup Model | ✅ |
 | Player Props | ✅ |
 | Shot Zone Tendency | ✅ |
 | Win Probability | ✅ |
@@ -114,17 +128,17 @@
 ---
 
 ## Recent Sessions
+- [[Sessions/Session-2026-03-19]]
+- [[Sessions/Session-2026-03-18]]
 - [[Sessions/Session-2026-03-17]]
 - [[Sessions/Session-2026-03-16]]
 - [[Sessions/Session-2026-03-16-loops]]
-- [[Sessions/Session-2026-03-15]]
-- [[Sessions/Session-2026-03-12]]
 
 ---
 
 ## Quick Links
 - [[Improvements/Tracker Improvements Log]] — all issues & fixes
-- [[Sessions/Session-2026-03-17]] — today's session
+- [[Sessions/Session-2026-03-19]] — today's session
 - [[Pipeline/System Architecture]] — how everything connects
 
 ---

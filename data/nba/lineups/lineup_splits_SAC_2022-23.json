@@ -1,0 +1,458 @@
+[
+  {
+    "lineup": [
+      "H. Barnes",
+      "A. Len",
+      "T. Lyles",
+      "D. Fox",
+      "M. Monk"
+    ],
+    "minutes": 39.0,
+    "net_rating": 59.1,
+    "off_rating": 126.6,
+    "def_rating": 67.5,
+    "pace": 99.98,
+    "efg_pct": 0.544,
+    "tov_pct": 0.076,
+    "oreb_pct": 0.351,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "T. Davis",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 31.0,
+    "net_rating": 47.0,
+    "off_rating": 118.2,
+    "def_rating": 71.2,
+    "pace": 100.68,
+    "efg_pct": 0.573,
+    "tov_pct": 0.076,
+    "oreb_pct": 0.257,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Huerter",
+      "T. Davis"
+    ],
+    "minutes": 46.0,
+    "net_rating": 23.7,
+    "off_rating": 124.7,
+    "def_rating": 101.0,
+    "pace": 101.24,
+    "efg_pct": 0.591,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.311,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "M. Monk",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 61.0,
+    "net_rating": 19.2,
+    "off_rating": 105.2,
+    "def_rating": 86.0,
+    "pace": 106.3,
+    "efg_pct": 0.523,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.145,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "T. Lyles",
+      "D. Fox",
+      "M. Monk",
+      "C. Metu"
+    ],
+    "minutes": 86.0,
+    "net_rating": 18.9,
+    "off_rating": 118.9,
+    "def_rating": 100.0,
+    "pace": 104.94,
+    "efg_pct": 0.583,
+    "tov_pct": 0.116,
+    "oreb_pct": 0.282,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "T. Lyles",
+      "D. Sabonis",
+      "M. Monk",
+      "D. Mitchell"
+    ],
+    "minutes": 38.0,
+    "net_rating": 16.4,
+    "off_rating": 112.9,
+    "def_rating": 96.6,
+    "pace": 109.02,
+    "efg_pct": 0.559,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.27,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "R. Holmes",
+      "D. Fox",
+      "K. Huerter",
+      "K. Murray"
+    ],
+    "minutes": 46.0,
+    "net_rating": 15.2,
+    "off_rating": 123.7,
+    "def_rating": 108.4,
+    "pace": 97.7,
+    "efg_pct": 0.6,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "M. Monk",
+      "K. Huerter"
+    ],
+    "minutes": 73.0,
+    "net_rating": 14.3,
+    "off_rating": 130.4,
+    "def_rating": 116.1,
+    "pace": 106.98,
+    "efg_pct": 0.623,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.29,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Sabonis",
+      "M. Monk",
+      "K. Huerter",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 39.0,
+    "net_rating": 13.8,
+    "off_rating": 125.6,
+    "def_rating": 111.8,
+    "pace": 102.16,
+    "efg_pct": 0.629,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.438,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "M. Monk",
+      "K. Murray"
+    ],
+    "minutes": 105.0,
+    "net_rating": 10.0,
+    "off_rating": 122.6,
+    "def_rating": 112.6,
+    "pace": 107.86,
+    "efg_pct": 0.57,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Fox",
+      "M. Monk",
+      "C. Metu",
+      "T. Davis",
+      "K. Murray"
+    ],
+    "minutes": 39.0,
+    "net_rating": 9.9,
+    "off_rating": 118.8,
+    "def_rating": 108.9,
+    "pace": 107.0,
+    "efg_pct": 0.565,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.293,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Sabonis",
+      "M. Monk",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 43.0,
+    "net_rating": 9.1,
+    "off_rating": 114.3,
+    "def_rating": 105.2,
+    "pace": 103.55,
+    "efg_pct": 0.555,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "K. Huerter",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 266.0,
+    "net_rating": 8.6,
+    "off_rating": 123.2,
+    "def_rating": 114.7,
+    "pace": 99.79,
+    "efg_pct": 0.649,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "T. Lyles",
+      "D. Sabonis",
+      "K. Huerter",
+      "D. Mitchell"
+    ],
+    "minutes": 37.0,
+    "net_rating": 5.2,
+    "off_rating": 128.6,
+    "def_rating": 123.4,
+    "pace": 100.03,
+    "efg_pct": 0.556,
+    "tov_pct": 0.091,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Huerter",
+      "K. Murray"
+    ],
+    "minutes": 900.0,
+    "net_rating": 2.2,
+    "off_rating": 118.3,
+    "def_rating": 116.1,
+    "pace": 102.69,
+    "efg_pct": 0.568,
+    "tov_pct": 0.117,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Sabonis",
+      "M. Monk",
+      "T. Davis",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 41.0,
+    "net_rating": -3.1,
+    "off_rating": 109.6,
+    "def_rating": 112.6,
+    "pace": 109.52,
+    "efg_pct": 0.575,
+    "tov_pct": 0.17,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Sabonis",
+      "M. Monk",
+      "T. Davis",
+      "D. Mitchell"
+    ],
+    "minutes": 43.0,
+    "net_rating": -4.3,
+    "off_rating": 96.8,
+    "def_rating": 101.1,
+    "pace": 103.59,
+    "efg_pct": 0.514,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.15,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "M. Monk",
+      "K. Huerter",
+      "D. Mitchell"
+    ],
+    "minutes": 65.0,
+    "net_rating": -7.4,
+    "off_rating": 112.1,
+    "def_rating": 119.5,
+    "pace": 98.21,
+    "efg_pct": 0.629,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.14,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Fox",
+      "M. Monk",
+      "C. Metu",
+      "K. Murray"
+    ],
+    "minutes": 34.0,
+    "net_rating": -7.8,
+    "off_rating": 114.1,
+    "def_rating": 121.9,
+    "pace": 107.7,
+    "efg_pct": 0.612,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "T. Davis",
+      "K. Murray"
+    ],
+    "minutes": 61.0,
+    "net_rating": -13.6,
+    "off_rating": 118.0,
+    "def_rating": 131.6,
+    "pace": 106.21,
+    "efg_pct": 0.56,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Sabonis",
+      "K. Huerter",
+      "D. Mitchell",
+      "K. Murray"
+    ],
+    "minutes": 31.0,
+    "net_rating": -14.1,
+    "off_rating": 104.7,
+    "def_rating": 118.8,
+    "pace": 99.47,
+    "efg_pct": 0.519,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Edwards",
+      "K. Murray"
+    ],
+    "minutes": 39.0,
+    "net_rating": -15.1,
+    "off_rating": 150.0,
+    "def_rating": 165.1,
+    "pace": 99.09,
+    "efg_pct": 0.789,
+    "tov_pct": 0.063,
+    "oreb_pct": 0.167,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "T. Lyles",
+      "D. Fox",
+      "M. Monk",
+      "C. Metu",
+      "T. Davis"
+    ],
+    "minutes": 56.0,
+    "net_rating": -19.7,
+    "off_rating": 115.3,
+    "def_rating": 135.0,
+    "pace": 103.89,
+    "efg_pct": 0.556,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.339,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "H. Barnes",
+      "D. Sabonis",
+      "D. Fox",
+      "K. Huerter",
+      "D. Mitchell"
+    ],
+    "minutes": 46.0,
+    "net_rating": -21.9,
+    "off_rating": 106.5,
+    "def_rating": 128.4,
+    "pace": 98.35,
+    "efg_pct": 0.521,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.244,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

@@ -1,0 +1,874 @@
+[
+  {
+    "player_name": "Nikola Vucevic",
+    "team_abbrev": "BOS",
+    "status": "Out",
+    "reason": "Vucevic underwent surgery Saturday to stabilize a fracture in his right ring finger and will be reevaluated in 3-to-4 weeks.",
+    "game_date": "2026-03-07T15:45Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Egor Demin",
+    "team_abbrev": "BKN",
+    "status": "Out",
+    "reason": "Demin underwent a non-surgical procedure to address plantar fasciitis in his left foot, and there's hope he will make a full recovery in time for NBA Summer League, Brian Lewis of the New York Post reports",
+    "game_date": "2026-03-18T21:57Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Ben Saraf",
+    "team_abbrev": "BKN",
+    "status": "Out",
+    "reason": "Saraf (foot) is out for Wednesday's game against the Thunder, Erik Slater of ClutchPoints.comreports.",
+    "game_date": "2026-03-18T20:20Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Michael Porter Jr.",
+    "team_abbrev": "BKN",
+    "status": "Out",
+    "reason": "Porter (ankle, hamstring) is out for Wednesday's game against the Thunder.",
+    "game_date": "2026-03-18T17:08Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Day'Ron Sharpe",
+    "team_abbrev": "BKN",
+    "status": "Out",
+    "reason": "Sharpe has been diagnosed with an ulnar collateral ligament tear in his left thumb and will require season-ending surgery, Erik Slater of ClutchPoints.com reports.",
+    "game_date": "2026-03-12T21:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Tidjane Salaun",
+    "team_abbrev": "CHA",
+    "status": "Out",
+    "reason": "Salaun (calf) has been ruled out for Thursday's game against the Magic.",
+    "game_date": "2026-03-18T21:12Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Isaac Okoro",
+    "team_abbrev": "CHI",
+    "status": "Out",
+    "reason": "Okoro (knee) has been ruled out for Wednesday's game against the Raptors, K.C. Johnson of Chicago Sports Network reports.",
+    "game_date": "2026-03-18T22:21Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jaden Ivey",
+    "team_abbrev": "CHI",
+    "status": "Out",
+    "reason": "The Bulls announced Monday that Ivey (knee) will be re-evaluated in one week.",
+    "game_date": "2026-03-16T19:06Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Anfernee Simons",
+    "team_abbrev": "CHI",
+    "status": "Out",
+    "reason": "Simons (wrist) will be re-evaluated in 10 days, the Bulls announced Monday.",
+    "game_date": "2026-03-16T19:05Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Zach Collins",
+    "team_abbrev": "CHI",
+    "status": "Out",
+    "reason": "Collins will undergo surgery for a sprain right toe and will be sidelined for the rest of the 2025-26 season.",
+    "game_date": "2026-02-21T16:42Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Noa Essengue",
+    "team_abbrev": "CHI",
+    "status": "Out",
+    "reason": "Essengue will undergo left shoulder surgery and will miss the remainder of the 2025-26 season, K.C. Johnson of Chicago Sports Network reports.",
+    "game_date": "2025-12-03T23:24Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Olivier Sarr",
+    "team_abbrev": "CLE",
+    "status": "Day-To-Day",
+    "reason": "Sarr agreed to a two-way contract with the Cavaliers on Tuesday, Michael Scotto of USA Today reports.",
+    "game_date": "2026-03-18T15:03Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Tyrese Proctor",
+    "team_abbrev": "CLE",
+    "status": "Out",
+    "reason": "Proctor (quadriceps) will miss Cleveland's upcoming three-game road trip.",
+    "game_date": "2026-03-16T22:53Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Craig Porter Jr.",
+    "team_abbrev": "CLE",
+    "status": "Out",
+    "reason": "Porter (groin) will remain out for the next 1-to-3 weeks.",
+    "game_date": "2026-03-16T22:46Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jarrett Allen",
+    "team_abbrev": "CLE",
+    "status": "Out",
+    "reason": "Allen (knee) will miss Cleveland's upcoming three-game road trip.",
+    "game_date": "2026-03-16T22:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Caleb Martin",
+    "team_abbrev": "DAL",
+    "status": "Out",
+    "reason": "Martin (foot) has been ruled out for Wednesday's game against the Hawks.",
+    "game_date": "2026-03-18T22:59Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Brandon Williams",
+    "team_abbrev": "DAL",
+    "status": "Out",
+    "reason": "Williams (concussion) is out for Wednesday's game against the Hawks.",
+    "game_date": "2026-03-18T18:04Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kyrie Irving",
+    "team_abbrev": "DAL",
+    "status": "Out",
+    "reason": "Irving (knee) will miss the remainder of the 2025-26 season, ESPN's Shams Charania reports.",
+    "game_date": "2026-02-18T15:04Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Dereck Lively II",
+    "team_abbrev": "DAL",
+    "status": "Out",
+    "reason": "Lively successfully underwent surgery on his right foot Sunday.",
+    "game_date": "2025-12-21T18:06Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Peyton Watson",
+    "team_abbrev": "DEN",
+    "status": "Out",
+    "reason": "Watson (hamstring) is out for Wednesday's game against Memphis.",
+    "game_date": "2026-03-18T18:05Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Aaron Gordon",
+    "team_abbrev": "DEN",
+    "status": "Out",
+    "reason": "Gordon will be rested Wednesday against Memphis.",
+    "game_date": "2026-03-18T18:04Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Wendell Moore Jr.",
+    "team_abbrev": "DET",
+    "status": "Out",
+    "reason": "Moore will sign a two-way contract with the Pistons, Michael Scotto of USA Today reports.",
+    "game_date": "2026-03-18T22:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Cade Cunningham",
+    "team_abbrev": "DET",
+    "status": "Out",
+    "reason": "Cunningham is out for Thursday's game versus the Wizards with a left back contusion.",
+    "game_date": "2026-03-18T20:21Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Isaiah Stewart",
+    "team_abbrev": "DET",
+    "status": "Out",
+    "reason": "The Pistons announced Tuesday that Stewart has been diagnosed with a Grade 1 left calf strain and will be re-evaluated in one week, Eric Vincent of ClutchPoints.com reports.",
+    "game_date": "2026-03-17T14:56Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "LJ Cryer",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "Cryer (hamstring) has been ruled out for Wednesday's game against the Celtics.",
+    "game_date": "2026-03-18T22:04Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Moses Moody",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "Moody (wrist) hasn't progressed as well as the Warriors had hoped, and he remains without a timetable for return, Nick Friedell of The Athletic reports.",
+    "game_date": "2026-03-18T21:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Stephen Curry",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "The Warriors are optimistic that Curry (knee) will be able to return before the end of March, per Shams Charania of ESPN.",
+    "game_date": "2026-03-18T20:13Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Seth Curry",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "Curry will be re-evaluated in a week due to a mild left adductor strain, Danny Emerman of SFStandard.com reports.",
+    "game_date": "2026-03-15T23:30Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Al Horford",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "An MRI confirmed a minor right calf strain for Horford and he will be re-evaluated in one week, Danny Emerman of SFStandard.com reports.",
+    "game_date": "2026-03-15T23:27Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jimmy Butler III",
+    "team_abbrev": "GSW",
+    "status": "Out",
+    "reason": "Butler underwent successful surgery Monday to repair a torn right anterior cruciate ligament.",
+    "game_date": "2026-02-10T00:49Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jae'Sean Tate",
+    "team_abbrev": "HOU",
+    "status": "Out",
+    "reason": "Tate (knee) will remain on the inactive list for Monday's game versus the Lakers.",
+    "game_date": "2026-03-15T22:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Steven Adams",
+    "team_abbrev": "HOU",
+    "status": "Out",
+    "reason": "The Rockets announced Wednesday that Adams has undergone season-ending left ankle surgery, per Shams Charania of ESPN.",
+    "game_date": "2026-01-28T20:34Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Fred VanVleet",
+    "team_abbrev": "HOU",
+    "status": "Out",
+    "reason": "VanVleet suffered a torn ACL and may be out for the entire 2025-26 campaign, Shams Charania of ESPN reports.",
+    "game_date": "2025-09-22T20:02Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Micah Potter",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Potter (triceps) is questionable for Wednesday's game against the Trail Blazers.",
+    "game_date": "2026-03-18T23:02Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Andrew Nembhard",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Nembhard (calf) is questionable for Wednesday's game against the Trail Blazers.",
+    "game_date": "2026-03-18T23:02Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Pascal Siakam",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Head coach Rick Carlisle said Wednesday that Siakam (knee) is making good progress but remains without a timetable for a return, Dustin Dopirak of The Indianapolis Star reports.",
+    "game_date": "2026-03-18T22:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Obi Toppin",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Toppin (rest) will not play Wednesday against Portland.",
+    "game_date": "2026-03-18T16:55Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Johnny Furphy",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Furphy was diagnosed with a torn right ACL on Monday and will miss the remainder of the season, Michael Scotto of USA Today reports.",
+    "game_date": "2026-02-09T21:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Tyrese Haliburton",
+    "team_abbrev": "IND",
+    "status": "Out",
+    "reason": "Haliburton said Tuesday in his appearance on the \"Mind the Game\" podcast that he has resumed taking part in 3-on-3 and 4-on-4 work on the court while he continues to recover from right Achilles surgery.",
+    "game_date": "2026-01-27T14:58Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Nicolas Batum",
+    "team_abbrev": "LA ",
+    "status": "Out",
+    "reason": "Batum (rest) has been ruled out for Wednesday's game against the Pelicans.",
+    "game_date": "2026-03-18T22:54Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Bennedict Mathurin",
+    "team_abbrev": "LA ",
+    "status": "Out",
+    "reason": "Mathurin (toe) will miss the Clippers' upcoming three-game road trip, which wraps up Saturday in Dallas, Tomer Azarly of ClutchPoints.com reports.",
+    "game_date": "2026-03-17T22:28Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Yanic Konan Niederhauser",
+    "team_abbrev": "LA ",
+    "status": "Out",
+    "reason": "Niederhauser has been diagnosed with a Lisfranc injury in his right foot and will require surgery. He's been ruled out for the remainder of the 2025-26 season, Joey Linn of SI.com reports.",
+    "game_date": "2026-03-06T03:59Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Bradley Beal",
+    "team_abbrev": "LA ",
+    "status": "Out",
+    "reason": "Beal will undergo season-ending surgery on his left hip, ESPN's Shams Charania reports.",
+    "game_date": "2025-11-12T20:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Maxi Kleber",
+    "team_abbrev": "LAL",
+    "status": "Out",
+    "reason": "Kleber is expected to miss additional time while recovering from a lumbar injury, Dave McMenamin of ESPN.com reports.",
+    "game_date": "2026-03-13T00:53Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jahmai Mashack",
+    "team_abbrev": "MEM",
+    "status": "Day-To-Day",
+    "reason": "Mashack (ankle) is questionable for Wednesday's game against the Nuggets.",
+    "game_date": "2026-03-17T22:28Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Brandon Clarke",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "Clarke (calf) has been ruled out for Wednesday's game against the Nuggets.",
+    "game_date": "2026-03-17T22:25Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Santi Aldama",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "Aldama will undergo a season-ending arthroscopic procedure and receive an orthobiologic injection to address discomfort in his right knee, Brett Siegel of ClutchPoints.com reports.",
+    "game_date": "2026-03-16T00:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Scotty Pippen Jr.",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "Pippen will miss the remainder of the season after undergoing a sesamoidectomy to address ongoing discomfort in his right big toe, Michael Scotto of USA Today reports Friday.",
+    "game_date": "2026-03-13T14:51Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Ja Morant",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "The Grizzlies announced Thursday that Morant is still experiencing discomfort in his left elbow and will be reevaluated by medical staff in two weeks.",
+    "game_date": "2026-03-06T00:38Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Zach Edey",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "Edey underwent surgery Tuesday to resolve discomfort and bone stress in his left ankle, and he'll miss the rest of the 2025-26 season.",
+    "game_date": "2026-03-04T04:09Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kentavious Caldwell-Pope",
+    "team_abbrev": "MEM",
+    "status": "Out",
+    "reason": "The Grizzlies announced Thursday that Caldwell-Pope underwent surgery to address the misalignment of his right pinky finger and will miss the remainder of the 2025-26 campaign.",
+    "game_date": "2026-02-20T00:01Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Andrew Wiggins",
+    "team_abbrev": "MIA",
+    "status": "Out",
+    "reason": "Wiggins (toe) is out for Thursday's game against the Lakers.",
+    "game_date": "2026-03-18T21:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Bam Adebayo",
+    "team_abbrev": "MIA",
+    "status": "Day-To-Day",
+    "reason": "Adebayo (calf) is listed as probable for Thursday's game against the Lakers.",
+    "game_date": "2026-03-18T21:11Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jaime Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "status": "Day-To-Day",
+    "reason": "Jaquez is questionable for Thursday's game against the Lakers due to left hip tightness.",
+    "game_date": "2026-03-18T21:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Terry Rozier",
+    "team_abbrev": "MIA",
+    "status": "Out",
+    "reason": "The NBA placed Rozier on immediate leave from the Heat on Thursday, ESPN's Shams Charania reports.",
+    "game_date": "2025-10-23T16:24Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kevin Porter Jr.",
+    "team_abbrev": "MIL",
+    "status": "Day-To-Day",
+    "reason": "Porter (knee) is listed as questionable for Thursday's game in Utah.",
+    "game_date": "2026-03-18T21:51Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Myles Turner",
+    "team_abbrev": "MIL",
+    "status": "Day-To-Day",
+    "reason": "Turner is questionable for Thursday's game against the Jazz due to a right calf strain.",
+    "game_date": "2026-03-18T21:51Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kyle Kuzma",
+    "team_abbrev": "MIL",
+    "status": "Day-To-Day",
+    "reason": "Kuzma is probable for Thursday's game in Utah due to a right elbow contusion.",
+    "game_date": "2026-03-18T21:51Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Giannis Antetokounmpo",
+    "team_abbrev": "MIL",
+    "status": "Out",
+    "reason": "Although the Bucks have approached Antetokounmpo (knee) about shutting down for the season, Milwaukee's franchise players wants to keep playing, Eric Nehm of The Athletic reports.",
+    "game_date": "2026-03-18T19:06Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Naz Reid",
+    "team_abbrev": "MIN",
+    "status": "Out",
+    "reason": "Reid is out for Wednesday's game against the Jazz due to a sprained right ankle.",
+    "game_date": "2026-03-18T19:54Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Anthony Edwards",
+    "team_abbrev": "MIN",
+    "status": "Out",
+    "reason": "Edwards will be re-evaluated in 1-to-2 weeks due to right knee inflammation, Chris Hine of the Minnesota Star Tribune reports.",
+    "game_date": "2026-03-17T19:30Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Bryce McGowens",
+    "team_abbrev": "NOP",
+    "status": "Out",
+    "reason": "McGowens (toe) has been ruled out for Wednesday's game against the Clippers.",
+    "game_date": "2026-03-17T21:20Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jalen Brunson",
+    "team_abbrev": "NYK",
+    "status": "Day-To-Day",
+    "reason": "Knicks head coach Mike Brown said Tuesday that he believes Brunson (ankle/neck) will return to the lineup Friday against the Nets, Stefan Bondy of The New York Post reports. \"I imagine [he'll play in Brooklyn]. ... There's two days off before the next game,\" Brown said of Brunson. \"There's plenty of time to get himself right.\"",
+    "game_date": "2026-03-18T19:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Miles McBride",
+    "team_abbrev": "NYK",
+    "status": "Out",
+    "reason": "McBride (pelvis) has started participating in contact drills but remains without a timeline for a return, Kristian Winfield of the New York Daily News reports.",
+    "game_date": "2026-03-17T21:59Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Luguentz Dort",
+    "team_abbrev": "OKC",
+    "status": "Out",
+    "reason": "Dort will be rested Wednesday against the Nets.",
+    "game_date": "2026-03-18T17:25Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Branden Carlson",
+    "team_abbrev": "OKC",
+    "status": "Out",
+    "reason": "Carlson (back) is out for Wednesday's game against the Nets.",
+    "game_date": "2026-03-18T17:23Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jalen Williams",
+    "team_abbrev": "OKC",
+    "status": "Out",
+    "reason": "Williams (hamstring) is out for Wednesday's game against the Nets.",
+    "game_date": "2026-03-18T17:20Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Isaiah Hartenstein",
+    "team_abbrev": "OKC",
+    "status": "Out",
+    "reason": "Hartenstein (rest) will not play Wednesday against the Nets.",
+    "game_date": "2026-03-18T17:18Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Thomas Sorber",
+    "team_abbrev": "OKC",
+    "status": "Out",
+    "reason": "The Thunder announced Friday that Sorber has sustained a torn ACL in his right knee during an offseason workout, NBA reporter Marc Stein reports.",
+    "game_date": "2025-09-05T21:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jonathan Isaac",
+    "team_abbrev": "ORL",
+    "status": "Out",
+    "reason": "Isaac is out for Thursday's game against the Hornets with a left knee sprain.",
+    "game_date": "2026-03-18T20:38Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Anthony Black",
+    "team_abbrev": "ORL",
+    "status": "Out",
+    "reason": "Black (abdomen) is out for Thursday's game against the Hornets.",
+    "game_date": "2026-03-18T20:37Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Franz Wagner",
+    "team_abbrev": "ORL",
+    "status": "Out",
+    "reason": "Wagner (ankle) is out for Thursday's game against the Hornets.",
+    "game_date": "2026-03-18T20:36Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jabari Walker",
+    "team_abbrev": "PHI",
+    "status": "Out",
+    "reason": "Walker (illness) has been ruled out for Tuesday's game against the Nuggets.",
+    "game_date": "2026-03-16T23:27Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Joel Embiid",
+    "team_abbrev": "PHI",
+    "status": "Out",
+    "reason": "Embiid (oblique) won't play Tuesday against Denver, Ky Carlin of USA Today reports.",
+    "game_date": "2026-03-16T23:15Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kelly Oubre Jr.",
+    "team_abbrev": "PHI",
+    "status": "Out",
+    "reason": "Oubre is expected to miss at least two weeks due to a left elbow sprain, Michael Scotto of USA Today reports.",
+    "game_date": "2026-03-11T21:11Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Tyrese Maxey",
+    "team_abbrev": "PHI",
+    "status": "Out",
+    "reason": "Maxey has been diagnosed with a tendon injury in his right pinkie finger and will be re-evaluated in three weeks, Shams Charania of ESPN reports.",
+    "game_date": "2026-03-10T22:43Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Johni Broome",
+    "team_abbrev": "PHI",
+    "status": "Out",
+    "reason": "Broome underwent a successful partial meniscectomy Saturday to address a lateral meniscus tear in his right knee, per Adam Zagoria of ZagsBlog.com.",
+    "game_date": "2026-03-01T00:47Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Paul George",
+    "team_abbrev": "PHI",
+    "status": "Suspension",
+    "reason": "The NBA suspended George for 25 games Saturday for violating the league's Anti-Drug program.",
+    "game_date": "2026-01-31T16:49Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Grayson Allen",
+    "team_abbrev": "PHX",
+    "status": "Day-To-Day",
+    "reason": "Allen (knee) is questionable for Thursday's game in San Antonio.",
+    "game_date": "2026-03-18T22:20Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Royce O'Neale",
+    "team_abbrev": "PHX",
+    "status": "Day-To-Day",
+    "reason": "O'Neale is questionable for Thursday's game against the Spurs due to left knee soreness.",
+    "game_date": "2026-03-18T22:19Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Dillon Brooks",
+    "team_abbrev": "PHX",
+    "status": "Out",
+    "reason": "Brooks has shed the cast on his surgically repaired left hand, but he's still not been cleared for contact work, Amanda Pflugrad of 3TV Phoenix reports.",
+    "game_date": "2026-03-12T21:42Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Mark Williams",
+    "team_abbrev": "PHX",
+    "status": "Out",
+    "reason": "Williams will be re-evaluated in 2-to-3 weeks after being diagnosed with a stress reaction in the third metatarsal of his left foot, Shane Young of the Suns' official site reports.",
+    "game_date": "2026-03-05T23:50Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Vit Krejci",
+    "team_abbrev": "POR",
+    "status": "Out",
+    "reason": "Krejci (calf) is out for Wednesday's game against the Pacers.",
+    "game_date": "2026-03-18T17:12Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Shaedon Sharpe",
+    "team_abbrev": "POR",
+    "status": "Out",
+    "reason": "Sharpe (calf) will be re-evaluated in 4-to-6 weeks, per Sean Highkin of Rip City Radio 620 Portland.",
+    "game_date": "2026-02-24T22:24Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Damian Lillard",
+    "team_abbrev": "POR",
+    "status": "Out",
+    "reason": "Lillard (Achilles) defeated Devin Booker and Kon Knueppel in the final round of Saturday's 2026 State Farm 3-Point Contest, taking home his third title.",
+    "game_date": "2026-02-14T23:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Daeqwon Plowden",
+    "team_abbrev": "SAC",
+    "status": "Day-To-Day",
+    "reason": "Plowden went to the locker room during the fourth quarter of Tuesday's game against the Spurs with an apparent lower body injury and didn't return, Sean Cunningham of Fox 40 Sacramento reports. He ended with 14 points (5-11 FG, 3-8 3Pt, 1-4 FT), one rebound, one assist and two steals in 28 minutes.",
+    "game_date": "2026-03-18T04:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Malik Monk",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Monk (ankle) has been ruled out for Tuesday's game against San Antonio.",
+    "game_date": "2026-03-18T00:17Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Devin Carter",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Carter (calf) is out for Monday's game against the Spurs.",
+    "game_date": "2026-03-16T22:52Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Drew Eubanks",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Eubanks will have surgery to repair a torn UCL in his left thumb, Matt George of ABC 10 Sacramento reports Sunday.",
+    "game_date": "2026-03-16T03:34Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Keegan Murray",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Murray (ankle) will be re-evaluated in two weeks, Matt George of ABC 10 Sacramento reports.",
+    "game_date": "2026-03-14T02:17Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "De'Andre Hunter",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Hunter is set to undergo season-ending eye surgery, Chris Haynes of NBA TV reports.",
+    "game_date": "2026-02-20T22:55Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Domantas Sabonis",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "Sabonis underwent season-ending knee surgery Wednesday to repair a torn left meniscus, Shams Charania of ESPN reports.",
+    "game_date": "2026-02-18T21:18Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Zach LaVine",
+    "team_abbrev": "SAC",
+    "status": "Out",
+    "reason": "LaVine will undergo season-ending surgery on his right hand after the All-Star break, Chris Haynes of NBA TV reports.",
+    "game_date": "2026-02-14T00:50Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "David Jones Garcia",
+    "team_abbrev": "SAS",
+    "status": "Out",
+    "reason": "Jones Garcia underwent ankle surgery Wednesday and will miss the remainder of the 2025-26 season, Tom Orsborn of the San Antonio Express-News reports.",
+    "game_date": "2026-02-04T22:39Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Collin Murray-Boyles",
+    "team_abbrev": "TOR",
+    "status": "Out",
+    "reason": "Murray-Boyles (thumb) has been ruled out for Wednesday's game against Chicago, Michael Grange of Sportsnet.ca reports.",
+    "game_date": "2026-03-18T22:46Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Chucky Hepburn",
+    "team_abbrev": "TOR",
+    "status": "Out",
+    "reason": "Hepburn (knee) was spotted Wednesday no longer using crutches, Ryan Wolstat of the Toronto Sun reports.",
+    "game_date": "2026-02-26T02:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Keyonte George",
+    "team_abbrev": "UTA",
+    "status": "Out",
+    "reason": "George has been diagnosed with a Grade 2 hamstring strain and will be reassessed in two weeks, Tim Bontemps of ESPN.com reports.",
+    "game_date": "2026-03-13T01:09Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Lauri Markkanen",
+    "team_abbrev": "UTA",
+    "status": "Out",
+    "reason": "Markkanen (hip) won't play Friday versus the Trail Blazers.",
+    "game_date": "2026-03-13T00:11Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jusuf Nurkic",
+    "team_abbrev": "UTA",
+    "status": "Out",
+    "reason": "Nurkic is scheduled to undergo season-ending nose surgery Wednesday, Chris Haynes of NBA TV reports.",
+    "game_date": "2026-02-23T20:23Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Jaren Jackson Jr.",
+    "team_abbrev": "UTA",
+    "status": "Out",
+    "reason": "Jackson was diagnosed with a localized PVNS growth in his left knee and will miss the remainder of the season, Chris Haynes of NBA TV reports.",
+    "game_date": "2026-02-12T16:09Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Walker Kessler",
+    "team_abbrev": "UTA",
+    "status": "Out",
+    "reason": "Kessler will undergo left shoulder surgery and will miss the remainder of the 2025-26 season, Tony Jones of The Athletic reports.",
+    "game_date": "2025-11-05T18:51Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Leaky Black",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "Black (ankle) will remain on the inactive list for Thursday's game versus the Pistons.",
+    "game_date": "2026-03-18T21:14Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Bilal Coulibaly",
+    "team_abbrev": "WAS",
+    "status": "Day-To-Day",
+    "reason": "Coulibaly (heel) is listed as questionable for Thursday's game against Detroit.",
+    "game_date": "2026-03-18T21:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Trae Young",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "Young (quad) won't play Thursday versus the Pistons.",
+    "game_date": "2026-03-18T21:10Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Alex Sarr",
+    "team_abbrev": "WAS",
+    "status": "Day-To-Day",
+    "reason": "Sarr (toe) is questionable for Thursday's game against the Pistons.",
+    "game_date": "2026-03-18T21:06Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Anthony Davis",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "The Wizards announced Thursday that Davis (finger) will be re-evaluated in two weeks.",
+    "game_date": "2026-03-05T19:08Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Kyshawn George",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "The Wizards announced Wednesday that George has been diagnosed with a partial tear of the UCL in his left elbow and will be re-evaluated in three weeks.",
+    "game_date": "2026-03-05T00:32Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "D'Angelo Russell",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "Russell (not injury related) has been ruled out for Tuesday's game against the Magic.",
+    "game_date": "2026-03-03T18:04Z",
+    "source": "espn_fallback"
+  },
+  {
+    "player_name": "Cam Whitmore",
+    "team_abbrev": "WAS",
+    "status": "Out",
+    "reason": "Whitmore has begun the recovery process for a diagnosed venous condition and he will miss the remainder of the 2025-26 season.",
+    "game_date": "2026-01-15T22:15Z",
+    "source": "espn_fallback"
+  }
+]

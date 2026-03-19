@@ -1,0 +1,211 @@
+[
+  {
+    "lineup": [
+      "M. Muscala",
+      "S. Gilgeous-Alexander",
+      "J. Giddey",
+      "A. Wiggins",
+      "J. Williams"
+    ],
+    "minutes": 31.0,
+    "net_rating": 37.4,
+    "off_rating": 141.8,
+    "def_rating": 104.3,
+    "pace": 104.79,
+    "efg_pct": 0.667,
+    "tov_pct": 0.06,
+    "oreb_pct": 0.308,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Muscala",
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Giddey",
+      "J. Williams"
+    ],
+    "minutes": 77.0,
+    "net_rating": 21.9,
+    "off_rating": 124.9,
+    "def_rating": 103.0,
+    "pace": 106.88,
+    "efg_pct": 0.597,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.296,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "L. Dort",
+      "J. Giddey",
+      "J. Williams"
+    ],
+    "minutes": 76.0,
+    "net_rating": 15.8,
+    "off_rating": 127.6,
+    "def_rating": 111.9,
+    "pace": 98.81,
+    "efg_pct": 0.556,
+    "tov_pct": 0.092,
+    "oreb_pct": 0.38,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Butler",
+      "J. Robinson-Earl",
+      "T. Mann",
+      "O. Sarr",
+      "O. Dieng"
+    ],
+    "minutes": 43.0,
+    "net_rating": 2.2,
+    "off_rating": 100.0,
+    "def_rating": 97.8,
+    "pace": 100.62,
+    "efg_pct": 0.526,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.116,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Giddey",
+      "J. Williams",
+      "J. Williams"
+    ],
+    "minutes": 289.0,
+    "net_rating": -2.1,
+    "off_rating": 109.4,
+    "def_rating": 111.5,
+    "pace": 103.64,
+    "efg_pct": 0.527,
+    "tov_pct": 0.131,
+    "oreb_pct": 0.259,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "J. Robinson-Earl",
+      "J. Giddey",
+      "J. Williams"
+    ],
+    "minutes": 82.0,
+    "net_rating": -4.4,
+    "off_rating": 105.3,
+    "def_rating": 109.7,
+    "pace": 108.74,
+    "efg_pct": 0.475,
+    "tov_pct": 0.134,
+    "oreb_pct": 0.32,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Williams",
+      "D. Bazley",
+      "T. Mann",
+      "J. Giddey",
+      "O. Dieng"
+    ],
+    "minutes": 35.0,
+    "net_rating": -5.7,
+    "off_rating": 88.7,
+    "def_rating": 94.4,
+    "pace": 96.95,
+    "efg_pct": 0.44,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.295,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Dort",
+      "I. Joe",
+      "J. Giddey",
+      "J. Williams",
+      "J. Williams"
+    ],
+    "minutes": 95.0,
+    "net_rating": -11.3,
+    "off_rating": 110.0,
+    "def_rating": 121.3,
+    "pace": 104.4,
+    "efg_pct": 0.516,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "A. Pokusevski",
+      "J. Giddey",
+      "J. Williams"
+    ],
+    "minutes": 90.0,
+    "net_rating": -22.8,
+    "off_rating": 104.9,
+    "def_rating": 127.7,
+    "pace": 108.06,
+    "efg_pct": 0.543,
+    "tov_pct": 0.153,
+    "oreb_pct": 0.202,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "L. Dort",
+      "A. Pokusevski",
+      "J. Robinson-Earl",
+      "J. Giddey"
+    ],
+    "minutes": 87.0,
+    "net_rating": -27.9,
+    "off_rating": 98.4,
+    "def_rating": 126.3,
+    "pace": 105.56,
+    "efg_pct": 0.467,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "S. Gilgeous-Alexander",
+      "K. Williams",
+      "J. Giddey",
+      "J. Williams",
+      "J. Williams"
+    ],
+    "minutes": 30.0,
+    "net_rating": -31.2,
+    "off_rating": 92.6,
+    "def_rating": 123.9,
+    "pace": 106.88,
+    "efg_pct": 0.509,
+    "tov_pct": 0.191,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

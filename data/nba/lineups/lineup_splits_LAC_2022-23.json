@@ -1,0 +1,325 @@
+[
+  {
+    "lineup": [
+      "R. Westbrook",
+      "E. Gordon",
+      "N. Batum",
+      "K. Leonard",
+      "I. Zubac"
+    ],
+    "minutes": 83.0,
+    "net_rating": 17.2,
+    "off_rating": 129.2,
+    "def_rating": 112.0,
+    "pace": 102.08,
+    "efg_pct": 0.644,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.247,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "M. Morris Sr.",
+      "K. Leonard",
+      "I. Zubac",
+      "T. Mann"
+    ],
+    "minutes": 142.0,
+    "net_rating": 14.8,
+    "off_rating": 133.0,
+    "def_rating": 118.1,
+    "pace": 92.22,
+    "efg_pct": 0.635,
+    "tov_pct": 0.085,
+    "oreb_pct": 0.239,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Westbrook",
+      "P. George",
+      "M. Morris Sr.",
+      "K. Leonard",
+      "I. Zubac"
+    ],
+    "minutes": 112.0,
+    "net_rating": 14.6,
+    "off_rating": 108.0,
+    "def_rating": 93.4,
+    "pace": 103.01,
+    "efg_pct": 0.536,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.248,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Batum",
+      "P. George",
+      "M. Morris Sr.",
+      "R. Jackson",
+      "I. Zubac"
+    ],
+    "minutes": 31.0,
+    "net_rating": 10.9,
+    "off_rating": 126.6,
+    "def_rating": 115.6,
+    "pace": 100.3,
+    "efg_pct": 0.717,
+    "tov_pct": 0.203,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "M. Morris Sr.",
+      "R. Jackson",
+      "I. Zubac",
+      "L. Kennard"
+    ],
+    "minutes": 100.0,
+    "net_rating": 10.8,
+    "off_rating": 109.3,
+    "def_rating": 98.5,
+    "pace": 97.6,
+    "efg_pct": 0.592,
+    "tov_pct": 0.181,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "K. Leonard",
+      "I. Zubac",
+      "L. Kennard",
+      "T. Mann"
+    ],
+    "minutes": 49.0,
+    "net_rating": 10.0,
+    "off_rating": 115.0,
+    "def_rating": 105.0,
+    "pace": 98.19,
+    "efg_pct": 0.6,
+    "tov_pct": 0.1,
+    "oreb_pct": 0.114,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Plumlee",
+      "R. Covington",
+      "N. Powell",
+      "T. Mann",
+      "B. Hyland"
+    ],
+    "minutes": 37.0,
+    "net_rating": 8.0,
+    "off_rating": 121.4,
+    "def_rating": 113.4,
+    "pace": 108.21,
+    "efg_pct": 0.636,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "M. Morris Sr.",
+      "K. Leonard",
+      "R. Jackson",
+      "I. Zubac"
+    ],
+    "minutes": 164.0,
+    "net_rating": 5.4,
+    "off_rating": 113.1,
+    "def_rating": 107.7,
+    "pace": 98.35,
+    "efg_pct": 0.575,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.23,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Batum",
+      "M. Morris Sr.",
+      "K. Leonard",
+      "I. Zubac",
+      "T. Mann"
+    ],
+    "minutes": 52.0,
+    "net_rating": 2.8,
+    "off_rating": 107.5,
+    "def_rating": 104.7,
+    "pace": 97.56,
+    "efg_pct": 0.467,
+    "tov_pct": 0.112,
+    "oreb_pct": 0.377,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Covington",
+      "A. Coffey",
+      "B. Boston Jr.",
+      "J. Preston",
+      "M. Diabate"
+    ],
+    "minutes": 31.0,
+    "net_rating": 0.2,
+    "off_rating": 106.2,
+    "def_rating": 106.0,
+    "pace": 102.86,
+    "efg_pct": 0.542,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.29,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "E. Gordon",
+      "N. Batum",
+      "K. Leonard",
+      "M. Plumlee",
+      "T. Mann"
+    ],
+    "minutes": 30.0,
+    "net_rating": -1.5,
+    "off_rating": 104.8,
+    "def_rating": 106.3,
+    "pace": 102.74,
+    "efg_pct": 0.455,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.432,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "M. Morris Sr.",
+      "R. Jackson",
+      "I. Zubac",
+      "T. Mann"
+    ],
+    "minutes": 65.0,
+    "net_rating": -2.4,
+    "off_rating": 111.5,
+    "def_rating": 114.0,
+    "pace": 95.05,
+    "efg_pct": 0.57,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.267,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Batum",
+      "P. George",
+      "R. Jackson",
+      "N. Powell",
+      "I. Zubac"
+    ],
+    "minutes": 36.0,
+    "net_rating": -17.3,
+    "off_rating": 100.0,
+    "def_rating": 117.3,
+    "pace": 98.24,
+    "efg_pct": 0.507,
+    "tov_pct": 0.162,
+    "oreb_pct": 0.297,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Batum",
+      "P. George",
+      "R. Jackson",
+      "R. Covington",
+      "N. Powell"
+    ],
+    "minutes": 33.0,
+    "net_rating": -18.8,
+    "off_rating": 100.0,
+    "def_rating": 118.8,
+    "pace": 99.38,
+    "efg_pct": 0.483,
+    "tov_pct": 0.087,
+    "oreb_pct": 0.143,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Westbrook",
+      "E. Gordon",
+      "M. Morris Sr.",
+      "K. Leonard",
+      "I. Zubac"
+    ],
+    "minutes": 41.0,
+    "net_rating": -21.4,
+    "off_rating": 107.1,
+    "def_rating": 128.4,
+    "pace": 101.2,
+    "efg_pct": 0.514,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.22,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Morris Sr.",
+      "R. Jackson",
+      "I. Zubac",
+      "A. Coffey",
+      "T. Mann"
+    ],
+    "minutes": 89.0,
+    "net_rating": -24.1,
+    "off_rating": 106.6,
+    "def_rating": 130.7,
+    "pace": 96.57,
+    "efg_pct": 0.494,
+    "tov_pct": 0.155,
+    "oreb_pct": 0.347,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "P. George",
+      "M. Morris Sr.",
+      "R. Jackson",
+      "N. Powell",
+      "I. Zubac"
+    ],
+    "minutes": 76.0,
+    "net_rating": -31.7,
+    "off_rating": 95.0,
+    "def_rating": 126.7,
+    "pace": 101.9,
+    "efg_pct": 0.473,
+    "tov_pct": 0.174,
+    "oreb_pct": 0.247,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

@@ -1,0 +1,306 @@
+[
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "L. Ball",
+      "C. White",
+      "P. Williams"
+    ],
+    "minutes": 33.0,
+    "net_rating": 29.7,
+    "off_rating": 131.0,
+    "def_rating": 101.3,
+    "pace": 107.03,
+    "efg_pct": 0.667,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.179,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "L. Ball",
+      "P. Williams",
+      "J. Giddey"
+    ],
+    "minutes": 79.0,
+    "net_rating": 13.1,
+    "off_rating": 115.5,
+    "def_rating": 102.4,
+    "pace": 103.33,
+    "efg_pct": 0.613,
+    "tov_pct": 0.125,
+    "oreb_pct": 0.189,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. White",
+      "J. Smith",
+      "A. Dosunmu",
+      "D. Terry",
+      "M. Buzelis"
+    ],
+    "minutes": 39.0,
+    "net_rating": 9.5,
+    "off_rating": 113.1,
+    "def_rating": 103.6,
+    "pace": 104.59,
+    "efg_pct": 0.529,
+    "tov_pct": 0.167,
+    "oreb_pct": 0.316,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "A. Dosunmu",
+      "J. Giddey",
+      "J. Phillips"
+    ],
+    "minutes": 55.0,
+    "net_rating": 9.1,
+    "off_rating": 118.9,
+    "def_rating": 109.8,
+    "pace": 106.67,
+    "efg_pct": 0.713,
+    "tov_pct": 0.197,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "K. Huerter",
+      "C. White",
+      "J. Giddey",
+      "M. Buzelis"
+    ],
+    "minutes": 134.0,
+    "net_rating": 5.2,
+    "off_rating": 122.9,
+    "def_rating": 117.6,
+    "pace": 104.38,
+    "efg_pct": 0.607,
+    "tov_pct": 0.137,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "C. White",
+      "P. Williams",
+      "A. Dosunmu"
+    ],
+    "minutes": 105.0,
+    "net_rating": -1.5,
+    "off_rating": 107.5,
+    "def_rating": 109.0,
+    "pace": 110.68,
+    "efg_pct": 0.54,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "C. White",
+      "P. Williams",
+      "D. Terry",
+      "J. Phillips"
+    ],
+    "minutes": 33.0,
+    "net_rating": -1.5,
+    "off_rating": 92.2,
+    "def_rating": 93.8,
+    "pace": 113.04,
+    "efg_pct": 0.456,
+    "tov_pct": 0.169,
+    "oreb_pct": 0.27,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "C. White",
+      "A. Dosunmu",
+      "J. Giddey"
+    ],
+    "minutes": 104.0,
+    "net_rating": -3.2,
+    "off_rating": 116.7,
+    "def_rating": 119.8,
+    "pace": 107.23,
+    "efg_pct": 0.632,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "C. White",
+      "P. Williams",
+      "J. Giddey"
+    ],
+    "minutes": 250.0,
+    "net_rating": -5.1,
+    "off_rating": 106.7,
+    "def_rating": 111.8,
+    "pace": 107.56,
+    "efg_pct": 0.552,
+    "tov_pct": 0.144,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "Z. LaVine",
+      "P. Williams",
+      "A. Dosunmu",
+      "J. Giddey"
+    ],
+    "minutes": 51.0,
+    "net_rating": -7.6,
+    "off_rating": 102.5,
+    "def_rating": 110.1,
+    "pace": 112.95,
+    "efg_pct": 0.558,
+    "tov_pct": 0.142,
+    "oreb_pct": 0.182,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "K. Huerter",
+      "C. White",
+      "T. Jones",
+      "M. Buzelis"
+    ],
+    "minutes": 54.0,
+    "net_rating": -10.0,
+    "off_rating": 104.3,
+    "def_rating": 114.3,
+    "pace": 104.02,
+    "efg_pct": 0.58,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.059,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "L. Ball",
+      "C. White",
+      "A. Dosunmu",
+      "J. Giddey"
+    ],
+    "minutes": 52.0,
+    "net_rating": -17.7,
+    "off_rating": 105.3,
+    "def_rating": 123.0,
+    "pace": 104.7,
+    "efg_pct": 0.535,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.271,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "C. White",
+      "J. Smith",
+      "A. Dosunmu",
+      "D. Terry",
+      "J. Phillips"
+    ],
+    "minutes": 37.0,
+    "net_rating": -18.5,
+    "off_rating": 96.6,
+    "def_rating": 115.1,
+    "pace": 113.07,
+    "efg_pct": 0.445,
+    "tov_pct": 0.112,
+    "oreb_pct": 0.283,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "C. White",
+      "P. Williams",
+      "A. Dosunmu",
+      "J. Giddey"
+    ],
+    "minutes": 58.0,
+    "net_rating": -28.0,
+    "off_rating": 112.7,
+    "def_rating": 140.7,
+    "pace": 103.75,
+    "efg_pct": 0.583,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.193,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "Z. Collins",
+      "C. White",
+      "T. Jones",
+      "J. Giddey",
+      "M. Buzelis"
+    ],
+    "minutes": 35.0,
+    "net_rating": -36.3,
+    "off_rating": 90.4,
+    "def_rating": 126.8,
+    "pace": 98.88,
+    "efg_pct": 0.4,
+    "tov_pct": 0.11,
+    "oreb_pct": 0.304,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "N. Vu\u010devi\u0107",
+      "C. White",
+      "A. Dosunmu",
+      "J. Giddey",
+      "M. Buzelis"
+    ],
+    "minutes": 62.0,
+    "net_rating": -36.7,
+    "off_rating": 96.2,
+    "def_rating": 132.8,
+    "pace": 100.98,
+    "efg_pct": 0.523,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.194,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

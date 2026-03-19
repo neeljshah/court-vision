@@ -1,0 +1,306 @@
+[
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Tatum",
+      "D. White",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 31.0,
+    "net_rating": 50.8,
+    "off_rating": 135.4,
+    "def_rating": 84.6,
+    "pace": 100.21,
+    "efg_pct": 0.649,
+    "tov_pct": 0.108,
+    "oreb_pct": 0.393,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Holiday",
+      "J. Tatum",
+      "L. Kornet",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 96.0,
+    "net_rating": 33.7,
+    "off_rating": 126.6,
+    "def_rating": 92.9,
+    "pace": 96.26,
+    "efg_pct": 0.531,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.358,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. Kornet",
+      "S. Mykhailiuk",
+      "O. Brissett",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 32.0,
+    "net_rating": 29.8,
+    "off_rating": 139.1,
+    "def_rating": 109.2,
+    "pace": 95.46,
+    "efg_pct": 0.648,
+    "tov_pct": 0.047,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Brown",
+      "D. White",
+      "L. Kornet",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 34.0,
+    "net_rating": 20.9,
+    "off_rating": 125.0,
+    "def_rating": 104.1,
+    "pace": 102.89,
+    "efg_pct": 0.58,
+    "tov_pct": 0.083,
+    "oreb_pct": 0.297,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "K. Porzingis",
+      "J. Brown",
+      "D. White",
+      "S. Hauser"
+    ],
+    "minutes": 82.0,
+    "net_rating": 19.4,
+    "off_rating": 114.4,
+    "def_rating": 94.9,
+    "pace": 102.81,
+    "efg_pct": 0.62,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.194,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "K. Porzingis",
+      "J. Brown",
+      "J. Tatum"
+    ],
+    "minutes": 56.0,
+    "net_rating": 17.2,
+    "off_rating": 118.0,
+    "def_rating": 100.8,
+    "pace": 105.21,
+    "efg_pct": 0.558,
+    "tov_pct": 0.131,
+    "oreb_pct": 0.291,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "J. Tatum",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 105.0,
+    "net_rating": 16.8,
+    "off_rating": 123.8,
+    "def_rating": 107.0,
+    "pace": 96.86,
+    "efg_pct": 0.628,
+    "tov_pct": 0.133,
+    "oreb_pct": 0.309,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "K. Porzingis",
+      "J. Brown",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 118.0,
+    "net_rating": 16.2,
+    "off_rating": 123.7,
+    "def_rating": 107.5,
+    "pace": 103.93,
+    "efg_pct": 0.578,
+    "tov_pct": 0.074,
+    "oreb_pct": 0.231,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "J. Tatum",
+      "D. White",
+      "S. Hauser"
+    ],
+    "minutes": 30.0,
+    "net_rating": 14.3,
+    "off_rating": 122.2,
+    "def_rating": 107.9,
+    "pace": 101.44,
+    "efg_pct": 0.602,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "K. Porzingis",
+      "J. Brown",
+      "D. White"
+    ],
+    "minutes": 55.0,
+    "net_rating": 13.6,
+    "off_rating": 127.0,
+    "def_rating": 113.4,
+    "pace": 104.95,
+    "efg_pct": 0.696,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.163,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "K. Porzingis",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 87.0,
+    "net_rating": 13.0,
+    "off_rating": 120.7,
+    "def_rating": 107.7,
+    "pace": 100.56,
+    "efg_pct": 0.578,
+    "tov_pct": 0.109,
+    "oreb_pct": 0.205,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Holiday",
+      "K. Porzingis",
+      "J. Brown",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 623.0,
+    "net_rating": 11.0,
+    "off_rating": 120.3,
+    "def_rating": 109.4,
+    "pace": 101.31,
+    "efg_pct": 0.595,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "J. Holiday",
+      "J. Tatum",
+      "N. Queta",
+      "P. Pritchard",
+      "S. Hauser"
+    ],
+    "minutes": 37.0,
+    "net_rating": 9.0,
+    "off_rating": 123.1,
+    "def_rating": 114.1,
+    "pace": 100.24,
+    "efg_pct": 0.599,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.263,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "J. Brown",
+      "J. Tatum",
+      "D. White"
+    ],
+    "minutes": 311.0,
+    "net_rating": 2.7,
+    "off_rating": 118.5,
+    "def_rating": 115.8,
+    "pace": 102.01,
+    "efg_pct": 0.595,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.195,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Brown",
+      "J. Tatum",
+      "D. White",
+      "P. Pritchard"
+    ],
+    "minutes": 34.0,
+    "net_rating": 2.7,
+    "off_rating": 100.0,
+    "def_rating": 97.3,
+    "pace": 105.87,
+    "efg_pct": 0.486,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.279,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Horford",
+      "J. Holiday",
+      "J. Tatum",
+      "L. Kornet",
+      "P. Pritchard"
+    ],
+    "minutes": 45.0,
+    "net_rating": -14.0,
+    "off_rating": 104.7,
+    "def_rating": 118.7,
+    "pace": 94.93,
+    "efg_pct": 0.513,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.289,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

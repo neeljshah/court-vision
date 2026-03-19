@@ -1,39 +1,23 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-18 (evening)
+## Resume From Here — Last Updated: 2026-03-19 01:03
 
 ### Pick Up Where We Left Off
-Multi-clip tracker loop ran Phase 0 + Phase 1 baseline + Fix A (1 of 8 iters).
-**Next: Fix B** — apply to `ball_detect_track.py` and benchmark phi_tor_2025 (51%).
-
-Fix B code (NOT yet applied — benchmark it first):
-- `_eff_threshold = REDET_THRESHOLD if self.pixel_vel > 40 else DETECT_THRESHOLD` (detection mode)
-- `_flow_limit = 15 if self.pixel_vel > 40 else FLOW_MAX_FRAMES` (flow age check)
-- Benchmark on phi_tor_2025 and bos_mia_playoffs, commit if +2pp ball_valid
-
-**Post-Fix-A standings (3600 frames each):**
-| Clip | ball_valid | suspended_pct | Status |
-|------|-----------|---------------|--------|
-| gsw_lakers_2025 | 87% | 0% | ✅ above 80% |
-| den_gsw_playoffs | 87% | 0% | ✅ fixed by Fix A (was 57%/14%) |
-| bos_mia_playoffs | 76% | 0% | 🟡 needs 4pp more |
-| sac_por_2025 | 76% | 0% | 🟡 needs 4pp more |
-| phi_tor_2025 | 51% | 0% | 🔴 worst — Fix B target |
+*(Fill in '## What's Next' in today's session note before closing)*
 
 ### This Session — Files Changed
-- `src/data/nba_enricher.py` — build_live_mask reads per-period PBP cache
-- `_bench_run.py` — game IDs for all 5 target clips + enrich() call post-pipeline
-- `src/pipeline/unified_pipeline.py` — Fix A: suspension threshold 40→200, vision guard 20→50
+- No file changes this session
 
 ### Open Priority Issues
-- 1. 🔴 Tracker loop — 7 iters remaining. Apply Fix B next (phi_tor_2025=51%)
-- 2. 🔴 Wire PostgreSQL — fix ISSUE-010 (every run overwrites tracking_data.csv)
-- 3. 🔴 Analytics + tracking dashboards (not built yet)
-- 4. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
-- 5. 🔴 Run full game — `conda run -n basketball_ai python run_full_game.py` (Phase 6)
+- 1. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
+- 2. 🔴 Analytics + tracking dashboards (not built yet)
+- 3. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
+- 4. 🔴 Real game clip needed — tracker has plateaued on Short4Mosaicing calibration clip; need actual NBA broadcast footage to benchmark further
+- 5. 🟢 Pano validation + fallback — fixed 2026-03-12
 
 ### Analytics Module Status (src/)
 - ✅ `src/analytics/betting_edge.py`
+- ✅ `src/analytics/chat.py`
 - ✅ `src/analytics/defense_pressure.py`
 - ✅ `src/analytics/defensive_scheme.py`
 - ✅ `src/analytics/drive_analysis.py`
@@ -77,10 +61,10 @@ Fix B code (NOT yet applied — benchmark it first):
 - ✅ `src/data/schedule_context.py`
 - ✅ `src/data/shot_chart_scraper.py`
 - ✅ `src/data/video_fetcher.py`
-- ✅ `src/detection/detection/models/detection_model.py`
-- 🔲 `src/detection/detection/tools/classes.py`
-- ✅ `src/detection/detection/tools/inference.py`
-- ✅ `src/detection/detection/tools/train.py`
+- ✅ `src/detection/models/detection_model.py`
+- 🔲 `src/detection/tools/classes.py`
+- ✅ `src/detection/tools/inference.py`
+- ✅ `src/detection/tools/train.py`
 - ✅ `src/features/feature_engineering.py`
 - ✅ `src/pipeline/data_loader.py`
 - ✅ `src/pipeline/feature_pipeline.py`
@@ -129,7 +113,7 @@ Fix B code (NOT yet applied — benchmark it first):
 - ✅ `src/utils/visualize.py`
 
 ### Session Log
-- Latest: `vault/Sessions/Session-2026-03-18.md`
+- Latest: `vault/Sessions/Session-2026-03-19.md`
 - Full log: `vault/Sessions/`
 
 <!-- END AUTO-GENERATED -->

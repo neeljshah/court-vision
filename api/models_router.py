@@ -1,104 +1,94 @@
+"""Models API router — serves predictions from trained src/prediction/ models.
+
+NOTE: /shot uses xfg_model (trained on 221K real shots, Brier 0.226).
+      /win uses win_probability (XGBoost, 27 features, 67.7% accuracy).
+      /player-impact is not yet available (Phase 7 — needs CV game data).
+"""
+import os
+import sys
+
 from fastapi import APIRouter, HTTPException, Query
-from models.shot_probability import ShotProbabilityModel
-from models.win_probability import WinProbabilityModel
-from models.player_impact import PlayerImpactModel
+
+# Ensure src/ is importable when running from project root
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.prediction.xfg_model import XFGModel
+from src.prediction.win_probability import WinProbModel
 
 router = APIRouter()
 
-# Lazy-load models once per process (module-level cache)
-_shot_model: ShotProbabilityModel | None = None
-_win_model: WinProbabilityModel | None = None
-_impact_model: PlayerImpactModel | None = None
+_xfg_model: XFGModel | None = None
+_win_model: WinProbModel | None = None
+
+_XFG_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "models", "xfg_v1.pkl")
+_WIN_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "models", "win_probability.pkl")
 
 
-def _get_shot_model() -> ShotProbabilityModel:
-    global _shot_model
-    if _shot_model is None:
-        _shot_model = ShotProbabilityModel.load("shot_probability")
-    return _shot_model
+def _get_xfg_model() -> XFGModel:
+    global _xfg_model
+    if _xfg_model is None:
+        if not os.path.exists(_XFG_PATH):
+            raise FileNotFoundError(f"xFG model not found at {_XFG_PATH}. Run: python src/prediction/xfg_model.py --train")
+        _xfg_model = XFGModel.load(_XFG_PATH)
+    return _xfg_model
 
 
-def _get_win_model() -> WinProbabilityModel:
+def _get_win_model() -> WinProbModel:
     global _win_model
     if _win_model is None:
-        _win_model = WinProbabilityModel.load("win_probability")
+        if not os.path.exists(_WIN_PATH):
+            raise FileNotFoundError(f"Win prob model not found at {_WIN_PATH}. Run: python src/prediction/win_probability.py --train")
+        _win_model = WinProbModel.load(_WIN_PATH)
     return _win_model
-
-
-def _get_impact_model() -> PlayerImpactModel:
-    global _impact_model
-    if _impact_model is None:
-        _impact_model = PlayerImpactModel.load("player_impact")
-    return _impact_model
 
 
 @router.get("/shot")
 def shot_probability(
-    defender_dist: float = Query(..., description="Distance to nearest defender in pixels"),
-    shot_angle: float = Query(..., description="Shot angle in degrees"),
-    fatigue_proxy: float = Query(0.5, description="Fatigue proxy [0,1]; 0=fresh, 1=fatigued"),
-    court_zone: str = Query("midrange", description="'paint', 'midrange', or 'three'"),
+    shot_zone_basic: str = Query("Mid-Range", description="Zone: 'Restricted Area', 'In The Paint (Non-RA)', 'Mid-Range', 'Left Corner 3', 'Right Corner 3', 'Above the Break 3', 'Backcourt'"),
+    shot_zone_range: str = Query("8-16 ft.", description="Range: '8-16 ft.', '16-24 ft.', 'Less Than 8 ft.', '24+ ft.', 'Back Court Shot'"),
+    shot_distance: int = Query(15, description="Distance in feet"),
+    is_3pt: int = Query(0, ge=0, le=1, description="1 if 3-pointer"),
+    action_type: str = Query("Jump Shot", description="Shot action type"),
 ):
-    """Predict shot make probability for given shot context."""
+    """Predict xFG (expected field goal %) for a shot. Trained on 221K real NBA shots."""
     try:
-        model = _get_shot_model()
+        model = _get_xfg_model()
         prob = model.predict({
-            "defender_dist": defender_dist,
-            "shot_angle": shot_angle,
-            "fatigue_proxy": fatigue_proxy,
-            "court_zone": court_zone,
+            "shot_zone_basic": shot_zone_basic,
+            "shot_zone_area": "Center(C)",
+            "shot_zone_range": shot_zone_range,
+            "shot_distance": shot_distance,
+            "is_3pt": is_3pt,
+            "action_type": action_type,
         })
-        return {"probability": prob}
+        return {"xfg": prob, "model": "xfg_v1", "brier_score": 0.226}
     except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=f"Model artifact missing: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/win")
 def win_probability(
-    convex_hull_area: float = Query(..., description="Offensive team hull area in px\u00b2"),
-    avg_inter_player_dist: float = Query(..., description="Average inter-player distance in px"),
-    scoring_run: int = Query(0, description="Current scoring run (positive=team leading, negative=trailing)"),
-    possession_streak: int = Query(0, description="Current possession streak length"),
-    swing_point: int = Query(0, ge=0, le=1, description="1 if this is a swing-point possession, else 0"),
+    home_team: str = Query(..., description="Home team abbreviation, e.g. 'BOS'"),
+    away_team: str = Query(..., description="Away team abbreviation, e.g. 'GSW'"),
+    season: str = Query("2024-25", description="Season string, e.g. '2024-25'"),
 ):
-    """Predict win probability for current game state."""
+    """Pre-game win probability. XGBoost, 27 features, 67.7% accuracy on 3 seasons."""
     try:
         model = _get_win_model()
-        prob = model.predict({
-            "convex_hull_area": convex_hull_area,
-            "avg_inter_player_dist": avg_inter_player_dist,
-            "scoring_run": scoring_run,
-            "possession_streak": possession_streak,
-            "swing_point": swing_point,
-        })
-        return {"win_probability": prob}
+        result = model.predict(home_team=home_team, away_team=away_team, season=season)
+        return result
     except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=f"Model artifact missing: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/player-impact")
-def player_impact(
-    track_id: int = Query(..., description="Player track ID"),
-    made_rate: float = Query(..., ge=0.0, le=1.0, description="Shot made rate for this player"),
-    shots_taken: int = Query(..., ge=1, description="Total shots taken"),
-    cut_events: int = Query(0, description="Number of cut events"),
-    screen_events: int = Query(0, description="Number of screen events"),
-):
-    """Predict player EPA per 100 possessions."""
-    try:
-        model = _get_impact_model()
-        result = model.predict({
-            "track_id": track_id,
-            "made_rate": made_rate,
-            "shots_taken": shots_taken,
-            "event_mix": {"cut": cut_events, "screen": screen_events},
-        })
-        return result
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=503, detail=f"Model artifact missing: {e}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+def player_impact_unavailable():
+    """Player EPA model — not yet trained (requires Phase 6 full game data)."""
+    raise HTTPException(
+        status_code=503,
+        detail="Player impact model not yet available. Requires 20+ full games of CV data (Phase 6)."
+    )

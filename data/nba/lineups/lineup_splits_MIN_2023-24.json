@@ -1,0 +1,401 @@
+[
+  {
+    "lineup": [
+      "K. Towns",
+      "N. Alexander-Walker",
+      "N. Reid",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 44.0,
+    "net_rating": 44.5,
+    "off_rating": 147.8,
+    "def_rating": 103.3,
+    "pace": 98.69,
+    "efg_pct": 0.775,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "K. Anderson",
+      "N. Alexander-Walker",
+      "N. Reid",
+      "A. Edwards"
+    ],
+    "minutes": 99.0,
+    "net_rating": 30.9,
+    "off_rating": 117.3,
+    "def_rating": 86.4,
+    "pace": 105.52,
+    "efg_pct": 0.592,
+    "tov_pct": 0.136,
+    "oreb_pct": 0.352,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Towns",
+      "T. Brown Jr.",
+      "N. Alexander-Walker"
+    ],
+    "minutes": 62.0,
+    "net_rating": 29.0,
+    "off_rating": 121.8,
+    "def_rating": 92.8,
+    "pace": 95.78,
+    "efg_pct": 0.693,
+    "tov_pct": 0.185,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Anderson",
+      "K. Towns",
+      "A. Edwards"
+    ],
+    "minutes": 38.0,
+    "net_rating": 25.1,
+    "off_rating": 116.0,
+    "def_rating": 90.9,
+    "pace": 100.3,
+    "efg_pct": 0.556,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.425,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Anderson",
+      "N. Alexander-Walker",
+      "N. Reid"
+    ],
+    "minutes": 48.0,
+    "net_rating": 14.3,
+    "off_rating": 110.1,
+    "def_rating": 95.8,
+    "pace": 91.24,
+    "efg_pct": 0.611,
+    "tov_pct": 0.27,
+    "oreb_pct": 0.361,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Anderson",
+      "K. Towns",
+      "J. McLaughlin",
+      "N. Alexander-Walker",
+      "N. Reid"
+    ],
+    "minutes": 45.0,
+    "net_rating": 13.9,
+    "off_rating": 92.0,
+    "def_rating": 78.1,
+    "pace": 105.61,
+    "efg_pct": 0.538,
+    "tov_pct": 0.2,
+    "oreb_pct": 0.163,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Anderson",
+      "M. Morris",
+      "N. Alexander-Walker",
+      "N. Reid",
+      "A. Edwards"
+    ],
+    "minutes": 47.0,
+    "net_rating": 13.1,
+    "off_rating": 105.0,
+    "def_rating": 91.8,
+    "pace": 102.45,
+    "efg_pct": 0.525,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Towns",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 641.0,
+    "net_rating": 7.9,
+    "off_rating": 118.7,
+    "def_rating": 110.8,
+    "pace": 97.12,
+    "efg_pct": 0.584,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.29,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Towns",
+      "N. Alexander-Walker",
+      "A. Edwards"
+    ],
+    "minutes": 124.0,
+    "net_rating": 7.6,
+    "off_rating": 110.6,
+    "def_rating": 103.1,
+    "pace": 101.03,
+    "efg_pct": 0.555,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.252,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "K. Towns",
+      "N. Alexander-Walker",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 106.0,
+    "net_rating": 6.4,
+    "off_rating": 122.8,
+    "def_rating": 116.4,
+    "pace": 98.33,
+    "efg_pct": 0.631,
+    "tov_pct": 0.121,
+    "oreb_pct": 0.241,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "N. Alexander-Walker",
+      "N. Reid",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 64.0,
+    "net_rating": 5.3,
+    "off_rating": 93.6,
+    "def_rating": 88.3,
+    "pace": 107.4,
+    "efg_pct": 0.54,
+    "tov_pct": 0.164,
+    "oreb_pct": 0.239,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Anderson",
+      "K. Towns",
+      "S. Milton",
+      "N. Alexander-Walker",
+      "N. Reid"
+    ],
+    "minutes": 43.0,
+    "net_rating": 5.3,
+    "off_rating": 114.6,
+    "def_rating": 109.3,
+    "pace": 108.95,
+    "efg_pct": 0.471,
+    "tov_pct": 0.073,
+    "oreb_pct": 0.3,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "M. Morris",
+      "N. Reid",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 31.0,
+    "net_rating": 3.0,
+    "off_rating": 112.1,
+    "def_rating": 109.1,
+    "pace": 103.28,
+    "efg_pct": 0.593,
+    "tov_pct": 0.091,
+    "oreb_pct": 0.185,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Anderson",
+      "J. McLaughlin",
+      "N. Alexander-Walker"
+    ],
+    "minutes": 44.0,
+    "net_rating": 1.1,
+    "off_rating": 100.0,
+    "def_rating": 98.9,
+    "pace": 97.89,
+    "efg_pct": 0.598,
+    "tov_pct": 0.202,
+    "oreb_pct": 0.088,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "N. Reid",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 200.0,
+    "net_rating": 0.0,
+    "off_rating": 102.1,
+    "def_rating": 102.1,
+    "pace": 101.64,
+    "efg_pct": 0.541,
+    "tov_pct": 0.153,
+    "oreb_pct": 0.228,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Anderson",
+      "K. Towns",
+      "N. Alexander-Walker",
+      "N. Reid",
+      "A. Edwards"
+    ],
+    "minutes": 153.0,
+    "net_rating": -3.7,
+    "off_rating": 110.8,
+    "def_rating": 114.5,
+    "pace": 103.51,
+    "efg_pct": 0.557,
+    "tov_pct": 0.135,
+    "oreb_pct": 0.276,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "K. Anderson",
+      "M. Morris",
+      "N. Alexander-Walker",
+      "A. Edwards"
+    ],
+    "minutes": 32.0,
+    "net_rating": -10.4,
+    "off_rating": 94.0,
+    "def_rating": 104.4,
+    "pace": 102.8,
+    "efg_pct": 0.491,
+    "tov_pct": 0.164,
+    "oreb_pct": 0.314,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Anderson",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 123.0,
+    "net_rating": -12.5,
+    "off_rating": 95.7,
+    "def_rating": 108.2,
+    "pace": 100.44,
+    "efg_pct": 0.454,
+    "tov_pct": 0.151,
+    "oreb_pct": 0.345,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "R. Gobert",
+      "K. Anderson",
+      "N. Alexander-Walker",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 32.0,
+    "net_rating": -20.7,
+    "off_rating": 93.0,
+    "def_rating": 113.7,
+    "pace": 106.89,
+    "efg_pct": 0.545,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.267,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "R. Gobert",
+      "K. Anderson",
+      "S. Milton",
+      "N. Reid"
+    ],
+    "minutes": 30.0,
+    "net_rating": -24.4,
+    "off_rating": 87.1,
+    "def_rating": 111.5,
+    "pace": 98.78,
+    "efg_pct": 0.447,
+    "tov_pct": 0.21,
+    "oreb_pct": 0.414,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "M. Conley",
+      "K. Anderson",
+      "N. Reid",
+      "A. Edwards",
+      "J. McDaniels"
+    ],
+    "minutes": 35.0,
+    "net_rating": -30.9,
+    "off_rating": 83.6,
+    "def_rating": 114.5,
+    "pace": 100.78,
+    "efg_pct": 0.331,
+    "tov_pct": 0.096,
+    "oreb_pct": 0.238,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

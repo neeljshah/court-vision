@@ -1,0 +1,43 @@
+{
+  "n_shots": 221866,
+  "league_fg_pct": 0.4671,
+  "val_brier": 0.2264,
+  "val_log_loss": 0.6432,
+  "zones": {
+    "Above the Break 3": {
+      "n": 9508,
+      "actual_fg": 0.37,
+      "mean_xfg": 0.467
+    },
+    "Backcourt": {
+      "n": 79,
+      "actual_fg": 0.038,
+      "mean_xfg": 0.4621
+    },
+    "In The Paint (Non-RA)": {
+      "n": 7210,
+      "actual_fg": 0.4571,
+      "mean_xfg": 0.4651
+    },
+    "Left Corner 3": {
+      "n": 1382,
+      "actual_fg": 0.39,
+      "mean_xfg": 0.4655
+    },
+    "Mid-Range": {
+      "n": 4954,
+      "actual_fg": 0.4332,
+      "mean_xfg": 0.4673
+    },
+    "Restricted Area": {
+      "n": 8835,
+      "actual_fg": 0.6724,
+      "mean_xfg": 0.4686
+    },
+    "Right Corner 3": {
+      "n": 1312,
+      "actual_fg": 0.4024,
+      "mean_xfg": 0.4624
+    }
+  }
+}

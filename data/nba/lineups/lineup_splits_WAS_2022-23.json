@@ -1,0 +1,477 @@
+[
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "D. Wright",
+      "K. Kuzma",
+      "C. Kispert"
+    ],
+    "minutes": 34.0,
+    "net_rating": 44.2,
+    "off_rating": 138.1,
+    "def_rating": 93.8,
+    "pace": 91.58,
+    "efg_pct": 0.592,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.419,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Gafford",
+      "D. Avdija"
+    ],
+    "minutes": 30.0,
+    "net_rating": 43.9,
+    "off_rating": 121.3,
+    "def_rating": 77.4,
+    "pace": 97.14,
+    "efg_pct": 0.554,
+    "tov_pct": 0.066,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Gafford",
+      "C. Kispert"
+    ],
+    "minutes": 75.0,
+    "net_rating": 34.0,
+    "off_rating": 139.0,
+    "def_rating": 105.0,
+    "pace": 102.79,
+    "efg_pct": 0.68,
+    "tov_pct": 0.119,
+    "oreb_pct": 0.281,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Kuzma",
+      "D. Gafford",
+      "D. Avdija",
+      "C. Kispert",
+      "J. Goodwin"
+    ],
+    "minutes": 30.0,
+    "net_rating": 15.9,
+    "off_rating": 117.5,
+    "def_rating": 101.6,
+    "pace": 103.28,
+    "efg_pct": 0.65,
+    "tov_pct": 0.19,
+    "oreb_pct": 0.292,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Wright",
+      "K. Kuzma",
+      "R. Hachimura",
+      "D. Gafford",
+      "D. Avdija"
+    ],
+    "minutes": 51.0,
+    "net_rating": 14.5,
+    "off_rating": 114.5,
+    "def_rating": 100.0,
+    "pace": 110.66,
+    "efg_pct": 0.577,
+    "tov_pct": 0.154,
+    "oreb_pct": 0.32,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Avdija"
+    ],
+    "minutes": 157.0,
+    "net_rating": 11.7,
+    "off_rating": 123.1,
+    "def_rating": 111.3,
+    "pace": 99.52,
+    "efg_pct": 0.583,
+    "tov_pct": 0.129,
+    "oreb_pct": 0.288,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "D. Wright",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 52.0,
+    "net_rating": 8.3,
+    "off_rating": 114.7,
+    "def_rating": 106.4,
+    "pace": 101.59,
+    "efg_pct": 0.565,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.313,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "D. Wright",
+      "K. Kuzma",
+      "D. Gafford"
+    ],
+    "minutes": 52.0,
+    "net_rating": 7.7,
+    "off_rating": 126.9,
+    "def_rating": 119.2,
+    "pace": 96.49,
+    "efg_pct": 0.744,
+    "tov_pct": 0.183,
+    "oreb_pct": 0.129,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Porzingis",
+      "M. Morris",
+      "R. Hachimura",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 37.0,
+    "net_rating": 7.5,
+    "off_rating": 95.5,
+    "def_rating": 88.0,
+    "pace": 117.94,
+    "efg_pct": 0.563,
+    "tov_pct": 0.202,
+    "oreb_pct": 0.118,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Gafford"
+    ],
+    "minutes": 119.0,
+    "net_rating": 5.1,
+    "off_rating": 118.5,
+    "def_rating": 113.5,
+    "pace": 100.68,
+    "efg_pct": 0.599,
+    "tov_pct": 0.161,
+    "oreb_pct": 0.262,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "K. Kuzma",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 42.0,
+    "net_rating": 3.6,
+    "off_rating": 117.6,
+    "def_rating": 114.0,
+    "pace": 104.89,
+    "efg_pct": 0.577,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.286,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "M. Morris",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 73.0,
+    "net_rating": 2.6,
+    "off_rating": 117.1,
+    "def_rating": 114.5,
+    "pace": 103.96,
+    "efg_pct": 0.582,
+    "tov_pct": 0.101,
+    "oreb_pct": 0.164,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Barton",
+      "K. Kuzma",
+      "D. Gafford",
+      "C. Kispert",
+      "J. Goodwin"
+    ],
+    "minutes": 36.0,
+    "net_rating": 1.2,
+    "off_rating": 92.3,
+    "def_rating": 91.1,
+    "pace": 105.1,
+    "efg_pct": 0.485,
+    "tov_pct": 0.179,
+    "oreb_pct": 0.27,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "A. Gill"
+    ],
+    "minutes": 59.0,
+    "net_rating": 1.1,
+    "off_rating": 130.5,
+    "def_rating": 129.4,
+    "pace": 97.18,
+    "efg_pct": 0.606,
+    "tov_pct": 0.068,
+    "oreb_pct": 0.208,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "M. Morris",
+      "D. Gafford",
+      "C. Kispert"
+    ],
+    "minutes": 56.0,
+    "net_rating": -1.4,
+    "off_rating": 120.5,
+    "def_rating": 121.9,
+    "pace": 98.89,
+    "efg_pct": 0.629,
+    "tov_pct": 0.145,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 122.0,
+    "net_rating": -4.6,
+    "off_rating": 102.7,
+    "def_rating": 107.3,
+    "pace": 102.66,
+    "efg_pct": 0.542,
+    "tov_pct": 0.122,
+    "oreb_pct": 0.127,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Porzingis",
+      "K. Kuzma",
+      "D. Avdija",
+      "C. Kispert",
+      "J. Goodwin"
+    ],
+    "minutes": 74.0,
+    "net_rating": -6.1,
+    "off_rating": 116.2,
+    "def_rating": 122.3,
+    "pace": 100.85,
+    "efg_pct": 0.586,
+    "tov_pct": 0.097,
+    "oreb_pct": 0.154,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Gafford",
+      "C. Kispert"
+    ],
+    "minutes": 40.0,
+    "net_rating": -7.6,
+    "off_rating": 132.9,
+    "def_rating": 140.5,
+    "pace": 95.81,
+    "efg_pct": 0.599,
+    "tov_pct": 0.098,
+    "oreb_pct": 0.361,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Wright",
+      "D. Gafford",
+      "D. Avdija",
+      "C. Kispert",
+      "J. Davis"
+    ],
+    "minutes": 35.0,
+    "net_rating": -9.9,
+    "off_rating": 91.5,
+    "def_rating": 101.4,
+    "pace": 95.91,
+    "efg_pct": 0.474,
+    "tov_pct": 0.239,
+    "oreb_pct": 0.306,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Barton",
+      "K. Kuzma",
+      "R. Hachimura",
+      "D. Gafford",
+      "J. Goodwin"
+    ],
+    "minutes": 32.0,
+    "net_rating": -10.3,
+    "off_rating": 82.4,
+    "def_rating": 92.6,
+    "pace": 103.56,
+    "efg_pct": 0.45,
+    "tov_pct": 0.132,
+    "oreb_pct": 0.22,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "K. Porzingis",
+      "K. Kuzma",
+      "M. Morris",
+      "C. Kispert"
+    ],
+    "minutes": 52.0,
+    "net_rating": -15.9,
+    "off_rating": 107.6,
+    "def_rating": 123.5,
+    "pace": 107.74,
+    "efg_pct": 0.564,
+    "tov_pct": 0.151,
+    "oreb_pct": 0.298,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Beal",
+      "D. Wright",
+      "K. Kuzma",
+      "D. Gafford",
+      "D. Avdija"
+    ],
+    "minutes": 46.0,
+    "net_rating": -18.9,
+    "off_rating": 98.9,
+    "def_rating": 117.8,
+    "pace": 94.24,
+    "efg_pct": 0.435,
+    "tov_pct": 0.146,
+    "oreb_pct": 0.377,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "W. Barton",
+      "K. Kuzma",
+      "M. Morris",
+      "D. Gafford",
+      "C. Kispert"
+    ],
+    "minutes": 33.0,
+    "net_rating": -20.8,
+    "off_rating": 95.9,
+    "def_rating": 116.7,
+    "pace": 104.4,
+    "efg_pct": 0.485,
+    "tov_pct": 0.082,
+    "oreb_pct": 0.22,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Gafford",
+      "A. Gill",
+      "C. Kispert",
+      "J. Goodwin",
+      "J. Davis"
+    ],
+    "minutes": 33.0,
+    "net_rating": -21.4,
+    "off_rating": 102.6,
+    "def_rating": 124.0,
+    "pace": 109.1,
+    "efg_pct": 0.444,
+    "tov_pct": 0.118,
+    "oreb_pct": 0.311,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Porzingis",
+      "M. Morris",
+      "D. Gafford",
+      "D. Avdija",
+      "C. Kispert"
+    ],
+    "minutes": 40.0,
+    "net_rating": -28.4,
+    "off_rating": 113.3,
+    "def_rating": 141.7,
+    "pace": 99.0,
+    "efg_pct": 0.568,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

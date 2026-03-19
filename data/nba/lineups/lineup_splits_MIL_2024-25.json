@@ -1,0 +1,401 @@
+[
+  {
+    "lineup": [
+      "G. Antetokounmpo",
+      "B. Portis",
+      "G. Trent Jr.",
+      "K. Porter Jr.",
+      "A. Green"
+    ],
+    "minutes": 42.0,
+    "net_rating": 51.2,
+    "off_rating": 144.6,
+    "def_rating": 93.4,
+    "pace": 103.4,
+    "efg_pct": 0.648,
+    "tov_pct": 0.054,
+    "oreb_pct": 0.409,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Middleton",
+      "G. Antetokounmpo",
+      "B. Portis",
+      "G. Trent Jr.",
+      "A. Green"
+    ],
+    "minutes": 57.0,
+    "net_rating": 26.0,
+    "off_rating": 128.5,
+    "def_rating": 102.5,
+    "pace": 101.88,
+    "efg_pct": 0.61,
+    "tov_pct": 0.081,
+    "oreb_pct": 0.315,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "B. Portis",
+      "G. Trent Jr.",
+      "A. Green"
+    ],
+    "minutes": 121.0,
+    "net_rating": 22.2,
+    "off_rating": 121.8,
+    "def_rating": 99.6,
+    "pace": 100.65,
+    "efg_pct": 0.608,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.211,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "K. Middleton",
+      "B. Portis",
+      "R. Rollins",
+      "A. Jackson Jr."
+    ],
+    "minutes": 39.0,
+    "net_rating": 20.0,
+    "off_rating": 123.5,
+    "def_rating": 103.6,
+    "pace": 103.78,
+    "efg_pct": 0.667,
+    "tov_pct": 0.153,
+    "oreb_pct": 0.212,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "G. Antetokounmpo",
+      "G. Trent Jr.",
+      "A. Green"
+    ],
+    "minutes": 54.0,
+    "net_rating": 15.7,
+    "off_rating": 118.3,
+    "def_rating": 102.6,
+    "pace": 103.58,
+    "efg_pct": 0.62,
+    "tov_pct": 0.13,
+    "oreb_pct": 0.188,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "K. Porter Jr.",
+      "A. Green"
+    ],
+    "minutes": 36.0,
+    "net_rating": 15.7,
+    "off_rating": 114.3,
+    "def_rating": 98.6,
+    "pace": 99.29,
+    "efg_pct": 0.682,
+    "tov_pct": 0.195,
+    "oreb_pct": 0.154,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "A. Green"
+    ],
+    "minutes": 110.0,
+    "net_rating": 14.5,
+    "off_rating": 107.0,
+    "def_rating": 92.5,
+    "pace": 105.53,
+    "efg_pct": 0.523,
+    "tov_pct": 0.12,
+    "oreb_pct": 0.203,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "K. Kuzma",
+      "R. Rollins"
+    ],
+    "minutes": 146.0,
+    "net_rating": 12.4,
+    "off_rating": 130.1,
+    "def_rating": 117.6,
+    "pace": 97.21,
+    "efg_pct": 0.684,
+    "tov_pct": 0.115,
+    "oreb_pct": 0.186,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "B. Portis",
+      "T. Prince",
+      "G. Trent Jr."
+    ],
+    "minutes": 80.0,
+    "net_rating": 8.5,
+    "off_rating": 120.2,
+    "def_rating": 111.8,
+    "pace": 100.79,
+    "efg_pct": 0.597,
+    "tov_pct": 0.143,
+    "oreb_pct": 0.225,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "K. Kuzma"
+    ],
+    "minutes": 205.0,
+    "net_rating": 4.3,
+    "off_rating": 113.4,
+    "def_rating": 109.1,
+    "pace": 102.97,
+    "efg_pct": 0.581,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "K. Kuzma",
+      "G. Trent Jr.",
+      "K. Porter Jr.",
+      "J. Sims",
+      "A. Green"
+    ],
+    "minutes": 47.0,
+    "net_rating": 3.0,
+    "off_rating": 102.0,
+    "def_rating": 99.0,
+    "pace": 102.42,
+    "efg_pct": 0.526,
+    "tov_pct": 0.19,
+    "oreb_pct": 0.279,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "G. Trent Jr."
+    ],
+    "minutes": 188.0,
+    "net_rating": 0.9,
+    "off_rating": 118.5,
+    "def_rating": 117.7,
+    "pace": 103.15,
+    "efg_pct": 0.606,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.15,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "G. Antetokounmpo",
+      "D. Wright",
+      "B. Portis",
+      "G. Trent Jr.",
+      "A. Green"
+    ],
+    "minutes": 35.0,
+    "net_rating": 0.0,
+    "off_rating": 133.8,
+    "def_rating": 133.8,
+    "pace": 101.47,
+    "efg_pct": 0.72,
+    "tov_pct": 0.095,
+    "oreb_pct": 0.16,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "G. Antetokounmpo",
+      "T. Prince",
+      "A. Jackson Jr."
+    ],
+    "minutes": 311.0,
+    "net_rating": -2.5,
+    "off_rating": 110.2,
+    "def_rating": 112.7,
+    "pace": 101.61,
+    "efg_pct": 0.571,
+    "tov_pct": 0.147,
+    "oreb_pct": 0.236,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "K. Middleton",
+      "G. Antetokounmpo",
+      "A. Jackson Jr."
+    ],
+    "minutes": 45.0,
+    "net_rating": -4.4,
+    "off_rating": 105.1,
+    "def_rating": 109.5,
+    "pace": 104.05,
+    "efg_pct": 0.489,
+    "tov_pct": 0.051,
+    "oreb_pct": 0.264,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "B. Portis",
+      "T. Prince",
+      "A. Jackson Jr."
+    ],
+    "minutes": 38.0,
+    "net_rating": -5.2,
+    "off_rating": 116.5,
+    "def_rating": 121.7,
+    "pace": 106.29,
+    "efg_pct": 0.623,
+    "tov_pct": 0.106,
+    "oreb_pct": 0.121,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "K. Kuzma",
+      "G. Trent Jr.",
+      "K. Porter Jr.",
+      "A. Green"
+    ],
+    "minutes": 43.0,
+    "net_rating": -9.8,
+    "off_rating": 110.2,
+    "def_rating": 120.0,
+    "pace": 96.07,
+    "efg_pct": 0.604,
+    "tov_pct": 0.136,
+    "oreb_pct": 0.129,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "T. Prince",
+      "K. Kuzma",
+      "G. Trent Jr.",
+      "K. Porter Jr."
+    ],
+    "minutes": 39.0,
+    "net_rating": -17.7,
+    "off_rating": 114.8,
+    "def_rating": 132.5,
+    "pace": 99.72,
+    "efg_pct": 0.59,
+    "tov_pct": 0.123,
+    "oreb_pct": 0.171,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "K. Middleton",
+      "B. Portis",
+      "G. Trent Jr."
+    ],
+    "minutes": 36.0,
+    "net_rating": -18.3,
+    "off_rating": 109.0,
+    "def_rating": 127.3,
+    "pace": 103.86,
+    "efg_pct": 0.573,
+    "tov_pct": 0.141,
+    "oreb_pct": 0.152,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Lillard",
+      "K. Kuzma",
+      "G. Trent Jr.",
+      "J. Sims",
+      "A. Green"
+    ],
+    "minutes": 43.0,
+    "net_rating": -20.2,
+    "off_rating": 99.0,
+    "def_rating": 119.2,
+    "pace": 108.45,
+    "efg_pct": 0.415,
+    "tov_pct": 0.113,
+    "oreb_pct": 0.291,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "B. Lopez",
+      "D. Lillard",
+      "K. Kuzma",
+      "G. Trent Jr.",
+      "A. Green"
+    ],
+    "minutes": 31.0,
+    "net_rating": -34.8,
+    "off_rating": 94.2,
+    "def_rating": 129.0,
+    "pace": 107.71,
+    "efg_pct": 0.5,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.152,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]
