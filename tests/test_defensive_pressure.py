@@ -5,8 +5,8 @@ All tests verify the behavior spec in the plan.
 """
 import math
 import pytest
-from features.defensive_pressure import compute_defensive_pressure
-from features.types import DefensivePressure
+from legacy.features.defensive_pressure import compute_defensive_pressure
+from legacy.features.types import DefensivePressure
 
 
 GAME_ID = "game-001"

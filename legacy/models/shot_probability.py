@@ -13,7 +13,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from models.base import BaseModel
+from legacy.models.base import BaseModel
 
 
 class ShotProbabilityModel(BaseModel):

@@ -9,8 +9,8 @@ Tests cover:
 
 import pytest
 import math
-from features.passing_network import build_passing_network, export_network_graph
-from features.types import PassingEdge
+from legacy.features.passing_network import build_passing_network, export_network_graph
+from legacy.features.types import PassingEdge
 import networkx as nx
 
 

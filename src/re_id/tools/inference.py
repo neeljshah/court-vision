@@ -11,7 +11,7 @@ import warnings
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-from models.model import *
+from src.re_id.models.model import *
 from timeit import default_timer as timer
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader

@@ -14,9 +14,9 @@ import cv2
 import numpy as np
 from deep_sort_realtime.deepsort_tracker import DeepSort
 
-from pipelines.detector import Detection
-from tracking.ball_kalman import BallKalman
-from tracking.homography import CourtHomography
+from legacy.pipelines.detector import Detection
+from legacy.tracking.ball_kalman import BallKalman
+from legacy.tracking.homography import CourtHomography
 
 # Rolling window for velocity smoothing (5 frames ≈ 167ms at 30fps)
 _VEL_WINDOW = 5

@@ -21,12 +21,12 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from pipelines.detector import ObjectDetector
-from pipelines.video_ingestor import VideoIngestor
-from tracking.coordinate_writer import CoordinateWriter
-from tracking.database import get_connection
-from tracking.homography import CourtHomography, detect_court_corners, detect_court_lines
-from tracking.tracker import ObjectTracker
+from legacy.pipelines.detector import ObjectDetector
+from legacy.pipelines.video_ingestor import VideoIngestor
+from legacy.tracking.coordinate_writer import CoordinateWriter
+from legacy.tracking.database import get_connection
+from legacy.tracking.homography import CourtHomography, detect_court_corners, detect_court_lines
+from legacy.tracking.tracker import ObjectTracker
 
 BATCH_SIZE      = 8    # frames per YOLO forward pass
 CALIB_FRAMES    = 30   # frames sampled for initial homography calibration

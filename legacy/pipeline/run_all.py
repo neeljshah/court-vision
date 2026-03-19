@@ -10,9 +10,9 @@ import argparse
 import webbrowser
 import uuid
 
-from pipeline.ingest_game import ingest_video
-from pipeline.export_data import export_game
-from pipeline.generate_graphs import generate_all
+from legacy.pipeline.ingest_game import ingest_video
+from legacy.pipeline.export_data import export_game
+from legacy.pipeline.generate_graphs import generate_all
 
 
 def run(video: str, home: str, away: str, date: str, season: str,

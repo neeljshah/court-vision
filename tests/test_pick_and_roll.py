@@ -6,14 +6,14 @@ NBA reference: screener ~0-3 ft/s, ball handler ~8+ ft/s, screen contact within 
 """
 
 import pytest
-from features.pick_and_roll import (
+from legacy.features.pick_and_roll import (
     detect_pick_and_roll,
     PNR_WINDOW_FRAMES,
     SCREEN_DISTANCE,
     SCREENER_MAX_SPEED,
     HANDLER_MIN_SPEED,
 )
-from features.types import PickAndRollEvent
+from legacy.features.types import PickAndRollEvent
 
 
 # ---------------------------------------------------------------------------

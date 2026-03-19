@@ -9,8 +9,8 @@ import tempfile
 import os
 
 # --- Import checks ---
-from pipelines.video_ingestor import VideoIngestor
-from pipelines.detector import ObjectDetector, Detection
+from legacy.pipelines.video_ingestor import VideoIngestor
+from legacy.pipelines.detector import ObjectDetector, Detection
 
 
 class TestDetectionDataclass:

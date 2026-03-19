@@ -8,7 +8,7 @@ No database dependencies — pure computation module.
 """
 
 import math
-from features.types import PassingEdge
+from legacy.features.types import PassingEdge
 
 try:
     import networkx as nx

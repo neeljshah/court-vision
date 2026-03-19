@@ -5,8 +5,8 @@ All tests verify the behavior spec in the plan.
 """
 import math
 import pytest
-from features.spacing import compute_spacing
-from features.types import SpacingMetrics
+from legacy.features.spacing import compute_spacing
+from legacy.features.types import SpacingMetrics
 
 
 GAME_ID = "game-001"
