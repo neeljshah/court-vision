@@ -30,9 +30,53 @@ from src.data.schedule_context import compute_travel_distance  # no API — aren
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
+
+# ── Phase 4.6 synergy helpers ──────────────────────────────────────────────────
+
+def _synergy_team_iso_ppp(team_abbr: str, season: str) -> float:
+    """Return team isolation PPP from synergy_offensive_all cache, or 0.0 on miss."""
+    path = os.path.join(_NBA_CACHE, f"synergy_offensive_all_{season}.json")
+    try:
+        rows = json.load(open(path))
+        for r in rows:
+            if (r.get("team_abbreviation", "").upper() == team_abbr.upper()
+                    and r.get("play_type") == "Isolation"):
+                return float(r.get("ppp", 0.0))
+    except Exception:
+        pass
+    return 0.0
+
+
+def _synergy_team_def_iso_ppp(team_abbr: str, season: str) -> float:
+    """Return team defensive isolation PPP allowed from synergy_defensive_all cache, or 0.0."""
+    path = os.path.join(_NBA_CACHE, f"synergy_defensive_all_{season}.json")
+    try:
+        rows = json.load(open(path))
+        for r in rows:
+            if (r.get("team_abbreviation", "").upper() == team_abbr.upper()
+                    and r.get("play_type") == "Isolation"):
+                return float(r.get("ppp", 0.0))
+    except Exception:
+        pass
+    return 0.0
+
+
+def _get_ref_fta_tendency(ref_names: Optional[List[str]], season: str) -> float:
+    """Return average FTA tendency from ref_fta_tendency cache, or 0.0 if not found."""
+    path = os.path.join(_NBA_CACHE, "ref_fta_tendency.json")
+    if not ref_names or not os.path.exists(path):
+        return 0.0
+    try:
+        ref_data = json.load(open(path))
+        vals = [float(ref_data.get(n, {}).get("fta_tendency", 0.0)) for n in ref_names]
+        return float(np.mean(vals)) if vals else 0.0
+    except Exception:
+        return 0.0
+
 # Bump this whenever the season_games cache schema changes (new fields, etc.)
 # Cached files with a different or absent version are automatically re-fetched.
-_SEASON_GAMES_VERSION = 3
+# Phase 4.6: bumped from 3→4 to add iso_matchup_edge + ref_fta_tendency columns.
+_SEASON_GAMES_VERSION = 4
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
 # NET_RATING, PACE, etc.) reflect the current season, not an early-season snapshot.
@@ -58,6 +102,8 @@ FEATURE_COLS = [
     "home_top_lineup_net_rtg", "away_top_lineup_net_rtg",
     # Referee crew tendencies (default=league avg during training)
     "ref_avg_fouls", "ref_home_win_pct",
+    # Phase 4.6: synergy matchup edge + ref FTA tendency
+    "iso_matchup_edge", "ref_fta_tendency",
 ]
 
 
@@ -398,6 +444,14 @@ def _build_features(
         except Exception:
             pass
 
+    # Phase 4.6: iso matchup edge = home team iso PPP - away team iso PPP allowed
+    home_iso_ppp = _synergy_team_iso_ppp(home_team, season)
+    away_def_iso_ppp = _synergy_team_def_iso_ppp(away_team, season)
+    iso_matchup_edge = home_iso_ppp - away_def_iso_ppp
+
+    # Phase 4.6: ref FTA tendency (0.0 when no ref cache)
+    ref_fta_tendency = _get_ref_fta_tendency(ref_names, season)
+
     return {
         "home_off_rtg":        ht["off_rtg"],
         "home_def_rtg":        ht["def_rtg"],
@@ -430,6 +484,8 @@ def _build_features(
         "away_top_lineup_net_rtg": a_lineup_nr,
         "ref_avg_fouls":       ref_avg_fouls,
         "ref_home_win_pct":    ref_home_win_pct,
+        "iso_matchup_edge":    iso_matchup_edge,
+        "ref_fta_tendency":    ref_fta_tendency,
     }
 
 
@@ -706,6 +762,13 @@ def _fetch_season_games(season: str) -> List[dict]:
             # Ref crew tendencies — unknown per historical game; use league averages
             "ref_avg_fouls":    42.0,
             "ref_home_win_pct": 0.5,
+            # Phase 4.6: iso matchup edge (home iso PPP - away def iso PPP allowed)
+            "iso_matchup_edge": (
+                _synergy_team_iso_ppp(h["TEAM_ABBREVIATION"], season)
+                - _synergy_team_def_iso_ppp(a["TEAM_ABBREVIATION"], season)
+            ),
+            # Phase 4.6: ref FTA tendency — unknown historically; 0.0 default
+            "ref_fta_tendency": 0.0,
         })
 
     with open(cache_path, "w") as f:
