@@ -1,15 +1,15 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-18 22:16
+## Resume From Here — Last Updated: 2026-03-18 22:40
 
 ### Pick Up Where We Left Off
 *(Fill in '## What's Next' in today's session note before closing)*
 
 ### This Session — Files Changed
-- No file changes this session
+- `c:/Users/neelj/nba-ai-system/src/pipeline/unified_pipeline.py`
 
 ### Open Priority Issues
-- 1. 🟢 Phase 4.6 COMPLETE 2026-03-18 — win_prob 67.7%→69.1%, matchup R² 0.796→0.808, +17 prop features wired
+- 1. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
 - 2. 🔴 Analytics + tracking dashboards (not built yet)
 - 3. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
 - 4. 🔴 Real game clip needed — tracker has plateaued on Short4Mosaicing calibration clip; need actual NBA broadcast footage to benchmark further
@@ -272,11 +272,13 @@ fatigue, play types, events          refs, injuries, schedule
 ### Model Readiness
 | Model | Status | Notes |
 |---|---|---|
-| Win probability (pre-game) | ✅ Retrained 2026-03-17 | 67.7% acc, Brier 0.204, data/models/win_probability.pkl |
+| Win probability (pre-game) | ✅ Retrained 2026-03-18 | 69.1% acc, Brier 0.203, data/models/win_probability.pkl |
 | xFG v1 | ✅ Trained 2026-03-17 | 221K shots, Brier 0.226, data/models/xfg_v1.pkl |
 | Shot zone tendency | ✅ Built 2026-03-17 | 566 players, 42-dim features, data/nba/shot_zone_tendency.json |
 | Clutch efficiency | ✅ Built 2026-03-17 | 3 seasons scored, data/nba/clutch_scores_*.json |
-| Player prop models | ✅ Retrained 2026-03-18 | 30 features (+bbref_bpm +contract_year). Walk-fwd MAE: pts=0.32, reb=0.11, ast=0.09, fg3m=0.09, stl=0.07, blk=0.05, tov=0.08 (R²>0.92 all). data/models/props_*.json |
+| Player prop models | ✅ Retrained 2026-03-18 | 52 features (+PBP +shot_zone +BBRef VORP/WS48 +DNP risk). Walk-fwd MAE: pts=0.308, reb=0.113, ast=0.093, fg3m=0.084, stl=0.064, blk=0.043, tov=0.075 (R²>0.93 all). data/models/props_*.json |
+| DNP predictor | ✅ Built 2026-03-18 | LogisticRegression ROC-AUC=0.979, wired into predict_props() ≥0.4 threshold. data/models/dnp_model.pkl |
+| Prop correlation matrix | ✅ Built 2026-03-18 | 508 player corr, 3447 lineup pairs. data/nba/prop_correlations.json |
 | Game total / spread / blowout | ✅ Trained 2026-03-17 | 5 models (total/spread/blowout/first_half/pace), src/prediction/game_models.py |
 | Matchup model M22 | ✅ Trained 2026-03-18 | XGBoost R²=0.796, MAE=4.55, hustle+on-off features, data/models/matchup_model.json |
 | CLV backtest baseline | ✅ Done 2026-03-18 | 70.7% correct winner, MAE=10.2pts, 3685 games (actual margin proxy), betting_edge.backtest_clv() |
