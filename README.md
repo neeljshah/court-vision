@@ -1,249 +1,370 @@
 # NBA AI System
 
-An end-to-end NBA analytics and prediction platform: computer vision player tracking → NBA API enrichment → machine learning models → betting edge detection → analytics dashboards → AI chat.
+> **A self-improving NBA analytics and prediction engine — combining computer vision player tracking, 25+ data sources, and 90 ML models to simulate every game 10,000 times, surface betting edges, and deliver professional-grade analytics through a conversational AI interface.**
 
 ---
 
-## What This System Does
+## What This Is
 
-```
-NBA Broadcast Video (.mp4)
-    ↓
-Computer Vision Tracking Pipeline
-    → player positions (2D court), ball location, spacing, possession, events, shot context
-    ↓
-NBA API Enrichment
-    → shot outcomes, possession results, lineups, box scores, schedule, rest, travel
-    ↓
-PostgreSQL Database
-    → all tracking + stats stored, versioned, queryable
-    ↓
-Machine Learning Models
-    → win probability, shot quality, possession outcome, player props, lineup impact
-    ↓
-Betting Edge Detection
-    → model probability vs sportsbook implied probability → flag value bets
-    ↓
-FastAPI Backend
-    → /predictions, /props, /analytics, /betting-edges, /chat
-    ↓
-Web App (React + Next.js)
-    → Betting Dashboard | Analytics Dashboard | AI Chat (Claude API)
-```
+This system extracts spatial data from NBA broadcast video that no public tool provides, combines it with exhaustive statistical data from the NBA API and external sources, and feeds everything into a layered machine learning stack.
+
+The end product is a **possession-by-possession Monte Carlo game simulator** that produces full stat distributions for every player — not just point estimates, but the entire probability curve. Those distributions get compared against sportsbook lines to flag edges automatically.
+
+The closest comparable system is Second Spectrum, which NBA teams pay $1M+/year for. This is the self-built version.
 
 ---
 
-## Three Final Products
+## Current Status
+
+| Layer | Status | Details |
+|---|---|---|
+| CV Tracking Pipeline | ✅ Operational | 5.7 fps, YOLOv8n + Kalman + Hungarian |
+| Data Collection | ✅ Complete | 25+ sources, 3 seasons, 221K shots |
+| Tier 1 ML Models | ✅ 18 trained | Win prob 69.1%, 7 props R²>0.93 |
+| External Data Feeds | ✅ Live | Injury / refs / lines wired |
+| CV Quality Upgrades | 🟡 Active | Phase 2.5 — pose estimation, per-clip homography |
+| Full Game Processing | 🔲 Next | Phase 6 — 20 games → PostgreSQL → shots enriched |
+| Possession Simulator | 🔲 Phase 8 | 7-model chain, 10K Monte Carlo |
+| Products (Dashboard / Chat) | 🔲 Phase 13–15 | FastAPI → Next.js → Claude AI Chat |
+
+---
+
+## Three End Products
 
 ### 1. Betting Dashboard
-- Live sportsbook lines (spread, total, moneyline, props) via The Odds API
-- Model prediction vs implied probability for every market
-- Edge score and star rating (1–3★) per bet
-- Best bets panel — highest-edge opportunities ranked automatically
-- Historical model accuracy vs closing line
+Live sportsbook lines vs model predictions — sorted by expected value. Kelly-sized bet recommendations, CLV tracking, same-game parlay optimizer, and injury reaction alerts for the 15–60 minute window when books haven't adjusted.
 
 ### 2. Analytics Dashboard
-- Court heatmaps — shot locations, player movement density
-- Win probability chart over all possessions in a game
-- Team spacing over time (convex hull area)
-- Shot quality by zone — xFG vs actual eFG%
-- Lineup performance — any 5-man unit, net rating, spacing score
-- Ball movement network — pass map, touch distribution
-- Defensive pressure timeline
-- Momentum chart — EMA-smoothed scoring run detection
+96 metrics across player, team, lineup, game, and predictive categories. D3 hexbin shot charts, win probability waterfalls, team spacing timelines, defensive pressure heatmaps, lineup matrices, and 10 chart types total.
 
 ### 3. AI Chat Interface
-- Powered by Claude API with tool use calling the backend
-- Tools: `get_game_prediction()`, `get_player_props()`, `get_analytics()`, `get_lineup_data()`, `get_betting_edges()`
-- Answers questions with real data, not general knowledge
-- Examples: *"What lineup should the Celtics use vs zone defense?"* / *"Which props have the most edge tonight?"*
+Claude API with 10 tools and a `render_chart` tool that renders charts inline in the conversation. Ask natural language questions — the model calls tools, fetches analytics, runs simulations, and renders everything visually in the chat window.
+
+```
+User: "How does Tatum perform vs zone defense and what's his best prop tonight?"
+
+Claude calls:
+  1. get_analytics("Tatum", "shot_quality", {"defense_type": "zone"})
+  2. get_player_props("Tatum", ["pts", "ast", "3pm"], today)
+  3. render_chart("scatter", tatum_zone_data)
+  4. render_chart("distribution", tatum_pts_simulation)
+
+→ Both charts render inline in the chat conversation.
+```
 
 ---
 
-## Current Build Status
+## Model Performance
 
-### Tracking (✅ Complete)
-| Module | Status | File |
+| Model | Metric | Value |
 |---|---|---|
-| Player detection (YOLOv8n) | ✅ | `src/tracking/player_detection.py` |
-| Advanced tracker (Kalman + Hungarian) | ✅ | `src/tracking/advanced_tracker.py` |
-| Appearance re-identification (HSV gallery) | ✅ | `src/tracking/advanced_tracker.py` |
-| Ball tracking (Hough + CSRT + optical flow) | ✅ | `src/tracking/ball_detect_track.py` |
-| Court rectification (SIFT + homography) | ✅ | `src/tracking/rectify_court.py` |
-| Event detection (shot/pass/dribble) | ✅ | `src/tracking/event_detector.py` |
-| Spatial metrics (spacing, paint, isolation) | ✅ | `src/pipeline/unified_pipeline.py` |
+| Win Probability (pre-game) | Accuracy | **69.1%** |
+| Win Probability | Brier Score | 0.203 |
+| xFG v1 (shot quality) | Brier Score | 0.226 (221K shots) |
+| Player Props — Points | Walk-forward MAE | 0.308 / R² 0.93 |
+| Player Props — Rebounds | Walk-forward MAE | 0.113 / R² 0.94 |
+| Player Props — Assists | Walk-forward MAE | 0.093 / R² 0.95 |
+| DNP Predictor | ROC-AUC | **0.979** |
+| Matchup Model | R² | **0.808** / MAE 4.55 |
+| CLV Backtest Baseline | Correct winner | 70.7% / MAE 10.2 pts |
 
-### Analytics (✅ Complete)
-| Module | Status | File |
+---
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  INPUTS                                                             │
+│                                                                     │
+│  Broadcast Video (.mp4)          NBA API + External Sources         │
+│  broadcast footage,              gamelogs, shot charts, PBP,        │
+│  game clips (30s–full game)      advanced stats, synergy,           │
+│                                  contracts, odds, injuries, refs     │
+└──────────┬───────────────────────────────┬──────────────────────────┘
+           │                               │
+           ▼                               ▼
+┌──────────────────────┐      ┌────────────────────────────────────┐
+│  CV TRACKING         │      │  DATA COLLECTION PIPELINE          │
+│                      │      │                                    │
+│  Court homography    │      │  Smart TTL cache layer             │
+│  YOLOv8n detection   │      │  25+ data sources, 3 seasons       │
+│  Kalman tracking     │      │  Live feeds (injury/lines/refs)     │
+│  HSV team re-ID      │      │                                    │
+│  Jersey OCR          │      │  data/nba/*.json                   │
+│  Ball detection      │      │  data/external/*.json              │
+│  Event detection     │      │                                    │
+│  → tracking_data.csv │      │                                    │
+└──────────┬───────────┘      └──────────────┬─────────────────────┘
+           └──────────────┬──────────────────┘
+                          ▼
+         ┌────────────────────────────────────────┐
+         │  FEATURE ENGINEERING (60+ features)   │
+         │  CV spatial + NBA API contextual       │
+         │  Rolling windows [5 / 10 / 20 games]  │
+         │  Bayesian shrinkage toward season avg  │
+         └─────────────────────┬──────────────────┘
+                               │
+                               ▼
+         ┌────────────────────────────────────────┐
+         │  ML MODEL STACK (90 models, 7 tiers)  │
+         │                                        │
+         │  Tier 1  Win prob, props, game models ✅│
+         │  Tier 2  xFG, shot zones, clutch      ✅│
+         │  Tier 3  CV behavioral (Phase 7)      🔲│
+         │  Tier 4–7  Simulator + live LSTM      🔲│
+         └─────────────────────┬──────────────────┘
+                               │
+                               ▼
+         ┌────────────────────────────────────────┐
+         │  POSSESSION SIMULATOR (Phase 8)        │
+         │                                        │
+         │  [1] Play Type → [2] Shot Selector     │
+         │  → [3] xFG → [4] TO/Foul              │
+         │  → [5] Rebound → [6] Fatigue           │
+         │  → [7] Substitution                    │
+         │  × 10,000 simulations per game         │
+         │  = Full stat distribution per player   │
+         └─────────────────────┬──────────────────┘
+                               │
+                               ▼
+         ┌────────────────────────────────────────┐
+         │  Compare vs sportsbook lines           │
+         │  → Flag +EV edges                      │
+         │  → Kelly-size positions                │
+         │  → Track CLV (closing line value)      │
+         └─────────────────────┬──────────────────┘
+                               │
+                               ▼
+     ┌─────────────────────────────────────────────────┐
+     │  FastAPI → Next.js Dashboard + Claude AI Chat   │
+     │  render_chart tool → inline chart rendering     │
+     └─────────────────────────────────────────────────┘
+```
+
+---
+
+## Dataset
+
+| Source | Volume | Status |
 |---|---|---|
-| Shot quality scoring | ✅ | `src/analytics/shot_quality.py` |
-| Defensive pressure scoring | ✅ | `src/analytics/defense_pressure.py` |
-| Momentum tracking | ✅ | `src/analytics/momentum.py` |
-| Feature engineering (60+ ML features) | ✅ | `src/features/feature_engineering.py` |
-
-### Data Pipeline (✅ Complete)
-| Module | Status | File |
-|---|---|---|
-| Unified tracking → CSV pipeline | ✅ | `src/pipeline/unified_pipeline.py` |
-| NBA API enrichment (shot labels, possession outcomes) | ✅ | `src/data/nba_enricher.py` |
-| NBA stats fetcher | ✅ | `src/data/nba_stats.py` |
-| Video downloader (yt-dlp) | ✅ | `src/data/video_fetcher.py` |
-| Single-command clip processor | ✅ | `run_clip.py` |
-
-### ML Models (🔲 In Progress)
-| Module | Status | File |
-|---|---|---|
-| Pre-game win probability | 🔲 Next | `src/prediction/win_probability.py` |
-| Game prediction | 🔲 Next | `src/prediction/game_prediction.py` |
-| Shot quality model | 🔲 Needs 20 games | `src/analytics/shot_quality.py` |
-| Possession outcome model | 🔲 Needs 50 games | — |
-| Player prop models (pts/reb/ast) | 🔲 Planned | — |
-| Live win probability (LSTM) | 🔲 Needs 200 games | — |
-| Lineup chemistry | 🔲 Needs 100 games | — |
-
-### Not Built Yet
-| Component | Status |
-|---|---|
-| Jersey number OCR (named player tracking) | 🔲 Planned |
-| PostgreSQL schema + migrations | 🔲 Planned |
-| NBA API schedule context (rest, travel) | 🔲 Planned |
-| NBA API lineup data (on/off splits) | 🔲 Planned |
-| Automated game processing pipeline | 🔲 Planned |
-| The Odds API integration | 🔲 Planned |
-| Historical odds + backtesting framework | 🔲 Planned |
-| FastAPI backend | 🔲 Planned |
-| React frontend | 🔲 Planned |
-| AI Chat (Claude API + tool use) | 🔲 Planned |
-| Docker + deployment | 🔲 Planned |
+| Player gamelogs (NBA API) | 622 players, 3 seasons | ✅ |
+| Shot charts with court coordinates | 221,866 shots | ✅ |
+| Play-by-play | 3,627 / 3,685 games (98.4%) | ✅ |
+| Player advanced stats | 569 / 569 players | ✅ |
+| Hustle stats | 567 players × 3 seasons | ✅ |
+| On/off splits | 569 players × 3 seasons | ✅ |
+| Defender zone FG% allowed | 566 players × 3 seasons | ✅ |
+| Matchup data (who guards whom) | 2,200+ records × 3 seasons | ✅ |
+| Synergy play types | 600 records (offense + defense) | ✅ |
+| BBRef advanced (VORP / WS48 / BPM) | 736 players × 3 seasons | ✅ |
+| Historical closing lines | 1,225+ games × 3 seasons | ✅ |
+| Player contracts | 523 players (171 walk-year) | ✅ |
+| CV tracking rows | 29,220 rows (17 short clips) | 🟡 Full games next |
 
 ---
 
-## Full Build Roadmap
-
-See [ROADMAP.md](ROADMAP.md) for detailed task breakdown per phase.
-
-### Phase 1 — Data Infrastructure
-- PostgreSQL schema, NBA API schedule context, lineup data, opponent features, caching layer
-
-### Phase 2 — Tracking Improvements
-- Jersey number OCR (named player identity), HSV re-ID improvements, referee filtering
-
-### Phase 3 — First ML Models (NBA API only, no tracking required)
-- Pre-game win probability, player prop models (pts/reb/ast), backtesting framework
-
-### Phase 4 — Tracking-Enhanced ML Models
-- Shot quality model, possession outcome model, betting edge detection logic
-
-### Phase 5 — Automated Game Processing
-- Nightly pipeline, job queue, historical odds collection, dataset compounding
-
-### Phase 6 — Betting Infrastructure
-- The Odds API integration, historical odds storage, edge scoring, CLV backtesting, star rating
-
-### Phase 7 — Backend API
-- FastAPI: `/predictions`, `/props`, `/analytics`, `/betting-edges`, `/chat`, caching, rate limiting
-
-### Phase 8 — Frontend
-- React + Next.js, analytics dashboard, betting dashboard, court visualizations (D3)
-
-### Phase 9 — AI Chat
-- Claude API with tool use, backend tool endpoints, context management
-
-### Phase 10 — Live Win Probability
-- LSTM on possession sequences, real-time WebSocket updates, 200+ game dataset
-
-### Phase 11 — Infrastructure
-- Docker, CI/CD, cloud deployment, model monitoring, automated retraining
-
----
-
-## Data Generated
-
-Each game clip processed produces:
-
-| File | Contents |
-|---|---|
-| `tracking_data.csv` | Per-frame: player ID, team, 2D position, speed, possession, event, spacing |
-| `possessions.csv` | Per-possession: type, duration, spacing, pressure, shot attempted, outcome |
-| `shot_log.csv` | Per-shot: who, where, zone, defender distance, spacing, made/missed |
-| `features.csv` | 60+ ML-ready engineered features per frame |
-| `player_clip_stats.csv` | Per-player aggregates: distance, velocity, possession%, shots, drive rate |
-| `shot_quality.csv` | Per-shot quality score (0–1) |
-| `momentum.csv` | Per-frame momentum score per team |
-| `defense_pressure.csv` | Per-frame defensive pressure score |
-
-**Volume needed for ML:**
-- 20 games → shot quality model
-- 50 games → possession outcome model
-- 100 games → lineup chemistry model
-- 200+ games → live win probability LSTM
-
-See [DATA_OUTPUTS.md](DATA_OUTPUTS.md) for full field-level schema.
-
----
-
-## ML Models
-
-See [MACHINE_LEARNING.md](MACHINE_LEARNING.md) for full model specs.
-
-| Model | Type | Needs | Output |
-|---|---|---|---|
-| Pre-game win probability | XGBoost | NBA API only | Win%, spread |
-| Player prop (pts/reb/ast) | XGBoost | NBA API only | Projected stats |
-| Shot quality | XGBoost | 20+ games tracked | xFG per shot |
-| Possession outcome | XGBoost | 50+ games tracked | Score/TO/foul % |
-| Lineup chemistry | Regression | 100+ games tracked | Net rating |
-| Live win probability | LSTM | 200+ games tracked | Win% per possession |
-
----
-
-## Tech Stack
+## Technology Stack
 
 | Layer | Technology |
 |---|---|
-| Detection | YOLOv8n (ultralytics) |
-| Tracking | Kalman filter + Hungarian algorithm (scipy) |
-| Court mapping | SIFT + homography (OpenCV) |
-| Re-identification | 96-dim HSV histogram gallery + CBAM re-ID model |
-| Analytics | Python, NumPy, Pandas |
-| ML models | XGBoost, LightGBM, PyTorch (LSTM) |
-| Database | PostgreSQL |
-| Backend API | FastAPI (Python) |
-| Frontend | React + Next.js, D3.js, Recharts, Tailwind |
-| AI Chat | Claude API with tool use |
-| Odds data | The Odds API |
-| Environment | conda `basketball_ai`, Python 3.9, CUDA 11.8 |
+| Computer Vision | YOLOv8n (detection), OpenCV (ball tracking), EasyOCR (jersey OCR) |
+| Player Tracking | Kalman filter (6D state), Hungarian algorithm, HSV appearance re-ID |
+| Court Mapping | SIFT feature matching, 3-tier homography, drift detection every 30 frames |
+| ML Models | XGBoost (game/props/matchup), scikit-learn (DNP), 57-feature vectors |
+| Data Collection | nba_api, BeautifulSoup (BBRef), feedparser (RotoWire) |
+| Backend API | FastAPI + Redis caching + WebSocket |
+| Database | PostgreSQL (9 tables, 2 views — schema ready) |
+| Frontend | Next.js + TypeScript + D3.js + Recharts + TailwindCSS (Phase 14) |
+| AI Chat | Claude API (claude-sonnet-4-6) + 10 tools + render_chart (Phase 15) |
+| Environment | Python 3.9, conda `basketball_ai`, PyTorch 2.0.1 + CUDA 11.8 |
+
+---
+
+## Repository Structure
+
+```
+nba-ai-system/
+│
+├── src/                        # All production source code
+│   ├── tracking/               # Computer vision tracking (20 modules)
+│   │   ├── advanced_tracker.py     # AdvancedFeetDetector (Kalman + Hungarian + HSV)
+│   │   ├── ball_detect_track.py    # BallDetectTrack (Hough + CSRT + optical flow)
+│   │   ├── rectify_court.py        # SIFT panorama + 3-tier homography
+│   │   ├── event_detector.py       # Shot / pass / dribble detection
+│   │   ├── jersey_ocr.py           # EasyOCR dual-pass jersey number reader
+│   │   └── color_reid.py           # TeamColorTracker (similar-color aware)
+│   │
+│   ├── prediction/             # ML model training and inference (8 modules)
+│   │   ├── win_probability.py      # XGBoost, 27 features, 69.1% accuracy
+│   │   ├── player_props.py         # 7 prop models (pts/reb/ast/3pm/stl/blk/tov)
+│   │   ├── game_models.py          # Total / spread / blowout / first-half / pace
+│   │   ├── xfg_model.py            # Expected field goal % (221K shots)
+│   │   ├── dnp_predictor.py        # DNP probability (ROC-AUC 0.979)
+│   │   └── matchup_model.py        # Player matchup efficiency (R² 0.808)
+│   │
+│   ├── analytics/              # Analytics computation (20 modules)
+│   │   ├── betting_edge.py         # EV, Kelly sizing, CLV, edge detection
+│   │   ├── shot_quality.py         # Shot quality score (0–1)
+│   │   ├── defense_pressure.py     # Defensive pressure metrics
+│   │   ├── momentum.py             # Scoring run / momentum detection
+│   │   └── prop_correlation.py     # Cross-player prop correlation matrix
+│   │
+│   ├── data/                   # Data collection and enrichment (24 modules)
+│   │   ├── nba_stats.py            # NBA API wrapper
+│   │   ├── nba_enricher.py         # Shot outcome enrichment via PBP matching
+│   │   ├── player_scraper.py       # 63-metric self-improving scraper
+│   │   ├── injury_monitor.py       # RotoWire RSS + NBA official injury PDF
+│   │   ├── bbref_scraper.py        # Basketball Reference VORP/WS48/BPM
+│   │   ├── odds_scraper.py         # Historical closing lines (OddsPortal)
+│   │   └── props_scraper.py        # Live DraftKings/FanDuel props (15min TTL)
+│   │
+│   ├── pipeline/               # Pipeline orchestration (6 modules)
+│   │   ├── unified_pipeline.py     # CV → possession → spatial metrics → CSV
+│   │   └── model_pipeline.py       # Train / evaluate / save all models
+│   │
+│   ├── features/               # Feature engineering
+│   │   └── feature_engineering.py  # 60+ spatial and temporal ML features
+│   │
+│   └── re_id/                  # Deep player re-identification model
+│
+├── api/                        # FastAPI backend
+│   ├── main.py
+│   └── routers/
+│       ├── predictions.py
+│       └── analytics.py
+│
+├── dashboards/                 # Streamlit prototype dashboard
+│
+├── database/                   # PostgreSQL schema
+│   └── schema.sql                  # 9 tables, 2 views
+│
+├── tests/                      # Test suite (431+ tests)
+│   ├── test_phase2.py
+│   └── test_phase3.py
+│
+├── scripts/                    # Utility and diagnostic scripts
+│   ├── benchmark/
+│   ├── diagnostics/
+│   └── validate/
+│
+├── resources/                  # Model weights and court templates
+│
+├── data/                       # Data artifacts (gitignored — large files)
+│   ├── models/                     # 18 trained model files
+│   ├── nba/                        # NBA API cache (3 seasons)
+│   ├── external/                   # BBRef, historical lines, contracts
+│   └── games/                      # Per-game tracking outputs
+│
+├── docs/                       # Full documentation suite
+│   ├── ROADMAP.md
+│   ├── ARCHITECTURE.md
+│   ├── ML_MODELS.md
+│   ├── DATA.md
+│   ├── CV_TRACKING.md
+│   ├── BETTING.md
+│   └── API.md
+│
+└── vault/                      # Obsidian knowledge vault
+    └── Project Vision.md
+```
 
 ---
 
 ## Quick Start
 
 ```bash
-conda activate basketball_ai
+# Clone and set up environment
+git clone https://github.com/neeljshah/nba-ai-system.git
 cd nba-ai-system
+conda create -n basketball_ai python=3.9
+conda activate basketball_ai
+pip install -r requirements.txt
 
-# Process a game clip end-to-end
-python run_clip.py --video game.mp4 --game-id 0022300001 --period 1 --start 0
+# Train win probability model (NBA API only — no video needed)
+python src/prediction/win_probability.py --train
 
-# Full video with debug overlays
-python run.py --frames 100 --debug
+# Predict a game
+python src/prediction/game_prediction.py --predict GSW BOS
 
-# Print tracking quality metrics
-python run.py --eval
+# Predict player props
+python -c "
+from src.prediction.player_props import predict_props
+print(predict_props('Jayson Tatum', 'MIL', '2024-25'))
+"
+
+# Run the full test suite
+python -m pytest tests/ -q
+
+# Start the API
+uvicorn api.main:app --reload
 ```
 
-Output is written to `data/`.
+---
+
+## The Self-Improving Loop
+
+```
+New game (video + game-id)
+    ↓
+CV tracker → positions + spacing + events + play types
+    ↓
+NBA API enrichment → shot outcomes + possession results
+    ↓
+PostgreSQL → all data stored, versioned by tracker_version + date
+    ↓
+Auto-retrain → triggered at 20 / 50 / 100 / 200 game milestones
+    ↓
+Simulator improves → predictions more accurate
+    ↓
+CLV tracking → did your bet beat the closing line?
+    ↓
+Feedback into confidence calibration → better bet sizing
+    ↓
+Loop → next game → repeat
+```
+
+Every game processed makes every model better. At 200 games the full 90-model stack is running.
+
+---
+
+## Competitive Position
+
+| Feature | This System | Second Spectrum | Public Tools |
+|---|---|---|---|
+| CV tracking from broadcast video | ✅ | ✅ (proprietary) | ❌ |
+| Spatial features (defender dist, spacing) | ✅ | ✅ | ❌ |
+| ML player prop prediction | ✅ 18 models | ❌ | Partial |
+| Monte Carlo game simulator | 🔲 Phase 8 | ❌ | ❌ |
+| Betting edge detection + Kelly sizing | 🔲 Phase 11 | ❌ | Partial |
+| AI chat with inline chart rendering | 🔲 Phase 15 | ❌ | ❌ |
+| Cost | Free (self-built) | $1M+/year | Free–$50/mo |
+
+---
+
+## Accuracy Targets by Phase
+
+| Phase | Win Probability | Props MAE (pts) | xFG Brier |
+|---|---|---|---|
+| 4 — current | 69.1% | 0.308 | 0.226 |
+| 4.6 — feature wiring | ~70–71% | ~0.22 | — |
+| 7 — CV behavioral models | ~72–73% | ~0.18 | ~0.200 |
+| 10 — 50–100 games | ~74–76% | ~0.15 | ~0.185 |
+| 16 — full stack, 200+ games | ~76–78% | ~0.12 | ~0.175 |
 
 ---
 
 ## Documentation
 
-| File | Contents |
+| Document | Contents |
 |---|---|
-| [ROADMAP.md](ROADMAP.md) | Full phase-by-phase build plan with task breakdown |
-| [DATA_OUTPUTS.md](DATA_OUTPUTS.md) | All data categories and fields produced by the system |
-| [MACHINE_LEARNING.md](MACHINE_LEARNING.md) | Model objectives, training data, build order |
-| [ANALYTICS_AND_BETTING.md](ANALYTICS_AND_BETTING.md) | Analytics and sports betting use cases |
-| [FRONTEND_OVERVIEW.md](FRONTEND_OVERVIEW.md) | Dashboard and interface descriptions |
-| [docs/architecture.md](docs/architecture.md) | Technical architecture detail |
-| [docs/tracking_pipeline.md](docs/tracking_pipeline.md) | Tracking pipeline internals |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Full 18-phase development plan with deliverables and success criteria |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Complete system architecture and module-level data flow |
+| [docs/ML_MODELS.md](docs/ML_MODELS.md) | All 90 models — inputs, outputs, tier, status, build order |
+| [docs/DATA.md](docs/DATA.md) | Every data source, collection method, cache TTL, and schema |
+| [docs/CV_TRACKING.md](docs/CV_TRACKING.md) | Computer vision pipeline — detection, tracking, homography, events |
+| [docs/BETTING.md](docs/BETTING.md) | Betting system — EV calculation, Kelly sizing, CLV workflow |
+| [docs/API.md](docs/API.md) | FastAPI backend — all endpoints with request/response schemas |
+
+---
+
+*Private repository — all rights reserved.*
