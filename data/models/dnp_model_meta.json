@@ -1,0 +1,11 @@
+{
+  "feat_cols": [
+    "recent_min_avg",
+    "min_trend",
+    "games_in_last_7",
+    "season_gp_pct",
+    "age_flag"
+  ],
+  "auc": 0.9787,
+  "dnp_rate": 0.0033
+}
