@@ -1,29 +1,25 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-19 22:40
+## Resume From Here — Last Updated: 2026-03-20
 
 ### Pick Up Where We Left Off
-Run the full game loop to process all 16 existing clips (first real game data run):
-```
-conda activate basketball_ai
-cd C:/Users/neelj/nba-ai-system
-python scripts/game_test_loop.py --max-frames 2000 --hours 2.5
-```
-Then run pytest (expect 804+ pass). Then read data/game_loop_results.json for quality grades.
+- **Phase 6 is the next action:** Run `python scripts/full_game_pipeline.py` to download full NBA games from YouTube and process them. This is the single biggest unblocked action — everything from Phase 7 onward is gated behind real game data.
+- Ref tendencies + player bio fetches are running/ready via `scripts/fetch_ref_data.py`
 
-### This Session — Files Changed (2026-03-19 evening)
-- `src/pipeline/unified_pipeline.py` — fix imgsz 320→480 in _is_gameplay; fix imgsz 640→480 in pano scan (TRT mismatch)
-- `src/tracking/advanced_tracker.py` — fix _appear_dist shape guard (256d deep vs 99d HSV); fix _update_appearance EMA dim mismatch
-- `scripts/game_test_loop.py` — new: processes 16 existing clips mapped to real game IDs
-- `scripts/full_game_pipeline.py` — new: yt-dlp download + full pipeline loop
-- Validated: 26.3 fps, stability=1.0, 0 ID switches, 10 shots, 18 possessions (lal_sas_2025.mp4)
+### This Session — Files Changed
+- `src/tracking/advanced_tracker.py` — ByteTrack two-stage now always active (removed lapx gate)
+- `src/data/nba_tracking_stats.py` — added `fetch_player_bio()` (height/weight/wingspan via CommonPlayerInfo)
+- `src/prediction/prop_model_stack.py` — NEW: Phase 4.7 confidence-gated meta-model stacker
+- `src/prediction/betting_portfolio.py` — NEW: Phase 4.8 Kelly+correlation sizing, CLV tracking, arb detection
+- `src/prediction/prop_backtester.py` — NEW: Phase 4.9 historical backtester + paper trading mode
+- `scripts/fetch_ref_data.py` — NEW: one-shot script to fetch ref tendencies + player bio
 
 ### Open Priority Issues
-- 1. 🔴 Full game loop not run yet — 16 clips on disk, game_test_loop.py ready, needs 2.5h run
-- 2. 🔴 PostgreSQL not wired — every pipeline run overwrites tracking_data.csv (ISSUE-010)
-- 3. 🔴 Pano fallback always triggers — per-clip pano stitching fails bad aspect ratio; uses generic pano_enhanced.png
-- 4. 🟡 Enrichment stage untested — shots_enriched=0 in all runs (needs NBA API + real game_id)
-- 5. 🟢 TRT engine imgsz mismatch — FIXED 2026-03-19 (320/640→480 in gameplay filter + pano scan)
+- 1. 🔴 **Phase 6 — Run full games:** `python scripts/full_game_pipeline.py` — downloads from YouTube, processes with game_id, enriches shots. Everything downstream (xFG v2, possession outcome, simulator) is gated behind this.
+- 2. 🔴 Analytics + tracking dashboards (not built yet)
+- 3. 🟡 HSV re-ID upgrades — ByteTrack now always active; OSNet deep re-ID still optional improvement
+- 4. 🟡 Player bio data — `fetch_player_bio()` built, run `python scripts/fetch_ref_data.py` to populate `data/nba/player_bio.json`
+- 5. 🟢 Pano validation + fallback — fixed 2026-03-12
 
 ### Analytics Module Status (src/)
 - ✅ `src/analytics/betting_edge.py`
@@ -188,7 +184,7 @@ Then run pytest (expect 804+ pass). Then read data/game_loop_results.json for qu
 - ✅ `src/utils/visualize.py`
 
 ### Session Log
-- Latest: `vault/Sessions/Session-2026-03-19.md`
+- Latest: `vault/Sessions/Session-2026-03-20.md`
 - Full log: `vault/Sessions/`
 
 <!-- END AUTO-GENERATED -->
@@ -225,7 +221,10 @@ A **self-improving possession-by-possession game simulator** combining CV tracki
 - **Phase C** ✅ — Infrastructure: PostgreSQL schema + Celery + Redis + batch processor (migrations.py + tasks.py + batch_process.py built)
 - **Phase D** ✅ — Self-improving pipeline: event_aggregator, outcome_recorder, auto_retrain, model versioning (all built)
 - **Phase E** ✅ — Fix 6 API tests + 5 missing endpoints + 7 Phase 4.5 models + Streamlit predictions tab (DONE 2026-03-19)
-- **Phase F** 🔲 — Test run: 10 local games, verify full loop works
+- **Phase 4.7** ✅ — Model stacking: `src/prediction/prop_model_stack.py` — confidence-gated Ridge meta-model over all 7 prop models (DONE 2026-03-20)
+- **Phase 4.8** ✅ — Betting portfolio: `src/prediction/betting_portfolio.py` — Kelly+correlation sizing, CLV tracking, cross-book arb detection (DONE 2026-03-20)
+- **Phase 4.9** ✅ — Backtester: `src/prediction/prop_backtester.py` — historical backtest + paper trading mode + validation gate (DONE 2026-03-20)
+- **Phase F** 🔲 — **NEXT:** Run `python scripts/full_game_pipeline.py` — downloads full NBA games from YouTube (yt-dlp ytsearch), processes with game_id, populates `data/full_game_results.json`
 - **Phase G** 🔲 — Cloud GPU blast: RunPod A100, 50-100 games, $50-100 budget
 
 **Start here:** Phase A — run `nba_tracking_stats.py` `fetch_all_tracking_data()` for all 3 seasons

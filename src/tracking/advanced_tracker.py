@@ -972,11 +972,11 @@ class AdvancedFeetDetector(FeetDetector):
             except Exception:
                 pass  # fall back to HSV per-det in downstream code
 
-        # ── Step 4: Assignment — ByteTrack (lapx) or Hungarian fallback ─────
-        # ByteTrack two-stage is active only when lapx is installed (faster
-        # linear assignment).  Without lapx we fall back to the original
-        # single-stage Kalman+Hungarian matcher (_match_team).
-        _use_bytetrack = _HAS_LAPX
+        # ── Step 4: Assignment — ByteTrack two-stage ─────────────────────────
+        # Always use two-stage ByteTrack: _assign() uses scipy.linear_sum_assignment
+        # which is available in the environment.  lapx is an optional faster backend
+        # but is not required — scipy is sufficient.
+        _use_bytetrack = True
         all_unmatched_dets: List[int] = []
 
         for team in ("green", "white", "referee"):
