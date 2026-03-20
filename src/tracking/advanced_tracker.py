@@ -36,6 +36,7 @@ except ImportError:
 
 try:
     from .player_identity import JerseyVotingBuffer as _JerseyVotingBuffer
+    from .player_identity import reset_confirmed_slot as _reset_confirmed_slot
     _HAS_VOTING = True
 except ImportError:
     _HAS_VOTING = False
@@ -53,10 +54,14 @@ except ImportError:
     _HAS_OSNET = False
 
 try:
-    import lapx as _lapx  # noqa: F401  — faster Hungarian for ByteTrack
+    import lap as _lapx  # noqa: F401  — lapx installs as 'lap'; faster Hungarian for ByteTrack
     _HAS_LAPX = True
 except ImportError:
-    _HAS_LAPX = False
+    try:
+        import lapx as _lapx  # noqa: F401  — older install name fallback
+        _HAS_LAPX = True
+    except ImportError:
+        _HAS_LAPX = False
 
 # ── Tuning constants ──────────────────────────────────────────────────────────
 COST_GATE       = 0.80   # reject any assignment with cost above this
@@ -82,7 +87,8 @@ OF_MAX_LEVEL = 2          # pyramid levels
 OF_MAX_AGE   = 8          # max lost frames before stopping optical flow propagation
 
 # ── Pose cadence ──────────────────────────────────────────────────────────────
-_POSE_INTERVAL = 3        # run pose model every N frames; reuse cached fields on others
+_POSE_INTERVAL           = 6   # run pose model every N frames; reuse cached fields on others
+_POSE_INTERVAL_SUSPENDED = 15  # Task 3: slower cadence when no ball holder + game suspended
 
 
 # ── Kalman filter helpers ─────────────────────────────────────────────────────
@@ -171,6 +177,8 @@ def _appear_dist(a: Optional[np.ndarray], b: Optional[np.ndarray]) -> float:
     """Histogram intersection distance in [0, 1]. 0 = identical."""
     if a is None or b is None:
         return 0.5  # neutral when unknown
+    if a.shape != b.shape:
+        return 0.5  # neutral when embeddings have different dims (deep vs HSV mismatch)
     return float(1.0 - np.minimum(a, b).sum())
 
 
@@ -244,11 +252,16 @@ class AdvancedFeetDetector(FeetDetector):
         self._kalmans:      Dict[int, cv2.KalmanFilter] = {}
         self._appearances:  Dict[int, np.ndarray]       = {}
         self._lost_ages:    Dict[int, int]              = {i: 0 for i in range(n)}
-        self._gallery:      Dict[int, np.ndarray]       = {}  # slot → appearance snapshot
-        self._gallery_ages: Dict[int, int]              = {}  # slot → frames since archived
+        self._gallery:        Dict[int, np.ndarray]       = {}  # slot → appearance snapshot
+        self._gallery_ages:   Dict[int, int]              = {}  # slot → frames since archived
+        self._gallery_last_pos: Dict[int, Tuple]          = {}  # slot → (x2d, y2d) at eviction
         self._kf_pred:      Dict[int, Tuple]            = {}  # predicted bboxes this frame
         self._jersey_buf:   Optional[object]            = None  # set externally after construction
         self._freeze_age:   Dict[int, int]              = {i: 0 for i in range(n)}  # frames frozen
+        # Task 2: stable-track OSNet skip — counts consecutive matched frames per slot;
+        # when >= 30 a 4-frame OSNet skip window is triggered for that slot.
+        self._stable_frames: Dict[int, int]             = {i: 0 for i in range(n)}
+        self._stable_skip:   Dict[int, int]             = {i: 0 for i in range(n)}
         # ISSUE-005: per-team color tracker for similar-uniform detection
         self._color_tracker = _TeamColorTracker() if _HAS_COLOR_REID else None
 
@@ -268,7 +281,8 @@ class AdvancedFeetDetector(FeetDetector):
         self._use_pose   = False
         try:
             from ultralytics import YOLO as _YOLO
-            _pm = _YOLO("yolov8n-pose.pt")
+            from .player_detection import _best_yolo_model
+            _pm = _YOLO(_best_yolo_model("yolov8n-pose"))
             if _cfg.get("broadcast_mode", True):
                 _pm.overrides["half"] = getattr(self, "_use_half", False)
             self._pose_model = _pm
@@ -327,8 +341,12 @@ class AdvancedFeetDetector(FeetDetector):
         emb = deep_emb if (deep_emb is not None and deep_emb.size > 0) \
               else _compute_appearance(crop_bgr)
         if slot in self._appearances:
-            self._appearances[slot] = (APPEAR_ALPHA * self._appearances[slot]
-                                       + (1 - APPEAR_ALPHA) * emb)
+            prior = self._appearances[slot]
+            if prior.shape == emb.shape:
+                self._appearances[slot] = APPEAR_ALPHA * prior + (1 - APPEAR_ALPHA) * emb
+            else:
+                # Dimension mismatch (deep ↔ HSV switch) — replace instead of blend
+                self._appearances[slot] = emb
         else:
             self._appearances[slot] = emb
 
@@ -345,7 +363,7 @@ class AdvancedFeetDetector(FeetDetector):
                 and hasattr(self, "_jersey_buf")
                 and self._jersey_buf is not None
                 and self.players[slot].previous_bb is not None):
-            self._jersey_buf.reset_slot(slot)
+            _reset_confirmed_slot(slot, self._jersey_buf)
 
         p = self.players[slot]
         p.previous_bb = det["bbox"]
@@ -363,6 +381,14 @@ class AdvancedFeetDetector(FeetDetector):
             else:
                 self._freeze_age[slot] = 0
         p.positions[timestamp] = new_pos
+        # Prune old positions — prevent unbounded growth during full-game runs.
+        # Keep last 300 frames (~10s at 30fps). All downstream consumers
+        # (velocity calc, duplicate suppression, Kalman fill) need at most 10s.
+        _PRUNE_AFTER = 300
+        if len(p.positions) > _PRUNE_AFTER:
+            cutoff = timestamp - _PRUNE_AFTER
+            for _k in [k for k in p.positions if k < cutoff]:
+                del p.positions[_k]
         if slot in self._kalmans:
             _kf_correct(self._kalmans[slot], det["bbox"])
         else:
@@ -371,6 +397,11 @@ class AdvancedFeetDetector(FeetDetector):
             slot, det["crop_bgr"], deep_emb=det.get("deep_emb")
         )
         self._lost_ages[slot] = 0
+        # Task 2: track consecutive matched frames; trigger OSNet skip after 30
+        self._stable_frames[slot] = self._stable_frames.get(slot, 0) + 1
+        if self._stable_frames[slot] >= 30:
+            self._stable_skip[slot] = 4
+            self._stable_frames[slot] = 0
         self._gallery.pop(slot, None)
         self._gallery_ages.pop(slot, None)
         # Update optical flow anchor point for this slot
@@ -729,7 +760,8 @@ class AdvancedFeetDetector(FeetDetector):
     # ── main override ─────────────────────────────────────────────────────
 
     def get_players_pos(self, M, M1, frame, timestamp, map_2d,
-                        skip_jersey_ocr: bool = False):
+                        skip_jersey_ocr: bool = False,
+                        suspended: bool = False):
         """Track players in one frame and return annotated frame + map images.
 
         Args:
@@ -737,6 +769,8 @@ class AdvancedFeetDetector(FeetDetector):
                 frame.  Set True by the pipeline during confirmed non-live sequences
                 (replays, halftime) when _ball_track_suspended is active — saves
                 ~20-30% compute on replay-heavy clips with no identity benefit.
+            suspended: When True (halftime, timeout), skip team-color re-calibration
+                so halftime studio footage doesn't corrupt the learned team centroids.
         """
         # Clear per-frame kpts capture dict
         self._matched_kpts_this_frame = {}
@@ -750,22 +784,30 @@ class AdvancedFeetDetector(FeetDetector):
                 self.players[slot].previous_bb = self._kf_pred[slot]
 
         # ── Step 2: YOLOv8 inference (pose every N frames, else detection) ─
+        # Task 3: use a longer pose interval when the game is suspended (replay /
+        # halftime) AND no player currently holds the ball — pose adds little value
+        # in those frames and costs ~15% of per-frame GPU time.
+        _pose_any_ball = any(p.has_ball for p in self.players)
+        _pose_ivl = (
+            _POSE_INTERVAL if (_pose_any_ball or not suspended)
+            else _POSE_INTERVAL_SUSPENDED
+        )
         _run_pose = (
             self._use_pose
             and self._pose_model is not None
-            and self._pose_frame_counter % _POSE_INTERVAL == 0
+            and self._pose_frame_counter % _pose_ivl == 0
         )
         self._pose_frame_counter += 1
 
         if _run_pose:
             yolo_results = self._pose_model(
                 frame, classes=[0], conf=self._conf_threshold,
-                verbose=False, imgsz=1280
+                verbose=False, imgsz=480, half=self._use_half
             )
         else:
             yolo_results = self.model(
                 frame, classes=[0], conf=self._conf_threshold,
-                verbose=False, imgsz=640, half=self._use_half
+                verbose=False, imgsz=480, half=self._use_half
             )
         boxes_xyxy   = (yolo_results[0].boxes.xyxy.cpu().numpy()
                         if yolo_results[0].boxes is not None else [])
@@ -890,13 +932,43 @@ class AdvancedFeetDetector(FeetDetector):
 
         # ── Step 3.5: Deep appearance embeddings (OSNet batch inference) ──
         # Batch all detection crops through OSNet once per frame for efficiency.
-        # Results stored as det["deep_emb"] and used downstream in place of HSV.
+        # F4: Skip OSNet on detections that moved <5px from nearest KF prediction.
+        # Task 2: Also skip OSNet for slots that have been stably tracked for
+        # ≥30 consecutive frames (4-frame skip window, ~40% OSNet call reduction).
         if self._use_deep and self._deep_extractor is not None and detections:
-            crops_for_deep = [d["crop_bgr"] for d in detections]
+            # Slot-aware center lookup so we can match detections to specific slots
+            kf_slot_centers = {
+                s: ((b[1] + b[3]) / 2.0, (b[0] + b[2]) / 2.0)
+                for s, b in self._kf_pred.items()
+            }
+            # Task 2: decrement stable-skip countdowns before checking
+            for _s in self._stable_skip:
+                if self._stable_skip[_s] > 0:
+                    self._stable_skip[_s] -= 1
+            slots_skipping = {s for s, c in self._stable_skip.items() if c > 0}
+
+            def _det_moved(d: dict) -> bool:
+                bb = d["bbox"]
+                dcx, dcy = (bb[1] + bb[3]) / 2.0, (bb[0] + bb[2]) / 2.0
+                if not kf_slot_centers:
+                    return True
+                best_slot, best_dist = None, float("inf")
+                for _slot, (pcx, pcy) in kf_slot_centers.items():
+                    dist = (dcx - pcx) ** 2 + (dcy - pcy) ** 2
+                    if dist < best_dist:
+                        best_dist, best_slot = dist, _slot
+                # Task 2: skip OSNet if nearest slot is in stable-skip window
+                if best_slot in slots_skipping:
+                    return False
+                return best_dist > 25.0  # F4: skip stationary detections
+
+            moving_indices = [i for i, d in enumerate(detections) if _det_moved(d)]
+            crops_for_deep = [detections[i]["crop_bgr"] for i in moving_indices]
             try:
-                deep_embs = self._deep_extractor.batch_extract(crops_for_deep)
-                for d, emb in zip(detections, deep_embs):
-                    d["deep_emb"] = emb
+                if crops_for_deep:
+                    deep_embs = self._deep_extractor.batch_extract(crops_for_deep)
+                    for i, emb in zip(moving_indices, deep_embs):
+                        detections[i]["deep_emb"] = emb
             except Exception:
                 pass  # fall back to HSV per-det in downstream code
 
@@ -922,12 +994,20 @@ class AdvancedFeetDetector(FeetDetector):
 
             for slot in unmatched_slots:
                 self._lost_ages[slot] = self._lost_ages.get(slot, 0) + 1
+                # Task 2: reset stable-track counters whenever a slot loses detection
+                self._stable_frames[slot] = 0
+                self._stable_skip[slot]   = 0
                 if self._lost_ages[slot] >= self._max_lost:
                     # Archive appearance before evicting
                     if slot in self._appearances:
                         self._gallery[slot] = self._appearances[slot].copy()
                         self._gallery_ages[slot] = 0
                     p = self.players[slot]
+                    # Store last known court position so velocity clamp fires
+                    # correctly when this slot is re-assigned via gallery re-ID.
+                    if p.positions:
+                        last_frame = max(p.positions)
+                        self._gallery_last_pos[slot] = p.positions[last_frame]
                     p.previous_bb = None
                     p.positions   = {}
                     p.has_ball    = False
@@ -938,14 +1018,15 @@ class AdvancedFeetDetector(FeetDetector):
             all_unmatched_dets.extend(unmatched_dets)
 
         # ── Age gallery entries and evict stale ones ──────────────────────
-        # ByteTrack handles lost/found tracks natively via two-stage matching,
-        # so gallery TTL aging is unnecessary and wastes compute when active.
-        if not _use_bytetrack:
-            for slot in list(self._gallery_ages.keys()):
-                self._gallery_ages[slot] += 1
-                if self._gallery_ages[slot] >= self._gallery_ttl:
-                    self._gallery.pop(slot, None)
-                    self._gallery_ages.pop(slot, None)
+        # Always age regardless of ByteTrack — without aging the gallery bloats
+        # with stale embeddings from early in the game, wasting memory and
+        # causing false-positive re-IDs late in long clips.
+        for slot in list(self._gallery_ages.keys()):
+            self._gallery_ages[slot] += 1
+            if self._gallery_ages[slot] >= self._gallery_ttl:
+                self._gallery.pop(slot, None)
+                self._gallery_ages.pop(slot, None)
+                self._gallery_last_pos.pop(slot, None)
 
         # ── Step 5: Re-ID unmatched detections from lost-track gallery ────
         truly_new: List[int] = []
@@ -970,7 +1051,9 @@ class AdvancedFeetDetector(FeetDetector):
         _FREEZE_MAX = 20
         for p in self.players:
             slot = self._slot(p)
-            if self._freeze_age.get(slot, 0) >= _FREEZE_MAX and p.previous_bb is not None:
+            if (self._freeze_age.get(slot, 0) >= _FREEZE_MAX
+                    and p.previous_bb is not None
+                    and not p.has_ball):  # never evict the confirmed ball-holder
                 if slot in self._appearances:
                     self._gallery[slot] = self._appearances[slot].copy()
                     self._gallery_ages[slot] = 0
@@ -1083,9 +1166,14 @@ class AdvancedFeetDetector(FeetDetector):
                         else:
                             del pj.positions[timestamp]
 
-        # Periodic re-calibration to adapt to changing camera angles
+        # Periodic re-calibration to adapt to changing camera angles.
+        # Skip during halftime/timeouts (suspended=True) so studio footage
+        # (announcers, replays, celebrity intros) doesn't corrupt the learned
+        # team-color centroids with non-player detections.
         self._frames_since_calib += 1
-        if self._frames_since_calib >= self._recalib_interval and len(self._warmup_colors) >= 10:
+        if (not suspended
+                and self._frames_since_calib >= self._recalib_interval
+                and len(self._warmup_colors) >= 10):
             self._calibrate_team_colors()
             self._warmup_colors = []   # reset sample buffer
             self._frames_since_calib = 0
@@ -1119,10 +1207,16 @@ class AdvancedFeetDetector(FeetDetector):
         for i, p in enumerate(self.players):
             if p.previous_bb is not None:
                 self._lost_ages[i] = self._lost_ages.get(i, 0) + 1
+                # Task 2: reset stable counters — all players lost this frame
+                self._stable_frames[i] = 0
+                self._stable_skip[i]   = 0
                 if self._lost_ages[i] >= MAX_LOST:
                     if i in self._appearances:
                         self._gallery[i] = self._appearances[i].copy()
                         self._gallery_ages[i] = 0
+                    if p.positions:
+                        last_frame = max(p.positions)
+                        self._gallery_last_pos[i] = p.positions[last_frame]
                     p.previous_bb = None
                     p.positions   = {}
                     p.has_ball    = False
@@ -1134,6 +1228,7 @@ class AdvancedFeetDetector(FeetDetector):
             if self._gallery_ages[slot] >= self._gallery_ttl:
                 self._gallery.pop(slot, None)
                 self._gallery_ages.pop(slot, None)
+                self._gallery_last_pos.pop(slot, None)
 
 
 # ── Debug visualisation ───────────────────────────────────────────────────────
