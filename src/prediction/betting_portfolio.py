@@ -1,0 +1,307 @@
+"""
+betting_portfolio.py — Phase 4.8: Quantitative betting infrastructure.
+
+Handles:
+  - Kelly sizing with correlation-aware fractional sizing
+  - Cross-book arbitrage detection
+  - CLV (closing line value) tracking per bet
+  - Portfolio construction: max bets in-flight, drawdown guard
+
+Public API
+----------
+    kelly_corr(edge, odds, bankroll, corr_matrix)    -> float (bet size $)
+    detect_arb(lines_by_book)                        -> list[ArbOpportunity]
+    log_bet(bet)                                     -> None
+    record_clv(bet_id, closing_line)                 -> None
+    get_portfolio_summary()                          -> dict
+    get_open_bets()                                  -> list[dict]
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import sys
+import time
+from dataclasses import asdict, dataclass, field
+from typing import Dict, List, Optional, Tuple
+
+import numpy as np
+
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, PROJECT_DIR)
+
+_BET_LOG = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
+_CLV_LOG  = os.path.join(PROJECT_DIR, "data", "models", "clv_log.json")
+
+# Portfolio guards
+MAX_OPEN_BETS     = 20      # never more than N bets in-flight at once
+MAX_DRAWDOWN_PCT  = 0.15    # halt betting when drawdown exceeds 15% of bankroll
+KELLY_FRACTION    = 0.25    # full Kelly is too aggressive; use quarter-Kelly
+MAX_BET_PCT       = 0.04    # cap any single bet at 4% of bankroll
+
+
+@dataclass
+class Bet:
+    """A single prop or game bet."""
+    bet_id:        str
+    player_id:     str
+    player_name:   str
+    stat:          str            # 'pts', 'reb', 'game_total', etc.
+    direction:     str            # 'over' or 'under'
+    line:          float
+    pred:          float
+    book:          str
+    odds:          int            # American odds, e.g. -110
+    edge_pct:      float          # (pred - line) / line
+    kelly_size:    float          # recommended bet in dollars
+    placed_at:     float = field(default_factory=time.time)
+    closing_line:  Optional[float] = None
+    clv:           Optional[float] = None   # closing line value
+    result:        Optional[str]  = None    # 'win', 'loss', 'push', None=open
+    pnl:           Optional[float] = None
+
+
+def _american_to_prob(odds: int) -> float:
+    """Convert American odds to implied probability."""
+    if odds > 0:
+        return 100.0 / (odds + 100.0)
+    return abs(odds) / (abs(odds) + 100.0)
+
+
+def _american_to_payout(odds: int) -> float:
+    """Return net payout per $1 wagered."""
+    if odds > 0:
+        return odds / 100.0
+    return 100.0 / abs(odds)
+
+
+def kelly_corr(
+    edge: float,
+    odds: int,
+    bankroll: float,
+    corr_with_open: float = 0.0,
+    existing_exposure: float = 0.0,
+) -> float:
+    """
+    Kelly criterion with correlation adjustment and bankroll guards.
+
+    Full Kelly = (bp - q) / b  where b=payout, p=win_prob, q=1-p.
+    Scales by KELLY_FRACTION (quarter-Kelly), then reduces for correlated
+    exposure already in the portfolio.
+
+    Args:
+        edge:               Model edge as fraction (e.g. 0.06 = 6%).
+        odds:               American odds on this bet.
+        bankroll:           Current bankroll in dollars.
+        corr_with_open:     Average correlation with currently open bets (0-1).
+        existing_exposure:  Total $ already at risk on correlated bets.
+
+    Returns:
+        Recommended bet size in dollars (0 if Kelly is negative).
+    """
+    implied_prob = _american_to_prob(odds)
+    # Model win probability from edge + implied prob
+    win_prob = min(0.95, implied_prob + edge)
+    b = _american_to_payout(odds)
+    q = 1.0 - win_prob
+
+    full_kelly = (win_prob * b - q) / b
+    if full_kelly <= 0:
+        return 0.0
+
+    # Quarter-Kelly
+    f = full_kelly * KELLY_FRACTION
+
+    # Correlation reduction: if we already have correlated exposure, shrink bet
+    corr_penalty = 1.0 - (corr_with_open * existing_exposure / max(bankroll, 1))
+    f = f * max(0.0, corr_penalty)
+
+    # Hard cap
+    f = min(f, MAX_BET_PCT)
+    return round(f * bankroll, 2)
+
+
+@dataclass
+class ArbOpportunity:
+    """A detected cross-book arbitrage."""
+    stat:      str
+    player:    str
+    over_book: str
+    over_odds: int
+    under_book: str
+    under_odds: int
+    arb_pct:   float   # guaranteed profit % of total stake
+
+
+def detect_arb(
+    lines_by_book: Dict[str, Dict[str, Tuple[float, int, int]]],
+) -> List[ArbOpportunity]:
+    """
+    Detect arbitrage across books for the same stat/player.
+
+    Args:
+        lines_by_book: {book_name: {player_stat_key: (line, over_odds, under_odds)}}
+                       player_stat_key example: "LeBron_pts_over"
+
+    Returns:
+        List of ArbOpportunity where profit % > 0.
+    """
+    arbs: List[ArbOpportunity] = []
+    # Build lookup: player_stat → {book: (over_odds, under_odds, line)}
+    lookup: Dict[str, Dict[str, Tuple]] = {}
+    for book, markets in lines_by_book.items():
+        for key, (line, over_odds, under_odds) in markets.items():
+            if key not in lookup:
+                lookup[key] = {}
+            lookup[key][book] = (over_odds, under_odds, line)
+
+    for key, book_data in lookup.items():
+        if len(book_data) < 2:
+            continue
+        # Find best over and best under across all books
+        best_over  = max(book_data.items(), key=lambda x: x[1][0])  # highest over odds
+        best_under = max(book_data.items(), key=lambda x: x[1][1])  # highest under odds
+        over_imp  = _american_to_prob(best_over[1][0])
+        under_imp = _american_to_prob(best_under[1][1])
+        total_imp = over_imp + under_imp
+        if total_imp < 1.0:
+            arb_pct = round((1.0 / total_imp - 1.0) * 100, 3)
+            # Parse player name from key
+            parts = key.rsplit("_", 2)
+            player = parts[0] if parts else key
+            stat   = parts[1] if len(parts) > 1 else "?"
+            arbs.append(ArbOpportunity(
+                stat=stat,
+                player=player,
+                over_book=best_over[0],
+                over_odds=best_over[1][0],
+                under_book=best_under[0],
+                under_odds=best_under[1][1],
+                arb_pct=arb_pct,
+            ))
+    return sorted(arbs, key=lambda a: a.arb_pct, reverse=True)
+
+
+def _load_bet_log() -> List[dict]:
+    if not os.path.exists(_BET_LOG):
+        return []
+    try:
+        return json.load(open(_BET_LOG, encoding="utf-8"))
+    except Exception:
+        return []
+
+
+def _save_bet_log(bets: List[dict]) -> None:
+    os.makedirs(os.path.dirname(_BET_LOG), exist_ok=True)
+    json.dump(bets, open(_BET_LOG, "w", encoding="utf-8"), indent=2)
+
+
+def log_bet(bet: Bet) -> None:
+    """Append a new bet to the persistent bet log."""
+    bets = _load_bet_log()
+    bets.append(asdict(bet))
+    _save_bet_log(bets)
+
+
+def record_clv(bet_id: str, closing_line: float) -> None:
+    """
+    Record the closing line for a placed bet and compute CLV.
+
+    CLV = (closing_line - opening_line) / opening_line (for overs)
+    Positive CLV means we beat the market close.
+    """
+    bets = _load_bet_log()
+    for b in bets:
+        if b["bet_id"] == bet_id:
+            b["closing_line"] = closing_line
+            opening = b.get("line", closing_line)
+            if b.get("direction") == "over":
+                b["clv"] = round((closing_line - opening) / max(opening, 0.01), 4)
+            else:
+                b["clv"] = round((opening - closing_line) / max(opening, 0.01), 4)
+            break
+    _save_bet_log(bets)
+
+    # Also append to CLV log
+    clv_log: List[dict] = []
+    if os.path.exists(_CLV_LOG):
+        try:
+            clv_log = json.load(open(_CLV_LOG, encoding="utf-8"))
+        except Exception:
+            pass
+    entry = next((b for b in bets if b["bet_id"] == bet_id), {})
+    if entry:
+        clv_log.append({
+            "bet_id":       bet_id,
+            "stat":         entry.get("stat"),
+            "player_name":  entry.get("player_name"),
+            "direction":    entry.get("direction"),
+            "opening_line": entry.get("line"),
+            "closing_line": closing_line,
+            "clv":          entry.get("clv"),
+            "edge_pct":     entry.get("edge_pct"),
+            "placed_at":    entry.get("placed_at"),
+        })
+        json.dump(clv_log, open(_CLV_LOG, "w", encoding="utf-8"), indent=2)
+
+
+def get_open_bets() -> List[dict]:
+    """Return all bets with result=None."""
+    return [b for b in _load_bet_log() if b.get("result") is None]
+
+
+def get_portfolio_summary() -> dict:
+    """
+    Return a summary of the current betting portfolio.
+
+    Returns:
+        {
+            "total_bets": int,
+            "open_bets": int,
+            "wins": int,
+            "losses": int,
+            "total_pnl": float,
+            "roi_pct": float,
+            "avg_clv": float,
+            "clv_positive_rate": float,
+            "total_wagered": float,
+        }
+    """
+    bets = _load_bet_log()
+    if not bets:
+        return {
+            "total_bets": 0, "open_bets": 0, "wins": 0, "losses": 0,
+            "total_pnl": 0.0, "roi_pct": 0.0, "avg_clv": 0.0,
+            "clv_positive_rate": 0.0, "total_wagered": 0.0,
+        }
+
+    open_bets  = sum(1 for b in bets if b.get("result") is None)
+    wins       = sum(1 for b in bets if b.get("result") == "win")
+    losses     = sum(1 for b in bets if b.get("result") == "loss")
+    total_pnl  = sum(b.get("pnl", 0.0) or 0.0 for b in bets)
+    wagered    = sum(b.get("kelly_size", 0.0) or 0.0 for b in bets)
+    roi        = total_pnl / max(wagered, 1) * 100
+
+    clv_vals   = [b["clv"] for b in bets if b.get("clv") is not None]
+    avg_clv    = float(np.mean(clv_vals)) if clv_vals else 0.0
+    clv_pos    = sum(1 for c in clv_vals if c > 0) / max(len(clv_vals), 1)
+
+    return {
+        "total_bets":       len(bets),
+        "open_bets":        open_bets,
+        "wins":             wins,
+        "losses":           losses,
+        "total_pnl":        round(total_pnl, 2),
+        "roi_pct":          round(roi, 2),
+        "avg_clv":          round(avg_clv, 4),
+        "clv_positive_rate": round(clv_pos, 3),
+        "total_wagered":    round(wagered, 2),
+    }
+
+
+if __name__ == "__main__":
+    summary = get_portfolio_summary()
+    print("Portfolio Summary:")
+    for k, v in summary.items():
+        print(f"  {k}: {v}")

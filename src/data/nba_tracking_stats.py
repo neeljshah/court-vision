@@ -206,6 +206,7 @@ def get_shot_dashboard(
     try:
         resp = playerdashptshots.PlayerDashPtShots(
             player_id=player_id,
+            team_id=0,
             season=season,
             per_mode_simple="PerGame",
         )
@@ -216,29 +217,62 @@ def get_shot_dashboard(
 
     result: dict = {"player_id": player_id, "season": season}
 
-    # Frame 0: General shot type (contested vs uncontested)
-    if len(frames) > 0 and not frames[0].empty:
-        df = frames[0]
-        contested_row = df[df.get("SHOT_DIST_RANGE", df.columns[0] if len(df.columns) > 0 else "X") == "CONT"]
-        # Fallback: parse all rows
-        for _, row in df.iterrows():
-            tag = str(row.get("GENERAL_RANGE", row.get("SHOT_DIST_RANGE", ""))).upper()
-            if "CONT" in tag and "UN" not in tag:
-                result["contested_pct"] = float(row.get("FGA_FREQUENCY", 0) or 0)
-                result["avg_defender_dist_contested"] = float(row.get("AVG_DRIBBLES", row.get("AVG_CLOSE_DEF_DIST", 0)) or 0)
-            elif "UN" in tag:
-                result["uncontested_pct"] = float(row.get("FGA_FREQUENCY", 0) or 0)
+    # Defender-distance midpoints (feet) for weighted-average calculation
+    _DIST_MIDPOINTS = {
+        "0-2": 1.0, "2-4": 3.0, "4-6": 5.0, "6+": 7.0,
+    }
 
-    # Frame 1: Shot clock range (catch-and-shoot vs pull-up)
-    if len(frames) > 2 and not frames[2].empty:
-        df2 = frames[2]
-        for _, row in df2.iterrows():
-            tag = str(row.get("SHOT_CLOCK_RANGE", "")).upper()
-            if "CATCH" in tag or "C&S" in tag:
-                result["catch_and_shoot_pct"] = float(row.get("FGA_FREQUENCY", 0) or 0)
-                result["avg_defender_dist_catch_shoot"] = float(row.get("AVG_CLOSE_DEF_DIST", 0) or 0)
-            elif "PULL" in tag or "OFF DRIBBLE" in tag:
-                result["pull_up_pct"] = float(row.get("FGA_FREQUENCY", 0) or 0)
+    def _dist_key(label: str) -> float:
+        for k, v in _DIST_MIDPOINTS.items():
+            if label.startswith(k):
+                return v
+        return 0.0
+
+    # Frame 1: SHOT_TYPE — "Catch and Shoot", "Pull Ups", "Other"
+    if len(frames) > 1 and not frames[1].empty:
+        df1 = frames[1]
+        for _, row in df1.iterrows():
+            tag = str(row.get("SHOT_TYPE", "")).upper()
+            freq = float(row.get("FGA_FREQUENCY", 0) or 0)
+            if "CATCH" in tag:
+                result["catch_and_shoot_pct"] = freq
+            elif "PULL" in tag:
+                result["pull_up_pct"] = freq
+
+    # Frame 4: CLOSE_DEF_DIST_RANGE (all shots) — compute contested_pct + avg dist
+    if len(frames) > 4 and not frames[4].empty:
+        df4 = frames[4]
+        total_freq = 0.0
+        weighted_dist = 0.0
+        contested = 0.0
+        for _, row in df4.iterrows():
+            label = str(row.get("CLOSE_DEF_DIST_RANGE", ""))
+            freq = float(row.get("FGA_FREQUENCY", 0) or 0)
+            dist = _dist_key(label)
+            total_freq += freq
+            weighted_dist += freq * dist
+            if label.startswith("0-2") or label.startswith("2-4"):
+                contested += freq
+        result["contested_pct"] = round(contested, 4)
+        result["uncontested_pct"] = round(max(0.0, total_freq - contested), 4)
+        result["avg_defender_dist_contested"] = round(
+            weighted_dist / total_freq if total_freq > 0 else 0.0, 3
+        )
+
+    # Frame 5: CLOSE_DEF_DIST_RANGE (catch-and-shoot shots) — avg dist for C&S
+    if len(frames) > 5 and not frames[5].empty:
+        df5 = frames[5]
+        total_freq = 0.0
+        weighted_dist = 0.0
+        for _, row in df5.iterrows():
+            label = str(row.get("CLOSE_DEF_DIST_RANGE", ""))
+            freq = float(row.get("FGA_FREQUENCY", 0) or 0)
+            dist = _dist_key(label)
+            total_freq += freq
+            weighted_dist += freq * dist
+        result["avg_defender_dist_catch_shoot"] = round(
+            weighted_dist / total_freq if total_freq > 0 else 0.0, 3
+        )
 
     # Defaults for missing keys
     for k in ("contested_pct", "uncontested_pct", "catch_and_shoot_pct",
@@ -760,6 +794,105 @@ def get_video_events(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# 9. Season-Level Player Tracking Stats — LeagueDashPlayerStats (Tracking)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_season_tracking_stats(season: str = "2024-25") -> list:
+    """
+    Season-level player tracking stats: avg speed, distance/game, touches,
+    elbow touches, post touches, paint touches, front-court touches.
+
+    Uses LeagueDashPlayerStats with measure_type='Tracking'.
+
+    Args:
+        season: e.g. "2024-25"
+
+    Returns:
+        List of dicts per player:
+        [
+            {
+                "player_id": int, "player_name": str, "team_abbreviation": str,
+                "speed": float,           # avg mph
+                "distance": float,        # miles/game
+                "touches": float,
+                "front_ct_touches": float,
+                "elbow_touches": float,
+                "post_touches": float,
+                "paint_touches": float,
+                "potential_assists": float,
+                "avg_dribbles_per_touch": float,
+                "avg_seconds_per_touch": float,
+            }, ...
+        ]
+        Returns [] on error.
+    """
+    key = f"player_tracking_{_safe(season)}"
+    path = _cache_path(key)
+    if _is_fresh(path, _TTL_24H):
+        return _load(path)
+
+    try:
+        from nba_api.stats.endpoints import leaguedashptstats
+    except ImportError:
+        raise RuntimeError("nba_api not installed.")
+
+    # Pull SpeedDistance + Touches in two calls, merge on player_id
+    all_records: dict = {}
+
+    for pt_type, col_map in [
+        (
+            "SpeedDistance",
+            {
+                "PLAYER_ID": "player_id",
+                "PLAYER_NAME": "player_name",
+                "TEAM_ABBREVIATION": "team_abbreviation",
+                "AVG_SPEED": "speed",
+                "DIST": "distance",
+            },
+        ),
+        (
+            "Possessions",
+            {
+                "PLAYER_ID": "player_id",
+                "TOUCHES": "touches",
+                "FRONT_CT_TOUCHES": "front_ct_touches",
+                "ELBOW_TOUCHES": "elbow_touches",
+                "POST_TOUCHES": "post_touches",
+                "PAINT_TOUCHES": "paint_touches",
+                "AVG_DRIB_PER_TOUCH": "avg_dribbles_per_touch",
+                "AVG_SEC_PER_TOUCH": "avg_seconds_per_touch",
+            },
+        ),
+    ]:
+        _nba_rate_limit(0.8)
+        try:
+            resp = leaguedashptstats.LeagueDashPtStats(
+                season=season,
+                pt_measure_type=pt_type,
+                player_or_team="Player",
+                per_mode_simple="PerGame",
+                season_type_all_star="Regular Season",
+            )
+            df = resp.get_data_frames()[0]
+        except Exception as e:
+            print(f"[nba_tracking_stats] LeagueDashPtStats({pt_type}) error: {e}")
+            continue
+
+        rows = _df_to_records(df, col_map)
+        for row in rows:
+            pid = str(row.get("player_id", ""))
+            if pid not in all_records:
+                all_records[pid] = {}
+            all_records[pid].update(row)
+        time.sleep(0.5)
+
+    records = list(all_records.values())
+    _save(path, records)
+    print(f"[nba_tracking_stats] Season tracking stats saved: {len(records)} players ({season})")
+    return records
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Bulk fetch helper
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -816,6 +949,128 @@ def fetch_all_tracking_data(
     return summary
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# 9. Player Bio — CommonPlayerInfo (height, weight, position, draft, country)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_BIO_CACHE = os.path.join(_NBA_CACHE, "player_bio.json")
+_TTL_BIO   = 7 * 24 * 3600   # 7-day TTL — bio rarely changes
+
+
+def _height_to_inches(h: str) -> Optional[float]:
+    """Convert '6-4' or '6' NBA height string to total inches."""
+    if not h:
+        return None
+    try:
+        if "-" in str(h):
+            feet, inches = str(h).split("-")
+            return int(feet) * 12 + int(inches)
+        return float(h) * 12
+    except Exception:
+        return None
+
+
+def fetch_player_bio(player_ids: Optional[List[str]] = None, force: bool = False) -> dict:
+    """
+    Fetch height, weight, position, draft year, and country for NBA players
+    using CommonPlayerInfo.  Estimated wingspan is derived from height using
+    the NBA scouting mean offset (wingspan ≈ height + 2 inches).
+
+    Args:
+        player_ids: List of player ID strings to fetch.  If None, loads the
+                    active-player list from ``data/nba/players_*.json`` for the
+                    current season.
+        force:      Re-fetch even if a fresh cache exists.
+
+    Returns:
+        dict mapping player_id (str) →
+            {
+                "player_id":     str,
+                "full_name":     str,
+                "height_in":     float | None,   # total inches
+                "weight_lbs":    float | None,
+                "wingspan_est":  float | None,   # height_in + 2.0
+                "position":      str,
+                "draft_year":    int | None,
+                "country":       str,
+            }
+
+    Cache: data/nba/player_bio.json  (7-day TTL).
+    """
+    if not force and _is_fresh(_BIO_CACHE, _TTL_BIO):
+        return _load(_BIO_CACHE)
+
+    # Load player IDs from existing roster cache if not provided
+    if player_ids is None:
+        player_ids = []
+        for fname in os.listdir(_NBA_CACHE):
+            if fname.startswith("players_") and fname.endswith(".json"):
+                try:
+                    roster = _load(os.path.join(_NBA_CACHE, fname))
+                    for p in roster:
+                        pid = str(p.get("id") or p.get("player_id") or "")
+                        if pid and pid not in player_ids:
+                            player_ids.append(pid)
+                except Exception:
+                    pass
+
+    if not player_ids:
+        print("[player_bio] No player IDs found — returning empty dict")
+        return {}
+
+    try:
+        from nba_api.stats.endpoints import CommonPlayerInfo
+    except ImportError:
+        print("[player_bio] nba_api not available")
+        return {}
+
+    bio_map: dict = {}
+    for i, pid in enumerate(player_ids):
+        try:
+            resp = CommonPlayerInfo(player_id=pid)
+            df = resp.common_player_info.get_data_frame()
+            if df.empty:
+                continue
+            row = df.iloc[0]
+
+            height_in = _height_to_inches(row.get("HEIGHT", ""))
+            weight_raw = row.get("WEIGHT", None)
+            try:
+                weight_lbs = float(str(weight_raw).replace(" lbs", "").strip())
+            except Exception:
+                weight_lbs = None
+
+            draft_year_raw = row.get("DRAFT_YEAR", None)
+            try:
+                draft_year = int(draft_year_raw) if str(draft_year_raw).isdigit() else None
+            except Exception:
+                draft_year = None
+
+            bio_map[str(pid)] = {
+                "player_id":    str(pid),
+                "full_name":    str(row.get("DISPLAY_FIRST_LAST", "")),
+                "height_in":    height_in,
+                "weight_lbs":   weight_lbs,
+                "wingspan_est": round(height_in + 2.0, 1) if height_in else None,
+                "position":     str(row.get("POSITION", "")),
+                "draft_year":   draft_year,
+                "country":      str(row.get("COUNTRY", "")),
+            }
+
+            if i % 50 == 0:
+                print(f"[player_bio] {i}/{len(player_ids)} fetched...")
+            _nba_rate_limit(0.8)
+
+        except Exception as exc:
+            print(f"[player_bio] skip {pid}: {exc}")
+            _nba_rate_limit(1.0)
+            continue
+
+    _save(_BIO_CACHE, bio_map)
+    print(f"[player_bio] Saved {len(bio_map)} players → {_BIO_CACHE}")
+    return bio_map
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -826,6 +1081,7 @@ if __name__ == "__main__":
     parser.add_argument("--on-off", action="store_true")
     parser.add_argument("--defender-zone", action="store_true")
     parser.add_argument("--synergy", choices=["offensive", "defensive"], default=None)
+    parser.add_argument("--bio", action="store_true", help="Fetch player bio (height/weight/wingspan)")
     args = parser.parse_args()
 
     if args.all:
@@ -843,5 +1099,8 @@ if __name__ == "__main__":
     elif args.synergy:
         data = get_synergy_all_types(args.season, args.synergy)
         print(f"Synergy ({args.synergy}): {len(data)} records")
+    elif args.bio:
+        data = fetch_player_bio()
+        print(f"Player bio: {len(data)} players")
     else:
         parser.print_help()
