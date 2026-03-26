@@ -161,6 +161,55 @@ def enrich_with_nba(
     return df
 
 
+# ── enrich_with_cv ─────────────────────────────────────────────────────────────
+
+def enrich_with_cv(
+    df: pd.DataFrame,
+    game_id: str,
+    data_root: Optional[str] = None,
+    register: bool = True,
+) -> pd.DataFrame:
+    """
+    Merge CV-derived per-player features into a features DataFrame.
+
+    Reads tracking/{game_id}/ CSV outputs, computes CV features, merges them
+    into df, and optionally registers them in the cv_features DB table.
+
+    Args:
+        df:        Features DataFrame (must contain a 'player_id' column).
+        game_id:   NBA game ID.
+        data_root: Root of data directory (defaults to project data/).
+        register:  If True, persist CV features to DB via cv_feature_registry.
+
+    Returns:
+        DataFrame with cv_* columns added where CV data is available.
+        Returns df unchanged if no CV data found.
+    """
+    if df.empty or not game_id:
+        return df
+
+    try:
+        from src.pipeline.tracking_feature_extractor import extract, merge_into_features
+        cv_dict = extract(game_id=game_id, data_root=data_root)
+    except Exception as exc:
+        print(f"[feature_pipeline] CV feature extraction failed: {exc}")
+        return df
+
+    if not cv_dict:
+        print(f"[feature_pipeline] No CV data found for game {game_id}")
+        return df
+
+    if register:
+        try:
+            from src.pipeline.cv_feature_registry import register_game
+            n = register_game(game_id=game_id, cv_dict=cv_dict)
+            print(f"[feature_pipeline] Registered CV features for {n} players (game {game_id})")
+        except Exception as exc:
+            print(f"[feature_pipeline] CV registry write failed (non-fatal): {exc}")
+
+    return merge_into_features(df, cv_dict, player_id_col="player_id")
+
+
 # ── CLI ────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

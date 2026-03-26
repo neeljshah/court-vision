@@ -232,18 +232,18 @@ Feedback into confidence calibration → bet sizing improves
 
 ## Prediction Accuracy By Market
 
-| Market | Current Edge (Phase 4) | Full Stack Edge |
-|---|---|---|
-| Game lines (spread/ML) | +0-1% — efficient market | +1-2% with full sharp signal |
-| Game total | +1-2% | +2-4% with pace + spatial |
-| First half total | +2-3% | +3-5% |
-| Role player props | +3-5% | +6-10% |
-| Star player props | +0-2% | +2-4% |
-| Back-to-back props | +3-5% | +5-8% with fatigue curves |
-| Injury reaction props | +8-15% (30-min window) | +8-15% (speed unchanged) |
-| Same-game parlays | +3-5% (correlation edge) | +4-8% |
-| Live props (halftime update) | N/A yet | +5-12% |
-| DFS lineups (cash) | +5-8% | +8-15% |
+| Market                       | Current Edge (Phase 4)   | Full Stack Edge              |
+| ---------------------------- | ------------------------ | ---------------------------- |
+| Game lines (spread/ML)       | +0-1% — efficient market | +1-2% with full sharp signal |
+| Game total                   | +1-2%                    | +2-4% with pace + spatial    |
+| First half total             | +2-3%                    | +3-5%                        |
+| Role player props            | +3-5%                    | +6-10%                       |
+| Star player props            | +0-2%                    | +2-4%                        |
+| Back-to-back props           | +3-5%                    | +5-8% with fatigue curves    |
+| Injury reaction props        | +8-15% (30-min window)   | +8-15% (speed unchanged)     |
+| Same-game parlays            | +3-5% (correlation edge) | +4-8%                        |
+| Live props (halftime update) | N/A yet                  | +5-12%                       |
+| DFS lineups (cash)           | +5-8%                    | +8-15%                       |
 
 ---
 

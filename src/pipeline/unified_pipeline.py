@@ -12,12 +12,27 @@ Output: data/tracking_data.csv + data/stats.json
 
 import csv
 import json
+import logging
 import os
 import queue
 import sys
 import threading
 import uuid
+import warnings
 from typing import Optional, List, Dict, Iterator
+
+log = logging.getLogger(__name__)
+
+# Suppress urllib3/requests version mismatch warning (urllib3 2.x vs requests expectation).
+# Install: pip install "urllib3<2" to eliminate permanently.
+try:
+    import requests.packages.urllib3.exceptions as _urllib3_exc
+    warnings.filterwarnings(
+        "ignore",
+        category=_urllib3_exc.RequestsDependencyWarning,
+    )
+except Exception:
+    pass
 
 import cv2
 import numpy as np
@@ -118,7 +133,7 @@ class _FramePrefetcher:
 
     Usage:
         pf = _FramePrefetcher(video_path, start_frame, stride=3)
-        ok, frame, frame_idx = pf.read()  # returns (False, None, -1) at EOF
+        ok, frame, frame_idx = pf.read()  # returns (False, None, -1) sentinel at EOF — never use frame_idx when ok=False
         pf.release()                       # no-op; daemon thread dies with process
 
     Args:
@@ -234,7 +249,7 @@ _FRAME_STRIDE       = 3      # process every 3rd frame on full-game clips (10fps
 _FRAME_STRIDE_THRESH = 3000  # frame count above which stride kicks in (~50s @ 60fps)
 
 # Gameplay detection — skip non-play frames (intro, halftime, timeouts, replays)
-MIN_GAMEPLAY_PERSONS = 5     # YOLO person count below this → skip frame
+MIN_GAMEPLAY_PERSONS = 3     # YOLO person count below this → skip frame
 _GAMEPLAY_CACHE_FRAMES = 90  # once gameplay confirmed, trust it for N frames (raised 30→90: 3s)
 
 # Shot-clock non-live filter — suppresses ball tracking during replays / halftime.
@@ -242,10 +257,11 @@ _GAMEPLAY_CACHE_FRAMES = 90  # once gameplay confirmed, trust it for N frames (r
 # consecutive scans, ball tracking is suspended until the clock reappears.
 # Guard: suspension only fires if the clock was seen at least once on this clip
 # (safety net for clips where ScoreboardOCR can't read the broadcast font at all).
-# Raised from 40→200 (200×15=3000 frames≈100s): older broadcast fonts (2022 playoffs)
-# cause OCR to miss the shot clock for 30-40s stretches; 40-scan threshold was
-# triggering permanent suspension on live play.
-_SHOT_CLOCK_ABSENT_THRESHOLD = 200
+# Lowered from 200→60 (60×30=1800 frames≈3 real min): frozen-clock detection
+# (3 consecutive OCR scans without clock advance) now handles the 30-40s OCR-miss
+# case; this threshold is a last-resort fallback for complete OCR blindness only.
+# 3 minutes of full OCR blindness is a reasonable trigger before forcing suspension.
+_SHOT_CLOCK_ABSENT_THRESHOLD = 60
 _PANO_SCAN_INTERVAL  = 150   # check every N frames when scanning for gameplay (5s @ 30fps)
 _PANO_STITCH_FRAMES  = 30    # consecutive frames to stitch into panorama
 
@@ -254,7 +270,43 @@ _BASKET_L            = (0.045, 0.5)   # left-baseline basket
 _BASKET_R            = (0.955, 0.5)   # right-baseline basket
 _DRIVE_VEL_THRESHOLD  = 3.0           # px/frame toward basket → counts as a drive
 _ISOLATION_DEFAULT    = 200.0         # px — "wide open" sentinel when no opponents detected
+_SPACING_NORM         = 4700.0        # ft² reference area (half-court ≈ 47×50 ft = 2350 ft², ×2 for full)
 _FAST_BREAK_VEL_MIN  = 3.5            # px/frame team-mean toward basket → fast break
+
+
+def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
+    """Defender distance for shot log. Falls back to shooter-centric calc when spatial sentinel fires."""
+    import math as _math
+    iso = spatial.get("_isolation")
+    if iso != _ISOLATION_DEFAULT:
+        return round(iso, 1)
+    # Fallback: compute from shooter position to nearest non-same-team player in frame
+    sx, sy = shooter.get("x2d"), shooter.get("y2d")
+    if sx is None or sy is None:
+        return ""
+    opp = [
+        (t["x2d"], t["y2d"])
+        for t in frame_tracks
+        if t.get("team") not in ("referee", shooter.get("team"))
+    ]
+    if not opp:
+        # Last resort: any non-shooter player
+        opp = [
+            (t["x2d"], t["y2d"])
+            for t in frame_tracks
+            if (t["x2d"], t["y2d"]) != (sx, sy) and t.get("team") != "referee"
+        ]
+    if not opp:
+        return ""
+    return round(min(_math.hypot(sx - x, sy - y) for x, y in opp), 1)
+
+
+def _shot_defender_dist_norm(spatial, shooter, frame_tracks, map_w):
+    """Normalised defender distance (0–1 of court width)."""
+    d = _shot_defender_dist(spatial, shooter, frame_tracks, map_w)
+    if d == "":
+        return ""
+    return round(d / max(map_w, 1), 4)
 
 
 # ── YOLO-NAS wrapper (optional) ───────────────────────────────────────────────
@@ -327,14 +379,22 @@ class UnifiedPipeline:
         show: bool = True,
         output_video_path: str = None,
         game_id: str = None,
+        period: int = 1,
+        clip_start_sec: float = 0.0,
+        data_dir: str = None,
     ):
         self.video_path        = video_path
         self.max_frames        = max_frames
         self.start_frame       = start_frame
         self.show              = show
         self.output_video_path = output_video_path
-        self.game_id           = game_id
-        self.clip_id           = str(uuid.uuid4())  # unique per pipeline run
+        self.game_id              = game_id
+        self.period               = period
+        self.clip_start_sec       = clip_start_sec
+        self.period_start_video_sec: float = 0.0   # set by scoreboard OCR in run()
+        self.clip_id              = str(uuid.uuid4())  # unique per pipeline run
+        # Fix 2: per-game output directory prevents cross-game CSV overwrites
+        self._data_dir = data_dir if data_dir is not None else _DATA
 
         self.yolo    = YoloDetector(yolo_weight_path)
         self.players = self._build_players()
@@ -381,6 +441,7 @@ class UnifiedPipeline:
 
         self._gameplay_cache_until:    int = 0   # frame index; skip YOLO check before this
         self._no_gameplay_until:       int = 0   # frame index; confirmed non-live before this
+        self._gameplay_yolo            = None    # lazy: PyTorch yolov8n at 640 (TRT engine locked at 480)
         self._sc_absent_streak:        int = 0   # consecutive OCR runs with no shot clock
         self._sc_ever_seen:         bool = False  # True once OCR reads a valid shot clock
         self._ball_track_suspended: bool = False  # True during replay / halftime sequences
@@ -392,9 +453,9 @@ class UnifiedPipeline:
         self.ball_det = BallDetectTrack(self.players)  # Hough fallback
 
         cap0 = cv2.VideoCapture(video_path)
+        fps  = cap0.get(cv2.CAP_PROP_FPS) or 30
         _, f0 = cap0.read(); cap0.release()
         h, w  = (f0[TOPCUT:].shape[:2]) if f0 is not None else (720, 1280)
-        fps   = cv2.VideoCapture(video_path).get(cv2.CAP_PROP_FPS) or 30
         self.stats_tracker = StatsTracker(frame_w=w, frame_h=h, fps=fps)
 
         sift = cv2.xfeatures2d.SIFT_create()
@@ -408,6 +469,16 @@ class UnifiedPipeline:
 
         self.event_det = EventDetector(map_w=self.map_2d.shape[1],
                                        map_h=self.map_2d.shape[0])
+
+        # ── Player identity resolver (requires --game-id) ─────────────────
+        self._player_resolver = None
+        if game_id:
+            try:
+                from src.tracking.player_resolver import PlayerResolver
+                self._player_resolver = PlayerResolver(game_id=game_id, fps=fps)
+                log.debug("PlayerResolver initialised for game %s", game_id)
+            except Exception as _pr_exc:
+                log.debug("PlayerResolver init failed: %s", _pr_exc)
 
         # ── Context classifiers ───────────────────────────────────────────
         _fw, _fh = w, h   # frame dims captured above for StatsTracker
@@ -457,15 +528,15 @@ class UnifiedPipeline:
 
         A usable court pano must be:
         - ≥2000 px wide (to produce a ~2800px rectified court)
-        - w/h ratio between 3.0 and 10.0 (basketball court ≈1.88:1, stitching adds width;
-          ratio >10 means over-stitched — SIFT homography will map all points far outside
-          the expected court region; ratio <3 means portrait/wrong corners)
+        - w/h ratio between 3.0 and 50.0 (basketball court ≈1.88:1, stitching adds width;
+          ratio >50 means extreme over-stitch with no court signal; ratio <3 = portrait/wrong)
+          Wide-ratio panos (10–50) are salvaged by center-crop in _scan_and_build_pano.
         """
         if pano is None:
             return False
         h, w = pano.shape[:2]
         ratio = w / max(h, 1)
-        return w >= 2000 and 3.0 <= ratio <= 10.0
+        return w >= 2000 and 3.0 <= ratio <= 50.0
 
     def _load_pano(self, video_path: str) -> np.ndarray:
         """Load panorama for this video, building it from gameplay frames if needed."""
@@ -566,12 +637,20 @@ class UnifiedPipeline:
             print(f"  Stitch failed ({e}), using single frame as pano")
             pano = stitch_frames[0]
 
-        # Validate stitched result — an over-wide pano (ratio >10) means the camera
-        # moved too much between sampled frames and SIFT stitched across multiple
-        # distinct views.  Fall back to a single gameplay frame in that case.
+        # Validate stitched result.  Over-wide panos (ratio >10) come from camera
+        # drift across many frames; salvage them by center-cropping to ~6:1 before
+        # falling back to a single gameplay frame (which has too few court features).
+        h_p, w_p = pano.shape[:2]
+        ratio_p = w_p / max(h_p, 1)
+        if ratio_p > 10.0 and w_p >= 2000:
+            target_w = int(h_p * 6.0)
+            if target_w < w_p:
+                x0 = (w_p - target_w) // 2
+                pano = pano[:, x0: x0 + target_w]
+                print(f"  Wide pano cropped {w_p}→{target_w}px (ratio {ratio_p:.1f}→6.0)")
         if not UnifiedPipeline._pano_valid(pano):
-            h, w = pano.shape[:2]
-            print(f"  Stitched pano invalid ({w}×{h}, ratio={w/max(h,1):.1f}) — using single gameplay frame")
+            h_p, w_p = pano.shape[:2]
+            print(f"  Stitched pano invalid ({w_p}×{h_p}, ratio={w_p/max(h_p,1):.1f}) — using single gameplay frame")
             pano = stitch_frames[0]
 
         out = UnifiedPipeline._auto_pano_path(video_path)
@@ -594,10 +673,23 @@ class UnifiedPipeline:
             return True
         if frame_idx < self._no_gameplay_until:
             return False
-        # imgsz=480: matches TRT engine compiled size (320 causes shape mismatch)
-        r = self.feet_det.model(
-            frame, classes=[0], conf=0.35, verbose=False,
-            imgsz=480, half=self.feet_det._use_half,
+        # imgsz=640: at 1280px broadcast width, players are ~50px tall.
+        # imgsz=480 scales them to ~19px which is below reliable detection.
+        # imgsz=640 → ~25px → acceptable for gameplay filter.
+        # NOTE: yolov8n.engine is compiled at 480 — cannot call at 640.
+        # Use a separate PyTorch model for gameplay detection only.
+        if self._gameplay_yolo is None:
+            try:
+                from ultralytics import YOLO as _YOLO
+                _pt = os.path.join(PROJECT_DIR, "yolov8n.pt")
+                if not os.path.exists(_pt):
+                    _pt = os.path.join(_RESOURCES, "yolov8n.pt")
+                self._gameplay_yolo = _YOLO(_pt)
+            except Exception:
+                self._gameplay_yolo = self.feet_det.model  # fallback: TRT at 480
+        r = self._gameplay_yolo(
+            frame, classes=[0], conf=0.25, verbose=False,
+            imgsz=640, half=self.feet_det._use_half,
         )
         n = len(r[0].boxes) if r[0].boxes is not None else 0
         if n >= MIN_GAMEPLAY_PERSONS:
@@ -630,7 +722,21 @@ class UnifiedPipeline:
         img = binarize_erode_dilate(pano, plot=False)
         _, corners = rectangularize_court(img, plot=False)
         rectified = rectify(pano, corners, plot=False)
-        map_2d = cv2.resize(map_img, (rectified.shape[1], rectified.shape[0]))
+
+        # Basketball court is always landscape (wider than tall, ~1.88:1).
+        # If rectify() returns portrait (height > width), court corner detection
+        # failed — fall back to 940×500 so M1 (Rectify1.npy, calibrated for
+        # 3698×500 pano → 940×500 court) produces valid landscape coordinates.
+        _rh, _rw = rectified.shape[:2]
+        if _rh > _rw:
+            import logging as _log_mod
+            _log_mod.getLogger(__name__).warning(
+                "_build_court: rectified is portrait (%dx%d) — "
+                "court corner detection failed; forcing 940×500 map",
+                _rw, _rh,
+            )
+            _rw, _rh = 940, 500
+        map_2d = cv2.resize(map_img, (_rw, _rh))
 
         # Per-clip homography detection (ISSUE-017 fix).
         # NOTE: detect_court_homography returns M1 mapping frame→940×500 directly.
@@ -695,11 +801,31 @@ class UnifiedPipeline:
                         new_M1 = new_M1_raw @ _np.linalg.inv(self._M_ema)
                     except (np.linalg.LinAlgError, AttributeError):
                         pass  # M_ema singular or unavailable — use raw M1
-                self._M1_raw_clip = new_M1_raw  # store for M_ema re-sync in _get_homography
-                self.M1 = new_M1
-                self._last_good_M1 = new_M1
-                self._M1_stale_frames = 0
-                self._M1_failed_attempts = 0
+                # Sanity-check: project 4 court corners through new_M1 and verify
+                # the output bounding box is landscape (width > height).
+                # A portrait result means detect_court_homography returned a
+                # rotated mapping — reject to avoid portrait-coordinate corruption.
+                _valid_m1 = True
+                try:
+                    _corners_src = np.array([[0,0],[1280,0],[1280,720],[0,720]],
+                                            dtype=np.float64).reshape(-1,1,2)
+                    _projected = cv2.perspectiveTransform(_corners_src, new_M1)
+                    _px = _projected[:, 0, 0]
+                    _py = _projected[:, 0, 1]
+                    _proj_w = float(_px.max() - _px.min())
+                    _proj_h = float(_py.max() - _py.min())
+                    if _proj_h > _proj_w * 1.5:   # portrait ratio → reject
+                        _valid_m1 = False
+                        self._M1_failed_attempts += 1
+                except Exception:
+                    pass
+
+                if _valid_m1:
+                    self._M1_raw_clip = new_M1_raw  # store for M_ema re-sync in _get_homography
+                    self.M1 = new_M1
+                    self._last_good_M1 = new_M1
+                    self._M1_stale_frames = 0
+                    self._M1_failed_attempts = 0
             else:
                 self._M1_failed_attempts += 1
                 self._M1_stale_frames = 0  # reset so we wait another threshold period
@@ -891,13 +1017,37 @@ class UnifiedPipeline:
         cap    = cv2.VideoCapture(self.video_path)
         fps    = cap.get(cv2.CAP_PROP_FPS) or 25.0
         map_h, map_w = self.map_2d.shape[:2]
-        total_video_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        total_video_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+        if total_video_frames == 0:
+            # cv2 couldn't read frame count (common with YouTube-downloaded MP4/MKV).
+            # Try PyAV for an accurate count; fall back to file-size heuristic.
+            try:
+                import av as _av
+                _c = _av.open(self.video_path)
+                total_video_frames = _c.streams.video[0].frames or 0
+                _c.close()
+            except Exception:
+                pass
+            if total_video_frames == 0:
+                # Last resort: estimate from file size — 1 GB ≈ full game at typical bitrate.
+                try:
+                    total_video_frames = int(os.path.getsize(self.video_path) / 250_000)
+                except Exception:
+                    total_video_frames = _FRAME_STRIDE_THRESH + 1  # assume long; use stride
         # Stride: skip (stride-1) frames between each processed frame on long clips.
         # Handled in the prefetcher so NVDEC only decodes ~1/stride of all frames.
         _stride = _FRAME_STRIDE if total_video_frames > _FRAME_STRIDE_THRESH else 1
+        # Wire fps + stride into EventDetector so shot debounce, drive speed, and
+        # closeout mph are all computed in correct absolute-frame / real-time units.
+        self.event_det.configure(fps, _stride)
         if self.start_frame > 0:
             cap.set(cv2.CAP_PROP_POS_FRAMES, self.start_frame)
         writer = self._make_writer(cap)
+        # cap is only needed for fps/frame-count metadata and writer init above.
+        # Release it now — the prefetcher opens its own decoder; holding cap open
+        # wastes a file handle and causes a leak if the main loop throws.
+        cap.release()
+        cap = None
         # Prefetcher runs in a background thread — overlaps decode with tracking.
         # Uses NVDEC (decord GPU) when available, falls back to PyAV/cv2.
         # stride= causes the decode thread to skip 2/3 of frames at the NVDEC level
@@ -910,12 +1060,22 @@ class UnifiedPipeline:
         player_stats:     dict       = {}
         possession_rows:  List[dict] = []
         shot_log_rows:    List[dict] = []
+        shot_poss_last_ts: dict      = {}  # possession_id -> last shot timestamp (cooldown)
+        _last_global_shot_ts: float  = -999.0  # global 3s gate across all possessions
+        scoreboard_log_rows: List[dict] = []
+        _events_log_rows: List[dict] = []  # FIX 1: rich events accumulator for events_log.csv
+        # FIX 4: per-possession event counts (accumulated in main loop to survive checkpoint clears)
+        _poss_event_counts: Dict[int, Dict[str, int]] = {}
+        _frame_tracks_buf: List[List[dict]] = []   # FIX 5: first-300-frame buffer for court-side team map
+        _sb_conf: float = 0.0                       # FIX 6: last scoreboard confidence for gating
         suspended_frame_count: int   = 0  # frames where ball tracking was suspended
+        _period_start_detected: bool = False  # True once we've set period_start_video_sec
         _ball_miss_streak:     int   = 0  # consecutive frames ball not detected
         frame_idx    = self.start_frame  # absolute video frame (comes from prefetcher on each read)
         gameplay_frames = 0             # gameplay frames actually processed (for max_frames check)
         prev_pos:    Dict[int, tuple] = {}   # player_id → (x2d, y2d)
         prev_vel:    Dict[int, float] = {}   # player_id → velocity prev frame
+        _player_dist_run: Dict[int, float] = {}  # player_id → cumulative px distance
         poss_team_prev:   str            = ""
         possession_dur:   int            = 0
         last_handler:     Optional[dict] = None   # last player who had ball (for shot log)
@@ -924,11 +1084,43 @@ class UnifiedPipeline:
         possession_start: int            = 0
         possession_buf:   List[dict]     = []
         fast_break:       int            = 0
+        # Offensive rebound shot clock: track whether the previous possession ended
+        # in a missed shot by the same team so we can apply the 14s reset rule.
+        _prev_poss_shot_attempted: bool  = False   # did last possession have a shot?
+        _prev_poss_result:         str   = ""      # "scored" or "missed" etc.
+        _poss_is_off_rebound:      bool  = False   # current possession follows off-rebound
         poss_no_ball_streak: int         = 0   # consecutive frames without detected ball handler
-        _POSS_PERSIST_FRAMES = 5               # frames without ball before possession resets
+        _POSS_PERSIST_FRAMES = 60              # frames without ball before possession resets (~2s at stride=3 30fps; raised 18→60: broadcast ball detection has 1-3s gaps)
+        # Fix 3 Part A: debounce brief wrong-team ball attribution (1-3 frame flickers
+        # cause false possession changes; require consecutive frames before switching).
+        # Raised 8→20: at 15fps effective, 8=0.5s caused ~1000+ false possession splits.
+        # 20 frames = ~1.3s — tolerates longer attribution noise without over-splitting.
+        _ball_loss_streak: int = 0
+        _BALL_LOSS_THRESH  = 20  # ~1.3s at 15fps effective sampling rate
+        # FIX 1: lineup tracking
+        _lineup_id_cache: Dict[frozenset, int] = {}
+        _lineup_counter: int = 0
+        _poss_lineup_buf: List[int] = []
+        # FIX 4: transition time tracking
+        _transition_frames: Optional[int] = None
+        _poss_crossed_halfcourt: bool = False
+        # FIX 5: second chance tracking
+        _poss_shot_count: Dict[int, int] = {}
+        # Fix 1: Replay detection — track previous OCR clock value per period.
+        # When game_clock_sec increases (clock goes backward) within the same period,
+        # the broadcast is showing an instant replay → suspend ball+event tracking.
+        _prev_game_clock_sec: float = -1.0
+        _prev_period:         int   = -1
+        # Fix 2: Frozen-clock detection — halftime / dead-ball / ad-break.
+        # OCR runs every _OCR_INTERVAL=30 frames; 3 consecutive scans with the
+        # same clock value = 90 frames ≈ 3 real seconds at stride=3/30fps.
+        _frozen_clock_scans: int = 0
+        _FROZEN_CLOCK_THRESHOLD = 3  # scans (= 90 source frames ≈ 3 real seconds)
 
         while True:
-            ok, frame, frame_idx = _prefetcher.read()
+            ok, frame, _fi = _prefetcher.read()
+            if ok:
+                frame_idx = _fi  # only update on valid frames; never let sentinel (-1) overwrite
             if not ok or frame is None or (self.max_frames and gameplay_frames >= self.max_frames):
                 break
 
@@ -957,6 +1149,7 @@ class UnifiedPipeline:
                 M, self.M1, frame, frame_idx, map_snap,
                 skip_jersey_ocr=self._ball_track_suspended,
                 suspended=self._ball_track_suspended,
+                stride=_stride,
             )
 
             # ── Scoreboard OCR (before ball tracking — drives non-live filter) ──
@@ -966,7 +1159,74 @@ class UnifiedPipeline:
                 if _sc_result:
                     self._sc_absent_streak     = 0
                     self._sc_ever_seen         = True
-                    self._ball_track_suspended = False
+                    # Fix 1: Replay detection — if game clock jumped backward within the
+                    # same period, the broadcast is showing an instant replay.  Suspend
+                    # ball and event tracking immediately (don't wait for absent streak).
+                    _gclock  = (sb_state.get("game_clock_sec") or -1.0) if sb_state else -1.0
+                    _gperiod = (sb_state.get("period") or -1)           if sb_state else -1
+                    if (_gclock > 0 and _prev_game_clock_sec > 0
+                            and _gperiod > 0 and _gperiod == _prev_period
+                            and _gclock > _prev_game_clock_sec + 2.0):
+                        # Clock jumped backward → instant replay
+                        self._ball_track_suspended = True
+                        _frozen_clock_scans = 0
+                    elif (_gclock > 0 and _prev_game_clock_sec > 0
+                            and abs(_gclock - _prev_game_clock_sec) < 0.5):
+                        # Clock hasn't advanced → halftime / dead-ball / ad-break
+                        _frozen_clock_scans += 1
+                        if _frozen_clock_scans >= _FROZEN_CLOCK_THRESHOLD:
+                            self._ball_track_suspended = True
+                    else:
+                        self._ball_track_suspended = False
+                        _frozen_clock_scans = 0
+                    if _gclock  > 0: _prev_game_clock_sec = _gclock
+                    if _gperiod > 0: _prev_period         = _gperiod
+
+                    # ── Scoreboard log + period-start auto-detection ──────
+                    # Compute confidence: fraction of primary fields that parsed
+                    _sc_fields = [
+                        _gclock  > 0,
+                        sb_state.get("shot_clock",  -1) > 0,
+                        sb_state.get("home_score",  -1) >= 0,
+                        sb_state.get("away_score",  -1) >= 0,
+                        _gperiod > 0,
+                    ]
+                    _sc_conf = sum(_sc_fields) / len(_sc_fields)
+                    _sb_conf = _sc_conf  # FIX 6: persist latest confidence for gating
+                    scoreboard_log_rows.append({
+                        "frame":       frame_idx,
+                        "game_clock":  f"{int(_gclock)//60}:{int(_gclock)%60:02d}" if _gclock > 0 else "",
+                        "shot_clock":  sb_state.get("shot_clock", "") if sb_state.get("shot_clock", -1) > 0 else "",
+                        "home_score":  sb_state.get("home_score", "") if sb_state.get("home_score", -1) >= 0 else "",
+                        "away_score":  sb_state.get("away_score", "") if sb_state.get("away_score", -1) >= 0 else "",
+                        "period":      _gperiod if _gperiod > 0 else "",
+                        "confidence":  round(_sc_conf, 3),
+                    })
+
+                    # Auto-detect period start offset from first confident reading
+                    # Formula: period_start_video_sec = video_time - elapsed_in_period
+                    # clip_start_sec = -period_start_video_sec (negative when clip
+                    # starts before the period, positive when clip starts mid-period)
+                    if (not _period_start_detected
+                            and _sc_conf >= 0.7
+                            and _gclock > 0
+                            and _gperiod > 0):
+                        _period_len = 300.0 if _gperiod > 4 else 720.0  # OT = 5 min
+                        _elapsed_in_period = _period_len - _gclock
+                        _video_time = frame_idx / fps
+                        _period_start_vsec = _video_time - _elapsed_in_period
+                        self.period_start_video_sec = _period_start_vsec
+                        # clip_start_sec: elapsed in period at video frame 0
+                        # = elapsed_in_period - video_time  (can be negative)
+                        _derived_clip_start = _elapsed_in_period - _video_time
+                        # Only auto-update if user passed default 0 (no manual --start)
+                        if self.clip_start_sec == 0.0:
+                            self.clip_start_sec = round(_derived_clip_start, 2)
+                            print(f"\n[scoreboard] Period {_gperiod} start detected "
+                                  f"at video {_period_start_vsec:.1f}s "
+                                  f"(frame {frame_idx}) — clip_start_sec auto-set "
+                                  f"to {self.clip_start_sec:.1f}s")
+                        _period_start_detected = True
                 elif self._sc_ever_seen:
                     # Only count absence once we know OCR can read this clip's clock.
                     # Prevents spurious suspension on clips where ScoreboardOCR never
@@ -1037,6 +1297,7 @@ class UnifiedPipeline:
                 "ball_x2d":  ball_pos[0] if ball_pos else "",
                 "ball_y2d":  ball_pos[1] if ball_pos else "",
                 "detected":  int(ball_pos is not None),
+                "live":      int(not self._ball_track_suspended),
             })
             if ball_pos is None and not self._ball_track_suspended:
                 _ball_miss_streak += 1
@@ -1106,16 +1367,40 @@ class UnifiedPipeline:
                     _dedup.append(t)
             frame_tracks = _dedup
 
+            # FIX 1: compute lineup_id for this frame
+            _active_ids = frozenset(t["player_id"] for t in frame_tracks if t.get("team") != "referee")
+            if _active_ids not in _lineup_id_cache:
+                _lineup_counter += 1
+                _lineup_id_cache[_active_ids] = _lineup_counter
+            _lineup_id = _lineup_id_cache[_active_ids]
+
             predictions.append({"frame": frame_idx, "tracks": frame_tracks})
             gameplay_frames += 1
 
             # ── Frame-level metrics (shared across all players this frame) ──
+            _n_events_before = len(self.event_det.events)   # kept for legacy compat
+            _n_evlog_before  = len(_events_log_rows)        # FIX 1/8: index before this frame's flush
             event = self.event_det.update(
                 frame_idx, ball_pos, frame_tracks,
                 pixel_vel=self.ball_det.pixel_vel,
                 ball_y_pixel=self.ball_det._prev_cy,
                 frame_height=frame.shape[0],
             )
+
+            # FIX 1: Flush rich events into _events_log_rows, then clear to prevent unbounded growth
+            for _evt in self.event_det.events:
+                _events_log_rows.append({
+                    **_evt,
+                    "game_id":      self.game_id or "",
+                    "frame":        _evt.get("frame", frame_idx),
+                    "timestamp":    timestamp_sec,
+                    "possession_id": possession_id,
+                })
+            self.event_det.events.clear()
+
+            # FIX 5: Buffer first 300 frame_tracks snapshots for court-side team mapping
+            if len(_frame_tracks_buf) < 300:
+                _frame_tracks_buf.append(list(frame_tracks))
 
             # ── Ball trajectory features (computed once per frame) ─────────
             _ball_traj = self.ball_det.get_trajectory_features()
@@ -1142,7 +1427,11 @@ class UnifiedPipeline:
                 }
                 for t in frame_tracks
             ]
-            poss_ctx = self.poss_cls.update(_players_simple, ball_pos, frame_idx)
+            _ocr_sc = sb_state.get("shot_clock", -1.0) if sb_state else -1.0
+            poss_ctx = self.poss_cls.update(
+                _players_simple, ball_pos, frame_idx,
+                ocr_shot_clock=float(_ocr_sc) if _ocr_sc > 0 else None,
+            )
 
             # ── Play type classification (uses predictions buffer) ─────────
             play_type = self.play_cls.update(
@@ -1167,69 +1456,206 @@ class UnifiedPipeline:
             else:
                 poss_no_ball_streak = 0
 
+            # Fix 3 Part A: team-switch debounce — ball briefly attributed to
+            # wrong team due to IoU assignment noise; suppress until 8 consecutive
+            # frames confirm the new team (covers 1-3 frame false flickers).
+            if curr_poss and curr_poss != poss_team_prev and poss_team_prev:
+                _ball_loss_streak += 1
+                if _ball_loss_streak < _BALL_LOSS_THRESH:
+                    curr_poss = poss_team_prev  # suppress brief team flicker
+                else:
+                    _ball_loss_streak = 0  # 8 frames confirmed — genuine switch
+            else:
+                _ball_loss_streak = 0
+
             if curr_poss and curr_poss == poss_team_prev:
                 possession_dur += 1
             else:
                 # Possession changed — finalize previous possession
                 if poss_team_prev and possession_buf:
+                    from collections import Counter as _Counter
+                    _dom_lineup = _Counter(_poss_lineup_buf).most_common(1)[0][0] if _poss_lineup_buf else 0
                     row = UnifiedPipeline._summarize_possession(
                         possession_id, poss_team_prev,
                         possession_start, frame_idx - 1,
                         possession_buf, fps, self.game_id,
+                        lineup_id=_dom_lineup,
+                        transition_frames=_transition_frames,
+                        offensive_rebound_poss=_poss_is_off_rebound,
                     )
                     if row:
                         possession_rows.append(row)
+                    # Record whether this ending possession had a shot, for the
+                    # next possession's offensive-rebound detection.
+                    _prev_poss_shot_attempted = bool(any(b.get("shot_event") for b in possession_buf))
+                    _prev_poss_result         = row.get("result", "") if row else ""
+                    _prev_poss_team           = poss_team_prev
+                else:
+                    _prev_poss_shot_attempted = False
+                    _prev_poss_result         = ""
+                    _prev_poss_team           = ""
+
+                # Detect offensive rebound: same team keeps ball after missed shot
+                # NBA rule: 14s reset when own team recovers offensive rebound.
+                _poss_is_off_rebound = (
+                    curr_poss is not None
+                    and curr_poss == _prev_poss_team  # same team retained possession
+                    and _prev_poss_shot_attempted     # prev possession ended in a shot
+                    and _prev_poss_result not in ("scored", "made")  # shot was missed
+                )
+
                 possession_id   += 1
                 possession_start = frame_idx
                 possession_buf   = []
                 possession_dur   = 1 if curr_poss else 0
                 poss_team_prev   = curr_poss
+                _poss_lineup_buf      = []
+                _transition_frames    = None
+                _poss_crossed_halfcourt = False
 
             # Build handler average velocity-toward-basket for buffer
+            # Divide by _stride so vtb is in px/abs-frame — matches _DRIVE_VEL_THRESHOLD.
             handler_vtb = 0.0
             if handler_now:
                 pxy_h = prev_pos.get(handler_now["player_id"])
                 if pxy_h:
-                    dx_h = handler_now["x2d"] - pxy_h[0]
-                    dy_h = handler_now["y2d"] - pxy_h[1]
+                    dx_h = (handler_now["x2d"] - pxy_h[0]) / _stride
+                    dy_h = (handler_now["y2d"] - pxy_h[1]) / _stride
                     handler_vtb = UnifiedPipeline._vel_toward_basket(
                         handler_now["x2d"], handler_now["y2d"],
                         dx_h, dy_h, map_w, map_h
                     )
+            # FIX 4: transition time — detect handler crossing half-court
+            if curr_poss and handler_now and not _poss_crossed_halfcourt:
+                if (abs(handler_now["x2d"] - map_w / 2) < 20
+                        and frame_idx - possession_start < 90):
+                    _transition_frames = frame_idx - possession_start
+                    _poss_crossed_halfcourt = True
+
             if curr_poss:
                 possession_buf.append({
-                    "frame":      frame_idx,
-                    "spacing":    spatial.get(curr_poss, {}).get("spacing", 0.0),
-                    "isolation":  spatial.get("_isolation", 0.0),
-                    "vtb":        handler_vtb,
-                    "drive":      int(handler_now is not None and handler_vtb > _DRIVE_VEL_THRESHOLD),
-                    "shot_event": event == "shot",
-                    "fast_break": fast_break,
+                    "frame":            frame_idx,
+                    "spacing":          spatial.get(curr_poss, {}).get("spacing", 0.0),
+                    "isolation":        spatial.get("_isolation", 0.0),
+                    "vtb":              handler_vtb,
+                    "drive":            int(handler_now is not None and handler_vtb > _DRIVE_VEL_THRESHOLD),
+                    "shot_event":       event == "shot",
+                    "fast_break":       fast_break,
+                    "poss_type":        poss_ctx.get("possession_type", "half_court"),
+                    "play_type":        play_type,
+                    "paint_touches":    poss_ctx.get("paint_touches", 0),
+                    "off_ball_distance": poss_ctx.get("off_ball_distance", 0.0),
+                    # Compute shot_clock_est from the pipeline's debounced
+                    # possession_start rather than PossessionClassifier's
+                    # internal timer — PC resets on every flicker causing
+                    # a +17s systematic bias (ISSUE-023 fix).
+                    "shot_clock_est":   max(0.0, (
+                        14.0 - (frame_idx - possession_start) / fps
+                        if _poss_is_off_rebound
+                        else 24.0 - (frame_idx - possession_start) / fps
+                    )),
+                    "handler_zone":     (UnifiedPipeline._court_zone(
+                                            handler_now["x2d"], handler_now["y2d"],
+                                            map_w, map_h)
+                                         if handler_now else None),
                 })
+                # FIX 1: track active lineup for this possession
+                _poss_lineup_buf.append(_lineup_id)
+
+            # FIX 4: accumulate per-possession event counts in-loop (tracking_rows may be flushed)
+            if curr_poss or poss_team_prev:
+                _eid = possession_id
+                if _eid not in _poss_event_counts:
+                    _poss_event_counts[_eid] = {"pass_count": 0, "screen_count": 0, "drive_count": 0, "cut_count": 0}
+                if event == "pass":
+                    _poss_event_counts[_eid]["pass_count"] += 1
+            # screen/drive/cut are counted from _events_log_rows at export time (already accumulated above)
 
             # ── Shot log entry ─────────────────────────────────────────────
             shooter = handler_now or last_handler  # use last known handler if ball in air
             if event == "shot" and shooter:
-                shot_log_rows.append({
-                    "game_id":            self.game_id,
-                    "shot_id":            len(shot_log_rows) + 1,
-                    "frame":              frame_idx,
-                    "timestamp":          timestamp_sec,
-                    "player_id":          shooter["player_id"],
-                    "team":               shooter["team"],
-                    "x_position":         shooter["x2d"],
-                    "y_position":         shooter["y2d"],
-                    "court_zone":         UnifiedPipeline._court_zone(
-                                              shooter["x2d"], shooter["y2d"],
-                                              map_w, map_h),
-                    "defender_distance":  round(spatial.get("_isolation", 0.0), 1),
-                    "team_spacing":       round(
-                                              spatial.get(shooter["team"], {})
-                                                    .get("spacing", 0.0), 1),
-                    "possession_id":      possession_id,
-                    "possession_duration": possession_dur,
-                    "made":               "",   # filled by nba_enricher
-                })
+                # Per-possession cooldown: skip if this possession already had a shot
+                # within 3 seconds — eliminates pump-fake / drive-then-shoot double-counts.
+                _poss_last = shot_poss_last_ts.get(possession_id)
+                _poss_ok   = (_poss_last is None or (timestamp_sec - _poss_last) > 3.0)
+                # Global cooldown: prevents back-to-back shots across possession boundaries
+                # caused by over-fragmentation.  Real shots are ≥3s apart game-wide.
+                _global_ok = (timestamp_sec - _last_global_shot_ts) > 3.0
+                _shot_allowed = _poss_ok and _global_ok
+                if _shot_allowed:
+                    shot_poss_last_ts[possession_id] = timestamp_sec
+                    _last_global_shot_ts = timestamp_sec
+                    # FIX 8: snapshot shot arc at the moment of shot detection
+                    self.ball_det.snapshot_shot_arc()
+                    _shooter_name = ""
+                    if self._player_resolver:
+                        _shooter_name = self._player_resolver.slot_to_player_name.get(
+                            shooter["player_id"], "")
+                    # FIX 6: gate shot_clock by scoreboard confidence
+                    _shot_clock_val = (
+                        sb_state.get("shot_clock", "")
+                        if (sb_state.get("shot_clock", -1) > 0 and _sb_conf >= 0.4)
+                        else ""
+                    )
+                    # FIX 8: use snapshotted _shot_arc_angle (not live parabola)
+                    _arc_val = self.ball_det._shot_arc_angle if self.ball_det._shot_arc_angle is not None else ""
+                    # closeout lookup: events flushed to _events_log_rows in FIX 1 above
+                    _closeout_speed = next(
+                        (e["closeout_speed"]
+                         for e in reversed(_events_log_rows[_n_evlog_before:])
+                         if e.get("type") == "closeout"),
+                        "",
+                    )
+                    # FIX 5: second chance flag
+                    _poss_shot_count[possession_id] = _poss_shot_count.get(possession_id, 0) + 1
+                    _second_chance = int(_poss_shot_count[possession_id] > 1)
+                    _shot_zone = UnifiedPipeline._court_zone(
+                        shooter["x2d"], shooter["y2d"], map_w, map_h)
+                    shot_log_rows.append({
+                        "game_id":            self.game_id or "",
+                        "shot_id":            len(shot_log_rows) + 1,
+                        "frame":              frame_idx,
+                        "timestamp":          timestamp_sec,
+                        "player_id":          shooter["player_id"],
+                        "team":               shooter["team"],
+                        "x_position":         shooter["x2d"],
+                        "y_position":         shooter["y2d"],
+                        "x_norm":             round(shooter["x2d"] / max(map_w, 1), 4),
+                        "y_norm":             round(shooter["y2d"] / max(map_h, 1), 4),
+                        "court_zone":         _shot_zone,
+                        "defender_distance":  _shot_defender_dist(
+                                                  spatial, shooter, frame_tracks, map_w),
+                        "defender_dist_norm": _shot_defender_dist_norm(
+                                                  spatial, shooter, frame_tracks, map_w),
+                        "team_spacing":       round(
+                                                  spatial.get(shooter["team"], {})
+                                                        .get("spacing", 0.0), 1),
+                        "possession_id":      possession_id,
+                        "possession_duration": possession_dur,
+                        "made":               "",   # filled by nba_enricher
+                        "player_name":        _shooter_name,
+                        "shot_clock":         _shot_clock_val,
+                        "contest_arm_angle":  shooter.get("contest_arm_angle", ""),
+                        "closeout_speed":     _closeout_speed,
+                        "fatigue_proxy":      round(
+                                                 _player_dist_run.get(
+                                                     shooter["player_id"], 0.0), 1),
+                        "dribble_count":      self.event_det.dribble_count,  # FIX 2
+                        "ball_shot_arc_angle": _arc_val,                     # FIX 8
+                        "catch_and_shoot":    int(self.event_det.dribble_count == 0),  # FIX 3
+                        "shot_distance":      UnifiedPipeline._dist_to_basket(
+                                                  shooter["x2d"], shooter["y2d"],
+                                                  map_w, map_h),  # FIX 3
+                        "second_chance":      _second_chance,  # FIX 5
+                        "shot_creation":      UnifiedPipeline._classify_shot_creation(
+                                                  dribble_count=self.event_det.dribble_count,
+                                                  shot_zone=_shot_zone,
+                                                  vel_toward_basket=handler_vtb,
+                                                  defender_distance=(_shot_defender_dist(
+                                                      spatial, shooter, frame_tracks, map_w) or None),
+                                                  ball_shot_arc_angle=self.ball_det._shot_arc_angle or 0.0,
+                                              ),  # FIX 8
+                    })
 
             # ── Ball velocity (2D court px/frame) ─────────────────────────
             ball_vel_2d = 0.0
@@ -1242,8 +1668,31 @@ class UnifiedPipeline:
 
             # ── Fast-break flag (frame-level) ─────────────────────────────
             fast_break = UnifiedPipeline._fast_break_flag(
-                frame_tracks, prev_pos, map_w, map_h
+                frame_tracks, prev_pos, map_w, map_h, stride=_stride,
             )
+
+            # ── PlayerResolver: feed crops every _SAMPLE_EVERY frames ────────
+            if self._player_resolver is not None:
+                for _pt in frame_tracks:
+                    _slot = _pt["player_id"]
+                    _bb   = _pt.get("bbox")   # (y1, x1, y2, x2) or None
+                    _crop = None
+                    if _bb and len(_bb) == 4:
+                        _y1, _x1, _y2, _x2 = [int(v) for v in _bb]
+                        _fh_c, _fw_c = frame.shape[:2]
+                        _y1 = max(0, _y1); _x1 = max(0, _x1)
+                        _y2 = min(_fh_c, _y2); _x2 = min(_fw_c, _x2)
+                        if _y2 > _y1 and _x2 > _x1:
+                            _crop = frame[_y1:_y2, _x1:_x2]
+                    self._player_resolver.update(
+                        slot=_slot, team=_pt["team"],
+                        crop_bgr=_crop, frame_idx=frame_idx,
+                    )
+                # Finalize once warmup completes (only once)
+                if (self._player_resolver.warmup_complete
+                        and not self._player_resolver._warmup_done):
+                    self._player_resolver.finalize()
+                    print("\n" + self._player_resolver.resolution_report())
 
             # Pass 2: enrich each track into a full CSV row
             for track in frame_tracks:
@@ -1262,6 +1711,7 @@ class UnifiedPipeline:
                 )) % 360, 1) if (pxy and vel > 0) else 0.0
                 prev_pos[pid] = (x2d, y2d)
                 prev_vel[pid] = vel
+                _player_dist_run[pid] = _player_dist_run.get(pid, 0.0) + _raw_dist
 
                 # Normalize displacement components to per-real-frame scale
                 dx_v    = float(x2d - pxy[0]) / _stride if pxy else 0.0
@@ -1293,6 +1743,8 @@ class UnifiedPipeline:
                     "team":               team,
                     "x_position":         x2d,
                     "y_position":         y2d,
+                    "x_norm":             round(x2d / max(map_w, 1), 4),
+                    "y_norm":             round(y2d / max(map_h, 1), 4),
                     "velocity":           vel,
                     "acceleration":       acc,
                     "direction_deg":      hdg,
@@ -1301,16 +1753,19 @@ class UnifiedPipeline:
                     "distance_to_ball":   dist_ball,
                     "nearest_opponent":   round(min(opp_d), 1) if opp_d else "",
                     "nearest_teammate":   round(min(tm_d), 1)  if tm_d  else "",
-                    "event":              event,
+                    "event":              event if track["has_ball"] else "none",
                     # Spatial — own team
                     "team_spacing":       round(ts.get("spacing", 0.0), 1),
+                    "spacing_hull_area":  round(ts.get("hull_area", 0.0), 1),  # FIX 9
                     "team_centroid_x":    round(ts.get("cx", 0.0), 1),
                     "team_centroid_y":    round(ts.get("cy", 0.0), 1),
                     "paint_count_own":    ts.get("paint_n", 0),
                     "paint_count_opp":    os_.get("paint_n", 0),
                     # Spatial — ball
                     "possession_side":    spatial.get("_ball_side", ""),
-                    "handler_isolation":  round(spatial.get("_isolation", 0.0), 1),
+                    "handler_isolation":  (""
+                                          if spatial.get("_isolation") == _ISOLATION_DEFAULT
+                                          else round(spatial.get("_isolation", 0.0), 1)),
                     # Raw bbox + ball
                     "bbox_x1":            bbox[1] if bbox else "",
                     "bbox_y1":            bbox[0] if bbox else "",
@@ -1327,18 +1782,27 @@ class UnifiedPipeline:
                     "fast_break_flag":    fast_break,
                     "possession_id":       possession_id,
                     "possession_duration": possession_dur,
-                    # ── Scoreboard context ─────────────────────────────────
-                    "scoreboard_game_clock":  sb_state.get("game_clock_sec", ""),
-                    "scoreboard_shot_clock":  sb_state.get("shot_clock", ""),
-                    "scoreboard_score_diff":  sb_state.get("score_diff", ""),
+                    # ── Scoreboard context (FIX 6: confidence-gated) ──────
+                    "scoreboard_game_clock":  (sb_state.get("game_clock_sec", "")
+                                               if _sb_conf >= 0.3 else ""),
+                    "scoreboard_shot_clock":  (sb_state.get("shot_clock", "")
+                                               if _sb_conf >= 0.4 else ""),
+                    "scoreboard_score_diff":  (sb_state.get("score_diff", "")
+                                               if _sb_conf >= 0.3 else ""),
                     "scoreboard_period":      sb_state.get("period", ""),
+                    "scoreboard_confidence":  round(_sb_conf, 3),  # FIX 6: raw confidence
                     # ── Possession + play-type context ─────────────────────
                     "possession_type":         poss_ctx.get("possession_type", "half_court"),
                     "play_type":               play_type,
                     "possession_duration_sec": poss_ctx.get("possession_duration_sec", 0.0),
                     "paint_touches":           poss_ctx.get("paint_touches", 0),
                     "off_ball_distance":       poss_ctx.get("off_ball_distance", 0.0),
-                    "shot_clock_est":          poss_ctx.get("shot_clock_est", 24.0),
+                    # ISSUE-023: use debounced possession_start (same fix as poss buf)
+                    "shot_clock_est":          max(0.0, (
+                        14.0 - (frame_idx - possession_start) / fps
+                        if _poss_is_off_rebound
+                        else 24.0 - (frame_idx - possession_start) / fps
+                    )),
                     # ── Pose estimation fields ─────────────────────────────
                     "ankle_x":            track.get("ankle_x", ""),
                     "ankle_y":            track.get("ankle_y", ""),
@@ -1349,6 +1813,13 @@ class UnifiedPipeline:
                     "ball_shot_arc_angle":  _ball_traj.get("shot_arc_angle", ""),
                     "ball_peak_height_px":  _ball_traj.get("peak_height_px", ""),
                     "ball_pass_speed_pxpf": _ball_traj.get("pass_speed_pxpf", ""),
+                    # ── Player identity (populated after 300-frame warmup) ──
+                    "player_name":    (self._player_resolver.slot_to_player_name.get(pid, "")
+                                       if self._player_resolver else ""),
+                    "jersey_number":  (self._player_resolver.get_jersey_number(pid)
+                                       if self._player_resolver else ""),
+                    "dribble_count":  self.event_det.dribble_count,  # FIX 2
+                    "lineup_id":      _lineup_id,  # FIX 1
                 })
 
             # ── Visualise ─────────────────────────────────────────────────
@@ -1370,7 +1841,6 @@ class UnifiedPipeline:
                 self._ckpt_queue.put(list(tracking_rows))  # snapshot; writer thread drains queue
                 tracking_rows.clear()
 
-        cap.release()
         if writer:
             writer.release()
         cv2.destroyAllWindows()
@@ -1379,20 +1849,77 @@ class UnifiedPipeline:
 
         # Finalize last open possession
         if poss_team_prev and possession_buf:
+            from collections import Counter as _Counter
+            _dom_lineup = _Counter(_poss_lineup_buf).most_common(1)[0][0] if _poss_lineup_buf else 0
             row = UnifiedPipeline._summarize_possession(
                 possession_id, poss_team_prev,
                 possession_start, frame_idx - 1,
                 possession_buf, fps, self.game_id,
+                lineup_id=_dom_lineup,
+                transition_frames=_transition_frames,
+                offensive_rebound_poss=_poss_is_off_rebound,
             )
             if row:
                 possession_rows.append(row)
 
+        # Fix 4: resolve HSV color labels ('white','green') → NBA team abbreviations
+        if self.game_id and (possession_rows or shot_log_rows):
+            _color_labels = [r.get("team", "") for r in possession_rows]
+            _color_labels += [r.get("team", "") for r in shot_log_rows]
+            _team_map = self._resolve_team_names(self.game_id, _color_labels)
+            if _team_map:
+                for _row in possession_rows:
+                    _row["team"] = _team_map.get(_row.get("team", ""), _row.get("team", ""))
+                for _row in shot_log_rows:
+                    _row["team"] = _team_map.get(_row.get("team", ""), _row.get("team", ""))
+
+        # FIX 4: finalize screen/drive/cut counts from events_log before export
+        for _erow in _events_log_rows:
+            _epid = _erow.get("possession_id")
+            if _epid is None:
+                continue
+            _key = int(_epid) if isinstance(_epid, (int, float)) else None
+            if _key is None:
+                continue
+            if _key not in _poss_event_counts:
+                _poss_event_counts[_key] = {"pass_count": 0, "screen_count": 0, "drive_count": 0, "cut_count": 0}
+            _etype = _erow.get("type", "")
+            if _etype == "screen_set":
+                _poss_event_counts[_key]["screen_count"] += 1
+            elif _etype == "drive":
+                _poss_event_counts[_key]["drive_count"] += 1
+            elif _etype == "cut":
+                _poss_event_counts[_key]["cut_count"] += 1
+
+        # FIX 5: build court-side team map for possession/shot rows (after frame buffer is complete)
+        if self.game_id and _frame_tracks_buf:
+            _ct_map = self._court_side_team_map(_frame_tracks_buf, self.game_id)
+            if _ct_map:
+                for _row in possession_rows:
+                    _row["team"] = _ct_map.get(_row.get("team", ""), _row.get("team", ""))
+                for _row in shot_log_rows:
+                    _row["team"] = _ct_map.get(_row.get("team", ""), _row.get("team", ""))
+
         self._export_csv(tracking_rows)
         self._export_ball_csv(ball_rows)
         self._export_stats(player_stats)
-        self._export_possessions_csv(possession_rows)
+        self._export_possessions_csv(possession_rows, _poss_event_counts)  # FIX 4
         self._export_shot_log(shot_log_rows)
         self._export_player_stats(tracking_rows, fps)
+        self._export_scoreboard_log(scoreboard_log_rows)
+        self._export_events_log(_events_log_rows)  # FIX 1
+
+        # FIX 7: backfill player_name in tracking_data.csv and shot_log.csv post-run
+        if (self._player_resolver is not None
+                and len(self._player_resolver.slot_to_player_name) >= 5):
+            self._backfill_player_names()
+
+        # DB writes (SQLite by default, PostgreSQL when DATABASE_URL is set)
+        self._db_write_shot_log(shot_log_rows)
+        self._db_write_scoreboard_log(scoreboard_log_rows)
+
+        if self.game_id:
+            self._run_enrichment(fps)
 
         metrics = evaluate_tracking(predictions)
         return {
@@ -1542,14 +2069,24 @@ class UnifiedPipeline:
             spacing = 0.0
             if _SCIPY and len(arr) >= 3:
                 try:
-                    spacing = float(_ConvexHull(arr).volume)
+                    _px_area = float(_ConvexHull(arr).volume)
+                    spacing = _px_area / ((map_w * map_h) / _SPACING_NORM)
                 except Exception:
                     pass
+            # FIX 9: convex hull area normalised to ft² equivalent (ISSUE-026)
+            hull_area = 0.0
+            if len(arr) >= 3:
+                if _SCIPY:
+                    try:
+                        _px_area2 = float(_ConvexHull(arr).volume)
+                        hull_area = _px_area2 / ((map_w * map_h) / _SPACING_NORM)
+                    except Exception:
+                        hull_area = 0.0
             paint_n = sum(
                 1 for x, y in pts
                 if UnifiedPipeline._court_zone(x, y, map_w, map_h) == "paint"
             )
-            result[team] = {"spacing": spacing, "cx": cx, "cy": cy, "paint_n": paint_n}
+            result[team] = {"spacing": spacing, "cx": cx, "cy": cy, "paint_n": paint_n, "hull_area": hull_area}
 
         # Ball side
         if ball_pos:
@@ -1573,6 +2110,18 @@ class UnifiedPipeline:
                 dists = [float(np.hypot(handler_pos[0] - x, handler_pos[1] - y))
                          for x, y in opp_pts]
                 isolation = min(dists)
+            else:
+                # Fallback: team classification may have merged all players under one label.
+                # Use any non-handler, non-referee player as a proxy defender.
+                all_non_handler = [
+                    (t["x2d"], t["y2d"])
+                    for t in frame_tracks
+                    if t.get("team") != "referee" and (t["x2d"], t["y2d"]) != handler_pos
+                ]
+                if all_non_handler:
+                    dists = [float(np.hypot(handler_pos[0] - x, handler_pos[1] - y))
+                             for x, y in all_non_handler]
+                    isolation = min(dists)
         result["_isolation"] = isolation
 
         return result
@@ -1632,10 +2181,11 @@ class UnifiedPipeline:
         prev_pos: Dict[int, tuple],
         map_w: int,
         map_h: int,
+        stride: int = 1,
     ) -> int:
         """
         Returns 1 if ≥3 players from the same team are moving toward the same
-        basket at ≥ _FAST_BREAK_VEL_MIN px/frame, else 0.
+        basket at ≥ _FAST_BREAK_VEL_MIN px/abs-frame, else 0.
         """
         team_vtb: Dict[str, List[float]] = {}
         for t in frame_tracks:
@@ -1644,8 +2194,9 @@ class UnifiedPipeline:
             pxy = prev_pos.get(t["player_id"])
             if not pxy:
                 continue
-            dx = float(t["x2d"] - pxy[0])
-            dy = float(t["y2d"] - pxy[1])
+            # Divide by stride so vtb is in px/abs-frame — consistent with threshold.
+            dx = float(t["x2d"] - pxy[0]) / stride
+            dy = float(t["y2d"] - pxy[1]) / stride
             vtb = UnifiedPipeline._vel_toward_basket(
                 t["x2d"], t["y2d"], dx, dy, map_w, map_h
             )
@@ -1654,6 +2205,62 @@ class UnifiedPipeline:
             if sum(1 for v in vals if v >= _FAST_BREAK_VEL_MIN) >= 3:
                 return 1
         return 0
+
+    # ── team name resolution ───────────────────────────────────────────────
+
+    def _resolve_team_names(self, game_id: str, color_labels: list) -> dict:
+        """Map HSV color labels ('white','green') to NBA team abbreviations.
+
+        Calls BoxScoreSummaryV2 to get home/visitor abbreviations, then maps
+        the two color labels alphabetically: first label → home, second → visitor.
+        Caches result to data/nba/team_map_{game_id}.json.
+
+        Falls back to 'team_a'/'team_b' when the API call fails.
+        """
+        if not game_id or not color_labels:
+            return {}
+        labels = sorted(set(l for l in color_labels if l))
+        if not labels:
+            return {}
+
+        # Try cache
+        cache_dir = os.path.join(_DATA, "nba")
+        cache_path = os.path.join(cache_dir, f"team_map_{game_id}.json")
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path) as _f:
+                    return json.load(_f)
+            except Exception:
+                pass
+
+        # Build fallback in case API fails
+        fallback = {lbl: f"team_{chr(ord('a') + i)}" for i, lbl in enumerate(labels)}
+
+        try:
+            import time as _time
+            from nba_api.stats.endpoints import boxscoresummaryv2 as _bss
+            _time.sleep(0.6)
+            _bs     = _bss.BoxScoreSummaryV2(game_id=game_id)
+            _df     = _bs.get_data_frames()[0]
+            home    = str(_df["HOME_TEAM_ABBREVIATION"].iloc[0])
+            visitor = str(_df["VISITOR_TEAM_ABBREVIATION"].iloc[0])
+            # Court-position heuristic: label with lower alphabetical sort →
+            # home team (rough proxy — works well enough for cross-game ML).
+            mapping: dict = {}
+            if len(labels) >= 2:
+                mapping[labels[0]] = home
+                mapping[labels[1]] = visitor
+            elif len(labels) == 1:
+                mapping[labels[0]] = home
+            # Cache
+            os.makedirs(cache_dir, exist_ok=True)
+            with open(cache_path, "w") as _f:
+                json.dump(mapping, _f)
+            print(f"  [team_names] {mapping}")
+            return mapping
+        except Exception as _e:
+            print(f"  [team_names] NBA API failed ({_e}) — using team_a/team_b fallback")
+            return fallback
 
     # ── possession / shot helpers ──────────────────────────────────────────
 
@@ -1666,15 +2273,45 @@ class UnifiedPipeline:
         buf: List[dict],
         fps: float,
         game_id: Optional[str] = None,
+        lineup_id: int = 0,
+        transition_frames: Optional[int] = None,
+        offensive_rebound_poss: bool = False,
     ) -> dict:
         """Aggregate a possession buffer into one summary row."""
         if not buf:
             return {}
         dur = max(1, end_f - start_f + 1)
-        spacings   = [b["spacing"]   for b in buf if b["spacing"]]
-        isolations = [b["isolation"] for b in buf if b["isolation"]]
-        vtbs       = [b["vtb"]       for b in buf if b["vtb"] != 0]
-        shot_frames = [b["frame"]    for b in buf if b["shot_event"]]
+        spacings    = [b["spacing"]   for b in buf if b["spacing"]]
+        isolations  = [b["isolation"] for b in buf
+                       if b["isolation"] and b["isolation"] != _ISOLATION_DEFAULT]
+        vtbs        = [b["vtb"]       for b in buf if b["vtb"] != 0]
+        shot_frames = [b["frame"]     for b in buf if b["shot_event"]]
+
+        # Dominant play_type: most common across all frames
+        # Prefer the play_cls output; fall back to poss_cls possession_type
+        from collections import Counter as _Counter
+        play_types = [b["play_type"]  for b in buf if b.get("play_type")]
+        poss_types = [b["poss_type"]  for b in buf if b.get("poss_type")]
+        if play_types:
+            dominant_play_type = _Counter(play_types).most_common(1)[0][0]
+        elif poss_types:
+            dominant_play_type = _Counter(poss_types).most_common(1)[0][0]
+        else:
+            dominant_play_type = "half_court"
+
+        # FIX 2: poss_ctx aggregates
+        max_paint_touches = max((b.get("paint_touches", 0) for b in buf), default=0)
+        _off_dists = [b.get("off_ball_distance", 0.0) for b in buf if b.get("off_ball_distance", 0.0) > 0]
+        avg_off_ball_distance = round(float(sum(_off_dists) / len(_off_dists)), 1) if _off_dists else ""
+        min_shot_clock_est = min((b.get("shot_clock_est", 24.0) for b in buf), default=24.0)
+
+        # FIX 2: dominant handler zone (only frames where handler exists)
+        _zones = [b["handler_zone"] for b in buf if b.get("handler_zone") is not None]
+        dominant_zone = _Counter(_zones).most_common(1)[0][0] if _zones else ""
+
+        # FIX 4: transition time
+        transition_time_sec = round(transition_frames / fps, 2) if transition_frames is not None else ""
+
         return {
             "possession_id":           pid,
             "team":                    team,
@@ -1689,40 +2326,108 @@ class UnifiedPipeline:
             "shot_attempted":          int(bool(shot_frames)),
             "shot_frame":              shot_frames[0] if shot_frames else "",
             "fast_break":              int(any(b["fast_break"] for b in buf)),
+            "play_type":               dominant_play_type,
             "result":                  "",   # filled by nba_enricher
             "outcome_score":           "",   # filled by nba_enricher
             "game_id":                 game_id,
+            "lineup_id":               lineup_id,           # FIX 1
+            "max_paint_touches":       max_paint_touches,   # FIX 2
+            "avg_off_ball_distance":   avg_off_ball_distance,  # FIX 2
+            "min_shot_clock_est":      round(min_shot_clock_est, 1),  # FIX 2
+            "dominant_zone":           dominant_zone,        # FIX 2
+            "transition_time_sec":     transition_time_sec,  # FIX 4
+            "offensive_rebound_poss":  int(offensive_rebound_poss),  # Step 4
         }
 
-    def _export_possessions_csv(self, rows: List[dict]):
+    def _export_possessions_csv(self, rows: List[dict], event_counts: dict = None):
         if not rows:
             return
-        os.makedirs(_DATA, exist_ok=True)
-        path   = os.path.join(_DATA, "possessions.csv")
+        os.makedirs(self._data_dir, exist_ok=True)
+        path   = os.path.join(self._data_dir, "possessions.csv")
+        # Fix 3 Part B: filter sub-3s noise possessions before writing.
+        # Raised 2.0s→3.0s: avg was 0.9s meaning sub-2s filter kept many noise rows.
+        kept    = [r for r in rows if float(r.get("duration_sec") or 0) >= 3.0]
+        skipped = len(rows) - len(kept)
+        print(f"Possessions: {len(kept)} kept, {skipped} skipped (<3s noise)")
+
+        # Fix 3 Part C: merge consecutive same-team possessions with a short gap.
+        # Over-fragmentation creates A→A chains where the same team briefly loses
+        # and regains the ball (loose ball, same-team rebound, brief OOB).
+        # Merge if: same team, gap < 90 frames (~3s at 30fps), no shot ended prior.
+        _fps_est = next(
+            (float(r["duration_frames"]) / float(r["duration_sec"])
+             for r in kept
+             if float(r.get("duration_sec") or 0) > 0
+             and int(r.get("duration_frames") or 0) > 0),
+            30.0,
+        )
+        merged_poss: list = []
+        for row in kept:
+            if (merged_poss
+                    and row.get("team") == merged_poss[-1].get("team")
+                    and int(row.get("start_frame") or 0) - int(merged_poss[-1].get("end_frame") or 0) < 90
+                    and not merged_poss[-1].get("shot_attempted")):
+                prev = merged_poss[-1]
+                prev["end_frame"]       = row["end_frame"]
+                prev["duration_frames"] = int(prev["end_frame"]) - int(prev["start_frame"])
+                prev["duration_sec"]    = round(prev["duration_frames"] / _fps_est, 2)
+                if row.get("shot_attempted"):
+                    prev["shot_attempted"] = row["shot_attempted"]
+                    prev["shot_frame"]     = row.get("shot_frame", "")
+                for _k in ("pass_count", "screen_count", "drive_count", "cut_count", "drive_attempts"):
+                    prev[_k] = int(prev.get(_k) or 0) + int(row.get(_k) or 0)
+            else:
+                merged_poss.append(dict(row))
+        pre_merge = len(kept)
+        kept = merged_poss
+        print(f"Possessions: {len(kept)} after same-team merge (was {pre_merge})")
+
+        # FIX 2 + FIX 4: merge per-possession event counts (always set; default 0)
+        _ec = event_counts or {}
+        for row in kept:
+            _pid = row.get("possession_id")
+            _cnts = _ec.get(_pid, {}) if _pid is not None else {}
+            row["pass_count"]   = _cnts.get("pass_count",   row.get("pass_count", 0))
+            row["screen_count"] = _cnts.get("screen_count", row.get("screen_count", 0))
+            row["drive_count"]  = _cnts.get("drive_count",  row.get("drive_count", 0))
+            row["cut_count"]    = _cnts.get("cut_count",    row.get("cut_count", 0))
         fields = [
             "game_id", "possession_id", "team", "start_frame", "end_frame",
             "duration_frames", "duration_sec",
             "avg_spacing", "avg_defensive_pressure", "avg_vel_toward_basket",
             "drive_attempts", "shot_attempted", "shot_frame",
-            "fast_break", "result", "outcome_score",
+            "fast_break", "play_type", "result", "outcome_score",
+            "pass_count", "screen_count", "drive_count", "cut_count",  # FIX 4
+            "lineup_id",              # FIX 1
+            "max_paint_touches",      # FIX 2
+            "avg_off_ball_distance",  # FIX 2
+            "min_shot_clock_est",       # FIX 2
+            "dominant_zone",            # FIX 2
+            "transition_time_sec",      # FIX 4
+            "offensive_rebound_poss",   # Step 4
         ]
         with open(path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=fields)
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
             w.writeheader()
-            w.writerows(rows)
-        print(f"Possessions     → {path}  ({len(rows)} rows)")
+            w.writerows(kept)
+        print(f"Possessions     → {path}  ({len(kept)} rows)")
 
     def _export_shot_log(self, rows: List[dict]):
-        os.makedirs(_DATA, exist_ok=True)
-        path   = os.path.join(_DATA, "shot_log.csv")
+        os.makedirs(self._data_dir, exist_ok=True)
+        path   = os.path.join(self._data_dir, "shot_log.csv")
         fields = [
-            "game_id", "shot_id", "frame", "timestamp", "player_id", "team",
-            "x_position", "y_position", "court_zone",
-            "defender_distance", "team_spacing",
+            "game_id", "shot_id", "frame", "timestamp", "player_id", "player_name",
+            "team", "x_position", "y_position", "x_norm", "y_norm", "court_zone",
+            "defender_distance", "defender_dist_norm", "team_spacing",
             "possession_id", "possession_duration", "made",
+            "shot_clock", "contest_arm_angle", "closeout_speed", "fatigue_proxy",
+            "dribble_count", "ball_shot_arc_angle",  # FIX 2, FIX 8
+            "catch_and_shoot", "shot_distance",  # FIX 3
+            "second_chance",   # FIX 5
+            "shot_creation",   # FIX 8
         ]
         with open(path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=fields)
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
         print(f"Shot log        → {path}  ({len(rows)} shots)")
@@ -1786,8 +2491,8 @@ class UnifiedPipeline:
                 "avg_nearest_opponent": round(s["opp_dist_sum"] / max(1, s["opp_dist_n"]), 1),
             })
 
-        os.makedirs(_DATA, exist_ok=True)
-        path = os.path.join(_DATA, "player_clip_stats.csv")
+        os.makedirs(self._data_dir, exist_ok=True)
+        path = os.path.join(self._data_dir, "player_clip_stats.csv")
         fields = list(rows[0].keys()) if rows else []
         with open(path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields)
@@ -1807,10 +2512,6 @@ class UnifiedPipeline:
         Args:
             rows: List of tracking row dicts (same as CSV output).
         """
-        import os as _os
-        if not _os.environ.get("DATABASE_URL"):
-            print("[pg] DATABASE_URL not set — skipping PostgreSQL write")
-            return
         if not rows:
             return
         game_id = self.game_id or None   # NULL when --game-id not passed
@@ -1858,15 +2559,87 @@ class UnifiedPipeline:
                 }
                 for r in rows
             ]
+            backend = "PostgreSQL" if is_postgres(conn) else "SQLite"
             execute_batch(cur, insert_sql, db_rows, page_size=500)
             conn.commit()
             cur.close()
             conn.close()
-            backend = "PostgreSQL" if is_postgres(conn) else "SQLite"
             print(f"[db] tracking_frames ← {len(db_rows)} rows "
                   f"({backend}, game_id={game_id}, clip_id={self.clip_id[:8]}…)")
         except Exception as e:
             print(f"[db] WARNING: database write failed — {e}")
+
+    def _db_write_shot_log(self, rows: List[dict]) -> None:
+        """Write shot_log rows to the shots DB table (SQLite or PostgreSQL)."""
+        if not rows:
+            return
+        try:
+            from src.data.db import get_connection, execute_batch, is_postgres
+            conn = get_connection()
+            sql  = """
+                INSERT OR IGNORE INTO shots
+                    (game_id, possession_id, player_id, tracker_player_id,
+                     shot_x, shot_y, court_zone, defender_distance,
+                     team_spacing, made, period)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            db_rows = [
+                (
+                    r.get("game_id") or None,
+                    r.get("possession_id") or None,
+                    r.get("player_id"),
+                    r.get("player_id"),
+                    r.get("x_position"),
+                    r.get("y_position"),
+                    r.get("court_zone"),
+                    r.get("defender_distance") or None,
+                    r.get("team_spacing") or None,
+                    r.get("made") if r.get("made") not in ("", None) else None,
+                    self.period,
+                )
+                for r in rows
+            ]
+            backend = "PostgreSQL" if is_postgres(conn) else "SQLite"
+            with conn:
+                with conn.cursor() as cur:
+                    execute_batch(cur, sql, db_rows)
+            conn.close()
+            print(f"[db] shots ← {len(db_rows)} rows ({backend})")
+        except Exception as exc:
+            print(f"[db] shot_log write failed (non-fatal): {exc}")
+
+    def _db_write_scoreboard_log(self, rows: List[dict]) -> None:
+        """Write scoreboard_log rows to DB."""
+        if not rows:
+            return
+        try:
+            from src.data.db import get_connection, execute_batch
+            conn = get_connection()
+            sql  = """
+                INSERT OR IGNORE INTO scoreboard_log
+                    (game_id, frame, game_clock, shot_clock,
+                     home_score, away_score, period, confidence)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            db_rows = [
+                (
+                    self.game_id or None,
+                    r["frame"],
+                    r.get("game_clock") or None,
+                    r.get("shot_clock") or None,
+                    r.get("home_score") or None,
+                    r.get("away_score") or None,
+                    r.get("period") or None,
+                    r.get("confidence"),
+                )
+                for r in rows
+            ]
+            with conn:
+                with conn.cursor() as cur:
+                    execute_batch(cur, sql, db_rows)
+            conn.close()
+        except Exception as exc:
+            print(f"[db] scoreboard_log write failed (non-fatal): {exc}")
 
     def _checkpoint_writer_loop(self) -> None:
         """Task 4: Background daemon — drain _ckpt_queue and write CSV rows."""
@@ -1884,20 +2657,14 @@ class UnifiedPipeline:
     def _checkpoint_csv(self, rows: List[dict]) -> None:
         """Flush rows to CSV mid-run so a crash doesn't lose all data.
 
-        Writes to data/tracking/{game_id}_{date}.csv when game_id is set,
-        otherwise falls back to data/tracking_data.csv.
+        Writes to self._data_dir/tracking_data.csv — the per-game directory
+        when data_dir was passed (Fix 2), otherwise data/tracking_data.csv.
         """
         if not rows:
             return
-        if self.game_id:
-            from datetime import date as _date
-            tracking_dir = os.path.join(_DATA, "tracking")
-            os.makedirs(tracking_dir, exist_ok=True)
-            fname = f"{self.game_id}_{_date.today().isoformat()}.csv"
-            path = os.path.join(tracking_dir, fname)
-        else:
-            os.makedirs(_DATA, exist_ok=True)
-            path = os.path.join(_DATA, "tracking_data.csv")
+        data_dir = getattr(self, "_data_dir", _DATA)
+        os.makedirs(data_dir, exist_ok=True)
+        path = os.path.join(data_dir, "tracking_data.csv")
         file_exists = os.path.exists(path) and os.path.getsize(path) > 0
         fields = self._tracking_csv_fields()
         with open(path, "a", newline="") as f:
@@ -1911,13 +2678,13 @@ class UnifiedPipeline:
     def _tracking_csv_fields() -> List[str]:
         return [
             "frame", "timestamp", "player_id", "team",
-            "x_position", "y_position",
+            "x_position", "y_position", "x_norm", "y_norm",
             "velocity", "acceleration", "direction_deg",
             "court_zone",
             "ball_possession", "distance_to_ball",
             "nearest_opponent", "nearest_teammate",
             "event",
-            "team_spacing", "team_centroid_x", "team_centroid_y",
+            "team_spacing", "spacing_hull_area", "team_centroid_x", "team_centroid_y",  # FIX 9
             "paint_count_own", "paint_count_opp",
             "possession_side", "handler_isolation",
             "bbox_x1", "bbox_y1", "bbox_x2", "bbox_y2",
@@ -1929,10 +2696,44 @@ class UnifiedPipeline:
             "play_type", "paint_touches", "off_ball_distance", "shot_clock_est",
             "scoreboard_shot_clock", "scoreboard_game_clock",
             "scoreboard_period", "scoreboard_score_diff",
+            "scoreboard_confidence",  # FIX 6
             "possession_duration_sec", "possession_type",
             "ankle_x", "ankle_y", "contest_arm_angle", "jump_detected", "dribble_hand",
             "ball_shot_arc_angle", "ball_peak_height_px", "ball_pass_speed_pxpf",
+            "player_name", "jersey_number",  # FIX 7: included so backfill can overwrite
+            "dribble_count",  # FIX 2
+            "lineup_id",  # FIX 1
         ]
+
+    def _run_enrichment(self, fps: float) -> None:
+        """Call nba_enricher.enrich() to label shots/possessions from NBA API PBP."""
+        try:
+            from src.data.nba_enricher import enrich as _nba_enrich, _infer_period_count, _infer_fps
+            periods, _max_ts = _infer_period_count(self._data_dir)
+            clip_fps = _infer_fps(self._data_dir, default=fps)
+            if len(periods) > 1:
+                print(f"\nEnriching shots with NBA API  (game_id={self.game_id}, periods={periods}, fps={clip_fps:.2f})")
+                result = _nba_enrich(
+                    game_id        = self.game_id,
+                    periods        = periods,
+                    clip_start_sec = 0.0,
+                    fps            = clip_fps,
+                    data_dir       = self._data_dir,
+                )
+            else:
+                print(f"\nEnriching shots with NBA API  (game_id={self.game_id}, period={periods[0]}, fps={clip_fps:.2f})")
+                result = _nba_enrich(
+                    game_id        = self.game_id,
+                    period         = periods[0],
+                    clip_start_sec = self.clip_start_sec,
+                    fps            = clip_fps,
+                    data_dir       = self._data_dir,
+                )
+            if result:
+                for label, path in result.items():
+                    print(f"  ✓ {label}: {path}")
+        except Exception as exc:
+            print(f"  [enrichment] failed (non-fatal): {exc}")
 
     def _export_csv(self, rows: List[dict]):
         """Write any remaining rows not yet flushed by _checkpoint_csv."""
@@ -1945,9 +2746,9 @@ class UnifiedPipeline:
     def _export_ball_csv(self, rows: List[dict]):
         if not rows:
             return
-        os.makedirs(_DATA, exist_ok=True)
-        path   = os.path.join(_DATA, "ball_tracking.csv")
-        fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected"]
+        os.makedirs(self._data_dir, exist_ok=True)
+        path   = os.path.join(self._data_dir, "ball_tracking.csv")
+        fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected", "live"]
         with open(path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields)
             w.writeheader()
@@ -1957,11 +2758,180 @@ class UnifiedPipeline:
     def _export_stats(self, player_stats):
         if not player_stats:
             return
-        os.makedirs(_DATA, exist_ok=True)
-        path = os.path.join(_DATA, "stats.json")
+        os.makedirs(self._data_dir, exist_ok=True)
+        path = os.path.join(self._data_dir, "stats.json")
         with open(path, "w") as f:
             json.dump(player_stats, f, indent=2)
         print(f"Player stats → {path}")
+
+    def _export_scoreboard_log(self, rows: List[dict]):
+        if not rows:
+            return
+        os.makedirs(self._data_dir, exist_ok=True)
+        path   = os.path.join(self._data_dir, "scoreboard_log.csv")
+        fields = ["frame", "game_clock", "shot_clock", "home_score", "away_score",
+                  "period", "confidence"]
+        with open(path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fields)
+            w.writeheader()
+            w.writerows(rows)
+        print(f"Scoreboard log → {path}  ({len(rows)} readings, "
+              f"period_start_video_sec={self.period_start_video_sec:.1f}s)")
+
+    # ── FIX 1: events log export ──────────────────────────────────────────
+
+    def _export_events_log(self, rows: List[dict]) -> None:
+        """Write events_log.csv — all rich events (screen/cut/drive/closeout/rebound)."""
+        os.makedirs(self._data_dir, exist_ok=True)
+        path = os.path.join(self._data_dir, "events_log.csv")
+        fields = [
+            "game_id", "frame", "timestamp", "possession_id",
+            "type", "player_id", "defender_id",
+            "x", "y", "start_x", "end_x",
+            "closeout_speed", "crash_angle", "crash_speed", "box_out",
+            "ball_handler_id", "screener_id", "screen_action",  # FIX 6
+            "handler_id", "rotation_dist",  # FIX 7
+        ]
+        with open(path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(rows)
+        print(f"Events log      → {path}  ({len(rows)} events)")
+
+    # ── FIX 5: court-side team map ────────────────────────────────────────
+
+    def _court_side_team_map(self, frame_tracks_buf: list, game_id: str) -> dict:
+        """Map team color labels to NBA abbreviations using court-side position.
+
+        Computes mean x2d per team over the first 300 tracked frames.
+        The team with lower mean x2d is on the left (home team in Q1 per NBA convention).
+        Falls back to alphabetical sort when API fails or game_id is None.
+
+        Returns {} when no color labels are found.
+        """
+        if not game_id or not frame_tracks_buf:
+            return {}
+
+        # Collect mean x2d per color label
+        from collections import defaultdict as _dd
+        _team_xs: dict = _dd(list)
+        for _fts in frame_tracks_buf:
+            for _t in _fts:
+                _lbl = _t.get("team", "")
+                if _lbl and _lbl != "referee":
+                    _x = _t.get("x2d", 0)
+                    if _x:
+                        _team_xs[_lbl].append(float(_x))
+
+        labels = sorted(_team_xs.keys())
+        if not labels:
+            return {}
+
+        # Alphabetical fallback (same as _resolve_team_names)
+        fallback = {lbl: f"team_{chr(ord('a') + i)}" for i, lbl in enumerate(labels)}
+
+        try:
+            import time as _time
+            from nba_api.stats.endpoints import boxscoresummaryv2 as _bss
+            _time.sleep(0.3)
+            _bs    = _bss.BoxScoreSummaryV2(game_id=game_id)
+            _df    = _bs.get_data_frames()[0]
+            home    = str(_df["HOME_TEAM_ABBREVIATION"].iloc[0])
+            visitor = str(_df["VISITOR_TEAM_ABBREVIATION"].iloc[0])
+        except Exception as _e:
+            print(f"  [court_side] API failed ({_e}) — using alphabetical fallback")
+            return fallback
+
+        # Position-based mapping: lower mean x2d → left half = home team in Q1
+        if len(labels) >= 2:
+            _means = {lbl: (sum(_team_xs[lbl]) / len(_team_xs[lbl])) for lbl in labels if _team_xs[lbl]}
+            _sorted_by_x = sorted(_means.keys(), key=lambda l: _means.get(l, 0))
+            # NBA convention: home team attacks right basket in Q1 → home in left half (lower x)
+            mapping = {_sorted_by_x[0]: home, _sorted_by_x[1]: visitor}
+        elif len(labels) == 1:
+            mapping = {labels[0]: home}
+        else:
+            return fallback
+
+        # Cache to disk (same file as _resolve_team_names so both paths share cache)
+        try:
+            _cache_dir  = os.path.join(_DATA, "nba")
+            _cache_path = os.path.join(_cache_dir, f"team_map_{game_id}.json")
+            os.makedirs(_cache_dir, exist_ok=True)
+            with open(_cache_path, "w") as _f:
+                json.dump(mapping, _f)
+        except Exception:
+            pass
+
+        print(f"  [court_side] {mapping}")
+        return mapping
+
+    # ── FIX 7: player name backfill ───────────────────────────────────────
+
+    def _backfill_player_names(self) -> None:
+        """Overwrite empty player_name cells in tracking_data.csv and shot_log.csv."""
+        if self._player_resolver is None:
+            return
+        _name_map = self._player_resolver.slot_to_player_name
+        if len(_name_map) < 5:
+            return
+
+        for _fname in ("tracking_data.csv", "shot_log.csv"):
+            _path = os.path.join(self._data_dir, _fname)
+            if not os.path.exists(_path):
+                continue
+            try:
+                with open(_path, newline="") as _f:
+                    reader = csv.DictReader(_f)
+                    if "player_name" not in (reader.fieldnames or []):
+                        continue
+                    _rows = list(reader)
+                    _fields = list(reader.fieldnames)
+                _updated = 0
+                for _row in _rows:
+                    if _row.get("player_name", "") == "":
+                        _pid_raw = _row.get("player_id", "")
+                        try:
+                            _pid = int(_pid_raw)
+                        except (ValueError, TypeError):
+                            continue
+                        _name = _name_map.get(_pid, "")
+                        if _name:
+                            _row["player_name"] = _name
+                            _updated += 1
+                with open(_path, "w", newline="") as _f:
+                    w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                    w.writeheader()
+                    w.writerows(_rows)
+                print(f"Player name backfill: {_updated} rows updated in {_fname}")
+            except Exception as _e:
+                print(f"  [backfill_names] {_fname} failed: {_e}")
+
+
+    @staticmethod
+    def _classify_shot_creation(
+        dribble_count: int,
+        shot_zone: str,
+        vel_toward_basket: float,
+        defender_distance: float,
+        ball_shot_arc_angle: float,
+    ) -> str:
+        """
+        Returns: "catch_and_shoot" | "pull_up" | "step_back" | "floater" | "drive_layup" | "post_up" | "other"
+        """
+        if dribble_count == 0:
+            return "catch_and_shoot"
+        if shot_zone == "paint" and vel_toward_basket > 2.0:
+            if ball_shot_arc_angle and ball_shot_arc_angle > 55:
+                return "floater"
+            return "drive_layup"
+        if shot_zone in ("paint", "mid_range") and vel_toward_basket < 0.5:
+            return "post_up"
+        if dribble_count >= 2 and vel_toward_basket < 0:
+            return "step_back"
+        if dribble_count >= 1:
+            return "pull_up"
+        return "other"
 
 
 class _ReIdStub:
@@ -1986,8 +2956,11 @@ if __name__ == "__main__":
     ap.add_argument("--output",   default=None,  help="Output CSV path (default: data/tracking_data.csv)")
     ap.add_argument("--frames",   type=int, default=None, help="Max frames to process")
     ap.add_argument("--start-frame", type=int, default=0, help="Frame to start from")
-    ap.add_argument("--no-show",  action="store_true", help="Disable live preview window")
-    ap.add_argument("--yolo",     default=None, help="Path to YOLO-NAS weights (.pth)")
+    ap.add_argument("--no-show",       action="store_true", help="Disable live preview window")
+    ap.add_argument("--yolo",          default=None,  help="Path to YOLO-NAS weights (.pth)")
+    ap.add_argument("--period",        type=int, default=1, help="Quarter the clip covers (1-4)")
+    ap.add_argument("--clip-start-sec", type=float, default=0.0,
+                    help="Seconds into the quarter when the clip starts")
     args = ap.parse_args()
 
     pipeline = UnifiedPipeline(
@@ -1997,5 +2970,7 @@ if __name__ == "__main__":
         start_frame=args.start_frame,
         show=not args.no_show,
         game_id=args.game_id,
+        period=args.period,
+        clip_start_sec=args.clip_start_sec,
     )
     pipeline.run()

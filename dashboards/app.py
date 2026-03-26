@@ -99,8 +99,8 @@ st.sidebar.caption("Upload a new game in the **Upload** tab.")
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab_upload, tab_film, tab_movement, tab_plays, tab_defense = st.tabs([
-    "📤 Upload", "🎬 Film Review", "🏃 Movement", "📋 Play Analysis", "🛡️ Defense"
+tab_upload, tab_film, tab_movement, tab_plays, tab_defense, tab_predictions = st.tabs([
+    "Upload", "Film Review", "Movement", "Play Analysis", "Defense", "Predictions"
 ])
 
 
@@ -540,3 +540,152 @@ with tab_defense:
         st.dataframe(df_t, use_container_width=True, hide_index=True)
     else:
         st.caption("No micro-timing data yet.")
+
+
+# =============================================================================
+# TAB 5 — Predictions
+# =============================================================================
+with tab_predictions:
+    # ── Phase E5: Full predictions dashboard ──────────────────────────────────
+    try:
+        from dashboards.predictions_tab import _render_todays_games
+        _render_todays_games(season="2024-25")
+        st.divider()
+    except Exception:
+        pass  # today's games section optional
+
+    st.subheader("Player Prop Predictions")
+
+    season_sel = st.sidebar.text_input("Season", value="2024-25", key="pred_season")
+    player_sel = st.text_input("Player name", placeholder="e.g. LeBron James", key="pred_player")
+    opp_sel    = st.text_input("Opponent team (optional)", placeholder="e.g. BOS", key="pred_opp")
+
+    col_prop, col_dnp, col_edge = st.columns(3)
+
+    # ── Prop projections ──────────────────────────────────────────────────────
+    with col_prop:
+        st.markdown("#### Prop Projections")
+        if player_sel:
+            try:
+                from src.prediction.player_props import predict_props
+                preds = predict_props(player_name=player_sel, opponent_team=opp_sel or None,
+                                      season=season_sel)
+                props = preds.get("props", preds)
+                dnp_risk = preds.get("dnp_risk", None)
+
+                rows = []
+                for stat, val in props.items():
+                    if isinstance(val, dict):
+                        pred_val = val.get("prediction", val.get("value", "—"))
+                    else:
+                        pred_val = val
+                    rows.append({"Stat": stat.upper(), "Projection": round(float(pred_val), 1) if pred_val else "—"})
+
+                if rows:
+                    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+                else:
+                    st.caption("No projections available.")
+
+                if dnp_risk is not None:
+                    color = "red" if dnp_risk >= 0.4 else ("orange" if dnp_risk >= 0.2 else "green")
+                    st.markdown(f"**DNP Risk:** :{color}[{dnp_risk:.0%}]")
+            except Exception as e:
+                st.warning(f"Prediction error: {e}")
+        else:
+            st.caption("Enter a player name above.")
+
+    # ── DNP board ─────────────────────────────────────────────────────────────
+    with col_dnp:
+        st.markdown("#### DNP Board")
+        try:
+            from src.prediction.load_management import predict_load_management
+            from src.data.nba_stats import get_active_players
+            active = get_active_players(season_sel)[:30]
+            at_risk = []
+            for p in active:
+                r = predict_load_management(p, season_sel)
+                if r["load_mgmt_prob"] >= 0.15:
+                    at_risk.append({"Player": p, "Load Mgmt %": f"{r['load_mgmt_prob']:.0%}",
+                                    "Signal": r["recommendation"]})
+            if at_risk:
+                at_risk.sort(key=lambda x: -float(x["Load Mgmt %"].strip("%")) / 100)
+                st.dataframe(pd.DataFrame(at_risk[:10]), use_container_width=True, hide_index=True)
+            else:
+                st.caption("No load management risk detected today.")
+        except Exception:
+            st.caption("Load management model not yet available.")
+
+    # ── Edge scanner ──────────────────────────────────────────────────────────
+    with col_edge:
+        st.markdown("#### Model Health")
+        try:
+            from src.pipeline.outcome_recorder import get_calibration_report
+            report = get_calibration_report(n_games=20)
+            rows = []
+            for stat, m in report.items():
+                mae = m.get("mae")
+                r2  = m.get("r2")
+                rows.append({
+                    "Stat": stat.upper(),
+                    "MAE":  f"{mae:.3f}" if mae is not None else "—",
+                    "R2":   f"{r2:.3f}"  if r2  is not None else "—",
+                    "N":    m.get("n", 0),
+                })
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        except Exception:
+            st.caption("No outcome data yet (run games first).")
+
+    st.divider()
+
+    # ── Breakout candidates ───────────────────────────────────────────────────
+    st.markdown("#### Breakout Candidates")
+    if st.button("Scan for breakout candidates"):
+        try:
+            from src.prediction.breakout_predictor import get_breakout_candidates
+            candidates = get_breakout_candidates(season_sel, top_n=10)
+            if candidates:
+                rows = [{"Player": c["player"],
+                         "Score": f"{c['breakout_score']:.2f}",
+                         "Signals": ", ".join(c["signals"].keys())} for c in candidates]
+                st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            else:
+                st.caption("No breakout candidates found.")
+        except Exception as e:
+            st.warning(f"Error: {e}")
+
+    # ── CLV dashboard ─────────────────────────────────────────────────────────
+    st.divider()
+    st.markdown("#### CLV Dashboard (Closing Line Value)")
+    try:
+        from src.analytics.clv_tracker import get_clv_summary
+        summary = get_clv_summary()
+        c1, c2, c3, c4 = st.columns(4)
+        metrics = [
+            ("Spread 7d", summary["spread_7d"]),
+            ("Spread 30d", summary["spread_30d"]),
+            ("Total 7d",  summary["total_7d"]),
+            ("Total 30d", summary["total_30d"]),
+        ]
+        for col, (label, val) in zip([c1, c2, c3, c4], metrics):
+            with col:
+                st.markdown(f"""
+                <div class="metric-card">
+                  <div class="metric-val">{val['mean_clv']:+.2f}</div>
+                  <div class="metric-lbl">{label} CLV  (n={val['n_games']})</div>
+                </div>""", unsafe_allow_html=True)
+    except Exception:
+        st.caption("CLV data not yet available (run games first).")
+
+    # ── Model version history ─────────────────────────────────────────────────
+    st.divider()
+    st.markdown("#### Model Versions")
+    try:
+        from src.pipeline.model_version_manager import list_active_versions
+        active_vers = list_active_versions()
+        if active_vers:
+            rows = [{"Model": k, "Version": v} for k, v in sorted(active_vers.items())]
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        else:
+            st.caption("No model versions registered yet.")
+    except Exception:
+        st.caption("Model version manager not available.")

@@ -67,10 +67,15 @@ POSSESSION_REQUIRED = {
 
 SHOT_REQUIRED = {
     "frame", "team", "court_zone",
+    "shot_clock", "contest_arm_angle", "closeout_speed", "fatigue_proxy",
 }
 
 PLAYER_STATS_REQUIRED = {
     "player_id", "team",
+}
+
+EVENTS_LOG_REQUIRED = {
+    "type", "frame", "possession_id",
 }
 
 
@@ -347,6 +352,31 @@ def validate_shot_log(r: Report):
 
 # ── Section: player_clip_stats.csv ────────────────────────────────────────────
 
+def validate_events_log(r: Report):
+    path = os.path.join(DATA_DIR, "events_log.csv")
+    print("── events_log.csv ────────────────────────────────────────────")
+    df = _check_file(r, path, "events_log")
+    if df is None:
+        return
+
+    _check_cols(r, df, EVENTS_LOG_REQUIRED, "events_log")
+
+    if len(df) == 0:
+        r.warn("events_log non-empty", "0 events — clip may be too short to generate events")
+        print()
+        return
+
+    if "type" in df.columns:
+        event_types = df["type"].value_counts().to_dict()
+        r.ok("event types", str(event_types))
+
+    if "possession_id" in df.columns:
+        n_poss = df["possession_id"].nunique()
+        r.ok("events by possession", f"{n_poss} unique possession IDs in events log")
+
+    print()
+
+
 def validate_player_stats(r: Report):
     path = os.path.join(DATA_DIR, "player_clip_stats.csv")
     print("── player_clip_stats.csv ─────────────────────────────────────")
@@ -502,16 +532,18 @@ def main():
     r_stats    = Report()
     r_features = Report()
     r_cross    = Report()
+    r_events   = Report()
 
     validate_tracking(r_tracking);   r_tracking.print()
     validate_ball(r_ball);           r_ball.print()
     validate_possessions(r_poss);    r_poss.print()
     validate_shot_log(r_shots);      r_shots.print()
+    validate_events_log(r_events);   r_events.print()
     validate_player_stats(r_stats);  r_stats.print()
     validate_features(r_features);   r_features.print()
     validate_cross_file(r_cross);    r_cross.print()
 
-    all_reports = [r_tracking, r_ball, r_poss, r_shots, r_stats, r_features, r_cross]
+    all_reports = [r_tracking, r_ball, r_poss, r_shots, r_stats, r_features, r_cross, r_events]
 
     total_pass = sum(r.counts.get(PASS, 0) for r in all_reports)
     total_fail = sum(r.counts.get(FAIL, 0) for r in all_reports)

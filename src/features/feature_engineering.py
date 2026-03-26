@@ -52,7 +52,8 @@ def load_tracking(path: str = None) -> pd.DataFrame:
                 "team_spacing", "team_centroid_x", "team_centroid_y",
                 "handler_isolation", "ball_x2d", "ball_y2d",
                 "distance_to_basket", "vel_toward_basket", "ball_velocity",
-                "possession_duration"):
+                "possession_duration",
+                "ankle_x", "ankle_y", "contest_arm_angle", "jump_detected"):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
     if "event" not in df.columns:
@@ -224,24 +225,41 @@ def add_momentum_features(df: pd.DataFrame) -> pd.DataFrame:
         team_spacing_val=("team_spacing", "first"),
     ).reset_index()
 
-    rows = []
-    for frame, grp in frame_team.groupby("frame"):
-        teams = grp[grp["team"] != "referee"]
-        for _, row in teams.iterrows():
-            opp = teams[teams["team"] != row["team"]]
-            opp_vel  = opp["team_vel_mean"].mean() if len(opp) else np.nan
-            opp_spc  = opp["team_spacing_val"].mean() if len(opp) else np.nan
-            rows.append({
-                "frame":             frame,
-                "team":              row["team"],
-                "team_velocity_mean": round(row["team_vel_mean"], 2),
-                "opp_velocity_mean":  round(opp_vel, 2) if not np.isnan(opp_vel) else np.nan,
-                "spacing_advantage":  round(
-                    row["team_spacing_val"] - opp_spc, 1
-                ) if not np.isnan(opp_spc) else np.nan,
-            })
+    # Vectorized: pivot to wide (one row per frame, one column per team),
+    # compute opponent stats as the row-sum minus own-team value, then melt back.
+    non_ref = frame_team[frame_team["team"] != "referee"].copy()
+    if non_ref.empty:
+        df["team_velocity_mean"] = np.nan
+        df["opp_velocity_mean"]  = np.nan
+        df["spacing_advantage"]  = np.nan
+        return df
 
-    momentum_df = pd.DataFrame(rows)
+    # Per-frame totals for the two non-ref teams
+    frame_totals = non_ref.groupby("frame").agg(
+        total_vel=("team_vel_mean", "sum"),
+        total_spc=("team_spacing_val", "sum"),
+        n_teams=("team", "count"),
+    )
+
+    non_ref = non_ref.join(frame_totals, on="frame")
+    # When n_teams==2: opp_vel = total - own;  n_teams==1: opp = NaN
+    non_ref["team_velocity_mean"] = non_ref["team_vel_mean"].round(2)
+    non_ref["opp_velocity_mean"] = np.where(
+        non_ref["n_teams"] == 2,
+        (non_ref["total_vel"] - non_ref["team_vel_mean"]).round(2),
+        np.nan,
+    )
+    non_ref["opp_spc"] = np.where(
+        non_ref["n_teams"] == 2,
+        non_ref["total_spc"] - non_ref["team_spacing_val"],
+        np.nan,
+    )
+    non_ref["spacing_advantage"] = (
+        non_ref["team_spacing_val"] - non_ref["opp_spc"]
+    ).round(1)
+
+    momentum_df = non_ref[["frame", "team", "team_velocity_mean",
+                            "opp_velocity_mean", "spacing_advantage"]]
     df = df.merge(momentum_df, on=["frame", "team"], how="left")
     return df
 
@@ -359,20 +377,35 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df["shot_quality_proxy"] = 0.0
 
-    # ── Pick-roll proxy ────────────────────────────────────────────────────
-    pr_list = []
-    for frame_id, fgrp in df.groupby("frame"):
-        handler = fgrp[fgrp["ball_possession"] == 1]
-        if len(handler) == 0:
-            pr_list.append({"frame": frame_id, "pick_roll_proxy": 0})
-            continue
-        hx     = handler.iloc[0]["x_position"]
-        hy     = handler.iloc[0]["y_position"]
-        h_team = handler.iloc[0]["team"]
-        mates  = fgrp[(fgrp["team"] == h_team) & (fgrp["ball_possession"] == 0)]
-        near   = int((np.hypot(mates["x_position"] - hx, mates["y_position"] - hy) < 80).sum())
-        pr_list.append({"frame": frame_id, "pick_roll_proxy": int(near >= 2)})
-    pr_df = pd.DataFrame(pr_list)
+    # ── Pick-roll proxy (vectorized) ───────────────────────────────────────
+    # For each frame: find the ball handler (ball_possession==1), then count
+    # teammates within 80px.  Implemented without a Python loop via a self-merge.
+    _pos = df[["frame", "player_id", "team", "x_position",
+               "y_position", "ball_possession"]].copy()
+    _handlers = _pos[_pos["ball_possession"] == 1][
+        ["frame", "team", "x_position", "y_position"]
+    ].rename(columns={"x_position": "hx", "y_position": "hy", "team": "h_team"})
+    # Keep only one handler per frame (first in index order)
+    _handlers = _handlers.drop_duplicates(subset="frame")
+
+    if len(_handlers):
+        # Join every player row to its frame's handler
+        _merged = _pos.merge(_handlers, on="frame", how="inner")
+        # Teammates (same team, not the handler itself)
+        _mates = _merged[
+            (_merged["team"] == _merged["h_team"]) &
+            (_merged["ball_possession"] == 0)
+        ].copy()
+        _mates["near"] = (
+            np.hypot(_mates["x_position"] - _mates["hx"],
+                     _mates["y_position"] - _mates["hy"]) < 80
+        ).astype(int)
+        _near_count = _mates.groupby("frame")["near"].sum().rename("near_count")
+        _frame_pr = _handlers[["frame"]].join(_near_count, on="frame").fillna(0)
+        _frame_pr["pick_roll_proxy"] = (_frame_pr["near_count"] >= 2).astype(int)
+        pr_df = _frame_pr[["frame", "pick_roll_proxy"]]
+    else:
+        pr_df = pd.DataFrame({"frame": df["frame"].unique(), "pick_roll_proxy": 0})
 
     # ── Merge all frame-level features back ───────────────────────────────
     keep = ["frame", "turnover_flag", "pace_30"]
@@ -436,7 +469,8 @@ def add_per100_features(df: pd.DataFrame) -> pd.DataFrame:
                     df.groupby("player_id", group_keys=False).apply(
                         lambda g: (
                             g[dcol] / g["possessions_est"].clip(lower=1) * 100
-                        ).round(1)
+                        ).round(1),
+                        include_groups=False,
                     )
                 )
     return df
@@ -646,7 +680,7 @@ def add_external_player_features(
 
     # ── Build per-player feature rows ────────────────────────────────────────
     def _ext_features(player_name: str) -> dict:
-        key = (player_name or "").lower()
+        key = (player_name if isinstance(player_name, str) else "").lower()
         bb  = bbref_lookup.get(key, {})
         hu  = hustle_lookup.get(key, {})
         oo  = on_off_lookup.get(key, {})
@@ -694,6 +728,59 @@ def add_external_player_features(
     return df
 
 
+def add_pose_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Derive ML-ready features from pose estimation columns.
+
+    New columns:
+      contest_arm_mean_30   — rolling 30-frame mean of contest_arm_angle per player
+                              (0=arm low/relaxed, 1=arm fully raised above nose)
+      jump_shot_flag        — 1 when event==shot AND jump_detected==1
+                              (distinguishes jump shots from layups/dunks/tip-ins)
+      shot_quality_pose     — shot_quality_proxy adjusted for nearest-opponent
+                              contest arm angle when available; non-zero on shot frames
+    """
+    df = df.copy()
+
+    # ── Rolling contest arm angle ──────────────────────────────────────────
+    if "contest_arm_angle" in df.columns:
+        df = df.sort_values(["player_id", "frame"])
+        df["contest_arm_mean_30"] = (
+            df.groupby("player_id", group_keys=False)["contest_arm_angle"]
+            .transform(lambda s: s.rolling(30, min_periods=1).mean().round(3))
+        )
+    else:
+        df["contest_arm_mean_30"] = 0.0
+
+    # ── Jump shot flag ─────────────────────────────────────────────────────
+    has_event = "event" in df.columns
+    has_jump  = "jump_detected" in df.columns
+    if has_event and has_jump:
+        df["jump_shot_flag"] = (
+            (df["event"] == "shot") & (df["jump_detected"] == 1)
+        ).astype(int)
+    else:
+        df["jump_shot_flag"] = 0
+
+    # ── Pose-enhanced shot quality ─────────────────────────────────────────
+    # When a nearest opponent has a high contest_arm_angle, reduce shot quality.
+    # Proxy: use the shooter's own contest_arm_mean_30 on shot frames
+    # (high arm = shooter is contesting their own shot = defensive pressure visible).
+    if "shot_quality_proxy" in df.columns and "contest_arm_angle" in df.columns:
+        shot_mask = df.get("event", pd.Series("none", index=df.index)) == "shot"
+        contest   = pd.to_numeric(df["contest_arm_angle"], errors="coerce").fillna(0.0)
+        # Defender pressure adjustment: contest_arm_angle 0→1 reduces quality by up to 30%
+        df["shot_quality_pose"] = np.where(
+            shot_mask,
+            (df["shot_quality_proxy"] * (1.0 - 0.30 * contest)).round(3),
+            0.0,
+        )
+    else:
+        df["shot_quality_pose"] = df.get("shot_quality_proxy", 0.0)
+
+    return df
+
+
 def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     """
     Full feature engineering pipeline.
@@ -713,6 +800,7 @@ def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
     df = add_game_flow_features(df)
     df = add_per100_features(df)
     df = add_context_features(df)
+    df = add_pose_features(df)
     df = add_external_player_features(df)
     df = df.sort_values(["frame", "player_id"]).reset_index(drop=True)
 

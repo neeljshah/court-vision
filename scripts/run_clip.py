@@ -44,7 +44,7 @@ import uuid
 
 import cv2
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
 from src.pipeline.unified_pipeline import UnifiedPipeline
@@ -103,6 +103,9 @@ def main():
     ap.add_argument("--start",    type=float, default=0.0,
                     help="Seconds elapsed in the period when the clip starts. "
                          "e.g. clip starts at 8:30 left in Q1 → --start 210")
+    ap.add_argument("--data-dir", default=None,
+                    help="Output directory for CSV files (default: data/). "
+                         "run_phase_g.py passes data/tracking/<game_id>/ here.")
     args = ap.parse_args()
 
     if not os.path.exists(args.video):
@@ -124,7 +127,8 @@ def main():
         # Exit with non-zero so automated pipelines can detect short clips.
         sys.exit(2)
 
-    data_dir = os.path.join(PROJECT_DIR, "data")
+    data_dir = args.data_dir if args.data_dir else os.path.join(PROJECT_DIR, "data")
+    os.makedirs(data_dir, exist_ok=True)
     t0 = time.time()
 
     # ── Stage 1: Tracking ─────────────────────────────────────────────────────
@@ -139,6 +143,8 @@ def main():
         max_frames=args.frames,
         start_frame=args.start_frame,
         show=not args.no_show,
+        data_dir=data_dir,
+        game_id=args.game_id,
     )
     results = pipeline.run()
 
@@ -149,11 +155,18 @@ def main():
     print(f" Est. ID switches : {results['id_switches']}")
 
     # ── Stage 2: Feature engineering ─────────────────────────────────────────
+    tracking_csv = os.path.join(data_dir, "tracking_data.csv")
+    if not os.path.exists(tracking_csv):
+        print("\n[WARN] tracking_data.csv not written — Stage 1 produced 0 rows.")
+        print("       Possible causes: gameplay not detected, homography mismatch,")
+        print("       or all frames filtered as dead-ball.  Skipping Stage 2.")
+        sys.exit(3)  # exit 3 = empty tracking; run_phase_g treats 3 as soft failure
+
     print("\n" + "=" * 60)
     print(" Stage 2 / 3 — Feature Engineering")
     print("=" * 60)
     features_df = run_features(
-        input_path=os.path.join(data_dir, "tracking_data.csv"),
+        input_path=tracking_csv,
         output_path=os.path.join(data_dir, "features.csv"),
     )
 
