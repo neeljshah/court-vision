@@ -25,14 +25,93 @@ from __future__ import annotations
 
 import logging
 import re
+from dataclasses import dataclass
 from typing import Dict, Optional
 
 import cv2
 import numpy as np
 
+
+@dataclass
+class ScoreboardReading:
+    """Single scoreboard OCR reading for one frame.
+
+    Fields that could not be parsed are None.
+    confidence is 0.0–1.0 based on how many of the 5 primary fields were read.
+    """
+    frame_idx:  int
+    game_clock: Optional[str]   # "MM:SS" e.g. "10:42"
+    shot_clock: Optional[int]   # 1-24
+    home_score: Optional[int]
+    away_score: Optional[int]
+    period:     Optional[int]   # 1-4 or 5 for OT
+    confidence: float           # 0.0-1.0
+
+
+def read_scoreboard(frame: "np.ndarray", frame_idx: int) -> ScoreboardReading:
+    """
+    Read scoreboard state from a single frame.
+
+    Convenience wrapper around ScoreboardOCR for one-shot reads.
+    For streaming use (every N frames with caching), instantiate ScoreboardOCR
+    and call .read() directly.
+
+    Args:
+        frame:     BGR numpy array (post-TOPCUT).
+        frame_idx: Absolute video frame index (for logging/CSV).
+
+    Returns:
+        ScoreboardReading with populated fields and a 0–1 confidence score.
+        Any field that could not be parsed is None.
+    """
+    _state = _one_shot_ocr(frame)
+    gc_sec  = _state.get("game_clock_sec", -1.0)
+    sc      = _state.get("shot_clock",    -1.0)
+    hs      = _state.get("home_score",    -1)
+    as_     = _state.get("away_score",    -1)
+    period  = _state.get("period",        -1)
+
+    # Convert game_clock_sec to "MM:SS" string
+    if gc_sec >= 0:
+        mins = int(gc_sec) // 60
+        secs = int(gc_sec) % 60
+        clock_str: Optional[str] = f"{mins}:{secs:02d}"
+    else:
+        clock_str = None
+
+    parsed = [
+        clock_str is not None,
+        sc      > 0,
+        hs      >= 0,
+        as_     >= 0,
+        period  > 0,
+    ]
+    conf = sum(parsed) / len(parsed)
+
+    return ScoreboardReading(
+        frame_idx  = frame_idx,
+        game_clock = clock_str,
+        shot_clock = int(sc)  if sc   > 0  else None,
+        home_score = hs       if hs   >= 0 else None,
+        away_score = as_      if as_  >= 0 else None,
+        period     = period   if period > 0 else None,
+        confidence = round(conf, 3),
+    )
+
+
+def _one_shot_ocr(frame: "np.ndarray") -> Dict:
+    """Run one OCR pass (no caching). Used by read_scoreboard()."""
+    _tmp = ScoreboardOCR(
+        frame_width=frame.shape[1],
+        frame_height=frame.shape[0],
+    )
+    # Force the internal counter to trigger on the first call
+    _tmp._frame_counter = _OCR_INTERVAL - 1
+    return _tmp._ocr_frame(frame)
+
 log = logging.getLogger(__name__)
 
-_OCR_INTERVAL = 15      # run OCR every N frames (EasyOCR is expensive)
+_OCR_INTERVAL = 30      # run OCR every N frames (raised 15→30: score/clock at 1fps is plenty)
 _TOP_FRAC     = 0.06    # top 6% of frame — ESPN/TNT scoreboard always in top ~5%
 _OCR_CONF_MIN = 0.35    # minimum EasyOCR confidence to accept a text token
 
@@ -49,18 +128,42 @@ _DEFAULT_STATE: Dict = {
     "score_diff":      0,
 }
 
-_reader_sb: Optional[object] = None   # module-level EasyOCR singleton
+_reader_sb: Optional[object] = None    # module-level OCR singleton
+_sb_use_paddle: bool = False           # True when PaddleOCR init succeeded
 
 
 def _get_reader() -> object:
-    """Lazy-init EasyOCR reader (GPU when available, CPU fallback)."""
-    global _reader_sb
-    if _reader_sb is None:
-        import easyocr  # optional dependency — may not be installed
-        try:
-            _reader_sb = easyocr.Reader(["en"], gpu=True, verbose=False)
-        except Exception:
-            _reader_sb = easyocr.Reader(["en"], gpu=False, verbose=False)
+    """Lazy-init OCR reader: PaddleOCR (GPU) first, EasyOCR fallback."""
+    global _reader_sb, _sb_use_paddle
+    if _reader_sb is not None:
+        return _reader_sb
+
+    # PaddleOCR — faster on GPU
+    try:
+        import os as _os
+        _os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
+        from paddleocr import PaddleOCR  # type: ignore
+        _reader_sb = PaddleOCR(
+            use_angle_cls=False,
+            lang="en",
+            use_gpu=True,
+            show_log=False,
+            rec_char_dict_path=None,
+        )
+        _sb_use_paddle = True
+        log.debug("scoreboard_ocr: using PaddleOCR (GPU)")
+        return _reader_sb
+    except Exception as e:
+        log.debug("scoreboard_ocr: PaddleOCR unavailable (%s) — falling back to EasyOCR", e)
+
+    # EasyOCR fallback
+    try:
+        import easyocr  # type: ignore
+        _reader_sb = easyocr.Reader(["en"], gpu=True, verbose=False)
+    except Exception:
+        import easyocr  # type: ignore
+        _reader_sb = easyocr.Reader(["en"], gpu=False, verbose=False)
+    _sb_use_paddle = False
     return _reader_sb
 
 
@@ -150,8 +253,23 @@ class ScoreboardOCR:
         if region.size == 0:
             return state
         try:
-            results = reader.readtext(region, detail=1, paragraph=False)
-            tokens = [r[1] for r in results if r[2] >= _OCR_CONF_MIN]
+            if _sb_use_paddle:
+                # PaddleOCR returns [[[bbox, (text, conf)], ...]] or None
+                raw = reader.ocr(region, cls=False)
+                lines = (raw[0] or []) if raw else []
+                tokens = []
+                for line in lines:
+                    if line is None:
+                        continue
+                    try:
+                        _, (text_tok, conf_tok) = line
+                        if float(conf_tok) >= _OCR_CONF_MIN:
+                            tokens.append(str(text_tok))
+                    except (TypeError, ValueError):
+                        continue
+            else:
+                results = reader.readtext(region, detail=1, paragraph=False)
+                tokens = [r[1] for r in results if r[2] >= _OCR_CONF_MIN]
             text = " ".join(tokens)
             parsed = _parse_scoreboard_text(text)
             for k, v in parsed.items():
@@ -208,29 +326,54 @@ def _parse_scoreboard_text(text: str) -> Dict:
         else:
             state["period"] = int(period.group(1) or period.group(2))
 
-    # ── Scores: two integers in typical NBA game-score range (30-175) ─────
-    candidates = [
-        int(m) for m in re.findall(r"\b(\d{1,3})\b", text)
-        if 30 <= int(m) <= 175
-    ]
-    if len(candidates) >= 2:
-        state["home_score"] = candidates[0]
-        state["away_score"] = candidates[1]
+    # ── Scores: two integers in NBA game-score range ──────────────────────
+    # Two-pass approach: prefer the established [30, 175] window (avoids
+    # clock/shot-clock digits) but fall back to [10, 175] when no pair is
+    # found (early Q1 when both teams score < 30).  In both passes take the
+    # first ordered pair in text order with diff ≤ 60.
+    def _find_score_pair(cands):
+        for _si, _a in enumerate(cands):
+            for _b in cands[_si + 1:]:
+                if abs(_a - _b) <= 60:
+                    return _a, _b
+        return None, None
 
-    # ── Timeouts: small integer 0-7 that appears twice ────────────────────
-    timeout_cands = [
-        int(m) for m in re.findall(r"\b([0-7])\b", text)
-    ]
-    if len(timeout_cands) >= 2:
-        state["home_timeouts"] = timeout_cands[0]
-        state["away_timeouts"] = timeout_cands[1]
+    _score_cands_30 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 30 <= int(m) <= 175]
+    _hs, _as = _find_score_pair(_score_cands_30)
+    if _hs is None:
+        # Fallback: early game — allow ≥ 10, require diff ≤ 40 to exclude shot clocks
+        _score_cands_10 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 10 <= int(m) <= 175]
+        _hs, _as = _find_score_pair(_score_cands_10)
+    if _hs is not None:
+        state["home_score"] = _hs
+        state["away_score"] = _as
 
-    # ── Fouls: small integer 0-6 that appears twice ───────────────────────
-    foul_cands = [
-        int(m) for m in re.findall(r"\b([0-6])\b", text)
-    ]
-    if len(foul_cands) >= 2:
-        state["home_fouls"] = foul_cands[0]
-        state["away_fouls"] = foul_cands[1]
+    # ── Timeouts / fouls: require keyword context to avoid mixing stray digits
+    # Pattern: look for labeled pairs like "HOME X ... AWAY Y" or just take
+    # the first two standalone small integers that appear after a digit-free
+    # region.  Fallback: original blind extraction if no label match.
+    def _extract_labeled_pair(pattern: str, t: str, lo: int, hi: int):
+        """Try labeled regex first; fall back to first two in-range digits."""
+        m = re.search(pattern, t, re.IGNORECASE)
+        if m:
+            return int(m.group(1)), int(m.group(2))
+        raw = [int(x) for x in re.findall(r"\b(\d)\b", t) if lo <= int(x) <= hi]
+        return (raw[0], raw[1]) if len(raw) >= 2 else (None, None)
+
+    _to_pat = (
+        r"(?:home|team\s*a)[^\d]{0,10}([0-7])[^\d]{1,40}(?:away|team\s*b)[^\d]{0,10}([0-7])"
+    )
+    h_to, a_to = _extract_labeled_pair(_to_pat, text, 0, 7)
+    if h_to is not None:
+        state["home_timeouts"] = h_to
+        state["away_timeouts"] = a_to
+
+    _foul_pat = (
+        r"(?:home|team\s*a)[^\d]{0,10}([0-6])[^\d]{1,40}(?:away|team\s*b)[^\d]{0,10}([0-6])"
+    )
+    h_f, a_f = _extract_labeled_pair(_foul_pat, text, 0, 6)
+    if h_f is not None:
+        state["home_fouls"] = h_f
+        state["away_fouls"] = a_f
 
     return state

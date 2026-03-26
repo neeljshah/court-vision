@@ -424,3 +424,40 @@ def backtest_clv(
         "by_season":          by_season,
         "clv_distribution":   all_clv,
     }
+
+
+def get_betting_edges(limit: int = 50) -> List[dict]:
+    """Fetch current positive-EV betting edges from live props and odds.
+
+    Convenience wrapper for the stitch_router; returns serialisable dicts.
+    When the props/odds pipeline is not yet wired, returns an empty list.
+
+    Args:
+        limit: Maximum number of edges to return (highest EV first).
+
+    Returns:
+        List of dicts with keys: player, stat, line, direction,
+        your_prob, book_prob, edge_pct, ev, kelly_size.
+    """
+    try:
+        from src.data.props_scraper import get_props
+        from src.data.odds_scraper import get_current_odds
+        props_list = get_props() or []
+        odds_feed  = get_current_odds() or {}
+        edges = find_edges(props_list, odds_feed)
+        return [
+            {
+                "player":     e.player,
+                "stat":       e.stat,
+                "line":       e.line,
+                "direction":  e.direction,
+                "your_prob":  e.your_prob,
+                "book_prob":  e.book_prob,
+                "edge_pct":   e.edge_pct,
+                "ev":         e.ev,
+                "kelly_size": e.kelly_size,
+            }
+            for e in edges[:limit]
+        ]
+    except Exception:
+        return []

@@ -18,8 +18,6 @@ from __future__ import annotations
 import logging
 from typing import Dict, Optional
 
-import psycopg2
-
 from .db import get_connection
 
 logger = logging.getLogger(__name__)
@@ -76,7 +74,7 @@ def persist_identity_map(
         conn.commit()
         conn.close()
         return True
-    except psycopg2.Error as e:
+    except Exception as e:
         logger.warning("[player_identity] DB error: %s", e)
         return False
 
@@ -101,18 +99,41 @@ def update_tracking_frames(
     Returns:
         Number of tracking_frames rows updated.
     """
-    sql = """
-        UPDATE tracking_frames tf
-        SET player_id = pim.player_id
-        FROM player_identity_map pim
-        WHERE tf.game_id         = pim.game_id
-          AND tf.clip_id         = pim.clip_id::uuid
-          AND tf.tracker_player_id = pim.tracker_slot
-          AND tf.game_id         = %s
-          AND pim.clip_id        = %s::uuid
-          AND pim.player_id      IS NOT NULL
-    """
     conn = get_connection(db_url)
+    from .db import is_postgres
+    if is_postgres(conn):
+        sql = """
+            UPDATE tracking_frames tf
+            SET player_id = pim.player_id
+            FROM player_identity_map pim
+            WHERE tf.game_id           = pim.game_id
+              AND tf.clip_id           = pim.clip_id::uuid
+              AND tf.tracker_player_id = pim.tracker_slot
+              AND tf.game_id           = %s
+              AND pim.clip_id          = %s::uuid
+              AND pim.player_id        IS NOT NULL
+        """
+    else:
+        # SQLite: correlated subquery (no UPDATE ... FROM)
+        sql = """
+            UPDATE tracking_frames
+            SET player_id = (
+                SELECT pim.player_id FROM player_identity_map pim
+                WHERE pim.game_id      = tracking_frames.game_id
+                  AND pim.clip_id      = tracking_frames.clip_id
+                  AND pim.tracker_slot = tracking_frames.tracker_player_id
+                  AND pim.player_id    IS NOT NULL
+                LIMIT 1
+            )
+            WHERE game_id = %s AND clip_id = %s
+              AND EXISTS (
+                SELECT 1 FROM player_identity_map pim
+                WHERE pim.game_id      = tracking_frames.game_id
+                  AND pim.clip_id      = tracking_frames.clip_id
+                  AND pim.tracker_slot = tracking_frames.tracker_player_id
+                  AND pim.player_id    IS NOT NULL
+              )
+        """
     with conn.cursor() as cur:
         cur.execute(sql, (game_id, clip_id))
         rows_updated = cur.rowcount

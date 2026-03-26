@@ -639,13 +639,15 @@ class TestPixelSpaceShotFallback:
             "player_id": 1, "team": "green",
             "x2d": 251.0, "y2d": 151.0, "has_ball": False,
         }
-        # ball_pos at same x as origin → dx_ball=0, dot product=0 → direction fails
+        # ball_pos at same x as origin → dx_ball=0, dot product=0 → direction fails.
+        # Frame index must clear debounce: frame_idx - _last_shot_frame(-30) >= 90.
+        # ball_y_pixel must decrease (ball moves up: y decreases).
         event = det.update(
-            1,
-            ball_pos=(250.0, 130.0),  # minor y-shift upward — neutral dot product
+            60,                        # 60 - (-30) = 90 >= _SHOT_DEBOUNCE(90) ✓
+            ball_pos=(250.0, 130.0),   # minor y-shift upward — neutral dot product
             frame_tracks=[no_ball_track],
-            pixel_vel=20.0,          # > _PIXEL_SHOT_VEL (12.0)
-            ball_y_pixel=200.0,      # upper half (200 < 720*0.5=360)
+            pixel_vel=20.0,            # > _PIXEL_SHOT_VEL threshold
+            ball_y_pixel=184.0,        # 200→184 = -16px (< -5 threshold, ball moved up)
             frame_height=720,
         )
         assert event == "shot", (
@@ -725,7 +727,7 @@ class TestPipelineEventDetectorCallSite:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "pipeline", "unified_pipeline.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
 
         tree = ast.parse(source)
@@ -788,13 +790,14 @@ class TestPixelFallbackBallPosNone:
             "player_id": 1, "team": "green",
             "x2d": 251.0, "y2d": 151.0, "has_ball": False,
         }
-        # ball_pos=None simulates Hough dropping the ball at shot release
+        # ball_pos=None simulates Hough dropping the ball at shot release.
+        # Frame index must clear debounce: 60 - (-30) = 90 >= _SHOT_DEBOUNCE(90) ✓
         event = det.update(
-            1,
+            60,
             ball_pos=None,           # ← Hough/CSRT lost the ball
             frame_tracks=[no_ball_track],
             pixel_vel=22.0,          # fast movement in pixel space
-            ball_y_pixel=150.0,      # upper half of 720px frame
+            ball_y_pixel=150.0,      # upper half of 720px frame (200→150 = -50px ✓)
             frame_height=720,
         )
         assert event == "shot", (
@@ -820,12 +823,12 @@ class TestPixelFallbackBallPosNone:
             1,
             ball_pos=None,
             frame_tracks=[no_ball_track],
-            pixel_vel=7.0,           # below _PIXEL_SHOT_VEL (8.0)
+            pixel_vel=5.0,           # below both thresholds: early detector (>6.0) and _PIXEL_SHOT_VEL (8.0)
             ball_y_pixel=150.0,
             frame_height=720,
         )
         assert event != "shot", (
-            f"Should NOT fire when pixel_vel=7 (below threshold), got '{event}'"
+            f"Should NOT fire when pixel_vel=5 (below threshold), got '{event}'"
         )
 
     def test_no_shot_when_ball_pos_none_and_lower_half(self):
@@ -856,7 +859,10 @@ class TestPixelFallbackBallPosNone:
         )
 
 
-# ── Fix 7: Hough false-positive guard — param2 must not go below 24 ──────────
+# ── Fix 7: Hough false-positive guard — param2 floor updated to 15 (was 24) ──
+# 2026-03-23: Session 5 lowered param2 25→18 AND added Fallback 2 (orange-guard
+# only path).  The orange HSV guard filters false positives that the 2026-03-18
+# experiment saw without the guard.  New safe floor = 15.
 
 
 class TestDriftGuardThreshold:
@@ -877,7 +883,7 @@ class TestDriftGuardThreshold:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
         # Look for the drift guard comparison: "> <number>" near "possessor_2d"
         tree = ast.parse(source)
@@ -902,25 +908,24 @@ class TestDriftGuardThreshold:
 
 
 class TestHoughBallDetectionParams:
-    """Hough param2 must stay ≥ 24 to avoid false positives that trip the
-    200px jump guard and lower ball_valid_pct.
+    """Hough param2 must stay ≥ 15 to avoid degenerate Hough circles.
 
-    Experiment (2026-03-18): lowering param2 25→22 + maxRadius 18→22 on
-    phi_tor_2025 dropped ball_valid_pct from 34% to 20%, confirming that
-    lower param2 generates spurious circles that jump >200px and get
-    discarded, degrading 2D validity.  The correct fix for that clip is
-    better homography, not looser Hough thresholds.
+    2026-03-18 experiment: param2=22 (no orange guard) dropped ball_valid
+    34%→20% on phi_tor_2025.
+    2026-03-23 session 5: param2 lowered 25→18 WITH Fallback-2 orange guard.
+    Orange HSV filtering eliminates non-ball Hough circles before they reach
+    the 200px jump guard.  Floor set to 15 — below 15 Hough is unstable.
     """
 
     def test_hough_param2_not_too_loose(self):
-        """param2 must be ≥ 24 to avoid false-positive circles."""
+        """param2 must be ≥ 15 (orange guard compensates; see 2026-03-23 session 5)."""
         import ast
         import os
         src_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
 
         tree = ast.parse(source)
@@ -934,9 +939,9 @@ class TestHoughBallDetectionParams:
             if "param2" in kw:
                 p2 = kw["param2"]
                 val = p2.value if isinstance(p2, ast.Constant) else None
-                assert val is not None and val >= 24, (
-                    f"Hough param2={val} causes false positives — must stay ≥ 24. "
-                    f"See 2026-03-18 experiment on phi_tor_2025."
+                assert val is not None and val >= 15, (
+                    f"Hough param2={val} below safe floor of 15 — degenerate circles. "
+                    f"param2=18 is valid with orange-guard fallback (2026-03-23 session 5)."
                 )
 
 
@@ -1015,7 +1020,7 @@ class TestShotClockNonLiveDetection:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "pipeline", "unified_pipeline.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
         assert "_sc_absent_streak" in source, (
             "unified_pipeline.py must initialise _sc_absent_streak"
@@ -1029,7 +1034,7 @@ class TestShotClockNonLiveDetection:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "pipeline", "unified_pipeline.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
         assert "_ball_track_suspended" in source, (
             "unified_pipeline.py must initialise _ball_track_suspended"
@@ -1042,7 +1047,7 @@ class TestShotClockNonLiveDetection:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "pipeline", "unified_pipeline.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
         assert "_SHOT_CLOCK_ABSENT_THRESHOLD" in source, (
             "unified_pipeline.py must define _SHOT_CLOCK_ABSENT_THRESHOLD"
@@ -1174,7 +1179,7 @@ class TestCsrtFastFallback:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src) as f:
+        with open(src, encoding="utf-8") as f:
             source = f.read()
         assert "_csrt_consecutive_fails" in source, (
             "ball_detect_track.py must define _csrt_consecutive_fails"
@@ -1187,7 +1192,7 @@ class TestCsrtFastFallback:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src) as f:
+        with open(src, encoding="utf-8") as f:
             source = f.read()
         assert "_CSRT_FAIL_THRESH" in source, (
             "ball_detect_track.py must define _CSRT_FAIL_THRESH"
@@ -1264,7 +1269,7 @@ class TestReentryHoughRadius:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src) as f:
+        with open(src, encoding="utf-8") as f:
             source = f.read()
         assert "_reentry_mode" in source, (
             "ball_detect_track.py must define _reentry_mode"
@@ -1280,7 +1285,7 @@ class TestReentryHoughRadius:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "tracking", "ball_detect_track.py",
         )
-        with open(src) as f:
+        with open(src, encoding="utf-8") as f:
             source = f.read()
         assert "_REENTRY_ATTEMPTS" in source, (
             "ball_detect_track.py must define _REENTRY_ATTEMPTS"
@@ -1404,7 +1409,7 @@ class TestVisionFallback:
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
             "src", "pipeline", "unified_pipeline.py",
         )
-        with open(src_path) as f:
+        with open(src_path, encoding="utf-8") as f:
             source = f.read()
         assert "_no_ball_vision_streak" in source, (
             "unified_pipeline.py must initialise _no_ball_vision_streak in __init__"
@@ -1428,9 +1433,9 @@ class TestBenchDefaultFrames:
         import os
         bench_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "_bench_run.py",
+            "scripts", "diagnostics", "_bench_run.py",
         )
-        with open(bench_path) as f:
+        with open(bench_path, encoding="utf-8") as f:
             src = f.read()
         assert "default=3600" in src, (
             "Expected default=3600 in _bench_run.py --frames argument"
@@ -1441,9 +1446,9 @@ class TestBenchDefaultFrames:
         import os
         bench_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "_bench_run.py",
+            "scripts", "diagnostics", "_bench_run.py",
         )
-        with open(bench_path) as f:
+        with open(bench_path, encoding="utf-8") as f:
             src = f.read()
         assert "ball_valid_live" in src, (
             "Expected ball_valid_live in _bench_run.py build_summary or evaluate_layers"
@@ -1454,9 +1459,9 @@ class TestBenchDefaultFrames:
         import os
         bench_path = os.path.join(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            "_bench_run.py",
+            "scripts", "diagnostics", "_bench_run.py",
         )
-        with open(bench_path) as f:
+        with open(bench_path, encoding="utf-8") as f:
             src = f.read()
         assert "ball_valid_dead" in src, (
             "Expected ball_valid_dead in _bench_run.py build_summary or evaluate_layers"

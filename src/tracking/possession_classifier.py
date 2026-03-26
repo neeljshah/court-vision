@@ -36,9 +36,9 @@ _PAINT_XN        = 0.15    # xn < this (or > 1 - this) = near baseline
 _PAINT_YN_LO     = 0.28    # lane lower bound (normalised y)
 _PAINT_YN_HI     = 0.72    # lane upper bound (normalised y)
 _BLOCK_XN        = 0.08    # xn this close to baseline = post/block area
-_DRIVE_VEL_PX    = 3.5     # px/frame toward basket = drive  (matches pipeline constant)
+_DRIVE_VEL_PX    = 3.0     # px/frame toward basket = drive  (matches EventDetector _DRIVE_VEL_THRESHOLD)
 _POST_VEL_MAX    = 2.0     # px/frame max to classify as post-up (backing down slowly)
-_DBL_TEAM_RAD_N  = 0.044   # normalised radius (~4 ft at 940-px map) = double-team
+_DBL_TEAM_RAD_N  = 0.12  # calibrated 2026-03-25 from 18 games — was 0.044
 _FAST_BRK_ADV    = 1       # attacker surplus in frontcourt to call fast break
 
 SHOT_CLOCK_MAX   = 24.0    # seconds
@@ -74,6 +74,12 @@ class PossessionClassifier:
         self._off_dist:    float         = 0.0
         self._prev_offball: Dict[int, Tuple[float, float]] = {}
 
+        # Shot-clock tracking (ISSUE-023)
+        self._sc_remaining:      float         = 24.0
+        self._sc_last_team:      Optional[str] = None
+        self._prev_dur_sec:      float         = 0.0
+        self._poss_is_off_rebound: bool        = False
+
     # ── public ────────────────────────────────────────────────────────────
 
     def update(
@@ -81,16 +87,20 @@ class PossessionClassifier:
         players: List[Dict],
         ball_pos: Optional[Tuple[float, float]],
         frame_num: int,
+        ocr_shot_clock: Optional[float] = None,
     ) -> Dict:
         """
         Classify possession for this frame and return metrics.
 
         Args:
-            players:   List of dicts with keys:
-                       player_id (int), x (float), y (float),
-                       speed (float, px/frame), team (str), has_ball (bool).
-            ball_pos:  (x, y) ball position in 2D court coords, or None.
-            frame_num: Current frame index.
+            players:         List of dicts with keys:
+                             player_id (int), x (float), y (float),
+                             speed (float, px/frame), team (str), has_ball (bool).
+            ball_pos:        (x, y) ball position in 2D court coords, or None.
+            frame_num:       Current frame index.
+            ocr_shot_clock:  Shot clock value read from broadcast OCR this frame,
+                             or None if unavailable. When provided and > 0, overrides
+                             the computed estimate and resyncs internal state.
 
         Returns:
             Dict with keys: possession_type (str), possession_duration_sec (float),
@@ -107,6 +117,10 @@ class PossessionClassifier:
             self._in_paint       = False
             self._off_dist       = 0.0
             self._prev_offball   = {}
+            self._prev_dur_sec   = 0.0
+            # Reset shot clock: 14s on offensive rebound, 24s otherwise
+            self._sc_remaining   = 14.0 if self._poss_is_off_rebound else 24.0
+            self._poss_is_off_rebound = False
 
         if self._poss_start is None:
             self._poss_start = frame_num
@@ -135,13 +149,21 @@ class PossessionClassifier:
                     ))
                 self._prev_offball[pid] = (float(p["x"]), float(p["y"]))
 
+        # ── Shot clock: decrement per-frame instead of resetting every call ──
+        if ocr_shot_clock is not None and ocr_shot_clock > 0:
+            # Authoritative OCR read — resync internal state
+            self._sc_remaining = float(ocr_shot_clock)
+        else:
+            frame_delta = dur_sec - self._prev_dur_sec
+            self._sc_remaining = max(0.0, min(24.0, self._sc_remaining - frame_delta))
+        self._prev_dur_sec = dur_sec
+
         poss_type = self._classify(players, ball_pos, handler)
-        sc_est    = max(0.0, SHOT_CLOCK_MAX - dur_sec)
 
         return {
             "possession_type":        poss_type,
             "possession_duration_sec": dur_sec,
-            "shot_clock_est":         round(sc_est, 1),
+            "shot_clock_est":         round(self._sc_remaining, 1),
             "paint_touches":          self._paint_n,
             "off_ball_distance":      round(self._off_dist, 1),
         }

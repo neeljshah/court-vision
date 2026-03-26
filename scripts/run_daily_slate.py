@@ -1,0 +1,460 @@
+"""
+run_daily_slate.py — End-to-end daily NBA prop prediction pipeline.
+
+Usage:
+    python scripts/run_daily_slate.py --season 2024-25 --date 2026-03-19
+
+Steps:
+1. Fetch today's games from NBA API Scoreboard (falls back to schedule files)
+2. Get active players for each team (filters dnp_prob > 0.70)
+3. Run predict_props() per player (errors caught per-player)
+4. Normalise via team total (normalise_team_totals)
+5. Score vs DraftKings lines (props_scraper)
+6. Rank by edge, apply Kelly sizing
+7. Write data/output/slate_{YYYYMMDD}.json + print ranked table
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import os
+import sys
+from datetime import date as _date
+from typing import Optional
+
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, PROJECT_DIR)
+
+logging.basicConfig(level=logging.WARNING,
+                    format="%(levelname)s %(name)s: %(message)s")
+log = logging.getLogger("run_daily_slate")
+
+_NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
+_OUTPUT_DIR = os.path.join(PROJECT_DIR, "data", "output")
+
+# ── Step 1: Fetch today's games ───────────────────────────────────────────────
+
+
+def fetch_today_games(date_str: str, season: str) -> list[dict]:
+    """
+    Returns list of {"home_team": str, "away_team": str, "game_id": str}.
+    Tries NBA API first; falls back to schedule JSON files.
+    """
+    try:
+        import time
+        try:
+            from nba_api.stats.endpoints import scoreboard as _sb_mod
+            sb = _sb_mod.Scoreboard(game_date=date_str)
+        except ImportError:
+            from nba_api.stats.endpoints import scoreboardv2 as _sb_mod
+            sb = _sb_mod.ScoreboardV2(game_date=date_str)
+        time.sleep(0.6)
+        df = sb.game_header.get_data_frame()
+        games = []
+        for _, row in df.iterrows():
+            # GAMECODE format: YYYYMMDD/AWAYABBRHOMEABBR e.g. "20260323/LALDET"
+            gamecode = str(row.get("GAMECODE", ""))
+            if "/" in gamecode:
+                teams = gamecode.split("/", 1)[1]
+                away = teams[:3]
+                home = teams[3:6]
+            else:
+                away = str(row.get("VISITOR_TEAM_ABBREVIATION", ""))
+                home = str(row.get("HOME_TEAM_ABBREVIATION", ""))
+            games.append({
+                "game_id":   str(row.get("GAME_ID", "")),
+                "home_team": home,
+                "away_team": away,
+            })
+        if games:
+            print(f"[slate] Fetched {len(games)} games from NBA API for {date_str}")
+            return games
+    except Exception as e:
+        log.warning("NBA API scoreboard failed (%s) — falling back to schedule files", e)
+
+    # Fallback: scan schedule files for today's date
+    sched_dir = os.path.join(_NBA_CACHE, "schedule")
+    games = []
+    seen = set()
+    if os.path.isdir(sched_dir):
+        for fname in os.listdir(sched_dir):
+            if not fname.endswith(".json"):
+                continue
+            try:
+                parts = fname.replace(".json", "").split("_")
+                # schedule_{TEAM}_{SEASON} or schedule_{TEAM}_{SEASON}_v2
+                if len(parts) < 3:
+                    continue
+                team = parts[1].upper()
+                with open(os.path.join(sched_dir, fname)) as f:
+                    sched = json.load(f)
+                for g in sched:
+                    raw_date = str(g.get("date", ""))[:10]
+                    if raw_date != date_str:
+                        continue
+                    home = str(g.get("home_team", g.get("matchup", "")).split()[0]).upper()
+                    away = str(g.get("away_team", "")).upper()
+                    gid  = str(g.get("game_id", ""))
+                    key  = (home, away)
+                    if home and away and key not in seen:
+                        seen.add(key)
+                        games.append({"game_id": gid, "home_team": home, "away_team": away})
+            except Exception:
+                continue
+    if games:
+        print(f"[slate] Found {len(games)} games from schedule files for {date_str}")
+    else:
+        print(f"[slate] WARNING: No games found for {date_str}")
+    return games
+
+
+# ── Step 2: Get active players ────────────────────────────────────────────────
+
+
+def get_active_players(team_abbr: str, season: str) -> list[str]:
+    """
+    Return list of player names on this team from player_avgs_{season}.json.
+    """
+    path = os.path.join(_NBA_CACHE, f"player_avgs_{season}.json")
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path) as f:
+            avgs = json.load(f)
+        players = []
+        for name, data in avgs.items():
+            if str(data.get("team", "")).upper() == team_abbr.upper():
+                players.append(name)
+        return players
+    except Exception as e:
+        log.warning("get_active_players(%s) failed: %s", team_abbr, e)
+        return []
+
+
+def _check_dnp(player_id: int, season: str) -> float:
+    """Return dnp_prob for a player; defaults to 0.05 on error."""
+    try:
+        from src.prediction.dnp_predictor import predict_dnp
+        result = predict_dnp(str(player_id), season=season)
+        return float(result.get("dnp_prob", 0.05) if isinstance(result, dict) else 0.05)
+    except Exception:
+        return 0.05
+
+
+# ── Step 3+4: Predict + Normalise ─────────────────────────────────────────────
+
+
+def run_predictions(games: list[dict], season: str) -> list[dict]:
+    """
+    Run predict_props for each active player in each game, then normalise by team total.
+    Returns flat list of prediction dicts.
+    """
+    from types import SimpleNamespace
+    from src.prediction.player_props import predict_props, _get_player_season_avgs
+    from src.prediction.team_total_normalizer import normalise_team_totals
+
+    all_preds: list[dict] = []
+
+    for game in games:
+        home = game["home_team"]
+        away = game["away_team"]
+        gid  = game.get("game_id", "")
+
+        print(f"\n[slate] {away} @ {home}  (game_id={gid})")
+
+        game_ns_list: list[SimpleNamespace] = []
+
+        for team_abbr, opp_abbr in [(home, away), (away, home)]:
+            players = get_active_players(team_abbr, season)
+            if not players:
+                log.warning("  No players found for %s", team_abbr)
+
+            for pname in players:
+                try:
+                    # Pre-check DNP
+                    _avgs = _get_player_season_avgs(pname, season)
+                    if _avgs is None:
+                        continue
+                    _pid = int(_avgs.get("player_id", 0))
+                    dnp_prob = _check_dnp(_pid, season)
+                    if dnp_prob > 0.70:
+                        continue
+
+                    props = predict_props(pname, opp_abbr, season=season)
+                    if not props:
+                        continue
+
+                    _proj_min = float(props.get("min", _avgs.get("min", 24.0)) or 24.0)
+                    ns = SimpleNamespace(
+                        player_name=pname,
+                        player_id=_pid,
+                        team=team_abbr,
+                        opp_team=opp_abbr,
+                        game_id=gid,
+                        proj_pts=float(props.get("pts", 0) or 0),
+                        proj_reb=float(props.get("reb", 0) or 0),
+                        proj_ast=float(props.get("ast", 0) or 0),
+                        proj_fg3m=float(props.get("fg3m", 0) or 0),
+                        proj_stl=float(props.get("stl", 0) or 0),
+                        proj_blk=float(props.get("blk", 0) or 0),
+                        proj_tov=float(props.get("tov", 0) or 0),
+                        proj_min=_proj_min,
+                        dnp_prob=dnp_prob,
+                        confidence=props.get("confidence", "low"),
+                    )
+                    game_ns_list.append(ns)
+                    print(f"  {pname:<25} pts={props.get('pts', 0):.1f}  "
+                          f"reb={props.get('reb', 0):.1f}  ast={props.get('ast', 0):.1f}")
+                except Exception as e:
+                    log.warning("  predict_props error for %s: %s", pname, e)
+                    continue
+
+        # Normalise by team total
+        if game_ns_list:
+            predicted_total = 220.0
+            try:
+                from src.prediction.game_models import predict as _gm
+                _gm_out = _gm(home, away, season)
+                predicted_total = float(_gm_out.get("total_est", 220.0))
+            except Exception:
+                pass
+
+            try:
+                game_ns_list = normalise_team_totals(game_ns_list, home, away, predicted_total)
+            except Exception as e:
+                log.debug("normalise_team_totals failed: %s", e)
+
+        for ns in game_ns_list:
+            all_preds.append({
+                "player":     ns.player_name,
+                "player_id":  ns.player_id,
+                "team":       ns.team,
+                "opp_team":   ns.opp_team,
+                "game_id":    ns.game_id,
+                "pts":        round(ns.proj_pts,  1),
+                "reb":        round(ns.proj_reb,  1),
+                "ast":        round(ns.proj_ast,  1),
+                "fg3m":       round(ns.proj_fg3m, 1),
+                "stl":        round(ns.proj_stl,  1),
+                "blk":        round(ns.proj_blk,  1),
+                "tov":        round(ns.proj_tov,  1),
+                "proj_pts":   round(ns.proj_pts,  1),
+                "proj_min":   round(ns.proj_min,  1),
+                "dnp_prob":   round(ns.dnp_prob,  3),
+                "confidence": ns.confidence,
+            })
+
+    return all_preds
+
+
+# ── Step 5: Score vs book lines ───────────────────────────────────────────────
+
+
+_STAT_PROP_TYPE_MAP = {
+    "pts": ["points", "pts", "player_points"],
+    "reb": ["rebounds", "reb", "player_rebounds", "total_rebounds"],
+    "ast": ["assists", "ast", "player_assists"],
+    "fg3m": ["threes", "fg3m", "three_pointers_made", "3-pointers_made"],
+    "stl": ["steals", "stl", "player_steals"],
+    "blk": ["blocks", "blk", "player_blocks"],
+    "tov": ["turnovers", "tov", "player_turnovers"],
+}
+
+
+def fetch_book_lines() -> dict:
+    """
+    Return {player_name_lower: {stat: line}} from DraftKings via props_scraper.
+    get_current_props() returns a list of dicts with player_name, prop_type, line.
+    Returns {} on failure.
+    """
+    try:
+        from src.data.props_scraper import get_current_props
+        raw = get_current_props()
+        if not raw:
+            log.warning("props_scraper returned empty — proceeding without book lines")
+            return {}
+
+        # Build reverse lookup: prop_type string → our stat key
+        _pt_to_stat: dict = {}
+        for stat, aliases in _STAT_PROP_TYPE_MAP.items():
+            for alias in aliases:
+                _pt_to_stat[alias.lower().replace(" ", "_")] = stat
+
+        index: dict = {}
+        for entry in (raw if isinstance(raw, list) else []):
+            pname = str(entry.get("player_name", "")).lower().strip()
+            ptype = str(entry.get("prop_type", "")).lower().strip().replace(" ", "_")
+            line  = entry.get("line")
+            if pname and ptype and line is not None:
+                stat = _pt_to_stat.get(ptype)
+                if stat:
+                    index.setdefault(pname, {})[stat] = float(line)
+
+        log.info("Book lines loaded for %d players", len(index))
+        return index
+    except Exception as e:
+        log.warning("props_scraper failed: %s", e)
+        return {}
+
+
+def score_vs_lines(preds: list[dict], book_lines: dict) -> list[dict]:
+    """
+    For each player×stat, compute:
+      edge_pct = model_proj - book_line  (raw difference)
+      kelly    = edge_pct / (1 + edge_pct), capped at 0.04 (4% max)
+    Adds {stat}_book_line, {stat}_edge, {stat}_kelly to each pred dict.
+    """
+    for p in preds:
+        # Try both "First Last" and "first_last" key formats
+        pname_lower = p["player"].lower().strip()
+        pname_key   = pname_lower.replace(" ", "_")
+        player_lines = (book_lines.get(pname_lower)
+                        or book_lines.get(pname_key)
+                        or {})
+
+        for stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
+            line = player_lines.get(stat)
+            proj = float(p.get(stat, p.get(f"proj_{stat}", 0)) or 0)
+
+            if line is not None:
+                line = float(line)
+                edge = proj - line
+                kelly = edge / (1.0 + edge) if edge > 0 else 0.0
+                kelly = min(kelly, 0.04)
+            else:
+                edge, kelly, line = 0.0, 0.0, None
+
+            p[f"{stat}_book_line"] = line
+            p[f"{stat}_edge"]      = round(edge, 2)
+            p[f"{stat}_kelly"]     = round(kelly, 4)
+
+    return preds
+
+
+# ── Step 6+7: Rank + Write output ─────────────────────────────────────────────
+
+
+def build_edge_rows(preds: list[dict], min_edge: float = 0.5) -> list[dict]:
+    """
+    Explode each player×stat into a row. Filter |edge| > min_edge.
+    Returns rows sorted descending by |edge|, each with:
+      player, stat, projection, book_line, edge, kelly, confidence.
+    """
+    rows = []
+    for p in preds:
+        for stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
+            proj  = float(p.get(stat, 0) or 0)
+            line  = p.get(f"{stat}_book_line")
+            edge  = p.get(f"{stat}_edge", 0.0)
+            kelly = p.get(f"{stat}_kelly", 0.0)
+            if abs(edge) > min_edge and line is not None:
+                rows.append({
+                    "player":     p["player"],
+                    "stat":       stat,
+                    "projection": round(proj, 1),
+                    "book_line":  round(float(line), 1),
+                    "edge":       round(edge, 2),
+                    "kelly":      round(kelly, 4),
+                    "confidence": p.get("confidence", "low"),
+                    "team":       p.get("team", ""),
+                    "opp_team":   p.get("opp_team", ""),
+                    "game_id":    p.get("game_id", ""),
+                    "dnp_prob":   p.get("dnp_prob", 0.0),
+                })
+    rows.sort(key=lambda r: abs(r["edge"]), reverse=True)
+    return rows
+
+
+def print_table(edge_rows: list[dict], preds: list[dict], top_n: int = 20) -> None:
+    """Print ranked table: player | stat | projection | book_line | edge | kelly | confidence."""
+    display = edge_rows[:top_n]
+
+    if not display:
+        # No edges — show top projections
+        display = [
+            {"player": p["player"], "stat": "pts",
+             "projection": float(p.get("pts", 0)),
+             "book_line": None, "edge": 0.0, "kelly": 0.0,
+             "confidence": p.get("confidence", "low")}
+            for p in sorted(preds, key=lambda x: float(x.get("pts", 0)), reverse=True)[:top_n]
+        ]
+
+    print(f"\n{'='*72}")
+    print(f"  NBA PROP EDGES  (top {top_n})")
+    print(f"{'='*72}")
+    hdr = f"  {'#':>2}  {'Player':<24} {'Stat':<6} {'Proj':>6} {'Line':>6} {'Edge':>7} {'Kelly':>7} {'Conf':<8}"
+    print(hdr)
+    print(f"  {'-'*68}")
+    for i, r in enumerate(display, 1):
+        line_s = f"{r['book_line']:>6.1f}" if r["book_line"] is not None else "   N/A"
+        edge_s = f"{r['edge']:>+7.2f}"
+        print(f"  {i:>2}  {r['player']:<24} {r['stat']:<6} "
+              f"{r['projection']:>6.1f} {line_s} {edge_s} "
+              f"{r['kelly']:>7.4f} {r.get('confidence',''):<8}")
+    print(f"{'='*72}\n")
+
+
+def write_output(preds: list[dict], edge_rows: list[dict], date_str: str) -> str:
+    """Write full slate JSON to data/output/slate_{YYYYMMDD}.json."""
+    import datetime as _datetime
+    os.makedirs(_OUTPUT_DIR, exist_ok=True)
+    date_compact = date_str.replace("-", "")
+    out_path = os.path.join(_OUTPUT_DIR, f"slate_{date_compact}.json")
+    payload = {
+        "date":          date_str,
+        "generated_at":  _datetime.datetime.utcnow().isoformat() + "Z",
+        "top_edges":     edge_rows,
+        "all_predictions": preds,
+    }
+    with open(out_path, "w") as f:
+        json.dump(payload, f, indent=2)
+    print(f"[slate] Output → {out_path}  ({len(preds)} players, {len(edge_rows)} edges)")
+    return out_path
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+
+def main(season: str, date_str: str) -> None:
+    print(f"\n{'='*60}")
+    print(f"  NBA Daily Slate — {date_str}  (season {season})")
+    print(f"{'='*60}")
+
+    # 1. Fetch games
+    games = fetch_today_games(date_str, season)
+    if not games:
+        print("[slate] No games today — writing empty output.")
+        write_output([], [], date_str)
+        return
+
+    # 2+3+4. Predict + normalise
+    preds = run_predictions(games, season)
+    if not preds:
+        print("[slate] No predictions generated.")
+        write_output([], [], date_str)
+        return
+
+    # 5. Fetch book lines + score all stats
+    book_lines = fetch_book_lines()
+    if not book_lines:
+        print("[slate] No book lines available — showing projections only.")
+    score_vs_lines(preds, book_lines)
+
+    # 6. Build edge rows (all stats, |edge| > 0.5)
+    edge_rows = build_edge_rows(preds, min_edge=0.5)
+
+    # 7. Print ranked table + write output
+    print_table(edge_rows, preds, top_n=20)
+    write_output(preds, edge_rows, date_str)
+
+    print(f"[slate] Done — {len(preds)} players, {len(edge_rows)} edges surfaced.")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="NBA Daily Prop Prediction Pipeline")
+    parser.add_argument("--season", default="2024-25", help="NBA season (e.g. 2024-25)")
+    parser.add_argument("--date",   default=str(_date.today()), help="Date YYYY-MM-DD")
+    args = parser.parse_args()
+    main(season=args.season, date_str=args.date)

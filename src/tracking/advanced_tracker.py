@@ -78,8 +78,9 @@ APPEAR_ALPHA    = 0.7    # EMA weight for appearance update (higher = more stabl
 MAX_2D_JUMP     = 250    # max court pixels a player can move between frames (~2× court width/sec at 30fps)
 
 # ── ByteTrack constants ───────────────────────────────────────────────────────
-BT_HIGH_THRESH    = 0.50   # Stage-1: high-confidence detections matched with IoU+appearance
-BT_SECOND_IOUGATE = 0.50   # Stage-2: minimum IoU required for low-conf "byte" match
+BT_HIGH_THRESH    = 0.35   # Stage-1: align with _conf_threshold so broadcast dets use IoU+appearance
+BT_SECOND_IOUGATE = 0.30   # Stage-2: lower gate for occluded players (smaller bbox → lower IoU)
+BT_STAGE2_PROX_PX = 80.0  # Stage-2 proximity fallback: pixel radius when IoU=0 but position matches
 
 # ── Optical flow constants ────────────────────────────────────────────────────
 OF_WIN_SIZE  = (15, 15)   # Lucas-Kanade search window
@@ -248,6 +249,26 @@ class AdvancedFeetDetector(FeetDetector):
         if _cfg.get("broadcast_mode", True):
             self._conf_threshold = 0.35
 
+        # YOLO model + image size — configurable for post-game high-quality runs
+        _yolo_stem = _cfg.get("yolo_model", "yolov8n")
+        self._yolo_imgsz: int = int(_cfg.get("yolo_imgsz", 640))
+        if _yolo_stem != "yolov8n":
+            try:
+                from ultralytics import YOLO as _YOLO
+                from .player_detection import _best_yolo_model
+                self.model = _YOLO(_best_yolo_model(_yolo_stem))
+                self.model(
+                    __import__("numpy").zeros((self._yolo_imgsz, self._yolo_imgsz, 3),
+                                             dtype=__import__("numpy").uint8),
+                    verbose=False, half=self._use_half,
+                )
+            except Exception:
+                pass  # fall back to yolov8n loaded by FeetDetector.__init__
+
+        self._fill_conf_threshold = 0.22  # lower threshold for
+        # slots that have active Kalman predictions — catches
+        # partially-occluded players YOLO would otherwise discard
+
         n = len(players)
         self._kalmans:      Dict[int, cv2.KalmanFilter] = {}
         self._appearances:  Dict[int, np.ndarray]       = {}
@@ -271,8 +292,19 @@ class AdvancedFeetDetector(FeetDetector):
         self._warmup_colors: List[np.ndarray] = []   # dominant HSV samples
         self._team_centroids: Optional[List[np.ndarray]] = None  # [centroid_A, centroid_B]
         self._warmup_needed = 30   # detections before first calibration
-        self._recalib_interval = 150  # frames between re-calibrations
+        self._recalib_interval = 300  # frames between periodic re-calibrations (raised 150→300)
         self._frames_since_calib = 0
+        # Rolling HSV buffer for periodic re-calibration (replaces warmup_colors after warmup).
+        # Uses the most recent 300 frames of detection HSV rather than an ever-growing pool.
+        from collections import deque as _deque
+        self._rolling_hsv_buf: "_deque[np.ndarray]" = _deque(maxlen=300)
+        # Per-slot confidence-based sample pool for the initial calibration window.
+        # Only detections within the first _WARMUP_FRAME_LIMIT source frames are used;
+        # up to _WARMUP_TOP_K highest-confidence crops per slot are kept so similar-
+        # colored uniforms (e.g. OKC blue vs DAL navy) get representative coverage.
+        self._warmup_per_slot: Dict[int, List] = {}   # slot → [(conf, hsv_mean), ...]
+        self._warmup_frame_limit = 300  # stop per-slot confidence sampling after this frame
+        self._warmup_top_k      = 10   # keep top-K crops per slot by YOLO confidence
 
         # ── Pose estimation (ankle keypoints) ─────────────────────────────
         # Replace bbox_bottom heuristic with YOLOv8-pose ankle keypoints.
@@ -350,7 +382,7 @@ class AdvancedFeetDetector(FeetDetector):
         else:
             self._appearances[slot] = emb
 
-    def _activate_slot(self, slot: int, det: dict, timestamp: int):
+    def _activate_slot(self, slot: int, det: dict, timestamp: int, stride: int = 1):
         """
         Assign a detection to a player slot and update all state.
 
@@ -375,7 +407,7 @@ class AdvancedFeetDetector(FeetDetector):
         if p.positions:
             last_pos = p.positions[max(p.positions)]
             dist = float(np.hypot(new_pos[0] - last_pos[0], new_pos[1] - last_pos[1]))
-            if dist > MAX_2D_JUMP:
+            if dist > MAX_2D_JUMP * max(1, stride):
                 new_pos = last_pos
                 self._freeze_age[slot] = self._freeze_age.get(slot, 0) + 1
             else:
@@ -415,16 +447,45 @@ class AdvancedFeetDetector(FeetDetector):
 
     # ── dynamic team color calibration ───────────────────────────────────
 
-    def _calibrate_team_colors(self) -> None:
-        """K-means k=2 on warmup_colors to find two team centroids."""
+    def _calibrate_team_colors(self, min_cluster_size: int = 5) -> None:
+        """K-means k=2 on warmup_colors to find two team centroids.
+
+        Uses a numpy-only implementation to avoid sklearn/threadpoolctl
+        Windows DLL errors.  Initialized with the two samples furthest apart
+        by hue, giving stable clusters for any pair of jersey colors.
+
+        Args:
+            min_cluster_size: Reject result if either cluster has fewer than this
+                              many samples.  Default 5 (warmup pass); periodic
+                              rolling-buf recalibration uses 20 (tighter gate).
+        """
         if len(self._warmup_colors) < 10:
             return
         try:
-            from sklearn.cluster import KMeans
             samples = np.array(self._warmup_colors, dtype=np.float32)
-            km = KMeans(n_clusters=2, n_init=5, max_iter=50, random_state=0)
-            km.fit(samples)
-            self._team_centroids = list(km.cluster_centers_)
+            # Init: pick the two samples with max hue separation
+            hues = samples[:, 0]
+            i0 = int(np.argmin(hues))
+            i1 = int(np.argmax(hues))
+            c0, c1 = samples[i0].copy(), samples[i1].copy()
+            for _ in range(30):
+                # Circular hue distance
+                d0 = np.minimum(np.abs(samples[:,0]-c0[0]), 180.-np.abs(samples[:,0]-c0[0]))
+                d1 = np.minimum(np.abs(samples[:,0]-c1[0]), 180.-np.abs(samples[:,0]-c1[0]))
+                labels = (d1 < d0).astype(np.int32)
+                new_c0 = samples[labels==0].mean(axis=0) if (labels==0).any() else c0
+                new_c1 = samples[labels==1].mean(axis=0) if (labels==1).any() else c1
+                if np.allclose(new_c0, c0, atol=0.5) and np.allclose(new_c1, c1, atol=0.5):
+                    break
+                c0, c1 = new_c0, new_c1
+            # Reject clusters below the minimum size gate — k-means didn't find two
+            # distinct jersey colors; keep existing centroids (don't clear to None).
+            n0 = int((labels == 0).sum())
+            n1 = int((labels == 1).sum())
+            if n0 < min_cluster_size or n1 < min_cluster_size:
+                self._team_centroids = None
+                return
+            self._team_centroids = [c0, c1]
         except Exception:
             self._team_centroids = None
 
@@ -661,7 +722,7 @@ class AdvancedFeetDetector(FeetDetector):
                     matched_slot_idx.add(ri)
                     matched_det_set.add(high_dets[ci])
 
-        # ── Stage 2: low-conf dets vs unmatched tracks (IoU only) ─────────
+        # ── Stage 2: low-conf dets vs unmatched tracks (IoU + proximity) ─
         if low_dets:
             remaining_slots = [slots[ri] for ri in range(len(slots))
                                if ri not in matched_slot_idx]
@@ -674,6 +735,16 @@ class AdvancedFeetDetector(FeetDetector):
                     for ci, di in enumerate(low_dets):
                         det_bbox = detections[di]["bbox"]
                         iou_val  = _iou(pred, det_bbox) if pred is not None else 0.0
+                        # Proximity fallback for partially-occluded players whose
+                        # shrunken bbox has near-zero IoU with the full-body prediction.
+                        # Only fires when IoU=0 AND slot has an active Kalman prediction.
+                        if iou_val == 0.0 and pred is not None:
+                            py1, px1, py2, px2 = pred
+                            dy1, dx1, dy2, dx2 = det_bbox
+                            dist = ((px1 + px2) / 2 - (dx1 + dx2) / 2) ** 2 + \
+                                   ((py1 + py2) / 2 - (dy1 + dy2) / 2) ** 2
+                            prox = max(0.0, 1.0 - dist ** 0.5 / BT_STAGE2_PROX_PX)
+                            iou_val = prox * 0.5  # contributes up to 0.5 IoU-equivalent
                         cost2[ri, ci] = 1.0 - iou_val
 
                 for ri, ci in _assign(cost2):
@@ -761,7 +832,8 @@ class AdvancedFeetDetector(FeetDetector):
 
     def get_players_pos(self, M, M1, frame, timestamp, map_2d,
                         skip_jersey_ocr: bool = False,
-                        suspended: bool = False):
+                        suspended: bool = False,
+                        stride: int = 1):
         """Track players in one frame and return annotated frame + map images.
 
         Args:
@@ -801,13 +873,13 @@ class AdvancedFeetDetector(FeetDetector):
 
         if _run_pose:
             yolo_results = self._pose_model(
-                frame, classes=[0], conf=self._conf_threshold,
-                verbose=False, imgsz=480, half=self._use_half
+                frame, classes=[0], conf=self._fill_conf_threshold,
+                verbose=False, imgsz=self._yolo_imgsz, half=self._use_half
             )
         else:
             yolo_results = self.model(
-                frame, classes=[0], conf=self._conf_threshold,
-                verbose=False, imgsz=480, half=self._use_half
+                frame, classes=[0], conf=self._fill_conf_threshold,
+                verbose=False, imgsz=self._yolo_imgsz, half=self._use_half
             )
         boxes_xyxy   = (yolo_results[0].boxes.xyxy.cpu().numpy()
                         if yolo_results[0].boxes is not None else [])
@@ -831,9 +903,54 @@ class AdvancedFeetDetector(FeetDetector):
 
         if len(boxes_xyxy) == 0:
             self._age_all(timestamp)
-            # Update optical flow state for next frame even on empty detections
-            self._prev_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            self._flow_pts  = {}
+            gray_now = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            # Run optical flow gap-fill even on fully-empty frames (YOLO blackout).
+            # Broadcast footage has frequent YOLO misses; skipping flow here causes
+            # the same positional gaps as the YOLO miss itself.
+            if self._prev_gray is not None and self._flow_pts:
+                _of_candidates = [
+                    (self._slot(p), p, self._flow_pts[self._slot(p)])
+                    for p in self.players
+                    if (0 < self._lost_ages.get(self._slot(p), 0) <= OF_MAX_AGE
+                        and self._slot(p) in self._flow_pts
+                        and p.previous_bb is not None
+                        and timestamp not in p.positions)
+                ]
+                if _of_candidates:
+                    _prev_batch = np.array(
+                        [c[2][0] for c in _of_candidates], dtype=np.float32
+                    ).reshape(-1, 1, 2)
+                    try:
+                        _new_batch, _statuses, _ = cv2.calcOpticalFlowPyrLK(
+                            self._prev_gray, gray_now, _prev_batch, None,
+                            winSize=OF_WIN_SIZE, maxLevel=OF_MAX_LEVEL,
+                            criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+                                      10, 0.03),
+                        )
+                        for (_slot, _p, _), _new_pt, _st in zip(
+                            _of_candidates, _new_batch, _statuses
+                        ):
+                            if _st[0] != 1:
+                                continue
+                            _fx, _fy = int(_new_pt[0, 0]), int(_new_pt[0, 1])
+                            if not (0 <= _fx < frame.shape[1]
+                                    and 0 <= _fy < frame.shape[0]):
+                                continue
+                            _kpt  = np.array([_fx, _fy, 1], dtype=np.float64)
+                            _homo = M1 @ (M @ _kpt.reshape(3, 1))
+                            if abs(_homo[2, 0]) > 1e-6:
+                                _homo = np.int32(_homo / _homo[2, 0]).ravel()
+                                if (0 <= _homo[0] < map_2d.shape[1]
+                                        and 0 <= _homo[1] < map_2d.shape[0]):
+                                    _p.positions[timestamp] = (_homo[0], _homo[1])
+                                    self._flow_pts[_slot] = _new_pt
+                    except Exception:
+                        pass
+            self._prev_gray = gray_now
+            self._flow_pts = {
+                s: pts for s, pts in self._flow_pts.items()
+                if self._lost_ages.get(s, 0) <= OF_MAX_AGE
+            }
             return self._render(frame, map_2d, timestamp)
 
         # ── Step 3: Build detection list (bbox, team, crop, court pos) ────
@@ -863,19 +980,51 @@ class AdvancedFeetDetector(FeetDetector):
             if not team:
                 continue
 
+            # Early score extraction so it's available for warmup filtering below.
+            _early_score = float(scores_conf[box_i]) if box_i < len(scores_conf) else 1.0
+
             # Dynamic re-classification: when both teams wear colored jerseys,
             # HSV masks both as 'green'.  Use K-means centroids to separate them.
             if team not in ("referee",):
-                # Accumulate warm-up samples from non-referee detections.
-                # Use mean HSV (not KMeans) — fast, good enough for calibration.
-                if len(self._warmup_colors) < self._warmup_needed * 3:
+                # Per-slot confidence-based warmup (first _warmup_frame_limit frames).
+                # Keeps top-_warmup_top_k highest-confidence crops per detection slot
+                # so similar-colored uniforms (e.g. OKC blue vs DAL navy) are correctly
+                # separated — low-conf noisy crops that blur the centroids are excluded.
+                if timestamp < self._warmup_frame_limit:
+                    if _early_score >= self._conf_threshold:
+                        h_c = max(1, int(bgr_crop.shape[0] * 0.65))
+                        roi_hsv = cv2.cvtColor(bgr_crop[:h_c], cv2.COLOR_BGR2HSV)
+                        hsv_mean = roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
+                        slot_samples = self._warmup_per_slot.setdefault(box_i, [])
+                        slot_samples.append((_early_score, hsv_mean))
+                        slot_samples.sort(key=lambda x: -x[0])
+                        del slot_samples[self._warmup_top_k:]
+                        # Rebuild flat warmup_colors from all per-slot top-K samples
+                        self._warmup_colors = [
+                            hsv for samples in self._warmup_per_slot.values()
+                            for _, hsv in samples
+                        ]
+                        if len(self._warmup_colors) >= self._warmup_needed:
+                            self._calibrate_team_colors()
+                        # Feed rolling buf for post-warmup periodic re-calibration
+                        self._rolling_hsv_buf.append(hsv_mean)
+                elif len(self._warmup_colors) < self._warmup_needed * 3:
+                    # Fallback: after warmup window, still collect low-conf samples
+                    # (maintains backward-compat for clips with no high-conf phase)
                     h_c = max(1, int(bgr_crop.shape[0] * 0.65))
                     roi_hsv = cv2.cvtColor(bgr_crop[:h_c], cv2.COLOR_BGR2HSV)
-                    self._warmup_colors.append(
-                        roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
-                    )
+                    hsv_mean_fb = roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
+                    self._warmup_colors.append(hsv_mean_fb)
+                    self._rolling_hsv_buf.append(hsv_mean_fb)
                     if len(self._warmup_colors) == self._warmup_needed:
                         self._calibrate_team_colors()
+                else:
+                    # Post-warmup: still feed the rolling buf for periodic re-calibration
+                    h_c = max(1, int(bgr_crop.shape[0] * 0.65))
+                    roi_hsv = cv2.cvtColor(bgr_crop[:h_c], cv2.COLOR_BGR2HSV)
+                    self._rolling_hsv_buf.append(
+                        roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
+                    )
                 team = self._classify_team_dynamic(bgr_crop, team)
 
             # ── Foot position: ankle keypoints (pose) or bbox_bottom ──────
@@ -907,6 +1056,7 @@ class AdvancedFeetDetector(FeetDetector):
 
             det_crop = bgr_crop if bgr_crop.size > 0 else None
             score    = float(scores_conf[box_i]) if box_i < len(scores_conf) else 1.0
+            high_conf = score >= self._conf_threshold
             # Store full keypoints per detection for downstream pose extraction
             det_kpts_xy   = (_kpts_xy[box_i]
                              if _kpts_xy is not None and box_i < len(_kpts_xy)
@@ -921,6 +1071,7 @@ class AdvancedFeetDetector(FeetDetector):
                 "color":     color_bgr,
                 "crop_bgr":  det_crop,
                 "score":     score,
+                "high_conf": high_conf,          # True if conf >= _conf_threshold
                 "foot_xy":   (head_x, foot_y),  # pixel foot position for optical flow
                 "kpts_xy":   det_kpts_xy,        # (17,2) COCO keypoints or None
                 "kpts_conf": det_kpts_conf,       # (17,) per-kpt confidence or None
@@ -990,7 +1141,7 @@ class AdvancedFeetDetector(FeetDetector):
                 )
 
             for slot, di in matched:
-                self._activate_slot(slot, detections[di], timestamp)
+                self._activate_slot(slot, detections[di], timestamp, stride)
 
             for slot in unmatched_slots:
                 self._lost_ages[slot] = self._lost_ages.get(slot, 0) + 1
@@ -1033,7 +1184,7 @@ class AdvancedFeetDetector(FeetDetector):
         for di in all_unmatched_dets:
             slot = self._reid(detections[di])
             if slot is not None:
-                self._activate_slot(slot, detections[di], timestamp)
+                self._activate_slot(slot, detections[di], timestamp, stride)
             else:
                 truly_new.append(di)
 
@@ -1042,7 +1193,7 @@ class AdvancedFeetDetector(FeetDetector):
             det  = detections[di]
             for p in self.players:
                 if p.team == det["team"] and p.previous_bb is None:
-                    self._activate_slot(self._slot(p), det, timestamp)
+                    self._activate_slot(self._slot(p), det, timestamp, stride)
                     break
 
         # ── Step 6.5: Evict tracks frozen in place (velocity clamp stuck) ──
@@ -1092,46 +1243,50 @@ class AdvancedFeetDetector(FeetDetector):
                     except Exception:
                         pass
 
-        # ── Step 7.5: Optical flow gap-fill ───────────────────────────────
-        # For players missed by YOLO (lost_age 1..OF_MAX_AGE), propagate their
-        # last known pixel position using Lucas-Kanade optical flow.  This gives
-        # smoother court-position estimates than pure Kalman prediction,
-        # especially when a player is partially occluded.
+        # ── Step 7.5: Optical flow gap-fill (batched) ────────────────────
+        # Batch all lost-track flow points into a single calcOpticalFlowPyrLK
+        # call — avoids per-player Python overhead on frames with multiple misses.
         gray_now = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if self._prev_gray is not None:
-            for p in self.players:
-                slot     = self._slot(p)
-                lost_age = self._lost_ages.get(slot, 0)
-                if (0 < lost_age <= OF_MAX_AGE
-                        and slot in self._flow_pts
-                        and p.previous_bb is not None
-                        and timestamp not in p.positions):
-                    prev_pt = self._flow_pts[slot]  # shape (1, 2) float32
-                    try:
-                        new_pt, status, _ = cv2.calcOpticalFlowPyrLK(
-                            self._prev_gray, gray_now, prev_pt, None,
-                            winSize=OF_WIN_SIZE,
-                            maxLevel=OF_MAX_LEVEL,
-                            criteria=(
-                                cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
-                                10, 0.03,
-                            ),
-                        )
-                        if status is not None and status[0, 0] == 1:
-                            fx, fy = int(new_pt[0, 0]), int(new_pt[0, 1])
-                            if (0 <= fx < frame.shape[1]
-                                    and 0 <= fy < frame.shape[0]):
-                                kpt  = np.array([fx, fy, 1], dtype=np.float64)
-                                homo = M1 @ (M @ kpt.reshape(3, 1))
-                                if abs(homo[2, 0]) > 1e-6:
-                                    homo = np.int32(homo / homo[2, 0]).ravel()
-                                    if (0 <= homo[0] < map_2d.shape[1]
-                                            and 0 <= homo[1] < map_2d.shape[0]):
-                                        p.positions[timestamp] = (homo[0], homo[1])
-                                        # Advance flow anchor for next frame
-                                        self._flow_pts[slot] = new_pt
-                    except Exception:
-                        pass
+            of_candidates = [
+                (self._slot(p), p, self._flow_pts[self._slot(p)])
+                for p in self.players
+                if (0 < self._lost_ages.get(self._slot(p), 0) <= OF_MAX_AGE
+                    and self._slot(p) in self._flow_pts
+                    and p.previous_bb is not None
+                    and timestamp not in p.positions)
+            ]
+            if of_candidates:
+                prev_pts_batch = np.array(
+                    [c[2][0] for c in of_candidates], dtype=np.float32
+                ).reshape(-1, 1, 2)
+                try:
+                    new_pts_batch, statuses, _ = cv2.calcOpticalFlowPyrLK(
+                        self._prev_gray, gray_now, prev_pts_batch, None,
+                        winSize=OF_WIN_SIZE,
+                        maxLevel=OF_MAX_LEVEL,
+                        criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+                                  10, 0.03),
+                    )
+                    for (slot, p, _), new_pt, status in zip(
+                        of_candidates, new_pts_batch, statuses
+                    ):
+                        if status[0] != 1:
+                            continue
+                        fx, fy = int(new_pt[0, 0]), int(new_pt[0, 1])
+                        if not (0 <= fx < frame.shape[1]
+                                and 0 <= fy < frame.shape[0]):
+                            continue
+                        kpt  = np.array([fx, fy, 1], dtype=np.float64)
+                        homo = M1 @ (M @ kpt.reshape(3, 1))
+                        if abs(homo[2, 0]) > 1e-6:
+                            homo = np.int32(homo / homo[2, 0]).ravel()
+                            if (0 <= homo[0] < map_2d.shape[1]
+                                    and 0 <= homo[1] < map_2d.shape[0]):
+                                p.positions[timestamp] = (homo[0], homo[1])
+                                self._flow_pts[slot] = new_pt  # advance anchor
+                except Exception:
+                    pass
         self._prev_gray = gray_now
 
         # ── Step 8: Same-team duplicate suppression ───────────────────────
@@ -1166,16 +1321,21 @@ class AdvancedFeetDetector(FeetDetector):
                         else:
                             del pj.positions[timestamp]
 
-        # Periodic re-calibration to adapt to changing camera angles.
-        # Skip during halftime/timeouts (suspended=True) so studio footage
-        # (announcers, replays, celebrity intros) doesn't corrupt the learned
-        # team-color centroids with non-player detections.
+        # Periodic re-calibration using a rolling window of the most recent
+        # _rolling_hsv_buf detections rather than the ever-growing warmup buffer.
+        # This lets the centroids adapt when teams change jerseys (home/away) or
+        # lighting conditions shift mid-game, while the tighter 20-sample gate
+        # prevents noisy re-calibration on sparse detection frames.
+        # Skip during halftime/timeouts (suspended=True) to avoid studio footage.
         self._frames_since_calib += 1
         if (not suspended
                 and self._frames_since_calib >= self._recalib_interval
-                and len(self._warmup_colors) >= 10):
-            self._calibrate_team_colors()
-            self._warmup_colors = []   # reset sample buffer
+                and len(self._rolling_hsv_buf) >= 50):
+            # Swap warmup_colors to rolling window for this recalibration pass
+            _saved = self._warmup_colors
+            self._warmup_colors = list(self._rolling_hsv_buf)
+            self._calibrate_team_colors(min_cluster_size=20)  # tighter gate than warmup's 5
+            self._warmup_colors = _saved
             self._frames_since_calib = 0
 
         # ── Pose field extraction and player attribute update ──────────────

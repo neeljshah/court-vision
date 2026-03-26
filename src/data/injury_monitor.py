@@ -160,6 +160,11 @@ def get_all_injuries() -> list:
     return data.get("injuries", [])
 
 
+def get_injury_report() -> list:
+    """Alias for get_all_injuries() for API router compatibility."""
+    return get_all_injuries()
+
+
 def get_injury_status(player_name: str) -> dict:
     """
     Look up injury status for a player by name (fuzzy, accent-insensitive).

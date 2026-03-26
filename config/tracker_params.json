@@ -2,9 +2,23 @@
   "conf_threshold": 0.3,
   "topcut": 60,
   "appearance_w": 0.4,
-  "max_lost_frames": 90,
-  "min_gameplay_persons": 5,
+  "max_lost_frames": 15,
+  "min_gameplay_persons": 3,
   "reid_threshold": 0.35,
   "gallery_ttl": 300,
-  "kalman_fill_window": 7
+  "kalman_fill_window": 7,
+
+  "broadcast_mode": true,
+
+  "yolo_model": "yolov8n",
+  "yolo_imgsz": 640,
+
+  "osnet_weights_path": "",
+
+  "_post_game_overrides": {
+    "_comment": "Apply these by running with --post-game flag or setting manually.",
+    "yolo_model": "yolov8x",
+    "yolo_imgsz": 1280,
+    "conf_threshold": 0.25
+  }
 }

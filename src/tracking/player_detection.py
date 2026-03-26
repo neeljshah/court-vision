@@ -47,16 +47,46 @@ def hsv2bgr(color_hsv):
     return (int(color_bgr[0]), int(color_bgr[1]), int(color_bgr[2]))
 
 
+def _best_yolo_model(stem: str = "yolov8n") -> str:
+    """Return fastest available model: .engine (TensorRT) > .pt (PyTorch CUDA).
+
+    .onnx is intentionally excluded — onnxruntime-gpu requires cuDNN 9 + CUDA 12
+    while this project targets CUDA 11.8 + cuDNN 8.9.  Run export_tensorrt.py
+    after installing tensorrt to unlock the .engine path.
+    """
+    import os
+    _resources = os.path.join(os.path.dirname(__file__), "..", "..", "resources")
+    engine = os.path.normpath(os.path.join(_resources, f"{stem}.engine"))
+    if os.path.exists(engine):
+        try:
+            import tensorrt  # noqa: F401
+            return engine
+        except (ImportError, FileNotFoundError, OSError):
+            pass  # TRT not installed or DLLs missing — fall through to .pt
+    return f"{stem}.pt"  # ultralytics auto-downloads
+
+
 class FeetDetector:
 
     def __init__(self, players):
         from ultralytics import YOLO
         import torch
-        self.model = YOLO("yolov8n.pt")
         self._use_half = torch.cuda.is_available()
         self.players = players
-        # Warmup — eliminates JIT/CUDA init latency on first real frame
-        self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False, half=self._use_half)
+        weight = _best_yolo_model("yolov8n")
+        try:
+            self.model = YOLO(weight)
+            # Warmup — eliminates JIT/CUDA init latency on first real frame
+            self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False, half=self._use_half)
+        except Exception as _e:
+            # TRT engine load failed (e.g. nvinfer DLL not on PATH) — fall back to .pt
+            if weight.endswith(".engine"):
+                import warnings
+                warnings.warn(f"TRT engine load failed ({_e}); falling back to yolov8n.pt")
+                self.model = YOLO("yolov8n.pt")
+                self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False, half=self._use_half)
+            else:
+                raise
 
     @staticmethod
     def count_non_black(image):
