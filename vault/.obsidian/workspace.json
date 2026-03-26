@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Concepts/Prediction Pipeline.md",
+                "file": "Project Vision.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Prediction Pipeline"
+              "title": "Project Vision"
             }
           }
         ]
@@ -182,30 +182,41 @@
   },
   "active": "83f430a9b9dc0808",
   "lastOpenFiles": [
-    "Concepts/Key Metrics.md",
+    "Improvements/Tracker Improvements Log.md.tmp.17492.1774488700811",
+    "Roadmap.md",
+    "Project Vision.md",
+    "Sessions/Session-2026-03-25.md.tmp.18804.1774475261624",
+    "Pipeline/System Architecture.md",
+    "Concepts/Prediction Pipeline.md",
     "Concepts/Complete Model Catalog.md",
     "Concepts/Complete Data Sources.md",
-    "Sessions/Session-2026-03-18.md",
+    "Concepts/Basketball CV Concepts.md",
+    "01 - System Architecture.md",
     "00 - Home.md",
+    "Improvements/Tracker Improvements Log.md.tmp.24156.1774472933649",
+    "03 - Data Sources.md",
+    "Master Build Plan.md",
+    "Improvements/Tracker Improvements Log.md",
+    "04 - Pipeline Flow.md",
+    "05 - Ideas and Future Work.md",
+    "02 - Model Catalog.md",
+    "Improvements/Tracker Improvements Log.md.tmp.56404.1774386003132",
+    "Validation/prop_holdout_report.md",
+    "Validation",
+    "Concepts/Key Metrics.md",
+    "Sessions/Session-2026-03-24.md",
+    "prompts/wire_existing_models_into_props.md",
+    "Sessions/full_game_2026-03-23_1445.md",
+    "Sessions/full_game_2026-03-23_1308.md",
+    "Sessions/Session-2026-03-11.md",
+    "Sessions/Session-2026-03-18.md",
     "Sessions/Session-2026-03-15.md",
-    "Roadmap.md",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773616952632",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773616395598",
     "Improvements/Tracker Improvements Log.md.tmp.55244.1773614684639",
     "Improvements/Tracker Improvements Log.md.tmp.55244.1773614524755",
     "Improvements/Tracker Improvements Log.md.tmp.71076.1773614326125",
     "Improvements/Tracker Improvements Log.md.tmp.55244.1773614200416",
-    "Improvements/Tracker Improvements Log.md.tmp.71076.1773613580383",
-    "Improvements/Tracker Improvements Log.md.tmp.55244.1773613492882",
-    "Improvements/Tracker Improvements Log.md.tmp.71076.1773612747250",
-    "Improvements/Tracker Improvements Log.md.tmp.71076.1773612236669",
-    "Project Vision.md",
-    "Sessions/Session-2026-03-10.md",
-    "Pipeline/System Architecture.md",
-    "Improvements/Tracker Improvements Log.md",
-    "Concepts/Basketball CV Concepts.md",
-    "Sessions/Session-2026-03-12.md",
-    "Sessions/Session-2026-03-11.md",
-    "Sessions/Session Template.md"
+    "Sessions/Session-2026-03-10.md"
   ]
 }

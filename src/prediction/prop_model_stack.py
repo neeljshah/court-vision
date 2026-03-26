@@ -78,6 +78,33 @@ def _load_motivation_flags(player_id: str) -> Dict[str, bool]:
                     break
         except Exception:
             pass
+
+    # Resolve player name for name-based predictors
+    player_name: str = ""
+    try:
+        from src.pipeline.feature_assembler import _resolve_player_name
+        player_name = _resolve_player_name(int(player_id)) or ""
+    except Exception:
+        pass
+
+    # Load management — flag if load_prob > 0.30
+    if player_name:
+        try:
+            from src.prediction.load_management import predict_load_management
+            lm = predict_load_management(player_name)
+            flags["load_management"] = float(lm.get("load_prob", 0.0)) > 0.30
+        except Exception:
+            pass
+
+    # Breakout predictor — flag if breakout_score > 0.60
+    if player_name:
+        try:
+            from src.prediction.breakout_predictor import predict_breakout
+            bo = predict_breakout(player_name)
+            flags["breakout"] = float(bo.get("breakout_score", 0.0)) > 0.60
+        except Exception:
+            pass
+
     return flags
 
 

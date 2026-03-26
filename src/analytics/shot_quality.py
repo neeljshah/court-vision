@@ -229,5 +229,36 @@ def _write_heatmap(shots: pd.DataFrame, output_dir: str) -> None:
     print(f"Shot heatmap  → {path}")
 
 
+def get_shot_quality_metrics(player_id: str, season: str = "2024-25") -> dict:
+    """Return shot quality summary for a player from cached shot data.
+
+    Args:
+        player_id: NBA player ID string.
+        season:    Season string e.g. "2024-25".
+
+    Returns:
+        Dict with avg_shot_quality, shot_count, zone_breakdown, or {} on failure.
+    """
+    try:
+        import os, json
+        path = os.path.join(
+            os.path.dirname(__file__), "..", "..", "data", "nba",
+            f"shot_zone_tendency.json",
+        )
+        if not os.path.exists(path):
+            return {}
+        with open(path, encoding="utf-8") as f:
+            tendency = json.load(f)
+        player_data = tendency.get(str(player_id), {})
+        return {
+            "player_id":        player_id,
+            "season":           season,
+            "zone_tendency":    player_data,
+            "found":            bool(player_data),
+        }
+    except Exception:
+        return {}
+
+
 if __name__ == "__main__":
     run()

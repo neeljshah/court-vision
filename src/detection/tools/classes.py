@@ -1,6 +1,1 @@
-class_names = ['', 
-               'ball', 
-               'made', 
-               'person', 
-               'rim', 
-               'shoot']
+class_names = ["ball", "made", "person", "rim", "shoot"]

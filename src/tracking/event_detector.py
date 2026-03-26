@@ -44,6 +44,9 @@ class EventDetector:
         Args:
             map_w: width of the 2D court map in pixels
             map_h: height of the 2D court map in pixels
+
+        Call configure(fps, stride) after construction (from UnifiedPipeline.run())
+        to set fps-correct thresholds.  Defaults assume 60 fps, stride=1.
         """
         self.map_w = map_w
         self.map_h = map_h
@@ -53,6 +56,10 @@ class EventDetector:
             (int(0.935 * map_w), int(0.5 * map_h)),
         ]
 
+        # fps / stride — set via configure(); defaults match original 60fps design
+        self._fps:    float = 60.0
+        self._stride: int   = 1
+
         self._prev_ball:        Optional[Tuple[float, float]] = None
         self._ball_vel:         float = 0.0
         self._pixel_vel_used:   bool  = False
@@ -60,7 +67,13 @@ class EventDetector:
         self._last_ball_y_pixel: Optional[float] = None   # raw image-space y coord of ball
         self._last_frame_height: Optional[int]   = None   # raw frame height in pixels
         self._loss_frame: Optional[int] = None   # frame at which possession was lost
+        self._possession_held_frames: int = 0  # frames current possessor has held ball
+        self._ball_loss_streak: int = 0         # consecutive frames ball detection has been None
         self._ball_buf:   deque = deque(maxlen=30)
+        # Ball pixel-space y buffer for dribble floor-bounce detection.
+        # Stores recent ball_y_pixel values (raw image y, increases downward).
+        # Bounce signature: ball was falling (vy > 0) then rising/stationary (vy ≤ 0).
+        self._bvybuf:     deque = deque(maxlen=3)   # last 3 ball_y_pixel values
 
         # Retroactive overrides: frame_idx → event string
         # Written when a pass is confirmed by the receiver picking up the ball.
@@ -73,23 +86,59 @@ class EventDetector:
         # Per-player position history: player_id → deque of (frame, x, y, speed)
         self._phist: Dict[int, deque] = defaultdict(lambda: deque(maxlen=15))
 
+        # Dribble count: resets on every possession change
+        self._dribble_count: int = 0
+
         # Drive streak: player_id → consecutive frames above drive speed
         self._drive_streak: Dict[int, int] = defaultdict(int)
         self._drive_start:  Dict[int, Tuple[float, float]] = {}
 
         # Screen debounce: (pid_a, pid_b) → last frame a screen was logged
         self._screen_last: Dict[Tuple[int, int], int] = {}
+        # Help defense rotation debounce: (defender_id, handler_id) → last frame fired
+        self._help_rotation_last: Dict[Tuple[int, int], int] = {}
+
+        # Shot debounce: minimum frames between consecutive shot detections.
+        # Initialized to -(DEBOUNCE+1) so frame 0 can always trigger a shot.
+        # Raised 1.5s→3.0s: real shots are ~30-80s apart; 1.5s allowed pump fakes
+        # to re-fire immediately after a genuine shot debounce window closed.
+        self._last_shot_frame: int = -(int(3.0 * self._fps) + 1)  # = -181 at 60fps
 
         # Court scale (pixels per foot, approximate from basket span)
         _span = 0.87 * map_w            # ~80.5 ft between baskets in pixels
         self._ft: float = _span / 80.5  # px per foot
 
-        # Distance thresholds in court pixels
+        # Distance thresholds in court pixels (static — not fps-dependent)
         self._SCREEN_DIST    = 3.0 * self._ft   # 3 ft
         self._CLOSEOUT_FAR   = 6.0 * self._ft   # 6 ft
         self._CLOSEOUT_NEAR  = 3.0 * self._ft   # 3 ft
-        # 8 mph → ft/s → ft/frame (30fps) → px/frame
-        self._DRIVE_SPEED    = (8.0 * 5280.0 / 3600.0 / 30.0) * self._ft
+
+        # fps-dependent thresholds — recomputed by configure(); defaults = 60fps
+        # 8 mph → ft/s → ft/abs-frame (at fps) → px/abs-frame
+        self._DRIVE_SPEED    = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
+        # 3.0 seconds between shots in absolute frame count (raised from 1.5s)
+        self._SHOT_DEBOUNCE: int = int(3.0 * self._fps)
+
+    @property
+    def dribble_count(self) -> int:
+        """Current dribble count for the active possession."""
+        return self._dribble_count
+
+    def configure(self, fps: float, stride: int = 1) -> None:
+        """Recalculate fps- and stride-dependent thresholds.
+
+        Call once from UnifiedPipeline.run() after fps and stride are known.
+
+        Args:
+            fps:    Source video frames-per-second (e.g. 30.0 or 60.0).
+            stride: Frame stride used by the prefetcher (typically 1 or 3).
+        """
+        self._fps    = max(1.0, float(fps))
+        self._stride = max(1, int(stride))
+        # Drive speed: 8 mph in court px per absolute video frame
+        self._DRIVE_SPEED   = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
+        # Shot debounce: 3.0 s between shots expressed in absolute frame count
+        self._SHOT_DEBOUNCE = int(3.0 * self._fps)
 
     def update(
         self,
@@ -127,6 +176,42 @@ class EventDetector:
         if ball_pos is not None:
             self._ball_buf.append((frame_idx, ball_pos[0], ball_pos[1]))
 
+        # Track ball pixel-y for dribble bounce confirmation
+        self._bvybuf.append(ball_y_pixel)
+
+        # ── Direct upward-velocity shot detector ─────────────────────────
+        # Hough+CSRT keeps the ball "possessed" even during the shot arc,
+        # so the possession state-machine can't fire.  Fire directly when the
+        # ball is moving fast upward in pixel space — the clearest signature
+        # of a shot release that isn't a lob pass.
+        #
+        # Conditions (all must hold):
+        #   1. pixel_vel > 12 px/processed-frame  (raised from 6: pump fakes and
+        #      arm raises rarely exceed 12px/frame; real shot releases do)
+        #   2. ball_y_pixel decreased by > 8 px   (raised from 5: more confident upward move)
+        #   3. vertical fraction > 0.65 — upward component is ≥65% of total velocity.
+        #      Lob passes travel diagonally (large horizontal component), shots are
+        #      nearly vertical at release.  Raised from 0.50 to cut diagonal passes.
+        #   4. ball between 15-60% of frame height — shot releases happen in the
+        #      upper portion of the frame; 0.60 upper bound cuts waist-height passes.
+        #      Raised lower from 10%→15%, lowered upper from 80%→60%.
+        #   5. debounce cleared
+        _prev_y = getattr(self, "_prev_ball_y_pixel", None)
+        if (pixel_vel > 12.0
+                and _prev_y is not None
+                and ball_y_pixel is not None
+                and frame_height is not None
+                and (ball_y_pixel - _prev_y) < -8          # ball moved UP (y decreases)
+                and abs(ball_y_pixel - _prev_y) / (pixel_vel + 1e-6) > 0.65  # mostly vertical
+                and ball_y_pixel > frame_height * 0.15     # not scoreboard artifact at top
+                and ball_y_pixel < frame_height * 0.60     # not waist/floor level
+                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE):
+            self._last_shot_frame = frame_idx
+            self._prev_ball_y_pixel = ball_y_pixel
+            self._prev_ball = ball_pos
+            return "shot"
+        self._prev_ball_y_pixel = ball_y_pixel
+
         possessor_id  = None
         possessor_pos = None
         for t in frame_tracks:
@@ -157,6 +242,7 @@ class EventDetector:
         self._detect_screens(frame_idx, frame_tracks)
         self._detect_cuts(frame_idx, frame_tracks)
         self._detect_drives(frame_idx, frame_tracks)
+        self._detect_help_defense(frame_idx, frame_tracks)
 
         # Prune stale _pending entries (retroactive writes whose target frame has
         # already been consumed). Prevents unbounded growth on long game sequences.
@@ -182,26 +268,49 @@ class EventDetector:
         if possessor_id != prev_id:
 
             if prev_id is not None and possessor_id is None:
-                # Ball left a player — potential shot or turnover
+                # Ball left a player — evaluate as shot/pass immediately.
+                # NOTE: _ball_loss_streak was a 3-frame jitter guard added in session 3
+                # but was structurally broken: after the first loss self._possessor=None,
+                # so subsequent no-possessor frames enter the stable branch and never
+                # re-increment the streak.  _evaluate_shot was permanently disabled.
+                # Removed; the pixel fallback (lines 176-187) handles jitter already.
+                _MIN_HOLD_FRAMES = 2  # require ≥2 frames of possession (prevents single-frame noise)
+                held = self._possession_held_frames
+                self._possession_held_frames = 0
+                self._ball_loss_streak = 0
+                if held < _MIN_HOLD_FRAMES:
+                    return "none"
                 self._loss_frame = frame_idx
-                return self._evaluate_shot(ball_pos)
+                return self._evaluate_shot(ball_pos, frame_idx)
 
             if prev_id is None and possessor_id is not None:
                 # Player gained ball — confirm pass if within window
+                self._ball_loss_streak = 0
+                self._dribble_count = 0
                 if (self._loss_frame is not None
                         and frame_idx - self._loss_frame <= _PASS_MAX_FRAMES):
                     self._pending[self._loss_frame] = "pass"
                 self._loss_frame = None
+                self._possession_held_frames = 1
                 return "none"
 
             if prev_id is not None and possessor_id is not None:
                 # Steal / direct hand-off
+                self._ball_loss_streak = 0
+                self._dribble_count = 0
                 self._loss_frame = None
+                self._possession_held_frames = 1
                 if self._ball_vel >= _PASS_MIN_VEL:
                     return "pass"
                 return "none"
 
         # ── Stable possession ─────────────────────────────────────────────
+        if possessor_id is not None:
+            self._ball_loss_streak = 0
+            self._possession_held_frames += 1
+        else:
+            self._possession_held_frames = 0
+
         if (possessor_id is not None
                 and ball_pos is not None
                 and possessor_pos is not None):
@@ -210,6 +319,24 @@ class EventDetector:
                 ball_pos[1] - possessor_pos[1],
             ))
             if dist <= _DRIBBLE_MAX_DIST and self._ball_vel <= _DRIBBLE_MAX_VEL:
+                # Require floor-bounce confirmation: ball_y_pixel must have been
+                # falling (vy_prev > 1.0, i.e. y increasing downward in image space)
+                # and now rising/stationary (vy_curr ≤ 0).  This rejects stationary
+                # ball-handling, tips, and shot releases from inflating dribble_count.
+                _bounce = False
+                _by = list(self._bvybuf)
+                if (len(_by) >= 3
+                        and _by[-3] is not None
+                        and _by[-2] is not None
+                        and _by[-1] is not None):
+                    _vy_prev = _by[-2] - _by[-3]   # falling → positive (y down)
+                    _vy_curr = _by[-1] - _by[-2]
+                    _bounce  = _vy_prev > 1.0 and _vy_curr <= 0.0
+                elif len(_by) >= 2 and _by[-2] is not None and _by[-1] is not None:
+                    # Two-frame fallback: at least check current frame is not falling
+                    _bounce = (_by[-1] - _by[-2]) <= 0.0
+                if _bounce:
+                    self._dribble_count += 1
                 return "dribble"
 
         # ── Ball in flight, nobody has it ────────────────────────────────
@@ -219,7 +346,7 @@ class EventDetector:
 
         return "none"
 
-    def _evaluate_shot(self, ball_pos: Optional[Tuple[float, float]]) -> str:
+    def _evaluate_shot(self, ball_pos: Optional[Tuple[float, float]], frame_idx: int = 0) -> str:
         """Return 'shot' if ball is moving fast enough toward a basket.
 
         When pixel-space velocity is active, single-frame court coordinates are
@@ -228,20 +355,22 @@ class EventDetector:
         as shots), we use the last 3 frames of the court-coordinate trajectory
         buffer to compute a more stable direction vector.
         """
+        # Noise gate: velocities > 150 px/frame are tracking jumps, not real shots.
+        _NOISE_VEL = 150.0
+        if self._ball_vel > _NOISE_VEL:
+            return "none"
+
         if self._ball_vel < _SHOT_MIN_VEL:
             return "none"
 
-        # When 2D court position is unavailable (Hough/CSRT lost ball during
-        # the shot arc), use pixel-space velocity + vertical position as the
-        # sole indicator.  This fires BEFORE the court-coord path so that a
-        # dropped ball doesn't silently kill shot detection.
+        # Debounce: set by configure() — 1.5s of absolute frames at source fps.
+        if frame_idx - self._last_shot_frame < self._SHOT_DEBOUNCE:
+            return "none"
+
+        # When 2D court position is unavailable, we cannot verify direction toward
+        # basket — skip rather than fire a low-confidence shot.  The upward-velocity
+        # detector at the top of update() already handles ball-in-arc frames.
         if ball_pos is None:
-            if (self._pixel_vel_used
-                    and self._ball_vel > _PIXEL_SHOT_VEL
-                    and self._last_ball_y_pixel is not None
-                    and self._last_frame_height is not None
-                    and self._last_ball_y_pixel < self._last_frame_height * 0.75):
-                return "shot"
             return "none"
 
         if self._prev_ball is None:
@@ -254,13 +383,19 @@ class EventDetector:
             and 0 <= self._prev_ball[1] <= self.map_h
         )
         if not in_bounds:
-            # Court projection out of range — can't determine direction; allow.
-            return "shot"
+            # Court projection out of range — can't determine direction; skip.
+            return "none"
 
         nearest = min(
             self._baskets,
             key=lambda b: np.hypot(ball_pos[0] - b[0], ball_pos[1] - b[1]),
         )
+
+        # Backcourt guard: reject shots from center-court band (xn 0.40-0.60)
+        # Mirrors _court_zone "backcourt" definition; real shots don't come from midcourt
+        _xn = ball_pos[0] / max(self.map_w, 1)
+        if 0.40 < _xn < 0.60:
+            return "none"
 
         # When pixel velocity is active, use a multi-frame average origin from
         # _ball_buf (court coords) to reduce homography noise.
@@ -277,20 +412,15 @@ class EventDetector:
         dy_basket = nearest[1]  - ball_pos[1]
 
         if dx_ball * dx_basket + dy_ball * dy_basket > 0:
+            self._last_shot_frame = frame_idx
             return "shot"
 
-        # Pixel-space fallback: if ball is moving fast in image space and is not
-        # in the bottom quarter of the frame (floor level), count as a shot even
-        # when the court-coord direction check fails (homography noise, broadcast
-        # clips).  0.75 threshold allows hand/waist-level releases (y ≈ 50-70%
-        # of frame height) while excluding floor-level bounces and dribbles.
-        if (self._pixel_vel_used
-                and self._ball_vel > _PIXEL_SHOT_VEL
-                and self._last_ball_y_pixel is not None
-                and self._last_frame_height is not None
-                and self._last_ball_y_pixel < self._last_frame_height * 0.75):
-            return "shot"
-
+        # Pixel-space fallback removed: if the court-coord direction check says
+        # the ball is NOT moving toward the basket, trust it — don't override
+        # with pixel velocity alone.  The fallback was firing on chest passes,
+        # outlet passes, and arm raises that happen to be fast at waist height,
+        # causing 5-15x shot over-detection.  The upward-velocity detector
+        # (top of update()) already handles shots the state-machine misses.
         return "none"
 
     # ── Rich event helpers ────────────────────────────────────────────────
@@ -305,8 +435,10 @@ class EventDetector:
             pid = t["player_id"]
             x, y = float(t.get("x2d", 0)), float(t.get("y2d", 0))
             hist = self._phist[pid]
+            # Divide by stride so speed is in px/abs-frame regardless of stride.
+            # _DRIVE_SPEED and STATIONARY/MOVING thresholds are all px/abs-frame.
             speed = (
-                float(np.hypot(x - hist[-1][1], y - hist[-1][2]))
+                float(np.hypot(x - hist[-1][1], y - hist[-1][2])) / self._stride
                 if hist else 0.0
             )
             hist.append((frame_idx, x, y, speed))
@@ -359,14 +491,38 @@ class EventDetector:
                     continue
 
                 if si < STATIONARY and sj > MOVING:
-                    self.events.append(
-                        {"type": "screen_set", "x": xi, "y": yi, "frame": frame_idx}
-                    )
+                    _i_has = ti.get("has_ball", False)
+                    _j_has = tj.get("has_ball", False)
+                    if _i_has or _j_has:
+                        _pnr_action = "pick_and_roll"
+                        _bh_id = ti["player_id"] if _i_has else tj["player_id"]
+                        _sc_id = tj["player_id"] if _i_has else ti["player_id"]
+                    else:
+                        _pnr_action = "off_ball_screen"
+                        _bh_id = None
+                        _sc_id = None
+                    self.events.append({
+                        "type": "screen_set", "x": xi, "y": yi, "frame": frame_idx,
+                        "ball_handler_id": _bh_id, "screener_id": _sc_id,
+                        "screen_action": _pnr_action,
+                    })
                     self._screen_last[key] = frame_idx
                 elif sj < STATIONARY and si > MOVING:
-                    self.events.append(
-                        {"type": "screen_set", "x": xj, "y": yj, "frame": frame_idx}
-                    )
+                    _i_has = ti.get("has_ball", False)
+                    _j_has = tj.get("has_ball", False)
+                    if _i_has or _j_has:
+                        _pnr_action = "pick_and_roll"
+                        _bh_id = ti["player_id"] if _i_has else tj["player_id"]
+                        _sc_id = tj["player_id"] if _i_has else ti["player_id"]
+                    else:
+                        _pnr_action = "off_ball_screen"
+                        _bh_id = None
+                        _sc_id = None
+                    self.events.append({
+                        "type": "screen_set", "x": xj, "y": yj, "frame": frame_idx,
+                        "ball_handler_id": _bh_id, "screener_id": _sc_id,
+                        "screen_action": _pnr_action,
+                    })
                     self._screen_last[key] = frame_idx
 
     def _detect_cuts(
@@ -466,8 +622,8 @@ class EventDetector:
             if dist_then > self._CLOSEOUT_FAR and dist_now < self._CLOSEOUT_NEAR:
                 avg_speed = float(np.mean([pts[-i][3]
                                            for i in range(1, min(6, len(pts) + 1))]))
-                # Convert px/frame → mph
-                mph = (avg_speed / max(1.0, self._ft)) * 30.0 * 3600.0 / 5280.0
+                # Convert px/abs-frame → ft/abs-frame → ft/s → mph
+                mph = (avg_speed / max(1.0, self._ft)) * self._fps * 3600.0 / 5280.0
                 self.events.append({
                     "type": "closeout",
                     "defender_id": def_id,
@@ -513,4 +669,62 @@ class EventDetector:
                 "crash_angle": round(crash_angle, 1),
                 "crash_speed": round(crash_speed, 2),
                 "box_out": bool(box_out and self._toward_basket(vx, vy, x, y)),
+            })
+
+    def _detect_help_defense(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Log help_rotation when a defender moves from >12ft to <6ft of handler in ~10 frames.
+
+        Only fires when self._possessor is not None (someone has the ball).
+        Debounced: same (defender_id, handler_id) pair suppressed for 45 frames.
+        """
+        if self._possessor is None:
+            return
+
+        handler_hist = self._phist.get(self._possessor)
+        if not handler_hist:
+            return
+        hx, hy = handler_hist[-1][1], handler_hist[-1][2]
+
+        handler_team = next(
+            (t.get("team") for t in frame_tracks if t["player_id"] == self._possessor),
+            None,
+        )
+        if handler_team is None:
+            return
+
+        DIST_FAR  = 12.0 * self._ft  # 12 ft in court px
+        DIST_NEAR =  6.0 * self._ft  #  6 ft in court px
+        LOOKBACK  = 10
+        DEBOUNCE  = 45
+
+        for t in frame_tracks:
+            if t.get("team") == handler_team or t.get("team") == "referee":
+                continue
+            def_id = t["player_id"]
+            dhist  = self._phist.get(def_id)
+            if not dhist:
+                continue
+
+            dist_now = float(np.hypot(dhist[-1][1] - hx, dhist[-1][2] - hy))
+            if dist_now >= DIST_NEAR:
+                continue  # not close enough now
+
+            hist_list = list(dhist)
+            old_entry = hist_list[-min(LOOKBACK, len(hist_list))]
+            dist_then = float(np.hypot(old_entry[1] - hx, old_entry[2] - hy))
+            if dist_then <= DIST_FAR:
+                continue  # wasn't far enough back
+
+            key = (def_id, self._possessor)
+            if frame_idx - self._help_rotation_last.get(key, -999) < DEBOUNCE:
+                continue
+
+            self._help_rotation_last[key] = frame_idx
+            self.events.append({
+                "type":          "help_rotation",
+                "defender_id":   def_id,
+                "handler_id":    self._possessor,
+                "rotation_dist": round(dist_now, 1),
             })

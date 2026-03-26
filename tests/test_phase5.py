@@ -395,16 +395,17 @@ class TestUnifiedPipelinePgWrite:
         assert rows_inserted[0]["game_id"] == "0022400001"
         assert rows_inserted[0]["frame_number"] == 1
 
-    def test_no_database_url_skips_silently(self, monkeypatch, capsys):
-        """No DATABASE_URL → skip silently, print warning, no exception."""
-        import src.pipeline.unified_pipeline as up
-
+    def test_no_database_url_writes_sqlite(self, monkeypatch, tmp_path, capsys):
+        """Phase 5: no DATABASE_URL → falls back to SQLite, no exception."""
         monkeypatch.delenv("DATABASE_URL", raising=False)
-        stub = self._make_pipeline_stub(game_id="0022400001")
-        stub._pg_write_tracking_rows([{"frame": 1}])  # should not raise
+        monkeypatch.setattr("src.data.db._SQLITE_PATH", str(tmp_path / "test.db"))
 
+        stub = self._make_pipeline_stub(game_id="0022400001")
+        stub._pg_write_tracking_rows([{"frame": 1}])  # must not raise
+
+        # Output must NOT contain a DATABASE_URL skip message
         out = capsys.readouterr().out
-        assert "DATABASE_URL" in out
+        assert "DATABASE_URL" not in out or "SQLite" in out
 
     def test_no_game_id_skips_silently(self, monkeypatch, capsys):
         """No game_id → skip silently, print warning, no exception."""

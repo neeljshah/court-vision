@@ -20,6 +20,8 @@ from __future__ import annotations
 import os
 from typing import Dict, List, Optional
 
+import time
+
 from src.data.cache_utils import cache_is_fresh, load_json_cache, save_json_cache
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

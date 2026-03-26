@@ -1,596 +1,139 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-20
+## Resume From Here — Last Updated: 2026-03-24 20:18
 
 ### Pick Up Where We Left Off
-- **Phase 6 is the next action:** Run `python scripts/full_game_pipeline.py` to download full NBA games from YouTube and process them. This is the single biggest unblocked action — everything from Phase 7 onward is gated behind real game data.
-- Ref tendencies + player bio fetches are running/ready via `scripts/fetch_ref_data.py`
+*(Fill in '## What's Next' in today's session note before closing)*
 
 ### This Session — Files Changed
-- `src/tracking/advanced_tracker.py` — ByteTrack two-stage now always active (removed lapx gate)
-- `src/data/nba_tracking_stats.py` — added `fetch_player_bio()` (height/weight/wingspan via CommonPlayerInfo)
-- `src/prediction/prop_model_stack.py` — NEW: Phase 4.7 confidence-gated meta-model stacker
-- `src/prediction/betting_portfolio.py` — NEW: Phase 4.8 Kelly+correlation sizing, CLV tracking, arb detection
-- `src/prediction/prop_backtester.py` — NEW: Phase 4.9 historical backtester + paper trading mode
-- `scripts/fetch_ref_data.py` — NEW: one-shot script to fetch ref tendencies + player bio
-
-### Open Priority Issues
-- 1. 🔴 **Phase 6 — Run full games:** `python scripts/full_game_pipeline.py` — downloads from YouTube, processes with game_id, enriches shots. Everything downstream (xFG v2, possession outcome, simulator) is gated behind this.
-- 2. 🔴 Analytics + tracking dashboards (not built yet)
-- 3. 🟡 HSV re-ID upgrades — ByteTrack now always active; OSNet deep re-ID still optional improvement
-- 4. 🟡 Player bio data — `fetch_player_bio()` built, run `python scripts/fetch_ref_data.py` to populate `data/nba/player_bio.json`
-- 5. 🟢 Pano validation + fallback — fixed 2026-03-12
-
-### Analytics Module Status (src/)
-- ✅ `src/analytics/betting_edge.py`
-- ✅ `src/analytics/chat.py`
-- ✅ `src/analytics/clv_tracker.py`
-- ✅ `src/analytics/defense_pressure.py`
-- ✅ `src/analytics/defensive_scheme.py`
-- ✅ `src/analytics/drive_analysis.py`
-- ✅ `src/analytics/edge_detector.py`
-- ✅ `src/analytics/game_flow.py`
-- ✅ `src/analytics/injury_news_lag.py`
-- ✅ `src/analytics/line_movement_predictor.py`
-- ✅ `src/analytics/lineup_synergy.py`
-- ✅ `src/analytics/micro_timing.py`
-- ✅ `src/analytics/momentum.py`
-- ✅ `src/analytics/momentum_events.py`
-- ✅ `src/analytics/off_ball_events.py`
-- ✅ `src/analytics/passing_network.py`
-- ✅ `src/analytics/pick_and_roll.py`
-- ✅ `src/analytics/play_recognition.py`
-- ✅ `src/analytics/player_defensive_pressure.py`
-- ✅ `src/analytics/prop_correlation.py`
-- ✅ `src/analytics/rebound_positioning.py`
-- ✅ `src/analytics/shot_creation.py`
-- ✅ `src/analytics/shot_quality.py`
-- ✅ `src/analytics/space_control.py`
-- ✅ `src/analytics/spacing.py`
-- ✅ `src/analytics/spatial_types.py`
-- ✅ `src/data/action_network.py`
-- ✅ `src/data/bbref_scraper.py`
-- ✅ `src/data/beat_reporter_monitor.py`
-- ✅ `src/data/cache_utils.py`
-- ✅ `src/data/contracts_scraper.py`
-- ✅ `src/data/db.py`
-- ✅ `src/data/game_matcher.py`
-- ✅ `src/data/injury_monitor.py`
-- ✅ `src/data/line_monitor.py`
-- ✅ `src/data/lineup_data.py`
-- ✅ `src/data/migrations.py`
-- ✅ `src/data/nba_enricher.py`
-- ✅ `src/data/nba_stats.py`
-- ✅ `src/data/nba_tracking_stats.py`
-- ✅ `src/data/news_scraper.py`
-- ✅ `src/data/odds_scraper.py`
-- ✅ `src/data/pbp_features.py`
-- ✅ `src/data/pbp_scraper.py`
-- ✅ `src/data/pinnacle_monitor.py`
-- ✅ `src/data/player_identity.py`
-- ✅ `src/data/player_scraper.py`
-- ✅ `src/data/prop_validator.py`
-- ✅ `src/data/props_scraper.py`
-- ✅ `src/data/ref_tracker.py`
-- ✅ `src/data/referee_model.py`
-- ✅ `src/data/schedule_context.py`
-- ✅ `src/data/shot_chart_scraper.py`
-- ✅ `src/data/video_fetcher.py`
-- ✅ `src/detection/models/detection_model.py`
-- 🔲 `src/detection/tools/classes.py`
-- ✅ `src/detection/tools/inference.py`
-- ✅ `src/detection/tools/train.py`
-- ✅ `src/features/feature_engineering.py`
-- ✅ `src/nlp/injury_severity.py`
-- ✅ `src/pipeline/auto_retrain.py`
-- ✅ `src/pipeline/data_loader.py`
-- ✅ `src/pipeline/event_aggregator.py`
-- ✅ `src/pipeline/feature_assembler.py`
-- ✅ `src/pipeline/feature_drift_detector.py`
-- ✅ `src/pipeline/feature_pipeline.py`
-- ✅ `src/pipeline/model_pipeline.py`
-- ✅ `src/pipeline/model_registry.py`
-- ✅ `src/pipeline/model_version_manager.py`
-- ✅ `src/pipeline/outcome_recorder.py`
-- ✅ `src/pipeline/prediction_calibrator.py`
-- ✅ `src/pipeline/prediction_orchestrator.py`
-- ✅ `src/pipeline/run_pipeline.py`
-- ✅ `src/pipeline/tasks.py`
-- ✅ `src/pipeline/tracking_pipeline.py`
-- ✅ `src/pipeline/unified_pipeline.py`
-- ✅ `src/prediction/age_curve_model.py`
-- ✅ `src/prediction/alt_line_ev_model.py`
-- ✅ `src/prediction/altitude_model.py`
-- ✅ `src/prediction/back_to_back_model.py`
-- ✅ `src/prediction/beat_reporter_credibility.py`
-- ✅ `src/prediction/beneficiary_cascade.py`
-- ✅ `src/prediction/book_bias_detector.py`
-- ✅ `src/prediction/breakout_predictor.py`
-- ✅ `src/prediction/clutch_efficiency.py`
-- ✅ `src/prediction/clutch_lineup_model.py`
-- ✅ `src/prediction/contested_rate_model.py`
-- ✅ `src/prediction/contested_shot_predictor.py`
-- ✅ `src/prediction/contract_year_quantifier.py`
-- ✅ `src/prediction/defensive_matchup_classifier.py`
-- ✅ `src/prediction/dnp_predictor.py`
-- ✅ `src/prediction/foul_draw_rate_model.py`
-- ✅ `src/prediction/foul_trouble_predictor.py`
-- ✅ `src/prediction/game_models.py`
-- ✅ `src/prediction/game_possessions_model.py`
-- ✅ `src/prediction/game_prediction.py`
-- ✅ `src/prediction/garbage_time_detector.py`
-- ✅ `src/prediction/home_away_model.py`
-- ✅ `src/prediction/hot_cold_streak_detector.py`
-- ✅ `src/prediction/injury_return.py`
-- ✅ `src/prediction/injury_risk.py`
-- ✅ `src/prediction/load_management.py`
-- ✅ `src/prediction/matchup_model.py`
-- ✅ `src/prediction/minutes_floor_model.py`
-- ✅ `src/prediction/overtime_probability.py`
-- ✅ `src/prediction/parlay_optimizer.py`
-- ✅ `src/prediction/player_props.py`
-- ✅ `src/prediction/playoff_push_model.py`
-- ✅ `src/prediction/plus_minus_predictor.py`
-- ✅ `src/prediction/possession_outcome_model.py`
-- ✅ `src/prediction/prop_uncertainty_estimator.py`
-- ✅ `src/prediction/public_fade.py`
-- ✅ `src/prediction/rest_day_model.py`
-- ✅ `src/prediction/rotation_predictor.py`
-- ✅ `src/prediction/season_regression_detector.py`
-- ✅ `src/prediction/second_half_adjustment_model.py`
-- ✅ `src/prediction/shot_clock_pressure_model.py`
-- ✅ `src/prediction/shot_type_model.py`
-- ✅ `src/prediction/shot_zone_tendency.py`
-- ✅ `src/prediction/soft_book_lag.py`
-- ✅ `src/prediction/substitution_timing_model.py`
-- ✅ `src/prediction/team_total_normalizer.py`
-- ✅ `src/prediction/travel_impact_model.py`
-- ✅ `src/prediction/true_shooting_model.py`
-- ✅ `src/prediction/usage_rate_model.py`
-- ✅ `src/prediction/usage_surge_detector.py`
-- ✅ `src/prediction/win_probability.py`
-- ✅ `src/prediction/xfg_model.py`
-- ✅ `src/re_id/data/download_data.py`
-- ✅ `src/re_id/models/model.py`
-- ✅ `src/re_id/module/cbam.py`
-- ✅ `src/re_id/module/loss.py`
-- ✅ `src/re_id/module/reid.py`
-- ✅ `src/re_id/module/transform.py`
-- ✅ `src/re_id/tools/inference.py`
-- ✅ `src/re_id/tools/train.py`
-- ✅ `src/simulation/possession_simulator.py`
-- ✅ `src/stats_tracker/tracker.py`
-- ✅ `src/tracking/advanced_tracker.py`
-- ✅ `src/tracking/ball_detect_track.py`
-- ✅ `src/tracking/color_reid.py`
-- ✅ `src/tracking/court_detector.py`
-- ✅ `src/tracking/defensive_scheme_classifier.py`
-- ✅ `src/tracking/evaluate.py`
-- ✅ `src/tracking/event_detector.py`
-- ✅ `src/tracking/jersey_ocr.py`
-- ✅ `src/tracking/osnet_reid.py`
-- ✅ `src/tracking/play_type_classifier.py`
-- ✅ `src/tracking/player.py`
-- ✅ `src/tracking/player_detection.py`
-- ✅ `src/tracking/player_identity.py`
-- ✅ `src/tracking/possession_classifier.py`
-- ✅ `src/tracking/rectify_court.py`
-- ✅ `src/tracking/scoreboard_ocr.py`
-- ✅ `src/tracking/tracker_config.py`
-- ✅ `src/tracking/utils/plot_tools.py`
-- ✅ `src/tracking/video_handler.py`
-- ✅ `src/utils/bbox_crop.py`
-- ✅ `src/utils/frame.py`
-- ✅ `src/utils/visualize.py`
-
-### Session Log
-- Latest: `vault/Sessions/Session-2026-03-20.md`
-- Full log: `vault/Sessions/`
-
-<!-- END AUTO-GENERATED -->
-
-# NBA AI Tracking System — Claude Context File
-
-## What This Project Is Building
-
-A **self-improving possession-by-possession game simulator** combining CV tracking + NBA API + 50 ML models to simulate any NBA game 10,000 times, produce stat distributions for every player, compare against sportsbook lines, and surface edges — accessible via conversational AI that renders charts inline.
-
-**Three products:**
-1. **Betting Dashboard** — prop edges by EV, Kelly sizing, live injury alerts
-2. **Analytics Dashboard** — 96 metrics, shot charts, lineup matrices, win prob timelines, 10 chart types
-3. **AI Chat** — "Show me Murray's shot quality vs guards and his prop tonight" → Claude calls tools, renders charts, synthesizes insight
-
-**The moat:** Spatial CV data (defender distance, spacing, fatigue) that no public tool has. Simulator self-improves with every game. Closest competitor is Second Spectrum ($1M+/yr, teams only).
-
-**Full plan:** `.planning/ROADMAP.md` — 17 phases, 50 models, 96 analytics metrics, complete simulator architecture
-
----
-
-## Current Phase: Pre-Phase 6 — Build Everything Before Running Games
-
-**Master Build Plan:** `vault/Master Build Plan.md` — full phase-by-phase plan, read this
-
-**Phases Complete:**
-- Phase 3 ✅ | Phase 4 ✅ | Phase 5 ✅ | Phase 4.6 ✅ | Pre-Phase 6 Enrichment ✅
-- Models: win prob 69.1%, props 57 features, matchup R²=0.808, DNP AUC=0.979
-- Data: 3,627 PBP, 221K shots, BBRef VORP/WS48, prop correlations, sharp detector
-
-**Master Build Plan — 6 phases before running games:**
-- **Phase A** ✅ — Pull missing data: PlayerDashPtShots (pull_shot_dashboard.py built + running), player tracking stats, synergy backfill, full schedules, ref tendencies, daily pipeline
-- **Phase B** ✅ — Wire data into models + full retrain — shot_dashboard pulled (532/539 / 563/572 / 559/569 players), props retrained with 4 shot dashboard features
-- **Phase C** ✅ — Infrastructure: PostgreSQL schema + Celery + Redis + batch processor (migrations.py + tasks.py + batch_process.py built)
-- **Phase D** ✅ — Self-improving pipeline: event_aggregator, outcome_recorder, auto_retrain, model versioning (all built)
-- **Phase E** ✅ — Fix 6 API tests + 5 missing endpoints + 7 Phase 4.5 models + Streamlit predictions tab (DONE 2026-03-19)
-- **Phase 4.7** ✅ — Model stacking: `src/prediction/prop_model_stack.py` — confidence-gated Ridge meta-model over all 7 prop models (DONE 2026-03-20)
-- **Phase 4.8** ✅ — Betting portfolio: `src/prediction/betting_portfolio.py` — Kelly+correlation sizing, CLV tracking, cross-book arb detection (DONE 2026-03-20)
-- **Phase 4.9** ✅ — Backtester: `src/prediction/prop_backtester.py` — historical backtest + paper trading mode + validation gate (DONE 2026-03-20)
-- **Phase F** 🔲 — **NEXT:** Run `python scripts/full_game_pipeline.py` — downloads full NBA games from YouTube (yt-dlp ytsearch), processes with game_id, populates `data/full_game_results.json`
-- **Phase G** 🔲 — Cloud GPU blast: RunPod A100, 50-100 games, $50-100 budget
-
-**Start here:** Phase A — run `nba_tracking_stats.py` `fetch_all_tracking_data()` for all 3 seasons
+- README.md — full rewrite (professional, investor-ready)
+- CONTRIBUTING.md — created
+- LICENSE — created (MIT)
+- .gitignore — expanded and organized
+- requirements.txt — expanded from 17 → 35+ packages with categories
+- CLAUDE.md — optimized for token efficiency
+- vault/ — new organized Obsidian documentation structure
 
 ---
 
 ## Open Priority Issues
 
-| ID | Issue | Fix |
-|---|---|---|
-| ISSUE-016 | sklearn mismatch — win prob needs retrain | ✅ CLOSED 2026-03-17 — retrained, 67.7% acc |
-| ISSUE-018 | PBP at 43% — 1,602/3,685 games | ✅ CLOSED 2026-03-18 — 3,627/3,685 (98.4%), gap-filled |
-| ISSUE-010 | PostgreSQL wired via .env — CSV partitioned to data/tracking/{game_id}_{date}.csv | ✅ CLOSED 2026-03-19 |
-| ISSUE-009 | 0 shots enriched — no --game-id runs | Phase G (record 10 games) |
-| ISSUE-021 | Master Build Plan Phase F complete — wire DATABASE_URL + run 10 games (Phase G) | 🔴 Active |
-| ISSUE-022 | Props pipeline returning 0 lines — DK v5 endpoint blocked | ✅ CLOSED 2026-03-19 — Odds API primary + DK fallback + manual seed |
-| ISSUE-023 | daily_pipeline step_props n always 0 — isinstance(list, dict) always False | ✅ CLOSED 2026-03-19 — fixed to len(props) |
-| ISSUE-024 | record_outcome int(player_id) throws when player_id is a name string | ✅ CLOSED 2026-03-19 — name-key fallback in load_predictions + compare_and_record |
-| ISSUE-019 | 0 shot charts | ✅ CLOSED 2026-03-17 — 569/569, xFG v1 trained |
-| ISSUE-020 | Gamelogs missing | ✅ CLOSED 2026-03-17 — 622/569 complete |
+1. 🔴 Win probability / game prediction models — data pipeline ready, model still TBD
+2. 🔴 Analytics + tracking dashboards — not built yet
+3. 🟡 HSV re-ID upgrades — jersey confusion on similar-colored uniforms
+4. 🔴 Real game clip needed — tracker plateaued on Short4Mosaicing clip; need actual NBA broadcast footage
+5. 🟢 Pano validation + fallback — fixed 2026-03-12
 
 ---
 
-## Roadmap (17 phases — full detail in .planning/ROADMAP.md)
+## What This Project Is
 
-| Phase | Status | Goal |
-|---|---|---|
-| 1 — Data Infrastructure | ✅ | PostgreSQL, schedule, lineup, NBA stats |
-| 2 — Tracker Bug Fixes | ✅ | Team color, EventDetector, 431 tests |
-| 2.5 — CV Tracker Upgrades | 🔲 | Pose estimation, ByteTrack, per-clip homography |
-| 3 — NBA API Data | ✅ | 622 gamelogs, 221K shots, 1,602 PBP games |
-| 4 — Tier 1 ML Models | 🟡 Active | 13 models: win prob retrain + all props + game models |
-| 5 — External Factors | 🔲 | Injury, refs, line movement |
-| 6 — Full Game Processing | 🔲 | 20+ games, PostgreSQL, shots enriched |
-| 7 — Tier 2-3 ML Models | 🔲 | xFG v2, play type, pressure, spacing (20 games) |
-| 8 — Possession Simulator v1 | 🔲 | 7-model chain, 10K Monte Carlo |
-| 9 — Feedback Loop | 🔲 | Nightly process → auto-retrain → better predictions |
-| 10 — Tier 4-5 ML Models | 🔲 | Fatigue, lineup chemistry, matchup matrix (50-100 games) |
-| 11 — Betting Infrastructure | 🔲 | Odds API, Kelly, CLV backtesting |
-| 12 — Full Monte Carlo | 🔲 | All 50 models, full stat distributions |
-| 13 — FastAPI Backend | 🔲 | 12 endpoints, Redis, WebSocket |
-| 14 — Analytics Dashboard | 🔲 | Next.js, D3 shot charts, 10 chart types |
-| 15 — AI Chat | 🔲 | Claude API + 10 tools + render_chart inline |
-| 16 — Live Win Prob | 🔲 | 200+ games, LSTM, real-time WebSocket |
-| 17 — Infrastructure | 🔲 | Docker, CI/CD, cloud GPU |
+**CourtVision** — a self-improving possession-by-possession NBA game simulator combining CV tracking + NBA API + 90 ML models. Runs 10,000 Monte Carlo simulations per game, produces stat distributions for every player, compares against sportsbook lines, surfaces +EV edges.
+
+**Three products:** Betting Dashboard (Kelly + CLV) | Analytics Dashboard (96 metrics, 10 chart types) | AI Chat (Claude + render_chart inline)
+
+**Moat:** Spatial CV data (defender distance, spacing, fatigue) from broadcast video. Second Spectrum charges $1M+/yr for this. No public API has it.
+
+**Full plan:** `.planning/ROADMAP.md` — 17 phases, 90 models, 96 analytics metrics
 
 ---
 
-## The Feedback Loop
+## Current Phase: Pre-Phase F
+
+**Phases Complete:** 3 ✅ | 4 ✅ | 5 ✅ | 4.6 ✅ | Pre-Phase 6 Enrichment ✅
+
+**Next action:** Phase F — run `scripts/full_game_pipeline.py` to download + process full NBA games
+
+**Model status:**
+- Win prob: 69.1% acc, Brier 0.203 (`data/models/win_probability.pkl`)
+- Props ×7: R² > 0.93, MAE pts=0.308 (`data/models/props_*.json`)
+- xFG v1: Brier 0.226, 221K shots (`data/models/xfg_v1.pkl`)
+- DNP: AUC 0.979 (`data/models/dnp_model.pkl`)
+- Matchup: R² 0.796 (`data/models/matchup_model.json`)
+- Phase 4.5 models: load_management, injury_return, injury_risk, breakout_predictor, public_fade, soft_book_lag — all `.pkl` in `data/models/`
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/tracking/advanced_tracker.py` | AdvancedFeetDetector — main tracker |
+| `src/tracking/color_reid.py` | TeamColorTracker — similar-color re-ID |
+| `src/tracking/jersey_ocr.py` | EasyOCR jersey number reader |
+| `src/pipeline/unified_pipeline.py` | Tracking → possession → spatial → CSV |
+| `src/prediction/win_probability.py` | XGBoost win prob (WinProbModel) |
+| `src/prediction/player_props.py` | predict_props() / train_props() |
+| `src/prediction/prop_model_stack.py` | Ridge meta-model over all 7 props |
+| `src/prediction/betting_portfolio.py` | Kelly + CLV + arb detection |
+| `src/prediction/prop_backtester.py` | Historical backtest + paper trading |
+| `src/data/nba_tracking_stats.py` | NBA API tracking data fetcher |
+| `src/features/feature_engineering.py` | 60+ ML features |
+| `api/main.py` | FastAPI app (10 endpoints) |
+| `scripts/daily_pipeline.py` | Morning: injuries → props → predict → CLV |
+| `scripts/record_outcome.py` | Post-game: box score → CLV report |
+| `database/schema.sql` | PostgreSQL schema (9 tables, 2 views) |
+
+---
+
+## Architecture Summary
 
 ```
-Process game → CV features + NBA API enrichment
-    → label possessions → retrain 7 simulator models
-    → Monte Carlo 10K sims → stat distributions
-    → compare vs book lines → flag edges → bet
-    → outcome → retrain → repeat
+CV Tracker (broadcast feed) + NBA API (stats, PBP, shots)
+    → 90 ML Models → Possession Simulator (10K Monte Carlo)
+    → Stat distributions → Compare vs book lines → Flag +EV edges
+    → FastAPI → Next.js Dashboard + Claude AI Chat
 ```
 
-Every game processed improves every model. At 200 games the full 50-model stack is running.
+**Tracking tech:** YOLOv8n → SIFT homography → Kalman+Hungarian → **OSNet-x0.25 torchreid re-ID (512-dim, ImageNet pretrained)** → EasyOCR jersey → EventDetector (shot/pass/dribble)
+
+**Feedback loop:** Process game → label possessions → retrain models → Monte Carlo → compare vs lines → record outcomes → repeat
 
 ---
 
-## Video Processing
+## Module Status (Quick Ref)
 
-Running on RTX 4060 (8.6 GB VRAM).
-- Use `run_clip.py` for clips; always pass `--game-id`
-- Do NOT run `loop_processor.py` unattended (fills disk)
+**All ✅ built — see README.md for full list**
 
----
-
-## System Architecture
-
-```
-CV Tracker (broadcast feed)          NBA API (stats, PBP, shots)
-positions, pressure, spacing    +    gamelogs, outcomes, lineups
-fatigue, play types, events          refs, injuries, schedule
-        ↓                                       ↓
-        └──────────── 50 ML Models ─────────────┘
-                            ↓
-              Possession Simulator (7-model chain)
-                10,000 Monte Carlo per game
-                            ↓
-            Stat distributions for every player
-                            ↓
-        Compare vs sportsbook lines → flag +EV edges
-                            ↓
-    FastAPI → Next.js Dashboard + Claude AI Chat
-        render_chart tool → charts render inline in conversation
-```
-| Phase 13 — Live Win Probability | 🔲 Needs 200+ full games | LSTM on possession sequences, WebSocket real-time |
-| Phase 14 — Infrastructure | 🔲 | Docker, CI/CD, cloud GPU, drift monitoring |
+Unbuilt:
+- `src/detection/tools/classes.py` 🔲
+- `src/visualization/` 🔲 (Phase 14)
+- `frontend/` 🔲 (Phase 14)
 
 ---
 
-## Dataset Status (Audited 2026-03-17)
+## Dataset Status
 
-### CV Tracking Data — Phase 2 bugs fixed; ready for full game runs
-| Metric | Count | Notes |
-|---|---|---|
-| Game clips processed | 17 | BUT: 1–21 second clips, not full games |
-| Tracking rows | 29,220 | ✅ Team separation fixed (2026-03-17) |
-| Shots detected | 17 | ✅ EventDetector fixed — ball fallback added |
-| Dribbles detected | 14 passes | ✅ EventDetector firing |
-| Possessions labeled | 124 | result=NaN — no --game-id runs yet (ISSUE-009) |
-| Shots with outcomes | 0 | No --game-id runs yet |
-
-### NBA API Data — Phase 3 Complete (2026-03-17) + Phase 3.5 scrapers built (2026-03-18)
-| Metric | Count | Notes |
-|---|---|---|
-| Season games (3 seasons) | 3,675+ | Full game results + team features for win prob |
-| Team stats | 30 teams × 3 seasons | off_rtg, def_rtg, net_rtg, pace, eFG%, TS%, TOV% |
-| Player base stats | 569 players | pts, reb, ast, min, fg%, 3pt%, ft% |
-| Player advanced stats | 569 / 569 | ✅ All scraped 2026-03-17 |
-| Player gamelogs | 622 / 569 | ✅ Complete 2026-03-17 |
-| Shot charts | 569 / 569 | ✅ 221,866 shots scraped 2026-03-17 |
-| Play-by-play | 3,627 / 3,685 (98.4%) | ✅ Gap-filled 2026-03-18 (was 84%) |
-| Clutch scores | 3 seasons | ✅ 228–255 qualified players/season |
-| Boxscores | 13 games | Full per-player stats |
-| Injury report | 126 players | Current, refreshed 2026-03-16 |
-| Hustle stats | ✅ Fetched 2026-03-18 | 567/567/535 players × 3 seasons, data/nba/hustle_stats_*.json |
-| On/off splits | ✅ Fetched 2026-03-18 | 569/572/539 players × 3 seasons (TeamPlayerOnOffSummary), data/nba/on_off_*.json |
-| Defender zones | ✅ Fetched 2026-03-18 | 566/562/530 players × 3 seasons, data/nba/defender_zone_*.json |
-| Matchups | ✅ Fetched 2026-03-18 | 2269/2283/2154 records × 3 seasons, data/nba/matchups_*.json |
-| Synergy play types | ✅ Fetched 2026-03-18 | 300 offensive + 300 defensive (2024-25), data/nba/synergy_*.json |
-| BBRef advanced stats | ✅ Fetched 2026-03-18 | 736/736/680 players × 3 seasons, data/external/bbref_advanced_*.json |
-| BBRef injury history | 🔲 pending fetch | Built: get_injury_history() — games missed |
-| Historical lines | ✅ Fetched 2026-03-18 | 1225/1230/1230 games × 3 seasons (actual margins, NBA API), data/external/historical_lines_*.json |
-| Current props | 🔲 pending fetch | Built: props_scraper.py — DK/FD (15min TTL) |
-| Player contracts | ✅ Fetched 2026-03-18 | 523 players, 171 walk-year (BBRef contracts), data/external/contracts_2024-25.json |
-
-### Model Readiness
-| Model | Status | Notes |
-|---|---|---|
-| Win probability (pre-game) | ✅ Retrained 2026-03-18 | 69.1% acc, Brier 0.203, data/models/win_probability.pkl |
-| xFG v1 | ✅ Trained 2026-03-17 | 221K shots, Brier 0.226, data/models/xfg_v1.pkl |
-| Shot zone tendency | ✅ Built 2026-03-17 | 566 players, 42-dim features, data/nba/shot_zone_tendency.json |
-| Clutch efficiency | ✅ Built 2026-03-17 | 3 seasons scored, data/nba/clutch_scores_*.json |
-| Player prop models | ✅ Retrained 2026-03-19 | 56 features (+4 shot_dashboard: contested_pct/pull_up_pct/catch_shoot_pct/avg_defender_dist). MAE: pts=0.314, reb=0.117, ast=0.091, fg3m=0.083, stl=0.066, blk=0.044, tov=0.078 (R²>0.93 all). 559/569 players have real shot dash data. data/models/props_*.json |
-| DNP predictor | ✅ Built 2026-03-18 | LogisticRegression ROC-AUC=0.979, wired into predict_props() ≥0.4 threshold. data/models/dnp_model.pkl |
-| Prop correlation matrix | ✅ Built 2026-03-18 | 508 player corr, 3447 lineup pairs. data/nba/prop_correlations.json |
-| Game total / spread / blowout | ✅ Trained 2026-03-17 | 5 models (total/spread/blowout/first_half/pace), src/prediction/game_models.py |
-| Matchup model M22 | ✅ Trained 2026-03-18 | XGBoost R²=0.796, MAE=4.55, hustle+on-off features, data/models/matchup_model.json |
-| CLV backtest baseline | ✅ Done 2026-03-18 | 70.7% correct winner, MAE=10.2pts, 3685 games (actual margin proxy), betting_edge.backtest_clv() |
-| Load management | ✅ Built 2026-03-19 | Heuristic logistic weights, data/models/load_management.pkl |
-| Injury return curve | ✅ Built 2026-03-19 | Rule-based recovery curves, data/models/injury_return.pkl |
-| Injury risk | ✅ Built 2026-03-19 | Linear risk weights, data/models/injury_risk.pkl |
-| Breakout predictor | ✅ Built 2026-03-19 | Heuristic scorer, data/models/breakout_predictor.pkl |
-| Public fade | ✅ Built 2026-03-19 | Skew/line-move thresholds, data/models/public_fade.pkl |
-| Soft book lag | ✅ Built 2026-03-19 | Lag threshold + book lists, data/models/soft_book_lag.pkl |
-| Shot quality v2 (CV-enhanced) | 🔲 Phase 6+7 | Needs 200+ enriched CV shots |
-| Possession outcome | 🔲 Phase 6+7 | Needs 500+ labeled possessions |
-| Lineup chemistry | 🔲 Phase 7 | NBA API lineups + CV validation |
-| Live win prob LSTM | 🔲 Phase 16 | Needs 200+ full games |
-
-Data volume milestones: **Phase 4 (now)** → all 13 Tier 1 models; **Phase 6** (20 full games) → xFG v2 + possession outcome; **Phase 10** (100 games) → lineup chemistry; **Phase 16** (200+ games) → live LSTM
+| Dataset | Count | Status |
+|---------|-------|--------|
+| Shot charts | 221,866 shots, 569 players | ✅ |
+| PBP | 3,627 / 3,685 (98.4%) | ✅ |
+| Player gamelogs | 622 players, 3 seasons | ✅ |
+| Hustle / on-off / matchups / synergy | All fetched | ✅ |
+| BBRef advanced | 736 players, 3 seasons | ✅ |
+| Contracts | 523 players | ✅ |
+| Historical lines | 1,225+ games | ✅ |
+| Full game CV data | 1 clean (0022400625), 8 dirs total; 10 games reprocessing now | 🟡 Phase G — Session 21 in progress |
 
 ---
 
-## Complete Data Catalog
+## Active Issues
 
-> Full reference: `vault/Concepts/Complete Data Sources.md`
+| ID | Issue | Status |
+|----|-------|--------|
+| ISSUE-021 | Wire DATABASE_URL + run 10 full games (Phase G) | 🔴 Active |
+| ISSUE-009 | 11 games reprocess — Session 21 in progress; 1/11 done (0022400625 CLEAN); 10 running | 🟡 Reprocess b8ci65tth running — check `data/phase_g_processed.txt` for progress |
+| ISSUE-022 | `defender_distance=200.0` sentinel — fix in `unified_pipeline.py` (emits `""`) but 5 pre-fix games still have 200.0 in shot_log.csv: 0022400430, 0022400537, 0022400909, 0022401123, 0022401156 | 🟡 Active — those 5 games need reprocess to patch existing CSVs |
+| ISSUE-023 | Shot clock MAE=17.16s — clock doesn't decrement per-frame, resets each possession | ✅ CLOSED 2026-03-25 |
+| ISSUE-024 | `0022400852` — tracking ran 393K frames, tracking_data.csv never written; Stage 2 crash (FileNotFoundError); NOT in reprocess list | 🔴 New — needs full reprocess: `scripts/reprocess_failed_games.py --game-ids 0022400852` |
+| ISSUE-025 | `feature_engineering.py:683` — `player_name or ""` guard fails for `float(nan)` player names (NaN is truthy); crashes Stage 2 for all games with empty rosters | ✅ FIXED 2026-03-25 — changed to `isinstance(player_name, str)` guard |
+| ISSUE-026 | `team_spacing` px² normalization — FIXED. `_SPACING_NORM=4700.0` added, both hull assignments now divide by `(map_w*map_h)/4700`. Backfill ran on 11 games. | ✅ CLOSED 2026-03-25 |
+| ISSUE-027 | `0022400710` — video downloaded (CLE@BOS 2025-02-04, 105MB). Reprocess running. | 🟡 Reprocessing |
+| ISSUE-028 | `run_clip.py` was missing from `scripts/` — Stage 2 crashed for all games. Restored + added `--data-dir` arg + exit-3 guard. | ✅ CLOSED 2026-03-25 |
+| ISSUE-029 | Ball detection 14.1% valid pct — YOLO conf lowered 0.55→0.30, orange guard removed from YOLO path, Hough param2 12→8. Re-test pending. | 🟡 Active — needs test run |
+| ISSUE-030 | `0022400852` — 0 rows tracked (gameplay detector failing or homography mismatch). run_clip.py now exits 3 gracefully instead of crashing. Root cause unknown. | 🔴 Active — needs investigation |
 
-### CV Tracker — Currently Extracting ✅
-positions (x,y), speed, acceleration, team classification, jersey OCR, player identity, ball position, possession, events (shot/pass/dribble), court homography, scoreboard OCR, play type, possession type
-
-### CV Tracker — Not Yet Extracting 🔲 (Phase 2.5/6)
-spacing index (convex hull), paint density, defensive alignment, PnR coverage type (drop/hedge/switch/ICE), zone vs man detection, double team, screen detection, shot arc (parabola), ball trajectory, contest arm angle, player speed vs baseline (real-time fatigue), movement asymmetry (injury proxy), crowd noise level (audio RMS), announcer keyword detection (speech-to-text), forced shot flag
-
-### NBA API — ✅ Built (Phase 3.5 — 2026-03-18, src/data/nba_tracking_stats.py)
-- `BoxScorePlayerTrackV2` → `get_player_tracking(game_id)` — speed/distance/touches
-- `PlayerDashPtShots` → `get_shot_dashboard(player_id, season)` — contested%/C+S%/pull-up%/defender dist
-- `LeagueDashPtDefend` → `get_defender_zone(season)` — FG% allowed by zone
-- `MatchupsRollup` → `get_matchups(season)` — who guards whom
-- `LeagueHustleStatsPlayer` → `get_hustle_stats(season)` — deflections/screens/charges
-- `SynergyPlayTypes` → `get_synergy_play_types(season, play_type, offense/defense)` — pts/possession
-- `LeaguePlayerOnDetails` → `get_on_off_splits(season)` — on/off net rating
-- `VideoEventDetails` → `get_video_events(season)` — labeled event clip metadata
-
-### External Sources — ✅ Built (Phase 3.5 — 2026-03-18)
-- **Basketball Reference** → `src/data/bbref_scraper.py` — BPM/VORP/WS + injury history (48h TTL)
-- **OddsPortal** → `src/data/odds_scraper.py` — historical closing lines spread+total (7d TTL)
-- **DraftKings/FanDuel** → `src/data/props_scraper.py` — current player props (15min TTL)
-- **HoopsHype** → `src/data/contracts_scraper.py` — salary/years remaining/contract year flag (7d TTL)
-- **RotoWire RSS** → `src/data/injury_monitor.py:refresh_rotowire()` — injury/lineup feed (30min TTL)
-- **NBA official CDN** → `src/data/injury_monitor.py:refresh_nba_official_injury()` — daily JSON (6h TTL)
-- **Action Network** → not yet built (Phase 5)
-- **Pinnacle** → not yet built (Phase 5)
-- **Reddit r/nba** (praw) → not yet built
-
----
-
-## Complete Model Catalog — 90 Models
-
-> Full detail: `vault/Concepts/Complete Model Catalog.md`
-> Prediction formula: `vault/Concepts/Prediction Pipeline.md`
-
-### Trained ✅ (18 models)
-M1-M6: Win prob (67.7%) / game total / spread / blowout / first half / pace
-M7-M13: Props pts/reb/ast/3pm/stl/blk/tov
-M14: xFG v1 (Brier 0.226, 221K shots)
-M15-M18: Zone tendency / shot volume / clutch efficiency / shot creation type
-
-### Phase 3.5 — Untapped Data 🔲 (10 models)
-M19-M24: Defensive effort / ball movement / screen ROI / touch dependency / play type efficiency / defender zone xFG adjust (nba_api hustle + synergy + matchup)
-M25-M28: Age curve / injury recurrence / coaching adjustment / ref tendency extended (BBRef)
-
-### Phase 4.5 — Betting + Lifecycle ✅ (12 models — DONE 2026-03-19)
-M29-M34: Sharp money detector / CLV predictor / public fade ✅ / prop correlation matrix ✅ / SGP optimizer / soft book lag ✅
-M35-M40: DNP predictor ✅ / load management ✅ / return-from-injury curve ✅ / injury risk ✅ / breakout predictor ✅ / contract year effect
-PKL files: data/models/{load_management,injury_return,injury_risk,breakout_predictor,public_fade,soft_book_lag}.pkl
-
-### Phase 7 — 20 CV Games 🔲 (10 models)
-M41-M50: xFG v2 (with defender + spacing) / shot selection quality / play type classifier / defensive pressure / spacing rating / drive frequency / open shot rate / transition frequency / off-ball movement / possession value
-
-### Phase 9 — NLP 🔲 (4 models)
-M66-M69: Injury report severity NLP / injury news lag / team chemistry sentiment / beat reporter credibility
-
-### Phase 10 — 50-100 CV Games 🔲 (15 models)
-M51-M65: Fatigue curve / rebound positioning / late-game efficiency / closeout quality / help defense frequency / ball stagnation / screen effectiveness / turnover under pressure / lineup chemistry / matchup matrix / substitution timing / momentum / foul drawing rate / second chance / pace per lineup
-
-### Phase 11 — Live 🔲 (6 models)
-M70-M75: Live prop updater / comeback probability / garbage time predictor / foul trouble / Q4 star usage / momentum run
-
-### Phase 12/16 — Full Stack 🔲 (7 models)
-M76-M82: Full possession simulator / live win prob LSTM / true player impact / lineup optimizer / prop pricing engine / regression detector / injury impact
-
-### The 7-Model Possession Chain (Simulator Core)
-```
-[1] Play Type → [2] Shot Selector → [3] xFG → [4] TO/Foul
-→ [5] Rebound → [6] Fatigue → [7] Substitution
-× 10,000 per game = full stat distribution per player
-```
-
----
-
-## Module Status
-
-### Tracking (all ✅)
-- ✅ `src/tracking/advanced_tracker.py` — AdvancedFeetDetector (Kalman+Hungarian+ReID)
-- ✅ `src/tracking/ball_detect_track.py` — BallDetectTrack (YOLO TRT primary → Hough+CSRT fallback)
-- ✅ `src/tracking/color_reid.py` — TeamColorTracker, similar-color k-means re-ID
-- ✅ `src/tracking/event_detector.py` — shot/pass/dribble detection
-- ✅ `src/tracking/jersey_ocr.py` — EasyOCR dual-pass, JerseyVotingBuffer
-- ✅ `src/tracking/player.py`, `player_detection.py`, `player_identity.py`
-- ✅ `src/tracking/rectify_court.py` — SIFT panorama + three-tier homography
-- ✅ `src/tracking/tracker_config.py`, `evaluate.py`, `video_handler.py`
-- ✅ `src/tracking/utils/plot_tools.py`
-
-### Data / Pipeline
-- ✅ `src/data/db.py` — PostgreSQL connection helper
-- ✅ `src/data/game_matcher.py`, `lineup_data.py`, `nba_enricher.py`, `nba_stats.py`
-- ✅ `src/data/player_scraper.py` — 63-metric player scraper, self-improving loop, coverage tracker
-- ✅ `src/data/player_identity.py` — player_identity_map schema + persistence
-- ✅ `src/data/schedule_context.py` — rest days, back-to-back, travel distance
-- ✅ `src/data/video_fetcher.py` — yt-dlp downloader + download_batch()
-- ✅ `src/features/feature_engineering.py` — 60+ ML features
-- ✅ `src/pipeline/unified_pipeline.py`, `model_pipeline.py`
-- 🔲 `src/pipeline/data_loader.py`, `feature_pipeline.py`, `tracking_pipeline.py`
-
-### Analytics
-- ✅ `src/analytics/defense_pressure.py`, `momentum.py`, `shot_quality.py`
-
-### Prediction (code built, untrained)
-- ✅ `src/prediction/win_probability.py` — XGBoost, WinProbModel + WinProbabilityModel alias
-- ✅ `src/prediction/game_prediction.py` — predict_game(), predict_today()
-- ✅ `src/prediction/player_props.py` — predict_props(), train_props()
-- 🔲 `src/prediction/game_prediction.py` — needs trained model to run
-- 🔲 `src/data/injury_monitor.py` — Phase 3.5
-- 🔲 `src/data/ref_tracker.py` — Phase 3.5
-- 🔲 `src/data/line_monitor.py` — Phase 3.5
-- 🔲 `src/analytics/betting_edge.py` — Phase 6
-
-### API (built 2026-03-19)
-- ✅ `api/predictions_router.py` — 10 endpoints: /props, /injury-risk, /game, /win-prob, /breakout, /lineup-optimizer, /today, /props/{player_id}, /shot, /player-impact
-- ✅ `api/routers/predictions_router.py` — re-export alias for backward compat
-- ✅ `tests/test_predictions_router.py` — 9 tests (all passing)
-- ✅ `tests/test_models_router.py` — 8 tests (all passing, ISSUE-020 closed 2026-03-19)
-
-### Dashboard (built 2026-03-19)
-- ✅ `dashboards/predictions_tab.py` — Today's Games, Player Props, Breakout Alerts; wired into app.py
-- ✅ `src/simulation/possession_simulator.py` — 10K Monte Carlo, SimResult dataclass
-- ✅ `scripts/daily_pipeline.py` — morning run: injuries → props → predict → CLV log → edge report → retrain
-- ✅ `scripts/record_outcome.py` — post-game: fetch box score → compare vs predictions → CLV report
-- ✅ `scripts/batch_process.py` — batch video processing via Celery (load_dotenv wired)
-- ✅ `tests/test_new_models.py` — 30 smoke tests for Phase 4.5 + pre-Phase 6 models (all passing)
-
-### Visualization / Frontend
-- 🔲 `src/visualization/analytics_dashboard.py`, `tracking_dashboard.py`
-- 🔲 `frontend/` — Phase 14
-
----
-
-## Architecture
-
-```
-Video Input (.mp4)
-    ↓
-Court Rectification (SIFT + homography → resources/Rectify1.npy)
-    ↓
-AdvancedFeetDetector (src/tracking/advanced_tracker.py)
-  - YOLOv8n → person bboxes
-  - HSV + k-means color → team classification (similar-color aware)
-  - Kalman filter per player slot
-  - Hungarian assignment (IoU + appearance cost)
-  - Jersey OCR (EasyOCR) → named player identity
-  - Appearance re-ID gallery (TTL=300 frames)
-    ↓
-BallDetectTrack (YOLO TRT FP16 primary → Hough+CSRT fallback + possession IoU)
-    ↓
-EventDetector (shot / pass / dribble)
-    ↓
-Feature Engineering (60+ spatial + temporal features)
-    ↓
-Analytics (shot quality, defensive pressure, momentum)
-    ↓
-NBA API Enrichment (shot outcomes, score context, lineup)
-    ↓
-data/tracking_data.csv → PostgreSQL (schema ready, writes TBD)
-```
-
----
-
-## Key Technical Details
-
-### AdvancedFeetDetector (src/tracking/advanced_tracker.py)
-- **Kalman filter**: 6D state [cx, cy, vx, vy, w, h]
-- **Hungarian algorithm**: globally optimal assignment via scipy
-- **Cost matrix**: (1-IoU)×0.75 + appearance_distance×0.25; weights shift +0.10 when teams have similar uniform colors
-- **Appearance embeddings**: 96-dim L1-normalised HSV histogram (EMA updated)
-- **Similar-color handling**: `TeamColorTracker` (color_reid.py) — k-means k=2 per detection; jersey number tiebreaker when hue centroids within 20 units
-- **Gallery TTL**: 300 frames; MAX_LOST=90
-
-### Court Rectification (src/tracking/rectify_court.py)
-- SIFT panorama stitching; three-tier homography: reject <8 inliers, EMA blend 8–39, hard-reset ≥40
-- Court-line drift check every 30 frames (`_check_court_drift`)
-- Homography saved to `resources/Rectify1.npy`
-
-### Win Probability Model (src/prediction/win_probability.py)
-- XGBoost classifier, 27 features (team ratings, pace, rest, travel, recent form)
-- `WinProbModel` is the class; `WinProbabilityModel` is an alias
-- Training: `python src/prediction/win_probability.py --train` (3 seasons, NBA API only)
-- Backtesting: `--backtest` (walk-forward, CLV proxy metric)
-
-### External Factors (Phase 3.5 — not yet built)
-- Injury monitor → poll NBA official report + Rotowire every 30 min
-- Ref tracker → historical tendencies (pace, foul rate, home win%) + daily assignment
-- Line monitor → The Odds API, opening vs closing line, sharp money signal
-
-### Data Schema
-```python
-tracking_data = {
-    "game_id": str,
-    "timestamp": float,        # seconds from video start
-    "frame": int,
-    "player_id": int,          # 0-9 players, 10 referee
-    "team_id": int,            # 0=team_a, 1=team_b, 2=referee
-    "x_position": float,       # 2D court coordinates
-    "y_position": float,
-    "speed": float,
-    "acceleration": float,
-    "ball_possession": bool,
-    "event": str,              # "dribble","pass","shot","none"
-    "jersey_number": int,      # from OCR, -1 if unknown
-    "player_name": str,        # from NBA API roster lookup
-}
-```
+All other issues CLOSED — see `vault/Sessions/` for history.
 
 ---
 
@@ -600,198 +143,65 @@ tracking_data = {
 conda activate basketball_ai
 cd C:/Users/neelj/nba-ai-system
 
-# Tests only (NO VIDEO PROCESSING)
+# Tests (no video)
 python -m pytest tests/ -q
 
-# Train win probability model (safe — no video)
+# Train win probability
 python src/prediction/win_probability.py --train
 
-# Predict a game (safe — no video, needs trained model)
+# Predict a game
 python src/prediction/game_prediction.py --predict GSW BOS
 
-# Check dataset status
-python -m pytest tests/ -v
+# Daily pipeline
+python scripts/daily_pipeline.py
+
+# API server
+uvicorn api.main:app --reload --port 8000
+
+# Dashboard
+streamlit run dashboards/app.py
 ```
 
-**Never run**: `run.py`, `run_clip.py`, `scripts/loop_processor.py`
+**Never run:** `run.py`, `run_clip.py`, `scripts/loop_processor.py`
 
 ---
 
 ## Environment
 
 - Python 3.9, conda env: `basketball_ai`
-- PyTorch 2.0.1 + CUDA 11.8 + cuDNN 8.9
-- YOLOv8n (ultralytics), OpenCV, NumPy, Pandas
-- nba_api, XGBoost, scikit-learn, scipy, EasyOCR
-- PostgreSQL (schema ready at `database/schema.sql`)
+- PyTorch 2.0.1 + CUDA 11.8 + cuDNN 8.9 | RTX 4060 8GB
+- YOLOv8n, OpenCV, EasyOCR, nba_api, XGBoost, scikit-learn
+- PostgreSQL (schema ready, writes wired Phase 6)
 
 ---
 
 ## Platform Engineer Protocols
 
-### 1. Session Start — Project Pulse
+**Session Start Pulse:**
 ```
-• Architecture:  <3-word summary of active subsystem>
-• Branch:        <git branch>
-• Last Modified: <3 most recently touched files>
-```
-
-### 2. Response Navigation — Breadcrumb Format
-```
-[Module > Submodule > filename.py]
+• Architecture: <3-word summary>
+• Branch: <git branch>
+• Last Modified: <3 files>
 ```
 
-### 3. Token Efficiency Rules
-- Use `# ... existing code ...` for unchanged logic in snippets
+**Navigation breadcrumbs:** `[Module > Submodule > filename.py]`
+
+**Token efficiency rules:**
+- Use `# ... existing code ...` for unchanged blocks
 - Never re-read large data directories unless asked
-- Strip doc comments from code blocks unless the docstring itself is being edited
+- Strip doc comments from code snippets unless editing the docstring
 
-### 4. Autonomous Improvement Protocol
-When asked to improve the system:
-1. Read `CLAUDE.md` Open Priority Issues
-2. Read `tests/` — find failing or missing tests
-3. Implement fix (code changes only — no video runs)
-4. Run `pytest tests/` to confirm
-5. Update CLAUDE.md and STATE.md
+**Autonomous improvement protocol:**
+1. Read `CLAUDE.md` open issues
+2. Read `tests/` — find failing/missing tests
+3. Implement fix (code only, no video runs)
+4. Run `pytest tests/`
+5. Update CLAUDE.md + STATE.md
 
----
-
-## Code Rules
-
-- Python 3.9, modular functions, max 300 lines per file
-- All functions need docstrings + type hints
-- Save model outputs to `data/` as CSV or JSON
-- Log improvements in `vault/Improvements/Tracker Improvements Log.md`
-- No background agents that spawn video processing subprocesses
+**Code rules:** Python 3.9 | modular | max 300 lines/file | docstrings + type hints | save models to `data/` | log in `vault/Improvements/`
 
 ---
 
-## Known Issues
-
-| ID | Issue | Status |
-|---|---|---|
-| ISSUE-001 | Ball detection on fast shots | ✅ Fixed 2026-03-12 |
-| ISSUE-002 | Team color classification in poor lighting | ✅ Fixed 2026-03-12 |
-| ISSUE-003 | Player re-ID when leaving/re-entering frame | ✅ Fixed 2026-03-12 |
-| ISSUE-004 | Homography drift on long videos | ✅ Fixed 2026-03-12 |
-| ISSUE-005 | HSV re-ID on similar-colored uniforms | ✅ Fixed 2026-03-16 |
-| ISSUE-006 | Anonymous player IDs (no jersey OCR) | ✅ Fixed 2026-03-16 |
-| ISSUE-007 | Referees in analytics calculations | ✅ Fixed 2026-03-16 |
-| ISSUE-008 | No shot clock from video | 🔲 Phase 5 |
-| ISSUE-009 | 0 shots enriched — no --game-id runs yet | 🔴 Active — Phase G |
-| ISSUE-010 | PostgreSQL not wired — losing tracking history | ✅ CLOSED 2026-03-19 — .env + data/tracking/{game_id}_{date}.csv |
-| ISSUE-011 | 0 dribble events — event_detector ball_pos/possessor_pos likely None in 2D | ✅ Fixed by EventDetector rewrite (validated by 02-07) |
-| ISSUE-012 | autonomous_loop fix suggestions were stale (hardcoded 0.5→0.4) | ✅ Fixed 2026-03-16 |
-| ISSUE-013 | All players labeled 'green' — team color separation broken | ✅ Fixed 2026-03-17 — dynamic KMeans warm-up clustering |
-| ISSUE-014 | 2fps processing speed — KMeans per crop per frame | ✅ Fixed 2026-03-17 — mean HSV replaces KMeans in _compute_appearance |
-| ISSUE-015 | SIFT too slow — 441ms/call × 100 calls = 44s/500 frames | ✅ Fixed 2026-03-17 — _SIFT_INTERVAL=15, _SIFT_SCALE=0.5 downscale |
-| ISSUE-016 | sklearn 1.6.1 model pickled, env now 1.7.2 | 🔴 Retrain: python src/prediction/win_probability.py --train |
-| ISSUE-017 | Per-video homography wrong — M1 calibrated for pano_enhanced, not broadcast angle | ✅ Fixed 2026-03-17 — detect_court_homography() + 300-frame scan. 3/4 clips detect; 1 still falls back. |
-| ISSUE-018 | PostgreSQL not wired — losing tracking history | ✅ CLOSED 2026-03-19 — merged with ISSUE-010 fix |
-| ISSUE-019 | 0 shot charts scraped — ShotChartDetail never run | ✅ CLOSED 2026-03-17 — 569/569, xFG v1 trained |
-| ISSUE-020 | 209/569 players still missing gamelogs | ✅ CLOSED 2026-03-17 — 622/569 complete |
-| ISSUE-021 | Pipeline 5.1fps — YOLO imgsz=1280 bottleneck | ✅ Fixed 2026-03-17 — imgsz=640, 5.7fps (+12%) |
-| ISSUE-022 | _match_team crash without lapx — 256-dim vs 99-dim embedding mismatch | ✅ Fixed 2026-03-17 — pre-compute det["deep_emb"] before cost loop |
-
----
-
-## Files To Know
-
-| File | Purpose |
-|---|---|
-| `CLAUDE.md` | This file — project context for Claude |
-| `ROADMAP.md` | Full 11-phase build plan |
-| `.planning/STATE.md` | Current sprint state, dataset counts |
-| `src/tracking/advanced_tracker.py` | AdvancedFeetDetector — main tracker |
-| `src/tracking/color_reid.py` | TeamColorTracker — similar-color re-ID |
-| `src/tracking/jersey_ocr.py` | EasyOCR jersey number reader |
-| `src/pipeline/unified_pipeline.py` | Tracking → possession → spatial metrics → CSV |
-| `src/data/nba_enricher.py` | NBA API enrichment (shot labels, outcomes) |
-| `src/data/db.py` | PostgreSQL connection helper |
-| `src/prediction/win_probability.py` | Pre-game win prob (XGBoost) |
-| `src/prediction/player_props.py` | Player prop projections |
-| `src/features/feature_engineering.py` | 60+ ML features |
-| `src/analytics/shot_quality.py` | Shot quality score (0–1) |
-| `database/schema.sql` | PostgreSQL schema (9 tables, 2 views) |
-| `tests/test_phase2.py` | Phase 2 tracking tests |
-| `tests/test_phase3.py` | Phase 3 ML model tests |
-| `data/videos/` | 16 broadcast clips downloaded |
-| `resources/Rectify1.npy` | Precomputed homography |
-| `vault/` | Obsidian knowledge vault |
-
----
-
-## Knowledge Debt
-
-> Complex decisions and bug fixes. Use `[[Wikilinks]]`. Newest first.
-
-### 2026-03-17 — Full system vision designed: simulator + AI chat + analytics dashboard
-- **Decision:** Central architecture is a 7-model possession-by-possession Monte Carlo simulator (10K sims/game) producing stat distributions compared to book lines via Kelly sizing.
-- **50 models in 6 tiers:** Tier 1 (NBA API, 13 models) → Tier 2 (shot charts, 5) → Tier 3 (20 CV games, 10) → Tier 4 (50 games, 8) → Tier 5 (100 games, 7) → Tier 6 (200 games, 7 including LSTM).
-- **96 analytics metrics:** 36 player, 21 team, 6 lineup, 15 game, 10 predictive, 8 league-wide.
-- **AI chat architecture:** Claude API (claude-sonnet-4-6) + 10 tools + `render_chart` tool → frontend renders chart inline in chat. Split panel: chat left, canvas right.
-- **10 chart types:** shot chart (D3 hexbin), bar comparison, line trend, distribution curve, radar, heatmap, scatter, win prob waterfall, box plot, lineup matrix.
-- **CV quality gap vs Second Spectrum:** ~2-3% on prediction accuracy. Closed by pose estimation (3 days) + data volume (1000+ games). Unbridgeable gaps: ball height, hand contest — worth ~2% total, not worth chasing.
-- **Edge markets:** Role player props + minutes + live totals. Books price lazily, your spatial data has genuine edge. Stars props already sharp-moved.
-- **Related:** [[possession_simulator]], [[monte_carlo]], [[ai_chat]], [[render_chart]], [[prop_pricing]]
-
-### 2026-03-17 — Phase 2.5 CV upgrades designed
-- **Highest ROI:** Pose estimation (ankle keypoints) — 3 days, closes 60% of position gap vs SS. YOLOv8-pose or ViTPose.
-- **Critical blocker:** Per-clip homography (ISSUE-017) — M1 calibrated for pano_enhanced angle. Fix: auto-detect court lines per clip, build M1 from intersections.
-- **ByteTrack:** Replace Kalman+Hungarian → ID switch rate 15% → 3%.
-- **After Phase 2.5:** position ±6-8", xFG ~64%, ID switches ~3% (vs SS: ±3", ~68%, <1%).
-- **Related:** [[advanced_tracker]], [[rectify_court]], [[unified_pipeline]]
-
-### 2026-03-16 — player_scraper.py: 63-metric self-improving player data loop
-- **Built:** [[player_scraper]] `src/data/player_scraper.py`
-- **Tiers:** Base (25 cols), Advanced (16: usg_pct/ts_pct/off_rtg/def_rtg/net_rtg/pie/ast_pct/reb_pct/efg_pct...), Scoring (14: pct_pts_paint/mid_range/3pt/ft...), Misc (10: pts_off_tov/pts_paint/pts_fb...)
-- **Tier 2 per-player:** full gamelog (24 cols: all box score + plus_minus) + last-5/10/15/20 splits via PlayerDashboardByLastNGames
-- **Self-improving loop:** `run_improvement_loop(season, max_players)` — detects stale/missing metric groups, fills gaps in priority order (Advanced → Scoring → Misc → Base → GameLog → Splits), logs delta to vault
-- **Coverage tracking:** `data/nba/scraper_coverage.json` — per-player score 0–1, updated each run
-- **Profile lookup:** `get_player_profile("LeBron James")` → flat dict with all metrics + gamelog + splits + l5 computed stats
-- **CLI:** `python src/data/player_scraper.py --loop --max 100` or `--player "Jayson Tatum"`
-- **TTLs:** batch=24h, gamelog=6h, splits=12h — respects NBA API rate limits (0.8s delay)
-- **Related:** [[player_props]], [[nba_stats]], [[win_probability]]
-
-### 2026-03-16 — Phase 3 ML models built (untrained)
-- **Built:** [[win_probability]] `WinProbModel` (XGBoost, 27 features), [[game_prediction]] `predict_game()`, [[player_props]] `predict_props()` with rolling fallback, [[model_pipeline]] unified train/eval/save pipeline.
-- **Tests:** `tests/test_phase3.py` — 21 tests passing, isolated with monkeypatch, no NBA API calls needed.
-- **Key alias:** `WinProbabilityModel = WinProbModel` added for backward compat.
-- **Next:** Run `--train` to produce `data/models/win_probability.pkl`.
-- **Related:** [[model_pipeline]], [[player_props]], [[game_prediction]]
-
-### 2026-03-16 — Phase 3.5 planned: External Factors Scraper
-- **Decision:** Add external context layer between NBA API enrichment and ML models.
-- **Why:** Injury status, referee assignments, and line movement are underpriced in sportsbooks and not in current feature set. Injury alone worth ~1-2% accuracy on prop models.
-- **Priority order:** (1) `injury_monitor.py` — poll NBA official report + Rotowire, (2) `ref_tracker.py` — historical pace/foul tendencies + daily assignments, (3) `line_monitor.py` — The Odds API opening vs closing line, (4) `news_scraper.py` — ESPN headline keyword monitor.
-- **Related:** [[win_probability]], [[player_props]], [[betting_edge]]
-
-### 2026-03-16 — Phase 2 complete: ISSUE-005 similar-color re-ID fixed
-- **Change:** Added `src/tracking/color_reid.py`: `TeamColorTracker`, `dominant_team_color()`, `similar_team_colors()`.
-- **k-means k=2** per detection updates per-team EMA color signature. When team hue centroids within 20 hue units: appearance weight raised +0.10 in Hungarian cost; jersey-number tiebreaker window widened +0.10 in gallery re-ID.
-- **Related:** [[AdvancedFeetDetector]], [[advanced_tracker]]
-
-### 2026-03-16 — Phase 2 complete: Jersey OCR + player identity
-- **02-01:** EasyOCR dual-pass (normal + inverted binary crop) for dark-on-light and light-on-dark jerseys. `JerseyVotingBuffer` deque(maxlen=3) for noise-free confirmation. KMeans small-crop mean fallback.
-- **02-02:** `_jersey_buf` attr added per tracker slot; `reset_slot()` clears buffer on eviction. Jersey number feeds into re-ID tiebreaker.
-- **02-04:** `player_identity_map` schema in PostgreSQL; `persist_identity_map()` in `src/data/player_identity.py`.
-- **Related:** [[jersey_ocr]], [[advanced_tracker]], [[player_identity]]
-
-### 2026-03-16 — Phase 2 complete: Referee filtering
-- **Change:** Referee spatial columns (spacing, pressure) set to NaN sentinel — not row removal. String label `"referee"` used, not `team_id==2`. `compute_spatial_features()` in [[feature_engineering]] and [[shot_quality]] both guard on this.
-- **Related:** [[feature_engineering]], [[shot_quality]], [[defense_pressure]]
-
-### 2026-03-12 — ISSUE-004: Three-tier homography + court-line drift check
-- **Change:** [[unified_pipeline]] `_get_homography`: (1) reject <8 inliers, (2) EMA blend 8–39, (3) hard-reset ≥40. `_check_court_drift()` runs every 30 frames — checks white-pixel alignment of projected court boundary lines; if <0.35 → force hard-reset.
-- **Constants:** `_H_RESET_INLIERS=40`, `_REANCHOR_INTERVAL=30`, `_REANCHOR_ALIGN_MIN=0.35`
-- **Related:** [[rectify_court]], [[AdvancedFeetDetector]]
-
-### 2026-03-12 — Detectron2 → YOLOv8n migration
-- **Decision:** Replaced Mask R-CNN with YOLOv8n. `detectron2` not installable on Python 3.10 + PyTorch 2.1.
-- **Detection change:** `model(frame, classes=[0], conf=0.5)` → `boxes.xyxy`. Keypoint: `head_x=(x1+x2)//2`, `foot_y=y2`.
-- **Related:** [[FeetDetector]], [[AdvancedFeetDetector]]
-
-### 2026-03-12 — Re-ID spatial gate bug fix
-- **Bug:** `_reid` spatial IoU gate blocked valid re-IDs (players off-screen have low IoU with Kalman prediction). Gate removed — appearance threshold alone sufficient.
-- **Schema fix:** `timestamp` (seconds) and `velocity` (court px/frame) added to CSV output.
-- **Related:** [[AdvancedFeetDetector]], [[video_handler]]
+## Session Log
+- Latest: `vault/Sessions/Session-2026-03-25.md`
+- Full log: `vault/Sessions/`
