@@ -2291,3 +2291,218 @@ CLV check: did line move in model's direction after open?
 - Phase 7 (xFG v2 + behavioral profiles): ~62-65% — behavioral profiles beat pure statistics.
 - Phase 10 (100 games): ~63-67% with lineup chemistry + full matchup matrix.
 - Phase 12 (full stack): ~65-69% on targeted props. +10-15% edge on best bets.
+
+---
+
+## Expanded Betting Markets Roadmap
+> Added 2026-03-24. Full breakdown of every market, model, and EV target.
+> Priority tiers based on: (1) EV potential, (2) data already available, (3) build time.
+
+---
+
+### Phase 8.5: SGP Correlation Engine
+**Goal**: Price same-game parlays using real joint distributions instead of independence assumption.
+**Depends on**: Phase 8 (simulator running)
+**EV target**: +10–20% on select SGPs
+**Build time**: 2 weeks
+
+**Why this matters**: DraftKings/FanDuel introduced SGPs in 2020 and still price most legs as independent. Your prop correlation matrix + Monte Carlo simulator gives the actual joint probability. Books are systematically wrong on correlated legs.
+
+**Models needed:**
+- `src/prediction/sgp_pricer.py` — joint probability extractor from simulator output
+- `src/prediction/sgp_correlation_decay.py` — how correlation weakens across 2/3/4/5-leg parlays
+- `src/prediction/sgp_edge_scorer.py` — compare your joint P vs book's implied P per leg combo
+
+**Markets:**
+- Player A pts over + Player B ast over (P&R partner correlation)
+- Team total over + star player pts over (usage correlation)
+- Game total over + pace-pushing team wins (blowout correlation)
+- Any 2–6 leg SGP combination on same game
+
+**Success criteria:**
+1. SGP pricer produces calibrated joint probabilities (backtested vs outcomes)
+2. Edge scorer flags >10% mispriced parlays correctly 60%+ of time
+3. SGP optimizer in dashboard with top 5 edges per slate
+
+---
+
+### Phase 9.5: Quick-Win Betting Markets
+**Goal**: Activate 5 high-EV markets using data already collected. No new CV needed.
+**Depends on**: Phase 8 (simulator) + ref_tracker.py (already built)
+**EV targets**: +3–8% per market
+**Build time**: 2 weeks total
+
+#### 9.5-A: Minutes and Usage Props (3 days)
+**EV: +5–8%**
+Books price minutes off season averages. You price off real-time rotation context.
+- Wire rotation_predictor + dnp_predictor + garbage_time_detector + blowout_prob
+- `src/prediction/minutes_prop_model.py` — final minutes projection with confidence interval
+- Markets: player minutes over/under, starter/bench minutes splits, player to record 20+ min
+
+#### 9.5-B: First Half / Second Half Markets (2 days)
+**EV: +3–5%**
+Books split full-game lines naively. First-half scoring is highly predictable.
+- Extend first_half model (already built) with team fast-start tendency and ref half-pace
+- `src/prediction/halftime_models.py` — H1/H2 total, H1/H2 spread, H1 team total
+- Markets: H1 total, H1 spread, H2 total, H2 team total, largest lead at half
+
+#### 9.5-C: Referee Market Models (3 days)
+**EV: +3–5%**
+Referees have stable, measurable tendencies. Books barely adjust for crew assignment.
+- Extend ref_tracker.py (already built) with foul rate per 48, pace tendency, T-foul rate
+- `src/prediction/referee_prop_model.py` — foul/FTA/pace projections by crew
+- Markets: total fouls, total free throw attempts, total personal fouls per team, technical fouls
+
+#### 9.5-D: Threshold / Milestone Props (1 week)
+**EV: +6–10%**
+Books price milestones using normal distribution centered on player average. Your simulator gives actual distribution shape — especially important for skewed or bimodal performers.
+- `src/prediction/threshold_prob_extractor.py` — P(X > threshold) from simulator output
+- `src/prediction/milestone_prop_model.py` — DD/TD/20+/30+/10+ ast yes/no
+- Markets: double-double, triple-double, 20+ pts, 30+ pts, 5+ stl+blk combined, PRA combos
+
+#### 9.5-E: Team Total Model (2 days)
+**EV: +3–5%**
+Team total is independent of opponent's offense. Books price it as game_total / 2 + adjustment. Your model prices each team's offense vs tonight's specific defense.
+- `src/prediction/team_total_model.py` — team off_rtg vs opp def_rtg × pace × ref tendency
+- Markets: team total over/under, H1 team total, each quarter team total
+
+---
+
+### Phase 11.5: Advanced Markets
+**Goal**: Activate quarter-level, margin, and alt-line markets after full simulator is running.
+**Depends on**: Phase 11 (live models) + Phase 12 (full Monte Carlo)
+**EV targets**: +4–10% per market
+**Build time**: 3 weeks
+
+#### 11.5-A: Quarter Total Models (1 week)
+**EV: +4–6%**
+Each quarter has distinct scoring patterns. Q1 is most predictable (set plays, no fatigue, no foul trouble). Q4 in close games is predictable (intentional fouling, clock management).
+- `src/prediction/quarter_models.py` — Q1/Q2/Q3/Q4 total and team total
+- Q1 special model: tip-off possession + first-possession play type + team offensive tempo
+- Q4 special model: blowout_prob conditioning (Q4 in blowout = garbage time suppression)
+- Markets: Q1–Q4 total, Q1–Q4 team total, Q1 spread (who leads after 1)
+
+#### 11.5-B: Win Margin Distribution (3 days)
+**EV: +5–8%**
+Simulator already produces full margin distribution. Extract as market.
+- `src/prediction/margin_distribution_model.py` — P(win by 1-5), P(win by 6-10), etc.
+- Markets: winning margin range, game within 5 at half, OT yes/no (overtime_probability.py already built ✓)
+
+#### 11.5-C: Alt Line EV Model (1 week)
+**EV: +8–12%** — highest single-market EV after SGPs
+Books price alt lines algorithmically off the main line using a normal distribution. Your full distribution catches: (1) asymmetric performers (high-ceiling scorers), (2) injury-discounted games, (3) rest game suppression.
+- `src/prediction/alt_line_ev_model.py` — already built ✓, extend with full distribution input
+- Systematic sweep: price every alt line ±5/10/15 pts from main line for every player
+- Markets: alt pts over/under at every threshold, alt reb, alt ast, alt PRA
+
+#### 11.5-D: Derived Stats Props (3 days)
+**EV: +3–5%**
+Books now offer fantasy score, combined stat lines, and defensive props.
+- Wire simulator outputs to combined stat calculators
+- Markets: DK fantasy score over/under, PRA combined, stl+blk combined, tov over/under, personal fouls over/under
+
+---
+
+### Phase 12.5: Futures and Season Markets
+**Goal**: Build season-long and futures models. Long time horizon = more mispricing by books.
+**Depends on**: Phase 12 (full model stack)
+**EV targets**: +5–12% pre-season, +8–15% mid-season adjustments
+**Build time**: 3 weeks
+
+#### 12.5-A: Season Win Total Model (1 week)
+**EV: +4–8% pre-season, +8–15% mid-season**
+Books set win totals in October. Your injury model + schedule difficulty calculator catches adjustments faster than the market.
+- `src/prediction/season_win_total_model.py`
+  - Inputs: team ratings, schedule difficulty, injury risk per player, contract year flags, coaching tendencies
+  - Mid-season update: remaining SOS × current form × injury-adjusted roster
+- Markets: season win total over/under, make/miss playoffs, conference finish (top 4, 5-8, 9-10, miss)
+
+#### 12.5-B: Award Probability Model (1 week)
+**EV: +6–12% early season**
+Books post MVP/DPOY/ROTY/6MOY/MIP odds all season. Performance pricing is poor in October. Your models price production better than market consensus for first 3 months.
+- `src/prediction/award_probability_model.py`
+  - Inputs: projected stats (prop models), age curve, injury risk, team win total (narrative matters), historical award voting patterns
+  - Voter psychology modifier: recency bias, "narrative" games, media market size
+- Markets: MVP, DPOY, Sixth Man, Most Improved, Rookie of Year, Coach of Year
+
+#### 12.5-C: Playoff Series Simulator (2 weeks)
+**EV: +5–8%**
+Extend game simulator to series level. Playoff basketball has compressed variance (7 games, max scouting, fatigue accumulation) that your model captures.
+- `src/simulation/series_simulator.py` — run N×10K game sims across 7-game series
+  - Home court advantage in playoffs vs regular season (different coefficient)
+  - Fatigue accumulation across games (CV fatigue curve feeds directly in)
+  - Coaching adjustment speed (does coach solve matchup problem by Game 3?)
+- Markets: series winner, series length (4/5/6/7 games), conference champion, NBA champion, individual game lines in series
+
+---
+
+### Phase J: Live Betting Full Pipeline
+**Goal**: Real-time CV pipeline feeds live models. Highest-EV market in the entire system.
+**Depends on**: Phase 16 (live LSTM) + live video feed
+**EV target**: +8–15%
+**Build time**: 4 weeks (after Phase 16)
+
+**Why this is the final boss**: Books update live lines based on score and time. They are systematically slow on: lineup changes, foul trouble, fatigue signals, momentum shifts. Your CV pipeline updates every possession. That gap is money.
+
+**Models needed:**
+- Live win probability LSTM (Phase 16, already planned ✓)
+- `src/prediction/live_pace_adjuster.py` — real-time possessions/min → revised total
+- `src/prediction/live_prop_updater.py` — adjust player props based on current minutes, shots, fouls
+- `src/prediction/live_foul_trouble_model.py` — P(player fouls out) given current foul count + time
+- `src/prediction/live_lineup_impact.py` — detect lineup change from CV → adjust all affected props
+
+**Markets:**
+- Live spread
+- Live total (pace-adjusted in real time)
+- Live team total
+- Live player props (updated every possession)
+- Race to X points (next team to score 10/15/20 in quarter)
+- Next team to score yes/no
+- Player to score next basket
+
+**Infrastructure needed:**
+- Live video stream input (YouTube live, NBA League Pass API, or screen capture)
+- Sub-second processing pipeline (TRT engines + CUDA → <100ms per frame)
+- Live odds feed (The Odds API WebSocket or Pinnacle real-time)
+- Latency monitor (your model must beat book update by >2 seconds to capture edge)
+
+**Success criteria:**
+1. CV pipeline processes live feed at ≥30fps with <200ms total latency
+2. Live win prob updates within 1 possession of score change
+3. Live edge alerts generated within 3 seconds of lineup change
+4. Backtested live model shows +8%+ EV vs book live lines on held-out games
+
+---
+
+### Complete Market × EV Summary
+
+| Market | Phase | EV Target | Data Needed | Build Time |
+|---|---|---|---|---|
+| **Player props (standard)** | 4 ✅ | +4–7% | NBA API | Done |
+| **SGPs (correlation-aware)** | 8.5 | +10–20% | Simulator | 2 weeks |
+| **Alt lines (full distribution)** | 11.5-C | +8–12% | Simulator | 1 week |
+| **Live betting** | J | +8–15% | Live CV feed | 4 weeks |
+| **Threshold props (DD/TD/20+)** | 9.5-D | +6–10% | Simulator | 1 week |
+| **Minutes props** | 9.5-A | +5–8% | Already have | 3 days |
+| **Win margin distribution** | 11.5-B | +5–8% | Simulator | 3 days |
+| **Award futures** | 12.5-B | +6–12% | Full model stack | 1 week |
+| **Quarter totals** | 11.5-A | +4–6% | PBP + simulator | 1 week |
+| **Team totals** | 9.5-E | +3–5% | NBA API | 2 days |
+| **First half markets** | 9.5-B | +3–5% | PBP (have it) | 2 days |
+| **Referee markets** | 9.5-C | +3–5% | ref_tracker.py | 3 days |
+| **Playoff series** | 12.5-C | +5–8% | Full model stack | 2 weeks |
+| **Season win totals** | 12.5-A | +4–15% | Full model stack | 1 week |
+| **Derived stats (PRA/stl+blk)** | 11.5-D | +3–5% | Simulator | 3 days |
+| **Game spread** | 4 ✅ | +2–3% | NBA API | Done |
+| **Game total** | 4 ✅ | +3–4% | NBA API | Done |
+
+**Total markets at full build: 17 distinct betting categories, 50+ individual market types**
+
+**Priority build order after Phase H:**
+1. SGP engine (2 weeks) — highest single EV unlock
+2. Threshold props (1 week) — simulator already does the hard work
+3. Minutes props (3 days) — already 90% built
+4. First half markets (2 days) — PBP data already collected
+5. Referee models (3 days) — ref_tracker.py already built
+6. Alt line sweep (1 week) — alt_line_ev_model.py already built, extend with distribution
+7. Team totals (2 days) — team_total_normalizer.py already built ✓

@@ -1,0 +1,498 @@
+"""
+run_phase_g.py — Phase G: Batch-process existing game videos, no recording needed.
+
+Scans data/videos/full_games/ (game-ID-named) and data/videos/ (team-named),
+runs the full tracker pipeline on each unprocessed game, saves per-game outputs
+to data/tracking/{game_id}/, and logs tracker quality metrics.
+
+Usage:
+    conda activate basketball_ai
+    cd C:/Users/neelj/nba-ai-system
+
+    # Process all unprocessed games (default: first 10 min of each game)
+    python scripts/run_phase_g.py
+
+    # Process a specific number of frames per game (e.g. 5 min at 30fps = 9000)
+    python scripts/run_phase_g.py --frames 9000
+
+    # Process full games (slow — use for final validation)
+    python scripts/run_phase_g.py --full
+
+    # Re-process already-done games
+    python scripts/run_phase_g.py --reprocess
+
+    # Download + process (requires fetch_games.py run first, or add --download)
+    python scripts/run_phase_g.py --download --count 5
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+
+# Force UTF-8 output on Windows (cp1252 default chokes on Unicode video filenames)
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_DIR))
+
+DATA_DIR      = PROJECT_DIR / "data"
+VIDEOS_DIR    = DATA_DIR / "videos"
+FULL_GAMES    = VIDEOS_DIR / "full_games"
+TRACKING_DIR  = DATA_DIR / "tracking"
+DONE_LOG      = DATA_DIR / "phase_g_processed.txt"
+METRICS_LOG   = DATA_DIR / "phase_g_metrics.csv"
+VAULT_LOG     = PROJECT_DIR / "vault" / "Improvements" / "Tracker Improvements Log.md"
+
+# Frames to process per game in quick mode (10 min @ 30fps)
+DEFAULT_FRAMES = 18_000
+
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+def _done_set() -> set[str]:
+    if DONE_LOG.exists():
+        return set(DONE_LOG.read_text().splitlines())
+    return set()
+
+
+def _mark_done(key: str):
+    with open(DONE_LOG, "a") as f:
+        f.write(key + "\n")
+
+
+def _quality_label(ball_valid_pct: float) -> str:
+    """Fix 5: classify game tracking quality by ball detection rate."""
+    if ball_valid_pct >= 80.0:
+        return "high"
+    if ball_valid_pct >= 65.0:
+        return "medium"
+    return "low"
+
+
+def _save_metrics(game_key: str, game_id: Optional[str], metrics: dict):
+    METRICS_LOG.parent.mkdir(parents=True, exist_ok=True)
+    # Fix 5: add quality column
+    quality = _quality_label(float(metrics.get("ball_valid_pct", 0)))
+    fieldnames = ["timestamp", "game_key", "game_id", "frames", "stability",
+                  "id_switches", "ball_valid_pct", "quality", "duration_s"]
+    exists = METRICS_LOG.exists()
+    with open(METRICS_LOG, "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        if not exists:
+            w.writeheader()
+        w.writerow({
+            "timestamp":     datetime.now().isoformat(timespec="seconds"),
+            "game_key":      game_key,
+            "game_id":       game_id or "",
+            "quality":       quality,
+            **metrics,
+        })
+    if quality == "low":
+        print(f"  WARNING: {game_key} ball_valid={metrics.get('ball_valid_pct', 0):.1f}% "
+              f"— LOW QUALITY, exclude from training")
+
+
+def _log_to_vault(entries: list[str]):
+    if not VAULT_LOG.exists():
+        return
+    header = f"\n## Phase G — {datetime.now().strftime('%Y-%m-%d')}\n"
+    with open(VAULT_LOG, "a", encoding="utf-8") as f:
+        f.write(header)
+        for line in entries:
+            f.write(f"- {line}\n")
+
+
+def _is_complete(out_dir: Path) -> bool:
+    """Return True iff the output directory has all required CSVs with > 0 rows."""
+    required = ["ball_tracking.csv", "tracking_data.csv", "possessions.csv"]
+    for name in required:
+        p = out_dir / name
+        if not p.exists():
+            return False
+        try:
+            with open(p) as f:
+                reader = csv.reader(f)
+                next(reader)  # header
+                next(reader)  # at least one data row
+        except StopIteration:
+            return False  # file has 0 data rows
+        except Exception:
+            return False
+    return True
+
+
+def _recompute_ball_valid(ball_csv: Path) -> Optional[float]:
+    """Recompute ball_valid_pct using live-frame denominator if column exists.
+
+    For CSVs that have the `live` column: detected.sum() / live.sum().
+    For old CSVs without `live`: apply a streak-based heuristic — any stretch
+    of 90+ consecutive detected=0 frames is classified as non-live (replay /
+    halftime / ad-break) and excluded from the denominator.
+    """
+    if not ball_csv.exists():
+        return None
+    try:
+        detected_flags: list = []
+        live_flags: list     = []
+        has_live = False
+        with open(ball_csv) as bf:
+            for row in csv.DictReader(bf):
+                d = int(str(row.get("detected", "0")) == "1")
+                detected_flags.append(d)
+                if "live" in row:
+                    has_live = True
+                    live_flags.append(int(str(row["live"]) == "1"))
+
+        if not detected_flags:
+            return None
+
+        if has_live and live_flags:
+            detected  = sum(detected_flags)
+            live_total = sum(live_flags)
+            denom = live_total if live_total > 0 else len(detected_flags)
+            return round(detected / denom * 100, 1)
+
+        # Heuristic for old CSVs (no live column): mark 90+-frame zero-detection
+        # stretches as non-live.  30fps / stride=3 → 10 effective fps; 90 frames
+        # = 9 real seconds — long enough to span replays and halftime sequences.
+        _STREAK_MIN = 90
+        heuristic_live = [1] * len(detected_flags)
+        streak_start = None
+        for i, d in enumerate(detected_flags):
+            if d == 0:
+                if streak_start is None:
+                    streak_start = i
+            else:
+                if streak_start is not None and (i - streak_start) >= _STREAK_MIN:
+                    for j in range(streak_start, i):
+                        heuristic_live[j] = 0
+                streak_start = None
+        # Handle trailing streak
+        if streak_start is not None and (len(detected_flags) - streak_start) >= _STREAK_MIN:
+            for j in range(streak_start, len(detected_flags)):
+                heuristic_live[j] = 0
+
+        detected   = sum(detected_flags)
+        live_total = sum(heuristic_live)
+        denom = live_total if live_total > 0 else len(detected_flags)
+        return round(detected / denom * 100, 1)
+    except Exception:
+        pass
+    return None
+
+
+def _collect_videos() -> list[tuple[str, Path, Optional[str]]]:
+    """Return list of (display_key, video_path, game_id_or_None)."""
+    videos = []
+
+    # full_games/*.mp4 — filename IS the game ID
+    if FULL_GAMES.exists():
+        for p in sorted(FULL_GAMES.glob("*.mp4")):
+            gid = p.stem  # e.g. "0022400625"
+            videos.append((gid, p, gid))
+
+    # data/videos/*.mp4 — team-named clips, no game ID
+    for p in sorted(VIDEOS_DIR.glob("*.mp4")):
+        key = p.stem
+        videos.append((key, p, None))
+
+    return videos
+
+
+def _backfill_live_pct():
+    """Recompute ball_valid_pct for all processed games using live-frame denominator.
+
+    Reads each game's ball_tracking.csv from data/tracking/{game_id}/ and updates
+    the ball_valid_pct column in phase_g_metrics.csv.  Games whose CSVs lack the
+    `live` column fall back to the existing detected/total computation.
+    """
+    if not METRICS_LOG.exists():
+        print("phase_g_metrics.csv not found — nothing to backfill.")
+        return
+
+    rows = []
+    with open(METRICS_LOG, newline="") as f:
+        rows = list(csv.DictReader(f))
+
+    updated = 0
+    for row in rows:
+        game_key = row.get("game_key", "")
+        ball_csv = TRACKING_DIR / game_key / "ball_tracking.csv"
+        pct = _recompute_ball_valid(ball_csv)
+        if pct is not None:
+            old_pct = row.get("ball_valid_pct", "")
+            row["ball_valid_pct"] = str(pct)
+            row["quality"] = _quality_label(pct)   # Fix 5: backfill quality label
+            if old_pct != str(pct):
+                print(f"  {game_key}: ball_valid_pct  {old_pct} → {pct}  quality={row['quality']}")
+                updated += 1
+
+    if not rows:
+        print("No rows to update.")
+        return
+
+    # Ensure quality column is present in fieldnames (older CSVs won't have it)
+    fieldnames = list(rows[0].keys())
+    if "quality" not in fieldnames:
+        # Insert after ball_valid_pct
+        idx = fieldnames.index("ball_valid_pct") + 1 if "ball_valid_pct" in fieldnames else len(fieldnames)
+        fieldnames.insert(idx, "quality")
+    with open(METRICS_LOG, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+
+    print(f"Backfill complete — {updated} game(s) updated in {METRICS_LOG.name}")
+
+
+def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
+              out_dir: Path) -> dict:
+    """Run run_clip.py and capture metrics. Returns metrics dict."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    cmd = [
+        sys.executable, str(PROJECT_DIR / "scripts" / "run_clip.py"),
+        "--video", str(video),
+        "--no-show",
+        "--data-dir", str(out_dir),   # Fix 2: write directly to per-game dir
+    ]
+    if frames:
+        cmd += ["--frames", str(frames)]
+    if game_id:
+        cmd += ["--game-id", game_id, "--period", "1"]
+
+    t0 = time.time()
+    result = subprocess.run(
+        cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+        cwd=str(PROJECT_DIR),
+    )
+    elapsed = time.time() - t0
+
+    # Parse metrics from stdout
+    metrics = {"duration_s": round(elapsed, 1), "frames": 0,
+               "stability": 0.0, "id_switches": 0, "ball_valid_pct": 0.0}
+    for line in (result.stdout or "").splitlines():
+        # "Frames : 58533  (1951s @ 30fps)" or "Frames processed: N"
+        if ("Frames processed" in line or
+                (line.strip().startswith("Frames") and ":" in line and "@" in line)):
+            try:
+                metrics["frames"] = int(line.split(":")[1].strip().split()[0])
+            except (ValueError, IndexError):
+                pass
+        elif "Track stability" in line:
+            try:
+                metrics["stability"] = float(line.split(":")[-1].strip())
+            except ValueError:
+                pass
+        elif "Est. ID switches" in line:
+            try:
+                metrics["id_switches"] = int(line.split(":")[-1].strip())
+            except ValueError:
+                pass
+        elif "ball_valid" in line.lower() or "ball valid" in line.lower():
+            try:
+                pct = float(line.split()[-1].rstrip("%"))
+                metrics["ball_valid_pct"] = pct
+            except (ValueError, IndexError):
+                pass
+
+    # Fix 2: run_clip.py now writes directly to out_dir (--data-dir flag above),
+    # so the shutil.copy2 loop is no longer needed and has been removed.
+
+    # Compute ball_valid_pct from ball_tracking.csv written directly to out_dir.
+    # When the `live` column exists, use detected.sum() / live.sum() (excludes replay/
+    # halftime frames from the denominator).  Falls back to detected.mean() for old CSVs.
+    if metrics["ball_valid_pct"] == 0.0:
+        ball_csv = out_dir / "ball_tracking.csv"
+        if ball_csv.exists():
+            try:
+                import csv as _csv
+                detected = live_total = total = 0
+                has_live = False
+                with open(ball_csv, encoding="utf-8", errors="replace") as bf:
+                    for row in _csv.DictReader(bf):
+                        total += 1
+                        if str(row.get("detected", "0")) == "1":
+                            detected += 1
+                        if "live" in row:
+                            has_live = True
+                            if str(row["live"]) == "1":
+                                live_total += 1
+                denom = live_total if (has_live and live_total > 0) else total
+                if denom > 0:
+                    metrics["ball_valid_pct"] = round(detected / denom * 100, 1)
+            except Exception:
+                pass
+
+    # Save run log
+    (out_dir / "run.log").write_text(
+        (result.stdout or "") + "\n--- STDERR ---\n" + (result.stderr or ""),
+        encoding="utf-8",
+    )
+
+    if result.returncode == 3:
+        print(f"  [WARN] run_clip.py exited 3 — Stage 1 produced 0 rows (no gameplay detected)")
+        print("         Video may need manual review or different start frame.")
+    elif result.returncode not in (0, 2):  # 2 = short clip warning, still ok
+        print(f"  [WARN] run_clip.py exited {result.returncode}")
+        if result.stderr:
+            print(result.stderr[-500:])
+
+    return metrics
+
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+def main():
+    ap = argparse.ArgumentParser(description="Phase G — batch tracker evaluation")
+    ap.add_argument("--frames",     type=int, default=DEFAULT_FRAMES,
+                    help="Frames per game in quick mode (default 18000 = ~10 min)")
+    ap.add_argument("--full",       action="store_true",
+                    help="Process entire video, not just the first N frames")
+    ap.add_argument("--reprocess",  action="store_true",
+                    help="Re-run games already in done log")
+    ap.add_argument("--limit",      type=int, default=None,
+                    help="Max number of games to process this run")
+    ap.add_argument("--game-ids",   nargs="*", default=None,
+                    help="Only process specific game IDs / keys")
+    ap.add_argument("--resume",     action="store_true",
+                    help="Re-run games that are in done log but have incomplete output "
+                         "(missing ball_tracking.csv, tracking_data.csv, or possessions.csv)")
+    ap.add_argument("--download",   action="store_true",
+                    help="Download missing games first via fetch_games.py")
+    ap.add_argument("--count",      type=int, default=5,
+                    help="Games to download when --download is set (default 5)")
+    ap.add_argument("--backfill-live", action="store_true",
+                    help="Recompute ball_valid_pct for all processed games using "
+                         "live-frame denominator (detected/live rows) and update "
+                         "phase_g_metrics.csv in place.")
+    args = ap.parse_args()
+
+    if args.download:
+        print("==> Downloading games via fetch_games.py ...")
+        subprocess.run(
+            [sys.executable, str(PROJECT_DIR / "scripts" / "fetch_games.py"),
+             "--count", str(args.count)],
+            cwd=str(PROJECT_DIR),
+        )
+
+    done = _done_set()
+
+    # --backfill-live: recompute ball_valid_pct in-place for all processed games
+    if args.backfill_live:
+        _backfill_live_pct()
+        return
+
+    videos = _collect_videos()
+
+    if args.game_ids:
+        videos = [(k, p, g) for k, p, g in videos if k in args.game_ids]
+
+    if not args.reprocess:
+        videos = [(k, p, g) for k, p, g in videos if k not in done]
+
+    # --resume: also re-run games that are in done log but have incomplete output
+    if args.resume:
+        # Collect all video entries (including done ones) and filter to incomplete
+        all_videos = _collect_videos()
+        if args.game_ids:
+            all_videos = [(k, p, g) for k, p, g in all_videos if k in args.game_ids]
+        incomplete = [
+            (k, p, g) for k, p, g in all_videos
+            if k in done and not _is_complete(TRACKING_DIR / k)
+        ]
+        # Merge with already-filtered list, avoiding duplicates
+        existing_keys = {k for k, _, _ in videos}
+        videos = videos + [(k, p, g) for k, p, g in incomplete if k not in existing_keys]
+        if incomplete:
+            print(f"  [resume] Found {len(incomplete)} incomplete game(s) to reprocess: "
+                  f"{', '.join(k for k, _, _ in incomplete)}")
+
+    if not videos:
+        print("No unprocessed games found. Use --reprocess to re-run done games.")
+        return
+
+    if args.limit:
+        videos = videos[:args.limit]
+
+    frames_per_game = None if args.full else args.frames
+    print(f"\nPhase G — processing {len(videos)} game(s), "
+          f"{'full game' if args.full else f'first {frames_per_game} frames'} each\n")
+
+    vault_entries = []
+    total_t0 = time.time()
+
+    for i, (key, video_path, game_id) in enumerate(videos, 1):
+        print(f"[{i}/{len(videos)}] {key}")
+        print(f"  video  : {video_path}")
+        print(f"  game_id: {game_id or '(no enrichment)'}")
+
+        out_dir = TRACKING_DIR / key
+        metrics = _run_clip(video_path, game_id, frames_per_game, out_dir)
+
+        # Only save metrics + mark done when output is complete.
+        # Incomplete runs (crash mid-pipeline) leave no metrics row — re-run
+        # with --resume to produce correct metrics after recovery.
+        if _is_complete(out_dir):
+            _save_metrics(key, game_id, metrics)
+            _mark_done(key)
+        else:
+            print(f"  [WARN] Output incomplete for {key} — skipping metrics + done log. "
+                  f"Re-run with --resume to retry.")
+
+        print(f"  frames     : {metrics['frames']}")
+        print(f"  stability  : {metrics['stability']:.3f}")
+        print(f"  id_switches: {metrics['id_switches']}")
+        print(f"  ball_valid : {metrics['ball_valid_pct']:.1f}%")
+        print(f"  elapsed    : {metrics['duration_s']:.0f}s")
+        print(f"  output     : {out_dir}")
+        print()
+
+        vault_entries.append(
+            f"{key} — stability={metrics['stability']:.3f} "
+            f"id_sw={metrics['id_switches']} "
+            f"ball={metrics['ball_valid_pct']:.1f}% "
+            f"({metrics['frames']} frames, {metrics['duration_s']:.0f}s)"
+        )
+
+    total_elapsed = time.time() - total_t0
+    print(f"Phase G complete — {len(videos)} games in {total_elapsed:.0f}s")
+    print(f"Metrics log : {METRICS_LOG}")
+
+    _log_to_vault(vault_entries)
+
+    # Print aggregate summary
+    if METRICS_LOG.exists():
+        import statistics
+        rows = []
+        with open(METRICS_LOG) as f:
+            for row in csv.DictReader(f):
+                try:
+                    rows.append({
+                        "stability":    float(row["stability"]),
+                        "id_switches":  int(row["id_switches"]),
+                        "ball_valid":   float(row["ball_valid_pct"]),
+                    })
+                except (ValueError, KeyError):
+                    pass
+        if rows:
+            print("\n-- Aggregate across all processed games -------------")
+            print(f"  stability  avg={statistics.mean(r['stability'] for r in rows):.3f}")
+            print(f"  id_switches avg={statistics.mean(r['id_switches'] for r in rows):.1f}")
+            print(f"  ball_valid  avg={statistics.mean(r['ball_valid'] for r in rows):.1f}%")
+
+
+if __name__ == "__main__":
+    main()

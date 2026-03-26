@@ -1,145 +1,60 @@
-# NBA AI System — Home
-*Auto-updated: 2026-03-19 01:23*
+# CourtVision — Knowledge Base Home
+*Last updated: 2026-03-24*
 
 ---
 
-## Pick Up Here Next Session
-*(fill in 'What's Next' in today's session note)*
+## Quick Navigation
+
+| Note | Description |
+|------|-------------|
+| [[01 - System Architecture]] | End-to-end architecture, data flow, component map |
+| [[02 - Model Catalog]] | All 90 models, tiers, training status, performance |
+| [[03 - Data Sources]] | Every data source, scraper, TTL, coverage stats |
+| [[04 - Pipeline Flow]] | Step-by-step pipeline from video to edge flag |
+| [[05 - Ideas and Future Work]] | Roadmap ideas, experiments, backlog |
 
 ---
 
-## Last Session Changes (2026-03-19)
-- no file changes
+## Current Status
+
+**Phase:** 4 of 17 — Tier 1 Models (Active)
+**Next action:** Phase F — run `scripts/full_game_pipeline.py`
+**Full game CV data:** 0 games processed (blocker for Phases 7–16)
+
+### Open Priority Issues
+
+- 🔴 Win prob / game prediction — data ready, live feature pipeline TBD
+- 🔴 Analytics + tracking dashboards — not yet built
+- 🟡 HSV re-ID — jersey confusion on similar-colored uniforms
+- 🔴 Real game clip needed for tracker benchmarking (plateaued on calibration clip)
+- 🟢 Pano validation + fallback — fixed 2026-03-12
 
 ---
 
-## Open Priority Issues
-- 1. 🔴 Win probability / game prediction models — data pipeline now ready, model still TBD
-- 2. 🔴 Analytics + tracking dashboards (not built yet)
-- 3. 🟡 HSV re-ID upgrades (jersey confusion on similar-colored uniforms)
-- 4. 🔴 Real game clip needed — tracker has plateaued on Short4Mosaicing calibration clip; need actual NBA broadcast footage to benchmark further
-- 5. 🟢 Pano validation + fallback — fixed 2026-03-12
+## Model Performance (Phase 4 — Trained)
+
+| Model | Metric | Value |
+|-------|--------|-------|
+| Win probability | Accuracy | 69.1% |
+| Win probability | Brier | 0.203 |
+| Player props (pts) | MAE | 0.308 |
+| Player props (all 7) | R² | >0.93 |
+| xFG v1 | Brier | 0.226 |
+| DNP predictor | AUC | 0.979 |
+| Matchup model | R² | 0.796 |
 
 ---
 
-## Project Status
-| Module | Status |
-|--------|--------|
-| Player detection (Detectron2) | ✅ |
-| Ball tracking (Hough + CSRT) | ✅ |
-| Court rectification (homography) | ✅ |
-| Video processing loop | ✅ |
-| Betting Edge | ✅ |
-| Chat | ✅ |
-| Defense Pressure | ✅ |
-| Defensive Scheme | ✅ |
-| Drive Analysis | ✅ |
-| Game Flow | ✅ |
-| Lineup Synergy | ✅ |
-| Micro Timing | ✅ |
-| Momentum | ✅ |
-| Momentum Events | ✅ |
-| Off Ball Events | ✅ |
-| Passing Network | ✅ |
-| Pick And Roll | ✅ |
-| Play Recognition | ✅ |
-| Player Defensive Pressure | ✅ |
-| Prop Correlation | ✅ |
-| Rebound Positioning | ✅ |
-| Shot Creation | ✅ |
-| Shot Quality | ✅ |
-| Space Control | ✅ |
-| Spacing | ✅ |
-| Spatial Types | ✅ |
-| Bbref Scraper | ✅ |
-| Cache Utils | ✅ |
-| Contracts Scraper | ✅ |
-| Db | ✅ |
-| Game Matcher | ✅ |
-| Injury Monitor | ✅ |
-| Line Monitor | ✅ |
-| Lineup Data | ✅ |
-| Nba Enricher | ✅ |
-| Nba Stats | ✅ |
-| Nba Tracking Stats | ✅ |
-| News Scraper | ✅ |
-| Odds Scraper | ✅ |
-| Pbp Features | ✅ |
-| Pbp Scraper | ✅ |
-| Player Identity | ✅ |
-| Player Scraper | ✅ |
-| Prop Validator | ✅ |
-| Props Scraper | ✅ |
-| Ref Tracker | ✅ |
-| Schedule Context | ✅ |
-| Shot Chart Scraper | ✅ |
-| Video Fetcher | ✅ |
-| Detection Model | ✅ |
-| Classes | 🔲 |
-| Inference | ✅ |
-| Train | ✅ |
-| Feature Engineering | ✅ |
-| Data Loader | ✅ |
-| Feature Pipeline | ✅ |
-| Model Pipeline | ✅ |
-| Run Pipeline | ✅ |
-| Tracking Pipeline | ✅ |
-| Unified Pipeline | ✅ |
-| Clutch Efficiency | ✅ |
-| Dnp Predictor | ✅ |
-| Game Models | ✅ |
-| Game Prediction | ✅ |
-| Matchup Model | ✅ |
-| Player Props | ✅ |
-| Shot Zone Tendency | ✅ |
-| Win Probability | ✅ |
-| Xfg Model | ✅ |
-| Download Data | ✅ |
-| Model | ✅ |
-| Cbam | ✅ |
-| Loss | ✅ |
-| Reid | ✅ |
-| Transform | ✅ |
-| Inference | ✅ |
-| Train | ✅ |
-| Tracker | ✅ |
-| Advanced Tracker | ✅ |
-| Ball Detect Track | ✅ |
-| Color Reid | ✅ |
-| Court Detector | ✅ |
-| Evaluate | ✅ |
-| Event Detector | ✅ |
-| Jersey Ocr | ✅ |
-| Osnet Reid | ✅ |
-| Play Type Classifier | ✅ |
-| Player | ✅ |
-| Player Detection | ✅ |
-| Player Identity | ✅ |
-| Possession Classifier | ✅ |
-| Rectify Court | ✅ |
-| Scoreboard Ocr | ✅ |
-| Tracker Config | ✅ |
-| Plot Tools | ✅ |
-| Video Handler | ✅ |
-| Bbox Crop | ✅ |
-| Frame | ✅ |
-| Visualize | ✅ |
+## Session Log
+
+- [[Sessions/Session-2026-03-24]]
+- Full history in `vault/Sessions/`
 
 ---
 
-## Recent Sessions
-- [[Sessions/Session-2026-03-19]]
-- [[Sessions/Session-2026-03-18]]
-- [[Sessions/Session-2026-03-17]]
-- [[Sessions/Session-2026-03-16]]
-- [[Sessions/Session-2026-03-16-loops]]
+## Key Decisions
 
----
-
-## Quick Links
-- [[Improvements/Tracker Improvements Log]] — all issues & fixes
-- [[Sessions/Session-2026-03-19]] — today's session
-- [[Pipeline/System Architecture]] — how everything connects
-
----
-*This file is auto-generated by finalize_session.py — do not edit manually*
+- **2026-03-17:** Full system vision designed — simulator + AI chat + analytics dashboard → [[01 - System Architecture]]
+- **2026-03-17:** 90-model architecture in 6 tiers, 96 analytics metrics, Claude AI chat with render_chart → [[02 - Model Catalog]]
+- **2026-03-18:** All Phase 3.5 data fetched (hustle, on/off, matchups, synergy, BBRef, contracts) → [[03 - Data Sources]]
+- **2026-03-20:** Prop model stack (Ridge meta) + betting portfolio (Kelly + CLV) + backtester built → [[02 - Model Catalog]]

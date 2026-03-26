@@ -307,6 +307,28 @@ def get_game_lines(home_team: str, away_team: str) -> dict:
     }
 
 
+def get_current_lines(game_id: str) -> dict:
+    """Return current lines for a game by game_id.
+
+    Looks up the cached lines keyed by game_id.  Falls back to empty dict
+    if the game_id is not in the cache.
+
+    Args:
+        game_id: NBA game ID string (e.g. "0022400001").
+
+    Returns:
+        Line dict matching the get_game_lines() schema, or {} if not found.
+    """
+    try:
+        lines = refresh_lines()
+        rec = lines.get(str(game_id))
+        if rec:
+            return rec
+        return {"found": False}
+    except Exception:
+        return {"found": False}
+
+
 def get_sharp_signal(home_team: str, away_team: str) -> float:
     """
     Compute sharp-money signal for the home team.

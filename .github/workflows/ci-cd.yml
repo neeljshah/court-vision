@@ -1,0 +1,190 @@
+name: NBA AI System CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run daily pipeline at 8 AM UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+    inputs:
+      deploy_to_stitch:
+        description: 'Deploy to Stitch'
+        required: false
+        default: 'false'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.9]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Run tests without video processing
+      run: |
+        python -m pytest tests/ -v --cov=src --cov-report=xml --tb=short
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  build-and-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_to_stitch == 'true'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/nba-ai-system:latest
+          ${{ secrets.DOCKER_USERNAME }}/nba-ai-system:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Deploy to Stitch
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.STITCH_HOST }}
+        username: ${{ secrets.STITCH_USERNAME }}
+        key: ${{ secrets.STITCH_SSH_KEY }}
+        script: |
+          cd /opt/nba-ai-system
+          docker-compose pull
+          docker-compose down
+          docker-compose up -d
+          docker system prune -f
+
+  daily-pipeline:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 8 * * *'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run daily pipeline
+      env:
+        NBA_API_KEY: ${{ secrets.NBA_API_KEY }}
+        THE_ODDS_API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python scripts/daily_pipeline.py
+        python scripts/record_outcome.py
+    
+    - name: Update models if improved
+      run: |
+        python src/pipeline/auto_retrain.py --check-improvement
+    
+    - name: Commit updated models
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/models/
+        git commit -m "Auto-update models from daily pipeline" || exit 0
+        git push
+
+  model-training:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[retrain]')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Retrain models
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        python src/prediction/win_probability.py --train
+        python src/prediction/player_props.py --train
+        python src/prediction/xfg_model.py --train
+    
+    - name: Test new models
+      run: |
+        python -m pytest tests/test_models.py -v
+    
+    - name: Commit updated models
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/models/
+        git commit -m "Retrain models - ${{ github.sha }}"
+        git push
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'

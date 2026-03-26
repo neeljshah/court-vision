@@ -1,10 +1,13 @@
 """
 props_scraper.py — Current-day player props from DraftKings and FanDuel.
 
-Uses public JSON endpoints (no auth required). Refreshes at 15-minute TTL
-to respect rate limits. Never hits the same endpoint twice per minute.
+Priority fallback chain for get_current_props():
+  1. The Odds API (ODDS_API_KEY env var, free tier 500 req/mo) — most reliable
+  2. DraftKings direct scrape (public JSON endpoint, often blocked)
+  3. Manual seed file: data/props/props_{today}.json
 
-Prop types scraped: pts, reb, ast, 3pm, stl, blk
+Refreshes at 15-minute TTL to respect rate limits.
+Prop types: pts, reb, ast, 3pm, stl, blk
 
 Public API
 ----------
@@ -18,6 +21,7 @@ Public API
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import sys
@@ -27,6 +31,14 @@ from typing import List, Optional
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(override=False)
+except ImportError:
+    pass
+
+log = logging.getLogger(__name__)
 
 _EXT_CACHE = os.path.join(PROJECT_DIR, "data", "external")
 _TTL_15MIN = 15 * 60    # minimum cache TTL — never hit same endpoint twice/min
@@ -279,12 +291,140 @@ def _merge_over_under(raw: list) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# The Odds API (primary source — ODDS_API_KEY env var)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_ODDS_API_BASE = "https://api.the-odds-api.com/v4"
+_ODDS_API_MARKET_MAP = {
+    "player_points":   "points",
+    "player_rebounds": "rebounds",
+    "player_assists":  "assists",
+    "player_threes":   "threes",
+    "player_steals":   "steals",
+    "player_blocks":   "blocks",
+}
+_ODDS_API_MARKETS_PARAM = ",".join(_ODDS_API_MARKET_MAP.keys())
+
+
+def _fetch_odds_api_props(bookmaker: str = "draftkings") -> list:
+    """
+    Fetch NBA player props from The Odds API (https://the-odds-api.com).
+
+    Requires ODDS_API_KEY env var. Free tier: 500 requests/month.
+    Uses per-event endpoint — one call per game + one call for event list.
+    """
+    import requests
+
+    api_key = os.environ.get("ODDS_API_KEY", "")
+    if not api_key:
+        log.debug("ODDS_API_KEY not set — skipping Odds API")
+        return []
+
+    # Step 1: get today's NBA events
+    try:
+        resp = requests.get(
+            f"{_ODDS_API_BASE}/sports/basketball_nba/events",
+            params={"apiKey": api_key},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            log.warning("Odds API events returned %s: %s", resp.status_code, resp.text[:200])
+            return []
+        events = resp.json()
+    except Exception as e:
+        log.warning("Odds API events error: %s", e)
+        return []
+
+    if not events:
+        log.info("Odds API: no events today")
+        return []
+
+    # Step 2: fetch player prop odds per event (all markets in one call)
+    records: list = []
+    for event in events[:12]:   # cap at 12 games to stay within free quota
+        event_id = event.get("id")
+        if not event_id:
+            continue
+        try:
+            time.sleep(0.4)
+            resp = requests.get(
+                f"{_ODDS_API_BASE}/sports/basketball_nba/events/{event_id}/odds",
+                params={
+                    "apiKey":      api_key,
+                    "regions":     "us",
+                    "markets":     _ODDS_API_MARKETS_PARAM,
+                    "oddsFormat":  "american",
+                    "bookmakers":  bookmaker,
+                },
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                continue
+            event_odds = resp.json()
+        except Exception as e:
+            log.warning("Odds API event %s error: %s", event_id, e)
+            continue
+
+        for bk in event_odds.get("bookmakers", []):
+            for market in bk.get("markets", []):
+                prop_type = _ODDS_API_MARKET_MAP.get(market.get("key", ""))
+                if not prop_type:
+                    continue
+                for outcome in market.get("outcomes", []):
+                    # player name is in "description" for player props
+                    player_name = outcome.get("description") or outcome.get("name", "")
+                    if not player_name:
+                        continue
+                    line  = float(outcome.get("point", 0) or 0)
+                    price = int(outcome.get("price", 0) or 0)
+                    side  = (outcome.get("name") or "").upper()
+                    records.append({
+                        "player_name": player_name,
+                        "prop_type":   prop_type,
+                        "line":        line,
+                        "over_odds":   price if "OVER" in side else None,
+                        "under_odds":  price if "UNDER" in side else None,
+                        "book":        bookmaker,
+                        "fetched_at":  datetime.now(timezone.utc).isoformat(),
+                    })
+
+    log.info("Odds API: %d raw prop rows from %d events", len(records), len(events))
+    return _merge_over_under(records)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Manual seed fallback
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _load_cached_props(today: str) -> list:
+    """
+    Load hand-edited seed file: data/props/props_{today}.json.
+    Returns [] if not found or malformed.
+    """
+    path = os.path.join(PROJECT_DIR, "data", "props", f"props_{today}.json")
+    if not os.path.exists(path):
+        return []
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+        result = data if isinstance(data, list) else data.get("props", [])
+        if result:
+            log.info("Loaded %d props from manual seed %s", len(result), path)
+        return result
+    except Exception as e:
+        log.warning("Could not load manual props seed %s: %s", path, e)
+        return []
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Public API
 # ─────────────────────────────────────────────────────────────────────────────
 
 def get_current_props(book: str = "draftkings") -> list:
     """
-    Fetch current-day player props from the specified book.
+    Fetch current-day player props. Three-tier fallback:
+      1. The Odds API (ODDS_API_KEY) — most reliable
+      2. DraftKings / FanDuel direct scrape — often blocked, kept as fallback
+      3. Manual seed file: data/props/props_{today}.json
 
     Respects 15-minute TTL — will not re-fetch if cache is fresh.
 
@@ -292,40 +432,44 @@ def get_current_props(book: str = "draftkings") -> list:
         book: "draftkings" | "fanduel"
 
     Returns:
-        List of prop dicts:
-        [
-            {
-                "player_name": str,
-                "prop_type":   str,    # "points", "rebounds", etc.
-                "line":        float,
-                "over_odds":   int | None,    # American odds
-                "under_odds":  int | None,
-                "book":        str,
-                "fetched_at":  str,
-            }, ...
-        ]
+        List of prop dicts with keys: player_name, prop_type, line,
+        over_odds, under_odds, book, fetched_at.
     """
     key  = f"current_props_{_safe(book)}"
     path = _cache_path(key)
     if _is_fresh(path, _TTL_15MIN):
         return _load(path)
 
-    if book == "draftkings":
-        records = _fetch_dk_all_props()
-    elif book == "fanduel":
-        records = _fetch_fd_props()
-    else:
-        raise ValueError(f"Unknown book: {book}. Use 'draftkings' or 'fanduel'.")
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # Tier 1: The Odds API
+    records = _fetch_odds_api_props(bookmaker=book if book == "draftkings" else "fanduel")
+
+    # Tier 2: Direct scrape fallback
+    if not records:
+        log.info("Odds API returned 0 props — trying direct %s scrape", book)
+        if book == "draftkings":
+            records = _fetch_dk_all_props()
+        elif book == "fanduel":
+            records = _fetch_fd_props()
+        else:
+            log.warning("Unknown book '%s' — skipping direct scrape", book)
+
+    # Tier 3: Manual seed file
+    if not records:
+        log.info("Direct scrape returned 0 props — trying manual seed file")
+        records = _load_cached_props(today)
 
     if not records:
-        print(f"[props_scraper] No props fetched from {book} — returning empty list")
-        # Return stale cache if available
+        log.warning("No props fetched from %s (all sources exhausted)", book)
+        # Return stale cache rather than empty
         if os.path.exists(path):
+            log.info("Returning stale cache for %s", book)
             return _load(path)
         return []
 
     _save(path, records)
-    print(f"[props_scraper] {book}: {len(records)} props fetched")
+    log.info("%s: %d props fetched and cached", book, len(records))
     return records
 
 

@@ -1,28 +1,35 @@
 """
 process_game.py — Automate full-game processing across multiple clips/quarters.
 
-Runs the full pipeline (tracking → features → NBA enrichment) for each clip,
-saves outputs to data/games/<game_id>/q<N>/, then merges all quarters into a
-single game-level dataset.
+Runs the full pipeline (tracking → features → NBA enrichment → auto-retrain)
+for each clip, saves outputs to data/games/<game_id>/q<N>/, then merges all
+quarters into a single game-level dataset.
 
 Usage
 -----
     conda activate basketball_ai
     cd C:/Users/neelj/nba-ai-system
 
-    # One clip per quarter (most common)
-    python process_game.py --game-id 0022301234 \\
+    # Simple single-clip mode (most common for first run)
+    python scripts/process_game.py --video data/videos/q1.mp4 \\
+        --game-id 0022301234 --period 1
+
+    python scripts/process_game.py --video data/videos/q1.mp4 \\
+        --game-id 0022301234 --period 1 --skip 2 --no-enrich
+
+    # Multi-clip mode (full game — one clip per quarter)
+    python scripts/process_game.py --game-id 0022301234 \\
       --clips "q1.mp4:1:0" "q2.mp4:2:0" "q3.mp4:3:0" "q4.mp4:4:0"
 
     # With custom start offsets (e.g. clip starts 3 min into Q2)
-    python process_game.py --game-id 0022301234 \\
+    python scripts/process_game.py --game-id 0022301234 \\
       --clips "q1_full.mp4:1:0" "q2_clip.mp4:2:180"
 
     # From a JSON manifest (easier for batch scheduling)
-    python process_game.py --game-id 0022301234 --manifest clips.json
+    python scripts/process_game.py --game-id 0022301234 --manifest clips.json
 
     # Headless + re-use cached court calibration
-    python process_game.py --game-id 0022301234 \\
+    python scripts/process_game.py --game-id 0022301234 \\
       --clips "q1.mp4:1:0" "q2.mp4:2:0" --no-show
 
 Manifest JSON format (--manifest)
@@ -55,7 +62,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
 from src.pipeline.unified_pipeline import UnifiedPipeline
@@ -142,15 +149,19 @@ def process_clip(
     game_id: str,
     show: bool = True,
     max_frames: Optional[int] = None,
+    frame_skip: int = 1,
+    no_enrich: bool = False,
 ) -> dict:
     """
     Run the full pipeline for a single clip and snapshot outputs to the game dir.
 
     Args:
-        clip:       {"path": str, "period": int, "start": float}
-        game_id:    NBA Stats game ID string.
-        show:       Whether to show the live preview window.
-        max_frames: Cap on frames to process (None = full clip).
+        clip:        {"path": str, "period": int, "start": float}
+        game_id:     NBA Stats game ID string.
+        show:        Whether to show the live preview window.
+        max_frames:  Cap on frames to process (None = full clip).
+        frame_skip:  Process every Nth frame (default 1 = every frame; 2 = every other).
+        no_enrich:   Skip NBA enrichment step.
 
     Returns:
         Result dict with keys: period, success, error, out_dir, n_frames, stability.
@@ -169,6 +180,10 @@ def process_clip(
         "error":     None,
         "n_frames":  0,
         "stability": 0.0,
+        "shots_detected":     0,
+        "possessions_labeled": 0,
+        "shots_enriched":     0,
+        "possessions_enriched": 0,
     }
 
     if not os.path.exists(video_path):
@@ -187,54 +202,111 @@ def process_clip(
 
     # ── Stage 1: Tracking ──────────────────────────────────────────────────────
     print(f"\n{'='*60}")
-    print(f" Q{period} — Stage 1 / 3 — Tracking")
+    print(f" Q{period} — Stage 1 / 4 — Tracking")
     print(f"{'='*60}")
-    print(f" Video : {video_path}")
+    print(f" Video      : {video_path}")
+    if frame_skip > 1:
+        print(f" Frame skip : every {frame_skip} frames")
 
     try:
-        pipeline = UnifiedPipeline(
+        # Pass frame_skip if UnifiedPipeline supports it; silently ignore if not
+        import inspect
+        _up_sig = inspect.signature(UnifiedPipeline.__init__).parameters
+        _up_kwargs: dict = dict(
             video_path=video_path,
             yolo_weight_path=None,
             max_frames=max_frames,
             show=show,
+            game_id=game_id,
         )
+        if "frame_skip" in _up_sig:
+            _up_kwargs["frame_skip"] = frame_skip
+        pipeline = UnifiedPipeline(**_up_kwargs)
         tracking_results = pipeline.run()
     except Exception as e:
         result["error"] = f"Tracking failed: {e}"
         return result
 
-    fps = pipeline.stats_tracker.fps if hasattr(pipeline, "stats_tracker") else 30.0
-    result["n_frames"]  = tracking_results["total_frames"]
-    result["stability"] = tracking_results["stability"]
+    fps = getattr(getattr(pipeline, "stats_tracker", None), "fps", None) or 30.0
+    result["n_frames"]  = tracking_results.get("total_frames", 0)
+    result["stability"] = tracking_results.get("stability", 0.0)
 
     print(f"\n Frames     : {result['n_frames']}")
     print(f" Stability  : {result['stability']:.3f}")
-    print(f" ID switches: {tracking_results['id_switches']}")
+    print(f" ID switches: {tracking_results.get('id_switches', '?')}")
+
+    # Count shots in shot_log.csv
+    shot_log_path = os.path.join(_DATA_DIR, "shot_log.csv")
+    if os.path.exists(shot_log_path):
+        import csv as _csv
+        with open(shot_log_path, newline="") as _f:
+            result["shots_detected"] = sum(1 for _ in _csv.DictReader(_f))
+
+    # Count possessions in possessions.csv
+    poss_path = os.path.join(_DATA_DIR, "possessions.csv")
+    if os.path.exists(poss_path):
+        import csv as _csv
+        with open(poss_path, newline="") as _f:
+            result["possessions_labeled"] = sum(1 for _ in _csv.DictReader(_f))
 
     # ── Stage 2: Feature engineering ──────────────────────────────────────────
-    print(f"\n Q{period} — Stage 2 / 3 — Feature Engineering")
+    print(f"\n Q{period} — Stage 2 / 4 — Feature Engineering")
     try:
         run_features(
             input_path=os.path.join(_DATA_DIR, "tracking_data.csv"),
             output_path=os.path.join(_DATA_DIR, "features.csv"),
         )
     except Exception as e:
-        print(f"  ⚠  Feature engineering failed: {e}")
+        print(f"  [WARN] Feature engineering failed: {e}")
 
     # ── Stage 3: NBA enrichment ────────────────────────────────────────────────
-    print(f"\n Q{period} — Stage 3 / 3 — NBA Enrichment")
+    if no_enrich:
+        print(f"\n Q{period} — Stage 3 / 4 — NBA Enrichment  [SKIPPED (--no-enrich)]")
+    else:
+        print(f"\n Q{period} — Stage 3 / 4 — NBA Enrichment")
+        try:
+            from src.data.nba_enricher import enrich
+            enrich_result = enrich(
+                game_id=game_id,
+                period=period,
+                clip_start_sec=start_sec,
+                fps=fps,
+                data_dir=_DATA_DIR,
+            )
+            # Count enriched shots/possessions
+            import csv as _csv
+            for key, path_key in [
+                ("shots_enriched",       "shot_log_enriched"),
+                ("possessions_enriched", "possessions_enriched"),
+            ]:
+                p = enrich_result.get(path_key, "")
+                if p and os.path.exists(p):
+                    with open(p, newline="") as _f:
+                        rows_e = list(_csv.DictReader(_f))
+                    if path_key == "shots_enriched":
+                        result["shots_enriched"] = sum(
+                            1 for r in rows_e if r.get("made", "") != ""
+                        )
+                    else:
+                        result["possessions_enriched"] = sum(
+                            1 for r in rows_e if r.get("result", "") not in ("", "unknown")
+                        )
+        except Exception as e:
+            print(f"  [WARN] NBA enrichment failed: {e}")
+            print("  (Tracking data is still complete — enrichment is optional)")
+
+    # ── Stage 4: Auto-retrain check ────────────────────────────────────────────
+    print(f"\n Q{period} — Stage 4 / 4 — Auto-retrain check")
     try:
-        from src.data.nba_enricher import enrich
-        enrich(
-            game_id=game_id,
-            period=period,
-            clip_start_sec=start_sec,
-            fps=fps,
-            data_dir=_DATA_DIR,
-        )
+        from src.pipeline.auto_retrain import check_and_retrain
+        retrain_result = check_and_retrain()
+        if retrain_result.get("retrained"):
+            models_retrained = retrain_result.get("models", [])
+            print(f"  Retrained models: {models_retrained}")
+        else:
+            print(f"  No retrain triggered (threshold not met)")
     except Exception as e:
-        print(f"  ⚠  NBA enrichment failed: {e}")
-        print("  (Tracking data is still complete — enrichment is optional)")
+        print(f"  [WARN] Auto-retrain check failed: {e}")
 
     # ── Snapshot outputs to game dir ───────────────────────────────────────────
     for fname in _CLIP_OUTPUTS:
@@ -299,27 +371,40 @@ def main():
     ap = argparse.ArgumentParser(
         description="NBA AI — automate full-game processing across quarters"
     )
-    ap.add_argument("--game-id",  required=True,
+    ap.add_argument("--game-id",   required=True,
                     help="NBA Stats game ID (e.g. 0022301234)")
-    ap.add_argument("--clips",    nargs="+", default=[],
+    # ── Single-clip shorthand ──────────────────────────────────────────────────
+    ap.add_argument("--video",     default=None,
+                    help="Path to a single video clip (use with --period)")
+    ap.add_argument("--period",    type=int, default=1,
+                    help="Quarter the clip covers (1-4). Used with --video.")
+    ap.add_argument("--skip",      type=int, default=1,
+                    help="Process every Nth frame (default 1; use 2 for faster runs)")
+    ap.add_argument("--no-enrich", action="store_true",
+                    help="Skip NBA enrichment step (offline/testing use)")
+    # ── Multi-clip modes ───────────────────────────────────────────────────────
+    ap.add_argument("--clips",     nargs="+", default=[],
                     help="Clip specs: 'video.mp4:period:start_sec' (e.g. q1.mp4:1:0)")
-    ap.add_argument("--manifest", default=None,
+    ap.add_argument("--manifest",  default=None,
                     help="JSON file with clip list (alternative to --clips)")
-    ap.add_argument("--no-show",  action="store_true",
+    ap.add_argument("--no-show",   action="store_true",
                     help="Disable live preview windows (faster, for headless runs)")
-    ap.add_argument("--frames",   type=int, default=None,
+    ap.add_argument("--frames",    type=int, default=None,
                     help="Max frames per clip (default: full clip; useful for testing)")
     args = ap.parse_args()
 
     # ── Resolve clip list ──────────────────────────────────────────────────────
     clips: List[dict] = []
-    if args.manifest:
+    if args.video:
+        # Single-clip shorthand: --video <path> --period <N>
+        clips = [{"path": args.video, "period": args.period, "start": 0.0}]
+    elif args.manifest:
         clips = load_manifest(args.manifest)
     elif args.clips:
         for spec in args.clips:
             clips.append(parse_clip_spec(spec))
     else:
-        ap.error("Provide --clips or --manifest")
+        ap.error("Provide --video, --clips, or --manifest")
 
     if not clips:
         ap.error("No clips to process.")
@@ -344,13 +429,15 @@ def main():
             game_id=args.game_id,
             show=not args.no_show,
             max_frames=args.frames,
+            frame_skip=args.skip,
+            no_enrich=args.no_enrich,
         )
         result["elapsed_s"] = round(time.time() - t0, 1)
         run_log.append(result)
 
-        status = "✓" if result["success"] else "✗"
+        status = "OK" if result["success"] else "FAIL"
         skip   = " (skipped)" if result.get("skipped") else ""
-        print(f"\n {status} Q{result['period']}{skip}  "
+        print(f"\n [{status}] Q{result['period']}{skip}  "
               f"{result['n_frames']} frames  "
               f"stability={result['stability']:.3f}  "
               f"{result['elapsed_s']}s")
@@ -376,21 +463,30 @@ def main():
         }, f, indent=2)
 
     # ── Summary ────────────────────────────────────────────────────────────────
-    total_elapsed = time.time() - t_game_start
-    n_ok    = sum(1 for r in run_log if r["success"])
-    n_fail  = len(run_log) - n_ok
-    n_frames_total = sum(r["n_frames"] for r in run_log)
+    total_elapsed  = time.time() - t_game_start
+    n_ok           = sum(1 for r in run_log if r["success"])
+    n_fail         = len(run_log) - n_ok
+    n_frames_total = sum(r.get("n_frames", 0) for r in run_log)
+    n_shots        = sum(r.get("shots_detected", 0) for r in run_log)
+    n_poss         = sum(r.get("possessions_labeled", 0) for r in run_log)
+    n_shots_enr    = sum(r.get("shots_enriched", 0) for r in run_log)
+    n_poss_enr     = sum(r.get("possessions_enriched", 0) for r in run_log)
 
     print(f"\n{'='*60}")
     print(f" Game {args.game_id} — Done")
     print(f"{'='*60}")
-    print(f"  Clips processed : {n_ok}/{len(run_log)}"
+    print(f"  Clips processed       : {n_ok}/{len(run_log)}"
           + (f"  ({n_fail} failed)" if n_fail else ""))
-    print(f"  Total frames    : {n_frames_total:,}")
-    print(f"  Output dir      : {game_dir}")
-    print(f"  Total time      : {total_elapsed:.0f}s")
+    print(f"  Frames tracked        : {n_frames_total:,}")
+    print(f"  Shots detected        : {n_shots}")
+    print(f"  Possessions labeled   : {n_poss}")
+    if not args.no_enrich:
+        print(f"  Shots enriched (made/missed) : {n_shots_enr}/{n_shots}")
+        print(f"  Possession outcomes filled   : {n_poss_enr}/{n_poss}")
+    print(f"  Output dir            : {game_dir}")
+    print(f"  Total time            : {total_elapsed:.0f}s")
     if n_fail:
-        print("\n Failed clips:")
+        print("\n  Failed clips:")
         for r in run_log:
             if not r["success"]:
                 print(f"    Q{r['period']}: {r['error']}")

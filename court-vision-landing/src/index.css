@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Button specific interaction requested */
+  .btn-magnetic {
+    @apply relative inline-flex items-center justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] font-medium;
+  }
+  .btn-magnetic:hover {
+    transform: scale(1.03) translateY(-1px);
+  }
+  
+  .btn-slide-accent {
+    @apply bg-surface text-primary border border-surfaceHover;
+  }
+  .btn-slide-accent .slide-layer {
+    @apply absolute inset-0 -translate-x-full transition-transform duration-500 ease-out bg-accent;
+    z-index: 0;
+  }
+  .btn-slide-accent:hover .slide-layer {
+    @apply translate-x-0;
+  }
+  .btn-slide-accent span {
+    @apply relative z-10 transition-colors duration-200;
+  }
+  .btn-slide-accent:hover span {
+    @apply text-background;
+  }
+
+  /* Link interaction */
+  .interactive-lift {
+    @apply transition-transform duration-200 ease-out inline-block hover:-translate-y-[1px];
+  }
+  
+  /* Containers use rounded-[2rem] to rounded-[3rem] */
+  .card-container {
+    @apply rounded-[2rem] bg-surface border border-surfaceHover shadow-2xl;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: #0D0D12;
+}
+
+/* Base custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0D0D12;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A1A24;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5A5A66;
+}

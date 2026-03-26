@@ -136,20 +136,18 @@ def _make_tracking_rows(n: int = 3) -> list:
     ]
 
 
-def test_pg_write_skips_without_database_url(monkeypatch):
-    """ISSUE-010: _pg_write_tracking_rows never calls get_connection when DATABASE_URL is unset."""
+def test_pg_write_uses_sqlite_without_database_url(monkeypatch, tmp_path):
+    """Phase 5: _pg_write_tracking_rows falls back to SQLite when DATABASE_URL is unset."""
     monkeypatch.delenv("DATABASE_URL", raising=False)
+    # Redirect SQLite DB to a temp path so the test is isolated
+    monkeypatch.setattr("src.data.db._SQLITE_PATH", str(tmp_path / "test.db"))
 
     import types, uuid as _uuid
     pipeline = types.SimpleNamespace(game_id="0022400001", clip_id=str(_uuid.uuid4()))
 
-    connect_called = []
-    monkeypatch.setattr("src.data.db.get_connection", lambda: connect_called.append(1))
-
     from src.pipeline.unified_pipeline import UnifiedPipeline
+    # Must not raise; falls back to SQLite
     UnifiedPipeline._pg_write_tracking_rows(pipeline, _make_tracking_rows())
-
-    assert connect_called == [], "get_connection must not be called when DATABASE_URL is absent"
 
 
 def test_pg_write_skips_without_game_id(monkeypatch, tmp_path):
@@ -298,10 +296,11 @@ def _possessor_track(player_id: int, x: float, y: float, has_ball: bool = True) 
 def test_shot_toward_basket_labeled_shot():
     """Ball released by player moving fast toward the left basket → 'shot'."""
     ed = _make_event_detector()
-    # Frame 0: player 0 holds ball at (300, 250)
+    # Frames 0-1: player 0 holds ball for ≥2 frames (satisfies _MIN_HOLD_FRAMES=2)
     ed.update(0, (300.0, 250.0), [_possessor_track(0, 300.0, 250.0)], pixel_vel=0.0)
-    # Frame 1: player releases ball; ball moves fast leftward toward left basket (65, 250)
-    result = ed.update(1, (200.0, 250.0), [], pixel_vel=12.0)
+    ed.update(1, (300.0, 250.0), [_possessor_track(0, 300.0, 250.0)], pixel_vel=0.0)
+    # Frame 2: player releases ball; ball moves fast leftward toward left basket (65, 250)
+    result = ed.update(2, (200.0, 250.0), [], pixel_vel=12.0)
     assert result == "shot", f"expected 'shot', got {result!r}"
 
 
@@ -319,12 +318,14 @@ def test_fast_pass_across_court_not_shot():
 def test_shot_direction_uses_trajectory_buffer():
     """With pixel_vel active and ≥3 buffered positions, direction is computed from buffer avg."""
     ed = _make_event_detector()
-    # Frames 0-2: player holds ball, court pos slowly drifts right to left (toward left basket)
+    # Frames 0-2: player holds ball (≥2 frames satisfies _MIN_HOLD_FRAMES=2), pos drifts left
     ed.update(0, (700.0, 250.0), [_possessor_track(0, 700.0, 250.0)], pixel_vel=0.0)
     ed.update(1, (650.0, 250.0), [_possessor_track(0, 650.0, 250.0)], pixel_vel=0.0)
     ed.update(2, (600.0, 250.0), [_possessor_track(0, 600.0, 250.0)], pixel_vel=0.0)
     # Frame 3: player releases, ball moves fast toward left basket — buffer has 3 pts.
-    result = ed.update(3, (500.0, 250.0), [], pixel_vel=15.0)
+    # ball_pos=(350,250): _xn=0.35 outside center-court band (0.40-0.60), dot product
+    # toward basket_left=(65,250) is positive → "shot" confirmed from trajectory buffer.
+    result = ed.update(3, (350.0, 250.0), [], pixel_vel=15.0)
     assert result == "shot", f"expected 'shot' from trajectory buffer direction, got {result!r}"
 
 
@@ -1287,6 +1288,10 @@ def test_match_team_white_slots_populated():
 
 def test_clip_duration_validator():
     """REQ-02E: MIN_CLIP_SECONDS must be defined in run_clip and be a sensible integer >= 30."""
+    import sys, os as _os
+    _scripts_dir = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "scripts")
+    if _scripts_dir not in sys.path:
+        sys.path.insert(0, _scripts_dir)
     import run_clip
     assert hasattr(run_clip, "MIN_CLIP_SECONDS"), (
         "MIN_CLIP_SECONDS constant must exist in run_clip.py"
@@ -1311,17 +1316,23 @@ def test_event_detector_shot():
 
     detector = EventDetector(map_w=500, map_h=280)
 
-    # Frame 1: player 1 has ball at right-of-centre, facing left basket
+    # Frames 1-2: player 1 holds ball (≥2 frames satisfies _MIN_HOLD_FRAMES=2)
     detector.update(
         1,
         ball_pos=(200.0, 140.0),
         frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
         pixel_vel=0.0,
     )
-
-    # Frame 2: nobody has ball, ball moved left at high velocity toward basket_left (x=32)
-    result = detector.update(
+    detector.update(
         2,
+        ball_pos=(200.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    # Frame 3: nobody has ball, ball moved left at high velocity toward basket_left (x=32)
+    result = detector.update(
+        3,
         ball_pos=(100.0, 140.0),
         frame_tracks=[],
         pixel_vel=15.0,
@@ -1365,37 +1376,43 @@ def test_event_detector_pass():
 
     detector = EventDetector(map_w=500, map_h=280)
 
-    # Frame 1: player 1 has ball
+    # Frames 1-2: player 1 holds ball (≥2 frames satisfies _MIN_HOLD_FRAMES=2)
     detector.update(
         1,
         ball_pos=(200.0, 140.0),
         frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
         pixel_vel=0.0,
     )
-
-    # Frame 2: nobody has ball — player 1 released it. _loss_frame=2 is set.
     detector.update(
         2,
+        ball_pos=(200.0, 140.0),
+        frame_tracks=[{"player_id": 1, "team": "green", "x2d": 200.0, "y2d": 140.0, "has_ball": True}],
+        pixel_vel=0.0,
+    )
+
+    # Frame 3: nobody has ball — player 1 released it. held=2 >= 2, so _loss_frame=3 is set.
+    detector.update(
+        3,
         ball_pos=(210.0, 140.0),
         frame_tracks=[],
         pixel_vel=0.0,
     )
 
-    # Frame 3: player 2 gains ball — pass confirmed retroactively at frame 2.
-    # After _classify sets _pending[2]="pass", return pops frame_idx=3 (not 2),
-    # so _pending[2] remains until consumed by a future call with frame_idx=2.
+    # Frame 4: player 2 gains ball — pass confirmed retroactively at frame 3.
+    # _classify sets _pending[3]="pass"; frame_idx=4 is returned (not 3),
+    # so _pending[3] remains until consumed by a future call with frame_idx=3.
     detector.update(
-        3,
+        4,
         ball_pos=(220.0, 140.0),
         frame_tracks=[{"player_id": 2, "team": "green", "x2d": 220.0, "y2d": 140.0, "has_ball": True}],
         pixel_vel=0.0,
     )
 
-    assert 2 in detector._pending, (
-        "After player 2 picks up ball, frame 2 should be retroactively marked as 'pass' in _pending"
+    assert 3 in detector._pending, (
+        "After player 2 picks up ball, frame 3 should be retroactively marked as 'pass' in _pending"
     )
-    assert detector._pending[2] == "pass", (
-        f"Expected _pending[2]='pass', got {detector._pending.get(2)!r}"
+    assert detector._pending[3] == "pass", (
+        f"Expected _pending[3]='pass', got {detector._pending.get(3)!r}"
     )
 
 
@@ -1652,11 +1669,13 @@ def test_deep_extractor_available_and_returns_correct_shape():
     if not ext.available:
         import pytest; pytest.skip("DeepAppearanceExtractor not available on this system")
 
+    # embed_dim is dynamic: 512 when torchreid weights are loaded, 256 for standalone.
+    expected_dim = ext._embed_dim
     crops = [np.random.randint(0, 255, (60, 30, 3), dtype=np.uint8) for _ in range(3)]
     embs  = ext.batch_extract(crops)
     assert len(embs) == 3, f"Expected 3 embeddings, got {len(embs)}"
-    assert embs[0].shape == (_EMBED_DIM,), (
-        f"Expected ({_EMBED_DIM},) embedding, got {embs[0].shape}"
+    assert embs[0].shape == (expected_dim,), (
+        f"Expected ({expected_dim},) embedding, got {embs[0].shape}"
     )
     # L2-norm should be 1.0 (model normalises output)
     norms = [float(np.linalg.norm(e)) for e in embs]
