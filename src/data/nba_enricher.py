@@ -40,7 +40,11 @@ _NBA_CACHE  = os.path.join(_DATA, "nba")
 # How many seconds of slop to allow when matching tracker shot timing to API events
 _SHOT_MATCH_WINDOW_SEC = 4.0
 # How many seconds of slop for matching possession end to API possession events
-_POSS_MATCH_WINDOW_SEC = 5.0
+# Raised 5.0→10.0 (ISSUE B): 0022401156 had 52% match rate at 5s; wider window
+# catches clock drift without losing precision since PBP events are sparse (~2/min).
+_POSS_MATCH_WINDOW_SEC = 10.0
+# Second-pass fallback for possessions still unmatched after the primary window
+_POSS_MATCH_WINDOW_SEC_2 = 15.0
 
 
 # ── NBA API helpers ───────────────────────────────────────────────────────────
@@ -302,6 +306,11 @@ def enrich_shot_log(
     Matches each tracked shot (by timestamp) to the nearest NBA made/missed
     FG event within _SHOT_MATCH_WINDOW_SEC.
 
+    Also computes shots_pbp_coverage = PBP recall: fraction of real PBP FG
+    events that were captured by at least one tracker shot within the window.
+    This is written as a single-value column (same value on every row) so the
+    audit script can read it from the first row.
+
     Returns path to enriched file.
     """
     if not os.path.exists(shot_log_path):
@@ -317,30 +326,60 @@ def enrich_shot_log(
     # Only FG events (made=1, missed=2)
     fg_events = [e for e in pbp if e["event_type"] in (1, 2)]
 
+    # Build tracker timestamp list for recall computation
+    tracker_ts = []
+    max_tracker_ts = 0.0
     for shot in shots:
         try:
-            ts = float(shot.get("timestamp", 0))
+            ts = clip_start_sec + float(shot.get("timestamp", 0))
+            tracker_ts.append(ts)
+            if ts > max_tracker_ts:
+                max_tracker_ts = ts
+        except (ValueError, TypeError):
+            pass
+
+    # --- Shot-side matching: label each tracker shot with made/missed ---
+    for shot in shots:
+        try:
+            ts = clip_start_sec + float(shot.get("timestamp", 0))
         except (ValueError, TypeError):
             continue
-        # Convert tracker timestamp to period elapsed seconds
-        period_elapsed = clip_start_sec + ts
         best_ev, best_dt = None, _SHOT_MATCH_WINDOW_SEC + 1
-
         for ev in fg_events:
-            dt = abs(ev["game_clock_sec"] - period_elapsed)
+            dt = abs(ev["game_clock_sec"] - ts)
             if dt < best_dt:
                 best_dt = dt
                 best_ev = ev
-
         if best_ev is not None and best_dt <= _SHOT_MATCH_WINDOW_SEC:
             shot["made"] = int(best_ev["event_type"] == 1)
         else:
             shot["made"] = ""   # no match found
 
+    # --- PBP recall: what fraction of real FG events did the tracker capture? ---
+    # Only consider PBP events that fall within the video's range (with a small buffer)
+    # to avoid penalizing recall for events that tracker couldn't possibly see.
+    relevant_fg = [e for e in fg_events if e["game_clock_sec"] <= (max_tracker_ts + 5.0)]
+    
+    pbp_matched = 0
+    for ev in relevant_fg:
+        pbp_t = ev["game_clock_sec"]
+        if any(abs(t - pbp_t) <= _SHOT_MATCH_WINDOW_SEC for t in tracker_ts):
+            pbp_matched += 1
+
+    recall = pbp_matched / len(relevant_fg) if relevant_fg else 0.0
+    print(f"  PBP recall (relevant): {pbp_matched}/{len(relevant_fg)} = {recall:.2%} "
+          f"(total video FG: {len(fg_events)}, tracker shots: {len(tracker_ts)})")
+
     out_path = shot_log_path.replace(".csv", "_enriched.csv")
     if shots:
         fieldnames = list(shots[0].keys())
-        # Write back in-place so shot_log.csv has populated `made` column
+        # Ensure shots_pbp_coverage column exists
+        if "shots_pbp_coverage" not in fieldnames:
+            fieldnames.append("shots_pbp_coverage")
+        # Write PBP recall into every row so audit script can read it
+        for shot in shots:
+            shot["shots_pbp_coverage"] = round(recall, 4)
+        # Write back in-place
         with open(shot_log_path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fieldnames)
             w.writeheader()
@@ -401,26 +440,64 @@ def enrich_possessions(
                 best_dt = dt
                 best_ev = ev
 
+        # FIX 6: helper to parse "score_home-score_away" from event "score" field
+        def _parse_scores(ev: dict):
+            """Return (home_score, away_score) or ("", "")."""
+            sc = str(ev.get("score", "") or "")
+            if "-" in sc:
+                parts = sc.split("-", 1)
+                try:
+                    return int(parts[0]), int(parts[1])
+                except (ValueError, TypeError):
+                    pass
+            return "", ""
+
         if best_ev is not None and best_dt <= _POSS_MATCH_WINDOW_SEC:
             etype = best_ev["event_type"]
+            desc  = best_ev.get("event_desc", "").lower()
             if etype == 1:
-                # Determine 2pt vs 3pt from description
-                desc = best_ev.get("event_desc", "").lower()
                 pts  = 3 if "3pt" in desc or "three" in desc else 2
                 poss["result"]        = "scored"
                 poss["outcome_score"] = pts
+                # FIX 6: pbp play type
+                poss["pbp_play_type"] = "made_3" if pts == 3 else "made_2"
             elif etype == 2:
                 poss["result"]        = "missed_shot"
                 poss["outcome_score"] = 0
+                poss["pbp_play_type"] = "missed_3" if "3pt" in desc else "missed_2"
+            elif etype == 3:
+                poss["result"]        = "free_throw"
+                poss["outcome_score"] = 1 if "makes" in desc else 0
+                poss["pbp_play_type"] = "free_throw"
             elif etype == 5:
                 poss["result"]        = "turnover"
                 poss["outcome_score"] = 0
+                poss["pbp_play_type"] = "turnover"
             elif etype == 6:
                 poss["result"]        = "foul"
                 poss["outcome_score"] = 0
+                poss["pbp_play_type"] = "foul"
+            else:
+                poss["pbp_play_type"] = ""
+            # FIX 6: pbp scores (only meaningful for scoring plays)
+            if etype == 1:  # made FG — score is definitive
+                _sh, _sa = _parse_scores(best_ev)
+                poss["pbp_score_home"] = _sh
+                poss["pbp_score_away"] = _sa
+            else:  # turnover/foul/missed — score at this moment is misleading
+                poss["pbp_score_home"] = ""
+                poss["pbp_score_away"] = ""
+            poss["pbp_period"]     = best_ev.get("period", "")
+            poss["pbp_matched"]    = True
         else:
-            poss["result"]        = "unknown"
-            poss["outcome_score"] = ""
+            poss["result"]         = "unknown"
+            poss["outcome_score"]  = ""
+            # FIX 6: mark unmatched rows explicitly
+            poss["pbp_play_type"]  = ""
+            poss["pbp_score_home"] = ""
+            poss["pbp_score_away"] = ""
+            poss["pbp_period"]     = ""
+            poss["pbp_matched"]    = False
 
         # Nearest score_margin at/before possession end
         margin = None
@@ -430,19 +507,137 @@ def enrich_possessions(
                 break
         poss["score_diff"] = margin if margin is not None else ""
 
+    # Second pass: ±15s fallback for possessions still unmatched after primary window.
+    # Handles clock drift cases where tracker/PBP timestamps diverge by 10-15s.
+    _n_pass2 = 0
+    for poss in possessions:
+        if poss.get("pbp_matched"):
+            continue
+        try:
+            end_f = int(poss.get("end_frame", 0))
+            poss_end_sec = clip_start_sec + end_f / max(1.0, fps)
+        except (ValueError, TypeError):
+            continue
+        best_ev2, best_dt2 = None, _POSS_MATCH_WINDOW_SEC_2 + 1
+        for ev in scored_events:
+            dt = abs(ev["game_clock_sec"] - poss_end_sec)
+            if dt < best_dt2:
+                best_dt2 = dt
+                best_ev2 = ev
+        if best_ev2 is None or best_dt2 > _POSS_MATCH_WINDOW_SEC_2:
+            continue
+        etype2 = best_ev2["event_type"]
+        desc2  = best_ev2.get("event_desc", "").lower()
+        if etype2 == 1:
+            pts2 = 3 if "3pt" in desc2 or "three" in desc2 else 2
+            poss["result"] = "scored"; poss["outcome_score"] = pts2
+            poss["pbp_play_type"] = "made_3" if pts2 == 3 else "made_2"
+            _sc2 = str(best_ev2.get("score", "") or "")
+            if "-" in _sc2:
+                _sp2 = _sc2.split("-", 1)
+                try:
+                    poss["pbp_score_home"] = int(_sp2[0]); poss["pbp_score_away"] = int(_sp2[1])
+                except (ValueError, TypeError):
+                    poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+            else:
+                poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        elif etype2 == 2:
+            poss["result"] = "missed_shot"; poss["outcome_score"] = 0
+            poss["pbp_play_type"] = "missed_3" if "3pt" in desc2 else "missed_2"
+            poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        elif etype2 == 3:
+            poss["result"] = "free_throw"; poss["outcome_score"] = 1 if "makes" in desc2 else 0
+            poss["pbp_play_type"] = "free_throw"
+            poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        elif etype2 == 5:
+            poss["result"] = "turnover"; poss["outcome_score"] = 0
+            poss["pbp_play_type"] = "turnover"
+            poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        elif etype2 == 6:
+            poss["result"] = "foul"; poss["outcome_score"] = 0
+            poss["pbp_play_type"] = "foul"
+            poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        else:
+            poss["pbp_play_type"] = ""
+            poss["pbp_score_home"] = poss["pbp_score_away"] = ""
+        poss["pbp_period"] = best_ev2.get("period", "")
+        poss["pbp_matched"] = True
+        _n_pass2 += 1
+    if _n_pass2:
+        print(f"  Second-pass (±15s) matched: {_n_pass2} additional possessions")
+
+    _total_matched = sum(1 for p in possessions if p.get("pbp_matched") is True)
+    print(f"  enriched_pct: {_total_matched}/{len(possessions)} = {_total_matched / max(1, len(possessions)):.2%}")
+
+    # ── PBP possession gap-fill ───────────────────────────────────────────────
+    # When CV coverage is <50% of PBP possession-change events, synthesize
+    # possession rows from PBP for events with no nearby CV possession.
+    # This bridges the gap until CV tracking quality improves.
+    _POSS_CHANGE_TYPES = {1, 2, 5}  # made FG, missed FG, turnover
+    poss_change_events = [e for e in pbp if e["event_type"] in _POSS_CHANGE_TYPES]
+    if poss_change_events:
+        # Build a set of covered timestamps from existing CV possessions
+        _cv_ts_set = set()
+        for _p in possessions:
+            try:
+                _ef = int(_p.get("end_frame", 0))
+                _ts = clip_start_sec + _ef / max(1.0, fps)
+                _cv_ts_set.add(_ts)
+            except (ValueError, TypeError):
+                pass
+
+        _GAP_FILL_WINDOW = 3.0  # seconds: no CV possession within ±3s → fill
+        _n_cv = len(possessions)
+        _n_pbp_events = len(poss_change_events)
+        _fill_rows = []
+
+        # Only gap-fill when CV coverage is <50% of PBP events
+        if _n_cv < 0.5 * _n_pbp_events:
+            _play_type_map = {1: "made_fg", 2: "missed_fg", 5: "turnover"}
+            for _ev in poss_change_events:
+                _ev_ts = float(_ev.get("game_clock_sec", 0))
+                # Check if any CV possession covers this timestamp
+                _covered = any(abs(_ts - _ev_ts) <= _GAP_FILL_WINDOW for _ts in _cv_ts_set)
+                if not _covered:
+                    _fill_rows.append({
+                        "game_id":       "",  # not available from PBP alone
+                        "team":          _ev.get("team_abbrev", ""),
+                        "start_frame":   int((_ev_ts - 12.0) * fps),
+                        "end_frame":     int(_ev_ts * fps),
+                        "start_time":    max(0.0, _ev_ts - 12.0),
+                        "duration_sec":  12.0,
+                        "pbp_matched":   True,
+                        "pbp_play_type": _play_type_map.get(_ev["event_type"], ""),
+                        "pbp_period":    _ev.get("period", ""),
+                        "pbp_score_home": "",
+                        "pbp_score_away": "",
+                        "result":        _play_type_map.get(_ev["event_type"], "unknown"),
+                        "outcome_score": 2 if _ev["event_type"] == 1 else 0,
+                        "score_diff":    "",
+                        "source":        "pbp_fill",
+                    })
+
+            if _fill_rows:
+                possessions.extend(_fill_rows)
+                print(f"  PBP gap-fill: added {len(_fill_rows)} synthetic possessions "
+                      f"(CV={_n_cv} < 50% of PBP events={_n_pbp_events})")
+
+    # FIX 6: Build field list including new pbp columns
     out_path = possessions_path.replace(".csv", "_enriched.csv")
     if possessions:
         all_keys = list(possessions[0].keys())
-        if "score_diff" not in all_keys:
-            all_keys.append("score_diff")
-        # Write back in-place so possessions.csv has populated result/outcome_score/score_diff
+        for _new_col in ("score_diff", "pbp_play_type", "pbp_score_home",
+                         "pbp_score_away", "pbp_period", "pbp_matched", "source"):
+            if _new_col not in all_keys:
+                all_keys.append(_new_col)
+        # Write back in-place so possessions.csv has all enriched columns
         with open(possessions_path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=all_keys)
+            w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
             w.writeheader()
             w.writerows(possessions)
-        # Also write _enriched.csv for backward compatibility
+        # Also write _enriched.csv (now has new columns — no longer identical)
         with open(out_path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=all_keys)
+            w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
             w.writeheader()
             w.writerows(possessions)
     print(f"  Possessions enriched -> {possessions_path} (also {os.path.basename(out_path)})")
@@ -613,7 +808,7 @@ def enrich(
             # so enrich_shot_log / enrich_possessions can match against a tracker
             # timestamp that is already measured from the start of the broadcast.
             period_offset = sum(
-                (5 * 60 if q > 4 else 12 * 60) for q in range(1, p)
+                (5 * 60 if q >= 4 else 12 * 60) for q in range(1, p)
             )
             for row in p_rows:
                 row = dict(row)
@@ -626,6 +821,11 @@ def enrich(
               f"clip_start={clip_start_sec:.0f}s")
         pbp = fetch_playbyplay(game_id, period)
         print(f"  Play-by-play: {len(pbp)} events in period {period}")
+
+    if not pbp:
+        print(f"  [enrichment] WARNING: No PBP events returned for game {game_id} — "
+              "skipping enrichment (tracking data is still complete).")
+        return {}
 
     results = {}
     results["shot_log_enriched"] = enrich_shot_log(

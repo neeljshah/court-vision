@@ -59,6 +59,9 @@ class EventDetector:
         # fps / stride — set via configure(); defaults match original 60fps design
         self._fps:    float = 60.0
         self._stride: int   = 1
+        # fps/stride-aware pass window and pixel-vel threshold (set in configure())
+        self._PASS_MAX_FRAMES: int   = _PASS_MAX_FRAMES
+        self._PIXEL_SHOT_VEL:  float = _PIXEL_SHOT_VEL
 
         self._prev_ball:        Optional[Tuple[float, float]] = None
         self._ball_vel:         float = 0.0
@@ -66,6 +69,7 @@ class EventDetector:
         self._possessor:        Optional[int] = None   # player_id currently holding ball
         self._last_ball_y_pixel: Optional[float] = None   # raw image-space y coord of ball
         self._last_frame_height: Optional[int]   = None   # raw frame height in pixels
+        self._last_ball_frame:  int = -999   # frame index of last non-None ball_pos
         self._loss_frame: Optional[int] = None   # frame at which possession was lost
         self._possession_held_frames: int = 0  # frames current possessor has held ball
         self._ball_loss_streak: int = 0         # consecutive frames ball detection has been None
@@ -74,6 +78,11 @@ class EventDetector:
         # Stores recent ball_y_pixel values (raw image y, increases downward).
         # Bounce signature: ball was falling (vy > 0) then rising/stationary (vy ≤ 0).
         self._bvybuf:     deque = deque(maxlen=3)   # last 3 ball_y_pixel values
+
+        # Handler vel-toward-basket history: last 10 processed frames.
+        # Used by both shot detectors to require the ball-handler was actually
+        # approaching the basket before a "shot" is fired.  Positive = toward.
+        self._handler_vtb_buf: deque = deque(maxlen=10)
 
         # Retroactive overrides: frame_idx → event string
         # Written when a pass is confirmed by the receiver picking up the ball.
@@ -100,9 +109,9 @@ class EventDetector:
 
         # Shot debounce: minimum frames between consecutive shot detections.
         # Initialized to -(DEBOUNCE+1) so frame 0 can always trigger a shot.
-        # Raised 1.5s→3.0s: real shots are ~30-80s apart; 1.5s allowed pump fakes
-        # to re-fire immediately after a genuine shot debounce window closed.
-        self._last_shot_frame: int = -(int(3.0 * self._fps) + 1)  # = -181 at 60fps
+        # FIX 2: Raised 3.0s→5.0s, now lowered 5.0s→3.5s — 3.5s safe for ~1 shot
+        # per 14s average while being less restrictive than 5s was.
+        self._last_shot_frame: int = -(int(3.5 * self._fps) + 1)  # = -211 at 60fps
 
         # Court scale (pixels per foot, approximate from basket span)
         _span = 0.87 * map_w            # ~80.5 ft between baskets in pixels
@@ -116,8 +125,8 @@ class EventDetector:
         # fps-dependent thresholds — recomputed by configure(); defaults = 60fps
         # 8 mph → ft/s → ft/abs-frame (at fps) → px/abs-frame
         self._DRIVE_SPEED    = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
-        # 3.0 seconds between shots in absolute frame count (raised from 1.5s)
-        self._SHOT_DEBOUNCE: int = int(3.0 * self._fps)
+        # 3.5 seconds between shots in absolute frame count (lowered from 5.0s)
+        self._SHOT_DEBOUNCE: int = int(3.5 * self._fps)
 
     @property
     def dribble_count(self) -> int:
@@ -137,8 +146,12 @@ class EventDetector:
         self._stride = max(1, int(stride))
         # Drive speed: 8 mph in court px per absolute video frame
         self._DRIVE_SPEED   = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
-        # Shot debounce: 3.0 s between shots expressed in absolute frame count
-        self._SHOT_DEBOUNCE = int(3.0 * self._fps)
+        # 3.5s between shots in absolute frame count (lowered from 5.0s)
+        self._SHOT_DEBOUNCE = int(3.5 * self._fps)
+        # fps/stride-aware pass window: 2.0s real-time in processed frames
+        self._PASS_MAX_FRAMES = max(_PASS_MAX_FRAMES, int(2.0 * self._fps / self._stride))
+        # pixel-vel shot threshold scales with stride (larger stride → larger per-frame displacement)
+        self._PIXEL_SHOT_VEL = _PIXEL_SHOT_VEL * self._stride
 
     def update(
         self,
@@ -165,19 +178,57 @@ class EventDetector:
         """
         self._last_ball_y_pixel = ball_y_pixel
         self._last_frame_height = frame_height
+        # Compute velocity gap BEFORE updating _last_ball_frame.
+        _ball_gap = frame_idx - self._last_ball_frame  # frames since last detection
+        _large_gap = _ball_gap > 20                    # gap too wide for reliable velocity
         if ball_pos is not None and self._prev_ball is not None:
-            self._ball_vel = float(np.hypot(
-                ball_pos[0] - self._prev_ball[0],
-                ball_pos[1] - self._prev_ball[1],
-            ))
+            if _large_gap:
+                # Velocity across a large gap is meaningless (could be teleport artifact).
+                # Zero it out and clear _prev_ball so direction check is skipped.
+                self._ball_vel = 0.0
+                self._prev_ball = None
+            else:
+                self._ball_vel = float(np.hypot(
+                    ball_pos[0] - self._prev_ball[0],
+                    ball_pos[1] - self._prev_ball[1],
+                )) / max(1, _ball_gap)
         else:
             self._ball_vel = 0.0
 
         if ball_pos is not None:
             self._ball_buf.append((frame_idx, ball_pos[0], ball_pos[1]))
+            self._last_ball_frame = frame_idx
 
         # Track ball pixel-y for dribble bounce confirmation
         self._bvybuf.append(ball_y_pixel)
+
+        # ── FIX 2: Handler vel-toward-basket guard (10-frame window) ─────
+        # Compute the ball-handler's velocity toward the nearest basket using
+        # the PREVIOUS frame's history (before _update_player_hist for this frame).
+        # Appended to _handler_vtb_buf every frame; shot detectors require any
+        # of the last 10 frames to show the handler moving toward the basket.
+        _handler_vtb_now = 0.0
+        for _t in frame_tracks:
+            if _t.get("has_ball"):
+                _hist = list(self._phist[_t["player_id"]])
+                if len(_hist) >= 2:
+                    _, _x1, _y1, _ = _hist[-2]
+                    _, _x2, _y2, _ = _hist[-1]
+                    _dx, _dy = _x2 - _x1, _y2 - _y1
+                    _nb = min(self._baskets,
+                              key=lambda b, x=_x2, y=_y2: np.hypot(x - b[0], y - b[1]))
+                    _dbx, _dby = _nb[0] - _x2, _nb[1] - _y2
+                    _nd = np.hypot(_dbx, _dby) + 1e-6
+                    _handler_vtb_now = (_dx * _dbx + _dy * _dby) / _nd
+                break
+        self._handler_vtb_buf.append(_handler_vtb_now)
+        # Guard: block shot only when handler was *consistently sprinting away* from
+        # basket (max vtb < -1.0).  Stationary handlers (vtb=0) and approaching
+        # handlers (vtb>0) both pass.  Filters ball bounces where the only tracked
+        # "handler" was actively running away at the moment of the bounce.
+        _handler_toward_basket = (
+            max(self._handler_vtb_buf, default=0.0) > -1.0
+        )
 
         # ── Direct upward-velocity shot detector ─────────────────────────
         # Hough+CSRT keeps the ball "possessed" even during the shot arc,
@@ -186,26 +237,23 @@ class EventDetector:
         # of a shot release that isn't a lob pass.
         #
         # Conditions (all must hold):
-        #   1. pixel_vel > 12 px/processed-frame  (raised from 6: pump fakes and
-        #      arm raises rarely exceed 12px/frame; real shot releases do)
-        #   2. ball_y_pixel decreased by > 8 px   (raised from 5: more confident upward move)
-        #   3. vertical fraction > 0.65 — upward component is ≥65% of total velocity.
-        #      Lob passes travel diagonally (large horizontal component), shots are
-        #      nearly vertical at release.  Raised from 0.50 to cut diagonal passes.
-        #   4. ball between 15-60% of frame height — shot releases happen in the
-        #      upper portion of the frame; 0.60 upper bound cuts waist-height passes.
-        #      Raised lower from 10%→15%, lowered upper from 80%→60%.
-        #   5. debounce cleared
+        #   1. pixel_vel > 12 px/processed-frame
+        #   2. ball_y_pixel decreased by > 8 px (ball moved UP)
+        #   3. vertical fraction > 0.55 — upward component ≥55% of total velocity
+        #   4. ball between 15-70% of frame height (broadcast angle: release ~65%)
+        #   5. debounce cleared (3.5s)
+        #   6. handler was approaching basket in last 10 frames
         _prev_y = getattr(self, "_prev_ball_y_pixel", None)
-        if (pixel_vel > 12.0
+        if (pixel_vel > max(12.0, self._PIXEL_SHOT_VEL)
                 and _prev_y is not None
                 and ball_y_pixel is not None
                 and frame_height is not None
                 and (ball_y_pixel - _prev_y) < -8          # ball moved UP (y decreases)
-                and abs(ball_y_pixel - _prev_y) / (pixel_vel + 1e-6) > 0.65  # mostly vertical
+                and abs(ball_y_pixel - _prev_y) / (pixel_vel + 1e-6) > 0.55  # mostly vertical (allow ~55% vertical component)
                 and ball_y_pixel > frame_height * 0.15     # not scoreboard artifact at top
-                and ball_y_pixel < frame_height * 0.60     # not waist/floor level
-                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE):
+                and ball_y_pixel < frame_height * 0.70     # broadcast angle: release ~65% height
+                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE
+                and _handler_toward_basket):               # FIX 2: handler approached basket
             self._last_shot_frame = frame_idx
             self._prev_ball_y_pixel = ball_y_pixel
             self._prev_ball = ball_pos
@@ -235,7 +283,13 @@ class EventDetector:
             self._detect_closeout(frame_idx, frame_tracks)
             self._detect_rebound_positions(frame_idx, frame_tracks)
 
-        self._prev_ball = ball_pos
+        # When gap was ≤20 frames and ball_pos is not None, record new position.
+        # Large-gap case: _prev_ball already cleared to None above.
+        if ball_pos is not None and not _large_gap:
+            self._prev_ball = ball_pos
+        elif ball_pos is None:
+            self._prev_ball = None
+        # else: _large_gap → _prev_ball already set to None in vel block above
         self._possessor = possessor_id
 
         # Per-frame rich events (run after possessor update)
@@ -246,7 +300,7 @@ class EventDetector:
 
         # Prune stale _pending entries (retroactive writes whose target frame has
         # already been consumed). Prevents unbounded growth on long game sequences.
-        _stale_cutoff = frame_idx - _PASS_MAX_FRAMES - 1
+        _stale_cutoff = frame_idx - self._PASS_MAX_FRAMES - 1
         for _k in [k for k in self._pending if k < _stale_cutoff]:
             del self._pending[_k]
 
@@ -281,14 +335,17 @@ class EventDetector:
                 if held < _MIN_HOLD_FRAMES:
                     return "none"
                 self._loss_frame = frame_idx
-                return self._evaluate_shot(ball_pos, frame_idx)
+                # Pass handler-toward-basket flag so direction path can also
+                # reject events where the handler was sprinting away from basket.
+                _htb = max(self._handler_vtb_buf, default=0.0) > -1.0
+                return self._evaluate_shot(ball_pos, frame_idx, handler_toward_basket=_htb)
 
             if prev_id is None and possessor_id is not None:
                 # Player gained ball — confirm pass if within window
                 self._ball_loss_streak = 0
                 self._dribble_count = 0
                 if (self._loss_frame is not None
-                        and frame_idx - self._loss_frame <= _PASS_MAX_FRAMES):
+                        and frame_idx - self._loss_frame <= self._PASS_MAX_FRAMES):
                     self._pending[self._loss_frame] = "pass"
                 self._loss_frame = None
                 self._possession_held_frames = 1
@@ -320,7 +377,7 @@ class EventDetector:
             ))
             if dist <= _DRIBBLE_MAX_DIST and self._ball_vel <= _DRIBBLE_MAX_VEL:
                 # Require floor-bounce confirmation: ball_y_pixel must have been
-                # falling (vy_prev > 1.0, i.e. y increasing downward in image space)
+                # falling (vy_prev > 0.5, i.e. y increasing downward in image space)
                 # and now rising/stationary (vy_curr ≤ 0).  This rejects stationary
                 # ball-handling, tips, and shot releases from inflating dribble_count.
                 _bounce = False
@@ -331,22 +388,33 @@ class EventDetector:
                         and _by[-1] is not None):
                     _vy_prev = _by[-2] - _by[-3]   # falling → positive (y down)
                     _vy_curr = _by[-1] - _by[-2]
-                    _bounce  = _vy_prev > 1.0 and _vy_curr <= 0.0
+                    _bounce  = _vy_prev > 0.5 and _vy_curr <= 0.0
                 elif len(_by) >= 2 and _by[-2] is not None and _by[-1] is not None:
                     # Two-frame fallback: at least check current frame is not falling
                     _bounce = (_by[-1] - _by[-2]) <= 0.0
+                # Fallback: when ball_y_pixel is unavailable (CSRT not tracking),
+                # count a dribble every 15 frames of stable close possession —
+                # ~0.5s at 30fps, roughly one dribble cadence.
+                if not _bounce and all(v is None for v in _by[-3:]):
+                    _bounce = (self._possession_held_frames % 15 == 0
+                               and self._possession_held_frames > 0)
                 if _bounce:
                     self._dribble_count += 1
                 return "dribble"
 
         # ── Ball in flight, nobody has it ────────────────────────────────
         if possessor_id is None and self._loss_frame is not None:
-            if frame_idx - self._loss_frame > _PASS_MAX_FRAMES:
+            if frame_idx - self._loss_frame > self._PASS_MAX_FRAMES:
                 self._loss_frame = None   # nobody caught it — clear pending state
 
         return "none"
 
-    def _evaluate_shot(self, ball_pos: Optional[Tuple[float, float]], frame_idx: int = 0) -> str:
+    def _evaluate_shot(
+        self,
+        ball_pos: Optional[Tuple[float, float]],
+        frame_idx: int = 0,
+        handler_toward_basket: bool = True,
+    ) -> str:
         """Return 'shot' if ball is moving fast enough toward a basket.
 
         When pixel-space velocity is active, single-frame court coordinates are
@@ -354,17 +422,25 @@ class EventDetector:
         the direction check entirely (which caused fast passes to be mislabeled
         as shots), we use the last 3 frames of the court-coordinate trajectory
         buffer to compute a more stable direction vector.
+
+        Args:
+            handler_toward_basket: Set False when handler was sprinting away from
+                the basket in the last 10 frames — suppresses outlet-pass misfires.
         """
-        # Noise gate: velocities > 150 px/frame are tracking jumps, not real shots.
-        _NOISE_VEL = 150.0
+        # Noise gate: velocities > 120 px/frame are tracking jumps, not real shots.
+        _NOISE_VEL = 120.0
         if self._ball_vel > _NOISE_VEL:
             return "none"
 
         if self._ball_vel < _SHOT_MIN_VEL:
             return "none"
 
-        # Debounce: set by configure() — 1.5s of absolute frames at source fps.
+        # Debounce: set by configure() — 5s of absolute frames at source fps.
         if frame_idx - self._last_shot_frame < self._SHOT_DEBOUNCE:
+            return "none"
+
+        # Handler must not have been sprinting away from basket (blocks outlet passes).
+        if not handler_toward_basket:
             return "none"
 
         # When 2D court position is unavailable, we cannot verify direction toward
@@ -411,7 +487,9 @@ class EventDetector:
         dx_basket = nearest[0]  - ball_pos[0]
         dy_basket = nearest[1]  - ball_pos[1]
 
-        if dx_ball * dx_basket + dy_ball * dy_basket > 0:
+        # cos>0.5 ≈ within 60° of direct basket line — allows corner 3s and
+        # pull-up shots that aren't perfectly on-axis (loosened 0.7→0.5).
+        if dx_ball * dx_basket + dy_ball * dy_basket > 0.5 * (np.hypot(dx_ball, dy_ball) * np.hypot(dx_basket, dy_basket) + 1e-6):
             self._last_shot_frame = frame_idx
             return "shot"
 
