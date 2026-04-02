@@ -1,0 +1,13 @@
+# RunPod connection config — fill in after creating your pod
+# Usage: source .runpod
+
+# From RunPod UI → My Pods → Connect → SSH
+RUNPOD_IP=""        # e.g. 123.45.67.89
+RUNPOD_PORT=""      # e.g. 22 or 10022
+RUNPOD_USER="root"  # always root on RunPod
+
+# Optional: path to your SSH key (leave blank to use ssh-agent / default key)
+RUNPOD_KEY=""       # e.g. ~/.ssh/id_rsa
+
+# Where the project lives on the pod (ephemeral disk — no extra cost)
+REMOTE_DIR="/workspace/nba-ai-system"
