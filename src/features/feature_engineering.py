@@ -28,6 +28,30 @@ try:
 except ImportError:
     _SCIPY = False
 
+# Advanced feature modules (A-1 to A-14 — Pre-Season Accuracy Plan)
+try:
+    from src.features.advanced_features import (
+        add_acceleration_features,
+        add_fatigue_features,
+        add_defender_features,
+        add_off_ball_features,
+        add_paint_pressure_features,
+        add_slump_features,
+        add_ewma_features,
+        add_interaction_features,
+        compute_regression_weight,
+        get_elo_features,
+        get_opp_def_trend,
+        get_home_away_splits,
+        get_drive_outcomes,
+    )
+    _HAS_ADVANCED = True
+except ImportError:
+    _HAS_ADVANCED = False
+
+    def compute_regression_weight(games_played: int) -> float:  # noqa: F811
+        return min(float(games_played) / 50.0, 1.0)
+
 _DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data")
 
 # Rolling window sizes in frames (~1 s / 3 s / 5 s at 30 fps)
@@ -43,9 +67,11 @@ def load_tracking(path: str = None) -> pd.DataFrame:
     """Load tracking_data.csv and return a typed DataFrame."""
     if path is None:
         path = os.path.join(_DATA_DIR, "tracking_data.csv")
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, low_memory=False)
     for col in ("frame", "player_id"):
         if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+            df = df.dropna(subset=[col])
             df[col] = df[col].astype(int)
     for col in ("x_position", "y_position", "velocity", "acceleration",
                 "distance_to_ball", "nearest_opponent", "nearest_teammate",
@@ -71,6 +97,11 @@ def compute_spatial_features(df: pd.DataFrame) -> pd.DataFrame:
     calculations. Their spatial columns are set to NaN in the output so they
     do not corrupt ML features. Non-referee rows are unchanged.
 
+    Also removes sentinel values that corrupt rolling window ML features:
+      - defender_distance == 200.0  (``_ISOLATION_DEFAULT`` from unified_pipeline)
+      - handler_isolation == 200.0  (same sentinel in tracking_data.csv)
+      - team_spacing == 0.0         (invalid hull area: no players detected this frame)
+
     The spatial columns this function guards are those produced by the tracking
     pipeline (unified_pipeline.py):
         team_spacing, nearest_opponent, nearest_teammate,
@@ -83,8 +114,8 @@ def compute_spatial_features(df: pd.DataFrame) -> pd.DataFrame:
             they are not added.
 
     Returns:
-        DataFrame identical to input except referee rows have NaN values in all
-        spatial metric columns. The referee rows themselves are retained.
+        DataFrame identical to input except referee rows and sentinel values have
+        NaN in spatial metric columns.
     """
     _SPATIAL = [
         "team_spacing",
@@ -94,10 +125,33 @@ def compute_spatial_features(df: pd.DataFrame) -> pd.DataFrame:
         "paint_count_opp",
     ]
 
+    df = df.copy()
+
+    # Sentinel filter — must run before referee mask so sentinels are cleaned
+    # regardless of team.  These values corrupt rolling window stats in ML training.
+    # Covers all distance columns that use 200.0 as a "no data" sentinel.
+    for col in ("defender_distance", "handler_isolation", "nearest_opponent", "nearest_teammate"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+            df.loc[df[col] >= 199.5, col] = np.nan  # catches 200 as int, float, or near-200
+            df.loc[df[col] <= 0, col] = np.nan       # 0.0 means "no data", not "touching"
+
+    if "team_spacing" in df.columns:
+        df["team_spacing"] = pd.to_numeric(df["team_spacing"], errors="coerce")
+        df.loc[df["team_spacing"] == 0.0, "team_spacing"] = np.nan
+
+    # Velocity clamp — tracking re-ID jumps produce physically impossible spikes
+    # (p99 ~106 px/frame observed; NBA max sprint ~20 px/frame at 30fps/1294px court).
+    # Cap at 60 px/frame (~3x real max) to absorb legitimate fast breaks while
+    # eliminating teleportation artifacts that corrupt rolling velocity features.
+    _VEL_MAX = 60.0
+    for col in ("velocity", "acceleration"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").clip(upper=_VEL_MAX)
+
     if "team" not in df.columns:
         return df
 
-    df = df.copy()
     ref_mask = df["team"] == "referee"
 
     if not ref_mask.any():
@@ -123,8 +177,9 @@ def add_rolling_features(df: pd.DataFrame, windows: List[int] = None) -> pd.Data
     if windows is None:
         windows = _WINDOWS
 
-    df = df.sort_values(["player_id", "frame"]).copy()
-    grp = df.groupby("player_id", group_keys=False)
+    group_cols = ["game_id", "player_id"] if "game_id" in df.columns else ["player_id"]
+    df = df.sort_values(group_cols + ["frame"]).copy()
+    grp = df.groupby(group_cols, group_keys=False)
 
     for w in windows:
         df[f"velocity_mean_{w}"] = grp["velocity"].transform(
@@ -211,6 +266,41 @@ def add_event_features(df: pd.DataFrame, window: int = _EVENT_WINDOW) -> pd.Data
     return df
 
 
+def add_ft_coordinates(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    FIX 3: Derive real-world foot coordinates from normalized court position.
+
+    Adds columns (no-op if ft_x already present from pipeline output):
+      ft_x              — court x in feet (0=left baseline, 94=right baseline)
+      ft_y              — court y in feet (0=bottom sideline, 50=top sideline)
+      dist_to_basket_ft — Euclidean distance to nearest basket in feet
+    """
+    if "ft_x" in df.columns and "ft_y" in df.columns:
+        # Already written by unified_pipeline; only recompute dist_to_basket_ft
+        # if missing (old pipeline outputs).
+        if "dist_to_basket_ft" not in df.columns:
+            _bx_l, _by, _bx_r = 5.25, 25.0, 88.75
+            _dl = np.hypot(df["ft_x"] - _bx_l, df["ft_y"] - _by)
+            _dr = np.hypot(df["ft_x"] - _bx_r, df["ft_y"] - _by)
+            df["dist_to_basket_ft"] = np.minimum(_dl, _dr).round(2)
+        return df
+
+    if "x_norm" not in df.columns or "y_norm" not in df.columns:
+        return df
+
+    df = df.copy()
+    _xn = pd.to_numeric(df["x_norm"], errors="coerce")
+    _yn = pd.to_numeric(df["y_norm"], errors="coerce")
+    df["ft_x"] = (_xn * 94.0).round(2)
+    df["ft_y"] = (_yn * 50.0).round(2)
+
+    _bx_l, _by, _bx_r = 5.25, 25.0, 88.75
+    _dl = np.hypot(df["ft_x"] - _bx_l, df["ft_y"] - _by)
+    _dr = np.hypot(df["ft_x"] - _bx_r, df["ft_y"] - _by)
+    df["dist_to_basket_ft"] = np.minimum(_dl, _dr).round(2)
+    return df
+
+
 def add_momentum_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Team-level momentum proxy features per frame.
@@ -218,7 +308,7 @@ def add_momentum_features(df: pd.DataFrame) -> pd.DataFrame:
     New columns:
       team_velocity_mean   — average velocity of all teammates this frame
       opp_velocity_mean    — average velocity of opponents this frame
-      spacing_advantage    — own team_spacing minus opponent team_spacing
+      spacing_advantage    — own team spacing minus opponent (ft², calibrated)
     """
     frame_team = df.groupby(["frame", "team"]).agg(
         team_vel_mean=("velocity", "mean"),
@@ -256,11 +346,53 @@ def add_momentum_features(df: pd.DataFrame) -> pd.DataFrame:
     )
     non_ref["spacing_advantage"] = (
         non_ref["team_spacing_val"] - non_ref["opp_spc"]
-    ).round(1)
+    ).clip(-5000, 5000).round(1)
 
     momentum_df = non_ref[["frame", "team", "team_velocity_mean",
                             "opp_velocity_mean", "spacing_advantage"]]
     df = df.merge(momentum_df, on=["frame", "team"], how="left")
+
+    # FIX 3: Recompute spacing_advantage from ft² convex hulls when ft coords
+    # available.  Old CSVs may have team_spacing in raw pixel² (ISSUE-026 was
+    # not backfilled everywhere), producing ±1,013,593 range.  ft-based hull
+    # area is always in correct ft² units (should be roughly ±2000 ft²).
+    if "ft_x" in df.columns and "ft_y" in df.columns and _SCIPY:
+        _ft_rows = df[df["team"] != "referee"][["frame", "team", "ft_x", "ft_y"]].dropna()
+        if not _ft_rows.empty:
+            _hull_map: dict = {}
+            for (fr, tm), grp in _ft_rows.groupby(["frame", "team"]):
+                _pts = grp[["ft_x", "ft_y"]].values
+                _area = 0.0
+                if len(_pts) >= 3:
+                    try:
+                        _area = float(_ConvexHull(_pts).volume)
+                    except Exception:
+                        pass
+                _hull_map[(fr, tm)] = _area
+            _ft_df = pd.DataFrame(
+                [{"frame": fr, "team": tm, "_ft_sp": area}
+                 for (fr, tm), area in _hull_map.items()]
+            )
+            _ft_tot = (
+                _ft_df.groupby("frame")["_ft_sp"]
+                .agg(total="sum", n="count")
+                .reset_index()
+            )
+            _ft_df = _ft_df.merge(_ft_tot, on="frame")
+            _ft_df["spacing_advantage"] = np.where(
+                _ft_df["n"] == 2,
+                (_ft_df["_ft_sp"] - (_ft_df["total"] - _ft_df["_ft_sp"])).clip(-5000, 5000).round(1),
+                np.nan,
+            )
+            df = df.merge(
+                _ft_df[["frame", "team", "spacing_advantage"]],
+                on=["frame", "team"],
+                how="left",
+                suffixes=("_px", ""),
+            )
+            if "spacing_advantage_px" in df.columns:
+                df.drop(columns=["spacing_advantage_px"], inplace=True)
+
     return df
 
 
@@ -278,8 +410,9 @@ def add_basket_features(df: pd.DataFrame, windows: List[int] = None) -> pd.DataF
     if windows is None:
         windows = _WINDOWS
 
-    df = df.sort_values(["player_id", "frame"]).copy()
-    grp = df.groupby("player_id", group_keys=False)
+    group_cols = ["game_id", "player_id"] if "game_id" in df.columns else ["player_id"]
+    df = df.sort_values(group_cols + ["frame"]).copy()
+    grp = df.groupby(group_cols, group_keys=False)
 
     for w in windows:
         df[f"dist_to_basket_mean_{w}"] = grp["distance_to_basket"].transform(
@@ -358,7 +491,7 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
     else:
         frame_poss["pace_30"] = 0.0
 
-    # ── Shot quality proxy ─────────────────────────────────────────────────
+    # ── Shot quality proxy (A-6: prefer xFG model over hand formula) ──────
     _zone_weight = {
         "paint":     1.00,
         "corner_3":  0.85,
@@ -366,14 +499,39 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
         "mid_range": 0.55,
         "backcourt": 0.05,
     }
+    _xfg_model_used = False
     if "court_zone" in df.columns and "nearest_opponent" in df.columns:
         shot_mask = df.get("event", pd.Series("none", index=df.index)) == "shot"
-        zone_w    = df["court_zone"].map(_zone_weight).fillna(0.5)
-        opp_d     = pd.to_numeric(df["nearest_opponent"], errors="coerce").fillna(50.0)
-        spacing   = pd.to_numeric(df.get("team_spacing", 0), errors="coerce").fillna(0.0)
-        spacing_n = (spacing / (spacing.max() + 1e-6)).clip(0.0, 1.0)
-        sq_proxy  = (zone_w * (1.0 / (1.0 + opp_d / 50.0)) * (0.5 + 0.5 * spacing_n)).round(3)
-        df["shot_quality_proxy"] = np.where(shot_mask, sq_proxy, 0.0)
+
+        # A-6: Try CV stack first, then v1, then fall back to hand formula
+        _xfg_model_path_stack = os.path.join(_DATA_DIR, "..", "data", "models", "xfg_cv_stack.pkl")
+        _xfg_model_path_v1    = os.path.join(_DATA_DIR, "..", "data", "models", "xfg_v1.pkl")
+        _chosen_model_path    = None
+        for _p in (_xfg_model_path_stack, _xfg_model_path_v1):
+            if os.path.exists(_p):
+                _chosen_model_path = _p
+                break
+
+        if _chosen_model_path and shot_mask.any():
+            try:
+                from src.prediction.xfg_model import load as _xfg_load, predict_batch as _predict_batch
+                _xfg_obj = _xfg_load(_chosen_model_path)
+                _shot_rows = df[shot_mask].copy()
+                _xfg_preds = _predict_batch(_xfg_obj, _shot_rows)
+                _sq = pd.Series(0.0, index=df.index)
+                _sq.loc[_shot_rows.index] = _xfg_preds.values
+                df["shot_quality_proxy"] = _sq.round(3)
+                _xfg_model_used = True
+            except Exception:
+                pass
+
+        if not _xfg_model_used:
+            zone_w    = df["court_zone"].map(_zone_weight).fillna(0.5)
+            opp_d     = pd.to_numeric(df["nearest_opponent"], errors="coerce").fillna(50.0)
+            spacing   = pd.to_numeric(df.get("team_spacing", 0), errors="coerce").fillna(0.0)
+            spacing_n = (spacing / (spacing.max() + 1e-6)).clip(0.0, 1.0)
+            sq_proxy  = (zone_w * (1.0 / (1.0 + opp_d / 50.0)) * (0.5 + 0.5 * spacing_n)).round(3)
+            df["shot_quality_proxy"] = np.where(shot_mask, sq_proxy, 0.0)
     else:
         df["shot_quality_proxy"] = 0.0
 
@@ -535,6 +693,8 @@ def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
 def add_external_player_features(
     df: pd.DataFrame,
     season: str = "2024-25",
+    home_team: str = "",
+    away_team: str = "",
 ) -> pd.DataFrame:
     """
     Enrich per-player rows with pre-game context features from external data sources.
@@ -678,6 +838,14 @@ def add_external_player_features(
     except Exception:
         pass
 
+    # ── A-7: ELO features (game-level constants) ─────────────────────────────
+    _elo_feats = {"home_elo": 1500.0, "away_elo": 1500.0, "elo_differential": 0.0}
+    if _HAS_ADVANCED and (home_team or away_team):
+        try:
+            _elo_feats = get_elo_features(home_team or "", away_team or "")
+        except Exception:
+            pass
+
     # ── Build per-player feature rows ────────────────────────────────────────
     def _ext_features(player_name: str) -> dict:
         key = (player_name if isinstance(player_name, str) else "").lower()
@@ -687,6 +855,34 @@ def add_external_player_features(
         syn = synergy_lookup.get(key, {})
         con = contract_lookup.get(key, {})
         sd  = shot_dash_lookup.get(key, {})
+
+        # A-8: Opponent defensive trajectory (uses opp_team not available here;
+        # inject as 0.0 unless df has opp_team_abbrev column — wired post Phase G)
+        opp_def_trend = 0.0
+        if _HAS_ADVANCED:
+            try:
+                opp_def_trend = get_opp_def_trend("", season)  # team TBD post-Phase G
+            except Exception:
+                pass
+
+        # A-9: Home/away splits
+        ha_splits = {"pts_delta": 0.0, "reb_delta": 0.0, "ast_delta": 0.0}
+        if _HAS_ADVANCED and isinstance(player_name, str) and player_name:
+            try:
+                ha_splits = get_home_away_splits(player_name, season)
+            except Exception:
+                pass
+
+        # A-10: Drive outcome distribution
+        drive_outcomes = {
+            "drive_finish_rate": 0.35, "drive_foul_rate": 0.25,
+            "drive_kickout_rate": 0.28, "drive_tov_rate": 0.12,
+        }
+        if _HAS_ADVANCED and isinstance(player_name, str) and player_name:
+            try:
+                drive_outcomes = get_drive_outcomes(player_name)
+            except Exception:
+                pass
 
         return {
             # BBRef
@@ -715,6 +911,21 @@ def add_external_player_features(
             "catch_and_shoot_pct":   float(sd.get("catch_and_shoot_pct", 0.0) or 0.0),
             "pull_up_pct":           float(sd.get("pull_up_pct", 0.0) or 0.0),
             "avg_defender_dist":     float(sd.get("avg_defender_dist_contested", 0.0) or 0.0),
+            # A-7: ELO (game-level constants broadcast to all players)
+            "elo_home":              _elo_feats["home_elo"],
+            "elo_away":              _elo_feats["away_elo"],
+            "elo_diff":              _elo_feats["elo_differential"],
+            # A-8: Opponent defensive trajectory
+            "opp_def_rtg_trend":     opp_def_trend,
+            # A-9: Home/away splits
+            "home_away_pts_delta":   ha_splits["pts_delta"],
+            "home_away_reb_delta":   ha_splits["reb_delta"],
+            "home_away_ast_delta":   ha_splits["ast_delta"],
+            # A-10: Drive outcomes
+            "drive_finish_rate":     drive_outcomes["drive_finish_rate"],
+            "drive_foul_rate":       drive_outcomes["drive_foul_rate"],
+            "drive_kickout_rate":    drive_outcomes["drive_kickout_rate"],
+            "drive_tov_rate":        drive_outcomes["drive_tov_rate"],
         }
 
     # Vectorized: build feature df and merge
@@ -781,34 +992,227 @@ def add_pose_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def run(input_path: str = None, output_path: str = None) -> pd.DataFrame:
+def fill_spatial_gaps(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fix 1 & 2: Fill blank nearest_opponent and handler_isolation values by
+    recomputing from frame-level position data.
+
+    nearest_opponent: for each blank row, find minimum Euclidean distance to
+    any player in the same frame with a different non-referee team label.
+
+    handler_isolation: for each frame where a ball_possession==1 player exists
+    and handler_isolation is blank, compute min distance from handler to any
+    opponent (requires at least 2 opponents visible in the frame).
+    """
+    if "x_position" not in df.columns or "y_position" not in df.columns:
+        return df
+    if "team" not in df.columns:
+        return df
+
+    df = df.copy()
+    x_vals = pd.to_numeric(df["x_position"], errors="coerce").values
+    y_vals = pd.to_numeric(df["y_position"], errors="coerce").values
+    teams  = df["team"].astype(str).values
+    frames = df["frame"].values
+    df_idx = df.index.values
+
+    # ── nearest_opponent fallback ─────────────────────────────────────────────
+    if "nearest_opponent" in df.columns:
+        opp_vals = pd.to_numeric(df["nearest_opponent"], errors="coerce").values
+        # treat 0.0 as missing — two players can't physically overlap
+        need_opp = np.isnan(opp_vals) | (opp_vals <= 0)
+        if need_opp.any():
+            # Build per-frame index: frame → list of (x, y, team, position-in-array)
+            from collections import defaultdict
+            frame_entries: dict = defaultdict(list)
+            for i, fr in enumerate(frames):
+                if not (np.isnan(x_vals[i]) or np.isnan(y_vals[i])):
+                    frame_entries[fr].append((x_vals[i], y_vals[i], teams[i], i))
+
+            new_vals = opp_vals.copy()
+            for pos, (fr, xi, yi, ti, need) in enumerate(
+                zip(frames, x_vals, y_vals, teams, need_opp)
+            ):
+                if not need:
+                    continue
+                if np.isnan(xi) or np.isnan(yi):
+                    continue
+                entries = frame_entries.get(fr, [])
+                dists = [
+                    float(np.hypot(xi - ox, yi - oy))
+                    for ox, oy, ot, _ in entries
+                    if ot != ti and ot != "referee"
+                ]
+                if dists:
+                    new_vals[pos] = round(min(dists), 1)
+            df["nearest_opponent"] = new_vals
+            filled = int(np.sum(need_opp & ~np.isnan(new_vals)))
+            print(f"  [fill_spatial] nearest_opponent: filled {filled} blank rows")
+
+    # ── handler_isolation fallback ───────────────────────────────────────────
+    if "handler_isolation" in df.columns and "ball_possession" in df.columns:
+        iso_vals  = pd.to_numeric(df["handler_isolation"], errors="coerce").values
+        poss_vals = pd.to_numeric(df["ball_possession"],  errors="coerce").fillna(0).values
+        # treat 0.0 as missing — handler can't have isolation distance of 0
+        need_iso  = np.isnan(iso_vals) | (iso_vals <= 0)
+
+        if need_iso.any():
+            # Per frame: find handler, compute min opp distance if 2+ opponents visible
+            frame_iso: dict = {}
+            from collections import defaultdict as _dd
+            frame_entries2: dict = _dd(list)
+            for i, fr in enumerate(frames):
+                if not (np.isnan(x_vals[i]) or np.isnan(y_vals[i])):
+                    frame_entries2[fr].append((x_vals[i], y_vals[i], teams[i], bool(poss_vals[i])))
+
+            for fr, entries in frame_entries2.items():
+                handlers = [(x, y, t) for x, y, t, has_ball in entries if has_ball]
+                if not handlers:
+                    continue
+                hx, hy, ht = handlers[0]
+                opps = [(x, y) for x, y, t, _ in entries if t != ht and t != "referee"]
+                if len(opps) < 2:
+                    continue
+                dists = [float(np.hypot(hx - ox, hy - oy)) for ox, oy in opps]
+                frame_iso[fr] = round(min(dists), 1)
+
+            if frame_iso:
+                new_iso = iso_vals.copy()
+                for pos, (fr, need) in enumerate(zip(frames, need_iso)):
+                    if need and fr in frame_iso:
+                        new_iso[pos] = frame_iso[fr]
+                df["handler_isolation"] = new_iso
+                filled = int(np.sum(need_iso & ~np.isnan(new_iso)))
+                print(f"  [fill_spatial] handler_isolation: filled {filled} blank frames")
+
+    return df
+
+
+def run(input_path: str = None, output_path: str = None, skip_advanced: bool = False) -> pd.DataFrame:
     """
     Full feature engineering pipeline.
 
     Reads tracking_data.csv, adds all feature groups, writes features.csv.
     Returns the feature DataFrame.
+
+    Args:
+        skip_advanced: If True, skip expensive advanced features (A-1 to A-14) for memory efficiency
     """
+    import gc
+
     df = load_tracking(input_path)
     print(f"Loaded {len(df)} rows, {df['frame'].nunique()} frames, "
           f"{df['player_id'].nunique()} players")
 
     df = compute_spatial_features(df)
+    df = fill_spatial_gaps(df)        # Fix 1 & 2: nearest_opponent / handler_isolation fallback
+    df = add_ft_coordinates(df)       # FIX 3: ft_x / ft_y / dist_to_basket_ft
+
+    # A-1 to A-14: advanced features (pre-season accuracy plan)
+    # Skip on large games (>100K rows) to prevent memory bloat
+    if _HAS_ADVANCED and not skip_advanced:
+        if len(df) < 100000:
+            try:
+                df = add_acceleration_features(df)
+                gc.collect()
+                df = add_fatigue_features(df)
+                gc.collect()
+                df = add_defender_features(df)
+                gc.collect()
+                df = add_off_ball_features(df)
+                gc.collect()
+                df = add_paint_pressure_features(df)
+                gc.collect()
+                df = add_slump_features(df)
+                gc.collect()
+                df = add_ewma_features(df)
+                gc.collect()
+                df = add_interaction_features(df)
+                gc.collect()
+            except Exception as e:
+                print(f"  [skip] advanced features error: {str(e)[:80]}")
+        else:
+            print(f"  [skip] advanced features (large game: {len(df):,} rows)")
+
     df = add_rolling_features(df)
+    gc.collect()
     df = add_event_features(df)
+    gc.collect()
     df = add_momentum_features(df)
+    gc.collect()
     df = add_basket_features(df)
-    df = add_game_flow_features(df)
+    gc.collect()
+    df = add_game_flow_features(df)   # A-6: xFG model call inside
+    gc.collect()
     df = add_per100_features(df)
+    gc.collect()
     df = add_context_features(df)
+    gc.collect()
     df = add_pose_features(df)
-    df = add_external_player_features(df)
+    gc.collect()
+    df = add_external_player_features(df)  # A-7/8/9/10 wired inside
+    gc.collect()
+
+    # FIX 7: add team_abbrev from team_colors.json when available.
+    # The JSON lives alongside tracking_data.csv in data/tracking/{game_id}/.
+    if "team_abbrev" not in df.columns or df["team_abbrev"].fillna("").eq("").all():
+        _tc_json = None
+        if input_path:
+            _tc_json = os.path.join(os.path.dirname(input_path), "team_colors.json")
+        else:
+            # Default path: data/tracking/ siblings
+            _tc_json = os.path.join(_DATA_DIR, "tracking", "team_colors.json")
+        if _tc_json and os.path.exists(_tc_json):
+            try:
+                import json as _json
+                with open(_tc_json) as _f:
+                    _color_map = _json.load(_f)
+                if "team" in df.columns:
+                    df["team_abbrev"] = df["team"].map(_color_map).fillna("")
+                    print(f"  team_abbrev applied from {_tc_json}")
+            except Exception as _e:
+                print(f"  [team_abbrev] JSON load failed: {_e}")
+
+    # Backfill player_name from jersey_name_map.json when column is blank.
+    # jersey_name_map.json lives in the same directory as tracking_data.csv.
+    if "player_name" in df.columns and "jersey_number" in df.columns:
+        blank_name = df["player_name"].fillna("") == ""
+        if blank_name.any():
+            _jnm_path = None
+            if input_path:
+                _jnm_path = os.path.join(os.path.dirname(input_path), "jersey_name_map.json")
+            if _jnm_path and os.path.exists(_jnm_path):
+                try:
+                    import json as _json2
+                    with open(_jnm_path) as _jf:
+                        _jmap = _json2.load(_jf)
+                    # jersey_name_map: {"jersey_str": "Player Name"}
+                    def _lookup_name(row):
+                        _pn = str(row.get("player_name", "") or "").strip()
+                        if _pn and _pn.lower() not in ("nan", "none", ""):
+                            return row["player_name"]
+                        _jraw = row.get("jersey_number", "")
+                        try:
+                            # Float jersey numbers (e.g. 8.0) → "8" to match JSON keys
+                            jersey = str(int(float(_jraw)))
+                        except (ValueError, TypeError):
+                            jersey = str(_jraw).strip()
+                        if jersey and jersey not in ("nan", "None", ""):
+                            return _jmap.get(jersey, "")
+                        return ""
+                    df["player_name"] = df.apply(_lookup_name, axis=1)
+                    filled = (df["player_name"].fillna("") != "").sum() - (~blank_name).sum()
+                    print(f"  player_name: filled {max(0, filled)} rows from jersey_name_map.json")
+                except Exception as _jne:
+                    print(f"  [player_name] jersey_name_map.json lookup failed: {_jne}")
+
     df = df.sort_values(["frame", "player_id"]).reset_index(drop=True)
 
     if output_path is None:
         output_path = os.path.join(_DATA_DIR, "features.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)
-    print(f"Features → {output_path}  ({len(df)} rows, {len(df.columns)} cols)")
+    print(f"Features -> {output_path}  ({len(df)} rows, {len(df.columns)} cols)")
     return df
 
 
