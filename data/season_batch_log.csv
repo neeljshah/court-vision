@@ -1,0 +1,78 @@
+timestamp,game_id,matchup,status,rows,shots,poss,duration_min,error
+2026-03-31 19:35:57,0022501093,MEM vs. PHX,success,0,0,0,0.0,
+2026-03-31 20:18:48,0022501093,MEM vs. PHX,success,0,0,0,0.0,
+2026-03-31 20:17:53,0022501098,LAL vs. WAS,success,0,0,0,0.0,
+2026-03-31 20:25:42,0022501093,MEM vs. PHX,quality_gate: only 4299 rows (min 10000),4299,0,0,0.0,quality_gate: only 4299 rows (min 10000)
+2026-03-31 20:36:05,0022501093,MEM vs. PHX,success,18701,0,0,0.0,
+2026-03-31 20:35:34,0022501092,ATL vs. BOS,success,22780,0,0,0.0,
+2026-03-31 20:28:57,0022501093,MEM vs. PHX,success,18701,0,0,0.0,
+2026-03-31 20:48:49,0022500001,OKC vs. HOU,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 20:49:07,0022500002,GSW @ LAL,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 20:54:04,0022500080,CHA vs. BKN,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 20:54:21,0022500085,MEM vs. NOP,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 20:54:39,0022500087,LAC @ UTA,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 20:54:56,0022500081,MIA @ ORL,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 20:59:49,0022500082,TOR @ ATL,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:00:08,0022500084,CHI vs. DET,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:00:25,0022500088,SAC @ PHX,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:00:42,0022500089,POR vs. MIN,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:01:01,0022500083,PHI @ BOS,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:01:18,0022500086,WAS @ MIL,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:03:06,0022500001,OKC vs. HOU,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:01:35,0022500004,DAL vs. SAS,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:06:11,0022500003,CLE @ NYK,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:06:29,0022500006,DEN @ GSW,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:10:43,0022500005,OKC @ IND,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:15:19,0022500092,MIL @ TOR,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:20:37,0022500097,GSW @ POR,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:21:03,0022500091,BKN vs. CLE,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:26:01,0022500094,MEM vs. MIA,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:26:18,0022500090,ORL vs. ATL,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:31:33,0022500096,WAS @ DAL,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:34:54,0022500019,LAL vs. MIN,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:40:07,0022500095,NOP vs. SAS,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:40:24,0022500098,UTA @ SAC,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:40:41,0022500093,HOU vs. DET,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:40:59,0022500018,NYK vs. BOS,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-03-31 21:41:16,0022500099,PHX @ LAC,pipeline_failed,0,0,0,0.0,run_phase_g non-zero exit
+2026-03-31 21:03:25,0022500002,GSW @ LAL,success,229633,7,234,102.0,
+2026-04-01 00:16:21,0022500080,CHA vs. BKN,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-04-01 00:16:38,0022500085,MEM vs. NOP,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-04-01 00:16:55,0022500087,LAC @ UTA,download_failed,0,0,0,0.0,yt-dlp returned no video
+2026-04-01 00:17:12,0022500081,MIA @ ORL,pipeline_failed,5190,0,0,0.0,run_phase_g non-zero exit
+2026-04-01 20:01:36,0022500001,OKC vs. HOU,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-01 20:01:54,0022500085,MEM vs. NOP,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-01 20:02:11,0022500080,CHA vs. BKN,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 09:57:10,0022501110,MIL @ HOU,success,12101,0,0,0.0,C,0.0,29,0.0,13,97.6,0.0,
+2026-04-02 18:22:12,0022501105,PHI @ WAS,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:22:28,0022501113,SAS @ GSW,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:22:43,0022501108,TOR vs. SAC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:22:59,0022501103,CLE @ LAL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:23:34,0022501106,BOS @ MIA,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:23:49,0022501109,CHI vs. IND,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:24:08,0022501107,ATL @ ORL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:24:53,0022501106,BOS @ MIA,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:25:09,0022501109,CHI vs. IND,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:25:27,0022501107,ATL @ ORL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:25:43,0022501003,NYK @ MEM,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:26:02,0022501112,UTA vs. DEN,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:26:17,0022501105,PHI @ WAS,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:26:33,0022501113,SAS @ GSW,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:26:49,0022501108,TOR vs. SAC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:27:05,0022501103,CLE @ LAL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:27:20,0022501101,TOR @ DET,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:27:35,0022501104,POR @ LAC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:27:51,0022501102,HOU vs. NYK,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:28:14,0022501099,PHX @ ORL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:28:29,0022500652,MIL vs. DAL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:28:44,0022501100,BKN vs. CHA,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:28:59,0022501096,UTA vs. CLE,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:29:18,0022501097,DET @ OKC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:29:34,0022501093,MEM vs. PHX,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:29:53,0022501095,MIN @ DAL,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:30:08,0022501085,CHA vs. BOS,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:30:24,0022501088,NOP vs. HOU,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:30:39,0022501084,BKN vs. SAC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:30:55,0022501090,GSW @ DEN,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:31:13,0022501083,IND vs. MIA,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video
+2026-04-02 18:31:32,0022501089,NYK @ OKC,download_failed,0,0,0,0.0,,,,,,,,yt-dlp returned no video

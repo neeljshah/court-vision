@@ -30,9 +30,16 @@ from typing import Optional
 import cv2
 import numpy as np
 
-_OCR_CONF_MIN = 0.65    # minimum confidence to accept a digit read
-_MIN_CROP_PIXELS = 600  # below this, fall back from k-means to mean color
-_KMEANS_K = 3           # number of clusters for jersey color
+_OCR_CONF_MIN    = 0.45  # minimum confidence to accept a digit read (ISSUE-057: lowered 0.65→0.45)
+_MIN_CROP_PIXELS = 600   # below this, fall back from k-means to mean color
+_KMEANS_K        = 3     # number of clusters for jersey color
+
+# ── Per-slot OCR skip state ───────────────────────────────────────────────────
+# Skips EasyOCR/PaddleOCR for slots that already have a confirmed jersey number
+# and were read within the last _OCR_SKIP_FRAMES frames (~1 s at 30 fps).
+_OCR_SKIP_FRAMES: int = 30
+_slot_ocr_last:   dict = {}  # slot → frame_idx of last OCR run
+_slot_confirmed:  dict = {}  # slot → last confirmed jersey number (int)
 
 _reader: Optional[object] = None  # module-level singleton (PaddleOCR or EasyOCR)
 _USE_PADDLE: bool = False          # True when PaddleOCR init succeeded
@@ -249,6 +256,72 @@ def read_jersey_number(crop_bgr: np.ndarray) -> Optional[int]:
 
     except Exception as exc:
         log.debug("read_jersey_number failed silently: %s", exc)
+        return None
+
+
+def read_jersey_number_with_conf(
+    crop_bgr: np.ndarray,
+    slot: Optional[int] = None,
+    frame_idx: Optional[int] = None,
+) -> Optional[tuple]:
+    """
+    Read a jersey number and return ``(number, confidence)`` or ``None``.
+
+    Same waterfall as :func:`read_jersey_number` but exposes the OCR confidence
+    so callers can build a confidence-weighted majority vote.
+
+    Args:
+        crop_bgr:  BGR image crop of a player bounding box (any size).
+        slot:      Tracker slot index, used for per-slot OCR skip state.
+                   When provided together with ``frame_idx``, returns the cached
+                   result immediately if the slot already has a confirmed jersey
+                   number and fewer than ``_OCR_SKIP_FRAMES`` frames have elapsed
+                   since the last OCR run (~1 second at 30 fps).
+        frame_idx: Absolute video frame index, paired with ``slot``.
+
+    Returns:
+        ``(int, float)`` — (jersey_number, confidence) on success, or ``None``.
+    """
+    # ── 30-frame skip: return cached result for confirmed slots ───────────
+    if slot is not None and frame_idx is not None:
+        _confirmed = _slot_confirmed.get(slot)
+        _last      = _slot_ocr_last.get(slot, -_OCR_SKIP_FRAMES)
+        if _confirmed is not None and (frame_idx - _last) < _OCR_SKIP_FRAMES:
+            return (_confirmed, 1.0)
+
+    try:
+        preprocessed = preprocess_crop(crop_bgr)
+
+        result = _ocr_image(preprocessed)
+        if result is not None:
+            if slot is not None and frame_idx is not None:
+                _slot_ocr_last[slot]  = frame_idx
+                _slot_confirmed[slot] = result[0]
+            return result  # (number, conf)
+
+        result = _ocr_image(cv2.bitwise_not(preprocessed))
+        if result is not None:
+            if slot is not None and frame_idx is not None:
+                _slot_ocr_last[slot]  = frame_idx
+                _slot_confirmed[slot] = result[0]
+            return result
+
+        h2x, w2x = preprocessed.shape[0] * 2, preprocessed.shape[1] * 2
+        resized_2x = cv2.resize(preprocessed, (w2x, h2x), interpolation=cv2.INTER_CUBIC)
+        result = _ocr_image(resized_2x)
+        if result is not None:
+            if slot is not None and frame_idx is not None:
+                _slot_ocr_last[slot]  = frame_idx
+                _slot_confirmed[slot] = result[0]
+            return result
+
+        # No result: still update the last-run timestamp so we don't hammer this slot
+        if slot is not None and frame_idx is not None:
+            _slot_ocr_last[slot] = frame_idx
+        return None
+
+    except Exception as exc:
+        log.debug("read_jersey_number_with_conf failed silently: %s", exc)
         return None
 
 

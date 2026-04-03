@@ -25,7 +25,7 @@ class VideoHandler:
 
     def __init__(self, pano, video, ball_detector, feet_detector, map_2d):
         self.M1 = np.load(os.path.join(_RESOURCES_DIR, "Rectify1.npy"))
-        self.sift = cv2.xfeatures2d.SIFT_create()
+        self.sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
         self.pano = pano
         self.video = video
         self.feet_detector = feet_detector

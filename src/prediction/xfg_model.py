@@ -268,10 +268,11 @@ class XFGModel:
     # ── persistence ───────────────────────────────────────────────────────────
 
     def _save(self, path: str) -> None:
-        payload = {"model": self.model, "encoders": self.encoders, "meta": self.meta}
+        model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
+        payload = {"model_bytes": model_bytes, "encoders": self.encoders, "meta": self.meta}
         with open(path, "wb") as f:
             pickle.dump(payload, f)
-        print(f"[xfg] Saved → {path}")
+        print(f"[xfg] Saved -> {path}")
 
     def _write_calibration(
         self,
@@ -297,10 +298,23 @@ class XFGModel:
 
 def load(model_path: str = _MODEL_PATH) -> XFGModel:
     """Load a saved XFGModel from disk."""
+    from xgboost import XGBClassifier
     with open(model_path, "rb") as f:
         payload = pickle.load(f)
     m = XFGModel()
-    m.model    = payload["model"]
+    if "model_bytes" in payload:
+        import tempfile
+        clf = XGBClassifier()
+        with tempfile.NamedTemporaryFile(suffix=".ubj", delete=False) as tmp:
+            tmp.write(payload["model_bytes"])
+            tmp_path = tmp.name
+        try:
+            clf.load_model(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+        m.model = clf
+    else:
+        m.model = payload["model"]  # backward compat
     m.encoders = payload["encoders"]
     m.meta     = payload.get("meta", {})
     return m

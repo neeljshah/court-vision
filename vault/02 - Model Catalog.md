@@ -1,5 +1,5 @@
 # Model Catalog
-*Last updated: 2026-03-24*
+*Last updated: 2026-03-25*
 
 ← [[01 - System Architecture]] | → [[03 - Data Sources]]
 
@@ -7,20 +7,23 @@
 
 ## Summary
 
-90 models total across 6 tiers. 18 trained and validated. Remaining tiers unlock as full-game CV data accumulates.
+90 models total across 6 tiers. **46 trained and validated.** Remaining tiers unlock as full-game CV data accumulates.
 
-| Tier | Models | Status | Unlock |
-|------|--------|--------|--------|
-| Tier 1 — NBA API | 18 | ✅ Trained | Now |
-| Tier 2 — Shot Charts | 5 | ✅ Trained | Now |
-| Tier 3 — 20 CV Games | 10 | 🔲 Phase 7 | 20 games |
-| Tier 4 — 50 Games | 8 | 🔲 Phase 10 | 50 games |
-| Tier 5 — 100 Games | 7 | 🔲 Phase 10 | 100 games |
-| Tier 6 — 200 Games | 7 | 🔲 Phase 16 | 200 games |
+| Tier | Target | Trained | Status | Unlock |
+|------|--------|---------|--------|--------|
+| Tier 1 — NBA API Core | 13 | 13 | ✅ Done | Now |
+| Tier 1B — Betting + Lifecycle (Phase 4.5) | 6 | 6 | ✅ Done | Now |
+| Tier 1C — Specialist models (Phase 4.6–4.9) | 27 | 27 | ✅ Done | Now |
+| Tier 2 — Shot Charts + xFG | 5 | 2 | 🟡 Partial | Now (xFG v1 done; v2 needs CV data) |
+| Tier 3 — 20 CV Games | 10 | 0 | 🔲 Phase 7 | 20 games |
+| Tier 4 — 50 Games | 8 | 0 | 🔲 Phase 10 | 50 games |
+| Tier 5 — 100 Games | 7 | 0 | 🔲 Phase 10 | 100 games |
+| Tier 6 — 200 Games + LSTM | 7 | 0 | 🔲 Phase 16 | 200 games |
+| **Total** | **90** | **46** | | |
 
 ---
 
-## Trained Models (✅ 18)
+## Trained Models (✅ 46)
 
 ### Win Probability
 
@@ -90,43 +93,68 @@
 - **R²:** 0.796, **MAE:** 4.55
 - **Artifact:** `data/models/matchup_model.json`
 
-### Phase 4.5 Models (all production-ready)
+### Phase 4.5 — Betting + Lifecycle Models (✅ 6)
 
-| Model | File | Artifact |
-|-------|------|---------|
-| Load management | `load_management.py` | `load_management.pkl` |
-| Injury return curve | `injury_return.py` | `injury_return.pkl` |
-| Injury risk | `injury_risk.py` | `injury_risk.pkl` |
-| Breakout predictor | `breakout_predictor.py` | `breakout_predictor.pkl` |
-| Public fade | `public_fade.py` | `public_fade.pkl` |
-| Soft book lag | `soft_book_lag.py` | `soft_book_lag.pkl` |
+| Model | Artifact | Notes |
+|-------|---------|-------|
+| Load management | `load_management.pkl` | Rest-based DNP/minutes cap predictor |
+| Injury return curve | `injury_return.pkl` | Efficiency ramp on return from injury |
+| Injury risk | `injury_risk.pkl` | In-game injury probability |
+| Breakout predictor | `breakout_predictor.pkl` | Usage spike + opportunity flags |
+| Public fade | `public_fade.pkl` | Fade signal when public% > 75% |
+| Soft book lag | `soft_book_lag.pkl` | Line lag detector vs sharp books |
 
-### Additional Built Models
+### Phase 4.6–4.9 — Specialist Models (✅ 23)
+
+| Model | Artifact |
+|-------|---------|
+| Age curve | `age_curve_model.pkl` |
+| Altitude impact | `altitude_model.pkl` |
+| Back-to-back fatigue | `back_to_back_model.pkl` |
+| Beneficiary cascade (injury) | `beneficiary_cascade.pkl` |
+| Clutch lineup | `clutch_lineup_model.pkl` |
+| Contested rate | `contested_rate_model.pkl` |
+| Contested shot predictor | `contested_shot_predictor.pkl` |
+| Foul trouble | `foul_trouble.pkl` |
+| Garbage time detector | `garbage_time.pkl` |
+| Home/away split | `home_away_model.pkl` |
+| Line movement predictor | `line_movement_predictor.pkl` |
+| Minutes floor | `minutes_floor.pkl` |
+| Overtime probability | `overtime_probability.pkl` |
+| Plus/minus predictor | `plus_minus_predictor.pkl` |
+| Referee tendencies | `referee_model.pkl` |
+| Rest day impact | `rest_day_model.pkl` |
+| Rotation predictor | `rotation_predictor.pkl` |
+| Shot clock pressure | `shot_clock_pressure_model.pkl` |
+| Shot type classifier | `shot_type_model.pkl` |
+| Substitution timing | `substitution_timing_model.pkl` |
+| Travel impact | `travel_impact_model.pkl` |
+| True shooting estimator | `true_shooting_model.pkl` |
+| Usage rate predictor | `usage_rate_model.pkl` |
+
+### Infrastructure Models
 
 - `CLV predictor` — `clv_tracker.py` — opening vs closing line tracking
 - `Prop correlation matrix` — 508 player correlations, 3,447 lineup pairs (`prop_correlations.json`)
+- `xFG CV stack` — `xfg_cv_stack.pkl` — CV-enriched shot quality (needs more game data)
 - `Betting portfolio` — Kelly + correlation sizing + cross-book arb detection (`betting_portfolio.py`)
 - `Prop backtester` — historical backtest + paper trading + validation gate (`prop_backtester.py`)
-- `CLV backtest baseline` — 70.7% correct winner, MAE=10.2pts (3,685 games)
 
 ---
 
-## Untrained / Phase 3.5 Models (🔲 10)
+## What's Still Needed (Phase 3.5 — data gaps)
 
-Waiting on data: hustle, synergy, matchup, BBRef, on/off all fetched — these models just need to be coded + trained.
-
-| Model | Target | Data Source |
-|-------|--------|------------|
-| Defensive effort | Hustle stats | `hustle_stats_*.json` |
-| Ball movement | Passing + touches | `BoxScorePlayerTrackV2` |
-| Screen ROI | Synergy screen PPP | `synergy_*.json` |
-| Touch dependency | Touch% by player | `BoxScorePlayerTrackV2` |
-| Play type efficiency | Synergy PPP | `synergy_*.json` |
-| Defender zone xFG | Allowed FG% by zone | `defender_zone_*.json` |
-| Age curve | BBRef aging data | `bbref_advanced_*.json` |
-| Injury recurrence | BBRef injury history | Pending fetch |
-| Coaching adjustment | Half-time adj | PBP + lineup data |
-| Ref tendency extended | Foul rate + pace | `ref_tracker.py` |
+| Model | Blocker |
+|-------|---------|
+| Defensive effort | hustle data fetched, model not trained |
+| Ball movement quality | BoxScorePlayerTrackV2 fetched, model not trained |
+| Screen ROI | Synergy data fetched, model not trained |
+| Touch dependency | fetched, not trained |
+| Play type efficiency | fetched, not trained |
+| Defender zone xFG | fetched, not trained |
+| Injury recurrence | ProSportsTransactions not fetched yet |
+| Coaching adjustment | PBP data available, model not coded |
+| Ref tendency extended | partial — ref_tracker.py built, extended features pending |
 
 ---
 

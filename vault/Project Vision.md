@@ -1,6 +1,6 @@
 # Project Vision — NBA AI Analytics & Prediction System
 > **Goal: Build the world's best NBA analytics and prediction system.**
-> Last updated: 2026-03-17
+> Last updated: 2026-03-25
 
 ---
 
@@ -178,28 +178,33 @@ Loop → next game → repeat
 
 ## Roadmap Overview
 
-| Phase | Goal                                           | Status |
-| ----- | ---------------------------------------------- | ------ |
-| 1     | Data infrastructure                            | ✅      |
-| 2     | CV tracker bug fixes                           | ✅      |
-| 2.5   | CV quality upgrades                            | 🟡     |
-| 3     | NBA API data maximization                      | ✅      |
-| 3.5   | Expanded data: BBRef + untapped nba_api + news | 🔲     |
-| 4     | Tier 1 ML models                               | ✅      |
-| 4.5   | Betting market models + lifecycle models       | 🔲     |
-| 5     | External factors                               | ✅      |
-| 6     | 20 full games + PostgreSQL                     | 🔲     |
-| 7     | Tier 2-3 spatial models                        | 🔲     |
-| 8     | Possession simulator v1                        | 🔲     |
-| 9     | Feedback loop + NLP models                     | 🔲     |
-| 10    | Tier 4-5 volume models                         | 🔲     |
-| 11    | Betting infrastructure + live models           | 🔲     |
-| 12    | Full Monte Carlo (all 90 models)               | 🔲     |
-| 13    | FastAPI backend                                | 🔲     |
-| 14    | Analytics dashboard                            | 🔲     |
-| 15    | AI chat interface                              | 🔲     |
-| 16    | Live win prob LSTM                             | 🔲     |
-| 17    | Infrastructure                                 | 🔲     |
+| Phase | Goal                                             | Status                 |
+| ----- | ------------------------------------------------ | ---------------------- |
+| 1     | Data infrastructure                              | ✅                      |
+| 2     | CV tracker bug fixes                             | ✅                      |
+| 2.5   | CV quality upgrades                              | 🟡 Partial             |
+| 3     | NBA API data maximization                        | ✅                      |
+| 3.5   | Expanded data: BBRef + untapped nba_api + news   | 🟡 Partial             |
+| 4     | Tier 1 ML models (23 trained)                    | ✅                      |
+| 4.5   | Betting market models + lifecycle models         | ✅                      |
+| 4.6   | Untapped signal wiring (52-feature props)        | ✅                      |
+| 4.7   | Prediction quality stack + meta-model            | ✅                      |
+| 4.8   | Quantitative betting infrastructure              | ✅                      |
+| 4.9   | Backtesting + validation infrastructure          | ✅                      |
+| 5     | External factors                                 | ✅                      |
+| G     | Full game data collection (Phase 6 prerequisite) | 🟡 Active — 1/20 clean |
+| 6     | 20 full games + PostgreSQL                       | 🔲 Next                |
+| 7     | Tier 2-3 spatial models                          | 🔲                     |
+| 8     | Possession simulator v1                          | 🔲                     |
+| 9     | Feedback loop + NLP models                       | 🔲                     |
+| 10    | Tier 4-5 volume models                           | 🔲                     |
+| 11    | Betting infrastructure + live models             | 🔲                     |
+| 12    | Full Monte Carlo (all 90 models)                 | 🔲                     |
+| 13    | FastAPI backend                                  | 🔲                     |
+| 14    | Analytics dashboard                              | 🔲                     |
+| 15    | AI chat interface                                | 🔲                     |
+| 16    | Live win prob LSTM                               | 🔲                     |
+| 17    | Infrastructure                                   | 🔲                     |
 
 See `.planning/ROADMAP.md` for full phase detail.
 

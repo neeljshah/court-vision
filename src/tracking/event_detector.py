@@ -70,6 +70,10 @@ class EventDetector:
         self._last_ball_y_pixel: Optional[float] = None   # raw image-space y coord of ball
         self._last_frame_height: Optional[int]   = None   # raw frame height in pixels
         self._last_ball_frame:  int = -999   # frame index of last non-None ball_pos
+        # Rolling history of DETECTED ball y positions: (frame_idx, ball_y_pixel).
+        # Only appended when ball_y_pixel is not None — persists across undetected frames.
+        # Used by upward-velocity shot detector instead of single-frame _prev_ball_y_pixel.
+        self._ball_y_hist: deque = deque(maxlen=60)   # ~6s at 10fps processed
         self._loss_frame: Optional[int] = None   # frame at which possession was lost
         self._possession_held_frames: int = 0  # frames current possessor has held ball
         self._ball_loss_streak: int = 0         # consecutive frames ball detection has been None
@@ -109,9 +113,8 @@ class EventDetector:
 
         # Shot debounce: minimum frames between consecutive shot detections.
         # Initialized to -(DEBOUNCE+1) so frame 0 can always trigger a shot.
-        # FIX 2: Raised 3.0s→5.0s, now lowered 5.0s→3.5s — 3.5s safe for ~1 shot
-        # per 14s average while being less restrictive than 5s was.
-        self._last_shot_frame: int = -(int(3.5 * self._fps) + 1)  # = -211 at 60fps
+        # Now 8.0s to reduce over-detection (raised from 3.5s).
+        self._last_shot_frame: int = -(int(8.0 * self._fps) + 1)  # = -481 at 60fps
 
         # Court scale (pixels per foot, approximate from basket span)
         _span = 0.87 * map_w            # ~80.5 ft between baskets in pixels
@@ -125,8 +128,9 @@ class EventDetector:
         # fps-dependent thresholds — recomputed by configure(); defaults = 60fps
         # 8 mph → ft/s → ft/abs-frame (at fps) → px/abs-frame
         self._DRIVE_SPEED    = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
-        # 3.5 seconds between shots in absolute frame count (lowered from 5.0s)
-        self._SHOT_DEBOUNCE: int = int(3.5 * self._fps)
+        # 8.0 seconds between shots in absolute frame count (raised from 3.5s to reduce
+        # over-detection; NBA shot clock is 24s so 8s minimum between attempts is safe)
+        self._SHOT_DEBOUNCE: int = int(8.0 * self._fps)
 
     @property
     def dribble_count(self) -> int:
@@ -146,8 +150,8 @@ class EventDetector:
         self._stride = max(1, int(stride))
         # Drive speed: 8 mph in court px per absolute video frame
         self._DRIVE_SPEED   = (3.1 * 5280.0 / 3600.0 / self._fps) * self._ft
-        # 3.5s between shots in absolute frame count (lowered from 5.0s)
-        self._SHOT_DEBOUNCE = int(3.5 * self._fps)
+        # 8.0s between shots in absolute frame count (raised from 3.5s)
+        self._SHOT_DEBOUNCE = int(8.0 * self._fps)
         # fps/stride-aware pass window: 2.0s real-time in processed frames
         self._PASS_MAX_FRAMES = max(_PASS_MAX_FRAMES, int(2.0 * self._fps / self._stride))
         # pixel-vel shot threshold scales with stride (larger stride → larger per-frame displacement)
@@ -237,28 +241,23 @@ class EventDetector:
         # of a shot release that isn't a lob pass.
         #
         # Conditions (all must hold):
-        #   1. pixel_vel > 12 px/processed-frame
-        #   2. ball_y_pixel decreased by > 8 px (ball moved UP)
-        #   3. vertical fraction > 0.55 — upward component ≥55% of total velocity
-        #   4. ball between 15-70% of frame height (broadcast angle: release ~65%)
-        #   5. debounce cleared (3.5s)
-        #   6. handler was approaching basket in last 10 frames
-        _prev_y = getattr(self, "_prev_ball_y_pixel", None)
-        if (pixel_vel > max(12.0, self._PIXEL_SHOT_VEL)
-                and _prev_y is not None
+        #   1. pixel_vel > threshold (ball moving fast)
+        #   2. ball between 15-80% of frame height (not scoreboard/baseline)
+        #   3. debounce cleared (8s)
+        # _y_drop / _ref_y rise check removed — fails for long frame gaps;
+        # pixel_vel > threshold already ensures the ball is actually moving fast.
+
+        if (pixel_vel > max(8.0, self._PIXEL_SHOT_VEL * 0.6)   # stride scaling halved
                 and ball_y_pixel is not None
                 and frame_height is not None
-                and (ball_y_pixel - _prev_y) < -8          # ball moved UP (y decreases)
-                and abs(ball_y_pixel - _prev_y) / (pixel_vel + 1e-6) > 0.55  # mostly vertical (allow ~55% vertical component)
-                and ball_y_pixel > frame_height * 0.15     # not scoreboard artifact at top
-                and ball_y_pixel < frame_height * 0.70     # broadcast angle: release ~65% height
-                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE
-                and _handler_toward_basket):               # FIX 2: handler approached basket
+                and ball_y_pixel > frame_height * 0.15       # not scoreboard artifact at top
+                and ball_y_pixel < frame_height * 0.75       # reject floor-level balls
+                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE):
             self._last_shot_frame = frame_idx
             self._prev_ball_y_pixel = ball_y_pixel
             self._prev_ball = ball_pos
             return "shot"
-        self._prev_ball_y_pixel = ball_y_pixel
+        self._prev_ball_y_pixel = ball_y_pixel if ball_y_pixel is not None else getattr(self, "_prev_ball_y_pixel", None)
 
         possessor_id  = None
         possessor_pos = None
@@ -487,9 +486,9 @@ class EventDetector:
         dx_basket = nearest[0]  - ball_pos[0]
         dy_basket = nearest[1]  - ball_pos[1]
 
-        # cos>0.5 ≈ within 60° of direct basket line — allows corner 3s and
-        # pull-up shots that aren't perfectly on-axis (loosened 0.7→0.5).
-        if dx_ball * dx_basket + dy_ball * dy_basket > 0.5 * (np.hypot(dx_ball, dy_ball) * np.hypot(dx_basket, dy_basket) + 1e-6):
+        # cos>0.75 ≈ within 41° of direct basket line — tight enough to reject most
+        # passes and arm raises while keeping corner 3s and pull-ups (raised 0.5→0.75).
+        if dx_ball * dx_basket + dy_ball * dy_basket > 0.75 * (np.hypot(dx_ball, dy_ball) * np.hypot(dx_basket, dy_basket) + 1e-6):
             self._last_shot_frame = frame_idx
             return "shot"
 

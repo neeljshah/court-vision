@@ -1,25 +1,23 @@
 #!/usr/bin/env bash
-# runpod_4gpu.sh — Launch 4 parallel batch workers on a 4x RTX 4090 RunPod pod.
+# runpod_4gpu.sh — Launch parallel batch workers, one per GPU on RunPod.
 #
-# Each worker gets its own GPU and processes every 4th game from the target list:
-#   GPU 0 → games 0, 4, 8, 12, 16 ...
-#   GPU 1 → games 1, 5, 9, 13, 17 ...
-#   GPU 2 → games 2, 6, 10, 14, 18 ...
-#   GPU 3 → games 3, 7, 11, 15, 19 ...
+# Auto-detects GPU count. Each worker processes every Nth game:
+#   GPU 0 → games 0, 4, 8, ...
+#   GPU 1 → games 1, 5, 9, ...
+#   etc.
 #
 # Usage (on RunPod pod):
 #   conda activate basketball_ai
 #   cd /workspace/nba-ai-system
 #   bash scripts/runpod_4gpu.sh [--limit 20] [--frames 0]
 #
-# Logs:  logs/worker_0.log  …  logs/worker_3.log
+# Logs:  logs/worker_0.log  …  logs/worker_N.log
 # Watch: tail -f logs/worker_*.log
 set -euo pipefail
 
 REMOTE_DIR="/workspace/nba-ai-system"
 PYTHON="/opt/conda/envs/basketball_ai/bin/python"
 LOG_DIR="$REMOTE_DIR/logs"
-NUM_GPUS=4
 
 # Pass through any extra args (--limit, --frames, etc.)
 EXTRA_ARGS="$*"
@@ -27,6 +25,29 @@ EXTRA_ARGS="$*"
 mkdir -p "$LOG_DIR"
 cd "$REMOTE_DIR"
 
+# ── Auto-detect GPU count ────────────────────────────────────────────────────
+NUM_GPUS=$($PYTHON -c "import torch; print(torch.cuda.device_count())" 2>/dev/null || echo 0)
+if [[ "$NUM_GPUS" -eq 0 ]]; then
+    # Fallback: count nvidia-smi lines
+    NUM_GPUS=$(nvidia-smi -L 2>/dev/null | wc -l || echo 1)
+fi
+[[ "$NUM_GPUS" -lt 1 ]] && NUM_GPUS=1
+
+echo "==> Detected $NUM_GPUS GPU(s)"
+
+# ── Verify GPU access before launching workers ───────────────────────────────
+$PYTHON -c "
+import torch
+assert torch.cuda.is_available(), 'CUDA not available — check PyTorch install vs pod CUDA version'
+for i in range(torch.cuda.device_count()):
+    name = torch.cuda.get_device_name(i)
+    mem  = torch.cuda.get_device_properties(i).total_mem / 1e9
+    print(f'  GPU {i}: {name} ({mem:.1f} GB)')
+torch.backends.cudnn.benchmark = True
+print(f'  cuDNN benchmark: enabled')
+"
+
+echo ""
 echo "==> Launching $NUM_GPUS workers on GPUs 0-$((NUM_GPUS-1))"
 echo "    Extra args: ${EXTRA_ARGS:-none}"
 echo ""
@@ -45,7 +66,7 @@ for GPU_ID in $(seq 0 $((NUM_GPUS-1))); do
 done
 
 echo ""
-echo "==> All 4 workers started. PIDs: ${PIDS[*]}"
+echo "==> All $NUM_GPUS workers started. PIDs: ${PIDS[*]}"
 echo "    Watch all logs:   tail -f logs/worker_*.log"
 echo "    Watch one:        tail -f logs/worker_0.log"
 echo "    Kill all:         kill ${PIDS[*]}"
@@ -77,7 +98,7 @@ fi
 if [[ -f "$REMOTE_DIR/data/season_batch_log.csv" ]]; then
     echo ""
     echo "==> Batch log summary:"
-    python3 -c "
+    $PYTHON -c "
 import csv
 rows = list(csv.DictReader(open('$REMOTE_DIR/data/season_batch_log.csv')))
 ok  = [r for r in rows if r.get('status') == 'success']

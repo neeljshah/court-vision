@@ -72,19 +72,28 @@ class FeetDetector:
         from ultralytics import YOLO
         import torch
         self._use_half = torch.cuda.is_available()
+        self._device = 0 if self._use_half else "cpu"
         self.players = players
+        # Enable cuDNN autotuner — ~15% speedup on fixed-size inputs (broadcast frames)
+        if self._use_half:
+            torch.backends.cudnn.benchmark = True
+        # Always use yolov8n + imgsz=640 for batch processing speed.
+        # yolov8x is slower to load and only marginally better for tracking.
+        self._infer_imgsz = 640
         weight = _best_yolo_model("yolov8n")
         try:
             self.model = YOLO(weight)
             # Warmup — eliminates JIT/CUDA init latency on first real frame
-            self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False, half=self._use_half)
+            self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False,
+                       half=self._use_half, device=self._device)
         except Exception as _e:
-            # TRT engine load failed (e.g. nvinfer DLL not on PATH) — fall back to .pt
+            # TRT engine load failed — fall back to yolov8n.pt
             if weight.endswith(".engine"):
                 import warnings
-                warnings.warn(f"TRT engine load failed ({_e}); falling back to yolov8n.pt")
+                warnings.warn(f"YOLO engine load failed ({_e}); falling back to yolov8n.pt")
                 self.model = YOLO("yolov8n.pt")
-                self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False, half=self._use_half)
+                self.model(np.zeros((640, 640, 3), dtype=np.uint8), verbose=False,
+                           half=self._use_half, device=self._device)
             else:
                 raise
 
@@ -105,7 +114,9 @@ class FeetDetector:
         return iou
 
     def get_players_pos(self, M, M1, frame, timestamp, map_2d):
-        results = self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=640, half=self._use_half)
+        _imgsz = getattr(self, "_infer_imgsz", 640)
+        results = self.model(frame, classes=[0], conf=0.3, verbose=False, imgsz=_imgsz,
+                             half=self._use_half, device=self._device)
         boxes   = results[0].boxes.xyxy.cpu().numpy() if results[0].boxes is not None else []
 
         adaptive_colors = _adaptive_colors(frame)

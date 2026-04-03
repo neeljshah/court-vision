@@ -212,6 +212,29 @@ def _run_pipeline(game_id: str, video_path: Path, frames: int, gpu: int = 0) -> 
         return False
 
 
+def _verify_gpu(gpu_id: int = 0) -> None:
+    """Print GPU status at startup. Warn loudly if CUDA unavailable."""
+    try:
+        import torch
+        print(f"  PyTorch {torch.__version__}  CUDA available: {torch.cuda.is_available()}")
+        if torch.cuda.is_available():
+            n = torch.cuda.device_count()
+            for i in range(n):
+                name = torch.cuda.get_device_name(i)
+                mem = torch.cuda.get_device_properties(i).total_memory / 1e9
+                print(f"    GPU {i}: {name} ({mem:.1f} GB)")
+            # Pin this worker to its assigned GPU
+            if gpu_id < n:
+                torch.cuda.set_device(gpu_id)
+            # Enable cuDNN autotuner for fixed-size inputs (broadcast frames)
+            torch.backends.cudnn.benchmark = True
+        else:
+            print("  *** WARNING: CUDA NOT AVAILABLE — running on CPU (very slow) ***")
+            print("  Check: PyTorch CUDA version matches pod's nvcc/nvidia-smi")
+    except ImportError:
+        print("  *** WARNING: PyTorch not installed ***")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Batch-process 2025-26 season games")
     parser.add_argument("--frames", type=int, default=0,
@@ -227,6 +250,8 @@ def main() -> None:
     parser.add_argument("--num-workers", type=int, default=1,
                         help="Total number of parallel workers (default: 1)")
     args = parser.parse_args()
+
+    _verify_gpu(args.gpu)
 
     targets = _load_targets()
     if not targets:

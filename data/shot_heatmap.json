@@ -1,0 +1,72 @@
+{
+  "3pt_arc": {
+    "count": 9,
+    "avg_quality": 0.3218,
+    "per_team": {
+      "green": {
+        "count": 7,
+        "avg_quality": 0.3229
+      },
+      "white": {
+        "count": 2,
+        "avg_quality": 0.3178
+      }
+    }
+  },
+  "backcourt": {
+    "count": 5,
+    "avg_quality": 0.1579,
+    "per_team": {
+      "green": {
+        "count": 2,
+        "avg_quality": 0.1543
+      },
+      "white": {
+        "count": 3,
+        "avg_quality": 0.1603
+      }
+    }
+  },
+  "corner_3": {
+    "count": 6,
+    "avg_quality": 0.4214,
+    "per_team": {
+      "green": {
+        "count": 4,
+        "avg_quality": 0.4235
+      },
+      "white": {
+        "count": 2,
+        "avg_quality": 0.4172
+      }
+    }
+  },
+  "mid_range": {
+    "count": 6,
+    "avg_quality": 0.2595,
+    "per_team": {
+      "green": {
+        "count": 2,
+        "avg_quality": 0.2454
+      },
+      "white": {
+        "count": 4,
+        "avg_quality": 0.2666
+      }
+    }
+  },
+  "paint": {
+    "count": 3,
+    "avg_quality": 0.4346,
+    "per_team": {
+      "green": {
+        "count": 1,
+        "avg_quality": 0.4455
+      },
+      "white": {
+        "count": 2,
+        "avg_quality": 0.4292
+      }
+    }
+  }
+}
