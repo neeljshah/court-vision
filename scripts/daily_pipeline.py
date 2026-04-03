@@ -12,7 +12,7 @@ Steps (in order):
 
 Usage:
     conda activate basketball_ai
-    python scripts/daily_pipeline.py [--min-ev 0.03] [--season 2024-25] [--dry-run]
+    python scripts/daily_pipeline.py [--min-ev 0.03] [--season 2025-26] [--dry-run]
 """
 
 from __future__ import annotations
@@ -241,7 +241,7 @@ def step_summary(
 def main() -> None:
     parser = argparse.ArgumentParser(description="NBA AI daily morning pipeline")
     parser.add_argument("--min-ev",  type=float, default=0.03, help="Minimum EV to flag an edge")
-    parser.add_argument("--season",  default="2024-25", help="NBA season string")
+    parser.add_argument("--season",  default="2025-26", help="NBA season string")
     parser.add_argument("--dry-run", action="store_true", help="Log steps without writing or fetching live data")
     args = parser.parse_args()
 

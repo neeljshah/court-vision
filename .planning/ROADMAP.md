@@ -15,21 +15,27 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 
 ## Phase Overview
 
+*Last updated: 2026-03-28 | Models trained: 46/90 | CV games with full data: 5 (target: 20)*
+
+> **Pre-Season Accuracy Plan:** Full feature engineering + model + simulator checklist → `.planning/PRE_SEASON_ACCURACY_PLAN.md`
+
 | Phase | Status | Goal |
 |---|---|---|
 | Phase 1 — Data Infrastructure | ✅ Done | PostgreSQL, schedule context, lineup data, NBA stats |
-| Phase 2 — Tracker Bug Fixes | ✅ Done | Team color, event detector, test suite |
-| Phase 2.5 — CV Tracker Upgrades | 🟡 Active | Pose estimation (025-07 — MUST finish before Phase 6), ByteTrack, per-clip homography |
-| Phase 3 — NBA API Data Maximization | ✅ Done | 568/569 gamelogs, 221K shots, 3,102 PBP games |
-| Phase 3.5 — Expanded Data Collection | 🔲 | BBRef 6yr history + The Odds API (fwd from P11) + ProSportsTransactions injury history + news |
-| Phase 4 — Tier 1 ML Models | ✅ Done | 13 models trained: win prob + all props + game models |
-| Phase 4.5 — Betting + Lifecycle Models | 🔲 | Sharp detector, CLV, correlation matrix, DNP predictor |
-| Phase 4.6 — Untapped Signal Wiring | 🔲 | Wire all existing cache data into models — props 30→52 features, no new scraping |
-| Phase 4.7 — Prediction Quality Stack | 🔲 | Model stacking, temporal weighting, confidence-gated meta-model, motivation flags |
-| Phase 4.8 — Quantitative Betting Infrastructure | 🔲 | CLV tracking, cross-book arb, market structure edges, portfolio construction, execution pipeline |
-| Phase 4.9 — Backtesting + Validation Infrastructure | 🔲 | Strategy backtester, paper trading mode, historical prop results DB, validation gate before live money |
-| Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor wired |
-| Phase 6 — Full Game Processing + Rich Events | 🔲 | 20+ full games, rich event aggregation (drives/box-outs/closeouts/cuts/screens) |
+| Phase 2 — Tracker Bug Fixes | ✅ Done | Team color, event detector, test suite — 431 tests passing |
+| Phase 2.5 — CV Tracker Upgrades | 🟡 Partial | 025-01/02/03 done; 025-04 homography, 025-07 pose estimation BLOCKED (must finish before Phase 6) |
+| Phase 3 — NBA API Data Maximization | ✅ Done | 569/569 gamelogs, 221K shots, 3,102 PBP games |
+| Phase 3.5 — Expanded Data Collection | 🟡 Partial | BBRef advanced data fetched; Odds API + ProSportsTransactions + full injury history still needed |
+| Phase 4 — Tier 1 ML Models | ✅ Done | 23 models trained: win prob, 7 props, 5 game models, xFG v1, matchup, DNP, prop stack |
+| Phase 4.5 — Betting + Lifecycle Models | ✅ Done | load_management, injury_return, injury_risk, breakout_predictor, public_fade, soft_book_lag |
+| Phase 4.6 — Untapped Signal Wiring | ✅ Done | Props expanded 30→52 features (shot dashboard, contested%, defender dist); player bio fetched |
+| Phase 4.7 — Prediction Quality Stack | ✅ Done | Ridge meta-model stack, temporal weighting, confidence-gated output, motivation flags |
+| Phase 4.8 — Quantitative Betting Infrastructure | ✅ Done | Kelly + CLV + cross-book arb + portfolio construction + execution pipeline |
+| Phase 4.9 — Backtesting + Validation Infrastructure | ✅ Done | Strategy backtester, paper trading mode, historical prop results DB, validation gate |
+| Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor, schedule context wired |
+| **Pre-Season Accuracy Plan** | 🔲 Queued | Feature engineering (14) + CV integration (4) + win prob (8) + props algo (8) + possession model (5) + Monte Carlo simulator + game model ML rebuild. See PRE_SEASON_ACCURACY_PLAN.md |
+| Phase G — Full Game Data Collection | 🟡 Active | 4 clean games; 11 games not yet processed; 2 partials need reprocess; 0022400710 needs new video |
+| Phase 6 — Full Game Processing + Rich Events | 🔲 Next | 20+ clean games, rich event aggregation (drives/box-outs/closeouts/cuts/screens), PostgreSQL writes |
 | Phase 7 — Tier 2-3 ML Models + CV Wiring | 🔲 | xFG v2 with closeout speed + shot clock, props retrained with CV behavioral features |
 | Phase 8 — Possession Simulator v1 | 🔲 | 7-model chain with rich event inputs, 10K Monte Carlo |
 | Phase 9 — Feedback Loop + NLP | 🔲 | Nightly processing, auto-retrain, NLP injury models |

@@ -317,7 +317,7 @@ def enrich_shot_log(
         print(f"  shot_log not found: {shot_log_path}")
         return shot_log_path
 
-    with open(shot_log_path, newline="") as f:
+    with open(shot_log_path, newline="", encoding="utf-8", errors="replace") as f:
         shots = list(csv.DictReader(f))
 
     if not shots:
@@ -380,12 +380,12 @@ def enrich_shot_log(
         for shot in shots:
             shot["shots_pbp_coverage"] = round(recall, 4)
         # Write back in-place
-        with open(shot_log_path, "w", newline="") as f:
+        with open(shot_log_path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fieldnames)
             w.writeheader()
             w.writerows(shots)
         # Also write _enriched.csv for backward compatibility
-        with open(out_path, "w", newline="") as f:
+        with open(out_path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fieldnames)
             w.writeheader()
             w.writerows(shots)
@@ -416,7 +416,7 @@ def enrich_possessions(
         print(f"  possessions not found: {possessions_path}")
         return possessions_path
 
-    with open(possessions_path, newline="") as f:
+    with open(possessions_path, newline="", encoding="utf-8", errors="replace") as f:
         possessions = list(csv.DictReader(f))
 
     if not possessions:
@@ -591,8 +591,16 @@ def enrich_possessions(
         _n_pbp_events = len(poss_change_events)
         _fill_rows = []
 
-        # Only gap-fill when CV coverage is <50% of PBP events
-        if _n_cv < 0.5 * _n_pbp_events:
+        # Gap-fill when CV coverage is <50% of PBP events, OR when
+        # absolute possession count is suspiciously low for the clip size.
+        # The second condition handles full-game broadcasts where _infer_period_count
+        # previously returned [1] (ball only detected in Q1), so only ~50 PBP events
+        # were loaded and 49 CV possessions wrongly appeared "sufficient".
+        _poss_per_pbp_event = _n_cv / max(1, _n_pbp_events)
+        _undercovered = _n_cv < 0.5 * _n_pbp_events or (
+            _n_pbp_events >= 40 and _poss_per_pbp_event < 0.6
+        )
+        if _undercovered:
             _play_type_map = {1: "made_fg", 2: "missed_fg", 5: "turnover"}
             for _ev in poss_change_events:
                 _ev_ts = float(_ev.get("game_clock_sec", 0))
@@ -620,7 +628,7 @@ def enrich_possessions(
             if _fill_rows:
                 possessions.extend(_fill_rows)
                 print(f"  PBP gap-fill: added {len(_fill_rows)} synthetic possessions "
-                      f"(CV={_n_cv} < 50% of PBP events={_n_pbp_events})")
+                      f"(CV={_n_cv}, PBP_events={_n_pbp_events}, ratio={_poss_per_pbp_event:.2f})")
 
     # FIX 6: Build field list including new pbp columns
     out_path = possessions_path.replace(".csv", "_enriched.csv")
@@ -631,12 +639,12 @@ def enrich_possessions(
             if _new_col not in all_keys:
                 all_keys.append(_new_col)
         # Write back in-place so possessions.csv has all enriched columns
-        with open(possessions_path, "w", newline="") as f:
+        with open(possessions_path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
             w.writeheader()
             w.writerows(possessions)
         # Also write _enriched.csv (now has new columns — no longer identical)
-        with open(out_path, "w", newline="") as f:
+        with open(out_path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=all_keys, extrasaction="ignore")
             w.writeheader()
             w.writerows(possessions)
@@ -737,20 +745,32 @@ def _infer_period_count(data_dir: str) -> tuple:
         return [1], 0.0
     try:
         max_ts: Optional[float] = None
+        max_ts_any: Optional[float] = None  # max across ALL rows (not just detected)
         with open(ball_csv, newline="") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                try:
+                    ts = float(row.get("timestamp", 0))
+                except (ValueError, TypeError):
+                    continue
+                if max_ts_any is None or ts > max_ts_any:
+                    max_ts_any = ts
                 if str(row.get("detected", "0")) == "1":
-                    try:
-                        ts = float(row.get("timestamp", 0))
-                    except (ValueError, TypeError):
-                        continue
                     if max_ts is None or ts > max_ts:
                         max_ts = ts
-        if max_ts is None:
+        # Use detected max_ts if available; fall back to full-clip duration.
+        # This handles full-game broadcasts where ball isn't detected during
+        # pre-game / halftime — the clip is still 2-3 hours long.
+        effective_ts = max_ts if max_ts is not None else (max_ts_any if max_ts_any is not None else None)
+        if effective_ts is None:
             return [1], 0.0
-        n_periods = min(int(max_ts / 720) + 1, 4)
-        return list(range(1, n_periods + 1)), max_ts
+        # For full-game clips: if total clip duration >> detected max_ts
+        # (e.g. ball only detected in Q1 due to pre-game starting the clip),
+        # use total clip duration to determine period count.
+        if max_ts_any is not None and max_ts is not None and max_ts_any > max_ts * 1.5:
+            effective_ts = max_ts_any
+        n_periods = min(int(effective_ts / 720) + 1, 4)
+        return list(range(1, n_periods + 1)), effective_ts
     except Exception:
         return [1], 0.0
 
@@ -789,8 +809,10 @@ def enrich(
 
     # Auto-calibrate clip_start_sec when caller didn't specify one.
     # Derives offset from first ball-detected timestamp in ball_tracking.csv.
-    # Skipped in full-game mode (periods list) since timestamps are already absolute.
-    if clip_start_sec == 0.0 and periods is None:
+    # Applied in both single-period and full-game mode: full-game clips still have
+    # pre-game broadcast content before tipoff, so video timestamps need offsetting
+    # to align with PBP game_clock_sec (which counts from actual game start).
+    if clip_start_sec == 0.0:
         inferred = _infer_clip_start_sec(d)
         if inferred is not None and inferred != 0.0:
             print(f"  [enrichment] Auto-calibrated clip_start_sec={inferred:.1f}s "

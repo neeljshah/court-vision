@@ -429,6 +429,12 @@ class DeepAppearanceExtractor:
             model = model.to(self._device).eval()
             self._model  = model
             self.available = True
+            # Warmup: eliminate CUDA JIT latency (~9s) on first real call
+            if self._device != "cpu":
+                _dummy = torch.zeros(1, 3, 256, 128, device=self._device)
+                with torch.no_grad():
+                    self._model(_dummy)
+                _log.debug("OSNet CUDA warmup complete (device=%s)", self._device)
         except Exception:
             # 4. MobileNetV2 fallback
             try:
@@ -485,33 +491,44 @@ class DeepAppearanceExtractor:
             if not valid_idx:
                 return [zero.copy() for _ in crops]
 
+            _CHUNK = 64  # max crops per GPU forward pass (fits 24 GB VRAM with margin)
+
             if self._use_trt:
-                # Build batched input tensor for TRT
-                batch = np.stack(
+                # Build batched input tensor for TRT; process in chunks of _CHUNK
+                _all_np = np.stack(
                     [_preprocess_crop(crops[i]).squeeze(0).numpy() for i in valid_idx],
                     axis=0,
                 )  # (N_valid, 3, 256, 128)
-                valid_embs = self._trt.infer(batch)  # (N_valid, 256)
+                _chunks = [
+                    self._trt.infer(_all_np[_ci:_ci + _CHUNK])
+                    for _ci in range(0, len(_all_np), _CHUNK)
+                ]
+                valid_embs = np.concatenate(_chunks, axis=0)
             elif self._use_torchreid:
-                tensors = torch.cat(
-                    [_preprocess_crop(crops[i]) for i in valid_idx],
-                    dim=0,
+                _all_t = torch.cat(
+                    [_preprocess_crop(crops[i]) for i in valid_idx], dim=0
                 )  # (N_valid, 3, 256, 128)
-                valid_embs = self._torchreid_model.infer(tensors)  # (N_valid, 512)
+                _chunks = [
+                    self._torchreid_model.infer(_all_t[_ci:_ci + _CHUNK])
+                    for _ci in range(0, len(_all_t), _CHUNK)
+                ]
+                valid_embs = np.concatenate(_chunks, axis=0)
             else:
-                tensors = torch.cat(
+                _all_t = torch.cat(
                     [_preprocess_crop(crops[i]).to(self._device) for i in valid_idx],
                     dim=0,
                 )  # (N_valid, 3, H, W)
-
-                if getattr(self, "_use_mv2", False):
-                    feats = self._model(tensors)
-                    feats = self._mv2_gap(feats).squeeze(-1).squeeze(-1)
-                    feats = F.normalize(feats, dim=1)
-                else:
-                    feats = self._model(tensors)           # (N_valid, embed_dim)
-
-                valid_embs = feats.cpu().float().numpy()   # (N_valid, embed_dim)
+                _chunk_embs = []
+                for _ci in range(0, len(_all_t), _CHUNK):
+                    _t = _all_t[_ci:_ci + _CHUNK]
+                    if getattr(self, "_use_mv2", False):
+                        _f = self._model(_t)
+                        _f = self._mv2_gap(_f).squeeze(-1).squeeze(-1)
+                        _f = F.normalize(_f, dim=1)
+                    else:
+                        _f = self._model(_t)   # (chunk, embed_dim)
+                    _chunk_embs.append(_f.cpu().float().numpy())
+                valid_embs = np.concatenate(_chunk_embs, axis=0)
 
             # Reconstruct full-length list with zeros for invalid crops
             out = [zero.copy() for _ in crops]

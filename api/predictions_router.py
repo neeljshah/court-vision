@@ -26,13 +26,13 @@ router = APIRouter()
 
 class InjuryRiskRequest(BaseModel):
     player_id: int
-    season: str = "2024-25"
+    season: str = "2025-26"
 
 
 class BreakoutRequest(BaseModel):
     player_id: int
     opponent_team: Optional[str] = None
-    season: str = "2024-25"
+    season: str = "2025-26"
 
 
 class LineupOptimizerRequest(BaseModel):
@@ -44,7 +44,7 @@ class LineupOptimizerRequest(BaseModel):
 class PropsRequest(BaseModel):
     player_id: int
     opp_team: Optional[str] = None
-    season: str = "2024-25"
+    season: str = "2025-26"
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ def lineup_optimizer(req: LineupOptimizerRequest):
 # ── GET /predictions/today ────────────────────────────────────────────────────
 
 @router.get("/today")
-def predictions_today(season: str = "2024-25"):
+def predictions_today(season: str = "2025-26"):
     """Win probabilities and top props for tonight's games."""
     try:
         from src.prediction.game_prediction import predict_today
@@ -218,7 +218,7 @@ def predictions_today(season: str = "2024-25"):
 # ── GET /predictions/props/{player_id} ───────────────────────────────────────
 
 @router.get("/props/{player_id}")
-def props_by_id(player_id: int, season: str = "2024-25", opp_team: str = ""):
+def props_by_id(player_id: int, season: str = "2025-26", opp_team: str = ""):
     """Prop projections (pts/reb/ast/fg3m/stl/blk/tov) for a single player."""
     player_name = _player_name_from_id(player_id)
     if player_name is None:

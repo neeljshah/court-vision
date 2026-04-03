@@ -127,7 +127,7 @@ def enrich_game_from_shot_chart(game_id: str, season: str = "2024-25") -> Option
         print(f"  [skip] {game_id}: shot_log.csv not found")
         return None
 
-    with open(shot_log_path, newline="") as f:
+    with open(shot_log_path, newline="", encoding="utf-8", errors="replace") as f:
         cv_shots = list(csv.DictReader(f))
     n_cv = len(cv_shots)
 
@@ -207,7 +207,7 @@ def enrich_game_from_shot_chart(game_id: str, season: str = "2024-25") -> Option
     if new_rows:
         all_rows = cv_shots + new_rows
         all_rows.sort(key=lambda r: float(r.get("timestamp", 0) or 0))
-        with open(shot_log_path, "w", newline="") as f:
+        with open(shot_log_path, "w", newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
             w.writeheader()
             w.writerows(all_rows)

@@ -24,16 +24,17 @@ from __future__ import annotations
 
 import logging
 import time
-from collections import Counter
-from typing import Dict, List, Optional
+from collections import Counter, deque
+from typing import Dict, List, Optional, Tuple
 
 log = logging.getLogger(__name__)
 
 # After this many frames, lock in jersey assignments
 _WARMUP_FRAMES = 300
-# OCR every N frames per slot — lowered 60→10 so jerseys visible <2s still get a vote
-# (at 30fps/stride=3 effective rate: 10-frame interval ≈ 0.33s between samples)
-_SAMPLE_EVERY  = 10
+# OCR every N frames per slot (every 15 frames ≈ 0.5s at stride=3/30fps)
+_SAMPLE_EVERY       = 15
+# Confidence-weighted majority vote: keep the last N OCR samples per slot
+_CONF_VOTE_WINDOW   = 60  # last 60 OCR samples ≈ 30s of gameplay at 2 samples/s
 
 
 class PlayerResolver:
@@ -50,12 +51,16 @@ class PlayerResolver:
         fps:     Video frame rate (not currently used; kept for API consistency).
     """
 
-    def __init__(self, game_id: str, fps: float = 30.0) -> None:
+    def __init__(self, game_id: str, fps: float = 30.0, data_dir: str = None) -> None:
         self.game_id = game_id
         self.fps     = fps
+        self._data_dir = data_dir  # for jersey_name_map.json save/load
 
-        # slot → Counter of observed jersey numbers (accumulates across frames)
+        # slot → Counter of observed jersey numbers (accumulates across frames, legacy)
         self._votes: Dict[int, Counter] = {}
+        # slot → deque of (number, confidence) for the last _CONF_VOTE_WINDOW OCR samples
+        # Used for confidence-weighted majority vote (replaces simple Counter).
+        self._conf_bufs: Dict[int, deque] = {}
         # slot → confirmed (highest-voted) jersey number
         self._jersey: Dict[int, int]    = {}
         # slot → team label ("green" | "white")
@@ -89,7 +94,9 @@ class PlayerResolver:
             frame_idx: Absolute video frame index.
         """
         self._slot_team[slot] = team
-        self._frame_count     = max(self._frame_count, frame_idx)
+        # Increment relative counter (absolute frame_idx starts far above _WARMUP_FRAMES
+        # for full-game videos, causing finalize() to fire before any OCR votes accumulate)
+        self._frame_count += 1
 
         # Only run OCR on every _SAMPLE_EVERY frames and non-empty crops
         if frame_idx % _SAMPLE_EVERY != 0:
@@ -104,17 +111,38 @@ class PlayerResolver:
             return
 
         try:
-            from src.tracking.jersey_ocr import read_jersey_number
-            number = read_jersey_number(crop_bgr)
+            from src.tracking.jersey_ocr import read_jersey_number_with_conf
+            result = read_jersey_number_with_conf(crop_bgr, slot=slot, frame_idx=frame_idx)
         except Exception as exc:
             log.debug("PlayerResolver OCR failed (slot %d): %s", slot, exc)
             return
 
-        if number is not None:
+        if result is not None:
+            number, conf = result
+            # Legacy counter for backward-compat callers
             self._votes.setdefault(slot, Counter())[number] += 1
+            # Confidence-weighted buffer: newest samples replace oldest after window size
+            buf = self._conf_bufs.get(slot)
+            if buf is None:
+                buf = deque(maxlen=_CONF_VOTE_WINDOW)
+                self._conf_bufs[slot] = buf
+            buf.append((number, float(conf)))
 
     def get_jersey_number(self, slot: int) -> Optional[int]:
-        """Return the most-voted jersey number for slot, or None."""
+        """Return the confidence-weighted majority-vote jersey number for slot, or None.
+
+        Sums OCR confidence scores across the last _CONF_VOTE_WINDOW samples per slot
+        so high-confidence reads outweigh uncertain ones.  Falls back to plain vote
+        count (legacy Counter) when the confidence buffer is empty.
+        """
+        buf = self._conf_bufs.get(slot)
+        if buf:
+            # Accumulate weighted score per candidate number
+            weighted: Dict[int, float] = {}
+            for num, conf in buf:
+                weighted[num] = weighted.get(num, 0.0) + conf
+            return max(weighted, key=lambda n: weighted[n])
+        # Fallback: legacy unweighted counter
         counter = self._votes.get(slot)
         if not counter:
             return None
@@ -151,14 +179,27 @@ class PlayerResolver:
             self._fetch_roster()
 
         resolved = 0
-        for slot in list(self._votes.keys()):
+        # ISSUE-057: iterate ALL seen slots (not just those with OCR votes)
+        all_slots = sorted(set(self._slot_team.keys()) | set(self._votes.keys()))
+        for slot in all_slots:
             info = self.resolve_player(slot)
             if info:
                 self.slot_to_player_id[slot]   = info["player_id"]
                 self.slot_to_player_name[slot] = info["player_name"]
                 resolved += 1
+            elif slot in self.slot_to_player_name and self.slot_to_player_name[slot]:
+                pass  # already resolved from a previous finalize() call
+            else:
+                # Fallback: write team placeholder so column is never blank
+                team_lbl = self._slot_team.get(slot, "")
+                # Try to find abbrev from roster keys
+                abbrevs = {v.get("team", "") for v in self._roster.values() if v}
+                team_str = team_lbl if not abbrevs else (
+                    next((a for a in abbrevs if team_lbl and a), team_lbl) or team_lbl
+                )
+                self.slot_to_player_name[slot] = f"{team_str}#?" if team_str else "?#?"
         self._warmup_done = True
-        log.info("PlayerResolver: %d/%d slots resolved", resolved, len(self._votes))
+        log.info("PlayerResolver: %d/%d slots resolved (of %d tracked)", resolved, len(all_slots), len(all_slots))
 
     @property
     def warmup_complete(self) -> bool:
@@ -187,12 +228,72 @@ class PlayerResolver:
     # ── internal ──────────────────────────────────────────────────────────────
 
     def _fetch_roster(self) -> None:
-        """Fetch both teams' rosters from BoxScoreTraditionalV3 and build lookup."""
+        """Fetch both teams' rosters from NBA API and build lookup.
+
+        On success, saves jersey_name_map.json to data_dir for future fallback.
+        On failure, loads jersey_name_map.json if available.
+        """
         self._roster_loaded = True  # set before fetch to prevent re-entry on error
         try:
             self._fetch_roster_api()
         except Exception as exc:
-            log.warning("PlayerResolver: roster fetch failed (%s) — identity disabled", exc)
+            log.warning("PlayerResolver: roster fetch failed (%s)", exc)
+
+        if self._roster:
+            self._save_jersey_name_map()
+        else:
+            self._load_jersey_name_map()
+
+    def _save_jersey_name_map(self) -> None:
+        """Persist jersey→name mapping for offline fallback."""
+        if not self._data_dir:
+            return
+        import json, os
+        jmap: Dict[str, str] = {}
+        seen = set()
+        for (jersey_num, _label), info in self._roster.items():
+            key = str(jersey_num)
+            if key not in seen:
+                jmap[key] = info["player_name"]
+                seen.add(key)
+        path = os.path.join(self._data_dir, "jersey_name_map.json")
+        try:
+            os.makedirs(self._data_dir, exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(jmap, f, indent=2, ensure_ascii=False)
+            log.info("PlayerResolver: saved jersey_name_map.json (%d entries)", len(jmap))
+        except Exception as exc:
+            log.warning("PlayerResolver: jersey_name_map.json save failed: %s", exc)
+
+    def _load_jersey_name_map(self) -> None:
+        """Load jersey_name_map.json as fallback when API fails."""
+        if not self._data_dir:
+            return
+        import json, os
+        path = os.path.join(self._data_dir, "jersey_name_map.json")
+        if not os.path.exists(path):
+            log.warning("PlayerResolver: no jersey_name_map.json fallback at %s", path)
+            return
+        try:
+            with open(path, encoding="utf-8") as f:
+                jmap = json.load(f)
+            for jersey_str, name in jmap.items():
+                try:
+                    jersey_num = int(jersey_str)
+                except (ValueError, TypeError):
+                    continue
+                for label in ("green", "white"):
+                    key = (jersey_num, label)
+                    if key not in self._roster:
+                        self._roster[key] = {
+                            "player_id": 0,
+                            "player_name": name,
+                            "team": "",
+                            "jersey": jersey_num,
+                        }
+            log.info("PlayerResolver: loaded jersey_name_map.json fallback (%d entries)", len(jmap))
+        except Exception as exc:
+            log.warning("PlayerResolver: jersey_name_map.json load failed: %s", exc)
 
     def _fetch_roster_api(self) -> None:
         """Internal: call NBA Stats API and populate self._roster."""
@@ -213,28 +314,20 @@ class PlayerResolver:
         if df is None or df.empty:
             return
 
-        # Determine which team label (green/white) corresponds to which abbrev.
-        # We can't know this without color calibration, so we add both team labels
-        # for every player.  The resolver uses both team colors as candidate keys.
-        team_abbrevs = df["TEAM_ABBREVIATION"].unique().tolist()
-        labels       = ["green", "white"]
+        labels = ["green", "white"]
 
         for _, row in df.iterrows():
             try:
-                jersey_str = str(row.get("START_POSITION", "") or "")
-                # The API doesn't always expose jersey numbers in BoxScore.
-                # Try the jersey_number field first, fall back to team-level lookup.
+                # BoxScoreTraditionalV2 rarely includes jersey numbers — try both known field names
                 jersey_raw = row.get("jersey_number") or row.get("JERSEY_NUM") or ""
                 jersey_num = int(str(jersey_raw).strip()) if str(jersey_raw).strip().isdigit() else None
                 if jersey_num is None:
                     continue
 
-                pid   = int(row["PLAYER_ID"])
-                name  = str(row["PLAYER_NAME"])
-                abbr  = str(row["TEAM_ABBREVIATION"])
+                pid  = int(row["PLAYER_ID"])
+                name = str(row["PLAYER_NAME"])
+                abbr = str(row["TEAM_ABBREVIATION"])
 
-                # Map to both team labels (green/white) since we don't know which
-                # team the tracker assigned to which color
                 for label in labels:
                     key = (jersey_num, label)
                     self._roster[key] = {
@@ -246,8 +339,58 @@ class PlayerResolver:
             except (ValueError, KeyError, TypeError):
                 continue
 
-        log.info("PlayerResolver: roster loaded — %d entries", len(self._roster))
+        log.info("PlayerResolver: BoxScore roster loaded — %d entries", len(self._roster))
+
+        # Fallback: BoxScoreTraditionalV2 rarely has jersey numbers.
+        # Use CommonTeamRoster for each team — it always has the NUM column.
         if not self._roster:
-            # Fallback: try PlayerGameLog-based approach or print debug info
-            log.warning("PlayerResolver: roster empty — jersey column may not be available "
-                        "in BoxScoreTraditionalV2 for this game")
+            log.info("PlayerResolver: BoxScore had no jersey data — trying CommonTeamRoster")
+            self._fetch_roster_common_team(df)
+
+    def _fetch_roster_common_team(self, box_df) -> None:
+        """Fallback: fetch jersey numbers from CommonTeamRoster for each team in the game."""
+        try:
+            from nba_api.stats.endpoints import commonteamroster
+        except ImportError:
+            return
+
+        labels = ["green", "white"]
+        team_ids = box_df["TEAM_ID"].unique().tolist() if "TEAM_ID" in box_df.columns else []
+        for team_id in team_ids:
+            time.sleep(0.6)
+            try:
+                roster_ep = commonteamroster.CommonTeamRoster(team_id=int(team_id))
+                rdf = roster_ep.common_team_roster.get_data_frame()
+            except Exception as exc:
+                log.warning("CommonTeamRoster fetch failed for team %s: %s", team_id, exc)
+                continue
+
+            if rdf is None or rdf.empty:
+                continue
+
+            # CommonTeamRoster has NUM (jersey number), PLAYER (name), TeamID, PLAYER_ID
+            abbr_rows = box_df[box_df["TEAM_ID"] == team_id]["TEAM_ABBREVIATION"]
+            abbr = str(abbr_rows.iloc[0]) if not abbr_rows.empty else ""
+
+            for _, row in rdf.iterrows():
+                try:
+                    jersey_raw = str(row.get("NUM", "") or "").strip()
+                    jersey_num = int(jersey_raw) if jersey_raw.isdigit() else None
+                    if jersey_num is None:
+                        continue
+                    pid  = int(row["PLAYER_ID"])
+                    name = str(row["PLAYER"])
+                    for label in labels:
+                        key = (jersey_num, label)
+                        self._roster[key] = {
+                            "player_id":   pid,
+                            "player_name": name,
+                            "team":        abbr,
+                            "jersey":      jersey_num,
+                        }
+                except (ValueError, KeyError, TypeError):
+                    continue
+
+        log.info("PlayerResolver: CommonTeamRoster fallback loaded — %d entries", len(self._roster))
+        if not self._roster:
+            log.warning("PlayerResolver: roster still empty after CommonTeamRoster fallback")

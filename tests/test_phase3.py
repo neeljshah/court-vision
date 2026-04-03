@@ -520,9 +520,9 @@ def test_player_props_import():
 
 
 def test_feature_cols_count():
-    """FEATURE_COLS has 32 features (includes lineup net_rtg + ref + Phase 4.6 synergy/fta columns)."""
+    """FEATURE_COLS has 47 features (32 original + 14 added in pre-season accuracy plan C-1 to C-7)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 32
+    assert len(FEATURE_COLS) == 47
 
 
 # ── player_props fallback behaviour ───────────────────────────────────────────
@@ -766,7 +766,7 @@ def test_margin_est_calibration():
 def test_player_avgs_uses_totals_mode():
     """LeagueDashPlayerStats must be called with per_mode_simple='Totals'.
 
-    The default PerGame mode returns PTS=25.1; dividing by GP (55) gives 0.46.
+    The default PerGame mode returns PTS=25.1; dividing by GP (55) gives 0.47.
     Totals mode returns PTS=1380; dividing by GP gives 25.1 (correct).
     """
     import inspect
@@ -775,7 +775,7 @@ def test_player_avgs_uses_totals_mode():
     assert "Totals" in src_text, (
         "_get_player_season_avgs must pass per_mode_simple='Totals' to LeagueDashPlayerStats. "
         "The default PerGame mode already returns per-game averages — dividing by GP again "
-        "produces stats ~55x too small (e.g. LeBron scoring 0.46 pts/game)."
+        "produces stats ~55x too small (e.g. LeBron scoring 0.47 pts/game)."
     )
 
 
@@ -807,7 +807,7 @@ def test_player_avgs_per_game_sanity(tmp_path, monkeypatch):
     # 1380 PTS / 55 GP = 25.09 ppg
     assert result["pts"] == pytest.approx(25.09, abs=0.1), (
         f"pts={result['pts']:.2f} — expected ~25.1 ppg. "
-        f"If ~0.46, the PerGame double-divide bug is still present."
+        f"If ~0.47, the PerGame double-divide bug is still present."
     )
     assert result["reb"] == pytest.approx(9.0, abs=0.1)
     assert result["ast"] == pytest.approx(8.0, abs=0.1)
@@ -1001,10 +1001,10 @@ def test_home_travel_miles_removed_from_feature_cols():
 
 
 def test_feature_cols_length():
-    """FEATURE_COLS should have 32 features (Phase 4.6: +iso_matchup_edge +ref_fta_tendency)."""
+    """FEATURE_COLS should have 47 features (32 original + 14 added in pre-season accuracy plan C-1 to C-7)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 32, (
-        f"Expected 32 features (lineup + ref + Phase 4.6 columns added), got {len(FEATURE_COLS)}"
+    assert len(FEATURE_COLS) == 47, (
+        f"Expected 47 features (32 original + 14 pre-season plan additions), got {len(FEATURE_COLS)}"
     )
 
 

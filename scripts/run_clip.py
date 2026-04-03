@@ -63,6 +63,54 @@ except ImportError:
 
 
 MIN_CLIP_SECONDS = 60  # clips under this are too short for meaningful analytics
+_PREFLIGHT_FRAMES = 10   # number of evenly-spaced frames to sample
+_PREFLIGHT_MIN_PERSONS = 3  # median person count below this → reject video
+
+
+def _preflight_check(video_path: str, yolo_weight=None):
+    """Sample 10 frames and run YOLO person detection.
+
+    Returns (ok, median_person_count).
+    ok=False means the video appears to be non-broadcast (app UI, no court footage).
+    Exits with code 4 + prints a clear error when preflight fails.
+    """
+    try:
+        from ultralytics import YOLO as _YOLO
+        _model_path = yolo_weight or os.path.join(PROJECT_DIR, "yolov8n.pt")
+        if not os.path.exists(_model_path):
+            # Can't run preflight without model — skip and proceed
+            print("[preflight] YOLO model not found — skipping preflight check")
+            return True, 0.0
+        _model = _YOLO(_model_path)
+    except ImportError:
+        print("[preflight] ultralytics not available — skipping preflight check")
+        return True, 0.0
+
+    cap = cv2.VideoCapture(video_path)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    if total_frames <= 0:
+        cap.release()
+        return True, 0.0  # can't read — let Stage 1 handle it
+
+    sample_indices = [int(total_frames * i / (_PREFLIGHT_FRAMES - 1))
+                      for i in range(_PREFLIGHT_FRAMES)]
+    counts = []
+    for fi in sample_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, fi)
+        ret, frame = cap.read()
+        if not ret:
+            continue
+        results = _model(frame, classes=[0], verbose=False)  # class 0 = person
+        n_persons = len(results[0].boxes) if results and results[0].boxes is not None else 0
+        counts.append(n_persons)
+    cap.release()
+
+    if not counts:
+        return True, 0.0
+
+    import statistics
+    median = statistics.median(counts)
+    return median >= _PREFLIGHT_MIN_PERSONS, float(median)
 
 
 def _fmt_rows(path: str) -> str:
@@ -98,14 +146,24 @@ def main():
     # NBA enrichment (optional)
     ap.add_argument("--game-id",  default=None,
                     help="NBA Stats game ID (e.g. 0022301234) for play-by-play enrichment")
-    ap.add_argument("--period",   type=int, default=1,
-                    help="Quarter the clip covers (1-4). Used with --game-id.")
+    ap.add_argument("--period",   type=int, default=None,
+                    help="Quarter the clip covers (1-4). Used with --game-id. "
+                         "Defaults to auto-detect via ball_tracking.csv duration.")
+    ap.add_argument("--periods",  default=None,
+                    help="Comma-separated list of quarters to enrich (e.g. 1,2,3,4 for full game). "
+                         "Overrides --period.")
     ap.add_argument("--start",    type=float, default=0.0,
                     help="Seconds elapsed in the period when the clip starts. "
                          "e.g. clip starts at 8:30 left in Q1 → --start 210")
     ap.add_argument("--data-dir", default=None,
                     help="Output directory for CSV files (default: data/). "
                          "run_phase_g.py passes data/tracking/<game_id>/ here.")
+    ap.add_argument("--skip-tracking", action="store_true",
+                    help="Skip Stage 1 (tracking) and jump straight to feature engineering "
+                         "and enrichment.  Requires tracking_data.csv to already exist in "
+                         "--data-dir.  Use for games where tracking crashed after Stage 1.")
+    ap.add_argument("--skip-features", action="store_true",
+                    help="Skip feature engineering (fast mode for jersey OCR only)")
     args = ap.parse_args()
 
     if not os.path.exists(args.video):
@@ -127,34 +185,73 @@ def main():
         # Exit with non-zero so automated pipelines can detect short clips.
         sys.exit(2)
 
+    # ── Preflight: verify broadcast content ───────────────────────────────────
+    print("[preflight] Sampling 10 frames for person detection...")
+    _preflight_ok, _preflight_median = _preflight_check(args.video, args.yolo)
+    if not _preflight_ok:
+        print(
+            f"\n[PREFLIGHT FAIL] Median person count = {_preflight_median:.0f} "
+            f"(threshold: {_PREFLIGHT_MIN_PERSONS})\n"
+            "Video appears to be non-broadcast footage (app UI, overlays, no court).\n"
+            "This is a YOLO detection check — if the video is a real broadcast,\n"
+            "re-download from a different source and retry.\n"
+        )
+        sys.exit(4)
+    print(f"[preflight] OK — median persons/frame = {_preflight_median:.1f}")
+
     data_dir = args.data_dir if args.data_dir else os.path.join(PROJECT_DIR, "data")
     os.makedirs(data_dir, exist_ok=True)
     t0 = time.time()
 
     # ── Stage 1: Tracking ─────────────────────────────────────────────────────
-    print("\n" + "=" * 60)
-    print(" Stage 1 / 3 — Tracking")
-    print("=" * 60)
-    print(f" Video : {args.video}")
+    if args.skip_tracking:
+        print("\n" + "=" * 60)
+        print(" Stage 1 / 3 — Tracking SKIPPED (--skip-tracking)")
+        print("=" * 60)
+        _td = os.path.join(data_dir, "tracking_data.csv")
+        if not os.path.exists(_td):
+            print(f"ERROR: --skip-tracking requires tracking_data.csv at {_td}")
+            sys.exit(1)
+        # Infer fps from the video for enrichment timestamp math
+        _cap = cv2.VideoCapture(args.video)
+        fps = _cap.get(cv2.CAP_PROP_FPS) or 30.0
+        _cap.release()
+        print(f" Using existing tracking_data.csv  fps={fps:.1f}")
+    else:
+        print("\n" + "=" * 60)
+        print(" Stage 1 / 3 — Tracking")
+        print("=" * 60)
+        print(f" Video : {args.video}")
 
-    pipeline = UnifiedPipeline(
-        video_path=args.video,
-        yolo_weight_path=args.yolo,
-        max_frames=args.frames,
-        start_frame=args.start_frame,
-        show=not args.no_show,
-        data_dir=data_dir,
-        game_id=args.game_id,
-    )
-    results = pipeline.run()
+        pipeline = UnifiedPipeline(
+            video_path=args.video,
+            yolo_weight_path=args.yolo,
+            max_frames=args.frames,
+            start_frame=args.start_frame,
+            show=not args.no_show,
+            data_dir=data_dir,
+            game_id=args.game_id,
+        )
+        results = pipeline.run()
 
-    fps = pipeline.stats_tracker.fps if hasattr(pipeline, "stats_tracker") else 30.0
+        fps = getattr(getattr(pipeline, "stats_tracker", None), "fps", None) or 30.0
 
-    print(f"\n Frames processed : {results['total_frames']}")
-    print(f" Track stability  : {results['stability']:.3f}")
-    print(f" Est. ID switches : {results['id_switches']}")
+        print(f"\n Frames processed : {results['total_frames']}")
+        print(f" Track stability  : {results['stability']:.3f}")
+        print(f" Est. ID switches : {results['id_switches']}")
 
-    # ── Stage 2: Feature engineering ─────────────────────────────────────────
+    # ── Free GPU memory after tracking — Stage 2+3 are CPU-only ─────────────
+    try:
+        del pipeline
+        import gc; gc.collect()
+        import torch
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        print("  [mem] GPU memory released for post-processing")
+    except Exception:
+        pass
+
+    # ── Stage 2: NBA enrichment (optional — runs BEFORE features) ──────────
     tracking_csv = os.path.join(data_dir, "tracking_data.csv")
     if not os.path.exists(tracking_csv):
         print("\n[WARN] tracking_data.csv not written — Stage 1 produced 0 rows.")
@@ -162,36 +259,121 @@ def main():
         print("       or all frames filtered as dead-ball.  Skipping Stage 2.")
         sys.exit(3)  # exit 3 = empty tracking; run_phase_g treats 3 as soft failure
 
-    print("\n" + "=" * 60)
-    print(" Stage 2 / 3 — Feature Engineering")
-    print("=" * 60)
-    features_df = run_features(
-        input_path=tracking_csv,
-        output_path=os.path.join(data_dir, "features.csv"),
-    )
-
-    # ── Stage 3: NBA enrichment (optional) ───────────────────────────────────
+    # ── Stage 2: NBA enrichment (optional) ───────────────────────────────────
     enriched = {}
     if args.game_id:
         print("\n" + "=" * 60)
-        print(" Stage 3 / 3 — NBA API Enrichment")
+        print(" Stage 2 / 3 — NBA API Enrichment")
         print("=" * 60)
         try:
             from src.data.nba_enricher import enrich
-            enriched = enrich(
+            # Resolve period list: --periods overrides --period; default auto-detect.
+            from src.data.nba_enricher import _infer_period_count
+            if args.periods:
+                enrich_periods = [int(p) for p in args.periods.split(",")]
+            elif args.period is not None:
+                enrich_periods = None  # single-period mode
+            else:
+                enrich_periods, _ = _infer_period_count(data_dir)
+            enrich_kwargs = dict(
                 game_id=args.game_id,
-                period=args.period,
                 clip_start_sec=args.start,
                 fps=fps,
                 data_dir=data_dir,
             )
+            if enrich_periods is not None:
+                enrich_kwargs["periods"] = enrich_periods
+            else:
+                enrich_kwargs["period"] = args.period or 1
+            enriched = enrich(**enrich_kwargs)
         except Exception as e:
             print(f"  NBA enrichment failed: {e}")
             print("  (Tracking data is still complete — enrichment is optional)")
     else:
-        print("\n Stage 3 / 3 — NBA Enrichment skipped (no --game-id)")
+        print("\n Stage 2 / 3 — NBA Enrichment skipped (no --game-id)")
         print("  Run later: python -m src.data.nba_enricher "
               "--game-id <ID> --period <P> --start <secs>")
+
+    # ── Team abbrev backfill (skip-tracking path) ──────────────────────────────
+    # When --skip-tracking is used, pipeline.run() never fires _resolve_team_names
+    # or _backfill_team_abbrev, leaving team_abbrev all NaN in tracking_data.csv.
+    # Fix: resolve team names from NBA API and backfill here.
+    if args.skip_tracking and args.game_id:
+        try:
+            import csv as _csv
+            import json as _json
+            _td_path = os.path.join(data_dir, "tracking_data.csv")
+            # Check if team_abbrev is already filled
+            _needs_backfill = True
+            if os.path.exists(_td_path):
+                import pandas as _pd
+                _sample = _pd.read_csv(_td_path, nrows=100, encoding="utf-8")
+                if "team_abbrev" in _sample.columns and _sample["team_abbrev"].notna().any():
+                    _needs_backfill = False
+            if _needs_backfill:
+                # Try loading cached team map first
+                _cache_path = os.path.join(
+                    os.path.dirname(os.path.dirname(data_dir)), "nba",
+                    f"team_map_{args.game_id}.json",
+                )
+                _color_map = {}
+                if os.path.exists(_cache_path):
+                    with open(_cache_path) as _f:
+                        _color_map = _json.load(_f)
+                if not _color_map:
+                    # Resolve via NBA API
+                    from nba_api.stats.static import teams as _teams_static
+                    import time as _time
+                    _time.sleep(0.6)
+                    _id_to_abbr = {t["id"]: t["abbreviation"] for t in _teams_static.get_teams()}
+                    try:
+                        from nba_api.stats.endpoints import boxscoresummaryv3 as _bssv3
+                        _bs = _bssv3.BoxScoreSummaryV3(game_id=args.game_id)
+                        _df = _bs.get_data_frames()[0]
+                        _home = _id_to_abbr.get(int(_df["homeTeamId"].iloc[0]), "UNK")
+                        _away = _id_to_abbr.get(int(_df["awayTeamId"].iloc[0]), "UNK")
+                    except Exception:
+                        from nba_api.stats.endpoints import boxscoresummaryv2 as _bssv2
+                        _bs = _bssv2.BoxScoreSummaryV2(game_id=args.game_id)
+                        _df = _bs.get_data_frames()[0]
+                        _home = _id_to_abbr.get(int(_df["HOME_TEAM_ID"].iloc[0]), "UNK")
+                        _away = _id_to_abbr.get(int(_df["VISITOR_TEAM_ID"].iloc[0]), "UNK")
+                    # Read color labels from tracking CSV
+                    _full = _pd.read_csv(_td_path, usecols=["team"], encoding="utf-8")
+                    _labels = sorted(_full["team"].dropna().unique().tolist())
+                    _labels = [l for l in _labels if l and l != "referee"]
+                    if len(_labels) >= 2:
+                        _color_map = {_labels[0]: _home, _labels[1]: _away}
+                    elif len(_labels) == 1:
+                        _color_map = {_labels[0]: _home}
+                    # Cache
+                    os.makedirs(os.path.dirname(_cache_path), exist_ok=True)
+                    with open(_cache_path, "w") as _f:
+                        _json.dump(_color_map, _f)
+                if _color_map:
+                    # Backfill tracking_data.csv
+                    with open(_td_path, newline="", encoding="utf-8") as _f:
+                        _reader = _csv.DictReader(_f)
+                        _fields = list(_reader.fieldnames or [])
+                        _rows = list(_reader)
+                    if "team_abbrev" not in _fields:
+                        _fields.append("team_abbrev")
+                    for _row in _rows:
+                        _color = _row.get("team", "")
+                        _row["team_abbrev"] = _color_map.get(_color, "")
+                    with open(_td_path, "w", newline="", encoding="utf-8") as _f:
+                        _w = _csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                        _w.writeheader()
+                        _w.writerows(_rows)
+                    # Also write team_colors.json for feature_engineering fallback
+                    _tc_path = os.path.join(data_dir, "team_colors.json")
+                    with open(_tc_path, "w") as _f:
+                        _json.dump(_color_map, _f, indent=2)
+                    print(f"  [team_abbrev] backfill applied: {_color_map}")
+                else:
+                    print("  [team_abbrev] no color labels found — skipped")
+        except Exception as _e:
+            print(f"  [team_abbrev] backfill failed: {_e}")
 
     # ── OCR identity annotation pass ──────────────────────────────────────────
     if _HAS_IDENTITY and args.game_id:
@@ -207,7 +389,7 @@ def main():
         # player_crops is a dict {slot: crop_bgr} saved during the tracking loop.
         # If the pipeline exposes crops, use them; otherwise pass an empty dict
         # and let run_ocr_annotation_pass skip gracefully (no crops = no OCR reads).
-        player_crops: dict = getattr(results, "player_crops", {})
+        player_crops: dict = getattr(results, "player_crops", {}) if not args.skip_tracking else {}
 
         # run_ocr_annotation_pass expects a frame and frame_index.
         # Since we are in post-processing mode (no live frame), pass a dummy frame
@@ -246,6 +428,19 @@ def main():
             print("[run_clip] No confirmed jersey identities in this clip")
     # ── end OCR annotation pass ───────────────────────────────────────────────
 
+    # ── Stage 3: Feature engineering (AFTER enrichment so features include enrichment cols)
+    if not args.skip_features:
+        print("\n" + "=" * 60)
+        print(" Stage 3 / 3 — Feature Engineering")
+        print("=" * 60)
+        features_df = run_features(
+            input_path=tracking_csv,
+            output_path=os.path.join(data_dir, "features.csv"),
+        )
+    else:
+        print("\n[SKIP] Feature Engineering (--skip-features)")
+        features_df = None
+
     # ── Summary ───────────────────────────────────────────────────────────────
     elapsed = time.time() - t0
     print("\n" + "=" * 60)
@@ -260,7 +455,7 @@ def main():
         ("player_clip_stats.csv", "Per-player clip aggregates"),
         ("features.csv",          "ML-ready engineered features"),
     ]
-    if results.get("stats"):
+    if not args.skip_tracking and results.get("stats"):
         outputs.append(("stats.json", "Shot attempts + made (YOLO mode)"))
     if enriched.get("shot_log_enriched"):
         outputs.append(("shot_log_enriched.csv",     "Shot log + made/missed (NBA API)"))
@@ -279,7 +474,7 @@ def main():
     # ML readiness
     td_path = os.path.join(data_dir, "tracking_data.csv")
     fe_path = os.path.join(data_dir, "features.csv")
-    n_frames = results["total_frames"]
+    n_frames = results["total_frames"] if not args.skip_tracking else 0
     n_cols   = len(features_df.columns) if features_df is not None else "?"
 
     print(f"\n ML Dataset")
