@@ -1,17 +1,19 @@
 """
 pull_missing_data.py -- Phase A bulk data pull.
 
-Fetches all missing NBA API data for 3 seasons in order of priority:
+Fetches all missing NBA API data for 4 seasons in order of priority:
+  A0  Per-player gamelogs -- training labels + live 2025-26 rolling features
   A1  PlayerDashPtShots   -- contested%, pull-up%, defender dist (HIGHEST PRIORITY)
   A2  PlayerTrackingStats -- season-level speed, distance, touches
   A3  SynergyPlayTypes    -- backfill 2022-23 + 2023-24 (2024-25 already exists)
-  A4  Full schedules      -- all 30 teams x 3 seasons
+  A4  Full schedules      -- all 30 teams x 4 seasons
   A5  Referee tendencies  -- foul rate, home win%, pace per ref
 
 Usage:
     conda activate basketball_ai
     cd C:/Users/neelj/nba-ai-system
     python scripts/pull_missing_data.py               # all phases
+    python scripts/pull_missing_data.py --phase A0    # gamelogs only
     python scripts/pull_missing_data.py --phase A1    # single phase
     python scripts/pull_missing_data.py --check       # show coverage summary
 """
@@ -28,7 +30,14 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
 _NBA_DATA = os.path.join(PROJECT_DIR, "data", "nba")
-_SEASONS  = ["2024-25", "2023-24", "2022-23"]
+_SEASONS  = ["2025-26", "2024-25", "2023-24", "2022-23"]
+
+# Seasons to fetch per-player gamelogs for.
+# 2024-25 already exists (526 files) — skip existing files.
+# 2025-26 = live rolling features for predictions.
+# 2022-23, 2023-24 = training labels for prop models.
+_GAMELOG_SEASONS = ["2022-23", "2023-24", "2024-25", "2025-26"]
+_GAMELOG_MAX_PLAYERS = 600
 
 _ALL_TEAMS = [
     "ATL", "BKN", "BOS", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GSW",
@@ -44,6 +53,15 @@ _ALL_TEAMS = [
 def check_coverage() -> None:
     """Print a summary of what Phase A data exists vs. what's missing."""
     print("\n=== Phase A Data Coverage ===\n")
+
+    # A0 -- per-player gamelogs
+    print("A0 -- Per-player Gamelogs (PlayerGameLog):")
+    for s in _GAMELOG_SEASONS:
+        pattern = os.path.join(_NBA_DATA, f"gamelog_full_*_{s}.json")
+        import glob as _glob
+        count = len(_glob.glob(pattern))
+        status = f"[OK] {count} players" if count > 0 else "[MISSING]"
+        print(f"  {s}: {status}")
 
     # A1 -- shot dashboards
     print("A1 -- Shot Dashboard (PlayerDashPtShots):")
@@ -97,6 +115,103 @@ def check_coverage() -> None:
         print("  [MISSING]")
 
     print()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# A0 -- Per-player Gamelogs
+# ─────────────────────────────────────────────────────────────────────────────
+
+def pull_a0_gamelogs() -> None:
+    """
+    Pull per-player gamelogs for 2022-23, 2023-24, 2025-26.
+
+    2024-25 already exists — skip it here (handled by existing files).
+    Saves data/nba/gamelog_full_{player_id}_{season}.json.
+    Rate limit: 0.8s delay between calls.
+    Cap: _GAMELOG_MAX_PLAYERS players per season from LeagueDashPlayerStats.
+    """
+    from nba_api.stats.endpoints import playergamelog, leaguedashplayerstats
+
+    print("\n=== A0: Per-player Gamelogs ===")
+    print(f"Seasons: {_GAMELOG_SEASONS}")
+    print(f"Estimated time: ~{_GAMELOG_MAX_PLAYERS * 0.8 / 60:.0f} min/season "
+          f"({_GAMELOG_MAX_PLAYERS} players x 0.8s)")
+
+    os.makedirs(_NBA_DATA, exist_ok=True)
+
+    for season in _GAMELOG_SEASONS:
+        print(f"\n  {season}: fetching player list...", flush=True)
+
+        # Get player IDs for this season (cap at _GAMELOG_MAX_PLAYERS)
+        try:
+            time.sleep(0.6)
+            df = leaguedashplayerstats.LeagueDashPlayerStats(
+                season=season,
+                per_mode_detailed="PerGame",
+            ).get_data_frames()[0]
+        except Exception as e:
+            print(f"  {season}: [ERR] Could not fetch player list — {e}")
+            continue
+
+        # Sort by minutes played descending so we prioritize starters
+        if "MIN" in df.columns:
+            df = df.sort_values("MIN", ascending=False)
+        player_ids = df["PLAYER_ID"].tolist()[:_GAMELOG_MAX_PLAYERS]
+        print(f"  {season}: {len(player_ids)} players to process", flush=True)
+
+        fetched = 0
+        skipped = 0
+        errors  = 0
+
+        for pid in player_ids:
+            out_path = os.path.join(_NBA_DATA, f"gamelog_full_{pid}_{season}.json")
+            if os.path.exists(out_path):
+                skipped += 1
+                continue
+
+            try:
+                time.sleep(0.8)
+                gl = playergamelog.PlayerGameLog(
+                    player_id=pid,
+                    season=season,
+                    season_type_all_star="Regular Season",
+                ).get_data_frames()[0]
+            except Exception as e:
+                err_str = str(e)
+                if "429" in err_str or "rate" in err_str.lower():
+                    print(f"    [RATE LIMIT] sleeping 2s and retrying...", flush=True)
+                    time.sleep(2.0)
+                    try:
+                        gl = playergamelog.PlayerGameLog(
+                            player_id=pid,
+                            season=season,
+                            season_type_all_star="Regular Season",
+                        ).get_data_frames()[0]
+                    except Exception as e2:
+                        print(f"    [SKIP] pid={pid}: {e2}")
+                        errors += 1
+                        continue
+                else:
+                    print(f"    [SKIP] pid={pid}: {e}")
+                    errors += 1
+                    continue
+
+            # Normalise column names to lowercase for consistency with existing files
+            gl.columns = [c.lower() for c in gl.columns]
+            # Add a game_date field in a consistent format (already present as GAME_DATE -> game_date)
+            if "game_date" not in gl.columns and "game_date" in gl.columns:
+                pass  # already lowercased above
+            rows = gl.to_dict(orient="records")
+
+            with open(out_path, "w") as f:
+                json.dump(rows, f)
+            fetched += 1
+
+            if fetched % 50 == 0:
+                print(f"    {fetched} fetched, {skipped} skipped, {errors} errors...", flush=True)
+
+        print(f"  {season}: [OK] fetched={fetched}  skipped={skipped}  errors={errors}")
+        time.sleep(1.0)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -155,15 +270,13 @@ def pull_a2_tracking_stats() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def pull_a3_synergy() -> None:
-    """Backfill SynergyPlayTypes for 2022-23 and 2023-24 (2024-25 already exists)."""
+    """Fetch SynergyPlayTypes for all seasons in _SEASONS that are missing."""
     from src.data.nba_tracking_stats import get_synergy_all_types
 
-    print("\n=== A3: Synergy Backfill (2022-23, 2023-24) ===")
+    print("\n=== A3: Synergy (all missing seasons) ===")
     print("Estimated time: ~4 min/season (10 play types x 2 sides x 1s delay)")
 
-    backfill_seasons = ["2023-24", "2022-23"]
-
-    for season in backfill_seasons:
+    for season in _SEASONS:
         for side in ("offensive", "defensive"):
             cache_path = os.path.join(_NBA_DATA, f"synergy_{side}_all_{season}.json")
             if os.path.exists(cache_path):
@@ -250,7 +363,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Phase A -- Pull all missing NBA data")
     parser.add_argument(
         "--phase",
-        choices=["A1", "A2", "A3", "A4", "A5"],
+        choices=["A0", "A1", "A2", "A3", "A4", "A5"],
         help="Run only a specific phase (default: all)",
     )
     parser.add_argument(
@@ -270,6 +383,7 @@ def main() -> None:
     start = time.time()
 
     phases = {
+        "A0": pull_a0_gamelogs,
         "A1": pull_a1_shot_dashboards,
         "A2": pull_a2_tracking_stats,
         "A3": pull_a3_synergy,

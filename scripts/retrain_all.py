@@ -138,6 +138,8 @@ def retrain_win_prob() -> dict:
 
     start = time.time()
     try:
+        # Train on 3 completed seasons only — do NOT include 2025-26 because
+        # game outcomes are the labels and we're predicting live 2025-26 games.
         model = wp_train(seasons=["2022-23", "2023-24", "2024-25"])
         elapsed = time.time() - start
         acc = getattr(model, "_last_accuracy", None)

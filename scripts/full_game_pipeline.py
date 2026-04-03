@@ -113,16 +113,20 @@ _PRIORITY_MATCHUPS: List[Tuple[str, str]] = [
 _SCHED_CACHE: Dict[str, dict] = {}   # game_id → {game_id, date, home, away}
 
 def _build_schedule_index() -> Dict[str, dict]:
-    """Build a full game_id → matchup index from all 2024-25 schedule files."""
+    """Build a full game_id → matchup index from all schedule files (2024-25 + 2025-26)."""
     if _SCHED_CACHE:
         return _SCHED_CACHE
 
     import glob
     files = glob.glob(os.path.join(_SCHEDULE_DIR, "schedule_*_2024-25*.json"))
+    files += glob.glob(os.path.join(_SCHEDULE_DIR, "schedule_*_2025-26*.json"))
     for fpath in files:
-        team = os.path.basename(fpath).split("schedule_")[1].split("_2024")[0]
+        # Extract team abbrev: schedule_ATL_2024-25_v2.json → ATL
+        _base = os.path.basename(fpath).split("schedule_")[1]
+        team = _base.split("_20")[0]  # split on _20 to handle any season year
         try:
-            data = json.load(open(fpath))
+            with open(fpath, encoding="utf-8") as _fh:
+                data = json.load(_fh)
         except Exception:
             continue
         games = data if isinstance(data, list) else []
@@ -626,9 +630,9 @@ def run_pipeline(
         else:
             print(f"  [PREDICTIONS] skipped")
 
-        _snapshot(game["game_id"], result)
         result["stages_completed"].append("snapshot")
         result["success"] = True
+        _snapshot(game["game_id"], result)
 
     except KeyboardInterrupt:
         raise
@@ -795,7 +799,7 @@ def main() -> None:
     if args.game_id:
         g = lookup_game_by_id(args.game_id)
         if not g:
-            print(f"Unknown game_id {args.game_id!r} — not in data/nba/schedule_*_2024-25*.json")
+            print(f"Unknown game_id {args.game_id!r} — not in schedule files")
             sys.exit(1)
         targets = [g]
 
@@ -803,7 +807,8 @@ def main() -> None:
     results: List[dict] = []
     if os.path.exists(_RESULTS_PATH):
         try:
-            existing = json.load(open(_RESULTS_PATH))
+            with open(_RESULTS_PATH, encoding="utf-8") as _rfh:
+                existing = json.load(_rfh)
             for r in existing:
                 if r.get("success"):
                     done_ids.add(r["game_id"])

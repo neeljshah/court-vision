@@ -1,6 +1,45 @@
 # Tracker Improvements Log
 ---
 
+### Session 22 Broadcast Reliability Fixes — 2026-03-25
+
+**FIX 1 — Replay/Cut Detector (`unified_pipeline.py`)**
+- Added `_is_replay_or_cut()` method: detects scene cuts (SSIM < 0.6 or histogram diff fallback), brightness spikes (replay graphic overlay, mean-V × 1.4 + 20), scoreboard disappearance (confidence drop to 0).
+- When triggered: sets `_homography_suspended = True` for 30 frames. SIFT update skipped (hold last good EMA). `spatial = {}` blanks defender_distance and team_spacing. `homography_valid = 0` written to tracking_data.csv rows.
+- New columns: `homography_valid` in tracking_data.csv, `ball_inferred` in ball_tracking.csv.
+- **Before:** frozen/stale positions from replays corrupted spatial features. **After:** homography suspended for 30 frames on any cut/overlay.
+
+**FIX 2 — Defender Distance Sentinel Cleanup (code verified)**
+- Backfill scripts confirmed ready: `scripts/backfill_defender_distance.py` and `scripts/reprocess_failed_games.py --game-ids` both exist.
+- 5 pre-fix games (0022400430 0022400537 0022400909 0022401123 0022401156) need: `python scripts/reprocess_failed_games.py --game-ids ... --frames 18000` + `python scripts/backfill_defender_distance.py`.
+
+**FIX 3 — Ball Dribble Predictor (`ball_detect_track.py`)**
+- Added `_ball_under_dribble_predictor()`: when ball lost < 8 frames AND a player has `has_ball=True`, projects ball to possessor's hand position (bbox center_x, ankle_y - 80px). Returns 20×20px bbox.
+- `ball_inferred` flag set True on predicted frames, False otherwise. Written to `ball_tracking.csv`.
+- **Before:** ~14% ball_valid_pct on dribble occlusion gaps. **After:** short gaps (<8 frames) filled from possessor position.
+
+**FIX 4 — Jersey OCR Sampling + Confidence Vote (`player_resolver.py`)**
+- Changed `_SAMPLE_EVERY`: 10 → 15 (every 15 frames ≈ 0.5s at stride=3/30fps).
+- Added `_CONF_VOTE_WINDOW = 60` — keeps last 60 OCR samples per slot as `(number, conf)` pairs in a deque.
+- `get_jersey_number()` now returns argmax of summed confidence scores (confidence-weighted majority vote). Falls back to plain Counter if buffer empty.
+- Added `read_jersey_number_with_conf()` to `jersey_ocr.py` — same waterfall as `read_jersey_number()` but returns `(number, confidence)`.
+- **Before:** plain vote count misidentified jerseys on light-colored matchups. **After:** high-confidence reads outweigh uncertain ones.
+
+**FIX 5 — Sentinel Filter in Feature Engineering (`feature_engineering.py`)**
+- `compute_spatial_features()` now zeros out sentinel values before ML feature computation:
+  - `defender_distance == 200.0` → NaN
+  - `handler_isolation == 200.0` → NaN
+  - `team_spacing == 0.0` → NaN (invalid hull area)
+- **Before:** 200.0 sentinels in rolling windows corrupted avg_defender_distance and contested_shot_rate. **After:** sentinels become NaN and are excluded from rolling stats.
+
+**Also fixed (hardening tests)**
+- `_frame_spatial` isolation fallback: now only uses non-handler players as proxy defenders when 6+ players share one team label (team misclassification scenario). Previously used teammates when no opponents tracked → returned wrong distance instead of _ISOLATION_DEFAULT.
+- `test_hardening.py` Hough param2 floor: updated 15 → 5 (Session 21 intentionally set param2=8 for broadcast recall; downstream orange+jump guards compensate).
+
+**Test result: 832 passed, 93 skipped, 2 failed (pre-existing DB infra — PostgreSQL not running)**
+
+---
+
 ### Session 21 Data-Collection Blockers Fixed — 2026-03-25
 
 **ISSUE-022 fix — `defender_distance` sentinel backfill**
@@ -12647,3 +12686,119 @@ Props retrained: 7 models
 
 ## Phase G — 2026-03-25
 - 0022400710 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 0s)
+
+## Phase G — 2026-03-25
+- 0022400852 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 385s)
+
+### 2026-03-26 23:16 -- Model Retrain
+Win probability retrained
+
+### 2026-03-27 — Auto Loop Iteration 2
+**Clip:** 0022400430.mp4 · 300 frames benchmark
+**Metrics:** fps 54 (vid fps)  ball_valid 62% combined (53% detected + 9% inferred)  shots 1  id_sw 0  possessions 3
+**Fix:** `src/tracking/ball_detect_track.py:414` — dribble predictor gap 8→12 frames — **reverted** (combined 62%→59.7%, gap 8-12 rarely populated)
+**Full game:** 0022400625 queued for reprocess (18000 frames)
+**Next:** possessions 1.07/min→2/min — audit `_BALL_LOSS_THRESH` + `_POSS_PERSIST_FRAMES` in unified_pipeline.py for fps-aware thresholds on short clips
+
+
+### 2026-03-27 — Game Loop Iteration 1 (game-loop skill)
+**Game:** 0022401183 (POR @ GSW) · 18,000 frames (running) + 150-frame verify
+**CV Accuracy:** ball_valid=100% (150fr)  homography=0.274 (FALLBACK-A triggered)  shots=0 (partial)  possessions=0 (partial)
+**Fallbacks:** shot_chart=✅  jersey_map=✅  hustle_stats=✅  pbp_v3=✅  proximity=❌ (API signature changed)
+**Fix (kept):** `src/pipeline/unified_pipeline.py:2406,3013` — BoxScoreSummaryV2→V3 (V2 deprecated, no data post-4/10/2025). team_names resolve: {'white':'POR','green':'GSW'} ✅
+**Fix (reverted):** `src/pipeline/unified_pipeline.py:1165` — _POSS_PERSIST_FRAMES stride-aware: possessions 3→1 (more <2s fragments filtered) ❌
+**Audit:** 1/20 clean (0022400909). 0022400430/537 at 5/6 — need reprocess to clear old run.log
+**Today:** 10 games — OKC 86.8%, DEN 84.0%, GSW 79.8%, LAC 79.2% away. Props blocked (gamelogs pending).
+**Next:** Fix homography for 0022401183 (0.274 — may be highlights reel). Complete gamelog A0 → retrain props.
+
+## Phase G — 2026-03-27
+- 0022401183 — stability=1.000 id_sw=0 ball=52.0% (73392 frames, 4399s)
+
+## Phase G — 2026-03-27
+- 0022401185 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 3818s)
+- 0022401190 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 67s)
+- 0022401194 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 127s)
+- 0022401196 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 28s)
+- 0022401198 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 14s)
+
+## Phase G — 2026-03-28
+- 0022400625 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 94s)
+
+## Phase G — 2026-03-28
+- 0022400625 — stability=0.000 id_sw=0 ball=35.1% (0 frames, 88s)
+
+## Phase G — 2026-03-28
+- 0022400625 — stability=0.000 id_sw=0 ball=35.1% (0 frames, 100s)
+
+## Phase G — 2026-03-28
+- 0022400430 — stability=1.000 id_sw=0 ball=71.2% (118779 frames, 8737s)
+
+## Phase G — 2026-03-28
+- 0022400430 — stability=0.000 id_sw=0 ball=71.2% (0 frames, 97s)
+
+## Phase G — 2026-03-28
+- 0022400537 — stability=1.000 id_sw=0 ball=79.6% (239418 frames, 6771s)
+
+## Phase G — 2026-03-28
+- 0022400625 — stability=0.000 id_sw=0 ball=35.1% (0 frames, 119s)
+
+## Phase G — 2026-03-30
+- 0022400430 — stability=0.000 id_sw=0 ball=71.2% (0 frames, 530s)
+
+## Phase G — 2026-03-30
+- 0022400430 — stability=0.000 id_sw=0 ball=71.2% (0 frames, 78s)
+
+## Phase G — 2026-03-30
+- 0022400430 — stability=0.000 id_sw=0 ball=71.2% (0 frames, 72s)
+
+## Phase G — 2026-03-30
+- 0022400909 — stability=0.000 id_sw=0 ball=76.3% (0 frames, 50s)
+
+## Phase G — 2026-03-30
+- 0022400909 — stability=1.000 id_sw=0 ball=96.0% (1620 frames, 502s)
+
+## Phase G — 2026-03-30
+- 0022400909 — stability=1.000 id_sw=0 ball=96.0% (1620 frames, 484s)
+
+## Phase G — 2026-03-30
+- 0022400909 — stability=1.000 id_sw=0 ball=96.0% (1620 frames, 500s)
+
+## Phase G — 2026-03-31
+- 0022400687 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 21s)
+
+## Phase G — 2026-03-31
+- 0022400687 — stability=1.000 id_sw=0 ball=83.4% (62958 frames, 4295s)
+
+## Phase G — 2026-03-31
+- 0022401185 — stability=0.000 id_sw=0 ball=82.2% (0 frames, 115s)
+
+## Phase G — 2026-03-31
+- 0022401185 — stability=1.000 id_sw=0 ball=88.8% (237408 frames, 13839s)
+
+## Phase G — 2026-03-31
+- 0022501098 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 152s)
+
+## Phase G — 2026-03-31
+- 0022501093 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 102s)
+
+## Phase G — 2026-03-31
+- 0022501093 — stability=1.000 id_sw=0 ball=57.8% (250410 frames, 2513s)
+
+## Phase G — 2026-03-31
+- 0022501093 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 509s)
+
+
+## Phase G — 2026-03-31
+- 0022501092 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 633s)
+
+## Phase G — 2026-03-31
+- 0022501093 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 602s)
+
+## Phase G — 2026-03-31
+- 0022501093 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 1031s)
+
+## Phase G — 2026-04-01
+- 0022500002 — stability=1.000 id_sw=0 ball=71.1% (368610 frames, 11571s)
+
+## Phase G — 2026-04-02
+- 0022501110 — stability=0.000 id_sw=0 ball=0.0% (0 frames, 858s)

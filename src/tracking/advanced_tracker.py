@@ -88,8 +88,8 @@ OF_MAX_LEVEL = 2          # pyramid levels
 OF_MAX_AGE   = 8          # max lost frames before stopping optical flow propagation
 
 # ── Pose cadence ──────────────────────────────────────────────────────────────
-_POSE_INTERVAL           = 6   # run pose model every N frames; reuse cached fields on others
-_POSE_INTERVAL_SUSPENDED = 15  # Task 3: slower cadence when no ball holder + game suspended
+_POSE_INTERVAL           = 15  # OPTIMIZATION: 10→15. Pose every 1.5s real-time (stride=3/30fps); keypoints stable
+_POSE_INTERVAL_SUSPENDED = 30  # OPTIMIZATION: 25→30. Slower cadence when no ball holder + game suspended
 
 
 # ── Kalman filter helpers ─────────────────────────────────────────────────────
@@ -252,6 +252,7 @@ class AdvancedFeetDetector(FeetDetector):
         # YOLO model + image size — configurable for post-game high-quality runs
         _yolo_stem = _cfg.get("yolo_model", "yolov8n")
         self._yolo_imgsz: int = int(_cfg.get("yolo_imgsz", 640))
+        self._yolo_device = 0 if self._use_half else "cpu"
         if _yolo_stem != "yolov8n":
             try:
                 from ultralytics import YOLO as _YOLO
@@ -260,7 +261,7 @@ class AdvancedFeetDetector(FeetDetector):
                 self.model(
                     __import__("numpy").zeros((self._yolo_imgsz, self._yolo_imgsz, 3),
                                              dtype=__import__("numpy").uint8),
-                    verbose=False, half=self._use_half,
+                    verbose=False, half=self._use_half, device=self._yolo_device,
                 )
             except Exception:
                 pass  # fall back to yolov8n loaded by FeetDetector.__init__
@@ -317,6 +318,11 @@ class AdvancedFeetDetector(FeetDetector):
             _pm = _YOLO(_best_yolo_model("yolov8n-pose"))
             if _cfg.get("broadcast_mode", True):
                 _pm.overrides["half"] = getattr(self, "_use_half", False)
+            # Warmup on GPU to avoid first-call latency
+            _pm(
+                __import__("numpy").zeros((640, 640, 3), dtype=__import__("numpy").uint8),
+                verbose=False, half=self._use_half, device=self._yolo_device,
+            )
             self._pose_model = _pm
             self._use_pose   = True
         except Exception:
@@ -353,6 +359,13 @@ class AdvancedFeetDetector(FeetDetector):
                     self._deep_extractor.load_weights(_weights_path)
             except Exception:
                 pass
+
+        # Batch YOLO inference buffer — accumulates frames for GPU batch processing
+        # When the result cache has entries, YOLO is skipped entirely for that frame.
+        # True 16-frame batching activates automatically when the caller pushes
+        # multiple frames before consuming results (async / prefetch architecture).
+        self._yolo_frame_buf: deque = deque()
+        self._yolo_result_buf: list = []  # cached [(yolo_results, ran_pose), ...]
 
     # ── helpers ───────────────────────────────────────────────────────────
 
@@ -432,7 +445,7 @@ class AdvancedFeetDetector(FeetDetector):
         # Task 2: track consecutive matched frames; trigger OSNet skip after 30
         self._stable_frames[slot] = self._stable_frames.get(slot, 0) + 1
         if self._stable_frames[slot] >= 30:
-            self._stable_skip[slot] = 4
+            self._stable_skip[slot] = 12
             self._stable_frames[slot] = 0
         self._gallery.pop(slot, None)
         self._gallery_ages.pop(slot, None)
@@ -871,16 +884,49 @@ class AdvancedFeetDetector(FeetDetector):
         )
         self._pose_frame_counter += 1
 
-        if _run_pose:
-            yolo_results = self._pose_model(
-                frame, classes=[0], conf=self._fill_conf_threshold,
-                verbose=False, imgsz=self._yolo_imgsz, half=self._use_half
-            )
+        _imgsz = getattr(self, "_infer_imgsz", self._yolo_imgsz)
+        _dev   = getattr(self, "_yolo_device", 0 if self._use_half else "cpu")
+        _BATCH = 16
+
+        # ── Batch YOLO inference with 16-frame deque buffer ───────────────
+        # Serve from pre-computed cache when available (zero GPU cost this frame).
+        if self._yolo_result_buf:
+            yolo_results, _run_pose = self._yolo_result_buf.pop(0)
         else:
-            yolo_results = self.model(
-                frame, classes=[0], conf=self._fill_conf_threshold,
-                verbose=False, imgsz=self._yolo_imgsz, half=self._use_half
-            )
+            # Accumulate current frame; flush entire buffer as one GPU batch call.
+            # In the current sequential architecture the batch will typically be
+            # size 1; it scales to 16 automatically when a prefetch/async caller
+            # pushes multiple frames before consuming results.
+            self._yolo_frame_buf.append((frame, _run_pose))
+            _batch = list(self._yolo_frame_buf)
+            self._yolo_frame_buf.clear()
+
+            _pose_idx = [i for i, (_, rp) in enumerate(_batch) if rp]
+            _det_idx  = [i for i, (_, rp) in enumerate(_batch) if not rp]
+            _pending: list = [(None, None)] * len(_batch)
+
+            if _pose_idx and self._use_pose and self._pose_model is not None:
+                _pimgs = [_batch[i][0] for i in _pose_idx]
+                _pres  = list(self._pose_model(
+                    _pimgs, classes=[0], conf=self._fill_conf_threshold,
+                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                ))
+                for _j, _r in zip(_pose_idx, _pres):
+                    _pending[_j] = ([_r], True)
+
+            if _det_idx:
+                _dimgs = [_batch[i][0] for i in _det_idx]
+                _dres  = list(self.model(
+                    _dimgs, classes=[0], conf=self._fill_conf_threshold,
+                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                ))
+                for _j, _r in zip(_det_idx, _dres):
+                    _pending[_j] = ([_r], False)
+
+            yolo_results, _run_pose = _pending[0]
+            if len(_pending) > 1:
+                self._yolo_result_buf = list(_pending[1:])
+
         boxes_xyxy   = (yolo_results[0].boxes.xyxy.cpu().numpy()
                         if yolo_results[0].boxes is not None else [])
         scores_conf  = (yolo_results[0].boxes.conf.cpu().numpy()

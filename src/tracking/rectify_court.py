@@ -15,7 +15,7 @@ flann = cv2.FlannBasedMatcher(
 
 
 def collage(frames, direction=1, plot=False):
-    sift = cv2.xfeatures2d.SIFT_create()
+    sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
     current_mosaic = frames[0] if direction == 1 else frames[-1]
 
     for i in range(len(frames) - 1):
@@ -49,7 +49,7 @@ def collage(frames, direction=1, plot=False):
 
 
 def add_frame(frame, pano, pano_enhanced, plot=False):
-    sift = cv2.xfeatures2d.SIFT_create()
+    sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
     kp1, des1 = sift.compute(pano, sift.detect(pano))
     kp2, des2 = sift.compute(frame, sift.detect(frame))
 

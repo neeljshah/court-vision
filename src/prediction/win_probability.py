@@ -76,7 +76,8 @@ def _get_ref_fta_tendency(ref_names: Optional[List[str]], season: str) -> float:
 # Bump this whenever the season_games cache schema changes (new fields, etc.)
 # Cached files with a different or absent version are automatically re-fetched.
 # Phase 4.6: bumped from 3→4 to add iso_matchup_edge + ref_fta_tendency columns.
-_SEASON_GAMES_VERSION = 4
+# 2025-26 update: bumped 4→5 to add C-1 through C-7 feature columns.
+_SEASON_GAMES_VERSION = 5
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
 # NET_RATING, PACE, etc.) reflect the current season, not an early-season snapshot.
@@ -104,7 +105,127 @@ FEATURE_COLS = [
     "ref_avg_fouls", "ref_home_win_pct",
     # Phase 4.6: synergy matchup edge + ref FTA tendency
     "iso_matchup_edge", "ref_fta_tendency",
+    # C-1: ELO ratings
+    "home_elo", "away_elo", "elo_differential",
+    # C-2: Opponent defensive trajectory
+    "home_def_rtg_trend", "away_def_rtg_trend",
+    # C-3: Pace variance
+    "home_pace_variance", "away_pace_variance",
+    # C-4: Hustle stats
+    "home_hustle_deflections_pg", "away_hustle_deflections_pg",
+    # C-5: Synergy PnR PPP
+    "home_pnr_ppp", "away_pnr_ppp",
+    # C-6: Interaction terms
+    "b2b_diff", "elo_pace_interaction",
+    # C-7: Bench net rating
+    "home_bench_net_rtg", "away_bench_net_rtg",
 ]
+
+
+# ── C-1 through C-7: helper functions ─────────────────────────────────────────
+
+def _get_elo_feature(team_abbr: str) -> float:
+    """Load ELO for a team from elo_ratings.json. Falls back to 1500."""
+    try:
+        from src.features.advanced_features import _ELO_PATH
+        if not os.path.exists(_ELO_PATH):
+            return 1500.0
+        elo = json.load(open(_ELO_PATH))
+        return float(elo.get(team_abbr, 1500.0))
+    except Exception:
+        return 1500.0
+
+
+def _get_def_rtg_trend(team_abbr: str, season: str) -> float:
+    """C-2: def_rtg_last10 - def_rtg_season for a team. 0.0 on miss."""
+    try:
+        from src.features.advanced_features import get_opp_def_trend
+        return get_opp_def_trend(team_abbr, season)
+    except Exception:
+        return 0.0
+
+
+def _get_pace_variance(team_abbr: str, season: str, last_n: int = 20) -> float:
+    """C-3: Std of possessions per game over last N games. 2.0 on miss."""
+    try:
+        games_path = os.path.join(_NBA_CACHE, f"season_games_{season}.json")
+        if not os.path.exists(games_path):
+            return 2.0
+        games = json.load(open(games_path))
+        team_games = [
+            g for g in games
+            if g.get("home_team") == team_abbr or g.get("away_team") == team_abbr
+        ]
+        team_games = sorted(team_games, key=lambda g: g.get("game_date", ""))[-last_n:]
+        poss_list = []
+        for g in team_games:
+            p = g.get("home_possessions") if g.get("home_team") == team_abbr else g.get("away_possessions")
+            if p is not None:
+                poss_list.append(float(p))
+        if len(poss_list) < 3:
+            return 2.0
+        return round(float(np.std(poss_list)), 3)
+    except Exception:
+        return 2.0
+
+
+def _get_hustle_deflections(team_abbr: str, season: str) -> float:
+    """C-4: Mean deflections per game for a team from hustle cache. 0.0 on miss."""
+    try:
+        path = os.path.join(_NBA_CACHE, f"hustle_stats_{season}.json")
+        if not os.path.exists(path):
+            return 0.0
+        rows = json.load(open(path))
+        team_rows = [r for r in rows
+                     if str(r.get("team_abbreviation", "")).upper() == team_abbr.upper()]
+        if not team_rows:
+            return 0.0
+        vals = [float(r.get("deflections_pg", 0) or 0) for r in team_rows]
+        return round(sum(vals) / len(vals), 3) if vals else 0.0
+    except Exception:
+        return 0.0
+
+
+def _get_pnr_ppp(team_abbr: str, season: str) -> float:
+    """C-5: Team PnR Ball Handler PPP from synergy_offensive_all cache."""
+    try:
+        path = os.path.join(_NBA_CACHE, f"synergy_offensive_all_{season}.json")
+        if not os.path.exists(path):
+            return 0.0
+        rows = json.load(open(path))
+        for r in rows:
+            if (r.get("team_abbreviation", "").upper() == team_abbr.upper()
+                    and r.get("play_type") in ("PRBallHandler", "PnR Ball Handler")):
+                return float(r.get("ppp", 0.0))
+        return 0.0
+    except Exception:
+        return 0.0
+
+
+def _get_bench_net_rtg(team_abbr: str, season: str) -> float:
+    """C-7: Mean net rating for bench lineups (<20 min/g) from data/nba/lineups/."""
+    try:
+        lineup_dir = os.path.join(_NBA_CACHE, "lineups")
+        if not os.path.exists(lineup_dir):
+            return 0.0
+        candidates = [
+            f for f in os.listdir(lineup_dir)
+            if team_abbr.upper() in f.upper() and f.endswith(".json")
+        ]
+        if not candidates:
+            return 0.0
+        vals = []
+        for fname in candidates:
+            rows = json.load(open(os.path.join(lineup_dir, fname)))
+            for r in rows:
+                if (int(r.get("lineup_size", 5)) >= 5
+                        and float(r.get("min", 99)) < 20):
+                    nr = r.get("net_rtg") or r.get("NET_RATING")
+                    if nr is not None:
+                        vals.append(float(nr))
+        return round(sum(vals) / len(vals), 3) if vals else 0.0
+    except Exception:
+        return 0.0
 
 
 class WinProbModel:
@@ -124,7 +245,7 @@ class WinProbModel:
         self,
         home_team: str,
         away_team: str,
-        season: str = "2024-25",
+        season: str = "2025-26",
         game_date: Optional[str] = None,
         ref_names: Optional[List[str]] = None,
     ) -> dict:
@@ -165,8 +286,9 @@ class WinProbModel:
         import pickle
         os.makedirs(_MODEL_DIR, exist_ok=True)
         path = path or os.path.join(_MODEL_DIR, "win_probability.pkl")
+        model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
         with open(path, "wb") as f:
-            pickle.dump({"model": self.model, "threshold": self.threshold,
+            pickle.dump({"model_bytes": model_bytes, "threshold": self.threshold,
                          "feature_importance": self._feature_importance}, f)
         print(f"Model saved -> {path}")
         return path
@@ -181,6 +303,18 @@ class WinProbModel:
 
 # Alias for backward compatibility
 WinProbabilityModel = WinProbModel
+
+
+# C-8: Retrain trigger (infrastructure only — does NOT auto-retrain)
+def retrain() -> None:
+    """
+    C-8: Print retrain instructions. Does not execute training.
+
+    Call train() explicitly to retrain with all new features.
+    """
+    n = len(FEATURE_COLS)
+    print(f"Ready to retrain with {n} features.")
+    print(f"Run: python src/prediction/win_probability.py --train")
 
 
 # ── Training ───────────────────────────────────────────────────────────────────
@@ -213,6 +347,7 @@ def train(
     from sklearn.metrics import accuracy_score, brier_score_loss
 
     if seasons is None:
+        # Default: 3 completed seasons only — 2025-26 outcomes are live targets
         seasons = ["2022-23", "2023-24", "2024-25"]
 
     print(f"Building dataset from {seasons} ...")
@@ -225,7 +360,7 @@ def train(
     if not rows:
         raise RuntimeError("No data fetched — check NBA API connectivity")
 
-    df = pd.DataFrame(rows).dropna(subset=FEATURE_COLS + ["home_win"])
+    df = pd.DataFrame(rows).dropna(subset=["home_win"])
 
     # Sort chronologically so the validation split is truly future games.
     # Random split leaks future games into training (October 2024 in train
@@ -265,12 +400,26 @@ def train(
 def load(model_path: Optional[str] = None) -> WinProbModel:
     """Load saved WinProbModel from disk."""
     import pickle
+    from xgboost import XGBClassifier
     path = model_path or os.path.join(_MODEL_DIR, "win_probability.pkl")
     if not os.path.exists(path):
         raise FileNotFoundError(f"Model not found: {path} — run train() first")
     with open(path, "rb") as f:
         data = pickle.load(f)
-    m = WinProbModel(model=data["model"], threshold=data.get("threshold", 0.5))
+    if "model_bytes" in data:
+        import tempfile
+        clf = XGBClassifier()
+        with tempfile.NamedTemporaryFile(suffix=".ubj", delete=False) as tmp:
+            tmp.write(data["model_bytes"])
+            tmp_path = tmp.name
+        try:
+            clf.load_model(tmp_path)
+        finally:
+            os.unlink(tmp_path)
+    else:
+        # backward compat: old pickle format stored the model object directly
+        clf = data["model"]
+    m = WinProbModel(model=clf, threshold=data.get("threshold", 0.5))
     m._feature_importance = data.get("feature_importance")
     return m
 
@@ -303,7 +452,7 @@ def backtest(seasons: Optional[List[str]] = None) -> dict:
     if not rows:
         return {"error": "No data — check NBA API connectivity"}
 
-    df = pd.DataFrame(rows).dropna(subset=FEATURE_COLS + ["home_win"])
+    df = pd.DataFrame(rows).dropna(subset=["home_win"])
 
     # Sort chronologically so TimeSeriesSplit folds are truly walk-forward.
     # Without this, API-return order mixes games across seasons randomly,
@@ -486,6 +635,31 @@ def _build_features(
         "ref_home_win_pct":    ref_home_win_pct,
         "iso_matchup_edge":    iso_matchup_edge,
         "ref_fta_tendency":    ref_fta_tendency,
+        # C-1: ELO ratings
+        "home_elo":            _get_elo_feature(home_team),
+        "away_elo":            _get_elo_feature(away_team),
+        "elo_differential":    round(_get_elo_feature(home_team) - _get_elo_feature(away_team), 2),
+        # C-2: Defensive trajectory
+        "home_def_rtg_trend":  _get_def_rtg_trend(home_team, season),
+        "away_def_rtg_trend":  _get_def_rtg_trend(away_team, season),
+        # C-3: Pace variance
+        "home_pace_variance":  _get_pace_variance(home_team, season),
+        "away_pace_variance":  _get_pace_variance(away_team, season),
+        # C-4: Hustle
+        "home_hustle_deflections_pg": _get_hustle_deflections(home_team, season),
+        "away_hustle_deflections_pg": _get_hustle_deflections(away_team, season),
+        # C-5: Synergy PnR PPP
+        "home_pnr_ppp": _get_pnr_ppp(home_team, season),
+        "away_pnr_ppp": _get_pnr_ppp(away_team, season),
+        # C-6: Interaction terms
+        "b2b_diff": float(a_ctx["back_to_back"]) - float(h_ctx["back_to_back"]),
+        "elo_pace_interaction": round(
+            (_get_elo_feature(home_team) - _get_elo_feature(away_team))
+            * (ht["pace"] - at["pace"]) / 100.0, 4
+        ),
+        # C-7: Bench net rating
+        "home_bench_net_rtg": _get_bench_net_rtg(home_team, season),
+        "away_bench_net_rtg": _get_bench_net_rtg(away_team, season),
     }
 
 
@@ -769,6 +943,34 @@ def _fetch_season_games(season: str) -> List[dict]:
             ),
             # Phase 4.6: ref FTA tendency — unknown historically; 0.0 default
             "ref_fta_tendency": 0.0,
+            # C-1: ELO — use static file (current ELO, not game-time ELO)
+            "home_elo":          _get_elo_feature(h["TEAM_ABBREVIATION"]),
+            "away_elo":          _get_elo_feature(a["TEAM_ABBREVIATION"]),
+            "elo_differential":  (
+                _get_elo_feature(h["TEAM_ABBREVIATION"])
+                - _get_elo_feature(a["TEAM_ABBREVIATION"])
+            ),
+            # C-2: Defensive trajectory — 0.0 default for historical training rows
+            "home_def_rtg_trend":  0.0,
+            "away_def_rtg_trend":  0.0,
+            # C-3: Pace variance — 2.0 neutral default
+            "home_pace_variance":  2.0,
+            "away_pace_variance":  2.0,
+            # C-4: Hustle deflections — 0.0 when not available
+            "home_hustle_deflections_pg": 0.0,
+            "away_hustle_deflections_pg": 0.0,
+            # C-5: PnR PPP — season-level from synergy cache
+            "home_pnr_ppp": _get_pnr_ppp(h["TEAM_ABBREVIATION"], season),
+            "away_pnr_ppp": _get_pnr_ppp(a["TEAM_ABBREVIATION"], season),
+            # C-6: Interaction terms
+            "b2b_diff":            float(h_rest == 1) - float(a_rest == 1),
+            "elo_pace_interaction": (
+                _get_elo_feature(h["TEAM_ABBREVIATION"]) * ht["pace"]
+                - _get_elo_feature(a["TEAM_ABBREVIATION"]) * at["pace"]
+            ),
+            # C-7: Bench net rating — 0.0 when not available
+            "home_bench_net_rtg":  0.0,
+            "away_bench_net_rtg":  0.0,
         })
 
     with open(cache_path, "w") as f:
@@ -888,7 +1090,7 @@ if __name__ == "__main__":
     ap.add_argument("--train",    action="store_true", help="Train on 3 seasons")
     ap.add_argument("--backtest", action="store_true", help="Walk-forward backtest")
     ap.add_argument("--predict",  nargs=2, metavar=("HOME", "AWAY"))
-    ap.add_argument("--season",   default="2024-25")
+    ap.add_argument("--season",   default="2025-26")
     ap.add_argument("--seasons",  nargs="+", default=["2022-23", "2023-24", "2024-25"])
     args = ap.parse_args()
 

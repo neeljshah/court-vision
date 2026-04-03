@@ -82,11 +82,13 @@ def _label_to_season(label: str) -> tuple[str, str]:
         if "2024" in label_lower:
             return "2023-24", "Playoffs"
         return "2023-24", "Playoffs"
+    if "2026" in label_lower:
+        return "2025-26", "Regular Season"
     if "2025" in label_lower:
         return "2024-25", "Regular Season"
     if "2024" in label_lower:
         return "2023-24", "Regular Season"
-    return "2024-25", "Regular Season"
+    return "2025-26", "Regular Season"
 
 
 def _parse_teams(label: str) -> tuple[Optional[str], Optional[str]]:

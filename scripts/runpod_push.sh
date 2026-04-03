@@ -103,18 +103,18 @@ rsync -az --progress \
     "$ROOT_DIR/data/jersey_name_map.json" \
     "$DEST/data/" 2>/dev/null || true
 
-# ── 6. Run setup on pod if conda env doesn't exist yet ───────────────────────
+# ── 6. Run setup on pod if conda env doesn't exist or GPU isn't working ──────
 echo ""
-echo "[5/5] Checking if conda env exists on pod..."
-ENV_EXISTS=$(ssh $SSH_OPTS "${RUNPOD_USER}@${RUNPOD_IP}" \
-    "test -d /opt/conda/envs/basketball_ai && echo yes || echo no" 2>/dev/null || echo "no")
+echo "[5/5] Checking conda env + GPU on pod..."
+GPU_OK=$(ssh $SSH_OPTS "${RUNPOD_USER}@${RUNPOD_IP}" \
+    "/opt/conda/envs/basketball_ai/bin/python -c 'import torch; print(\"yes\" if torch.cuda.is_available() else \"no\")' 2>/dev/null" || echo "no")
 
-if [[ "$ENV_EXISTS" == "no" ]]; then
-    echo "  Env not found — running setup (takes ~5 min)..."
+if [[ "$GPU_OK" != "yes" ]]; then
+    echo "  GPU not working (CUDA mismatch?) — running setup..."
     ssh $SSH_OPTS "${RUNPOD_USER}@${RUNPOD_IP}" \
         "bash ${REMOTE_DIR}/scripts/runpod_setup.sh"
 else
-    echo "  Env already exists — skipping setup."
+    echo "  Env exists + GPU working — skipping setup."
 fi
 
 echo ""
@@ -124,6 +124,9 @@ echo "To start the batch run on the pod:"
 echo "  ssh $SSH_OPTS ${RUNPOD_USER}@${RUNPOD_IP}"
 echo "  cd $REMOTE_DIR && conda activate basketball_ai"
 echo "  nohup python scripts/batch_season.py --limit 20 > logs/batch.log 2>&1 &"
+echo ""
+echo "Multi-GPU:"
+echo "  bash scripts/runpod_4gpu.sh --limit 20"
 echo ""
 echo "Then on your local machine, pull data back as it runs:"
 echo "  bash scripts/runpod_pull.sh --watch"

@@ -1985,7 +1985,7 @@ def _compute_blowout_prob(
 def predict_props(
     player_name: str,
     opp_team: str,
-    season: str = "2024-25",
+    season: str = "2025-26",
     n_games: int = 10,
     ref_names: Optional[list] = None,
     game_id: Optional[str] = None,
@@ -2204,7 +2204,42 @@ _ALL_FEATS = [
     # PBP expanded
     "assist_rate_pbp", "paint_fg_rate_pbp", "fastbreak_pts_rate",
     "clutch_pm_pbp", "foul_drawn_rate_pbp2",
+    # B-3: CV fatigue features (populated from features.csv when available)
+    "fatigue_index_game_avg", "dist_traveled_game_total",
 ]
+
+
+# ── D-5: Asymmetric loss objective (infrastructure — not active yet) ──────────
+# This custom XGBoost objective penalises overconfident predictions more heavily
+# than underconfident ones (alpha > 1). In betting, false edges cost more than
+# missed edges. Wire as obj=_asymmetric_objective in any future retrain call.
+#
+# Usage:
+#   from src.prediction.player_props import _asymmetric_objective
+#   xgb.train(params, dtrain, obj=_asymmetric_objective)
+
+import numpy as _np  # local alias to avoid polluting namespace
+
+
+def _asymmetric_objective(y_true, y_pred, alpha: float = 1.3):
+    """
+    D-5: Asymmetric MSE objective for XGBoost.
+
+    Penalises under-predictions (missed overs) by factor alpha vs over-predictions.
+    alpha=1.3 means we care 30% more about false-over bets than false-under bets.
+
+    Args:
+        y_true:  Ground-truth values (numpy array).
+        y_pred:  Predicted values (numpy array).
+        alpha:   Asymmetry factor (>1 = penalise under-predictions more).
+
+    Returns:
+        (grad, hess) tuple for XGBoost custom objective.
+    """
+    residuals = y_true - y_pred
+    grad = _np.where(residuals >= 0, -2.0 * alpha * residuals, -2.0 * residuals)
+    hess = _np.where(residuals >= 0,  2.0 * alpha, 2.0) * _np.ones_like(grad)
+    return grad, hess
 
 # Stats modelled by XGBoost (each model excludes its own season_{stat} feature)
 _PROP_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
@@ -2647,7 +2682,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="NBA Player Prop Prediction")
     ap.add_argument("--player", type=str, help="Player full name")
     ap.add_argument("--opp",    type=str, help="Opponent abbreviation")
-    ap.add_argument("--season", default="2024-25")
+    ap.add_argument("--season", default="2025-26")
     ap.add_argument("--train",  action="store_true", help="Train prop models")
     args = ap.parse_args()
 

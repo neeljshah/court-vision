@@ -28,15 +28,24 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import csv
 import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+_file_lock = threading.Lock()  # guards phase_g_processed.txt + metrics CSV writes
+
+try:
+    import cv2 as _cv2
+except ImportError:
+    _cv2 = None  # cv2 unavailable — FPS detection will be skipped
 
 # Force UTF-8 output on Windows (cp1252 default chokes on Unicode video filenames)
 if hasattr(sys.stdout, "reconfigure"):
@@ -68,7 +77,7 @@ def _done_set() -> set[str]:
 
 
 def _mark_done(key: str):
-    with open(DONE_LOG, "a") as f:
+    with _file_lock, open(DONE_LOG, "a") as f:
         f.write(key + "\n")
 
 
@@ -83,22 +92,22 @@ def _quality_label(ball_valid_pct: float) -> str:
 
 def _save_metrics(game_key: str, game_id: Optional[str], metrics: dict):
     METRICS_LOG.parent.mkdir(parents=True, exist_ok=True)
-    # Fix 5: add quality column
-    quality = _quality_label(float(metrics.get("ball_valid_pct", 0)))
+    quality = metrics.pop("quality", None) or _quality_label(float(metrics.get("ball_valid_pct", 0)))
     fieldnames = ["timestamp", "game_key", "game_id", "frames", "stability",
                   "id_switches", "ball_valid_pct", "quality", "duration_s"]
-    exists = METRICS_LOG.exists()
-    with open(METRICS_LOG, "a", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        if not exists:
-            w.writeheader()
-        w.writerow({
-            "timestamp":     datetime.now().isoformat(timespec="seconds"),
-            "game_key":      game_key,
-            "game_id":       game_id or "",
-            "quality":       quality,
-            **metrics,
-        })
+    with _file_lock:
+        exists = METRICS_LOG.exists()
+        with open(METRICS_LOG, "a", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            if not exists:
+                w.writeheader()
+            w.writerow({
+                "timestamp":     datetime.now().isoformat(timespec="seconds"),
+                "game_key":      game_key,
+                "game_id":       game_id or "",
+                "quality":       quality,
+                **metrics,
+            })
     if quality == "low":
         print(f"  WARNING: {game_key} ball_valid={metrics.get('ball_valid_pct', 0):.1f}% "
               f"— LOW QUALITY, exclude from training")
@@ -108,7 +117,7 @@ def _log_to_vault(entries: list[str]):
     if not VAULT_LOG.exists():
         return
     header = f"\n## Phase G — {datetime.now().strftime('%Y-%m-%d')}\n"
-    with open(VAULT_LOG, "a", encoding="utf-8") as f:
+    with _file_lock, open(VAULT_LOG, "a", encoding="utf-8") as f:
         f.write(header)
         for line in entries:
             f.write(f"- {line}\n")
@@ -257,10 +266,34 @@ def _backfill_live_pct():
     print(f"Backfill complete — {updated} game(s) updated in {METRICS_LOG.name}")
 
 
+def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
+    """Scale target_frames so we always cover ~10 min regardless of video FPS.
+
+    target_frames is calibrated for 30fps (18000 = 10 min).  For 60fps clips,
+    we double the budget so both get the same real-time window of footage.
+    """
+    try:
+        if _cv2 is None:
+            return target_frames
+        cap = _cv2.VideoCapture(str(video))
+        fps = cap.get(_cv2.CAP_PROP_FPS) or 30.0
+        cap.release()
+        if fps > 45:   # 60fps clip
+            return int(target_frames * fps / 30.0)
+    except Exception:
+        pass
+    return target_frames
+
+
 def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
-              out_dir: Path) -> dict:
+              out_dir: Path, start_frame: int = 0, skip_tracking: bool = False) -> dict:
     """Run run_clip.py and capture metrics. Returns metrics dict."""
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Auto-scale frame budget for high-FPS (60fps) videos so we always cover
+    # the same real-time window regardless of video frame rate.
+    if frames is not None and not skip_tracking:
+        frames = _fps_adjusted_frames(video, frames)
 
     cmd = [
         sys.executable, str(PROJECT_DIR / "scripts" / "run_clip.py"),
@@ -268,23 +301,25 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         "--no-show",
         "--data-dir", str(out_dir),   # Fix 2: write directly to per-game dir
     ]
-    if frames:
+    if frames and not skip_tracking:
         cmd += ["--frames", str(frames)]
+    if start_frame:
+        cmd += ["--start-frame", str(start_frame)]
     if game_id:
-        cmd += ["--game-id", game_id, "--period", "1"]
+        cmd += ["--game-id", game_id]  # period auto-detected via ball_tracking.csv duration
+    if skip_tracking:
+        cmd += ["--skip-tracking"]
 
     t0 = time.time()
-    result = subprocess.run(
-        cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
-        cwd=str(PROJECT_DIR),
-    )
-    elapsed = time.time() - t0
 
-    # Parse metrics from stdout
-    metrics = {"duration_s": round(elapsed, 1), "frames": 0,
+    # Stream stdout live so the terminal shows progress instead of going silent
+    # for the full duration of the run.  Metrics are parsed from lines as they arrive.
+    metrics = {"duration_s": 0.0, "frames": 0,
                "stability": 0.0, "id_switches": 0, "ball_valid_pct": 0.0}
-    for line in (result.stdout or "").splitlines():
-        # "Frames : 58533  (1951s @ 30fps)" or "Frames processed: N"
+    stdout_lines: list[str] = []
+    stderr_lines: list[str] = []
+
+    def _parse_metric_line(line: str) -> None:
         if ("Frames processed" in line or
                 (line.strip().startswith("Frames") and ":" in line and "@" in line)):
             try:
@@ -308,12 +343,48 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             except (ValueError, IndexError):
                 pass
 
-    # Fix 2: run_clip.py now writes directly to out_dir (--data-dir flag above),
-    # so the shutil.copy2 loop is no longer needed and has been removed.
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        cwd=str(PROJECT_DIR),
+        bufsize=1,  # line-buffered
+    )
 
-    # Compute ball_valid_pct from ball_tracking.csv written directly to out_dir.
-    # When the `live` column exists, use detected.sum() / live.sum() (excludes replay/
-    # halftime frames from the denominator).  Falls back to detected.mean() for old CSVs.
+    # Drain stderr in a background thread so it never deadlocks the stdout read.
+    def _drain_stderr():
+        for line in proc.stderr:
+            stderr_lines.append(line)
+    _stderr_thread = threading.Thread(target=_drain_stderr, daemon=True)
+    _stderr_thread.start()
+
+    for raw_line in proc.stdout:
+        line = raw_line.rstrip("\n")
+        stdout_lines.append(line)
+        _parse_metric_line(line)
+        # Print live — suppress \r Frame lines to avoid terminal spam; show all others
+        if not line.startswith("\r") and line.strip():
+            print(f"    {line}", flush=True)
+        elif line.startswith("\r"):
+            # Show a condensed progress ticker
+            print(f"    {line.strip()}", end="\r", flush=True)
+
+    proc.wait()
+    _stderr_thread.join(timeout=5)
+    elapsed = time.time() - t0
+    metrics["duration_s"] = round(elapsed, 1)
+    returncode = proc.returncode
+
+    # Save run log
+    (out_dir / "run.log").write_text(
+        "\n".join(stdout_lines) + "\n--- STDERR ---\n" + "".join(stderr_lines),
+        encoding="utf-8",
+    )
+
+    # Compute ball_valid_pct from ball_tracking.csv if not parsed from stdout
     if metrics["ball_valid_pct"] == 0.0:
         ball_csv = out_dir / "ball_tracking.csv"
         if ball_csv.exists():
@@ -336,19 +407,22 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             except Exception:
                 pass
 
-    # Save run log
-    (out_dir / "run.log").write_text(
-        (result.stdout or "") + "\n--- STDERR ---\n" + (result.stderr or ""),
-        encoding="utf-8",
-    )
-
-    if result.returncode == 3:
+    if returncode == 3:
         print(f"  [WARN] run_clip.py exited 3 — Stage 1 produced 0 rows (no gameplay detected)")
         print("         Video may need manual review or different start frame.")
-    elif result.returncode not in (0, 2):  # 2 = short clip warning, still ok
-        print(f"  [WARN] run_clip.py exited {result.returncode}")
-        if result.stderr:
-            print(result.stderr[-500:])
+    elif returncode == 4:
+        print(f"  [PREFLIGHT FAIL] run_clip.py exited 4 — non-broadcast video detected")
+        print("         Median person count below threshold. Download a real broadcast clip.")
+        metrics["ball_valid_pct"] = 0.0
+        metrics["frames"] = 0
+        metrics["stability"] = 0.0
+        _save_metrics(game_key, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
+        _mark_done(game_key + "_PREFLIGHT_FAIL")
+    elif returncode not in (0, 2):  # 2 = short clip warning, still ok
+        print(f"  [WARN] run_clip.py exited {returncode}")
+        stderr_tail = "".join(stderr_lines)
+        if stderr_tail:
+            print(stderr_tail[-500:])
 
     return metrics
 
@@ -378,6 +452,16 @@ def main():
                     help="Recompute ball_valid_pct for all processed games using "
                          "live-frame denominator (detected/live rows) and update "
                          "phase_g_metrics.csv in place.")
+    ap.add_argument("--start-frame",  type=int, default=0,
+                    help="Frame index to seek to before processing (default 0). "
+                         "Use to skip pre-game content in full-game downloads.")
+    ap.add_argument("--parallel",     type=int, default=1,
+                    help="Number of games to process simultaneously (default 1). "
+                         "Use 2 on an RTX 4060 8GB — each pipeline uses ~3GB VRAM. "
+                         "Do NOT use >2 without checking VRAM headroom.")
+    ap.add_argument("--skip-tracking", action="store_true",
+                    help="Skip Stage 1 tracking (requires tracking_data.csv to exist). "
+                         "Use for games where tracking completed but post-processing crashed.")
     args = ap.parse_args()
 
     if args.download:
@@ -434,32 +518,40 @@ def main():
     vault_entries = []
     total_t0 = time.time()
 
-    for i, (key, video_path, game_id) in enumerate(videos, 1):
-        print(f"[{i}/{len(videos)}] {key}")
-        print(f"  video  : {video_path}")
-        print(f"  game_id: {game_id or '(no enrichment)'}")
-
+    def _process_one(args_tuple):
+        i, total, key, video_path, game_id = args_tuple
+        print(f"[{i}/{total}] {key}  video={video_path.name}  game_id={game_id or '(none)'}")
         out_dir = TRACKING_DIR / key
-        metrics = _run_clip(video_path, game_id, frames_per_game, out_dir)
-
-        # Only save metrics + mark done when output is complete.
-        # Incomplete runs (crash mid-pipeline) leave no metrics row — re-run
-        # with --resume to produce correct metrics after recovery.
+        # On reprocess, clear stale tracking_data.csv so we don't append new rows
+        # onto old data with potentially different column layouts.
+        if args.reprocess and not args.skip_tracking:
+            stale = out_dir / "tracking_data.csv"
+            if stale.exists():
+                stale.unlink()
+        metrics = _run_clip(video_path, game_id, frames_per_game, out_dir,
+                            start_frame=args.start_frame,
+                            skip_tracking=args.skip_tracking)
         if _is_complete(out_dir):
             _save_metrics(key, game_id, metrics)
             _mark_done(key)
         else:
-            print(f"  [WARN] Output incomplete for {key} — skipping metrics + done log. "
-                  f"Re-run with --resume to retry.")
+            print(f"  [WARN] {key} output incomplete — re-run with --resume to retry.")
+        print(f"  [{key}] frames={metrics['frames']}  stability={metrics['stability']:.3f}"
+              f"  id_sw={metrics['id_switches']}  ball={metrics['ball_valid_pct']:.1f}%"
+              f"  elapsed={metrics['duration_s']:.0f}s  → {out_dir}")
+        return key, metrics
 
-        print(f"  frames     : {metrics['frames']}")
-        print(f"  stability  : {metrics['stability']:.3f}")
-        print(f"  id_switches: {metrics['id_switches']}")
-        print(f"  ball_valid : {metrics['ball_valid_pct']:.1f}%")
-        print(f"  elapsed    : {metrics['duration_s']:.0f}s")
-        print(f"  output     : {out_dir}")
-        print()
+    work = [(i, len(videos), k, p, g) for i, (k, p, g) in enumerate(videos, 1)]
 
+    n_workers = max(1, args.parallel)
+    if n_workers == 1:
+        results_list = [_process_one(w) for w in work]
+    else:
+        print(f"  Running {n_workers} games in parallel (thread pool)")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=n_workers) as pool:
+            results_list = list(pool.map(_process_one, work))
+
+    for key, metrics in results_list:
         vault_entries.append(
             f"{key} — stability={metrics['stability']:.3f} "
             f"id_sw={metrics['id_switches']} "

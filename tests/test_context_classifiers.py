@@ -104,7 +104,8 @@ def test_parse_scoreboard_unparseable_fields():
                 "home_timeouts", "away_timeouts", "home_fouls", "away_fouls"):
         assert state[key] == -1, f"Expected -1 for '{key}', got {state[key]}"
     assert state["game_clock_sec"] == -1.0
-    assert state["score_diff"] == 0
+    # FIX 5: score_diff is None when scores are unknown (not 0 — that implies tied game)
+    assert state["score_diff"] is None
 
 
 def test_parse_scoreboard_empty_string_no_raise():
@@ -129,11 +130,11 @@ def test_scoreboard_score_diff_computed_on_ocr_frame(monkeypatch):
     assert result["score_diff"] == 8    # 105 - 97
 
 
-def test_scoreboard_score_diff_zero_when_scores_unknown():
-    """score_diff stays 0 when home_score or away_score is still -1."""
+def test_scoreboard_score_diff_none_when_scores_unknown():
+    """FIX 5: score_diff is None (not 0) when home_score or away_score is still -1."""
     ocr = scoreboard_ocr_mod.ScoreboardOCR(frame_width=640, frame_height=360)
     result = ocr.read(_blank_frame())   # first call, no OCR — all defaults
-    assert result["score_diff"] == 0
+    assert result["score_diff"] is None
 
 
 def test_parse_scoreboard_pipe_separated_espn_style():
