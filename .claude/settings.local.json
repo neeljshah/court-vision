@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls c:/Users/neelj/nba-ai-system/data/videos/*.mp4)"
-    ]
-  }
-}
