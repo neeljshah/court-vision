@@ -106,7 +106,7 @@ def _one_shot_ocr(frame: "np.ndarray") -> Dict:
         frame_height=frame.shape[0],
     )
     # Force the internal counter to trigger on the first call
-    _tmp._frame_counter = _OCR_INTERVAL - 1
+    _tmp._frame_counter = _tmp._ocr_interval - 1
     return _tmp._ocr_frame(frame)
 
 log = logging.getLogger(__name__)
@@ -125,7 +125,10 @@ _DEFAULT_STATE: Dict = {
     "away_timeouts":  -1,
     "home_fouls":     -1,
     "away_fouls":     -1,
-    "score_diff":      0,
+    # FIX 5: None instead of 0 so downstream code can distinguish "unknown"
+    # from a genuine tied game.  score_diff=0 was misleading — the game is
+    # almost never tied on every single frame.
+    "score_diff":     None,
 }
 
 _reader_sb: Optional[object] = None    # module-level OCR singleton
@@ -138,7 +141,9 @@ def _get_reader() -> object:
     if _reader_sb is not None:
         return _reader_sb
 
-    # PaddleOCR — faster on GPU
+    # PaddleOCR — run on CPU to save ~1.5GB VRAM for tracking models.
+    # Scoreboard OCR is lightweight (top 6% of frame, every ~30 frames)
+    # and CPU is fast enough.
     try:
         import os as _os
         _os.environ.setdefault("PADDLE_PDX_DISABLE_MODEL_SOURCE_CHECK", "True")
@@ -146,20 +151,20 @@ def _get_reader() -> object:
         _reader_sb = PaddleOCR(
             use_angle_cls=False,
             lang="en",
-            use_gpu=True,
+            use_gpu=False,
             show_log=False,
             rec_char_dict_path=None,
         )
         _sb_use_paddle = True
-        log.debug("scoreboard_ocr: using PaddleOCR (GPU)")
+        log.debug("scoreboard_ocr: using PaddleOCR (CPU — saves VRAM)")
         return _reader_sb
     except Exception as e:
         log.debug("scoreboard_ocr: PaddleOCR unavailable (%s) — falling back to EasyOCR", e)
 
-    # EasyOCR fallback
+    # EasyOCR fallback — also CPU to save VRAM
     try:
         import easyocr  # type: ignore
-        _reader_sb = easyocr.Reader(["en"], gpu=True, verbose=False)
+        _reader_sb = easyocr.Reader(["en"], gpu=False, verbose=False)
     except Exception:
         import easyocr  # type: ignore
         _reader_sb = easyocr.Reader(["en"], gpu=False, verbose=False)
@@ -184,11 +189,16 @@ class ScoreboardOCR:
         self.fw = frame_width
         self.fh = frame_height
         self._frame_counter = 0
+        self._ocr_interval = _OCR_INTERVAL
         self._last_state: Dict = dict(_DEFAULT_STATE)
         # current_scan_result: None when no OCR ran this call (cached return),
         # True when OCR ran and found a shot clock, False when OCR ran but didn't.
         # Callers poll this after read() to drive non-live detection.
         self._current_scan_result: Optional[bool] = None
+
+    def configure(self, fps: float, stride: int = 1) -> None:
+        """Set OCR cadence based on video fps and processing stride."""
+        self._ocr_interval = max(15, int(fps / stride))
 
     @property
     def current_scan_result(self) -> Optional[bool]:
@@ -217,7 +227,7 @@ class ScoreboardOCR:
             Dict with all scoreboard keys. Unknown fields are -1.
         """
         self._frame_counter += 1
-        if self._frame_counter % _OCR_INTERVAL != 0:
+        if self._frame_counter % self._ocr_interval != 0:
             self._current_scan_result = None   # no OCR ran this call
             return dict(self._last_state)
 
@@ -233,7 +243,8 @@ class ScoreboardOCR:
         # Recompute score_diff from best known scores
         hs = self._last_state["home_score"]
         as_ = self._last_state["away_score"]
-        self._last_state["score_diff"] = (hs - as_) if (hs >= 0 and as_ >= 0) else 0
+        # FIX 5: use None when scores are unknown (not 0 — that implies a tied game)
+        self._last_state["score_diff"] = (hs - as_) if (hs >= 0 and as_ >= 0) else None
 
         return dict(self._last_state)
 
@@ -338,11 +349,13 @@ def _parse_scoreboard_text(text: str) -> Dict:
                     return _a, _b
         return None, None
 
-    _score_cands_30 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 30 <= int(m) <= 175]
+    # Cap at 120: max realistic NBA score. Prevents shot clock (1-24) and game
+    # clock digits from being mistaken for team scores.
+    _score_cands_30 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 30 <= int(m) <= 120]
     _hs, _as = _find_score_pair(_score_cands_30)
     if _hs is None:
-        # Fallback: early game — allow ≥ 10, require diff ≤ 40 to exclude shot clocks
-        _score_cands_10 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 10 <= int(m) <= 175]
+        # Fallback: early game — allow ≥ 10, still cap at 120
+        _score_cands_10 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 10 <= int(m) <= 120]
         _hs, _as = _find_score_pair(_score_cands_10)
     if _hs is not None:
         state["home_score"] = _hs

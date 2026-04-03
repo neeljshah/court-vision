@@ -1,11 +1,15 @@
 """
 retrain_props_v2.py — Retrain all 7 prop models on real per-game rolling features.
 
-Data source  : data/nba/gamelog_full_{pid}_2024-25.json  (569 files)
+Data source  : data/nba/gamelog_full_{pid}_{season}.json for 2022-23, 2023-24, 2024-25
+               Plus 2025-26 files when present (used for test/holdout only).
 Features     : same _build_row() / _load_gamelogs() as prop_holdout.py
-Train        : games < 2025-01-01
-Test         : 2025-01-01 – 2025-02-01
-Validate     : 2025-02-01+
+Train        : games < 2025-10-01  (all 3 completed seasons: 2022-23, 2023-24, 2024-25)
+Test         : 2025-10-01 – 2026-01-01  (early 2025-26 games)
+Validate     : 2026-01-01+  (2025-26 mid-season holdout)
+
+Season resets: rolling averages reset at each season boundary so 2023-24 stats
+               don't bleed into the first game of 2024-25.
 
 Output
   data/models/props_{stat}_v2.json   — new model (always saved)
@@ -42,9 +46,12 @@ _FEATS_JSON = os.path.join(PROJECT_DIR, "scripts", "validate", "_all_feats.json"
 _REG_PATH   = os.path.join(_MODEL_DIR, "model_registry.json")
 
 # ── Config ─────────────────────────────────────────────────────────────────────
-_PROP_STATS  = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
-_TRAIN_CUTOFF = datetime(2025, 1, 1)
-_TEST_CUTOFF  = datetime(2025, 2, 1)
+_PROP_STATS   = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
+# All games before 2025-10-01 are training (2022-23, 2023-24, 2024-25 completed seasons).
+# Early 2025-26 games (Oct 2025 – Jan 2026) form the test set.
+# 2026-01-01+ is the holdout / validation set.
+_TRAIN_CUTOFF = datetime(2025, 10, 1)
+_TEST_CUTOFF  = datetime(2026, 1, 1)
 _BAYES_K     = 15
 _ROLL_N      = 10
 _MIN_PRIOR   = 3   # minimum prior games needed to build a feature row
@@ -94,14 +101,15 @@ def _parse_date(s: str) -> Optional[datetime]:
 
 def _load_gamelogs() -> Dict[int, List[dict]]:
     by_player: Dict[int, List[dict]] = defaultdict(list)
-    pattern = os.path.join(_NBA_CACHE, "gamelog_full_*_2024-25.json")
-    files = glob.glob(pattern)
+    # Load gamelogs for all available seasons — pick up 2025-26 files if present
+    files = glob.glob(os.path.join(_NBA_CACHE, "gamelog_full_*_????-??.json"))
     print(f"[retrain] Found {len(files)} gamelog files")
     for fpath in files:
-        m = re.search(r"gamelog_full_(\d+)_2024-25\.json", os.path.basename(fpath))
+        m = re.search(r"gamelog_full_(\d+)_(\d{4}-\d{2})\.json", os.path.basename(fpath))
         if not m:
             continue
-        pid = int(m.group(1))
+        pid    = int(m.group(1))
+        season = m.group(2)
         try:
             rows = json.load(open(fpath))
         except Exception:
@@ -110,7 +118,8 @@ def _load_gamelogs() -> Dict[int, List[dict]]:
             d = _parse_date(str(r.get("game_date", "")))
             if d is None:
                 continue
-            by_player[pid].append({**r, "_dt": d})
+            # Tag each row with its season so rolling averages can reset at season boundaries
+            by_player[pid].append({**r, "_dt": d, "_season": season})
     for pid in by_player:
         by_player[pid].sort(key=lambda r: r["_dt"])
     return by_player
@@ -209,7 +218,12 @@ def _build_dataset(
         if idx % 100 == 0:
             print(f"  [build] {idx}/{n_players} players ...", flush=True)
         for i, game in enumerate(games):
-            prior = games[:i]
+            # Only use prior games from the same season as rolling context.
+            # This prevents a player's 2023-24 rolling average from bleeding into
+            # the first game of 2024-25 (which would have no same-season prior).
+            cur_season = game.get("_season", "")
+            prior_same_season = [g for g in games[:i] if g.get("_season") == cur_season]
+            prior = prior_same_season
             if len(prior) < _MIN_PRIOR:
                 continue
             dt = game["_dt"]
@@ -311,7 +325,9 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
         val_r2 = val_m["r2"] if val_m["r2"] is not None else -999.0
         if val_r2 > (old_r2 or -999.0):
             prod_path = os.path.join(_MODEL_DIR, f"props_{stat}.json")
-            model.save_model(prod_path)
+            tmp_path  = prod_path + ".tmp"
+            model.save_model(tmp_path)
+            os.replace(tmp_path, prod_path)
             print(f"  promoted → {prod_path}  (val R² {val_r2:.4f} > old {old_r2})")
 
         results[stat] = {
@@ -359,7 +375,7 @@ def _update_registry(results: Dict[str, dict]) -> None:
             "holdout_n":    val["n"],
             "needs_retrain": (val["r2"] is None) or (val["r2"] < 0.70),
             "retrained_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "retrain_version": "v2_real_gamelogs",
+            "retrain_version": "v2_multiseasson_2022-23_to_2024-25",
         })
 
     with open(_REG_PATH, "w") as f:

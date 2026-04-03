@@ -73,6 +73,8 @@ def _american_to_payout(odds: int) -> float:
     """Return net payout per $1 wagered."""
     if odds > 0:
         return odds / 100.0
+    if odds == 0:
+        return 0.0
     return 100.0 / abs(odds)
 
 

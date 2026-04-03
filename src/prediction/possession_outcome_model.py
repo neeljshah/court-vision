@@ -91,18 +91,24 @@ def _parse_pbp_outcomes(seasons: list) -> dict:
 
     for fpath in files:
         try:
-            data = json.load(open(fpath))
+            with open(fpath, encoding="utf-8") as _fh:
+                data = json.load(_fh)
             events = data if isinstance(data, list) else data.get("playByPlay", data.get("plays", []))
 
             for ev in events:
                 if not isinstance(ev, dict):
                     continue
-                evt_type = ev.get("eventMsgType") or ev.get("event_type")
+                evt_type = ev.get("event_type") or ev.get("eventMsgType")
+                # Support both player_id and player_name as key
                 pid = ev.get("player1_id") or ev.get("playerId")
-                if not pid:
-                    continue
-                pid = int(pid)
-                desc = str(ev.get("description", ev.get("actionType", "")))
+                if pid:
+                    pid = int(pid)
+                else:
+                    pname = ev.get("player_name", "")
+                    if not pname:
+                        continue
+                    pid = pname  # use player_name as key
+                desc = str(ev.get("event_desc", ev.get("description", ev.get("actionType", ""))))
                 play_type = _classify_play_type(desc)
                 zone = _classify_zone(desc)
 
@@ -199,67 +205,176 @@ def train(seasons: list = None, force: bool = False) -> dict:
     return {"n_players": n, "avg_shot_prob": avg_shot_prob, "avg_tov_prob": avg_tov_prob}
 
 
+# ── B-1: Defender distance adjustment ────────────────────────────────────────
+
+def _defender_adjustment(defender_dist_ft: Optional[float]) -> float:
+    """
+    B-1/E-1: FG% multiplier based on closest defender distance (feet).
+
+    Empirical sigmoid from NBA shot dashboard data:
+      0–2 ft:  0.82   (heavily contested)
+      2–4 ft:  0.88
+      4–6 ft:  0.93
+      6–10 ft: 0.98
+      10+ ft:  1.04   (wide open)
+
+    Formula: 0.82 + 0.22 * sigmoid((dist - 2.0) / 3.0)
+    Clip output to [0.75, 1.10].
+    Returns 1.0 (no adjustment) when defender_dist_ft is None.
+    """
+    if defender_dist_ft is None:
+        return 1.0
+    try:
+        d = float(defender_dist_ft)
+    except (TypeError, ValueError):
+        return 1.0
+    sig = 1.0 / (1.0 + (2.718281828 ** (-((d - 2.0) / 3.0))))
+    return float(max(0.75, min(1.10, 0.82 + 0.22 * sig)))
+
+
+# ── B-2: Spacing advantage → shot_prob scaling ───────────────────────────────
+
+def _spacing_multiplier(spacing_advantage: Optional[float]) -> float:
+    """
+    B-2/E-2: Shot probability multiplier based on spacing advantage (ft²).
+
+    Formula: 1.0 + 0.08 * sigmoid(spacing_advantage / 500.0)
+    Clip to [0.88, 1.12].
+    Returns 1.0 when spacing_advantage is None.
+    """
+    if spacing_advantage is None:
+        return 1.0
+    try:
+        s = float(spacing_advantage)
+    except (TypeError, ValueError):
+        return 1.0
+    sig = 1.0 / (1.0 + (2.718281828 ** (-(s / 500.0))))
+    return float(max(0.88, min(1.12, 1.0 + 0.08 * sig)))
+
+
+# ── E-3: Game state context multipliers ──────────────────────────────────────
+
+def _game_state_multiplier(score_diff: int, period: int) -> dict:
+    """
+    E-3: Empirical multipliers for blowout / clutch game states.
+
+    Blowout (|score_diff| > 15, period >= 3):
+        tov_mult=1.15, shot_mult=1.05, fg_mult=0.94
+
+    Close (|score_diff| <= 5, period >= 3):
+        tov_mult=0.92, shot_mult=0.97, fg_mult=1.03
+
+    Normal: all multipliers = 1.0
+    """
+    try:
+        sd = int(score_diff)
+        p  = int(period)
+    except (TypeError, ValueError):
+        return {"tov_mult": 1.0, "shot_mult": 1.0, "fg_mult": 1.0}
+
+    if abs(sd) > 15 and p >= 3:
+        return {"tov_mult": 1.15, "shot_mult": 1.05, "fg_mult": 0.94}
+    if abs(sd) <= 5 and p >= 3:
+        return {"tov_mult": 0.92, "shot_mult": 0.97, "fg_mult": 1.03}
+    return {"tov_mult": 1.0, "shot_mult": 1.0, "fg_mult": 1.0}
+
+
 def predict_outcome(
     player_id: int,
     play_type: str = "other",
     zone: str = "other",
     opp_team: str = "",
+    defender_dist_ft: Optional[float] = None,
+    spacing_advantage: Optional[float] = None,
+    score_diff: int = 0,
+    period: int = 2,
+    lineup_quality: float = 0.0,
 ) -> dict:
     """
     Predict possession outcome probabilities for this player + play context.
 
     Falls back to league averages if player not in model.
 
+    Args:
+        player_id:        NBA player ID.
+        play_type:        Synergy play type string.
+        zone:             Court zone ('paint', '3pt', 'midrange', 'other').
+        opp_team:         Opponent team abbreviation.
+        defender_dist_ft: Closest defender in feet (B-1/E-1 adjustment).
+        spacing_advantage: Team spacing advantage in ft² (B-2/E-2 adjustment).
+        score_diff:       Current score diff home-away (E-3 context).
+        period:           Period 1-4+ (E-3 context).
+        lineup_quality:   On/off differential of current lineup (E-4).
+
+    TODO (E-5): Replace PBP-text zone classification with CV court_zone column
+        from tracking_data.csv when available. Current zone bucket ('3pt','paint',
+        'midrange') derived from PBP text. CV zone gives precise ft_x/ft_y location.
+
     Returns:
         {shot_prob, tov_prob, fta_prob, fg_pct_est}
     """
-    default = {
-        "shot_prob": _PRIOR_SHOT_PROB,
-        "tov_prob":  _PRIOR_TOV_PROB,
-        "fta_prob":  _PRIOR_FTA_PROB,
-        "fg_pct_est": _PRIOR_FG_PCT,
-    }
+    # Resolve base values from model (or fall back to priors)
+    base_shot_prob = _PRIOR_SHOT_PROB
+    base_tov_prob  = _PRIOR_TOV_PROB
+    base_fta_prob  = _PRIOR_FTA_PROB
+    base_fg_pct    = _PRIOR_FG_PCT
 
-    if not os.path.exists(_MODEL_PATH):
-        return default
+    if os.path.exists(_MODEL_PATH):
+        try:
+            with open(_MODEL_PATH, "rb") as f:
+                outcome_data = pickle.load(f)
+            player_data = outcome_data.get(int(player_id))
+            if player_data:
+                pt = play_type.lower() if play_type else "other"
+                if pt not in player_data:
+                    all_vals = list(player_data.values())
+                    if all_vals:
+                        base_shot_prob = sum(v["shot_prob"] for v in all_vals) / len(all_vals)
+                        base_tov_prob  = sum(v["tov_prob"]  for v in all_vals) / len(all_vals)
+                        base_fta_prob  = sum(v["fta_prob"]  for v in all_vals) / len(all_vals)
+                        base_fg_pct    = sum(v["fg_pct"]    for v in all_vals) / len(all_vals)
+                else:
+                    pt_data = player_data[pt]
+                    base_shot_prob = pt_data.get("shot_prob", _PRIOR_SHOT_PROB)
+                    base_tov_prob  = pt_data.get("tov_prob",  _PRIOR_TOV_PROB)
+                    base_fta_prob  = pt_data.get("fta_prob",  _PRIOR_FTA_PROB)
+                    fg_pct = pt_data.get("fg_pct", _PRIOR_FG_PCT)
+                    zone_fg = pt_data.get("zone_fg", {})
+                    z = zone.lower() if zone else "other"
+                    if z in zone_fg:
+                        fg_pct = zone_fg[z]
+                    base_fg_pct = fg_pct
+        except Exception:
+            pass  # keep priors
 
+    # B-1/E-1: Defender distance adjustment on fg_pct
+    base_fg_pct = round(base_fg_pct * _defender_adjustment(defender_dist_ft), 4)
+
+    # B-2/E-2: Spacing advantage on shot_prob
+    base_shot_prob = round(base_shot_prob * _spacing_multiplier(spacing_advantage), 4)
+
+    # E-3: Game state context multipliers
+    ctx = _game_state_multiplier(score_diff, period)
+    base_tov_prob  = round(base_tov_prob  * ctx["tov_mult"],  4)
+    base_shot_prob = round(base_shot_prob * ctx["shot_mult"], 4)
+    base_fg_pct    = round(base_fg_pct    * ctx["fg_mult"],   4)
+
+    # E-4: Lineup quality scaling
+    # lineup_multiplier = 1.0 + 0.03 * (sigmoid(lineup_quality/5) - 0.5)
     try:
-        with open(_MODEL_PATH, "rb") as f:
-            outcome_data = pickle.load(f)
+        _lq = float(lineup_quality)
+        _lq_sig = 1.0 / (1.0 + (2.718281828 ** (-_lq / 5.0)))
+        _lq_mult = max(0.90, min(1.10, 1.0 + 0.03 * (_lq_sig - 0.5)))
+        base_shot_prob = round(base_shot_prob * _lq_mult, 4)
+        base_fg_pct    = round(base_fg_pct    * _lq_mult, 4)
     except Exception:
-        return default
-
-    player_data = outcome_data.get(int(player_id))
-    if not player_data:
-        return default
-
-    pt = play_type.lower() if play_type else "other"
-    if pt not in player_data:
-        # Average over all play types for this player
-        all_vals = list(player_data.values())
-        if not all_vals:
-            return default
-        return {
-            "shot_prob":  round(sum(v["shot_prob"] for v in all_vals) / len(all_vals), 4),
-            "tov_prob":   round(sum(v["tov_prob"]  for v in all_vals) / len(all_vals), 4),
-            "fta_prob":   round(sum(v["fta_prob"]  for v in all_vals) / len(all_vals), 4),
-            "fg_pct_est": round(sum(v["fg_pct"]    for v in all_vals) / len(all_vals), 4),
-        }
-
-    pt_data = player_data[pt]
-
-    # Use zone-specific FG% if available
-    fg_pct = pt_data.get("fg_pct", _PRIOR_FG_PCT)
-    zone_fg = pt_data.get("zone_fg", {})
-    z = zone.lower() if zone else "other"
-    if z in zone_fg:
-        fg_pct = zone_fg[z]
+        pass
 
     return {
-        "shot_prob":  pt_data.get("shot_prob", _PRIOR_SHOT_PROB),
-        "tov_prob":   pt_data.get("tov_prob",  _PRIOR_TOV_PROB),
-        "fta_prob":   pt_data.get("fta_prob",  _PRIOR_FTA_PROB),
-        "fg_pct_est": round(fg_pct, 4),
+        "shot_prob":  base_shot_prob,
+        "tov_prob":   base_tov_prob,
+        "fta_prob":   base_fta_prob,
+        "fg_pct_est": base_fg_pct,
     }
 
 

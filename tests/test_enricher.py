@@ -206,7 +206,7 @@ class TestInferPeriodCount:
         assert max_ts == 0.0
 
     def test_no_detections_returns_single(self, tmp_path):
-        """All detected=0 → default [1]."""
+        """All detected=0 → [1] period, max_ts from all-row fallback (Session 26 fix)."""
         p = tmp_path / "ball_tracking.csv"
         with open(p, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=["frame", "timestamp", "detected"])
@@ -214,7 +214,8 @@ class TestInferPeriodCount:
             w.writerow({"frame": 1000, "timestamp": 33.3, "detected": 0})
         periods, max_ts = _infer_period_count(str(tmp_path))
         assert periods == [1]
-        assert max_ts == 0.0
+        # No detected=1 rows → falls back to all-row max timestamp (33.3)
+        assert max_ts == 33.3
 
 
 # ── _infer_fps ────────────────────────────────────────────────────────────────
