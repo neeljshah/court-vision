@@ -1,3 +1,13 @@
+---
+version: 1
+priority: P3
+status: active
+phase: "G"
+tags: [prompt]
+created: 2026-04-03
+updated: 2026-04-03
+---
+
 # Prompt: Wire 23 Trained Models + 3 Data Sources Into player_props.py
 
 ## Context

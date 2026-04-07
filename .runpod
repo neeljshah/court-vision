@@ -2,8 +2,8 @@
 # Usage: source .runpod
 
 # From RunPod UI → My Pods → Connect → SSH
-RUNPOD_IP="103.196.86.53"
-RUNPOD_PORT="17194"
+RUNPOD_IP="160.250.71.206"
+RUNPOD_PORT="55779"
 RUNPOD_USER="root"
 
 # Optional: path to your SSH key (leave blank to use ssh-agent / default key)

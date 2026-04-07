@@ -52,11 +52,25 @@ echo "==> Launching $NUM_GPUS workers on GPUs 0-$((NUM_GPUS-1))"
 echo "    Extra args: ${EXTRA_ARGS:-none}"
 echo ""
 
+# ── GPU optimization env vars ───────────────────────────────────────────────
+# cuDNN autotuner: benchmark convolution algorithms on first run, cache fastest
+export TORCH_CUDNN_V8_API_ENABLED=1
+# Disable TF32 for reproducibility (marginal speed loss, better precision)
+export NVIDIA_TF32_OVERRIDE=1
+# OpenCV: disable CPU threading (all heavy work is GPU; CPU threads just contend)
+export OMP_NUM_THREADS=2
+export OPENBLAS_NUM_THREADS=2
+export MKL_NUM_THREADS=2
+# Python hash randomization off for reproducible worker assignment
+export PYTHONHASHSEED=0
+
 PIDS=()
 for GPU_ID in $(seq 0 $((NUM_GPUS-1))); do
     LOG="$LOG_DIR/worker_${GPU_ID}.log"
     echo "  GPU $GPU_ID → $LOG"
-    CUDA_VISIBLE_DEVICES=$GPU_ID $PYTHON scripts/batch_season.py \
+    CUDA_VISIBLE_DEVICES=$GPU_ID \
+    OMP_NUM_THREADS=2 \
+    $PYTHON scripts/batch_season.py \
         --gpu $GPU_ID \
         --worker-id $GPU_ID \
         --num-workers $NUM_GPUS \

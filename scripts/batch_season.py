@@ -202,6 +202,12 @@ def _run_pipeline(game_id: str, video_path: Path, frames: int, gpu: int = 0) -> 
         cmd += ["--full"]
     env = os.environ.copy()
     env["CUDA_VISIBLE_DEVICES"] = str(gpu)
+    # GPU optimization: reduce CPU thread contention, let GPU do the work
+    env["OMP_NUM_THREADS"] = "2"
+    env["OPENBLAS_NUM_THREADS"] = "2"
+    env["MKL_NUM_THREADS"] = "2"
+    # cuDNN autotuner: benchmark conv algorithms, cache fastest
+    env["TORCH_CUDNN_V8_API_ENABLED"] = "1"
     print(f"  Running pipeline (GPU {gpu}): {' '.join(cmd)}")
     try:
         # Full games can take 3-4 hours on GPU
@@ -243,6 +249,8 @@ def main() -> None:
                         help="Max games to process this run")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show plan without downloading or processing")
+    parser.add_argument("--retry-failed", action="store_true",
+                        help="Re-attempt games that previously failed (pipeline_failed or download_failed)")
     parser.add_argument("--gpu", type=int, default=0,
                         help="CUDA device index for this worker (default: 0)")
     parser.add_argument("--worker-id", type=int, default=0,
@@ -256,6 +264,25 @@ def main() -> None:
     targets = _load_targets()
     if not targets:
         return
+
+    # --retry-failed: re-queue games that previously failed
+    if args.retry_failed and LOG_PATH.exists():
+        _failed_ids = set()
+        try:
+            with open(LOG_PATH, encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get("status") in ("pipeline_failed", "download_failed"):
+                        _failed_ids.add(row.get("game_id", ""))
+            # Remove failed IDs from the "already done" check by filtering them
+            # to the front of the targets list
+            _failed_targets = [t for t in targets if t["game_id"] in _failed_ids]
+            _other_targets = [t for t in targets if t["game_id"] not in _failed_ids]
+            targets = _failed_targets + _other_targets
+            if _failed_targets:
+                print(f"  Retrying {len(_failed_targets)} previously failed games first")
+        except Exception as e:
+            print(f"  Warning: could not parse log for retry: {e}")
 
     # Multi-GPU: each worker takes every Nth game starting at offset worker-id
     if args.num_workers > 1:
@@ -386,9 +413,16 @@ def main() -> None:
                     pass
 
         _append_log(log_row)
-        # Free memory between games
+        # Free GPU + CPU memory between games to prevent VRAM fragmentation
         gc.collect()
-        time.sleep(5.0)  # pause between games for memory to settle
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.reset_peak_memory_stats()
+        except ImportError:
+            pass
+        time.sleep(2.0)  # brief pause for memory to settle (reduced 5→2s for throughput)
 
     print(f"\n=== Done. Processed: {processed}  Skipped: {skipped} ===")
     print(f"Log: {LOG_PATH}")

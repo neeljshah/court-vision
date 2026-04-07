@@ -30,8 +30,9 @@ RESOURCES = os.path.join(ROOT, "resources")
 os.makedirs(RESOURCES, exist_ok=True)
 
 # Ensure TensorRT DLLs are findable (Windows: bin/ dir must be on PATH)
+# On RunPod/Linux, TRT is on LD_LIBRARY_PATH already.
 _TRT_BIN = r"C:\Windows\System32\TensorRT-10.16.0.72\bin"
-if os.path.isdir(_TRT_BIN) and _TRT_BIN not in os.environ.get("PATH", ""):
+if sys.platform == "win32" and os.path.isdir(_TRT_BIN) and _TRT_BIN not in os.environ.get("PATH", ""):
     os.environ["PATH"] = _TRT_BIN + os.pathsep + os.environ.get("PATH", "")
 
 
@@ -156,8 +157,20 @@ def export_osnet_trt() -> str | None:
                 return None
 
         config = builder.create_builder_config()
-        config.set_memory_pool_limit(trt.MemoryPoolType.WORKSPACE, 1 << 30)  # 1 GB
-        if builder.platform_has_fast_fp16:
+        # L40S (48GB): use 4 GB workspace for larger optimization search space
+        config.set_memory_pool_limit(trt.MemoryPoolType.WORKSPACE, 1 << 32)  # 4 GB
+
+        # Precision: FP8 > FP16 (Ada Lovelace / L40S has native FP8 Transformer Engine)
+        _used_fp8 = False
+        if hasattr(trt.BuilderFlag, "FP8") and builder.platform_has_fast_fp16:
+            try:
+                config.set_flag(trt.BuilderFlag.FP8)
+                config.set_flag(trt.BuilderFlag.FP16)  # FP8 requires FP16 fallback layers
+                _used_fp8 = True
+                print("  FP8 mode enabled (L40S/Ada native)")
+            except Exception:
+                pass
+        if not _used_fp8 and builder.platform_has_fast_fp16:
             config.set_flag(trt.BuilderFlag.FP16)
             print("  FP16 mode enabled")
 
