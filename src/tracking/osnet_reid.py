@@ -259,13 +259,19 @@ class _TRTOSNet:
     Input:  (N, 3, 256, 128) float32 numpy array (ImageNet normalised).
     Output: (N, 256) float32 numpy array (L2-normalised embeddings).
 
+    L40S optimization: pre-allocates pinned host buffers and device memory
+    for max batch size (16 players) at init time.  Eliminates per-batch
+    cuda.mem_alloc/free which caused VRAM fragmentation and OOM on long runs.
+    A persistent CUDA stream avoids stream creation overhead per call.
+
     Falls back silently if TRT is not installed or engine file is missing.
     """
+
+    _MAX_BATCH = 16  # max players per frame (10 players + 1 ref + margin)
 
     def __init__(self, engine_path: str) -> None:
         self.available = False
         self._context  = None
-        self._bindings = None
         self._stream   = None
 
         if not os.path.exists(engine_path):
@@ -286,18 +292,25 @@ class _TRTOSNet:
             self._engine  = engine
             self._cuda    = cuda
 
-            # Allocate host/device buffers once
-            import numpy as _np  # keep local to avoid polluting module namespace
-            self._np      = _np
+            # Pre-allocate pinned host + device buffers for max batch (eliminates per-call malloc)
+            _inp_bytes = self._MAX_BATCH * 3 * _IN_H * _IN_W * 4  # float32
+            _out_bytes = self._MAX_BATCH * _EMBED_DIM * 4
+
+            self._h_input  = cuda.pagelocked_zeros((self._MAX_BATCH, 3, _IN_H, _IN_W), dtype=np.float32)
+            self._h_output = cuda.pagelocked_zeros((self._MAX_BATCH, _EMBED_DIM), dtype=np.float32)
+            self._d_input  = cuda.mem_alloc(_inp_bytes)
+            self._d_output = cuda.mem_alloc(_out_bytes)
+            self._stream   = cuda.Stream()
+
             self.available = True
-            _log.debug("OSNet TRT engine loaded from %s", engine_path)
+            _log.debug("OSNet TRT engine loaded from %s (pre-alloc %d batch)", engine_path, self._MAX_BATCH)
 
         except Exception as e:
             _log.debug("OSNet TRT load failed (%s) — using PyTorch fallback", e)
 
     def infer(self, input_np: "np.ndarray") -> "np.ndarray":
         """
-        Run OSNet TRT inference.
+        Run OSNet TRT inference using pre-allocated buffers.
 
         Args:
             input_np: float32 array (N, 3, 256, 128), ImageNet normalised.
@@ -305,34 +318,42 @@ class _TRTOSNet:
         Returns:
             float32 array (N, 256) L2-normalised embeddings.
         """
-        import pycuda.driver as cuda  # type: ignore
-        import numpy as _np
-
         n = input_np.shape[0]
-        inp = _np.ascontiguousarray(input_np, dtype=_np.float32)
-        out = _np.zeros((n, _EMBED_DIM), dtype=_np.float32)
+        if n == 0:
+            return np.zeros((0, _EMBED_DIM), dtype=np.float32)
 
-        # Set dynamic batch size
-        self._context.set_binding_shape(0, (n, 3, _IN_H, _IN_W))
+        cuda = self._cuda
 
-        d_input  = cuda.mem_alloc(inp.nbytes)
-        d_output = cuda.mem_alloc(out.nbytes)
-        stream   = cuda.Stream()
+        # Copy into pre-allocated pinned host buffer (zero-copy to GPU)
+        # Process in chunks of _MAX_BATCH if needed (unlikely: usually ≤11 players)
+        all_out = []
+        for chunk_start in range(0, n, self._MAX_BATCH):
+            chunk_end = min(chunk_start + self._MAX_BATCH, n)
+            chunk_n = chunk_end - chunk_start
+            chunk_in = input_np[chunk_start:chunk_end]
 
-        cuda.memcpy_htod_async(d_input, inp, stream)
-        self._context.execute_async_v2(
-            bindings=[int(d_input), int(d_output)],
-            stream_handle=stream.handle,
-        )
-        cuda.memcpy_dtoh_async(out, d_output, stream)
-        stream.synchronize()
+            # Copy to pinned buffer
+            self._h_input[:chunk_n] = np.ascontiguousarray(chunk_in, dtype=np.float32)
 
-        d_input.free()
-        d_output.free()
+            # Set dynamic batch size
+            self._context.set_binding_shape(0, (chunk_n, 3, _IN_H, _IN_W))
 
-        # L2 normalise (engine outputs un-normalised when weights are random)
-        norms = _np.linalg.norm(out, axis=1, keepdims=True)
-        norms = _np.maximum(norms, 1e-8)
+            # Async H2D → execute → D2H on persistent stream
+            cuda.memcpy_htod_async(self._d_input, self._h_input[:chunk_n], self._stream)
+            self._context.execute_async_v2(
+                bindings=[int(self._d_input), int(self._d_output)],
+                stream_handle=self._stream.handle,
+            )
+            cuda.memcpy_dtoh_async(self._h_output[:chunk_n], self._d_output, self._stream)
+            self._stream.synchronize()
+
+            all_out.append(self._h_output[:chunk_n].copy())
+
+        out = np.concatenate(all_out, axis=0) if len(all_out) > 1 else all_out[0]
+
+        # L2 normalise
+        norms = np.linalg.norm(out, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-8)
         return out / norms
 
 

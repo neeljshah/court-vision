@@ -1,3 +1,13 @@
+---
+version: 1
+priority: P2
+status: active
+phase: "3"
+tags: [pipeline, architecture]
+created: 2026-04-03
+updated: 2026-04-03
+---
+
 # System Architecture
 
 *Last updated: 2026-03-12*

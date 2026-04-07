@@ -1,3 +1,13 @@
+---
+version: 1
+priority: P2
+status: complete
+phase: "G"
+tags: [fix, improvement]
+created: 2026-04-03
+updated: 2026-04-03
+---
+
 # Tracker Improvements Log
 ---
 

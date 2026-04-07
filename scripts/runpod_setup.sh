@@ -76,7 +76,7 @@ $PIP install \
 
 # ── 3. GPU video decode (decord with NVDEC) ─────────────────────────────────
 echo ""
-echo "[3/6] Installing decord (GPU NVDEC video decode)..."
+echo "[3/6] Installing decord (GPU NVDEC video decode) + TensorRT..."
 $PIP install decord -q 2>/dev/null || {
     # decord wheel sometimes unavailable — build from source
     echo "  decord pip install failed; trying conda..."
@@ -86,6 +86,15 @@ $PIP install decord -q 2>/dev/null || {
 }
 # PyAV as fallback
 $PIP install av -q
+
+# TensorRT — 2-4x speedup for YOLO + OSNet inference
+echo "  Installing TensorRT..."
+$PIP install tensorrt -q 2>/dev/null || {
+    echo "  TensorRT pip install failed — trying nvidia-tensorrt..."
+    $PIP install nvidia-tensorrt -q 2>/dev/null || {
+        echo "  WARNING: TensorRT unavailable — will use PyTorch FP16 (still fast)"
+    }
+}
 
 # ── 4. torchreid (OSNet re-ID) ───────────────────────────────────────────────
 echo ""
@@ -124,9 +133,16 @@ else
     echo "  OSNet weights already present."
 fi
 
-# ── 6. Verify GPU access + project imports ───────────────────────────────────
+# ── 6. Export TensorRT engines for this GPU ──────────────────────────────────
 echo ""
-echo "[6/6] Verifying GPU + project imports..."
+echo "[6/7] Exporting TensorRT engines (GPU-specific, ~2 min)..."
+$PYTHON "$REMOTE_DIR/scripts/export_tensorrt.py" 2>&1 || {
+    echo "  TRT export failed — will use PyTorch FP16 fallback (still GPU)"
+}
+
+# ── 7. Verify GPU access + project imports ───────────────────────────────────
+echo ""
+echo "[7/7] Verifying GPU + project imports..."
 mkdir -p "$REMOTE_DIR/logs"
 
 $PYTHON -c "

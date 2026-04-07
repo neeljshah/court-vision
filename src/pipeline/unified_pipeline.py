@@ -237,7 +237,7 @@ class _FramePrefetcher:
 
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, PROJECT_DIR)
+sys.path.insert(0, PROJECT_DIR)  # Required: src.* imports need project root on sys.path (not installed as package)
 
 from src.tracking import (
     Player, AdvancedFeetDetector, BallDetectTrack,
