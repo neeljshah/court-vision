@@ -33,7 +33,9 @@ _NBA_DATA = os.path.join(PROJECT_DIR, "data", "nba")
 _SEASONS  = ["2025-26", "2024-25", "2023-24", "2022-23"]
 
 # Seasons to fetch per-player gamelogs for.
-# 2024-25 already exists (526 files) — skip existing files.
+# NOTE: 2024-25 has 525 gamelog_{pid}_2024-25.json (short format, uppercase keys)
+# but only 1 gamelog_full_{pid}_2024-25.json (full format needed for training).
+# Running pull_a0_gamelogs() will fetch the missing gamelog_full_ files for 2024-25.
 # 2025-26 = live rolling features for predictions.
 # 2022-23, 2023-24 = training labels for prop models.
 _GAMELOG_SEASONS = ["2022-23", "2023-24", "2024-25", "2025-26"]
@@ -55,12 +57,20 @@ def check_coverage() -> None:
     print("\n=== Phase A Data Coverage ===\n")
 
     # A0 -- per-player gamelogs
-    print("A0 -- Per-player Gamelogs (PlayerGameLog):")
+    import glob as _glob
+    print("A0 -- Per-player Gamelogs (PlayerGameLog, gamelog_full format):")
     for s in _GAMELOG_SEASONS:
-        pattern = os.path.join(_NBA_DATA, f"gamelog_full_*_{s}.json")
-        import glob as _glob
-        count = len(_glob.glob(pattern))
-        status = f"[OK] {count} players" if count > 0 else "[MISSING]"
+        full_count  = len(_glob.glob(os.path.join(_NBA_DATA, f"gamelog_full_*_{s}.json")))
+        short_count = len(_glob.glob(os.path.join(_NBA_DATA, f"gamelog_{s[:-6]}*_{s}.json")))
+        # short files have format gamelog_{pid}_{season}.json (no _full_)
+        all_count   = len(_glob.glob(os.path.join(_NBA_DATA, f"gamelog_*_{s}.json")))
+        short_only  = all_count - full_count
+        if full_count >= 400:
+            status = f"[OK] {full_count} full"
+        elif short_only > 0:
+            status = f"[PARTIAL] {full_count} full + {short_only} short-format (run --phase A0 to fix)"
+        else:
+            status = f"[MISSING] (run --phase A0)"
         print(f"  {s}: {status}")
 
     # A1 -- shot dashboards
@@ -123,9 +133,11 @@ def check_coverage() -> None:
 
 def pull_a0_gamelogs() -> None:
     """
-    Pull per-player gamelogs for 2022-23, 2023-24, 2025-26.
+    Pull per-player gamelogs for all seasons in _GAMELOG_SEASONS.
 
-    2024-25 already exists — skip it here (handled by existing files).
+    2024-25 has ~525 short-format gamelog_ files (uppercase keys, no game_id)
+    but is MISSING the gamelog_full_ files used for training. This function
+    will fetch the missing gamelog_full_2024-25 files (per-file skip if exists).
     Saves data/nba/gamelog_full_{player_id}_{season}.json.
     Rate limit: 0.8s delay between calls.
     Cap: _GAMELOG_MAX_PLAYERS players per season from LeagueDashPlayerStats.
