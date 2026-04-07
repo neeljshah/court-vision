@@ -11,13 +11,13 @@ data/videos/
 
 # -- YOLO / Model Weights -----------------------------------------------------
 *.pt
+*.pth
 *.onnx
 *.engine
 *.trt
 *.pkl
 models/weights/
-data/models/*.pkl
-data/models/*.json
+data/models/
 !data/models/.gitkeep
 
 # -- Python -------------------------------------------------------------------
@@ -104,6 +104,10 @@ court-visions/
 court-vision-landing/
 teflon-quant-dashboard/
 
+# -- Knowledge base / planning (internal) -------------------------------------
+vault/
+.planning/
+
 # -- Archive (safe-moved code) -------------------------------------------------
 _archive/
 legacy/
@@ -123,8 +127,16 @@ data/benchmarks/report_*.json
 bus.jpg
 remote_ls.txt
 OPUS_PROMPT.txt
+OPUS_SYSTEM_PROMPT.md
+SYSTEM_OPTIMIZED.md
 reprocess_safe.bat
 cleanup.py
+
+# -- Internal / experimental scaffolding --------------------------------------
+scripts/vault_reorganize.py
+scripts/runpod_optimize.sh
+src/pipeline/gpu_dataframe.py
+.claude/prompts/
 
 # -- Backup files -------------------------------------------------------------
 *.bak
