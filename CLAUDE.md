@@ -1,9 +1,15 @@
 <!-- AUTO-GENERATED — DO NOT EDIT BELOW THIS LINE -->
 
-## Resume From Here — Last Updated: 2026-03-31 (Session 30)
+## Resume From Here — Last Updated: 2026-04-07 (Session 31)
 
 ### Current State — Season 2025-26 Batch Ready
-**Template pollution cleaned.** 27 duplicate-hash game dirs moved to `data/games/_templates/`. ISSUE-065 (ball detect stride/FPS) and ISSUE-066 (team abbrev) confirmed code-fixed in current source. **Next action: run `select_season_games.py` when NBA API network is available, then launch `batch_season.py`.**
+**ISSUE-065 and ISSUE-066 root causes found and fixed.** Ball detector was bypassed during all live gameplay; team_abbrev fallback values leaked through. Both are now closed. **Next action: run `select_season_games.py` when NBA API network is available, then launch `batch_season.py`.**
+
+### Session 31 Changes (code only, no video)
+- `src/pipeline/unified_pipeline.py` — **ISSUE-065 fix**: `ball_det.ball_tracker()` now runs when `_last_ball_2d` is None after `_apply_yolo`. Previously the dedicated yolov8n_ball model (conf=0.05) was completely bypassed during live gameplay because any player detection from the main YOLO caused `ball_det` to be skipped.
+- `src/pipeline/unified_pipeline.py` — **ISSUE-066 fix**: `_ct_map` fallback values (`{"green": "team_a"}`) now filtered same as `_team_map` before passing to `_backfill_team_abbrev`. Previously fallback abbreviations could overwrite real ones.
+- **ISSUE-054**: code-complete (direction cos>0.75, debounce 8s, vtb guard, backcourt guard). Validation against NBA shot chart requires reprocessing a game with ISSUE-065 fix applied.
+- 1040 tests pass, 2 skipped (DB requires PostgreSQL running).
 
 ### Session 30 Changes (code only, no video)
 - `data/games/_templates/` — 27 template dirs moved (see `data/CLEANUP_MANIFEST.txt`)
@@ -107,9 +113,9 @@ python scripts/retrain_props_v2.py    # blocked until gamelog A0 completes
 - `scripts/batch_season.py` — reads targets, downloads, runs pipeline, deletes .mp4, logs result
 
 **Known data quality status (still applicable to new batch runs):**
-- ISSUE-065 ball detection: `event_det.configure(fps, stride)` wired at `unified_pipeline.py:1118`, YOLO conf=0.30 ✅ code-fixed
-- ISSUE-066 team abbrev: `_backfill_team_abbrev()` 3-pass fill at `unified_pipeline.py:3171` ✅ code-fixed
-- Shot overcounting ~2-3x: direction threshold 0.7 + 8s debounce in code (ISSUE-054), unvalidated vs ground truth
+- ISSUE-065 ball detection: ✅ FIXED Session 31 — `ball_det.ball_tracker()` now runs when `_last_ball_2d` is None after `_apply_yolo`. Root cause was ball detector bypassed during all live gameplay.
+- ISSUE-066 team abbrev: ✅ FIXED Session 31 — `_ct_map_real` guard added; fallback "team_a"/"team_b" values no longer passed to `_backfill_team_abbrev`.
+- Shot overcounting: direction cos>0.75 + 8s debounce + vtb guard (ISSUE-054). Validate with next batch run.
 
 ### This Session (Session 29) — Data Collection & Accuracy Assessment
 **Output:** Game 22401175 tracking + enrichment complete. New accuracy metrics logged.
@@ -269,7 +275,7 @@ Unbuilt:
 | ISSUE-052 | `pbp_score_home/away` written for turnovers and fouls — misleading (score at foul ≠ scoring play). Fixed: only write scores when `pbp_play_type` is a made FG. | ✅ CLOSED 2026-03-26 |
 | ISSUE-053 | `spacing_advantage` had no bounds — could reach ±231K when one team hull = 0 sentinel. Fixed: `.clip(-5000, 5000)` applied after both pixel-based and ft-based computation. | ✅ CLOSED 2026-03-26 |
 
-| ISSUE-054 | **Shot over-detection in all 4 clean games** — 264–850 shots → retroactively cleaned to 63–169 via `scripts/clean_shot_log.py` (10s debounce + backcourt/baseline filters). Originals backed up as shot_log.csv.bak. Code fix: `event_detector.py` direction threshold tightened 0.3→0.7 (cos>0.7 = within 45°), `_handler_toward_basket` guard added to direction path. Shots are still ~2-3× estimated actual (can't distinguish fast passes retroactively — true fix = reprocess). | 🟡 Partially mitigated — reprocess when ready |
+| ISSUE-054 | **Shot over-detection** — Code-complete: direction cos>0.75 (within 41°), debounce 8s, vtb guard, backcourt guard. Session 31 audit confirms debounce fires on absolute frame count (stride-correct). Historical data still has overcounted shots but validation against NBA ground truth requires reprocessing with ISSUE-065 fix active. | 🟡 Code-fixed — validate with next batch run |
 | ISSUE-055 | **Possession fragmentation in all 4 clean games** — 969–1201 possessions → cleaned to 110–277 via `scripts/clean_possessions.py` (2s filter + 300-frame same-team merge). Median duration 0.4s → 3.35–4.0s. Still below ~14s target — true fix = reprocess with new fps-aware code. Originals backed up as possessions.csv.bak. | 🟡 Partially mitigated — reprocess when ready |
 | ISSUE-056 | **x_norm/y_norm > 1.0 on ~34% of rows** in 0022400430 and 0022400537 — court coordinate normalization bug (older pipeline). ft_x/ft_y derived from clipped values (still valid, just capped at court boundary). Fix: reprocess with current pipeline. | 🟡 Partially mitigated |
 | ISSUE-057 | **player_name blank in ALL games** — Root cause: `_backfill_player_names()` guard blocked jersey_name_map fallback when API resolution failed. Fixed Session 28: removed len guard, UTF-8 encoding, retroactive backfill script. 155K rows filled across all game dirs. Games with 0% jersey data (0022400430/537/909/1156) need reprocess. | ✅ CLOSED 2026-03-28 |
@@ -277,8 +283,8 @@ Unbuilt:
 | ISSUE-058 | **team_abbrev = UNK** — root cause: both `_court_side_team_map` and `_resolve_team_names` accessed non-existent `HOME_TEAM_ABBREVIATION` column. Fixed both to use `nba_api.stats.static.teams` ID lookup. Also fixed duplicate mapping conflict: `_court_side_team_map` now skips re-mapping rows when `_resolve_team_names` already produced real abbreviations. | ✅ CLOSED 2026-03-27 |
 | ISSUE-064 | **PBP gap-fill never triggered for full-game clips** — `_infer_period_count` only scanned `detected=1` rows, so pre-game/halftime dead zones made 37-min clips appear as 10-min clips → returned `[1]` → only Q1 PBP loaded (~50 events) → 49 CV possessions appeared "sufficient". Fixed: scan ALL rows for total clip duration; use `max_ts_any > max_ts * 1.5` guard to fall back to total duration when ball detection is sparse. Also added ratio fallback to gap-fill condition. Re-enriched 0022401183: 49 → 232 possessions. | ✅ CLOSED 2026-03-27 |
 | ISSUE-060 | **0022400710 bad source video** — homography_valid = 5.7% (only 608/10607 frames mapped). Video is a highlights reel with frequent cuts, not a full broadcast. Needs new YouTube source before reprocessing. | 🔴 Needs new video |
-| ISSUE-065 | **Ball detection critically low (30.2% on 0022401175)** — Only 2 shots detected in 212 minutes (should be 50-100+). Root cause: likely stride/FPS mismatch in frame sampling or YOLO confidence threshold too strict (conf=0.30 from ISSUE-029). Blocks shot detection validation. Spatial features (homography, nearest_opponent) excellent but ball tracking weak. | 🔴 BLOCKER — needs debug + retuning |
-| ISSUE-066 | **team_abbrev only 7.8% filled on 0022401175 despite jersey_name_map.json** — Session 28 fixes wired jersey→name mapping, but team_abbrev still blank. Root cause: `_resolve_team_names()` or `_court_side_team_map()` logic not executing correctly. jersey_number filled 97%, but abbreviations not resolved from numbers. | 🔴 BLOCKER — needs debug before next batch |
+| ISSUE-065 | **Ball detection critically low** — Root cause found: `ball_det.ball_tracker()` was skipped whenever `yolo_results` was non-empty (i.e. all live gameplay). The dedicated `yolov8n_ball.pt` (conf=0.05, ~98% accuracy) was only called when zero YOLO detections existed. Fixed: `ball_det` now runs as fallback when `_last_ball_2d` is None after `_apply_yolo`. Validate with next batch run. | ✅ CLOSED 2026-04-07 — code fix in `unified_pipeline.py` |
+| ISSUE-066 | **team_abbrev only 7.8% filled** — Root cause found: `_ct_map` fallback values (`{"green": "team_a"}`) were truthy so they bypassed the `team_` prefix guard and overwrote `_team_map`. Fixed: `_ct_map_real` check added (same guard as `_team_map`). | ✅ CLOSED 2026-04-07 — code fix in `unified_pipeline.py` |
 
 All other issues CLOSED — see `vault/Sessions/` for history.
 

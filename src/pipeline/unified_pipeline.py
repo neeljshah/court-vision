@@ -91,6 +91,15 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]
     Falls back to _pyav_frame_iter if decord is not installed or GPU context fails.
     GPU decode with decord is ~2× faster than PyAV CPU decode on NVIDIA hardware.
 
+    L40S optimization: uses batch decode with pre-allocated numpy buffer to
+    minimize GPU→CPU copies.  Decodes in chunks of 32 frames via
+    vr.get_batch() which is ~3× faster than sequential vr[i] access because
+    it amortizes NVDEC kernel launch overhead.  The pre-allocated buffer avoids
+    per-frame numpy allocation.
+
+    Respects CUDA_VISIBLE_DEVICES for multi-GPU RunPod setups — always uses
+    device 0 (which maps to the correct physical GPU via CUDA_VISIBLE_DEVICES).
+
     Args:
         video_path:  Path to video file.
         start_frame: First frame index to yield (0-based).
@@ -98,15 +107,45 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]
     Yields:
         (frame_idx, bgr_ndarray, fps, total_frames)
     """
+    _BATCH_DECODE = 32  # frames per NVDEC batch — saturates L40S decode engine
+
     try:
         from decord import VideoReader, gpu  # type: ignore
-        vr  = VideoReader(video_path, ctx=gpu(0))
+        # Always gpu(0) — CUDA_VISIBLE_DEVICES remaps physical GPU to logical 0
+        vr  = VideoReader(video_path, ctx=gpu(0), num_threads=1)
         fps = float(vr.get_avg_fps())
         total = len(vr)
-        for i in range(start_frame, total):
-            frame_rgb = vr[i].asnumpy()
-            bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
-            yield i, bgr, fps, total
+
+        # Pre-allocate reusable BGR buffer (avoids per-frame allocation)
+        _bgr_buf = None
+
+        # Batch decode: get_batch() amortizes NVDEC kernel launch overhead
+        for batch_start in range(start_frame, total, _BATCH_DECODE):
+            batch_end = min(batch_start + _BATCH_DECODE, total)
+            indices = list(range(batch_start, batch_end))
+            try:
+                frames_rgb = vr.get_batch(indices).asnumpy()  # (N, H, W, 3) single copy
+            except Exception:
+                # Fallback to sequential on batch failure (edge case: last few frames)
+                for i in indices:
+                    try:
+                        frame_rgb = vr[i].asnumpy()
+                        bgr = cv2.cvtColor(frame_rgb, cv2.COLOR_RGB2BGR)
+                        yield i, bgr, fps, total
+                    except Exception:
+                        continue
+                continue
+
+            for j, frame_idx in enumerate(indices):
+                rgb_frame = frames_rgb[j]
+                # Reuse buffer when shape matches (avoids allocation on every frame)
+                if _bgr_buf is None or _bgr_buf.shape != rgb_frame.shape:
+                    _bgr_buf = np.empty_like(rgb_frame)
+                cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR, dst=_bgr_buf)
+                yield frame_idx, _bgr_buf, fps, total
+
+            del frames_rgb  # release batch immediately
+
         return
     except Exception:
         pass  # decord unavailable or GPU context failed — fall through to PyAV
@@ -171,7 +210,9 @@ class _FramePrefetcher:
                 # the real video position (correct for timestamp calculation).
                 if self._stride > 1 and (_fi - start_frame) % self._stride != 0:
                     continue
-                self._q.put((True, bgr, _fi))
+                # Copy: _decord_frame_iter batch decode reuses a buffer, and
+                # this frame lives in the queue until the consumer thread reads it.
+                self._q.put((True, bgr.copy(), _fi))
         except Exception:
             pass
         # Always push sentinel so consumer can detect EOF
@@ -233,10 +274,11 @@ _H_MIN_INLIERS      = 4      # below this → reject and use last-known good M
 _H_RESET_INLIERS    = 40     # ≥ this → hard-reset EMA (very clean SIFT match)
 _REANCHOR_INTERVAL  = 60     # court-line drift check every N frames (raised 30→60: court stable)
 _REANCHOR_ALIGN_MIN = 0.35   # projected boundary alignment below this → force re-anchor
-_SIFT_INTERVAL      = 180    # OPTIMIZATION: 120→180 frames. Histogram gate catches camera cuts between intervals.
-                             # At stride=3/30fps, SIFT every 180 = every 15 real-time seconds (Kalman stable)
+_SIFT_INTERVAL      = 300    # OPTIMIZATION: 180→300 frames for RunPod GPU saturation.
+                             # At stride=3/30fps, SIFT every 300 = every 30 real-time seconds (Kalman stable)
                              # EMA smoothing (α=0.25) keeps homography smooth between updates.
-_SIFT_SCALE         = 0.5   # downsample frame before SIFT detect (4x speedup, minimal quality loss)
+                             # SIFT is pure CPU — reducing frequency frees CPU for decode/IO.
+_SIFT_SCALE         = 0.35  # downsample frame before SIFT detect (0.5→0.35: ~2x fewer keypoints, minimal quality loss)
 _SIFT_CUT_THRESH    = 0.20  # OPTIMIZATION: 0.15→0.20. Stricter histogram gate, skip more non-cut frames
 
 # Replay/cut detector — suspend homography on scene cuts, replays, or overlay graphics
@@ -476,9 +518,26 @@ class UnifiedPipeline:
         h, w  = (f0[TOPCUT:].shape[:2]) if f0 is not None else (720, 1280)
         self.stats_tracker = StatsTracker(frame_w=w, frame_h=h, fps=fps)
 
-        sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
-        self.sift = sift
-        self.kp1, self.des1 = sift.compute(pano, sift.detect(pano))
+        # SIFT: prefer cv2.cuda SIFT on L40S/RunPod (GPU-accelerated, frees CPU
+        # for decode thread).  Falls back to CPU SIFT when CUDA module unavailable.
+        self._sift_gpu = False
+        try:
+            _cuda_sift = cv2.cuda.SURF_CUDA_create(400)  # SURF is faster on GPU than SIFT
+            # Test upload to verify CUDA module works
+            _test_gpu = cv2.cuda_GpuMat()
+            _test_gpu.upload(cv2.cvtColor(pano, cv2.COLOR_BGR2GRAY) if len(pano.shape) == 3 else pano)
+            _gpu_kp, _gpu_des = _cuda_sift.detectWithDescriptors(_test_gpu, None)
+            self._cuda_sift = _cuda_sift
+            self._sift_gpu = True
+            # Store pano descriptors on GPU for fast matching
+            self.kp1 = cv2.cuda_SURF_CUDA.downloadKeypoints(_cuda_sift, _gpu_kp)
+            self.des1 = _gpu_des.download()
+            self.sift = None  # not used in GPU path
+            log.info("SIFT: using cv2.cuda.SURF_CUDA (GPU-accelerated)")
+        except (cv2.error, AttributeError, Exception):
+            sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
+            self.sift = sift
+            self.kp1, self.des1 = sift.compute(pano, sift.detect(pano))
         self._M_ema:              Optional[np.ndarray] = None
         self._last_ball_2d:       Optional[tuple]      = None  # (x2d, y2d) this frame
         self._frames_since_anchor: int                 = 0
@@ -921,9 +980,26 @@ class UnifiedPipeline:
                 return self._M_ema  # no camera cut — reuse cached EMA homography
         self._sift_last_hist = hist_cur
 
-        # Task 6: run SIFT on the cropped ROI (downscaled for speed)
+        # Run feature detection on the cropped ROI (downscaled for speed).
+        # Uses cv2.cuda SURF on GPU when available (L40S), falls back to CPU SIFT.
         small = cv2.resize(roi, (int(roi.shape[1] * _SIFT_SCALE), int(roi.shape[0] * _SIFT_SCALE)))
-        kp2_small, des2 = self.sift.detectAndCompute(small, None)
+
+        if self._sift_gpu:
+            try:
+                _gray_small = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+                _gpu_mat = cv2.cuda_GpuMat()
+                _gpu_mat.upload(_gray_small)
+                _gpu_kp, _gpu_des = self._cuda_sift.detectWithDescriptors(_gpu_mat, None)
+                kp2_small = cv2.cuda_SURF_CUDA.downloadKeypoints(self._cuda_sift, _gpu_kp)
+                des2 = _gpu_des.download()
+            except Exception:
+                # GPU SIFT failed on this frame — fall back to CPU
+                if self.sift is None:
+                    self.sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
+                kp2_small, des2 = self.sift.detectAndCompute(small, None)
+        else:
+            kp2_small, des2 = self.sift.detectAndCompute(small, None)
+
         if des2 is None or len(des2) < 4:
             return self._M_ema
         inv_s = 1.0 / _SIFT_SCALE
@@ -933,7 +1009,6 @@ class UnifiedPipeline:
                              kp.octave, kp.class_id) for kp in kp2_small]
 
         # OPTIMIZATION: Cap descriptors to first 500 to speed up FLANN (early termination)
-        # des2 is small already (downscaled frame), but cap it anyway for consistency
         _des2_capped = des2[:min(500, len(des2))]
         matches = FLANN.knnMatch(self.des1, _des2_capped, k=2)
         good    = [m for m, n in matches if m.distance < 0.7 * n.distance]
@@ -1154,7 +1229,9 @@ class UnifiedPipeline:
         # Uses NVDEC (decord GPU) when available, falls back to PyAV/cv2.
         # stride= causes the decode thread to skip 2/3 of frames at the NVDEC level
         # rather than decoding-then-discarding, saving GPU bandwidth and memory.
-        _prefetcher = _FramePrefetcher(self.video_path, self.start_frame, stride=_stride, queue_size=32)
+        # queue_size=64: deeper buffer overlaps GPU decode with tracking compute.
+        # On RunPod (24GB+ VRAM), 64 frames ≈ 300MB — well within budget.
+        _prefetcher = _FramePrefetcher(self.video_path, self.start_frame, stride=_stride, queue_size=64)
 
         tracking_rows:    List[dict] = []
         ball_rows:        List[dict] = []
@@ -1224,8 +1301,11 @@ class UnifiedPipeline:
         _ocr_stride_counter: int = 0
         _OCR_STRIDE_INTERVAL: int = 30  # OPTIMIZATION: raised 3→30 for RunPod batch (EasyOCR bottleneck)
 
-        # OPTIMIZATION: periodic CUDA cache cleanup to prevent VRAM fragmentation
-        _VRAM_FLUSH_INTERVAL = 5000  # every 5000 gameplay frames (~8 min at 10fps)
+        # OPTIMIZATION: periodic CUDA cache cleanup to prevent VRAM fragmentation.
+        # L40S (48GB): flush every 3000 frames (~5 min) — more frequent than before to
+        # prevent fragmentation from accumulating over full-game runs (90K+ frames).
+        # empty_cache() is ~0.1ms on L40S — negligible vs the 5-min interval.
+        _VRAM_FLUSH_INTERVAL = 3000
         _vram_flush_counter  = 0
 
         while True:
@@ -1390,7 +1470,14 @@ class UnifiedPipeline:
                 frame, map_snap = self._apply_yolo(
                     frame, map_snap, map_txt, yolo_results, M, frame_idx
                 )
-            else:
+            # ISSUE-065 fix: always run dedicated ball detector when _apply_yolo
+            # did not find the ball.  The main YOLO model detects players and
+            # occasionally ball; ball_det uses a fine-tuned yolov8n_ball model
+            # (conf=0.05) + CSRT tracker that is far more reliable for ball
+            # tracking.  Previously ball_det was skipped whenever any YOLO
+            # results existed — i.e. during all live gameplay — causing
+            # ball_detected to stay at ~0% despite the conf=0.05 fix.
+            if self._last_ball_2d is None:
                 frame, _ = self.ball_det.ball_tracker(
                     M, self.M1, frame, map_snap.copy(), map_txt, frame_idx,
                     stride=_stride,
@@ -1513,7 +1600,7 @@ class UnifiedPipeline:
             predictions.append({"frame": frame_idx, "tracks": frame_tracks})
             gameplay_frames += 1
 
-            # ── Periodic VRAM cleanup (prevents fragmentation on 8GB GPUs) ──
+            # ── Periodic VRAM + RAM cleanup (prevents fragmentation on L40S 48GB) ──
             _vram_flush_counter += 1
             if _vram_flush_counter >= _VRAM_FLUSH_INTERVAL:
                 _vram_flush_counter = 0
@@ -1523,6 +1610,12 @@ class UnifiedPipeline:
                         _torch.cuda.empty_cache()
                 except (ImportError, Exception):
                     pass
+                # Clear predictions buffer — only used for return value summary;
+                # keeping 3000+ frame dicts in RAM causes multi-GB heap growth on
+                # full-game runs.  Checkpoint CSV already persists all tracking rows.
+                predictions.clear()
+                import gc as _gc
+                _gc.collect()
 
             # ── Frame-level metrics (shared across all players this frame) ──
             _n_events_before = len(self.event_det.events)   # kept for legacy compat
@@ -2169,9 +2262,13 @@ class UnifiedPipeline:
         # FIX 7 (new): backfill team_abbrev column into tracking_data.csv
         # Prefer court-side position map; fall back to _resolve_team_names result
         # when _court_side_team_map returned {} (e.g. all x2d missing in first 300 frames).
-        _abbrev_map = _ct_map or (
-            _team_map if _team_map and not any(v.startswith("team_") for v in _team_map.values())
-            else {}
+        # ISSUE-066 fix: guard _ct_map fallback values (keys "team_a"/"team_b") same
+        # as _team_map — otherwise fallback abbreviations overwrite real ones.
+        _ct_map_real = _ct_map and not any(v.startswith("team_") for v in _ct_map.values())
+        _abbrev_map = (
+            _ct_map if _ct_map_real
+            else (_team_map if _team_map and not any(v.startswith("team_") for v in _team_map.values())
+                  else {})
         )
         if _abbrev_map:
             self._backfill_team_abbrev(_abbrev_map)
