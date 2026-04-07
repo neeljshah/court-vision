@@ -16,20 +16,6 @@
 
 ---
 
-<div align="center">
-
-![CourtVision tracking demo](assets/tracking-demo.gif)
-
-*Player tracking · possession segmentation · spatial metrics — from standard broadcast video*
-
-</div>
-
-<div align="center">
-
-![Dashboard preview](assets/dashboard-preview.png)
-
-</div>
-
 ---
 
 ## What Is This
@@ -56,12 +42,6 @@ CourtVision extracts defender distance, spacing index, drive frequency, and fati
 ---
 
 ## Architecture
-
-<div align="center">
-
-![System architecture](assets/architecture.png)
-
-</div>
 
 Broadcast video is ingested by a YOLOv8n + Kalman/Hungarian tracking pipeline that maps every player to real-world court coordinates via SIFT homography, assigns identities through OSNet deep re-ID and EasyOCR jersey reads, and fires an event detector for shots, passes, and dribbles. Per-frame spatial data is enriched with three seasons of NBA API context (shot charts, play-by-play, hustle stats, matchups) and transformed into 60+ features that train the ML stack. A 7-model possession chain then runs 10,000 Monte Carlo simulations to produce stat distributions, which are compared against sportsbook lines by a Kelly-sized betting portfolio engine.
 
