@@ -1,3 +1,13 @@
+---
+version: 1
+priority: P2
+status: active
+phase: "7"
+tags: [validation, audit]
+created: 2026-04-03
+updated: 2026-04-03
+---
+
 # Prop Model Holdout Validation Report
 
 **Generated:** 2026-03-24 15:33  

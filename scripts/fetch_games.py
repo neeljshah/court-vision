@@ -48,14 +48,35 @@ sys.path.insert(0, str(PROJECT_DIR))
 VIDEOS_DIR = PROJECT_DIR / "data" / "videos" / "full_games"
 
 # YouTube search templates — ordered to find actual full-game broadcast replays.
-# Full games (90-160 min) are required for prediction models — highlights won't work.
-# "LIVE" streams and highlights are filtered out in candidate selection.
+# Full games (90-160 min) preferred; highlights (10-20 min) accepted as fallback.
+# ytsearch10 (not 5) to widen net — NBA full games get DMCA'd fast so most
+# results are re-uploads on smaller channels with different naming patterns.
 _YT_SEARCH_TEMPLATES = [
+    # Primary: exact matchup + date searches
     "NBA full game {away} vs {home} {date_str} replay",
     "{away} vs {home} {date_str} NBA full game",
     "NBA full game {month_year} {away} {home}",
     "{away} vs {home} NBA full game replay {month_year}",
-    "NBA regular season full game {date_str} replay HD",
+    # Broader: team-name variants (re-uploaders often use city not team)
+    "{away_city} vs {home_city} NBA full game {date_str}",
+    "{away} {home} full game replay {season}",
+    # Channel-specific patterns (common NBA re-upload channels)
+    "NBA full game replay {away} {home} {season}",
+]
+
+# Fallback: highlights templates (used only when no full game found)
+_YT_HIGHLIGHTS_TEMPLATES = [
+    "{away} vs {home} {date_str} NBA full highlights",
+    "{away} vs {home} highlights {date_str}",
+    "NBA {away} vs {home} {month_year} highlights extended",
+    "{away} vs {home} extended highlights {season}",
+]
+
+# Dailymotion search templates — NBA full games persist longer on DM than YouTube
+_DM_SEARCH_TEMPLATES = [
+    "{away} vs {home} NBA full game {date_str}",
+    "{away} {home} full game {month_year}",
+    "NBA {away} vs {home} full game replay",
 ]
 
 # Team name abbreviation → full name map for search
@@ -70,8 +91,19 @@ _TEAM_NAMES = {
     "UTA": "Jazz",   "WAS": "Wizards",
 }
 
+# City names for broader search queries (re-uploaders often use city not team name)
+_TEAM_CITIES = {
+    "ATL": "Atlanta",  "BOS": "Boston",   "BKN": "Brooklyn", "CHA": "Charlotte",
+    "CHI": "Chicago",  "CLE": "Cleveland","DAL": "Dallas",   "DEN": "Denver",
+    "DET": "Detroit",  "GSW": "Golden State","HOU": "Houston","IND": "Indiana",
+    "LAC": "LA Clippers","LAL": "LA Lakers","MEM": "Memphis", "MIA": "Miami",
+    "MIL": "Milwaukee","MIN": "Minnesota","NOP": "New Orleans","NYK": "New York",
+    "OKC": "Oklahoma City","ORL": "Orlando","PHI": "Philadelphia","PHX": "Phoenix",
+    "POR": "Portland", "SAC": "Sacramento","SAS": "San Antonio","TOR": "Toronto",
+    "UTA": "Utah",     "WAS": "Washington",
+}
+
 # Channels known to post full/extended NBA game content
-# We prefer longer videos (>600s) to ensure enough continuous gameplay for the tracker
 _PREFERRED_CHANNELS = [
     "NBA",
     "ESPN",
@@ -81,6 +113,10 @@ _PREFERRED_CHANNELS = [
 
 def _team_full(abbrev: str) -> str:
     return _TEAM_NAMES.get(abbrev.upper(), abbrev)
+
+
+def _team_city(abbrev: str) -> str:
+    return _TEAM_CITIES.get(abbrev.upper(), abbrev)
 
 
 def _get_recent_games(count: int, from_date: Optional[str],
@@ -137,163 +173,282 @@ def _get_recent_games(count: int, from_date: Optional[str],
     return games[:count * 2]
 
 
+def _build_base_cmd() -> list:
+    """Build the base yt-dlp command with common options."""
+    cookies_file = PROJECT_DIR / "data" / "videos" / "youtube_cookies.txt"
+    base_cmd = [
+        "yt-dlp",
+        "--no-playlist",
+        "--format", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[height<=720]",
+        "--merge-output-format", "mp4",
+        "--quiet",
+        "--no-warnings",
+        "--sleep-requests", "2",
+        "--no-abort-on-error",
+    ]
+    # Point yt-dlp at conda env's ffmpeg (not on system PATH)
+    _ffmpeg_dir = PROJECT_DIR.parent / "anaconda3" / "envs" / "basketball_ai" / "Library" / "bin"
+    if (_ffmpeg_dir / "ffmpeg.exe").exists():
+        base_cmd += ["--ffmpeg-location", str(_ffmpeg_dir)]
+    if cookies_file.exists():
+        try:
+            content = cookies_file.read_text(encoding="utf-8", errors="ignore")
+            has_auth = any(k in content for k in ("SID\t", "SAPISID\t", "LOGIN_INFO\t"))
+        except Exception:
+            has_auth = False
+        if has_auth:
+            base_cmd += ["--cookies", str(cookies_file)]
+    return base_cmd
+
+
+def _search_yt(query: str, base_cmd: list, min_dur: int = 300,
+               max_dur: int = 14400, reject_kw: Optional[list] = None,
+               num_results: int = 10) -> list:
+    """Search YouTube and return filtered candidates sorted by duration desc."""
+    search_url = f"ytsearch{num_results}:{query}"
+    info_cmd = base_cmd + ["--dump-json", "--flat-playlist", search_url]
+    try:
+        info_proc = subprocess.run(info_cmd, capture_output=True, text=True, timeout=30)
+    except subprocess.TimeoutExpired:
+        return []
+    except Exception:
+        return []
+
+    candidates = []
+    for line in info_proc.stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            info = json.loads(line)
+            dur = info.get("duration") or 0
+            vid_id = info.get("id") or info.get("url", "")
+            title = info.get("title", "")
+            channel = info.get("channel", "")
+            candidates.append((dur, vid_id, title, channel))
+        except json.JSONDecodeError:
+            continue
+
+    _ALWAYS_REJECT = ["live stream", "scoreboard", "score update",
+                      "aiscore", "simulcast", "animation", "animated",
+                      "watchalong", "watch along", "reaction",
+                      "2k", "nba2k", "nba 2k"]
+    all_reject = list(_ALWAYS_REJECT)
+    if reject_kw:
+        all_reject.extend(reject_kw)
+
+    return [
+        c for c in candidates
+        if min_dur <= c[0] <= max_dur
+        and not any(kw in c[2].lower() for kw in all_reject)
+    ]
+
+
+def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
+                       segment_seconds: int, best_dur: int) -> bool:
+    """Download a YouTube video by ID. Returns True on success."""
+    dl_cmd = list(base_cmd)
+    dl_cmd += ["--output", str(out_path)]
+    if segment_seconds and best_dur > segment_seconds * 2:
+        start_sec = 60
+        for i, part in enumerate(dl_cmd):
+            if part == "--format":
+                dl_cmd[i + 1] = "best[height<=720][vcodec^=avc1]/best[height<=720]/best"
+                break
+        dl_cmd += [
+            "--download-sections", f"*{start_sec}-{start_sec + segment_seconds}",
+            "--force-keyframes-at-cuts",
+        ]
+    else:
+        for i, part in enumerate(dl_cmd):
+            if part == "--format":
+                dl_cmd[i + 1] = (
+                    "bestvideo[height<=720][vcodec^=avc1]+bestaudio/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+                )
+                break
+    dl_cmd.append(f"https://www.youtube.com/watch?v={vid_id}")
+
+    try:
+        dl_proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=600)
+        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+            print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
+            return True
+        if dl_proc.stderr:
+            print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+    except subprocess.TimeoutExpired:
+        print("  Download timed out")
+    except Exception as e:
+        print(f"  Download error: {e}")
+    return False
+
+
+def _search_dailymotion(query: str, base_cmd: list,
+                        min_dur: int = 300, max_dur: int = 14400) -> list:
+    """Search Dailymotion via yt-dlp. NBA full games persist longer on DM."""
+    search_url = f"dmsearch10:{query}"
+    info_cmd = base_cmd + ["--dump-json", "--flat-playlist", search_url]
+    try:
+        proc = subprocess.run(info_cmd, capture_output=True, text=True, timeout=30)
+    except (subprocess.TimeoutExpired, Exception):
+        return []
+
+    candidates = []
+    _REJECT = ["live stream", "scoreboard", "aiscore", "simulcast",
+               "animation", "animated", "2k", "nba2k", "reaction"]
+    for line in proc.stdout.splitlines():
+        if not line.strip():
+            continue
+        try:
+            info = json.loads(line)
+            dur = info.get("duration") or 0
+            vid_url = info.get("webpage_url") or info.get("url", "")
+            title = info.get("title", "")
+            channel = info.get("uploader", info.get("channel", ""))
+            if min_dur <= dur <= max_dur:
+                if not any(kw in title.lower() for kw in _REJECT):
+                    candidates.append((dur, vid_url, title, channel))
+        except json.JSONDecodeError:
+            continue
+    return sorted(candidates, key=lambda c: c[0], reverse=True)
+
+
+def _download_direct_url(url: str, out_path: Path, base_cmd: list,
+                         segment_seconds: int, best_dur: int) -> bool:
+    """Download from a direct URL (Dailymotion, etc). Returns True on success."""
+    dl_cmd = list(base_cmd)
+    dl_cmd += ["--output", str(out_path)]
+    if segment_seconds and best_dur > segment_seconds * 2:
+        start_sec = 60
+        dl_cmd += [
+            "--download-sections", f"*{start_sec}-{start_sec + segment_seconds}",
+            "--force-keyframes-at-cuts",
+        ]
+    dl_cmd.append(url)
+
+    try:
+        dl_proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=900)
+        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+            print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
+            return True
+        if dl_proc.stderr:
+            print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+    except subprocess.TimeoutExpired:
+        print("  Download timed out")
+    except Exception as e:
+        print(f"  Download error: {e}")
+    return False
+
+
 def _search_and_download(game: dict, out_path: Path,
                          segment_seconds: int) -> bool:
-    """Search YouTube for the game and download to out_path. Returns True on success."""
+    """Search YouTube + Dailymotion for the game and download to out_path.
+    Returns True on success.
+    Tries: YT full games → DM full games → YT highlights."""
     date_obj = datetime.strptime(game["date"], "%Y-%m-%d")
     date_str  = date_obj.strftime("%B %d %Y")
     month_year = date_obj.strftime("%B %Y")
     away_full = _team_full(game["away"])
     home_full = _team_full(game["home"])
+    away_city = _team_city(game["away"])
+    home_city = _team_city(game["home"])
+    fmt_args = dict(away=away_full, home=home_full,
+                    away_city=away_city, home_city=home_city,
+                    date_str=date_str, month_year=month_year,
+                    season=_current_nba_season())
 
-    # Try each search template
+    base_cmd = _build_base_cmd()
+
+    # Collect ALL candidates from ALL YouTube templates first, then pick the best.
+    # Previous approach tried one template at a time and downloaded the first hit,
+    # missing better results from later templates.
+    all_yt_candidates = []
+
+    # ── Pass 1: YouTube full game replays (>60 min) ──────────────────────────
     for tmpl in _YT_SEARCH_TEMPLATES:
-        query = tmpl.format(
-            away=away_full, home=home_full,
-            date_str=date_str, month_year=month_year,
-            season=_current_nba_season(),
-        )
-        search_url = f"ytsearch5:{query}"  # top 5 results
+        query = tmpl.format(**fmt_args)
+        print(f"  [YT] Searching: {query}")
+        candidates = _search_yt(query, base_cmd, min_dur=300, max_dur=14400,
+                                reject_kw=["highlights", "highlight"],
+                                num_results=10)
+        all_yt_candidates.extend(candidates)
+        time.sleep(1)  # rate limit
 
-        print(f"  Searching: {query}")
+    # Deduplicate by video ID
+    _seen_ids = set()
+    deduped = []
+    for c in all_yt_candidates:
+        if c[1] not in _seen_ids:
+            _seen_ids.add(c[1])
+            deduped.append(c)
+    full_games = [c for c in deduped if c[0] >= 3600]
 
-        # yt-dlp: search, pick longest result ≥ segment_seconds, download segment
-        cookies_file = PROJECT_DIR / "data" / "videos" / "youtube_cookies.txt"
-        base_cmd = [
-            "yt-dlp",
-            "--no-playlist",
-            "--format", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[height<=720]",
-            "--merge-output-format", "mp4",
-            "--quiet",
-            "--no-warnings",
-            "--js-runtimes", "node",          # yt-dlp 2026+ requires JS runtime for PO token
-            "--remote-components", "ejs:github",  # download challenge solver — fixes n-sig throttle
-            "--sleep-requests", "2",          # 2s between API requests — avoids rate-limit
-            "--no-abort-on-error",
-        ]
-        # Point yt-dlp at conda env's ffmpeg (not on system PATH)
-        _ffmpeg_dir = PROJECT_DIR.parent / "anaconda3" / "envs" / "basketball_ai" / "Library" / "bin"
-        if (_ffmpeg_dir / "ffmpeg.exe").exists():
-            base_cmd += ["--ffmpeg-location", str(_ffmpeg_dir)]
-        if cookies_file.exists():
-            # Only use cookies if they have real YouTube auth tokens
-            try:
-                content = cookies_file.read_text(encoding="utf-8", errors="ignore")
-                has_auth = any(k in content for k in ("SID\t", "SAPISID\t", "LOGIN_INFO\t"))
-            except Exception:
-                has_auth = False
-            if has_auth:
-                base_cmd += ["--cookies", str(cookies_file)]
+    if full_games:
+        def _score(c):
+            dur, vid_id, title, channel = c
+            s = dur
+            cl = channel.lower()
+            tl = title.lower()
+            # Boost known reliable channels
+            if any(k in cl for k in ["manuelmazon", "time for basketball",
+                                      "nba full", "full game", "nba replays"]):
+                s += 5000
+            if cl == "nba" and dur >= 3600:
+                s += 4000
+            # Boost titles that match team names (relevance check)
+            if away_full.lower() in tl and home_full.lower() in tl:
+                s += 3000
+            elif game["away"].lower() in tl and game["home"].lower() in tl:
+                s += 2000
+            # Penalize suspiciously long (compilations, not single games)
+            if dur > 10800:
+                s -= 3000
+            return s
 
-        # First pass: get video info only (no download) to pick best result
-        info_cmd = base_cmd + [
-            "--dump-json",
-            "--flat-playlist",
-            search_url,
-        ]
-        try:
-            info_proc = subprocess.run(
-                info_cmd, capture_output=True, text=True, timeout=30
-            )
-            candidates = []
-            for line in info_proc.stdout.splitlines():
-                if not line.strip():
-                    continue
-                try:
-                    info = json.loads(line)
-                    dur = info.get("duration") or 0
-                    vid_id = info.get("id") or info.get("url", "")
-                    title = info.get("title", "")
-                    channel = info.get("channel", "")
-                    candidates.append((dur, vid_id, title, channel))
-                except json.JSONDecodeError:
-                    continue
-
-            # Filter out fake LIVE streams and non-broadcast content
-            _REJECT_KEYWORDS = ["live", "live stream", "scoreboard", "score update",
-                                "aiscore", "simulcast", "animation", "animated",
-                                "watchalong", "watch along", "reaction",
-                                "highlights", "highlight"]
-            candidates = [
-                c for c in candidates
-                if c[0] >= 300 and c[0] <= 14400  # 5 min to 4 hours
-                and not any(kw in c[2].lower() for kw in _REJECT_KEYWORDS)
-            ]
-            if not candidates:
-                continue
-
-            # Only keep actual full games (>60 min broadcast replays)
-            full_games = [c for c in candidates if c[0] >= 3600]
-            if not full_games:
-                continue  # skip this template, try next — we ONLY want full games
-
-            # Score: prefer longer games from known replay channels
-            def _score(c):
-                dur, vid_id, title, channel = c
-                s = dur  # longer = more game footage
-                cl = channel.lower()
-                # Known full-game replay channels get a bonus
-                if any(k in cl for k in ["manuelmazon", "time for basketball",
-                                          "nba full", "full game"]):
-                    s += 5000
-                # Official NBA channel classic games
-                if cl == "nba" and dur >= 3600:
-                    s += 4000
-                # Penalize excessively long (>3hr = likely a stream recording with dead time)
-                if dur > 10800:
-                    s -= 3000
-                return s
-
-            full_games.sort(key=_score, reverse=True)
-            best_dur, best_id, best_title = full_games[0][0], full_games[0][1], full_games[0][2]
-
-            print(f"  Found: {best_title[:60]} ({best_dur}s)")
-
-            # Download — if segment_seconds is set and video > 2x that, download section only
-            dl_cmd = list(base_cmd)  # copy to avoid mutating shared list
-            dl_cmd += ["--output", str(out_path)]
-            if segment_seconds and best_dur > segment_seconds * 2:
-                # Skip intro (~60s) then grab segment_seconds of live play.
-                # --download-sections requires a single pre-merged stream (no bestvideo+bestaudio).
-                # Use "best[height<=720]" without ext filter — ext=mp4 rejects webm-only videos.
-                start_sec = 60
-                for i, part in enumerate(dl_cmd):
-                    if part == "--format":
-                        dl_cmd[i + 1] = "best[height<=720][vcodec^=avc1]/best[height<=720]/best"
-                        break
-                dl_cmd += [
-                    "--download-sections", f"*{start_sec}-{start_sec + segment_seconds}",
-                    "--force-keyframes-at-cuts",
-                ]
-            else:
-                # Short video (≤ 2× segment): drop the ext=mp4 constraint for same reason
-                for i, part in enumerate(dl_cmd):
-                    if part == "--format":
-                        dl_cmd[i + 1] = (
-                            "bestvideo[height<=720][vcodec^=avc1]+bestaudio/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
-                        )
-                        break
-
-            dl_cmd.append(f"https://www.youtube.com/watch?v={best_id}")
-
-            print(f"  Downloading {'segment ' if segment_seconds else 'full '}"
-                  f"from {best_id} ...")
-            dl_proc = subprocess.run(
-                dl_cmd, capture_output=True, text=True, timeout=300
-            )
-            if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
-                print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
+        full_games.sort(key=_score, reverse=True)
+        # Try top 3 candidates (first might be DMCA'd or geo-blocked)
+        for best in full_games[:3]:
+            print(f"  Found full game: {best[2][:70]} ({best[0]}s, ch={best[3][:30]})")
+            print(f"  Downloading from {best[1]} ...")
+            if _download_video_yt(best[1], out_path, base_cmd, segment_seconds, best[0]):
                 return True
-            else:
-                if dl_proc.stderr:
-                    print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+            print(f"  Failed — trying next candidate...")
 
-        except subprocess.TimeoutExpired:
-            print("  Search timed out, trying next template...")
+    # ── Pass 2: Dailymotion full games ───────────────────────────────────────
+    print(f"  No YouTube full game found — trying Dailymotion...")
+    for tmpl in _DM_SEARCH_TEMPLATES:
+        query = tmpl.format(**fmt_args)
+        print(f"  [DM] Searching: {query}")
+        candidates = _search_dailymotion(query, base_cmd, min_dur=1200, max_dur=14400)
+        if candidates:
+            # Prefer longest (most complete game)
+            best = candidates[0]
+            print(f"  Found on DM: {best[2][:70]} ({best[0]}s)")
+            if _download_direct_url(best[1], out_path, base_cmd, segment_seconds, best[0]):
+                return True
+        time.sleep(1)
+
+    # ── Pass 3: YouTube highlights fallback (>5 min) ─────────────────────────
+    print(f"  No full game found — trying highlights...")
+    for tmpl in _YT_HIGHLIGHTS_TEMPLATES:
+        query = tmpl.format(**fmt_args)
+        print(f"  Searching: {query}")
+        candidates = _search_yt(query, base_cmd, min_dur=300, max_dur=1800)
+        if not candidates:
             continue
-        except Exception as e:
-            print(f"  Error: {e}")
-            continue
+        # Prefer longer highlights, NBA official channel
+        def _hl_score(c):
+            dur, vid_id, title, channel = c
+            s = dur
+            if channel.lower() == "nba":
+                s += 2000
+            if "extended" in title.lower():
+                s += 1000
+            return s
+        candidates.sort(key=_hl_score, reverse=True)
+        best = candidates[0]
+        print(f"  Found highlights: {best[2][:60]} ({best[0]}s)")
+        print(f"  Downloading from {best[1]} ...")
+        if _download_video_yt(best[1], out_path, base_cmd, 0, best[0]):
+            return True
 
     return False
 
