@@ -780,6 +780,81 @@ def _load_ats_season(season_str: str) -> list:
         return []
 
 
+def _load_cv_features_player(player_id: int, last_n: int = 5) -> dict:
+    """
+    Return averaged CV-derived features for a player across their last N tracked games.
+
+    Reads from the cv_features DB table populated by cv_feature_registry.register_game().
+    Falls back to all-zeros when no CV data exists (graceful degradation).
+
+    Features returned (prefixed cv_ to avoid collision with NBA tracking stats):
+      cv_avg_defender_distance   mean defender dist (pixels) at shot moment
+      cv_contested_shot_rate     fraction of shots with defender < 150px
+      cv_shot_zone_paint_pct     fraction of shots from paint
+      cv_shot_zone_3pt_pct       fraction of shots from 3pt zones
+      cv_shots_per_possession    shot creation rate
+      cv_possession_duration_avg mean possession length (sec)
+      cv_play_type_transition_pct fraction of team possessions in transition
+      cv_n_games_cv              number of games contributing to these averages
+    """
+    _defaults = {
+        "cv_avg_defender_distance":    0.0,
+        "cv_contested_shot_rate":      0.0,
+        "cv_shot_zone_paint_pct":      0.0,
+        "cv_shot_zone_3pt_pct":        0.0,
+        "cv_shots_per_possession":     0.0,
+        "cv_possession_duration_avg":  0.0,
+        "cv_play_type_transition_pct": 0.0,
+        "cv_n_games_cv":               0.0,
+    }
+    _cv_key_map = {
+        "avg_defender_distance":    "cv_avg_defender_distance",
+        "contested_shot_rate":      "cv_contested_shot_rate",
+        "shot_zone_paint_pct":      "cv_shot_zone_paint_pct",
+        "shot_zone_3pt_pct":        "cv_shot_zone_3pt_pct",
+        "shots_per_possession":     "cv_shots_per_possession",
+        "possession_duration_avg":  "cv_possession_duration_avg",
+        "play_type_transition_pct": "cv_play_type_transition_pct",
+    }
+    try:
+        from src.data.db import get_connection
+        conn = get_connection()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT DISTINCT game_id FROM cv_features "
+                "WHERE player_id = ? ORDER BY rowid DESC LIMIT ?",
+                (player_id, last_n),
+            )
+            game_ids = [r[0] for r in cur.fetchall()]
+        if not game_ids:
+            conn.close()
+            return _defaults.copy()
+        # Aggregate: average each feature across the player's last N games
+        accumulated: dict = {}
+        counts: dict = {}
+        for gid in game_ids:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT feature_name, feature_value FROM cv_features "
+                    "WHERE player_id = ? AND game_id = ?",
+                    (player_id, gid),
+                )
+                for fname, fval in cur.fetchall():
+                    if fname in _cv_key_map:
+                        out_key = _cv_key_map[fname]
+                        accumulated[out_key] = accumulated.get(out_key, 0.0) + float(fval)
+                        counts[out_key] = counts.get(out_key, 0) + 1
+        conn.close()
+        result = _defaults.copy()
+        for key, total in accumulated.items():
+            n = counts.get(key, 1)
+            result[key] = round(total / n, 4)
+        result["cv_n_games_cv"] = float(len(game_ids))
+        return result
+    except Exception:
+        return _defaults.copy()
+
+
 def _get_ats_stats(team: str, opp: str, season: str) -> dict:
     """
     Compute ATS cover rates for team and opponent across up to 3 seasons.
@@ -1923,6 +1998,10 @@ def _build_player_features(
             "foul_drawn_rate_pbp2": 0.0,
         })
 
+    # ── CV-derived spatial features (from broadcast tracking) ─────────────────
+    # Populated once cv_feature_registry has data; zero-defaults until then.
+    feats.update(_load_cv_features_player(int(pid)))
+
     return feats
 
 
@@ -2206,6 +2285,11 @@ _ALL_FEATS = [
     "clutch_pm_pbp", "foul_drawn_rate_pbp2",
     # B-3: CV fatigue features (populated from features.csv when available)
     "fatigue_index_game_avg", "dist_traveled_game_total",
+    # CV spatial features (populated from broadcast tracking via cv_feature_registry)
+    "cv_avg_defender_distance", "cv_contested_shot_rate",
+    "cv_shot_zone_paint_pct", "cv_shot_zone_3pt_pct",
+    "cv_shots_per_possession", "cv_possession_duration_avg",
+    "cv_play_type_transition_pct",
 ]
 
 
