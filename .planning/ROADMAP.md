@@ -15,7 +15,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 
 ## Phase Overview
 
-*Last updated: 2026-03-28 | Models trained: 46/90 | CV games with full data: 5 (target: 20)*
+*Last updated: 2026-04-07 | Session 31 | Tests: 1040 pass | Models trained: 46/90 | CV games: 5 clean / 20 target*
 
 > **Pre-Season Accuracy Plan:** Full feature engineering + model + simulator checklist → `.planning/PRE_SEASON_ACCURACY_PLAN.md`
 
@@ -34,7 +34,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 4.9 — Backtesting + Validation Infrastructure | ✅ Done | Strategy backtester, paper trading mode, historical prop results DB, validation gate |
 | Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor, schedule context wired |
 | **Pre-Season Accuracy Plan** | 🔲 Queued | Feature engineering (14) + CV integration (4) + win prob (8) + props algo (8) + possession model (5) + Monte Carlo simulator + game model ML rebuild. See PRE_SEASON_ACCURACY_PLAN.md |
-| Phase G — Full Game Data Collection | 🟡 Active | 4 clean games; 11 games not yet processed; 2 partials need reprocess; 0022400710 needs new video |
+| Phase G — Full Game Data Collection | 🟡 Active | 5 clean games; ISSUE-065/066 fixed; batch season pipeline next |
 | Phase 6 — Full Game Processing + Rich Events | 🔲 Next | 20+ clean games, rich event aggregation (drives/box-outs/closeouts/cuts/screens), PostgreSQL writes |
 | Phase 7 — Tier 2-3 ML Models + CV Wiring | 🔲 | xFG v2 with closeout speed + shot clock, props retrained with CV behavioral features |
 | Phase 8 — Possession Simulator v1 | 🔲 | 7-model chain with rich event inputs, 10K Monte Carlo |
