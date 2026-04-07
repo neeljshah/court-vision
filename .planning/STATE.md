@@ -2,10 +2,12 @@
 
 ## Current Status
 
-**Active Phase**: Phase 3 — NBA API Data Maximization (in progress) + Phase 2.5 active
-**Last Updated**: 2026-03-17
-**Test suite**: 637 passing, 2 skipped
-**Last Completed Plan**: 025-06 — Synthetic court detector tests (2026-03-17)
+**Active Phase**: Pre-F — Full Game Collection (Phase G active)
+**Last Updated**: 2026-04-07 (Session 31)
+**Test suite**: 1040 passing, 2 skipped
+**Last Fixed**: ISSUE-065 ball detector bypass + ISSUE-066 team_abbrev fallback (2026-04-07)
+**CV games**: 5 clean / 20 target (Phase F gate)
+**Season 2025-26**: 0 / 50 games processed
 
 ---
 
@@ -92,27 +94,40 @@
 
 | ID | Issue | Status |
 |---|---|---|
-| ISSUE-009 | 0 shots enriched — no --game-id runs | 🔴 Phase 6 |
-| ISSUE-010 | PostgreSQL not wired — overwrites tracking_data.csv | 🟡 Wired 2026-03-17 — `_pg_write_tracking_rows` added; fires when DATABASE_URL + game_id set |
-| ISSUE-016 | sklearn 1.6.1 model, env now 1.7.2 | ✅ Closed 2026-03-17 — retrained, 67.7% acc |
-| ISSUE-017 | Per-video homography wrong — M1 for pano_enhanced not broadcast | ✅ Closed 2026-03-17 — per-clip detection in court_detector.py + wired in unified_pipeline |
-| ISSUE-018 | 0 PBP for 1,223 games | 🟡 Scraper built — `python src/data/pbp_scraper.py --season 2024-25` |
-| ISSUE-019 | 0 shot charts scraped | ✅ Closed 2026-03-17 — 1,707 files across 3 seasons (569 × 3) |
-| ISSUE-020 | 209/569 gamelogs missing | ✅ Closed 2026-03-17 — 568/569 done |
+| ISSUE-054 | Shot overcounting 2-3x | Code-fixed, unvalidated — needs batch run |
+| ISSUE-065 | Ball detector bypass | ✅ Fixed 2026-04-07 |
+| ISSUE-066 | team_abbrev fallback | ✅ Fixed 2026-04-07 |
+| — | CV features not wired into ML models | Open — core moat unused |
+| — | Possession simulator unbuilt | Blocked on 20 clean games |
+| — | Gamelog 2023-24 stalled ~200/600 | Open — props retrain blocked |
+| — | Homography low on newer games | Needs reprocess |
+| ISSUE-009 | 0 shots enriched — no --game-id runs | 🔴 Phase F |
+| ISSUE-010 | PostgreSQL writes not fully wired | 🟡 _pg_write_tracking_rows added; needs DATABASE_URL |
+| ISSUE-018 | PBP coverage gaps | 🟡 3,627/3,685 (98.4%) |
 
 ---
 
 ## Next Actions (Priority Order)
 
-1. ✅ ~~Win prob retrain~~ — done, 67.7% val acc (ISSUE-016 closed)
-2. ✅ ~~Gamelog scrape~~ — 568/569 done (ISSUE-020 closed)
-3. ✅ ~~Per-clip homography (ISSUE-017)~~ — court_detector.py + unified_pipeline wired
-4. ✅ ~~Player props train~~ — 7 models, R² 0.928-0.995
-5. ✅ ~~Phase 5 external factors~~ — ref_tracker.py + line_monitor.py built; injury_monitor wired; pg writes added
-6. ✅ ~~Shot charts 2024-25~~ — 569 files, 221,866 shots; 2022-23/2023-24 scraping in background
-7. ✅ ~~Quick task 1~~ — build_live_mask() in nba_enricher + live/dead bench split + Guard 2/3 verified + vision fallback (2026-03-18)
-8. **NOW**: `python src/data/pbp_scraper.py --season 2024-25` — 1,225 games, enables clutch features
-9. **Phase 6**: Process 20 full games with `--game-id` → PostgreSQL will auto-write tracking_frames
+1. **NOW**: Validate shot overcounting fix — run batch on 3 clean games, check shot_log counts (ISSUE-054)
+2. **Phase F**: `select_season_games.py` → `batch_season.py` — reach 20 clean games
+3. **Phase G**: Season 2025-26 batch — 50 games, 2 per team
+4. **Phase 7**: Wire CV spatial features (defender_distance, spacing_index) into xFG v2 and prop models
+5. **Phase 8**: Build possession simulator — 7-model chain, 10K Monte Carlo per game
+6. **Later**: Gamelog 2023-24 completion (200/600) → props retrain
+
+## Completed Phases (summary)
+
+| Phase | Completed | Key Output |
+|-------|-----------|------------|
+| 1 | 2026-03-12 | PostgreSQL schema, schedule context, lineup data |
+| 2 | 2026-03-17 | CV tracker: Kalman/Hungarian, HSV team color, 431 tests |
+| 2.5 | 2026-03-25 | OSNet 512-dim re-ID, per-clip homography, pose estimation |
+| 3 | 2026-03-18 | 221K shots, 98.4% PBP, 3 seasons NBA API data |
+| 4 | 2026-03-20 | 23 ML models: win prob, 7 props, xFG v1, DNP, matchup |
+| 4.5–4.9 | 2026-03-22 | Betting infra: Kelly, CLV, backtester, paper trading |
+| 5 | 2026-03-23 | External factors: injury, refs, line monitor |
+| 4.6 | 2026-04-07 | ISSUE-065/066 fixes, spatial gap-fill, team abbrev |
 
 ---
 
