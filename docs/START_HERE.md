@@ -1,218 +1,157 @@
-# Get 20 Perfect NBA AI Games — Start Here
+# CourtVision — Start Here
 
-## Your Goal ✅
-Reprocess all NBA game datasets for:
-- ✅ Fast processing (3-4 min per game)
-- ✅ Accurate data (jersey OCR → player names)
-- ✅ No bugs or errors
-- ✅ 20 games with perfect data
-
-## What You Have Now
-```
-48 game directories in data/games/:
-  - 30 complete (tracking + shots + possessions + features)
-  - 14 partial (missing shot_log)
-  - Issue: no player_name, no jersey numbers
-
-397,283 total rows of tracking data
-~650 MB current storage
-```
-
-## What's Missing
-```
-Old pipeline (v1) tracked without:
-  ❌ Jersey number extraction (OCR)
-  ❌ Player name mapping
-  ❌ Complete spatial features
-
-New pipeline (v2, in place) has:
-  ✅ Jersey OCR (advanced_tracker.py)
-  ✅ Player name resolution (jersey_name_map.json)
-  ✅ Full spatial features (nearest_opponent, etc)
-  ✅ Code tested & validated
-```
-
-## Your Action Plan
-
-### Step 1: 5-Minute Setup & Validation
-```bash
-cd C:/Users/neelj/nba-ai-system
-conda activate basketball_ai
-
-# Check current state
-python scripts/batch_validate_games.py --summary
-```
-
-Expected: 48 games, 26 marked as OK (will improve after reprocessing), 397K rows.
-
-### Step 2: 2-Minute Preview
-```bash
-# See exactly what will happen (no files modified)
-python scripts/batch_reprocess_games.py --dry-run --count 5
-
-# Output shows 5 sample games being queued for reprocessing
-# ~2 hours total time estimate
-```
-
-### Step 3: 90-Minute Full Reprocessing
-```bash
-# This is the main command — runs headless, loops through all games
-python scripts/batch_reprocess_games.py --frames 18000
-
-# What happens per game:
-#   1. Load video from data/videos/full_games/
-#   2. Extract jersey numbers via OCR
-#   3. Generate jersey_name_map.json
-#   4. Write player_name + jersey_number to tracking_data.csv
-#   5. Regenerate shot detection (cleaner)
-#   6. Regenerate all features
-#   7. Move to next game
-#
-# Result: tracking_data.csv now has player_name column!
-```
-
-**Expect logs like:**
-```
-[1/30] 0022400015... SUCCESS
-[2/30] 0022400021... SUCCESS
-...
-[30/30] atl_ind_2025... SUCCESS
-
-Completed: 30/30
-
-Logged to: vault/Sessions/Reprocessing_2026-03-30_143022.md
-```
-
-### Step 4: 5-Minute Validation
-```bash
-# Check quality improved
-python scripts/batch_validate_games.py
-
-# Look for improvement:
-#   Before: NO player_name column in features
-#   After:  player_name column exists, >95% filled
-#
-#   Before: nearest_opponent 50-60% filled
-#   After:  nearest_opponent 90%+ filled
-```
-
-### Step 5: 10-Minute Audit (Optional)
-```bash
-# Deep dive on data quality
-python scripts/audit_phase_g.py
-
-# Validates:
-#   - Shot locations vs NBA shot chart
-#   - Possession counts vs play-by-play
-#   - Player tracking accuracy
-#   - Homography quality
-```
-
-## Success Indicators ✅
-
-After reprocessing, you'll have:
-```
-20+ games (out of 30) where:
-  ✅ player_name: 98%+ filled (jersey OCR → names)
-  ✅ jersey_number: 100% filled (OCR output)
-  ✅ nearest_opponent: 90%+ filled (spatial feature)
-  ✅ shot_log: realistic counts (160-180 shots, not 1000+)
-  ✅ possessions: 110-280 per game (realistic)
-  ✅ features.csv: all required columns present
-  ✅ No error/corruption in features
-```
-
-## Key Features of Your System
-
-**Code Quality:**
-- Latest fixes already in place (Portrait homography, UTF-8 encoding, etc)
-- Safe reprocessing (doesn't delete originals, overwrites CSVs)
-- Headless operation (no GUI, good for automation)
-- Atomic commits (each game is independent)
-
-**Data Integrity:**
-- Jersey_name_map.json auto-generated per game
-- Player names resolved via two methods (jersey OCR + NBA API fallback)
-- Spatial features recomputed with fixed bugs (nearest_opponent now >90%)
-- All features have proper type handling
-
-**Error Handling:**
-- OOM-safe (one game at a time)
-- Skip-friendly (can resume if interrupted)
-- Validation-first (checks work before writing)
-- Logging to vault for review
-
-## Estimated Timeline
-- Step 1 (Validation): 5 minutes
-- Step 2 (Preview): 2 minutes
-- Step 3 (Reprocessing): 90 minutes (can run overnight)
-- Step 4 (Check): 5 minutes
-- **Total: ~2 hours** to get perfect data
-
-## Troubleshooting
-
-**Q: Can I run just a few games to test?**
-```bash
-# Yes! Try 5 games first
-python scripts/batch_reprocess_games.py --games 0022400430 0022400537 0022400909 0022401123 0022401183
-# This should take 15-20 minutes
-```
-
-**Q: What if a game gets OOM?**
-```bash
-# It'll skip and continue. You can rerun with fewer frames:
-python scripts/run_phase_g.py --game-ids PROBLEM_GAME --frames 9000 --reprocess
-# (5 min of video instead of 10 min)
-```
-
-**Q: Can I interrupt and resume?**
-```bash
-# Yes! Script skips already-processed games
-# Just run the same command again
-python scripts/batch_reprocess_games.py --frames 18000
-```
-
-**Q: How much storage needed?**
-```
-Current: ~650 MB (30 games)
-During reprocessing: ~1-2 GB (temporary intermediates)
-After: ~650 MB (same, cleaner CSVs)
-```
-
-## Files Created for You
-
-**New Scripts:**
-- `scripts/batch_validate_games.py` — Check data quality
-- `scripts/batch_reprocess_games.py` — Run batch reprocessing
-- `scripts/batch_enrich_player_names.py` — Backfill names (uses after reprocess)
-- `scripts/batch_fix_games.py` — Manual fixups (if needed)
-
-**Documentation:**
-- `REPROCESS_PLAN.md` — Technical details of strategy
-- `EXECUTION_GUIDE.md` — Full reference guide
-- `START_HERE.md` — This file
-
-## Next: Run It
-
-```bash
-cd C:/Users/neelj/nba-ai-system
-conda activate basketball_ai
-python scripts/batch_reprocess_games.py --frames 18000
-```
-
-**That's it.** Everything else is automated.
+New to this project? Read this first.
 
 ---
 
-**Questions?**
-- Check `EXECUTION_GUIDE.md` for detailed reference
-- Check `REPROCESS_PLAN.md` for technical background
-- Check `vault/Improvements/Tracker Improvements Log.md` for known issues
-- Check `vault/Sessions/` logs after reprocessing completes
+## What This Is
 
-**Status Tracking:**
-- Logs go to `vault/Sessions/Reprocessing_*.md`
-- Results go to `vault/Sessions/` for review
-- Each game's status tracked in batch script output
+CourtVision is an end-to-end NBA analytics pipeline that:
 
-**You're ready to go!** 🚀
+1. **Watches broadcast video** and tracks every player's position on the court in real time
+2. **Extracts spatial metrics** (defender distance, spacing, drive frequency) that don't exist in any public dataset
+3. **Feeds those metrics into 90 ML models** that predict game outcomes and player stats
+4. **Runs 10,000 Monte Carlo simulations** per game to find positive-EV edges against sportsbook lines
+
+The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. This pipeline replicates that on a single consumer GPU.
+
+---
+
+## How It Works (Plain English)
+
+```
+NBA broadcast video (.mp4)
+    │
+    ▼
+CV Tracker (YOLOv8 + Kalman filter + SIFT homography)
+    │   Detects and tracks all 10 players frame-by-frame
+    │   Maps pixel positions → real court coordinates (feet)
+    │   Identifies players via jersey OCR + deep re-ID
+    ▼
+Spatial Features (defender_distance, spacing_index, drive_freq, fatigue_proxy)
+    │
+    ▼
+NBA API Enrichment (shot charts, play-by-play, hustle stats, 3 seasons)
+    │
+    ▼
+60+ ML Features → 90 Models (XGBoost, Ridge, PyTorch)
+    │   Win probability, 7 player props, xFG, DNP predictor, matchups
+    ▼
+10,000 Monte Carlo Simulations per game
+    │
+    ▼
+Kelly-sized bet recommendations + CLV tracking
+```
+
+---
+
+## Repository Structure
+
+```
+nba-ai-system/
+├── src/
+│   ├── tracking/          # CV pipeline: player detection, tracking, re-ID, OCR
+│   ├── pipeline/          # Orchestrator: runs full game end-to-end
+│   ├── features/          # 60+ feature engineering functions
+│   ├── prediction/        # 90 ML models (win prob, props, xFG, DNP, etc.)
+│   ├── analytics/         # Betting edge, spacing, momentum, shot quality
+│   ├── data/              # NBA API scrapers, enrichment, database helpers
+│   └── simulation/        # Possession simulator (Monte Carlo)
+├── api/                   # FastAPI REST backend (10 endpoints)
+├── scripts/               # Operational scripts (batch runs, training, backfills)
+├── tests/                 # 1040+ tests
+├── database/              # PostgreSQL schema + migrations
+├── docs/                  # Documentation (you are here)
+└── .github/workflows/     # CI/CD (GitHub Actions)
+```
+
+---
+
+## Setup
+
+**Requirements:** Python 3.9, CUDA 11.8, GPU with 8GB+ VRAM (CPU works, but slowly)
+
+```bash
+# 1. Clone
+git clone https://github.com/neeljshah/nba-ai-system.git
+cd nba-ai-system
+
+# 2. Create environment
+conda create -n basketball_ai python=3.9 -y
+conda activate basketball_ai
+pip install -r requirements.txt
+
+# 3. Configure secrets
+cp .env.example .env
+# Edit .env — set DATABASE_URL, ODDS_API_KEY
+
+# 4. Run tests
+python -m pytest tests/ -q
+# Expected: 1040 pass, 2 skip
+
+# 5. Start the API
+uvicorn api.main:app --reload --port 8000
+# Visit http://localhost:8000/docs
+```
+
+---
+
+## Run a Prediction
+
+```bash
+# Predict a matchup
+python src/prediction/game_prediction.py --predict GSW BOS
+
+# Process a game clip (needs video file + GPU)
+python scripts/run_clip.py --video data/videos/game.mp4 --no-show
+
+# Run batch season processing
+python scripts/batch_season.py --season 2025-26
+```
+
+---
+
+## Key Numbers
+
+| Metric | Value |
+|--------|-------|
+| Win probability accuracy | 69.1% |
+| Player props MAE (pts) | 0.308 |
+| DNP predictor AUC | 0.979 |
+| xFG Brier score | 0.226 |
+| Shots in training data | 221,866 |
+| Play-by-play coverage | 98.4% (3,627 / 3,685 games) |
+| Tracking throughput | 15 fps on RTX 4060 8GB |
+
+---
+
+## Project Status
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1–5 | Data infra, CV tracker, NBA data, Tier 1 models | ✅ Done |
+| F | Full game processing (20 clean games target) | 🔲 In progress |
+| G | Season 2025-26 batch (50 games) | 🔲 Planned |
+| 7 | Tier 2–3 models with CV spatial features | 🔲 Blocked on F |
+| 8 | Possession simulator (7-model chain, 10K MC) | 🔲 Planned |
+| 9–17 | Feedback loop, betting infra, frontend, live | 🔲 Future |
+
+---
+
+## Documentation Index
+
+| Doc | What's In It |
+|-----|--------------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | System design, module dependencies, data flow |
+| [CV_TRACKING.md](CV_TRACKING.md) | Tracking pipeline deep-dive: homography, re-ID, OCR |
+| [ML_MODELS.md](ML_MODELS.md) | All 90 models: features, training, accuracy |
+| [DATA_SCHEMA.md](DATA_SCHEMA.md) | PostgreSQL schema, CSV formats, API cache |
+| [API.md](API.md) | FastAPI endpoints, request/response examples |
+| [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |
+| [ROADMAP.md](ROADMAP.md) | Full phase-by-phase build plan |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](../CONTRIBUTING.md) for code style, PR workflow, and no-touch zones.
