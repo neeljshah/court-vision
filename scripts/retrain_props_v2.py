@@ -71,6 +71,21 @@ _XGB_PARAMS = {
     "tree_method":      "hist",
 }
 
+# STL-specific params: more regularization for noisy count stat (MSE beats Poisson objective)
+_XGB_PARAMS_STL = {
+    "n_estimators":     200,
+    "max_depth":        3,
+    "learning_rate":    0.05,
+    "subsample":        0.7,
+    "colsample_bytree": 0.7,
+    "min_child_weight": 8,
+    "reg_alpha":        0.5,
+    "reg_lambda":       3.0,
+    "random_state":     42,
+    "n_jobs":           -1,
+    "tree_method":      "hist",
+}
+
 
 # -- Feature list --------------------------------------------------------------
 
@@ -166,6 +181,13 @@ def _build_row(pid: int, prior: List[dict], all_feats: List[str]) -> dict:
         if float(x.get("pts", 0) or 0) >= 10 and float(x.get("reb", 0) or 0) >= 10
     ) / max(n_roll, 1)
 
+    # STL-specific derived features
+    _min_r = max(r["min"], 1.0)
+    stl_per_min       = round(r["stl"] / _min_r * 36, 4)
+    def_activity_rate = round((r["stl"] + r["blk"]) / _min_r, 4)
+    stl_vals = [float(x.get("stl", 0) or 0) for x in roll]
+    stl_consistency = float(np.var(stl_vals)) if len(stl_vals) > 1 else 0.0
+
     row = {f: 0.0 for f in all_feats}
     row.update({
         "season_pts": s["pts"], "season_reb": s["reb"], "season_ast": s["ast"],
@@ -173,6 +195,10 @@ def _build_row(pid: int, prior: List[dict], all_feats: List[str]) -> dict:
         "season_blk": s["blk"], "season_tov": s["tov"],
         "pts_roll":  r["pts"],  "reb_roll":  r["reb"],
         "ast_roll":  r["ast"],  "min_roll":  r["min"],
+        "stl_roll":  r["stl"],  "blk_roll":  r["blk"],
+        "stl_per_min":       stl_per_min,
+        "def_activity_rate": def_activity_rate,
+        "stl_consistency":   stl_consistency,
         "pts_bayes":  _bayes(r["pts"],  s["pts"]),
         "reb_bayes":  _bayes(r["reb"],  s["reb"]),
         "ast_bayes":  _bayes(r["ast"],  s["ast"]),
@@ -206,6 +232,36 @@ def _build_dataset(
     Returns per-stat dict with keys:
       X_train, y_train, X_test, y_test, X_val, y_val
     """
+    # Build opponent tov_pct / pace lookup: {season: {abbrev: {tov_pct, pace}}}
+    _opp_stats_by_season: Dict[str, dict] = {}
+    try:
+        from nba_api.stats.static import teams as _nba_teams
+        _abbrev_to_id = {t["abbreviation"]: str(t["id"]) for t in _nba_teams.get_teams()}
+    except Exception:
+        _abbrev_to_id = {}
+    for _s in ("2022-23", "2023-24", "2024-25", "2025-26"):
+        _ts_path = os.path.join(_NBA_CACHE, f"team_stats_{_s}.json")
+        if os.path.exists(_ts_path):
+            try:
+                _ts = json.load(open(_ts_path))
+                _opp_stats_by_season[_s] = {
+                    abbr: {
+                        "opp_tov_pct": float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("tov_pct", 0.145) or 0.145),
+                        "opp_pace":    float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("pace",    100.0) or 100.0),
+                    }
+                    for abbr in _abbrev_to_id
+                }
+            except Exception:
+                pass
+
+    def _opp_abbr(matchup: str) -> str:
+        """Extract opponent abbreviation from matchup string like 'SAS vs. TOR' or 'SAS @ TOR'."""
+        m = str(matchup)
+        for sep in (" vs. ", " @ "):
+            if sep in m:
+                return m.split(sep)[-1].strip()
+        return ""
+
     rows_train = {s: [] for s in _PROP_STATS}
     rows_test  = {s: [] for s in _PROP_STATS}
     rows_val   = {s: [] for s in _PROP_STATS}
@@ -228,6 +284,12 @@ def _build_dataset(
                 continue
             dt = game["_dt"]
             feat_row = _build_row(pid, prior, all_feats)
+
+            # Add opponent tov_pct / pace for this game
+            _opp = _opp_abbr(game.get("matchup", ""))
+            _os  = _opp_stats_by_season.get(cur_season, {}).get(_opp, {})
+            feat_row["opp_tov_pct"] = _os.get("opp_tov_pct", 0.145)
+            feat_row["opp_pace"]    = _os.get("opp_pace",    100.0)
 
             for stat in _PROP_STATS:
                 actual = game.get(stat)
@@ -282,11 +344,13 @@ def _metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
     }
 
 
-def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
+def train_and_save(datasets: Dict[str, dict], only_stat: str = None) -> Dict[str, dict]:
     os.makedirs(_MODEL_DIR, exist_ok=True)
     results = {}
 
-    for stat in _PROP_STATS:
+    stats_to_train = (only_stat,) if only_stat else _PROP_STATS
+
+    for stat in stats_to_train:
         d = datasets[stat]
         X_train, y_train = d["X_train"], d["y_train"]
         X_test,  y_test  = d["X_test"],  d["y_test"]
@@ -298,7 +362,8 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
 
         print(f"\n[train] {stat.upper()} -- {len(y_train)} train rows", flush=True)
 
-        model = xgb.XGBRegressor(**_XGB_PARAMS)
+        params = _XGB_PARAMS_STL if stat == "stl" else _XGB_PARAMS
+        model = xgb.XGBRegressor(**params)
         model.fit(
             X_train, y_train,
             eval_set=[(X_test, y_test)] if len(y_test) > 0 else None,
@@ -386,6 +451,15 @@ def _update_registry(results: Dict[str, dict]) -> None:
 # -- Main ----------------------------------------------------------------------
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--stat", default=None, help="Only retrain this stat (e.g. stl)")
+    args = parser.parse_args()
+    only_stat = args.stat.lower() if args.stat else None
+    if only_stat and only_stat not in _PROP_STATS:
+        print(f"[retrain] Unknown stat: {only_stat}. Choose from {_PROP_STATS}")
+        return
+
     print("[retrain] Loading feature list ...")
     all_feats = _load_all_feats()
     print(f"[retrain] {len(all_feats)} features")
@@ -398,10 +472,10 @@ def main() -> None:
     datasets = _build_dataset(by_player, all_feats)
 
     print("\n[retrain] Training models ...")
-    results = train_and_save(datasets)
+    results = train_and_save(datasets, only_stat=only_stat)
 
     print("\n-- Final Results -----------------------------------------")
-    for stat in _PROP_STATS:
+    for stat in (_PROP_STATS if not only_stat else (only_stat,)):
         if stat not in results:
             continue
         r = results[stat]
