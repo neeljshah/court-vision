@@ -178,6 +178,27 @@ def _get_opp_def_rating(opp_team: str, season: str) -> float:
         return 113.0
 
 
+def _get_opp_tov_stats(opp_team: str, season: str) -> dict:
+    """Return opponent tov_pct and pace from team_stats cache. Fallbacks: tov_pct=0.145, pace=100.0."""
+    primary = os.path.join(_NBA_CACHE, f"team_stats_{season}.json")
+    if os.path.exists(primary):
+        try:
+            with open(primary) as f:
+                ts = json.load(f)
+            from nba_api.stats.static import teams as _teams
+            abbrev_to_id = {t["abbreviation"]: str(t["id"]) for t in _teams.get_teams()}
+            tid = abbrev_to_id.get(opp_team, "0")
+            row = ts.get(tid, {})
+            if row:
+                return {
+                    "opp_tov_pct": float(row.get("tov_pct", 0.145)),
+                    "opp_pace":    float(row.get("pace",    100.0)),
+                }
+        except Exception:
+            pass
+    return {"opp_tov_pct": 0.145, "opp_pace": 100.0}
+
+
 def _get_recent_form(player_id: int, season: str, n: int = 10) -> Optional[dict]:
     """
     Compute rolling n-game averages from PlayerGameLog.
@@ -261,6 +282,10 @@ def _get_recent_form(player_id: int, season: str, n: int = 10) -> Optional[dict]
     home_games = [r for r in recent if "@" not in str(r.get("MATCHUP", ""))]
     away_games = [r for r in recent if "@" in str(r.get("MATCHUP", ""))]
 
+    import statistics as _stats
+    stl_vals = [float(r.get("STL", 0)) for r in recent]
+    stl_var = _stats.variance(stl_vals) if len(stl_vals) > 1 else 0.0
+
     result = {
         "pts_roll":  _avg("PTS", recent),
         "reb_roll":  _avg("REB", recent),
@@ -270,6 +295,7 @@ def _get_recent_form(player_id: int, season: str, n: int = 10) -> Optional[dict]
         "stl_roll":  _avg("STL", recent),
         "blk_roll":  _avg("BLK", recent),
         "tov_roll":  _avg("TOV", recent),
+        "stl_consistency": stl_var,
         "n_games":   ng,
         # Home/away splits (None if no data for that split)
         "home_pts_avg": _avg("PTS", home_games) if home_games else None,
@@ -1040,6 +1066,8 @@ def _build_player_features(
         "reb_roll":     form["reb_roll"]   if form else avgs["reb"],
         "ast_roll":     form["ast_roll"]   if form else avgs["ast"],
         "min_roll":     form["min_roll"]   if form else avgs["min"],
+        "stl_roll":     form["stl_roll"]   if form else avgs.get("stl", 0.0),
+        "blk_roll":     form["blk_roll"]   if form else avgs.get("blk", 0.0),
         # Bayesian-shrunk rolling averages
         "pts_bayes":  _bayes(form["pts_roll"],  avgs["pts"])  if form else avgs["pts"],
         "reb_bayes":  _bayes(form["reb_roll"],  avgs["reb"])  if form else avgs["reb"],
@@ -1086,6 +1114,17 @@ def _build_player_features(
         "charges_per_game":     float(hustle.get("charges_per_game", 0.0) or 0.0),
         "box_outs_pg":          float(hustle.get("box_outs", 0.0) or 0.0),
     })
+
+    # ── STL-specific derived features ────────────────────────────────────────
+    _stl_r = feats.get("stl_roll", 0.0)
+    _blk_r = feats.get("blk_roll", 0.0)
+    _min_r = max(feats.get("min_roll", 1.0), 1.0)
+    feats["stl_per_min"]       = round(_stl_r / _min_r * 36, 4)
+    feats["def_activity_rate"] = round((_stl_r + _blk_r) / _min_r, 4)
+    feats["stl_consistency"]   = float(form.get("stl_consistency", 0.0)) if form else 0.0
+    _opp_tov = _get_opp_tov_stats(opp_team, season)
+    feats["opp_tov_pct"] = _opp_tov["opp_tov_pct"]
+    feats["opp_pace"]    = _opp_tov["opp_pace"]
 
     # ── Phase 4.6: on/off splits ─────────────────────────────────────────────
     on_off = _load_on_off_player(pid, season)
@@ -2168,6 +2207,10 @@ _ALL_FEATS = [
     "season_fg3m", "season_stl", "season_blk", "season_tov",
     # Raw rolling averages
     "pts_roll", "reb_roll", "ast_roll", "min_roll",
+    "stl_roll", "blk_roll",
+    # STL-specific features
+    "stl_per_min", "def_activity_rate", "stl_consistency",
+    "opp_tov_pct", "opp_pace",
     # Bayesian-shrunk rolling averages
     "pts_bayes", "reb_bayes", "ast_bayes",
     "fg3m_bayes", "stl_bayes", "blk_bayes", "tov_bayes",
