@@ -269,6 +269,32 @@ class TrackingCleaner:
                 for label, abbr in label_to_abbr.items():
                     mask = df["team"] == label
                     df.loc[mask & df["team_abbrev"].isna(), "team_abbrev"] = abbr
+
+                # Fallback: if no labels matched the tracking color columns (e.g. team_colors keys
+                # are abbreviations like "MIL"/"CHI" but tracking uses "green"/"white"), use
+                # manifest home/away with NBA convention (home wears white).
+                if df["team_abbrev"].isna().all():
+                    manifest_path = self.game_dir / "manifest.json"
+                    if manifest_path.exists():
+                        try:
+                            with open(manifest_path, encoding="utf-8") as mf:
+                                manifest = json.load(mf)
+                            home = manifest.get("home", "")
+                            away = manifest.get("away", "")
+                            if home and away and "team" in df.columns:
+                                # Ensure object dtype before assigning strings
+                                df["team_abbrev"] = df["team_abbrev"].astype(object)
+                                # NBA convention: home team wears white; away wears color
+                                color_vals = df["team"].dropna().unique()
+                                white_labels = [c for c in color_vals if "white" in str(c).lower()]
+                                other_labels = [c for c in color_vals if "white" not in str(c).lower()]
+                                for wl in white_labels:
+                                    df.loc[df["team"] == wl, "team_abbrev"] = home
+                                for ol in other_labels:
+                                    df.loc[df["team"] == ol, "team_abbrev"] = away
+                                log.info("team_abbrev: used manifest fallback (home=%s=white, away=%s)", home, away)
+                        except Exception as me:
+                            log.warning("manifest fallback for team_abbrev failed: %s", me)
         except Exception as e:
             log.warning("team_abbrev backfill failed: %s", e)
         return df
