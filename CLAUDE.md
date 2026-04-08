@@ -4,20 +4,21 @@
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 31, 2026-04-07)
-- Branch: `master` | Tests: 1040 pass, 2 skip (PG)
+### State (Session 33, 2026-04-07)
+- Branch: `master` | Tests: 1042 pass, 93 skip
 - Phase: Pre-F. Next: season batch (`select_season_games.py` -> `batch_season.py`)
-- CV games: 5 clean / 20 target. Season 2025-26: 0/50.
-- ISSUE-065 ball bypass + ISSUE-066 team_abbrev: both FIXED
-- ISSUE-054 shot overcounting: code-fixed, unvalidated
+- CV games: 14 A/B-grade / 20 target. Season 2025-26: 2 processed, 59 videos waiting
+- CV registry: 24 player-game records (backfill improved jersey chain resolution)
+- 2024-25 gamelog_full: DONE (569/569). Props retrain running.
+- A1 shot dashboard 2025-26: MISSING (fetching)
 
 ### Open Issues (priority)
-1. Shot overcounting 2-3x — validate with batch run (ISSUE-054)
-2. CV features not wired into ML models — core moat unused
-3. Possession simulator unbuilt (Phase 8)
-4. No frontend/API serving predictions
-5. Gamelog 2023-24 stalled ~200/600 — props retrain blocked
-6. Homography low on newer games — reprocess needed
+1. 59 unprocessed 2025-26 videos in data/videos/full_games/ — run `python scripts/run_phase_g.py` (GPU needed)
+2. Props models: retrain in progress with 2024-25 data (all 7 flagged needs_retrain)
+3. CV registry sparsity — 24 records across 6 games; needs better OCR/player resolution
+4. Possession simulator unbuilt (Phase 8)
+5. No frontend/API serving predictions
+6. Homography low on older games — reprocess needed
 
 ### Task -> Files Cheatsheet
 | Task | Load only |
