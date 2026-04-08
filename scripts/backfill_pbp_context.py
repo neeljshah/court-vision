@@ -1,5 +1,5 @@
 """
-backfill_pbp_context.py — Fill scoreboard, shot_clock, player_name, and team_abbrev
+backfill_pbp_context.py -- Fill scoreboard, shot_clock, player_name, and team_abbrev
 from locally-cached NBA PBP data.
 
 For each game_id:
@@ -285,7 +285,7 @@ def resolve_team_colors(
     color_map: dict[str, str] = {}
     mapped_teams = set(vote_map.values())
     if len(mapped_teams) < len(vote_map) or (home and away and mapped_teams == {home} or mapped_teams == {away}):
-        print(f"  Ambiguous votes — using NBA convention: white={home}, non-white={away}")
+        print(f"  Ambiguous votes -- using NBA convention: white={home}, non-white={away}")
         for color in vote_map:
             color_map[color] = home if color == "white" else away
     else:
@@ -311,7 +311,7 @@ def process_game(game_id: str, skip_features: bool = False, backup_features: boo
     # Load PBP
     events = load_pbp(game_id)
     if not events:
-        print(f"  No PBP cache found — skipping")
+        print(f"  No PBP cache found -- skipping")
         return
     print(f"  PBP events: {len(events)}")
 
@@ -497,7 +497,7 @@ def _patch_features(
 
     for chunk in pd.read_csv(features_path, chunksize=chunk_size, low_memory=False):
         if "frame" not in chunk.columns:
-            print("  features.csv has no 'frame' column — skipping")
+            print("  features.csv has no 'frame' column -- skipping")
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
             return

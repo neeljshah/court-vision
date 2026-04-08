@@ -1,5 +1,5 @@
 """
-batch_season.py — Batch-process 2025-26 season games from select_season_games.py.
+batch_season.py -- Batch-process 2025-26 season games from select_season_games.py.
 
 Reads data/season_2025-26_targets.json, then for each game:
   1. Download video via fetch_games.py logic (yt-dlp YouTube search)
@@ -165,7 +165,7 @@ def _download_video(game_id: str, matchup: str, game_date: str) -> Optional[Path
         print(f"  ERROR importing fetch_games: {e}")
         return None
 
-    # Parse matchup "AWAY vs. HOME" or "AWAY @ HOME" → team abbrevs
+    # Parse matchup "AWAY vs. HOME" or "AWAY @ HOME" -> team abbrevs
     import re
     m = re.match(r"(\w+)\s+(?:vs\.?|@)\s+(\w+)", matchup)
     if not m:
@@ -179,7 +179,7 @@ def _download_video(game_id: str, matchup: str, game_date: str) -> Optional[Path
         "home": home_abbr,
         "date": game_date,
     }
-    # segment_seconds=0 → download full game (no clipping)
+    # segment_seconds=0 -> download full game (no clipping)
     print(f"  Searching YouTube for {game_id} ({matchup} {game_date})...")
     try:
         ok = fg._search_and_download(game_info, out_path, segment_seconds=0)
@@ -235,7 +235,7 @@ def _verify_gpu(gpu_id: int = 0) -> None:
             # Enable cuDNN autotuner for fixed-size inputs (broadcast frames)
             torch.backends.cudnn.benchmark = True
         else:
-            print("  *** WARNING: CUDA NOT AVAILABLE — running on CPU (very slow) ***")
+            print("  *** WARNING: CUDA NOT AVAILABLE -- running on CPU (very slow) ***")
             print("  Check: PyTorch CUDA version matches pod's nvcc/nvidia-smi")
     except ImportError:
         print("  *** WARNING: PyTorch not installed ***")
@@ -288,9 +288,9 @@ def main() -> None:
     if args.num_workers > 1:
         targets = [t for i, t in enumerate(targets) if i % args.num_workers == args.worker_id]
         print(f"=== Worker {args.worker_id}/{args.num_workers} on GPU {args.gpu} "
-              f"— {len(targets)} targets ===")
+              f"-- {len(targets)} targets ===")
     else:
-        print(f"=== batch_season.py — {len(targets)} targets  GPU {args.gpu} ===")
+        print(f"=== batch_season.py -- {len(targets)} targets  GPU {args.gpu} ===")
 
     processed = 0
     skipped = 0
@@ -308,7 +308,7 @@ def main() -> None:
         # Resume check
         existing_rows = _already_done(game_id)
         if existing_rows:
-            print(f"  SKIP — already processed ({existing_rows:,} rows)")
+            print(f"  SKIP -- already processed ({existing_rows:,} rows)")
             skipped += 1
             continue
 
@@ -327,7 +327,7 @@ def main() -> None:
             log_row["status"] = "download_failed"
             log_row["error"] = "yt-dlp returned no video"
             _append_log(log_row)
-            print(f"  FAILED download — logged, continuing")
+            print(f"  FAILED download -- logged, continuing")
             continue
 
         # Step 2: Pipeline
@@ -337,12 +337,12 @@ def main() -> None:
         metrics = _read_metrics(game_id)
         log_row.update(metrics)
 
-        # Quality gate — reject games with too few tracking rows (bad video)
+        # Quality gate -- reject games with too few tracking rows (bad video)
         MIN_ROWS = 10_000
         if success and metrics["rows"] < MIN_ROWS:
             success = False
             log_row["error"] = f"quality_gate: only {metrics['rows']} rows (min {MIN_ROWS})"
-            print(f"  QUALITY FAIL — only {metrics['rows']:,} rows (need {MIN_ROWS:,})")
+            print(f"  QUALITY FAIL -- only {metrics['rows']:,} rows (need {MIN_ROWS:,})")
             # Clean up garbage output so it doesn't block retries
             import shutil
             for parent in (TRACKING_DIR, GAMES_DIR):
@@ -397,14 +397,14 @@ def main() -> None:
                 print(f"  Warning: could not delete {video_path}: {e}")
             log_row["status"] = "success"
             processed += 1
-            print(f"  SUCCESS — rows={metrics['rows']:,}  shots={metrics['shots']}  "
+            print(f"  SUCCESS -- rows={metrics['rows']:,}  shots={metrics['shots']}  "
                   f"poss={metrics['poss']}  dur={metrics['duration_min']}min")
         else:
             log_row["status"] = log_row.get("error", "") or "pipeline_failed"
             if not log_row.get("error"):
                 log_row["error"] = "run_phase_g non-zero exit"
-            print(f"  FAILED — rows={metrics['rows']:,} — logged, continuing")
-            # Delete video on failure too (save disk — can re-download)
+            print(f"  FAILED -- rows={metrics['rows']:,} -- logged, continuing")
+            # Delete video on failure too (save disk -- can re-download)
             if video_path.exists():
                 try:
                     video_path.unlink()
@@ -422,7 +422,7 @@ def main() -> None:
                 torch.cuda.reset_peak_memory_stats()
         except ImportError:
             pass
-        time.sleep(2.0)  # brief pause for memory to settle (reduced 5→2s for throughput)
+        time.sleep(2.0)  # brief pause for memory to settle (reduced 5->2s for throughput)
 
     print(f"\n=== Done. Processed: {processed}  Skipped: {skipped} ===")
     print(f"Log: {LOG_PATH}")
