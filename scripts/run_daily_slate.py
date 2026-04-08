@@ -1,5 +1,5 @@
 """
-run_daily_slate.py — End-to-end daily NBA prop prediction pipeline.
+run_daily_slate.py -- End-to-end daily NBA prop prediction pipeline.
 
 Usage:
     python scripts/run_daily_slate.py --season 2024-25 --date 2026-03-19
@@ -34,7 +34,7 @@ log = logging.getLogger("run_daily_slate")
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _OUTPUT_DIR = os.path.join(PROJECT_DIR, "data", "output")
 
-# ── Step 1: Fetch today's games ───────────────────────────────────────────────
+# -- Step 1: Fetch today's games -----------------------------------------------
 
 
 def fetch_today_games(date_str: str, season: str) -> list[dict]:
@@ -72,7 +72,7 @@ def fetch_today_games(date_str: str, season: str) -> list[dict]:
             print(f"[slate] Fetched {len(games)} games from NBA API for {date_str}")
             return games
     except Exception as e:
-        log.warning("NBA API scoreboard failed (%s) — falling back to schedule files", e)
+        log.warning("NBA API scoreboard failed (%s) -- falling back to schedule files", e)
 
     # Fallback: scan schedule files for today's date
     sched_dir = os.path.join(_NBA_CACHE, "schedule")
@@ -110,7 +110,7 @@ def fetch_today_games(date_str: str, season: str) -> list[dict]:
     return games
 
 
-# ── Step 2: Get active players ────────────────────────────────────────────────
+# -- Step 2: Get active players ------------------------------------------------
 
 
 def get_active_players(team_abbr: str, season: str) -> list[str]:
@@ -143,7 +143,7 @@ def _check_dnp(player_id: int, season: str) -> float:
         return 0.05
 
 
-# ── Step 3+4: Predict + Normalise ─────────────────────────────────────────────
+# -- Step 3+4: Predict + Normalise ---------------------------------------------
 
 
 def run_predictions(games: list[dict], season: str) -> list[dict]:
@@ -249,7 +249,7 @@ def run_predictions(games: list[dict], season: str) -> list[dict]:
     return all_preds
 
 
-# ── Step 5: Score vs book lines ───────────────────────────────────────────────
+# -- Step 5: Score vs book lines -----------------------------------------------
 
 
 _STAT_PROP_TYPE_MAP = {
@@ -273,10 +273,10 @@ def fetch_book_lines() -> dict:
         from src.data.props_scraper import get_current_props
         raw = get_current_props()
         if not raw:
-            log.warning("props_scraper returned empty — proceeding without book lines")
+            log.warning("props_scraper returned empty -- proceeding without book lines")
             return {}
 
-        # Build reverse lookup: prop_type string → our stat key
+        # Build reverse lookup: prop_type string -> our stat key
         _pt_to_stat: dict = {}
         for stat, aliases in _STAT_PROP_TYPE_MAP.items():
             for alias in aliases:
@@ -301,7 +301,7 @@ def fetch_book_lines() -> dict:
 
 def score_vs_lines(preds: list[dict], book_lines: dict) -> list[dict]:
     """
-    For each player×stat, compute:
+    For each playerxstat, compute:
       edge_pct = model_proj - book_line  (raw difference)
       kelly    = edge_pct / (1 + edge_pct), capped at 0.04 (4% max)
     Adds {stat}_book_line, {stat}_edge, {stat}_kelly to each pred dict.
@@ -333,12 +333,12 @@ def score_vs_lines(preds: list[dict], book_lines: dict) -> list[dict]:
     return preds
 
 
-# ── Step 6+7: Rank + Write output ─────────────────────────────────────────────
+# -- Step 6+7: Rank + Write output ---------------------------------------------
 
 
 def build_edge_rows(preds: list[dict], min_edge: float = 0.5) -> list[dict]:
     """
-    Explode each player×stat into a row. Filter |edge| > min_edge.
+    Explode each playerxstat into a row. Filter |edge| > min_edge.
     Returns rows sorted descending by |edge|, each with:
       player, stat, projection, book_line, edge, kelly, confidence.
     """
@@ -372,7 +372,7 @@ def print_table(edge_rows: list[dict], preds: list[dict], top_n: int = 20) -> No
     display = edge_rows[:top_n]
 
     if not display:
-        # No edges — show top projections
+        # No edges -- show top projections
         display = [
             {"player": p["player"], "stat": "pts",
              "projection": float(p.get("pts", 0)),
@@ -410,22 +410,22 @@ def write_output(preds: list[dict], edge_rows: list[dict], date_str: str) -> str
     }
     with open(out_path, "w") as f:
         json.dump(payload, f, indent=2)
-    print(f"[slate] Output → {out_path}  ({len(preds)} players, {len(edge_rows)} edges)")
+    print(f"[slate] Output -> {out_path}  ({len(preds)} players, {len(edge_rows)} edges)")
     return out_path
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ----------------------------------------------------------------------
 
 
 def main(season: str, date_str: str) -> None:
     print(f"\n{'='*60}")
-    print(f"  NBA Daily Slate — {date_str}  (season {season})")
+    print(f"  NBA Daily Slate -- {date_str}  (season {season})")
     print(f"{'='*60}")
 
     # 1. Fetch games
     games = fetch_today_games(date_str, season)
     if not games:
-        print("[slate] No games today — writing empty output.")
+        print("[slate] No games today -- writing empty output.")
         write_output([], [], date_str)
         return
 
@@ -439,7 +439,7 @@ def main(season: str, date_str: str) -> None:
     # 5. Fetch book lines + score all stats
     book_lines = fetch_book_lines()
     if not book_lines:
-        print("[slate] No book lines available — showing projections only.")
+        print("[slate] No book lines available -- showing projections only.")
     score_vs_lines(preds, book_lines)
 
     # 6. Build edge rows (all stats, |edge| > 0.5)
@@ -449,7 +449,7 @@ def main(season: str, date_str: str) -> None:
     print_table(edge_rows, preds, top_n=20)
     write_output(preds, edge_rows, date_str)
 
-    print(f"[slate] Done — {len(preds)} players, {len(edge_rows)} edges surfaced.")
+    print(f"[slate] Done -- {len(preds)} players, {len(edge_rows)} edges surfaced.")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 """
-daily_pipeline.py — Single command run each morning.
+daily_pipeline.py -- Single command run each morning.
 
 Steps (in order):
   1. Refresh injury reports
-  2. Fetch today's props (DK, 15min TTL) → data/props/props_{today}.json
+  2. Fetch today's props (DK, 15min TTL) -> data/props/props_{today}.json
   3. Run full prediction cascade + edge detection
   4. Log predictions to outcome recorder (CLV tracking)
-  5. Print + save edge report → data/edges/edges_{today}.json
+  5. Print + save edge report -> data/edges/edges_{today}.json
   6. Check auto_retrain milestones
   7. Print summary
 
@@ -44,7 +44,7 @@ TODAY = _date.today().isoformat()
 
 
 def _step(n: int, label: str) -> None:
-    log.info("─── Step %d: %s", n, label)
+    log.info("--- Step %d: %s", n, label)
 
 
 def _ok(label: str, detail: str = "") -> None:
@@ -53,10 +53,10 @@ def _ok(label: str, detail: str = "") -> None:
 
 
 def _warn(label: str, err: Exception) -> None:
-    log.warning("    ✗ %s — %s", label, err)
+    log.warning("    ✗ %s -- %s", label, err)
 
 
-# ── Step 1 — Refresh injuries ─────────────────────────────────────────────────
+# -- Step 1 -- Refresh injuries -------------------------------------------------
 
 def step_injuries() -> dict:
     _step(1, "Refresh injury reports")
@@ -73,7 +73,7 @@ def step_injuries() -> dict:
     return result
 
 
-# ── Step 2 — Fetch props ──────────────────────────────────────────────────────
+# -- Step 2 -- Fetch props ------------------------------------------------------
 
 def step_props(dry_run: bool = False) -> dict:
     _step(2, "Fetch today's props (DraftKings)")
@@ -89,7 +89,7 @@ def step_props(dry_run: bool = False) -> dict:
         if not dry_run:
             with open(path, "w") as f:
                 json.dump(props, f, indent=2)
-        _ok("Props saved", f"{n} player lines → {path}")
+        _ok("Props saved", f"{n} player lines -> {path}")
         result["props"] = n
         result["path"] = path
     except Exception as e:
@@ -98,14 +98,14 @@ def step_props(dry_run: bool = False) -> dict:
     return result
 
 
-# ── Step 3 — Prediction cascade + edges ──────────────────────────────────────
+# -- Step 3 -- Prediction cascade + edges --------------------------------------
 
 def step_predict(min_ev: float, season: str, dry_run: bool = False) -> tuple[list, dict]:
     _step(3, f"Prediction cascade + edge detection (min_ev={min_ev})")
     edges: list = []
     result: dict = {"status": "ok", "edges": 0}
     if dry_run:
-        _ok("Dry run — skipping prediction cascade")
+        _ok("Dry run -- skipping prediction cascade")
         return edges, result
     try:
         from src.pipeline.prediction_orchestrator import PredictionOrchestrator
@@ -119,25 +119,25 @@ def step_predict(min_ev: float, season: str, dry_run: bool = False) -> tuple[lis
     return edges, result
 
 
-# ── Step 4 — Log predictions for CLV ─────────────────────────────────────────
+# -- Step 4 -- Log predictions for CLV -----------------------------------------
 
 def step_log_predictions(edges: list, dry_run: bool = False) -> dict:
     _step(4, "Log predictions to outcome recorder (CLV tracking)")
     result: dict = {"status": "ok"}
     if dry_run:
-        _ok("Dry run — skipping log")
+        _ok("Dry run -- skipping log")
         return result
     try:
         from src.pipeline.outcome_recorder import log_predictions
         log_predictions(edges)
-        _ok("Predictions logged", f"{len(edges)} edges → data/predictions/predictions_{TODAY}.json")
+        _ok("Predictions logged", f"{len(edges)} edges -> data/predictions/predictions_{TODAY}.json")
     except Exception as e:
         _warn("Log predictions", e)
         result["status"] = "failed"
     return result
 
 
-# ── Step 5 — Edge report ──────────────────────────────────────────────────────
+# -- Step 5 -- Edge report ------------------------------------------------------
 
 def step_edge_report(edges: list, dry_run: bool = False) -> dict:
     _step(5, "Print + save edge report")
@@ -171,13 +171,13 @@ def step_edge_report(edges: list, dry_run: bool = False) -> dict:
     return result
 
 
-# ── Step 6 — Auto retrain ─────────────────────────────────────────────────────
+# -- Step 6 -- Auto retrain -----------------------------------------------------
 
 def step_retrain(season: str, dry_run: bool = False) -> dict:
     _step(6, f"Check auto_retrain milestones (season={season})")
     result: dict = {"status": "ok", "retrained": []}
     if dry_run:
-        _ok("Dry run — skipping retrain check")
+        _ok("Dry run -- skipping retrain check")
         return result
     try:
         from src.pipeline.auto_retrain import check_and_retrain
@@ -191,7 +191,7 @@ def step_retrain(season: str, dry_run: bool = False) -> dict:
     return result
 
 
-# ── Step 7 — Summary ──────────────────────────────────────────────────────────
+# -- Step 7 -- Summary ----------------------------------------------------------
 
 def step_summary(
     injuries: dict,
@@ -203,7 +203,7 @@ def step_summary(
     _step(7, "Daily summary")
     n_edges = len(edges)
     print("\n" + "=" * 60)
-    print(f"  NBA AI Daily Pipeline — {TODAY}")
+    print(f"  NBA AI Daily Pipeline -- {TODAY}")
     print("=" * 60)
     print(f"  Injury alerts : {injuries.get('players', 0)} players")
     print(f"  Props fetched : {props.get('props', 0)} lines")
@@ -236,7 +236,7 @@ def step_summary(
     print("=" * 60 + "\n")
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ----------------------------------------------------------------------
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="NBA AI daily morning pipeline")
@@ -245,7 +245,7 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Log steps without writing or fetching live data")
     args = parser.parse_args()
 
-    log.info("Starting daily pipeline — %s  (dry_run=%s)", TODAY, args.dry_run)
+    log.info("Starting daily pipeline -- %s  (dry_run=%s)", TODAY, args.dry_run)
 
     injuries = step_injuries()
     props    = step_props(dry_run=args.dry_run)

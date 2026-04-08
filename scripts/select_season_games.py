@@ -1,8 +1,8 @@
 """
-select_season_games.py — Pick 2025-26 season games for batch CV processing.
+select_season_games.py -- Pick 2025-26 season games for batch CV processing.
 
 Fetches all completed 2025-26 regular season games from the NBA API,
-selects 2 games per team (30 teams × 2 = 60 slots, ~50 unique games),
+selects 2 games per team (30 teams x 2 = 60 slots, ~50 unique games),
 and writes data/season_2025-26_targets.json.
 
 Usage:
@@ -110,7 +110,7 @@ def _select_games(records: list, games_per_team: int) -> List[dict]:
         seen_ids.add(gid)
         unique.append(r)
 
-    # Sort newest first — recent games have better YouTube availability
+    # Sort newest first -- recent games have better YouTube availability
     unique.sort(key=lambda x: x.get("GAME_DATE", ""), reverse=True)
 
     # Pick up to games_per_team per team
@@ -126,7 +126,7 @@ def _select_games(records: list, games_per_team: int) -> List[dict]:
         if team_counts[team_abbr] >= games_per_team:
             continue
         if gid in selected_ids:
-            # Game already selected via the opponent's record — still credit this team
+            # Game already selected via the opponent's record -- still credit this team
             team_counts[team_abbr] += 1
             continue
         team_counts[team_abbr] += 1
@@ -172,7 +172,7 @@ def main() -> None:
                         help="Print selection without writing JSON")
     args = parser.parse_args()
 
-    print(f"=== select_season_games.py — {SEASON} ===")
+    print(f"=== select_season_games.py -- {SEASON} ===")
 
     already_done = _already_processed()
     print(f"Already processed: {len(already_done)} game dirs with >10K tracking rows")
@@ -189,7 +189,7 @@ def main() -> None:
             "total_targets": 0,
             "skipped_already_processed": 0,
             "targets": [],
-            "error": "NBA API returned no data — re-run when network is available",
+            "error": "NBA API returned no data -- re-run when network is available",
         }
     else:
         print(f"Raw records: {len(raw_records)} game-team rows")
