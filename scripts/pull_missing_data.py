@@ -246,7 +246,15 @@ def pull_a1_shot_dashboards() -> None:
             continue
 
         print(f"  {season}: fetching...", flush=True)
-        result = get_shot_dashboard_all_players(season=season, delay=0.8)
+        # get_shot_dashboard_all_players falls back to player_avgs_{season}.json for IDs.
+        # If that file is missing (e.g. 2025-26), derive IDs from gamelog_full files instead.
+        import glob as _glob, re as _re
+        gl_files = _glob.glob(os.path.join(_NBA_DATA, f"gamelog_full_*_{season}.json"))
+        extra_ids = [int(_re.search(r"gamelog_full_(\d+)_", f).group(1))
+                     for f in gl_files if _re.search(r"gamelog_full_(\d+)_", f)]
+        result = get_shot_dashboard_all_players(
+            season=season, player_ids=extra_ids or None, delay=0.8
+        )
         print(f"  {season}: [OK] {len(result)} players saved")
 
 
