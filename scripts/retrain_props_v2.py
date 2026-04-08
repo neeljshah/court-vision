@@ -1,20 +1,20 @@
 """
-retrain_props_v2.py — Retrain all 7 prop models on real per-game rolling features.
+retrain_props_v2.py -- Retrain all 7 prop models on real per-game rolling features.
 
 Data source  : data/nba/gamelog_full_{pid}_{season}.json for 2022-23, 2023-24, 2024-25
                Plus 2025-26 files when present (used for test/holdout only).
 Features     : same _build_row() / _load_gamelogs() as prop_holdout.py
 Train        : games < 2025-10-01  (all 3 completed seasons: 2022-23, 2023-24, 2024-25)
-Test         : 2025-10-01 – 2026-01-01  (early 2025-26 games)
+Test         : 2025-10-01 - 2026-01-01  (early 2025-26 games)
 Validate     : 2026-01-01+  (2025-26 mid-season holdout)
 
 Season resets: rolling averages reset at each season boundary so 2023-24 stats
                don't bleed into the first game of 2024-25.
 
 Output
-  data/models/props_{stat}_v2.json   — new model (always saved)
-  data/models/props_{stat}.json      — overwritten if holdout R² improves
-  data/models/model_registry.json    — updated with new metrics + needs_retrain=false
+  data/models/props_{stat}_v2.json   -- new model (always saved)
+  data/models/props_{stat}.json      -- overwritten if holdout R2 improves
+  data/models/model_registry.json    -- updated with new metrics + needs_retrain=false
 
 Usage
 -----
@@ -38,17 +38,17 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error, r2_score
 
-# ── Paths ──────────────────────────────────────────────────────────────────────
+# -- Paths ----------------------------------------------------------------------
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
 _FEATS_JSON = os.path.join(PROJECT_DIR, "scripts", "validate", "_all_feats.json")
 _REG_PATH   = os.path.join(_MODEL_DIR, "model_registry.json")
 
-# ── Config ─────────────────────────────────────────────────────────────────────
+# -- Config ---------------------------------------------------------------------
 _PROP_STATS   = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 # All games before 2025-10-01 are training (2022-23, 2023-24, 2024-25 completed seasons).
-# Early 2025-26 games (Oct 2025 – Jan 2026) form the test set.
+# Early 2025-26 games (Oct 2025 - Jan 2026) form the test set.
 # 2026-01-01+ is the holdout / validation set.
 _TRAIN_CUTOFF = datetime(2025, 10, 1)
 _TEST_CUTOFF  = datetime(2026, 1, 1)
@@ -72,7 +72,7 @@ _XGB_PARAMS = {
 }
 
 
-# ── Feature list ──────────────────────────────────────────────────────────────
+# -- Feature list --------------------------------------------------------------
 
 def _load_all_feats() -> List[str]:
     if os.path.exists(_FEATS_JSON):
@@ -86,7 +86,7 @@ def _load_all_feats() -> List[str]:
     raise RuntimeError("Cannot find _ALL_FEATS in player_props.py")
 
 
-# ── Date parser ───────────────────────────────────────────────────────────────
+# -- Date parser ---------------------------------------------------------------
 
 def _parse_date(s: str) -> Optional[datetime]:
     for fmt in ("%b %d, %Y", "%B %d, %Y", "%Y-%m-%d"):
@@ -97,11 +97,11 @@ def _parse_date(s: str) -> Optional[datetime]:
     return None
 
 
-# ── Gamelog loader ────────────────────────────────────────────────────────────
+# -- Gamelog loader ------------------------------------------------------------
 
 def _load_gamelogs() -> Dict[int, List[dict]]:
     by_player: Dict[int, List[dict]] = defaultdict(list)
-    # Load gamelogs for all available seasons — pick up 2025-26 files if present
+    # Load gamelogs for all available seasons -- pick up 2025-26 files if present
     files = glob.glob(os.path.join(_NBA_CACHE, "gamelog_full_*_????-??.json"))
     print(f"[retrain] Found {len(files)} gamelog files")
     for fpath in files:
@@ -125,7 +125,7 @@ def _load_gamelogs() -> Dict[int, List[dict]]:
     return by_player
 
 
-# ── Feature builder (mirrors prop_holdout.py exactly) ─────────────────────────
+# -- Feature builder (mirrors prop_holdout.py exactly) -------------------------
 
 def _avg(key: str, rows: List[dict]) -> float:
     vals = [float(r.get(key, 0) or 0) for r in rows]
@@ -196,7 +196,7 @@ def _build_row(pid: int, prior: List[dict], all_feats: List[str]) -> dict:
     return row
 
 
-# ── Dataset builder ───────────────────────────────────────────────────────────
+# -- Dataset builder -----------------------------------------------------------
 
 def _build_dataset(
     by_player: Dict[int, List[dict]],
@@ -269,7 +269,7 @@ def _build_dataset(
     return out
 
 
-# ── Train + evaluate ──────────────────────────────────────────────────────────
+# -- Train + evaluate ----------------------------------------------------------
 
 def _metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
     if len(y_true) == 0:
@@ -293,10 +293,10 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
         X_val,   y_val   = d["X_val"],   d["y_val"]
 
         if len(y_train) == 0:
-            print(f"[train] {stat}: no training data — skipping")
+            print(f"[train] {stat}: no training data -- skipping")
             continue
 
-        print(f"\n[train] {stat.upper()} — {len(y_train)} train rows", flush=True)
+        print(f"\n[train] {stat.upper()} -- {len(y_train)} train rows", flush=True)
 
         model = xgb.XGBRegressor(**_XGB_PARAMS)
         model.fit(
@@ -310,9 +310,9 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
         val_m   = _metrics(y_val,   model.predict(X_val)   if len(y_val)  > 0 else np.array([]))
 
         print(
-            f"  train  MAE={train_m['mae']:.4f}  R²={train_m['r2']:.4f}  n={train_m['n']}\n"
-            f"  test   MAE={test_m['mae']}  R²={test_m['r2']}  n={test_m['n']}\n"
-            f"  val    MAE={val_m['mae']}   R²={val_m['r2']}   n={val_m['n']}"
+            f"  train  MAE={train_m['mae']:.4f}  R2={train_m['r2']:.4f}  n={train_m['n']}\n"
+            f"  test   MAE={test_m['mae']}  R2={test_m['r2']}  n={test_m['n']}\n"
+            f"  val    MAE={val_m['mae']}   R2={val_m['r2']}   n={val_m['n']}"
         )
 
         # Always save v2
@@ -320,7 +320,7 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
         model.save_model(v2_path)
         print(f"  saved -> {v2_path}")
 
-        # Overwrite props_{stat}.json if val R² beats current registry
+        # Overwrite props_{stat}.json if val R2 beats current registry
         old_r2 = _get_registry_r2(stat)
         val_r2 = val_m["r2"] if val_m["r2"] is not None else -999.0
         if val_r2 > (old_r2 or -999.0):
@@ -328,7 +328,7 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
             tmp_path  = prod_path + ".tmp"
             model.save_model(tmp_path)
             os.replace(tmp_path, prod_path)
-            print(f"  promoted -> {prod_path}  (val R² {val_r2:.4f} > old {old_r2})")
+            print(f"  promoted -> {prod_path}  (val R2 {val_r2:.4f} > old {old_r2})")
 
         results[stat] = {
             "train": train_m,
@@ -349,7 +349,7 @@ def _get_registry_r2(stat: str) -> Optional[float]:
         return None
 
 
-# ── Registry update ───────────────────────────────────────────────────────────
+# -- Registry update -----------------------------------------------------------
 
 def _update_registry(results: Dict[str, dict]) -> None:
     try:
@@ -383,7 +383,7 @@ def _update_registry(results: Dict[str, dict]) -> None:
     print(f"\n[retrain] Registry updated -> {_REG_PATH}")
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ----------------------------------------------------------------------
 
 def main() -> None:
     print("[retrain] Loading feature list ...")
@@ -400,19 +400,19 @@ def main() -> None:
     print("\n[retrain] Training models ...")
     results = train_and_save(datasets)
 
-    print("\n── Final Results ─────────────────────────────────────────")
+    print("\n-- Final Results -----------------------------------------")
     for stat in _PROP_STATS:
         if stat not in results:
             continue
         r = results[stat]
         print(
             f"  {stat.upper():4s}  "
-            f"train R²={r['train']['r2']:.4f}  "
-            f"test R²={r['test']['r2']}  "
-            f"val R²={r['val']['r2']}  "
+            f"train R2={r['train']['r2']:.4f}  "
+            f"test R2={r['test']['r2']}  "
+            f"val R2={r['val']['r2']}  "
             f"val MAE={r['val']['mae']}"
         )
-    print("──────────────────────────────────────────────────────────\n")
+    print("----------------------------------------------------------\n")
 
     _update_registry(results)
     print("[retrain] Done.")
