@@ -413,6 +413,72 @@ def build_elo_ratings(seasons: List[str] = None) -> dict:
     return elo
 
 
+def compute_game_elo_lookup(seasons: list) -> dict:
+    """
+    Build a game_id → {"home_elo": float, "away_elo": float} lookup.
+
+    Runs the same K=20 / HOME_ADV=100 ELO update as build_elo_ratings, but
+    snapshots BEFORE each update so each game gets the ELO that was current
+    at tip-off (point-in-time, no leakage).
+
+    Args:
+        seasons: List of season strings e.g. ["2022-23", "2023-24", "2024-25"].
+
+    Returns:
+        Dict mapping str(game_id) → {"home_elo": float, "away_elo": float}.
+    """
+    K = 20
+    HOME_ADV = 100
+
+    all_games: list = []
+    for season in seasons:
+        path = os.path.join(_NBA_CACHE, f"season_games_{season}.json")
+        if not os.path.exists(path):
+            continue
+        try:
+            payload = json.load(open(path))
+            if isinstance(payload, dict):
+                payload = payload.get("rows", [])
+            all_games.extend(payload)
+        except Exception:
+            continue
+
+    if not all_games:
+        return {}
+
+    try:
+        all_games.sort(key=lambda g: g.get("game_date", ""))
+    except Exception:
+        pass
+
+    elo: dict = {}
+    lookup: dict = {}
+    for game in all_games:
+        home = str(game.get("home_team_abbrev") or game.get("home_team", ""))
+        away = str(game.get("away_team_abbrev") or game.get("away_team", ""))
+        gid  = str(game.get("game_id", ""))
+        result = game.get("home_win")
+        if not home or not away or not gid:
+            continue
+
+        elo.setdefault(home, 1500.0)
+        elo.setdefault(away, 1500.0)
+
+        # Snapshot BEFORE update — this is the ELO at game time
+        lookup[gid] = {"home_elo": elo[home], "away_elo": elo[away]}
+
+        if result is None:
+            continue  # future game — snapshot only, no update
+
+        home_elo_adj = elo[home] + HOME_ADV
+        exp_home = _sigmoid(home_elo_adj - elo[away])
+        delta = K * (float(result) - exp_home)
+        elo[home] = round(elo[home] + delta, 2)
+        elo[away] = round(elo[away] - delta, 2)
+
+    return lookup
+
+
 def get_elo_features(home_team: str, away_team: str) -> dict:
     """
     A-7: Return ELO features for a game.
@@ -584,3 +650,58 @@ def get_drive_outcomes(player_name: str) -> dict:
     }
     _DRIVE_CACHE[key] = result
     return result
+
+
+# ── Fusion layer adapter ───────────────────────────────────────────────────────
+
+def wrap_with_confidence(
+    feature_dict: dict,
+    data_source: str = "nba_api",
+) -> dict[str, "SourceValue"]:
+    """
+    Wrap a flat feature dict with SourceValue confidence annotations.
+
+    Used by Phase 4 rewire: every feature that passes through advanced_features
+    gets a confidence score derived from its data source.
+
+    Returns a parallel dict: {feature_name: SourceValue}.
+    Callers that don't need SourceValue can still use `feature_dict` directly.
+    """
+    try:
+        from src.fusion.source_registry import SourceValue, SOURCE_DEFAULT_CONFIDENCE
+        conf = SOURCE_DEFAULT_CONFIDENCE.get(data_source, 0.55)
+        return {
+            k: SourceValue(value=v, source=data_source, confidence=conf)
+            for k, v in feature_dict.items()
+            if v is not None
+        }
+    except Exception:
+        return {}
+
+
+def compute_feature_confidence(feature_dict: dict) -> float:
+    """
+    Compute an aggregate data_confidence score (0-1) for a feature row.
+
+    CV-sourced features boost confidence; missing/zero features reduce it.
+    Used as sample_weight during XGBoost training.
+    """
+    cv_keys = {
+        "cv_avg_defender_distance", "cv_contested_shot_rate",
+        "cvb_avg_defender_dist", "cvb_avg_spacing",
+        "xPTS_per_shot",
+    }
+    has_cv = any(
+        feature_dict.get(k, 0.0) not in (0.0, None)
+        for k in cv_keys
+    )
+    n_nonzero = sum(
+        1 for v in feature_dict.values()
+        if isinstance(v, (int, float)) and v != 0.0
+    )
+    n_total = max(len(feature_dict), 1)
+
+    base_conf = 0.85       # NBA API data
+    cv_bonus  = 0.10 if has_cv else 0.0
+    fill_rate = n_nonzero / n_total
+    return round(min(1.0, base_conf * fill_rate + cv_bonus), 4)
