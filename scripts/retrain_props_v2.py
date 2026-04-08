@@ -133,7 +133,7 @@ def _avg(key: str, rows: List[dict]) -> float:
 
 
 def _build_row(pid: int, prior: List[dict], all_feats: List[str]) -> dict:
-    """Build one feature row from prior games; unknowns → 0.0."""
+    """Build one feature row from prior games; unknowns -> 0.0."""
     n_all  = len(prior)
     n_roll = min(_ROLL_N, n_all)
     roll   = prior[-n_roll:] if n_roll > 0 else []
@@ -318,7 +318,7 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
         # Always save v2
         v2_path = os.path.join(_MODEL_DIR, f"props_{stat}_v2.json")
         model.save_model(v2_path)
-        print(f"  saved → {v2_path}")
+        print(f"  saved -> {v2_path}")
 
         # Overwrite props_{stat}.json if val R² beats current registry
         old_r2 = _get_registry_r2(stat)
@@ -328,7 +328,7 @@ def train_and_save(datasets: Dict[str, dict]) -> Dict[str, dict]:
             tmp_path  = prod_path + ".tmp"
             model.save_model(tmp_path)
             os.replace(tmp_path, prod_path)
-            print(f"  promoted → {prod_path}  (val R² {val_r2:.4f} > old {old_r2})")
+            print(f"  promoted -> {prod_path}  (val R² {val_r2:.4f} > old {old_r2})")
 
         results[stat] = {
             "train": train_m,
@@ -380,7 +380,7 @@ def _update_registry(results: Dict[str, dict]) -> None:
 
     with open(_REG_PATH, "w") as f:
         json.dump(registry, f, indent=2)
-    print(f"\n[retrain] Registry updated → {_REG_PATH}")
+    print(f"\n[retrain] Registry updated -> {_REG_PATH}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
