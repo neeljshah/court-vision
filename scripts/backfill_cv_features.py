@@ -76,6 +76,63 @@ def _build_name_to_id_map() -> Dict[str, int]:
     return result
 
 
+def _resolve_slot_via_jersey(
+    game_dir: str,
+    name_to_id: Dict[str, int],
+) -> Dict[int, int]:
+    """
+    Return mapping: tracker_slot_id → real_nba_player_id using jersey number chain.
+
+    Chain: slot_id → jersey_number (tracking_data.csv) → full_name (jersey_name_map.json) → NBA_id
+    This handles last-name-only OCR in shot_log by using the jersey map which has full names.
+    """
+    # Load jersey_name_map.json (jersey_num → full_name)
+    jnm_path = os.path.join(game_dir, "jersey_name_map.json")
+    jersey_to_name: Dict[str, str] = {}
+    try:
+        with open(jnm_path, encoding="utf-8", errors="replace") as f:
+            jnm = json.load(f)
+        jersey_to_name = {str(k): str(v) for k, v in jnm.items() if v}
+    except Exception:
+        return {}
+
+    if not jersey_to_name:
+        return {}
+
+    # Build slot → jersey_number from tracking_data.csv
+    # jersey_number may be stored as float (e.g. "3.0") — normalize to int string ("3")
+    tracking_path = os.path.join(game_dir, "tracking_data.csv")
+    slot_to_jersey: Dict[int, str] = {}
+    try:
+        with open(tracking_path, newline="", encoding="utf-8", errors="replace") as f:
+            for row in csv.DictReader(f):
+                try:
+                    slot = int(row.get("player_id", 0) or 0)
+                    jersey_raw = str(row.get("jersey_number", "")).strip()
+                    if not slot or not jersey_raw or jersey_raw in ("nan", ""):
+                        continue
+                    # Normalize float strings: "3.0" → "3", "00.0" handled via int
+                    try:
+                        jersey = str(int(float(jersey_raw)))
+                    except (ValueError, TypeError):
+                        jersey = jersey_raw
+                    slot_to_jersey.setdefault(slot, jersey)
+                except (ValueError, TypeError):
+                    pass
+    except Exception:
+        return {}
+
+    slot_to_nba: Dict[int, int] = {}
+    for slot, jersey in slot_to_jersey.items():
+        full_name = jersey_to_name.get(jersey)
+        if not full_name:
+            continue
+        nba_id = name_to_id.get(_norm(full_name))
+        if nba_id:
+            slot_to_nba[slot] = nba_id
+    return slot_to_nba
+
+
 def _resolve_player_names_from_shot_log(
     shot_log_path: str,
     name_to_id: Dict[str, int],
@@ -143,8 +200,11 @@ def process_game(
     if not os.path.exists(shot_log):
         return 0
 
-    # Get slot → real_nba_id mapping from player names
-    slot_to_nba = _resolve_player_names_from_shot_log(shot_log, name_to_id)
+    # Primary: slot → jersey_number (tracking_data) → full_name (jersey_name_map) → NBA_id
+    slot_to_nba = _resolve_slot_via_jersey(game_dir, name_to_id)
+    # Fallback: direct full-name match from shot_log player_name column
+    if not slot_to_nba:
+        slot_to_nba = _resolve_player_names_from_shot_log(shot_log, name_to_id)
     if not slot_to_nba:
         return 0
 
