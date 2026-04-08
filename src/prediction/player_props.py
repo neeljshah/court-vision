@@ -2573,6 +2573,12 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
         y_train = train_df[f"season_{stat}"].values
         y_test  = test_df[f"season_{stat}"].values
 
+        # data_confidence as sample_weight: rows with CV data get higher weight
+        if "data_confidence" in train_df.columns:
+            sample_w = train_df["data_confidence"].clip(0.1, 1.0).values
+        else:
+            sample_w = None
+
         m = xgb.XGBRegressor(
             n_estimators=200,
             max_depth=4,
@@ -2581,7 +2587,7 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
             colsample_bytree=0.8,
             random_state=42,
         )
-        m.fit(X_train, y_train)
+        m.fit(X_train, y_train, sample_weight=sample_w)
         preds = m.predict(X_test)
         mae = mean_absolute_error(y_test, preds)
         r2  = r2_score(y_test, preds)
@@ -2828,6 +2834,16 @@ def _get_all_player_avgs(season: str) -> list:
             "dist_per_game": float(tracking_by_pid.get(pid, {}).get("distance", 0.0) or 0.0),
             "touches_pg":    float(tracking_by_pid.get(pid, {}).get("touches",  0.0) or 0.0),
         })
+
+    # data_confidence: compute after rows are fully built
+    try:
+        from src.features.advanced_features import compute_feature_confidence as _conf_fn
+        for row in rows:
+            row["data_confidence"] = _conf_fn(row)
+    except Exception:
+        for row in rows:
+            row.setdefault("data_confidence", 0.85)
+
     return rows
 
 
