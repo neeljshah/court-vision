@@ -1,5 +1,5 @@
 """
-run_phase_g.py — Phase G: Batch-process existing game videos, no recording needed.
+run_phase_g.py -- Phase G: Batch-process existing game videos, no recording needed.
 
 Scans data/videos/full_games/ (game-ID-named) and data/videos/ (team-named),
 runs the full tracker pipeline on each unprocessed game, saves per-game outputs
@@ -15,7 +15,7 @@ Usage:
     # Process a specific number of frames per game (e.g. 5 min at 30fps = 9000)
     python scripts/run_phase_g.py --frames 9000
 
-    # Process full games (slow — use for final validation)
+    # Process full games (slow -- use for final validation)
     python scripts/run_phase_g.py --full
 
     # Re-process already-done games
@@ -45,7 +45,7 @@ _file_lock = threading.Lock()  # guards phase_g_processed.txt + metrics CSV writ
 try:
     import cv2 as _cv2
 except ImportError:
-    _cv2 = None  # cv2 unavailable — FPS detection will be skipped
+    _cv2 = None  # cv2 unavailable -- FPS detection will be skipped
 
 # Force UTF-8 output on Windows (cp1252 default chokes on Unicode video filenames)
 if hasattr(sys.stdout, "reconfigure"):
@@ -68,7 +68,7 @@ VAULT_LOG     = PROJECT_DIR / "vault" / "Improvements" / "Tracker Improvements L
 DEFAULT_FRAMES = 18_000
 
 
-# ── helpers ───────────────────────────────────────────────────────────────────
+# -- helpers -------------------------------------------------------------------
 
 def _done_set() -> set[str]:
     if DONE_LOG.exists():
@@ -110,13 +110,13 @@ def _save_metrics(game_key: str, game_id: Optional[str], metrics: dict):
             })
     if quality == "low":
         print(f"  WARNING: {game_key} ball_valid={metrics.get('ball_valid_pct', 0):.1f}% "
-              f"— LOW QUALITY, exclude from training")
+              f"-- LOW QUALITY, exclude from training")
 
 
 def _log_to_vault(entries: list[str]):
     if not VAULT_LOG.exists():
         return
-    header = f"\n## Phase G — {datetime.now().strftime('%Y-%m-%d')}\n"
+    header = f"\n## Phase G -- {datetime.now().strftime('%Y-%m-%d')}\n"
     with _file_lock, open(VAULT_LOG, "a", encoding="utf-8") as f:
         f.write(header)
         for line in entries:
@@ -146,7 +146,7 @@ def _recompute_ball_valid(ball_csv: Path) -> Optional[float]:
     """Recompute ball_valid_pct using live-frame denominator if column exists.
 
     For CSVs that have the `live` column: detected.sum() / live.sum().
-    For old CSVs without `live`: apply a streak-based heuristic — any stretch
+    For old CSVs without `live`: apply a streak-based heuristic -- any stretch
     of 90+ consecutive detected=0 frames is classified as non-live (replay /
     halftime / ad-break) and excluded from the denominator.
     """
@@ -174,8 +174,8 @@ def _recompute_ball_valid(ball_csv: Path) -> Optional[float]:
             return round(detected / denom * 100, 1)
 
         # Heuristic for old CSVs (no live column): mark 90+-frame zero-detection
-        # stretches as non-live.  30fps / stride=3 → 10 effective fps; 90 frames
-        # = 9 real seconds — long enough to span replays and halftime sequences.
+        # stretches as non-live.  30fps / stride=3 -> 10 effective fps; 90 frames
+        # = 9 real seconds -- long enough to span replays and halftime sequences.
         _STREAK_MIN = 90
         heuristic_live = [1] * len(detected_flags)
         streak_start = None
@@ -206,13 +206,13 @@ def _collect_videos() -> list[tuple[str, Path, Optional[str]]]:
     """Return list of (display_key, video_path, game_id_or_None)."""
     videos = []
 
-    # full_games/*.mp4 — filename IS the game ID
+    # full_games/*.mp4 -- filename IS the game ID
     if FULL_GAMES.exists():
         for p in sorted(FULL_GAMES.glob("*.mp4")):
             gid = p.stem  # e.g. "0022400625"
             videos.append((gid, p, gid))
 
-    # data/videos/*.mp4 — team-named clips, no game ID
+    # data/videos/*.mp4 -- team-named clips, no game ID
     for p in sorted(VIDEOS_DIR.glob("*.mp4")):
         key = p.stem
         videos.append((key, p, None))
@@ -228,7 +228,7 @@ def _backfill_live_pct():
     `live` column fall back to the existing detected/total computation.
     """
     if not METRICS_LOG.exists():
-        print("phase_g_metrics.csv not found — nothing to backfill.")
+        print("phase_g_metrics.csv not found -- nothing to backfill.")
         return
 
     rows = []
@@ -245,7 +245,7 @@ def _backfill_live_pct():
             row["ball_valid_pct"] = str(pct)
             row["quality"] = _quality_label(pct)   # Fix 5: backfill quality label
             if old_pct != str(pct):
-                print(f"  {game_key}: ball_valid_pct  {old_pct} → {pct}  quality={row['quality']}")
+                print(f"  {game_key}: ball_valid_pct  {old_pct} -> {pct}  quality={row['quality']}")
                 updated += 1
 
     if not rows:
@@ -263,7 +263,7 @@ def _backfill_live_pct():
         w.writeheader()
         w.writerows(rows)
 
-    print(f"Backfill complete — {updated} game(s) updated in {METRICS_LOG.name}")
+    print(f"Backfill complete -- {updated} game(s) updated in {METRICS_LOG.name}")
 
 
 def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
@@ -365,7 +365,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         line = raw_line.rstrip("\n")
         stdout_lines.append(line)
         _parse_metric_line(line)
-        # Print live — suppress \r Frame lines to avoid terminal spam; show all others
+        # Print live -- suppress \r Frame lines to avoid terminal spam; show all others
         if not line.startswith("\r") and line.strip():
             print(f"    {line}", flush=True)
         elif line.startswith("\r"):
@@ -408,10 +408,10 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
                 pass
 
     if returncode == 3:
-        print(f"  [WARN] run_clip.py exited 3 — Stage 1 produced 0 rows (no gameplay detected)")
+        print(f"  [WARN] run_clip.py exited 3 -- Stage 1 produced 0 rows (no gameplay detected)")
         print("         Video may need manual review or different start frame.")
     elif returncode == 4:
-        print(f"  [PREFLIGHT FAIL] run_clip.py exited 4 — non-broadcast video detected")
+        print(f"  [PREFLIGHT FAIL] run_clip.py exited 4 -- non-broadcast video detected")
         print("         Median person count below threshold. Download a real broadcast clip.")
         metrics["ball_valid_pct"] = 0.0
         metrics["frames"] = 0
@@ -427,10 +427,10 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
     return metrics
 
 
-# ── main ──────────────────────────────────────────────────────────────────────
+# -- main ----------------------------------------------------------------------
 
 def main():
-    ap = argparse.ArgumentParser(description="Phase G — batch tracker evaluation")
+    ap = argparse.ArgumentParser(description="Phase G -- batch tracker evaluation")
     ap.add_argument("--frames",     type=int, default=DEFAULT_FRAMES,
                     help="Frames per game in quick mode (default 18000 = ~10 min)")
     ap.add_argument("--full",       action="store_true",
@@ -457,7 +457,7 @@ def main():
                          "Use to skip pre-game content in full-game downloads.")
     ap.add_argument("--parallel",     type=int, default=1,
                     help="Number of games to process simultaneously (default 1). "
-                         "Use 2 on an RTX 4060 8GB — each pipeline uses ~3GB VRAM. "
+                         "Use 2 on an RTX 4060 8GB -- each pipeline uses ~3GB VRAM. "
                          "Do NOT use >2 without checking VRAM headroom.")
     ap.add_argument("--skip-tracking", action="store_true",
                     help="Skip Stage 1 tracking (requires tracking_data.csv to exist). "
@@ -512,7 +512,7 @@ def main():
         videos = videos[:args.limit]
 
     frames_per_game = None if args.full else args.frames
-    print(f"\nPhase G — processing {len(videos)} game(s), "
+    print(f"\nPhase G -- processing {len(videos)} game(s), "
           f"{'full game' if args.full else f'first {frames_per_game} frames'} each\n")
 
     vault_entries = []
@@ -535,10 +535,10 @@ def main():
             _save_metrics(key, game_id, metrics)
             _mark_done(key)
         else:
-            print(f"  [WARN] {key} output incomplete — re-run with --resume to retry.")
+            print(f"  [WARN] {key} output incomplete -- re-run with --resume to retry.")
         print(f"  [{key}] frames={metrics['frames']}  stability={metrics['stability']:.3f}"
               f"  id_sw={metrics['id_switches']}  ball={metrics['ball_valid_pct']:.1f}%"
-              f"  elapsed={metrics['duration_s']:.0f}s  → {out_dir}")
+              f"  elapsed={metrics['duration_s']:.0f}s  -> {out_dir}")
         return key, metrics
 
     work = [(i, len(videos), k, p, g) for i, (k, p, g) in enumerate(videos, 1)]
@@ -553,14 +553,14 @@ def main():
 
     for key, metrics in results_list:
         vault_entries.append(
-            f"{key} — stability={metrics['stability']:.3f} "
+            f"{key} -- stability={metrics['stability']:.3f} "
             f"id_sw={metrics['id_switches']} "
             f"ball={metrics['ball_valid_pct']:.1f}% "
             f"({metrics['frames']} frames, {metrics['duration_s']:.0f}s)"
         )
 
     total_elapsed = time.time() - total_t0
-    print(f"Phase G complete — {len(videos)} games in {total_elapsed:.0f}s")
+    print(f"Phase G complete -- {len(videos)} games in {total_elapsed:.0f}s")
     print(f"Metrics log : {METRICS_LOG}")
 
     _log_to_vault(vault_entries)
