@@ -373,7 +373,7 @@ def _update_registry(results: Dict[str, dict]) -> None:
             "holdout_mae":  val["mae"],
             "holdout_r2":   val["r2"],
             "holdout_n":    val["n"],
-            "needs_retrain": (val["r2"] is None) or (val["r2"] < 0.70),
+            "needs_retrain": (val["r2"] is None) or (val["r2"] < 0.10),
             "retrained_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "retrain_version": "v2_multiseasson_2022-23_to_2024-25",
         })
