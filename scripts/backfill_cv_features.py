@@ -1,9 +1,9 @@
 """
-backfill_cv_features.py — Register CV features from existing tracking game directories.
+backfill_cv_features.py -- Register CV features from existing tracking game directories.
 
 Reads all game directories under data/tracking/ and data/games/, extracts
 per-player CV features via tracking_feature_extractor, resolves player_name
-→ real NBA player_id using cached player_avgs, then writes to cv_features DB.
+-> real NBA player_id using cached player_avgs, then writes to cv_features DB.
 
 Usage:
     conda activate basketball_ai
@@ -34,7 +34,7 @@ TRACKING_DIR = DATA_DIR / "tracking"
 GAMES_DIR   = DATA_DIR / "games"
 NBA_CACHE   = DATA_DIR / "nba"
 
-# Seasons to look up player → NBA ID mappings (newest first)
+# Seasons to look up player -> NBA ID mappings (newest first)
 _LOOKUP_SEASONS = ["2025-26", "2024-25", "2023-24"]
 # Cache file candidates per season (checked in order)
 _CACHE_PATTERNS = ["player_full_{season}.json", "player_avgs_{season}.json"]
@@ -45,7 +45,7 @@ def _norm(s: str) -> str:
 
 
 def _build_name_to_id_map() -> Dict[str, int]:
-    """Build player_name → NBA player_id from cached player stats files."""
+    """Build player_name -> NBA player_id from cached player stats files."""
     result: Dict[str, int] = {}
     for season in _LOOKUP_SEASONS:
         for pattern in _CACHE_PATTERNS:
@@ -81,12 +81,12 @@ def _resolve_slot_via_jersey(
     name_to_id: Dict[str, int],
 ) -> Dict[int, int]:
     """
-    Return mapping: tracker_slot_id → real_nba_player_id using jersey number chain.
+    Return mapping: tracker_slot_id -> real_nba_player_id using jersey number chain.
 
-    Chain: slot_id → jersey_number (tracking_data.csv) → full_name (jersey_name_map.json) → NBA_id
+    Chain: slot_id -> jersey_number (tracking_data.csv) -> full_name (jersey_name_map.json) -> NBA_id
     This handles last-name-only OCR in shot_log by using the jersey map which has full names.
     """
-    # Load jersey_name_map.json (jersey_num → full_name)
+    # Load jersey_name_map.json (jersey_num -> full_name)
     jnm_path = os.path.join(game_dir, "jersey_name_map.json")
     jersey_to_name: Dict[str, str] = {}
     try:
@@ -99,8 +99,8 @@ def _resolve_slot_via_jersey(
     if not jersey_to_name:
         return {}
 
-    # Build slot → jersey_number from tracking_data.csv
-    # jersey_number may be stored as float (e.g. "3.0") — normalize to int string ("3")
+    # Build slot -> jersey_number from tracking_data.csv
+    # jersey_number may be stored as float (e.g. "3.0") -- normalize to int string ("3")
     tracking_path = os.path.join(game_dir, "tracking_data.csv")
     slot_to_jersey: Dict[int, str] = {}
     try:
@@ -111,7 +111,7 @@ def _resolve_slot_via_jersey(
                     jersey_raw = str(row.get("jersey_number", "")).strip()
                     if not slot or not jersey_raw or jersey_raw in ("nan", ""):
                         continue
-                    # Normalize float strings: "3.0" → "3", "00.0" handled via int
+                    # Normalize float strings: "3.0" -> "3", "00.0" handled via int
                     try:
                         jersey = str(int(float(jersey_raw)))
                     except (ValueError, TypeError):
@@ -138,7 +138,7 @@ def _resolve_player_names_from_shot_log(
     name_to_id: Dict[str, int],
 ) -> Dict[int, int]:
     """
-    Return mapping: tracker_slot_id → real_nba_player_id.
+    Return mapping: tracker_slot_id -> real_nba_player_id.
 
     Reads player_name column from shot_log.csv and matches against the NBA
     player_id cache. Only slots with a clean name match are returned.
@@ -200,7 +200,7 @@ def process_game(
     if not os.path.exists(shot_log):
         return 0
 
-    # Primary: slot → jersey_number (tracking_data) → full_name (jersey_name_map) → NBA_id
+    # Primary: slot -> jersey_number (tracking_data) -> full_name (jersey_name_map) -> NBA_id
     slot_to_nba = _resolve_slot_via_jersey(game_dir, name_to_id)
     # Fallback: direct full-name match from shot_log player_name column
     if not slot_to_nba:
@@ -236,7 +236,7 @@ def main() -> None:
     args = parser.parse_args()
 
     name_to_id = _build_name_to_id_map()
-    print(f"Player name→ID map: {len(name_to_id)} entries loaded")
+    print(f"Player name->ID map: {len(name_to_id)} entries loaded")
 
     # Collect all game directories
     dirs_to_check: list[tuple[str, str]] = []  # (game_id, game_dir_path)
@@ -270,7 +270,7 @@ def main() -> None:
         if n == 0:
             skipped_no_names += 1
             if args.dry_run:
-                print(f"  {game_id}: no resolvable player names → skip")
+                print(f"  {game_id}: no resolvable player names -> skip")
         else:
             total_registered += n
             status = "[DRY RUN]" if args.dry_run else "registered"
