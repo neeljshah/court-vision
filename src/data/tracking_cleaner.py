@@ -254,8 +254,15 @@ class TrackingCleaner:
         try:
             with open(tc_path, encoding="utf-8") as f:
                 tc = json.load(f)
-            label_to_abbr = {v.get("label", k): v.get("abbreviation", k)
-                             for k, v in tc.items() if isinstance(v, dict)}
+            # Support both formats:
+            #   flat:   {"green": "ORL", "white": "UTA"}    (pipeline/backfill output)
+            #   nested: {"green": {"label": ..., "abbreviation": "ORL"}}  (legacy)
+            label_to_abbr = {}
+            for k, v in tc.items():
+                if isinstance(v, dict):
+                    label_to_abbr[v.get("label", k)] = v.get("abbreviation", k)
+                elif isinstance(v, str) and v:
+                    label_to_abbr[k] = v
             if "team" in df.columns:
                 if "team_abbrev" not in df.columns:
                     df["team_abbrev"] = pd.NA
