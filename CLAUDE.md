@@ -5,16 +5,16 @@
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
 ### State (Session 33, 2026-04-07)
-- Branch: `master` | Tests: 1042 pass, 93 skip
+- Branch: `master` | Tests: 960 pass, 93 skip (excl PG tests)
 - Phase: Pre-F. Next: season batch (`select_season_games.py` -> `batch_season.py`)
-- CV games: 14 A/B-grade / 20 target. Season 2025-26: 2 processed, 59 videos waiting
-- CV registry: 24 player-game records (backfill improved jersey chain resolution)
-- 2024-25 gamelog_full: DONE (569/569). Props retrain running.
-- A1 shot dashboard 2025-26: MISSING (fetching)
+- CV games: 16 A/B-grade / 20 target (5A + 11B). 7 C-grade, 65 F-grade.
+- CV registry: 24 player-game records (6 games) via jersey chain resolution
+- 2024-25 gamelog_full: DONE (569/569). Props retrained — all 7 models updated.
+- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25 (STL=0.07 still weak)
 
 ### Open Issues (priority)
 1. 59 unprocessed 2025-26 videos in data/videos/full_games/ — run `python scripts/run_phase_g.py` (GPU needed)
-2. Props models: retrain in progress with 2024-25 data (all 7 flagged needs_retrain)
+2. STL prop model R2=0.07 — needs more features or different approach
 3. CV registry sparsity — 24 records across 6 games; needs better OCR/player resolution
 4. Possession simulator unbuilt (Phase 8)
 5. No frontend/API serving predictions
