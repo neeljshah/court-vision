@@ -2040,6 +2040,30 @@ def _build_player_features(
     # ── CV-derived spatial features (from broadcast tracking) ─────────────────
     # Populated once cv_feature_registry has data; zero-defaults until then.
     feats.update(_load_cv_features_player(int(pid)))
+    # CSV-based spatial bridge: direct aggregate from data/features.csv
+    try:
+        from src.features.cv_feature_bridge import get_cv_features as _get_cv_features
+        feats.update(_get_cv_features(player_name))
+    except Exception:
+        pass
+
+    # ── Shot quality: xPTS_per_shot (fusion-layer feature) ────────────────────
+    # Uses CV-trained ShotQualityModel; falls back to zone heuristic (conf=0.35)
+    xpts_per_shot       = 0.0
+    xpts_confidence     = 0.35
+    try:
+        from src.prediction.shot_quality import get_shot_quality_model as _sqm
+        _sq = _sqm()
+        _zone  = feats.get("shot_zone_primary", "mid_range")
+        _ddist = feats.get("avg_defender_dist", 5.0) or 5.0
+        _clk   = 12.0   # season-average; per-shot clock unavailable at prediction time
+        _cs    = int(feats.get("catch_shoot_pct", 0.0) > 0.35)
+        _, xpts_per_shot, xpts_confidence = _sq.predict(_zone, _ddist, _clk, _cs)
+    except Exception:
+        pass
+
+    feats["xPTS_per_shot"]   = xpts_per_shot
+    feats["xpts_confidence"] = xpts_confidence
 
     return feats
 
@@ -2328,11 +2352,16 @@ _ALL_FEATS = [
     "clutch_pm_pbp", "foul_drawn_rate_pbp2",
     # B-3: CV fatigue features (populated from features.csv when available)
     "fatigue_index_game_avg", "dist_traveled_game_total",
+    # CV bridge: broadcast spatial aggregates from data/features.csv
+    "cvb_avg_defender_dist", "cvb_avg_spacing", "cvb_avg_velocity",
+    "cvb_fatigue_score", "cvb_paint_time_pct", "cvb_off_ball_dist",
     # CV spatial features (populated from broadcast tracking via cv_feature_registry)
     "cv_avg_defender_distance", "cv_contested_shot_rate",
     "cv_shot_zone_paint_pct", "cv_shot_zone_3pt_pct",
     "cv_shots_per_possession", "cv_possession_duration_avg",
     "cv_play_type_transition_pct",
+    # Fusion layer: shot quality model (xPTS via CV-trained model + spatial prior)
+    "xPTS_per_shot",
 ]
 
 
