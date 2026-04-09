@@ -67,6 +67,57 @@ _PREFLIGHT_FRAMES = 10   # number of evenly-spaced frames to sample
 _PREFLIGHT_MIN_PERSONS = 3  # median person count below this → reject video
 
 
+def _ensure_decodable_video(video_path: str) -> str:
+    """Transcode AV1 videos to H.264 so opencv-python's bundled ffmpeg can read them.
+
+    opencv-python ships its own libavcodec built without libdav1d → cap.read()
+    returns False on every AV1 frame. System ffmpeg (apt install ffmpeg) has
+    libdav1d + av1_cuvid + h264_nvenc, so we transcode once to a cache dir and
+    return the cached path. Subsequent runs hit the cache.
+    """
+    import subprocess
+    try:
+        codec = subprocess.check_output(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "stream=codec_name", "-of", "default=nw=1:nk=1",
+             video_path],
+            text=True,
+        ).strip()
+    except (FileNotFoundError, subprocess.CalledProcessError):
+        return video_path  # ffprobe unavailable — trust cv2
+    if codec != "av1":
+        return video_path
+
+    cache_dir = os.path.join(PROJECT_DIR, "data", "videos", "full_games_h264")
+    os.makedirs(cache_dir, exist_ok=True)
+    stem = os.path.splitext(os.path.basename(video_path))[0]
+    out_path = os.path.join(cache_dir, f"{stem}.mp4")
+    if os.path.exists(out_path) and os.path.getsize(out_path) > 1_000_000:
+        print(f"[transcode] using cached H.264: {out_path}")
+        return out_path
+
+    print(f"[transcode] {codec} → h264 (CPU libdav1d/libx264): {video_path}")
+    tmp_path = out_path + ".tmp.mp4"
+    # RunPod containers typically do not expose NVDEC/NVENC (av1_cuvid + h264_nvenc
+    # fail with "unsupported device") even though CUDA compute works. Use pure CPU.
+    # ~2.5× realtime on this pod (~8–12 min per 20-min broadcast), multi-threaded.
+    cpu_cmd = [
+        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+        "-c:v", "libdav1d",
+        "-i", video_path,
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+        "-an", "-movflags", "+faststart",
+        tmp_path,
+    ]
+    rc = subprocess.call(cpu_cmd)
+    if rc != 0 or not os.path.exists(tmp_path):
+        print(f"[transcode] FAILED rc={rc} — returning original path, pipeline will fail cleanly")
+        return video_path
+    os.rename(tmp_path, out_path)
+    print(f"[transcode] done → {out_path} ({os.path.getsize(out_path)/1e6:.0f} MB)")
+    return out_path
+
+
 def _preflight_check(video_path: str, yolo_weight=None):
     """Sample 10 frames and run YOLO person detection.
 
@@ -169,6 +220,9 @@ def main():
     if not os.path.exists(args.video):
         print(f"Error: video not found at {args.video}")
         sys.exit(1)
+
+    # AV1 → H.264 shim (transcodes once, caches under data/videos/full_games_h264/)
+    args.video = _ensure_decodable_video(args.video)
 
     cap_check = cv2.VideoCapture(args.video)
     total_frames_check = int(cap_check.get(cv2.CAP_PROP_FRAME_COUNT))
