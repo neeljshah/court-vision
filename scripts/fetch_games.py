@@ -30,9 +30,13 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from pathlib import Path
+from threading import Lock
 from typing import Optional
+
+_print_lock = Lock()
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 
@@ -176,14 +180,22 @@ def _get_recent_games(count: int, from_date: Optional[str],
 def _build_base_cmd() -> list:
     """Build the base yt-dlp command with common options."""
     cookies_file = PROJECT_DIR / "data" / "videos" / "youtube_cookies.txt"
-    base_cmd = [
-        "yt-dlp",
+    # Use python3.11 -m yt_dlp when available (has curl_cffi impersonation support)
+    import shutil
+    if shutil.which("python3.11"):
+        base_cmd = ["python3.11", "-m", "yt_dlp"]
+    else:
+        base_cmd = ["yt-dlp"]
+    base_cmd += [
         "--no-playlist",
-        "--format", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][ext=mp4]/best[height<=720]",
+        # Force H.264 (avc1) — opencv-python's bundled ffmpeg cannot decode AV1
+        # on Linux without libdav1d, and RunPod containers block NVDEC av1_cuvid.
+        # Every fallback explicitly rejects av01/vp9 so we never redownload-transcode.
+        "--format", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]+bestaudio[ext=m4a]/best[height<=720][vcodec!*=av01][vcodec!*=vp9][ext=mp4]/best[height<=720][vcodec!*=av01][vcodec!*=vp9]",
         "--merge-output-format", "mp4",
         "--quiet",
         "--no-warnings",
-        "--sleep-requests", "2",
+        "--sleep-requests", "0",
         "--no-abort-on-error",
     ]
     # Point yt-dlp at conda env's ffmpeg (not on system PATH)
@@ -284,8 +296,9 @@ def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
 def _search_dailymotion(query: str, base_cmd: list,
                         min_dur: int = 300, max_dur: int = 14400) -> list:
     """Search Dailymotion via yt-dlp. NBA full games persist longer on DM."""
-    search_url = f"dmsearch10:{query}"
-    info_cmd = base_cmd + ["--dump-json", "--flat-playlist", search_url]
+    import urllib.parse
+    search_url = f"https://www.dailymotion.com/search/{urllib.parse.quote(query)}/videos"
+    info_cmd = base_cmd + ["--impersonate", "chrome", "--dump-json", "--flat-playlist", search_url]
     try:
         proc = subprocess.run(info_cmd, capture_output=True, text=True, timeout=30)
     except (subprocess.TimeoutExpired, Exception):
@@ -314,7 +327,7 @@ def _search_dailymotion(query: str, base_cmd: list,
 def _download_direct_url(url: str, out_path: Path, base_cmd: list,
                          segment_seconds: int, best_dur: int) -> bool:
     """Download from a direct URL (Dailymotion, etc). Returns True on success."""
-    dl_cmd = list(base_cmd)
+    dl_cmd = list(base_cmd) + ["--impersonate", "chrome"]
     dl_cmd += ["--output", str(out_path)]
     if segment_seconds and best_dur > segment_seconds * 2:
         start_sec = 60
@@ -370,7 +383,7 @@ def _search_and_download(game: dict, out_path: Path,
                                 reject_kw=["highlights", "highlight"],
                                 num_results=10)
         all_yt_candidates.extend(candidates)
-        time.sleep(1)  # rate limit
+        pass  # rate limit removed for pod use
 
     # Deduplicate by video ID
     _seen_ids = set()
@@ -499,25 +512,39 @@ def main():
         return
 
     segment_s = 0 if args.full else args.segment
-    downloaded = []
+    downloaded: list[str] = []
+    downloaded_lock = Lock()
 
-    for game in games:
-        if len(downloaded) >= args.count:
-            break
-        gid  = game["game_id"]
-        out  = VIDEOS_DIR / f"{gid}.mp4"
+    def _fetch_one(game: dict) -> str | None:
+        gid = game["game_id"]
+        out = VIDEOS_DIR / f"{gid}.mp4"
         if out.exists() and out.stat().st_size > 500_000:
-            print(f"[skip] {gid} already downloaded")
-            downloaded.append(gid)
-            continue
-
-        print(f"\n── {game['away']} @ {game['home']}  {game['date']}  ({gid})")
+            with _print_lock:
+                print(f"[skip] {gid} already downloaded")
+            return gid
+        with _print_lock:
+            print(f"\n── {game['away']} @ {game['home']}  {game['date']}  ({gid})")
         ok = _search_and_download(game, out, segment_s)
         if ok:
-            downloaded.append(gid)
-        else:
+            return gid
+        with _print_lock:
             print(f"  [WARN] Could not download {gid} — skipping")
-        time.sleep(2)  # polite rate limiting
+        return None
+
+    # Parallel fetch: 4 workers — each yt-dlp search is I/O-bound
+    workers = min(4, len(games))
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futs = {pool.submit(_fetch_one, g): g for g in games if len(downloaded) < args.count * 2}
+        for fut in as_completed(futs):
+            result = fut.result()
+            if result:
+                with downloaded_lock:
+                    if len(downloaded) < args.count:
+                        downloaded.append(result)
+            if len(downloaded) >= args.count:
+                # Cancel remaining if we have enough
+                for f in futs:
+                    f.cancel()
 
     print(f"\nDownloaded {len(downloaded)}/{args.count} games:")
     for gid in downloaded:
