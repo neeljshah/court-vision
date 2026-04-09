@@ -62,3 +62,5 @@ database/schema.sql                 # PostgreSQL
 - Full plan: `.planning/ROADMAP.md`
 - Full history: `SYSTEM_OPTIMIZED.md` + `vault/Sessions/`
 - Game data ref: see `SYSTEM_OPTIMIZED.md` (CLEAN/PARTIAL/BLOCKED list)
+- Single-4090 RunPod has ~18-core CFS quota — use `--parallel 3` (NOT 4). `--parallel 4` exhausts quota, CFS throttles, ~3x slower. Launch via `scripts/launch_single_gpu_pod.sh`.
+- `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be 3000 (not 100). Flushing `torch.cuda.empty_cache()` every 100 frames forces GPU syncs that stall CPU stages → 10x slowdown.

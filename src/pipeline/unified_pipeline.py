@@ -264,13 +264,12 @@ _DATA      = os.path.join(PROJECT_DIR, "data")
 FLANN = cv2.FlannBasedMatcher(dict(algorithm=1, trees=5), dict(checks=50))
 
 # Homography EMA — smooths per-frame SIFT homography to reduce jitter/drift
-_H_EMA_ALPHA        = 0.25   # 0 = heavy smooth, 1 = raw (no memory)
-                             # Reduced from 0.35: low-inlier broadcast matches (5-7) add noise;
-                             # heavier smoothing averages out per-frame jitter.
-_H_MIN_INLIERS      = 4      # below this → reject and use last-known good M
-                             # Lowered from 5 by 20%: broadcast NBA frames sometimes yield
-                             # 4 good inliers when the court is partially visible.
-                             # EMA smoothing compensates for noisy low-inlier estimates.
+_H_EMA_ALPHA        = 0.15   # 0 = heavy smooth, 1 = raw (no memory)
+                             # Lowered from 0.25: broadcast low-inlier frames (5-7) add
+                             # noise; heavier smoothing reduces accumulated drift on long games.
+_H_MIN_INLIERS      = 5      # below this → reject and use last-known good M
+                             # Restored to 5: 4-inlier matches cause drift over 64k+ frames;
+                             # EMA at 0.15 compensates for marginally-matched frames.
 _H_RESET_INLIERS    = 40     # ≥ this → hard-reset EMA (very clean SIFT match)
 _REANCHOR_INTERVAL  = 60     # court-line drift check every N frames (raised 30→60: court stable)
 _REANCHOR_ALIGN_MIN = 0.35   # projected boundary alignment below this → force re-anchor
@@ -1498,8 +1497,12 @@ class UnifiedPipeline:
             timestamp_sec = round(frame_idx / fps, 3)
             # PROFILER: print timing every 50 gameplay frames
             if gameplay_frames % 50 == 0:
+                _sp = getattr(self.feet_det, "_sub_profile", {}) or {}
+                _sp_str = "  ".join(f"{k}={v:.3f}" for k, v in _sp.items())
                 print(f"\n[PROFILE f={frame_idx}] gameplay={_t1-_t0:.3f}s  homog={_t2-_t1:.3f}s  "
                       f"players={_t3-_t2:.3f}s  ball={_t4-_t3:.3f}s  TOTAL={_t4-_t0:.3f}s")
+                if _sp_str:
+                    print(f"[SUBPROFILE] {_sp_str}")
             ball_pos      = self._last_ball_2d
 
             # Ball position fallback: when Hough/CSRT loses the ball, use the
