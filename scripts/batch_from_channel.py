@@ -97,7 +97,9 @@ def download_video(yt_id, game_id):
         return out
     VIDEOS.mkdir(parents=True, exist_ok=True)
     cmd = [
-        "yt-dlp", "-f", "best[height<=720]",
+        # Force H.264 — cv2 can't decode AV1; see scripts/fetch_games.py comment.
+        "yt-dlp", "-f", "bestvideo[height<=720][vcodec^=avc1]+bestaudio[ext=m4a]/best[height<=720][vcodec!*=av01][vcodec!*=vp9]",
+        "--merge-output-format", "mp4",
         "-o", str(out),
         f"https://www.youtube.com/watch?v={yt_id}",
     ]
