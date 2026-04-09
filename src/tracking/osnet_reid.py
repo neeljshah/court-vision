@@ -535,20 +535,26 @@ class DeepAppearanceExtractor:
                 ]
                 valid_embs = np.concatenate(_chunks, axis=0)
             else:
-                _all_t = torch.cat(
-                    [_preprocess_crop(crops[i]).to(self._device) for i in valid_idx],
-                    dim=0,
-                )  # (N_valid, 3, H, W)
-                _chunk_embs = []
-                for _ci in range(0, len(_all_t), _CHUNK):
-                    _t = _all_t[_ci:_ci + _CHUNK]
-                    if getattr(self, "_use_mv2", False):
-                        _f = self._model(_t)
-                        _f = self._mv2_gap(_f).squeeze(-1).squeeze(-1)
-                        _f = F.normalize(_f, dim=1)
-                    else:
-                        _f = self._model(_t)   # (chunk, embed_dim)
-                    _chunk_embs.append(_f.cpu().float().numpy())
+                # torch.no_grad(): inference only — prevents autograd from
+                # retaining activation tensors for backward, which otherwise
+                # balloons RSS on long runs (observed 10GB/sec leak on GPU hosts).
+                with torch.no_grad():
+                    _all_t = torch.cat(
+                        [_preprocess_crop(crops[i]).to(self._device) for i in valid_idx],
+                        dim=0,
+                    )  # (N_valid, 3, H, W)
+                    _chunk_embs = []
+                    for _ci in range(0, len(_all_t), _CHUNK):
+                        _t = _all_t[_ci:_ci + _CHUNK]
+                        if getattr(self, "_use_mv2", False):
+                            _f = self._model(_t)
+                            _f = self._mv2_gap(_f).squeeze(-1).squeeze(-1)
+                            _f = F.normalize(_f, dim=1)
+                        else:
+                            _f = self._model(_t)   # (chunk, embed_dim)
+                        _chunk_embs.append(_f.detach().cpu().float().numpy())
+                        del _f, _t
+                    del _all_t
                 valid_embs = np.concatenate(_chunk_embs, axis=0)
 
             # Reconstruct full-length list with zeros for invalid crops
