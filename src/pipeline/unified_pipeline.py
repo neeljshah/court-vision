@@ -2159,6 +2159,7 @@ class UnifiedPipeline:
         # Track whether Fix 4 produced real abbreviations so _court_side_team_map
         # can skip re-mapping rows whose team is already an abbreviation.
         _team_map_applied = False
+        _team_map: dict = {}
         if self.game_id and (possession_rows or shot_log_rows):
             _color_labels = [r.get("team", "") for r in possession_rows]
             _color_labels += [r.get("team", "") for r in shot_log_rows]
