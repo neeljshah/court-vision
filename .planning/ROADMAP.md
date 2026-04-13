@@ -21,6 +21,17 @@ Raw model count and feature breadth do not qualify as world-class on their own.
 4. **Contract gate:** API and DB contracts must pass compatibility tests per release.
 5. **Reliability gate:** production runtime must meet defined SLO/alert standards.
 
+### Allocator-Governance Addendum (Plan Sync)
+
+To keep roadmap and execution plan synchronized, the following are now mandatory across phases:
+
+1. **Execution matrix compliance:** each major risk must have metric, threshold, owner, cadence, and evidence artifact path.
+2. **Leakage zero-trust protocol:** no investor-facing metric is publishable unless as-of, walk-forward, and leakage red-team checks pass.
+3. **Portfolio risk policy enforcement:** position, cluster, daily, and monthly drawdown limits are hard gates with kill-switch behavior.
+4. **Monthly IC packet:** release-adjacent reporting bundle covering performance, scientific integrity, CV quality, risk controls, and reproducibility.
+
+If any phase output conflicts with these requirements, this addendum and `PLAN.md` take precedence.
+
 ### Delivery Sequence (Locked)
 
 1. **Integrity (0-30 days)**  
