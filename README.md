@@ -42,6 +42,29 @@ The objective is a defensible intelligence platform that can:
 
 ---
 
+## Vision Lock (12-Month Focus)
+
+CourtVision has one primary mission right now:
+
+**Build the most reliable NBA game + player-prop prediction engine in the market, measured by reproducible out-of-sample performance and execution quality.**
+
+Everything else in this repo supports that objective.
+
+### What success looks like
+
+- predictions are leakage-safe, calibrated, and drift-monitored,
+- CV-derived features show measurable holdout lift,
+- execution quality (CLV and risk controls) is stable over meaningful sample size,
+- every public claim is backed by reproducible artifacts.
+
+### What is explicitly out of scope until this is proven
+
+- multi-sport expansion,
+- broad UI redesign work,
+- platform commercialization beyond prediction validation milestones.
+
+---
+
 ## The Core Moat
 
 CourtVision extracts proprietary spatial features that are difficult to replicate cheaply:
