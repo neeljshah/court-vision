@@ -1,0 +1,25 @@
+{
+  "stem": "cavs_vs_celtics_2025",
+  "path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\cavs_vs_celtics_2025.mp4",
+  "game_id": "0022400021",
+  "size_mb": 282.6,
+  "started_at": "2026-03-19T20:44:12.391557",
+  "duration_sec": 0,
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 9960,
+  "tracking_rows": 2688,
+  "stability": 1.0,
+  "id_switches": 0,
+  "ball_detected_pct": 78.9,
+  "shots_detected": 50,
+  "possessions_labeled": 57,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "fps_estimate": 29.3,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

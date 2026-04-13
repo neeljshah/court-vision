@@ -23,10 +23,17 @@ Constants
 
 from __future__ import annotations
 
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
+
+try:
+    import torch as _torch
+    import kornia.color as _kcolor
+    _HAS_KORNIA = True
+except ImportError:
+    _HAS_KORNIA = False
 
 HUE_SIMILAR_TH: int = 20     # hue units; teams with |Δhue| < this are "similar"
 COLOR_ALPHA: float  = 0.85   # EMA weight for team color signature stability
@@ -58,15 +65,79 @@ def dominant_team_color(crop_bgr: np.ndarray) -> np.ndarray:
     if pixels.shape[0] < _MIN_PIXELS:
         return pixels.mean(axis=0).astype(np.float32)
 
+    # OPTIMIZATION: downsample to max 500 pixels and use cv2.kmeans (C impl,
+    # ~20x faster than sklearn.KMeans).  Prior impl ran sklearn KMeans with
+    # n_init=3,max_iter=30 on thousands of pixels twice per detection, driving
+    # per-frame player stage to 1.5s+ in Phase G.
+    if pixels.shape[0] > 500:
+        idx = np.random.default_rng(0).choice(pixels.shape[0], 500, replace=False)
+        pixels = pixels[idx]
     try:
-        from sklearn.cluster import KMeans
-        km = KMeans(n_clusters=K_DOMINANT, n_init=3, max_iter=30, random_state=0)
-        labels = km.fit_predict(pixels)
-        counts = np.bincount(labels)
+        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+        _compact, labels, centers = cv2.kmeans(
+            pixels, K_DOMINANT, None, criteria, 1, cv2.KMEANS_PP_CENTERS
+        )
+        counts = np.bincount(labels.ravel(), minlength=K_DOMINANT)
         dominant_idx = int(np.argmax(counts))
-        return km.cluster_centers_[dominant_idx].astype(np.float32)
+        return centers[dominant_idx].astype(np.float32)
     except Exception:
         return pixels.mean(axis=0).astype(np.float32)
+
+
+def batch_dominant_colors_gpu(crops_bgr: List[np.ndarray]) -> List[np.ndarray]:
+    """Batch BGR→HSV conversion on GPU via kornia. Returns per-crop dominant HSV.
+
+    Stacks all jersey-zone crops into a single tensor, converts once on GPU,
+    then computes mean HSV per crop. ~5x faster than per-crop cv2.cvtColor.
+    Falls back to CPU path if kornia unavailable.
+    """
+    if not _HAS_KORNIA or not _torch.cuda.is_available() or not crops_bgr:
+        return [dominant_team_color(c) for c in crops_bgr]
+
+    _dev = "cuda"
+    _target_h, _target_w = 64, 32  # small resize for speed
+    results: List[np.ndarray] = []
+
+    # Resize all crops to uniform size, take upper 65% (jersey zone)
+    tensors = []
+    valid_mask = []
+    for crop in crops_bgr:
+        if crop is None or crop.size == 0:
+            valid_mask.append(False)
+            continue
+        h = crop.shape[0]
+        roi = crop[: max(1, int(h * 0.65))]
+        resized = cv2.resize(roi, (_target_w, _target_h), interpolation=cv2.INTER_LINEAR)
+        # BGR→RGB float [0,1]
+        rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+        tensors.append(_torch.from_numpy(rgb).permute(2, 0, 1))
+        valid_mask.append(True)
+
+    if not tensors:
+        return [np.array([0.0, 0.0, 128.0], dtype=np.float32)] * len(crops_bgr)
+
+    with _torch.no_grad():
+        batch = _torch.stack(tensors).to(_dev)  # (N, 3, H, W)
+        hsv_batch = _kcolor.rgb_to_hsv(batch)    # (N, 3, H, W) — H in [0, 2π], S/V in [0,1]
+
+    # Convert to OpenCV HSV scale: H*180/(2π), S*255, V*255
+    hsv_np = hsv_batch.cpu().numpy()
+    del batch, hsv_batch  # release GPU tensors immediately
+    hsv_np[:, 0] *= 180.0 / (2.0 * 3.14159265)
+    hsv_np[:, 1] *= 255.0
+    hsv_np[:, 2] *= 255.0
+
+    vi = 0
+    for is_valid in valid_mask:
+        if not is_valid:
+            results.append(np.array([0.0, 0.0, 128.0], dtype=np.float32))
+        else:
+            # Mean HSV across spatial dims
+            mean_hsv = hsv_np[vi].reshape(3, -1).mean(axis=1).astype(np.float32)
+            results.append(mean_hsv)
+            vi += 1
+
+    return results
 
 
 def hue_distance(color_a: np.ndarray, color_b: np.ndarray) -> float:
@@ -152,6 +223,25 @@ class TeamColorTracker:
             self._team_sig[team] = new_color
 
         # Refresh flag whenever we have signatures for both teams
+        sigs = [s for k, s in self._team_sig.items() if k != "referee" and s is not None]
+        if len(sigs) >= 2:
+            self.similar_colors = similar_team_colors(sigs[0], sigs[1])
+
+    def batch_update(self, crops_bgr: List[np.ndarray], teams: List[str]) -> None:
+        """Batch-update team signatures using GPU HSV conversion."""
+        valid = [(c, t) for c, t in zip(crops_bgr, teams) if t != "referee" and c is not None]
+        if not valid:
+            return
+        crops, team_labels = zip(*valid)
+        colors = batch_dominant_colors_gpu(list(crops))
+        for color, team in zip(colors, team_labels):
+            if team in self._team_sig and self._team_sig[team] is not None:
+                self._team_sig[team] = (
+                    COLOR_ALPHA * self._team_sig[team]
+                    + (1.0 - COLOR_ALPHA) * color
+                )
+            else:
+                self._team_sig[team] = color
         sigs = [s for k, s in self._team_sig.items() if k != "referee" and s is not None]
         if len(sigs) >= 2:
             self.similar_colors = similar_team_colors(sigs[0], sigs[1])

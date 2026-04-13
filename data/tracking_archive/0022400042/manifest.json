@@ -1,0 +1,25 @@
+{
+  "stem": "mem_nop_2025",
+  "path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\mem_nop_2025.mp4",
+  "game_id": "0022400042",
+  "size_mb": 210.6,
+  "started_at": "2026-03-19T21:43:07.361284",
+  "duration_sec": 0,
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 11760,
+  "tracking_rows": 2688,
+  "stability": 1.0,
+  "id_switches": 0,
+  "ball_detected_pct": 63.0,
+  "shots_detected": 56,
+  "possessions_labeled": 72,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "fps_estimate": 25.2,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

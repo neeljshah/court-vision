@@ -1,0 +1,9 @@
+game_id,shot_id,frame,timestamp,player_id,team,x_position,y_position,court_zone,defender_distance,team_spacing,possession_id,possession_duration,made
+22400112,1,3030,50.55,9,white,1264,375,mid_range,,0.0,470,2,
+22400112,5,4323,72.122,6,white,3027,1076,paint,,0.0,569,89,
+22400112,6,5031,83.934,5,green,3014,1100,paint,,0.0,596,27,
+22400112,8,5670,94.594,3,green,1684,393,backcourt,,151084.0,672,3,
+22400112,11,6264,104.504,10,white,3014,1100,paint,,0.0,771,2,
+22400112,17,6840,114.114,9,white,447,215,corner_3,,0.0,923,3,
+22400112,19,8265,137.888,1,green,540,174,corner_3,,0.0,1178,5,
+22400112,20,9993,166.717,6,white,3027,1076,paint,,0.0,1369,3,

@@ -58,7 +58,7 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 DATA_DIR      = PROJECT_DIR / "data"
 VIDEOS_DIR    = DATA_DIR / "videos"
-FULL_GAMES    = VIDEOS_DIR / "full_games"
+FULL_GAMES    = Path(os.environ.get("PHASE_G_VIDEO_DIR", VIDEOS_DIR / "full_games"))
 TRACKING_DIR  = DATA_DIR / "tracking"
 DONE_LOG      = DATA_DIR / "phase_g_processed.txt"
 METRICS_LOG   = DATA_DIR / "phase_g_metrics.csv"
@@ -90,11 +90,31 @@ def _quality_label(ball_valid_pct: float) -> str:
     return "low"
 
 
+_METRICS_FIELDNAMES = ["timestamp", "game_key", "game_id", "frames", "stability",
+                       "id_switches", "ball_valid_pct", "quality", "duration_s"]
+
+
+def _repair_metrics_header():
+    """Rewrite phase_g_metrics.csv header in-place if it doesn't match _METRICS_FIELDNAMES."""
+    if not METRICS_LOG.exists():
+        return
+    with open(METRICS_LOG, newline="") as f:
+        reader = csv.DictReader(f)
+        existing_fields = reader.fieldnames or []
+        rows = list(reader)
+    if list(existing_fields) == _METRICS_FIELDNAMES:
+        return  # header already correct
+    with open(METRICS_LOG, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=_METRICS_FIELDNAMES, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+    print(f"  [metrics] Repaired header: {existing_fields} -> {_METRICS_FIELDNAMES}")
+
+
 def _save_metrics(game_key: str, game_id: Optional[str], metrics: dict):
     METRICS_LOG.parent.mkdir(parents=True, exist_ok=True)
     quality = metrics.pop("quality", None) or _quality_label(float(metrics.get("ball_valid_pct", 0)))
-    fieldnames = ["timestamp", "game_key", "game_id", "frames", "stability",
-                  "id_switches", "ball_valid_pct", "quality", "duration_s"]
+    fieldnames = _METRICS_FIELDNAMES
     with _file_lock:
         exists = METRICS_LOG.exists()
         with open(METRICS_LOG, "a", newline="") as f:
@@ -286,7 +306,8 @@ def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
 
 
 def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
-              out_dir: Path, start_frame: int = 0, skip_tracking: bool = False) -> dict:
+              out_dir: Path, start_frame: int = 0, skip_tracking: bool = False,
+              game_key: Optional[str] = None, gpu_id: Optional[int] = None) -> dict:
     """Run run_clip.py and capture metrics. Returns metrics dict."""
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -300,6 +321,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         "--video", str(video),
         "--no-show",
         "--data-dir", str(out_dir),   # Fix 2: write directly to per-game dir
+        "--skip-features",            # Phase G only needs tracking metrics, not features
     ]
     if frames and not skip_tracking:
         cmd += ["--frames", str(frames)]
@@ -343,6 +365,13 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             except (ValueError, IndexError):
                 pass
 
+    # Per-worker GPU assignment: when gpu_id is set, pin this subprocess to a
+    # single GPU via CUDA_VISIBLE_DEVICES.  With N GPUs and N workers, each
+    # worker gets exclusive VRAM — no contention, no fragmentation.
+    _env = os.environ.copy()
+    if gpu_id is not None:
+        _env["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -352,6 +381,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         errors="replace",
         cwd=str(PROJECT_DIR),
         bufsize=1,  # line-buffered
+        env=_env,
     )
 
     # Drain stderr in a background thread so it never deadlocks the stdout read.
@@ -377,6 +407,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
     elapsed = time.time() - t0
     metrics["duration_s"] = round(elapsed, 1)
     returncode = proc.returncode
+    metrics["_rc"] = returncode  # propagate to caller for failure handling
 
     # Save run log
     (out_dir / "run.log").write_text(
@@ -410,14 +441,16 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
     if returncode == 3:
         print(f"  [WARN] run_clip.py exited 3 -- Stage 1 produced 0 rows (no gameplay detected)")
         print("         Video may need manual review or different start frame.")
+        # Handled in _process_one -- do NOT save/mark_done here
     elif returncode == 4:
         print(f"  [PREFLIGHT FAIL] run_clip.py exited 4 -- non-broadcast video detected")
         print("         Median person count below threshold. Download a real broadcast clip.")
         metrics["ball_valid_pct"] = 0.0
         metrics["frames"] = 0
         metrics["stability"] = 0.0
-        _save_metrics(game_key, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
-        _mark_done(game_key + "_PREFLIGHT_FAIL")
+        _gk = game_key or game_id or video.stem
+        _save_metrics(_gk, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
+        _mark_done(_gk + "_PREFLIGHT_FAIL")
     elif returncode not in (0, 2):  # 2 = short clip warning, still ok
         print(f"  [WARN] run_clip.py exited {returncode}")
         stderr_tail = "".join(stderr_lines)
@@ -462,6 +495,10 @@ def main():
     ap.add_argument("--skip-tracking", action="store_true",
                     help="Skip Stage 1 tracking (requires tracking_data.csv to exist). "
                          "Use for games where tracking completed but post-processing crashed.")
+    ap.add_argument("--gpus",         type=int, default=None,
+                    help="Number of GPUs available. Workers are assigned GPUs round-robin "
+                         "(worker 0 → GPU 0, worker 1 → GPU 1, ...). "
+                         "Defaults to CUDA_VISIBLE_DEVICES count or 1.")
     args = ap.parse_args()
 
     if args.download:
@@ -472,6 +509,7 @@ def main():
             cwd=str(PROJECT_DIR),
         )
 
+    _repair_metrics_header()
     done = _done_set()
 
     # --backfill-live: recompute ball_valid_pct in-place for all processed games
@@ -518,9 +556,35 @@ def main():
     vault_entries = []
     total_t0 = time.time()
 
+    # Seconds to stagger each worker's startup to avoid simultaneous model
+    # loading (YOLO + OSNet + PaddleOCR/EasyOCR) causing a RAM spike.
+    _STARTUP_STAGGER_S: int = int(os.environ.get("PHASE_G_STAGGER_S", "60"))
+
+    # Detect available GPUs for round-robin assignment
+    _n_gpus = args.gpus
+    if _n_gpus is None:
+        _cvd = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+        if _cvd:
+            _n_gpus = len(_cvd.split(","))
+        else:
+            try:
+                import torch as _tch
+                _n_gpus = _tch.cuda.device_count() or 1
+            except Exception:
+                _n_gpus = 1
+    if _n_gpus > 1:
+        print(f"  Multi-GPU: {_n_gpus} GPUs detected — assigning workers round-robin")
+
     def _process_one(args_tuple):
         i, total, key, video_path, game_id = args_tuple
-        print(f"[{i}/{total}] {key}  video={video_path.name}  game_id={game_id or '(none)'}")
+        # Round-robin GPU assignment: worker index (0-based) mod GPU count
+        gpu_id = (i - 1) % _n_gpus if _n_gpus > 1 else None
+        if n_workers > 1 and i > 1:
+            delay = (i - 1) * _STARTUP_STAGGER_S
+            print(f"[{i}/{total}] {key}  staggering {delay}s to avoid model-load spike...")
+            time.sleep(delay)
+        _gpu_tag = f"  GPU={gpu_id}" if gpu_id is not None else ""
+        print(f"[{i}/{total}] {key}  video={video_path.name}  game_id={game_id or '(none)'}{_gpu_tag}")
         out_dir = TRACKING_DIR / key
         # On reprocess, clear stale tracking_data.csv so we don't append new rows
         # onto old data with potentially different column layouts.
@@ -528,10 +592,28 @@ def main():
             stale = out_dir / "tracking_data.csv"
             if stale.exists():
                 stale.unlink()
-        metrics = _run_clip(video_path, game_id, frames_per_game, out_dir,
-                            start_frame=args.start_frame,
-                            skip_tracking=args.skip_tracking)
-        if _is_complete(out_dir):
+        # Retry up to 2 attempts — single game crash shouldn't stop the batch
+        metrics = None
+        for _attempt in range(1, 3):
+            metrics = _run_clip(video_path, game_id, frames_per_game, out_dir,
+                                start_frame=args.start_frame,
+                                skip_tracking=args.skip_tracking,
+                                game_key=key, gpu_id=gpu_id)
+            rc = metrics.get("_rc", 0)
+            if rc in (0, 2, 3, 4):
+                break  # success or known non-retryable exit
+            print(f"  [RETRY] {key} attempt {_attempt} failed (rc={rc}), "
+                  f"{'retrying...' if _attempt < 2 else 'giving up.'}")
+            import time as _rt; _rt.sleep(5)
+        rc = metrics.pop("_rc", 0)
+        if rc == 3:
+            # Stage 1 produced zero rows — log distinctly, do NOT add to done log
+            # (so future --resume can retry without --reprocess)
+            _save_metrics(key, game_id, {**metrics, "quality": "RC3_ZERO_ROWS"})
+            _mark_done(key + "_RC3")
+        elif rc == 4:
+            pass  # already handled inside _run_clip
+        elif _is_complete(out_dir):
             _save_metrics(key, game_id, metrics)
             _mark_done(key)
         else:

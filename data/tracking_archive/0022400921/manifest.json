@@ -1,0 +1,34 @@
+{
+  "game_id": "0022400921",
+  "date": "2025-03-09",
+  "home": "DAL",
+  "away": "PHX",
+  "video_path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\full_games\\0022400921.mp4",
+  "started_at": "2026-03-23T13:06:46.594143",
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 17190,
+  "tracking_rows": 27651,
+  "stability": 1.0,
+  "id_switches": 0,
+  "fps_estimate": 44.2,
+  "ball_detected_pct": 69.4,
+  "shots_detected": 0,
+  "possessions_labeled": 25,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "stages_completed": [
+    "tracking",
+    "features",
+    "predictions"
+  ],
+  "predictions": {
+    "success": true,
+    "predictions_path": "C:\\Users\\neelj\\nba-ai-system\\data\\games\\0022400921\\predictions.json",
+    "props_context_path": null,
+    "injuries_refreshed": false,
+    "props_count": 0,
+    "error": null
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "game_id": "0022401198",
+  "date": "2025-04-13",
+  "home": "GSW",
+  "away": "LAC",
+  "video_path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\full_games\\0022401198.mp4",
+  "started_at": "2026-03-20T14:23:01.537762",
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 22470,
+  "tracking_rows": 5160,
+  "stability": 1.0,
+  "id_switches": 0,
+  "fps_estimate": 50.1,
+  "ball_detected_pct": 75.1,
+  "shots_detected": 63,
+  "possessions_labeled": 87,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

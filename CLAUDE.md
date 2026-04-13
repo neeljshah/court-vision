@@ -62,5 +62,51 @@ database/schema.sql                 # PostgreSQL
 - Full plan: `.planning/ROADMAP.md`
 - Full history: `SYSTEM_OPTIMIZED.md` + `vault/Sessions/`
 - Game data ref: see `SYSTEM_OPTIMIZED.md` (CLEAN/PARTIAL/BLOCKED list)
-- Single-4090 RunPod has ~18-core CFS quota — use `--parallel 3` (NOT 4). `--parallel 4` exhausts quota, CFS throttles, ~3x slower. Launch via `scripts/launch_single_gpu_pod.sh`.
 - `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be 3000 (not 100). Flushing `torch.cuda.empty_cache()` every 100 frames forces GPU syncs that stall CPU stages → 10x slowdown.
+
+### RunPod single-4090 runbook (READ BEFORE LAUNCHING)
+Pod has CFS quota of 17.85 cores (1785000/100000 in `/sys/fs/cgroup/cpu,cpuacct/cpu.cfs_quota_us`). Sessions 33–34 burned hours rediscovering this. Don't.
+
+**Required pod-side setup (one-time per fresh pod):**
+1. `pip install decord` — moves video decode to NVDEC GPU engine, frees ~1.5 cores/worker. Without this, PyAV CPU decode is the bottleneck. `src/pipeline/unified_pipeline.py:_decord_frame_iter` already prefers it; falls back silently if missing.
+2. Stage videos to `/root/nba_videos` (local overlay disk, not `/workspace`). Symlink `data/videos/full_games → /root/nba_videos`. mfs network disk is **38× slower** for video reads.
+3. Quarantine AV1-encoded videos (decoder lacks AV1 hw support) to `data/videos/full_games_av1_quarantine/`. Only H.264 in the queue.
+4. Verify `_VRAM_FLUSH_INTERVAL = 3000` on the pod copy of `unified_pipeline.py` (the launcher checks this).
+
+**Launch config (current optimum, encoded in `scripts/launch_single_gpu_pod.sh`):**
+- `--parallel 4` with `OMP_NUM_THREADS=6 MKL_NUM_THREADS=6 OPENBLAS_NUM_THREADS=6 NUMEXPR_NUM_THREADS=6`
+- WITHOUT the OMP cap, parallel-4 oversubscribes threads → 45% of CFS periods throttled → ~3× slowdown. Earlier guidance to use parallel-3 was a workaround for this; with the cap, parallel-4 is healthy (load ~12, throttling <2%).
+- WITH cap + decord: aggregate ~80 fps (4 workers × ~20 fps). Without: ~45 fps.
+
+**Health check after launch (run before walking away):**
+```
+ssh -p $PORT root@$IP "
+  cat /proc/loadavg                                       # 1m should be < 17.85
+  cat /sys/fs/cgroup/cpu,cpuacct/cpu.stat | head -3       # baseline
+  sleep 60
+  cat /sys/fs/cgroup/cpu,cpuacct/cpu.stat | head -3       # nr_throttled Δ should be <30
+  pgrep -af run_clip.py | grep -v pgrep | wc -l           # expect = parallel count
+  grep -oE 'f=[0-9]+' phase_g_p3.log | sort -t= -k2 -n | tail -3"
+```
+If `nr_throttled` Δ > 50/60s, OMP cap is missing or quota changed.
+
+**fps interpretation:**
+- The PROFILE log line `TOTAL=0.3s` per frame is NOT the frame interval (decord batches decode). Real fps = `max_frame / wall_seconds_since_worker_start`. Expect ~20 fps/worker with current setup.
+
+**Data persistence (CRITICAL — pod ephemeral disk wipes on stop):**
+- RunPod tracking outputs are NOT auto-synced. After every meaningful run, pull back:
+  ```
+  rsync -az -e "ssh -p $PORT" root@$IP:/workspace/nba-ai-system/data/tracking/ data/tracking/
+  scp -P $PORT root@$IP:/workspace/nba-ai-system/data/phase_g_processed.txt data/
+  scp -P $PORT root@$IP:/workspace/nba-ai-system/data/phase_g_metrics.csv data/
+  ```
+- Set up a cron or post-game hook for this. A finished game on the pod with no rsync = lost work.
+
+**Restart discipline:**
+- Killing workers wastes ~7 min × N workers of in-flight progress (each game restarts from frame 0). Don't restart unless throttling is confirmed.
+- The processed list (`phase_g_processed.txt`) prevents reprocessing finished games but does NOT save partial progress.
+
+**Real wins still on the table (require code + quality test, do on a branch):**
+- YOLO prefetch batching: infra in `advanced_tracker.py:898-935` (`_yolo_frame_buf`) is wired but never activates because the orchestrator is sequential. Add a `prefetch_yolo(frames)` method called by `unified_pipeline.py` with N=8. Expected: +50% fps. ~30 LOC tracker-side change. MUST quality-diff tracking JSON before merging.
+- HSV team-color vectorize in `color_reid.py::classify_dyn` — second-largest hotspot.
+- Skip: TensorRT (only ~5% gain, YOLO isn't the hotspot), ball-every-2nd-frame (shot detection risk).
