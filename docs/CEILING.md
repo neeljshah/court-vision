@@ -1,4 +1,3 @@
-
 # CourtVision: Prediction Ceiling & Competitive Position
 
 ## What This System Is
