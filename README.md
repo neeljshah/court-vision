@@ -12,14 +12,33 @@
 
 ## Why This Project Matters
 
-Most NBA prediction systems are built on public box score and play-by-play abstractions.  
-CourtVision is designed to go deeper by reconstructing court-space behavior from broadcast video and turning it into predictive signals.
+Most NBA prediction systems rely on the same public stats and converge to similar outputs.  
+CourtVision is built to generate differentiated signal by reconstructing court-space behavior directly from broadcast video.
 
-The long-term goal is not just better picks. The goal is a **defensible intelligence platform** that can:
+The objective is a defensible intelligence platform that can:
 
 - model games and props as probability distributions (not single-point guesses),
 - exploit structural inefficiencies in line pricing,
 - and continuously improve as more games are processed.
+
+---
+
+## Why This Wins (One-Screen Summary)
+
+**What exists now**
+- Working CV tracking stack, feature pipeline, model orchestration, API and batch infrastructure.
+
+**What is differentiated**
+- Proprietary spatial telemetry from broadcast video (defender pressure, spacing, movement context), fused with structured NBA and market data.
+
+**Why the prediction engine can outperform**
+- Better inputs (CV signal), better structure (specialized model layers), better controls (leakage/calibration/drift gates), better execution (distribution-aware risk sizing).
+
+**How progress is governed**
+- Explicit failure gates, audit artifacts, and release criteria in `PLAN.md` and `.planning/ROADMAP.md`.
+
+**Commercial path**
+- Internal alpha engine -> fund-grade risk system -> API/data product for external users.
 
 ---
 
@@ -115,7 +134,7 @@ The prediction pipeline is designed to compound edge through structure:
 3. **Better validation discipline** through leakage controls, drift checks, and calibration gates.
 4. **Better decision layer** through distribution-aware simulation and risk-constrained execution.
 
-This combination is what can turn a good model stack into a durable intelligence system.
+This is the key claim of CourtVision: not one model, but a compounding system where signal quality, model quality, and execution quality improve together.
 
 ---
 
