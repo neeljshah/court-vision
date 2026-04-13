@@ -63,6 +63,7 @@ data/predictions/
 data/edges/
 data/model_reports/
 data/ball_yolo/
+data/tracking_archive/*/features.csv
 
 # -- Generated CV / Tracking data ---------------------------------------------
 data/tracking/
@@ -131,6 +132,14 @@ OPUS_SYSTEM_PROMPT.md
 SYSTEM_OPTIMIZED.md
 reprocess_safe.bat
 cleanup.py
+
+# -- Root operational scratch notes -------------------------------------------
+h264_upload.txt
+missing_on_pod.txt
+missing_tmp_local.txt
+pod_videos_tmp.txt
+upload_batch1.txt
+upload_batch2.txt
 
 # -- Internal / experimental scaffolding --------------------------------------
 scripts/vault_reorganize.py

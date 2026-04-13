@@ -1,6 +1,15 @@
-# Contributing
+# Contributing to CourtVision
 
-## Setup
+Thanks for contributing. This project combines computer vision, data engineering, and sports modeling, so clarity and reproducibility are required for every change.
+
+## Principles
+
+- Keep changes focused and testable.
+- Prefer incremental improvements over broad rewrites.
+- Preserve pipeline reliability and data quality first.
+- Document any behavior changes that affect outputs or API contracts.
+
+## Development Setup
 
 ```bash
 git clone https://github.com/neeljshah/nba-ai-system.git
@@ -12,28 +21,62 @@ cp .env.example .env
 python -m pytest tests/ -q
 ```
 
-## Pull Requests
+## Branch and PR Workflow
 
-1. Branch from `master`: `git checkout -b feat/your-feature`
-2. Keep changes focused — one logical change per PR
-3. All tests must pass: `make test`
-4. Update `CLAUDE.md` open issues if your change closes one
-5. No new files without a clear reason; prefer editing existing modules
+1. Create a focused branch from your main working branch.
+2. Implement one logical change per PR.
+3. Add or update tests for behavior changes.
+4. Update relevant docs (`README.md`, `PLAN.md`, `docs/`) when interfaces or workflows change.
+5. Open a PR with:
+   - problem statement
+   - implementation summary
+   - validation evidence (tests, benchmarks, sample output)
 
-## Code Style
+## Code Standards
 
-- Python 3.9, PEP 8, max line length 120
-- Type hints on all public functions
-- Docstrings on classes and non-trivial functions
-- Max 300 lines per file — split if needed
-- No `cv2.imshow` or interactive display calls; pipeline runs headless
+- Python 3.9
+- Type hints on public functions
+- Docstrings for public classes/functions
+- Avoid hidden side effects and implicit globals
+- Prefer explicit error handling over blanket exception swallowing
+- Keep files manageable; split modules when responsibilities diverge
 
-## What Not to Touch
+## CV and Pipeline Rules
 
-- `src/tracking/` changes require re-running benchmarks (`make pipeline`)
-- `data/models/` — model artifacts are gitignored; train locally
-- `vault/` and `.planning/` — internal knowledge base, not part of the public interface
+- Headless operation only for video processing (no `cv2.imshow`).
+- Do not regress pipeline throughput without benchmark evidence.
+- Any tracking logic changes should include:
+  - quality validation against representative clips
+  - notes on expected runtime impact
 
-## Reporting Issues
+## API Contract Rules
 
-Open an issue with: observed behavior, expected behavior, reproduction steps, and relevant log output.
+- Treat endpoint request/response shapes as contracts.
+- Avoid breaking response keys without versioning or migration notes.
+- Add integration tests when router-to-model interfaces are modified.
+
+## Testing Expectations
+
+Run at minimum:
+
+```bash
+python -m pytest tests/ -q
+```
+
+For changes in high-risk areas (tracking, orchestration, contracts), include targeted tests and describe validation in PR notes.
+
+## Repo Hygiene
+
+- Avoid adding one-off root files when they belong in `docs/`, `scripts/`, or archived directories.
+- Prefer canonical paths and avoid duplicate module surfaces.
+- Do not commit secrets, credentials, or large generated artifacts.
+
+## Issue Reports
+
+When filing issues, include:
+
+- observed behavior
+- expected behavior
+- reproduction steps
+- relevant logs or traceback excerpts
+- environment details (OS, Python, GPU if relevant)
