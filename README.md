@@ -1,149 +1,162 @@
 # CourtVision
 
-**Vertical Intelligence for NBA decision markets.**
+**A full-stack NBA intelligence engine: computer vision + market data + ML + simulation.**
 
 ![Status](https://img.shields.io/badge/Status-Phase_G_Active-22c55e)
-![Hardware](https://img.shields.io/badge/Hardware-RTX_4060-76b900)
-![Architecture](https://img.shields.io/badge/Architecture-7--Tier_Ensemble-2563eb)
 ![Core](https://img.shields.io/badge/Core-CV_%2B_ML_%2B_Monte_Carlo-7c3aed)
-![API](https://img.shields.io/badge/Serving-FastAPI-0ea5e9)
+![Models](https://img.shields.io/badge/Target-90_Models-2563eb)
+![Serving](https://img.shields.io/badge/API-FastAPI-0ea5e9)
+![License](https://img.shields.io/badge/License-All_Rights_Reserved-red)
 
 ---
 
-## Investment Thesis
+## Why This Project Matters
 
-CourtVision builds a proprietary intelligence layer on top of NBA broadcast video by extracting spatial telemetry that does not exist in conventional public datasets.  
-This system is engineered as a quantitative infrastructure asset: from raw video to calibrated probability distributions to capital allocation decisions.
+Most NBA prediction systems are built on public box score and play-by-play abstractions.  
+CourtVision is designed to go deeper by reconstructing court-space behavior from broadcast video and turning it into predictive signals.
 
----
+The long-term goal is not just better picks. The goal is a **defensible intelligence platform** that can:
 
-## The Spatial Advantage
-
-Most public models price events from box score and play-by-play abstractions. CourtVision reconstructs **sub-foot coordinate telemetry** directly from broadcast video (player/ball location, spacing geometry, contest context, fatigue proxies), producing information that typically costs professional teams six figures annually through private data vendors.
-
-This telemetry becomes a first-class feature domain for prediction, simulation, and edge detection.
-
-| Signal Class | Extracted From | Strategic Value |
-|---|---|---|
-| Defender proximity | Court-mapped CV tracking | Shot quality and contest adjustment |
-| Team spacing geometry | Convex hull + movement topology | Possession efficiency and drive/3PT dynamics |
-| Fatigue and pace decay | Temporal motion vectors | Late-game projection resilience |
-| Off-ball behavior | Re-ID + event sequence | Hidden usage and rebound opportunity edge |
+- model games and props as probability distributions (not single-point guesses),
+- exploit structural inefficiencies in line pricing,
+- and continuously improve as more games are processed.
 
 ---
 
-## Technical Pillars
+## The Core Moat
 
-## 1) CV Pipeline
+CourtVision extracts proprietary spatial features that are difficult to replicate cheaply:
 
-`SIFT` homography + `YOLOv8` detection + Kalman/Hungarian tracking + `OSNet` re-identification.
+- defender distance and closeout pressure,
+- team spacing and off-ball geometry,
+- movement-derived fatigue and pace decay proxies,
+- lineup-level behavior patterns from tracking continuity.
 
-- Converts broadcast pixels into court-space coordinates.
-- Maintains identity continuity through occlusion and camera shifts.
-- Produces structured tracking artifacts for downstream modeling.
-
-## 2) Data Refinery
-
-TTL-aware caching and enrichment across **25+ NBA and market data sources**.
-
-- NBA stats and advanced context
-- Injury, referee, line movement, and betting inputs
-- Feature reliability safeguards and refresh discipline
-
-## 3) 90-Model Ensemble
-
-Recursive model stack from baseline context to behavioral CV intelligence.
-
-- Context and schedule models
-- Player state and game-state models
-- CV-enhanced behavioral and matchup layers
-- Portfolio and edge-evaluation layer
-
-## 4) Monte Carlo Engine
-
-**10,000 possession-level simulations** to estimate full distributions rather than point guesses.
-
-- Outcome bands and tail risk characterization
-- Prop and game-market probability surfaces
-- Distribution-aware decision support
+These CV-derived signals are fused with NBA/API/context/market data to power the prediction pipeline.
 
 ---
 
-## Quant Framework
-
-Expected value for a position:
-
-\[
-EV = p \cdot \text{payout} - (1-p)\cdot \text{stake}
-\]
-
-Kelly sizing (fractional implementation in practice):
-
-\[
-f^* = \frac{bp - q}{b}, \quad q = 1-p
-\]
-
-Where \(p\) is estimated win probability, \(b\) is net odds, and \(f^*\) is optimal bankroll fraction under model assumptions.
-
----
-
-## Commercial Strategy ("Empire Plan")
-
-| Track | Mechanism | Strategic Intent |
-|---|---|---|
-| Personal Betting | Distribution-driven position sizing | Validate edge and execution discipline |
-| Fund Management | Systematic model portfolio | Scale capital under formal risk controls |
-| Data Licensing | Spatial signal products | Monetize proprietary telemetry layer |
-| SaaS Platform | API-first intelligence delivery | Recurring, high-margin enterprise distribution |
-
----
-
-## Roadmap
+## End-to-End System
 
 ```mermaid
 graph LR
-    A[Broadcast Video] --> B[CV Pipeline<br/>SIFT + YOLOv8 + OSNet]
-    B --> C[Tracking Artifacts<br/>coordinates/events/features]
-    C --> D[Data Refinery<br/>25+ sources + TTL cache]
-    D --> E[7-Tier Ensemble<br/>90 models]
-    E --> F[Monte Carlo Engine<br/>10,000 possession sims]
-    F --> G[Edge & Portfolio Layer<br/>EV + Kelly]
-    G --> H[API + Product Surfaces]
-    H --> I[Jarvis AI Chat Interface]
+    A[Broadcast Video + NBA/Market Data] --> B[CV Tracking Pipeline]
+    B --> C[Spatial Feature Engineering]
+    A --> D[Data Enrichment + Storage]
+    C --> E[Model Stack]
+    D --> E
+    E --> F[Backtesting + Calibration + Drift Checks]
+    F --> G[Monte Carlo Simulation]
+    G --> H[Edge + Portfolio Construction]
+    H --> I[FastAPI + Dashboard + AI Interface]
 ```
+
+### 1) CV Tracking Pipeline
+
+Key components include `YOLOv8`, homography rectification, Kalman/Hungarian tracking, OCR-assisted identity recovery, and `OSNet` re-identification.
+
+Output:
+- court-mapped player and ball trajectories,
+- event primitives (shots, possessions, transitions),
+- quality metadata for downstream gating.
+
+### 2) Data Layer
+
+CourtVision combines video-derived telemetry with structured context:
+
+- NBA box, shot, lineup, and schedule context,
+- injuries, referee context, and market lines,
+- PostgreSQL-backed schema for reproducible model training.
+
+### 3) Prediction Pipeline
+
+The target architecture is a multi-layer ensemble (up to 90 models) spanning:
+
+- game outcomes and win probability,
+- player props across core stat markets,
+- matchup/context/risk adjustment models,
+- meta-model and calibration stack for reliability.
+
+### 4) Simulation + Execution
+
+CourtVision is built for distributional decision-making:
+
+- possession/game simulation with Monte Carlo sampling,
+- edge scoring against market prices,
+- risk-aware sizing and portfolio controls (fractional Kelly + correlation discipline).
+
+---
+
+## Current Status
+
+CourtVision is an advanced in-progress system, not a finished product.
+
+Built today:
+- working CV pipeline and tracking artifacts,
+- broad feature engineering and model orchestration framework,
+- API + batch infrastructure,
+- active roadmap and failure-gate planning for world-class rigor.
+
+In progress:
+- scaling high-quality CV game coverage,
+- strict leakage-proof backtesting and calibration gating,
+- stronger correlation/risk controls for production-grade portfolio deployment.
+
+See `PLAN.md` and `.planning/ROADMAP.md` for governance gates and execution details.
+
+---
+
+## What Makes The Prediction Pipeline Strong
+
+The prediction pipeline is designed to compound edge through structure:
+
+1. **Better raw signal** from CV-derived spatial context.
+2. **Better model architecture** through layered specialization and meta-adjustment.
+3. **Better validation discipline** through leakage controls, drift checks, and calibration gates.
+4. **Better decision layer** through distribution-aware simulation and risk-constrained execution.
+
+This combination is what can turn a good model stack into a durable intelligence system.
+
+---
+
+## Repository Map
+
+- `src/tracking/` - tracking, homography, re-ID, event detection
+- `src/features/` - feature construction and transformations
+- `src/prediction/` - model modules, props stack, portfolio logic
+- `src/pipeline/` - orchestration, registries, retrain/validation flow
+- `src/simulation/` - possession and game simulation
+- `api/` - FastAPI serving layer
+- `database/` - PostgreSQL schema and migrations
+- `.planning/` - phased execution roadmap
+- `PLAN.md` - canonical world-class operating plan
 
 ---
 
 ## Tech Stack
 
-| Layer | Components |
+| Layer | Primary Tools |
 |---|---|
 | Vision | YOLOv8, OpenCV, EasyOCR, OSNet |
 | ML | PyTorch, XGBoost, LightGBM, scikit-learn |
 | Data | pandas, nba_api, PostgreSQL, Redis |
-| Serving | FastAPI, Uvicorn, Celery |
-| Infra | Python 3.9, CUDA 11.8, Docker |
+| API | FastAPI, Uvicorn |
+| Runtime | Python 3.9, CUDA 11.8 |
 
 ---
 
-## Collaboration & Investment
+## Collaboration
 
-CourtVision is being developed as a proprietary quantitative intelligence platform.  
-We are open to high-conviction conversations around:
+CourtVision is a proprietary quantitative R&D platform.  
+Collaboration and investor conversations are welcome for:
 
-- Strategic collaboration on model quality and deployment hardening
-- Applied research partnerships in sports intelligence and simulation
-- Investor relationships aligned with long-horizon data moat creation
-
-For collaboration inquiries, use GitHub contact channels associated with this repository owner.
+- model quality and validation hardening,
+- system architecture and production reliability,
+- strategic commercialization of NBA intelligence products.
 
 ---
 
-## License & Usage
+## License
 
-This repository is proprietary and provided as a portfolio demonstration only.
-
-- License: **All Rights Reserved**
-- Public reuse: not permitted
-- Commercial use: not permitted
-- Redistribution or derivative works: not permitted without explicit written permission
+All rights reserved.  
+No reuse, redistribution, or commercial use without explicit written permission.
