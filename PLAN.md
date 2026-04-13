@@ -77,3 +77,91 @@ CourtVision is world-class only when all are true:
 - CourtVision demonstrates sustained quality, not one-off peaks.
 - Every public claim has a reproducible artifact and timestamped evidence.
 - A technical buyer can review docs and immediately see execution maturity.
+
+## Stress-Test Failure Register (Added 2026-04-13)
+
+These are additional institutional-grade failure points identified from architecture review. Each item is now part of the active plan and should be treated as a gating risk, not optional polish.
+
+### A) CV / Tracking Integrity Risks
+
+1. **Silent homography drift under prolonged occlusion and camera cuts**
+   - Risk: coordinates can remain numerically plausible while becoming spatially wrong.
+   - Plan action: define a hard drift SLA (court-landmark reprojection error threshold + max stale-frame budget), quarantine frames exceeding SLA, and block downstream feature writes.
+   - Exit proof: per-game drift report artifact with pass/fail status in CI.
+
+2. **Identity instability through dense overlap (ID switches)**
+   - Risk: player-level features and shot ownership become corrupted.
+   - Plan action: add ID-switch benchmark clips, measure IDS rate and track fragmentation, fail pipeline when thresholds are exceeded.
+   - Exit proof: locked benchmark suite with IDS < target across A/B-grade clips.
+
+3. **Calibration mismatch between tracker confidence and geometric truth**
+   - Risk: high confidence scores can hide bad court-space mapping.
+   - Plan action: add confidence calibration curves against geometric error bins and reweight or suppress low-reliability segments.
+   - Exit proof: reliability diagram and expected calibration error (ECE) per model version.
+
+4. **Partial-game corruption leakage into training corpora**
+   - Risk: bad frames contaminate model training and create hard-to-debug drift.
+   - Plan action: enforce quality tags on every frame/possession and exclude low-quality segments from official training sets.
+   - Exit proof: dataset manifest shows quality-filtered row counts and exclusions.
+
+### B) Modeling / Backtest Rigor Risks
+
+5. **Point-in-time leakage in ensemble training and evaluation**
+   - Risk: models can see future-derived signals through non-time-safe joins.
+   - Plan action: mandate `as_of_ts` on every feature table and enforce walk-forward training (train <= T, evaluate > T) with purged windows.
+   - Exit proof: leakage audit report showing no post-cutoff fields in any fold.
+
+6. **Synthetic or proxy evaluation paths in official metrics**
+   - Risk: reported edge can look strong without market-realistic inputs.
+   - Plan action: keep official backtests fail-closed when real market lines are missing; route proxy paths to "research-only" reports.
+   - Exit proof: official report schema includes `data_source=real_market_only`.
+
+7. **Weak uncertainty discipline across 90-model stack**
+   - Risk: overconfident predictions inflate Kelly stakes and drawdowns.
+   - Plan action: require calibrated predictive intervals and per-model uncertainty diagnostics before promotion.
+   - Exit proof: interval coverage and sharpness metrics meet gate thresholds by market.
+
+8. **Regime-shift fragility (roster changes, injuries, coaching shocks)**
+   - Risk: stale models degrade fast out-of-distribution.
+   - Plan action: add regime detectors and conditional retrain triggers tied to performance decay alarms.
+   - Exit proof: documented retrain events with pre/post uplift and alert traces.
+
+### C) Betting Edge / Portfolio Construction Risks
+
+9. **Static Pearson correlation underestimates tail co-movement**
+   - Risk: same-game and lineup-linked props can co-fail, causing hidden concentration.
+   - Plan action: move to regime-conditional covariance with shrinkage and uncertainty haircuts for stake sizing.
+   - Exit proof: stress test shows controlled drawdown under correlated downside scenarios.
+
+10. **Execution slippage vs modeled edge**
+    - Risk: model edge does not survive line movement and fill latency.
+    - Plan action: enforce edge-after-slippage and CLV gates at execution time, not just post-hoc analytics.
+    - Exit proof: realized CLV and execution quality dashboards by book/time bucket.
+
+11. **Portfolio-level kill switch not tied to causal risk indicators**
+    - Risk: drawdown limits alone can react too late.
+    - Plan action: add proactive throttles for correlation spikes, uncertainty spikes, and market microstructure instability.
+    - Exit proof: simulated shock tests trigger throttles before max drawdown breach.
+
+### D) Platform / Product Trust Risks
+
+12. **Data lineage and reproducibility gaps across artifacts**
+    - Risk: investor or auditor cannot replay an exact result set.
+    - Plan action: stamp each prediction/backtest with immutable dataset hash, model hash, and config hash.
+    - Exit proof: one-command replay reproduces benchmark metrics within tolerance.
+
+13. **Contract drift between API, DB, and offline jobs**
+    - Risk: silent schema mismatch corrupts downstream consumers.
+    - Plan action: contract tests as required release gate for DB writers, API payloads, and feature schemas.
+    - Exit proof: CI contract suite green on every release branch.
+
+14. **Operational blind spots during long-running GPU batch jobs**
+    - Risk: throughput collapse or data loss without immediate detection.
+    - Plan action: add run-level SLOs (fps, throttling, write success, checkpoint age) with alerting and auto-recovery runbooks.
+    - Exit proof: on-call dashboard with alert-to-resolution drill logs.
+
+### Program-Level Integration
+
+- These 14 items are now mandatory quality gates under "Integrity First" and "Scientific Rigor."
+- No "world-class" or investor-facing performance claim should be made unless corresponding gate evidence is attached.
+- Weekly review must include a traffic-light status for each failure point and owner assignment until all are green.
