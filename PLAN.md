@@ -11,6 +11,35 @@ CourtVision has a real technical moat candidate:
 
 CourtVision is not yet world-class because reliability and scientific rigor are not fully enforced as operating gates.
 
+## Vision Lock (Do Not Drift)
+
+Primary objective for the next 12 months:
+
+**Deliver the best NBA prediction system by measurable, reproducible evidence across game and player-prop markets.**
+
+All roadmap choices must serve this objective directly.
+
+### In-scope
+
+- Prediction quality (accuracy, calibration, uncertainty quality)
+- Scientific integrity (leakage controls, drift controls, reproducibility)
+- Execution quality (CLV discipline, risk-aware sizing, drawdown protection)
+- CV coverage improvements that lift prediction performance
+
+### Out-of-scope until objective is met
+
+- Multi-sport expansion
+- Non-essential frontend polish
+- New product lines not tied to prediction quality or execution reliability
+
+### 12-Month North Star Targets
+
+- Zero leakage violations in official reports
+- >=95% gate pass rate for drift/calibration/contract checks
+- Stable positive CLV over rolling 90-day windows
+- Statistically significant holdout lift from CV-derived features
+- Release-grade evidence packet generated on schedule
+
 ## World-Class Definition
 
 CourtVision is world-class only when all are true:

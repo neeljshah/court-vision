@@ -17,6 +17,26 @@ The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. Th
 
 ---
 
+## Current Stage (Important)
+
+CourtVision is in late build / validation stage.
+
+Current focus is intentionally narrow:
+
+- maximize NBA prediction quality (games + props),
+- prove reliability with leakage/calibration/drift gates,
+- prove execution quality with CLV and risk controls.
+
+Not the focus yet:
+
+- multi-sport expansion,
+- heavy frontend polish,
+- broad commercialization beyond validation milestones.
+
+If you are contributing, prioritize tasks that improve prediction quality or evidence quality first.
+
+---
+
 ## How It Works (Plain English)
 
 ```
