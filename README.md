@@ -32,10 +32,12 @@ CourtVision extracts defender distance, spacing index, drive frequency, and fati
 | Win Probability | Brier Score | **0.203** |
 | Expected Field Goal (xFG v1) | Brier Score | **0.226** |
 | Player Props (pts) | MAE | **0.308** |
-| Player Props (all 7) | R² | **>0.93** |
+| Player Props (all 7) | R² | **pts=0.47 reb=0.40 ast=0.46** |
 | DNP Predictor | AUC | **0.979** |
 | Matchup Model | R² | **0.796** |
-| CV Tracker throughput | FPS | **15 fps** (RTX 4060 8 GB) |
+| CV Tracker throughput | FPS | **~80 fps** (4× RTX 4090, RunPod) / **15 fps** (RTX 4060 local) |
+| CV Games Processed | A/B Grade | **16 / 20 target** |
+| Cloud Pipeline | RunPod 4090 | **4 parallel workers, decord GPU decode** |
 | Shot chart coverage | Shots | **221,866** across 3 seasons |
 | Play-by-play coverage | Games | **3,627 / 3,685 (98.4%)** |
 
@@ -85,6 +87,8 @@ Broadcast video is ingested by a YOLOv8n + Kalman/Hungarian tracking pipeline th
 - **OSNet re-ID** (256-dim embeddings) + 99-dim HSV histogram embeddings recover identity after off-screen exits (gallery TTL = 300 frames)
 - **YOLOv8-pose** ankle keypoints replace bbox-bottom heuristics for sub-foot court accuracy
 - **EasyOCR dual-pass** jersey OCR with voting buffer resolves player names from NBA roster lookup
+- **RunPod cloud pipeline**: 4 parallel workers on single 4090, OMP thread capping for CFS quota, decord NVDEC GPU decode, ~80 fps aggregate
+- **Batch processing**: `run_phase_g.py` orchestrates full-season video processing with health monitoring and auto-restart
 
 ### Prediction
 - **Win probability**: XGBoost on 27 features, **69.1%** accuracy, Brier **0.203**
@@ -145,15 +149,16 @@ Full setup, environment variables, and GPU configuration: [docs/ARCHITECTURE.md]
 | 2 | CV Tracker | ✅ | YOLOv8, Kalman/Hungarian, OSNet re-ID, 431 tests |
 | 3 | NBA API Data | ✅ | 221K shots, 98.4% PBP, 3 seasons, all stat types |
 | 4 | Tier 1 Models | ✅ | Win prob, props ×7, xFG v1, DNP, matchup |
+| 4.5–4.9 | Betting Lifecycle | ✅ | Betting lifecycle, signal wiring, prediction quality, quant betting, backtesting |
 | 5 | External Factors | ✅ | Injury risk, load management, public fade, line movement |
 | 4.6 | Pre-Phase Enrichment | ✅ | Spatial gap-fill, team abbrev, player name backfill |
 | F | Full Game Processing | 🔲 | 20+ full broadcast games, shot/possession enrichment |
-| G | CV Data Collection | 🔲 | Season 2025-26 batch — 50 games, 2 per team |
+| G | CV Data Collection | 🟡 | 17/59 games processed, RunPod 4090 pipeline active |
 | 7 | Tier 2–3 Models | 🔲 | xFG v2 with CV spatial features (needs 20 games) |
 | 8 | Possession Simulator | 🔲 | 7-model chain, 10K Monte Carlo per game |
 | 9 | Feedback Loop | 🔲 | Nightly retrain → self-improving pipeline |
 | 10 | Tier 4–5 Models | 🔲 | Fatigue, lineup chemistry (needs 50–100 games) |
-| 11 | Betting Infrastructure | 🔲 | Kelly sizing, CLV backtest, paper trading |
+| 11 | Betting Infrastructure | 🟡 | Kelly sizing, CLV backtest, cross-book arbitrage, paper trading built |
 | 12 | Full Monte Carlo | 🔲 | All 90 models, full stat distributions |
 | 13 | FastAPI Backend | 🔲 | 12 endpoints, Redis, WebSocket live updates |
 | 14 | Analytics Dashboard | 🔲 | Next.js, D3 shot charts, 10 visualization types |
@@ -174,6 +179,12 @@ Phase 17 target: win probability accuracy **76–78%** (vs. Second Spectrum ~80%
 | [docs/CV_TRACKING.md](docs/CV_TRACKING.md) | Tracking pipeline, homography, re-ID, OCR |
 | [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) | PostgreSQL schema, CSV formats, API cache structure |
 | [docs/API.md](docs/API.md) | FastAPI endpoints, request/response schemas |
+
+---
+
+## Prediction Ceiling
+
+Full analysis of system capabilities, competitive positioning, and accuracy targets: [PREDICTION_CEILING.md](PREDICTION_CEILING.md)
 
 ---
 
