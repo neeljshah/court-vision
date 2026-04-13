@@ -179,6 +179,7 @@ This is the key claim of CourtVision: not one model, but a compounding system wh
 - `docs/architecture.md` - full technical architecture and data flow
 - `docs/scoreboard.md` - weekly KPI and sprint tracking sheet
 - `docs/label_strategy.md` - GitHub issue labeling and triage rules
+- `docs/WORLD_CLASS_CASE.md` - strategic narrative for category-leading potential
 - `.github/ISSUE_TEMPLATE/` - standardized issue templates for bugs, features, experiments, and gates
 
 ---
