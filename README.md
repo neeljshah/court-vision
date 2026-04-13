@@ -150,6 +150,14 @@ This is the key claim of CourtVision: not one model, but a compounding system wh
 - `.planning/` - phased execution roadmap
 - `PLAN.md` - canonical world-class operating plan
 
+## Execution System
+
+- `PLAN.md` - strategic priorities, failure gates, and 14-day sprint queue
+- `docs/architecture.md` - full technical architecture and data flow
+- `docs/scoreboard.md` - weekly KPI and sprint tracking sheet
+- `docs/label_strategy.md` - GitHub issue labeling and triage rules
+- `.github/ISSUE_TEMPLATE/` - standardized issue templates for bugs, features, experiments, and gates
+
 ---
 
 ## Tech Stack

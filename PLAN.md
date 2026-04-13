@@ -228,3 +228,37 @@ Deliver this packet monthly and before any major capital scale-up:
    - Replay checks, contract test pass rates, pipeline reliability incidents
 6. **Action log**
    - Top regressions, corrective actions, owners, due dates, and expected impact
+
+## 14-Day Execution Sprint (Default Operating Queue)
+
+This section is the default "what to do next" queue. Refresh every Monday. If a task is not here, it is not a priority.
+
+### Must-Win Outcomes (Next 14 Days)
+
+1. **Leakage gate wiring (Owner: Research Platform, ETA: Day 5)**
+   - Add `as_of_ts` enforcement check in training/backtest pipeline.
+   - Produce first `leakage_audit.json` artifact on a recent fold.
+2. **CV drift benchmark v1 (Owner: CV Lead, ETA: Day 7)**
+   - Lock benchmark clips and emit first drift report (`p95/max`).
+   - Fail training data export when drift SLA is breached.
+3. **Quality-filtered dataset manifest (Owner: Data Platform, ETA: Day 9)**
+   - Tag low-quality rows and exclude from official train manifests.
+   - Emit `train_manifest.json` with exclusion counts.
+4. **Execution quality baseline (Owner: Trading Infra, ETA: Day 11)**
+   - Generate rolling CLV dashboard artifact and edge-after-slippage summary.
+5. **Release-gate dry run (Owner: MLOps, ETA: Day 14)**
+   - Run a full mock release and verify all required gate artifacts are present.
+
+### Kill List (Do Not Start Until Sprint Items Are Green)
+
+- New model families not tied to an active gate.
+- UI polish or dashboard redesign work that does not improve validation or reliability.
+- Large refactors without direct linkage to leakage/drift/contract/risk controls.
+- New external data integrations unless they unblock one of the five must-win outcomes.
+
+### Definition of Done (Per Task Type)
+
+- **Build:** code path implemented and exercised locally.
+- **Validate:** metric threshold or pass condition demonstrated on real data.
+- **Evidence:** artifact written to `data/model_reports/` and linked in task notes.
+- **Docs:** brief note added to weekly changelog or decision log.
