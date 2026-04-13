@@ -4,9 +4,9 @@
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 33, 2026-04-07)
-- Branch: `master` | Tests: 960 pass, 93 skip (excl PG tests)
-- Phase: Pre-F. Next: season batch (`select_season_games.py` -> `batch_season.py`)
+### State (Session 35+, 2026-04-13)
+- Branch: `feat/gpu-pipeline` | Tests: 960 pass, 93 skip (excl PG tests)
+- Phase: Phase G active. RunPod pipeline running — 17/59 Phase G games processed.
 - CV games: 16 A/B-grade / 20 target (5A + 11B). 7 C-grade, 65 F-grade.
 - CV registry: 24 player-game records (6 games) via jersey chain resolution
 - 2024-25 gamelog_full: DONE (569/569). Props retrained — all 7 models updated.
