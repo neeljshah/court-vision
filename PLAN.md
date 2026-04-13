@@ -165,3 +165,66 @@ These are additional institutional-grade failure points identified from architec
 - These 14 items are now mandatory quality gates under "Integrity First" and "Scientific Rigor."
 - No "world-class" or investor-facing performance claim should be made unless corresponding gate evidence is attached.
 - Weekly review must include a traffic-light status for each failure point and owner assignment until all are green.
+
+## Execution Matrix (Allocator-Grade Controls)
+
+This matrix turns the risk register into operating controls. A claim is valid only if the linked artifact exists for the same release.
+
+| Risk Domain | Primary Metric | Gate Threshold | Owner | Cadence | Evidence Artifact |
+|---|---|---|---|---|---|
+| Homography drift | Court landmark reprojection error | p95 <= 2.0 ft, max <= 4.0 ft | CV Lead | Per processed game | `data/model_reports/cv_drift/<game_id>.json` |
+| Tracking identity | ID switch rate (IDS / 1k frames) | <= 5 on locked benchmark suite | Tracking Lead | Weekly + release | `data/model_reports/cv_ids/benchmark_report.json` |
+| Tracking reliability | Confidence calibration ECE | <= 0.05 on A/B clips | CV QA Owner | Weekly | `data/model_reports/cv_calibration/ece_report.json` |
+| Dataset quality | Low-quality row contamination | 0 rows in official train manifests | Data Platform | Per training run | `data/model_reports/data_quality/train_manifest.json` |
+| Leakage control | Post-cutoff feature violations | 0 violations | Research Platform | Per fold + release | `data/model_reports/leakage/leakage_audit.json` |
+| Backtest realism | Official reports with proxy lines | 0 official reports | Research Platform | Release | `data/model_reports/backtests/source_audit.json` |
+| Uncertainty validity | Interval coverage (90% PI) | 88-92% by market | Modeling Lead | Per retrain | `data/model_reports/uncertainty/coverage.json` |
+| Regime robustness | OOS performance decay vs baseline | <= 10% relative drop before retrain trigger | Model Ops | Daily monitor | `data/model_reports/regime/drift_alerts.json` |
+| Correlation risk | Stress drawdown under correlated shock | <= policy limit (8% day / 15% month) | Portfolio Lead | Daily + monthly | `data/model_reports/risk/stress_test.json` |
+| Execution quality | CLV positive rate | >= 55% rolling 30 days | Trading Infra | Daily | `data/model_reports/execution/clv_30d.json` |
+| Kill switch readiness | Simulated trigger latency | <= 60s detection-to-halt | Trading Infra | Monthly drill | `data/model_reports/risk/kill_switch_drill.json` |
+| Reproducibility | Replay match rate | 100% metric replay within tolerance | MLOps | Release | `data/model_reports/repro/replay_check.json` |
+| Contract safety | API/DB schema compatibility failures | 0 on release branch | Backend Lead | CI + release | `data/model_reports/contracts/compat_report.json` |
+| Batch operations | Lost-checkpoint incidents | 0 unrecoverable runs | Pipeline Ops | Per run + weekly | `data/model_reports/pipeline/reliability.json` |
+
+## Leakage Zero-Trust Protocol (Mandatory)
+
+No model metric is publishable unless all checks pass:
+
+1. **As-of contract:** every feature row carries `as_of_ts`; joins require `feature_ts <= as_of_ts`.
+2. **Fold isolation:** walk-forward folds with purge windows; no overlap leakage across train/validation windows.
+3. **Artifact freeze:** each fold pins dataset hash, feature config hash, model hash, and code commit SHA.
+4. **Feature blacklist:** post-game or resolution-derived columns are blocked by schema policy for pre-game models.
+5. **Red-team check:** independent leakage scan runs before report generation.
+6. **Publish gate:** if any leakage check fails, report is marked `research-only` and cannot appear in investor materials.
+
+## Portfolio Risk Policy (Capital Protection Standard)
+
+Hard rules for live deployment:
+
+- **Single-position cap:** max 4% bankroll per bet, quarter-Kelly ceiling.
+- **Cluster cap:** max 10% bankroll per correlated cluster (same game/team dependency set).
+- **Daily loss guard:** auto-throttle at -4%, hard halt at -8%.
+- **Monthly drawdown guard:** hard halt at -15% until IC review.
+- **Uncertainty throttle:** if uncertainty coverage breaches gate for 2 consecutive windows, reduce stake multipliers by 50%.
+- **Correlation shock throttle:** if estimated tail co-movement exceeds policy bands, suspend same-game parlays and reduce correlated props.
+- **Kill-switch authority:** automated trigger + manual override by Portfolio Lead; all events logged with RCA within 24 hours.
+
+## Monthly IC Packet Template (Investor-Facing Evidence)
+
+Deliver this packet monthly and before any major capital scale-up:
+
+1. **Performance quality**
+   - ROI, CLV, hit rate by market and edge decile
+   - Calibration and uncertainty coverage by model family
+2. **Scientific integrity**
+   - Leakage audit summary (must be zero violations)
+   - Data source audit (official reports must be real-market-only)
+3. **CV quality**
+   - Drift SLA adherence, IDS benchmark trend, registry growth
+4. **Risk controls**
+   - Stress test outcomes, drawdown distribution, kill-switch drill results
+5. **Reproducibility + operations**
+   - Replay checks, contract test pass rates, pipeline reliability incidents
+6. **Action log**
+   - Top regressions, corrective actions, owners, due dates, and expected impact
