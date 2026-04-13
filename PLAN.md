@@ -40,6 +40,49 @@ All roadmap choices must serve this objective directly.
 - Statistically significant holdout lift from CV-derived features
 - Release-grade evidence packet generated on schedule
 
+## Live Execution + Frontend Program (Latency-Critical)
+
+This program defines how auto-betting and the quant dashboard operate as one system.
+
+### Architecture Decision
+
+- Keep 3 APIs:
+  - Prediction API (model outputs)
+  - Betting API (execution + risk controls)
+  - Quant API (dashboard aggregation and live stream)
+- Frontend reads Quant API for most views and uses controlled actions for execution controls.
+- Live game path uses precomputed CV-enhanced features + live market/context data (hybrid mode).
+
+### Latency SLOs (System-Level)
+
+- Prediction API: p95 <= 350 ms
+- Risk + sizing decision: p95 <= 200 ms
+- Bet cycle (line update -> execution decision): p95 <= 900 ms
+- Dashboard event freshness: <= 1.0 s for critical widgets
+- Kill-switch propagation: <= 1.0 s
+
+### Mandatory Controls
+
+- No execution when required gates are red.
+- Every strategy/config change is versioned and auditable.
+- Idempotent order handling with retry policy and dedupe keys.
+- Stale-data guardrails (banner + optional execution freeze when feed lag breaches threshold).
+
+### Build Sequence
+
+1. **Phase L1 - Foundations (2-3 weeks)**
+   - Define shared event schema (`prediction.created`, `line.updated`, `bet.placed`, `gate.failed`).
+   - Implement quant read models and dashboard overview endpoints.
+   - Add initial latency tracing and SLO dashboards.
+2. **Phase L2 - Auto-Betting Core (2-4 weeks)**
+   - Implement execution queue, risk checks, order lifecycle, and kill switch.
+   - Add CLV-aware execution metrics and slippage accounting.
+3. **Phase L3 - Quant Dashboard Control Plane (2-4 weeks)**
+   - Strategy controls (edge thresholds, max stake, correlation cap) with dry-run mode.
+   - Live monitoring panels (positions, risk, model health, gate status).
+4. **Phase L4 - Hardening (ongoing)**
+   - Latency regression tests, chaos/failure drills, runbooks, and autoscaling policies.
+
 ## World-Class Definition
 
 CourtVision is world-class only when all are true:
