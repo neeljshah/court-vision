@@ -107,6 +107,15 @@ Long-term direction:
 - Additional architecture notes are in `docs/`.
 - Contribution workflow and quality standards are in `CONTRIBUTING.md`.
 
+## License & Usage
+
+This repository is proprietary and provided as a portfolio demonstration only.
+
+- License: **All Rights Reserved**
+- Public reuse: not permitted
+- Commercial use: not permitted
+- Redistribution or derivative works: not permitted without explicit written permission
+
 ## Disclaimer
 
 For research and educational use. Not financial advice.
