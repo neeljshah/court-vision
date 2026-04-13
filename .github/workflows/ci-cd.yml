@@ -3,8 +3,6 @@ name: NBA AI System CI/CD
 on:
   push:
     branches: [main, develop]
-  pull_request:
-    branches: [main]
   schedule:
     # Run daily pipeline at 8 AM UTC
     - cron: '0 8 * * *'

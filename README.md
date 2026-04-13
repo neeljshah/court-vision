@@ -208,6 +208,16 @@ Collaboration and investor conversations are welcome for:
 
 ---
 
+## For Recruiters and Partners
+
+For a fast external review, start here:
+
+- Public evidence standards and proof framing: `docs/PUBLIC_EVIDENCE.md`
+- Deterministic setup and runnable walkthrough: `docs/DEMO.md`
+- Transparent current constraints and caveats: `docs/KNOWN_LIMITATIONS.md`
+
+---
+
 ## License
 
 All rights reserved.  
