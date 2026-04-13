@@ -1,111 +1,143 @@
 # CourtVision
 
-CourtVision is an end-to-end NBA computer vision and ML intelligence system that transforms broadcast video into spatial telemetry, fuses it with traditional basketball data, and produces prediction and betting analytics.
+**Vertical Intelligence for NBA decision markets.**
 
-## What It Does Today
+![Status](https://img.shields.io/badge/Status-Phase_G_Active-22c55e)
+![Hardware](https://img.shields.io/badge/Hardware-RTX_4060-76b900)
+![Architecture](https://img.shields.io/badge/Architecture-7--Tier_Ensemble-2563eb)
+![Core](https://img.shields.io/badge/Core-CV_%2B_ML_%2B_Monte_Carlo-7c3aed)
+![API](https://img.shields.io/badge/Serving-FastAPI-0ea5e9)
 
-- Extracts player/ball tracking from broadcast footage using a GPU CV pipeline.
-- Engineers CV + context features for downstream modeling.
-- Runs a large prediction stack for game, player, and props intelligence.
-- Exposes prediction and analytics surfaces through FastAPI endpoints.
-- Supports batch processing workflows for season-scale game pipelines.
+---
 
-## Why It Matters
+## Investment Thesis
 
-Most public NBA systems rely on box score or play-by-play data only. CourtVision adds spatial signals that are otherwise expensive or unavailable:
+CourtVision builds a proprietary intelligence layer on top of NBA broadcast video by extracting spatial telemetry that does not exist in conventional public datasets.  
+This system is engineered as a quantitative infrastructure asset: from raw video to calibrated probability distributions to capital allocation decisions.
 
-- Defender distance and contest quality
-- Floor spacing and shape dynamics
-- Possession-level movement and fatigue context
-- Event-level context from multi-stage CV tracking
+---
 
-## Architecture
+## The Spatial Advantage
 
-High-level flow:
+Most public models price events from box score and play-by-play abstractions. CourtVision reconstructs **sub-foot coordinate telemetry** directly from broadcast video (player/ball location, spacing geometry, contest context, fatigue proxies), producing information that typically costs professional teams six figures annually through private data vendors.
 
-1. Video ingest and frame decode
-2. Detection, tracking, court homography, OCR/re-ID
-3. Event extraction and per-game tracking artifacts
-4. Feature engineering and context enrichment
-5. Model orchestration and predictions
-6. API serving and analytics output
+This telemetry becomes a first-class feature domain for prediction, simulation, and edge detection.
 
-Core directories:
+| Signal Class | Extracted From | Strategic Value |
+|---|---|---|
+| Defender proximity | Court-mapped CV tracking | Shot quality and contest adjustment |
+| Team spacing geometry | Convex hull + movement topology | Possession efficiency and drive/3PT dynamics |
+| Fatigue and pace decay | Temporal motion vectors | Late-game projection resilience |
+| Off-ball behavior | Re-ID + event sequence | Hidden usage and rebound opportunity edge |
 
-- `src/tracking`: detection, tracking, homography, OCR, re-ID
-- `src/pipeline`: orchestration, registries, drift/retrain utilities
-- `src/features`: feature engineering and advanced derived features
-- `src/prediction`: model logic, game/props predictors, portfolio logic
-- `src/data` and `src/ingest`: external data collection and enrichment
-- `api`: FastAPI app and routers
-- `scripts`: operational runners for batch, validation, retraining
-- `tests`: unit/integration coverage
+---
+
+## Technical Pillars
+
+## 1) CV Pipeline
+
+`SIFT` homography + `YOLOv8` detection + Kalman/Hungarian tracking + `OSNet` re-identification.
+
+- Converts broadcast pixels into court-space coordinates.
+- Maintains identity continuity through occlusion and camera shifts.
+- Produces structured tracking artifacts for downstream modeling.
+
+## 2) Data Refinery
+
+TTL-aware caching and enrichment across **25+ NBA and market data sources**.
+
+- NBA stats and advanced context
+- Injury, referee, line movement, and betting inputs
+- Feature reliability safeguards and refresh discipline
+
+## 3) 90-Model Ensemble
+
+Recursive model stack from baseline context to behavioral CV intelligence.
+
+- Context and schedule models
+- Player state and game-state models
+- CV-enhanced behavioral and matchup layers
+- Portfolio and edge-evaluation layer
+
+## 4) Monte Carlo Engine
+
+**10,000 possession-level simulations** to estimate full distributions rather than point guesses.
+
+- Outcome bands and tail risk characterization
+- Prop and game-market probability surfaces
+- Distribution-aware decision support
+
+---
+
+## Quant Framework
+
+Expected value for a position:
+
+\[
+EV = p \cdot \text{payout} - (1-p)\cdot \text{stake}
+\]
+
+Kelly sizing (fractional implementation in practice):
+
+\[
+f^* = \frac{bp - q}{b}, \quad q = 1-p
+\]
+
+Where \(p\) is estimated win probability, \(b\) is net odds, and \(f^*\) is optimal bankroll fraction under model assumptions.
+
+---
+
+## Commercial Strategy ("Empire Plan")
+
+| Track | Mechanism | Strategic Intent |
+|---|---|---|
+| Personal Betting | Distribution-driven position sizing | Validate edge and execution discipline |
+| Fund Management | Systematic model portfolio | Scale capital under formal risk controls |
+| Data Licensing | Spatial signal products | Monetize proprietary telemetry layer |
+| SaaS Platform | API-first intelligence delivery | Recurring, high-margin enterprise distribution |
+
+---
+
+## Roadmap
+
+```mermaid
+graph LR
+    A[Broadcast Video] --> B[CV Pipeline<br/>SIFT + YOLOv8 + OSNet]
+    B --> C[Tracking Artifacts<br/>coordinates/events/features]
+    C --> D[Data Refinery<br/>25+ sources + TTL cache]
+    D --> E[7-Tier Ensemble<br/>90 models]
+    E --> F[Monte Carlo Engine<br/>10,000 possession sims]
+    F --> G[Edge & Portfolio Layer<br/>EV + Kelly]
+    G --> H[API + Product Surfaces]
+    H --> I[Jarvis AI Chat Interface]
+```
+
+---
 
 ## Tech Stack
 
-- Python 3.9
-- PyTorch + CUDA, YOLOv8, OpenCV, EasyOCR
-- scikit-learn, XGBoost, LightGBM
-- FastAPI + Uvicorn
-- PostgreSQL + Redis
-- Docker / docker-compose
+| Layer | Components |
+|---|---|
+| Vision | YOLOv8, OpenCV, EasyOCR, OSNet |
+| ML | PyTorch, XGBoost, LightGBM, scikit-learn |
+| Data | pandas, nba_api, PostgreSQL, Redis |
+| Serving | FastAPI, Uvicorn, Celery |
+| Infra | Python 3.9, CUDA 11.8, Docker |
 
-## Quick Start
+---
 
-```bash
-conda create -n basketball_ai python=3.9 -y
-conda activate basketball_ai
-pip install -r requirements.txt
-python -m pytest tests/ -q
-```
+## Collaboration & Investment
 
-Run a clip pipeline:
+CourtVision is being developed as a proprietary quantitative intelligence platform.  
+We are open to high-conviction conversations around:
 
-```bash
-python scripts/run_clip.py --game 0022400430 --no-show
-```
+- Strategic collaboration on model quality and deployment hardening
+- Applied research partnerships in sports intelligence and simulation
+- Investor relationships aligned with long-horizon data moat creation
 
-Run Phase G batch queue:
+For collaboration inquiries, use GitHub contact channels associated with this repository owner.
 
-```bash
-python scripts/run_phase_g.py --parallel 4
-```
-
-Start API locally:
-
-```bash
-uvicorn api.main:app --host 0.0.0.0 --port 8000
-```
-
-## Current Priorities
-
-- Increase high-quality processed CV games and registry density
-- Improve model governance and contract safety between API and models
-- Harden production security and runtime settings
-- Strengthen fallback observability and data quality gates
-
-## Vision & Future
-
-CourtVision is evolving from a research-grade pipeline into a public, production-grade basketball intelligence platform.
-
-Near-term direction:
-
-- Reliable live and pregame prediction APIs with strict contracts
-- Better confidence scoring tied to CV data quality and drift health
-- Streamlined frontend experiences backed by real auth and real-time endpoints
-- Stronger model lifecycle controls: promotion, rollback, drift-triggered retrain
-
-Long-term direction:
-
-- Possession-level simulation as a first-class product surface
-- Institutional-grade analytics delivery for media, teams, and quants
-- Subscription-ready prediction services with transparent model governance
-
-## Project Health and Planning
-
-- Strategic roadmap and gap audit live in `PLAN.md`.
-- Additional architecture notes are in `docs/`.
-- Contribution workflow and quality standards are in `CONTRIBUTING.md`.
+---
 
 ## License & Usage
 
@@ -115,7 +147,3 @@ This repository is proprietary and provided as a portfolio demonstration only.
 - Public reuse: not permitted
 - Commercial use: not permitted
 - Redistribution or derivative works: not permitted without explicit written permission
-
-## Disclaimer
-
-For research and educational use. Not financial advice.
