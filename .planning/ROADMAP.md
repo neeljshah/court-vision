@@ -1,5 +1,53 @@
 # Roadmap: NBA AI System
 
+## 2026-04-13 Master Execution Overlay (World-Class Track)
+
+This overlay is the governing plan for all phase work. If any existing phase item conflicts with this section, this section takes priority.
+
+### Core Principle
+
+CourtVision wins only if the system is:
+- scientifically defensible,
+- operationally reliable,
+- commercially trustworthy.
+
+Raw model count and feature breadth do not qualify as world-class on their own.
+
+### Mandatory Program Gates
+
+1. **Evidence gate:** every performance claim must map to a reproducible artifact in `data/model_reports/` or validation outputs.
+2. **Evaluation gate:** no synthetic fallback allowed in official backtest publications.
+3. **Promotion gate:** calibration + drift + leakage checks must pass before model promotion.
+4. **Contract gate:** API and DB contracts must pass compatibility tests per release.
+5. **Reliability gate:** production runtime must meet defined SLO/alert standards.
+
+### Delivery Sequence (Locked)
+
+1. **Integrity (0-30 days)**  
+   - Fix schema/contract drift across prediction writers and DB schema.  
+   - Unify metrics source-of-truth and remove stale/contradictory score reporting.  
+   - Enforce fail-closed behavior for missing joins in official evaluation.
+
+2. **Scientific + Platform Hardening (31-90 days)**  
+   - Wire calibration and drift checks into release workflow.  
+   - Establish fixed CV benchmark suite and CI thresholds.  
+   - Add production observability baseline (logs, metrics, alerts, incident runbook).
+
+3. **Moat Compounding + Commercialization (3-12 months)**  
+   - Scale high-quality CV coverage and registry depth.  
+   - Prove holdout lift from CV-derived features.  
+   - Implement fund-grade execution controls and tenant-safe API controls.
+
+### Progress KPIs (Program Level)
+
+- Contract mismatch incidents: target `0`.
+- Official reports with synthetic fallback: target `0`.
+- Calibration and drift gate pass rate: target `>=95%`.
+- CV benchmark pass rate on locked suite: target `>=95%`.
+- API SLO compliance (latency/error budget): target `>=99%`.
+
+---
+
 ## Vision
 
 Build the world's best NBA analytics and prediction system — a self-improving feedback loop combining computer vision tracking, exhaustive NBA API data, external context, and 50 ML models to simulate games possession-by-possession, surface betting edges, and deliver professional-grade analytics through a conversational AI interface.

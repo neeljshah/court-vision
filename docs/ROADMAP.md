@@ -1,5 +1,37 @@
 # Development Roadmap — NBA AI System
 
+## 2026-04-13 World-Class Alignment Update
+
+This roadmap now follows a strict sequence:
+1. Integrity and scientific trust,
+2. Reliability and production hardening,
+3. Data moat compounding and commercialization.
+
+### Non-Negotiable Gates
+
+- No official metric can rely on synthetic backtest fallback.
+- Model promotion requires calibration and drift checks.
+- API changes require contract tests and schema compatibility checks.
+- CV progress is measured on fixed benchmark clips, not ad-hoc runs.
+
+### Current Priority Stack (Supersedes broad feature expansion)
+
+1. Contract safety and schema consistency.
+2. Backtesting/calibration rigor and claim-evidence consistency.
+3. Security and runtime hardening.
+4. CV coverage quality and registry density.
+5. Commercial packaging (tenant-safe API and execution controls).
+
+### World-Class Milestones
+
+| Window | Milestone | Measurable Completion Signal |
+|---|---|---|
+| 0-30 days | Trust foundation | No schema drift, no synthetic official reports, production-safe API runtime |
+| 31-90 days | Scientific + ops hardening | Calibration/drift release gates, CV benchmark CI thresholds, SLO dashboards |
+| 3-12 months | Moat + scale | CV lift proven on holdout, full reliability posture, API commercialization controls |
+
+---
+
 **Vision:** A self-improving possession-by-possession Monte Carlo game simulator — 90 ML models, 10,000 simulations per game — producing full stat distributions for every player compared against sportsbook lines, accessible via conversational AI that renders charts inline.
 
 ---
