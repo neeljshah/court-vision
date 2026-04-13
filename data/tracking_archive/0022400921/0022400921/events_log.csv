@@ -1,0 +1,1 @@
+game_id,frame,timestamp,possession_id,type,player_id,defender_id,x,y,start_x,end_x,closeout_speed,crash_angle,crash_speed,box_out,ball_handler_id,screener_id,screen_action,handler_id,rotation_dist

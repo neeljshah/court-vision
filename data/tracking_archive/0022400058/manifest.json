@@ -1,0 +1,25 @@
+{
+  "stem": "den_gsw_playoffs",
+  "path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\den_gsw_playoffs.mp4",
+  "game_id": "0022400058",
+  "size_mb": 283.1,
+  "started_at": "2026-03-19T22:19:13.834334",
+  "duration_sec": 0,
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 10500,
+  "tracking_rows": 5160,
+  "stability": 1.0,
+  "id_switches": 0,
+  "ball_detected_pct": 65.4,
+  "shots_detected": 62,
+  "possessions_labeled": 60,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "fps_estimate": 35.7,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

@@ -38,6 +38,20 @@ import cv2
 import numpy as np
 
 try:
+    import torch as _torch
+    _HAS_TORCH = True
+except ImportError:
+    _HAS_TORCH = False
+
+try:
+    import kornia
+    import kornia.feature as _kf
+    import kornia.geometry as _kg
+    _HAS_KORNIA = True
+except ImportError:
+    _HAS_KORNIA = False
+
+try:
     from dotenv import load_dotenv
     load_dotenv(override=False)
 except ImportError:
@@ -46,10 +60,17 @@ except ImportError:
 
 # ── F5: PyAV fast frame decoder ───────────────────────────────────────────────
 
-def _pyav_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]:
+def _pyav_frame_iter(video_path: str, start_frame: int = 0,
+                     max_source_frames: int = 0) -> Iterator[tuple]:
     """
     Yield (frame_idx, bgr_array) using PyAV (FFmpeg) for 30-40% faster decode.
     Falls back to cv2.VideoCapture if PyAV is not installed.
+
+    Args:
+        max_source_frames: Stop after yielding this many frames (0 = no limit).
+            Set to max_gameplay_frames * stride * 3 for long videos to prevent
+            PyAV from decoding hundreds of thousands of frames when only the
+            first portion of the video contains the needed gameplay.
     """
     try:
         import av  # type: ignore
@@ -58,11 +79,19 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]:
         fps       = float(stream.average_rate) if stream.average_rate else 30.0
         total     = stream.frames or 0
         frame_idx = 0
+        yielded   = 0
         for packet in container.demux(stream):
             for av_frame in packet.decode():
                 if frame_idx >= start_frame:
                     bgr = av_frame.to_ndarray(format="bgr24")
+                    del av_frame  # release C-layer frame buffer before yield
                     yield frame_idx, bgr, fps, total
+                    yielded += 1
+                    if max_source_frames and yielded >= max_source_frames:
+                        container.close()
+                        return
+                else:
+                    del av_frame
                 frame_idx += 1
         container.close()
     except ImportError:
@@ -72,11 +101,16 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]:
         if start_frame > 0:
             cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
         frame_idx = start_frame
+        yielded   = 0
         while True:
             ok, frame = cap.read()
             if not ok:
                 break
             yield frame_idx, frame, fps, total
+            yielded += 1
+            if max_source_frames and yielded >= max_source_frames:
+                cap.release()
+                return
             frame_idx += 1
         cap.release()
     except Exception:
@@ -84,7 +118,7 @@ def _pyav_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]:
 
 # ── NVDEC GPU video decoder (decord) + PyAV fallback ─────────────────────────
 
-def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]:
+def _decord_frame_iter(video_path: str, start_frame: int = 0, max_source_frames: int = 0) -> Iterator[tuple]:
     """
     Yield (frame_idx, bgr_array, fps, total) using decord GPU NVDEC decode.
 
@@ -110,9 +144,25 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]
     _BATCH_DECODE = 32  # frames per NVDEC batch — saturates L40S decode engine
 
     try:
-        from decord import VideoReader, gpu  # type: ignore
-        # Always gpu(0) — CUDA_VISIBLE_DEVICES remaps physical GPU to logical 0
-        vr  = VideoReader(video_path, ctx=gpu(0), num_threads=1)
+        # DISABLED: decord (both GPU and CPU ctx) leaks ~200 MB/frame in its
+        # internal C++ buffer pool.  get_batch() retains frame buffers even after
+        # the Python ndarray is deleted.  Confirmed via tracemalloc + RSS monitoring
+        # (Session 35, 2026-04-10).  Fall through to PyAV which is stable at ~2 GB RSS.
+        _force_no_decord = os.environ.get("DECORD_ENABLE", "0") != "1"
+        if _force_no_decord:
+            raise ImportError("decord disabled — use DECORD_ENABLE=1 to override")
+        from decord import VideoReader, gpu, cpu  # type: ignore
+        import os as _os_dec
+        _use_gpu_ctx = False
+        if _os_dec.environ.get("DECORD_GPU", "0") == "1":
+            try:
+                vr = VideoReader(video_path, ctx=gpu(0), num_threads=1)
+                _use_gpu_ctx = True
+            except Exception:
+                vr = VideoReader(video_path, ctx=cpu(0), num_threads=2)
+        else:
+            vr = VideoReader(video_path, ctx=cpu(0), num_threads=2)
+
         fps = float(vr.get_avg_fps())
         total = len(vr)
 
@@ -124,7 +174,21 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]
             batch_end = min(batch_start + _BATCH_DECODE, total)
             indices = list(range(batch_start, batch_end))
             try:
-                frames_rgb = vr.get_batch(indices).asnumpy()  # (N, H, W, 3) single copy
+                batch_raw = vr.get_batch(indices)
+                # Try to get frames as torch CUDA tensors (zero-copy DLPack)
+                if _use_gpu_ctx and _HAS_TORCH:
+                    try:
+                        frames_rgb = _torch.from_dlpack(batch_raw)  # (N,H,W,3) CUDA
+                        # RGB→BGR via channel flip on GPU
+                        frames_bgr = frames_rgb[:, :, :, [2, 1, 0]]
+                        for j, frame_idx in enumerate(indices):
+                            yield frame_idx, frames_bgr[j].cpu().numpy(), fps, total
+                        del frames_rgb, frames_bgr
+                        continue
+                    except Exception:
+                        pass  # DLPack not supported in this decord version
+                # Fallback: asnumpy (GPU→CPU copy)
+                frames_rgb = batch_raw.asnumpy()
             except Exception:
                 # Fallback to sequential on batch failure (edge case: last few frames)
                 for i in indices:
@@ -150,7 +214,7 @@ def _decord_frame_iter(video_path: str, start_frame: int = 0) -> Iterator[tuple]
     except Exception:
         pass  # decord unavailable or GPU context failed — fall through to PyAV
 
-    yield from _pyav_frame_iter(video_path, start_frame)
+    yield from _pyav_frame_iter(video_path, start_frame, max_source_frames=max_source_frames)
 
 
 # ── Async frame prefetcher ────────────────────────────────────────────────────
@@ -190,21 +254,24 @@ class _FramePrefetcher:
         start_frame: int = 0,
         queue_size: int = 8,
         stride: int = 1,
+        max_source_frames: int = 0,
     ) -> None:
         self._stride = max(1, stride)
         self._q = queue.Queue(maxsize=queue_size)
         self._thread = threading.Thread(
             target=self._decode_loop,
-            args=(video_path, start_frame),
+            args=(video_path, start_frame, max_source_frames),
             daemon=True,
             name="FramePrefetcher",
         )
         self._thread.start()
 
-    def _decode_loop(self, video_path: str, start_frame: int) -> None:
+    def _decode_loop(self, video_path: str, start_frame: int,
+                     max_source_frames: int = 0) -> None:
         """Background: decode frames (respecting stride) and put into queue."""
         try:
-            for _fi, bgr, _fps, _total in _decord_frame_iter(video_path, start_frame):
+            for _fi, bgr, _fps, _total in _decord_frame_iter(
+                    video_path, start_frame, max_source_frames=max_source_frames):
                 # Skip frames that fall outside the stride pattern.
                 # Uses absolute frame index so frame_idx downstream is always
                 # the real video position (correct for timestamp calculation).
@@ -230,6 +297,20 @@ class _FramePrefetcher:
         frame position for CSV timestamps and position dictionaries.
         """
         return self._q.get()
+
+    def peek(self, n: int = 7) -> List[np.ndarray]:
+        """Non-blocking peek at up to n queued frames without consuming them.
+
+        Returns list of BGR frames (copies). Used by YOLO prefetch to batch
+        upcoming frames for GPU inference while the current frame is processed.
+        """
+        frames: List[np.ndarray] = []
+        with self._q.mutex:
+            for item in list(self._q.queue)[:n]:
+                ok, bgr, _fi = item
+                if ok and bgr is not None:
+                    frames.append(bgr.copy())
+        return frames
 
     def release(self) -> None:
         """No-op — daemon thread exits when the process terminates."""
@@ -517,24 +598,38 @@ class UnifiedPipeline:
         h, w  = (f0[TOPCUT:].shape[:2]) if f0 is not None else (720, 1280)
         self.stats_tracker = StatsTracker(frame_w=w, frame_h=h, fps=fps)
 
-        # SIFT: prefer cv2.cuda SIFT on L40S/RunPod (GPU-accelerated, frees CPU
-        # for decode thread).  Falls back to CPU SIFT when CUDA module unavailable.
+        # Feature matching: kornia KeyNetAffNetHardNet on GPU (preferred),
+        # fallback to cv2.SIFT on CPU.
         self._sift_gpu = False
+        self._kornia_matcher = None
+        self._pano_feats_kornia = None
+        # LoFTR disabled by default: allocates ~250MB CPU + ~120MB GPU per worker,
+        # and self-attention intermediates fragment the heap badly in multi-worker
+        # runs.  SIFT is ~5% slower but uses <10MB.  Set COURTV_NO_LOFTR=0 to re-enable.
+        _loftr_disabled = os.environ.get("COURTV_NO_LOFTR", "1") == "1"
+        if _HAS_KORNIA and not _loftr_disabled:
+            try:
+                _dev = "cuda" if _torch.cuda.is_available() else "cpu"
+                self._kornia_device = _dev
+                self._kornia_matcher = _kf.LoFTR(pretrained="outdoor").to(_dev).eval()
+                # Store pano as GPU tensor for LoFTR matching
+                _pano_gray = cv2.cvtColor(pano, cv2.COLOR_BGR2GRAY) if len(pano.shape) == 3 else pano
+                self._pano_tensor = _torch.from_numpy(_pano_gray).float().unsqueeze(0).unsqueeze(0).to(_dev) / 255.0
+                self._sift_gpu = True
+                log.info("Homography: using kornia LoFTR (GPU-accelerated)")
+            except Exception as _ke:
+                log.debug("kornia LoFTR init failed (%s) — falling back to SIFT", _ke)
+                self._kornia_matcher = None
+        elif _loftr_disabled:
+            log.info("Homography: LoFTR disabled (COURTV_NO_LOFTR=1), using SIFT")
+
+        # Always init SIFT as fallback (even when kornia LoFTR is available)
         try:
-            _cuda_sift = cv2.cuda.SURF_CUDA_create(400)  # SURF is faster on GPU than SIFT
-            # Test upload to verify CUDA module works
-            _test_gpu = cv2.cuda_GpuMat()
-            _test_gpu.upload(cv2.cvtColor(pano, cv2.COLOR_BGR2GRAY) if len(pano.shape) == 3 else pano)
-            _gpu_kp, _gpu_des = _cuda_sift.detectWithDescriptors(_test_gpu, None)
-            self._cuda_sift = _cuda_sift
-            self._sift_gpu = True
-            # Store pano descriptors on GPU for fast matching
-            self.kp1 = cv2.cuda_SURF_CUDA.downloadKeypoints(_cuda_sift, _gpu_kp)
-            self.des1 = _gpu_des.download()
-            self.sift = None  # not used in GPU path
-            log.info("SIFT: using cv2.cuda.SURF_CUDA (GPU-accelerated)")
-        except (cv2.error, AttributeError, Exception):
             sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
+            self.sift = sift
+            self.kp1, self.des1 = sift.compute(pano, sift.detect(pano))
+        except Exception:
+            sift = cv2.SIFT_create()
             self.sift = sift
             self.kp1, self.des1 = sift.compute(pano, sift.detect(pano))
         self._M_ema:              Optional[np.ndarray] = None
@@ -734,8 +829,21 @@ class UnifiedPipeline:
                 print(f"  Wide pano cropped {w_p}→{target_w}px (ratio {ratio_p:.1f}→6.0)")
         if not UnifiedPipeline._pano_valid(pano):
             h_p, w_p = pano.shape[:2]
-            print(f"  Stitched pano invalid ({w_p}×{h_p}, ratio={w_p/max(h_p,1):.1f}) — using single gameplay frame")
-            pano = stitch_frames[0]
+            # Single gameplay frame (640×300, ratio=2.1) is too narrow for SIFT →
+            # fall back to pano_enhanced.png which covers the full court.
+            print(f"  Stitched pano invalid ({w_p}×{h_p}, ratio={w_p/max(h_p,1):.1f})"
+                  f" — falling back to general pano")
+            for _fb in ("pano_enhanced.png", "pano.png"):
+                _fb_path = os.path.join(_RESOURCES, _fb)
+                if os.path.exists(_fb_path):
+                    _fb_img = cv2.imread(_fb_path)
+                    if UnifiedPipeline._pano_valid(_fb_img):
+                        pano = _fb_img
+                        print(f"  Using general pano fallback: {_fb}")
+                        break
+            else:
+                # Absolute last resort — single frame (homography will be unreliable)
+                pano = stitch_frames[0]
 
         out = UnifiedPipeline._auto_pano_path(video_path)
         cv2.imwrite(out, pano)
@@ -934,6 +1042,53 @@ class UnifiedPipeline:
                 self._M1_failed_attempts += 1
                 self._M1_stale_frames = 0  # reset so we wait another threshold period
 
+    def _kornia_homography(self, small_roi: np.ndarray, y_offset: int):
+        """Run kornia LoFTR matching and compute homography on GPU.
+
+        Returns (M, mask) or (None, None) on failure.
+        """
+        with _torch.no_grad():
+            return self._kornia_homography_inner(small_roi, y_offset)
+
+    def _kornia_homography_inner(self, small_roi: np.ndarray, y_offset: int):
+        _dev = self._kornia_device
+        inv_s = 1.0 / _SIFT_SCALE
+
+        gray_small = cv2.cvtColor(small_roi, cv2.COLOR_BGR2GRAY) if len(small_roi.shape) == 3 else small_roi
+        frame_t = _torch.from_numpy(gray_small).float().unsqueeze(0).unsqueeze(0).to(_dev) / 255.0
+
+        # Resize pano to comparable scale for LoFTR
+        _ph, _pw = self._pano_tensor.shape[2], self._pano_tensor.shape[3]
+        _sh, _sw = frame_t.shape[2], frame_t.shape[3]
+        pano_resized = _torch.nn.functional.interpolate(
+            self._pano_tensor, size=(_sh, _sw), mode="bilinear", align_corners=False
+        )
+
+        batch = {"image0": pano_resized, "image1": frame_t}
+        self._kornia_matcher(batch)
+
+        mkpts0 = batch["mkpts0_f"].cpu().numpy()  # pano keypoints (in resized space)
+        mkpts1 = batch["mkpts1_f"].cpu().numpy()  # frame keypoints (in small_roi space)
+        conf = batch["mconf"].cpu().numpy()
+
+        # Filter by confidence
+        good = conf > 0.5
+        if good.sum() < 4:
+            return None, None
+
+        # Scale back to full frame/pano coordinates
+        _pano_scale_x = _pw / _sw
+        _pano_scale_y = _ph / _sh
+        src = mkpts0[good] * np.array([_pano_scale_x, _pano_scale_y])
+        dst = mkpts1[good] * np.array([inv_s, inv_s])
+        dst[:, 1] += y_offset  # ROI offset
+
+        src = src.reshape(-1, 1, 2).astype(np.float32)
+        dst = dst.reshape(-1, 1, 2).astype(np.float32)
+
+        M, mask = cv2.findHomography(dst, src, cv2.RANSAC, 5.0)
+        return M, mask
+
     def _get_homography(self, frame) -> Optional[np.ndarray]:
         """
         Compute SIFT-based frame→panorama homography with EMA smoothing and
@@ -979,44 +1134,30 @@ class UnifiedPipeline:
                 return self._M_ema  # no camera cut — reuse cached EMA homography
         self._sift_last_hist = hist_cur
 
-        # Run feature detection on the cropped ROI (downscaled for speed).
-        # Uses cv2.cuda SURF on GPU when available (L40S), falls back to CPU SIFT.
+        # Run feature matching — kornia LoFTR (GPU) or SIFT (CPU fallback).
         small = cv2.resize(roi, (int(roi.shape[1] * _SIFT_SCALE), int(roi.shape[0] * _SIFT_SCALE)))
 
-        if self._sift_gpu:
+        M, mask = None, None
+        if self._kornia_matcher is not None:
             try:
-                _gray_small = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
-                _gpu_mat = cv2.cuda_GpuMat()
-                _gpu_mat.upload(_gray_small)
-                _gpu_kp, _gpu_des = self._cuda_sift.detectWithDescriptors(_gpu_mat, None)
-                kp2_small = cv2.cuda_SURF_CUDA.downloadKeypoints(self._cuda_sift, _gpu_kp)
-                des2 = _gpu_des.download()
+                M, mask = self._kornia_homography(small, y_offset)
             except Exception:
-                # GPU SIFT failed on this frame — fall back to CPU
-                if self.sift is None:
-                    self.sift = cv2.SIFT_create() if hasattr(cv2, "SIFT_create") else cv2.xfeatures2d.SIFT_create()
-                kp2_small, des2 = self.sift.detectAndCompute(small, None)
-        else:
+                pass  # fall through to SIFT
+
+        if M is None and hasattr(self, 'sift') and self.sift is not None:
             kp2_small, des2 = self.sift.detectAndCompute(small, None)
-
-        if des2 is None or len(des2) < 4:
-            return self._M_ema
-        inv_s = 1.0 / _SIFT_SCALE
-        # Add y_offset to convert keypoint y-coords from ROI-space → full-frame space
-        kp2 = [cv2.KeyPoint(kp.pt[0] * inv_s, kp.pt[1] * inv_s + y_offset,
-                             kp.size * inv_s, kp.angle, kp.response,
-                             kp.octave, kp.class_id) for kp in kp2_small]
-
-        # OPTIMIZATION: Cap descriptors to first 500 to speed up FLANN (early termination)
-        _des2_capped = des2[:min(500, len(des2))]
-        matches = FLANN.knnMatch(self.des1, _des2_capped, k=2)
-        good    = [m for m, n in matches if m.distance < 0.7 * n.distance]
-        if len(good) < 4:
-            return self._M_ema
-
-        src = np.float32([self.kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
-        dst = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
-        M, mask = cv2.findHomography(dst, src, cv2.RANSAC, 5.0)
+            if des2 is not None and len(des2) >= 4:
+                inv_s = 1.0 / _SIFT_SCALE
+                kp2 = [cv2.KeyPoint(kp.pt[0] * inv_s, kp.pt[1] * inv_s + y_offset,
+                                     kp.size * inv_s, kp.angle, kp.response,
+                                     kp.octave, kp.class_id) for kp in kp2_small]
+                _des2_capped = des2[:min(500, len(des2))]
+                matches = FLANN.knnMatch(self.des1, _des2_capped, k=2)
+                good = [m for m, n in matches if m.distance < 0.7 * n.distance]
+                if len(good) >= 4:
+                    src = np.float32([self.kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+                    dst = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+                    M, mask = cv2.findHomography(dst, src, cv2.RANSAC, 5.0)
 
         if M is None:
             return self._M_ema
@@ -1228,9 +1369,22 @@ class UnifiedPipeline:
         # Uses NVDEC (decord GPU) when available, falls back to PyAV/cv2.
         # stride= causes the decode thread to skip 2/3 of frames at the NVDEC level
         # rather than decoding-then-discarding, saving GPU bandwidth and memory.
-        # queue_size=64: deeper buffer overlaps GPU decode with tracking compute.
-        # On RunPod (24GB+ VRAM), 64 frames ≈ 300MB — well within budget.
-        _prefetcher = _FramePrefetcher(self.video_path, self.start_frame, stride=_stride, queue_size=64)
+        # queue_size=12: balance decode overlap vs RSS.  64 frames ≈ 384 MB
+        # per worker — on cgroup-limited pods (116 GB) this blows up with 3+ workers.
+        # 12 frames ≈ 72 MB keeps the decode thread busy without RSS bloat.
+        # Cap source frames decoded to prevent PyAV from reading full 200K-frame videos
+        # when only 18K gameplay frames are needed.  4× multiplier accounts for up to
+        # 75% non-live content (replays, halftime, ads). 0 = no cap (short clips).
+        _max_src = (self.max_frames * _stride * 4) if self.max_frames else 0
+        _prefetcher = _FramePrefetcher(self.video_path, self.start_frame,
+                                       stride=_stride, queue_size=12,
+                                       max_source_frames=_max_src)
+
+        # Clear stale CSV files from previous runs so incremental append starts fresh
+        for _stale in ("ball_tracking.csv", "scoreboard_log.csv", "events_log.csv"):
+            _sp = os.path.join(self._data_dir, _stale)
+            if os.path.exists(_sp):
+                os.remove(_sp)
 
         tracking_rows:    List[dict] = []
         ball_rows:        List[dict] = []
@@ -1306,6 +1460,23 @@ class UnifiedPipeline:
         # empty_cache() is ~0.1ms on L40S — negligible vs the 5-min interval.
         _VRAM_FLUSH_INTERVAL = 3000
         _vram_flush_counter  = 0
+
+        # RAM leak defense: gc.collect + malloc_trim every 500 gameplay frames.
+        # Checkpoints at 2000 frames are too infrequent — glibc arena fragmentation
+        # from rapid YOLO/SIFT/OSNet alloc/free grows RSS monotonically.
+        _GC_INTERVAL = 200
+        _gc_counter  = 0
+        _rss_prev_mb = 0.0  # track RSS growth between GC cycles
+
+        # ── tracemalloc leak profiler (enabled by TRACEMALLOC=1 env) ──────
+        _TM_ENABLED = os.environ.get("TRACEMALLOC", "") == "1"
+        _tm_snap0 = None
+        _TM_INTERVAL = 100  # snapshot every 100 gameplay frames
+        if _TM_ENABLED:
+            import tracemalloc as _tm
+            _tm.start(25)  # 25-frame deep tracebacks
+            _tm_snap0 = _tm.take_snapshot()
+            print("[TRACEMALLOC] enabled — will snapshot every 100 gameplay frames")
 
         while True:
             ok, frame, _fi = _prefetcher.read()
@@ -1438,6 +1609,16 @@ class UnifiedPipeline:
             np.copyto(self._map_snap_buf, self.map_2d)
             map_snap = self._map_snap_buf
             self._last_ball_2d = None
+
+            # ── YOLO prefetch: peek ahead N frames for batch GPU inference ──
+            # The prefetcher queue has buffered frames ahead; peek up to 7 more
+            # and push them into the tracker's YOLO batch buffer so the next
+            # 7 get_players_pos() calls serve cached results (zero GPU wait).
+            if hasattr(self.feet_det, "prefetch_yolo") and not self.feet_det._yolo_result_buf:
+                _peek_frames = _prefetcher.peek(7) if hasattr(_prefetcher, "peek") else []
+                if _peek_frames:
+                    _pf_list = [f[TOPCUT:] for f in _peek_frames]
+                    self.feet_det.prefetch_yolo(_pf_list)
 
             # ── Player tracking ───────────────────────────────────────────
             # OPTIMIZATION: Batch jersey OCR every N frames; voting buffer smooths across frames
@@ -1611,14 +1792,92 @@ class UnifiedPipeline:
                     import torch as _torch
                     if _torch.cuda.is_available():
                         _torch.cuda.empty_cache()
+                        # VRAM monitoring: warn if >20GB (4-worker headroom on 24GB 4090)
+                        _vram_mb = _torch.cuda.memory_allocated() / 1024 / 1024
+                        if _vram_mb > 20_000:
+                            print(f"\n[VRAM WARNING] {_vram_mb:.0f}MB allocated — "
+                                  f"exceeds 20GB threshold, risk of OOM with 4 workers")
                 except (ImportError, Exception):
                     pass
                 # Clear predictions buffer — only used for return value summary;
                 # keeping 3000+ frame dicts in RAM causes multi-GB heap growth on
                 # full-game runs.  Checkpoint CSV already persists all tracking rows.
                 predictions.clear()
+                # Also run gc.collect + malloc_trim here (same as GC interval) so
+                # the VRAM flush and RAM flush are co-scheduled every 3000 frames.
+                # Without this, glibc arenas can grow for up to 3000 frames between
+                # trimming cycles (GC every 200 but malloc_trim alone can't reclaim
+                # fragmented arenas faster than they're filled on a busy frame).
+                import gc as _gc_vf
+                _gc_vf.collect()
+                try:
+                    import ctypes as _ct_vf
+                    _ct_vf.CDLL("libc.so.6").malloc_trim(0)
+                except Exception:
+                    pass  # Windows / non-glibc
+
+            # ── Aggressive GC + malloc_trim every 500 frames ─────────────────
+            # glibc arena fragmentation from rapid YOLO/SIFT/OSNet alloc/free
+            # grows RSS monotonically.  gc.collect + malloc_trim releases arenas
+            # back to OS.  500-frame cadence = ~80s, keeps RSS stable.
+            _gc_counter += 1
+            if _gc_counter >= _GC_INTERVAL:
+                _gc_counter = 0
                 import gc as _gc
                 _gc.collect()
+                try:
+                    import ctypes as _ct_gc
+                    _ct_gc.CDLL("libc.so.6").malloc_trim(0)
+                except Exception:
+                    pass  # Windows / non-glibc
+                # RSS monitoring — log every GC cycle to track growth pattern
+                try:
+                    _rss_mb = 0.0
+                    try:
+                        # VmRSS = current RSS (not peak). ru_maxrss on Linux is
+                        # the high-watermark and never decreases — useless for
+                        # detecting whether GC/malloc_trim actually freed memory.
+                        with open("/proc/self/status") as _sf:
+                            for _line in _sf:
+                                if _line.startswith("VmRSS:"):
+                                    _rss_mb = int(_line.split()[1]) / 1024
+                                    break
+                    except Exception:
+                        try:
+                            import resource as _res
+                            _rss_mb = _res.getrusage(_res.RUSAGE_SELF).ru_maxrss / 1024
+                        except Exception:
+                            pass
+                    _delta = _rss_mb - _rss_prev_mb if _rss_prev_mb > 0 else 0
+                    _rss_prev_mb = _rss_mb
+                    print(f"\n[MEM gc f={frame_idx}] RSS={_rss_mb:.0f}MB  "
+                          f"Δ={_delta:+.0f}MB  "
+                          f"rows={len(tracking_rows)}  poss={len(possession_rows)}  "
+                          f"pred={len(predictions)}")
+                    # Emergency: if RSS > 25GB, force aggressive cleanup
+                    if _rss_mb > 25_000:
+                        print(f"[MEM EMERGENCY] RSS={_rss_mb:.0f}MB > 25GB — "
+                              f"forcing full cleanup")
+                        predictions.clear()
+                        _gc.collect()
+                        try:
+                            _ct_gc.CDLL("libc.so.6").malloc_trim(0)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+            # ── tracemalloc diff snapshot ──────────────────────────────────
+            if _TM_ENABLED and gameplay_frames % _TM_INTERVAL == 0 and gameplay_frames > 0:
+                import tracemalloc as _tm
+                _snap_now = _tm.take_snapshot()
+                if _tm_snap0 is not None:
+                    _top = _snap_now.compare_to(_tm_snap0, "lineno")
+                    print(f"\n[TRACEMALLOC f={frame_idx} gf={gameplay_frames}] "
+                          f"Top 15 memory growth:")
+                    for _si in _top[:15]:
+                        print(f"  {_si}")
+                _tm_snap0 = _snap_now
 
             # ── Frame-level metrics (shared across all players this frame) ──
             _n_events_before = len(self.event_det.events)   # kept for legacy compat
@@ -1632,13 +1891,27 @@ class UnifiedPipeline:
 
             # FIX 1: Flush rich events into _events_log_rows, then clear to prevent unbounded growth
             for _evt in self.event_det.events:
-                _events_log_rows.append({
+                _erow_dict = {
                     **_evt,
                     "game_id":      self.game_id or "",
                     "frame":        _evt.get("frame", frame_idx),
                     "timestamp":    timestamp_sec,
                     "possession_id": possession_id,
-                })
+                }
+                _events_log_rows.append(_erow_dict)
+                # Accumulate screen/drive/cut counts inline (events_log_rows
+                # is flushed at checkpoints so end-of-run iteration misses them)
+                _etype_evt = _evt.get("type", "")
+                if _etype_evt in ("screen_set", "drive", "cut"):
+                    _ek = possession_id
+                    if _ek not in _poss_event_counts:
+                        _poss_event_counts[_ek] = {"pass_count": 0, "screen_count": 0, "drive_count": 0, "cut_count": 0}
+                    if _etype_evt == "screen_set":
+                        _poss_event_counts[_ek]["screen_count"] += 1
+                    elif _etype_evt == "drive":
+                        _poss_event_counts[_ek]["drive_count"] += 1
+                    elif _etype_evt == "cut":
+                        _poss_event_counts[_ek]["cut_count"] += 1
             self.event_det.events.clear()
 
             # FIX 5: Buffer first 300 frame_tracks snapshots for court-side team mapping
@@ -2131,10 +2404,48 @@ class UnifiedPipeline:
             if frame_idx % _CHECKPOINT_INTERVAL < _stride and tracking_rows:
                 self._ckpt_queue.put(list(tracking_rows))  # snapshot; writer thread drains queue
                 tracking_rows.clear()
+                # Flush auxiliary row buffers — these grow unbounded across the full
+                # game and contribute ~5-15 GB RSS on 18K-frame runs.  Append-flush
+                # to their respective CSVs, then clear to reclaim heap.
+                if ball_rows:
+                    self._export_ball_csv(ball_rows, append=True)
+                    ball_rows.clear()
+                if scoreboard_log_rows:
+                    self._export_scoreboard_log(scoreboard_log_rows, append=True)
+                    scoreboard_log_rows.clear()
+                if _events_log_rows:
+                    self._export_events_log(_events_log_rows, append=True)
+                    _events_log_rows.clear()
+                # Force glibc to return freed pages to OS — Python's allocator
+                # holds onto arenas even after gc.collect(), causing RSS to only
+                # grow.  malloc_trim releases unmapped pages back to the kernel.
+                import gc as _gc2
+                _gc2.collect()
+                try:
+                    import ctypes as _ct
+                    _ct.CDLL("libc.so.6").malloc_trim(0)
+                except Exception:
+                    pass  # Windows / non-glibc — skip
+                # RSS monitoring — VmRSS = current RSS (ru_maxrss is peak, never drops)
+                try:
+                    _rss_mb = 0.0
+                    with open("/proc/self/status") as _sf:
+                        for _line in _sf:
+                            if _line.startswith("VmRSS:"):
+                                _rss_mb = int(_line.split()[1]) / 1024
+                                break
+                    print(f"\n[MEM] checkpoint f={frame_idx}  RSS={_rss_mb:.0f}MB  "
+                          f"tracking_rows={len(tracking_rows)}  ball={len(ball_rows)}  "
+                          f"events={len(_events_log_rows)}  poss={len(possession_rows)}")
+                except Exception:
+                    pass
 
         if writer:
             writer.release()
-        cv2.destroyAllWindows()
+        try:
+            cv2.destroyAllWindows()
+        except cv2.error:
+            pass
         print()
         self._flush_queue()  # Task 4: wait for all async checkpoint writes to finish
 
@@ -2172,23 +2483,9 @@ class UnifiedPipeline:
                     _row["team"] = _team_map.get(_row.get("team", ""), _row.get("team", ""))
                 _team_map_applied = True
 
-        # FIX 4: finalize screen/drive/cut counts from events_log before export
-        for _erow in _events_log_rows:
-            _epid = _erow.get("possession_id")
-            if _epid is None:
-                continue
-            _key = int(_epid) if isinstance(_epid, (int, float)) else None
-            if _key is None:
-                continue
-            if _key not in _poss_event_counts:
-                _poss_event_counts[_key] = {"pass_count": 0, "screen_count": 0, "drive_count": 0, "cut_count": 0}
-            _etype = _erow.get("type", "")
-            if _etype == "screen_set":
-                _poss_event_counts[_key]["screen_count"] += 1
-            elif _etype == "drive":
-                _poss_event_counts[_key]["drive_count"] += 1
-            elif _etype == "cut":
-                _poss_event_counts[_key]["cut_count"] += 1
+        # FIX 4: screen/drive/cut counts are now accumulated inline during the
+        # main loop (alongside event flush) — no end-of-run iteration needed.
+        # This is required because _events_log_rows is flushed at checkpoints.
 
         # FIX 5: build court-side team map for possession/shot rows (after frame buffer is complete)
         # FIX 7: extend to write team_colors.json and backfill team_abbrev in tracking_data.csv
@@ -2212,7 +2509,8 @@ class UnifiedPipeline:
                     print(f"  [team_colors] write failed: {_tc_err}")
 
         self._export_csv(tracking_rows)
-        self._export_ball_csv(ball_rows)
+        # Append remaining rows (most were flushed incrementally at checkpoints)
+        self._export_ball_csv(ball_rows, append=True)
         self._export_stats(player_stats)
         self._export_possessions_csv(possession_rows, _poss_event_counts)  # FIX 4
         # ── Free GPU memory before post-processing (saves ~3GB VRAM) ─────
@@ -2246,8 +2544,9 @@ class UnifiedPipeline:
 
         self._export_shot_log(shot_log_rows)
         self._export_player_stats(tracking_rows, fps)
-        self._export_scoreboard_log(scoreboard_log_rows)
-        self._export_events_log(_events_log_rows)  # FIX 1
+        # Append remaining rows (most were flushed incrementally at checkpoints)
+        self._export_scoreboard_log(scoreboard_log_rows, append=True)
+        self._export_events_log(_events_log_rows, append=True)  # FIX 1
 
         # FIX 7 (old): backfill player_name in tracking_data.csv and shot_log.csv post-run
         # ISSUE-057: re-finalize at end-of-run to pick up all slots accumulated after warmup
@@ -2843,7 +3142,7 @@ class UnifiedPipeline:
             "paint_frames": 0,
             "dist_to_basket_sum": 0.0, "opp_dist_sum": 0.0, "opp_dist_n": 0,
         })
-        total_frames = max((r["frame"] for r in tracking_rows), default=0) + 1
+        total_frames = max((int(r["frame"]) for r in tracking_rows), default=0) + 1
         for r in tracking_rows:
             pid = r["player_id"]
             s   = stats[pid]
@@ -3150,17 +3449,20 @@ class UnifiedPipeline:
         self._pg_write_tracking_rows(rows)
         print(f"Tracking data → data/tracking_data.csv  (clip_id={self.clip_id})")
 
-    def _export_ball_csv(self, rows: List[dict]):
+    def _export_ball_csv(self, rows: List[dict], append: bool = False):
         if not rows:
             return
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "ball_tracking.csv")
         fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected", "live", "ball_inferred"]
-        with open(path, "w", newline="", encoding="utf-8") as f:
+        mode = "a" if append and os.path.exists(path) else "w"
+        with open(path, mode, newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields)
-            w.writeheader()
+            if mode == "w":
+                w.writeheader()
             w.writerows(rows)
-        print(f"Ball tracking  → {path}  ({len(rows)} rows)")
+        if not append:
+            print(f"Ball tracking  → {path}  ({len(rows)} rows)")
 
     def _export_stats(self, player_stats):
         if not player_stats:
@@ -3171,23 +3473,26 @@ class UnifiedPipeline:
             json.dump(player_stats, f, indent=2)
         print(f"Player stats → {path}")
 
-    def _export_scoreboard_log(self, rows: List[dict]):
+    def _export_scoreboard_log(self, rows: List[dict], append: bool = False):
         if not rows:
             return
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "scoreboard_log.csv")
         fields = ["frame", "game_clock", "shot_clock", "home_score", "away_score",
                   "period", "confidence"]
-        with open(path, "w", newline="", encoding="utf-8") as f:
+        mode = "a" if append and os.path.exists(path) else "w"
+        with open(path, mode, newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields)
-            w.writeheader()
+            if mode == "w":
+                w.writeheader()
             w.writerows(rows)
-        print(f"Scoreboard log → {path}  ({len(rows)} readings, "
-              f"period_start_video_sec={self.period_start_video_sec:.1f}s)")
+        if not append:
+            print(f"Scoreboard log → {path}  ({len(rows)} readings, "
+                  f"period_start_video_sec={self.period_start_video_sec:.1f}s)")
 
     # ── FIX 1: events log export ──────────────────────────────────────────
 
-    def _export_events_log(self, rows: List[dict]) -> None:
+    def _export_events_log(self, rows: List[dict], append: bool = False) -> None:
         """Write events_log.csv — all rich events (screen/cut/drive/closeout/rebound)."""
         os.makedirs(self._data_dir, exist_ok=True)
         path = os.path.join(self._data_dir, "events_log.csv")
@@ -3199,11 +3504,14 @@ class UnifiedPipeline:
             "ball_handler_id", "screener_id", "screen_action",  # FIX 6
             "handler_id", "rotation_dist",  # FIX 7
         ]
-        with open(path, "w", newline="", encoding="utf-8") as f:
+        mode = "a" if append and os.path.exists(path) else "w"
+        with open(path, mode, newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
-            w.writeheader()
+            if mode == "w":
+                w.writeheader()
             w.writerows(rows)
-        print(f"Events log      → {path}  ({len(rows)} events)")
+        if not append:
+            print(f"Events log      → {path}  ({len(rows)} events)")
 
     # ── FIX 5: court-side team map ────────────────────────────────────────
 

@@ -1,0 +1,9 @@
+game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,x_norm,y_norm,court_zone,defender_distance,defender_dist_norm,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy,dribble_count,ball_shot_arc_angle,catch_and_shoot,shot_distance,second_chance,shot_creation
+0022500035,1,12003,400.501,3,,MIL,1999,131,0.5873,0.0766,mid_range,,,0.0,7,6,,,0.0,,690.6,0,-83.87786306057207,1,1446.4,0,catch_and_shoot
+0022500035,2,12690,423.423,5,,MIL,2697,1251,0.7923,0.7312,3pt_arc,614.6,0.1806,0.0,8,5,,,0.062159213746404124,,0.0,0,-85.6776703468309,1,680.5,0,catch_and_shoot
+0022500035,3,19521,651.351,10,white#?,CHI,2458,625,0.7221,0.3653,3pt_arc,,,0.0,36,55,,,0.0,,2647.1,0,-79.5618864528221,1,825.6,0,catch_and_shoot
+0022500035,4,28044,935.736,1,green#?,MIL,1343,1652,0.3945,0.9655,mid_range,1740.1,0.5112,0.0,79,35,,,0.0,,13915.6,0,74.20238271443773,1,1431.8,0,catch_and_shoot
+0022500035,5,32103,1071.171,8,white#?,CHI,1811,81,0.532,0.0473,backcourt,,,0.0,114,34,,,0.0,,26476.8,0,-52.360732341132326,1,1634.9,0,catch_and_shoot
+0022500035,6,35973,1200.3,2,green#?,MIL,1410,244,0.4142,0.1426,mid_range,1068.4,0.3139,0.0,138,97,,,0.0,,15648.8,0,-16.361413740414893,1,1397.7,0,catch_and_shoot
+0022500035,7,56280,1877.878,7,white#?,CHI,517,274,0.1519,0.1601,3pt_arc,685.3,0.2013,0.0,384,7,,,0.0,,108643.8,0,6.663661373892927e-13,1,685.9,0,catch_and_shoot
+0022500035,8,63420,2116.116,1,green#?,MIL,2704,1675,0.7944,0.979,corner_3,900.7,0.2646,1164.5,425,14,,,0.19215685671664762,,25058.3,0,77.58818878944254,1,985.2,0,catch_and_shoot

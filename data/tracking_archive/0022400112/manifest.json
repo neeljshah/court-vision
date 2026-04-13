@@ -1,0 +1,25 @@
+{
+  "stem": "sac_por_2025",
+  "path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\sac_por_2025.mp4",
+  "game_id": "0022400112",
+  "size_mb": 270.2,
+  "started_at": "2026-03-19T20:49:53.655663",
+  "duration_sec": 0,
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 11580,
+  "tracking_rows": 2688,
+  "stability": 1.0,
+  "id_switches": 0,
+  "ball_detected_pct": 75.1,
+  "shots_detected": 20,
+  "possessions_labeled": 38,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "fps_estimate": 37.6,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

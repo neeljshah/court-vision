@@ -1,0 +1,25 @@
+{
+  "stem": "gsw_lakers_2025",
+  "path": "C:\\Users\\neelj\\nba-ai-system\\data\\videos\\gsw_lakers_2025.mp4",
+  "game_id": "0022400408",
+  "size_mb": 185.3,
+  "started_at": "2026-03-19T21:50:54.389421",
+  "duration_sec": 0,
+  "success": false,
+  "error": null,
+  "traceback": null,
+  "total_frames": 12840,
+  "tracking_rows": 2688,
+  "stability": 1.0,
+  "id_switches": 0,
+  "ball_detected_pct": 65.5,
+  "shots_detected": 16,
+  "possessions_labeled": 45,
+  "shots_enriched": 0,
+  "possessions_enriched": 0,
+  "fps_estimate": 44.1,
+  "stages_completed": [
+    "tracking",
+    "features"
+  ]
+}

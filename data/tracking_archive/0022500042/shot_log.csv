@@ -1,0 +1,3 @@
+game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,x_norm,y_norm,court_zone,defender_distance,defender_dist_norm,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy,dribble_count,ball_shot_arc_angle,catch_and_shoot,shot_distance,second_chance,shot_creation
+0022500042,1,50502,1685.085,7,white#?,POR,2048,1511,0.6016,0.8831,mid_range,78.2,0.023,0.0,767,6,,,0.0,,3152.0,0,82.16692927174854,1,1369.8,0,catch_and_shoot
+0022500042,2,68460,2284.284,3,green#?,HOU,1402,1606,0.4119,0.9386,mid_range,869.9,0.2556,0.0,850,56,,,0.0,,13562.7,0,83.10559796620741,1,1457.0,0,catch_and_shoot

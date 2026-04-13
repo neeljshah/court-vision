@@ -39,7 +39,7 @@ _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 
 # Bump when scored_games cache schema changes to force re-fetch.
-_SCORED_GAMES_VERSION = 2
+_SCORED_GAMES_VERSION = 5
 
 # ── Feature schema ─────────────────────────────────────────────────────────────
 
@@ -67,6 +67,15 @@ FEATURE_COLS = [
     "home_top_lineup_net_rtg", "away_top_lineup_net_rtg",
     # Referee crew tendencies (default=league avg during training)
     "ref_avg_fouls", "ref_home_win_pct",
+    # Rolling L10: game-by-game rolling avg (10-game window, no season bias)
+    "home_off_rtg_L10", "home_def_rtg_L10", "home_net_rtg_L10",
+    "away_off_rtg_L10", "away_def_rtg_L10", "away_net_rtg_L10",
+    # Context model signals
+    "win_prob_home",        # logistic of net_rtg_diff (proxy for pre-game win prob)
+    "ot_prob",              # overtime_probability.pkl LR model
+    "home_rest_factor",     # rest_day_model.pkl pts ratio for home rest bucket
+    "away_rest_factor",     # rest_day_model.pkl pts ratio for away rest bucket
+    "travel_impact_score",  # travel_impact_model.pkl tz-based adjustment
 ]
 
 # Model names
@@ -74,6 +83,25 @@ _MODELS = ("game_total", "spread", "blowout", "first_half", "pace")
 
 # Blowout threshold (abs margin > N = blowout)
 _BLOWOUT_MARGIN = 15
+
+
+class _BoosterWrapper:
+    """Thin wrapper around xgb.Booster exposing predict() and predict_proba()."""
+
+    def __init__(self, booster: "xgb.Booster", is_classifier: bool = False) -> None:
+        self._booster = booster
+        self._is_classifier = is_classifier
+
+    def predict(self, X: "np.ndarray") -> "np.ndarray":
+        import xgboost as xgb
+        dm = xgb.DMatrix(X)
+        return self._booster.predict(dm)
+
+    def predict_proba(self, X: "np.ndarray") -> "np.ndarray":
+        import xgboost as xgb
+        dm = xgb.DMatrix(X)
+        probs = self._booster.predict(dm)
+        return np.column_stack([1 - probs, probs])
 
 
 @dataclass
@@ -250,20 +278,20 @@ def load_models() -> GameModels:
 
     gm = GameModels()
     model_map = {
-        "game_total": ("game_game_total.json", xgb.XGBRegressor),
-        "spread":     ("game_spread.json",     xgb.XGBRegressor),
-        "blowout":    ("game_blowout.json",    xgb.XGBClassifier),
-        "first_half": ("game_first_half.json", xgb.XGBRegressor),
-        "pace":       ("game_pace.json",       xgb.XGBRegressor),
+        "game_total": ("game_game_total.json", False),
+        "spread":     ("game_spread.json",     False),
+        "blowout":    ("game_blowout.json",    True),
+        "first_half": ("game_first_half.json", False),
+        "pace":       ("game_pace.json",       False),
     }
 
-    for attr, (filename, cls) in model_map.items():
+    for attr, (filename, is_cls) in model_map.items():
         path = os.path.join(_MODEL_DIR, filename)
         if not os.path.exists(path):
             raise FileNotFoundError(f"Model not found: {path} — run train() first")
-        m = cls()
-        m.load_model(path)
-        setattr(gm, attr, m)
+        booster = xgb.Booster()
+        booster.load_model(path)
+        setattr(gm, attr, _BoosterWrapper(booster, is_classifier=is_cls))
 
     metrics_path = os.path.join(_MODEL_DIR, "game_models_metrics.json")
     if os.path.exists(metrics_path):
@@ -316,7 +344,7 @@ def predict(
         first_half    = round(float(gm.first_half.predict(X)[0]), 1)
         pace_est      = round(float(gm.pace.predict(X)[0]), 1)
         confidence    = "model"
-    except FileNotFoundError:
+    except (FileNotFoundError, Exception):
         # Formula fallback (same as predict_total in game_prediction.py)
         pace_avg      = feats["pace_avg"]
         off_rtg_sum   = feats["off_rtg_sum"]
@@ -356,7 +384,7 @@ def _build_features(
     """Build FEATURE_COLS dict for a single matchup at inference time."""
     from src.prediction.win_probability import (
         _fetch_team_stats, _get_schedule_context, _get_last5_wins,
-        _get_top_lineup_net_rtg,
+        _get_top_lineup_net_rtg, _compute_rolling_team_stats,
     )
     from nba_api.stats.static import teams as nba_teams_static
 
@@ -387,6 +415,43 @@ def _build_features(
         except Exception:
             pass
 
+    # Rolling L10 features for inference — ONE gamelog call, both teams
+    _ROLL_D10 = {"off_rtg_L10": 112.0, "def_rtg_L10": 112.0, "net_rtg_L10": 0.0}
+    h_roll_inf, a_roll_inf = dict(_ROLL_D10), dict(_ROLL_D10)
+    try:
+        from nba_api.stats.endpoints import leaguegamelog as _lgl_inf
+        time.sleep(0.6)
+        _gl_inf = _lgl_inf.LeagueGameLog(
+            season=season,
+            season_type_all_star="Regular Season",
+            player_or_team_abbreviation="T",
+        ).get_data_frames()[0]
+        _gl_inf = _gl_inf.copy()
+        _gl_inf["_poss"] = (
+            _gl_inf["FGA"] + 0.44 * _gl_inf["FTA"] + _gl_inf["TOV"] - _gl_inf["OREB"]
+        ).clip(lower=1)
+        _gl_inf["_off_r"] = _gl_inf["PTS"] / _gl_inf["_poss"] * 100
+        _opp_m: dict = {}
+        for _, _r in _gl_inf.iterrows():
+            _opp_m.setdefault(str(_r["GAME_ID"]), {})[int(_r["TEAM_ID"])] = float(_r["_off_r"])
+        for _team, _roll_out in [(home_team, h_roll_inf), (away_team, a_roll_inf)]:
+            _tid = int(abbrev_to_id.get(_team, "0"))
+            _tg  = _gl_inf[_gl_inf["TEAM_ID"].astype(int) == _tid].copy()
+            if len(_tg) < 3:
+                continue
+            _tg["_def_r"] = [
+                ([v for t, v in _opp_m.get(str(r["GAME_ID"]), {}).items() if t != _tid] or [112.0])[0]
+                for _, r in _tg.iterrows()
+            ]
+            _tg["_dt"] = pd.to_datetime(_tg["GAME_DATE"], errors="coerce")
+            _tg = _tg.sort_values("_dt").tail(10)
+            _off = round(float(_tg["_off_r"].mean()), 2)
+            _de  = round(float(_tg["_def_r"].mean()), 2)
+            _roll_out.update({"off_rtg_L10": _off, "def_rtg_L10": _de,
+                              "net_rtg_L10": round(_off - _de, 2)})
+    except Exception:
+        pass
+
     feats = {
         "home_off_rtg":        ht["off_rtg"],
         "home_def_rtg":        ht["def_rtg"],
@@ -411,7 +476,7 @@ def _build_features(
         "away_travel_miles":   compute_travel_distance(away_team, home_team),
         "away_last5_wins":     _get_last5_wins(away_team, game_date, season),
         "away_season_win_pct": at["win_pct"],
-        "net_rtg_diff":        ht["net_rtg"] - at["net_rtg"],
+        "net_rtg_diff":        h_roll_inf["net_rtg_L10"] - a_roll_inf["net_rtg_L10"],
         "pace_diff":           ht["pace"]    - at["pace"],
         "home_advantage":      1.0,
         "pace_avg":            (ht["pace"]    + at["pace"])    / 2,
@@ -422,7 +487,15 @@ def _build_features(
         "away_top_lineup_net_rtg": _get_top_lineup_net_rtg(away_team, season),
         "ref_avg_fouls":       ref_avg_fouls,
         "ref_home_win_pct":    ref_home_win_pct,
+        # Rolling L10
+        "home_off_rtg_L10":    h_roll_inf["off_rtg_L10"],
+        "home_def_rtg_L10":    h_roll_inf["def_rtg_L10"],
+        "home_net_rtg_L10":    h_roll_inf["net_rtg_L10"],
+        "away_off_rtg_L10":    a_roll_inf["off_rtg_L10"],
+        "away_def_rtg_L10":    a_roll_inf["def_rtg_L10"],
+        "away_net_rtg_L10":    a_roll_inf["net_rtg_L10"],
     }
+    feats.update(_compute_context_signals(feats))
     return feats
 
 
@@ -469,11 +542,18 @@ def _fetch_scored_games(season: str) -> List[dict]:
         _fetch_team_stats as _wpts,
         _compute_rest_days,
         _compute_last5_wins,
+        _compute_cumulative_win_pct,
+        _compute_rolling_team_stats,
         _get_top_lineup_net_rtg,
     )
-    team_stats   = _wpts(season)
-    rest_lookup  = _compute_rest_days(gl)
-    wins5_lookup = _compute_last5_wins(gl)
+    from src.features.advanced_features import compute_game_elo_lookup
+    team_stats    = _wpts(season)
+    rest_lookup   = _compute_rest_days(gl)
+    wins5_lookup  = _compute_last5_wins(gl)
+    winpct_lookup = _compute_cumulative_win_pct(gl)
+    elo_lookup    = compute_game_elo_lookup([season])
+    roll_lookup   = _compute_rolling_team_stats(gl, 10)
+    _ROLL_D10    = {"off_rtg_L10": 112.0, "def_rtg_L10": 112.0, "net_rtg_L10": 0.0}
 
     _D = {"off_rtg": 112.0, "def_rtg": 112.0, "net_rtg": 0.0,
           "pace": 99.0, "efg_pct": 0.53, "ts_pct": 0.57,
@@ -504,6 +584,8 @@ def _fetch_scored_games(season: str) -> List[dict]:
         a_rest  = min(rest_lookup.get((int(a["TEAM_ID"]), str(gid)), 2), 10)
         h_wins5 = wins5_lookup.get((int(h["TEAM_ID"]), str(gid)), 2)
         a_wins5 = wins5_lookup.get((int(a["TEAM_ID"]), str(gid)), 2)
+        h_roll  = roll_lookup.get((int(h["TEAM_ID"]), str(gid)), _ROLL_D10)
+        a_roll  = roll_lookup.get((int(a["TEAM_ID"]), str(gid)), _ROLL_D10)
 
         pace_avg = (ht["pace"] + at["pace"]) / 2
 
@@ -536,7 +618,7 @@ def _fetch_scored_games(season: str) -> List[dict]:
             "home_rest_days":      float(h_rest),
             "home_back_to_back":   float(h_rest == 1),
             "home_last5_wins":     float(h_wins5),
-            "home_season_win_pct": ht["win_pct"],
+            "home_season_win_pct": winpct_lookup.get((int(h["TEAM_ID"]), str(gid)), 0.5),
             "away_off_rtg":        at["off_rtg"],
             "away_def_rtg":        at["def_rtg"],
             "away_net_rtg":        at["net_rtg"],
@@ -550,8 +632,8 @@ def _fetch_scored_games(season: str) -> List[dict]:
                 a["TEAM_ABBREVIATION"], h["TEAM_ABBREVIATION"]
             ),
             "away_last5_wins":     float(a_wins5),
-            "away_season_win_pct": at["win_pct"],
-            "net_rtg_diff":  ht["net_rtg"] - at["net_rtg"],
+            "away_season_win_pct": winpct_lookup.get((int(a["TEAM_ID"]), str(gid)), 0.5),
+            "net_rtg_diff":  h_roll["net_rtg_L10"] - a_roll["net_rtg_L10"],
             "pace_diff":     ht["pace"]    - at["pace"],
             "home_advantage": 1.0,
             "pace_avg":      (ht["pace"] + at["pace"]) / 2,
@@ -568,12 +650,128 @@ def _fetch_scored_games(season: str) -> List[dict]:
             # Ref crew unknown for historical games — use league averages
             "ref_avg_fouls":    42.0,
             "ref_home_win_pct": 0.5,
+            # Rolling L10
+            "home_off_rtg_L10":    h_roll["off_rtg_L10"],
+            "home_def_rtg_L10":    h_roll["def_rtg_L10"],
+            "home_net_rtg_L10":    h_roll["net_rtg_L10"],
+            "away_off_rtg_L10":    a_roll["off_rtg_L10"],
+            "away_def_rtg_L10":    a_roll["def_rtg_L10"],
+            "away_net_rtg_L10":    a_roll["net_rtg_L10"],
+            # Context model signals (computed from already-available row fields)
+            **_compute_context_signals({
+                "net_rtg_diff":      h_roll["net_rtg_L10"] - a_roll["net_rtg_L10"],
+                "home_rest_days":    float(h_rest),
+                "away_rest_days":    float(a_rest),
+                "away_travel_miles": compute_travel_distance(
+                    a["TEAM_ABBREVIATION"], h["TEAM_ABBREVIATION"]
+                ),
+            }),
+            # ELO — point-in-time (snapshot before each game, no leakage)
+            "home_elo":          elo_lookup.get(str(gid), {}).get("home_elo", 1500.0),
+            "away_elo":          elo_lookup.get(str(gid), {}).get("away_elo", 1500.0),
+            "elo_differential":  (
+                elo_lookup.get(str(gid), {}).get("home_elo", 1500.0)
+                - elo_lookup.get(str(gid), {}).get("away_elo", 1500.0)
+            ),
+            "elo_pace_interaction": (
+                elo_lookup.get(str(gid), {}).get("home_elo", 1500.0) * ht["pace"]
+                - elo_lookup.get(str(gid), {}).get("away_elo", 1500.0) * at["pace"]
+            ),
+            # Star availability — historical injury data not tracked; default 3 (full)
+            "home_stars_available": 3,
+            "away_stars_available": 3,
         })
 
     with open(cache_path, "w") as f:
         json.dump({"v": _SCORED_GAMES_VERSION, "rows": rows}, f)
     print(f"  Cached {len(rows)} scored games -> {cache_path}")
     return rows
+
+
+_CONTEXT_MODELS: dict = {}
+
+
+def _load_context_models() -> dict:
+    """Load context pkl models once per process; cache in module-level dict."""
+    global _CONTEXT_MODELS
+    if _CONTEXT_MODELS:
+        return _CONTEXT_MODELS
+    import pickle
+    for name in ("overtime_probability", "rest_day_model", "travel_impact_model"):
+        path = os.path.join(_MODEL_DIR, f"{name}.pkl")
+        if os.path.exists(path):
+            try:
+                _CONTEXT_MODELS[name] = pickle.load(open(path, "rb"))
+            except Exception:
+                pass
+    return _CONTEXT_MODELS
+
+
+def _compute_context_signals(feats: dict) -> dict:
+    """
+    Derive 5 context-model features from existing feats dict.
+
+    Uses overtime_probability.pkl, rest_day_model.pkl, travel_impact_model.pkl.
+    All lookups are graceful — returns defaults on any error.
+    """
+    import math
+
+    net_diff = float(feats.get("net_rtg_diff", 0.0))
+
+    # 1. win_prob_home: logistic of net_rtg_diff (fast; no extra API calls)
+    win_prob_home = 1.0 / (1.0 + math.exp(-0.1 * net_diff))
+
+    ctx = _load_context_models()
+
+    # 2. ot_prob from LR model (single feature: abs net_rtg_diff)
+    ot_prob = 0.07
+    try:
+        lrm = ctx.get("overtime_probability", {}).get("lr_model")
+        if lrm is not None:
+            ot_prob = float(lrm.predict_proba([[abs(net_diff)]])[0][1])
+    except Exception:
+        pass
+
+    # 3 & 4. rest factors from rest_day_model ratios
+    home_rest_factor = 1.0
+    away_rest_factor = 1.0
+    try:
+        ratios = ctx.get("rest_day_model", {}).get("ratios", {})
+        if ratios:
+            h_rest = int(min(feats.get("home_rest_days", 2), 10))
+            a_rest = int(min(feats.get("away_rest_days", 2), 10))
+            h_key = str(h_rest) if h_rest <= 2 else "3+"
+            a_key = str(a_rest) if a_rest <= 2 else "3+"
+            home_rest_factor = float(ratios.get(h_key, {}).get("pts", 1.0))
+            away_rest_factor = float(ratios.get(a_key, {}).get("pts", 1.0))
+    except Exception:
+        pass
+
+    # 5. travel_impact_score: tz-bucket from away_travel_miles
+    travel_impact_score = 0.0
+    try:
+        table = ctx.get("travel_impact_model", {}).get("table", {})
+        if table:
+            miles = float(feats.get("away_travel_miles", 0.0))
+            if miles < 500:
+                tz_key = "tz_0"
+            elif miles < 1200:
+                tz_key = "tz_1"
+            elif miles < 2000:
+                tz_key = "tz_2"
+            else:
+                tz_key = "tz_3"
+            travel_impact_score = float(table.get(tz_key, 0.0))
+    except Exception:
+        pass
+
+    return {
+        "win_prob_home":       round(win_prob_home, 4),
+        "ot_prob":             round(ot_prob, 4),
+        "home_rest_factor":    round(home_rest_factor, 4),
+        "away_rest_factor":    round(away_rest_factor, 4),
+        "travel_impact_score": round(travel_impact_score, 4),
+    }
 
 
 def _save_metrics(metrics: dict):

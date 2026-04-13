@@ -5,11 +5,14 @@
 #
 # Usage: bash scripts/sync_tracking_results.sh
 
-REMOTE="root@${RUNPOD_HOST:-203.57.40.203}"
-RPORT="${RUNPOD_PORT:-10130}"
+# Reads RUNPOD_IP / RUNPOD_PORT from .runpod (source it first)
+: "${RUNPOD_IP:?source .runpod first}"
+: "${RUNPOD_PORT:?source .runpod first}"
+REMOTE="${RUNPOD_USER:-root}@${RUNPOD_IP}"
+RPORT="${RUNPOD_PORT}"
 REMOTE_DIR="/workspace/nba-ai-system"
 LOCAL_DIR="data/tracking"
-TARGET=${TARGET_GAMES:-57}
+TARGET=${TARGET_GAMES:-50}
 
 SSH="ssh -o StrictHostKeyChecking=no -p $RPORT"
 SCP="scp -o StrictHostKeyChecking=no -P $RPORT"

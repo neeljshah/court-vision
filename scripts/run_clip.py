@@ -84,7 +84,25 @@ def _ensure_decodable_video(video_path: str) -> str:
             text=True,
         ).strip()
     except (FileNotFoundError, subprocess.CalledProcessError):
-        return video_path  # ffprobe unavailable — trust cv2
+        # ffprobe unavailable — fall back to cv2 read test
+        cap = cv2.VideoCapture(video_path)
+        ok, _ = cap.read()
+        cap.release()
+        if ok:
+            return video_path
+        # Can't read first frame — likely AV1 without hw decoder.
+        # Try PyAV probe as last resort.
+        try:
+            import av
+            c = av.open(video_path)
+            codec = c.streams.video[0].codec_context.name
+            c.close()
+            if codec != "av1":
+                return video_path
+            # Fall through to transcode
+        except Exception:
+            print(f"[transcode] Cannot read video and cannot probe codec — skipping")
+            return video_path
     if codec != "av1":
         return video_path
 
@@ -143,6 +161,15 @@ def _preflight_check(video_path: str, yolo_weight=None):
         cap.release()
         return True, 0.0  # can't read — let Stage 1 handle it
 
+    # Quick decodability check: if first frame can't be read, video codec
+    # is unsupported (e.g. AV1 without hw decoder). Fail fast.
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    _test_ok, _ = cap.read()
+    if not _test_ok:
+        cap.release()
+        print("[preflight] FAIL — cannot decode first frame (likely AV1 without hw decoder)")
+        return False, 0.0
+
     sample_indices = [int(total_frames * i / (_PREFLIGHT_FRAMES - 1))
                       for i in range(_PREFLIGHT_FRAMES)]
     counts = []
@@ -157,7 +184,7 @@ def _preflight_check(video_path: str, yolo_weight=None):
     cap.release()
 
     if not counts:
-        return True, 0.0
+        return False, 0.0
 
     import statistics
     median = statistics.median(counts)
@@ -240,8 +267,16 @@ def main():
         sys.exit(2)
 
     # ── Preflight: verify broadcast content ───────────────────────────────────
-    print("[preflight] Sampling 10 frames for person detection...")
-    _preflight_ok, _preflight_median = _preflight_check(args.video, args.yolo)
+    # Skip preflight in Phase G batch mode — videos are already quarantined by
+    # bootstrap_pod.sh, and loading a separate YOLO model per worker wastes
+    # ~500 MB GPU each during the simultaneous-init window.
+    _skip_preflight = os.environ.get("COURTV_NO_OCR", "0") == "1"
+    if _skip_preflight:
+        print("[preflight] Skipped (batch mode — COURTV_NO_OCR=1)")
+        _preflight_ok, _preflight_median = True, 10.0
+    else:
+        print("[preflight] Sampling 10 frames for person detection...")
+        _preflight_ok, _preflight_median = _preflight_check(args.video, args.yolo)
     if not _preflight_ok:
         print(
             f"\n[PREFLIGHT FAIL] Median person count = {_preflight_median:.0f} "
