@@ -177,7 +177,11 @@ def _log_to_vault(entries: list[str]):
 
 
 def _is_complete(out_dir: Path) -> bool:
-    """Return True iff the output directory has all required CSVs with > 0 rows."""
+    """Return True iff the output directory has all required CSVs with > 0 rows.
+
+    If a required CSV exists but has 0 data rows, deletes it so the game
+    can be retried cleanly on next --resume run.
+    """
     required = ["ball_tracking.csv", "tracking_data.csv", "possessions.csv"]
     for name in required:
         p = out_dir / name
@@ -189,7 +193,13 @@ def _is_complete(out_dir: Path) -> bool:
                 next(reader)  # header
                 next(reader)  # at least one data row
         except StopIteration:
-            return False  # file has 0 data rows
+            # Zero-row output — delete it so --resume can retry this game
+            try:
+                p.unlink()
+                print(f"  [cleanup] Deleted zero-row output: {p}")
+            except Exception:
+                pass
+            return False
         except Exception:
             return False
     return True
@@ -318,6 +328,33 @@ def _backfill_live_pct():
             w.writerows(rows)
 
     print(f"Backfill complete -- {updated} game(s) updated in {METRICS_LOG.name}")
+
+
+def _remove_zero_frame_processed() -> None:
+    """Remove game IDs with frames==0 from phase_g_processed.txt so --resume retries them."""
+    if not METRICS_LOG.exists() or not DONE_LOG.exists():
+        return
+    zero_ids: set[str] = set()
+    with open(METRICS_LOG, newline="") as f:
+        for row in csv.DictReader(f):
+            try:
+                if int(row.get("frames", "1") or "1") == 0:
+                    gid = row.get("game_id", "").strip()
+                    if gid:
+                        zero_ids.add(gid)
+            except (ValueError, TypeError):
+                pass
+    if not zero_ids:
+        return
+    lines = DONE_LOG.read_text().splitlines()
+    cleaned = [ln for ln in lines if ln.strip() not in zero_ids]
+    if len(cleaned) < len(lines):
+        removed = set(lines) - set(cleaned)
+        _tmp = DONE_LOG.with_suffix(".tmp")
+        _tmp.write_text("\n".join(cleaned) + ("\n" if cleaned else ""))
+        os.replace(str(_tmp), str(DONE_LOG))
+        print(f"  [processed] Removed {len(removed)} zero-frame game(s) from done log: "
+              f"{', '.join(sorted(removed))}")
 
 
 def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
@@ -571,6 +608,7 @@ def main():
         )
 
     _repair_metrics_header()
+    _remove_zero_frame_processed()
     done = _done_set()
 
     # --backfill-live: recompute ball_valid_pct in-place for all processed games
