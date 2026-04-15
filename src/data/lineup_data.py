@@ -19,6 +19,7 @@ Public API
 from __future__ import annotations
 
 import os
+import time
 from typing import Optional
 
 from src.data.cache_utils import load_json_cache, save_json_cache
@@ -382,24 +383,51 @@ def lineup_net_rating_lookup(
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
+def _main(argv=None):
     import argparse
 
-    ap = argparse.ArgumentParser(description="NBA Lineup Data Scraper")
+    ap = argparse.ArgumentParser(
+        prog="python -m src.data.lineup_data",
+        description="NBA Lineup Data Scraper",
+    )
     ap.add_argument("--scrape-all", action="store_true",
                     help="Scrape all 30 teams × 3 seasons into data/nba/lineups/")
+    ap.add_argument("--bulk", action="store_true",
+                    help="Bulk-fetch lineup splits for all 30 teams for --season")
     ap.add_argument("--team", default=None, help="Single team abbreviation (e.g. GSW)")
-    ap.add_argument("--season", default="2024-25")
-    ap.add_argument("--seasons", nargs="+", default=["2022-23", "2023-24", "2024-25"])
+    ap.add_argument("--season", default="2024-25",
+                    help="Target season (e.g. 2024-25). Used with --bulk and --team.")
+    ap.add_argument("--seasons", nargs="+", default=["2023-24", "2024-25", "2025-26"],
+                    help="Season list for --scrape-all")
     ap.add_argument("--force", action="store_true", help="Delete existing cache and re-fetch")
-    args = ap.parse_args()
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Print plan without making any NBA API calls")
+    args = ap.parse_args(argv)
 
-    if args.scrape_all:
-        scrape_all_teams(seasons=args.seasons, force=args.force)
-    elif args.team:
+    if args.dry_run:
+        target_seasons = [args.season] if args.bulk else args.seasons
+        teams = _ALL_TEAMS
+        print(f"[lineup_data] DRY-RUN -- would scrape {len(teams)} teams x {len(target_seasons)} seasons "
+              f"= {len(teams) * len(target_seasons)} requests")
+        for season in target_seasons:
+            for team in teams[:3]:   # preview first 3 only
+                print(f"  {team} {season} -> {_cache_path(f'lineup_splits_{team}_{season}')}")
+            if len(teams) > 3:
+                print(f"  ... and {len(teams) - 3} more teams")
+        return
+
+    if args.team:
         splits = get_lineup_splits(args.team, args.season)
         print(f"{args.team} {args.season} — {len(splits)} lineups")
         for lu in splits[:5]:
             print(f"  {' / '.join(lu['lineup'])} | net_rtg={lu['net_rating']} | min={lu['minutes']}")
+    elif args.bulk:
+        # Single-season bulk fetch — more targeted than --scrape-all
+        scrape_all_teams(seasons=[args.season], force=args.force)
     else:
-        ap.print_help()
+        # Default / --scrape-all: full 3-season fetch
+        scrape_all_teams(seasons=args.seasons, force=args.force)
+
+
+if __name__ == "__main__":
+    _main()
