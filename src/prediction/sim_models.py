@@ -128,9 +128,20 @@ class FatigueModel:
         penalty += max(0.0, dist_per100 - 4.0) * 0.005
         return float(max(0.85, 1.0 - penalty))
 
-    def batch_predict(self, n: int) -> np.ndarray:
-        """Return array of 1.0 multipliers (neutral until retrained)."""
-        return np.ones(n, dtype=np.float32)
+    def batch_predict(self, n: int,
+                      minutes: "Optional[np.ndarray]" = None) -> "np.ndarray":
+        """Return fatigue multiplier array.
+
+        If *minutes* is provided (shape (n,)), calls predict() per player with
+        their observed CV minutes.  Otherwise returns 1.0 (neutral) for all.
+        """
+        import numpy as _np
+        if minutes is not None and len(minutes) == n:
+            return _np.array(
+                [self.predict(minutes=float(m)) for m in minutes],
+                dtype=_np.float32,
+            )
+        return _np.ones(n, dtype=_np.float32)
 
 
 # ── SubstitutionModel ─────────────────────────────────────────────────────────
