@@ -33,10 +33,38 @@ _XFG_PATH    = os.path.join(_MODEL_DIR, "xfg_v1.pkl")
 _PROP_STATS = ("pts", "reb", "ast", "stl", "blk", "tov", "fg3m")
 
 
+def _load_cv_minutes(csv_path: str) -> dict[str, float]:
+    """Load per-player tracked minutes from a tracking_data.csv file.
+
+    Computes minutes as (max_timestamp - min_timestamp) per player_id.
+    Falls back to empty dict on any error so callers use season avg instead.
+    """
+    import csv as _csv
+    result: dict[str, float] = {}
+    try:
+        rows_by_pid: dict[str, list[float]] = {}
+        with open(csv_path, newline="", encoding="utf-8", errors="replace") as f:
+            for row in _csv.DictReader(f):
+                pid = str(row.get("player_id", "")).strip()
+                ts  = row.get("timestamp", "")
+                if not pid or not ts:
+                    continue
+                try:
+                    rows_by_pid.setdefault(pid, []).append(float(ts))
+                except ValueError:
+                    pass
+        for pid, timestamps in rows_by_pid.items():
+            if len(timestamps) >= 2:
+                result[pid] = (max(timestamps) - min(timestamps)) / 60.0
+    except Exception as e:
+        logging.warning("_load_cv_minutes: failed to parse %s: %s", csv_path, e)
+    return result
+
+
 class PossessionSimulator:
     """Vectorized game simulator. Chains all Phase-8 sub-models per possession."""
 
-    def __init__(self) -> None:
+    def __init__(self, cv_minutes_csv: Optional[str] = None) -> None:
         self._selector     = PlayTypeSelector()
         self._fatigue      = FatigueModel()
         self._sub_model    = SubstitutionModel()
@@ -46,6 +74,10 @@ class PossessionSimulator:
         self._usage_model  = None
         self._dnp_model    = None
         self._dnp_scaler   = None
+        # Per-player CV minutes: {player_id_str: minutes_float}
+        self._cv_minutes: dict[str, float] = {}
+        if cv_minutes_csv is not None:
+            self._cv_minutes = _load_cv_minutes(cv_minutes_csv)
         self._load_models()
         self._foul_mdl    = FoulTroubleModel()
         self._garbage_mdl = GarbageTimePredictor()
@@ -222,8 +254,18 @@ class PossessionSimulator:
         all_pids = roster_a + roster_b
         usage_a  = self._usage_weights(roster_a)
         usage_b  = self._usage_weights(roster_b)
-        fatigue_a = self._fatigue.batch_predict(max(len(roster_a), 1))
-        fatigue_b = self._fatigue.batch_predict(max(len(roster_b), 1))
+        # CV minutes: use per-player tracked minutes if available, else season avg default
+        _cv = self._cv_minutes
+        def _roster_minutes(roster: list[str]) -> "Optional[np.ndarray]":
+            if not _cv:
+                return None
+            mins = np.array([_cv.get(pid, 36.0) for pid in roster], dtype=np.float32)
+            return mins if len(mins) > 0 else None
+
+        fatigue_a = self._fatigue.batch_predict(
+            max(len(roster_a), 1), minutes=_roster_minutes(roster_a))
+        fatigue_b = self._fatigue.batch_predict(
+            max(len(roster_b), 1), minutes=_roster_minutes(roster_b))
 
         rng = np.random.default_rng()
 
