@@ -383,6 +383,9 @@ def train_and_save(datasets: Dict[str, dict], only_stat: str = None) -> Dict[str
         # Always save v2
         v2_path = os.path.join(_MODEL_DIR, f"props_{stat}_v2.json")
         model.save_model(v2_path)
+        metrics_path = os.path.join(_MODEL_DIR, f"props_{stat}_v2_metrics.json")
+        with open(metrics_path, "w") as _mf:
+            json.dump({"stat": stat, "train": train_m, "test": test_m, "val": val_m}, _mf, indent=2)
         print(f"  saved -> {v2_path}")
 
         # Overwrite props_{stat}.json if val R2 beats current registry
