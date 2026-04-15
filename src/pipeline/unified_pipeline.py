@@ -534,6 +534,13 @@ class UnifiedPipeline:
         except Exception:
             pass
 
+        # ISSUE-010: warn once at startup if DATABASE_URL is absent (PostgreSQL writes will be skipped)
+        if not os.environ.get("DATABASE_URL"):
+            log.warning(
+                "DATABASE_URL not set — _pg_write_tracking_rows will skip (SQLite-only mode). "
+                "Set DATABASE_URL=postgresql://... to enable PostgreSQL writes."
+            )
+
         self.yolo    = YoloDetector(yolo_weight_path)
         self.players = self._build_players()
 
@@ -3200,7 +3207,8 @@ class UnifiedPipeline:
         """
         Write tracking rows to the tracking_frames PostgreSQL table.
 
-        Silently skips if DATABASE_URL is not set.
+        Logs WARN and returns early if DATABASE_URL is not set (PostgreSQL-only table;
+        SQLite does not have tracking_frames).
         Works with or without game_id — when game_id is absent the column is
         NULL (requires migration 001_tracking_nullable_game_id.sql applied first).
         Uses INSERT ... ON CONFLICT DO NOTHING so re-runs are safe.
@@ -3209,6 +3217,12 @@ class UnifiedPipeline:
             rows: List of tracking row dicts (same as CSV output).
         """
         if not rows:
+            return
+        if not os.environ.get("DATABASE_URL"):
+            log.warning(
+                "[db] DATABASE_URL unset — skipping PostgreSQL tracking_frames write "
+                "(%d rows). Set DATABASE_URL to enable.", len(rows)
+            )
             return
         game_id = self.game_id or None   # NULL when --game-id not passed
         if game_id is None:
