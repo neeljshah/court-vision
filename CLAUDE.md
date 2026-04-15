@@ -4,21 +4,26 @@
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 35+, 2026-04-13)
-- Branch: `feat/gpu-pipeline` | Tests: 960 pass, 93 skip (excl PG tests)
-- Phase: Phase G active. RunPod pipeline running — 17/59 Phase G games processed.
-- CV games: 16 A/B-grade / 20 target (5A + 11B). 7 C-grade, 65 F-grade.
-- CV registry: 24 player-game records (6 games) via jersey chain resolution
-- 2024-25 gamelog_full: DONE (569/569). Props retrained — all 7 models updated.
-- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25 (STL=0.07 still weak)
+### State (Session 36+, 2026-04-15)
+- Branch: `main-sync` | Tests: 960+ pass, 93 skip (excl PG/GPU tests). Phase 8-13 suites all green.
+- Phase: Phase 13.5 done. Ready for 100-game Phase G run.
+- CV games: 41/94 videos tracked. 16 A/B-grade. CV registry: 24 player-game records.
+- Models: 75 .pkl/.json files in data/models/. 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl).
+- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, STL=0.07 (weak — needs opp_to_rate/pace)
+- Prediction stack: 73 modules in src/prediction/ (sim_models, possession_simulator, tier4/5, live_models, betting_edge all present)
+- API: 6 endpoints in api/main.py (/simulate, /props, /edge, /win-prob, /lineup, /health) + in-process TTL cache
+- Sync: incremental rsync every 5 min (scripts/watch_and_sync.sh, fixed 2026-04-15)
 
-### Open Issues (priority)
-1. 59 unprocessed 2025-26 videos in data/videos/full_games/ — run `python scripts/run_phase_g.py` (GPU needed)
-2. STL prop model R2=0.07 — needs more features or different approach
-3. CV registry sparsity — 24 records across 6 games; needs better OCR/player resolution
-4. Possession simulator unbuilt (Phase 8)
-5. No frontend/API serving predictions
-6. Homography low on older games — reprocess needed
+### Open Issues (priority — pre-100-game blockers first)
+1. **BLOCKER** Phase G dedup-by-hash + per-game crash isolation in scripts/run_phase_g.py (one bad video kills queue)
+2. **BLOCKER** Prop calibration layer (isotonic) in prop_model_stack.py — Kelly sizing unsafe without it
+3. /props endpoint in api/predictions_router.py calls raw predict_props instead of stack_predict
+4. STL R²=0.07 — add opp_to_rate + opp_pace features to player_props.py
+5. Backtest gate endpoint (POST /backtest/{stat}) — no validation before live money
+6. Correlation matrix not populated in betting_portfolio.kelly_corr (assumes zero correlation)
+7. CV fatigue minutes not wired into possession_simulator (uses defaults)
+8. 53 unprocessed videos in data/videos/full_games/ — needs next pod run
+9. CV registry sparsity (24 records) — improves with 100-game OCR volume
 
 ### Task -> Files Cheatsheet
 | Task | Load only |
@@ -97,8 +102,13 @@ If `nr_throttled` Δ > 50/60s, OMP cap is missing or quota changed.
 - RunPod tracking outputs are NOT auto-synced. After every meaningful run, pull back:
   ```
   rsync -az -e "ssh -p $PORT" root@$IP:/workspace/nba-ai-system/data/tracking/ data/tracking/
+  rsync -az -e "ssh -p $PORT" root@$IP:/workspace/nba-ai-system/data/events/ data/events/
   scp -P $PORT root@$IP:/workspace/nba-ai-system/data/phase_g_processed.txt data/
   scp -P $PORT root@$IP:/workspace/nba-ai-system/data/phase_g_metrics.csv data/
+  ```
+- Pre-launch: push PBP cache to pod so possession_outcome_model has its data:
+  ```
+  rsync -az -e "ssh -p $PORT" data/nba/ root@$IP:/workspace/nba-ai-system/data/nba/
   ```
 - Set up a cron or post-game hook for this. A finished game on the pod with no rsync = lost work.
 
