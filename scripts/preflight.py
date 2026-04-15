@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import datetime
 import os
+import shutil
 import sys
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -234,6 +235,46 @@ def check_phase_a_data() -> None:
         _check(label, exists, note)
 
 
+# ── Section 7: Hardware resources ─────────────────────────────────────────────
+
+def check_hardware() -> None:
+    global checks_total, checks_passed
+    print("\n[Hardware resources]")
+
+    # VRAM: warn if GPU has < 23 GB total memory
+    try:
+        import torch
+        if torch.cuda.is_available():
+            props = torch.cuda.get_device_properties(0)
+            vram_gb = props.total_memory / (1024 ** 3)
+            ok = vram_gb >= 23.0
+            if ok:
+                _check("VRAM >= 23GB", True, f"{vram_gb:.1f}GB on {props.name}")
+            else:
+                checks_total += 1
+                checks_passed += 1  # warn only, not blocker
+                print(f"  {_WARN} VRAM  {vram_gb:.1f}GB < 23GB on {props.name} — "
+                      "parallel-4 may OOM; consider --parallel 2")
+        else:
+            checks_total += 1
+            checks_passed += 1
+            print(f"  {_WARN} CUDA not available — skipping VRAM check")
+    except ImportError:
+        checks_total += 1
+        checks_passed += 1
+        print(f"  {_WARN} torch not installed — skipping VRAM check")
+
+    # Disk: fail if /workspace has < 100 GB free
+    _disk_path = "/workspace" if os.path.exists("/workspace") else PROJECT_DIR
+    try:
+        free_gb = shutil.disk_usage(_disk_path).free / (1024 ** 3)
+        _check(f"Disk free >= 100GB ({_disk_path})", free_gb >= 100.0,
+               f"{free_gb:.1f}GB free" if free_gb < 100.0
+               else f"{free_gb:.1f}GB free")
+    except Exception as e:
+        _check(f"Disk free >= 100GB ({_disk_path})", False, str(e))
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -248,6 +289,7 @@ def main() -> None:
     check_env_vars()
     check_database()
     check_phase_a_data()
+    check_hardware()
 
     print()
     print("=" * 60)

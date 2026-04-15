@@ -41,6 +41,9 @@ from pathlib import Path
 from typing import Optional
 
 _file_lock = threading.Lock()  # guards phase_g_processed.txt + metrics CSV writes
+_completed_count = 0  # total games marked done this run (for incremental rsync)
+
+_GAME_TIMEOUT = int(os.environ.get("PHASE_G_GAME_TIMEOUT", "3600"))  # per-game timeout (s)
 
 try:
     import cv2 as _cv2
@@ -76,9 +79,39 @@ def _done_set() -> set[str]:
     return set()
 
 
+def _try_rsync() -> None:
+    """Non-blocking incremental rsync of data/tracking/ to SYNC_TARGET."""
+    sync_target = os.environ.get("SYNC_TARGET", "")
+    if not sync_target:
+        print("  [rsync] SYNC_TARGET not set — skipping incremental sync", flush=True)
+        return
+    try:
+        r = subprocess.run(
+            ["rsync", "-az", "--timeout=60", "data/tracking/", sync_target],
+            capture_output=True, text=True, timeout=90, cwd=str(PROJECT_DIR),
+        )
+        if r.returncode == 0:
+            print(f"  [rsync] incremental sync OK -> {sync_target}", flush=True)
+        else:
+            print(f"  [rsync] sync failed (rc={r.returncode}): {r.stderr[:200]}", flush=True)
+    except Exception as e:
+        print(f"  [rsync] sync error (non-blocking): {e}", flush=True)
+
+
 def _mark_done(key: str):
-    with _file_lock, open(DONE_LOG, "a") as f:
-        f.write(key + "\n")
+    global _completed_count
+    # Fix 7: atomic write — write full content to .tmp then os.replace
+    with _file_lock:
+        existing = DONE_LOG.read_text().splitlines() if DONE_LOG.exists() else []
+        existing.append(key)
+        _tmp = DONE_LOG.with_suffix(".tmp")
+        _tmp.write_text("\n".join(existing) + "\n")
+        os.replace(str(_tmp), str(DONE_LOG))
+        _completed_count += 1
+        _count = _completed_count
+    # Fix 4: incremental rsync every 10 completed games when running on RunPod
+    if _count % 10 == 0 and os.environ.get("RUNPOD_POD_ID"):
+        _try_rsync()
 
 
 def _quality_label(ball_valid_pct: float) -> str:
@@ -278,10 +311,11 @@ def _backfill_live_pct():
         # Insert after ball_valid_pct
         idx = fieldnames.index("ball_valid_pct") + 1 if "ball_valid_pct" in fieldnames else len(fieldnames)
         fieldnames.insert(idx, "quality")
-    with open(METRICS_LOG, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        w.writeheader()
-        w.writerows(rows)
+    with _file_lock:
+        with open(METRICS_LOG, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(rows)
 
     print(f"Backfill complete -- {updated} game(s) updated in {METRICS_LOG.name}")
 
@@ -384,6 +418,30 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         env=_env,
     )
 
+    # Fix 1: per-game timeout — kill process tree after GAME_TIMEOUT seconds.
+    _game_label = game_key or game_id or video.stem
+    _timeout_info: dict = {"fired": False}
+
+    def _timeout_kill():
+        _timeout_info["fired"] = True
+        print(f"\n  [TIMEOUT] {_game_label} exceeded {_GAME_TIMEOUT}s — killing process",
+              flush=True)
+        try:
+            if sys.platform != "win32":
+                import signal as _sig
+                os.killpg(os.getpgid(proc.pid), _sig.SIGKILL)
+            else:
+                proc.kill()
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+
+    _timer = threading.Timer(_GAME_TIMEOUT, _timeout_kill)
+    _timer.daemon = True
+    _timer.start()
+
     # Drain stderr in a background thread so it never deadlocks the stdout read.
     def _drain_stderr():
         for line in proc.stderr:
@@ -403,9 +461,12 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             print(f"    {line.strip()}", end="\r", flush=True)
 
     proc.wait()
+    _timer.cancel()
     _stderr_thread.join(timeout=5)
     elapsed = time.time() - t0
     metrics["duration_s"] = round(elapsed, 1)
+    if _timeout_info["fired"]:
+        metrics["_timed_out"] = True
     returncode = proc.returncode
     metrics["_rc"] = returncode  # propagate to caller for failure handling
 
@@ -600,10 +661,14 @@ def main():
                                 skip_tracking=args.skip_tracking,
                                 game_key=key, gpu_id=gpu_id)
             rc = metrics.get("_rc", 0)
-            if rc in (0, 2, 3, 4):
+            if metrics.get("_timed_out"):
+                print(f"  [TIMEOUT] {key} — killed after {_GAME_TIMEOUT}s, "
+                      f"{'retrying...' if _attempt < 2 else 'giving up.'}")
+            elif rc in (0, 2, 3, 4):
                 break  # success or known non-retryable exit
-            print(f"  [RETRY] {key} attempt {_attempt} failed (rc={rc}), "
-                  f"{'retrying...' if _attempt < 2 else 'giving up.'}")
+            else:
+                print(f"  [RETRY] {key} attempt {_attempt} failed (rc={rc}), "
+                      f"{'retrying...' if _attempt < 2 else 'giving up.'}")
             import time as _rt; _rt.sleep(5)
         rc = metrics.pop("_rc", 0)
         if rc == 3:
@@ -630,8 +695,18 @@ def main():
         results_list = [_process_one(w) for w in work]
     else:
         print(f"  Running {n_workers} games in parallel (thread pool)")
+        results_list = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=n_workers) as pool:
-            results_list = list(pool.map(_process_one, work))
+            futs = {pool.submit(_process_one, w): w for w in work}
+            for fut in concurrent.futures.as_completed(futs):
+                try:
+                    results_list.append(fut.result(timeout=3700))
+                except concurrent.futures.TimeoutError:
+                    w = futs[fut]
+                    print(f"  [ERROR] {w[2]} future did not finish within 3700s")
+                except Exception as exc:
+                    w = futs[fut]
+                    print(f"  [ERROR] {w[2]}: {exc}")
 
     for key, metrics in results_list:
         vault_entries.append(

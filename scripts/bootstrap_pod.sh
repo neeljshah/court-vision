@@ -75,6 +75,14 @@ log "Step 4: Staging videos to /root/nba_videos (overlay, 38x faster than mfs)..
 $SSH bash <<'STAGE'
 set -e
 mkdir -p /root/nba_videos
+# Fix 6: require >=100GB free on overlay disk before staging videos
+free_kb=$(df /root/nba_videos 2>/dev/null | awk 'NR==2{print $4}')
+free_gb=$(( ${free_kb:-0} / 1024 / 1024 ))
+if [ "$free_gb" -lt 100 ]; then
+    echo "ERROR: /root/nba_videos has only ${free_gb}GB free — need at least 100GB. Aborting."
+    exit 1
+fi
+echo "  Disk free on /root: ${free_gb}GB — OK"
 # Copy from network disk to overlay (if videos exist on network disk)
 SRC="/workspace/nba-ai-system/data/videos/full_games"
 if [ -d "$SRC" ] && [ ! -L "$SRC" ]; then
@@ -141,6 +149,8 @@ echo "  Removed (already done): $removed"
 echo "  Quarantined (bad codec): $quarantined"
 echo "  Ready to process: $(ls /root/nba_videos/*.mp4 2>/dev/null | wc -l)"
 QUARANTINE
+# Fix 8: print final AV1 quarantine count from the workspace dir
+$SSH "echo \"AV1 quarantined: \$(ls /workspace/nba-ai-system/data/videos/av1_quarantine/*.mp4 2>/dev/null | wc -l)\""
 
 # ── Step 6: Verify critical settings ─────────────────────────────────
 log "Step 6: Verifying pipeline settings..."
@@ -184,7 +194,7 @@ echo "  Using --parallel ${PARALLEL}"
 # GPU check
 $SSH "nvidia-smi --query-gpu=name,memory.total,memory.free --format=csv,noheader | sed 's/^/  GPU: /'"
 
-OMP_THREADS=$(( PARALLEL <= 2 ? 6 : 4 ))
+OMP_THREADS=6
 
 # ── Step 7: Launch Phase G ────────────────────────────────────────────
 log "Step 7: Killing stale workers + launching Phase G (parallel=${PARALLEL})..."
@@ -202,7 +212,7 @@ $SSH "cd ${PROJ} && rm -f phase_g_batch.log && \
     COURTV_NO_LOFTR=1 \
     COURTV_NO_OCR=1 \
     PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512 \
-    PHASE_G_VIDEO_DIR=${PROJ}/data/videos/full_games \
+    PHASE_G_VIDEO_DIR=/root/nba_videos \
     PYTHONUNBUFFERED=1 \
     nohup python3 -u scripts/run_phase_g.py --frames 18000 --parallel ${PARALLEL} \
     > phase_g_batch.log 2>&1 & disown"

@@ -371,7 +371,7 @@ class AdvancedFeetDetector(FeetDetector):
         # True 16-frame batching activates automatically when the caller pushes
         # multiple frames before consuming results (async / prefetch architecture).
         self._yolo_frame_buf: deque = deque(maxlen=16)
-        self._yolo_result_buf: list = []  # cached [(yolo_results, ran_pose), ...]
+        self._yolo_result_buf: deque = deque(maxlen=16)  # cached [(yolo_results, ran_pose), ...]
 
         # Background YOLO prefetch thread
         self._prefetch_thread: Optional["threading.Thread"] = None
@@ -438,6 +438,53 @@ class AdvancedFeetDetector(FeetDetector):
         t = threading.Thread(target=_run, daemon=True, name="YOLOPrefetch")
         t.start()
         self._prefetch_thread = t
+
+    # ── Per-game state reset ─────────────────────────────────────────────
+
+    def _reset_per_game(self) -> None:
+        """Clear all per-game tracking state. Model weights are preserved."""
+        import threading as _th
+        n = len(self.players)
+        self._kalmans.clear()
+        self._appearances.clear()
+        self._lost_ages = {i: 0 for i in range(n)}
+        self._gallery.clear()
+        self._gallery_ages.clear()
+        self._gallery_last_pos.clear()
+        self._kf_pred.clear()
+        self._freeze_age = {i: 0 for i in range(n)}
+        self._stable_frames = {i: 0 for i in range(n)}
+        self._stable_skip = {i: 0 for i in range(n)}
+        self._warmup_colors.clear()
+        self._team_centroids = None
+        self._frames_since_calib = 0
+        self._rolling_hsv_buf.clear()
+        self._warmup_per_slot.clear()
+        self._pose_frame_counter = 0
+        self._pose_state.clear()
+        self._hip_y_history.clear()
+        self._matched_kpts_this_frame.clear()
+        self._prev_gray = None
+        self._flow_pts.clear()
+        self._yolo_frame_buf.clear()
+        self._yolo_result_buf.clear()
+        self._prefetch_thread = None
+        self._prefetch_lock = _th.Lock()
+        if self._color_tracker is not None and _HAS_COLOR_REID:
+            try:
+                self._color_tracker = _TeamColorTracker()
+            except Exception:
+                pass
+        if self._sv_tracker is not None and _HAS_SUPERVISION:
+            try:
+                self._sv_tracker = _sv.ByteTrack(
+                    track_activation_threshold=BT_HIGH_THRESH,
+                    lost_track_buffer=MAX_LOST,
+                    minimum_matching_threshold=BT_SECOND_IOUGATE,
+                    frame_rate=30,
+                )
+            except Exception:
+                pass
 
     # ── GPU ROI pooling for OSNet crops ────────────────────────────────
 
@@ -1119,7 +1166,7 @@ class AdvancedFeetDetector(FeetDetector):
             _has_cached = bool(self._yolo_result_buf)
         if _has_cached:
             with self._prefetch_lock:
-                yolo_results, _run_pose = self._yolo_result_buf.pop(0)
+                yolo_results, _run_pose = self._yolo_result_buf.popleft()
         else:
             # Accumulate current frame; flush entire buffer as one GPU batch call.
             # In the current sequential architecture the batch will typically be
@@ -1153,7 +1200,8 @@ class AdvancedFeetDetector(FeetDetector):
 
             yolo_results, _run_pose = _pending[0]
             if len(_pending) > 1:
-                self._yolo_result_buf = list(_pending[1:])
+                self._yolo_result_buf.clear()
+                self._yolo_result_buf.extend(_pending[1:])
 
         _sp["yolo"] = _subt.perf_counter() - _sp_t0
         _sp_last = _subt.perf_counter()
