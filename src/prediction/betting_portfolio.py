@@ -31,8 +31,21 @@ import numpy as np
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
 
-_BET_LOG = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
-_CLV_LOG  = os.path.join(PROJECT_DIR, "data", "models", "clv_log.json")
+_BET_LOG      = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
+_CLV_LOG      = os.path.join(PROJECT_DIR, "data", "models", "clv_log.json")
+_CORR_MATRIX  = os.path.join(PROJECT_DIR, "data", "models", "prop_corr_matrix.json")
+
+_PROP_STATS_ORDER = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+
+
+def _load_corr_matrix() -> Dict[str, Dict[str, float]]:
+    """Load prop correlation matrix from disk. Returns identity (zeros) on miss."""
+    if os.path.exists(_CORR_MATRIX):
+        try:
+            return json.load(open(_CORR_MATRIX, encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
 
 # Portfolio guards
 MAX_OPEN_BETS     = 20      # never more than N bets in-flight at once
@@ -84,6 +97,8 @@ def kelly_corr(
     bankroll: float,
     corr_with_open: float = 0.0,
     existing_exposure: float = 0.0,
+    stat: Optional[str] = None,
+    open_stats: Optional[List[str]] = None,
 ) -> float:
     """
     Kelly criterion with correlation adjustment and bankroll guards.
@@ -92,16 +107,30 @@ def kelly_corr(
     Scales by KELLY_FRACTION (quarter-Kelly), then reduces for correlated
     exposure already in the portfolio.
 
+    If *stat* and *open_stats* are provided, loads the persisted prop
+    correlation matrix to compute average correlation automatically.
+    *corr_with_open* is ignored when stat-based lookup succeeds.
+
     Args:
         edge:               Model edge as fraction (e.g. 0.06 = 6%).
         odds:               American odds on this bet.
         bankroll:           Current bankroll in dollars.
-        corr_with_open:     Average correlation with currently open bets (0-1).
+        corr_with_open:     Fallback average correlation (0-1) if matrix absent.
         existing_exposure:  Total $ already at risk on correlated bets.
+        stat:               Stat key for this bet (e.g. "pts").
+        open_stats:         List of stat keys for currently open bets.
 
     Returns:
         Recommended bet size in dollars (0 if Kelly is negative).
     """
+    # Resolve correlation from matrix if stat info provided
+    if stat and open_stats:
+        matrix = _load_corr_matrix()
+        if matrix:
+            stat_row = matrix.get(stat, {})
+            corrs = [abs(float(stat_row.get(s, 0.0))) for s in open_stats if s != stat]
+            if corrs:
+                corr_with_open = float(np.mean(corrs))
     implied_prob = _american_to_prob(odds)
     # Model win probability from edge + implied prob
     win_prob = min(0.95, implied_prob + edge)
