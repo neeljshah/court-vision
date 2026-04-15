@@ -30,12 +30,14 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import csv
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import threading
 import time
+import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -64,6 +66,7 @@ VIDEOS_DIR    = DATA_DIR / "videos"
 FULL_GAMES    = Path(os.environ.get("PHASE_G_VIDEO_DIR", VIDEOS_DIR / "full_games"))
 TRACKING_DIR  = DATA_DIR / "tracking"
 DONE_LOG      = DATA_DIR / "phase_g_processed.txt"
+FAILED_LOG    = DATA_DIR / "phase_g_failed.txt"
 METRICS_LOG   = DATA_DIR / "phase_g_metrics.csv"
 VAULT_LOG     = PROJECT_DIR / "vault" / "Improvements" / "Tracker Improvements Log.md"
 
@@ -73,10 +76,25 @@ DEFAULT_FRAMES = 18_000
 
 # -- helpers -------------------------------------------------------------------
 
+def _game_hash(key: str, video_path: Path) -> str:
+    """SHA256 hash of (game_key, resolved video path) for dedup."""
+    raw = f"{key}|{video_path.resolve()}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
 def _done_set() -> set[str]:
+    """Return set of done keys AND their hashes."""
     if DONE_LOG.exists():
         return set(DONE_LOG.read_text().splitlines())
     return set()
+
+
+def _done_hashes() -> set[str]:
+    """Return set of hash tokens already in the done log (prefix 'hash:')."""
+    if not DONE_LOG.exists():
+        return set()
+    return {ln[5:] for ln in DONE_LOG.read_text().splitlines()
+            if ln.startswith("hash:")}
 
 
 def _try_rsync() -> None:
@@ -98,20 +116,33 @@ def _try_rsync() -> None:
         print(f"  [rsync] sync error (non-blocking): {e}", flush=True)
 
 
-def _mark_done(key: str):
+def _mark_done(key: str, video_path: Optional[Path] = None):
     global _completed_count
-    # Fix 7: atomic write — write full content to .tmp then os.replace
+    # Atomic write — write full content to .tmp then os.replace
     with _file_lock:
         existing = DONE_LOG.read_text().splitlines() if DONE_LOG.exists() else []
         existing.append(key)
+        if video_path is not None:
+            existing.append(f"hash:{_game_hash(key, video_path)}")
         _tmp = DONE_LOG.with_suffix(".tmp")
         _tmp.write_text("\n".join(existing) + "\n")
         os.replace(str(_tmp), str(DONE_LOG))
         _completed_count += 1
         _count = _completed_count
-    # Fix 4: incremental rsync every 10 completed games when running on RunPod
+    # Incremental rsync every 10 completed games when running on RunPod
     if _count % 10 == 0 and os.environ.get("RUNPOD_POD_ID"):
         _try_rsync()
+
+
+def _mark_failed(key: str, stderr_tail: str) -> None:
+    """Append game_key + error snippet to phase_g_failed.txt (non-blocking)."""
+    try:
+        with _file_lock:
+            entry = f"{datetime.now().isoformat(timespec='seconds')} {key}: {stderr_tail[:300]}\n"
+            with open(FAILED_LOG, "a", encoding="utf-8", errors="replace") as f:
+                f.write(entry)
+    except Exception:
+        pass
 
 
 def _quality_label(ball_valid_pct: float) -> str:
@@ -674,8 +705,30 @@ def main():
     if _n_gpus > 1:
         print(f"  Multi-GPU: {_n_gpus} GPUs detected — assigning workers round-robin")
 
+    # Collect hashes already in the done log for hash-based dedup
+    _done_hash_set = _done_hashes()
+
     def _process_one(args_tuple):
         i, total, key, video_path, game_id = args_tuple
+        try:
+            return _process_one_inner(i, total, key, video_path, game_id)
+        except Exception as exc:
+            tb = traceback.format_exc()
+            print(f"  [CRASH] {key}: {exc}\n{tb[-500:]}", flush=True)
+            _mark_failed(key, tb)
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0,
+                         "_crashed": True}
+
+    def _process_one_inner(i, total, key, video_path, game_id):
+        # Hash-based dedup: skip if (key, path) already processed even if
+        # done log uses a different display key after re-staging
+        h = _game_hash(key, video_path)
+        if h in _done_hash_set:
+            print(f"[{i}/{total}] {key}  SKIP (hash dedup — already processed)")
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0, "_deduped": True}
+
         # Preflight: verify video file exists before spawning a worker process
         if not video_path.exists():
             print(f"[{i}/{total}] {key}  PREFLIGHT_MISSING: video not found: {video_path}")
@@ -718,12 +771,12 @@ def main():
             # Stage 1 produced zero rows — log distinctly, do NOT add to done log
             # (so future --resume can retry without --reprocess)
             _save_metrics(key, game_id, {**metrics, "quality": "RC3_ZERO_ROWS"})
-            _mark_done(key + "_RC3")
+            _mark_done(key + "_RC3", video_path)
         elif rc == 4:
             pass  # already handled inside _run_clip
         elif _is_complete(out_dir):
             _save_metrics(key, game_id, metrics)
-            _mark_done(key)
+            _mark_done(key, video_path)
         else:
             print(f"  [WARN] {key} output incomplete -- re-run with --resume to retry.")
         print(f"  [{key}] frames={metrics['frames']}  stability={metrics['stability']:.3f}"
