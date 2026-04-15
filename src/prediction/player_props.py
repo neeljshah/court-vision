@@ -179,7 +179,13 @@ def _get_opp_def_rating(opp_team: str, season: str) -> float:
 
 
 def _get_opp_stl_rate(opp_team: str, season: str) -> float:
-    """Return opponent steals per possession from team_stats cache. Fallback: 0.08 (league avg)."""
+    """Return opponent steals per possession from team_stats cache. Fallback: 0.08 (league avg).
+
+    NOTE: team_stats_{season}.json (written by leaguedashteamstats) does NOT include
+    stl_per_poss — this function always returns 0.08. The field would need to be added
+    to the cache write in _fetch_team_stats (win_probability.py) to activate.
+    Season-aggregate only; no per-date filtering needed since stl_per_poss is absent.
+    """
     primary = os.path.join(_NBA_CACHE, f"team_stats_{season}.json")
     if os.path.exists(primary):
         try:
