@@ -306,10 +306,6 @@ def predict_outcome(
         period:           Period 1-4+ (E-3 context).
         lineup_quality:   On/off differential of current lineup (E-4).
 
-    TODO (E-5): Replace PBP-text zone classification with CV court_zone column
-        from tracking_data.csv when available. Current zone bucket ('3pt','paint',
-        'midrange') derived from PBP text. CV zone gives precise ft_x/ft_y location.
-
     Returns:
         {shot_prob, tov_prob, fta_prob, fg_pct_est}
     """
