@@ -1333,6 +1333,11 @@ class UnifiedPipeline:
           stability    — track stability score
           total_frames — frames processed
         """
+        # Fix 2: reset tracker state so per-game leakage doesn't affect next game
+        self.feet_det._reset_per_game()
+        # Fix 3: reset VRAM flush counter at the top of each run() invocation
+        _vram_flush_counter = 0
+
         cap    = cv2.VideoCapture(self.video_path)
         fps    = cap.get(cv2.CAP_PROP_FPS) or 25.0
         map_h, map_w = self.map_2d.shape[:2]
