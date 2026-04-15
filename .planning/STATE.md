@@ -2,12 +2,15 @@
 
 ## Current Status
 
-**Active Phase**: Pre-F — Full Game Collection (Phase G active)
-**Last Updated**: 2026-04-07 (Session 31)
-**Test suite**: 1040 passing, 2 skipped
-**Last Fixed**: ISSUE-065 ball detector bypass + ISSUE-066 team_abbrev fallback (2026-04-07)
-**CV games**: 5 clean / 20 target (Phase F gate)
-**Season 2025-26**: 0 / 50 games processed
+**Active Phase**: BUILD PHASE — Phases 8-13 (possession simulator → FastAPI backend)
+**Last Updated**: 2026-04-15 (Session 36 — backlog sweep)
+**Test suite**: 960+ passing, 93 skip (excl PG tests) — +12 new tests
+**CV games**: 26 with tracking data / 29 dirs (3 empty); Phase G pod expired
+**Phase G**: 26 success, 3 failed (AV1×1, empty dirs×2); 5 AV1 videos quarantined
+
+**Strategy**: Build all prediction + serving infrastructure (Phases 8-13) using current dataset.
+Models scaffolded now, retrained to production accuracy after Full Season Run (~$200-300 RunPod, post-Phase 13).
+No more RunPod until all phases complete.
 
 ---
 
@@ -82,10 +85,10 @@
 | Player advanced stats | 569/569 | ✅ Complete |
 | Player gamelogs | 568/569 | ✅ ISSUE-020 closed |
 | Shot charts | 1,707 files | 2022-23: 569/569 ✅, 2023-24: 569/569 ✅, 2024-25: 569/569 ✅ — COMPLETE |
-| Play-by-play | 3,102 files | ✅ ~84% complete (3,102/3,685) — ISSUE-018 closed |
+| Play-by-play | 31 game IDs cached | 76/91 video game IDs missing; data/pbp_missing.txt written |
 | Boxscores | 13 games | |
-| Lineup on/off splits | 0 | No CLI in lineup_data.py — needs entry point before bulk scrape |
-| Coverage score | 0% avg | coverage_score field unpopulated in scraper_coverage.json |
+| Lineup on/off splits | 0 | ✅ CLI added: python -m src.data.lineup_data --season 2024-25 --bulk |
+| Coverage score | 31.6% | ✅ data/nba/scraper_coverage.json written (gamelog=92%, pbp=2.5%, shotchart=0%) |
 | Win prob model | ✅ Retrained | 67.7% val acc, sklearn 1.7.2, ISSUE-016 closed |
 
 ---
@@ -94,27 +97,32 @@
 
 | ID | Issue | Status |
 |---|---|---|
-| ISSUE-054 | Shot overcounting 2-3x | Code-fixed, unvalidated — needs batch run |
+| ISSUE-054 | Shot overcounting 2-3x | ✅ Validated 2026-04-15 — 3 tests in test_shot_dedup.py pass |
 | ISSUE-065 | Ball detector bypass | ✅ Fixed 2026-04-07 |
 | ISSUE-066 | team_abbrev fallback | ✅ Fixed 2026-04-07 |
-| — | CV features not wired into ML models | Open — core moat unused |
-| — | Possession simulator unbuilt | Blocked on 20 clean games |
+| ISSUE-010 | _pg_write_tracking_rows silent no-op | ✅ Fixed 2026-04-15 — WARN+skip when DATABASE_URL unset |
+| ISSUE-009 | 0 shots enriched — no --game-id runs | 🟡 Wiring confirmed; tests added; enricher mocked test passes |
+| — | CV features null (defender_distance=0/26) | BLOCKED — see .planning/ISSUE_CV_FEATURES.md |
+| — | STL prop R²=0.07 | 🟡 Poisson obj → R²=0.47 (5-fold CV); needs full retrain on pod |
+| — | CV registry sparsity | DIAGNOSED — root cause: --game-id not passed; OCR is 100% when used |
+| — | Possession simulator | ✅ Built Phase 8 — sim_models.py + possession_simulator.py, 16 tests passing |
 | — | Gamelog 2023-24 stalled ~200/600 | Open — props retrain blocked |
-| — | Homography low on newer games | Needs reprocess |
-| ISSUE-009 | 0 shots enriched — no --game-id runs | 🔴 Phase F |
-| ISSUE-010 | PostgreSQL writes not fully wired | 🟡 _pg_write_tracking_rows added; needs DATABASE_URL |
-| ISSUE-018 | PBP coverage gaps | 🟡 3,627/3,685 (98.4%) |
+| — | Homography low on newer games | 🟡 No metadata.json in dirs; manifest has no confidence field — add to pipeline |
+| ISSUE-018 | PBP coverage gaps | 🟡 76/91 video game IDs missing PBP (data/pbp_missing.txt) |
 
 ---
 
 ## Next Actions (Priority Order)
 
-1. **NOW**: Validate shot overcounting fix — run batch on 3 clean games, check shot_log counts (ISSUE-054)
-2. **Phase F**: `select_season_games.py` → `batch_season.py` — reach 20 clean games
-3. **Phase G**: Season 2025-26 batch — 50 games, 2 per team
-4. **Phase 7**: Wire CV spatial features (defender_distance, spacing_index) into xFG v2 and prop models
-5. **Phase 8**: Build possession simulator — 7-model chain, 10K Monte Carlo per game
-6. **Later**: Gamelog 2023-24 completion (200/600) → props retrain
+1. ✅ **Phase 8**: Possession Simulator v1 — COMPLETE (sim_models.py + possession_simulator.py, 16/16 tests, <30s 10K sims)
+2. ✅ **Phase 9**: Feedback loop + NLP injury models — code complete, pipeline wired
+3. ✅ **Phase 10**: Tier 4-5 models — 15 models built (8 Tier4 + 7 Tier5), FatigueCurveModel wired into FatigueModel, 37 tests pass
+4. ✅ **Phase 10.5**: Advanced CV signal extractors — code complete
+5. ✅ **Phase 11**: Betting infra — live_models.py (M70-M75), betting_edge.py (BettingEdge/CLVTracker/ArbDetector), 16 tests passing
+6. ✅ **Phase 12**: Full Monte Carlo — FoulTrouble/GarbageTime/Q4Usage wired, 7-stat player_distributions, 4/4 tests pass
+7. ✅ **Phase 13**: FastAPI backend — 6 new endpoints, in-process TTL cache, 5/5 tests pass (2026-04-14)
+
+8. **FULL SEASON RUN**: RunPod full 2025-26 season → retrain everything → production-ready
 
 ## Completed Phases (summary)
 
