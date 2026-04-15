@@ -164,18 +164,24 @@ _BACKTEST_CACHE: dict = {}
 _BACKTEST_TTL = 86400  # 24 hours
 
 
+class _BacktestRequest(BaseModel):
+    seasons: Optional[list] = None
+    edge_threshold: float = 0.04
+
+
 @app.post("/backtest/{stat}", tags=["backtest"])
-def backtest_stat(stat: str, seasons: Optional[list] = None, edge_threshold: float = 0.04):
+def backtest_stat(stat: str, req: _BacktestRequest = None):
     """Run prop backtest for a stat. Returns mae, hit_rate_over, roi. Cached 24h."""
+    from fastapi import HTTPException
     from src.prediction.prop_backtester import backtest_props, STATS
     if stat not in STATS:
-        from fastapi import HTTPException
         raise HTTPException(status_code=400, detail=f"stat must be one of {STATS}")
-    cache_key = (stat, tuple(seasons or []), edge_threshold)
+    req = req or _BacktestRequest()
+    cache_key = (stat, tuple(req.seasons or []), req.edge_threshold)
     entry = _BACKTEST_CACHE.get(cache_key)
     if entry and time.time() - entry[0] < _BACKTEST_TTL:
         return entry[1]
-    result = backtest_props(seasons=seasons, stat=stat, edge_threshold=edge_threshold)
+    result = backtest_props(seasons=req.seasons, stat=stat, edge_threshold=req.edge_threshold)
     n_over = result.wins
     n_bets = result.n_bets
     payload = {
