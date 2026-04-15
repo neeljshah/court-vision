@@ -676,6 +676,11 @@ def main():
 
     def _process_one(args_tuple):
         i, total, key, video_path, game_id = args_tuple
+        # Preflight: verify video file exists before spawning a worker process
+        if not video_path.exists():
+            print(f"[{i}/{total}] {key}  PREFLIGHT_MISSING: video not found: {video_path}")
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0}
         # Round-robin GPU assignment: worker index (0-based) mod GPU count
         gpu_id = (i - 1) % _n_gpus if _n_gpus > 1 else None
         if n_workers > 1 and i > 1:
