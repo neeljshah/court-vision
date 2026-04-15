@@ -61,6 +61,62 @@ class PropStackResult:
     micro_signals: Dict[str, float] = field(default_factory=dict)  # raw micro-model outputs
 
 
+_CALIB_DIR = _MODELS_DIR
+
+
+class CalibrationLayer:
+    """Per-stat isotonic regression calibration for prop probabilities.
+
+    fit():      Train one IsotonicRegression per stat on held-out (predicted_prob,
+                actual_outcome) pairs and persist to data/models/calibration_{stat}.joblib.
+    transform():Apply fitted isotonic to a raw probability; returns identity if not fitted.
+    """
+
+    def __init__(self) -> None:
+        self._models: Dict[str, object] = {}
+        self._load()
+
+    def _path(self, stat: str) -> str:
+        return os.path.join(_CALIB_DIR, f"calibration_{stat}.joblib")
+
+    def _load(self) -> None:
+        try:
+            import joblib
+            for stat in STATS:
+                p = self._path(stat)
+                if os.path.exists(p):
+                    self._models[stat] = joblib.load(p)
+        except Exception:
+            pass  # joblib absent or model corrupt — identity passthrough
+
+    def fit(self, stat: str, probs: "np.ndarray", outcomes: "np.ndarray") -> None:
+        """Fit isotonic regression for *stat*. probs in [0,1], outcomes in {0,1}."""
+        try:
+            import joblib
+            from sklearn.isotonic import IsotonicRegression
+            ir = IsotonicRegression(out_of_bounds="clip")
+            ir.fit(probs, outcomes)
+            self._models[stat] = ir
+            joblib.dump(ir, self._path(stat))
+        except Exception as e:
+            import logging
+            logging.warning("CalibrationLayer.fit(%s) failed: %s", stat, e)
+
+    def transform(self, stat: str, prob: float) -> float:
+        """Return calibrated probability (identity if not fitted)."""
+        mdl = self._models.get(stat)
+        if mdl is None:
+            return prob
+        try:
+            return float(mdl.predict([prob])[0])
+        except Exception:
+            return prob
+
+
+# Module-level singleton loaded once
+_calibration = CalibrationLayer()
+
+
 def _load_motivation_flags(player_id: str) -> Dict[str, bool]:
     """Load pre-computed motivation flags from model cache files."""
     flags: Dict[str, bool] = {
@@ -380,7 +436,8 @@ def stack_predict(
             confidence[stat] = 0.0
         else:
             conf = injury_mult * (1.0 - min(dnp_prob, 0.5) * 2) + micro_conf_adj
-            confidence[stat] = round(max(0.0, min(1.0, conf)), 3)
+            conf = max(0.0, min(1.0, conf))
+            confidence[stat] = round(_calibration.transform(stat, conf), 3)
 
     # ── Edge calculation ─────────────────────────────────────────────────────
     edges: Dict[str, float] = {}
