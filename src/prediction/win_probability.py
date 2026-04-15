@@ -27,6 +27,7 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.insert(0, PROJECT_DIR)
 
 from src.data.schedule_context import compute_travel_distance  # no API — arena coords only
+from src.prediction.possession_simulator import PossessionSimulator  # raises at load if missing
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
@@ -132,7 +133,43 @@ FEATURE_COLS = [
     "home_ft_rate_L10", "away_ft_rate_L10",
     "home_off_rtg_home_L10", "away_off_rtg_away_L10",
     "home_off_rtg_vs_top_def", "away_off_rtg_vs_top_def",
+    # Phase 8: Monte Carlo simulation features (computed but NOT fed to model until retrain)
+    # Model was trained on 67 features (without sim_*); FEATURE_COLS has 71.
+    # Use _MODEL_FEATURE_COLS for prediction/training until model is retrained with sim_*.
+    "sim_win_prob", "sim_score_diff_mean", "sim_score_diff_std", "sim_pace_adj",
 ]
+
+# 67-feature subset used by the current saved model (excludes the 4 sim_* additions).
+# actual=67 expected=71  diff=4 (sim_win_prob, sim_score_diff_mean, sim_score_diff_std, sim_pace_adj)
+# When model is retrained with sim_* features, replace _MODEL_FEATURE_COLS with FEATURE_COLS.
+_MODEL_FEATURE_COLS = FEATURE_COLS[:-4]
+
+_SIM_CACHE: dict[str, dict] = {}
+
+
+def _sim_features(home_team: str, away_team: str,
+                  home_stats: Optional[dict] = None,
+                  away_stats: Optional[dict] = None) -> dict:
+    """Run 1000-sim PossessionSimulator to generate Monte Carlo features. Cached by matchup."""
+    cache_key = f"{home_team}_{away_team}"
+    if cache_key in _SIM_CACHE:
+        return _SIM_CACHE[cache_key]
+    sim = PossessionSimulator()
+    res = sim.simulate_game(home_team, away_team, n_sims=1000,
+                            team_a_stats=home_stats, team_b_stats=away_stats)
+    wp = res["win_probability"]
+    sd_h = res["score_distribution"][home_team]
+    sd_a = res["score_distribution"][away_team]
+    pace_h = float((home_stats or {}).get("pace", 100))
+    pace_a = float((away_stats or {}).get("pace", 100))
+    out = {
+        "sim_win_prob": float(wp.get(home_team, 0.5)),
+        "sim_score_diff_mean": round(sd_h["mean"] - sd_a["mean"], 2),
+        "sim_score_diff_std": round((sd_h["std"] + sd_a["std"]) / 2, 2),
+        "sim_pace_adj": round((pace_h + pace_a) / 200, 4),
+    }
+    _SIM_CACHE[cache_key] = out
+    return out
 
 
 # ── C-1 through C-7: helper functions ─────────────────────────────────────────
@@ -297,7 +334,7 @@ class WinProbModel:
             raise RuntimeError("Model not trained — call train() or load() first")
 
         feats = _build_features(home_team, away_team, season, game_date, ref_names)
-        X     = np.array([[feats[c] for c in FEATURE_COLS]], dtype=np.float32)
+        X     = np.array([[feats[c] for c in _MODEL_FEATURE_COLS]], dtype=np.float32)
         prob  = float(self.model.predict_proba(X)[0][1])
 
         # Surface injury warnings (Out/Doubtful players on either team)
@@ -399,9 +436,9 @@ def train(
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[FEATURE_COLS].values.astype(np.float32)
+    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
-    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%}")
+    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(_MODEL_FEATURE_COLS)}")
 
     split = int(len(df) * 0.8)
     X_tr, X_val = X[:split], X[split:]
@@ -421,7 +458,7 @@ def train(
     print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}")
 
     model = WinProbModel(model=clf)
-    model._feature_importance = dict(zip(FEATURE_COLS, clf.feature_importances_.tolist()))
+    model._feature_importance = dict(zip(_MODEL_FEATURE_COLS, clf.feature_importances_.tolist()))
     model.save(output_path)
     _save_metrics({"accuracy": acc, "brier": brier,
                    "n_games": len(df), "seasons": seasons})
@@ -505,7 +542,7 @@ def backtest(seasons: Optional[List[str]] = None) -> dict:
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[FEATURE_COLS].values.astype(np.float32)
+    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
 
     results = []
@@ -1150,6 +1187,11 @@ def _fetch_season_games(season: str) -> List[dict]:
             # Tier 2 — Opponent-adjusted
             "home_off_rtg_vs_top_def": opp_adj_lookup.get((int(h["TEAM_ID"]), str(gid)), 112.0),
             "away_off_rtg_vs_top_def": opp_adj_lookup.get((int(a["TEAM_ID"]), str(gid)), 112.0),
+            # Phase 8: Monte Carlo simulation features
+            **_sim_features(
+                h["TEAM_ABBREVIATION"], a["TEAM_ABBREVIATION"],
+                home_stats=ht, away_stats=at,
+            ),
         })
 
     with open(cache_path, "w") as f:
@@ -1532,9 +1574,13 @@ if __name__ == "__main__":
     ap.add_argument("--predict",  nargs=2, metavar=("HOME", "AWAY"))
     ap.add_argument("--season",   default="2025-26")
     ap.add_argument("--seasons",  nargs="+", default=["2022-23", "2023-24", "2024-25"])
+    ap.add_argument("--retrain-with-sim", action="store_true",
+                    help="Retrain including Phase 8 Monte Carlo sim features")
     args = ap.parse_args()
 
-    if args.train:
+    if args.retrain_with_sim or args.train:
+        # Clear sim cache so fresh sims run for each matchup
+        _SIM_CACHE.clear()
         train(seasons=args.seasons)
     elif args.backtest:
         backtest(seasons=args.seasons)
