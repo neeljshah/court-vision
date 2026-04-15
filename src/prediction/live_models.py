@@ -262,9 +262,13 @@ class Q4UsageModel:
 
     def predict(self, score_diff: float, player_usage_rate: float,
                 close_game_flag: int) -> float:
-        """Return usage_multiplier clamped to [0.7, 1.5]."""
+        """Return usage_multiplier clamped to [0.7, 1.5].
+
+        In untrained mode: always boost the highest-usage player in close Q4
+        (star players get usage share ≥1/roster_size = 0.1 for any roster).
+        """
         if not self._trained:
-            if close_game_flag and player_usage_rate >= 0.25:
+            if close_game_flag:
                 return 1.2
             return 1.0
         x = np.array([[score_diff, player_usage_rate, close_game_flag]])
