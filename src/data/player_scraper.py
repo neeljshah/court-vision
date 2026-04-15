@@ -458,21 +458,20 @@ def _save_coverage(cov: dict) -> None:
 
 
 def _coverage_score(player_data: dict) -> float:
-    """0.0–1.0 based on how many metric groups are present for a player."""
-    all_keys = set()
-    for tier_cfg in _BATCH_TIERS.values():
-        all_keys.update(tier_cfg["cols"].values())
-    # Also count gamelog and splits presence
+    """0.0–1.0: ratio of present/expected data categories for a player.
+
+    Categories: one per _BATCH_TIERS entry + gamelog + splits.
+    A category counts as present when at least one of its columns exists in
+    player_data with a non-null value.
+    """
     total_groups = len(_BATCH_TIERS) + 2  # +gamelog +splits
-    present = sum(1 for k in tier_cfg["cols"].values() if k in player_data
-                  for tier_cfg in _BATCH_TIERS.values())
-    # Normalise
     filled_tiers = sum(
-        1 for tier_name, tier_cfg in _BATCH_TIERS.items()
-        if any(v in player_data for v in tier_cfg["cols"].values())
+        1 for tier_cfg in _BATCH_TIERS.values()
+        if any(player_data.get(v) not in (None, "", 0) for v in tier_cfg["cols"].values())
     )
-    has_gamelog = "gamelog_rows" in player_data
-    has_splits  = "splits_last10_pts" in player_data
+    has_gamelog = int(bool(player_data.get("gamelog_rows")))
+    has_splits  = int("splits_last10_pts" in player_data and
+                      player_data.get("splits_last10_pts") is not None)
     return round((filled_tiers + has_gamelog + has_splits) / total_groups, 3)
 
 
