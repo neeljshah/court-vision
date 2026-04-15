@@ -1,0 +1,26 @@
+# Homography Reprocess Candidates
+# Generated: 2026-04-15
+# Source: data/tracking/*/manifest.json (metadata.json does not exist)
+#
+# NOTE: manifest.json has no homography_confidence field.
+# The 'stability' field (1.0 = max, lower = more drift) is the closest proxy.
+# All 4 games with manifest.json have stability=1.0, so no reprocess needed
+# based on available data.
+#
+# To get real homography_confidence, it must be added to the pipeline's
+# manifest output. See unified_pipeline.py _build_court() — the SIFT
+# homography det score should be stored in manifest on write.
+#
+# Games with manifest.json:
+# 0022400625  stability=1.0  (AV1-quarantined)
+# 0022400852  stability=1.0  (AV1-quarantined)
+# 0022401183  stability=1.0
+# 0022401185  stability=1.0
+#
+# All other 22 tracking dirs have no manifest.json and no homography metric.
+# They require a full reprocess on RunPod to generate manifests with
+# homography_confidence populated.
+#
+# RECOMMENDATION: Add homography_confidence to manifest write in
+# unified_pipeline.py before next RunPod session so this list can be
+# populated automatically.
