@@ -93,18 +93,22 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 4.9 — Backtesting + Validation Infrastructure | ✅ Done | Strategy backtester, paper trading mode, historical prop results DB, validation gate |
 | Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor, schedule context wired |
 | **Pre-Season Accuracy Plan** | 🔲 Queued | Feature engineering (14) + CV integration (4) + win prob (8) + props algo (8) + possession model (5) + Monte Carlo simulator + game model ML rebuild. See PRE_SEASON_ACCURACY_PLAN.md |
-| Phase G — Full Game Data Collection | 🟡 Active | 5 clean games; ISSUE-065/066 fixed; batch season pipeline next |
-| Phase 6 — Full Game Processing + Rich Events | 🔲 Next | 20+ clean games, rich event aggregation (drives/box-outs/closeouts/cuts/screens), PostgreSQL writes |
-| Phase 7 — Tier 2-3 ML Models + CV Wiring | 🔲 | xFG v2 with closeout speed + shot clock, props retrained with CV behavioral features |
-| Phase 8 — Possession Simulator v1 | 🔲 | 7-model chain with rich event inputs, 10K Monte Carlo |
-| Phase 9 — Feedback Loop + NLP | 🔲 | Nightly processing, auto-retrain, NLP injury models |
-| Phase 10 — Tier 4-5 ML Models | 🔲 | Fatigue curve, lineup chemistry, matchup matrix |
-| Phase 10.5 — Advanced CV Signals | 🔲 | Coverage type, shot arc, biomechanics, audio |
-| Phase 11 — Betting Infrastructure + Live | 🔲 | Live models, CLV backtesting, Kelly+correlation |
-| Phase 12 — Full Monte Carlo (90 models) | 🔲 | All 90 models in simulator, full stat distributions |
-| Phase 13 — FastAPI Backend | 🔲 | 12 endpoints, Redis caching, async |
-| Phase 14 — Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
-| Phase 15 — AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
+| Phase G — Full Game Data Collection | ✅ Done | 25 games collected (7 high quality); pod expired 2026-04-14 |
+| Phase 6 — Full Game Processing + Rich Events | ✅ Done | Rich events aggregated; CV features wired; 266 enriched possessions |
+| Phase 7 — Tier 2-3 ML Models + CV Wiring | ✅ Done | xFG v2, props retrained with CV features, 62 models in data/models/ |
+| **BUILD PHASE — Phases 8-13** | 🟡 Active | Build all prediction + serving infrastructure using current 25-game dataset. Models will be scaffolded (low accuracy expected). All code complete before Full Season Run. |
+| Phase 8 — Possession Simulator v1 | ✅ Done | sim_models.py + possession_simulator.py. 7-model chain (PlayType→xFG→TOV/Foul→Rebound→Fatigue→Sub→Usage). 10K sims <30s, 16/16 tests green. |
+| Phase 9 — Feedback Loop + NLP | ✅ Done | Nightly pipeline, auto-retrain, NLP injury models. Code complete; volume comes from full season. |
+| Phase 10 — Tier 4-5 ML Models | ✅ Done | 15 models (8 Tier4 + 7 Tier5). Stubs with safe defaults; retrain on full season. |
+| Phase 10.5 — Advanced CV Signals | ✅ Done | Coverage type, shot arc, biomechanics extractors. Code complete. |
+| Phase 11 — Betting Infrastructure + Live | ✅ Done | live_models.py (M70-M75), betting_edge.py (BettingEdge/CLVTracker/ArbDetector). 16/16 tests green. |
+| Phase 12 — Full Monte Carlo (90 models) | ✅ Done | FoulTrouble/GarbageTime/Q4Usage wired, 7-stat player_distributions, 4/4 tests pass. |
+| Phase 13 — FastAPI Backend | ✅ Done | 6 new endpoints (/simulate, /props, /edge, /win-prob, /lineup, /health), in-process TTL cache, 5/5 tests pass (2026-04-14) |
+| **Phase 13.5 — 100-game Readiness** | ✅ Done | Prop stack wired, calibration layer, dedup+crash isolation, backtest endpoint, correlation matrix, CV fatigue, STL features (2026-04-15) |
+| **FULL SEASON RUN** | ⏳ After Phase 13.5 | ~$200-300 RunPod. Process 100 H.264 games. Retrain all models. Fit calibration. Run /backtest gate. Enable betting mode. |
+| Phase 14 — 100-game Run | 🔲 | Stage 100 H.264 videos, launch pod, retrain, fit calibration, /backtest gate, enable betting |
+| Phase 15 — Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
+| Phase 16 — AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
 | Phase 16 — Tier 6 + Live Win Prob | 🔲 | 200+ games, LSTM, WebSocket real-time |
 | Phase 17 — Infrastructure | 🔲 | Docker, CI/CD, cloud GPU, drift monitoring |
 
@@ -1844,9 +1848,11 @@ The loop only works if you know exactly when/what/how to retrain. Design decisio
 
 ---
 
-### Phase 10: Tier 4-5 ML Models (50-100 Games)
+### Phase 10: Tier 4-5 ML Models (50-100 Games) ✅ Done (2026-04-14)
 **Goal**: The models that require volume to train. Lineup chemistry and fatigue are the biggest edge unlocks.
-**Depends on**: Phase 9 (enough games processed)
+**Strategy**: Build all code and scaffolding now using current 25-game dataset. Models will train with limited data. Real accuracy comes when retrained after Full Season Run (50-100 games).
+**Depends on**: Phase 9 (code complete)
+**Delivered**: `src/prediction/tier4_models.py` (8 models), `src/prediction/tier5_models.py` (7 models), FatigueCurveModel wired into sim_models.FatigueModel, 37 tests passing.
 
 **Tier 4 — 50 Games:**
 1. Rebound positioning model (proximity at shot)
@@ -2082,7 +2088,39 @@ GET  /health                          → dataset status, model versions
 
 ---
 
-### Phase 14: Analytics Dashboard Frontend
+### Phase 13.5: 100-game Readiness
+**Goal**: All prediction + pipeline blockers resolved before 100-game RunPod run.
+**Status**: ✅ Done (2026-04-15)
+
+**Tasks completed:**
+1. ✅ /props endpoint — uses prop stack ensemble with DNP/injury gates (was calling raw predict_props)
+2. ✅ Live model imports (FoulTrouble/GarbageTime/Q4Usage) fail loud at module level
+3. ✅ STL prop features — opp_tov_pct and opp_pace already wired (confirmed)
+4. ✅ Phase G dedup by SHA256 hash + per-game crash isolation → phase_g_failed.txt
+5. ✅ POST /backtest/{stat} endpoint — mae, hit_rate_over, roi_at_break_even_odds, 24h cache
+6. ✅ CalibrationLayer (isotonic) in prop_model_stack.py + scripts/fit_prop_calibration.py
+7. ✅ CV fatigue minutes wired into possession_simulator via cv_minutes_csv param
+8. ✅ compute_prop_correlation_matrix in betting_edge.py; kelly_corr loads matrix from disk
+
+---
+
+### Phase 14: 100-game Run
+**Goal**: Process 100 H.264 games on RunPod 4090, retrain all models, validate betting readiness.
+**Depends on**: Phase 13.5
+
+**Subtasks:**
+1. Stage 100 H.264 videos to `/root/nba_videos` on pod (symlink `data/videos/full_games`)
+2. Launch via `scripts/launch_single_gpu_pod.sh` (incremental rsync lands every 5 min via watch_and_sync.sh)
+3. Monitor health: `nr_throttled` Δ < 30/60s, load < 17.85
+4. Post-run: rsync tracking/events/metrics back to local
+5. Refresh prop models: `python scripts/refresh_props.py`
+6. Fit calibration: `python scripts/fit_prop_calibration.py`
+7. Run /backtest gate: `POST /backtest/{stat}` — confirm `passed_gate=true` for pts/reb/ast
+8. Enable betting mode
+
+---
+
+### Phase 15: Analytics Dashboard Frontend
 **Goal**: Interactive analytics dashboard + betting dashboard. Professional-grade, conversational.
 **Depends on**: Phase 13
 
