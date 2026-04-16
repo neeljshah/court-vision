@@ -74,7 +74,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 
 ## Phase Overview
 
-*Last updated: 2026-04-07 | Session 31 | Tests: 1040 pass | Models trained: 46/90 | CV games: 5 clean / 20 target*
+*Last updated: 2026-04-15 | Session 36 | Tests: 960+ pass, 93 skip | Models trained: 75 | CV: 41/94 videos, 16 A/B-grade, 24 CV records*
 
 > **Pre-Season Accuracy Plan:** Full feature engineering + model + simulator checklist → `.planning/PRE_SEASON_ACCURACY_PLAN.md`
 
@@ -93,7 +93,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 4.9 — Backtesting + Validation Infrastructure | ✅ Done | Strategy backtester, paper trading mode, historical prop results DB, validation gate |
 | Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor, schedule context wired |
 | **Pre-Season Accuracy Plan** | 🔲 Queued | Feature engineering (14) + CV integration (4) + win prob (8) + props algo (8) + possession model (5) + Monte Carlo simulator + game model ML rebuild. See PRE_SEASON_ACCURACY_PLAN.md |
-| Phase G — Full Game Data Collection | ✅ Done | 25 games collected (7 high quality); pod expired 2026-04-14 |
+| Phase G — Full Game Data Collection | ✅ Done | 41/94 videos tracked, 16 A/B-grade, 24 CV records; 53 remaining for Phase 14 |
 | Phase 6 — Full Game Processing + Rich Events | ✅ Done | Rich events aggregated; CV features wired; 266 enriched possessions |
 | Phase 7 — Tier 2-3 ML Models + CV Wiring | ✅ Done | xFG v2, props retrained with CV features, 62 models in data/models/ |
 | **BUILD PHASE — Phases 8-13** | 🟡 Active | Build all prediction + serving infrastructure using current 25-game dataset. Models will be scaffolded (low accuracy expected). All code complete before Full Season Run. |
@@ -105,8 +105,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 12 — Full Monte Carlo (90 models) | ✅ Done | FoulTrouble/GarbageTime/Q4Usage wired, 7-stat player_distributions, 4/4 tests pass. |
 | Phase 13 — FastAPI Backend | ✅ Done | 6 new endpoints (/simulate, /props, /edge, /win-prob, /lineup, /health), in-process TTL cache, 5/5 tests pass (2026-04-14) |
 | **Phase 13.5 — 100-game Readiness** | ✅ Done | Prop stack wired, calibration layer, dedup+crash isolation, backtest endpoint, correlation matrix, CV fatigue, STL features (2026-04-15) |
-| **FULL SEASON RUN** | ⏳ After Phase 13.5 | ~$200-300 RunPod. Process 100 H.264 games. Retrain all models. Fit calibration. Run /backtest gate. Enable betting mode. |
-| Phase 14 — 100-game Run | 🔲 | Stage 100 H.264 videos, launch pod, retrain, fit calibration, /backtest gate, enable betting |
+| **Phase 14 — 100-game RunPod Run** | ⏳ **NEXT** | Stage 53 remaining H.264 videos, launch pod (~$200-300), retrain all models, fit isotonic calibration, /backtest gate, enable betting mode |
 | Phase 15 — Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
 | Phase 16 — AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
 | Phase 16 — Tier 6 + Live Win Prob | 🔲 | 200+ games, LSTM, WebSocket real-time |
