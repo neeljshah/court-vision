@@ -11,7 +11,7 @@ from api.predictions_router import router as predictions_ext_router
 from api.stitch_router import router as stitch_router
 from api.dashboard_router import router as dashboard_router
 from src.prediction.possession_simulator import PossessionSimulator
-from src.prediction.player_props import predict_props
+from src.prediction.prop_model_stack import stack_predict as _stack_predict
 from src.prediction.betting_edge import BettingEdge
 from src.prediction.win_probability import load as _load_win_prob
 
@@ -110,7 +110,9 @@ def props(player_id: str, opp_team: str = "GSW", season: str = "2025-26"):
     cached = _cget(key)
     if cached is not None:
         return cached
-    result = predict_props(player_id, opp_team, season=season)
+    stack = _stack_predict(player_id, game_context={"away_team": opp_team, "season": season})
+    result = {k: round(float(v), 3) for k, v in stack.predictions.items()
+              if not (isinstance(v, float) and v != v)}
     _cset(key, result)
     return result
 
@@ -119,13 +121,19 @@ def props(player_id: str, opp_team: str = "GSW", season: str = "2025-26"):
 def edge(game_id: str, home: str = "", away: str = "",
          home_odds: int = -110, away_odds: int = -110):
     try:
+        try:
+            _wp = _load_win_prob().predict(home, away)
+            home_win_prob = float(_wp.get("home_win_prob", 0.5))
+        except Exception:
+            home_win_prob = 0.5
         bets = []
         for team, odds, prob_key in [
             (home, home_odds, "home"), (away, away_odds, "away")
         ]:
             if not team:
                 continue
-            ev = _betting_edge.evaluate(0.5, odds)
+            team_prob = home_win_prob if prob_key == "home" else 1.0 - home_win_prob
+            ev = _betting_edge.evaluate(team_prob, odds)
             if ev.get("edge", 0) > 0:
                 bets.append({"team": team, **ev})
         return {"game_id": game_id, "edges": bets}
