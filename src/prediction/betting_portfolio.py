@@ -344,8 +344,88 @@ def get_portfolio_summary() -> dict:
     }
 
 
+def compute_prop_corr_matrix(residuals_path: Optional[str] = None) -> Dict[str, Dict[str, float]]:
+    """
+    Compute pairwise Pearson correlation matrix for prop stats from residuals.
+
+    Reads data/models/prop_residuals.json (rows: {stat, predicted, player_id, game_id}).
+    Groups by (player_id, game_id), keeps only rows where all 7 stats are present,
+    then computes pairwise Pearson correlations between predicted values.
+
+    Saves result to data/models/prop_corr_matrix.json and returns the matrix.
+    Returns empty dict if fewer than 10 complete player-game rows exist.
+    """
+    if residuals_path is None:
+        residuals_path = os.path.join(PROJECT_DIR, "data", "models", "prop_residuals.json")
+    if not os.path.exists(residuals_path):
+        print(f"  [corr] {residuals_path} not found — cannot compute correlation matrix")
+        return {}
+
+    try:
+        residuals = json.load(open(residuals_path, encoding="utf-8"))
+    except Exception as e:
+        print(f"  [corr] failed to load residuals: {e}")
+        return {}
+
+    # Pivot: (player_id, game_id) → {stat: predicted_value}
+    from collections import defaultdict
+    rows: Dict[tuple, Dict[str, float]] = defaultdict(dict)
+    for r in residuals:
+        stat = r.get("stat")
+        pred = r.get("predicted")
+        pid  = str(r.get("player_id", r.get("player_name", "")))
+        gid  = str(r.get("game_id", ""))
+        if stat in _PROP_STATS_ORDER and pred is not None and pid:
+            rows[(pid, gid)][stat] = float(pred)
+
+    # Keep only rows with all 7 stats present
+    complete = [d for d in rows.values() if all(s in d for s in _PROP_STATS_ORDER)]
+    if len(complete) < 10:
+        print(f"  [corr] only {len(complete)} complete player-game rows — skipping (need ≥10)")
+        return {}
+
+    arrays: Dict[str, List[float]] = {s: [d[s] for d in complete] for s in _PROP_STATS_ORDER}
+
+    matrix: Dict[str, Dict[str, float]] = {}
+    for s1 in _PROP_STATS_ORDER:
+        matrix[s1] = {}
+        x = np.array(arrays[s1])
+        for s2 in _PROP_STATS_ORDER:
+            if s1 == s2:
+                matrix[s1][s2] = 1.0
+            else:
+                y = np.array(arrays[s2])
+                if np.std(x) > 0 and np.std(y) > 0:
+                    matrix[s1][s2] = round(float(np.corrcoef(x, y)[0, 1]), 4)
+                else:
+                    matrix[s1][s2] = 0.0
+
+    os.makedirs(os.path.dirname(_CORR_MATRIX), exist_ok=True)
+    json.dump(matrix, open(_CORR_MATRIX, "w", encoding="utf-8"), indent=2)
+    print(f"  [corr] Saved {len(complete)}-row correlation matrix to {_CORR_MATRIX}")
+    return matrix
+
+
 if __name__ == "__main__":
-    summary = get_portfolio_summary()
-    print("Portfolio Summary:")
-    for k, v in summary.items():
-        print(f"  {k}: {v}")
+    import argparse
+    parser = argparse.ArgumentParser(description="Betting portfolio utilities")
+    parser.add_argument("--compute-corr", action="store_true",
+                        help="Compute prop correlation matrix from residuals and save")
+    parser.add_argument("--summary", action="store_true",
+                        help="Print portfolio summary")
+    args = parser.parse_args()
+
+    if args.compute_corr:
+        mat = compute_prop_corr_matrix()
+        if mat:
+            print("\nCorrelation matrix:")
+            header = "     " + "  ".join(f"{s:5s}" for s in _PROP_STATS_ORDER)
+            print(header)
+            for s1 in _PROP_STATS_ORDER:
+                row_str = "  ".join(f"{mat[s1][s2]:5.2f}" for s2 in _PROP_STATS_ORDER)
+                print(f"{s1:4s} {row_str}")
+    else:
+        summary = get_portfolio_summary()
+        print("Portfolio Summary:")
+        for k, v in summary.items():
+            print(f"  {k}: {v}")
