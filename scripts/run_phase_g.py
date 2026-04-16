@@ -103,9 +103,18 @@ def _try_rsync() -> None:
     if not sync_target:
         print("  [rsync] SYNC_TARGET not set — skipping incremental sync", flush=True)
         return
+    ssh_key = os.environ.get("SSH_KEY", "")
+    port    = os.environ.get("PORT", "")
+    if ssh_key and port:
+        ssh_opt = f"ssh -i {ssh_key} -p {port}"
+        cmd = ["rsync", "-az", "--timeout=60", "-e", ssh_opt, "data/tracking/", sync_target]
+    elif port:
+        cmd = ["rsync", "-az", "--timeout=60", "-e", f"ssh -p {port}", "data/tracking/", sync_target]
+    else:
+        cmd = ["rsync", "-az", "--timeout=60", "data/tracking/", sync_target]
     try:
         r = subprocess.run(
-            ["rsync", "-az", "--timeout=60", "data/tracking/", sync_target],
+            cmd,
             capture_output=True, text=True, timeout=90, cwd=str(PROJECT_DIR),
         )
         if r.returncode == 0:
