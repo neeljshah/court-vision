@@ -3030,7 +3030,18 @@ class UnifiedPipeline:
         }
 
     def _export_possessions_csv(self, rows: List[dict], event_counts: dict = None):
+        os.makedirs(self._data_dir, exist_ok=True)
+        path = os.path.join(self._data_dir, "possessions.csv")
         if not rows:
+            # Write header-only CSV so downstream readers don't KeyError on missing file
+            _poss_fields = [
+                "possession_id", "team", "start_frame", "end_frame",
+                "duration_frames", "duration_sec", "shot_attempted", "shot_frame",
+                "pass_count", "screen_count", "drive_count", "cut_count", "drive_attempts",
+            ]
+            with open(path, "w", newline="", encoding="utf-8") as _f:
+                import csv as _csv
+                _csv.DictWriter(_f, fieldnames=_poss_fields).writeheader()
             return
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "possessions.csv")
@@ -3469,11 +3480,15 @@ class UnifiedPipeline:
         print(f"Tracking data → data/tracking_data.csv  (clip_id={self.clip_id})")
 
     def _export_ball_csv(self, rows: List[dict], append: bool = False):
-        if not rows:
-            return
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "ball_tracking.csv")
         fields = ["frame", "timestamp", "ball_x2d", "ball_y2d", "detected", "live", "ball_inferred"]
+        if not rows:
+            # Write header-only CSV so downstream readers don't KeyError on missing file
+            if not (append and os.path.exists(path)):
+                with open(path, "w", newline="", encoding="utf-8") as _f:
+                    csv.DictWriter(_f, fieldnames=fields).writeheader()
+            return
         mode = "a" if append and os.path.exists(path) else "w"
         with open(path, mode, newline="", encoding="utf-8") as f:
             w = csv.DictWriter(f, fieldnames=fields)
