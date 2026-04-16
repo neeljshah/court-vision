@@ -4,12 +4,12 @@
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 36+, 2026-04-15)
+### State (Session 37, 2026-04-16)
 - Branch: `main-sync` | Tests: 960+ pass, 93 skip (excl PG/GPU tests). Phase 8-13 suites all green.
 - Phase: Phase 13.5 done. Ready for 100-game Phase G run.
 - CV games: 41/94 videos tracked. 16 A/B-grade. CV registry: 24 player-game records.
 - Models: 75 .pkl/.json files in data/models/. 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl).
-- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, STL=0.07 (weak — needs opp_to_rate/pace)
+- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, STL=0.09 (retrained with opp_stl_rate)
 - Prediction stack: 73 modules in src/prediction/ (sim_models, possession_simulator, tier4/5, live_models, betting_edge all present)
 - API: 6 endpoints in api/main.py (/simulate, /props, /edge, /win-prob, /lineup, /health) + in-process TTL cache
 - Sync: incremental rsync every 5 min (scripts/watch_and_sync.sh, fixed 2026-04-15)
@@ -18,12 +18,11 @@
 1. **BLOCKER** Phase G dedup-by-hash + per-game crash isolation in scripts/run_phase_g.py (one bad video kills queue)
 2. **BLOCKER** Prop calibration layer (isotonic) in prop_model_stack.py — Kelly sizing unsafe without it
 3. /props endpoint in api/predictions_router.py calls raw predict_props instead of stack_predict
-4. STL R²=0.07 — add opp_to_rate + opp_pace features to player_props.py
-5. Backtest gate endpoint (POST /backtest/{stat}) — no validation before live money
-6. Correlation matrix not populated in betting_portfolio.kelly_corr (assumes zero correlation)
-7. CV fatigue minutes not wired into possession_simulator (uses defaults)
-8. 53 unprocessed videos in data/videos/full_games/ — needs next pod run
-9. CV registry sparsity (24 records) — improves with 100-game OCR volume
+4. Backtest gate endpoint (POST /backtest/{stat}) — no validation before live money
+5. Correlation matrix not populated in betting_portfolio.kelly_corr (needs prop_residuals.json from live predictions)
+6. CV fatigue minutes not wired into possession_simulator (uses defaults)
+7. 53 unprocessed videos in data/videos/full_games/ — needs next pod run
+8. CV registry sparsity (24 records) — improves with 100-game OCR volume
 
 ### Task -> Files Cheatsheet
 | Task | Load only |
