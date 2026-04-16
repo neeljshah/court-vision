@@ -216,9 +216,13 @@ def backtest_props(
                 "avg_pnl":  round(float(np.mean([b["pnl"] for b in bucket])), 2),
             }
 
-    passed = (n_bets >= VALIDATION_MIN_BETS
-              and roi >= VALIDATION_MIN_ROI * 100
-              and avg_edge >= 0.0)
+    # Explicit fail-closed guard: no data → never pass gate
+    if n_predictions == 0 or n_bets == 0:
+        passed = False
+    else:
+        passed = (n_bets >= VALIDATION_MIN_BETS
+                  and roi >= VALIDATION_MIN_ROI * 100
+                  and avg_edge >= 0.0)
 
     result = BacktestResult(
         stat=stat, seasons=seasons, n_predictions=n_pred, n_bets=n_bets,
