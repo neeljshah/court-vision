@@ -1,4 +1,0 @@
-game_id,possession_id,team,start_frame,end_frame,duration_frames,duration_sec,avg_spacing,avg_defensive_pressure,avg_vel_toward_basket,drive_attempts,shot_attempted,shot_frame,fast_break,result,outcome_score
-22400402,173,white,2397,2492,95,3.1666666666666665,,180.8,,0,1,2403.0,0,,
-22400402,422,green,3852,4625,773,25.766666666666666,,200.0,,0,1,3963.0,0,,
-22400402,610,white,5757,5882,126,2.1,,161.8,,0,1,5859.0,0,,

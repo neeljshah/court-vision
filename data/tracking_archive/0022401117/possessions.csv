@@ -1,8 +1,0 @@
-game_id,possession_id,team,start_frame,end_frame,duration_frames,duration_sec,avg_spacing,avg_defensive_pressure,avg_vel_toward_basket,drive_attempts,shot_attempted,shot_frame,fast_break,play_type,result,outcome_score,pass_count,screen_count,drive_count,cut_count,lineup_id,max_paint_touches,avg_off_ball_distance,min_shot_clock_est,dominant_zone,transition_time_sec,offensive_rebound_poss
-0022401117,1660,LAL,19128,19985,858,14.31,,,-4.11,0,1,19416,0,unclassified,,,0,0,0,2,1,4,,9.8,corner_3,,0
-0022401117,5524,LAL,52614,53207,594,9.91,,,0.19,0,1,52854,0,unclassified,,,0,0,0,0,1,0,,14.2,corner_3,,0
-0022401117,5709,LAL,55032,55595,564,9.41,,120.9,-0.22,0,1,55362,0,unclassified,,,0,0,0,1,1,0,,14.7,corner_3,,0
-0022401117,5817,LAL,56238,57149,912,15.22,,,-1.05,0,1,56568,0,unclassified,,,0,0,0,0,1,1,,8.9,corner_3,,0
-0022401117,5956,LAL,57978,62687,4709,78.54,,,-2.58,0,1,61494,0,isolation,,,0,0,0,0,1,0,,12.7,3pt_arc,,0
-0022401117,10319,LAL,273888,274469,582,9.71,,,-2.62,0,0,,0,isolation,,,0,0,0,0,1,0,,14.4,corner_3,,0
-0022401117,11040,LAL,356718,357269,552,9.21,,,-2.5,0,0,,0,isolation,,,0,0,0,3,1,0,,14.9,3pt_arc,,0

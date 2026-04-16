@@ -1,8 +1,0 @@
-game_id,shot_id,frame,timestamp,player_id,team,x_position,y_position,court_zone,defender_distance,team_spacing,possession_id,possession_duration,made
-22400242,1,1278,21.321,3,green,48,524,paint,,7599.0,5,3,
-22400242,3,6675,111.361,9,white,248,245,3pt_arc,,10626.0,894,3,
-22400242,9,7491,124.975,7,white,319,878,paint,,0.0,1077,3,
-22400242,15,8712,145.345,10,white,213,91,mid_range,,0.0,1272,2,
-22400242,17,9918,165.465,2,green,204,139,mid_range,,0.0,1544,3,
-22400242,19,11010,183.684,6,white,209,155,mid_range,,0.0,1655,2,
-22400242,28,12189,203.353,3,green,117,484,mid_range,,0.0,1822,3,

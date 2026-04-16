@@ -1,5 +1,0 @@
-game_id,shot_id,frame,timestamp,player_id,team,x_position,y_position,court_zone,defender_distance,team_spacing,possession_id,possession_duration,made
-22400072,1,5751,95.946,8,white,3139,929,paint,,85719.0,693,3,
-22400072,2,9279,154.805,6,white,177,775,paint,,150383.5,1163,13,
-22400072,4,9846,164.264,4,green,7,872,paint,,0.0,1227,5,
-22400072,5,10455,174.424,8,white,3398,1227,paint,,64064.0,1308,3,

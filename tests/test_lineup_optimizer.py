@@ -191,3 +191,6 @@ class TestLineupOptimizer:
             assert required == set(player_stats.keys()), (
                 f"track_id={tid} missing keys: {required - set(player_stats.keys())}"
             )
+
+
+# ── Task 7: --bulk CLI dry-run ────────────────────────────────────────────────

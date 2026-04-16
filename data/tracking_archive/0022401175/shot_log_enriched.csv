@@ -1,3 +1,0 @@
-game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,x_norm,y_norm,court_zone,defender_distance,defender_dist_norm,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy,dribble_count,ball_shot_arc_angle,catch_and_shoot,shot_distance,second_chance,shot_creation,shots_pbp_coverage
-0022401175,1,210885,7036.53,2,CLE#?,CLE,264,419,0.0776,0.2449,3pt_arc,129.1,0.0379,0.0,124,64,,,0.39288297319743565,,1248.7,0,-83.97918008370861,1,450.3,0,catch_and_shoot,0.0
-0022401175,2,381528,12730.318,7,CLE#?,NYK,166,503,0.0488,0.294,paint,271.7,0.0798,86.4,303,21,,,0.48943031031334916,,926.0,0,-88.40914277752576,1,352.7,0,catch_and_shoot,0.0

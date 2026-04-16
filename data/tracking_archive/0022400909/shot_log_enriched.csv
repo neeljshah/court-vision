@@ -1,6 +1,0 @@
-game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,x_norm,y_norm,court_zone,defender_distance,defender_dist_norm,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy,dribble_count,ball_shot_arc_angle,catch_and_shoot,shot_distance,second_chance,shot_creation,shots_pbp_coverage
-0022400909,1,102,3.403,2,#64,PHX,699,1201,0.2053,0.7019,3pt_arc,636.8,0.1871,0.0,1,5,,,0.5430968693022311,,343.5,0,,1,646.0,0,catch_and_shoot,0.5
-0022400909,2,345,11.511,6,white#?,DEN,692,994,0.2033,0.5809,3pt_arc,293.8,0.0863,0.0,2,70,,,0.0,,305.1,0,85.19146845065521,1,556.3,0,catch_and_shoot,0.5
-0022400909,3,912,30.43,7,white#?,DEN,890,1211,0.2615,0.7078,3pt_arc,593.7,0.1744,0.0,2,79,,,0.0,,3412.9,0,87.27837129488765,1,818.1,1,catch_and_shoot,0.5
-0022400909,4,1158,38.639,2,green#?,PHX,678,1179,0.1992,0.6891,3pt_arc,214.4,0.063,0.0,4,13,,,0.8243451438386898,,916.2,0,-84.10877270643435,1,616.5,0,catch_and_shoot,0.5
-0022400909,5,1458,48.649,8,white#?,DEN,1356,1615,0.3984,0.9439,mid_range,616.7,0.1812,0.0,4,83,1,,0.0,,968.2,0,-84.95647098066195,1,1422.5,1,catch_and_shoot,0.5
