@@ -91,6 +91,14 @@ def _american_to_payout(odds: int) -> float:
     return 100.0 / abs(odds)
 
 
+def check_drawdown_ok(bankroll_start: float, bankroll_now: float) -> bool:
+    """Return False when drawdown from start exceeds MAX_DRAWDOWN_PCT (15%)."""
+    if bankroll_start <= 0:
+        return True
+    drawdown = (bankroll_start - bankroll_now) / bankroll_start
+    return drawdown <= MAX_DRAWDOWN_PCT
+
+
 def kelly_corr(
     edge: float,
     odds: int,
@@ -99,6 +107,7 @@ def kelly_corr(
     existing_exposure: float = 0.0,
     stat: Optional[str] = None,
     open_stats: Optional[List[str]] = None,
+    bankroll_start: Optional[float] = None,
 ) -> float:
     """
     Kelly criterion with correlation adjustment and bankroll guards.
@@ -123,6 +132,10 @@ def kelly_corr(
     Returns:
         Recommended bet size in dollars (0 if Kelly is negative).
     """
+    # Drawdown guard: halt betting when loss exceeds MAX_DRAWDOWN_PCT
+    if bankroll_start is not None and not check_drawdown_ok(bankroll_start, bankroll):
+        return 0.0
+
     # Resolve correlation from matrix if stat info provided
     if stat and open_stats:
         matrix = _load_corr_matrix()
