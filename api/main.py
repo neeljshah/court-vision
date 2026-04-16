@@ -113,6 +113,10 @@ def props(player_id: str, opp_team: str = "GSW", season: str = "2025-26"):
     stack = _stack_predict(player_id, game_context={"away_team": opp_team, "season": season})
     result = {k: round(float(v), 3) for k, v in stack.predictions.items()
               if not (isinstance(v, float) and v != v)}
+    if not result:
+        # player_id may be a name rather than a numeric ID; fall back to predict_props
+        from src.prediction.player_props import predict_props as _pp
+        result = _pp(player_id, opp_team, season=season)
     _cset(key, result)
     return result
 
