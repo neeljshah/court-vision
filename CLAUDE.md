@@ -1,6 +1,6 @@
 ## CourtVision — NBA CV+ML Pipeline
 
-**What:** Possession-by-possession NBA simulator. CV tracking + NBA API + 90 ML models -> 10K Monte Carlo -> +EV edges vs sportsbooks.
+**What:** Possession-by-possession NBA simulator. CV tracking + NBA API + 75 trained models -> 10K Monte Carlo -> +EV edges vs sportsbooks.
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
@@ -48,7 +48,7 @@ src/features/feature_engineering.py # 60+ features
 src/prediction/win_probability.py   # XGBoost win prob
 src/prediction/player_props.py      # 7 prop models
 src/prediction/betting_portfolio.py # Kelly + CLV
-api/main.py                         # FastAPI (10 endpoints)
+api/main.py                         # FastAPI (9 endpoints, 5 routers)
 scripts/batch_season.py             # Batch runner
 scripts/select_season_games.py      # Game selector
 database/schema.sql                 # PostgreSQL
@@ -65,8 +65,8 @@ database/schema.sql                 # PostgreSQL
 - No permission prompts — execute autonomously
 - Tests: `python -m pytest tests/ -q`
 - Full plan: `.planning/ROADMAP.md`
-- Full history: `SYSTEM_OPTIMIZED.md` + `vault/Sessions/`
-- Game data ref: see `SYSTEM_OPTIMIZED.md` (CLEAN/PARTIAL/BLOCKED list)
+- Full history: `vault/Sessions/`
+- Game data ref: see `vault/Pipeline/` (CLEAN/PARTIAL/BLOCKED list)
 - `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be 3000 (not 100). Flushing `torch.cuda.empty_cache()` every 100 frames forces GPU syncs that stall CPU stages → 10x slowdown.
 
 ### RunPod single-4090 runbook (READ BEFORE LAUNCHING)
