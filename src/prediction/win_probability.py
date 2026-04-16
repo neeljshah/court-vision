@@ -961,6 +961,26 @@ def _fetch_team_stats(season: str) -> dict:
             "reb_pct":  float(row.get("REB_PCT", 0.5)),
             "win_pct":  float(row.get("W_PCT", 0.5)),
         }
+
+    # Second pass: Base stats for STL → stl_per_poss = stl_pg / pace
+    # stl_per_poss is needed by player_props._get_opp_stl_rate(); without it
+    # that function always returns the league-avg constant 0.08 (no variance).
+    try:
+        time.sleep(0.8)
+        base_df = leaguedashteamstats.LeagueDashTeamStats(
+            season=season,
+            season_type_all_star="Regular Season",
+            measure_type_detailed_defense="Base",
+        ).get_data_frames()[0]
+        for _, row in base_df.iterrows():
+            tid = int(row["TEAM_ID"])
+            if tid in stats:
+                stl_pg = float(row.get("STL", 7.5))
+                pace   = stats[tid]["pace"]
+                stats[tid]["stl_per_poss"] = round(stl_pg / max(pace, 1.0), 4)
+    except Exception as _e:
+        print(f"  [warn] team base stats {season}: {_e} — stl_per_poss will use fallback")
+
     with open(cache_path, "w") as f:
         json.dump({str(k): v for k, v in stats.items()}, f)
     print(f"  Cached team stats for {len(stats)} teams ({season})")

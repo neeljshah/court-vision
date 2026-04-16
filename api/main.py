@@ -10,13 +10,31 @@ from api.analytics_router import router as analytics_router
 from api.predictions_router import router as predictions_ext_router
 from api.stitch_router import router as stitch_router
 from api.dashboard_router import router as dashboard_router
+import os as _os
+from pathlib import Path as _Path
+
 from src.prediction.possession_simulator import PossessionSimulator
 from src.prediction.prop_model_stack import stack_predict as _stack_predict
 from src.prediction.betting_edge import BettingEdge
 from src.prediction.win_probability import load as _load_win_prob
 
 app = FastAPI(title="NBA AI System — Project Court Vision", version="2.0.0")
-_simulator = PossessionSimulator()
+
+
+def _find_latest_tracking_csv() -> "Optional[str]":
+    """Return most recently modified tracking_data.csv for CV fatigue minutes."""
+    tracking_dir = _Path(__file__).resolve().parent.parent / "data" / "tracking"
+    if not tracking_dir.exists():
+        return None
+    csvs = sorted(
+        tracking_dir.rglob("tracking_data.csv"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    return str(csvs[0]) if csvs else None
+
+
+_simulator = PossessionSimulator(cv_minutes_csv=_find_latest_tracking_csv())
 _betting_edge = BettingEdge()
 
 # ── In-process TTL cache (TTL=300s) ──────────────────────────────────────────
