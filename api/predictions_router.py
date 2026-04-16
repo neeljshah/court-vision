@@ -292,6 +292,7 @@ def props_by_id(player_id: int, season: str = "2025-26", opp_team: str = ""):
     try:
         from src.prediction.prop_model_stack import stack_predict
         from src.prediction.dnp_predictor import predict_dnp
+        from src.prediction.injury_risk import get_injury_risk
 
         # Build game_context so all micro-model signals (CV, matchup, etc.) flow in
         game_context = {
@@ -304,15 +305,24 @@ def props_by_id(player_id: int, season: str = "2025-26", opp_team: str = ""):
         dnp_raw = predict_dnp(player_name, season=season)
         dnp_prob = float(dnp_raw) if not isinstance(dnp_raw, dict) else float(dnp_raw.get("dnp_prob", 0.0))
 
+        injury_risk = 0.0
+        try:
+            injury_raw = get_injury_risk(player_name, season=season)
+            injury_risk = float(injury_raw.get("risk_score", 0.0)) if isinstance(injury_raw, dict) else 0.0
+        except Exception:
+            injury_risk = 0.0
+
         return {
             "player_id":    player_id,
             "player_name":  player_name,
             "props":        {k: round(float(v), 3) for k, v in stack.predictions.items()},
             "dnp_prob":     round(dnp_prob, 4),
+            "injury_risk":  round(injury_risk, 4),
             "suppressed":   stack.suppressed,
             "suppression_reason": stack.suppression_reason,
             "confidence":   stack.confidence,
-            "edges":        stack.edges,
+            "edges":        {k: (None if isinstance(v, float) and v != v else v)
+                             for k, v in stack.edges.items()},
         }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
