@@ -44,8 +44,8 @@ Full technical architecture — how data flows from raw inputs through the CV pi
                                │
                                ▼
          ┌────────────────────────────────────────┐
-         │  ML MODEL STACK (73 modules, 75 trained)│
-         │  src/prediction/                       │
+         │  ML MODEL STACK (73 .py modules, 75 trained)│
+         │  src/prediction/                         │
          │                                        │
          │  Tier 1  Win prob, props (7 stats) ✅  │
          │  Tier 2  xFG, shot zones, clutch   ✅  │

@@ -141,6 +141,28 @@ See `CLAUDE.md` → RunPod section for full runbook (CFS quota, decord, OMP caps
 
 ---
 
+## Documentation
+
+| Doc | Description |
+|-----|-------------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Full system diagram, data flow, component map |
+| [`docs/API.md`](docs/API.md) | All endpoints, request/response schemas, curl examples |
+| [`docs/ML_MODELS.md`](docs/ML_MODELS.md) | 75 trained models — tiers, R² scores, file locations |
+| [`docs/tracking_pipeline.md`](docs/tracking_pipeline.md) | CV pipeline — per-frame loop, decord GPU path, perf |
+| [`docs/PRODUCTION_RUNBOOK.md`](docs/PRODUCTION_RUNBOOK.md) | RunPod deployment, health checks, data sync |
+
+---
+
+## Tests
+
+```bash
+python -m pytest tests/ -q
+# expect: 960+ passed, ~93 skipped (GPU/RunPod tests skip without CUDA)
+# 0 failures allowed
+```
+
+---
+
 ## License
 
 All rights reserved. No reuse, redistribution, or commercial use without explicit written permission.
