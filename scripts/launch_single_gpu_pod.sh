@@ -18,7 +18,7 @@ PROJ="/workspace/nba-ai-system"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
-log "Launching Phase G on ${IP}:${PORT} (--parallel 4, --frames ${FRAMES})"
+log "Launching Phase G on ${IP}:${PORT} (--parallel 4, --frames ${FRAMES}, OMP=6)"
 
 # ── Pre-flight: VRAM flush ────────────────────────────────────────────
 FLUSH=$($SSH "grep -oE '_VRAM_FLUSH_INTERVAL = [0-9]+' ${PROJ}/src/pipeline/unified_pipeline.py | head -1")
@@ -41,17 +41,19 @@ log "Starting phase_g --parallel 4 --frames ${FRAMES}..."
 $SSH "cd ${PROJ} && rm -f phase_g_batch.log && \
     MALLOC_ARENA_MAX=2 \
     MALLOC_MMAP_THRESHOLD_=65536 \
-    OMP_NUM_THREADS=4 \
-    MKL_NUM_THREADS=4 \
-    OPENBLAS_NUM_THREADS=4 \
-    NUMEXPR_NUM_THREADS=4 \
+    OMP_NUM_THREADS=6 \
+    MKL_NUM_THREADS=6 \
+    OPENBLAS_NUM_THREADS=6 \
+    NUMEXPR_NUM_THREADS=6 \
     CUDA_VISIBLE_DEVICES=0 \
     COURTV_NO_LOFTR=1 \
     PHASE_G_VIDEO_DIR=/root/nba_videos \
+    SYNC_TARGET="root@${IP}:/workspace/nba-ai-system/data/tracking/" \
     nohup python3 scripts/run_phase_g.py --frames ${FRAMES} --parallel 4 \
     > phase_g_batch.log 2>&1 & disown"
 
 sleep 5
-$SSH "pgrep -af run_phase_g.py | grep -v pgrep | head -1 && echo 'Launched OK' || echo 'WARN: no process found'"
+COUNT=$($SSH "pgrep -af run_phase_g.py | grep -v pgrep | wc -l" 2>/dev/null || echo 0)
+[ "$COUNT" -ge 1 ] && echo "Launched OK ($COUNT process)" || echo "ERROR: no process"
 
 log "Monitor: ssh -p ${PORT} root@${IP} 'tail -f ${PROJ}/phase_g_batch.log'"

@@ -1,1 +1,0 @@
-game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,x_norm,y_norm,court_zone,defender_distance,defender_dist_norm,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy,dribble_count,ball_shot_arc_angle,catch_and_shoot,shot_distance,second_chance,shot_creation

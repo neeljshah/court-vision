@@ -63,7 +63,7 @@ data/predictions/
 data/edges/
 data/model_reports/
 data/ball_yolo/
-data/tracking_archive/*/features.csv
+data/tracking_archive/
 
 # -- Generated CV / Tracking data ---------------------------------------------
 data/tracking/
@@ -140,6 +140,7 @@ missing_tmp_local.txt
 pod_videos_tmp.txt
 upload_batch1.txt
 upload_batch2.txt
+.pod_transfer_*.txt
 
 # -- Internal / experimental scaffolding --------------------------------------
 scripts/vault_reorganize.py

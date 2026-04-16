@@ -1,3 +1,0 @@
-shot_id,frame,timestamp,player_id,player_name,team,team_abbrev,x_norm,y_norm,ft_x,ft_y,dist_to_basket_ft,nearest_opponent
-1,13320,222.222,4,green#?,green,LAL,0.877,0.2042,82.43,10.21,16.08,792.9
-2,20652,344.544,4,green#?,green,LAL,0.1266,0.6444,11.9,32.22,9.81,425.0
