@@ -1,0 +1,1372 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (2:00 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "53-60",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 14,
+    "event_type": 2,
+    "event_desc": "MISS Queta 2' Cutting Dunk Shot",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 15,
+    "event_type": 4,
+    "event_desc": "Towns REBOUND (Off:0 Def:6)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 38,
+    "event_type": 2,
+    "event_desc": "MISS Hart 15' Driving Floating Jump Shot",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 39,
+    "event_type": 4,
+    "event_desc": "Scheierman REBOUND (Off:1 Def:9)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 55,
+    "event_type": 1,
+    "event_desc": "Queta 1' Alley Oop Dunk (4 PTS) (Brown 3 AST)",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "55-60",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 80,
+    "event_type": 1,
+    "event_desc": "Hart 25' 3PT Pullup Jump Shot (12 PTS)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "55-63",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 103,
+    "event_type": 2,
+    "event_desc": "MISS Garza 3PT Jump Shot",
+    "player_name": "Garza",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 104,
+    "event_type": 4,
+    "event_desc": "Towns REBOUND (Off:0 Def:7)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 115,
+    "event_type": 2,
+    "event_desc": "MISS Bridges 14' Jump Shot",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 116,
+    "event_type": 4,
+    "event_desc": "Queta REBOUND (Off:3 Def:2)",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 133,
+    "event_type": 6,
+    "event_desc": "Shamet S.FOUL (P2.T1) (B.Schwab)",
+    "player_name": "Shamet",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 133,
+    "event_type": 3,
+    "event_desc": "Brown Free Throw 1 of 2 (14 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "56-63",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 133,
+    "event_type": 3,
+    "event_desc": "Brown Free Throw 2 of 2 (15 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "57-63",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 142,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 27' 3PT Pullup Jump Shot",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 143,
+    "event_type": 4,
+    "event_desc": "Scheierman REBOUND (Off:1 Def:10)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 153,
+    "event_type": 1,
+    "event_desc": "Brown 6' Driving Hook Shot (17 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "59-63",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 163,
+    "event_type": 6,
+    "event_desc": "Queta S.FOUL (P3.T1) (B.Schwab)",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 163,
+    "event_type": 3,
+    "event_desc": "Hart Free Throw 1 of 2 (13 PTS)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "59-64",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 163,
+    "event_type": 3,
+    "event_desc": "Hart Free Throw 2 of 2 (14 PTS)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "59-65",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 180,
+    "event_type": 6,
+    "event_desc": "Brunson P.FOUL (P1.T2) (R.Acosta)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 192,
+    "event_type": 1,
+    "event_desc": "Brown 16' Turnaround Fadeaway (19 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "61-65",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 213,
+    "event_type": 2,
+    "event_desc": "MISS Shamet 29' 3PT Jump Shot",
+    "player_name": "Shamet",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 217,
+    "event_type": 4,
+    "event_desc": "Brunson REBOUND (Off:1 Def:1)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 221,
+    "event_type": 2,
+    "event_desc": "MISS Bridges 26' 3PT Jump Shot",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 223,
+    "event_type": 4,
+    "event_desc": "CELTICS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 223,
+    "event_type": 6,
+    "event_desc": "Hart L.B.FOUL (P4.T3) (B.Schwab)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 234,
+    "event_type": 2,
+    "event_desc": "MISS Brown 25' 3PT Pullup Jump Shot",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 236,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:1)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 236,
+    "event_type": 8,
+    "event_desc": "SUB: Robinson FOR Hart",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 236,
+    "event_type": 0,
+    "event_desc": "Knicks Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 236,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (2:08 PM EST)",
+    "player_name": "Ehlo",
+    "team_abbrev": "",
+    "score": "61-65",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 248,
+    "event_type": 2,
+    "event_desc": "MISS Towns 27' 3PT Jump Shot",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 250,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:2)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 250,
+    "event_type": 6,
+    "event_desc": "Brown P.FOUL (P3.T2) (B.Schwab)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 256,
+    "event_type": 6,
+    "event_desc": "Queta P.FOUL (P4.T3) (B.Schwab)",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 256,
+    "event_type": 8,
+    "event_desc": "SUB: Vucevic FOR Queta",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 259,
+    "event_type": 6,
+    "event_desc": "Garza S.FOUL (P3.T4) (B.Schwab)",
+    "player_name": "Garza",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 259,
+    "event_type": 3,
+    "event_desc": "Towns Free Throw 1 of 2 (7 PTS)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "61-66",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 259,
+    "event_type": 3,
+    "event_desc": "Towns Free Throw 2 of 2 (8 PTS)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "61-67",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 275,
+    "event_type": 2,
+    "event_desc": "MISS Brown 24' 3PT Step Back Jump Shot",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 276,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:3)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 282,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 25' 3PT Running Pull-Up Jump Shot",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 285,
+    "event_type": 4,
+    "event_desc": "Garza REBOUND (Off:0 Def:1)",
+    "player_name": "Garza",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 293,
+    "event_type": 2,
+    "event_desc": "MISS White 25' 3PT Pullup Jump Shot",
+    "player_name": "White",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 294,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:4)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 306,
+    "event_type": 1,
+    "event_desc": "Shamet 26' 3PT Jump Shot (3 PTS) (Towns 1 AST)",
+    "player_name": "Shamet",
+    "team_abbrev": "NYK",
+    "score": "61-70",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 0,
+    "event_desc": "CELTICS Timeout: Regular (Full 4 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 8,
+    "event_desc": "SUB: Pritchard FOR White",
+    "player_name": "White",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 8,
+    "event_desc": "SUB: Gonzalez FOR Scheierman",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 8,
+    "event_desc": "SUB: Harper Jr. FOR Garza",
+    "player_name": "Garza",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 8,
+    "event_desc": "SUB: Hart FOR Robinson",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 318,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 28' 3PT Jump Shot",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 4,
+    "event_desc": "Shamet REBOUND (Off:0 Def:3)",
+    "player_name": "Shamet",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 338,
+    "event_type": 2,
+    "event_desc": "MISS Bridges 18' Fadeaway Jumper",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 339,
+    "event_type": 4,
+    "event_desc": "Gonzalez REBOUND (Off:0 Def:1)",
+    "player_name": "Gonz\u00e1lez",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 347,
+    "event_type": 1,
+    "event_desc": "Brown 2' Driving Floating Jump Shot (21 PTS) (Pritchard 6 AST)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "63-70",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 363,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 4' Driving Layup",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 365,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:0 Def:2)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 373,
+    "event_type": 1,
+    "event_desc": "Brown 4' Driving Layup (23 PTS) (Pritchard 7 AST)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "65-70",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 390,
+    "event_type": 1,
+    "event_desc": "Hart 17' Pullup Jump Shot (16 PTS)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "65-72",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 411,
+    "event_type": 2,
+    "event_desc": "MISS Brown 17' Pullup Jump Shot",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 4,
+    "event_desc": "Pritchard REBOUND (Off:2 Def:0)",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 421,
+    "event_type": 2,
+    "event_desc": "MISS Pritchard 13' Pullup Jump Shot",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 422,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:2)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 435,
+    "event_type": 2,
+    "event_desc": "MISS Towns 4' Driving Floating Jump Shot",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 436,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:0 Def:3)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 447,
+    "event_type": 2,
+    "event_desc": "MISS Harper Jr. 24' 3PT Jump Shot",
+    "player_name": "Harper Jr.",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 448,
+    "event_type": 4,
+    "event_desc": "Towns REBOUND (Off:0 Def:8)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 7' Driving Floating Jump Shot",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 0,
+    "event_desc": "Harper Jr. BLOCK (1 BLK)",
+    "player_name": "Harper Jr.",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 8,
+    "event_desc": "SUB: Diawara FOR Bridges",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 8,
+    "event_desc": "SUB: Clarkson FOR Shamet",
+    "player_name": "Shamet",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 459,
+    "event_type": 1,
+    "event_desc": "Hart 3PT Jump Shot (19 PTS) (Brunson 7 AST)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "65-75",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 478,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 8' Turnaround Bank Hook Shot",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 479,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:3)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 2,
+    "event_desc": "MISS Hart 27' 3PT Running Pull-Up Jump Shot",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 486,
+    "event_type": 4,
+    "event_desc": "Clarkson REBOUND (Off:2 Def:0)",
+    "player_name": "Clarkson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 493,
+    "event_type": 6,
+    "event_desc": "Vucevic S.FOUL (P4.PN) (B.Schwab)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 493,
+    "event_type": 3,
+    "event_desc": "MISS Towns Free Throw 1 of 2",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 493,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 493,
+    "event_type": 8,
+    "event_desc": "SUB: Walsh FOR Gonzalez",
+    "player_name": "Gonz\u00e1lez",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 493,
+    "event_type": 3,
+    "event_desc": "Towns Free Throw 2 of 2 (9 PTS)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "65-76",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 511,
+    "event_type": 2,
+    "event_desc": "MISS Harper Jr. 3PT Jump Shot",
+    "player_name": "Harper Jr.",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 513,
+    "event_type": 4,
+    "event_desc": "Brunson REBOUND (Off:1 Def:2)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 528,
+    "event_type": 5,
+    "event_desc": "Towns Lost Ball Turnover (P1.T6)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 528,
+    "event_type": 0,
+    "event_desc": "Walsh STEAL (1 STL)",
+    "player_name": "Walsh",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 532,
+    "event_type": 2,
+    "event_desc": "MISS Brown 3' Running Layup",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 533,
+    "event_type": 4,
+    "event_desc": "Walsh REBOUND (Off:1 Def:2)",
+    "player_name": "Walsh",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 533,
+    "event_type": 2,
+    "event_desc": "MISS Walsh 3' Tip Layup Shot",
+    "player_name": "Walsh",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 534,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:4)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 537,
+    "event_type": 6,
+    "event_desc": "Towns Offensive Charge Foul (P2) (R.Acosta)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 537,
+    "event_type": 5,
+    "event_desc": "Towns Offensive Foul Turnover (P2.T7)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 2,
+    "event_desc": "MISS Pritchard 26' 3PT Pullup Jump Shot",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 549,
+    "event_type": 4,
+    "event_desc": "Towns REBOUND (Off:0 Def:9)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 562,
+    "event_type": 2,
+    "event_desc": "MISS Towns 9' Driving Layup",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 562,
+    "event_type": 0,
+    "event_desc": "Brown BLOCK (1 BLK)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 563,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 567,
+    "event_type": 1,
+    "event_desc": "Towns 5' Driving Layup (11 PTS) (Brunson 8 AST)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "65-78",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 1,
+    "event_desc": "Brown 4' Driving Layup (25 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "67-78",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 6,
+    "event_desc": "Towns S.FOUL (P3.T4) (B.Schwab)",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 8,
+    "event_desc": "SUB: Robinson FOR Clarkson",
+    "player_name": "Clarkson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 8,
+    "event_desc": "SUB: Queta FOR Walsh",
+    "player_name": "Walsh",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 8,
+    "event_desc": "SUB: Alvarado FOR Towns",
+    "player_name": "Towns",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 3,
+    "event_desc": "Brown Free Throw 1 of 1 (26 PTS)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "68-78",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 578,
+    "event_type": 6,
+    "event_desc": "Harper Jr. Personal Take Foul (P2.PN) (C.Blair)",
+    "player_name": "Harper Jr.",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 578,
+    "event_type": 3,
+    "event_desc": "Robinson Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "68-79",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 578,
+    "event_type": 3,
+    "event_desc": "Robinson Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "68-80",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 590,
+    "event_type": 2,
+    "event_desc": "MISS Brown 6' Pullup Jump Shot",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 591,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:5)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 601,
+    "event_type": 1,
+    "event_desc": "Brunson 12' Turnaround Jump Shot (21 PTS)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "68-82",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 619,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 26' 3PT Jump Shot",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 620,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:5)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 638,
+    "event_type": 2,
+    "event_desc": "MISS Hart 14' Step Back Jump Shot",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 6,
+    "event_desc": "Queta L.B.FOUL (P5.PN) (B.Schwab)",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 3,
+    "event_desc": "MISS Robinson Free Throw 1 of 2",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 8,
+    "event_desc": "SUB: White FOR Queta",
+    "player_name": "Queta",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 639,
+    "event_type": 3,
+    "event_desc": "Robinson Free Throw 2 of 2 (5 PTS)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "68-83",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 660,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 5' Driving Hook Shot",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 662,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:6)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 673,
+    "event_type": 1,
+    "event_desc": "Alvarado 9' Driving Floating Jump Shot (5 PTS)",
+    "player_name": "Alvarado",
+    "team_abbrev": "NYK",
+    "score": "68-85",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 687,
+    "event_type": 0,
+    "event_desc": "Jump Ball Brown vs. Diawara: Tip to Pritchard",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 690,
+    "event_type": 2,
+    "event_desc": "MISS Pritchard 25' 3PT Step Back Jump Shot",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 692,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:1 Def:3)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 694,
+    "event_type": 5,
+    "event_desc": "Vucevic Bad Pass Turnover (P2.T6)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 694,
+    "event_type": 0,
+    "event_desc": "Alvarado STEAL (1 STL)",
+    "player_name": "Alvarado",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 699,
+    "event_type": 2,
+    "event_desc": "MISS Hart 6' Running Layup",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 700,
+    "event_type": 4,
+    "event_desc": "Brown REBOUND (Off:0 Def:1)",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 717,
+    "event_type": 2,
+    "event_desc": "MISS Brown 14' Turnaround Jump Shot",
+    "player_name": "Brown",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 717,
+    "event_type": 0,
+    "event_desc": "Alvarado BLOCK (1 BLK)",
+    "player_name": "Alvarado",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 718,
+    "event_type": 4,
+    "event_desc": "Diawara REBOUND (Off:0 Def:2)",
+    "player_name": "Diawara",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 0,
+    "event_desc": "KNICKS Heave",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 4,
+    "event_desc": "Knicks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (2:32 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "68-85",
+    "score_margin": "-17"
+  }
+]

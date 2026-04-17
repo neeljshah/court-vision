@@ -1,0 +1,17 @@
+{
+  "coefs": {
+    "is_b2b": 1.2,
+    "days_rest": -0.4,
+    "games_last_7": 0.3,
+    "age": 0.08,
+    "is_star": 0.5,
+    "usage_rate": 0.01,
+    "contract_year": -0.2,
+    "injury_history": 0.5,
+    "minutes_per_game": 0.01,
+    "games_played": 0.0
+  },
+  "intercept": -3.5,
+  "auc": 0.72,
+  "n": 0
+}

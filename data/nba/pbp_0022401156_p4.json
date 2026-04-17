@@ -1,0 +1,1062 @@
+[
+  {
+    "period": 4,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 4th Period (8:46 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "80-61",
+    "score_margin": "19"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 14,
+    "event_type": 2,
+    "event_desc": "MISS Anthony 27' 3PT Jump Shot",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 18,
+    "event_type": 4,
+    "event_desc": "Pritchard REBOUND (Off:0 Def:3)",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 32,
+    "event_type": 2,
+    "event_desc": "MISS Kornet 1' Alley Oop Dunk",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 34,
+    "event_type": 4,
+    "event_desc": "Kornet REBOUND (Off:1 Def:2)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 36,
+    "event_type": 1,
+    "event_desc": "Kornet Putback Layup (10 PTS)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "80-63",
+    "score_margin": "17"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 44,
+    "event_type": 2,
+    "event_desc": "MISS Wagner 4' Driving Floating Jump Shot",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 46,
+    "event_type": 4,
+    "event_desc": "Craig REBOUND (Off:0 Def:7)",
+    "player_name": "Craig",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 49,
+    "event_type": 6,
+    "event_desc": "Kornet OFF.Foul (P1) (J.Williams)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 49,
+    "event_type": 5,
+    "event_desc": "Kornet Offensive Foul Turnover (P1.T15)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 61,
+    "event_type": 1,
+    "event_desc": "Wagner 8' Driving Floating Jump Shot (21 PTS) (Bitadze 2 AST)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "82-63",
+    "score_margin": "19"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 85,
+    "event_type": 1,
+    "event_desc": "Kornet 12' Turnaround Jump Shot (12 PTS)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "82-65",
+    "score_margin": "17"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 101,
+    "event_type": 1,
+    "event_desc": "Anthony 9' Pullup Jump Shot (18 PTS)",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "84-65",
+    "score_margin": "19"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 113,
+    "event_type": 2,
+    "event_desc": "MISS Hauser 19' Pullup Jump Shot",
+    "player_name": "Hauser",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 120,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:2 Def:3)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 133,
+    "event_type": 6,
+    "event_desc": "Kornet S.FOUL (P2.T1) (J.Williams)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 133,
+    "event_type": 3,
+    "event_desc": "Wagner Free Throw 1 of 2 (22 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "85-65",
+    "score_margin": "20"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 133,
+    "event_type": 3,
+    "event_desc": "Wagner Free Throw 2 of 2 (23 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "86-65",
+    "score_margin": "21"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 145,
+    "event_type": 2,
+    "event_desc": "MISS Hauser 26' 3PT Pullup Jump Shot",
+    "player_name": "Hauser",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 149,
+    "event_type": 4,
+    "event_desc": "Wagner REBOUND (Off:1 Def:7)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 155,
+    "event_type": 2,
+    "event_desc": "MISS Black 3' Running Layup",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 156,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:3 Def:3)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 157,
+    "event_type": 1,
+    "event_desc": "Bitadze Tip Dunk Shot (6 PTS)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "88-65",
+    "score_margin": "23"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 174,
+    "event_type": 2,
+    "event_desc": "MISS Craig 25' 3PT Pullup Jump Shot",
+    "player_name": "Craig",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 174,
+    "event_type": 4,
+    "event_desc": "Anthony REBOUND (Off:1 Def:6)",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 194,
+    "event_type": 2,
+    "event_desc": "MISS Wagner 26' 3PT Step Back Jump Shot",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 194,
+    "event_type": 4,
+    "event_desc": "Norris REBOUND (Off:0 Def:1)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 208,
+    "event_type": 1,
+    "event_desc": "Kornet 15' Jump Shot (14 PTS) (Pritchard 10 AST)",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "88-67",
+    "score_margin": "21"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 225,
+    "event_type": 2,
+    "event_desc": "MISS Black 3PT Jump Shot",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 228,
+    "event_type": 4,
+    "event_desc": "Pritchard REBOUND (Off:0 Def:4)",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 231,
+    "event_type": 2,
+    "event_desc": "MISS Norris 29' 3PT Running Jump Shot",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 236,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:0 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 251,
+    "event_type": 2,
+    "event_desc": "MISS Anthony 18' Pullup Jump Shot",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 255,
+    "event_type": 4,
+    "event_desc": "Hauser REBOUND (Off:0 Def:3)",
+    "player_name": "Hauser",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 263,
+    "event_type": 2,
+    "event_desc": "MISS Pritchard 28' 3PT Jump Shot",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 267,
+    "event_type": 4,
+    "event_desc": "Black REBOUND (Off:1 Def:2)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 275,
+    "event_type": 2,
+    "event_desc": "MISS da Silva 3PT Jump Shot",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 4,
+    "event_desc": "Celtics Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 6,
+    "event_desc": "Bitadze L.B.FOUL (P3.T1) (J.Williams)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 0,
+    "event_desc": "Celtics Timeout: Regular (Reg.4 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 0,
+    "event_desc": "Instant Replay4th Period (8:52 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "88-67",
+    "score_margin": "21"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 8,
+    "event_desc": "SUB: Houstan FOR Wagner",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 8,
+    "event_desc": "SUB: Tillman FOR Pritchard",
+    "player_name": "Pritchard",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 8,
+    "event_desc": "SUB: Davison FOR Craig",
+    "player_name": "Craig",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 8,
+    "event_desc": "SUB: Scheierman FOR Kornet",
+    "player_name": "Kornet",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 277,
+    "event_type": 8,
+    "event_desc": "SUB: Peterson FOR Hauser",
+    "player_name": "Hauser",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 287,
+    "event_type": 2,
+    "event_desc": "MISS Scheierman 25' 3PT Jump Shot",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 290,
+    "event_type": 4,
+    "event_desc": "Anthony REBOUND (Off:1 Def:7)",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 300,
+    "event_type": 2,
+    "event_desc": "MISS Bitadze 3PT Jump Shot",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 300,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:1 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 301,
+    "event_type": 2,
+    "event_desc": "MISS da Silva Tip Layup Shot",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 303,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:2 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 308,
+    "event_type": 2,
+    "event_desc": "MISS Bitadze 14' Hook Shot",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 310,
+    "event_type": 4,
+    "event_desc": "Peterson REBOUND (Off:1 Def:1)",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 326,
+    "event_type": 2,
+    "event_desc": "MISS Scheierman 31' 3PT Jump Shot",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 332,
+    "event_type": 4,
+    "event_desc": "Black REBOUND (Off:1 Def:3)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 352,
+    "event_type": 2,
+    "event_desc": "MISS Black 27' 3PT Jump Shot",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 356,
+    "event_type": 4,
+    "event_desc": "Peterson REBOUND (Off:1 Def:2)",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 364,
+    "event_type": 2,
+    "event_desc": "MISS Scheierman 8' Driving Floating Jump Shot",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 368,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:3 Def:4)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 378,
+    "event_type": 5,
+    "event_desc": "Black Bad Pass Turnover (P1.T9)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 378,
+    "event_type": 0,
+    "event_desc": "Norris STEAL (1 STL)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 385,
+    "event_type": 5,
+    "event_desc": "Scheierman Out of Bounds Lost Ball Turnover (P2.T16)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 385,
+    "event_type": 8,
+    "event_desc": "SUB: Queen FOR Bitadze",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 385,
+    "event_type": 8,
+    "event_desc": "SUB: Howard FOR Anthony",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 404,
+    "event_type": 2,
+    "event_desc": "MISS da Silva 3PT Jump Shot",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 408,
+    "event_type": 4,
+    "event_desc": "Scheierman REBOUND (Off:0 Def:5)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 422,
+    "event_type": 2,
+    "event_desc": "MISS Norris 7' Cutting Layup Shot",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 422,
+    "event_type": 0,
+    "event_desc": "Houstan BLOCK (2 BLK)",
+    "player_name": "Houstan",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 422,
+    "event_type": 4,
+    "event_desc": "Celtics Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 430,
+    "event_type": 2,
+    "event_desc": "MISS Davison 30' 3PT Pullup Jump Shot",
+    "player_name": "Davison",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 434,
+    "event_type": 4,
+    "event_desc": "Queen REBOUND (Off:0 Def:1)",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 437,
+    "event_type": 6,
+    "event_desc": "Tillman S.FOUL (P1.T2) (M.Kogut)",
+    "player_name": "Tillman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 437,
+    "event_type": 3,
+    "event_desc": "MISS Queen Free Throw 1 of 2",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 437,
+    "event_type": 4,
+    "event_desc": "MAGIC Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 437,
+    "event_type": 3,
+    "event_desc": "Queen Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "89-67",
+    "score_margin": "22"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 462,
+    "event_type": 1,
+    "event_desc": "Scheierman 3' Driving Finger Roll Layup (13 PTS)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "89-69",
+    "score_margin": "20"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 478,
+    "event_type": 2,
+    "event_desc": "MISS da Silva 4' Driving Layup",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 481,
+    "event_type": 4,
+    "event_desc": "Davison REBOUND (Off:1 Def:3)",
+    "player_name": "Davison",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 491,
+    "event_type": 1,
+    "event_desc": "Norris 26' 3PT Jump Shot (6 PTS) (Scheierman 3 AST)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "89-72",
+    "score_margin": "17"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 511,
+    "event_type": 1,
+    "event_desc": "da Silva 6' Cutting Layup Shot (2 PTS) (Howard 1 AST)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "91-72",
+    "score_margin": "19"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 524,
+    "event_type": 1,
+    "event_desc": "Scheierman 2' Driving Layup (15 PTS)",
+    "player_name": "Scheierman",
+    "team_abbrev": "BOS",
+    "score": "91-74",
+    "score_margin": "17"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 543,
+    "event_type": 1,
+    "event_desc": "da Silva 27' 3PT Pullup Jump Shot (5 PTS)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "94-74",
+    "score_margin": "20"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 554,
+    "event_type": 2,
+    "event_desc": "MISS Peterson 25' 3PT Step Back Jump Shot",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 556,
+    "event_type": 4,
+    "event_desc": "Norris REBOUND (Off:1 Def:1)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 567,
+    "event_type": 2,
+    "event_desc": "MISS Davison 26' 3PT Jump Shot",
+    "player_name": "Davison",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 570,
+    "event_type": 4,
+    "event_desc": "Norris REBOUND (Off:2 Def:1)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 570,
+    "event_type": 2,
+    "event_desc": "MISS Norris Tip Layup Shot",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 571,
+    "event_type": 4,
+    "event_desc": "Black REBOUND (Off:1 Def:4)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 588,
+    "event_type": 1,
+    "event_desc": "Houstan 7' Turnaround Fadeaway (5 PTS) (da Silva 1 AST)",
+    "player_name": "Houstan",
+    "team_abbrev": "ORL",
+    "score": "96-74",
+    "score_margin": "22"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 611,
+    "event_type": 1,
+    "event_desc": "Tillman 2' Turnaround Hook Shot (2 PTS)",
+    "player_name": "Tillman",
+    "team_abbrev": "BOS",
+    "score": "96-76",
+    "score_margin": "20"
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 622,
+    "event_type": 5,
+    "event_desc": "Black Bad Pass Turnover (P2.T10)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 622,
+    "event_type": 0,
+    "event_desc": "Norris STEAL (2 STL)",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 626,
+    "event_type": 2,
+    "event_desc": "MISS Peterson 25' 3PT Running Jump Shot",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 631,
+    "event_type": 4,
+    "event_desc": "Howard REBOUND (Off:0 Def:1)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 651,
+    "event_type": 2,
+    "event_desc": "MISS Queen 26' 3PT Pullup Jump Shot",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 656,
+    "event_type": 4,
+    "event_desc": "Peterson REBOUND (Off:1 Def:3)",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 668,
+    "event_type": 2,
+    "event_desc": "MISS Norris 26' 3PT Jump Shot",
+    "player_name": "Norris",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 673,
+    "event_type": 4,
+    "event_desc": "Queen REBOUND (Off:0 Def:2)",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 681,
+    "event_type": 2,
+    "event_desc": "MISS Queen 27' 3PT Pullup Jump Shot",
+    "player_name": "Queen",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 686,
+    "event_type": 4,
+    "event_desc": "Tillman REBOUND (Off:0 Def:1)",
+    "player_name": "Tillman",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 693,
+    "event_type": 2,
+    "event_desc": "MISS Peterson 27' 3PT Step Back Jump Shot",
+    "player_name": "Peterson",
+    "team_abbrev": "BOS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 698,
+    "event_type": 4,
+    "event_desc": "Howard REBOUND (Off:0 Def:2)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 720,
+    "event_type": 2,
+    "event_desc": "MISS Howard 34' 3PT Pullup Jump Shot",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 720,
+    "event_type": 4,
+    "event_desc": "MAGIC Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 4,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 4th Period (9:04 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "96-76",
+    "score_margin": "20"
+  }
+]

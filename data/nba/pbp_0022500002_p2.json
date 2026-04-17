@@ -1,0 +1,1372 @@
+[
+  {
+    "period": 2,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 2nd Period (10:52 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "22-28",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 8,
+    "event_type": 5,
+    "event_desc": "Butler III Traveling Turnover (P1.T7)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 18,
+    "event_type": 1,
+    "event_desc": "Vincent 26' 3PT Jump Shot (3 PTS) (Reaves 3 AST)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "25-28",
+    "score_margin": "-3"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 35,
+    "event_type": 2,
+    "event_desc": "MISS Butler III 15' Turnaround Fadeaway Shot",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 37,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:2)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 42,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 26' 3PT Running Pull-Up Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 45,
+    "event_type": 4,
+    "event_desc": "LaRavia REBOUND (Off:1 Def:0)",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 52,
+    "event_type": 6,
+    "event_desc": "Butler III S.FOUL (P2.T1) (J.DeRosa)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 52,
+    "event_type": 3,
+    "event_desc": "MISS LaRavia Free Throw 1 of 2",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 52,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 52,
+    "event_type": 3,
+    "event_desc": "MISS LaRavia Free Throw 2 of 2",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 54,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:4)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 69,
+    "event_type": 1,
+    "event_desc": "Podziemski 17' Jump Shot (4 PTS) (Post 1 AST)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "25-30",
+    "score_margin": "-5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 88,
+    "event_type": 2,
+    "event_desc": "MISS Vincent 26' 3PT Pullup Jump Shot",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 90,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:1 Def:2)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 99,
+    "event_type": 2,
+    "event_desc": "MISS Vanderbilt 3PT Jump Shot",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 100,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:5)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 104,
+    "event_type": 2,
+    "event_desc": "MISS Butler III 3' Running Layup",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 105,
+    "event_type": 4,
+    "event_desc": "Vanderbilt REBOUND (Off:0 Def:1)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 116,
+    "event_type": 5,
+    "event_desc": "Vanderbilt Out of Bounds Lost Ball Turnover (P1.T10)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 116,
+    "event_type": 6,
+    "event_desc": "Vanderbilt T.FOUL (P0.T0) (T.Ford)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 116,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw Technical (13 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "25-31",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 127,
+    "event_type": 1,
+    "event_desc": "Green 4' Driving Dunk (2 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "25-33",
+    "score_margin": "-8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 147,
+    "event_type": 1,
+    "event_desc": "Reaves 12' Pullup Jump Shot (8 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "27-33",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 169,
+    "event_type": 1,
+    "event_desc": "Butler III 14' Pullup Jump Shot (15 PTS) (Green 2 AST)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "27-35",
+    "score_margin": "-8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 182,
+    "event_type": 1,
+    "event_desc": "Reaves 12' Pullup Jump Shot (10 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "29-35",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 189,
+    "event_type": 6,
+    "event_desc": "Green OFF.Foul (P1) (P.Ransom)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 189,
+    "event_type": 5,
+    "event_desc": "Green Offensive Foul Turnover (P2.T8)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 189,
+    "event_type": 8,
+    "event_desc": "SUB: Hachimura FOR Vanderbilt",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 189,
+    "event_type": 8,
+    "event_desc": "SUB: Doncic FOR LaRavia",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 202,
+    "event_type": 6,
+    "event_desc": "Hayes OFF.Foul (P1) (T.Ford)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 202,
+    "event_type": 5,
+    "event_desc": "Hayes Offensive Foul Turnover (P1.T11)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 202,
+    "event_type": 8,
+    "event_desc": "SUB: Ayton FOR Hayes",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 215,
+    "event_type": 6,
+    "event_desc": "Reaves P.FOUL (P2.T1) (J.DeRosa)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 227,
+    "event_type": 2,
+    "event_desc": "MISS Podziemski 24' 3PT Jump Shot",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 230,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:1 Def:5)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 233,
+    "event_type": 5,
+    "event_desc": "Hield Step Out of Bounds Turnover (P2.T9)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 233,
+    "event_type": 8,
+    "event_desc": "SUB: Curry FOR Podziemski",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 251,
+    "event_type": 1,
+    "event_desc": "Doncic 15' Turnaround Jump Shot (12 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "31-35",
+    "score_margin": "-4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 6,
+    "event_desc": "Ayton S.FOUL (P2.T2) (P.Ransom)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw 1 of 2 (4 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "31-36",
+    "score_margin": "-5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 8,
+    "event_desc": "SUB: Horford FOR Hield",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 8,
+    "event_desc": "SUB: Richard FOR Butler III",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 8,
+    "event_desc": "SUB: Kuminga FOR Post",
+    "player_name": "Post",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 264,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw 2 of 2 (5 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "31-37",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 286,
+    "event_type": 2,
+    "event_desc": "MISS Hachimura 26' 3PT Jump Shot",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 289,
+    "event_type": 4,
+    "event_desc": "Horford REBOUND (Off:0 Def:4)",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 303,
+    "event_type": 0,
+    "event_desc": "LAKERS Timeout: Regular (Full 3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 303,
+    "event_type": 8,
+    "event_desc": "SUB: Smart FOR Reaves",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 303,
+    "event_type": 8,
+    "event_desc": "SUB: Payton II FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 303,
+    "event_type": 0,
+    "event_desc": "Jump Ball Vincent vs. Kuminga: Tip to Horford",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 307,
+    "event_type": 2,
+    "event_desc": "MISS Horford 26' 3PT Jump Shot",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 309,
+    "event_type": 4,
+    "event_desc": "Kuminga REBOUND (Off:1 Def:2)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 312,
+    "event_type": 5,
+    "event_desc": "Kuminga Lost Ball Turnover (P2.T10)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 312,
+    "event_type": 0,
+    "event_desc": "Vincent STEAL (1 STL)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 319,
+    "event_type": 6,
+    "event_desc": "Horford S.FOUL (P1.T2) (T.Ford)",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 319,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 2 (13 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "32-37",
+    "score_margin": "-5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 319,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 2 of 2 (14 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "33-37",
+    "score_margin": "-4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 336,
+    "event_type": 2,
+    "event_desc": "MISS Curry 3' Driving Reverse Layup",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 337,
+    "event_type": 4,
+    "event_desc": "Ayton REBOUND (Off:1 Def:1)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 350,
+    "event_type": 5,
+    "event_desc": "Ayton Lost Ball Turnover (P2.T12)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 350,
+    "event_type": 0,
+    "event_desc": "Payton II STEAL (1 STL)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 355,
+    "event_type": 1,
+    "event_desc": "Payton II 2' Running Alley Oop Layup Shot (2 PTS) (Richard 1 AST)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "33-39",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 366,
+    "event_type": 1,
+    "event_desc": "Smart 18' Driving Floating Jump Shot (2 PTS)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "35-39",
+    "score_margin": "-4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 6,
+    "event_desc": "Curry OFF.Foul (P1) (J.DeRosa)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 5,
+    "event_desc": "Curry Offensive Foul Turnover (P1.T11)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 8,
+    "event_desc": "SUB: Reaves FOR Vincent",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 387,
+    "event_type": 6,
+    "event_desc": "Smart FLAGRANT.FOUL.TYPE1 (P2.T3) (P.Ransom)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 387,
+    "event_type": 5,
+    "event_desc": "Smart Offensive Foul Turnover (P2.T13)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 387,
+    "event_type": 0,
+    "event_desc": "Instant Replay2nd Period (11:11 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "35-39",
+    "score_margin": "-4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 387,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw Flagrant 1 of 2 (6 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "35-40",
+    "score_margin": "-5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 387,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw Flagrant 2 of 2 (7 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "35-41",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 397,
+    "event_type": 6,
+    "event_desc": "Reaves S.FOUL (P3.T4) (J.DeRosa)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 397,
+    "event_type": 3,
+    "event_desc": "Kuminga Free Throw 1 of 2 (4 PTS)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "35-42",
+    "score_margin": "-7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 397,
+    "event_type": 3,
+    "event_desc": "MISS Kuminga Free Throw 2 of 2",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 399,
+    "event_type": 4,
+    "event_desc": "Ayton REBOUND (Off:1 Def:2)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 9' Pullup Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 417,
+    "event_type": 4,
+    "event_desc": "Horford REBOUND (Off:0 Def:5)",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 421,
+    "event_type": 1,
+    "event_desc": "Curry 28' 3PT Running Jump Shot (10 PTS) (Kuminga 3 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "35-45",
+    "score_margin": "-10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 437,
+    "event_type": 1,
+    "event_desc": "Reaves 3' Cutting Layup Shot (12 PTS) (Doncic 2 AST)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "37-45",
+    "score_margin": "-8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 454,
+    "event_type": 2,
+    "event_desc": "MISS Horford 2' Cutting Layup Shot",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 454,
+    "event_type": 0,
+    "event_desc": "Doncic BLOCK (1 BLK)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 455,
+    "event_type": 4,
+    "event_desc": "Ayton REBOUND (Off:1 Def:3)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 462,
+    "event_type": 1,
+    "event_desc": "Smart 3' Driving Finger Roll Layup (4 PTS) (Reaves 4 AST)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "39-45",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 462,
+    "event_type": 0,
+    "event_desc": "Warriors Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 462,
+    "event_type": 8,
+    "event_desc": "SUB: Butler III FOR Payton II",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 477,
+    "event_type": 1,
+    "event_desc": "Curry 4' Cutting Layup Shot (12 PTS) (Butler III 2 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "39-47",
+    "score_margin": "-8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 496,
+    "event_type": 1,
+    "event_desc": "Doncic 12' Fadeaway Jumper (16 PTS) (Hachimura 1 AST)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "41-47",
+    "score_margin": "-6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 510,
+    "event_type": 2,
+    "event_desc": "MISS Kuminga 25' 3PT Jump Shot",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 512,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:6)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 522,
+    "event_type": 5,
+    "event_desc": "Ayton Traveling Turnover (P3.T14)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 541,
+    "event_type": 1,
+    "event_desc": "Curry 4' Driving Floating Bank Jump Shot (14 PTS) (Kuminga 4 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "41-49",
+    "score_margin": "-8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 6,
+    "event_desc": "Horford S.FOUL (P2.T3) (J.DeRosa)",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 3,
+    "event_desc": "Smart Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "42-49",
+    "score_margin": "-7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 8,
+    "event_desc": "SUB: Green FOR Richard",
+    "player_name": "Richard",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 8,
+    "event_desc": "SUB: Podziemski FOR Horford",
+    "player_name": "Horford",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 8,
+    "event_desc": "SUB: Vincent FOR Reaves",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 554,
+    "event_type": 3,
+    "event_desc": "MISS Smart Free Throw 2 of 2",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 556,
+    "event_type": 4,
+    "event_desc": "Kuminga REBOUND (Off:1 Def:3)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 567,
+    "event_type": 5,
+    "event_desc": "Green Bad Pass Turnover (P3.T12)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 567,
+    "event_type": 0,
+    "event_desc": "Doncic STEAL (1 STL)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 577,
+    "event_type": 6,
+    "event_desc": "Green S.FOUL (P2.T4) (T.Ford)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 577,
+    "event_type": 3,
+    "event_desc": "MISS Ayton Free Throw 1 of 2",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 577,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 577,
+    "event_type": 3,
+    "event_desc": "MISS Ayton Free Throw 2 of 2",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 579,
+    "event_type": 4,
+    "event_desc": "Butler III REBOUND (Off:0 Def:1)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 587,
+    "event_type": 2,
+    "event_desc": "MISS Curry 28' 3PT Pullup Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 591,
+    "event_type": 4,
+    "event_desc": "Ayton REBOUND (Off:1 Def:4)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 593,
+    "event_type": 6,
+    "event_desc": "Smart OFF.Foul (P3) (T.Ford)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 593,
+    "event_type": 5,
+    "event_desc": "Smart Offensive Foul Turnover (P3.T15)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 599,
+    "event_type": 6,
+    "event_desc": "Green OFF.Foul (P3) (P.Ransom)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 599,
+    "event_type": 5,
+    "event_desc": "Green Offensive Foul Turnover (P4.T13)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 608,
+    "event_type": 1,
+    "event_desc": "Doncic 6' Driving Floating Jump Shot (18 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "44-49",
+    "score_margin": "-5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 608,
+    "event_type": 6,
+    "event_desc": "Kuminga S.FOUL (P1.PN) (T.Ford)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 608,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 1 (19 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "45-49",
+    "score_margin": "-4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 623,
+    "event_type": 2,
+    "event_desc": "MISS Kuminga 26' 3PT Jump Shot",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 624,
+    "event_type": 4,
+    "event_desc": "Hachimura REBOUND (Off:0 Def:2)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 632,
+    "event_type": 1,
+    "event_desc": "Hachimura 25' 3PT Jump Shot (3 PTS) (Doncic 3 AST)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "48-49",
+    "score_margin": "-1"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 652,
+    "event_type": 6,
+    "event_desc": "Smart P.FOUL (P4.PN) (J.DeRosa)",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 652,
+    "event_type": 3,
+    "event_desc": "Green Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "48-50",
+    "score_margin": "-2"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 652,
+    "event_type": 8,
+    "event_desc": "SUB: LaRavia FOR Smart",
+    "player_name": "Smart",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 652,
+    "event_type": 3,
+    "event_desc": "MISS Green Free Throw 2 of 2",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 654,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:7)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 664,
+    "event_type": 1,
+    "event_desc": "Hachimura 25' 3PT Jump Shot (6 PTS) (Doncic 4 AST)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "51-50",
+    "score_margin": "1"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 673,
+    "event_type": 2,
+    "event_desc": "MISS Curry 3' Driving Layup",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 674,
+    "event_type": 4,
+    "event_desc": "Kuminga REBOUND (Off:2 Def:3)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 675,
+    "event_type": 2,
+    "event_desc": "MISS Kuminga Tip Dunk Shot",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 677,
+    "event_type": 4,
+    "event_desc": "Podziemski REBOUND (Off:1 Def:1)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 687,
+    "event_type": 1,
+    "event_desc": "Podziemski 26' 3PT Step Back Jump Shot (7 PTS) (Kuminga 5 AST)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "51-53",
+    "score_margin": "-2"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 700,
+    "event_type": 1,
+    "event_desc": "Doncic 30' 3PT Step Back Jump Shot (22 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "54-53",
+    "score_margin": "1"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 718,
+    "event_type": 2,
+    "event_desc": "MISS Curry 28' 3PT Step Back Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Butler III REBOUND (Off:1 Def:1)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 6,
+    "event_desc": "Vincent S.FOUL (P1.PN) (P.Ransom)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw 1 of 2 (16 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "54-54",
+    "score_margin": "0"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 8,
+    "event_desc": "SUB: Horford FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw 2 of 2 (17 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "54-55",
+    "score_margin": "-1"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 2nd Period (11:28 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "54-55",
+    "score_margin": "-1"
+  }
+]

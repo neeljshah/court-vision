@@ -1,0 +1,10 @@
+{
+  "player_id": 1642450,
+  "season": "2025-26",
+  "catch_and_shoot_pct": 0.213,
+  "pull_up_pct": 0.363,
+  "contested_pct": 0.45,
+  "uncontested_pct": 0.55,
+  "avg_defender_dist_contested": 4.414,
+  "avg_defender_dist_catch_shoot": 5.396
+}

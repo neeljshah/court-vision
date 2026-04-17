@@ -1,0 +1,401 @@
+[
+  {
+    "lineup": [
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "R. Hachimura",
+      "G. Vincent",
+      "A. Reaves"
+    ],
+    "minutes": 32.0,
+    "net_rating": 57.9,
+    "off_rating": 132.9,
+    "def_rating": 75.0,
+    "pace": 107.56,
+    "efg_pct": 0.669,
+    "tov_pct": 0.057,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "G. Vincent",
+      "J. Hayes",
+      "A. Reaves"
+    ],
+    "minutes": 32.0,
+    "net_rating": 51.4,
+    "off_rating": 138.4,
+    "def_rating": 87.0,
+    "pace": 105.78,
+    "efg_pct": 0.672,
+    "tov_pct": 0.082,
+    "oreb_pct": 0.258,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "D. Finney-Smith",
+      "A. Reaves",
+      "M. Christie"
+    ],
+    "minutes": 48.0,
+    "net_rating": 34.0,
+    "off_rating": 125.5,
+    "def_rating": 91.5,
+    "pace": 104.4,
+    "efg_pct": 0.705,
+    "tov_pct": 0.176,
+    "oreb_pct": 0.125,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "J. Hayes",
+      "A. Reaves",
+      "J. Goodwin"
+    ],
+    "minutes": 38.0,
+    "net_rating": 26.1,
+    "off_rating": 132.5,
+    "def_rating": 106.4,
+    "pace": 96.96,
+    "efg_pct": 0.667,
+    "tov_pct": 0.104,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "R. Hachimura",
+      "A. Reaves",
+      "M. Christie",
+      "D. Knecht"
+    ],
+    "minutes": 34.0,
+    "net_rating": 19.1,
+    "off_rating": 145.6,
+    "def_rating": 126.5,
+    "pace": 95.92,
+    "efg_pct": 0.679,
+    "tov_pct": 0.103,
+    "oreb_pct": 0.25,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "R. Hachimura",
+      "A. Reaves"
+    ],
+    "minutes": 108.0,
+    "net_rating": 18.6,
+    "off_rating": 124.9,
+    "def_rating": 106.3,
+    "pace": 100.83,
+    "efg_pct": 0.651,
+    "tov_pct": 0.127,
+    "oreb_pct": 0.354,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "R. Hachimura",
+      "J. Hayes",
+      "A. Reaves",
+      "M. Christie"
+    ],
+    "minutes": 50.0,
+    "net_rating": 10.3,
+    "off_rating": 133.3,
+    "def_rating": 123.1,
+    "pace": 97.73,
+    "efg_pct": 0.634,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.295,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "G. Vincent",
+      "J. Hayes"
+    ],
+    "minutes": 46.0,
+    "net_rating": 10.0,
+    "off_rating": 112.0,
+    "def_rating": 102.0,
+    "pace": 103.1,
+    "efg_pct": 0.655,
+    "tov_pct": 0.21,
+    "oreb_pct": 0.189,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "D. Russell",
+      "R. Hachimura",
+      "A. Reaves"
+    ],
+    "minutes": 105.0,
+    "net_rating": 5.6,
+    "off_rating": 109.6,
+    "def_rating": 104.0,
+    "pace": 104.69,
+    "efg_pct": 0.518,
+    "tov_pct": 0.139,
+    "oreb_pct": 0.295,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "R. Hachimura",
+      "A. Reaves",
+      "M. Christie"
+    ],
+    "minutes": 199.0,
+    "net_rating": 1.1,
+    "off_rating": 107.4,
+    "def_rating": 106.3,
+    "pace": 103.43,
+    "efg_pct": 0.55,
+    "tov_pct": 0.156,
+    "oreb_pct": 0.253,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "D. Finney-Smith",
+      "L. Don\u010di\u0107",
+      "J. Hayes",
+      "A. Reaves"
+    ],
+    "minutes": 102.0,
+    "net_rating": 1.1,
+    "off_rating": 117.4,
+    "def_rating": 116.3,
+    "pace": 98.32,
+    "efg_pct": 0.58,
+    "tov_pct": 0.082,
+    "oreb_pct": 0.14,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "L. Don\u010di\u0107",
+      "R. Hachimura",
+      "J. Hayes",
+      "A. Reaves"
+    ],
+    "minutes": 100.0,
+    "net_rating": 1.0,
+    "off_rating": 112.3,
+    "def_rating": 111.4,
+    "pace": 105.66,
+    "efg_pct": 0.583,
+    "tov_pct": 0.164,
+    "oreb_pct": 0.234,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "D. Russell",
+      "R. Hachimura",
+      "A. Reaves",
+      "M. Christie"
+    ],
+    "minutes": 41.0,
+    "net_rating": 0.5,
+    "off_rating": 106.1,
+    "def_rating": 105.6,
+    "pace": 99.98,
+    "efg_pct": 0.515,
+    "tov_pct": 0.159,
+    "oreb_pct": 0.27,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "C. Reddish",
+      "A. Reaves",
+      "D. Knecht"
+    ],
+    "minutes": 46.0,
+    "net_rating": -10.5,
+    "off_rating": 112.5,
+    "def_rating": 123.0,
+    "pace": 102.6,
+    "efg_pct": 0.613,
+    "tov_pct": 0.177,
+    "oreb_pct": 0.114,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "R. Hachimura",
+      "C. Reddish",
+      "A. Reaves"
+    ],
+    "minutes": 68.0,
+    "net_rating": -13.2,
+    "off_rating": 107.6,
+    "def_rating": 120.8,
+    "pace": 101.78,
+    "efg_pct": 0.578,
+    "tov_pct": 0.138,
+    "oreb_pct": 0.222,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "R. Hachimura",
+      "J. Hayes",
+      "A. Reaves",
+      "D. Knecht"
+    ],
+    "minutes": 31.0,
+    "net_rating": -14.5,
+    "off_rating": 100.0,
+    "def_rating": 114.5,
+    "pace": 99.76,
+    "efg_pct": 0.509,
+    "tov_pct": 0.09,
+    "oreb_pct": 0.235,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "R. Hachimura",
+      "G. Vincent",
+      "A. Reaves",
+      "M. Christie"
+    ],
+    "minutes": 42.0,
+    "net_rating": -16.6,
+    "off_rating": 102.3,
+    "def_rating": 118.9,
+    "pace": 101.99,
+    "efg_pct": 0.533,
+    "tov_pct": 0.149,
+    "oreb_pct": 0.214,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "A. Reaves",
+      "M. Christie",
+      "D. Knecht"
+    ],
+    "minutes": 43.0,
+    "net_rating": -21.5,
+    "off_rating": 103.5,
+    "def_rating": 125.0,
+    "pace": 93.99,
+    "efg_pct": 0.472,
+    "tov_pct": 0.14,
+    "oreb_pct": 0.333,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "R. Hachimura",
+      "A. Reaves",
+      "D. Knecht"
+    ],
+    "minutes": 37.0,
+    "net_rating": -26.0,
+    "off_rating": 101.3,
+    "def_rating": 127.3,
+    "pace": 100.04,
+    "efg_pct": 0.563,
+    "tov_pct": 0.128,
+    "oreb_pct": 0.143,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "A. Davis",
+      "R. Hachimura",
+      "G. Vincent",
+      "M. Christie",
+      "D. Knecht"
+    ],
+    "minutes": 30.0,
+    "net_rating": -34.1,
+    "off_rating": 77.8,
+    "def_rating": 111.9,
+    "pace": 98.37,
+    "efg_pct": 0.42,
+    "tov_pct": 0.111,
+    "oreb_pct": 0.219,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  },
+  {
+    "lineup": [
+      "L. James",
+      "A. Davis",
+      "D. Russell",
+      "R. Hachimura",
+      "D. Knecht"
+    ],
+    "minutes": 33.0,
+    "net_rating": -36.5,
+    "off_rating": 85.1,
+    "def_rating": 121.5,
+    "pace": 95.81,
+    "efg_pct": 0.481,
+    "tov_pct": 0.209,
+    "oreb_pct": 0.2,
+    "ft_rate": 0.0,
+    "plus_minus": 0.0
+  }
+]

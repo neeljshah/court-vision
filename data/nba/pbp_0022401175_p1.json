@@ -1,0 +1,1112 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (7:42 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Robinson vs. Allen: Tip to Hart",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 24,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 12' Step Back Jump Shot",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 26,
+    "event_type": 4,
+    "event_desc": "Wade REBOUND (Off:0 Def:1)",
+    "player_name": "Wade",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 35,
+    "event_type": 1,
+    "event_desc": "Strus 25' 3PT Jump Shot (3 PTS) (Mobley 1 AST)",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "0-3",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 50,
+    "event_type": 1,
+    "event_desc": "Anunoby 1' Cutting Dunk Shot (2 PTS) (Bridges 1 AST)",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "2-3",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 71,
+    "event_type": 2,
+    "event_desc": "MISS Mobley 26' 3PT Jump Shot",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 74,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:1)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 82,
+    "event_type": 2,
+    "event_desc": "MISS Anunoby 25' 3PT Jump Shot",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 85,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:1 Def:0)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 91,
+    "event_type": 1,
+    "event_desc": "Bridges 1' Driving Layup (2 PTS) (Brunson 1 AST)",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "4-3",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 101,
+    "event_type": 1,
+    "event_desc": "Strus 26' 3PT Jump Shot (6 PTS) (Allen 1 AST)",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "4-6",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 127,
+    "event_type": 1,
+    "event_desc": "Bridges 25' 3PT Jump Shot (5 PTS) (Brunson 2 AST)",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "7-6",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 146,
+    "event_type": 5,
+    "event_desc": "Allen Out of Bounds - Bad Pass Turnover Turnover (P1.T1)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 169,
+    "event_type": 0,
+    "event_desc": "Allen Violation:Kicked Ball (J.Williams)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 179,
+    "event_type": 2,
+    "event_desc": "MISS Brunson 27' 3PT Pullup Jump Shot",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 182,
+    "event_type": 4,
+    "event_desc": "Mobley REBOUND (Off:0 Def:1)",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 185,
+    "event_type": 6,
+    "event_desc": "Robinson S.FOUL (P1.T1) (J.Williams)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 185,
+    "event_type": 3,
+    "event_desc": "Mobley Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "7-7",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 185,
+    "event_type": 3,
+    "event_desc": "Mobley Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "7-8",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 208,
+    "event_type": 6,
+    "event_desc": "Wade S.FOUL (P1.T1) (J.Williams)",
+    "player_name": "Wade",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 208,
+    "event_type": 3,
+    "event_desc": "MISS Brunson Free Throw 1 of 2",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 208,
+    "event_type": 4,
+    "event_desc": "KNICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 208,
+    "event_type": 3,
+    "event_desc": "Brunson Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "8-8",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 218,
+    "event_type": 2,
+    "event_desc": "MISS Strus 25' 3PT Jump Shot",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 220,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:2)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 229,
+    "event_type": 1,
+    "event_desc": "Anunoby 25' 3PT Step Back Jump Shot (5 PTS)",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "11-8",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 5,
+    "event_desc": "Strus Bad Pass Turnover (P1.T2)",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 0,
+    "event_desc": "Robinson STEAL (1 STL)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 258,
+    "event_type": 1,
+    "event_desc": "Robinson Dunk (2 PTS) (Anunoby 1 AST)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "13-8",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 267,
+    "event_type": 6,
+    "event_desc": "Hart S.FOUL (P1.T2) (B.Nansel)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 267,
+    "event_type": 3,
+    "event_desc": "Allen Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "13-9",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 267,
+    "event_type": 3,
+    "event_desc": "Allen Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "13-10",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 289,
+    "event_type": 0,
+    "event_desc": "Wade Violation:Kicked Ball (M.Kogut)",
+    "player_name": "Wade",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 289,
+    "event_type": 8,
+    "event_desc": "SUB: Porter Jr. FOR Mobley",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 289,
+    "event_type": 8,
+    "event_desc": "SUB: Okoro FOR Strus",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 305,
+    "event_type": 2,
+    "event_desc": "MISS Bridges 14' Fadeaway Jumper",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 307,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:0)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 1,
+    "event_desc": "Hart 25' 3PT Pullup Jump Shot (3 PTS) (Anunoby 2 AST)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "16-10",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 326,
+    "event_type": 1,
+    "event_desc": "Garland 5' Driving Floating Bank Jump Shot (2 PTS)",
+    "player_name": "Garland",
+    "team_abbrev": "CLE",
+    "score": "16-12",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 6,
+    "event_desc": "Okoro S.FOUL (P1.T2) (B.Nansel)",
+    "player_name": "Okoro",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 0,
+    "event_desc": "KNICKS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 8,
+    "event_desc": "SUB: Tyson FOR Wade",
+    "player_name": "Wade",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 3,
+    "event_desc": "Robinson Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "17-12",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 3,
+    "event_desc": "MISS Robinson Free Throw 2 of 2",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 336,
+    "event_type": 4,
+    "event_desc": "Allen REBOUND (Off:0 Def:1)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 348,
+    "event_type": 2,
+    "event_desc": "MISS Garland 28' 3PT Pullup Jump Shot",
+    "player_name": "Garland",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 351,
+    "event_type": 4,
+    "event_desc": "Hart REBOUND (Off:0 Def:3)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 357,
+    "event_type": 1,
+    "event_desc": "Brunson 1' Running Reverse Layup (3 PTS) (Hart 1 AST)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "19-12",
+    "score_margin": "7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 363,
+    "event_type": 6,
+    "event_desc": "Hart S.FOUL (P2.T3) (B.Nansel)",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 363,
+    "event_type": 3,
+    "event_desc": "Porter Jr. Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "19-13",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 363,
+    "event_type": 8,
+    "event_desc": "SUB: McBride FOR Hart",
+    "player_name": "Hart",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 363,
+    "event_type": 3,
+    "event_desc": "Porter Jr. Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "19-14",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 387,
+    "event_type": 2,
+    "event_desc": "MISS Anunoby 24' 3PT Step Back Jump Shot",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 388,
+    "event_type": 4,
+    "event_desc": "KNICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 388,
+    "event_type": 6,
+    "event_desc": "Allen L.B.FOUL (P1.T3) (B.Nansel)",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 397,
+    "event_type": 2,
+    "event_desc": "MISS Anunoby 14' Step Back Jump Shot",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 400,
+    "event_type": 4,
+    "event_desc": "Porter Jr. REBOUND (Off:0 Def:1)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 403,
+    "event_type": 5,
+    "event_desc": "Porter Jr. Out of Bounds - Bad Pass Turnover Turnover (P1.T3)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 423,
+    "event_type": 1,
+    "event_desc": "McBride 25' 3PT Pullup Jump Shot (3 PTS)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "22-14",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 442,
+    "event_type": 5,
+    "event_desc": "Garland Bad Pass Turnover (P1.T4)",
+    "player_name": "Garland",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 442,
+    "event_type": 0,
+    "event_desc": "Brunson STEAL (1 STL)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 448,
+    "event_type": 5,
+    "event_desc": "Anunoby Lost Ball Turnover (P1.T1)",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 448,
+    "event_type": 0,
+    "event_desc": "Porter Jr. STEAL (1 STL)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 453,
+    "event_type": 1,
+    "event_desc": "Porter Jr. 11' Driving Floating Jump Shot (4 PTS) (Garland 1 AST)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "22-16",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 453,
+    "event_type": 6,
+    "event_desc": "McBride S.FOUL (P1.T4) (B.Nansel)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 453,
+    "event_type": 8,
+    "event_desc": "SUB: Mobley FOR Garland",
+    "player_name": "Garland",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 453,
+    "event_type": 8,
+    "event_desc": "SUB: Strus FOR Allen",
+    "player_name": "Allen",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 453,
+    "event_type": 3,
+    "event_desc": "Porter Jr. Free Throw 1 of 1 (5 PTS)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "22-17",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 472,
+    "event_type": 1,
+    "event_desc": "Brunson 26' 3PT Pullup Jump Shot (6 PTS)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "25-17",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 484,
+    "event_type": 2,
+    "event_desc": "MISS Tyson 3PT Jump Shot",
+    "player_name": "Tyson",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 487,
+    "event_type": 4,
+    "event_desc": "McBride REBOUND (Off:0 Def:1)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 492,
+    "event_type": 1,
+    "event_desc": "Brunson 26' 3PT Running Jump Shot (9 PTS) (Bridges 2 AST)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "28-17",
+    "score_margin": "11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 493,
+    "event_type": 0,
+    "event_desc": "Cavaliers Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 516,
+    "event_type": 1,
+    "event_desc": "Okoro 25' 3PT Jump Shot (3 PTS) (Strus 1 AST)",
+    "player_name": "Okoro",
+    "team_abbrev": "CLE",
+    "score": "28-20",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 534,
+    "event_type": 1,
+    "event_desc": "Robinson 1' Alley Oop Dunk (5 PTS) (Bridges 3 AST)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "30-20",
+    "score_margin": "10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 548,
+    "event_type": 2,
+    "event_desc": "MISS Mobley 15' Jump Shot",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 550,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:2 Def:1)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 560,
+    "event_type": 1,
+    "event_desc": "Bridges 13' Pullup Jump Shot (7 PTS) (Anunoby 3 AST)",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "32-20",
+    "score_margin": "12"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 570,
+    "event_type": 5,
+    "event_desc": "Tyson Bad Pass Turnover (P1.T5)",
+    "player_name": "Tyson",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 570,
+    "event_type": 0,
+    "event_desc": "McBride STEAL (1 STL)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 1,
+    "event_desc": "McBride 1' Running Dunk (5 PTS)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "34-20",
+    "score_margin": "14"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 591,
+    "event_type": 1,
+    "event_desc": "Tyson 2' Cutting Dunk Shot (2 PTS) (Okoro 1 AST)",
+    "player_name": "Tyson",
+    "team_abbrev": "CLE",
+    "score": "34-22",
+    "score_margin": "12"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 614,
+    "event_type": 1,
+    "event_desc": "Brunson 11' Pullup Jump Shot (11 PTS)",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "36-22",
+    "score_margin": "14"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 6,
+    "event_desc": "McBride P.FOUL (P2.PN) (J.Williams)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 3,
+    "event_desc": "MISS Mobley Free Throw 1 of 2",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 4,
+    "event_desc": "Cavaliers Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 8,
+    "event_desc": "SUB: Shamet FOR Brunson",
+    "player_name": "Brunson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 8,
+    "event_desc": "SUB: Payne FOR Bridges",
+    "player_name": "Bridges",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 3,
+    "event_desc": "MISS Mobley Free Throw 2 of 2",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 626,
+    "event_type": 4,
+    "event_desc": "Anunoby REBOUND (Off:0 Def:1)",
+    "player_name": "Anunoby",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 647,
+    "event_type": 2,
+    "event_desc": "MISS McBride 19' Step Back Jump Shot",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 648,
+    "event_type": 4,
+    "event_desc": "Tyson REBOUND (Off:0 Def:1)",
+    "player_name": "Tyson",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 658,
+    "event_type": 2,
+    "event_desc": "MISS Porter Jr. 2' Driving Hook Shot",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 660,
+    "event_type": 4,
+    "event_desc": "Mobley REBOUND (Off:1 Def:1)",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 664,
+    "event_type": 5,
+    "event_desc": "Strus Bad Pass Turnover (P2.T6)",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 664,
+    "event_type": 0,
+    "event_desc": "Payne STEAL (1 STL)",
+    "player_name": "Payne",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 677,
+    "event_type": 5,
+    "event_desc": "Payne Bad Pass Turnover (P1.T2)",
+    "player_name": "Payne",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 677,
+    "event_type": 0,
+    "event_desc": "Mobley STEAL (1 STL)",
+    "player_name": "Mobley",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 685,
+    "event_type": 2,
+    "event_desc": "MISS Strus 26' 3PT Pullup Jump Shot",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 687,
+    "event_type": 4,
+    "event_desc": "Porter Jr. REBOUND (Off:1 Def:1)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 687,
+    "event_type": 1,
+    "event_desc": "Porter Jr. Tip Layup Shot (7 PTS)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "36-24",
+    "score_margin": "12"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 703,
+    "event_type": 1,
+    "event_desc": "McBride 26' 3PT Pullup Jump Shot (8 PTS)",
+    "player_name": "McBride",
+    "team_abbrev": "NYK",
+    "score": "39-24",
+    "score_margin": "15"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 717,
+    "event_type": 2,
+    "event_desc": "MISS Tyson 1' Reverse Layup",
+    "player_name": "Tyson",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 4,
+    "event_desc": "Porter Jr. REBOUND (Off:2 Def:1)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "KNICKS Timeout: Coach Challenge (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (8:09 PM EST)",
+    "player_name": "Royal",
+    "team_abbrev": "",
+    "score": "39-24",
+    "score_margin": "15"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS Strus 3PT Turnaround Jump Shot",
+    "player_name": "Strus",
+    "team_abbrev": "CLE",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 0,
+    "event_desc": "Robinson BLOCK (1 BLK)",
+    "player_name": "Robinson",
+    "team_abbrev": "NYK",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Cavaliers Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (8:12 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "39-24",
+    "score_margin": "15"
+  }
+]
