@@ -1,0 +1,1142 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (3:44 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Green vs. Zubac: Tip to Podziemski",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 21,
+    "event_type": 6,
+    "event_desc": "Powell S.FOUL (P1.T1) (J.Goble)",
+    "player_name": "Powell",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 21,
+    "event_type": 3,
+    "event_desc": "Podziemski Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "1-0",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 21,
+    "event_type": 3,
+    "event_desc": "Podziemski Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "2-0",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 43,
+    "event_type": 1,
+    "event_desc": "Harden 28' 3PT Step Back Jump Shot (3 PTS) (Zubac 1 AST)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "2-3",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 58,
+    "event_type": 5,
+    "event_desc": "Curry Bad Pass Turnover (P1.T1)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 58,
+    "event_type": 0,
+    "event_desc": "Dunn STEAL (1 STL)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 67,
+    "event_type": 1,
+    "event_desc": "Dunn 26' 3PT Jump Shot (3 PTS) (Zubac 2 AST)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "2-6",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 77,
+    "event_type": 1,
+    "event_desc": "Podziemski 18' Pullup Jump Shot (4 PTS)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "4-6",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 92,
+    "event_type": 6,
+    "event_desc": "Green P.FOUL (P1.T1) (K.Scott)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 99,
+    "event_type": 1,
+    "event_desc": "Leonard 6' Driving Floating Jump Shot (2 PTS) (Harden 1 AST)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "4-8",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 112,
+    "event_type": 2,
+    "event_desc": "MISS Butler III 4' Driving Layup",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 114,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:0 Def:1)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 118,
+    "event_type": 1,
+    "event_desc": "Leonard 4' Running Finger Roll Layup (4 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "4-10",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 134,
+    "event_type": 6,
+    "event_desc": "Dunn S.FOUL (P1.T2) (J.Goble)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 134,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "5-10",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 134,
+    "event_type": 3,
+    "event_desc": "Curry Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "6-10",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 148,
+    "event_type": 2,
+    "event_desc": "MISS Zubac 5' Cutting Layup Shot",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 148,
+    "event_type": 0,
+    "event_desc": "Green BLOCK (1 BLK)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 150,
+    "event_type": 4,
+    "event_desc": "Curry REBOUND (Off:0 Def:1)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 167,
+    "event_type": 2,
+    "event_desc": "MISS Moody 3PT Jump Shot",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 171,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:0 Def:2)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 181,
+    "event_type": 1,
+    "event_desc": "Harden 8' Driving Floating Jump Shot (5 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "6-12",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 182,
+    "event_type": 0,
+    "event_desc": "WARRIORS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 194,
+    "event_type": 1,
+    "event_desc": "Curry 25' 3PT Jump Shot (5 PTS) (Butler III 1 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "9-12",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 212,
+    "event_type": 2,
+    "event_desc": "MISS Leonard 17' Pullup Jump Shot",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 214,
+    "event_type": 4,
+    "event_desc": "Podziemski REBOUND (Off:0 Def:1)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 228,
+    "event_type": 2,
+    "event_desc": "MISS Butler III 26' 3PT Jump Shot",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 231,
+    "event_type": 4,
+    "event_desc": "Leonard REBOUND (Off:0 Def:1)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 238,
+    "event_type": 2,
+    "event_desc": "MISS Harden 25' 3PT Step Back Jump Shot",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:1)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 255,
+    "event_type": 1,
+    "event_desc": "Green 3' Cutting Layup Shot (2 PTS) (Curry 1 AST)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "11-12",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 5,
+    "event_desc": "Harden Lost Ball Turnover (P1.T1)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 0,
+    "event_desc": "Moody STEAL (1 STL)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 277,
+    "event_type": 1,
+    "event_desc": "Moody 3' Driving Dunk (2 PTS)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "13-12",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 294,
+    "event_type": 2,
+    "event_desc": "MISS Zubac 4' Cutting Layup Shot",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 294,
+    "event_type": 0,
+    "event_desc": "Podziemski BLOCK (1 BLK)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 294,
+    "event_type": 4,
+    "event_desc": "WARRIORS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 306,
+    "event_type": 5,
+    "event_desc": "Curry Out of Bounds - Bad Pass Turnover Turnover (P2.T2)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 306,
+    "event_type": 8,
+    "event_desc": "SUB: Hield FOR Podziemski",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 319,
+    "event_type": 2,
+    "event_desc": "MISS Powell 25' 3PT Jump Shot",
+    "player_name": "Powell",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 322,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:2)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 5,
+    "event_desc": "Curry Bad Pass Turnover (P3.T3)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 0,
+    "event_desc": "Leonard STEAL (1 STL)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 338,
+    "event_type": 6,
+    "event_desc": "Hield P.FOUL (P1.T2) (J.Butler)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 338,
+    "event_type": 8,
+    "event_desc": "SUB: Looney FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 349,
+    "event_type": 1,
+    "event_desc": "Harden 12' Pullup Jump Shot (7 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "13-14",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 366,
+    "event_type": 2,
+    "event_desc": "MISS Curry 10' Driving Floating Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 368,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:0 Def:3)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 374,
+    "event_type": 2,
+    "event_desc": "MISS Harden 10' Driving Floating Jump Shot",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 377,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:1 Def:3)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 377,
+    "event_type": 1,
+    "event_desc": "Zubac Tip Layup Shot (2 PTS)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "13-16",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 390,
+    "event_type": 1,
+    "event_desc": "Butler III 11' Pullup Jump Shot (2 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "15-16",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 1,
+    "event_desc": "Leonard 9' Driving Hook Shot (6 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "15-18",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 6,
+    "event_desc": "Curry S.FOUL (P1.T3) (K.Scott)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 8,
+    "event_desc": "SUB: Payton II FOR Butler III",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 3,
+    "event_desc": "Leonard Free Throw 1 of 1 (7 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "15-19",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 424,
+    "event_type": 1,
+    "event_desc": "Looney 8' Floating Jump Shot (2 PTS) (Moody 1 AST)",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "17-19",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 450,
+    "event_type": 1,
+    "event_desc": "Zubac 3' Cutting Layup Shot (4 PTS) (Dunn 1 AST)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "17-21",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 462,
+    "event_type": 5,
+    "event_desc": "Payton II Bad Pass Turnover (P1.T4)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 462,
+    "event_type": 0,
+    "event_desc": "Powell STEAL (1 STL)",
+    "player_name": "Powell",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 6,
+    "event_desc": "Curry S.FOUL (P2.T4) (J.Butler)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 3,
+    "event_desc": "MISS Harden Free Throw 1 of 2",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 4,
+    "event_desc": "Clippers Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 8,
+    "event_desc": "SUB: Podziemski FOR Moody",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 8,
+    "event_desc": "SUB: Butler III FOR Curry",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 8,
+    "event_desc": "SUB: Jones Jr. FOR Dunn",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 467,
+    "event_type": 3,
+    "event_desc": "Harden Free Throw 2 of 2 (8 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "17-22",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 482,
+    "event_type": 1,
+    "event_desc": "Hield 26' 3PT Pullup Jump Shot (3 PTS) (Looney 1 AST)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "20-22",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 494,
+    "event_type": 1,
+    "event_desc": "Zubac 6' Turnaround Bank Hook Shot (6 PTS) (Jones Jr. 1 AST)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "20-24",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 2,
+    "event_desc": "MISS Payton II 36' 3PT Pullup Jump Shot",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 4,
+    "event_desc": "WARRIORS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 5,
+    "event_desc": "WARRIORS Turnover: Shot Clock (T#5)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 8,
+    "event_desc": "SUB: Bogdanovi\u0107 FOR Powell",
+    "player_name": "Powell",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 540,
+    "event_type": 2,
+    "event_desc": "MISS Harden 7' Driving Floating Jump Shot",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 542,
+    "event_type": 4,
+    "event_desc": "Payton II REBOUND (Off:0 Def:1)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 560,
+    "event_type": 1,
+    "event_desc": "Butler III 3' Driving Dunk (4 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "22-24",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 560,
+    "event_type": 0,
+    "event_desc": "Clippers Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 560,
+    "event_type": 8,
+    "event_desc": "SUB: Simmons FOR Leonard",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 560,
+    "event_type": 8,
+    "event_desc": "SUB: Coffey FOR Zubac",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 576,
+    "event_type": 2,
+    "event_desc": "MISS Jones Jr. 26' 3PT Jump Shot",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 580,
+    "event_type": 4,
+    "event_desc": "Looney REBOUND (Off:0 Def:1)",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 592,
+    "event_type": 2,
+    "event_desc": "MISS Hield 25' 3PT Jump Shot",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 596,
+    "event_type": 4,
+    "event_desc": "Coffey REBOUND (Off:0 Def:1)",
+    "player_name": "Coffey",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 600,
+    "event_type": 6,
+    "event_desc": "Hield S.FOUL (P2.PN) (J.Goble)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 600,
+    "event_type": 3,
+    "event_desc": "MISS Jones Jr. Free Throw 1 of 2",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 600,
+    "event_type": 4,
+    "event_desc": "Clippers Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 600,
+    "event_type": 3,
+    "event_desc": "Jones Jr. Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "22-25",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 616,
+    "event_type": 1,
+    "event_desc": "Podziemski 25' 3PT Step Back Jump Shot (7 PTS) (Butler III 2 AST)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "25-25",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 630,
+    "event_type": 5,
+    "event_desc": "Coffey Out of Bounds Lost Ball Turnover (P1.T2)",
+    "player_name": "Coffey",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 630,
+    "event_type": 8,
+    "event_desc": "SUB: Green FOR Payton II",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 630,
+    "event_type": 8,
+    "event_desc": "SUB: Post FOR Looney",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 630,
+    "event_type": 0,
+    "event_desc": "WARRIORS Violation: Delay of game Violation",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 1,
+    "event_desc": "Butler III 2' Driving Dunk (6 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "27-25",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 667,
+    "event_type": 2,
+    "event_desc": "MISS Bogdanovi\u0107 26' 3PT Jump Shot",
+    "player_name": "Bogdanovi\u0107",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 670,
+    "event_type": 4,
+    "event_desc": "Podziemski REBOUND (Off:0 Def:2)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 6,
+    "event_desc": "Bogdanovi\u0107 S.FOUL (P1.T3) (K.Scott)",
+    "player_name": "Bogdanovi\u0107",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw 1 of 2 (7 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "28-25",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 8,
+    "event_desc": "SUB: Payton II FOR Hield",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 3,
+    "event_desc": "MISS Butler III Free Throw 2 of 2",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 686,
+    "event_type": 4,
+    "event_desc": "Harden REBOUND (Off:0 Def:1)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 691,
+    "event_type": 2,
+    "event_desc": "MISS Harden 4' Running Reverse Layup",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 693,
+    "event_type": 4,
+    "event_desc": "Podziemski REBOUND (Off:0 Def:3)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 697,
+    "event_type": 1,
+    "event_desc": "Butler III 3' Running Layup (9 PTS) (Podziemski 1 AST)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "30-25",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 697,
+    "event_type": 6,
+    "event_desc": "Coffey S.FOUL (P1.PN) (J.Goble)",
+    "player_name": "Coffey",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 697,
+    "event_type": 8,
+    "event_desc": "SUB: Moody FOR Post",
+    "player_name": "Post",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 697,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw 1 of 1 (10 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "31-25",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 5,
+    "event_desc": "Harden Bad Pass Turnover (P2.T3)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 0,
+    "event_desc": "Payton II STEAL (1 STL)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 715,
+    "event_type": 1,
+    "event_desc": "Podziemski 3' Running Layup (9 PTS) (Payton II 1 AST)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "33-25",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS Bogdanovi\u0107 39' 3PT Driving Floating Jump Shot",
+    "player_name": "Bogdanovi\u0107",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Clippers Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (4:13 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "33-25",
+    "score_margin": "8"
+  }
+]

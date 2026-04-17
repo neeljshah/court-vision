@@ -59,6 +59,7 @@ class PropStackResult:
     motivation_flags: Dict[str, bool]      # contract_year, load_management, breakout
     meta_applied: bool                     # True if Ridge meta was applied
     micro_signals: Dict[str, float] = field(default_factory=dict)  # raw micro-model outputs
+    calibrated_win_probs: Dict[str, float] = field(default_factory=dict)  # stat → P(actual>line)
 
 
 _CALIB_DIR = _MODELS_DIR
@@ -74,7 +75,9 @@ class CalibrationLayer:
 
     def __init__(self) -> None:
         self._models: Dict[str, object] = {}
+        self._win_models: Dict[str, object] = {}
         self._load()
+        self._load_win_models()
 
     def _path(self, stat: str) -> str:
         return os.path.join(_CALIB_DIR, f"calibration_{stat}.joblib")
@@ -111,6 +114,67 @@ class CalibrationLayer:
             return float(mdl.predict([prob])[0])
         except Exception:
             return prob
+
+    # ── Win-probability calibration (over/under) ──────────────────────────────
+
+    def _win_path(self, stat: str) -> str:
+        return os.path.join(_CALIB_DIR, f"calibration_win_{stat}.joblib")
+
+    def train_win_prob(
+        self,
+        stat: str,
+        predictions: "np.ndarray",
+        lines: "np.ndarray",
+        actuals: "np.ndarray",
+    ) -> None:
+        """Fit isotonic regression: (pred/line - 1) → P(actual > line).
+
+        Args:
+            predictions: Model point predictions (N,).
+            lines:       Sportsbook lines (N,).
+            actuals:     Actual stat values (N,).
+        """
+        try:
+            import joblib
+            from sklearn.isotonic import IsotonicRegression
+            edges = predictions / np.maximum(lines, 0.01) - 1.0  # (N,)
+            outcomes = (actuals > lines).astype(float)            # {0, 1}
+            ir = IsotonicRegression(out_of_bounds="clip")
+            ir.fit(edges, outcomes)
+            self._win_models[stat] = ir
+            joblib.dump(ir, self._win_path(stat))
+        except Exception as e:
+            import logging
+            logging.warning("CalibrationLayer.train_win_prob(%s) failed: %s", stat, e)
+
+    def win_prob(self, stat: str, pred: float, line: float) -> float:
+        """Return calibrated P(actual > line) for an over bet.
+
+        Falls back to sigmoid of edge if no calibration model is fitted.
+        Never returns below 0.05 or above 0.95.
+        """
+        edge = pred / max(line, 0.01) - 1.0
+        mdl = self._win_models.get(stat)
+        if mdl is not None:
+            try:
+                p = float(mdl.predict([edge])[0])
+                return max(0.05, min(0.95, p))
+            except Exception:
+                pass
+        # Uncalibrated fallback: sigmoid centred at 50%, scaled by typical σ≈0.15
+        import math
+        p = 1.0 / (1.0 + math.exp(-edge / 0.15))
+        return max(0.05, min(0.95, p))
+
+    def _load_win_models(self) -> None:
+        try:
+            import joblib
+            for stat in STATS:
+                p = self._win_path(stat)
+                if os.path.exists(p):
+                    self._win_models[stat] = joblib.load(p)
+        except Exception:
+            pass
 
 
 # Module-level singleton loaded once
@@ -451,6 +515,14 @@ def stack_predict(
 
     motivation_flags = _load_motivation_flags(player_id)
 
+    # Calibrated over/under win probabilities (used by kelly_corr)
+    calibrated_win_probs: Dict[str, float] = {}
+    for stat in STATS:
+        pred = adjusted.get(stat, float("nan"))
+        line = lines.get(stat)
+        if line and not np.isnan(pred) and line > 0:
+            calibrated_win_probs[stat] = _calibration.win_prob(stat, pred, float(line))
+
     player_name = base_raw.get("player_name", str(player_id))
 
     return PropStackResult(
@@ -465,6 +537,7 @@ def stack_predict(
         motivation_flags=motivation_flags,
         meta_applied=meta_applied,
         micro_signals=micro,
+        calibrated_win_probs=calibrated_win_probs,
     )
 
 
@@ -528,14 +601,74 @@ def train_all_meta(residuals: Optional[List[dict]] = None) -> dict:
     return {stat: train_meta(stat, residuals) for stat in STATS}
 
 
+def train_calibration(
+    stat: Optional[str] = None,
+    residuals_path: Optional[str] = None,
+) -> dict:
+    """Fit isotonic win-probability calibration from prop_residuals.json.
+
+    Each row in residuals must have: {stat, predicted, actual, line}.
+    Rows without a 'line' field are skipped.  Trains one IsotonicRegression
+    per stat and saves to data/models/calibration_win_{stat}.joblib.
+
+    Args:
+        stat:           Specific stat to train, or None to train all.
+        residuals_path: Override path; defaults to data/models/prop_residuals.json.
+
+    Returns:
+        {stat: {"n": int, "over_rate": float, "fitted": bool}, ...}
+    """
+    if residuals_path is None:
+        residuals_path = os.path.join(_MODELS_DIR, "prop_residuals.json")
+    if not os.path.exists(residuals_path):
+        print(f"  [calib] {residuals_path} not found — nothing to calibrate")
+        return {}
+
+    all_rows: List[dict] = json.load(open(residuals_path, encoding="utf-8"))
+    stats_to_train = [stat] if stat else STATS
+    results: dict = {}
+
+    for s in stats_to_train:
+        rows = [
+            r for r in all_rows
+            if r.get("stat") == s
+            and r.get("predicted") is not None
+            and r.get("actual") is not None
+            and r.get("line") is not None
+        ]
+        n = len(rows)
+        if n < 10:
+            results[s] = {"n": n, "over_rate": float("nan"), "fitted": False}
+            print(f"  [calib] {s}: only {n} rows with line data — skipping (need ≥10)")
+            continue
+        preds   = np.array([float(r["predicted"]) for r in rows])
+        lines_  = np.array([float(r["line"])      for r in rows])
+        actuals = np.array([float(r["actual"])     for r in rows])
+        over_rate = float((actuals > lines_).mean())
+        _calibration.train_win_prob(s, preds, lines_, actuals)
+        results[s] = {"n": n, "over_rate": round(over_rate, 3), "fitted": True}
+        print(f"  [calib] {s}: n={n}  over_rate={over_rate:.3f}  fitted=True")
+
+    return results
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Prop model stacker")
     parser.add_argument("--predict", type=str, help="Player ID to predict")
     parser.add_argument("--train-meta", action="store_true", help="Train all meta models")
+    parser.add_argument("--train-calibration", action="store_true",
+                        help="Fit isotonic win-prob calibration from prop_residuals.json")
+    parser.add_argument("--stat", type=str, default=None,
+                        help="Stat to calibrate (default: all)")
     args = parser.parse_args()
 
-    if args.train_meta:
+    if args.train_calibration:
+        results = train_calibration(stat=args.stat)
+        for s, r in results.items():
+            status = "fitted" if r["fitted"] else "skipped"
+            print(f"  {s}: n={r['n']}  over_rate={r['over_rate']}  {status}")
+    elif args.train_meta:
         results = train_all_meta()
         for stat, r in results.items():
             print(f"  {stat}: coef={r['coef']:.4f} intercept={r['intercept']:.4f} n={r['n']} r2={r['r2']:.3f}")

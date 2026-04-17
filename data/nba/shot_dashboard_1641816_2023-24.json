@@ -1,0 +1,10 @@
+{
+  "player_id": 1641816,
+  "season": "2023-24",
+  "catch_and_shoot_pct": 0.632,
+  "pull_up_pct": 0.158,
+  "contested_pct": 0.158,
+  "uncontested_pct": 0.842,
+  "avg_defender_dist_contested": 5.42,
+  "avg_defender_dist_catch_shoot": 5.798
+}

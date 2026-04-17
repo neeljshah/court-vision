@@ -1,0 +1,1382 @@
+[
+  {
+    "period": 2,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 2nd Period (5:42 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "31-21",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 13,
+    "event_type": 6,
+    "event_desc": "Sensabaugh S.FOUL (P1.T1) (T.Ford)",
+    "player_name": "Sensabaugh",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 13,
+    "event_type": 3,
+    "event_desc": "MISS Bitadze Free Throw 1 of 2",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 13,
+    "event_type": 4,
+    "event_desc": "Magic Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 13,
+    "event_type": 3,
+    "event_desc": "Bitadze Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "31-22",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 25,
+    "event_type": 6,
+    "event_desc": "Collier OFF.Foul (P2) (N.Sago)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 25,
+    "event_type": 5,
+    "event_desc": "Collier Offensive Foul Turnover (P1.T2)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 34,
+    "event_type": 2,
+    "event_desc": "MISS Howard 25' 3PT Jump Shot",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 36,
+    "event_type": 4,
+    "event_desc": "Isaac REBOUND (Off:1 Def:1)",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 38,
+    "event_type": 2,
+    "event_desc": "MISS Isaac 3' Putback Layup",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 38,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:1 Def:2)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 41,
+    "event_type": 1,
+    "event_desc": "Bitadze Tip Dunk Shot (3 PTS)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "31-24",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 54,
+    "event_type": 1,
+    "event_desc": "Sensabaugh 3PT Jump Shot (5 PTS) (Filipowski 1 AST)",
+    "player_name": "Sensabaugh",
+    "team_abbrev": "UTA",
+    "score": "34-24",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 83,
+    "event_type": 1,
+    "event_desc": "Wagner 6' Driving Floating Jump Shot (14 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "34-26",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 103,
+    "event_type": 2,
+    "event_desc": "MISS Collins 9' Driving Floating Jump Shot",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 105,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:1 Def:3)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 111,
+    "event_type": 2,
+    "event_desc": "MISS Wagner 25' 3PT Jump Shot",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 114,
+    "event_type": 4,
+    "event_desc": "Collier REBOUND (Off:0 Def:2)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 119,
+    "event_type": 1,
+    "event_desc": "Collier 6' Driving Finger Roll Layup (7 PTS)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "36-26",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 119,
+    "event_type": 6,
+    "event_desc": "Isaac S.FOUL (P1.T1) (T.Ford)",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 119,
+    "event_type": 3,
+    "event_desc": "Collier Free Throw 1 of 1 (8 PTS)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "37-26",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 128,
+    "event_type": 1,
+    "event_desc": "Howard 27' 3PT Jump Shot (3 PTS) (Bitadze 1 AST)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "37-29",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 144,
+    "event_type": 6,
+    "event_desc": "Wagner P.FOUL (P1.T2) (M.Myers)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 152,
+    "event_type": 2,
+    "event_desc": "MISS Filipowski 4' Dunk",
+    "player_name": "Filipowski",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 152,
+    "event_type": 0,
+    "event_desc": "Isaac BLOCK (1 BLK)",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 156,
+    "event_type": 4,
+    "event_desc": "Wagner REBOUND (Off:0 Def:2)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 162,
+    "event_type": 2,
+    "event_desc": "MISS Bitadze 4' Layup",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 162,
+    "event_type": 0,
+    "event_desc": "Filipowski BLOCK (1 BLK)",
+    "player_name": "Filipowski",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 164,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:2 Def:3)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 170,
+    "event_type": 2,
+    "event_desc": "MISS Howard 6' Driving Layup",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 173,
+    "event_type": 4,
+    "event_desc": "Collier REBOUND (Off:0 Def:3)",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 178,
+    "event_type": 2,
+    "event_desc": "MISS Sensabaugh 25' 3PT Running Jump Shot",
+    "player_name": "Sensabaugh",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 181,
+    "event_type": 4,
+    "event_desc": "Isaac REBOUND (Off:1 Def:2)",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 187,
+    "event_type": 2,
+    "event_desc": "MISS Wagner 26' 3PT Jump Shot",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 189,
+    "event_type": 4,
+    "event_desc": "Collins REBOUND (Off:0 Def:2)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 195,
+    "event_type": 6,
+    "event_desc": "Howard P.FOUL (P1.T3) (T.Ford)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 195,
+    "event_type": 8,
+    "event_desc": "SUB: Banchero FOR Isaac",
+    "player_name": "Isaac",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 195,
+    "event_type": 8,
+    "event_desc": "SUB: Harris FOR Wagner",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 206,
+    "event_type": 2,
+    "event_desc": "MISS Filipowski 11' Turnaround Fadeaway Shot",
+    "player_name": "Filipowski",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 208,
+    "event_type": 4,
+    "event_desc": "Banchero REBOUND (Off:0 Def:3)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 213,
+    "event_type": 2,
+    "event_desc": "MISS Howard 3PT Running Jump Shot",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 216,
+    "event_type": 4,
+    "event_desc": "JAZZ Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 229,
+    "event_type": 1,
+    "event_desc": "Sensabaugh 10' Driving Floating Jump Shot (7 PTS) (Filipowski 2 AST)",
+    "player_name": "Sensabaugh",
+    "team_abbrev": "UTA",
+    "score": "39-29",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 238,
+    "event_type": 1,
+    "event_desc": "Anthony 7' Driving Layup (4 PTS)",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "39-31",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 238,
+    "event_type": 0,
+    "event_desc": "JAZZ Timeout: Regular (Full 2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 238,
+    "event_type": 8,
+    "event_desc": "SUB: Black FOR Anthony",
+    "player_name": "Anthony",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 238,
+    "event_type": 8,
+    "event_desc": "SUB: Kessler FOR Filipowski",
+    "player_name": "Filipowski",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 255,
+    "event_type": 5,
+    "event_desc": "Collins Lost Ball Turnover (P1.T3)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 255,
+    "event_type": 0,
+    "event_desc": "Harris STEAL (2 STL)",
+    "player_name": "Harris",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 259,
+    "event_type": 1,
+    "event_desc": "Banchero 4' Running Dunk (3 PTS)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "39-33",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 271,
+    "event_type": 2,
+    "event_desc": "MISS Clarkson 28' 3PT Pullup Jump Shot",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 274,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:2 Def:4)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 280,
+    "event_type": 1,
+    "event_desc": "Howard 7' Driving Layup (5 PTS)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "39-35",
+    "score_margin": "4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 297,
+    "event_type": 2,
+    "event_desc": "MISS Collier 26' 3PT Step Back Jump Shot",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 300,
+    "event_type": 4,
+    "event_desc": "Bitadze REBOUND (Off:2 Def:5)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 6,
+    "event_desc": "Harris OFF.Foul (P1) (N.Sago)",
+    "player_name": "Harris",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 5,
+    "event_desc": "Harris Offensive Foul Turnover (P1.T2)",
+    "player_name": "Harris",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 8,
+    "event_desc": "SUB: Sexton FOR Collier",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 8,
+    "event_desc": "SUB: Markkanen FOR Collins",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 8,
+    "event_desc": "SUB: George FOR Sensabaugh",
+    "player_name": "Sensabaugh",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 8,
+    "event_desc": "SUB: Carter Jr. FOR Bitadze",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 323,
+    "event_type": 6,
+    "event_desc": "Howard S.FOUL (P2.T4) (M.Myers)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 323,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "40-35",
+    "score_margin": "5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 323,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "41-35",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 343,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 6' Driving Floating Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 345,
+    "event_type": 4,
+    "event_desc": "Kessler REBOUND (Off:0 Def:4)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 354,
+    "event_type": 1,
+    "event_desc": "George 7' Driving Floating Jump Shot (6 PTS)",
+    "player_name": "George",
+    "team_abbrev": "UTA",
+    "score": "43-35",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 360,
+    "event_type": 6,
+    "event_desc": "Sexton Transition Take Foul (P2.T2) (T.Ford)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 360,
+    "event_type": 3,
+    "event_desc": "Black Free Throw 1 of 1 (4 PTS)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "43-36",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 360,
+    "event_type": 8,
+    "event_desc": "SUB: Collier FOR George",
+    "player_name": "George",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 369,
+    "event_type": 5,
+    "event_desc": "Banchero Bad Pass Turnover (P1.T3)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 369,
+    "event_type": 0,
+    "event_desc": "Clarkson STEAL (1 STL)",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 374,
+    "event_type": 1,
+    "event_desc": "Sexton 3' Running Layup (4 PTS) (Clarkson 1 AST)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "45-36",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 374,
+    "event_type": 0,
+    "event_desc": "Magic Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 374,
+    "event_type": 8,
+    "event_desc": "SUB: George FOR Collier",
+    "player_name": "Collier",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 396,
+    "event_type": 2,
+    "event_desc": "MISS Carter Jr. 9' Pullup Jump Shot",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 400,
+    "event_type": 4,
+    "event_desc": "Kessler REBOUND (Off:0 Def:5)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 418,
+    "event_type": 5,
+    "event_desc": "George Out of Bounds Lost Ball Turnover (P1.T4)",
+    "player_name": "George",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 434,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 7' Driving Hook Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 437,
+    "event_type": 4,
+    "event_desc": "Kessler REBOUND (Off:0 Def:6)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 438,
+    "event_type": 5,
+    "event_desc": "Kessler Out of Bounds - Bad Pass Turnover Turnover (P1.T5)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 449,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 17' Pullup Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 452,
+    "event_type": 4,
+    "event_desc": "Kessler REBOUND (Off:0 Def:7)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 464,
+    "event_type": 1,
+    "event_desc": "Sexton 9' Driving Layup (6 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "47-36",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 464,
+    "event_type": 6,
+    "event_desc": "Black S.FOUL (P2.PN) (M.Myers)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 464,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 1 of 1 (7 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "48-36",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 479,
+    "event_type": 2,
+    "event_desc": "MISS Carter Jr. 13' Jump Shot",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 4,
+    "event_desc": "Kessler REBOUND (Off:0 Def:8)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 494,
+    "event_type": 6,
+    "event_desc": "Howard S.FOUL (P3.PN) (T.Ford)",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 494,
+    "event_type": 3,
+    "event_desc": "Clarkson Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "49-36",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 494,
+    "event_type": 8,
+    "event_desc": "SUB: da Silva FOR Howard",
+    "player_name": "Howard",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 494,
+    "event_type": 8,
+    "event_desc": "SUB: Wagner FOR Harris",
+    "player_name": "Harris",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 494,
+    "event_type": 3,
+    "event_desc": "Clarkson Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "50-36",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 514,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 12' Turnaround Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 518,
+    "event_type": 4,
+    "event_desc": "Carter Jr. REBOUND (Off:1 Def:1)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 522,
+    "event_type": 1,
+    "event_desc": "Carter Jr. 2' Layup (2 PTS) (Wagner 1 AST)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "50-38",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 535,
+    "event_type": 2,
+    "event_desc": "MISS Markkanen 26' 3PT Jump Shot",
+    "player_name": "Markkanen",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 538,
+    "event_type": 4,
+    "event_desc": "Black REBOUND (Off:1 Def:1)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 547,
+    "event_type": 2,
+    "event_desc": "MISS Black 5' Driving Layup",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 547,
+    "event_type": 0,
+    "event_desc": "Kessler BLOCK (1 BLK)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 549,
+    "event_type": 4,
+    "event_desc": "Clarkson REBOUND (Off:0 Def:1)",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 557,
+    "event_type": 8,
+    "event_desc": "SUB: Collins FOR Clarkson",
+    "player_name": "Clarkson",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 567,
+    "event_type": 6,
+    "event_desc": "da Silva S.FOUL (P1.PN) (N.Sago)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 567,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 1 of 2 (8 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "51-38",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 567,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 2 of 2 (9 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "52-38",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 574,
+    "event_type": 6,
+    "event_desc": "Sexton P.FOUL (P3.T3) (T.Ford)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 590,
+    "event_type": 2,
+    "event_desc": "MISS Carter Jr. 2' Cutting Layup Shot",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 590,
+    "event_type": 0,
+    "event_desc": "Collins BLOCK (1 BLK)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 592,
+    "event_type": 4,
+    "event_desc": "Sexton REBOUND (Off:0 Def:1)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 595,
+    "event_type": 1,
+    "event_desc": "Kessler 5' Running Alley Oop Dunk Shot (4 PTS) (Sexton 4 AST)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "54-38",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 602,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 25' 3PT Pullup Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 605,
+    "event_type": 4,
+    "event_desc": "Markkanen REBOUND (Off:0 Def:4)",
+    "player_name": "Markkanen",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 615,
+    "event_type": 5,
+    "event_desc": "Sexton Lost Ball Turnover (P2.T6)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 615,
+    "event_type": 0,
+    "event_desc": "Banchero STEAL (1 STL)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 619,
+    "event_type": 1,
+    "event_desc": "da Silva 3' Running Dunk (2 PTS) (Banchero 3 AST)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "54-40",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 634,
+    "event_type": 1,
+    "event_desc": "Collins 25' 3PT Jump Shot (12 PTS) (George 3 AST)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "57-40",
+    "score_margin": "17"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 651,
+    "event_type": 1,
+    "event_desc": "Carter Jr. 13' Jump Shot (4 PTS) (Black 1 AST)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "57-42",
+    "score_margin": "15"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 662,
+    "event_type": 6,
+    "event_desc": "da Silva P.FOUL (P2.PN) (M.Myers)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 662,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 1 of 2 (10 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "58-42",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 662,
+    "event_type": 3,
+    "event_desc": "Sexton Free Throw 2 of 2 (11 PTS)",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "59-42",
+    "score_margin": "17"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 676,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 25' 3PT Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 678,
+    "event_type": 4,
+    "event_desc": "Magic Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 678,
+    "event_type": 6,
+    "event_desc": "Kessler L.B.FOUL (P2.T4) (M.Myers)",
+    "player_name": "Kessler",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 678,
+    "event_type": 0,
+    "event_desc": "George Violation:Kicked Ball (T.Ford)",
+    "player_name": "George",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 684,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 28' 3PT Jump Shot",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 687,
+    "event_type": 4,
+    "event_desc": "Banchero REBOUND (Off:1 Def:3)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 689,
+    "event_type": 2,
+    "event_desc": "MISS Carter Jr. 3PT Jump Shot",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 693,
+    "event_type": 4,
+    "event_desc": "Collins REBOUND (Off:0 Def:3)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 711,
+    "event_type": 2,
+    "event_desc": "MISS Sexton 9' Pullup Jump Shot",
+    "player_name": "Sexton",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 713,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:0 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 717,
+    "event_type": 6,
+    "event_desc": "Markkanen S.FOUL (P1.PN) (T.Ford)",
+    "player_name": "Markkanen",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 717,
+    "event_type": 3,
+    "event_desc": "Wagner Free Throw 1 of 2 (15 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "59-43",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 717,
+    "event_type": 3,
+    "event_desc": "Wagner Free Throw 2 of 2 (16 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "59-44",
+    "score_margin": "15"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 718,
+    "event_type": 5,
+    "event_desc": "Collins Bad Pass Turnover (P2.T7)",
+    "player_name": "Collins",
+    "team_abbrev": "UTA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "da Silva STEAL (1 STL)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 1,
+    "event_desc": "da Silva 26' 3PT Jump Shot (5 PTS)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "59-47",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 0,
+    "event_desc": "Instant Replay2nd Period (6:12 PM EST)",
+    "player_name": "Askew",
+    "team_abbrev": "",
+    "score": "59-47",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 2nd Period (6:12 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "59-47",
+    "score_margin": "12"
+  }
+]

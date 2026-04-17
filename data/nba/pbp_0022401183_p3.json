@@ -1,0 +1,1292 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (11:22 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "37-50",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 9,
+    "event_type": 6,
+    "event_desc": "Curry P.FOUL (P1.T1) (B.Barnaky)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 27,
+    "event_type": 2,
+    "event_desc": "MISS Banton 13' Pullup Jump Shot",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 31,
+    "event_type": 4,
+    "event_desc": "Butler III REBOUND (Off:1 Def:2)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 40,
+    "event_type": 2,
+    "event_desc": "MISS Green 25' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 43,
+    "event_type": 4,
+    "event_desc": "Thybulle REBOUND (Off:1 Def:3)",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 51,
+    "event_type": 2,
+    "event_desc": "MISS Camara 8' Driving Layup",
+    "player_name": "Camara",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 51,
+    "event_type": 4,
+    "event_desc": "TRAIL BLAZERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 60,
+    "event_type": 1,
+    "event_desc": "Clingan 3' Cutting Layup Shot (12 PTS) (Banton 5 AST)",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "39-50",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 77,
+    "event_type": 1,
+    "event_desc": "Moody 25' 3PT Jump Shot (6 PTS) (Butler III 4 AST)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "39-53",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 86,
+    "event_type": 5,
+    "event_desc": "Banton Out of Bounds - Bad Pass Turnover Turnover (P5.T9)",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 109,
+    "event_type": 2,
+    "event_desc": "MISS Podziemski 11' Turnaround Fadeaway Shot",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 111,
+    "event_type": 4,
+    "event_desc": "Curry REBOUND (Off:1 Def:4)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 114,
+    "event_type": 1,
+    "event_desc": "Moody 3' Driving Layup (8 PTS) (Curry 5 AST)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "39-55",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 114,
+    "event_type": 6,
+    "event_desc": "Clingan S.FOUL (P1.T1) (E.Malloy)",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 114,
+    "event_type": 3,
+    "event_desc": "Moody Free Throw 1 of 1 (9 PTS)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "39-56",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 123,
+    "event_type": 2,
+    "event_desc": "MISS Banton 8' Driving Floating Jump Shot",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 123,
+    "event_type": 0,
+    "event_desc": "Green BLOCK (1 BLK)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 123,
+    "event_type": 4,
+    "event_desc": "TRAIL BLAZERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 2,
+    "event_desc": "MISS Clingan 25' 3PT Jump Shot",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 129,
+    "event_type": 4,
+    "event_desc": "Butler III REBOUND (Off:1 Def:3)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 144,
+    "event_type": 1,
+    "event_desc": "Green 25' 3PT Jump Shot (3 PTS) (Podziemski 2 AST)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "39-59",
+    "score_margin": "-20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 159,
+    "event_type": 1,
+    "event_desc": "Thybulle 24' 3PT Jump Shot (10 PTS) (Banton 6 AST)",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "42-59",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 169,
+    "event_type": 5,
+    "event_desc": "Curry Bad Pass Turnover (P1.T7)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 169,
+    "event_type": 0,
+    "event_desc": "Thybulle STEAL (3 STL)",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 173,
+    "event_type": 5,
+    "event_desc": "Banton Bad Pass Turnover (P6.T10)",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 173,
+    "event_type": 0,
+    "event_desc": "Moody STEAL (1 STL)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 178,
+    "event_type": 1,
+    "event_desc": "Curry 1' Running Layup (12 PTS) (Green 3 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "42-61",
+    "score_margin": "-19"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 184,
+    "event_type": 6,
+    "event_desc": "Moody P.FOUL (P3.T2) (B.Adair)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 195,
+    "event_type": 5,
+    "event_desc": "Banton Bad Pass Turnover (P7.T11)",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 195,
+    "event_type": 0,
+    "event_desc": "Green STEAL (4 STL)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 203,
+    "event_type": 1,
+    "event_desc": "Butler III 11' Driving Floating Jump Shot (8 PTS) (Podziemski 3 AST)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "42-63",
+    "score_margin": "-21"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 219,
+    "event_type": 2,
+    "event_desc": "MISS Banton 29' 3PT Jump Shot",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 223,
+    "event_type": 4,
+    "event_desc": "Butler III REBOUND (Off:1 Def:4)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 226,
+    "event_type": 1,
+    "event_desc": "Curry 2' Running Layup (14 PTS) (Butler III 5 AST)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "42-65",
+    "score_margin": "-23"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 226,
+    "event_type": 0,
+    "event_desc": "TRAIL BLAZERS Timeout: Regular (Full 3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 226,
+    "event_type": 8,
+    "event_desc": "SUB: Cissoko FOR Banton",
+    "player_name": "Banton",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 234,
+    "event_type": 5,
+    "event_desc": "Cissoko Lost Ball Turnover (P2.T12)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 234,
+    "event_type": 0,
+    "event_desc": "Moody STEAL (2 STL)",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 239,
+    "event_type": 2,
+    "event_desc": "MISS Curry 28' 3PT Running Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 244,
+    "event_type": 4,
+    "event_desc": "Clingan REBOUND (Off:1 Def:7)",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 249,
+    "event_type": 5,
+    "event_desc": "Cissoko Bad Pass Turnover (P3.T13)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 249,
+    "event_type": 0,
+    "event_desc": "Butler III STEAL (1 STL)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 254,
+    "event_type": 2,
+    "event_desc": "MISS Moody 6' Running Layup",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 254,
+    "event_type": 0,
+    "event_desc": "Clingan BLOCK (1 BLK)",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 257,
+    "event_type": 4,
+    "event_desc": "Clingan REBOUND (Off:1 Def:8)",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 276,
+    "event_type": 2,
+    "event_desc": "MISS Camara 9' Turnaround Jump Shot",
+    "player_name": "Camara",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 279,
+    "event_type": 4,
+    "event_desc": "Podziemski REBOUND (Off:1 Def:3)",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 289,
+    "event_type": 1,
+    "event_desc": "Butler III 3' Alley Oop Dunk (10 PTS) (Green 4 AST)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "42-67",
+    "score_margin": "-25"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 306,
+    "event_type": 5,
+    "event_desc": "Thybulle Bad Pass Turnover (P1.T14)",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 306,
+    "event_type": 0,
+    "event_desc": "Butler III STEAL (2 STL)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 318,
+    "event_type": 5,
+    "event_desc": "Green Out of Bounds - Bad Pass Turnover Turnover (P2.T8)",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 318,
+    "event_type": 8,
+    "event_desc": "SUB: Hield FOR Podziemski",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 318,
+    "event_type": 8,
+    "event_desc": "SUB: Kuminga FOR Butler III",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 6,
+    "event_desc": "Curry S.FOUL (P2.T3) (B.Barnaky)",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 3,
+    "event_desc": "MISS Thybulle Free Throw 1 of 2",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 4,
+    "event_desc": "TRAIL BLAZERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 8,
+    "event_desc": "SUB: Walker FOR Clingan",
+    "player_name": "Clingan",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 3,
+    "event_desc": "Thybulle Free Throw 2 of 2 (11 PTS)",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "43-67",
+    "score_margin": "-24"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 351,
+    "event_type": 2,
+    "event_desc": "MISS Moody 3' Driving Finger Roll Layup",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 351,
+    "event_type": 0,
+    "event_desc": "Murray BLOCK (1 BLK)",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 354,
+    "event_type": 4,
+    "event_desc": "Walker REBOUND (Off:0 Def:2)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 358,
+    "event_type": 1,
+    "event_desc": "Walker 3' Running Dunk (4 PTS) (Cissoko 2 AST)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "45-67",
+    "score_margin": "-22"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 358,
+    "event_type": 0,
+    "event_desc": "Warriors Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 358,
+    "event_type": 8,
+    "event_desc": "SUB: Rupert FOR Thybulle",
+    "player_name": "Thybulle",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 358,
+    "event_type": 8,
+    "event_desc": "SUB: Payton II FOR Moody",
+    "player_name": "Moody",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 358,
+    "event_type": 8,
+    "event_desc": "SUB: Looney FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 366,
+    "event_type": 6,
+    "event_desc": "Camara P.FOUL (P2.T2) (B.Barnaky)",
+    "player_name": "Camara",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 376,
+    "event_type": 6,
+    "event_desc": "Payton II OFF.Foul (P2) (E.Malloy)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 376,
+    "event_type": 5,
+    "event_desc": "Payton II Offensive Foul Turnover (P3.T9)",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 392,
+    "event_type": 5,
+    "event_desc": "Walker Step Out of Bounds Turnover (P2.T15)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 407,
+    "event_type": 2,
+    "event_desc": "MISS Curry 31' 3PT Pullup Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 4,
+    "event_desc": "Warriors Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 6,
+    "event_desc": "Rupert L.B.FOUL (P1.T3) (B.Adair)",
+    "player_name": "Rupert",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 420,
+    "event_type": 2,
+    "event_desc": "MISS Kuminga 26' 3PT Jump Shot",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 424,
+    "event_type": 4,
+    "event_desc": "Cissoko REBOUND (Off:2 Def:3)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 429,
+    "event_type": 2,
+    "event_desc": "MISS Walker 4' Running Layup",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 430,
+    "event_type": 4,
+    "event_desc": "Walker REBOUND (Off:1 Def:2)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 430,
+    "event_type": 6,
+    "event_desc": "Looney S.FOUL (P2.T4) (B.Barnaky)",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 430,
+    "event_type": 3,
+    "event_desc": "Walker Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "46-67",
+    "score_margin": "-21"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 430,
+    "event_type": 3,
+    "event_desc": "Walker Free Throw 2 of 2 (6 PTS)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "47-67",
+    "score_margin": "-20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 452,
+    "event_type": 2,
+    "event_desc": "MISS Curry 27' 3PT Step Back Jump Shot",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 455,
+    "event_type": 4,
+    "event_desc": "Murray REBOUND (Off:0 Def:2)",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 464,
+    "event_type": 2,
+    "event_desc": "MISS Murray 9' Turnaround Jump Shot",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 464,
+    "event_type": 0,
+    "event_desc": "Hield BLOCK (1 BLK)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 466,
+    "event_type": 4,
+    "event_desc": "Looney REBOUND (Off:0 Def:4)",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 474,
+    "event_type": 2,
+    "event_desc": "MISS Hield 3PT Jump Shot",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 478,
+    "event_type": 4,
+    "event_desc": "Walker REBOUND (Off:1 Def:3)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 495,
+    "event_type": 1,
+    "event_desc": "Walker 3PT Jump Shot (9 PTS) (Cissoko 3 AST)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "50-67",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 514,
+    "event_type": 2,
+    "event_desc": "MISS Kuminga 10' Pullup Jump Shot",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 517,
+    "event_type": 4,
+    "event_desc": "Cissoko REBOUND (Off:2 Def:4)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 519,
+    "event_type": 6,
+    "event_desc": "Hield S.FOUL (P2.PN) (E.Malloy)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 519,
+    "event_type": 3,
+    "event_desc": "Walker Free Throw 1 of 2 (10 PTS)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "51-67",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 519,
+    "event_type": 3,
+    "event_desc": "Walker Free Throw 2 of 2 (11 PTS)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "52-67",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 539,
+    "event_type": 6,
+    "event_desc": "Cissoko S.FOUL (P2.T4) (B.Adair)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 539,
+    "event_type": 3,
+    "event_desc": "MISS Kuminga Free Throw 1 of 2",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 539,
+    "event_type": 4,
+    "event_desc": "Warriors Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 539,
+    "event_type": 3,
+    "event_desc": "Kuminga Free Throw 2 of 2 (6 PTS)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "52-68",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 555,
+    "event_type": 5,
+    "event_desc": "Cissoko Lost Ball Turnover (P4.T16)",
+    "player_name": "Cissoko",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 555,
+    "event_type": 0,
+    "event_desc": "Kuminga STEAL (1 STL)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 6,
+    "event_desc": "Walker S.FOUL (P2.PN) (B.Barnaky)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (11:45 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "52-68",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 3,
+    "event_desc": "Kuminga Free Throw 1 of 2 (7 PTS)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "52-69",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 8,
+    "event_desc": "SUB: Minaya FOR Camara",
+    "player_name": "Camara",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 8,
+    "event_desc": "SUB: Butler III FOR Curry",
+    "player_name": "Curry",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 8,
+    "event_desc": "SUB: Podziemski FOR Payton II",
+    "player_name": "Payton II",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 3,
+    "event_desc": "Kuminga Free Throw 2 of 2 (8 PTS)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "52-70",
+    "score_margin": "-18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 570,
+    "event_type": 2,
+    "event_desc": "MISS Walker 7' Driving Hook Shot",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 572,
+    "event_type": 4,
+    "event_desc": "Hield REBOUND (Off:1 Def:2)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 586,
+    "event_type": 2,
+    "event_desc": "MISS Hield 26' 3PT Jump Shot",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 590,
+    "event_type": 4,
+    "event_desc": "Murray REBOUND (Off:0 Def:3)",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 596,
+    "event_type": 1,
+    "event_desc": "Rupert 3' Driving Layup (4 PTS) (Murray 2 AST)",
+    "player_name": "Rupert",
+    "team_abbrev": "POR",
+    "score": "54-70",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 623,
+    "event_type": 2,
+    "event_desc": "MISS Podziemski 3PT Pullup Jump Shot",
+    "player_name": "Podziemski",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 626,
+    "event_type": 4,
+    "event_desc": "Walker REBOUND (Off:1 Def:4)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 1,
+    "event_desc": "Walker 2' Running Layup (13 PTS)",
+    "player_name": "Walker",
+    "team_abbrev": "POR",
+    "score": "56-70",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 653,
+    "event_type": 1,
+    "event_desc": "Butler III 2' Driving Reverse Layup (12 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "56-72",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 653,
+    "event_type": 6,
+    "event_desc": "Minaya S.FOUL (P1.PN) (E.Malloy)",
+    "player_name": "Minaya",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 653,
+    "event_type": 3,
+    "event_desc": "Butler III Free Throw 1 of 1 (13 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "56-73",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 670,
+    "event_type": 2,
+    "event_desc": "MISS Rupert 14' Fadeaway Jumper",
+    "player_name": "Rupert",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 672,
+    "event_type": 4,
+    "event_desc": "Murray REBOUND (Off:1 Def:3)",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 672,
+    "event_type": 6,
+    "event_desc": "Looney P.FOUL (P3.PN) (E.Malloy)",
+    "player_name": "Looney",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 672,
+    "event_type": 3,
+    "event_desc": "Murray Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "57-73",
+    "score_margin": "-16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 672,
+    "event_type": 3,
+    "event_desc": "MISS Murray Free Throw 2 of 2",
+    "player_name": "Murray",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 674,
+    "event_type": 4,
+    "event_desc": "Hield REBOUND (Off:1 Def:3)",
+    "player_name": "Hield",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 689,
+    "event_type": 1,
+    "event_desc": "Kuminga 1' Cutting Layup Shot (10 PTS) (Butler III 6 AST)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "57-75",
+    "score_margin": "-18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 707,
+    "event_type": 2,
+    "event_desc": "MISS Minaya 3' Cutting Layup Shot",
+    "player_name": "Minaya",
+    "team_abbrev": "POR",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 711,
+    "event_type": 4,
+    "event_desc": "Kuminga REBOUND (Off:1 Def:4)",
+    "player_name": "Kuminga",
+    "team_abbrev": "GSW",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 717,
+    "event_type": 1,
+    "event_desc": "Butler III 2' Running Layup (15 PTS)",
+    "player_name": "Butler III",
+    "team_abbrev": "GSW",
+    "score": "57-77",
+    "score_margin": "-20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (11:52 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "57-77",
+    "score_margin": "-20"
+  }
+]

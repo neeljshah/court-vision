@@ -1,0 +1,1172 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (10:18 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Ayton vs. Gobert: Tip to Edwards",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 16,
+    "event_type": 2,
+    "event_desc": "MISS Edwards 26' 3PT Pullup Jump Shot",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 17,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:1)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 17,
+    "event_type": 5,
+    "event_desc": "Reaves Out of Bounds - Bad Pass Turnover Turnover (P1.T1)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 26,
+    "event_type": 1,
+    "event_desc": "DiVincenzo 10' Driving Floating Jump Shot (2 PTS) (Gobert 1 AST)",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "0-2",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 53,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 27' 3PT Pullup Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 57,
+    "event_type": 4,
+    "event_desc": "Edwards REBOUND (Off:0 Def:1)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 59,
+    "event_type": 1,
+    "event_desc": "McDaniels 1' Running Finger Roll Layup (2 PTS) (Edwards 1 AST)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "0-4",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 73,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 26' 3PT Pullup Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 77,
+    "event_type": 4,
+    "event_desc": "Randle REBOUND (Off:0 Def:1)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 83,
+    "event_type": 1,
+    "event_desc": "McDaniels 10' Fadeaway Jumper (4 PTS) (Randle 1 AST)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "0-6",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 99,
+    "event_type": 6,
+    "event_desc": "DiVincenzo S.FOUL (P1.T1) (S.Corbin)",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 99,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "1-6",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 99,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "2-6",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 124,
+    "event_type": 2,
+    "event_desc": "MISS McDaniels 3PT Pullup Jump Shot",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 125,
+    "event_type": 4,
+    "event_desc": "Timberwolves Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 132,
+    "event_type": 1,
+    "event_desc": "Randle 24' 3PT Jump Shot (3 PTS) (Edwards 2 AST)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "2-9",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 145,
+    "event_type": 1,
+    "event_desc": "Doncic 15' Fadeaway Jumper (4 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "4-9",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 152,
+    "event_type": 6,
+    "event_desc": "Doncic S.FOUL (P1.T1) (J.Williams)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 152,
+    "event_type": 3,
+    "event_desc": "MISS Randle Free Throw 1 of 2",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 152,
+    "event_type": 4,
+    "event_desc": "Timberwolves Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 152,
+    "event_type": 3,
+    "event_desc": "Randle Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "4-10",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 162,
+    "event_type": 1,
+    "event_desc": "Doncic 27' 3PT Pullup Jump Shot (7 PTS) (Reaves 1 AST)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "7-10",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 178,
+    "event_type": 2,
+    "event_desc": "MISS Edwards 13' Step Back Jump Shot",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 180,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:2)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 183,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 28' 3PT Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 188,
+    "event_type": 4,
+    "event_desc": "Randle REBOUND (Off:0 Def:2)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 199,
+    "event_type": 1,
+    "event_desc": "Randle 27' 3PT Pullup Jump Shot (7 PTS) (Gobert 2 AST)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "7-13",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 217,
+    "event_type": 1,
+    "event_desc": "Hachimura 26' 3PT Jump Shot (3 PTS) (Reaves 2 AST)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "10-13",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 231,
+    "event_type": 1,
+    "event_desc": "DiVincenzo 28' 3PT Jump Shot (5 PTS) (Randle 2 AST)",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "10-16",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 1,
+    "event_desc": "Vincent 24' 3PT Jump Shot (3 PTS) (Doncic 1 AST)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "13-16",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 253,
+    "event_type": 1,
+    "event_desc": "DiVincenzo 24' 3PT Jump Shot (8 PTS) (Randle 3 AST)",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "13-19",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 5,
+    "event_desc": "Doncic Bad Pass Turnover (P1.T2)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 0,
+    "event_desc": "DiVincenzo STEAL (1 STL)",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 275,
+    "event_type": 1,
+    "event_desc": "Edwards 2' Running Layup (2 PTS) (DiVincenzo 1 AST)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "13-21",
+    "score_margin": "-8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 275,
+    "event_type": 0,
+    "event_desc": "LAKERS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 290,
+    "event_type": 1,
+    "event_desc": "Doncic 8' Driving Floating Bank Jump Shot (9 PTS) (Reaves 3 AST)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "15-21",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 311,
+    "event_type": 1,
+    "event_desc": "Edwards 16' Turnaround Jump Shot (4 PTS)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "15-23",
+    "score_margin": "-8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 320,
+    "event_type": 2,
+    "event_desc": "MISS Vincent 3PT Jump Shot",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 322,
+    "event_type": 4,
+    "event_desc": "Randle REBOUND (Off:0 Def:3)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 328,
+    "event_type": 1,
+    "event_desc": "Edwards 28' 3PT Step Back Jump Shot (7 PTS)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "15-26",
+    "score_margin": "-11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 346,
+    "event_type": 1,
+    "event_desc": "Reaves 4' Driving Finger Roll Layup (2 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "17-26",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 6,
+    "event_desc": "Doncic P.FOUL (P2.T2) (J.Williams)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 0,
+    "event_desc": "Timberwolves Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (10:31 PM EST)",
+    "player_name": "Perkins",
+    "team_abbrev": "",
+    "score": "17-26",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 8,
+    "event_desc": "SUB: LaRavia FOR Hachimura",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 8,
+    "event_desc": "SUB: Smart FOR Vincent",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 8,
+    "event_desc": "SUB: Reid FOR Gobert",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 360,
+    "event_type": 1,
+    "event_desc": "Randle 16' Pullup Jump Shot (9 PTS) (Edwards 3 AST)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "17-28",
+    "score_margin": "-11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 376,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 4' Driving Floating Bank Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 378,
+    "event_type": 4,
+    "event_desc": "Reid REBOUND (Off:0 Def:1)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 384,
+    "event_type": 2,
+    "event_desc": "MISS Reid 11' Floating Jump Shot",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 387,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:3)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 393,
+    "event_type": 1,
+    "event_desc": "Reaves 6' Pullup Jump Shot (4 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "19-28",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 2,
+    "event_desc": "MISS Randle 30' 3PT Jump Shot",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 408,
+    "event_type": 4,
+    "event_desc": "Ayton REBOUND (Off:0 Def:1)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 8,
+    "event_desc": "SUB: Conley FOR DiVincenzo",
+    "player_name": "DiVincenzo",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 425,
+    "event_type": 1,
+    "event_desc": "LaRavia 26' 3PT Jump Shot (3 PTS) (Reaves 4 AST)",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "22-28",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 446,
+    "event_type": 2,
+    "event_desc": "MISS Edwards 29' 3PT Pullup Jump Shot",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 448,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:1)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 2,
+    "event_desc": "MISS Ayton 6' Hook Shot",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 0,
+    "event_desc": "McDaniels BLOCK (1 BLK)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 461,
+    "event_type": 4,
+    "event_desc": "Reid REBOUND (Off:0 Def:2)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 466,
+    "event_type": 5,
+    "event_desc": "Randle Out of Bounds - Bad Pass Turnover Turnover (P1.T1)",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 466,
+    "event_type": 8,
+    "event_desc": "SUB: Knecht FOR Reaves",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 466,
+    "event_type": 8,
+    "event_desc": "SUB: Shannon Jr. FOR Randle",
+    "player_name": "Randle",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 480,
+    "event_type": 1,
+    "event_desc": "Doncic 26' 3PT Step Back Jump Shot (12 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "25-28",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 495,
+    "event_type": 2,
+    "event_desc": "MISS Shannon Jr. 5' Driving Reverse Layup",
+    "player_name": "Shannon Jr.",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 495,
+    "event_type": 0,
+    "event_desc": "Ayton BLOCK (1 BLK)",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 496,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:0)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 496,
+    "event_type": 1,
+    "event_desc": "McDaniels 2' Putback Layup (6 PTS)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "25-30",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 508,
+    "event_type": 1,
+    "event_desc": "Doncic 16' Driving Floating Jump Shot (14 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "27-30",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 508,
+    "event_type": 6,
+    "event_desc": "Conley S.FOUL (P1.T2) (T.Ricks)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 508,
+    "event_type": 8,
+    "event_desc": "SUB: Vanderbilt FOR Ayton",
+    "player_name": "Ayton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 508,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 1 of 1",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 511,
+    "event_type": 4,
+    "event_desc": "Conley REBOUND (Off:0 Def:1)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 522,
+    "event_type": 1,
+    "event_desc": "Edwards 10' Driving Floating Bank Jump Shot (9 PTS)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "27-32",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 522,
+    "event_type": 6,
+    "event_desc": "Knecht S.FOUL (P1.T3) (S.Corbin)",
+    "player_name": "Knecht",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 522,
+    "event_type": 8,
+    "event_desc": "SUB: Gobert FOR McDaniels",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 522,
+    "event_type": 3,
+    "event_desc": "MISS Edwards Free Throw 1 of 1",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 525,
+    "event_type": 4,
+    "event_desc": "Reid REBOUND (Off:1 Def:2)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 528,
+    "event_type": 1,
+    "event_desc": "Edwards 15' Pullup Jump Shot (11 PTS)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "27-34",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 540,
+    "event_type": 1,
+    "event_desc": "Doncic 28' 3PT Step Back Jump Shot (17 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "30-34",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 568,
+    "event_type": 2,
+    "event_desc": "MISS Conley 9' Driving Floating Jump Shot",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 573,
+    "event_type": 4,
+    "event_desc": "Conley REBOUND (Off:1 Def:1)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 573,
+    "event_type": 2,
+    "event_desc": "MISS Conley Tip Layup Shot",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 4,
+    "event_desc": "Vanderbilt REBOUND (Off:0 Def:1)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 577,
+    "event_type": 6,
+    "event_desc": "Conley S.FOUL (P2.T3) (T.Ricks)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 577,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 1 of 2",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 577,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 577,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 2 of 2 (18 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "31-34",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 597,
+    "event_type": 1,
+    "event_desc": "Reid 28' 3PT Jump Shot (3 PTS) (Conley 1 AST)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "31-37",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 613,
+    "event_type": 1,
+    "event_desc": "Doncic 30' 3PT Pullup Jump Shot (21 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "34-37",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 623,
+    "event_type": 2,
+    "event_desc": "MISS Conley 26' 3PT Pullup Jump Shot",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 4,
+    "event_desc": "Timberwolves Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 624,
+    "event_type": 8,
+    "event_desc": "SUB: Reaves FOR LaRavia",
+    "player_name": "LaRavia",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 637,
+    "event_type": 1,
+    "event_desc": "Edwards 27' 3PT Step Back Jump Shot (14 PTS)",
+    "player_name": "Edwards",
+    "team_abbrev": "MIN",
+    "score": "34-40",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 653,
+    "event_type": 1,
+    "event_desc": "Doncic 1' Driving Layup (23 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "36-40",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 667,
+    "event_type": 2,
+    "event_desc": "MISS Shannon Jr. 28' 3PT Jump Shot",
+    "player_name": "Shannon Jr.",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 669,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:2)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 680,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 27' 3PT Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 680,
+    "event_type": 0,
+    "event_desc": "Reid BLOCK (1 BLK)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 4,
+    "event_desc": "Shannon Jr. REBOUND (Off:0 Def:1)",
+    "player_name": "Shannon Jr.",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 6,
+    "event_desc": "Reaves P.FOUL (P1.T4) (T.Ricks)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 8,
+    "event_desc": "SUB: Ayton FOR Doncic",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 689,
+    "event_type": 2,
+    "event_desc": "MISS Reid 29' 3PT Jump Shot",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 691,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:4)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 705,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 27' 3PT Step Back Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 711,
+    "event_type": 4,
+    "event_desc": "Shannon Jr. REBOUND (Off:0 Def:2)",
+    "player_name": "Shannon Jr.",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 712,
+    "event_type": 5,
+    "event_desc": "Shannon Jr. Bad Pass Turnover (P1.T2)",
+    "player_name": "Shannon Jr.",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 712,
+    "event_type": 0,
+    "event_desc": "Vanderbilt STEAL (1 STL)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 5' Driving Finger Roll Layup",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 28' 3PT Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (10:45 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "36-40",
+    "score_margin": "-4"
+  }
+]

@@ -108,6 +108,7 @@ def kelly_corr(
     stat: Optional[str] = None,
     open_stats: Optional[List[str]] = None,
     bankroll_start: Optional[float] = None,
+    win_prob_override: Optional[float] = None,
 ) -> float:
     """
     Kelly criterion with correlation adjustment and bankroll guards.
@@ -128,6 +129,10 @@ def kelly_corr(
         existing_exposure:  Total $ already at risk on correlated bets.
         stat:               Stat key for this bet (e.g. "pts").
         open_stats:         List of stat keys for currently open bets.
+        win_prob_override:  Calibrated P(win) from isotonic regression.  When
+                            provided, replaces the implied_prob + edge heuristic.
+                            Obtain via CalibrationLayer.win_prob() or
+                            PropStackResult.calibrated_win_probs[stat].
 
     Returns:
         Recommended bet size in dollars (0 if Kelly is negative).
@@ -145,8 +150,11 @@ def kelly_corr(
             if corrs:
                 corr_with_open = float(np.mean(corrs))
     implied_prob = _american_to_prob(odds)
-    # Model win probability from edge + implied prob
-    win_prob = min(0.95, implied_prob + edge)
+    # Use calibrated win probability when available; raw heuristic otherwise
+    if win_prob_override is not None:
+        win_prob = max(0.05, min(0.95, float(win_prob_override)))
+    else:
+        win_prob = min(0.95, implied_prob + edge)
     b = _american_to_payout(odds)
     q = 1.0 - win_prob
 

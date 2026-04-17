@@ -1,0 +1,1392 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (7:11 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Carter Jr. vs. Okongwu: Tip to Suggs",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 19,
+    "event_type": 6,
+    "event_desc": "Okongwu S.FOUL (P1.T1) (E.Malloy)",
+    "player_name": "Okongwu",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 19,
+    "event_type": 3,
+    "event_desc": "MISS Carter Jr. Free Throw 1 of 2",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 19,
+    "event_type": 4,
+    "event_desc": "MAGIC Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 19,
+    "event_type": 3,
+    "event_desc": "MISS Carter Jr. Free Throw 2 of 2",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 23,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:1)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 37,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 11' Fadeaway Jumper",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 39,
+    "event_type": 4,
+    "event_desc": "Carter Jr. REBOUND (Off:0 Def:1)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 46,
+    "event_type": 1,
+    "event_desc": "Wagner 3PT Jump Shot (3 PTS) (Suggs 1 AST)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "3-0",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 59,
+    "event_type": 0,
+    "event_desc": "Suggs Violation:Kicked Ball (E.Malloy)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 68,
+    "event_type": 1,
+    "event_desc": "Daniels 7' Driving Floating Jump Shot (2 PTS)",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "3-2",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 88,
+    "event_type": 1,
+    "event_desc": "Wagner 3' Driving Floating Jump Shot (5 PTS) (Bane 1 AST)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "5-2",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 96,
+    "event_type": 5,
+    "event_desc": "Young Bad Pass Turnover (P1.T1)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 96,
+    "event_type": 0,
+    "event_desc": "Wagner STEAL (1 STL)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 101,
+    "event_type": 1,
+    "event_desc": "Bane 1' Running Layup (2 PTS)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "7-2",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 101,
+    "event_type": 6,
+    "event_desc": "Okongwu S.FOUL (P2.T2) (J.Butler)",
+    "player_name": "Okongwu",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 101,
+    "event_type": 8,
+    "event_desc": "SUB: Gueye FOR Okongwu",
+    "player_name": "Okongwu",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 101,
+    "event_type": 3,
+    "event_desc": "Bane Free Throw 1 of 1 (3 PTS)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "8-2",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 116,
+    "event_type": 1,
+    "event_desc": "Young 3' Driving Layup (2 PTS)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "8-4",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 119,
+    "event_type": 5,
+    "event_desc": "Suggs Lost Ball Turnover (P1.T1)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 119,
+    "event_type": 0,
+    "event_desc": "Young STEAL (1 STL)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 125,
+    "event_type": 1,
+    "event_desc": "Johnson 2' Running Dunk (2 PTS) (Alexander-Walker 1 AST)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "8-6",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 131,
+    "event_type": 6,
+    "event_desc": "Suggs Offensive Charge Foul (P1) (D.Scott)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 131,
+    "event_type": 5,
+    "event_desc": "Suggs Offensive Foul Turnover (P2.T2)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 147,
+    "event_type": 2,
+    "event_desc": "MISS Young 26' 3PT Pullup Jump Shot",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 147,
+    "event_type": 4,
+    "event_desc": "Bane REBOUND (Off:0 Def:1)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 147,
+    "event_type": 5,
+    "event_desc": "Bane Traveling Turnover (P1.T3)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 166,
+    "event_type": 2,
+    "event_desc": "MISS Gueye 12' Turnaround Jump Shot",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 168,
+    "event_type": 4,
+    "event_desc": "Wagner REBOUND (Off:0 Def:1)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 181,
+    "event_type": 1,
+    "event_desc": "Suggs 26' 3PT Jump Shot (3 PTS) (Bane 2 AST)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "11-6",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 197,
+    "event_type": 2,
+    "event_desc": "MISS Young 27' 3PT Step Back Jump Shot",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 200,
+    "event_type": 4,
+    "event_desc": "Suggs REBOUND (Off:0 Def:1)",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 207,
+    "event_type": 5,
+    "event_desc": "Bane Bad Pass Turnover (P2.T4)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 207,
+    "event_type": 0,
+    "event_desc": "Young STEAL (2 STL)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 207,
+    "event_type": 6,
+    "event_desc": "Bane P.FOUL (P1.T1) (J.Butler)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 220,
+    "event_type": 1,
+    "event_desc": "Daniels 5' Cutting Layup Shot (4 PTS) (Alexander-Walker 2 AST)",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "11-8",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 232,
+    "event_type": 1,
+    "event_desc": "Banchero 2' Driving Layup (2 PTS)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "13-8",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 6,
+    "event_desc": "Johnson OFF.Foul (P1) (E.Malloy)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 242,
+    "event_type": 5,
+    "event_desc": "Johnson Offensive Foul Turnover (P1.T2)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 252,
+    "event_type": 5,
+    "event_desc": "Banchero Out of Bounds Lost Ball Turnover (P1.T5)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 263,
+    "event_type": 1,
+    "event_desc": "Alexander-Walker 12' Pullup Jump Shot (2 PTS) (Johnson 1 AST)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "13-10",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 283,
+    "event_type": 2,
+    "event_desc": "MISS Bane 25' 3PT Jump Shot",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 283,
+    "event_type": 4,
+    "event_desc": "Hawks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 283,
+    "event_type": 8,
+    "event_desc": "SUB: Black FOR Suggs",
+    "player_name": "Suggs",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 300,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 3PT Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 303,
+    "event_type": 4,
+    "event_desc": "Black REBOUND (Off:0 Def:1)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 6,
+    "event_desc": "Black OFF.Foul (P1) (E.Malloy)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 5,
+    "event_desc": "Black Offensive Foul Turnover (P1.T6)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 0,
+    "event_desc": "MAGIC Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: da Silva FOR Wagner",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: Kennard FOR Young",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 2,
+    "event_desc": "MISS Daniels 8' Driving Floating Jump Shot",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 329,
+    "event_type": 4,
+    "event_desc": "Kennard REBOUND (Off:1 Def:0)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 331,
+    "event_type": 2,
+    "event_desc": "MISS Gueye 3PT Jump Shot",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 331,
+    "event_type": 4,
+    "event_desc": "Hawks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 333,
+    "event_type": 5,
+    "event_desc": "Alexander-Walker Step Out of Bounds Turnover (P1.T3)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 6,
+    "event_desc": "Banchero OFF.Foul (P1) (J.Butler)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 350,
+    "event_type": 5,
+    "event_desc": "Banchero Offensive Foul Turnover (P2.T7)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 364,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 5' Turnaround Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 365,
+    "event_type": 4,
+    "event_desc": "Gueye REBOUND (Off:1 Def:0)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 365,
+    "event_type": 6,
+    "event_desc": "Carter Jr. S.FOUL (P1.T2) (D.Scott)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 365,
+    "event_type": 3,
+    "event_desc": "MISS Gueye Free Throw 1 of 2",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 365,
+    "event_type": 4,
+    "event_desc": "Hawks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 365,
+    "event_type": 3,
+    "event_desc": "MISS Gueye Free Throw 2 of 2",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 369,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:0 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 370,
+    "event_type": 6,
+    "event_desc": "Johnson S.FOUL (P2.T3) (D.Scott)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 370,
+    "event_type": 3,
+    "event_desc": "MISS Black Free Throw 1 of 2",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 370,
+    "event_type": 4,
+    "event_desc": "MAGIC Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 370,
+    "event_type": 3,
+    "event_desc": "MISS Black Free Throw 2 of 2",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 373,
+    "event_type": 4,
+    "event_desc": "Daniels REBOUND (Off:0 Def:1)",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 387,
+    "event_type": 1,
+    "event_desc": "Johnson 8' Driving Floating Jump Shot (4 PTS)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "13-12",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 391,
+    "event_type": 6,
+    "event_desc": "Kennard S.FOUL (P1.T4) (J.Butler)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 391,
+    "event_type": 3,
+    "event_desc": "Bane Free Throw 1 of 2 (4 PTS)",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "14-12",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 391,
+    "event_type": 3,
+    "event_desc": "MISS Bane Free Throw 2 of 2",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 395,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:2)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 411,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 26' 3PT Pullup Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 414,
+    "event_type": 4,
+    "event_desc": "Gueye REBOUND (Off:2 Def:0)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 417,
+    "event_type": 1,
+    "event_desc": "Kennard 11' Jump Shot (2 PTS) (Gueye 1 AST)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "14-14",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 426,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 2' Driving Layup",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 426,
+    "event_type": 0,
+    "event_desc": "Gueye BLOCK (1 BLK)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 429,
+    "event_type": 4,
+    "event_desc": "Alexander-Walker REBOUND (Off:0 Def:1)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 431,
+    "event_type": 1,
+    "event_desc": "Alexander-Walker 4' Running Layup (4 PTS)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "14-16",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 455,
+    "event_type": 1,
+    "event_desc": "Carter Jr. 12' Jump Shot (2 PTS) (Bane 3 AST)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "16-16",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 471,
+    "event_type": 5,
+    "event_desc": "Kennard Lost Ball Turnover (P1.T4)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 471,
+    "event_type": 0,
+    "event_desc": "Carter Jr. STEAL (1 STL)",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 479,
+    "event_type": 2,
+    "event_desc": "MISS Bane 3PT Pullup Jump Shot",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 482,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:3)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 485,
+    "event_type": 5,
+    "event_desc": "Johnson Out of Bounds - Bad Pass Turnover Turnover (P2.T5)",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 485,
+    "event_type": 8,
+    "event_desc": "SUB: Jones FOR Bane",
+    "player_name": "Bane",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 485,
+    "event_type": 8,
+    "event_desc": "SUB: Bitadze FOR Carter Jr.",
+    "player_name": "Carter Jr.",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 4' Driving Dunk",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 0,
+    "event_desc": "Daniels BLOCK (1 BLK)",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 4,
+    "event_desc": "Hawks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 0,
+    "event_desc": "Hawks Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (7:30 PM EST)",
+    "player_name": "Pack",
+    "team_abbrev": "",
+    "score": "16-16",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 8,
+    "event_desc": "SUB: Young FOR Johnson",
+    "player_name": "Johnson",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 8,
+    "event_desc": "SUB: Dante FOR Alexander-Walker",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 511,
+    "event_type": 1,
+    "event_desc": "Gueye 3PT Jump Shot (3 PTS) (Daniels 1 AST)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "16-19",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 534,
+    "event_type": 5,
+    "event_desc": "Black Out of Bounds - Bad Pass Turnover Turnover (P2.T8)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 534,
+    "event_type": 8,
+    "event_desc": "SUB: Krejci FOR Daniels",
+    "player_name": "Daniels",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 554,
+    "event_type": 5,
+    "event_desc": "Gueye Bad Pass Turnover (P1.T6)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 554,
+    "event_type": 0,
+    "event_desc": "Black STEAL (1 STL)",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 570,
+    "event_type": 2,
+    "event_desc": "MISS Banchero 5' Driving Finger Roll Layup",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 572,
+    "event_type": 4,
+    "event_desc": "Gueye REBOUND (Off:2 Def:1)",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 583,
+    "event_type": 2,
+    "event_desc": "MISS Young 11' Floating Jump Shot",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 586,
+    "event_type": 4,
+    "event_desc": "Banchero REBOUND (Off:0 Def:1)",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 589,
+    "event_type": 1,
+    "event_desc": "da Silva 3PT Running Jump Shot (3 PTS) (Jones 1 AST)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "19-19",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 607,
+    "event_type": 2,
+    "event_desc": "MISS Gueye 25' 3PT Jump Shot",
+    "player_name": "Gueye",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 610,
+    "event_type": 4,
+    "event_desc": "Dante REBOUND (Off:1 Def:0)",
+    "player_name": "Dante",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 617,
+    "event_type": 2,
+    "event_desc": "MISS Young 27' 3PT Pullup Jump Shot",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 618,
+    "event_type": 4,
+    "event_desc": "Hawks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 618,
+    "event_type": 6,
+    "event_desc": "da Silva P.FOUL (P1.T3) (J.Butler)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 618,
+    "event_type": 8,
+    "event_desc": "SUB: Wagner FOR Black",
+    "player_name": "Black",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 618,
+    "event_type": 8,
+    "event_desc": "SUB: Suggs FOR Banchero",
+    "player_name": "Banchero",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 629,
+    "event_type": 2,
+    "event_desc": "MISS Kennard 8' Pullup Jump Shot",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 629,
+    "event_type": 0,
+    "event_desc": "Jones BLOCK (1 BLK)",
+    "player_name": "Jones",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 629,
+    "event_type": 4,
+    "event_desc": "Kennard REBOUND (Off:2 Def:0)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 637,
+    "event_type": 1,
+    "event_desc": "Kennard 6' Driving Floating Jump Shot (4 PTS)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "19-21",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 6,
+    "event_desc": "Krejci P.FOUL (P1.PN) (E.Malloy)",
+    "player_name": "Krej\u010d\u00ed",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 3,
+    "event_desc": "Wagner Free Throw 1 of 2 (6 PTS)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "20-21",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 3,
+    "event_desc": "MISS Wagner Free Throw 2 of 2",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 648,
+    "event_type": 4,
+    "event_desc": "Dante REBOUND (Off:1 Def:1)",
+    "player_name": "Dante",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 656,
+    "event_type": 1,
+    "event_desc": "Krejci 4' Cutting Layup Shot (2 PTS) (Gueye 2 AST)",
+    "player_name": "Krej\u010d\u00ed",
+    "team_abbrev": "ATL",
+    "score": "20-23",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 667,
+    "event_type": 2,
+    "event_desc": "MISS da Silva 8' Driving Floating Jump Shot",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 667,
+    "event_type": 4,
+    "event_desc": "da Silva REBOUND (Off:1 Def:1)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 669,
+    "event_type": 1,
+    "event_desc": "da Silva 7' Jump Shot (5 PTS)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "22-23",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 688,
+    "event_type": 5,
+    "event_desc": "Kennard Out of Bounds - Bad Pass Turnover Turnover (P2.T7)",
+    "player_name": "Kennard",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 707,
+    "event_type": 2,
+    "event_desc": "MISS Wagner 11' Driving Floating Bank Jump Shot",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 709,
+    "event_type": 4,
+    "event_desc": "Dante REBOUND (Off:1 Def:2)",
+    "player_name": "Dante",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 711,
+    "event_type": 5,
+    "event_desc": "Dante Bad Pass Turnover (P1.T8)",
+    "player_name": "Dante",
+    "team_abbrev": "ATL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 711,
+    "event_type": 0,
+    "event_desc": "da Silva STEAL (1 STL)",
+    "player_name": "da Silva",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 1,
+    "event_desc": "Wagner 1' Cutting Dunk Shot (8 PTS) (da Silva 1 AST)",
+    "player_name": "Wagner",
+    "team_abbrev": "ORL",
+    "score": "24-23",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 716,
+    "event_type": 6,
+    "event_desc": "Bitadze P.FOUL (P1.PN) (J.Butler)",
+    "player_name": "Bitadze",
+    "team_abbrev": "ORL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 716,
+    "event_type": 3,
+    "event_desc": "Young Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "24-24",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 716,
+    "event_type": 3,
+    "event_desc": "Young Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Young",
+    "team_abbrev": "ATL",
+    "score": "24-25",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 0,
+    "event_desc": "MAGIC Heave",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "MAGIC Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (7:40 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "24-25",
+    "score_margin": "-1"
+  }
+]

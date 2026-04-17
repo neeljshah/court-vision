@@ -1,0 +1,1012 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (4:51 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "54-60",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 16,
+    "event_type": 2,
+    "event_desc": "MISS Marshall 3PT Jump Shot",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 20,
+    "event_type": 4,
+    "event_desc": "Beal REBOUND (Off:0 Def:3)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 27,
+    "event_type": 1,
+    "event_desc": "Booker 14' Pullup Jump Shot (8 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "54-62",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 47,
+    "event_type": 2,
+    "event_desc": "MISS Edwards 1' Layup",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 47,
+    "event_type": 0,
+    "event_desc": "Richards BLOCK (1 BLK)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 50,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:1 Def:4)",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 52,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 25' 3PT Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 55,
+    "event_type": 4,
+    "event_desc": "Booker REBOUND (Off:0 Def:3)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 61,
+    "event_type": 1,
+    "event_desc": "Booker 2' Running Layup (10 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "54-64",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 72,
+    "event_type": 2,
+    "event_desc": "MISS Williams 3' Driving Finger Roll Layup",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 76,
+    "event_type": 4,
+    "event_desc": "Bol REBOUND (Off:2 Def:3)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 84,
+    "event_type": 1,
+    "event_desc": "Booker 10' Turnaround Fadeaway (12 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "54-66",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 84,
+    "event_type": 6,
+    "event_desc": "Williams S.FOUL (P1.T1) (J.Goble)",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 84,
+    "event_type": 3,
+    "event_desc": "Booker Free Throw 1 of 1 (13 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "54-67",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 97,
+    "event_type": 1,
+    "event_desc": "Edwards 2' Cutting Dunk Shot (10 PTS) (Williams 4 AST)",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "56-67",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 118,
+    "event_type": 1,
+    "event_desc": "Beal 3PT Jump Shot (12 PTS) (Booker 5 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "56-70",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 137,
+    "event_type": 2,
+    "event_desc": "MISS Marshall 26' 3PT Jump Shot",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 139,
+    "event_type": 4,
+    "event_desc": "Durant REBOUND (Off:0 Def:5)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 141,
+    "event_type": 5,
+    "event_desc": "Durant Bad Pass Turnover (P5.T10)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 141,
+    "event_type": 0,
+    "event_desc": "Marshall STEAL (2 STL)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 145,
+    "event_type": 1,
+    "event_desc": "Thompson 24' 3PT Running Jump Shot (8 PTS) (Marshall 7 AST)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "59-70",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 162,
+    "event_type": 1,
+    "event_desc": "Richards Cutting Dunk Shot (10 PTS) (Beal 5 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "59-72",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 178,
+    "event_type": 1,
+    "event_desc": "Christie 27' 3PT Jump Shot (9 PTS) (Williams 5 AST)",
+    "player_name": "Christie",
+    "team_abbrev": "DAL",
+    "score": "62-72",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 194,
+    "event_type": 8,
+    "event_desc": "SUB: Exum FOR Williams",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 202,
+    "event_type": 5,
+    "event_desc": "Durant Lost Ball Turnover (P6.T11)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 202,
+    "event_type": 0,
+    "event_desc": "Exum STEAL (1 STL)",
+    "player_name": "Exum",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 210,
+    "event_type": 1,
+    "event_desc": "Thompson 25' 3PT Running Jump Shot (11 PTS) (Marshall 8 AST)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "65-72",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 227,
+    "event_type": 1,
+    "event_desc": "Richards 2' Layup (12 PTS) (Beal 6 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "65-74",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 235,
+    "event_type": 6,
+    "event_desc": "Booker S.FOUL (P2.T1) (K.Scott)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 235,
+    "event_type": 3,
+    "event_desc": "Thompson Free Throw 1 of 3 (12 PTS)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "66-74",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 235,
+    "event_type": 3,
+    "event_desc": "Thompson Free Throw 2 of 3 (13 PTS)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "67-74",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 235,
+    "event_type": 3,
+    "event_desc": "Thompson Free Throw 3 of 3 (14 PTS)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "68-74",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 254,
+    "event_type": 1,
+    "event_desc": "Beal 11' Driving Floating Jump Shot (14 PTS) (Bol 1 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "68-76",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 28' 3PT Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 271,
+    "event_type": 4,
+    "event_desc": "Richards REBOUND (Off:1 Def:6)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 279,
+    "event_type": 1,
+    "event_desc": "Beal 3PT Jump Shot (17 PTS) (Booker 6 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "68-79",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 293,
+    "event_type": 6,
+    "event_desc": "Bol P.FOUL (P1.T2) (S.Mitchell)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 293,
+    "event_type": 8,
+    "event_desc": "SUB: Martin FOR Edwards",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 300,
+    "event_type": 1,
+    "event_desc": "Marshall 1' Driving Dunk (17 PTS) (Thompson 3 AST)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "70-79",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 6,
+    "event_desc": "Thompson S.FOUL (P1.T2) (S.Mitchell)",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 0,
+    "event_desc": "MAVERICKS Timeout: Regular (Full 4 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 8,
+    "event_desc": "SUB: Dinwiddie FOR Thompson",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 3,
+    "event_desc": "Beal Free Throw 1 of 2 (18 PTS)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "70-80",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 320,
+    "event_type": 3,
+    "event_desc": "Beal Free Throw 2 of 2 (19 PTS)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "70-81",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 338,
+    "event_type": 2,
+    "event_desc": "MISS Dinwiddie 3PT Jump Shot",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 340,
+    "event_type": 4,
+    "event_desc": "Durant REBOUND (Off:0 Def:6)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 359,
+    "event_type": 2,
+    "event_desc": "MISS Bol 25' 3PT Jump Shot",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 363,
+    "event_type": 4,
+    "event_desc": "Dinwiddie REBOUND (Off:0 Def:1)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 370,
+    "event_type": 1,
+    "event_desc": "Marshall 7' Driving Floating Bank Jump Shot (19 PTS)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "72-81",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 381,
+    "event_type": 6,
+    "event_desc": "Exum S.FOUL (P2.T3) (K.Scott)",
+    "player_name": "Exum",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 381,
+    "event_type": 3,
+    "event_desc": "Booker Free Throw 1 of 2 (14 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "72-82",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 381,
+    "event_type": 8,
+    "event_desc": "SUB: O'Neale FOR Bol",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 381,
+    "event_type": 3,
+    "event_desc": "Booker Free Throw 2 of 2 (15 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "72-83",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 390,
+    "event_type": 2,
+    "event_desc": "MISS Martin 26' 3PT Jump Shot",
+    "player_name": "Martin",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 393,
+    "event_type": 4,
+    "event_desc": "Richards REBOUND (Off:1 Def:7)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 406,
+    "event_type": 1,
+    "event_desc": "Durant 12' Turnaround Fadeaway (13 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "72-85",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 429,
+    "event_type": 2,
+    "event_desc": "MISS Marshall 1' Driving Reverse Layup",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 431,
+    "event_type": 4,
+    "event_desc": "Richards REBOUND (Off:1 Def:8)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 438,
+    "event_type": 1,
+    "event_desc": "Durant 15' Pullup Jump Shot (15 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "72-87",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 456,
+    "event_type": 1,
+    "event_desc": "Marshall 25' 3PT Jump Shot (22 PTS) (Martin 1 AST)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "75-87",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 489,
+    "event_type": 1,
+    "event_desc": "Richards 2' Cutting Finger Roll Layup Shot (14 PTS) (Durant 6 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "75-89",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 503,
+    "event_type": 1,
+    "event_desc": "Marshall 25' 3PT Jump Shot (25 PTS) (Dinwiddie 1 AST)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "78-89",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 517,
+    "event_type": 0,
+    "event_desc": "Suns Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 517,
+    "event_type": 8,
+    "event_desc": "SUB: Powell FOR Exum",
+    "player_name": "Exum",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 517,
+    "event_type": 8,
+    "event_desc": "SUB: Edwards FOR Christie",
+    "player_name": "Christie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 517,
+    "event_type": 8,
+    "event_desc": "SUB: Allen FOR Booker",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 525,
+    "event_type": 6,
+    "event_desc": "Edwards P.FOUL (P2.T4) (J.Goble)",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 6,
+    "event_desc": "Edwards P.FOUL (P3.PN) (S.Mitchell)",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 3,
+    "event_desc": "Durant Free Throw 1 of 2 (16 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "78-90",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 8,
+    "event_desc": "SUB: Jones FOR Richards",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 8,
+    "event_desc": "SUB: Plumlee FOR Beal",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 3,
+    "event_desc": "Durant Free Throw 2 of 2 (17 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "78-91",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 552,
+    "event_type": 2,
+    "event_desc": "MISS Martin 24' 3PT Jump Shot",
+    "player_name": "Martin",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 556,
+    "event_type": 4,
+    "event_desc": "Powell REBOUND (Off:1 Def:0)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 561,
+    "event_type": 1,
+    "event_desc": "Marshall 2' Driving Reverse Layup (27 PTS)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "80-91",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 584,
+    "event_type": 1,
+    "event_desc": "Allen 1' Driving Finger Roll Layup (12 PTS) (Jones 1 AST)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "80-93",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 608,
+    "event_type": 2,
+    "event_desc": "MISS Dinwiddie 12' Driving Floating Jump Shot",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 610,
+    "event_type": 4,
+    "event_desc": "Durant REBOUND (Off:0 Def:7)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 617,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 25' 3PT Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 621,
+    "event_type": 4,
+    "event_desc": "Powell REBOUND (Off:1 Def:1)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 628,
+    "event_type": 1,
+    "event_desc": "Powell 2' Cutting Layup Shot (2 PTS) (Martin 2 AST)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "82-93",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 636,
+    "event_type": 2,
+    "event_desc": "MISS Durant 26' 3PT Jump Shot",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 636,
+    "event_type": 0,
+    "event_desc": "Powell BLOCK (1 BLK)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 636,
+    "event_type": 4,
+    "event_desc": "Marshall REBOUND (Off:0 Def:4)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 641,
+    "event_type": 1,
+    "event_desc": "Marshall 1' Running Layup (29 PTS)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "84-93",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 660,
+    "event_type": 2,
+    "event_desc": "MISS Plumlee 2' Alley Oop Layup",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 4,
+    "event_desc": "Powell REBOUND (Off:1 Def:2)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 5,
+    "event_desc": "Powell Step Out of Bounds Turnover (P1.T4)",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 0,
+    "event_desc": "MAVERICKS Timeout: Regular (Full 5 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 8,
+    "event_desc": "SUB: Exum FOR Powell",
+    "player_name": "Powell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 8,
+    "event_desc": "SUB: Christie FOR Edwards",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Dinwiddie",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 662,
+    "event_type": 1,
+    "event_desc": "Allen 3' Cutting Layup Shot (14 PTS) (O'Neale 1 AST)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "84-95",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 676,
+    "event_type": 2,
+    "event_desc": "MISS Martin 26' 3PT Jump Shot",
+    "player_name": "Martin",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 679,
+    "event_type": 4,
+    "event_desc": "O'Neale REBOUND (Off:0 Def:2)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 686,
+    "event_type": 1,
+    "event_desc": "Durant 5' Driving Layup (19 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "84-97",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 704,
+    "event_type": 1,
+    "event_desc": "Williams 2' Driving Reverse Layup (13 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "86-97",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 27' 3PT Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (5:19 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "86-97",
+    "score_margin": "-11"
+  }
+]

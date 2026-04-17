@@ -128,13 +128,28 @@ def props(player_id: str, opp_team: str = "GSW", season: str = "2025-26"):
     cached = _cget(key)
     if cached is not None:
         return cached
-    stack = _stack_predict(player_id, game_context={"away_team": opp_team, "season": season})
+    game_context = {"away_team": opp_team, "season": season}
+    stack = _stack_predict(player_id, game_context=game_context)
     result = {k: round(float(v), 3) for k, v in stack.predictions.items()
               if not (isinstance(v, float) and v != v)}
     if not result:
-        # player_id may be a name rather than a numeric ID; fall back to predict_props
+        # stack_predict requires a numeric ID for name lookup — try treating
+        # player_id as a display name directly via player_props
         from src.prediction.player_props import predict_props as _pp
-        result = _pp(player_id, opp_team, season=season)
+        raw = _pp(player_id, opp_team, season=season)
+        # Re-stack with the resolved name so micro-signals still apply
+        if raw:
+            name = raw.get("player_name", player_id)
+            from nba_api.stats.static import players as _ps
+            matches = [p for p in _ps.get_players()
+                       if p["full_name"].lower() == str(name).lower()]
+            if matches:
+                stack2 = _stack_predict(str(matches[0]["id"]), game_context=game_context)
+                result = {k: round(float(v), 3) for k, v in stack2.predictions.items()
+                          if not (isinstance(v, float) and v != v)}
+            if not result:
+                result = {k: round(float(v), 3) for k, v in raw.items()
+                          if isinstance(v, (int, float)) and k != "player_name"}
     _cset(key, result)
     return result
 

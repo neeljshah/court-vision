@@ -1,0 +1,1422 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (9:20 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "57-58",
+    "score_margin": "-1"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 15,
+    "event_type": 2,
+    "event_desc": "MISS Reid 26' 3PT Jump Shot",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 19,
+    "event_type": 4,
+    "event_desc": "Alexander-Walker REBOUND (Off:1 Def:2)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 23,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 26' 3PT Pullup Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 25,
+    "event_type": 4,
+    "event_desc": "Kuzma REBOUND (Off:0 Def:6)",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 36,
+    "event_type": 1,
+    "event_desc": "George 25' 3PT Jump Shot (6 PTS) (Valan\u010di\u016bnas 2 AST)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "57-61",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 54,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 8' Driving Floating Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 56,
+    "event_type": 4,
+    "event_desc": "George REBOUND (Off:0 Def:4)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 66,
+    "event_type": 2,
+    "event_desc": "MISS Kuzma 13' Step Back Jump Shot",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 69,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:5)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 75,
+    "event_type": 2,
+    "event_desc": "MISS Reid 25' 3PT Running Jump Shot",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 77,
+    "event_type": 4,
+    "event_desc": "Wizards Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 92,
+    "event_type": 2,
+    "event_desc": "MISS Coulibaly 11' Driving Floating Jump Shot",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 95,
+    "event_type": 4,
+    "event_desc": "Gobert REBOUND (Off:4 Def:6)",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 114,
+    "event_type": 2,
+    "event_desc": "MISS Gobert 14' Jump Shot",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 117,
+    "event_type": 4,
+    "event_desc": "Poole REBOUND (Off:0 Def:2)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 127,
+    "event_type": 2,
+    "event_desc": "MISS Poole 25' 3PT Pullup Jump Shot",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 130,
+    "event_type": 4,
+    "event_desc": "Gobert REBOUND (Off:4 Def:7)",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 144,
+    "event_type": 1,
+    "event_desc": "Gobert 2' Layup (9 PTS) (Conley 3 AST)",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "59-61",
+    "score_margin": "-2"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 144,
+    "event_type": 6,
+    "event_desc": "Valan\u010di\u016bnas S.FOUL (P2.T1) (J.Conley)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 144,
+    "event_type": 3,
+    "event_desc": "Gobert Free Throw 1 of 1 (10 PTS)",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "60-61",
+    "score_margin": "-1"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 161,
+    "event_type": 2,
+    "event_desc": "MISS Kuzma 10' Driving Hook Shot",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 164,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:6)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 179,
+    "event_type": 2,
+    "event_desc": "MISS Conley 25' 3PT Step Back Jump Shot",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 182,
+    "event_type": 4,
+    "event_desc": "Coulibaly REBOUND (Off:1 Def:1)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 187,
+    "event_type": 1,
+    "event_desc": "Kuzma 3' Running Reverse Layup (20 PTS) (Coulibaly 3 AST)",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "60-63",
+    "score_margin": "-3"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 202,
+    "event_type": 2,
+    "event_desc": "MISS McDaniels 8' Floating Jump Shot",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 202,
+    "event_type": 0,
+    "event_desc": "Coulibaly BLOCK (2 BLK)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 204,
+    "event_type": 4,
+    "event_desc": "Valan\u010di\u016bnas REBOUND (Off:0 Def:6)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 210,
+    "event_type": 6,
+    "event_desc": "Reid S.FOUL (P1.T1) (B.Forte)",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 210,
+    "event_type": 3,
+    "event_desc": "Coulibaly Free Throw 1 of 2 (11 PTS)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "60-64",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 210,
+    "event_type": 8,
+    "event_desc": "SUB: Clark FOR Reid",
+    "player_name": "Reid",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 210,
+    "event_type": 3,
+    "event_desc": "Coulibaly Free Throw 2 of 2 (12 PTS)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "60-65",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 223,
+    "event_type": 5,
+    "event_desc": "McDaniels Bad Pass Turnover (P1.T8)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 223,
+    "event_type": 0,
+    "event_desc": "Coulibaly STEAL (2 STL)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 227,
+    "event_type": 5,
+    "event_desc": "Coulibaly Lost Ball Turnover (P3.T8)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 227,
+    "event_type": 0,
+    "event_desc": "McDaniels STEAL (1 STL)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 231,
+    "event_type": 2,
+    "event_desc": "MISS Clark 3PT Jump Shot",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 232,
+    "event_type": 4,
+    "event_desc": "Poole REBOUND (Off:0 Def:3)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 235,
+    "event_type": 6,
+    "event_desc": "Alexander-Walker P.FOUL (P3.T2) (J.Conley)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 244,
+    "event_type": 5,
+    "event_desc": "Poole Bad Pass Turnover (P1.T9)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 244,
+    "event_type": 0,
+    "event_desc": "McDaniels STEAL (2 STL)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 250,
+    "event_type": 1,
+    "event_desc": "Clark 3PT Running Jump Shot (9 PTS) (Conley 4 AST)",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "63-65",
+    "score_margin": "-2"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 2,
+    "event_desc": "MISS George 3' Driving Layup",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 6,
+    "event_desc": "Valan\u010di\u016bnas L.B.FOUL (P3.T2) (B.Forte)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 286,
+    "event_type": 5,
+    "event_desc": "Conley Bad Pass Turnover (P2.T9)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 286,
+    "event_type": 0,
+    "event_desc": "George STEAL (1 STL)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 290,
+    "event_type": 1,
+    "event_desc": "Kuzma 3' Running Layup (22 PTS) (George 1 AST)",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "63-67",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 307,
+    "event_type": 2,
+    "event_desc": "MISS Gobert 4' Layup",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 308,
+    "event_type": 4,
+    "event_desc": "Coulibaly REBOUND (Off:1 Def:2)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 315,
+    "event_type": 1,
+    "event_desc": "George 3PT Running Jump Shot (9 PTS) (Kuzma 2 AST)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "63-70",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 317,
+    "event_type": 0,
+    "event_desc": "TIMBERWOLVES Timeout: Regular (Full 4 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 317,
+    "event_type": 8,
+    "event_desc": "SUB: Dillingham FOR Conley",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 330,
+    "event_type": 1,
+    "event_desc": "McDaniels 26' 3PT Pullup Jump Shot (14 PTS) (Alexander-Walker 4 AST)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "66-70",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 349,
+    "event_type": 6,
+    "event_desc": "Dillingham S.FOUL (P2.T3) (J.Orr)",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 349,
+    "event_type": 3,
+    "event_desc": "George Free Throw 1 of 2 (10 PTS)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "66-71",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 349,
+    "event_type": 3,
+    "event_desc": "George Free Throw 2 of 2 (11 PTS)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "66-72",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 359,
+    "event_type": 2,
+    "event_desc": "MISS Dillingham 25' 3PT Pullup Jump Shot",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 362,
+    "event_type": 4,
+    "event_desc": "Valan\u010di\u016bnas REBOUND (Off:0 Def:7)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 369,
+    "event_type": 2,
+    "event_desc": "MISS Kuzma 6' Driving Hook Shot",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 370,
+    "event_type": 4,
+    "event_desc": "Valan\u010di\u016bnas REBOUND (Off:1 Def:7)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 370,
+    "event_type": 2,
+    "event_desc": "MISS Valan\u010di\u016bnas 2' Putback Layup",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:7)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 379,
+    "event_type": 2,
+    "event_desc": "MISS McDaniels 10' Driving Floating Jump Shot",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 381,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 393,
+    "event_type": 2,
+    "event_desc": "MISS Clark 3PT Jump Shot",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 393,
+    "event_type": 0,
+    "event_desc": "Poole BLOCK (1 BLK)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 394,
+    "event_type": 4,
+    "event_desc": "Clark REBOUND (Off:3 Def:0)",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 395,
+    "event_type": 5,
+    "event_desc": "TIMBERWOLVES Turnover: Shot Clock (T#10)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 395,
+    "event_type": 8,
+    "event_desc": "SUB: Garza FOR Gobert",
+    "player_name": "Gobert",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 6,
+    "event_desc": "Valan\u010di\u016bnas OFF.Foul (P4) (J.Orr)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 5,
+    "event_desc": "Valan\u010di\u016bnas Offensive Foul Turnover (P2.T10)",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 8,
+    "event_desc": "SUB: Holmes FOR Valan\u010di\u016bnas",
+    "player_name": "Valan\u010di\u016bnas",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 425,
+    "event_type": 2,
+    "event_desc": "MISS Dillingham 3' Layup",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 426,
+    "event_type": 4,
+    "event_desc": "Wizards Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 426,
+    "event_type": 6,
+    "event_desc": "Dillingham L.B.FOUL (P3.T4) (J.Orr)",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 426,
+    "event_type": 8,
+    "event_desc": "SUB: Carrington FOR George",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 426,
+    "event_type": 8,
+    "event_desc": "SUB: Kispert FOR Kuzma",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 440,
+    "event_type": 1,
+    "event_desc": "Poole 13' Turnaround Fadeaway (15 PTS) (Coulibaly 4 AST)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "66-74",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 453,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 7' Driving Floating Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 458,
+    "event_type": 4,
+    "event_desc": "Kispert REBOUND (Off:0 Def:2)",
+    "player_name": "Kispert",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 466,
+    "event_type": 0,
+    "event_desc": "Jump Ball Dillingham vs. Poole: Tip to Garza",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 466,
+    "event_type": 5,
+    "event_desc": "Poole Lost Ball Turnover (P2.T11)",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 466,
+    "event_type": 0,
+    "event_desc": "Dillingham STEAL (1 STL)",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 473,
+    "event_type": 1,
+    "event_desc": "Alexander-Walker 25' 3PT Jump Shot (8 PTS) (Garza 1 AST)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "69-74",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 0,
+    "event_desc": "McDaniels Violation:Kicked Ball (B.Forte)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 8,
+    "event_desc": "SUB: Ingles FOR McDaniels",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 8,
+    "event_desc": "SUB: Brogdon FOR Poole",
+    "player_name": "Poole",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 495,
+    "event_type": 2,
+    "event_desc": "MISS Kispert 25' 3PT Jump Shot",
+    "player_name": "Kispert",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 6,
+    "event_desc": "Carrington S.FOUL (P3.T3) (J.Conley)",
+    "player_name": "Carrington",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 0,
+    "event_desc": "Wizards Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:39 PM EST)",
+    "player_name": "Rogers",
+    "team_abbrev": "",
+    "score": "69-74",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 3,
+    "event_desc": "Alexander-Walker Free Throw 1 of 3 (9 PTS)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "70-74",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 3,
+    "event_desc": "Alexander-Walker Free Throw 2 of 3 (10 PTS)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "71-74",
+    "score_margin": "-3"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 3,
+    "event_desc": "Alexander-Walker Free Throw 3 of 3 (11 PTS)",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "72-74",
+    "score_margin": "-2"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 523,
+    "event_type": 1,
+    "event_desc": "Holmes 4' Turnaround Hook Shot (2 PTS) (Coulibaly 5 AST)",
+    "player_name": "Holmes",
+    "team_abbrev": "WAS",
+    "score": "72-76",
+    "score_margin": "-4"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 538,
+    "event_type": 2,
+    "event_desc": "MISS Dillingham 5' Driving Finger Roll Layup",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 540,
+    "event_type": 4,
+    "event_desc": "Brogdon REBOUND (Off:1 Def:3)",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 544,
+    "event_type": 1,
+    "event_desc": "Coulibaly 3' Running Layup (14 PTS) (Carrington 4 AST)",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "72-78",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 557,
+    "event_type": 2,
+    "event_desc": "MISS Dillingham 26' 3PT Pullup Jump Shot",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 560,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 560,
+    "event_type": 8,
+    "event_desc": "SUB: Kuzma FOR Coulibaly",
+    "player_name": "Coulibaly",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 2,
+    "event_desc": "MISS Garza 4' Cutting Layup Shot",
+    "player_name": "Garza",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 0,
+    "event_desc": "Kispert BLOCK (1 BLK)",
+    "player_name": "Kispert",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 574,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 574,
+    "event_type": 5,
+    "event_desc": "TIMBERWOLVES Turnover: Shot Clock (T#11)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 587,
+    "event_type": 6,
+    "event_desc": "Dillingham S.FOUL (P4.PN) (B.Forte)",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 587,
+    "event_type": 3,
+    "event_desc": "Brogdon Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "72-79",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 587,
+    "event_type": 8,
+    "event_desc": "SUB: McDaniels FOR Alexander-Walker",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 587,
+    "event_type": 3,
+    "event_desc": "MISS Brogdon Free Throw 2 of 2",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 589,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:8)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 598,
+    "event_type": 5,
+    "event_desc": "Ingles Out of Bounds - Bad Pass Turnover Turnover (P2.T12)",
+    "player_name": "Ingles",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 6,
+    "event_desc": "Clark S.FOUL (P3.PN) (J.Conley)",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 0,
+    "event_desc": "TIMBERWOLVES Timeout: Regular (Full 5 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:46 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "72-79",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 8,
+    "event_desc": "SUB: Conley FOR Clark",
+    "player_name": "Clark",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 8,
+    "event_desc": "SUB: Gobert FOR Garza",
+    "player_name": "Garza",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 3,
+    "event_desc": "Holmes Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Holmes",
+    "team_abbrev": "WAS",
+    "score": "72-80",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 614,
+    "event_type": 3,
+    "event_desc": "Holmes Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Holmes",
+    "team_abbrev": "WAS",
+    "score": "72-81",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 2,
+    "event_desc": "MISS McDaniels 8' Pullup Jump Shot",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 634,
+    "event_type": 4,
+    "event_desc": "Brogdon REBOUND (Off:1 Def:4)",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 641,
+    "event_type": 5,
+    "event_desc": "Kispert Bad Pass Turnover (P2.T12)",
+    "player_name": "Kispert",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 641,
+    "event_type": 0,
+    "event_desc": "McDaniels STEAL (3 STL)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 642,
+    "event_type": 6,
+    "event_desc": "Brogdon P.FOUL (P2.T4) (B.Forte)",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 652,
+    "event_type": 5,
+    "event_desc": "Dillingham Out of Bounds Lost Ball Turnover (P2.T13)",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 665,
+    "event_type": 1,
+    "event_desc": "Brogdon 1' Driving Layup (3 PTS)",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "72-83",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 673,
+    "event_type": 1,
+    "event_desc": "Ingles 25' 3PT Jump Shot (8 PTS) (Dillingham 7 AST)",
+    "player_name": "Ingles",
+    "team_abbrev": "MIN",
+    "score": "75-83",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 692,
+    "event_type": 2,
+    "event_desc": "MISS Kuzma 25' 3PT Jump Shot",
+    "player_name": "Kuzma",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 695,
+    "event_type": 4,
+    "event_desc": "McDaniels REBOUND (Off:1 Def:9)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 6,
+    "event_desc": "Carrington P.FOUL (P4.PN) (B.Forte)",
+    "player_name": "Carrington",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 3,
+    "event_desc": "McDaniels Free Throw 1 of 2 (15 PTS)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "76-83",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 8,
+    "event_desc": "SUB: Alexander-Walker FOR Dillingham",
+    "player_name": "Dillingham",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 8,
+    "event_desc": "SUB: Clark FOR Ingles",
+    "player_name": "Ingles",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 8,
+    "event_desc": "SUB: Poole FOR Carrington",
+    "player_name": "Carrington",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 697,
+    "event_type": 3,
+    "event_desc": "McDaniels Free Throw 2 of 2 (16 PTS)",
+    "player_name": "McDaniels",
+    "team_abbrev": "MIN",
+    "score": "77-83",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 713,
+    "event_type": 2,
+    "event_desc": "MISS Brogdon 19' Step Back Jump Shot",
+    "player_name": "Brogdon",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 714,
+    "event_type": 4,
+    "event_desc": "Conley REBOUND (Off:0 Def:2)",
+    "player_name": "Conley",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 2,
+    "event_desc": "MISS Alexander-Walker 15' Floating Jump Shot",
+    "player_name": "Alexander-Walker",
+    "team_abbrev": "MIN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "TIMBERWOLVES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (9:53 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "77-83",
+    "score_margin": "-6"
+  }
+]

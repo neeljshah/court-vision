@@ -4,7 +4,7 @@
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 37, 2026-04-16)
+### State (Session 38, 2026-04-16)
 - Branch: `main-sync` | Tests: 960+ pass, 93 skip (excl PG/GPU tests). Phase 8-13 suites all green.
 - Phase: Phase 13.5 done. Ready for 100-game Phase G run.
 - CV games: 41/94 videos tracked. 16 A/B-grade. CV registry: 24 player-game records.
@@ -13,14 +13,15 @@
 - Prediction stack: 73 modules in src/prediction/ (sim_models, possession_simulator, tier4/5, live_models, betting_edge all present)
 - API: 6 endpoints in api/main.py (/simulate, /props, /edge, /win-prob, /lineup, /health) + in-process TTL cache
 - Sync: incremental rsync every 5 min (scripts/watch_and_sync.sh, fixed 2026-04-15)
+- Calibration: CalibrationLayer.win_prob() + train_win_prob() added. kelly_corr() takes win_prob_override. Activate: `python -m src.prediction.prop_model_stack --train-calibration` (needs prop_residuals.json with line field)
 
 ### Open Issues (priority — pre-100-game blockers first)
-1. **BLOCKER** Phase G dedup-by-hash + per-game crash isolation in scripts/run_phase_g.py (one bad video kills queue)
-2. **BLOCKER** Prop calibration layer (isotonic) in prop_model_stack.py — Kelly sizing unsafe without it
-3. /props endpoint in api/predictions_router.py calls raw predict_props instead of stack_predict
-4. Backtest gate endpoint (POST /backtest/{stat}) — no validation before live money
-5. Correlation matrix not populated in betting_portfolio.kelly_corr (needs prop_residuals.json from live predictions)
-6. CV fatigue minutes not wired into possession_simulator (uses defaults)
+1. ~~**BLOCKER** Phase G dedup-by-hash + per-game crash isolation~~ — already implemented
+2. ~~**BLOCKER** Prop calibration layer (isotonic) in prop_model_stack.py~~ — CalibrationLayer.win_prob() + kelly_corr(win_prob_override) done; needs prop_residuals.json with line data to train
+3. ~~**/props endpoint calls raw predict_props**~~ — fixed: name→ID resolution + re-stack
+4. ~~Backtest gate endpoint (POST /backtest/{stat})~~ — implemented; `build_prop_residuals()` bootstraps data (`python -m src.prediction.prop_backtester --build-residuals`)
+5. Correlation matrix not populated in betting_portfolio.kelly_corr (needs prop_residuals.json — run `--build-residuals` then `--compute-corr`)
+6. ~~CV fatigue minutes not wired into possession_simulator~~ — wired: `_find_latest_tracking_csv()` → `PossessionSimulator(cv_minutes_csv=...)`
 7. 53 unprocessed videos in data/videos/full_games/ — needs next pod run
 8. CV registry sparsity (24 records) — improves with 100-game OCR volume
 
