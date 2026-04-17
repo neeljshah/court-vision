@@ -1,5 +1,14 @@
 ## CourtVision — NBA CV+ML Pipeline
 
+### Fresh-device setup (read FIRST if repo was just cloned)
+If `data/models/props_pts.json` is missing, this is a fresh clone. Run:
+```bash
+bash scripts/setup_dev.sh          # macOS/Linux/Git-Bash — creates conda env, installs deps, verifies models
+# OR on Windows PowerShell:
+powershell -ExecutionPolicy Bypass -File scripts/setup_dev.ps1
+```
+Then copy API keys into `.env` (template in `.env.example`). Everything needed is in git — **no external rsync required**. CV tracking needs a GPU; ML/prediction/API work runs CPU-only.
+
 **What:** Possession-by-possession NBA simulator. CV tracking + NBA API + 75 trained models -> 10K Monte Carlo -> +EV edges vs sportsbooks.
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js

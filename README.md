@@ -10,23 +10,29 @@
 
 ---
 
-## Quick Start (5 min)
+## Quick Start (one command on a fresh machine)
 
 ```bash
-# 1. Clone and create environment
+git clone https://github.com/neeljshah/court-vision.git && cd court-vision
+git checkout main-sync
+
+# macOS / Linux / Windows Git-Bash:
+bash scripts/setup_dev.sh
+
+# Windows PowerShell:
+powershell -ExecutionPolicy Bypass -File scripts/setup_dev.ps1
+```
+
+The setup script creates the `basketball_ai` conda env, installs deps, verifies models, and bootstraps `.env` from the template. Everything except `.env` secrets and large video/tracking outputs is in git — no external file copy needed. After setup, fill `.env` with your API keys.
+
+### Manual steps (if you prefer)
+
+```bash
 conda create -n basketball_ai python=3.9 -y
 conda activate basketball_ai
 pip install -r requirements.txt
-
-# 2. Set up environment
-cp .env.example .env
-# edit .env — add your NBA_API_KEY if using live data
-
-# 3. Run tests to verify setup
-python -m pytest tests/ -q
-# expect: 960+ pass, ~93 skip (GPU/pod tests skipped without CUDA)
-
-# 4. Start API server
+cp .env.example .env  # fill in NBA_API_KEY, THE_ODDS_API_KEY, etc.
+python -m pytest tests/ -q  # 960+ pass, ~93 skip
 uvicorn api.main:app --reload
 # → http://localhost:8000
 # → http://localhost:8000/docs  (Swagger UI)
