@@ -6,11 +6,14 @@ import argparse
 import logging
 import os
 import shutil
+import signal
 import sqlite3
 import subprocess
 import sys
 import tempfile
+import threading
 import time
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
@@ -24,7 +27,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(LOG_DIR / "p5_sync.log"),
+        RotatingFileHandler(LOG_DIR / "p5_sync.log", maxBytes=50 * 1024 * 1024, backupCount=3),
     ],
 )
 logger = logging.getLogger("sync_remote")
@@ -37,6 +40,14 @@ SYNC_DIRS = [
 ]
 RETRY_COUNT  = 3
 RETRY_DELAY  = 10
+
+# Guard: never accidentally sync videos (80 GB+) or content-addressed store
+_FORBIDDEN = ("videos", "by_sha")
+for _d in SYNC_DIRS:
+    assert not any(p in _d.parts for p in _FORBIDDEN), \
+        f"SYNC_DIRS safety violation: {_d} contains forbidden path segment"
+
+RCLONE_FLAGS = ["--buffer-size", "16M", "--transfers", "4", "--checkers", "8"]
 
 
 def _check_rclone() -> str:
@@ -92,7 +103,7 @@ def _backup_db(db_path: Path) -> Path:
 
 
 def push(rclone: str, remote: str, bucket: str, dry_run: bool = False) -> None:
-    flags = ["--progress"] + (["--dry-run"] if dry_run else [])
+    flags = RCLONE_FLAGS + ["--progress"] + (["--dry-run"] if dry_run else [])
 
     # Sync directories
     for d in SYNC_DIRS:
@@ -117,7 +128,7 @@ def push(rclone: str, remote: str, bucket: str, dry_run: bool = False) -> None:
 
 
 def pull(rclone: str, remote: str, bucket: str, dry_run: bool = False) -> None:
-    flags = ["--progress"] + (["--dry-run"] if dry_run else [])
+    flags = RCLONE_FLAGS + ["--progress"] + (["--dry-run"] if dry_run else [])
 
     for d in SYNC_DIRS:
         d.mkdir(parents=True, exist_ok=True)
@@ -159,9 +170,19 @@ def main() -> None:
 
     elif args.loop:
         logger.info("Loop mode: pushing every %d minutes", args.loop)
-        while True:
+        _shutdown = threading.Event()
+
+        def _handle_stop(signum, frame):
+            logger.info("Signal %d — shutting down loop cleanly", signum)
+            _shutdown.set()
+
+        signal.signal(signal.SIGTERM, _handle_stop)
+        signal.signal(signal.SIGINT, _handle_stop)
+
+        while not _shutdown.is_set():
             push(rclone, remote, bucket)
-            time.sleep(args.loop * 60)
+            _shutdown.wait(timeout=args.loop * 60)
+        logger.info("Loop exited.")
 
 
 if __name__ == "__main__":

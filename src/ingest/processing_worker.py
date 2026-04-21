@@ -111,16 +111,20 @@ def process_game(
     _original_sigterm = signal.getsignal(signal.SIGTERM)
 
     def _handle_sigterm(signum, frame):
-        logger.warning("SIGTERM received — checkpointing %s at %d", game_id, resume_frame)
+        logger.warning("SIGTERM received — checkpointing %s", game_id)
         _interrupted.set()
         _stop_ckpt.set()
-        release_job(conn, game_id)
+        # Own connection: main conn will be closed before pipeline runs
+        _sig_conn = connect(db_path)
+        release_job(_sig_conn, game_id)
+        _sig_conn.close()
         signal.signal(signal.SIGTERM, _original_sigterm)
 
     signal.signal(signal.SIGTERM, _handle_sigterm)
 
     log_event(conn, game_id, "process", "info",
               {"stage": "start", "resume_frame": resume_frame})
+    conn.close()  # release before long pipeline.run() so other workers can write
 
     try:
         if _PIPELINE_CLASS is not None:
@@ -137,34 +141,31 @@ def process_game(
             data_dir=data_dir or tracking_out,
         )
 
-        # Monkey-patch the run loop to inject checkpointing + progress events
         _orig_run = pipeline.run
 
         def _instrumented_run():
-            import cv2
             start_t = time.time()
-            result = None
-
-            # We can't easily inject into the run() main loop without modifying
-            # unified_pipeline.py significantly. Instead, run in a thread and
-            # checkpoint via the checkpoint file based on frame count heuristic.
-            # The real checkpoint is written at end-of-game since run() is atomic.
-            # For crash-recovery: write checkpoint at interval via side-thread.
             _frames_done = [0]
 
             def _checkpoint_thread():
+                # Own connection — sqlite3 connections are not thread-safe for writes
+                ckpt_conn = connect(db_path)
                 last_ckpt = 0
-                while not _stop_ckpt.wait(timeout=10):
-                    if _frames_done[0] > last_ckpt + PROGRESS_INTERVAL:
-                        _write_checkpoint(game_id, _frames_done[0] + resume_frame)
-                        last_ckpt = _frames_done[0]
-                        log_event(conn, game_id, "process", "info",
-                                  {"stage": "progress", "frames": _frames_done[0],
-                                   "elapsed_s": round(time.time() - start_t, 1)})
+                try:
+                    while not _stop_ckpt.wait(timeout=10):
+                        if _frames_done[0] > last_ckpt + PROGRESS_INTERVAL:
+                            _write_checkpoint(game_id, _frames_done[0] + resume_frame)
+                            last_ckpt = _frames_done[0]
+                            log_event(ckpt_conn, game_id, "process", "info",
+                                      {"stage": "progress", "frames": _frames_done[0],
+                                       "elapsed_s": round(time.time() - start_t, 1)})
+                finally:
+                    ckpt_conn.close()
 
             ckpt_t = threading.Thread(target=_checkpoint_thread, daemon=True)
             ckpt_t.start()
 
+            result = None
             if not _interrupted.is_set():
                 result = _orig_run()
 
@@ -177,29 +178,28 @@ def process_game(
 
         if _interrupted.is_set():
             logger.warning("Pipeline interrupted for %s", game_id)
-            conn.close()
             return False
 
-        elapsed = time.time()
         total_frames = result.get("total_frames", 0) if result else 0
-        log_event(conn, game_id, "process", "info",
+        done_conn = connect(db_path)
+        log_event(done_conn, game_id, "process", "info",
                   {"stage": "complete", "total_frames": total_frames,
                    "stability": result.get("stability") if result else None})
-        update_game(conn, game_id, status="processed")
+        update_game(done_conn, game_id, status="processed")
+        done_conn.close()
 
-        # Remove checkpoint on clean completion
         cp = _checkpoint_path(game_id)
         if cp.exists():
             cp.unlink()
 
-        conn.close()
         return True
 
     except Exception as exc:
         logger.exception("Pipeline failed for %s: %s", game_id, exc)
-        log_event(conn, game_id, "process", "error", {"error": str(exc)[:500]})
-        release_job(conn, game_id)
-        conn.close()
+        err_conn = connect(db_path)
+        log_event(err_conn, game_id, "process", "error", {"error": str(exc)[:500]})
+        release_job(err_conn, game_id)
+        err_conn.close()
         return False
     finally:
         signal.signal(signal.SIGTERM, _original_sigterm)
