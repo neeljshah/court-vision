@@ -1366,6 +1366,10 @@ class UnifiedPipeline:
         # games don't take 2× longer than 30fps games for the same real-time window.
         _base_stride = max(_FRAME_STRIDE, round(fps / 10.0)) if fps > 35 else _FRAME_STRIDE
         _stride = _base_stride if total_video_frames > _FRAME_STRIDE_THRESH else 1
+        # max_frames is given in source-frame units (calibrated by _fps_adjusted_frames).
+        # gameplay_frames counts DECODED frames (1 per stride), so scale down.
+        if self.max_frames and _stride > 1:
+            self.max_frames = max(1, self.max_frames // _stride)
         # Wire fps + stride into EventDetector so shot debounce, drive speed, and
         # closeout mph are all computed in correct absolute-frame / real-time units.
         self.event_det.configure(fps, _stride)

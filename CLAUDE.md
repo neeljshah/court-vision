@@ -13,26 +13,41 @@ Then copy API keys into `.env` (template in `.env.example`). Everything needed i
 **Moat:** Spatial CV data (defender_distance, spacing, fatigue) from broadcast video.
 **Stack:** YOLOv8n -> SIFT homography -> Kalman+Hungarian -> OSNet re-ID -> EasyOCR -> EventDetector -> FastAPI -> Next.js
 
-### State (Session 38, 2026-04-16)
+### State (Session 39, 2026-04-21)
 - Branch: `main-sync` | Tests: 960+ pass, 93 skip (excl PG/GPU tests). Phase 8-13 suites all green.
-- Phase: Phase 13.5 done. Ready for 100-game Phase G run.
-- CV games: 41/94 videos tracked. 16 A/B-grade. CV registry: 24 player-game records.
+- Phase: Phase 13.5 done. In-progress: 80-game run on single RTX 3090 ($5 budget).
+- CV games: 17 high/medium quality games synced locally. Goal: 80 total.
 - Models: 75 .pkl/.json files in data/models/. 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl).
-- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, STL=0.09 (retrained with opp_stl_rate)
-- Prediction stack: 73 modules in src/prediction/ (sim_models, possession_simulator, tier4/5, live_models, betting_edge all present)
-- API: 6 endpoints in api/main.py (/simulate, /props, /edge, /win-prob, /lineup, /health) + in-process TTL cache
-- Sync: incremental rsync every 5 min (scripts/watch_and_sync.sh, fixed 2026-04-15)
-- Calibration: CalibrationLayer.win_prob() + train_win_prob() added. kelly_corr() takes win_prob_override. Activate: `python -m src.prediction.prop_model_stack --train-calibration` (needs prop_residuals.json with line field)
+- Props R2: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, STL=0.09
+- Prediction stack: 73 modules in src/prediction/. API: 6 endpoints in api/main.py. Stack fully functional on NBA API data.
+- Calibration: CalibrationLayer.win_prob() + train_win_prob() added. Needs prop_residuals.json to train.
 
-### Open Issues (priority — pre-100-game blockers first)
-1. ~~**BLOCKER** Phase G dedup-by-hash + per-game crash isolation~~ — already implemented
-2. ~~**BLOCKER** Prop calibration layer (isotonic) in prop_model_stack.py~~ — CalibrationLayer.win_prob() + kelly_corr(win_prob_override) done; needs prop_residuals.json with line data to train
-3. ~~**/props endpoint calls raw predict_props**~~ — fixed: name→ID resolution + re-stack
-4. ~~Backtest gate endpoint (POST /backtest/{stat})~~ — implemented; `build_prop_residuals()` bootstraps data (`python -m src.prediction.prop_backtester --build-residuals`)
-5. Correlation matrix not populated in betting_portfolio.kelly_corr (needs prop_residuals.json — run `--build-residuals` then `--compute-corr`)
-6. ~~CV fatigue minutes not wired into possession_simulator~~ — wired: `_find_latest_tracking_csv()` → `PossessionSimulator(cv_minutes_csv=...)`
-7. 53 unprocessed videos in data/videos/full_games/ — needs next pod run
-8. CV registry sparsity (24 records) — improves with 100-game OCR volume
+### Fixes applied (Session 39)
+- `unified_pipeline.py`: max_frames stride bug fixed — gameplay_frames (decoded) vs max_frames (source units) mismatch caused 60fps games to never stop. Fix: `self.max_frames //= _stride` after stride is computed.
+- `fetch_games.py`: archive.org fallback (Pass 2.5), android player client for YouTube bot bypass, highlights min_dur raised to 1800s, PREFLIGHT retry loop fix (reads phase_g_processed.txt at startup, skips already-done game IDs so they're never re-downloaded).
+
+### Next pod run: single RTX 3090 → 80 good games
+**One command:** `bash scripts/launch_single_3090_pod.sh`
+
+**Before launching — export YouTube cookies (doubles download success):**
+1. Install "Get cookies.txt LOCALLY" Chrome extension
+2. Go to youtube.com while logged in
+3. Export cookies → save as `data/videos/youtube_cookies.txt` on the pod
+4. fetch_games.py auto-detects this file and passes `--cookies` to yt-dlp
+
+**Settings:** PARALLEL=4, OMP=4, BATCH=12, TARGET=90, CUDA_VISIBLE_DEVICES=0
+**Est. time:** 7-9 hrs | **Est. cost:** $2.50-4.50 on community 3090 (~$0.35-0.50/hr)
+**Download sync after run:**
+```bash
+scp -P <PORT> root@<IP>:/workspace/nba-ai-system/data/phase_g_metrics.csv data/
+scp -P <PORT> root@<IP>:/workspace/nba-ai-system/data/phase_g_processed.txt data/
+rsync -az -e "ssh -p <PORT>" root@<IP>:/workspace/nba-ai-system/data/tracking/ data/tracking/
+```
+
+### Open Issues
+1. Correlation matrix not populated in betting_portfolio.kelly_corr (needs prop_residuals.json — run `--build-residuals` then `--compute-corr`)
+2. CV registry sparsity (17 good games) — target 80 games to meaningfully improve model R²
+3. ball_valid_pct=0% bug on some games: ball_track_suspended stays True for entire video — investigate when CV data volume warrants it
 
 ### Task -> Files Cheatsheet
 | Task | Load only |

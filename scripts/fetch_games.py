@@ -197,6 +197,8 @@ def _build_base_cmd() -> list:
         "--no-warnings",
         "--sleep-requests", "0",
         "--no-abort-on-error",
+        # Android player client bypasses datacenter IP bot detection without curl_cffi
+        "--extractor-args", "youtube:player_client=android",
     ]
     # Point yt-dlp at conda env's ffmpeg (not on system PATH)
     _ffmpeg_dir = PROJECT_DIR.parent / "anaconda3" / "envs" / "basketball_ai" / "Library" / "bin"
@@ -286,6 +288,70 @@ def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
             return True
         if dl_proc.stderr:
             print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+    except subprocess.TimeoutExpired:
+        print("  Download timed out")
+    except Exception as e:
+        print(f"  Download error: {e}")
+    return False
+
+
+def _search_archive_org(away: str, home: str, away_city: str, home_city: str,
+                        min_dur: int = 1800) -> list:
+    """Search archive.org for NBA footage. No bot detection or rate limits."""
+    import urllib.request, urllib.parse
+    seen: set = set()
+    candidates = []
+    for q in [f'"{away}" "{home}" NBA', f'"{away_city}" "{home_city}" NBA basketball']:
+        params = urllib.parse.urlencode([
+            ("q", f"({q}) AND mediatype:movies"),
+            ("fl[]", "identifier"), ("fl[]", "title"), ("fl[]", "runtime"),
+            ("rows", "5"), ("output", "json"),
+        ])
+        try:
+            req = urllib.request.Request(
+                f"https://archive.org/advancedsearch.php?{params}",
+                headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=10) as r:
+                docs = json.loads(r.read()).get("response", {}).get("docs", [])
+            for doc in docs:
+                ident = doc.get("identifier", "")
+                if not ident or ident in seen:
+                    continue
+                seen.add(ident)
+                title = doc.get("title", "")
+                parts = (doc.get("runtime") or "").split(":")
+                dur = 0
+                try:
+                    if len(parts) == 3:
+                        dur = int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+                    elif len(parts) == 2:
+                        dur = int(parts[0]) * 60 + int(parts[1])
+                except ValueError:
+                    pass
+                if dur >= min_dur or dur == 0:
+                    candidates.append((dur or 7200, f"https://archive.org/details/{ident}", title))
+        except Exception:
+            pass
+    return sorted(candidates, key=lambda c: c[0], reverse=True)
+
+
+def _download_archive_item(url: str, out_path: Path, base_cmd: list,
+                           segment_seconds: int) -> bool:
+    """Download from archive.org via yt-dlp (no impersonation needed)."""
+    dl_cmd = list(base_cmd) + ["--output", str(out_path)]
+    if segment_seconds:
+        dl_cmd += [
+            "--download-sections", f"*60-{60 + segment_seconds}",
+            "--force-keyframes-at-cuts",
+        ]
+    dl_cmd.append(url)
+    try:
+        proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=600)
+        if proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+            print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
+            return True
+        if proc.stderr:
+            print(f"  yt-dlp error: {proc.stderr[-200:]}")
     except subprocess.TimeoutExpired:
         print("  Download timed out")
     except Exception as e:
@@ -439,15 +505,23 @@ def _search_and_download(game: dict, out_path: Path,
                 return True
         time.sleep(1)
 
-    # ── Pass 3: YouTube highlights fallback (>5 min) ─────────────────────────
-    print(f"  No full game found — trying highlights...")
+    # ── Pass 2.5: Internet Archive ────────────────────────────────────────────
+    print(f"  Trying Internet Archive...")
+    ia_hits = _search_archive_org(away_full, home_full, away_city, home_city)
+    for ia_dur, ia_url, ia_title in ia_hits[:3]:
+        print(f"  [IA] {ia_title[:60]} ({ia_dur}s)")
+        if _download_archive_item(ia_url, out_path, base_cmd, segment_seconds):
+            return True
+
+    # ── Pass 3: extended highlights (≥30 min) — short clips cause RC3_ZERO_ROWS ──
+    # Only accept ≥1800s so the tracker sees enough stable broadcast court footage.
+    print(f"  No full game found — trying extended highlights (≥30 min)...")
     for tmpl in _YT_HIGHLIGHTS_TEMPLATES:
         query = tmpl.format(**fmt_args)
         print(f"  Searching: {query}")
-        candidates = _search_yt(query, base_cmd, min_dur=300, max_dur=1800)
+        candidates = _search_yt(query, base_cmd, min_dur=1800, max_dur=5400)
         if not candidates:
             continue
-        # Prefer longer highlights, NBA official channel
         def _hl_score(c):
             dur, vid_id, title, channel = c
             s = dur
@@ -458,9 +532,9 @@ def _search_and_download(game: dict, out_path: Path,
             return s
         candidates.sort(key=_hl_score, reverse=True)
         best = candidates[0]
-        print(f"  Found highlights: {best[2][:60]} ({best[0]}s)")
+        print(f"  Found extended highlights: {best[2][:60]} ({best[0]}s)")
         print(f"  Downloading from {best[1]} ...")
-        if _download_video_yt(best[1], out_path, base_cmd, 0, best[0]):
+        if _download_video_yt(best[1], out_path, base_cmd, segment_seconds, best[0]):
             return True
 
     return False
@@ -483,6 +557,18 @@ def main():
     args = ap.parse_args()
 
     VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Load already-processed game IDs so we never re-download PREFLIGHT_FAIL or
+    # done games.  Without this, the orchestrator loop re-downloads the same
+    # failed game every iteration (video deleted post-PREFLIGHT → not on disk →
+    # fetch_games thinks it's new → downloads again → PREFLIGHT_FAIL → repeat).
+    _done_log = PROJECT_DIR / "data" / "phase_g_processed.txt"
+    _processed_ids: set[str] = set()
+    if _done_log.exists():
+        for _ln in _done_log.read_text().splitlines():
+            _ln = _ln.strip()
+            if _ln and not _ln.startswith("hash:"):
+                _processed_ids.add(_ln)
 
     # Default date range: last 30 days, but cap to current season window
     # so we don't accidentally search outside the active season.
@@ -517,6 +603,10 @@ def main():
 
     def _fetch_one(game: dict) -> str | None:
         gid = game["game_id"]
+        if gid in _processed_ids:
+            with _print_lock:
+                print(f"[skip] {gid} already processed (in done log)")
+            return None  # don't count as downloaded — already handled
         out = VIDEOS_DIR / f"{gid}.mp4"
         if out.exists() and out.stat().st_size > 500_000:
             with _print_lock:
