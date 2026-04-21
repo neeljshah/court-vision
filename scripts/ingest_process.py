@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 from logging.handlers import RotatingFileHandler
+import os
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -65,26 +66,28 @@ def main() -> None:
 
     games_done = 0
 
-    def _worker(_: int) -> bool:
+    def _worker(idx: int) -> bool:
         nonlocal games_done
+        os.environ["INGEST_WORKER_IDX"] = str(idx)
         wconn = connect()
         game_id = claim_job(wconn)
         wconn.close()
         if game_id is None:
             return False
-        logger.info("Worker processing %s", game_id)
+        logger.info("Worker[%d] pid=%d processing %s", idx, os.getpid(), game_id)
         ok = process_game(game_id)
-        logger.info("%s → %s", game_id, "done" if ok else "FAILED")
+        logger.info("Worker[%d] %s → %s", idx, game_id, "done" if ok else "FAILED")
         return ok
 
     with ThreadPoolExecutor(max_workers=args.parallel) as pool:
-        futures = [pool.submit(_worker, i) for i in range(args.max_games)]
+        futures = {pool.submit(_worker, i): i for i in range(args.max_games)}
         for f in as_completed(futures):
+            worker_idx = futures[f]
             try:
                 f.result()
                 games_done += 1
             except Exception as e:
-                logger.error("Worker error: %s", e)
+                logger.error("Worker[%d] unhandled exception: %s", worker_idx, e)
 
     logger.info("Done: %d jobs submitted", games_done)
 

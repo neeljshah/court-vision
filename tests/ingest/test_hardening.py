@@ -281,3 +281,106 @@ def test_symlink_uses_absolute_path(tmp_path):
     if link.is_symlink():
         target = Path(os.readlink(str(link)))
         assert target.is_absolute(), f"Symlink target is relative: {target}"
+
+
+# ── H3: worker orchestration + claim retry ───────────────────────────────────
+
+def test_claim_job_retries_on_race(tmp_path):
+    """claim_job retries when all verified games get grabbed by another worker mid-race."""
+    from src.ingest.db import connect, set_db_path, migrate
+    from src.ingest.processing_worker import claim_job
+
+    set_db_path(tmp_path / "test.db")
+    conn = connect()
+    migrate(conn)
+    conn.execute("INSERT INTO games (game_id, status, created_at, updated_at) VALUES ('g_race','verified',datetime('now'),datetime('now'))")
+    conn.commit()
+
+    # Simulate another worker stealing the game between SELECT and UPDATE
+    # by pre-marking the game as processing before claim_job runs
+    conn.execute("UPDATE games SET status='processing' WHERE game_id='g_race'")
+    conn.commit()
+
+    # With retries=3, claim_job should return None (no verified games left)
+    result = claim_job(conn, retries=3, jitter_ms=0)
+    conn.close()
+    set_db_path(None)
+    assert result is None
+
+
+def test_claim_job_returns_none_when_empty(tmp_path):
+    """claim_job returns None immediately when no verified games exist."""
+    from src.ingest.db import connect, set_db_path, migrate
+    from src.ingest.processing_worker import claim_job
+
+    set_db_path(tmp_path / "test.db")
+    conn = connect()
+    migrate(conn)
+    result = claim_job(conn)
+    conn.close()
+    set_db_path(None)
+    assert result is None
+
+
+def test_worker_exception_does_not_kill_others(tmp_path):
+    """One worker throwing must not stop other workers from completing."""
+    import src.ingest.processing_worker as pw
+    from src.ingest.db import connect, set_db_path, migrate
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    set_db_path(tmp_path / "test.db")
+    conn = connect()
+    migrate(conn)
+    for gid in ("crash_game", "ok_game"):
+        conn.execute(f"INSERT INTO games (game_id, status, created_at, updated_at) VALUES ('{gid}','verified',datetime('now'),datetime('now'))")
+    conn.commit()
+    conn.close()
+
+    results = []
+    errors = []
+
+    def _worker(game_id: str) -> bool:
+        if game_id == "crash_game":
+            raise RuntimeError("Simulated OOM")
+        return True
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = {pool.submit(_worker, gid): gid for gid in ("crash_game", "ok_game")}
+        for f in as_completed(futures):
+            gid = futures[f]
+            try:
+                results.append(f.result())
+            except Exception as e:
+                errors.append(str(e))
+
+    set_db_path(None)
+    assert len(results) == 1   # ok_game succeeded
+    assert len(errors) == 1    # crash_game errored
+    assert "OOM" in errors[0]
+
+
+def test_reset_stale_locks_hours_param(tmp_path):
+    """reset_stale_locks respects custom stale_hours argument."""
+    from src.ingest.db import connect, set_db_path, migrate
+    from src.ingest.processing_worker import reset_stale_locks
+
+    set_db_path(tmp_path / "test.db")
+    conn = connect()
+    migrate(conn)
+    # Insert a "processing" job stuck for ~1 minute (via old updated_at)
+    conn.execute(
+        "INSERT INTO games (game_id, status, created_at, updated_at) "
+        "VALUES ('stale','processing',datetime('now','-10 minutes'),datetime('now','-10 minutes'))"
+    )
+    conn.commit()
+
+    # Should NOT reset with 2h threshold
+    n = reset_stale_locks(conn, stale_hours=2.0)
+    assert n == 0
+
+    # SHOULD reset with 0.1h (6 min) threshold
+    n = reset_stale_locks(conn, stale_hours=0.1)
+    assert n == 1
+
+    conn.close()
+    set_db_path(None)
