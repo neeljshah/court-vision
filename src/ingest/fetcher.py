@@ -42,7 +42,18 @@ def _content_store(src: Path) -> Tuple[Path, str]:
     BY_SHA_DIR.mkdir(parents=True, exist_ok=True)
     dest = BY_SHA_DIR / f"{sha}.mp4"
     if not dest.exists():
-        src.rename(dest)
+        try:
+            src.rename(dest)
+            logger.debug("_content_store: renamed %s → %s", src, dest)
+        except OSError as exc:
+            import errno
+            if exc.errno == errno.EXDEV:
+                # Cross-device link (e.g. overlayFS /root → /workspace mfs on pod)
+                logger.info("_content_store: cross-device rename, falling back to copy+unlink")
+                shutil.copy2(src, dest)
+                src.unlink(missing_ok=True)
+            else:
+                raise
     else:
         src.unlink(missing_ok=True)
     return dest, sha

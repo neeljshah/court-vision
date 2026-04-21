@@ -1,4 +1,4 @@
-"""H1 hardening tests: memory hygiene, connection safety, log rotation."""
+"""H1+H2 hardening tests: memory hygiene, connection safety, filesystem safety."""
 from __future__ import annotations
 
 import inspect
@@ -220,3 +220,64 @@ def test_log_rotation_triggers(tmp_path):
     handler.close()
     backups = list(tmp_path.glob("test.log.*"))
     assert len(backups) >= 1, "No backup log files created"
+
+
+# ── H2: cross-filesystem rename fallback ─────────────────────────────────────
+
+def test_content_store_exdev_fallback(tmp_path):
+    """_content_store falls back to copy+unlink on EXDEV (cross-device)."""
+    import errno
+    from src.ingest.fetcher import _content_store, BY_SHA_DIR
+
+    # Create a fake source file
+    src_dir = tmp_path / "inbox"
+    src_dir.mkdir()
+    src_file = src_dir / "test_video.mp4"
+    src_file.write_bytes(b"fake video content for sha test")
+
+    original_rename = Path.rename
+
+    def _raise_exdev(self, dst):
+        raise OSError(errno.EXDEV, "Invalid cross-device link", str(self))
+
+    with patch("src.ingest.fetcher.BY_SHA_DIR", tmp_path / "by_sha"), \
+         patch.object(Path, "rename", _raise_exdev):
+        dest, sha = _content_store(src_file)
+
+    assert dest.exists()
+    assert not src_file.exists()
+    assert len(sha) == 64  # sha256 hex
+
+
+def test_content_store_normal_rename(tmp_path):
+    """_content_store uses rename when on same filesystem."""
+    from src.ingest.fetcher import _content_store
+
+    src_dir = tmp_path / "inbox"
+    src_dir.mkdir()
+    src_file = src_dir / "test2.mp4"
+    src_file.write_bytes(b"another fake video")
+
+    with patch("src.ingest.fetcher.BY_SHA_DIR", tmp_path / "by_sha"):
+        dest, sha = _content_store(src_file)
+
+    assert dest.exists()
+    assert not src_file.exists()
+
+
+def test_symlink_uses_absolute_path(tmp_path):
+    """_symlink_game creates symlink with absolute (resolved) target path."""
+    from src.ingest.fetcher import _symlink_game
+
+    sha_dir = tmp_path / "by_sha"
+    sha_dir.mkdir()
+    sha_path = sha_dir / "abc123.mp4"
+    sha_path.write_bytes(b"fake")
+
+    games_dir = tmp_path / "full_games"
+    with patch("src.ingest.fetcher.GAMES_DIR", games_dir):
+        link = _symlink_game(sha_path, "test_game")
+
+    if link.is_symlink():
+        target = Path(os.readlink(str(link)))
+        assert target.is_absolute(), f"Symlink target is relative: {target}"
