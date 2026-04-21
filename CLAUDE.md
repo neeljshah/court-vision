@@ -29,19 +29,28 @@ Then copy API keys into `.env` (template in `.env.example`). Everything needed i
 ### Next pod run: single RTX 3090 → 80 good games
 **One command:** `bash scripts/launch_single_3090_pod.sh`
 
+**Ingest system (P1-P6 complete — Session 40):**
+- `python -m src.ingest.manifest migrate` — import legacy games into SQLite queue
+- `python scripts/ingest_fetch.py --count N --game-id <id> --url <url>` — download + verify
+- `python scripts/ingest_process.py --max-games N --parallel K` — run pipeline on verified games
+- `python scripts/ingest_backfill_quality.py` — score all processed games
+- `python scripts/ingest_status.py` — one-screen dashboard
+- `python scripts/sync_remote.py --push` — push tracking/events/DB to B2 (needs .env B2 creds)
+- `python scripts/reset_stale_jobs.py` — unstick processing→verified after crash
+
 **Before launching — export YouTube cookies (doubles download success):**
 1. Install "Get cookies.txt LOCALLY" Chrome extension
 2. Go to youtube.com while logged in
 3. Export cookies → save as `data/videos/youtube_cookies.txt` on the pod
-4. fetch_games.py auto-detects this file and passes `--cookies` to yt-dlp
+4. ingest_fetch.py auto-detects this file and passes `--cookies` to yt-dlp
 
 **Settings:** PARALLEL=4, OMP=4, BATCH=12, TARGET=90, CUDA_VISIBLE_DEVICES=0
 **Est. time:** 7-9 hrs | **Est. cost:** $2.50-4.50 on community 3090 (~$0.35-0.50/hr)
-**Download sync after run:**
+**Download sync after run (or use --loop 5 auto-sync if B2 creds set):**
 ```bash
-scp -P <PORT> root@<IP>:/workspace/nba-ai-system/data/phase_g_metrics.csv data/
-scp -P <PORT> root@<IP>:/workspace/nba-ai-system/data/phase_g_processed.txt data/
+scp -P <PORT> root@<IP>:/workspace/nba-ai-system/data/ingest/queue.db data/ingest/
 rsync -az -e "ssh -p <PORT>" root@<IP>:/workspace/nba-ai-system/data/tracking/ data/tracking/
+rsync -az -e "ssh -p <PORT>" root@<IP>:/workspace/nba-ai-system/data/events/ data/events/
 ```
 
 ### Open Issues
