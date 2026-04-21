@@ -222,7 +222,7 @@ def _is_complete(out_dir: Path) -> bool:
     If a required CSV exists but has 0 data rows, deletes it so the game
     can be retried cleanly on next --resume run.
     """
-    required = ["ball_tracking.csv", "tracking_data.csv", "possessions.csv"]
+    required = ["tracking_data.csv"]
     for name in required:
         p = out_dir / name
         if not p.exists():
@@ -588,7 +588,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         metrics["stability"] = 0.0
         _gk = game_key or game_id or video.stem
         _save_metrics(_gk, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
-        _mark_done(_gk + "_PREFLIGHT_FAIL")
+        _mark_done(_gk)  # plain key so skip-check matches on re-run
     elif returncode not in (0, 2):  # 2 = short clip warning, still ok
         print(f"  [WARN] run_clip.py exited {returncode}")
         stderr_tail = "".join(stderr_lines)
@@ -777,10 +777,10 @@ def main():
             import time as _rt; _rt.sleep(5)
         rc = metrics.pop("_rc", 0)
         if rc == 3:
-            # Stage 1 produced zero rows — log distinctly, do NOT add to done log
-            # (so future --resume can retry without --reprocess)
+            # Stage 1 produced zero rows — mark done so it isn't retried forever;
+            # RC3 almost always means a non-broadcast clip with no court visibility.
             _save_metrics(key, game_id, {**metrics, "quality": "RC3_ZERO_ROWS"})
-            _mark_done(key + "_RC3", video_path)
+            _mark_done(key, video_path)
         elif rc == 4:
             pass  # already handled inside _run_clip
         elif _is_complete(out_dir):
