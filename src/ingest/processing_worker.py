@@ -55,23 +55,31 @@ def _read_checkpoint(game_id: str) -> int:
     return 0
 
 
-def claim_job(conn: sqlite3.Connection) -> Optional[str]:
-    """Atomically claim one verified game. Returns game_id or None."""
-    row = conn.execute(
-        "SELECT game_id FROM games WHERE status='verified' ORDER BY created_at LIMIT 1"
-    ).fetchone()
-    if row is None:
-        return None
-    game_id = row["game_id"]
-    updated = conn.execute(
-        "UPDATE games SET status='processing', updated_at=? "
-        "WHERE game_id=? AND status='verified'",
-        (_now(), game_id),
-    ).rowcount
-    conn.commit()
-    if updated == 0:
-        return None   # race condition — another worker grabbed it
-    return game_id
+def claim_job(conn: sqlite3.Connection, retries: int = 3, jitter_ms: int = 100) -> Optional[str]:
+    """Atomically claim one verified game. Returns game_id or None.
+
+    Retries up to `retries` times with random jitter on UPDATE rowcount=0 races.
+    """
+    for attempt in range(retries):
+        row = conn.execute(
+            "SELECT game_id FROM games WHERE status='verified' ORDER BY created_at LIMIT 1"
+        ).fetchone()
+        if row is None:
+            return None  # genuinely no work available
+        game_id = row["game_id"]
+        updated = conn.execute(
+            "UPDATE games SET status='processing', updated_at=? "
+            "WHERE game_id=? AND status='verified'",
+            (_now(), game_id),
+        ).rowcount
+        conn.commit()
+        if updated > 0:
+            return game_id
+        # Race: another worker grabbed it — wait with jitter then retry
+        if attempt < retries - 1:
+            import random
+            time.sleep(random.uniform(0, jitter_ms / 1000))
+    return None
 
 
 def release_job(conn: sqlite3.Connection, game_id: str) -> None:
@@ -205,12 +213,13 @@ def process_game(
         signal.signal(signal.SIGTERM, _original_sigterm)
 
 
-def reset_stale_locks(conn: sqlite3.Connection) -> int:
-    """Reset processing→verified for jobs stuck >STALE_HOURS hours."""
+def reset_stale_locks(conn: sqlite3.Connection, stale_hours: float = STALE_HOURS) -> int:
+    """Reset processing→verified for jobs stuck >stale_hours hours."""
     conn.execute(
-        f"""UPDATE games SET status='verified', updated_at=datetime('now')
-            WHERE status='processing'
-            AND (julianday('now') - julianday(updated_at)) * 24 > {STALE_HOURS}"""
+        """UPDATE games SET status='verified', updated_at=datetime('now')
+           WHERE status='processing'
+           AND (julianday('now') - julianday(updated_at)) * 24 > ?""",
+        (stale_hours,),
     )
     conn.commit()
     return conn.execute("SELECT changes()").fetchone()[0]
