@@ -18,6 +18,9 @@ cd "$PROJ"
 
 echo "=== Single 3090 pod setup ==="
 
+# ── Step 0: Preflight — fail loudly before wasting compute ──────────────────
+bash scripts/ingest_preflight.sh || exit 1
+
 # ── Step 1: pip install decord (GPU video decode, frees ~1.5 CPU cores/worker) ──
 pip install decord -q && echo "decord OK" || echo "decord failed (non-fatal)"
 
