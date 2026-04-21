@@ -34,7 +34,15 @@ case "$FLUSH" in
   *)      echo "ERROR: _VRAM_FLUSH_INTERVAL != 3000 (got: $FLUSH). Fix before running."; exit 1 ;;
 esac
 
-# ── Step 4: Start orchestrator ───────────────────────────────────────────────────
+# ── Step 4: Start cloud sync loop (push every 5 min) ───────────────────────────
+if [ -f ".env" ] && grep -q "B2_BUCKET=" .env && grep -qv "B2_BUCKET=$" .env; then
+  nohup python scripts/sync_remote.py --loop 5 --push > "$PROJ/sync.log" 2>&1 & disown
+  echo "sync loop started (push every 5 min) — tail $PROJ/sync.log"
+else
+  echo "B2 creds not set in .env — skipping cloud sync loop"
+fi
+
+# ── Step 5: Start orchestrator ───────────────────────────────────────────────────
 # Single 3090: PARALLEL=4 workers × ~2GB VRAM = ~8GB of 24GB used.
 # OMP_NUM_THREADS=4: 4 workers × 4 threads = 16 threads (safe for 8-16 vCPU pods).
 # BATCH=12: enough games to keep 4 workers busy without wasting download time.
