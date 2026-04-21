@@ -27,7 +27,7 @@ Then copy API keys into `.env` (template in `.env.example`). Everything needed i
 - `fetch_games.py`: archive.org fallback (Pass 2.5), android player client for YouTube bot bypass, highlights min_dur raised to 1800s, PREFLIGHT retry loop fix (reads phase_g_processed.txt at startup, skips already-done game IDs so they're never re-downloaded).
 
 ### Next pod run: single RTX 3090 → 80 good games
-**One command:** `bash scripts/launch_single_3090_pod.sh`
+**One command:** `bash scripts/ingest_preflight.sh && bash scripts/launch_single_3090_pod.sh`
 
 **Ingest system (P1-P6 complete — Session 40):**
 - `python -m src.ingest.manifest migrate` — import legacy games into SQLite queue
@@ -36,7 +36,7 @@ Then copy API keys into `.env` (template in `.env.example`). Everything needed i
 - `python scripts/ingest_backfill_quality.py` — score all processed games
 - `python scripts/ingest_status.py` — one-screen dashboard
 - `python scripts/sync_remote.py --push` — push tracking/events/DB to B2 (needs .env B2 creds)
-- `python scripts/reset_stale_jobs.py` — unstick processing→verified after crash
+- `python scripts/reset_stale_jobs.py [--hours N]` — unstick processing→verified after crash (default 2h)
 
 **Before launching — export YouTube cookies (doubles download success):**
 1. Install "Get cookies.txt LOCALLY" Chrome extension
