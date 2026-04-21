@@ -27,6 +27,14 @@ mkdir -p "$VIDEOS"
 ln -sfn "$VIDEOS" data/videos/full_games
 echo "videos dir: $VIDEOS (symlinked)"
 
+# ── Step 2b: Verify symlink resolves (overlay FS relative symlinks can break) ───
+if ! ls data/videos/full_games/ >/dev/null 2>&1; then
+  echo "ERROR: data/videos/full_games/ symlink does not resolve."
+  echo "  Fix: mkdir -p /root/nba_videos && ln -sfn /root/nba_videos data/videos/full_games"
+  exit 1
+fi
+echo "symlink OK: data/videos/full_games/ → $(readlink data/videos/full_games)"
+
 # ── Step 3: Preflight check — VRAM_FLUSH must be 3000 ───────────────────────────
 FLUSH=$(grep -oE '_VRAM_FLUSH_INTERVAL = [0-9]+' src/pipeline/unified_pipeline.py | head -1)
 case "$FLUSH" in
