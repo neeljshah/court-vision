@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
 from pathlib import Path
 
@@ -22,7 +23,7 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler(LOG_DIR / "p2_fetch.log"),
+        RotatingFileHandler(LOG_DIR / "p2_fetch.log", maxBytes=50 * 1024 * 1024, backupCount=3),
     ],
 )
 logger = logging.getLogger("ingest_fetch")
