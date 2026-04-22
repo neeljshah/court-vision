@@ -1,55 +1,34 @@
 # Changelog
 
-All notable changes to CourtVision. Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+All notable changes to this project will be documented in this file.
 
----
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
-### Docs
-- Comprehensive documentation and vault update (README, API.md, ML_MODELS.md, tracking_pipeline.md, PRODUCTION_RUNBOOK.md, ARCHITECTURE.md, CHANGELOG.md)
-- Updated 10 Obsidian vault files with real metrics, thresholds, and current state
+## [0.13.5] - 2026-04-21
 
----
+### Added
+- Ingest system P1-P6 complete: SQLite work queue, yt-dlp fetcher, parallel processing workers, quality backfill, status dashboard, B2 sync
+- `ingest_preflight.sh` + `launch_single_3090_pod.sh` for single-GPU pod runs
+- CalibrationLayer: `win_prob()` + `train_win_prob()` methods
+- 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl) with live API serving
 
-## [Phase 13.5] — 2026-04-15
+### Changed
+- `unified_pipeline.py`: fixed max_frames stride bug — `gameplay_frames` (decoded) vs `max_frames` (source units) mismatch caused 60fps games to never stop
+- `fetch_games.py`: archive.org fallback (Pass 2.5), android player client for YouTube bot bypass, highlights `min_dur` raised to 1800s, PREFLIGHT retry loop reads `phase_g_processed.txt` at startup to skip already-done game IDs
+- `_VRAM_FLUSH_INTERVAL` set to 3000 (was 100) — flushing every 100 frames caused GPU syncs stalling CPU stages ~10×
 
-### Docs
-- `13a4ba2` Update ARCHITECTURE.md — case-sensitivity fix on Windows
-- `684561a` Update CLAUDE.md — 75 trained models, remove SYSTEM_OPTIMIZED.md ref, fix endpoint count
-- `43589f2` Update ROADMAP and CLAUDE.md for 100-game readiness
+### Fixed
+- H1: memory + connection hygiene for 3090 pod
+- H2: cross-filesystem rename + symlink safety
+- H3: parallel worker isolation + retry on claim race
+- H4: pod preflight script
+- H5: final verification + runbook update
 
-### Refactor
-- `5532ebc` Professional cleanup — remove 1.5GB tracked binaries, dead code, stale docs
+### Research
+- Props R²: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.09
+- Portfolio: 312 settled picks, CLV +14 bps/bet vs Pinnacle (t=2.3), ROI +3.8%
+- CV games ingested: 17 high/medium quality (target: 80)
 
-### Fix (100-game blockers)
-- `f904aa5` `/props` fallback to `predict_props` when stack yields empty predictions
-- `f198ea0` Sanitize NaN edges in predictions_router JSON response
-- `cd5f1ec` Phase G rsync uses SSH key auth or skips gracefully
-- `abd4a6d` unified_pipeline writes empty CSVs on failure paths
-- `818263f` main.py `/props` uses `stack_predict` (deduplicated with router)
-- `243fe36` `/edge` uses win_probability model instead of hardcoded 0.5
-- `0d80f83` Backtest gate fails closed on empty data
-- `65aa185` Enforce MAX_DRAWDOWN_PCT in `kelly_corr`
-- `f49fd7d` stitch_router predict_game signature fix
-- `71ec893` Test fixes for prop stack + simulator integration
-
-### Feat (100-game preparation)
-- `4ae06c0` Prop correlation matrix for Kelly sizing in betting portfolio
-- `66c4279` Wire CV-derived minutes into fatigue model in possession simulator
-- `3dca4da` Isotonic calibration layer for prop probabilities (Kelly safety)
-- `075f235` Backtest endpoint for prop validation gate
-- `d265ece` Dedup processed list by hash and isolate per-game failures (BLOCKER fix)
-
-### Fix (Phase G pre-launch hardening)
-- `9502832` Fail loud on live model import errors in possession simulator
-- `7302950` P1-6/7/8 remove dead court_zone param, add fallback warning, (path,player) cache key
-- `39f0081` P0-5 document `_get_opp_stl_rate` always returns 0.08 (stl_per_poss absent from cache)
-- `64706de` P0-4 preflight video existence check logs missing path before worker spawn
-- `d394a47` P0-3 `_is_complete` deletes zero-row outputs; `_remove_zero_frame_processed` cleans done log
-- `ca741d3` P0-1/P0-2 PossessionSimulator top-level import, `_MODEL_FEATURE_COLS` excludes 4 sim_* (67 vs 71)
-- `a364b4c` 10 pre-launch hardening fixes for 100-game RunPod run
-- `e9d6986` Write props_v2 metrics sidecar JSON on retrain
-- `d279378` Add `--all-missing` flag to post_tracking_enrich.py
-- `1296448` Add `data/events/` to rsync pull in watch_and_sync.sh
-- `2c6cf5f` Tracking + data backlog sweep
+[0.13.5]: https://github.com/neeljshah/court-vision/releases/tag/v0.13.5
