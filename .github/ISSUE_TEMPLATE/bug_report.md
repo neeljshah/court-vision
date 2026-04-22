@@ -1,39 +1,33 @@
 ---
 name: Bug report
-about: Report a defect affecting correctness, reliability, or gate compliance
-title: "[BUG] "
-labels: ["domain:infra", "state:ready"]
-assignees: []
+about: Something is broken
+labels: bug
 ---
 
-## Summary
+## Expected behavior
 
-What is failing?
+<!-- What should happen? -->
 
-## Impact
+## Actual behavior
 
-- Affected area:
-- User/system impact:
-- Related gate label (if any):
+<!-- What happens instead? -->
 
-## Reproduction
+## Reproduction steps
 
-1.
-2.
-3.
+```bash
+# Minimal command or script to reproduce
+```
 
-## Expected vs Actual
+## Environment
 
-- Expected:
-- Actual:
+- OS:
+- Python:
+- conda env: `basketball_ai` (yes/no)
+- GPU / CUDA:
+- Branch / commit:
 
-## Evidence
+## Logs
 
-- Logs/artifacts:
-- Screenshots (if relevant):
-
-## Definition of Done
-
-- [ ] Fix merged
-- [ ] Validation run passed
-- [ ] Evidence artifact path linked
+```
+# Paste relevant logs here
+```
