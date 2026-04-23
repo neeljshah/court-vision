@@ -84,4 +84,21 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import argparse as _argparse
+    _p = _argparse.ArgumentParser(description="Fit isotonic calibration for prop stats")
+    _p.add_argument("--all-stats", action="store_true",
+                    help="Fit calibration for all 7 stats (default behavior)")
+    _p.add_argument("--stat", default=None,
+                    choices=STATS, help="Fit only a specific stat")
+    _p.add_argument("--min-samples", type=int, default=MIN_SAMPLES,
+                    help=f"Minimum samples per stat (default: {MIN_SAMPLES})")
+    _args = _p.parse_args()
+
+    if _args.stat:
+        # Patch STATS to only fit the requested one
+        import src.prediction.prop_model_stack as _pms
+        _pms.STATS = [_args.stat]
+    if _args.min_samples != MIN_SAMPLES:
+        globals()["MIN_SAMPLES"] = _args.min_samples
+
     main()

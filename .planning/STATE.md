@@ -2,15 +2,28 @@
 
 ## Current Status
 
-**Active Phase**: BUILD PHASE — Phases 8-13 (possession simulator → FastAPI backend)
-**Last Updated**: 2026-04-15 (Session 36 — backlog sweep)
-**Test suite**: 960+ passing, 93 skip (excl PG tests) — +12 new tests
-**CV games**: 26 with tracking data / 29 dirs (3 empty); Phase G pod expired
-**Phase G**: 26 success, 3 failed (AV1×1, empty dirs×2); 5 AV1 videos quarantined
+**Active Phase**: LIVE BETTING BUILD — Phase 15 (bet selector middleware)
+**Last Updated**: 2026-04-23 (Session 42 — Phase 14 complete)
+**Test suite**: 960+ passing, 93 skip (excl PG tests)
+**CV games**: 17 with usable tracking data; pod run deferred to Phase 20
 
-**Strategy**: Build all prediction + serving infrastructure (Phases 8-13) using current dataset.
-Models scaffolded now, retrained to production accuracy after Full Season Run (~$200-300 RunPod, post-Phase 13).
-No more RunPod until all phases complete.
+**Strategy**: Finish the serving/betting loop on free-tier data (nba_api + ESPN + The Odds API) before spending on CV ingest. Goal: hands-off "inject data → bets out". CV features injected later as model upgrade, not blocker.
+
+**Next up**: Phase 15 — bet selector middleware (`src/prediction/bet_selector.py`, `config/betting.yaml`)
+
+**Full plan**: `.planning/LIVE_BETTING_PLAN.md` (authoritative for Phases 14-20).
+
+**Phase 14 complete (2026-04-23)**:
+- `data/models/prop_residuals.json` — 152,845 rows, 21,835/stat (2023-24 + 2024-25 gamelogs)
+- `data/models/calibration_{pts,reb,ast,fg3m,stl,blk,tov}.joblib` — 7 isotonic calibration models
+- `data/models/prop_corr_matrix.json` — 7×7 symmetric correlation matrix (pts-tov corr=0.80, reb-blk=0.61)
+- `scripts/build_historical_residuals.py` — bootstrap script (idempotent, --append flag)
+- `scripts/record_slate_results.py` — T+1 live recorder (fetches box scores, resolves bet_log)
+- `scripts/fit_prop_calibration.py` — now has --all-stats / --stat CLI flags
+
+**Known blockers**:
+1. No bet-selector middleware → slate emits edges but no "bets to place" list
+2. No scheduler → manual runs only
 
 ---
 
