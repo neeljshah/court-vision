@@ -46,6 +46,15 @@ _GAMELOG_TTL_HOURS = 24
 _PLAYER_AVGS_TTL_HOURS = 24
 
 
+def _offline_mode() -> bool:
+    """NBA_OFFLINE=1 forces stale cache use + default fallbacks instead of network fetch.
+
+    Used by batch/backtest flows where stats.nba.com throttles or blocks requests,
+    causing multi-minute hangs. A stale cache is always preferable to a hang.
+    """
+    return os.environ.get("NBA_OFFLINE", "0") == "1"
+
+
 # ── Data helpers ───────────────────────────────────────────────────────────────
 
 def _get_player_season_avgs(player_name: str, season: str) -> Optional[dict]:
@@ -60,6 +69,9 @@ def _get_player_season_avgs(player_name: str, season: str) -> Optional[dict]:
         os.path.exists(cache_path)
         and (time.time() - os.path.getmtime(cache_path)) < _PLAYER_AVGS_TTL_HOURS * 3600
     )
+    # Offline mode: serve stale cache instead of hitting nba.com (which may block).
+    if _offline_mode() and os.path.exists(cache_path):
+        _avgs_fresh = True
     if _avgs_fresh:
         with open(cache_path) as f:
             cache = json.load(f)
@@ -75,6 +87,9 @@ def _get_player_season_avgs(player_name: str, season: str) -> Optional[dict]:
     norm_cache = {_norm(k): v for k, v in cache.items()}
     if key in norm_cache:
         return norm_cache[key]
+
+    if _offline_mode():
+        return None
 
     try:
         from nba_api.stats.endpoints import leaguedashplayerstats
@@ -155,6 +170,9 @@ def _get_opp_def_rating(opp_team: str, season: str) -> float:
             pass
 
     # 3. Fetch from NBA API and populate secondary cache
+    if _offline_mode():
+        return 113.0
+
     try:
         from nba_api.stats.endpoints import leaguedashteamstats
         time.sleep(0.6)
@@ -236,9 +254,14 @@ def _get_recent_form(player_id: int, season: str, n: int = 10) -> Optional[dict]
         os.path.exists(cache_path)
         and (time.time() - os.path.getmtime(cache_path)) < _GAMELOG_TTL_HOURS * 3600
     )
+    # Offline mode: serve stale cache rather than hanging on nba.com.
+    if _offline_mode() and os.path.exists(cache_path):
+        _cache_fresh = True
     if _cache_fresh:
         with open(cache_path) as f:
             rows = json.load(f)
+    elif _offline_mode():
+        return None
     else:
         try:
             from nba_api.stats.endpoints import playergamelog
@@ -2479,7 +2502,8 @@ def _predict_with_models(feats: dict) -> tuple:
 
 # ── Training ───────────────────────────────────────────────────────────────────
 
-def train_props(seasons: list = None, force: bool = False) -> dict:
+def train_props(seasons: list = None, force: bool = False,
+                exclude_player_ids: list = None) -> dict:
     """
     Train XGBoost regression models for pts, reb, ast props.
 
@@ -2497,6 +2521,9 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
     import numpy as np
     import xgboost as xgb
     from sklearn.metrics import mean_absolute_error, r2_score
+    from src.prediction.prop_cv_split import (
+        make_temporal_split, sort_chronologically, filter_excluded_players, _objective_for_stat
+    )
 
     if seasons is None:
         seasons = ["2022-23", "2023-24", "2024-25"]
@@ -2527,6 +2554,10 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
 
     import pandas as pd
     df = pd.DataFrame(all_rows)
+
+    if exclude_player_ids:
+        df = filter_excluded_players(df, exclude_player_ids)
+        print(f"  [props] Excluded {len(exclude_player_ids)} player IDs from training set")
 
     feat_cols = list(_ALL_FEATS)  # full feature set
 
@@ -2579,10 +2610,15 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
     df = df.dropna(subset=["season_pts", "season_reb", "season_ast"])
 
     results = {}
-    train_seasons = seasons[:-1]
-    test_season   = seasons[-1]
-    train_df = df[df["season"].isin(train_seasons)]
-    test_df  = df[df["season"] == test_season]
+    # Temporal split: sort by season ordinal, hold out last fold chronologically
+    df_sorted = sort_chronologically(df, date_col="game_date")
+    tscv = make_temporal_split(df_sorted, date_col="game_date", n_splits=5)
+    _all_idx = np.arange(len(df_sorted))
+    _splits  = list(tscv.split(_all_idx))
+    train_idx_final, holdout_idx_final = _splits[-1]  # Last fold = most recent holdout
+    train_df = df_sorted.iloc[train_idx_final].reset_index(drop=True)
+    test_df  = df_sorted.iloc[holdout_idx_final].reset_index(drop=True)
+    print(f"  [props] Temporal split: {len(train_df)} train rows, {len(test_df)} holdout rows")
 
     for stat in _PROP_STATS:
         # Drop season_{stat} to prevent label leakage
@@ -2613,7 +2649,7 @@ def train_props(seasons: list = None, force: bool = False) -> dict:
         # STL/BLK: count data — Poisson objective improves R² (+5pp vs reg on CV)
         # Experiment 2026-04-15: Poisson R²=0.47 vs baseline R²=0.44 (5-fold CV).
         # Interaction feature (def_rtg*min) did NOT help (R²=0.43 < baseline).
-        _objective = "count:poisson" if stat in ("stl", "blk") else "reg:squarederror"
+        _objective = _objective_for_stat(stat)
 
         m = xgb.XGBRegressor(
             n_estimators=200,
