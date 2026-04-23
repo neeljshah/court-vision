@@ -2230,12 +2230,13 @@ Plans:
 - Feature drift alerts when input distributions shift > 2 sigma
 - Model performance monitoring dashboard
 
-**Plans:** 3 plans
+**Plans:** 4 plans
 
 Plans:
 - [ ] 17-01-PLAN.md — Wave 0 test stubs (test_infrastructure.py + conftest fixtures)
 - [ ] 17-02-PLAN.md — Wire drift detector + fix auto-retrain milestone crossing
 - [ ] 17-03-PLAN.md — Model validation gate in CI/CD + Monitoring dashboard tab
+- [ ] 17-04-PLAN.md — Cloud GPU lifecycle: pod_manager.py + auto-sync (REQ-14-5)
 
 ---
 
