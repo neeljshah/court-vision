@@ -12,6 +12,7 @@ Steps:
 5. Score vs DraftKings lines (props_scraper)
 6. Rank by edge, apply Kelly sizing
 7. Write data/output/slate_{YYYYMMDD}.json + print ranked table
+8. Run bet_selector middleware -> data/output/bets_{YYYYMMDD}.json
 """
 
 from __future__ import annotations
@@ -417,7 +418,7 @@ def write_output(preds: list[dict], edge_rows: list[dict], date_str: str) -> str
 # -- Main ----------------------------------------------------------------------
 
 
-def main(season: str, date_str: str) -> None:
+def main(season: str, date_str: str, dry_run: bool = False) -> None:
     print(f"\n{'='*60}")
     print(f"  NBA Daily Slate -- {date_str}  (season {season})")
     print(f"{'='*60}")
@@ -449,12 +450,20 @@ def main(season: str, date_str: str) -> None:
     print_table(edge_rows, preds, top_n=20)
     write_output(preds, edge_rows, date_str)
 
+    # 8. Bet selector middleware
+    try:
+        from src.prediction.bet_selector import select as _select
+        _select(edge_rows, date_str=date_str, dry_run=dry_run)
+    except Exception as e:
+        log.warning("bet_selector failed (non-fatal): %s", e)
+
     print(f"[slate] Done -- {len(preds)} players, {len(edge_rows)} edges surfaced.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NBA Daily Prop Prediction Pipeline")
-    parser.add_argument("--season", default="2024-25", help="NBA season (e.g. 2024-25)")
-    parser.add_argument("--date",   default=str(_date.today()), help="Date YYYY-MM-DD")
+    parser.add_argument("--season",   default="2024-25",        help="NBA season (e.g. 2024-25)")
+    parser.add_argument("--date",     default=str(_date.today()), help="Date YYYY-MM-DD")
+    parser.add_argument("--dry-run",  action="store_true",      help="Paper-trade: log bets as status=paper")
     args = parser.parse_args()
-    main(season=args.season, date_str=args.date)
+    main(season=args.season, date_str=args.date, dry_run=args.dry_run)
