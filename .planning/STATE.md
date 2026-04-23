@@ -2,8 +2,15 @@
 
 ## Current Status
 
-**Active Phase**: LIVE BETTING BUILD — Phase 15 (bet selector middleware)
-**Last Updated**: 2026-04-23 (Session 42 — Phase 14 complete)
+**Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV)
+**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 01 complete)
+**Phase 14-5a Plan 01 complete (2026-04-23)**:
+- `tests/test_prop_temporal_cv.py` — 4 xfail stubs (temporal split, no leakage, rolling features, Poisson objective)
+- `tests/test_player_exclusion.py` — 2 xfail stubs (exclusion honored, empty-list noop)
+- `tests/test_prop_grid_search.py` — 3 tests (best_params, holdout gap <0.08, Poisson grid tighter)
+- `tests/test_model_registry.py` — 3 tests (holdout fields, all 7 stats, needs_retrain flag logic)
+- `tests/test_prop_retrain.py` — 2 xfail stubs (produces model files, updates registry)
+- `scripts/validate_holdout_gap.py` — CLI gate: exits 1 when gap > threshold (real registry: 6/7 stats failing)
 **Test suite**: 960+ passing, 93 skip (excl PG tests)
 **CV games**: 17 with usable tracking data; pod run deferred to Phase 20
 
