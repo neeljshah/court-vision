@@ -3,7 +3,12 @@
 ## Current Status
 
 **Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV)
-**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 01 complete)
+**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 02 complete)
+**Phase 14-5a Plan 02 complete (2026-04-23)**:
+- `src/prediction/prop_cv_split.py` — 123 LOC; make_temporal_split, sort_chronologically, filter_excluded_players, _objective_for_stat
+- `src/prediction/player_props.py` — train_props() wired: exclude_player_ids param, TimeSeriesSplit holdout, _objective_for_stat dispatch
+- 6 xfail tests now XPASS (4 temporal CV + 2 player exclusion)
+- Decision: make_temporal_split returns TimeSeriesSplit only (not tuple) to match Plan 01 test contract
 **Phase 14-5a Plan 01 complete (2026-04-23)**:
 - `tests/test_prop_temporal_cv.py` — 4 xfail stubs (temporal split, no leakage, rolling features, Poisson objective)
 - `tests/test_player_exclusion.py` — 2 xfail stubs (exclusion honored, empty-list noop)
