@@ -2159,7 +2159,7 @@ GET  /health                          → dataset status, model versions
 #### Phase 14.5a: XGB Retune + Temporal CV
 **Goal**: Enforce temporal CV split and retune XGBoost across all 7 prop models. Measurable holdout improvement before adding new algorithms.
 **Depends on**: Phase 14
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [ ] 14-5a-01-PLAN.md — Wave 0: test stubs + validate_holdout_gap.py CLI

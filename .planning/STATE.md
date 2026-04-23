@@ -3,7 +3,13 @@
 ## Current Status
 
 **Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV)
-**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 02 complete)
+**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 03 complete)
+**Phase 14-5a Plan 03 complete (2026-04-23)**:
+- `src/prediction/prop_grid_search.py` — 109 LOC; run_grid_search(), REGRESSION_PARAM_GRID, POISSON_PARAM_GRID
+- `scripts/retrain_props_temporal.py` — 178 LOC; CLI with --stats/--dry-run/--threshold/--seasons/--exclude; holdout gap reporting
+- 5 tests XPASS (3 grid-search + 2 retrain); LR constraint verified (Poisson max 0.05)
+- Decision: sort_chronologically separate from make_temporal_split (Plan 02 contract: returns TimeSeriesSplit only)
+- Decision: GridSearchCV refit=True returns best_estimator_ refitted on full training set
 **Phase 14-5a Plan 02 complete (2026-04-23)**:
 - `src/prediction/prop_cv_split.py` — 123 LOC; make_temporal_split, sort_chronologically, filter_excluded_players, _objective_for_stat
 - `src/prediction/player_props.py` — train_props() wired: exclude_player_ids param, TimeSeriesSplit holdout, _objective_for_stat dispatch
