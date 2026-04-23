@@ -2209,6 +2209,14 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 3. Full stat distribution for every player from simulator
 4. Prop pricing engine ROI > 0 on holdout backtest
 
+**Plans:** 5 plans
+Plans:
+- [ ] 16-01-PLAN.md -- Wave 0: test stubs (test_live_win_probability.py, test_prop_pricing.py, conftest fixtures)
+- [ ] 16-02-PLAN.md -- LSTM trainer + LiveWinProbInference (live_win_probability.py)
+- [ ] 16-03-PLAN.md -- Prop pricing engine (prop_pricing_engine.py, simulation -> distribution)
+- [ ] 16-04-PLAN.md -- WebSocket /ws/win-prob endpoint + /win-prob upgrade (api/main.py)
+- [ ] 16-05-PLAN.md -- Simulator LSTM gate + player_distributions percentiles + integration tests
+
 ---
 
 ### Phase 17: Infrastructure
@@ -2221,6 +2229,13 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 - Auto-retrain every 2 weeks on latest data
 - Feature drift alerts when input distributions shift > 2 sigma
 - Model performance monitoring dashboard
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 17-01-PLAN.md — Wave 0 test stubs (test_infrastructure.py + conftest fixtures)
+- [ ] 17-02-PLAN.md — Wire drift detector + fix auto-retrain milestone crossing
+- [ ] 17-03-PLAN.md — Model validation gate in CI/CD + Monitoring dashboard tab
 
 ---
 
