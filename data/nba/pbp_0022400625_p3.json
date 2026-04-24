@@ -1,0 +1,1472 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (9:24 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "62-60",
+    "score_margin": "2"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 17,
+    "event_type": 2,
+    "event_desc": "MISS Wallace 6' Driving Floating Jump Shot",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 18,
+    "event_type": 4,
+    "event_desc": "Gafford REBOUND (Off:2 Def:1)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 35,
+    "event_type": 5,
+    "event_desc": "Washington Lost Ball Turnover (P4.T10)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 35,
+    "event_type": 0,
+    "event_desc": "Wallace STEAL (1 STL)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 38,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 1' Running Layup",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 40,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:7)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 51,
+    "event_type": 1,
+    "event_desc": "Washington 2' Driving Finger Roll Layup (12 PTS) (Gafford 1 AST)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "62-62",
+    "score_margin": "0"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 9' Pullup Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 69,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:8)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 76,
+    "event_type": 6,
+    "event_desc": "Gafford OFF.Foul (P3) (G.Petraitis)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 76,
+    "event_type": 5,
+    "event_desc": "Gafford Offensive Foul Turnover (P1.T11)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 92,
+    "event_type": 6,
+    "event_desc": "Washington P.FOUL (P2.T1) (N.Buchert)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 103,
+    "event_type": 2,
+    "event_desc": "MISS Jay. Williams 9' Floating Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 105,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:9)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 118,
+    "event_type": 1,
+    "event_desc": "Washington 25' 3PT Jump Shot (15 PTS) (Dinwiddie 2 AST)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "62-65",
+    "score_margin": "-3"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 132,
+    "event_type": 2,
+    "event_desc": "MISS Jay. Williams 26' 3PT Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 136,
+    "event_type": 4,
+    "event_desc": "Dort REBOUND (Off:1 Def:3)",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 139,
+    "event_type": 1,
+    "event_desc": "Jal. Williams 6' Pullup Jump Shot (10 PTS) (Jay. Williams 1 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "64-65",
+    "score_margin": "-1"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 150,
+    "event_type": 2,
+    "event_desc": "MISS Irving 26' 3PT Jump Shot",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 153,
+    "event_type": 4,
+    "event_desc": "Edwards REBOUND (Off:1 Def:2)",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 167,
+    "event_type": 1,
+    "event_desc": "Gafford 8' Turnaround Hook Shot (8 PTS) (Edwards 2 AST)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "64-67",
+    "score_margin": "-3"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 181,
+    "event_type": 1,
+    "event_desc": "Jal. Williams 15' Step Back Jump Shot (12 PTS) (Jay. Williams 2 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "66-67",
+    "score_margin": "-1"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 190,
+    "event_type": 6,
+    "event_desc": "Wallace P.FOUL (P2.T1) (S.Mitchell)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 195,
+    "event_type": 6,
+    "event_desc": "Jay. Williams P.FOUL (P1.T2) (S.Mitchell)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 208,
+    "event_type": 1,
+    "event_desc": "Gafford 1' Layup (10 PTS) (Washington 2 AST)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "66-69",
+    "score_margin": "-3"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 208,
+    "event_type": 0,
+    "event_desc": "THUNDER Timeout: Regular (Full 3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 214,
+    "event_type": 5,
+    "event_desc": "Gilgeous-Alexander Bad Pass Turnover (P2.T9)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 214,
+    "event_type": 0,
+    "event_desc": "Edwards STEAL (1 STL)",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 218,
+    "event_type": 1,
+    "event_desc": "Irving 12' Driving Floating Jump Shot (10 PTS)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "66-71",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 237,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 12' Fadeaway Jumper",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 238,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:10)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 248,
+    "event_type": 2,
+    "event_desc": "MISS Irving 5' Driving Floating Jump Shot",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 250,
+    "event_type": 4,
+    "event_desc": "Jay. Williams REBOUND (Off:0 Def:4)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 257,
+    "event_type": 6,
+    "event_desc": "Jay. Williams OFF.Foul (P2) (S.Mitchell)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 257,
+    "event_type": 5,
+    "event_desc": "Jay. Williams Offensive Foul Turnover (P2.T10)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 274,
+    "event_type": 1,
+    "event_desc": "Irving 27' 3PT Jump Shot (13 PTS)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "66-74",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 294,
+    "event_type": 1,
+    "event_desc": "Jal. Williams 10' Fadeaway Jumper (14 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "68-74",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 6,
+    "event_desc": "Dort FLAGRANT.FOUL.TYPE2 (P3.T3) (S.Mitchell)",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 6,
+    "event_desc": "Jal. Williams T.FOUL (P1.T3) (N.Buchert)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:36 PM EST)",
+    "player_name": "Wright",
+    "team_abbrev": "",
+    "score": "68-74",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 0,
+    "event_desc": "Dort Ejection:Other",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: Wiggins FOR Dort",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: Grimes FOR Edwards",
+    "player_name": "Edwards",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 3,
+    "event_desc": "Irving Free Throw Technical (14 PTS)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "68-75",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 3,
+    "event_desc": "Gafford Free Throw Flagrant 1 of 2 (11 PTS)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "68-76",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 3,
+    "event_desc": "Gafford Free Throw Flagrant 2 of 2 (12 PTS)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "68-77",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: Caruso FOR Jay. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 8,
+    "event_desc": "SUB: Kleber FOR Gafford",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 6,
+    "event_desc": "Gilgeous-Alexander P.FOUL (P2.T4) (G.Petraitis)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 316,
+    "event_type": 6,
+    "event_desc": "Wallace S.FOUL (P3.PN) (N.Buchert)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 316,
+    "event_type": 3,
+    "event_desc": "Irving Free Throw 1 of 2 (15 PTS)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "68-78",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 316,
+    "event_type": 8,
+    "event_desc": "SUB: K. Williams FOR Wallace",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 316,
+    "event_type": 3,
+    "event_desc": "Irving Free Throw 2 of 2 (16 PTS)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "68-79",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 322,
+    "event_type": 5,
+    "event_desc": "Gilgeous-Alexander Lost Ball Turnover (P3.T11)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 322,
+    "event_type": 0,
+    "event_desc": "Irving STEAL (2 STL)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 338,
+    "event_type": 2,
+    "event_desc": "MISS Irving 14' Pullup Jump Shot",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 340,
+    "event_type": 4,
+    "event_desc": "K. Williams REBOUND (Off:0 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 357,
+    "event_type": 2,
+    "event_desc": "MISS Caruso 26' 3PT Jump Shot",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 359,
+    "event_type": 4,
+    "event_desc": "Kleber REBOUND (Off:0 Def:2)",
+    "player_name": "Kleber",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 368,
+    "event_type": 1,
+    "event_desc": "Washington 4' Driving Layup (17 PTS)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "68-81",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 382,
+    "event_type": 2,
+    "event_desc": "MISS Wiggins 25' 3PT Jump Shot",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 385,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:11)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 391,
+    "event_type": 2,
+    "event_desc": "MISS Dinwiddie 26' 3PT Jump Shot",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 396,
+    "event_type": 4,
+    "event_desc": "K. Williams REBOUND (Off:0 Def:2)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 400,
+    "event_type": 6,
+    "event_desc": "Grimes S.FOUL (P2.T2) (S.Mitchell)",
+    "player_name": "Grimes",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 400,
+    "event_type": 3,
+    "event_desc": "Jal. Williams Free Throw 1 of 2 (15 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "69-81",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 400,
+    "event_type": 8,
+    "event_desc": "SUB: Jones FOR Wiggins",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 400,
+    "event_type": 8,
+    "event_desc": "SUB: Prosper FOR Dinwiddie",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 400,
+    "event_type": 3,
+    "event_desc": "Jal. Williams Free Throw 2 of 2 (16 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "70-81",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 1,
+    "event_desc": "Irving 7' Floating Jump Shot (18 PTS) (Grimes 3 AST)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "70-83",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 421,
+    "event_type": 1,
+    "event_desc": "Jal. Williams 25' 3PT Jump Shot (19 PTS) (Caruso 4 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "73-83",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 435,
+    "event_type": 6,
+    "event_desc": "Jal. Williams S.FOUL (P2.PN) (S.Mitchell)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 435,
+    "event_type": 3,
+    "event_desc": "Washington Free Throw 1 of 2 (18 PTS)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "73-84",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 435,
+    "event_type": 3,
+    "event_desc": "Washington Free Throw 2 of 2 (19 PTS)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "73-85",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 450,
+    "event_type": 1,
+    "event_desc": "K. Williams 3PT Jump Shot (3 PTS) (Jones 2 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "76-85",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 473,
+    "event_type": 6,
+    "event_desc": "Kleber OFF.Foul (P1) (N.Buchert)",
+    "player_name": "Kleber",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 473,
+    "event_type": 5,
+    "event_desc": "Kleber Offensive Foul Turnover (P1.T12)",
+    "player_name": "Kleber",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 16' Pullup Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 489,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:12)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 2,
+    "event_desc": "MISS Washington 3' Driving Layup",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 0,
+    "event_desc": "Jones BLOCK (1 BLK)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 4,
+    "event_desc": "THUNDER Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 8,
+    "event_desc": "SUB: Gafford FOR Washington",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 496,
+    "event_type": 8,
+    "event_desc": "SUB: Dinwiddie FOR Kleber",
+    "player_name": "Kleber",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 502,
+    "event_type": 1,
+    "event_desc": "Caruso 1' Driving Finger Roll Layup (8 PTS) (Jal. Williams 7 AST)",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "78-85",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 502,
+    "event_type": 6,
+    "event_desc": "Irving S.FOUL (P2.T3) (S.Mitchell)",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 502,
+    "event_type": 8,
+    "event_desc": "SUB: Wallace FOR Gilgeous-Alexander",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 502,
+    "event_type": 3,
+    "event_desc": "MISS Caruso Free Throw 1 of 1",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 4,
+    "event_desc": "Gafford REBOUND (Off:2 Def:2)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 518,
+    "event_type": 6,
+    "event_desc": "Jones S.FOUL (P2.PN) (S.Mitchell)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 518,
+    "event_type": 3,
+    "event_desc": "Dinwiddie Free Throw 1 of 2 (15 PTS)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "78-86",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 518,
+    "event_type": 8,
+    "event_desc": "SUB: Jay. Williams FOR Jones",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 518,
+    "event_type": 3,
+    "event_desc": "Dinwiddie Free Throw 2 of 2 (16 PTS)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "78-87",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 533,
+    "event_type": 2,
+    "event_desc": "MISS Wallace 9' Driving Floating Jump Shot",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 535,
+    "event_type": 4,
+    "event_desc": "Caruso REBOUND (Off:1 Def:1)",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 539,
+    "event_type": 2,
+    "event_desc": "MISS Caruso 26' 3PT Step Back Jump Shot",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 543,
+    "event_type": 4,
+    "event_desc": "Grimes REBOUND (Off:0 Def:1)",
+    "player_name": "Grimes",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 548,
+    "event_type": 0,
+    "event_desc": "Mavericks Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 564,
+    "event_type": 2,
+    "event_desc": "MISS Grimes 21' Step Back Jump Shot",
+    "player_name": "Grimes",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 568,
+    "event_type": 4,
+    "event_desc": "Prosper REBOUND (Off:1 Def:1)",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 569,
+    "event_type": 2,
+    "event_desc": "MISS Irving 3PT Jump Shot",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 4,
+    "event_desc": "Prosper REBOUND (Off:2 Def:1)",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 8,
+    "event_desc": "SUB: Washington FOR Grimes",
+    "player_name": "Grimes",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Irving",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 573,
+    "event_type": 0,
+    "event_desc": "Jump Ball Wallace vs. Prosper: Tip to K. Williams",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 575,
+    "event_type": 5,
+    "event_desc": "Prosper Lost Ball Turnover (P1.T13)",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 575,
+    "event_type": 0,
+    "event_desc": "Wallace STEAL (2 STL)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 589,
+    "event_type": 1,
+    "event_desc": "Jal. Williams 14' Fadeaway Jumper (21 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "80-87",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 606,
+    "event_type": 6,
+    "event_desc": "Wallace S.FOUL (P4.PN) (G.Petraitis)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 606,
+    "event_type": 3,
+    "event_desc": "Prosper Free Throw 1 of 2 (14 PTS)",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "80-88",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 606,
+    "event_type": 3,
+    "event_desc": "MISS Prosper Free Throw 2 of 2",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 608,
+    "event_type": 4,
+    "event_desc": "Jay. Williams REBOUND (Off:0 Def:5)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 621,
+    "event_type": 2,
+    "event_desc": "MISS Jay. Williams 2' Driving Dunk",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 621,
+    "event_type": 0,
+    "event_desc": "Washington BLOCK (2 BLK)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 622,
+    "event_type": 4,
+    "event_desc": "Gafford REBOUND (Off:2 Def:3)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 1,
+    "event_desc": "Dinwiddie 25' 3PT Pullup Jump Shot (19 PTS)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "80-91",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 646,
+    "event_type": 5,
+    "event_desc": "Jal. Williams Lost Ball Turnover (P3.T12)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 646,
+    "event_type": 0,
+    "event_desc": "Gafford STEAL (1 STL)",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 6,
+    "event_desc": "K. Williams S.FOUL (P2.PN) (N.Buchert)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 3,
+    "event_desc": "MISS Prosper Free Throw 1 of 2",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 4,
+    "event_desc": "Mavericks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 8,
+    "event_desc": "SUB: Gilgeous-Alexander FOR Caruso",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 8,
+    "event_desc": "SUB: Wiggins FOR K. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 648,
+    "event_type": 3,
+    "event_desc": "MISS Prosper Free Throw 2 of 2",
+    "player_name": "Prosper",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 649,
+    "event_type": 4,
+    "event_desc": "Mavericks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 650,
+    "event_type": 5,
+    "event_desc": "Dinwiddie Step Out of Bounds Turnover (P1.T14)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 663,
+    "event_type": 2,
+    "event_desc": "MISS Wiggins 3PT Jump Shot",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 669,
+    "event_type": 4,
+    "event_desc": "Gilgeous-Alexander REBOUND (Off:1 Def:0)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 675,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 9' Turnaround Fadeaway Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 679,
+    "event_type": 4,
+    "event_desc": "Washington REBOUND (Off:2 Def:13)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 692,
+    "event_type": 2,
+    "event_desc": "MISS Williams 6' Floating Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 694,
+    "event_type": 4,
+    "event_desc": "Wallace REBOUND (Off:2 Def:4)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 6,
+    "event_desc": "Washington S.FOUL (P3.T4) (N.Buchert)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "MISS Jal. Williams Free Throw 1 of 2",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 4,
+    "event_desc": "THUNDER Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 8,
+    "event_desc": "SUB: Caruso FOR Wallace",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 8,
+    "event_desc": "SUB: Irving FOR Gafford",
+    "player_name": "Gafford",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 8,
+    "event_desc": "SUB: K. Williams FOR Jay. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "Jal. Williams Free Throw 2 of 2 (22 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "81-91",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 711,
+    "event_type": 5,
+    "event_desc": "Dinwiddie Out of Bounds - Bad Pass Turnover Turnover (P2.T15)",
+    "player_name": "Dinwiddie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 711,
+    "event_type": 8,
+    "event_desc": "SUB: Carlson FOR K. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 711,
+    "event_type": 8,
+    "event_desc": "SUB: Kleber FOR Williams",
+    "player_name": "Williams",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 711,
+    "event_type": 8,
+    "event_desc": "SUB: Grimes FOR Irving",
+    "player_name": "Irving",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 1,
+    "event_desc": "Gilgeous-Alexander 5' Driving Floating Bank Jump Shot (15 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "83-91",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (10:01 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "83-91",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (10:01 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "83-91",
+    "score_margin": "-8"
+  }
+]

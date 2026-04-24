@@ -1,5 +1,64 @@
 # Roadmap: NBA AI System
 
+## 2026-04-13 Master Execution Overlay (World-Class Track)
+
+This overlay is the governing plan for all phase work. If any existing phase item conflicts with this section, this section takes priority.
+
+### Core Principle
+
+CourtVision wins only if the system is:
+- scientifically defensible,
+- operationally reliable,
+- commercially trustworthy.
+
+Raw model count and feature breadth do not qualify as world-class on their own.
+
+### Mandatory Program Gates
+
+1. **Evidence gate:** every performance claim must map to a reproducible artifact in `data/model_reports/` or validation outputs.
+2. **Evaluation gate:** no synthetic fallback allowed in official backtest publications.
+3. **Promotion gate:** calibration + drift + leakage checks must pass before model promotion.
+4. **Contract gate:** API and DB contracts must pass compatibility tests per release.
+5. **Reliability gate:** production runtime must meet defined SLO/alert standards.
+
+### Allocator-Governance Addendum (Plan Sync)
+
+To keep roadmap and execution plan synchronized, the following are now mandatory across phases:
+
+1. **Execution matrix compliance:** each major risk must have metric, threshold, owner, cadence, and evidence artifact path.
+2. **Leakage zero-trust protocol:** no investor-facing metric is publishable unless as-of, walk-forward, and leakage red-team checks pass.
+3. **Portfolio risk policy enforcement:** position, cluster, daily, and monthly drawdown limits are hard gates with kill-switch behavior.
+4. **Monthly IC packet:** release-adjacent reporting bundle covering performance, scientific integrity, CV quality, risk controls, and reproducibility.
+
+If any phase output conflicts with these requirements, this addendum and `PLAN.md` take precedence.
+
+### Delivery Sequence (Locked)
+
+1. **Integrity (0-30 days)**  
+   - Fix schema/contract drift across prediction writers and DB schema.  
+   - Unify metrics source-of-truth and remove stale/contradictory score reporting.  
+   - Enforce fail-closed behavior for missing joins in official evaluation.
+
+2. **Scientific + Platform Hardening (31-90 days)**  
+   - Wire calibration and drift checks into release workflow.  
+   - Establish fixed CV benchmark suite and CI thresholds.  
+   - Add production observability baseline (logs, metrics, alerts, incident runbook).
+
+3. **Moat Compounding + Commercialization (3-12 months)**  
+   - Scale high-quality CV coverage and registry depth.  
+   - Prove holdout lift from CV-derived features.  
+   - Implement fund-grade execution controls and tenant-safe API controls.
+
+### Progress KPIs (Program Level)
+
+- Contract mismatch incidents: target `0`.
+- Official reports with synthetic fallback: target `0`.
+- Calibration and drift gate pass rate: target `>=95%`.
+- CV benchmark pass rate on locked suite: target `>=95%`.
+- API SLO compliance (latency/error budget): target `>=99%`.
+
+---
+
 ## Vision
 
 Build the world's best NBA analytics and prediction system — a self-improving feedback loop combining computer vision tracking, exhaustive NBA API data, external context, and 50 ML models to simulate games possession-by-possession, surface betting edges, and deliver professional-grade analytics through a conversational AI interface.
@@ -15,7 +74,7 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 
 ## Phase Overview
 
-*Last updated: 2026-04-07 | Session 31 | Tests: 1040 pass | Models trained: 46/90 | CV games: 5 clean / 20 target*
+*Last updated: 2026-04-15 | Session 36 | Tests: 960+ pass, 93 skip | Models trained: 75 | CV: 41/94 videos, 16 A/B-grade, 24 CV records*
 
 > **Pre-Season Accuracy Plan:** Full feature engineering + model + simulator checklist → `.planning/PRE_SEASON_ACCURACY_PLAN.md`
 
@@ -34,20 +93,44 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 4.9 — Backtesting + Validation Infrastructure | ✅ Done | Strategy backtester, paper trading mode, historical prop results DB, validation gate |
 | Phase 5 — External Factors | ✅ Done | Injury monitor, ref tracker, line monitor, schedule context wired |
 | **Pre-Season Accuracy Plan** | 🔲 Queued | Feature engineering (14) + CV integration (4) + win prob (8) + props algo (8) + possession model (5) + Monte Carlo simulator + game model ML rebuild. See PRE_SEASON_ACCURACY_PLAN.md |
-| Phase G — Full Game Data Collection | 🟡 Active | 5 clean games; ISSUE-065/066 fixed; batch season pipeline next |
-| Phase 6 — Full Game Processing + Rich Events | 🔲 Next | 20+ clean games, rich event aggregation (drives/box-outs/closeouts/cuts/screens), PostgreSQL writes |
-| Phase 7 — Tier 2-3 ML Models + CV Wiring | 🔲 | xFG v2 with closeout speed + shot clock, props retrained with CV behavioral features |
-| Phase 8 — Possession Simulator v1 | 🔲 | 7-model chain with rich event inputs, 10K Monte Carlo |
-| Phase 9 — Feedback Loop + NLP | 🔲 | Nightly processing, auto-retrain, NLP injury models |
-| Phase 10 — Tier 4-5 ML Models | 🔲 | Fatigue curve, lineup chemistry, matchup matrix |
-| Phase 10.5 — Advanced CV Signals | 🔲 | Coverage type, shot arc, biomechanics, audio |
-| Phase 11 — Betting Infrastructure + Live | 🔲 | Live models, CLV backtesting, Kelly+correlation |
-| Phase 12 — Full Monte Carlo (90 models) | 🔲 | All 90 models in simulator, full stat distributions |
-| Phase 13 — FastAPI Backend | 🔲 | 12 endpoints, Redis caching, async |
-| Phase 14 — Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
-| Phase 15 — AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
-| Phase 16 — Tier 6 + Live Win Prob | 🔲 | 200+ games, LSTM, WebSocket real-time |
-| Phase 17 — Infrastructure | 🔲 | Docker, CI/CD, cloud GPU, drift monitoring |
+| Phase G — Full Game Data Collection | ✅ Done | 41/94 videos tracked, 16 A/B-grade, 24 CV records; 53 remaining for Phase 14 |
+| Phase 6 — Full Game Processing + Rich Events | ✅ Done | Rich events aggregated; CV features wired; 266 enriched possessions |
+| Phase 7 — Tier 2-3 ML Models + CV Wiring | ✅ Done | xFG v2, props retrained with CV features, 62 models in data/models/ |
+| **BUILD PHASE — Phases 8-13** | 🟡 Active | Build all prediction + serving infrastructure using current 25-game dataset. Models will be scaffolded (low accuracy expected). All code complete before Full Season Run. |
+| Phase 8 — Possession Simulator v1 | ✅ Done | sim_models.py + possession_simulator.py. 7-model chain (PlayType→xFG→TOV/Foul→Rebound→Fatigue→Sub→Usage). 10K sims <30s, 16/16 tests green. |
+| Phase 9 — Feedback Loop + NLP | ✅ Done | Nightly pipeline, auto-retrain, NLP injury models. Code complete; volume comes from full season. |
+| Phase 10 — Tier 4-5 ML Models | ✅ Done | 15 models (8 Tier4 + 7 Tier5). Stubs with safe defaults; retrain on full season. |
+| Phase 10.5 — Advanced CV Signals | ✅ Done | Coverage type, shot arc, biomechanics extractors. Code complete. |
+| Phase 11 — Betting Infrastructure + Live | ✅ Done | live_models.py (M70-M75), betting_edge.py (BettingEdge/CLVTracker/ArbDetector). 16/16 tests green. |
+| Phase 12 — Full Monte Carlo (90 models) | ✅ Done | FoulTrouble/GarbageTime/Q4Usage wired, 7-stat player_distributions, 4/4 tests pass. |
+| Phase 13 — FastAPI Backend | ✅ Done | 6 new endpoints (/simulate, /props, /edge, /win-prob, /lineup, /health), in-process TTL cache, 5/5 tests pass (2026-04-14) |
+| **Phase 13.5 — 100-game Readiness** | ✅ Done | Prop stack wired, calibration layer, dedup+crash isolation, backtest endpoint, correlation matrix, CV fatigue, STL features (2026-04-15) |
+| **Phase 14 — 100-game RunPod Run** | ⏳ **NEXT** | Stage 53 remaining H.264 videos, launch pod (~$200-300), retrain all models, fit isotonic calibration, /backtest gate, enable betting mode |
+| Phase 14.5 — Model Retune + Ensemble | 🔲 | Temporal CV, XGB retune, LightGBM+CatBoost, meta-learner stack (14.5a: XGB+CV, 14.5b: ensemble) |
+| Phase 14.7 — Pinnacle Triangulation Gate | 🔲 | Wire pinnacle_monitor.py into bet_selector; triangulation filter + stale-line classifier |
+| Phase 14.8 — Cohort Segmented Calibration | 🔲 | 7×6 per-segment isotonic calibrators replacing global calibration |
+| Phase 15.5 — Uncertainty + Alt-Line Ladder | 🔲 | Conformal intervals in bet_selector + EV ladder across every alt line |
+| Phase 15.7 — QP Portfolio Optimizer | 🔲 | cvxpy QP replacing greedy Kelly; confidence+drawdown scaling; dynamic bankroll |
+| Phase 16 — Scheduler and Automation | 🔲 | Unattended daily run, circuit breakers, lineup-release trigger |
+| Phase 16.5 — CLV Prediction Model | 🔲 | Meta-model predicting closing-line value; dual edge+CLV filter |
+| Phase 16.7 — Closing-Line Prediction + Bet Timing | 🔲 | Timing optimizer; steam detection; RLM signal wiring |
+| Phase 17 — Exchange API Adapters | 🔲 | Auto-placement on Sporttrade + Kalshi + Polymarket; price-shopping router |
+| Phase 17.5 — Market Intelligence Layer | 🔲 | SGP exploit, promo EV, beat reporter latency loop, account longevity |
+| Phase 18 — Dashboard and Model Ops | 🔲 | Streamlit: P&L, CLV, drift monitor, champion/challenger tracker |
+| Phase 18.5 — Full-System Backtester | 🔲 | Offline P&L curves with realistic fills + limit simulation |
+| Phase 19 — Paper Trading Mode | 🔲 | ≥50 bets paper; go/no-go checklist before LIVE_BETTING=1 |
+| Phase 19.5 — Live Trigger Models | 🔲 | Intraday triggers: foul trouble, injury scratch, blowout, halftime |
+| Phase 20 — CV Data Injection | 🔲 | 80-game RunPod ingest; retrain with defender_distance/spacing/fatigue |
+| Phase 21 — Cloud and Serverless | 🔲 | Hetzner VPS cron deploy; Telegram bot for manual queue |
+| Phase 22 — In-Play Live Betting | 🔲 | WebSocket feeds; live prop model updated every possession; <1s latency |
+| Phase 23 — Cross-Sport Expansion | 🔲 | WNBA → college bball → NFL props; same model infra, new markets |
+| Phase 24 — Volatility Arbitrage | 🔲 | Implied vol vs model vol on alt ladders; straddle + skew trading |
+| Phase 25 — Statistical Pairs Trading | 🔲 | Cointegrated player pairs; market-neutral positions; 40% var reduction |
+| Phase 26 — Cross-Market Consistency Arb | 🔲 | Σ player pts ≈ team total arb; synthetic alt lines; triangular arb |
+| Phase 27 — Mean Reversion + Momentum | 🔲 | Hot-streak fade, RLM, line momentum, star overreaction auto-signals |
+| Phase 28 — Kalshi/Polymarket Market Making | 🔲 | Maker liquidity; inventory mgmt; adverse selection detection |
+| Phase 29 — Multi-Period Portfolio Optimization | 🔲 | Weekly capital plan; reserve for high-EV games; DP optimizer |
+| Phase 30 — Factor Model + Risk Parity | 🔲 | PCA factor decomposition; portfolio factor hedging; 25% var reduction |
 
 ---
 
@@ -1785,9 +1868,11 @@ The loop only works if you know exactly when/what/how to retrain. Design decisio
 
 ---
 
-### Phase 10: Tier 4-5 ML Models (50-100 Games)
+### Phase 10: Tier 4-5 ML Models (50-100 Games) ✅ Done (2026-04-14)
 **Goal**: The models that require volume to train. Lineup chemistry and fatigue are the biggest edge unlocks.
-**Depends on**: Phase 9 (enough games processed)
+**Strategy**: Build all code and scaffolding now using current 25-game dataset. Models will train with limited data. Real accuracy comes when retrained after Full Season Run (50-100 games).
+**Depends on**: Phase 9 (code complete)
+**Delivered**: `src/prediction/tier4_models.py` (8 models), `src/prediction/tier5_models.py` (7 models), FatigueCurveModel wired into sim_models.FatigueModel, 37 tests passing.
 
 **Tier 4 — 50 Games:**
 1. Rebound positioning model (proximity at shot)
@@ -2023,7 +2108,443 @@ GET  /health                          → dataset status, model versions
 
 ---
 
-### Phase 14: Analytics Dashboard Frontend
+### Phase 13.5: 100-game Readiness
+**Goal**: All prediction + pipeline blockers resolved before 100-game RunPod run.
+**Status**: ✅ Done (2026-04-15)
+
+**Tasks completed:**
+1. ✅ /props endpoint — uses prop stack ensemble with DNP/injury gates (was calling raw predict_props)
+2. ✅ Live model imports (FoulTrouble/GarbageTime/Q4Usage) fail loud at module level
+3. ✅ STL prop features — opp_tov_pct and opp_pace already wired (confirmed)
+4. ✅ Phase G dedup by SHA256 hash + per-game crash isolation → phase_g_failed.txt
+5. ✅ POST /backtest/{stat} endpoint — mae, hit_rate_over, roi_at_break_even_odds, 24h cache
+6. ✅ CalibrationLayer (isotonic) in prop_model_stack.py + scripts/fit_prop_calibration.py
+7. ✅ CV fatigue minutes wired into possession_simulator via cv_minutes_csv param
+8. ✅ compute_prop_correlation_matrix in betting_edge.py; kelly_corr loads matrix from disk
+
+---
+
+### Phase 14: 100-game Run
+**Goal**: Process 100 H.264 games on RunPod 4090, retrain all models, validate betting readiness.
+**Depends on**: Phase 13.5
+
+**Subtasks:**
+1. Stage 100 H.264 videos to `/root/nba_videos` on pod (symlink `data/videos/full_games`)
+2. Launch via `scripts/launch_single_gpu_pod.sh` (incremental rsync lands every 5 min via watch_and_sync.sh)
+3. Monitor health: `nr_throttled` Δ < 30/60s, load < 17.85
+4. Post-run: rsync tracking/events/metrics back to local
+5. Refresh prop models: `python scripts/refresh_props.py`
+6. Fit calibration: `python scripts/fit_prop_calibration.py`
+7. Run /backtest gate: `POST /backtest/{stat}` — confirm `passed_gate=true` for pts/reb/ast
+8. Enable betting mode
+
+---
+
+### Phase 14.5: Model Quality — Retune + Ensemble
+**Goal**: Close the 0.13 R² train/holdout gap by enforcing temporal CV discipline, retuning XGBoost, adding LightGBM + CatBoost, and stacking all three into an ensemble. Register v3 models.
+**Depends on**: Phase 14
+
+**Subtasks:**
+1. Replace random-split CV with temporal split (2022-23+2023-24 train, 2024-25 H1 val, H2 test) — re-benchmark all 7 props
+2. Retune XGB: `max_depth` 6→4, `min_child_weight` 1→5, raise `reg_alpha`/`reg_lambda`, grid search with temporal CV
+3. Add LightGBM + CatBoost on same feature set — three models per stat
+4. Meta-learner stacker: linear regression on 3-model OOF predictions → ensemble prediction per stat
+5. Feature audit: verify opponent position-specific defense, Vegas implied team total, pace differential, lineup on/off, ref assignment — add if missing
+6. Per-player rolling MAE → `config/exclusion_list.yaml`, auto-updated on retrain
+7. Update `model_registry.json` with new R² baselines
+
+**Target:** pts R²≥0.50, reb≥0.43, ast≥0.47. Train-holdout gap <0.08.
+**Deliverable:** v3 ensemble prop models registered and wired into `run_daily_slate.py`.
+
+#### Phase 14.5a: XGB Retune + Temporal CV
+**Goal**: Enforce temporal CV split and retune XGBoost across all 7 prop models. Measurable holdout improvement before adding new algorithms.
+**Depends on**: Phase 14
+**Plans:** 3/4 plans executed
+
+Plans:
+- [ ] 14-5a-01-PLAN.md — Wave 0: test stubs + validate_holdout_gap.py CLI
+- [ ] 14-5a-02-PLAN.md — prop_cv_split.py + train_props() temporal wiring
+- [ ] 14-5a-03-PLAN.md — prop_grid_search.py + retrain_props_temporal.py CLI
+- [ ] 14-5a-04-PLAN.md — prop_validation.py + model_registry.json population + phase gate
+
+**Target:** Train-holdout gap <0.08 on all props.
+
+#### Phase 14.5b: LightGBM + CatBoost + Stacker
+**Goal**: Add two new base learners and stack all three into an ensemble meta-learner.
+**Depends on**: Phase 14.5a
+
+**Subtasks:**
+1. LightGBM training on same feature set as retunedd XGB
+2. CatBoost training on same feature set
+3. OOF predictions for all 3 models → linear stacker
+4. Wire ensemble output into `run_daily_slate.py`
+5. Update `model_registry.json` with ensemble R² baselines
+
+**Target:** pts R²≥0.50, reb≥0.43, ast≥0.47.
+
+---
+
+### Phase 14.7: Pinnacle Triangulation Gate
+**Goal**: Wire `pinnacle_monitor.py` into bet_selector as a triangulation filter. Only fire when model AND Pinnacle both disagree with soft book in same direction.
+**Depends on**: Phase 14.5
+
+**Subtasks:**
+1. Pinnacle no-vig converter — strip vig from Pinnacle lines → true probability
+2. Compute `(our_proj_prob - pinnacle_prob)` delta per bet, add as feature to bet_selector
+3. Triangulation filter — only fire when model + Pinnacle agree vs soft book
+4. Stake multiplier — kelly × agreement factor: both agree (1.0×), model only (0.5×), disagree (0.1× or skip)
+5. Stale-line classifier — train classifier on (time_since_move, news_in_window, lineup_status) → stale vs trap
+
+**Deliverable:** `src/data/pinnacle_gate.py` + bet_selector integration.
+
+---
+
+### Phase 14.8: Cohort Segmented Calibration
+**Goal**: Replace 7 global isotonic calibrators with per-segment calibrators across 6 situation dimensions.
+**Depends on**: Phase 14.7
+
+**Subtasks:**
+1. Segment taxonomy — 6 dims: star vs rotation, home vs away, B2B vs rested, vs top-10 vs bottom-10 defense, pre/post ASB, regular vs playoff
+2. Per-segment calibration — replace 7 global `.joblib` with 7×6 segment calibrators using `segment_calibrator.py`
+3. Fallback to global when segment has <50 samples
+4. Reliability diagram per segment — target max 5% probability error
+
+**Deliverable:** Updated `scripts/fit_prop_calibration.py` + 42 segment calibrator files.
+
+---
+
+### Phase 15.5: Uncertainty Wiring + Alt-Line Ladder
+**Goal**: Wire conformal prediction intervals into bet_selector and build EV ladder across every available alt line.
+**Depends on**: Phase 14.8
+
+**Subtasks:**
+1. Wire `conformal_props.py` output into bet_selector — each bet gets (point_est, lo_80, hi_80, lo_95, hi_95)
+2. Alt-line ladder builder — for each player generate EV at every available alt line using quantile model CDF
+3. Alt-line selector — pick optimal alt line (max risk-adjusted EV) from ladder; apply Pinnacle gate + corr caps
+4. Extend `bets_YYYYMMDD.json` schema for alt lines
+
+**Deliverable:** `src/prediction/alt_line_ladder.py`. 2–3× bet count at same or better edge threshold.
+
+---
+
+### Phase 15.7: QP Portfolio Optimizer
+**Goal**: Replace greedy Kelly with constrained QP optimization using full correlation matrix.
+**Depends on**: Phase 15.5
+
+**Subtasks:**
+1. QP formulation — maximize Σ log(1 + edge_i × stake_i / bankroll) subject to: total ≤20% bankroll, per-game ≤5%, per-player ≤8%, full 7×7 corr matrix penalty
+2. Solver — `cvxpy` (~50 LOC), warm-start from greedy Kelly
+3. Confidence scaling — multiply Kelly by ensemble agreement factor from Phase 14.5 stacker disagreement
+4. Edge-magnitude scaling — 4–6%: 0.25× Kelly; 6–10%: 0.50× Kelly; >10%: cap 0.25× (likely stale-line trap)
+5. Drawdown-adaptive sizing — when drawdown >10% of HWM, multiply all stakes by 0.5 until recovered
+6. Dynamic bankroll — auto-update from `bet_log.json` P&L on each run; no more static `bankroll: 1000`
+
+**Deliverable:** `src/prediction/portfolio_optimizer.py` replacing greedy Kelly in bet_selector. +15–25% capital efficiency.
+
+---
+
+### Phase 16: Scheduler and Automation
+**Goal**: Fully unattended daily run with hard risk limits and circuit breakers before any live capital.
+**Depends on**: Phase 15.7
+
+**Subtasks:**
+1. Daily orchestrator `scripts/daily_run.sh` — sequence: record_slate_results → run_daily_slate → bet_selector → post summary; `LIVE_BETTING=0` forces dry-run globally
+2. Windows Task Scheduler — 9:00 AM ET daily + T+1 result recording
+3. Circuit breakers (non-negotiable before live): daily loss cap -5% bankroll; drawdown kill-switch >10% HWM + 24hr cooldown; corr-cluster cap 15%; model-disagreement halt if ensemble spread >3 stat units; consecutive losing streak throttle (3 losses → 50% stakes; 5 → paper only)
+4. Failure alerting — `data/output/alerts/ALERT_{date}.txt` + `vault/alerts.log`
+5. Lineup-release trigger — 30min pre-tip automatic slate rerun for that day's games
+
+**Deliverable:** Fully unattended daily run with hard risk limits.
+
+---
+
+### Phase 16.5: CLV Prediction Model
+**Goal**: Train a meta-model that predicts closing-line value so bet_selector can filter for sharp bets early.
+**Depends on**: Phase 16
+
+**Subtasks:**
+1. CLV labels — build historical (bet_features, market_features, time_to_game) → closing_line pairs from historical odds data
+2. CLV predictor — XGBoost: features = (our_edge, pinnacle_delta, public_pct, time_to_game, lineup_freshness, line_movement_last_2h) → predicted CLV
+3. Dual filter — bet_selector requires edge >4% AND predicted CLV >1.5%
+4. CLV tracker — extend `record_slate_results.py` to fetch closing lines and score every bet; weekly beat-rate report
+
+**Deliverable:** `src/prediction/clv_predictor.py`. Know within 2 weeks if system is sharp.
+
+---
+
+### Phase 16.7: Closing-Line Prediction and Bet Timing
+**Goal**: Predict where lines will close and time bet firing optimally — fire now or wait.
+**Depends on**: Phase 16.5
+
+**Subtasks:**
+1. Closing price predictor — train (open_price, time_to_game, lineup_news, public_pct, sharp_pct, line_velocity) → closing price using `line_monitor.py` history
+2. Timing optimizer — if model predicts line moves your way before tip, wait; if against, fire immediately
+3. Steam detection — Pinnacle >0.5pt move in <5min: (a) fire fast on soft books, (b) pause if you disagree
+4. RLM signal — wire `action_network.py` public% into timing model; public 75%+ one side + line opposite = sharp money signal
+
+**Deliverable:** `src/data/line_timing.py`. Bets fire at optimal time, not just at slate run time.
+
+---
+
+### Phase 17: Exchange API Adapters
+**Goal**: Auto-placement on Sporttrade + Kalshi + Polymarket with price-shopping router.
+**Depends on**: Phase 16.7
+
+**Subtasks:**
+1. Book router `src/execution/book_router.py` — routes each bet to best-price book; compares Sporttrade + Kalshi + Polymarket
+2. Sporttrade adapter `src/execution/sporttrade.py` (Connect Trade REST)
+3. Kalshi adapter `src/execution/kalshi.py` — limit orders (maker rebates) preferred; `CalibrationLayer.win_prob()` → binary contract price
+4. Polymarket adapter `src/execution/polymarket.py`
+5. Dry-run passthrough — `LIVE_BETTING=0` logs intent, no real orders
+6. ProphetX adapter — add once API confirmed
+
+**Deliverable:** Auto-placement on Sporttrade + Kalshi + Polymarket; manual list for DK/FD.
+
+---
+
+### Phase 17.5: Market Intelligence Layer
+**Goal**: Wire SGP exploit, promo EV, beat reporter latency loop, and account longevity patterns.
+**Depends on**: Phase 17
+
+**Subtasks:**
+1. SGP correlation exploit — `parlay_optimizer.py` extended: every same-game parlay combo at soft books; fire when implied joint prob (book) > model joint prob by >3%
+2. Promotional EV calculator `src/data/promo_detector.py` — parse DK/FD boost pages; when boost makes bet +EV, auto-add to manual queue with calculated stake
+3. Beat reporter latency loop — `beat_reporter_monitor.py` runs continuously; credible tweet re minutes/role → update projection → rerun bet_selector → fire if edge created
+4. Account longevity patterns — stake noise (±15% random), 60–180s random delay post-signal, occasional public-team bets; implemented as middleware in book_router
+5. Cash sweep automation — weekly script: if any book balance >2× weekly bet volume, log sweep reminder to `vault/alerts.log`
+
+**Deliverable:** 3 new bet-generation surfaces (SGP, promos, breaking news) + account safety layer.
+
+---
+
+### Phase 18: Dashboard and Model Ops
+**Goal**: Full Streamlit dashboard with P&L, CLV beat rate, model health, champion/challenger, and drift monitoring.
+**Depends on**: Phase 17.5
+
+**Subtasks:**
+1. Today's bets page — auto-placed vs manual queue, stake, edge, Pinnacle agreement, timing rationale
+2. Bankroll chart — running P&L per book, high-water mark, drawdown indicator
+3. CLV beat rate — % bets beating closing line, by book and stat
+4. Model-by-stat ROI — actual ROI vs projected edge
+5. Prediction audit page — per-game: every prediction + rationale + ensemble spread
+6. Alert log — surface recent failures + circuit-breaker events
+7. Champion/challenger tracker — shadow model R² vs champion; auto-promote after 100 bets if sig improvement
+8. Drift monitor panel — rolling 30-bet MAE per stat; red if >1.5× baseline; auto-quarantine stat if triggered
+
+**Deliverable:** `streamlit run dashboards/app.py` — full visibility into health, P&L, and model ops.
+
+---
+
+### Phase 18.5: Full-System Backtester
+**Goal**: Offline P&L curves with realistic fill simulation before paper trading.
+**Depends on**: Phase 18
+
+**Subtasks:**
+1. System replay engine `scripts/backtest_system.py` — replays full historical daily flow (lineup → odds → projections → selector → portfolio optimizer → simulated fills)
+2. Realistic fill simulation — model slippage, line movement against you after large bets, book re-pricing
+3. Limit simulation — simulate getting limited at DK/FD after X winning bets
+4. Output metrics — total ROI, CLV beat rate, max drawdown, Sharpe ratio, bet count, book breakdown, per-stat breakdown
+5. Regression test — run after every model change to catch P&L regressions before deploy
+
+**Deliverable:** `scripts/backtest_system.py`. Know historical P&L curve before risking real time on paper trading.
+
+---
+
+### Phase 19: Paper Trading Mode
+**Goal**: Paper trade ≥50 bets and meet all acceptance criteria before flipping LIVE_BETTING=1.
+**Depends on**: Phase 18.5
+
+**Subtasks:**
+1. `LIVE_BETTING=0` globally; adapters skip real orders
+2. `scripts/weekly_review.py` — ROI, CLV beat rate, worst streaks, calibration drift, Pinnacle agreement accuracy
+3. Acceptance criteria gate before going live: ≥50 paper bets, CLV beat rate ≥55%, paper ROI ≥3%, no calibration drift >10% on any stat, backtest ROI ≥ paper ROI × 0.7, no circuit breaker triggered in last 7 days
+4. Retrain calibration with accumulated residuals → A/B test → ship if improved
+
+**Deliverable:** Go/no-go checklist for live capital.
+
+---
+
+### Phase 19.5: Live Trigger Models
+**Goal**: In-day bet generation from foul trouble, injury, and blowout triggers.
+**Depends on**: Phase 19
+
+**Subtasks:**
+1. Foul trouble trigger — `foul_trouble_predictor.py` monitors live box scores; star gets 3 fouls in Q2 → fire alt-unders on his stats + alt-overs on primary beneficiary
+2. Injury/scratch trigger — `injury_monitor.py` polls ESPN every 2min on game days; unexpected scratch → rerun slate → fire selector
+3. Blowout trigger — `garbage_time_detector.py` monitors live score; when model forecasts >15pt spread, alt-overs on bench mob become +EV
+4. Halftime model — `second_half_adjustment_model.py` wired to halftime lines; significant 1H deviation → fire 2H prop bets
+
+**Deliverable:** `scripts/intraday_trigger.py` running continuously on game days. Adds 10–15 bets/day.
+
+---
+
+### Phase 20: CV Data Injection
+**Goal**: Run 80-game ingest on RunPod to add CV spatial features (defender_distance, spacing, fatigue) to prop models.
+**Depends on**: Phase 19.5
+
+**Subtasks:**
+1. Export YouTube cookies → `data/videos/youtube_cookies.txt`; run ingest preflight + launch pod
+2. `python scripts/ingest_backfill_quality.py` — score games
+3. Retrain 7 prop models with CV features added to ensemble
+4. A/B test: CV-enhanced vs current on last 2 weeks of residuals
+5. Ship if R² improves ≥10% on any stat without degrading others
+
+**Target:** pts R² ≥0.55 (current 0.47). defender_distance alone typically worth +0.05 on pts.
+
+---
+
+### Phase 21: Cloud and Serverless
+**Goal**: Deploy daily run to VPS so system runs unattended without local machine.
+**Depends on**: Phase 20
+
+**Subtasks:**
+1. Hetzner CX11 (~$5/mo) — copy repo, set `.env`, register cron at 9am ET
+2. Streamlit dashboard at public URL
+3. DK/FD manual list → Telegram bot to phone
+4. (Optional future) AWS Lambda + EventBridge + S3 for true serverless
+
+**Deliverable:** System runs on VPS, no local machine required.
+
+---
+
+### Phase 22: In-Play Live Betting
+**Goal**: Real-time in-play betting with WebSocket feeds and sub-1s latency bet firing.
+**Depends on**: Phase 21
+
+**Subtasks:**
+1. WebSocket feeds — Kalshi + Sporttrade live line streams
+2. Live prop model — `live_models.py` + `win_probability.py` updated every possession with play-by-play
+3. In-play selector — same edge/Pinnacle/corr filters, latency budget <1s
+4. Foul trouble live edge — real-time foul count → immediate alt-under fire on soft book before re-line
+5. CV in-play injection — when live CV tracking available (Phase 20+), inject defender_distance + spacing into live model
+
+---
+
+### Phase 23: Cross-Sport Expansion
+**Goal**: Deploy same prop model infra to WNBA, college basketball, and NFL to maximize bankroll utilization.
+**Depends on**: Phase 22
+
+**Subtasks:**
+1. WNBA (May–Sep) — extremely soft markets, same NBA model infra; expected R² similar, sharper relative edge
+2. College basketball (Nov–Mar) — very soft alt lines, overlaps NBA season; low limits but high edge
+3. NFL player props (Sep–Feb) — deep markets, lower edge but much higher liquidity (receiving yards, rushing yards, QB props)
+4. MLB run totals — Statcast data equivalent to NBA tracking; consider after NFL
+
+---
+
+### Phase 24: Volatility Arbitrage on Alt Ladders
+**Goal**: Exploit the gap between books' implied vol (fitted from alt-line prices) and model vol (from quantile predictions).
+**Depends on**: Phase 23
+
+**Subtasks:**
+1. Implied vol extractor `src/prediction/vol_arb.py` — given book's alt-line prices, fit distribution; compute σ_implied
+2. Model vol — extract σ_model from `quantile_props.py` for same stat
+3. Vol arb signal — if σ_book < σ_model: buy vol (straddle: over at high alt + under at low alt); if σ_book > σ_model: sell vol
+4. Skew trading — when high alts cheap vs low alts relative to model skew, buy cheap tail
+5. Integration — new bet type "vol_arb" in `bets_YYYYMMDD.json`; same Pinnacle gate + circuit breakers
+
+**Deliverable:** `src/prediction/vol_arb.py`. ~5 opportunities/night nobody else takes.
+
+---
+
+### Phase 25: Statistical Pairs Trading and Cointegration
+**Goal**: Market-neutral positions exploiting cointegrated player performance pairs that books price independently.
+**Depends on**: Phase 24
+
+**Subtasks:**
+1. Player correlation map — extend `prop_corr_matrix.json` to player×player corr using historical game-log covariance
+2. Pairs signal — when Player A deviates >1σ from prediction, cointegrated Player B expected to mean-revert; compute z-score
+3. Cointegration test — Engle-Granger on player pairs over rolling 100-game window; maintain pairs with p<0.05
+4. Pairs bet constructor — long high-usage event (over) + short paired player (under); market-neutral with idiosyncratic edge
+5. Hedge ratio — compute β between pair; size positions so dollar exposure is neutral to shared factor
+6. Hot-streak fade — standalone: after 3 games >1σ above mean, fire under at 0.15× Kelly
+
+**Deliverable:** `src/prediction/pairs_trader.py`. ~40% variance reduction on correlated positions.
+
+---
+
+### Phase 26: Cross-Market Consistency Arbitrage
+**Goal**: Exploit the constraint that Σ player pts ≈ team total. Deviations are near-pure arbitrage.
+**Depends on**: Phase 25
+
+**Subtasks:**
+1. Team-level consistency check — daily: sum all player pts projections vs team total implied by book; flag deviations >4 pts
+2. Arb executor — when Σ(player pts) > team total + threshold: bet team under + individual overs; reverse when negative
+3. Rebounds consistency — same for team rebounds
+4. Synthetic alt lines — build alt-line prices from main line + over/under combinations when book doesn't offer specific alt
+5. Series-level hedging — when long 5+ bets on one team winning, hedge with series total or opp series win futures
+6. Scale-in option — bet small pre-tip, scale if line moves your way; requires limit-order infra from Phase 28
+7. Triangular arb — spread + total + ML must be internally consistent; fire when not
+
+**Deliverable:** `src/prediction/cross_market_arb.py`. Pure-arb surface requires no model edge.
+
+---
+
+### Phase 27: Mean Reversion and Momentum Auto-Signals
+**Goal**: Wire hot-streak fade, RLM, line momentum, and star overreaction into a unified auto-signal consolidator.
+**Depends on**: Phase 26
+
+**Subtasks:**
+1. Hot-streak fade auto-fire — `hot_cold_streak_detector.py` output → player 3+ games >1.2σ above season mean → add under at 0.15× Kelly
+2. Cold-streak buy — after 3 games >1σ below, fade the under
+3. Line momentum follow — `line_monitor.py` extended: when sharp line moves 1+ pt in 30min without news, follow direction at 0.5× Kelly
+4. RLM auto-signal — `action_network.py`: public >70% one side + line moved opposite → bet agrees with sharp side
+5. Star overreaction fade — after top-10-usage player scores >2σ: pts line jumps too far; model-vs-book delta fires under
+6. Middle detection — when line moved 1+ pt since open: check if both sides +EV; extend `detect_arb()`
+
+**Deliverable:** `src/prediction/signal_aggregator.py` — all auto-signals consolidated.
+
+---
+
+### Phase 28: Kalshi and Polymarket Market Making
+**Goal**: Provide liquidity on Kalshi/Polymarket to earn spread, dramatically lowering variance vs directional bets.
+**Depends on**: Phase 27
+
+**Subtasks:**
+1. Fair-value model `src/execution/mm_pricer.py` — use `CalibrationLayer.win_prob()` as FV; quote bid = FV - half_spread, ask = FV + half_spread
+2. Spread calibration — half_spread = f(model_uncertainty, adverse_selection_risk, inventory_delta); wider when uncertain
+3. Inventory management `src/execution/inventory.py` — track net position; skew quotes when |net delta| > threshold
+4. Adverse selection detection — if fills cluster directionally (informed flow), widen spread or pull quotes
+5. Kalshi maker integration — extend `src/execution/kalshi.py` with `place_limit_order(ticker, price, qty, side)`; capture maker rebates
+6. Polymarket maker — `src/execution/polymarket.py` with CLOB order placement
+7. MM kill-switch — halt if: inventory >10% bankroll, adverse selection ratio >2.0, or circuit breaker fires
+
+**Deliverable:** `src/execution/market_maker.py`. Earn spread ~100×/week vs directional ~30×/week. Variance drops ~40%.
+
+---
+
+### Phase 29: Multi-Period Portfolio Optimization
+**Goal**: Reserve capital for high-EV future games instead of deploying everything daily.
+**Depends on**: Phase 28
+
+**Subtasks:**
+1. Week-forward EV map — at Monday slate, estimate EV density per remaining day based on schedule, matchups, model uncertainty
+2. Multi-period optimizer — dynamic programming: allocate weekly bankroll proportional to expected EV × liquidity; reserve 25–40% for high-EV late-week games
+3. Intraday rebalance — as games resolve and bankroll updates, rebalance remaining-day allocation
+4. Opportunity cost gate — if today's best bet 5% EV but Thursday similar bet likely 8% EV, delay or reduce today's size
+5. Integration — `portfolio_optimizer.py` extended with multi-day horizon constraint
+
+**Deliverable:** Weekly capital plan auto-generated each Monday. ~10% improvement in log-growth vs myopic daily Kelly.
+
+---
+
+### Phase 30: Factor Model Decomposition and Risk Parity
+**Goal**: Reduce portfolio variance 25% by identifying and hedging hidden factor exposures across all bets.
+**Depends on**: Phase 29
+
+**Subtasks:**
+1. Factor identification — PCA on prop residuals; identify main factors: pace_factor, defense_factor, foul_factor, garbage_factor, momentum_factor
+2. Factor loading per bet — each bet in `bets_YYYYMMDD.json` gets a `factor_loadings` dict
+3. Portfolio factor exposure — sum loadings across slate; detect unintentional concentration (e.g., long heavy pace_factor)
+4. Factor hedge — if exposure > threshold, add small opposite bet (e.g., game total under) to hedge
+5. Risk parity allocation — reweight positions so each factor contributes equally to total portfolio variance
+6. Factor dashboard — add factor exposure bars per day to Phase 18 dashboard
+
+**Deliverable:** `src/prediction/factor_model.py`. Portfolio variance drops ~25%; same expected return. Required for external capital.
+
+---
+
+### Phase 15: Analytics Dashboard Frontend
 **Goal**: Interactive analytics dashboard + betting dashboard. Professional-grade, conversational.
 **Depends on**: Phase 13
 
@@ -2113,6 +2634,14 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 3. Full stat distribution for every player from simulator
 4. Prop pricing engine ROI > 0 on holdout backtest
 
+**Plans:** 5 plans
+Plans:
+- [ ] 16-01-PLAN.md -- Wave 0: test stubs (test_live_win_probability.py, test_prop_pricing.py, conftest fixtures)
+- [ ] 16-02-PLAN.md -- LSTM trainer + LiveWinProbInference (live_win_probability.py)
+- [ ] 16-03-PLAN.md -- Prop pricing engine (prop_pricing_engine.py, simulation -> distribution)
+- [ ] 16-04-PLAN.md -- WebSocket /ws/win-prob endpoint + /win-prob upgrade (api/main.py)
+- [ ] 16-05-PLAN.md -- Simulator LSTM gate + player_distributions percentiles + integration tests
+
 ---
 
 ### Phase 17: Infrastructure
@@ -2125,6 +2654,14 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 - Auto-retrain every 2 weeks on latest data
 - Feature drift alerts when input distributions shift > 2 sigma
 - Model performance monitoring dashboard
+
+**Plans:** 4 plans
+
+Plans:
+- [ ] 17-01-PLAN.md — Wave 0 test stubs (test_infrastructure.py + conftest fixtures)
+- [ ] 17-02-PLAN.md — Wire drift detector + fix auto-retrain milestone crossing
+- [ ] 17-03-PLAN.md — Model validation gate in CI/CD + Monitoring dashboard tab
+- [ ] 17-04-PLAN.md — Cloud GPU lifecycle: pod_manager.py + auto-sync (REQ-14-5)
 
 ---
 

@@ -105,11 +105,11 @@ async def get_today_games():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/stitch/game/{game_id}")
-async def get_game_details(game_id: str):
+async def get_game_details(game_id: str, home_team: str = "", away_team: str = ""):
     """Get detailed game analysis"""
     try:
         # Get game prediction
-        prediction = predict_game(game_id)
+        prediction = predict_game(home_team, away_team) if home_team and away_team else {}
         
         # Get current lines
         lines = get_current_lines(game_id)

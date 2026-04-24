@@ -24,6 +24,8 @@ This stub is intentionally minimal. Full implementation requires:
 
 from __future__ import annotations
 
+import logging
+
 
 class MultiTaskPropsModel:
     """
@@ -47,6 +49,8 @@ class MultiTaskPropsModel:
             X:      Feature matrix (n_samples, n_features).
             y_dict: {stat: y_array} for each of 7 stats.
         """
+        # BLOCKED: Phase G dependent. Requires PyTorch + 50+ game dataset.
+        # Do not call until Phase G complete (20 clean games ingested + features.csv populated).
         raise NotImplementedError(
             "MultiTaskPropsModel.train() not yet implemented.\n"
             "Requires: pip install torch\n"
@@ -54,11 +58,21 @@ class MultiTaskPropsModel:
             "See: src/prediction/multitask_props.py"
         )
 
-    def predict(self, X) -> dict:
+    def predict(self, X, game_id: str = "") -> dict:
         """
-        TODO: Return {stat: predicted_value} for each input row.
+        Fallback: delegate to PlayerPropsModel and return {stat: predicted_value}.
+        Full multi-task implementation pending PyTorch installation and Phase G data.
         """
-        raise NotImplementedError("Model not trained — call train() first")
+        logging.warning(
+            "MultiTaskPropsModel not trained; falling back to PlayerPropsModel for game=%s",
+            game_id,
+        )
+        try:
+            from src.prediction.player_props import PlayerPropsModel
+            _fallback = PlayerPropsModel()
+            return _fallback.predict(X)
+        except Exception as _e:
+            return {stat: 0.0 for stat in self.STATS}
 
 
 if __name__ == "__main__":

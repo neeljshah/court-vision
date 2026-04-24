@@ -3,7 +3,32 @@ import os
 import cv2
 import numpy as np
 
+try:
+    import torch as _torch
+    import kornia.geometry as _kg
+    _HAS_KORNIA = True
+except ImportError:
+    _HAS_KORNIA = False
+
 from .utils.plot_tools import plt_plot
+
+
+def _warp_perspective(img: np.ndarray, M: np.ndarray, dsize: tuple) -> np.ndarray:
+    """GPU warpPerspective via kornia when available, else cv2 fallback."""
+    if not _HAS_KORNIA or not _torch.cuda.is_available():
+        return cv2.warpPerspective(img, M, dsize)
+    _dev = "cuda"
+    h, w = img.shape[:2]
+    src_t = _torch.from_numpy(img).float().to(_dev)
+    if src_t.ndim == 2:
+        src_t = src_t.unsqueeze(0).unsqueeze(0)
+    else:
+        src_t = src_t.permute(2, 0, 1).unsqueeze(0)
+    M_t = _torch.from_numpy(M).float().unsqueeze(0).to(_dev)
+    out = _kg.warp_perspective(src_t, M_t, dsize)
+    out_np = out.squeeze(0).permute(1, 2, 0).cpu().numpy().astype(np.uint8) if out.shape[1] > 1 \
+        else out.squeeze(0).squeeze(0).cpu().numpy().astype(np.uint8)
+    return out_np
 
 _RESOURCES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "resources")
 
@@ -30,7 +55,7 @@ def collage(frames, direction=1, plot=False):
         dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
         M, _ = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC, 5.0)
 
-        result = cv2.warpPerspective(
+        result = _warp_perspective(
             next_frame, M,
             (current_mosaic.shape[1] + next_frame.shape[1], next_frame.shape[0] + 50)
         )
@@ -63,7 +88,7 @@ def add_frame(frame, pano, pano_enhanced, plot=False):
     src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
     M, _ = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC, 5.0)
-    result = cv2.warpPerspective(frame, M, (pano.shape[1], pano.shape[0]))
+    result = _warp_perspective(frame, M, (pano.shape[1], pano.shape[0]))
 
     if plot:
         plt_plot(result, "Warped new image")
@@ -159,7 +184,7 @@ def homography(rect, image, plot=False):
     dst = np.array([[0, 0], [maxWidth - 1, 0],
                     [maxWidth - 1, maxHeight - 1], [0, maxHeight - 1]], dtype="float32")
     M = cv2.getPerspectiveTransform(rect, dst)
-    warped = cv2.warpPerspective(image, M, (maxWidth, maxHeight))
+    warped = _warp_perspective(image, M, (maxWidth, maxHeight))
 
     if plot:
         plt_plot(warped)

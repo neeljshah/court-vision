@@ -1,0 +1,1292 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (9:26 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "38-53",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 21,
+    "event_type": 2,
+    "event_desc": "MISS Russell 13' Fadeaway Jumper",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 25,
+    "event_type": 4,
+    "event_desc": "Brooks REBOUND (Off:1 Def:2)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 30,
+    "event_type": 1,
+    "event_desc": "Ja. Green 1' Running Layup (11 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "40-53",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 51,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 22' Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 54,
+    "event_type": 4,
+    "event_desc": "Brooks REBOUND (Off:1 Def:3)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 64,
+    "event_type": 2,
+    "event_desc": "MISS Je. Green 24' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:2 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 76,
+    "event_type": 6,
+    "event_desc": "Holiday P.FOUL (P1.T1) (D.Collins)",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 82,
+    "event_type": 1,
+    "event_desc": "Claxton 3' Driving Layup (7 PTS)",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "40-55",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 99,
+    "event_type": 1,
+    "event_desc": "Ja. Green 5' Driving Finger Roll Layup (13 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "42-55",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 121,
+    "event_type": 2,
+    "event_desc": "MISS Russell 6' Driving Layup",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 123,
+    "event_type": 4,
+    "event_desc": "Thompson REBOUND (Off:0 Def:5)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 1,
+    "event_desc": "Thompson 2' Running Layup (2 PTS)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "44-55",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 6,
+    "event_desc": "Claxton S.FOUL (P3.T1) (D.Collins)",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 0,
+    "event_desc": "Nets Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 3,
+    "event_desc": "MISS Thompson Free Throw 1 of 1",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 126,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:2 Def:2)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 138,
+    "event_type": 1,
+    "event_desc": "Russell 12' Driving Layup (12 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "44-57",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 160,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 24' 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 163,
+    "event_type": 4,
+    "event_desc": "Thompson REBOUND (Off:1 Def:5)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 165,
+    "event_type": 1,
+    "event_desc": "Ja. Green 2' Layup (15 PTS) (Thompson 4 AST)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "46-57",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 183,
+    "event_type": 2,
+    "event_desc": "MISS Claxton 1' Alley Oop Layup",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 185,
+    "event_type": 4,
+    "event_desc": "Thompson REBOUND (Off:1 Def:6)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 189,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 3' Running Reverse Layup",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 193,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:2 Def:3)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 196,
+    "event_type": 1,
+    "event_desc": "Williams 26' 3PT Running Jump Shot (9 PTS) (Russell 2 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "46-60",
+    "score_margin": "-14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 217,
+    "event_type": 1,
+    "event_desc": "Thompson 2' Alley Oop Layup (4 PTS) (Holiday 1 AST)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "48-60",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 234,
+    "event_type": 1,
+    "event_desc": "Johnson 26' 3PT Jump Shot (8 PTS) (Williams 1 AST)",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "48-63",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 247,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 6' Driving Layup",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 247,
+    "event_type": 0,
+    "event_desc": "Russell BLOCK (1 BLK)",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 247,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 249,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 30' 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 251,
+    "event_type": 4,
+    "event_desc": "Nets Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 255,
+    "event_type": 6,
+    "event_desc": "Holiday P.FOUL (P2.T2) (D.Collins)",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 255,
+    "event_type": 8,
+    "event_desc": "SUB: Evbuomwan FOR Russell",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 255,
+    "event_type": 8,
+    "event_desc": "SUB: Simmons FOR Johnson",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 264,
+    "event_type": 2,
+    "event_desc": "MISS Wilson 3' Driving Layup",
+    "player_name": "Wilson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 4,
+    "event_desc": "Wilson REBOUND (Off:1 Def:3)",
+    "player_name": "Wilson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 1,
+    "event_desc": "Wilson 2' Putback Layup (10 PTS)",
+    "player_name": "Wilson",
+    "team_abbrev": "BKN",
+    "score": "48-65",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 6,
+    "event_desc": "Brooks S.FOUL (P4.T3) (D.Richardson)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 268,
+    "event_type": 3,
+    "event_desc": "Wilson Free Throw 1 of 1 (11 PTS)",
+    "player_name": "Wilson",
+    "team_abbrev": "BKN",
+    "score": "48-66",
+    "score_margin": "-18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 278,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 281,
+    "event_type": 4,
+    "event_desc": "Brooks REBOUND (Off:2 Def:3)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 292,
+    "event_type": 1,
+    "event_desc": "Ja. Green 27' 3PT Step Back Jump Shot (18 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "51-66",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 322,
+    "event_type": 1,
+    "event_desc": "Williams 10' Turnaround Fadeaway (11 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "51-68",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 340,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 27' 3PT Step Back Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 345,
+    "event_type": 4,
+    "event_desc": "Thompson REBOUND (Off:2 Def:6)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 1,
+    "event_desc": "Brooks 6' Driving Finger Roll Layup (6 PTS) (Thompson 5 AST)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "53-68",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 360,
+    "event_type": 2,
+    "event_desc": "MISS Claxton 4' Alley Oop Layup",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 360,
+    "event_type": 0,
+    "event_desc": "Thompson BLOCK (1 BLK)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 361,
+    "event_type": 4,
+    "event_desc": "Brooks REBOUND (Off:2 Def:4)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 374,
+    "event_type": 2,
+    "event_desc": "MISS Brooks 2' Driving Layup",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 376,
+    "event_type": 4,
+    "event_desc": "Brooks REBOUND (Off:3 Def:4)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 376,
+    "event_type": 1,
+    "event_desc": "Brooks 5' Putback Layup (8 PTS)",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "55-68",
+    "score_margin": "-13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 391,
+    "event_type": 1,
+    "event_desc": "Claxton 2' Cutting Dunk Shot (9 PTS) (Simmons 2 AST)",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "55-70",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 407,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 407,
+    "event_type": 4,
+    "event_desc": "Simmons REBOUND (Off:0 Def:2)",
+    "player_name": "Simmons",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 419,
+    "event_type": 1,
+    "event_desc": "Claxton 4' Turnaround Hook Shot (11 PTS) (Simmons 3 AST)",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "55-72",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 441,
+    "event_type": 1,
+    "event_desc": "Je. Green 4' Driving Layup (2 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "57-72",
+    "score_margin": "-15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 461,
+    "event_type": 2,
+    "event_desc": "MISS Williams 26' 3PT Step Back Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 465,
+    "event_type": 4,
+    "event_desc": "Simmons REBOUND (Off:1 Def:2)",
+    "player_name": "Simmons",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 469,
+    "event_type": 1,
+    "event_desc": "Simmons 8' Driving Floating Jump Shot (2 PTS)",
+    "player_name": "Simmons",
+    "team_abbrev": "BKN",
+    "score": "57-74",
+    "score_margin": "-17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 486,
+    "event_type": 5,
+    "event_desc": "Je. Green Bad Pass Turnover (P1.T10)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 486,
+    "event_type": 0,
+    "event_desc": "Claxton STEAL (1 STL)",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 502,
+    "event_type": 2,
+    "event_desc": "MISS Williams 4' Cutting Layup Shot",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:3 Def:3)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 1,
+    "event_desc": "Williams Tip Layup Shot (13 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "57-76",
+    "score_margin": "-19"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 0,
+    "event_desc": "ROCKETS Timeout: Regular (Full 5 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Adams FOR Holiday",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Sheppard FOR Thompson",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Tate FOR Ja. Green",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Whitmore FOR Brooks",
+    "player_name": "Brooks",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Eason FOR Je. Green",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Johnson FOR Williams",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Watford FOR Wilson",
+    "player_name": "Wilson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 504,
+    "event_type": 8,
+    "event_desc": "SUB: Sharpe FOR Claxton",
+    "player_name": "Claxton",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 513,
+    "event_type": 2,
+    "event_desc": "MISS Whitmore 3PT Jump Shot",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 515,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:5)",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 520,
+    "event_type": 1,
+    "event_desc": "Sharpe 2' Running Dunk (10 PTS) (Simmons 4 AST)",
+    "player_name": "Sharpe",
+    "team_abbrev": "BKN",
+    "score": "57-78",
+    "score_margin": "-21"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 531,
+    "event_type": 6,
+    "event_desc": "Sharpe S.FOUL (P4.T2) (P.Fraher)",
+    "player_name": "Sharpe",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 531,
+    "event_type": 3,
+    "event_desc": "MISS Adams Free Throw 1 of 2",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 531,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 531,
+    "event_type": 3,
+    "event_desc": "MISS Adams Free Throw 2 of 2",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 534,
+    "event_type": 4,
+    "event_desc": "Evbuomwan REBOUND (Off:0 Def:1)",
+    "player_name": "Evbuomwan",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 548,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 24' 3PT Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 551,
+    "event_type": 4,
+    "event_desc": "Sheppard REBOUND (Off:0 Def:1)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 560,
+    "event_type": 5,
+    "event_desc": "Eason Out of Bounds - Bad Pass Turnover Turnover (P3.T11)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 574,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 27' 3PT Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 4,
+    "event_desc": "Eason REBOUND (Off:1 Def:2)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 594,
+    "event_type": 2,
+    "event_desc": "MISS Whitmore 8' Driving Floating Jump Shot",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 597,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:6)",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 603,
+    "event_type": 2,
+    "event_desc": "MISS Sharpe 2' Layup",
+    "player_name": "Sharpe",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 603,
+    "event_type": 0,
+    "event_desc": "Eason BLOCK (1 BLK)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 604,
+    "event_type": 4,
+    "event_desc": "Eason REBOUND (Off:1 Def:3)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 604,
+    "event_type": 6,
+    "event_desc": "Watford P.FOUL (P1.T3) (P.Fraher)",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 604,
+    "event_type": 8,
+    "event_desc": "SUB: Russell FOR Simmons",
+    "player_name": "Simmons",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 620,
+    "event_type": 6,
+    "event_desc": "Watford S.FOUL (P2.PN) (D.Richardson)",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 620,
+    "event_type": 3,
+    "event_desc": "Tate Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "58-78",
+    "score_margin": "-20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 620,
+    "event_type": 3,
+    "event_desc": "Tate Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "59-78",
+    "score_margin": "-19"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 2,
+    "event_desc": "MISS Watford 1' Driving Floating Jump Shot",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 6,
+    "event_desc": "Sharpe L.B.FOUL (P5.PN) (P.Fraher)",
+    "player_name": "Sharpe",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 3,
+    "event_desc": "MISS Adams Free Throw 1 of 2",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 630,
+    "event_type": 3,
+    "event_desc": "Adams Free Throw 2 of 2 (9 PTS)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "60-78",
+    "score_margin": "-18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 647,
+    "event_type": 1,
+    "event_desc": "Russell 26' 3PT Pullup Jump Shot (15 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "60-81",
+    "score_margin": "-21"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 2,
+    "event_desc": "MISS Eason 4' Driving Layup",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 0,
+    "event_desc": "Russell BLOCK (2 BLK)",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 661,
+    "event_type": 4,
+    "event_desc": "Nets Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 6,
+    "event_desc": "Whitmore S.FOUL (P2.T4) (P.Fraher)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 3,
+    "event_desc": "MISS Watford Free Throw 1 of 2",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 4,
+    "event_desc": "Nets Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Sharpe",
+    "player_name": "Sharpe",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 8,
+    "event_desc": "SUB: Simmons FOR Russell",
+    "player_name": "Russell",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 3,
+    "event_desc": "MISS Watford Free Throw 2 of 2",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 4,
+    "event_desc": "Sheppard REBOUND (Off:0 Def:2)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 6,
+    "event_desc": "Simmons S.FOUL (P2.PN) (P.Fraher)",
+    "player_name": "Simmons",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "Whitmore Free Throw 1 of 2 (4 PTS)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "61-81",
+    "score_margin": "-20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 0,
+    "event_desc": "Nets Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 8,
+    "event_desc": "SUB: Russell FOR Williams",
+    "player_name": "Williams",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "MISS Whitmore Free Throw 2 of 2",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 698,
+    "event_type": 4,
+    "event_desc": "Watford REBOUND (Off:2 Def:2)",
+    "player_name": "Watford",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 713,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 24' 3PT Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 716,
+    "event_type": 4,
+    "event_desc": "Evbuomwan REBOUND (Off:1 Def:1)",
+    "player_name": "Evbuomwan",
+    "team_abbrev": "BKN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 716,
+    "event_type": 1,
+    "event_desc": "Evbuomwan Tip Layup Shot (7 PTS)",
+    "player_name": "Evbuomwan",
+    "team_abbrev": "BKN",
+    "score": "61-83",
+    "score_margin": "-22"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 1,
+    "event_desc": "Sheppard 31' 3PT Pullup Jump Shot (3 PTS)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "64-83",
+    "score_margin": "-19"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:53 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "64-83",
+    "score_margin": "-19"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (9:53 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "64-83",
+    "score_margin": "-19"
+  }
+]

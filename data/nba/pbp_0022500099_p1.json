@@ -1,0 +1,1192 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (10:44 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Zubac vs. Ighodaro: Tip to Booker",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 18,
+    "event_type": 2,
+    "event_desc": "MISS Allen 24' 3PT Jump Shot",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 21,
+    "event_type": 4,
+    "event_desc": "Jones Jr. REBOUND (Off:0 Def:1)",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 25,
+    "event_type": 1,
+    "event_desc": "Jones Jr. 2' Running Finger Roll Layup (2 PTS)",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "2-0",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 40,
+    "event_type": 1,
+    "event_desc": "Brooks 12' Turnaround Fadeaway (2 PTS)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "2-2",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 58,
+    "event_type": 5,
+    "event_desc": "Beal Bad Pass Turnover (P1.T1)",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 58,
+    "event_type": 0,
+    "event_desc": "Allen STEAL (1 STL)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 70,
+    "event_type": 2,
+    "event_desc": "MISS Booker 3PT Jump Shot",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 70,
+    "event_type": 4,
+    "event_desc": "Dunn REBOUND (Off:1 Def:0)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 72,
+    "event_type": 1,
+    "event_desc": "Dunn Tip Dunk Shot (2 PTS)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "2-4",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 97,
+    "event_type": 1,
+    "event_desc": "Beal 21' Pullup Jump Shot (2 PTS) (Leonard 1 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "4-4",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 106,
+    "event_type": 1,
+    "event_desc": "Brooks 25' 3PT Pullup Jump Shot (5 PTS) (Allen 1 AST)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "4-7",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 124,
+    "event_type": 2,
+    "event_desc": "MISS Beal 12' Driving Floating Bank Jump Shot",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 125,
+    "event_type": 4,
+    "event_desc": "Beal REBOUND (Off:1 Def:0)",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 126,
+    "event_type": 2,
+    "event_desc": "MISS Beal 2' Tip Layup Shot",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 126,
+    "event_type": 0,
+    "event_desc": "Allen BLOCK (1 BLK)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 127,
+    "event_type": 4,
+    "event_desc": "Ighodaro REBOUND (Off:0 Def:1)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 134,
+    "event_type": 1,
+    "event_desc": "Dunn 3' Running Dunk (4 PTS) (Allen 2 AST)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "4-9",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 146,
+    "event_type": 1,
+    "event_desc": "Harden 3' Driving Floating Bank Jump Shot (2 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "6-9",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 146,
+    "event_type": 6,
+    "event_desc": "Dunn S.FOUL (P1.T1) (S.Mitchell)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 146,
+    "event_type": 3,
+    "event_desc": "Harden Free Throw 1 of 1 (3 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "7-9",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 160,
+    "event_type": 1,
+    "event_desc": "Booker 3' Driving Layup (2 PTS) (Allen 3 AST)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "7-11",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 175,
+    "event_type": 1,
+    "event_desc": "Harden 26' 3PT Step Back Jump Shot (6 PTS) (Zubac 1 AST)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "10-11",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 192,
+    "event_type": 2,
+    "event_desc": "MISS Dunn 14' Pullup Jump Shot",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 193,
+    "event_type": 4,
+    "event_desc": "Dunn REBOUND (Off:2 Def:0)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 195,
+    "event_type": 2,
+    "event_desc": "MISS Brooks 3PT Step Back Jump Shot",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 199,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:0 Def:1)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 201,
+    "event_type": 6,
+    "event_desc": "Allen S.FOUL (P1.T2) (T.Maddox)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 201,
+    "event_type": 3,
+    "event_desc": "Leonard Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "11-11",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 201,
+    "event_type": 3,
+    "event_desc": "Leonard Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "12-11",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 225,
+    "event_type": 2,
+    "event_desc": "MISS Brooks 25' 3PT Step Back Jump Shot",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 227,
+    "event_type": 4,
+    "event_desc": "Leonard REBOUND (Off:0 Def:1)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 237,
+    "event_type": 1,
+    "event_desc": "Leonard 12' Turnaround Jump Shot (4 PTS)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "14-11",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 254,
+    "event_type": 1,
+    "event_desc": "Brooks 26' 3PT Jump Shot (8 PTS) (Booker 1 AST)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "14-14",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 6,
+    "event_desc": "Zubac OFF.Foul (P1) (T.Maddox)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 5,
+    "event_desc": "Zubac Offensive Foul Turnover (P1.T2)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 283,
+    "event_type": 1,
+    "event_desc": "Allen 26' 3PT Jump Shot (3 PTS) (Booker 2 AST)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "14-17",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 302,
+    "event_type": 2,
+    "event_desc": "MISS Zubac 5' Driving Layup",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 304,
+    "event_type": 4,
+    "event_desc": "Booker REBOUND (Off:0 Def:1)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 311,
+    "event_type": 1,
+    "event_desc": "Ighodaro 8' Driving Hook Shot (2 PTS) (Booker 3 AST)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "14-19",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 311,
+    "event_type": 0,
+    "event_desc": "CLIPPERS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 334,
+    "event_type": 2,
+    "event_desc": "MISS Zubac 7' Driving Bank Hook Shot",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 336,
+    "event_type": 4,
+    "event_desc": "Dunn REBOUND (Off:2 Def:1)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 340,
+    "event_type": 6,
+    "event_desc": "Beal L.B.FOUL (P1.T1) (T.Maddox)",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 354,
+    "event_type": 1,
+    "event_desc": "Brooks 16' Fadeaway Jumper (10 PTS)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "14-21",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 379,
+    "event_type": 2,
+    "event_desc": "MISS Leonard 26' 3PT Jump Shot",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 380,
+    "event_type": 4,
+    "event_desc": "Booker REBOUND (Off:0 Def:2)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 398,
+    "event_type": 1,
+    "event_desc": "Ighodaro 2' Cutting Layup Shot (4 PTS) (Booker 4 AST)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "14-23",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 407,
+    "event_type": 6,
+    "event_desc": "Dunn P.FOUL (P2.T3) (M.Ervin)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 407,
+    "event_type": 8,
+    "event_desc": "SUB: Collins FOR Beal",
+    "player_name": "Beal",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 407,
+    "event_type": 8,
+    "event_desc": "SUB: Batum FOR Leonard",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 407,
+    "event_type": 8,
+    "event_desc": "SUB: O'Neale FOR Dunn",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 407,
+    "event_type": 8,
+    "event_desc": "SUB: Gillespie FOR Allen",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 418,
+    "event_type": 1,
+    "event_desc": "Jones Jr. 3PT Jump Shot (5 PTS) (Harden 1 AST)",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "17-23",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 429,
+    "event_type": 6,
+    "event_desc": "Collins S.FOUL (P1.T2) (M.Ervin)",
+    "player_name": "Collins",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 429,
+    "event_type": 3,
+    "event_desc": "Ighodaro Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "17-24",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 429,
+    "event_type": 3,
+    "event_desc": "MISS Ighodaro Free Throw 2 of 2",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 432,
+    "event_type": 4,
+    "event_desc": "Zubac REBOUND (Off:0 Def:2)",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 442,
+    "event_type": 6,
+    "event_desc": "Brooks P.FOUL (P1.T4) (T.Maddox)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 442,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Ighodaro",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 6,
+    "event_desc": "Brooks S.FOUL (P2.PN) (M.Ervin)",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 3,
+    "event_desc": "Harden Free Throw 1 of 2 (7 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "18-24",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 8,
+    "event_desc": "SUB: Lopez FOR Jones Jr.",
+    "player_name": "Jones Jr.",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 8,
+    "event_desc": "SUB: Dunn FOR Zubac",
+    "player_name": "Zubac",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 3,
+    "event_desc": "Harden Free Throw 2 of 2 (8 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "19-24",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 1,
+    "event_desc": "Booker 25' 3PT Pullup Jump Shot (5 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "19-27",
+    "score_margin": "-8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 6,
+    "event_desc": "Batum FLAGRANT.FOUL.TYPE1 (P1.T3) (M.Ervin)",
+    "player_name": "Batum",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (11:02 PM EST)",
+    "player_name": "Skiles",
+    "team_abbrev": "",
+    "score": "19-27",
+    "score_margin": "-8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 458,
+    "event_type": 3,
+    "event_desc": "Booker Free Throw Flagrant 1 of 1 (6 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "19-28",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 464,
+    "event_type": 2,
+    "event_desc": "MISS Williams 3' Driving Layup",
+    "player_name": "Williams",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 464,
+    "event_type": 0,
+    "event_desc": "Lopez BLOCK (1 BLK)",
+    "player_name": "Lopez",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 465,
+    "event_type": 4,
+    "event_desc": "Harden REBOUND (Off:0 Def:1)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 468,
+    "event_type": 1,
+    "event_desc": "Harden 2' Running Layup (10 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "21-28",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 468,
+    "event_type": 6,
+    "event_desc": "Gillespie S.FOUL (P1.PN) (S.Mitchell)",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 468,
+    "event_type": 3,
+    "event_desc": "Harden Free Throw 1 of 1 (11 PTS)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "22-28",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 488,
+    "event_type": 5,
+    "event_desc": "O'Neale Lost Ball Turnover (P1.T1)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 488,
+    "event_type": 0,
+    "event_desc": "Dunn STEAL (1 STL)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 495,
+    "event_type": 0,
+    "event_desc": " ",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 498,
+    "event_type": 8,
+    "event_desc": "SUB: Hayes-Davis FOR Brooks",
+    "player_name": "Brooks",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 500,
+    "event_type": 1,
+    "event_desc": "Lopez 28' 3PT Jump Shot (3 PTS) (Collins 1 AST)",
+    "player_name": "Lopez",
+    "team_abbrev": "LAC",
+    "score": "25-28",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 515,
+    "event_type": 5,
+    "event_desc": "Booker Out of Bounds Lost Ball Turnover (P1.T2)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 527,
+    "event_type": 1,
+    "event_desc": "Harden 26' 3PT Jump Shot (14 PTS) (Lopez 1 AST)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "28-28",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 529,
+    "event_type": 0,
+    "event_desc": "Suns Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 554,
+    "event_type": 2,
+    "event_desc": "MISS Williams 9' Fadeaway Jumper",
+    "player_name": "Williams",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 556,
+    "event_type": 4,
+    "event_desc": "Harden REBOUND (Off:0 Def:2)",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 6,
+    "event_desc": "O'Neale P.FOUL (P1.PN) (S.Mitchell)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 3,
+    "event_desc": "Dunn Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "29-28",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 8,
+    "event_desc": "SUB: Paul FOR Harden",
+    "player_name": "Harden",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 3,
+    "event_desc": "Dunn Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "30-28",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 591,
+    "event_type": 2,
+    "event_desc": "MISS Booker 25' 3PT Pullup Jump Shot",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 594,
+    "event_type": 4,
+    "event_desc": "Batum REBOUND (Off:0 Def:1)",
+    "player_name": "Batum",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 600,
+    "event_type": 2,
+    "event_desc": "MISS Lopez 25' 3PT Running Jump Shot",
+    "player_name": "Lopez",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 602,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:0 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 613,
+    "event_type": 1,
+    "event_desc": "O'Neale 4' Driving Layup (2 PTS)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "30-30",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 626,
+    "event_type": 5,
+    "event_desc": "Paul Bad Pass Turnover (P1.T3)",
+    "player_name": "Paul",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 626,
+    "event_type": 0,
+    "event_desc": "Hayes-Davis STEAL (1 STL)",
+    "player_name": "Hayes-Davis",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 629,
+    "event_type": 5,
+    "event_desc": "Gillespie Bad Pass Turnover (P1.T3)",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 629,
+    "event_type": 0,
+    "event_desc": "Dunn STEAL (2 STL)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 633,
+    "event_type": 2,
+    "event_desc": "MISS Batum 24' 3PT Running Jump Shot",
+    "player_name": "Batum",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 4,
+    "event_desc": "Collins REBOUND (Off:1 Def:0)",
+    "player_name": "Collins",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 6,
+    "event_desc": "Williams S.FOUL (P1.PN) (T.Maddox)",
+    "player_name": "Williams",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 3,
+    "event_desc": "Collins Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Collins",
+    "team_abbrev": "LAC",
+    "score": "31-30",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 8,
+    "event_desc": "SUB: Leonard FOR Batum",
+    "player_name": "Batum",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 8,
+    "event_desc": "SUB: Allen FOR Booker",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 636,
+    "event_type": 3,
+    "event_desc": "Collins Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Collins",
+    "team_abbrev": "LAC",
+    "score": "32-30",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 1,
+    "event_desc": "Gillespie 29' 3PT Jump Shot (3 PTS) (Allen 4 AST)",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "32-33",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 671,
+    "event_type": 2,
+    "event_desc": "MISS Collins 7' Turnaround Hook Shot",
+    "player_name": "Collins",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 673,
+    "event_type": 4,
+    "event_desc": "Dunn REBOUND (Off:1 Def:0)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 673,
+    "event_type": 1,
+    "event_desc": "Dunn 3' Putback Layup (4 PTS)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "34-33",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 688,
+    "event_type": 2,
+    "event_desc": "MISS Gillespie 27' 3PT Step Back Jump Shot",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 691,
+    "event_type": 4,
+    "event_desc": "Lopez REBOUND (Off:0 Def:1)",
+    "player_name": "Lopez",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 5,
+    "event_desc": "CLIPPERS Turnover: Shot Clock (T#4)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 8,
+    "event_desc": "SUB: Booker FOR Hayes-Davis",
+    "player_name": "Hayes-Davis",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 713,
+    "event_type": 8,
+    "event_desc": "SUB: Jones Jr. FOR Lopez",
+    "player_name": "Lopez",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 717,
+    "event_type": 6,
+    "event_desc": "Dunn P.FOUL (P1.T4) (T.Maddox)",
+    "player_name": "Dunn",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 717,
+    "event_type": 2,
+    "event_desc": "MISS Allen 24' 3PT Jump Shot",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 4,
+    "event_desc": "Leonard REBOUND (Off:0 Def:2)",
+    "player_name": "Leonard",
+    "team_abbrev": "LAC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (11:18 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "34-33",
+    "score_margin": "1"
+  }
+]

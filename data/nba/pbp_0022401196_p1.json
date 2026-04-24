@@ -1,0 +1,1282 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (3:41 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Robinson-Earl vs. J. Williams: Tip to Jones",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 13,
+    "event_type": 2,
+    "event_desc": "MISS Wiggins 7' Floating Jump Shot",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 16,
+    "event_type": 4,
+    "event_desc": "Joe REBOUND (Off:1 Def:0)",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 23,
+    "event_type": 2,
+    "event_desc": "MISS J. Williams 7' Floating Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 26,
+    "event_type": 4,
+    "event_desc": "Robinson-Earl REBOUND (Off:0 Def:1)",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 36,
+    "event_type": 5,
+    "event_desc": "Robinson-Earl Bad Pass Turnover (P1.T1)",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 36,
+    "event_type": 0,
+    "event_desc": "K. Williams STEAL (1 STL)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 41,
+    "event_type": 1,
+    "event_desc": "Wiggins 3' Running Layup (2 PTS) (K. Williams 1 AST)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "0-2",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 59,
+    "event_type": 2,
+    "event_desc": "MISS Robinson-Earl 11' Jump Shot",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 62,
+    "event_type": 4,
+    "event_desc": "J. Williams REBOUND (Off:0 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 71,
+    "event_type": 2,
+    "event_desc": "MISS Jones 6' Turnaround Jump Shot",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 71,
+    "event_type": 0,
+    "event_desc": "Payton BLOCK (1 BLK)",
+    "player_name": "Payton",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 72,
+    "event_type": 4,
+    "event_desc": "Robinson-Earl REBOUND (Off:0 Def:2)",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 76,
+    "event_type": 5,
+    "event_desc": "Alvarado Lost Ball Turnover (P1.T2)",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 76,
+    "event_type": 0,
+    "event_desc": "Joe STEAL (1 STL)",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 80,
+    "event_type": 1,
+    "event_desc": "Joe 25' 3PT Running Pull-Up Jump Shot (3 PTS)",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "0-5",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 92,
+    "event_type": 1,
+    "event_desc": "Reeves 7' Driving Floating Jump Shot (2 PTS)",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "2-5",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 102,
+    "event_type": 1,
+    "event_desc": "Wiggins 2' Driving Finger Roll Layup (4 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "2-7",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 102,
+    "event_type": 0,
+    "event_desc": "Brooks Jr. Violation:Defensive Goaltending (M.Dagher)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 112,
+    "event_type": 2,
+    "event_desc": "MISS Robinson-Earl 26' 3PT Jump Shot",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 116,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:1)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 123,
+    "event_type": 1,
+    "event_desc": "Jones 1' Driving Layup (2 PTS)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "2-9",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 131,
+    "event_type": 2,
+    "event_desc": "MISS Payton 10' Driving Floating Jump Shot",
+    "player_name": "Payton",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 135,
+    "event_type": 4,
+    "event_desc": "J. Williams REBOUND (Off:0 Def:2)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 136,
+    "event_type": 1,
+    "event_desc": "Jones 2' Running Finger Roll Layup (4 PTS) (Wiggins 1 AST)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "2-11",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 136,
+    "event_type": 0,
+    "event_desc": "PELICANS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 136,
+    "event_type": 8,
+    "event_desc": "SUB: Carlson FOR J. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 151,
+    "event_type": 1,
+    "event_desc": "Reeves 2' Cutting Layup Shot (4 PTS) (Alvarado 1 AST)",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "4-11",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 169,
+    "event_type": 2,
+    "event_desc": "MISS K. Williams 19' Pullup Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 173,
+    "event_type": 4,
+    "event_desc": "Brooks Jr. REBOUND (Off:0 Def:1)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 184,
+    "event_type": 2,
+    "event_desc": "MISS Brooks Jr. 24' 3PT Jump Shot",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 188,
+    "event_type": 4,
+    "event_desc": "K. Williams REBOUND (Off:0 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 201,
+    "event_type": 2,
+    "event_desc": "MISS Jones 3' Driving Finger Roll Layup",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 203,
+    "event_type": 4,
+    "event_desc": "Carlson REBOUND (Off:1 Def:0)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 203,
+    "event_type": 1,
+    "event_desc": "Carlson Putback Layup (2 PTS)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "4-13",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 220,
+    "event_type": 1,
+    "event_desc": "Brooks Jr. 1' Cutting Dunk Shot (2 PTS) (Payton 1 AST)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "6-13",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 230,
+    "event_type": 1,
+    "event_desc": "Wiggins 27' 3PT Pullup Jump Shot (7 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "6-16",
+    "score_margin": "-10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 247,
+    "event_type": 2,
+    "event_desc": "MISS Reeves 26' 3PT Jump Shot",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 4,
+    "event_desc": "Robinson-Earl REBOUND (Off:1 Def:2)",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 6,
+    "event_desc": "Joe S.FOUL (P1.T1) (K.Cutler)",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 3,
+    "event_desc": "MISS Robinson-Earl Free Throw 1 of 2",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 4,
+    "event_desc": "PELICANS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 8,
+    "event_desc": "SUB: Flagler FOR Wiggins",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 248,
+    "event_type": 3,
+    "event_desc": "Robinson-Earl Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "7-16",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 261,
+    "event_type": 1,
+    "event_desc": "Flagler 2' Cutting Layup Shot (2 PTS) (Carlson 1 AST)",
+    "player_name": "Flagler",
+    "team_abbrev": "OKC",
+    "score": "7-18",
+    "score_margin": "-11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 2,
+    "event_desc": "MISS Payton 7' Driving Floating Jump Shot",
+    "player_name": "Payton",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 273,
+    "event_type": 0,
+    "event_desc": "Carlson BLOCK (1 BLK)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 275,
+    "event_type": 4,
+    "event_desc": "Payton REBOUND (Off:1 Def:0)",
+    "player_name": "Payton",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 285,
+    "event_type": 2,
+    "event_desc": "MISS Brooks Jr. 7' Turnaround Jump Shot",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 286,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:2)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 286,
+    "event_type": 5,
+    "event_desc": "Jones Out of Bounds Lost Ball Turnover (P1.T1)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 286,
+    "event_type": 8,
+    "event_desc": "SUB: Cain FOR Payton",
+    "player_name": "Payton",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 299,
+    "event_type": 2,
+    "event_desc": "MISS Reeves 26' 3PT Jump Shot",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 302,
+    "event_type": 4,
+    "event_desc": "Carlson REBOUND (Off:1 Def:1)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 311,
+    "event_type": 1,
+    "event_desc": "K. Williams 2' Driving Layup (2 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "7-20",
+    "score_margin": "-13"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 323,
+    "event_type": 5,
+    "event_desc": "Alvarado Bad Pass Turnover (P2.T3)",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 323,
+    "event_type": 0,
+    "event_desc": "K. Williams STEAL (2 STL)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 1,
+    "event_desc": "K. Williams 7' Driving Floating Jump Shot (4 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "7-22",
+    "score_margin": "-15"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 6,
+    "event_desc": "Reeves S.FOUL (P1.T1) (M.Dagher)",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 8,
+    "event_desc": "SUB: Kelley FOR Robinson-Earl",
+    "player_name": "Robinson-Earl",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 327,
+    "event_type": 3,
+    "event_desc": "MISS K. Williams Free Throw 1 of 1",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 330,
+    "event_type": 4,
+    "event_desc": "Kelley REBOUND (Off:0 Def:1)",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 337,
+    "event_type": 1,
+    "event_desc": "Reeves 2' Cutting Layup Shot (6 PTS) (Alvarado 2 AST)",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "9-22",
+    "score_margin": "-13"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 348,
+    "event_type": 1,
+    "event_desc": "Carlson 26' 3PT Jump Shot (5 PTS) (Jones 1 AST)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "9-25",
+    "score_margin": "-16"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 361,
+    "event_type": 2,
+    "event_desc": "MISS Alvarado 27' 3PT Step Back Jump Shot",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 364,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:3)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 369,
+    "event_type": 2,
+    "event_desc": "MISS Joe 4' Driving Finger Roll Layup",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 369,
+    "event_type": 0,
+    "event_desc": "Kelley BLOCK (1 BLK)",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 371,
+    "event_type": 4,
+    "event_desc": "Cain REBOUND (Off:0 Def:1)",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 377,
+    "event_type": 2,
+    "event_desc": "MISS Cain 3' Driving Floating Bank Jump Shot",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 380,
+    "event_type": 4,
+    "event_desc": "Carlson REBOUND (Off:1 Def:2)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 380,
+    "event_type": 5,
+    "event_desc": "Carlson Lost Ball Turnover (P1.T2)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 380,
+    "event_type": 0,
+    "event_desc": "Brooks Jr. STEAL (1 STL)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 387,
+    "event_type": 1,
+    "event_desc": "Brooks Jr. 2' Reverse Layup (4 PTS)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "11-25",
+    "score_margin": "-14"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 397,
+    "event_type": 1,
+    "event_desc": "K. Williams 7' Jump Shot (6 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "11-27",
+    "score_margin": "-16"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 419,
+    "event_type": 5,
+    "event_desc": "Brooks Jr. Traveling Turnover (P1.T4)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 419,
+    "event_type": 8,
+    "event_desc": "SUB: Quinones FOR Alvarado",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 419,
+    "event_type": 8,
+    "event_desc": "SUB: Ducas FOR K. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 433,
+    "event_type": 6,
+    "event_desc": "Carlson OFF.Foul (P1) (M.Dagher)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 433,
+    "event_type": 5,
+    "event_desc": "Carlson Offensive Foul Turnover (P2.T3)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 448,
+    "event_type": 2,
+    "event_desc": "MISS Quinones 8' Driving Floating Jump Shot",
+    "player_name": "Quinones",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 451,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:4)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 457,
+    "event_type": 6,
+    "event_desc": "Brooks Jr. S.FOUL (P1.T2) (K.Cutler)",
+    "player_name": "Brooks Jr.",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 457,
+    "event_type": 3,
+    "event_desc": "Carlson Free Throw 1 of 2 (6 PTS)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "11-28",
+    "score_margin": "-17"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 457,
+    "event_type": 3,
+    "event_desc": "Carlson Free Throw 2 of 2 (7 PTS)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "11-29",
+    "score_margin": "-18"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 478,
+    "event_type": 6,
+    "event_desc": "Joe P.FOUL (P2.T2) (M.Dagher)",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 478,
+    "event_type": 8,
+    "event_desc": "SUB: Wiggins FOR Joe",
+    "player_name": "Joe",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 487,
+    "event_type": 2,
+    "event_desc": "MISS Cain 11' Fadeaway Jumper",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 491,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:5)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 502,
+    "event_type": 1,
+    "event_desc": "Carlson 5' Floating Jump Shot (9 PTS) (Wiggins 2 AST)",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "11-31",
+    "score_margin": "-20"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 514,
+    "event_type": 2,
+    "event_desc": "MISS Quinones 29' 3PT Jump Shot",
+    "player_name": "Quinones",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 517,
+    "event_type": 4,
+    "event_desc": "Cain REBOUND (Off:1 Def:1)",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 519,
+    "event_type": 1,
+    "event_desc": "Cain 7' Driving Floating Jump Shot (2 PTS)",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "13-31",
+    "score_margin": "-18"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 525,
+    "event_type": 0,
+    "event_desc": "Thunder Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 525,
+    "event_type": 8,
+    "event_desc": "SUB: Alvarado FOR Reeves",
+    "player_name": "Reeves",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 533,
+    "event_type": 2,
+    "event_desc": "MISS Ducas 25' 3PT Jump Shot",
+    "player_name": "Ducas",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 536,
+    "event_type": 4,
+    "event_desc": "Quinones REBOUND (Off:0 Def:1)",
+    "player_name": "Quinones",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 551,
+    "event_type": 2,
+    "event_desc": "MISS Alvarado 26' 3PT Jump Shot",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 554,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:6)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 559,
+    "event_type": 2,
+    "event_desc": "MISS Flagler 25' 3PT Running Pull-Up Jump Shot",
+    "player_name": "Flagler",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 562,
+    "event_type": 4,
+    "event_desc": "Quinones REBOUND (Off:0 Def:2)",
+    "player_name": "Quinones",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 6,
+    "event_desc": "Ducas S.FOUL (P1.T3) (M.Dagher)",
+    "player_name": "Ducas",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 3,
+    "event_desc": "MISS Kelley Free Throw 1 of 2",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 4,
+    "event_desc": "PELICANS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 8,
+    "event_desc": "SUB: K. Williams FOR Carlson",
+    "player_name": "Carlson",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 574,
+    "event_type": 3,
+    "event_desc": "Kelley Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "14-31",
+    "score_margin": "-17"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 587,
+    "event_type": 6,
+    "event_desc": "Cain S.FOUL (P1.T3) (M.Myers)",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 587,
+    "event_type": 3,
+    "event_desc": "Wiggins Free Throw 1 of 2 (8 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "14-32",
+    "score_margin": "-18"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 587,
+    "event_type": 3,
+    "event_desc": "Wiggins Free Throw 2 of 2 (9 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "14-33",
+    "score_margin": "-19"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 602,
+    "event_type": 1,
+    "event_desc": "Kelley 2' Cutting Finger Roll Layup Shot (3 PTS) (Cain 1 AST)",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "16-33",
+    "score_margin": "-17"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 611,
+    "event_type": 2,
+    "event_desc": "MISS K. Williams 29' 3PT Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 613,
+    "event_type": 4,
+    "event_desc": "PELICANS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 622,
+    "event_type": 2,
+    "event_desc": "MISS Cain 26' 3PT Jump Shot",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 625,
+    "event_type": 4,
+    "event_desc": "Wiggins REBOUND (Off:0 Def:1)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 640,
+    "event_type": 2,
+    "event_desc": "MISS K. Williams 24' 3PT Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 644,
+    "event_type": 4,
+    "event_desc": "Wiggins REBOUND (Off:1 Def:1)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 646,
+    "event_type": 1,
+    "event_desc": "Ducas 26' 3PT Jump Shot (3 PTS) (Wiggins 3 AST)",
+    "player_name": "Ducas",
+    "team_abbrev": "OKC",
+    "score": "16-36",
+    "score_margin": "-20"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 668,
+    "event_type": 2,
+    "event_desc": "MISS Cain 3' Driving Layup",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 671,
+    "event_type": 4,
+    "event_desc": "Wiggins REBOUND (Off:1 Def:2)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 677,
+    "event_type": 2,
+    "event_desc": "MISS Wiggins 26' 3PT Jump Shot",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 680,
+    "event_type": 4,
+    "event_desc": "Kelley REBOUND (Off:0 Def:2)",
+    "player_name": "Kelley",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 688,
+    "event_type": 2,
+    "event_desc": "MISS Alvarado 29' 3PT Jump Shot",
+    "player_name": "Alvarado",
+    "team_abbrev": "NOP",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 691,
+    "event_type": 4,
+    "event_desc": "Ducas REBOUND (Off:0 Def:1)",
+    "player_name": "Ducas",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 696,
+    "event_type": 1,
+    "event_desc": "Jones 2' Layup (6 PTS)",
+    "player_name": "Jones",
+    "team_abbrev": "OKC",
+    "score": "16-38",
+    "score_margin": "-22"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 1,
+    "event_desc": "Cain 27' 3PT Jump Shot (5 PTS) (Quinones 1 AST)",
+    "player_name": "Cain",
+    "team_abbrev": "NOP",
+    "score": "19-38",
+    "score_margin": "-19"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (4:05 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "19-38",
+    "score_margin": "-19"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (4:06 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "19-38",
+    "score_margin": "-19"
+  }
+]

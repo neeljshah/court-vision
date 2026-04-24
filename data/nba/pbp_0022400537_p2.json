@@ -1,0 +1,992 @@
+[
+  {
+    "period": 2,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 2nd Period (11:13 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "32-22",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 14,
+    "event_type": 1,
+    "event_desc": "Vanderbilt 1' Driving Dunk (2 PTS) (Reaves 3 AST)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "34-22",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 34,
+    "event_type": 1,
+    "event_desc": "Barnes 3' Driving Layup (5 PTS) (Johnson 1 AST)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "34-24",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 54,
+    "event_type": 8,
+    "event_desc": "SUB: Biyombo FOR Mamukelashvili",
+    "player_name": "Mamukelashvili",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 57,
+    "event_type": 1,
+    "event_desc": "Reaves 11' Pullup Jump Shot (8 PTS) (Knecht 1 AST)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "36-24",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 78,
+    "event_type": 1,
+    "event_desc": "Biyombo 6' Floating Jump Shot (2 PTS) (Champagnie 2 AST)",
+    "player_name": "Biyombo",
+    "team_abbrev": "SAS",
+    "score": "36-26",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 96,
+    "event_type": 1,
+    "event_desc": "Knecht 1' Cutting Layup Shot (7 PTS) (Vanderbilt 1 AST)",
+    "player_name": "Knecht",
+    "team_abbrev": "LAL",
+    "score": "38-26",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 107,
+    "event_type": 8,
+    "event_desc": "SUB: Vassell FOR Johnson",
+    "player_name": "Johnson",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 117,
+    "event_type": 1,
+    "event_desc": "Wesley 3PT Jump Shot (3 PTS) (Barnes 2 AST)",
+    "player_name": "Wesley",
+    "team_abbrev": "SAS",
+    "score": "38-29",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 140,
+    "event_type": 1,
+    "event_desc": "Knecht 28' 3PT Pullup Jump Shot (10 PTS) (Finney-Smith 1 AST)",
+    "player_name": "Knecht",
+    "team_abbrev": "LAL",
+    "score": "41-29",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 161,
+    "event_type": 1,
+    "event_desc": "Biyombo 2' Reverse Layup (4 PTS) (Wesley 1 AST)",
+    "player_name": "Biyombo",
+    "team_abbrev": "SAS",
+    "score": "41-31",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 180,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 26' 3PT Step Back Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 182,
+    "event_type": 4,
+    "event_desc": "Champagnie REBOUND (Off:0 Def:2)",
+    "player_name": "Champagnie",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 192,
+    "event_type": 1,
+    "event_desc": "Vassell 25' 3PT Pullup Jump Shot (10 PTS)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "41-34",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 212,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 31' 3PT Pullup Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 215,
+    "event_type": 4,
+    "event_desc": "Wesley REBOUND (Off:0 Def:1)",
+    "player_name": "Wesley",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 232,
+    "event_type": 2,
+    "event_desc": "MISS Wesley 10' Fadeaway Jumper",
+    "player_name": "Wesley",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 236,
+    "event_type": 4,
+    "event_desc": "Vanderbilt REBOUND (Off:0 Def:1)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 243,
+    "event_type": 1,
+    "event_desc": "Finney-Smith 28' 3PT Jump Shot (4 PTS) (Knecht 2 AST)",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "44-34",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 6,
+    "event_desc": "Goodwin S.FOUL (P2.T1) (J.Sterling)",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 3,
+    "event_desc": "Vassell Free Throw 1 of 2 (11 PTS)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "44-35",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 8,
+    "event_desc": "SUB: Hayes FOR Vanderbilt",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 8,
+    "event_desc": "SUB: Doncic FOR Knecht",
+    "player_name": "Knecht",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 8,
+    "event_desc": "SUB: Milton FOR Goodwin",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 8,
+    "event_desc": "SUB: Castle FOR Wesley",
+    "player_name": "Wesley",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 8,
+    "event_desc": "SUB: Sochan FOR Champagnie",
+    "player_name": "Champagnie",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 258,
+    "event_type": 3,
+    "event_desc": "Vassell Free Throw 2 of 2 (12 PTS)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "44-36",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 281,
+    "event_type": 1,
+    "event_desc": "Reaves 27' 3PT Jump Shot (11 PTS) (Hayes 1 AST)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "47-36",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 296,
+    "event_type": 2,
+    "event_desc": "MISS Biyombo 11' Floating Jump Shot",
+    "player_name": "Biyombo",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 300,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:2)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 311,
+    "event_type": 2,
+    "event_desc": "MISS Finney-Smith 3PT Jump Shot",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 314,
+    "event_type": 4,
+    "event_desc": "Vassell REBOUND (Off:0 Def:3)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 331,
+    "event_type": 2,
+    "event_desc": "MISS Castle 26' 3PT Jump Shot",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 334,
+    "event_type": 4,
+    "event_desc": "Barnes REBOUND (Off:1 Def:1)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 335,
+    "event_type": 1,
+    "event_desc": "Barnes 14' Pullup Jump Shot (7 PTS)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "47-38",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 350,
+    "event_type": 1,
+    "event_desc": "Finney-Smith 3PT Jump Shot (7 PTS) (Doncic 3 AST)",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "50-38",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 351,
+    "event_type": 0,
+    "event_desc": "Spurs Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 351,
+    "event_type": 8,
+    "event_desc": "SUB: Vincent FOR Reaves",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 369,
+    "event_type": 2,
+    "event_desc": "MISS Castle 12' Pullup Jump Shot",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 371,
+    "event_type": 4,
+    "event_desc": "Hayes REBOUND (Off:0 Def:3)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 380,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 26' 3PT Step Back Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 383,
+    "event_type": 4,
+    "event_desc": "Hayes REBOUND (Off:1 Def:3)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 388,
+    "event_type": 6,
+    "event_desc": "Biyombo S.FOUL (P2.T1) (K.Scott)",
+    "player_name": "Biyombo",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 388,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 2 (13 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "51-38",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 388,
+    "event_type": 8,
+    "event_desc": "SUB: Paul FOR Biyombo",
+    "player_name": "Biyombo",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 388,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 2 of 2",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 390,
+    "event_type": 4,
+    "event_desc": "Vassell REBOUND (Off:0 Def:4)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 402,
+    "event_type": 1,
+    "event_desc": "Vassell 27' 3PT Jump Shot (15 PTS) (Paul 3 AST)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "51-41",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 6,
+    "event_desc": "Vassell S.FOUL (P2.T2) (J.Sterling)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 3,
+    "event_desc": "Hayes Free Throw 1 of 2 (2 PTS)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "52-41",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 8,
+    "event_desc": "SUB: Goodwin FOR Finney-Smith",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 3,
+    "event_desc": "Hayes Free Throw 2 of 2 (3 PTS)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "53-41",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 426,
+    "event_type": 2,
+    "event_desc": "MISS Castle 26' 3PT Pullup Jump Shot",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 430,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:3)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 449,
+    "event_type": 2,
+    "event_desc": "MISS Goodwin 27' 3PT Jump Shot",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 453,
+    "event_type": 4,
+    "event_desc": "Castle REBOUND (Off:0 Def:1)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 459,
+    "event_type": 5,
+    "event_desc": "Barnes Bad Pass Turnover (P1.T7)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 459,
+    "event_type": 0,
+    "event_desc": "Hayes STEAL (1 STL)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 472,
+    "event_type": 1,
+    "event_desc": "Hayes Driving Dunk (5 PTS) (Goodwin 1 AST)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "55-41",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 486,
+    "event_type": 1,
+    "event_desc": "Sochan 1' Cutting Dunk Shot (5 PTS) (Castle 1 AST)",
+    "player_name": "Sochan",
+    "team_abbrev": "SAS",
+    "score": "55-43",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 515,
+    "event_type": 1,
+    "event_desc": "Milton 9' Floating Jump Shot (2 PTS) (Goodwin 2 AST)",
+    "player_name": "Milton",
+    "team_abbrev": "LAL",
+    "score": "57-43",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 531,
+    "event_type": 0,
+    "event_desc": "Spurs Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 531,
+    "event_type": 8,
+    "event_desc": "SUB: Reaves FOR Milton",
+    "player_name": "Milton",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 531,
+    "event_type": 8,
+    "event_desc": "SUB: Johnson FOR Barnes",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 538,
+    "event_type": 6,
+    "event_desc": "Vincent S.FOUL (P1.T2) (B.Forte)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 538,
+    "event_type": 3,
+    "event_desc": "MISS Castle Free Throw 1 of 2",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 538,
+    "event_type": 4,
+    "event_desc": "Spurs Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 538,
+    "event_type": 3,
+    "event_desc": "Castle Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "57-44",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 551,
+    "event_type": 1,
+    "event_desc": "Vincent 27' 3PT Jump Shot (3 PTS) (Doncic 4 AST)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "60-44",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 563,
+    "event_type": 5,
+    "event_desc": "Paul Bad Pass Turnover (P1.T8)",
+    "player_name": "Paul",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 563,
+    "event_type": 0,
+    "event_desc": "Doncic STEAL (2 STL)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 568,
+    "event_type": 6,
+    "event_desc": "Sochan S.FOUL (P1.T3) (J.Sterling)",
+    "player_name": "Sochan",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 568,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 2 (14 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "61-44",
+    "score_margin": "17"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 568,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 2 of 2",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 571,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:1)",
+    "player_name": "Johnson",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 579,
+    "event_type": 2,
+    "event_desc": "MISS Castle 4' Driving Layup",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 581,
+    "event_type": 4,
+    "event_desc": "Vincent REBOUND (Off:0 Def:1)",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 588,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 27' 3PT Step Back Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 591,
+    "event_type": 4,
+    "event_desc": "Castle REBOUND (Off:0 Def:2)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 601,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 25' 3PT Running Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 604,
+    "event_type": 4,
+    "event_desc": "Castle REBOUND (Off:1 Def:2)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 604,
+    "event_type": 1,
+    "event_desc": "Castle 3' Layup (3 PTS)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "61-46",
+    "score_margin": "15"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 615,
+    "event_type": 2,
+    "event_desc": "MISS Hayes 3' Cutting Layup Shot",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 615,
+    "event_type": 4,
+    "event_desc": "Paul REBOUND (Off:1 Def:2)",
+    "player_name": "Paul",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 621,
+    "event_type": 1,
+    "event_desc": "Castle 26' 3PT Running Jump Shot (6 PTS) (Paul 4 AST)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "61-49",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 651,
+    "event_type": 2,
+    "event_desc": "MISS Vincent 24' 3PT Jump Shot",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 654,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:1 Def:3)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 654,
+    "event_type": 1,
+    "event_desc": "Doncic 4' Putback Layup (16 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "63-49",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 662,
+    "event_type": 1,
+    "event_desc": "Johnson 9' Driving Floating Jump Shot (2 PTS) (Paul 5 AST)",
+    "player_name": "Johnson",
+    "team_abbrev": "SAS",
+    "score": "63-51",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 680,
+    "event_type": 1,
+    "event_desc": "Goodwin 4' Hook Bank Shot (7 PTS) (Doncic 5 AST)",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "65-51",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 686,
+    "event_type": 2,
+    "event_desc": "MISS Castle 4' Driving Layup",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 688,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:1 Def:4)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 693,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 4' Running Layup",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 695,
+    "event_type": 4,
+    "event_desc": "Vassell REBOUND (Off:0 Def:5)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 716,
+    "event_type": 2,
+    "event_desc": "MISS Vassell 13' Step Back Jump Shot",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 718,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:1 Def:5)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 35' 3PT Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 2nd Period (11:37 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "65-51",
+    "score_margin": "14"
+  }
+]

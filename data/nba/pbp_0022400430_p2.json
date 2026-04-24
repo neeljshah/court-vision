@@ -1,0 +1,1092 @@
+[
+  {
+    "period": 2,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 2nd Period (8:36 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "33-25",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 15,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 2' Driving Layup",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 16,
+    "event_type": 4,
+    "event_desc": "Rollins REBOUND (Off:0 Def:3)",
+    "player_name": "Rollins",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 20,
+    "event_type": 2,
+    "event_desc": "MISS Rollins 1' Running Layup",
+    "player_name": "Rollins",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 20,
+    "event_type": 0,
+    "event_desc": "Buzelis BLOCK (2 BLK)",
+    "player_name": "Buzelis",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 20,
+    "event_type": 4,
+    "event_desc": "Bucks Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 31,
+    "event_type": 1,
+    "event_desc": "Prince 1' Driving Layup (2 PTS) (Lopez 1 AST)",
+    "player_name": "Prince",
+    "team_abbrev": "MIL",
+    "score": "33-27",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 43,
+    "event_type": 6,
+    "event_desc": "Trent Jr. P.FOUL (P1.T1) (A.Nagy)",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 43,
+    "event_type": 8,
+    "event_desc": "SUB: Phillips FOR Buzelis",
+    "player_name": "Buzelis",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 57,
+    "event_type": 1,
+    "event_desc": "Carter 27' 3PT Jump Shot (5 PTS) (Vucevic 2 AST)",
+    "player_name": "Carter",
+    "team_abbrev": "CHI",
+    "score": "36-27",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 78,
+    "event_type": 2,
+    "event_desc": "MISS Trent Jr. 1' Floating Jump Shot",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 80,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:0 Def:3)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 84,
+    "event_type": 2,
+    "event_desc": "MISS Phillips 2' Running Layup",
+    "player_name": "Phillips",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 85,
+    "event_type": 4,
+    "event_desc": "Prince REBOUND (Off:0 Def:2)",
+    "player_name": "Prince",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 88,
+    "event_type": 2,
+    "event_desc": "MISS Trent Jr. 3PT Running Jump Shot",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 92,
+    "event_type": 4,
+    "event_desc": "White REBOUND (Off:0 Def:1)",
+    "player_name": "White",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 101,
+    "event_type": 1,
+    "event_desc": "White 1' Driving Layup (11 PTS) (Vucevic 3 AST)",
+    "player_name": "White",
+    "team_abbrev": "CHI",
+    "score": "38-27",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 125,
+    "event_type": 1,
+    "event_desc": "Lopez 1' Driving Layup (5 PTS) (Trent Jr. 1 AST)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "38-29",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 142,
+    "event_type": 5,
+    "event_desc": "Terry Out of Bounds - Bad Pass Turnover Turnover (P1.T2)",
+    "player_name": "Terry",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 142,
+    "event_type": 8,
+    "event_desc": "SUB: Middleton FOR Prince",
+    "player_name": "Prince",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 160,
+    "event_type": 1,
+    "event_desc": "Trent Jr. 25' 3PT Step Back Jump Shot (5 PTS)",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "38-32",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 161,
+    "event_type": 0,
+    "event_desc": "BULLS Timeout: Regular (Full 2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 161,
+    "event_type": 8,
+    "event_desc": "SUB: Giddey FOR White",
+    "player_name": "White",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 173,
+    "event_type": 2,
+    "event_desc": "MISS Vucevic 25' 3PT Jump Shot",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 175,
+    "event_type": 4,
+    "event_desc": "Rollins REBOUND (Off:0 Def:4)",
+    "player_name": "Rollins",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 182,
+    "event_type": 1,
+    "event_desc": "Trent Jr. 15' Jump Shot (7 PTS)",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "38-34",
+    "score_margin": "4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 195,
+    "event_type": 2,
+    "event_desc": "MISS Carter 3PT Jump Shot",
+    "player_name": "Carter",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 197,
+    "event_type": 4,
+    "event_desc": "Lopez REBOUND (Off:0 Def:1)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 208,
+    "event_type": 1,
+    "event_desc": "Rollins 1' Driving Layup (2 PTS) (Lopez 2 AST)",
+    "player_name": "Rollins",
+    "team_abbrev": "MIL",
+    "score": "38-36",
+    "score_margin": "2"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 223,
+    "event_type": 1,
+    "event_desc": "Giddey 11' Floating Jump Shot (7 PTS)",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "40-36",
+    "score_margin": "4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 244,
+    "event_type": 2,
+    "event_desc": "MISS Lopez 14' Jump Shot",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 245,
+    "event_type": 4,
+    "event_desc": "Phillips REBOUND (Off:0 Def:1)",
+    "player_name": "Phillips",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 6,
+    "event_desc": "Lopez S.FOUL (P1.T2) (A.Nagy)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 3,
+    "event_desc": "MISS Terry Free Throw 1 of 2",
+    "player_name": "Terry",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 4,
+    "event_desc": "BULLS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 8,
+    "event_desc": "SUB: LaVine FOR Carter",
+    "player_name": "Carter",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 8,
+    "event_desc": "SUB: Lillard FOR Rollins",
+    "player_name": "Rollins",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 254,
+    "event_type": 3,
+    "event_desc": "MISS Terry Free Throw 2 of 2",
+    "player_name": "Terry",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 257,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:2)",
+    "player_name": "Green",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 271,
+    "event_type": 2,
+    "event_desc": "MISS Lillard 11' Fadeaway Jumper",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 275,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:0 Def:4)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 278,
+    "event_type": 1,
+    "event_desc": "Giddey 1' Running Layup (9 PTS) (LaVine 3 AST)",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "42-36",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 292,
+    "event_type": 2,
+    "event_desc": "MISS Middleton 23' Step Back Jump Shot",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 294,
+    "event_type": 4,
+    "event_desc": "Giddey REBOUND (Off:2 Def:3)",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 308,
+    "event_type": 5,
+    "event_desc": "Giddey Bad Pass Turnover (P1.T3)",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 308,
+    "event_type": 0,
+    "event_desc": "Trent Jr. STEAL (1 STL)",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 308,
+    "event_type": 6,
+    "event_desc": "Terry P.FOUL (P1.T1) (T.Ford)",
+    "player_name": "Terry",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 308,
+    "event_type": 8,
+    "event_desc": "SUB: Horton-Tucker FOR Terry",
+    "player_name": "Terry",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 317,
+    "event_type": 2,
+    "event_desc": "MISS Green 26' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 321,
+    "event_type": 4,
+    "event_desc": "Vucevic REBOUND (Off:0 Def:5)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 326,
+    "event_type": 6,
+    "event_desc": "Middleton P.FOUL (P2.T3) (A.Nagy)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 326,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Phillips",
+    "player_name": "Phillips",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 326,
+    "event_type": 8,
+    "event_desc": "SUB: Craig FOR Vucevic",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 335,
+    "event_type": 2,
+    "event_desc": "MISS Craig 3PT Jump Shot",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 335,
+    "event_type": 0,
+    "event_desc": "Lopez BLOCK (1 BLK)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 340,
+    "event_type": 4,
+    "event_desc": "Middleton REBOUND (Off:0 Def:4)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 346,
+    "event_type": 1,
+    "event_desc": "Lillard 1' Driving Layup (5 PTS) (Middleton 2 AST)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "42-38",
+    "score_margin": "4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 356,
+    "event_type": 1,
+    "event_desc": "Craig 27' 3PT Jump Shot (3 PTS) (Giddey 4 AST)",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "45-38",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 379,
+    "event_type": 1,
+    "event_desc": "Lopez Driving Layup (7 PTS)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "45-40",
+    "score_margin": "5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 393,
+    "event_type": 1,
+    "event_desc": "Craig 26' 3PT Jump Shot (6 PTS) (Giddey 5 AST)",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "48-40",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 394,
+    "event_type": 0,
+    "event_desc": "Bucks Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 394,
+    "event_type": 8,
+    "event_desc": "SUB: Jackson Jr. FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 415,
+    "event_type": 2,
+    "event_desc": "MISS Jackson Jr. 7' Turnaround Hook Shot",
+    "player_name": "Jackson Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 418,
+    "event_type": 4,
+    "event_desc": "Craig REBOUND (Off:0 Def:1)",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 423,
+    "event_type": 1,
+    "event_desc": "Giddey 5' Driving Floating Jump Shot (11 PTS)",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "50-40",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 431,
+    "event_type": 2,
+    "event_desc": "MISS Lillard 30' 3PT Jump Shot",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 433,
+    "event_type": 4,
+    "event_desc": "BULLS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 451,
+    "event_type": 2,
+    "event_desc": "MISS Williams 3' Driving Layup",
+    "player_name": "Williams",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 451,
+    "event_type": 0,
+    "event_desc": "Lopez BLOCK (2 BLK)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 451,
+    "event_type": 4,
+    "event_desc": "BULLS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 451,
+    "event_type": 8,
+    "event_desc": "SUB: Portis FOR Trent Jr.",
+    "player_name": "Trent Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 453,
+    "event_type": 1,
+    "event_desc": "LaVine 25' 3PT Jump Shot (7 PTS) (Giddey 6 AST)",
+    "player_name": "LaVine",
+    "team_abbrev": "CHI",
+    "score": "53-40",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 469,
+    "event_type": 1,
+    "event_desc": "Lopez 13' Jump Shot (9 PTS) (Lillard 3 AST)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "53-42",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 482,
+    "event_type": 2,
+    "event_desc": "MISS Craig 26' 3PT Jump Shot",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 482,
+    "event_type": 4,
+    "event_desc": "Lillard REBOUND (Off:1 Def:1)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 503,
+    "event_type": 6,
+    "event_desc": "Horton-Tucker P.FOUL (P1.T2) (T.Ford)",
+    "player_name": "Horton-Tucker",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 503,
+    "event_type": 8,
+    "event_desc": "SUB: White FOR Giddey",
+    "player_name": "Giddey",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 503,
+    "event_type": 8,
+    "event_desc": "SUB: Ball FOR Craig",
+    "player_name": "Craig",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 503,
+    "event_type": 8,
+    "event_desc": "SUB: Vucevic FOR Horton-Tucker",
+    "player_name": "Horton-Tucker",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 515,
+    "event_type": 1,
+    "event_desc": "Middleton 10' Turnaround Fadeaway (10 PTS)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "53-44",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 527,
+    "event_type": 2,
+    "event_desc": "MISS Ball 8' Step Back Jump Shot",
+    "player_name": "Ball",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 529,
+    "event_type": 4,
+    "event_desc": "Lillard REBOUND (Off:1 Def:2)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 532,
+    "event_type": 2,
+    "event_desc": "MISS Jackson Jr. 1' Running Layup",
+    "player_name": "Jackson Jr.",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 534,
+    "event_type": 4,
+    "event_desc": "LaVine REBOUND (Off:0 Def:2)",
+    "player_name": "LaVine",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 542,
+    "event_type": 1,
+    "event_desc": "Williams 27' 3PT Pullup Jump Shot (7 PTS) (White 2 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "CHI",
+    "score": "56-44",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 560,
+    "event_type": 1,
+    "event_desc": "Lillard 7' Driving Floating Jump Shot (7 PTS) (Middleton 3 AST)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "56-46",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 577,
+    "event_type": 2,
+    "event_desc": "MISS White 12' Step Back Jump Shot",
+    "player_name": "White",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 579,
+    "event_type": 4,
+    "event_desc": "Portis REBOUND (Off:2 Def:1)",
+    "player_name": "Portis",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 586,
+    "event_type": 1,
+    "event_desc": "Middleton 28' 3PT Jump Shot (13 PTS) (Lillard 4 AST)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "56-49",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 602,
+    "event_type": 1,
+    "event_desc": "Vucevic 7' Floating Jump Shot (8 PTS) (Ball 2 AST)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "58-49",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 611,
+    "event_type": 1,
+    "event_desc": "Middleton 26' 3PT Jump Shot (16 PTS) (Lillard 5 AST)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "58-52",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 611,
+    "event_type": 6,
+    "event_desc": "Ball FLAGRANT.FOUL.TYPE1 (P2.T3) (T.Ford)",
+    "player_name": "Ball",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 611,
+    "event_type": 0,
+    "event_desc": "Instant Replay2nd Period (8:57 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "58-52",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 611,
+    "event_type": 3,
+    "event_desc": "Middleton Free Throw Flagrant 1 of 1 (17 PTS)",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "58-53",
+    "score_margin": "5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 611,
+    "event_type": 8,
+    "event_desc": "SUB: Buzelis FOR Williams",
+    "player_name": "Williams",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 616,
+    "event_type": 1,
+    "event_desc": "Lillard 1' Cutting Layup Shot (9 PTS) (Portis 2 AST)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "58-55",
+    "score_margin": "3"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 629,
+    "event_type": 1,
+    "event_desc": "Buzelis 2' Driving Finger Roll Layup (2 PTS) (Vucevic 4 AST)",
+    "player_name": "Buzelis",
+    "team_abbrev": "CHI",
+    "score": "60-55",
+    "score_margin": "5"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 640,
+    "event_type": 1,
+    "event_desc": "Lopez 27' 3PT Jump Shot (12 PTS) (Lillard 6 AST)",
+    "player_name": "Lopez",
+    "team_abbrev": "MIL",
+    "score": "60-58",
+    "score_margin": "2"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 658,
+    "event_type": 5,
+    "event_desc": "Ball Out of Bounds - Bad Pass Turnover Turnover (P1.T4)",
+    "player_name": "Ball",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 658,
+    "event_type": 8,
+    "event_desc": "SUB: Prince FOR Middleton",
+    "player_name": "Middleton",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 679,
+    "event_type": 2,
+    "event_desc": "MISS Lillard 28' 3PT Jump Shot",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 680,
+    "event_type": 4,
+    "event_desc": "BULLS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 686,
+    "event_type": 1,
+    "event_desc": "Vucevic 7' Floating Jump Shot (10 PTS) (LaVine 4 AST)",
+    "player_name": "Vu\u010devi\u0107",
+    "team_abbrev": "CHI",
+    "score": "62-58",
+    "score_margin": "4"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 698,
+    "event_type": 6,
+    "event_desc": "Ball P.FOUL (P3.PN) (T.Ford)",
+    "player_name": "Ball",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "Lillard Free Throw 1 of 2 (10 PTS)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "62-59",
+    "score_margin": "3"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 698,
+    "event_type": 3,
+    "event_desc": "Lillard Free Throw 2 of 2 (11 PTS)",
+    "player_name": "Lillard",
+    "team_abbrev": "MIL",
+    "score": "62-60",
+    "score_margin": "2"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 2,
+    "event_desc": "MISS LaVine 27' 3PT Jump Shot",
+    "player_name": "LaVine",
+    "team_abbrev": "CHI",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 4,
+    "event_desc": "BULLS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 2nd Period (9:02 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "62-60",
+    "score_margin": "2"
+  }
+]

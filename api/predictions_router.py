@@ -47,6 +47,16 @@ class PropsRequest(BaseModel):
     season: str = "2025-26"
 
 
+class GamePredictionRequest(BaseModel):
+    home_team: str
+    away_team: str
+    season: str = "2025-26"
+    player_ids: Optional[List[str]] = None
+    lines: Optional[dict] = None
+    bankroll: float = 10_000.0
+    game_date: Optional[str] = None
+
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _player_name_from_id(player_id: int) -> Optional[str]:
@@ -200,17 +210,72 @@ def lineup_optimizer(req: LineupOptimizerRequest):
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+# ── POST /predictions/game ────────────────────────────────────────────────────
+
+@router.post("/game")
+def predict_game_endpoint(req: GamePredictionRequest):
+    """Full game prediction: win prob + game models + player props + Kelly edges."""
+    try:
+        from src.prediction.game_orchestrator import predict_game
+        result = predict_game(
+            home_team=req.home_team,
+            away_team=req.away_team,
+            season=req.season,
+            player_ids=req.player_ids,
+            lines=req.lines,
+            bankroll=req.bankroll,
+            game_date=req.game_date,
+            save=True,
+        )
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 # ── GET /predictions/today ────────────────────────────────────────────────────
 
 @router.get("/today")
 def predictions_today(season: str = "2025-26"):
-    """Win probabilities and top props for tonight's games."""
+    """Win probabilities and top props for tonight's games via orchestrator."""
     try:
-        from src.prediction.game_prediction import predict_today
-        games = predict_today(season=season)
-        if isinstance(games, list):
-            return {"games": games, "season": season}
-        return games
+        from src.prediction.game_orchestrator import predict_game
+
+        # Fetch tonight's matchups from nba_api scoreboard
+        matchups: list = []
+        try:
+            from nba_api.stats.endpoints import scoreboard
+            sb = scoreboard.Scoreboard()
+            games_df = sb.game_header.get_data_frame()
+            for _, row in games_df.iterrows():
+                matchups.append({
+                    "home_team": str(row.get("HOME_TEAM_ABBREVIATION", "")),
+                    "away_team": str(row.get("VISITOR_TEAM_ABBREVIATION", "")),
+                })
+        except Exception:
+            matchups = []
+
+        if not matchups:
+            # Fallback to legacy predict_today if no scoreboard data
+            from src.prediction.game_prediction import predict_today
+            games = predict_today(season=season)
+            return {"games": games if isinstance(games, list) else [games], "season": season}
+
+        results = []
+        for m in matchups:
+            if not m["home_team"] or not m["away_team"]:
+                continue
+            try:
+                pred = predict_game(
+                    home_team=m["home_team"],
+                    away_team=m["away_team"],
+                    season=season,
+                    save=True,
+                )
+                results.append(pred)
+            except Exception:
+                results.append(m)
+
+        return {"games": results, "season": season}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
@@ -225,24 +290,39 @@ def props_by_id(player_id: int, season: str = "2025-26", opp_team: str = ""):
         raise HTTPException(status_code=404, detail=f"Player {player_id} not found")
 
     try:
-        from src.prediction.player_props import predict_props
+        from src.prediction.prop_model_stack import stack_predict
         from src.prediction.dnp_predictor import predict_dnp
+        from src.prediction.injury_risk import get_injury_risk
 
-        result  = predict_props(player_name, opp_team=opp_team or "OPP", season=season)
+        # Build game_context so all micro-model signals (CV, matchup, etc.) flow in
+        game_context = {
+            "home_team": opp_team or "OPP",
+            "away_team": opp_team or "OPP",
+            "season": season,
+        }
+        stack = stack_predict(str(player_id), game_context=game_context)
+
         dnp_raw = predict_dnp(player_name, season=season)
         dnp_prob = float(dnp_raw) if not isinstance(dnp_raw, dict) else float(dnp_raw.get("dnp_prob", 0.0))
 
-        props = {k: round(float(v), 3) for k, v in result.items()
-                 if k in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")}
+        injury_risk = 0.0
+        try:
+            injury_raw = get_injury_risk(player_name, season=season)
+            injury_risk = float(injury_raw.get("risk_score", 0.0)) if isinstance(injury_raw, dict) else 0.0
+        except Exception:
+            injury_risk = 0.0
 
         return {
             "player_id":    player_id,
             "player_name":  player_name,
-            "props":        props,
+            "props":        {k: round(float(v), 3) for k, v in stack.predictions.items()},
             "dnp_prob":     round(dnp_prob, 4),
-            "injury_risk":  round(float(result.get("dnp_risk", dnp_prob)), 4),
-            "confidence":   result.get("confidence", "model"),
-            "minutes_proj": round(float(result.get("minutes_proj", 0.0)), 1),
+            "injury_risk":  round(injury_risk, 4),
+            "suppressed":   stack.suppressed,
+            "suppression_reason": stack.suppression_reason,
+            "confidence":   stack.confidence,
+            "edges":        {k: (None if isinstance(v, float) and v != v else v)
+                             for k, v in stack.edges.items()},
         }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))

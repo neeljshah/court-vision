@@ -17,6 +17,26 @@ The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. Th
 
 ---
 
+## Current Stage (Important)
+
+CourtVision is in late build / validation stage.
+
+Current focus is intentionally narrow:
+
+- maximize NBA prediction quality (games + props),
+- prove reliability with leakage/calibration/drift gates,
+- prove execution quality with CLV and risk controls.
+
+Not the focus yet:
+
+- multi-sport expansion,
+- heavy frontend polish,
+- broad commercialization beyond validation milestones.
+
+If you are contributing, prioritize tasks that improve prediction quality or evidence quality first.
+
+---
+
 ## How It Works (Plain English)
 
 ```
@@ -142,13 +162,15 @@ python scripts/batch_season.py --season 2025-26
 
 | Doc | What's In It |
 |-----|--------------|
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System design, module dependencies, data flow |
+| [architecture.md](architecture.md) | System design, module dependencies, data flow |
 | [CV_TRACKING.md](CV_TRACKING.md) | Tracking pipeline deep-dive: homography, re-ID, OCR |
 | [ML_MODELS.md](ML_MODELS.md) | All 90 models: features, training, accuracy |
-| [DATA_SCHEMA.md](DATA_SCHEMA.md) | PostgreSQL schema, CSV formats, API cache |
+| [data_schema.md](data_schema.md) | PostgreSQL schema, CSV formats, API cache |
 | [API.md](API.md) | FastAPI endpoints, request/response examples |
 | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |
 | [ROADMAP.md](ROADMAP.md) | Full phase-by-phase build plan |
+| [PROJECT_INDEX.md](PROJECT_INDEX.md) | Canonical repository navigation map |
+| [../PLAN.md](../PLAN.md) | Current state, gap analysis, prioritized roadmap |
 
 ---
 

@@ -246,8 +246,9 @@ def _build_dataset(
                 _ts = json.load(open(_ts_path))
                 _opp_stats_by_season[_s] = {
                     abbr: {
-                        "opp_tov_pct": float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("tov_pct", 0.145) or 0.145),
-                        "opp_pace":    float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("pace",    100.0) or 100.0),
+                        "opp_tov_pct":  float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("tov_pct",       0.145) or 0.145),
+                        "opp_pace":     float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("pace",          100.0) or 100.0),
+                        "opp_stl_rate": float(_ts.get(_abbrev_to_id.get(abbr, ""), {}).get("stl_per_poss",  0.080) or 0.080),
                     }
                     for abbr in _abbrev_to_id
                 }
@@ -288,8 +289,9 @@ def _build_dataset(
             # Add opponent tov_pct / pace for this game
             _opp = _opp_abbr(game.get("matchup", ""))
             _os  = _opp_stats_by_season.get(cur_season, {}).get(_opp, {})
-            feat_row["opp_tov_pct"] = _os.get("opp_tov_pct", 0.145)
-            feat_row["opp_pace"]    = _os.get("opp_pace",    100.0)
+            feat_row["opp_tov_pct"]  = _os.get("opp_tov_pct",  0.145)
+            feat_row["opp_pace"]     = _os.get("opp_pace",    100.0)
+            feat_row["opp_stl_rate"] = _os.get("opp_stl_rate", 0.080)
 
             for stat in _PROP_STATS:
                 actual = game.get(stat)
@@ -383,6 +385,9 @@ def train_and_save(datasets: Dict[str, dict], only_stat: str = None) -> Dict[str
         # Always save v2
         v2_path = os.path.join(_MODEL_DIR, f"props_{stat}_v2.json")
         model.save_model(v2_path)
+        metrics_path = os.path.join(_MODEL_DIR, f"props_{stat}_v2_metrics.json")
+        with open(metrics_path, "w") as _mf:
+            json.dump({"stat": stat, "train": train_m, "test": test_m, "val": val_m}, _mf, indent=2)
         print(f"  saved -> {v2_path}")
 
         # Overwrite props_{stat}.json if val R2 beats current registry

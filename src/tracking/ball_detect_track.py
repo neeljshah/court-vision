@@ -17,6 +17,13 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 
+try:
+    import torch as _torch
+    import kornia
+    _HAS_KORNIA_BALL = True
+except ImportError:
+    _HAS_KORNIA_BALL = False
+
 from .player_detection import FeetDetector
 
 # ── YOLO ball model path (TRT engine preferred, .pt fallback) ─────────────────
@@ -33,6 +40,7 @@ _BALL_PT_PATH2 = os.path.normpath(
 
 _ball_yolo_model = None       # lazy-loaded YOLO ball model (global singleton)
 _ball_yolo_available = None   # None = not yet checked; True/False after first attempt
+_ball_yolo_is_coco = False    # True when using generic yolov8n COCO (class 32) fallback
 
 
 def _trt_available() -> bool:
@@ -45,8 +53,8 @@ def _trt_available() -> bool:
 
 
 def _get_ball_yolo_model():
-    """Lazy-init YOLO ball model: TRT engine → .pt → None."""
-    global _ball_yolo_model, _ball_yolo_available
+    """Lazy-init YOLO ball model: TRT engine → fine-tuned .pt → generic COCO .pt → None."""
+    global _ball_yolo_model, _ball_yolo_available, _ball_yolo_is_coco
     if _ball_yolo_available is not None:
         return _ball_yolo_model  # already attempted init
 
@@ -64,7 +72,15 @@ def _get_ball_yolo_model():
                 _ball_yolo_model = YOLO(pt_path, task="detect")
                 _ball_yolo_available = True
             else:
-                _ball_yolo_available = False
+                # Fallback: generic yolov8n (COCO class 32 = sports ball). GPU inference
+                # replaces the ~0.2-0.3s/frame Hough+template CPU path with ~0.02-0.05s/frame.
+                # Lower recall than a fine-tuned ball model but much faster than Hough fallback.
+                try:
+                    _ball_yolo_model = YOLO("yolov8n.pt", task="detect")
+                    _ball_yolo_available = True
+                    _ball_yolo_is_coco = True
+                except Exception:
+                    _ball_yolo_available = False
     except Exception:
         _ball_yolo_available = False
 
@@ -318,10 +334,17 @@ class BallDetectTrack:
         if model is None:
             return None
         try:
-            # conf lowered 0.30→0.05: fine-tuned ball model outputs low confidence
-            # (~0.11 typical). At 0.30 detection was 0%; at 0.05 it's ~98%.
-            # Single-class model (ball only) so low conf still means ball-shaped.
-            results = model(frame, imgsz=640, conf=0.05, verbose=False)
+            if _ball_yolo_is_coco:
+                # COCO fallback: query class 32 (sports ball). Higher conf threshold
+                # because COCO yolov8n is not fine-tuned on NBA broadcasts — lower
+                # confidence detections are often crowd/arena objects, not the ball.
+                results = model(frame, imgsz=640, classes=[32], conf=0.20,
+                                half=True, verbose=False)
+            else:
+                # conf lowered 0.30→0.05: fine-tuned ball model outputs low confidence
+                # (~0.11 typical). At 0.30 detection was 0%; at 0.05 it's ~98%.
+                # Single-class model (ball only) so low conf still means ball-shaped.
+                results = model(frame, imgsz=640, conf=0.05, verbose=False)
             boxes = results[0].boxes
             if boxes is None or len(boxes) == 0:
                 return None
@@ -329,13 +352,14 @@ class BallDetectTrack:
             # Without this filter, an untrained model returns players (largest
             # high-conf detection) which corrupts CSRT with player bboxes.
             cls_arr = boxes.cls.cpu().numpy() if boxes.cls is not None else None
-            if cls_arr is not None:
+            if cls_arr is not None and not _ball_yolo_is_coco:
                 ball_mask = (cls_arr == 0)
                 if not ball_mask.any():
                     return None  # no ball-class detections
                 confs = boxes.conf.cpu().numpy()[ball_mask]
                 xyxy_all = boxes.xyxy.cpu().numpy()[ball_mask]
             else:
+                # COCO path already filtered to class 32 via classes=[32] kwarg.
                 confs = boxes.conf.cpu().numpy()
                 xyxy_all = boxes.xyxy.cpu().numpy()
             best_i = int(confs.argmax())
@@ -374,11 +398,18 @@ class BallDetectTrack:
             pad = max(1, radius)
             return (cx - pad, cy - pad, pad * 2, pad * 2)
 
-        # When YOLO ball TRT is available, skip expensive Hough fallback (~1s/frame).
-        # YOLO is more accurate than Hough; if YOLO doesn't see the ball, Hough
-        # won't either. Only fall back to Hough when YOLO is not loaded at all.
+        # When YOLO ball model is available (fine-tuned or COCO fallback), try
+        # kornia GPU blob detection before expensive Hough CPU fallback.
         if _ball_yolo_available:
+            blob_result = self._detect_ball_kornia(frame)
+            if blob_result is not None:
+                return blob_result
             return None
+
+        # Fallback: kornia GPU blob → Hough CPU
+        blob_result = self._detect_ball_kornia(frame)
+        if blob_result is not None:
+            return blob_result
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -397,6 +428,62 @@ class BallDetectTrack:
                     return (cx - pad, cy - pad, pad * 2, pad * 2)
 
         return None
+
+    def _detect_ball_kornia(self, frame: np.ndarray) -> Optional[Tuple[int, int, int, int]]:
+        """GPU ball detection using kornia color filtering + blob analysis.
+
+        Converts frame to HSV on GPU, masks basketball-orange pixels, finds
+        connected components. Returns (x, y, w, h) or None.
+        """
+        if not _HAS_KORNIA_BALL or not _torch.cuda.is_available():
+            return None
+        try:
+            _dev = "cuda"
+            # BGR→RGB→GPU tensor
+            rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            t = _torch.from_numpy(rgb).float().permute(2, 0, 1).unsqueeze(0).to(_dev) / 255.0
+
+            # RGB→HSV (kornia: H in [0, 2π], S/V in [0,1])
+            hsv = kornia.color.rgb_to_hsv(t)  # (1, 3, H, W)
+            h_ch = hsv[0, 0] * 180.0 / (2.0 * 3.14159265)  # to OpenCV scale [0,180]
+            s_ch = hsv[0, 1] * 255.0
+            v_ch = hsv[0, 2] * 255.0
+
+            # Orange mask matching _BALL_H_LO/_BALL_H_HI/_BALL_S_MIN/_BALL_V_MIN
+            mask = ((h_ch >= _BALL_H_LO) & (h_ch <= _BALL_H_HI)
+                    & (s_ch >= _BALL_S_MIN) & (v_ch >= _BALL_V_MIN))
+
+            # Morphological close to merge nearby pixels
+            kernel = _torch.ones(1, 1, 5, 5, device=_dev)
+            mask_f = mask.float().unsqueeze(0).unsqueeze(0)
+            mask_f = _torch.nn.functional.conv2d(mask_f, kernel, padding=2)
+            mask_f = (mask_f > 3).float()
+
+            # Find largest connected region on CPU (kornia doesn't have fast CC)
+            mask_np = mask_f.squeeze().cpu().numpy().astype(np.uint8)
+            n_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(mask_np)
+
+            if n_labels <= 1:
+                return None
+
+            # Skip label 0 (background), find largest blob in ball-radius range
+            best = None
+            best_area = 0
+            for i in range(1, n_labels):
+                area = stats[i, cv2.CC_STAT_AREA]
+                w = stats[i, cv2.CC_STAT_WIDTH]
+                h = stats[i, cv2.CC_STAT_HEIGHT]
+                # Ball-sized: 10-50px diameter range, roughly circular (aspect 0.5-2.0)
+                if 50 < area < 3000 and 0.4 < (w / max(h, 1)) < 2.5:
+                    if area > best_area:
+                        best_area = area
+                        cx = int(centroids[i][0])
+                        cy = int(centroids[i][1])
+                        r = max(1, int((w + h) / 4))
+                        best = (cx - r, cy - r, r * 2, r * 2)
+            return best
+        except Exception:
+            return None
 
     # ── Optical flow tracking ─────────────────────────────────────────────
 

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Execution Plan
+    url: https://github.com/neeljshah/court-vision/blob/master/PLAN.md
+    about: Review plan gates before opening major work items.

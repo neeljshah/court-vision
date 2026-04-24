@@ -1,0 +1,20 @@
+# Bet selector configuration
+# All monetary values in USD.
+
+bankroll: 1000.0          # starting bankroll
+kelly_fraction: 0.25      # quarter-Kelly (conservative)
+max_bet_pct: 0.04         # cap single bet at 4% of bankroll
+
+edge_min: 0.04            # minimum |edge| fraction to qualify (4%)
+max_bets_per_game: 3      # max bets on the same game_id
+max_correlated_same_game: 3  # same-game correlated bets cap
+max_combined_pct: 0.06    # combined bankroll % cap when same player has 2+ stats
+
+default_odds: -110        # fallback American odds when book doesn't provide them
+
+books_enabled:
+  - draftkings
+  - fanduel
+  - betmgm
+
+dry_run: false            # set true to paper-trade (logs bets as status="paper")

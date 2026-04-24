@@ -1,433 +1,473 @@
-# API Reference — NBA AI System
+# API Reference — CourtVision
 
-FastAPI backend for serving model predictions, analytics, and live data.
+FastAPI backend. Phase 13.5 complete — 5 routers, 21+ endpoints live.
 
-**Current state:** 2 routers live (predictions + analytics). Full 12-endpoint spec planned for Phase 13.
-
-**Base URL:** `http://localhost:8000`
-
----
-
-## Starting the Server
+**Base URL:** `http://localhost:8000`  
+**Docs:** `http://localhost:8000/docs` (auto-generated Swagger UI)
 
 ```bash
 conda activate basketball_ai
-cd C:/Users/neelj/nba-ai-system
 uvicorn api.main:app --reload
-# → http://localhost:8000
-# → http://localhost:8000/docs  (auto-generated Swagger UI)
 ```
 
 ---
 
-## Current Endpoints (Live)
+## Endpoint Index
 
-### GET `/predictions/props/{player_name}`
+| Method | Path | Router | Description |
+|--------|------|--------|-------------|
+| GET | `/health` | main.py | System status |
+| POST | `/simulate` | main.py | Monte Carlo game simulation |
+| POST | `/simulate_game` | main.py | Full game simulation with rosters |
+| POST | `/over_prob` | main.py | Per-stat over probability |
+| GET | `/props/{player_id}` | main.py | 7-stat prop projections (by name) |
+| GET | `/edge/{game_id}` | main.py | Betting edge vs market |
+| GET | `/win-prob/{game_id}` | main.py | Win probability |
+| GET | `/lineup/{team}` | main.py | Injury-filtered lineup |
+| POST | `/backtest/{stat}` | main.py | Prop backtest gate (24h cache) |
+| GET | `/predictions/shot` | models_router.py | xFG probability (spatial) |
+| GET | `/predictions/win` | models_router.py | In-game win probability |
+| GET | `/predictions/player-impact` | models_router.py | Player EPA (Phase 6+ placeholder) |
+| GET | `/predictions/props/{player_id}` | predictions_router.py | Props by numeric player ID |
+| POST | `/predictions/injury-risk` | predictions_router.py | Injury risk + load management |
+| POST | `/predictions/breakout` | predictions_router.py | Breakout potential score |
+| POST | `/predictions/lineup-optimizer` | predictions_router.py | DFS lineup optimizer |
+| POST | `/predictions/game` | predictions_router.py | Full game prediction orchestration |
+| GET | `/predictions/today` | predictions_router.py | Tonight's game predictions |
+| GET | `/analytics/shot-chart` | analytics_router.py | Shot log for a game |
+| GET | `/analytics/tracking` | analytics_router.py | Tracking coordinates by frame range |
+| GET | `/analytics/lineup-stats` | analytics_router.py | 503 until Phase 6 (20+ CV games) |
+| POST | `/chat` | dashboard_router.py | AI chat (Claude + DB + models) |
+| GET | `/analytics/clv-summary` | dashboard_router.py | Rolling CLV (7d/30d) |
+| GET | `/analytics/edges/today` | dashboard_router.py | Today's ranked betting edges |
 
-Returns all 7 prop projections for a player vs their next opponent.
+---
 
-**Request:**
-```
-GET /predictions/props/Jayson%20Tatum?opp_team=MIL&season=2024-25
-```
+## Core Endpoints (api/main.py)
 
-**Response:**
+### GET `/health`
+
 ```json
 {
-  "player": "Jayson Tatum",
-  "opp_team": "MIL",
-  "dnp_risk": 0.03,
-  "projections": {
-    "pts": {
-      "projection": 27.4,
-      "line": 26.5,
-      "edge": "over",
-      "edge_pct": 0.043,
-      "confidence": 0.81
-    },
-    "reb": {
-      "projection": 8.2,
-      "line": 8.0,
-      "edge": "over",
-      "edge_pct": 0.021
-    },
-    "ast": { "projection": 4.9, "line": 4.5, "edge": "over" },
-    "fg3m": { "projection": 2.8, "line": 2.5, "edge": "over" },
-    "stl": { "projection": 1.1, "line": 1.0, "edge": "push" },
-    "blk": { "projection": 0.8, "line": 1.0, "edge": "under" },
-    "tov": { "projection": 2.1, "line": 2.5, "edge": "under" }
-  },
-  "features_used": 57,
-  "sharp_adjustment_applied": false
+  "status": "ok",
+  "model_status": {
+    "possession_simulator": "loaded",
+    "player_props": "available",
+    "betting_edge": "loaded",
+    "win_probability": "available",
+    "tracking": "available",
+    "re_id": "available"
+  }
 }
 ```
 
 ---
 
-### GET `/predictions/win-probability`
+### POST `/simulate`
 
-Pre-game win probability for a matchup.
+Monte Carlo game simulation. TTL-cached 300s.
 
 **Request:**
-```
-GET /predictions/win-probability?home_team=BOS&away_team=MIL&season=2024-25
+```json
+{ "team_a": "BOS", "team_b": "MIL", "n_sims": 1000, "player_stats": null }
 ```
 
 **Response:**
 ```json
 {
-  "home_team": "BOS",
-  "away_team": "MIL",
-  "home_win_prob": 0.624,
-  "away_win_prob": 0.376,
-  "projected_spread": -7.2,
-  "projected_total": 226.4,
-  "confidence": 0.78,
-  "key_factors": [
-    "BOS +4.1 net rating advantage",
-    "MIL back-to-back (rest disadvantage)",
-    "BOS 8-2 last 10 at home"
+  "team_a_win_pct": 0.58,
+  "mean_score_a": 112.4,
+  "mean_score_b": 108.1,
+  "player_distributions": {}
+}
+```
+
+**Example:**
+```bash
+curl -X POST http://localhost:8000/simulate \
+  -H "Content-Type: application/json" \
+  -d '{"team_a": "BOS", "team_b": "MIL", "n_sims": 1000}'
+```
+
+---
+
+### POST `/simulate_game`
+
+Full game simulation with optional per-team stats override.
+
+**Request:**
+```json
+{
+  "team_a": "BOS",
+  "team_b": "MIL",
+  "n_sims": 1000,
+  "team_a_stats": null,
+  "team_b_stats": null
+}
+```
+
+---
+
+### POST `/over_prob`
+
+Per-player per-stat over probability from Monte Carlo distribution.
+
+**Request:**
+```json
+{
+  "player_id": "Jayson Tatum",
+  "stat": "pts",
+  "line": 26.5,
+  "team_a": "BOS",
+  "team_b": "MIL",
+  "roster_a": ["Jayson Tatum", "Jaylen Brown"],
+  "roster_b": ["Giannis Antetokounmpo"],
+  "n_sims": 1000
+}
+```
+
+**Response:**
+```json
+{ "player_id": "Jayson Tatum", "stat": "pts", "line": 26.5, "over_prob": 0.612, "mean": 27.4 }
+```
+
+---
+
+### GET `/props/{player_id}`
+
+7-stat prop projections. Accepts player name or ID string. Uses `stack_predict`; falls back to `predict_props` if stack returns empty.
+
+**Query params:** `opp_team=GSW` (default), `season=2025-26` (default)
+
+**Example:**
+```bash
+curl "http://localhost:8000/props/LeBron%20James?opp_team=MIL&season=2024-25"
+```
+
+**Response:**
+```json
+{
+  "pts": 24.1,
+  "reb": 7.4,
+  "ast": 8.1,
+  "fg3m": 1.8,
+  "stl": 1.2,
+  "blk": 0.6,
+  "tov": 3.1
+}
+```
+
+**Known issue:** STL R²=0.07 — do not size aggressively until `opp_to_rate`/`opp_pace` features land.
+
+---
+
+### GET `/edge/{game_id}`
+
+Betting edge vs current market line. Uses XGBoost win probability internally.
+
+**Query params:** `home=BOS`, `away=MIL`, `home_odds=-110`, `away_odds=-110`
+
+**Example:**
+```bash
+curl "http://localhost:8000/edge/0022400512?home=BOS&away=MIL&home_odds=-110&away_odds=+100"
+```
+
+**Response:**
+```json
+{
+  "game_id": "0022400512",
+  "edges": [
+    { "team": "BOS", "edge": 0.043, "ev": 0.031, "kelly_fraction": 0.028 }
   ]
 }
 ```
 
 ---
 
-### GET `/analytics/shot-chart/{player_id}`
+### GET `/win-prob/{game_id}`
 
-Shot chart data for a player — coordinates, made/missed, xFG by zone.
+XGBoost win probability with confidence interval.
+
+**Query params:** `home=BOS`, `away=MIL`, `season=2025-26`
+
+**Response:**
+```json
+{
+  "game_id": "0022400512",
+  "home_win_prob": 0.61,
+  "confidence_interval": [0.56, 0.66],
+  "model": "xgboost_v2"
+}
+```
+
+---
+
+### GET `/lineup/{team}`
+
+Returns injury-filtered DNP list (Out/Doubtful) via InjuryMonitor.
+
+**Response:**
+```json
+{ "team": "BOS", "dnp": ["Kristaps Porzingis"], "active_count": "unknown — filter applied" }
+```
+
+---
+
+### POST `/backtest/{stat}`
+
+Prop backtest gate. Cached 24h. `stat` must be one of: pts, reb, ast, fg3m, stl, blk, tov.
 
 **Request:**
+```json
+{ "seasons": ["2024-25"], "edge_threshold": 0.04 }
 ```
-GET /analytics/shot-chart/1629029?season=2024-25&min_games=10
+
+**Response:**
+```json
+{
+  "stat": "pts",
+  "n": 1240,
+  "mae": 3.1,
+  "hit_rate_over": 0.512,
+  "roi_at_break_even_odds": 0.024,
+  "passed_gate": true,
+  "edge_buckets": {}
+}
 ```
+
+**Error codes:** 400 if stat not in valid list; 500 on internal error.
+
+---
+
+## Predictions Router (`/predictions` prefix)
+
+### GET `/predictions/shot`
+
+xFG probability from spatial features. Backed by xFG v1 (Brier 0.226, 221K shots).
+
+**Query params:** `defender_dist` (required), `shot_angle` (required), `fatigue_proxy=0.0`, `court_zone=paint`
+
+**Response:**
+```json
+{ "probability": 0.487, "model": "xfg_v1", "inputs": { ... } }
+```
+
+---
+
+### GET `/predictions/win`
+
+In-game win probability using spatial momentum features.
+
+**Query params:** `convex_hull_area` (required), `avg_inter_player_dist=0.0`, `scoring_run=0`, `possession_streak=0`, `swing_point=0`
+
+**Response:**
+```json
+{ "win_probability": 0.634 }
+```
+
+---
+
+### GET `/predictions/player-impact`
+
+Player EPA per 100 possessions. Phase 6+ placeholder until 20 CV games trained.
+
+**Query params:** `track_id` (required), `made_rate=0.0`, `shots_taken=0`
+
+---
+
+### GET `/predictions/props/{player_id}`
+
+Props by numeric NBA player ID. More complete than root `/props` — includes DNP prob, injury risk, confidence, suppression.
+
+**Query params:** `season=2025-26`, `opp_team=""`
+
+**Response:**
+```json
+{
+  "player_id": 2544,
+  "player_name": "LeBron James",
+  "props": { "pts": 24.1, "reb": 7.4, "ast": 8.1, "fg3m": 1.8, "stl": 1.2, "blk": 0.6, "tov": 3.1 },
+  "dnp_prob": 0.03,
+  "injury_risk": 0.12,
+  "suppressed": false,
+  "suppression_reason": null,
+  "confidence": 0.82,
+  "edges": { "pts": 0.026, "reb": 0.018 }
+}
+```
+
+---
+
+### POST `/predictions/injury-risk`
+
+**Request:** `{ "player_id": 2544, "season": "2025-26" }`
+
+**Response:**
+```json
+{
+  "player_id": 2544,
+  "player_name": "LeBron James",
+  "injury_risk_score": 0.18,
+  "risk_level": "Low",
+  "load_management_prob": 0.08,
+  "games_missed_recent": 2,
+  "drivers": { "age": 0.12, "b2b": 0.06 }
+}
+```
+
+---
+
+### POST `/predictions/breakout`
+
+**Request:** `{ "player_id": 1629029, "opponent_team": "OKC", "season": "2025-26" }`
 
 **Response:**
 ```json
 {
   "player_id": 1629029,
-  "player_name": "Jayson Tatum",
-  "season": "2024-25",
-  "shots": [
-    {
-      "court_x": 14.2,
-      "court_y": 4.8,
-      "zone": "left_corner_3",
-      "made": true,
-      "xfg": 0.38,
-      "shot_type": "catch_and_shoot",
-      "quarter": 2,
-      "game_clock": "4:23"
-    }
-  ],
-  "zone_summary": {
-    "paint_rate": 0.32,
-    "corner_3_rate": 0.18,
-    "above_break_3_rate": 0.29,
-    "mid_range_rate": 0.21,
-    "paint_fg_pct": 0.64,
-    "above_break_3_fg_pct": 0.38,
-    "actual_efg": 0.584,
-    "xfg_efg": 0.531,
-    "luck_factor": +0.053
-  }
+  "player_name": "Ja Morant",
+  "breakout_score": 0.74,
+  "predicted_pts_above_avg": 3.2,
+  "key_factors": ["usage_trend", "matchup_advantage"],
+  "signals": { "usage_trend": 0.82, "matchup_advantage": 0.61 }
 }
 ```
 
 ---
 
-### GET `/analytics/lineup/{team_id}`
+### POST `/predictions/lineup-optimizer`
 
-Five-man lineup data and net ratings for a team.
+Greedy DFS optimizer. Requires at least one game_id from tonight's slate.
 
 **Request:**
+```json
+{ "game_ids": ["0022400512"], "budget": 50000.0, "platform": "draftkings" }
 ```
-GET /analytics/lineup/1610612738?season=2024-25&min_minutes=50
+
+---
+
+### POST `/predictions/game`
+
+Full game prediction: win prob + game models + player props + Kelly edges.
+
+**Request:**
+```json
+{
+  "home_team": "BOS",
+  "away_team": "MIL",
+  "season": "2025-26",
+  "player_ids": null,
+  "lines": null,
+  "bankroll": 10000.0,
+  "game_date": null
+}
 ```
+
+---
+
+### GET `/predictions/today`
+
+Win probabilities and top props for tonight's games via NBA scoreboard.
+
+---
+
+## Analytics Router (`/analytics` prefix)
+
+### GET `/analytics/shot-chart`
+
+All shot log records for a game from `shot_logs` table.
+
+**Query params:** `game_id` (required)
 
 **Response:**
 ```json
 {
-  "team_id": 1610612738,
-  "team": "BOS",
-  "lineups": [
-    {
-      "players": ["Tatum", "Brown", "White", "Holiday", "Porzingis"],
-      "minutes": 387,
-      "net_rtg": +14.2,
-      "off_rtg": 128.4,
-      "def_rtg": 114.2,
-      "pace": 98.1,
-      "spacing_score": 0.82
-    }
+  "game_id": "abc123",
+  "shots": [
+    { "player_id": 1, "x": 14.2, "y": 8.1, "made": true, "court_zone": "paint",
+      "nearest_defender_dist": 3.1, "shot_angle": 45.0, "fatigue_proxy": 0.12 }
   ]
 }
 ```
 
 ---
 
-## Phase 13 Planned Endpoints
+### GET `/analytics/tracking`
 
-Full REST API with 12 endpoints, Redis caching, and WebSocket.
+Tracking coordinates for a frame range.
 
-### Predictions
+**Query params:** `game_id` (required), `frame_start=0`, `frame_end=500`, `object_type=player`
 
-```
-GET  /predictions/game/{game_id}
-     Win probability, spread, total, confidence intervals
-
-GET  /predictions/props/{player_id}
-     All 7 prop projections with edge vs current lines
-
-GET  /predictions/props/{player_id}/distribution
-     Full simulation distribution (P10/P25/mean/P75/P90)
-
-GET  /predictions/edges
-     All +EV edges today, sorted by EV, with Kelly sizes
-
-GET  /predictions/dnp
-     DNP probability for all players with injury flags
-```
-
-### Analytics
-
-```
-GET  /analytics/shot-chart/{player_id}
-     Shot coordinates + xFG + zone efficiency
-
-GET  /analytics/lineup/{team_id}
-     5-man lineup data + net ratings + spacing scores
-
-GET  /analytics/player/{player_id}/profile
-     Full 96-metric player profile
-
-GET  /analytics/matchup/{home_team}/{away_team}
-     Head-to-head breakdown + predicted lineups + edges
-```
-
-### Data
-
-```
-GET  /data/injuries
-     Current injury report (30min TTL)
-
-GET  /data/odds
-     Current lines from all available books
-
-GET  /data/schedule
-     Today's games with tip times + venue
-```
-
-### Simulation
-
-```
-POST /simulate/{game_id}
-     Run 10K Monte Carlo simulation
-     Returns: full stat distributions for all players
-
-Body: {
-  "home_lineup": ["player_id_1", ...],
-  "away_lineup": ["player_id_1", ...],
-  "n_simulations": 10000
-}
-
-Response: {
-  "game_id": "...",
-  "simulation_count": 10000,
-  "home_win_prob": 0.624,
-  "distributions": {
-    "player_id_1": {
-      "pts": {"p10": 18, "p25": 23, "mean": 27.4, "p75": 32, "p90": 37},
-      "reb": {"p10": 5, "p25": 7, "mean": 8.2, "p75": 10, "p90": 12},
-      ...
-    }
-  }
-}
-```
-
-### Live (WebSocket)
-
-```
-WS   /ws/live/{game_id}
-     Real-time win probability updates after each possession
-     Requires Phase 16 (LSTM model)
-
-Message format:
+**Response:**
+```json
 {
-  "possession_number": 47,
-  "home_score": 54,
-  "away_score": 48,
-  "home_win_prob": 0.712,
-  "momentum": "home_run",
-  "live_props": {
-    "player_id_1": {
-      "pts_current": 14,
-      "pts_projected": 27.2,
-      "pts_line": 26.5
-    }
-  }
+  "game_id": "abc123",
+  "frame_range": [0, 500],
+  "rows": [{ "frame_number": 0, "track_id": 1, "x": 24.1, "y": 12.3, "vx": 0.4, "vy": -0.1, "direction": 45.0, "object_type": "player" }]
 }
 ```
 
 ---
 
-## AI Chat Tools (Phase 15)
+### GET `/analytics/lineup-stats`
 
-Claude API tool definitions for the AI chat interface:
+Returns **503** until Phase 6 (requires 20+ full games of CV data).
 
-```python
-tools = [
-    {
-        "name": "get_game_prediction",
-        "description": "Get win probability, spread, and total for a game",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "home_team": {"type": "string"},
-                "away_team": {"type": "string"},
-                "date": {"type": "string", "format": "date"}
-            }
-        }
-    },
-    {
-        "name": "get_player_props",
-        "description": "Get prop projections and edge vs book line for a player",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "player_name": {"type": "string"},
-                "stats": {"type": "array", "items": {"type": "string"}},
-                "date": {"type": "string"}
-            }
-        }
-    },
-    {
-        "name": "get_analytics",
-        "description": "Get any of 96 analytics metrics for a player or team",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "entity": {"type": "string"},
-                "metric": {"type": "string"},
-                "filters": {"type": "object"}
-            }
-        }
-    },
-    {
-        "name": "get_shot_chart",
-        "description": "Get shot chart data for visualization",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "player_name": {"type": "string"},
-                "season": {"type": "string"},
-                "filters": {"type": "object"}
-            }
-        }
-    },
-    {
-        "name": "simulate_game",
-        "description": "Run 10K Monte Carlo simulation for a game",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "game_id": {"type": "string"},
-                "n_simulations": {"type": "integer", "default": 10000}
-            }
-        }
-    },
-    {
-        "name": "get_betting_edges",
-        "description": "Get all +EV betting edges for today, ranked by expected value",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "date": {"type": "string"},
-                "min_edge_pct": {"type": "number", "default": 0.03},
-                "stat_types": {"type": "array", "items": {"type": "string"}}
-            }
-        }
-    },
-    {
-        "name": "get_injuries",
-        "description": "Get current injury report and lineup news",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "date": {"type": "string"},
-                "team": {"type": "string"}
-            }
-        }
-    },
-    {
-        "name": "get_lineup_data",
-        "description": "Get 5-man lineup net ratings for a team",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "team": {"type": "string"},
-                "season": {"type": "string"},
-                "min_minutes": {"type": "integer", "default": 50}
-            }
-        }
-    },
-    {
-        "name": "get_player_similarity",
-        "description": "Find historically similar players to a given player",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "player_name": {"type": "string"},
-                "n_comps": {"type": "integer", "default": 5}
-            }
-        }
-    },
-    {
-        "name": "render_chart",
-        "description": "Render a chart inline in the chat conversation",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "chart_type": {
-                    "type": "string",
-                    "enum": [
-                        "shot_chart", "bar", "line", "distribution",
-                        "radar", "heatmap", "scatter", "win_prob",
-                        "box_plot", "lineup_matrix"
-                    ]
-                },
-                "data": {"type": "object"},
-                "title": {"type": "string"},
-                "config": {"type": "object"}
-            }
-        }
-    }
-]
+---
+
+## Dashboard Router (root prefix)
+
+### POST `/chat`
+
+AI chat powered by Claude + live DB + model tools.
+
+**Request:** `{ "message": "What are the top edges tonight?", "game_id": null }`
+
+**Response:** `{ "response": "..." }`
+
+---
+
+### GET `/analytics/clv-summary`
+
+Rolling CLV for spread and total (7d, 30d).
+
+---
+
+### GET `/analytics/edges/today`
+
+Ranked betting edges for today's slate.
+
+**Query params:** `min_ev=0.03`
+
+**Response:**
+```json
+{ "edges": [{ "game_id": "...", "stat": "pts", "direction": "over", "ev": 0.045, "kelly": 0.028 }], "count": 3 }
 ```
 
 ---
 
-## Redis Caching (Phase 13)
+## TTL Cache
 
-All prediction endpoints will be cached in Redis:
-
-| Endpoint | TTL | Invalidation |
-|---|---|---|
-| `/predictions/props/{player}` | 15 minutes | On injury update |
-| `/predictions/win-probability` | 30 minutes | On lineup news |
-| `/analytics/shot-chart` | 24 hours | On new game data |
-| `/analytics/lineup` | 1 hour | On rotation change |
-| `/predictions/edges` | 15 minutes | On odds update |
-| `/data/injuries` | 5 minutes | Push on RotoWire update |
+- Root endpoint responses: 300s in-process cache. Key = endpoint + params. No Redis for local dev.
+- `/backtest/{stat}`: 24h cache (`_BACKTEST_CACHE`).
 
 ---
 
-## Known Issues (Current State)
+## Error Codes
 
-**6 failing tests in `tests/test_models_router.py`:**
-- `AttributeError` on `/predictions/shot` — wrong attribute access
-- Wrong status codes on `/predictions/player-impact`
+| Code | Meaning |
+|------|---------|
+| 200 | Success |
+| 400 | Invalid parameter (e.g., bad stat name for backtest) |
+| 404 | Player not found (predictions router) |
+| 500 | Internal error (model failure, DB failure) |
+| 503 | Feature not yet available (lineup-stats, player-impact before Phase 6) |
 
-These are pre-existing API wiring issues. The underlying prediction models work correctly — the failure is in the FastAPI route handlers.
+---
 
-**Fix:** Wire `src/prediction/*.py` outputs into the route handlers for these endpoints (Phase 4.6 Track 2).
+## Known Production Blockers
+
+- `/props` (root) calls `stack_predict` with name-based ID; falls back to `predict_props` if stack empty
+- Isotonic calibration layer missing — Kelly sizing unsafe without it (CLAUDE.md issue #2)
+- Correlation matrix not populated in `kelly_corr` — assumes zero correlation (issue #6)
+- `stitch_router.py` routes include double `/stitch` prefix (router path + mount prefix)

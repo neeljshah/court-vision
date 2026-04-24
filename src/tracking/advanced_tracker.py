@@ -63,6 +63,12 @@ except ImportError:
     except ImportError:
         _HAS_LAPX = False
 
+try:
+    import supervision as _sv
+    _HAS_SUPERVISION = True
+except ImportError:
+    _HAS_SUPERVISION = False
+
 # ── Tuning constants ──────────────────────────────────────────────────────────
 COST_GATE       = 0.80   # reject any assignment with cost above this
 APPEARANCE_W    = 0.25   # weight of appearance vs IoU in cost matrix
@@ -364,8 +370,188 @@ class AdvancedFeetDetector(FeetDetector):
         # When the result cache has entries, YOLO is skipped entirely for that frame.
         # True 16-frame batching activates automatically when the caller pushes
         # multiple frames before consuming results (async / prefetch architecture).
-        self._yolo_frame_buf: deque = deque()
-        self._yolo_result_buf: list = []  # cached [(yolo_results, ran_pose), ...]
+        self._yolo_frame_buf: deque = deque(maxlen=16)
+        self._yolo_result_buf: deque = deque(maxlen=16)  # cached [(yolo_results, ran_pose), ...]
+
+        # Background YOLO prefetch thread
+        self._prefetch_thread: Optional["threading.Thread"] = None
+        self._prefetch_lock = __import__("threading").Lock()
+
+        # supervision ByteTrack tracker (GPU-native when available)
+        self._sv_tracker = None
+        if _HAS_SUPERVISION:
+            try:
+                self._sv_tracker = _sv.ByteTrack(
+                    track_activation_threshold=BT_HIGH_THRESH,
+                    lost_track_buffer=MAX_LOST,
+                    minimum_matching_threshold=BT_SECOND_IOUGATE,
+                    frame_rate=30,
+                )
+            except Exception:
+                pass
+
+    # ── YOLO batch prefetch ──────────────────────────────────────────────
+
+    def prefetch_yolo(self, frames: List[np.ndarray], run_pose_flags: Optional[List[bool]] = None) -> None:
+        """Push N frames into YOLO batch buffer via background thread.
+
+        Runs YOLO inference on up to 8 frames in a single GPU batch call.
+        Results are cached in _yolo_result_buf so get_players_pos() serves
+        them with zero GPU cost for the next N-1 frames.
+        """
+        import threading
+        if not frames:
+            return
+        n = min(len(frames), 8)
+        frames = frames[:n]
+        if run_pose_flags is None:
+            run_pose_flags = [False] * n
+
+        def _run():
+            _imgsz = getattr(self, "_infer_imgsz", self._yolo_imgsz)
+            _dev = getattr(self, "_yolo_device", 0 if self._use_half else "cpu")
+            _pose_idx = [i for i, rp in enumerate(run_pose_flags) if rp]
+            _det_idx = [i for i, rp in enumerate(run_pose_flags) if not rp]
+            _pending: list = [(None, None)] * n
+
+            if _pose_idx and self._use_pose and self._pose_model is not None:
+                _pimgs = [frames[i] for i in _pose_idx]
+                _pres = list(self._pose_model(
+                    _pimgs, classes=[0], conf=self._fill_conf_threshold,
+                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                ))
+                for _j, _r in zip(_pose_idx, _pres):
+                    _pending[_j] = ([_r], True)
+
+            if _det_idx:
+                _dimgs = [frames[i] for i in _det_idx]
+                _dres = list(self.model(
+                    _dimgs, classes=[0], conf=self._fill_conf_threshold,
+                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                ))
+                for _j, _r in zip(_det_idx, _dres):
+                    _pending[_j] = ([_r], False)
+
+            with self._prefetch_lock:
+                self._yolo_result_buf.extend(_pending)
+
+        t = threading.Thread(target=_run, daemon=True, name="YOLOPrefetch")
+        t.start()
+        self._prefetch_thread = t
+
+    # ── Per-game state reset ─────────────────────────────────────────────
+
+    def _reset_per_game(self) -> None:
+        """Clear all per-game tracking state. Model weights are preserved."""
+        import threading as _th
+        n = len(self.players)
+        self._kalmans.clear()
+        self._appearances.clear()
+        self._lost_ages = {i: 0 for i in range(n)}
+        self._gallery.clear()
+        self._gallery_ages.clear()
+        self._gallery_last_pos.clear()
+        self._kf_pred.clear()
+        self._freeze_age = {i: 0 for i in range(n)}
+        self._stable_frames = {i: 0 for i in range(n)}
+        self._stable_skip = {i: 0 for i in range(n)}
+        self._warmup_colors.clear()
+        self._team_centroids = None
+        self._frames_since_calib = 0
+        self._rolling_hsv_buf.clear()
+        self._warmup_per_slot.clear()
+        self._pose_frame_counter = 0
+        self._pose_state.clear()
+        self._hip_y_history.clear()
+        self._matched_kpts_this_frame.clear()
+        self._prev_gray = None
+        self._flow_pts.clear()
+        self._yolo_frame_buf.clear()
+        self._yolo_result_buf.clear()
+        self._prefetch_thread = None
+        self._prefetch_lock = _th.Lock()
+        if self._color_tracker is not None and _HAS_COLOR_REID:
+            try:
+                self._color_tracker = _TeamColorTracker()
+            except Exception:
+                pass
+        if self._sv_tracker is not None and _HAS_SUPERVISION:
+            try:
+                self._sv_tracker = _sv.ByteTrack(
+                    track_activation_threshold=BT_HIGH_THRESH,
+                    lost_track_buffer=MAX_LOST,
+                    minimum_matching_threshold=BT_SECOND_IOUGATE,
+                    frame_rate=30,
+                )
+            except Exception:
+                pass
+
+    # ── GPU ROI pooling for OSNet crops ────────────────────────────────
+
+    def _gpu_roi_extract(
+        self, frame: np.ndarray, detections: List[dict], indices: List[int]
+    ) -> Optional[List[np.ndarray]]:
+        """Extract OSNet embeddings via torchvision.ops.roi_align (GPU, zero CPU crops).
+
+        Converts frame to GPU tensor once, builds ROI boxes from detection bboxes,
+        runs roi_align → OSNet in a single GPU pipeline. Returns None on failure
+        so caller can fall back to CPU crop path.
+        """
+        try:
+            import torch
+            from torchvision.ops import roi_align
+        except ImportError:
+            return None
+
+        if not self._use_deep or self._deep_extractor is None:
+            return None
+
+        _dev = getattr(self._deep_extractor, "_device", "cuda")
+        if _dev == "cpu":
+            return None
+
+        # Frame → GPU tensor (H, W, 3) BGR → (1, 3, H, W) RGB float32 [0,1]
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_t = torch.from_numpy(frame_rgb).permute(2, 0, 1).unsqueeze(0).float().to(_dev) / 255.0
+
+        # Build ROI tensor: (N, 5) where col0=batch_idx, cols1-4=xyxy
+        rois = []
+        for idx in indices:
+            bb = detections[idx]["bbox"]  # (y1, x1, y2, x2)
+            y1, x1, y2, x2 = bb
+            # Clamp to frame
+            x1c = max(0, x1); y1c = max(0, y1)
+            x2c = min(frame.shape[1], x2); y2c = min(frame.shape[0], y2)
+            rois.append([0, x1c, y1c, x2c, y2c])
+
+        if not rois:
+            return None
+
+        rois_t = torch.tensor(rois, dtype=torch.float32, device=_dev)
+
+        # roi_align → (N, 3, 256, 128) — OSNet input size
+        pooled = roi_align(frame_t, rois_t, output_size=(256, 128), aligned=True)
+
+        # ImageNet normalize
+        _mean = torch.tensor([0.485, 0.456, 0.406], device=_dev).view(1, 3, 1, 1)
+        _std = torch.tensor([0.229, 0.224, 0.225], device=_dev).view(1, 3, 1, 1)
+        pooled = (pooled - _mean) / _std
+
+        # Run through OSNet model directly (skip preprocessing)
+        extractor = self._deep_extractor
+        with torch.no_grad():
+            if getattr(extractor, "_use_torchreid", False):
+                feats = extractor._torchreid_model._model.featuremaps(pooled.to(_dev))
+                v = extractor._torchreid_model._model.global_avgpool(feats).view(feats.size(0), -1)
+                emb = extractor._torchreid_model._model.fc(v)
+                emb = torch.nn.functional.normalize(emb, dim=1)
+            elif getattr(extractor, "_use_trt", False):
+                return None  # TRT path uses its own memory — fall back
+            elif extractor._model is not None:
+                emb = extractor._model(pooled.to(_dev))
+            else:
+                return None
+            return [e.cpu().numpy() for e in emb]
 
     # ── helpers ───────────────────────────────────────────────────────────
 
@@ -442,10 +628,10 @@ class AdvancedFeetDetector(FeetDetector):
             slot, det["crop_bgr"], deep_emb=det.get("deep_emb")
         )
         self._lost_ages[slot] = 0
-        # Task 2: track consecutive matched frames; trigger OSNet skip after 30
+        # Task 2: track consecutive matched frames; trigger OSNet skip after 15
         self._stable_frames[slot] = self._stable_frames.get(slot, 0) + 1
-        if self._stable_frames[slot] >= 30:
-            self._stable_skip[slot] = 12
+        if self._stable_frames[slot] >= 15:
+            self._stable_skip[slot] = 30
             self._stable_frames[slot] = 0
         self._gallery.pop(slot, None)
         self._gallery_ages.pop(slot, None)
@@ -772,6 +958,83 @@ class AdvancedFeetDetector(FeetDetector):
         unmatched_dets  = [di for di in team_dets if di not in matched_det_set]
         return matched, unmatched_slots, unmatched_dets
 
+    def _match_all_supervision(
+        self, detections: List[dict]
+    ) -> Tuple[List[Tuple[int, int]], List[int], List[int]]:
+        """Match all detections at once using supervision.ByteTrack.
+
+        Returns same format as _match_team_bytetrack: (matched, unmatched_slots, unmatched_dets).
+        Maps supervision track_ids back to player slots for downstream compatibility.
+        """
+        if not detections:
+            return [], list(range(len(self.players))), []
+
+        # Build xyxy + conf arrays for supervision
+        xyxy = np.zeros((len(detections), 4), dtype=np.float32)
+        confs = np.zeros(len(detections), dtype=np.float32)
+        class_ids = np.zeros(len(detections), dtype=np.int32)
+        _team_map = {"green": 0, "white": 1, "referee": 2}
+
+        for i, d in enumerate(detections):
+            bb = d["bbox"]  # (y1, x1, y2, x2)
+            xyxy[i] = [bb[1], bb[0], bb[3], bb[2]]  # to x1,y1,x2,y2
+            confs[i] = d.get("score", 1.0)
+            class_ids[i] = _team_map.get(d["team"], 0)
+
+        sv_dets = _sv.Detections(
+            xyxy=xyxy,
+            confidence=confs,
+            class_id=class_ids,
+        )
+        tracked = self._sv_tracker.update_with_detections(sv_dets)
+
+        # Map supervision tracker_ids → player slots
+        # supervision assigns persistent track_ids; we map them to our slot system
+        matched: List[Tuple[int, int]] = []
+        used_slots: set = set()
+        if not hasattr(self, "_sv_track_to_slot"):
+            self._sv_track_to_slot: Dict[int, int] = {}
+
+        all_slots = set(range(len(self.players)))
+
+        for i in range(len(tracked)):
+            det_idx = int(tracked.tracker_id[i]) if tracked.tracker_id is not None else i
+            sv_tid = int(tracked.tracker_id[i]) if tracked.tracker_id is not None else -1
+
+            # Find original detection index by matching xyxy
+            orig_idx = None
+            for di, d in enumerate(detections):
+                bb = d["bbox"]
+                if (abs(xyxy[di][0] - tracked.xyxy[i][0]) < 1 and
+                    abs(xyxy[di][1] - tracked.xyxy[i][1]) < 1):
+                    orig_idx = di
+                    break
+            if orig_idx is None:
+                continue
+
+            # Resolve track_id → slot
+            if sv_tid in self._sv_track_to_slot:
+                slot = self._sv_track_to_slot[sv_tid]
+            else:
+                # Assign to first available slot for this team
+                team = detections[orig_idx]["team"]
+                team_slots = [self._slot(p) for p in self.players if p.team == team]
+                available = [s for s in team_slots if s not in used_slots]
+                if available:
+                    slot = available[0]
+                    self._sv_track_to_slot[sv_tid] = slot
+                else:
+                    continue
+
+            if slot not in used_slots:
+                matched.append((slot, orig_idx))
+                used_slots.add(slot)
+
+        unmatched_slots = [s for s in all_slots if s not in used_slots]
+        matched_dets = {di for _, di in matched}
+        unmatched_dets = [i for i in range(len(detections)) if i not in matched_dets]
+        return matched, unmatched_slots, unmatched_dets
+
     # ── re-ID from gallery ────────────────────────────────────────────────
 
     def _reid(
@@ -857,6 +1120,13 @@ class AdvancedFeetDetector(FeetDetector):
             suspended: When True (halftime, timeout), skip team-color re-calibration
                 so halftime studio footage doesn't corrupt the learned team centroids.
         """
+        # SUB-PROFILER (temporary) -----------------------------------------
+        import time as _subt
+        _sp = {}
+        _sp_t0 = _subt.perf_counter()
+        self._sub_profile = _sp  # expose for pipeline to print
+        # ------------------------------------------------------------------
+
         # Clear per-frame kpts capture dict
         self._matched_kpts_this_frame = {}
 
@@ -889,9 +1159,14 @@ class AdvancedFeetDetector(FeetDetector):
         _BATCH = 16
 
         # ── Batch YOLO inference with 16-frame deque buffer ───────────────
-        # Serve from pre-computed cache when available (zero GPU cost this frame).
-        if self._yolo_result_buf:
-            yolo_results, _run_pose = self._yolo_result_buf.pop(0)
+        # Wait for prefetch thread if running, then serve from cache.
+        if self._prefetch_thread is not None and self._prefetch_thread.is_alive():
+            self._prefetch_thread.join()
+        with self._prefetch_lock:
+            _has_cached = bool(self._yolo_result_buf)
+        if _has_cached:
+            with self._prefetch_lock:
+                yolo_results, _run_pose = self._yolo_result_buf.popleft()
         else:
             # Accumulate current frame; flush entire buffer as one GPU batch call.
             # In the current sequential architecture the batch will typically be
@@ -925,7 +1200,11 @@ class AdvancedFeetDetector(FeetDetector):
 
             yolo_results, _run_pose = _pending[0]
             if len(_pending) > 1:
-                self._yolo_result_buf = list(_pending[1:])
+                self._yolo_result_buf.clear()
+                self._yolo_result_buf.extend(_pending[1:])
+
+        _sp["yolo"] = _subt.perf_counter() - _sp_t0
+        _sp_last = _subt.perf_counter()
 
         boxes_xyxy   = (yolo_results[0].boxes.xyxy.cpu().numpy()
                         if yolo_results[0].boxes is not None else [])
@@ -946,6 +1225,16 @@ class AdvancedFeetDetector(FeetDetector):
                     _kpts_conf = yolo_results[0].keypoints.conf.cpu().numpy()  # (N, 17)
             except Exception:
                 _kpts_xy = _kpts_conf = None
+
+        # Release YOLO Results immediately — each holds orig_img (~6MB frame ref)
+        # and GPU tensor refs.  Without this, they linger until GC collects them,
+        # fragmenting both VRAM and CPU heap in multi-worker runs.
+        del yolo_results
+        # Also clear predictor's cached results/batch (holds orig_img refs)
+        for _m in (self.model, self._pose_model):
+            if _m is not None and hasattr(_m, "predictor") and _m.predictor is not None:
+                _m.predictor.results = None
+                _m.predictor.batch = None
 
         if len(boxes_xyxy) == 0:
             self._age_all(timestamp)
@@ -1000,7 +1289,14 @@ class AdvancedFeetDetector(FeetDetector):
             return self._render(frame, map_2d, timestamp)
 
         # ── Step 3: Build detection list (bbox, team, crop, court pos) ────
+        _sp_ac_t0 = _subt.perf_counter()
         adaptive_colors = _adaptive_colors(frame)
+        _sp["ac_call"] = _subt.perf_counter() - _sp_ac_t0
+        _sp["hsv"] = 0.0
+        _sp["warmup"] = 0.0
+        _sp["classify_dyn"] = 0.0
+        _sp["ctrack_upd"] = 0.0
+        _sp["n_boxes"] = len(boxes_xyxy)
         detections: List[dict] = []
         for box_i, box in enumerate(boxes_xyxy):
             x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
@@ -1012,6 +1308,7 @@ class AdvancedFeetDetector(FeetDetector):
                 continue
 
             # Team classification — HSV range first to detect referee/white
+            _hsv_t0 = _subt.perf_counter()
             jersey_h = max(1, int(bgr_crop.shape[0] * 0.70))
             hsv_crop = cv2.cvtColor(bgr_crop[:jersey_h], cv2.COLOR_BGR2HSV)
             team, best_n = "", 0
@@ -1022,6 +1319,7 @@ class AdvancedFeetDetector(FeetDetector):
                 n = int(cv2.countNonZero(mask_c))
                 if n > best_n:
                     best_n, team = n, color_key
+            _sp["hsv"] += _subt.perf_counter() - _hsv_t0
 
             if not team:
                 continue
@@ -1031,6 +1329,7 @@ class AdvancedFeetDetector(FeetDetector):
 
             # Dynamic re-classification: when both teams wear colored jerseys,
             # HSV masks both as 'green'.  Use K-means centroids to separate them.
+            _wu_t0 = _subt.perf_counter()
             if team not in ("referee",):
                 # Per-slot confidence-based warmup (first _warmup_frame_limit frames).
                 # Keeps top-_warmup_top_k highest-confidence crops per detection slot
@@ -1071,7 +1370,10 @@ class AdvancedFeetDetector(FeetDetector):
                     self._rolling_hsv_buf.append(
                         roi_hsv.reshape(-1, 3).astype(np.float32).mean(axis=0)
                     )
+                _cd_t0 = _subt.perf_counter()
                 team = self._classify_team_dynamic(bgr_crop, team)
+                _sp["classify_dyn"] += _subt.perf_counter() - _cd_t0
+            _sp["warmup"] += _subt.perf_counter() - _wu_t0 - (_sp["classify_dyn"] if False else 0)
 
             # ── Foot position: ankle keypoints (pose) or bbox_bottom ──────
             head_x = (x1c + x2c) // 2
@@ -1123,9 +1425,21 @@ class AdvancedFeetDetector(FeetDetector):
                 "kpts_conf": det_kpts_conf,       # (17,) per-kpt confidence or None
             })
 
-            # ISSUE-005: update per-team color signature for similar-color detection
-            if self._color_tracker is not None and det_crop is not None:
-                self._color_tracker.update(det_crop, team)
+        # ISSUE-005: batch update per-team color signatures (GPU when available)
+        if self._color_tracker is not None and detections:
+            _ct_t0 = _subt.perf_counter()
+            _ct_crops = [d.get("crop_bgr") for d in detections]
+            _ct_teams = [d["team"] for d in detections]
+            if hasattr(self._color_tracker, "batch_update"):
+                self._color_tracker.batch_update(_ct_crops, _ct_teams)
+            else:
+                for c, t in zip(_ct_crops, _ct_teams):
+                    if c is not None:
+                        self._color_tracker.update(c, t)
+            _sp["ctrack_upd"] = _subt.perf_counter() - _ct_t0
+
+        _sp["crops_step3"] = _subt.perf_counter() - _sp_last
+        _sp_last = _subt.perf_counter()
 
         # ── Step 3.5: Deep appearance embeddings (OSNet batch inference) ──
         # Batch all detection crops through OSNet once per frame for efficiency.
@@ -1160,59 +1474,80 @@ class AdvancedFeetDetector(FeetDetector):
                 return best_dist > 25.0  # F4: skip stationary detections
 
             moving_indices = [i for i, d in enumerate(detections) if _det_moved(d)]
-            crops_for_deep = [detections[i]["crop_bgr"] for i in moving_indices]
             try:
-                if crops_for_deep:
-                    deep_embs = self._deep_extractor.batch_extract(crops_for_deep)
+                if moving_indices:
+                    deep_embs = self._gpu_roi_extract(frame, detections, moving_indices)
+                    if deep_embs is None:
+                        # Fallback: CPU crop path
+                        crops_for_deep = [detections[i]["crop_bgr"] for i in moving_indices]
+                        deep_embs = self._deep_extractor.batch_extract(crops_for_deep)
                     for i, emb in zip(moving_indices, deep_embs):
                         detections[i]["deep_emb"] = emb
             except Exception:
                 pass  # fall back to HSV per-det in downstream code
 
-        # ── Step 4: Assignment — ByteTrack two-stage ─────────────────────────
-        # Always use two-stage ByteTrack: _assign() uses scipy.linear_sum_assignment
-        # which is available in the environment.  lapx is an optional faster backend
-        # but is not required — scipy is sufficient.
-        _use_bytetrack = True
+        _sp["osnet"] = _subt.perf_counter() - _sp_last
+        _sp_last = _subt.perf_counter()
+
+        # ── Step 4: Assignment — supervision ByteTrack (GPU) or custom two-stage
+        _use_sv = self._sv_tracker is not None
         all_unmatched_dets: List[int] = []
 
-        for team in ("green", "white", "referee"):
-            if _use_bytetrack:
-                matched, unmatched_slots, unmatched_dets = self._match_team_bytetrack(
-                    team, detections
-                )
-            else:
-                matched, unmatched_slots, unmatched_dets = self._match_team(
-                    team, detections
-                )
-
-            for slot, di in matched:
+        if _use_sv and detections:
+            # supervision ByteTrack handles all teams at once
+            _all_matched, _all_unmatched_slots, _all_unmatched_dets = \
+                self._match_all_supervision(detections)
+            # Process matched
+            for slot, di in _all_matched:
                 self._activate_slot(slot, detections[di], timestamp, stride)
-
-            for slot in unmatched_slots:
+            for slot in _all_unmatched_slots:
                 self._lost_ages[slot] = self._lost_ages.get(slot, 0) + 1
-                # Task 2: reset stable-track counters whenever a slot loses detection
                 self._stable_frames[slot] = 0
-                self._stable_skip[slot]   = 0
+                self._stable_skip[slot] = 0
                 if self._lost_ages[slot] >= self._max_lost:
-                    # Archive appearance before evicting
                     if slot in self._appearances:
                         self._gallery[slot] = self._appearances[slot].copy()
                         self._gallery_ages[slot] = 0
                     p = self.players[slot]
-                    # Store last known court position so velocity clamp fires
-                    # correctly when this slot is re-assigned via gallery re-ID.
                     if p.positions:
                         last_frame = max(p.positions)
                         self._gallery_last_pos[slot] = p.positions[last_frame]
                     p.previous_bb = None
-                    p.positions   = {}
-                    p.has_ball    = False
+                    p.positions = {}
+                    p.has_ball = False
                     self._kalmans.pop(slot, None)
                     self._appearances.pop(slot, None)
                     self._lost_ages[slot] = 0
+            all_unmatched_dets = _all_unmatched_dets
+        else:
+            for team in ("green", "white", "referee"):
+                matched, unmatched_slots, unmatched_dets = self._match_team_bytetrack(
+                    team, detections
+                )
 
-            all_unmatched_dets.extend(unmatched_dets)
+                for slot, di in matched:
+                    self._activate_slot(slot, detections[di], timestamp, stride)
+
+                for slot in unmatched_slots:
+                    self._lost_ages[slot] = self._lost_ages.get(slot, 0) + 1
+                    self._stable_frames[slot] = 0
+                    self._stable_skip[slot]   = 0
+                    if self._lost_ages[slot] >= self._max_lost:
+                        if slot in self._appearances:
+                            self._gallery[slot] = self._appearances[slot].copy()
+                            self._gallery_ages[slot] = 0
+                        p = self.players[slot]
+                        if p.positions:
+                            last_frame = max(p.positions)
+                            self._gallery_last_pos[slot] = p.positions[last_frame]
+                        p.previous_bb = None
+                        p.positions   = {}
+                        p.has_ball    = False
+                        self._kalmans.pop(slot, None)
+                        self._appearances.pop(slot, None)
+                        self._lost_ages[slot] = 0
+
+                all_unmatched_dets.extend(unmatched_dets)
 
         # ── Age gallery entries and evict stale ones ──────────────────────
         # Always age regardless of ByteTrack — without aging the gallery bloats
@@ -1404,6 +1739,8 @@ class AdvancedFeetDetector(FeetDetector):
             p.contest_arm_angle  = pose.get("contest_arm_angle", 0.0)
             p.dribble_hand       = pose.get("dribble_hand", "unknown")
 
+        _sp["assign_render"] = _subt.perf_counter() - _sp_last
+        _sp["total"]         = _subt.perf_counter() - _sp_t0
         return self._render(frame, map_2d, timestamp)
 
     # ── housekeeping ──────────────────────────────────────────────────────

@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "generated": "2026-04-15",
+    "season": "2024-25",
+    "categories": [
+      "gamelog",
+      "shotchart",
+      "pbp"
+    ]
+  },
+  "gamelog": {
+    "present": 525,
+    "expected": 569,
+    "score": 0.923
+  },
+  "shotchart": {
+    "present": 0,
+    "expected": 569,
+    "score": 0.0
+  },
+  "pbp": {
+    "present": 31,
+    "expected": 1230,
+    "score": 0.025
+  },
+  "overall_score": 0.316
+}
