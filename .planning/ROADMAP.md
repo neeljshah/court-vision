@@ -2641,7 +2641,7 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 3. Full stat distribution for every player from simulator
 4. Prop pricing engine ROI > 0 on holdout backtest
 
-**Plans:** 1/5 plans executed
+**Plans:** 2/5 plans executed
 Plans:
 - [ ] 33-01-PLAN.md -- Wave 0: test stubs (test_live_win_probability.py, test_prop_pricing.py, conftest fixtures)
 - [ ] 33-02-PLAN.md -- LSTM trainer + LiveWinProbInference (live_win_probability.py)
