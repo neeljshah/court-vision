@@ -32,19 +32,41 @@ def test_lstm_trains():
     assert out.shape == (1, 3, 1), f"Expected (1, 3, 1), got {out.shape}"
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
-def test_auc(sample_game_dict):
-    """Verify train_lstm_win_prob returns metrics dict with val_auc >= 0.0.
+def test_auc():
+    """Verify train_lstm_win_prob returns metrics dict with val_auc in [0, 1].
 
-    Uses two synthetic game sequences as training data. The returned metrics
-    dict must contain a 'val_auc' key that is a non-negative float — just a
-    sanity check that training ran and produced some measurement.
+    Uses 20 synthetic game sequences (8 possessions each) as training data.
+    The returned metrics dict must contain a 'val_auc' key that is a float
+    in [0.0, 1.0] — sanity check that training ran and produced a measurement.
     """
-    games = [sample_game_dict, sample_game_dict]
-    metrics = train_lstm_win_prob(games, epochs=1, hidden_dim=16)
+    # Build 20 synthetic game_sequences: each has possessions as dicts + outcome
+    rng = np.random.default_rng(42)
+    games = []
+    for i in range(20):
+        possessions = []
+        home_pts = 0
+        away_pts = 0
+        for j in range(8):
+            home_pts += int(rng.integers(0, 4))
+            away_pts += int(rng.integers(0, 4))
+            possessions.append({
+                "home_pts": home_pts,
+                "away_pts": away_pts,
+                "time_remaining_s": float(2400 - j * 300),
+                "spacing_index": float(rng.uniform(2.5, 5.0)),
+            })
+        games.append({
+            "possessions": possessions,
+            "home_team": {"off_rtg": 110.0, "def_rtg": 110.0},
+            "away_team": {"off_rtg": 110.0, "def_rtg": 110.0},
+            "home_lineup_net_rtg": 0.0,
+            "outcome": i % 2,  # alternating 0/1
+        })
+
+    metrics = train_lstm_win_prob(games, epochs=5, batch_size=4, device="cpu")
     assert "val_auc" in metrics, "metrics dict missing 'val_auc' key"
     assert isinstance(metrics["val_auc"], float), "val_auc must be a float"
-    assert metrics["val_auc"] >= 0.0, "val_auc must be non-negative"
+    assert 0.0 <= metrics["val_auc"] <= 1.0, f"val_auc {metrics['val_auc']} outside [0, 1]"
 
 
 def test_features(sample_game_dict):
@@ -91,7 +113,6 @@ def test_fallback_xgb(sample_game_dict, mock_xgb_model):
     )
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_calibration_brier():
     """Verify Brier score < 0.25 after calibration on 10 synthetic predictions.
 
