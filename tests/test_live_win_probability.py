@@ -61,7 +61,6 @@ def test_features(sample_game_dict):
         assert np.isfinite(f), f"Feature {i} is not finite: {f}"
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_inference_latency(sample_game_dict, mock_xgb_model):
     """Verify LiveWinProbInference.update() returns result with inference_ms < 500 on CPU.
 
@@ -77,7 +76,6 @@ def test_inference_latency(sample_game_dict, mock_xgb_model):
     )
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_fallback_xgb(sample_game_dict, mock_xgb_model):
     """Verify LiveWinProbInference falls back to XGBoost when lstm_model is None.
 

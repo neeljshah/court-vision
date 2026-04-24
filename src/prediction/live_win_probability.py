@@ -28,13 +28,7 @@ def extract_possession_features(
     game_dict: dict,
     possession_idx: Optional[int] = None,
 ) -> Tuple[float, float, float, float, float]:
-    """Extract 5 normalised features from the last (or specified) possession.
-
-    Returns
-    -------
-    tuple[float, float, float, float, float]
-        (score_margin, time_remaining, spacing_index, momentum_score, lineup_net_rtg)
-    """
+    """Return (score_margin, time_remaining, spacing_index, momentum_score, lineup_net_rtg)."""
     possessions: List[dict] = game_dict.get("possessions", [])
     if not possessions:
         return (0.0, 1.0, 0.0, 0.0, 0.0)
@@ -91,16 +85,7 @@ class LiveWinProbLSTM(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Run LSTM over sequence, apply FC to every position.
-
-        Parameters
-        ----------
-        x : torch.Tensor  shape (batch, seq_len, input_dim)
-
-        Returns
-        -------
-        torch.Tensor  shape (batch, seq_len, 1)
-        """
+        """x: (batch, seq_len, input_dim) → (batch, seq_len, 1)."""
         lstm_out, _ = self.lstm(x)  # (batch, seq, hidden)
         return self.fc(lstm_out)    # (batch, seq, 1)
 
@@ -113,13 +98,7 @@ def train_lstm_win_prob(
     device: str = "cpu",
     hidden_dim: int = 64,
 ) -> Dict[str, Any]:
-    """Train LSTM on possession sequences.  Returns metrics dict.
-
-    Parameters
-    ----------
-    game_sequences : list[dict]
-        Each dict has 'possessions' (list of raw possession dicts) and 'outcome' (0/1).
-    """
+    """Train LSTM on possession sequences. Returns metrics dict with val_auc, val_brier, epochs, n_games."""
     n = len(game_sequences)
     if n < 10:
         log.warning("Insufficient data (N=%d); LSTM may underfit. Need 200+ games.", n)
@@ -240,12 +219,7 @@ class LiveWinProbInference:
         self.possession_history: List[Tuple[float, float, float, float, float]] = []
 
     def update(self, game_dict: dict, possession_idx: Optional[int] = None) -> Dict[str, Any]:
-        """Extract features, append to history, run LSTM (or fallback).
-
-        Returns
-        -------
-        dict with keys: win_prob_home, source, confidence, inference_ms
-        """
+        """Extract features, run LSTM or fallback. Returns {win_prob_home, source, confidence, inference_ms}."""
         t0 = time.time()
         try:
             features = extract_possession_features(game_dict, possession_idx)
@@ -287,21 +261,8 @@ class LiveWinProbInference:
         }
 
 
-def calibrate_win_prob(
-    predictions: np.ndarray,
-    outcomes: np.ndarray,
-) -> np.ndarray:
-    """Isotonic calibration of win probability predictions.
-
-    Parameters
-    ----------
-    predictions : np.ndarray  shape (N,)  raw model outputs in [0,1]
-    outcomes    : np.ndarray  shape (N,)  binary labels (0 or 1)
-
-    Returns
-    -------
-    np.ndarray  shape (N,)  calibrated probabilities
-    """
+def calibrate_win_prob(predictions: np.ndarray, outcomes: np.ndarray) -> np.ndarray:
+    """Isotonic calibration. Returns calibrated probabilities same shape as predictions."""
     from sklearn.isotonic import IsotonicRegression
     ir = IsotonicRegression(out_of_bounds="clip")
     ir.fit(predictions, outcomes)
