@@ -19,7 +19,6 @@ except ImportError:
 pytestmark = pytest.mark.skipif(not _IMPORT_OK, reason="live_win_probability.py not yet implemented")
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_lstm_trains():
     """Verify LiveWinProbLSTM instantiates and produces correct output shape.
 
@@ -48,7 +47,6 @@ def test_auc(sample_game_dict):
     assert metrics["val_auc"] >= 0.0, "val_auc must be non-negative"
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_features(sample_game_dict):
     """Verify extract_possession_features returns 5 finite floats.
 
@@ -112,7 +110,6 @@ def test_calibration_brier():
     assert brier < 0.25, f"Brier score {brier:.4f} exceeds 0.25 after calibration"
 
 
-@pytest.mark.skip(reason="stub — implement after live_win_probability.py exists")
 def test_sparse_features(sample_game_dict):
     """Verify extract_possession_features handles missing spacing_index gracefully.
 
