@@ -3,20 +3,26 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-last_updated: "2026-04-24T03:32:35.191Z"
+last_updated: "2026-04-24T13:22:54.056Z"
 progress:
   total_phases: 60
   completed_phases: 6
   total_plans: 43
-  completed_plans: 34
+  completed_plans: 35
 ---
 
 # Project State: NBA AI System
 
 ## Current Status
 
-**Active Phase**: Phase 15.5 — Uncertainty Wiring + Alt-Line Ladder (COMPLETE — all 3 plans done)
-**Last Updated**: 2026-04-23 (Session 46 — Phase 15.5 Plan 03 complete)
+**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 01 complete)
+**Last Updated**: 2026-04-24 (Session 47 — Phase 16 Plan 01 complete)
+**Phase 16 Plan 01 complete (2026-04-24)**:
+- `tests/test_live_win_probability.py` — 7 stubs (LSTM train, AUC, features, latency, fallback, calibration, sparse)
+- `tests/test_prop_pricing.py` — 2 stubs (ROI, distribution)
+- `tests/conftest.py` — 3 new fixtures (sample_game_dict, sample_possession_sequence, mock_xgb_model)
+- 9 tests collected, 9 skipped, 0 errors — downstream verify targets ready for plans 02-05
+- Decision: double-guard pattern (pytestmark skipif + per-test @skip) handles both ImportError and stub states
 **Phase 15.5 Plan 03 complete (2026-04-23)**:
 - `src/prediction/bet_selector.py` — 284 LOC; _conformal_cache + _has_conformal guard, _get_ci() inner helper, ci_lo_80/ci_hi_80/alt_line/alt_line_ev fields in every bet dict
 - `scripts/run_daily_slate.py` — --build-ladder CLI flag; Step 8 ladder block loops edge_rows + appends top-EV alt bets before bet_selector (Step 9)
