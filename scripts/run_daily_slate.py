@@ -418,7 +418,7 @@ def write_output(preds: list[dict], edge_rows: list[dict], date_str: str) -> str
 # -- Main ----------------------------------------------------------------------
 
 
-def main(season: str, date_str: str, dry_run: bool = False) -> None:
+def main(season: str, date_str: str, dry_run: bool = False, build_ladder: bool = False) -> None:
     print(f"\n{'='*60}")
     print(f"  NBA Daily Slate -- {date_str}  (season {season})")
     print(f"{'='*60}")
@@ -450,7 +450,31 @@ def main(season: str, date_str: str, dry_run: bool = False) -> None:
     print_table(edge_rows, preds, top_n=20)
     write_output(preds, edge_rows, date_str)
 
-    # 8. Bet selector middleware
+    # 8. Alt-line ladder (if --build-ladder flag set)
+    if build_ladder:
+        try:
+            from src.prediction.alt_line_ladder import build_alt_line_ladder, ladder_to_bets
+            ladder_rows = []
+            for row in edge_rows:
+                lo_ci = row.get("ci_lo_80") or float(row.get("projection", 0)) * 0.7
+                hi_ci = row.get("ci_hi_80") or float(row.get("projection", 0)) * 1.3
+                ladder = build_alt_line_ladder(
+                    player=row["player"], stat=row["stat"],
+                    point_estimate=float(row.get("projection", 0)),
+                    conformal_interval=(lo_ci, hi_ci),
+                    pinnacle_signal={"line": float(row.get("book_line", 0) or 0),
+                                     "over_odds": -110, "under_odds": -110},
+                )
+                top = [r for r in ladder if r["ev"] > 0.04][:3]
+                for alt in top:
+                    ladder_rows.append({**row, "alt_line": alt["alt_line"],
+                                        "alt_line_ev": alt["ev"]})
+            edge_rows = edge_rows + ladder_rows
+            print(f"[slate] Alt-line ladder: {len(ladder_rows)} additional bets")
+        except Exception as e:
+            log.warning("alt_line_ladder failed (non-fatal): %s", e)
+
+    # 9. Bet selector middleware
     try:
         from src.prediction.bet_selector import select as _select
         _select(edge_rows, date_str=date_str, dry_run=dry_run)
@@ -462,8 +486,9 @@ def main(season: str, date_str: str, dry_run: bool = False) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NBA Daily Prop Prediction Pipeline")
-    parser.add_argument("--season",   default="2024-25",        help="NBA season (e.g. 2024-25)")
-    parser.add_argument("--date",     default=str(_date.today()), help="Date YYYY-MM-DD")
-    parser.add_argument("--dry-run",  action="store_true",      help="Paper-trade: log bets as status=paper")
+    parser.add_argument("--season",       default="2024-25",        help="NBA season (e.g. 2024-25)")
+    parser.add_argument("--date",         default=str(_date.today()), help="Date YYYY-MM-DD")
+    parser.add_argument("--dry-run",      action="store_true",      help="Paper-trade: log bets as status=paper")
+    parser.add_argument("--build-ladder", action="store_true",      help="Generate alt-line ladder bets (requires Pinnacle lines)")
     args = parser.parse_args()
-    main(season=args.season, date_str=args.date, dry_run=args.dry_run)
+    main(season=args.season, date_str=args.date, dry_run=args.dry_run, build_ladder=args.build_ladder)
