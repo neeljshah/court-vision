@@ -3,9 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: active
-last_updated: "2026-04-24T13:50:00.000Z"
+last_updated: "2026-04-24T13:50:40.917Z"
 progress:
   total_phases: 60
+  completed_phases: 6
+  total_plans: 43
+  completed_plans: 38
+  percent: 88
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T13:50:00.000Z"
+progress:
+  [█████████░] 88%
   completed_phases: 6
   total_plans: 43
   completed_plans: 37
@@ -17,8 +31,16 @@ progress:
 
 ## Current Status
 
-**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 03 complete)
-**Last Updated**: 2026-04-24 (Session 49 — Phase 16 Plan 03 complete)
+**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 04 complete)
+**Last Updated**: 2026-04-24 (Session 49 — Phase 16 Plan 04 complete)
+**Phase 16 Plan 04 complete (2026-04-24)**:
+- `api/main.py` — WebSocket `/ws/win-prob/{game_id}` endpoint + upgraded `/win-prob` HTTP endpoint
+- WebSocket: accept → receive_json(possession_idx, game_dict) → engine.update() → send_json; handles WebSocketDisconnect
+- /win-prob: prefers LiveWinProbInference when available, falls back to XGBoost baseline; adds `source` key to response
+- _LIVE_INFERENCE_AVAILABLE guard; lazy import of load_inference_engine, LiveWinProbInference
+- Phase 13 tests: 5/5 passed (no regressions)
+- Decision: fresh engine per WebSocket connection (stateless, LSTM small)
+- Decision: /win-prob falls back to xgboost_baseline when _LIVE_INFERENCE_AVAILABLE=False
 **Phase 16 Plan 03 complete (2026-04-24)**:
 - `src/prediction/prop_pricing_engine.py` — 220 LOC; PropPricingEngine with get_distribution(), price_vs_line(), backtest()
 - get_distribution(): 7-key percentile dict (mean, std, p10, p25, p50, p75, p90); simulation-first with normal fallback
