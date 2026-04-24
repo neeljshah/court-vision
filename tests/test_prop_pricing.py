@@ -13,7 +13,6 @@ except ImportError:
 pytestmark = pytest.mark.skipif(not _IMPORT_OK, reason="prop_pricing_engine.py not yet implemented")
 
 
-@pytest.mark.skip(reason="stub — implement after prop_pricing_engine.py exists")
 def test_roi():
     """Verify PropPricingEngine.backtest() returns dict with 'roi' as a float.
 
@@ -29,7 +28,6 @@ def test_roi():
     )
 
 
-@pytest.mark.skip(reason="stub — implement after prop_pricing_engine.py exists")
 def test_distribution():
     """Verify PropPricingEngine.get_distribution() returns full percentile dict.
 
