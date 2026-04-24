@@ -1,7 +1,16 @@
+import asyncio
+import logging
+import os
 import time
 from typing import Optional
 
-from fastapi import FastAPI
+log = logging.getLogger(__name__)
+
+# Default to offline mode so API requests never hang on stats.nba.com edge blocks.
+# Operators can set NBA_OFFLINE=0 explicitly to allow live fetches.
+os.environ.setdefault("NBA_OFFLINE", "1")
+
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -17,6 +26,12 @@ from src.prediction.possession_simulator import PossessionSimulator
 from src.prediction.prop_model_stack import stack_predict as _stack_predict
 from src.prediction.betting_edge import BettingEdge
 from src.prediction.win_probability import load as _load_win_prob
+
+try:
+    from src.prediction.live_win_probability import load_inference_engine, LiveWinProbInference
+    _LIVE_INFERENCE_AVAILABLE = True
+except ImportError:
+    _LIVE_INFERENCE_AVAILABLE = False
 
 app = FastAPI(title="NBA AI System — Project Court Vision", version="2.0.0")
 
@@ -47,6 +62,18 @@ def _cget(key):
 
 def _cset(key, val):
     _CACHE[key] = (time.time(), val)
+
+
+def _with_timeout(fn, timeout_sec: float = 8.0):
+    """Run fn() on a worker thread and return its result, or raise TimeoutError.
+
+    Prevents individual handlers from stalling the event loop when a downstream
+    helper blocks (stats.nba.com, bbref, pinnacle). Windows-friendly — no signals.
+    """
+    import concurrent.futures as _cf
+    with _cf.ThreadPoolExecutor(max_workers=1) as _tp:
+        fut = _tp.submit(fn)
+        return fut.result(timeout=timeout_sec)
 
 
 class _SimGameRequest(BaseModel):
@@ -129,7 +156,11 @@ def props(player_id: str, opp_team: str = "GSW", season: str = "2025-26"):
     if cached is not None:
         return cached
     game_context = {"away_team": opp_team, "season": season}
-    stack = _stack_predict(player_id, game_context=game_context)
+    try:
+        stack = _with_timeout(lambda: _stack_predict(player_id, game_context=game_context), 10.0)
+    except Exception as exc:
+        return {"player_id": player_id, "opp_team": opp_team, "season": season,
+                "error": f"timeout or error: {exc}"}
     result = {k: round(float(v), 3) for k, v in stack.predictions.items()
               if not (isinstance(v, float) and v != v)}
     if not result:
@@ -159,7 +190,7 @@ def edge(game_id: str, home: str = "", away: str = "",
          home_odds: int = -110, away_odds: int = -110):
     try:
         try:
-            _wp = _load_win_prob().predict(home, away)
+            _wp = _with_timeout(lambda: _load_win_prob().predict(home, away), 8.0)
             home_win_prob = float(_wp.get("home_win_prob", 0.5))
         except Exception:
             home_win_prob = 0.5
@@ -180,16 +211,70 @@ def edge(game_id: str, home: str = "", away: str = "",
 
 @app.get("/win-prob/{game_id}", tags=["predictions"])
 def win_prob_game(game_id: str, home: str = "", away: str = "", season: str = "2025-26"):
+    """Return win probability for a game. Uses LiveWinProbInference when available."""
     try:
+        if _LIVE_INFERENCE_AVAILABLE:
+            engine: LiveWinProbInference = load_inference_engine(device="cpu")
+            game_dict = {"home_team": home, "away_team": away, "season": season, "possessions": []}
+            result = engine.update(game_dict, possession_idx=0)
+            wp = float(result.get("win_prob_home", 0.5))
+            ci_half = 0.05
+            return {
+                "game_id": game_id,
+                "home_win_prob": round(wp, 4),
+                "win_prob_home": round(wp, 4),
+                "source": result.get("source", "live_inference"),
+                "confidence": result.get("confidence", 1.0),
+                "inference_ms": result.get("inference_ms", 0.0),
+                "confidence_interval": [round(wp - ci_half, 4), round(wp + ci_half, 4)],
+            }
+        # Fallback: static XGBoost baseline
         model = _load_win_prob()
-        result = model.predict(home, away, season=season)
+        result = _with_timeout(lambda: model.predict(home, away, season=season), 8.0)
         ci_half = 0.05
         wp = result.get("home_win_prob", 0.5)
-        return {**result, "game_id": game_id,
+        return {**result, "game_id": game_id, "source": "xgboost_baseline",
                 "confidence_interval": [round(wp - ci_half, 4), round(wp + ci_half, 4)]}
     except Exception as exc:
-        return {"game_id": game_id, "win_probability": 0.5,
-                "confidence_interval": [0.45, 0.55], "error": str(exc)}
+        return {"game_id": game_id, "win_probability": 0.5, "win_prob_home": 0.5,
+                "source": "error", "confidence_interval": [0.45, 0.55], "error": str(exc)}
+
+
+@app.websocket("/ws/win-prob/{game_id}")
+async def ws_win_prob(websocket: WebSocket, game_id: str):
+    """Stream live win probability updates per possession.
+
+    Client sends: {"possession_idx": int, "game_dict": {...}}
+    Server sends: {"win_prob_home": float, "source": str, "confidence": float, "inference_ms": float}
+
+    WebSocket closes when client disconnects.
+    Target latency: <500ms per possession update.
+    """
+    await websocket.accept()
+
+    if not _LIVE_INFERENCE_AVAILABLE:
+        await websocket.send_json({"error": "live_win_probability module not available"})
+        await websocket.close()
+        return
+
+    engine: LiveWinProbInference = load_inference_engine(device="cpu")
+
+    try:
+        while True:
+            data = await websocket.receive_json()
+            possession_idx: int = int(data.get("possession_idx", 0))
+            game_dict: dict = data.get("game_dict", {})
+
+            result = engine.update(game_dict, possession_idx)
+            await websocket.send_json(result)
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        log.error("WebSocket win-prob error: %s", e)
+        try:
+            await websocket.send_json({"error": str(e), "win_prob_home": 0.5})
+        except Exception:
+            pass
 
 
 @app.get("/lineup/{team}", tags=["lineup"])
