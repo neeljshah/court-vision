@@ -3,9 +3,23 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: active
-last_updated: "2026-04-24T13:50:40.917Z"
+last_updated: "2026-04-24T13:55:26.282Z"
 progress:
   total_phases: 60
+  completed_phases: 7
+  total_plans: 43
+  completed_plans: 39
+  percent: 91
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T13:50:40.917Z"
+progress:
+  [█████████░] 91%
   completed_phases: 6
   total_plans: 43
   completed_plans: 38
@@ -31,8 +45,15 @@ progress:
 
 ## Current Status
 
-**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 04 complete)
-**Last Updated**: 2026-04-24 (Session 49 — Phase 16 Plan 04 complete)
+**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 05 complete)
+**Last Updated**: 2026-04-24 (Session 50 — Phase 16 Plan 05 complete)
+**Phase 16 Plan 05 complete (2026-04-24)**:
+- `src/prediction/possession_simulator.py` — LSTM gate via optional lstm_engine param; player_distributions expanded to 7-key percentile dict (p10/p25/p50/p75/p90)
+- `tests/test_live_win_probability.py` — test_auc and test_calibration_brier unlocked; all 7 LSTM tests pass
+- simulate_game() result includes live_win_prob key when lstm_engine provided; falls back silently on LSTM error
+- player_distributions now matches PropPricingEngine.get_distribution() contract exactly
+- Decision: LSTM gate uses try/except; simulator never crashes on bad LSTM — warning logged, key omitted
+- Decision: percentile expansion additive — p25/p75 preserved, p10/p50/p90 added
 **Phase 16 Plan 04 complete (2026-04-24)**:
 - `api/main.py` — WebSocket `/ws/win-prob/{game_id}` endpoint + upgraded `/win-prob` HTTP endpoint
 - WebSocket: accept → receive_json(possession_idx, game_dict) → engine.update() → send_json; handles WebSocketDisconnect
