@@ -2297,15 +2297,20 @@ Plans:
 **Goal**: Auto-placement on Sporttrade + Kalshi + Polymarket with price-shopping router.
 **Depends on**: Phase 16.7
 
-**Subtasks:**
-1. Book router `src/execution/book_router.py` — routes each bet to best-price book; compares Sporttrade + Kalshi + Polymarket
-2. Sporttrade adapter `src/execution/sporttrade.py` (Connect Trade REST)
-3. Kalshi adapter `src/execution/kalshi.py` — limit orders (maker rebates) preferred; `CalibrationLayer.win_prob()` → binary contract price
-4. Polymarket adapter `src/execution/polymarket.py`
-5. Dry-run passthrough — `LIVE_BETTING=0` logs intent, no real orders
-6. ProphetX adapter — add once API confirmed
+**Plans:** 9 plans (17-01 through 17-09)
 
-**Deliverable:** Auto-placement on Sporttrade + Kalshi + Polymarket; manual list for DK/FD.
+Plans:
+- [ ] 17-01-PLAN.md — Wave 0 test stubs for ML infrastructure
+- [ ] 17-02-PLAN.md — Feature drift detector + auto-retrain milestone
+- [ ] 17-03-PLAN.md — Model validation gate + compare_models
+- [ ] 17-04-PLAN.md — Cloud GPU pod manager lifecycle
+- [ ] 17-05-PLAN.md — Wave 0 test stubs for exchange adapter tests (EX-01 to EX-07)
+- [ ] 17-06-PLAN.md — Base adapter interface + BookRouter + dry-run + .env.example additions
+- [ ] 17-07-PLAN.md — Kalshi adapter (RSA-PSS auth, limit orders, KXNBA discovery)
+- [ ] 17-08-PLAN.md — Polymarket adapter (py-clob-client, Gamma API, token ID extraction)
+- [ ] 17-09-PLAN.md — Sporttrade stub + package init re-exports + end-to-end dry-run gate
+
+**Deliverable:** Auto-placement on Kalshi + Polymarket; Sporttrade stub (no confirmed public API); LIVE_BETTING=0 dry-run kill switch; price-shopping router; manual list for DK/FD.
 
 ---
 
