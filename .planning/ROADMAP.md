@@ -2224,7 +2224,7 @@ Plans:
 ### Phase 15.5: Uncertainty Wiring + Alt-Line Ladder
 **Goal**: Wire conformal prediction intervals into bet_selector and build EV ladder across every available alt line.
 **Depends on**: Phase 14.8
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
 - [ ] 15.5-01-PLAN.md --- Wave 0 test stubs: alt_line_ladder xfail tests + bet_selector CI field tests
