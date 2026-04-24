@@ -2224,15 +2224,14 @@ Plans:
 ### Phase 15.5: Uncertainty Wiring + Alt-Line Ladder
 **Goal**: Wire conformal prediction intervals into bet_selector and build EV ladder across every available alt line.
 **Depends on**: Phase 14.8
+**Plans:** 3 plans
 
-**Subtasks:**
-1. Wire `conformal_props.py` output into bet_selector — each bet gets (point_est, lo_80, hi_80, lo_95, hi_95)
-2. Alt-line ladder builder — for each player generate EV at every available alt line using quantile model CDF
-3. Alt-line selector — pick optimal alt line (max risk-adjusted EV) from ladder; apply Pinnacle gate + corr caps
-4. Extend `bets_YYYYMMDD.json` schema for alt lines
+Plans:
+- [ ] 15.5-01-PLAN.md --- Wave 0 test stubs: alt_line_ladder xfail tests + bet_selector CI field tests
+- [ ] 15.5-02-PLAN.md --- Build src/prediction/alt_line_ladder.py (11 offsets, EV ladder, Kelly cap)
+- [ ] 15.5-03-PLAN.md --- Wire CI fields into bet_selector + --build-ladder flag in run_daily_slate.py
 
-**Deliverable:** `src/prediction/alt_line_ladder.py`. 2–3× bet count at same or better edge threshold.
-
+**Deliverable:** `src/prediction/alt_line_ladder.py`. 2-3x bet count at same or better edge threshold.
 ---
 
 ### Phase 15.7: QP Portfolio Optimizer
