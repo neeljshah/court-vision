@@ -2,35 +2,31 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-last_updated: "2026-04-24T13:34:38.689Z"
+status: active
+last_updated: "2026-04-24T13:50:00.000Z"
 progress:
   total_phases: 60
   completed_phases: 6
   total_plans: 43
-  completed_plans: 36
-  percent: 84
----
-
----
-gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: unknown
-last_updated: "2026-04-24T13:22:54.056Z"
-progress:
-  [████████░░] 84%
-  completed_phases: 6
-  total_plans: 43
-  completed_plans: 35
+  completed_plans: 37
+  percent: 86
+  bar: "[█████████░] 86%"
 ---
 
 # Project State: NBA AI System
 
 ## Current Status
 
-**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 02 complete)
-**Last Updated**: 2026-04-24 (Session 48 — Phase 16 Plan 02 complete)
+**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 03 complete)
+**Last Updated**: 2026-04-24 (Session 49 — Phase 16 Plan 03 complete)
+**Phase 16 Plan 03 complete (2026-04-24)**:
+- `src/prediction/prop_pricing_engine.py` — 220 LOC; PropPricingEngine with get_distribution(), price_vs_line(), backtest()
+- get_distribution(): 7-key percentile dict (mean, std, p10, p25, p50, p75, p90); simulation-first with normal fallback
+- price_vs_line(): over_prob, under_prob, ev_over, ev_under, edge, recommendation (over/under/pass at 3% threshold)
+- backtest(): holdout ROI from prop_residuals.json; no-data safe returns roi=0.0
+- test_distribution and test_roi both PASSED (2/2)
+- Decision: fallback chain PossessionSimulator → predict_props normal approx → hardcoded defaults
+- Decision: backtest() uses edge-adjusted win_prob on residuals; no-crash on missing data
 **Phase 16 Plan 02 complete (2026-04-24)**:
 - `src/prediction/live_win_probability.py` — 283 LOC; LiveWinProbLSTM, LiveWinProbInference, extract_possession_features, train_lstm_win_prob, calibrate_win_prob, load_inference_engine
 - `data/models/live_win_prob_metrics.json` — {val_auc: 1.0, val_brier: 0.247, epochs: 10, n_games: 15}
