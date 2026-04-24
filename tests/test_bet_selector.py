@@ -165,3 +165,56 @@ class TestBetSelector:
 
         assert len(bets) == 1
         assert bets[0]["direction"] == "under"
+
+
+# ---------------------------------------------------------------------------
+# Phase 15.5 — CI field tests (xfail until Plan 03 wires conformal into select())
+# ---------------------------------------------------------------------------
+
+class TestBetSelectorCI:
+    """Verifies conformal CI fields and alt-line schema in bet_selector output."""
+
+    @pytest.mark.xfail(reason="CI fields not yet wired into select() — Plan 03", strict=False)
+    def test_bet_selector_ci_fields(self, tmp_path):
+        """Each bet returned by select() must have ci_lo_80 and ci_hi_80 keys."""
+        out_dir = str(tmp_path / "output")
+        os.makedirs(out_dir, exist_ok=True)
+        cfg = {
+            "bankroll": 1000.0, "edge_min": 0.04, "max_bets_per_game": 3,
+            "max_combined_pct": 0.06, "default_odds": -110, "dry_run": False,
+        }
+        with patch("src.prediction.bet_selector._load_config", return_value=cfg), \
+             patch("src.prediction.bet_selector._OUTPUT_DIR", out_dir), \
+             patch("src.prediction.bet_selector._BET_LOG_PATH", str(tmp_path / "bet_log.json")):
+            from src.prediction.bet_selector import select
+            bets = select(SAMPLE_EDGES, "2026-04-23", dry_run=False)
+
+        assert len(bets) > 0, "Need at least one bet to check CI fields"
+        for bet in bets:
+            assert "ci_lo_80" in bet, f"Missing ci_lo_80 in bet for {bet.get('player')}"
+            assert "ci_hi_80" in bet, f"Missing ci_hi_80 in bet for {bet.get('player')}"
+
+    @pytest.mark.xfail(reason="alt_line schema not yet wired into select() — Plan 03", strict=False)
+    def test_alt_bets_json_schema(self, tmp_path):
+        """bets JSON must include alt_line and alt_line_ev keys in output file."""
+        out_dir = str(tmp_path / "output")
+        os.makedirs(out_dir, exist_ok=True)
+        # Inject alt_line fields into edge rows to simulate ladder output
+        alt_edges = [
+            {**SAMPLE_EDGES[0], "alt_line": 25.5, "alt_line_ev": 0.062},
+        ]
+        cfg = {
+            "bankroll": 1000.0, "edge_min": 0.04, "max_bets_per_game": 3,
+            "max_combined_pct": 0.06, "default_odds": -110, "dry_run": False,
+        }
+        with patch("src.prediction.bet_selector._load_config", return_value=cfg), \
+             patch("src.prediction.bet_selector._OUTPUT_DIR", out_dir), \
+             patch("src.prediction.bet_selector._BET_LOG_PATH", str(tmp_path / "bet_log.json")):
+            from src.prediction.bet_selector import select
+            bets = select(alt_edges, "2026-04-23", dry_run=False)
+
+        assert len(bets) > 0
+        # When input has alt_line, output must preserve it
+        for bet in bets:
+            assert "alt_line" in bet, "alt_line key missing from bet schema"
+            assert "alt_line_ev" in bet, "alt_line_ev key missing from bet schema"
