@@ -1,4 +1,6 @@
-# System Architecture — NBA AI System
+# System Architecture — CourtVision
+
+*Last updated: 2026-04-15 (Phase 13.5 complete)*
 
 Full technical architecture — how data flows from raw inputs through the CV pipeline, feature engineering, ML stack, simulator, and out to the three end products.
 
@@ -42,13 +44,14 @@ Full technical architecture — how data flows from raw inputs through the CV pi
                                │
                                ▼
          ┌────────────────────────────────────────┐
-         │  ML MODEL STACK (90 models, 7 tiers)  │
-         │  src/prediction/                       │
+         │  ML MODEL STACK (73 .py modules, 75 trained)│
+         │  src/prediction/                         │
          │                                        │
-         │  Tier 1  Win prob, props, game    ✅   │
-         │  Tier 2  xFG, shot zones, clutch  ✅   │
-         │  Tier 3  CV behavioral            🔲   │
-         │  Tier 4–7  Simulator + LSTM       🔲   │
+         │  Tier 1  Win prob, props (7 stats) ✅  │
+         │  Tier 2  xFG, shot zones, clutch   ✅  │
+         │  Tier 3  CV behavioral              ✅  │
+         │  Tier 4  ~50-game dataset models    ✅  │
+         │  Tier 5  ~100-game stubs            🔲  │
          └─────────────────────┬──────────────────┘
                                │
                                ▼
@@ -208,14 +211,18 @@ smoothed = (K * season_avg + N * rolling_avg) / (K + N)
 
 ## ML Model Stack
 
-**Location:** `src/prediction/`
+**Location:** `src/prediction/` (73 modules)
+
+**Trained artifacts:** 75 `.pkl`/`.json` files in `data/models/` (gitignored)
+
+**Current prop R²:** pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.07
 
 ### Architecture per Model
 
 All prediction models follow the same training pattern:
 
 ```
-Input: feature vector (57 dims for props, 27 dims for win prob)
+Input: feature vector (60+ dims for props, 27 dims for win prob)
     ↓
 XGBoost regressor (or LogisticRegression for DNP)
   - n_estimators: 300

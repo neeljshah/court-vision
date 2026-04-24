@@ -1,0 +1,1142 @@
+[
+  {
+    "period": 2,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 2nd Period (11:10 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "38-32",
+    "score_margin": "6"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 10,
+    "event_type": 5,
+    "event_desc": "Whitmore Out of Bounds - Bad Pass Turnover Turnover (P1.T4)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 29,
+    "event_type": 1,
+    "event_desc": "Vanderbilt 2' Cutting Layup Shot (4 PTS) (Reaves 1 AST)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "40-32",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 41,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 31' 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 44,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:3)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 65,
+    "event_type": 1,
+    "event_desc": "L. James 5' Driving Reverse Layup (9 PTS)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "42-32",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 89,
+    "event_type": 1,
+    "event_desc": "Holiday 11' Driving Floating Jump Shot (2 PTS) (Je. Green 3 AST)",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "42-34",
+    "score_margin": "8"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 107,
+    "event_type": 1,
+    "event_desc": "Reaves 27' 3PT Pullup Jump Shot (12 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "45-34",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 108,
+    "event_type": 0,
+    "event_desc": "Rockets Timeout: Regular (Reg.2 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 108,
+    "event_type": 8,
+    "event_desc": "SUB: Landale FOR Dante",
+    "player_name": "Dante",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 126,
+    "event_type": 6,
+    "event_desc": "L. James S.FOUL (P1.T1) (K.Cutler)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 126,
+    "event_type": 3,
+    "event_desc": "MISS Landale Free Throw 1 of 2",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 126,
+    "event_type": 4,
+    "event_desc": "Rockets Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 126,
+    "event_type": 3,
+    "event_desc": "Landale Free Throw 2 of 2 (3 PTS)",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "45-35",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 148,
+    "event_type": 1,
+    "event_desc": "Goodwin 3PT Jump Shot (3 PTS) (L. James 4 AST)",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "48-35",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 156,
+    "event_type": 0,
+    "event_desc": "Hachimura Violation:Kicked Ball (K.Cutler)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 156,
+    "event_type": 8,
+    "event_desc": "SUB: Finney-Smith FOR Hachimura",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 160,
+    "event_type": 2,
+    "event_desc": "MISS Je. Green 26' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 163,
+    "event_type": 4,
+    "event_desc": "Vanderbilt REBOUND (Off:0 Def:2)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 171,
+    "event_type": 2,
+    "event_desc": "MISS Reaves 28' 3PT Pullup Jump Shot",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 174,
+    "event_type": 4,
+    "event_desc": "Landale REBOUND (Off:0 Def:2)",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 181,
+    "event_type": 1,
+    "event_desc": "Holiday 28' 3PT Pullup Jump Shot (5 PTS)",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "48-38",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 202,
+    "event_type": 2,
+    "event_desc": "MISS L. James 32' 3PT Pullup Jump Shot",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 205,
+    "event_type": 4,
+    "event_desc": "Landale REBOUND (Off:0 Def:3)",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 214,
+    "event_type": 1,
+    "event_desc": "Holiday 31' 3PT Pullup Jump Shot (8 PTS) (Je. Green 4 AST)",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "48-41",
+    "score_margin": "7"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 228,
+    "event_type": 2,
+    "event_desc": "MISS Finney-Smith 3PT Jump Shot",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 231,
+    "event_type": 4,
+    "event_desc": "Landale REBOUND (Off:0 Def:4)",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 236,
+    "event_type": 2,
+    "event_desc": "MISS Je. Green 25' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 240,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:4)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 246,
+    "event_type": 1,
+    "event_desc": "L. James 1' Cutting Dunk Shot (11 PTS) (Reaves 2 AST)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "50-41",
+    "score_margin": "9"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 255,
+    "event_type": 5,
+    "event_desc": "Sheppard Bad Pass Turnover (P1.T5)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 255,
+    "event_type": 0,
+    "event_desc": "L. James STEAL (1 STL)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 261,
+    "event_type": 1,
+    "event_desc": "Vanderbilt 1' Running Dunk (6 PTS) (L. James 5 AST)",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "52-41",
+    "score_margin": "11"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 280,
+    "event_type": 2,
+    "event_desc": "MISS Landale 4' Turnaround Hook Shot",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 284,
+    "event_type": 4,
+    "event_desc": "Goodwin REBOUND (Off:0 Def:2)",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 287,
+    "event_type": 6,
+    "event_desc": "Sheppard P.FOUL (P1.T1) (K.Cutler)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 287,
+    "event_type": 8,
+    "event_desc": "SUB: Hayes FOR Vanderbilt",
+    "player_name": "Vanderbilt",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 287,
+    "event_type": 8,
+    "event_desc": "SUB: Doncic FOR Goodwin",
+    "player_name": "Goodwin",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 287,
+    "event_type": 8,
+    "event_desc": "SUB: Ja. Green FOR Landale",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 295,
+    "event_type": 1,
+    "event_desc": "Hayes 1' Cutting Dunk Shot (4 PTS) (Doncic 4 AST)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "54-41",
+    "score_margin": "13"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 307,
+    "event_type": 6,
+    "event_desc": "Reaves P.FOUL (P1.T2) (N.Green)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 312,
+    "event_type": 1,
+    "event_desc": "Sheppard 29' 3PT Pullup Jump Shot (6 PTS)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "54-44",
+    "score_margin": "10"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 327,
+    "event_type": 1,
+    "event_desc": "Reaves 3' Driving Reverse Layup (14 PTS)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "56-44",
+    "score_margin": "12"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 343,
+    "event_type": 2,
+    "event_desc": "MISS Holiday 27' 3PT Jump Shot",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 346,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:5)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 352,
+    "event_type": 1,
+    "event_desc": "L. James 3' Driving Layup (13 PTS)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "58-44",
+    "score_margin": "14"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 352,
+    "event_type": 6,
+    "event_desc": "Je. Green S.FOUL (P2.T2) (K.Scott)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 352,
+    "event_type": 8,
+    "event_desc": "SUB: Williams FOR Holiday",
+    "player_name": "Holiday",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 352,
+    "event_type": 3,
+    "event_desc": "L. James Free Throw 1 of 1 (14 PTS)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "59-44",
+    "score_margin": "15"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 375,
+    "event_type": 2,
+    "event_desc": "MISS Je. Green 25' 3PT Pullup Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 4,
+    "event_desc": "Rockets Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 5,
+    "event_desc": "Rockets Turnover: Shot Clock (T#6)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 376,
+    "event_type": 8,
+    "event_desc": "SUB: Vincent FOR L. James",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 398,
+    "event_type": 1,
+    "event_desc": "Doncic 27' 3PT Step Back Jump Shot (18 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "62-44",
+    "score_margin": "18"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 414,
+    "event_type": 2,
+    "event_desc": "MISS Whitmore 28' 3PT Step Back Jump Shot",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 417,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:5)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 426,
+    "event_type": 1,
+    "event_desc": "Finney-Smith 26' 3PT Jump Shot (6 PTS) (Doncic 5 AST)",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "65-44",
+    "score_margin": "21"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 427,
+    "event_type": 0,
+    "event_desc": "Rockets Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 427,
+    "event_type": 8,
+    "event_desc": "SUB: Landale FOR Je. Green",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 441,
+    "event_type": 1,
+    "event_desc": "Ja. Green 4' Driving Finger Roll Layup (7 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "65-46",
+    "score_margin": "19"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 460,
+    "event_type": 2,
+    "event_desc": "MISS Finney-Smith 13' Turnaround Fadeaway Shot",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 463,
+    "event_type": 4,
+    "event_desc": "Ja. Green REBOUND (Off:1 Def:2)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 479,
+    "event_type": 5,
+    "event_desc": "Williams Lost Ball Turnover (P3.T7)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 479,
+    "event_type": 0,
+    "event_desc": "Doncic STEAL (1 STL)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 6,
+    "event_desc": "Williams S.FOUL (P1.T3) (N.Green)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 1 of 2",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 4,
+    "event_desc": "LAKERS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 8,
+    "event_desc": "SUB: Hachimura FOR Reaves",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 483,
+    "event_type": 3,
+    "event_desc": "MISS Doncic Free Throw 2 of 2",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 489,
+    "event_type": 4,
+    "event_desc": "Whitmore REBOUND (Off:1 Def:2)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 493,
+    "event_type": 1,
+    "event_desc": "Whitmore 3' Cutting Layup Shot (12 PTS) (Ja. Green 2 AST)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "65-48",
+    "score_margin": "17"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 493,
+    "event_type": 6,
+    "event_desc": "Hayes S.FOUL (P2.T3) (K.Scott)",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 493,
+    "event_type": 3,
+    "event_desc": "Whitmore Free Throw 1 of 1 (13 PTS)",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "65-49",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 505,
+    "event_type": 5,
+    "event_desc": "Doncic Bad Pass Turnover (P3.T6)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 505,
+    "event_type": 0,
+    "event_desc": "Landale STEAL (2 STL)",
+    "player_name": "Landale",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 513,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 5' Driving Floating Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 515,
+    "event_type": 4,
+    "event_desc": "Hachimura REBOUND (Off:0 Def:2)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 524,
+    "event_type": 1,
+    "event_desc": "Doncic 5' Driving Layup (20 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "67-49",
+    "score_margin": "18"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 533,
+    "event_type": 2,
+    "event_desc": "MISS Whitmore 29' 3PT Pullup Jump Shot",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 541,
+    "event_type": 4,
+    "event_desc": "Williams REBOUND (Off:1 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 541,
+    "event_type": 1,
+    "event_desc": "Williams Putback Layup (6 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "67-51",
+    "score_margin": "16"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 561,
+    "event_type": 6,
+    "event_desc": "Sheppard S.FOUL (P2.T4) (K.Scott)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 561,
+    "event_type": 3,
+    "event_desc": "Hachimura Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "68-51",
+    "score_margin": "17"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 561,
+    "event_type": 8,
+    "event_desc": "SUB: L. James FOR Hayes",
+    "player_name": "Hayes",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 561,
+    "event_type": 8,
+    "event_desc": "SUB: Roddy FOR Whitmore",
+    "player_name": "Whitmore",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 561,
+    "event_type": 3,
+    "event_desc": "Hachimura Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "69-51",
+    "score_margin": "18"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 574,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 27' 3PT Pullup Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 578,
+    "event_type": 4,
+    "event_desc": "L. James REBOUND (Off:0 Def:2)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 582,
+    "event_type": 5,
+    "event_desc": "L. James Bad Pass Turnover (P1.T7)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 582,
+    "event_type": 0,
+    "event_desc": "Ja. Green STEAL (1 STL)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 585,
+    "event_type": 5,
+    "event_desc": "Williams Out of Bounds - Bad Pass Turnover Turnover (P4.T8)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 606,
+    "event_type": 1,
+    "event_desc": "Doncic 10' Fadeaway Jumper (22 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "71-51",
+    "score_margin": "20"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 615,
+    "event_type": 2,
+    "event_desc": "MISS Sheppard 32' 3PT Pullup Jump Shot",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 619,
+    "event_type": 4,
+    "event_desc": "L. James REBOUND (Off:0 Def:3)",
+    "player_name": "James",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 622,
+    "event_type": 2,
+    "event_desc": "MISS Vincent 25' 3PT Running Jump Shot",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 626,
+    "event_type": 4,
+    "event_desc": "Roddy REBOUND (Off:0 Def:1)",
+    "player_name": "Roddy",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 632,
+    "event_type": 2,
+    "event_desc": "MISS Williams 3PT Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 635,
+    "event_type": 4,
+    "event_desc": "Doncic REBOUND (Off:0 Def:6)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 644,
+    "event_type": 2,
+    "event_desc": "MISS Doncic 17' Step Back Jump Shot",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 646,
+    "event_type": 4,
+    "event_desc": "Ja. Green REBOUND (Off:1 Def:3)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 658,
+    "event_type": 5,
+    "event_desc": "Ja. Green Bad Pass Turnover (P1.T9)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 658,
+    "event_type": 0,
+    "event_desc": "Finney-Smith STEAL (2 STL)",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 660,
+    "event_type": 1,
+    "event_desc": "Hachimura 1' Running Dunk (4 PTS) (L. James 6 AST)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "73-51",
+    "score_margin": "22"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 672,
+    "event_type": 1,
+    "event_desc": "Sheppard 4' Driving Reverse Layup (8 PTS)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "73-53",
+    "score_margin": "20"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 682,
+    "event_type": 6,
+    "event_desc": "Sheppard P.FOUL (P3.PN) (K.Scott)",
+    "player_name": "Sheppard",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 682,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 1 of 2 (23 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "74-53",
+    "score_margin": "21"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 682,
+    "event_type": 8,
+    "event_desc": "SUB: Reaves FOR Vincent",
+    "player_name": "Vincent",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 682,
+    "event_type": 3,
+    "event_desc": "Doncic Free Throw 2 of 2 (24 PTS)",
+    "player_name": "Don\u010di\u0107",
+    "team_abbrev": "LAL",
+    "score": "75-53",
+    "score_margin": "22"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 690,
+    "event_type": 1,
+    "event_desc": "Williams 26' 3PT Jump Shot (9 PTS) (Ja. Green 3 AST)",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "75-56",
+    "score_margin": "19"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 708,
+    "event_type": 1,
+    "event_desc": "Hachimura 28' 3PT Jump Shot (7 PTS) (Reaves 3 AST)",
+    "player_name": "Hachimura",
+    "team_abbrev": "LAL",
+    "score": "78-56",
+    "score_margin": "22"
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 710,
+    "event_type": 6,
+    "event_desc": "Finney-Smith P.FOUL (P1.T4) (N.Green)",
+    "player_name": "Finney-Smith",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 716,
+    "event_type": 2,
+    "event_desc": "MISS Williams 3PT Jump Shot",
+    "player_name": "Williams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Reaves REBOUND (Off:0 Def:6)",
+    "player_name": "Reaves",
+    "team_abbrev": "LAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 2,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 2nd Period (11:36 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "78-56",
+    "score_margin": "22"
+  }
+]

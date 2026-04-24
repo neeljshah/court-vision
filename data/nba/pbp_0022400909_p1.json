@@ -1,0 +1,1022 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (10:14 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Joki\u0107 vs. Bol: Tip to Richards",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 23,
+    "event_type": 5,
+    "event_desc": "Richards Traveling Turnover (P1.T1)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 43,
+    "event_type": 2,
+    "event_desc": "MISS Joki\u0107 9' Driving Floating Jump Shot",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 44,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:0)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 45,
+    "event_type": 1,
+    "event_desc": "Joki\u0107 3' Putback Layup (2 PTS)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "2-0",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 58,
+    "event_type": 1,
+    "event_desc": "Richards 3' Floating Jump Shot (2 PTS) (Booker 1 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "2-2",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 72,
+    "event_type": 1,
+    "event_desc": "Joki\u0107 26' 3PT Jump Shot (5 PTS) (Murray 1 AST)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "5-2",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 91,
+    "event_type": 1,
+    "event_desc": "Beal 8' Turnaround Fadeaway (2 PTS) (Durant 1 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "5-4",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 105,
+    "event_type": 6,
+    "event_desc": "Richards P.FOUL (P1.T1) (S.Foster)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 114,
+    "event_type": 1,
+    "event_desc": "Porter Jr. 20' Step Back Jump Shot (2 PTS) (Joki\u0107 1 AST)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "DEN",
+    "score": "7-4",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 132,
+    "event_type": 2,
+    "event_desc": "MISS Booker 24' 3PT Jump Shot",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 132,
+    "event_type": 4,
+    "event_desc": "Bol REBOUND (Off:1 Def:0)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 140,
+    "event_type": 1,
+    "event_desc": "Beal 15' Step Back Jump Shot (4 PTS) (Bol 1 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "7-6",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 162,
+    "event_type": 2,
+    "event_desc": "MISS Joki\u0107 25' 3PT Jump Shot",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 165,
+    "event_type": 4,
+    "event_desc": "Bol REBOUND (Off:1 Def:1)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 175,
+    "event_type": 1,
+    "event_desc": "Richards 13' Jump Shot (4 PTS) (Durant 2 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "7-8",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 188,
+    "event_type": 1,
+    "event_desc": "Gordon 24' 3PT Jump Shot (3 PTS) (Joki\u0107 2 AST)",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "10-8",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 202,
+    "event_type": 5,
+    "event_desc": "Durant Bad Pass Turnover (P1.T2)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 202,
+    "event_type": 0,
+    "event_desc": "Murray STEAL (1 STL)",
+    "player_name": "Murray",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 205,
+    "event_type": 1,
+    "event_desc": "Murray Running Dunk (2 PTS)",
+    "player_name": "Murray",
+    "team_abbrev": "DEN",
+    "score": "12-8",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 219,
+    "event_type": 2,
+    "event_desc": "MISS Booker 19' Pullup Jump Shot",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 221,
+    "event_type": 4,
+    "event_desc": "Richards REBOUND (Off:1 Def:0)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 224,
+    "event_type": 2,
+    "event_desc": "MISS Bol 27' 3PT Jump Shot",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 227,
+    "event_type": 4,
+    "event_desc": "Gordon REBOUND (Off:0 Def:1)",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 232,
+    "event_type": 1,
+    "event_desc": "Gordon 26' 3PT Running Pull-Up Jump Shot (6 PTS)",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "15-8",
+    "score_margin": "7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 247,
+    "event_type": 1,
+    "event_desc": "Richards 6' Driving Layup (6 PTS) (Beal 1 AST)",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "15-10",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 257,
+    "event_type": 1,
+    "event_desc": "Gordon 27' 3PT Jump Shot (9 PTS) (Braun 1 AST)",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "18-10",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 277,
+    "event_type": 1,
+    "event_desc": "Bol 24' 3PT Jump Shot (3 PTS) (Booker 2 AST)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "18-13",
+    "score_margin": "5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 287,
+    "event_type": 5,
+    "event_desc": "Joki\u0107 Bad Pass Turnover (P1.T1)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 287,
+    "event_type": 0,
+    "event_desc": "Bol STEAL (1 STL)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 288,
+    "event_type": 6,
+    "event_desc": "Braun P.FOUL (P1.T1) (P.Ransom)",
+    "player_name": "Braun",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 310,
+    "event_type": 2,
+    "event_desc": "MISS Richards 15' Jump Shot",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 312,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:1)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 316,
+    "event_type": 1,
+    "event_desc": "Gordon 25' 3PT Running Pull-Up Jump Shot (12 PTS) (Joki\u0107 3 AST)",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "21-13",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 329,
+    "event_type": 0,
+    "event_desc": "Joki\u0107 Violation:Kicked Ball (T.Maddox)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 329,
+    "event_type": 0,
+    "event_desc": "NUGGETS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 344,
+    "event_type": 1,
+    "event_desc": "Beal 22' Step Back Jump Shot (6 PTS) (Booker 3 AST)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "21-15",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 368,
+    "event_type": 2,
+    "event_desc": "MISS Joki\u0107 25' 3PT Jump Shot",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 368,
+    "event_type": 4,
+    "event_desc": "Bol REBOUND (Off:1 Def:2)",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 381,
+    "event_type": 2,
+    "event_desc": "MISS Bol 3PT Jump Shot",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 384,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:2)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 397,
+    "event_type": 2,
+    "event_desc": "MISS Gordon 12' Turnaround Fadeaway Shot",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 398,
+    "event_type": 4,
+    "event_desc": "Booker REBOUND (Off:0 Def:1)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 413,
+    "event_type": 2,
+    "event_desc": "MISS Beal 12' Driving Floating Jump Shot",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 415,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:3)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 6,
+    "event_desc": "Beal P.FOUL (P1.T2) (S.Foster)",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 8,
+    "event_desc": "SUB: Westbrook FOR Porter Jr.",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 8,
+    "event_desc": "SUB: Allen FOR Beal",
+    "player_name": "Beal",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 8,
+    "event_desc": "SUB: Plumlee FOR Bol",
+    "player_name": "Bol",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 422,
+    "event_type": 8,
+    "event_desc": "SUB: Jones FOR Richards",
+    "player_name": "Richards",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 431,
+    "event_type": 2,
+    "event_desc": "MISS Gordon 26' 3PT Jump Shot",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 435,
+    "event_type": 4,
+    "event_desc": "Westbrook REBOUND (Off:1 Def:0)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 443,
+    "event_type": 1,
+    "event_desc": "Braun 25' 3PT Jump Shot (3 PTS) (Joki\u0107 4 AST)",
+    "player_name": "Braun",
+    "team_abbrev": "DEN",
+    "score": "24-15",
+    "score_margin": "9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 470,
+    "event_type": 2,
+    "event_desc": "MISS Jones 12' Driving Floating Jump Shot",
+    "player_name": "Jones",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 472,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:4)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 477,
+    "event_type": 5,
+    "event_desc": "Braun Bad Pass Turnover (P1.T2)",
+    "player_name": "Braun",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 477,
+    "event_type": 0,
+    "event_desc": "Booker STEAL (1 STL)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 484,
+    "event_type": 6,
+    "event_desc": "Joki\u0107 P.FOUL (P1.T2) (T.Maddox)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 491,
+    "event_type": 1,
+    "event_desc": "Durant 26' 3PT Jump Shot (3 PTS) (Jones 1 AST)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "24-18",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 502,
+    "event_type": 1,
+    "event_desc": "Joki\u0107 26' 3PT Pullup Jump Shot (8 PTS)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "27-18",
+    "score_margin": "9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 509,
+    "event_type": 5,
+    "event_desc": "Allen Bad Pass Turnover (P1.T3)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 509,
+    "event_type": 0,
+    "event_desc": "Murray STEAL (2 STL)",
+    "player_name": "Murray",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 511,
+    "event_type": 1,
+    "event_desc": "Murray 2' Driving Dunk (4 PTS)",
+    "player_name": "Murray",
+    "team_abbrev": "DEN",
+    "score": "29-18",
+    "score_margin": "11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 512,
+    "event_type": 0,
+    "event_desc": "Suns Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 512,
+    "event_type": 8,
+    "event_desc": "SUB: Porter Jr. FOR Braun",
+    "player_name": "Braun",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 512,
+    "event_type": 8,
+    "event_desc": "SUB: Watson FOR Murray",
+    "player_name": "Murray",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 512,
+    "event_type": 8,
+    "event_desc": "SUB: O'Neale FOR Booker",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 6,
+    "event_desc": "Westbrook S.FOUL (P1.T3) (P.Ransom)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 3,
+    "event_desc": "MISS Durant Free Throw 1 of 2",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 520,
+    "event_type": 3,
+    "event_desc": "Durant Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "29-19",
+    "score_margin": "10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 543,
+    "event_type": 2,
+    "event_desc": "MISS Porter Jr. 15' Pullup Jump Shot",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 4,
+    "event_desc": "Plumlee REBOUND (Off:0 Def:1)",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 552,
+    "event_type": 2,
+    "event_desc": "MISS Jones 14' Driving Floating Jump Shot",
+    "player_name": "Jones",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 552,
+    "event_type": 0,
+    "event_desc": "Porter Jr. BLOCK (1 BLK)",
+    "player_name": "Porter Jr.",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 552,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 552,
+    "event_type": 8,
+    "event_desc": "SUB: Nnaji FOR Gordon",
+    "player_name": "Gordon",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 557,
+    "event_type": 6,
+    "event_desc": "Westbrook S.FOUL (P2.T4) (S.Foster)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 557,
+    "event_type": 3,
+    "event_desc": "MISS Plumlee Free Throw 1 of 2",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 557,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 557,
+    "event_type": 3,
+    "event_desc": "Plumlee Free Throw 2 of 2 (1 PTS)",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "29-20",
+    "score_margin": "9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 579,
+    "event_type": 5,
+    "event_desc": "Joki\u0107 Bad Pass Turnover (P2.T3)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 579,
+    "event_type": 0,
+    "event_desc": "Jones STEAL (1 STL)",
+    "player_name": "Jones",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 583,
+    "event_type": 1,
+    "event_desc": "O'Neale 26' 3PT Running Jump Shot (3 PTS) (Jones 2 AST)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "29-23",
+    "score_margin": "6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 596,
+    "event_type": 1,
+    "event_desc": "Westbrook 2' Cutting Layup Shot (2 PTS) (Joki\u0107 5 AST)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "31-23",
+    "score_margin": "8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 614,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 26' 3PT Step Back Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 616,
+    "event_type": 4,
+    "event_desc": "Joki\u0107 REBOUND (Off:1 Def:5)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 623,
+    "event_type": 1,
+    "event_desc": "Westbrook 5' Running Finger Roll Layup (4 PTS) (Joki\u0107 6 AST)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "33-23",
+    "score_margin": "10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 631,
+    "event_type": 5,
+    "event_desc": "Durant Bad Pass Turnover (P2.T4)",
+    "player_name": "Durant",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 631,
+    "event_type": 0,
+    "event_desc": "Westbrook STEAL (1 STL)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 634,
+    "event_type": 1,
+    "event_desc": "Westbrook 14' Running Pull-Up Jump Shot (6 PTS)",
+    "player_name": "Westbrook",
+    "team_abbrev": "DEN",
+    "score": "35-23",
+    "score_margin": "12"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 662,
+    "event_type": 5,
+    "event_desc": "Suns Turnover: Shot Clock (T#5)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 673,
+    "event_type": 2,
+    "event_desc": "MISS Watson 3PT Jump Shot",
+    "player_name": "Watson",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 676,
+    "event_type": 4,
+    "event_desc": "Plumlee REBOUND (Off:0 Def:2)",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 691,
+    "event_type": 1,
+    "event_desc": "Allen 26' 3PT Jump Shot (3 PTS) (O'Neale 1 AST)",
+    "player_name": "Allen",
+    "team_abbrev": "PHX",
+    "score": "35-26",
+    "score_margin": "9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 712,
+    "event_type": 1,
+    "event_desc": "Joki\u0107 4' Cutting Finger Roll Layup Shot (10 PTS) (Westbrook 1 AST)",
+    "player_name": "Joki\u0107",
+    "team_abbrev": "DEN",
+    "score": "37-26",
+    "score_margin": "11"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 2,
+    "event_desc": "MISS Jones 3PT Jump Shot",
+    "player_name": "Jones",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "Watson BLOCK (1 BLK)",
+    "player_name": "Watson",
+    "team_abbrev": "DEN",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Plumlee REBOUND (Off:1 Def:2)",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 1,
+    "event_desc": "Plumlee Putback Dunk (3 PTS)",
+    "player_name": "Plumlee",
+    "team_abbrev": "PHX",
+    "score": "37-28",
+    "score_margin": "9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (10:38 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "37-28",
+    "score_margin": "9"
+  }
+]

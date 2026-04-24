@@ -1,0 +1,10 @@
+{
+  "player_id": 1628993,
+  "season": "2022-23",
+  "catch_and_shoot_pct": 0.167,
+  "pull_up_pct": 0.167,
+  "contested_pct": 0.833,
+  "uncontested_pct": 0.167,
+  "avg_defender_dist_contested": 3.668,
+  "avg_defender_dist_catch_shoot": 5.0
+}

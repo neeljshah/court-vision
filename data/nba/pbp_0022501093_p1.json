@@ -1,0 +1,1092 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (8:11 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Hendricks vs. Ighodaro: Tip to Mashack",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 12,
+    "event_type": 1,
+    "event_desc": "Spencer 25' 3PT Jump Shot (3 PTS) (Mashack 1 AST)",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "3-0",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 31,
+    "event_type": 1,
+    "event_desc": "Green 1' Cutting Dunk Shot (2 PTS) (Booker 1 AST)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "3-2",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 50,
+    "event_type": 2,
+    "event_desc": "MISS Hendricks 3PT Jump Shot",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 53,
+    "event_type": 4,
+    "event_desc": "Spencer REBOUND (Off:1 Def:0)",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 55,
+    "event_type": 1,
+    "event_desc": "Jackson 1' Cutting Dunk Shot (2 PTS) (Spencer 1 AST)",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "5-2",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 73,
+    "event_type": 1,
+    "event_desc": "Booker 19' Pullup Jump Shot (2 PTS) (Gillespie 1 AST)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "5-4",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 85,
+    "event_type": 6,
+    "event_desc": "Green S.FOUL (P1.T1) (J.Van Duyne)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 85,
+    "event_type": 3,
+    "event_desc": "Jackson Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "6-4",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 85,
+    "event_type": 3,
+    "event_desc": "Jackson Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "7-4",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 96,
+    "event_type": 6,
+    "event_desc": "Coward P.FOUL (P1.T1) (J.Van Duyne)",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 106,
+    "event_type": 1,
+    "event_desc": "Booker 28' 3PT Pullup Jump Shot (5 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "7-7",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 121,
+    "event_type": 6,
+    "event_desc": "O'Neale S.FOUL (P1.T2) (B.Schwab)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 121,
+    "event_type": 3,
+    "event_desc": "Coward Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "8-7",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 121,
+    "event_type": 3,
+    "event_desc": "Coward Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "9-7",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 138,
+    "event_type": 6,
+    "event_desc": "Mashack P.FOUL (P1.T2) (B.Schwab)",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 145,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 26' 3PT Pullup Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 149,
+    "event_type": 4,
+    "event_desc": "Hendricks REBOUND (Off:0 Def:1)",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 155,
+    "event_type": 1,
+    "event_desc": "Mashack 2' Driving Reverse Layup (2 PTS) (Jackson 1 AST)",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "11-7",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 179,
+    "event_type": 1,
+    "event_desc": "Booker 3' Driving Layup (7 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "11-9",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 200,
+    "event_type": 1,
+    "event_desc": "Hendricks 3' Driving Layup (2 PTS) (Coward 1 AST)",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "13-9",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 211,
+    "event_type": 2,
+    "event_desc": "MISS Green 26' 3PT Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 212,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 212,
+    "event_type": 6,
+    "event_desc": "Hendricks L.B.FOUL (P1.T3) (J.Capers)",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 219,
+    "event_type": 1,
+    "event_desc": "Green 26' 3PT Jump Shot (5 PTS) (Booker 2 AST)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "13-12",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 234,
+    "event_type": 1,
+    "event_desc": "Spencer 25' 3PT Jump Shot (6 PTS) (Mashack 2 AST)",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "16-12",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 256,
+    "event_type": 1,
+    "event_desc": "Ighodaro 2' Reverse Layup (2 PTS) (O'Neale 1 AST)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "16-14",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 270,
+    "event_type": 1,
+    "event_desc": "Spencer 2' Driving Finger Roll Layup (8 PTS)",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "18-14",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 285,
+    "event_type": 1,
+    "event_desc": "Booker 7' Pullup Jump Shot (9 PTS) (Ighodaro 1 AST)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "18-16",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 295,
+    "event_type": 2,
+    "event_desc": "MISS Spencer 28' 3PT Jump Shot",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 298,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:1)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 304,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 27' 3PT Running Pull-Up Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 307,
+    "event_type": 4,
+    "event_desc": "Coward REBOUND (Off:0 Def:1)",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 314,
+    "event_type": 2,
+    "event_desc": "MISS Coward 25' 3PT Step Back Jump Shot",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 319,
+    "event_type": 4,
+    "event_desc": "O'Neale REBOUND (Off:0 Def:1)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 338,
+    "event_type": 1,
+    "event_desc": "Green 26' 3PT Jump Shot (8 PTS) (Booker 3 AST)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "18-19",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 6,
+    "event_desc": "Gillespie P.FOUL (P1.T3) (J.Capers)",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 0,
+    "event_desc": "GRIZZLIES Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (8:20 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "18-19",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Clayton Jr. FOR Hendricks",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Burton FOR Coward",
+    "player_name": "Coward",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Bal FOR Jackson",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Jarreau FOR Spencer",
+    "player_name": "Spencer",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Maluach FOR Gillespie",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 347,
+    "event_type": 8,
+    "event_desc": "SUB: Goodwin FOR Ighodaro",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 364,
+    "event_type": 2,
+    "event_desc": "MISS Mashack 17' Fadeaway Jumper",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 369,
+    "event_type": 4,
+    "event_desc": "Maluach REBOUND (Off:0 Def:1)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 376,
+    "event_type": 1,
+    "event_desc": "O'Neale 26' 3PT Jump Shot (3 PTS) (Green 1 AST)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "18-22",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 385,
+    "event_type": 2,
+    "event_desc": "MISS Jarreau 11' Pullup Jump Shot",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 389,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:2)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 400,
+    "event_type": 1,
+    "event_desc": "Booker 25' 3PT Pullup Jump Shot (12 PTS)",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "18-25",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 424,
+    "event_type": 2,
+    "event_desc": "MISS Clayton Jr. 3' Driving Layup",
+    "player_name": "Clayton Jr.",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 424,
+    "event_type": 0,
+    "event_desc": "Maluach BLOCK (1 BLK)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 427,
+    "event_type": 4,
+    "event_desc": "Clayton Jr. REBOUND (Off:1 Def:0)",
+    "player_name": "Clayton Jr.",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 428,
+    "event_type": 2,
+    "event_desc": "MISS Burton 25' 3PT Pullup Jump Shot",
+    "player_name": "Burton",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 434,
+    "event_type": 4,
+    "event_desc": "Green REBOUND (Off:0 Def:3)",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 451,
+    "event_type": 1,
+    "event_desc": "O'Neale 26' 3PT Jump Shot (6 PTS) (Goodwin 1 AST)",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "18-28",
+    "score_margin": "-10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 465,
+    "event_type": 1,
+    "event_desc": "Mashack 2' Driving Finger Roll Layup (4 PTS) (Clayton Jr. 1 AST)",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "20-28",
+    "score_margin": "-8"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 480,
+    "event_type": 2,
+    "event_desc": "MISS O'Neale 3PT Jump Shot",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 4,
+    "event_desc": "Maluach REBOUND (Off:1 Def:1)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 6,
+    "event_desc": "Clayton Jr. S.FOUL (P1.T4) (J.Van Duyne)",
+    "player_name": "Clayton Jr.",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 3,
+    "event_desc": "Maluach Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "20-29",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 8,
+    "event_desc": "SUB: Dunn FOR O'Neale",
+    "player_name": "O'Neale",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 8,
+    "event_desc": "SUB: Fleming FOR Green",
+    "player_name": "Green",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 481,
+    "event_type": 3,
+    "event_desc": "MISS Maluach Free Throw 2 of 2",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 486,
+    "event_type": 4,
+    "event_desc": "Jarreau REBOUND (Off:0 Def:1)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 497,
+    "event_type": 5,
+    "event_desc": "Mashack Lost Ball Turnover (P1.T1)",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 497,
+    "event_type": 0,
+    "event_desc": "Fleming STEAL (1 STL)",
+    "player_name": "Fleming",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 507,
+    "event_type": 5,
+    "event_desc": "Goodwin Bad Pass Turnover (P1.T1)",
+    "player_name": "Goodwin",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 507,
+    "event_type": 0,
+    "event_desc": "Bal STEAL (1 STL)",
+    "player_name": "Bal",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 519,
+    "event_type": 2,
+    "event_desc": "MISS Jarreau 24' 3PT Jump Shot",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 522,
+    "event_type": 4,
+    "event_desc": "Maluach REBOUND (Off:1 Def:2)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 537,
+    "event_type": 2,
+    "event_desc": "MISS Booker 16' Step Back Jump Shot",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 541,
+    "event_type": 4,
+    "event_desc": "Dunn REBOUND (Off:1 Def:0)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 6,
+    "event_desc": "Clayton Jr. S.FOUL (P2.PN) (J.Van Duyne)",
+    "player_name": "Clayton Jr.",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 0,
+    "event_desc": "Suns Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 8,
+    "event_desc": "SUB: Hendricks FOR Mashack",
+    "player_name": "Mashack",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 3,
+    "event_desc": "MISS Maluach Free Throw 1 of 2",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 546,
+    "event_type": 3,
+    "event_desc": "Maluach Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "20-30",
+    "score_margin": "-10"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 559,
+    "event_type": 1,
+    "event_desc": "Hendricks 25' 3PT Jump Shot (5 PTS) (Jarreau 1 AST)",
+    "player_name": "Hendricks",
+    "team_abbrev": "MEM",
+    "score": "23-30",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 2,
+    "event_desc": "MISS Goodwin 26' 3PT Jump Shot",
+    "player_name": "Goodwin",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 577,
+    "event_type": 4,
+    "event_desc": "Jarreau REBOUND (Off:0 Def:2)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 588,
+    "event_type": 5,
+    "event_desc": "Burton Bad Pass Turnover (P1.T2)",
+    "player_name": "Burton",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 588,
+    "event_type": 0,
+    "event_desc": "Dunn STEAL (1 STL)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 592,
+    "event_type": 8,
+    "event_desc": "SUB: Jackson FOR Burton",
+    "player_name": "Burton",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 592,
+    "event_type": 8,
+    "event_desc": "SUB: Ighodaro FOR Booker",
+    "player_name": "Booker",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 592,
+    "event_type": 8,
+    "event_desc": "SUB: Gillespie FOR Maluach",
+    "player_name": "Maluach",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 595,
+    "event_type": 1,
+    "event_desc": "Ighodaro 2' Cutting Dunk Shot (4 PTS) (Gillespie 2 AST)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "23-32",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 608,
+    "event_type": 6,
+    "event_desc": "Goodwin P.FOUL (P1.T4) (B.Schwab)",
+    "player_name": "Goodwin",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 619,
+    "event_type": 5,
+    "event_desc": "Jackson Traveling Turnover (P1.T3)",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 635,
+    "event_type": 2,
+    "event_desc": "MISS Goodwin 26' 3PT Jump Shot",
+    "player_name": "Goodwin",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 637,
+    "event_type": 4,
+    "event_desc": "GRIZZLIES Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 650,
+    "event_type": 1,
+    "event_desc": "Jackson 3' Driving Reverse Layup (6 PTS) (Jarreau 2 AST)",
+    "player_name": "Jackson",
+    "team_abbrev": "MEM",
+    "score": "25-32",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 661,
+    "event_type": 1,
+    "event_desc": "Dunn 1' Cutting Dunk Shot (2 PTS) (Ighodaro 2 AST)",
+    "player_name": "Dunn",
+    "team_abbrev": "PHX",
+    "score": "25-34",
+    "score_margin": "-9"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 672,
+    "event_type": 1,
+    "event_desc": "Jarreau 1' Driving Layup (2 PTS)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "27-34",
+    "score_margin": "-7"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 684,
+    "event_type": 2,
+    "event_desc": "MISS Gillespie 25' 3PT Pullup Jump Shot",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 686,
+    "event_type": 4,
+    "event_desc": "Clayton Jr. REBOUND (Off:1 Def:1)",
+    "player_name": "Clayton Jr.",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 690,
+    "event_type": 1,
+    "event_desc": "Jarreau 1' Running Finger Roll Layup (4 PTS) (Clayton Jr. 2 AST)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "29-34",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 714,
+    "event_type": 2,
+    "event_desc": "MISS Gillespie 19' Step Back Jump Shot",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 717,
+    "event_type": 4,
+    "event_desc": "Jarreau REBOUND (Off:0 Def:3)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 6,
+    "event_desc": "Ighodaro S.FOUL (P1.PN) (J.Capers)",
+    "player_name": "Ighodaro",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (8:35 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "29-34",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 3,
+    "event_desc": "Jarreau Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "30-34",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 3,
+    "event_desc": "Jarreau Free Throw 2 of 2 (6 PTS)",
+    "player_name": "Jarreau",
+    "team_abbrev": "MEM",
+    "score": "31-34",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 2,
+    "event_desc": "MISS Gillespie 28' 3PT Jump Shot",
+    "player_name": "Gillespie",
+    "team_abbrev": "PHX",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 4,
+    "event_desc": "Suns Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (8:36 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "31-34",
+    "score_margin": "-3"
+  }
+]

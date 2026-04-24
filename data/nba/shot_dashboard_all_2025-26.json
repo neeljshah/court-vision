@@ -1,0 +1,4352 @@
+{
+  "101108": {
+    "player_id": 101108,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.196,
+    "pull_up_pct": 0.679,
+    "contested_pct": 0.143,
+    "uncontested_pct": 0.857,
+    "avg_defender_dist_contested": 5.464,
+    "avg_defender_dist_catch_shoot": 5.654
+  },
+  "1626145": {
+    "player_id": 1626145,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.48,
+    "pull_up_pct": 0.358,
+    "contested_pct": 0.225,
+    "uncontested_pct": 0.774,
+    "avg_defender_dist_contested": 5.442,
+    "avg_defender_dist_catch_shoot": 5.912
+  },
+  "1626156": {
+    "player_id": 1626156,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.25,
+    "pull_up_pct": 0.509,
+    "contested_pct": 0.375,
+    "uncontested_pct": 0.625,
+    "avg_defender_dist_contested": 4.596,
+    "avg_defender_dist_catch_shoot": 5.065
+  },
+  "1626157": {
+    "player_id": 1626157,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.271,
+    "pull_up_pct": 0.084,
+    "contested_pct": 0.552,
+    "uncontested_pct": 0.448,
+    "avg_defender_dist_contested": 4.068,
+    "avg_defender_dist_catch_shoot": 5.634
+  },
+  "1626162": {
+    "player_id": 1626162,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.392,
+    "pull_up_pct": 0.125,
+    "contested_pct": 0.498,
+    "uncontested_pct": 0.502,
+    "avg_defender_dist_contested": 4.294,
+    "avg_defender_dist_catch_shoot": 5.378
+  },
+  "1626164": {
+    "player_id": 1626164,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.117,
+    "pull_up_pct": 0.589,
+    "contested_pct": 0.492,
+    "uncontested_pct": 0.509,
+    "avg_defender_dist_contested": 4.143,
+    "avg_defender_dist_catch_shoot": 4.57
+  },
+  "1626166": {
+    "player_id": 1626166,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.268,
+    "pull_up_pct": 0.477,
+    "contested_pct": 0.336,
+    "uncontested_pct": 0.664,
+    "avg_defender_dist_contested": 4.784,
+    "avg_defender_dist_catch_shoot": 5.264
+  },
+  "1626167": {
+    "player_id": 1626167,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.593,
+    "pull_up_pct": 0.122,
+    "contested_pct": 0.292,
+    "uncontested_pct": 0.708,
+    "avg_defender_dist_contested": 5.252,
+    "avg_defender_dist_catch_shoot": 6.094
+  },
+  "1626171": {
+    "player_id": 1626171,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.451,
+    "pull_up_pct": 0.244,
+    "contested_pct": 0.384,
+    "uncontested_pct": 0.616,
+    "avg_defender_dist_contested": 4.498,
+    "avg_defender_dist_catch_shoot": 5.045
+  },
+  "1626172": {
+    "player_id": 1626172,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.167,
+    "pull_up_pct": 0.111,
+    "contested_pct": 0.685,
+    "uncontested_pct": 0.315,
+    "avg_defender_dist_contested": 3.482,
+    "avg_defender_dist_catch_shoot": 5.75
+  },
+  "1626181": {
+    "player_id": 1626181,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.281,
+    "pull_up_pct": 0.328,
+    "contested_pct": 0.561,
+    "uncontested_pct": 0.439,
+    "avg_defender_dist_contested": 3.962,
+    "avg_defender_dist_catch_shoot": 4.612
+  },
+  "1626204": {
+    "player_id": 1626204,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.555,
+    "pull_up_pct": 0.009,
+    "contested_pct": 0.355,
+    "uncontested_pct": 0.646,
+    "avg_defender_dist_contested": 5.108,
+    "avg_defender_dist_catch_shoot": 6.43
+  },
+  "1626220": {
+    "player_id": 1626220,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.644,
+    "pull_up_pct": 0.216,
+    "contested_pct": 0.158,
+    "uncontested_pct": 0.841,
+    "avg_defender_dist_contested": 5.929,
+    "avg_defender_dist_catch_shoot": 6.369
+  },
+  "1627734": {
+    "player_id": 1627734,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.176,
+    "pull_up_pct": 0.009,
+    "contested_pct": 0.715,
+    "uncontested_pct": 0.285,
+    "avg_defender_dist_contested": 3.588,
+    "avg_defender_dist_catch_shoot": 6.379
+  },
+  "1627739": {
+    "player_id": 1627739,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.447,
+    "pull_up_pct": 0.08,
+    "contested_pct": 0.392,
+    "uncontested_pct": 0.608,
+    "avg_defender_dist_contested": 4.918,
+    "avg_defender_dist_catch_shoot": 6.346
+  },
+  "1627741": {
+    "player_id": 1627741,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.476,
+    "pull_up_pct": 0.249,
+    "contested_pct": 0.297,
+    "uncontested_pct": 0.702,
+    "avg_defender_dist_contested": 5.008,
+    "avg_defender_dist_catch_shoot": 5.72
+  },
+  "1627742": {
+    "player_id": 1627742,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.256,
+    "pull_up_pct": 0.494,
+    "contested_pct": 0.558,
+    "uncontested_pct": 0.442,
+    "avg_defender_dist_contested": 4.022,
+    "avg_defender_dist_catch_shoot": 4.368
+  },
+  "1627746": {
+    "player_id": 1627746,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.5,
+    "pull_up_pct": 0.1,
+    "contested_pct": 0.4,
+    "uncontested_pct": 0.6,
+    "avg_defender_dist_contested": 5.0,
+    "avg_defender_dist_catch_shoot": 5.571
+  },
+  "1627747": {
+    "player_id": 1627747,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.282,
+    "pull_up_pct": 0.344,
+    "contested_pct": 0.363,
+    "uncontested_pct": 0.637,
+    "avg_defender_dist_contested": 4.72,
+    "avg_defender_dist_catch_shoot": 5.579
+  },
+  "1627749": {
+    "player_id": 1627749,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.181,
+    "pull_up_pct": 0.434,
+    "contested_pct": 0.494,
+    "uncontested_pct": 0.505,
+    "avg_defender_dist_contested": 4.121,
+    "avg_defender_dist_catch_shoot": 4.609
+  },
+  "1627750": {
+    "player_id": 1627750,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.155,
+    "pull_up_pct": 0.52,
+    "contested_pct": 0.407,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.449,
+    "avg_defender_dist_catch_shoot": 5.198
+  },
+  "1627751": {
+    "player_id": 1627751,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.14,
+    "pull_up_pct": 0.007,
+    "contested_pct": 0.712,
+    "uncontested_pct": 0.288,
+    "avg_defender_dist_contested": 3.37,
+    "avg_defender_dist_catch_shoot": 5.392
+  },
+  "1627752": {
+    "player_id": 1627752,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.565,
+    "pull_up_pct": 0.221,
+    "contested_pct": 0.298,
+    "uncontested_pct": 0.702,
+    "avg_defender_dist_contested": 4.938,
+    "avg_defender_dist_catch_shoot": 5.348
+  },
+  "1627759": {
+    "player_id": 1627759,
+    "season": "2025-26",
+    "pull_up_pct": 0.464,
+    "catch_and_shoot_pct": 0.125,
+    "contested_pct": 0.513,
+    "uncontested_pct": 0.486,
+    "avg_defender_dist_contested": 3.991,
+    "avg_defender_dist_catch_shoot": 4.744
+  },
+  "1627780": {
+    "player_id": 1627780,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.291,
+    "pull_up_pct": 0.031,
+    "contested_pct": 0.517,
+    "uncontested_pct": 0.483,
+    "avg_defender_dist_contested": 4.506,
+    "avg_defender_dist_catch_shoot": 6.646
+  },
+  "1627783": {
+    "player_id": 1627783,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.214,
+    "pull_up_pct": 0.313,
+    "contested_pct": 0.464,
+    "uncontested_pct": 0.537,
+    "avg_defender_dist_contested": 4.299,
+    "avg_defender_dist_catch_shoot": 5.259
+  },
+  "1627824": {
+    "player_id": 1627824,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.62,
+    "pull_up_pct": 0.05,
+    "contested_pct": 0.327,
+    "uncontested_pct": 0.674,
+    "avg_defender_dist_contested": 4.862,
+    "avg_defender_dist_catch_shoot": 5.697
+  },
+  "1627826": {
+    "player_id": 1627826,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.052,
+    "pull_up_pct": 0.017,
+    "contested_pct": 0.844,
+    "uncontested_pct": 0.156,
+    "avg_defender_dist_contested": 2.994,
+    "avg_defender_dist_catch_shoot": 4.286
+  },
+  "1627827": {
+    "player_id": 1627827,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.734,
+    "pull_up_pct": 0.04,
+    "contested_pct": 0.226,
+    "uncontested_pct": 0.774,
+    "avg_defender_dist_contested": 5.678,
+    "avg_defender_dist_catch_shoot": 6.398
+  },
+  "1627884": {
+    "player_id": 1627884,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.389,
+    "pull_up_pct": 0.069,
+    "contested_pct": 0.472,
+    "uncontested_pct": 0.527,
+    "avg_defender_dist_contested": 4.389,
+    "avg_defender_dist_catch_shoot": 5.856
+  },
+  "1627936": {
+    "player_id": 1627936,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.534,
+    "pull_up_pct": 0.103,
+    "contested_pct": 0.307,
+    "uncontested_pct": 0.693,
+    "avg_defender_dist_contested": 5.192,
+    "avg_defender_dist_catch_shoot": 6.321
+  },
+  "1628365": {
+    "player_id": 1628365,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.091,
+    "pull_up_pct": 0.545,
+    "contested_pct": 0.818,
+    "uncontested_pct": 0.182,
+    "avg_defender_dist_contested": 3.546,
+    "avg_defender_dist_catch_shoot": 3.857
+  },
+  "1628366": {
+    "player_id": 1628366,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.617,
+    "pull_up_pct": 0.263,
+    "contested_pct": 0.154,
+    "uncontested_pct": 0.846,
+    "avg_defender_dist_contested": 5.458,
+    "avg_defender_dist_catch_shoot": 5.675
+  },
+  "1628368": {
+    "player_id": 1628368,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.199,
+    "pull_up_pct": 0.435,
+    "contested_pct": 0.391,
+    "uncontested_pct": 0.608,
+    "avg_defender_dist_contested": 4.483,
+    "avg_defender_dist_catch_shoot": 5.264
+  },
+  "1628369": {
+    "player_id": 1628369,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.14,
+    "pull_up_pct": 0.553,
+    "contested_pct": 0.515,
+    "uncontested_pct": 0.485,
+    "avg_defender_dist_contested": 4.072,
+    "avg_defender_dist_catch_shoot": 4.507
+  },
+  "1628370": {
+    "player_id": 1628370,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.262,
+    "pull_up_pct": 0.422,
+    "contested_pct": 0.356,
+    "uncontested_pct": 0.644,
+    "avg_defender_dist_contested": 4.702,
+    "avg_defender_dist_catch_shoot": 5.37
+  },
+  "1628374": {
+    "player_id": 1628374,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.383,
+    "pull_up_pct": 0.155,
+    "contested_pct": 0.481,
+    "uncontested_pct": 0.52,
+    "avg_defender_dist_contested": 4.291,
+    "avg_defender_dist_catch_shoot": 5.255
+  },
+  "1628378": {
+    "player_id": 1628378,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.183,
+    "pull_up_pct": 0.457,
+    "contested_pct": 0.442,
+    "uncontested_pct": 0.557,
+    "avg_defender_dist_contested": 4.317,
+    "avg_defender_dist_catch_shoot": 4.919
+  },
+  "1628379": {
+    "player_id": 1628379,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.519,
+    "pull_up_pct": 0.276,
+    "contested_pct": 0.235,
+    "uncontested_pct": 0.764,
+    "avg_defender_dist_contested": 5.33,
+    "avg_defender_dist_catch_shoot": 5.873
+  },
+  "1628380": {
+    "player_id": 1628380,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.422,
+    "pull_up_pct": 0.031,
+    "contested_pct": 0.469,
+    "uncontested_pct": 0.532,
+    "avg_defender_dist_contested": 4.594,
+    "avg_defender_dist_catch_shoot": 6.377
+  },
+  "1628381": {
+    "player_id": 1628381,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.35,
+    "pull_up_pct": 0.096,
+    "contested_pct": 0.533,
+    "uncontested_pct": 0.467,
+    "avg_defender_dist_contested": 4.288,
+    "avg_defender_dist_catch_shoot": 5.749
+  },
+  "1628384": {
+    "player_id": 1628384,
+    "season": "2025-26",
+    "pull_up_pct": 0.175,
+    "catch_and_shoot_pct": 0.411,
+    "contested_pct": 0.409,
+    "uncontested_pct": 0.591,
+    "avg_defender_dist_contested": 4.592,
+    "avg_defender_dist_catch_shoot": 5.438
+  },
+  "1628386": {
+    "player_id": 1628386,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.118,
+    "pull_up_pct": 0.025,
+    "contested_pct": 0.694,
+    "uncontested_pct": 0.306,
+    "avg_defender_dist_contested": 3.6,
+    "avg_defender_dist_catch_shoot": 5.476
+  },
+  "1628389": {
+    "player_id": 1628389,
+    "season": "2025-26",
+    "pull_up_pct": 0.245,
+    "catch_and_shoot_pct": 0.33,
+    "contested_pct": 0.441,
+    "uncontested_pct": 0.558,
+    "avg_defender_dist_contested": 4.564,
+    "avg_defender_dist_catch_shoot": 5.652
+  },
+  "1628392": {
+    "player_id": 1628392,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.168,
+    "pull_up_pct": 0.049,
+    "contested_pct": 0.628,
+    "uncontested_pct": 0.372,
+    "avg_defender_dist_contested": 3.716,
+    "avg_defender_dist_catch_shoot": 5.065
+  },
+  "1628398": {
+    "player_id": 1628398,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.317,
+    "pull_up_pct": 0.109,
+    "contested_pct": 0.506,
+    "uncontested_pct": 0.494,
+    "avg_defender_dist_contested": 4.348,
+    "avg_defender_dist_catch_shoot": 5.906
+  },
+  "1628401": {
+    "player_id": 1628401,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.293,
+    "pull_up_pct": 0.489,
+    "contested_pct": 0.332,
+    "uncontested_pct": 0.669,
+    "avg_defender_dist_contested": 4.8,
+    "avg_defender_dist_catch_shoot": 5.247
+  },
+  "1628404": {
+    "player_id": 1628404,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.289,
+    "pull_up_pct": 0.282,
+    "contested_pct": 0.392,
+    "uncontested_pct": 0.609,
+    "avg_defender_dist_contested": 4.734,
+    "avg_defender_dist_catch_shoot": 5.895
+  },
+  "1628415": {
+    "player_id": 1628415,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.249,
+    "pull_up_pct": 0.523,
+    "contested_pct": 0.315,
+    "uncontested_pct": 0.685,
+    "avg_defender_dist_contested": 4.788,
+    "avg_defender_dist_catch_shoot": 5.194
+  },
+  "1628418": {
+    "player_id": 1628418,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.523,
+    "pull_up_pct": 0.023,
+    "contested_pct": 0.411,
+    "uncontested_pct": 0.589,
+    "avg_defender_dist_contested": 4.798,
+    "avg_defender_dist_catch_shoot": 6.255
+  },
+  "1628436": {
+    "player_id": 1628436,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.034,
+    "contested_pct": 0.772,
+    "uncontested_pct": 0.227,
+    "avg_defender_dist_contested": 3.228,
+    "avg_defender_dist_catch_shoot": 5.0,
+    "pull_up_pct": 0.0
+  },
+  "1628960": {
+    "player_id": 1628960,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.369,
+    "pull_up_pct": 0.34,
+    "contested_pct": 0.264,
+    "uncontested_pct": 0.735,
+    "avg_defender_dist_contested": 5.216,
+    "avg_defender_dist_catch_shoot": 5.881
+  },
+  "1628963": {
+    "player_id": 1628963,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.122,
+    "pull_up_pct": 0.026,
+    "contested_pct": 0.752,
+    "uncontested_pct": 0.249,
+    "avg_defender_dist_contested": 3.386,
+    "avg_defender_dist_catch_shoot": 6.101
+  },
+  "1628969": {
+    "player_id": 1628969,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.439,
+    "pull_up_pct": 0.28,
+    "contested_pct": 0.329,
+    "uncontested_pct": 0.67,
+    "avg_defender_dist_contested": 4.72,
+    "avg_defender_dist_catch_shoot": 5.125
+  },
+  "1628970": {
+    "player_id": 1628970,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.312,
+    "pull_up_pct": 0.169,
+    "contested_pct": 0.462,
+    "uncontested_pct": 0.539,
+    "avg_defender_dist_contested": 4.451,
+    "avg_defender_dist_catch_shoot": 5.766
+  },
+  "1628971": {
+    "player_id": 1628971,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.279,
+    "pull_up_pct": 0.131,
+    "contested_pct": 0.55,
+    "uncontested_pct": 0.45,
+    "avg_defender_dist_contested": 4.074,
+    "avg_defender_dist_catch_shoot": 5.389
+  },
+  "1628973": {
+    "player_id": 1628973,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.156,
+    "pull_up_pct": 0.547,
+    "contested_pct": 0.47,
+    "uncontested_pct": 0.529,
+    "avg_defender_dist_contested": 4.193,
+    "avg_defender_dist_catch_shoot": 4.58
+  },
+  "1628975": {
+    "player_id": 1628975,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.463,
+    "pull_up_pct": 0.435,
+    "contested_pct": 0.187,
+    "uncontested_pct": 0.813,
+    "avg_defender_dist_contested": 5.348,
+    "avg_defender_dist_catch_shoot": 5.528
+  },
+  "1628976": {
+    "player_id": 1628976,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.45,
+    "pull_up_pct": 0.061,
+    "contested_pct": 0.447,
+    "uncontested_pct": 0.553,
+    "avg_defender_dist_contested": 4.616,
+    "avg_defender_dist_catch_shoot": 6.154
+  },
+  "1628978": {
+    "player_id": 1628978,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.607,
+    "pull_up_pct": 0.204,
+    "contested_pct": 0.246,
+    "uncontested_pct": 0.754,
+    "avg_defender_dist_contested": 5.308,
+    "avg_defender_dist_catch_shoot": 5.724
+  },
+  "1628983": {
+    "player_id": 1628983,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.055,
+    "pull_up_pct": 0.575,
+    "contested_pct": 0.455,
+    "uncontested_pct": 0.545,
+    "avg_defender_dist_contested": 4.24,
+    "avg_defender_dist_catch_shoot": 4.831
+  },
+  "1628988": {
+    "player_id": 1628988,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.573,
+    "pull_up_pct": 0.226,
+    "contested_pct": 0.261,
+    "uncontested_pct": 0.739,
+    "avg_defender_dist_contested": 5.452,
+    "avg_defender_dist_catch_shoot": 5.984
+  },
+  "1628989": {
+    "player_id": 1628989,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.45,
+    "pull_up_pct": 0.159,
+    "contested_pct": 0.382,
+    "uncontested_pct": 0.618,
+    "avg_defender_dist_contested": 4.666,
+    "avg_defender_dist_catch_shoot": 5.489
+  },
+  "1628991": {
+    "player_id": 1628991,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.309,
+    "pull_up_pct": 0.201,
+    "contested_pct": 0.576,
+    "uncontested_pct": 0.425,
+    "avg_defender_dist_contested": 4.201,
+    "avg_defender_dist_catch_shoot": 5.341
+  },
+  "1628997": {
+    "player_id": 1628997,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.34,
+    "pull_up_pct": 0.165,
+    "contested_pct": 0.393,
+    "uncontested_pct": 0.607,
+    "avg_defender_dist_contested": 4.704,
+    "avg_defender_dist_catch_shoot": 5.879
+  },
+  "1628998": {
+    "player_id": 1628998,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.4,
+    "pull_up_pct": 0.2,
+    "contested_pct": 0.5,
+    "uncontested_pct": 0.5,
+    "avg_defender_dist_contested": 4.4,
+    "avg_defender_dist_catch_shoot": 6.0
+  },
+  "1629001": {
+    "player_id": 1629001,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.332,
+    "pull_up_pct": 0.203,
+    "contested_pct": 0.469,
+    "uncontested_pct": 0.531,
+    "avg_defender_dist_contested": 4.456,
+    "avg_defender_dist_catch_shoot": 5.691
+  },
+  "1629004": {
+    "player_id": 1629004,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.431,
+    "pull_up_pct": 0.283,
+    "contested_pct": 0.315,
+    "uncontested_pct": 0.685,
+    "avg_defender_dist_contested": 4.814,
+    "avg_defender_dist_catch_shoot": 5.522
+  },
+  "1629006": {
+    "player_id": 1629006,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.543,
+    "pull_up_pct": 0.037,
+    "contested_pct": 0.33,
+    "uncontested_pct": 0.671,
+    "avg_defender_dist_contested": 5.202,
+    "avg_defender_dist_catch_shoot": 6.703
+  },
+  "1629008": {
+    "player_id": 1629008,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.377,
+    "pull_up_pct": 0.295,
+    "contested_pct": 0.629,
+    "uncontested_pct": 0.37,
+    "avg_defender_dist_contested": 3.795,
+    "avg_defender_dist_catch_shoot": 4.052
+  },
+  "1629011": {
+    "player_id": 1629011,
+    "season": "2025-26",
+    "contested_pct": 0.876,
+    "uncontested_pct": 0.124,
+    "avg_defender_dist_contested": 2.882,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "1629012": {
+    "player_id": 1629012,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.26,
+    "pull_up_pct": 0.28,
+    "contested_pct": 0.453,
+    "uncontested_pct": 0.548,
+    "avg_defender_dist_contested": 4.355,
+    "avg_defender_dist_catch_shoot": 5.407
+  },
+  "1629013": {
+    "player_id": 1629013,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.547,
+    "pull_up_pct": 0.258,
+    "contested_pct": 0.258,
+    "uncontested_pct": 0.742,
+    "avg_defender_dist_contested": 5.322,
+    "avg_defender_dist_catch_shoot": 5.777
+  },
+  "1629014": {
+    "player_id": 1629014,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.307,
+    "pull_up_pct": 0.489,
+    "contested_pct": 0.381,
+    "uncontested_pct": 0.619,
+    "avg_defender_dist_contested": 4.544,
+    "avg_defender_dist_catch_shoot": 4.947
+  },
+  "1629018": {
+    "player_id": 1629018,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.536,
+    "pull_up_pct": 0.341,
+    "contested_pct": 0.258,
+    "uncontested_pct": 0.742,
+    "avg_defender_dist_contested": 5.052,
+    "avg_defender_dist_catch_shoot": 5.328
+  },
+  "1629020": {
+    "player_id": 1629020,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.417,
+    "contested_pct": 0.475,
+    "uncontested_pct": 0.525,
+    "avg_defender_dist_contested": 4.652,
+    "avg_defender_dist_catch_shoot": 6.851,
+    "pull_up_pct": 0.0
+  },
+  "1629021": {
+    "player_id": 1629021,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.348,
+    "pull_up_pct": 0.027,
+    "contested_pct": 0.577,
+    "uncontested_pct": 0.422,
+    "avg_defender_dist_contested": 4.209,
+    "avg_defender_dist_catch_shoot": 6.353
+  },
+  "1629023": {
+    "player_id": 1629023,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.317,
+    "pull_up_pct": 0.099,
+    "contested_pct": 0.53,
+    "uncontested_pct": 0.47,
+    "avg_defender_dist_contested": 4.246,
+    "avg_defender_dist_catch_shoot": 5.716
+  },
+  "1629026": {
+    "player_id": 1629026,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.385,
+    "pull_up_pct": 0.218,
+    "contested_pct": 0.385,
+    "uncontested_pct": 0.615,
+    "avg_defender_dist_contested": 4.754,
+    "avg_defender_dist_catch_shoot": 5.865
+  },
+  "1629027": {
+    "player_id": 1629027,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.11,
+    "pull_up_pct": 0.595,
+    "contested_pct": 0.382,
+    "uncontested_pct": 0.619,
+    "avg_defender_dist_contested": 4.594,
+    "avg_defender_dist_catch_shoot": 5.034
+  },
+  "1629028": {
+    "player_id": 1629028,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.138,
+    "pull_up_pct": 0.033,
+    "contested_pct": 0.723,
+    "uncontested_pct": 0.277,
+    "avg_defender_dist_contested": 3.428,
+    "avg_defender_dist_catch_shoot": 4.64
+  },
+  "1629029": {
+    "player_id": 1629029,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.119,
+    "pull_up_pct": 0.631,
+    "contested_pct": 0.393,
+    "uncontested_pct": 0.607,
+    "avg_defender_dist_contested": 4.336,
+    "avg_defender_dist_catch_shoot": 4.618
+  },
+  "1629048": {
+    "player_id": 1629048,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.08,
+    "pull_up_pct": 0.005,
+    "contested_pct": 0.774,
+    "uncontested_pct": 0.226,
+    "avg_defender_dist_contested": 3.28,
+    "avg_defender_dist_catch_shoot": 6.176
+  },
+  "1629057": {
+    "player_id": 1629057,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.123,
+    "pull_up_pct": 0.004,
+    "contested_pct": 0.757,
+    "uncontested_pct": 0.242,
+    "avg_defender_dist_contested": 3.348,
+    "avg_defender_dist_catch_shoot": 6.141
+  },
+  "1629060": {
+    "player_id": 1629060,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.459,
+    "pull_up_pct": 0.288,
+    "contested_pct": 0.29,
+    "uncontested_pct": 0.71,
+    "avg_defender_dist_contested": 5.022,
+    "avg_defender_dist_catch_shoot": 5.669
+  },
+  "1629111": {
+    "player_id": 1629111,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.402,
+    "pull_up_pct": 0.015,
+    "contested_pct": 0.538,
+    "uncontested_pct": 0.463,
+    "avg_defender_dist_contested": 4.203,
+    "avg_defender_dist_catch_shoot": 5.984
+  },
+  "1629130": {
+    "player_id": 1629130,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.602,
+    "pull_up_pct": 0.204,
+    "contested_pct": 0.382,
+    "uncontested_pct": 0.619,
+    "avg_defender_dist_contested": 4.728,
+    "avg_defender_dist_catch_shoot": 5.054
+  },
+  "1629216": {
+    "player_id": 1629216,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.557,
+    "pull_up_pct": 0.333,
+    "contested_pct": 0.219,
+    "uncontested_pct": 0.781,
+    "avg_defender_dist_contested": 5.096,
+    "avg_defender_dist_catch_shoot": 5.317
+  },
+  "1629234": {
+    "player_id": 1629234,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.154,
+    "pull_up_pct": 0.077,
+    "contested_pct": 0.699,
+    "uncontested_pct": 0.301,
+    "avg_defender_dist_contested": 3.64,
+    "avg_defender_dist_catch_shoot": 5.278
+  },
+  "1629312": {
+    "player_id": 1629312,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.55,
+    "pull_up_pct": 0.2,
+    "contested_pct": 0.3,
+    "uncontested_pct": 0.7,
+    "avg_defender_dist_contested": 5.0,
+    "avg_defender_dist_catch_shoot": 5.933
+  },
+  "1629610": {
+    "player_id": 1629610,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.316,
+    "pull_up_pct": 0.158,
+    "contested_pct": 0.527,
+    "uncontested_pct": 0.473,
+    "avg_defender_dist_contested": 4.05,
+    "avg_defender_dist_catch_shoot": 5.219
+  },
+  "1629611": {
+    "player_id": 1629611,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.311,
+    "pull_up_pct": 0.289,
+    "contested_pct": 0.376,
+    "uncontested_pct": 0.624,
+    "avg_defender_dist_contested": 4.772,
+    "avg_defender_dist_catch_shoot": 5.87
+  },
+  "1629614": {
+    "player_id": 1629614,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.197,
+    "pull_up_pct": 0.529,
+    "contested_pct": 0.269,
+    "uncontested_pct": 0.731,
+    "avg_defender_dist_contested": 5.124,
+    "avg_defender_dist_catch_shoot": 5.772
+  },
+  "1629618": {
+    "player_id": 1629618,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.439,
+    "pull_up_pct": 0.327,
+    "contested_pct": 0.293,
+    "uncontested_pct": 0.707,
+    "avg_defender_dist_contested": 5.144,
+    "avg_defender_dist_catch_shoot": 5.867
+  },
+  "1629622": {
+    "player_id": 1629622,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.704,
+    "pull_up_pct": 0.127,
+    "contested_pct": 0.324,
+    "uncontested_pct": 0.676,
+    "avg_defender_dist_contested": 4.86,
+    "avg_defender_dist_catch_shoot": 5.205
+  },
+  "1629627": {
+    "player_id": 1629627,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.001,
+    "pull_up_pct": 0.046,
+    "contested_pct": 0.856,
+    "uncontested_pct": 0.145,
+    "avg_defender_dist_contested": 3.046,
+    "avg_defender_dist_catch_shoot": 4.917
+  },
+  "1629628": {
+    "player_id": 1629628,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.336,
+    "pull_up_pct": 0.1,
+    "contested_pct": 0.513,
+    "uncontested_pct": 0.487,
+    "avg_defender_dist_contested": 4.298,
+    "avg_defender_dist_catch_shoot": 5.787
+  },
+  "1629630": {
+    "player_id": 1629630,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.109,
+    "pull_up_pct": 0.429,
+    "contested_pct": 0.426,
+    "uncontested_pct": 0.574,
+    "avg_defender_dist_contested": 4.47,
+    "avg_defender_dist_catch_shoot": 5.388
+  },
+  "1629631": {
+    "player_id": 1629631,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.387,
+    "pull_up_pct": 0.301,
+    "contested_pct": 0.397,
+    "uncontested_pct": 0.603,
+    "avg_defender_dist_contested": 4.558,
+    "avg_defender_dist_catch_shoot": 5.224
+  },
+  "1629632": {
+    "player_id": 1629632,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.294,
+    "pull_up_pct": 0.343,
+    "contested_pct": 0.343,
+    "uncontested_pct": 0.657,
+    "avg_defender_dist_contested": 4.822,
+    "avg_defender_dist_catch_shoot": 5.718
+  },
+  "1629636": {
+    "player_id": 1629636,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.198,
+    "pull_up_pct": 0.459,
+    "contested_pct": 0.399,
+    "uncontested_pct": 0.601,
+    "avg_defender_dist_contested": 4.648,
+    "avg_defender_dist_catch_shoot": 5.384
+  },
+  "1629637": {
+    "player_id": 1629637,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.024,
+    "contested_pct": 0.798,
+    "uncontested_pct": 0.203,
+    "avg_defender_dist_contested": 3.288,
+    "avg_defender_dist_catch_shoot": 6.333,
+    "pull_up_pct": 0.0
+  },
+  "1629638": {
+    "player_id": 1629638,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.392,
+    "pull_up_pct": 0.279,
+    "contested_pct": 0.381,
+    "uncontested_pct": 0.62,
+    "avg_defender_dist_contested": 4.594,
+    "avg_defender_dist_catch_shoot": 5.283
+  },
+  "1629639": {
+    "player_id": 1629639,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.22,
+    "pull_up_pct": 0.453,
+    "contested_pct": 0.468,
+    "uncontested_pct": 0.533,
+    "avg_defender_dist_contested": 4.279,
+    "avg_defender_dist_catch_shoot": 4.799
+  },
+  "1629640": {
+    "player_id": 1629640,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.319,
+    "pull_up_pct": 0.041,
+    "contested_pct": 0.605,
+    "uncontested_pct": 0.395,
+    "avg_defender_dist_contested": 4.002,
+    "avg_defender_dist_catch_shoot": 5.975
+  },
+  "1629645": {
+    "player_id": 1629645,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.121,
+    "pull_up_pct": 0.42,
+    "contested_pct": 0.459,
+    "uncontested_pct": 0.54,
+    "avg_defender_dist_contested": 4.295,
+    "avg_defender_dist_catch_shoot": 5.184
+  },
+  "1629651": {
+    "player_id": 1629651,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.065,
+    "pull_up_pct": 0.043,
+    "contested_pct": 0.763,
+    "uncontested_pct": 0.236,
+    "avg_defender_dist_contested": 3.324,
+    "avg_defender_dist_catch_shoot": 5.36
+  },
+  "1629652": {
+    "player_id": 1629652,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.654,
+    "pull_up_pct": 0.18,
+    "contested_pct": 0.154,
+    "uncontested_pct": 0.846,
+    "avg_defender_dist_contested": 5.542,
+    "avg_defender_dist_catch_shoot": 5.909
+  },
+  "1629655": {
+    "player_id": 1629655,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.013,
+    "pull_up_pct": 0.016,
+    "contested_pct": 0.839,
+    "uncontested_pct": 0.16,
+    "avg_defender_dist_contested": 2.966,
+    "avg_defender_dist_catch_shoot": 4.517
+  },
+  "1629656": {
+    "player_id": 1629656,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.336,
+    "pull_up_pct": 0.273,
+    "contested_pct": 0.435,
+    "uncontested_pct": 0.565,
+    "avg_defender_dist_contested": 4.436,
+    "avg_defender_dist_catch_shoot": 5.153
+  },
+  "1629660": {
+    "player_id": 1629660,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.107,
+    "pull_up_pct": 0.581,
+    "contested_pct": 0.451,
+    "uncontested_pct": 0.549,
+    "avg_defender_dist_contested": 4.302,
+    "avg_defender_dist_catch_shoot": 4.743
+  },
+  "1629661": {
+    "player_id": 1629661,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.476,
+    "pull_up_pct": 0.19,
+    "contested_pct": 0.327,
+    "uncontested_pct": 0.673,
+    "avg_defender_dist_contested": 5.124,
+    "avg_defender_dist_catch_shoot": 6.049
+  },
+  "1629673": {
+    "player_id": 1629673,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.353,
+    "pull_up_pct": 0.372,
+    "contested_pct": 0.343,
+    "uncontested_pct": 0.657,
+    "avg_defender_dist_contested": 4.83,
+    "avg_defender_dist_catch_shoot": 5.435
+  },
+  "1629674": {
+    "player_id": 1629674,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.042,
+    "pull_up_pct": 0.027,
+    "contested_pct": 0.757,
+    "uncontested_pct": 0.243,
+    "avg_defender_dist_contested": 3.274,
+    "avg_defender_dist_catch_shoot": 5.167
+  },
+  "1629675": {
+    "player_id": 1629675,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.419,
+    "pull_up_pct": 0.208,
+    "contested_pct": 0.418,
+    "uncontested_pct": 0.582,
+    "avg_defender_dist_contested": 4.736,
+    "avg_defender_dist_catch_shoot": 5.752
+  },
+  "1629680": {
+    "player_id": 1629680,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.633,
+    "pull_up_pct": 0.092,
+    "contested_pct": 0.234,
+    "uncontested_pct": 0.767,
+    "avg_defender_dist_contested": 5.531,
+    "avg_defender_dist_catch_shoot": 6.354
+  },
+  "1629684": {
+    "player_id": 1629684,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.656,
+    "pull_up_pct": 0.178,
+    "contested_pct": 0.215,
+    "uncontested_pct": 0.785,
+    "avg_defender_dist_contested": 5.416,
+    "avg_defender_dist_catch_shoot": 5.883
+  },
+  "1629723": {
+    "player_id": 1629723,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.509,
+    "pull_up_pct": 0.064,
+    "contested_pct": 0.391,
+    "uncontested_pct": 0.608,
+    "avg_defender_dist_contested": 5.038,
+    "avg_defender_dist_catch_shoot": 6.449
+  },
+  "1629726": {
+    "player_id": 1629726,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.788,
+    "pull_up_pct": 0.115,
+    "contested_pct": 0.384,
+    "uncontested_pct": 0.616,
+    "avg_defender_dist_contested": 4.81,
+    "avg_defender_dist_catch_shoot": 5.044
+  },
+  "1629731": {
+    "player_id": 1629731,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.678,
+    "pull_up_pct": 0.055,
+    "contested_pct": 0.238,
+    "uncontested_pct": 0.762,
+    "avg_defender_dist_contested": 5.33,
+    "avg_defender_dist_catch_shoot": 6.041
+  },
+  "1629750": {
+    "player_id": 1629750,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.576,
+    "pull_up_pct": 0.037,
+    "contested_pct": 0.325,
+    "uncontested_pct": 0.675,
+    "avg_defender_dist_contested": 5.124,
+    "avg_defender_dist_catch_shoot": 6.227
+  },
+  "1630162": {
+    "player_id": 1630162,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.122,
+    "pull_up_pct": 0.559,
+    "contested_pct": 0.464,
+    "uncontested_pct": 0.536,
+    "avg_defender_dist_contested": 4.222,
+    "avg_defender_dist_catch_shoot": 4.711
+  },
+  "1630163": {
+    "player_id": 1630163,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.268,
+    "pull_up_pct": 0.448,
+    "contested_pct": 0.308,
+    "uncontested_pct": 0.692,
+    "avg_defender_dist_contested": 4.896,
+    "avg_defender_dist_catch_shoot": 5.558
+  },
+  "1630164": {
+    "player_id": 1630164,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.1,
+    "contested_pct": 0.7,
+    "uncontested_pct": 0.3,
+    "avg_defender_dist_contested": 3.6,
+    "avg_defender_dist_catch_shoot": 7.0,
+    "pull_up_pct": 0.0
+  },
+  "1630165": {
+    "player_id": 1630165,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.279,
+    "pull_up_pct": 0.468,
+    "contested_pct": 0.288,
+    "uncontested_pct": 0.711,
+    "avg_defender_dist_contested": 4.838,
+    "avg_defender_dist_catch_shoot": 5.357
+  },
+  "1630166": {
+    "player_id": 1630166,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.233,
+    "pull_up_pct": 0.231,
+    "contested_pct": 0.5,
+    "uncontested_pct": 0.5,
+    "avg_defender_dist_contested": 4.276,
+    "avg_defender_dist_catch_shoot": 5.567
+  },
+  "1630167": {
+    "player_id": 1630167,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.493,
+    "pull_up_pct": 0.148,
+    "contested_pct": 0.359,
+    "uncontested_pct": 0.641,
+    "avg_defender_dist_contested": 4.958,
+    "avg_defender_dist_catch_shoot": 5.841
+  },
+  "1630168": {
+    "player_id": 1630168,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.441,
+    "pull_up_pct": 0.049,
+    "contested_pct": 0.484,
+    "uncontested_pct": 0.516,
+    "avg_defender_dist_contested": 4.61,
+    "avg_defender_dist_catch_shoot": 6.183
+  },
+  "1630170": {
+    "player_id": 1630170,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.54,
+    "pull_up_pct": 0.327,
+    "contested_pct": 0.352,
+    "uncontested_pct": 0.647,
+    "avg_defender_dist_contested": 4.654,
+    "avg_defender_dist_catch_shoot": 4.82
+  },
+  "1630171": {
+    "player_id": 1630171,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.431,
+    "pull_up_pct": 0.055,
+    "contested_pct": 0.424,
+    "uncontested_pct": 0.576,
+    "avg_defender_dist_contested": 4.848,
+    "avg_defender_dist_catch_shoot": 6.758
+  },
+  "1630172": {
+    "player_id": 1630172,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.458,
+    "pull_up_pct": 0.195,
+    "contested_pct": 0.357,
+    "uncontested_pct": 0.643,
+    "avg_defender_dist_contested": 4.882,
+    "avg_defender_dist_catch_shoot": 5.846
+  },
+  "1630173": {
+    "player_id": 1630173,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.166,
+    "pull_up_pct": 0.075,
+    "contested_pct": 0.69,
+    "uncontested_pct": 0.31,
+    "avg_defender_dist_contested": 3.634,
+    "avg_defender_dist_catch_shoot": 5.608
+  },
+  "1630174": {
+    "player_id": 1630174,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.443,
+    "pull_up_pct": 0.244,
+    "contested_pct": 0.291,
+    "uncontested_pct": 0.709,
+    "avg_defender_dist_contested": 4.958,
+    "avg_defender_dist_catch_shoot": 5.651
+  },
+  "1630175": {
+    "player_id": 1630175,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.186,
+    "pull_up_pct": 0.433,
+    "contested_pct": 0.399,
+    "uncontested_pct": 0.602,
+    "avg_defender_dist_contested": 4.582,
+    "avg_defender_dist_catch_shoot": 5.35
+  },
+  "1630178": {
+    "player_id": 1630178,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.162,
+    "pull_up_pct": 0.449,
+    "contested_pct": 0.398,
+    "uncontested_pct": 0.603,
+    "avg_defender_dist_contested": 4.728,
+    "avg_defender_dist_catch_shoot": 5.605
+  },
+  "1630180": {
+    "player_id": 1630180,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.329,
+    "pull_up_pct": 0.212,
+    "contested_pct": 0.439,
+    "uncontested_pct": 0.561,
+    "avg_defender_dist_contested": 4.54,
+    "avg_defender_dist_catch_shoot": 5.808
+  },
+  "1630182": {
+    "player_id": 1630182,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.739,
+    "pull_up_pct": 0.045,
+    "contested_pct": 0.233,
+    "uncontested_pct": 0.767,
+    "avg_defender_dist_contested": 5.522,
+    "avg_defender_dist_catch_shoot": 6.13
+  },
+  "1630183": {
+    "player_id": 1630183,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.214,
+    "pull_up_pct": 0.332,
+    "contested_pct": 0.44,
+    "uncontested_pct": 0.559,
+    "avg_defender_dist_contested": 4.528,
+    "avg_defender_dist_catch_shoot": 5.501
+  },
+  "1630188": {
+    "player_id": 1630188,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.55,
+    "pull_up_pct": 0.02,
+    "contested_pct": 0.408,
+    "uncontested_pct": 0.592,
+    "avg_defender_dist_contested": 4.844,
+    "avg_defender_dist_catch_shoot": 6.261
+  },
+  "1630191": {
+    "player_id": 1630191,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.291,
+    "pull_up_pct": 0.016,
+    "contested_pct": 0.616,
+    "uncontested_pct": 0.384,
+    "avg_defender_dist_contested": 4.092,
+    "avg_defender_dist_catch_shoot": 6.696
+  },
+  "1630192": {
+    "player_id": 1630192,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.371,
+    "pull_up_pct": 0.029,
+    "contested_pct": 0.55,
+    "uncontested_pct": 0.45,
+    "avg_defender_dist_contested": 4.2,
+    "avg_defender_dist_catch_shoot": 6.246
+  },
+  "1630193": {
+    "player_id": 1630193,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.394,
+    "pull_up_pct": 0.35,
+    "contested_pct": 0.305,
+    "uncontested_pct": 0.695,
+    "avg_defender_dist_contested": 5.218,
+    "avg_defender_dist_catch_shoot": 5.794
+  },
+  "1630194": {
+    "player_id": 1630194,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.18,
+    "pull_up_pct": 0.054,
+    "contested_pct": 0.64,
+    "uncontested_pct": 0.361,
+    "avg_defender_dist_contested": 3.695,
+    "avg_defender_dist_catch_shoot": 5.672
+  },
+  "1630198": {
+    "player_id": 1630198,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.671,
+    "pull_up_pct": 0.204,
+    "contested_pct": 0.177,
+    "uncontested_pct": 0.823,
+    "avg_defender_dist_contested": 5.408,
+    "avg_defender_dist_catch_shoot": 5.679
+  },
+  "1630200": {
+    "player_id": 1630200,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.167,
+    "pull_up_pct": 0.133,
+    "contested_pct": 0.625,
+    "uncontested_pct": 0.375,
+    "avg_defender_dist_contested": 3.892,
+    "avg_defender_dist_catch_shoot": 5.645
+  },
+  "1630202": {
+    "player_id": 1630202,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.298,
+    "pull_up_pct": 0.469,
+    "contested_pct": 0.23,
+    "uncontested_pct": 0.77,
+    "avg_defender_dist_contested": 5.14,
+    "avg_defender_dist_catch_shoot": 5.705
+  },
+  "1630208": {
+    "player_id": 1630208,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.136,
+    "pull_up_pct": 0.035,
+    "contested_pct": 0.774,
+    "uncontested_pct": 0.227,
+    "avg_defender_dist_contested": 3.374,
+    "avg_defender_dist_catch_shoot": 5.686
+  },
+  "1630217": {
+    "player_id": 1630217,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.195,
+    "pull_up_pct": 0.326,
+    "contested_pct": 0.521,
+    "uncontested_pct": 0.479,
+    "avg_defender_dist_contested": 4.174,
+    "avg_defender_dist_catch_shoot": 5.054
+  },
+  "1630224": {
+    "player_id": 1630224,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.219,
+    "pull_up_pct": 0.435,
+    "contested_pct": 0.401,
+    "uncontested_pct": 0.599,
+    "avg_defender_dist_contested": 4.422,
+    "avg_defender_dist_catch_shoot": 5.28
+  },
+  "1630228": {
+    "player_id": 1630228,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.238,
+    "pull_up_pct": 0.208,
+    "contested_pct": 0.499,
+    "uncontested_pct": 0.502,
+    "avg_defender_dist_contested": 4.081,
+    "avg_defender_dist_catch_shoot": 5.395
+  },
+  "1630230": {
+    "player_id": 1630230,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.24,
+    "pull_up_pct": 0.201,
+    "contested_pct": 0.58,
+    "uncontested_pct": 0.42,
+    "avg_defender_dist_contested": 4.014,
+    "avg_defender_dist_catch_shoot": 5.144
+  },
+  "1630241": {
+    "player_id": 1630241,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.58,
+    "pull_up_pct": 0.277,
+    "contested_pct": 0.278,
+    "uncontested_pct": 0.721,
+    "avg_defender_dist_contested": 5.014,
+    "avg_defender_dist_catch_shoot": 5.288
+  },
+  "1630245": {
+    "player_id": 1630245,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.326,
+    "pull_up_pct": 0.126,
+    "contested_pct": 0.51,
+    "uncontested_pct": 0.49,
+    "avg_defender_dist_contested": 4.466,
+    "avg_defender_dist_catch_shoot": 6.227
+  },
+  "1630249": {
+    "player_id": 1630249,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.623,
+    "pull_up_pct": 0.208,
+    "contested_pct": 0.311,
+    "uncontested_pct": 0.689,
+    "avg_defender_dist_contested": 4.796,
+    "avg_defender_dist_catch_shoot": 5.079
+  },
+  "1630264": {
+    "player_id": 1630264,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.217,
+    "pull_up_pct": 0.05,
+    "contested_pct": 0.633,
+    "uncontested_pct": 0.367,
+    "avg_defender_dist_contested": 3.968,
+    "avg_defender_dist_catch_shoot": 6.281
+  },
+  "1630286": {
+    "player_id": 1630286,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.333,
+    "contested_pct": 0.667,
+    "uncontested_pct": 0.333,
+    "avg_defender_dist_contested": 2.332,
+    "avg_defender_dist_catch_shoot": 5.0,
+    "pull_up_pct": 0.0
+  },
+  "1630311": {
+    "player_id": 1630311,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.214,
+    "pull_up_pct": 0.421,
+    "contested_pct": 0.435,
+    "uncontested_pct": 0.566,
+    "avg_defender_dist_contested": 4.646,
+    "avg_defender_dist_catch_shoot": 5.535
+  },
+  "1630314": {
+    "player_id": 1630314,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.193,
+    "pull_up_pct": 0.234,
+    "contested_pct": 0.536,
+    "uncontested_pct": 0.464,
+    "avg_defender_dist_contested": 4.2,
+    "avg_defender_dist_catch_shoot": 5.748
+  },
+  "1630526": {
+    "player_id": 1630526,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.44,
+    "pull_up_pct": 0.05,
+    "contested_pct": 0.44,
+    "uncontested_pct": 0.56,
+    "avg_defender_dist_contested": 4.48,
+    "avg_defender_dist_catch_shoot": 6.265
+  },
+  "1630529": {
+    "player_id": 1630529,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.46,
+    "pull_up_pct": 0.162,
+    "contested_pct": 0.35,
+    "uncontested_pct": 0.65,
+    "avg_defender_dist_contested": 4.916,
+    "avg_defender_dist_catch_shoot": 6.049
+  },
+  "1630530": {
+    "player_id": 1630530,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.323,
+    "pull_up_pct": 0.327,
+    "contested_pct": 0.343,
+    "uncontested_pct": 0.657,
+    "avg_defender_dist_contested": 4.774,
+    "avg_defender_dist_catch_shoot": 5.495
+  },
+  "1630532": {
+    "player_id": 1630532,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.164,
+    "pull_up_pct": 0.262,
+    "contested_pct": 0.585,
+    "uncontested_pct": 0.415,
+    "avg_defender_dist_contested": 3.924,
+    "avg_defender_dist_catch_shoot": 5.136
+  },
+  "1630533": {
+    "player_id": 1630533,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.536,
+    "pull_up_pct": 0.099,
+    "contested_pct": 0.406,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.55,
+    "avg_defender_dist_catch_shoot": 5.333
+  },
+  "1630534": {
+    "player_id": 1630534,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.413,
+    "pull_up_pct": 0.097,
+    "contested_pct": 0.405,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.904,
+    "avg_defender_dist_catch_shoot": 6.502
+  },
+  "1630536": {
+    "player_id": 1630536,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.175,
+    "pull_up_pct": 0.336,
+    "contested_pct": 0.459,
+    "uncontested_pct": 0.54,
+    "avg_defender_dist_contested": 4.403,
+    "avg_defender_dist_catch_shoot": 5.887
+  },
+  "1630538": {
+    "player_id": 1630538,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.352,
+    "pull_up_pct": 0.361,
+    "contested_pct": 0.329,
+    "uncontested_pct": 0.672,
+    "avg_defender_dist_contested": 5.046,
+    "avg_defender_dist_catch_shoot": 5.834
+  },
+  "1630540": {
+    "player_id": 1630540,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.469,
+    "pull_up_pct": 0.398,
+    "contested_pct": 0.409,
+    "uncontested_pct": 0.591,
+    "avg_defender_dist_contested": 4.51,
+    "avg_defender_dist_catch_shoot": 4.726
+  },
+  "1630541": {
+    "player_id": 1630541,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.614,
+    "pull_up_pct": 0.151,
+    "contested_pct": 0.352,
+    "uncontested_pct": 0.648,
+    "avg_defender_dist_contested": 4.77,
+    "avg_defender_dist_catch_shoot": 5.193
+  },
+  "1630543": {
+    "player_id": 1630543,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.017,
+    "pull_up_pct": 0.034,
+    "contested_pct": 0.865,
+    "uncontested_pct": 0.135,
+    "avg_defender_dist_contested": 3.068,
+    "avg_defender_dist_catch_shoot": 5.84
+  },
+  "1630544": {
+    "player_id": 1630544,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.262,
+    "pull_up_pct": 0.477,
+    "contested_pct": 0.309,
+    "uncontested_pct": 0.691,
+    "avg_defender_dist_contested": 5.086,
+    "avg_defender_dist_catch_shoot": 5.694
+  },
+  "1630549": {
+    "player_id": 1630549,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.098,
+    "pull_up_pct": 0.02,
+    "contested_pct": 0.772,
+    "uncontested_pct": 0.228,
+    "avg_defender_dist_contested": 3.356,
+    "avg_defender_dist_catch_shoot": 6.424
+  },
+  "1630551": {
+    "player_id": 1630551,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.308,
+    "pull_up_pct": 0.054,
+    "contested_pct": 0.569,
+    "uncontested_pct": 0.431,
+    "avg_defender_dist_contested": 4.046,
+    "avg_defender_dist_catch_shoot": 5.788
+  },
+  "1630552": {
+    "player_id": 1630552,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.196,
+    "pull_up_pct": 0.275,
+    "contested_pct": 0.512,
+    "uncontested_pct": 0.489,
+    "avg_defender_dist_contested": 4.201,
+    "avg_defender_dist_catch_shoot": 5.336
+  },
+  "1630557": {
+    "player_id": 1630557,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.515,
+    "pull_up_pct": 0.114,
+    "contested_pct": 0.405,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.642,
+    "avg_defender_dist_catch_shoot": 5.509
+  },
+  "1630558": {
+    "player_id": 1630558,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.339,
+    "pull_up_pct": 0.21,
+    "contested_pct": 0.369,
+    "uncontested_pct": 0.632,
+    "avg_defender_dist_contested": 5.002,
+    "avg_defender_dist_catch_shoot": 6.321
+  },
+  "1630559": {
+    "player_id": 1630559,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.201,
+    "pull_up_pct": 0.402,
+    "contested_pct": 0.452,
+    "uncontested_pct": 0.548,
+    "avg_defender_dist_contested": 4.4,
+    "avg_defender_dist_catch_shoot": 5.092
+  },
+  "1630560": {
+    "player_id": 1630560,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.13,
+    "pull_up_pct": 0.564,
+    "contested_pct": 0.521,
+    "uncontested_pct": 0.479,
+    "avg_defender_dist_contested": 4.058,
+    "avg_defender_dist_catch_shoot": 4.506
+  },
+  "1630567": {
+    "player_id": 1630567,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.215,
+    "pull_up_pct": 0.249,
+    "contested_pct": 0.575,
+    "uncontested_pct": 0.424,
+    "avg_defender_dist_contested": 3.957,
+    "avg_defender_dist_catch_shoot": 4.992
+  },
+  "1630568": {
+    "player_id": 1630568,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.411,
+    "pull_up_pct": 0.009,
+    "contested_pct": 0.463,
+    "uncontested_pct": 0.537,
+    "avg_defender_dist_contested": 4.48,
+    "avg_defender_dist_catch_shoot": 6.362
+  },
+  "1630570": {
+    "player_id": 1630570,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.165,
+    "pull_up_pct": 0.105,
+    "contested_pct": 0.693,
+    "uncontested_pct": 0.308,
+    "avg_defender_dist_contested": 3.729,
+    "avg_defender_dist_catch_shoot": 5.401
+  },
+  "1630572": {
+    "player_id": 1630572,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.459,
+    "pull_up_pct": 0.041,
+    "contested_pct": 0.418,
+    "uncontested_pct": 0.581,
+    "avg_defender_dist_contested": 4.904,
+    "avg_defender_dist_catch_shoot": 6.403
+  },
+  "1630573": {
+    "player_id": 1630573,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.7,
+    "pull_up_pct": 0.226,
+    "contested_pct": 0.199,
+    "uncontested_pct": 0.801,
+    "avg_defender_dist_contested": 5.452,
+    "avg_defender_dist_catch_shoot": 5.588
+  },
+  "1630577": {
+    "player_id": 1630577,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.681,
+    "pull_up_pct": 0.1,
+    "contested_pct": 0.339,
+    "uncontested_pct": 0.661,
+    "avg_defender_dist_contested": 4.862,
+    "avg_defender_dist_catch_shoot": 5.297
+  },
+  "1630578": {
+    "player_id": 1630578,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.124,
+    "pull_up_pct": 0.181,
+    "contested_pct": 0.693,
+    "uncontested_pct": 0.308,
+    "avg_defender_dist_contested": 3.535,
+    "avg_defender_dist_catch_shoot": 5.171
+  },
+  "1630579": {
+    "player_id": 1630579,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.04,
+    "contested_pct": 0.78,
+    "uncontested_pct": 0.22,
+    "avg_defender_dist_contested": 3.28,
+    "avg_defender_dist_catch_shoot": 5.0,
+    "pull_up_pct": 0.0
+  },
+  "1630581": {
+    "player_id": 1630581,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.261,
+    "pull_up_pct": 0.252,
+    "contested_pct": 0.484,
+    "uncontested_pct": 0.516,
+    "avg_defender_dist_contested": 4.486,
+    "avg_defender_dist_catch_shoot": 5.657
+  },
+  "1630583": {
+    "player_id": 1630583,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.405,
+    "pull_up_pct": 0.143,
+    "contested_pct": 0.452,
+    "uncontested_pct": 0.548,
+    "avg_defender_dist_contested": 4.39,
+    "avg_defender_dist_catch_shoot": 5.407
+  },
+  "1630590": {
+    "player_id": 1630590,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.188,
+    "pull_up_pct": 0.365,
+    "contested_pct": 0.469,
+    "uncontested_pct": 0.531,
+    "avg_defender_dist_contested": 4.228,
+    "avg_defender_dist_catch_shoot": 4.967
+  },
+  "1630591": {
+    "player_id": 1630591,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.33,
+    "pull_up_pct": 0.389,
+    "contested_pct": 0.295,
+    "uncontested_pct": 0.705,
+    "avg_defender_dist_contested": 5.13,
+    "avg_defender_dist_catch_shoot": 5.688
+  },
+  "1630592": {
+    "player_id": 1630592,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.562,
+    "pull_up_pct": 0.077,
+    "contested_pct": 0.322,
+    "uncontested_pct": 0.678,
+    "avg_defender_dist_contested": 4.992,
+    "avg_defender_dist_catch_shoot": 6.061
+  },
+  "1630595": {
+    "player_id": 1630595,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.13,
+    "pull_up_pct": 0.415,
+    "contested_pct": 0.523,
+    "uncontested_pct": 0.478,
+    "avg_defender_dist_contested": 4.157,
+    "avg_defender_dist_catch_shoot": 5.062
+  },
+  "1630596": {
+    "player_id": 1630596,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.215,
+    "pull_up_pct": 0.114,
+    "contested_pct": 0.639,
+    "uncontested_pct": 0.36,
+    "avg_defender_dist_contested": 3.817,
+    "avg_defender_dist_catch_shoot": 5.34
+  },
+  "1630598": {
+    "player_id": 1630598,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.393,
+    "pull_up_pct": 0.181,
+    "contested_pct": 0.432,
+    "uncontested_pct": 0.568,
+    "avg_defender_dist_contested": 4.668,
+    "avg_defender_dist_catch_shoot": 5.956
+  },
+  "1630610": {
+    "player_id": 1630610,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.337,
+    "pull_up_pct": 0.193,
+    "contested_pct": 0.445,
+    "uncontested_pct": 0.554,
+    "avg_defender_dist_contested": 4.688,
+    "avg_defender_dist_catch_shoot": 6.181
+  },
+  "1630611": {
+    "player_id": 1630611,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.455,
+    "pull_up_pct": 0.048,
+    "contested_pct": 0.405,
+    "uncontested_pct": 0.595,
+    "avg_defender_dist_contested": 4.744,
+    "avg_defender_dist_catch_shoot": 6.205
+  },
+  "1630619": {
+    "player_id": 1630619,
+    "season": "2025-26",
+    "contested_pct": 0.767,
+    "uncontested_pct": 0.233,
+    "avg_defender_dist_contested": 3.31,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "1630623": {
+    "player_id": 1630623,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.728,
+    "pull_up_pct": 0.173,
+    "contested_pct": 0.21,
+    "uncontested_pct": 0.79,
+    "avg_defender_dist_contested": 5.396,
+    "avg_defender_dist_catch_shoot": 5.633
+  },
+  "1630631": {
+    "player_id": 1630631,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.4,
+    "pull_up_pct": 0.333,
+    "contested_pct": 0.299,
+    "uncontested_pct": 0.7,
+    "avg_defender_dist_contested": 5.302,
+    "avg_defender_dist_catch_shoot": 6.037
+  },
+  "1630643": {
+    "player_id": 1630643,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.604,
+    "pull_up_pct": 0.033,
+    "contested_pct": 0.309,
+    "uncontested_pct": 0.691,
+    "avg_defender_dist_contested": 5.314,
+    "avg_defender_dist_catch_shoot": 6.513
+  },
+  "1630679": {
+    "player_id": 1630679,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.521,
+    "pull_up_pct": 0.221,
+    "contested_pct": 0.236,
+    "uncontested_pct": 0.765,
+    "avg_defender_dist_contested": 5.086,
+    "avg_defender_dist_catch_shoot": 5.712
+  },
+  "1630692": {
+    "player_id": 1630692,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.448,
+    "pull_up_pct": 0.192,
+    "contested_pct": 0.396,
+    "uncontested_pct": 0.604,
+    "avg_defender_dist_contested": 4.718,
+    "avg_defender_dist_catch_shoot": 5.847
+  },
+  "1630695": {
+    "player_id": 1630695,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.6,
+    "pull_up_pct": 0.008,
+    "contested_pct": 0.313,
+    "uncontested_pct": 0.687,
+    "avg_defender_dist_contested": 5.14,
+    "avg_defender_dist_catch_shoot": 6.326
+  },
+  "1630696": {
+    "player_id": 1630696,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.342,
+    "pull_up_pct": 0.12,
+    "contested_pct": 0.501,
+    "uncontested_pct": 0.499,
+    "avg_defender_dist_contested": 4.51,
+    "avg_defender_dist_catch_shoot": 6.098
+  },
+  "1630699": {
+    "player_id": 1630699,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.459,
+    "pull_up_pct": 0.243,
+    "contested_pct": 0.311,
+    "uncontested_pct": 0.689,
+    "avg_defender_dist_contested": 5.026,
+    "avg_defender_dist_catch_shoot": 5.691
+  },
+  "1630700": {
+    "player_id": 1630700,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.149,
+    "pull_up_pct": 0.066,
+    "contested_pct": 0.667,
+    "uncontested_pct": 0.333,
+    "avg_defender_dist_contested": 3.814,
+    "avg_defender_dist_catch_shoot": 6.156
+  },
+  "1630702": {
+    "player_id": 1630702,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.458,
+    "pull_up_pct": 0.294,
+    "contested_pct": 0.287,
+    "uncontested_pct": 0.713,
+    "avg_defender_dist_contested": 4.902,
+    "avg_defender_dist_catch_shoot": 5.439
+  },
+  "1630703": {
+    "player_id": 1630703,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.273,
+    "pull_up_pct": 0.342,
+    "contested_pct": 0.415,
+    "uncontested_pct": 0.585,
+    "avg_defender_dist_contested": 4.538,
+    "avg_defender_dist_catch_shoot": 5.448
+  },
+  "1631093": {
+    "player_id": 1631093,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.41,
+    "pull_up_pct": 0.262,
+    "contested_pct": 0.324,
+    "uncontested_pct": 0.676,
+    "avg_defender_dist_contested": 5.142,
+    "avg_defender_dist_catch_shoot": 6.044
+  },
+  "1631094": {
+    "player_id": 1631094,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.12,
+    "pull_up_pct": 0.339,
+    "contested_pct": 0.557,
+    "uncontested_pct": 0.443,
+    "avg_defender_dist_contested": 4.016,
+    "avg_defender_dist_catch_shoot": 5.051
+  },
+  "1631095": {
+    "player_id": 1631095,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.454,
+    "pull_up_pct": 0.285,
+    "contested_pct": 0.419,
+    "uncontested_pct": 0.582,
+    "avg_defender_dist_contested": 4.477,
+    "avg_defender_dist_catch_shoot": 4.962
+  },
+  "1631096": {
+    "player_id": 1631096,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.285,
+    "pull_up_pct": 0.184,
+    "contested_pct": 0.512,
+    "uncontested_pct": 0.488,
+    "avg_defender_dist_contested": 4.174,
+    "avg_defender_dist_catch_shoot": 5.348
+  },
+  "1631097": {
+    "player_id": 1631097,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.19,
+    "pull_up_pct": 0.395,
+    "contested_pct": 0.424,
+    "uncontested_pct": 0.577,
+    "avg_defender_dist_contested": 4.393,
+    "avg_defender_dist_catch_shoot": 5.034
+  },
+  "1631099": {
+    "player_id": 1631099,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.36,
+    "pull_up_pct": 0.35,
+    "contested_pct": 0.44,
+    "uncontested_pct": 0.56,
+    "avg_defender_dist_contested": 4.394,
+    "avg_defender_dist_catch_shoot": 4.983
+  },
+  "1631101": {
+    "player_id": 1631101,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.1,
+    "pull_up_pct": 0.471,
+    "contested_pct": 0.467,
+    "uncontested_pct": 0.534,
+    "avg_defender_dist_contested": 4.247,
+    "avg_defender_dist_catch_shoot": 5.087
+  },
+  "1631104": {
+    "player_id": 1631104,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.292,
+    "pull_up_pct": 0.175,
+    "contested_pct": 0.458,
+    "uncontested_pct": 0.542,
+    "avg_defender_dist_contested": 4.634,
+    "avg_defender_dist_catch_shoot": 6.093
+  },
+  "1631105": {
+    "player_id": 1631105,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.014,
+    "pull_up_pct": 0.045,
+    "contested_pct": 0.815,
+    "uncontested_pct": 0.185,
+    "avg_defender_dist_contested": 3.168,
+    "avg_defender_dist_catch_shoot": 4.967
+  },
+  "1631106": {
+    "player_id": 1631106,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.439,
+    "pull_up_pct": 0.137,
+    "contested_pct": 0.445,
+    "uncontested_pct": 0.555,
+    "avg_defender_dist_contested": 4.576,
+    "avg_defender_dist_catch_shoot": 5.762
+  },
+  "1631107": {
+    "player_id": 1631107,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.513,
+    "pull_up_pct": 0.073,
+    "contested_pct": 0.353,
+    "uncontested_pct": 0.647,
+    "avg_defender_dist_contested": 4.894,
+    "avg_defender_dist_catch_shoot": 6.13
+  },
+  "1631108": {
+    "player_id": 1631108,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.414,
+    "pull_up_pct": 0.313,
+    "contested_pct": 0.349,
+    "uncontested_pct": 0.65,
+    "avg_defender_dist_contested": 4.718,
+    "avg_defender_dist_catch_shoot": 5.305
+  },
+  "1631109": {
+    "player_id": 1631109,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.06,
+    "pull_up_pct": 0.014,
+    "contested_pct": 0.785,
+    "uncontested_pct": 0.215,
+    "avg_defender_dist_contested": 3.278,
+    "avg_defender_dist_catch_shoot": 4.671
+  },
+  "1631113": {
+    "player_id": 1631113,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.2,
+    "pull_up_pct": 0.263,
+    "contested_pct": 0.537,
+    "uncontested_pct": 0.463,
+    "avg_defender_dist_contested": 4.094,
+    "avg_defender_dist_catch_shoot": 5.215
+  },
+  "1631114": {
+    "player_id": 1631114,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.116,
+    "pull_up_pct": 0.348,
+    "contested_pct": 0.58,
+    "uncontested_pct": 0.42,
+    "avg_defender_dist_contested": 3.974,
+    "avg_defender_dist_catch_shoot": 5.013
+  },
+  "1631117": {
+    "player_id": 1631117,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.135,
+    "pull_up_pct": 0.054,
+    "contested_pct": 0.594,
+    "uncontested_pct": 0.405,
+    "avg_defender_dist_contested": 3.919,
+    "avg_defender_dist_catch_shoot": 6.556
+  },
+  "1631119": {
+    "player_id": 1631119,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.735,
+    "pull_up_pct": 0.07,
+    "contested_pct": 0.143,
+    "uncontested_pct": 0.857,
+    "avg_defender_dist_contested": 5.922,
+    "avg_defender_dist_catch_shoot": 6.449
+  },
+  "1631121": {
+    "player_id": 1631121,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.342,
+    "pull_up_pct": 0.169,
+    "contested_pct": 0.422,
+    "uncontested_pct": 0.578,
+    "avg_defender_dist_contested": 4.738,
+    "avg_defender_dist_catch_shoot": 6.209
+  },
+  "1631123": {
+    "player_id": 1631123,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.181,
+    "pull_up_pct": 0.377,
+    "contested_pct": 0.451,
+    "uncontested_pct": 0.549,
+    "avg_defender_dist_contested": 4.45,
+    "avg_defender_dist_catch_shoot": 5.43
+  },
+  "1631124": {
+    "player_id": 1631124,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.372,
+    "pull_up_pct": 0.267,
+    "contested_pct": 0.372,
+    "uncontested_pct": 0.628,
+    "avg_defender_dist_contested": 4.912,
+    "avg_defender_dist_catch_shoot": 5.767
+  },
+  "1631126": {
+    "player_id": 1631126,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.402,
+    "pull_up_pct": 0.293,
+    "contested_pct": 0.328,
+    "uncontested_pct": 0.672,
+    "avg_defender_dist_contested": 4.832,
+    "avg_defender_dist_catch_shoot": 5.566
+  },
+  "1631128": {
+    "player_id": 1631128,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.341,
+    "pull_up_pct": 0.09,
+    "contested_pct": 0.484,
+    "uncontested_pct": 0.516,
+    "avg_defender_dist_contested": 4.514,
+    "avg_defender_dist_catch_shoot": 6.404
+  },
+  "1631131": {
+    "player_id": 1631131,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.068,
+    "pull_up_pct": 0.01,
+    "contested_pct": 0.738,
+    "uncontested_pct": 0.262,
+    "avg_defender_dist_contested": 3.31,
+    "avg_defender_dist_catch_shoot": 4.744
+  },
+  "1631132": {
+    "player_id": 1631132,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.203,
+    "pull_up_pct": 0.014,
+    "contested_pct": 0.637,
+    "uncontested_pct": 0.362,
+    "avg_defender_dist_contested": 3.957,
+    "avg_defender_dist_catch_shoot": 6.0
+  },
+  "1631133": {
+    "player_id": 1631133,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.443,
+    "pull_up_pct": 0.024,
+    "contested_pct": 0.529,
+    "uncontested_pct": 0.471,
+    "avg_defender_dist_contested": 4.294,
+    "avg_defender_dist_catch_shoot": 6.008
+  },
+  "1631157": {
+    "player_id": 1631157,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.233,
+    "pull_up_pct": 0.416,
+    "contested_pct": 0.385,
+    "uncontested_pct": 0.615,
+    "avg_defender_dist_contested": 4.65,
+    "avg_defender_dist_catch_shoot": 5.5
+  },
+  "1631159": {
+    "player_id": 1631159,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.352,
+    "pull_up_pct": 0.067,
+    "contested_pct": 0.425,
+    "uncontested_pct": 0.575,
+    "avg_defender_dist_contested": 4.594,
+    "avg_defender_dist_catch_shoot": 6.333
+  },
+  "1631165": {
+    "player_id": 1631165,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.501,
+    "pull_up_pct": 0.237,
+    "contested_pct": 0.256,
+    "uncontested_pct": 0.744,
+    "avg_defender_dist_contested": 5.158,
+    "avg_defender_dist_catch_shoot": 5.627
+  },
+  "1631169": {
+    "player_id": 1631169,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.554,
+    "pull_up_pct": 0.074,
+    "contested_pct": 0.376,
+    "uncontested_pct": 0.624,
+    "avg_defender_dist_contested": 4.768,
+    "avg_defender_dist_catch_shoot": 5.725
+  },
+  "1631170": {
+    "player_id": 1631170,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.179,
+    "pull_up_pct": 0.152,
+    "contested_pct": 0.625,
+    "uncontested_pct": 0.375,
+    "avg_defender_dist_contested": 3.952,
+    "avg_defender_dist_catch_shoot": 5.554
+  },
+  "1631172": {
+    "player_id": 1631172,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.278,
+    "pull_up_pct": 0.47,
+    "contested_pct": 0.296,
+    "uncontested_pct": 0.703,
+    "avg_defender_dist_contested": 5.096,
+    "avg_defender_dist_catch_shoot": 5.737
+  },
+  "1631174": {
+    "player_id": 1631174,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.5,
+    "pull_up_pct": 0.161,
+    "contested_pct": 0.366,
+    "uncontested_pct": 0.634,
+    "avg_defender_dist_contested": 4.91,
+    "avg_defender_dist_catch_shoot": 5.73
+  },
+  "1631200": {
+    "player_id": 1631200,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.431,
+    "pull_up_pct": 0.011,
+    "contested_pct": 0.507,
+    "uncontested_pct": 0.492,
+    "avg_defender_dist_contested": 4.481,
+    "avg_defender_dist_catch_shoot": 6.725
+  },
+  "1631204": {
+    "player_id": 1631204,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.361,
+    "pull_up_pct": 0.438,
+    "contested_pct": 0.219,
+    "uncontested_pct": 0.781,
+    "avg_defender_dist_contested": 5.32,
+    "avg_defender_dist_catch_shoot": 5.93
+  },
+  "1631212": {
+    "player_id": 1631212,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.294,
+    "pull_up_pct": 0.229,
+    "contested_pct": 0.429,
+    "uncontested_pct": 0.572,
+    "avg_defender_dist_contested": 4.514,
+    "avg_defender_dist_catch_shoot": 5.603
+  },
+  "1631213": {
+    "player_id": 1631213,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.487,
+    "pull_up_pct": 0.17,
+    "contested_pct": 0.401,
+    "uncontested_pct": 0.599,
+    "avg_defender_dist_contested": 4.63,
+    "avg_defender_dist_catch_shoot": 5.362
+  },
+  "1631214": {
+    "player_id": 1631214,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.462,
+    "pull_up_pct": 0.115,
+    "contested_pct": 0.423,
+    "uncontested_pct": 0.577,
+    "avg_defender_dist_contested": 4.232,
+    "avg_defender_dist_catch_shoot": 4.733
+  },
+  "1631217": {
+    "player_id": 1631217,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.029,
+    "pull_up_pct": 0.017,
+    "contested_pct": 0.765,
+    "uncontested_pct": 0.235,
+    "avg_defender_dist_contested": 3.252,
+    "avg_defender_dist_catch_shoot": 5.128
+  },
+  "1631221": {
+    "player_id": 1631221,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.346,
+    "pull_up_pct": 0.523,
+    "contested_pct": 0.218,
+    "uncontested_pct": 0.782,
+    "avg_defender_dist_contested": 5.344,
+    "avg_defender_dist_catch_shoot": 5.706
+  },
+  "1631222": {
+    "player_id": 1631222,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.405,
+    "pull_up_pct": 0.107,
+    "contested_pct": 0.409,
+    "uncontested_pct": 0.591,
+    "avg_defender_dist_contested": 4.846,
+    "avg_defender_dist_catch_shoot": 6.302
+  },
+  "1631230": {
+    "player_id": 1631230,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.245,
+    "pull_up_pct": 0.046,
+    "contested_pct": 0.608,
+    "uncontested_pct": 0.392,
+    "avg_defender_dist_contested": 3.944,
+    "avg_defender_dist_catch_shoot": 6.007
+  },
+  "1631243": {
+    "player_id": 1631243,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.477,
+    "pull_up_pct": 0.053,
+    "contested_pct": 0.399,
+    "uncontested_pct": 0.6,
+    "avg_defender_dist_contested": 4.81,
+    "avg_defender_dist_catch_shoot": 6.389
+  },
+  "1631245": {
+    "player_id": 1631245,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.263,
+    "pull_up_pct": 0.195,
+    "contested_pct": 0.451,
+    "uncontested_pct": 0.548,
+    "avg_defender_dist_contested": 4.54,
+    "avg_defender_dist_catch_shoot": 5.837
+  },
+  "1631246": {
+    "player_id": 1631246,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.404,
+    "pull_up_pct": 0.318,
+    "contested_pct": 0.326,
+    "uncontested_pct": 0.675,
+    "avg_defender_dist_contested": 4.896,
+    "avg_defender_dist_catch_shoot": 5.477
+  },
+  "1631248": {
+    "player_id": 1631248,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.595,
+    "pull_up_pct": 0.249,
+    "contested_pct": 0.159,
+    "uncontested_pct": 0.841,
+    "avg_defender_dist_contested": 5.824,
+    "avg_defender_dist_catch_shoot": 6.25
+  },
+  "1631250": {
+    "player_id": 1631250,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.584,
+    "pull_up_pct": 0.062,
+    "contested_pct": 0.309,
+    "uncontested_pct": 0.691,
+    "avg_defender_dist_contested": 5.292,
+    "avg_defender_dist_catch_shoot": 6.337
+  },
+  "1631255": {
+    "player_id": 1631255,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.391,
+    "pull_up_pct": 0.013,
+    "contested_pct": 0.468,
+    "uncontested_pct": 0.532,
+    "avg_defender_dist_contested": 4.54,
+    "avg_defender_dist_catch_shoot": 6.343
+  },
+  "1631260": {
+    "player_id": 1631260,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.677,
+    "pull_up_pct": 0.279,
+    "contested_pct": 0.328,
+    "uncontested_pct": 0.672,
+    "avg_defender_dist_contested": 4.826,
+    "avg_defender_dist_catch_shoot": 4.892
+  },
+  "1631321": {
+    "player_id": 1631321,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.541,
+    "pull_up_pct": 0.085,
+    "contested_pct": 0.317,
+    "uncontested_pct": 0.683,
+    "avg_defender_dist_contested": 5.074,
+    "avg_defender_dist_catch_shoot": 6.111
+  },
+  "1631323": {
+    "player_id": 1631323,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.599,
+    "pull_up_pct": 0.117,
+    "contested_pct": 0.392,
+    "uncontested_pct": 0.608,
+    "avg_defender_dist_contested": 4.56,
+    "avg_defender_dist_catch_shoot": 5.243
+  },
+  "1631342": {
+    "player_id": 1631342,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.618,
+    "pull_up_pct": 0.067,
+    "contested_pct": 0.328,
+    "uncontested_pct": 0.672,
+    "avg_defender_dist_contested": 4.714,
+    "avg_defender_dist_catch_shoot": 5.391
+  },
+  "1631351": {
+    "player_id": 1631351,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.571,
+    "pull_up_pct": 0.19,
+    "contested_pct": 0.285,
+    "uncontested_pct": 0.714,
+    "avg_defender_dist_contested": 5.192,
+    "avg_defender_dist_catch_shoot": 5.877
+  },
+  "1631457": {
+    "player_id": 1631457,
+    "season": "2025-26",
+    "contested_pct": 0.666,
+    "uncontested_pct": 0.333,
+    "avg_defender_dist_contested": 3.0,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "1631466": {
+    "player_id": 1631466,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.328,
+    "pull_up_pct": 0.016,
+    "contested_pct": 0.594,
+    "uncontested_pct": 0.406,
+    "avg_defender_dist_contested": 4.218,
+    "avg_defender_dist_catch_shoot": 6.541
+  },
+  "1641705": {
+    "player_id": 1641705,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.273,
+    "pull_up_pct": 0.262,
+    "contested_pct": 0.502,
+    "uncontested_pct": 0.498,
+    "avg_defender_dist_contested": 4.156,
+    "avg_defender_dist_catch_shoot": 4.974
+  },
+  "1641706": {
+    "player_id": 1641706,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.368,
+    "pull_up_pct": 0.366,
+    "contested_pct": 0.388,
+    "uncontested_pct": 0.612,
+    "avg_defender_dist_contested": 4.704,
+    "avg_defender_dist_catch_shoot": 5.212
+  },
+  "1641707": {
+    "player_id": 1641707,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.484,
+    "pull_up_pct": 0.061,
+    "contested_pct": 0.437,
+    "uncontested_pct": 0.563,
+    "avg_defender_dist_contested": 4.598,
+    "avg_defender_dist_catch_shoot": 5.93
+  },
+  "1641708": {
+    "player_id": 1641708,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.124,
+    "pull_up_pct": 0.158,
+    "contested_pct": 0.581,
+    "uncontested_pct": 0.419,
+    "avg_defender_dist_contested": 3.988,
+    "avg_defender_dist_catch_shoot": 5.505
+  },
+  "1641709": {
+    "player_id": 1641709,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.047,
+    "pull_up_pct": 0.141,
+    "contested_pct": 0.748,
+    "uncontested_pct": 0.252,
+    "avg_defender_dist_contested": 3.472,
+    "avg_defender_dist_catch_shoot": 4.672
+  },
+  "1641710": {
+    "player_id": 1641710,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.249,
+    "pull_up_pct": 0.27,
+    "contested_pct": 0.458,
+    "uncontested_pct": 0.542,
+    "avg_defender_dist_contested": 4.572,
+    "avg_defender_dist_catch_shoot": 5.941
+  },
+  "1641711": {
+    "player_id": 1641711,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.448,
+    "pull_up_pct": 0.193,
+    "contested_pct": 0.362,
+    "uncontested_pct": 0.638,
+    "avg_defender_dist_contested": 4.85,
+    "avg_defender_dist_catch_shoot": 5.667
+  },
+  "1641712": {
+    "player_id": 1641712,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.39,
+    "pull_up_pct": 0.154,
+    "contested_pct": 0.437,
+    "uncontested_pct": 0.563,
+    "avg_defender_dist_contested": 4.708,
+    "avg_defender_dist_catch_shoot": 6.076
+  },
+  "1641713": {
+    "player_id": 1641713,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.253,
+    "pull_up_pct": 0.179,
+    "contested_pct": 0.522,
+    "uncontested_pct": 0.478,
+    "avg_defender_dist_contested": 4.27,
+    "avg_defender_dist_catch_shoot": 5.904
+  },
+  "1641715": {
+    "player_id": 1641715,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.095,
+    "pull_up_pct": 0.32,
+    "contested_pct": 0.52,
+    "uncontested_pct": 0.479,
+    "avg_defender_dist_contested": 3.995,
+    "avg_defender_dist_catch_shoot": 5.058
+  },
+  "1641716": {
+    "player_id": 1641716,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.364,
+    "pull_up_pct": 0.264,
+    "contested_pct": 0.39,
+    "uncontested_pct": 0.611,
+    "avg_defender_dist_contested": 4.59,
+    "avg_defender_dist_catch_shoot": 5.454
+  },
+  "1641717": {
+    "player_id": 1641717,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.416,
+    "pull_up_pct": 0.14,
+    "contested_pct": 0.415,
+    "uncontested_pct": 0.585,
+    "avg_defender_dist_contested": 4.676,
+    "avg_defender_dist_catch_shoot": 6.005
+  },
+  "1641718": {
+    "player_id": 1641718,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.225,
+    "pull_up_pct": 0.414,
+    "contested_pct": 0.515,
+    "uncontested_pct": 0.484,
+    "avg_defender_dist_contested": 4.099,
+    "avg_defender_dist_catch_shoot": 4.598
+  },
+  "1641722": {
+    "player_id": 1641722,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.423,
+    "pull_up_pct": 0.453,
+    "contested_pct": 0.423,
+    "uncontested_pct": 0.577,
+    "avg_defender_dist_contested": 4.522,
+    "avg_defender_dist_catch_shoot": 4.728
+  },
+  "1641724": {
+    "player_id": 1641724,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.466,
+    "pull_up_pct": 0.191,
+    "contested_pct": 0.395,
+    "uncontested_pct": 0.606,
+    "avg_defender_dist_contested": 4.672,
+    "avg_defender_dist_catch_shoot": 5.544
+  },
+  "1641726": {
+    "player_id": 1641726,
+    "season": "2025-26",
+    "contested_pct": 1.0,
+    "uncontested_pct": 0.0,
+    "avg_defender_dist_contested": 2.666,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "1641727": {
+    "player_id": 1641727,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.56,
+    "pull_up_pct": 0.2,
+    "contested_pct": 0.2,
+    "uncontested_pct": 0.8,
+    "avg_defender_dist_contested": 5.0,
+    "avg_defender_dist_catch_shoot": 5.316
+  },
+  "1641729": {
+    "player_id": 1641729,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.381,
+    "pull_up_pct": 0.322,
+    "contested_pct": 0.363,
+    "uncontested_pct": 0.638,
+    "avg_defender_dist_contested": 4.6,
+    "avg_defender_dist_catch_shoot": 5.19
+  },
+  "1641730": {
+    "player_id": 1641730,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.582,
+    "pull_up_pct": 0.1,
+    "contested_pct": 0.357,
+    "uncontested_pct": 0.643,
+    "avg_defender_dist_contested": 4.808,
+    "avg_defender_dist_catch_shoot": 5.614
+  },
+  "1641731": {
+    "player_id": 1641731,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.331,
+    "pull_up_pct": 0.157,
+    "contested_pct": 0.468,
+    "uncontested_pct": 0.532,
+    "avg_defender_dist_contested": 4.408,
+    "avg_defender_dist_catch_shoot": 5.683
+  },
+  "1641733": {
+    "player_id": 1641733,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.308,
+    "pull_up_pct": 0.554,
+    "contested_pct": 0.246,
+    "uncontested_pct": 0.753,
+    "avg_defender_dist_contested": 5.292,
+    "avg_defender_dist_catch_shoot": 5.534
+  },
+  "1641737": {
+    "player_id": 1641737,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.033,
+    "contested_pct": 0.84,
+    "uncontested_pct": 0.16,
+    "avg_defender_dist_contested": 2.964,
+    "avg_defender_dist_catch_shoot": 6.394,
+    "pull_up_pct": 0.0
+  },
+  "1641738": {
+    "player_id": 1641738,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.452,
+    "pull_up_pct": 0.079,
+    "contested_pct": 0.406,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.782,
+    "avg_defender_dist_catch_shoot": 6.224
+  },
+  "1641739": {
+    "player_id": 1641739,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.52,
+    "pull_up_pct": 0.147,
+    "contested_pct": 0.29,
+    "uncontested_pct": 0.71,
+    "avg_defender_dist_contested": 5.268,
+    "avg_defender_dist_catch_shoot": 6.278
+  },
+  "1641740": {
+    "player_id": 1641740,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.394,
+    "pull_up_pct": 0.076,
+    "contested_pct": 0.495,
+    "uncontested_pct": 0.505,
+    "avg_defender_dist_contested": 4.526,
+    "avg_defender_dist_catch_shoot": 6.271
+  },
+  "1641744": {
+    "player_id": 1641744,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.102,
+    "pull_up_pct": 0.01,
+    "contested_pct": 0.836,
+    "uncontested_pct": 0.163,
+    "avg_defender_dist_contested": 3.082,
+    "avg_defender_dist_catch_shoot": 4.646
+  },
+  "1641750": {
+    "player_id": 1641750,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.021,
+    "pull_up_pct": 0.011,
+    "contested_pct": 0.852,
+    "uncontested_pct": 0.149,
+    "avg_defender_dist_contested": 3.016,
+    "avg_defender_dist_catch_shoot": 4.833
+  },
+  "1641757": {
+    "player_id": 1641757,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.238,
+    "pull_up_pct": 0.128,
+    "contested_pct": 0.593,
+    "uncontested_pct": 0.407,
+    "avg_defender_dist_contested": 4.01,
+    "avg_defender_dist_catch_shoot": 5.649
+  },
+  "1641764": {
+    "player_id": 1641764,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.295,
+    "pull_up_pct": 0.394,
+    "contested_pct": 0.349,
+    "uncontested_pct": 0.65,
+    "avg_defender_dist_contested": 4.852,
+    "avg_defender_dist_catch_shoot": 5.469
+  },
+  "1641765": {
+    "player_id": 1641765,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.394,
+    "pull_up_pct": 0.071,
+    "contested_pct": 0.429,
+    "uncontested_pct": 0.57,
+    "avg_defender_dist_contested": 4.824,
+    "avg_defender_dist_catch_shoot": 6.557
+  },
+  "1641767": {
+    "player_id": 1641767,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.545,
+    "pull_up_pct": 0.124,
+    "contested_pct": 0.31,
+    "uncontested_pct": 0.69,
+    "avg_defender_dist_contested": 5.228,
+    "avg_defender_dist_catch_shoot": 6.25
+  },
+  "1641771": {
+    "player_id": 1641771,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.558,
+    "pull_up_pct": 0.07,
+    "contested_pct": 0.373,
+    "uncontested_pct": 0.628,
+    "avg_defender_dist_contested": 4.672,
+    "avg_defender_dist_catch_shoot": 5.818
+  },
+  "1641772": {
+    "player_id": 1641772,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.342,
+    "pull_up_pct": 0.017,
+    "contested_pct": 0.49,
+    "uncontested_pct": 0.51,
+    "avg_defender_dist_contested": 4.452,
+    "avg_defender_dist_catch_shoot": 6.475
+  },
+  "1641774": {
+    "player_id": 1641774,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.467,
+    "pull_up_pct": 0.218,
+    "contested_pct": 0.3,
+    "uncontested_pct": 0.7,
+    "avg_defender_dist_contested": 4.942,
+    "avg_defender_dist_catch_shoot": 5.622
+  },
+  "1641775": {
+    "player_id": 1641775,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.434,
+    "pull_up_pct": 0.033,
+    "contested_pct": 0.467,
+    "uncontested_pct": 0.533,
+    "avg_defender_dist_contested": 4.57,
+    "avg_defender_dist_catch_shoot": 6.456
+  },
+  "1641778": {
+    "player_id": 1641778,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.436,
+    "pull_up_pct": 0.327,
+    "contested_pct": 0.346,
+    "uncontested_pct": 0.654,
+    "avg_defender_dist_contested": 4.816,
+    "avg_defender_dist_catch_shoot": 5.43
+  },
+  "1641783": {
+    "player_id": 1641783,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.449,
+    "pull_up_pct": 0.191,
+    "contested_pct": 0.372,
+    "uncontested_pct": 0.628,
+    "avg_defender_dist_contested": 4.87,
+    "avg_defender_dist_catch_shoot": 5.862
+  },
+  "1641796": {
+    "player_id": 1641796,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.316,
+    "pull_up_pct": 0.072,
+    "contested_pct": 0.53,
+    "uncontested_pct": 0.47,
+    "avg_defender_dist_contested": 4.35,
+    "avg_defender_dist_catch_shoot": 6.216
+  },
+  "1641815": {
+    "player_id": 1641815,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.286,
+    "pull_up_pct": 0.143,
+    "contested_pct": 0.571,
+    "uncontested_pct": 0.429,
+    "avg_defender_dist_contested": 4.144,
+    "avg_defender_dist_catch_shoot": 5.0
+  },
+  "1641824": {
+    "player_id": 1641824,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.396,
+    "pull_up_pct": 0.131,
+    "contested_pct": 0.469,
+    "uncontested_pct": 0.531,
+    "avg_defender_dist_contested": 4.284,
+    "avg_defender_dist_catch_shoot": 5.439
+  },
+  "1641842": {
+    "player_id": 1641842,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.341,
+    "pull_up_pct": 0.074,
+    "contested_pct": 0.484,
+    "uncontested_pct": 0.517,
+    "avg_defender_dist_contested": 4.481,
+    "avg_defender_dist_catch_shoot": 6.32
+  },
+  "1641854": {
+    "player_id": 1641854,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.167,
+    "pull_up_pct": 0.362,
+    "contested_pct": 0.439,
+    "uncontested_pct": 0.561,
+    "avg_defender_dist_contested": 4.496,
+    "avg_defender_dist_catch_shoot": 5.616
+  },
+  "1641869": {
+    "player_id": 1641869,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.273,
+    "pull_up_pct": 0.2,
+    "contested_pct": 0.528,
+    "uncontested_pct": 0.473,
+    "avg_defender_dist_contested": 4.417,
+    "avg_defender_dist_catch_shoot": 5.998
+  },
+  "1641989": {
+    "player_id": 1641989,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.447,
+    "pull_up_pct": 0.193,
+    "contested_pct": 0.33,
+    "uncontested_pct": 0.671,
+    "avg_defender_dist_contested": 4.96,
+    "avg_defender_dist_catch_shoot": 5.854
+  },
+  "1642258": {
+    "player_id": 1642258,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.445,
+    "pull_up_pct": 0.145,
+    "contested_pct": 0.397,
+    "uncontested_pct": 0.603,
+    "avg_defender_dist_contested": 4.722,
+    "avg_defender_dist_catch_shoot": 5.881
+  },
+  "1642259": {
+    "player_id": 1642259,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.235,
+    "pull_up_pct": 0.122,
+    "contested_pct": 0.609,
+    "uncontested_pct": 0.391,
+    "avg_defender_dist_contested": 4.01,
+    "avg_defender_dist_catch_shoot": 5.676
+  },
+  "1642262": {
+    "player_id": 1642262,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.244,
+    "pull_up_pct": 0.173,
+    "contested_pct": 0.52,
+    "uncontested_pct": 0.48,
+    "avg_defender_dist_contested": 4.268,
+    "avg_defender_dist_catch_shoot": 5.679
+  },
+  "1642263": {
+    "player_id": 1642263,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.41,
+    "pull_up_pct": 0.383,
+    "contested_pct": 0.362,
+    "uncontested_pct": 0.638,
+    "avg_defender_dist_contested": 4.83,
+    "avg_defender_dist_catch_shoot": 5.249
+  },
+  "1642264": {
+    "player_id": 1642264,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.249,
+    "pull_up_pct": 0.213,
+    "contested_pct": 0.497,
+    "uncontested_pct": 0.503,
+    "avg_defender_dist_contested": 4.388,
+    "avg_defender_dist_catch_shoot": 5.853
+  },
+  "1642265": {
+    "player_id": 1642265,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.189,
+    "pull_up_pct": 0.33,
+    "contested_pct": 0.478,
+    "uncontested_pct": 0.522,
+    "avg_defender_dist_contested": 4.268,
+    "avg_defender_dist_catch_shoot": 5.446
+  },
+  "1642266": {
+    "player_id": 1642266,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.617,
+    "pull_up_pct": 0.068,
+    "contested_pct": 0.292,
+    "uncontested_pct": 0.707,
+    "avg_defender_dist_contested": 5.142,
+    "avg_defender_dist_catch_shoot": 6.114
+  },
+  "1642267": {
+    "player_id": 1642267,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.267,
+    "pull_up_pct": 0.585,
+    "contested_pct": 0.231,
+    "uncontested_pct": 0.77,
+    "avg_defender_dist_contested": 5.102,
+    "avg_defender_dist_catch_shoot": 5.39
+  },
+  "1642268": {
+    "player_id": 1642268,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.121,
+    "pull_up_pct": 0.219,
+    "contested_pct": 0.555,
+    "uncontested_pct": 0.444,
+    "avg_defender_dist_contested": 4.109,
+    "avg_defender_dist_catch_shoot": 5.452
+  },
+  "1642269": {
+    "player_id": 1642269,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.249,
+    "pull_up_pct": 0.212,
+    "contested_pct": 0.502,
+    "uncontested_pct": 0.498,
+    "avg_defender_dist_contested": 4.178,
+    "avg_defender_dist_catch_shoot": 5.331
+  },
+  "1642270": {
+    "player_id": 1642270,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.317,
+    "pull_up_pct": 0.024,
+    "contested_pct": 0.549,
+    "uncontested_pct": 0.451,
+    "avg_defender_dist_contested": 4.228,
+    "avg_defender_dist_catch_shoot": 6.454
+  },
+  "1642271": {
+    "player_id": 1642271,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.346,
+    "pull_up_pct": 0.05,
+    "contested_pct": 0.53,
+    "uncontested_pct": 0.469,
+    "avg_defender_dist_contested": 4.273,
+    "avg_defender_dist_catch_shoot": 6.131
+  },
+  "1642272": {
+    "player_id": 1642272,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.358,
+    "pull_up_pct": 0.365,
+    "contested_pct": 0.315,
+    "uncontested_pct": 0.685,
+    "avg_defender_dist_contested": 4.996,
+    "avg_defender_dist_catch_shoot": 5.71
+  },
+  "1642273": {
+    "player_id": 1642273,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.265,
+    "pull_up_pct": 0.416,
+    "contested_pct": 0.347,
+    "uncontested_pct": 0.654,
+    "avg_defender_dist_contested": 4.83,
+    "avg_defender_dist_catch_shoot": 5.6
+  },
+  "1642274": {
+    "player_id": 1642274,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.028,
+    "pull_up_pct": 0.018,
+    "contested_pct": 0.863,
+    "uncontested_pct": 0.137,
+    "avg_defender_dist_contested": 2.972,
+    "avg_defender_dist_catch_shoot": 5.13
+  },
+  "1642275": {
+    "player_id": 1642275,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.506,
+    "pull_up_pct": 0.019,
+    "contested_pct": 0.386,
+    "uncontested_pct": 0.614,
+    "avg_defender_dist_contested": 4.938,
+    "avg_defender_dist_catch_shoot": 6.52
+  },
+  "1642276": {
+    "player_id": 1642276,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.342,
+    "pull_up_pct": 0.042,
+    "contested_pct": 0.57,
+    "uncontested_pct": 0.431,
+    "avg_defender_dist_contested": 3.987,
+    "avg_defender_dist_catch_shoot": 5.655
+  },
+  "1642277": {
+    "player_id": 1642277,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.45,
+    "pull_up_pct": 0.04,
+    "contested_pct": 0.422,
+    "uncontested_pct": 0.577,
+    "avg_defender_dist_contested": 4.451,
+    "avg_defender_dist_catch_shoot": 5.871
+  },
+  "1642281": {
+    "player_id": 1642281,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.462,
+    "pull_up_pct": 0.058,
+    "contested_pct": 0.444,
+    "uncontested_pct": 0.555,
+    "avg_defender_dist_contested": 4.534,
+    "avg_defender_dist_catch_shoot": 5.76
+  },
+  "1642285": {
+    "player_id": 1642285,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.297,
+    "pull_up_pct": 0.564,
+    "contested_pct": 0.292,
+    "uncontested_pct": 0.708,
+    "avg_defender_dist_contested": 4.88,
+    "avg_defender_dist_catch_shoot": 5.113
+  },
+  "1642345": {
+    "player_id": 1642345,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.088,
+    "pull_up_pct": 0.041,
+    "contested_pct": 0.729,
+    "uncontested_pct": 0.27,
+    "avg_defender_dist_contested": 3.322,
+    "avg_defender_dist_catch_shoot": 4.55
+  },
+  "1642346": {
+    "player_id": 1642346,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.445,
+    "pull_up_pct": 0.05,
+    "contested_pct": 0.395,
+    "uncontested_pct": 0.606,
+    "avg_defender_dist_contested": 4.91,
+    "avg_defender_dist_catch_shoot": 6.271
+  },
+  "1642347": {
+    "player_id": 1642347,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.413,
+    "pull_up_pct": 0.248,
+    "contested_pct": 0.405,
+    "uncontested_pct": 0.596,
+    "avg_defender_dist_contested": 4.944,
+    "avg_defender_dist_catch_shoot": 5.861
+  },
+  "1642348": {
+    "player_id": 1642348,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.493,
+    "pull_up_pct": 0.225,
+    "contested_pct": 0.332,
+    "uncontested_pct": 0.667,
+    "avg_defender_dist_contested": 4.846,
+    "avg_defender_dist_catch_shoot": 5.529
+  },
+  "1642349": {
+    "player_id": 1642349,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.221,
+    "pull_up_pct": 0.246,
+    "contested_pct": 0.523,
+    "uncontested_pct": 0.478,
+    "avg_defender_dist_contested": 4.419,
+    "avg_defender_dist_catch_shoot": 5.833
+  },
+  "1642354": {
+    "player_id": 1642354,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.309,
+    "pull_up_pct": 0.289,
+    "contested_pct": 0.433,
+    "uncontested_pct": 0.567,
+    "avg_defender_dist_contested": 4.67,
+    "avg_defender_dist_catch_shoot": 5.657
+  },
+  "1642363": {
+    "player_id": 1642363,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.304,
+    "pull_up_pct": 0.319,
+    "contested_pct": 0.356,
+    "uncontested_pct": 0.644,
+    "avg_defender_dist_contested": 4.812,
+    "avg_defender_dist_catch_shoot": 5.618
+  },
+  "1642364": {
+    "player_id": 1642364,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.461,
+    "pull_up_pct": 0.083,
+    "contested_pct": 0.369,
+    "uncontested_pct": 0.631,
+    "avg_defender_dist_contested": 4.918,
+    "avg_defender_dist_catch_shoot": 6.305
+  },
+  "1642366": {
+    "player_id": 1642366,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.616,
+    "pull_up_pct": 0.073,
+    "contested_pct": 0.292,
+    "uncontested_pct": 0.707,
+    "avg_defender_dist_contested": 5.264,
+    "avg_defender_dist_catch_shoot": 6.171
+  },
+  "1642377": {
+    "player_id": 1642377,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.44,
+    "pull_up_pct": 0.274,
+    "contested_pct": 0.32,
+    "uncontested_pct": 0.681,
+    "avg_defender_dist_contested": 4.85,
+    "avg_defender_dist_catch_shoot": 5.538
+  },
+  "1642380": {
+    "player_id": 1642380,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.564,
+    "pull_up_pct": 0.154,
+    "contested_pct": 0.256,
+    "uncontested_pct": 0.743,
+    "avg_defender_dist_contested": 5.462,
+    "avg_defender_dist_catch_shoot": 6.287
+  },
+  "1642383": {
+    "player_id": 1642383,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.293,
+    "pull_up_pct": 0.382,
+    "contested_pct": 0.398,
+    "uncontested_pct": 0.602,
+    "avg_defender_dist_contested": 4.6,
+    "avg_defender_dist_catch_shoot": 5.374
+  },
+  "1642396": {
+    "player_id": 1642396,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.671,
+    "pull_up_pct": 0.132,
+    "contested_pct": 0.276,
+    "uncontested_pct": 0.724,
+    "avg_defender_dist_contested": 4.948,
+    "avg_defender_dist_catch_shoot": 5.297
+  },
+  "1642450": {
+    "player_id": 1642450,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.213,
+    "pull_up_pct": 0.363,
+    "contested_pct": 0.45,
+    "uncontested_pct": 0.55,
+    "avg_defender_dist_contested": 4.414,
+    "avg_defender_dist_catch_shoot": 5.396
+  },
+  "1642461": {
+    "player_id": 1642461,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.557,
+    "pull_up_pct": 0.031,
+    "contested_pct": 0.324,
+    "uncontested_pct": 0.675,
+    "avg_defender_dist_contested": 5.138,
+    "avg_defender_dist_catch_shoot": 6.337
+  },
+  "1642504": {
+    "player_id": 1642504,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.583,
+    "pull_up_pct": 0.111,
+    "contested_pct": 0.278,
+    "uncontested_pct": 0.722,
+    "avg_defender_dist_contested": 5.276,
+    "avg_defender_dist_catch_shoot": 6.039
+  },
+  "1642843": {
+    "player_id": 1642843,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.1,
+    "pull_up_pct": 0.382,
+    "contested_pct": 0.644,
+    "uncontested_pct": 0.356,
+    "avg_defender_dist_contested": 3.798,
+    "avg_defender_dist_catch_shoot": 4.595
+  },
+  "1642844": {
+    "player_id": 1642844,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.223,
+    "pull_up_pct": 0.2,
+    "contested_pct": 0.527,
+    "uncontested_pct": 0.473,
+    "avg_defender_dist_contested": 4.294,
+    "avg_defender_dist_catch_shoot": 6.012
+  },
+  "1642845": {
+    "player_id": 1642845,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.263,
+    "pull_up_pct": 0.351,
+    "contested_pct": 0.438,
+    "uncontested_pct": 0.563,
+    "avg_defender_dist_contested": 4.335,
+    "avg_defender_dist_catch_shoot": 5.045
+  },
+  "1642846": {
+    "player_id": 1642846,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.359,
+    "pull_up_pct": 0.348,
+    "contested_pct": 0.35,
+    "uncontested_pct": 0.649,
+    "avg_defender_dist_contested": 4.842,
+    "avg_defender_dist_catch_shoot": 5.475
+  },
+  "1642847": {
+    "player_id": 1642847,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.191,
+    "pull_up_pct": 0.3,
+    "contested_pct": 0.478,
+    "uncontested_pct": 0.522,
+    "avg_defender_dist_contested": 4.398,
+    "avg_defender_dist_catch_shoot": 5.609
+  },
+  "1642848": {
+    "player_id": 1642848,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.333,
+    "pull_up_pct": 0.458,
+    "contested_pct": 0.336,
+    "uncontested_pct": 0.664,
+    "avg_defender_dist_contested": 4.868,
+    "avg_defender_dist_catch_shoot": 5.269
+  },
+  "1642849": {
+    "player_id": 1642849,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.303,
+    "pull_up_pct": 0.198,
+    "contested_pct": 0.49,
+    "uncontested_pct": 0.51,
+    "avg_defender_dist_contested": 4.294,
+    "avg_defender_dist_catch_shoot": 5.3
+  },
+  "1642851": {
+    "player_id": 1642851,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.477,
+    "pull_up_pct": 0.248,
+    "contested_pct": 0.406,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.66,
+    "avg_defender_dist_catch_shoot": 5.259
+  },
+  "1642852": {
+    "player_id": 1642852,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.141,
+    "pull_up_pct": 0.182,
+    "contested_pct": 0.653,
+    "uncontested_pct": 0.346,
+    "avg_defender_dist_contested": 3.745,
+    "avg_defender_dist_catch_shoot": 5.578
+  },
+  "1642856": {
+    "player_id": 1642856,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.461,
+    "pull_up_pct": 0.339,
+    "contested_pct": 0.314,
+    "uncontested_pct": 0.686,
+    "avg_defender_dist_contested": 4.85,
+    "avg_defender_dist_catch_shoot": 5.267
+  },
+  "1642857": {
+    "player_id": 1642857,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.552,
+    "pull_up_pct": 0.126,
+    "contested_pct": 0.314,
+    "uncontested_pct": 0.686,
+    "avg_defender_dist_contested": 4.946,
+    "avg_defender_dist_catch_shoot": 5.73
+  },
+  "1642860": {
+    "player_id": 1642860,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.287,
+    "pull_up_pct": 0.287,
+    "contested_pct": 0.454,
+    "uncontested_pct": 0.546,
+    "avg_defender_dist_contested": 4.416,
+    "avg_defender_dist_catch_shoot": 5.418
+  },
+  "1642862": {
+    "player_id": 1642862,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.606,
+    "pull_up_pct": 0.064,
+    "contested_pct": 0.351,
+    "uncontested_pct": 0.649,
+    "avg_defender_dist_contested": 5.278,
+    "avg_defender_dist_catch_shoot": 6.395
+  },
+  "1642864": {
+    "player_id": 1642864,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.444,
+    "pull_up_pct": 0.059,
+    "contested_pct": 0.414,
+    "uncontested_pct": 0.585,
+    "avg_defender_dist_contested": 4.858,
+    "avg_defender_dist_catch_shoot": 6.319
+  },
+  "1642867": {
+    "player_id": 1642867,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.197,
+    "pull_up_pct": 0.022,
+    "contested_pct": 0.675,
+    "uncontested_pct": 0.325,
+    "avg_defender_dist_contested": 3.762,
+    "avg_defender_dist_catch_shoot": 6.534
+  },
+  "1642869": {
+    "player_id": 1642869,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.365,
+    "pull_up_pct": 0.145,
+    "contested_pct": 0.465,
+    "uncontested_pct": 0.535,
+    "avg_defender_dist_contested": 4.48,
+    "avg_defender_dist_catch_shoot": 5.913
+  },
+  "1642874": {
+    "player_id": 1642874,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.405,
+    "pull_up_pct": 0.123,
+    "contested_pct": 0.45,
+    "uncontested_pct": 0.55,
+    "avg_defender_dist_contested": 4.65,
+    "avg_defender_dist_catch_shoot": 6.26
+  },
+  "1642875": {
+    "player_id": 1642875,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.222,
+    "pull_up_pct": 0.034,
+    "contested_pct": 0.599,
+    "uncontested_pct": 0.402,
+    "avg_defender_dist_contested": 3.925,
+    "avg_defender_dist_catch_shoot": 5.371
+  },
+  "1642877": {
+    "player_id": 1642877,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.38,
+    "pull_up_pct": 0.131,
+    "contested_pct": 0.388,
+    "uncontested_pct": 0.612,
+    "avg_defender_dist_contested": 4.892,
+    "avg_defender_dist_catch_shoot": 6.243
+  },
+  "1642879": {
+    "player_id": 1642879,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.233,
+    "pull_up_pct": 0.12,
+    "contested_pct": 0.602,
+    "uncontested_pct": 0.398,
+    "avg_defender_dist_contested": 4.07,
+    "avg_defender_dist_catch_shoot": 5.958
+  },
+  "1642880": {
+    "player_id": 1642880,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.375,
+    "pull_up_pct": 0.125,
+    "contested_pct": 0.419,
+    "uncontested_pct": 0.581,
+    "avg_defender_dist_contested": 4.472,
+    "avg_defender_dist_catch_shoot": 5.548
+  },
+  "1642882": {
+    "player_id": 1642882,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.053,
+    "pull_up_pct": 0.07,
+    "contested_pct": 0.772,
+    "uncontested_pct": 0.228,
+    "avg_defender_dist_contested": 3.35,
+    "avg_defender_dist_catch_shoot": 5.276
+  },
+  "1642883": {
+    "player_id": 1642883,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.566,
+    "pull_up_pct": 0.095,
+    "contested_pct": 0.321,
+    "uncontested_pct": 0.679,
+    "avg_defender_dist_contested": 5.288,
+    "avg_defender_dist_catch_shoot": 6.432
+  },
+  "1642907": {
+    "player_id": 1642907,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.335,
+    "pull_up_pct": 0.23,
+    "contested_pct": 0.479,
+    "uncontested_pct": 0.521,
+    "avg_defender_dist_contested": 4.364,
+    "avg_defender_dist_catch_shoot": 5.34
+  },
+  "1642914": {
+    "player_id": 1642914,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.16,
+    "pull_up_pct": 0.446,
+    "contested_pct": 0.394,
+    "uncontested_pct": 0.606,
+    "avg_defender_dist_contested": 4.83,
+    "avg_defender_dist_catch_shoot": 5.799
+  },
+  "1642920": {
+    "player_id": 1642920,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.489,
+    "pull_up_pct": 0.239,
+    "contested_pct": 0.275,
+    "uncontested_pct": 0.724,
+    "avg_defender_dist_contested": 5.17,
+    "avg_defender_dist_catch_shoot": 5.862
+  },
+  "1642928": {
+    "player_id": 1642928,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.045,
+    "pull_up_pct": 0.019,
+    "contested_pct": 0.753,
+    "uncontested_pct": 0.246,
+    "avg_defender_dist_contested": 3.414,
+    "avg_defender_dist_catch_shoot": 5.0
+  },
+  "1642933": {
+    "player_id": 1642933,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.25,
+    "pull_up_pct": 0.25,
+    "contested_pct": 0.5,
+    "uncontested_pct": 0.5,
+    "avg_defender_dist_contested": 4.0,
+    "avg_defender_dist_catch_shoot": 6.0
+  },
+  "1642942": {
+    "player_id": 1642942,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.348,
+    "pull_up_pct": 0.101,
+    "contested_pct": 0.544,
+    "uncontested_pct": 0.456,
+    "avg_defender_dist_contested": 4.38,
+    "avg_defender_dist_catch_shoot": 6.098
+  },
+  "1642948": {
+    "player_id": 1642948,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.229,
+    "pull_up_pct": 0.571,
+    "contested_pct": 0.231,
+    "uncontested_pct": 0.768,
+    "avg_defender_dist_contested": 5.17,
+    "avg_defender_dist_catch_shoot": 5.58
+  },
+  "1642954": {
+    "player_id": 1642954,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.544,
+    "pull_up_pct": 0.126,
+    "contested_pct": 0.251,
+    "uncontested_pct": 0.749,
+    "avg_defender_dist_contested": 5.4,
+    "avg_defender_dist_catch_shoot": 6.307
+  },
+  "1642955": {
+    "player_id": 1642955,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.25,
+    "contested_pct": 0.688,
+    "uncontested_pct": 0.313,
+    "avg_defender_dist_contested": 3.625,
+    "avg_defender_dist_catch_shoot": 6.0,
+    "pull_up_pct": 0.0
+  },
+  "1642962": {
+    "player_id": 1642962,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.432,
+    "pull_up_pct": 0.254,
+    "contested_pct": 0.384,
+    "uncontested_pct": 0.616,
+    "avg_defender_dist_contested": 4.708,
+    "avg_defender_dist_catch_shoot": 5.43
+  },
+  "1642967": {
+    "player_id": 1642967,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.625,
+    "pull_up_pct": 0.35,
+    "contested_pct": 0.05,
+    "uncontested_pct": 0.95,
+    "avg_defender_dist_contested": 5.9,
+    "avg_defender_dist_catch_shoot": 5.9
+  },
+  "1643007": {
+    "player_id": 1643007,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.703,
+    "pull_up_pct": 0.141,
+    "contested_pct": 0.211,
+    "uncontested_pct": 0.79,
+    "avg_defender_dist_contested": 5.515,
+    "avg_defender_dist_catch_shoot": 5.851
+  },
+  "1643016": {
+    "player_id": 1643016,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.283,
+    "pull_up_pct": 0.132,
+    "contested_pct": 0.509,
+    "uncontested_pct": 0.491,
+    "avg_defender_dist_contested": 4.398,
+    "avg_defender_dist_catch_shoot": 6.089
+  },
+  "1643018": {
+    "player_id": 1643018,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.456,
+    "pull_up_pct": 0.437,
+    "contested_pct": 0.116,
+    "uncontested_pct": 0.883,
+    "avg_defender_dist_contested": 5.817,
+    "avg_defender_dist_catch_shoot": 6.01
+  },
+  "1643052": {
+    "player_id": 1643052,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.292,
+    "pull_up_pct": 0.139,
+    "contested_pct": 0.528,
+    "uncontested_pct": 0.473,
+    "avg_defender_dist_contested": 4.335,
+    "avg_defender_dist_catch_shoot": 6.225
+  },
+  "1643133": {
+    "player_id": 1643133,
+    "season": "2025-26",
+    "contested_pct": 1.0,
+    "uncontested_pct": 0.0,
+    "avg_defender_dist_contested": 2.6,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "1643158": {
+    "player_id": 1643158,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.414,
+    "pull_up_pct": 0.034,
+    "contested_pct": 0.552,
+    "uncontested_pct": 0.448,
+    "avg_defender_dist_contested": 4.172,
+    "avg_defender_dist_catch_shoot": 5.772
+  },
+  "1643253": {
+    "player_id": 1643253,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.438,
+    "pull_up_pct": 0.188,
+    "contested_pct": 0.376,
+    "uncontested_pct": 0.625,
+    "avg_defender_dist_contested": 4.872,
+    "avg_defender_dist_catch_shoot": 6.2
+  },
+  "201142": {
+    "player_id": 201142,
+    "season": "2025-26",
+    "pull_up_pct": 0.541,
+    "catch_and_shoot_pct": 0.261,
+    "contested_pct": 0.605,
+    "uncontested_pct": 0.395,
+    "avg_defender_dist_contested": 3.866,
+    "avg_defender_dist_catch_shoot": 4.001
+  },
+  "201143": {
+    "player_id": 201143,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.649,
+    "pull_up_pct": 0.043,
+    "contested_pct": 0.254,
+    "uncontested_pct": 0.746,
+    "avg_defender_dist_contested": 5.442,
+    "avg_defender_dist_catch_shoot": 6.267
+  },
+  "201144": {
+    "player_id": 201144,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.505,
+    "pull_up_pct": 0.375,
+    "contested_pct": 0.15,
+    "uncontested_pct": 0.85,
+    "avg_defender_dist_contested": 5.82,
+    "avg_defender_dist_catch_shoot": 6.148
+  },
+  "201566": {
+    "player_id": 201566,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.341,
+    "pull_up_pct": 0.292,
+    "contested_pct": 0.338,
+    "uncontested_pct": 0.661,
+    "avg_defender_dist_contested": 4.872,
+    "avg_defender_dist_catch_shoot": 5.827
+  },
+  "201567": {
+    "player_id": 201567,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.653,
+    "pull_up_pct": 0.106,
+    "contested_pct": 0.261,
+    "uncontested_pct": 0.739,
+    "avg_defender_dist_contested": 5.222,
+    "avg_defender_dist_catch_shoot": 5.921
+  },
+  "201569": {
+    "player_id": 201569,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.571,
+    "pull_up_pct": 0.048,
+    "contested_pct": 0.19,
+    "uncontested_pct": 0.81,
+    "avg_defender_dist_contested": 5.668,
+    "avg_defender_dist_catch_shoot": 6.571
+  },
+  "201572": {
+    "player_id": 201572,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.551,
+    "pull_up_pct": 0.148,
+    "contested_pct": 0.321,
+    "uncontested_pct": 0.679,
+    "avg_defender_dist_contested": 5.036,
+    "avg_defender_dist_catch_shoot": 5.711
+  },
+  "201587": {
+    "player_id": 201587,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.922,
+    "pull_up_pct": 0.065,
+    "contested_pct": 0.056,
+    "uncontested_pct": 0.944,
+    "avg_defender_dist_contested": 6.274,
+    "avg_defender_dist_catch_shoot": 6.289
+  },
+  "201599": {
+    "player_id": 201599,
+    "season": "2025-26",
+    "contested_pct": 0.875,
+    "uncontested_pct": 0.125,
+    "avg_defender_dist_contested": 3.0,
+    "catch_and_shoot_pct": 0.0,
+    "pull_up_pct": 0.0,
+    "avg_defender_dist_catch_shoot": 0.0
+  },
+  "201935": {
+    "player_id": 201935,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.132,
+    "pull_up_pct": 0.507,
+    "contested_pct": 0.605,
+    "uncontested_pct": 0.396,
+    "avg_defender_dist_contested": 3.853,
+    "avg_defender_dist_catch_shoot": 4.372
+  },
+  "201939": {
+    "player_id": 201939,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.317,
+    "pull_up_pct": 0.413,
+    "contested_pct": 0.405,
+    "uncontested_pct": 0.594,
+    "avg_defender_dist_contested": 4.451,
+    "avg_defender_dist_catch_shoot": 4.86
+  },
+  "201942": {
+    "player_id": 201942,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.188,
+    "pull_up_pct": 0.556,
+    "contested_pct": 0.659,
+    "uncontested_pct": 0.341,
+    "avg_defender_dist_contested": 3.706,
+    "avg_defender_dist_catch_shoot": 3.951
+  },
+  "201950": {
+    "player_id": 201950,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.183,
+    "pull_up_pct": 0.473,
+    "contested_pct": 0.344,
+    "uncontested_pct": 0.656,
+    "avg_defender_dist_contested": 4.628,
+    "avg_defender_dist_catch_shoot": 5.414
+  },
+  "202331": {
+    "player_id": 202331,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.355,
+    "pull_up_pct": 0.415,
+    "contested_pct": 0.378,
+    "uncontested_pct": 0.622,
+    "avg_defender_dist_contested": 4.44,
+    "avg_defender_dist_catch_shoot": 4.774
+  },
+  "202685": {
+    "player_id": 202685,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.175,
+    "pull_up_pct": 0.073,
+    "contested_pct": 0.627,
+    "uncontested_pct": 0.373,
+    "avg_defender_dist_contested": 3.86,
+    "avg_defender_dist_catch_shoot": 5.479
+  },
+  "202691": {
+    "player_id": 202691,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.574,
+    "pull_up_pct": 0.326,
+    "contested_pct": 0.362,
+    "uncontested_pct": 0.637,
+    "avg_defender_dist_contested": 4.666,
+    "avg_defender_dist_catch_shoot": 4.808
+  },
+  "202695": {
+    "player_id": 202695,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.16,
+    "pull_up_pct": 0.544,
+    "contested_pct": 0.468,
+    "uncontested_pct": 0.531,
+    "avg_defender_dist_contested": 4.167,
+    "avg_defender_dist_catch_shoot": 4.47
+  },
+  "202696": {
+    "player_id": 202696,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.431,
+    "pull_up_pct": 0.073,
+    "contested_pct": 0.471,
+    "uncontested_pct": 0.529,
+    "avg_defender_dist_contested": 4.568,
+    "avg_defender_dist_catch_shoot": 5.946
+  },
+  "202699": {
+    "player_id": 202699,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.318,
+    "pull_up_pct": 0.277,
+    "contested_pct": 0.493,
+    "uncontested_pct": 0.507,
+    "avg_defender_dist_contested": 4.398,
+    "avg_defender_dist_catch_shoot": 5.278
+  },
+  "202710": {
+    "player_id": 202710,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.143,
+    "pull_up_pct": 0.208,
+    "contested_pct": 0.627,
+    "uncontested_pct": 0.373,
+    "avg_defender_dist_contested": 3.788,
+    "avg_defender_dist_catch_shoot": 4.881
+  },
+  "203076": {
+    "player_id": 203076,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.147,
+    "pull_up_pct": 0.243,
+    "contested_pct": 0.578,
+    "uncontested_pct": 0.422,
+    "avg_defender_dist_contested": 3.892,
+    "avg_defender_dist_catch_shoot": 5.103
+  },
+  "203078": {
+    "player_id": 203078,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.333,
+    "pull_up_pct": 0.375,
+    "contested_pct": 0.438,
+    "uncontested_pct": 0.563,
+    "avg_defender_dist_contested": 4.666,
+    "avg_defender_dist_catch_shoot": 5.293
+  },
+  "203083": {
+    "player_id": 203083,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.263,
+    "pull_up_pct": 0.016,
+    "contested_pct": 0.619,
+    "uncontested_pct": 0.381,
+    "avg_defender_dist_contested": 3.996,
+    "avg_defender_dist_catch_shoot": 6.649
+  },
+  "203084": {
+    "player_id": 203084,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.558,
+    "pull_up_pct": 0.121,
+    "contested_pct": 0.294,
+    "uncontested_pct": 0.707,
+    "avg_defender_dist_contested": 5.144,
+    "avg_defender_dist_catch_shoot": 6.031
+  },
+  "203110": {
+    "player_id": 203110,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.648,
+    "pull_up_pct": 0.032,
+    "contested_pct": 0.249,
+    "uncontested_pct": 0.751,
+    "avg_defender_dist_contested": 5.472,
+    "avg_defender_dist_catch_shoot": 6.438
+  },
+  "203114": {
+    "player_id": 203114,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.255,
+    "pull_up_pct": 0.488,
+    "contested_pct": 0.382,
+    "uncontested_pct": 0.618,
+    "avg_defender_dist_contested": 4.496,
+    "avg_defender_dist_catch_shoot": 4.947
+  },
+  "203468": {
+    "player_id": 203468,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.228,
+    "pull_up_pct": 0.478,
+    "contested_pct": 0.472,
+    "uncontested_pct": 0.527,
+    "avg_defender_dist_contested": 4.325,
+    "avg_defender_dist_catch_shoot": 4.847
+  },
+  "203471": {
+    "player_id": 203471,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.272,
+    "pull_up_pct": 0.332,
+    "contested_pct": 0.455,
+    "uncontested_pct": 0.545,
+    "avg_defender_dist_contested": 4.428,
+    "avg_defender_dist_catch_shoot": 5.271
+  },
+  "203484": {
+    "player_id": 203484,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.353,
+    "pull_up_pct": 0.397,
+    "contested_pct": 0.356,
+    "uncontested_pct": 0.643,
+    "avg_defender_dist_contested": 4.736,
+    "avg_defender_dist_catch_shoot": 5.248
+  },
+  "203497": {
+    "player_id": 203497,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.032,
+    "pull_up_pct": 0.002,
+    "contested_pct": 0.803,
+    "uncontested_pct": 0.197,
+    "avg_defender_dist_contested": 3.236,
+    "avg_defender_dist_catch_shoot": 6.0
+  },
+  "203500": {
+    "player_id": 203500,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.044,
+    "contested_pct": 0.905,
+    "uncontested_pct": 0.095,
+    "avg_defender_dist_contested": 2.636,
+    "avg_defender_dist_catch_shoot": 4.674,
+    "pull_up_pct": 0.0
+  },
+  "203501": {
+    "player_id": 203501,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.566,
+    "pull_up_pct": 0.27,
+    "contested_pct": 0.369,
+    "uncontested_pct": 0.631,
+    "avg_defender_dist_contested": 4.72,
+    "avg_defender_dist_catch_shoot": 5.06
+  },
+  "203507": {
+    "player_id": 203507,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.042,
+    "pull_up_pct": 0.189,
+    "contested_pct": 0.681,
+    "uncontested_pct": 0.319,
+    "avg_defender_dist_contested": 3.584,
+    "avg_defender_dist_catch_shoot": 5.506
+  },
+  "203552": {
+    "player_id": 203552,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.5,
+    "pull_up_pct": 0.308,
+    "contested_pct": 0.346,
+    "uncontested_pct": 0.654,
+    "avg_defender_dist_contested": 4.77,
+    "avg_defender_dist_catch_shoot": 5.0
+  },
+  "203897": {
+    "player_id": 203897,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.238,
+    "pull_up_pct": 0.413,
+    "contested_pct": 0.382,
+    "uncontested_pct": 0.617,
+    "avg_defender_dist_contested": 4.487,
+    "avg_defender_dist_catch_shoot": 5.14
+  },
+  "203903": {
+    "player_id": 203903,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.342,
+    "pull_up_pct": 0.225,
+    "contested_pct": 0.506,
+    "uncontested_pct": 0.495,
+    "avg_defender_dist_contested": 4.279,
+    "avg_defender_dist_catch_shoot": 5.148
+  },
+  "203914": {
+    "player_id": 203914,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.6,
+    "pull_up_pct": 0.158,
+    "contested_pct": 0.274,
+    "uncontested_pct": 0.726,
+    "avg_defender_dist_contested": 5.124,
+    "avg_defender_dist_catch_shoot": 5.723
+  },
+  "203924": {
+    "player_id": 203924,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.446,
+    "pull_up_pct": 0.121,
+    "contested_pct": 0.474,
+    "uncontested_pct": 0.526,
+    "avg_defender_dist_contested": 4.236,
+    "avg_defender_dist_catch_shoot": 5.429
+  },
+  "203926": {
+    "player_id": 203926,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.841,
+    "pull_up_pct": 0.097,
+    "contested_pct": 0.168,
+    "uncontested_pct": 0.832,
+    "avg_defender_dist_contested": 5.532,
+    "avg_defender_dist_catch_shoot": 5.68
+  },
+  "203932": {
+    "player_id": 203932,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.27,
+    "pull_up_pct": 0.253,
+    "contested_pct": 0.474,
+    "uncontested_pct": 0.526,
+    "avg_defender_dist_contested": 4.232,
+    "avg_defender_dist_catch_shoot": 5.231
+  },
+  "203935": {
+    "player_id": 203935,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.545,
+    "pull_up_pct": 0.172,
+    "contested_pct": 0.288,
+    "uncontested_pct": 0.712,
+    "avg_defender_dist_contested": 5.206,
+    "avg_defender_dist_catch_shoot": 5.97
+  },
+  "203937": {
+    "player_id": 203937,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.052,
+    "pull_up_pct": 0.156,
+    "contested_pct": 0.769,
+    "uncontested_pct": 0.231,
+    "avg_defender_dist_contested": 3.38,
+    "avg_defender_dist_catch_shoot": 4.373
+  },
+  "203939": {
+    "player_id": 203939,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.058,
+    "contested_pct": 0.756,
+    "uncontested_pct": 0.245,
+    "avg_defender_dist_contested": 3.444,
+    "avg_defender_dist_catch_shoot": 6.593,
+    "pull_up_pct": 0.0
+  },
+  "203944": {
+    "player_id": 203944,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.193,
+    "pull_up_pct": 0.324,
+    "contested_pct": 0.435,
+    "uncontested_pct": 0.566,
+    "avg_defender_dist_contested": 4.379,
+    "avg_defender_dist_catch_shoot": 5.399
+  },
+  "203952": {
+    "player_id": 203952,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.347,
+    "pull_up_pct": 0.218,
+    "contested_pct": 0.442,
+    "uncontested_pct": 0.558,
+    "avg_defender_dist_contested": 4.364,
+    "avg_defender_dist_catch_shoot": 5.349
+  },
+  "203954": {
+    "player_id": 203954,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.284,
+    "pull_up_pct": 0.319,
+    "contested_pct": 0.42,
+    "uncontested_pct": 0.579,
+    "avg_defender_dist_contested": 4.411,
+    "avg_defender_dist_catch_shoot": 5.184
+  },
+  "203991": {
+    "player_id": 203991,
+    "season": "2025-26",
+    "pull_up_pct": 0.005,
+    "contested_pct": 0.903,
+    "uncontested_pct": 0.098,
+    "avg_defender_dist_contested": 2.874,
+    "avg_defender_dist_catch_shoot": 3.0,
+    "catch_and_shoot_pct": 0.0
+  },
+  "203992": {
+    "player_id": 203992,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.319,
+    "pull_up_pct": 0.468,
+    "contested_pct": 0.334,
+    "uncontested_pct": 0.667,
+    "avg_defender_dist_contested": 4.686,
+    "avg_defender_dist_catch_shoot": 5.144
+  },
+  "203994": {
+    "player_id": 203994,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.227,
+    "pull_up_pct": 0.034,
+    "contested_pct": 0.644,
+    "uncontested_pct": 0.355,
+    "avg_defender_dist_contested": 3.957,
+    "avg_defender_dist_catch_shoot": 6.213
+  },
+  "203999": {
+    "player_id": 203999,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.225,
+    "pull_up_pct": 0.138,
+    "contested_pct": 0.631,
+    "uncontested_pct": 0.368,
+    "avg_defender_dist_contested": 3.811,
+    "avg_defender_dist_catch_shoot": 4.871
+  },
+  "204001": {
+    "player_id": 204001,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.412,
+    "pull_up_pct": 0.228,
+    "contested_pct": 0.44,
+    "uncontested_pct": 0.56,
+    "avg_defender_dist_contested": 4.526,
+    "avg_defender_dist_catch_shoot": 5.331
+  },
+  "204456": {
+    "player_id": 204456,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.118,
+    "pull_up_pct": 0.511,
+    "contested_pct": 0.428,
+    "uncontested_pct": 0.571,
+    "avg_defender_dist_contested": 4.331,
+    "avg_defender_dist_catch_shoot": 4.871
+  },
+  "2544": {
+    "player_id": 2544,
+    "season": "2025-26",
+    "catch_and_shoot_pct": 0.153,
+    "pull_up_pct": 0.318,
+    "contested_pct": 0.462,
+    "uncontested_pct": 0.539,
+    "avg_defender_dist_contested": 4.255,
+    "avg_defender_dist_catch_shoot": 5.188
+  }
+}

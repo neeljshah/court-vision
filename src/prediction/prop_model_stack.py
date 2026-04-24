@@ -58,6 +58,127 @@ class PropStackResult:
     suppression_reason: str
     motivation_flags: Dict[str, bool]      # contract_year, load_management, breakout
     meta_applied: bool                     # True if Ridge meta was applied
+    micro_signals: Dict[str, float] = field(default_factory=dict)  # raw micro-model outputs
+    calibrated_win_probs: Dict[str, float] = field(default_factory=dict)  # stat → P(actual>line)
+
+
+_CALIB_DIR = _MODELS_DIR
+
+
+class CalibrationLayer:
+    """Per-stat isotonic regression calibration for prop probabilities.
+
+    fit():      Train one IsotonicRegression per stat on held-out (predicted_prob,
+                actual_outcome) pairs and persist to data/models/calibration_{stat}.joblib.
+    transform():Apply fitted isotonic to a raw probability; returns identity if not fitted.
+    """
+
+    def __init__(self) -> None:
+        self._models: Dict[str, object] = {}
+        self._win_models: Dict[str, object] = {}
+        self._load()
+        self._load_win_models()
+
+    def _path(self, stat: str) -> str:
+        return os.path.join(_CALIB_DIR, f"calibration_{stat}.joblib")
+
+    def _load(self) -> None:
+        try:
+            import joblib
+            for stat in STATS:
+                p = self._path(stat)
+                if os.path.exists(p):
+                    self._models[stat] = joblib.load(p)
+        except Exception:
+            pass  # joblib absent or model corrupt — identity passthrough
+
+    def fit(self, stat: str, probs: "np.ndarray", outcomes: "np.ndarray") -> None:
+        """Fit isotonic regression for *stat*. probs in [0,1], outcomes in {0,1}."""
+        try:
+            import joblib
+            from sklearn.isotonic import IsotonicRegression
+            ir = IsotonicRegression(out_of_bounds="clip")
+            ir.fit(probs, outcomes)
+            self._models[stat] = ir
+            joblib.dump(ir, self._path(stat))
+        except Exception as e:
+            import logging
+            logging.warning("CalibrationLayer.fit(%s) failed: %s", stat, e)
+
+    def transform(self, stat: str, prob: float) -> float:
+        """Return calibrated probability (identity if not fitted)."""
+        mdl = self._models.get(stat)
+        if mdl is None:
+            return prob
+        try:
+            return float(mdl.predict([prob])[0])
+        except Exception:
+            return prob
+
+    # ── Win-probability calibration (over/under) ──────────────────────────────
+
+    def _win_path(self, stat: str) -> str:
+        return os.path.join(_CALIB_DIR, f"calibration_win_{stat}.joblib")
+
+    def train_win_prob(
+        self,
+        stat: str,
+        predictions: "np.ndarray",
+        lines: "np.ndarray",
+        actuals: "np.ndarray",
+    ) -> None:
+        """Fit isotonic regression: (pred/line - 1) → P(actual > line).
+
+        Args:
+            predictions: Model point predictions (N,).
+            lines:       Sportsbook lines (N,).
+            actuals:     Actual stat values (N,).
+        """
+        try:
+            import joblib
+            from sklearn.isotonic import IsotonicRegression
+            edges = predictions / np.maximum(lines, 0.01) - 1.0  # (N,)
+            outcomes = (actuals > lines).astype(float)            # {0, 1}
+            ir = IsotonicRegression(out_of_bounds="clip")
+            ir.fit(edges, outcomes)
+            self._win_models[stat] = ir
+            joblib.dump(ir, self._win_path(stat))
+        except Exception as e:
+            import logging
+            logging.warning("CalibrationLayer.train_win_prob(%s) failed: %s", stat, e)
+
+    def win_prob(self, stat: str, pred: float, line: float) -> float:
+        """Return calibrated P(actual > line) for an over bet.
+
+        Falls back to sigmoid of edge if no calibration model is fitted.
+        Never returns below 0.05 or above 0.95.
+        """
+        edge = pred / max(line, 0.01) - 1.0
+        mdl = self._win_models.get(stat)
+        if mdl is not None:
+            try:
+                p = float(mdl.predict([edge])[0])
+                return max(0.05, min(0.95, p))
+            except Exception:
+                pass
+        # Uncalibrated fallback: sigmoid centred at 50%, scaled by typical σ≈0.15
+        import math
+        p = 1.0 / (1.0 + math.exp(-edge / 0.15))
+        return max(0.05, min(0.95, p))
+
+    def _load_win_models(self) -> None:
+        try:
+            import joblib
+            for stat in STATS:
+                p = self._win_path(stat)
+                if os.path.exists(p):
+                    self._win_models[stat] = joblib.load(p)
+        except Exception:
+            pass
+
+
+# Module-level singleton loaded once
+_calibration = CalibrationLayer()
 
 
 def _load_motivation_flags(player_id: str) -> Dict[str, bool]:
@@ -147,6 +268,121 @@ def _get_injury_mult(player_id: str) -> float:
         return 1.0
 
 
+def _collect_micro_signals(player_id: str, game_context: dict) -> dict:
+    """
+    Load each available micro-model .pkl and return a dict of signal values.
+    All failures are silently swallowed — missing models return safe defaults.
+    """
+    gc = game_context  # shorthand
+    pid_int = int(player_id) if str(player_id).isdigit() else 0
+    signals: dict = {}
+
+    # ── Multiplier models ────────────────────────────────────────────────────
+    try:
+        from src.prediction.rest_day_model import predict_rest_mult
+        signals["rest_mult"] = float(predict_rest_mult(gc).get("mult", 1.0))
+    except Exception:
+        signals["rest_mult"] = 1.0
+
+    try:
+        from src.prediction.back_to_back_model import predict_b2b_mult
+        b2b = predict_b2b_mult(gc)
+        signals["b2b_pts"] = float(b2b.get("pts", 1.0))
+        signals["b2b_reb"] = float(b2b.get("reb", 1.0))
+        signals["b2b_ast"] = float(b2b.get("ast", 1.0))
+    except Exception:
+        signals["b2b_pts"] = signals["b2b_reb"] = signals["b2b_ast"] = 1.0
+
+    try:
+        from src.prediction.travel_impact_model import predict_travel_adj
+        signals["travel_adj"] = float(predict_travel_adj(gc).get("adj", 1.0))
+    except Exception:
+        signals["travel_adj"] = 1.0
+
+    try:
+        from src.prediction.altitude_model import predict_altitude_adj
+        signals["altitude_adj"] = float(predict_altitude_adj(gc).get("adj", 1.0))
+    except Exception:
+        signals["altitude_adj"] = 1.0
+
+    try:
+        from src.prediction.home_away_model import predict_home_away
+        signals["home_away_adj"] = float(predict_home_away(gc).get("adj", 1.0))
+    except Exception:
+        signals["home_away_adj"] = 1.0
+
+    try:
+        from src.prediction.shot_type_model import predict_shot_type_adj
+        signals["shot_type_mult"] = float(predict_shot_type_adj(gc).get("mult", 1.0))
+    except Exception:
+        signals["shot_type_mult"] = 1.0
+
+    # ── Contextual / confidence signals ──────────────────────────────────────
+    try:
+        from src.prediction.rotation_predictor import predict_rotation
+        rot = predict_rotation({**gc, "player_id": player_id})
+        signals["starter_prob"]  = float(rot.get("starter_prob", 0.5))
+        signals["expected_min"]  = float(rot.get("expected_min", 24.0))
+    except Exception:
+        signals["starter_prob"] = 0.5
+        signals["expected_min"] = 24.0
+
+    try:
+        from src.prediction.garbage_time_detector import predict_garbage_time
+        gt = predict_garbage_time(gc)
+        signals["garbage_time_prob"] = float(gt.get("garbage_time_prob", 0.1))
+    except Exception:
+        signals["garbage_time_prob"] = 0.1
+
+    try:
+        from src.prediction.foul_trouble_predictor import predict_foul_trouble
+        ft = predict_foul_trouble(pid_int, gc)
+        signals["foul_out_prob"]  = float(ft.get("foul_out_prob", 0.05))
+        signals["min_reduction"]  = float(ft.get("min_reduction", 0.0))
+    except Exception:
+        signals["foul_out_prob"] = 0.05
+        signals["min_reduction"] = 0.0
+
+    try:
+        from src.prediction.usage_rate_model import predict_usage
+        signals["proj_usg_pct"] = float(predict_usage(gc).get("proj_usg_pct", 0.2))
+    except Exception:
+        signals["proj_usg_pct"] = 0.2
+
+    try:
+        from src.prediction.true_shooting_model import predict_ts
+        signals["proj_ts_pct"] = float(predict_ts(gc).get("proj_ts_pct", 0.55))
+    except Exception:
+        signals["proj_ts_pct"] = 0.55
+
+    try:
+        from src.prediction.plus_minus_predictor import predict_pm
+        signals["proj_pm"] = float(predict_pm(gc).get("proj_pm", 0.0))
+    except Exception:
+        signals["proj_pm"] = 0.0
+
+    try:
+        from src.prediction.clutch_lineup_model import predict_clutch_prob
+        signals["clutch_prob"] = float(predict_clutch_prob(gc).get("prob", 0.5))
+    except Exception:
+        signals["clutch_prob"] = 0.5
+
+    try:
+        from src.prediction.contested_rate_model import predict_contested_rate
+        signals["contested_rate"] = float(predict_contested_rate(gc).get("rate", 0.5))
+    except Exception:
+        signals["contested_rate"] = 0.5
+
+    return signals
+
+
+# Per-stat b2b multiplier lookup
+_B2B_STAT_KEY: Dict[str, str] = {
+    "pts": "b2b_pts", "reb": "b2b_reb", "ast": "b2b_ast",
+    "fg3m": "b2b_pts", "stl": "b2b_reb", "blk": "b2b_reb", "tov": "b2b_ast",
+}
+
+
 def stack_predict(
     player_id: str,
     game_context: Optional[dict] = None,
@@ -166,10 +402,28 @@ def stack_predict(
     game_context = game_context or {}
     lines = lines or {}
 
+    # ── Resolve player name from ID ────────────────────────────────────────────
+    player_name = ""
+    try:
+        from nba_api.stats.static import players as _players_static
+        matches = [p for p in _players_static.get_players()
+                   if str(p["id"]) == str(player_id)]
+        if matches:
+            player_name = matches[0]["full_name"]
+    except Exception:
+        pass
+
     # ── Pull base predictions from player_props ──────────────────────────────
+    opp_team = game_context.get("away_team", "")
+    # If this player is on the away team, opponent is home
+    # (heuristic: caller should set player_team in game_context if known)
     try:
         from src.prediction.player_props import predict_props
-        base_raw = predict_props(player_id, context=game_context)
+        base_raw = predict_props(
+            player_name or str(player_id),
+            opp_team=opp_team,
+            season=game_context.get("season", "2025-26"),
+        ) if player_name else {}
     except Exception:
         base_raw = {}
 
@@ -213,16 +467,41 @@ def stack_predict(
         except Exception:
             pass
 
+    # ── Collect and apply micro-model signals ────────────────────────────────
+    micro = _collect_micro_signals(player_id, game_context)
+
+    # Shared scalar multiplier (rest, travel, altitude, home/away, shot type)
+    scalar_mult = (
+        micro["rest_mult"]
+        * micro["travel_adj"]
+        * micro["altitude_adj"]
+        * micro["home_away_adj"]
+        * micro["shot_type_mult"]
+    )
+    for stat in STATS:
+        val = adjusted.get(stat, float("nan"))
+        if not np.isnan(val):
+            # Per-stat b2b mult (pts/reb/ast proxies for other stats)
+            b2b_mult = micro.get(_B2B_STAT_KEY.get(stat, "b2b_pts"), 1.0)
+            adjusted[stat] = round(val * scalar_mult * b2b_mult, 4)
+
     # ── Confidence scores ─────────────────────────────────────────────────────
-    # Base confidence on: data completeness, injury mult, form consistency
+    # Base confidence on: data completeness, injury mult, form consistency,
+    # plus micro signals (garbage time, foul trouble, starter probability).
     confidence: Dict[str, float] = {}
+    micro_conf_adj = (
+        micro["starter_prob"] * 0.10              # starters more predictable
+        - micro["garbage_time_prob"] * 0.20       # garbage time = high variance
+        - micro["foul_out_prob"] * 0.15           # foul trouble = uncertain minutes
+    )
     for stat in STATS:
         val = adjusted.get(stat, float("nan"))
         if np.isnan(val) or suppressed:
             confidence[stat] = 0.0
         else:
-            conf = injury_mult * (1.0 - min(dnp_prob, 0.5) * 2)
-            confidence[stat] = round(max(0.0, min(1.0, conf)), 3)
+            conf = injury_mult * (1.0 - min(dnp_prob, 0.5) * 2) + micro_conf_adj
+            conf = max(0.0, min(1.0, conf))
+            confidence[stat] = round(_calibration.transform(stat, conf), 3)
 
     # ── Edge calculation ─────────────────────────────────────────────────────
     edges: Dict[str, float] = {}
@@ -235,6 +514,14 @@ def stack_predict(
             edges[stat] = float("nan")
 
     motivation_flags = _load_motivation_flags(player_id)
+
+    # Calibrated over/under win probabilities (used by kelly_corr)
+    calibrated_win_probs: Dict[str, float] = {}
+    for stat in STATS:
+        pred = adjusted.get(stat, float("nan"))
+        line = lines.get(stat)
+        if line and not np.isnan(pred) and line > 0:
+            calibrated_win_probs[stat] = _calibration.win_prob(stat, pred, float(line))
 
     player_name = base_raw.get("player_name", str(player_id))
 
@@ -249,6 +536,8 @@ def stack_predict(
         suppression_reason=suppression_reason,
         motivation_flags=motivation_flags,
         meta_applied=meta_applied,
+        micro_signals=micro,
+        calibrated_win_probs=calibrated_win_probs,
     )
 
 
@@ -312,14 +601,74 @@ def train_all_meta(residuals: Optional[List[dict]] = None) -> dict:
     return {stat: train_meta(stat, residuals) for stat in STATS}
 
 
+def train_calibration(
+    stat: Optional[str] = None,
+    residuals_path: Optional[str] = None,
+) -> dict:
+    """Fit isotonic win-probability calibration from prop_residuals.json.
+
+    Each row in residuals must have: {stat, predicted, actual, line}.
+    Rows without a 'line' field are skipped.  Trains one IsotonicRegression
+    per stat and saves to data/models/calibration_win_{stat}.joblib.
+
+    Args:
+        stat:           Specific stat to train, or None to train all.
+        residuals_path: Override path; defaults to data/models/prop_residuals.json.
+
+    Returns:
+        {stat: {"n": int, "over_rate": float, "fitted": bool}, ...}
+    """
+    if residuals_path is None:
+        residuals_path = os.path.join(_MODELS_DIR, "prop_residuals.json")
+    if not os.path.exists(residuals_path):
+        print(f"  [calib] {residuals_path} not found — nothing to calibrate")
+        return {}
+
+    all_rows: List[dict] = json.load(open(residuals_path, encoding="utf-8"))
+    stats_to_train = [stat] if stat else STATS
+    results: dict = {}
+
+    for s in stats_to_train:
+        rows = [
+            r for r in all_rows
+            if r.get("stat") == s
+            and r.get("predicted") is not None
+            and r.get("actual") is not None
+            and r.get("line") is not None
+        ]
+        n = len(rows)
+        if n < 10:
+            results[s] = {"n": n, "over_rate": float("nan"), "fitted": False}
+            print(f"  [calib] {s}: only {n} rows with line data — skipping (need ≥10)")
+            continue
+        preds   = np.array([float(r["predicted"]) for r in rows])
+        lines_  = np.array([float(r["line"])      for r in rows])
+        actuals = np.array([float(r["actual"])     for r in rows])
+        over_rate = float((actuals > lines_).mean())
+        _calibration.train_win_prob(s, preds, lines_, actuals)
+        results[s] = {"n": n, "over_rate": round(over_rate, 3), "fitted": True}
+        print(f"  [calib] {s}: n={n}  over_rate={over_rate:.3f}  fitted=True")
+
+    return results
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Prop model stacker")
     parser.add_argument("--predict", type=str, help="Player ID to predict")
     parser.add_argument("--train-meta", action="store_true", help="Train all meta models")
+    parser.add_argument("--train-calibration", action="store_true",
+                        help="Fit isotonic win-prob calibration from prop_residuals.json")
+    parser.add_argument("--stat", type=str, default=None,
+                        help="Stat to calibrate (default: all)")
     args = parser.parse_args()
 
-    if args.train_meta:
+    if args.train_calibration:
+        results = train_calibration(stat=args.stat)
+        for s, r in results.items():
+            status = "fitted" if r["fitted"] else "skipped"
+            print(f"  {s}: n={r['n']}  over_rate={r['over_rate']}  {status}")
+    elif args.train_meta:
         results = train_all_meta()
         for stat, r in results.items():
             print(f"  {stat}: coef={r['coef']:.4f} intercept={r['intercept']:.4f} n={r['n']} r2={r['r2']:.3f}")

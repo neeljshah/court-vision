@@ -1,5 +1,7 @@
 # Repository Structure Guide
 
+> Note: this file includes historical target structure notes from prior phases. For current public-facing canonical navigation, use `docs/PROJECT_INDEX.md`.
+
 This document describes the intended clean structure of the repository, current redundancies to resolve, and the single source of truth for each module.
 
 ---

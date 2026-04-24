@@ -30,17 +30,22 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import csv
+import hashlib
 import json
 import os
 import subprocess
 import sys
 import threading
 import time
+import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
 _file_lock = threading.Lock()  # guards phase_g_processed.txt + metrics CSV writes
+_completed_count = 0  # total games marked done this run (for incremental rsync)
+
+_GAME_TIMEOUT = int(os.environ.get("PHASE_G_GAME_TIMEOUT", "3600"))  # per-game timeout (s)
 
 try:
     import cv2 as _cv2
@@ -58,9 +63,10 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 DATA_DIR      = PROJECT_DIR / "data"
 VIDEOS_DIR    = DATA_DIR / "videos"
-FULL_GAMES    = VIDEOS_DIR / "full_games"
+FULL_GAMES    = Path(os.environ.get("PHASE_G_VIDEO_DIR", VIDEOS_DIR / "full_games"))
 TRACKING_DIR  = DATA_DIR / "tracking"
 DONE_LOG      = DATA_DIR / "phase_g_processed.txt"
+FAILED_LOG    = DATA_DIR / "phase_g_failed.txt"
 METRICS_LOG   = DATA_DIR / "phase_g_metrics.csv"
 VAULT_LOG     = PROJECT_DIR / "vault" / "Improvements" / "Tracker Improvements Log.md"
 
@@ -70,15 +76,82 @@ DEFAULT_FRAMES = 18_000
 
 # -- helpers -------------------------------------------------------------------
 
+def _game_hash(key: str, video_path: Path) -> str:
+    """SHA256 hash of (game_key, resolved video path) for dedup."""
+    raw = f"{key}|{video_path.resolve()}"
+    return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
 def _done_set() -> set[str]:
+    """Return set of done keys AND their hashes."""
     if DONE_LOG.exists():
         return set(DONE_LOG.read_text().splitlines())
     return set()
 
 
-def _mark_done(key: str):
-    with _file_lock, open(DONE_LOG, "a") as f:
-        f.write(key + "\n")
+def _done_hashes() -> set[str]:
+    """Return set of hash tokens already in the done log (prefix 'hash:')."""
+    if not DONE_LOG.exists():
+        return set()
+    return {ln[5:] for ln in DONE_LOG.read_text().splitlines()
+            if ln.startswith("hash:")}
+
+
+def _try_rsync() -> None:
+    """Non-blocking incremental rsync of data/tracking/ to SYNC_TARGET."""
+    sync_target = os.environ.get("SYNC_TARGET", "")
+    if not sync_target:
+        print("  [rsync] SYNC_TARGET not set — skipping incremental sync", flush=True)
+        return
+    ssh_key = os.environ.get("SSH_KEY", "")
+    port    = os.environ.get("PORT", "")
+    if ssh_key and port:
+        ssh_opt = f"ssh -i {ssh_key} -p {port}"
+        cmd = ["rsync", "-az", "--timeout=60", "-e", ssh_opt, "data/tracking/", sync_target]
+    elif port:
+        cmd = ["rsync", "-az", "--timeout=60", "-e", f"ssh -p {port}", "data/tracking/", sync_target]
+    else:
+        cmd = ["rsync", "-az", "--timeout=60", "data/tracking/", sync_target]
+    try:
+        r = subprocess.run(
+            cmd,
+            capture_output=True, text=True, timeout=90, cwd=str(PROJECT_DIR),
+        )
+        if r.returncode == 0:
+            print(f"  [rsync] incremental sync OK -> {sync_target}", flush=True)
+        else:
+            print(f"  [rsync] sync failed (rc={r.returncode}): {r.stderr[:200]}", flush=True)
+    except Exception as e:
+        print(f"  [rsync] sync error (non-blocking): {e}", flush=True)
+
+
+def _mark_done(key: str, video_path: Optional[Path] = None):
+    global _completed_count
+    # Atomic write — write full content to .tmp then os.replace
+    with _file_lock:
+        existing = DONE_LOG.read_text().splitlines() if DONE_LOG.exists() else []
+        existing.append(key)
+        if video_path is not None:
+            existing.append(f"hash:{_game_hash(key, video_path)}")
+        _tmp = DONE_LOG.with_suffix(".tmp")
+        _tmp.write_text("\n".join(existing) + "\n")
+        os.replace(str(_tmp), str(DONE_LOG))
+        _completed_count += 1
+        _count = _completed_count
+    # Incremental rsync every 10 completed games when running on RunPod
+    if _count % 10 == 0 and os.environ.get("RUNPOD_POD_ID"):
+        _try_rsync()
+
+
+def _mark_failed(key: str, stderr_tail: str) -> None:
+    """Append game_key + error snippet to phase_g_failed.txt (non-blocking)."""
+    try:
+        with _file_lock:
+            entry = f"{datetime.now().isoformat(timespec='seconds')} {key}: {stderr_tail[:300]}\n"
+            with open(FAILED_LOG, "a", encoding="utf-8", errors="replace") as f:
+                f.write(entry)
+    except Exception:
+        pass
 
 
 def _quality_label(ball_valid_pct: float) -> str:
@@ -90,11 +163,31 @@ def _quality_label(ball_valid_pct: float) -> str:
     return "low"
 
 
+_METRICS_FIELDNAMES = ["timestamp", "game_key", "game_id", "frames", "stability",
+                       "id_switches", "ball_valid_pct", "quality", "duration_s"]
+
+
+def _repair_metrics_header():
+    """Rewrite phase_g_metrics.csv header in-place if it doesn't match _METRICS_FIELDNAMES."""
+    if not METRICS_LOG.exists():
+        return
+    with open(METRICS_LOG, newline="") as f:
+        reader = csv.DictReader(f)
+        existing_fields = reader.fieldnames or []
+        rows = list(reader)
+    if list(existing_fields) == _METRICS_FIELDNAMES:
+        return  # header already correct
+    with open(METRICS_LOG, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=_METRICS_FIELDNAMES, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+    print(f"  [metrics] Repaired header: {existing_fields} -> {_METRICS_FIELDNAMES}")
+
+
 def _save_metrics(game_key: str, game_id: Optional[str], metrics: dict):
     METRICS_LOG.parent.mkdir(parents=True, exist_ok=True)
     quality = metrics.pop("quality", None) or _quality_label(float(metrics.get("ball_valid_pct", 0)))
-    fieldnames = ["timestamp", "game_key", "game_id", "frames", "stability",
-                  "id_switches", "ball_valid_pct", "quality", "duration_s"]
+    fieldnames = _METRICS_FIELDNAMES
     with _file_lock:
         exists = METRICS_LOG.exists()
         with open(METRICS_LOG, "a", newline="") as f:
@@ -124,8 +217,12 @@ def _log_to_vault(entries: list[str]):
 
 
 def _is_complete(out_dir: Path) -> bool:
-    """Return True iff the output directory has all required CSVs with > 0 rows."""
-    required = ["ball_tracking.csv", "tracking_data.csv", "possessions.csv"]
+    """Return True iff the output directory has all required CSVs with > 0 rows.
+
+    If a required CSV exists but has 0 data rows, deletes it so the game
+    can be retried cleanly on next --resume run.
+    """
+    required = ["tracking_data.csv"]
     for name in required:
         p = out_dir / name
         if not p.exists():
@@ -136,7 +233,13 @@ def _is_complete(out_dir: Path) -> bool:
                 next(reader)  # header
                 next(reader)  # at least one data row
         except StopIteration:
-            return False  # file has 0 data rows
+            # Zero-row output — delete it so --resume can retry this game
+            try:
+                p.unlink()
+                print(f"  [cleanup] Deleted zero-row output: {p}")
+            except Exception:
+                pass
+            return False
         except Exception:
             return False
     return True
@@ -258,12 +361,40 @@ def _backfill_live_pct():
         # Insert after ball_valid_pct
         idx = fieldnames.index("ball_valid_pct") + 1 if "ball_valid_pct" in fieldnames else len(fieldnames)
         fieldnames.insert(idx, "quality")
-    with open(METRICS_LOG, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-        w.writeheader()
-        w.writerows(rows)
+    with _file_lock:
+        with open(METRICS_LOG, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+            w.writeheader()
+            w.writerows(rows)
 
     print(f"Backfill complete -- {updated} game(s) updated in {METRICS_LOG.name}")
+
+
+def _remove_zero_frame_processed() -> None:
+    """Remove game IDs with frames==0 from phase_g_processed.txt so --resume retries them."""
+    if not METRICS_LOG.exists() or not DONE_LOG.exists():
+        return
+    zero_ids: set[str] = set()
+    with open(METRICS_LOG, newline="") as f:
+        for row in csv.DictReader(f):
+            try:
+                if int(row.get("frames", "1") or "1") == 0:
+                    gid = row.get("game_id", "").strip()
+                    if gid:
+                        zero_ids.add(gid)
+            except (ValueError, TypeError):
+                pass
+    if not zero_ids:
+        return
+    lines = DONE_LOG.read_text().splitlines()
+    cleaned = [ln for ln in lines if ln.strip() not in zero_ids]
+    if len(cleaned) < len(lines):
+        removed = set(lines) - set(cleaned)
+        _tmp = DONE_LOG.with_suffix(".tmp")
+        _tmp.write_text("\n".join(cleaned) + ("\n" if cleaned else ""))
+        os.replace(str(_tmp), str(DONE_LOG))
+        print(f"  [processed] Removed {len(removed)} zero-frame game(s) from done log: "
+              f"{', '.join(sorted(removed))}")
 
 
 def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
@@ -286,7 +417,8 @@ def _fps_adjusted_frames(video: Path, target_frames: int) -> int:
 
 
 def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
-              out_dir: Path, start_frame: int = 0, skip_tracking: bool = False) -> dict:
+              out_dir: Path, start_frame: int = 0, skip_tracking: bool = False,
+              game_key: Optional[str] = None, gpu_id: Optional[int] = None) -> dict:
     """Run run_clip.py and capture metrics. Returns metrics dict."""
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -300,6 +432,7 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         "--video", str(video),
         "--no-show",
         "--data-dir", str(out_dir),   # Fix 2: write directly to per-game dir
+        "--skip-features",            # Phase G only needs tracking metrics, not features
     ]
     if frames and not skip_tracking:
         cmd += ["--frames", str(frames)]
@@ -343,6 +476,13 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             except (ValueError, IndexError):
                 pass
 
+    # Per-worker GPU assignment: when gpu_id is set, pin this subprocess to a
+    # single GPU via CUDA_VISIBLE_DEVICES.  With N GPUs and N workers, each
+    # worker gets exclusive VRAM — no contention, no fragmentation.
+    _env = os.environ.copy()
+    if gpu_id is not None:
+        _env["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
+
     proc = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
@@ -352,7 +492,32 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         errors="replace",
         cwd=str(PROJECT_DIR),
         bufsize=1,  # line-buffered
+        env=_env,
     )
+
+    # Fix 1: per-game timeout — kill process tree after GAME_TIMEOUT seconds.
+    _game_label = game_key or game_id or video.stem
+    _timeout_info: dict = {"fired": False}
+
+    def _timeout_kill():
+        _timeout_info["fired"] = True
+        print(f"\n  [TIMEOUT] {_game_label} exceeded {_GAME_TIMEOUT}s — killing process",
+              flush=True)
+        try:
+            if sys.platform != "win32":
+                import signal as _sig
+                os.killpg(os.getpgid(proc.pid), _sig.SIGKILL)
+            else:
+                proc.kill()
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+
+    _timer = threading.Timer(_GAME_TIMEOUT, _timeout_kill)
+    _timer.daemon = True
+    _timer.start()
 
     # Drain stderr in a background thread so it never deadlocks the stdout read.
     def _drain_stderr():
@@ -373,10 +538,14 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
             print(f"    {line.strip()}", end="\r", flush=True)
 
     proc.wait()
+    _timer.cancel()
     _stderr_thread.join(timeout=5)
     elapsed = time.time() - t0
     metrics["duration_s"] = round(elapsed, 1)
+    if _timeout_info["fired"]:
+        metrics["_timed_out"] = True
     returncode = proc.returncode
+    metrics["_rc"] = returncode  # propagate to caller for failure handling
 
     # Save run log
     (out_dir / "run.log").write_text(
@@ -410,14 +579,16 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
     if returncode == 3:
         print(f"  [WARN] run_clip.py exited 3 -- Stage 1 produced 0 rows (no gameplay detected)")
         print("         Video may need manual review or different start frame.")
+        # Handled in _process_one -- do NOT save/mark_done here
     elif returncode == 4:
         print(f"  [PREFLIGHT FAIL] run_clip.py exited 4 -- non-broadcast video detected")
         print("         Median person count below threshold. Download a real broadcast clip.")
         metrics["ball_valid_pct"] = 0.0
         metrics["frames"] = 0
         metrics["stability"] = 0.0
-        _save_metrics(game_key, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
-        _mark_done(game_key + "_PREFLIGHT_FAIL")
+        _gk = game_key or game_id or video.stem
+        _save_metrics(_gk, game_id, {**metrics, "quality": "PREFLIGHT_FAIL"})
+        _mark_done(_gk)  # plain key so skip-check matches on re-run
     elif returncode not in (0, 2):  # 2 = short clip warning, still ok
         print(f"  [WARN] run_clip.py exited {returncode}")
         stderr_tail = "".join(stderr_lines)
@@ -462,6 +633,10 @@ def main():
     ap.add_argument("--skip-tracking", action="store_true",
                     help="Skip Stage 1 tracking (requires tracking_data.csv to exist). "
                          "Use for games where tracking completed but post-processing crashed.")
+    ap.add_argument("--gpus",         type=int, default=None,
+                    help="Number of GPUs available. Workers are assigned GPUs round-robin "
+                         "(worker 0 → GPU 0, worker 1 → GPU 1, ...). "
+                         "Defaults to CUDA_VISIBLE_DEVICES count or 1.")
     args = ap.parse_args()
 
     if args.download:
@@ -472,6 +647,8 @@ def main():
             cwd=str(PROJECT_DIR),
         )
 
+    _repair_metrics_header()
+    _remove_zero_frame_processed()
     done = _done_set()
 
     # --backfill-live: recompute ball_valid_pct in-place for all processed games
@@ -518,9 +695,62 @@ def main():
     vault_entries = []
     total_t0 = time.time()
 
+    # Seconds to stagger each worker's startup to avoid simultaneous model
+    # loading (YOLO + OSNet + PaddleOCR/EasyOCR) causing a RAM spike.
+    _STARTUP_STAGGER_S: int = int(os.environ.get("PHASE_G_STAGGER_S", "60"))
+
+    # Detect available GPUs for round-robin assignment
+    _n_gpus = args.gpus
+    if _n_gpus is None:
+        _cvd = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+        if _cvd:
+            _n_gpus = len(_cvd.split(","))
+        else:
+            try:
+                import torch as _tch
+                _n_gpus = _tch.cuda.device_count() or 1
+            except Exception:
+                _n_gpus = 1
+    if _n_gpus > 1:
+        print(f"  Multi-GPU: {_n_gpus} GPUs detected — assigning workers round-robin")
+
+    # Collect hashes already in the done log for hash-based dedup
+    _done_hash_set = _done_hashes()
+
     def _process_one(args_tuple):
         i, total, key, video_path, game_id = args_tuple
-        print(f"[{i}/{total}] {key}  video={video_path.name}  game_id={game_id or '(none)'}")
+        try:
+            return _process_one_inner(i, total, key, video_path, game_id)
+        except Exception as exc:
+            tb = traceback.format_exc()
+            print(f"  [CRASH] {key}: {exc}\n{tb[-500:]}", flush=True)
+            _mark_failed(key, tb)
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0,
+                         "_crashed": True}
+
+    def _process_one_inner(i, total, key, video_path, game_id):
+        # Hash-based dedup: skip if (key, path) already processed even if
+        # done log uses a different display key after re-staging
+        h = _game_hash(key, video_path)
+        if h in _done_hash_set:
+            print(f"[{i}/{total}] {key}  SKIP (hash dedup — already processed)")
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0, "_deduped": True}
+
+        # Preflight: verify video file exists before spawning a worker process
+        if not video_path.exists():
+            print(f"[{i}/{total}] {key}  PREFLIGHT_MISSING: video not found: {video_path}")
+            return key, {"frames": 0, "stability": 0.0, "id_switches": 0,
+                         "ball_valid_pct": 0.0, "duration_s": 0.0}
+        # Round-robin GPU assignment: worker index (0-based) mod GPU count
+        gpu_id = (i - 1) % _n_gpus if _n_gpus > 1 else None
+        if n_workers > 1 and i > 1:
+            delay = (i - 1) * _STARTUP_STAGGER_S
+            print(f"[{i}/{total}] {key}  staggering {delay}s to avoid model-load spike...")
+            time.sleep(delay)
+        _gpu_tag = f"  GPU={gpu_id}" if gpu_id is not None else ""
+        print(f"[{i}/{total}] {key}  video={video_path.name}  game_id={game_id or '(none)'}{_gpu_tag}")
         out_dir = TRACKING_DIR / key
         # On reprocess, clear stale tracking_data.csv so we don't append new rows
         # onto old data with potentially different column layouts.
@@ -528,12 +758,34 @@ def main():
             stale = out_dir / "tracking_data.csv"
             if stale.exists():
                 stale.unlink()
-        metrics = _run_clip(video_path, game_id, frames_per_game, out_dir,
-                            start_frame=args.start_frame,
-                            skip_tracking=args.skip_tracking)
-        if _is_complete(out_dir):
+        # Retry up to 2 attempts — single game crash shouldn't stop the batch
+        metrics = None
+        for _attempt in range(1, 3):
+            metrics = _run_clip(video_path, game_id, frames_per_game, out_dir,
+                                start_frame=args.start_frame,
+                                skip_tracking=args.skip_tracking,
+                                game_key=key, gpu_id=gpu_id)
+            rc = metrics.get("_rc", 0)
+            if metrics.get("_timed_out"):
+                print(f"  [TIMEOUT] {key} — killed after {_GAME_TIMEOUT}s, "
+                      f"{'retrying...' if _attempt < 2 else 'giving up.'}")
+            elif rc in (0, 2, 3, 4):
+                break  # success or known non-retryable exit
+            else:
+                print(f"  [RETRY] {key} attempt {_attempt} failed (rc={rc}), "
+                      f"{'retrying...' if _attempt < 2 else 'giving up.'}")
+            import time as _rt; _rt.sleep(5)
+        rc = metrics.pop("_rc", 0)
+        if rc == 3:
+            # Stage 1 produced zero rows — mark done so it isn't retried forever;
+            # RC3 almost always means a non-broadcast clip with no court visibility.
+            _save_metrics(key, game_id, {**metrics, "quality": "RC3_ZERO_ROWS"})
+            _mark_done(key, video_path)
+        elif rc == 4:
+            pass  # already handled inside _run_clip
+        elif _is_complete(out_dir):
             _save_metrics(key, game_id, metrics)
-            _mark_done(key)
+            _mark_done(key, video_path)
         else:
             print(f"  [WARN] {key} output incomplete -- re-run with --resume to retry.")
         print(f"  [{key}] frames={metrics['frames']}  stability={metrics['stability']:.3f}"
@@ -548,8 +800,18 @@ def main():
         results_list = [_process_one(w) for w in work]
     else:
         print(f"  Running {n_workers} games in parallel (thread pool)")
+        results_list = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=n_workers) as pool:
-            results_list = list(pool.map(_process_one, work))
+            futs = {pool.submit(_process_one, w): w for w in work}
+            for fut in concurrent.futures.as_completed(futs):
+                try:
+                    results_list.append(fut.result(timeout=3700))
+                except concurrent.futures.TimeoutError:
+                    w = futs[fut]
+                    print(f"  [ERROR] {w[2]} future did not finish within 3700s")
+                except Exception as exc:
+                    w = futs[fut]
+                    print(f"  [ERROR] {w[2]}: {exc}")
 
     for key, metrics in results_list:
         vault_entries.append(

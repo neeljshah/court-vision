@@ -25,6 +25,7 @@ Module constants
 from __future__ import annotations
 
 import logging
+import os
 from typing import Optional
 
 import cv2
@@ -60,7 +61,14 @@ def get_reader() -> object:
 
     Returns:
         PaddleOCR or easyocr.Reader: Shared reader configured for digit recognition.
+
+    Raises:
+        RuntimeError: If COURTV_NO_OCR=1 is set (Phase G batch mode — OCR
+            unused, saves ~10-15 GB RAM per worker from PaddlePaddle init).
     """
+    if os.environ.get("COURTV_NO_OCR", "0") == "1":
+        raise RuntimeError("OCR disabled via COURTV_NO_OCR=1")
+
     global _reader, _USE_PADDLE
     if _reader is not None:
         return _reader

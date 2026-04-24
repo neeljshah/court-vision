@@ -1,0 +1,922 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (2:20 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "60-66",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 13,
+    "event_type": 2,
+    "event_desc": "MISS Ware 2' Cutting Layup Shot",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 15,
+    "event_type": 4,
+    "event_desc": "Sarr REBOUND (Off:1 Def:5)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 25,
+    "event_type": 1,
+    "event_desc": "Jones 11' Driving Floating Jump Shot (8 PTS) (Sarr 4 AST)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "60-68",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 41,
+    "event_type": 1,
+    "event_desc": "Highsmith 25' 3PT Jump Shot (5 PTS) (Jaquez Jr. 3 AST)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "63-68",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 59,
+    "event_type": 2,
+    "event_desc": "MISS Sarr 24' 3PT Jump Shot",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 62,
+    "event_type": 4,
+    "event_desc": "Robinson REBOUND (Off:0 Def:2)",
+    "player_name": "Robinson",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 73,
+    "event_type": 2,
+    "event_desc": "MISS Highsmith 13' Floating Jump Shot",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 77,
+    "event_type": 4,
+    "event_desc": "George REBOUND (Off:0 Def:1)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 88,
+    "event_type": 1,
+    "event_desc": "Johnson 2' Driving Finger Roll Layup (4 PTS)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "63-70",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 100,
+    "event_type": 1,
+    "event_desc": "Highsmith 10' Floating Jump Shot (7 PTS) (Mitchell 6 AST)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "65-70",
+    "score_margin": "-5"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 122,
+    "event_type": 1,
+    "event_desc": "Jones 13' Driving Floating Jump Shot (10 PTS)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "65-72",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 141,
+    "event_type": 5,
+    "event_desc": "Jaquez Jr. Bad Pass Turnover (P2.T5)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 141,
+    "event_type": 0,
+    "event_desc": "Sarr STEAL (1 STL)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 146,
+    "event_type": 2,
+    "event_desc": "MISS Vukcevic 28' 3PT Running Jump Shot",
+    "player_name": "Vukcevic",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 150,
+    "event_type": 4,
+    "event_desc": "Highsmith REBOUND (Off:1 Def:2)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 156,
+    "event_type": 2,
+    "event_desc": "MISS Robinson 26' 3PT Pullup Jump Shot",
+    "player_name": "Robinson",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 159,
+    "event_type": 4,
+    "event_desc": "Jaquez Jr. REBOUND (Off:1 Def:3)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 161,
+    "event_type": 2,
+    "event_desc": "MISS Robinson 24' 3PT Jump Shot",
+    "player_name": "Robinson",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 164,
+    "event_type": 4,
+    "event_desc": "Sarr REBOUND (Off:1 Def:6)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 177,
+    "event_type": 1,
+    "event_desc": "Vukcevic 3PT Jump Shot (20 PTS) (Johnson 6 AST)",
+    "player_name": "Vukcevic",
+    "team_abbrev": "WAS",
+    "score": "65-75",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 192,
+    "event_type": 2,
+    "event_desc": "MISS Mitchell 2' Driving Layup",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 193,
+    "event_type": 4,
+    "event_desc": "Sarr REBOUND (Off:1 Def:7)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 198,
+    "event_type": 1,
+    "event_desc": "Sarr 7' Driving Floating Jump Shot (10 PTS)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "65-77",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 218,
+    "event_type": 2,
+    "event_desc": "MISS Ware 26' 3PT Jump Shot",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 221,
+    "event_type": 4,
+    "event_desc": "Vukcevic REBOUND (Off:1 Def:6)",
+    "player_name": "Vukcevic",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 238,
+    "event_type": 5,
+    "event_desc": "Jones Bad Pass Turnover (P2.T6)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 238,
+    "event_type": 0,
+    "event_desc": "Ware STEAL (1 STL)",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 245,
+    "event_type": 2,
+    "event_desc": "MISS Jaquez Jr. 3PT Jump Shot",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 250,
+    "event_type": 4,
+    "event_desc": "George REBOUND (Off:0 Def:2)",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 271,
+    "event_type": 5,
+    "event_desc": "Wizards Turnover: Shot Clock (T#7)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 280,
+    "event_type": 1,
+    "event_desc": "Jaquez Jr. 2' Driving Layup (21 PTS)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "67-77",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 296,
+    "event_type": 2,
+    "event_desc": "MISS Jones 9' Driving Floating Bank Jump Shot",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 298,
+    "event_type": 4,
+    "event_desc": "Jaquez Jr. REBOUND (Off:1 Def:4)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 301,
+    "event_type": 1,
+    "event_desc": "Jaquez Jr. 1' Running Dunk (23 PTS)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "69-77",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 321,
+    "event_type": 2,
+    "event_desc": "MISS Sarr 17' Jump Shot",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 323,
+    "event_type": 4,
+    "event_desc": "Jaquez Jr. REBOUND (Off:1 Def:5)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 339,
+    "event_type": 1,
+    "event_desc": "Jaquez Jr. 4' Driving Finger Roll Layup (25 PTS)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "71-77",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 360,
+    "event_type": 1,
+    "event_desc": "Johnson 1' Driving Dunk (6 PTS) (Jones 3 AST)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "71-79",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 6,
+    "event_desc": "Sarr S.FOUL (P2.T1) (J.Williams)",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 0,
+    "event_desc": "HEAT Timeout: Regular (Full 3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 8,
+    "event_desc": "SUB: Carrington FOR Sarr",
+    "player_name": "Sarr",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 8,
+    "event_desc": "SUB: Champagnie FOR George",
+    "player_name": "George",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 3,
+    "event_desc": "MISS Jaquez Jr. Free Throw 1 of 2",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 4,
+    "event_desc": "HEAT Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 371,
+    "event_type": 3,
+    "event_desc": "Jaquez Jr. Free Throw 2 of 2 (26 PTS)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "72-79",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 385,
+    "event_type": 1,
+    "event_desc": "Carrington 20' Jump Shot (13 PTS) (Vukcevic 4 AST)",
+    "player_name": "Carrington",
+    "team_abbrev": "WAS",
+    "score": "72-81",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 406,
+    "event_type": 2,
+    "event_desc": "MISS Ware 2' Driving Hook Shot",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 407,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:4)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 418,
+    "event_type": 1,
+    "event_desc": "Jones 16' Step Back Jump Shot (12 PTS)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "72-83",
+    "score_margin": "-11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 430,
+    "event_type": 1,
+    "event_desc": "Jaquez Jr. 4' Driving Floating Bank Jump Shot (28 PTS)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "74-83",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 450,
+    "event_type": 1,
+    "event_desc": "Johnson 28' 3PT Step Back Jump Shot (9 PTS)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "74-86",
+    "score_margin": "-12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 6,
+    "event_desc": "Champagnie P.FOUL (P1.T2) (J.Williams)",
+    "player_name": "Champagnie",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 457,
+    "event_type": 8,
+    "event_desc": "SUB: Rozier FOR Jaquez Jr.",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 463,
+    "event_type": 1,
+    "event_desc": "Ware 1' Alley Oop Dunk (11 PTS) (Robinson 2 AST)",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "76-86",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 485,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 13' Pullup Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 487,
+    "event_type": 4,
+    "event_desc": "Mitchell REBOUND (Off:0 Def:2)",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 490,
+    "event_type": 1,
+    "event_desc": "Highsmith 3' Running Layup (9 PTS) (Mitchell 7 AST)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "78-86",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 490,
+    "event_type": 0,
+    "event_desc": "Champagnie Violation:Defensive Goaltending (B.Forte)",
+    "player_name": "Champagnie",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 499,
+    "event_type": 1,
+    "event_desc": "Jones 1' Cutting Dunk Shot (14 PTS) (Carrington 5 AST)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "78-88",
+    "score_margin": "-10"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 519,
+    "event_type": 1,
+    "event_desc": "Highsmith 25' 3PT Pullup Jump Shot (12 PTS)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "81-88",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 1,
+    "event_desc": "Johnson 1' Driving Finger Roll Layup (11 PTS) (Carrington 6 AST)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "81-90",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 559,
+    "event_type": 2,
+    "event_desc": "MISS Mitchell 1' Driving Layup",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 561,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:5)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 569,
+    "event_type": 2,
+    "event_desc": "MISS Jones 3' Driving Layup",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 571,
+    "event_type": 4,
+    "event_desc": "Ware REBOUND (Off:0 Def:4)",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 5,
+    "event_desc": "Highsmith Bad Pass Turnover (P1.T6)",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 577,
+    "event_type": 0,
+    "event_desc": "Champagnie STEAL (1 STL)",
+    "player_name": "Champagnie",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 582,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 24' 3PT Running Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 585,
+    "event_type": 4,
+    "event_desc": "Mitchell REBOUND (Off:0 Def:3)",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 593,
+    "event_type": 2,
+    "event_desc": "MISS Highsmith 3PT Jump Shot",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 599,
+    "event_type": 4,
+    "event_desc": "Jones REBOUND (Off:0 Def:6)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 610,
+    "event_type": 2,
+    "event_desc": "MISS Carrington 25' 3PT Pullup Jump Shot",
+    "player_name": "Carrington",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 612,
+    "event_type": 4,
+    "event_desc": "Mitchell REBOUND (Off:0 Def:4)",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 616,
+    "event_type": 1,
+    "event_desc": "Ware 2' Running Alley Oop Layup Shot (13 PTS) (Mitchell 8 AST)",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "83-90",
+    "score_margin": "-7"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 6,
+    "event_desc": "Ware P.FOUL (P2.T1) (J.Williams)",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 0,
+    "event_desc": "Wizards Timeout: Regular (Reg.3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 8,
+    "event_desc": "SUB: Christopher FOR Ware",
+    "player_name": "Ware",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 8,
+    "event_desc": "SUB: Jaquez Jr. FOR Highsmith",
+    "player_name": "Highsmith",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 8,
+    "event_desc": "SUB: Johnson FOR Mitchell",
+    "player_name": "Mitchell",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 631,
+    "event_type": 8,
+    "event_desc": "SUB: Anderson FOR Robinson",
+    "player_name": "Robinson",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 638,
+    "event_type": 1,
+    "event_desc": "Jones 10' Turnaround Jump Shot (16 PTS) (Champagnie 1 AST)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "83-92",
+    "score_margin": "-9"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 653,
+    "event_type": 6,
+    "event_desc": "Johnson P.FOUL (P2.T3) (P.Ransom)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 656,
+    "event_type": 1,
+    "event_desc": "Jaquez Jr. 26' 3PT Jump Shot (31 PTS) (Johnson 1 AST)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "86-92",
+    "score_margin": "-6"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 681,
+    "event_type": 1,
+    "event_desc": "Jones 11' Floating Jump Shot (18 PTS) (Johnson 7 AST)",
+    "player_name": "Jones",
+    "team_abbrev": "WAS",
+    "score": "86-94",
+    "score_margin": "-8"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 686,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 25' 3PT Jump Shot",
+    "player_name": "Johnson",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 689,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:1)",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 704,
+    "event_type": 2,
+    "event_desc": "MISS Johnson 3' Driving Finger Roll Layup",
+    "player_name": "Johnson",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 706,
+    "event_type": 4,
+    "event_desc": "Jaquez Jr. REBOUND (Off:1 Def:6)",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 716,
+    "event_type": 2,
+    "event_desc": "MISS Jaquez Jr. 26' 3PT Pullup Jump Shot",
+    "player_name": "Jaquez Jr.",
+    "team_abbrev": "MIA",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 717,
+    "event_type": 4,
+    "event_desc": "Vukcevic REBOUND (Off:1 Def:7)",
+    "player_name": "Vukcevic",
+    "team_abbrev": "WAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (2:40 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "86-94",
+    "score_margin": "-8"
+  }
+]

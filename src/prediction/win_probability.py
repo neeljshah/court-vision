@@ -27,6 +27,7 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.insert(0, PROJECT_DIR)
 
 from src.data.schedule_context import compute_travel_distance  # no API — arena coords only
+from src.prediction.possession_simulator import PossessionSimulator  # raises at load if missing
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
@@ -77,7 +78,9 @@ def _get_ref_fta_tendency(ref_names: Optional[List[str]], season: str) -> float:
 # Cached files with a different or absent version are automatically re-fetched.
 # Phase 4.6: bumped from 3→4 to add iso_matchup_edge + ref_fta_tendency columns.
 # 2025-26 update: bumped 4→5 to add C-1 through C-7 feature columns.
-_SEASON_GAMES_VERSION = 5
+# Tier 2: bumped 7→8 to add SRS, four factors L10, venue splits, opp-adjusted (14 cols).
+# NOTE: delete data/cache/nba/season_games_*.json to force re-fetch with new schema.
+_SEASON_GAMES_VERSION = 8
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
 # NET_RATING, PACE, etc.) reflect the current season, not an early-season snapshot.
@@ -119,7 +122,178 @@ FEATURE_COLS = [
     "b2b_diff", "elo_pace_interaction",
     # C-7: Bench net rating
     "home_bench_net_rtg", "away_bench_net_rtg",
+    # Rolling L10: game-by-game rolling avg (10-game window, no season bias)
+    "home_off_rtg_L10", "home_def_rtg_L10", "home_net_rtg_L10",
+    "away_off_rtg_L10", "away_def_rtg_L10", "away_net_rtg_L10",
+    # Tier 2
+    "home_srs", "away_srs",
+    "home_efg_L10", "away_efg_L10",
+    "home_tov_pct_L10", "away_tov_pct_L10",
+    "home_oreb_pct_L10", "away_oreb_pct_L10",
+    "home_ft_rate_L10", "away_ft_rate_L10",
+    "home_off_rtg_home_L10", "away_off_rtg_away_L10",
+    "home_off_rtg_vs_top_def", "away_off_rtg_vs_top_def",
+    # Phase 8: Monte Carlo simulation features (computed but NOT fed to model until retrain)
+    # Model was trained on 67 features (without sim_*); FEATURE_COLS has 71.
+    # Use _MODEL_FEATURE_COLS for prediction/training until model is retrained with sim_*.
+    "sim_win_prob", "sim_score_diff_mean", "sim_score_diff_std", "sim_pace_adj",
 ]
+
+# 67-feature subset used by the current saved model (excludes the 4 sim_* additions).
+# actual=67 expected=71  diff=4 (sim_win_prob, sim_score_diff_mean, sim_score_diff_std, sim_pace_adj)
+# When model is retrained with sim_* features, replace _MODEL_FEATURE_COLS with FEATURE_COLS.
+_MODEL_FEATURE_COLS = FEATURE_COLS[:-4]
+
+_SIM_CACHE: dict[str, dict] = {}
+
+
+def _sim_features(home_team: str, away_team: str,
+                  home_stats: Optional[dict] = None,
+                  away_stats: Optional[dict] = None) -> dict:
+    """Run 1000-sim PossessionSimulator to generate Monte Carlo features. Cached by matchup."""
+    cache_key = f"{home_team}_{away_team}"
+    if cache_key in _SIM_CACHE:
+        return _SIM_CACHE[cache_key]
+    sim = PossessionSimulator()
+    res = sim.simulate_game(home_team, away_team, n_sims=1000,
+                            team_a_stats=home_stats, team_b_stats=away_stats)
+    wp = res["win_probability"]
+    sd_h = res["score_distribution"][home_team]
+    sd_a = res["score_distribution"][away_team]
+    pace_h = float((home_stats or {}).get("pace", 100))
+    pace_a = float((away_stats or {}).get("pace", 100))
+    out = {
+        "sim_win_prob": float(wp.get(home_team, 0.5)),
+        "sim_score_diff_mean": round(sd_h["mean"] - sd_a["mean"], 2),
+        "sim_score_diff_std": round((sd_h["std"] + sd_a["std"]) / 2, 2),
+        "sim_pace_adj": round((pace_h + pace_a) / 200, 4),
+    }
+    _SIM_CACHE[cache_key] = out
+    return out
+
+
+# ── C-1 through C-7: helper functions ─────────────────────────────────────────
+
+def _get_elo_feature(team_abbr: str) -> float:
+    """Load ELO for a team from elo_ratings.json. Falls back to 1500."""
+    try:
+        from src.features.advanced_features import _ELO_PATH
+        if not os.path.exists(_ELO_PATH):
+            return 1500.0
+        elo = json.load(open(_ELO_PATH))
+        return float(elo.get(team_abbr, 1500.0))
+    except Exception:
+        return 1500.0
+
+
+def _get_stars_available(team_abbr: str) -> int:
+    """Count of top-3-by-minutes players available (not Out/Suspended). 3=full."""
+    try:
+        from src.data.injury_monitor import InjuryMonitor
+        from src.data.nba_stats import get_team_roster
+        im = InjuryMonitor()
+        if im.is_stale():
+            im.refresh()
+        roster = get_team_roster(team_abbr)
+        if not roster:
+            return 3
+        top3 = sorted(roster, key=lambda p: p.get("MIN", 0), reverse=True)[:3]
+        out_count = sum(1 for p in top3 if im.get_status(p.get("PLAYER_ID")) in ("Out", "Suspended"))
+        return 3 - out_count
+    except Exception:
+        return 3
+
+
+def _get_def_rtg_trend(team_abbr: str, season: str) -> float:
+    """C-2: def_rtg_last10 - def_rtg_season for a team. 0.0 on miss."""
+    try:
+        from src.features.advanced_features import get_opp_def_trend
+        return get_opp_def_trend(team_abbr, season)
+    except Exception:
+        return 0.0
+
+
+def _get_pace_variance(team_abbr: str, season: str, last_n: int = 20) -> float:
+    """C-3: Std of possessions per game over last N games. 2.0 on miss."""
+    try:
+        games_path = os.path.join(_NBA_CACHE, f"season_games_{season}.json")
+        if not os.path.exists(games_path):
+            return 2.0
+        games = json.load(open(games_path))
+        team_games = [
+            g for g in games
+            if g.get("home_team") == team_abbr or g.get("away_team") == team_abbr
+        ]
+        team_games = sorted(team_games, key=lambda g: g.get("game_date", ""))[-last_n:]
+        poss_list = []
+        for g in team_games:
+            p = g.get("home_possessions") if g.get("home_team") == team_abbr else g.get("away_possessions")
+            if p is not None:
+                poss_list.append(float(p))
+        if len(poss_list) < 3:
+            return 2.0
+        return round(float(np.std(poss_list)), 3)
+    except Exception:
+        return 2.0
+
+
+def _get_hustle_deflections(team_abbr: str, season: str) -> float:
+    """C-4: Mean deflections per game for a team from hustle cache. 0.0 on miss."""
+    try:
+        path = os.path.join(_NBA_CACHE, f"hustle_stats_{season}.json")
+        if not os.path.exists(path):
+            return 0.0
+        rows = json.load(open(path))
+        team_rows = [r for r in rows
+                     if str(r.get("team_abbreviation", "")).upper() == team_abbr.upper()]
+        if not team_rows:
+            return 0.0
+        vals = [float(r.get("deflections_pg", 0) or 0) for r in team_rows]
+        return round(sum(vals) / len(vals), 3) if vals else 0.0
+    except Exception:
+        return 0.0
+
+
+def _get_pnr_ppp(team_abbr: str, season: str) -> float:
+    """C-5: Team PnR Ball Handler PPP from synergy_offensive_all cache."""
+    try:
+        path = os.path.join(_NBA_CACHE, f"synergy_offensive_all_{season}.json")
+        if not os.path.exists(path):
+            return 0.0
+        rows = json.load(open(path))
+        for r in rows:
+            if (r.get("team_abbreviation", "").upper() == team_abbr.upper()
+                    and r.get("play_type") in ("PRBallHandler", "PnR Ball Handler")):
+                return float(r.get("ppp", 0.0))
+        return 0.0
+    except Exception:
+        return 0.0
+
+
+def _get_bench_net_rtg(team_abbr: str, season: str) -> float:
+    """C-7: Mean net rating for bench lineups (<20 min/g) from data/nba/lineups/."""
+    try:
+        lineup_dir = os.path.join(_NBA_CACHE, "lineups")
+        if not os.path.exists(lineup_dir):
+            return 0.0
+        candidates = [
+            f for f in os.listdir(lineup_dir)
+            if team_abbr.upper() in f.upper() and f.endswith(".json")
+        ]
+        if not candidates:
+            return 0.0
+        vals = []
+        for fname in candidates:
+            rows = json.load(open(os.path.join(lineup_dir, fname)))
+            for r in rows:
+                if (int(r.get("lineup_size", 5)) >= 5
+                        and float(r.get("min", 99)) < 20):
+                    nr = r.get("net_rtg") or r.get("NET_RATING")
+                    if nr is not None:
+                        vals.append(float(nr))
+        return round(sum(vals) / len(vals), 3) if vals else 0.0
+    except Exception:
+        return 0.0
 
 
 # ── C-1 through C-7: helper functions ─────────────────────────────────────────
@@ -266,7 +440,7 @@ class WinProbModel:
             raise RuntimeError("Model not trained — call train() or load() first")
 
         feats = _build_features(home_team, away_team, season, game_date, ref_names)
-        X     = np.array([[feats[c] for c in FEATURE_COLS]], dtype=np.float32)
+        X     = np.array([[feats[c] for c in _MODEL_FEATURE_COLS]], dtype=np.float32)
         prob  = float(self.model.predict_proba(X)[0][1])
 
         # Surface injury warnings (Out/Doubtful players on either team)
@@ -368,9 +542,9 @@ def train(
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[FEATURE_COLS].values.astype(np.float32)
+    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
-    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%}")
+    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(_MODEL_FEATURE_COLS)}")
 
     split = int(len(df) * 0.8)
     X_tr, X_val = X[:split], X[split:]
@@ -390,11 +564,24 @@ def train(
     print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}")
 
     model = WinProbModel(model=clf)
-    model._feature_importance = dict(zip(FEATURE_COLS, clf.feature_importances_.tolist()))
+    model._feature_importance = dict(zip(_MODEL_FEATURE_COLS, clf.feature_importances_.tolist()))
     model.save(output_path)
     _save_metrics({"accuracy": acc, "brier": brier,
                    "n_games": len(df), "seasons": seasons})
     return model
+
+
+class _BoosterClassifier:
+    """Thin wrapper around xgb.Booster exposing predict_proba() for binary classification."""
+
+    def __init__(self, booster: "xgb.Booster") -> None:
+        self._booster = booster
+
+    def predict_proba(self, X: "np.ndarray") -> "np.ndarray":
+        import xgboost as xgb
+        dm = xgb.DMatrix(X)
+        probs = self._booster.predict(dm)
+        return np.column_stack([1 - probs, probs])
 
 
 def load(model_path: Optional[str] = None) -> WinProbModel:
@@ -408,14 +595,16 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
         data = pickle.load(f)
     if "model_bytes" in data:
         import tempfile
-        clf = XGBClassifier()
+        import xgboost as xgb
+        booster = xgb.Booster()
         with tempfile.NamedTemporaryFile(suffix=".ubj", delete=False) as tmp:
             tmp.write(data["model_bytes"])
             tmp_path = tmp.name
         try:
-            clf.load_model(tmp_path)
+            booster.load_model(tmp_path)
         finally:
             os.unlink(tmp_path)
+        clf = _BoosterClassifier(booster)
     else:
         # backward compat: old pickle format stored the model object directly
         clf = data["model"]
@@ -460,7 +649,7 @@ def backtest(seasons: Optional[List[str]] = None) -> dict:
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[FEATURE_COLS].values.astype(np.float32)
+    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
 
     results = []
@@ -601,6 +790,74 @@ def _build_features(
     # Phase 4.6: ref FTA tendency (0.0 when no ref cache)
     ref_fta_tendency = _get_ref_fta_tendency(ref_names, season)
 
+    # Rolling L10 features for inference — ONE gamelog call for both teams
+    _ROLL_D10 = {
+        "off_rtg_L10": 112.0, "def_rtg_L10": 112.0, "net_rtg_L10": 0.0,
+        "efg_L10": 0.50, "tov_pct_L10": 0.13, "oreb_pct_L10": 0.25, "ft_rate_L10": 0.25,
+    }
+    h_roll_inf, a_roll_inf = dict(_ROLL_D10), dict(_ROLL_D10)
+    # Tier 2 inference defaults
+    _t2_h = {"srs": 0.0, "venue_L10": 112.0, "opp_adj": 112.0}
+    _t2_a = {"srs": 0.0, "venue_L10": 112.0, "opp_adj": 112.0}
+    try:
+        from nba_api.stats.endpoints import leaguegamelog as _lgl_inf
+        time.sleep(0.6)
+        _gl_inf = _lgl_inf.LeagueGameLog(
+            season=season,
+            season_type_all_star="Regular Season",
+            player_or_team_abbreviation="T",
+        ).get_data_frames()[0]
+        _gl_inf = _gl_inf.copy()
+        _gl_inf["_poss"] = (
+            _gl_inf["FGA"] + 0.44 * _gl_inf["FTA"] + _gl_inf["TOV"] - _gl_inf["OREB"]
+        ).clip(lower=1)
+        _gl_inf["_off_r"] = _gl_inf["PTS"] / _gl_inf["_poss"] * 100
+        _opp_m: dict = {}
+        for _, _r in _gl_inf.iterrows():
+            _opp_m.setdefault(str(_r["GAME_ID"]), {})[int(_r["TEAM_ID"])] = float(_r["_off_r"])
+        for _team, _roll_out in [(home_team, h_roll_inf), (away_team, a_roll_inf)]:
+            _tid = int(abbrev_to_id.get(_team, "0"))
+            _tg  = _gl_inf[_gl_inf["TEAM_ID"].astype(int) == _tid].copy()
+            if len(_tg) < 3:
+                continue
+            _tg["_def_r"] = [
+                ([v for t, v in _opp_m.get(str(r["GAME_ID"]), {}).items() if t != _tid] or [112.0])[0]
+                for _, r in _tg.iterrows()
+            ]
+            _tg["_dt"] = pd.to_datetime(_tg["GAME_DATE"], errors="coerce")
+            _tg = _tg.sort_values("_dt").tail(10)
+            _off = round(float(_tg["_off_r"].mean()), 2)
+            _de  = round(float(_tg["_def_r"].mean()), 2)
+            _roll_out.update({"off_rtg_L10": _off, "def_rtg_L10": _de,
+                              "net_rtg_L10": round(_off - _de, 2)})
+
+        # Tier 2 helpers reuse the same _gl_inf
+        _roll_lkp  = _compute_rolling_team_stats(_gl_inf, 10)
+        _srs_lkp   = _compute_srs_lookup(_gl_inf)
+        _venue_lkp = _compute_venue_rolling(_gl_inf)
+        _oadj_lkp  = _compute_opp_adjusted_rolling(_gl_inf, team_stats)
+        # latest game_id per team (for inference point-in-time)
+        _gl_inf_s = _gl_inf.copy()
+        _gl_inf_s["_dt2"] = pd.to_datetime(_gl_inf_s["GAME_DATE"], errors="coerce")
+        _gl_inf_s = _gl_inf_s.sort_values("_dt2")
+        _last_gid = (_gl_inf_s.groupby(_gl_inf_s["TEAM_ID"].astype(int))["GAME_ID"]
+                     .last().astype(str).to_dict())
+        for _team, _roll_out2, _t2_out, _venue_key in [
+            (home_team, h_roll_inf, _t2_h, "home_venue_L10"),
+            (away_team, a_roll_inf, _t2_a, "away_venue_L10"),
+        ]:
+            _tid = int(abbrev_to_id.get(_team, "0"))
+            _lgid = _last_gid.get(_tid, "")
+            if not _lgid:
+                continue
+            _rr = _roll_lkp.get((_tid, _lgid), {})
+            _roll_out2.update({k: v for k, v in _rr.items() if k in _ROLL_D10})
+            _t2_out["srs"]      = _srs_lkp.get((_tid, _lgid), 0.0)
+            _t2_out["venue_L10"]= _venue_lkp.get((_tid, _lgid), {}).get(_venue_key, 112.0)
+            _t2_out["opp_adj"]  = _oadj_lkp.get((_tid, _lgid), 112.0)
+    except Exception:
+        pass
+
     return {
         "home_off_rtg":        ht["off_rtg"],
         "home_def_rtg":        ht["def_rtg"],
@@ -626,7 +883,7 @@ def _build_features(
         "away_travel_miles":   compute_travel_distance(away_team, home_team),
         "away_last5_wins":     _get_last5_wins(away_team, game_date, season),
         "away_season_win_pct": at["win_pct"],
-        "net_rtg_diff":        ht["net_rtg"] - at["net_rtg"],
+        "net_rtg_diff":        h_roll_inf["net_rtg_L10"] - a_roll_inf["net_rtg_L10"],
         "pace_diff":           ht["pace"]    - at["pace"],
         "home_advantage":      1.0,
         "home_top_lineup_net_rtg": h_lineup_nr,
@@ -660,6 +917,31 @@ def _build_features(
         # C-7: Bench net rating
         "home_bench_net_rtg": _get_bench_net_rtg(home_team, season),
         "away_bench_net_rtg": _get_bench_net_rtg(away_team, season),
+        # Rolling L10
+        "home_off_rtg_L10":   h_roll_inf["off_rtg_L10"],
+        "home_def_rtg_L10":   h_roll_inf["def_rtg_L10"],
+        "home_net_rtg_L10":   h_roll_inf["net_rtg_L10"],
+        "away_off_rtg_L10":   a_roll_inf["off_rtg_L10"],
+        "away_def_rtg_L10":   a_roll_inf["def_rtg_L10"],
+        "away_net_rtg_L10":   a_roll_inf["net_rtg_L10"],
+        # Tier 2 — SRS
+        "home_srs":           _t2_h["srs"],
+        "away_srs":           _t2_a["srs"],
+        # Tier 2 — Four Factors L10
+        "home_efg_L10":        h_roll_inf.get("efg_L10",      0.50),
+        "away_efg_L10":        a_roll_inf.get("efg_L10",      0.50),
+        "home_tov_pct_L10":    h_roll_inf.get("tov_pct_L10",  0.13),
+        "away_tov_pct_L10":    a_roll_inf.get("tov_pct_L10",  0.13),
+        "home_oreb_pct_L10":   h_roll_inf.get("oreb_pct_L10", 0.25),
+        "away_oreb_pct_L10":   a_roll_inf.get("oreb_pct_L10", 0.25),
+        "home_ft_rate_L10":    h_roll_inf.get("ft_rate_L10",  0.25),
+        "away_ft_rate_L10":    a_roll_inf.get("ft_rate_L10",  0.25),
+        # Tier 2 — Home/away venue splits
+        "home_off_rtg_home_L10": _t2_h["venue_L10"],
+        "away_off_rtg_away_L10": _t2_a["venue_L10"],
+        # Tier 2 — Opponent-adjusted
+        "home_off_rtg_vs_top_def": _t2_h["opp_adj"],
+        "away_off_rtg_vs_top_def": _t2_a["opp_adj"],
     }
 
 
@@ -786,6 +1068,26 @@ def _fetch_team_stats(season: str) -> dict:
             "reb_pct":  float(row.get("REB_PCT", 0.5)),
             "win_pct":  float(row.get("W_PCT", 0.5)),
         }
+
+    # Second pass: Base stats for STL → stl_per_poss = stl_pg / pace
+    # stl_per_poss is needed by player_props._get_opp_stl_rate(); without it
+    # that function always returns the league-avg constant 0.08 (no variance).
+    try:
+        time.sleep(0.8)
+        base_df = leaguedashteamstats.LeagueDashTeamStats(
+            season=season,
+            season_type_all_star="Regular Season",
+            measure_type_detailed_defense="Base",
+        ).get_data_frames()[0]
+        for _, row in base_df.iterrows():
+            tid = int(row["TEAM_ID"])
+            if tid in stats:
+                stl_pg = float(row.get("STL", 7.5))
+                pace   = stats[tid]["pace"]
+                stats[tid]["stl_per_poss"] = round(stl_pg / max(pace, 1.0), 4)
+    except Exception as _e:
+        print(f"  [warn] team base stats {season}: {_e} — stl_per_poss will use fallback")
+
     with open(cache_path, "w") as f:
         json.dump({str(k): v for k, v in stats.items()}, f)
     print(f"  Cached team stats for {len(stats)} teams ({season})")
@@ -861,9 +1163,20 @@ def _fetch_season_games(season: str) -> List[dict]:
     # Fetch team season ratings (keyed by TEAM_ID)
     team_stats = _fetch_team_stats(season)
 
-    # Build rest-day and recent-form lookups from game log (no extra API call)
-    rest_lookup  = _compute_rest_days(gl)
-    wins5_lookup = _compute_last5_wins(gl)
+    # Build rest-day, recent-form, and rolling-rating lookups from game log (no extra API call)
+    from src.features.advanced_features import compute_game_elo_lookup
+    rest_lookup    = _compute_rest_days(gl)
+    wins5_lookup   = _compute_last5_wins(gl)
+    winpct_lookup  = _compute_cumulative_win_pct(gl)
+    elo_lookup     = compute_game_elo_lookup([season])
+    roll_lookup    = _compute_rolling_team_stats(gl, 10)
+    srs_lookup     = _compute_srs_lookup(gl)
+    venue_lookup   = _compute_venue_rolling(gl)
+    opp_adj_lookup = _compute_opp_adjusted_rolling(gl, team_stats)
+    _ROLL_D10 = {
+        "off_rtg_L10": 112.0, "def_rtg_L10": 112.0, "net_rtg_L10": 0.0,
+        "efg_L10": 0.50, "tov_pct_L10": 0.13, "oreb_pct_L10": 0.25, "ft_rate_L10": 0.25,
+    }
 
     _DEFAULT = {"off_rtg": 112.0, "def_rtg": 112.0, "net_rtg": 0.0,
                 "pace": 99.0, "efg_pct": 0.53, "ts_pct": 0.57,
@@ -887,6 +1200,8 @@ def _fetch_season_games(season: str) -> List[dict]:
         a_rest  = min(rest_lookup.get((int(a["TEAM_ID"]), str(gid)), 2), 10)
         h_wins5 = wins5_lookup.get((int(h["TEAM_ID"]), str(gid)), 2)
         a_wins5 = wins5_lookup.get((int(a["TEAM_ID"]), str(gid)), 2)
+        h_roll  = roll_lookup.get((int(h["TEAM_ID"]), str(gid)), _ROLL_D10)
+        a_roll  = roll_lookup.get((int(a["TEAM_ID"]), str(gid)), _ROLL_D10)
 
         rows.append({
             "game_id": gid, "season": season,
@@ -905,7 +1220,7 @@ def _fetch_season_games(season: str) -> List[dict]:
             "home_back_to_back":   float(h_rest == 1),
             "home_travel_miles":   0.0,
             "home_last5_wins":     float(h_wins5),
-            "home_season_win_pct": ht["win_pct"],
+            "home_season_win_pct": winpct_lookup.get((int(h["TEAM_ID"]), str(gid)), 0.5),
             # Away team season ratings
             "away_off_rtg":        at["off_rtg"],
             "away_def_rtg":        at["def_rtg"],
@@ -921,9 +1236,9 @@ def _fetch_season_games(season: str) -> List[dict]:
                 a["TEAM_ABBREVIATION"], h["TEAM_ABBREVIATION"]
             ),
             "away_last5_wins":     float(a_wins5),
-            "away_season_win_pct": at["win_pct"],
-            # Derived
-            "net_rtg_diff":   ht["net_rtg"] - at["net_rtg"],
+            "away_season_win_pct": winpct_lookup.get((int(a["TEAM_ID"]), str(gid)), 0.5),
+            # Derived (net_rtg_diff uses rolling values; pace_diff stays season-level)
+            "net_rtg_diff":   h_roll["net_rtg_L10"] - a_roll["net_rtg_L10"],
             "pace_diff":      ht["pace"]    - at["pace"],
             "home_advantage": 1.0,
             # Lineup quality (season-level; same value for all games in same season)
@@ -943,12 +1258,12 @@ def _fetch_season_games(season: str) -> List[dict]:
             ),
             # Phase 4.6: ref FTA tendency — unknown historically; 0.0 default
             "ref_fta_tendency": 0.0,
-            # C-1: ELO — use static file (current ELO, not game-time ELO)
-            "home_elo":          _get_elo_feature(h["TEAM_ABBREVIATION"]),
-            "away_elo":          _get_elo_feature(a["TEAM_ABBREVIATION"]),
+            # C-1: ELO — point-in-time (snapshot before each game, no leakage)
+            "home_elo":          elo_lookup.get(str(gid), {}).get("home_elo", 1500.0),
+            "away_elo":          elo_lookup.get(str(gid), {}).get("away_elo", 1500.0),
             "elo_differential":  (
-                _get_elo_feature(h["TEAM_ABBREVIATION"])
-                - _get_elo_feature(a["TEAM_ABBREVIATION"])
+                elo_lookup.get(str(gid), {}).get("home_elo", 1500.0)
+                - elo_lookup.get(str(gid), {}).get("away_elo", 1500.0)
             ),
             # C-2: Defensive trajectory — 0.0 default for historical training rows
             "home_def_rtg_trend":  0.0,
@@ -965,12 +1280,45 @@ def _fetch_season_games(season: str) -> List[dict]:
             # C-6: Interaction terms
             "b2b_diff":            float(h_rest == 1) - float(a_rest == 1),
             "elo_pace_interaction": (
-                _get_elo_feature(h["TEAM_ABBREVIATION"]) * ht["pace"]
-                - _get_elo_feature(a["TEAM_ABBREVIATION"]) * at["pace"]
+                elo_lookup.get(str(gid), {}).get("home_elo", 1500.0) * ht["pace"]
+                - elo_lookup.get(str(gid), {}).get("away_elo", 1500.0) * at["pace"]
             ),
+            # Star availability — historical injury data not tracked; default 3 (full)
+            "home_stars_available": 3,
+            "away_stars_available": 3,
             # C-7: Bench net rating — 0.0 when not available
             "home_bench_net_rtg":  0.0,
             "away_bench_net_rtg":  0.0,
+            # Rolling L10: game-by-game rolling avg (10-game window)
+            "home_off_rtg_L10":    h_roll["off_rtg_L10"],
+            "home_def_rtg_L10":    h_roll["def_rtg_L10"],
+            "home_net_rtg_L10":    h_roll["net_rtg_L10"],
+            "away_off_rtg_L10":    a_roll["off_rtg_L10"],
+            "away_def_rtg_L10":    a_roll["def_rtg_L10"],
+            "away_net_rtg_L10":    a_roll["net_rtg_L10"],
+            # Tier 2 — SRS
+            "home_srs":            srs_lookup.get((int(h["TEAM_ID"]), str(gid)), 0.0),
+            "away_srs":            srs_lookup.get((int(a["TEAM_ID"]), str(gid)), 0.0),
+            # Tier 2 — Four Factors L10
+            "home_efg_L10":        h_roll.get("efg_L10",      0.50),
+            "away_efg_L10":        a_roll.get("efg_L10",      0.50),
+            "home_tov_pct_L10":    h_roll.get("tov_pct_L10",  0.13),
+            "away_tov_pct_L10":    a_roll.get("tov_pct_L10",  0.13),
+            "home_oreb_pct_L10":   h_roll.get("oreb_pct_L10", 0.25),
+            "away_oreb_pct_L10":   a_roll.get("oreb_pct_L10", 0.25),
+            "home_ft_rate_L10":    h_roll.get("ft_rate_L10",  0.25),
+            "away_ft_rate_L10":    a_roll.get("ft_rate_L10",  0.25),
+            # Tier 2 — Home/away venue splits
+            "home_off_rtg_home_L10": venue_lookup.get((int(h["TEAM_ID"]), str(gid)), {}).get("home_venue_L10", 112.0),
+            "away_off_rtg_away_L10": venue_lookup.get((int(a["TEAM_ID"]), str(gid)), {}).get("away_venue_L10", 112.0),
+            # Tier 2 — Opponent-adjusted
+            "home_off_rtg_vs_top_def": opp_adj_lookup.get((int(h["TEAM_ID"]), str(gid)), 112.0),
+            "away_off_rtg_vs_top_def": opp_adj_lookup.get((int(a["TEAM_ID"]), str(gid)), 112.0),
+            # Phase 8: Monte Carlo simulation features
+            **_sim_features(
+                h["TEAM_ABBREVIATION"], a["TEAM_ABBREVIATION"],
+                home_stats=ht, away_stats=at,
+            ),
         })
 
     with open(cache_path, "w") as f:
@@ -1032,6 +1380,49 @@ def _compute_last5_wins(gl: "pd.DataFrame") -> dict:
     return lookup
 
 
+def _compute_cumulative_win_pct(gl: "pd.DataFrame") -> dict:
+    """
+    Build a (team_id, game_id) → cumulative_win_pct lookup from a league game log.
+
+    For each game the value is W / G for all games played *before* that game.
+    Season opener defaults to 0.5 (neutral prior).
+
+    Args:
+        gl: DataFrame with columns TEAM_ID, GAME_ID, GAME_DATE, WL.
+
+    Returns:
+        Dict mapping (int team_id, str game_id) → float win_pct.
+    """
+    from datetime import datetime
+
+    def _parse(d: str):
+        for fmt in ("%Y-%m-%d", "%b %d, %Y", "%B %d, %Y"):
+            try:
+                return datetime.strptime(d.strip(), fmt)
+            except ValueError:
+                continue
+        return None
+
+    lookup: dict = {}
+    tmp = gl[["TEAM_ID", "GAME_ID", "GAME_DATE", "WL"]].copy()
+    tmp["_date"] = tmp["GAME_DATE"].apply(_parse)
+    tmp = tmp.sort_values(["TEAM_ID", "_date"])
+
+    wins:  dict = {}  # team_id → cumulative wins
+    games: dict = {}  # team_id → cumulative games played
+    for _, row in tmp.iterrows():
+        tid = int(row["TEAM_ID"])
+        gid = str(row["GAME_ID"])
+        wl  = str(row.get("WL", ""))
+        w = wins.get(tid, 0)
+        g = games.get(tid, 0)
+        lookup[(tid, gid)] = round(w / g, 4) if g > 0 else 0.5
+        wins[tid]  = w + (1 if wl == "W" else 0)
+        games[tid] = g + 1
+
+    return lookup
+
+
 def _compute_rest_days(gl: "pd.DataFrame") -> dict:
     """
     Build a (team_id, game_id) → rest_days lookup from a league game log.
@@ -1075,6 +1466,224 @@ def _compute_rest_days(gl: "pd.DataFrame") -> dict:
     return lookup
 
 
+def _compute_rolling_team_stats(
+    gl: "pd.DataFrame", window: int = 10
+) -> "dict[tuple, dict]":
+    """
+    Build (team_id, game_id) → rolling-window rating lookup from game log.
+
+    Off/def rating proxy per game, then rolling mean of prior *window* games
+    (shift(1) prevents leakage).  Falls back to 112/112/0 when < 3 prior games.
+
+    Args:
+        gl:     LeagueGameLog DataFrame with TEAM_ID, GAME_ID, GAME_DATE,
+                PTS, FGA, FTA, TOV, OREB cols.
+        window: Look-back window (default 10).
+
+    Returns:
+        Dict mapping (int team_id, str game_id) → {off_rtg_LN, def_rtg_LN, net_rtg_LN}.
+    """
+    suffix = f"L{window}"
+    _DEF = {
+        f"off_rtg_{suffix}": 112.0, f"def_rtg_{suffix}": 112.0, f"net_rtg_{suffix}": 0.0,
+        "efg_L10": 0.50, "tov_pct_L10": 0.13, "oreb_pct_L10": 0.25, "ft_rate_L10": 0.25,
+    }
+
+    needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS", "FGA", "FTA", "TOV", "OREB"}
+    ff_cols = {"FGM", "FG3M", "DREB"}
+    has_ff  = ff_cols.issubset(gl.columns)
+    if not needed.issubset(gl.columns):
+        return {}
+
+    load_cols = list(needed | (ff_cols if has_ff else set()))
+    df = gl[load_cols].copy()
+    df["TEAM_ID"] = df["TEAM_ID"].astype(int)
+    df["GAME_ID"] = df["GAME_ID"].astype(str)
+    df["poss"] = (df["FGA"] + 0.44 * df["FTA"] + df["TOV"] - df["OREB"]).clip(lower=1)
+    df["off_raw"] = (df["PTS"] / df["poss"] * 100).round(2)
+
+    # Build GAME_ID → {team_id: (off_raw, DREB)} for opponent lookups
+    opp: dict = {}
+    for _, r in df.iterrows():
+        opp.setdefault(r["GAME_ID"], {})[r["TEAM_ID"]] = {
+            "off": r["off_raw"],
+            "dreb": float(r["DREB"]) if has_ff else 0.0,
+        }
+
+    def _def_raw(r) -> float:
+        vals = [v["off"] for t, v in opp.get(r["GAME_ID"], {}).items() if t != r["TEAM_ID"]]
+        return vals[0] if vals else 112.0
+
+    def _opp_dreb(r) -> float:
+        vals = [v["dreb"] for t, v in opp.get(r["GAME_ID"], {}).items() if t != r["TEAM_ID"]]
+        return vals[0] if vals else 0.0
+
+    df["def_raw"] = df.apply(_def_raw, axis=1)
+    if has_ff:
+        df["opp_dreb"] = df.apply(_opp_dreb, axis=1)
+        df["efg_raw"]     = ((df["FGM"] + 0.5 * df["FG3M"]) / df["FGA"].clip(lower=1)).round(4)
+        df["tov_pct_raw"] = (df["TOV"] / (df["FGA"] + 0.44 * df["FTA"] + df["TOV"]).clip(lower=1)).round(4)
+        df["oreb_pct_raw"]= (df["OREB"] / (df["OREB"] + df["opp_dreb"]).clip(lower=1)).round(4)
+        df["ft_rate_raw"] = (df["FTA"] / df["FGA"].clip(lower=1)).round(4)
+
+    df["_date"] = pd.to_datetime(df["GAME_DATE"], errors="coerce")
+    df = df.sort_values(["TEAM_ID", "_date"])
+
+    lookup: dict = {}
+    for tid, grp in df.groupby("TEAM_ID"):
+        grp = grp.reset_index(drop=True)
+        r_off   = grp["off_raw"].shift(1).rolling(window, min_periods=1).mean()
+        r_def   = grp["def_raw"].shift(1).rolling(window, min_periods=1).mean()
+        n_prior = grp["off_raw"].expanding().count() - 1  # games before this one
+        if has_ff:
+            r_efg  = grp["efg_raw"].shift(1).rolling(window, min_periods=1).mean()
+            r_tov  = grp["tov_pct_raw"].shift(1).rolling(window, min_periods=1).mean()
+            r_oreb = grp["oreb_pct_raw"].shift(1).rolling(window, min_periods=1).mean()
+            r_ftr  = grp["ft_rate_raw"].shift(1).rolling(window, min_periods=1).mean()
+        for i in range(len(grp)):
+            gid = str(grp.at[i, "GAME_ID"])
+            if int(n_prior.iloc[i]) < 3:
+                lookup[(int(tid), gid)] = dict(_DEF)
+            else:
+                off = round(float(r_off.iloc[i]), 2)
+                de  = round(float(r_def.iloc[i]), 2)
+                entry = {
+                    f"off_rtg_{suffix}": off,
+                    f"def_rtg_{suffix}": de,
+                    f"net_rtg_{suffix}": round(off - de, 2),
+                    "efg_L10":     round(float(r_efg.iloc[i]),  4) if has_ff else 0.50,
+                    "tov_pct_L10": round(float(r_tov.iloc[i]),  4) if has_ff else 0.13,
+                    "oreb_pct_L10":round(float(r_oreb.iloc[i]), 4) if has_ff else 0.25,
+                    "ft_rate_L10": round(float(r_ftr.iloc[i]),  4) if has_ff else 0.25,
+                }
+                lookup[(int(tid), gid)] = entry
+    return lookup
+
+
+def _compute_srs_lookup(gl: "pd.DataFrame", iterations: int = 10) -> dict:
+    """
+    Build (team_id, game_id) → SRS (Simple Rating System) at that point in time.
+
+    SRS = cumulative avg margin + strength of schedule (damped season-level SOS).
+    shift(1) prevents leakage. Default 0.0.
+    """
+    needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS"}
+    if not needed.issubset(gl.columns):
+        return {}
+    df = gl[["TEAM_ID", "GAME_ID", "GAME_DATE", "PTS"]].copy()
+    df["TEAM_ID"] = df["TEAM_ID"].astype(int)
+    df["GAME_ID"] = df["GAME_ID"].astype(str)
+    df["_dt"] = pd.to_datetime(df["GAME_DATE"], errors="coerce")
+
+    pts_map: dict = {}
+    for _, r in df.iterrows():
+        pts_map.setdefault(r["GAME_ID"], {})[r["TEAM_ID"]] = float(r["PTS"])
+
+    def _opp_info(r):
+        d = {t: p for t, p in pts_map.get(r["GAME_ID"], {}).items() if t != r["TEAM_ID"]}
+        pair = list(d.items())
+        return (pair[0][0], pair[0][1]) if pair else (0, float(r["PTS"]))
+
+    df[["_opp_tid", "_opp_pts"]] = df.apply(_opp_info, axis=1, result_type="expand")
+    df["_margin"] = df["PTS"] - df["_opp_pts"]
+    df = df.sort_values(["TEAM_ID", "_dt"])
+
+    teams = list(df["TEAM_ID"].unique())
+    opp_dict = {t: df[df["TEAM_ID"] == t]["_opp_tid"].astype(int).tolist() for t in teams}
+    avg_m    = {t: float(df[df["TEAM_ID"] == t]["_margin"].mean()) for t in teams}
+    srs = {t: 0.0 for t in teams}
+    for _ in range(iterations):
+        srs = {t: avg_m[t] + (np.mean([srs.get(o, 0.0) for o in opp_dict[t]]) if opp_dict[t] else 0.0)
+               for t in teams}
+
+    lookup: dict = {}
+    for tid, grp in df.groupby("TEAM_ID"):
+        grp = grp.reset_index(drop=True)
+        cum_m = grp["_margin"].shift(1).expanding().mean().fillna(0.0)
+        for i, row in grp.iterrows():
+            sos = srs.get(int(row["_opp_tid"]), 0.0) * 0.5
+            lookup[(int(tid), str(row["GAME_ID"]))] = round(float(cum_m.iloc[i]) + sos, 3)
+    return lookup
+
+
+def _compute_venue_rolling(gl: "pd.DataFrame") -> dict:
+    """
+    Build (team_id, game_id) → {"home_venue_L10": float, "away_venue_L10": float}.
+
+    home_venue_L10: rolling off_rtg of last 10 home games (MATCHUP "vs."), shift(1).
+    away_venue_L10: rolling off_rtg of last 10 away games (MATCHUP "@"), shift(1).
+    Default 112.0.
+    """
+    needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS", "FGA", "FTA", "TOV", "OREB", "MATCHUP"}
+    if not needed.issubset(gl.columns):
+        return {}
+    df = gl[list(needed)].copy()
+    df["TEAM_ID"] = df["TEAM_ID"].astype(int)
+    df["GAME_ID"] = df["GAME_ID"].astype(str)
+    df["_dt"] = pd.to_datetime(df["GAME_DATE"], errors="coerce")
+    df["poss"]    = (df["FGA"] + 0.44 * df["FTA"] + df["TOV"] - df["OREB"]).clip(lower=1)
+    df["off_raw"] = (df["PTS"] / df["poss"] * 100).round(2)
+    df = df.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
+
+    lookup: dict = {}
+    for tid, grp in df.groupby("TEAM_ID"):
+        grp = grp.reset_index(drop=True)
+        h = grp[grp["MATCHUP"].str.contains(r" vs\. ", na=False)].copy().reset_index(drop=True)
+        a = grp[grp["MATCHUP"].str.contains(r" @ ",    na=False)].copy().reset_index(drop=True)
+        h["_hv"] = h["off_raw"].shift(1).rolling(10, min_periods=1).mean().fillna(112.0).round(2)
+        a["_av"] = a["off_raw"].shift(1).rolling(10, min_periods=1).mean().fillna(112.0).round(2)
+        h_map = dict(zip(h["GAME_ID"], h["_hv"]))
+        a_map = dict(zip(a["GAME_ID"], a["_av"]))
+        for _, row in grp.iterrows():
+            gid = str(row["GAME_ID"])
+            lookup[(int(tid), gid)] = {
+                "home_venue_L10": float(h_map.get(gid, 112.0)),
+                "away_venue_L10": float(a_map.get(gid, 112.0)),
+            }
+    return lookup
+
+
+def _compute_opp_adjusted_rolling(gl: "pd.DataFrame", team_stats: dict) -> dict:
+    """
+    Build (team_id, game_id) → rolling off_rtg vs top-10 defensive teams (last 10 qualifying).
+
+    Top-10 = teams with lowest def_rtg in team_stats. shift(1), default 112.0.
+    """
+    needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS", "FGA", "FTA", "TOV", "OREB"}
+    if not needed.issubset(gl.columns):
+        return {}
+    df = gl[list(needed)].copy()
+    df["TEAM_ID"] = df["TEAM_ID"].astype(int)
+    df["GAME_ID"] = df["GAME_ID"].astype(str)
+    df["_dt"] = pd.to_datetime(df["GAME_DATE"], errors="coerce")
+    df["poss"]    = (df["FGA"] + 0.44 * df["FTA"] + df["TOV"] - df["OREB"]).clip(lower=1)
+    df["off_raw"] = (df["PTS"] / df["poss"] * 100).round(2)
+
+    def_sorted = sorted(team_stats.items(), key=lambda x: x[1].get("def_rtg", 999.0))
+    top10_def  = {int(tid) for tid, _ in def_sorted[:10]}
+
+    opp_tid_map: dict = {}
+    for _, r in df.iterrows():
+        opp_tid_map.setdefault(r["GAME_ID"], {})[r["TEAM_ID"]] = True
+    df["_opp_tid"] = df.apply(
+        lambda r: next((t for t in opp_tid_map.get(r["GAME_ID"], {}) if t != r["TEAM_ID"]), 0),
+        axis=1,
+    ).astype(int)
+    df["_vs_top"] = df["_opp_tid"].isin(top10_def)
+    df = df.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
+
+    lookup: dict = {}
+    for tid, grp in df.groupby("TEAM_ID"):
+        grp = grp.reset_index(drop=True)
+        top = grp[grp["_vs_top"]].copy().reset_index(drop=True)
+        top["_roll"] = top["off_raw"].shift(1).rolling(10, min_periods=1).mean().fillna(112.0).round(2)
+        top_map = dict(zip(top["GAME_ID"].astype(str), top["_roll"]))
+        for _, row in grp.iterrows():
+            gid = str(row["GAME_ID"])
+            lookup[(int(tid), gid)] = float(top_map.get(gid, 112.0))
+    return lookup
+
+
 def _save_metrics(metrics: dict):
     """Write training metrics to data/models/win_prob_metrics.json."""
     os.makedirs(_MODEL_DIR, exist_ok=True)
@@ -1092,9 +1701,13 @@ if __name__ == "__main__":
     ap.add_argument("--predict",  nargs=2, metavar=("HOME", "AWAY"))
     ap.add_argument("--season",   default="2025-26")
     ap.add_argument("--seasons",  nargs="+", default=["2022-23", "2023-24", "2024-25"])
+    ap.add_argument("--retrain-with-sim", action="store_true",
+                    help="Retrain including Phase 8 Monte Carlo sim features")
     args = ap.parse_args()
 
-    if args.train:
+    if args.retrain_with_sim or args.train:
+        # Clear sim cache so fresh sims run for each matchup
+        _SIM_CACHE.clear()
         train(seasons=args.seasons)
     elif args.backtest:
         backtest(seasons=args.seasons)

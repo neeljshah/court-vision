@@ -1,0 +1,1332 @@
+[
+  {
+    "period": 3,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 3rd Period (9:24 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "69-53",
+    "score_margin": "16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 16,
+    "event_type": 2,
+    "event_desc": "MISS Sengun 14' Jump Shot",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 17,
+    "event_type": 4,
+    "event_desc": "Adams REBOUND (Off:5 Def:3)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 17,
+    "event_type": 1,
+    "event_desc": "Adams Tip Layup Shot (6 PTS)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "71-53",
+    "score_margin": "18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 35,
+    "event_type": 6,
+    "event_desc": "VanVleet P.FOUL (P2.T1) (J.Williams)",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 42,
+    "event_type": 2,
+    "event_desc": "MISS Holmgren 1' Cutting Layup Shot",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 43,
+    "event_type": 4,
+    "event_desc": "Hartenstein REBOUND (Off:1 Def:2)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 43,
+    "event_type": 1,
+    "event_desc": "Hartenstein Tip Layup Shot (8 PTS)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "71-55",
+    "score_margin": "16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 6,
+    "event_desc": "Hartenstein S.FOUL (P2.T1) (K.Lane)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 3,
+    "event_desc": "MISS Sengun Free Throw 1 of 2",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 67,
+    "event_type": 3,
+    "event_desc": "Sengun Free Throw 2 of 2 (20 PTS)",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "72-55",
+    "score_margin": "17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 76,
+    "event_type": 2,
+    "event_desc": "MISS Holmgren 25' 3PT Step Back Jump Shot",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 79,
+    "event_type": 4,
+    "event_desc": "Adams REBOUND (Off:5 Def:4)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 94,
+    "event_type": 1,
+    "event_desc": "Ja. Green 27' 3PT Jump Shot (17 PTS) (Sengun 2 AST)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "75-55",
+    "score_margin": "20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 105,
+    "event_type": 2,
+    "event_desc": "MISS J. Williams 8' Driving Layup",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 107,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 107,
+    "event_type": 6,
+    "event_desc": "Hartenstein L.B.FOUL (P3.T2) (K.Lane)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 107,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:28 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "75-55",
+    "score_margin": "20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 115,
+    "event_type": 5,
+    "event_desc": "Ja. Green Bad Pass Turnover (P1.T7)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 115,
+    "event_type": 0,
+    "event_desc": "Gilgeous-Alexander STEAL (2 STL)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 120,
+    "event_type": 1,
+    "event_desc": "Gilgeous-Alexander 1' Running Layup (12 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "75-57",
+    "score_margin": "18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 134,
+    "event_type": 1,
+    "event_desc": "Sengun 8' Turnaround Hook Shot (22 PTS) (VanVleet 3 AST)",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "77-57",
+    "score_margin": "20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 145,
+    "event_type": 1,
+    "event_desc": "Hartenstein 10' Turnaround Hook Shot (10 PTS) (J. Williams 3 AST)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "77-59",
+    "score_margin": "18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 167,
+    "event_type": 2,
+    "event_desc": "MISS VanVleet 26' 3PT Jump Shot",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 168,
+    "event_type": 4,
+    "event_desc": "Hartenstein REBOUND (Off:1 Def:3)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 177,
+    "event_type": 1,
+    "event_desc": "Holmgren 3PT Jump Shot (12 PTS) (Gilgeous-Alexander 5 AST)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "77-62",
+    "score_margin": "15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 190,
+    "event_type": 5,
+    "event_desc": "Ja. Green Traveling Turnover (P2.T8)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 209,
+    "event_type": 2,
+    "event_desc": "MISS J. Williams 13' Fadeaway Jumper",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 209,
+    "event_type": 0,
+    "event_desc": "Ja. Green BLOCK (1 BLK)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 211,
+    "event_type": 4,
+    "event_desc": "J. Williams REBOUND (Off:1 Def:1)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 212,
+    "event_type": 2,
+    "event_desc": "MISS J. Williams 9' Driving Layup",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 212,
+    "event_type": 4,
+    "event_desc": "Hartenstein REBOUND (Off:2 Def:3)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 216,
+    "event_type": 1,
+    "event_desc": "Hartenstein Tip Dunk Shot (12 PTS)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "77-64",
+    "score_margin": "13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 230,
+    "event_type": 6,
+    "event_desc": "Dort P.FOUL (P4.T3) (J.Williams)",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 230,
+    "event_type": 8,
+    "event_desc": "SUB: Wallace FOR Dort",
+    "player_name": "Dort",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 244,
+    "event_type": 1,
+    "event_desc": "Sengun 22' Jump Shot (24 PTS) (VanVleet 4 AST)",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "79-64",
+    "score_margin": "15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 258,
+    "event_type": 1,
+    "event_desc": "Holmgren 25' 3PT Step Back Jump Shot (15 PTS) (Gilgeous-Alexander 6 AST)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "79-67",
+    "score_margin": "12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 258,
+    "event_type": 0,
+    "event_desc": "ROCKETS Timeout: Regular (Full 3 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 272,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 3' Driving Finger Roll Layup",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 275,
+    "event_type": 4,
+    "event_desc": "Adams REBOUND (Off:6 Def:4)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 275,
+    "event_type": 1,
+    "event_desc": "Adams Tip Layup Shot (8 PTS)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "81-67",
+    "score_margin": "14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 283,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 7' Fadeaway Jumper",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 286,
+    "event_type": 4,
+    "event_desc": "Hartenstein REBOUND (Off:3 Def:3)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 288,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 3PT Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 288,
+    "event_type": 4,
+    "event_desc": "Adams REBOUND (Off:6 Def:5)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 295,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 2' Running Reverse Layup",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 295,
+    "event_type": 0,
+    "event_desc": "Holmgren BLOCK (1 BLK)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 298,
+    "event_type": 4,
+    "event_desc": "Wallace REBOUND (Off:0 Def:1)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 308,
+    "event_type": 2,
+    "event_desc": "MISS Wallace 7' Driving Floating Bank Jump Shot",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 310,
+    "event_type": 4,
+    "event_desc": "Adams REBOUND (Off:6 Def:6)",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 319,
+    "event_type": 5,
+    "event_desc": "Sengun Lost Ball Turnover (P2.T9)",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 319,
+    "event_type": 0,
+    "event_desc": "Hartenstein STEAL (1 STL)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 328,
+    "event_type": 1,
+    "event_desc": "J. Williams 2' Cutting Layup Shot (18 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "81-69",
+    "score_margin": "12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 344,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 25' 3PT Pullup Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 347,
+    "event_type": 4,
+    "event_desc": "Ja. Green REBOUND (Off:1 Def:2)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 4' Driving Finger Roll Layup",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 0,
+    "event_desc": "Holmgren BLOCK (2 BLK)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 8,
+    "event_desc": "SUB: Smith Jr. FOR Thompson",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 8,
+    "event_desc": "SUB: Eason FOR Adams",
+    "player_name": "Adams",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 348,
+    "event_type": 8,
+    "event_desc": "SUB: Tate FOR Sengun",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 360,
+    "event_type": 1,
+    "event_desc": "VanVleet 2' Driving Finger Roll Layup (7 PTS) (Tate 1 AST)",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "83-69",
+    "score_margin": "14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 372,
+    "event_type": 1,
+    "event_desc": "J. Williams 2' Driving Finger Roll Layup (20 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "83-71",
+    "score_margin": "12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 385,
+    "event_type": 1,
+    "event_desc": "Tate 25' 3PT Jump Shot (6 PTS) (Smith Jr. 1 AST)",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "86-71",
+    "score_margin": "15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 399,
+    "event_type": 5,
+    "event_desc": "J. Williams Bad Pass Turnover (P2.T10)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 399,
+    "event_type": 0,
+    "event_desc": "Smith Jr. STEAL (1 STL)",
+    "player_name": "Smith Jr.",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 405,
+    "event_type": 2,
+    "event_desc": "MISS Ja. Green 25' 3PT Step Back Jump Shot",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 408,
+    "event_type": 4,
+    "event_desc": "Hartenstein REBOUND (Off:3 Def:4)",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 6,
+    "event_desc": "Holmgren Offensive Charge Foul (P2) (J.Williams)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 5,
+    "event_desc": "Holmgren Offensive Foul Turnover (P2.T11)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 8,
+    "event_desc": "SUB: K. Williams FOR Holmgren",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 413,
+    "event_type": 8,
+    "event_desc": "SUB: Caruso FOR Hartenstein",
+    "player_name": "Hartenstein",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 431,
+    "event_type": 5,
+    "event_desc": "Tate Lost Ball Turnover (P2.T10)",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 431,
+    "event_type": 0,
+    "event_desc": "Wallace STEAL (1 STL)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 436,
+    "event_type": 2,
+    "event_desc": "MISS Caruso 3' Running Layup",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 437,
+    "event_type": 4,
+    "event_desc": "Eason REBOUND (Off:1 Def:1)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 446,
+    "event_type": 6,
+    "event_desc": "Gilgeous-Alexander S.FOUL (P2.T4) (N.Sago)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 446,
+    "event_type": 3,
+    "event_desc": "Ja. Green Free Throw 1 of 2 (18 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "87-71",
+    "score_margin": "16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 446,
+    "event_type": 3,
+    "event_desc": "Ja. Green Free Throw 2 of 2 (19 PTS)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "88-71",
+    "score_margin": "17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 453,
+    "event_type": 5,
+    "event_desc": "Caruso Lost Ball Turnover (P1.T12)",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 453,
+    "event_type": 0,
+    "event_desc": "Ja. Green STEAL (2 STL)",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 460,
+    "event_type": 2,
+    "event_desc": "MISS Eason 2' Running Layup",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 462,
+    "event_type": 4,
+    "event_desc": "Eason REBOUND (Off:2 Def:1)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 462,
+    "event_type": 2,
+    "event_desc": "MISS Eason 3' Putback Layup",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 462,
+    "event_type": 0,
+    "event_desc": "J. Williams BLOCK (1 BLK)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 462,
+    "event_type": 4,
+    "event_desc": "Wallace REBOUND (Off:0 Def:2)",
+    "player_name": "Wallace",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 472,
+    "event_type": 1,
+    "event_desc": "J. Williams 3' Driving Layup (22 PTS)",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "88-73",
+    "score_margin": "15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 497,
+    "event_type": 1,
+    "event_desc": "Tate 3PT Jump Shot (9 PTS) (VanVleet 5 AST)",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "91-73",
+    "score_margin": "18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 26' 3PT Step Back Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 4,
+    "event_desc": "ROCKETS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 509,
+    "event_type": 8,
+    "event_desc": "SUB: Thompson FOR VanVleet",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 519,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 6' Driving Floating Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 520,
+    "event_type": 4,
+    "event_desc": "Caruso REBOUND (Off:1 Def:3)",
+    "player_name": "Caruso",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 530,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 13' Pullup Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 532,
+    "event_type": 4,
+    "event_desc": "Smith Jr. REBOUND (Off:2 Def:10)",
+    "player_name": "Smith Jr.",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 1,
+    "event_desc": "Smith Jr. 11' Jump Shot (9 PTS) (Ja. Green 5 AST)",
+    "player_name": "Smith Jr.",
+    "team_abbrev": "HOU",
+    "score": "93-73",
+    "score_margin": "20"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 0,
+    "event_desc": "Thunder Timeout: Regular (Reg.4 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 8,
+    "event_desc": "SUB: Sengun FOR Ja. Green",
+    "player_name": "Green",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 8,
+    "event_desc": "SUB: Holmgren FOR J. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 547,
+    "event_type": 8,
+    "event_desc": "SUB: Wiggins FOR K. Williams",
+    "player_name": "Williams",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 564,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 25' 3PT Step Back Jump Shot",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 566,
+    "event_type": 4,
+    "event_desc": "Eason REBOUND (Off:2 Def:2)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 585,
+    "event_type": 2,
+    "event_desc": "MISS Sengun 12' Driving Floating Jump Shot",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 589,
+    "event_type": 4,
+    "event_desc": "Wiggins REBOUND (Off:0 Def:2)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 599,
+    "event_type": 1,
+    "event_desc": "Gilgeous-Alexander 9' Pullup Jump Shot (14 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "93-75",
+    "score_margin": "18"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 622,
+    "event_type": 5,
+    "event_desc": "Smith Jr. Bad Pass Turnover (P2.T11)",
+    "player_name": "Smith Jr.",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 622,
+    "event_type": 0,
+    "event_desc": "Gilgeous-Alexander STEAL (3 STL)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 627,
+    "event_type": 1,
+    "event_desc": "Gilgeous-Alexander 2' Running Layup (16 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "93-77",
+    "score_margin": "16"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 647,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 20' Pullup Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 650,
+    "event_type": 4,
+    "event_desc": "Wiggins REBOUND (Off:0 Def:3)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 657,
+    "event_type": 6,
+    "event_desc": "Smith Jr. S.FOUL (P3.T2) (J.Williams)",
+    "player_name": "Smith Jr.",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 657,
+    "event_type": 3,
+    "event_desc": "Wiggins Free Throw 1 of 2 (4 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "93-78",
+    "score_margin": "15"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 657,
+    "event_type": 8,
+    "event_desc": "SUB: VanVleet FOR Tate",
+    "player_name": "Tate",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 657,
+    "event_type": 3,
+    "event_desc": "Wiggins Free Throw 2 of 2 (5 PTS)",
+    "player_name": "Wiggins",
+    "team_abbrev": "OKC",
+    "score": "93-79",
+    "score_margin": "14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 668,
+    "event_type": 1,
+    "event_desc": "VanVleet 26' 3PT Pullup Jump Shot (10 PTS)",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "96-79",
+    "score_margin": "17"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 675,
+    "event_type": 1,
+    "event_desc": "Gilgeous-Alexander 27' 3PT Pullup Jump Shot (19 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "96-82",
+    "score_margin": "14"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 682,
+    "event_type": 2,
+    "event_desc": "MISS VanVleet 29' 3PT Pullup Jump Shot",
+    "player_name": "VanVleet",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 684,
+    "event_type": 4,
+    "event_desc": "Holmgren REBOUND (Off:0 Def:4)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 685,
+    "event_type": 6,
+    "event_desc": "Eason P.FOUL (P1.PN) (J.Williams)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 685,
+    "event_type": 3,
+    "event_desc": "Holmgren Free Throw 1 of 2 (16 PTS)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "96-83",
+    "score_margin": "13"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 685,
+    "event_type": 3,
+    "event_desc": "Holmgren Free Throw 2 of 2 (17 PTS)",
+    "player_name": "Holmgren",
+    "team_abbrev": "OKC",
+    "score": "96-84",
+    "score_margin": "12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 706,
+    "event_type": 2,
+    "event_desc": "MISS Sengun 4' Turnaround Hook Shot",
+    "player_name": "Sengun",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 709,
+    "event_type": 4,
+    "event_desc": "Gilgeous-Alexander REBOUND (Off:1 Def:3)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 716,
+    "event_type": 2,
+    "event_desc": "MISS Gilgeous-Alexander 2' Driving Layup",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 716,
+    "event_type": 0,
+    "event_desc": "Eason BLOCK (1 BLK)",
+    "player_name": "Eason",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 718,
+    "event_type": 4,
+    "event_desc": "Thunder Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 6,
+    "event_desc": "Thompson S.FOUL (P3.PN) (J.Williams)",
+    "player_name": "Thompson",
+    "team_abbrev": "HOU",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 0,
+    "event_desc": "Instant Replay3rd Period (9:52 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "96-84",
+    "score_margin": "12"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 3,
+    "event_desc": "MISS Gilgeous-Alexander Free Throw 1 of 2",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "Thunder Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 719,
+    "event_type": 3,
+    "event_desc": "Gilgeous-Alexander Free Throw 2 of 2 (20 PTS)",
+    "player_name": "Gilgeous-Alexander",
+    "team_abbrev": "OKC",
+    "score": "96-85",
+    "score_margin": "11"
+  },
+  {
+    "period": 3,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 3rd Period (9:53 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "96-85",
+    "score_margin": "11"
+  }
+]

@@ -216,9 +216,13 @@ def backtest_props(
                 "avg_pnl":  round(float(np.mean([b["pnl"] for b in bucket])), 2),
             }
 
-    passed = (n_bets >= VALIDATION_MIN_BETS
-              and roi >= VALIDATION_MIN_ROI * 100
-              and avg_edge >= 0.0)
+    # Explicit fail-closed guard: no data → never pass gate
+    if n_pred == 0 or n_bets == 0:
+        passed = False
+    else:
+        passed = (n_bets >= VALIDATION_MIN_BETS
+                  and roi >= VALIDATION_MIN_ROI * 100
+                  and avg_edge >= 0.0)
 
     result = BacktestResult(
         stat=stat, seasons=seasons, n_predictions=n_pred, n_bets=n_bets,
@@ -344,6 +348,106 @@ def paper_trade_today(
     return paper_bets
 
 
+def build_prop_residuals(seasons: Optional[List[str]] = None) -> int:
+    """
+    Bootstrap prop_residuals.json from gamelogs + model predictions.
+
+    For each gamelog_{player_id}_{season}.json, runs predict_props() and pairs
+    predictions against actual stats.  Uses actual values as proxy lines
+    (no market line available historically).  Skips players where predict_props
+    raises or returns no data.
+
+    Returns number of records written.  Safe to re-run — appends only new
+    (player_id, game_date, stat) triples not already in the file.
+    """
+    import glob as _glob
+    import re
+
+    try:
+        from src.prediction.player_props import predict_props
+    except ImportError:
+        print("  [residuals] cannot import predict_props — aborting")
+        return 0
+
+    seasons = seasons or ["2024-25", "2025-26"]
+    season_set = set(seasons)
+
+    residuals_path = os.path.join(_MODELS_DIR, "prop_residuals.json")
+    existing: List[dict] = []
+    if os.path.exists(residuals_path):
+        try:
+            existing = json.load(open(residuals_path, encoding="utf-8"))
+        except Exception:
+            pass
+
+    # Build a set of already-recorded keys to avoid duplicates
+    seen = {
+        (r.get("player_id"), r.get("game_date"), r.get("stat"))
+        for r in existing
+    }
+
+    stat_map = {"PTS": "pts", "REB": "reb", "AST": "ast",
+                "FG3M": "fg3m", "STL": "stl", "BLK": "blk", "TOV": "tov"}
+
+    pattern = os.path.join(_NBA_DIR, "gamelog_*_*.json")
+    files = _glob.glob(pattern)
+    new_records: List[dict] = []
+
+    for fpath in files:
+        m = re.search(r"gamelog_(\d+)_(.+?)\.json$", os.path.basename(fpath))
+        if not m:
+            continue
+        player_id, season = m.group(1), m.group(2)
+        if season not in season_set:
+            continue
+
+        try:
+            logs = json.load(open(fpath, encoding="utf-8"))
+        except Exception:
+            continue
+
+        # Run prediction once per player; skip if it fails
+        try:
+            preds = predict_props(player_id)
+        except Exception:
+            continue
+
+        for entry in logs:
+            game_date = entry.get("GAME_DATE", "")
+            for raw_stat, stat in stat_map.items():
+                actual = entry.get(raw_stat)
+                if actual is None:
+                    continue
+                key = (player_id, game_date, stat)
+                if key in seen:
+                    continue
+                pred_val = preds.get(stat) or preds.get(f"predicted_{stat}")
+                if pred_val is None:
+                    continue
+                seen.add(key)
+                new_records.append({
+                    "player_id":   player_id,
+                    "player_name": preds.get("player_name", ""),
+                    "stat":        stat,
+                    "game_date":   game_date,
+                    "predicted":   round(float(pred_val), 3),
+                    "actual":      float(actual),
+                    "line":        float(actual),   # proxy — no historical market line
+                    "direction":   "over" if float(pred_val) > float(actual) else "under",
+                    "edge_pct":    round((float(pred_val) - float(actual)) / max(float(actual), 0.01), 4),
+                })
+
+    if new_records:
+        combined = existing + new_records
+        os.makedirs(_MODELS_DIR, exist_ok=True)
+        json.dump(combined, open(residuals_path, "w", encoding="utf-8"), indent=2)
+        print(f"  [residuals] wrote {len(new_records)} new records ({len(combined)} total) → {residuals_path}")
+    else:
+        print("  [residuals] no new records to write")
+
+    return len(new_records)
+
+
 def backtest_all_stats(
     seasons: Optional[List[str]] = None,
     edge_threshold: float = 0.04,
@@ -358,9 +462,14 @@ if __name__ == "__main__":
     parser.add_argument("--stat", default="pts", choices=STATS + ["all"])
     parser.add_argument("--edge", type=float, default=0.04)
     parser.add_argument("--paper", action="store_true", help="Run paper trades for today")
+    parser.add_argument("--build-residuals", action="store_true",
+                        help="Bootstrap prop_residuals.json from gamelogs + model predictions")
     args = parser.parse_args()
 
-    if args.paper:
+    if args.build_residuals:
+        n = build_prop_residuals()
+        print(f"Done — {n} new records written")
+    elif args.paper:
         trades = paper_trade_today(edge_threshold=args.edge)
         print(f"Paper trades today: {len(trades)}")
         for t in trades[:10]:

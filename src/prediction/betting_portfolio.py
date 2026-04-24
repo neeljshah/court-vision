@@ -31,8 +31,21 @@ import numpy as np
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
 
-_BET_LOG = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
-_CLV_LOG  = os.path.join(PROJECT_DIR, "data", "models", "clv_log.json")
+_BET_LOG      = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
+_CLV_LOG      = os.path.join(PROJECT_DIR, "data", "models", "clv_log.json")
+_CORR_MATRIX  = os.path.join(PROJECT_DIR, "data", "models", "prop_corr_matrix.json")
+
+_PROP_STATS_ORDER = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+
+
+def _load_corr_matrix() -> Dict[str, Dict[str, float]]:
+    """Load prop correlation matrix from disk. Returns identity (zeros) on miss."""
+    if os.path.exists(_CORR_MATRIX):
+        try:
+            return json.load(open(_CORR_MATRIX, encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
 
 # Portfolio guards
 MAX_OPEN_BETS     = 20      # never more than N bets in-flight at once
@@ -78,12 +91,24 @@ def _american_to_payout(odds: int) -> float:
     return 100.0 / abs(odds)
 
 
+def check_drawdown_ok(bankroll_start: float, bankroll_now: float) -> bool:
+    """Return False when drawdown from start exceeds MAX_DRAWDOWN_PCT (15%)."""
+    if bankroll_start <= 0:
+        return True
+    drawdown = (bankroll_start - bankroll_now) / bankroll_start
+    return drawdown <= MAX_DRAWDOWN_PCT
+
+
 def kelly_corr(
     edge: float,
     odds: int,
     bankroll: float,
     corr_with_open: float = 0.0,
     existing_exposure: float = 0.0,
+    stat: Optional[str] = None,
+    open_stats: Optional[List[str]] = None,
+    bankroll_start: Optional[float] = None,
+    win_prob_override: Optional[float] = None,
 ) -> float:
     """
     Kelly criterion with correlation adjustment and bankroll guards.
@@ -92,19 +117,44 @@ def kelly_corr(
     Scales by KELLY_FRACTION (quarter-Kelly), then reduces for correlated
     exposure already in the portfolio.
 
+    If *stat* and *open_stats* are provided, loads the persisted prop
+    correlation matrix to compute average correlation automatically.
+    *corr_with_open* is ignored when stat-based lookup succeeds.
+
     Args:
         edge:               Model edge as fraction (e.g. 0.06 = 6%).
         odds:               American odds on this bet.
         bankroll:           Current bankroll in dollars.
-        corr_with_open:     Average correlation with currently open bets (0-1).
+        corr_with_open:     Fallback average correlation (0-1) if matrix absent.
         existing_exposure:  Total $ already at risk on correlated bets.
+        stat:               Stat key for this bet (e.g. "pts").
+        open_stats:         List of stat keys for currently open bets.
+        win_prob_override:  Calibrated P(win) from isotonic regression.  When
+                            provided, replaces the implied_prob + edge heuristic.
+                            Obtain via CalibrationLayer.win_prob() or
+                            PropStackResult.calibrated_win_probs[stat].
 
     Returns:
         Recommended bet size in dollars (0 if Kelly is negative).
     """
+    # Drawdown guard: halt betting when loss exceeds MAX_DRAWDOWN_PCT
+    if bankroll_start is not None and not check_drawdown_ok(bankroll_start, bankroll):
+        return 0.0
+
+    # Resolve correlation from matrix if stat info provided
+    if stat and open_stats:
+        matrix = _load_corr_matrix()
+        if matrix:
+            stat_row = matrix.get(stat, {})
+            corrs = [abs(float(stat_row.get(s, 0.0))) for s in open_stats if s != stat]
+            if corrs:
+                corr_with_open = float(np.mean(corrs))
     implied_prob = _american_to_prob(odds)
-    # Model win probability from edge + implied prob
-    win_prob = min(0.95, implied_prob + edge)
+    # Use calibrated win probability when available; raw heuristic otherwise
+    if win_prob_override is not None:
+        win_prob = max(0.05, min(0.95, float(win_prob_override)))
+    else:
+        win_prob = min(0.95, implied_prob + edge)
     b = _american_to_payout(odds)
     q = 1.0 - win_prob
 
@@ -302,8 +352,88 @@ def get_portfolio_summary() -> dict:
     }
 
 
+def compute_prop_corr_matrix(residuals_path: Optional[str] = None) -> Dict[str, Dict[str, float]]:
+    """
+    Compute pairwise Pearson correlation matrix for prop stats from residuals.
+
+    Reads data/models/prop_residuals.json (rows: {stat, predicted, player_id, game_id}).
+    Groups by (player_id, game_id), keeps only rows where all 7 stats are present,
+    then computes pairwise Pearson correlations between predicted values.
+
+    Saves result to data/models/prop_corr_matrix.json and returns the matrix.
+    Returns empty dict if fewer than 10 complete player-game rows exist.
+    """
+    if residuals_path is None:
+        residuals_path = os.path.join(PROJECT_DIR, "data", "models", "prop_residuals.json")
+    if not os.path.exists(residuals_path):
+        print(f"  [corr] {residuals_path} not found — cannot compute correlation matrix")
+        return {}
+
+    try:
+        residuals = json.load(open(residuals_path, encoding="utf-8"))
+    except Exception as e:
+        print(f"  [corr] failed to load residuals: {e}")
+        return {}
+
+    # Pivot: (player_id, game_id) → {stat: predicted_value}
+    from collections import defaultdict
+    rows: Dict[tuple, Dict[str, float]] = defaultdict(dict)
+    for r in residuals:
+        stat = r.get("stat")
+        pred = r.get("predicted")
+        pid  = str(r.get("player_id", r.get("player_name", "")))
+        gid  = str(r.get("game_id", ""))
+        if stat in _PROP_STATS_ORDER and pred is not None and pid:
+            rows[(pid, gid)][stat] = float(pred)
+
+    # Keep only rows with all 7 stats present
+    complete = [d for d in rows.values() if all(s in d for s in _PROP_STATS_ORDER)]
+    if len(complete) < 10:
+        print(f"  [corr] only {len(complete)} complete player-game rows — skipping (need ≥10)")
+        return {}
+
+    arrays: Dict[str, List[float]] = {s: [d[s] for d in complete] for s in _PROP_STATS_ORDER}
+
+    matrix: Dict[str, Dict[str, float]] = {}
+    for s1 in _PROP_STATS_ORDER:
+        matrix[s1] = {}
+        x = np.array(arrays[s1])
+        for s2 in _PROP_STATS_ORDER:
+            if s1 == s2:
+                matrix[s1][s2] = 1.0
+            else:
+                y = np.array(arrays[s2])
+                if np.std(x) > 0 and np.std(y) > 0:
+                    matrix[s1][s2] = round(float(np.corrcoef(x, y)[0, 1]), 4)
+                else:
+                    matrix[s1][s2] = 0.0
+
+    os.makedirs(os.path.dirname(_CORR_MATRIX), exist_ok=True)
+    json.dump(matrix, open(_CORR_MATRIX, "w", encoding="utf-8"), indent=2)
+    print(f"  [corr] Saved {len(complete)}-row correlation matrix to {_CORR_MATRIX}")
+    return matrix
+
+
 if __name__ == "__main__":
-    summary = get_portfolio_summary()
-    print("Portfolio Summary:")
-    for k, v in summary.items():
-        print(f"  {k}: {v}")
+    import argparse
+    parser = argparse.ArgumentParser(description="Betting portfolio utilities")
+    parser.add_argument("--compute-corr", action="store_true",
+                        help="Compute prop correlation matrix from residuals and save")
+    parser.add_argument("--summary", action="store_true",
+                        help="Print portfolio summary")
+    args = parser.parse_args()
+
+    if args.compute_corr:
+        mat = compute_prop_corr_matrix()
+        if mat:
+            print("\nCorrelation matrix:")
+            header = "     " + "  ".join(f"{s:5s}" for s in _PROP_STATS_ORDER)
+            print(header)
+            for s1 in _PROP_STATS_ORDER:
+                row_str = "  ".join(f"{mat[s1][s2]:5.2f}" for s2 in _PROP_STATS_ORDER)
+                print(f"{s1:4s} {row_str}")
+    else:
+        summary = get_portfolio_summary()
+        print("Portfolio Summary:")
+        for k, v in summary.items():
+            print(f"  {k}: {v}")

@@ -1,0 +1,1392 @@
+[
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Start of 1st Period (9:49 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "0-0",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 0,
+    "event_type": 0,
+    "event_desc": "Jump Ball Lively II vs. Wembanyama: Tip to Champagnie",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 12,
+    "event_type": 5,
+    "event_desc": "Barnes Bad Pass Turnover (P1.T1)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 12,
+    "event_type": 0,
+    "event_desc": "Davis STEAL (1 STL)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 16,
+    "event_type": 2,
+    "event_desc": "MISS Flagg 1' Running Alley Oop Dunk Shot",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 18,
+    "event_type": 4,
+    "event_desc": "Davis REBOUND (Off:1 Def:0)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 21,
+    "event_type": 1,
+    "event_desc": "Davis 2' Putback Dunk (2 PTS)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "2-0",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 40,
+    "event_type": 6,
+    "event_desc": "Washington S.FOUL (P1.T1) (N.Green)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 40,
+    "event_type": 3,
+    "event_desc": "Wembanyama Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "2-1",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 40,
+    "event_type": 3,
+    "event_desc": "Wembanyama Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "2-2",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 61,
+    "event_type": 1,
+    "event_desc": "Davis 14' Step Back Jump Shot (4 PTS) (Lively II 1 AST)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "4-2",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 75,
+    "event_type": 2,
+    "event_desc": "MISS Vassell 11' Pullup Jump Shot",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 77,
+    "event_type": 4,
+    "event_desc": "Lively II REBOUND (Off:0 Def:1)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 80,
+    "event_type": 1,
+    "event_desc": "Washington 4' Running Finger Roll Layup (2 PTS)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "6-2",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 80,
+    "event_type": 0,
+    "event_desc": "Wembanyama Violation:Defensive Goaltending (T.Brothers)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 102,
+    "event_type": 2,
+    "event_desc": "MISS Wembanyama 8' Driving Floating Bank Jump Shot",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 104,
+    "event_type": 4,
+    "event_desc": "Davis REBOUND (Off:1 Def:1)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 118,
+    "event_type": 2,
+    "event_desc": "MISS Flagg 21' Pullup Jump Shot",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 119,
+    "event_type": 4,
+    "event_desc": "Spurs Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 135,
+    "event_type": 6,
+    "event_desc": "Washington S.FOUL (P2.T2) (T.Brothers)",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 135,
+    "event_type": 3,
+    "event_desc": "Castle Free Throw 1 of 2 (1 PTS)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "6-3",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 135,
+    "event_type": 8,
+    "event_desc": "SUB: Marshall FOR Washington",
+    "player_name": "Washington",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 135,
+    "event_type": 3,
+    "event_desc": "Castle Free Throw 2 of 2 (2 PTS)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "6-4",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 148,
+    "event_type": 1,
+    "event_desc": "Lively II 1' Alley Oop Dunk (2 PTS) (Davis 1 AST)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "8-4",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 149,
+    "event_type": 0,
+    "event_desc": "MAVERICKS Violation: Delay of game Violation",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 164,
+    "event_type": 1,
+    "event_desc": "Wembanyama 19' Pullup Jump Shot (4 PTS) (Vassell 1 AST)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "8-6",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 180,
+    "event_type": 2,
+    "event_desc": "MISS Marshall 7' Turnaround Jump Shot",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 182,
+    "event_type": 4,
+    "event_desc": "Lively II REBOUND (Off:1 Def:1)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 191,
+    "event_type": 2,
+    "event_desc": "MISS Davis 3' Driving Layup",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 194,
+    "event_type": 4,
+    "event_desc": "Barnes REBOUND (Off:0 Def:1)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 199,
+    "event_type": 1,
+    "event_desc": "Vassell 26' 3PT Running Jump Shot (3 PTS) (Castle 1 AST)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "8-9",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 210,
+    "event_type": 2,
+    "event_desc": "MISS Davis 4' Layup",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 210,
+    "event_type": 0,
+    "event_desc": "Wembanyama BLOCK (1 BLK)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 210,
+    "event_type": 4,
+    "event_desc": "Champagnie REBOUND (Off:0 Def:1)",
+    "player_name": "Champagnie",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 219,
+    "event_type": 1,
+    "event_desc": "Castle 15' Pullup Jump Shot (4 PTS)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "8-11",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 232,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 26' 3PT Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 232,
+    "event_type": 4,
+    "event_desc": "Spurs Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 232,
+    "event_type": 8,
+    "event_desc": "SUB: Christie FOR Lively II",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 244,
+    "event_type": 1,
+    "event_desc": "Barnes 24' 3PT Jump Shot (3 PTS) (Castle 2 AST)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "8-14",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 261,
+    "event_type": 2,
+    "event_desc": "MISS Davis 26' 3PT Jump Shot",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 263,
+    "event_type": 4,
+    "event_desc": "MAVERICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 2,
+    "event_desc": "MISS Thompson 15' Pullup Jump Shot",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 4,
+    "event_desc": "Davis REBOUND (Off:2 Def:1)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 6,
+    "event_desc": "Champagnie S.FOUL (P1.T1) (S.Twardoski)",
+    "player_name": "Champagnie",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 3,
+    "event_desc": "Davis Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "9-14",
+    "score_margin": "-5"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 271,
+    "event_type": 3,
+    "event_desc": "Davis Free Throw 2 of 2 (6 PTS)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "10-14",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 284,
+    "event_type": 1,
+    "event_desc": "Wembanyama 1' Driving Dunk (6 PTS) (Barnes 1 AST)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "10-16",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 311,
+    "event_type": 1,
+    "event_desc": "Christie 3PT Jump Shot (3 PTS) (Marshall 1 AST)",
+    "player_name": "Christie",
+    "team_abbrev": "DAL",
+    "score": "13-16",
+    "score_margin": "-3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 326,
+    "event_type": 0,
+    "event_desc": "MAVERICKS Timeout: Regular (Full 1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 326,
+    "event_type": 8,
+    "event_desc": "SUB: Russell FOR Thompson",
+    "player_name": "Thompson",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 326,
+    "event_type": 8,
+    "event_desc": "SUB: Nembhard FOR Flagg",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 326,
+    "event_type": 8,
+    "event_desc": "SUB: Kornet FOR Wembanyama",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 330,
+    "event_type": 1,
+    "event_desc": "Castle 26' 3PT Jump Shot (7 PTS) (Kornet 1 AST)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "13-19",
+    "score_margin": "-6"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 343,
+    "event_type": 6,
+    "event_desc": "Castle P.FOUL (P1.T2) (S.Twardoski)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 351,
+    "event_type": 1,
+    "event_desc": "Russell 7' Driving Floating Bank Jump Shot (2 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "15-19",
+    "score_margin": "-4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 357,
+    "event_type": 6,
+    "event_desc": "Davis S.FOUL (P1.T3) (S.Twardoski)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 357,
+    "event_type": 3,
+    "event_desc": "MISS Castle Free Throw 1 of 2",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 357,
+    "event_type": 4,
+    "event_desc": "Spurs Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 357,
+    "event_type": 3,
+    "event_desc": "MISS Castle Free Throw 2 of 2",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 359,
+    "event_type": 4,
+    "event_desc": "Russell REBOUND (Off:0 Def:1)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 371,
+    "event_type": 5,
+    "event_desc": "Christie Step Out of Bounds Turnover (P1.T1)",
+    "player_name": "Christie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 371,
+    "event_type": 8,
+    "event_desc": "SUB: Johnson FOR Champagnie",
+    "player_name": "Champagnie",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 383,
+    "event_type": 2,
+    "event_desc": "MISS Vassell 25' 3PT Jump Shot",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 384,
+    "event_type": 4,
+    "event_desc": "MAVERICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 399,
+    "event_type": 2,
+    "event_desc": "MISS Davis 22' Step Back Jump Shot",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 403,
+    "event_type": 4,
+    "event_desc": "Castle REBOUND (Off:0 Def:1)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 6,
+    "event_desc": "Kornet OFF.Foul (P1) (T.Brothers)",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 5,
+    "event_desc": "Kornet Offensive Foul Turnover (P1.T2)",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 404,
+    "event_type": 8,
+    "event_desc": "SUB: Harper FOR Barnes",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 415,
+    "event_type": 1,
+    "event_desc": "Nembhard 17' Pullup Jump Shot (2 PTS)",
+    "player_name": "Nembhard",
+    "team_abbrev": "DAL",
+    "score": "17-19",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 436,
+    "event_type": 2,
+    "event_desc": "MISS Harper 12' Pullup Jump Shot",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 438,
+    "event_type": 4,
+    "event_desc": "Davis REBOUND (Off:2 Def:2)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 444,
+    "event_type": 2,
+    "event_desc": "MISS Davis 10' Driving Floating Jump Shot",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 447,
+    "event_type": 4,
+    "event_desc": "Castle REBOUND (Off:0 Def:2)",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 449,
+    "event_type": 5,
+    "event_desc": "Harper Step Out of Bounds Turnover (P1.T3)",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 2,
+    "event_desc": "MISS Davis 10' Driving Floating Jump Shot",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 4,
+    "event_desc": "Davis REBOUND (Off:3 Def:2)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 6,
+    "event_desc": "Kornet FLAGRANT.FOUL.TYPE1 (P2.T3) (S.Twardoski)",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 0,
+    "event_desc": "Instant Replay1st Period (10:07 PM EST)",
+    "player_name": "Ellis",
+    "team_abbrev": "",
+    "score": "17-19",
+    "score_margin": "-2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 8,
+    "event_desc": "SUB: McLaughlin FOR Castle",
+    "player_name": "Castle",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 3,
+    "event_desc": "Davis Free Throw Flagrant 1 of 2 (7 PTS)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "18-19",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 463,
+    "event_type": 3,
+    "event_desc": "Davis Free Throw Flagrant 2 of 2 (8 PTS)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "19-19",
+    "score_margin": "0"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 469,
+    "event_type": 6,
+    "event_desc": "Harper S.FOUL (P1.T4) (T.Brothers)",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 469,
+    "event_type": 3,
+    "event_desc": "Russell Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "20-19",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 469,
+    "event_type": 3,
+    "event_desc": "MISS Russell Free Throw 2 of 2",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 472,
+    "event_type": 4,
+    "event_desc": "Harper REBOUND (Off:0 Def:1)",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 493,
+    "event_type": 1,
+    "event_desc": "Vassell 14' Pullup Jump Shot (5 PTS) (Johnson 1 AST)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "20-21",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 496,
+    "event_type": 0,
+    "event_desc": "Spurs Violation: Delay of game Violation",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 507,
+    "event_type": 1,
+    "event_desc": "Nembhard 11' Driving Floating Jump Shot (4 PTS)",
+    "player_name": "Nembhard",
+    "team_abbrev": "DAL",
+    "score": "22-21",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 521,
+    "event_type": 1,
+    "event_desc": "Vassell 16' Pullup Jump Shot (7 PTS) (Kornet 2 AST)",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "22-23",
+    "score_margin": "-1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 535,
+    "event_type": 1,
+    "event_desc": "Davis 4' Turnaround Bank Shot (10 PTS) (Russell 1 AST)",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "24-23",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 541,
+    "event_type": 0,
+    "event_desc": "Spurs Timeout: Regular (Reg.1 Short 0)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 541,
+    "event_type": 8,
+    "event_desc": "SUB: Lively II FOR Davis",
+    "player_name": "Davis",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 541,
+    "event_type": 8,
+    "event_desc": "SUB: Flagg FOR Nembhard",
+    "player_name": "Nembhard",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 541,
+    "event_type": 8,
+    "event_desc": "SUB: Wembanyama FOR McLaughlin",
+    "player_name": "McLaughlin",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 549,
+    "event_type": 2,
+    "event_desc": "MISS Vassell 19' Pullup Jump Shot",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 552,
+    "event_type": 4,
+    "event_desc": "Marshall REBOUND (Off:0 Def:1)",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 556,
+    "event_type": 2,
+    "event_desc": "MISS Marshall 6' Driving Floating Jump Shot",
+    "player_name": "Marshall",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 556,
+    "event_type": 0,
+    "event_desc": "Kornet BLOCK (1 BLK)",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 559,
+    "event_type": 4,
+    "event_desc": "Wembanyama REBOUND (Off:0 Def:1)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 565,
+    "event_type": 5,
+    "event_desc": "Harper Palming Turnover (P2.T4)",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 565,
+    "event_type": 8,
+    "event_desc": "SUB: McLaughlin FOR Vassell",
+    "player_name": "Vassell",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 6,
+    "event_desc": "Harper S.FOUL (P2.PN) (N.Green)",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 3,
+    "event_desc": "MISS Russell Free Throw 1 of 2",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 4,
+    "event_desc": "MAVERICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 575,
+    "event_type": 3,
+    "event_desc": "Russell Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "25-23",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 591,
+    "event_type": 2,
+    "event_desc": "MISS Harper 16' Pullup Jump Shot",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 593,
+    "event_type": 4,
+    "event_desc": "MAVERICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 593,
+    "event_type": 6,
+    "event_desc": "Kornet L.B.FOUL (P3.PN) (S.Twardoski)",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 593,
+    "event_type": 3,
+    "event_desc": "Lively II Free Throw 1 of 2 (3 PTS)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "26-23",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 593,
+    "event_type": 8,
+    "event_desc": "SUB: Barnes FOR Kornet",
+    "player_name": "Kornet",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 593,
+    "event_type": 3,
+    "event_desc": "Lively II Free Throw 2 of 2 (4 PTS)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "27-23",
+    "score_margin": "4"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 606,
+    "event_type": 5,
+    "event_desc": "Barnes Bad Pass Turnover (P2.T5)",
+    "player_name": "Barnes",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 606,
+    "event_type": 0,
+    "event_desc": "Flagg STEAL (1 STL)",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 613,
+    "event_type": 2,
+    "event_desc": "MISS Russell 27' 3PT Running Jump Shot",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 618,
+    "event_type": 4,
+    "event_desc": "Wembanyama REBOUND (Off:0 Def:2)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 626,
+    "event_type": 2,
+    "event_desc": "MISS Harper 3' Driving Reverse Layup",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 627,
+    "event_type": 4,
+    "event_desc": "Spurs Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 627,
+    "event_type": 6,
+    "event_desc": "Lively II L.B.FOUL (P1.T4) (N.Green)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 634,
+    "event_type": 1,
+    "event_desc": "Wembanyama 1' Cutting Dunk Shot (8 PTS) (Harper 1 AST)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "27-25",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 6,
+    "event_desc": "Lively II OFF.Foul (P2) (S.Twardoski)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 645,
+    "event_type": 5,
+    "event_desc": "Lively II Offensive Foul Turnover (P1.T2)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 663,
+    "event_type": 2,
+    "event_desc": "MISS McLaughlin 3PT Jump Shot",
+    "player_name": "McLaughlin",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 666,
+    "event_type": 4,
+    "event_desc": "Flagg REBOUND (Off:0 Def:1)",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 672,
+    "event_type": 2,
+    "event_desc": "MISS Christie 3PT Running Jump Shot",
+    "player_name": "Christie",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 675,
+    "event_type": 4,
+    "event_desc": "Johnson REBOUND (Off:0 Def:1)",
+    "player_name": "Johnson",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 683,
+    "event_type": 6,
+    "event_desc": "Lively II S.FOUL (P3.PN) (T.Brothers)",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 683,
+    "event_type": 3,
+    "event_desc": "Wembanyama Free Throw 1 of 2 (9 PTS)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "27-26",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 683,
+    "event_type": 8,
+    "event_desc": "SUB: Powell FOR Lively II",
+    "player_name": "Lively II",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 683,
+    "event_type": 8,
+    "event_desc": "SUB: Champagnie FOR Harper",
+    "player_name": "Harper",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 683,
+    "event_type": 3,
+    "event_desc": "MISS Wembanyama Free Throw 2 of 2",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 688,
+    "event_type": 4,
+    "event_desc": "Flagg REBOUND (Off:0 Def:2)",
+    "player_name": "Flagg",
+    "team_abbrev": "DAL",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 693,
+    "event_type": 6,
+    "event_desc": "McLaughlin P.FOUL (P1.PN) (T.Brothers)",
+    "player_name": "McLaughlin",
+    "team_abbrev": "SAS",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 693,
+    "event_type": 3,
+    "event_desc": "Russell Free Throw 1 of 2 (5 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "28-26",
+    "score_margin": "2"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 693,
+    "event_type": 3,
+    "event_desc": "Russell Free Throw 2 of 2 (6 PTS)",
+    "player_name": "Russell",
+    "team_abbrev": "DAL",
+    "score": "29-26",
+    "score_margin": "3"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 716,
+    "event_type": 1,
+    "event_desc": "Wembanyama 13' Fadeaway Jumper (11 PTS)",
+    "player_name": "Wembanyama",
+    "team_abbrev": "SAS",
+    "score": "29-28",
+    "score_margin": "1"
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 718,
+    "event_type": 0,
+    "event_desc": "MAVERICKS Heave",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 719,
+    "event_type": 4,
+    "event_desc": "MAVERICKS Rebound",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "",
+    "score_margin": ""
+  },
+  {
+    "period": 1,
+    "game_clock_sec": 720,
+    "event_type": 13,
+    "event_desc": "End of 1st Period (10:23 PM EST)",
+    "player_name": "",
+    "team_abbrev": "",
+    "score": "29-28",
+    "score_margin": "1"
+  }
+]

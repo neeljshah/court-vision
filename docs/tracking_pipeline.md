@@ -4,14 +4,51 @@
 
 ```bash
 # Single clip — full pipeline (tracking → enrichment → features → analytics)
-python run_clip.py --video game.mp4 --game-id 0022300001 --period 1 --start 0
-
-# Full video with debug overlay
-python run.py --frames 100 --debug
+python run_clip.py --video game.mp4 --game-id 0022300001 --period 1 --start 0 --no-show
 
 # Tracking quality metrics only
 python run.py --eval
 ```
+
+---
+
+## Video Decode Path
+
+The pipeline prefers GPU-accelerated video decode via **decord** (NVDEC engine):
+
+```python
+# src/pipeline/unified_pipeline.py::_decord_frame_iter
+# 1st choice: decord (pip install decord) — NVDEC GPU decode, frees ~1.5 CPU cores/worker
+# Fallback:   PyAV CPU decode — silent fallback if decord not installed
+```
+
+**Performance impact:**
+- With decord: ~20 fps/worker on RTX 4090, ~80 fps aggregate (4 workers)
+- Without decord (PyAV fallback): ~11 fps/worker, ~45 fps aggregate
+- Install: `pip install decord` on pod before launch
+
+---
+
+## VRAM Flush Interval
+
+```python
+# src/pipeline/unified_pipeline.py
+_VRAM_FLUSH_INTERVAL = 3000   # MUST be 3000, never 100
+```
+
+`torch.cuda.empty_cache()` is called every `_VRAM_FLUSH_INTERVAL` frames. Setting this to 100 forces GPU syncs every 100 frames → 10x slowdown. The value 3000 is enforced by the pod launch script preflight check.
+
+---
+
+## Performance Reference (RTX 4090, Phase G config)
+
+| Config | fps/worker | Aggregate (4 workers) |
+|--------|-----------|----------------------|
+| decord + OMP_NUM_THREADS=6 | ~20 | ~80 |
+| PyAV + no OMP cap | ~11 | ~45 |
+| PyAV + OMP cap | ~11 | ~45 |
+
+**fps interpretation:** The `PROFILE TOTAL=0.3s` log line is NOT the frame interval — decord batches decode. Real fps = `max_frame / wall_seconds_since_worker_start`.
 
 ---
 
