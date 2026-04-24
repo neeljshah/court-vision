@@ -2,8 +2,16 @@
 
 ## Current Status
 
-**Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV)
-**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 03 complete)
+**Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV) — COMPLETE
+**Last Updated**: 2026-04-24 (Session 44 — Phase 14-5a Plan 04 complete)
+**Phase 14-5a Plan 04 complete (2026-04-24)**:
+- `src/prediction/prop_validation.py` — 100 LOC; write_registry(), validate_gap_threshold(), generate_report()
+- `data/models/model_registry.json` — v3 schema, all 7 stats, retrain_version=v3_temporal_cv_gridtuned_2026-04
+- `data/models/hyperparams_{stat}.json` — 7 files, best GridSearchCV params per stat
+- `data/models/props_{stat}.json` — 7 updated model files (best_estimator_ refitted on 2025-26 data)
+- pts/reb/ast pass gap threshold (0.034, 0.027, 0.046); fg3m/stl/blk/tov exceed (84-row holdout, single season)
+- Decision: document fg3m/stl/blk/tov gap failures as known exception (count-data noise + single-season holdout)
+- Decision: Phase 15 bet-selector should filter on needs_retrain=False (pts/reb/ast eligible)
 **Phase 14-5a Plan 03 complete (2026-04-23)**:
 - `src/prediction/prop_grid_search.py` — 109 LOC; run_grid_search(), REGRESSION_PARAM_GRID, POISSON_PARAM_GRID
 - `scripts/retrain_props_temporal.py` — 178 LOC; CLI with --stats/--dry-run/--threshold/--seasons/--exclude; holdout gap reporting
@@ -28,6 +36,7 @@
 **Strategy**: Finish the serving/betting loop on free-tier data (nba_api + ESPN + The Odds API) before spending on CV ingest. Goal: hands-off "inject data → bets out". CV features injected later as model upgrade, not blocker.
 
 **Next up**: Phase 15 — bet selector middleware (`src/prediction/bet_selector.py`, `config/betting.yaml`)
+**Phase 14-5a COMPLETE** — All 4 plans done. Registry populated, validation pipeline live.
 
 **Full plan**: `.planning/LIVE_BETTING_PLAN.md` (authoritative for Phases 14-20).
 
