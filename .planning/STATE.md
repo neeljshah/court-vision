@@ -2,8 +2,21 @@
 
 ## Current Status
 
-**Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV) — COMPLETE
-**Last Updated**: 2026-04-24 (Session 44 — Phase 14-5a Plan 04 complete)
+**Active Phase**: Phase 15.5 — Uncertainty Wiring + Alt-Line Ladder (COMPLETE — all 3 plans done)
+**Last Updated**: 2026-04-23 (Session 46 — Phase 15.5 Plan 03 complete)
+**Phase 15.5 Plan 03 complete (2026-04-23)**:
+- `src/prediction/bet_selector.py` — 284 LOC; _conformal_cache + _has_conformal guard, _get_ci() inner helper, ci_lo_80/ci_hi_80/alt_line/alt_line_ev fields in every bet dict
+- `scripts/run_daily_slate.py` — --build-ladder CLI flag; Step 8 ladder block loops edge_rows + appends top-EV alt bets before bet_selector (Step 9)
+- 2 TestBetSelectorCI xfail tests (ci_fields, alt_bets_json_schema) XPASS — Phase 15.5 requirements complete
+- Decision: _get_ci as inner function to access module-level _conformal_cache naturally
+- Decision: alt_line/alt_line_ev via row.get() passthrough — None for main-line bets, schema uniformity
+**Phase 15.5 Plan 02 complete (2026-04-24)**:
+- `src/prediction/alt_line_ladder.py` — 196 LOC; build_alt_line_ladder(), ladder_to_bets(), _compute_ev(), _kelly_fraction()
+- 11 alt-line offsets [-2.5..+2.5]; 22 rows per call (over + under per offset), sorted EV desc
+- Pinnacle decay: 12%/pt overs, 8%/pt unders from main line; quarter-Kelly capped at 0.02
+- 4 xfail tests (test_ladder_offsets, test_ev_computation, test_pinnacle_decay, test_kelly_cap) → all XPASS
+- Decision: IQR sigma fit: (hi-lo)/1.349, floor 0.3 — matches POC convention, avoids z-score inversion
+- Decision: Do not import alt_line_ev_model in production code — math extracted cleanly
 **Phase 14-5a Plan 04 complete (2026-04-24)**:
 - `src/prediction/prop_validation.py` — 100 LOC; write_registry(), validate_gap_threshold(), generate_report()
 - `data/models/model_registry.json` — v3 schema, all 7 stats, retrain_version=v3_temporal_cv_gridtuned_2026-04
