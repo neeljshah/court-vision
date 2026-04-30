@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#08080c"/>
+  <rect x="1" y="1" width="1198" height="628" fill="none" stroke="#1f1f2e" stroke-width="2"/>
+  <text x="80" y="120" font-family="monospace" font-size="18" fill="#3b82f6" letter-spacing="4">QUANTITATIVE RESEARCHER</text>
+  <text x="80" y="220" font-family="sans-serif" font-weight="bold" font-size="80" fill="#e7e7ee">Neel Shah</text>
+  <text x="80" y="310" font-family="sans-serif" font-size="28" fill="#9999a8">Possession-level NBA simulator</text>
+  <text x="80" y="356" font-family="sans-serif" font-size="28" fill="#9999a8">Broadcast video → spatial features → priced positions</text>
+  <rect x="80" y="420" width="220" height="80" rx="8" fill="#13131c" stroke="#1f1f2e"/>
+  <text x="190" y="452" font-family="monospace" font-size="13" fill="#9999a8" text-anchor="middle">CLV vs Pinnacle</text>
+  <text x="190" y="480" font-family="monospace" font-weight="bold" font-size="24" fill="#10b981" text-anchor="middle">+14 bps</text>
+  <rect x="320" y="420" width="220" height="80" rx="8" fill="#13131c" stroke="#1f1f2e"/>
+  <text x="430" y="452" font-family="monospace" font-size="13" fill="#9999a8" text-anchor="middle">Settled Picks</text>
+  <text x="430" y="480" font-family="monospace" font-weight="bold" font-size="24" fill="#e7e7ee" text-anchor="middle">312</text>
+  <rect x="560" y="420" width="220" height="80" rx="8" fill="#13131c" stroke="#1f1f2e"/>
+  <text x="670" y="452" font-family="monospace" font-size="13" fill="#9999a8" text-anchor="middle">Best R²</text>
+  <text x="670" y="480" font-family="monospace" font-weight="bold" font-size="24" fill="#e7e7ee" text-anchor="middle">0.47</text>
+  <rect x="800" y="420" width="220" height="80" rx="8" fill="#13131c" stroke="#1f1f2e"/>
+  <text x="910" y="452" font-family="monospace" font-size="13" fill="#9999a8" text-anchor="middle">ML Models</text>
+  <text x="910" y="480" font-family="monospace" font-weight="bold" font-size="24" fill="#e7e7ee" text-anchor="middle">75+</text>
+  <text x="80" y="590" font-family="monospace" font-size="14" fill="#3b82f6">neeljshah22@gmail.com</text>
+</svg>
