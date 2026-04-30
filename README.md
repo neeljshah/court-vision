@@ -4,6 +4,7 @@ A possession-level NBA simulator priced against live prop markets. Spatial featu
 from broadcast video feed a 75-model stack, which feeds a 10K-path Monte Carlo,
 which feeds a fractional-Kelly portfolio with correlation-aware sizing and
 CLV attribution.
+Project Portfolio - https://projectcourtvision-neelshah.netlify.app/
 
 ## Thesis
 
