@@ -149,3 +149,6 @@ src/pipeline/gpu_dataframe.py
 *.bak
 *.orig
 *.tmp
+portfolio-site/node_modules/
+portfolio-site/.next/
+portfolio-site/out/
