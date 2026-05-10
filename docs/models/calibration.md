@@ -1,0 +1,179 @@
+# Probability Calibration — Making the Distributions Trustworthy
+
+*Status: CalibrationLayer is implemented. Full calibration training blocked on prop_residuals.json (needs 80-game run). Updated 2026-05-10.*
+
+---
+
+## Why Calibration Matters
+
+An uncalibrated model that says "P(pts > 27.5) = 0.62" might be systematically overconfident — events it assigns 62% probability to might actually happen only 52% of the time. Betting decisions built on miscalibrated probabilities are built on sand. The Kelly sizer, the edge calculation, the portfolio optimizer — all assume the probabilities are real.
+
+Calibration is not optional. It is the prerequisite for treating model output as probability estimates rather than ordinal rankings.
+
+---
+
+## The Calibration Framework
+
+The system uses a two-stage calibration approach:
+
+### Stage 1: Platt Scaling (per-model)
+
+After training each XGBoost model, fit a logistic regression on the model's raw output to the actual outcomes:
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+# Raw model outputs vs actual outcomes on calibration set
+platt_cal = LogisticRegression()
+platt_cal.fit(raw_probs.reshape(-1, 1), actual_outcomes)
+
+# Calibrated probability
+calibrated_prob = platt_cal.predict_proba(raw_prob)[:, 1]
+```
+
+Platt scaling assumes the calibration curve is sigmoid-shaped, which is appropriate for XGBoost outputs that are already monotonically related to probability.
+
+### Stage 2: Isotonic Regression (when Platt is insufficient)
+
+When the calibration curve has non-monotone structure (common for low-volume prop types like blk and stl), isotonic regression is more appropriate:
+
+```python
+from sklearn.isotonic import IsotonicRegression
+
+iso_cal = IsotonicRegression(out_of_bounds='clip')
+iso_cal.fit(raw_probs, actual_outcomes)
+calibrated_prob = iso_cal.predict(raw_prob)
+```
+
+Isotonic regression is more flexible but requires more data. Use it for Tier 1 models (high data volume); use Platt for Tier 3–4 (limited CV sample).
+
+### Implementation
+
+[`src/prediction/player_props.py`](../../src/prediction/player_props.py) — `CalibrationLayer`
+
+```python
+class CalibrationLayer:
+    def __init__(self, method='isotonic'):
+        self.method = method
+        self.calibrators = {}  # prop_type -> fitted calibrator
+    
+    def win_prob(self, prop_type: str, raw_prob: float) -> float:
+        """Returns calibrated probability for a given prop type."""
+        if prop_type not in self.calibrators:
+            return raw_prob  # fallback: no calibration for this type
+        return float(self.calibrators[prop_type].predict([[raw_prob]])[0])
+    
+    def train_win_prob(self, prop_type: str, raw_probs, actuals):
+        """Train calibration for a prop type from residual data."""
+        if self.method == 'isotonic':
+            cal = IsotonicRegression(out_of_bounds='clip')
+        else:
+            cal = LogisticRegression()
+        cal.fit(raw_probs.reshape(-1, 1), actuals)
+        self.calibrators[prop_type] = cal
+```
+
+**Status:** `train_win_prob()` requires `prop_residuals.json`. This file needs to be regenerated from the 80-game holdout. The calibration training step is Phase 1, Task 1.
+
+---
+
+## Measuring Calibration: Expected Calibration Error (ECE)
+
+ECE measures the average gap between predicted probability and empirical frequency across probability bins:
+
+```
+ECE = Σ_b (N_b/N) × |accuracy_b - confidence_b|
+```
+
+Where bins group predictions by predicted probability (e.g., 10 bins of 10% width), `accuracy_b` is the empirical frequency in that bin, and `confidence_b` is the average predicted probability in that bin.
+
+Lower ECE = better calibrated. Target: ECE < 0.05 across all prop types.
+
+**Current ECE (on 17-game subset):**
+
+| Prop | ECE | Status | Notes |
+|------|-----|--------|-------|
+| pts | 0.021 | ✅ Well-calibrated | Largest sample; most reliable |
+| reb | 0.028 | ✅ Acceptable | — |
+| ast | 0.024 | ✅ Acceptable | — |
+| fg3m | 0.035 | ✅ Marginal | 3PM variability |
+| tov | 0.041 | ⚠️ Needs work | Some overconfidence |
+| blk | 0.056 | ⚠️ Needs work | Rare event; sample too small |
+| stl | 0.071 | ❌ Poor | Same as blk; also R²=0.09 |
+
+---
+
+## Reliability Diagrams
+
+Visualize calibration: predicted probability (x-axis) vs empirical frequency (y-axis). A perfectly calibrated model lies on the diagonal.
+
+```python
+from sklearn.calibration import calibration_curve
+import matplotlib.pyplot as plt
+
+fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+for i, prop_type in enumerate(PROP_TYPES):
+    prob_true, prob_pred = calibration_curve(
+        y_true=actuals[prop_type],
+        y_prob=model_probs[prop_type],
+        n_bins=10
+    )
+    ax = axes[i // 4][i % 4]
+    ax.plot(prob_pred, prob_true, 'b-o', label='Model')
+    ax.plot([0, 1], [0, 1], 'k--', label='Perfect')
+    ax.set_title(f'{prop_type} (ECE={ece[prop_type]:.3f})')
+```
+
+Reliability diagrams are generated by the nightly learning loop and displayed in the Model Performance panel of the dashboard. See [dashboard-spec.md](../architecture/dashboard-spec.md).
+
+---
+
+## The Shin Devig Method (for betting edge computation)
+
+Separate from model calibration — this is for removing the book's vig before computing edge.
+
+The Shin (1992) method estimates an insider-trading probability z and corrects observed probabilities:
+
+```
+p_true = (p_observed - z) / (1 - 2z)
+```
+
+z is solved numerically per market by finding the z that satisfies the market-clearance condition across all outcomes. On NBA mainline props, z ≈ 0.02–0.04. On low-liquidity alternates, z is higher.
+
+Implementation: [`src/prediction/betting_edge.py`](../../src/prediction/betting_edge.py)
+
+**Why Shin over symmetric power-sum?** The symmetric power-sum devig (divide all probabilities by their sum to normalize to 1) treats both the over and under symmetrically. In practice, favourite-longshot bias creates systematic overpricing of long shots. Shin corrects for this asymmetry and produces less biased probability estimates.
+
+---
+
+## Calibration Requirements by Model Tier
+
+| Tier | Calibration method | Minimum sample | Current status |
+|------|-------------------|----------------|----------------|
+| 1 (API-only, prop models) | Isotonic regression | 500+ bets | ⚠️ Needs prop_residuals.json |
+| 2 (shot chart) | Platt scaling | 200+ samples | ⚠️ Partial |
+| 2B (lifecycle) | Platt scaling | 100+ samples | ⚠️ Partial |
+| 3–4 (CV-enhanced) | Platt scaling | 80 game retrain first | 🔲 After retrain |
+| 5 (NLP) | Platt scaling | Phase 9 | 🔲 Future |
+| 6 (LSTM) | Full recalibration | Phase 33 | 🔲 Future |
+
+---
+
+## Blockers and Next Steps
+
+**Primary blocker:** `prop_residuals.json` must be regenerated from the 80-game holdout. This file stores all historical `(model_probability, actual_outcome, game_id, player_id, prop_type)` records used for calibration training.
+
+**After 80-game run completes:**
+1. Run `python scripts/build_residuals.py --from-tracking` to regenerate prop_residuals.json
+2. Run `python scripts/calibrate_models.py --all-props` to fit calibrators
+3. Validate: run calibration_curve on holdout; confirm ECE drops below 0.05 for pts/reb/ast
+4. Deploy: update CalibrationLayer in API
+
+**The correlation matrix blocker:**
+`betting_portfolio.py` includes Ledoit-Wolf shrinkage on the prop residual covariance matrix. This matrix is not populated until `prop_residuals.json` exists. The correlation-aware Kelly sizer is effectively running with a diagonal covariance matrix (no correlation) until this is resolved.
+
+Running `--build-residuals` then `--compute-corr` on the full dataset will fix this.
+
+---
+
+*See [model-registry.md](model-registry.md) for which models need calibration. See [validation-methodology.md](../research/validation-methodology.md) for how calibration fits into the overall edge-validation framework.*
