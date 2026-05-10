@@ -30,6 +30,14 @@ _CONFIG_PATH  = os.path.join(PROJECT_DIR, "config", "betting.yaml")
 _OUTPUT_DIR   = os.path.join(PROJECT_DIR, "data", "output")
 _BET_LOG_PATH = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
 
+# Conformal predictor cache (per stat, loaded once per process)
+_conformal_cache: dict = {}
+try:
+    from src.prediction.conformal_props import ConformalPredictor as _CP
+    _has_conformal = True
+except Exception:
+    _has_conformal = False
+
 
 def _load_config() -> dict:
     try:
@@ -106,6 +114,23 @@ def select(
     player_stakes: dict[str, float] = {}   # player -> total $ committed
     open_stats:    list[str]        = []   # stats with bets already selected
 
+    def _get_ci(stat: str, projection: Optional[float]) -> tuple:
+        """Return (lo_80, hi_80) from conformal predictor or (None, None)."""
+        if not _has_conformal or projection is None:
+            return None, None
+        if stat not in _conformal_cache:
+            try:
+                _conformal_cache[stat] = _CP.load_residuals(stat)
+            except Exception:
+                _conformal_cache[stat] = None
+        cp = _conformal_cache.get(stat)
+        if cp is None:
+            return None, None
+        try:
+            return cp.predict_interval(float(projection), coverage=0.80)
+        except Exception:
+            return None, None
+
     # Sort descending by absolute edge — take best edges first
     candidates = sorted(edge_rows, key=lambda r: abs(r.get("edge", 0.0)), reverse=True)
 
@@ -153,11 +178,14 @@ def select(
 
         size = round(size, 2)
 
+        proj = row.get("projection")
+        lo_80, hi_80 = _get_ci(stat, proj)
+
         bet = {
             "player":     player,
             "stat":       stat,
             "direction":  "over" if edge > 0 else "under",
-            "projection": row.get("projection"),
+            "projection": proj,
             "book_line":  row.get("book_line"),
             "edge":       round(edge, 4),
             "odds":       odds,
@@ -171,9 +199,13 @@ def select(
             "status":     "paper" if dry_run else "pending",
             "rationale":  (
                 f"edge={edge:+.2f} vs line {row.get('book_line')} "
-                f"(proj {row.get('projection')}), "
+                f"(proj {proj}), "
                 f"kelly={size:.2f}, conf={row.get('confidence','?')}"
             ),
+            "ci_lo_80":    lo_80,
+            "ci_hi_80":    hi_80,
+            "alt_line":    row.get("alt_line"),
+            "alt_line_ev": row.get("alt_line_ev"),
         }
 
         bets.append(bet)

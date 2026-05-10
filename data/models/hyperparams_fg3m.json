@@ -1,0 +1,11 @@
+{
+  "stat": "fg3m",
+  "best_params": {
+    "colsample_bytree": 0.8,
+    "learning_rate": 0.1,
+    "max_depth": 6,
+    "n_estimators": 300,
+    "subsample": 0.7
+  },
+  "best_cv_r2": 0.8342
+}

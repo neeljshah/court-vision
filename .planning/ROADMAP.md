@@ -131,6 +131,14 @@ Build the world's best NBA analytics and prediction system — a self-improving 
 | Phase 28 — Kalshi/Polymarket Market Making | 🔲 | Maker liquidity; inventory mgmt; adverse selection detection |
 | Phase 29 — Multi-Period Portfolio Optimization | 🔲 | Weekly capital plan; reserve for high-EV games; DP optimizer |
 | Phase 30 — Factor Model + Risk Parity | 🔲 | PCA factor decomposition; portfolio factor hedging; 25% var reduction |
+| Phase 31 — Analytics Dashboard Frontend | 🔲 | Next.js + D3; 10 chart types; Betting/Analytics/Live surfaces |
+| Phase 32 — AI Chat Interface | 🔲 | Claude tool-use over FastAPI; 10 tools; natural-language basketball queries |
+| Phase 33 — Tier 6 Deep Model Suite | 🔲 | Live LSTM, full simulator, prop pricing engine; requires 200 CV games |
+| Phase 34 — Full Production Infrastructure (MLOps) | 🔲 | Docker Compose, CI/CD, MLflow experiment tracking, auto-retrain, drift alerts |
+| Phase 35 — Production Observability | 🔲 | Structured logs, metrics, SLOs, alerting, incident runbooks |
+| Phase 36 — Signal Attribution + P&L Decomposition | 🔲 | Decompose realized P&L by signal source; prove CV lift over API baseline |
+| Phase 37 — Tail Risk Reporting | 🔲 | VaR/CVaR/ES + drawdown analytics; allocator-ready risk packet |
+| Phase 38 — Data Vendor Redundancy + Failover | 🔲 | Backup data sources; fail-over logic; zero single-vendor dependency |
 
 ---
 
@@ -2037,7 +2045,7 @@ class DFSOptimizer:
 **[ADD] Data Backup Strategy**
 
 ```
-Automated daily backup (add to Phase 17 cron but implement from Phase 6):
+Automated daily backup (add to Phase 34 infra but implement from Phase 6):
 - data/nba/ → cloud storage (S3/Backblaze B2) daily sync
 - data/models/ → versioned backup after every training run
 - data/external/ → weekly sync (changes slowly)
@@ -2216,15 +2224,14 @@ Plans:
 ### Phase 15.5: Uncertainty Wiring + Alt-Line Ladder
 **Goal**: Wire conformal prediction intervals into bet_selector and build EV ladder across every available alt line.
 **Depends on**: Phase 14.8
+**Plans:** 3/3 plans complete
 
-**Subtasks:**
-1. Wire `conformal_props.py` output into bet_selector — each bet gets (point_est, lo_80, hi_80, lo_95, hi_95)
-2. Alt-line ladder builder — for each player generate EV at every available alt line using quantile model CDF
-3. Alt-line selector — pick optimal alt line (max risk-adjusted EV) from ladder; apply Pinnacle gate + corr caps
-4. Extend `bets_YYYYMMDD.json` schema for alt lines
+Plans:
+- [ ] 15.5-01-PLAN.md --- Wave 0 test stubs: alt_line_ladder xfail tests + bet_selector CI field tests
+- [ ] 15.5-02-PLAN.md --- Build src/prediction/alt_line_ladder.py (11 offsets, EV ladder, Kelly cap)
+- [ ] 15.5-03-PLAN.md --- Wire CI fields into bet_selector + --build-ladder flag in run_daily_slate.py
 
-**Deliverable:** `src/prediction/alt_line_ladder.py`. 2–3× bet count at same or better edge threshold.
-
+**Deliverable:** `src/prediction/alt_line_ladder.py`. 2-3x bet count at same or better edge threshold.
 ---
 
 ### Phase 15.7: QP Portfolio Optimizer
@@ -2290,15 +2297,20 @@ Plans:
 **Goal**: Auto-placement on Sporttrade + Kalshi + Polymarket with price-shopping router.
 **Depends on**: Phase 16.7
 
-**Subtasks:**
-1. Book router `src/execution/book_router.py` — routes each bet to best-price book; compares Sporttrade + Kalshi + Polymarket
-2. Sporttrade adapter `src/execution/sporttrade.py` (Connect Trade REST)
-3. Kalshi adapter `src/execution/kalshi.py` — limit orders (maker rebates) preferred; `CalibrationLayer.win_prob()` → binary contract price
-4. Polymarket adapter `src/execution/polymarket.py`
-5. Dry-run passthrough — `LIVE_BETTING=0` logs intent, no real orders
-6. ProphetX adapter — add once API confirmed
+**Plans:** 9 plans (17-01 through 17-09)
 
-**Deliverable:** Auto-placement on Sporttrade + Kalshi + Polymarket; manual list for DK/FD.
+Plans:
+- [ ] 17-01-PLAN.md — Wave 0 test stubs for ML infrastructure
+- [ ] 17-02-PLAN.md — Feature drift detector + auto-retrain milestone
+- [ ] 17-03-PLAN.md — Model validation gate + compare_models
+- [ ] 17-04-PLAN.md — Cloud GPU pod manager lifecycle
+- [ ] 17-05-PLAN.md — Wave 0 test stubs for exchange adapter tests (EX-01 to EX-07)
+- [ ] 17-06-PLAN.md — Base adapter interface + BookRouter + dry-run + .env.example additions
+- [ ] 17-07-PLAN.md — Kalshi adapter (RSA-PSS auth, limit orders, KXNBA discovery)
+- [ ] 17-08-PLAN.md — Polymarket adapter (py-clob-client, Gamma API, token ID extraction)
+- [ ] 17-09-PLAN.md — Sporttrade stub + package init re-exports + end-to-end dry-run gate
+
+**Deliverable:** Auto-placement on Kalshi + Polymarket; Sporttrade stub (no confirmed public API); LIVE_BETTING=0 dry-run kill switch; price-shopping router; manual list for DK/FD.
 
 ---
 
@@ -2544,7 +2556,7 @@ Plans:
 
 ---
 
-### Phase 15: Analytics Dashboard Frontend
+### Phase 31: Analytics Dashboard Frontend
 **Goal**: Interactive analytics dashboard + betting dashboard. Professional-grade, conversational.
 **Depends on**: Phase 13
 
@@ -2575,7 +2587,7 @@ Plans:
 
 ---
 
-### Phase 15: AI Chat Interface
+### Phase 32: AI Chat Interface
 **Goal**: Conversational access to everything. Ask any basketball question, get data-backed insight with inline charts.
 **Depends on**: Phase 14
 
@@ -2613,9 +2625,9 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 
 ---
 
-### Phase 16: Tier 6 Models + Live Win Probability
+### Phase 33: Tier 6 Deep Model Suite
 **Goal**: The full 50-model stack. Requires 200+ games processed.
-**Depends on**: Phase 9 (feedback loop running), Phase 15
+**Depends on**: Phase 9 (feedback loop running), Phase 32
 
 **Tier 6 — 200 Games:**
 1. Full possession simulator (all 50 models chained)
@@ -2634,19 +2646,19 @@ User message → Claude (claude-sonnet-4-6) → tool calls → FastAPI
 3. Full stat distribution for every player from simulator
 4. Prop pricing engine ROI > 0 on holdout backtest
 
-**Plans:** 5 plans
+**Plans:** 5/5 plans complete
 Plans:
-- [ ] 16-01-PLAN.md -- Wave 0: test stubs (test_live_win_probability.py, test_prop_pricing.py, conftest fixtures)
-- [ ] 16-02-PLAN.md -- LSTM trainer + LiveWinProbInference (live_win_probability.py)
-- [ ] 16-03-PLAN.md -- Prop pricing engine (prop_pricing_engine.py, simulation -> distribution)
-- [ ] 16-04-PLAN.md -- WebSocket /ws/win-prob endpoint + /win-prob upgrade (api/main.py)
-- [ ] 16-05-PLAN.md -- Simulator LSTM gate + player_distributions percentiles + integration tests
+- [ ] 33-01-PLAN.md -- Wave 0: test stubs (test_live_win_probability.py, test_prop_pricing.py, conftest fixtures)
+- [ ] 33-02-PLAN.md -- LSTM trainer + LiveWinProbInference (live_win_probability.py)
+- [ ] 33-03-PLAN.md -- Prop pricing engine (prop_pricing_engine.py, simulation -> distribution)
+- [ ] 33-04-PLAN.md -- WebSocket /ws/win-prob endpoint + /win-prob upgrade (api/main.py)
+- [ ] 33-05-PLAN.md -- Simulator LSTM gate + player_distributions percentiles + integration tests
 
 ---
 
-### Phase 17: Infrastructure
-**Goal**: Production-ready. Runs itself.
-**Depends on**: Phase 16
+### Phase 34: Full Production Infrastructure (MLOps)
+**Goal**: Production-ready. Runs itself. Experiment tracking and reproducibility at scale.
+**Depends on**: Phase 33
 
 - Docker Compose runs full stack locally
 - GitHub Actions: lint + test on push, auto-deploy on merge
@@ -2654,14 +2666,79 @@ Plans:
 - Auto-retrain every 2 weeks on latest data
 - Feature drift alerts when input distributions shift > 2 sigma
 - Model performance monitoring dashboard
+- MLflow experiment tracking — all runs logged with params, metrics, and artifact hashes; enables reproducibility at scale without manual seed management
 
 **Plans:** 4 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — Wave 0 test stubs (test_infrastructure.py + conftest fixtures)
-- [ ] 17-02-PLAN.md — Wire drift detector + fix auto-retrain milestone crossing
-- [ ] 17-03-PLAN.md — Model validation gate in CI/CD + Monitoring dashboard tab
-- [ ] 17-04-PLAN.md — Cloud GPU lifecycle: pod_manager.py + auto-sync (REQ-14-5)
+- [ ] 34-01-PLAN.md — Wave 0 test stubs (test_infrastructure.py + conftest fixtures)
+- [ ] 34-02-PLAN.md — Wire drift detector + fix auto-retrain milestone crossing + MLflow integration
+- [ ] 34-03-PLAN.md — Model validation gate in CI/CD + Monitoring dashboard tab
+- [ ] 34-04-PLAN.md — Cloud GPU lifecycle: pod_manager.py + auto-sync (REQ-14-5)
+
+---
+
+### Phase 35: Production Observability
+**Goal**: Full-stack visibility into pipeline health, data quality, and model runtime so failures are caught before they affect P&L.
+**Depends on**: Phase 34
+
+**Subtasks:**
+1. Structured logging — replace print/logging.info with JSON-structured logs throughout `src/`; fields: timestamp, level, module, game_id, event, latency_ms
+2. Metrics collection — Prometheus-compatible counters/gauges: ingest queue depth, pipeline fps, model inference latency p50/p95/p99, daily bet count, CLV hit rate, drift flags
+3. SLO definitions — set and document: ingest pipeline uptime ≥99%, model inference p95 <500ms, daily slate completion <10min, data freshness <30min
+4. Alerting layer — `src/ops/alerter.py`: emit to `vault/alerts.log` + Telegram when SLO breached; circuit-breaker fire; drift >2σ; job stall >2h
+5. Incident runbooks — `vault/Runbooks/`: stall recovery, OOM recovery, model rollback procedure, data-vendor outage response
+6. Health dashboard tab — add `/health/ops` endpoint to `api/main.py` returning pipeline metrics JSON; surface in Phase 18 dashboard
+
+**Deliverable:** Observable system — every failure surfaces within 5 minutes without manual inspection.
+
+---
+
+### Phase 36: Signal Attribution + P&L Decomposition
+**Goal**: Decompose realized P&L and CLV by signal source to prove which layers of the stack actually contribute edge.
+**Depends on**: Phase 35
+
+**Subtasks:**
+1. Bet tagging — extend `bets_YYYYMMDD.json` with `signal_sources: [cv_features, api_features, timing, pinnacle_gate, ...]` per bet
+2. Attribution model — `src/prediction/signal_attribution.py`: regress bet CLV on signal source flags; output contribution scores per source
+3. CV lift measurement — controlled comparison: for games with CV data, CV-enhanced vs API-only prediction on same holdout; report Δ CLV and Δ R² per stat
+4. Timing attribution — separate CLV earned from model edge vs line timing (fire-early vs fire-late)
+5. Source P&L ledger — weekly report: `vault/attribution/YYYY-WW.md` with P&L breakdown by: API-only baseline, CV features, timing, pinnacle triangulation, pairs/arb signals
+6. Roll-up dashboard tab — add to Phase 18 dashboard: stacked bar of P&L by source over trailing 90 days
+
+**Deliverable:** `src/prediction/signal_attribution.py` + weekly attribution report. Single-sentence answer to "does the CV data actually pay?"
+
+---
+
+### Phase 37: Tail Risk Reporting
+**Goal**: Produce allocator-grade risk packet covering tail scenarios, drawdown analytics, and portfolio stress tests.
+**Depends on**: Phase 36
+
+**Subtasks:**
+1. VaR/CVaR/ES — daily: compute 95% VaR (parametric + historical), CVaR, and Expected Shortfall on open portfolio; output to `data/output/risk/risk_YYYYMMDD.json`
+2. Drawdown analytics — `src/prediction/drawdown_tracker.py`: rolling max drawdown, drawdown duration, recovery time; integrated with circuit breaker in Phase 16
+3. Stress testing — `scripts/stress_test.py`: simulate 3 adverse scenarios: (a) all-correlated-leg loss day, (b) book limits 50% of positions, (c) model breakdown (CLV drops to 0 for 2 weeks); output P&L impact
+4. Bet-level risk contribution — each bet in `bets_YYYYMMDD.json` gets `risk_contribution_pct` (its contribution to portfolio VaR)
+5. Monthly risk packet — `scripts/gen_risk_packet.py`: auto-generate `vault/risk/YYYY-MM.md` covering: max drawdown, VaR 95%, worst single day, Sharpe (annualized), CLV beat rate, stress test results
+6. Dashboard risk tab — add to Phase 18 dashboard: VaR bar, drawdown chart, Sharpe gauge
+
+**Deliverable:** `scripts/gen_risk_packet.py` + monthly risk packet. Answer "what's the worst realistic month?" with a number.
+
+---
+
+### Phase 38: Data Vendor Redundancy + Failover
+**Goal**: Eliminate all single-vendor dependencies so a data outage doesn't halt the daily run.
+**Depends on**: Phase 37
+
+**Subtasks:**
+1. Vendor dependency audit — enumerate every external data pull in `src/` and `scripts/`; tag each with vendor + criticality (bet-blocking vs enrichment-only)
+2. NBA stats failover — primary: `nba_api`; fallback: `basketball-reference` scraper; tertiary: cached last-known values with staleness flag; all behind `src/data/nba_stats_router.py`
+3. Odds API failover — primary: The Odds API; fallback: Pinnacle direct scraper; tertiary: DraftKings scraper; router in `src/data/odds_router.py`
+4. Injury report failover — primary: NBA official; fallback: Rotowire; fallback 2: ESPN injury API; router in `src/data/injury_router.py`
+5. Staleness propagation — when fallback fires, tag all affected predictions with `data_quality: degraded`; bet_selector applies 0.5× Kelly multiplier on degraded predictions
+6. Vendor health monitor — `src/ops/vendor_monitor.py`: poll each vendor on daily run start; emit alert if primary unavailable; log failover activations to `vault/alerts.log`
+
+**Deliverable:** `src/data/*_router.py` for each critical feed. Daily run completes even if one vendor is down.
 
 ---
 
@@ -2981,14 +3058,14 @@ Extend game simulator to series level. Playoff basketball has compressed varianc
 
 ### Phase J: Live Betting Full Pipeline
 **Goal**: Real-time CV pipeline feeds live models. Highest-EV market in the entire system.
-**Depends on**: Phase 16 (live LSTM) + live video feed
+**Depends on**: Phase 33 (live LSTM) + live video feed
 **EV target**: +8–15%
-**Build time**: 4 weeks (after Phase 16)
+**Build time**: 4 weeks (after Phase 33)
 
 **Why this is the final boss**: Books update live lines based on score and time. They are systematically slow on: lineup changes, foul trouble, fatigue signals, momentum shifts. Your CV pipeline updates every possession. That gap is money.
 
 **Models needed:**
-- Live win probability LSTM (Phase 16, already planned ✓)
+- Live win probability LSTM (Phase 33, already planned ✓)
 - `src/prediction/live_pace_adjuster.py` — real-time possessions/min → revised total
 - `src/prediction/live_prop_updater.py` — adjust player props based on current minutes, shots, fouls
 - `src/prediction/live_foul_trouble_model.py` — P(player fouls out) given current foul count + time

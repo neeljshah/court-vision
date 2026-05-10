@@ -148,6 +148,11 @@ def retrain_props_temporal_cv(
             "needs_retrain": gap > threshold,
         }
 
+    if not dry_run:
+        from src.prediction.prop_validation import write_registry, generate_report
+        registry = write_registry(results)
+        generate_report(registry, threshold=threshold)
+
     return results
 
 

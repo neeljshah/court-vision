@@ -1,9 +1,122 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T14:09:50.390Z"
+progress:
+  total_phases: 60
+  completed_phases: 7
+  total_plans: 43
+  completed_plans: 39
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T13:55:26.282Z"
+progress:
+  total_phases: 60
+  completed_phases: 7
+  total_plans: 43
+  completed_plans: 39
+  percent: 91
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T13:50:40.917Z"
+progress:
+  [█████████░] 91%
+  completed_phases: 6
+  total_plans: 43
+  completed_plans: 38
+  percent: 88
+---
+
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: active
+last_updated: "2026-04-24T13:50:00.000Z"
+progress:
+  [█████████░] 88%
+  completed_phases: 6
+  total_plans: 43
+  completed_plans: 37
+  percent: 86
+  bar: "[█████████░] 86%"
+---
+
 # Project State: NBA AI System
 
 ## Current Status
 
-**Active Phase**: LIVE BETTING BUILD — Phase 14-5a XGBoost retune (temporal CV)
-**Last Updated**: 2026-04-23 (Session 43 — Phase 14-5a Plan 03 complete)
+**Active Phase**: Phase 16 — Tier-6 Models + Live Win Probability (Plan 05 complete)
+**Last Updated**: 2026-04-24 (Session 50 — Phase 16 Plan 05 complete)
+**Phase 16 Plan 05 complete (2026-04-24)**:
+- `src/prediction/possession_simulator.py` — LSTM gate via optional lstm_engine param; player_distributions expanded to 7-key percentile dict (p10/p25/p50/p75/p90)
+- `tests/test_live_win_probability.py` — test_auc and test_calibration_brier unlocked; all 7 LSTM tests pass
+- simulate_game() result includes live_win_prob key when lstm_engine provided; falls back silently on LSTM error
+- player_distributions now matches PropPricingEngine.get_distribution() contract exactly
+- Decision: LSTM gate uses try/except; simulator never crashes on bad LSTM — warning logged, key omitted
+- Decision: percentile expansion additive — p25/p75 preserved, p10/p50/p90 added
+**Phase 16 Plan 04 complete (2026-04-24)**:
+- `api/main.py` — WebSocket `/ws/win-prob/{game_id}` endpoint + upgraded `/win-prob` HTTP endpoint
+- WebSocket: accept → receive_json(possession_idx, game_dict) → engine.update() → send_json; handles WebSocketDisconnect
+- /win-prob: prefers LiveWinProbInference when available, falls back to XGBoost baseline; adds `source` key to response
+- _LIVE_INFERENCE_AVAILABLE guard; lazy import of load_inference_engine, LiveWinProbInference
+- Phase 13 tests: 5/5 passed (no regressions)
+- Decision: fresh engine per WebSocket connection (stateless, LSTM small)
+- Decision: /win-prob falls back to xgboost_baseline when _LIVE_INFERENCE_AVAILABLE=False
+**Phase 16 Plan 03 complete (2026-04-24)**:
+- `src/prediction/prop_pricing_engine.py` — 220 LOC; PropPricingEngine with get_distribution(), price_vs_line(), backtest()
+- get_distribution(): 7-key percentile dict (mean, std, p10, p25, p50, p75, p90); simulation-first with normal fallback
+- price_vs_line(): over_prob, under_prob, ev_over, ev_under, edge, recommendation (over/under/pass at 3% threshold)
+- backtest(): holdout ROI from prop_residuals.json; no-data safe returns roi=0.0
+- test_distribution and test_roi both PASSED (2/2)
+- Decision: fallback chain PossessionSimulator → predict_props normal approx → hardcoded defaults
+- Decision: backtest() uses edge-adjusted win_prob on residuals; no-crash on missing data
+**Phase 16 Plan 02 complete (2026-04-24)**:
+- `src/prediction/live_win_probability.py` — 283 LOC; LiveWinProbLSTM, LiveWinProbInference, extract_possession_features, train_lstm_win_prob, calibrate_win_prob, load_inference_engine
+- `data/models/live_win_prob_metrics.json` — {val_auc: 1.0, val_brier: 0.247, epochs: 10, n_games: 15}
+- `data/models/live_win_prob_lstm.pt` — trained LSTM state dict (synthetic 15-game seed)
+- 5/7 tests pass (test_lstm_trains, test_features, test_sparse_features, test_inference_latency, test_fallback_xgb)
+- Decision: test signatures are authoritative — input_dim/hidden_dim, xgb_fallback param, no mandatory possession_idx
+- Decision: test_auc and test_calibration_brier remain skipped (deferred to Plan 05 integration)
+**Phase 16 Plan 01 complete (2026-04-24)**:
+- `tests/test_live_win_probability.py` — 7 stubs (LSTM train, AUC, features, latency, fallback, calibration, sparse)
+- `tests/test_prop_pricing.py` — 2 stubs (ROI, distribution)
+- `tests/conftest.py` — 3 new fixtures (sample_game_dict, sample_possession_sequence, mock_xgb_model)
+- 9 tests collected, 9 skipped, 0 errors — downstream verify targets ready for plans 02-05
+- Decision: double-guard pattern (pytestmark skipif + per-test @skip) handles both ImportError and stub states
+**Phase 15.5 Plan 03 complete (2026-04-23)**:
+- `src/prediction/bet_selector.py` — 284 LOC; _conformal_cache + _has_conformal guard, _get_ci() inner helper, ci_lo_80/ci_hi_80/alt_line/alt_line_ev fields in every bet dict
+- `scripts/run_daily_slate.py` — --build-ladder CLI flag; Step 8 ladder block loops edge_rows + appends top-EV alt bets before bet_selector (Step 9)
+- 2 TestBetSelectorCI xfail tests (ci_fields, alt_bets_json_schema) XPASS — Phase 15.5 requirements complete
+- Decision: _get_ci as inner function to access module-level _conformal_cache naturally
+- Decision: alt_line/alt_line_ev via row.get() passthrough — None for main-line bets, schema uniformity
+**Phase 15.5 Plan 02 complete (2026-04-24)**:
+- `src/prediction/alt_line_ladder.py` — 196 LOC; build_alt_line_ladder(), ladder_to_bets(), _compute_ev(), _kelly_fraction()
+- 11 alt-line offsets [-2.5..+2.5]; 22 rows per call (over + under per offset), sorted EV desc
+- Pinnacle decay: 12%/pt overs, 8%/pt unders from main line; quarter-Kelly capped at 0.02
+- 4 xfail tests (test_ladder_offsets, test_ev_computation, test_pinnacle_decay, test_kelly_cap) → all XPASS
+- Decision: IQR sigma fit: (hi-lo)/1.349, floor 0.3 — matches POC convention, avoids z-score inversion
+- Decision: Do not import alt_line_ev_model in production code — math extracted cleanly
+**Phase 14-5a Plan 04 complete (2026-04-24)**:
+- `src/prediction/prop_validation.py` — 100 LOC; write_registry(), validate_gap_threshold(), generate_report()
+- `data/models/model_registry.json` — v3 schema, all 7 stats, retrain_version=v3_temporal_cv_gridtuned_2026-04
+- `data/models/hyperparams_{stat}.json` — 7 files, best GridSearchCV params per stat
+- `data/models/props_{stat}.json` — 7 updated model files (best_estimator_ refitted on 2025-26 data)
+- pts/reb/ast pass gap threshold (0.034, 0.027, 0.046); fg3m/stl/blk/tov exceed (84-row holdout, single season)
+- Decision: document fg3m/stl/blk/tov gap failures as known exception (count-data noise + single-season holdout)
+- Decision: Phase 15 bet-selector should filter on needs_retrain=False (pts/reb/ast eligible)
 **Phase 14-5a Plan 03 complete (2026-04-23)**:
 - `src/prediction/prop_grid_search.py` — 109 LOC; run_grid_search(), REGRESSION_PARAM_GRID, POISSON_PARAM_GRID
 - `scripts/retrain_props_temporal.py` — 178 LOC; CLI with --stats/--dry-run/--threshold/--seasons/--exclude; holdout gap reporting
@@ -28,6 +141,7 @@
 **Strategy**: Finish the serving/betting loop on free-tier data (nba_api + ESPN + The Odds API) before spending on CV ingest. Goal: hands-off "inject data → bets out". CV features injected later as model upgrade, not blocker.
 
 **Next up**: Phase 15 — bet selector middleware (`src/prediction/bet_selector.py`, `config/betting.yaml`)
+**Phase 14-5a COMPLETE** — All 4 plans done. Registry populated, validation pipeline live.
 
 **Full plan**: `.planning/LIVE_BETTING_PLAN.md` (authoritative for Phases 14-20).
 
