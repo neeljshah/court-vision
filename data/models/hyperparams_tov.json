@@ -1,0 +1,11 @@
+{
+  "stat": "tov",
+  "best_params": {
+    "colsample_bytree": 0.9,
+    "learning_rate": 0.05,
+    "max_depth": 3,
+    "n_estimators": 200,
+    "subsample": 0.7
+  },
+  "best_cv_r2": 0.8068
+}

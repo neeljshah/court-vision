@@ -1,9 +1,113 @@
 # CourtVision
 
-A possession-level NBA simulator priced against live prop markets. Spatial features
-from broadcast video feed a 75-model stack, which feeds a 10K-path Monte Carlo,
-which feeds a fractional-Kelly portfolio with correlation-aware sizing and
-CLV attribution.
+A solo-built AI-native sports quant system that extracts spatial features from broadcast video and prices them against live NBA player prop lines. What would take a traditional quant firm 50 engineers and $5M/year to build — this does with Claude, a GPU, and a $50/month infrastructure budget.
+
+## The Structural Argument
+
+SIG (via Nellie Analytics) and Jump Trading are the only major quant firms with sports operations — and both focus on exchange-level market making, not retail player props. Citadel, IMC, and DE Shaw have explicitly stayed out. There are five structural reasons why:
+
+1. **No hedging instrument.** Sports event contracts have no underlying spot asset for mechanical hedging. Quant firms can't build the risk management infrastructure they rely on.
+2. **Labor economics don't work.** A 10-person SIG-caliber sports analytics team costs $7–10M/year. The total extractable edge across all NBA prop bettors is ~$50–100M annually — invisible at institutional scale.
+3. **Account access is structurally blocked.** Books flag and close professional entity accounts. An individual holds 6+ sportsbook accounts simultaneously without entity-level detection.
+4. **Minimum deployment size.** Props are limited to $25–500/bet at retail. You can't deploy $50M into DraftKings props. A $100K bankroll can operate profitably at full scale.
+5. **Capacity constraint.** This mirrors micro-cap equities: institutions ignore markets below $500M deployable capacity. Solo operators dominate micro-caps for exactly this reason.
+
+This is a market sized for individual operators. See [docs/research/competitive-landscape.md](docs/research/competitive-landscape.md).
+
+## System Architecture
+
+```mermaid
+flowchart LR
+  V[Broadcast Video] --> Y[YOLOv8 detection]
+  Y --> H[SIFT homography]
+  H --> T[Kalman + Hungarian]
+  T --> R[OSNet re-ID]
+  R --> SF["CV features\ndefender_dist, spacing,\nfatigue, contest%"]
+  A[NBA API] --> BF[Box-score features]
+  SF --> FS[Feature store]
+  BF --> FS
+  FS --> M[75 prop models]
+  M --> MC[10K-path Monte Carlo]
+  MC --> LE[Line evaluator\nvs live odds]
+  LE --> K["Fractional Kelly\n+ shrinkage correlation"]
+  K --> EX[Execution router\n6 books + P2P]
+  EX --> CLV[CLV tracker\nnightly calibration]
+
+  classDef moat fill:#fff2a8,stroke:#c08400,stroke-width:3px
+  class SF moat
+```
+
+The yellow block is the moat. CV-derived spatial features are not in any public dataset. Everything else is table stakes that any well-resourced analyst could build.
+
+## The Edge Stack
+
+37 enumerated edges across four categories. Full detail with academic citations: [docs/research/edge-taxonomy.md](docs/research/edge-taxonomy.md).
+
+**Information Edges — CV-Spatial (1–9)**
+
+| # | Edge | Status |
+|---|------|--------|
+| 1 | Defender distance distributions at shot release | BUILT (17 games) |
+| 2 | Court spacing — convex hull of offensive players | BUILT |
+| 3 | Closeout speed on shooters | Planned (1–2 days) |
+| 4 | Paint density per possession | Planned (hours) |
+| 5 | Transition vs half-court classification | Planned (hours) |
+| 6 | Catch-and-shoot vs off-dribble detection | Planned (1 day) |
+| 7 | Off-ball movement quality | Planned (1–2 days) |
+| 8 | Shot trajectory / release angle | Planned (2 weeks) |
+| 9 | Pick-and-roll detection (TacticExpert — arXiv:2503.10722) | Planned (2–3 weeks) |
+
+**Information Edges — Context (10–18)**
+
+| # | Edge | Status |
+|---|------|--------|
+| 10 | Referee foul rates and pace impact | In progress |
+| 11 | Travel fatigue index (great-circle + circadian + schedule density) | Planned |
+| 12 | Denver altitude adjustment (.302 home/away delta) | Planned |
+| 13 | Lineup usage redistribution on scratches | Planned |
+| 14 | Load management / rest prediction (arXiv:2603.26935) | Planned |
+| 15 | Contract year effect | Planned |
+| 16 | NBA2Vec player embeddings (arXiv:2302.13386) | Planned |
+| 17 | SportVU 2015-16 calibration dataset (631 games, 25fps ground truth) | Planned |
+| 18 | Venue-specific and situational effects | Partial |
+
+**Model Edges (19–25):** Full distributions vs point estimates, joint SGP distributions, regime detection, Bayesian in-season updating, adversarial book model, counterfactual simulation, RL timing optimization.
+
+**Execution Edges (26–32):** Multi-book line shopping, opening line capture (+1.2% avg CLV at 24hr pre-game), injury news speed (5–15 min window per event), steam detection, cross-venue arbitrage, account rotation, P2P market making.
+
+**Structural Edges (33–37):** Props priced from box scores not spatial data (permanent), SGP correlation mispriced (structural), alternate lines undermodeled, early season miscalibration (recurring every October), individual vs institutional access (permanent).
+
+## Why This Works
+
+The edge has three structural supports:
+
+1. **Books price props from box scores.** Season averages, opponent DRTG, recent game trends. The CV spatial features this system extracts exist in the world but not in the price.
+2. **The window is 1–3 years.** Before Genius Sports ships a tracking-integrated prop pricing product at retail scale. Voulgaris exploited NBA totals for years before the market caught up. Benter ran Hong Kong racing for decades.
+3. **AI collapsed the build cost.** What took Voulgaris years of manual data collection takes days with Claude + NBA API. Operating cost: ~$50–80/month. A competing firm: $3–5M/year minimum.
+
+See [docs/research/precedent-analysis.md](docs/research/precedent-analysis.md) for the Voulgaris and Benter cases.
+
+## Build Phases
+
+| Phase | Goal | Status | Unlocks |
+|-------|------|--------|---------|
+| 0 | CLV validation on 2024–25 historical data | 🔲 Next | Everything — gates all else |
+| 1 | Foundation: 80-game CV run + calibration | ⏳ In progress | Tier 3–4 model retrain |
+| 2 | Context layer: ref/fatigue/altitude/usage features | 🔲 Queued | Higher R² without new CV |
+| 3 | Core engine: live odds + line evaluator + Kelly | 🔲 Queued | First paper bets |
+| 4 | Execution: book adapters + account health + router | 🔲 Queued | Live capital gate |
+| 5 | Market expansion: SGP + arb + P2P adapters | 🔲 Queued | Zero-vig venue access |
+| 6 | Intelligence: NBA2Vec + regime detection + Bayesian | 🔲 Queued | Moat deepening |
+| 7 | Dashboard: Bloomberg-terminal-grade quant UI | 🔲 Queued | Real-time monitoring |
+| 8 | Learning loop: nightly residuals + auto-calibration | 🔲 Queued | Compounding improvement |
+| 9 | Sustainability: P2P market making + picks service | 🔲 Future | Account-limit independence |
+| 10 | Multi-sport: NFL, MLB, Soccer | 🔲 Future | 100% infra reuse |
+
+**Target go-live:** NBA Opening Night 2026 (October 22)
+
+**Critical path:** Phase 0 (CLV test) → Phase 1 (80-game run) → Phase 3 (live signals) → Phase 4 (execution) → live capital.
+
+---
 
 ## Thesis
 
@@ -562,6 +666,32 @@ Active work as of 2026-04-22:
   STL rates. Not shipping until it beats the baseline on a holdout.
 - **Live-odds integration** is deliberately out of scope for the v0.14
   release. Paper-book CLV first, live execution later, in that order.
+
+## Documentation
+
+The research and architecture documentation lives in `docs/`:
+
+**Research**
+- [Edge Taxonomy](docs/research/edge-taxonomy.md) — All 37 edges with academic citations and build estimates
+- [Competitive Landscape](docs/research/competitive-landscape.md) — Why institutional firms cannot enter this market
+- [Market Microstructure](docs/research/market-microstructure.md) — How books price props and where they're wrong
+- [Precedent Analysis](docs/research/precedent-analysis.md) — Voulgaris, Benter, Thorp case studies
+- [Data Sources](docs/research/data-sources.md) — Complete data architecture
+- [Validation Methodology](docs/research/validation-methodology.md) — CLV test protocol
+
+**Architecture**
+- [System Overview](docs/architecture/system-overview.md) — The 5 core systems
+- [CV Pipeline](docs/architecture/cv-pipeline.md) — YOLO to court-coordinate features
+- [Possession Simulator](docs/architecture/possession-simulator.md) — Monte Carlo engine
+- [Execution Engine](docs/architecture/execution-engine.md) — Multi-book routing
+- [Dashboard Spec](docs/architecture/dashboard-spec.md) — 10-panel quant terminal
+
+**Strategy**
+- [Timing Layer](docs/strategy/timing-layer.md) — When to bet throughout the day
+- [Account Longevity](docs/strategy/account-longevity.md) — Anti-limiting tactics
+- [Learning Loop](docs/strategy/learning-loop.md) — Nightly improvement cycle
+
+**Navigation:** [docs/PROJECT_INDEX.md](docs/PROJECT_INDEX.md) — complete index with one-line descriptions
 
 ## Contact
 

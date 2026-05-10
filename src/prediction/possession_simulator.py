@@ -13,7 +13,7 @@ import bisect
 import logging
 import os
 import warnings
-from typing import Optional
+from typing import Any, Optional
 
 import numpy as np
 
@@ -228,7 +228,8 @@ class PossessionSimulator:
                       team_b_stats: Optional[dict] = None,
                       player_stats: Optional[dict] = None,
                       home_team: Optional[str] = None,
-                      prop_lines: Optional[dict] = None) -> dict:
+                      prop_lines: Optional[dict] = None,
+                      lstm_engine: Optional[Any] = None) -> dict:
         """Run n_sims Monte Carlo game simulations.
 
         Args:
@@ -417,6 +418,33 @@ class PossessionSimulator:
             },
         }
 
+        # LSTM win probability gate (optional)
+        _team_a_pts_mean = round(float(sa_arr.mean()), 1)
+        _team_b_pts_mean = round(float(sb_arr.mean()), 1)
+        live_win_prob: Optional[dict] = None
+        if lstm_engine is not None:
+            try:
+                _game_dict = {
+                    'possessions': [
+                        {
+                            'home_pts': int(_team_a_pts_mean),
+                            'away_pts': int(_team_b_pts_mean),
+                            'time_remaining_s': 0.0,
+                            'spacing_index': 3.5,
+                        }
+                    ],
+                    'home_team': {'off_rtg': 112.0, 'def_rtg': 110.0},
+                    'away_team': {'off_rtg': 110.0, 'def_rtg': 112.0},
+                    'home_lineup_net_rtg': 2.0,
+                    'outcome': 1 if a_wins > (n_sims - a_wins) else 0,
+                }
+                live_win_prob = lstm_engine.update(_game_dict)
+            except Exception as _e:
+                logging.warning("LSTM gate failed: %s", _e)
+
+        if live_win_prob is not None:
+            out['live_win_prob'] = live_win_prob
+
         if pid_sims is not None:
             player_out: dict = {}
             player_dist: dict = {}
@@ -426,8 +454,11 @@ class PossessionSimulator:
                     entry: dict = {
                         "mean": round(float(vals.mean()), 2),
                         "std":  round(float(vals.std()), 2),
+                        "p10":  round(float(np.percentile(vals, 10)), 2),
                         "p25":  round(float(np.percentile(vals, 25)), 2),
+                        "p50":  round(float(np.percentile(vals, 50)), 2),
                         "p75":  round(float(np.percentile(vals, 75)), 2),
+                        "p90":  round(float(np.percentile(vals, 90)), 2),
                     }
                     lines = (prop_lines or {}).get(pid, {})
                     if stat in lines:

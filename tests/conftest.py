@@ -73,3 +73,75 @@ def temp_db_url() -> str:
     if not url:
         pytest.skip("DATABASE_URL not set — skipping DB integration tests")
     return url
+
+
+# ---------------------------------------------------------------------------
+# Phase 16 — Tier-6 Models / Live Win Probability
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def sample_possession_sequence():
+    """Return 12 possession dicts simulating realistic in-game state.
+
+    Each dict has home_pts, away_pts, time_remaining_s, spacing_index.
+    Scores grow over time; time_remaining_s decrements from 2400 (full game).
+
+    Returns
+    -------
+    list[dict]
+        12-element list representing possession-by-possession game state.
+    """
+    possessions = []
+    home_pts = 0
+    away_pts = 0
+    time_remaining = 2400.0
+    spacing_values = [3.2, 3.5, 3.8, 3.1, 3.6, 3.9, 3.3, 3.7, 3.4, 3.8, 3.5, 3.6]
+    for i in range(12):
+        # Scores increment realistically (roughly 2-3 pts per possession)
+        home_pts += 2 if i % 3 != 1 else 3
+        away_pts += 2 if i % 4 != 2 else 3
+        time_remaining -= 200.0
+        possessions.append({
+            "home_pts": home_pts,
+            "away_pts": away_pts,
+            "time_remaining_s": time_remaining,
+            "spacing_index": spacing_values[i],
+        })
+    return possessions
+
+
+@pytest.fixture
+def sample_game_dict(sample_possession_sequence):
+    """Return a minimal game dict consumed by live win probability features.
+
+    Returns
+    -------
+    dict
+        Game state with possessions list, team ratings, lineup net rating, outcome.
+    """
+    return {
+        "possessions": sample_possession_sequence,
+        "home_team": {"off_rtg": 112.0, "def_rtg": 108.0, "abbr": "LAL"},
+        "away_team": {"off_rtg": 109.0, "def_rtg": 111.0, "abbr": "GSW"},
+        "home_lineup_net_rtg": 3.5,
+        "outcome": 1,  # home win
+    }
+
+
+@pytest.fixture
+def mock_xgb_model():
+    """Return a mock XGBoost-like model for fallback tests.
+
+    The mock always predicts 0.6 regardless of input, allowing downstream
+    tests to assert on fallback path behavior without a real model on disk.
+
+    Returns
+    -------
+    _MockXGB
+        Object with .predict(X) -> np.array([0.6]).
+    """
+    class _MockXGB:
+        def predict(self, X):
+            return np.array([0.6])
+
+    return _MockXGB()
