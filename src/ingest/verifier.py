@@ -9,9 +9,11 @@ from typing import Dict, Optional, Tuple
 
 FFPROBE_CANDIDATES = [
     "ffprobe",
-    "/c/Users/neelj/anaconda3/envs/basketball_ai/Library/bin/ffprobe.exe",
     "/usr/bin/ffprobe",
     "/usr/local/bin/ffprobe",
+    # Windows: conda environments common install locations
+    r"C:\ProgramData\anaconda3\Library\bin\ffprobe.exe",
+    r"C:\Users\Public\anaconda3\Library\bin\ffprobe.exe",
 ]
 
 MIN_DURATION = 1800.0
