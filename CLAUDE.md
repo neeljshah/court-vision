@@ -46,7 +46,7 @@ database/schema.sql                 # PostgreSQL
 - Video: headless only (`--no-show`), never `cv2.imshow`
 - No permission prompts — execute autonomously
 - Tests: `python -m pytest tests/ -q`
-- Full plan: `.planning/ROADMAP.md` | Session log: `vault/Sessions/Decision Log.md`
+- Full plan: `.planning/ROADMAP.md` (167KB — grep/section-read only, NEVER full-read) | Session log: `vault/Sessions/Decision Log.md`
 - `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100)
 
 ### Vault Auto-Maintenance (Obsidian Brain)

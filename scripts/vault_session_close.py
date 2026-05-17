@@ -7,6 +7,7 @@ Run by Claude Code Stop hook. Updates:
   3. vault/Data/CV Data Status.md — update counts
   4. vault/Models/Model Performance.md — refresh metrics
   5. vault/Sessions/Decision Log.md — append one row per session (idempotent)
+  6. vault/Strategy/Now.md — update snapshot date
 
 Idempotent — safe to run multiple times.
 """
@@ -35,7 +36,6 @@ def _run(cmd: str) -> str:
 
 
 def update_home():
-    """Refresh Home.md via existing script."""
     try:
         import sys
         sys.path.insert(0, str(ROOT / "scripts"))
@@ -49,7 +49,6 @@ def update_home():
 
 
 def update_open_issues():
-    """Sync Open Issues from CLAUDE-state.md."""
     state_file = ROOT / "docs" / "CLAUDE-state.md"
     if not state_file.exists():
         return
@@ -88,13 +87,12 @@ def update_open_issues():
 {new_issues}
 
 -> Tracked in `docs/CLAUDE-state.md`
--> Priority aligned with [[Build Phases]]
+-> Priority aligned with [[Strategy/Build Phases]]
 """
     target.write_text(new_content, encoding="utf-8")
 
 
 def update_cv_status():
-    """Update CV Data Status with latest counts."""
     tracking_dir = ROOT / "data" / "tracking"
     if not tracking_dir.exists():
         return
@@ -120,7 +118,6 @@ def update_cv_status():
 
 
 def update_model_performance():
-    """Refresh model metrics from latest state file."""
     state_file = ROOT / "docs" / "CLAUDE-state.md"
     if not state_file.exists():
         return
@@ -150,8 +147,37 @@ def update_model_performance():
     target.write_text(content, encoding="utf-8")
 
 
+def update_now_snapshot():
+    now_file = VAULT / "Strategy" / "Now.md"
+    if not now_file.exists():
+        return
+    content = now_file.read_text(encoding="utf-8")
+    content = re.sub(
+        r"updated: \d{4}-\d{2}-\d{2}",
+        f"updated: {TODAY}",
+        content
+    )
+    now_file.write_text(content, encoding="utf-8")
+
+
+def _categorize_commit(msg: str) -> str:
+    msg_lower = msg.lower()
+    if any(k in msg_lower for k in ["fix", "bug", "crash", "broken"]):
+        return "fix"
+    if any(k in msg_lower for k in ["feat", "add", "wire", "implement"]):
+        return "feature"
+    if any(k in msg_lower for k in ["refactor", "cleanup", "reorganize"]):
+        return "refactor"
+    if any(k in msg_lower for k in ["doc", "readme", "plan"]):
+        return "docs"
+    if any(k in msg_lower for k in ["test", "spec", "validate"]):
+        return "test"
+    if any(k in msg_lower for k in ["chore", "gitignore", "config"]):
+        return "chore"
+    return "other"
+
+
 def _detect_metric_changes() -> str:
-    """Detect model metric changes from docs/CLAUDE-state.md."""
     state_file = ROOT / "docs" / "CLAUDE-state.md"
     if not state_file.exists():
         return "no metric changes detected"
@@ -159,7 +185,6 @@ def _detect_metric_changes() -> str:
     text = state_file.read_text(encoding="utf-8")
     metrics = []
 
-    # Look for R², Brier, MAE, AUC patterns
     for pattern, label in [
         (r"R[²2]\s*[=:]\s*([\d.]+)", "R²"),
         (r"Brier\s*[=:]\s*([\d.]+)", "Brier"),
@@ -175,28 +200,46 @@ def _detect_metric_changes() -> str:
     return "no metric changes detected"
 
 
-def update_decision_log():
-    """Append one row to Sessions/Decision Log.md for today's session.
+def _detect_affected_domains() -> list[str]:
+    diff_files = _run("git diff --name-only HEAD~1 HEAD 2>/dev/null")
+    if not diff_files:
+        return []
+    domains = set()
+    for f in diff_files.splitlines():
+        if "tracking" in f or "detection" in f or "homography" in f:
+            domains.add("CV")
+        if "model" in f or "prediction" in f or "props" in f:
+            domains.add("Models")
+        if "betting" in f or "kelly" in f or "portfolio" in f:
+            domains.add("Betting")
+        if "api/" in f or "endpoint" in f:
+            domains.add("API")
+        if "feature" in f:
+            domains.add("Features")
+        if "pipeline" in f:
+            domains.add("Pipeline")
+        if "vault/" in f:
+            domains.add("Vault")
+    return sorted(domains)
 
-    Idempotent: if a row for TODAY already exists, update it in place
-    rather than duplicating.
-    """
+
+def update_decision_log():
     DECISION_LOG.parent.mkdir(parents=True, exist_ok=True)
 
-    # Get the most recent git commit message (1 line)
     commit_msg = _run("git log --oneline -1")
     if commit_msg:
-        # Strip the hash prefix
         parts = commit_msg.split(" ", 1)
         summary = parts[1] if len(parts) > 1 else commit_msg
     else:
         summary = "no commit this session"
 
-    # Truncate long summaries
     if len(summary) > 80:
         summary = summary[:77] + "..."
 
     impact = _detect_metric_changes()
+    domains = _detect_affected_domains()
+    if domains:
+        impact = f"{', '.join(domains)} | {impact}"
 
     new_row = f"| {TODAY} | {summary} | {impact} |"
 
@@ -205,12 +248,15 @@ def update_decision_log():
             f"""---
 tags: [decision-log, moc]
 updated: {TODAY}
+aliases: ["Decision Log"]
 ---
+
+> [[Home]] | [[Sessions/Timeline]] | [[Sessions/Game Log]]
 
 # Decision Log
 
-Rolling log of session decisions, fixes, and metric changes.
-One line per session. Full session files archived at [[Sessions/_archive/]].
+Rolling log of key decisions, fixes, and milestones. Auto-updated by `vault_session_close.py`.
+One row per significant event. Full session files in `Sessions/_archive/`.
 
 ---
 
@@ -224,13 +270,10 @@ One line per session. Full session files archived at [[Sessions/_archive/]].
 
     content = DECISION_LOG.read_text(encoding="utf-8")
 
-    # Check if today's row already exists — update it
     today_pattern = rf"^\| {re.escape(TODAY)} \|.*$"
     if re.search(today_pattern, content, re.MULTILINE):
         content = re.sub(today_pattern, new_row, content, flags=re.MULTILINE)
     else:
-        # Append after the header row
-        header_marker = "| Date | Key Decision / Fix | Impact |"
         separator = "|------|--------------------|--------|"
         if separator in content:
             content = content.replace(
@@ -238,16 +281,7 @@ One line per session. Full session files archived at [[Sessions/_archive/]].
                 separator + "\n" + new_row,
                 1
             )
-        elif header_marker in content:
-            content = content.replace(
-                header_marker,
-                header_marker + "\n" + separator + "\n" + new_row,
-                1
-            )
-        else:
-            content = content.rstrip() + f"\n{new_row}\n"
 
-    # Update the frontmatter date
     content = re.sub(
         r"updated: \d{4}-\d{2}-\d{2}",
         f"updated: {TODAY}",
@@ -264,6 +298,7 @@ def main():
     update_open_issues()
     update_cv_status()
     update_model_performance()
+    update_now_snapshot()
     update_decision_log()
     print("vault_session_close: done")
 

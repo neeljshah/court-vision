@@ -16,9 +16,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -49,7 +50,6 @@ def _git_log(n: int = 5) -> list[str]:
 
 
 def _test_summary() -> str:
-    """Quick pytest count — no actual run, just reads last cached result if available."""
     cache = ROOT / ".pytest_cache" / "v" / "cache" / "lastfailed"
     if cache.exists():
         try:
@@ -62,7 +62,6 @@ def _test_summary() -> str:
 
 
 def _open_issues() -> list[tuple[str, str, str]]:
-    """Return list of (id, description, status) from CLAUDE.md."""
     claude_md = ROOT / "CLAUDE.md"
     if not claude_md.exists():
         return []
@@ -83,16 +82,45 @@ def _open_issues() -> list[tuple[str, str, str]]:
 
 
 def _cv_game_count() -> tuple[int, int]:
-    """Return (clean, target) from CLAUDE.md."""
     claude_md = ROOT / "CLAUDE.md"
     if not claude_md.exists():
         return 5, 20
     text = claude_md.read_text(encoding="utf-8")
-    import re
     m = re.search(r'CV games:\s*(\d+)\s*clean\s*/\s*(\d+)\s*target', text)
     if m:
         return int(m.group(1)), int(m.group(2))
     return 5, 20
+
+
+def _recent_activity(n: int = 8) -> list[dict]:
+    raw = _run(f'git log --format="%ad|%s" --date=short -{n}')
+    if not raw:
+        return []
+    entries = []
+    seen_dates = set()
+    for line in raw.splitlines():
+        parts = line.split("|", 1)
+        if len(parts) == 2:
+            date, msg = parts
+            if date not in seen_dates:
+                entries.append({"date": date, "msg": msg})
+                seen_dates.add(date)
+    return entries[:6]
+
+
+def _weekly_velocity() -> dict:
+    now = datetime.now()
+    week_ago = (now - timedelta(days=7)).strftime("%Y-%m-%d")
+    month_ago = (now - timedelta(days=30)).strftime("%Y-%m-%d")
+    week_commits = _run(f'git rev-list --count --since="{week_ago}" HEAD', "0")
+    month_commits = _run(f'git rev-list --count --since="{month_ago}" HEAD', "0")
+    files_changed_week = _run(
+        f'git diff --stat --since="{week_ago}" HEAD 2>/dev/null | tail -1', ""
+    )
+    return {
+        "week_commits": int(week_commits) if week_commits.isdigit() else 0,
+        "month_commits": int(month_commits) if month_commits.isdigit() else 0,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -104,10 +132,16 @@ def generate_home() -> str:
     branch = _git_branch()
     clean, target = _cv_game_count()
     issues = _open_issues()
+    activity = _recent_activity()
+    velocity = _weekly_velocity()
 
     issue_rows = "\n".join(
         f"| {i} | {d} | {s} |" for i, d, s in issues
     ) if issues else "| — | No open issues | — |"
+
+    activity_rows = "\n".join(
+        f"| {a['date']} | {a['msg'][:70]} |" for a in activity
+    ) if activity else "| — | No recent activity |"
 
     return f"""---
 tags: [index, moc]
@@ -122,21 +156,29 @@ updated: {today}
 
 ## Quick Navigation
 
-| Note | Description |
+| Domain | Entry Point | What's There |
+|--------|------------|--------------|
+| Strategy | [[Strategy/Now]] | Current focus, blockers, next actions |
+| CV Pipeline | [[MOC-CV]] | Tracking, detection, homography, re-ID |
+| ML Models | [[MOC-Models]] | 75 models, features, signal inventory |
+| Betting | [[MOC-Betting]] | Kelly, CLV, quant framework, edges |
+| Operations | [[MOC-Ops]] | RunPod, data pipeline, architecture |
+| Research | [[MOC-Research]] | Validation, benchmarks, concepts |
+
+## History & Progress
+
+| Note | What's There |
 |------|-------------|
-| [[Pipeline/System Architecture]] | End-to-end architecture, data flow, component map |
-| [[Models/Model-Catalog]] | All 90 models, tiers, training status, performance |
-| [[Research/Data-Sources]] | Every data source, scraper, TTL, coverage stats |
-| [[Pipeline/Pipeline-Flow]] | Step-by-step pipeline from video to edge flag |
-| [[Plans/Roadmap]] | Phase-by-phase build plan with current status |
-| [[Improvements/Tracker Improvements Log]] | CV tracker fix history |
-| [[Validation/prop_holdout_report]] | Prop model holdout validation |
+| [[Sessions/Timeline]] | Condensed project history, milestones, metric progression |
+| [[Sessions/Decision Log]] | Key decisions and fixes with impact |
+| [[Sessions/Game Log]] | All CV-processed games with grades and metrics |
+| [[Tracking/Tracker Improvements]] | Chronological CV fix log |
 
 ---
 
 ## Current Status ({today})
 
-**Branch:** `{branch}` | **Tests:** {_test_summary()}
+**Branch:** `{branch}` | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
 
 ### Phase Completion
 
@@ -159,15 +201,20 @@ updated: {today}
 
 ## Model Performance
 
-| Model | Metric | Value |
-|-------|--------|-------|
-| Win probability | Accuracy | 69.1% |
-| Win probability | Brier | 0.203 |
-| Player props (pts) | MAE | 0.308 |
-| Player props (all 7) | R² | >0.93 |
-| xFG v1 | Brier | 0.226 |
-| DNP predictor | AUC | 0.979 |
-| Matchup model | R² | 0.796 |
+| Model | Metric | Value | Target | Gap |
+|-------|--------|-------|--------|-----|
+| [[Models/Win Probability\|Win prob]] | Accuracy | 69.1% | 72% | -2.9% |
+| [[Models/Win Probability\|Win prob]] | Brier | 0.203 | <0.19 | -0.013 |
+| [[Models/Player Props\|Props PTS]] | R² | 0.47 | 0.55 | -0.08 |
+| [[Models/Player Props\|Props REB]] | R² | 0.40 | 0.50 | -0.10 |
+| [[Models/Player Props\|Props AST]] | R² | 0.46 | 0.55 | -0.09 |
+| [[Models/Player Props\|Props STL]] | R² | 0.07 | 0.20 | -0.13 |
+| [[Models/xFG Model\|xFG]] | Brier | 0.226 | <0.20 | -0.026 |
+| [[Models/DNP Predictor\|DNP]] | AUC | 0.979 | >0.97 | ✅ |
+| [[Models/Matchup Model\|Matchup]] | R² | 0.796 | >0.80 | -0.004 |
+
+→ Full metrics: [[Models/Model Performance]]
+→ Holdout reality check: [[Validation/prop_holdout_report]]
 
 ---
 
@@ -177,6 +224,9 @@ updated: {today}
 |--------|-------|
 | Clean games | {clean} / {target} |
 | Season 2025-26 | 0 / 50 |
+| Tracking rows | ~126K |
+
+→ Game details: [[Sessions/Game Log]]
 
 ---
 
@@ -188,11 +238,11 @@ updated: {today}
 
 ---
 
-## Recent Commits
+## Recent Activity
 
-```
-{chr(10).join(_git_log(5))}
-```
+| Date | What |
+|------|------|
+{activity_rows}
 
 ---
 
@@ -209,10 +259,20 @@ updated: {today}
 
 ---
 
-## Session Log
+## Deep Dives
 
-[[Sessions/Decision Log]] — rolling log of session decisions and fixes
-Full archive: `vault/Sessions/_archive/`
+| Note | Description |
+|------|-------------|
+| [[Plans/Master Build Plan]] | 100-model stack, priority queue, ROI projections |
+| [[Pipeline/System Architecture]] | End-to-end pipeline architecture |
+| [[Research/Data-Sources]] | Every data source, scraper, TTL, coverage |
+| [[Pipeline/Pipeline-Flow]] | Step-by-step from video to edge flag |
+| [[Strategy/Edge Taxonomy]] | 164 exploitable market gaps |
+| [[Validation/prop_holdout_report]] | Prop model holdout validation |
+
+---
+
+*Session log: [[Sessions/Decision Log]] · Full archive: `Sessions/_archive/`*
 """
 
 
@@ -224,7 +284,6 @@ def update(notes: str = "") -> None:
     VAULT.mkdir(exist_ok=True)
     SESSIONS.mkdir(exist_ok=True)
 
-    # Home only — session logging moved to vault_session_close.py
     home_path = VAULT / "Home.md"
     home_path.write_text(generate_home(), encoding="utf-8")
     print(f"Updated: {home_path.relative_to(ROOT)}")
