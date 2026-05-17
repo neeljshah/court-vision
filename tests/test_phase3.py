@@ -520,9 +520,9 @@ def test_player_props_import():
 
 
 def test_feature_cols_count():
-    """FEATURE_COLS has 47 features (32 original + 14 added in pre-season accuracy plan C-1 to C-7)."""
+    """FEATURE_COLS has 71 features (original set + Phase 8 sim_* additions and mid-season expansions)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 47
+    assert len(FEATURE_COLS) == 71
 
 
 # ── player_props fallback behaviour ───────────────────────────────────────────
@@ -1001,10 +1001,10 @@ def test_home_travel_miles_removed_from_feature_cols():
 
 
 def test_feature_cols_length():
-    """FEATURE_COLS should have 47 features (32 original + 14 added in pre-season accuracy plan C-1 to C-7)."""
+    """FEATURE_COLS should have 71 features (original set + Phase 8 sim_* and mid-season expansions)."""
     from src.prediction.win_probability import FEATURE_COLS
-    assert len(FEATURE_COLS) == 47, (
-        f"Expected 47 features (32 original + 14 pre-season plan additions), got {len(FEATURE_COLS)}"
+    assert len(FEATURE_COLS) == 71, (
+        f"Expected 71 features, got {len(FEATURE_COLS)}"
     )
 
 
