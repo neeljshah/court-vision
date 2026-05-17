@@ -7,7 +7,7 @@
 - Phase 13.5 done. In-progress: 80-game run on single RTX 3090 ($5 budget).
 - CV games: 17 high/medium quality locally. Goal: 80 total.
 - Models: 75 .pkl/.json in `data/models/`. 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl).
-- Props R²: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.09
+- Props R² (holdout): pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 | train: pts=0.47, reb=0.43, ast=0.42 (source: data/models/model_registry.json)
 - Prediction: 73 modules in `src/prediction/`. API: 6 endpoints. Stack fully functional on NBA API data.
 - Calibration: CalibrationLayer.win_prob() added. Needs prop_residuals.json to train.
 

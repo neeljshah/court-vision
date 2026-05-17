@@ -13,13 +13,13 @@ Tracking dashboard for all model metrics.
 |-------|--------|-------|--------|
 | [[Win Probability]] | Accuracy | 69.1% | 72% |
 | [[Win Probability]] | Brier | 0.203 | <0.19 |
-| [[Player Props]] PTS | R² | 0.47 | 0.55 |
-| [[Player Props]] REB | R² | 0.40 | 0.50 |
-| [[Player Props]] AST | R² | 0.46 | 0.55 |
-| [[Player Props]] FG3M | R² | 0.28 | 0.35 |
-| [[Player Props]] BLK | R² | 0.18 | 0.25 |
-| [[Player Props]] TOV | R² | 0.25 | 0.30 |
-| [[Player Props]] STL | R² | 0.07 | 0.20 |
+| [[Player Props]] PTS | Holdout R² | 0.41 | 0.55 |
+| [[Player Props]] REB | Holdout R² | 0.38 | 0.50 |
+| [[Player Props]] AST | Holdout R² | 0.36 | 0.55 |
+| [[Player Props]] FG3M | Holdout R² | 0.29 | 0.35 |
+| [[Player Props]] BLK | Holdout R² | 0.16 | 0.25 |
+| [[Player Props]] TOV | Holdout R² | 0.22 | 0.30 |
+| [[Player Props]] STL | Holdout R² | 0.18 | 0.20 |
 | [[xFG Model]] | Brier | 0.226 | <0.20 |
 | [[DNP Predictor]] | AUC | 0.979 | >0.97 |
 | [[Matchup Model]] | R² | 0.796 | >0.80 |
