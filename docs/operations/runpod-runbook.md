@@ -1,6 +1,6 @@
 # RunPod Runbook — GPU Cloud Operations
 
-*Status: Operational. Current target: 80-game ingest run on single RTX 3090. Updated 2026-05-10.*
+*GPU cloud operations — CFS quota, OMP thread cap, VRAM flush, data sync.*
 
 ---
 

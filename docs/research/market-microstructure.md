@@ -1,6 +1,6 @@
 # Market Microstructure — How Books Price Props and Where They're Wrong
 
-*Status: Research document. Updated 2026-05-10.*
+*How books price props, where they're systematically wrong, and venue comparison.*
 
 ---
 

@@ -1,6 +1,6 @@
 # Competitive Landscape — Why Large Quant Firms Cannot Do This
 
-*Status: Analysis document. Updated 2026-05-10.*
+*Why institutional quant firms cannot profitably enter NBA player prop markets.*
 
 ---
 

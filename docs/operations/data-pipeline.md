@@ -1,6 +1,6 @@
 # Data Pipeline — Ingest System Documentation
 
-*Status: P1–P6 complete (Session 40). System operational. Updated 2026-05-10.*
+*Ingest system — download, queue, processing, quality scoring, sync.*
 
 ---
 

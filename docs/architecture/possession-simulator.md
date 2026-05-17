@@ -1,6 +1,6 @@
 # Possession Simulator — Monte Carlo Engine Design
 
-*Status: Core built. Possession-level mechanics and full distribution output active. Lineup-dependent transitions and foul/blowout logic are Phase 3 extensions. Updated 2026-05-10.*
+*Possession-level mechanics and full distribution output. Lineup-dependent transitions and foul/blowout logic are planned extensions.*
 
 ---
 
@@ -88,16 +88,16 @@ pts_distribution = [s['pts'] for s in results['203076']]
 
 ## Inputs Required
 
-| Input | Source | Timing | Current status |
-|-------|--------|--------|----------------|
-| Lineup on floor per possession | NBA API (live lineups 30 min pre-game) | Pre-game | ✅ Wired |
-| Lineup on/off data (historical) | PBPStats API | Ingested weekly | ✅ Wired |
-| CV spatial features | CV pipeline | Game-day (17 games available) | ⚠️ Partial |
-| Referee crew | NBA official assignments | ~9am ET game day | ⏳ In progress |
-| Travel fatigue index | Computed from schedule | Pre-game | ⏳ Planned |
-| Denver altitude flag | Static lookup | Pre-game | 🔲 Planned |
-| Player embeddings (NBA2Vec) | Trained offline | Session | 🔲 Phase 6 |
-| Blowout probability | Current blowout model | Pre-game | ✅ Tier 1 model |
+| Input | Source | Timing |
+|-------|--------|--------|
+| Lineup on floor per possession | NBA API (live lineups 30 min pre-game) | Pre-game |
+| Lineup on/off data (historical) | PBPStats API | Ingested weekly |
+| CV spatial features | CV pipeline | Game-day |
+| Referee crew | NBA official assignments | ~9am ET game day |
+| Travel fatigue index | Computed from schedule | Pre-game |
+| Denver altitude flag | Static lookup | Pre-game |
+| Player embeddings (NBA2Vec) | Trained offline | Session |
+| Blowout probability | Blowout model | Pre-game |
 
 ---
 
@@ -113,15 +113,15 @@ Calibration process:
 
 Current calibration status:
 
-| Prop | ECE | Status |
-|------|-----|--------|
-| pts | 0.021 | ✅ Well-calibrated |
-| reb | 0.028 | ✅ Acceptable |
-| ast | 0.024 | ✅ Acceptable |
-| fg3m | 0.035 | ✅ Marginal |
-| tov | 0.041 | ⚠️ Needs work |
-| blk | 0.056 | ⚠️ Needs work |
-| stl | 0.071 | ❌ Poor — also R²=0.09 |
+| Prop | ECE |
+|------|-----|
+| pts | 0.021 |
+| reb | 0.028 |
+| ast | 0.024 |
+| fg3m | 0.035 |
+| tov | 0.041 |
+| blk | 0.056 |
+| stl | 0.071 |
 
 ECE (Expected Calibration Error): lower is better; < 0.05 is target.
 
@@ -151,13 +151,13 @@ The joint probability naturally captures game-level correlation (all legs that d
 
 ## Planned Extensions
 
-| Extension | Phase | What it enables |
-|-----------|-------|----------------|
-| Full lineup-dependent transition matrices | Phase 3 | Accurate joint distributions; SGP pricing |
-| Blowout / garbage time integration | Phase 3 | Counting stat overs suppressed in blowout scenarios |
-| Foul trouble substitution model | Phase 3 | FTA props, minutes-based props |
-| NBA2Vec lineup quality scoring | Phase 6 | Better lineup compatibility estimation for sparse combos |
-| Bayesian in-season parameter updating | Phase 6 | Distributions improve as season progresses |
+| Extension | What it enables |
+|-----------|----------------|
+| Full lineup-dependent transition matrices | Accurate joint distributions; SGP pricing |
+| Blowout / garbage time integration | Counting stat overs suppressed in blowout scenarios |
+| Foul trouble substitution model | FTA props, minutes-based props |
+| NBA2Vec lineup quality scoring | Better lineup compatibility estimation for sparse combos |
+| Bayesian in-season parameter updating | Distributions improve as season progresses |
 
 ---
 

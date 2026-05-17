@@ -1,6 +1,6 @@
 # Feature Inventory — All Signals in the Stack
 
-*Status: Reference document. Features marked by tier (wired / partial / planned). Updated 2026-05-10.*
+*All ~70 features across 7 classes — API, CV spatial, temporal, market microstructure.*
 
 ---
 
@@ -8,13 +8,13 @@
 
 | Class | Source | Feature count | Status |
 |-------|--------|--------------|--------|
-| API box-score | `nba_api` game logs 2018–present | ~20 | ✅ Wired |
-| API derived | Pace, team total, lineup on/off, ref, altitude, travel | ~12 | ✅ Wired |
-| CV spatial | defender_distance, spacing_score, fatigue, contest%, isolation | ~8 | ⚠️ Partial (17 games) |
-| CV temporal | Rolling shots/passes/dribbles over 5/10/20-frame windows | ~12 | ✅ Wired |
-| CV biomechanical | ankle_y, contest_arm_angle, jump_detected, shot arc, pose landmarks | ~6 | ⚠️ Partial |
-| Market microstructure | Pinnacle no-vig line, line velocity, steam flag, public% | ~6 | ⚠️ Partial |
-| Sentiment / NLP | Injury severity, beat reporter credibility, lineup freshness | ~5 | ⚠️ Partial |
+| API box-score | `nba_api` game logs 2018–present | ~20 | Wired |
+| API derived | Pace, team total, lineup on/off, ref, altitude, travel | ~12 | Wired |
+| CV spatial | defender_distance, spacing_score, fatigue, contest%, isolation | ~8 | Partial (17 games) |
+| CV temporal | Rolling shots/passes/dribbles over 5/10/20-frame windows | ~12 | Wired |
+| CV biomechanical | ankle_y, contest_arm_angle, jump_detected, shot arc, pose landmarks | ~6 | Partial |
+| Market microstructure | Pinnacle no-vig line, line velocity, steam flag, public% | ~6 | Partial |
+| Sentiment / NLP | Injury severity, beat reporter credibility, lineup freshness | ~5 | Partial |
 
 **Total wired features:** ~50 (API + CV temporal). **Partial/planned:** ~27.
 
@@ -57,19 +57,19 @@ Computed from combinations of NBA API data and external sources.
 
 | Feature | Description | Source | Status |
 |---------|-------------|--------|--------|
-| `pace_diff` | Team pace differential vs opponent | NBA API | ✅ |
-| `vegas_team_total` | Implied team total from game line | Odds API | ✅ |
-| `opp_drtg_vs_pos` | Opponent defensive rating vs player's position | NBA API LeagueDashPtStats | ✅ |
-| `lineup_net_rating` | Net rating of typical starting lineup | PBPStats on/off | ✅ |
-| `altitude_flag` | 1 if game in Denver or SLC | Static lookup | ✅ |
-| `travel_distance` | Great-circle distance from prior city | Computed | ⚠️ Partial |
-| `timezone_cross` | Timezone crossings (direction-aware) | Computed | 🔲 Planned |
-| `days_rest` | Days since last game | NBA schedule | ✅ |
-| `opp_days_rest` | Opponent days since last game | NBA schedule | ✅ |
-| `home_flag` | Home vs away | NBA API | ✅ |
-| `ref_foul_rate` | Historical foul rate for assigned ref | Scraped ref stats | ⏳ In progress |
-| `ref_pace_factor` | Historical pace effect for assigned ref | Scraped ref stats | ⏳ In progress |
-| `contract_year_flag` | Player in final year of contract | Spotrac | 🔲 Planned |
+| `pace_diff` | Team pace differential vs opponent | NBA API | |
+| `vegas_team_total` | Implied team total from game line | Odds API | |
+| `opp_drtg_vs_pos` | Opponent defensive rating vs player's position | NBA API LeagueDashPtStats | |
+| `lineup_net_rating` | Net rating of typical starting lineup | PBPStats on/off | |
+| `altitude_flag` | 1 if game in Denver or SLC | Static lookup | |
+| `travel_distance` | Great-circle distance from prior city | Computed | Partial |
+| `timezone_cross` | Timezone crossings (direction-aware) | Computed | Planned |
+| `days_rest` | Days since last game | NBA schedule | |
+| `opp_days_rest` | Opponent days since last game | NBA schedule | |
+| `home_flag` | Home vs away | NBA API | |
+| `ref_foul_rate` | Historical foul rate for assigned ref | Scraped ref stats | In progress |
+| `ref_pace_factor` | Historical pace effect for assigned ref | Scraped ref stats | In progress |
+| `contract_year_flag` | Player in final year of contract | Spotrac | Planned |
 
 ---
 
@@ -81,18 +81,18 @@ These are the moat features — the only features in the stack that are not avai
 
 | Feature | Description | Unit | Status |
 |---------|-------------|------|--------|
-| `defender_distance` | Distance to nearest defender at shot release | Meters (court coords) | ✅ BUILT |
-| `spacing_score` | Convex hull area of 4 off-ball offensive players | m² | ✅ BUILT |
-| `legs_fatigue` | Cumulative running distance, last 6 min, exp-decayed | m × decay | ✅ BUILT |
-| `nearest_opponent` | Distance to nearest opponent (any time) | Meters | ✅ BUILT |
-| `handler_isolation` | Distance from ball-handler to nearest teammate | Meters | ✅ BUILT |
-| `contest_pct` | Fraction of possession frames with defender within 2m | 0–1 | ✅ BUILT |
-| `closeout_speed` | Defender velocity toward shooter at catch | m/s | 🔲 Planned |
-| `paint_density` | Players within paint polygon per frame | Count | 🔲 Planned |
-| `transition_flag` | Transition vs half-court possession | Binary | 🔲 Planned |
-| `catch_and_shoot_flag` | Player stationary before shot release | Binary | 🔲 Planned |
-| `off_ball_movement` | Total off-ball player distance per possession | Meters | 🔲 Planned |
-| `shot_release_angle` | Angle of ball trajectory at release | Degrees | 🔲 Planned |
+| `defender_distance` | Distance to nearest defender at shot release | Meters (court coords) | BUILT |
+| `spacing_score` | Convex hull area of 4 off-ball offensive players | m² | BUILT |
+| `legs_fatigue` | Cumulative running distance, last 6 min, exp-decayed | m × decay | BUILT |
+| `nearest_opponent` | Distance to nearest opponent (any time) | Meters | BUILT |
+| `handler_isolation` | Distance from ball-handler to nearest teammate | Meters | BUILT |
+| `contest_pct` | Fraction of possession frames with defender within 2m | 0–1 | BUILT |
+| `closeout_speed` | Defender velocity toward shooter at catch | m/s | Planned |
+| `paint_density` | Players within paint polygon per frame | Count | Planned |
+| `transition_flag` | Transition vs half-court possession | Binary | Planned |
+| `catch_and_shoot_flag` | Player stationary before shot release | Binary | Planned |
+| `off_ball_movement` | Total off-ball player distance per possession | Meters | Planned |
+| `shot_release_angle` | Angle of ball trajectory at release | Degrees | Planned |
 
 **SHAP contribution (combined CV spatial):** 31% of mass on pts model. Δ R² over API-only: +0.08.
 
@@ -124,12 +124,12 @@ Pose-derived features from player skeleton keypoints.
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| `ankle_y` | Ankle height at shot release (jump detection proxy) | ⚠️ Partial |
-| `contest_arm_angle` | Defender arm angle at shot (contest quality) | ⚠️ Partial |
-| `jump_detected` | Binary: player in air at shot release | ⚠️ Partial |
-| `shot_arc_angle` | Ball trajectory arc angle (from edge 8) | 🔲 Planned |
-| `release_height` | Estimated release height from pose | ⚠️ Partial |
-| `pose_balance_score` | Composite balance metric from pose keypoints | 🔲 Planned |
+| `ankle_y` | Ankle height at shot release (jump detection proxy) | Partial |
+| `contest_arm_angle` | Defender arm angle at shot (contest quality) | Partial |
+| `jump_detected` | Binary: player in air at shot release | Partial |
+| `shot_arc_angle` | Ball trajectory arc angle (from edge 8) | Planned |
+| `release_height` | Estimated release height from pose | Partial |
+| `pose_balance_score` | Composite balance metric from pose keypoints | Planned |
 
 ---
 
@@ -139,12 +139,12 @@ Derived from real-time line monitoring.
 
 | Feature | Description | Source | Status |
 |---------|-------------|--------|--------|
-| `pinnacle_nv_prob` | Pinnacle no-vig probability | Line monitor | ⚠️ Partial |
-| `line_velocity` | Points moved per minute since open | Odds API history | ⚠️ Partial |
-| `steam_flag` | Binary: steam move detected on this market | Computed | ⚠️ Partial |
-| `public_pct_over` | % of public bets on over | Action Network | ⚠️ Partial |
-| `line_movement_dir` | Direction of movement since open | Computed | ⚠️ Partial |
-| `book_lag_score` | How far behind market consensus this book is | Computed | 🔲 Planned |
+| `pinnacle_nv_prob` | Pinnacle no-vig probability | Line monitor | Partial |
+| `line_velocity` | Points moved per minute since open | Odds API history | Partial |
+| `steam_flag` | Binary: steam move detected on this market | Computed | Partial |
+| `public_pct_over` | % of public bets on over | Action Network | Partial |
+| `line_movement_dir` | Direction of movement since open | Computed | Partial |
+| `book_lag_score` | How far behind market consensus this book is | Computed | Planned |
 
 These features enter the pipeline as bet-selector filters rather than model inputs at current stage (Phase 14.7 Pinnacle triangulation gate).
 
@@ -154,11 +154,11 @@ These features enter the pipeline as bet-selector filters rather than model inpu
 
 | Feature | Description | Source | Status |
 |---------|-------------|--------|--------|
-| `injury_severity_score` | ML-classified severity from injury report text | Own classifier | ⚠️ Partial |
-| `reporter_credibility` | Credibility score for injury source | Curated list | ⚠️ Partial |
-| `lineup_freshness` | Hours since lineup was last confirmed | NBA API | ⚠️ Partial |
-| `press_conf_sentiment` | Sentiment from pre-game press conference | NLP | 🔲 Planned |
-| `dnp_probability` | Probability of DNP given current injury status | Own model | ⚠️ Partial |
+| `injury_severity_score` | ML-classified severity from injury report text | Own classifier | Partial |
+| `reporter_credibility` | Credibility score for injury source | Curated list | Partial |
+| `lineup_freshness` | Hours since lineup was last confirmed | NBA API | Partial |
+| `press_conf_sentiment` | Sentiment from pre-game press conference | NLP | Planned |
+| `dnp_probability` | Probability of DNP given current injury status | Own model | Partial |
 
 ---
 
