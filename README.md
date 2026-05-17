@@ -254,7 +254,7 @@ results/             # reliability diagrams, CLV plots, per-model ECE
 
 ## About
 
-Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app). B.S. Data Science, University of Iowa.
+Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app). 
 
 - Portfolio: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - GitHub: [github.com/neeljshah](https://github.com/neeljshah)
