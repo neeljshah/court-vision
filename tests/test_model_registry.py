@@ -1,11 +1,11 @@
 """
-test_model_registry.py — Wave 0 stubs for model_registry.json contract.
+test_model_registry.py — model_registry.json contract + drift regression gate.
 
-Tests 1-2 are xfail(strict=False) — registry doesn't exist until Plan 04.
+Tests 1-2 require data/models/model_registry.json (created by retrain_props_temporal_cv).
 Test 3 is standalone (synthetic dict) — verifies flag logic, no file dependency.
+Test 4 is a CI regression gate: fails if any prop model's holdout R² drops below baseline.
 """
 import json
-import math
 from pathlib import Path
 
 import pytest
@@ -20,14 +20,28 @@ ALL_STATS = [
     "props_stl", "props_blk", "props_tov",
 ]
 
+# Minimum acceptable holdout R² per stat — CI fails if any drops below these.
+# Values are conservative floors; update when models genuinely improve.
+HOLDOUT_R2_BASELINES = {
+    "props_pts":  0.25,
+    "props_reb":  0.22,
+    "props_ast":  0.20,
+    "props_fg3m": 0.12,
+    "props_stl":  0.08,
+    "props_blk":  0.07,
+    "props_tov":  0.10,
+}
 
-@pytest.mark.xfail(strict=False, reason="registry created in Plan 04")
+
+def _load_registry() -> dict:
+    if not REGISTRY_PATH.exists():
+        pytest.skip("model_registry.json not yet created — run retrain_props_temporal_cv first")
+    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+
+
 def test_registry_has_holdout_fields() -> None:
     """Each entry in model_registry.json has all required holdout fields."""
-    if not REGISTRY_PATH.exists():
-        pytest.skip("model_registry.json not yet created (Plan 04)")
-
-    registry = json.loads(REGISTRY_PATH.read_text())
+    registry = _load_registry()
     for key, entry in registry.items():
         missing = REQUIRED_KEYS - set(entry.keys())
         assert not missing, (
@@ -35,13 +49,9 @@ def test_registry_has_holdout_fields() -> None:
         )
 
 
-@pytest.mark.xfail(strict=False, reason="registry created in Plan 04")
 def test_all_7_stats_present() -> None:
     """model_registry.json must contain entries for all 7 prop stats."""
-    if not REGISTRY_PATH.exists():
-        pytest.skip("model_registry.json not yet created (Plan 04)")
-
-    registry = json.loads(REGISTRY_PATH.read_text())
+    registry = _load_registry()
     for key in ALL_STATS:
         assert key in registry, (
             f"Expected registry key '{key}' not found. "
@@ -50,33 +60,34 @@ def test_all_7_stats_present() -> None:
 
 
 def test_needs_retrain_flag_logic() -> None:
-    """needs_retrain should be True when |train_r2 - holdout_r2| > 0.08.
-
-    This test is fully standalone — verifies the flag logic contract
-    without depending on the actual registry file.
-    """
+    """needs_retrain = True when |train_r2 - holdout_r2| > 0.08 (standalone, no file)."""
     THRESHOLD = 0.08
 
-    # Case 1: overfitting → needs_retrain should be True
-    overfit_entry = {
-        "train_r2": 0.92,
-        "holdout_r2": 0.60,
-        "needs_retrain": True,
-    }
+    overfit_entry = {"train_r2": 0.92, "holdout_r2": 0.60, "needs_retrain": True}
     gap = abs(overfit_entry["train_r2"] - overfit_entry["holdout_r2"])
-    expected_flag = gap > THRESHOLD
-    assert overfit_entry["needs_retrain"] == expected_flag, (
-        f"needs_retrain should be {expected_flag} when gap={gap:.3f}"
-    )
+    assert overfit_entry["needs_retrain"] == (gap > THRESHOLD)
 
-    # Case 2: well-calibrated → needs_retrain should be False
-    good_entry = {
-        "train_r2": 0.55,
-        "holdout_r2": 0.50,
-        "needs_retrain": False,
-    }
+    good_entry = {"train_r2": 0.55, "holdout_r2": 0.50, "needs_retrain": False}
     gap2 = abs(good_entry["train_r2"] - good_entry["holdout_r2"])
-    expected_flag2 = gap2 > THRESHOLD
-    assert good_entry["needs_retrain"] == expected_flag2, (
-        f"needs_retrain should be {expected_flag2} when gap={gap2:.3f}"
+    assert good_entry["needs_retrain"] == (gap2 > THRESHOLD)
+
+
+def test_holdout_r2_above_baseline() -> None:
+    """CI regression gate: no prop model's holdout R² may fall below its recorded baseline.
+
+    Update HOLDOUT_R2_BASELINES when models are genuinely improved — this gate exists
+    to catch accidental regressions from data or feature changes.
+    """
+    registry = _load_registry()
+    failures = []
+    for stat, floor in HOLDOUT_R2_BASELINES.items():
+        if stat not in registry:
+            continue
+        actual = registry[stat].get("holdout_r2", 0.0)
+        if actual < floor:
+            failures.append(f"{stat}: holdout_r2={actual:.4f} < baseline={floor:.4f}")
+
+    assert not failures, (
+        "Holdout R² regression(s) detected — models need retraining:\n"
+        + "\n".join(f"  {f}" for f in failures)
     )
