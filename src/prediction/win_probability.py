@@ -133,16 +133,12 @@ FEATURE_COLS = [
     "home_ft_rate_L10", "away_ft_rate_L10",
     "home_off_rtg_home_L10", "away_off_rtg_away_L10",
     "home_off_rtg_vs_top_def", "away_off_rtg_vs_top_def",
-    # Phase 8: Monte Carlo simulation features (computed but NOT fed to model until retrain)
-    # Model was trained on 67 features (without sim_*); FEATURE_COLS has 71.
-    # Use _MODEL_FEATURE_COLS for prediction/training until model is retrained with sim_*.
+    # Phase 8: Monte Carlo simulation features
     "sim_win_prob", "sim_score_diff_mean", "sim_score_diff_std", "sim_pace_adj",
 ]
 
-# 67-feature subset used by the current saved model (excludes the 4 sim_* additions).
-# actual=67 expected=71  diff=4 (sim_win_prob, sim_score_diff_mean, sim_score_diff_std, sim_pace_adj)
-# When model is retrained with sim_* features, replace _MODEL_FEATURE_COLS with FEATURE_COLS.
-_MODEL_FEATURE_COLS = FEATURE_COLS[:-4]
+# Model is trained on all 71 FEATURE_COLS (sim_* features included since last retrain).
+_MODEL_FEATURE_COLS = FEATURE_COLS
 
 _SIM_CACHE: dict[str, dict] = {}
 
