@@ -24,7 +24,7 @@ Three things shifted in the last 36 months that, together, made an institutional
 | Code production | 5–10 engineers, 12+ months | AI-assisted, one engineer, weeks |
 | **Build cost** | **$3–5M/year** | **~$50–80/month** |
 
-The collapse is not 10×. It is closer to 5000×. An entire competitive analysis category — "who else is doing this?" — empties out, because the people who could afford the old cost structure cannot afford the regulatory, account-access, and talent-cost economics required to enter at the new one. Books cap individual bets at $25–500, which makes the addressable market unsuitable for a $7–10M/year quant team but ideal for a solo operator. This is the same shape as micro-cap equity arbitrage: institutions ignore markets below ~$500M deployable capacity, so the edge gets left for individuals.
+The infrastructure cost reduction implied by the table above is roughly 5000×: from $3–5M/year for a full quant-sports team down to $50–80/month in cloud compute. The competitive dynamic is structural rather than cost-driven: traditional quantitative operators who require substantial deployable capital to justify that overhead find per-game bet limits ($25–500 at most books) too constraining to generate adequate returns at their scale. The addressable capacity is the barrier, not the build cost. This is the same structure as micro-cap equity arbitrage: institutions pass on markets below ~$500M deployable capacity, leaving the edge accessible to individuals who can operate within the limits.
 
 The window closes in 1–3 years, when Genius Sports or Sportradar productizes a tracking-integrated prop pricing API and sells it to books at retail scale. Voulgaris exploited NBA totals for fifteen years before the market caught up. Benter ran Hong Kong racing for thirty. There is documented precedent for solo operators holding edges this long; see [docs/research/precedent-analysis.md](docs/research/precedent-analysis.md).
 
@@ -138,24 +138,44 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 
 ---
 
-## Results (80-game holdout, walk-forward season-purged)
+## Results
 
-| Model | Target    | R²   | MAE | ECE   | N  |
-|-------|-----------|------|-----|-------|----|
-| pts   | points    | 0.47 | 4.9 | 0.021 | 80 |
-| reb   | rebounds  | 0.40 | 2.1 | 0.028 | 80 |
-| ast   | assists   | 0.46 | 1.7 | 0.024 | 80 |
-| fg3m  | 3PM       | 0.28 | 1.0 | 0.035 | 80 |
-| tov   | turnovers | 0.25 | 1.1 | 0.041 | 80 |
-| blk   | blocks    | 0.18 | 0.6 | 0.056 | 80 |
-| stl   | steals    | 0.09 | 0.7 | 0.071 | 80 |
+### Measured — API-data holdout (N=480 player-game observations, walk-forward temporal CV)
 
-**Portfolio:** 312 settled picks. CLV +14 bps/bet vs Pinnacle Shin-devigged close (t=2.3). Realized ROI +3.8% on 1u-Kelly-fractional sizing. Reliability diagrams and per-market CLV in [/results](./results).
+Models trained on NBA API data (2018–present). Walk-forward: every fold trains on `game_date < t`, evaluated on `game_date >= t`. 48-hour same-team purge eliminates autocorrelation leakage. These are **holdout** R² values, not training R². Source: [`data/models/model_registry.json`](data/models/model_registry.json).
 
-**CV contribution:** Combined CV spatial features = 31% of SHAP mass on pts model. Delta R² over API-only baseline: +0.08. Three features drive the moat:
+| Model | Target    | Holdout R² | MAE  | Train R² |
+|-------|-----------|-----------|------|---------|
+| pts   | points    | 0.41      | 4.12 | 0.47    |
+| reb   | rebounds  | 0.38      | 1.84 | 0.43    |
+| ast   | assists   | 0.36      | 1.52 | 0.42    |
+| fg3m  | 3PM       | 0.29      | 0.91 | 0.34    |
+| tov   | turnovers | 0.22      | 0.76 | 0.28    |
+| blk   | blocks    | 0.16      | 0.42 | 0.22    |
+| stl   | steals    | 0.18      | 0.48 | 0.24    |
+
+Win probability holdout (2018–present): Accuracy 69.1%, Brier 0.203. xFG model: Brier 0.226.
+
+These are API-only models — no CV features yet. The holdout set is 20% of total observations (480 of 2,880 player-game records).
+
+### Projected — pending 80-game CV run
+
+**The items below are not yet measured.** They are model-design projections gated on two blockers:
+
+1. **Compute blocker (RunPod):** 80-game CV ingest — currently 17 of 80 games processed locally. Estimated ~7–9 hours on RTX 3090, ~$5 GPU budget.
+2. **Paper-trading gate:** ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3% before any live capital.
+
+Once these pass, expected results:
+- **CV delta R² +0.08** over API-only baseline — projected contribution of spatial features (defender_distance, spacing_score, legs_fatigue). Bootstrap CIs on the current 17-game sample overlap zero at 95%; number becomes precise at 80 games.
+- **CLV +14 bps/bet vs Pinnacle** Shin-devigged close — projected from backtested edge model.
+- **Realized ROI +3.8%** on 1u-Kelly-fractional sizing — projected; dependent on fill prices and book limits.
+
+CV features that drive the projected moat (currently wired in pipeline, not yet in production models):
 - **defender_distance** — meters to nearest defender at shot release, post-homography court coordinates
 - **spacing_score** — convex hull area of 4 off-ball offensive players, normalized to half-court
 - **legs_fatigue** — cumulative running distance over last 6 minutes, exponentially decayed
+
+Reliability diagrams and CLV charts will be generated by `python scripts/generate_results.py` after the CV run completes. See [`results/README.md`](results/README.md).
 
 ---
 
@@ -167,7 +187,7 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 
 **Fractional Kelly + shrinkage correlation.** Full Kelly ignores parameter uncertainty; fractional multiplier k in [0.25, 0.5] scales by model confidence tier. Ledoit-Wolf shrinkage on the 7×7 residual covariance matrix reduces correlated-leg overstaking by 20–40%. Implementation: [src/prediction/betting_portfolio.py](src/prediction/betting_portfolio.py).
 
-**CLV over ROI.** Realized ROI on 312 picks is noisy. CLV against Shin-devigged Pinnacle close is almost-unbiased. CLV is the primary metric; ROI is the secondary check.
+**CLV over ROI.** Realized ROI on a small pick sample is noisy at low N. CLV against Shin-devigged Pinnacle close is almost-unbiased and is the primary validation metric; realized ROI is the secondary check once the paper-trading gate has enough settled bets.
 
 ---
 
@@ -254,7 +274,7 @@ No live capital until all circuit breakers are coded and the paper-trading gate 
 
 ## Limitations
 
-- STL model R²=0.09 — effectively no signal. Requires zero-inflated specification. Not shipping until it beats baseline on clean holdout.
+- STL model holdout R²=0.18 — weakest prop model. Steals are zero-inflated and high-variance; treat predictions as low-confidence signals, size ≤25% full Kelly until zero-inflated specification is implemented.
 - `ball_track_suspended` stays True on ~8% of games. Known bug, scheduled for triage at 80-game volume.
 - N=80 CV games is thin. Bootstrap CIs on defender_distance and spacing_score overlap zero at 95% on tail markets. The +0.08 R² figure is directional, not precise. Tier 3–4 model retrain is gated on a larger corpus.
 - CLV measured against Pinnacle close, not fill price. Actual fills at DK/FD have wider vig. Fill-price simulation is in flight.

@@ -1,8 +1,18 @@
 # Results
 
-Reliability diagrams, CLV plots, and per-model ECE for CourtVision v0.14.0-80g.
+This directory will contain reliability diagrams, CLV plots, and per-model ECE once the 80-game CV run and paper-trading gate complete.
 
-## Schema
+## Status
+
+**Nothing here yet.** The 80-game CV ingest run is in progress: 17 of 80 games processed. Once complete, run:
+
+```bash
+python scripts/generate_results.py
+```
+
+Metrics available right now: [`data/models/model_registry.json`](../data/models/model_registry.json) — API-data holdout R² and MAE per model, walk-forward temporal CV.
+
+## Artifact schema (post-run)
 
 | File | Description |
 |------|-------------|
@@ -17,9 +27,4 @@ Reliability diagrams, CLV plots, and per-model ECE for CourtVision v0.14.0-80g.
 | `clv_by_time.png` | CLV vs time-to-close scatter |
 | `clv_cumulative.png` | Cumulative CLV over bet sequence with bootstrap band |
 | `ece_by_model.csv` | ECE and MCE per model, walk-forward folds |
-| `clv_picks.csv` | Full 312-pick CLV dataset |
-
-## Current status
-
-Plots pending release v0.14.0-80g. Run `python scripts/generate_results.py` after
-the 80-game holdout to populate this directory.
+| `clv_picks.csv` | Full pick-log CLV dataset (populated after paper-trading gate: ≥50 settled bets) |
