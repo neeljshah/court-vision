@@ -1,6 +1,6 @@
 # Execution Engine — Multi-Book Routing and Account Health
 
-*Status: Architecture designed; adapters in Phase 17. Dry-run (LIVE_BETTING=0) gate enforced until Phase 19 paper trading passes. Updated 2026-05-10.*
+*Architecture design. Dry-run (`LIVE_BETTING=0`) gate enforced until paper trading passes.*
 
 ---
 
@@ -8,7 +8,7 @@
 
 The execution engine is the last mile: sized bets from the Kelly sizer flow here and get placed at the optimal venue at the best available price. It manages nine venue adapters, tracks account health across all books, routes to P2P when price is competitive, and enforces kill switches.
 
-No live capital is deployed until all circuit breakers are coded, tested, and the Phase 19 paper-trading gate is passed (≥50 paper bets, CLV beat rate ≥55%, paper ROI ≥3%).
+No live capital is deployed until all circuit breakers are coded, tested, and the paper-trading gate is passed (≥50 paper bets, CLV beat rate ≥55%, paper ROI ≥3%).
 
 ---
 
@@ -50,7 +50,7 @@ No public API exists for these books. Two approaches:
 System generates bet slip details (book, market, side, amount) and alerts for manual placement. Lowest automation, highest reliability, no TOS risk.
 
 **Option B: Playwright automation**
-Automate web interface via headless browser. Higher throughput; higher detection risk. Books increasingly fingerprint browser automation. Implementation: `src/execution/book_router.py` (Phase 17)
+Automate web interface via headless browser. Higher throughput; higher detection risk. Books increasingly fingerprint browser automation. Implementation: `src/execution/book_router.py`
 
 Current implementation: manual queue for DraftKings and FanDuel; Playwright path in development.
 
@@ -61,14 +61,14 @@ Current implementation: manual queue for DraftKings and FanDuel; Playwright path
 | Kalshi | REST (CFTC-regulated) | `src/execution/kalshi.py` | Limit orders preferred — captures maker rebates |
 | Polymarket | CLOB order placement | `src/execution/polymarket.py` | USDC; US residents technically prohibited |
 | Sporttrade | Connect Trade REST | `src/execution/sporttrade.py` | Exchange-model sportsbook |
-| Novig | API (sweepstakes) | TBD (Phase 5) | Zero vig; no limiting |
-| ProphetX | API (sweepstakes) | TBD (Phase 5) | Zero vig; no limiting |
+| Novig | API (sweepstakes) | Planned | Zero vig; no limiting |
+| ProphetX | API (sweepstakes) | Planned | Zero vig; no limiting |
 
 ### Kalshi Detail
 
 Kalshi operates as a CFTC-regulated event contract exchange. Player performance contracts are available for some markets (primarily game-level; some player performance). The calibration layer (`CalibrationLayer.win_prob()`) converts stat projections to binary contract prices. Limit orders at FV − half_spread capture maker rebates and reduce effective cost.
 
-Market making on Kalshi (Phase 28): quote at `FV ± half_spread`, where FV is calibrated win probability and half_spread widens under high model uncertainty or detected adverse-selection flow. Kill switch: inventory > 10% bankroll or adverse-selection ratio > 2.0.
+Market making on Kalshi: quote at `FV ± half_spread`, where FV is calibrated win probability and half_spread widens under high model uncertainty or detected adverse-selection flow. Kill switch: inventory > 10% bankroll or adverse-selection ratio > 2.0.
 
 ---
 
@@ -103,13 +103,13 @@ All must be coded and tested before live capital is deployed:
 | Drawdown kill switch | > 10% below high-water mark | Paper-only mode + 24hr cooldown |
 | Consecutive losing streak | 3 losses → 50% stake; 5 → paper only | Automatic stake reduction |
 | Model disagreement halt | Ensemble spread > 3 stat units | Skip market |
-| Data quality degradation | Fallback vendor active | 0.5× Kelly multiplier (Phase 38) |
+| Data quality degradation | Fallback vendor active | 0.5× Kelly multiplier |
 
-**Global dry-run gate:** `LIVE_BETTING=0` flag in `scripts/daily_run.sh` forces all adapters to log intent and skip real orders. This flag is hard-coded until the Phase 19 paper-trading gate is passed.
+**Global dry-run gate:** `LIVE_BETTING=0` flag in `scripts/daily_run.sh` forces all adapters to log intent and skip real orders. This flag is hard-coded until the paper-trading gate is passed.
 
 ---
 
-## Paper Trading (Phase 19)
+## Paper Trading
 
 Before live capital:
 1. Run the full daily stack with `LIVE_BETTING=0`
@@ -124,7 +124,7 @@ Paper trading catches real issues that backtests cannot simulate: API timeouts, 
 
 ---
 
-## P2P Market Making (Phase 32, long-term)
+## P2P Market Making
 
 On Novig and ProphetX, the router can post lines rather than match them. Mechanics:
 

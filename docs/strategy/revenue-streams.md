@@ -1,6 +1,6 @@
 # Revenue Streams — Beyond Direct Bankroll
 
-*Status: Stream 1 (betting) is the current focus. Streams 2–4 are longer-term diversification. Updated 2026-05-10.*
+*Four revenue streams — direct betting, picks service, API licensing, dashboard SaaS.*
 
 ---
 

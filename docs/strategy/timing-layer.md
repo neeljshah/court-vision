@@ -1,6 +1,6 @@
 # Timing Layer — When to Bet Throughout the Day
 
-*Status: Designed. Automation is Phase 3 (6am polling) and Phase 4 (full orchestration). Updated 2026-05-10.*
+*Event timeline from 6am to post-game — when to capture each edge.*
 
 ---
 

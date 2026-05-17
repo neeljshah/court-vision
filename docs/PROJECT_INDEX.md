@@ -67,7 +67,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 |----------|---------|
 | [MASTER_PLAN.md](../MASTER_PLAN.md) | Full strategic vision — load at session start |
 | [README.md](../README.md) | System overview, results, methodology, limitations |
-| [CLAUDE.md](../CLAUDE.md) | Session state, operational runbook, current phase |
+| [CLAUDE.md](../CLAUDE.md) | Operational runbook and session state |
 | [.planning/ROADMAP.md](../.planning/ROADMAP.md) | Full phase roadmap (125K; load only if needed) |
 
 ---
@@ -82,7 +82,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 | `src/pipeline/` | unified_pipeline.py — the orchestrator |
 | `src/ingest/` | SQLite queue, yt-dlp wrapper, B2 sync |
 | `src/data/` | NBA API connectors, line monitor, injury scraper |
-| `src/execution/` | Book adapters (Phase 17) |
+| `src/execution/` | Book adapters, exchange connectors |
 | `api/` | FastAPI — 9 endpoints, 5 routers |
 | `scripts/` | Operational scripts — ingest, batch, setup, validation |
 | `tests/` | 960+ tests; 93 skip (PG/GPU excluded) |

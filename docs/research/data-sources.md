@@ -1,6 +1,6 @@
 # Data Sources — Complete Architecture
 
-*Status: Reference document. Updated 2026-05-10.*
+*Complete data architecture — free tier, paid tier, proprietary CV pipeline.*
 
 ---
 
@@ -14,27 +14,27 @@ The system draws on four tiers of data: free public sources (cost: $0), cheap pa
 
 | Source | URL | Data | Rate Limits | Status |
 |--------|-----|------|-------------|--------|
-| `nba_api` Python package | github.com/swar/nba_api | 70+ endpoints: box scores, PBP, tracking aggregates, shot charts (x/y coords), lineup data, on/off splits | ~600 req/min max; cloud IPs get banned — use residential or add delays | ✅ Wired |
-| PBPStats API | api.pbpstats.com | Possession-level PBP, on/off splits, shooting by zone, lineup combinations | Reasonable | ✅ Wired |
-| Basketball-Reference | basketball-reference.com | Historical stats 1947–present, advanced metrics, contract data | Rate limit carefully; respect robots.txt | ✅ Wired |
-| `shufinskiy/nba_data` | github.com/shufinskiy/nba_data | Pre-scraped PBP from stats.nba.com + pbpstats.com, 1996–present. Ready to download | One-time download | ✅ Downloaded |
-| NBA.com tracking pages | nba.com/stats/players/speed-distance | Speed, distance, touches, closest defender distance (aggregated, not per-possession) | Via `nba_api` LeagueDashPtStats | ✅ Wired |
-| SportVU 2015-16 | github.com/sealneaward/nba-movement-data | 631 games, raw 25fps XY player + ball coordinates. Only public raw tracking release. | One-time download | 🔲 Planned (validation use) |
-| Kaggle NBA database | kaggle.com/datasets/wyattowalsh/basketball | 64K+ games, 4800+ players, box scores since 1947 | One-time download | ✅ Downloaded |
-| Kaggle NBA PBP | kaggle.com/datasets/szymonjwiak/nba-play-by-play-data-1997-2023 | Play-by-play 1997–2025 | One-time download | ✅ Downloaded |
-| Referee assignments | official.nba.com/referee-assignments | Daily ref crew posted ~9am ET | Scrape daily | ⏳ In progress |
-| NBAstuffer referee stats | nbastuffer.com/nba-stats/referee | Game-by-game ref stats, multi-season | Scrapeable | 🔲 Planned |
-| Covers.com referee | covers.com/sport/basketball/nba/referees | Ref O/U records, ATS tendencies | Scrapeable | 🔲 Planned |
-| Basketball-Reference refs | basketball-reference.com/referees | Ref career directory + game stats | Scrapeable | 🔲 Planned |
-| NBA injury reports | nba.com/players/injuries | Mandatory filings 1pm/5pm ET game days | Poll 2×/day | ✅ Wired |
-| RotoWire injuries | rotowire.com/basketball/injury-report.php | Injury report + status + news | Scrapeable | ✅ Wired |
-| ESPN injuries | espn.com/nba/injuries | Per-team injury status | Scrapeable | ⏳ Partial |
-| BallDontLie | balldontlie.io | Players, games, stats, standings, injuries | Free tier available | ✅ Wired |
-| OddsPortal | oddsportal.com | Historical closing lines, odds movement | Scrapeable (rate-limit carefully) | 🔲 Planned |
-| SportsOddsHistory | sportsoddshistory.com | Archived futures, spreads, totals | Scrapeable | 🔲 Planned |
-| The Odds API (free) | the-odds-api.com | Live odds 40+ books, 500 req/mo | 500 req/mo free tier | ✅ Wired (free tier) |
-| YouTube highlights | youtube.com | 10–20 min highlight clips via yt-dlp + cookies | Gray area; working approach | ✅ Wired |
-| archive.org | archive.org | Some older full games | Availability varies | ✅ Fallback (Pass 2.5) |
+| `nba_api` Python package | github.com/swar/nba_api | 70+ endpoints: box scores, PBP, tracking aggregates, shot charts (x/y coords), lineup data, on/off splits | ~600 req/min max; cloud IPs get banned — use residential or add delays | Wired |
+| PBPStats API | api.pbpstats.com | Possession-level PBP, on/off splits, shooting by zone, lineup combinations | Reasonable | Wired |
+| Basketball-Reference | basketball-reference.com | Historical stats 1947–present, advanced metrics, contract data | Rate limit carefully; respect robots.txt | Wired |
+| `shufinskiy/nba_data` | github.com/shufinskiy/nba_data | Pre-scraped PBP from stats.nba.com + pbpstats.com, 1996–present. Ready to download | One-time download | Downloaded |
+| NBA.com tracking pages | nba.com/stats/players/speed-distance | Speed, distance, touches, closest defender distance (aggregated, not per-possession) | Via `nba_api` LeagueDashPtStats | Wired |
+| SportVU 2015-16 | github.com/sealneaward/nba-movement-data | 631 games, raw 25fps XY player + ball coordinates. Only public raw tracking release. | One-time download | Planned (validation use) |
+| Kaggle NBA database | kaggle.com/datasets/wyattowalsh/basketball | 64K+ games, 4800+ players, box scores since 1947 | One-time download | Downloaded |
+| Kaggle NBA PBP | kaggle.com/datasets/szymonjwiak/nba-play-by-play-data-1997-2023 | Play-by-play 1997–2025 | One-time download | Downloaded |
+| Referee assignments | official.nba.com/referee-assignments | Daily ref crew posted ~9am ET | Scrape daily | In progress |
+| NBAstuffer referee stats | nbastuffer.com/nba-stats/referee | Game-by-game ref stats, multi-season | Scrapeable | Planned |
+| Covers.com referee | covers.com/sport/basketball/nba/referees | Ref O/U records, ATS tendencies | Scrapeable | Planned |
+| Basketball-Reference refs | basketball-reference.com/referees | Ref career directory + game stats | Scrapeable | Planned |
+| NBA injury reports | nba.com/players/injuries | Mandatory filings 1pm/5pm ET game days | Poll 2×/day | Wired |
+| RotoWire injuries | rotowire.com/basketball/injury-report.php | Injury report + status + news | Scrapeable | Wired |
+| ESPN injuries | espn.com/nba/injuries | Per-team injury status | Scrapeable | Partial |
+| BallDontLie | balldontlie.io | Players, games, stats, standings, injuries | Free tier available | Wired |
+| OddsPortal | oddsportal.com | Historical closing lines, odds movement | Scrapeable (rate-limit carefully) | Planned |
+| SportsOddsHistory | sportsoddshistory.com | Archived futures, spreads, totals | Scrapeable | Planned |
+| The Odds API (free) | the-odds-api.com | Live odds 40+ books, 500 req/mo | 500 req/mo free tier | Wired (free tier) |
+| YouTube highlights | youtube.com | 10–20 min highlight clips via yt-dlp + cookies | Gray area; working approach | Wired |
+| archive.org | archive.org | Some older full games | Availability varies | Fallback (Pass 2.5) |
 
 ---
 
@@ -42,12 +42,12 @@ The system draws on four tiers of data: free public sources (cost: $0), cheap pa
 
 | Source | URL | Data | Cost | Status |
 |--------|-----|------|------|--------|
-| The Odds API (paid) | the-odds-api.com | Real-time props across 40+ books, enough for production | $20–80/mo | 🔲 Production path |
-| Cleaning the Glass | cleaningtheglass.com | Garbage-time-filtered stats, lineup combinations, play types | ~$10/mo | 🔲 Planned |
-| BigDataBall | bigdataball.com | Validated PBP + odds combined, per-season | $30–50/season | 🔲 Planned |
-| Colab Pro | colab.research.google.com | T4/A100 GPU access, longer sessions | $10/mo | ⏳ Used for prototyping |
-| Vast.ai GPU | vast.ai | RTX 3090 $0.20–0.30/hr, RTX 4090 $0.28–0.32/hr | Pay-per-use | ✅ Used |
-| RunPod GPU | runpod.io | RTX 4090 $0.34/hr, A100 $1.39/hr. More reliable than Vast. | Pay-per-use | ✅ Active (current 80-game run) |
+| The Odds API (paid) | the-odds-api.com | Real-time props across 40+ books, enough for production | $20–80/mo | Production path |
+| Cleaning the Glass | cleaningtheglass.com | Garbage-time-filtered stats, lineup combinations, play types | ~$10/mo | Planned |
+| BigDataBall | bigdataball.com | Validated PBP + odds combined, per-season | $30–50/season | Planned |
+| Colab Pro | colab.research.google.com | T4/A100 GPU access, longer sessions | $10/mo | Used for prototyping |
+| Vast.ai GPU | vast.ai | RTX 3090 $0.20–0.30/hr, RTX 4090 $0.28–0.32/hr | Pay-per-use | Used |
+| RunPod GPU | runpod.io | RTX 4090 $0.34/hr, A100 $1.39/hr. More reliable than Vast. | Pay-per-use | Active (current 80-game run) |
 
 ---
 

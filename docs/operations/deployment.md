@@ -1,6 +1,6 @@
 # Deployment — API and Dashboard
 
-*Status: FastAPI serving is operational (9 endpoints). Dashboard is Phase 7. VPS deployment is Phase 21. Updated 2026-05-10.*
+*API serving, execution router, and deployment architecture.*
 
 ---
 

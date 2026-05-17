@@ -1,6 +1,6 @@
 # CV Pipeline — YOLO to Court-Coordinate Features
 
-*Status: BUILT (17 games). Retrain gate at 80 games. Updated 2026-05-10.*
+*Full CV layer — YOLO detection through court-coordinate feature extraction.*
 
 ---
 

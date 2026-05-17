@@ -1,6 +1,6 @@
 # Learning Loop — How the System Improves Every Night
 
-*Status: Framework designed. Nightly automation is Phase 8. Residual collection and CLV computation are wired as of Phase 13.5. Updated 2026-05-10.*
+*Nightly improvement cycle — residuals, calibration, drift detection, auto-retrain.*
 
 ---
 

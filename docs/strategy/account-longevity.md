@@ -1,6 +1,6 @@
 # Account Longevity — Anti-Limiting Tactics
 
-*Status: Strategy document. Account health monitoring is Phase 4. Updated 2026-05-10.*
+*Heat score model, rotation strategy, and P2P migration for account longevity.*
 
 ---
 

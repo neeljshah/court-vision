@@ -1,6 +1,6 @@
 # Multi-Sport Expansion Plan
 
-*Status: NBA primary. NFL/MLB/Soccer expansion is Phase 10 (2027). Infrastructure designed for reuse. Updated 2026-05-10.*
+*NFL, MLB, Soccer expansion plan — infrastructure reuse by component.*
 
 ---
 
@@ -18,14 +18,14 @@ Basketball has the strongest case for this specific approach:
 
 | Component | NBA | NFL | MLB | Soccer |
 |-----------|-----|-----|-----|--------|
-| Odds ingestion (The Odds API) | ✅ | 100% reuse | 100% reuse | 100% reuse |
-| Execution adapters (all books) | ✅ | 100% reuse | 100% reuse | 100% reuse |
-| Kelly / risk systems | ✅ | 100% reuse | 100% reuse | 100% reuse |
-| Dashboard | ✅ | 90% reuse | 90% reuse | 90% reuse |
-| Context features (fatigue, travel) | ✅ | 80% reuse | 80% reuse | 70% reuse |
-| Possession simulator | ✅ | Rebuild | Rebuild | Rebuild |
-| CV pipeline | ✅ | Adapt | Adapt | Harder |
-| Spatial feature engineering | ✅ | Sport-specific | Sport-specific | Sport-specific |
+| Odds ingestion (The Odds API) | NBA | 100% reuse | 100% reuse | 100% reuse |
+| Execution adapters (all books) | NBA | 100% reuse | 100% reuse | 100% reuse |
+| Kelly / risk systems | NBA | 100% reuse | 100% reuse | 100% reuse |
+| Dashboard | NBA | 90% reuse | 90% reuse | 90% reuse |
+| Context features (fatigue, travel) | NBA | 80% reuse | 80% reuse | 70% reuse |
+| Possession simulator | NBA | Rebuild | Rebuild | Rebuild |
+| CV pipeline | NBA | Adapt | Adapt | Harder |
+| Spatial feature engineering | NBA | Sport-specific | Sport-specific | Sport-specific |
 
 The key insight: the execution, risk, and market infrastructure is sport-agnostic. Building it once for NBA means 100% of those components transfer. The simulator and CV pipeline are sport-specific, but they constitute only ~20% of total system complexity.
 

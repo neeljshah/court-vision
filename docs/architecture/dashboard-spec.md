@@ -1,6 +1,6 @@
 # Dashboard Specification — Bloomberg Terminal for Sports Betting
 
-*Status: Designed. Implementation is Phase 7 (parallel to Phases 4–6). Updated 2026-05-10.*
+*Design specification for the real-time monitoring interface.*
 
 ---
 

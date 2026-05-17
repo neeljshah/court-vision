@@ -1,6 +1,6 @@
 # Validation Methodology — Proving the Edge Before Risking Capital
 
-*Status: Reference document. Core methodology is implemented; full CLV validation is Phase 0. Updated 2026-05-10.*
+*CLV framework — how to prove edge exists before deploying capital.*
 
 ---
 
@@ -139,23 +139,22 @@ The walk-forward harness: [`src/prediction/prop_backtester.py`](../../src/predic
 | Per-prop-type CLV | 100 bets per type | p < 0.10 |
 | Calibration check | 200 bets per probability decile | ECE < 0.05 |
 | Model retrain gate | 80 CV games | Δ R² > 0.05 on holdout |
-| Paper trading gate (Phase 19) | 50 bets | CLV beat rate ≥ 55%, paper ROI ≥ 3% |
-| Live capital gate | Pass Phase 19 + manual review | All circuit breakers tested |
+| Paper trading gate | 50 bets | CLV beat rate ≥ 55%, paper ROI ≥ 3% |
+| Live capital gate | Pass paper trading + manual review | All circuit breakers tested |
 
 ---
 
-## Current Validation Status
+## Validation Targets
 
-| Metric | Current | Target | Gap |
-|--------|---------|--------|-----|
-| Settled picks | 312 | 500+ | 188 more needed |
-| CLV vs Pinnacle | +14 bps/bet (t=2.3) | > 0, p < 0.05 | ✅ passes at current N |
-| Realized ROI | +3.8% on 1u-Kelly sizing | > 0 | ✅ directionally positive |
-| pts model R² | 0.47 (17 CV games) | ≥ 0.50 (target at 80 games) | ⏳ pending 80-game run |
-| Calibration ECE | pts=0.021, blk=0.056, stl=0.071 | < 0.05 across all | ⚠️ blk/stl need work |
-| Calibration training | Not yet run (needs prop_residuals.json) | Platt scaling applied | 🔲 Phase 1 task |
+| Metric | Target |
+|--------|--------|
+| Settled picks | 500+ |
+| CLV vs Pinnacle | > 0, p < 0.05 |
+| pts model R² | ≥ 0.50 (at 80 CV games) |
+| Calibration ECE | < 0.05 across all prop types |
+| Calibration training | Platt scaling applied post-residual generation |
 
-**Note on CLV figures:** CLV is measured against Pinnacle's closing line, which is not the price at which any bet is placed. Actual fills occur at DraftKings, FanDuel, and exchanges with wider vig and lower limits. +14 bps CLV translates to a smaller realized edge after margin differences. No fill-price simulation has been run; Phase 18.5 adds realistic fill modeling.
+**Note on CLV figures:** CLV is measured against Pinnacle's closing line, which is not the price at which any bet is placed. Actual fills occur at DraftKings, FanDuel, and exchanges with wider vig and lower limits. Realistic fill modeling is planned to close this gap.
 
 ---
 

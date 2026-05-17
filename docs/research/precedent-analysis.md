@@ -1,6 +1,6 @@
 # Precedent Analysis — Solo Operators Who Built Real Edge
 
-*Status: Research document. Updated 2026-05-10.*
+*Voulgaris, Benter, Thorp — solo operators who proved the template.*
 
 ---
 

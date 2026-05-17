@@ -1,6 +1,6 @@
 # Model Registry — 75 Models, What Each Does, Current Performance
 
-*Status: Reference document. Updated 2026-05-10.*
+*75 models organized by data-requirement tier, with current performance metrics.*
 
 ---
 
@@ -8,15 +8,15 @@
 
 The 75 models are organized into 6 data-requirement tiers. Tier determines when retrain is warranted, not model importance.
 
-| Tier | Data gate | Count | Algorithm | Status | Production gate |
-|------|-----------|-------|-----------|--------|-----------------|
-| 1 | NBA API only | 13 | XGBoost + Ridge stacker | Trained | ✅ Shipped |
-| 2 | Shot chart data | 5 | XGBoost | Trained | ✅ Shipped |
-| 2B | Lifecycle + betting signals | 6 | XGBoost / logistic | Trained | ✅ Shipped |
-| 3 | 20+ CV games | 10 | XGBoost | Trained on 17-game subset | Retrain at 80 games |
-| 4 | 50+ CV games | 8 | XGBoost | Trained stubs | Retrain at 80 games |
-| 5 | NLP / feedback loop | 7 | XGBoost / logistic | Trained stubs | Phase 9 wired |
-| 6 | 200+ CV games | 7 | LSTM + ensemble | Code scaffolded; not trained | Phase 33 |
+| Tier | Data gate | Count | Algorithm | Production gate |
+|------|-----------|-------|-----------|-----------------|
+| 1 | NBA API only | 13 | XGBoost + Ridge stacker | Shipped |
+| 2 | Shot chart data | 5 | XGBoost | Shipped |
+| 2B | Lifecycle + betting signals | 6 | XGBoost / logistic | Shipped |
+| 3 | 20+ CV games | 10 | XGBoost | Retrain gate: 80 games |
+| 4 | 50+ CV games | 8 | XGBoost | Retrain gate: 80 games |
+| 5 | NLP / feedback loop | 7 | XGBoost / logistic | Requires NLP pipeline |
+| 6 | 200+ CV games | 7 | LSTM + ensemble | Requires 200+ game corpus |
 
 **Model registry file:** `data/models/model_registry.json`
 
@@ -77,7 +77,7 @@ Trained but not yet generating standalone betting signal at volume. They filter 
 
 These models incorporate CV spatial features. Trained on 17-game subset; R² values below are on this limited sample. All will be retrained when 80-game ingest completes.
 
-**Target after retrain:** pts R² ≥ 0.55 (Phase 20 spec).
+**Target after retrain:** pts R² ≥ 0.55.
 
 | Model | Target | Current R² | Target R² | Key CV features |
 |-------|--------|------------|-----------|----------------|
@@ -119,13 +119,13 @@ Trained stubs requiring larger CV sample for meaningful training.
 
 | Model | Target | Status |
 |-------|--------|--------|
-| injury_severity_clf | Injury severity from report text | ⚠️ Partial |
-| dnp_probability | P(DNP) from current injury status | ⚠️ Partial |
-| lineup_confirmation | P(lineup confirmed at tipoff) | 🔲 Planned |
-| reporter_credibility | Credibility score for injury sources | ⚠️ Partial |
-| rest_prediction | P(star player resting today) | 🔲 Planned |
-| sentiment_analysis | Press conference / media tone | 🔲 Planned |
-| edge_decay_classifier | Detecting when a model edge is decaying | 🔲 Planned |
+| injury_severity_clf | Injury severity from report text | Partial |
+| dnp_probability | P(DNP) from current injury status | Partial |
+| lineup_confirmation | P(lineup confirmed at tipoff) | Planned |
+| reporter_credibility | Credibility score for injury sources | Partial |
+| rest_prediction | P(star player resting today) | Planned |
+| sentiment_analysis | Press conference / media tone | Planned |
+| edge_decay_classifier | Detecting when a model edge is decaying | Planned |
 
 ---
 
@@ -149,7 +149,7 @@ These require 200+ CV games for meaningful LSTM sequence training. Code is scaff
 
 All Tier 1–2B models are registered in `data/models/model_registry.json` and served via [`api/main.py`](../../api/main.py).
 
-**9 API endpoints as of Phase 13.5:**
+**API endpoints:**
 - `POST /predict/player-props` — batch prediction for a slate
 - `GET /predict/win-probability` — game win probability
 - `GET /predict/game-total` — over/under for game

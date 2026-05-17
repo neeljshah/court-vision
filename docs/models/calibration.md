@@ -1,6 +1,6 @@
 # Probability Calibration — Making the Distributions Trustworthy
 
-*Status: CalibrationLayer is implemented. Full calibration training blocked on prop_residuals.json (needs 80-game run). Updated 2026-05-10.*
+*Probability calibration — Platt scaling, isotonic regression, ECE targets, Shin devig.*
 
 ---
 
@@ -73,7 +73,7 @@ class CalibrationLayer:
         self.calibrators[prop_type] = cal
 ```
 
-**Status:** `train_win_prob()` requires `prop_residuals.json`. This file needs to be regenerated from the 80-game holdout. The calibration training step is Phase 1, Task 1.
+`train_win_prob()` requires `prop_residuals.json`, which needs to be regenerated from the 80-game holdout.
 
 ---
 
@@ -93,13 +93,13 @@ Lower ECE = better calibrated. Target: ECE < 0.05 across all prop types.
 
 | Prop | ECE | Status | Notes |
 |------|-----|--------|-------|
-| pts | 0.021 | ✅ Well-calibrated | Largest sample; most reliable |
-| reb | 0.028 | ✅ Acceptable | — |
-| ast | 0.024 | ✅ Acceptable | — |
-| fg3m | 0.035 | ✅ Marginal | 3PM variability |
-| tov | 0.041 | ⚠️ Needs work | Some overconfidence |
-| blk | 0.056 | ⚠️ Needs work | Rare event; sample too small |
-| stl | 0.071 | ❌ Poor | Same as blk; also R²=0.09 |
+| pts | 0.021 | Well-calibrated | Largest sample; most reliable |
+| reb | 0.028 | Acceptable | — |
+| ast | 0.024 | Acceptable | — |
+| fg3m | 0.035 | Marginal | 3PM variability |
+| tov | 0.041 | Needs work | Some overconfidence |
+| blk | 0.056 | Needs work | Rare event; sample too small |
+| stl | 0.071 | Poor | Same as blk; also R²=0.09 |
 
 ---
 
@@ -150,12 +150,12 @@ Implementation: [`src/prediction/betting_edge.py`](../../src/prediction/betting_
 
 | Tier | Calibration method | Minimum sample | Current status |
 |------|-------------------|----------------|----------------|
-| 1 (API-only, prop models) | Isotonic regression | 500+ bets | ⚠️ Needs prop_residuals.json |
-| 2 (shot chart) | Platt scaling | 200+ samples | ⚠️ Partial |
-| 2B (lifecycle) | Platt scaling | 100+ samples | ⚠️ Partial |
-| 3–4 (CV-enhanced) | Platt scaling | 80 game retrain first | 🔲 After retrain |
-| 5 (NLP) | Platt scaling | Phase 9 | 🔲 Future |
-| 6 (LSTM) | Full recalibration | Phase 33 | 🔲 Future |
+| 1 (API-only, prop models) | Isotonic regression | 500+ bets | Needs prop_residuals.json |
+| 2 (shot chart) | Platt scaling | 200+ samples | Partial |
+| 2B (lifecycle) | Platt scaling | 100+ samples | Partial |
+| 3–4 (CV-enhanced) | Platt scaling | 80 game retrain first | After retrain |
+| 5 (NLP) | Platt scaling | Requires NLP pipeline | Future |
+| 6 (LSTM) | Full recalibration | Requires 200+ game corpus | Future |
 
 ---
 

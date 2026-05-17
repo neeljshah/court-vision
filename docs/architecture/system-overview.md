@@ -1,6 +1,6 @@
 # System Overview — The 5 Core Systems
 
-*Status: Reference document. Updated 2026-05-10.*
+*Reference document — the 5 core systems and how they interconnect.*
 
 ---
 
@@ -76,7 +76,7 @@ The simulator runs the game possession-by-possession using lineup-dependent tran
 - CV spatial features: defender_distance, spacing_score, legs_fatigue
 - Context: referee crew, rest days, altitude, travel fatigue index
 - Game state: score differential, time remaining (for garbage time modeling)
-- Player embeddings (NBA2Vec — planned, Phase 6)
+- Player embeddings (NBA2Vec — planned)
 
 **Possession mechanics:**
 - Lineup-dependent possession outcome probabilities
@@ -153,7 +153,7 @@ Full Kelly is too aggressive under parameter uncertainty. The system uses fracti
 - 20% drawdown → reduce to quarter Kelly
 - 30% drawdown → suspend all betting, alert, manual review required
 
-**Position limits (Phase 15.7):**
+**Position limits:**
 - Total portfolio exposure: ≤ 20% of bankroll per slate
 - Per-game exposure: ≤ 5% of bankroll
 - Per-player exposure: ≤ 8% of bankroll
@@ -187,7 +187,7 @@ Routes each sized bet to the optimal venue.
 - Novig, ProphetX (P2P; API where available)
 - Kalshi (CFTC-regulated exchange; limit orders preferred for maker rebates)
 
-Implementation: [`api/execution_router.py`](../../api/execution_router.py), [`src/execution/`](../../src/execution/) (Phase 17)
+Implementation: [`api/execution_router.py`](../../api/execution_router.py), [`src/execution/`](../../src/execution/)
 
 ---
 
