@@ -12,8 +12,8 @@ Thanks for contributing. This project combines computer vision, data engineering
 ## Development Setup
 
 ```bash
-git clone https://github.com/neeljshah/nba-ai-system.git
-cd nba-ai-system
+git clone https://github.com/neeljshah/court-vision.git
+cd court-vision
 conda create -n basketball_ai python=3.9 -y
 conda activate basketball_ai
 pip install -r requirements.txt

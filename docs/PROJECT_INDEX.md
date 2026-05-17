@@ -8,7 +8,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 
 | Document | Description |
 |----------|-------------|
-| [edge-taxonomy.md](research/edge-taxonomy.md) | All 37 enumerated edges — CV-spatial, context, model, execution, structural — with academic backing and build estimates |
+| [edge-taxonomy.md](research/edge-taxonomy.md) | All 164 enumerated edges — CV-spatial, context, model, execution, structural — with academic backing and build estimates |
 | [competitive-landscape.md](research/competitive-landscape.md) | Why SIG, Jump, Citadel, and IMC cannot enter player prop markets; the structural argument |
 | [market-microstructure.md](research/market-microstructure.md) | How books price props, where they're systematically wrong, venue comparison |
 | [precedent-analysis.md](research/precedent-analysis.md) | Voulgaris, Benter, Thorp — solo operators who proved the template |
