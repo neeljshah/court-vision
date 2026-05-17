@@ -1,8 +1,7 @@
 """
-test_prop_temporal_cv.py — Wave 0 stubs for temporal CV split contracts.
+test_prop_temporal_cv.py — Temporal CV split contracts.
 
-All tests are xfail(strict=False) — they define the contract that
-src/prediction/prop_cv_split.py (Plan 02) must satisfy.
+Tests verify src/prediction/prop_cv_split.py implements leakage-safe splits.
 """
 import numpy as np
 import pandas as pd
@@ -16,7 +15,6 @@ def _make_date_df(n: int = 300) -> pd.DataFrame:
     return pd.DataFrame({"game_date": dates, "pts": rng.normal(20, 5, n)})
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 02")
 def test_temporal_split() -> None:
     """make_temporal_split returns TimeSeriesSplit with n_splits=5 and
     all fold train indices strictly before val indices in date ordering."""
@@ -36,7 +34,6 @@ def test_temporal_split() -> None:
         ), "Train dates must be strictly before val dates"
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 02")
 def test_no_future_leakage() -> None:
     """For every fold produced by make_temporal_split, max(train_dates) < min(val_dates)."""
     prop_cv_split = pytest.importorskip("src.prediction.prop_cv_split")
@@ -56,7 +53,6 @@ def test_no_future_leakage() -> None:
         )
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 02")
 def test_rolling_features_per_fold() -> None:
     """Documents leakage risk: full-dataset rolling mean differs from
     train-window rolling mean for validation rows.
@@ -90,7 +86,6 @@ def test_rolling_features_per_fold() -> None:
     )
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 02")
 def test_poisson_objective_selector() -> None:
     """_objective_for_stat returns correct XGBoost objective per stat type."""
     prop_cv_split = pytest.importorskip("src.prediction.prop_cv_split")
