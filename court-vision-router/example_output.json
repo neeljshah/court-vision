@@ -1,0 +1,35 @@
+{
+  "game": "Lakers vs Suns",
+  "court_vision_prob": 0.62,
+  "notional_usd": 100.0,
+  "min_edge": 0.02,
+  "timestamp": "2026-04-24T19:44:09.008339+00:00",
+  "books": [
+    {
+      "venue": "polymarket",
+      "market_id": "",
+      "error": "no active market found",
+      "depth_usd": 0,
+      "top_of_book": null,
+      "levels": 0
+    },
+    {
+      "venue": "sx_bet",
+      "market_id": "",
+      "error": "no active market found",
+      "depth_usd": 0,
+      "top_of_book": null,
+      "levels": 0
+    }
+  ],
+  "routing": {
+    "target_usd": 100.0,
+    "cv_prob": 0.62,
+    "min_edge": 0.02,
+    "quotes": [],
+    "allocations": [],
+    "unrouted_usd": 100.0,
+    "status": "none"
+  },
+  "payloads": []
+}
