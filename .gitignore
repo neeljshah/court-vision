@@ -102,6 +102,13 @@ court-visions/
 court-vision-landing/
 teflon-quant-dashboard/
 
+# -- Model training runs (large artifacts, re-generable) ----------------------
+models/runs/
+resources/*.pt
+
+# -- Outreach / personal contact data (sensitive) -----------------------------
+scripts/outreach/
+
 # -- Knowledge base / planning (internal) -------------------------------------
 vault/
 .planning/
@@ -119,6 +126,7 @@ scripts/_*
 .claude_session_changes.json
 .claude/worktrees/
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # -- Benchmark / Diagnostic outputs -------------------------------------------
 data/benchmarks/report_*.json
