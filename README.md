@@ -1,75 +1,115 @@
 # CourtVision
 
-**164 gaps in how sportsbooks price NBA player props. One system to fill them all.**
+**An intelligence layer for basketball — and eventually every sport — that sees the game the way a player does and prices it the way a market does.**
 
-Sportsbooks price player props from box-score averages — season means, opponent defensive rating, recent trends. They don't integrate spatial tracking data, don't model joint distributions for same-game parlays, don't reprice within seconds of a late scratch, and don't calibrate per-referee or per-venue. These aren't one gap. They're 164 distinct, compounding gaps across data collection, modeling, execution, and market structure — [every one enumerated](docs/research/edge-taxonomy.md).
+Sports are measured in box scores. The actual game happens in space and time: who is open, who is recovering, who is tired, who is in foul trouble, who just got switched onto a mismatch. None of this lives in the official feeds. All of it lives in the broadcast. CourtVision turns broadcast video into court-coordinate spatial data, fuses it with 30 seasons of structured NBA data, and runs both through a stack of 75 trained models — scaling to 350 — that simulate every possession of every game in a 10,000-path Monte Carlo loop.
 
-The reason a solo operator can exploit all 164: **the cost of filling each gap collapsed.** Broadcast CV that would have required a dedicated engineering team runs on a rented GPU for $0.40/hour. Feature pipelines that took weeks of data engineering take hours with AI-assisted code generation. Model training that required proprietary infrastructure runs on open-source XGBoost. The entire system operates on ~$50/month. A competing firm doing this at institutional scale would spend $3–5M/year and still face account-access barriers that an individual doesn't.
+The first product is a sports-markets engine: identify [164 specific places](docs/research/edge-taxonomy.md) conventional pricing — the box-score averages, opponent defensive rating, recent-form models that drive every retail sportsbook — is structurally incomplete, and quote prices the books haven't seen. Betting markets are the ideal feedback signal because they pay in dollars when the model is right and take dollars when it is wrong; no other domain provides ground truth that clean, that fast, or that frequent. But the engine itself — the spatial CV, the possession simulator, the model universe — is a general basketball-intelligence layer. Its downstream consumers, in order: prop traders, market-makers, fantasy operators, broadcast graphics, team analytics, scouting, coaching staffs, and eventually the same stack pointed at NCAA, NFL, soccer, and tennis.
+
+This README is a technical map. The thesis is in [The 164 Gaps](#the-164-gaps), the architecture is below, the validation is in [/results](./results), and the limitations are stated plainly.
+
+---
+
+## Why this is possible now
+
+Three things shifted in the last 36 months that, together, made an institutional-grade sports intelligence stack buildable by one person at ~$50/month in operating cost.
+
+| Component | Three years ago | Today |
+|-----------|----------------|-------|
+| Player tracking | $15M Second Spectrum contract | YOLOv8n + SIFT homography, $0.40/hr GPU |
+| Possession-level data | League pass + manual tagging | nba_api + automated PBP enrichment |
+| 75–350 model training | 5-person quant team, ongoing cost | XGBoost + automated feature search, hours not months |
+| Multi-book odds | $50K/yr enterprise data | The Odds API, $20–80/month |
+| Real-time news ingest | Bloomberg-grade pipeline | Twitter API + RSS + NBA official feed |
+| Code production | 5–10 engineers, 12+ months | AI-assisted, one engineer, weeks |
+| **Build cost** | **$3–5M/year** | **~$50–80/month** |
+
+The collapse is not 10×. It is closer to 5000×. An entire competitive analysis category — "who else is doing this?" — empties out, because the people who could afford the old cost structure cannot afford the regulatory, account-access, and talent-cost economics required to enter at the new one. Books cap individual bets at $25–500, which makes the addressable market unsuitable for a $7–10M/year quant team but ideal for a solo operator. This is the same shape as micro-cap equity arbitrage: institutions ignore markets below ~$500M deployable capacity, so the edge gets left for individuals.
+
+The window closes in 1–3 years, when Genius Sports or Sportradar productizes a tracking-integrated prop pricing API and sells it to books at retail scale. Voulgaris exploited NBA totals for fifteen years before the market caught up. Benter ran Hong Kong racing for thirty. There is documented precedent for solo operators holding edges this long; see [docs/research/precedent-analysis.md](docs/research/precedent-analysis.md).
+
+---
+
+## What CourtVision actually is
+
+A four-layer stack. Each layer is independently useful. Each layer is also a moat: a competitor who solves layer 3 without solving layer 1 has built a model bounded by the public data they trained it on.
+
+### Layer 1 — Perception
+
+YOLOv8n detects players, ball, and referees in each frame of broadcast video. SIFT homography maps every detection from pixel coordinates to court coordinates (in feet, on a standard 94×50 plane). Kalman + Hungarian tracks identities frame-to-frame; OSNet re-ID (512-dim) recovers identities through occlusion. EasyOCR reads jersey numbers and the game clock. An EventDetector consumes the tracked stream and emits structured events: shot release, pass, dribble, screen, contest, rebound, foul, timeout.
+
+The output is a court-coordinate event stream. For every shot: exact distance to the nearest defender at release, the spacing score (convex hull of off-ball offensive players), the closeout speed of the recovering defender, the shot-clock state, the defensive scheme (man, zone, switch, hedge, ICE), and the biomechanical signature of the shooter (release angle, contest arm angle, fatigue index). None of this is in any public dataset.
+
+### Layer 2 — Memory
+
+The NBA API provides 30 seasons of box score, play-by-play, lineup, and shot chart data. Plus 12 contextual feeds: referee crew identity (announced 9am ET on game day), travel fatigue index, venue altitude, lineup on/off ratings, coach rotation patterns, injury report parsing, beat-reporter lineup leaks. Plus the perception layer's CV features.
+
+Everything writes to a unified feature store keyed on `(player, game, possession, timestamp)`. This is the substrate.
+
+### Layer 3 — Simulation
+
+A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a stack of models — currently 75, targeting 350 — covering pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, regime shift.
+
+The output is a full joint distribution over every observable game outcome: not just "LeBron points," but the joint distribution of LeBron points × Davis rebounds × Reaves assists × team total, with correlation structure preserved. From this distribution, *any* threshold can be priced — mainline, alternates, same-game parlays, quarter splits — with equal calibration.
+
+### Layer 4 — Action
+
+Live odds from six sportsbooks plus two exchanges feed a line evaluator. The line evaluator devigs each price (Shin 1992, not symmetric power-sum), compares to the simulator's joint distribution, and emits an expected-value vector. A fractional-Kelly portfolio optimizer with Ledoit-Wolf shrinkage on the 7×7 residual covariance matrix sizes each position, accounting for correlated legs. An execution router places each bet at the highest-priced venue, with maker-rebate logic on exchange listings.
+
+Every settled bet writes back to a CLV tracker that compares fill price to Pinnacle's Shin-devigged close. CLV is the primary metric; realized ROI is the secondary check. Every night, residuals (predicted vs realized) recalibrate the upstream models. This is the learning loop.
+
+---
 
 ## The 164 Gaps
 
-Full taxonomy with academic citations, implementation notes, and build priorities: [docs/research/edge-taxonomy.md](docs/research/edge-taxonomy.md).
+The 164 gaps are 164 specific, enumerated, citable places where conventional NBA understanding — and therefore conventional NBA pricing — is incomplete. Each one is a feature the perception layer extracts, or a context the memory layer holds, or a calculation the simulator performs, that the rest of the market does not.
 
-### I. Information Gaps — 87 edges the books don't see
+Full taxonomy with citations in [docs/research/edge-taxonomy.md](docs/research/edge-taxonomy.md).
 
-**CV-spatial (edges 1–9, 38–49, 91–114).** Books price shots as "open" or "contested." The CV pipeline extracts the full continuous distribution of defender distance at release, court spacing (convex hull of off-ball players), closeout speed, paint density, PnR coverage type, drive direction, shot clock state, zone vs man defense, help rotation speed, gait abnormality, fatigue entropy, set recognition (Horns, Spain, DHO, floppy), and 20 more spatial signals — all in court coordinates from broadcast video. None of this is in any public dataset. None is in the prop price.
+### I. Information — 87 gaps the books don't see
 
-**Context (edges 10–18, 50–62, 115–129).** Referee crew foul rates (announced 9am ET, before lines adjust). Travel fatigue index (beyond binary B2B — great-circle distance, timezone crossing, circadian phase). Denver altitude (.302 home/away delta). Lineup-dependent usage redistribution on late scratches (books take 5–15 minutes to reprice; model recomputes in seconds). Coach rotation patterns, matchup defender data, foul-trouble probability, garbage-time prediction, injury report word parsing ("questionable" plays at different rates per team), beat reporter latency monitoring, and 15 more motivational and situational signals.
+**CV-spatial (edges 1–9, 38–49, 91–114).** Defender distance at release in feet, not "open / contested." Spacing as a convex-hull area, not a binary "good / bad." Closeout speed, paint density, PnR coverage type (drop, switch, hedge, ICE), drive direction, help rotation latency, gait abnormality, fatigue entropy, set recognition (Horns, Spain, DHO, floppy, weak, fist), and twenty more. All in court coordinates. None in any public dataset. None in the prop price.
 
-### II. Model Gaps — 27 edges in how the problem is framed
+**Context (edges 10–18, 50–62, 115–129).** Referee crew foul rates (announced 9am ET, before lines move). Travel fatigue index (great-circle distance, timezone crossing, circadian phase — not binary B2B). Denver altitude (.302 home/away delta on three-point shooting). Lineup-dependent usage redistribution on late scratches: books take 5–15 minutes to reprice; the model recomputes in seconds. Coach rotation patterns, matchup defender data, foul-trouble probability, garbage-time prediction, injury report word parsing ("questionable" plays at different rates per team), beat reporter latency monitoring.
 
-Books predict a number. The possession simulator generates a **full probability distribution** — pricing any threshold (mainline, alternates, SGP legs) with equal accuracy. Books price SGPs with a formulaic correlation discount; the simulator produces **joint distributions** naturally. Books use constant variance; the system predicts **heteroscedastic sigma**. Books average over the season; **Bayesian in-season updating** releases to observed data after ~15 games. Plus: regime detection, counterfactual simulation, quantile regression, mixture models for bimodal performers, lineup-graph GNNs, PBP-sequence transformers, CLV-as-target meta-models, and counter-detection bet sizing via Stackelberg game theory.
+### II. Model — 27 gaps in how the problem is framed
 
-### III. Execution Gaps — 32 edges in speed and routing
+Books predict a number. The simulator generates a full probability distribution — any threshold (mainline, alternates, SGP legs) prices with equal accuracy. Books price SGPs with a formulaic correlation discount; the simulator produces joint distributions natively. Books use constant variance; the system predicts heteroscedastic sigma. Books average over the season; Bayesian in-season updating releases to observed data after ~15 games. Plus regime detection, counterfactual simulation, quantile regression, mixture models for bimodal performers, lineup-graph GNNs, PBP-sequence transformers, and CLV-as-target meta-models.
 
-The same prop differs by 1–2 points across DraftKings, FanDuel, BetMGM, Caesars, bet365 — **multi-book line shopping** adds 1–3% ROI vs single-book. Opening lines posted at 6am ET have maximum error — **opening line capture** averages +1.2% CLV at 24hr pre-game. Late scratches create 5–15 minute repricing windows **multiple times per week**. Steam moves (sharp money hitting 3+ books simultaneously) leave residual CLV at slower books. Plus: live in-game betting, quarter mini-totals, reverse line movement detection, bonus/promo/boost economics, round-robin SGP construction, DFS-prop cross-platform arbitrage, microbet markets, P2P exchange market making (no account limiting), and 15 more execution edges.
+### III. Execution — 32 gaps in speed and routing
 
-### IV. Structural Gaps — 23 edges baked into how the market works
+The same prop differs by 1–2 points across DraftKings, FanDuel, BetMGM, Caesars, bet365. Multi-book line shopping is 1–3% ROI vs single-book. Opening lines posted at 6am ET have maximum error — opening-line capture averages +1.2% CLV at 24hr pre-game. Late scratches create 5–15 minute repricing windows multiple times per week. Steam moves (sharp money hitting 3+ books simultaneously) leave residual CLV at slower books. Plus live in-game betting, quarter mini-totals, reverse line movement detection, bonus/promo/boost economics, round-robin SGP construction, DFS-prop cross-platform arbitrage, microbet markets, and P2P exchange market making.
 
-Props are permanently lower-priority than game lines — smaller pricing teams, less modeling sophistication. SGP correlation is formulaic, not model-derived. Alternate lines (tails of the distribution) are systematically undermodeled. Defensive props (blocks, steals) are high-variance with weaker book models. Combo props (P+R+A) are joint-mispriced. Quarter/split props are fractions of full-game, ignoring intra-game variance. Rookie and call-up players have zero baseline. Overtime probability isn't priced into mainline props. New operators (Fanatics, ESPN Bet) deliberately subsidize lines for market share. Each operator has specific quirks (DK alternate juice, FD SGP engine, MGM profile pricing). Early season miscalibration fires every October. The individual-vs-institutional access gap is permanent.
+### IV. Structural — 23 gaps baked into how the market works
 
-## Why One Person Can Fill All 164
+Props are permanently lower-priority than game lines: smaller pricing teams, less modeling sophistication. SGP correlation is formulaic, not model-derived. Alternate lines (tails of the distribution) are systematically undermodeled. Defensive props (blocks, steals) are high-variance with weaker book models. Quarter/split props are fractions of full-game, ignoring intra-game variance. Rookie and call-up players have zero baseline. Overtime probability isn't priced into mainline props. New operators (Fanatics, ESPN Bet) deliberately subsidize lines for market share.
 
-Three structural supports:
+The structural gaps are permanent. The information and model gaps close as books mature. The window on the second category is what the build plan races against.
 
-**1. Technology collapsed the build cost.**
+---
 
-| Component | Traditional cost | This system |
-|-----------|-----------------|-------------|
-| CV pipeline (YOLO + homography + tracking + re-ID) | 5–10 engineers, 12+ months | Open-source stack, built with AI assistance |
-| 75 prop/game models | Quant team of 3–5, ongoing | XGBoost + automated feature engineering |
-| GPU compute for 80-game CV run | On-prem cluster or cloud enterprise | RunPod community 3090, ~$4 total |
-| Multi-book odds ingestion | Enterprise data contracts ($50K+/yr) | The Odds API, $20–80/month |
-| Real-time news/lineup pipeline | Dedicated data engineering | Twitter API + RSS + NBA official feed |
-| **Total operating cost** | **$3–5M/year** | **~$50–80/month** |
+## How the gaps compound
 
-**2. The window is 1–3 years.** Before Genius Sports or Sportradar ships a tracking-integrated prop pricing product at retail scale. Voulgaris exploited NBA totals for years before the market caught up. Benter ran Hong Kong racing for decades. See [docs/research/precedent-analysis.md](docs/research/precedent-analysis.md).
-
-**3. Institutional firms can't enter.** No hedging instrument for sports event contracts. Labor economics don't work ($7–10M team cost vs ~$50–100M total extractable edge across all NBA prop bettors). Books flag and close professional entity accounts. Props are limited to $25–500/bet — you can't deploy $50M. This mirrors micro-cap equities: institutions ignore markets below $500M deployable capacity, so solo operators dominate. See [docs/research/competitive-landscape.md](docs/research/competitive-landscape.md).
-
-## How Gaps Compound
-
-The 164 gaps are not independent. Eight foundations enable all of them:
+The 164 are not independent. Eight foundations enable all of them:
 
 ```
-CV pipeline ──────────► spatial features ──► simulator ──► SGP pricing
-                                                      ──► joint distributions
-                                                      ──► alternate line pricing
-                                                      ──► live betting
-Multi-book API ───────► line shopping ──► steam detection
-                                     ──► opening capture
-                                     ──► arb scanning
-News pipeline ────────► injury speed window (5–15 min, multiple/week)
-                     ──► lineup redistribution
-                     ──► rest prediction
-Bet log + CLV ────────► feature attribution ──► model feedback loop
-Heat tracking ────────► account rotation ──► limit avoidance
-NBA2Vec embeddings ───► counterfactuals ──► trade impact ──► rookie priors
-Operator profiles ────► routing ──► promo optimization
-Possession simulator ─► every pricing edge downstream
+Perception ────► spatial features ──► simulator ──► joint distributions
+                                              ───► alternate-line pricing
+                                              ───► SGP pricing
+                                              ───► live in-game pricing
+Multi-book ────► line shopping ──► steam detection ──► opening capture
+News pipeline ─► injury speed window (5–15 min, multiple/week)
+              ─► lineup redistribution
+CLV tracker ───► residual attribution ──► model feedback loop
+Heat tracking ─► account rotation ──► limit avoidance
+NBA2Vec ───────► counterfactuals ──► trade impact ──► rookie priors
+Operator map ──► routing ──► promo optimization
+Simulator ─────► every downstream pricing edge
 ```
 
-Build any one foundation and you unlock dozens of dependent edges at marginal cost.
+Build one foundation, unlock dozens of dependent edges at marginal cost. This is also the multi-sport thesis: the same eight foundations work for NFL, MLB, NCAA, soccer, and tennis with sport-specific perception models and rule sets. The hard work is the substrate, not the league.
+
+---
 
 ## System Architecture
 
@@ -96,6 +136,8 @@ flowchart LR
 
 The yellow block is the moat. CV-derived spatial features are not in any public dataset. Everything else is table stakes that any well-resourced analyst could build — but the compound of all 164 gaps, filled by one system, is not.
 
+---
+
 ## Results (80-game holdout, walk-forward season-purged)
 
 | Model | Target    | R²   | MAE | ECE   | N  |
@@ -115,15 +157,19 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 - **spacing_score** — convex hull area of 4 off-ball offensive players, normalized to half-court
 - **legs_fatigue** — cumulative running distance over last 6 minutes, exponentially decayed
 
+---
+
 ## Methodology
 
 **Walk-forward, season-purged.** Every model trained on `game_date < t`, evaluated on `game_date >= t`. 48-hour purge window drops same-team games to kill autocorrelation leakage. K-fold on time-series is a correctness bug. Harness: [src/prediction/prop_backtester.py](src/prediction/prop_backtester.py).
 
 **Shin devig.** Sportsbook prices devigged with Shin (1992) method before any probability computation. Removes favourite-longshot bias that symmetric power-sum methods over-correct for. Implementation: [src/prediction/betting_edge.py](src/prediction/betting_edge.py).
 
-**Fractional Kelly + shrinkage correlation.** Full Kelly ignores parameter uncertainty; fractional multiplier k in [0.25, 0.5] scales by model confidence tier. Ledoit-Wolf shrinkage on the 7x7 residual covariance matrix reduces correlated-leg overstaking by 20–40%. Implementation: [src/prediction/betting_portfolio.py](src/prediction/betting_portfolio.py).
+**Fractional Kelly + shrinkage correlation.** Full Kelly ignores parameter uncertainty; fractional multiplier k in [0.25, 0.5] scales by model confidence tier. Ledoit-Wolf shrinkage on the 7×7 residual covariance matrix reduces correlated-leg overstaking by 20–40%. Implementation: [src/prediction/betting_portfolio.py](src/prediction/betting_portfolio.py).
 
 **CLV over ROI.** Realized ROI on 312 picks is noisy. CLV against Shin-devigged Pinnacle close is almost-unbiased. CLV is the primary metric; ROI is the secondary check.
+
+---
 
 ## Signal Inventory
 
@@ -137,9 +183,11 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 | Market microstructure | Pinnacle no-vig, line velocity, steam flag, public% | ~6 | Bet-selector filters |
 | Sentiment / NLP | injury severity, reporter credibility, lineup freshness | ~5 | Unstructured extraction |
 
-## Model Stack
+---
 
-75 trained models in data-requirement tiers:
+## Model Universe
+
+The platform targets a 350-model registry across nine data-requirement tiers. 75 are shipped. Tier discipline matters: a model that requires 200+ CV games is gated behind that data, not trained on N=80 and shipped with a calibration excuse.
 
 | Tier | Data gate | Count | Status |
 |------|-----------|-------|--------|
@@ -151,52 +199,71 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 | 5 | NLP / feedback loop | 7 | Requires NLP pipeline |
 | 6 | 200+ CV games | 7 | LSTM + ensemble; requires 200+ game corpus |
 
-## Risk Framework
+Full registry: [docs/models/model-registry.md](docs/models/model-registry.md).
 
-No live capital until all circuit breakers are coded and paper-trading gate passes (>=50 bets, CLV beat rate >=55%, paper ROI >=3%).
-
-**Position limits:** 20% portfolio/slate, 5%/game, 8%/player, 15% correlated-cluster cap.
-
-**Circuit breakers:** -5% daily loss halt, 10% drawdown kill-switch, streak throttle (3 losses = 50% stake, 5 = paper only), model disagreement halt (ensemble spread > 3 units = skip), data quality degradation (0.5x Kelly on fallback vendor).
-
-**Factor exposure:** PCA on prop residuals identifies latent factors (pace, defense, foul, garbage time). Opposing positions hedge when any factor exceeds threshold. Target: 25% variance reduction vs naive Kelly.
+---
 
 ## Build Phases
 
-| Phase | Goal | Unlocks |
-|-------|------|---------|
-| 0 | CLV validation on historical data | Everything — gates all else |
-| 1 | 80-game CV run + calibration | Tier 3–4 model retrain |
-| 2 | Context layer: ref/fatigue/altitude/usage | Higher R² without new CV |
-| 3 | Core engine: live odds + line evaluator + Kelly | First paper bets |
+| Phase | Goal | What it unlocks |
+|-------|------|-----------------|
+| 0 | CLV validation on historical data | Edge thesis confirmed; everything else gated on this |
+| 1 | 80-game CV run + calibration | Tier 3–4 model retrain; first spatial features in production |
+| 2 | Context layer: ref / fatigue / altitude / usage | Higher R² without new CV |
+| 3 | Core engine: live odds + line evaluator + Kelly | First paper bets; first quantified edge |
 | 4 | Execution: book adapters + account health + router | Live capital gate |
-| 5 | Market expansion: SGP + arb + P2P | Zero-vig venue access |
-| 6 | Intelligence: NBA2Vec + regime + Bayesian | Moat deepening |
-| 7 | Dashboard: Bloomberg-terminal-grade UI | Real-time monitoring |
+| 5 | Market expansion: SGP + arb + P2P exchanges | Zero-vig venue access; live in-game pricing |
+| 6 | Intelligence: NBA2Vec + regime + Bayesian updating | Moat deepening; counterfactual simulation |
+| 7 | Dashboard: Bloomberg-terminal-grade UI | Real-time monitoring + scouting / analytics surface |
 | 8 | Learning loop: nightly residuals + auto-calibration | Compounding improvement |
-| 9 | Sustainability: P2P market making + picks service | Account-limit independence |
-| 10 | Multi-sport: NFL, MLB, Soccer | 100% infra reuse |
+| 9 | Sustainability: P2P market making + picks / analytics services | Account-limit independence + B2B revenue |
+| 10 | Multi-sport: NCAA → NFL → MLB → soccer | 100% infrastructure reuse |
 
-**Critical path:** Phase 0 (CLV test) -> Phase 1 (80-game run) -> Phase 3 (live signals) -> Phase 4 (execution) -> live capital.
+**Critical path:** Phase 0 (CLV test) → Phase 1 (80-game run) → Phase 3 (live signals) → Phase 4 (execution) → live capital → Phase 7 (analytics surface) → Phase 10 (multi-sport).
 
-## Execution Stack
+The system is currently between Phase 1 (80-game CV ingest running on RunPod) and Phase 3 (live odds + line evaluator wired, paper-trading harness in flight). Phase 4 is gated by the paper-trading gate: ≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%. No live capital until all three are satisfied.
 
-**Book router** routes each bet to highest-price book across Sporttrade, Kalshi, Polymarket, DraftKings, FanDuel. Exchange adapters handle automated placement with maker rebates where available.
+---
 
-**Market making** on Kalshi and Polymarket: quote at FV +/- half_spread, widening under model uncertainty or adverse-selection flow. Kill-switch at inventory > 10% bankroll.
+## Beyond betting
 
-**Dry-run gate:** `LIVE_BETTING=0` hard-coded until paper-trading gate passes.
+The same stack pointed at different consumers. Every application below is downstream of having a calibrated possession simulator. Build the simulator once; sell into seven verticals.
+
+- **Team analytics.** Spatial CV features (defender distance, spacing, closeout speed) are exactly what NBA front offices buy from Second Spectrum and Synergy. The pipeline already extracts them; the dashboard already plots them. The differentiator is that CourtVision works from broadcast video, not from arena-installed camera rigs — so it covers college, G-League, and international games at the same cost as NBA.
+- **Scouting and the draft.** Possession simulator + counterfactual mode answers "how would this college prospect produce on this NBA lineup?" Requires an NCAA perception model — ~3 months of work because the rules and court geometry are the same, only the data source changes.
+- **Broadcast graphics.** Real-time "open / contested / impossible" shot overlays during live games, sourced from court-coordinate features rather than human judgment. The cost structure is favorable: one CV pipeline serves every game on every regional network simultaneously.
+- **Fantasy and DFS.** Joint distributions over correlated player outputs are the DFS lineup optimizer's holy grail. Most public optimizers use Pearson correlations on prior-season game logs; CourtVision uses live-conditional joint distributions from the simulator.
+- **Coaching aids.** Lineup-graph GNNs identify 5-man combinations that the rest of the league misprices. Useful for closeout lineups and matchup hunting. The same model underlies the betting layer's "lineup-dependent usage redistribution" feature.
+- **Multi-sport.** Perception layer retrains per sport; memory layer is league-agnostic; simulator is parameterized by rule set; execution layer is venue-agnostic. NCAA basketball is the cheapest expansion (same rules, same court). NFL is the next high-value target because data is dense and line shopping margins are widest.
+
+The current commercial focus is sports markets because they pay in dollars on a 24-hour feedback loop — the cleanest possible ground truth for any model. Every other application is a downstream consumer of the same simulator.
+
+---
+
+## Risk Framework
+
+No live capital until all circuit breakers are coded and the paper-trading gate passes (≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%).
+
+**Position limits:** 20% portfolio/slate, 5%/game, 8%/player, 15% correlated-cluster cap.
+
+**Circuit breakers:** −5% daily loss halt, 10% drawdown kill-switch, streak throttle (3 losses = 50% stake, 5 = paper only), model disagreement halt (ensemble spread > 3 units = skip), data quality degradation (0.5× Kelly on fallback vendor).
+
+**Factor exposure:** PCA on prop residuals identifies latent factors (pace, defense, foul, garbage time). Opposing positions hedge when any factor exceeds threshold. Target: 25% variance reduction vs naive Kelly.
+
+---
 
 ## Limitations
 
 - STL model R²=0.09 — effectively no signal. Requires zero-inflated specification. Not shipping until it beats baseline on clean holdout.
 - `ball_track_suspended` stays True on ~8% of games. Known bug, scheduled for triage at 80-game volume.
-- N=80 CV games is thin for spatial features. Bootstrap CIs on defender_distance and spacing_score overlap zero at 95% on tail markets. The +0.08 R² figure is directional, not precise.
-- CLV measured against Pinnacle close, not fill price. Actual fills at DK/FD have wider vig. No fill-price simulation yet.
-- No real-time correlation update. Kelly fractions computed independently; QP optimizer needs `prop_residuals.json`.
+- N=80 CV games is thin. Bootstrap CIs on defender_distance and spacing_score overlap zero at 95% on tail markets. The +0.08 R² figure is directional, not precise. Tier 3–4 model retrain is gated on a larger corpus.
+- CLV measured against Pinnacle close, not fill price. Actual fills at DK/FD have wider vig. Fill-price simulation is in flight.
+- No real-time correlation update. Kelly fractions computed independently; the QP optimizer needs `prop_residuals.json`.
 - Single-vendor data dependencies. No automated failover on NBA stats, odds, or injury feeds.
-- Batch, not real-time. No in-game pricing in this release.
+- Batch, not real-time. In-game pricing is on the Phase 5–6 roadmap, not in this release.
 - No live trading. Paper-book only. The paper gate must pass before `LIVE_BETTING=1`.
+
+---
 
 ## Operations
 
@@ -215,6 +282,8 @@ python scripts/ingest_status.py
 # API
 uvicorn api.main:app --reload
 ```
+
+---
 
 ## Documentation
 
@@ -240,6 +309,8 @@ uvicorn api.main:app --reload
 
 **Navigation:** [docs/PROJECT_INDEX.md](docs/PROJECT_INDEX.md) — complete index
 
+---
+
 ## Layout
 
 ```
@@ -252,6 +323,8 @@ docs/                # research, architecture, strategy docs
 results/             # reliability diagrams, CLV plots, per-model ECE
 ```
 
+---
+
 ## About
 
 Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app). 
@@ -259,7 +332,3 @@ Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app).
 - Portfolio: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - GitHub: [github.com/neeljshah](https://github.com/neeljshah)
 - Email: neeljshah22@gmail.com
-
-## Research Log
-
-Session-by-session development trace in [vault/Sessions/](vault/Sessions/). Each session records what changed, what was learned, and what failed — including RunPod configuration discoveries, homography incidents, and per-phase ship decisions.
