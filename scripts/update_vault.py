@@ -3,7 +3,10 @@ update_vault.py — Auto-update Obsidian vault with current system state.
 
 Generates/refreshes:
   vault/Home.md              — project status dashboard
-  vault/Sessions/Session-YYYY-MM-DD.md  — today's session log
+
+Session logging is handled by vault_session_close.py (Stop hook),
+which appends to vault/Sessions/Decision Log.md instead of creating
+per-session files.
 
 Run manually:   python scripts/update_vault.py
 Auto-run via:   Claude hook (PostToolUse) or cron
@@ -193,50 +196,23 @@ updated: {today}
 
 ---
 
+## Maps of Content
+
+| MOC | Domain |
+|-----|--------|
+| [[MOC-CV]] | CV pipeline, tracking, detection, homography |
+| [[MOC-Models]] | ML models, features, signal inventory |
+| [[MOC-Betting]] | Kelly sizing, CLV, quant framework, edges |
+| [[MOC-Ops]] | RunPod ops, data pipeline, architecture |
+| [[MOC-Strategy]] | Strategy, roadmap, decisions, product plans |
+| [[MOC-Research]] | Research, validation, concepts, benchmarks |
+
+---
+
 ## Session Log
 
-Latest: [[Sessions/Session-{today}]]
-Full history: `vault/Sessions/`
-"""
-
-
-def generate_session(notes: str = "") -> str:
-    today = datetime.now().strftime("%Y-%m-%d")
-    now = datetime.now().strftime("%H:%M")
-    branch = _git_branch()
-    clean, target = _cv_game_count()
-
-    return f"""---
-date: {today}
-session: auto
-tags: [session]
----
-
-# Session — {today}
-
-*Generated: {now}*
-
----
-
-## State
-
-- **Branch:** `{branch}`
-- **CV games:** {clean} clean / {target} target
-- **Tests:** {_test_summary()}
-
-## Recent Commits
-
-```
-{chr(10).join(_git_log(5))}
-```
-
-## Notes
-
-{notes if notes else "_No notes for this session._"}
-
----
-
-[[Home]]
+[[Sessions/Decision Log]] — rolling log of session decisions and fixes
+Full archive: `vault/Sessions/_archive/`
 """
 
 
@@ -248,19 +224,10 @@ def update(notes: str = "") -> None:
     VAULT.mkdir(exist_ok=True)
     SESSIONS.mkdir(exist_ok=True)
 
-    # Home
+    # Home only — session logging moved to vault_session_close.py
     home_path = VAULT / "Home.md"
     home_path.write_text(generate_home(), encoding="utf-8")
     print(f"Updated: {home_path.relative_to(ROOT)}")
-
-    # Today's session
-    today = datetime.now().strftime("%Y-%m-%d")
-    session_path = SESSIONS / f"Session-{today}.md"
-    if not session_path.exists():
-        session_path.write_text(generate_session(notes), encoding="utf-8")
-        print(f"Created:  {session_path.relative_to(ROOT)}")
-    else:
-        print(f"Exists:   {session_path.relative_to(ROOT)} (not overwritten)")
 
 
 if __name__ == "__main__":
