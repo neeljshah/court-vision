@@ -11,7 +11,7 @@ The 75 trained models are not the system. They are components. Everything flows 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         BROADCAST VIDEO                             │
-│                    (17 games → 80 target)                           │
+│              (29 usable / 75 attempted → 80 CLEAN target)           │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │
                             ▼

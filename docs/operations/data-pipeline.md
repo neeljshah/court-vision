@@ -232,8 +232,8 @@ Output: `data/tracking/GAME_ID.json` + `data/events/GAME_ID.json`
 
 ## Current State (Session 40)
 
-- 17 games: processed at HIGH quality
-- Target: 80 games total
+- 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted
+- Target: 80 CLEAN
 - Next pod run: single RTX 3090, ~7–9 hours, ~$4 budget
 
 After 80 games complete:

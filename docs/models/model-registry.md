@@ -75,7 +75,7 @@ Trained but not yet generating standalone betting signal at volume. They filter 
 
 ## Tier 3 — 20+ CV Games (10 models, RETRAIN AT 80 GAMES)
 
-These models incorporate CV spatial features. Trained on 17-game subset; R² values below are on this limited sample. All will be retrained when 80-game ingest completes.
+These models incorporate CV spatial features. Trained on 29-game subset (9 CLEAN + 20 PARTIAL of 75 attempted); R² values below are on this limited sample. All will be retrained when 80-CLEAN-game ingest completes.
 
 **Target after retrain:** pts R² ≥ 0.55.
 
@@ -92,7 +92,7 @@ These models incorporate CV spatial features. Trained on 17-game subset; R² val
 | catch_shoot_3p | C&S 3P% | — | — | catch_shoot_flag |
 | fatigue_decay | Performance vs legs_fatigue | — | — | legs_fatigue |
 
-*Includes 17-game CV subset; reflects upper bound of current CV contribution.
+*Includes 29-game CV subset (9 CLEAN + 20 PARTIAL); reflects upper bound of current CV contribution.
 
 **No Tier 3–4 model is added to live sizing until a CV A/B test confirms Δ R² ≥ +0.05 on holdout.**
 

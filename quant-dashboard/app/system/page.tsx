@@ -100,8 +100,8 @@ export default function SystemStatus() {
           <CardContent className="px-4 pb-4">
             <div className="space-y-2 text-xs font-mono">
               {[
-                { k: "CV Games (local)", v: "17 high/med quality" },
-                { k: "Target", v: "80 games" },
+                { k: "CV Games (local)", v: "29 usable (9 CLEAN + 20 PARTIAL of 75)" },
+                { k: "Target", v: "80 CLEAN games" },
                 { k: "Models", v: "75 .pkl/.json" },
                 { k: "Props tracked", v: "7 (pts/reb/ast/fg3m/blk/tov/stl)" },
                 { k: "VRAM flush interval", v: "3000 frames" },

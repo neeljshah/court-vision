@@ -16,7 +16,7 @@ interface Node {
 const NODES: Node[] = [
   { id: 'video', label: 'Broadcast Video', sublabel: '60fps H.264', tier: 'standard',
     tooltip: 'Full-game broadcast feeds at 60fps. H.264 only; AV1 quarantined due to decoder constraints.',
-    detail: 'Input is a full-game broadcast video file (1080p60, H.264). Decoded via decord NVDEC for GPU-accelerated frame extraction, falling back to PyAV on CPU. Each game is ~7GB; 17 high-quality games currently in the CV registry.',
+    detail: 'Input is a full-game broadcast video file (1080p60, H.264). Decoded via decord NVDEC for GPU-accelerated frame extraction, falling back to PyAV on CPU. Each game is ~7GB; 29 usable games (9 CLEAN + 20 PARTIAL of 75 attempted) currently in the CV registry, targeting 80 CLEAN.',
     file: 'scripts/ingest_fetch.py' },
   { id: 'yolo', label: 'YOLOv8n', sublabel: 'Player + Ball', tier: 'standard',
     tooltip: 'Custom-trained YOLOv8n detecting 10 players + ball per frame at ~20fps/worker.',

@@ -4,7 +4,7 @@ This directory will contain reliability diagrams, CLV plots, and per-model ECE o
 
 ## Status
 
-**Nothing here yet.** The 80-game CV ingest run is in progress: 17 of 80 games processed. Once complete, run:
+**Nothing here yet.** The 80-game CV ingest run is in progress: 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted; target 80 CLEAN. Once complete, run:
 
 ```bash
 python scripts/generate_results.py

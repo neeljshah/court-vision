@@ -26,9 +26,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - H4: pod preflight script
 - H5: final verification + runbook update
 
-### Research
-- Props R²: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.09
-- Portfolio: 312 settled picks, CLV +14 bps/bet vs Pinnacle (t=2.3), ROI +3.8%
-- CV games ingested: 17 high/medium quality (target: 80)
+### Measured (walk-forward temporal-CV holdout, source `data/models/model_registry.json`)
+- Props R²: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, tov=0.22, stl=0.18, blk=0.16
+- CV games ingested: 29 usable (9 CLEAN + 20 PARTIAL) of 75 attempted (target: 80 CLEAN)
+
+### Projected (gated on paper-trading gate ≥50 settled bets — _not yet measured_)
+- CLV +14 bps/bet vs Pinnacle Shin-devigged close — backtested edge model
+- Realized ROI +3.8% on 1u-Kelly-fractional — dependent on fill prices and book limits
+- No live bets placed; paper-trading harness in flight (Phase 3)
 
 [0.13.5]: https://github.com/neeljshah/court-vision/releases/tag/v0.13.5

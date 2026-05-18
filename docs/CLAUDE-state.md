@@ -5,7 +5,7 @@
 ## Session State (2026-05-17)
 - Branch: `master` | Tests: 960+ pass, 93 skip (excl PG/GPU tests). Phase 8-13 suites all green.
 - Phase 13.5 done. In-progress: 80-game run on single RTX 3090 ($5 budget).
-- CV games: 17 high/medium quality locally. Goal: 80 total.
+- CV games: 29 usable (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted. Goal: 80 CLEAN.
 - Models: 75 .pkl/.json in `data/models/`. 7 prop models registered (pts/reb/ast/fg3m/blk/tov/stl).
 - Props R² (holdout): pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 | train: pts=0.47, reb=0.43, ast=0.42 (source: data/models/model_registry.json)
 - Prediction: 73 modules in `src/prediction/`. API: 6 endpoints. Stack fully functional on NBA API data.
@@ -13,7 +13,7 @@
 
 ## Open Issues
 1. `betting_portfolio.kelly_corr` — correlation matrix not populated. Run `--build-residuals` then `--compute-corr`.
-2. CV registry sparse (17 games) — target 80 to meaningfully improve R².
+2. CV registry sparse (29 usable, 9 CLEAN-only) — target 80 CLEAN to meaningfully improve R².
 3. `ball_valid_pct=0%` on some games: `ball_track_suspended` stays True entire video — investigate after 80-game run.
 
 ## Recent Fixes Applied

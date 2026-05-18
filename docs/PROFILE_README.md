@@ -93,7 +93,7 @@ SHAP attribution on the pts model: these three combined carry 31% of mass.
 - [Risk Framework](docs/risk-framework.md) — position limits, circuit breakers, VaR/CVaR/ES
 - [Backtest Methodology](docs/backtest-methodology.md) — walk-forward harness, CLV labeling, paper gate
 
-**Status:** Active. 17/80 CV games processed. Phase 14.5a (temporal CV retune) in progress.
+**Status:** Active. 29 usable CV games (9 CLEAN + 20 PARTIAL) of 75 attempted; target 80 CLEAN. Phase 14.5a (temporal CV retune) in progress.
 
 ---
 
