@@ -2,8 +2,9 @@
 # Download NBA full game videos locally (residential IP), upload to RunPod, process there.
 # Usage: bash scripts/local_download_remote_process.sh
 
-REMOTE="root@${RUNPOD_HOST:-203.57.40.203}"
-RPORT="${RUNPOD_PORT:-10130}"
+: "${RUNPOD_HOST:?Set RUNPOD_HOST=root@<ip>}"
+REMOTE="$RUNPOD_HOST"
+RPORT="${RUNPOD_PORT:?Set RUNPOD_PORT=<ssh_port>}"
 REMOTE_DIR="/workspace/nba-ai-system"
 LOCAL_TMP="data/videos/full_games"
 PYTHON="python3"
