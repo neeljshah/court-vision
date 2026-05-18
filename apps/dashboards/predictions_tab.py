@@ -6,8 +6,8 @@ Sections:
     2. Player Props   — all 7 props with model prediction, edge %, confidence bar
     3. Breakout Alerts — top 10 players with highest breakout_score today
 
-Can be imported and rendered by dashboards/app.py via render_predictions_tab().
-Can also be run standalone: streamlit run dashboards/predictions_tab.py
+Can be imported and rendered by apps/dashboards/app.py via render_predictions_tab().
+Can also be run standalone: streamlit run apps/dashboards/predictions_tab.py
 """
 from __future__ import annotations
 

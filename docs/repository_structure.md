@@ -123,7 +123,7 @@ nba-ai-system/
 │   │   ├── analytics_router.py
 │   │   └── models_router.py
 │   │
-│   ├── dashboards/                   # Dashboard UI (Phase 14)
+│   ├── apps/dashboards/              # Dashboard UI (Phase 14)
 │   │   ├── app.py
 │   │   └── charts.py
 │   │

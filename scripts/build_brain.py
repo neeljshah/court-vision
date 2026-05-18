@@ -1701,7 +1701,7 @@ Next.js + React frontend for visualization and monitoring.
 
 - Spec: `docs/architecture/dashboard-spec.md`
 - Implementation: [[Build Phases|Phase 9+]]
-- Directory: `quant-dashboard/`
+- Directory: `apps/quant-dashboard/`
 
 → Visualizes [[Five Systems]] state
 → Consumes [[API Server]]

@@ -106,7 +106,6 @@ dist/
 
 # -- Separate projects / nested repos -----------------------------------------
 court-visions/
-court-vision-landing/
 teflon-quant-dashboard/
 
 # -- Model training runs (large artifacts, re-generable) ----------------------
@@ -164,6 +163,6 @@ src/pipeline/gpu_dataframe.py
 *.bak
 *.orig
 *.tmp
-portfolio-site/node_modules/
-portfolio-site/.next/
-portfolio-site/out/
+apps/portfolio-site/node_modules/
+apps/portfolio-site/.next/
+apps/portfolio-site/out/
