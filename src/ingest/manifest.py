@@ -70,7 +70,7 @@ def list_games(conn: sqlite3.Connection, status: Optional[str] = None) -> List[s
 # ── migration ─────────────────────────────────────────────────────────────────
 
 def migrate_legacy(conn: sqlite3.Connection) -> int:
-    """Import phase_g_processed.txt + phase_g_metrics.csv → games table. Idempotent."""
+    """Import phase_g_processed.txt + phase_g_metrics.csv -> games table. Idempotent."""
     inserted = 0
     now = _now()
 
@@ -137,7 +137,7 @@ def main() -> None:
 
     sub.add_parser("migrate",    help="Migrate legacy txt/csv into DB")
     sub.add_parser("status",     help="Print counts by status + tier")
-    sub.add_parser("reset-locks",help="Reset processing→verified for stale jobs")
+    sub.add_parser("reset-locks",help="Reset processing->verified for stale jobs")
 
     add_p = sub.add_parser("add", help="Add a game to the queue")
     add_p.add_argument("game_id")

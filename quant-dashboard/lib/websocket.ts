@@ -45,7 +45,7 @@ export class RealtimeSocket {
     onMessage: MessageHandler<{ type: string; data: unknown }>,
     onError?: (e: Event) => void
   ) {
-    this.ws = new WebSocket(`${WS_BASE}/ws/realtime`);
+    this.ws = new WebSocket(`${WS_BASE}/stitch/ws/realtime`);
 
     this.ws.onopen = () => {
       this.ws?.send(JSON.stringify({ type: "subscribe" }));

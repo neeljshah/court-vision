@@ -43,7 +43,7 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-@router.get("/stitch/health")
+@router.get("/health")
 async def stitch_health():
     """Health check endpoint for Stitch to verify API is working"""
     return {
@@ -58,7 +58,7 @@ async def stitch_health():
         }
     }
 
-@router.get("/stitch/dashboard/overview")
+@router.get("/dashboard/overview")
 async def get_dashboard_overview():
     """Main dashboard data for Stitch frontend"""
     try:
@@ -91,7 +91,7 @@ async def get_dashboard_overview():
         logger.error(f"Dashboard overview error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/games/today")
+@router.get("/games/today")
 async def get_today_games():
     """Get today's NBA games with predictions"""
     try:
@@ -104,7 +104,7 @@ async def get_today_games():
         logger.error(f"Today's games error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/game/{game_id}")
+@router.get("/game/{game_id}")
 async def get_game_details(game_id: str, home_team: str = "", away_team: str = ""):
     """Get detailed game analysis"""
     try:
@@ -127,7 +127,7 @@ async def get_game_details(game_id: str, home_team: str = "", away_team: str = "
         logger.error(f"Game details error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/player/{player_id}/props")
+@router.get("/player/{player_id}/props")
 async def get_player_props(player_id: str, season: str = "2024-25"):
     """Get player prop predictions for a specific player"""
     try:
@@ -142,7 +142,7 @@ async def get_player_props(player_id: str, season: str = "2024-25"):
         logger.error(f"Player props error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/analytics/shot-quality/{player_id}")
+@router.get("/analytics/shot-quality/{player_id}")
 async def get_player_shot_quality(player_id: str, season: str = "2024-25"):
     """Get detailed shot quality analytics for a player"""
     try:
@@ -157,7 +157,7 @@ async def get_player_shot_quality(player_id: str, season: str = "2024-25"):
         logger.error(f"Shot quality error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/betting/edges")
+@router.get("/betting/edges")
 async def get_betting_edges_api(limit: int = 50):
     """Get current betting edges and opportunities"""
     try:
@@ -171,7 +171,7 @@ async def get_betting_edges_api(limit: int = 50):
         logger.error(f"Betting edges error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/analytics/team/{team_id}")
+@router.get("/analytics/team/{team_id}")
 async def get_team_analytics(team_id: str):
     """Get comprehensive team analytics"""
     try:
@@ -189,7 +189,7 @@ async def get_team_analytics(team_id: str):
         logger.error(f"Team analytics error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/models/performance")
+@router.get("/models/performance")
 async def get_model_performance():
     """Get performance metrics for all ML models"""
     try:
@@ -268,7 +268,7 @@ async def broadcast_updates():
             logger.error(f"Broadcast error: {e}")
             await asyncio.sleep(60)
 
-@router.get("/stitch/export/predictions")
+@router.get("/export/predictions")
 async def export_predictions(format: str = "json"):
     """Export current predictions in various formats"""
     try:
@@ -292,7 +292,7 @@ async def export_predictions(format: str = "json"):
         logger.error(f"Export error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/stitch/search/players")
+@router.get("/search/players")
 async def search_players(query: str, limit: int = 10):
     """Search for players by name"""
     try:
