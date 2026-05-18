@@ -3,7 +3,7 @@
 #
 # Usage:
 #   bash scripts/launch_single_gpu_pod.sh <IP> <PORT> [FRAMES]
-#   # Example: bash scripts/launch_single_gpu_pod.sh 213.192.2.68 40193
+#   # Example: bash scripts/launch_single_gpu_pod.sh <pod-ip> <ssh-port>
 #
 # For first-time pod setup, use bootstrap_pod.sh instead.
 # This script assumes deps are installed and videos staged.

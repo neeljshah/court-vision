@@ -1,5 +1,0 @@
-path: C:\Users\neelj\nba-ai-system\data\ball_yolo
-train: images
-val: images
-nc: 1
-names: ['ball']

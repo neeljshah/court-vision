@@ -3,7 +3,7 @@
 #
 # Usage:
 #   bash scripts/bootstrap_pod.sh <IP> <PORT>
-#   # Example: bash scripts/bootstrap_pod.sh 213.192.2.68 40193
+#   # Example: bash scripts/bootstrap_pod.sh <pod-ip> <ssh-port>
 #
 # What it does:
 #   1. Pushes current code to pod (scp, no rsync needed)

@@ -109,22 +109,22 @@ services:
     networks:
       - nba-ai-network
 
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: nba-ai-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/nginx/ssl
-    depends_on:
-      - api
-      - dashboard
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
+  # Nginx reverse proxy — uncomment when nginx.conf is ready
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: nba-ai-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #     - ./ssl:/etc/nginx/ssl
+  #   depends_on:
+  #     - api
+  #     - dashboard
+  #   restart: unless-stopped
+  #   networks:
+  #     - nba-ai-network
 
 volumes:
   postgres_data:

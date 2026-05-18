@@ -3,7 +3,7 @@
 #
 # Usage:
 #   bash scripts/pod_setup_and_launch.sh <HOST> <PORT> [FRAMES]
-#   bash scripts/pod_setup_and_launch.sh 203.57.40.203 10130 9000
+#   bash scripts/pod_setup_and_launch.sh <pod-ip> <ssh-port> <frames>
 #
 # Assumes:
 #   - Project code already synced to /workspace/nba-ai-system/ (via scp or rsync)

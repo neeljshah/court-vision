@@ -8,8 +8,8 @@
 
 set -euo pipefail
 
-REMOTE_HOST="203.57.40.203"
-REMOTE_PORT="10057"
+REMOTE_HOST="${RUNPOD_HOST:?Set RUNPOD_HOST}"
+REMOTE_PORT="${RUNPOD_PORT:?Set RUNPOD_PORT}"
 REMOTE="root@${REMOTE_HOST}"
 REMOTE_DIR="/workspace/nba-ai-system"
 LOCAL_TMP="data/videos/full_games"
