@@ -18,6 +18,13 @@ models/weights/
 !yolov8n.pt
 !yolov8n-pose.pt
 
+# -- Test fixture / placeholder PBP files -------------------------------------
+data/nba/pbp_COMPLETEGAME*.json
+data/nba/pbp_TESTGAME*.json
+data/nba/pbp_None*.json
+data/nba/pbp_atl_ind_2025*.json
+data/nba/pbp_bos_mia_2025*.json
+
 # -- Python -------------------------------------------------------------------
 __pycache__/
 *.pyc
