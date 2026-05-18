@@ -10,6 +10,39 @@ This README is a technical map. The thesis is in [The 164 Gaps](#the-164-gaps), 
 
 ---
 
+## Validated today
+
+Numbers from the codebase, not projections. Source files linked; every value is reproducible from the committed data.
+
+**Prop models — holdout R² (walk-forward temporal CV, 48-hr purge, N=480)**
+Source: [`data/models/model_registry.json`](data/models/model_registry.json)
+
+| Prop | Holdout R² | MAE |
+|------|-----------|-----|
+| pts  | 0.41      | 4.12 |
+| reb  | 0.38      | 1.84 |
+| ast  | 0.36      | 1.52 |
+| fg3m | 0.29      | 0.91 |
+| tov  | 0.22      | 0.76 |
+| stl  | 0.18      | 0.48 |
+| blk  | 0.16      | 0.42 |
+
+**Win probability — XGBoost, 3 seasons (N=3,685 games)**
+Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
+
+| Metric | Value |
+|--------|-------|
+| Accuracy | 68.5% |
+| Brier    | 0.209 |
+
+**Not yet measured:**
+- CLV vs Pinnacle close — no settled bets yet (paper-trading gate not passed)
+- Per-model calibration ECE — gated on 80-game CV ingest
+- Code-backed edge count (of 164 claimed) — not yet audited
+- CV feature delta R² — bootstrap CIs overlap zero at current N=29 games
+
+---
+
 ## Why this is possible now
 
 Three things shifted in the last 36 months that, together, made an institutional-grade sports intelligence stack buildable by one person at ~$50/month in operating cost.
@@ -154,7 +187,7 @@ Models trained on NBA API data (2018–present). Walk-forward: every fold trains
 | blk   | blocks    | 0.16      | 0.42 | 0.22    |
 | stl   | steals    | 0.18      | 0.48 | 0.24    |
 
-Win probability holdout (2018–present): Accuracy 69.1%, Brier 0.203. xFG model: Brier 0.226.
+Win probability holdout (2018–present): Accuracy 68.5%, Brier 0.209 ([source](data/models/win_prob_metrics.json)). xFG model: Brier 0.226.
 
 These are API-only models — no CV features yet. The holdout set is 20% of total observations (480 of 2,880 player-game records).
 
