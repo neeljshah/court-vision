@@ -10,13 +10,13 @@ data/videos/
 *.mkv
 
 # -- YOLO / Model Weights -----------------------------------------------------
+*.pt
 *.onnx
 *.engine
 *.trt
 models/weights/
-# Root YOLO weights are tracked (re-download via setup_dev.sh if missing)
-!yolov8n.pt
-!yolov8n-pose.pt
+# Trained artifacts in data/models/ are tracked
+!data/models/*.pt
 
 # -- Test fixture / placeholder PBP files -------------------------------------
 data/nba/pbp_COMPLETEGAME*.json
