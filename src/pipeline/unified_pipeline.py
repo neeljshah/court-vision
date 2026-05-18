@@ -2,8 +2,8 @@
 unified_pipeline.py — Full NBA AI tracking pipeline
 
 Combines:
-  - AdvancedFeetDetector: player tracking (Detectron2 + Kalman + Hungarian + ReID)
-  - YOLO-NAS detection: ball, rim, shot-attempt, made-basket (when weights available)
+  - AdvancedFeetDetector: player tracking (YOLOv8 + Kalman + Hungarian + OSNet ReID)
+  - YOLOv8n detection: ball, rim, shot-attempt, made-basket (when weights available)
   - Hough+CSRT ball tracker: fallback when no YOLO weights
   - StatsTracker: shot attempts + made baskets per player
 
