@@ -110,24 +110,61 @@ python -m src.ingest.manifest migrate
 
 ---
 
-## Launch
+## Launch — Optimized Multi-GPU (recommended, Phase G2+)
+
+For pods on Python 3.12 / CUDA 12.8+ with any number of GPUs:
+
+```bash
+# One-time setup on a fresh pod (after bootstrap_pod.sh pushes code):
+ssh -p <PORT> root@<IP> 'bash /workspace/nba-ai-system/scripts/setup_pod_optimized.sh'
+
+# Launch (auto-detects GPU count):
+ssh -p <PORT> root@<IP> 'cd /workspace/nba-ai-system && bash scripts/launch_multigpu.sh 1'
+# Arg = PARALLEL_PER_GPU. Use 1 (safe), 2 (aggressive, needs >40GB VRAM/GPU).
+```
+
+The optimized launcher:
+1. Detects available GPUs and pins one `run_phase_g.py` to each via `CUDA_VISIBLE_DEVICES`
+2. Auto-sizes OMP threads from CFS quota / total workers
+3. Sets `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True,max_split_size_mb:512` (cuts VRAM frag)
+4. Sets `MALLOC_ARENA_MAX=1` (cuts glibc RAM frag)
+5. Each GPU writes to its own `phase_g_batch_gpu<N>.log` for isolated debugging
+
+**Critical fixes vs legacy `launch_single_3090_pod.sh`:**
+
+| Issue | Legacy | Optimized |
+|-------|--------|-----------|
+| YOLO ball inference | FP32, imgsz=640, device unset → CPU fallback | FP16 (`half=True`), imgsz=384, `device=0` |
+| Python 3.12 pip | Blocked by PEP 668 | `--break-system-packages` |
+| Pod has different GPU than dev | TRT engines fail to load → CPU fallback | `build_trt_engines.sh` rebuilds for pod GPU |
+| Multi-GPU pod | Single-GPU only | Auto-distributes workers per GPU |
+| Memory peaks at 116GB | parallel=4 caused 1.7M cgroup hits → OOM kills | parallel=1 per GPU + memory caps |
+| Kornia GPU blob fallback | Not installed → falls through to CPU Hough | Installed by setup script |
+
+**Settings (optimized):**
+- `--parallel 1` per GPU (no OOM risk; bump to 2 only on 40GB+ VRAM)
+- `OMP_NUM_THREADS=$(CFS_cores / total_workers)` (auto)
+- `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`
+- `MALLOC_ARENA_MAX=1`
+- `device=0`, `half=True`, `imgsz=384` for ball YOLO
+
+## Launch — Legacy (single 3090, RTX 4060-derived TRT engines)
 
 ```bash
 bash scripts/ingest_preflight.sh && bash scripts/launch_single_3090_pod.sh
 ```
 
-The launcher:
+The legacy launcher:
 1. Validates VRAM flush interval
 2. Sets OMP thread caps
 3. Launches 4 parallel workers
 4. Starts log monitoring
 
-**Settings:**
-- `--parallel 4` (4 concurrent game processing workers)
-- `OMP_NUM_THREADS=6` (per worker thread cap)
-- `BATCH=12` (YOLO batch size)
-- `TARGET=90` (target games before stopping)
-- `CUDA_VISIBLE_DEVICES=0` (single GPU)
+**Legacy settings:**
+- `--parallel 4` (causes OOM on Python 3.12 + RTX 3090 — use optimized launcher instead)
+- `OMP_NUM_THREADS=6`
+- `BATCH=12`
+- `CUDA_VISIBLE_DEVICES=0`
 
 ---
 
