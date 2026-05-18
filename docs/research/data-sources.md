@@ -65,7 +65,7 @@ The data that cannot be purchased at any price tier.
 | Ball detection and trajectory | YOLOv8n ball class + Kalman smoother | `src/tracking/ball_detect_track.py` |
 | Shot attempt detection | Ball trajectory + player pose at release | `src/pipeline/unified_pipeline.py` (EventDetector) |
 
-**Current status:** 17 games fully processed with CV features. Target: 80 games (enables retrain of Tier 3–4 models with meaningful spatial features). Full tracking pipeline on single RTX 3090 processes ~20 fps per worker; 4-worker pod completes a game in approximately 2 hours.
+**Current status:** 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted. Target: 80 CLEAN (enables retrain of Tier 3–4 models with meaningful spatial features). Full tracking pipeline on single RTX 3090 processes ~20 fps per worker; 4-worker pod completes a game in approximately 2 hours.
 
 See [cv-pipeline.md](../architecture/cv-pipeline.md) for full pipeline architecture. See [runpod-runbook.md](../operations/runpod-runbook.md) for GPU operations.
 

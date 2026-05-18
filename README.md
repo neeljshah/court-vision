@@ -162,11 +162,11 @@ These are API-only models — no CV features yet. The holdout set is 20% of tota
 
 **The items below are not yet measured.** They are model-design projections gated on two blockers:
 
-1. **Compute blocker (RunPod):** 80-game CV ingest — currently 17 of 80 games processed locally. Estimated ~7–9 hours on RTX 3090, ~$5 GPU budget.
+1. **Compute blocker (RunPod):** 80-game CV ingest — currently 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted; target 80 CLEAN. Estimated ~7–9 hours on RTX 3090, ~$5 GPU budget.
 2. **Paper-trading gate:** ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3% before any live capital.
 
 Once these pass, expected results:
-- **CV delta R² +0.08** over API-only baseline — projected contribution of spatial features (defender_distance, spacing_score, legs_fatigue). Bootstrap CIs on the current 17-game sample overlap zero at 95%; number becomes precise at 80 games.
+- **CV delta R² +0.08** over API-only baseline — projected contribution of spatial features (defender_distance, spacing_score, legs_fatigue). Bootstrap CIs on the current 29-game sample overlap zero at 95%; number becomes precise at 80 games.
 - **CLV +14 bps/bet vs Pinnacle** Shin-devigged close — projected from backtested edge model.
 - **Realized ROI +3.8%** on 1u-Kelly-fractional sizing — projected; dependent on fill prices and book limits.
 

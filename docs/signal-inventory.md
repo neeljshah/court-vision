@@ -70,8 +70,9 @@ Functions: `add_context_features`, `add_external_player_features`,
 homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector).
 Post-homography computation in `src/features/feature_engineering.py`::`compute_spatial_features`.
 
-Available for 17 of 80 target games. Features marked "Partial" are in the model
-feature set but carry imputed means for non-CV games.
+Available for 29 usable games (9 CLEAN + 20 PARTIAL) of 75 attempted; target 80 CLEAN.
+Features marked "Partial" are in the model feature set but carry imputed means for
+non-CV games.
 
 | Feature | Definition | Source function | Wired |
 |---------|-----------|----------------|-------|
@@ -181,7 +182,7 @@ production-ready NLP model.**
 |-------|-------|--------|
 | API box-score | ~20 | ✅ Fully wired |
 | API derived | ~12 | ✅ Fully wired |
-| CV spatial | ~8 | Partial (17/80 games) |
+| CV spatial | ~8 | Partial (29/80 target — 9 CLEAN + 20 PARTIAL) |
 | CV temporal | ~12 | ✅ Fully wired |
 | CV biomechanical | ~6 | Partial (not in betting stack) |
 | Market microstructure | ~6 | Partial (filter only) |

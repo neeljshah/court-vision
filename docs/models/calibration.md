@@ -89,7 +89,7 @@ Where bins group predictions by predicted probability (e.g., 10 bins of 10% widt
 
 Lower ECE = better calibrated. Target: ECE < 0.05 across all prop types.
 
-**Current ECE (on 17-game subset):**
+**Current ECE (on 29-game subset — 9 CLEAN + 20 PARTIAL):**
 
 | Prop | ECE | Status | Notes |
 |------|-----|--------|-------|

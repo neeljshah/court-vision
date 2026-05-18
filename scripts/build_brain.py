@@ -865,8 +865,8 @@ Advanced models that require [[CV Pipeline]] spatial data — the unique edge.
 
 ## Status
 
-- Trained on limited [[CV Data Status|CV game data]] (17 games)
-- Need 80+ games to be reliable ([[Build Phases|Phase 7]])
+- Trained on limited [[CV Data Status|CV game data]] (29 usable: 9 CLEAN + 20 PARTIAL of 75 attempted)
+- Need 80+ CLEAN games to be reliable ([[Build Phases|Phase 7]])
 - Currently informational, not in [[Portfolio Manager|betting stack]]
 
 → Part of [[Model Registry]]
@@ -1882,8 +1882,8 @@ The gap between what sportsbooks price and what's knowable is 164 edges wide ([[
 ## Current State
 
 - 75 [[Model Registry|trained models]]
-- [[CV Pipeline]] operational (17 games, targeting 80)
-- [[Player Props]] R² 0.07-0.47 across 7 stats
+- [[CV Pipeline]] operational (29 usable: 9 CLEAN + 20 PARTIAL of 75, targeting 80 CLEAN)
+- [[Player Props]] R² 0.16-0.41 holdout (walk-forward temporal CV)
 - [[Paper Trading Gate]] not yet cleared
 - [[CLV Validation]] is the #1 open question
 
@@ -1931,11 +1931,11 @@ note("Tracking/Open Issues", ["tracking", "issues"], """
 ## Critical
 
 1. [[Correlation Engine]] — `kelly_corr` correlation matrix not populated
-2. [[CV Data Status]] — 17 games, need 80 for reliable models
+2. [[CV Data Status]] — 29 usable (9 CLEAN + 20 PARTIAL), need 80 CLEAN for reliable models
 
 ## High
 
-3. [[Player Props]] STL R²=0.07 — add `opp_to_rate` + `opp_pace`
+3. [[Player Props]] STL R²=0.18 (weakest prop) — add `opp_to_rate` + `opp_pace`
 4. [[Fatigue Metrics]] not wired into [[Possession Simulator]]
 
 ## Medium
