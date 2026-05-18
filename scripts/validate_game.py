@@ -7,7 +7,6 @@ then computes accuracy metrics and writes a full-game summary to the vault.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Validate an already-processed snapshot (fast, no tracking):
     python scripts/validate_game.py --game-id 0022400625

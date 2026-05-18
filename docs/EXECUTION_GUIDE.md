@@ -15,7 +15,7 @@ Reprocessing all games with the **latest tracking pipeline** which includes:
 
 ## Phase 1: Quick Validation (5 min)
 ```bash
-cd C:/Users/neelj/nba-ai-system
+cd /path/to/nba-ai-system
 conda activate basketball_ai
 
 # Check what we have
@@ -143,7 +143,7 @@ python scripts/run_phase_g.py --game-ids 0022400430 --frames 9000 --reprocess
 ```bash
 # Activate environment
 conda activate basketball_ai
-cd C:/Users/neelj/nba-ai-system
+cd /path/to/nba-ai-system
 
 # Validate current state
 python scripts/batch_validate_games.py --summary

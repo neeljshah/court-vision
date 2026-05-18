@@ -6,7 +6,6 @@ Runs every stage end-to-end and prints a summary of all output files.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Basic — just tracking data
     python run_clip.py --video path/to/clip.mp4

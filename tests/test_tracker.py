@@ -3,7 +3,6 @@ tests/test_tracker.py — Automated tracking reliability test
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python tests/test_tracker.py
     python tests/test_tracker.py --video path/to/clip.mp4 --frames 200
 """

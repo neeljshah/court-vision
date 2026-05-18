@@ -27,7 +27,6 @@ Covers four failure classes:
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Re-run all known-bad games (13 games, ~4 hours)
     python scripts/reprocess_failed_games.py

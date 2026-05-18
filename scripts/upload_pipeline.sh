@@ -1,15 +1,26 @@
 #!/bin/bash
 # Upload local MP4s to pod + register as 'verified' in pod SQLite.
 # Loops forever — picks up newly-downloaded games too.
+#
+# Required env:
+#   RUNPOD_HOST   e.g. root@1.2.3.4
+#   RUNPOD_PORT   e.g. 40045
+# Optional:
+#   FFMPEG_DIR    prepended to PATH so ffprobe resolves
+#   SSH_KEY       default ~/.ssh/id_rsa
+#   POD_VIDEOS    default /root/nba_videos
+
 set -u
 cd "$(dirname "$0")/.."
 
-# ffprobe from winget install
-FFMPEG_DIR="/c/Users/neelj/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin"
-export PATH="$FFMPEG_DIR:$PATH"
+: "${RUNPOD_HOST:?Set RUNPOD_HOST=root@<ip>}"
+: "${RUNPOD_PORT:?Set RUNPOD_PORT=<ssh_port>}"
 
-SSH_CFG="$HOME/.ssh/config.pod"
-POD_VIDEOS="/root/nba_videos"
+[ -n "${FFMPEG_DIR:-}" ] && export PATH="$FFMPEG_DIR:$PATH"
+
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_rsa}"
+SSH_CFG="${SSH_CFG:-$HOME/.ssh/config.pod}"
+POD_VIDEOS="${POD_VIDEOS:-/root/nba_videos}"
 
 # Returns fps as integer (truncated). 60fps → 60, 30fps → 30, NTSC 29.97 → 29
 video_fps_int() {
@@ -54,8 +65,8 @@ print(r[0] if r else 'none')
 
         size=$(stat -c%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null)
         echo "[$(date +%H:%M:%S)] UPLOAD $gid ($(( size / 1024 / 1024 ))MB) status=$pod_status"
-        if scp -i ~/.ssh/id_rsa -P 40045 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
-            "$f" "root@213.192.2.83:$POD_VIDEOS/$gid.mp4" 2>&1 | tail -1; then
+        if scp -i "$SSH_KEY" -P "$RUNPOD_PORT" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            "$f" "$RUNPOD_HOST:$POD_VIDEOS/$gid.mp4" 2>&1 | tail -1; then
 
             ssh -F "$SSH_CFG" pod "cd /workspace/nba-ai-system && python -c \"
 from src.ingest.db import connect, migrate

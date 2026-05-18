@@ -11,7 +11,6 @@ Run after Phase A data collection is complete.
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python scripts/retrain_all.py               # all models
     python scripts/retrain_all.py --model props  # single model
     python scripts/retrain_all.py --check        # show current model metrics

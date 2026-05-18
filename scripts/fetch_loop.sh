@@ -4,9 +4,11 @@
 set -u
 cd "$(dirname "$0")/.."
 
-# ffmpeg / ffprobe path (winget install location)
-FFMPEG_DIR="/c/Users/neelj/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1-full_build/bin"
-export PATH="$FFMPEG_DIR:$PATH"
+# Optional: point FFMPEG_DIR at a directory containing ffmpeg/ffprobe.
+# Falls back to whatever is already on PATH.
+if [ -n "${FFMPEG_DIR:-}" ]; then
+    export PATH="$FFMPEG_DIR:$PATH"
+fi
 export PYTHONIOENCODING=utf-8
 export PYTHONUTF8=1
 

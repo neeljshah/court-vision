@@ -7,7 +7,6 @@ before running a full game through the pipeline.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python scripts/preflight.py
 """
 

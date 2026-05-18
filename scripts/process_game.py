@@ -8,7 +8,6 @@ quarters into a single game-level dataset.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Simple single-clip mode (most common for first run)
     python scripts/process_game.py --video data/videos/q1.mp4 \\

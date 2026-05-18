@@ -11,7 +11,6 @@ future data.  Features not derivable from game logs default to 0.0.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python scripts/validate/prop_holdout.py
 """
 from __future__ import annotations

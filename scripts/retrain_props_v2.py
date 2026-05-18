@@ -19,7 +19,6 @@ Output
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python scripts/retrain_props_v2.py
 """
 from __future__ import annotations

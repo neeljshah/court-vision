@@ -11,7 +11,6 @@ Fetches all missing NBA API data for 4 seasons in order of priority:
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
     python scripts/pull_missing_data.py               # all phases
     python scripts/pull_missing_data.py --phase A0    # gamelogs only
     python scripts/pull_missing_data.py --phase A1    # single phase

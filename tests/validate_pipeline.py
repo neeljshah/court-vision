@@ -7,7 +7,6 @@ for correctness, completeness, and data quality.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Run pipeline then validate (recommended)
     python tests/validate_pipeline.py --run
