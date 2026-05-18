@@ -81,6 +81,14 @@ def _get_ball_yolo_model():
                     _ball_yolo_is_coco = True
                 except Exception:
                     _ball_yolo_available = False
+        # Move to CUDA if available — ultralytics defaults to CPU unless explicitly moved
+        if _ball_yolo_model is not None:
+            try:
+                import torch as _torch_local
+                if _torch_local.cuda.is_available():
+                    _ball_yolo_model.to("cuda")
+            except Exception:
+                pass
     except Exception:
         _ball_yolo_available = False
 
@@ -338,13 +346,15 @@ class BallDetectTrack:
                 # COCO fallback: query class 32 (sports ball). Higher conf threshold
                 # because COCO yolov8n is not fine-tuned on NBA broadcasts — lower
                 # confidence detections are often crowd/arena objects, not the ball.
-                results = model(frame, imgsz=640, classes=[32], conf=0.20,
-                                half=True, verbose=False)
+                results = model(frame, imgsz=384, classes=[32], conf=0.20,
+                                half=True, device=0, verbose=False)
             else:
                 # conf lowered 0.30→0.05: fine-tuned ball model outputs low confidence
                 # (~0.11 typical). At 0.30 detection was 0%; at 0.05 it's ~98%.
                 # Single-class model (ball only) so low conf still means ball-shaped.
-                results = model(frame, imgsz=640, conf=0.05, verbose=False)
+                # half=True + imgsz=384 + device=0: ~4× faster than FP32 imgsz=640 on CPU.
+                results = model(frame, imgsz=384, conf=0.05,
+                                half=True, device=0, verbose=False)
             boxes = results[0].boxes
             if boxes is None or len(boxes) == 0:
                 return None
