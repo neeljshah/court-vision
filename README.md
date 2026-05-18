@@ -262,11 +262,11 @@ The current commercial focus is sports markets because they pay in dollars on a 
 
 ## Risk Framework
 
-No live capital until all circuit breakers are coded and the paper-trading gate passes (≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%).
+No live capital until the paper-trading gate passes (≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%). All guards in [src/prediction/risk_guards.py](src/prediction/risk_guards.py) with tests in [tests/test_risk_guards.py](tests/test_risk_guards.py); not yet wired into the live bet selector (Phase 4).
 
-**Position limits:** 20% portfolio/slate, 5%/game, 8%/player, 15% correlated-cluster cap.
+**Position limits:** 20% portfolio/slate, 5%/game, 8%/player, 15% correlated-cluster cap. (`MAX_PORTFOLIO_PCT`, `MAX_GAME_PCT`, `MAX_PLAYER_PCT`, `MAX_CORRELATED_PCT`)
 
-**Circuit breakers:** −5% daily loss halt, 10% drawdown kill-switch, streak throttle (3 losses = 50% stake, 5 = paper only), model disagreement halt (ensemble spread > 3 units = skip), data quality degradation (0.5× Kelly on fallback vendor).
+**Circuit breakers:** −5% daily loss halt, 10% drawdown kill-switch, streak throttle (3 losses = 50% stake, 5 = paper only), model disagreement halt (ensemble spread > 3 units = skip), data quality degradation (0.5× Kelly on fallback vendor). (`DAILY_LOSS_HALT_PCT`, `KILL_SWITCH_PCT`, `STREAK_LOSSES_THROTTLE/PAPER`, `MAX_ENSEMBLE_SPREAD`, `FALLBACK_KELLY_FACTOR`)
 
 **Factor exposure:** PCA on prop residuals identifies latent factors (pace, defense, foul, garbage time). Opposing positions hedge when any factor exceeds threshold. Target: 25% variance reduction vs naive Kelly.
 
