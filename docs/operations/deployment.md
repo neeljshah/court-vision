@@ -125,7 +125,7 @@ The dashboard is a Next.js frontend on the existing FastAPI backend.
 
 **Development:**
 ```bash
-cd quant-dashboard
+cd apps/quant-dashboard
 npm install
 npm run dev    # http://localhost:3000
 ```

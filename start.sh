@@ -21,7 +21,7 @@ python -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload &
 API_PID=$!
 
 # Start Streamlit
-streamlit run dashboards/app.py --server.port 8501 --server.address 0.0.0.0
+streamlit run apps/dashboards/app.py --server.port 8501 --server.address 0.0.0.0
 
 # Cleanup on exit
 kill $API_PID 2>/dev/null || true
