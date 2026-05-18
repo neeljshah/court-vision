@@ -6,7 +6,6 @@ skips already-processed games, and submits the rest to the Celery queue.
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Start Redis + worker first:
     #   redis-server  (or use Redis Cloud)

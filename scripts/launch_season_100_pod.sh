@@ -5,10 +5,15 @@
 # - Pulls tracking data
 # - Prints status
 
-POD_PORT=19528
-POD_HOST="root@103.196.86.195"
+# Required env: RUNPOD_HOST=root@<ip>, RUNPOD_PORT=<ssh_port>
+# Optional:     FFPROBE=path/to/ffprobe (default: 'ffprobe' on PATH)
+set -u
+: "${RUNPOD_HOST:?Set RUNPOD_HOST=root@<ip>}"
+: "${RUNPOD_PORT:?Set RUNPOD_PORT=<ssh_port>}"
+POD_PORT="$RUNPOD_PORT"
+POD_HOST="$RUNPOD_HOST"
 POD_SSH="ssh -p $POD_PORT $POD_HOST"
-FFPROBE="/c/Users/neelj/anaconda3/envs/basketball_ai/Library/bin/ffprobe"
+FFPROBE="${FFPROBE:-ffprobe}"
 UPLOAD_THRESHOLD=10
 MAX_UPLOAD=8      # never upload more than this at once — keeps pod disk bounded
 METRICS="data/phase_g_metrics.csv"

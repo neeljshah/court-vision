@@ -198,11 +198,11 @@ Only restart if:
 ## Watch-and-Sync Script Reference
 
 ```bash
-# scripts/watch_and_sync.sh configuration
-IP="<pod_ip>"
-PORT="<pod_port>"
-LOCAL="C:/Users/neelj/nba-ai-system"   # override with NBA_LOCAL_PATH env var
-# Syncs every 5 min, exits when workers = 0
+# scripts/watch_and_sync.sh env vars
+export RUNPOD_HOST=root@<pod_ip>
+export RUNPOD_PORT=<pod_port>
+# Optional overrides: REMOTE_ROOT, LOCAL_ROOT, SSH_KEY, POLL_SECONDS, SYNC_SECONDS
+# Syncs every SYNC_SECONDS (default 300), exits when workers = 0
 ```
 
 ---

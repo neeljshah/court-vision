@@ -327,7 +327,7 @@ Impact:
 
 ```bash
 conda activate basketball_ai
-cd C:/Users/neelj/nba-ai-system
+cd /path/to/nba-ai-system
 
 # Process a single clip (NEVER run without --game-id for enrichment)
 python run_clip.py --video data/videos/cavs_celtics_2025.mp4 --game-id 0022400710

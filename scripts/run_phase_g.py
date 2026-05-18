@@ -7,7 +7,6 @@ to data/tracking/{game_id}/, and logs tracker quality metrics.
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Process all unprocessed games (default: first 10 min of each game)
     python scripts/run_phase_g.py

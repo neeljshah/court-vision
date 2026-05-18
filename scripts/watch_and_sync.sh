@@ -1,45 +1,55 @@
 #!/bin/bash
-# Watches pod until Phase G finishes, then syncs all tracking data + metrics back locally.
-# Also handles the mid-upload relaunch when bl3tl1k66 upload completes.
-set -euo pipefail
+# watch_and_sync.sh — watch a pod until Phase G finishes, then sync tracking back.
+#
+# Required env:
+#   RUNPOD_HOST   e.g. root@1.2.3.4
+#   RUNPOD_PORT   e.g. 14149
+# Optional:
+#   REMOTE_ROOT   default /workspace/nba-ai-system
+#   LOCAL_ROOT    default $PWD (when run from repo root)
+#   SSH_KEY       default ~/.ssh/id_rsa
+#   POLL_SECONDS  default 30 (worker check); sync every SYNC_SECONDS (default 300)
 
-IP="103.196.86.195"
-PORT="14149"
-SSH="ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -p ${PORT} root@${IP}"
-SCP="scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -P ${PORT}"
-PROJ="/workspace/nba-ai-system"
-# pod→windows backpull: override via NBA_LOCAL_PATH when running from the pod
-#   e.g.  export NBA_LOCAL_PATH="neelj@192.168.1.X:/Users/neelj/nba-ai-system"
-LOCAL="${NBA_LOCAL_PATH:-C:/Users/neelj/nba-ai-system}"
+set -euo pipefail
+: "${RUNPOD_HOST:?Set RUNPOD_HOST=root@<ip>}"
+: "${RUNPOD_PORT:?Set RUNPOD_PORT=<ssh_port>}"
+
+REMOTE_ROOT="${REMOTE_ROOT:-/workspace/nba-ai-system}"
+LOCAL_ROOT="${LOCAL_ROOT:-$PWD}"
+SSH_KEY="${SSH_KEY:-$HOME/.ssh/id_rsa}"
+POLL_SECONDS="${POLL_SECONDS:-30}"
+SYNC_SECONDS="${SYNC_SECONDS:-300}"
+
+SSH="ssh -o StrictHostKeyChecking=no -i $SSH_KEY -p $RUNPOD_PORT $RUNPOD_HOST"
+SCP="scp -o StrictHostKeyChecking=no -i $SSH_KEY -P $RUNPOD_PORT"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
-log "Watching pod for Phase G completion (syncing every 5 min)..."
+log "Watching $RUNPOD_HOST:$RUNPOD_PORT for Phase G completion (sync every ${SYNC_SECONDS}s)..."
 
 last_sync=$(date +%s)
 while true; do
-    sleep 30
+    sleep "$POLL_SECONDS"
 
     now=$(date +%s)
     WORKERS=$($SSH "pgrep -f run_clip.py | grep -v pgrep | wc -l" 2>/dev/null || echo 0)
 
-    # Sync every 5min or when workers finish
-    if (( now - last_sync >= 300 )) || [ "$WORKERS" -eq 0 ]; then
+    if (( now - last_sync >= SYNC_SECONDS )) || [ "$WORKERS" -eq 0 ]; then
         log "Syncing data (workers=${WORKERS})..."
-        $SCP -r root@${IP}:${PROJ}/data/tracking/ "${LOCAL}/data/" 2>/dev/null || true
-        $SCP -r root@${IP}:${PROJ}/data/events/ "${LOCAL}/data/" 2>/dev/null || true
-        $SCP root@${IP}:${PROJ}/data/phase_g_metrics.csv "${LOCAL}/data/" 2>/dev/null || true
+        $SCP -r "$RUNPOD_HOST:${REMOTE_ROOT}/data/tracking/" "${LOCAL_ROOT}/data/" 2>/dev/null || true
+        $SCP -r "$RUNPOD_HOST:${REMOTE_ROOT}/data/events/"   "${LOCAL_ROOT}/data/" 2>/dev/null || true
+        $SCP    "$RUNPOD_HOST:${REMOTE_ROOT}/data/phase_g_metrics.csv" "${LOCAL_ROOT}/data/" 2>/dev/null || true
         last_sync=$(date +%s)
     fi
 
     if [ "$WORKERS" -eq 0 ]; then
-        $SCP root@${IP}:${PROJ}/data/phase_g_processed.txt "${LOCAL}/data/" 2>/dev/null || true
-        DONE=$(cat "${LOCAL}/data/phase_g_processed.txt" 2>/dev/null | wc -l || echo 0)
+        $SCP "$RUNPOD_HOST:${REMOTE_ROOT}/data/phase_g_processed.txt" "${LOCAL_ROOT}/data/" 2>/dev/null || true
+        DONE=$(wc -l < "${LOCAL_ROOT}/data/phase_g_processed.txt" 2>/dev/null || echo 0)
         log "All workers done. ${DONE} games in processed list."
-        log "Tracking data: ${LOCAL}/data/tracking/"
+        log "Tracking data: ${LOCAL_ROOT}/data/tracking/"
         break
     else
-        FRAME=$($SSH "grep -oE 'Frame [0-9]+' ${PROJ}/phase_g_batch.log 2>/dev/null | tail -1" 2>/dev/null || echo "...")
+        FRAME=$($SSH "grep -oE 'Frame [0-9]+' ${REMOTE_ROOT}/phase_g_batch.log 2>/dev/null | tail -1" 2>/dev/null || echo "...")
         log "  ${WORKERS} workers active | last log: ${FRAME}"
     fi
 done

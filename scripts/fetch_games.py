@@ -7,7 +7,6 @@ and saves to data/videos/full_games/{game_id}.mp4.
 
 Usage:
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Download 5 recent games (default)
     python scripts/fetch_games.py

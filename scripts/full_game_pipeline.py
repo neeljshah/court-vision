@@ -10,7 +10,6 @@ Runs until the time budget is exhausted, skipping games already on disk.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     python scripts/full_game_pipeline.py                  # 3-hour default
     python scripts/full_game_pipeline.py --hours 6        # longer run

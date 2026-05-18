@@ -4,7 +4,6 @@ query_cv_features.py — Query CV-derived features from the database.
 Usage
 -----
     conda activate basketball_ai
-    cd C:/Users/neelj/nba-ai-system
 
     # Last 5 games of CV features for a player
     python scripts/query_cv_features.py --player "LeBron James" --last 5
