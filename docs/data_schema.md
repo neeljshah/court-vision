@@ -196,7 +196,7 @@ All NBA Stats API responses, cached to disk with smart TTL.
 
 | File | Model | Key Metric |
 |------|-------|------------|
-| `win_probability.pkl` | Pre-game win probability (XGBoost) | 67.7% acc, Brier 0.204 |
+| `win_probability.pkl` | Pre-game win probability (XGBoost) | 68.5% acc, Brier 0.209 |
 | `props_pts.json` | Points prop model | MAE 0.32, R² 0.92 |
 | `props_reb.json` | Rebounds prop model | MAE 0.11, R² 0.94 |
 | `props_ast.json` | Assists prop model | MAE 0.09, R² 0.93 |

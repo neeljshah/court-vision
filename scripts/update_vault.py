@@ -189,8 +189,8 @@ updated: {today}
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
-| [[Models/Win Probability\|Win prob]] | Accuracy | 69.1% | 72% | -2.9% |
-| [[Models/Win Probability\|Win prob]] | Brier | 0.203 | <0.19 | -0.013 |
+| [[Models/Win Probability\|Win prob]] | Accuracy | 68.5% | 72% | -3.5% |
+| [[Models/Win Probability\|Win prob]] | Brier | 0.209 | <0.19 | -0.019 |
 | [[Models/Player Props\|Props PTS]] | R² (holdout) | 0.41 | 0.47-0.51 | pending CV lift |
 | [[Models/Player Props\|Props REB]] | R² (holdout) | 0.38 | 0.45-0.48 | pending CV lift |
 | [[Models/Player Props\|Props AST]] | R² (holdout) | 0.36 | 0.42-0.45 | pending CV lift |

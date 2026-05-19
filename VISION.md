@@ -70,7 +70,7 @@ The substrate that makes the research machine possible is largely done:
 | Steals | 0.18 |
 | Blocks | 0.16 |
 
-Win probability: 69.1% accuracy, Brier 0.203. xFG (shot quality): Brier 0.226 on 221K shots.
+Win probability: 68.5% accuracy, Brier 0.209. xFG (shot quality): Brier 0.226 on 221K shots.
 
 **Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (1040 passing), CLV tracker scaffolding, CV benchmark.
 

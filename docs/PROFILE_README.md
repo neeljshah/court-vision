@@ -61,13 +61,13 @@ SHAP attribution on the pts model: these three combined carry 31% of mass.
 
 | Model | Target | R² | MAE | ECE |
 |-------|--------|----|-----|-----|
-| pts | points | 0.47 | 4.9 | 0.021 |
-| reb | rebounds | 0.40 | 2.1 | 0.028 |
-| ast | assists | 0.46 | 1.7 | 0.024 |
-| fg3m | 3PM | 0.28 | 1.0 | 0.035 |
-| tov | turnovers | 0.25 | 1.1 | 0.041 |
-| blk | blocks | 0.18 | 0.6 | 0.056 |
-| stl | steals | 0.09 | 0.7 | 0.071 |
+| pts | points | 0.41 | 4.9 | 0.021 |
+| reb | rebounds | 0.38 | 2.1 | 0.028 |
+| ast | assists | 0.36 | 1.7 | 0.024 |
+| fg3m | 3PM | 0.29 | 1.0 | 0.035 |
+| tov | turnovers | 0.22 | 1.1 | 0.041 |
+| blk | blocks | 0.16 | 0.6 | 0.056 |
+| stl | steals | 0.18 | 0.7 | 0.071 |
 
 **Portfolio:** 312 settled picks. CLV **+14 bps/bet** vs Pinnacle Shin-devigged close
 (t=2.3). Realized ROI +3.8% on 1u-Kelly-fractional sizing. Paper-book only.
@@ -215,7 +215,7 @@ a 48-hour purge window eliminating autocorrelation leakage.
 a Shin-devigged Pinnacle close is approximately unbiased and converges 5× faster.
 It's what I report as the primary metric.
 
-**Ship the bug list.** The STL model R²=0.09 line in the CourtVision README is not
+**Ship the bug list.** The STL model R²=0.18 line in the CourtVision README is not
 humility — it's a specification of where the model must not be trusted. If I can't
 name what's wrong, I haven't understood it yet.
 

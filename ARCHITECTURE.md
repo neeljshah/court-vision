@@ -91,7 +91,7 @@ This is the difference between "a prediction system" and "the Renaissance of spo
 | Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 bug: ball_valid_pct=0% on some games |
 | Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ Done |
 | 7 prop models (pts/reb/ast/fg3m/blk/tov/stl) | `src/prediction/player_props.py` | ✅ Holdout validated |
-| Win probability (XGBoost) | `src/prediction/win_probability.py` | ✅ 69.1% acc, Brier 0.203 |
+| Win probability (XGBoost) | `src/prediction/win_probability.py` | ✅ 68.5% acc, Brier 0.209 |
 | xFG model | `src/prediction/` | ✅ Brier 0.226 on 221K shots |
 | Fractional Kelly + shrinkage | `src/prediction/betting_portfolio.py` | ✅ Built |
 | Shin devig | `src/prediction/devig.py` | ✅ Built |

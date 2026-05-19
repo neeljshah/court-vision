@@ -12,8 +12,8 @@
 |---|---|
 | **File** | `data/models/win_probability.pkl` |
 | **Algorithm** | XGBoost classifier |
-| **Accuracy** | 69.1% (walk-forward backtest, 3 seasons) |
-| **Brier Score** | 0.203 |
+| **Accuracy** | 68.5% (walk-forward backtest, 3 seasons) |
+| **Brier Score** | 0.209 |
 
 ### Game-Level Models
 
@@ -29,12 +29,12 @@
 
 | Stat | R² | File (v2 active) |
 |------|-----|---|
-| pts | **0.47** | `data/models/props_pts_v2.json` |
-| reb | **0.40** | `data/models/props_reb_v2.json` |
-| ast | **0.46** | `data/models/props_ast_v2.json` |
-| fg3m | **0.28** | `data/models/props_fg3m_v2.json` |
-| blk | **0.18** | `data/models/props_blk_v2.json` |
-| tov | **0.25** | `data/models/props_tov_v2.json` |
+| pts | **0.41** | `data/models/props_pts_v2.json` |
+| reb | **0.38** | `data/models/props_reb_v2.json` |
+| ast | **0.36** | `data/models/props_ast_v2.json` |
+| fg3m | **0.29** | `data/models/props_fg3m_v2.json` |
+| blk | **0.16** | `data/models/props_blk_v2.json` |
+| tov | **0.22** | `data/models/props_tov_v2.json` |
 | stl | **0.18** | `data/models/props_stl_v2.json` |
 
 **Note:** R² values reflect actual walk-forward validation. STL R²=0.18 is weak — do not size aggressively. `opp_to_rate` + `opp_pace` features are planned to improve it. v1 files (`props_pts.json`, etc.) are retained as fallback.
