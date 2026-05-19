@@ -197,13 +197,13 @@ All NBA Stats API responses, cached to disk with smart TTL.
 | File | Model | Key Metric |
 |------|-------|------------|
 | `win_probability.pkl` | Pre-game win probability (XGBoost) | 68.5% acc, Brier 0.209 |
-| `props_pts.json` | Points prop model | MAE 0.32, R² 0.92 |
-| `props_reb.json` | Rebounds prop model | MAE 0.11, R² 0.94 |
-| `props_ast.json` | Assists prop model | MAE 0.09, R² 0.93 |
-| `props_fg3m.json` | 3-pointers made prop model | Trained |
-| `props_stl.json` | Steals prop model | Trained |
-| `props_blk.json` | Blocks prop model | Trained |
-| `props_tov.json` | Turnovers prop model | Trained |
+| `props_pts.json` | Points prop model | MAE 4.12, R² 0.41 (holdout) |
+| `props_reb.json` | Rebounds prop model | MAE 1.84, R² 0.38 (holdout) |
+| `props_ast.json` | Assists prop model | MAE 1.52, R² 0.36 (holdout) |
+| `props_fg3m.json` | 3-pointers made prop model | MAE 0.91, R² 0.29 (holdout) |
+| `props_stl.json` | Steals prop model | MAE 0.48, R² 0.18 (holdout) |
+| `props_blk.json` | Blocks prop model | MAE 0.42, R² 0.16 (holdout) |
+| `props_tov.json` | Turnovers prop model | R² 0.22 (holdout) |
 | `game_total.json` | Game total (over/under) model | Trained |
 | `game_spread.json` | Game spread model | Trained |
 | `game_blowout.json` | Blowout probability model | Trained |

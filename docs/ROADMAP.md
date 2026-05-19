@@ -1,6 +1,8 @@
 # Development Roadmap — CourtVision
 
-*Last updated: 2026-04-15 | Phase 13.5 complete*
+*Build / phase log. Last detailed update: 2026-04-15.*
+
+> **Current state (2026-05-18):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md).
 
 ---
 
@@ -23,7 +25,7 @@ Priority stack:
 
 ## Phase Overview
 
-*Session 36 | 2026-04-15 | Tests: 960+ pass, 93 skip | Models: 75 trained | CV: 41/94 videos, 16 A/B-grade*
+*Session 36 | 2026-04-15 | Tests: 960+ pass, 93 skip | Models: 75 trained | CV: 17 quality / 29 usable / 75 attempted (target 80 CLEAN)*
 
 | Phase | Name | Status | Key Deliverable |
 |---|---|---|---|
@@ -39,7 +41,7 @@ Priority stack:
 | 4.8 | Quantitative Betting Infra | ✅ Done | Kelly + CLV + cross-book arb + portfolio construction |
 | 4.9 | Backtesting + Validation | ✅ Done | Strategy backtester, paper trading, /backtest endpoint |
 | 5 | External Factors | ✅ Done | Injury monitor, ref tracker, line monitor |
-| G | Full Game Data Collection | ✅ Done | 41/94 videos tracked, 16 A/B-grade, 24 CV records |
+| G | Full Game Data Collection | 🟡 Active | 17 quality / 29 usable / 75 attempted; target 80 CLEAN |
 | 6 | Full Game Processing + Rich Events | ✅ Done | Rich events aggregated, CV features wired, 266 enriched possessions |
 | 7 | Tier 2–3 ML Models | ✅ Done | xFG v2, props retrained with CV features |
 | 8 | Possession Simulator v1 | ✅ Done | 7-model chain, 10K Monte Carlo <30s |
@@ -50,7 +52,8 @@ Priority stack:
 | 12 | Full Monte Carlo | ✅ Done | FoulTrouble/GarbageTime/Q4Usage wired, 7-stat distributions |
 | 13 | FastAPI Backend | ✅ Done | 24 endpoints across 5 routers, in-process TTL cache |
 | **13.5** | **100-game Readiness** | ✅ **Done** | Prop stack wired, isotonic calibration, dedup+crash isolation, backtest endpoint, correlation matrix, CV fatigue, STL features |
-| **14** | **100-game RunPod Run** | ⏳ **NEXT** | Stage 100 H.264 videos, launch pod, retrain, fit calibration, /backtest gate, enable betting |
+| **Gate 1** | **CLV Validation** | 🔴 **NOT YET RUN** | ≥50 settled bets vs Pinnacle close, beat rate ≥55%, paper ROI ≥3% — gates everything downstream |
+| **14** | **80-game RunPod Run** | ⏳ **NEXT** | Stage videos to 80 CLEAN, launch pod, retrain with CV features, fit calibration, /backtest gate |
 | 15 | Analytics Dashboard | 🔲 | Next.js + D3 shot charts + 10 chart types |
 | 16 | AI Chat Interface | 🔲 | Claude API + tool use + render_chart inline |
 | 16B | Live Win Probability LSTM | 🔲 | 200+ games, LSTM hidden dim 256, WebSocket real-time |
@@ -65,8 +68,8 @@ Priority stack:
 
 **CV Pipeline**
 - YOLOv8n detection → SIFT homography → Kalman+Hungarian → OSNet re-ID (512-dim) → EasyOCR → EventDetector
-- 41/94 videos tracked, 16 A/B-grade, 24 CV player-game records
-- 53 unprocessed videos in queue for Phase 14
+- 17 quality / 29 usable / 75 attempted games (target 80 CLEAN)
+- Remaining videos queued for the 80-game RunPod run
 
 **ML Models (75 trained artifacts)**
 - Win probability: 68.5% accuracy, Brier 0.209
@@ -97,28 +100,30 @@ Priority stack:
 
 | # | Issue | Severity |
 |---|-------|---------|
-| 1 | Isotonic calibration layer — verify end-to-end wiring before live sizing | CRITICAL |
-| 2 | STL R²=0.18 — add opp_to_rate + opp_pace to player_props.py | HIGH |
-| 3 | Correlation matrix in kelly_corr not populated (assumes zero) | HIGH |
-| 4 | CV fatigue minutes — verify wired into possession_simulator | MEDIUM |
-| 5 | 53 unprocessed videos awaiting Phase 14 RunPod run | MEDIUM |
+| 1 | Gate 1 (CLV validation) NOT YET RUN — gates all downstream surfaces | CRITICAL |
+| 2 | Isotonic calibration layer — verify end-to-end wiring before live sizing | CRITICAL |
+| 3 | Underprediction bias on all 7 prop models (predict below closing line) | HIGH |
+| 4 | STL R²=0.18 — add opp_to_rate + opp_pace to player_props.py | HIGH |
+| 5 | Correlation matrix in kelly_corr not populated (assumes zero) | HIGH |
+| 6 | CV fatigue minutes — verify wired into possession_simulator | MEDIUM |
 
 ---
 
-## Next: Phase 14 — 100-Game RunPod Run
+## Next: Gate 1, then Phase 14 — 80-Game RunPod Run
+
+**Gate 1 first** — CLV validation gates everything: ≥50 settled bets vs Pinnacle close, beat rate ≥55%, paper ROI ≥3%. If Gate 1 fails, debug the edge thesis before any further surface investment.
 
 ```bash
 bash scripts/launch_single_gpu_pod.sh <IP> <PORT>
 bash scripts/watch_and_sync.sh
 ```
 
-**Targets:**
-- 30+ new A/B-grade games processed
-- CV registry: 24 → 200+ player-game records
+**Phase 14 targets (80-game run):**
+- Reach 80 CLEAN games (from 29 usable today)
 - Prop model retrain with CV features → pts R² target 0.55+
 - Isotonic calibration fitted on new volume
 - /backtest gate passed for all 7 props
-- Betting mode enabled
+- Betting mode enabled only after Gate 1 passes
 
 ---
 

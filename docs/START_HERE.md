@@ -136,7 +136,7 @@ python scripts/batch_season.py --season 2025-26
 | Metric | Value |
 |--------|-------|
 | Win probability accuracy | 68.5% |
-| Player props MAE (pts) | 0.308 |
+| Player props MAE (pts) | 4.12 (holdout) |
 | DNP predictor AUC | 0.979 |
 | xFG Brier score | 0.226 |
 | Shots in training data | 221,866 |
@@ -149,12 +149,13 @@ python scripts/batch_season.py --season 2025-26
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1–5 | Data infra, CV tracker, NBA data, Tier 1 models | ✅ Done |
-| F | Full game processing (20 clean games target) | 🔲 In progress |
-| G | Season 2025-26 batch (50 games) | 🔲 Planned |
-| 7 | Tier 2–3 models with CV spatial features | 🔲 Blocked on F |
-| 8 | Possession simulator (7-model chain, 10K MC) | 🔲 Planned |
-| 9–17 | Feedback loop, betting infra, frontend, live | 🔲 Future |
+| 1–13.5 | Data infra, CV tracker, NBA data, 75 ML models, possession simulator, betting infra, FastAPI | ✅ Done |
+| G | Full-game CV data collection (target 80 CLEAN games) | 🟡 Active — 29 usable / 75 attempted |
+| Gate 1 | CLV validation vs Pinnacle close (≥50 bets, beat rate ≥55%, ROI ≥3%) | 🔴 Not yet run — top priority |
+| 14 | 80-game RunPod run + retrain with CV spatial features | ⏳ Next |
+| 15–18 | Analytics dashboard, AI chat, live win-prob LSTM, infrastructure | 🔲 Future |
+
+For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic roadmap see [../ROADMAP.md](../ROADMAP.md).
 
 ---
 
