@@ -1,79 +1,63 @@
 # CourtVision — System Architecture
 
 > Technical shape of the platform. For strategy: [VISION.md](VISION.md). For build sequence: [ROADMAP.md](ROADMAP.md).
+> See also: [docs/architecture/system-overview.md](docs/architecture/system-overview.md) for full system descriptions.
 
 ---
 
-## The Four Clusters
+## The Six Core Systems
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│  CLUSTER 1: CV TRACKING                                             │
+│                         BROADCAST VIDEO                             │
+│              (29 usable / 75 attempted → 80 CLEAN target)           │
+└───────────────────────────┬─────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      CV PIPELINE [LIVE]                             │
 │  src/tracking/ + src/pipeline/                                      │
-│                                                                     │
-│  Broadcast video → court-coordinate spatial features                │
-│  YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet → EasyOCR   │
-│                                                                     │
-│  Output: defender_distance, spacing_score, fatigue_index,           │
-│          play_type, event_stream, jersey_ids                        │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  CLUSTER 2: DATA INGEST + FEATURE STORE                             │
-│  src/ingest/ + src/features/ + src/data/                            │
-│                                                                     │
-│  NBA API (3 seasons, 221K shots, 3.6K PBP) + CV features +         │
-│  betting odds + injury feeds + referee tendencies → unified store   │
-│                                                                     │
-│  Keyed on (player, game, possession, timestamp)                     │
-│  Database: PostgreSQL (target) / SQLite (current ingest queue)      │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  CLUSTER 3: ML PREDICTION + SIMULATION                              │
-│  src/prediction/                                                    │
-│                                                                     │
-│  75 trained models → 10K-path Monte Carlo possession simulator      │
-│  7 prop models + win prob + xFG + game total + spread + more        │
-│  Calibration layer, meta-model, quantile regression                 │
-│                                                                     │
-│  Output: full joint distribution over every observable outcome      │
-└─────────────────────┬───────────────────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────────────────┐
-│  CLUSTER 4: SERVING + EXECUTION                                     │
-│  api/ + src/prediction/betting_portfolio.py                         │
-│                                                                     │
-│  FastAPI (6 endpoints) + fractional Kelly + Shin devig +            │
-│  CLV tracker + multi-book execution router                          │
-│                                                                     │
-│  Output: bet recommendations, paper/live fills, CLV attribution     │
-└─────────────────────────────────────────────────────────────────────┘
+│  YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID        │
+│  Output: defender_distance, spacing_score, legs_fatigue, events     │
+└───────────────────────────┬─────────────────────────────────────────┘
+                            │ (CV spatial features)
+        ┌───────────────────┤
+        │ (NBA API features)│
+        ▼                   ▼
+┌───────────────────────────────────────────────────────────────────┐
+│            SYSTEM 1: POSSESSION SIMULATOR [PLANNED]               │
+│   Lineup-dependent transition matrices + 10K Monte Carlo paths    │
+│   Output: P(stat > X) for every player, every stat, any X        │
+└───────────────────────────┬───────────────────────────────────────┘
+                            │ (full distributions)
+        ┌───────────────────┴────────────────────┐
+        ▼                                        ▼
+┌────────────────────────┐          ┌───────────────────────────────┐
+│ SYSTEM 2: LINE         │          │ SYSTEM 3: CORRELATION ENGINE  │
+│ EVALUATOR [SCAFFOLDED] │          │ [SCAFFOLDED]                  │
+│ devig.py exists;       │          │ kelly_corr not yet populated; │
+│ live pipeline pending  │          │ Ledoit-Wolf code exists       │
+└───────────┬────────────┘          └──────────────┬────────────────┘
+            └──────────────┬───────────────────────┘
+                           ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                  SYSTEM 4: KELLY SIZER [LIVE]                    │
+│   Fractional Kelly (0.25-0.5) + Ledoit-Wolf shrinkage on corr   │
+│   Drawdown circuit breakers • betting_portfolio.py               │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ (sized bets)
+                           ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                 SYSTEM 5: EXECUTION ROUTER [PLANNED]             │
+│   DK, FD, BetMGM, Caesars, bet365, Fanatics, Novig, Kalshi      │
+│   api/execution_router.py + src/execution/                       │
+└──────────────────────────────────────────────────────────────────┘
+
+  SYSTEM 6: AGENTIC RESEARCH SYSTEM [PLANNED]
+  Multi-agent Claude loop: Orchestrator → Researcher → Engineer
+  → Validator → Risk Manager → Retirement Monitor
+  Autonomously discovers, validates, ships, and retires signals.
 ```
-
----
-
-## The Agentic Research Layer (Planned)
-
-The above four clusters are the substrate. The agentic layer is the research machine that runs on top of them.
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  CLUSTER 5: AGENTIC RESEARCH SYSTEM (not yet built)                │
-│                                                                     │
-│  Orchestrator Agent                                                 │
-│    ├── Researcher Agent: hypothesis generation + literature search  │
-│    ├── Engineer Agent: signal implementation + feature wiring       │
-│    ├── Validator Agent: holdout testing + IR calculation            │
-│    ├── Risk Manager Agent: correlation + Kelly impact               │
-│    └── Retirement Monitor: signal decay detection + deprecation     │
-│                                                                     │
-│  Memory: signal registry + IR history + P&L attribution            │
-│  Output: autonomous signal discovery, validation, deployment        │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-This is the difference between "a prediction system" and "the Renaissance of sports." See [vault/Plans/Agentic Research System.md](vault/Plans/Agentic%20Research%20System.md).
 
 ---
 
@@ -81,31 +65,38 @@ This is the difference between "a prediction system" and "the Renaissance of spo
 
 | Component | File(s) | Status |
 |-----------|---------|--------|
-| YOLOv8n detection | `src/tracking/advanced_tracker.py` | ✅ Running |
-| SIFT homography | `src/pipeline/unified_pipeline.py` | ✅ Running |
-| Kalman+Hungarian tracking | `src/tracking/advanced_tracker.py` | ✅ Running |
-| OSNet re-ID (512-dim) | `src/tracking/osnet_reid.py` | ✅ Running |
-| HSV team classification | `src/tracking/color_reid.py` | ✅ Running |
-| EasyOCR jersey reading | `src/pipeline/unified_pipeline.py` | ✅ Running |
-| EventDetector | `src/pipeline/unified_pipeline.py` | ✅ Running |
-| Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 bug: ball_valid_pct=0% on some games |
-| Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ Done |
-| 7 prop models (pts/reb/ast/fg3m/blk/tov/stl) | `src/prediction/player_props.py` | ✅ Holdout validated |
-| Win probability (XGBoost) | `src/prediction/win_probability.py` | ✅ 68.5% acc, Brier 0.209 |
-| xFG model | `src/prediction/` | ✅ Brier 0.226 on 221K shots |
-| Fractional Kelly + shrinkage | `src/prediction/betting_portfolio.py` | ✅ Built |
-| Shin devig | `src/prediction/devig.py` | ✅ Built |
-| CLV tracker | `src/prediction/betting_portfolio.py` | ✅ Scaffolded (Gate 1 not run) |
-| Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ Walk-forward, 48-hr purge |
-| Model registry | `data/models/model_registry.json` | ✅ 75 models registered |
-| Regression test suite | `tests/` | ✅ 1040 passing |
-| FastAPI serving | `api/main.py` | ✅ 6 endpoints |
-| PostgreSQL schema | `database/schema.sql` | 🟡 Schema exists, not yet in production |
-| Ingest queue (SQLite) | `src/ingest/` | ✅ Running |
-| Possession simulator (Monte Carlo) | — | 🔲 Not started |
-| Agentic research system | — | 🔲 Not started |
-| News ingestion | — | 🔲 Not started |
-| Real-time / live betting | — | 🔲 Phase 5+ |
+| YOLOv8n detection | `src/tracking/advanced_tracker.py` | ✅ [LIVE] |
+| SIFT homography | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
+| Kalman+Hungarian tracking | `src/tracking/advanced_tracker.py` | ✅ [LIVE] |
+| OSNet re-ID (512-dim) | `src/tracking/osnet_reid.py` | ✅ [LIVE] |
+| HSV team classification | `src/tracking/color_reid.py` | ✅ [LIVE] |
+| EasyOCR jersey reading | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
+| EventDetector | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
+| Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 [LIVE] bug: ball_valid_pct=0% some games |
+| Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ [LIVE] |
+| 7 prop models (pts/reb/ast/fg3m/blk/tov/stl) | `src/prediction/player_props.py` | ✅ [LIVE] holdout validated |
+| Win probability (XGBoost) | `src/prediction/win_probability.py` | ✅ [LIVE] 68.5% acc, Brier 0.209 |
+| xFG model | `src/prediction/` | ✅ [LIVE] Brier 0.226 on 221K shots |
+| DNP predictor | `src/prediction/` | ✅ [LIVE] AUC 0.979 |
+| Matchup model | `src/prediction/` | ✅ [LIVE] |
+| Fractional Kelly sizing | `src/prediction/betting_portfolio.py` | ✅ [LIVE] |
+| Shin devig | `src/prediction/devig.py` | ✅ [LIVE] |
+| Risk guards | `src/prediction/risk_guards.py` | ✅ [LIVE] |
+| Ingest queue (SQLite) | `src/ingest/` | ✅ [LIVE] |
+| FastAPI serving | `api/main.py` | ✅ [LIVE] 6 endpoints + 5 routers |
+| Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
+| Model registry | `data/models/model_registry.json` | ✅ [LIVE] 75 models registered |
+| Regression test suite | `tests/` | ✅ [LIVE] 1040 passing |
+| CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Gate 1 not run |
+| Line evaluator | `src/prediction/devig.py` + analytics | 🟡 [SCAFFOLDED] live pipeline pending |
+| Correlation engine | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] kelly_corr not populated |
+| PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending |
+| Possession simulator (Monte Carlo) | — | 🔲 [PLANNED] |
+| Execution router | `api/execution_router.py` (stub) | 🔲 [PLANNED] |
+| Book adapters (DK/FD/BetMGM/Novig) | `src/execution/` (stub) | 🔲 [PLANNED] |
+| P2P exchange integration | — | 🔲 [PLANNED] |
+| Nightly calibration loop | — | 🔲 [PLANNED] |
+| Agentic research system | — | 🔲 [PLANNED] |
 
 ---
 
@@ -151,7 +142,8 @@ betting_portfolio.py
     │
     ▼
 FastAPI (api/main.py)
-    └─ 6 endpoints: predictions, props, win_prob, kelly, clv, health
+    └─ 6 endpoints: health, simulate_game, over_prob, simulate, props, edge
+       + 5 routers: predictions, analytics, stitch, dashboard
 ```
 
 ---
@@ -203,4 +195,4 @@ FastAPI (api/main.py)
 
 ---
 
-*Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [vault/Pipeline/System Architecture.md](vault/Pipeline/System%20Architecture.md)*
+*Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [vault/Pipeline/System Architecture.md](vault/Pipeline/System%20Architecture.md)*
