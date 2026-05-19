@@ -32,7 +32,7 @@ Priority stack:
 | 2.5 | CV Quality Upgrades | ✅ Done | Broadcast mode, OCR brightness norm, OSNet re-ID wired |
 | 3 | NBA Data Collection | ✅ Done | 622 gamelogs, 221K shots, 98.4% PBP |
 | 3.5 | Expanded Data Collection | 🟡 Partial | BBRef advanced fetched; Odds API + full injury history pending |
-| 4 | Tier 1 ML Models | ✅ Done | Win prob 69.1%, 7 props, 5 game models, xFG v1 |
+| 4 | Tier 1 ML Models | ✅ Done | Win prob 68.5%, 7 props, 5 game models, xFG v1 |
 | 4.5 | Betting + Lifecycle Models | ✅ Done | load_management, injury_risk/return, breakout, public_fade, soft_book_lag |
 | 4.6 | Feature Wiring | ✅ Done | Props 30→57 features, all models retrained |
 | 4.7 | Prediction Quality Stack | ✅ Done | Ridge meta-stack, temporal weighting, confidence-gated output |
@@ -69,8 +69,8 @@ Priority stack:
 - 53 unprocessed videos in queue for Phase 14
 
 **ML Models (75 trained artifacts)**
-- Win probability: 69.1% accuracy, Brier 0.203
-- Player props × 7: pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.07 R²
+- Win probability: 68.5% accuracy, Brier 0.209
+- Player props × 7: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 R²
 - Game models × 5: total, spread, blowout, first-half, pace
 - xFG v1: Brier 0.226, 221K shots
 - DNP predictor: AUC 0.979
@@ -98,7 +98,7 @@ Priority stack:
 | # | Issue | Severity |
 |---|-------|---------|
 | 1 | Isotonic calibration layer — verify end-to-end wiring before live sizing | CRITICAL |
-| 2 | STL R²=0.07 — add opp_to_rate + opp_pace to player_props.py | HIGH |
+| 2 | STL R²=0.18 — add opp_to_rate + opp_pace to player_props.py | HIGH |
 | 3 | Correlation matrix in kelly_corr not populated (assumes zero) | HIGH |
 | 4 | CV fatigue minutes — verify wired into possession_simulator | MEDIUM |
 | 5 | 53 unprocessed videos awaiting Phase 14 RunPod run | MEDIUM |
@@ -139,7 +139,7 @@ bash scripts/watch_and_sync.sh
 - 1,225+ historical closing lines, 523 contracts, 736 BBRef players
 
 ### Phase 4 — Tier 1 ML Models ✅ (2026-03-18)
-- Win prob: XGBoost, 27 features, 69.1%, Brier 0.203
+- Win prob: XGBoost, 27 features, 68.5%, Brier 0.209
 - Props × 7: holdout R² range 0.16–0.41 (pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18)
 - xFG v1: Brier 0.226, DNP: AUC 0.979, Matchup: R²=0.796
 

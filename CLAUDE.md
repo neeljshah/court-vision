@@ -7,6 +7,8 @@
 > **Current state, open issues, recent fixes:** `docs/CLAUDE-state.md`
 > **RunPod launch runbook:** `docs/operations/runpod-runbook.md`
 > **Ingest system commands:** `docs/operations/runpod-runbook.md#ingest`
+>
+> ⚠️ **Local-only paths** (gitignored — absent from a fresh clone): `docs/CLAUDE-state.md`, `.planning/`, `vault/`. When working from a clone that lacks these, skip the "Vault Auto-Maintenance" section below and any `.planning/` reference — they exist only in the maintainer's local working copy.
 
 ### Task → Files
 | Task | Load only |

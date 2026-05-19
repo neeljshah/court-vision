@@ -46,8 +46,8 @@ Walk-forward temporal CV, 48-hr purge, N=480 observations. Source: `data/models/
 
 | Metric | Current | Target (post 80-game CV retrain) |
 |--------|---------|----------------------------------|
-| Accuracy | 69.1% | 71-73% |
-| Brier | 0.203 | 0.185-0.195 |
+| Accuracy | 68.5% | 71-73% |
+| Brier | 0.209 | 0.185-0.195 |
 
 ### xFG Model (Shot Quality)
 
@@ -111,7 +111,7 @@ Renaissance Technologies runs ~500 signals at any time. 60-70% of newly proposed
 - Not a claim that the agentic system exists. It's planned, not built.
 - Not a claim that 90 models are trained. 75 are trained; the architecture targets 500-5000 signals (not 90 models).
 
-The honest current position: 7 prop models with holdout R² in the 0.16-0.41 range, win probability at 69.1%/Brier 0.203, 29 usable CV games, Gate 1 pending.
+The honest current position: 7 prop models with holdout R² in the 0.16-0.41 range, win probability at 68.5%/Brier 0.209, 29 usable CV games, Gate 1 pending.
 
 ---
 

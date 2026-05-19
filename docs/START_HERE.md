@@ -10,7 +10,7 @@ CourtVision is an end-to-end NBA analytics pipeline that:
 
 1. **Watches broadcast video** and tracks every player's position on the court in real time
 2. **Extracts spatial metrics** (defender distance, spacing, drive frequency) that don't exist in any public dataset
-3. **Feeds those metrics into 90 ML models** that predict game outcomes and player stats
+3. **Feeds those metrics into 75 trained models** that predict game outcomes and player stats
 4. **Runs 10,000 Monte Carlo simulations** per game to find positive-EV edges against sportsbook lines
 
 The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. This pipeline replicates that on a single consumer GPU.
@@ -73,7 +73,7 @@ nba-ai-system/
 │   ├── tracking/          # CV pipeline: player detection, tracking, re-ID, OCR
 │   ├── pipeline/          # Orchestrator: runs full game end-to-end
 │   ├── features/          # 60+ feature engineering functions
-│   ├── prediction/        # 90 ML models (win prob, props, xFG, DNP, etc.)
+│   ├── prediction/        # 75 ML models (win prob, props, xFG, DNP, etc.)
 │   ├── analytics/         # Betting edge, spacing, momentum, shot quality
 │   ├── data/              # NBA API scrapers, enrichment, database helpers
 │   └── simulation/        # Possession simulator (Monte Carlo)
@@ -135,7 +135,7 @@ python scripts/batch_season.py --season 2025-26
 
 | Metric | Value |
 |--------|-------|
-| Win probability accuracy | 69.1% |
+| Win probability accuracy | 68.5% |
 | Player props MAE (pts) | 0.308 |
 | DNP predictor AUC | 0.979 |
 | xFG Brier score | 0.226 |
@@ -170,7 +170,7 @@ python scripts/batch_season.py --season 2025-26
 | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |
 | [ROADMAP.md](ROADMAP.md) | Full phase-by-phase build plan |
 | [PROJECT_INDEX.md](PROJECT_INDEX.md) | Canonical repository navigation map |
-| [../PLAN.md](../PLAN.md) | Current state, gap analysis, prioritized roadmap |
+| [../MASTER_PLAN.md](../MASTER_PLAN.md) | Full strategic plan + canonical facts table |
 
 ---
 

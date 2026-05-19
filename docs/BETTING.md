@@ -1,4 +1,4 @@
-# Betting System — NBA AI System
+# Betting System — CourtVision
 
 How the system identifies +EV betting opportunities, sizes positions, and tracks performance.
 
@@ -228,7 +228,7 @@ Once the simulator runs in real-time, live prop lines can be compared to updated
 |---|---|---|
 | Correct winner prediction | 70.7% | 3,685 games, walk-forward |
 | MAE (point margin) | 10.2 pts | Using actual margins as CLV proxy |
-| Win probability Brier | 0.203 | Phase 4 trained model |
+| Win probability Brier | 0.209 | Phase 4 trained model |
 | Props pts MAE | 0.308 | Walk-forward, 3 seasons |
 
 **Limitation:** Current CLV backtest uses actual game margins, not real closing lines. Phase 3.5 replaces with OddsPortal historical closing lines for true CLV measurement.

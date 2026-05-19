@@ -32,8 +32,8 @@ The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius
 | Props holdout R² — tov | 0.22 | same |
 | Props holdout R² — stl | 0.18 | same |
 | Props holdout R² — blk | 0.16 | same |
-| Win prob accuracy | 69.1% | `data/models/win_prob_metrics.json` |
-| Win prob Brier | 0.203 | same |
+| Win prob accuracy | 68.5% | `data/models/win_prob_metrics.json` |
+| Win prob Brier | 0.209 | same |
 | xFG Brier | 0.226 (221K shots) | model registry |
 | CV games | 17 quality / 29 usable / 75 attempted | `data/ingest/queue.db` |
 | Models trained | 75 | `data/models/` |
