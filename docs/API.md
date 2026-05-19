@@ -157,7 +157,7 @@ curl "http://localhost:8000/props/LeBron%20James?opp_team=MIL&season=2024-25"
 }
 ```
 
-**Known issue:** STL R²=0.07 — do not size aggressively until `opp_to_rate`/`opp_pace` features land.
+**Known issue:** STL R²=0.18 — do not size aggressively until `opp_to_rate`/`opp_pace` features land.
 
 ---
 
