@@ -58,7 +58,7 @@ The substrate that makes the research machine possible is largely done:
 
 **CV Tracking Pipeline** — YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector. Converts broadcast video to court-coordinate spatial features. 29 usable games processed (target: 80 clean).
 
-**ML Signal Stack** — 75 trained models across 7 tiers. Real holdout performance (walk-forward temporal CV, 48-hr purge, N=480):
+**ML Signal Stack** — 85 trained models across 7 tiers. Real holdout performance (walk-forward temporal CV, 48-hr purge, N=480):
 
 | Signal | Holdout R² |
 |--------|-----------|

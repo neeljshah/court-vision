@@ -1,6 +1,6 @@
 ## CourtVision — The Renaissance of Sports
 
-**What:** AI-native sports intelligence platform. CV tracking + NBA API + 75 trained signals → 10K Monte Carlo → multi-surface monetization. Claude agents autonomously discover, validate, ship, and retire prediction signals.
+**What:** AI-native sports intelligence platform. CV tracking + NBA API + 85 trained signals → 10K Monte Carlo → multi-surface monetization. Claude agents autonomously discover, validate, ship, and retire prediction signals.
 **Moat:** CV behavioral features from broadcast video (defender_distance, spacing, fatigue, play type) + agentic research system.
 **Stack:** YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector → FastAPI → Claude agents
 

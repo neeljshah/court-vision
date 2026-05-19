@@ -1,10 +1,10 @@
 # ML Models — CourtVision
 
-75 trained model artifacts in `data/models/`. Models built in tier order — each tier requires more CV game data.
+85 trained model artifacts in `data/models/`. Models built in tier order — each tier requires more CV game data.
 
 ---
 
-## TRAINED (75 artifacts, Phases 1–13.5)
+## TRAINED (85 artifacts, Phases 1–13.5)
 
 ### Win Probability
 

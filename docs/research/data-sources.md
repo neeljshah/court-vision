@@ -111,7 +111,7 @@ YouTube / archive.org
               (ingestion timestamps preserved for walk-forward)
                     │
                     ▼
-            75 prop models
+            85 trained models
                     │
                     ▼
           10K-path Monte Carlo
