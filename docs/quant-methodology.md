@@ -218,6 +218,26 @@ probability error on any reliability diagram segment.
 
 ---
 
+## Renaissance-Style Methodology (Signal-Based Architecture)
+
+CourtVision's signal architecture follows the Renaissance Technologies research model: 500-5000 signals, each tracked by information ratio (IR), birth date, and retirement date. The following techniques are required for rigorous signal research:
+
+| Technique | Purpose | Reference |
+|-----------|---------|-----------|
+| **Deflated Sharpe Ratio** | Correct Sharpe for multiple testing and selection bias | López de Prado (2018) |
+| **Purged k-fold CV** | Eliminate leakage in time-series by purging training samples near test boundary | López de Prado (2018) |
+| **Triple-barrier labeling** | Label outcomes by time, profit take, or stop loss — not arbitrary horizon | López de Prado (2018) |
+| **Meta-labeling** | Secondary model decides whether to bet (size), primary model decides direction | López de Prado (2018) |
+| **Signal information ratio** | IR = mean return / std(return); gate: IR > 0.5 before promotion | Standard quant |
+| **Signal retirement** | Systematic deprecation when IR drops below threshold for N consecutive periods | Signal-based arch |
+| **Factor decomposition** | Attribute P&L to CV / context / market factors; detect factor crowding | PCA on residuals |
+| **CVaR risk management** | Tail-risk-aware Kelly sizing (Conditional Value at Risk) | Rockafellar & Uryasev |
+| **Online portfolio selection** | Dynamic weight updates without full retrain | Cover (1991) |
+
+See [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20Methodology.md) for full treatment.
+
+---
+
 ## References
 
 - Kelly, J.L. (1956). *A New Interpretation of Information Rate.* Bell System Technical Journal.
@@ -226,6 +246,7 @@ probability error on any reliability diagram segment.
 - Ledoit, O. & Wolf, M. (2004). *A Well-Conditioned Estimator for Large-Dimensional
   Covariance Matrices.* Journal of Multivariate Analysis.
 - Thorp, E.O. (1997). *The Kelly Criterion in Blackjack, Sports Betting, and the Stock Market.*
+- López de Prado, M. (2018). *Advances in Financial Machine Learning.* Wiley.
 - Venn, A. et al. (2018). *A Unified Theory of Conformal Prediction.*
 - Cervone, D. et al. (2016). *A Multiresolution Stochastic Process Model for Predicting
   Basketball Possession Outcomes.* JASA.

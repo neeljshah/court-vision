@@ -54,7 +54,7 @@ Spatial Features (defender_distance, spacing_index, drive_freq, fatigue_proxy)
 NBA API Enrichment (shot charts, play-by-play, hustle stats, 3 seasons)
     │
     ▼
-60+ ML Features → 90 Models (XGBoost, Ridge, PyTorch)
+60+ ML Features → 75 Trained Signals (XGBoost, Ridge, PyTorch)
     │   Win probability, 7 player props, xFG, DNP predictor, matchups
     ▼
 10,000 Monte Carlo Simulations per game
@@ -164,7 +164,7 @@ python scripts/batch_season.py --season 2025-26
 |-----|--------------|
 | [architecture.md](architecture.md) | System design, module dependencies, data flow |
 | [CV_TRACKING.md](CV_TRACKING.md) | Tracking pipeline deep-dive: homography, re-ID, OCR |
-| [ML_MODELS.md](ML_MODELS.md) | All 90 models: features, training, accuracy |
+| [ML_MODELS.md](ML_MODELS.md) | 75 trained signals: features, training, accuracy |
 | [data_schema.md](data_schema.md) | PostgreSQL schema, CSV formats, API cache |
 | [API.md](API.md) | FastAPI endpoints, request/response examples |
 | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |
