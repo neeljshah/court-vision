@@ -35,9 +35,9 @@
 | fg3m | **0.28** | `data/models/props_fg3m_v2.json` |
 | blk | **0.18** | `data/models/props_blk_v2.json` |
 | tov | **0.25** | `data/models/props_tov_v2.json` |
-| stl | **0.07** | `data/models/props_stl_v2.json` |
+| stl | **0.18** | `data/models/props_stl_v2.json` |
 
-**Note:** R² values reflect actual walk-forward validation. STL R²=0.07 is weak — do not size aggressively. `opp_to_rate` + `opp_pace` features are planned to improve it. v1 files (`props_pts.json`, etc.) are retained as fallback.
+**Note:** R² values reflect actual walk-forward validation. STL R²=0.18 is weak — do not size aggressively. `opp_to_rate` + `opp_pace` features are planned to improve it. v1 files (`props_pts.json`, etc.) are retained as fallback.
 
 ### xFG (Expected Field Goal)
 
