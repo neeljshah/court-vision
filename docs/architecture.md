@@ -215,7 +215,7 @@ smoothed = (K * season_avg + N * rolling_avg) / (K + N)
 
 **Trained artifacts:** 75 `.pkl`/`.json` files in `data/models/` (gitignored)
 
-**Current prop R²:** pts=0.47, reb=0.40, ast=0.46, fg3m=0.28, blk=0.18, tov=0.25, stl=0.07
+**Current prop R² (holdout, N=480, 48-hr purge):** pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18. Source: `data/models/model_registry.json`.
 
 ### Architecture per Model
 

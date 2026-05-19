@@ -140,7 +140,7 @@ bash scripts/watch_and_sync.sh
 
 ### Phase 4 — Tier 1 ML Models ✅ (2026-03-18)
 - Win prob: XGBoost, 27 features, 69.1%, Brier 0.203
-- Props × 7: actual R² range 0.07–0.47 (see current state above)
+- Props × 7: holdout R² range 0.16–0.41 (pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18)
 - xFG v1: Brier 0.226, DNP: AUC 0.979, Matchup: R²=0.796
 
 ### Phase 4.5–4.9 ✅ (2026-03-18 through 2026-04-07)

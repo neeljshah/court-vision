@@ -1,22 +1,24 @@
 # Why CourtVision Can Become The Best In The World
 
-This document is the strategic case for CourtVision as a category-defining sports prediction system.
+> Updated 2026-05-18: Renaissance of sports framing added. CourtVision is an AI-native sports intelligence platform, not a prediction model.
+
+This document is the strategic case for CourtVision as a category-defining sports intelligence platform — the Renaissance of sports.
 
 ---
 
 ## Executive Thesis
 
-CourtVision is not a single model. It is a full prediction intelligence stack:
+CourtVision is not a prediction model. It is an agentic research system built on a sports intelligence substrate:
 
 - proprietary signal generation from broadcast computer vision,
 - structured data fusion across basketball and market context,
-- model architecture for both game and prop markets,
-- simulation-aware decision logic,
+- Claude-powered agents that autonomously discover, validate, ship, and retire prediction signals,
+- simulation-aware decision logic across six revenue surfaces,
 - and governance gates that make performance claims defensible.
 
-The claim is simple:
+The Renaissance comparison is precise: Jim Simons built the Medallion Fund not as a trading desk but as a research institution — ruthless signal testing, ruthless retirement, no emotional attachment to any model that stops working. AI collapses the research labor cost by 100-1000x. Solo operator + Claude agents = Renaissance-depth research at sharp-shop budget.
 
-**If CourtVision continues to execute its current roadmap discipline, it can become the most complete and most defensible NBA prediction engine in the market.**
+**The claim:** If CourtVision executes its roadmap discipline, it can become the most complete and most defensible NBA sports intelligence platform in the market — and the first AI-native sports research machine to match Renaissance-style methodology.
 
 ---
 
