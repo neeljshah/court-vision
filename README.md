@@ -1,12 +1,31 @@
-# CourtVision
+# CourtVision — The Renaissance of Sports
 
-**An intelligence layer for basketball — and eventually every sport — that sees the game the way a player does and prices it the way a market does.**
+> An AI-native sports intelligence platform where Claude-powered agents autonomously discover, validate, ship, and retire prediction signals across multiple monetization surfaces.
 
-Sports are measured in box scores. The actual game happens in space and time: who is open, who is recovering, who is tired, who is in foul trouble, who just got switched onto a mismatch. None of this lives in the official feeds. All of it lives in the broadcast. CourtVision turns broadcast video into court-coordinate spatial data, fuses it with 30 seasons of structured NBA data, and runs both through a stack of 75 trained models — scaling to 350 — that simulate every possession of every game in a 10,000-path Monte Carlo loop.
+**What this is:** A research machine, not a prediction model. CourtVision turns broadcast video into court-coordinate spatial features (defender distance, spacing, fatigue, play type) that no public dataset has, fuses them with 30 seasons of structured NBA data and live market intelligence, and runs 75 trained signals through a 10,000-path Monte Carlo simulator — with Claude agents autonomously discovering more signals on top.
 
-The first product is a sports-markets engine: identify [164 specific places](docs/research/edge-taxonomy.md) conventional pricing — the box-score averages, opponent defensive rating, recent-form models that drive every retail sportsbook — is structurally incomplete, and quote prices the books haven't seen. Betting markets are the ideal feedback signal because they pay in dollars when the model is right and take dollars when it is wrong; no other domain provides ground truth that clean, that fast, or that frequent. But the engine itself — the spatial CV, the possession simulator, the model universe — is a general basketball-intelligence layer. Its downstream consumers, in order: prop traders, market-makers, fantasy operators, broadcast graphics, team analytics, scouting, coaching staffs, and eventually the same stack pointed at NCAA, NFL, soccer, and tennis.
+**What this isn't:** A betting tool, a stat predictor, or a sportsbook. Sports-market betting is the first and fastest feedback signal (dollars when the model is right, taken when wrong), but the substrate supports six revenue surfaces simultaneously.
 
-This README is a technical map. The thesis is in [The 164 Gaps](#the-164-gaps), the architecture is below, the validation is in [/results](./results), and the limitations are stated plainly.
+**The window:** 1-3 years before Genius Sports or Sportradar ships a tracking-integrated prop pricing API. The AI-native operator who builds the research machine first establishes category dominance for 5-10 years.
+
+For the full strategic thesis: [VISION.md](VISION.md). For technical architecture: [ARCHITECTURE.md](ARCHITECTURE.md). For build sequence: [ROADMAP.md](ROADMAP.md).
+
+---
+
+## The Six Revenue Surfaces
+
+| Surface | Status | Revenue target |
+|---------|--------|---------------|
+| Personal betting (Iowa-legal, multi-book + P2P) | Active (paper-trading, Gate 1 pending) | $1-5M/yr at scale |
+| Fund management (audited returns, LP capital) | Planned (after 12-mo track record) | $10-35M/yr |
+| Signal subscriptions (~30 sharp subscribers, $5-25K/mo) | Planned (after CLV track record) | $3-8M/yr |
+| Team / scouting licensing ($150-400K/yr per franchise) | Demo-ready | $1-5M/yr |
+| Media / broadcast augmentation | Planned | $500K-2M/deal |
+| AI knowledge layer API | Planned | Metered |
+
+---
+
+## This README is a technical map. The thesis is in [The 164 Gaps](#the-164-gaps), the architecture is below, the validation is in [/results](./results), and the limitations are stated plainly.
 
 ---
 

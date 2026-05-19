@@ -1,5 +1,43 @@
-# MASTER PLAN — Sports Quant AI System
-*Canonical planning document — full strategic vision for the sports quant AI system.*
+# CourtVision MASTER PLAN — The Renaissance of Sports
+*Canonical strategic document. Updated 2026-05-18 to reflect agentic AI framing.*
+
+---
+
+## Executive Summary
+
+Sports prediction sits on a $200-500M/year extractable profit pool that institutional capital structurally cannot reach: per-game bet limits ($25-500 at retail books) make the math impossible for quant funds that need $50M+ deployment. The regulatory architecture (sportsbooks close professional entities) further blocks institutions. Solo operator + Claude agents = the only economic model that works.
+
+The Renaissance comparison: Jim Simons built the Medallion Fund not as a trading desk but as a research institution — ruthless signal testing, ruthless retirement, no emotional attachment to any model that stops working. 66% gross returns for 30 years. CourtVision applies the same architecture to sports: not "90 models" but a signal universe (500-5000 signals over 3-5 years), each with documented information ratio, birth date, retirement date, and P&L attribution. Claude agents replace the PhD research staff at 100-1000x lower cost.
+
+The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius Sports, DraftKings, Two Sigma Sports, or Anthropic-adjacent sports vertical. The asset being acquired is the agentic research system + knowledge graph + audited track record + commercial relationships — not just a software product.
+
+## What Changed in This Update (2026-05-18)
+
+- Reframed from "90-model betting system" to "agentic AI research platform"
+- Signal-based architecture (500-5000 signals with IR tracking) replaces model-based (90 target models)
+- Multi-surface monetization (6 revenue streams) made explicit — betting is surface 1, not the product
+- Renaissance-style methodology added as core intellectual framework
+- Multi-agent Claude research system added as the 6th system (the moat)
+- Canonical R² corrected: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18
+- Gate 1 status clarified: NOT YET RUN — top priority
+
+## Canonical Facts (2026-05-18)
+
+| Metric | Canonical value | Source |
+|--------|----------------|--------|
+| Props holdout R² — pts | 0.41 | `data/models/model_registry.json` |
+| Props holdout R² — reb | 0.38 | same |
+| Props holdout R² — ast | 0.36 | same |
+| Props holdout R² — fg3m | 0.29 | same |
+| Props holdout R² — tov | 0.22 | same |
+| Props holdout R² — stl | 0.18 | same |
+| Props holdout R² — blk | 0.16 | same |
+| Win prob accuracy | 69.1% | `data/models/win_prob_metrics.json` |
+| Win prob Brier | 0.203 | same |
+| xFG Brier | 0.226 (221K shots) | model registry |
+| CV games | 17 quality / 29 usable / 75 attempted | `data/ingest/queue.db` |
+| Models trained | 75 | `data/models/` |
+| Gate 1 status | NOT YET RUN | — |
 
 ---
 
@@ -106,9 +144,11 @@ Same event priced differently on sportsbook vs P2P exchange vs Kalshi. When line
 
 ---
 
-## The 5 Core Systems
+## The 6 Core Systems
 
-Everything in the system flows through these 5. Not 75 models — 5 systems. Your 75 models are components that feed into them.
+Everything in the system flows through these 6. Not 75 models — 6 systems. The 75 models are components that feed into them. System 6 (the agentic research layer) is the moat that discovers and retires what feeds into Systems 1-5.
+
+> **Signal-based reframe (2026-05-18):** The "90 models" language is deprecated. The architecture targets a signal universe of 500-5000 signals over 3-5 years — each signal tracked by information ratio (IR), birth date, and retirement date. Individual signals are like individual hypotheses in a research program: most fail, the survivors compound. This is how Renaissance Technologies worked. This is how CourtVision works.
 
 ### System 1: Possession Simulator
 
@@ -213,6 +253,33 @@ The centerpiece. Everyone else predicts a number. You generate a distribution.
 - Selenium/Playwright automation of web interface
 - OR: system generates bet slip details (book, market, side, amount) and alerts you for manual placement
 - Long-term: find if any books offer unofficial APIs or if P2P exchanges have official APIs
+
+### System 6: Agentic Research System (not yet built — the moat)
+
+**What it is:** A multi-agent Claude system that autonomously discovers, validates, ships, and retires prediction signals. The substrate (Systems 1-5) is the instrument. System 6 is the research program that plays the instrument.
+
+**Agents:**
+- **Orchestrator** — coordinates the loop, allocates research budget, logs to vault
+- **Researcher** — hypothesis generation from knowledge graph + academic literature + market microstructure
+- **Engineer** — signal implementation + feature wiring + unit tests
+- **Validator** — holdout testing + information ratio calculation + pass/fail gate
+- **Risk Manager** — correlation impact + Kelly impact + drawdown simulation
+- **Retirement Monitor** — signal decay detection + deprecation trigger
+
+**Signal lifecycle:**
+1. Hypothesis generated by Researcher
+2. Signal implemented by Engineer
+3. Validated against holdout by Validator (IR threshold = 0.5 minimum to promote)
+4. Deployed to shadow mode by Orchestrator
+5. Promoted to production after 30+ settled observations confirming IR
+6. Monitored for decay by Retirement Monitor
+7. Retired when IR drops below threshold for 60 consecutive days
+
+**Why this is the real moat:** A competitor who copies the current 75 models doesn't get the discovery engine that generated them. The signal universe database (birth date, retirement date, IR history, P&L attribution) is not reproducible without running the full research pipeline from scratch.
+
+**Target:** 50 validated signals by month 3, 200 by month 9, 500+ by year 2. Ruthless retirement: expect 60-70% of signals to fail validation or decay within 18 months.
+
+**See:** [vault/Plans/Agentic Research System.md](vault/Plans/Agentic%20Research%20System.md) for full architecture.
 
 ---
 
