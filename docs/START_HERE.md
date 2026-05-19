@@ -10,7 +10,7 @@ CourtVision is an end-to-end NBA analytics pipeline that:
 
 1. **Watches broadcast video** and tracks every player's position on the court in real time
 2. **Extracts spatial metrics** (defender distance, spacing, drive frequency) that don't exist in any public dataset
-3. **Feeds those metrics into 75 trained models** that predict game outcomes and player stats
+3. **Feeds those metrics into 85 trained models** that predict game outcomes and player stats
 4. **Runs 10,000 Monte Carlo simulations** per game to find positive-EV edges against sportsbook lines
 
 The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. This pipeline replicates that on a single consumer GPU.
@@ -54,7 +54,7 @@ Spatial Features (defender_distance, spacing_index, drive_freq, fatigue_proxy)
 NBA API Enrichment (shot charts, play-by-play, hustle stats, 3 seasons)
     │
     ▼
-60+ ML Features → 75 Trained Signals (XGBoost, Ridge, PyTorch)
+60+ ML Features → 85 Trained Signals (XGBoost, Ridge, PyTorch)
     │   Win probability, 7 player props, xFG, DNP predictor, matchups
     ▼
 10,000 Monte Carlo Simulations per game

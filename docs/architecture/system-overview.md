@@ -6,7 +6,7 @@
 
 ## Architecture Principle
 
-The 75 trained models are not the system. They are components. Everything flows through six systems. Understanding those six systems — and how they interconnect — is the prerequisite for understanding any individual component. Systems 1–5 are the instrument that prices and places bets; System 6 (the agentic research layer) is the research program that plays it — autonomously discovering, validating, and retiring the signals that feed Systems 1–5.
+The 85 trained models are not the system. They are components. Everything flows through six systems. Understanding those six systems — and how they interconnect — is the prerequisite for understanding any individual component. Systems 1–5 are the instrument that prices and places bets; System 6 (the agentic research layer) is the research program that plays it — autonomously discovering, validating, and retiring the signals that feed Systems 1–5.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -237,7 +237,7 @@ CV pipeline → CV features (defender_dist, spacing, fatigue)
 NBA API ────────────┼──→ Feature store (timestamped for walk-forward)
                     │
                     ▼
-              75 prop models
+              85 trained models
                     │
                     ▼
          Possession simulator (10K Monte Carlo)

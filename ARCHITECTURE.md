@@ -85,7 +85,7 @@
 | Ingest queue (SQLite) | `src/ingest/` | ✅ [LIVE] |
 | FastAPI serving | `api/main.py` | ✅ [LIVE] 6 endpoints + 5 routers |
 | Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
-| Model registry | `data/models/model_registry.json` | ✅ [LIVE] 75 models registered |
+| Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
 | Regression test suite | `tests/` | ✅ [LIVE] 1040 passing |
 | CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Gate 1 not run |
 | Line evaluator | `src/prediction/devig.py` + analytics | 🟡 [SCAFFOLDED] live pipeline pending |
@@ -126,7 +126,7 @@ feature_engineering.py
     └─ Market features: Pinnacle no-vig, line velocity, steam flag
     │
     ▼
-Model Stack (75 models)
+Model Stack (85 models)
     ├─ Tier 1: Win prob, 7 prop models, game total, spread, pace, blowout
     ├─ Tier 2: xFG (Brier 0.226), shot zones, xPTS
     ├─ Tier 2B: DNP predictor (AUC 0.979), load management, injury return
