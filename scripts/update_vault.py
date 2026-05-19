@@ -148,9 +148,24 @@ tags: [index, moc]
 updated: {today}
 ---
 
-# CourtVision — Knowledge Base
+# CourtVision — The Renaissance of Sports
 
-*Auto-updated by `scripts/update_vault.py` · {today}*
+> AI-native sports intelligence platform. Claude agents autonomously discover, validate, ship, and retire prediction signals across multiple monetization surfaces.
+> *Auto-updated by `scripts/update_vault.py` · {today}*
+
+---
+
+## Current State at a Glance ({today})
+
+**Branch:** `{branch}` | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
+
+| Item | Status |
+|------|--------|
+| Phase | G (CV game collection — 17 quality / 29 usable / 75 attempted) |
+| **Gate 1: CLV vs Pinnacle close** | **NOT YET RUN — TOP PRIORITY** |
+| Signal universe | 75 models trained (target: 500-5000 signals via agentic system) |
+| Top revenue surface live | None yet (signal subs targeted Q3 2026) |
+| Agentic research system | Not yet built (planned — see [[Plans/Agentic Research System]]) |
 
 ---
 
@@ -158,63 +173,36 @@ updated: {today}
 
 | Domain | Entry Point | What's There |
 |--------|------------|--------------|
-| Strategy | [[Strategy/Now]] | Current focus, blockers, next actions |
+| Strategy | [[Plans/Project Vision]] | Full product picture + 6 surfaces |
+| Renaissance thesis | [[Plans/Renaissance Comparison]] | Similarities + differences with RenTech |
+| Agentic system | [[Plans/Agentic Research System]] | Multi-agent Claude architecture |
+| Gate 1 | [[Plans/Gate 1 Validation]] | Step-by-step execution plan |
 | CV Pipeline | [[MOC-CV]] | Tracking, detection, homography, re-ID |
 | ML Models | [[MOC-Models]] | 75 models, features, signal inventory |
 | Betting | [[MOC-Betting]] | Kelly, CLV, quant framework, edges |
 | Operations | [[MOC-Ops]] | RunPod, data pipeline, architecture |
 | Research | [[MOC-Research]] | Validation, benchmarks, concepts |
 
-## History & Progress
-
-| Note | What's There |
-|------|-------------|
-| [[Sessions/Timeline]] | Condensed project history, milestones, metric progression |
-| [[Sessions/Decision Log]] | Key decisions and fixes with impact |
-| [[Sessions/Game Log]] | All CV-processed games with grades and metrics |
-| [[Tracking/Tracker Improvements]] | Chronological CV fix log |
-
 ---
 
-## Current Status ({today})
-
-**Branch:** `{branch}` | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
-
-### Phase Completion
-
-| Phase | Status |
-|-------|--------|
-| 1 — Data Infrastructure | ✅ Done |
-| 2 — CV Tracker | ✅ Done |
-| 2.5 — CV Tracker Upgrades | ✅ Done |
-| 3 — NBA API Data | ✅ Done |
-| 4 — Tier 1 ML Models | ✅ Done |
-| 5 — External Factors | ✅ Done |
-| 4.6 — Pre-Phase Enrichment | ✅ Done |
-| F — Full Game Processing | 🟡 Active ({clean} clean / {target} target) |
-| G — Season 2025-26 Batch | 🔲 0/50 games |
-| 7 — Tier 2–3 Models (CV features) | 🔲 Blocked on F |
-| 8 — Possession Simulator | 🔲 Not started |
-| 9–17 — Feedback / Live / Frontend | 🔲 Future |
-
----
-
-## Model Performance
+## Model Performance (holdout, walk-forward, 48-hr purge, N=480)
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
 | [[Models/Win Probability\|Win prob]] | Accuracy | 69.1% | 72% | -2.9% |
 | [[Models/Win Probability\|Win prob]] | Brier | 0.203 | <0.19 | -0.013 |
-| [[Models/Player Props\|Props PTS]] | R² | 0.47 | 0.55 | -0.08 |
-| [[Models/Player Props\|Props REB]] | R² | 0.40 | 0.50 | -0.10 |
-| [[Models/Player Props\|Props AST]] | R² | 0.46 | 0.55 | -0.09 |
-| [[Models/Player Props\|Props STL]] | R² | 0.07 | 0.20 | -0.13 |
-| [[Models/xFG Model\|xFG]] | Brier | 0.226 | <0.20 | -0.026 |
+| [[Models/Player Props\|Props PTS]] | R² (holdout) | 0.41 | 0.47-0.51 | pending CV lift |
+| [[Models/Player Props\|Props REB]] | R² (holdout) | 0.38 | 0.45-0.48 | pending CV lift |
+| [[Models/Player Props\|Props AST]] | R² (holdout) | 0.36 | 0.42-0.45 | pending CV lift |
+| [[Models/Player Props\|Props FG3M]] | R² (holdout) | 0.29 | 0.37-0.41 | needs closeout speed |
+| [[Models/Player Props\|Props TOV]] | R² (holdout) | 0.22 | 0.26-0.29 | marginal |
+| [[Models/Player Props\|Props STL]] | R² (holdout) | 0.18 | 0.22-0.25 | filter hard |
+| [[Models/Player Props\|Props BLK]] | R² (holdout) | 0.16 | 0.21-0.24 | filter hard |
+| [[Models/xFG Model\|xFG]] | Brier | 0.226 | <0.20 | pending CV defender data |
 | [[Models/DNP Predictor\|DNP]] | AUC | 0.979 | >0.97 | ✅ |
-| [[Models/Matchup Model\|Matchup]] | R² | 0.796 | >0.80 | -0.004 |
 
 → Full metrics: [[Models/Model Performance]]
-→ Holdout reality check: [[Validation/prop_holdout_report]]
+→ Holdout report: [[Validation/prop_holdout_report]]
 
 ---
 
@@ -222,19 +210,24 @@ updated: {today}
 
 | Metric | Value |
 |--------|-------|
-| Clean games | {clean} / {target} |
-| Season 2025-26 | 0 / 50 |
-| Tracking rows | ~126K |
+| Quality games | 17 |
+| Usable games | 29 (9 CLEAN + 20 PARTIAL) |
+| Attempted | 75 |
+| Goal | 80 CLEAN |
 
 → Game details: [[Sessions/Game Log]]
 
 ---
 
-## Open Issues
+## Open Issues (top 5)
 
 | # | Issue | Status |
 |---|-------|--------|
-{issue_rows}
+| 1 | Gate 1 not run — no CLV validation vs real closing lines | 🔴 Top priority |
+| 2 | ball_valid_pct=0% on some games (ball_track_suspended stays True) | 🟡 After 80-game run |
+| 3 | Underprediction bias on all 7 prop models | 🟡 Calibration pass needed |
+| 4 | kelly_corr matrix not populated (run --build-residuals then --compute-corr) | 🟡 After Gate 1 |
+| 5 | News ingestion pipe unbuilt (missing injury/lineup reaction edge) | 🔲 Month 4-6 |
 
 ---
 
@@ -259,20 +252,34 @@ updated: {today}
 
 ---
 
-## Deep Dives
+## Strategic Plans
 
-| Note | Description |
+| Plan | Description |
 |------|-------------|
-| [[Plans/Master Build Plan]] | 100-model stack, priority queue, ROI projections |
-| [[Pipeline/System Architecture]] | End-to-end pipeline architecture |
-| [[Research/Data-Sources]] | Every data source, scraper, TTL, coverage |
-| [[Pipeline/Pipeline-Flow]] | Step-by-step from video to edge flag |
-| [[Strategy/Edge Taxonomy]] | 164 exploitable market gaps |
-| [[Validation/prop_holdout_report]] | Prop model holdout validation |
+| [[Plans/Project Vision]] | Full product picture, 6 surfaces, Renaissance framing |
+| [[Plans/Renaissance Comparison]] | Side-by-side with RenTech — similarities + differences |
+| [[Plans/Agentic Research System]] | Multi-agent Claude architecture (the moat) |
+| [[Plans/Signal Architecture]] | Signal-based vs model-based, IR tracking, retirement |
+| [[Plans/Six Surfaces]] | Detail on each revenue surface, gates, targets |
+| [[Plans/Gate 1 Validation]] | Step-by-step Gate 1 execution |
+| [[Plans/Investor Narrative]] | Pitch-deck narrative in markdown form |
+| [[Plans/Master Build Plan]] | Build sequence, signal priority queue |
+
+---
+
+## History & Progress
+
+| Note | What's There |
+|------|-------------|
+| [[Sessions/Timeline]] | Condensed project history, milestones, metric progression |
+| [[Sessions/Decision Log]] | Key decisions and fixes with impact |
+| [[Sessions/Game Log]] | All CV-processed games with grades and metrics |
+| [[Tracking/Tracker Improvements]] | Chronological CV fix log |
 
 ---
 
 *Session log: [[Sessions/Decision Log]] · Full archive: `Sessions/_archive/`*
+*Git repo: README.md · VISION.md · ARCHITECTURE.md · ROADMAP.md · MASTER_PLAN.md*
 """
 
 
