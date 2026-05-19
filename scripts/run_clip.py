@@ -46,6 +46,18 @@ import cv2
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
+# Diagnostic: SIGUSR1 dumps all-thread Python stacks to stderr, even mid-C-call.
+# Used to locate runaway native allocations (py-spy/gdb blocked in container).
+if os.environ.get("FAULTHANDLER", "") == "1":
+    import faulthandler as _fh
+    import signal as _sig
+    _fh.enable()
+    try:
+        _fh.register(_sig.SIGUSR1, all_threads=True, chain=False)
+        print("[FAULTHANDLER] SIGUSR1 stack-dump armed", flush=True)
+    except Exception:
+        pass
+
 from src.pipeline.unified_pipeline import UnifiedPipeline
 from src.features.feature_engineering import run as run_features
 

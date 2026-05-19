@@ -7,6 +7,7 @@
 #
 # Usage:
 #   bash scripts/launch_multigpu.sh [PARALLEL_PER_GPU]
+#   FULL_GAME=1 bash scripts/launch_multigpu.sh 1    # full-game mode
 #   PARALLEL_PER_GPU defaults to 1 (safest, no OOM)
 #
 # Memory math (RTX 3090/4090, 24GB VRAM, 125GB RAM cgroup):
@@ -16,15 +17,28 @@
 #   parallel=4: ~125GB peak → OOM risk even on 1 GPU
 #
 # Env vars (override):
-#   FRAMES=18000              (per-game frame cap)
+#   FULL_GAME=1               (process entire video, no frame cap)
+#   FRAMES=18000              (per-game frame cap, ignored if FULL_GAME=1)
+#   RSS_KILL_GB=40            (RSS abort threshold per worker)
 #   OMP_PER_WORKER=12         (CPU thread cap)
 #   BATCH=12                  (YOLO batch size)
 
 set -euo pipefail
 PROJ=/workspace/nba-ai-system
 PARALLEL_PER_GPU="${1:-1}"
+FULL_GAME="${FULL_GAME:-0}"
 FRAMES="${FRAMES:-18000}"
+RSS_KILL_GB="${RSS_KILL_GB:-40}"
 OMP_PER_WORKER="${OMP_PER_WORKER:-12}"
+
+# Build --frames or --full flag
+if [ "$FULL_GAME" = "1" ]; then
+    FRAMES_FLAG="--full"
+    echo "Mode: FULL GAME (no frame cap, RSS kill at ${RSS_KILL_GB}GB)"
+else
+    FRAMES_FLAG="--frames $FRAMES"
+    echo "Mode: CLIP ($FRAMES frames per game)"
+fi
 
 cd "$PROJ"
 
@@ -74,6 +88,7 @@ for gpu in $(seq 0 $((N_GPUS - 1))); do
     nohup env \
         MALLOC_ARENA_MAX=1 \
         MALLOC_MMAP_THRESHOLD_=65536 \
+        RSS_KILL_GB=$RSS_KILL_GB \
         OMP_NUM_THREADS=$THREADS_PER_WORKER \
         MKL_NUM_THREADS=$THREADS_PER_WORKER \
         OPENBLAS_NUM_THREADS=$THREADS_PER_WORKER \
@@ -83,7 +98,7 @@ for gpu in $(seq 0 $((N_GPUS - 1))); do
         YOLO_CONFIG_DIR=/tmp/Ultralytics_gpu${gpu} \
         PHASE_G_VIDEO_DIR=/root/nba_videos \
         PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True,max_split_size_mb:512" \
-        python3 scripts/run_phase_g.py --frames "$FRAMES" --parallel "$PARALLEL_PER_GPU" \
+        python3 scripts/run_phase_g.py $FRAMES_FLAG --parallel "$PARALLEL_PER_GPU" \
         > "$LOG" 2>&1 &
     echo "  PID $! → $LOG"
 done

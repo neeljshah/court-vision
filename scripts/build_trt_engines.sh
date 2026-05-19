@@ -31,14 +31,15 @@ build_engine() {
     fi
 
     echo "  Building: $pt_path → $engine_path (imgsz=$input_size)"
+    # dynamic=True + batch=16 — code calls YOLO with batches of 1-16 frames
+    # (16-frame prefetch deque in advanced_tracker.py). dynamic=False forces
+    # batch=1 and crashes with "input size [N, ...] not equal to max model size".
     python3 -c "
 from ultralytics import YOLO
 import os
 os.environ['YOLO_CONFIG_DIR'] = '/tmp/Ultralytics'
 m = YOLO('$pt_path')
-# half=True for FP16 = 2× faster on Ampere+
-# dynamic=True allows variable batch
-m.export(format='engine', imgsz=$input_size, half=True, dynamic=False, verbose=False)
+m.export(format='engine', imgsz=$input_size, half=True, dynamic=True, batch=16, verbose=False)
 "
     # Ultralytics writes engine next to .pt — move to resources/
     local src_engine="${pt_path%.pt}.engine"

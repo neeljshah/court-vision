@@ -10,13 +10,66 @@ The CV pipeline requires a GPU. Local development runs on an RTX 4060 (8GB). Pro
 
 ---
 
+## Session Quick-Start — Verified Optimized Method (use this)
+
+This is the canonical procedure. It supersedes the parallelism guidance lower in the
+runbook. Last verified 2026-05-18: full game (194K frames) processed end-to-end in
+68 min, stability 1.000, ball 79%, **zero OOM**.
+
+```bash
+export PORT=<ssh_port>  IP=<pod_ip>
+
+# 1. Sync code (pod is NOT a git repo)
+rsync -az -e "ssh -p $PORT" --exclude data --exclude '.git' ./ root@$IP:/workspace/nba-ai-system/
+
+# 2. One-time setup on a fresh pod
+ssh -p $PORT root@$IP 'bash /workspace/nba-ai-system/scripts/setup_pod_optimized.sh'
+ssh -p $PORT root@$IP 'cd /workspace/nba-ai-system && bash scripts/build_trt_engines.sh'
+
+# 3. Launch — full games, max safe parallelism
+ssh -p $PORT root@$IP 'cd /workspace/nba-ai-system && FULL_GAME=1 OMP_PER_WORKER=12 RSS_KILL_GB=40 bash scripts/launch_multigpu.sh <N>'
+```
+
+**`<N>` = workers per GPU. GPU VRAM is the hard limit — each worker ≈ 3.3 GB VRAM:**
+
+| GPU | Safe `<N>` | Notes |
+|-----|-----------|-------|
+| RTX 3090 / 4090 (24 GB) | **6** | verified — GPU steady ~20 GB, RAM ~15 GB |
+| 40–48 GB (A6000, etc.) | 10–12 | RAM (~5 GB/worker) becomes the limit |
+
+Rule: `N ≈ floor(VRAM_GB / 3.5)`. The old "1 per GPU" guidance below was a
+pre-fix workaround for the memory leak — **obsolete since the CSRT init fix**.
+
+**Why this is the optimized method:**
+- TRT engines rebuilt for the pod GPU with `dynamic=True, batch=16` (FP16) — no CPU fallback
+- CSRT degenerate-bbox guard (`ball_detect_track.py`) — kills the deterministic full-game OOM
+- `RSS_KILL_GB=40` per-worker abort — graceful flush instead of cgroup SIGKILL
+- `MALLOC_ARENA_MAX=1`, `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` — RAM/VRAM frag caps
+- Memory holds flat (~2.5 GB/worker steady) for the entire game — verified 194K frames
+
+**Watch during the run:** GPU must stay < 23 GB, cgroup < 80 GB. `nvidia-smi`,
+`cat /sys/fs/cgroup/memory.current`. A worker count is `ps -C python3 | grep -c run_clip`.
+
+For the full data-collection sequence (NBA API Tier 1 + this as Tier 2) see
+`.planning/DATA_VISION.md` §Data Acquisition Strategy.
+
+---
+
 ## Current Run Spec
 
-**Target:** 17 → 80 games processed with full CV feature extraction  
-**Hardware:** Single RTX 3090 (community tier)  
-**Estimated time:** 7–9 hours  
-**Estimated cost:** $2.50–4.50 ($0.35–0.50/hr)  
-**Launch command:** `bash scripts/ingest_preflight.sh && bash scripts/launch_single_3090_pod.sh`
+**Target:** Full-game processing (all frames, not 10-min clips)  
+**Hardware:** RTX 3090 (24 GB) — 6 workers in parallel on one GPU  
+**Verified time per game:** ~68 min (194K-frame game, 6-way GPU share)  
+**Verified cost per game:** ~$0.10–0.13 (one $0.40/hr pod ÷ 6 workers)  
+**Quality:** stability 1.000, id_switches 0, ball detection ~79%  
+**Launch command:** `FULL_GAME=1 OMP_PER_WORKER=12 bash scripts/launch_multigpu.sh 6` (see §Session Quick-Start)  
+**Full config doc:** [`docs/operations/full-game-production.md`](full-game-production.md)
+
+### Previous Run (80-game clips)
+**Target:** 80 games, 18K frames each (10-min clips)  
+**Hardware:** Single RTX 3090  
+**Actual time:** ~7 hours  
+**Actual cost:** ~$3.00
 
 ---
 
@@ -257,6 +310,7 @@ The `phase_g_processed.txt` file prevents reprocessing of already-finished games
 | `nr_throttled` Δ > 50/60s | OMP cap missing | Add thread env vars; restart |
 | fps < 5 | Video on NFS | Stage to local disk; restart |
 | CUDA OOM | `_VRAM_FLUSH_INTERVAL` too high | Confirm it's 3000 (not higher) |
+| Worker hangs + RAM → 124 GB → SIGKILL mid-game | CSRT `.init()` on out-of-frame ball bbox (fixed 2026-05-18) | Confirm `ball_detect_track.py` has the degenerate-bbox guard before `.init()`; rebuild pod copy if missing |
 | `ball_track_suspended` True for whole game | Known bug, ~8% of games | Skip; will triage at N=80 |
 | re-ID coverage < 8 players | Lighting / broadcast angle | Game excluded from CV training set |
 | Worker stuck on same game > 2 hours | Crashed worker | `python scripts/reset_stale_jobs.py --hours 2` |

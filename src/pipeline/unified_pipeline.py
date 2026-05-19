@@ -1397,7 +1397,7 @@ class UnifiedPipeline:
                                        max_source_frames=_max_src)
 
         # Clear stale CSV files from previous runs so incremental append starts fresh
-        for _stale in ("ball_tracking.csv", "scoreboard_log.csv", "events_log.csv"):
+        for _stale in ("ball_tracking.csv", "scoreboard_log.csv", "events_log.csv", "shot_log.csv"):
             _sp = os.path.join(self._data_dir, _stale)
             if os.path.exists(_sp):
                 os.remove(_sp)
@@ -1870,11 +1870,31 @@ class UnifiedPipeline:
                           f"Δ={_delta:+.0f}MB  "
                           f"rows={len(tracking_rows)}  poss={len(possession_rows)}  "
                           f"pred={len(predictions)}")
-                    # Emergency: if RSS > 25GB, force aggressive cleanup
+                    # Emergency cleanup at 25GB; hard abort at RSS_KILL_GB (default 40GB)
+                    _RSS_KILL_MB = int(os.environ.get("RSS_KILL_GB", "40")) * 1024
+                    if _rss_mb > _RSS_KILL_MB:
+                        print(f"\n[MEM FATAL] RSS={_rss_mb:.0f}MB > {_RSS_KILL_MB}MB — "
+                              f"aborting to prevent OOM kill (f={frame_idx}, "
+                              f"gf={gameplay_frames})")
+                        # Flush what we have before dying
+                        if tracking_rows:
+                            self._ckpt_queue.put(list(tracking_rows))
+                            tracking_rows.clear()
+                        self._flush_queue()
+                        break
                     if _rss_mb > 25_000:
                         print(f"[MEM EMERGENCY] RSS={_rss_mb:.0f}MB > 25GB — "
                               f"forcing full cleanup")
                         predictions.clear()
+                        if tracking_rows:
+                            self._ckpt_queue.put(list(tracking_rows))
+                            tracking_rows.clear()
+                        if shot_log_rows:
+                            self._export_shot_log(shot_log_rows, append=True)
+                            shot_log_rows.clear()
+                        if ball_rows:
+                            self._export_ball_csv(ball_rows, append=True)
+                            ball_rows.clear()
                         _gc.collect()
                         try:
                             _ct_gc.CDLL("libc.so.6").malloc_trim(0)
@@ -2432,6 +2452,9 @@ class UnifiedPipeline:
                 if _events_log_rows:
                     self._export_events_log(_events_log_rows, append=True)
                     _events_log_rows.clear()
+                if shot_log_rows:
+                    self._export_shot_log(shot_log_rows, append=True)
+                    shot_log_rows.clear()
                 # Force glibc to return freed pages to OS — Python's allocator
                 # holds onto arenas even after gc.collect(), causing RSS to only
                 # grow.  malloc_trim releases unmapped pages back to the kernel.
@@ -2558,7 +2581,7 @@ class UnifiedPipeline:
         except Exception:
             pass  # non-fatal — best-effort cleanup
 
-        self._export_shot_log(shot_log_rows)
+        self._export_shot_log(shot_log_rows, append=True)
         self._export_player_stats(tracking_rows, fps)
         # Append remaining rows (most were flushed incrementally at checkpoints)
         self._export_scoreboard_log(scoreboard_log_rows, append=True)
@@ -3126,7 +3149,7 @@ class UnifiedPipeline:
             w.writerows(kept)
         print(f"Possessions     → {path}  ({len(kept)} rows)")
 
-    def _export_shot_log(self, rows: List[dict]):
+    def _export_shot_log(self, rows: List[dict], append: bool = False):
         os.makedirs(self._data_dir, exist_ok=True)
         path   = os.path.join(self._data_dir, "shot_log.csv")
         fields = [
@@ -3140,11 +3163,14 @@ class UnifiedPipeline:
             "second_chance",   # FIX 5
             "shot_creation",   # FIX 8
         ]
-        with open(path, "w", newline="") as f:
+        mode = "a" if append and os.path.exists(path) else "w"
+        with open(path, mode, newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
-            w.writeheader()
+            if mode == "w":
+                w.writeheader()
             w.writerows(rows)
-        print(f"Shot log        → {path}  ({len(rows)} shots)")
+        if not append:
+            print(f"Shot log        → {path}  ({len(rows)} shots)")
 
     def _export_player_stats(self, tracking_rows: List[dict], fps: float):
         """Aggregate per-player stats across the entire clip."""
