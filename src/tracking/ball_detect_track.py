@@ -591,6 +591,20 @@ class BallDetectTrack:
             _eff_threshold = REDET_THRESHOLD if self.pixel_vel > 40 else DETECT_THRESHOLD
             bbox = self.ball_detection(frame, _eff_threshold, max_radius=_max_r)
             if bbox is not None:
+                _bx, _by, _bw, _bh = bbox
+                _fh, _fw = frame.shape[:2]
+                if (_bw <= 0 or _bh <= 0 or _bw > _fw or _bh > _fh
+                        or _bx < 0 or _by < 0
+                        or _bx + _bw > _fw or _by + _bh > _fh):
+                    # Degenerate bbox: CSRT/MIL .init() derives internal buffer
+                    # sizes from the box geometry; an out-of-frame box triggers a
+                    # multi-hundred-GB native allocation the cgroup SIGKILLs
+                    # before OpenCV can raise cv2.error. Discard — stay in
+                    # detection mode (mirrors the update-path guard below).
+                    print(f"[BALL] discarding degenerate ball bbox {bbox} "
+                          f"(frame {_fw}x{_fh})", flush=True)
+                    bbox = None
+            if bbox is not None:
                 _bbox_from_hough = True
                 try:
                     self.tracker = self._make_csrt()

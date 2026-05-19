@@ -44,7 +44,7 @@ from typing import Optional
 _file_lock = threading.Lock()  # guards phase_g_processed.txt + metrics CSV writes
 _completed_count = 0  # total games marked done this run (for incremental rsync)
 
-_GAME_TIMEOUT = int(os.environ.get("PHASE_G_GAME_TIMEOUT", "3600"))  # per-game timeout (s)
+_GAME_TIMEOUT = int(os.environ.get("PHASE_G_GAME_TIMEOUT", "10800"))  # per-game timeout: 3h for full games
 
 try:
     import cv2 as _cv2
