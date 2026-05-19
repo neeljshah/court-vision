@@ -88,11 +88,15 @@ A four-layer stack. Each layer is independently useful. Each layer is also a moa
 
 ### Layer 1 — Perception
 
+**Status: LIVE — 29 games processed**
+
 YOLOv8n detects players, ball, and referees in each frame of broadcast video. SIFT homography maps every detection from pixel coordinates to court coordinates (in feet, on a standard 94×50 plane). Kalman + Hungarian tracks identities frame-to-frame; OSNet re-ID (512-dim) recovers identities through occlusion. EasyOCR reads jersey numbers and the game clock. An EventDetector consumes the tracked stream and emits structured events: shot release, pass, dribble, screen, contest, rebound, foul, timeout.
 
 The output is a court-coordinate event stream. For every shot: exact distance to the nearest defender at release, the spacing score (convex hull of off-ball offensive players), the closeout speed of the recovering defender, the shot-clock state, the defensive scheme (man, zone, switch, hedge, ICE), and the biomechanical signature of the shooter (release angle, contest arm angle, fatigue index). None of this is in any public dataset.
 
 ### Layer 2 — Memory
+
+**Status: LIVE — 3 seasons ingested**
 
 The NBA API provides 30 seasons of box score, play-by-play, lineup, and shot chart data. Plus 12 contextual feeds: referee crew identity (announced 9am ET on game day), travel fatigue index, venue altitude, lineup on/off ratings, coach rotation patterns, injury report parsing, beat-reporter lineup leaks. Plus the perception layer's CV features.
 
@@ -100,11 +104,15 @@ Everything writes to a unified feature store keyed on `(player, game, possession
 
 ### Layer 3 — Simulation
 
+**Status: PLANNED — Monte Carlo engine not yet built**
+
 A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a stack of models — currently 75, expanding toward a signal universe of 500–5000 via the agentic research system — covering pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, regime shift.
 
 The output is a full joint distribution over every observable game outcome: not just "LeBron points," but the joint distribution of LeBron points × Davis rebounds × Reaves assists × team total, with correlation structure preserved. From this distribution, *any* threshold can be priced — mainline, alternates, same-game parlays, quarter splits — with equal calibration.
 
 ### Layer 4 — Action
+
+**Status: PLANNED — paper-trading scaffolded, no live execution**
 
 Live odds from six sportsbooks plus two exchanges feed a line evaluator. The line evaluator devigs each price (Shin 1992, not symmetric power-sum), compares to the simulator's joint distribution, and emits an expected-value vector. A fractional-Kelly portfolio optimizer with Ledoit-Wolf shrinkage on the 7×7 residual covariance matrix sizes each position, accounting for correlated legs. An execution router places each bet at the highest-priced venue, with maker-rebate logic on exchange listings.
 
@@ -169,20 +177,22 @@ Build one foundation, unlock dozens of dependent edges at marginal cost. This is
 
 ```mermaid
 flowchart LR
-  V[Broadcast Video] --> Y[YOLOv8 detection]
-  Y --> H[SIFT homography]
-  H --> T[Kalman + Hungarian]
-  T --> R[OSNet re-ID]
-  R --> SF["CV features\ndefender_dist, spacing,\nfatigue, contest%"]
-  A[NBA API] --> BF[Box-score features]
-  SF --> FS[Feature store]
+  %% LIVE nodes: CV pipeline, feature store, models, Kelly
+  %% PLANNED nodes: Monte Carlo simulator, line evaluator, execution router
+  V[Broadcast Video] --> Y["YOLOv8 detection [LIVE]"]
+  Y --> H["SIFT homography [LIVE]"]
+  H --> T["Kalman + Hungarian [LIVE]"]
+  T --> R["OSNet re-ID [LIVE]"]
+  R --> SF["CV features [LIVE]\ndefender_dist, spacing,\nfatigue, contest%"]
+  A[NBA API] --> BF["Box-score features [LIVE]"]
+  SF --> FS["Feature store [LIVE]"]
   BF --> FS
-  FS --> M[75 prop models]
-  M --> MC[10K-path Monte Carlo]
-  MC --> LE[Line evaluator\nvs live odds]
-  LE --> K["Fractional Kelly\n+ shrinkage correlation"]
-  K --> EX[Execution router\n6 books + P2P]
-  EX --> CLV[CLV tracker\nnightly calibration]
+  FS --> M["75 trained models [LIVE]"]
+  M --> MC["10K-path Monte Carlo [PLANNED]"]
+  MC --> LE["Line evaluator [SCAFFOLDED]\nvs live odds"]
+  LE --> K["Fractional Kelly [LIVE]\n+ shrinkage correlation"]
+  K --> EX["Execution router [PLANNED]\n6 books + P2P"]
+  EX --> CLV["CLV tracker [SCAFFOLDED]\nnightly calibration"]
 
   classDef moat fill:#fff2a8,stroke:#c08400,stroke-width:3px
   class SF moat
