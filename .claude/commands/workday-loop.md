@@ -163,10 +163,11 @@ Then move the task `ai-todo.md` → `done.md`. If the ai-todo entry had a
 `- **source:**` line, copy it into the `done.md` entry verbatim — `scan_plans.py`
 reads it to mark that GSD plan built and unblock its dependents.
 
-Then **push the monitoring mirror**: `git push origin master:bot/live`. This updates
-the `bot/live` branch on GitHub so the user can watch progress remotely (phone, etc.).
-If the push fails (auth/network), log one line to `human-todo.md` and continue — a
-push failure must never block the loop or a task.
+Then **push the monitoring mirror and master**: `git push origin master:bot/live && git push origin master`.
+First push updates the `bot/live` mirror so the user can watch progress remotely (phone, etc.);
+second push backs up master to GitHub immediately so a laptop crash never loses merged work.
+If either push fails (auth/network), log one line to `human-todo.md` and continue — a push
+failure must never block the loop or a task.
 
 **Hard stops** (commit-what-works + flag + move on):
 - iteration exceeds ~400K tokens total
@@ -239,8 +240,9 @@ under-use the plan is an **empty queue** — which Step 1.5 now prevents.
 - Never edit `src/prediction/betting_portfolio.py`, `database/schema.sql`, `CLAUDE.md`,
   `requirements.txt`, `environment.yml` — these go to `for-review.md`, never auto-merge.
 - Never edit lines containing `_VRAM_FLUSH_INTERVAL = 3000` in `unified_pipeline.py`.
-- Push to `origin/bot/live` after each task merges — the monitoring mirror (Step 4c).
-  NEVER push to remote `master` or `main`; the user owns those.
+- Push `origin/bot/live` AND `origin/master` after each task merges (Step 4c) — mirror
+  for monitoring + master for durable backup. User authorized auto-push to master 2026-05-21.
+  NEVER push to remote `main` or any other branch the user owns.
 - Never call Kalshi / Polymarket / Betfair APIs; never move money or open positions.
 - Never run `run.py` or `loop_processor.py`.
 - Never delete files not created in this session.
