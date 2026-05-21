@@ -66,19 +66,21 @@ This file is the bot's heartbeat — `python scripts/bot_guards/watch.py` tails 
 
 ---
 
-## PHASE 1.5 — Arm the stall safety net
+## PHASE 1.5 — Arm the stall safety net (keeps the loop running constantly)
 
-The loop self-paces with `ScheduleWakeup`; a turn that bare-stops (`phase:"idle"`,
-`next_wake_at:null`) leaves the bot dark and idle. Arm a backstop that re-fires the
-loop every ~15 min so any stall self-revives within one interval — no dead hours.
+The loop self-paces with `ScheduleWakeup`, but that wake fires unreliably here, so the
+loop stalls at turn boundaries (`phase:"idle"`). A frequent cron re-fires `/workday-loop`
+so any stall self-revives within ~2 min — effectively continuous, no babysitting.
 
-`ToolSearch` query `select:CronCreate` to load the tool, then create:
-- `cron`: `7,22,37,52 * * * *` · `prompt`: `/workday-loop`
-- `recurring`: true · `durable`: false (session-scoped — dies when the window
-  closes at night, re-armed by the next `bot go`)
+`ToolSearch` query `select:CronCreate,CronList,CronDelete` to load the tools, then:
+1. `CronList` — for every existing job whose prompt is `/workday-loop`, `CronDelete` it
+   (clears any stale or slower cron from a prior boot — makes the re-arm idempotent).
+2. `CronCreate`: `cron` = `*/2 * * * *` · `prompt` = `/workday-loop` ·
+   `recurring` = true · `durable` = false.
 
-First check `CronList` — if a `/workday-loop` cron already exists this session,
-skip it; never stack duplicates.
+Fires every 2 min. While the loop is mid-task the fire is deferred (no effect); when the
+loop is idle or stalled, the next fire revives it within ~2 min. Session-scoped — re-armed
+by each `bot go`.
 
 ---
 
