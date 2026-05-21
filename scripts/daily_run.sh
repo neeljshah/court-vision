@@ -39,4 +39,8 @@ python -m src.prediction.bet_selector --date "$DATE" 2>/dev/null || \
   python "$SCRIPT_DIR/run_daily_slate.py" --bet-select --date "$DATE" 2>/dev/null || \
   echo "[daily_run] Stage 3: bet_selector not wired yet (skipped)"
 
+# Stage 4: Auto-retrain stale prop models (14-day gate)
+python "$SCRIPT_DIR/auto_retrain.py" || \
+  echo "[daily_run] Stage 4: auto_retrain skipped or errored (non-fatal)"
+
 echo "[daily_run] Pipeline complete for $DATE"
