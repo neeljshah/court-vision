@@ -39,6 +39,54 @@ _STACK_CACHE = os.path.join(_MODELS_DIR, "prop_stack_meta.json")
 
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 
+# ── Ensemble base-learner registry ───────────────────────────────────────────
+# Maps learner name -> model-file template. The linear stacker (prop_stacker.py,
+# a later task) consumes this to combine base-learner predictions.
+BASE_LEARNERS: Dict[str, str] = {
+    "xgboost":  "props_{stat}.json",
+    "lightgbm": "props_lgb_{stat}.pkl",
+}
+
+
+def base_learner_available(name: str) -> Dict[str, bool]:
+    """Return {stat: file-exists-bool} for each stat under the given learner name."""
+    template = BASE_LEARNERS.get(name, "")
+    return {
+        stat: os.path.exists(os.path.join(_MODELS_DIR, template.format(stat=stat)))
+        for stat in STATS
+    }
+
+
+def predict_base_learner(name: str, stat: str, X) -> Optional[float]:
+    """Load the model for (name, stat) and return scalar prediction on X (shape (1, n_feats)).
+
+    Returns None if the model file is missing or loading fails.
+    XGBoost (.json) loads via xgb.XGBRegressor; everything else via joblib.
+    """
+    template = BASE_LEARNERS.get(name, "")
+    if not template:
+        return None
+    path = os.path.join(_MODELS_DIR, template.format(stat=stat))
+    if not os.path.exists(path):
+        return None
+    try:
+        import numpy as _np
+        _X = _np.array(X)
+        if _X.ndim == 1:
+            _X = _X.reshape(1, -1)
+        if path.endswith(".json"):
+            import xgboost as xgb
+            m = xgb.XGBRegressor()
+            m.load_model(path)
+            return float(m.predict(_X)[0])
+        else:
+            import joblib
+            m = joblib.load(path)
+            return float(m.predict(_X)[0])
+    except Exception:
+        return None
+
+
 # Confidence gate thresholds
 _DNP_GATE      = 0.30   # suppress if DNP probability ≥ this
 _INJURY_GATE   = 0.70   # suppress if injury_mult ≤ this

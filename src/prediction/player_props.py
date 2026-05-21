@@ -2502,44 +2502,27 @@ def _predict_with_models(feats: dict) -> tuple:
 
 # ── Training ───────────────────────────────────────────────────────────────────
 
-def train_props(seasons: list = None, force: bool = False,
-                exclude_player_ids: list = None) -> dict:
-    """
-    Train XGBoost regression models for pts, reb, ast props.
+def _build_prop_training_frame(
+    seasons: list = None,
+    exclude_player_ids: list = None,
+) -> tuple:
+    """Build (train_df, test_df, feat_cols) for prop-model training.
 
-    Uses LeagueDashPlayerStats per season as training signal.
-    Target = actual season per-game stat, features = first-half-season proxy.
-    Walk-forward: train on earlier seasons, test on latest.
-
-    Args:
-        seasons: List of season strings. Defaults to ["2022-23", "2023-24", "2024-25"].
-        force:   Retrain even if models already saved.
-
-    Returns:
-        {"pts": {"mae": float, "r2": float}, "reb": ..., "ast": ...}
+    Shared by every base learner (XGBoost / LightGBM / CatBoost) so each model
+    trains on byte-identical data and the same temporal holdout split. Returns
+    (None, None, None) when there is insufficient data (<100 rows).
     """
     import numpy as np
-    import xgboost as xgb
-    from sklearn.metrics import mean_absolute_error, r2_score
+    import pandas as pd
     from src.prediction.prop_cv_split import (
-        make_temporal_split, sort_chronologically, filter_excluded_players, _objective_for_stat
+        make_temporal_split, sort_chronologically, filter_excluded_players,
     )
 
     if seasons is None:
         seasons = ["2022-23", "2023-24", "2024-25"]
 
-    os.makedirs(_MODEL_DIR, exist_ok=True)
-
-    # Check if already trained
-    if not force and all(
-        os.path.exists(os.path.join(_MODEL_DIR, f"props_{s}.json"))
-        for s in _PROP_STATS
-    ):
-        print("[props] Models already trained. Use force=True to retrain.")
-        return {}
-
-    # Gather cross-season player data
-    all_rows = []
+    # Per-season fetch
+    all_rows: list = []
     for season in seasons:
         print(f"  [props] Fetching {season} player stats...")
         avgs = _get_all_player_avgs(season)
@@ -2550,20 +2533,18 @@ def train_props(seasons: list = None, force: bool = False,
 
     if len(all_rows) < 100:
         print(f"  [props] Not enough data ({len(all_rows)} rows). Skipping training.")
-        return {}
+        return (None, None, None)
 
-    import pandas as pd
     df = pd.DataFrame(all_rows)
 
     if exclude_player_ids:
         df = filter_excluded_players(df, exclude_player_ids)
         print(f"  [props] Excluded {len(exclude_player_ids)} player IDs from training set")
 
-    feat_cols = list(_ALL_FEATS)  # full feature set
+    feat_cols = list(_ALL_FEATS)
 
     # Simulate rolling-vs-season divergence with calibrated noise.
     # Without noise roll == season exactly → trivial identity model.
-    import numpy as np
     _rng_form = np.random.default_rng(0)
     for col, scale in [
         ("pts", 0.15), ("reb", 0.12), ("ast", 0.20), ("min", 0.12),
@@ -2571,7 +2552,6 @@ def train_props(seasons: list = None, force: bool = False,
     ]:
         noise = _rng_form.normal(0.0, scale, size=len(df))
         df[f"{col}_roll"] = (df[f"season_{col}"] * (1.0 + noise)).clip(lower=0.0)
-        # Bayesian-shrunk version (use n=10 games as constant during training)
         _n = 10.0
         df[f"{col}_bayes"] = (
             (_n / (_n + _BAYES_K)) * df[f"{col}_roll"]
@@ -2609,23 +2589,63 @@ def train_props(seasons: list = None, force: bool = False,
 
     df = df.dropna(subset=["season_pts", "season_reb", "season_ast"])
 
-    results = {}
     # Temporal split: sort by season ordinal, hold out last fold chronologically
     df_sorted = sort_chronologically(df, date_col="game_date")
     tscv = make_temporal_split(df_sorted, date_col="game_date", n_splits=5)
     _all_idx = np.arange(len(df_sorted))
-    _splits  = list(tscv.split(_all_idx))
-    train_idx_final, holdout_idx_final = _splits[-1]  # Last fold = most recent holdout
+    _splits = list(tscv.split(_all_idx))
+    train_idx_final, holdout_idx_final = _splits[-1]
     train_df = df_sorted.iloc[train_idx_final].reset_index(drop=True)
     test_df  = df_sorted.iloc[holdout_idx_final].reset_index(drop=True)
     print(f"  [props] Temporal split: {len(train_df)} train rows, {len(test_df)} holdout rows")
+
+    return (train_df, test_df, feat_cols)
+
+
+def train_props(seasons: list = None, force: bool = False,
+                exclude_player_ids: list = None) -> dict:
+    """
+    Train XGBoost regression models for pts, reb, ast props.
+
+    Uses LeagueDashPlayerStats per season as training signal.
+    Target = actual season per-game stat, features = first-half-season proxy.
+    Walk-forward: train on earlier seasons, test on latest.
+
+    Args:
+        seasons: List of season strings. Defaults to ["2022-23", "2023-24", "2024-25"].
+        force:   Retrain even if models already saved.
+
+    Returns:
+        {"pts": {"mae": float, "r2": float}, "reb": ..., "ast": ...}
+    """
+    import numpy as np
+    import xgboost as xgb
+    from sklearn.metrics import mean_absolute_error, r2_score
+    from src.prediction.prop_cv_split import _objective_for_stat
+
+    os.makedirs(_MODEL_DIR, exist_ok=True)
+
+    # Check if already trained
+    if not force and all(
+        os.path.exists(os.path.join(_MODEL_DIR, f"props_{s}.json"))
+        for s in _PROP_STATS
+    ):
+        print("[props] Models already trained. Use force=True to retrain.")
+        return {}
+
+    train_df, test_df, feat_cols = _build_prop_training_frame(seasons, exclude_player_ids)
+    if train_df is None:
+        print("  [props] Not enough data. Skipping training.")
+        return {}
+
+    results = {}
 
     for stat in _PROP_STATS:
         # Drop season_{stat} to prevent label leakage
         stat_feat_cols = [c for c in feat_cols if c != f"season_{stat}"]
         # Fill missing columns with 0 for robustness
         for col in stat_feat_cols:
-            if col not in df.columns:
+            if col not in train_df.columns:
                 train_df = train_df.copy()
                 train_df[col] = 0.0
                 test_df = test_df.copy()
@@ -2669,6 +2689,93 @@ def train_props(seasons: list = None, force: bool = False,
         m.save_model(model_path)
         results[stat] = {"mae": round(mae, 3), "r2": round(r2, 3)}
         print(f"  [props] {stat.upper()} - MAE: {mae:.2f}  R2: {r2:.3f}  -> saved {model_path}")
+
+    return results
+
+
+def train_props_lightgbm(seasons: list = None, force: bool = False,
+                         exclude_player_ids: list = None) -> dict:
+    """Train 7 LightGBM regressors (one per prop stat) — ensemble base learner #2.
+
+    Mirrors train_props() but uses lightgbm.LGBMRegressor. Models persist to
+    data/models/props_lgb_{stat}.pkl via joblib. Returns {stat: {"mae","r2"}}.
+    """
+    import datetime
+    import joblib
+    import lightgbm as lgb
+    from sklearn.metrics import mean_absolute_error, r2_score
+
+    os.makedirs(_MODEL_DIR, exist_ok=True)
+
+    if not force and all(
+        os.path.exists(os.path.join(_MODEL_DIR, f"props_lgb_{s}.pkl"))
+        for s in _PROP_STATS
+    ):
+        print("[props_lgb] Models already trained. Use force=True to retrain.")
+        return {}
+
+    train_df, test_df, feat_cols = _build_prop_training_frame(seasons, exclude_player_ids)
+    if train_df is None:
+        print("  [props_lgb] Not enough data. Skipping training.")
+        return {}
+
+    results: dict = {}
+
+    for stat in _PROP_STATS:
+        stat_feat_cols = [c for c in feat_cols if c != f"season_{stat}"]
+        # Fill missing columns with 0.0 on copies to avoid chained-assignment warnings
+        _train = train_df.copy()
+        _test  = test_df.copy()
+        for col in stat_feat_cols:
+            if col not in _train.columns:
+                _train[col] = 0.0
+                _test[col]  = 0.0
+
+        if f"season_{stat}" not in _train.columns:
+            print(f"  [props_lgb] {stat.upper()} — no label column, skipping")
+            continue
+
+        X_train = _train[stat_feat_cols].fillna(0.0).values
+        X_test  = _test[stat_feat_cols].fillna(0.0).values
+        y_train = _train[f"season_{stat}"].values
+        y_test  = _test[f"season_{stat}"].values
+
+        if "data_confidence" in _train.columns:
+            sample_w = _train["data_confidence"].clip(0.1, 1.0).values
+        else:
+            sample_w = None
+
+        # Poisson for count stats (STL/BLK) — mirrors XGBoost rationale
+        objective = "poisson" if stat in ("stl", "blk") else "regression"
+
+        m = lgb.LGBMRegressor(
+            n_estimators=200,
+            max_depth=4,
+            learning_rate=0.05,
+            subsample=0.8,
+            subsample_freq=1,       # required for subsample to take effect in LightGBM
+            colsample_bytree=0.8,
+            random_state=42,
+            objective=objective,
+            n_jobs=-1,
+            verbosity=-1,
+        )
+        m.fit(X_train, y_train, sample_weight=sample_w)
+        preds = m.predict(X_test)
+        mae = mean_absolute_error(y_test, preds)
+        r2  = r2_score(y_test, preds)
+
+        model_path = os.path.join(_MODEL_DIR, f"props_lgb_{stat}.pkl")
+        joblib.dump(m, model_path)
+        results[stat] = {"mae": round(mae, 3), "r2": round(r2, 3)}
+        print(f"  [props_lgb] {stat.upper()} - MAE: {mae:.2f}  R2: {r2:.3f}  -> saved {model_path}")
+
+    metrics_path = os.path.join(_MODEL_DIR, "props_lgb_metrics.json")
+    with open(metrics_path, "w") as _f:
+        json.dump(
+            {"model": "lightgbm", "trained_at": datetime.datetime.now().isoformat(), "stats": results},
+            _f, indent=2,
+        )
 
     return results
 
