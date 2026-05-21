@@ -223,13 +223,54 @@ def _detect_affected_domains() -> list[str]:
     return sorted(domains)
 
 
-def update_decision_log():
+_SEPARATOR = "|------|--------------------|--------|"
+_HEADER_TEMPLATE = """\
+---
+tags: [decision-log, moc]
+updated: {today}
+aliases: ["Decision Log"]
+---
+
+> [[Home]] | [[Sessions/Timeline]] | [[Sessions/Game Log]]
+
+# Decision Log
+
+Rolling log of key decisions, fixes, and milestones. Auto-updated by `vault_session_close.py`.
+One row per task — appended, never replaced. Full session files in `Sessions/_archive/`.
+
+---
+
+| Date | Key Decision / Fix | Impact |
+{sep}
+"""
+
+
+def _build_new_row(commit_sha: str, summary: str, impact: str) -> str:
+    """Format one table row including a hidden SHA anchor for dedup."""
+    return f"| {TODAY} | {summary} | {impact} | <!-- {commit_sha} -->"
+
+
+def _row_already_logged(content: str, commit_sha: str) -> bool:
+    """Return True if this exact commit SHA anchor is already present in the log."""
+    # Match the full anchor comment so 'abc123' does not false-positively hit
+    # 'abc1234' or any other SHA that contains it as a prefix.
+    return f"<!-- {commit_sha} -->" in content
+
+
+def update_decision_log() -> None:
+    """Append one row per task/commit to the Decision Log — never replace.
+
+    Idempotent: re-running on the same HEAD commit is a no-op (deduped by SHA).
+    Each distinct merged commit produces its own dated row so N tasks → N lines.
+    """
     DECISION_LOG.parent.mkdir(parents=True, exist_ok=True)
 
-    commit_msg = _run("git log --oneline -1")
-    if commit_msg:
-        parts = commit_msg.split(" ", 1)
-        summary = parts[1] if len(parts) > 1 else commit_msg
+    commit_oneline = _run("git log --oneline -1")
+    commit_sha = _run("git rev-parse --short HEAD") or "unknown"
+
+    if commit_oneline:
+        parts = commit_oneline.split(" ", 1)
+        summary = parts[1] if len(parts) > 1 else commit_oneline
     else:
         summary = "no commit this session"
 
@@ -241,52 +282,38 @@ def update_decision_log():
     if domains:
         impact = f"{', '.join(domains)} | {impact}"
 
-    new_row = f"| {TODAY} | {summary} | {impact} |"
+    new_row = _build_new_row(commit_sha, summary, impact)
 
     if not DECISION_LOG.exists():
         DECISION_LOG.write_text(
-            f"""---
-tags: [decision-log, moc]
-updated: {TODAY}
-aliases: ["Decision Log"]
----
-
-> [[Home]] | [[Sessions/Timeline]] | [[Sessions/Game Log]]
-
-# Decision Log
-
-Rolling log of key decisions, fixes, and milestones. Auto-updated by `vault_session_close.py`.
-One row per significant event. Full session files in `Sessions/_archive/`.
-
----
-
-| Date | Key Decision / Fix | Impact |
-|------|--------------------|--------|
-{new_row}
-""",
-            encoding="utf-8"
+            _HEADER_TEMPLATE.format(today=TODAY, sep=_SEPARATOR) + new_row + "\n",
+            encoding="utf-8",
         )
         return
 
     content = DECISION_LOG.read_text(encoding="utf-8")
 
-    today_pattern = rf"^\| {re.escape(TODAY)} \|.*$"
-    if re.search(today_pattern, content, re.MULTILINE):
-        content = re.sub(today_pattern, new_row, content, flags=re.MULTILINE)
+    # Idempotency: skip if this SHA was already written (e.g. hook ran twice).
+    if _row_already_logged(content, commit_sha):
+        return
+
+    # Always append — insert immediately after the separator header row so
+    # newest entries appear at the top of the table (below the header).
+    if _SEPARATOR in content:
+        content = content.replace(
+            _SEPARATOR,
+            _SEPARATOR + "\n" + new_row,
+            1,
+        )
     else:
-        separator = "|------|--------------------|--------|"
-        if separator in content:
-            content = content.replace(
-                separator,
-                separator + "\n" + new_row,
-                1
-            )
+        # Fallback: the separator is missing; just append at end of file.
+        content = content.rstrip("\n") + "\n" + new_row + "\n"
 
     content = re.sub(
         r"updated: \d{4}-\d{2}-\d{2}",
         f"updated: {TODAY}",
         content,
-        count=1
+        count=1,
     )
 
     DECISION_LOG.write_text(content, encoding="utf-8")
