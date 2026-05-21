@@ -2,10 +2,13 @@
   "stat": "pts",
   "best_params": {
     "colsample_bytree": 0.8,
-    "learning_rate": 0.02,
+    "learning_rate": 0.05,
     "max_depth": 3,
-    "n_estimators": 300,
-    "subsample": 0.7
+    "min_child_weight": 3,
+    "n_estimators": 100,
+    "reg_alpha": 0.0,
+    "reg_lambda": 1.0,
+    "subsample": 0.8
   },
-  "best_cv_r2": 0.8874
+  "best_cv_r2": 0.8828
 }

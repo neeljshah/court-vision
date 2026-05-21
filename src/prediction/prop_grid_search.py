@@ -27,21 +27,29 @@ _MODEL_DIR = Path(os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))) / "data" / "models"
 
 # Regression stats (continuous): pts, reb, ast, fg3m, tov
+# 2×2×2×1×1×3×2×2 = 96 combos
 REGRESSION_PARAM_GRID: dict = {
-    "n_estimators":     [100, 200, 300],
-    "max_depth":        [3, 4, 5, 6],
-    "learning_rate":    [0.02, 0.05, 0.10],
-    "subsample":        [0.7, 0.8, 0.9],
-    "colsample_bytree": [0.7, 0.8, 0.9],
+    "n_estimators":     [100, 200],
+    "max_depth":        [3, 5],
+    "learning_rate":    [0.05, 0.10],
+    "subsample":        [0.8],
+    "colsample_bytree": [0.8],
+    "min_child_weight": [1, 3, 5],
+    "reg_alpha":        [0.0, 0.5],
+    "reg_lambda":       [1.0, 3.0],
 }
 
 # Count stats (Poisson): stl, blk — tighter learning_rate per research
+# 2×2×2×2×1×3×2×2 = 192 combos
 POISSON_PARAM_GRID: dict = {
-    "n_estimators":     [150, 200, 250],
-    "max_depth":        [3, 4, 5],
-    "learning_rate":    [0.02, 0.03, 0.05],
+    "n_estimators":     [150, 200],
+    "max_depth":        [3, 4],
+    "learning_rate":    [0.02, 0.05],
     "subsample":        [0.8, 0.9],
-    "colsample_bytree": [0.8, 0.9],
+    "colsample_bytree": [0.8],
+    "min_child_weight": [1, 3, 5],
+    "reg_alpha":        [0.0, 0.5],
+    "reg_lambda":       [1.0, 3.0],
 }
 
 _COUNT_STATS = frozenset(("stl", "blk"))
