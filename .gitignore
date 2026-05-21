@@ -126,6 +126,7 @@ teflon-quant-dashboard/
 
 # -- Model training runs (large artifacts, re-generable) ----------------------
 models/
+!src/models/
 src/detection/data/images/
 
 # -- Outreach / personal contact data (sensitive) -----------------------------
