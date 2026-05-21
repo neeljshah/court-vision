@@ -99,8 +99,8 @@ st.sidebar.caption("Upload a new game in the **Upload** tab.")
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab_upload, tab_film, tab_movement, tab_plays, tab_defense, tab_predictions = st.tabs([
-    "Upload", "Film Review", "Movement", "Play Analysis", "Defense", "Predictions"
+tab_upload, tab_film, tab_movement, tab_plays, tab_defense, tab_predictions, tab_monitoring = st.tabs([
+    "Upload", "Film Review", "Movement", "Play Analysis", "Defense", "Predictions", "Monitoring"
 ])
 
 
@@ -689,3 +689,71 @@ with tab_predictions:
             st.caption("No model versions registered yet.")
     except Exception:
         st.caption("Model version manager not available.")
+
+
+# =============================================================================
+# TAB 6 — Monitoring
+# =============================================================================
+with tab_monitoring:
+    import json
+    import os as _os
+
+    st.subheader("Model Health & Drift Monitoring")
+
+    # ── Feature drift log ─────────────────────────────────────────────────────
+    st.markdown("#### Feature Drift Log")
+    drift_log_path = "data/models/feature_drift_log.json"
+    if _os.path.exists(drift_log_path):
+        with open(drift_log_path, encoding="utf-8") as _f:
+            drift_data = json.load(_f)
+        st.write(f"**Models tracked:** {len(drift_data)}")
+        for model_id, history in drift_data.items():
+            if history:
+                last = history[-1]
+                ts = last.get("timestamp", "unknown")
+                st.write(f"- `{model_id}`: {len(history)} snapshots, last `{ts}`")
+    else:
+        st.info("No drift log yet. Run daily_pipeline.py to populate.")
+
+    st.divider()
+
+    # ── Model metrics history ─────────────────────────────────────────────────
+    st.markdown("#### Model Metrics History")
+    metrics_path = "data/models/model_metrics_history.json"
+    if _os.path.exists(metrics_path):
+        with open(metrics_path, encoding="utf-8") as _f:
+            metrics = json.load(_f)
+        rows = []
+        for stat, hist in metrics.items():
+            if hist:
+                last = hist[-1]
+                rows.append({
+                    "stat": stat,
+                    "r2": last.get("r2"),
+                    "mae": last.get("mae"),
+                    "trained_at": last.get("trained_at"),
+                })
+        if rows:
+            st.dataframe(
+                pd.DataFrame(rows).set_index("stat"),
+                use_container_width=True,
+            )
+        else:
+            st.caption("Metrics history file exists but contains no entries.")
+    else:
+        st.info("No model metrics history yet.")
+
+    st.divider()
+
+    # ── Alert log from daily pipeline ─────────────────────────────────────────
+    st.markdown("#### Alert Log")
+    alert_log_path = "data/models/alert_log.json"
+    if _os.path.exists(alert_log_path):
+        with open(alert_log_path, encoding="utf-8") as _f:
+            alerts = json.load(_f)
+        if alerts:
+            st.dataframe(pd.DataFrame(alerts), use_container_width=True, hide_index=True)
+        else:
+            st.caption("Alert log is empty — no alerts triggered.")
+    else:
+        st.info("No alert log yet. Alerts are written by compare_models.py during CI.")
