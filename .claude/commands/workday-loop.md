@@ -240,8 +240,28 @@ Flat subscription: leaving capacity unused is the only waste. So:
   ONE message spawn a Sonnet executor for every task whose file set is disjoint
   from the others. Run serially only when tasks genuinely touch the same files.
   This is the main throughput lever — lean on it hard.
-- **Then** `ScheduleWakeup(delaySeconds=60, prompt="/workday-loop", reason="continue — fresh context")`
-  to resume immediately in a clean context. No long idle gaps.
+
+### ⚠️ END-OF-TURN RULE — never just stop
+
+**Every turn that does ANY work MUST end with one of three outcomes — never a bare stop.**
+
+| Outcome | When | Required action |
+|---|---|---|
+| Continue in same turn | Context still light, queue has work | Loop to Step 1 in this same response |
+| Schedule next wake | Context heavy / planned break | `ScheduleWakeup(delaySeconds=60, prompt="/workday-loop", reason="continue — fresh context")` |
+| Exit deliberately | Stop condition matched (Step 1) | `add_spend(usd=0, task_slug="exit:<reason>")`, write `phase="stopped"` |
+
+There is **NO fourth option**. A turn that finishes a task and just ends — with `phase="idle"`,
+`next_wake_at=null`, no exit reason logged — is a **bug**. The bot session goes dark waiting
+for user input that never comes, and the user has to type `/workday-loop` to revive it.
+
+**Belt-and-braces:** *before* writing the final assistant message of a turn, verify one of the
+three outcomes is in flight. If unsure, schedule a 60-second wakeup — a redundant wakeup is
+free; an unscheduled stall costs a manual restart.
+
+A scheduled task fires `/workday-loop` every 15 min as a safety net, so even if you do stall,
+a fresh session picks up where you left off — state is on disk in `.bot_state/`. But don't
+rely on that — the rule above is primary.
 
 **Rate limit is the real cap — and hitting it is the goal.** When a 5-hour usage
 window is exhausted, calls fail with a rate-limit/usage-limit error stating a reset
