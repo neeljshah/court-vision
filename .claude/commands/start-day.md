@@ -66,6 +66,22 @@ This file is the bot's heartbeat — `python scripts/bot_guards/watch.py` tails 
 
 ---
 
+## PHASE 1.5 — Arm the stall safety net
+
+The loop self-paces with `ScheduleWakeup`; a turn that bare-stops (`phase:"idle"`,
+`next_wake_at:null`) leaves the bot dark and idle. Arm a backstop that re-fires the
+loop every ~15 min so any stall self-revives within one interval — no dead hours.
+
+`ToolSearch` query `select:CronCreate` to load the tool, then create:
+- `cron`: `7,22,37,52 * * * *` · `prompt`: `/workday-loop`
+- `recurring`: true · `durable`: false (session-scoped — dies when the window
+  closes at night, re-armed by the next `bot go`)
+
+First check `CronList` — if a `/workday-loop` cron already exists this session,
+skip it; never stack duplicates.
+
+---
+
 ## PHASE 2 — Kick the workday loop
 
 Report to the user, one line:
