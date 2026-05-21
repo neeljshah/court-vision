@@ -137,17 +137,33 @@ already knows. Then:
    edge case handled? every file in the blast radius addressed? Fix gaps before delegating —
    only a spec that passes this check goes to Sonnet.
 
-**4b — EXECUTE (Sonnet subagent — the workhorse).**
-1. `git checkout -b bot/<date>-<slug>` — write the slug into `live_status.current_task`
-   IMMEDIATELY (crash-recovery marker).
-2. Spawn ONE `Agent(subagent_type="general-purpose", model="sonnet")`. Prompt = the full spec, plus:
-   *"Implement exactly this spec. Then run `python -m pytest tests/ -q -x`; if it fails, fix and
-   rerun up to 2×. Report: files changed, `git diff --stat`, final pytest result. Do NOT commit,
-   do NOT switch branches."*
-3. If the task is N independent file-edits → spawn N Sonnet agents in ONE message (parallel —
-   all hit the CLAUDE.md prompt cache).
-4. If the agent reports tests still failing after its retries → re-PLAN with the failure output,
-   re-delegate to Sonnet ONCE. Only if that also fails, debug inline in Opus.
+**4b — EXECUTE (Sonnet subagents — the workhorse). DEFAULT IS PARALLEL.**
+
+The single biggest throughput lever in this loop is parallel Sonnet spawns. Stay
+sequential **only** when tasks genuinely share files; otherwise batch.
+
+1. **Look 2–4 tasks ahead in `ai-todo.md`.** For each candidate, list its target files.
+2. **Build a parallel batch.** Group the current task with any look-ahead task whose
+   file set is **disjoint** from every other task already in the batch. Stop when:
+   batch size hits 4, OR the next task shares a file with one already in the batch,
+   OR a task is `touch betting?: yes` (handle those serially with extra care).
+3. **For each task in the batch:** `git checkout -b bot/<date>-<slug>` from master,
+   write the slug + branch into `live_status.current_task` (one slug at a time is fine —
+   the crash marker just needs a recovery anchor). Return to master before checking out
+   the next branch so each Sonnet starts from a clean tree on its own branch.
+4. **Spawn N Sonnets in ONE message** — all hit the CLAUDE.md prompt cache, multiplying
+   throughput at near-flat orchestration cost. Each prompt = that task's spec plus:
+   *"Implement exactly this spec on branch `bot/<your-slug>` (already checked out by
+   parent). Run `python -m pytest tests/ -q -x` after edits; if it fails, fix and rerun
+   up to 2×. Report: branch, files changed, `git diff --stat`, final pytest result. Do
+   NOT commit, do NOT switch branches, do NOT touch other branches' files."*
+5. **Serial fallback — single Sonnet — only when:** the next task is the only eligible
+   one, OR every look-ahead task overlaps files with the current task, OR the current
+   task is L-size (>~400K tokens estimate — already saturating one Sonnet's context).
+6. If any agent reports tests still failing after its retries → re-PLAN with the failure
+   output, re-delegate to Sonnet ONCE. Only if that also fails, debug inline in Opus.
+
+After the spawn(s) complete, REVIEW each independently in step 4c — one merge per branch.
 
 **4c — REVIEW (Opus, cheap).**
 The Sonnet agent left changes uncommitted on `bot/<slug>`. Read its summary + `git diff --stat`;
