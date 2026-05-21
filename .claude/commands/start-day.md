@@ -1,21 +1,21 @@
-# Start Day — "bot go"
+# "bot go" — run a work burst
 
-The user said **bot go** (or `go` / `start`).
+The user said **bot go** (or `go` / `start`). This is a **poke**: run one autonomous
+work burst, then stop. There is no scheduled task and no auto-restart — those do not
+work in this environment. The model is poke-to-run: the user pokes, the bot ships a
+burst, the user pokes again when they want more.
 
-The autonomous bot runs as a **Windows scheduled task** (`CourtVisionBot`) that fires a
-fresh headless Claude Code cycle every 15 minutes. Each cycle runs `/workday-loop`, ships
-a batch of work, and exits. `bot go` simply turns that task **ON**.
+## Do this
 
-## Do exactly this, then stop. Be terse.
+Execute `/workday-loop` — read `.claude/commands/workday-loop.md` and follow it:
 
-1. Run: `python scripts/bot_guards/bot_go.py`
-2. Relay its output to the user in 1–2 lines — confirm the bot is ON, runs every 15 min
-   hands-off, and stops with `bot stop`.
+1. Probe the queue (`.planning/queue/ai-todo.md`).
+2. If the queue is low, replenish: `python scripts/bot_guards/scan_plans.py --write 12`,
+   and if that adds little, decompose the next `🔲` roadmap phase from
+   `.planning/ROADMAP.md` into fresh task blocks (Tier 2 — the queue never runs dry
+   while roadmap phases remain).
+3. Build a batch — Opus plans, Sonnet subagents code in parallel, review, merge, push.
+4. Run batches back-to-back until context gets heavy (~6-10 tasks), then report what
+   shipped in a short summary and STOP. Do not ScheduleWakeup, do not create crons.
 
-## Do NOT
-
-- Do NOT run `/workday-loop` in this session. The scheduled task's own headless cycles
-  run the loop. This interactive session's only job is to flip the task on.
-- Do NOT `ScheduleWakeup` or create crons — the Windows scheduled task is the driver now.
-
-`bot stop` → `python scripts/bot_guards/stop_bot.py` (disables the task; bot fully off).
+One poke = one burst. That is the whole job.
