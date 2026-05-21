@@ -101,3 +101,64 @@ jobs:
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: 'trivy-results.sarif'
+
+  model-training:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[retrain]')
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+
+    - name: Train models
+      run: |
+        python src/prediction/player_props.py --train
+        pytest tests/test_models.py
+
+    - name: Validate model improvement
+      run: |
+        RESULT=$(python scripts/compare_models.py --stat all --threshold 0.02 2>&1)
+        echo "$RESULT"
+        python scripts/compare_models.py --stat all --threshold 0.02
+
+    - name: Commit models with metrics
+      run: |
+        METRICS=$(python scripts/compare_models.py --stat all --threshold 0.02 2>&1 | grep -E "\[PASS\]|\[FAIL\]|\[FIRST RUN\]" | tr '\n' ' ')
+        git config user.name "GSD Executor"
+        git config user.email "noreply@courtvision.io"
+        git add data/models/
+        git commit -m "retrain: ${METRICS}" || echo "No model changes to commit"
+        git push || echo "Nothing to push"
+
+  daily-pipeline:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.9"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run daily pipeline
+      run: |
+        python scripts/daily_pipeline.py --season 2024-25 || exit 1
+
+    - name: Record slate results
+      run: |
+        python scripts/record_slate_results.py || true
