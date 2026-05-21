@@ -129,9 +129,9 @@ Everything writes to a unified feature store keyed on `(player, game, possession
 
 ### Layer 3 — Simulation
 
-**Status: Designed — the Phase 3 build**
+**Status: LIVE — core engine implemented (~1,800 LOC); calibration + pipeline integration in progress**
 
-A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a stack of models — currently 85, expanding toward a signal universe of 500–5000 via the agentic research system — covering pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, regime shift.
+A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a 7-sub-model chain — PlayTypeSelector → ShotSelector → xFGModel → TurnoverFoulModel → ReboundModel → FatigueModel → SubstitutionModel — currently 85 trained signals, expanding toward a signal universe of 500–5000 via the agentic research system. The engine covers pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, and regime shift.
 
 The output is a full joint distribution over every observable game outcome: not just "LeBron points," but the joint distribution of LeBron points × Davis rebounds × Reaves assists × team total, with correlation structure preserved. From this distribution, *any* threshold can be priced — mainline, alternates, same-game parlays, quarter splits — with equal calibration.
 
@@ -213,7 +213,7 @@ flowchart LR
   SF --> FS["Feature store [LIVE]"]
   BF --> FS
   FS --> M["85 trained models [LIVE]"]
-  M --> MC["10K-path Monte Carlo [NEXT]"]
+  M --> MC["10K-path Monte Carlo [LIVE]"]
   MC --> LE["Line evaluator [SCAFFOLDED]\nvs live odds"]
   LE --> K["Fractional Kelly [LIVE]\n+ shrinkage correlation"]
   K --> EX["Execution router [NEXT]\n6 books + P2P"]
@@ -346,6 +346,21 @@ The same stack pointed at different consumers. Every application below is downst
 - **Multi-sport.** Perception layer retrains per sport; memory layer is league-agnostic; simulator is parameterized by rule set; execution layer is venue-agnostic. NCAA basketball is the cheapest expansion (same rules, same court). NFL is the next high-value target because data is dense and line shopping margins are widest.
 
 The current commercial focus is sports markets because they pay in dollars on a 24-hour feedback loop — the cleanest possible ground truth for any model. Every other application is a downstream consumer of the same simulator.
+
+---
+
+## Dashboard & Frontend
+
+A multi-app frontend layer is in progress, built with React + Vite:
+
+| App | Purpose |
+|-----|---------|
+| `quant-dashboard` | Bloomberg-terminal-grade analytics surface (55 files) |
+| `court-vision-landing` | Public-facing project landing page |
+| `court-vision-router` | App routing layer |
+| `portfolio-site` | Personal portfolio |
+
+The quant dashboard is the Phase 7 build target — real-time monitoring, scouting views, and the analytics surface that feeds the team-licensing revenue stream.
 
 ---
 
