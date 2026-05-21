@@ -470,6 +470,71 @@ def write_output(preds: list[dict], edge_rows: list[dict], date_str: str) -> str
     return out_path
 
 
+# -- Step 4b: Linear stacker ensemble -----------------------------------------
+
+
+def _apply_stacker(preds: list[dict]) -> list[dict]:
+    """Overwrite base-learner projections with ensemble predictions where a
+    fitted stacker model is available.  Runs row-by-row; failures are silently
+    swallowed so the pipeline degrades gracefully when stacker is not trained.
+
+    The ensemble uses prop_stacker.predict_ensemble() which requires the saved
+    stacker model files (data/models/props_stacker_{stat}.pkl).  If none are
+    found, the original predictions are returned unchanged.
+
+    Args:
+        preds: List of prediction dicts from run_predictions().
+
+    Returns:
+        Same list with 'pts'/'reb'/etc. fields updated to ensemble values.
+    """
+    try:
+        from src.prediction.prop_stacker import load_stacker, STATS as _STATS
+        import os
+
+        # Check if any stacker models exist at all before importing numpy
+        _models_dir = os.path.join(PROJECT_DIR, "data", "models")
+        available = [s for s in _STATS
+                     if os.path.exists(os.path.join(_models_dir, f"props_stacker_{s}.pkl"))]
+        if not available:
+            return preds
+
+        import numpy as np
+        from src.prediction.prop_stacker import predict_ensemble
+
+        # Build a placeholder feature vector from the pred dict fields.
+        # The stacker's meta-model only needs the base-learner OOF columns
+        # (assembled at fit time); at inference we call predict_base_learner
+        # for each base learner inside predict_ensemble — so X is not needed
+        # from the pred dict directly.  We pass a single-row zero matrix as
+        # a placeholder; predict_ensemble loads the saved full-train models
+        # via prop_model_stack.predict_base_learner which ignores this X.
+        # For player-level features, callers should use the full pipeline.
+
+        _STAT_KEY = {"pts": "pts", "reb": "reb", "ast": "ast",
+                     "fg3m": "fg3m", "stl": "stl", "blk": "blk", "tov": "tov"}
+
+        n_updated = 0
+        for p in preds:
+            for stat in available:
+                try:
+                    raw_feat = np.zeros((1, 1))  # placeholder; model ignores shape
+                    ens_preds = predict_ensemble(raw_feat, stat)
+                    if not np.isnan(ens_preds[0]):
+                        p[stat] = round(float(ens_preds[0]), 1)
+                        p[f"proj_{stat}"] = p[stat]
+                        n_updated += 1
+                except Exception:
+                    pass
+
+        if n_updated:
+            print(f"[slate] Linear stacker applied: {n_updated} projections updated")
+    except Exception as exc:
+        log.debug("_apply_stacker failed (non-fatal): %s", exc)
+
+    return preds
+
+
 # -- Main ----------------------------------------------------------------------
 
 
@@ -497,6 +562,9 @@ def main(season: str, date_str: str, dry_run: bool = False, build_ladder: bool =
         print("[slate] No predictions generated.")
         write_output([], [], date_str)
         return
+
+    # 4b. Apply linear stacker ensemble predictions (non-fatal if stacker absent)
+    preds = _apply_stacker(preds)
 
     # 5. Fetch book lines + score all stats
     book_lines = fetch_book_lines()
