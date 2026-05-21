@@ -163,10 +163,17 @@ Then move the task `ai-todo.md` → `done.md`. If the ai-todo entry had a
 `- **source:**` line, copy it into the `done.md` entry verbatim — `scan_plans.py`
 reads it to mark that GSD plan built and unblock its dependents.
 
-Then **push the monitoring mirror and master**: `git push origin master:bot/live && git push origin master`.
+Then **push the monitoring mirror and master, then record telemetry**:
+```bash
+git push origin master:bot/live && git push origin master && \
+  python scripts/bot_guards/update_telemetry.py
+```
 First push updates the `bot/live` mirror so the user can watch progress remotely (phone, etc.);
-second push backs up master to GitHub immediately so a laptop crash never loses merged work.
-If either push fails (auth/network), log one line to `human-todo.md` and continue — a push
+second push backs up master to GitHub immediately so a laptop crash never loses merged work;
+third call writes spend + bumps `tasks_completed_today` from the merge diff (idempotent via
+`telemetry_seen.json`). A git post-commit hook also calls update_telemetry — keeping the
+explicit call here makes step 4c self-contained even on a fresh clone.
+If push fails (auth/network), log one line to `human-todo.md` and continue — a push
 failure must never block the loop or a task.
 
 **Hard stops** (commit-what-works + flag + move on):
@@ -177,11 +184,12 @@ failure must never block the loop or a task.
 ### 5 — Update state (atomic)
 
 Via `_state` helpers (NOT raw Write):
-- `add_spend(...)` — telemetry only, no cap. Estimate per model and sum: Opus tokens
-  at `estimate_usd(i, o, "opus")`, each Sonnet subagent at `"sonnet"`, Haiku at
-  `"haiku"`. Rough is fine — it just feeds the usage report.
-- `write_json_atomic(status_path(), {...})` — `current_task` (or null), `tasks_completed_today`,
-  `last_commit`, `queue_depth`, `phase`, `next_wake_at`.
+- Spend + `tasks_completed_today` are handled automatically by step 4c's
+  `update_telemetry.py` call (and the git post-commit hook backstop). Don't
+  duplicate it here — the script is idempotent per SHA.
+- `write_json_atomic(status_path(), {...})` — `current_task` (or null), `queue_depth`,
+  `phase`, `next_wake_at`. (Skip `tasks_completed_today` and `last_commit` — telemetry
+  owns those.)
 
 ### Knowledge capture — grow the Obsidian brain every task
 
