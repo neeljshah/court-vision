@@ -2780,6 +2780,100 @@ def train_props_lightgbm(seasons: list = None, force: bool = False,
     return results
 
 
+try:
+    import catboost as _catboost  # noqa: F401
+    _CATBOOST_AVAILABLE = True
+except ImportError:
+    _CATBOOST_AVAILABLE = False
+
+
+def train_props_catboost(seasons: list = None, force: bool = False,
+                         exclude_player_ids: list = None) -> dict:
+    """Train 7 CatBoost regressors (one per prop stat) — ensemble base learner #3.
+
+    Mirrors train_props_lightgbm() but uses catboost.CatBoostRegressor. Models
+    persist to data/models/props_cb_{stat}.cbm via CatBoost's native save_model().
+    Returns {stat: {"mae", "r2"}}. No-ops (returns {}) if catboost is not installed.
+    """
+    if not _CATBOOST_AVAILABLE:
+        print("[props_cb] catboost not installed — skipping training.")
+        return {}
+
+    import datetime
+    import catboost as cb
+    from sklearn.metrics import mean_absolute_error, r2_score
+
+    os.makedirs(_MODEL_DIR, exist_ok=True)
+
+    if not force and all(
+        os.path.exists(os.path.join(_MODEL_DIR, f"props_cb_{s}.cbm"))
+        for s in _PROP_STATS
+    ):
+        print("[props_cb] Models already trained. Use force=True to retrain.")
+        return {}
+
+    train_df, test_df, feat_cols = _build_prop_training_frame(seasons, exclude_player_ids)
+    if train_df is None:
+        print("  [props_cb] Not enough data. Skipping training.")
+        return {}
+
+    results: dict = {}
+
+    for stat in _PROP_STATS:
+        stat_feat_cols = [c for c in feat_cols if c != f"season_{stat}"]
+        _train = train_df.copy()
+        _test  = test_df.copy()
+        for col in stat_feat_cols:
+            if col not in _train.columns:
+                _train[col] = 0.0
+                _test[col]  = 0.0
+
+        if f"season_{stat}" not in _train.columns:
+            print(f"  [props_cb] {stat.upper()} — no label column, skipping")
+            continue
+
+        X_train = _train[stat_feat_cols].fillna(0.0).values
+        X_test  = _test[stat_feat_cols].fillna(0.0).values
+        y_train = _train[f"season_{stat}"].values
+        y_test  = _test[f"season_{stat}"].values
+
+        if "data_confidence" in _train.columns:
+            sample_w = _train["data_confidence"].clip(0.1, 1.0).values
+        else:
+            sample_w = None
+
+        # Poisson for count stats (STL/BLK) — mirrors XGBoost/LightGBM rationale
+        loss_function = "Poisson" if stat in ("stl", "blk") else "RMSE"
+
+        m = cb.CatBoostRegressor(
+            iterations=200,
+            max_depth=4,
+            learning_rate=0.05,
+            subsample=0.8,
+            random_seed=42,
+            loss_function=loss_function,
+            verbose=0,
+        )
+        m.fit(X_train, y_train, sample_weight=sample_w)
+        preds = m.predict(X_test)
+        mae = mean_absolute_error(y_test, preds)
+        r2  = r2_score(y_test, preds)
+
+        model_path = os.path.join(_MODEL_DIR, f"props_cb_{stat}.cbm")
+        m.save_model(model_path)
+        results[stat] = {"mae": round(mae, 3), "r2": round(r2, 3)}
+        print(f"  [props_cb] {stat.upper()} - MAE: {mae:.2f}  R2: {r2:.3f}  -> saved {model_path}")
+
+    metrics_path = os.path.join(_MODEL_DIR, "props_cb_metrics.json")
+    with open(metrics_path, "w") as _f:
+        json.dump(
+            {"model": "catboost", "trained_at": datetime.datetime.now().isoformat(), "stats": results},
+            _f, indent=2,
+        )
+
+    return results
+
+
 def _get_all_player_avgs(season: str) -> list:
     """
     Return list of feature dicts for all players in a season.
