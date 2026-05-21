@@ -128,6 +128,86 @@ def get_clv_summary(log_path: Optional[str] = None) -> Dict:
     }
 
 
+def generate_beat_rate_report(
+    output_dir: Optional[str] = None,
+    log_path: Optional[str] = None,
+    week: Optional[str] = None,
+) -> str:
+    """Generate weekly CLV beat-rate report comparing all bets vs CLV-positive bets.
+
+    Returns the output file path.
+    """
+    from pathlib import Path
+    from datetime import date
+
+    if week is None:
+        d = date.today()
+        week = f"{d.isocalendar()[0]}-W{d.isocalendar()[1]:02d}"
+
+    out_dir = Path(output_dir) if output_dir else PROJECT_DIR / "data" / "output"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"clv_beat_rate_{week}.txt"
+
+    path = Path(log_path) if log_path else _DEFAULT_LOG
+    if not path.exists():
+        report = f"CLV Beat Rate Report — Week {week}\nNo CLV log found.\n"
+        out_path.write_text(report, encoding="utf-8")
+        return str(out_path)
+
+    try:
+        data: List[Dict] = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        data = []
+
+    if not data:
+        report = f"CLV Beat Rate Report — Week {week}\nNo bets recorded yet.\n"
+        out_path.write_text(report, encoding="utf-8")
+        return str(out_path)
+
+    all_bets = [e for e in data if "clv" in e]
+    clv_positive = [e for e in all_bets if float(e["clv"]) > 0]
+
+    def _beat_rate(bets):
+        if not bets:
+            return 0.0, 0
+        n_beat = sum(1 for e in bets if float(e.get("clv", 0)) > 0)
+        return round(n_beat / len(bets), 3), len(bets)
+
+    all_beat_rate, all_n = _beat_rate(all_bets)
+
+    by_stat_all: Dict[str, List[Dict]] = {}
+    for e in all_bets:
+        stat = str(e.get("stat", "unknown"))
+        by_stat_all.setdefault(stat, []).append(e)
+
+    lines = [
+        f"CLV Beat Rate Report — Week {week}",
+        f"{'='*50}",
+        f"All bets:       n={all_n}  beat_rate={all_beat_rate:.1%}",
+        f"CLV+ bets:      n={len(clv_positive)}  (clv > 0)",
+        f"",
+        f"Per-stat breakdown (all bets):",
+    ]
+    for stat in sorted(by_stat_all):
+        bets = by_stat_all[stat]
+        br = (
+            round(sum(1 for e in bets if float(e.get("clv", 0)) > 0) / len(bets), 3)
+            if bets else 0.0
+        )
+        mean_clv = (
+            round(sum(float(e.get("clv", 0)) for e in bets) / len(bets), 4)
+            if bets else 0.0
+        )
+        lines.append(
+            f"  {stat:6s}: n={len(bets):4d}  beat_rate={br:.1%}  mean_clv={mean_clv:+.4f}"
+        )
+
+    report = "\n".join(lines) + "\n"
+    out_path.write_text(report, encoding="utf-8")
+    print(f"  [clv_tracker] Report written -> {out_path}")
+    return str(out_path)
+
+
 def fetch_closing_lines(bets: List[Dict]) -> List[Dict]:
     """
     Fetch closing lines for open bets from the odds data source.
@@ -149,8 +229,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="CLV tracker")
     parser.add_argument("--summary", action="store_true", help="Print CLV summary")
+    parser.add_argument("--beat-rate", action="store_true", help="Generate weekly CLV beat-rate report")
+    parser.add_argument("--week", default=None, help="ISO week string e.g. 2026-W21")
     args = parser.parse_args()
 
     if args.summary:
         summary = get_clv_summary()
         print(f"CLV Summary: {json.dumps(summary, indent=2)}")
+    if args.beat_rate:
+        path = generate_beat_rate_report(week=args.week)
+        print(f"Report: {path}")

@@ -262,6 +262,16 @@ def main() -> None:
             _save_bet_log(bets)
         print(f"Bets: {res} resolved, {skip} skipped (open from other dates or missing data)")
 
+    # Generate weekly CLV beat-rate report
+    try:
+        target_date = datetime.strptime(slate_date, "%Y-%m-%d").date()
+        _week = f"{target_date.isocalendar()[0]}-W{target_date.isocalendar()[1]:02d}"
+        sys.path.insert(0, os.path.dirname(__file__))
+        from clv_tracker import generate_beat_rate_report
+        generate_beat_rate_report(week=_week)
+    except Exception as _e:
+        print(f"  [record_slate_results] CLV report skipped: {_e}")
+
     print(f"\nDone. Run calibration next:")
     print(f"  python scripts/fit_prop_calibration.py --all-stats")
 
