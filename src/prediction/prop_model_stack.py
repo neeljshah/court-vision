@@ -39,6 +39,7 @@ sys.path.insert(0, PROJECT_DIR)
 
 _MODELS_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _STACK_CACHE = os.path.join(_MODELS_DIR, "prop_stack_meta.json")
+_QUARANTINE_PATH = os.path.join(_MODELS_DIR, "quarantine_state.json")
 
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 
@@ -462,6 +463,35 @@ _B2B_STAT_KEY: Dict[str, str] = {
 }
 
 
+def _load_quarantine() -> set:
+    """Load set of quarantined stats from JSON file."""
+    if not os.path.exists(_QUARANTINE_PATH):
+        return set()
+    try:
+        data = json.load(open(_QUARANTINE_PATH, encoding="utf-8"))
+        return set(data.get("quarantined", []))
+    except Exception:
+        return set()
+
+
+def quarantine_stat(stat: str) -> None:
+    """Add stat to quarantine list (persists to disk)."""
+    current = _load_quarantine()
+    current.add(stat)
+    os.makedirs(_MODELS_DIR, exist_ok=True)
+    with open(_QUARANTINE_PATH, "w", encoding="utf-8") as f:
+        json.dump({"quarantined": sorted(current)}, f)
+
+
+def clear_quarantine(stat: str) -> None:
+    """Remove stat from quarantine list."""
+    current = _load_quarantine()
+    current.discard(stat)
+    os.makedirs(_MODELS_DIR, exist_ok=True)
+    with open(_QUARANTINE_PATH, "w", encoding="utf-8") as f:
+        json.dump({"quarantined": sorted(current)}, f)
+
+
 def stack_predict(
     player_id: str,
     game_context: Optional[dict] = None,
@@ -525,9 +555,12 @@ def stack_predict(
         suppression_reason = f"Injury multiplier {injury_mult:.2f} ≤ {_INJURY_GATE}"
 
     # ── Apply injury multiplier to raw predictions ───────────────────────────
+    _quarantined = _load_quarantine()
     adjusted: Dict[str, float] = {}
     for stat, val in base_preds.items():
-        if np.isnan(val):
+        if stat in _quarantined:
+            adjusted[stat] = float("nan")
+        elif np.isnan(val):
             adjusted[stat] = val
         else:
             adjusted[stat] = val * injury_mult
@@ -574,6 +607,9 @@ def stack_predict(
         - micro["foul_out_prob"] * 0.15           # foul trouble = uncertain minutes
     )
     for stat in STATS:
+        if stat in _quarantined:
+            confidence[stat] = 0.0
+            continue
         val = adjusted.get(stat, float("nan"))
         if np.isnan(val) or suppressed:
             confidence[stat] = 0.0
@@ -617,6 +653,10 @@ def stack_predict(
                 calibrated_win_probs[stat] = raw_wp
 
     player_name = base_raw.get("player_name", str(player_id))
+
+    # Set quarantined stats to None in final predictions
+    for stat in _quarantined:
+        adjusted[stat] = None  # type: ignore[assignment]
 
     return PropStackResult(
         player_id=str(player_id),
