@@ -10,6 +10,13 @@
 >
 > ⚠️ **Local-only paths** (gitignored — absent from a fresh clone): `docs/CLAUDE-state.md`, `.planning/`, `vault/`. When working from a clone that lacks these, skip the "Vault Auto-Maintenance" section below and any `.planning/` reference — they exist only in the maintainer's local working copy.
 
+### "bot go" — autonomous workday loop
+When the user's message is `bot go` (or `go` / `start` alone), read `.claude/commands/start-day.md`
+and execute it — boots the all-day autonomous coder **on this account**.
+`bot stop` → `python scripts/bot_guards/stop_bot.py`.
+Routing: **Opus** orchestrates, plans, reviews · **Sonnet** writes code (subagents) · Explore/Haiku search.
+Loop spec: `.claude/commands/workday-loop.md`.
+
 ### Task → Files
 | Task | Load only |
 |------|-----------|
