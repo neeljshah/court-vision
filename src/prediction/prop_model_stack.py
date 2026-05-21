@@ -45,6 +45,7 @@ STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 BASE_LEARNERS: Dict[str, str] = {
     "xgboost":  "props_{stat}.json",
     "lightgbm": "props_lgb_{stat}.pkl",
+    "catboost": "props_cb_{stat}.cbm",
 }
 
 
@@ -77,6 +78,11 @@ def predict_base_learner(name: str, stat: str, X) -> Optional[float]:
         if path.endswith(".json"):
             import xgboost as xgb
             m = xgb.XGBRegressor()
+            m.load_model(path)
+            return float(m.predict(_X)[0])
+        elif path.endswith(".cbm"):
+            import catboost as cb
+            m = cb.CatBoostRegressor()
             m.load_model(path)
             return float(m.predict(_X)[0])
         else:
