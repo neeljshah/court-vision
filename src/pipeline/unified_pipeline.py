@@ -1320,6 +1320,30 @@ class UnifiedPipeline:
 
         return triggered
 
+    def _vision_probe_resume(self, frame: np.ndarray, frame_idx: int) -> bool:
+        """Probe YOLO every 150 frames to clear a vision-based suspension.
+
+        When ball-track was suspended by the vision fallback (no OCR scoreboard +
+        long ball-absent streak + low person count), we periodically re-run YOLO
+        on a single frame to check whether the scene has returned to live play
+        (≥8 persons visible).  Returns True and clears suspension when that
+        threshold is met; returns False with no state change otherwise.
+        """
+        if not (self._ball_track_suspended
+                and not self._sc_ever_seen
+                and frame_idx % 150 == 0
+                and self.yolo.available):
+            return False
+        probe_results = self.yolo.predict(frame)
+        n = len(probe_results)
+        if n >= 8:
+            self._ball_track_suspended = False
+            self._no_ball_vision_streak = 0
+            print(f"[resume] frame {frame_idx}: vision probe found {n} persons "
+                  f"→ suspension cleared")
+            return True
+        return False
+
     # ── main run ──────────────────────────────────────────────────────────
 
     def run(self) -> dict:
@@ -1588,6 +1612,12 @@ class UnifiedPipeline:
                     self._sc_absent_streak += 1
                     if self._sc_absent_streak >= _SHOT_CLOCK_ABSENT_THRESHOLD:
                         self._ball_track_suspended = True
+
+            # Probe YOLO every 150 frames to clear vision-based suspension when
+            # OCR never fired (no scoreboard).  Must run before the hard-skip so
+            # a successful probe lets this frame fall through to normal tracking.
+            if self._vision_probe_resume(frame, frame_idx):
+                pass  # suspension cleared; fall through to normal processing
 
             # ── HARD SKIP non-live frames ─────────────────────────────────
             # When suspended (replay, halftime, timeout, ad break), skip ALL
