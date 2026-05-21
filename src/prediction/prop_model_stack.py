@@ -732,6 +732,21 @@ def train_meta(
 def train_all_meta(residuals: Optional[List[dict]] = None) -> dict:
     """Train Ridge meta for all 7 stats. Returns summary dict."""
     results = {stat: train_meta(stat, residuals) for stat in STATS}
+
+    # Log each stat's training run to MLflow (no-op if mlflow not installed)
+    try:
+        from src.prediction import mlflow_logger
+        for _stat, _r in results.items():
+            mlflow_logger.log_training_run(
+                stat=_stat,
+                coef=float(_r.get("coef", 1.0)),
+                intercept=float(_r.get("intercept", 0.0)),
+                r2=float(_r.get("r2", 0.0)),
+                n=int(_r.get("n", 0)),
+            )
+    except Exception:
+        pass
+
     # Champion/challenger: update champion R² from meta results
     try:
         from src.prediction.champion_challenger import _load_state, _save_state
