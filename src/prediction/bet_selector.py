@@ -282,3 +282,42 @@ def _print_bets_table(bets: list[dict]) -> None:
               f"{line_s} {proj_s} {b['edge']:>+7.4f} ${b['stake']:>7.2f}")
     total = sum(b["stake"] for b in bets)
     print(f"  {'':>2}  {'TOTAL STAKE':>24}                              ${total:>7.2f}\n")
+
+
+if __name__ == "__main__":
+    import argparse
+    from datetime import date as _date
+
+    parser = argparse.ArgumentParser(description="Bet selector: produce bets_YYYYMMDD.json")
+    parser.add_argument("--date", default=str(_date.today()), help="Date YYYY-MM-DD")
+    parser.add_argument("--dry-run", action="store_true", help="Paper mode (status=paper)")
+    parser.add_argument("--bankroll", type=float, default=None, help="Override bankroll")
+    args = parser.parse_args()
+
+    # Guard: LIVE_BETTING env var must be 0 (paper mode enforced)
+    live = int(os.environ.get("LIVE_BETTING", "0"))
+    if live != 0:
+        print("[bet_selector] ERROR: LIVE_BETTING must be 0 (paper mode only)", file=sys.stderr)
+        sys.exit(1)
+
+    # Load slate edges for the date
+    date_compact = args.date.replace("-", "")
+    slate_path = os.path.join(_OUTPUT_DIR, f"slate_{date_compact}.json")
+    if not os.path.exists(slate_path):
+        print(f"[bet_selector] No slate file for {args.date}: {slate_path}")
+        sys.exit(0)  # not an error — no games today
+
+    try:
+        with open(slate_path) as _f:
+            _slate = json.load(_f)
+        _edge_rows = _slate.get("top_edges", [])
+    except Exception as _exc:
+        print(f"[bet_selector] ERROR reading slate: {_exc}", file=sys.stderr)
+        sys.exit(1)
+
+    select(
+        edge_rows=_edge_rows,
+        date_str=args.date,
+        dry_run=args.dry_run,
+        bankroll=args.bankroll,
+    )

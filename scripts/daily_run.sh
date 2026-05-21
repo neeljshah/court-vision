@@ -2,6 +2,9 @@
 # Daily pipeline orchestrator. Exits non-zero if any stage fails.
 set -euo pipefail
 
+# Paper mode only — NEVER enable live betting from this script
+export LIVE_BETTING=0
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 DATE="${1:-$(date +%Y-%m-%d)}"
@@ -24,23 +27,27 @@ _fail() {
   exit 1
 }
 
-echo "[daily_run] Starting pipeline for $DATE"
+echo "[daily_run] Starting pipeline for $DATE (LIVE_BETTING=$LIVE_BETTING)"
 
-# Stage 1: Record previous slate results
+# Stage 1/4: Record previous slate results (T+1 settlement)
+echo "[daily_run] stage 1/4: record_slate_results"
 python "$SCRIPT_DIR/record_slate_results.py" --date "$DATE" || _fail "record_slate_results"
-echo "[daily_run] Stage 1 done: record_slate_results"
+echo "[daily_run] stage 1/4 done: record_slate_results"
 
-# Stage 2: Run today's slate predictions
+# Stage 2/4: Run today's slate predictions
+echo "[daily_run] stage 2/4: run_daily_slate"
 python "$SCRIPT_DIR/run_daily_slate.py" --date "$DATE" || _fail "run_daily_slate"
-echo "[daily_run] Stage 2 done: run_daily_slate"
+echo "[daily_run] stage 2/4 done: run_daily_slate"
 
-# Stage 3: Bet selection
-python -m src.prediction.bet_selector --date "$DATE" 2>/dev/null || \
-  python "$SCRIPT_DIR/run_daily_slate.py" --bet-select --date "$DATE" 2>/dev/null || \
-  echo "[daily_run] Stage 3: bet_selector not wired yet (skipped)"
+# Stage 3/4: Bet selection
+echo "[daily_run] stage 3/4: bet_selector"
+python -m src.prediction.bet_selector --date "$DATE" || _fail "bet_selector"
+echo "[daily_run] stage 3/4 done: bet_selector"
 
-# Stage 4: Auto-retrain stale prop models (14-day gate)
+# Stage 4/4: Auto-retrain stale prop models (14-day gate)
+echo "[daily_run] stage 4/4: auto_retrain"
 python "$SCRIPT_DIR/auto_retrain.py" || \
-  echo "[daily_run] Stage 4: auto_retrain skipped or errored (non-fatal)"
+  echo "[daily_run] stage 4/4: auto_retrain skipped or errored (non-fatal)"
+echo "[daily_run] stage 4/4 done: auto_retrain"
 
 echo "[daily_run] Pipeline complete for $DATE"
