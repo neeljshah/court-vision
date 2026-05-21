@@ -207,6 +207,16 @@ def _run_props_retrain(retrained: list, metrics: dict) -> None:
                 register_retrain(f"props_{stat}", m)
         except Exception:
             pass
+        # Train Ridge meta to correct systematic bias
+        try:
+            from src.prediction.prop_model_stack import train_all_meta
+            meta_results = train_all_meta()
+            _log_retrain("Ridge meta retrained: " + ", ".join(
+                f"{s}: coef={r['coef']:.3f} int={r['intercept']:.3f}"
+                for s, r in meta_results.items()
+            ))
+        except Exception as e:
+            print(f"[auto_retrain] Ridge meta error: {e}")
     except Exception as e:
         print(f"[auto_retrain] Props retrain error: {e}")
 
