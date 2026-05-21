@@ -23,7 +23,9 @@ import logging
 import os
 import sys
 from datetime import date as _date
-from typing import Optional
+from typing import Optional, Set
+
+import yaml
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
@@ -34,6 +36,41 @@ log = logging.getLogger("run_daily_slate")
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _OUTPUT_DIR = os.path.join(PROJECT_DIR, "data", "output")
+_EXCLUSION_PATH = os.path.join(PROJECT_DIR, "config", "exclusion_list.yaml")
+
+
+# -- Exclusion list loader ----------------------------------------------------
+
+
+def load_exclusion_set(path: str = _EXCLUSION_PATH) -> Set[str]:
+    """
+    Load the exclusion list YAML and return a set of excluded player names
+    (lower-cased) and player IDs (as strings).
+
+    Falls back to an empty set if the file is missing or malformed.
+
+    Args:
+        path: Path to config/exclusion_list.yaml.
+
+    Returns:
+        Set of lower-cased player names and string player IDs to skip.
+    """
+    excluded: Set[str] = set()
+    if not os.path.exists(path):
+        return excluded
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f) or {}
+        for entry in data.get("excluded_players", []) or []:
+            pid = entry.get("player_id")
+            name = entry.get("player_name", "")
+            if pid is not None:
+                excluded.add(str(pid))
+            if name:
+                excluded.add(str(name).lower().strip())
+    except Exception as exc:
+        log.warning("Could not load exclusion list from %s: %s", path, exc)
+    return excluded
 
 # -- Step 1: Fetch today's games -----------------------------------------------
 
@@ -147,15 +184,26 @@ def _check_dnp(player_id: int, season: str) -> float:
 # -- Step 3+4: Predict + Normalise ---------------------------------------------
 
 
-def run_predictions(games: list[dict], season: str) -> list[dict]:
+def run_predictions(
+    games: list[dict],
+    season: str,
+    exclusion_set: Optional[Set[str]] = None,
+) -> list[dict]:
     """
     Run predict_props for each active player in each game, then normalise by team total.
     Returns flat list of prediction dicts.
+
+    Args:
+        games:         List of game dicts from fetch_today_games().
+        season:        NBA season string (e.g. "2024-25").
+        exclusion_set: Set of lower-cased player names / str player IDs to skip.
+                       Populated by load_exclusion_set(). Pass None to skip no one.
     """
     from types import SimpleNamespace
     from src.prediction.player_props import predict_props, _get_player_season_avgs
     from src.prediction.team_total_normalizer import normalise_team_totals
 
+    _excluded = exclusion_set or set()
     all_preds: list[dict] = []
 
     for game in games:
@@ -179,6 +227,13 @@ def run_predictions(games: list[dict], season: str) -> list[dict]:
                     if _avgs is None:
                         continue
                     _pid = int(_avgs.get("player_id", 0))
+
+                    # Skip players on the exclusion list
+                    if (str(_pid) in _excluded
+                            or pname.lower().strip() in _excluded):
+                        log.info("  Skipping excluded player: %s (id=%s)", pname, _pid)
+                        continue
+
                     dnp_prob = _check_dnp(_pid, season)
                     if dnp_prob > 0.70:
                         continue
@@ -430,8 +485,14 @@ def main(season: str, date_str: str, dry_run: bool = False, build_ladder: bool =
         write_output([], [], date_str)
         return
 
+    # Load exclusion list (players with high rolling MAE are skipped)
+    exclusion_set = load_exclusion_set()
+    if exclusion_set:
+        print(f"[slate] Exclusion list active: {len(exclusion_set)} entries "
+              f"(from {_EXCLUSION_PATH})")
+
     # 2+3+4. Predict + normalise
-    preds = run_predictions(games, season)
+    preds = run_predictions(games, season, exclusion_set=exclusion_set)
     if not preds:
         print("[slate] No predictions generated.")
         write_output([], [], date_str)
