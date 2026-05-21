@@ -163,7 +163,7 @@ updated: {today}
 |------|--------|
 | Phase | G (CV game collection — 17 quality / 29 usable / 75 attempted) |
 | **Gate 1: CLV vs Pinnacle close** | **NOT YET RUN — TOP PRIORITY** |
-| Signal universe | 75 models trained (target: 500-5000 signals via agentic system) |
+| Signal universe | 85 models trained (target: 500-5000 signals via agentic system) |
 | Top revenue surface live | None yet (signal subs targeted Q3 2026) |
 | Agentic research system | Not yet built (planned — see [[Plans/Agentic Research System]]) |
 
@@ -178,7 +178,7 @@ updated: {today}
 | Agentic system | [[Plans/Agentic Research System]] | Multi-agent Claude architecture |
 | Gate 1 | [[Plans/Gate 1 Validation]] | Step-by-step execution plan |
 | CV Pipeline | [[MOC-CV]] | Tracking, detection, homography, re-ID |
-| ML Models | [[MOC-Models]] | 75 models, features, signal inventory |
+| ML Models | [[MOC-Models]] | 85 models, features, signal inventory |
 | Betting | [[MOC-Betting]] | Kelly, CLV, quant framework, edges |
 | Operations | [[MOC-Ops]] | RunPod, data pipeline, architecture |
 | Research | [[MOC-Research]] | Validation, benchmarks, concepts |

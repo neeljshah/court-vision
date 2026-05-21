@@ -185,3 +185,9 @@ src/pipeline/gpu_dataframe.py
 apps/portfolio-site/node_modules/
 apps/portfolio-site/.next/
 apps/portfolio-site/out/
+
+# Bot account state + runtime
+.bot_state/
+*.pid
+.pod_start_epoch
+.pending_uploads.txt
