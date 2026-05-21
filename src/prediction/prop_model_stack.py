@@ -24,12 +24,15 @@ Public API
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sys
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
@@ -233,6 +236,28 @@ class CalibrationLayer:
 
 # Module-level singleton loaded once
 _calibration = CalibrationLayer()
+
+# ── Cohort calibrator (lazy-loaded singleton) ─────────────────────────────────
+
+_cohort_calibrator: Optional["CohortCalibrator"] = None  # type: ignore[name-defined]
+
+
+def _get_cohort_calibrator() -> Optional[object]:
+    """Return the module-level CohortCalibrator, loading it from disk if available."""
+    global _cohort_calibrator
+    if _cohort_calibrator is not None:
+        return _cohort_calibrator
+    try:
+        from src.calibration.cohort_calibrator import CohortCalibrator
+        pkl_path = os.path.join(_CALIB_DIR, "cohort_calibrator.pkl")
+        if os.path.exists(pkl_path):
+            _cohort_calibrator = CohortCalibrator.load(pkl_path)
+            logger.info("CohortCalibrator loaded from %s", pkl_path)
+        else:
+            _cohort_calibrator = CohortCalibrator()  # empty — falls back to global
+    except Exception as exc:
+        logger.warning("CohortCalibrator load failed: %s", exc)
+    return _cohort_calibrator
 
 
 def _load_motivation_flags(player_id: str) -> Dict[str, bool]:
@@ -570,12 +595,26 @@ def stack_predict(
     motivation_flags = _load_motivation_flags(player_id)
 
     # Calibrated over/under win probabilities (used by kelly_corr)
+    # Prefer cohort-calibrated probabilities; fall back to global CalibrationLayer.
+    cohort_calib = _get_cohort_calibrator()
+    cohort_ctx = {
+        "minutes":   micro.get("expected_min", 25.0),
+        "usage":     micro.get("proj_usg_pct", 0.20),
+        "rest_days": int(game_context.get("rest_days", 2)),
+    }
     calibrated_win_probs: Dict[str, float] = {}
     for stat in STATS:
         pred = adjusted.get(stat, float("nan"))
         line = lines.get(stat)
         if line and not np.isnan(pred) and line > 0:
-            calibrated_win_probs[stat] = _calibration.win_prob(stat, pred, float(line))
+            raw_wp = _calibration.win_prob(stat, pred, float(line))
+            if cohort_calib is not None:
+                try:
+                    calibrated_win_probs[stat] = cohort_calib.transform(raw_wp, cohort_ctx)
+                except Exception:
+                    calibrated_win_probs[stat] = raw_wp
+            else:
+                calibrated_win_probs[stat] = raw_wp
 
     player_name = base_raw.get("player_name", str(player_id))
 
@@ -706,6 +745,71 @@ def train_calibration(
     return results
 
 
+def train_cohort_calibration(
+    residuals_path: Optional[str] = None,
+    stat: Optional[str] = None,
+) -> dict:
+    """Fit CohortCalibrator from prop_residuals.json and compare vs global Brier.
+
+    Each residuals row must have: {stat, predicted, actual, line}.
+    Rows without 'line' are skipped.  Cohort context keys minutes/usage/rest_days
+    are read when present; otherwise defaults are used.
+
+    Args:
+        residuals_path: Override path; defaults to data/models/prop_residuals.json.
+        stat:           Single stat to evaluate (default: first available stat).
+
+    Returns:
+        compare_brier result dict plus {"fitted": bool, "saved": str}.
+    """
+    from src.calibration.cohort_calibrator import CohortCalibrator, compare_brier
+
+    if residuals_path is None:
+        residuals_path = os.path.join(_MODELS_DIR, "prop_residuals.json")
+    if not os.path.exists(residuals_path):
+        print(f"  [cohort_calib] {residuals_path} not found — nothing to fit")
+        return {"fitted": False, "saved": ""}
+
+    all_rows: List[dict] = json.load(open(residuals_path, encoding="utf-8"))
+    target_stat = stat or (STATS[0] if STATS else "pts")
+
+    records = []
+    for r in all_rows:
+        if r.get("stat") != target_stat:
+            continue
+        if r.get("predicted") is None or r.get("actual") is None or r.get("line") is None:
+            continue
+        pred_val  = float(r["predicted"])
+        actual    = float(r["actual"])
+        line_val  = float(r["line"])
+        # Convert to win probability: P(actual > line)
+        prob      = max(0.05, min(0.95, pred_val / max(line_val, 0.01) - 0.5 + 0.5))
+        outcome   = 1.0 if actual > line_val else 0.0
+        records.append({
+            "prob":      prob,
+            "outcome":   outcome,
+            "minutes":   float(r.get("minutes",   25.0)),
+            "usage":     float(r.get("usage",     0.20)),
+            "rest_days": int(r.get("rest_days",    2)),
+        })
+
+    if len(records) < 10:
+        print(f"  [cohort_calib] only {len(records)} rows for {target_stat} — skipping")
+        return {"fitted": False, "saved": "", "n": len(records)}
+
+    comparison = compare_brier(records)
+
+    # Fit on full dataset and save
+    cc = CohortCalibrator().fit(records)
+    save_path = cc.save(os.path.join(_MODELS_DIR, "cohort_calibrator.pkl"))
+
+    # Invalidate module-level singleton so next call reloads
+    global _cohort_calibrator
+    _cohort_calibrator = cc
+
+    return {**comparison, "fitted": True, "saved": save_path, "stat": target_stat}
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Prop model stacker")
@@ -713,11 +817,20 @@ if __name__ == "__main__":
     parser.add_argument("--train-meta", action="store_true", help="Train all meta models")
     parser.add_argument("--train-calibration", action="store_true",
                         help="Fit isotonic win-prob calibration from prop_residuals.json")
+    parser.add_argument("--train-cohort-calibration", action="store_true",
+                        help="Fit CohortCalibrator from prop_residuals.json")
     parser.add_argument("--stat", type=str, default=None,
-                        help="Stat to calibrate (default: all)")
+                        help="Stat to calibrate (default: all / first)")
     args = parser.parse_args()
 
-    if args.train_calibration:
+    if getattr(args, "train_cohort_calibration", False):
+        result = train_cohort_calibration(stat=args.stat)
+        print(f"  stat={result.get('stat')} fitted={result.get('fitted')}")
+        if result.get("fitted"):
+            print(f"  global_brier={result['global_brier']:.5f}  "
+                  f"cohort_brier={result['cohort_brier']:.5f}  "
+                  f"improvement={result['improvement']:+.5f}")
+    elif args.train_calibration:
         results = train_calibration(stat=args.stat)
         for s, r in results.items():
             status = "fitted" if r["fitted"] else "skipped"
