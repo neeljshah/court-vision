@@ -1,135 +1,25 @@
-version: '3.8'
-
+version: "3.9"
 services:
-  # FastAPI Backend
   api:
-    build: .
-    container_name: nba-ai-api
-    ports:
-      - "8000:8000"
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports: ["8000:8000"]
+    volumes: ["./data:/app/data", "./vault:/app/vault"]
     environment:
-      - DATABASE_URL=postgresql://nba_user:${DB_PASSWORD}@postgres:5432/nba_ai
-      - REDIS_URL=redis://redis:6379
-      - NBA_API_KEY=${NBA_API_KEY}
-      - CLAUDE_API_KEY=${CLAUDE_API_KEY}
-      - THE_ODDS_API_KEY=${THE_ODDS_API_KEY}
-      - ENVIRONMENT=production
-    depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
-      - ./models:/app/models
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
+      - PYTHONPATH=/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15
-    container_name: nba-ai-postgres
-    environment:
-      - POSTGRES_DB=nba_ai
-      - POSTGRES_USER=nba_user
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
-
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: nba-ai-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
-
-  # Streamlit Dashboard (Alternative UI)
   dashboard:
-    build: .
-    container_name: nba-ai-dashboard
-    command: streamlit run apps/dashboards/app.py --server.port=8501 --server.address=0.0.0.0
-    ports:
-      - "8501:8501"
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    ports: ["8501:8501"]
+    volumes: ["./data:/app/data", "./vault:/app/vault"]
     environment:
-      - DATABASE_URL=postgresql://nba_user:${DB_PASSWORD}@postgres:5432/nba_ai
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
-      - ./apps/dashboards:/app/apps/dashboards
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
-
-  # Celery Worker for Background Tasks
-  celery-worker:
-    build: .
-    container_name: nba-ai-celery
-    command: celery -A src.pipeline.tasks worker --loglevel=info
-    environment:
-      - DATABASE_URL=postgresql://nba_user:${DB_PASSWORD}@postgres:5432/nba_ai
-      - REDIS_URL=redis://redis:6379
-      - NBA_API_KEY=${NBA_API_KEY}
-    depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
-      - ./scripts:/app/scripts
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
-
-  # Celery Beat for Scheduled Tasks
-  celery-beat:
-    build: .
-    container_name: nba-ai-beat
-    command: celery -A src.pipeline.tasks beat --loglevel=info
-    environment:
-      - DATABASE_URL=postgresql://nba_user:${DB_PASSWORD}@postgres:5432/nba_ai
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
-    volumes:
-      - ./data:/app/data
-    restart: unless-stopped
-    networks:
-      - nba-ai-network
-
-  # Nginx reverse proxy — uncomment when nginx.conf is ready
-  # nginx:
-  #   image: nginx:alpine
-  #   container_name: nba-ai-nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf
-  #     - ./ssl:/etc/nginx/ssl
-  #   depends_on:
-  #     - api
-  #     - dashboard
-  #   restart: unless-stopped
-  #   networks:
-  #     - nba-ai-network
-
-volumes:
-  postgres_data:
-  redis_data:
-
-networks:
-  nba-ai-network:
-    driver: bridge
+      - PYTHONPATH=/app
+    depends_on: [api]
