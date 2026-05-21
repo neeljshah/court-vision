@@ -1,9 +1,11 @@
 import asyncio
+import json
 import logging
 import os
 import time
 from typing import Optional
 
+_STARTUP_TIME = time.time()
 log = logging.getLogger(__name__)
 
 # Default to offline mode so API requests never hang on stats.nba.com edge blocks.
@@ -19,7 +21,6 @@ from api.analytics_router import router as analytics_router
 from api.predictions_router import router as predictions_ext_router
 from api.stitch_router import router as stitch_router
 from api.dashboard_router import router as dashboard_router
-import os as _os
 from pathlib import Path as _Path
 
 from src.prediction.possession_simulator import PossessionSimulator
@@ -105,6 +106,49 @@ def health():
         "tracking": "available",
         "re_id": "available",
     }}
+
+@app.get("/health/ops", tags=["health"])
+def health_ops():
+    """Operational pipeline metrics: scraper lag, CLV hit rate, drift flags, uptime."""
+    root = os.path.dirname(os.path.dirname(__file__))
+    mdir = os.path.join(root, "data", "models")
+    daily_bet_count, clv_hit_rate, drift_flags, scraper_lag_min = 0, None, [], None
+    bet_log = os.path.join(mdir, "bet_log.json")
+    if os.path.exists(bet_log):
+        try:
+            today = time.strftime("%Y-%m-%d")
+            bets = json.load(open(bet_log, encoding="utf-8"))
+            if isinstance(bets, list):
+                daily_bet_count = sum(1 for b in bets if str(b.get("date", "")).startswith(today))
+        except Exception: pass
+    clv_log = os.path.join(mdir, "clv_log.json")
+    if os.path.exists(clv_log):
+        try:
+            clv_data = json.load(open(clv_log, encoding="utf-8"))
+            if clv_data:
+                vals = [float(e["clv"]) for e in clv_data if "clv" in e]
+                clv_hit_rate = round(sum(1 for v in vals if v > 0) / len(vals), 3) if vals else None
+        except Exception: pass
+    qpath = os.path.join(mdir, "quarantine_state.json")
+    if os.path.exists(qpath):
+        try:
+            drift_flags = json.load(open(qpath, encoding="utf-8")).get("quarantined", [])
+        except Exception: pass
+    db_path = os.path.join(root, "data", "nba_ai.db")
+    if os.path.exists(db_path):
+        try:
+            import sqlite3, datetime as _dt
+            with sqlite3.connect(db_path) as _c:
+                _row = _c.execute("SELECT MAX(completed_at) FROM scraper_runs WHERE status='done'").fetchone()
+            if _row and _row[0]:
+                _last = _dt.datetime.fromisoformat(str(_row[0]).replace("Z", "+00:00")).astimezone(_dt.timezone.utc)
+                scraper_lag_min = round((_dt.datetime.now(_dt.timezone.utc) - _last).total_seconds() / 60, 1)
+        except Exception: pass
+    return {"status": "ok",
+            "scraper_lag_min": scraper_lag_min, "model_inference_ms_p95": None,
+            "daily_bet_count": daily_bet_count, "clv_hit_rate": clv_hit_rate,
+            "drift_flags": drift_flags, "last_slate_duration_min": None,
+            "uptime_hours": round((time.time() - _STARTUP_TIME) / 3600, 2)}
 
 
 @app.post("/simulate_game", tags=["simulation"])
