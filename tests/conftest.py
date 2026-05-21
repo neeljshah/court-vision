@@ -145,3 +145,74 @@ def mock_xgb_model():
             return np.array([0.6])
 
     return _MockXGB()
+
+
+# ---------------------------------------------------------------------------
+# Phase 17 — Infrastructure / Drift / Auto-Retrain
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_model_metrics() -> dict:
+    """Return synthetic model metrics used by test_model_validation_gate (plan 03).
+
+    Returns
+    -------
+    dict
+        Mapping of model name to {r2, mae} metrics.
+    """
+    return {
+        "pts_model": {"r2": 0.47, "mae": 3.2},
+        "reb_model": {"r2": 0.40, "mae": 1.1},
+    }
+
+
+@pytest.fixture
+def mock_feature_importance() -> dict:
+    """Return two feature-importance snapshots: baseline and drifted.
+
+    Used by test_drift_alert_fires to supply synthetic importances without
+    reading real model artifacts.
+
+    Returns
+    -------
+    dict
+        Keys "baseline" and "drifted", each a dict of feature -> importance float.
+    """
+    return {
+        "baseline": {
+            "fg_pct": 0.4,
+            "usage": 0.3,
+            "rest_days": 0.2,
+            "def_rtg": 0.1,
+        },
+        "drifted": {
+            "fg_pct": 0.05,
+            "usage": 0.45,
+            "rest_days": 0.35,
+            "def_rtg": 0.15,
+        },
+    }
+
+
+@pytest.fixture
+def drift_log_path(tmp_path, monkeypatch) -> str:
+    """Return a temp path for the feature drift log and monkeypatch the module constant.
+
+    Patches src.pipeline.feature_drift_detector._DRIFT_LOG so that
+    FeatureDriftDetector writes to a throwaway temp file during tests,
+    never polluting data/models/.
+
+    Returns
+    -------
+    str
+        Absolute path to the temp drift log file (does not need to pre-exist).
+    """
+    log_path = str(tmp_path / "feature_drift_log.json")
+    try:
+        import src.pipeline.feature_drift_detector as fdd_mod
+        if hasattr(fdd_mod, "_DRIFT_LOG"):
+            monkeypatch.setattr(fdd_mod, "_DRIFT_LOG", log_path)
+    except ImportError:
+        pass  # Module not yet implemented — fixture still returns the path
+    return log_path
