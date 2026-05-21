@@ -804,6 +804,44 @@ def add_external_player_features(
     except Exception:
         pass
 
+    # ── News Reaction Window ─────────────────────────────────────────────────
+    news_lookup: dict = {}
+    try:
+        import json as _json, os as _os
+        _rw_cache = _os.path.join(_DATA_DIR, "external", "rotowire_news.json")
+        if _os.path.exists(_rw_cache):
+            with open(_rw_cache, encoding="utf-8") as _f:
+                _rw_items = _json.load(_f)
+            import unicodedata as _ud
+            def _nn(s: str) -> str:
+                return _ud.normalize("NFKD", s).encode("ascii", "ignore").decode().lower().strip()
+            import datetime as _dtmod
+            _now_utc = _dtmod.datetime.utcnow()
+            _by_player: dict = {}
+            for _it in _rw_items:
+                if (_it.get("status_guess", "Unknown") == "Unknown"):
+                    continue
+                _pkey = _nn(_it.get("player_name", ""))
+                _pub_raw = _it.get("published", "")
+                _pub_dt = None
+                for _fmt in ("%a, %d %b %Y %H:%M:%S %z", "%Y-%m-%dT%H:%M:%S%z",
+                             "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"):
+                    try:
+                        _parsed = _dtmod.datetime.strptime(_pub_raw.strip(), _fmt)
+                        _pub_dt = _parsed.replace(tzinfo=None) if _parsed.tzinfo else _parsed
+                        break
+                    except (ValueError, AttributeError):
+                        continue
+                if _pub_dt is None:
+                    continue
+                if _pkey not in _by_player or _pub_dt > _by_player[_pkey]:
+                    _by_player[_pkey] = _pub_dt
+            for _pkey, _dt in _by_player.items():
+                _hrs = (_now_utc - _dt).total_seconds() / 3600.0
+                news_lookup[_pkey] = max(0.0, min(999.0, _hrs))
+    except Exception:
+        pass
+
     # ── Contract Features ────────────────────────────────────────────────────
     contract_lookup: dict = {}
     try:
@@ -901,8 +939,9 @@ def add_external_player_features(
             "synergy_iso_ppp":       float(syn.get("isolation", 0.0) or 0.0),
             "synergy_pnr_ppp":       float(syn.get("prbballhandler", 0.0) or 0.0),
             "synergy_spotup_ppp":    float(syn.get("spotup", 0.0) or 0.0),
-            # Injury
-            "injury_status_multiplier": float(injury_lookup.get(key, 1.0)),
+            # Injury / news
+            "injury_status_multiplier":  float(injury_lookup.get(key, 1.0)),
+            "news_reaction_window_hrs":  float(news_lookup.get(key, 999.0)),
             # Contract
             "contract_year_flag":    int(bool(con.get("contract_year", False))),
             "cap_hit_pct":           float(con.get("cap_hit_pct", 0.0) or 0.0),
