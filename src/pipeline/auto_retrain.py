@@ -28,6 +28,8 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.insert(0, PROJECT_DIR)
 
 _VAULT_LOG = os.path.join(PROJECT_DIR, "vault", "Improvements", "Tracker Improvements Log.md")
+_MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
+_MILESTONE_STATE_PATH = os.path.join(_MODEL_DIR, "retrain_milestones.json")
 
 # Quality gate: retrain props if rolling MAE exceeds these thresholds
 _MAE_THRESHOLDS = {
@@ -44,6 +46,24 @@ _TIER_MILESTONES = {
     100: "tier5",
     200: "tier6",
 }
+
+
+def _load_milestone_state() -> dict:
+    """Load persisted milestone state from JSON file."""
+    if os.path.exists(_MILESTONE_STATE_PATH):
+        try:
+            with open(_MILESTONE_STATE_PATH) as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def _save_milestone_state(state: dict) -> None:
+    """Persist milestone fired state to JSON file."""
+    os.makedirs(_MODEL_DIR, exist_ok=True)
+    with open(_MILESTONE_STATE_PATH, "w") as f:
+        json.dump(state, f, indent=2)
 
 
 def get_game_count() -> int:
@@ -136,9 +156,10 @@ def check_and_retrain(
 
     # ── Milestone retrains ────────────────────────────────────────────────────
     milestone_hit = None
+    fired = _load_milestone_state()
     for threshold, tier in sorted(_TIER_MILESTONES.items()):
-        # Trigger once when crossing the threshold (prev_count < threshold <= game_count)
-        if game_count == threshold:
+        # Trigger once when crossing the threshold; idempotent via JSON state file
+        if game_count >= threshold and not fired.get(tier):
             milestone_hit = tier
             print(f"[auto_retrain] Milestone {threshold} games -> retrain {tier}")
             _log_retrain(f"Milestone {threshold} games reached: triggering {tier} retrain")
@@ -150,6 +171,9 @@ def check_and_retrain(
             elif tier in ("tier5", "tier6"):
                 print(f"[auto_retrain] {tier} models need to be built first (Phase 10/12)")
                 skipped.append(tier)
+
+            fired[tier] = True
+            _save_milestone_state(fired)
             break
 
     # Always retrain props at every milestone
