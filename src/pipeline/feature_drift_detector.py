@@ -95,53 +95,80 @@ class FeatureDriftDetector:
         """
         Check if any features have drifted significantly for model_id.
 
+        Uses 2-sigma statistical threshold when >= 3 snapshots exist (so at least
+        2 historical points are available before the latest). Falls back to the
+        fixed _DRIFT_ALERT_THRESHOLD (30%) when only 1 historical point exists.
+
         Returns:
-            drifted_features: list of features with >30% importance change
-            is_degraded:      bool — model should be retrained
-            drift_score:      0-1, overall drift magnitude
+            drifted:          bool — any feature exceeded threshold
+            drifted_features: list of feature names that drifted
+            drift_score:      0-1, normalised overall drift magnitude
+            is_degraded:      bool — any feature critically degraded (legacy compat)
+            snapshots:        int  — number of history entries
         """
         history = self._history.get(model_id, [])
         if len(history) < 2:
-            return {"drifted_features": [], "is_degraded": False, "drift_score": 0.0}
+            return {
+                "drifted": False,
+                "drifted_features": [],
+                "is_degraded": False,
+                "drift_score": 0.0,
+                "snapshots": len(history),
+            }
 
-        # Compare latest to first snapshot
-        first  = history[0]["importances"]
-        latest = history[-1]["importances"]
+        snapshots = [h["importances"] for h in history]
+        all_features = set().union(*[s.keys() for s in snapshots])
+        drifted_features: list[str] = []
+        drifted_details: list[dict] = []
+        max_score: float = 0.0
 
-        drifted: list[dict] = []
-        drift_scores: list[float] = []
-
-        all_features = set(first.keys()) | set(latest.keys())
         for feat in all_features:
-            old_imp = float(first.get(feat, 0))
-            new_imp = float(latest.get(feat, 0))
+            values = [s.get(feat, 0.0) for s in snapshots[:-1]]  # historical
+            current = float(snapshots[-1].get(feat, 0.0))
 
-            if old_imp < 0.001:
-                continue  # skip near-zero features
+            if len(values) >= 2:
+                mean_v = float(np.mean(values))
+                std_v = float(np.std(values))
+                if std_v > 0:
+                    z = abs(current - mean_v) / std_v
+                    score = z / 2.0  # normalize: z=2 → score=1.0
+                    if z > 2.0:
+                        drifted_features.append(feat)
+                        drifted_details.append({
+                            "feature":   feat,
+                            "old":       round(mean_v, 4),
+                            "new":       round(current, 4),
+                            "drift_pct": round(abs(current - mean_v) / max(mean_v, 0.001) * 100, 1),
+                            "critical":  z > 4.0,
+                        })
+                        max_score = max(max_score, score)
+                    continue
 
-            drift = abs(new_imp - old_imp) / max(old_imp, 0.001)
-            drift_scores.append(drift)
+            # Fallback: only 1 historical point — use fixed 30% threshold
+            baseline = float(values[0]) if values else 0.0
+            if baseline > 0.001:
+                drop = (baseline - current) / baseline
+                if drop > _DRIFT_ALERT_THRESHOLD:
+                    drifted_features.append(feat)
+                    drifted_details.append({
+                        "feature":   feat,
+                        "old":       round(baseline, 4),
+                        "new":       round(current, 4),
+                        "drift_pct": round(drop * 100, 1),
+                        "critical":  drop > _DRIFT_CRITICAL_THRESHOLD,
+                    })
+                    max_score = max(max_score, drop)
 
-            if drift > _DRIFT_ALERT_THRESHOLD:
-                drifted.append({
-                    "feature":    feat,
-                    "old":        round(old_imp, 4),
-                    "new":        round(new_imp, 4),
-                    "drift_pct":  round(drift * 100, 1),
-                    "critical":   drift > _DRIFT_CRITICAL_THRESHOLD,
-                })
-
-        drift_score = float(np.mean(drift_scores)) if drift_scores else 0.0
-        is_degraded = any(d["critical"] for d in drifted)
-
+        is_degraded = any(d["critical"] for d in drifted_details)
         if is_degraded and model_id not in self._degraded:
             self._degraded.append(model_id)
-            log.warning("Model %s flagged as degraded (drift_score=%.3f)", model_id, drift_score)
+            log.warning("Model %s flagged as degraded (drift_score=%.3f)", model_id, max_score)
 
         return {
-            "drifted_features": sorted(drifted, key=lambda x: -x["drift_pct"])[:10],
+            "drifted":          len(drifted_features) > 0,
+            "drifted_features": drifted_features,
             "is_degraded":      is_degraded,
-            "drift_score":      round(drift_score, 4),
+            "drift_score":      round(max_score, 4),
             "snapshots":        len(history),
         }
 
