@@ -8,7 +8,8 @@ Steps (in order):
   4. Log predictions to outcome recorder (CLV tracking)
   5. Print + save edge report -> data/edges/edges_{today}.json
   6. Check auto_retrain milestones
-  7. Print summary
+  7. Check feature drift (2-sigma statistical threshold)
+  8. Print summary
 
 Usage:
     conda activate basketball_ai
@@ -52,8 +53,9 @@ def _ok(label: str, detail: str = "") -> None:
     log.info("    ✓ %s%s", label, suffix)
 
 
-def _warn(label: str, err: Exception) -> None:
-    log.warning("    ✗ %s -- %s", label, err)
+def _warn(label: str, detail: str = "") -> None:
+    suffix = f"  ({detail})" if detail else ""
+    log.warning("    ✗ %s%s", label, suffix)
 
 
 # -- Step 1 -- Refresh injuries -------------------------------------------------
@@ -68,7 +70,7 @@ def step_injuries() -> dict:
         _ok("Injury reports refreshed", f"{n} entries")
         result["players"] = n
     except Exception as e:
-        _warn("Injury refresh", e)
+        _warn("Injury refresh", str(e))
         result["status"] = "failed"
     return result
 
@@ -93,7 +95,7 @@ def step_props(dry_run: bool = False) -> dict:
         result["props"] = n
         result["path"] = path
     except Exception as e:
-        _warn("Props fetch", e)
+        _warn("Props fetch", str(e))
         result["status"] = "failed"
     return result
 
@@ -114,7 +116,7 @@ def step_predict(min_ev: float, season: str, dry_run: bool = False) -> tuple[lis
         _ok("Prediction cascade complete", f"{len(edges)} edges found")
         result["edges"] = len(edges)
     except Exception as e:
-        _warn("Prediction cascade", e)
+        _warn("Prediction cascade", str(e))
         result["status"] = "failed"
     return edges, result
 
@@ -132,7 +134,7 @@ def step_log_predictions(edges: list, dry_run: bool = False) -> dict:
         log_predictions(edges)
         _ok("Predictions logged", f"{len(edges)} edges -> data/predictions/predictions_{TODAY}.json")
     except Exception as e:
-        _warn("Log predictions", e)
+        _warn("Log predictions", str(e))
         result["status"] = "failed"
     return result
 
@@ -166,7 +168,7 @@ def step_edge_report(edges: list, dry_run: bool = False) -> dict:
             _ok("Edge report saved", path)
             result["path"] = path
     except Exception as e:
-        _warn("Edge report", e)
+        _warn("Edge report", str(e))
         result["status"] = "failed"
     return result
 
@@ -186,12 +188,32 @@ def step_retrain(season: str, dry_run: bool = False) -> dict:
         _ok("Retrain check complete", f"{len(retrained)} models retrained")
         result["retrained"] = retrained
     except Exception as e:
-        _warn("Auto retrain", e)
+        _warn("Auto retrain", str(e))
         result["status"] = "failed"
     return result
 
 
-# -- Step 7 -- Summary ----------------------------------------------------------
+# -- Step 7 -- Feature drift check ---------------------------------------------
+
+def step_drift() -> dict:
+    """Check feature importance drift using 2-sigma statistical threshold."""
+    _step(7, "Check feature drift (2-sigma)")
+    try:
+        from src.pipeline.feature_drift_detector import FeatureDriftDetector
+        detector = FeatureDriftDetector()
+        report = detector.run_full_check()
+        degraded = report.get("degraded_models", [])
+        if degraded:
+            _warn("Drift alert", f"{len(degraded)} models degraded: {', '.join(degraded)}")
+        else:
+            _ok("Drift check", f"{len(report.get('model_drift', {}))} models healthy")
+        return {"status": "ok", "degraded_models": degraded}
+    except Exception as exc:  # noqa: BLE001
+        _warn("Drift check", str(exc))
+        return {"status": "failed"}
+
+
+# -- Step 8 -- Summary ----------------------------------------------------------
 
 def step_summary(
     injuries: dict,
@@ -200,7 +222,7 @@ def step_summary(
     retrain: dict,
     edges: list,
 ) -> None:
-    _step(7, "Daily summary")
+    _step(8, "Daily summary")
     n_edges = len(edges)
     print("\n" + "=" * 60)
     print(f"  NBA AI Daily Pipeline -- {TODAY}")
@@ -253,6 +275,7 @@ def main() -> None:
     step_log_predictions(edges, dry_run=args.dry_run)
     step_edge_report(edges, dry_run=args.dry_run)
     retrain  = step_retrain(args.season, dry_run=args.dry_run)
+    step_drift()
     step_summary(injuries, props, predict_result, retrain, edges)
 
 

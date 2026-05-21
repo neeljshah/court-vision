@@ -167,6 +167,25 @@ def mock_model_metrics() -> dict:
     }
 
 
+@pytest.fixture(autouse=True)
+def _clean_milestone_state(tmp_path, monkeypatch):
+    """Redirect retrain_milestones.json to a temp path for every test.
+
+    Prevents cross-test pollution when check_and_retrain persists milestone state.
+    Applied automatically to all tests via autouse=True.
+    """
+    try:
+        import src.pipeline.auto_retrain as ar_mod
+        if hasattr(ar_mod, "_MILESTONE_STATE_PATH"):
+            monkeypatch.setattr(
+                ar_mod,
+                "_MILESTONE_STATE_PATH",
+                str(tmp_path / "retrain_milestones.json"),
+            )
+    except ImportError:
+        pass
+
+
 @pytest.fixture
 def mock_feature_importance() -> dict:
     """Return two feature-importance snapshots: baseline and drifted.
