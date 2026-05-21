@@ -66,6 +66,7 @@ When you make changes that affect any of these, update the corresponding vault n
 - Phase status changed → update `vault/Strategy/Build Phases.md`
 - New feature wired → update `vault/Features/Signal Inventory.md`
 - R² or Brier improved → update `vault/Models/Model Performance.md` + relevant model note
+- New gotcha / design decision / non-obvious learning → `vault/Improvements/Engineering Knowledge.md` — **dedup**: sharpen the existing entry, never duplicate
 
 Keep updates minimal — change the metric value or add a one-liner. Don't rewrite entire notes.
 The `Stop` hook runs `scripts/vault_session_close.py` to append one line to Decision Log + refresh Home.md.

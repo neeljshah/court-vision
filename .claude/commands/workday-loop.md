@@ -114,6 +114,11 @@ If no eligible task → exit, reason="no_eligible_work".
 
 **4a — PLAN (Opus). Plan thoroughly — a bad spec burns a whole Sonnet cycle + review + revert.**
 
+**First, consult the vault** — grep `vault/Improvements/Engineering Knowledge.md` and the
+relevant `vault/Tracking` / `vault/Models` notes + `vault/Sessions/Decision Log.md` for prior
+learnings on this area. Reuse known gotchas and decisions; never re-derive what the brain
+already knows. Then:
+
 1. **Scope sweep (Sonnet/Explore).** Spawn an `Explore` subagent: "for this task, find every
    file, function, call site, import, and test that touches <the task's files> — return paths
    + line ranges + a one-line role for each." This surfaces ripple effects before you plan.
@@ -177,12 +182,27 @@ Via `_state` helpers (NOT raw Write):
 - `write_json_atomic(status_path(), {...})` — `current_task` (or null), `tasks_completed_today`,
   `last_commit`, `queue_depth`, `phase`, `next_wake_at`.
 
-### Vault updates (only if changed)
+### Knowledge capture — grow the Obsidian brain every task
 
-Per CLAUDE.md vault-auto rules — one line each:
-- Tracker fix → `vault/Tracking/Tracker Improvements.md`
-- Model metric → cell in `vault/Models/Model Performance.md`
-- Issue resolved → flip in `vault/Tracking/Open Issues.md`
+The vault is the project's memory. After each task, before scheduling the next:
+
+1. **Update the live notes** (per CLAUDE.md vault-auto rules) — one line each, only if changed:
+   - Tracker fix → `vault/Tracking/Tracker Improvements.md`
+   - Model metric / R² / Brier → cell in `vault/Models/Model Performance.md`
+   - Issue resolved or found → `vault/Tracking/Open Issues.md`
+   - Phase status changed → `vault/Strategy/Build Phases.md`
+2. **Record what was learned** in `vault/Improvements/Engineering Knowledge.md` — but ONLY
+   genuine, durable, non-obvious knowledge: a gotcha, a design decision + its *why*, a reusable
+   pattern, an "X already exists at Y". Skip the trivial.
+   - **Dedup is the rule.** Search the note first. If an entry on this area exists, *sharpen*
+     it (more concrete / more correct) — do NOT add a second. The brain gets tighter and
+     smarter over time, never longer with duplicates. Delete entries that became wrong.
+   - Concrete only — real paths, real values, the actual failure mode.
+3. **Decision Log** — append ONE line to `vault/Sessions/Decision Log.md`:
+   `| <date> | <what shipped> | <one-line why / impact> |`
+
+This is a read+write loop: Step 4a PLAN *reads* this knowledge so each task starts smarter
+than the last. A redundant or vague note is a bug — keep the brain concrete and compounding.
 
 ### Pacing — use the Max plan fully
 
