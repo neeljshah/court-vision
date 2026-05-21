@@ -3,6 +3,11 @@
 Runs all day in a self-paced loop: picks a task, plans it, delegates the coding, reviews,
 commits, sleeps, repeats. Be terse. Act.
 
+**Scope: NBA only.** This bot builds the NBA analytics + prediction system exclusively —
+props, models, CV pipeline, betting/CLV infra, and the data/validation layers serving it.
+Skip anything scoped to another sport (NFL/MLB/NHL/soccer/tennis) or generic multi-sport
+scaffolding.
+
 ## Model routing — the core efficiency rule
 
 This session is **Opus**. It orchestrates only — it must **not** write feature code itself.
@@ -45,7 +50,8 @@ python -c "import json; s=json.load(open('.bot_state/live_status.json')); print(
 Exit the loop only if:
 - `STOP` in output → reason="user_stop"
 - `for-review.md (5+ real items)` → reason="review_pile_full"
-- queue empty **and** Step 1.5 replenish produced nothing → reason="all_work_done"
+- queue empty **and** Step 1.5 produced nothing from *either* tier — no executable
+  plans left AND every roadmap phase already decomposed + built → reason="roadmap_complete"
 
 **There is no spend cap.** Flat Max subscription — usage is the goal, not a risk.
 Spend numbers are telemetry. The real limiter is the 5-hour rate limit (see Pacing).
@@ -70,6 +76,21 @@ finished task's `source:` path lands in `done.md`, which marks that plan built.
 The user may add or edit plan files from another account anytime — the next scan
 picks them up. After replenishing, re-probe before picking a task.
 
+**Tier 2 — decompose the next roadmap phase (when Tier 1 comes back empty).**
+If `scan_plans.py --write` added nothing new AND `ai-todo.md` is still ≤ 8 items, the
+*executable* plans are exhausted but the **roadmap is not**. Self-extend instead of exiting:
+1. Read `.planning/ROADMAP.md` — find the first phase still marked `🔲` in table order
+   (skip `✅`/done; skip the `⏳` phase if it is pure-ops, e.g. a RunPod/GPU run).
+2. Read that phase's detail file `.planning/phases/phase-<N>.md` **and any planning doc
+   it references** (e.g. `PRE_SEASON_ACCURACY_PLAN.md`, `LIVE_BETTING_PLAN.md`).
+3. Decompose it: write 6–12 concrete, properly-formatted task blocks into `ai-todo.md`
+   for that phase — real file paths, measurable `done when`, `est`, `touch betting?`.
+   This is the bot planning its own next phase.
+4. If a phase is not codeable (pure ops — GPU run, manual data collection), skip it,
+   note one line in `human-todo.md`, move to the next `🔲`.
+This keeps the loop **self-extending through the entire 64-phase roadmap** — it never
+runs dry while un-built phases remain.
+
 ### 2 — Resume vs pick (avoid orphaned branches)
 
 If live_status `current_task.slug != null` AND `git branch --list "bot/<slug>"` exists, the prior
@@ -79,7 +100,11 @@ re-pick, note to `human-todo.md`.
 ### 3 — Pick next task
 
 From `ai-todo.md`, top P0 (or P1 if no P0). Skip if:
-- `touch betting?: yes` AND no override marker in `.bot_state/edit_override.txt`
+- the task is scoped to a non-NBA sport (NFL/MLB/NHL/soccer/tennis) or generic multi-sport
+  scaffolding → move it to `blocked.md`, reason "out of scope: NBA-only"
+- `touch betting?: yes` AND no line in `.bot_state/edit_override.txt` matches the task title
+  (scoped authorization — the marker names exactly which betting-flagged tasks the user OK'd;
+  missing/empty file = none authorized)
 - listed files don't exist on disk (Glob first; if missing → append to `human-todo.md`, skip)
 - identical task title already in `done.md` today
 
@@ -132,6 +157,11 @@ run `git diff` for the protected-file check and anything that looks wrong. Then:
 Then move the task `ai-todo.md` → `done.md`. If the ai-todo entry had a
 `- **source:**` line, copy it into the `done.md` entry verbatim — `scan_plans.py`
 reads it to mark that GSD plan built and unblock its dependents.
+
+Then **push the monitoring mirror**: `git push origin master:bot/live`. This updates
+the `bot/live` branch on GitHub so the user can watch progress remotely (phone, etc.).
+If the push fails (auth/network), log one line to `human-todo.md` and continue — a
+push failure must never block the loop or a task.
 
 **Hard stops** (commit-what-works + flag + move on):
 - iteration exceeds ~400K tokens total
@@ -189,7 +219,8 @@ under-use the plan is an **empty queue** — which Step 1.5 now prevents.
 - Never edit `src/prediction/betting_portfolio.py`, `database/schema.sql`, `CLAUDE.md`,
   `requirements.txt`, `environment.yml` — these go to `for-review.md`, never auto-merge.
 - Never edit lines containing `_VRAM_FLUSH_INTERVAL = 3000` in `unified_pipeline.py`.
-- Never push to remote — the human pushes after review.
+- Push to `origin/bot/live` after each task merges — the monitoring mirror (Step 4c).
+  NEVER push to remote `master` or `main`; the user owns those.
 - Never call Kalshi / Polymarket / Betfair APIs; never move money or open positions.
 - Never run `run.py` or `loop_processor.py`.
 - Never delete files not created in this session.
