@@ -142,11 +142,13 @@ already knows. Then:
 The single biggest throughput lever in this loop is parallel Sonnet spawns. Stay
 sequential **only** when tasks genuinely share files; otherwise batch.
 
-1. **Look 2–4 tasks ahead in `ai-todo.md`.** For each candidate, list its target files.
-2. **Build a parallel batch.** Group the current task with any look-ahead task whose
-   file set is **disjoint** from every other task already in the batch. Stop when:
-   batch size hits 4, OR the next task shares a file with one already in the batch,
-   OR a task is `touch betting?: yes` (handle those serially with extra care).
+1. **Look 6–10 tasks ahead in `ai-todo.md`.** For each candidate, list its target files.
+2. **Build a parallel batch — be greedy.** Group the current task with every look-ahead
+   task whose file set is **disjoint** from every other task already in the batch. Stop
+   when: batch size hits **8**, OR the next task shares a file with one already in the
+   batch, OR a task is `touch betting?: yes` (handle those serially with extra care).
+   The Max plan rewards throughput; an 8-Sonnet batch costs near-flat orchestration
+   overhead and 8× the implementation work per cycle.
 3. **For each task in the batch:** `git checkout -b bot/<date>-<slug>` from master,
    write the slug + branch into `live_status.current_task` (one slug at a time is fine —
    the crash marker just needs a recovery anchor). Return to master before checking out
