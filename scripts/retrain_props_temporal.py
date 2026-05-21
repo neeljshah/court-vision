@@ -106,8 +106,17 @@ def _cv_metrics(
         X_tr = np.column_stack([X_tr, last_roll])
         X_val = np.column_stack([X_val, val_fill])
 
-        params: dict = {"n_estimators": 80, "max_depth": 3,
-                        "learning_rate": 0.1, "random_state": 42}
+        _default_params: dict = {"n_estimators": 80, "max_depth": 3,
+                                 "learning_rate": 0.1, "random_state": 42}
+        _hp_path = _MODEL_DIR / f"hyperparams_{stat}.json"
+        if _hp_path.exists():
+            try:
+                _saved = json.loads(_hp_path.read_text(encoding="utf-8"))
+                _default_params.update(_saved.get("best_params", {}))
+            except Exception:
+                pass
+        params: dict = _default_params
+        params["random_state"] = 42
         if obj == "count:poisson" and hasattr(XGBRegressor, "set_params"):
             params["objective"] = obj
         try:

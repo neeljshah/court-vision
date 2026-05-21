@@ -1,8 +1,5 @@
 """
-test_prop_grid_search.py — Wave 0 stubs for GridSearchCV contract.
-
-All tests are xfail(strict=False) — they define the contract that
-src/prediction/prop_grid_search.py (Plan 03) must satisfy.
+test_prop_grid_search.py — GridSearchCV contract tests.
 """
 import numpy as np
 import pytest
@@ -16,7 +13,6 @@ def _toy_data(n: int = 300, seed: int = 0):
     return X, y
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 03")
 def test_gridsearch_returns_best_params() -> None:
     """run_grid_search returns an XGBRegressor with best_params_ containing
     n_estimators, max_depth, learning_rate."""
@@ -35,7 +31,6 @@ def test_gridsearch_returns_best_params() -> None:
     assert "learning_rate" in best_params, "best_params must contain learning_rate"
 
 
-@pytest.mark.xfail(strict=False, reason="threshold contract — no Plan 03 dep")
 def test_holdout_gap_under_threshold() -> None:
     """Train-holdout R² gap must be < 0.08 for well-conditioned toy data.
 
@@ -69,7 +64,6 @@ def test_holdout_gap_under_threshold() -> None:
     )
 
 
-@pytest.mark.xfail(strict=False, reason="impl pending Plan 03")
 def test_poisson_grid_is_tighter() -> None:
     """POISSON_PARAM_GRID learning_rate max must be <= 0.05 (tighter than regression)."""
     prop_grid_search = pytest.importorskip("src.prediction.prop_grid_search")
