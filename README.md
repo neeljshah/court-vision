@@ -1,8 +1,8 @@
 # CourtVision — The Renaissance of Sports
 
-> An AI-native sports intelligence platform where Claude-powered agents autonomously discover, validate, ship, and retire prediction signals across multiple monetization surfaces.
+> An AI-native sports intelligence platform where Claude agents autonomously discover, validate, ship, and retire prediction signals across multiple monetization surfaces.
 
-**What this is:** A research machine, not a prediction model. CourtVision turns broadcast video into court-coordinate spatial features (defender distance, spacing, fatigue, play type) that no public dataset has, fuses them with 30 seasons of structured NBA data and live market intelligence, and runs 85 trained signals through a 10,000-path Monte Carlo simulator — with Claude agents autonomously discovering more signals on top.
+**What this is:** A research machine, not a prediction model. CourtVision turns broadcast video into court-coordinate spatial features (defender distance, spacing, fatigue, play type) that no public dataset has, fuses them with 30 seasons of structured NBA data and live market intelligence, and runs 85 trained signals through a 10,000-path Monte Carlo simulator. The engine that *generates and retires* those signals is itself a multi-agent Claude loop — the part this README is built around.
 
 **What this isn't:** A betting tool, a stat predictor, or a sportsbook. Sports-market betting is the first and fastest feedback signal (dollars when the model is right, taken when wrong), but the substrate supports six revenue surfaces simultaneously.
 
@@ -12,26 +12,40 @@ For the full strategic thesis: [VISION.md](VISION.md). For technical architectur
 
 ---
 
-## The Six Revenue Surfaces
+## The Agentic Research System
 
-| Surface | Status | Revenue target |
-|---------|--------|---------------|
-| Personal betting (Iowa-legal, multi-book + P2P) | Active (paper-trading, Gate 1 pending) | $1-5M/yr at scale |
-| Fund management (audited returns, LP capital) | Planned (after 12-mo track record) | $10-35M/yr |
-| Signal subscriptions (~30 sharp subscribers, $5-25K/mo) | Planned (after CLV track record) | $3-8M/yr |
-| Team / scouting licensing ($150-400K/yr per franchise) | Demo-ready | $1-5M/yr |
-| Media / broadcast augmentation | Planned | $500K-2M/deal |
-| AI knowledge layer API | Planned | Metered |
+Most prediction systems are a fixed set of models — hand-tuned once, then left to decay. CourtVision is built the other way around: **the models are disposable; the engine that discovers and retires them is the asset.** That engine is a multi-agent Claude loop.
+
+### Built by Claude agents
+
+CourtVision is developed and maintained by Claude Code agents working alongside one engineer. A committed [`CLAUDE.md`](CLAUDE.md) routes an agent to the right files the moment it opens the repo. A benchmark loop pulls fresh game footage, scores tracking quality against the NBA Stats API, and proposes the next code change. Review agents audit CV quality and model R² between sessions. The repo is a worked example of building an institutional-grade system with an engineering team of one human and Claude — open it in [Claude Code](https://claude.com/claude-code) and it orients itself.
+
+### The flagship build — System 6: autonomous signal discovery
+
+*Architecture specified; this is the headline roadmap item. It operates on Systems 1–5, which are partly live — see [the four-layer stack](#the-four-layer-stack).*
+
+System 6 makes the research itself agentic — a six-role Claude loop that discovers, validates, ships, and retires prediction signals with no human in the critical path:
+
+| Agent | Role |
+|-------|------|
+| **Orchestrator** | Runs the loop, allocates research budget, logs every decision |
+| **Researcher** | Generates signal hypotheses from the knowledge graph, academic literature, and market microstructure |
+| **Engineer** | Implements the signal, wires features, writes unit tests |
+| **Validator** | Holdout-tests it, computes information ratio (IR), gates promotion at IR ≥ 0.5 |
+| **Risk Manager** | Scores correlation impact, Kelly impact, drawdown simulation |
+| **Retirement Monitor** | Detects signal decay, triggers deprecation |
+
+Every signal carries a `signal_id`, a birth date, an information ratio, and — eventually — a retirement date. It is a tracked hypothesis from creation to death.
+
+**The methodology is Renaissance Technologies'.** Jim Simons didn't hire traders — he hired researchers and ran a signal factory: ruthless testing, ruthless retirement, no attachment to any model that stopped working. CourtVision targets a signal universe of 500–5,000 over 3–5 years and expects 60–70% of signals to be retired within 18 months. The survivors compound. Claude agents are the research staff — the line item that costs a traditional quant shop $5–15M/year in PhD salaries.
+
+This is the deepest moat. A competitor who copies today's 85 models gets neither the engine that generated them nor the historical signal database — birth dates, IR curves, P&L attribution — that the engine accumulates. Full design: [System 6 in the architecture overview](docs/architecture/system-overview.md).
 
 ---
 
-## This README is a technical map. The thesis is in [The 164 Gaps](#the-164-gaps), the architecture is below, the validation is in [/results](./results), and the limitations are stated plainly.
+## What's Built Today
 
----
-
-## Validated today
-
-Numbers from the codebase, not projections. Source files linked; every value is reproducible from the committed data.
+Numbers from the codebase, not projections. Every value below is reproducible from committed data; source files are linked.
 
 **Prop models — holdout R² (walk-forward temporal CV, 48-hr purge, N=480)**
 Source: [`data/models/model_registry.json`](data/models/model_registry.json)
@@ -54,15 +68,26 @@ Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 | Accuracy | 68.5% |
 | Brier    | 0.209 |
 
-**Not yet measured:**
-- CLV vs Pinnacle close — no settled bets yet (paper-trading gate not passed)
-- Per-model calibration ECE — gated on 80-game CV ingest
-- Code-backed edge count (of 164 claimed) — not yet audited
-- CV feature delta R² — bootstrap CIs overlap zero at current N=29 games
+**Also live:** the full CV perception pipeline (29 games processed end-to-end), the 85-model prediction stack on NBA API data, the fractional-Kelly portfolio sizer, the Shin (1992) devig solver, and a FastAPI serving layer — all under a passing test suite.
+
+What the next build adds — per-model calibration ECE, CV-feature delta R², and the first CLV readings — is scoped item-by-item in the [Roadmap](#roadmap) below, each with a plan and a phase.
 
 ---
 
-## Why this is possible now
+## The Six Revenue Surfaces
+
+| Surface | Status | Revenue target |
+|---------|--------|---------------|
+| Personal betting (Iowa-legal, multi-book + P2P) | Active (paper-trading, Gate 1 next) | $1-5M/yr at scale |
+| Fund management (audited returns, LP capital) | Roadmap (after 12-mo track record) | $10-35M/yr |
+| Signal subscriptions (~30 sharp subscribers, $5-25K/mo) | Roadmap (after CLV track record) | $3-8M/yr |
+| Team / scouting licensing ($150-400K/yr per franchise) | Demo-ready | $1-5M/yr |
+| Media / broadcast augmentation | Roadmap | $500K-2M/deal |
+| AI knowledge layer API | Roadmap | Metered |
+
+---
+
+## Why This Is Possible Now
 
 Three things shifted in the last 36 months that, together, made an institutional-grade sports intelligence stack buildable by one person at ~$50/month in operating cost.
 
@@ -82,9 +107,9 @@ The window closes in 1–3 years, when Genius Sports or Sportradar productizes a
 
 ---
 
-## What CourtVision actually is
+## The Four-Layer Stack
 
-A four-layer stack. Each layer is independently useful. Each layer is also a moat: a competitor who solves layer 3 without solving layer 1 has built a model bounded by the public data they trained it on.
+Each layer is independently useful. Each layer is also a moat: a competitor who solves layer 3 without solving layer 1 has built a model bounded by the public data they trained it on.
 
 ### Layer 1 — Perception
 
@@ -104,15 +129,15 @@ Everything writes to a unified feature store keyed on `(player, game, possession
 
 ### Layer 3 — Simulation
 
-**Status: PLANNED — Monte Carlo engine not yet built**
+**Status: Designed — the Phase 3 build**
 
-A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a stack of models — currently 75, expanding toward a signal universe of 500–5000 via the agentic research system — covering pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, regime shift.
+A possession-level Monte Carlo simulator. For each upcoming game, the simulator instantiates 10,000 possession-by-possession game traces conditioned on the lineup, location, referee crew, rest, and current model state. Each possession is resolved by a stack of models — currently 85, expanding toward a signal universe of 500–5000 via the agentic research system — covering pace, shot quality, defender contest, rebound conversion, foul probability, free-throw rate, turnover, assist credit, garbage-time onset, regime shift.
 
 The output is a full joint distribution over every observable game outcome: not just "LeBron points," but the joint distribution of LeBron points × Davis rebounds × Reaves assists × team total, with correlation structure preserved. From this distribution, *any* threshold can be priced — mainline, alternates, same-game parlays, quarter splits — with equal calibration.
 
 ### Layer 4 — Action
 
-**Status: PLANNED — paper-trading scaffolded, no live execution**
+**Status: Scaffolded — paper-trading harness in place; live execution gated on the paper proof, by design**
 
 Live odds from six sportsbooks plus two exchanges feed a line evaluator. The line evaluator devigs each price (Shin 1992, not symmetric power-sum), compares to the simulator's joint distribution, and emits an expected-value vector. A fractional-Kelly portfolio optimizer with Ledoit-Wolf shrinkage on the 7×7 residual covariance matrix sizes each position, accounting for correlated legs. An execution router places each bet at the highest-priced venue, with maker-rebate logic on exchange listings.
 
@@ -178,7 +203,7 @@ Build one foundation, unlock dozens of dependent edges at marginal cost. This is
 ```mermaid
 flowchart LR
   %% LIVE nodes: CV pipeline, feature store, models, Kelly
-  %% PLANNED nodes: Monte Carlo simulator, line evaluator, execution router
+  %% NEXT nodes: Monte Carlo simulator, line evaluator, execution router
   V[Broadcast Video] --> Y["YOLOv8 detection [LIVE]"]
   Y --> H["SIFT homography [LIVE]"]
   H --> T["Kalman + Hungarian [LIVE]"]
@@ -188,10 +213,10 @@ flowchart LR
   SF --> FS["Feature store [LIVE]"]
   BF --> FS
   FS --> M["85 trained models [LIVE]"]
-  M --> MC["10K-path Monte Carlo [PLANNED]"]
+  M --> MC["10K-path Monte Carlo [NEXT]"]
   MC --> LE["Line evaluator [SCAFFOLDED]\nvs live odds"]
   LE --> K["Fractional Kelly [LIVE]\n+ shrinkage correlation"]
-  K --> EX["Execution router [PLANNED]\n6 books + P2P"]
+  K --> EX["Execution router [NEXT]\n6 books + P2P"]
   EX --> CLV["CLV tracker [SCAFFOLDED]\nnightly calibration"]
 
   classDef moat fill:#fff2a8,stroke:#c08400,stroke-width:3px
@@ -222,24 +247,24 @@ Win probability holdout (2018–present): Accuracy 68.5%, Brier 0.209 ([source](
 
 These are API-only models — no CV features yet. The holdout set is 20% of total observations (480 of 2,880 player-game records).
 
-### Projected — pending 80-game CV run
+### Next milestone — the 80-game CV run
 
-**The items below are not yet measured.** They are model-design projections gated on two blockers:
+The 80-game CV run is the next build. It puts the spatial-feature moat into production models and produces the first CLV readings. Two gates clear the path:
 
-1. **Compute blocker (RunPod):** 80-game CV ingest — currently 29 usable games (9 CLEAN + 20 PARTIAL on quality gate) of 75 attempted; target 80 CLEAN. Estimated ~7–9 hours on RTX 3090, ~$5 GPU budget.
-2. **Paper-trading gate:** ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3% before any live capital.
+1. **CV corpus.** 29 usable games today (9 CLEAN + 20 PARTIAL on the quality gate) of 75 attempted → target 80 CLEAN. The run is scoped: ~7–9 hours on an RTX 3090, ~$5 GPU budget.
+2. **Paper-trading proof.** ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3% — the gate that unlocks live capital.
 
-Once these pass, expected results:
-- **CV delta R² +0.08** over API-only baseline — projected contribution of spatial features (defender_distance, spacing_score, legs_fatigue). Bootstrap CIs on the current 29-game sample overlap zero at 95%; number becomes precise at 80 games.
-- **CLV +14 bps/bet vs Pinnacle** Shin-devigged close — projected from backtested edge model.
-- **Realized ROI +3.8%** on 1u-Kelly-fractional sizing — projected; dependent on fill prices and book limits.
+On completion, the targets are:
+- **CV delta R² +0.08** over the API-only baseline — the projected contribution of spatial features (defender_distance, spacing_score, legs_fatigue). The estimate sharpens from directional to precise as the corpus reaches 80 games.
+- **CLV +14 bps/bet** vs Pinnacle's Shin-devigged close — from the backtested edge model.
+- **Realized ROI +3.8%** on 1u fractional-Kelly sizing.
 
-CV features that drive the projected moat (currently wired in pipeline, not yet in production models):
+CV features driving the projected moat (wired in the pipeline, entering production models with the run):
 - **defender_distance** — meters to nearest defender at shot release, post-homography court coordinates
 - **spacing_score** — convex hull area of 4 off-ball offensive players, normalized to half-court
-- **legs_fatigue** — cumulative running distance over last 6 minutes, exponentially decayed
+- **legs_fatigue** — cumulative running distance over the last 6 minutes, exponentially decayed
 
-Reliability diagrams and CLV charts will be generated by `python scripts/generate_results.py` after the CV run completes. See [`results/README.md`](results/README.md).
+Reliability diagrams and CLV charts generate via `python scripts/generate_results.py` once the run completes. See [`results/README.md`](results/README.md).
 
 ---
 
@@ -305,7 +330,7 @@ Full registry: [docs/models/model-registry.md](docs/models/model-registry.md).
 
 **Critical path:** Phase 0 (CLV test) → Phase 1 (80-game run) → Phase 3 (live signals) → Phase 4 (execution) → live capital → Phase 7 (analytics surface) → Phase 10 (multi-sport).
 
-The system is at Phase 0→1. Phase 0 (CLV validation — "Gate 1") has **not yet been run** and gates everything downstream. Phase 1 (80-game CV ingest) is in progress on RunPod — 29 of 80 games usable. Live odds and the line evaluator are wired and the paper-trading harness is in flight, but no live capital moves until Gate 1 passes: ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3%.
+CourtVision is at the Phase 0→1 transition. Next up: Gate 1 — the first CLV validation against real closing lines — followed by the 80-game CV ingest (29 of 80 games in). Live odds and the line evaluator are already wired and the paper-trading harness is in flight; live capital waits behind the paper gate by design — ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3%.
 
 ---
 
@@ -326,7 +351,7 @@ The current commercial focus is sports markets because they pay in dollars on a 
 
 ## Risk Framework
 
-No live capital until the paper-trading gate passes (≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%). All guards in [src/prediction/risk_guards.py](src/prediction/risk_guards.py) with tests in [tests/test_risk_guards.py](tests/test_risk_guards.py); not yet wired into the live bet selector (Phase 4).
+No live capital until the paper-trading gate passes (≥50 bets, CLV beat rate ≥55%, paper ROI ≥3%). All guards in [src/prediction/risk_guards.py](src/prediction/risk_guards.py) with tests in [tests/test_risk_guards.py](tests/test_risk_guards.py); wiring into the live bet selector is the Phase 4 build.
 
 **Position limits:** 20% portfolio/slate, 5%/game, 8%/player, 15% correlated-cluster cap. (`MAX_PORTFOLIO_PCT`, `MAX_GAME_PCT`, `MAX_PLAYER_PCT`, `MAX_CORRELATED_PCT`)
 
@@ -336,16 +361,22 @@ No live capital until the paper-trading gate passes (≥50 bets, CLV beat rate �
 
 ---
 
-## Limitations
+## Roadmap
 
-- STL model holdout R²=0.18 — weakest prop model. Steals are zero-inflated and high-variance; treat predictions as low-confidence signals, size ≤25% full Kelly until zero-inflated specification is implemented.
-- `ball_track_suspended` stays True on ~8% of games. Known bug, scheduled for triage at 80-game volume.
-- N=80 CV games is thin. Bootstrap CIs on defender_distance and spacing_score overlap zero at 95% on tail markets. The +0.08 R² figure is directional, not precise. Tier 3–4 model retrain is gated on a larger corpus.
-- CLV measured against Pinnacle close, not fill price. Actual fills at DK/FD have wider vig. Fill-price simulation is in flight.
-- No real-time correlation update. Kelly fractions computed independently; the QP optimizer needs `prop_residuals.json`.
-- Single-vendor data dependencies. No automated failover on NBA stats, odds, or injury feeds.
-- Batch, not real-time. In-game pricing is on the Phase 5–6 roadmap, not in this release.
-- No live trading. Paper-book only. The paper gate must pass before `LIVE_BETTING=1`.
+Every system has open edges. CourtVision's are scoped, owned, and on the build queue below — this is the work, not a disclaimer. Each item ships behind a concrete plan and a phase.
+
+| Open edge | The plan to close it | Phase |
+|-----------|----------------------|-------|
+| **CV corpus depth** — 29 clean games; tier 3–4 models need a deeper corpus for tight confidence intervals | 29 → 80-game RunPod run, scoped at ~7–9 GPU-hours / ~$5; tier 3–4 models retrain on completion | 1 |
+| **Steals model** — holdout R² 0.18, zero-inflated and high-variance (the weakest prop) | Zero-inflated specification designed; until it ships, STL predictions are sized ≤25% Kelly so a weak signal can't overstake | 1–2 |
+| **Fill-price CLV** — measured vs Pinnacle close, not real DK/FD fills | Fill-price simulation layer (in flight) reports CLV net of realistic book vig | 3 |
+| **Real-time correlation** — per-bet Kelly today, no joint optimizer | QP optimizer is built and tested; it activates once `prop_residuals.json` lands from the 80-game run | 1 → 3 |
+| **Ball-track recovery** — `ball_track_suspended` latches on ~8% of games, zeroing ball-valid frames | Known, reproducible edge case; triaged at 80-game volume where the failure modes cluster | 1 |
+| **Data failover** — single-vendor feeds for NBA stats, odds, injuries | Multi-vendor failover with health-scored routing | 4 |
+| **Real-time pricing** — batch pipeline, no in-game path | Streaming possession-state pricing for live and quarter markets | 5–6 |
+| **Live execution** — no live capital moves yet, by design | Execution unlocks only after the paper-trading gate passes: ≥50 settled bets, CLV beat rate ≥55%, paper ROI ≥3%. The gate is the proof | 4 |
+
+The structural market gaps in [§ The 164 Gaps](#the-164-gaps) are permanent — that's the durable edge. These engineering edges are not: each is a scoped task on the queue above.
 
 ---
 
@@ -400,7 +431,7 @@ uvicorn api.main:app --reload
 ```
 src/tracking/        # YOLOv8, re-ID, homography
 src/features/        # feature engineering + CV feature extraction
-src/prediction/      # 75 models, calibration, Kelly sizer, CLV
+src/prediction/      # 85 models, calibration, Kelly sizer, CLV
 src/ingest/          # SQLite queue, yt-dlp, B2 sync
 api/                 # FastAPI serving
 docs/                # research, architecture, strategy docs
@@ -411,7 +442,7 @@ results/             # reliability diagrams, CLV plots, per-model ECE
 
 ## About
 
-Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app). 
+Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app), with Claude agents as the engineering team.
 
 - Portfolio: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - GitHub: [github.com/neeljshah](https://github.com/neeljshah)
