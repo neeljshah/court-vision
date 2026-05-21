@@ -29,6 +29,8 @@ import time
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
+from src.data.pinnacle_gate import strip_vig as _strip_vig
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _CACHE_CURRENT = os.path.join(PROJECT_DIR, "data", "nba", "pinnacle_props_current.json")
 _CACHE_OPENING = os.path.join(PROJECT_DIR, "data", "nba", "pinnacle_props_opening.json")
@@ -82,17 +84,7 @@ def _prop_key(player: str, stat: str) -> str:
 
 def _vig_free_prob(over_odds: int, under_odds: int) -> float:
     """Remove vig from over/under pair and return vig-free over probability."""
-    def _to_prob(american: int) -> float:
-        if american >= 0:
-            return 100.0 / (american + 100)
-        return abs(american) / (abs(american) + 100)
-
-    p_over  = _to_prob(over_odds)
-    p_under = _to_prob(under_odds)
-    total   = p_over + p_under
-    if total <= 0:
-        return 0.5
-    return round(p_over / total, 4)
+    return _strip_vig(over_odds, under_odds)["over_prob"]
 
 
 # ── Core fetcher ──────────────────────────────────────────────────────────────
