@@ -731,7 +731,18 @@ def train_meta(
 
 def train_all_meta(residuals: Optional[List[dict]] = None) -> dict:
     """Train Ridge meta for all 7 stats. Returns summary dict."""
-    return {stat: train_meta(stat, residuals) for stat in STATS}
+    results = {stat: train_meta(stat, residuals) for stat in STATS}
+    # Champion/challenger: update champion R² from meta results
+    try:
+        from src.prediction.champion_challenger import _load_state, _save_state
+        _cc = _load_state()
+        for _stat, _r in results.items():
+            if _r.get("r2") is not None and _stat in _cc.get("stats", {}):
+                _cc["stats"][_stat]["champion_r2"] = float(_r["r2"])
+        _save_state(_cc)
+    except Exception:
+        pass
+    return results
 
 
 def train_calibration(
