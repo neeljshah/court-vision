@@ -39,6 +39,12 @@ echo "[daily_run] stage 2/4: run_daily_slate"
 python "$SCRIPT_DIR/run_daily_slate.py" --date "$DATE" || _fail "run_daily_slate"
 echo "[daily_run] stage 2/4 done: run_daily_slate"
 
+# Log today's prop lines into the history store — builds the market-line
+# training dataset over the season. Non-fatal: never blocks the pipeline.
+echo "[daily_run] logging prop lines"
+python "$SCRIPT_DIR/log_prop_lines.py" --date "$DATE" || \
+  echo "[daily_run] log_prop_lines skipped or errored (non-fatal)"
+
 # Stage 3/4: Bet selection
 echo "[daily_run] stage 3/4: bet_selector"
 python -m src.prediction.bet_selector --date "$DATE" || _fail "bet_selector"
