@@ -164,6 +164,122 @@ def predict_foul_trouble(player_id: int, features: dict) -> dict:
     }
 
 
+# ── live foul-trouble detection (task 19.5-01) ───────────────────────────────
+
+# A player is in foul trouble at this many fouls; Q2 is the exploitable window
+# because pre-game props were priced before any in-game foul information.
+_FOUL_TROUBLE_COUNT = 3
+_FOUL_TROUBLE_PERIOD = 2
+# Minute-driven counting stats whose pre-game lines a foul-trouble bench hurts.
+_AFFECTED_STATS = ["pts", "reb", "ast"]
+# Usage share at/above which a player counts as a "star" worth fading.
+_STAR_USAGE = 0.20
+
+
+def _is_star(player: dict) -> bool:
+    """A player counts as a star via an explicit flag or a high usage share."""
+    if player.get("is_star"):
+        return True
+    return float(player.get("usage", 0.0) or 0.0) >= _STAR_USAGE
+
+
+def _primary_beneficiary(players: list, star: dict) -> Optional[dict]:
+    """Highest-usage teammate not himself in foul trouble — absorbs the minutes."""
+    team = star.get("team")
+    candidates = [
+        p for p in players
+        if p.get("team") == team
+        and p.get("player_id") != star.get("player_id")
+        and int(p.get("fouls", 0) or 0) < _FOUL_TROUBLE_COUNT
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: float(p.get("usage", p.get("minutes", 0.0)) or 0.0))
+
+
+def monitor_foul_trouble(players: list, period: Optional[int] = None) -> list:
+    """Scan a live box score and emit foul-trouble bet recommendations.
+
+    When a star records 3 fouls in Q2, his pre-game props are stale: emit an
+    alt-under on his counting stats and an alt-over on the primary beneficiary
+    who absorbs the freed-up minutes.
+
+    Args:
+        players: Live box-score rows — dicts with player_id, player_name,
+                 team, fouls, usage/minutes, optional is_star, optional period.
+        period:  Current quarter (1–4).  Falls back to each row's "period".
+
+    Returns:
+        List of recommendation dicts (FOUL_TROUBLE alt-under + paired
+        FOUL_TROUBLE_BENEFICIARY alt-over).  Empty when nothing qualifies.
+    """
+    recs: list = []
+    for player in players:
+        p_period = period if period is not None else int(player.get("period", 0) or 0)
+        fouls = int(player.get("fouls", 0) or 0)
+        if not (fouls >= _FOUL_TROUBLE_COUNT and p_period == _FOUL_TROUBLE_PERIOD):
+            continue
+        if not _is_star(player):
+            continue
+
+        recs.append({
+            "event": "FOUL_TROUBLE",
+            "player_id": player.get("player_id"),
+            "player_name": player.get("player_name", ""),
+            "team": player.get("team", ""),
+            "fouls": fouls,
+            "period": p_period,
+            "recommendation": "alt_under",
+            "stats": list(_AFFECTED_STATS),
+            "reason": (f"{player.get('player_name','star')} has {fouls} fouls in "
+                       f"Q{p_period} — bench risk caps his minutes"),
+        })
+
+        beneficiary = _primary_beneficiary(players, player)
+        if beneficiary is not None:
+            recs.append({
+                "event": "FOUL_TROUBLE_BENEFICIARY",
+                "player_id": beneficiary.get("player_id"),
+                "player_name": beneficiary.get("player_name", ""),
+                "team": beneficiary.get("team", ""),
+                "recommendation": "alt_over",
+                "stats": list(_AFFECTED_STATS),
+                "linked_to": player.get("player_id"),
+                "reason": (f"absorbs minutes/usage while "
+                           f"{player.get('player_name','the star')} sits"),
+            })
+    return recs
+
+
+def validate_foul_trouble_signal(historical_events: list) -> dict:
+    """Validate the foul-trouble signal against labelled historical events.
+
+    Each event is ``{"players": [...], "period": int, "clv": float}`` where
+    ``clv`` is the realised closing-line value of the bet the detector would
+    have fired.  The signal passes when it fired on the event and CLV > 0 on
+    at least 60% of the events it fired on.
+
+    Returns ``{"n_events", "n_fired", "n_clv_positive", "clv_positive_rate",
+    "pass"}``.
+    """
+    n_fired = n_clv_positive = 0
+    for ev in historical_events:
+        recs = monitor_foul_trouble(ev.get("players", []), ev.get("period"))
+        if not recs:
+            continue
+        n_fired += 1
+        if float(ev.get("clv", 0.0)) > 0:
+            n_clv_positive += 1
+    rate = (n_clv_positive / n_fired) if n_fired else 0.0
+    return {
+        "n_events": len(historical_events),
+        "n_fired": n_fired,
+        "n_clv_positive": n_clv_positive,
+        "clv_positive_rate": round(rate, 4),
+        "pass": n_fired > 0 and rate >= 0.60,
+    }
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
