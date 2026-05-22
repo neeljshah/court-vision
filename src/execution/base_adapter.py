@@ -19,6 +19,26 @@ _log = logging.getLogger(__name__)
 LIVE_BETTING: bool = os.getenv("LIVE_BETTING", "0") == "1"
 
 
+def live_betting_enabled() -> bool:
+    """Return True only when LIVE_BETTING=1. Read fresh so tests can patch it."""
+    return os.getenv("LIVE_BETTING", "0") == "1"
+
+
+def assert_live_betting_enabled(exchange: str = "exchange") -> None:
+    """Hard kill-switch guard for real order placement (task 19-01).
+
+    Any adapter that places a REAL order MUST call this at the top of
+    place_limit_order().  Raises RuntimeError when LIVE_BETTING != "1" so a
+    real order can never be sent while the system is in paper mode — a
+    code-level enforcement that a stray config flag cannot override.
+    """
+    if not live_betting_enabled():
+        raise RuntimeError(
+            f"LIVE_BETTING is not enabled — refusing real order placement on "
+            f"'{exchange}'. Set LIVE_BETTING=1 to permit live betting."
+        )
+
+
 @dataclass
 class MarketQuote:
     exchange: str
@@ -65,6 +85,16 @@ class ExchangeAdapter(ABC):
         Returns list of dicts with at minimum an 'id' key.
         """
         ...
+
+    def guard_live_order(self) -> None:
+        """Enforce the LIVE_BETTING kill switch before a real order.
+
+        Subclasses that place REAL orders must call this at the start of
+        place_limit_order().  Raises RuntimeError when LIVE_BETTING != 1.
+        DryRunAdapter intentionally does not call it — it never places real
+        orders.
+        """
+        assert_live_betting_enabled(self.__class__.__name__)
 
 
 class DryRunAdapter(ExchangeAdapter):

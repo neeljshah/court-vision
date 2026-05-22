@@ -11,7 +11,13 @@ import logging
 import os
 from typing import Optional
 
-from .base_adapter import ExchangeAdapter, MarketQuote, OrderResult
+from .base_adapter import (
+    ExchangeAdapter,
+    MarketQuote,
+    OrderResult,
+    assert_live_betting_enabled,
+    live_betting_enabled,
+)
 
 _log = logging.getLogger(__name__)
 
@@ -21,6 +27,13 @@ class BookRouter:
 
     def __init__(self, adapters: list) -> None:
         self._adapters = adapters
+        # Read the LIVE_BETTING kill switch at startup and log the mode so
+        # the operating mode is unambiguous in the logs (task 19-01).
+        self._startup_live = live_betting_enabled()
+        _log.info(
+            "BookRouter initialised with %d adapter(s) — mode=%s",
+            len(adapters), "LIVE" if self._startup_live else "PAPER (LIVE_BETTING=0)",
+        )
 
     def route(
         self,
@@ -69,6 +82,10 @@ class BookRouter:
                 status="paper",
             )
 
+        # Hard kill-switch guard: raises RuntimeError if LIVE_BETTING flipped
+        # off between the top-of-call read and here — a real order is never
+        # placed in paper mode (task 19-01).
+        assert_live_betting_enabled(best_quote.exchange)
         return best_adapter.place_limit_order(
             best_quote.ticker, side, count, best_quote.yes_ask
         )
