@@ -210,20 +210,21 @@ def predict_clv(features: Dict, model_path: Optional[str] = None) -> dict:
 
     Returns:
         {
-            "clv_prob":     float,  # P(favourable closing-line move)
+            "clv_prob":     float,  # P(favourable closing-line move), [0,1]
             "clv_label":    int,    # 1 if clv_prob >= 0.5 else 0
-            "expected_clv": float,  # clv_prob expressed as a percentage proxy
+            "expected_clv": float,  # CLV signal strength in percentage points
         }
 
-    ``expected_clv`` is the favourable-move probability scaled to a percentage
-    so callers expecting a "predicted CLV %" (e.g. bet_selector's dual gate)
-    have a single comparable number.
+    ``expected_clv`` is the favourable-move probability expressed as edge over
+    a coin flip, in percentage points: ``(clv_prob - 0.5) * 100``.  A value of
+    1.5 therefore means the model is 51.5% confident the line moves our way.
+    bet_selector's dual gate (16.5-03) compares this against ``clv_min``.
     """
     prob = predict_clv_prob(features, model_path)
     return {
         "clv_prob": round(prob, 4),
         "clv_label": int(prob >= 0.5),
-        "expected_clv": round(prob * 100.0, 4),
+        "expected_clv": round((prob - 0.5) * 100.0, 4),
     }
 
 
