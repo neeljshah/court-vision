@@ -52,6 +52,47 @@ _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
 _MODEL_PATH = os.path.join(_MODEL_DIR, "xfg_v1.pkl")
 
+# ── defender-distance xFG adjustment (Phase 40 Block B-1 / task PRED-06) ──────
+# Canonical multiplier curve from .planning/CANONICAL_VALUES.md — a tighter
+# contest lowers shot quality. These are a starting prior to be re-fit from
+# tracked CV data; they are NOT ground truth.
+_DEFENDER_DISTANCE_BANDS = [
+    (2.0,  0.82),   # 0–2 ft  — heavily contested
+    (5.0,  0.91),   # 3–5 ft  — contested
+    (10.0, 0.99),   # 6–10 ft — lightly contested
+]
+_DEFENDER_OPEN_MULT = 1.05   # 10+ ft — open look
+# defender_distance == 200.0 is the unified_pipeline isolation sentinel
+# (ISSUE-022); any implausibly large value is treated as "unknown".
+_DEFENDER_SENTINEL = 100.0
+
+
+def defender_distance_multiplier(distance) -> float:
+    """Return the xFG multiplier for a shot given the closest defender's distance.
+
+    Tighter contests scale xFG down; wide-open looks scale it up.  A missing,
+    NaN, negative, or sentinel (200.0 isolation) distance returns a neutral
+    1.0 — the model falls back to its distance/zone estimate unchanged.
+
+    Args:
+        distance: Closest-defender distance in feet (or None).
+
+    Returns:
+        Multiplier in {0.82, 0.91, 0.99, 1.05} or 1.0 when distance is unknown.
+    """
+    if distance is None:
+        return 1.0
+    try:
+        d = float(distance)
+    except (TypeError, ValueError):
+        return 1.0
+    if np.isnan(d) or d < 0.0 or d >= _DEFENDER_SENTINEL:
+        return 1.0
+    for max_ft, mult in _DEFENDER_DISTANCE_BANDS:
+        if d <= max_ft:
+            return mult
+    return _DEFENDER_OPEN_MULT
+
 # Top action types to keep as categories; everything else → "Other"
 _TOP_ACTION_TYPES = [
     "Jump Shot", "Layup Shot", "Driving Layup Shot", "Dunk Shot",
@@ -226,17 +267,30 @@ class XFGModel:
                   (shot_zone_basic, shot_zone_area, shot_zone_range,
                    shot_distance, shot_type, action_type)
 
+        A ``defender_distance`` key (feet), when present, applies the
+        canonical contest adjustment; absent/sentinel values leave xFG
+        unchanged.
+
         Returns:
             xFG probability in [0, 1].
         """
         df = pd.DataFrame([shot])
         X, _ = _encode_features(df, encoders=self.encoders)
-        return float(self.model.predict_proba(X)[0, 1])
+        base = float(self.model.predict_proba(X)[0, 1])
+        adjusted = base * defender_distance_multiplier(shot.get("defender_distance"))
+        return float(min(max(adjusted, 0.0), 1.0))
 
     def predict_batch(self, df: pd.DataFrame) -> pd.Series:
-        """Predict xFG for each row in a DataFrame."""
+        """Predict xFG for each row in a DataFrame.
+
+        When a ``defender_distance`` column is present, the canonical
+        contest multiplier is applied per row.
+        """
         X, _ = _encode_features(df, encoders=self.encoders)
         probs = self.model.predict_proba(X)[:, 1]
+        if "defender_distance" in df.columns:
+            mult = df["defender_distance"].apply(defender_distance_multiplier).values
+            probs = np.clip(probs * mult, 0.0, 1.0)
         return pd.Series(probs, index=df.index, name="xfg")
 
     # ── evaluation ────────────────────────────────────────────────────────────
