@@ -316,6 +316,81 @@ def detect_steam(
     return None
 
 
+# ── RLM annotation (task 16.7-04) ────────────────────────────────────────────
+
+# Public-lean threshold: tickets % beyond this counts as a real public side.
+RLM_PUBLIC_THRESHOLD = 55.0
+
+
+def annotate_rlm(
+    event: Optional[dict],
+    public_bets_pct: float,
+    *,
+    public_threshold: float = RLM_PUBLIC_THRESHOLD,
+) -> Optional[dict]:
+    """Tag a steam event as reverse line movement (RLM) or public-driven.
+
+    RLM is the sharp-money tell: the line moves *against* where the public
+    money sits.  When the line instead follows the public lean, the move is
+    public-driven and should not be treated as a sharp signal.
+
+    Args:
+        event:            A steam event from detect_steam() (or None).
+        public_bets_pct:  % of public tickets on the over (0–100).
+        public_threshold: Tickets % beyond which a public side is recognised.
+
+    Returns:
+        The same event dict with ``rlm`` (bool) and ``move_source``
+        ("sharp" | "public" | "unknown") added; None passes through.
+    """
+    if event is None:
+        return None
+    direction = event.get("direction")
+    public_over = public_bets_pct > public_threshold
+    public_under = public_bets_pct < (100.0 - public_threshold)
+
+    rlm = (public_over and direction == "under") or \
+          (public_under and direction == "over")
+
+    if (public_over and direction == "over") or (public_under and direction == "under"):
+        move_source = "public"          # line followed the public — not sharp
+    elif rlm:
+        move_source = "sharp"           # line moved against the public — RLM
+    else:
+        move_source = "unknown"         # no clear public side
+
+    event["rlm"] = bool(rlm)
+    event["move_source"] = move_source
+    event["public_bets_pct"] = round(float(public_bets_pct), 1)
+    return event
+
+
+def annotate_steam_from_action_network(
+    event: Optional[dict],
+    player_name: str,
+    stat: str,
+    *,
+    public_threshold: float = RLM_PUBLIC_THRESHOLD,
+) -> Optional[dict]:
+    """Ingest the public lean from action_network and annotate RLM on an event.
+
+    Degrades gracefully: if action_network is unavailable the event's ``rlm``
+    is left as None rather than raising.
+    """
+    if event is None:
+        return None
+    try:
+        from src.data.action_network import get_sharp_pct
+        sig = get_sharp_pct(player_name, stat)
+        public_bets_pct = float(sig.get("public_bets_pct", 50.0))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("action_network unavailable (%s) — RLM left unannotated", exc)
+        event["rlm"] = None
+        event["move_source"] = "unknown"
+        return event
+    return annotate_rlm(event, public_bets_pct, public_threshold=public_threshold)
+
+
 # ── timing optimisation (task 16.7-03) ──────────────────────────────────────
 
 # Minimum favourable line movement (points) that justifies delaying a fire.
