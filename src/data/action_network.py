@@ -171,9 +171,10 @@ def refresh_action_network(force: bool = False) -> dict:
                 pub_money     = float(mkt.get("public_money_pct") or mkt.get("money_pct")  or 0.0)
                 line_move     = float(mkt.get("line_move") or 0.0)
 
-                # Steam move: public >60% on over but line moved down → reverse-line movement
-                steam_move = (pub_bets > 60 and line_move < -0.25) or \
-                             (pub_bets < 40 and line_move > 0.25)
+                # Reverse line movement (RLM): public heavy one way but the
+                # line moved the other — the classic sharp-money tell.
+                rlm = (pub_bets > 60 and line_move < -0.25) or \
+                      (pub_bets < 40 and line_move > 0.25)
 
                 key = _prop_key(player, stat)
                 result[key] = {
@@ -182,7 +183,9 @@ def refresh_action_network(force: bool = False) -> dict:
                     "line":             float(line) if line is not None else None,
                     "public_bets_pct":  round(pub_bets, 1),
                     "public_money_pct": round(pub_money, 1),
-                    "steam_move":       steam_move,
+                    "line_move":        round(line_move, 2),
+                    "rlm":              rlm,
+                    "steam_move":       rlm,   # back-compat alias
                     "fetched_at":       fetched_at,
                 }
 
@@ -209,36 +212,36 @@ def get_sharp_pct(player_name: str, stat: str) -> dict:
         {
             "public_bets_pct":  float,   # 0–100; high = public heavy on over
             "public_money_pct": float,
-            "steam_move":       bool,    # reverse-line movement detected
+            "rlm":              bool,    # reverse line movement detected
+            "steam_move":       bool,    # back-compat alias of rlm
             "found":            bool,
         }
     """
     _null = {"public_bets_pct": 50.0, "public_money_pct": 50.0,
-             "steam_move": False, "found": False}
+             "rlm": False, "steam_move": False, "found": False}
 
     cache = refresh_action_network()
+
+    def _shape(rec: dict) -> dict:
+        rlm = bool(rec.get("rlm", rec.get("steam_move", False)))
+        return {
+            "public_bets_pct":  rec.get("public_bets_pct", 50.0),
+            "public_money_pct": rec.get("public_money_pct", 50.0),
+            "rlm":              rlm,
+            "steam_move":       rlm,
+            "found":            True,
+        }
 
     # Try exact key first
     key = _prop_key(player_name, stat)
     if key in cache:
-        rec = cache[key]
-        return {
-            "public_bets_pct":  rec.get("public_bets_pct", 50.0),
-            "public_money_pct": rec.get("public_money_pct", 50.0),
-            "steam_move":       bool(rec.get("steam_move", False)),
-            "found":            True,
-        }
+        return _shape(cache[key])
 
     # Fuzzy name match (normalise unicode)
     norm = _norm_name(player_name)
     for k, rec in cache.items():
         if k.endswith(f"|{stat}") and _norm_name(rec.get("player", "")) == norm:
-            return {
-                "public_bets_pct":  rec.get("public_bets_pct", 50.0),
-                "public_money_pct": rec.get("public_money_pct", 50.0),
-                "steam_move":       bool(rec.get("steam_move", False)),
-                "found":            True,
-            }
+            return _shape(rec)
 
     return _null
 
