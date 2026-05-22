@@ -11,6 +11,12 @@ from __future__ import annotations
 import json
 import os
 import sys
+from datetime import datetime
+
+
+def _dt(s: str) -> datetime:
+    """Parse an NBA gamelog date string for tests."""
+    return datetime.strptime(s, "%b %d, %Y")
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
@@ -18,6 +24,7 @@ sys.path.insert(0, PROJECT_DIR)
 from src.prediction.prop_pergame import (  # noqa: E402
     STATS,
     _ewma,
+    build_opponent_defense,
     build_pergame_dataset,
     feature_columns,
     train_pergame_models,
@@ -51,12 +58,39 @@ def test_ewma_empty_is_zero():
 # ── feature columns ───────────────────────────────────────────────────────────
 
 def test_feature_columns_are_leakage_free():
-    """Every feature is a prior-game form metric or game context — no target."""
+    """Every feature is a prior-game form metric, game context, or opponent
+    defence — never the target."""
     cols = feature_columns()
     assert "rest_days" in cols and "is_home" in cols
     assert all(not c.startswith("target_") for c in cols)
-    # 5 form features x 8 stats + 3 context.
-    assert len(cols) == 5 * 8 + 3
+    assert all(f"opp_def_{s}" in cols for s in STATS)
+    # 5 form features x 8 stats + 3 context + 7 opponent-defence factors.
+    assert len(cols) == 5 * 8 + 3 + 7
+
+
+def test_opponent_defense_is_to_date_only(tmp_path):
+    """Opponent-defence factors use only games before the query date — no leak."""
+    # SAS allows big lines early, small lines late.
+    sas_games = ([_game(f"Jan {d:02d}, 2025", "TOR @ SAS", 40, 12, 10) for d in range(1, 9)]
+                 + [_game(f"Feb {d:02d}, 2025", "TOR @ SAS", 4, 1, 1) for d in range(1, 9)])
+    (tmp_path / "gamelog_99_2024-25.json").write_text(json.dumps(sas_games), encoding="utf-8")
+    # A control opponent (DEN) with steady lines so the league baseline is stable.
+    den_games = ([_game(f"Jan {d:02d}, 2025", "TOR @ DEN", 20, 6, 5) for d in range(9, 17)]
+                 + [_game(f"Feb {d:02d}, 2025", "TOR @ DEN", 20, 6, 5) for d in range(9, 17)])
+    (tmp_path / "gamelog_100_2024-25.json").write_text(json.dumps(den_games), encoding="utf-8")
+
+    oppdef = build_opponent_defense(str(tmp_path))
+    early = oppdef.factors("SAS", _dt("Jan 20, 2025"))   # only SAS's big lines seen
+    late = oppdef.factors("SAS", _dt("Feb 20, 2025"))    # big + small lines seen
+    # Early query sees only the inflated lines -> a higher allowed factor.
+    assert early["opp_def_pts"] > late["opp_def_pts"]
+
+
+def test_opponent_defense_neutral_without_history(tmp_path):
+    """An unknown opponent / no prior games yields a neutral 1.0 factor."""
+    oppdef = build_opponent_defense(str(tmp_path))
+    factors = oppdef.factors("XXX", _dt("Jan 01, 2025"))
+    assert all(v == 1.0 for v in factors.values())
 
 
 # ── dataset construction ──────────────────────────────────────────────────────
