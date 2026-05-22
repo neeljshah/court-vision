@@ -21,6 +21,7 @@ Public API
 """
 from __future__ import annotations
 
+import bisect
 import glob
 import json
 import os
@@ -78,13 +79,94 @@ def _ewma(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
 
 
 def feature_columns() -> List[str]:
-    """Ordered feature names — 5 form features per stat + 3 game-context."""
+    """Ordered feature names — form features, game-context, opponent defence."""
     cols: List[str] = []
     for stat in _FORM_STATS:
         cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
                  f"ewma_{stat}", f"prev_{stat}"]
     cols += ["rest_days", "is_home", "games_played"]
+    cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
     return cols
+
+
+# ── opponent defence (leakage-free to-date factors) ──────────────────────────
+
+class _OpponentDefense:
+    """Per-team opponent-defence factors computed strictly to-date.
+
+    For a game on date D against team O, the factor for a stat is O's mean
+    allowed value for that stat over O's games BEFORE D, divided by the
+    league mean to D. >1 means O is an easier-than-average matchup. Using
+    only games before D keeps the feature leakage-free.
+    """
+
+    def __init__(self, allowed: Dict[str, list], league: list):
+        self._team = {t: self._index(rows) for t, rows in allowed.items()}
+        self._league = self._index(league)
+
+    @staticmethod
+    def _index(rows: list) -> dict:
+        rows = sorted(rows, key=lambda r: r[0])
+        dates = [r[0] for r in rows]
+        prefix = {s: [0.0] for s in STATS}
+        for _d, line in rows:
+            for s in STATS:
+                prefix[s].append(prefix[s][-1] + line[s])
+        return {"dates": dates, "prefix": prefix}
+
+    @staticmethod
+    def _todate_mean(idx: dict, date, stat: str) -> Optional[float]:
+        i = bisect.bisect_left(idx["dates"], date)
+        return idx["prefix"][stat][i] / i if i > 0 else None
+
+    def factors(self, opponent: str, date) -> Dict[str, float]:
+        """Return {opp_def_{stat}: factor} for an opponent on a date.
+
+        Falls back to a neutral 1.0 when there is no prior history."""
+        out: Dict[str, float] = {}
+        team_idx = self._team.get(opponent)
+        for stat in STATS:
+            league_mean = self._todate_mean(self._league, date, stat)
+            team_mean = self._todate_mean(team_idx, date, stat) if team_idx else None
+            if team_mean and league_mean and league_mean > 0:
+                out[f"opp_def_{stat}"] = round(team_mean / league_mean, 4)
+            else:
+                out[f"opp_def_{stat}"] = 1.0
+        return out
+
+
+def _opponent_from_matchup(matchup: str) -> str:
+    """Opponent abbreviation — the last token of 'TEAM vs. OPP' / 'TEAM @ OPP'."""
+    parts = str(matchup).split()
+    return parts[-1] if parts else ""
+
+
+def build_opponent_defense(gamelog_dir: str) -> _OpponentDefense:
+    """Pass over every gamelog to build the to-date opponent-defence model.
+
+    Each played game is a stat line the *opponent* allowed — aggregated per
+    opponent and league-wide, sorted chronologically.
+    """
+    allowed: Dict[str, list] = {}
+    league: list = []
+    for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
+        try:
+            games = json.load(open(path, encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(games, list):
+            continue
+        for g in games:
+            if _num(g.get("MIN")) < _MIN_PLAYED:
+                continue
+            gdate = _parse_date(g.get("GAME_DATE"))
+            opp = _opponent_from_matchup(g.get("MATCHUP", ""))
+            if gdate is None or not opp:
+                continue
+            line = {s: _num(g.get(_BOX_COL[s])) for s in STATS}
+            allowed.setdefault(opp, []).append((gdate, line))
+            league.append((gdate, line))
+    return _OpponentDefense(allowed, league)
 
 
 def _row_features(prior_played: List[dict], rest_days: float,
@@ -126,6 +208,9 @@ def build_pergame_dataset(
     feature_cols = feature_columns()
     rows: List[dict] = []
 
+    # Leakage-free opponent-defence model, built from all gamelogs first.
+    oppdef = build_opponent_defense(gamelog_dir)
+
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
             games = json.load(open(path, encoding="utf-8"))
@@ -147,8 +232,10 @@ def build_pergame_dataset(
                 if idx > 0:
                     delta = (gdate - dated[idx - 1][0]).days
                     rest = float(min(max(delta, 0), 10))
-                is_home = 1 if " vs. " in str(game.get("MATCHUP", "")) else 0
+                matchup = str(game.get("MATCHUP", ""))
+                is_home = 1 if " vs. " in matchup else 0
                 feats = _row_features(prior_played, rest, is_home, len(prior_played))
+                feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
