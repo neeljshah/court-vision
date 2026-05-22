@@ -2226,6 +2226,21 @@ def predict_props(
 
     predictions, confidence = _predict_with_models(feats)
 
+    # Prefer the per-game models — trained on real game logs (one row per
+    # game, leakage-free), the honest measured task. The legacy season-average
+    # models above remain the fallback when a player's gamelog is unavailable.
+    try:
+        from src.prediction.prop_pergame import predict_player_pergame
+        _pid = feats.get("player_id")
+        if _pid:
+            _is_home = bool(feats.get("is_home", 1))
+            _pg = predict_player_pergame(_pid, opp_team, season, is_home=_is_home)
+            if _pg is not None:
+                predictions = {s: round(max(float(_pg[s]), 0.0), 1) for s in _pg}
+                confidence = "pergame"
+    except Exception:  # noqa: BLE001 — never let the per-game path break a prediction
+        pass
+
     # Bayesian minutes projection: pulls min_roll toward season_min when sample is small.
     # Same _BAYES_K constant used for all other Bayesian features.
     _min_roll   = feats.get("min_roll",    feats.get("season_min", 0.0))

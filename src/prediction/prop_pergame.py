@@ -365,6 +365,89 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     return round(max(float(model.predict(X)[0]), 0.0), 2)
 
 
+# ── live prediction ───────────────────────────────────────────────────────────
+
+# Process-level cache — building the opponent-defence model globs every
+# gamelog, so it must not be rebuilt on every predict_props() call.
+_OPP_DEF_CACHE: Dict[str, _OpponentDefense] = {}
+
+
+def _get_opponent_defense(gamelog_dir: str) -> _OpponentDefense:
+    """Return the (process-cached) opponent-defence model for a gamelog dir."""
+    if gamelog_dir not in _OPP_DEF_CACHE:
+        _OPP_DEF_CACHE[gamelog_dir] = build_opponent_defense(gamelog_dir)
+    return _OPP_DEF_CACHE[gamelog_dir]
+
+
+def build_prediction_row(
+    player_id,
+    opp_team: str,
+    season: str,
+    *,
+    is_home: bool = True,
+    rest_days: float = 2.0,
+    gamelog_dir: Optional[str] = None,
+    min_prior: int = 6,
+) -> Optional[Dict[str, float]]:
+    """Build the per-game feature row for a player's UPCOMING game.
+
+    Reads the player's season gamelog, treats every played game as prior
+    form, and assembles the same feature row the models were trained on.
+    Returns None when the gamelog is missing or the player has too little
+    history — the caller then falls back to the legacy models.
+    """
+    gamelog_dir = gamelog_dir or _NBA_CACHE
+    path = os.path.join(gamelog_dir, f"gamelog_{player_id}_{season}.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        games = json.load(open(path, encoding="utf-8"))
+    except Exception:
+        return None
+    if not isinstance(games, list):
+        return None
+
+    dated = [(d, g) for g in games if (d := _parse_date(g.get("GAME_DATE"))) is not None]
+    dated.sort(key=lambda x: x[0])
+    prior_played = [g for _d, g in dated if _num(g.get("MIN")) >= _MIN_PLAYED]
+    if len(prior_played) < min_prior:
+        return None
+
+    feats = _row_features(prior_played, float(rest_days), int(is_home),
+                          len(prior_played))
+    factor_date = dated[-1][0] if dated else datetime.now()
+    feats.update(_get_opponent_defense(gamelog_dir).factors(opp_team, factor_date))
+    return feats
+
+
+def predict_player_pergame(
+    player_id,
+    opp_team: str,
+    season: str,
+    *,
+    is_home: bool = True,
+    rest_days: float = 2.0,
+    gamelog_dir: Optional[str] = None,
+    model_dir: Optional[str] = None,
+) -> Optional[Dict[str, float]]:
+    """Predict all 7 prop stats for a player's upcoming game.
+
+    Returns ``{stat: value}`` from the honest per-game models, or None when
+    the per-game models or the player's gamelog are unavailable.
+    """
+    row = build_prediction_row(player_id, opp_team, season, is_home=is_home,
+                               rest_days=rest_days, gamelog_dir=gamelog_dir)
+    if row is None:
+        return None
+    out: Dict[str, float] = {}
+    for stat in STATS:
+        val = predict_pergame(stat, row, model_dir)
+        if val is None:
+            return None
+        out[stat] = val
+    return out
+
+
 if __name__ == "__main__":
     import argparse
 
