@@ -79,14 +79,65 @@ def _ewma(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
 
 
 def feature_columns() -> List[str]:
-    """Ordered feature names — form features, game-context, opponent defence."""
+    """Ordered feature names — form features, game-context, opponent defence, rest/travel."""
     cols: List[str] = []
     for stat in _FORM_STATS:
         cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
                  f"ewma_{stat}", f"prev_{stat}"]
     cols += ["rest_days", "is_home", "games_played"]
     cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
+    cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     return cols
+
+
+# ── rest / travel features ────────────────────────────────────────────────────
+
+_REST_TRAVEL_PATH = os.path.join(PROJECT_DIR, "data", "rest_travel.parquet")
+_REST_TRAVEL_DEFAULTS: Dict[str, float] = {
+    "is_b2b": 0.0, "is_b3b": 0.0, "miles_traveled": 0.0, "altitude_ft": 0.0,
+}
+
+
+class _RestTravel:
+    """Lookup table for rest/travel features sourced from data/rest_travel.parquet.
+
+    Keyed by (game_date_iso, team_abbreviation) → {is_b2b, is_b3b, miles_traveled, altitude_ft}.
+    Yields neutral defaults when the parquet is absent or the key is missing.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, team_abbrev: str, gdate: datetime) -> Dict[str, float]:
+        """Return rest/travel feature dict for a team on a date."""
+        key = (gdate.date().isoformat(), str(team_abbrev))
+        return dict(self._lookup.get(key, _REST_TRAVEL_DEFAULTS))
+
+
+def build_rest_travel(cache_path: Optional[str] = None) -> _RestTravel:
+    """Load rest/travel parquet and build the lookup table.
+
+    If the parquet is absent or pandas/pyarrow import fails, returns a
+    _RestTravel that always yields neutral defaults. Never raises.
+    """
+    path = cache_path or _REST_TRAVEL_PATH
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _RestTravel(lookup)
+        df = pd.read_parquet(path)
+        for _, row in df.iterrows():
+            key = (str(row["game_date"]), str(row["team_abbreviation"]))
+            lookup[key] = {
+                "is_b2b":         float(row.get("is_b2b", 0.0) or 0.0),
+                "is_b3b":         float(row.get("is_b3b", 0.0) or 0.0),
+                "miles_traveled": float(row.get("miles_traveled", 0.0) or 0.0),
+                "altitude_ft":    float(row.get("altitude_ft", 0.0) or 0.0),
+            }
+    except Exception:
+        pass
+    return _RestTravel(lookup)
 
 
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
@@ -210,6 +261,7 @@ def build_pergame_dataset(
 
     # Leakage-free opponent-defence model, built from all gamelogs first.
     oppdef = build_opponent_defense(gamelog_dir)
+    resttravel = build_rest_travel()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -234,8 +286,10 @@ def build_pergame_dataset(
                     rest = float(min(max(delta, 0), 10))
                 matchup = str(game.get("MATCHUP", ""))
                 is_home = 1 if " vs. " in matchup else 0
+                team_abbrev = matchup.split()[0] if matchup.split() else ""
                 feats = _row_features(prior_played, rest, is_home, len(prior_played))
                 feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
+                feats.update(resttravel.features(team_abbrev, gdate))
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
@@ -387,6 +441,12 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     if not models:
         return None
     cols = feature_columns()
+    expected_n = len(cols)
+    # Guard: stale model trained on a different feature set — refuse to predict.
+    for m in models:
+        n_feats = getattr(m, "n_features_in_", None)
+        if n_feats is not None and n_feats != expected_n:
+            return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
     preds = [float(m.predict(X)[0]) for m in models]
     return round(max(sum(preds) / len(preds), 0.0), 2)
@@ -444,6 +504,8 @@ def build_prediction_row(
                           len(prior_played))
     factor_date = dated[-1][0] if dated else datetime.now()
     feats.update(_get_opponent_defense(gamelog_dir).factors(opp_team, factor_date))
+    # Rest/travel: use neutral defaults for future games (no parquet row yet).
+    feats.update(_REST_TRAVEL_DEFAULTS)
     return feats
 
 
