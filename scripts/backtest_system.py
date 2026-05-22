@@ -109,6 +109,78 @@ def simulate_fill(bet: dict, fill_model: Optional[Callable] = None) -> dict:
     }
 
 
+# ── slippage + book-repricing fill model (task 18.5-02) ──────────────────────
+# Per-book adverse slippage (basis points of the line) and order-size limits.
+# Sharp books (Pinnacle) slip least; retail books slip more and cap smaller.
+DEFAULT_BOOK_SLIPPAGE_BPS: Dict[str, float] = {
+    "pinnacle": 10.0, "kalshi": 15.0, "polymarket": 20.0,
+    "draftkings": 25.0, "fanduel": 25.0, "betmgm": 30.0, "caesars": 30.0,
+}
+DEFAULT_SLIPPAGE_BPS = 25.0
+DEFAULT_BOOK_LIMITS: Dict[str, float] = {
+    "pinnacle": 2000.0, "kalshi": 5000.0, "polymarket": 5000.0,
+    "draftkings": 250.0, "fanduel": 250.0, "betmgm": 200.0, "caesars": 200.0,
+}
+DEFAULT_REPRICING_PENALTY_BPS = 50.0
+
+
+def make_slippage_fill_model(
+    *,
+    book_slippage_bps: Optional[Dict[str, float]] = None,
+    default_slippage_bps: float = DEFAULT_SLIPPAGE_BPS,
+    book_limits: Optional[Dict[str, float]] = None,
+    repricing_penalty_bps: float = DEFAULT_REPRICING_PENALTY_BPS,
+) -> Callable[[dict], dict]:
+    """Build a fill model that applies per-book slippage + a repricing penalty.
+
+    Slippage worsens the fill line by ``slippage_bps`` basis points of the
+    line (an over bet fills higher, an under fills lower).  When a bet's stake
+    exceeds the book's limit, an additional repricing penalty — scaled by the
+    overage fraction (capped at 3×) — is applied: large orders move the book.
+
+    Returns a callable(bet)->fill dict suitable for replay_bet_ledger's
+    ``fill_model`` argument.
+    """
+    book_slippage_bps = book_slippage_bps if book_slippage_bps is not None \
+        else dict(DEFAULT_BOOK_SLIPPAGE_BPS)
+    book_limits = book_limits if book_limits is not None else dict(DEFAULT_BOOK_LIMITS)
+
+    def _fill(bet: dict) -> dict:
+        book = str(bet.get("book", bet.get("sportsbook", "default"))).lower()
+        line = bet.get("book_line", bet.get("line"))
+        stake = float(bet.get("stake", 0.0) or 0.0)
+        direction = str(bet.get("direction", "over")).lower()
+
+        slip_bps = book_slippage_bps.get(book, default_slippage_bps)
+
+        reprice_bps = 0.0
+        limit = book_limits.get(book)
+        if limit and limit > 0 and stake > limit:
+            overage = (stake - limit) / limit
+            reprice_bps = repricing_penalty_bps * min(overage, 3.0)
+
+        total_bps = slip_bps + reprice_bps
+        if line is None:
+            return {"filled": True, "fill_line": None, "fill_stake": stake,
+                    "slippage": 0.0, "slippage_bps": round(total_bps, 2),
+                    "reprice_bps": round(reprice_bps, 2), "book": book}
+
+        slip_pts = float(line) * (total_bps / 10_000.0)
+        fill_line = float(line) + slip_pts if direction == "over" \
+            else float(line) - slip_pts
+        return {
+            "filled": True,
+            "fill_line": round(fill_line, 4),
+            "fill_stake": stake,
+            "slippage": round(abs(fill_line - float(line)), 4),
+            "slippage_bps": round(total_bps, 2),
+            "reprice_bps": round(reprice_bps, 2),
+            "book": book,
+        }
+
+    return _fill
+
+
 def _bet_pnl(bet: dict, fill: dict) -> float:
     """Re-derive realised P&L for a bet under its simulated fill.
 
@@ -223,9 +295,14 @@ def run_full_backtest(
     *,
     starting_bankroll: float = 1000.0,
     fill_model: Optional[Callable] = None,
-    fill_model_name: str = "point_estimate",
+    fill_model_name: object = "point_estimate",
 ) -> dict:
-    """Replay the historical bet ledger end-to-end and write backtest_results.json."""
+    """Replay the historical bet ledger end-to-end and write backtest_results.json.
+
+    ``fill_model_name`` is recorded verbatim in the result's ``fill_model``
+    field — a plain string for the identity fill, or a config dict describing
+    the slippage + repricing model (task 18.5-02).
+    """
     ledger_path = ledger_path or _BET_LOG_PATH
     output_path = output_path or _RESULTS_PATH
 
@@ -262,10 +339,27 @@ def main(argv: List[str] | None = None) -> int:
     p.add_argument("--replay", action="store_true",
                    help="Run the full-system bet-ledger replay instead of the R² gate")
     p.add_argument("--bankroll", type=float, default=1000.0, help="Replay starting bankroll")
+    p.add_argument("--slippage", action="store_true",
+                   help="Apply the per-book slippage + repricing fill model in --replay")
     args = p.parse_args(argv)
 
     if args.replay:
-        result = run_full_backtest(starting_bankroll=args.bankroll)
+        fill_model = None
+        fill_model_name: object = "point_estimate"
+        if args.slippage:
+            fill_model = make_slippage_fill_model()
+            fill_model_name = {
+                "type": "slippage_repricing",
+                "default_slippage_bps": DEFAULT_SLIPPAGE_BPS,
+                "repricing_penalty_bps": DEFAULT_REPRICING_PENALTY_BPS,
+                "per_book_bps": DEFAULT_BOOK_SLIPPAGE_BPS,
+                "book_limits": DEFAULT_BOOK_LIMITS,
+            }
+        result = run_full_backtest(
+            starting_bankroll=args.bankroll,
+            fill_model=fill_model,
+            fill_model_name=fill_model_name,
+        )
         print(json.dumps(result, indent=2))
         return 0
 
