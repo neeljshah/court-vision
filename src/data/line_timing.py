@@ -248,6 +248,74 @@ def clear_cache() -> None:
     _CACHED_BUNDLE = None
 
 
+# ── steam detection (task 16.7-02) ───────────────────────────────────────────
+
+# A qualifying steam move: > 0.5 pt Pinnacle move inside a 5-minute window.
+STEAM_MOVE_THRESHOLD = 0.5    # points
+STEAM_WINDOW_MINUTES = 5.0    # minutes
+
+
+def _parse_ts(value):
+    """Parse an ISO-8601 string (or pass through a datetime) to datetime."""
+    from datetime import datetime as _dt
+    if hasattr(value, "year"):
+        return value
+    return _dt.fromisoformat(str(value).replace("Z", "+00:00"))
+
+
+def detect_steam(
+    line_history: List[Dict],
+    *,
+    threshold: float = STEAM_MOVE_THRESHOLD,
+    window_minutes: float = STEAM_WINDOW_MINUTES,
+) -> Optional[dict]:
+    """Scan a Pinnacle line-snapshot history for a qualifying steam move.
+
+    A STEAM event fires when the line moves more than ``threshold`` points
+    within any ``window_minutes`` span — the clearest sharp-money signal.
+    Returns the first such event chronologically (so a replay detects it at
+    the snapshot that completes the move, well inside the 2-minute target),
+    or None when no qualifying move exists.
+
+    Args:
+        line_history:   Chronological [{"timestamp", "line"}] snapshots, e.g.
+                         from pinnacle_monitor.get_line_history().
+        threshold:      Minimum absolute points moved to qualify.
+        window_minutes: Maximum span over which the move must occur.
+
+    Returns:
+        ``{"event": "STEAM", "direction", "velocity", "magnitude",
+           "from_line", "to_line", "elapsed_minutes", "detected_at"}`` or None.
+    """
+    snaps = sorted(
+        (s for s in line_history if s.get("line") is not None and s.get("timestamp")),
+        key=lambda s: s["timestamp"],
+    )
+    if len(snaps) < 2:
+        return None
+
+    for j in range(1, len(snaps)):
+        t_j = _parse_ts(snaps[j]["timestamp"])
+        for i in range(j - 1, -1, -1):
+            t_i = _parse_ts(snaps[i]["timestamp"])
+            elapsed = (t_j - t_i).total_seconds() / 60.0
+            if elapsed > window_minutes:
+                break  # earlier snapshots are all outside the window
+            move = float(snaps[j]["line"]) - float(snaps[i]["line"])
+            if abs(move) > threshold and elapsed > 0:
+                return {
+                    "event": "STEAM",
+                    "direction": "over" if move > 0 else "under",
+                    "velocity": round(move / elapsed, 4),       # pts / minute
+                    "magnitude": round(move, 4),                # signed pts
+                    "from_line": float(snaps[i]["line"]),
+                    "to_line": float(snaps[j]["line"]),
+                    "elapsed_minutes": round(elapsed, 4),
+                    "detected_at": str(snaps[j]["timestamp"]),
+                }
+    return None
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

@@ -285,6 +285,40 @@ def get_all_prop_signals() -> dict:
     return refresh_pinnacle_props()
 
 
+# ── line-movement history (for steam detection, task 16.7-02) ────────────────
+# Timestamped snapshot log so downstream consumers (line_timing.detect_steam)
+# can see intra-window movement, not just opening-vs-current.
+_LINE_HISTORY = os.path.join(PROJECT_DIR, "data", "nba", "pinnacle_line_history.json")
+
+
+def record_line_snapshot(player_name: str, stat: str, line: float,
+                         ts: Optional[str] = None,
+                         history_path: Optional[str] = None) -> None:
+    """Append one timestamped Pinnacle line observation to the history log."""
+    path = history_path or _LINE_HISTORY
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    hist = _load(path)
+    key = _prop_key(player_name, stat)
+    hist.setdefault(key, []).append({
+        "timestamp": ts or datetime.now(timezone.utc).isoformat(),
+        "line": float(line),
+    })
+    _save(path, hist)
+
+
+def get_line_history(player_name: str, stat: str,
+                     history_path: Optional[str] = None) -> List[Dict]:
+    """Return the chronological line-snapshot history for a player+stat prop.
+
+    Each element is ``{"timestamp": iso8601, "line": float}``.  Returns [] when
+    no history has been recorded yet.
+    """
+    path = history_path or _LINE_HISTORY
+    hist = _load(path)
+    snaps = hist.get(_prop_key(player_name, stat), [])
+    return sorted(snaps, key=lambda s: s.get("timestamp", ""))
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
