@@ -1,11 +1,15 @@
 """
 backtest_system.py — Full-system backtest entry point.
 
-Phase 18.5-01 (betting simulation) will extend this with fill modeling.
-This module provides the R²-regression gate used by CI.
+Two modes:
+  * Regression gate (default) — R² check per stat, used by CI.
+  * Full-system replay (--replay) — replays the historical bet ledger
+    end-to-end (lineup refresh -> bet_selector -> portfolio optimizer ->
+    simulated fill) and reports realised portfolio metrics.
 
 Usage:
     python scripts/backtest_system.py [--r2-threshold 0.7] [--stat pts]
+    python scripts/backtest_system.py --replay [--bankroll 1000]
 
 Exits 0 if all stats pass the R² threshold, 1 if any stat regresses.
 """
@@ -15,15 +19,23 @@ import argparse
 import json
 import os
 import sys
-from typing import Dict, List, Optional
+from datetime import datetime
+from typing import Callable, Dict, List, Optional
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
 _RESIDUALS_PATH = os.path.join(PROJECT_DIR, "data", "models", "prop_residuals.json")
 _METRICS_PATH   = os.path.join(PROJECT_DIR, "data", "models", "props_metrics.json")
+_BET_LOG_PATH   = os.path.join(PROJECT_DIR, "data", "models", "bet_log.json")
+_RESULTS_PATH   = os.path.join(PROJECT_DIR, "data", "output", "backtest_results.json")
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 DEFAULT_R2_THRESHOLD = 0.70
+
+# Pipeline stages a full-system replay reconstructs.  The bet ledger is the
+# recorded output of the first three stages; the replay re-derives P&L by
+# layering the simulated-fill stage on top.
+REPLAY_STAGES = ["lineup_refresh", "bet_selector", "portfolio_optimizer", "simulated_fill"]
 
 
 def _load_residuals(path: str | None = None) -> List[dict]:
@@ -75,13 +87,187 @@ def run_regression_check(
     return results
 
 
+# ── full-system replay engine (task 18.5-01) ─────────────────────────────────
+
+def simulate_fill(bet: dict, fill_model: Optional[Callable] = None) -> dict:
+    """Stage 4 — simulated fill for one bet.
+
+    The default is an identity (point-estimate) fill: the bet is filled
+    exactly at its requested line and stake.  Task 18.5-02 plugs a slippage
+    + book-repricing model in via ``fill_model``.
+
+    Returns ``{"filled", "fill_line", "fill_stake", "slippage"}``.
+    """
+    if fill_model is not None:
+        return fill_model(bet)
+    line = bet.get("book_line", bet.get("line"))
+    return {
+        "filled": True,
+        "fill_line": line,
+        "fill_stake": float(bet.get("stake", 0.0) or 0.0),
+        "slippage": 0.0,
+    }
+
+
+def _bet_pnl(bet: dict, fill: dict) -> float:
+    """Re-derive realised P&L for a bet under its simulated fill.
+
+    Win/loss is recomputed against the (possibly repriced) fill line so the
+    backtest reflects the fill model rather than trusting the recorded P&L.
+    """
+    stake = float(fill.get("fill_stake", bet.get("stake", 0.0)) or 0.0)
+    if stake <= 0:
+        return 0.0
+    actual    = bet.get("actual")
+    fill_line = fill.get("fill_line", bet.get("book_line", bet.get("line")))
+    direction = str(bet.get("direction", "over")).lower()
+    if actual is not None and fill_line is not None:
+        won = (float(actual) > float(fill_line)) if direction == "over" \
+              else (float(actual) < float(fill_line))
+    else:
+        won = bet.get("won")
+    if won is None:
+        return 0.0
+    odds = int(bet.get("odds", -110) or -110)
+    if odds < 0:
+        return stake if won else -stake
+    return stake * (odds / 100.0) if won else -stake
+
+
+def _clv_beat(bet: dict) -> Optional[bool]:
+    """Return whether a bet beat the closing line, or None if CLV is unknown."""
+    if bet.get("clv") is not None:
+        return float(bet["clv"]) > 0
+    closing = bet.get("closing_line")
+    opening = bet.get("book_line", bet.get("line"))
+    if closing is None or opening is None:
+        return None
+    direction = str(bet.get("direction", "over")).lower()
+    move = float(closing) - float(opening)
+    return move > 0 if direction == "over" else move < 0
+
+
+def _max_drawdown(equity: List[float]) -> float:
+    """Largest peak-to-trough fractional decline along an equity curve."""
+    peak, max_dd = (equity[0] if equity else 0.0), 0.0
+    for v in equity:
+        peak = max(peak, v)
+        if peak > 0:
+            max_dd = max(max_dd, (peak - v) / peak)
+    return round(max_dd, 4)
+
+
+def _sharpe(returns: List[float]) -> Optional[float]:
+    """Per-bet Sharpe ratio (mean / stdev of stake-normalised returns)."""
+    if len(returns) < 2:
+        return None
+    mean = sum(returns) / len(returns)
+    var  = sum((r - mean) ** 2 for r in returns) / (len(returns) - 1)
+    std  = var ** 0.5
+    return round(mean / std, 4) if std > 0 else None
+
+
+def replay_bet_ledger(
+    bets: List[dict],
+    *,
+    starting_bankroll: float = 1000.0,
+    fill_model: Optional[Callable] = None,
+) -> dict:
+    """Replay settled bets chronologically and compute portfolio metrics.
+
+    Returns a metrics dict: total_roi, clv_beat_rate, max_drawdown, sharpe,
+    bet_count, total_staked, total_pnl, starting/ending bankroll.
+    """
+    settled = [b for b in bets if b.get("won") is not None
+               or b.get("status") in ("won", "lost")]
+    settled.sort(key=lambda b: str(b.get("game_date", b.get("date", ""))))
+
+    bankroll = starting_bankroll
+    equity   = [bankroll]
+    returns: List[float] = []
+    total_staked = total_pnl = 0.0
+    clv_beats = clv_n = 0
+
+    for bet in settled:
+        fill  = simulate_fill(bet, fill_model)
+        stake = float(fill.get("fill_stake", 0.0) or 0.0)
+        pnl   = _bet_pnl(bet, fill)
+        bankroll += pnl
+        equity.append(bankroll)
+        total_staked += stake
+        total_pnl    += pnl
+        if stake > 0:
+            returns.append(pnl / stake)
+        beat = _clv_beat(bet)
+        if beat is not None:
+            clv_n += 1
+            clv_beats += int(beat)
+
+    return {
+        "bet_count":        len(settled),
+        "total_staked":     round(total_staked, 2),
+        "total_pnl":        round(total_pnl, 2),
+        "total_roi":        round(total_pnl / total_staked, 4) if total_staked > 0 else None,
+        "clv_beat_rate":    round(clv_beats / clv_n, 4) if clv_n > 0 else None,
+        "clv_sample":       clv_n,
+        "max_drawdown":     _max_drawdown(equity),
+        "sharpe":           _sharpe(returns),
+        "starting_bankroll": round(starting_bankroll, 2),
+        "ending_bankroll":  round(bankroll, 2),
+    }
+
+
+def run_full_backtest(
+    ledger_path: Optional[str] = None,
+    output_path: Optional[str] = None,
+    *,
+    starting_bankroll: float = 1000.0,
+    fill_model: Optional[Callable] = None,
+    fill_model_name: str = "point_estimate",
+) -> dict:
+    """Replay the historical bet ledger end-to-end and write backtest_results.json."""
+    ledger_path = ledger_path or _BET_LOG_PATH
+    output_path = output_path or _RESULTS_PATH
+
+    bets: List[dict] = []
+    if os.path.exists(ledger_path):
+        try:
+            bets = json.load(open(ledger_path, encoding="utf-8"))
+        except Exception:
+            bets = []
+
+    metrics = replay_bet_ledger(
+        bets, starting_bankroll=starting_bankroll, fill_model=fill_model,
+    )
+    result = {
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "stages":       REPLAY_STAGES,
+        "fill_model":   fill_model_name,
+        **metrics,
+    }
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
+    print(f"[backtest_system] replay complete: {metrics['bet_count']} bets, "
+          f"ROI={metrics['total_roi']}, max_dd={metrics['max_drawdown']} -> {output_path}")
+    return result
+
+
 def main(argv: List[str] | None = None) -> int:
     """Return 0 if all stats pass, 1 if any regresses."""
-    p = argparse.ArgumentParser(description="Backtest regression gate")
+    p = argparse.ArgumentParser(description="Backtest regression gate / full-system replay")
     p.add_argument("--r2-threshold", type=float, default=DEFAULT_R2_THRESHOLD)
     p.add_argument("--stat", choices=STATS, default=None, help="Check only one stat")
     p.add_argument("--residuals", default=None, help="Path to prop_residuals.json")
+    p.add_argument("--replay", action="store_true",
+                   help="Run the full-system bet-ledger replay instead of the R² gate")
+    p.add_argument("--bankroll", type=float, default=1000.0, help="Replay starting bankroll")
     args = p.parse_args(argv)
+
+    if args.replay:
+        result = run_full_backtest(starting_bankroll=args.bankroll)
+        print(json.dumps(result, indent=2))
+        return 0
 
     residuals = _load_residuals(args.residuals)
     stats     = [args.stat] if args.stat else STATS
