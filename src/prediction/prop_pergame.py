@@ -169,14 +169,18 @@ def train_pergame_models(
     *,
     min_prior: int = 6,
     holdout_frac: float = 0.2,
+    val_frac: float = 0.15,
 ) -> dict:
     """Train one XGBoost regressor per stat on the per-game dataset.
 
-    The split is temporal — the most recent ``holdout_frac`` of games are held
-    out — so the reported R²/MAE are honest out-of-sample numbers.
+    Three-way temporal split — train / validation / holdout, in chronological
+    order. The validation slice drives early stopping (the model adds trees
+    only while validation error keeps falling), which curbs overfitting
+    without ever touching the holdout. The most recent ``holdout_frac`` of
+    games is the honest out-of-sample test.
 
     Returns a metrics dict ``{stat: {train_r2, holdout_r2, train_mae,
-    holdout_mae, gap}}`` and writes props_pg_{stat}.json + a metrics JSON.
+    holdout_mae, gap, best_iteration}}`` and writes props_pg_{stat}.json.
     """
     import numpy as np
     import xgboost as xgb
@@ -188,43 +192,56 @@ def train_pergame_models(
         return {"status": "insufficient_data", "n_rows": len(rows)}
 
     rows.sort(key=lambda r: r["date"])           # temporal order
-    split = int(len(rows) * (1.0 - holdout_frac))
+    n = len(rows)
+    train_end = int(n * (1.0 - holdout_frac - val_frac))
+    val_end   = int(n * (1.0 - holdout_frac))
     X_all = np.array([[r[c] for c in feature_cols] for r in rows], dtype=float)
 
     os.makedirs(model_dir, exist_ok=True)
-    metrics: dict = {"n_rows": len(rows), "n_train": split,
-                     "n_holdout": len(rows) - split, "stats": {}}
+    metrics: dict = {"n_rows": n, "n_train": train_end,
+                     "n_val": val_end - train_end, "n_holdout": n - val_end,
+                     "stats": {}}
 
     for stat in STATS:
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
-        # Count stats (stl/blk) — Poisson; shallower trees curb overfit.
         is_count = stat in ("stl", "blk")
+        # Regularised config + early stopping — the gap-closing levers.
         model = xgb.XGBRegressor(
-            n_estimators=300,
-            max_depth=3 if is_count else 5,
-            learning_rate=0.05,
+            n_estimators=800,                        # cap; early stopping picks the count
+            max_depth=3 if is_count else 4,
+            learning_rate=0.04,
             subsample=0.8,
             colsample_bytree=0.8,
-            min_child_weight=5,
-            reg_lambda=1.5,
+            min_child_weight=10,
+            reg_lambda=2.0,
+            reg_alpha=0.5,
+            gamma=0.2,
             random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
+            early_stopping_rounds=40,
+            eval_metric="mae",
         )
-        model.fit(X_all[:split], y[:split])
-        train_pred = model.predict(X_all[:split])
-        hold_pred  = model.predict(X_all[split:])
+        model.fit(
+            X_all[:train_end], y[:train_end],
+            eval_set=[(X_all[train_end:val_end], y[train_end:val_end])],
+            verbose=False,
+        )
+        train_pred = model.predict(X_all[:train_end])
+        hold_pred  = model.predict(X_all[val_end:])
 
         m = {
-            "train_r2":    round(float(r2_score(y[:split], train_pred)), 4),
-            "holdout_r2":  round(float(r2_score(y[split:], hold_pred)), 4),
-            "train_mae":   round(float(mean_absolute_error(y[:split], train_pred)), 4),
-            "holdout_mae": round(float(mean_absolute_error(y[split:], hold_pred)), 4),
+            "train_r2":      round(float(r2_score(y[:train_end], train_pred)), 4),
+            "holdout_r2":    round(float(r2_score(y[val_end:], hold_pred)), 4),
+            "train_mae":     round(float(mean_absolute_error(y[:train_end], train_pred)), 4),
+            "holdout_mae":   round(float(mean_absolute_error(y[val_end:], hold_pred)), 4),
+            "best_iteration": int(getattr(model, "best_iteration", 0) or 0),
         }
         m["gap"] = round(m["train_r2"] - m["holdout_r2"], 4)
         metrics["stats"][stat] = m
         model.save_model(os.path.join(model_dir, f"props_pg_{stat}.json"))
         print(f"  [prop_pergame] {stat.upper():4s} holdout R²={m['holdout_r2']:.3f} "
-              f"MAE={m['holdout_mae']:.2f}  (train R²={m['train_r2']:.3f}, gap={m['gap']:.3f})")
+              f"MAE={m['holdout_mae']:.2f}  (train R²={m['train_r2']:.3f}, "
+              f"gap={m['gap']:.3f}, trees={m['best_iteration']})")
 
     metrics["feature_cols"] = feature_cols
     with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
