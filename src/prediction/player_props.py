@@ -2455,10 +2455,34 @@ def _asymmetric_objective(y_true, y_pred, alpha: float = 1.3):
 _PROP_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
 
+def _try_stacker_prediction(X, stat: str):
+    """Return the multi-model stacker prediction for one stat, or None.
+
+    Returns None when no trained stacker (``props_stacker_{stat}.pkl``) exists,
+    so the caller cleanly falls back to the single XGBoost model — wiring the
+    ensemble in is therefore zero-regression: it only takes effect once the
+    LightGBM/CatBoost base learners and the stacker have been trained.
+    """
+    try:
+        import numpy as np
+        from src.prediction.prop_stacker import load_stacker, predict_ensemble
+
+        if load_stacker(stat) is None:
+            return None
+        pred = predict_ensemble(np.asarray(X, dtype=float), stat)
+        if pred is None or len(pred) == 0:
+            return None
+        v = float(pred[0])
+        return v if np.isfinite(v) else None
+    except Exception:
+        return None
+
+
 def _predict_with_models(feats: dict) -> tuple:
     """
-    Try loading trained XGBoost models for each of 7 prop stats.
-    Falls back to Bayesian rolling avg, then season avg.
+    Predict 7 prop stats. Prefers the trained multi-model stacker ensemble
+    (XGBoost + LightGBM + CatBoost), then a single XGBoost model, then
+    Bayesian rolling avg, then season avg.
 
     Returns (predictions_dict, confidence_str).
     """
@@ -2466,15 +2490,22 @@ def _predict_with_models(feats: dict) -> tuple:
 
     predictions = {}
     any_model = False
+    used_stacker = False
 
     for stat in _PROP_STATS:
         # Drop season_{stat} from features — it IS the training label
         stat_feat_order = [c for c in _ALL_FEATS if c != f"season_{stat}"]
         X = np.array([[feats.get(k, 0.0) for k in stat_feat_order]])
-        model_path = os.path.join(_MODEL_DIR, f"props_{stat}.json")
 
-        val = None
-        if os.path.exists(model_path):
+        # 1. Multi-model stacker ensemble (when trained).
+        val = _try_stacker_prediction(X, stat)
+        if val is not None:
+            any_model = True
+            used_stacker = True
+
+        # 2. Single XGBoost model (the long-standing path).
+        model_path = os.path.join(_MODEL_DIR, f"props_{stat}.json")
+        if val is None and os.path.exists(model_path):
             try:
                 import xgboost as xgb
                 m = xgb.XGBRegressor()
@@ -2496,7 +2527,7 @@ def _predict_with_models(feats: dict) -> tuple:
 
         predictions[stat] = round(max(val, 0.0), 1)
 
-    confidence = "model" if any_model else "rolling"
+    confidence = "ensemble" if used_stacker else ("model" if any_model else "rolling")
     return predictions, confidence
 
 
