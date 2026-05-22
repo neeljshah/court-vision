@@ -39,7 +39,9 @@ _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 
 # Bump when scored_games cache schema changes to force re-fetch.
-_SCORED_GAMES_VERSION = 5
+# v6: game_pace target switched from season-pace average to realised
+#     box-score pace (PRED-01 leakage fix) — old caches must be rebuilt.
+_SCORED_GAMES_VERSION = 6
 
 # ── Feature schema ─────────────────────────────────────────────────────────────
 
@@ -83,6 +85,37 @@ _MODELS = ("game_total", "spread", "blowout", "first_half", "pace")
 
 # Blowout threshold (abs margin > N = blowout)
 _BLOWOUT_MARGIN = 15
+
+
+def _observed_game_pace(home_row, away_row) -> float:
+    """Actual game pace — possessions per 48 minutes — from the box score.
+
+    Possessions use Dean Oliver's estimator: FGA − OREB + TOV + 0.44·FTA.
+    The result is the *realised* pace of that specific game, not the average
+    of the two teams' season paces.  Using the season-pace average as the
+    target made it identical to the `pace_avg` feature — a 100% leakage that
+    inflated the pace model's R² to a meaningless 1.0 (fixed: task PRED-01).
+
+    OT games are normalised back to a per-48 pace via the team MIN column.
+    Falls back to the season-pace average only when box-score stats are absent.
+    """
+    def _poss(r) -> float:
+        fga  = float(r.get("FGA", 0) or 0)
+        oreb = float(r.get("OREB", 0) or 0)
+        tov  = float(r.get("TOV", 0) or 0)
+        fta  = float(r.get("FTA", 0) or 0)
+        return fga - oreb + tov + 0.44 * fta
+
+    avg_poss = (_poss(home_row) + _poss(away_row)) / 2.0
+    if avg_poss <= 0:
+        return -1.0  # sentinel — caller substitutes the season-pace prior
+
+    raw_min = float(home_row.get("MIN", 240) or 240)
+    # Team MIN is 5×game minutes (240 for regulation); some feeds report 48.
+    game_minutes = raw_min / 5.0 if raw_min > 100 else raw_min
+    if game_minutes <= 0:
+        game_minutes = 48.0
+    return round(48.0 * avg_poss / game_minutes, 2)
 
 
 class _BoosterWrapper:
@@ -510,7 +543,8 @@ def _fetch_scored_games(season: str) -> List[dict]:
         game_total       = home_pts + away_pts
         spread           = home_pts - away_pts
         first_half_proxy = game_total * 0.47 + pace_noise (team-specific)
-        game_pace        = (home_season_pace + away_season_pace) / 2
+        game_pace        = realised box-score pace, possessions per 48 min
+                           (FGA − OREB + TOV + 0.44·FTA), OT-normalised
     """
     cache_path = os.path.join(_NBA_CACHE, f"scored_games_{season}.json")
     if os.path.exists(cache_path):
@@ -589,6 +623,11 @@ def _fetch_scored_games(season: str) -> List[dict]:
 
         pace_avg = (ht["pace"] + at["pace"]) / 2
 
+        # Realised game pace from the box score; fall back to the season-pace
+        # average only when box-score stats are missing (task PRED-01).
+        observed_pace = _observed_game_pace(h, a)
+        game_pace = observed_pace if observed_pace > 0 else pace_avg
+
         # first_half_proxy: 0.47 × game_total + small pace-correlated noise.
         # High-pace games tend to have slightly more first-half action (faster early tempo).
         game_total = home_pts + away_pts
@@ -606,7 +645,9 @@ def _fetch_scored_games(season: str) -> List[dict]:
             "game_total":        game_total,
             "spread":            home_pts - away_pts,
             "first_half_proxy":  fh_proxy,
-            "game_pace":         pace_avg,
+            # Realised game pace from the box score — NOT the season-pace
+            # average (that was identical to the pace_avg feature → leakage).
+            "game_pace":         game_pace,
             # Features (mirrors win_probability.py FEATURE_COLS + extras)
             "home_off_rtg":        ht["off_rtg"],
             "home_def_rtg":        ht["def_rtg"],
