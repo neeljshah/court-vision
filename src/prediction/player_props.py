@@ -2621,7 +2621,7 @@ def train_props(seasons: list = None, force: bool = False,
     import numpy as np
     import xgboost as xgb
     from sklearn.metrics import mean_absolute_error, r2_score
-    from src.prediction.prop_cv_split import _objective_for_stat
+    from src.prediction.prop_cv_split import xgb_params_for_stat
 
     os.makedirs(_MODEL_DIR, exist_ok=True)
 
@@ -2666,20 +2666,10 @@ def train_props(seasons: list = None, force: bool = False,
         else:
             sample_w = None
 
-        # STL/BLK: count data — Poisson objective improves R² (+5pp vs reg on CV)
-        # Experiment 2026-04-15: Poisson R²=0.47 vs baseline R²=0.44 (5-fold CV).
-        # Interaction feature (def_rtg*min) did NOT help (R²=0.43 < baseline).
-        _objective = _objective_for_stat(stat)
-
-        m = xgb.XGBRegressor(
-            n_estimators=200,
-            max_depth=4,
-            learning_rate=0.05,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            random_state=42,
-            objective=_objective,
-        )
+        # Per-stat hyperparameters: STL/BLK use the Poisson objective AND
+        # stronger regularisation — the walk-forward report (PRED-02) flagged
+        # props_stl overfitting with a 0.18 train/holdout R² gap.
+        m = xgb.XGBRegressor(**xgb_params_for_stat(stat))
         m.fit(X_train, y_train, sample_weight=sample_w)
         preds = m.predict(X_test)
         mae = mean_absolute_error(y_test, preds)
