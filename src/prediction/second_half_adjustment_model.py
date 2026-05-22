@@ -227,6 +227,65 @@ def predict_half_split(
     return default
 
 
+# ── 2H prop bets from a blowout signal (task 19.5-04) ────────────────────────
+
+def produce_2h_prop_bets(
+    blowout_signal: dict,
+    players: list,
+    season: str = "2024-25",
+) -> list:
+    """Produce second-half prop bets from a blowout signal.
+
+    In a blowout both teams' starters sit while the bench mob plays:
+      * starters  -> 2H alt-UNDER (minutes capped by garbage time)
+      * bench     -> 2H alt-OVER  (unexpected garbage-time minutes)
+
+    Args:
+        blowout_signal: A BLOWOUT signal from garbage_time_detector.detect_blowout.
+        players:        [{player_id, player_name, team, role}], role in
+                        {"starter", "bench"}.
+        season:         Season for the H1/H2 split lookup.
+
+    Returns:
+        List of 2H prop-bet dicts (player_id, team, half="2H", stat="pts",
+        recommendation, h2_pts_pct, reason).
+    """
+    if not blowout_signal or blowout_signal.get("event") != "BLOWOUT":
+        return []
+
+    affected = {blowout_signal.get("leading_team"), blowout_signal.get("trailing_team")}
+    affected.discard(None)
+
+    bets = []
+    for p in players:
+        if p.get("team") not in affected:
+            continue
+        role = str(p.get("role", "starter")).lower()
+        is_starter = role == "starter"
+
+        try:
+            split = predict_half_split(int(p.get("player_id", 0)), season)
+            h2_pct = split.get("h2_pts_pct", 0.50)
+        except Exception:  # noqa: BLE001
+            h2_pct = 0.50
+
+        bets.append({
+            "player_id":      p.get("player_id"),
+            "player_name":    p.get("player_name", ""),
+            "team":           p.get("team"),
+            "half":           "2H",
+            "stat":           "pts",
+            "recommendation": "alt_under" if is_starter else "alt_over",
+            "h2_pts_pct":     round(float(h2_pct), 4),
+            "reason": (
+                f"blowout ({blowout_signal.get('point_differential')} pts) — "
+                + ("starter minutes capped by garbage time"
+                   if is_starter else "bench-mob garbage-time minutes")
+            ),
+        })
+    return bets
+
+
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()

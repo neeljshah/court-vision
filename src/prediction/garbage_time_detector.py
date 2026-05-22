@@ -150,6 +150,78 @@ def predict_garbage_time(features: dict) -> dict:
     }
 
 
+# ── live blowout signal (task 19.5-04) ───────────────────────────────────────
+
+# A blowout: a margin this large with no more than this much game time left
+# means starters sit and the bench mob plays — second-half props are stale.
+_BLOWOUT_MARGIN = 18.0           # points
+_BLOWOUT_MAX_MINUTES_LEFT = 18.0  # minutes (≈ halftime or later)
+
+
+def detect_blowout(
+    game_state: dict,
+    *,
+    margin_threshold: float = _BLOWOUT_MARGIN,
+    max_minutes_remaining: float = _BLOWOUT_MAX_MINUTES_LEFT,
+) -> Optional[dict]:
+    """Emit a blowout signal from a live game state.
+
+    A blowout fires when the point differential is at least
+    ``margin_threshold`` and no more than ``max_minutes_remaining`` minutes of
+    game time remain — the window where coaches empty the bench.
+
+    Args:
+        game_state: ``{point_differential, period, minutes_remaining,
+                       leading_team, trailing_team}``.  leading/trailing are
+                       derived from scores when team names + scores are given.
+
+    Returns:
+        ``{"event": "BLOWOUT", point_differential, period, minutes_remaining,
+           leading_team, trailing_team}`` or None when no blowout.
+    """
+    diff = abs(float(game_state.get("point_differential", 0.0) or 0.0))
+    mins_left = float(game_state.get("minutes_remaining", 48.0) or 48.0)
+    if diff < margin_threshold or mins_left > max_minutes_remaining:
+        return None
+
+    leading = game_state.get("leading_team")
+    trailing = game_state.get("trailing_team")
+    if leading is None and game_state.get("home_team") is not None:
+        home_lead = float(game_state.get("home_score", 0)) >= float(game_state.get("away_score", 0))
+        leading  = game_state["home_team"] if home_lead else game_state.get("away_team")
+        trailing = game_state.get("away_team") if home_lead else game_state["home_team"]
+
+    return {
+        "event": "BLOWOUT",
+        "point_differential": round(diff, 1),
+        "period": int(game_state.get("period", 0) or 0),
+        "minutes_remaining": round(mins_left, 1),
+        "leading_team": leading,
+        "trailing_team": trailing,
+    }
+
+
+def route_blowout_to_second_half(
+    game_state: dict,
+    players: list,
+    season: str = "2024-25",
+) -> list:
+    """Detect a blowout and route it to the second-half model for 2H prop bets.
+
+    Returns the list of 2H prop bets produced, or [] when no blowout fires.
+    This is the end-to-end signal path: detect_blowout -> second-half model.
+    """
+    signal = detect_blowout(game_state)
+    if signal is None:
+        return []
+    try:
+        from src.prediction.second_half_adjustment_model import produce_2h_prop_bets
+    except Exception as exc:  # noqa: BLE001
+        log.warning("second_half_adjustment_model unavailable: %s", exc)
+        return []
+    return produce_2h_prop_bets(signal, players, season=season)
+
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
