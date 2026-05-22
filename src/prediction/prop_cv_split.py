@@ -121,3 +121,49 @@ def filter_excluded_players(
 def _objective_for_stat(stat: str) -> str:
     """XGBoost objective for stat. Count stats use Poisson; others use squared error."""
     return "count:poisson" if stat in _COUNT_STATS else "reg:squarederror"
+
+
+# Default XGBoost hyperparameters for prop regression.
+_BASE_XGB_PARAMS = {
+    "n_estimators":     200,
+    "max_depth":        4,
+    "learning_rate":    0.05,
+    "subsample":        0.8,
+    "colsample_bytree": 0.8,
+    "random_state":     42,
+}
+
+# Stronger regularisation for low-signal count stats (stl, blk). The
+# walk-forward report (PRED-02) found props_stl overfitting badly — a 0.18
+# train−holdout R² gap. Shallower trees, heavier leaf weighting, and L1/L2
+# penalties shrink that gap by curbing the model's capacity to memorise.
+_COUNT_STAT_REGULARISATION = {
+    "max_depth":        3,     # shallower trees — less capacity to memorise
+    "min_child_weight": 8,     # require more samples per leaf
+    "reg_lambda":       2.0,   # stronger L2 shrinkage
+    "reg_alpha":        0.5,   # L1 sparsity on weak splits
+    "gamma":            0.5,   # minimum loss reduction to make a split
+    "subsample":        0.7,   # heavier row subsampling
+    "colsample_bytree": 0.7,   # heavier column subsampling
+}
+
+
+def xgb_params_for_stat(stat: str) -> dict:
+    """Return XGBoost hyperparameters tuned for a prop stat.
+
+    High-signal stats (pts/reb/ast/fg3m/tov) use the base parameters. Low-signal
+    count stats (stl, blk) — which the walk-forward report flagged as overfit —
+    receive stronger regularisation to close the train/holdout gap.
+
+    Args:
+        stat: Prop stat name.
+
+    Returns:
+        A kwargs dict ready to splat into ``xgboost.XGBRegressor(**params)``,
+        including the per-stat ``objective``.
+    """
+    params = dict(_BASE_XGB_PARAMS)
+    params["objective"] = _objective_for_stat(stat)
+    if stat in _COUNT_STATS:
+        params.update(_COUNT_STAT_REGULARISATION)
+    return params
