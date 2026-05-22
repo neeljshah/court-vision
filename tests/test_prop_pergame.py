@@ -23,9 +23,11 @@ sys.path.insert(0, PROJECT_DIR)
 
 from src.prediction.prop_pergame import (  # noqa: E402
     STATS,
+    _RestTravel,
     _ewma,
     build_opponent_defense,
     build_pergame_dataset,
+    build_rest_travel,
     feature_columns,
     train_pergame_models,
 )
@@ -64,8 +66,43 @@ def test_feature_columns_are_leakage_free():
     assert "rest_days" in cols and "is_home" in cols
     assert all(not c.startswith("target_") for c in cols)
     assert all(f"opp_def_{s}" in cols for s in STATS)
-    # 5 form features x 8 stats + 3 context + 7 opponent-defence factors.
-    assert len(cols) == 5 * 8 + 3 + 7
+    # 5 form features x 8 stats + 3 context + 7 opponent-defence factors + 4 rest/travel.
+    assert len(cols) == 5 * 8 + 3 + 7 + 4
+
+
+def test_feature_columns_include_rest_travel():
+    """feature_columns() includes the 4 new rest/travel schedule features."""
+    cols = feature_columns()
+    for name in ("is_b2b", "is_b3b", "miles_traveled", "altitude_ft"):
+        assert name in cols, f"Missing rest/travel feature: {name}"
+
+
+def test_build_rest_travel_neutral_defaults_for_unknown_key():
+    """_RestTravel returns neutral defaults for any (date, team) not in the parquet."""
+    rt = build_rest_travel()   # parquet absent in test env -> empty lookup
+    from datetime import datetime
+    feats = rt.features("XXX", datetime(2025, 1, 15))
+    assert feats["is_b2b"] == 0.0
+    assert feats["is_b3b"] == 0.0
+    assert feats["miles_traveled"] == 0.0
+    assert feats["altitude_ft"] == 0.0
+
+
+def test_build_pergame_dataset_has_rest_travel_columns(tmp_path):
+    """build_pergame_dataset() includes all 4 rest/travel columns in every row
+    even when no rest_travel.parquet exists (neutral defaults applied)."""
+    import math
+    games = [_game(f"Jan {d:02d}, 2025", "SAS vs. TOR", 10 + d, 5, 4)
+             for d in range(1, 16)]
+    (tmp_path / "gamelog_10_2024-25.json").write_text(
+        json.dumps(games), encoding="utf-8")
+    rows, cols = build_pergame_dataset(str(tmp_path), min_prior=6)
+    assert len(rows) > 0
+    for name in ("is_b2b", "is_b3b", "miles_traveled", "altitude_ft"):
+        assert name in cols, f"feature_columns() missing {name}"
+        for row in rows:
+            assert name in row, f"Row missing key {name}"
+            assert math.isfinite(row[name]), f"{name} is not finite in row"
 
 
 def test_opponent_defense_is_to_date_only(tmp_path):
