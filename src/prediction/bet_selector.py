@@ -296,6 +296,7 @@ def select(
             "alt_line_ev": row.get("alt_line_ev"),
             "clv_prob":    clv_pred.get("clv_prob") if clv_pred else None,
             "predicted_clv": clv_pred.get("expected_clv") if clv_pred else None,
+            "source":      row.get("source", "slate"),
         }
 
         # 5. Timing optimiser — fire now, or divert to the delayed-fire queue.
@@ -361,6 +362,50 @@ def _write_bets(bets: list[dict], date_str: str) -> str:
         json.dump(payload, f, indent=2)
     print(f"[bet_selector] Written -> {path}")
     return path
+
+
+def route_intraday_events(events: list[dict], date_str: str = None) -> int:
+    """Receive intraday trigger events and persist them for bet selection.
+
+    Called by scripts/intraday_trigger.py (task 19.5-02): live trigger events
+    (foul trouble, late scratch, garbage time) arrive here each carrying a
+    ``source`` tag.  They are appended to data/output/intraday_triggers_{date}.json
+    so the selection pipeline can act on them.
+
+    Args:
+        events:   List of trigger-event dicts, each with a ``source`` key.
+        date_str: YYYY-MM-DD (default: today) for the output filename.
+
+    Returns:
+        Number of events routed in this call.
+    """
+    from datetime import date as _date
+    date_str = date_str or str(_date.today())
+    os.makedirs(_OUTPUT_DIR, exist_ok=True)
+    path = os.path.join(_OUTPUT_DIR, f"intraday_triggers_{date_str.replace('-', '')}.json")
+
+    existing: list[dict] = []
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                existing = json.load(f).get("events", [])
+        except Exception:
+            existing = []
+
+    stamped = []
+    for ev in events:
+        ev = dict(ev)
+        ev.setdefault("source", "intraday")
+        ev["routed_at"] = datetime.utcnow().isoformat() + "Z"
+        stamped.append(ev)
+        log.info("intraday event routed: source=%s event=%s",
+                 ev.get("source"), ev.get("event", ev.get("recommendation", "?")))
+
+    payload = {"date": date_str, "count": len(existing) + len(stamped),
+               "events": existing + stamped}
+    with open(path, "w") as f:
+        json.dump(payload, f, indent=2)
+    return len(stamped)
 
 
 def _write_timing_queue(scheduled: list[dict], date_str: str) -> str:
