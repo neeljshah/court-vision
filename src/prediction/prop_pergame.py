@@ -269,6 +269,8 @@ def train_pergame_models(
     Returns a metrics dict ``{stat: {train_r2, holdout_r2, train_mae,
     holdout_mae, gap, best_iteration}}`` and writes props_pg_{stat}.json.
     """
+    import joblib
+    import lightgbm as lgb
     import numpy as np
     import xgboost as xgb
     from sklearn.metrics import mean_absolute_error, r2_score
@@ -283,6 +285,7 @@ def train_pergame_models(
     train_end = int(n * (1.0 - holdout_frac - val_frac))
     val_end   = int(n * (1.0 - holdout_frac))
     X_all = np.array([[r[c] for c in feature_cols] for r in rows], dtype=float)
+    X_tr, X_val, X_ho = X_all[:train_end], X_all[train_end:val_end], X_all[val_end:]
 
     os.makedirs(model_dir, exist_ok=True)
     metrics: dict = {"n_rows": n, "n_train": train_end,
@@ -291,44 +294,54 @@ def train_pergame_models(
 
     for stat in STATS:
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
+        y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
         is_count = stat in ("stl", "blk")
-        # Regularised config + early stopping — the gap-closing levers.
-        model = xgb.XGBRegressor(
-            n_estimators=800,                        # cap; early stopping picks the count
-            max_depth=3 if is_count else 4,
-            learning_rate=0.04,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            min_child_weight=10,
-            reg_lambda=2.0,
-            reg_alpha=0.5,
-            gamma=0.2,
-            random_state=42,
+
+        # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
+        xgb_model = xgb.XGBRegressor(
+            n_estimators=800, max_depth=3 if is_count else 4, learning_rate=0.04,
+            subsample=0.8, colsample_bytree=0.8, min_child_weight=10,
+            reg_lambda=2.0, reg_alpha=0.5, gamma=0.2, random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
-            early_stopping_rounds=40,
-            eval_metric="mae",
+            early_stopping_rounds=40, eval_metric="mae",
         )
-        model.fit(
-            X_all[:train_end], y[:train_end],
-            eval_set=[(X_all[train_end:val_end], y[train_end:val_end])],
-            verbose=False,
+        xgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=False)
+
+        # Base learner 2 — LightGBM, a different bias-variance tradeoff.
+        lgb_model = lgb.LGBMRegressor(
+            n_estimators=800, max_depth=3 if is_count else 4, learning_rate=0.04,
+            subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
+            min_child_samples=20, reg_lambda=2.0, reg_alpha=0.5, random_state=42,
+            objective="poisson" if is_count else "regression",
+            n_jobs=-1, verbosity=-1,
         )
-        train_pred = model.predict(X_all[:train_end])
-        hold_pred  = model.predict(X_all[val_end:])
+        lgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
+                      callbacks=[lgb.early_stopping(40, verbose=False)])
+
+        # Blend = mean of the two base learners — what predict_pergame uses.
+        def _blend(X):
+            return 0.5 * (xgb_model.predict(X) + lgb_model.predict(X))
+
+        xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
+        blend_ho = 0.5 * (xgb_ho + lgb_ho)
+        blend_tr = _blend(X_tr)
 
         m = {
-            "train_r2":      round(float(r2_score(y[:train_end], train_pred)), 4),
-            "holdout_r2":    round(float(r2_score(y[val_end:], hold_pred)), 4),
-            "train_mae":     round(float(mean_absolute_error(y[:train_end], train_pred)), 4),
-            "holdout_mae":   round(float(mean_absolute_error(y[val_end:], hold_pred)), 4),
-            "best_iteration": int(getattr(model, "best_iteration", 0) or 0),
+            "holdout_r2":      round(float(r2_score(y_ho, blend_ho)), 4),
+            "holdout_mae":     round(float(mean_absolute_error(y_ho, blend_ho)), 4),
+            "train_r2":        round(float(r2_score(y_tr, blend_tr)), 4),
+            "xgb_holdout_r2":  round(float(r2_score(y_ho, xgb_ho)), 4),
+            "lgb_holdout_r2":  round(float(r2_score(y_ho, lgb_ho)), 4),
         }
         m["gap"] = round(m["train_r2"] - m["holdout_r2"], 4)
+        m["ensemble_lift"] = round(m["holdout_r2"] - max(m["xgb_holdout_r2"],
+                                                         m["lgb_holdout_r2"]), 4)
         metrics["stats"][stat] = m
-        model.save_model(os.path.join(model_dir, f"props_pg_{stat}.json"))
-        print(f"  [prop_pergame] {stat.upper():4s} holdout R²={m['holdout_r2']:.3f} "
-              f"MAE={m['holdout_mae']:.2f}  (train R²={m['train_r2']:.3f}, "
-              f"gap={m['gap']:.3f}, trees={m['best_iteration']})")
+        xgb_model.save_model(os.path.join(model_dir, f"props_pg_{stat}.json"))
+        joblib.dump(lgb_model, os.path.join(model_dir, f"props_pg_lgb_{stat}.pkl"))
+        print(f"  [prop_pergame] {stat.upper():4s} blend R²={m['holdout_r2']:.3f} "
+              f"MAE={m['holdout_mae']:.2f}  (xgb={m['xgb_holdout_r2']:.3f}, "
+              f"lgb={m['lgb_holdout_r2']:.3f}, lift={m['ensemble_lift']:+.3f})")
 
     metrics["feature_cols"] = feature_cols
     with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
@@ -338,31 +351,45 @@ def train_pergame_models(
 
 # ── inference ─────────────────────────────────────────────────────────────────
 
-def load_pergame_model(stat: str, model_dir: Optional[str] = None):
-    """Load the per-game XGBoost model for a stat, or None if untrained."""
-    path = os.path.join(model_dir or _MODEL_DIR, f"props_pg_{stat}.json")
-    if not os.path.exists(path):
-        return None
-    try:
-        import xgboost as xgb
-        model = xgb.XGBRegressor()
-        model.load_model(path)
-        return model
-    except Exception:
-        return None
+def load_pergame_model(stat: str, model_dir: Optional[str] = None) -> list:
+    """Load the per-game base learners (XGBoost + LightGBM) for a stat.
+
+    Returns a list of fitted models — empty when none are trained. The blend
+    of whatever is present is what predict_pergame uses.
+    """
+    model_dir = model_dir or _MODEL_DIR
+    models: list = []
+    xgb_path = os.path.join(model_dir, f"props_pg_{stat}.json")
+    if os.path.exists(xgb_path):
+        try:
+            import xgboost as xgb
+            m = xgb.XGBRegressor()
+            m.load_model(xgb_path)
+            models.append(m)
+        except Exception:
+            pass
+    lgb_path = os.path.join(model_dir, f"props_pg_lgb_{stat}.pkl")
+    if os.path.exists(lgb_path):
+        try:
+            import joblib
+            models.append(joblib.load(lgb_path))
+        except Exception:
+            pass
+    return models
 
 
 def predict_pergame(stat: str, feature_row: Dict[str, float],
                     model_dir: Optional[str] = None) -> Optional[float]:
-    """Predict one stat for one game from a pre-game feature row."""
+    """Predict one stat for one game — the mean of the per-game base learners."""
     import numpy as np
 
-    model = load_pergame_model(stat, model_dir)
-    if model is None:
+    models = load_pergame_model(stat, model_dir)
+    if not models:
         return None
     cols = feature_columns()
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
-    return round(max(float(model.predict(X)[0]), 0.0), 2)
+    preds = [float(m.predict(X)[0]) for m in models]
+    return round(max(sum(preds) / len(preds), 0.0), 2)
 
 
 # ── live prediction ───────────────────────────────────────────────────────────
