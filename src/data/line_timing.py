@@ -316,6 +316,85 @@ def detect_steam(
     return None
 
 
+# ── timing optimisation (task 16.7-03) ──────────────────────────────────────
+
+# Minimum favourable line movement (points) that justifies delaying a fire.
+FIRE_MIN_GAIN = 0.25
+
+
+def get_fire_recommendation(
+    bet: Dict,
+    *,
+    predict_fn=None,
+    model_path: Optional[str] = None,
+    min_gain: float = FIRE_MIN_GAIN,
+) -> dict:
+    """Recommend firing a bet now or waiting for a better closing line.
+
+    Uses the closing-price model: if the line is expected to move in our
+    favour by more than ``min_gain`` points, waiting captures extra value;
+    otherwise the value is best locked in immediately.
+
+    Args:
+        bet:        A bet dict (direction, book_line, and any timing features).
+        predict_fn: Optional callable(features)->closing_price for testing.
+        model_path: Override path to line_timing.pkl.
+        min_gain:   Favourable-movement threshold (points) to justify waiting.
+
+    Returns:
+        ``{"action": "fire_now"|"wait", "predicted_closing", "current_line",
+           "expected_gain", "delay_minutes", "reason"}``.  Degrades to
+        "fire_now" whenever no closing-price model is available.
+    """
+    direction = str(bet.get("direction", "over")).lower()
+    current_line = bet.get("book_line")
+    ttg_hours = float(bet.get("time_to_game", bet.get("time_to_game_hours", 0.0)) or 0.0)
+    feats = {
+        "open_price": float(current_line) if current_line is not None else 0.0,
+        "time_to_game": ttg_hours,
+        "lineup_news": float(bet.get("lineup_news", 0.0) or 0.0),
+        "public_pct": float(bet.get("public_pct", 50.0) or 50.0),
+        "sharp_pct": float(bet.get("sharp_pct", 50.0) or 50.0),
+        "line_velocity": float(bet.get("line_velocity", 0.0) or 0.0),
+    }
+
+    predicted: Optional[float] = None
+    if current_line is not None:
+        try:
+            predicted = float(predict_fn(feats)) if predict_fn is not None \
+                else predict_closing_price(feats, model_path)
+        except FileNotFoundError:
+            predicted = None
+        except Exception as exc:  # noqa: BLE001 — a bad prediction must not block firing
+            log.warning("get_fire_recommendation: prediction failed (%s)", exc)
+            predicted = None
+
+    if predicted is None or current_line is None:
+        return {"action": "fire_now", "predicted_closing": predicted,
+                "current_line": current_line, "expected_gain": 0.0,
+                "delay_minutes": 0.0,
+                "reason": "no closing-line model — fire immediately"}
+
+    # over bets want a LOWER line; under bets want a HIGHER line.
+    if direction == "over":
+        expected_gain = float(current_line) - predicted
+    else:
+        expected_gain = predicted - float(current_line)
+
+    if expected_gain > min_gain:
+        delay_minutes = round(min(max(ttg_hours * 60.0 * 0.5, 0.0), 90.0), 1)
+        return {"action": "wait", "predicted_closing": round(predicted, 4),
+                "current_line": float(current_line),
+                "expected_gain": round(expected_gain, 4),
+                "delay_minutes": delay_minutes,
+                "reason": f"line expected to move {expected_gain:+.2f} pt in our favour"}
+
+    return {"action": "fire_now", "predicted_closing": round(predicted, 4),
+            "current_line": float(current_line),
+            "expected_gain": round(expected_gain, 4), "delay_minutes": 0.0,
+            "reason": "no favourable line movement expected — lock value now"}
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":

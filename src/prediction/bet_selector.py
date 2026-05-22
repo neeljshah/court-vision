@@ -18,7 +18,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -93,6 +93,20 @@ def _resolve_clv_predictor(model_path: Optional[str] = None):
     return lambda feats: predict_clv(feats, model_path)
 
 
+def _resolve_timing_recommender():
+    """Return a callable(bet)->recommendation dict, or None if unavailable.
+
+    line_timing.get_fire_recommendation self-degrades to "fire_now" when no
+    closing-price model exists, so this only returns None on import failure.
+    """
+    try:
+        from src.data.line_timing import get_fire_recommendation
+    except Exception as exc:  # noqa: BLE001
+        log.warning("line_timing unavailable (%s) — timing optimiser skipped", exc)
+        return None
+    return get_fire_recommendation
+
+
 def select(
     edge_rows: list[dict],
     date_str: str,
@@ -101,6 +115,7 @@ def select(
     *,
     clv_predict_fn=None,
     clv_model_path: Optional[str] = None,
+    timing_recommend_fn=None,
 ) -> list[dict]:
     """
     Filter and size bets from slate edge_rows.
@@ -114,9 +129,14 @@ def select(
                          for the dual edge+CLV gate.  If None, the real
                          clv_predictor is loaded (when clv_predictor.pkl exists).
         clv_model_path:  Override path to clv_predictor.pkl.
+        timing_recommend_fn: Injectable callable(bet)->fire-recommendation dict
+                         for the timing optimiser.  If None, the real
+                         line_timing.get_fire_recommendation is used.
 
     Returns:
-        List of bet dicts written to data/output/bets_YYYYMMDD.json.
+        List of bet dicts written to data/output/bets_YYYYMMDD.json.  Bets the
+        timing optimiser recommends delaying are diverted to the persisted
+        delay queue (bet_timing_queue.json) instead of this list.
 
     Dual filter (task 16.5-03): a candidate must clear BOTH
         |edge| > edge_min (4%)   AND   predicted CLV > clv_min (1.5%)
@@ -139,6 +159,13 @@ def select(
     if _clv_fn is None and clv_enabled:
         _clv_fn = _resolve_clv_predictor(clv_model_path)
     clv_dropped = 0
+
+    # Resolve the timing optimiser (None -> fire every bet immediately).
+    timing_enabled = bool(cfg.get("timing_optimizer_enabled", True))
+    _timing_fn = timing_recommend_fn
+    if _timing_fn is None and timing_enabled:
+        _timing_fn = _resolve_timing_recommender()
+    scheduled: list[dict] = []   # bets diverted to the delayed-fire queue
 
     # Import kelly_corr (graceful fallback if portfolio unavailable)
     try:
@@ -271,10 +298,39 @@ def select(
             "predicted_clv": clv_pred.get("expected_clv") if clv_pred else None,
         }
 
+        # 5. Timing optimiser — fire now, or divert to the delayed-fire queue.
+        if _timing_fn is not None:
+            try:
+                rec = _timing_fn(bet)
+            except Exception as exc:  # noqa: BLE001 — never let timing abort a slate
+                log.warning("timing recommendation failed for %s/%s (%s) — firing now",
+                            player, stat, exc)
+                rec = None
+            if rec is not None and rec.get("action") == "wait":
+                fire_at = (
+                    datetime.utcnow()
+                    + timedelta(minutes=float(rec.get("delay_minutes", 0.0) or 0.0))
+                )
+                bet["status"] = "scheduled"
+                scheduled.append({
+                    "bet": bet,
+                    "fire_at": fire_at.isoformat() + "Z",
+                    "recommendation": rec,
+                })
+                game_counts[game_id] = game_count + 1
+                player_stakes[player] = committed + size
+                open_stats.append(stat)
+                continue
+            if rec is not None:
+                bet["timing"] = rec
+
         bets.append(bet)
         game_counts[game_id] = game_count + 1
         player_stakes[player] = committed + size
         open_stats.append(stat)
+
+    if _timing_fn is not None:
+        _write_timing_queue(scheduled, date_str)
 
     _write_bets(bets, date_str)
 
@@ -283,8 +339,9 @@ def select(
 
     mode = "PAPER" if dry_run else "LIVE"
     clv_note = f", clv_min={clv_min}% ({clv_dropped} dropped)" if _clv_fn is not None else ""
+    timing_note = f", {len(scheduled)} scheduled" if _timing_fn is not None and scheduled else ""
     print(f"[bet_selector] {mode}: {len(bets)} bets selected from {len(candidates)} edges "
-          f"(edge_min={edge_min}, bankroll=${bk:.0f}{clv_note})")
+          f"(edge_min={edge_min}, bankroll=${bk:.0f}{clv_note}{timing_note})")
     _print_bets_table(bets)
 
     return bets
@@ -303,6 +360,27 @@ def _write_bets(bets: list[dict], date_str: str) -> str:
     with open(path, "w") as f:
         json.dump(payload, f, indent=2)
     print(f"[bet_selector] Written -> {path}")
+    return path
+
+
+def _write_timing_queue(scheduled: list[dict], date_str: str) -> str:
+    """Persist the delayed-fire queue to data/output/bet_timing_queue.json.
+
+    Written on every run (even when empty) so the queue file always reflects
+    the current scheduling state for the timing-aware firing loop to consume.
+    """
+    os.makedirs(_OUTPUT_DIR, exist_ok=True)
+    path = os.path.join(_OUTPUT_DIR, "bet_timing_queue.json")
+    payload = {
+        "date":         date_str,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "count":        len(scheduled),
+        "queue":        scheduled,
+    }
+    with open(path, "w") as f:
+        json.dump(payload, f, indent=2)
+    if scheduled:
+        print(f"[bet_selector] {len(scheduled)} bets scheduled for delayed fire -> {path}")
     return path
 
 
