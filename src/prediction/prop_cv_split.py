@@ -10,6 +10,8 @@ Public API
 """
 from __future__ import annotations
 
+import json
+import os
 import warnings
 from typing import List
 
@@ -18,6 +20,11 @@ import pandas as pd
 from sklearn.model_selection import TimeSeriesSplit
 
 _COUNT_STATS = frozenset(("stl", "blk"))
+
+_MODELS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    "data", "models",
+)
 
 _SEASON_ORDER = {
     "2020-21": 0,
@@ -148,15 +155,40 @@ _COUNT_STAT_REGULARISATION = {
 }
 
 
-def xgb_params_for_stat(stat: str) -> dict:
+def _load_tuned_params(stat: str, model_dir: str) -> dict:
+    """Load grid-searched hyperparameters for a stat, or {} if none exist.
+
+    prop_grid_search.run_grid_search() writes ``hyperparams_{stat}.json`` with
+    a ``best_params`` block. When present, those empirically-tuned values
+    override the static defaults.
+    """
+    path = os.path.join(model_dir, f"hyperparams_{stat}.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f).get("best_params", {}) or {}
+    except Exception:
+        return {}
+
+
+def xgb_params_for_stat(stat: str, model_dir: str = None) -> dict:
     """Return XGBoost hyperparameters tuned for a prop stat.
 
-    High-signal stats (pts/reb/ast/fg3m/tov) use the base parameters. Low-signal
-    count stats (stl, blk) — which the walk-forward report flagged as overfit —
-    receive stronger regularisation to close the train/holdout gap.
+    Layering, lowest to highest precedence:
+      1. base parameters,
+      2. grid-searched ``best_params`` from hyperparams_{stat}.json (when a
+         tuning run has produced them) — empirical wins over static defaults,
+      3. for the low-signal count stats (stl, blk), the overfit-fix
+         regularisation is applied LAST and is authoritative: the walk-forward
+         report found props_stl badly overfit, and the existing grid-search
+         results for those stats were themselves produced on a leaky CV split
+         (best_cv_r2 ≈ 0.79 vs a 0.06 realised holdout). The regularisation
+         must not be silently undone by that stale tuning.
 
     Args:
-        stat: Prop stat name.
+        stat:      Prop stat name.
+        model_dir: Directory holding hyperparams_{stat}.json (default data/models).
 
     Returns:
         A kwargs dict ready to splat into ``xgboost.XGBRegressor(**params)``,
@@ -164,6 +196,9 @@ def xgb_params_for_stat(stat: str) -> dict:
     """
     params = dict(_BASE_XGB_PARAMS)
     params["objective"] = _objective_for_stat(stat)
+    # Empirically-tuned params override the static defaults.
+    params.update(_load_tuned_params(stat, model_dir or _MODELS_DIR))
+    # Count-stat regularisation is authoritative — applied after tuning.
     if stat in _COUNT_STATS:
         params.update(_COUNT_STAT_REGULARISATION)
     return params
