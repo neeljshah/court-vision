@@ -224,12 +224,133 @@ def fetch_closing_lines(bets: List[Dict]) -> List[Dict]:
     return updated
 
 
+# ── CLV training dataset (task 16.5-01) ──────────────────────────────────────
+
+# Column order written to clv_training_data.csv. bet_id is a dedup key; the
+# remaining 7 columns are the labelled feature row consumed by clv_predictor.
+_CLV_TRAINING_COLUMNS = [
+    "bet_id",
+    "our_edge",
+    "pinnacle_delta",
+    "public_pct",
+    "time_to_game",
+    "lineup_freshness",
+    "line_movement_last_2h",
+    "clv_label",
+]
+
+
+def _bet_feature_row(bet: Dict) -> Optional[Dict]:
+    """Extract one labelled CLV training row from a resolved bet dict.
+
+    Returns None when the bet lacks the closing line needed to label CLV.
+    Missing feature fields fall back to neutral defaults so a partially
+    populated ledger still yields a usable (if noisier) row.
+    """
+    if bet.get("closing_line") is None:
+        return None
+    opening = bet.get("opening_line", bet.get("line"))
+    if opening is None:
+        return None
+
+    # pinnacle_delta: prefer an explicit field, else derive from a logged
+    # Pinnacle line, else neutral 0.0.
+    pinnacle_delta = bet.get("pinnacle_delta")
+    if pinnacle_delta is None and bet.get("pinnacle_line") is not None:
+        try:
+            pinnacle_delta = float(bet["pinnacle_line"]) - float(opening)
+        except (TypeError, ValueError):
+            pinnacle_delta = 0.0
+    if pinnacle_delta is None:
+        pinnacle_delta = 0.0
+
+    clv = _compute_clv({**bet, "opening_line": opening})
+    return {
+        "bet_id":                bet.get("bet_id", ""),
+        "our_edge":              round(float(bet.get("edge_pct", bet.get("edge", 0.0)) or 0.0), 4),
+        "pinnacle_delta":        round(float(pinnacle_delta), 4),
+        "public_pct":            round(float(bet.get("public_pct", 0.5) or 0.5), 4),
+        "time_to_game":          round(float(bet.get("time_to_game_hours", 0.0) or 0.0), 4),
+        "lineup_freshness":      round(float(bet.get("lineup_freshness_min", 0.0) or 0.0), 4),
+        "line_movement_last_2h": round(float(bet.get("line_movement_2h", 0.0) or 0.0), 4),
+        "clv_label":             1 if clv > 0 else 0,
+    }
+
+
+def build_clv_training_data(
+    bet_log_path: Optional[str] = None,
+    output_csv: Optional[str] = None,
+) -> int:
+    """Append labelled CLV training rows from the bet ledger to a CSV.
+
+    Reads the bet log, fetches closing lines for any open bets via
+    ``fetch_closing_lines``, and writes one row per bet that has a closing
+    line.  Idempotent: rows already present (keyed by bet_id) are skipped.
+    The CSV header is always written so a schema-correct file exists even
+    before any closing lines are available.
+
+    Args:
+        bet_log_path: Path to bet_log.json (default: data/models/bet_log.json).
+        output_csv:   Destination CSV (default: data/output/clv_training_data.csv).
+
+    Returns:
+        Number of new rows appended.
+    """
+    import csv
+
+    log_path = Path(bet_log_path) if bet_log_path else PROJECT_DIR / "data" / "models" / "bet_log.json"
+    out_path = Path(output_csv) if output_csv else PROJECT_DIR / "data" / "output" / "clv_training_data.csv"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    bets: List[Dict] = []
+    if log_path.exists():
+        try:
+            bets = json.loads(log_path.read_text(encoding="utf-8"))
+        except Exception:
+            bets = []
+
+    # Enrich open bets with closing lines (stub-safe — keeps existing values).
+    bets = fetch_closing_lines(bets)
+
+    existing_ids: set = set()
+    file_exists = out_path.exists()
+    if file_exists:
+        try:
+            with open(out_path, newline="", encoding="utf-8") as f:
+                existing_ids = {r["bet_id"] for r in csv.DictReader(f) if r.get("bet_id")}
+        except Exception:
+            existing_ids = set()
+
+    new_rows: List[Dict] = []
+    for bet in bets:
+        row = _bet_feature_row(bet)
+        if row is None:
+            continue
+        if row["bet_id"] and row["bet_id"] in existing_ids:
+            continue
+        new_rows.append(row)
+        if row["bet_id"]:
+            existing_ids.add(row["bet_id"])
+
+    with open(out_path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=_CLV_TRAINING_COLUMNS)
+        if not file_exists:
+            writer.writeheader()
+        for row in new_rows:
+            writer.writerow(row)
+
+    print(f"  [clv_tracker] +{len(new_rows)} CLV training rows -> {out_path}")
+    return len(new_rows)
+
+
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="CLV tracker")
     parser.add_argument("--summary", action="store_true", help="Print CLV summary")
     parser.add_argument("--beat-rate", action="store_true", help="Generate weekly CLV beat-rate report")
+    parser.add_argument("--build-training", action="store_true",
+                        help="Append labelled rows to clv_training_data.csv")
     parser.add_argument("--week", default=None, help="ISO week string e.g. 2026-W21")
     args = parser.parse_args()
 
@@ -239,3 +360,6 @@ if __name__ == "__main__":
     if args.beat_rate:
         path = generate_beat_rate_report(week=args.week)
         print(f"Report: {path}")
+    if args.build_training:
+        n = build_clv_training_data()
+        print(f"CLV training rows appended: {n}")

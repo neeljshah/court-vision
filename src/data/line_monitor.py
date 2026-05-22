@@ -360,6 +360,30 @@ def get_sharp_signal(home_team: str, away_team: str) -> float:
     return round(opening - closing, 1)
 
 
+def get_line_movement(home_team: str, away_team: str,
+                      window_hours: float = 2.0) -> float:
+    """
+    Magnitude of spread movement for a game, used as a CLV training feature.
+
+    Best-effort: returns the absolute points moved between the recorded
+    opening spread and the current cached spread.  Full intraday windowing
+    (movement strictly within the last ``window_hours``) requires a
+    timestamped snapshot log, which is not yet persisted — until then this
+    returns total opening→current movement and ``window_hours`` is accepted
+    only for forward-compatible call sites.
+
+    Args:
+        home_team:    Team abbreviation or full name.
+        away_team:    Team abbreviation or full name.
+        window_hours: Reserved for snapshot-based windowing (currently unused).
+
+    Returns:
+        Absolute spread movement in points; 0.0 when history/lines are absent.
+    """
+    signal = get_sharp_signal(home_team, away_team)
+    return round(abs(signal), 1)
+
+
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
