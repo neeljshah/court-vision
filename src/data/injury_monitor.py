@@ -750,3 +750,125 @@ class InjuryMonitor:
             except Exception:
                 continue
         return {}
+
+
+# ── late-scratch handler (task 19.5-03) ──────────────────────────────────────
+# On game days an unexpected scratch — a player flipping to Out who was
+# expected to play — is the largest source of pre-game prop misfires.  These
+# helpers poll ESPN on a tight interval and rerun the slate when one appears.
+
+_LATE_SCRATCH_POLL_SECONDS = 120          # poll ESPN every 2 minutes
+_NOT_PLAYING_STATUSES = {"out", "doubtful"}
+
+
+def detect_late_scratches(prior_statuses: dict, current_injuries: list) -> list:
+    """Compare two injury snapshots and return unexpected scratches.
+
+    A late scratch is a player whose status flipped to "Out" when the prior
+    snapshot had him expected to play (any status other than Out/Doubtful, or
+    absent entirely — absence implies presumed available).
+
+    Args:
+        prior_statuses:   {normalised player name: prior status string}.
+        current_injuries: Current ESPN injury records (refresh()["injuries"]).
+
+    Returns:
+        List of scratch dicts: player_name, team_abbrev, prior_status,
+        new_status, detected_at (ISO-8601 UTC).
+    """
+    scratches = []
+    now_iso = datetime.now(timezone.utc).isoformat()
+    for rec in current_injuries:
+        name = rec.get("player_name", "")
+        new_status = _norm_status(str(rec.get("status", "")))
+        if new_status.lower() != "out":
+            continue
+        prior = prior_statuses.get(_norm_name(name), "Available")
+        if str(prior).lower() in _NOT_PLAYING_STATUSES:
+            continue  # already ruled out — not an unexpected scratch
+        scratches.append({
+            "player_name":  name,
+            "team_abbrev":  rec.get("team_abbrev", ""),
+            "prior_status": prior,
+            "new_status":   new_status,
+            "detected_at":  now_iso,
+        })
+    return scratches
+
+
+def _snapshot_statuses(injuries: list) -> dict:
+    """Build a {normalised name: status} snapshot from ESPN injury records."""
+    return {
+        _norm_name(r.get("player_name", "")): _norm_status(str(r.get("status", "")))
+        for r in injuries if r.get("player_name")
+    }
+
+
+def rerun_slate_for_scratch(scratch: dict, season: str = "2024-25",
+                            date_str: str = None) -> bool:
+    """Rerun the daily slate after a late scratch — refreshes predictions and
+    re-fires bet_selector with the scratched player removed.
+
+    Returns True if the rerun was invoked, False if it could not be reached.
+    """
+    from datetime import date as _date
+    date_str = date_str or str(_date.today())
+    try:
+        sys.path.insert(0, os.path.join(PROJECT_DIR, "scripts"))
+        from run_daily_slate import rerun_for_scratch
+        rerun_for_scratch(scratch.get("player_name", ""), season, date_str)
+        return True
+    except Exception as exc:  # noqa: BLE001 — a rerun failure must not kill the monitor
+        print(f"[injury_monitor] scratch rerun failed: {exc}")
+        return False
+
+
+def monitor_late_scratches(
+    on_scratch,
+    *,
+    poll_interval: int = _LATE_SCRATCH_POLL_SECONDS,
+    fetch_fn=None,
+    sleep_fn=None,
+    max_polls: Optional[int] = None,
+    stop_fn=None,
+    prior_statuses: Optional[dict] = None,
+) -> dict:
+    """Poll ESPN every poll_interval seconds and fire on each late scratch.
+
+    Args:
+        on_scratch:     Callback invoked once per detected scratch dict.
+        poll_interval:  Seconds between polls (default 120 = 2 minutes).
+        fetch_fn:       Injectable () -> list of injury records.  Defaults to
+                        a forced ESPN refresh.
+        sleep_fn:       Injectable sleep (default time.sleep); tests pass a no-op.
+        max_polls:      Stop after this many polls (None = until stop_fn).
+        stop_fn:        Optional () -> bool; loop ends when it returns True.
+        prior_statuses: Initial baseline snapshot; defaults to the first poll.
+
+    Returns:
+        {"polls": int, "scratches_detected": int}.
+    """
+    fetch_fn = fetch_fn or (lambda: refresh(force=True).get("injuries", []))
+    sleep_fn = sleep_fn or time.sleep
+    prior = dict(prior_statuses) if prior_statuses is not None else None
+
+    polls = 0
+    detected = 0
+    while True:
+        injuries = fetch_fn()
+        if prior is None:
+            prior = _snapshot_statuses(injuries)   # establish baseline
+        else:
+            for scratch in detect_late_scratches(prior, injuries):
+                detected += 1
+                on_scratch(scratch)
+            prior = _snapshot_statuses(injuries)
+        polls += 1
+
+        if max_polls is not None and polls >= max_polls:
+            break
+        if stop_fn is not None and stop_fn():
+            break
+        sleep_fn(poll_interval)
+
+    return {"polls": polls, "scratches_detected": detected}
