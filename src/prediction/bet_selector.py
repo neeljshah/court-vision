@@ -74,23 +74,53 @@ def _cfg_int(cfg: dict, key: str, default: int) -> int:
     return int(cfg.get(key, default))
 
 
+def _resolve_clv_predictor(model_path: Optional[str] = None):
+    """Return a callable(features)->prediction dict, or None if unavailable.
+
+    The CLV gate degrades gracefully: when clv_predictor.pkl has not been
+    trained yet (no settled-bet history), this returns None and bet_selector
+    falls back to edge-only filtering rather than crashing the daily run.
+    """
+    try:
+        from src.prediction.clv_predictor import load_model, predict_clv
+        load_model(model_path)  # probe — raises FileNotFoundError if absent
+    except FileNotFoundError:
+        log.warning("clv_predictor.pkl not found — CLV gate skipped (edge-only filtering)")
+        return None
+    except Exception as exc:  # noqa: BLE001 — any import/load failure -> skip gate
+        log.warning("CLV predictor unavailable (%s) — CLV gate skipped", exc)
+        return None
+    return lambda feats: predict_clv(feats, model_path)
+
+
 def select(
     edge_rows: list[dict],
     date_str: str,
     dry_run: bool = False,
     bankroll: Optional[float] = None,
+    *,
+    clv_predict_fn=None,
+    clv_model_path: Optional[str] = None,
 ) -> list[dict]:
     """
     Filter and size bets from slate edge_rows.
 
     Args:
-        edge_rows:  top_edges list from run_daily_slate.py output.
-        date_str:   YYYY-MM-DD for output filename.
-        dry_run:    If True, bets logged with status="paper".
-        bankroll:   Override config bankroll.
+        edge_rows:       top_edges list from run_daily_slate.py output.
+        date_str:        YYYY-MM-DD for output filename.
+        dry_run:         If True, bets logged with status="paper".
+        bankroll:        Override config bankroll.
+        clv_predict_fn:  Injectable callable(features)->{clv_prob, expected_clv,...}
+                         for the dual edge+CLV gate.  If None, the real
+                         clv_predictor is loaded (when clv_predictor.pkl exists).
+        clv_model_path:  Override path to clv_predictor.pkl.
 
     Returns:
         List of bet dicts written to data/output/bets_YYYYMMDD.json.
+
+    Dual filter (task 16.5-03): a candidate must clear BOTH
+        |edge| > edge_min (4%)   AND   predicted CLV > clv_min (1.5%)
+    before it is sized and selected.
     """
     cfg = _load_config()
 
@@ -99,8 +129,16 @@ def select(
     max_per_game  = _cfg_int(cfg,   "max_bets_per_game",        3)
     max_combined  = _cfg_float(cfg, "max_combined_pct",         0.06)
     default_odds  = _cfg_int(cfg,   "default_odds",             -110)
+    clv_min       = _cfg_float(cfg, "clv_min",                  1.5)
+    clv_enabled   = bool(cfg.get("clv_filter_enabled", True))
     if dry_run is False:
         dry_run = bool(cfg.get("dry_run", False))
+
+    # Resolve the CLV predictor for the dual gate (None -> edge-only fallback).
+    _clv_fn = clv_predict_fn
+    if _clv_fn is None and clv_enabled:
+        _clv_fn = _resolve_clv_predictor(clv_model_path)
+    clv_dropped = 0
 
     # Import kelly_corr (graceful fallback if portfolio unavailable)
     try:
@@ -143,6 +181,29 @@ def select(
         # 1. Edge threshold
         if abs(edge) < edge_min:
             continue
+
+        # 1b. CLV gate — dual filter: drop bets the model expects to lose
+        #     closing-line value, even when the edge clears the bar.
+        clv_pred: Optional[dict] = None
+        if _clv_fn is not None:
+            try:
+                clv_pred = _clv_fn({
+                    "our_edge":              abs(edge),
+                    "pinnacle_delta":        float(row.get("pinnacle_delta", 0.0) or 0.0),
+                    "public_pct":            float(row.get("public_pct", 0.5) or 0.5),
+                    "time_to_game":          float(row.get("time_to_game", 0.0) or 0.0),
+                    "lineup_freshness":      float(row.get("lineup_freshness", 0.0) or 0.0),
+                    "line_movement_last_2h": float(row.get("line_movement_last_2h", 0.0) or 0.0),
+                })
+            except Exception as exc:  # noqa: BLE001 — a bad prediction must not abort the slate
+                log.warning("CLV prediction failed for %s/%s (%s) — keeping bet", player, stat, exc)
+                clv_pred = None
+
+            if clv_pred is not None and float(clv_pred.get("expected_clv", 0.0)) <= clv_min:
+                clv_dropped += 1
+                log.debug("skip %s/%s: predicted CLV %.2f%% <= %.2f%%",
+                          player, stat, clv_pred.get("expected_clv", 0.0), clv_min)
+                continue
 
         # 2. Game exposure cap
         game_count = game_counts.get(game_id, 0)
@@ -206,6 +267,8 @@ def select(
             "ci_hi_80":    hi_80,
             "alt_line":    row.get("alt_line"),
             "alt_line_ev": row.get("alt_line_ev"),
+            "clv_prob":    clv_pred.get("clv_prob") if clv_pred else None,
+            "predicted_clv": clv_pred.get("expected_clv") if clv_pred else None,
         }
 
         bets.append(bet)
@@ -219,8 +282,9 @@ def select(
         _append_to_bet_log(bets)
 
     mode = "PAPER" if dry_run else "LIVE"
+    clv_note = f", clv_min={clv_min}% ({clv_dropped} dropped)" if _clv_fn is not None else ""
     print(f"[bet_selector] {mode}: {len(bets)} bets selected from {len(candidates)} edges "
-          f"(edge_min={edge_min}, bankroll=${bk:.0f})")
+          f"(edge_min={edge_min}, bankroll=${bk:.0f}{clv_note})")
     _print_bets_table(bets)
 
     return bets
