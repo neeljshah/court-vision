@@ -613,6 +613,18 @@ def main(season: str, date_str: str, dry_run: bool = False, build_ladder: bool =
     print(f"[slate] Done -- {len(preds)} players, {len(edge_rows)} edges surfaced.")
 
 
+def rerun_for_scratch(player_name: str, season: str, date_str: str) -> None:
+    """Rerun the full slate after a late scratch (task 19.5-03).
+
+    A late scratch invalidates every prediction that assumed the player was
+    active.  Re-running main() refreshes predictions and re-fires bet_selector
+    (step 9) with the scratched player excluded.
+    """
+    log.warning("Late scratch detected: %s — rerunning slate for %s",
+                player_name, date_str)
+    main(season=season, date_str=date_str)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NBA Daily Prop Prediction Pipeline")
     parser.add_argument("--season",       default="2024-25",        help="NBA season (e.g. 2024-25)")
