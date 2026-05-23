@@ -55,6 +55,11 @@ _FORM_STATS = STATS + ["min"]          # min drives every counting stat
 _MIN_PLAYED = 5.0                      # a game counts only if the player played
 _EWMA_ALPHA = 0.30                     # recency weight — recent games dominate
 
+# Training-row recency decay: weight = exp(-_RECENCY_DECAY * age_years).
+# 0.0 = no weighting; 0.5 means rows 2 years old count ~37% as much as
+# the most-recent training row. Picked via single-cycle sweep, see cycle 18.
+_RECENCY_DECAY = 0.5
+
 
 # ── feature helpers ───────────────────────────────────────────────────────────
 
@@ -685,6 +690,7 @@ def train_pergame_models(
     val_frac: float = 0.15,
     stats: Optional[List[str]] = None,
     stat_params_override: Optional[Dict[str, dict]] = None,
+    recency_decay: Optional[float] = None,
 ) -> dict:
     """Train one XGBoost regressor per stat on the per-game dataset.
 
@@ -716,9 +722,23 @@ def train_pergame_models(
     X_all = np.array([[r[c] for c in feature_cols] for r in rows], dtype=float)
     X_tr, X_val, X_ho = X_all[:train_end], X_all[train_end:val_end], X_all[val_end:]
 
+    # Recency-decay sample weights — older training rows count less.
+    # Player skill distributions drift season-to-season (rule changes,
+    # pace shifts, role changes); rows from 2022-23 are less representative
+    # of 2025-26 prop distributions than rows from 2024-25. Weight is
+    # exp(-_RECENCY_DECAY * age_years) where age_years is the gap between
+    # the most recent training row's date and the row's own date. Holdout
+    # and val are NOT weighted (they're frozen ground truth).
+    decay = _RECENCY_DECAY if recency_decay is None else float(recency_decay)
+    train_dates = [datetime.fromisoformat(rows[i]["date"]) for i in range(train_end)]
+    max_train_date = max(train_dates)
+    age_years = np.array([(max_train_date - d).days / 365.0 for d in train_dates], dtype=float)
+    sample_w_tr = np.exp(-decay * age_years) if decay > 0 else None
+
     os.makedirs(model_dir, exist_ok=True)
     metrics: dict = {"n_rows": n, "n_train": train_end,
                      "n_val": val_end - train_end, "n_holdout": n - val_end,
+                     "recency_decay": decay,
                      "stats": {}}
 
     # Per-stat regularisation overrides — the walk-forward report (PRED-02)
@@ -786,7 +806,8 @@ def train_pergame_models(
             objective="count:poisson" if is_count else "reg:squarederror",
             early_stopping_rounds=40, eval_metric="mae",
         )
-        xgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=False)
+        xgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
+                      sample_weight=sample_w_tr, verbose=False)
 
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
         lgb_model = lgb.LGBMRegressor(
@@ -798,6 +819,7 @@ def train_pergame_models(
             n_jobs=-1, verbosity=-1,
         )
         lgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
+                      sample_weight=sample_w_tr,
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
