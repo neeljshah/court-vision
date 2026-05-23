@@ -747,38 +747,41 @@ def train_pergame_models(
     # so it needs tighter regularisation than the other counts. _STAT_PARAMS
     # below is the central knob: each key overrides the default for one stat.
     _DEFAULT_COUNT = {"max_depth": 3, "min_child_weight": 10, "reg_lambda": 2.0,
-                      "gamma": 0.2, "n_estimators": 800}
+                      "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04}
     _DEFAULT_REG   = {"max_depth": 4, "min_child_weight": 10, "reg_lambda": 2.0,
-                      "gamma": 0.2, "n_estimators": 800}
+                      "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04}
     _STAT_PARAMS: Dict[str, dict] = {
         # STL — high noise, low signal; aggressive regularisation, gap 0.058 → 0.011.
+        # Cycle 25: lr 0.04 → 0.06 (sweep showed slightly higher LR fits noise
+        # less reliably with the depth-2 ceiling + n_est=400).
         "stl": {"max_depth": 2, "min_child_weight": 40, "reg_lambda": 6.0,
-                "gamma": 0.6, "n_estimators": 400},
+                "gamma": 0.6, "n_estimators": 400, "learning_rate": 0.06},
         # BLK — low base rate (~0.5/game), bimodal across positions; tighten
         # depth + child weight to prevent splits on rare combinations.
+        # Cycle 25: lr 0.04 → 0.06 (biggest single-stat MAE win of the sweep, -0.32%).
         "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
-                "gamma": 0.4, "n_estimators": 500},
+                "gamma": 0.4, "n_estimators": 500, "learning_rate": 0.06},
         # FG3M — re-tuned cycle 20: less regularisation now that we have
-        # 93k rows. MAE 0.9411 -> 0.9405.
+        # 93k rows. Cycle 25: lr 0.04 → 0.025 (smaller LR + early-stopping
+        # extracts more lift on rate-shaped targets).
         "fg3m": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 2.0,
-                 "gamma": 0.3, "n_estimators": 600},
+                 "gamma": 0.3, "n_estimators": 600, "learning_rate": 0.025},
         # PTS — re-tuned cycle 20 (93k rows, recency decay): one more depth
-        # level + slightly tighter mcw/lambda. MAE 4.7094 -> 4.7089.
+        # level + slightly tighter mcw/lambda. Cycle 25: lr 0.04 → 0.025.
         "pts": {"max_depth": 6, "min_child_weight": 20, "reg_lambda": 4.0,
-                "gamma": 0.2, "n_estimators": 800},
+                "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025},
         # AST — re-tuned cycle 20 (93k rows, recency-decay active):
-        # bumped depth 4 -> 5. MAE 1.4015 -> 1.3983.
+        # bumped depth 4 -> 5. Cycle 25: lr 0.04 → 0.025.
         "ast": {"max_depth": 5, "min_child_weight": 20, "reg_lambda": 5.0,
-                "gamma": 0.2, "n_estimators": 800},
+                "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025},
         # REB — re-tuned cycle 12: tighter min_child_weight + more reg.
-        # MAE 1.9366 -> 1.9351.
+        # Cycle 25: lr 0.04 → 0.025.
         "reb": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 4.0,
-                "gamma": 0.3, "n_estimators": 800},
-        # TOV — count-ish (mean ~1.3/game); responds to count-style reg
-        # (deeper child-weight, higher lambda) like BLK/STL but doesn't need
-        # the depth-2 ceiling. Marginal but consistent.
+                "gamma": 0.3, "n_estimators": 800, "learning_rate": 0.025},
+        # TOV — count-ish (mean ~1.3/game); responds to count-style reg.
+        # Cycle 25: lr 0.04 → 0.025.
         "tov": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 6.0,
-                "gamma": 0.4, "n_estimators": 700},
+                "gamma": 0.4, "n_estimators": 700, "learning_rate": 0.025},
     }
 
     # Allow callers (e.g. tuning sweeps) to restrict which stats are trained
@@ -799,7 +802,8 @@ def train_pergame_models(
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
         xgb_model = xgb.XGBRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
-            learning_rate=0.04, subsample=0.8, colsample_bytree=0.8,
+            learning_rate=params.get("learning_rate", 0.04),
+            subsample=0.8, colsample_bytree=0.8,
             min_child_weight=params["min_child_weight"], reg_lambda=params["reg_lambda"],
             reg_alpha=0.5, gamma=params["gamma"], random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
@@ -811,7 +815,8 @@ def train_pergame_models(
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
         lgb_model = lgb.LGBMRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
-            learning_rate=0.04, subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
+            learning_rate=params.get("learning_rate", 0.04),
+            subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
             min_child_samples=max(20, params["min_child_weight"] * 2),
             reg_lambda=params["reg_lambda"], reg_alpha=0.5, random_state=42,
             objective="poisson" if is_count else "regression",
