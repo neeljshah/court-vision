@@ -34,6 +34,12 @@ sys.path.insert(0, PROJECT_DIR)
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
+_PLAYTYPE_PATH = os.path.join(PROJECT_DIR, "data", "playtypes.parquet")
+_PLAY_TYPES = [
+    "isolation", "prballhandler", "prrollman", "postup",
+    "spotup", "handoff", "cut", "offscreen", "transition",
+]
+_PLAYTYPE_DEFAULTS: Dict[str, float] = {f"pt_{pt}_freq": 0.0 for pt in _PLAY_TYPES}
 
 # Stats predicted, and their box-score column names in the gamelog JSON.
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
@@ -87,6 +93,7 @@ def feature_columns() -> List[str]:
     cols += ["rest_days", "is_home", "games_played"]
     cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
+    cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
     return cols
 
 
@@ -138,6 +145,62 @@ def build_rest_travel(cache_path: Optional[str] = None) -> _RestTravel:
     except Exception:
         pass
     return _RestTravel(lookup)
+
+
+# ── play-type features ────────────────────────────────────────────────────────
+
+class _PlayTypes:
+    """Lookup table for Synergy play-type frequencies sourced from data/playtypes.parquet.
+
+    Keyed by (player_id, season) → {pt_<playtype>_freq: float, ...}.
+    Yields zero defaults when the parquet is absent or the key is missing.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        """Return play-type feature dict for a player in a season."""
+        key = (int(player_id), str(season))
+        return dict(self._lookup.get(key, _PLAYTYPE_DEFAULTS))
+
+
+def build_playtypes(cache_path: Optional[str] = None) -> _PlayTypes:
+    """Load the play-type parquet and build the lookup table.
+
+    If the parquet is absent or pandas/pyarrow import fails, returns a
+    _PlayTypes that always yields zero defaults. Never raises.
+    """
+    path = cache_path or _PLAYTYPE_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _PlayTypes(lookup)
+        df = pd.read_parquet(path)
+        for _, row in df.iterrows():
+            normalized = str(row["play_type"]).lower().replace(" ", "")
+            key = (int(row["player_id"]), str(row["season"]))
+            lookup.setdefault(key, {})[f"pt_{normalized}_freq"] = (
+                float(row.get("freq_pct", 0.0) or 0.0)
+            )
+        # Ensure every entry has all 9 keys so callers never get KeyError.
+        for key in lookup:
+            for pt in _PLAY_TYPES:
+                lookup[key].setdefault(f"pt_{pt}_freq", 0.0)
+    except Exception:
+        pass
+    return _PlayTypes(lookup)
+
+
+_PLAYTYPES_CACHE: Optional[_PlayTypes] = None
+
+
+def _get_playtypes() -> _PlayTypes:
+    global _PLAYTYPES_CACHE
+    if _PLAYTYPES_CACHE is None:
+        _PLAYTYPES_CACHE = build_playtypes()
+    return _PLAYTYPES_CACHE
 
 
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
@@ -262,6 +325,7 @@ def build_pergame_dataset(
     # Leakage-free opponent-defence model, built from all gamelogs first.
     oppdef = build_opponent_defense(gamelog_dir)
     resttravel = build_rest_travel()
+    playtypes = build_playtypes()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -274,6 +338,17 @@ def build_pergame_dataset(
         # Sort chronologically; keep games with a parseable date.
         dated = [(d, g) for g in games if (d := _parse_date(g.get("GAME_DATE"))) is not None]
         dated.sort(key=lambda x: x[0])
+
+        # Parse player_id and season from filename: gamelog_<pid>_<season>.json
+        try:
+            basename = os.path.basename(path)
+            parts = basename.split("_")
+            # parts[0]="gamelog", parts[1]=pid, parts[-1]="<season>.json"
+            file_player_id = int(parts[1])
+            file_season = parts[-1].replace(".json", "")
+        except Exception:
+            file_player_id = 0
+            file_season = ""
 
         prior_played: List[dict] = []
         for idx, (gdate, game) in enumerate(dated):
@@ -290,6 +365,7 @@ def build_pergame_dataset(
                 feats = _row_features(prior_played, rest, is_home, len(prior_played))
                 feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
                 feats.update(resttravel.features(team_abbrev, gdate))
+                feats.update(playtypes.features(file_player_id, file_season))
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
@@ -506,6 +582,11 @@ def build_prediction_row(
     feats.update(_get_opponent_defense(gamelog_dir).factors(opp_team, factor_date))
     # Rest/travel: use neutral defaults for future games (no parquet row yet).
     feats.update(_REST_TRAVEL_DEFAULTS)
+    # Play-type frequencies: process-cached, zero defaults when parquet absent.
+    try:
+        feats.update(_get_playtypes().features(int(player_id), season))
+    except Exception:
+        feats.update(_PLAYTYPE_DEFAULTS)
     return feats
 
 
