@@ -585,7 +585,7 @@ def _row_features(prior_played: List[dict], rest_days: float,
 
 def build_pergame_dataset(
     gamelog_dir: Optional[str] = None,
-    min_prior: int = 1,
+    min_prior: int = 0,
 ) -> Tuple[List[dict], List[str]]:
     """Build the per-game training set from every player gamelog.
 
@@ -644,11 +644,14 @@ def build_pergame_dataset(
                 # Rampup gap: distance to last *played* game (DNPs that just sit
                 # in the gamelog shouldn't reset the rampup counter). prior_played
                 # is built only from games with MIN >= _MIN_PLAYED so [-1] is the
-                # most recent real appearance.
+                # most recent real appearance — except when min_prior=0 and this
+                # is the very first row for a player, in which case fall back to
+                # the neutral 3-day gap.
                 raw_gap_days = 3.0
-                last_played_date = _parse_date(prior_played[-1].get("GAME_DATE"))
-                if last_played_date is not None:
-                    raw_gap_days = float(max((gdate - last_played_date).days, 0))
+                if prior_played:
+                    last_played_date = _parse_date(prior_played[-1].get("GAME_DATE"))
+                    if last_played_date is not None:
+                        raw_gap_days = float(max((gdate - last_played_date).days, 0))
                 matchup = str(game.get("MATCHUP", ""))
                 is_home = 1 if " vs. " in matchup else 0
                 team_abbrev = matchup.split()[0] if matchup.split() else ""
@@ -677,7 +680,7 @@ def train_pergame_models(
     gamelog_dir: Optional[str] = None,
     model_dir: Optional[str] = None,
     *,
-    min_prior: int = 1,
+    min_prior: int = 0,
     holdout_frac: float = 0.2,
     val_frac: float = 0.15,
     stats: Optional[List[str]] = None,
@@ -1099,7 +1102,7 @@ def build_prediction_row(
     is_home: bool = True,
     rest_days: float = 2.0,
     gamelog_dir: Optional[str] = None,
-    min_prior: int = 1,
+    min_prior: int = 0,
 ) -> Optional[Dict[str, float]]:
     """Build the per-game feature row for a player's UPCOMING game.
 
