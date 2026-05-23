@@ -422,16 +422,34 @@ def train_pergame_models(
                      "n_val": val_end - train_end, "n_holdout": n - val_end,
                      "stats": {}}
 
+    # Per-stat regularisation overrides — the walk-forward report (PRED-02)
+    # flagged STL with a train/holdout gap of 0.18 (> the 0.15 gate). STL is
+    # the noisiest counting stat — mean ~0.7, no strong player-form signal —
+    # so it needs tighter regularisation than the other counts. _STAT_PARAMS
+    # below is the central knob: each key overrides the default for one stat.
+    _DEFAULT_COUNT = {"max_depth": 3, "min_child_weight": 10, "reg_lambda": 2.0,
+                      "gamma": 0.2, "n_estimators": 800}
+    _DEFAULT_REG   = {"max_depth": 4, "min_child_weight": 10, "reg_lambda": 2.0,
+                      "gamma": 0.2, "n_estimators": 800}
+    _STAT_PARAMS: Dict[str, dict] = {
+        "stl": {"max_depth": 2, "min_child_weight": 40, "reg_lambda": 6.0,
+                "gamma": 0.6, "n_estimators": 400},
+    }
+
     for stat in STATS:
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
         y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
         is_count = stat in ("stl", "blk")
 
+        params = {**(_DEFAULT_COUNT if is_count else _DEFAULT_REG),
+                  **_STAT_PARAMS.get(stat, {})}
+
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
         xgb_model = xgb.XGBRegressor(
-            n_estimators=800, max_depth=3 if is_count else 4, learning_rate=0.04,
-            subsample=0.8, colsample_bytree=0.8, min_child_weight=10,
-            reg_lambda=2.0, reg_alpha=0.5, gamma=0.2, random_state=42,
+            n_estimators=params["n_estimators"], max_depth=params["max_depth"],
+            learning_rate=0.04, subsample=0.8, colsample_bytree=0.8,
+            min_child_weight=params["min_child_weight"], reg_lambda=params["reg_lambda"],
+            reg_alpha=0.5, gamma=params["gamma"], random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
             early_stopping_rounds=40, eval_metric="mae",
         )
@@ -439,9 +457,10 @@ def train_pergame_models(
 
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
         lgb_model = lgb.LGBMRegressor(
-            n_estimators=800, max_depth=3 if is_count else 4, learning_rate=0.04,
-            subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
-            min_child_samples=20, reg_lambda=2.0, reg_alpha=0.5, random_state=42,
+            n_estimators=params["n_estimators"], max_depth=params["max_depth"],
+            learning_rate=0.04, subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
+            min_child_samples=max(20, params["min_child_weight"] * 2),
+            reg_lambda=params["reg_lambda"], reg_alpha=0.5, random_state=42,
             objective="poisson" if is_count else "regression",
             n_jobs=-1, verbosity=-1,
         )
