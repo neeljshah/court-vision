@@ -47,7 +47,7 @@ STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 # blend (ensemble_lift negative on holdout). For these we save only the
 # LGB model and predict_pergame's load_pergame_model returns just LGB,
 # making the "blend" a single-model prediction.
-_LGB_ONLY_STATS = {"stl"}
+_LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
 _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
