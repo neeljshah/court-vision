@@ -499,8 +499,11 @@ def train(
     seasons: Optional[List[str]] = None,
     output_path: Optional[str] = None,
     n_estimators: int = 300,
-    learning_rate: float = 0.05,
+    learning_rate: float = 0.035,
     max_depth: int = 4,
+    subsample: float = 0.8,
+    colsample_bytree: float = 0.50,
+    gamma: float = 0.40,
 ) -> WinProbModel:
     """
     Train XGBoost win probability model on 3 seasons of NBA data.
@@ -508,12 +511,19 @@ def train(
     Fetches game logs from NBA Stats API, constructs feature vectors,
     trains classifier with 80/20 split.
 
+    Default hyperparameters reflect the `combined_lean` winner from the
+    loop-4 cycle-6 roll-up sweep (best Brier of all combined configs):
+        learning_rate=0.035, colsample_bytree=0.50, gamma=0.40.
+
     Args:
-        seasons:       Seasons to train on (default last 3).
-        output_path:   Where to save model (auto if None).
-        n_estimators:  XGBoost trees.
-        learning_rate: XGBoost lr.
-        max_depth:     XGBoost depth.
+        seasons:          Seasons to train on (default last 3).
+        output_path:      Where to save model (auto if None).
+        n_estimators:     XGBoost trees.
+        learning_rate:    XGBoost lr.
+        max_depth:        XGBoost depth.
+        subsample:        Row bagging fraction.
+        colsample_bytree: Feature bagging fraction.
+        gamma:            Minimum loss reduction to split.
 
     Returns:
         Trained WinProbModel.
@@ -558,7 +568,8 @@ def train(
 
     clf = XGBClassifier(
         n_estimators=n_estimators, learning_rate=learning_rate,
-        max_depth=max_depth, subsample=0.8, colsample_bytree=0.8,
+        max_depth=max_depth, subsample=subsample,
+        colsample_bytree=colsample_bytree, gamma=gamma,
         eval_metric="logloss", random_state=42, n_jobs=-1,
         early_stopping_rounds=20,
     )
