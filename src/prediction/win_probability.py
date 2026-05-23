@@ -405,8 +405,11 @@ class WinProbModel:
                  feature_cols: Optional[List[str]] = None,
                  calibrator=None,
                  lgb_model=None,
+                 lr_model=None,
+                 lr_scaler=None,
                  w_xgb: float = 1.0,
-                 w_lgb: float = 0.0):
+                 w_lgb: float = 0.0,
+                 w_lr:  float = 0.0):
         """
         Args:
             model:        Trained XGBClassifier (None before training). The
@@ -418,32 +421,39 @@ class WinProbModel:
             calibrator:   Optional sklearn IsotonicRegression applied to the
                           blended probability at predict time.
             lgb_model:    Optional second base learner (LightGBM classifier).
-                          When present, predict_proba blends it with the XGB
-                          probability via w_xgb / w_lgb (NNLS-fit weights).
-            w_xgb:        Weight on XGB probability in the blend. Default 1.0.
-            w_lgb:        Weight on LGB probability in the blend. Default 0.0
-                          (no blending — XGB-only, backward compat).
+            lr_model:     Optional third base learner (Logistic Regression).
+            lr_scaler:    StandardScaler fit on training features for the LR
+                          base learner (LR needs scaled inputs; XGB/LGB don't).
+            w_xgb:        Weight on XGB probability. Default 1.0.
+            w_lgb:        Weight on LGB probability. Default 0.0.
+            w_lr:         Weight on LR probability. Default 0.0.
         """
         self.model        = model
         self.threshold    = threshold
         self._feature_cols = list(feature_cols) if feature_cols else list(_MODEL_FEATURE_COLS)
         self._calibrator  = calibrator
         self._lgb_model   = lgb_model
+        self._lr_model    = lr_model
+        self._lr_scaler   = lr_scaler
         self._w_xgb       = float(w_xgb)
         self._w_lgb       = float(w_lgb)
+        self._w_lr        = float(w_lr)
         self._feature_importance: Optional[dict] = None
 
     def _blend_prob(self, X: "np.ndarray") -> float:
-        """Run XGB (+ LGB if present) on X and return the blended probability.
+        """Run all available base learners on X and return the NNLS blend.
 
-        For backward compat, when `_lgb_model is None` or `_w_lgb == 0.0`,
-        the LGB call is skipped entirely — old single-XGB pickles still work.
+        Backward compat: when a learner is absent or its weight is 0.0, its
+        path is skipped entirely. Old single-XGB pickles still work.
         """
-        prob_xgb = float(self.model.predict_proba(X)[0][1])
-        if self._lgb_model is None or self._w_lgb == 0.0:
-            return prob_xgb
-        prob_lgb = float(self._lgb_model.predict_proba(X)[0][1])
-        return self._w_xgb * prob_xgb + self._w_lgb * prob_lgb
+        prob = self._w_xgb * float(self.model.predict_proba(X)[0][1])
+        if self._lgb_model is not None and self._w_lgb != 0.0:
+            prob += self._w_lgb * float(self._lgb_model.predict_proba(X)[0][1])
+        if (self._lr_model is not None and self._w_lr != 0.0
+                and self._lr_scaler is not None):
+            X_s = self._lr_scaler.transform(X)
+            prob += self._w_lr * float(self._lr_model.predict_proba(X_s)[0][1])
+        return prob
 
     def predict(
         self,
@@ -494,7 +504,7 @@ class WinProbModel:
         os.makedirs(_MODEL_DIR, exist_ok=True)
         path = path or os.path.join(_MODEL_DIR, "win_probability.pkl")
         model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
-        # LGBMClassifier is sklearn-style and pickle-safe directly.
+        # LGBMClassifier and LogisticRegression are sklearn-style and pickle-safe.
         with open(path, "wb") as f:
             pickle.dump({"model_bytes":        model_bytes,
                          "threshold":          self.threshold,
@@ -502,8 +512,11 @@ class WinProbModel:
                          "feature_cols":       self._feature_cols,
                          "calibrator":         self._calibrator,
                          "lgb_model":          self._lgb_model,
+                         "lr_model":           self._lr_model,
+                         "lr_scaler":          self._lr_scaler,
                          "w_xgb":              self._w_xgb,
-                         "w_lgb":              self._w_lgb}, f)
+                         "w_lgb":              self._w_lgb,
+                         "w_lr":               self._w_lr}, f)
         print(f"Model saved -> {path}")
         return path
 
@@ -634,28 +647,51 @@ def train(
 
     xgb_brier = brier_score_loss(y_val, xgb_val_probs)
     lgb_brier = brier_score_loss(y_val, lgb_val_probs)
-    print(f"  base XGB Brier {xgb_brier:.4f}  base LGB Brier {lgb_brier:.4f}")
 
-    # NNLS meta-stacker: fit non-negative weights w_xgb, w_lgb that minimize
-    # ||y_val - w_xgb*xgb_val_probs - w_lgb*lgb_val_probs||^2 (== Brier).
-    # Mirrors the prop_pergame stacker. Sanity guard: if weights sum outside
-    # [0.5, 1.5] fall back to 0.5/0.5 — that usually indicates val/training
-    # disagreement and the fit won't generalise.
+    # Third base learner: Logistic Regression on standardized features. Linear
+    # model with a fundamentally different inductive bias than the two GBDTs
+    # — picks up signal in linear combinations the trees fragment across many
+    # splits. Requires StandardScaler since LR is scale-sensitive.
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.preprocessing import StandardScaler
+    lr_scaler = StandardScaler().fit(X_tr)
+    X_tr_s   = lr_scaler.transform(X_tr)
+    X_val_s  = lr_scaler.transform(X_val)
+    lr_clf = LogisticRegression(max_iter=1000, C=1.0, solver="lbfgs",
+                                random_state=42, n_jobs=-1)
+    lr_clf.fit(X_tr_s, y_tr)
+    lr_val_probs = lr_clf.predict_proba(X_val_s)[:, 1]
+    lr_brier = brier_score_loss(y_val, lr_val_probs)
+    print(f"  base XGB Brier {xgb_brier:.4f}  "
+          f"base LGB Brier {lgb_brier:.4f}  "
+          f"base LR  Brier {lr_brier:.4f}")
+
+    # 3-way NNLS meta-stacker: fit non-negative weights minimizing
+    # ||y_val - w_xgb*xgb_p - w_lgb*lgb_p - w_lr*lr_p||^2 (== Brier).
+    # Sanity guard on weight sum to detect val/train disagreement.
     from sklearn.linear_model import LinearRegression
     stacker = LinearRegression(positive=True, fit_intercept=False)
-    stacker.fit(np.column_stack([xgb_val_probs, lgb_val_probs]), y_val)
-    w_xgb_raw, w_lgb_raw = float(stacker.coef_[0]), float(stacker.coef_[1])
-    w_sum = w_xgb_raw + w_lgb_raw
+    stacker.fit(
+        np.column_stack([xgb_val_probs, lgb_val_probs, lr_val_probs]),
+        y_val,
+    )
+    w_xgb_raw = float(stacker.coef_[0])
+    w_lgb_raw = float(stacker.coef_[1])
+    w_lr_raw  = float(stacker.coef_[2])
+    w_sum = w_xgb_raw + w_lgb_raw + w_lr_raw
     if not (0.5 <= w_sum <= 1.5):
-        w_xgb, w_lgb = 0.5, 0.5
-        meta_fit_source = "fallback_05_05"
+        # Fallback: equal weights across three learners.
+        w_xgb, w_lgb, w_lr = 1/3, 1/3, 1/3
+        meta_fit_source = "fallback_equal"
     else:
-        w_xgb, w_lgb = w_xgb_raw, w_lgb_raw
-        meta_fit_source = "val_nnls"
+        w_xgb, w_lgb, w_lr = w_xgb_raw, w_lgb_raw, w_lr_raw
+        meta_fit_source = "val_nnls_3way"
     print(f"  NNLS weights: w_xgb={w_xgb:.3f}  w_lgb={w_lgb:.3f}  "
-          f"(source={meta_fit_source})")
+          f"w_lr={w_lr:.3f}  (source={meta_fit_source})")
 
-    val_probs = w_xgb * xgb_val_probs + w_lgb * lgb_val_probs
+    val_probs = (w_xgb * xgb_val_probs
+                 + w_lgb * lgb_val_probs
+                 + w_lr  * lr_val_probs)
     val_probs = np.clip(val_probs, 0.0, 1.0)
     acc   = accuracy_score(y_val, (val_probs >= 0.5).astype(int))
     brier = brier_score_loss(y_val, val_probs)
@@ -699,7 +735,9 @@ def train(
 
     model = WinProbModel(model=clf, feature_cols=feature_cols,
                          calibrator=calibrator,
-                         lgb_model=lgb_clf, w_xgb=w_xgb, w_lgb=w_lgb)
+                         lgb_model=lgb_clf, lr_model=lr_clf,
+                         lr_scaler=lr_scaler,
+                         w_xgb=w_xgb, w_lgb=w_lgb, w_lr=w_lr)
     model._feature_importance = dict(zip(feature_cols, clf.feature_importances_.tolist()))
     model.save(output_path)
     _save_metrics({
@@ -709,7 +747,8 @@ def train(
         "calibrator_deployed": calibrator is not None,
         "xgb_brier": float(xgb_brier),
         "lgb_brier": float(lgb_brier),
-        "w_xgb": float(w_xgb), "w_lgb": float(w_lgb),
+        "lr_brier":  float(lr_brier),
+        "w_xgb": float(w_xgb), "w_lgb": float(w_lgb), "w_lr": float(w_lr),
         "meta_fit_source": meta_fit_source,
         "n_games": len(df), "seasons": seasons,
     })
@@ -757,8 +796,11 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
                      feature_cols=data.get("feature_cols"),
                      calibrator=data.get("calibrator"),
                      lgb_model=data.get("lgb_model"),
+                     lr_model=data.get("lr_model"),
+                     lr_scaler=data.get("lr_scaler"),
                      w_xgb=float(data.get("w_xgb", 1.0)),
-                     w_lgb=float(data.get("w_lgb", 0.0)))
+                     w_lgb=float(data.get("w_lgb", 0.0)),
+                     w_lr=float(data.get("w_lr", 0.0)))
     m._feature_importance = data.get("feature_importance")
     return m
 
