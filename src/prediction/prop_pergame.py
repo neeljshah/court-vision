@@ -492,14 +492,15 @@ def build_opponent_defense(gamelog_dir: str) -> _OpponentDefense:
     return _OpponentDefense(allowed, league)
 
 
+# Cross-stat ratio features. The 6 per-minute rates (pm_pts, pm_ast, ...)
+# added in cycle 4 turned out to be ~95% collinear with the existing l5_*
+# form features (l5_min varies less than the counting stats it normalises)
+# and added a small net MAE drift; gradient-boosted trees can derive
+# per-minute behaviour from interactions of l5_pts and l5_min directly.
+# pts_share_3pt is the one ratio that carries genuinely new signal (3pt
+# specialists vs balanced scorers), so it stays.
 _RATIO_KEYS = (
-    "pm_pts",        # per-minute scoring rate
-    "pm_ast",        # per-minute assists
-    "pm_reb",        # per-minute rebounds
-    "pm_fg3m",       # per-minute 3PM
-    "pm_stl",        # per-minute steals
-    "pm_blk",        # per-minute blocks
-    "pts_share_3pt", # fraction of points from threes (3 * fg3m / pts)
+    "pts_share_3pt",  # fraction of points from threes (3 * fg3m / pts)
 )
 
 
@@ -573,18 +574,9 @@ def _row_features(prior_played: List[dict], rest_days: float,
     raw_gap = float(rest_days) if days_since_last_game is None else float(days_since_last_game)
     feats["days_since_last_game"]      = min(raw_gap, _DAYS_SINCE_CAP)
     feats["games_since_long_absence"]  = _games_since_long_absence(prior_played, raw_gap)
-    # Cross-stat ratios — per-minute production rates and 3pt-share. Denominators
-    # are clipped to a minimum of 5 so bench players with tiny l5_min don't blow
-    # up the ratio (NBA Advanced uses /36 minutes; trees only care about the
-    # relative ordering so the constant divisor doesn't matter).
-    l5_min_safe = max(feats["l5_min"], 5.0)
+    # 3-point share — fraction of recent points coming from threes (3 * fg3m / pts).
+    # Denominator clipped at 5 so low-volume rows don't blow up the ratio.
     l5_pts_safe = max(feats["l5_pts"], 5.0)
-    feats["pm_pts"]        = feats["l5_pts"]  / l5_min_safe
-    feats["pm_ast"]        = feats["l5_ast"]  / l5_min_safe
-    feats["pm_reb"]        = feats["l5_reb"]  / l5_min_safe
-    feats["pm_fg3m"]       = feats["l5_fg3m"] / l5_min_safe
-    feats["pm_stl"]        = feats["l5_stl"]  / l5_min_safe
-    feats["pm_blk"]        = feats["l5_blk"]  / l5_min_safe
     feats["pts_share_3pt"] = (3.0 * feats["l5_fg3m"]) / l5_pts_safe
     return feats
 
