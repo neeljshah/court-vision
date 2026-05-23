@@ -748,17 +748,17 @@ def train_pergame_models(
     # below is the central knob: each key overrides the default for one stat.
     _DEFAULT_COUNT = {"max_depth": 3, "min_child_weight": 10, "reg_lambda": 2.0,
                       "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04,
-                      "subsample": 0.8, "colsample_bytree": 0.8}
+                      "subsample": 0.8, "colsample_bytree": 0.8, "reg_alpha": 0.5}
     _DEFAULT_REG   = {"max_depth": 4, "min_child_weight": 10, "reg_lambda": 2.0,
                       "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04,
-                      "subsample": 0.8, "colsample_bytree": 0.8}
+                      "subsample": 0.8, "colsample_bytree": 0.8, "reg_alpha": 0.5}
     _STAT_PARAMS: Dict[str, dict] = {
         # STL — high noise, low signal; aggressive regularisation, gap 0.058 → 0.011.
-        # Cycle 25: lr 0.04 → 0.06. Cycle 26: subsample 0.8 → 0.9 (less
-        # bagging helps the noisiest-but-shallow stat).
+        # Cycle 25: lr 0.04 → 0.06. Cycle 26: subsample 0.8 → 0.9. Cycle 28:
+        # reg_alpha 0.5 → 0.25 (small L1 prune helps the noisiest stat).
         "stl": {"max_depth": 2, "min_child_weight": 40, "reg_lambda": 6.0,
                 "gamma": 0.6, "n_estimators": 400, "learning_rate": 0.06,
-                "subsample": 0.9},
+                "subsample": 0.9, "reg_alpha": 0.25},
         # BLK — low base rate (~0.5/game), bimodal across positions; tighten
         # depth + child weight to prevent splits on rare combinations.
         # Cycle 25: lr 0.04 → 0.06. Cycle 27: colsample_bytree 0.8 → 1.0
@@ -775,10 +775,11 @@ def train_pergame_models(
                  "subsample": 0.7},
         # PTS — re-tuned cycle 20 (93k rows, recency decay): one more depth
         # level + slightly tighter mcw/lambda. Cycle 25: lr 0.04 → 0.025.
-        # Cycle 27: colsample_bytree 0.8 → 0.9.
+        # Cycle 27: colsample_bytree 0.8 → 0.9. Cycle 28: reg_alpha 0.5 → 2.0
+        # (deeper PTS trees overfit; stronger L1 prunes noisy splits).
         "pts": {"max_depth": 6, "min_child_weight": 20, "reg_lambda": 4.0,
                 "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025,
-                "colsample_bytree": 0.9},
+                "colsample_bytree": 0.9, "reg_alpha": 2.0},
         # AST — re-tuned cycle 20 (93k rows, recency-decay active):
         # bumped depth 4 -> 5. Cycle 25: lr 0.04 → 0.025. Cycle 26:
         # subsample 0.8 → 0.7 (biggest MAE win of the subsample sweep, -0.15%).
@@ -819,7 +820,8 @@ def train_pergame_models(
             subsample=params.get("subsample", 0.8),
             colsample_bytree=params.get("colsample_bytree", 0.8),
             min_child_weight=params["min_child_weight"], reg_lambda=params["reg_lambda"],
-            reg_alpha=0.5, gamma=params["gamma"], random_state=42,
+            reg_alpha=params.get("reg_alpha", 0.5),
+            gamma=params["gamma"], random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
             early_stopping_rounds=40, eval_metric="mae",
         )
@@ -834,7 +836,8 @@ def train_pergame_models(
             subsample_freq=1,
             colsample_bytree=params.get("colsample_bytree", 0.8),
             min_child_samples=max(20, params["min_child_weight"] * 2),
-            reg_lambda=params["reg_lambda"], reg_alpha=0.5, random_state=42,
+            reg_lambda=params["reg_lambda"],
+            reg_alpha=params.get("reg_alpha", 0.5), random_state=42,
             objective="poisson" if is_count else "regression",
             n_jobs=-1, verbosity=-1,
         )
