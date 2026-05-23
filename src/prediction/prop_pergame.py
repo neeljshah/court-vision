@@ -208,15 +208,17 @@ def _get_playtypes() -> _PlayTypes:
 # ── BBRef advanced features (per-player-season efficiency + rate metrics) ────
 
 _BBREF_DIR = os.path.join(PROJECT_DIR, "data", "external")
-# Order matters — drives feature_columns() output. Picked the strongest signals
-# without too much collinearity: efficiency (ts), volume (usg), shot profile
-# (three_par, ftr), per-100 rate stats (ast/stl/blk/tov), holistic impact
-# (ws_per_48, bpm). Dropped per (collinear with bpm), trb/orb/drb_pct
-# (handled implicitly by opp_def_reb + form features), vorp (collinear bpm),
-# ows/dws (collinear ws_per_48).
+# Order matters — drives feature_columns() output. Efficiency (ts), volume
+# (usg), shot profile (three_par, ftr), per-100 rate stats (ast/stl/blk/tov),
+# holistic impact (ws_per_48, per), and SPLIT offensive/defensive BPM (obpm,
+# dbpm) — bpm itself is the sum so we keep the split for finer per-side
+# weighting. per is included for its independent signal (corr 0.88 with bpm —
+# enough non-redundancy to matter for trees). Dropped: trb/orb/drb_pct
+# (handled implicitly by opp_def_reb + form), vorp (collinear bpm/ws),
+# ows/dws (collinear ws_per_48), bpm (sum of obpm+dbpm — corr 0.9999).
 _BBREF_KEYS = ("usg_pct", "ts_pct", "three_par", "ftr",
                "ast_pct", "stl_pct", "blk_pct", "tov_pct",
-               "ws_per_48", "bpm")
+               "ws_per_48", "per", "obpm", "dbpm")
 _BBREF_DEFAULTS: Dict[str, float] = {f"bbref_{k}": 0.0 for k in _BBREF_KEYS}
 
 
@@ -541,8 +543,17 @@ def train_pergame_models(
     _DEFAULT_REG   = {"max_depth": 4, "min_child_weight": 10, "reg_lambda": 2.0,
                       "gamma": 0.2, "n_estimators": 800}
     _STAT_PARAMS: Dict[str, dict] = {
+        # STL — high noise, low signal; aggressive regularisation, gap 0.058 → 0.011.
         "stl": {"max_depth": 2, "min_child_weight": 40, "reg_lambda": 6.0,
                 "gamma": 0.6, "n_estimators": 400},
+        # BLK — low base rate (~0.5/game), bimodal across positions; tighten
+        # depth + child weight to prevent splits on rare combinations.
+        "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
+                "gamma": 0.4, "n_estimators": 500},
+        # FG3M — bounded count, position-correlated (centers ~0, guards ~3+);
+        # gap was 0.058 with default reg, room to tighten the regression head.
+        "fg3m": {"max_depth": 3, "min_child_weight": 20, "reg_lambda": 3.0,
+                 "gamma": 0.3, "n_estimators": 600},
     }
 
     for stat in STATS:
