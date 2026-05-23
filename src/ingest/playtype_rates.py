@@ -27,13 +27,15 @@ _SEASON      = "2024-25"
 
 
 def _fetch_synergy(play_type: str, season: str) -> Optional[pd.DataFrame]:
+    """Fetch one Synergy play-type slice. Param names per current nba_api (2026):
+    `per_mode_simple` (not _nullable), `season` (not season_year_nullable)."""
     try:
         from nba_api.stats.endpoints import SynergyPlayTypes  # type: ignore
         resp = SynergyPlayTypes(
             play_type_nullable=play_type,
             type_grouping_nullable="offensive",
-            per_mode_simple_nullable="PerGame",
-            season_year_nullable=season,
+            per_mode_simple="PerGame",
+            season=season,
         )
         dfs = resp.get_data_frames()
         if dfs:
