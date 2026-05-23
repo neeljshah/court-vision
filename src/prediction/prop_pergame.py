@@ -758,18 +758,17 @@ def train_pergame_models(
         # depth + child weight to prevent splits on rare combinations.
         "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
                 "gamma": 0.4, "n_estimators": 500},
-        # FG3M — bounded count, position-correlated. Re-tuned cycle 12 (with
-        # meta-stacker active): one more depth-layer helps. MAE 0.9466 -> 0.9457.
-        "fg3m": {"max_depth": 4, "min_child_weight": 20, "reg_lambda": 3.0,
+        # FG3M — re-tuned cycle 20: less regularisation now that we have
+        # 93k rows. MAE 0.9411 -> 0.9405.
+        "fg3m": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 2.0,
                  "gamma": 0.3, "n_estimators": 600},
-        # PTS — high-variance, dense signal. Sweep (cycle 6) found that an
-        # extra split layer plus slightly more reg trades a tiny bit of bias
-        # for variance reduction. MAE 4.7433 → 4.7407.
-        "pts": {"max_depth": 5, "min_child_weight": 15, "reg_lambda": 3.0,
+        # PTS — re-tuned cycle 20 (93k rows, recency decay): one more depth
+        # level + slightly tighter mcw/lambda. MAE 4.7094 -> 4.7089.
+        "pts": {"max_depth": 6, "min_child_weight": 20, "reg_lambda": 4.0,
                 "gamma": 0.2, "n_estimators": 800},
-        # AST — re-tuned cycle 12 (with meta-stacker active): tighter
-        # min_child_weight + more reg vs the cycle-6 winner. MAE 1.4105 -> 1.4100.
-        "ast": {"max_depth": 4, "min_child_weight": 20, "reg_lambda": 5.0,
+        # AST — re-tuned cycle 20 (93k rows, recency-decay active):
+        # bumped depth 4 -> 5. MAE 1.4015 -> 1.3983.
+        "ast": {"max_depth": 5, "min_child_weight": 20, "reg_lambda": 5.0,
                 "gamma": 0.2, "n_estimators": 800},
         # REB — re-tuned cycle 12: tighter min_child_weight + more reg.
         # MAE 1.9366 -> 1.9351.
