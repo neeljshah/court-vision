@@ -52,7 +52,7 @@ _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
 
-_MIN_PLAYED = 3.0                      # a game counts only if the player played
+_MIN_PLAYED = 1.0                      # a game counts only if the player played
 _EWMA_ALPHA = 0.30                     # recency weight — recent games dominate
 
 # Training-row recency decay: weight = exp(-_RECENCY_DECAY * age_years).
