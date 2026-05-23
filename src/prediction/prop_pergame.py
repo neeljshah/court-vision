@@ -761,11 +761,11 @@ def train_pergame_models(
                 "subsample": 0.9, "reg_alpha": 0.25},
         # BLK — low base rate (~0.5/game), bimodal across positions; tighten
         # depth + child weight to prevent splits on rare combinations.
-        # Cycle 25: lr 0.04 → 0.06. Cycle 27: colsample_bytree 0.8 → 1.0
-        # (biggest MAE win of the colsample sweep, -0.27%) — BLK benefits
-        # from seeing all features at every tree since shot-block signal
-        # lives in usg+height+blk_pct, not in incidental cols.
-        "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
+        # Cycle 25: lr 0.04 → 0.06. Cycle 27: colsample_bytree 0.8 → 1.0.
+        # Cycle 35: max_depth 2 → 3 (now that the bagging/L1/L2 stack is
+        # tuned, the model can afford an extra split layer; -0.49% MAE +
+        # R² +0.0030, biggest single-cycle win of this batch).
+        "blk": {"max_depth": 3, "min_child_weight": 25, "reg_lambda": 4.0,
                 "gamma": 0.4, "n_estimators": 500, "learning_rate": 0.06,
                 "colsample_bytree": 1.0},
         # FG3M — re-tuned cycle 20: less regularisation now that we have
