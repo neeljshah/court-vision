@@ -638,17 +638,19 @@ def train(
     from sklearn.metrics import accuracy_score, brier_score_loss
 
     if seasons is None:
-        # Default: 4 post-COVID seasons. Cycle-17 sweep with gap features
-        # filled (synergy + hustle + bench + lineups + def_rtg_trend +
-        # pace_variance + real ELO) found:
-        #   3 seasons   -> 0.6947 / 0.2008
-        #   4 seasons   -> 0.7040 / 0.1992   <-- best
-        #   5 seasons   -> 0.6892 / 0.2002
-        #   6 seasons   -> 0.6934 / 0.1996
-        # The 2018-19 + 2020-21 (bubble/no-fans/COVID) seasons hurt the
-        # scaled learners (MLP, NB) — different distributions. The recent
-        # 4 normal seasons compound cleanly. 2025-26 stays out (live).
-        seasons = ["2021-22", "2022-23", "2023-24", "2024-25"]
+        # Default: 2 most-recent completed seasons.
+        # Cycle-19 sweep — less data, more recent wins:
+        #   2 seasons (2023-24+)  -> 0.7291 / 0.1897   <-- chosen
+        #   3 seasons (2022-23+)  -> 0.6947 / 0.1998
+        #   4 seasons (2021-22+)  -> 0.6989 / 0.1987   (cycle-18 baseline)
+        #   6 seasons (drop 2019-20) -> 0.6934 / 0.1996
+        # Walk-forward (expanding folds) corroborates:
+        #   2-season mean: acc 0.6979 +- 0.0167   brier 0.1979 +- 0.0072
+        #   4-season mean: acc 0.6796 +- 0.0144   brier 0.2059 +- 0.0061
+        # NBA rule emphasis / pace / 3pt volume / rosters drift year-to-year;
+        # older seasons add training rows but inject distribution drift the
+        # recent val window suffers from. 2025-26 stays out — live targets.
+        seasons = ["2023-24", "2024-25"]
 
     print(f"Building dataset from {seasons} ...")
     rows = []
