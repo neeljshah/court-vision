@@ -85,7 +85,8 @@ def _ewma(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
 
 
 def feature_columns() -> List[str]:
-    """Ordered feature names — form features, game-context, opponent defence, rest/travel."""
+    """Ordered feature names — form, game-context, opponent defence, rest/travel,
+    playtype frequency, BBRef advanced (efficiency + per-rate-100 metrics)."""
     cols: List[str] = []
     for stat in _FORM_STATS:
         cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
@@ -94,6 +95,7 @@ def feature_columns() -> List[str]:
     cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
+    cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     return cols
 
 
@@ -201,6 +203,111 @@ def _get_playtypes() -> _PlayTypes:
     if _PLAYTYPES_CACHE is None:
         _PLAYTYPES_CACHE = build_playtypes()
     return _PLAYTYPES_CACHE
+
+
+# ── BBRef advanced features (per-player-season efficiency + rate metrics) ────
+
+_BBREF_DIR = os.path.join(PROJECT_DIR, "data", "external")
+# Order matters — drives feature_columns() output. Picked the strongest signals
+# without too much collinearity: efficiency (ts), volume (usg), shot profile
+# (three_par, ftr), per-100 rate stats (ast/stl/blk/tov), holistic impact
+# (ws_per_48, bpm). Dropped per (collinear with bpm), trb/orb/drb_pct
+# (handled implicitly by opp_def_reb + form features), vorp (collinear bpm),
+# ows/dws (collinear ws_per_48).
+_BBREF_KEYS = ("usg_pct", "ts_pct", "three_par", "ftr",
+               "ast_pct", "stl_pct", "blk_pct", "tov_pct",
+               "ws_per_48", "bpm")
+_BBREF_DEFAULTS: Dict[str, float] = {f"bbref_{k}": 0.0 for k in _BBREF_KEYS}
+
+
+class _BBRefAdvanced:
+    """Per-(player_name, season) lookup of BBRef advanced metrics.
+
+    Source: data/external/bbref_advanced_<season>.json (already cached).
+    Keys: player_name (NBA full_name) and season (e.g. '2024-25').
+    Yields zero defaults when the season file is absent or the player isn't
+    listed (rookies, two-way contracts, missing scrape). Never raises.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]],
+                 id_to_name: Dict[int, str]):
+        self._lookup = lookup
+        self._id_to_name = id_to_name
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        try:
+            name = self._id_to_name.get(int(player_id))
+        except (TypeError, ValueError):
+            name = None
+        if not name:
+            return dict(_BBREF_DEFAULTS)
+        return dict(self._lookup.get((name, str(season)), _BBREF_DEFAULTS))
+
+
+def _bbref_id_to_name() -> Dict[int, str]:
+    """Build {player_id: full_name} from nba_api's static player list.
+    Never raises — returns {} if the static cache is unavailable."""
+    try:
+        from nba_api.stats.static import players  # noqa: PLC0415
+        return {int(p["id"]): str(p["full_name"]) for p in players.get_players()}
+    except Exception:
+        return {}
+
+
+def _unmangle_utf8(s: str) -> str:
+    """The cached BBRef JSON was written with mangled encoding — every UTF-8
+    byte sequence got re-stored as if it were Latin-1, so 'Nikola Jokić'
+    became 'Nikola JokiÄ\\x87'. Reverse the round-trip when possible; fall
+    back to the original string. No-op for ASCII names."""
+    try:
+        if s.isascii():
+            return s
+        return s.encode("latin-1").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return s
+
+
+def build_bbref_advanced(bbref_dir: Optional[str] = None) -> _BBRefAdvanced:
+    """Load every bbref_advanced_<season>.json under bbref_dir into a lookup
+    keyed by (player_name, season). Never raises. Reverses the mojibake on
+    non-ASCII names so accented players (Jokić, Vučević, Šengün, ...) match
+    the nba_api full_name canonical form."""
+    bbref_dir = bbref_dir or _BBREF_DIR
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        if not os.path.isdir(bbref_dir):
+            return _BBRefAdvanced(lookup, _bbref_id_to_name())
+        for fname in os.listdir(bbref_dir):
+            if not fname.startswith("bbref_advanced_") or not fname.endswith(".json"):
+                continue
+            season = fname.removeprefix("bbref_advanced_").removesuffix(".json")
+            try:
+                rows = json.load(open(os.path.join(bbref_dir, fname), encoding="utf-8"))
+            except Exception:
+                continue
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                name = _unmangle_utf8(str(row.get("player_name", "")).strip())
+                if not name:
+                    continue
+                lookup[(name, season)] = {
+                    f"bbref_{k}": float(row.get(k, 0.0) or 0.0)
+                    for k in _BBREF_KEYS
+                }
+    except Exception:
+        pass
+    return _BBRefAdvanced(lookup, _bbref_id_to_name())
+
+
+_BBREF_CACHE: Optional[_BBRefAdvanced] = None
+
+
+def _get_bbref() -> _BBRefAdvanced:
+    global _BBREF_CACHE
+    if _BBREF_CACHE is None:
+        _BBREF_CACHE = build_bbref_advanced()
+    return _BBREF_CACHE
 
 
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
@@ -326,6 +433,7 @@ def build_pergame_dataset(
     oppdef = build_opponent_defense(gamelog_dir)
     resttravel = build_rest_travel()
     playtypes = build_playtypes()
+    bbref = build_bbref_advanced()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -366,6 +474,7 @@ def build_pergame_dataset(
                 feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
                 feats.update(resttravel.features(team_abbrev, gdate))
                 feats.update(playtypes.features(file_player_id, file_season))
+                feats.update(bbref.features(file_player_id, file_season))
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
@@ -606,6 +715,11 @@ def build_prediction_row(
         feats.update(_get_playtypes().features(int(player_id), season))
     except Exception:
         feats.update(_PLAYTYPE_DEFAULTS)
+    # BBRef advanced efficiency / rate stats: process-cached.
+    try:
+        feats.update(_get_bbref().features(int(player_id), season))
+    except Exception:
+        feats.update(_BBREF_DEFAULTS)
     return feats
 
 
