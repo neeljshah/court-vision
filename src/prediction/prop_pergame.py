@@ -748,10 +748,10 @@ def train_pergame_models(
     # below is the central knob: each key overrides the default for one stat.
     _DEFAULT_COUNT = {"max_depth": 3, "min_child_weight": 10, "reg_lambda": 2.0,
                       "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04,
-                      "subsample": 0.8}
+                      "subsample": 0.8, "colsample_bytree": 0.8}
     _DEFAULT_REG   = {"max_depth": 4, "min_child_weight": 10, "reg_lambda": 2.0,
                       "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.04,
-                      "subsample": 0.8}
+                      "subsample": 0.8, "colsample_bytree": 0.8}
     _STAT_PARAMS: Dict[str, dict] = {
         # STL — high noise, low signal; aggressive regularisation, gap 0.058 → 0.011.
         # Cycle 25: lr 0.04 → 0.06. Cycle 26: subsample 0.8 → 0.9 (less
@@ -761,9 +761,13 @@ def train_pergame_models(
                 "subsample": 0.9},
         # BLK — low base rate (~0.5/game), bimodal across positions; tighten
         # depth + child weight to prevent splits on rare combinations.
-        # Cycle 25: lr 0.04 → 0.06 (biggest single-stat MAE win of the sweep, -0.32%).
+        # Cycle 25: lr 0.04 → 0.06. Cycle 27: colsample_bytree 0.8 → 1.0
+        # (biggest MAE win of the colsample sweep, -0.27%) — BLK benefits
+        # from seeing all features at every tree since shot-block signal
+        # lives in usg+height+blk_pct, not in incidental cols.
         "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
-                "gamma": 0.4, "n_estimators": 500, "learning_rate": 0.06},
+                "gamma": 0.4, "n_estimators": 500, "learning_rate": 0.06,
+                "colsample_bytree": 1.0},
         # FG3M — re-tuned cycle 20: less regularisation now that we have
         # 93k rows. Cycle 25: lr 0.04 → 0.025. Cycle 26: subsample 0.8 → 0.7.
         "fg3m": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 2.0,
@@ -771,8 +775,10 @@ def train_pergame_models(
                  "subsample": 0.7},
         # PTS — re-tuned cycle 20 (93k rows, recency decay): one more depth
         # level + slightly tighter mcw/lambda. Cycle 25: lr 0.04 → 0.025.
+        # Cycle 27: colsample_bytree 0.8 → 0.9.
         "pts": {"max_depth": 6, "min_child_weight": 20, "reg_lambda": 4.0,
-                "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025},
+                "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025,
+                "colsample_bytree": 0.9},
         # AST — re-tuned cycle 20 (93k rows, recency-decay active):
         # bumped depth 4 -> 5. Cycle 25: lr 0.04 → 0.025. Cycle 26:
         # subsample 0.8 → 0.7 (biggest MAE win of the subsample sweep, -0.15%).
@@ -781,9 +787,10 @@ def train_pergame_models(
                 "subsample": 0.7},
         # REB — re-tuned cycle 12: tighter min_child_weight + more reg.
         # Cycle 25: lr 0.04 → 0.025. Cycle 26: subsample 0.8 → 0.7.
+        # Cycle 27: colsample_bytree 0.8 → 0.9.
         "reb": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 4.0,
                 "gamma": 0.3, "n_estimators": 800, "learning_rate": 0.025,
-                "subsample": 0.7},
+                "subsample": 0.7, "colsample_bytree": 0.9},
         # TOV — count-ish (mean ~1.3/game); responds to count-style reg.
         # Cycle 25: lr 0.04 → 0.025.
         "tov": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 6.0,
@@ -809,7 +816,8 @@ def train_pergame_models(
         xgb_model = xgb.XGBRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
-            subsample=params.get("subsample", 0.8), colsample_bytree=0.8,
+            subsample=params.get("subsample", 0.8),
+            colsample_bytree=params.get("colsample_bytree", 0.8),
             min_child_weight=params["min_child_weight"], reg_lambda=params["reg_lambda"],
             reg_alpha=0.5, gamma=params["gamma"], random_state=42,
             objective="count:poisson" if is_count else "reg:squarederror",
@@ -823,7 +831,8 @@ def train_pergame_models(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
             subsample=params.get("subsample", 0.8),
-            subsample_freq=1, colsample_bytree=0.8,
+            subsample_freq=1,
+            colsample_bytree=params.get("colsample_bytree", 0.8),
             min_child_samples=max(20, params["min_child_weight"] * 2),
             reg_lambda=params["reg_lambda"], reg_alpha=0.5, random_state=42,
             objective="poisson" if is_count else "regression",
