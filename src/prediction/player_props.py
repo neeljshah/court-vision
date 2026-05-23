@@ -17,7 +17,7 @@ import json
 import os
 import sys
 import time
-from typing import Optional
+from typing import Dict, Optional
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
@@ -2244,6 +2244,38 @@ def predict_props(
         pass
     confidence = _maybe_flag_fallback(_used_pergame, confidence)
 
+    # ── Minutes-aware adjustment (PRED-19) ────────────────────────────────────
+    # Scale counting-stat predictions by expected minutes / season average,
+    # raised to per-stat elasticity. Rate stats untouched. Skips when the
+    # player has no gamelog or season_min is unknown.
+    expected_minutes_meta: Dict[str, float] = {}
+    try:
+        from src.prediction.minutes_aware_props import adjust_props_for_minutes  # noqa: PLC0415
+        _pid = feats.get("player_id")
+        _season_min = float(feats.get("season_min", 0.0) or 0.0)
+        if _pid and _season_min > 0:
+            _game_ctx = {
+                "is_b2b": bool(feats.get("is_b2b", 0)),
+                "rest_days": float(feats.get("rest_days", 2.0) or 2.0),
+                "is_home": bool(feats.get("is_home", 1)),
+                "opp_team": opp_team,
+                "season": season,
+            }
+            _adjusted = adjust_props_for_minutes(
+                predictions, int(_pid), _game_ctx, _season_min,
+            )
+            # Copy back the scaled counting stats; preserve the original confidence.
+            for _stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
+                if _stat in _adjusted:
+                    predictions[_stat] = round(max(float(_adjusted[_stat]), 0.0), 1)
+            # Surface the meta fields the post-process injected.
+            for _k in ("expected_minutes", "p_dnp", "p_load_mgmt",
+                       "minutes_factor", "minutes_std"):
+                if _k in _adjusted:
+                    expected_minutes_meta[_k] = _adjusted[_k]
+    except Exception:  # noqa: BLE001 — never let minutes adjustment break a prediction
+        pass
+
     # Bayesian minutes projection: pulls min_roll toward season_min when sample is small.
     # Same _BAYES_K constant used for all other Bayesian features.
     _min_roll   = feats.get("min_roll",    feats.get("season_min", 0.0))
@@ -2290,6 +2322,7 @@ def predict_props(
         "blowout_prob":      blowout_prob,
         "dnp_risk":          round(dnp_risk, 4),
         "confidence":        confidence,
+        **expected_minutes_meta,
         "injury_status":     injury_status,
         "injury_multiplier": injury_mult,
         "features":          feats,
