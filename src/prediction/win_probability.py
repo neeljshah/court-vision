@@ -272,26 +272,28 @@ def _get_pnr_ppp(team_abbr: str, season: str) -> float:
 
 
 def _get_bench_net_rtg(team_abbr: str, season: str) -> float:
-    """C-7: Mean net rating for bench lineups (<20 min/g) from data/nba/lineups/."""
+    """C-7: Mean net rating for bench lineups (<20 min total) for a team-season.
+
+    Reads exactly the (team_abbr, season) lineup file rather than any file
+    matching the team name — the previous implementation averaged across
+    every cached season for the team, so the value was identical for the
+    same team regardless of which season was requested. Cycle-17 fix.
+    """
     try:
         lineup_dir = os.path.join(_NBA_CACHE, "lineups")
-        if not os.path.exists(lineup_dir):
+        path = os.path.join(
+            lineup_dir, f"lineup_splits_{team_abbr.upper()}_{season}.json"
+        )
+        if not os.path.exists(path):
             return 0.0
-        candidates = [
-            f for f in os.listdir(lineup_dir)
-            if team_abbr.upper() in f.upper() and f.endswith(".json")
-        ]
-        if not candidates:
-            return 0.0
+        rows = json.load(open(path))
         vals = []
-        for fname in candidates:
-            rows = json.load(open(os.path.join(lineup_dir, fname)))
-            for r in rows:
-                if (int(r.get("lineup_size", 5)) >= 5
-                        and float(r.get("min", 99)) < 20):
-                    nr = r.get("net_rtg") or r.get("NET_RATING")
-                    if nr is not None:
-                        vals.append(float(nr))
+        for r in rows:
+            if (int(r.get("lineup_size", 5)) >= 5
+                    and float(r.get("min", 99)) < 20):
+                nr = r.get("net_rtg") or r.get("NET_RATING")
+                if nr is not None:
+                    vals.append(float(nr))
         return round(sum(vals) / len(vals), 3) if vals else 0.0
     except Exception:
         return 0.0
@@ -378,26 +380,28 @@ def _get_pnr_ppp(team_abbr: str, season: str) -> float:
 
 
 def _get_bench_net_rtg(team_abbr: str, season: str) -> float:
-    """C-7: Mean net rating for bench lineups (<20 min/g) from data/nba/lineups/."""
+    """C-7: Mean net rating for bench lineups (<20 min total) for a team-season.
+
+    Reads exactly the (team_abbr, season) lineup file rather than any file
+    matching the team name — the previous implementation averaged across
+    every cached season for the team, so the value was identical for the
+    same team regardless of which season was requested. Cycle-17 fix.
+    """
     try:
         lineup_dir = os.path.join(_NBA_CACHE, "lineups")
-        if not os.path.exists(lineup_dir):
+        path = os.path.join(
+            lineup_dir, f"lineup_splits_{team_abbr.upper()}_{season}.json"
+        )
+        if not os.path.exists(path):
             return 0.0
-        candidates = [
-            f for f in os.listdir(lineup_dir)
-            if team_abbr.upper() in f.upper() and f.endswith(".json")
-        ]
-        if not candidates:
-            return 0.0
+        rows = json.load(open(path))
         vals = []
-        for fname in candidates:
-            rows = json.load(open(os.path.join(lineup_dir, fname)))
-            for r in rows:
-                if (int(r.get("lineup_size", 5)) >= 5
-                        and float(r.get("min", 99)) < 20):
-                    nr = r.get("net_rtg") or r.get("NET_RATING")
-                    if nr is not None:
-                        vals.append(float(nr))
+        for r in rows:
+            if (int(r.get("lineup_size", 5)) >= 5
+                    and float(r.get("min", 99)) < 20):
+                nr = r.get("net_rtg") or r.get("NET_RATING")
+                if nr is not None:
+                    vals.append(float(nr))
         return round(sum(vals) / len(vals), 3) if vals else 0.0
     except Exception:
         return 0.0
@@ -629,8 +633,17 @@ def train(
     from sklearn.metrics import accuracy_score, brier_score_loss
 
     if seasons is None:
-        # Default: 3 completed seasons only — 2025-26 outcomes are live targets
-        seasons = ["2022-23", "2023-24", "2024-25"]
+        # Default: 4 post-COVID seasons. Cycle-17 sweep with gap features
+        # filled (synergy + hustle + bench + lineups + def_rtg_trend +
+        # pace_variance + real ELO) found:
+        #   3 seasons   -> 0.6947 / 0.2008
+        #   4 seasons   -> 0.7040 / 0.1992   <-- best
+        #   5 seasons   -> 0.6892 / 0.2002
+        #   6 seasons   -> 0.6934 / 0.1996
+        # The 2018-19 + 2020-21 (bubble/no-fans/COVID) seasons hurt the
+        # scaled learners (MLP, NB) — different distributions. The recent
+        # 4 normal seasons compound cleanly. 2025-26 stays out (live).
+        seasons = ["2021-22", "2022-23", "2023-24", "2024-25"]
 
     print(f"Building dataset from {seasons} ...")
     rows = []
@@ -654,6 +667,16 @@ def train(
     # lack the 4 sim_* features; on-the-fly Monte Carlo backfill is too slow
     # for an interactive retrain, so we accept the reduced feature set.
     feature_cols = _available_feature_cols(df.to_dict("records") if len(df) else [])
+    # Drop zero-variance columns — these add nothing for trees and force
+    # spurious shrinkage on LR. Currently catches the sim_* placeholders
+    # written as constants by the fast historical-season fetcher.
+    if len(df) > 1:
+        stds = df[feature_cols].std(numeric_only=True)
+        constants = [c for c in feature_cols if stds.get(c, 1.0) < 1e-8]
+        if constants:
+            feature_cols = [c for c in feature_cols if c not in constants]
+            print(f"  [filter] dropped {len(constants)} zero-variance "
+                  f"columns: {constants}")
     X  = df[feature_cols].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
     print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(feature_cols)}/{len(_MODEL_FEATURE_COLS)}")
