@@ -402,7 +402,8 @@ class WinProbModel:
     """XGBoost pre-game win probability model."""
 
     def __init__(self, model=None, threshold: float = 0.5,
-                 feature_cols: Optional[List[str]] = None):
+                 feature_cols: Optional[List[str]] = None,
+                 calibrator=None):
         """
         Args:
             model:        Trained XGBClassifier (None before training).
@@ -410,10 +411,14 @@ class WinProbModel:
             feature_cols: Columns the model was trained on. Defaults to
                           `_MODEL_FEATURE_COLS` for backward compat with old
                           pickles that didn't record this.
+            calibrator:   Optional sklearn IsotonicRegression (or any
+                          .predict(probs)->probs object) applied to the raw
+                          XGB probability at predict time. None disables.
         """
         self.model        = model
         self.threshold    = threshold
         self._feature_cols = list(feature_cols) if feature_cols else list(_MODEL_FEATURE_COLS)
+        self._calibrator  = calibrator
         self._feature_importance: Optional[dict] = None
 
     def predict(
@@ -443,6 +448,9 @@ class WinProbModel:
         feats = _build_features(home_team, away_team, season, game_date, ref_names)
         X     = np.array([[feats[c] for c in self._feature_cols]], dtype=np.float32)
         prob  = float(self.model.predict_proba(X)[0][1])
+        if self._calibrator is not None:
+            prob = float(self._calibrator.predict([prob])[0])
+            prob = max(0.0, min(1.0, prob))
 
         # Surface injury warnings (Out/Doubtful players on either team)
         injury_warnings = _get_injury_warnings(home_team, away_team)
@@ -465,7 +473,8 @@ class WinProbModel:
         with open(path, "wb") as f:
             pickle.dump({"model_bytes": model_bytes, "threshold": self.threshold,
                          "feature_importance": self._feature_importance,
-                         "feature_cols": self._feature_cols}, f)
+                         "feature_cols": self._feature_cols,
+                         "calibrator": self._calibrator}, f)
         print(f"Model saved -> {path}")
         return path
 
@@ -578,14 +587,55 @@ def train(
     val_probs = clf.predict_proba(X_val)[:, 1]
     acc   = accuracy_score(y_val, (val_probs >= 0.5).astype(int))
     brier = brier_score_loss(y_val, val_probs)
-    print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}")
+    print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}  (uncalibrated)")
 
-    model = WinProbModel(model=clf)
+    # Isotonic calibration with k-fold cross-fitting on the val set.
+    # Mirrors the prop_pergame calibration pattern: cross-fit for honest
+    # lift measurement, then refit on the full val set for the deployed
+    # calibrator. Opt-in — only ship the calibrator if cross-fitted Brier
+    # is strictly better than uncalibrated.
+    from sklearn.isotonic import IsotonicRegression
+    n_val = len(y_val)
+    k = 5
+    fold_size = n_val // k
+    perm = np.random.RandomState(42).permutation(n_val)
+    cal_probs_cv = np.zeros(n_val)
+    for fold in range(k):
+        lo = fold * fold_size
+        hi = n_val if fold == k - 1 else (fold + 1) * fold_size
+        test_idx  = perm[lo:hi]
+        train_idx = np.concatenate([perm[:lo], perm[hi:]])
+        fold_cal = IsotonicRegression(out_of_bounds="clip")
+        fold_cal.fit(val_probs[train_idx], y_val[train_idx])
+        cal_probs_cv[test_idx] = fold_cal.predict(val_probs[test_idx])
+    cal_probs_cv = np.clip(cal_probs_cv, 0.0, 1.0)
+    cal_brier = brier_score_loss(y_val, cal_probs_cv)
+    cal_acc   = accuracy_score(y_val, (cal_probs_cv >= 0.5).astype(int))
+    print(f"Cross-fitted calibrated:    Brier {cal_brier:.4f}  "
+          f"(lift {cal_brier-brier:+.4f})  acc {cal_acc:.3f}")
+
+    calibrator = None
+    if cal_brier < brier:
+        calibrator = IsotonicRegression(out_of_bounds="clip")
+        calibrator.fit(val_probs, y_val)
+        print(f"Calibrator DEPLOYED — Brier improvement {brier-cal_brier:+.4f}")
+    else:
+        print(f"Calibrator NOT deployed — no improvement on cross-fitted Brier")
+
+    served_acc   = float(cal_acc if calibrator is not None else acc)
+    served_brier = float(cal_brier if calibrator is not None else brier)
+
+    model = WinProbModel(model=clf, feature_cols=feature_cols,
+                         calibrator=calibrator)
     model._feature_importance = dict(zip(feature_cols, clf.feature_importances_.tolist()))
-    model._feature_cols = feature_cols
     model.save(output_path)
-    _save_metrics({"accuracy": acc, "brier": brier,
-                   "n_games": len(df), "seasons": seasons})
+    _save_metrics({
+        "accuracy": served_acc, "brier": served_brier,
+        "uncalibrated_brier": float(brier),
+        "calibration_lift": float(cal_brier - brier),
+        "calibrator_deployed": calibrator is not None,
+        "n_games": len(df), "seasons": seasons,
+    })
     return model
 
 
@@ -627,7 +677,8 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
         # backward compat: old pickle format stored the model object directly
         clf = data["model"]
     m = WinProbModel(model=clf, threshold=data.get("threshold", 0.5),
-                     feature_cols=data.get("feature_cols"))
+                     feature_cols=data.get("feature_cols"),
+                     calibrator=data.get("calibrator"))
     m._feature_importance = data.get("feature_importance")
     return m
 
