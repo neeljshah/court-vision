@@ -618,6 +618,8 @@ def train_pergame_models(
     min_prior: int = 4,
     holdout_frac: float = 0.2,
     val_frac: float = 0.15,
+    stats: Optional[List[str]] = None,
+    stat_params_override: Optional[Dict[str, dict]] = None,
 ) -> dict:
     """Train one XGBoost regressor per stat on the per-game dataset.
 
@@ -675,15 +677,40 @@ def train_pergame_models(
         # gap was 0.058 with default reg, room to tighten the regression head.
         "fg3m": {"max_depth": 3, "min_child_weight": 20, "reg_lambda": 3.0,
                  "gamma": 0.3, "n_estimators": 600},
+        # PTS — high-variance, dense signal. Sweep (cycle 6) found that an
+        # extra split layer plus slightly more reg trades a tiny bit of bias
+        # for variance reduction. MAE 4.7433 → 4.7407.
+        "pts": {"max_depth": 5, "min_child_weight": 15, "reg_lambda": 3.0,
+                "gamma": 0.2, "n_estimators": 800},
+        # AST — sweep prefers slightly tighter child-weight + more reg over
+        # the default. Marginal MAE win (4-5 bp) — keep for the R² lift.
+        "ast": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 4.0,
+                "gamma": 0.2, "n_estimators": 800},
+        # REB — sweep prefers shallower trees + a touch more gamma. Trees
+        # were overfitting deep splits on rebound spikes from anomalous games.
+        "reb": {"max_depth": 3, "min_child_weight": 20, "reg_lambda": 3.0,
+                "gamma": 0.3, "n_estimators": 800},
+        # TOV — count-ish (mean ~1.3/game); responds to count-style reg
+        # (deeper child-weight, higher lambda) like BLK/STL but doesn't need
+        # the depth-2 ceiling. Marginal but consistent.
+        "tov": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 6.0,
+                "gamma": 0.4, "n_estimators": 700},
     }
 
-    for stat in STATS:
+    # Allow callers (e.g. tuning sweeps) to restrict which stats are trained
+    # and to override the per-stat hyperparameters without editing _STAT_PARAMS.
+    stats_to_train = list(stats) if stats else list(STATS)
+    effective_params = dict(_STAT_PARAMS)
+    if stat_params_override:
+        effective_params.update(stat_params_override)
+
+    for stat in stats_to_train:
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
         y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
         is_count = stat in ("stl", "blk")
 
         params = {**(_DEFAULT_COUNT if is_count else _DEFAULT_REG),
-                  **_STAT_PARAMS.get(stat, {})}
+                  **effective_params.get(stat, {})}
 
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
         xgb_model = xgb.XGBRegressor(
@@ -791,8 +818,12 @@ def train_pergame_models(
               f"cal_lift_mae={m['calibration_lift_mae']:+.3f})")
 
     metrics["feature_cols"] = feature_cols
-    with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
-        json.dump(metrics, f, indent=2)
+    # Only persist metrics when this was a full train — partial trains (e.g.
+    # tuning sweeps) would clobber the per-stat metrics for stats they didn't
+    # touch.
+    if set(stats_to_train) == set(STATS):
+        with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
     return metrics
 
 
