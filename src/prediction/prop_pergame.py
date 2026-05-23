@@ -86,7 +86,7 @@ def _ewma(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
 
 def feature_columns() -> List[str]:
     """Ordered feature names — form, game-context, opponent defence, rest/travel,
-    playtype frequency, BBRef advanced (efficiency + per-rate-100 metrics)."""
+    playtype frequency, BBRef advanced, contracts."""
     cols: List[str] = []
     for stat in _FORM_STATS:
         cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
@@ -96,6 +96,7 @@ def feature_columns() -> List[str]:
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
+    cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     return cols
 
 
@@ -315,6 +316,95 @@ def _get_bbref() -> _BBRefAdvanced:
     return _BBREF_CACHE
 
 
+# ── contract features (salary, contract-year, role stability) ────────────────
+
+# Per-(player_name, season) features sourced from data/external/contracts_<season>.json.
+# Schema: player_name, team, current_salary, years_remaining, cap_hit, cap_hit_pct,
+# contract_type, contract_year. current_salary is log-scaled (raw range $22K..$60M
+# blows up tree splits); contract_type is dropped because every cached row is
+# "guaranteed" (zero-variance constant). Only 2024-25 / 2025-26 are cached, so
+# ~50% of training rows currently get neutral defaults.
+_CONTRACTS_DIR = os.path.join(PROJECT_DIR, "data", "external")
+_CONTRACT_KEYS = ("salary_log", "cap_hit_pct", "year", "years_remaining")
+_CONTRACT_DEFAULTS: Dict[str, float] = {f"contract_{k}": 0.0 for k in _CONTRACT_KEYS}
+
+
+class _Contracts:
+    """Per-(player_name, season) contract feature lookup.
+
+    Yields zero defaults when the season file is absent or the player isn't
+    listed (rookies on two-ways, mid-season signings, missing scrape).
+    Never raises.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]],
+                 id_to_name: Dict[int, str]):
+        self._lookup = lookup
+        self._id_to_name = id_to_name
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        try:
+            name = self._id_to_name.get(int(player_id))
+        except (TypeError, ValueError):
+            name = None
+        if not name:
+            return dict(_CONTRACT_DEFAULTS)
+        return dict(self._lookup.get((name, str(season)), _CONTRACT_DEFAULTS))
+
+
+def build_contracts(contracts_dir: Optional[str] = None) -> _Contracts:
+    """Load every contracts_<season>.json into a (player_name, season) lookup.
+
+    Salary is converted to log10(salary+1) so heavy-tail values (Curry $60M
+    vs. min $22K) don't dominate tree split selection. cap_hit_pct stays as
+    its native 0-1 fraction. contract_year and years_remaining are passed
+    through (0/1 and small int respectively). Never raises — missing files
+    yield an empty lookup."""
+    import math
+
+    contracts_dir = contracts_dir or _CONTRACTS_DIR
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        if not os.path.isdir(contracts_dir):
+            return _Contracts(lookup, _bbref_id_to_name())
+        for fname in os.listdir(contracts_dir):
+            if not fname.startswith("contracts_") or not fname.endswith(".json"):
+                continue
+            season = fname.removeprefix("contracts_").removesuffix(".json")
+            try:
+                rows = json.load(open(os.path.join(contracts_dir, fname), encoding="utf-8"))
+            except Exception:
+                continue
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                name = _unmangle_utf8(str(row.get("player_name", "")).strip())
+                if not name:
+                    continue
+                salary = row.get("current_salary")
+                salary_log = math.log10(float(salary) + 1.0) if salary else 0.0
+                cap_pct = row.get("cap_hit_pct")
+                lookup[(name, season)] = {
+                    "contract_salary_log":      float(salary_log),
+                    "contract_cap_hit_pct":     float(cap_pct or 0.0),
+                    "contract_year":            1.0 if row.get("contract_year") else 0.0,
+                    "contract_years_remaining": float(row.get("years_remaining") or 0),
+                }
+    except Exception:
+        pass
+    return _Contracts(lookup, _bbref_id_to_name())
+
+
+_CONTRACTS_CACHE: Optional[_Contracts] = None
+
+
+def _get_contracts() -> _Contracts:
+    global _CONTRACTS_CACHE
+    if _CONTRACTS_CACHE is None:
+        _CONTRACTS_CACHE = build_contracts()
+    return _CONTRACTS_CACHE
+
+
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
 
 class _OpponentDefense:
@@ -439,6 +529,7 @@ def build_pergame_dataset(
     resttravel = build_rest_travel()
     playtypes = build_playtypes()
     bbref = build_bbref_advanced()
+    contracts = build_contracts()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -480,6 +571,7 @@ def build_pergame_dataset(
                 feats.update(resttravel.features(team_abbrev, gdate))
                 feats.update(playtypes.features(file_player_id, file_season))
                 feats.update(bbref.features(file_player_id, file_season))
+                feats.update(contracts.features(file_player_id, file_season))
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
@@ -816,6 +908,11 @@ def build_prediction_row(
         feats.update(_get_bbref().features(int(player_id), season))
     except Exception:
         feats.update(_BBREF_DEFAULTS)
+    # Contract features (salary, contract-year, role stability) — process-cached.
+    try:
+        feats.update(_get_contracts().features(int(player_id), season))
+    except Exception:
+        feats.update(_CONTRACT_DEFAULTS)
     return feats
 
 
