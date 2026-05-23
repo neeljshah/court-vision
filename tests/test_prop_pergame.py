@@ -66,8 +66,8 @@ def test_feature_columns_are_leakage_free():
     assert "rest_days" in cols and "is_home" in cols
     assert all(not c.startswith("target_") for c in cols)
     assert all(f"opp_def_{s}" in cols for s in STATS)
-    # 5 form x 8 stats + 3 context + 7 opp_def + 4 rest/travel + 9 playtype freq + 10 bbref.
-    assert len(cols) == 5 * 8 + 3 + 7 + 4 + 9 + 10
+    # 5 form x 8 stats + 3 context + 7 opp_def + 4 rest/travel + 9 playtype + 12 bbref.
+    assert len(cols) == 5 * 8 + 3 + 7 + 4 + 9 + 12
 
 
 def test_feature_columns_include_rest_travel():
