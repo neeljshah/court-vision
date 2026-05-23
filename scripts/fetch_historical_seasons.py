@@ -67,6 +67,22 @@ _SIM_NEUTRAL = {
 }
 
 
+def _load_stars_available(season: str) -> dict:
+    """Read stars_available_{season}.json if present.
+
+    Returns dict mapping game_id (str) -> {team_abbreviation: int_count}.
+    Empty dict if not available; row builder falls back to 3 (full strength).
+    """
+    path = os.path.join(_NBA_CACHE, f"stars_available_{season}.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path) as f:
+            return json.load(f) or {}
+    except Exception:
+        return {}
+
+
 def _fetch_one_season(season: str) -> int:
     """Fetch one season, build rows (no sim Monte Carlo), persist cache.
 
@@ -129,6 +145,7 @@ def _fetch_one_season(season: str) -> int:
                    + _pv["TOV"] - _pv["OREB"]).clip(lower=1)
     _pv["_dt"] = pd.to_datetime(_pv["GAME_DATE"], errors="coerce")
     _pv = _pv.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
+    stars_available_lookup = _load_stars_available(season)
     pace_var_lookup: dict = {}
     for _tid, _grp in _pv.groupby("TEAM_ID"):
         _grp = _grp.reset_index(drop=True)
@@ -229,8 +246,14 @@ def _fetch_one_season(season: str) -> int:
                 elo_lookup.get(str(gid), {}).get("home_elo", 1500.0) * ht["pace"]
                 - elo_lookup.get(str(gid), {}).get("away_elo", 1500.0) * at["pace"]
             ),
-            "home_stars_available": 3,
-            "away_stars_available": 3,
+            # Historical injury proxy: count of top-8-by-minutes players on
+            # the team who actually appeared in this specific game. Built by
+            # scripts/fetch_historical_injuries.py. Falls back to 8 (full
+            # strength) if no cache.
+            "home_stars_available": int(stars_available_lookup.get(str(gid), {}).get(
+                h["TEAM_ABBREVIATION"], 8)),
+            "away_stars_available": int(stars_available_lookup.get(str(gid), {}).get(
+                a["TEAM_ABBREVIATION"], 8)),
             "home_bench_net_rtg":  _get_bench_net_rtg(h["TEAM_ABBREVIATION"], season),
             "away_bench_net_rtg":  _get_bench_net_rtg(a["TEAM_ABBREVIATION"], season),
             "home_off_rtg_L10":    h_roll["off_rtg_L10"],
