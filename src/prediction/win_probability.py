@@ -407,7 +407,7 @@ class WinProbModel:
                  lgb_model=None,
                  lr_model=None,
                  lr_scaler=None,
-                 mlp_model=None,
+                 mlp_models=None,
                  w_xgb: float = 1.0,
                  w_lgb: float = 0.0,
                  w_lr:  float = 0.0,
@@ -426,11 +426,17 @@ class WinProbModel:
             lr_model:     Optional third base learner (Logistic Regression).
             lr_scaler:    StandardScaler fit on training features for the LR
                           AND MLP base learners (both need scaled inputs).
-            mlp_model:    Optional fourth base learner (MLPClassifier).
+            mlp_models:   Optional list of MLPClassifier instances trained
+                          with different seeds. Their probabilities are
+                          AVERAGED at predict time and then weighted by
+                          w_mlp. Cycle-12 used a single MLP whose gain was
+                          seed-specific; cycle-13 made this an ensemble for
+                          stability. Accepts a single MLPClassifier too —
+                          wrapped into a singleton list internally.
             w_xgb:        Weight on XGB probability. Default 1.0.
             w_lgb:        Weight on LGB probability. Default 0.0.
             w_lr:         Weight on LR probability. Default 0.0.
-            w_mlp:        Weight on MLP probability. Default 0.0.
+            w_mlp:        Weight on the AVERAGED MLP probability. Default 0.0.
         """
         self.model        = model
         self.threshold    = threshold
@@ -439,7 +445,15 @@ class WinProbModel:
         self._lgb_model   = lgb_model
         self._lr_model    = lr_model
         self._lr_scaler   = lr_scaler
-        self._mlp_model   = mlp_model
+        # Normalise mlp_models to a list (or None). Old pickles pass a single
+        # MLPClassifier in `mlp_model`; load() forwards it here, so accept
+        # both shapes transparently.
+        if mlp_models is None:
+            self._mlp_models = None
+        elif isinstance(mlp_models, (list, tuple)):
+            self._mlp_models = list(mlp_models)
+        else:
+            self._mlp_models = [mlp_models]
         self._w_xgb       = float(w_xgb)
         self._w_lgb       = float(w_lgb)
         self._w_lr        = float(w_lr)
@@ -451,19 +465,22 @@ class WinProbModel:
 
         Backward compat: when a learner is absent or its weight is 0.0, its
         path is skipped entirely. Both LR and MLP use the shared StandardScaler.
+        When `_mlp_models` has multiple entries their probs are averaged
+        before applying `_w_mlp`.
         """
         prob = self._w_xgb * float(self.model.predict_proba(X)[0][1])
         if self._lgb_model is not None and self._w_lgb != 0.0:
             prob += self._w_lgb * float(self._lgb_model.predict_proba(X)[0][1])
         need_scaled = (
-            (self._lr_model  is not None and self._w_lr  != 0.0) or
-            (self._mlp_model is not None and self._w_mlp != 0.0)
+            (self._lr_model   is not None and self._w_lr  != 0.0) or
+            (self._mlp_models is not None and self._w_mlp != 0.0)
         )
         X_s = self._lr_scaler.transform(X) if (need_scaled and self._lr_scaler is not None) else None
         if self._lr_model is not None and self._w_lr != 0.0 and X_s is not None:
             prob += self._w_lr * float(self._lr_model.predict_proba(X_s)[0][1])
-        if self._mlp_model is not None and self._w_mlp != 0.0 and X_s is not None:
-            prob += self._w_mlp * float(self._mlp_model.predict_proba(X_s)[0][1])
+        if self._mlp_models and self._w_mlp != 0.0 and X_s is not None:
+            mlp_probs = [float(m.predict_proba(X_s)[0][1]) for m in self._mlp_models]
+            prob += self._w_mlp * (sum(mlp_probs) / len(mlp_probs))
         return prob
 
     def predict(
@@ -525,7 +542,7 @@ class WinProbModel:
                          "lgb_model":          self._lgb_model,
                          "lr_model":           self._lr_model,
                          "lr_scaler":          self._lr_scaler,
-                         "mlp_model":          self._mlp_model,
+                         "mlp_models":         self._mlp_models,
                          "w_xgb":              self._w_xgb,
                          "w_lgb":              self._w_lgb,
                          "w_lr":               self._w_lr,
@@ -676,20 +693,27 @@ def train(
     lr_val_probs = lr_clf.predict_proba(X_val_s)[:, 1]
     lr_brier = brier_score_loss(y_val, lr_val_probs)
 
-    # Fourth base learner: small MLP on standardized features. Catches
-    # nonlinear interactions the GBDTs miss on this dataset. Empirically
-    # (cycle 12 screen) the single-hidden-layer (64,) alpha=0.001
-    # config carried 0.27-0.28 NNLS weight and lifted blend accuracy by
-    # 1.5-1.8pp. early_stopping=True guards against overfit.
+    # Fourth base learner: ENSEMBLE of small MLPs on standardized features.
+    # Catches nonlinear interactions the GBDTs miss. Cycle 12 used a single
+    # MLP with random_state=42 and reported a +1.76pp accuracy gain, but
+    # the cycle-12-stability screen revealed that gain was idiosyncratic
+    # to seed=42 (other seeds gave +0.0pp). Replacing with an ensemble of 5
+    # MLPs with different seeds; their probs are averaged. This gives a
+    # stable, real ~+0.5pp accuracy gain that survives seed permutation.
     from sklearn.neural_network import MLPClassifier
-    mlp_clf = MLPClassifier(
-        hidden_layer_sizes=(64,), alpha=0.001,
-        early_stopping=True, validation_fraction=0.15,
-        n_iter_no_change=20, max_iter=500,
-        random_state=42,
-    )
-    mlp_clf.fit(X_tr_s, y_tr)
-    mlp_val_probs = mlp_clf.predict_proba(X_val_s)[:, 1]
+    _MLP_SEEDS = [1, 7, 42, 100, 2024]
+    mlp_models: list = []
+    for seed in _MLP_SEEDS:
+        m = MLPClassifier(
+            hidden_layer_sizes=(64,), alpha=0.001,
+            early_stopping=True, validation_fraction=0.15,
+            n_iter_no_change=20, max_iter=500,
+            random_state=seed,
+        )
+        m.fit(X_tr_s, y_tr)
+        mlp_models.append(m)
+    mlp_val_probs_list = [m.predict_proba(X_val_s)[:, 1] for m in mlp_models]
+    mlp_val_probs = np.mean(mlp_val_probs_list, axis=0)
     mlp_brier = brier_score_loss(y_val, mlp_val_probs)
     print(f"  base XGB Brier {xgb_brier:.4f}  "
           f"base LGB Brier {lgb_brier:.4f}")
@@ -769,7 +793,7 @@ def train(
     model = WinProbModel(model=clf, feature_cols=feature_cols,
                          calibrator=calibrator,
                          lgb_model=lgb_clf, lr_model=lr_clf,
-                         lr_scaler=lr_scaler, mlp_model=mlp_clf,
+                         lr_scaler=lr_scaler, mlp_models=mlp_models,
                          w_xgb=w_xgb, w_lgb=w_lgb,
                          w_lr=w_lr, w_mlp=w_mlp)
     model._feature_importance = dict(zip(feature_cols, clf.feature_importances_.tolist()))
@@ -828,13 +852,16 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
     else:
         # backward compat: old pickle format stored the model object directly
         clf = data["model"]
+    # Accept both shapes: new pickles use 'mlp_models' (list); cycle-12
+    # pickles used 'mlp_model' (single). WinProbModel.__init__ normalises.
+    mlp_loaded = data.get("mlp_models", data.get("mlp_model"))
     m = WinProbModel(model=clf, threshold=data.get("threshold", 0.5),
                      feature_cols=data.get("feature_cols"),
                      calibrator=data.get("calibrator"),
                      lgb_model=data.get("lgb_model"),
                      lr_model=data.get("lr_model"),
                      lr_scaler=data.get("lr_scaler"),
-                     mlp_model=data.get("mlp_model"),
+                     mlp_models=mlp_loaded,
                      w_xgb=float(data.get("w_xgb", 1.0)),
                      w_lgb=float(data.get("w_lgb", 0.0)),
                      w_lr=float(data.get("w_lr", 0.0)),
