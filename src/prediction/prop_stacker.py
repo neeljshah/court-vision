@@ -396,6 +396,7 @@ def train_stacker_all(
     # Write metrics JSON
     metrics_payload = {
         "model": "linear_stacker",
+        "task": "season_aggregate_circular",
         "trained_at": datetime.datetime.now().isoformat(),
         "catboost_available": _CATBOOST_AVAILABLE,
         "stats": {
@@ -411,6 +412,11 @@ def train_stacker_all(
             for stat, r in results.items()
         },
     }
+    import logging
+    logging.getLogger(__name__).warning(
+        "prop_stacker metrics reflect a SEASON-AVERAGE CIRCULAR task — "
+        "R² is not a real game-level holdout. The honest game-level model is prop_pergame."
+    )
     with open(_STACKER_METRICS, "w") as f:
         json.dump(metrics_payload, f, indent=2)
     print(f"[stacker] Metrics -> {_STACKER_METRICS}")

@@ -2208,7 +2208,7 @@ def predict_props(
           "stl":       float,
           "blk":       float,
           "tov":       float,
-          "confidence": str,   # "model" | "rolling" | "season" | "default"
+          "confidence": str,   # "pergame" | "season_avg_fallback" | "model" | "rolling" | "season" | "default"
           "features":  dict,
         }
     """
@@ -2229,6 +2229,7 @@ def predict_props(
     # Prefer the per-game models — trained on real game logs (one row per
     # game, leakage-free), the honest measured task. The legacy season-average
     # models above remain the fallback when a player's gamelog is unavailable.
+    _used_pergame = False
     try:
         from src.prediction.prop_pergame import predict_player_pergame
         _pid = feats.get("player_id")
@@ -2238,8 +2239,10 @@ def predict_props(
             if _pg is not None:
                 predictions = {s: round(max(float(_pg[s]), 0.0), 1) for s in _pg}
                 confidence = "pergame"
+                _used_pergame = True
     except Exception:  # noqa: BLE001 — never let the per-game path break a prediction
         pass
+    confidence = _maybe_flag_fallback(_used_pergame, confidence)
 
     # Bayesian minutes projection: pulls min_roll toward season_min when sample is small.
     # Same _BAYES_K constant used for all other Bayesian features.
@@ -2491,6 +2494,13 @@ def _try_stacker_prediction(X, stat: str):
         return v if np.isfinite(v) else None
     except Exception:
         return None
+
+
+def _maybe_flag_fallback(used_pergame: bool, confidence: str) -> str:
+    """Return 'season_avg_fallback' when the circular legacy models fired and pergame did not."""
+    if not used_pergame and confidence in ("ensemble", "model"):
+        return "season_avg_fallback"
+    return confidence
 
 
 def _predict_with_models(feats: dict) -> tuple:
@@ -2807,9 +2817,19 @@ def train_props_lightgbm(seasons: list = None, force: bool = False,
         print(f"  [props_lgb] {stat.upper()} - MAE: {mae:.2f}  R2: {r2:.3f}  -> saved {model_path}")
 
     metrics_path = os.path.join(_MODEL_DIR, "props_lgb_metrics.json")
+    import logging
+    logging.getLogger(__name__).warning(
+        "props_lgb metrics reflect a SEASON-AVERAGE CIRCULAR task — "
+        "R² is not a real game-level holdout. The honest game-level model is prop_pergame."
+    )
     with open(metrics_path, "w") as _f:
         json.dump(
-            {"model": "lightgbm", "trained_at": datetime.datetime.now().isoformat(), "stats": results},
+            {
+                "model": "lightgbm",
+                "task": "season_aggregate_circular",
+                "trained_at": datetime.datetime.now().isoformat(),
+                "stats": results,
+            },
             _f, indent=2,
         )
 
@@ -2901,9 +2921,19 @@ def train_props_catboost(seasons: list = None, force: bool = False,
         print(f"  [props_cb] {stat.upper()} - MAE: {mae:.2f}  R2: {r2:.3f}  -> saved {model_path}")
 
     metrics_path = os.path.join(_MODEL_DIR, "props_cb_metrics.json")
+    import logging
+    logging.getLogger(__name__).warning(
+        "props_cb metrics reflect a SEASON-AVERAGE CIRCULAR task — "
+        "R² is not a real game-level holdout. The honest game-level model is prop_pergame."
+    )
     with open(metrics_path, "w") as _f:
         json.dump(
-            {"model": "catboost", "trained_at": datetime.datetime.now().isoformat(), "stats": results},
+            {
+                "model": "catboost",
+                "task": "season_aggregate_circular",
+                "trained_at": datetime.datetime.now().isoformat(),
+                "stats": results,
+            },
             _f, indent=2,
         )
 
