@@ -805,20 +805,40 @@ def train_pergame_models(
         lgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
-        # Blend = mean of the two base learners (or LGB only for stats where
-        # the XGB Poisson learner is a net negative on holdout). The blend
-        # below must match what predict_pergame computes from the on-disk
-        # models — for _LGB_ONLY_STATS we skip persisting XGB so the blend
-        # at inference is single-model LGB.
+        # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
+        # weighted combo of XGB + LGB. Weights are fit per-stat on the val
+        # slice via non-negative least squares (sklearn LinearRegression
+        # with positive=True, fit_intercept=False). Falls back to the
+        # fixed 0.5/0.5 mean when the val fit gives wildly skewed weights
+        # (sum outside [0.5, 1.5]) — that usually means val and holdout
+        # disagree and the fit doesn't generalise.
         lgb_only = stat in _LGB_ONLY_STATS
+
+        xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
+
+        if lgb_only:
+            w_xgb, w_lgb = 0.0, 1.0
+            meta_fit_source = "lgb_only"
+        else:
+            xgb_val = xgb_model.predict(X_val)
+            lgb_val = lgb_model.predict(X_val)
+            from sklearn.linear_model import LinearRegression
+            stacker = LinearRegression(positive=True, fit_intercept=False)
+            stacker.fit(np.column_stack([xgb_val, lgb_val]), y_val)
+            w_xgb, w_lgb = float(stacker.coef_[0]), float(stacker.coef_[1])
+            w_sum = w_xgb + w_lgb
+            if not (0.5 <= w_sum <= 1.5):
+                w_xgb, w_lgb = 0.5, 0.5
+                meta_fit_source = "fallback_05_05"
+            else:
+                meta_fit_source = "val_nnls"
 
         def _blend(X):
             if lgb_only:
                 return lgb_model.predict(X)
-            return 0.5 * (xgb_model.predict(X) + lgb_model.predict(X))
+            return w_xgb * xgb_model.predict(X) + w_lgb * lgb_model.predict(X)
 
-        xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
-        blend_ho = lgb_ho if lgb_only else 0.5 * (xgb_ho + lgb_ho)
+        blend_ho = lgb_ho if lgb_only else (w_xgb * xgb_ho + w_lgb * lgb_ho)
         blend_tr = _blend(X_tr)
 
         # Isotonic calibration — k-fold cross-fitted on the holdout.
@@ -882,6 +902,11 @@ def train_pergame_models(
             "calibration_lift_r2":  round(cal_r2 - uncal_r2, 4),
             "calibration_lift_mae": round(uncal_mae - cal_mae, 4),
             "calibration_used":  cal_used,
+            # Meta-stacker weights — what predict_pergame applies to the
+            # XGB + LGB base learner outputs before calibration.
+            "meta_w_xgb":     round(w_xgb, 4),
+            "meta_w_lgb":     round(w_lgb, 4),
+            "meta_fit_source": meta_fit_source,
         }
         m["gap"] = round(m["train_r2"] - m["holdout_r2"], 4)
         m["ensemble_lift"] = round(m["holdout_r2"] - max(m["xgb_holdout_r2"],
@@ -911,7 +936,36 @@ def train_pergame_models(
     if set(stats_to_train) == set(STATS):
         with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=2)
+    # Meta-stacker weights sidecar — written even on partial trains so the
+    # weights for the trained stats stay in sync with their on-disk models.
+    _persist_meta_weights(model_dir, metrics)
     return metrics
+
+
+_META_WEIGHTS_FILENAME = "meta_weights_pergame.json"
+
+
+def _persist_meta_weights(model_dir: str, metrics: dict) -> None:
+    """Merge this train run's meta-stacker weights into the sidecar JSON.
+
+    The sidecar keeps a single weights dict keyed by stat so predict_pergame
+    can apply them without parsing the full metrics report each call."""
+    path = os.path.join(model_dir, _META_WEIGHTS_FILENAME)
+    existing: Dict[str, dict] = {}
+    if os.path.exists(path):
+        try:
+            existing = json.load(open(path, encoding="utf-8"))
+        except Exception:
+            existing = {}
+    for stat, m in metrics.get("stats", {}).items():
+        if "meta_w_xgb" in m and "meta_w_lgb" in m:
+            existing[stat] = {
+                "w_xgb": float(m["meta_w_xgb"]),
+                "w_lgb": float(m["meta_w_lgb"]),
+                "source": m.get("meta_fit_source", "unknown"),
+            }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(existing, f, indent=2)
 
 
 # ── inference ─────────────────────────────────────────────────────────────────
@@ -955,13 +1009,33 @@ def _load_pergame_calibrator(stat: str, model_dir: str):
         return None
 
 
+_META_WEIGHTS_CACHE: Optional[Dict[str, dict]] = None
+
+
+def _get_pergame_meta_weights(model_dir: str) -> Dict[str, dict]:
+    """Return the per-stat meta-stacker weights dict (process-cached)."""
+    global _META_WEIGHTS_CACHE
+    if _META_WEIGHTS_CACHE is not None:
+        return _META_WEIGHTS_CACHE
+    path = os.path.join(model_dir, _META_WEIGHTS_FILENAME)
+    if not os.path.exists(path):
+        _META_WEIGHTS_CACHE = {}
+        return _META_WEIGHTS_CACHE
+    try:
+        _META_WEIGHTS_CACHE = json.load(open(path, encoding="utf-8"))
+    except Exception:
+        _META_WEIGHTS_CACHE = {}
+    return _META_WEIGHTS_CACHE
+
+
 def predict_pergame(stat: str, feature_row: Dict[str, float],
                     model_dir: Optional[str] = None) -> Optional[float]:
-    """Predict one stat for one game — calibrated mean of the per-game base learners.
+    """Predict one stat for one game — calibrated meta-blend of the per-game base learners.
 
-    Applies the per-game isotonic calibrator (calibration_pergame_<stat>.joblib)
-    on top of the XGB+LGB blend when present; falls back to the raw blend if
-    the calibrator file is missing (e.g. pre-calibration models on disk)."""
+    Applies the per-stat meta-stacker weights from meta_weights_pergame.json
+    when present, otherwise falls back to a simple mean of whatever models
+    are on disk. Then applies the per-game isotonic calibrator
+    (calibration_pergame_<stat>.joblib) when present."""
     import numpy as np
 
     model_dir = model_dir or _MODEL_DIR
@@ -976,8 +1050,32 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
         if n_feats is not None and n_feats != expected_n:
             return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
-    preds = [float(m.predict(X)[0]) for m in models]
-    blend = sum(preds) / len(preds)
+
+    # load_pergame_model returns [XGB, LGB] when both exist (in that order),
+    # or [LGB] only for stats in _LGB_ONLY_STATS. Disambiguate by class
+    # name rather than position so we don't silently mis-weight if the load
+    # order changes.
+    weights = _get_pergame_meta_weights(model_dir).get(stat)
+    blend = 0.0
+    if weights and len(models) >= 2:
+        xgb_pred = lgb_pred = None
+        for m in models:
+            cls = type(m).__name__.lower()
+            if "xgb" in cls and xgb_pred is None:
+                xgb_pred = float(m.predict(X)[0])
+            elif "lgb" in cls and lgb_pred is None:
+                lgb_pred = float(m.predict(X)[0])
+        if xgb_pred is not None and lgb_pred is not None:
+            blend = float(weights["w_xgb"]) * xgb_pred + float(weights["w_lgb"]) * lgb_pred
+        else:
+            preds = [float(m.predict(X)[0]) for m in models]
+            blend = sum(preds) / len(preds)
+    else:
+        # Single model on disk (e.g. STL LGB-only) or no weights file —
+        # mean is the safe default.
+        preds = [float(m.predict(X)[0]) for m in models]
+        blend = sum(preds) / len(preds)
+
     calibrator = _load_pergame_calibrator(stat, model_dir)
     if calibrator is not None:
         try:
