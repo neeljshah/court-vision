@@ -91,6 +91,21 @@ def _fit_eval(
     The split is the same chronological 80/20 production uses. No model is
     saved.
     """
+    params = dict(fixed_params)
+    params[knob] = knob_value
+    return _fit_eval_config(X, y, params)
+
+
+def _fit_eval_config(
+    X: np.ndarray,
+    y: np.ndarray,
+    params: Dict[str, Any],
+) -> Tuple[float, float]:
+    """Train XGB with a fully-specified params dict; return (acc, brier).
+
+    Same chronological 80/20 split as production. No model saved. Used by
+    both `run_sweep` (via `_fit_eval`) and `compare_configs`.
+    """
     from xgboost import XGBClassifier
     from sklearn.metrics import accuracy_score, brier_score_loss
 
@@ -98,8 +113,6 @@ def _fit_eval(
     X_tr, X_val = X[:split], X[split:]
     y_tr, y_val = y[:split], y[split:]
 
-    params = dict(fixed_params)
-    params[knob] = knob_value
     clf = XGBClassifier(**params)
     clf.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=False)
     probs = clf.predict_proba(X_val)[:, 1]
@@ -197,6 +210,89 @@ def run_sweep(
                    "delta_acc_pp": d_acc_pp,
                    "delta_brier": d_brier,
                    "ships": bool(ships)},
+    }
+    out_path = os.path.join(_MODEL_DIR, result_filename)
+    with open(out_path, "w") as f:
+        json.dump(payload, f, indent=2)
+    print(f"\nWrote {out_path}")
+    return payload
+
+
+def compare_configs(
+    configs: Dict[str, Dict[str, Any]],
+    baseline_name: str,
+    result_filename: str,
+) -> Dict[str, Any]:
+    """Compare N named full XGB configs against one named as baseline.
+
+    Each entry in `configs` is a complete kwargs dict for XGBClassifier
+    (unlike `run_sweep` which holds most params fixed and varies one). Trains
+    every config on the same chronological 80/20 split, reports val accuracy
+    + Brier, and evaluates the workday-loop ship gate vs the baseline.
+
+    Args:
+        configs: Mapping from human label -> XGB kwargs dict.
+        baseline_name: Key into `configs` to use as the comparator. Must be
+            present.
+        result_filename: Basename inside `_MODEL_DIR` to write JSON to.
+
+    Returns:
+        The payload dict that also lands on disk.
+    """
+    if baseline_name not in configs:
+        raise RuntimeError(
+            f"baseline {baseline_name!r} not in configs={list(configs)}"
+        )
+
+    print(f"Win-Probability config comparison "
+          f"(configs={list(configs)}, baseline={baseline_name!r})\n")
+    file_acc, file_brier = _prod_metrics()
+    print(f"Prod metrics file: accuracy={file_acc:.4f}  Brier={file_brier:.4f} "
+          f"(informational only)")
+
+    print("\nBuilding dataset from cached season games...")
+    X, y, features_used = _build_dataset()
+    print(f"  Dataset: n={len(X)} games | home win rate {y.mean():.1%} "
+          f"| features={X.shape[1]}\n")
+
+    results: Dict[str, Tuple[float, float]] = {}
+    for name, params in configs.items():
+        acc, brier = _fit_eval_config(X, y, params)
+        results[name] = (acc, brier)
+        print(f"  {name:>20s}  acc {acc:.4f}  brier {brier:.4f}")
+
+    base_acc, base_brier = results[baseline_name]
+    print(f"\nBaseline ({baseline_name}): acc {base_acc:.4f}  brier {base_brier:.4f}")
+    print("Deltas vs baseline:")
+    deltas: Dict[str, Dict[str, float]] = {}
+    ships_any = False
+    for name, (a, b) in results.items():
+        d_acc_pp = (a - base_acc) * 100
+        d_brier  = b - base_brier
+        ships    = (d_brier < -0.001) or (d_acc_pp >= 0.5)
+        deltas[name] = {"d_acc_pp": d_acc_pp, "d_brier": d_brier,
+                        "ships": bool(ships)}
+        flag = "SHIPS" if ships and name != baseline_name else (
+            "BASE " if name == baseline_name else "     ")
+        print(f"  {name:>20s}  d_acc {d_acc_pp:+.2f}pp  "
+              f"d_brier {d_brier:+.4f}  {flag}")
+        if ships and name != baseline_name:
+            ships_any = True
+
+    print(f"\nShip gate (any non-baseline beats it): "
+          f"{'PASS' if ships_any else 'FAIL'}")
+
+    payload: Dict[str, Any] = {
+        "configs": configs,
+        "baseline_name": baseline_name,
+        "seasons": SEASONS,
+        "features_used": features_used,
+        "n_features_used": len(features_used),
+        "prod_metrics_file": {"accuracy": file_acc, "brier": file_brier},
+        "results": {n: {"accuracy": a, "brier": b}
+                    for n, (a, b) in results.items()},
+        "deltas_vs_baseline": deltas,
+        "any_config_ships": bool(ships_any),
     }
     out_path = os.path.join(_MODEL_DIR, result_filename)
     with open(out_path, "w") as f:
