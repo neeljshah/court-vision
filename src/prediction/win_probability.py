@@ -26,6 +26,11 @@ import pandas as pd
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
 
+# Patch nba_api headers BEFORE any endpoint module is imported. Without this,
+# stats.nba.com read-times-out on every call (nba_api's default User-Agent +
+# missing x-nba-stats-* headers fail NBA's bot detection).
+from src.data import nba_api_headers_patch  # noqa: F401, E402
+
 from src.data.schedule_context import compute_travel_distance  # no API — arena coords only
 from src.prediction.possession_simulator import PossessionSimulator  # raises at load if missing
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
