@@ -47,7 +47,7 @@ def test_bbref_loads_real_data_for_known_player(tmp_path):
             "player_name": "LeBron James",
             "usg_pct": 28.0, "ts_pct": 0.58, "three_par": 0.30, "ftr": 0.20,
             "ast_pct": 41.2, "stl_pct": 1.3, "blk_pct": 1.0, "tov_pct": 12.0,
-            "ws_per_48": 0.17, "bpm": 5.5,
+            "ws_per_48": 0.17, "per": 24.0, "obpm": 4.0, "dbpm": 1.5,
         },
         {
             # Note: BBRef cache stores names mangled (UTF-8 bytes mis-encoded as
@@ -56,7 +56,7 @@ def test_bbref_loads_real_data_for_known_player(tmp_path):
             "player_name": "Nikola JokiÄ",
             "usg_pct": 30.0, "ts_pct": 0.66, "three_par": 0.20, "ftr": 0.30,
             "ast_pct": 50.0, "stl_pct": 1.8, "blk_pct": 1.5, "tov_pct": 15.0,
-            "ws_per_48": 0.30, "bpm": 13.0,
+            "ws_per_48": 0.30, "per": 32.0, "obpm": 9.0, "dbpm": 4.0,
         },
     ]
     (season_dir / "bbref_advanced_2024-25.json").write_text(json.dumps(fixture))
@@ -67,11 +67,14 @@ def test_bbref_loads_real_data_for_known_player(tmp_path):
     feats = b.features(2544, "2024-25")
     assert feats["bbref_usg_pct"] == pytest.approx(28.0)
     assert feats["bbref_ts_pct"] == pytest.approx(0.58)
-    assert feats["bbref_bpm"] == pytest.approx(5.5)
+    assert feats["bbref_per"] == pytest.approx(24.0)
+    assert feats["bbref_obpm"] == pytest.approx(4.0)
+    assert feats["bbref_dbpm"] == pytest.approx(1.5)
 
     # Jokic: player_id 203999
     feats_jok = b.features(203999, "2024-25")
-    assert feats_jok["bbref_bpm"] == pytest.approx(13.0)
+    assert feats_jok["bbref_per"] == pytest.approx(32.0)
+    assert feats_jok["bbref_obpm"] == pytest.approx(9.0)
     assert feats_jok["bbref_ts_pct"] == pytest.approx(0.66)
 
 
