@@ -1,6 +1,6 @@
 {
-  "val_auc": 1.0,
-  "val_brier": 0.24727004820119328,
-  "epochs": 10,
-  "n_games": 15
+  "val_auc": 0.0,
+  "val_brier": 0.2534056131019147,
+  "epochs": 5,
+  "n_games": 20
 }

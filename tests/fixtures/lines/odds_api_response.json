@@ -1,0 +1,48 @@
+{
+  "data": [
+    {
+      "id": "test_event_001",
+      "sport_key": "basketball_nba",
+      "sport_title": "NBA",
+      "commence_time": "2026-05-22T00:00:00Z",
+      "home_team": "Boston Celtics",
+      "away_team": "Miami Heat",
+      "bookmakers": [
+        {
+          "key": "pinnacle",
+          "title": "Pinnacle",
+          "last_update": "2026-05-22T12:00:00Z",
+          "markets": [
+            {
+              "key": "h2h",
+              "last_update": "2026-05-22T12:00:00Z",
+              "outcomes": [
+                {"name": "Boston Celtics", "price": 1.65},
+                {"name": "Miami Heat", "price": 2.35}
+              ]
+            },
+            {
+              "key": "spreads",
+              "last_update": "2026-05-22T12:00:00Z",
+              "outcomes": [
+                {"name": "Boston Celtics", "price": 1.91, "point": -7.5},
+                {"name": "Miami Heat", "price": 1.91, "point": 7.5}
+              ]
+            },
+            {
+              "key": "totals",
+              "last_update": "2026-05-22T12:00:00Z",
+              "outcomes": [
+                {"name": "Over", "price": 1.91, "point": 218.5},
+                {"name": "Under", "price": 1.91, "point": 218.5}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "timestamp": "2026-05-22T12:00:00Z",
+  "prev_timestamp": "2026-05-22T11:55:00Z",
+  "next_timestamp": "2026-05-22T12:05:00Z"
+}

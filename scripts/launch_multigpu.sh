@@ -69,9 +69,17 @@ except:
 echo "CFS cores: $CFS_CORES"
 
 TOTAL_WORKERS=$((N_GPUS * PARALLEL_PER_GPU))
-THREADS_PER_WORKER=$(( CFS_CORES / TOTAL_WORKERS ))
-[ "$THREADS_PER_WORKER" -lt 4 ] && THREADS_PER_WORKER=4
-[ "$THREADS_PER_WORKER" -gt 12 ] && THREADS_PER_WORKER=12
+# Honor OMP_PER_WORKER if explicitly set (e.g. when CFS detection returns the
+# 8-core default on a pod without /sys/fs/cgroup/cpu.max — that gives OMP=4
+# which halves throughput vs the 12-thread sweet spot for this pipeline).
+if [ "${OMP_PER_WORKER:-}" != "" ] && [ "${OMP_PER_WORKER}" != "auto" ]; then
+    THREADS_PER_WORKER="$OMP_PER_WORKER"
+    echo "OMP_PER_WORKER override: $THREADS_PER_WORKER"
+else
+    THREADS_PER_WORKER=$(( CFS_CORES / TOTAL_WORKERS ))
+    [ "$THREADS_PER_WORKER" -lt 4 ] && THREADS_PER_WORKER=4
+    [ "$THREADS_PER_WORKER" -gt 12 ] && THREADS_PER_WORKER=12
+fi
 echo "Total workers: $TOTAL_WORKERS, threads per worker: $THREADS_PER_WORKER"
 
 # ── Kill any stale workers ───────────────────────────────────────────────

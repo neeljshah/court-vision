@@ -1,0 +1,23 @@
+{
+  "date": "2026-05-22",
+  "scraped_at": "2026-05-22T22:32:50.827017Z",
+  "source": "sbr",
+  "lines": [
+    {
+      "game_id": null,
+      "date": "2026-05-22",
+      "home": "SAS",
+      "away": "OKC",
+      "open_total": null,
+      "close_total": null,
+      "open_spread_home": -1.5,
+      "close_spread_home": -1.5,
+      "open_ml_home": -102,
+      "close_ml_home": -115,
+      "open_ml_away": -118,
+      "close_ml_away": -105,
+      "book": "betmgm",
+      "scraped_at": "2026-05-22T22:32:50.826018Z"
+    }
+  ]
+}

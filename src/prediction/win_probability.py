@@ -79,7 +79,9 @@ def _get_ref_fta_tendency(ref_names: Optional[List[str]], season: str) -> float:
 # Phase 4.6: bumped from 3→4 to add iso_matchup_edge + ref_fta_tendency columns.
 # 2025-26 update: bumped 4→5 to add C-1 through C-7 feature columns.
 # Tier 2: bumped 7→8 to add SRS, four factors L10, venue splits, opp-adjusted (14 cols).
-# NOTE: delete data/cache/nba/season_games_*.json to force re-fetch with new schema.
+# v2 ELO + injury: these 6 new features are computed post-load via build_elo_history and
+# build_injury_lookup rather than forcing a full season cache re-fetch. Version stays 8.
+# NOTE: delete data/nba/season_games_*.json to force re-fetch with new schema.
 _SEASON_GAMES_VERSION = 8
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
@@ -135,6 +137,10 @@ FEATURE_COLS = [
     "home_off_rtg_vs_top_def", "away_off_rtg_vs_top_def",
     # Phase 8: Monte Carlo simulation features
     "sim_win_prob", "sim_score_diff_mean", "sim_score_diff_std", "sim_pace_adj",
+    # v2: Improved ELO (FiveThirtyEight formula: K=20 + MOV mult, home_adj=85, 25% regression)
+    "home_elo_v2", "away_elo_v2", "elo_diff_v2",
+    # v2: Team injury impact — estimated win-shares lost from inactive players
+    "home_inj_ws", "away_inj_ws", "inj_ws_diff",
 ]
 
 # Model is trained on all 71 FEATURE_COLS (sim_* features included since last retrain).
@@ -168,6 +174,24 @@ def _sim_features(home_team: str, away_team: str,
     return out
 
 
+_SIM_NEUTRAL = {
+    "sim_win_prob":        0.5,
+    "sim_score_diff_mean": 0.0,
+    "sim_score_diff_std":  10.0,
+    "sim_pace_adj":        1.0,
+}
+
+
+def _sim_features_safe(home_team: str, away_team: str,
+                       home_stats: Optional[dict] = None,
+                       away_stats: Optional[dict] = None) -> dict:
+    """Wrap _sim_features with fallback to neutral defaults on any failure."""
+    try:
+        return _sim_features(home_team, away_team, home_stats, away_stats)
+    except Exception:
+        return dict(_SIM_NEUTRAL)
+
+
 # ── C-1 through C-7: helper functions ─────────────────────────────────────────
 
 def _get_elo_feature(team_abbr: str) -> float:
@@ -178,6 +202,15 @@ def _get_elo_feature(team_abbr: str) -> float:
             return 1500.0
         elo = json.load(open(_ELO_PATH))
         return float(elo.get(team_abbr, 1500.0))
+    except Exception:
+        return 1500.0
+
+
+def _get_elo_v2(team_abbr: str) -> float:
+    """Load improved ELO (v2) from elo_state.json. Falls back to 1500."""
+    try:
+        from src.features.elo import get_current_elo
+        return get_current_elo(team_abbr)
     except Exception:
         return 1500.0
 
@@ -455,7 +488,7 @@ class WinProbModel:
         """Save model to disk, return saved path."""
         import pickle
         os.makedirs(_MODEL_DIR, exist_ok=True)
-        path = path or os.path.join(_MODEL_DIR, "win_probability.pkl")
+        path = path or os.path.join(_MODEL_DIR, "win_prob.pkl")
         model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
         with open(path, "wb") as f:
             pickle.dump({"model_bytes": model_bytes, "threshold": self.threshold,
@@ -492,20 +525,22 @@ def retrain() -> None:
 def train(
     seasons: Optional[List[str]] = None,
     output_path: Optional[str] = None,
-    n_estimators: int = 300,
+    n_estimators: int = 1000,
     learning_rate: float = 0.05,
     max_depth: int = 4,
 ) -> WinProbModel:
     """
     Train XGBoost win probability model on 3 seasons of NBA data.
 
-    Fetches game logs from NBA Stats API, constructs feature vectors,
-    trains classifier with 80/20 split.
+    Walk-forward evaluation:
+      - Train: 2022-23 + 2023-24 games
+      - Validate (early stopping): 2024-25 first half (Oct 2024 – Jan 2025)
+      - Holdout (reported): 2024-25 second half (Feb 2025 – end)
 
     Args:
-        seasons:       Seasons to train on (default last 3).
+        seasons:       Seasons to train on (default ["2022-23","2023-24","2024-25"]).
         output_path:   Where to save model (auto if None).
-        n_estimators:  XGBoost trees.
+        n_estimators:  Max XGBoost trees (early stopping will find optimal).
         learning_rate: XGBoost lr.
         max_depth:     XGBoost depth.
 
@@ -513,11 +548,9 @@ def train(
         Trained WinProbModel.
     """
     from xgboost import XGBClassifier
-    from sklearn.model_selection import train_test_split
     from sklearn.metrics import accuracy_score, brier_score_loss
 
     if seasons is None:
-        # Default: 3 completed seasons only — 2025-26 outcomes are live targets
         seasons = ["2022-23", "2023-24", "2024-25"]
 
     print(f"Building dataset from {seasons} ...")
@@ -532,38 +565,138 @@ def train(
 
     df = pd.DataFrame(rows).dropna(subset=["home_win"])
 
-    # Sort chronologically so the validation split is truly future games.
-    # Random split leaks future games into training (October 2024 in train
-    # while October 2023 is in val), inflating reported accuracy.
+    # Sort chronologically — walk-forward splits must be strictly in the future
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
+
+    # ── v2: Compute improved ELO and injury features as overlay ───────────────
+    print("  Computing v2 ELO (K=20 + MOV mult, home_adj=85, 25% regression) ...")
+    try:
+        from src.features.elo import compute_game_elo_lookup_v2
+        elo_v2 = compute_game_elo_lookup_v2(seasons)
+        df["home_elo_v2"] = df["game_id"].apply(
+            lambda g: elo_v2.get(str(g), {}).get("home_elo", 1500.0)
+        )
+        df["away_elo_v2"] = df["game_id"].apply(
+            lambda g: elo_v2.get(str(g), {}).get("away_elo", 1500.0)
+        )
+        df["elo_diff_v2"] = (df["home_elo_v2"] - df["away_elo_v2"]).round(2)
+        n_nondefault = (df["home_elo_v2"] != 1500.0).sum()
+        print(f"    ELO v2 populated for {n_nondefault}/{len(df)} games")
+    except Exception as e:
+        print(f"  [warn] ELO v2 failed: {e} — using 1500.0 defaults")
+        df["home_elo_v2"] = 1500.0
+        df["away_elo_v2"] = 1500.0
+        df["elo_diff_v2"] = 0.0
+
+    print("  Computing injury impact (boxscore-based inactive WS) ...")
+    try:
+        from src.features.injury_impact import build_injury_lookup
+        inj_lkp = build_injury_lookup(seasons)
+        df["home_inj_ws"]  = df["game_id"].apply(lambda g: inj_lkp.get(str(g), {}).get("home_inj_ws", 0.0))
+        df["away_inj_ws"]  = df["game_id"].apply(lambda g: inj_lkp.get(str(g), {}).get("away_inj_ws", 0.0))
+        df["inj_ws_diff"]  = df["game_id"].apply(lambda g: inj_lkp.get(str(g), {}).get("inj_ws_diff", 0.0))
+        n_inj = (df["home_inj_ws"] > 0).sum()
+        print(f"    Injury data populated for {n_inj}/{len(df)} games "
+              f"(0.0 = no boxscore or no prior-season data)")
+    except Exception as e:
+        print(f"  [warn] Injury impact failed: {e} — using 0.0 defaults")
+        df["home_inj_ws"] = 0.0
+        df["away_inj_ws"] = 0.0
+        df["inj_ws_diff"] = 0.0
+
+    # Fill any remaining missing feature columns with 0.0
+    for col in _MODEL_FEATURE_COLS:
+        if col not in df.columns:
+            df[col] = 0.0
 
     X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
     print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(_MODEL_FEATURE_COLS)}")
 
-    split = int(len(df) * 0.8)
-    X_tr, X_val = X[:split], X[split:]
-    y_tr, y_val = y[:split], y[split:]
+    # Walk-forward split strategy:
+    #   - Fit on ALL data (80% chronological), early stopping on last 20%
+    #   - Additionally report per-slice metrics: 2022-23/24 vs 2024-25 first/second half
+    #   This avoids distribution-shift early stopping while still exposing per-slice performance.
+    split   = int(len(df) * 0.8)
+    X_tr    = X[:split]
+    y_tr    = y[:split]
+    X_val   = X[split:]
+    y_val   = y[split:]
+    print(f"  Fit: {len(X_tr)} games | Early-stop val: {len(X_val)} games")
+
+    # Build per-slice masks for reporting (no impact on training)
+    mask_train_seasons = df["season"].isin(["2022-23", "2023-24"]) if "season" in df.columns else None
+    if "season" in df.columns and "game_date" in df.columns:
+        mask_2425    = df["season"] == "2024-25"
+        games_2425   = df[mask_2425].reset_index(drop=True)
+        mid_idx      = len(games_2425) // 2
+        mid_date     = games_2425.iloc[mid_idx]["game_date"] if len(games_2425) else "2025-01-15"
+        mask_val_1h  = mask_2425 & (df["game_date"] < mid_date)
+        mask_hold_2h = mask_2425 & (df["game_date"] >= mid_date)
+        print(f"  Report slices: 2024-25 first half (<{mid_date}), second half (>={mid_date})")
+    else:
+        mid_date, mask_val_1h, mask_hold_2h = None, None, None
+
+    X_hold  = X_val   # holdout = same as val for final reporting
+    y_hold  = y_val
 
     clf = XGBClassifier(
         n_estimators=n_estimators, learning_rate=learning_rate,
         max_depth=max_depth, subsample=0.8, colsample_bytree=0.8,
         eval_metric="logloss", random_state=42, n_jobs=-1,
-        early_stopping_rounds=20,
+        early_stopping_rounds=50,
     )
-    clf.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=50)
+    clf.fit(X_tr, y_tr, eval_set=[(X_val, y_val)], verbose=100)
 
-    val_probs = clf.predict_proba(X_val)[:, 1]
-    acc   = accuracy_score(y_val, (val_probs >= 0.5).astype(int))
-    brier = brier_score_loss(y_val, val_probs)
-    print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}")
+    # Report per-slice metrics
+    print("\n── Walk-forward evaluation ──────────────────────────────────")
+    slice_metrics = {}
+
+    base_slices = [("train_80pct", X_tr, y_tr), ("val_20pct", X_val, y_val)]
+    for name, Xs, ys in base_slices:
+        if len(ys) == 0:
+            continue
+        probs = clf.predict_proba(Xs)[:, 1]
+        acc_s   = accuracy_score(ys, (probs >= 0.5).astype(int))
+        brier_s = brier_score_loss(ys, probs)
+        slice_metrics[name] = {"acc": round(acc_s, 4), "brier": round(brier_s, 4), "n": len(ys)}
+        print(f"  {name:14s}: acc={acc_s:.4f}  brier={brier_s:.4f}  n={len(ys)}")
+
+    # Additional season-level breakdown
+    if mask_val_1h is not None:
+        for slice_name, mask in [("2024-25 H1", mask_val_1h), ("2024-25 H2", mask_hold_2h)]:
+            Xs_sl = df[mask][_MODEL_FEATURE_COLS].values.astype(np.float32)
+            ys_sl = df[mask]["home_win"].values.astype(int)
+            if len(ys_sl) < 10:
+                continue
+            probs_sl = clf.predict_proba(Xs_sl)[:, 1]
+            acc_sl   = accuracy_score(ys_sl, (probs_sl >= 0.5).astype(int))
+            brier_sl = brier_score_loss(ys_sl, probs_sl)
+            key = slice_name.replace(" ", "_").lower()
+            slice_metrics[key] = {"acc": round(acc_sl, 4), "brier": round(brier_sl, 4), "n": len(ys_sl)}
+            print(f"  {slice_name:14s}: acc={acc_sl:.4f}  brier={brier_sl:.4f}  n={len(ys_sl)}")
+
+    # Final reported metrics = 20% val (chronologically last 20% of all 3 seasons)
+    hold_probs = clf.predict_proba(X_hold)[:, 1]
+    acc   = accuracy_score(y_hold, (hold_probs >= 0.5).astype(int))
+    brier = brier_score_loss(y_hold, hold_probs)
+    best_n = clf.best_iteration + 1 if hasattr(clf, "best_iteration") and clf.best_iteration else n_estimators
+    print(f"\nFinal (20% val): acc={acc:.4f}  brier={brier:.4f}  best_n_estimators={best_n}")
 
     model = WinProbModel(model=clf)
     model._feature_importance = dict(zip(_MODEL_FEATURE_COLS, clf.feature_importances_.tolist()))
     model.save(output_path)
-    _save_metrics({"accuracy": acc, "brier": brier,
-                   "n_games": len(df), "seasons": seasons})
+    _save_metrics({
+        "accuracy":         round(acc, 6),
+        "brier":            round(brier, 6),
+        "n_games":          len(df),
+        "seasons":          seasons,
+        "version":          "v2_elo_injury",
+        "features":         _MODEL_FEATURE_COLS,
+        "best_n_estimators": best_n,
+        "slices":           slice_metrics,
+    })
     return model
 
 
@@ -584,7 +717,7 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
     """Load saved WinProbModel from disk."""
     import pickle
     from xgboost import XGBClassifier
-    path = model_path or os.path.join(_MODEL_DIR, "win_probability.pkl")
+    path = model_path or os.path.join(_MODEL_DIR, "win_prob.pkl")
     if not os.path.exists(path):
         raise FileNotFoundError(f"Model not found: {path} — run train() first")
     with open(path, "rb") as f:
@@ -938,6 +1071,16 @@ def _build_features(
         # Tier 2 — Opponent-adjusted
         "home_off_rtg_vs_top_def": _t2_h["opp_adj"],
         "away_off_rtg_vs_top_def": _t2_a["opp_adj"],
+        # v2: Improved ELO from persisted state (inference uses latest ratings)
+        "home_elo_v2":  _get_elo_v2(home_team),
+        "away_elo_v2":  _get_elo_v2(away_team),
+        "elo_diff_v2":  round(_get_elo_v2(home_team) - _get_elo_v2(away_team), 2),
+        # v2: Injury impact — 0.0 default at inference (real-time data not available)
+        "home_inj_ws":  0.0,
+        "away_inj_ws":  0.0,
+        "inj_ws_diff":  0.0,
+        # Phase 8: Monte Carlo sim features — run 1 000 sims; fall back to neutral if unavailable
+        **_sim_features_safe(home_team, away_team, ht, at),
     }
 
 

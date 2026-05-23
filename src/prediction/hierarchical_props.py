@@ -1,23 +1,319 @@
 """
-hierarchical_props.py — D-3/D-4: Bayesian hierarchical blending + optimal lookback.
+hierarchical_props.py — Empirical Bayes hierarchical prop model + legacy D-3/D-4 blend.
 
-D-3: Blend XGBoost predictions toward position-archetype priors for small sample players.
-D-4: Fit AR(p) model per player to determine optimal lookback window.
+New (HierarchicalPropModel):
+  Full 3-level normal-normal empirical Bayes with closed-form posteriors.
+  Hierarchy: league → position → player.  No MCMC required.
+  Returns posterior mean + 80%/95% credible intervals + posterior samples.
 
-Public API
-----------
-    blend_prediction(xgb_pred, player_id, stat, games_played) -> float
-    compute_optimal_lookback(player_id, stat) -> int
-    get_archetype_prior(player_id, stat) -> float
+Legacy (D-3/D-4 — preserved for backward compatibility):
+  blend_prediction(xgb_pred, player_id, stat, games_played) -> float
+  compute_optimal_lookback(player_id, stat) -> int
+  get_archetype_prior(player_id, stat) -> float
+
+Bayesian library: numpy empirical Bayes (PyMC/cmdstanpy/bambi unavailable).
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import os
-from typing import Optional
+import pickle
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
+
+log = logging.getLogger(__name__)
+
+_PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_MODELS_DIR  = os.path.join(_PROJECT_DIR, "data", "models")
+_NBA_DIR     = os.path.join(_PROJECT_DIR, "data", "nba")
+
+
+# ── HierarchicalPropModel ────────────────────────────────────────────────────
+
+class HierarchicalPropModel:
+    """
+    3-level empirical Bayes hierarchical model for a single stat.
+
+    Hierarchy:
+      league_mean -> position_mean[pos] -> player_mean[player]
+
+    Closed-form normal-normal posterior:
+      posterior_mean[i] = (n_i * x_bar_i / sigma^2 + mu_pos / tau^2)
+                          / (n_i / sigma^2 + 1 / tau^2)
+      posterior_var[i]  = 1 / (n_i / sigma^2 + 1 / tau^2)
+
+    where sigma^2 = within-player game variance (estimated from data),
+          tau^2   = between-player variance (EB estimate per position group).
+    """
+
+    STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+
+    def __init__(self, stat: str, model_dir: str = _MODELS_DIR) -> None:
+        if stat not in self.STATS:
+            raise ValueError(f"stat must be one of {self.STATS}, got {stat!r}")
+        self.stat       = stat
+        self.model_dir  = model_dir
+        # Fitted parameters (set by fit())
+        self._league_mean:   float = 0.0
+        self._sigma2:        float = 1.0      # within-player variance
+        self._pos_means:     Dict[str, float] = {}   # position -> mean
+        self._pos_tau2:      Dict[str, float] = {}   # position -> between-player var
+        self._player_stats:  Dict[int, Dict]  = {}   # player_id -> {n, x_bar, pos}
+        self._fitted:        bool = False
+
+    # ── Position inference ────────────────────────────────────────────────────
+
+    @staticmethod
+    def _infer_position(player_id: int, player_base: Dict[int, dict]) -> str:
+        """Rule-based position from stat profile: G (high ast), C (high blk), F (else)."""
+        row = player_base.get(player_id, {})
+        blk = float(row.get("blk", 0) or 0)
+        ast = float(row.get("ast", 0) or 0)
+        if blk >= 0.9:
+            return "C"
+        if ast >= 4.0:
+            return "G"
+        return "F"
+
+    @staticmethod
+    def _load_player_base() -> Dict[int, dict]:
+        """Load data/nba/player_base_2024-25.json as {player_id: row}."""
+        path = os.path.join(_NBA_DIR, "player_base_2024-25.json")
+        if not os.path.exists(path):
+            return {}
+        try:
+            with open(path) as f:
+                raw = json.load(f)
+            # Dict keyed by player name -> {player_id, ...}
+            if isinstance(raw, dict):
+                return {int(v["player_id"]): v for v in raw.values() if "player_id" in v}
+            if isinstance(raw, list):
+                return {int(r["player_id"]): r for r in raw if "player_id" in r}
+        except Exception as e:
+            log.debug("_load_player_base failed: %s", e)
+        return {}
+
+    # ── EB estimation helpers ─────────────────────────────────────────────────
+
+    @staticmethod
+    def _estimate_eb_params(
+        player_vals: Dict[int, List[float]]
+    ) -> Tuple[float, float, float]:
+        """
+        Method-of-moments EB for normal-normal model.
+
+        Returns (mu_pop, sigma2, tau2):
+          mu_pop  = grand mean of per-player means
+          sigma2  = mean within-player variance (pooled)
+          tau2    = between-player variance (must be >= 0)
+        """
+        n_players = len(player_vals)
+        if n_players == 0:
+            return 0.0, 1.0, 0.0
+
+        player_ns    = np.array([len(v) for v in player_vals.values()], dtype=float)
+        player_means = np.array([np.mean(v) for v in player_vals.values()], dtype=float)
+        player_vars  = np.array(
+            [np.var(v, ddof=1) if len(v) > 1 else 1.0 for v in player_vals.values()],
+            dtype=float,
+        )
+
+        mu_pop  = float(np.mean(player_means))
+        sigma2  = float(np.mean(player_vars))          # within-player pooled
+        sigma2  = max(sigma2, 1e-6)
+
+        # Between-player variance via MOM: Var(x_bar_i) = tau2 + sigma2/n_i
+        observed_var = float(np.var(player_means, ddof=1)) if n_players > 1 else 0.0
+        avg_sigma2_over_n = float(np.mean(sigma2 / np.maximum(player_ns, 1)))
+        tau2 = max(0.0, observed_var - avg_sigma2_over_n)
+
+        return mu_pop, sigma2, tau2
+
+    # ── fit ───────────────────────────────────────────────────────────────────
+
+    def fit(self, training_data, n_iter: int = 1000) -> Dict:
+        """
+        Fit empirical Bayes hierarchical model from training_data.
+
+        training_data: pd.DataFrame OR list-of-dicts with columns/keys:
+          player_id (int), actual (float), [pos (str, optional)]
+
+        n_iter: ignored for EB (kept for API compatibility with MCMC version).
+
+        Returns: {"stat", "n_players", "n_obs", "league_mean", "sigma2",
+                  "positions", "fitted"}
+        """
+        import pandas as pd
+
+        if isinstance(training_data, list):
+            df = pd.DataFrame(training_data)
+        else:
+            df = training_data.copy()
+
+        if "actual" not in df.columns and self.stat in df.columns:
+            df = df.rename(columns={self.stat: "actual"})
+
+        df = df[df["actual"].notna()].copy()
+        df["actual"] = df["actual"].astype(float)
+
+        # Load positions
+        player_base = self._load_player_base()
+
+        if "pos" not in df.columns:
+            df["pos"] = df["player_id"].apply(
+                lambda pid: self._infer_position(int(pid), player_base)
+            )
+
+        positions = df["pos"].unique().tolist()
+        self._pos_means = {}
+        self._pos_tau2  = {}
+        self._player_stats = {}
+
+        # ── League-level EB ───────────────────────────────────────────────────
+        all_vals: Dict[int, List[float]] = {}
+        for pid, grp in df.groupby("player_id"):
+            all_vals[int(pid)] = grp["actual"].tolist()
+
+        self._league_mean, self._sigma2, league_tau2 = self._estimate_eb_params(all_vals)
+
+        # ── Position-level EB ─────────────────────────────────────────────────
+        for pos in positions:
+            pos_df = df[df["pos"] == pos]
+            pos_vals: Dict[int, List[float]] = {}
+            for pid, grp in pos_df.groupby("player_id"):
+                pos_vals[int(pid)] = grp["actual"].tolist()
+            pos_mean, _, pos_tau2 = self._estimate_eb_params(pos_vals)
+            self._pos_means[pos] = pos_mean
+            self._pos_tau2[pos]  = max(pos_tau2, 1e-6)   # guard zero
+
+        # ── Player-level posteriors ────────────────────────────────────────────
+        for pid, grp in df.groupby("player_id"):
+            pos = grp["pos"].iloc[0]
+            vals = grp["actual"].tolist()
+            n   = len(vals)
+            x_bar = float(np.mean(vals))
+            self._player_stats[int(pid)] = {
+                "n": n, "x_bar": x_bar, "pos": pos,
+                "vals": vals,
+            }
+
+        self._fitted = True
+        log.info(
+            "HierarchicalPropModel[%s] fitted: %d players, %d obs, "
+            "league_mean=%.3f, sigma2=%.4f",
+            self.stat, len(self._player_stats), len(df),
+            self._league_mean, self._sigma2,
+        )
+        return {
+            "stat":        self.stat,
+            "n_players":   len(self._player_stats),
+            "n_obs":       len(df),
+            "league_mean": round(self._league_mean, 4),
+            "sigma2":      round(self._sigma2, 4),
+            "positions":   {p: {"mean": round(m, 4), "tau2": round(self._pos_tau2.get(p, 0), 6)}
+                            for p, m in self._pos_means.items()},
+            "fitted":      True,
+        }
+
+    # ── predict ───────────────────────────────────────────────────────────────
+
+    def predict(self, player_id: int, game_features: dict) -> Dict[str, float]:
+        """
+        Return posterior predictive distribution for player_id.
+
+        game_features: dict (currently unused in EB; reserved for future
+          covariates like opp_def_rating, is_home when game logs are wired).
+
+        Returns dict with keys:
+          mean, lo_80, hi_80, lo_95, hi_95, posterior_samples (np.ndarray)
+        """
+        if not self._fitted:
+            raise RuntimeError("Call fit() before predict()")
+
+        player_base = self._load_player_base()
+
+        if player_id in self._player_stats:
+            ps  = self._player_stats[player_id]
+            n   = ps["n"]
+            x_bar = ps["x_bar"]
+            pos = ps["pos"]
+        else:
+            # Unseen player: use position prior
+            pos   = self._infer_position(player_id, player_base)
+            n     = 0
+            x_bar = self._pos_means.get(pos, self._league_mean)
+
+        mu_pos  = self._pos_means.get(pos, self._league_mean)
+        tau2    = self._pos_tau2.get(pos, self._sigma2)
+        sigma2  = self._sigma2
+
+        # Closed-form normal-normal posterior
+        if n > 0 and tau2 > 0 and sigma2 > 0:
+            precision_data  = n / sigma2
+            precision_prior = 1.0 / tau2
+            post_prec = precision_data + precision_prior
+            post_mean = (precision_data * x_bar + precision_prior * mu_pos) / post_prec
+            post_var  = 1.0 / post_prec
+        else:
+            post_mean = mu_pos
+            post_var  = tau2 if tau2 > 0 else sigma2
+
+        post_std = max(float(np.sqrt(post_var)), 1e-6)
+        post_mean = max(0.0, float(post_mean))   # stats are non-negative
+
+        # Predictive uncertainty includes within-player noise
+        pred_var = post_var + sigma2
+        pred_std = float(np.sqrt(pred_var))
+
+        # Credible intervals (Gaussian approx)
+        z80, z95 = 1.2816, 1.9600
+        samples = np.random.normal(post_mean, pred_std, size=500)
+        samples = np.maximum(samples, 0.0)
+
+        return {
+            "mean":             round(post_mean, 4),
+            "lo_80":            round(max(0.0, post_mean - z80 * pred_std), 4),
+            "hi_80":            round(post_mean + z80 * pred_std, 4),
+            "lo_95":            round(max(0.0, post_mean - z95 * pred_std), 4),
+            "hi_95":            round(post_mean + z95 * pred_std, 4),
+            "posterior_std":    round(post_std, 4),
+            "shrinkage_weight": round(1.0 / (1.0 + n * tau2 / sigma2) if sigma2 > 0 and tau2 > 0 else 1.0, 4),
+            "n_games":          n,
+            "position":         pos,
+            "posterior_samples": samples,
+        }
+
+    # ── persistence ──────────────────────────────────────────────────────────
+
+    def save(self, path: Optional[str] = None) -> str:
+        path = path or os.path.join(self.model_dir, f"hierarchical_{self.stat}.pkl")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        payload = {
+            "stat":           self.stat,
+            "league_mean":    self._league_mean,
+            "sigma2":         self._sigma2,
+            "pos_means":      self._pos_means,
+            "pos_tau2":       self._pos_tau2,
+            "player_stats":   self._player_stats,
+        }
+        with open(path, "wb") as f:
+            pickle.dump(payload, f)
+        return path
+
+    def load(self, path: Optional[str] = None) -> "HierarchicalPropModel":
+        path = path or os.path.join(self.model_dir, f"hierarchical_{self.stat}.pkl")
+        with open(path, "rb") as f:
+            payload = pickle.load(f)
+        self._league_mean  = payload["league_mean"]
+        self._sigma2       = payload["sigma2"]
+        self._pos_means    = payload["pos_means"]
+        self._pos_tau2     = payload["pos_tau2"]
+        self._player_stats = payload["player_stats"]
+        self._fitted       = True
+        return self
 
 _NBA_CACHE = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),

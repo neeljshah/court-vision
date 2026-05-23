@@ -113,3 +113,10 @@ def test_train_lightgbm_synthetic(monkeypatch: pytest.MonkeyPatch, tmp_path) -> 
     assert metrics["model"] == "lightgbm"
     assert "trained_at" in metrics
     assert "stats" in metrics
+
+    # PRED-13: circular-task warning keys must be present
+    assert metrics.get("task") == "season_aggregate_circular", (
+        f"Expected task='season_aggregate_circular', got {metrics.get('task')!r}"
+    )
+    assert "warning" in metrics, "Missing 'warning' key in LightGBM metrics"
+    assert "circular" in metrics["warning"].lower() or "season" in metrics["warning"].lower()

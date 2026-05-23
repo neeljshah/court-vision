@@ -1,0 +1,41 @@
+{
+  "data": {
+    "children": [
+      {
+        "data": {
+          "title": "Stephen Curry ruled out tonight with ankle injury",
+          "link_flair_text": "Injury/Roster Update",
+          "url": "https://reddit.com/r/nba/comments/abc123"
+        }
+      },
+      {
+        "data": {
+          "title": "LeBron James questionable with foot soreness ahead of game",
+          "link_flair_text": "Injury/Roster Update",
+          "url": "https://reddit.com/r/nba/comments/abc456"
+        }
+      },
+      {
+        "data": {
+          "title": "Game Thread: Golden State Warriors vs Los Angeles Lakers",
+          "link_flair_text": "Game Thread",
+          "url": "https://reddit.com/r/nba/comments/abc789"
+        }
+      },
+      {
+        "data": {
+          "title": "Daily Discussion Thread",
+          "link_flair_text": null,
+          "url": "https://reddit.com/r/nba/comments/abcdef"
+        }
+      },
+      {
+        "data": {
+          "title": "Jayson Tatum out doubtful for tonight due to wrist",
+          "link_flair_text": "Injury/Roster Update",
+          "url": "https://reddit.com/r/nba/comments/abcghi"
+        }
+      }
+    ]
+  }
+}

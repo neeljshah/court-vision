@@ -206,6 +206,55 @@ def test_train_stacker_all_synthetic(monkeypatch, tmp_path: Path) -> None:
     assert "stats" in metrics
 
 
+def test_train_stacker_all_metrics_circular_keys(monkeypatch, tmp_path: Path) -> None:
+    """train_stacker_all() metrics JSON contains PRED-13 circular-task warning keys."""
+    import src.prediction.player_props as pp_mod
+    import src.prediction.prop_stacker as stacker_mod
+
+    rng = np.random.default_rng(99)
+    import pandas as pd
+
+    n_train, n_test = 220, 70
+    n_total = n_train + n_test
+    pts_roll = rng.normal(15.0, 4.0, n_total)
+
+    data: dict = {}
+    for feat in pp_mod._ALL_FEATS:
+        data[feat] = rng.normal(0.5, 0.2, n_total)
+    data["pts_roll"]     = pts_roll
+    data["season_pts"]   = 0.7 * pts_roll + rng.normal(0, 3.0, n_total)
+    data["season_reb"]   = rng.normal(5.0, 1.5, n_total)
+    data["season_ast"]   = rng.normal(4.0, 1.5, n_total)
+    data["season_fg3m"]  = rng.normal(1.5, 0.5, n_total).clip(0)
+    data["season_stl"]   = rng.normal(1.0, 0.3, n_total).clip(0)
+    data["season_blk"]   = rng.normal(0.6, 0.3, n_total).clip(0)
+    data["season_tov"]   = rng.normal(2.0, 0.5, n_total).clip(0)
+    data["data_confidence"] = rng.uniform(0.5, 1.0, n_total)
+
+    df = pd.DataFrame(data)
+    train_df = df.iloc[:n_train].reset_index(drop=True)
+    test_df  = df.iloc[n_train:].reset_index(drop=True)
+
+    monkeypatch.setattr(pp_mod, "_build_prop_training_frame",
+                        lambda *a, **kw: (train_df, test_df, list(pp_mod._ALL_FEATS)))
+    monkeypatch.setattr(stacker_mod, "_MODELS_DIR", str(tmp_path))
+    monkeypatch.setattr(stacker_mod, "_STACKER_METRICS",
+                        str(tmp_path / "prop_stacker_metrics.json"))
+
+    stacker_mod.train_stacker_all(force=True, models_dir=str(tmp_path))
+
+    metrics_path = tmp_path / "prop_stacker_metrics.json"
+    assert metrics_path.exists(), "Metrics JSON not written"
+    with open(metrics_path) as f:
+        metrics = json.load(f)
+
+    assert metrics.get("task") == "season_aggregate_circular", (
+        f"Expected task='season_aggregate_circular', got {metrics.get('task')!r}"
+    )
+    assert "warning" in metrics, "Missing 'warning' key in stacker metrics"
+    assert "circular" in metrics["warning"].lower() or "season" in metrics["warning"].lower()
+
+
 def test_apply_stacker_nonfatal_no_models(monkeypatch) -> None:
     """_apply_stacker() in run_daily_slate returns preds unchanged when no models."""
     import scripts.run_daily_slate as slate

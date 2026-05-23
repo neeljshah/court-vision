@@ -10,7 +10,7 @@ ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT))
 
 from src.ingest.db import connect, migrate
-from src.ingest.manifest import update_game
+from src.ingest.manifest import add_game, update_game
 from src.ingest.quality import score
 
 LOG_DIR = ROOT / "data" / "ingest" / "logs"
@@ -31,17 +31,29 @@ def main() -> None:
     conn = connect()
     migrate(conn)
 
-    rows = conn.execute(
-        "SELECT game_id FROM games WHERE status IN ('processed','legacy_import')"
-        " OR (status='processed')"
-    ).fetchall()
+    # Reconcile: run_phase_g.py (the pod processor) writes tracking output to
+    # disk but never updates queue.db. Adopt every game that has a
+    # tracking_data.csv as 'processed' so the scorer below sees pod output.
+    tracking_root = ROOT / "data" / "tracking"
+    reconciled = 0
+    if tracking_root.exists():
+        for d in sorted(tracking_root.iterdir()):
+            if not (d.is_dir() and (d / "tracking_data.csv").exists()):
+                continue
+            row = conn.execute(
+                "SELECT status FROM games WHERE game_id=?", (d.name,)).fetchone()
+            if row is None:
+                add_game(conn, d.name, status="processed", source="reconcile")
+                reconciled += 1
+            elif row["status"] != "processed":
+                update_game(conn, d.name, status="processed")
+                reconciled += 1
+    if reconciled:
+        logger.info("Reconciled %d games (disk tracking output -> processed)",
+                    reconciled)
 
-    # Also score any game that has tracking output but no tier
-    unscored = conn.execute(
-        "SELECT game_id FROM games WHERE status='processed'"
-    ).fetchall()
-
-    game_ids = [r["game_id"] for r in unscored]
+    game_ids = [r["game_id"] for r in conn.execute(
+        "SELECT game_id FROM games WHERE status='processed'").fetchall()]
     logger.info("Scoring %d processed games", len(game_ids))
 
     counts: dict = {"CLEAN": 0, "PARTIAL": 0, "REJECT": 0, "skip": 0}

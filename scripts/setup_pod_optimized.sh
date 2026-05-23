@@ -23,9 +23,13 @@ ts() { date '+%H:%M:%S'; }
 log() { echo "[$(ts)] $*"; }
 
 log "=== Step 1: Install dependencies (PEP 668 override) ==="
+# tensorrt-cu12 is REQUIRED to load the .engine files — without it YOLO falls back
+# to unaccelerated inference (~4x slower). It is NOT pulled by any other package
+# here; it must be listed explicitly. Pin to the version build_trt_engines.sh uses.
 pip install --break-system-packages -q \
     ultralytics decord av pandas xgboost scikit-learn nba_api easyocr scipy \
-    torchreid kornia onnxruntime-gpu paddleocr 2>&1 | tail -5 || true
+    torchreid kornia onnxruntime-gpu paddleocr yt-dlp \
+    "tensorrt-cu12==10.16.1.11" 2>&1 | tail -5 || true
 
 log "=== Step 2: Verify CUDA + GPUs ==="
 python3 -c "

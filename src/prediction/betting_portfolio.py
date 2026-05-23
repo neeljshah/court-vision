@@ -10,6 +10,8 @@ Handles:
 Public API
 ----------
     kelly_corr(edge, odds, bankroll, corr_matrix)    -> float (bet size $)
+    kelly_portfolio(bets, bankroll)                  -> List[float] (stake per bet)
+    simulate_portfolio(bets, bankroll, n_sims)       -> Dict  (ROI distribution)
     detect_arb(lines_by_book)                        -> list[ArbOpportunity]
     log_bet(bet)                                     -> None
     record_clv(bet_id, closing_line)                 -> None
@@ -39,10 +41,36 @@ _PROP_STATS_ORDER = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 
 
 def _load_corr_matrix() -> Dict[str, Dict[str, float]]:
-    """Load prop correlation matrix from disk. Returns identity (zeros) on miss."""
+    """Load prop correlation matrix from disk. Returns identity (zeros) on miss.
+
+    Supports both legacy dict-of-dicts format and the new structured format
+    {"stats": [...], "corr": [[...]], "std": [...], "n": int, "computed_at": str}.
+    Always returns the legacy dict-of-dicts form for backwards compat.
+    """
     if os.path.exists(_CORR_MATRIX):
         try:
-            return json.load(open(_CORR_MATRIX, encoding="utf-8"))
+            raw = json.load(open(_CORR_MATRIX, encoding="utf-8"))
+            # New structured format — convert to dict-of-dicts for compat
+            if "stats" in raw and "corr" in raw:
+                stats = raw["stats"]
+                corr  = raw["corr"]
+                return {
+                    stats[i]: {stats[j]: corr[i][j] for j in range(len(stats))}
+                    for i in range(len(stats))
+                }
+            return raw
+        except Exception:
+            pass
+    return {}
+
+
+def _load_corr_structured() -> dict:
+    """Load the structured corr matrix (new format). Returns {} on miss/legacy format."""
+    if os.path.exists(_CORR_MATRIX):
+        try:
+            raw = json.load(open(_CORR_MATRIX, encoding="utf-8"))
+            if "stats" in raw and "corr" in raw and "std" in raw:
+                return raw
         except Exception:
             pass
     return {}
@@ -349,6 +377,185 @@ def get_portfolio_summary() -> dict:
         "avg_clv":          round(avg_clv, 4),
         "clv_positive_rate": round(clv_pos, 3),
         "total_wagered":    round(wagered, 2),
+    }
+
+
+def kelly_portfolio(
+    bets: List[Bet],
+    bankroll: float,
+    max_stake_pct: float = MAX_BET_PCT,
+    bankroll_start: Optional[float] = None,
+) -> List[float]:
+    """
+    Correlated Kelly portfolio sizing.
+
+    Solves  f* = Σ⁻¹ · μ  (fractional Kelly) where:
+      - μ[i] = full-Kelly fraction for bet i (edge / payout)
+      - Σ    = covariance matrix of bet outcomes, built from prop_corr_matrix std/corr
+               Cross-player or cross-game bets use correlation = 0 (independent).
+               Same-player different-stat bets use the stored prop correlation.
+
+    Falls back to independent quarter-Kelly with shrinkage when Σ is singular.
+
+    Args:
+        bets:            List of Bet objects to size simultaneously.
+        bankroll:        Current bankroll in dollars.
+        max_stake_pct:   Hard cap per bet (default 4% bankroll).
+        bankroll_start:  Original bankroll for drawdown guard.
+
+    Returns:
+        List[float] — dollar stake for each bet (0.0 if Kelly is negative).
+    """
+    if bankroll_start is not None and not check_drawdown_ok(bankroll_start, bankroll):
+        return [0.0] * len(bets)
+
+    n = len(bets)
+    if n == 0:
+        return []
+
+    corr_raw = _load_corr_structured()
+    stats_order: list = corr_raw.get("stats", _PROP_STATS_ORDER)
+    corr_arr = np.array(corr_raw.get("corr", []), dtype=float) if corr_raw else np.array([])
+    std_arr  = np.array(corr_raw.get("std",  []), dtype=float) if corr_raw else np.array([])
+    stat_idx = {s: i for i, s in enumerate(stats_order)}
+
+    # --- Build mu vector (full-Kelly fractions) ---
+    mu = np.zeros(n)
+    for i, bet in enumerate(bets):
+        imp_prob = _american_to_prob(bet.odds)
+        win_prob = min(0.95, imp_prob + bet.edge_pct)
+        b = _american_to_payout(bet.odds)
+        q = 1.0 - win_prob
+        fk = (win_prob * b - q) / b
+        mu[i] = max(fk, 0.0)
+
+    if np.all(mu == 0.0):
+        return [0.0] * n
+
+    # --- Build covariance matrix ---
+    # Σ[i,j] = std_i * std_j * r_ij for same-player bets, else 0.
+    # std here = residual std of the stat model (a proxy for bet outcome volatility).
+    sigma = np.eye(n)
+    for i in range(n):
+        for j in range(i + 1, n):
+            r = 0.0
+            # Only correlate bets on the same player
+            if bets[i].player_id and bets[i].player_id == bets[j].player_id:
+                si = stat_idx.get(bets[i].stat)
+                sj = stat_idx.get(bets[j].stat)
+                if si is not None and sj is not None and len(corr_arr) > 0:
+                    r = float(corr_arr[si, sj])
+            # Diagonal: variance = std^2, off-diag: covariance = std_i * std_j * r
+            s_i = float(std_arr[stat_idx[bets[i].stat]]) if (
+                len(std_arr) > 0 and bets[i].stat in stat_idx
+            ) else 1.0
+            s_j = float(std_arr[stat_idx[bets[j].stat]]) if (
+                len(std_arr) > 0 and bets[j].stat in stat_idx
+            ) else 1.0
+            sigma[i, j] = s_i * s_j * r
+            sigma[j, i] = sigma[i, j]
+    # Diagonal variance
+    for i in range(n):
+        s_i = float(std_arr[stat_idx[bets[i].stat]]) if (
+            len(std_arr) > 0 and bets[i].stat in stat_idx
+        ) else 1.0
+        sigma[i, i] = s_i ** 2 if s_i > 0 else 1.0
+
+    # --- Solve f* = Σ⁻¹ · μ (quarter-Kelly scaling) ---
+    try:
+        inv_sigma = np.linalg.inv(sigma)
+        f_star = inv_sigma @ mu
+        f_star = f_star * KELLY_FRACTION
+    except np.linalg.LinAlgError:
+        # Singular: fall back to independent quarter-Kelly with 0.5x shrinkage
+        f_star = mu * KELLY_FRACTION * 0.5
+
+    # Clip negatives and apply hard cap
+    f_star = np.clip(f_star, 0.0, max_stake_pct)
+
+    # Further shrinkage: if total allocation > 20% bankroll, scale down proportionally
+    total_alloc = float(np.sum(f_star))
+    if total_alloc > 0.20:
+        f_star = f_star * (0.20 / total_alloc)
+
+    return [round(float(f) * bankroll, 2) for f in f_star]
+
+
+def simulate_portfolio(
+    bets: List[Bet],
+    bankroll: float = 10_000.0,
+    n_sims: int = 10_000,
+    bankroll_start: Optional[float] = None,
+) -> Dict:
+    """
+    Monte Carlo the portfolio ROI distribution over n_sims independent trials.
+
+    Each simulation draws a win/loss for each bet independently using the bet's
+    implied win probability + edge, then sums P&L using kelly_portfolio stakes.
+
+    Args:
+        bets:            Bets to simulate.
+        bankroll:        Starting bankroll for sizing.
+        n_sims:          Number of Monte Carlo trials.
+        bankroll_start:  Drawdown guard reference (defaults to bankroll).
+
+    Returns:
+        {
+            "mean_roi":         float,   # mean return on invested capital
+            "median_roi":       float,
+            "var_5pct":         float,   # 5th-percentile ROI (Value at Risk)
+            "win_pct":          float,   # fraction of sims with positive ROI
+            "kelly_growth_rate": float,  # E[log(1 + roi)] — geometric growth proxy
+            "n_bets":           int,
+            "n_sims":           int,
+            "total_staked":     float,   # dollar amount staked across all bets
+        }
+    """
+    if not bets:
+        return {
+            "mean_roi": 0.0, "median_roi": 0.0, "var_5pct": 0.0,
+            "win_pct": 0.0, "kelly_growth_rate": 0.0,
+            "n_bets": 0, "n_sims": n_sims, "total_staked": 0.0,
+        }
+
+    stakes = kelly_portfolio(bets, bankroll,
+                             bankroll_start=bankroll_start or bankroll)
+    total_staked = sum(stakes)
+    if total_staked <= 0:
+        return {
+            "mean_roi": 0.0, "median_roi": 0.0, "var_5pct": 0.0,
+            "win_pct": 0.0, "kelly_growth_rate": 0.0,
+            "n_bets": len(bets), "n_sims": n_sims, "total_staked": 0.0,
+        }
+
+    # Build per-bet win probability and payout arrays
+    win_probs = np.array([
+        min(0.95, _american_to_prob(b.odds) + b.edge_pct) for b in bets
+    ])
+    payouts = np.array([_american_to_payout(b.odds) for b in bets])
+    stake_arr = np.array(stakes)
+
+    rng = np.random.default_rng(seed=42)
+    # Shape: (n_sims, n_bets); 1=win, 0=loss
+    outcomes = rng.random((n_sims, len(bets))) < win_probs[np.newaxis, :]
+
+    # P&L per sim: wins return stake*payout, losses lose stake
+    pnl_per_bet = np.where(outcomes, stake_arr * payouts, -stake_arr)   # (n_sims, n)
+    sim_pnl = pnl_per_bet.sum(axis=1)                                   # (n_sims,)
+    sim_roi = sim_pnl / total_staked                                     # fraction
+
+    # Kelly growth rate = E[log(1 + ROI)]
+    growth = float(np.mean(np.log1p(np.clip(sim_roi, -0.9999, None))))
+
+    return {
+        "mean_roi":          round(float(np.mean(sim_roi)), 4),
+        "median_roi":        round(float(np.median(sim_roi)), 4),
+        "var_5pct":          round(float(np.percentile(sim_roi, 5)), 4),
+        "win_pct":           round(float(np.mean(sim_roi > 0)), 4),
+        "kelly_growth_rate": round(growth, 6),
+        "n_bets":            len(bets),
+        "n_sims":            n_sims,
+        "total_staked":      round(total_staked, 2),
     }
 
 

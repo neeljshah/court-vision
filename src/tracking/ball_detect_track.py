@@ -904,13 +904,14 @@ class BallDetectTrack:
                 homo = M1 @ (M @ ball_center.reshape(3, -1))
                 homo = np.int32(homo / homo[-1]).ravel()
                 ball_2d = (int(homo[0]), int(homo[1]))
-                # Reject projections with negative coordinates — these are
-                # always wrong (off-court, outside pano) and occur when M or
-                # M1 is stale/misaligned.  The drift guard below only fires
-                # when player positions are available; this check is
-                # unconditional and catches the -1018/-57940 values seen when
-                # SIFT inliers are few and M_ema is noisy.
-                if ball_2d[0] < 0 or ball_2d[1] < 0:
+                # Reject negative AND blown-up projections. When M/M1 is
+                # near-singular, homo[-1]≈0 so homo/homo[-1] explodes — ball_2d
+                # values up to 3.3M px were seen in corrupt output. The
+                # player-distance drift guard below can't catch this when no
+                # players are tracked that frame, so bound it unconditionally.
+                # Real court coords are < ~3700px on the 3698px pano; 6000 is a
+                # safe ceiling. Also catches inf/nan→INT_MIN from div-by-zero.
+                if not (0 <= ball_2d[0] < 6000 and 0 <= ball_2d[1] < 6000):
                     self.last_2d_pos = None
                 else:
                     # Guard against CSRT drift: if the projected ball is far

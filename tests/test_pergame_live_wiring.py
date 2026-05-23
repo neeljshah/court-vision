@@ -99,6 +99,100 @@ def test_opponent_defense_cache_reused(tmp_path):
     assert prop_pergame._OPP_DEF_CACHE[str(tmp_path)] is cached
 
 
+# ── PRED-13: is_fallback flag tests ───────────────────────────────────────────
+
+def test_predict_props_is_fallback_false_when_pergame_fires(tmp_path, monkeypatch):
+    """When the per-game model fires, is_fallback must be False and confidence == 'pergame'."""
+    import src.prediction.player_props as pp
+
+    _seed_gamelogs(tmp_path)
+    fake_pg = {s: 10.0 for s in STATS}
+
+    # Monkeypatch _build_player_features to return a minimal feature dict
+    monkeypatch.setattr(pp, "_build_player_features",
+                        lambda *a, **kw: {"player_id": 7, "is_home": 1,
+                                          **{f"season_{s}": 10.0 for s in pp._PROP_STATS},
+                                          **{f"{s}_roll": 10.0 for s in pp._PROP_STATS},
+                                          "min_roll": 30.0, "season_min": 30.0,
+                                          "n_games_form": 10})
+    # Per-game model returns a valid prediction
+    monkeypatch.setattr(
+        "src.prediction.prop_pergame.predict_player_pergame",
+        lambda *a, **kw: fake_pg,
+    )
+
+    result = pp.predict_props("Test Player", "TOR", "2024-25")
+    assert result["is_fallback"] is False, (
+        f"Expected is_fallback=False when pergame fires, got {result['is_fallback']}"
+    )
+    assert result["confidence"] == "pergame"
+
+
+def test_predict_props_is_fallback_true_when_pergame_returns_none(monkeypatch):
+    """When predict_player_pergame returns None, is_fallback must be True."""
+    import src.prediction.player_props as pp
+
+    monkeypatch.setattr(pp, "_build_player_features",
+                        lambda *a, **kw: {"player_id": 7, "is_home": 1,
+                                          **{f"season_{s}": 10.0 for s in pp._PROP_STATS},
+                                          **{f"{s}_roll": 10.0 for s in pp._PROP_STATS},
+                                          "min_roll": 30.0, "season_min": 30.0,
+                                          "n_games_form": 10})
+    # Per-game model returns None → fallback path
+    monkeypatch.setattr(
+        "src.prediction.prop_pergame.predict_player_pergame",
+        lambda *a, **kw: None,
+    )
+
+    result = pp.predict_props("Test Player", "TOR", "2024-25")
+    assert result["is_fallback"] is True, (
+        f"Expected is_fallback=True when pergame returns None, got {result['is_fallback']}"
+    )
+    assert result["confidence"] != "pergame"
+
+
+def test_predict_props_is_fallback_true_when_pergame_raises(monkeypatch):
+    """When predict_player_pergame raises an exception, is_fallback must be True."""
+    import src.prediction.player_props as pp
+
+    monkeypatch.setattr(pp, "_build_player_features",
+                        lambda *a, **kw: {"player_id": 7, "is_home": 1,
+                                          **{f"season_{s}": 10.0 for s in pp._PROP_STATS},
+                                          **{f"{s}_roll": 10.0 for s in pp._PROP_STATS},
+                                          "min_roll": 30.0, "season_min": 30.0,
+                                          "n_games_form": 10})
+
+    def _raise(*a, **kw):
+        raise RuntimeError("simulated per-game failure")
+
+    monkeypatch.setattr(
+        "src.prediction.prop_pergame.predict_player_pergame",
+        _raise,
+    )
+
+    result = pp.predict_props("Test Player", "TOR", "2024-25")
+    assert result["is_fallback"] is True, (
+        f"Expected is_fallback=True when pergame raises, got {result['is_fallback']}"
+    )
+
+
+def test_predict_props_is_fallback_true_when_no_player_id(monkeypatch):
+    """When no player_id in features (pergame path skipped), is_fallback must be True."""
+    import src.prediction.player_props as pp
+
+    # No player_id → per-game block is skipped entirely
+    monkeypatch.setattr(pp, "_build_player_features",
+                        lambda *a, **kw: {
+                            **{f"season_{s}": 10.0 for s in pp._PROP_STATS},
+                            **{f"{s}_roll": 10.0 for s in pp._PROP_STATS},
+                            "min_roll": 30.0, "season_min": 30.0,
+                            "n_games_form": 10,
+                        })
+
+    result = pp.predict_props("Test Player", "TOR", "2024-25")
+    assert result["is_fallback"] is True
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-q"]))

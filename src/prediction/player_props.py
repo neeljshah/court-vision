@@ -2215,16 +2215,26 @@ def predict_props(
     feats = _build_player_features(player_name, opp_team, season, n_games,
                                     ref_names=ref_names, game_id=game_id)
     if feats is None:
+        _fallback_preds = {
+            s: {"point": _STAT_DEFAULTS[s], "low": 0.0,
+                "high": _STAT_DEFAULTS[s] * 2.0, "mean": _STAT_DEFAULTS[s],
+                "components": {"base": _STAT_DEFAULTS[s], "stacked": _STAT_DEFAULTS[s],
+                               "calibrated": _STAT_DEFAULTS[s],
+                               "bias_corrected": _STAT_DEFAULTS[s]}}
+            for s in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
+        }
         return {
-            "player":    player_name,
-            "opp_team":  opp_team,
+            "player":      player_name,
+            "opp_team":    opp_team,
             **{s: _STAT_DEFAULTS[s] for s in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")},
+            "props":        _fallback_preds,
             "minutes_proj": None,
-            "confidence": "default",
-            "features":  {},
+            "confidence":  "default",
+            "is_fallback": True,
+            "features":    {},
         }
 
-    predictions, confidence = _predict_with_models(feats)
+    predictions, confidence, components = _predict_with_models(feats)
 
     # Prefer the per-game models — trained on real game logs (one row per
     # game, leakage-free), the honest measured task. The legacy season-average
@@ -2238,11 +2248,14 @@ def predict_props(
             if _pg is not None:
                 predictions = {s: round(max(float(_pg[s]), 0.0), 1) for s in _pg}
                 confidence = "pergame"
+                # Rebuild components with pergame point as final; keep stacker pipeline values
+                for s in _PROP_STATS:
+                    if s in components:
+                        components[s]["bias_corrected"] = predictions.get(s, components[s]["bias_corrected"])
     except Exception:  # noqa: BLE001 — never let the per-game path break a prediction
         pass
 
     # Bayesian minutes projection: pulls min_roll toward season_min when sample is small.
-    # Same _BAYES_K constant used for all other Bayesian features.
     _min_roll   = feats.get("min_roll",    feats.get("season_min", 0.0))
     _min_season = feats.get("season_min",  0.0)
     _ng         = feats.get("n_games_form", _BAYES_K)  # falls back to K so weight splits 50/50
@@ -2279,14 +2292,34 @@ def predict_props(
             if stat in predictions:
                 predictions[stat] = round(predictions[stat] * scale, 1)
 
+    # ── Build rich per-stat output with intervals ─────────────────────────────
+    props_out: dict = {}
+    for stat in _PROP_STATS:
+        point = predictions.get(stat, _STAT_DEFAULTS.get(stat, 0.0))
+        low, high = _build_prop_interval(point, stat)
+        props_out[stat] = {
+            "point": point,
+            "low":   low,
+            "high":  high,
+            "mean":  point,   # backward compat alias
+            "components": components.get(stat, {
+                "base": point, "stacked": point,
+                "calibrated": point, "bias_corrected": point,
+            }),
+        }
+
     return {
         "player":            player_name,
         "opp_team":          opp_team,
+        # Scalar fields preserved for backward compatibility
         **predictions,
+        # Rich per-stat dict: {stat: {point, low, high, mean, components}}
+        "props":             props_out,
         "minutes_proj":      minutes_proj,
         "blowout_prob":      blowout_prob,
         "dnp_risk":          round(dnp_risk, 4),
         "confidence":        confidence,
+        "is_fallback":       confidence != "pergame",
         "injury_status":     injury_status,
         "injury_multiplier": injury_mult,
         "features":          feats,
@@ -2469,6 +2502,140 @@ def _asymmetric_objective(y_true, y_pred, alpha: float = 1.3):
 # Stats modelled by XGBoost (each model excludes its own season_{stat} feature)
 _PROP_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
+# ── Post-processing helpers (stacker meta / calibration / bias / conformal) ────
+
+# Module-level caches to avoid repeated disk reads per inference call
+_stack_meta_cache: Optional[dict] = None       # prop_stack_meta.json coefficients
+_calibration_cache: dict = {}                  # stat -> IsotonicRegression
+_conformal_cache: dict = {}                    # stat -> {"q80": float, "q95": float}
+_bias_cache: Optional[dict] = None            # stat -> {"median_bias": float, ...}
+
+
+def _load_stack_meta() -> dict:
+    """Load prop_stack_meta.json Ridge coefficients. Returns {} on miss."""
+    global _stack_meta_cache
+    if _stack_meta_cache is not None:
+        return _stack_meta_cache
+    path = os.path.join(_MODEL_DIR, "prop_stack_meta.json")
+    if not os.path.exists(path):
+        _stack_meta_cache = {}
+        return {}
+    try:
+        with open(path) as f:
+            _stack_meta_cache = json.load(f)
+        return _stack_meta_cache
+    except Exception:
+        _stack_meta_cache = {}
+        return {}
+
+
+def _apply_stack_meta(base_val: float, stat: str) -> float:
+    """Apply Ridge meta-stacker: coef * base + intercept. Returns base_val if unavailable."""
+    meta = _load_stack_meta()
+    if stat not in meta:
+        return base_val
+    entry = meta[stat]
+    try:
+        coef = float(entry.get("coef", 1.0))
+        intercept = float(entry.get("intercept", 0.0))
+        return coef * base_val + intercept
+    except (TypeError, ValueError):
+        return base_val
+
+
+def _load_calibration(stat: str) -> Optional[object]:
+    """Load isotonic regression calibrator for a stat. Returns None on miss."""
+    global _calibration_cache
+    if stat in _calibration_cache:
+        return _calibration_cache[stat]
+    try:
+        import joblib
+        path = os.path.join(_MODEL_DIR, f"calibration_{stat}.joblib")
+        if not os.path.exists(path):
+            _calibration_cache[stat] = None
+            return None
+        m = joblib.load(path)
+        # Verify it's a proper regression calibrator (not degenerate win-prob one)
+        # Degenerate models have X_min_ == X_max_ (range=0)
+        if hasattr(m, "X_min_") and hasattr(m, "X_max_") and m.X_min_ == m.X_max_:
+            _calibration_cache[stat] = None
+            return None
+        _calibration_cache[stat] = m
+        return m
+    except Exception:
+        _calibration_cache[stat] = None
+        return None
+
+
+def _apply_calibration(val: float, stat: str) -> float:
+    """Apply isotonic calibration to a continuous prop point estimate."""
+    m = _load_calibration(stat)
+    if m is None:
+        return val
+    try:
+        import numpy as np
+        return float(m.predict(np.array([val]))[0])
+    except Exception:
+        return val
+
+
+def _load_bias(stat: str) -> float:
+    """Load median bias (predicted - actual) for a stat. Returns 0.0 on miss."""
+    global _bias_cache
+    if _bias_cache is None:
+        for fname in ("prop_calibration_summary.json", "prop_residuals_summary.json"):
+            path = os.path.join(_MODEL_DIR, fname)
+            if os.path.exists(path):
+                try:
+                    with open(path) as f:
+                        _bias_cache = json.load(f)
+                    break
+                except Exception:
+                    pass
+        if _bias_cache is None:
+            _bias_cache = {}
+    entry = _bias_cache.get(stat, {})
+    if isinstance(entry, dict):
+        return float(entry.get("median_bias", 0.0))
+    return 0.0
+
+
+def _load_conformal(stat: str) -> dict:
+    """Load conformal quantiles for a stat. Returns {} on miss."""
+    global _conformal_cache
+    if stat in _conformal_cache:
+        return _conformal_cache[stat]
+    path = os.path.join(_MODEL_DIR, f"conformal_{stat}.json")
+    if not os.path.exists(path):
+        _conformal_cache[stat] = {}
+        return {}
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        _conformal_cache[stat] = data
+        return data
+    except Exception:
+        _conformal_cache[stat] = {}
+        return {}
+
+
+def _build_prop_interval(point: float, stat: str) -> tuple:
+    """Return (low, high) 80% prediction interval for a stat.
+
+    Uses conformal q80 when available, otherwise ±1.28σ fallback using MAE proxy.
+    """
+    conf = _load_conformal(stat)
+    if conf and "q80" in conf:
+        q = float(conf["q80"])
+    else:
+        # ±1.28σ fallback — approximate σ from MAE (σ ≈ MAE × 1.25 for normal)
+        _fallback_sigma = {
+            "pts": 5.0, "reb": 2.5, "ast": 2.0, "fg3m": 1.2,
+            "stl": 0.8, "blk": 0.6, "tov": 1.2,
+        }
+        q = 1.28 * _fallback_sigma.get(stat, 3.0)
+    return (round(max(point - q, 0.0), 2), round(point + q, 2))
+
 
 def _try_stacker_prediction(X, stat: str):
     """Return the multi-model stacker prediction for one stat, or None.
@@ -2493,30 +2660,96 @@ def _try_stacker_prediction(X, stat: str):
         return None
 
 
+# ── V3 LightGBM model loader ───────────────────────────────────────────────────
+
+# MODEL_VERSION: "v3" uses prop_{stat}_v3_lgb.txt (LightGBM) when present;
+# any other value falls through to v2/v1 XGBoost.  Override via env-var:
+#   MODEL_VERSION=v2 python ...
+MODEL_VERSION: str = os.environ.get("MODEL_VERSION", "v3")
+
+# Module-level booster cache (loaded once per process)
+_v3_booster_cache: dict = {}
+# Module-level v3 feature-column cache (loaded from model metadata)
+_v3_feat_cols_cache: dict = {}
+
+
+def _load_v3_model(stat: str):
+    """Load the LightGBM booster for stat from prop_{stat}_v3_lgb.txt.
+
+    Returns the lightgbm.Booster if the file exists, else None.
+    Result is cached for the lifetime of the process.
+    """
+    global _v3_booster_cache
+    if stat in _v3_booster_cache:
+        return _v3_booster_cache[stat]
+    path = os.path.join(_MODEL_DIR, f"prop_{stat}_v3_lgb.txt")
+    if not os.path.exists(path):
+        _v3_booster_cache[stat] = None
+        return None
+    try:
+        import lightgbm as lgb
+        booster = lgb.Booster(model_file=path)
+        _v3_booster_cache[stat] = booster
+        return booster
+    except Exception:
+        _v3_booster_cache[stat] = None
+        return None
+
+
+def _v3_predict(feats: dict, stat: str) -> Optional[float]:
+    """Run a v3 LightGBM prediction for one stat.  Returns None on any failure."""
+    booster = _load_v3_model(stat)
+    if booster is None:
+        return None
+    try:
+        import numpy as np
+        feat_names = booster.feature_name()
+        X = np.array([[float(feats.get(k, 0.0)) for k in feat_names]])
+        val = float(booster.predict(X)[0])
+        return val if np.isfinite(val) else None
+    except Exception:
+        return None
+
+
 def _predict_with_models(feats: dict) -> tuple:
     """
-    Predict 7 prop stats. Prefers the trained multi-model stacker ensemble
-    (XGBoost + LightGBM + CatBoost), then a single XGBoost model, then
-    Bayesian rolling avg, then season avg.
+    Predict 7 prop stats with full post-processing pipeline:
+      v3 LightGBM (when MODEL_VERSION="v3" and model file exists)
+      → Ridge meta-stacker → isotonic calibration → bias correction
 
-    Returns (predictions_dict, confidence_str).
+    Falls back to v2/v1 XGBoost for backward compatibility.
+
+    Returns (predictions_dict, confidence_str, components_dict).
+    components_dict: {stat: {base, stacked, calibrated, bias_corrected}}
     """
     import numpy as np
 
     predictions = {}
+    components: dict = {}
     any_model = False
     used_stacker = False
+    used_v3 = False
 
     for stat in _PROP_STATS:
-        # Drop season_{stat} from features — it IS the training label
+        val: Optional[float] = None
+
+        # 0. V3 LightGBM (preferred when MODEL_VERSION == "v3")
+        if MODEL_VERSION == "v3":
+            val = _v3_predict(feats, stat)
+            if val is not None:
+                any_model = True
+                used_v3 = True
+
+        # Drop season_{stat} from features for v1/v2 models
         stat_feat_order = [c for c in _ALL_FEATS if c != f"season_{stat}"]
         X = np.array([[feats.get(k, 0.0) for k in stat_feat_order]])
 
         # 1. Multi-model stacker ensemble (when trained).
-        val = _try_stacker_prediction(X, stat)
-        if val is not None:
-            any_model = True
-            used_stacker = True
+        if val is None:
+            val = _try_stacker_prediction(X, stat)
+            if val is not None:
+                any_model = True
+                used_stacker = True
 
         # 2. Single XGBoost model (the long-standing path).
         model_path = os.path.join(_MODEL_DIR, f"props_{stat}.json")
@@ -2540,10 +2773,30 @@ def _predict_with_models(feats: dict) -> tuple:
             else:
                 val = _STAT_DEFAULTS.get(stat, 0.0)
 
-        predictions[stat] = round(max(val, 0.0), 1)
+        base_val = max(val, 0.0)
 
-    confidence = "ensemble" if used_stacker else ("model" if any_model else "rolling")
-    return predictions, confidence
+        # 3. Ridge meta-stacker: coef * base + intercept (from prop_stack_meta.json)
+        stacked_val = max(_apply_stack_meta(base_val, stat), 0.0)
+
+        # 4. Isotonic calibration (predicted → actual mapping)
+        calibrated_val = max(_apply_calibration(stacked_val, stat), 0.0)
+
+        # 5. Bias correction: subtract median systematic underprediction
+        # median_bias = median(predicted - actual) → positive means overprediction
+        median_bias = _load_bias(stat)
+        bias_corrected_val = max(calibrated_val - median_bias, 0.0)
+
+        components[stat] = {
+            "base":            round(base_val, 3),
+            "stacked":         round(stacked_val, 3),
+            "calibrated":      round(calibrated_val, 3),
+            "bias_corrected":  round(bias_corrected_val, 3),
+        }
+        predictions[stat] = round(bias_corrected_val, 1)
+
+    confidence = ("v3_lgb" if used_v3 else
+                  ("ensemble" if used_stacker else ("model" if any_model else "rolling")))
+    return predictions, confidence, components
 
 
 # ── Training ───────────────────────────────────────────────────────────────────
@@ -2809,9 +3062,22 @@ def train_props_lightgbm(seasons: list = None, force: bool = False,
     metrics_path = os.path.join(_MODEL_DIR, "props_lgb_metrics.json")
     with open(metrics_path, "w") as _f:
         json.dump(
-            {"model": "lightgbm", "trained_at": datetime.datetime.now().isoformat(), "stats": results},
+            {
+                "model": "lightgbm",
+                "trained_at": datetime.datetime.now().isoformat(),
+                "task": "season_aggregate_circular",
+                "warning": (
+                    "meta_r2 is a near-identity fit on season aggregates, NOT a game-level "
+                    "holdout. The honest game-level metric is prop_pergame holdout R2 (~0.45-0.48)."
+                ),
+                "stats": results,
+            },
             _f, indent=2,
         )
+    print(
+        "[props_lgb] WARNING: R2 reflects season-aggregate circular task — "
+        "NOT a reliable game-level accuracy estimate."
+    )
 
     return results
 

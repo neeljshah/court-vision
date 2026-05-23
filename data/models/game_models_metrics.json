@@ -1,28 +1,41 @@
 {
   "game_total": {
-    "mae": 14.08,
-    "r2": 0.173,
-    "n": 3685
+    "mae": 15.21,
+    "r2": 0.15,
+    "holdout_mae": 14.58,
+    "holdout_r2": 0.149,
+    "n": 2460
   },
   "spread": {
-    "mae": 11.23,
-    "r2": 0.239,
-    "n": 3685
+    "mae": 11.46,
+    "r2": 0.176,
+    "holdout_mae": 11.24,
+    "holdout_r2": 0.181,
+    "n": 2460
   },
   "blowout": {
-    "acc": 0.6201,
-    "brier": 0.2395,
-    "blowout_rate": 0.281,
-    "n": 3685
+    "acc": 0.6897,
+    "brier": 0.214,
+    "blowout_rate": 0.253,
+    "holdout_acc": 0.6963,
+    "holdout_brier": 0.2124,
+    "n": 2460
   },
   "first_half": {
-    "mae": 6.66,
-    "r2": 0.182,
-    "n": 3685
+    "mae": 7.06,
+    "r2": 0.166,
+    "holdout_mae": 6.96,
+    "holdout_r2": 0.153,
+    "label": "first_half_proxy",
+    "n": 2460
   },
   "pace": {
-    "mae": 0.02,
-    "r2": 1.0,
-    "n": 3685
-  }
+    "mae": 3.063,
+    "r2": 0.301,
+    "holdout_mae": 3.187,
+    "holdout_r2": 0.274,
+    "note": "pace_avg and pace_expectation excluded to prevent leakage",
+    "n": 2460
+  },
+  "version": "v2_l10_features"
 }

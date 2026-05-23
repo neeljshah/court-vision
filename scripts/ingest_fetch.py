@@ -36,6 +36,8 @@ def main() -> None:
     parser.add_argument("--dry-run", action="store_true", help="Print jobs without downloading")
     parser.add_argument("--game-id", help="Fetch a specific game_id")
     parser.add_argument("--url", help="Override source URL for --game-id")
+    parser.add_argument("--parallel", type=int, default=1,
+                        help="Concurrent downloads (4-6 is a good pod default)")
     args = parser.parse_args()
 
     conn = connect()
@@ -56,15 +58,24 @@ def main() -> None:
         logger.info("No queued games found.")
         return
 
-    for g in games_to_fetch:
+    def _fetch_one(g: dict) -> None:
         game_id = g["game_id"]
         url = g.get("source_url")
         if args.dry_run:
             logger.info("DRY-RUN: would fetch %s url=%s", game_id, url)
-            continue
+            return
         logger.info("Fetching %s ...", game_id)
         ok = fetch(game_id, url=url)
-        logger.info("%s → %s", game_id, "verified" if ok else "FAILED")
+        logger.info("%s -> %s", game_id, "verified" if ok else "FAILED")
+
+    if args.parallel > 1 and not args.dry_run:
+        from concurrent.futures import ThreadPoolExecutor
+        # fetch() opens its own WAL connection per call -> thread-safe.
+        with ThreadPoolExecutor(max_workers=args.parallel) as pool:
+            list(pool.map(_fetch_one, games_to_fetch))
+    else:
+        for g in games_to_fetch:
+            _fetch_one(g)
 
 
 if __name__ == "__main__":

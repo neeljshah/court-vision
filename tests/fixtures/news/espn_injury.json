@@ -1,0 +1,43 @@
+{
+  "injuries": [
+    {
+      "id": "9",
+      "displayName": "Golden State Warriors",
+      "injuries": [
+        {
+          "athlete": {
+            "id": "3975",
+            "displayName": "Stephen Curry",
+            "fullName": "Stephen Curry"
+          },
+          "status": "Out",
+          "shortComment": "Left ankle sprain - will not play"
+        },
+        {
+          "athlete": {
+            "id": "6589",
+            "displayName": "Draymond Green",
+            "fullName": "Draymond Green"
+          },
+          "status": "Questionable",
+          "shortComment": "Knee soreness"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "displayName": "Los Angeles Lakers",
+      "injuries": [
+        {
+          "athlete": {
+            "id": "1966",
+            "displayName": "LeBron James",
+            "fullName": "LeBron James"
+          },
+          "status": "Probable",
+          "shortComment": "Left foot - game-time decision"
+        }
+      ]
+    }
+  ]
+}

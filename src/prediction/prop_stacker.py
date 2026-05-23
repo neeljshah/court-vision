@@ -398,6 +398,11 @@ def train_stacker_all(
         "model": "linear_stacker",
         "trained_at": datetime.datetime.now().isoformat(),
         "catboost_available": _CATBOOST_AVAILABLE,
+        "task": "season_aggregate_circular",
+        "warning": (
+            "meta_r2 is a near-identity fit on season aggregates, NOT a game-level "
+            "holdout. The honest game-level metric is prop_pergame holdout R2 (~0.45-0.48)."
+        ),
         "stats": {
             stat: {
                 "meta_r2": r.meta_r2,
@@ -414,6 +419,10 @@ def train_stacker_all(
     with open(_STACKER_METRICS, "w") as f:
         json.dump(metrics_payload, f, indent=2)
     print(f"[stacker] Metrics -> {_STACKER_METRICS}")
+    print(
+        "[stacker] WARNING: meta_r2 reflects season-aggregate circular task — "
+        "NOT a reliable game-level accuracy estimate."
+    )
 
     return results
 

@@ -491,6 +491,8 @@ def _run_clip(video: Path, game_id: Optional[str], frames: Optional[int],
         errors="replace",
         cwd=str(PROJECT_DIR),
         bufsize=1,  # line-buffered
+        start_new_session=True,  # isolate: per-game timeout kill (os.killpg) must
+                                 # not cascade to run_phase_g / sibling workers
         env=_env,
     )
 

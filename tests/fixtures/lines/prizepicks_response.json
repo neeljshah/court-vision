@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "type": "projection",
+      "id": "pp_proj_001",
+      "attributes": {
+        "league_id": 7,
+        "stat_type": "Points",
+        "line_score": 24.5,
+        "description": "Jayson Tatum",
+        "start_time": "2026-05-22T20:00:00Z",
+        "sport": "NBA"
+      },
+      "relationships": {
+        "new_player": {
+          "data": {"type": "new_player", "id": "player_001"}
+        }
+      }
+    },
+    {
+      "type": "projection",
+      "id": "pp_proj_002",
+      "attributes": {
+        "league_id": 7,
+        "stat_type": "Rebounds",
+        "line_score": 8.5,
+        "description": "Jimmy Butler",
+        "start_time": "2026-05-22T20:00:00Z",
+        "sport": "NBA"
+      },
+      "relationships": {
+        "new_player": {
+          "data": {"type": "new_player", "id": "player_002"}
+        }
+      }
+    },
+    {
+      "type": "projection",
+      "id": "pp_proj_003",
+      "attributes": {
+        "league_id": 8,
+        "stat_type": "Goals",
+        "line_score": 1.5,
+        "description": "Non-NBA player",
+        "start_time": "2026-05-22T20:00:00Z",
+        "sport": "NHL"
+      },
+      "relationships": {
+        "new_player": {
+          "data": {"type": "new_player", "id": "player_099"}
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "type": "new_player",
+      "id": "player_001",
+      "attributes": {
+        "name": "Jayson Tatum",
+        "team": "BOS",
+        "league": "NBA"
+      }
+    },
+    {
+      "type": "new_player",
+      "id": "player_002",
+      "attributes": {
+        "name": "Jimmy Butler",
+        "team": "MIA",
+        "league": "NBA"
+      }
+    },
+    {
+      "type": "new_player",
+      "id": "player_099",
+      "attributes": {
+        "name": "Non-NBA Player",
+        "team": "NHL_TEAM",
+        "league": "NHL"
+      }
+    }
+  ]
+}

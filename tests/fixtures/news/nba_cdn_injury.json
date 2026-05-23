@@ -1,0 +1,44 @@
+{
+  "injuryDate": "2026-05-22",
+  "injuryReport": [
+    {
+      "teamAbbreviation": "GSW",
+      "injuredPlayers": [
+        {
+          "playerId": 1629029,
+          "playerName": "Steph Curry",
+          "personStatus": "Out",
+          "injuryNote": "Left ankle sprain"
+        },
+        {
+          "playerId": 1628384,
+          "playerName": "Klay Thompson",
+          "personStatus": "Questionable",
+          "injuryNote": "Right knee soreness"
+        }
+      ]
+    },
+    {
+      "teamAbbreviation": "LAL",
+      "injuredPlayers": [
+        {
+          "playerId": 2544,
+          "playerName": "LeBron James",
+          "personStatus": "Probable",
+          "injuryNote": "Left foot"
+        }
+      ]
+    },
+    {
+      "teamAbbreviation": "BOS",
+      "injuredPlayers": [
+        {
+          "playerId": 1628369,
+          "playerName": "Jayson Tatum",
+          "personStatus": "Doubtful",
+          "injuryNote": "Wrist inflammation"
+        }
+      ]
+    }
+  ]
+}
