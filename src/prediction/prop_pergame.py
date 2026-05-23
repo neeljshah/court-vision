@@ -514,6 +514,7 @@ def train_pergame_models(
     import lightgbm as lgb
     import numpy as np
     import xgboost as xgb
+    from sklearn.isotonic import IsotonicRegression
     from sklearn.metrics import mean_absolute_error, r2_score
 
     model_dir = model_dir or _MODEL_DIR
@@ -595,12 +596,67 @@ def train_pergame_models(
         blend_ho = 0.5 * (xgb_ho + lgb_ho)
         blend_tr = _blend(X_tr)
 
+        # Isotonic calibration — k-fold cross-fitted on the holdout.
+        #
+        # We can't fit on val because val is what early-stopping used (the
+        # base learners are already slightly optimistic there), and we can't
+        # fit-and-evaluate on holdout directly (self-leak). 5-fold CV gives
+        # honest cross-fitted predictions for the lift measurement, and we
+        # then refit on the full holdout for the deployed calibrator. This
+        # is opt-in per stat: if the cross-fitted lift on MAE is not strictly
+        # positive, we delete any prior calibrator so predict_pergame falls
+        # back to the raw blend (calibration helps low-rate stats like BLK
+        # but is noise on already-unbiased high-volume stats like PTS).
+        n_ho = len(blend_ho)
+        k = 5
+        cal_blend_ho = np.empty(n_ho, dtype=float)
+        rng = np.random.default_rng(42)
+        perm = rng.permutation(n_ho)
+        fold_size = n_ho // k
+        for fold in range(k):
+            lo = fold * fold_size
+            hi = n_ho if fold == k - 1 else (fold + 1) * fold_size
+            test_idx = perm[lo:hi]
+            train_idx = np.concatenate([perm[:lo], perm[hi:]])
+            fold_cal = IsotonicRegression(out_of_bounds="clip")
+            fold_cal.fit(blend_ho[train_idx], y_ho[train_idx])
+            cal_blend_ho[test_idx] = fold_cal.predict(blend_ho[test_idx])
+        cal_blend_ho = np.clip(cal_blend_ho, 0.0, None)
+
+        uncal_r2  = float(r2_score(y_ho, blend_ho))
+        uncal_mae = float(mean_absolute_error(y_ho, blend_ho))
+        cal_r2    = float(r2_score(y_ho, cal_blend_ho))
+        cal_mae   = float(mean_absolute_error(y_ho, cal_blend_ho))
+
+        # Opt-in: only deploy the calibrator if it strictly improves MAE on
+        # the cross-fitted holdout predictions. Otherwise remove any stale
+        # file so predict_pergame falls back to the raw blend.
+        cal_path = os.path.join(model_dir, f"calibration_pergame_{stat}.joblib")
+        if cal_mae < uncal_mae:
+            full_cal = IsotonicRegression(out_of_bounds="clip")
+            full_cal.fit(blend_ho, y_ho)
+            joblib.dump(full_cal, cal_path)
+            served_r2, served_mae = cal_r2, cal_mae
+            cal_used = True
+        else:
+            if os.path.exists(cal_path):
+                os.remove(cal_path)
+            served_r2, served_mae = uncal_r2, uncal_mae
+            cal_used = False
+
         m = {
-            "holdout_r2":      round(float(r2_score(y_ho, blend_ho)), 4),
-            "holdout_mae":     round(float(mean_absolute_error(y_ho, blend_ho)), 4),
+            # Production-served metrics — match what predict_pergame returns.
+            "holdout_r2":      round(served_r2, 4),
+            "holdout_mae":     round(served_mae, 4),
             "train_r2":        round(float(r2_score(y_tr, blend_tr)), 4),
             "xgb_holdout_r2":  round(float(r2_score(y_ho, xgb_ho)), 4),
             "lgb_holdout_r2":  round(float(r2_score(y_ho, lgb_ho)), 4),
+            # Diagnostics — pre-calibration blend and the cross-fitted lift.
+            "uncal_holdout_r2":  round(uncal_r2, 4),
+            "uncal_holdout_mae": round(uncal_mae, 4),
+            "calibration_lift_r2":  round(cal_r2 - uncal_r2, 4),
+            "calibration_lift_mae": round(uncal_mae - cal_mae, 4),
+            "calibration_used":  cal_used,
         }
         m["gap"] = round(m["train_r2"] - m["holdout_r2"], 4)
         m["ensemble_lift"] = round(m["holdout_r2"] - max(m["xgb_holdout_r2"],
@@ -608,9 +664,11 @@ def train_pergame_models(
         metrics["stats"][stat] = m
         xgb_model.save_model(os.path.join(model_dir, f"props_pg_{stat}.json"))
         joblib.dump(lgb_model, os.path.join(model_dir, f"props_pg_lgb_{stat}.pkl"))
-        print(f"  [prop_pergame] {stat.upper():4s} blend R²={m['holdout_r2']:.3f} "
+        cal_tag = "cal" if cal_used else "raw"
+        print(f"  [prop_pergame] {stat.upper():4s} {cal_tag} R²={m['holdout_r2']:.3f} "
               f"MAE={m['holdout_mae']:.2f}  (xgb={m['xgb_holdout_r2']:.3f}, "
-              f"lgb={m['lgb_holdout_r2']:.3f}, lift={m['ensemble_lift']:+.3f})")
+              f"lgb={m['lgb_holdout_r2']:.3f}, lift={m['ensemble_lift']:+.3f}, "
+              f"cal_lift_mae={m['calibration_lift_mae']:+.3f})")
 
     metrics["feature_cols"] = feature_cols
     with open(os.path.join(model_dir, "props_pergame_metrics.json"), "w", encoding="utf-8") as f:
@@ -647,11 +705,28 @@ def load_pergame_model(stat: str, model_dir: Optional[str] = None) -> list:
     return models
 
 
+def _load_pergame_calibrator(stat: str, model_dir: str):
+    """Load the per-game isotonic calibrator for a stat, or None if absent."""
+    path = os.path.join(model_dir, f"calibration_pergame_{stat}.joblib")
+    if not os.path.exists(path):
+        return None
+    try:
+        import joblib
+        return joblib.load(path)
+    except Exception:
+        return None
+
+
 def predict_pergame(stat: str, feature_row: Dict[str, float],
                     model_dir: Optional[str] = None) -> Optional[float]:
-    """Predict one stat for one game — the mean of the per-game base learners."""
+    """Predict one stat for one game — calibrated mean of the per-game base learners.
+
+    Applies the per-game isotonic calibrator (calibration_pergame_<stat>.joblib)
+    on top of the XGB+LGB blend when present; falls back to the raw blend if
+    the calibrator file is missing (e.g. pre-calibration models on disk)."""
     import numpy as np
 
+    model_dir = model_dir or _MODEL_DIR
     models = load_pergame_model(stat, model_dir)
     if not models:
         return None
@@ -664,7 +739,14 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
     preds = [float(m.predict(X)[0]) for m in models]
-    return round(max(sum(preds) / len(preds), 0.0), 2)
+    blend = sum(preds) / len(preds)
+    calibrator = _load_pergame_calibrator(stat, model_dir)
+    if calibrator is not None:
+        try:
+            blend = float(calibrator.predict([blend])[0])
+        except Exception:
+            pass
+    return round(max(blend, 0.0), 2)
 
 
 # ── live prediction ───────────────────────────────────────────────────────────
