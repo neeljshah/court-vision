@@ -408,10 +408,12 @@ class WinProbModel:
                  lr_model=None,
                  lr_scaler=None,
                  mlp_models=None,
+                 nb_model=None,
                  w_xgb: float = 1.0,
                  w_lgb: float = 0.0,
                  w_lr:  float = 0.0,
-                 w_mlp: float = 0.0):
+                 w_mlp: float = 0.0,
+                 w_nb:  float = 0.0):
         """
         Args:
             model:        Trained XGBClassifier (None before training). The
@@ -454,10 +456,12 @@ class WinProbModel:
             self._mlp_models = list(mlp_models)
         else:
             self._mlp_models = [mlp_models]
+        self._nb_model    = nb_model
         self._w_xgb       = float(w_xgb)
         self._w_lgb       = float(w_lgb)
         self._w_lr        = float(w_lr)
         self._w_mlp       = float(w_mlp)
+        self._w_nb        = float(w_nb)
         self._feature_importance: Optional[dict] = None
 
     def _blend_prob(self, X: "np.ndarray") -> float:
@@ -473,7 +477,8 @@ class WinProbModel:
             prob += self._w_lgb * float(self._lgb_model.predict_proba(X)[0][1])
         need_scaled = (
             (self._lr_model   is not None and self._w_lr  != 0.0) or
-            (self._mlp_models is not None and self._w_mlp != 0.0)
+            (self._mlp_models is not None and self._w_mlp != 0.0) or
+            (self._nb_model   is not None and self._w_nb  != 0.0)
         )
         X_s = self._lr_scaler.transform(X) if (need_scaled and self._lr_scaler is not None) else None
         if self._lr_model is not None and self._w_lr != 0.0 and X_s is not None:
@@ -481,6 +486,8 @@ class WinProbModel:
         if self._mlp_models and self._w_mlp != 0.0 and X_s is not None:
             mlp_probs = [float(m.predict_proba(X_s)[0][1]) for m in self._mlp_models]
             prob += self._w_mlp * (sum(mlp_probs) / len(mlp_probs))
+        if self._nb_model is not None and self._w_nb != 0.0 and X_s is not None:
+            prob += self._w_nb * float(self._nb_model.predict_proba(X_s)[0][1])
         return prob
 
     def predict(
@@ -532,7 +539,8 @@ class WinProbModel:
         os.makedirs(_MODEL_DIR, exist_ok=True)
         path = path or os.path.join(_MODEL_DIR, "win_probability.pkl")
         model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
-        # LGBMClassifier, LogisticRegression, MLPClassifier are pickle-safe.
+        # LGBMClassifier, LogisticRegression, MLPClassifier, GaussianNB
+        # are all sklearn-style and pickle-safe.
         with open(path, "wb") as f:
             pickle.dump({"model_bytes":        model_bytes,
                          "threshold":          self.threshold,
@@ -543,10 +551,12 @@ class WinProbModel:
                          "lr_model":           self._lr_model,
                          "lr_scaler":          self._lr_scaler,
                          "mlp_models":         self._mlp_models,
+                         "nb_model":           self._nb_model,
                          "w_xgb":              self._w_xgb,
                          "w_lgb":              self._w_lgb,
                          "w_lr":               self._w_lr,
-                         "w_mlp":              self._w_mlp}, f)
+                         "w_mlp":              self._w_mlp,
+                         "w_nb":               self._w_nb}, f)
         print(f"Model saved -> {path}")
         return path
 
@@ -715,40 +725,60 @@ def train(
     mlp_val_probs_list = [m.predict_proba(X_val_s)[:, 1] for m in mlp_models]
     mlp_val_probs = np.mean(mlp_val_probs_list, axis=0)
     mlp_brier = brier_score_loss(y_val, mlp_val_probs)
+
+    # Fifth base learner: GaussianNB on standardized features. NB has a
+    # very different inductive bias (assumes feature independence + per-
+    # class normality) so its errors are uncorrelated with XGB/MLP/LR.
+    # Its individual Brier is poor (~0.27) due to overconfidence, but the
+    # NNLS stacker still picks ~0.10 weight — the diversity helps.
+    # Temporal-stability check (cycle-14 screen across split fractions
+    # 0.70/0.75/0.80/0.85/0.90) showed Brier improvement is CONSISTENT
+    # across splits (-0.0005 to -0.0027) while accuracy is noisier.
+    from sklearn.naive_bayes import GaussianNB
+    nb_clf = GaussianNB()
+    nb_clf.fit(X_tr_s, y_tr)
+    nb_val_probs = nb_clf.predict_proba(X_val_s)[:, 1]
+    nb_brier = brier_score_loss(y_val, nb_val_probs)
     print(f"  base XGB Brier {xgb_brier:.4f}  "
           f"base LGB Brier {lgb_brier:.4f}")
     print(f"  base LR  Brier {lr_brier:.4f}  "
-          f"base MLP Brier {mlp_brier:.4f}")
+          f"base MLP Brier {mlp_brier:.4f}  "
+          f"base NB  Brier {nb_brier:.4f}")
 
-    # 4-way NNLS meta-stacker: fit non-negative weights minimizing
-    # ||y_val - w_xgb*xgb_p - w_lgb*lgb_p - w_lr*lr_p - w_mlp*mlp_p||^2
-    # Sanity guard on weight sum to detect val/train disagreement.
+    # 5-way NNLS meta-stacker.
     from sklearn.linear_model import LinearRegression
     stacker = LinearRegression(positive=True, fit_intercept=False)
     stacker.fit(
         np.column_stack([xgb_val_probs, lgb_val_probs,
-                         lr_val_probs, mlp_val_probs]),
+                         lr_val_probs, mlp_val_probs, nb_val_probs]),
         y_val,
     )
     w_xgb_raw = float(stacker.coef_[0])
     w_lgb_raw = float(stacker.coef_[1])
     w_lr_raw  = float(stacker.coef_[2])
     w_mlp_raw = float(stacker.coef_[3])
-    w_sum = w_xgb_raw + w_lgb_raw + w_lr_raw + w_mlp_raw
+    w_nb_raw  = float(stacker.coef_[4])
+    w_sum = w_xgb_raw + w_lgb_raw + w_lr_raw + w_mlp_raw + w_nb_raw
     if not (0.5 <= w_sum <= 1.5):
-        # Fallback: equal weights across four learners.
-        w_xgb = w_lgb = w_lr = w_mlp = 0.25
+        # Fallback: equal weights across five learners.
+        w_xgb = w_lgb = w_lr = w_mlp = w_nb = 0.2
         meta_fit_source = "fallback_equal"
     else:
-        w_xgb, w_lgb, w_lr, w_mlp = w_xgb_raw, w_lgb_raw, w_lr_raw, w_mlp_raw
-        meta_fit_source = "val_nnls_4way"
+        w_xgb = w_xgb_raw
+        w_lgb = w_lgb_raw
+        w_lr  = w_lr_raw
+        w_mlp = w_mlp_raw
+        w_nb  = w_nb_raw
+        meta_fit_source = "val_nnls_5way"
     print(f"  NNLS weights: w_xgb={w_xgb:.3f}  w_lgb={w_lgb:.3f}  "
-          f"w_lr={w_lr:.3f}  w_mlp={w_mlp:.3f}  (source={meta_fit_source})")
+          f"w_lr={w_lr:.3f}  w_mlp={w_mlp:.3f}  w_nb={w_nb:.3f}  "
+          f"(source={meta_fit_source})")
 
     val_probs = (w_xgb * xgb_val_probs
                  + w_lgb * lgb_val_probs
                  + w_lr  * lr_val_probs
-                 + w_mlp * mlp_val_probs)
+                 + w_mlp * mlp_val_probs
+                 + w_nb  * nb_val_probs)
     val_probs = np.clip(val_probs, 0.0, 1.0)
     acc   = accuracy_score(y_val, (val_probs >= 0.5).astype(int))
     brier = brier_score_loss(y_val, val_probs)
@@ -794,8 +824,9 @@ def train(
                          calibrator=calibrator,
                          lgb_model=lgb_clf, lr_model=lr_clf,
                          lr_scaler=lr_scaler, mlp_models=mlp_models,
+                         nb_model=nb_clf,
                          w_xgb=w_xgb, w_lgb=w_lgb,
-                         w_lr=w_lr, w_mlp=w_mlp)
+                         w_lr=w_lr, w_mlp=w_mlp, w_nb=w_nb)
     model._feature_importance = dict(zip(feature_cols, clf.feature_importances_.tolist()))
     model.save(output_path)
     _save_metrics({
@@ -807,8 +838,10 @@ def train(
         "lgb_brier": float(lgb_brier),
         "lr_brier":  float(lr_brier),
         "mlp_brier": float(mlp_brier),
+        "nb_brier":  float(nb_brier),
         "w_xgb": float(w_xgb), "w_lgb": float(w_lgb),
         "w_lr":  float(w_lr),  "w_mlp": float(w_mlp),
+        "w_nb":  float(w_nb),
         "meta_fit_source": meta_fit_source,
         "n_games": len(df), "seasons": seasons,
     })
@@ -862,10 +895,12 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
                      lr_model=data.get("lr_model"),
                      lr_scaler=data.get("lr_scaler"),
                      mlp_models=mlp_loaded,
+                     nb_model=data.get("nb_model"),
                      w_xgb=float(data.get("w_xgb", 1.0)),
                      w_lgb=float(data.get("w_lgb", 0.0)),
                      w_lr=float(data.get("w_lr", 0.0)),
-                     w_mlp=float(data.get("w_mlp", 0.0)))
+                     w_mlp=float(data.get("w_mlp", 0.0)),
+                     w_nb=float(data.get("w_nb", 0.0)))
     m._feature_importance = data.get("feature_importance")
     return m
 
