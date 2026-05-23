@@ -735,22 +735,22 @@ def train_pergame_models(
         # depth + child weight to prevent splits on rare combinations.
         "blk": {"max_depth": 2, "min_child_weight": 25, "reg_lambda": 4.0,
                 "gamma": 0.4, "n_estimators": 500},
-        # FG3M — bounded count, position-correlated (centers ~0, guards ~3+);
-        # gap was 0.058 with default reg, room to tighten the regression head.
-        "fg3m": {"max_depth": 3, "min_child_weight": 20, "reg_lambda": 3.0,
+        # FG3M — bounded count, position-correlated. Re-tuned cycle 12 (with
+        # meta-stacker active): one more depth-layer helps. MAE 0.9466 -> 0.9457.
+        "fg3m": {"max_depth": 4, "min_child_weight": 20, "reg_lambda": 3.0,
                  "gamma": 0.3, "n_estimators": 600},
         # PTS — high-variance, dense signal. Sweep (cycle 6) found that an
         # extra split layer plus slightly more reg trades a tiny bit of bias
         # for variance reduction. MAE 4.7433 → 4.7407.
         "pts": {"max_depth": 5, "min_child_weight": 15, "reg_lambda": 3.0,
                 "gamma": 0.2, "n_estimators": 800},
-        # AST — sweep prefers slightly tighter child-weight + more reg over
-        # the default. Marginal MAE win (4-5 bp) — keep for the R² lift.
-        "ast": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 4.0,
+        # AST — re-tuned cycle 12 (with meta-stacker active): tighter
+        # min_child_weight + more reg vs the cycle-6 winner. MAE 1.4105 -> 1.4100.
+        "ast": {"max_depth": 4, "min_child_weight": 20, "reg_lambda": 5.0,
                 "gamma": 0.2, "n_estimators": 800},
-        # REB — sweep prefers shallower trees + a touch more gamma. Trees
-        # were overfitting deep splits on rebound spikes from anomalous games.
-        "reb": {"max_depth": 3, "min_child_weight": 20, "reg_lambda": 3.0,
+        # REB — re-tuned cycle 12: tighter min_child_weight + more reg.
+        # MAE 1.9366 -> 1.9351.
+        "reb": {"max_depth": 3, "min_child_weight": 30, "reg_lambda": 4.0,
                 "gamma": 0.3, "n_estimators": 800},
         # TOV — count-ish (mean ~1.3/game); responds to count-style reg
         # (deeper child-weight, higher lambda) like BLK/STL but doesn't need
