@@ -770,9 +770,10 @@ def train_pergame_models(
                 "colsample_bytree": 1.0},
         # FG3M — re-tuned cycle 20: less regularisation now that we have
         # 93k rows. Cycle 25: lr 0.04 → 0.025. Cycle 26: subsample 0.8 → 0.7.
-        # Cycle 29: gamma 0.3 → 0.0 (other regularizers absorb the work;
-        # gamma 0.3 was clipping useful splits in three-point feature space).
-        "fg3m": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 2.0,
+        # Cycle 29: gamma 0.3 → 0.0. Cycle 31: reg_lambda 2.0 → 8.0
+        # (stronger L2 compensates for the gamma drop; FG3M now leans on
+        # leaf-weight smoothing instead of split-loss thresholding).
+        "fg3m": {"max_depth": 4, "min_child_weight": 15, "reg_lambda": 8.0,
                  "gamma": 0.0, "n_estimators": 600, "learning_rate": 0.025,
                  "subsample": 0.7},
         # PTS — re-tuned cycle 20 (93k rows, recency decay): one more depth
