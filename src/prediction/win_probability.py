@@ -127,6 +127,11 @@ FEATURE_COLS = [
     "b2b_diff", "elo_pace_interaction",
     # C-7: Bench net rating
     "home_bench_net_rtg", "away_bench_net_rtg",
+    # Cycle-18: per-game stars-available (count of top-8-by-MIN players who
+    # actually appeared in the game). Built by fetch_historical_injuries.py.
+    # Replaces the prior constant-3 default — first real per-game injury
+    # signal in the training data.
+    "home_stars_available", "away_stars_available",
     # Rolling L10: game-by-game rolling avg (10-game window, no season bias)
     "home_off_rtg_L10", "home_def_rtg_L10", "home_net_rtg_L10",
     "away_off_rtg_L10", "away_def_rtg_L10", "away_net_rtg_L10",
