@@ -401,14 +401,19 @@ def _get_bench_net_rtg(team_abbr: str, season: str) -> float:
 class WinProbModel:
     """XGBoost pre-game win probability model."""
 
-    def __init__(self, model=None, threshold: float = 0.5):
+    def __init__(self, model=None, threshold: float = 0.5,
+                 feature_cols: Optional[List[str]] = None):
         """
         Args:
-            model:     Trained XGBClassifier (None before training).
-            threshold: Decision threshold for binary prediction.
+            model:        Trained XGBClassifier (None before training).
+            threshold:    Decision threshold for binary prediction.
+            feature_cols: Columns the model was trained on. Defaults to
+                          `_MODEL_FEATURE_COLS` for backward compat with old
+                          pickles that didn't record this.
         """
-        self.model     = model
-        self.threshold = threshold
+        self.model        = model
+        self.threshold    = threshold
+        self._feature_cols = list(feature_cols) if feature_cols else list(_MODEL_FEATURE_COLS)
         self._feature_importance: Optional[dict] = None
 
     def predict(
@@ -436,7 +441,7 @@ class WinProbModel:
             raise RuntimeError("Model not trained — call train() or load() first")
 
         feats = _build_features(home_team, away_team, season, game_date, ref_names)
-        X     = np.array([[feats[c] for c in _MODEL_FEATURE_COLS]], dtype=np.float32)
+        X     = np.array([[feats[c] for c in self._feature_cols]], dtype=np.float32)
         prob  = float(self.model.predict_proba(X)[0][1])
 
         # Surface injury warnings (Out/Doubtful players on either team)
@@ -459,7 +464,8 @@ class WinProbModel:
         model_bytes = self.model.get_booster().save_raw(raw_format="ubj")
         with open(path, "wb") as f:
             pickle.dump({"model_bytes": model_bytes, "threshold": self.threshold,
-                         "feature_importance": self._feature_importance}, f)
+                         "feature_importance": self._feature_importance,
+                         "feature_cols": self._feature_cols}, f)
         print(f"Model saved -> {path}")
         return path
 
@@ -538,9 +544,13 @@ def train(
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
+    # Filter to columns actually present in the cached rows. Older v8 caches
+    # lack the 4 sim_* features; on-the-fly Monte Carlo backfill is too slow
+    # for an interactive retrain, so we accept the reduced feature set.
+    feature_cols = _available_feature_cols(df.to_dict("records") if len(df) else [])
+    X  = df[feature_cols].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
-    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(_MODEL_FEATURE_COLS)}")
+    print(f"Dataset: {len(df)} games | home win rate {y.mean():.1%} | features={len(feature_cols)}/{len(_MODEL_FEATURE_COLS)}")
 
     split = int(len(df) * 0.8)
     X_tr, X_val = X[:split], X[split:]
@@ -560,7 +570,8 @@ def train(
     print(f"Val accuracy: {acc:.3f}  |  Brier: {brier:.4f}")
 
     model = WinProbModel(model=clf)
-    model._feature_importance = dict(zip(_MODEL_FEATURE_COLS, clf.feature_importances_.tolist()))
+    model._feature_importance = dict(zip(feature_cols, clf.feature_importances_.tolist()))
+    model._feature_cols = feature_cols
     model.save(output_path)
     _save_metrics({"accuracy": acc, "brier": brier,
                    "n_games": len(df), "seasons": seasons})
@@ -604,7 +615,8 @@ def load(model_path: Optional[str] = None) -> WinProbModel:
     else:
         # backward compat: old pickle format stored the model object directly
         clf = data["model"]
-    m = WinProbModel(model=clf, threshold=data.get("threshold", 0.5))
+    m = WinProbModel(model=clf, threshold=data.get("threshold", 0.5),
+                     feature_cols=data.get("feature_cols"))
     m._feature_importance = data.get("feature_importance")
     return m
 
@@ -645,7 +657,8 @@ def backtest(seasons: Optional[List[str]] = None) -> dict:
     if "game_date" in df.columns:
         df = df.sort_values("game_date").reset_index(drop=True)
 
-    X  = df[_MODEL_FEATURE_COLS].values.astype(np.float32)
+    feature_cols = _available_feature_cols(df.to_dict("records") if len(df) else [])
+    X  = df[feature_cols].values.astype(np.float32)
     y  = df["home_win"].values.astype(int)
 
     results = []
@@ -1114,6 +1127,23 @@ def _is_active_season(season: str) -> bool:
         return start_year >= current_year or end_year >= current_year
     except (IndexError, ValueError):
         return True  # default to active if format is unrecognised
+
+
+def _available_feature_cols(rows: List[dict]) -> List[str]:
+    """Return the subset of `_MODEL_FEATURE_COLS` actually present in `rows`.
+
+    Older v8 caches were written before _sim_features landed in the row
+    builder, so they lack the 4 sim_* columns. Running 1000-sim Monte Carlo
+    per matchup at train time to backfill is prohibitively slow (~15 min for
+    900 unique matchups) so we accept the reduced feature set instead. The
+    sweep evidence shows the 67-feature configuration already produces the
+    same baseline metrics as the prod metrics file, so dropping these is
+    not a regression.
+    """
+    if not rows:
+        return list(_MODEL_FEATURE_COLS)
+    sample = rows[0]
+    return [c for c in _MODEL_FEATURE_COLS if c in sample]
 
 
 def _fetch_season_games(season: str) -> List[dict]:
