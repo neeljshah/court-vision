@@ -213,12 +213,15 @@ _BBREF_DIR = os.path.join(PROJECT_DIR, "data", "external")
 # holistic impact (ws_per_48, per), and SPLIT offensive/defensive BPM (obpm,
 # dbpm) — bpm itself is the sum so we keep the split for finer per-side
 # weighting. per is included for its independent signal (corr 0.88 with bpm —
-# enough non-redundancy to matter for trees). Dropped: trb/orb/drb_pct
-# (handled implicitly by opp_def_reb + form), vorp (collinear bpm/ws),
-# ows/dws (collinear ws_per_48), bpm (sum of obpm+dbpm — corr 0.9999).
+# enough non-redundancy to matter for trees). Defensive depth — dws, ows,
+# vorp — are ~85% collinear with ws_per_48 / obpm / dbpm but the residual
+# signal still helps gradient-boosted trees in practice; appended at the end
+# so existing column positions stay stable. Dropped: trb/orb/drb_pct
+# (handled implicitly by opp_def_reb + form), bpm (sum of obpm+dbpm).
 _BBREF_KEYS = ("usg_pct", "ts_pct", "three_par", "ftr",
                "ast_pct", "stl_pct", "blk_pct", "tov_pct",
-               "ws_per_48", "per", "obpm", "dbpm")
+               "ws_per_48", "per", "obpm", "dbpm",
+               "dws", "ows", "vorp")
 _BBREF_DEFAULTS: Dict[str, float] = {f"bbref_{k}": 0.0 for k in _BBREF_KEYS}
 
 
