@@ -97,6 +97,7 @@ def feature_columns() -> List[str]:
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
+    cols += list(_RATIO_KEYS)
     return cols
 
 
@@ -485,6 +486,17 @@ def build_opponent_defense(gamelog_dir: str) -> _OpponentDefense:
     return _OpponentDefense(allowed, league)
 
 
+_RATIO_KEYS = (
+    "pm_pts",        # per-minute scoring rate
+    "pm_ast",        # per-minute assists
+    "pm_reb",        # per-minute rebounds
+    "pm_fg3m",       # per-minute 3PM
+    "pm_stl",        # per-minute steals
+    "pm_blk",        # per-minute blocks
+    "pts_share_3pt", # fraction of points from threes (3 * fg3m / pts)
+)
+
+
 def _row_features(prior_played: List[dict], rest_days: float,
                   is_home: int, games_played: int) -> Dict[str, float]:
     """Build the leakage-free feature row from a player's prior played games."""
@@ -500,6 +512,19 @@ def _row_features(prior_played: List[dict], rest_days: float,
     feats["rest_days"]     = rest_days
     feats["is_home"]       = float(is_home)
     feats["games_played"]  = float(games_played)
+    # Cross-stat ratios — per-minute production rates and 3pt-share. Denominators
+    # are clipped to a minimum of 5 so bench players with tiny l5_min don't blow
+    # up the ratio (NBA Advanced uses /36 minutes; trees only care about the
+    # relative ordering so the constant divisor doesn't matter).
+    l5_min_safe = max(feats["l5_min"], 5.0)
+    l5_pts_safe = max(feats["l5_pts"], 5.0)
+    feats["pm_pts"]        = feats["l5_pts"]  / l5_min_safe
+    feats["pm_ast"]        = feats["l5_ast"]  / l5_min_safe
+    feats["pm_reb"]        = feats["l5_reb"]  / l5_min_safe
+    feats["pm_fg3m"]       = feats["l5_fg3m"] / l5_min_safe
+    feats["pm_stl"]        = feats["l5_stl"]  / l5_min_safe
+    feats["pm_blk"]        = feats["l5_blk"]  / l5_min_safe
+    feats["pts_share_3pt"] = (3.0 * feats["l5_fg3m"]) / l5_pts_safe
     return feats
 
 
