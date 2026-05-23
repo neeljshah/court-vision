@@ -2047,8 +2047,14 @@ class UnifiedPipeline:
             # Fix 3 Part A: team-switch debounce — accumulate explicit new-team
             # detections until threshold reached (ISSUE-061 fix: gaps don't reset
             # the streak; only an explicit original-team re-detection resets it).
-            # Threshold = 0.5s real-time of explicit has_ball detections.
-            _BALL_LOSS_THRESH = max(5, int(0.5 * fps / _stride))
+            # 2026-05-23: raised 0.5s → 2.0s. 0.5s admitted false-positive switches
+            # from deflections / steals / defender swipes — audit showed games
+            # with 459-735 possessions vs the NBA-typical 180-240. A real
+            # possession change persists >2s (new team takes ball up court);
+            # transient flicks die under this gate. Quick fast-break possessions
+            # (steal-and-score in <2s) will be slightly under-counted — acceptable
+            # trade: massive false-positive reduction vs rare under-count.
+            _BALL_LOSS_THRESH = max(5, int(2.0 * fps / _stride))
             if _handler_explicit and curr_poss and curr_poss != poss_team_prev and poss_team_prev:
                 _ball_loss_streak += 1
                 if _ball_loss_streak < _BALL_LOSS_THRESH:
