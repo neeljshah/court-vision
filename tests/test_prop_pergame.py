@@ -197,6 +197,8 @@ def test_train_reports_honest_holdout(tmp_path):
                                 blk=rng.randint(0, 3), tov=rng.randint(0, 5)))
         _write_gamelog(tmp_path, str(pid), games)
 
+    from src.prediction.prop_pergame import _LGB_ONLY_STATS
+
     metrics = train_pergame_models(
         gamelog_dir=str(tmp_path), model_dir=str(tmp_path), min_prior=6,
     )
@@ -206,7 +208,10 @@ def test_train_reports_honest_holdout(tmp_path):
         # Honest holdout — must NOT be a fake near-1.0 identity fit.
         assert -1.0 <= m["holdout_r2"] <= 0.95
         assert m["holdout_mae"] >= 0.0
-        assert os.path.exists(tmp_path / f"props_pg_{stat}.json")
+        # LGB-only stats don't persist the XGB model; everyone has the LGB pkl.
+        if stat not in _LGB_ONLY_STATS:
+            assert os.path.exists(tmp_path / f"props_pg_{stat}.json")
+        assert os.path.exists(tmp_path / f"props_pg_lgb_{stat}.pkl")
 
 
 def test_train_insufficient_data_returns_status(tmp_path):

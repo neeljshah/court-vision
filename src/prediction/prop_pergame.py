@@ -43,6 +43,11 @@ _PLAYTYPE_DEFAULTS: Dict[str, float] = {f"pt_{pt}_freq": 0.0 for pt in _PLAY_TYP
 
 # Stats predicted, and their box-score column names in the gamelog JSON.
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+# Stats where the XGB Poisson learner consistently degrades the XGB+LGB
+# blend (ensemble_lift negative on holdout). For these we save only the
+# LGB model and predict_pergame's load_pergame_model returns just LGB,
+# making the "blend" a single-model prediction.
+_LGB_ONLY_STATS = {"stl"}
 _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
@@ -735,12 +740,20 @@ def train_pergame_models(
         lgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
-        # Blend = mean of the two base learners — what predict_pergame uses.
+        # Blend = mean of the two base learners (or LGB only for stats where
+        # the XGB Poisson learner is a net negative on holdout). The blend
+        # below must match what predict_pergame computes from the on-disk
+        # models — for _LGB_ONLY_STATS we skip persisting XGB so the blend
+        # at inference is single-model LGB.
+        lgb_only = stat in _LGB_ONLY_STATS
+
         def _blend(X):
+            if lgb_only:
+                return lgb_model.predict(X)
             return 0.5 * (xgb_model.predict(X) + lgb_model.predict(X))
 
         xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
-        blend_ho = 0.5 * (xgb_ho + lgb_ho)
+        blend_ho = lgb_ho if lgb_only else 0.5 * (xgb_ho + lgb_ho)
         blend_tr = _blend(X_tr)
 
         # Isotonic calibration — k-fold cross-fitted on the holdout.
@@ -809,7 +822,16 @@ def train_pergame_models(
         m["ensemble_lift"] = round(m["holdout_r2"] - max(m["xgb_holdout_r2"],
                                                          m["lgb_holdout_r2"]), 4)
         metrics["stats"][stat] = m
-        xgb_model.save_model(os.path.join(model_dir, f"props_pg_{stat}.json"))
+        # For stats listed in _LGB_ONLY_STATS the XGB Poisson learner drags
+        # the blend (ensemble_lift is negative). Save only LGB so that
+        # predict_pergame's load_pergame_model picks up just the LGB model
+        # and the "blend" becomes a single-model prediction.
+        xgb_path = os.path.join(model_dir, f"props_pg_{stat}.json")
+        if stat in _LGB_ONLY_STATS:
+            if os.path.exists(xgb_path):
+                os.remove(xgb_path)
+        else:
+            xgb_model.save_model(xgb_path)
         joblib.dump(lgb_model, os.path.join(model_dir, f"props_pg_lgb_{stat}.pkl"))
         cal_tag = "cal" if cal_used else "raw"
         print(f"  [prop_pergame] {stat.upper():4s} {cal_tag} R²={m['holdout_r2']:.3f} "
