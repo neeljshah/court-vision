@@ -532,7 +532,7 @@ def _row_features(prior_played: List[dict], rest_days: float,
 
 def build_pergame_dataset(
     gamelog_dir: Optional[str] = None,
-    min_prior: int = 6,
+    min_prior: int = 4,
 ) -> Tuple[List[dict], List[str]]:
     """Build the per-game training set from every player gamelog.
 
@@ -615,7 +615,7 @@ def train_pergame_models(
     gamelog_dir: Optional[str] = None,
     model_dir: Optional[str] = None,
     *,
-    min_prior: int = 6,
+    min_prior: int = 4,
     holdout_frac: float = 0.2,
     val_frac: float = 0.15,
 ) -> dict:
@@ -891,7 +891,7 @@ def build_prediction_row(
     is_home: bool = True,
     rest_days: float = 2.0,
     gamelog_dir: Optional[str] = None,
-    min_prior: int = 6,
+    min_prior: int = 4,
 ) -> Optional[Dict[str, float]]:
     """Build the per-game feature row for a player's UPCOMING game.
 
