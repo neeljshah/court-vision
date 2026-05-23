@@ -97,6 +97,7 @@ def feature_columns() -> List[str]:
         cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
                  f"ewma_{stat}", f"prev_{stat}"]
     cols += ["rest_days", "is_home", "games_played"]
+    cols += ["days_since_last_game", "games_since_long_absence"]
     cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
@@ -502,9 +503,57 @@ _RATIO_KEYS = (
 )
 
 
+_LONG_ABSENCE_DAYS = 7      # threshold for "returning from injury / extended absence"
+_GAMES_SINCE_CAP   = 10     # cap the games-since-return counter so trees don't grow
+                            # spurious splits on values that exist only on a few rows
+_DAYS_SINCE_CAP    = 100.0  # cap days_since_last_game (offseason gaps blow up otherwise)
+
+
+def _games_since_long_absence(prior_played: List[dict], current_gap_days: float) -> float:
+    """Return the games-since-return-from-7+day-absence count for the upcoming game.
+
+    Returns:
+        0.0  — no long absence in the last _GAMES_SINCE_CAP prior games
+        1.0  — the upcoming game IS the first game back (current_gap_days >= 7)
+        N+1  — the upcoming game is N games past the last long absence found
+               in prior_played (capped at _GAMES_SINCE_CAP).
+
+    Scans only the most-recent _GAMES_SINCE_CAP prior games for efficiency
+    and to avoid splitting on stale absences from earlier in the season.
+    """
+    if current_gap_days >= _LONG_ABSENCE_DAYS:
+        return 1.0
+    # Look back through prior_played for the last 7+ day gap between consecutive games.
+    recent = prior_played[-_GAMES_SINCE_CAP:]
+    if len(recent) < 2:
+        return 0.0
+    prev_date = None
+    last_absence_idx = -1
+    for i, g in enumerate(recent):
+        gdate = _parse_date(g.get("GAME_DATE"))
+        if prev_date is not None and gdate is not None:
+            if (gdate - prev_date).days >= _LONG_ABSENCE_DAYS:
+                last_absence_idx = i
+        prev_date = gdate if gdate is not None else prev_date
+    if last_absence_idx < 0:
+        return 0.0
+    # +2: the absence was BEFORE recent[last_absence_idx], so recent[last_absence_idx]
+    # was game-1-back. The upcoming game is (len(recent) - last_absence_idx) games past
+    # that, plus 1 because we count from 1.
+    games_back = (len(recent) - last_absence_idx) + 1
+    return float(min(games_back, _GAMES_SINCE_CAP))
+
+
 def _row_features(prior_played: List[dict], rest_days: float,
-                  is_home: int, games_played: int) -> Dict[str, float]:
-    """Build the leakage-free feature row from a player's prior played games."""
+                  is_home: int, games_played: int,
+                  days_since_last_game: Optional[float] = None) -> Dict[str, float]:
+    """Build the leakage-free feature row from a player's prior played games.
+
+    `days_since_last_game` is the unclamped gap (in days) from the player's
+    previous played game to the upcoming game. When omitted we fall back to
+    `rest_days` (clamped 0-10), which loses long-absence signal — callers
+    that have the real date delta should pass it.
+    """
     feats: Dict[str, float] = {}
     for stat in _FORM_STATS:
         col = _BOX_COL[stat]
@@ -517,6 +566,13 @@ def _row_features(prior_played: List[dict], rest_days: float,
     feats["rest_days"]     = rest_days
     feats["is_home"]       = float(is_home)
     feats["games_played"]  = float(games_played)
+    # Injury rampup signal — unclamped days-since-last-game lets trees
+    # distinguish "1-day rest" (back-to-back) from "14-day rest" (back from
+    # extended injury). games_since_long_absence captures which rampup
+    # phase the player is in (1 = first game back, 2 = second, etc).
+    raw_gap = float(rest_days) if days_since_last_game is None else float(days_since_last_game)
+    feats["days_since_last_game"]      = min(raw_gap, _DAYS_SINCE_CAP)
+    feats["games_since_long_absence"]  = _games_since_long_absence(prior_played, raw_gap)
     # Cross-stat ratios — per-minute production rates and 3pt-share. Denominators
     # are clipped to a minimum of 5 so bench players with tiny l5_min don't blow
     # up the ratio (NBA Advanced uses /36 minutes; trees only care about the
@@ -593,10 +649,19 @@ def build_pergame_dataset(
                 if idx > 0:
                     delta = (gdate - dated[idx - 1][0]).days
                     rest = float(min(max(delta, 0), 10))
+                # Rampup gap: distance to last *played* game (DNPs that just sit
+                # in the gamelog shouldn't reset the rampup counter). prior_played
+                # is built only from games with MIN >= _MIN_PLAYED so [-1] is the
+                # most recent real appearance.
+                raw_gap_days = 3.0
+                last_played_date = _parse_date(prior_played[-1].get("GAME_DATE"))
+                if last_played_date is not None:
+                    raw_gap_days = float(max((gdate - last_played_date).days, 0))
                 matchup = str(game.get("MATCHUP", ""))
                 is_home = 1 if " vs. " in matchup else 0
                 team_abbrev = matchup.split()[0] if matchup.split() else ""
-                feats = _row_features(prior_played, rest, is_home, len(prior_played))
+                feats = _row_features(prior_played, rest, is_home, len(prior_played),
+                                      days_since_last_game=raw_gap_days)
                 feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
                 feats.update(resttravel.features(team_abbrev, gdate))
                 feats.update(playtypes.features(file_player_id, file_season))
