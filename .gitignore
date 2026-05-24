@@ -35,6 +35,9 @@ data/models/
 # -- NBA API data (fetched by ingest pipeline, not committed) -----------------
 data/nba/
 
+# -- CatBoost training logs (auto-created in CWD on every fit) ----------------
+catboost_info/
+
 # -- Python -------------------------------------------------------------------
 __pycache__/
 *.pyc

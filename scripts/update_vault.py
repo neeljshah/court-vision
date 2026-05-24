@@ -185,19 +185,19 @@ updated: {today}
 
 ---
 
-## Model Performance (holdout, walk-forward, 48-hr purge, N=480)
+## Model Performance (cycle 40, walk-forward, per-game N=99,818)
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
-| [[Models/Win Probability\|Win prob]] | Accuracy | 68.5% | 72% | -3.5% |
-| [[Models/Win Probability\|Win prob]] | Brier | 0.209 | <0.19 | -0.019 |
-| [[Models/Player Props\|Props PTS]] | R² (holdout) | 0.41 | 0.47-0.51 | pending CV lift |
-| [[Models/Player Props\|Props REB]] | R² (holdout) | 0.38 | 0.45-0.48 | pending CV lift |
-| [[Models/Player Props\|Props AST]] | R² (holdout) | 0.36 | 0.42-0.45 | pending CV lift |
-| [[Models/Player Props\|Props FG3M]] | R² (holdout) | 0.29 | 0.37-0.41 | needs closeout speed |
-| [[Models/Player Props\|Props TOV]] | R² (holdout) | 0.22 | 0.26-0.29 | marginal |
-| [[Models/Player Props\|Props STL]] | R² (holdout) | 0.18 | 0.22-0.25 | filter hard |
-| [[Models/Player Props\|Props BLK]] | R² (holdout) | 0.16 | 0.21-0.24 | filter hard |
+| [[Models/Win Probability\|Win prob]] | Accuracy (WF) | 0.7094 | 0.72 | -1.1pp |
+| [[Models/Win Probability\|Win prob]] | Brier (WF)    | 0.193  | <0.19 | -0.003 |
+| [[Models/Player Props\|Props PTS]]  | MAE | **4.62** (sqrt+Huber blend) | 4.50 | -0.12 |
+| [[Models/Player Props\|Props REB]]  | MAE | **1.90** (LGB-q50)          | 1.80 | -0.10 |
+| [[Models/Player Props\|Props AST]]  | MAE | **1.36** (multitask MLP)    | 1.30 | -0.06 |
+| [[Models/Player Props\|Props FG3M]] | MAE | **0.89** (XGB-q50)          | 0.85 | -0.04 |
+| [[Models/Player Props\|Props TOV]]  | MAE | **0.89** (XGB-q50)          | 0.85 | -0.04 |
+| [[Models/Player Props\|Props STL]]  | MAE | **0.72** (XGB-q50)          | 0.70 | -0.02 |
+| [[Models/Player Props\|Props BLK]]  | MAE | **0.44** (XGB-q50, -16% session) | 0.42 | -0.02 |
 | [[Models/xFG Model\|xFG]] | Brier | 0.226 | <0.20 | pending CV defender data |
 | [[Models/DNP Predictor\|DNP]] | AUC | 0.979 | >0.97 | ✅ |
 

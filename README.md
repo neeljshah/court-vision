@@ -45,32 +45,36 @@ This is the deepest moat. A competitor who copies today's 85 models gets neither
 
 ## What's Built Today
 
-Numbers from the codebase, not projections. Every value below is reproducible from committed data; source files are linked.
+Numbers from the codebase, not projections. Every value below is reproducible from committed data; source files are linked. MAE is the betting-relevant metric (sportsbook prop lines score against the median, not the mean) and is what loop 5 optimised. See [PREDICTIONS_QUICKSTART.md](PREDICTIONS_QUICKSTART.md) for the live CLIs.
 
-**Prop models — holdout R² (walk-forward temporal CV, 48-hr purge, N=480)**
-Source: [`data/models/model_registry.json`](data/models/model_registry.json)
+**Prop models — per-game, walk-forward, honest holdout (N=99,818 player-games)**
+Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_pergame_metrics.json), [`data/models/prop_pergame_walk_forward.json`](data/models/prop_pergame_walk_forward.json)
 
-| Prop | Holdout R² | MAE |
-|------|-----------|-----|
-| pts  | 0.41      | 4.12 |
-| reb  | 0.38      | 1.84 |
-| ast  | 0.36      | 1.52 |
-| fg3m | 0.29      | 0.91 |
-| tov  | 0.22      | 0.76 |
-| stl  | 0.18      | 0.48 |
-| blk  | 0.16      | 0.42 |
+| Prop | MAE  | Production recipe |
+|------|------|-------------------|
+| pts  | 4.62 | sqrt + Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
+| reb  | 1.90 | log1p LGB quantile q50 |
+| ast  | 1.36 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
+| fg3m | 0.89 | log1p XGB quantile q50 |
+| tov  | 0.89 | log1p XGB quantile q50 |
+| stl  | 0.72 | log1p XGB quantile q50 |
+| blk  | 0.44 | log1p XGB quantile q50 (**-16% vs prior best**) |
 
-**Win probability — XGBoost, 3 seasons (N=3,685 games)**
+Cumulative MAE improvement vs the leaked baseline (post-cycle-3 leak fix): PTS −0.50%, REB −0.82%, AST −1.28%, FG3M −2.85%, TOV −1.73%, STL −3.79%, BLK **−16.08%**.
+
+**Win probability — 5-way NNLS stack (XGB+LGB+LR+MLP+NB), 2 seasons**
 Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 
-| Metric | Value |
-|--------|-------|
-| Accuracy | 68.5% |
-| Brier    | 0.209 |
+| Metric | Walk-forward (3-fold, honest) | Single-split |
+|--------|-------------------------------|--------------|
+| Accuracy | 0.7094 ± 0.025 | 0.717 |
+| Brier    | 0.193 ± 0.008  | 0.188 |
 
-**Also live:** the full CV perception pipeline (29 games processed end-to-end), the 85-model prediction stack on NBA API data, the fractional-Kelly portfolio sizer, the Shin (1992) devig solver, and a FastAPI serving layer — all under a passing test suite.
+**Quantile intervals + calibration.** Every stat ships q10/q50/q90 heads; `data/models/quantile_calibration.json` scales them per-stat to hit 80% empirical coverage (asymmetric for FG3M/STL/BLK/TOV where q10 floors at 0). Honest intervals → honest Kelly probabilities.
 
-What the next build adds — per-model calibration ECE, CV-feature delta R², and the first CLV readings — is scoped item-by-item in the [Roadmap](#roadmap) below, each with a plan and a phase.
+**Also live:** the full CV perception pipeline (29 games processed end-to-end), the fractional-Kelly portfolio sizer, the Shin (1992) devig solver, a FastAPI serving layer, and three production prediction CLIs — `predict_player.py` (single player vs opponent), `predict_slate.py` (every player in every game on a given date), `compare_to_lines.py` (paste sportsbook lines → ranked EV + Kelly stakes). Also `betting_backtest.py` / `betting_backtest_smart_line.py` for synthetic-line backtests — the model is profitable on every stat at every threshold vs the smart-line proxy (+25-32% ROI on selective bets at +0.5 edge).
+
+What the next build adds — live injury feed, real sportsbook closing lines, CV `defender_distance` at scale, lineup projection — is scoped in the [Roadmap](#roadmap) and discussed under [What's NOT yet built](PREDICTIONS_QUICKSTART.md#whats-not-yet-built-potential-future-gains).
 
 ---
 
@@ -229,23 +233,25 @@ The yellow block is the moat. CV-derived spatial features are not in any public 
 
 ## Results
 
-### Measured — API-data holdout (N=480 player-game observations, walk-forward temporal CV)
+### Measured — per-game API holdout (N=99,818 player-game observations, walk-forward temporal CV)
 
-Models trained on NBA API data (2018–present). Walk-forward: every fold trains on `game_date < t`, evaluated on `game_date >= t`. 48-hour same-team purge eliminates autocorrelation leakage. These are **holdout** R² values, not training R². Source: [`data/models/model_registry.json`](data/models/model_registry.json).
+Models trained on NBA API data (2 most-recent seasons after cycle-19 confirmed recency > volume). Walk-forward: every fold trains on `game_date < t`, evaluated on `game_date >= t`. 48-hour same-team purge eliminates autocorrelation leakage. These are **honest holdout** values on the per-game target (one row per player-game, features from prior games only). Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_pergame_metrics.json).
 
-| Model | Target    | Holdout R² | MAE  | Train R² |
-|-------|-----------|-----------|------|---------|
-| pts   | points    | 0.41      | 4.12 | 0.47    |
-| reb   | rebounds  | 0.38      | 1.84 | 0.43    |
-| ast   | assists   | 0.36      | 1.52 | 0.42    |
-| fg3m  | 3PM       | 0.29      | 0.91 | 0.34    |
-| tov   | turnovers | 0.22      | 0.76 | 0.28    |
-| blk   | blocks    | 0.16      | 0.42 | 0.22    |
-| stl   | steals    | 0.18      | 0.48 | 0.24    |
+| Model | Target    | MAE  | Recipe |
+|-------|-----------|------|--------|
+| pts   | points    | 4.62 | sqrt+Huber XGB/LGB + 5-seed MLP (NNLS) |
+| reb   | rebounds  | 1.90 | LGB quantile q50 (log1p) |
+| ast   | assists   | 1.36 | XGB+LGB + multitask MLP (NNLS) |
+| fg3m  | 3PM       | 0.89 | XGB quantile q50 (log1p) |
+| tov   | turnovers | 0.89 | XGB quantile q50 (log1p) |
+| stl   | steals    | 0.72 | XGB quantile q50 (log1p) |
+| blk   | blocks    | 0.44 | XGB quantile q50 (log1p) — **−16% vs prior best** |
 
-Win probability holdout (2018–present): Accuracy 68.5%, Brier 0.209 ([source](data/models/win_prob_metrics.json)). xFG model: Brier 0.226.
+Win probability honest holdout (2 seasons): Accuracy 0.7094 walk-forward / 0.717 single-split, Brier 0.193 / 0.188 ([source](data/models/win_prob_metrics.json)). xFG model: Brier 0.226.
 
-These are API-only models — no CV features yet. The holdout set is 20% of total observations (480 of 2,880 player-game records).
+The single biggest lesson of loop 5: **q50 quantile regression beats squared-error/Huber blends for skewed counts** because sportsbook prop O/U lines score against the median, not the mean. R² gets *worse* for q50 stats but MAE wins decisively — and MAE is the metric that matters for betting. 6 of 7 stats now use q50 as the primary predictor; only AST stays on the multitask-MLP blend (q50 failed prod single-split despite winning 4/4 walk-forward folds).
+
+These are API-only models — no CV features yet. Once the 80-game CV corpus completes, the projected lift is on top of the numbers above.
 
 ### Next milestone — the 80-game CV run
 
