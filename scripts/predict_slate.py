@@ -18,6 +18,7 @@ Output (per game):
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import sys
@@ -50,7 +51,46 @@ from src.prediction.prop_pergame import (  # noqa: E402
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
+_PRED_DIR  = os.path.join(PROJECT_DIR, "data", "predictions")
 _API_SLEEP = 0.6  # polite delay between nba_api calls
+
+
+def save_predictions_csv(
+    out_path: str, date_str: str,
+    games: List[Dict],
+    per_game_rows: List[Tuple[Dict, List[Dict], List[Dict]]],
+) -> int:
+    """Write one row per (player, stat) to CSV — schema designed so that once
+    actuals are available, a future backtest can join on (date, player_id, stat)
+    and score the model's forward-looking accuracy honestly.
+
+    Returns rows written.
+    """
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    n = 0
+    with open(out_path, "w", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        w.writerow([
+            "date", "game_id", "player_id", "player", "team", "opp", "venue",
+            "stat", "pred",
+        ])
+        for g, home_rows, away_rows in per_game_rows:
+            game_id = g.get("game_id", "")
+            home_abbrev = g.get("home_abbrev") or f"T{g.get('home_id')}"
+            away_abbrev = g.get("away_abbrev") or f"T{g.get('away_id')}"
+            for venue, rows, opp in (("home", home_rows, away_abbrev),
+                                     ("away", away_rows, home_abbrev)):
+                for r in rows:
+                    for stat in STATS:
+                        v = r["preds"].get(stat)
+                        if v is None:
+                            continue
+                        w.writerow([
+                            date_str, game_id, r["player_id"], r["name"],
+                            r["team"], opp, venue, stat, f"{float(v):.4f}",
+                        ])
+                        n += 1
+    return n
 
 
 def _detect_season(d: _date) -> str:
@@ -274,6 +314,10 @@ def main() -> int:
                     help="Season override (e.g. '2024-25'). Default: auto-detect.")
     ap.add_argument("--rest", type=float, default=2.0,
                     help="Days rest assumed for every player (default 2)")
+    ap.add_argument("--save", nargs="?", const="__default__", default=None,
+                    help="Write predictions CSV. Bare flag → data/predictions/<date>.csv; "
+                         "with arg → write to that path. Schema: date,game_id,player_id,"
+                         "player,team,opp,venue,stat,pred (one row per stat).")
     args = ap.parse_args()
 
     if args.date:
@@ -296,6 +340,7 @@ def main() -> int:
 
     print(f"  Found {len(games)} game(s).")
 
+    per_game_rows: List[Tuple[Dict, List[Dict], List[Dict]]] = []
     for g in games:
         home_abbrev = g["home_abbrev"] or f"T{g['home_id']}"
         away_abbrev = g["away_abbrev"] or f"T{g['away_id']}"
@@ -308,6 +353,13 @@ def main() -> int:
             season, is_home=False, top_n=args.top, rest_days=args.rest,
         )
         print_game(home_abbrev, away_abbrev, date_str, home_rows, away_rows)
+        per_game_rows.append((g, home_rows, away_rows))
+
+    if args.save is not None:
+        out = (os.path.join(_PRED_DIR, f"{date_str}.csv")
+               if args.save == "__default__" else args.save)
+        n = save_predictions_csv(out, date_str, games, per_game_rows)
+        print(f"\n  Wrote {n} prediction rows → {out}")
 
     print()
     return 0
