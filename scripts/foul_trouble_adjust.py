@@ -59,60 +59,11 @@ _MINUTE_SCALING_STATS = (
 # Core heuristic
 # ─────────────────────────────────────────────────────────────────────────────
 
-def foul_trouble_factor(pf: int, period: int,
-                        clock_minutes_remaining: float) -> float:
-    """Return penalty factor in [0.0, 1.0] for remaining minutes.
-
-    Parameters
-    ----------
-    pf : int
-        Player's current personal-foul count.
-    period : int
-        Current period (1-4 for regulation, 5+ for OT).
-    clock_minutes_remaining : float
-        Decimal minutes left on the *current* period's game clock (e.g. 5.7
-        when the clock shows 5:42). Only consulted for the Q4 split, but
-        callers should always pass it for correctness.
-
-    Returns
-    -------
-    float
-        Multiplicative penalty in [0.0, 1.0]. 1.0 means "no foul trouble,
-        do not adjust". Lower values mean "coach is likely to bench — scale
-        remaining-minutes accordingly".
-
-    Notes
-    -----
-    Factors are industry-heuristic intuition (UNVALIDATED). See module
-    docstring + TODO at bottom for the empirical calibration plan.
-    """
-    pf = int(pf)
-    period = int(period)
-    clock = float(clock_minutes_remaining)
-
-    # Rule 1: 5+ fouls anywhere — one away from foul-out, aggressive bench.
-    if pf >= 5:
-        return 0.40
-
-    # Rule 2: 4 fouls — period-dependent leash.
-    if pf == 4:
-        if period <= 2:
-            # Already in deep early trouble; leash similar to Q3 case.
-            return 0.55
-        if period == 3:
-            return 0.55
-        # Q4 or OT — coach calculus depends on time left.
-        if period == 4 and clock > 6.0:
-            return 0.65
-        # Late Q4 OR any OT period: must-win, let them play.
-        return 0.90
-
-    # Rule 3: 3 fouls in Q2 — common "save him for the half" bench.
-    if pf == 3 and period == 2:
-        return 0.80
-
-    # No trouble.
-    return 1.00
+# Cycle 89b (loop 5): canonical table moved to src.prediction.live_factors.
+# This module's public API (foul_trouble_factor, apply_factor_to_projection,
+# adjust_snapshot, clock_str_to_minutes) is preserved — we just re-export the
+# unified implementation so all three legacy entry points agree on every input.
+from src.prediction.live_factors import foul_trouble_factor  # noqa: E402,F401
 
 
 # ─────────────────────────────────────────────────────────────────────────────

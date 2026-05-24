@@ -53,23 +53,28 @@ def test_quarter_remaining_scales_proportionally():
 # ── 2. foul-trouble penalty fires correctly ──────────────────────────────────
 
 def test_foul_trouble_penalty_q3_4fouls():
-    """4 PF in Q3 → 0.70 multiplier on remaining projection."""
+    """4 PF in Q3 -> 0.55 multiplier on remaining projection.
+
+    Cycle 89b (loop 5): canonical table unified into ``src.prediction.live_factors``;
+    the old 0.70 value (one of three disagreeing copies) is gone. We now use the
+    most conservative table — Q3 pf=4 -> 0.55 — and pf=5 anywhere -> 0.40.
+    """
     base = pig.project_final(
         current_stat=20.0, period=3, clock_remaining_min=6.0,
     )
     penalized = pig.project_final(
         current_stat=20.0, period=3, clock_remaining_min=6.0,
-        foul_factor=pig.foul_trouble_factor(4, 3),
+        foul_factor=pig.foul_trouble_factor(4, 3, 6.0),
     )
-    assert pig.foul_trouble_factor(4, 3) == pytest.approx(0.70)
+    assert pig.foul_trouble_factor(4, 3, 6.0) == pytest.approx(0.55)
     # base = 20 + 20 * (((48-30)/48) / (30/48)) = 20 + 20 * (18/30) = 32
-    # penalized remaining = 12 * 0.70 = 8.4 → final = 28.4
+    # penalized remaining = 12 * 0.55 = 6.6 -> final = 26.6
     assert base == pytest.approx(32.0, abs=1e-4)
-    assert penalized == pytest.approx(28.4, abs=1e-4)
-    # Q4 5+ fouls is the strictest band (foul-out risk)
-    assert pig.foul_trouble_factor(5, 4) == pytest.approx(0.50)
+    assert penalized == pytest.approx(26.6, abs=1e-4)
+    # Q4 5+ fouls is the strictest band (foul-out risk): 0.40 under unified table.
+    assert pig.foul_trouble_factor(5, 4, 2.0) == pytest.approx(0.40)
     # Q1 with 0-2 fouls: no penalty
-    assert pig.foul_trouble_factor(2, 1) == 1.0
+    assert pig.foul_trouble_factor(2, 1, 10.0) == 1.0
 
 
 # ── 3. blowout penalty applies to stars in Q4 ────────────────────────────────
