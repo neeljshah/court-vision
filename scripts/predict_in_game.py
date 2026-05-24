@@ -11,14 +11,17 @@ never update once tip happens — so we leave a large MAE on the table for
 in-play prop markets. This script closes that gap.
 
 Live snapshots are produced by `scripts/live_game_poll.py` (cycle 88a) and
-written to `data/live/<game_id>_<timestamp>.json`. Expected schema:
+written to `data/live/<game_id>_<timestamp>.json`. Canonical schema (matches
+`src/data/live.py` — top-level home_team / away_team / home_score / away_score):
 
     {
-        "game_id":  "0022400123",
-        "period":   3,                # 1..4 reg, 5+ OT
-        "clock":    "07:24",          # remaining in current period (MM:SS)
-        "home":     {"abbrev": "DEN", "score": 78, "fouls_q3": 4, ...},
-        "away":     {"abbrev": "LAL", "score": 58, "fouls_q3": 5, ...},
+        "game_id":    "0022400123",
+        "period":     3,                # 1..4 reg, 5+ OT
+        "clock":      "07:24",          # remaining in current period (MM:SS)
+        "home_team":  "DEN",
+        "away_team":  "LAL",
+        "home_score": 78,
+        "away_score": 58,
         "players":  [
             {"player_id": 203999, "name": "Nikola Jokic", "team": "DEN",
              "min": 24.5, "pts": 18, "reb": 9, "ast": 7, "fg3m": 1,
@@ -27,6 +30,10 @@ written to `data/live/<game_id>_<timestamp>.json`. Expected schema:
             ...
         ],
     }
+
+Cycle 89a (loop 5): the legacy nested form `{"home": {"abbrev", "score"},
+"away": {...}}` is auto-normalized to the canonical top-level form by
+`_normalize_snapshot()` so old fixtures keep working.
 
 Projection logic — pure functions in this module so the unit tests (see
 tests/test_predict_in_game.py) can validate the math without nba_api / models:
@@ -147,36 +154,11 @@ def clock_played_share(period: int, clock_remaining_min: float) -> float:
     return max(1e-6, min(1.0, share))
 
 
-def foul_trouble_factor(personal_fouls: float, period: int) -> float:
-    """Penalty multiplier applied to remaining-minute projection.
-
-    Bands chosen to roughly match coach behavior: a player with 4 fouls in
-    Q3 typically sits 2-4 min; 5 fouls in Q4 sits proactively to protect
-    against fouling out. Conservative penalties — easy to refine later
-    once we have an empirical signal from in-play vs final actuals.
-    """
-    try:
-        pf = int(personal_fouls or 0)
-    except (TypeError, ValueError):
-        return 1.0
-    p = int(period or 0)
-    if p <= 2:
-        # Early fouls (Q1/Q2): coach pulls but recovers; mild penalty only at 3+
-        if pf >= 3:
-            return 0.85
-        return 1.0
-    if p == 3:
-        if pf >= 5:
-            return 0.55
-        if pf >= 4:
-            return 0.70
-        return 1.0
-    # Q4 / OT
-    if pf >= 5:
-        return 0.50
-    if pf >= 4:
-        return 0.80
-    return 1.0
+# Cycle 89b (loop 5): foul_trouble_factor unified into src/prediction/live_factors.
+# The local table that lived here (Q3 pf=4 -> 0.70, Q4 pf=5 -> 0.50, etc.) was
+# one of three disagreeing copies; we now defer to the canonical, most-conservative
+# table. Note the new signature takes a third arg `clock_minutes_remaining`.
+from src.prediction.live_factors import foul_trouble_factor  # noqa: E402
 
 
 def blowout_factor(score_margin: float, period: int, is_star: bool = False) -> float:
@@ -308,6 +290,23 @@ def _num(v, default: float = 0.0) -> float:
         return default
 
 
+def _normalize_snapshot(snap: dict) -> dict:
+    """Coerce legacy nested {home: {abbrev, score}, away: {...}} → canonical
+    top-level home_team / home_score / away_team / away_score (the schema used
+    by `src/data/live.py`, `live_game_poll`, `save_live_predictions`, etc).
+
+    Idempotent: a snapshot already in canonical form is returned unchanged.
+    Mutates and returns the same dict so callers can chain.
+    """
+    if isinstance(snap.get("home"), dict):
+        snap["home_team"]  = snap.get("home_team")  or snap["home"].get("abbrev", "")
+        snap["home_score"] = snap.get("home_score", snap["home"].get("score", 0))
+    if isinstance(snap.get("away"), dict):
+        snap["away_team"]  = snap.get("away_team")  or snap["away"].get("abbrev", "")
+        snap["away_score"] = snap.get("away_score", snap["away"].get("score", 0))
+    return snap
+
+
 def load_snapshot(path: str) -> dict:
     """Parse snapshot JSON. Missing fields tolerated — projector handles defaults."""
     with open(path, "r", encoding="utf-8") as fh:
@@ -317,8 +316,12 @@ def load_snapshot(path: str) -> dict:
     snap.setdefault("players", [])
     snap.setdefault("period", 1)
     snap.setdefault("clock", "12:00")
-    snap.setdefault("home", {})
-    snap.setdefault("away", {})
+    # Lift legacy nested home/away dicts to canonical top-level keys.
+    _normalize_snapshot(snap)
+    snap.setdefault("home_team", "")
+    snap.setdefault("away_team", "")
+    snap.setdefault("home_score", 0)
+    snap.setdefault("away_score", 0)
     return snap
 
 
@@ -345,12 +348,15 @@ def project_snapshot(
     MIN > star_threshold_min projected across the game (rough proxy =
     current MIN scaled to 48 min). Avoids a separate roster lookup.
     """
+    # Defensively normalize: callers that build snapshots in-memory (tests,
+    # ad-hoc scripts) may still pass the legacy nested form.
+    _normalize_snapshot(snap)
     period = int(snap.get("period") or 1)
     clock_rem = parse_clock(snap.get("clock"))
-    home = snap.get("home") or {}
-    away = snap.get("away") or {}
-    home_score = _num(home.get("score"))
-    away_score = _num(away.get("score"))
+    home_team = (snap.get("home_team") or "")
+    away_team = (snap.get("away_team") or "")
+    home_score = _num(snap.get("home_score"))
+    away_score = _num(snap.get("away_score"))
     margin = home_score - away_score  # signed
 
     out: List[Dict] = []
@@ -360,7 +366,7 @@ def project_snapshot(
         pid = p.get("player_id")
         cur_min = _num(p.get("min"))
         pf = _num(p.get("pf"))
-        ff = foul_trouble_factor(pf, period)
+        ff = foul_trouble_factor(pf, period, clock_rem)
         # Star proxy: project min to 48; >= star_threshold_min counts.
         share_played_game = clock_played_share(period, clock_rem)
         proj_min = (cur_min / share_played_game) if share_played_game > 0 else cur_min
@@ -368,8 +374,8 @@ def project_snapshot(
         # Blowout factor uses absolute margin AND we apply only to the
         # leading-side stars (winning teams sit stars more aggressively).
         team_is_leading = (
-            (team == home.get("abbrev") and margin > 0) or
-            (team == away.get("abbrev") and margin < 0)
+            (team == home_team and margin > 0) or
+            (team == away_team and margin < 0)
         )
         bf = blowout_factor(abs(margin), period, is_star=(is_star and team_is_leading))
 
@@ -558,8 +564,8 @@ def main() -> int:
             continue
         rows = project_snapshot(snap, pace_factor=args.pace)
         gid = snap.get("game_id", "?")
-        away = (snap.get("away") or {}).get("abbrev", "")
-        home = (snap.get("home") or {}).get("abbrev", "")
+        away = snap.get("away_team", "") or ""
+        home = snap.get("home_team", "") or ""
         print(f"\n  === {away} @ {home}  game_id={gid}  "
               f"period={snap.get('period')}  clock={snap.get('clock')} ===")
         print(format_stdout(rows, pregame))
