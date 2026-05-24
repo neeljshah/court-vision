@@ -107,6 +107,27 @@ def compose_dk_props_cmd(date_str: str, books: Optional[List[str]] = None,
     return cmd
 
 
+def compose_actuals_cmd(date_str: str, python_exe: str = sys.executable) -> List[str]:
+    """Cycle 71: post-game actuals scrape (NBA boxscoretraditionalv2)."""
+    return [
+        python_exe,
+        os.path.join(SCRIPTS_DIR, "fetch_actuals.py"),
+        "--date", date_str,
+    ]
+
+
+def compose_settle_cmd(date_str: str, project_dir: str = PROJECT_DIR,
+                        python_exe: str = sys.executable) -> List[str]:
+    """Cycle 71: settle bets vs actuals."""
+    bet_path = os.path.join(project_dir, "data", "bets", f"{date_str}.csv")
+    actuals_path = os.path.join(project_dir, "data", "actuals", f"{date_str}.csv")
+    return [
+        python_exe,
+        os.path.join(SCRIPTS_DIR, "settle_bets.py"),
+        bet_path, actuals_path,
+    ]
+
+
 def compose_slate_cmd(date_str: str, top: Optional[int] = None,
                       with_lineups: bool = False,
                       python_exe: str = sys.executable) -> List[str]:
@@ -349,6 +370,9 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="Cycle 65: also run scripts/fetch_dk_props.py and use its output "
                          "(data/lines/<date>.csv) as the --lines input to compare_to_lines. "
                          "Overrides --lines if both are passed.")
+    ap.add_argument("--settle", action="store_true",
+                    help="Cycle 71: post-game mode. Skips slate/compare; runs fetch_actuals "
+                         "+ settle_bets for --date. Use this AFTER games complete.")
     ap.add_argument("--dry-run", action="store_true",
                     help="Print the commands that would run and exit.")
     args = ap.parse_args(argv)
@@ -358,6 +382,27 @@ def main(argv: Optional[List[str]] = None) -> int:
     except ValueError:
         print(f"[fail] bad --date format '{args.date}' (need YYYY-MM-DD)")
         return 2
+
+    # Cycle 71: --settle is a post-game mode (no slate / compare).
+    if args.settle:
+        actuals_cmd = compose_actuals_cmd(date_str)
+        settle_cmd = compose_settle_cmd(date_str)
+        if args.dry_run:
+            print(f"[daily_run] dry-run SETTLE plan for {date_str}:")
+            _print_cmd("[A] fetch_actuals", actuals_cmd)
+            _print_cmd("[B] settle_bets", settle_cmd)
+            return 0
+        t0 = time.time()
+        rc, _ = _run_step("fetch_actuals", actuals_cmd, capture_stdout=False)
+        if rc != 0:
+            print(f"[daily_run] FAIL: fetch_actuals exited {rc} — can't settle.")
+            return 1
+        rc, _ = _run_step("settle_bets", settle_cmd, capture_stdout=False)
+        if rc != 0:
+            print(f"[daily_run] warn: settle_bets exited {rc}")
+            return rc
+        print(f"\n[daily_run] settle complete in {time.time()-t0:.1f}s")
+        return 0
 
     # Cycle 65: auto-lines uses fetch_dk_props output as the --lines path.
     effective_lines = args.lines
