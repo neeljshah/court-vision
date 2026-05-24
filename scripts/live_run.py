@@ -200,13 +200,30 @@ def compose_live_poll_cmd(date_str: str,
 
 def compose_predict_in_game_cmd(game_id: str, period: int,
                                   python_exe: str = sys.executable) -> List[str]:
-    """End-of-period live projection — cycle 88b."""
+    """End-of-period live projection — cycle 88b (subprocess form, legacy)."""
     return [
         python_exe,
         os.path.join(SCRIPTS_DIR, "predict_in_game.py"),
         "--game-id", game_id,
         "--period", str(period),
     ]
+
+
+def project_active_slate(date_str: Optional[str] = None) -> Dict[str, list]:
+    """Cycle 95c: in-process projection for every active game today.
+
+    Replaces the per-event ``predict_in_game.py`` subprocess fan-out with a
+    single in-process call to ``src.prediction.live_engine.project_full_slate``
+    -- the consolidated entry point that wraps the cycle-88b validated core
+    (94d-validated, beats pre-game on 7/7 stats at endQ3).
+
+    Kept as a thin orchestrator-facing helper so tests can patch it without
+    spinning up subprocesses; ``_run_autopilot`` may call this on each tick
+    in phase 3 instead of (or in addition to) shelling out per-event.
+    """
+    from src.prediction import live_engine    # noqa: PLC0415
+
+    return live_engine.project_full_slate(date_iso=date_str)
 
 
 def compose_phase_commands(phase: int, date_str: str, *,
