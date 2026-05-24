@@ -898,30 +898,135 @@ def build_officials_crew(parquet_path: Optional[str] = None) -> _OfficialsCrew:
 
 _PREGAME_SPREADS_PATH = os.path.join(PROJECT_DIR, "data", "pregame_spreads.parquet")
 
+# Cycle 95a (loop 5) — ESPN tricode → NBA gamelog tricode alias map.
+# Diagnosed: pregame_spreads holdout coverage was 12.9% because ESPN's
+# scoreboard publishes 2-char / 4-char abbreviations for 6 teams while NBA
+# gamelog MATCHUPs use the canonical 3-letter codes. Without this map every
+# Warriors / Pelicans / Knicks / Spurs / Jazz / Wizards row silently missed.
+_ESPN_TO_NBA_ABBR = {
+    "GS":   "GSW",
+    "NO":   "NOP",
+    "NY":   "NYK",
+    "SA":   "SAS",
+    "UTAH": "UTA",
+    "WSH":  "WAS",
+    # Historical / fallback aliases (cheap insurance — no-op when absent).
+    "NOH":  "NOP",
+    "NJN":  "BKN",
+}
+
+
+def _normalize_abbr(abbr: str) -> str:
+    """Canonicalise any 2-/3-/4-letter abbrev to the NBA gamelog tricode."""
+    up = str(abbr).upper().strip()
+    return _ESPN_TO_NBA_ABBR.get(up, up)
+
 
 class _PregameSpreads:
     """Lookup of (game_date_iso, home_team, away_team) → {home_spread, total}.
 
     Empty wrapper yields None on every lookup so callers can branch on missing
     coverage without try/except.
+
+    Cycle 95a (loop 5): keys are stored under the ET date (matching NBA
+    gamelog MATCHUP dates). The parquet itself uses UTC dates because
+    ESPN's scoreboard payload reports `event["date"]` as UTC, so a game
+    tipping off at 7-10pm ET appears on the NEXT UTC calendar day. We
+    disambiguate via the cache filename (`data/cache/spreads/YYYYMMDD.json`,
+    where YYYYMMDD is the ET date the scoreboard was queried for). When the
+    cache is absent (fresh checkouts), we fall back to a ±1 day fuzzy match
+    on lookup.
     """
 
-    def __init__(self, lookup: Dict[Tuple[str, str, str], Dict[str, float]]):
+    def __init__(self, lookup: Dict[Tuple[str, str, str], Dict[str, float]],
+                 fuzzy_dates: bool = False):
         self._lookup = lookup
+        self._fuzzy_dates = fuzzy_dates
 
     def features(self, home_abbr: str, away_abbr: str,
                  gdate: datetime) -> Dict[str, Optional[float]]:
-        key = (gdate.date().isoformat(),
-               str(home_abbr).upper(),
-               str(away_abbr).upper())
+        h = _normalize_abbr(home_abbr)
+        a = _normalize_abbr(away_abbr)
+        base = gdate.date()
+        # Primary lookup: ET date (always tried; usually hits exactly when
+        # the cache filename was used to compute the key at load time).
+        key = (base.isoformat(), h, a)
         rec = self._lookup.get(key)
-        if rec is None:
-            return {"home_spread": None, "total": None}
-        return {"home_spread": rec.get("home_spread"),
-                "total":       rec.get("total")}
+        if rec is not None:
+            return {"home_spread": rec.get("home_spread"),
+                    "total":       rec.get("total")}
+        # Fuzzy fallback (only when ET-date keying was unavailable): try +1
+        # day to compensate for raw UTC parquet keys.
+        if self._fuzzy_dates:
+            from datetime import timedelta as _td  # noqa: PLC0415
+            for delta in (1, -1):
+                key = ((base + _td(days=delta)).isoformat(), h, a)
+                rec = self._lookup.get(key)
+                if rec is not None:
+                    return {"home_spread": rec.get("home_spread"),
+                            "total":       rec.get("total")}
+        return {"home_spread": None, "total": None}
 
     def __len__(self) -> int:
         return len(self._lookup)
+
+
+# Cycle 95a: cache (game_date_utc, home, away) → ET date by scanning
+# `data/cache/spreads/YYYYMMDD.json`. The filename is the date the ESPN
+# scoreboard was queried for (always ET because we're a US-based pipeline),
+# and the events inside carry UTC timestamps. This lets us key the parquet
+# rows by ET date even though the parquet only stores UTC.
+def _build_et_date_index(
+    cache_dir: Optional[str] = None,
+) -> Dict[Tuple[str, str, str], str]:
+    """Return {(utc_date_iso, home_norm, away_norm) -> et_date_iso}.
+
+    Best-effort: returns an empty dict if the cache directory is absent or
+    unreadable. Used at _PregameSpreads load time to upgrade UTC keys to
+    proper ET-dated keys (eliminating the ±1 day collision risk on
+    consecutive same-opponent matchups).
+    """
+    import glob as _glob  # noqa: PLC0415
+    cache_dir = cache_dir or os.path.join(PROJECT_DIR, "data", "cache", "spreads")
+    idx: Dict[Tuple[str, str, str], str] = {}
+    if not os.path.isdir(cache_dir):
+        return idx
+    for path in _glob.glob(os.path.join(cache_dir, "*.json")):
+        fname = os.path.basename(path)
+        stem = fname.replace(".json", "")
+        if len(stem) != 8 or not stem.isdigit():
+            continue
+        et_date = f"{stem[0:4]}-{stem[4:6]}-{stem[6:8]}"
+        try:
+            payload = json.load(open(path, encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        for ev in (payload.get("events") or []):
+            try:
+                comps = ev.get("competitions") or []
+                if not comps:
+                    continue
+                comp = comps[0]
+                teams = comp.get("competitors") or []
+                home_abbr = away_abbr = None
+                for t in teams:
+                    abbr = ((t.get("team") or {}).get("abbreviation") or "").upper()
+                    ha = (t.get("homeAway") or "").lower()
+                    if ha == "home":
+                        home_abbr = abbr
+                    elif ha == "away":
+                        away_abbr = abbr
+                if not home_abbr or not away_abbr:
+                    continue
+                utc_date = (ev.get("date") or comp.get("date") or "")[:10]
+                if not utc_date:
+                    continue
+                idx[(utc_date,
+                     _normalize_abbr(home_abbr),
+                     _normalize_abbr(away_abbr))] = et_date
+            except Exception:
+                continue
+    return idx
 
 
 def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads:
@@ -929,19 +1034,40 @@ def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads
 
     Returns an empty wrapper (every lookup yields None) when the parquet is
     absent or pandas/pyarrow fails. Never raises.
+
+    Cycle 95a (loop 5): apply _ESPN_TO_NBA_ABBR aliasing at load time so the
+    in-memory lookup is keyed by NBA-canonical tricodes (matching gamelog
+    MATCHUP strings). Date keys are normalised to ISO YYYY-MM-DD strings —
+    pandas may surface game_date as either a str or a Timestamp depending on
+    pyarrow version, so we coerce defensively.
     """
     path = parquet_path or _PREGAME_SPREADS_PATH
     lookup: Dict[Tuple[str, str, str], Dict[str, float]] = {}
+    fuzzy = False
     try:
         import pandas as pd  # noqa: PLC0415
         if not os.path.exists(path):
             return _PregameSpreads(lookup)
         df = pd.read_parquet(path)
+        # Cycle 95a: build UTC->ET date index from the scoreboard cache so
+        # we can rekey the parquet (which is in UTC) onto the NBA gamelog ET
+        # calendar. When the cache directory is absent, fall back to fuzzy
+        # ±1 day matching at lookup time.
+        et_index = _build_et_date_index()
+        if not et_index:
+            fuzzy = True
         for _, r in df.iterrows():
             try:
-                key = (str(r["game_date"]),
-                       str(r["home_team"]).upper(),
-                       str(r["away_team"]).upper())
+                raw_date = r["game_date"]
+                if hasattr(raw_date, "date"):
+                    utc_iso = raw_date.date().isoformat()
+                else:
+                    utc_iso = str(raw_date)[:10]
+                home_norm = _normalize_abbr(r["home_team"])
+                away_norm = _normalize_abbr(r["away_team"])
+                # Prefer the ET date from the cache index; fall back to UTC.
+                et_iso = et_index.get((utc_iso, home_norm, away_norm), utc_iso)
+                key = (et_iso, home_norm, away_norm)
                 hs = r.get("home_spread")
                 tot = r.get("total")
                 lookup[key] = {
@@ -952,8 +1078,8 @@ def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads
                 continue
     except Exception as exc:
         _warn_join_load_once("build_pregame_spreads", path, exc)
-        return _PregameSpreads(lookup)
-    return _PregameSpreads(lookup)
+        return _PregameSpreads(lookup, fuzzy_dates=fuzzy)
+    return _PregameSpreads(lookup, fuzzy_dates=fuzzy)
 
 
 # ── per-player personal fouls (cycle 91b loop 5) ──────────────────────────────
