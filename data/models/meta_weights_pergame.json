@@ -1,44 +1,44 @@
 {
   "pts": {
-    "w_xgb": 0.1738,
-    "w_lgb": 0.3679,
+    "w_xgb": 0.4834,
+    "w_lgb": 0.077,
     "source": "val_nnls_3way",
-    "w_mlp": 0.4737
+    "w_mlp": 0.4563
   },
   "reb": {
-    "w_xgb": 0.3749,
-    "w_lgb": 0.2118,
+    "w_xgb": 0.5751,
+    "w_lgb": 0.1187,
     "source": "val_nnls_3way",
-    "w_mlp": 0.4113
+    "w_mlp": 0.3072
   },
   "ast": {
-    "w_xgb": 0.1957,
-    "w_lgb": 0.5075,
+    "w_xgb": 0.2957,
+    "w_lgb": 0.3141,
     "source": "val_nnls_3way",
-    "w_mlp": 0.3126
+    "w_mlp": 0.3806
   },
   "fg3m": {
-    "w_xgb": 0.1585,
-    "w_lgb": 0.5297,
+    "w_xgb": 0.2436,
+    "w_lgb": 0.4495,
     "source": "val_nnls_3way",
-    "w_mlp": 0.3225
+    "w_mlp": 0.3156
   },
   "stl": {
-    "w_xgb": 0.3626,
-    "w_lgb": 0.4431,
+    "w_xgb": 0.3715,
+    "w_lgb": 0.4381,
     "source": "val_nnls_3way",
-    "w_mlp": 0.1604
+    "w_mlp": 0.1614
   },
   "blk": {
-    "w_xgb": 0.7044,
+    "w_xgb": 0.6677,
     "w_lgb": 0.0,
     "source": "val_nnls_3way",
-    "w_mlp": 0.2658
+    "w_mlp": 0.3016
   },
   "tov": {
-    "w_xgb": 0.2786,
-    "w_lgb": 0.4882,
+    "w_xgb": 0.0,
+    "w_lgb": 0.7913,
     "source": "val_nnls_3way",
-    "w_mlp": 0.1924
+    "w_mlp": 0.1717
   }
 }
