@@ -109,6 +109,14 @@ def feature_columns() -> List[str]:
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
+    # Per-player prior-season tracking (Drives + Passing + CatchShoot) lives in
+    # data/player_tracking.parquet — _PlayerTracking wraps it. Cycle 14 (loop 5)
+    # tested the wire-in and regressed 5 of 7 stats (PTS R² -0.0023, AST -0.0064)
+    # because year-over-year role changes mean prior-season tracking is a noisy
+    # proxy for THIS season's role. Form features (l5/l10/ewma) capture the same
+    # signal more accurately. Infrastructure stays for a future angle (e.g.,
+    # in-season per-month tracking, or transfer-weighted prior).
+    # cols += list(_TRACKING_KEYS)  # disabled — see cycle 14 notes
     # Per-player advanced-stat L5/L10/EWMA/prev features are infrastructure-
     # ready (_AdvancedStats + data/player_adv_stats.parquet, 77k player-game
     # rows across 3 seasons), but disabled here. Cycle 8 (loop 5) verified
@@ -144,6 +152,93 @@ _ADV_FEATURE_COLS: tuple = tuple(
 )
 _ADV_DEFAULTS: Dict[str, float] = {c: 0.0 for c in _ADV_FEATURE_COLS}
 _ADV_STATS_PATH = os.path.join(PROJECT_DIR, "data", "player_adv_stats.parquet")
+
+
+# ── per-player tracking features (cycle 14 loop 5) ─────────────────────────────
+# Source: data/player_tracking.parquet — built by scripts/fetch_player_tracking.py
+# from leaguedashptstats (Drives + Passing + CatchShoot) per season per player.
+# Lookup is PRIOR-SEASON keyed: for a 2024-25 game we use the player's 2023-24
+# tracking stats. That's point-in-time at season start (prior season is fully
+# complete before this season begins), so no leak. Rookies and players missing
+# prior-season data get neutral defaults.
+_TRACKING_KEYS = (
+    "trk_drv_count", "trk_drv_pts", "trk_drv_fg_pct",
+    "trk_drv_passes", "trk_drv_ast", "trk_drv_tov_pct",
+    "trk_pas_passes_made", "trk_pas_passes_received",
+    "trk_pas_potential_ast", "trk_pas_ast_points_created",
+    "trk_pas_secondary_ast", "trk_pas_ft_ast",
+    "trk_cs_fga", "trk_cs_fg_pct", "trk_cs_efg_pct", "trk_cs_pts",
+)
+_TRACKING_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _TRACKING_KEYS}
+_TRACKING_PATH = os.path.join(PROJECT_DIR, "data", "player_tracking.parquet")
+
+
+def _prior_season(season: str) -> str:
+    """Return '2023-24' for '2024-25', etc. Empty string on parse failure."""
+    try:
+        start, end = season.split("-")
+        return f"{int(start)-1}-{int(end)-1:02d}"
+    except (ValueError, IndexError, AttributeError):
+        return ""
+
+
+class _PlayerTracking:
+    """Per-(player_id, season) lookup of PRIOR-season tracking features."""
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup  # keyed by (player_id, season_of_the_tracking_data)
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        """Return tracking features for the player as of season-1.
+
+        For a 2024-25 game (season='2024-25') we look up the player's
+        2023-24 tracking row — strictly point-in-time at the start of this
+        season. Rookies (no prior-season row) get neutral defaults.
+        """
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_TRACKING_DEFAULTS)
+        prior = _prior_season(str(season))
+        if not prior:
+            return dict(_TRACKING_DEFAULTS)
+        row = self._lookup.get((pid, prior))
+        if not row:
+            return dict(_TRACKING_DEFAULTS)
+        return {k: float(row.get(k, 0.0) or 0.0) for k in _TRACKING_KEYS}
+
+
+def build_player_tracking(parquet_path: Optional[str] = None) -> _PlayerTracking:
+    """Load data/player_tracking.parquet into a _PlayerTracking wrapper.
+
+    Falls back to an empty wrapper when the parquet is absent or pandas is
+    unavailable. Never raises.
+    """
+    path = parquet_path or _TRACKING_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import math  # noqa: PLC0415
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _PlayerTracking(lookup)
+        df = pd.read_parquet(path)
+
+        def _coerce(v):
+            # NaN appears for stats with zero attempts (e.g. catch_shoot_fg_pct
+            # when a player took 0 catch-and-shoot threes) — collapse to 0.0
+            # so downstream learners (MLP especially) don't reject the row.
+            try:
+                f = float(v)
+                return 0.0 if (f != f) else f
+            except (TypeError, ValueError):
+                return 0.0
+
+        for _, r in df.iterrows():
+            key = (int(r["player_id"]), str(r["season"]))
+            lookup[key] = {k: _coerce(r.get(k, 0.0)) for k in _TRACKING_KEYS}
+    except Exception:
+        return _PlayerTracking(lookup)
+    return _PlayerTracking(lookup)
 
 
 # ── MLP seed ensemble (cycle 11 loop 5) ────────────────────────────────────────
@@ -774,6 +869,7 @@ def build_pergame_dataset(
     bbref = build_bbref_advanced()
     contracts = build_contracts()
     adv_stats = build_advanced_stats()
+    tracking  = build_player_tracking()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -828,8 +924,8 @@ def build_pergame_dataset(
                 feats.update(playtypes.features(file_player_id, file_season))
                 feats.update(bbref.features(file_player_id, file_season))
                 feats.update(contracts.features(file_player_id, file_season))
-                # adv_stats.features available but not appended to feature_cols
-                # — see feature_columns() comment.
+                # tracking.features + adv_stats.features available but not
+                # appended to feature_cols — see comments above.
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
