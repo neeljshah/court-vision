@@ -175,5 +175,48 @@ class TestSettleMode(unittest.TestCase):
         self.assertIn(os.path.join("data", "actuals", "2026-05-24.csv"), cmd[3])
 
 
+class TestReportFlag(unittest.TestCase):
+    """Cycle 74: --report runs nightly_report.py at end of either mode."""
+
+    def _run_dry(self, argv):
+        buf = io.StringIO()
+        with mock.patch("scripts.daily_run.subprocess.run") as mock_run, \
+             redirect_stdout(buf):
+            try:
+                rc = dr.main(argv)
+            except SystemExit as e:
+                rc = e.code
+        self.assertEqual(mock_run.call_count, 0)
+        return rc, buf.getvalue()
+
+    def test_compose_report_cmd_basic(self):
+        cmd = dr.compose_report_cmd("2026-05-24", python_exe="python")
+        self.assertEqual(cmd[0], "python")
+        self.assertTrue(cmd[1].endswith(os.path.join("scripts", "nightly_report.py")))
+        self.assertIn("--date", cmd)
+        self.assertIn("2026-05-24", cmd)
+
+    def test_report_flag_adds_step_4_in_morning_mode(self):
+        rc, out = self._run_dry(["--dry-run", "--report", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertIn("[4] nightly_report", out)
+        self.assertIn("nightly_report.py", out)
+
+    def test_report_flag_adds_step_C_in_settle_mode(self):
+        rc, out = self._run_dry(["--dry-run", "--settle", "--report",
+                                  "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertIn("[C] nightly_report", out)
+        # And the settle plan body is still there.
+        self.assertIn("[A] fetch_actuals", out)
+        self.assertIn("[B] settle_bets", out)
+
+    def test_no_report_flag_omits_step_4(self):
+        rc, out = self._run_dry(["--dry-run", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertNotIn("[4]", out)
+        self.assertNotIn("nightly_report.py", out)
+
+
 if __name__ == "__main__":
     unittest.main()
