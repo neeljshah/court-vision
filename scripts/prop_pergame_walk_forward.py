@@ -67,11 +67,9 @@ def _train_one_stat(stat, X_tr, y_tr, X_val, y_val, X_ho, y_ho, sw):
 
     sc = StandardScaler()
     X_tr_s, X_val_s, X_ho_s = sc.fit_transform(X_tr), sc.transform(X_val), sc.transform(X_ho)
-    mlp_m = MLPRegressor(
-        hidden_layer_sizes=(128, 64), max_iter=80, random_state=42,
-        early_stopping=True, batch_size=512,
-        n_iter_no_change=10, validation_fraction=0.15,
-    ).fit(X_tr_s, y_tr)
+    # Cycle 11: 5-seed ensemble — averages predictions across seeds {1,7,42,100,2024}.
+    from src.prediction.prop_pergame import _MLPSeedEnsemble  # noqa: PLC0415
+    mlp_m = _MLPSeedEnsemble().fit(X_tr_s, y_tr)
 
     xv, lv, mv = xgb_m.predict(X_val), lgb_m.predict(X_val), mlp_m.predict(X_val_s)
     xh, lh, mh = xgb_m.predict(X_ho), lgb_m.predict(X_ho), mlp_m.predict(X_ho_s)
