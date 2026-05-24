@@ -1924,8 +1924,12 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     if stat in _USE_Q50_STATS:
         q50 = _load_q50_model(stat, model_dir)
         if q50 is not None:
-            # Cycle 90d: REB uses an augmented feature set with OREB-context.
-            cols = feature_columns(stat=stat)
+            # Cycle 90d (REJECTED): REB OREB-context probe rejected (single
+            # +0.0013, WF 1/4 positive). REB stays on the 85-col cycle-29
+            # LGB-q50 artifact, so we dispatch with the global feature_columns()
+            # for all q50 stats. If a future cycle ships a wider REB head,
+            # switch this line to `feature_columns(stat=stat)`.
+            cols = feature_columns()
             if getattr(q50, "n_features_in_", None) not in (None, len(cols)):
                 return None
             X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
