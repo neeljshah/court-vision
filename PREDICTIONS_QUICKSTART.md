@@ -1,6 +1,6 @@
 # Predictions Quickstart
 
-Honest production state at master `c450a1f2`. All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat.
+Honest production state at master `d87a76b3` (loop 5, cycle 47). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
 
 ## Honest baseline
 
@@ -35,8 +35,13 @@ Output: 7 stat predictions + 80% intervals (q10..q90) + L5/L10 baselines + bet r
 python scripts/predict_slate.py                       # today
 python scripts/predict_slate.py --date 2025-04-13     # historical
 python scripts/predict_slate.py --top 5               # top 5 per team
+python scripts/predict_slate.py --save                # also write data/predictions/<date>.csv
+python scripts/predict_slate.py --save tonight.csv    # custom output path
 ```
 ~3 min runtime for a 15-game slate (0.6s API sleep between roster calls).
+
+The `--save` flag (cycle 47) writes one row per (player, stat) so a future
+backtest can join on (date, player_id, stat) once actuals are available.
 
 ### 3. Compare model predictions to sportsbook lines
 1. Edit `example_lines.csv` to your tonight's lines:
@@ -57,6 +62,26 @@ python scripts/betting_backtest.py                    # vs L5 line proxy
 python scripts/betting_backtest_smart_line.py         # vs L5 × opp_def × home_adj
 ```
 Result on the cycle-30 holdout (~20k games): **+25-32% ROI at +0.5 edge threshold across all 7 stats vs the smart line**. Real sportsbook closing lines are ~30-50% sharper; realistic expected ROI is ~10-20% on selective bets post-vig.
+
+### 5. Normalize sportsbook exports → backtest vs real closing lines
+```bash
+python scripts/normalize_lines.py raw_dk.csv -o tonight.csv     # DraftKings / PrizePicks adapter
+python scripts/backtest_vs_closing_lines.py historical.csv      # honest ROI vs real lines
+python scripts/backtest_vs_closing_lines.py h.csv --kelly --bankroll 1000 --threshold-edge 0.5
+```
+`normalize_lines.py` (cycle 44) auto-detects DraftKings or PrizePicks export
+formats and produces the canonical `compare_to_lines.py` schema. The
+historical backtest takes `date,player,opp,venue,stat,closing_line,
+over_odds,under_odds,actual_value` rows and reports realistic ROI / max DD.
+
+### 6. NBA daily injury report (cycle 43)
+```bash
+python scripts/fetch_injury_report.py                 # today
+python scripts/fetch_injury_report.py --date 2026-05-24 --time 05PM
+```
+Scrapes the NBA Official Injury Report PDF (cached at `data/cache/injuries/`)
+and writes `data/injuries_<date>.json` with per-player team/name/status/reason.
+Status feature wiring into prop_pergame is deferred to a future cycle.
 
 ## Retraining
 
