@@ -146,6 +146,44 @@ _ADV_DEFAULTS: Dict[str, float] = {c: 0.0 for c in _ADV_FEATURE_COLS}
 _ADV_STATS_PATH = os.path.join(PROJECT_DIR, "data", "player_adv_stats.parquet")
 
 
+# ── MLP seed ensemble (cycle 11 loop 5) ────────────────────────────────────────
+# Single-seed MLPs vary by ~0.005-0.007 R² across seeds {1,7,42,100,2024} for
+# the PTS target — within the +/-0.005 ship-gate width. Averaging the 5 trained
+# models stabilises the prediction AND improves it (PTS solo MLP R² 0.5107 ->
+# 0.5134 = +0.0027 from averaging alone). Per the seed-stability spec rule.
+_MLP_SEEDS = (1, 7, 42, 100, 2024)
+
+
+class _MLPSeedEnsemble:
+    """5-seed MLPRegressor wrapper — predict averages across all trained models."""
+
+    def __init__(self, hidden_layer_sizes=(128, 64), seeds=_MLP_SEEDS):
+        from sklearn.neural_network import MLPRegressor  # noqa: PLC0415
+        self.models = [
+            MLPRegressor(
+                hidden_layer_sizes=hidden_layer_sizes, activation="relu",
+                solver="adam", learning_rate_init=1e-3, alpha=1e-4,
+                batch_size=512, max_iter=80, random_state=int(s),
+                early_stopping=True, validation_fraction=0.15,
+                n_iter_no_change=10,
+            )
+            for s in seeds
+        ]
+        # n_features_in_ is set after the first .fit — predict_pergame's stale-
+        # model guard reads it on the wrapper.
+        self.n_features_in_ = None
+
+    def fit(self, X, y):
+        for m in self.models:
+            m.fit(X, y)
+        self.n_features_in_ = int(getattr(self.models[0], "n_features_in_", X.shape[1]))
+        return self
+
+    def predict(self, X):
+        import numpy as np  # noqa: PLC0415
+        return np.mean([m.predict(X) for m in self.models], axis=0)
+
+
 # ── rest / travel features ────────────────────────────────────────────────────
 
 _REST_TRAVEL_PATH = os.path.join(PROJECT_DIR, "data", "rest_travel.parquet")
@@ -975,23 +1013,16 @@ def train_pergame_models(
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
         # Base learner 3 — MLP on standardised features. Different bias
-        # (smooth function approximator) — the cycle-5 screen showed PTS
-        # gains -0.0207 MAE / +0.0046 R² and AST -0.0046 MAE / +0.0041 R²
-        # vs the 2-way blend; REB and FG3M are nearly a wash (NNLS picks
-        # a small w_mlp). 5-seed ensemble would be more stable but doubles
-        # train time; a single seed is fine because NNLS shrinks any
-        # seed-unstable learner toward 0 on the val fit.
+        # (smooth function approximator) than the trees. Single-seed MLPs
+        # vary by ~0.005-0.007 R² across seeds; cycle-11 (loop 5) verified
+        # 5-seed averaging buys PTS solo R² 0.5107 -> 0.5134 (+0.0027) and
+        # 3-way blend MAE -0.0033 vs the single seed. The wrapper persists
+        # all 5 fitted models via joblib.
         mlp_scaler = StandardScaler()
         X_tr_s  = mlp_scaler.fit_transform(X_tr)
         X_val_s = mlp_scaler.transform(X_val)
         X_ho_s  = mlp_scaler.transform(X_ho)
-        mlp_model = MLPRegressor(
-            hidden_layer_sizes=(128, 64), activation="relu", solver="adam",
-            learning_rate_init=1e-3, alpha=1e-4, batch_size=512,
-            max_iter=80, random_state=42, early_stopping=True,
-            validation_fraction=0.15, n_iter_no_change=10,
-        )
-        mlp_model.fit(X_tr_s, y_tr)
+        mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr)
 
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
         # 3-way weighted combo of XGB + LGB + MLP fit per-stat on the val
