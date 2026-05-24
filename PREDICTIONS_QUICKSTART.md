@@ -79,14 +79,40 @@ formats and produces the canonical `compare_to_lines.py` schema. The
 historical backtest takes `date,player,opp,venue,stat,closing_line,
 over_odds,under_odds,actual_value` rows and reports realistic ROI / max DD.
 
-### 6. NBA daily injury report (cycle 43)
+### 6. NBA daily injury report (cycle 43 + 60)
 ```bash
-python scripts/fetch_injury_report.py                 # today
-python scripts/fetch_injury_report.py --date 2026-05-24 --time 05PM
+python scripts/fetch_injury_report.py                 # NBA PDF source (cycle 43)
+python scripts/fetch_injury_espn.py                   # ESPN fallback (cycle 60)
 ```
-Scrapes the NBA Official Injury Report PDF (cached at `data/cache/injuries/`)
-and writes `data/injuries_<date>.json` with per-player team/name/status/reason.
-Status feature wiring into prop_pergame is deferred to a future cycle.
+Both write `data/injuries_<date>.json` (cycle-43 schema). The ESPN fallback
+is the more reliable source (no auth, rarely blocked) — live-verified
+pulling 125 active injuries in one fetch this session.
+
+Cross-referencing flags (cycle 51 + 53):
+- `compare_to_lines.py --injuries` — skip lines for OUT/DOUBTFUL/NOT-WITH-TEAM players
+- `predict_player.py --injuries` — exit 2 on OUT, soft-warn on QUESTIONABLE
+- `predict_slate.py --injuries` — drop unavailable, tag QUESTIONABLE in output
+- `--include-injured` overrides
+
+### 6b. Projected starting lineups (cycle 61-67)
+```bash
+python scripts/fetch_lineups.py                       # rotowire scrape
+```
+Writes `data/lineups_<date>.json` — projected starter, position, play_pct,
+injury tag, lineup status (Confirmed / Expected / Projected). Wired into
+all three CLIs:
+- `--lineups` flag prints classification (STARTER / QUESTIONABLE / BENCH / NO-GAME)
+- `--require-starter-lineup` (predict_player) — exits 2 for bench/no-game
+- `--scale-by-status` (cycle 66+67) — applies factor to predictions:
+  starter ×1.00, questionable ×0.75, bench ×0.30, no-game ×0.00
+
+### 6c. Sportsbook lines (cycle 44 + 59)
+```bash
+python scripts/fetch_dk_props.py                      # DraftKings (default)
+python scripts/fetch_dk_props.py --book draftkings --book fanduel
+python scripts/normalize_lines.py raw_dk.csv -o tonight.csv  # any export → canonical
+```
+Writes `data/lines/<date>.csv`. Wraps the existing 3-tier scraper (Odds API → DK direct → manual seed). Set `ODDS_API_KEY` env var for the most reliable path.
 
 ### 7. Verify production matches the honest baseline (cycles 48 + 56)
 ```bash
@@ -103,40 +129,59 @@ vectorized pass. Respects the cycle-27 `_USE_Q50_STATS` dispatch.
 0.193 brier claim. Both scripts exit 0 within tolerance, 1 with drift report
 otherwise — safe for CI wiring.
 
-### 8. One-shot daily orchestrator (cycle 54)
+### 8. One-shot daily orchestrator (cycles 54 + 65 + 71)
+**Morning (before games)** — runs the full ingest → predict → compare chain:
 ```bash
-python scripts/daily_run.py                           # injuries + slate
-python scripts/daily_run.py --lines tonight.csv       # full pipeline
-python scripts/daily_run.py --lines t.csv --kelly --bankroll 1000
-python scripts/daily_run.py --dry-run                 # print the plan only
-python scripts/daily_run.py --skip-injuries           # if injury JSON already exists
-python scripts/daily_run.py --date 2026-05-24         # historical replay
+python scripts/daily_run.py --auto-lineups --auto-lines --kelly --bankroll 1000
 ```
-Chains `fetch_injury_report.py` → `predict_slate.py --save --injuries` →
-optionally `compare_to_lines.py --injuries` via subprocess. Injury fetch
-failure is warned but non-fatal; predict_slate failure aborts; bet count
-parsed from compare_to_lines stdout. Final 4-line summary: injuries flagged,
-predictions written, bets selected, elapsed.
+Chains: fetch_injury_report → fetch_lineups → fetch_dk_props → predict_slate
+--save --injuries --lineups → compare_to_lines --injuries --lineups --kelly.
+
+**Evening (after games complete)** — fetches actuals + settles bets:
+```bash
+python scripts/daily_run.py --settle --date 2026-05-24
+```
+Chains: fetch_actuals (NBA box scores) → settle_bets (W/L/P + P&L per bet).
+
+Other flags: `--dry-run` (print plan only), `--skip-injuries`, `--lines /path/`
+(explicit file), `--top N` (players/team for slate).
+
+### 9. Ledger + bet log + settlement artifacts (cycles 47-49 + 68-70)
+Three rolling per-date CSVs accumulate the betting season:
+- `data/predictions/<date>.csv` — every prediction (predict_slate + predict_player both append)
+- `data/bets/<date>.csv` — every recommended positive-EV bet (compare_to_lines --bet-log)
+- `data/bets/<date>_settled.csv` — settled bets with W/L/P, payout, P&L (settle_bets)
+
+Ops view:
+```bash
+python scripts/ledger_summary.py                              # last 7 days
+python scripts/ledger_summary.py --player "Nikola Jokic"      # one player history
+python scripts/ledger_summary.py --stat pts --top 20          # top-20 PTS preds
+```
+
+### 10. Backtest infrastructure (cycles 44 + 52 + 70)
+```bash
+python scripts/backtest_vs_closing_lines.py historical.csv --kelly --bankroll 1000
+python scripts/synthetic_backtest_validation.py --threshold-edge 0.5
+```
+Cycle-52 synthetic validation confirms the math: **+27.42% ROI mean** on the
+synthetic L5 line proxy, matching the cycle-30 `+25-32%` claim. Once the
+cycle-68/70 bet log + actuals accumulate 30+ days, the backtest produces
+the honest closing-line ROI.
 
 ## Daily ops workflow (recommended)
-
 ```bash
-# 1. Pull tonight's injury report
-python scripts/fetch_injury_report.py
+# Morning, ~90 min before tip-off
+python scripts/daily_run.py --auto-lineups --auto-lines --kelly --bankroll 1000
 
-# 2. Build slate predictions + write daily ledger
-python scripts/predict_slate.py --save
+# After last game
+python scripts/daily_run.py --settle
 
-# 3. For each player you actually care about, get full intervals + role check
-python scripts/predict_player.py --name "Nikola Jokic" --opp LAL --home --save
-
-# 4. Compare to your sportsbook lines
-python scripts/normalize_lines.py raw_dk.csv -o tonight.csv
-python scripts/compare_to_lines.py tonight.csv --kelly --bankroll 1000
+# Anytime, ops view
+python scripts/ledger_summary.py
 ```
-Steps 2-3 both append to the same `data/predictions/<date>.csv` ledger (shared
-schema), so a future closing-line backtest can join on `(date, player_id, stat)`
-when actuals land.
+All steps append to the same per-date artifacts, so a future analysis joins
+on (date, player, stat) without per-source branching.
 
 ## Retraining
 
