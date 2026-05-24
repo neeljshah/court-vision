@@ -76,7 +76,15 @@ _LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov", "fg3m", "reb", "ast"}
 # bypassing the cycle-23 3-way NNLS blend entirely. Note: q50 R² is much
 # lower than blend R² because q50 minimises MAE (median-optimal) not MSE
 # (mean-optimal); R² is the wrong metric for sportsbook prop predictions.
-_USE_Q50_STATS: set = {"fg3m", "stl", "blk", "tov"}
+_USE_Q50_STATS: set = {"fg3m", "stl", "blk", "tov", "reb"}
+
+# Cycle 29 (loop 5): per-stat q50 BACKEND override. Stats here use the LGB
+# quantile model on disk (quantile_pergame_lgb_<stat>_q50.pkl) instead of
+# the default XGB one. Walk-forward showed REB XGB-q50 was 3/4 folds (didn't
+# pass cycle 27's dual-gate) while LGB-q50 was 4/4. Production single-split
+# confirms -0.0051 MAE for REB lgb_q50. AST had the same WF-vs-single-split
+# conflict regardless of backend, so AST stays on its multitask-MLP blend.
+_Q50_LGB_BACKEND_STATS: set = {"reb"}
 
 # Cycle 19 (loop 5): per-stat Huber-on-log1p infrastructure. Tested with the
 # six log1p stats — only FG3M showed a clean WF 4/4-folds MAE win
@@ -1620,12 +1628,26 @@ _META_WEIGHTS_CACHE: Optional[Dict[str, dict]] = None
 
 
 def _load_q50_model(stat: str, model_dir: str):
-    """Load the cycle-27 q=0.5 XGB quantile model for `stat`, or None on miss.
+    """Load the cycle-27 q=0.5 quantile model for `stat`, or None on miss.
 
     Persisted by src.prediction.prop_quantiles.train_quantile_models at
-    data/models/quantile_pergame_<stat>_q50.json. Same per-stat target
+    data/models/quantile_pergame_<stat>_q50.json (XGB) and
+    quantile_pergame_lgb_<stat>_q50.pkl (LGB). Same per-stat target
     transform as the rest of the prop_pergame stack.
+
+    Stats in _Q50_LGB_BACKEND_STATS use the LGB variant (cycle 29: REB
+    only). All others use XGB (cycle 27: fg3m, stl, blk, tov).
     """
+    if stat in _Q50_LGB_BACKEND_STATS:
+        path = os.path.join(model_dir, f"quantile_pergame_lgb_{stat}_q50.pkl")
+        if not os.path.exists(path):
+            return None
+        try:
+            import joblib  # noqa: PLC0415
+            return joblib.load(path)
+        except Exception:
+            return None
+    # Default: XGB backend.
     path = os.path.join(model_dir, f"quantile_pergame_{stat}_q50.json")
     if not os.path.exists(path):
         return None
