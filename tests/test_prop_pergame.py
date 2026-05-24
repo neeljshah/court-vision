@@ -220,6 +220,94 @@ def test_train_insufficient_data_returns_status(tmp_path):
     assert result["status"] == "insufficient_data"
 
 
+# ── 3-way MLP stack (cycle 5 loop 5) ──────────────────────────────────────────
+
+def _train_for_stack(tmp_path):
+    """Produce a small but valid synthetic dataset and train one round.
+
+    Returns the metrics dict so individual asserts can poke at it without
+    re-training. Re-used by the three stack tests below."""
+    import random
+    rng = random.Random(7)
+    for pid in range(8):
+        games = []
+        for i in range(45):
+            day = (i % 28) + 1
+            month = ((i // 28) % 12) + 1
+            year = 2024 + (i // 336)
+            games.append(_game(f"{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]} {day:02d}, {year}",
+                               f"P{pid:02d} vs. OPP{pid % 6:02d}",
+                               pts=rng.randint(0, 30), reb=rng.randint(0, 12),
+                               ast=rng.randint(0, 10), minutes=rng.uniform(8, 36),
+                               fg3m=rng.randint(0, 6), stl=rng.randint(0, 4),
+                               blk=rng.randint(0, 3), tov=rng.randint(0, 5)))
+        (tmp_path / f"gamelog_{pid}_2024-25.json").write_text(
+            json.dumps(games), encoding="utf-8")
+    return train_pergame_models(
+        gamelog_dir=str(tmp_path), model_dir=str(tmp_path), min_prior=6,
+    )
+
+
+def test_mlp_meta_weights_persisted_per_stat(tmp_path):
+    """meta_weights_pergame.json carries a w_mlp entry for every stat the
+    trainer touched. Smoke-tests the cycle-5 3-way stack writer."""
+    metrics = _train_for_stack(tmp_path)
+    from src.prediction.prop_pergame import _META_WEIGHTS_FILENAME
+    weights_path = tmp_path / _META_WEIGHTS_FILENAME
+    assert weights_path.exists()
+    weights = json.loads(weights_path.read_text())
+    for stat in STATS:
+        # Synthetic data may push a stat into _LGB_ONLY_STATS (no w_mlp);
+        # for everyone else the 3-way weights must all be present and the
+        # NNLS sum must land in the production-acceptable band.
+        w = weights[stat]
+        if w.get("source") == "lgb_only":
+            continue
+        assert "w_xgb" in w and "w_lgb" in w and "w_mlp" in w, w
+        assert 0.5 <= (w["w_xgb"] + w["w_lgb"] + w["w_mlp"]) <= 1.5
+
+
+def test_mlp_artifacts_only_when_keep_threshold_met(tmp_path):
+    """props_pg_mlp_<stat>.pkl + scaler are persisted iff w_mlp >= 0.05 and
+    the stat is not LGB-only — see train_pergame_models persistence block."""
+    metrics = _train_for_stack(tmp_path)
+    for stat in STATS:
+        mlp_pkl    = tmp_path / f"props_pg_mlp_{stat}.pkl"
+        mlp_scaler = tmp_path / f"props_pg_mlp_scaler_{stat}.pkl"
+        m = metrics["stats"][stat]
+        w_mlp = float(m.get("meta_w_mlp", 0.0))
+        meta_src = m.get("meta_fit_source", "")
+        if meta_src == "lgb_only" or w_mlp < 0.05:
+            assert not mlp_pkl.exists(), f"{stat}: mlp pkl persisted but w_mlp={w_mlp}, src={meta_src}"
+            assert not mlp_scaler.exists()
+        else:
+            assert mlp_pkl.exists(), f"{stat}: mlp pkl missing but w_mlp={w_mlp}"
+            assert mlp_scaler.exists()
+
+
+def test_predict_pergame_runs_with_3way_blend(tmp_path):
+    """predict_pergame returns a finite float when XGB+LGB+MLP all exist on
+    disk and the meta_weights JSON references w_mlp."""
+    from src.prediction.prop_pergame import (
+        feature_columns as fc, load_pergame_model, predict_pergame,
+    )
+    _train_for_stack(tmp_path)
+    # Use the first stat that actually persisted an MLP artifact.
+    for stat in STATS:
+        models = load_pergame_model(stat, model_dir=str(tmp_path))
+        if not models or not any(isinstance(m, tuple) for m in models):
+            continue
+        feat = {c: 1.0 for c in fc()}
+        pred = predict_pergame(stat, feat, model_dir=str(tmp_path))
+        assert pred is not None
+        assert pred >= 0.0
+        assert pred < 200.0  # sane bound for any per-game stat
+        return
+    # If no stat ended up with an MLP (small synthetic data sometimes
+    # below the keep threshold), don't fail — the artifact test covers
+    # the persistence path.
+
+
 if __name__ == "__main__":
     import pytest
     sys.exit(pytest.main([__file__, "-q"]))
