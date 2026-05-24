@@ -44,6 +44,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
 from src.prediction.prop_quantiles import (  # noqa: E402
     predict_pergame_quantiles,
 )
+from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
 
 
 def _strip_accents(s: str) -> str:
@@ -90,20 +91,20 @@ def _american_payout(odds: int, stake: float = 1.0) -> float:
     return stake * (100 / -odds)
 
 
-def _model_hit_prob(point_pred: float, qint: dict, line: float, side: str) -> float:
+def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side: str) -> float:
     """Approximate the model's predicted probability of WINNING the side at the given line.
 
-    Centers a normal distribution at the BLEND's point prediction (what
-    predict_pergame returns — for q50 stats this IS the q50; for blend stats
-    like PTS/AST it's the NNLS blend output that may differ from the q50
-    interval's center). Uses the q90 - q10 spread to estimate sigma:
-    sigma = (q90 - q10) / (2 * 1.2816), since 80% of a Normal lies within
-    [-1.2816, +1.2816] sigma of the mean.
+    Centers a normal distribution at the BLEND's point prediction and uses the
+    CYCLE-40 CALIBRATED q90 - q10 spread to estimate sigma. Calibration brings
+    each stat's interval to actually-80% coverage (raw was 71-91%) — without
+    it the Kelly probability estimates are systematically off (PTS/AST under-
+    cover means too-confident bets; STL/BLK over-cover means too-cautious).
     """
-    q10 = qint.get("q10"); q90 = qint.get("q90")
+    q10 = qint.get("q10"); q50 = qint.get("q50"); q90 = qint.get("q90")
     if q10 is None or q90 is None or point_pred is None:
         return None
-    sigma = max((q90 - q10) / (2 * 1.2816), 1e-6)
+    cal_q10, cal_q90 = apply_quantile_calibration(stat, q10, q50 or point_pred, q90)
+    sigma = max((cal_q90 - cal_q10) / (2 * 1.2816), 1e-6)
     from math import erf, sqrt
     z = (line - point_pred) / sigma
     cdf_at_line = 0.5 * (1 + erf(z / sqrt(2)))
@@ -174,7 +175,7 @@ def main():
             continue
         side = "OVER" if edge > 0 else "UNDER"
         odds = over_odds if side == "OVER" else under_odds
-        prob = _model_hit_prob(model_pred, qint, line, side)
+        prob = _model_hit_prob(stat, model_pred, qint, line, side)
         net_payout = _american_payout(odds, 1.0)
         ev_per_dollar = prob * net_payout - (1 - prob) * 1.0 if prob is not None else 0.0
         kf = _kelly_fraction(prob, odds) if prob is not None else 0.0
