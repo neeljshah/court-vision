@@ -86,6 +86,20 @@ _USE_Q50_STATS: set = {"fg3m", "stl", "blk", "tov", "reb"}
 # conflict regardless of backend, so AST stays on its multitask-MLP blend.
 _Q50_LGB_BACKEND_STATS: set = {"reb"}
 
+# Cycle 90d (loop 5) — T1-E REB OREB-context per-stat extra features.
+# When stat == "reb", feature_columns(stat="reb") appends these 3 features:
+#   team_oreb_pct_l5  — rolling-5 prior team OREB% (shift(1).rolling(5))
+#   opp_dreb_pct_l5   — rolling-5 prior opp DREB% (shift(1).rolling(5))
+#   reb_chance_l5     — interaction (team_oreb_pct_l5 * opp_dreb_pct_l5)
+# Source: data/team_reb_context.parquet, built by scripts/build_team_reb_context.py
+# from boxscore_adv_*.json. Only the REB LGB-q50 head is retrained with these
+# features; other heads still use feature_columns() unchanged so existing
+# model artifacts (PTS sqrt+Huber, AST multitask MLP, fg3m/stl/blk/tov XGB-q50)
+# load and predict without dimension mismatch.
+_REB_CONTEXT_KEYS = ("team_oreb_pct_l5", "opp_dreb_pct_l5", "reb_chance_l5")
+_REB_CONTEXT_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _REB_CONTEXT_KEYS}
+_REB_CONTEXT_PATH = os.path.join(PROJECT_DIR, "data", "team_reb_context.parquet")
+
 # Cycle 19 (loop 5): per-stat Huber-on-log1p infrastructure. Tested with the
 # six log1p stats — only FG3M showed a clean WF 4/4-folds MAE win
 # (-0.0024 +- 0.0013), but on the production single-split MAE was a wash
@@ -150,13 +164,20 @@ def _ewma(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
     return weighted / total_w if total_w > 0 else 0.0
 
 
-def feature_columns() -> List[str]:
+def feature_columns(stat: Optional[str] = None) -> List[str]:
     """Ordered feature names — form, game-context, opponent defence, rest/travel,
-    playtype frequency, BBRef advanced, contracts."""
+    playtype frequency, BBRef advanced, contracts.
+
+    When stat is provided, additional per-stat features are appended after the
+    global list. Cycle 90d adds REB-context features for stat="reb" only:
+    team_oreb_pct_l5, opp_dreb_pct_l5, reb_chance_l5 (interaction). All other
+    stats receive the unchanged global feature list so their persisted model
+    artifacts continue to load without n_features_in_ mismatch.
+    """
     cols: List[str] = []
-    for stat in _FORM_STATS:
-        cols += [f"l5_{stat}", f"l10_{stat}", f"std_{stat}",
-                 f"ewma_{stat}", f"prev_{stat}"]
+    for s in _FORM_STATS:
+        cols += [f"l5_{s}", f"l10_{s}", f"std_{s}",
+                 f"ewma_{s}", f"prev_{s}"]
     cols += ["rest_days", "is_home", "games_played"]
     cols += ["days_since_last_game", "games_since_long_absence"]
     cols += [f"opp_def_{s}" for s in STATS]      # opponent-defence factors
@@ -189,6 +210,12 @@ def feature_columns() -> List[str]:
     # features already span the same signal. Future angles: season-to-date
     # aggregation, per-opponent split, or use raw values without rolling.
     # cols += list(_ADV_FEATURE_COLS)  # disabled — see _AdvancedStats docstring
+
+    # Cycle 90d (loop 5) — T1-E: REB-only OREB-context features.
+    # ONLY appended when stat == "reb"; other stats keep the global list to
+    # preserve compatibility with existing model artifacts.
+    if stat == "reb":
+        cols += list(_REB_CONTEXT_KEYS)
     return cols
 
 
@@ -403,7 +430,185 @@ class _MultitaskMLPProxy:
         return out[:, self.stat_idx]
 
 
+# ── REB OREB-context features (cycle 90d loop 5, T1-E) ────────────────────────
+# Per-team time-series of per-game OREB% and DREB% (sourced from
+# data/team_reb_context.parquet — built from boxscore_adv_*.json team entries).
+# For row (team_abbrev, opp_abbrev, date), exposes 3 rolling features computed
+# STRICTLY from prior games (shift(1).rolling(5)):
+#   team_oreb_pct_l5  — team's last-5 OREB% average
+#   opp_dreb_pct_l5   — opponent's last-5 DREB% average
+#   reb_chance_l5     — interaction product (rebound-OPPORTUNITY proxy)
+# Outlier/Action-Network's "Rebound Chances" framework: rebound rate ≠
+# rebound volume — the ratio captures opportunity. REB-only because team-
+# rebound context is dominated by player skill+pace signal for other stats.
+
+
+class _TeamRebContext:
+    """Per-team time series of OREB%/DREB% with point-in-time rolling-5 features.
+
+    Keyed on team_tricode → sorted list of (date, oreb_pct, dreb_pct). For a
+    row dated D, returns the mean of the team's last 5 games STRICTLY before D
+    (shift(1).rolling(5) discipline). Returns neutral 0.0 defaults when the
+    parquet is absent or the team has no prior games.
+    """
+
+    def __init__(self, by_team: Dict[str, list]):
+        self._by_team = by_team
+
+    def _l5(self, team_tricode: str, current_date) -> Optional[Tuple[float, float]]:
+        history = self._by_team.get(str(team_tricode))
+        if not history:
+            return None
+        priors = []
+        for d, oreb, dreb in history:
+            if d < current_date:
+                priors.append((oreb, dreb))
+            else:
+                break
+        if not priors:
+            return None
+        last5 = priors[-5:]
+        o = sum(x[0] for x in last5) / len(last5)
+        d = sum(x[1] for x in last5) / len(last5)
+        return (o, d)
+
+    def features(self, team_tricode: str, opp_tricode: str,
+                 current_date) -> Dict[str, float]:
+        out: Dict[str, float] = dict(_REB_CONTEXT_DEFAULTS)
+        team_l5 = self._l5(team_tricode, current_date)
+        opp_l5 = self._l5(opp_tricode, current_date)
+        if team_l5 is not None:
+            out["team_oreb_pct_l5"] = round(team_l5[0], 5)
+        if opp_l5 is not None:
+            out["opp_dreb_pct_l5"] = round(opp_l5[1], 5)
+        out["reb_chance_l5"] = round(out["team_oreb_pct_l5"] * out["opp_dreb_pct_l5"], 6)
+        return out
+
+
+_TEAM_REB_CONTEXT_CACHE: Optional["_TeamRebContext"] = None
+
+
+def _get_team_reb_context() -> "_TeamRebContext":
+    """Process-cached _TeamRebContext for live prediction paths."""
+    global _TEAM_REB_CONTEXT_CACHE
+    if _TEAM_REB_CONTEXT_CACHE is None:
+        _TEAM_REB_CONTEXT_CACHE = build_team_reb_context()
+    return _TEAM_REB_CONTEXT_CACHE
+
+
+def build_team_reb_context(parquet_path: Optional[str] = None) -> _TeamRebContext:
+    """Load team_reb_context.parquet into a _TeamRebContext wrapper. Never raises."""
+    path = parquet_path or _REB_CONTEXT_PATH
+    by_team: Dict[str, list] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _TeamRebContext(by_team)
+        df = pd.read_parquet(path)
+        for tcode, grp in df.groupby("team_tricode"):
+            grp_sorted = grp.sort_values("game_date")
+            hist = []
+            for _, r in grp_sorted.iterrows():
+                d = _parse_date_iso(str(r["game_date"]))
+                if d is None:
+                    continue
+                hist.append((d, float(r.get("oreb_pct", 0.0) or 0.0),
+                             float(r.get("dreb_pct", 0.0) or 0.0)))
+            by_team[str(tcode)] = hist
+    except Exception:
+        return _TeamRebContext(by_team)
+    return _TeamRebContext(by_team)
+
+
 # ── rest / travel features ────────────────────────────────────────────────────
+
+# ── player positions (cycle 90e loop 5) ───────────────────────────────────────
+# Source: data/player_positions.parquet — built by scripts/fetch_player_positions.py
+# from commonplayerinfo cache. Per-player static metadata (not point-in-time):
+# position, height_inches, weight_lbs, birth_date, draft_year. The parquet may
+# not exist on a fresh checkout — _PlayerPositions.from_parquet returns a
+# defaults-only wrapper in that case so build_pergame_dataset stays backward
+# compatible (no crash, no behaviour change). Position is NOT yet appended to
+# feature_columns() — that requires a separate retrain cycle. For now we only
+# expose it via the per-row dict so probes (cycle 89c) can re-run.
+_PLAYER_POSITIONS_PATH = os.path.join(PROJECT_DIR, "data", "player_positions.parquet")
+
+
+class _PlayerPositions:
+    """Per-player static position / physical lookup.
+
+    Keyed on player_id → {position, height_inches, weight_lbs, birth_date,
+    draft_year}. Unknown pids return None for position (probes treat this
+    as the no-position bucket).
+    """
+
+    def __init__(self, lookup: Dict[int, Dict[str, object]]):
+        self._lookup = lookup
+
+    def __contains__(self, pid) -> bool:
+        try:
+            return int(pid) in self._lookup
+        except (TypeError, ValueError):
+            return False
+
+    def __len__(self) -> int:
+        return len(self._lookup)
+
+    def position(self, player_id) -> Optional[str]:
+        """Return the player's POSITION string (e.g. 'Guard', 'Forward-Center'),
+        or None when the pid is missing from the parquet."""
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return None
+        row = self._lookup.get(pid)
+        if not row:
+            return None
+        v = row.get("position")
+        if v in (None, ""):
+            return None
+        return str(v)
+
+    def row(self, player_id) -> Optional[Dict[str, object]]:
+        """Return the full per-player dict (position, height_inches, ...) or None."""
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return None
+        return self._lookup.get(pid)
+
+
+def build_player_positions(parquet_path: Optional[str] = None) -> _PlayerPositions:
+    """Load data/player_positions.parquet into a _PlayerPositions wrapper.
+
+    GATED on file existence: when the parquet is absent (a fresh checkout
+    or a machine that hasn't run fetch_player_positions.py yet), returns
+    an empty wrapper so callers get position=None for every pid. Never
+    raises — pandas/pyarrow import failures collapse to the empty wrapper.
+    """
+    path = parquet_path or _PLAYER_POSITIONS_PATH
+    lookup: Dict[int, Dict[str, object]] = {}
+    if not os.path.exists(path):
+        return _PlayerPositions(lookup)
+    try:
+        import pandas as pd  # noqa: PLC0415
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            lookup[pid] = {
+                "position":      r.get("position"),
+                "height_inches": r.get("height_inches"),
+                "weight_lbs":    r.get("weight_lbs"),
+                "birth_date":    r.get("birth_date"),
+                "draft_year":    r.get("draft_year"),
+            }
+    except Exception:
+        return _PlayerPositions(lookup)
+    return _PlayerPositions(lookup)
+
 
 _REST_TRAVEL_PATH = os.path.join(PROJECT_DIR, "data", "rest_travel.parquet")
 _REST_TRAVEL_DEFAULTS: Dict[str, float] = {
@@ -1044,6 +1249,15 @@ def build_pergame_dataset(
     adv_stats = build_advanced_stats()
     tracking  = build_player_tracking()
     officials = build_officials_crew()
+    # Cycle 90d (loop 5) — REB OREB-context per-team prior rolling-5.
+    reb_ctx = build_team_reb_context()
+    # Cycle 90e (loop 5) — per-player position lookup. GATED on file
+    # existence: empty wrapper when data/player_positions.parquet is
+    # absent, so the join is a no-op on fresh checkouts. position is
+    # added to each row dict (NOT to feature_columns yet — that requires
+    # a separate retrain cycle). Probes (cycle 89c) can re-run once the
+    # parquet is populated.
+    positions = build_player_positions()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -1098,12 +1312,26 @@ def build_pergame_dataset(
                 feats.update(playtypes.features(file_player_id, file_season))
                 feats.update(bbref.features(file_player_id, file_season))
                 feats.update(contracts.features(file_player_id, file_season))
+                # Cycle 90d (loop 5) — REB OREB-context (team + opp rolling-5).
+                # Stored on every row but only sliced into the REB head's feature
+                # set via feature_columns(stat="reb"); other heads ignore them.
+                feats.update(reb_ctx.features(
+                    team_abbrev, _opponent_from_matchup(matchup), gdate))
                 # officials.features + tracking.features + adv_stats.features
                 # available but not appended to feature_cols — see comments above.
                 row = {c: feats[c] for c in feature_cols}
+                # Carry REB-context cols on every row even though they aren't in
+                # the default feature_cols — the REB-only retraining path reads
+                # them via feature_columns(stat="reb").
+                for k in _REB_CONTEXT_KEYS:
+                    row[k] = feats.get(k, 0.0)
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
                 row["date"] = gdate.isoformat()
+                # Cycle 90e (loop 5) — per-row position (additive only; not in
+                # feature_cols). None when the parquet is absent or the pid
+                # is uncached. Probes consume row["position"] directly.
+                row["position"] = positions.position(file_player_id)
                 rows.append(row)
 
             if played:
@@ -1696,7 +1924,8 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     if stat in _USE_Q50_STATS:
         q50 = _load_q50_model(stat, model_dir)
         if q50 is not None:
-            cols = feature_columns()
+            # Cycle 90d: REB uses an augmented feature set with OREB-context.
+            cols = feature_columns(stat=stat)
             if getattr(q50, "n_features_in_", None) not in (None, len(cols)):
                 return None
             X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
@@ -1854,6 +2083,16 @@ def build_prediction_row(
         feats.update(_get_contracts().features(int(player_id), season))
     except Exception:
         feats.update(_CONTRACT_DEFAULTS)
+    # Cycle 90d — REB OREB-context. Derive team_abbrev from the player's most
+    # recent game; opp_team is the caller-provided opponent. Neutral defaults
+    # if the parquet/lookup misses.
+    try:
+        last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
+        team_abbrev = last_matchup.split()[0] if last_matchup.split() else ""
+        feats.update(_get_team_reb_context().features(
+            team_abbrev, opp_team, factor_date))
+    except Exception:
+        feats.update(_REB_CONTEXT_DEFAULTS)
     return feats
 
 
