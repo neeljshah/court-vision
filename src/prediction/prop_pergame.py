@@ -109,7 +109,38 @@ def feature_columns() -> List[str]:
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
+    # Advanced-stat L5/L10/EWMA columns exist as infrastructure but are NOT
+    # appended here — cycle 6 (loop 5) tested wiring them in and the model
+    # regressed: the gamelog form features already span the same signal, and
+    # the pre-2023-10 zero-coverage created covariate shift. Backfilling
+    # 2022-23 boxscoreadvancedv3 + re-testing is the open follow-up.
     return cols
+
+
+# ── per-player advanced-stat L5/L10/EWMA features (cycle 6, loop 5) ────────────
+#
+# Sourced from data/player_adv_stats.parquet — built by
+# scripts/aggregate_player_advanced_stats.py from cached
+# data/nba/boxscore_adv_*.json (boxscoreadvancedv3 per-game). Each row carries
+# one player's per-game advanced metrics: USG%, TS%, AST%, REB%, PIE. We
+# expose them to the trainer as point-in-time rolling features (L5/L10/EWMA/
+# prev) computed strictly from games before the row's game_date — identical
+# leakage discipline as the existing per-game form features.
+_ADV_STAT_KEYS = ("usg", "ts", "ast_pct", "reb_pct", "pie")
+_ADV_RAW_COL = {
+    "usg":     "usagepercentage",
+    "ts":      "trueshootingpercentage",
+    "ast_pct": "assistpercentage",
+    "reb_pct": "reboundpercentage",
+    "pie":     "pie",
+}
+_ADV_FEATURE_COLS: tuple = tuple(
+    f"{prefix}_adv_{stat}"
+    for stat in _ADV_STAT_KEYS
+    for prefix in ("l5", "l10", "ewma", "prev")
+)
+_ADV_DEFAULTS: Dict[str, float] = {c: 0.0 for c in _ADV_FEATURE_COLS}
+_ADV_STATS_PATH = os.path.join(PROJECT_DIR, "data", "player_adv_stats.parquet")
 
 
 # ── rest / travel features ────────────────────────────────────────────────────
@@ -469,6 +500,94 @@ def _opponent_from_matchup(matchup: str) -> str:
     return parts[-1] if parts else ""
 
 
+class _AdvancedStats:
+    """Per-player advanced-stat time series with point-in-time L5/L10/EWMA.
+
+    Built from data/player_adv_stats.parquet — keyed on player_id with a
+    chronologically-sorted list of (date, {raw_stat: value}). For a row with
+    date D, returns rolling features computed strictly from the player's games
+    BEFORE D, mirroring the leakage discipline of the standard form features.
+    """
+
+    def __init__(self, by_player: Dict[int, list]):
+        self._by_player = by_player
+
+    def features(self, player_id, current_date) -> Dict[str, float]:
+        """Return adv-stat rolling features for one player on one date."""
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_ADV_DEFAULTS)
+        history = self._by_player.get(pid)
+        if not history:
+            return dict(_ADV_DEFAULTS)
+        # Strictly-prior games — bisect for O(log n) lookup
+        priors = []
+        for d, stats in history:
+            if d < current_date:
+                priors.append((d, stats))
+            else:
+                break
+        if not priors:
+            return dict(_ADV_DEFAULTS)
+        out: Dict[str, float] = {}
+        for key, raw in _ADV_RAW_COL.items():
+            recent = [s[raw] for (_d, s) in priors[-10:]]
+            l5 = sum(recent[-5:]) / max(1, len(recent[-5:]))
+            l10 = sum(recent) / len(recent)
+            # Exponentially-weighted mean over last 10 — most recent dominates.
+            w_sum = total_w = 0.0
+            for i, v in enumerate(reversed(recent)):
+                w = 0.30 * (0.70 ** i)
+                w_sum += w * v
+                total_w += w
+            ewma = w_sum / total_w if total_w > 0 else 0.0
+            prev = priors[-1][1][raw]
+            out[f"l5_adv_{key}"]   = round(l5, 4)
+            out[f"l10_adv_{key}"]  = round(l10, 4)
+            out[f"ewma_adv_{key}"] = round(ewma, 4)
+            out[f"prev_adv_{key}"] = round(prev, 4)
+        return out
+
+
+def build_advanced_stats(parquet_path: Optional[str] = None) -> _AdvancedStats:
+    """Load data/player_adv_stats.parquet into an _AdvancedStats wrapper.
+
+    Falls back to an empty (defaults-only) wrapper if the file is absent or
+    pandas/pyarrow is unavailable. Never raises — the trainer gracefully gets
+    all-zero advanced features and proceeds with the original feature set.
+    """
+    path = parquet_path or _ADV_STATS_PATH
+    by_player: Dict[int, list] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _AdvancedStats(by_player)
+        df = pd.read_parquet(path)
+        for pid, grp in df.groupby("player_id"):
+            grp_sorted = grp.sort_values("game_date")
+            history = []
+            for _, r in grp_sorted.iterrows():
+                d = _parse_date_iso(str(r["game_date"]))
+                if d is None:
+                    continue
+                stats = {raw: float(r.get(raw, 0.0) or 0.0)
+                         for raw in _ADV_RAW_COL.values()}
+                history.append((d, stats))
+            by_player[int(pid)] = history
+    except Exception:
+        return _AdvancedStats(by_player)
+    return _AdvancedStats(by_player)
+
+
+def _parse_date_iso(raw: str) -> Optional[datetime]:
+    """Parse an ISO date ('2024-10-22') — adv_stats parquet column format."""
+    try:
+        return datetime.fromisoformat(str(raw).strip())
+    except (TypeError, ValueError):
+        return None
+
+
 def build_opponent_defense(gamelog_dir: str) -> _OpponentDefense:
     """Pass over every gamelog to build the to-date opponent-defence model.
 
@@ -613,6 +732,7 @@ def build_pergame_dataset(
     playtypes = build_playtypes()
     bbref = build_bbref_advanced()
     contracts = build_contracts()
+    adv_stats = build_advanced_stats()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -667,6 +787,8 @@ def build_pergame_dataset(
                 feats.update(playtypes.features(file_player_id, file_season))
                 feats.update(bbref.features(file_player_id, file_season))
                 feats.update(contracts.features(file_player_id, file_season))
+                # adv_stats.features available but not appended to feature_cols
+                # — see feature_columns() comment.
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
