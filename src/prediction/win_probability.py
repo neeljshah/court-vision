@@ -84,8 +84,14 @@ def _get_ref_fta_tendency(ref_names: Optional[List[str]], season: str) -> float:
 # Phase 4.6: bumped from 3→4 to add iso_matchup_edge + ref_fta_tendency columns.
 # 2025-26 update: bumped 4→5 to add C-1 through C-7 feature columns.
 # Tier 2: bumped 7→8 to add SRS, four factors L10, venue splits, opp-adjusted (14 cols).
+# Leak fix: bumped 8→9 — home_/away_off_rtg/def_rtg/net_rtg/pace/efg_pct/ts_pct/tov_pct
+# are now season-to-date (expanding window, shift(1)) instead of season-FINAL from
+# _fetch_team_stats. Previously the model was given the team's eventual full-season
+# net rating for every game in that season — i.e. predicting October games using
+# strength signals computed from games played in April. See
+# _compute_season_to_date_team_stats below.
 # NOTE: delete data/cache/nba/season_games_*.json to force re-fetch with new schema.
-_SEASON_GAMES_VERSION = 8
+_SEASON_GAMES_VERSION = 9
 
 # Team stats cache TTL: re-fetch after 24 hours so ratings (OFF_RATING, DEF_RATING,
 # NET_RATING, PACE, etc.) reflect the current season, not an early-season snapshot.
@@ -1518,6 +1524,14 @@ def _fetch_season_games(season: str) -> List[dict]:
     srs_lookup     = _compute_srs_lookup(gl)
     venue_lookup   = _compute_venue_rolling(gl)
     opp_adj_lookup = _compute_opp_adjusted_rolling(gl, team_stats)
+    # Season-to-date team ratings — the leakage-free replacement for the
+    # season-FINAL leaguedashteamstats lookup that previously filled
+    # home_/away_off_rtg/def_rtg/net_rtg/pace/efg_pct/ts_pct/tov_pct. The
+    # team_stats dict (season-final) is still used as a fallback for early-
+    # season games where the expanding-window sample is too small (<3 prior
+    # games), but using season-final on the first few games of the year is
+    # still a minor leak — TODO replace with prior-season carryover.
+    std_lookup     = _compute_season_to_date_team_stats(gl)
     _ROLL_D10 = {
         "off_rtg_L10": 112.0, "def_rtg_L10": 112.0, "net_rtg_L10": 0.0,
         "efg_L10": 0.50, "tov_pct_L10": 0.13, "oreb_pct_L10": 0.25, "ft_rate_L10": 0.25,
@@ -1537,8 +1551,12 @@ def _fetch_season_games(season: str) -> List[dict]:
         if home_r.empty or away_r.empty:
             continue
         h, a   = home_r.iloc[0], away_r.iloc[0]
-        ht     = team_stats.get(int(h["TEAM_ID"]), _DEFAULT)
-        at     = team_stats.get(int(a["TEAM_ID"]), _DEFAULT)
+        # Point-in-time team strength: expanding window through games strictly
+        # prior to this game_id, NOT season-final from leaguedashteamstats.
+        # Falls back to neutral league averages (_DEFAULT) — never to the
+        # season-final team_stats dict, which would re-introduce the leak.
+        ht     = std_lookup.get((int(h["TEAM_ID"]), str(gid)), _DEFAULT)
+        at     = std_lookup.get((int(a["TEAM_ID"]), str(gid)), _DEFAULT)
 
         # Cap at 10 to match _get_schedule_context (inference) — keeps train/inference aligned.
         h_rest  = min(rest_lookup.get((int(h["TEAM_ID"]), str(gid)), 2), 10)
@@ -1808,6 +1826,109 @@ def _compute_rest_days(gl: "pd.DataFrame") -> dict:
         lookup[(tid, gid)] = rest
         prev[tid] = date
 
+    return lookup
+
+
+def _compute_season_to_date_team_stats(gl: "pd.DataFrame") -> "dict[tuple, dict]":
+    """Build (team_id, game_id) → expanding-window team advanced ratings.
+
+    For each game N, returns ratings computed from the team's games 1..N-1
+    only (shift(1)). Matches the 7-field shape of _fetch_team_stats:
+    {off_rtg, def_rtg, net_rtg, pace, efg_pct, ts_pct, tov_pct}.
+
+    Why this exists: _fetch_team_stats returns the team's season-FINAL
+    leaguedashteamstats ratings — using those as features at training time
+    leaks future games (predicting October on an April-stable signal).
+    This function rebuilds the same fields from the regular game log using
+    only strictly-prior games, eliminating the leak.
+
+    Falls back to league averages for the first three games of a team's
+    season (no qualifying prior sample).
+    """
+    needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS", "MIN",
+              "FGM", "FGA", "FG3M", "FTA", "OREB", "TOV"}
+    if not needed.issubset(gl.columns):
+        return {}
+
+    # tov_pct is a fraction (0.13), not a percent — matches the
+    # leaguedashteamstats TM_TOV_PCT scale that the cached rows use.
+    _DEF = {"off_rtg": 112.0, "def_rtg": 112.0, "net_rtg": 0.0,
+            "pace": 99.0, "efg_pct": 0.53, "ts_pct": 0.57, "tov_pct": 0.13}
+
+    df = gl[list(needed)].copy()
+    df["TEAM_ID"] = df["TEAM_ID"].astype(int)
+    df["GAME_ID"] = df["GAME_ID"].astype(str)
+    df["_dt"] = pd.to_datetime(df["GAME_DATE"], errors="coerce")
+    df["poss"] = (df["FGA"] + 0.44 * df["FTA"] + df["TOV"] - df["OREB"]).clip(lower=1)
+
+    # Per-game lookup of opponent PTS + POSS for def_rtg.
+    by_game: dict = {}
+    for _, r in df.iterrows():
+        by_game.setdefault(r["GAME_ID"], {})[int(r["TEAM_ID"])] = {
+            "pts": float(r["PTS"]), "poss": float(r["poss"]),
+        }
+
+    def _opp(r):
+        d = {t: v for t, v in by_game.get(r["GAME_ID"], {}).items()
+             if t != int(r["TEAM_ID"])}
+        if d:
+            v = next(iter(d.values()))
+            return v["pts"], v["poss"]
+        return 0.0, 0.0
+
+    df[["_opp_pts", "_opp_poss"]] = df.apply(_opp, axis=1, result_type="expand")
+    df = df.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
+
+    lookup: dict = {}
+    for tid, grp in df.groupby("TEAM_ID"):
+        grp = grp.reset_index(drop=True)
+        # shift(1) so game N's lookup uses cumulative stats through games 1..N-1.
+        cum_pts      = grp["PTS"].shift(1).expanding().sum()
+        cum_poss     = grp["poss"].shift(1).expanding().sum()
+        cum_opp_pts  = grp["_opp_pts"].shift(1).expanding().sum()
+        cum_opp_poss = grp["_opp_poss"].shift(1).expanding().sum()
+        cum_min      = grp["MIN"].shift(1).expanding().sum()
+        cum_fgm      = grp["FGM"].shift(1).expanding().sum()
+        cum_fga      = grp["FGA"].shift(1).expanding().sum()
+        cum_fg3m     = grp["FG3M"].shift(1).expanding().sum()
+        cum_fta      = grp["FTA"].shift(1).expanding().sum()
+        cum_tov      = grp["TOV"].shift(1).expanding().sum()
+        n_prior      = grp["PTS"].shift(1).expanding().count()
+
+        for i in range(len(grp)):
+            gid = str(grp.at[i, "GAME_ID"])
+            if int(n_prior.iloc[i]) < 3:
+                lookup[(int(tid), gid)] = dict(_DEF)
+                continue
+            poss      = float(cum_poss.iloc[i])
+            opp_poss  = float(cum_opp_poss.iloc[i])
+            mn        = float(cum_min.iloc[i])
+            fga       = float(cum_fga.iloc[i])
+            fta       = float(cum_fta.iloc[i])
+            if poss <= 0 or opp_poss <= 0 or mn <= 0 or fga <= 0:
+                lookup[(int(tid), gid)] = dict(_DEF)
+                continue
+            off_rtg = float(cum_pts.iloc[i]) / poss * 100.0
+            def_rtg = float(cum_opp_pts.iloc[i]) / opp_poss * 100.0
+            # MIN is team-minutes (5 players × 48 = 240 per regulation game),
+            # not game-minutes. Standard NBA pace is poss per 48 game-minutes,
+            # so divide by (MIN / 5) and rescale: poss * 240 / MIN.
+            pace    = poss * 240.0 / mn
+            efg     = (float(cum_fgm.iloc[i]) + 0.5 * float(cum_fg3m.iloc[i])) / fga
+            ts_den  = 2.0 * (fga + 0.44 * fta)
+            ts_pct  = float(cum_pts.iloc[i]) / ts_den if ts_den > 0 else 0.57
+            # TM_TOV_PCT from leaguedashteamstats is a fraction (0.12), not a
+            # percentage (12) — the cached training rows store the fraction.
+            tov_pct = float(cum_tov.iloc[i]) / poss
+            lookup[(int(tid), gid)] = {
+                "off_rtg": round(off_rtg, 2),
+                "def_rtg": round(def_rtg, 2),
+                "net_rtg": round(off_rtg - def_rtg, 2),
+                "pace":    round(pace, 2),
+                "efg_pct": round(efg, 4),
+                "ts_pct":  round(ts_pct, 4),
+                "tov_pct": round(tov_pct, 4),
+            }
     return lookup
 
 
