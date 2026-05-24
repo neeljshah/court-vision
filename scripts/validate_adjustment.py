@@ -49,6 +49,7 @@ sys.path.insert(0, PROJECT_DIR)
 from src.prediction.prop_pergame import (  # noqa: E402
     STATS, _USE_Q50_STATS, _LOG_TRANSFORM_STATS, _SQRT_HUBER_STATS,
     _MODEL_DIR, _META_WEIGHTS_FILENAME,
+    apply_garbage_time_haircut,
     build_pergame_dataset, feature_columns,
     _load_q50_model, load_pergame_model,
 )
@@ -255,7 +256,15 @@ def validate(adjust_fn: AdjustFn,
       adjusted_mae    = MAE of adjust_fn(production prediction) vs target
       delta_mae       = adjusted - baseline (negative = improvement)
       n               = rows considered (excludes rows with NaN target)
+
+    Cycle 97a (loop 5): the production prediction path now applies the T1-A
+    garbage-time haircut (apply_garbage_time_haircut) after the q50/blend
+    dispatch. Mirroring it here keeps the no-op baseline numerically aligned
+    with cycle-96a anchors (PTS 4.6104 etc.) — without it the validator
+    reported the pre-haircut blend MAE (PTS 4.6221) and any probe layered
+    ON TOP of the haircut would be measured against the wrong baseline.
     """
+    spreads = [r.get("home_spread") for r in holdout]
     results: Dict[str, Dict[str, float]] = {}
     for stat in stats:
         # BUG fixed: previous `r.get(...) or np.nan` evaluated `0.0 or nan`
@@ -274,6 +283,9 @@ def validate(adjust_fn: AdjustFn,
                               "delta_mae": float("nan"),
                               "n": 0}
             continue
+        # Cycle 97a — vectorised mirror of predict_pergame's haircut step.
+        pred = np.array([apply_garbage_time_haircut(float(p), stat, hs)
+                         for p, hs in zip(pred, spreads)], dtype=float)
         adj = adjust_fn(pred, holdout, stat)
         bm = float(np.mean(np.abs(pred[mask] - y_true[mask])))
         am = float(np.mean(np.abs(adj[mask] - y_true[mask])))
