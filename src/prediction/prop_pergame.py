@@ -1904,6 +1904,12 @@ def build_pergame_dataset(
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
                 row["date"] = gdate.isoformat()
+                # Cycle 98c (loop 5) — per-row player_id (additive only; not in
+                # feature_cols). Surfaces the gamelog-derived pid so probes can
+                # build per-player prior-distribution lookups (e.g. L20 q90 for
+                # outlier prediction) without re-reading gamelogs. Mirrors the
+                # cycle 90e position field pattern: additive, never trained on.
+                row["player_id"] = file_player_id
                 # Cycle 90e (loop 5) — per-row position (additive only; not in
                 # feature_cols). None when the parquet is absent or the pid
                 # is uncached. Probes consume row["position"] directly.
