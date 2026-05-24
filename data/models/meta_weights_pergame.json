@@ -1,0 +1,44 @@
+{
+  "pts": {
+    "w_xgb": 0.1738,
+    "w_lgb": 0.3679,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.4737
+  },
+  "reb": {
+    "w_xgb": 0.3749,
+    "w_lgb": 0.2118,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.4113
+  },
+  "ast": {
+    "w_xgb": 0.1957,
+    "w_lgb": 0.5075,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.3126
+  },
+  "fg3m": {
+    "w_xgb": 0.1585,
+    "w_lgb": 0.5297,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.3225
+  },
+  "stl": {
+    "w_xgb": 0.3626,
+    "w_lgb": 0.4431,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.1604
+  },
+  "blk": {
+    "w_xgb": 0.7044,
+    "w_lgb": 0.0,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.2658
+  },
+  "tov": {
+    "w_xgb": 0.2786,
+    "w_lgb": 0.4882,
+    "source": "val_nnls_3way",
+    "w_mlp": 0.1924
+  }
+}
