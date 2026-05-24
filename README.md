@@ -72,9 +72,25 @@ Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 
 **Quantile intervals + calibration.** Every stat ships q10/q50/q90 heads; `data/models/quantile_calibration.json` scales them per-stat to hit 80% empirical coverage (asymmetric for FG3M/STL/BLK/TOV where q10 floors at 0). Honest intervals → honest Kelly probabilities.
 
-**Also live:** the full CV perception pipeline (29 games processed end-to-end), the fractional-Kelly portfolio sizer, the Shin (1992) devig solver, a FastAPI serving layer, and three production prediction CLIs — `predict_player.py` (single player vs opponent), `predict_slate.py` (every player in every game on a given date), `compare_to_lines.py` (paste sportsbook lines → ranked EV + Kelly stakes). Also `betting_backtest.py` / `betting_backtest_smart_line.py` for synthetic-line backtests — the model is profitable on every stat at every threshold vs the smart-line proxy (+25-32% ROI on selective bets at +0.5 edge).
+**Also live:** the full CV perception pipeline (29 games processed end-to-end), the fractional-Kelly portfolio sizer, the Shin (1992) devig solver, a FastAPI serving layer, and a complete daily ops chain (loop 5, cycles 42-75) wired end-to-end:
 
-What the next build adds — live injury feed, real sportsbook closing lines, CV `defender_distance` at scale, lineup projection — is scoped in the [Roadmap](#roadmap) and discussed under [What's NOT yet built](PREDICTIONS_QUICKSTART.md#whats-not-yet-built-potential-future-gains).
+- **Predictions** — `predict_player.py`, `predict_slate.py`, both with `--save` to a shared per-date ledger
+- **Injuries** — `fetch_injury_report.py` (NBA PDF) + `fetch_injury_espn.py` (ESPN fallback); 125 live injuries fetched per pull
+- **Lineups** — `fetch_lineups.py` (rotowire projected starters with play_pct + injury tags)
+- **Lines** — `fetch_dk_props.py` (DraftKings/FanDuel via 3-tier scraper)
+- **Bet log + settlement** — `compare_to_lines.py --bet-log` writes recommended bets; `fetch_actuals.py` + `settle_bets.py` compute W/L/P and P&L after games
+- **CLV tracking** — `compute_clv.py` measures closing-line-value (sharp% metric)
+- **Reporting** — `nightly_report.py` emits Markdown daily summary; `ledger_summary.py` rolls multi-day stats
+- **Orchestrator** — `daily_run.py` runs the morning chain (`--auto-lineups --auto-lines --kelly --bankroll N --report`) or the post-game settle (`--settle --report`) in one command
+- **Validation** — `verify_production_mae.py` + `verify_winprob.py` exit non-zero on drift vs claims (CI-ready)
+- **Backtest** — `synthetic_backtest_validation.py` confirms the cycle-30 claim: **+27.42% mean ROI** at +0.5 edge threshold on the L5-line proxy across 20k holdout games
+
+Three cross-cutting safety rails turn data into prediction quality without touching the model:
+- `--injuries` skips OUT/DOUBTFUL players across all three CLIs (cycle 51 + 53)
+- `--lineups` skips bench/no-game players (cycle 64)
+- `--scale-by-status` scales predictions by lineup classification — questionable ×0.75, bench ×0.30, no-game ×0.00 (cycle 66 + 67)
+
+What's next — CV `defender_distance` at scale, model retrain with the new data context — is scoped in the [Roadmap](#roadmap) and discussed under [What's NOT yet built](PREDICTIONS_QUICKSTART.md#whats-not-yet-built-potential-future-gains).
 
 ---
 
