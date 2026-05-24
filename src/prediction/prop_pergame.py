@@ -351,7 +351,8 @@ def build_player_tracking(parquet_path: Optional[str] = None) -> _PlayerTracking
         for _, r in df.iterrows():
             key = (int(r["player_id"]), str(r["season"]))
             lookup[key] = {k: _coerce(r.get(k, 0.0)) for k in _TRACKING_KEYS}
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_player_tracking", path, exc)
         return _PlayerTracking(lookup)
     return _PlayerTracking(lookup)
 
@@ -402,6 +403,58 @@ class _MLPSeedEnsemble:
 # (4/4 folds positive MAE: AST -0.0022, STL -0.0014); PTS/REB/FG3M/BLK/TOV
 # either washed or regressed on WF and kept their independent _MLPSeedEnsemble.
 _USE_MULTITASK_MLP_STATS: set = {"ast", "stl"}
+
+# Cycle 96a (loop 5) — T1-A garbage-time haircut SHIPPED.
+# Cycle 94a/95a validated: with the cycle-95a home_spread join fix (13% ->
+# 99.9% holdout coverage) the v1-revalidate variant passes the ship gate:
+#   single-split PTS -0.0117 MAE, agg(PTS+REB+AST) -0.0103
+#   walk-forward 4-fold PTS 4/4 folds negative (improvement)
+# Tiered multiplicative shrink keyed on |home_spread|, applied AFTER the
+# main blend/q50 dispatch and AFTER quantile_calibration on volume stats
+# (PTS, REB, AST) only — fg3m/stl/blk/tov are saturated per cycle 89f/90a.
+# The flag _APPLY_GARBAGE_HAIRCUT can be flipped to False for emergency
+# rollback without touching the prediction call sites.
+_APPLY_GARBAGE_HAIRCUT = True
+_GARBAGE_HAIRCUT_BINS = (6.0, 10.0, 14.0)
+_GARBAGE_HAIRCUT_FACTORS = (0.98, 0.95, 0.92)
+_GARBAGE_HAIRCUT_STATS = ("pts", "reb", "ast")
+
+
+def apply_garbage_time_haircut(pred: float, stat: str,
+                               home_spread: Optional[float]) -> float:
+    """Cycle 96a (loop 5). Cycle 94a/95a-validated spread-conditioned shrink.
+
+    Multiplicative haircut on volume-stat predictions when the absolute
+    home_spread crosses 6/10/14 point bins (0.98/0.95/0.92 factors). A no-op
+    when:
+      * the module flag _APPLY_GARBAGE_HAIRCUT is False
+      * the stat isn't in _GARBAGE_HAIRCUT_STATS (only PTS/REB/AST shipped)
+      * home_spread is None (no pre-game line cached for the matchup)
+
+    home_spread is from the PLAYER'S perspective (negative when their team
+    is favoured); abs() captures blowout magnitude either way. Must be
+    applied AFTER any other post-prediction transform (quantile calibration,
+    isotonic calibration, lineup scaling) so the haircut sees the final
+    point estimate. Returns pred unchanged when any guard trips so existing
+    callers see no behaviour change on pre-cycle-95a data (no home_spread).
+    """
+    if not _APPLY_GARBAGE_HAIRCUT:
+        return pred
+    if stat not in _GARBAGE_HAIRCUT_STATS:
+        return pred
+    if home_spread is None:
+        return pred
+    try:
+        m = abs(float(home_spread))
+    except (TypeError, ValueError):
+        return pred
+    if m >= _GARBAGE_HAIRCUT_BINS[2]:
+        return pred * _GARBAGE_HAIRCUT_FACTORS[2]
+    if m >= _GARBAGE_HAIRCUT_BINS[1]:
+        return pred * _GARBAGE_HAIRCUT_FACTORS[1]
+    if m >= _GARBAGE_HAIRCUT_BINS[0]:
+        return pred * _GARBAGE_HAIRCUT_FACTORS[0]
+    return pred
 
 
 class _MultitaskMLPEnsemble:
@@ -539,7 +592,8 @@ def build_team_reb_context(parquet_path: Optional[str] = None) -> _TeamRebContex
                 hist.append((d, float(r.get("oreb_pct", 0.0) or 0.0),
                              float(r.get("dreb_pct", 0.0) or 0.0)))
             by_team[str(tcode)] = hist
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_team_reb_context", path, exc)
         return _TeamRebContext(by_team)
     return _TeamRebContext(by_team)
 
@@ -832,8 +886,8 @@ def build_rest_travel(cache_path: Optional[str] = None) -> _RestTravel:
                 "miles_traveled": float(row.get("miles_traveled", 0.0) or 0.0),
                 "altitude_ft":    float(row.get("altitude_ft", 0.0) or 0.0),
             }
-    except Exception:
-        pass
+    except Exception as exc:
+        _warn_join_load_once("build_rest_travel", path, exc)
     return _RestTravel(lookup)
 
 
@@ -881,7 +935,8 @@ def build_officials_crew(parquet_path: Optional[str] = None) -> _OfficialsCrew:
             key = (str(r["team_abbreviation"]), str(r["game_date"]))
             lookup[key] = {k: float(r.get(k, _OFFICIALS_DEFAULTS[k]) or _OFFICIALS_DEFAULTS[k])
                            for k in _OFFICIALS_KEYS}
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_officials_crew", path, exc)
         return _OfficialsCrew(lookup)
     return _OfficialsCrew(lookup)
 
@@ -1082,6 +1137,22 @@ def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads
     return _PregameSpreads(lookup, fuzzy_dates=fuzzy)
 
 
+_PREGAME_SPREADS_CACHE: Optional["_PregameSpreads"] = None
+
+
+def _get_pregame_spreads() -> "_PregameSpreads":
+    """Process-cached _PregameSpreads for live prediction paths.
+
+    Cycle 96a (loop 5) added this so build_prediction_row can resolve a
+    pre-game home_spread for the upcoming matchup without rebuilding the
+    parquet lookup on every call. Returns an empty wrapper (always None
+    lookups) when the parquet is absent — see build_pregame_spreads."""
+    global _PREGAME_SPREADS_CACHE
+    if _PREGAME_SPREADS_CACHE is None:
+        _PREGAME_SPREADS_CACHE = build_pregame_spreads()
+    return _PREGAME_SPREADS_CACHE
+
+
 # ── per-player personal fouls (cycle 91b loop 5) ──────────────────────────────
 # Source: data/player_pf.parquet — built by
 # scripts/aggregate_player_pf_from_boxscores.py from cached
@@ -1233,8 +1304,8 @@ def build_playtypes(cache_path: Optional[str] = None) -> _PlayTypes:
         for key in lookup:
             for pt in _PLAY_TYPES:
                 lookup[key].setdefault(f"pt_{pt}_freq", 0.0)
-    except Exception:
-        pass
+    except Exception as exc:
+        _warn_join_load_once("build_playtypes", path, exc)
     return _PlayTypes(lookup)
 
 
@@ -1343,8 +1414,8 @@ def build_bbref_advanced(bbref_dir: Optional[str] = None) -> _BBRefAdvanced:
                     f"bbref_{k}": float(row.get(k, 0.0) or 0.0)
                     for k in _BBREF_KEYS
                 }
-    except Exception:
-        pass
+    except Exception as exc:
+        _warn_join_load_once("build_bbref_advanced", bbref_dir, exc)
     return _BBRefAdvanced(lookup, _bbref_id_to_name())
 
 
@@ -1432,8 +1503,8 @@ def build_contracts(contracts_dir: Optional[str] = None) -> _Contracts:
                     "contract_year":            1.0 if row.get("contract_year") else 0.0,
                     "contract_years_remaining": float(row.get("years_remaining") or 0),
                 }
-    except Exception:
-        pass
+    except Exception as exc:
+        _warn_join_load_once("build_contracts", contracts_dir, exc)
     return _Contracts(lookup, _bbref_id_to_name())
 
 
@@ -1574,7 +1645,8 @@ def build_advanced_stats(parquet_path: Optional[str] = None) -> _AdvancedStats:
                          for raw in _ADV_RAW_COL.values()}
                 history.append((d, stats))
             by_player[int(pid)] = history
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_advanced_stats", path, exc)
         return _AdvancedStats(by_player)
     return _AdvancedStats(by_player)
 
@@ -2461,6 +2533,12 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
 
     model_dir = model_dir or _MODEL_DIR
 
+    # Cycle 96a (loop 5): pull home_spread off the feature_row once so both
+    # the q50 path and the blend path can apply the garbage-time haircut at
+    # the very end. None when the pre-game spread isn't cached for the row's
+    # matchup — apply_garbage_time_haircut is a no-op in that case.
+    hs_raw = feature_row.get("home_spread")
+
     # Cycle 27 q50 dispatch — bypasses the entire 3-way blend.
     if stat in _USE_Q50_STATS:
         q50 = _load_q50_model(stat, model_dir)
@@ -2477,10 +2555,16 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             pred_t = float(q50.predict(X)[0])
             # Inverse-transform back to raw-count scale (same as training inv).
             if stat in _SQRT_HUBER_STATS:
-                return round(max(0.0, pred_t) ** 2, 2)
-            if stat in _LOG_TRANSFORM_STATS:
-                return round(max(0.0, float(np.expm1(pred_t))), 2)
-            return round(max(0.0, pred_t), 2)
+                pred = max(0.0, pred_t) ** 2
+            elif stat in _LOG_TRANSFORM_STATS:
+                pred = max(0.0, float(np.expm1(pred_t)))
+            else:
+                pred = max(0.0, pred_t)
+            # Cycle 96a (loop 5) — T1-A garbage-time haircut. Applied AFTER
+            # the q50 head + inverse transform so the multiplicative shrink
+            # acts on the raw-count point estimate.
+            pred = apply_garbage_time_haircut(pred, stat, hs_raw)
+            return round(pred, 2)
         # q50 model missing on disk — fall through to the legacy blend so
         # predict_pergame still returns SOMETHING.
 
@@ -2556,7 +2640,13 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             blend = float(calibrator.predict([blend])[0])
         except Exception:
             pass
-    return round(max(blend, 0.0), 2)
+    blend = max(blend, 0.0)
+    # Cycle 96a (loop 5) — T1-A garbage-time haircut. Applied AFTER the
+    # isotonic calibrator (and the floor-at-0) so the multiplicative shrink
+    # sits on the final raw-count blend prediction. No-op for non-volume
+    # stats and for rows without a cached home_spread.
+    blend = apply_garbage_time_haircut(blend, stat, hs_raw)
+    return round(blend, 2)
 
 
 # ── live prediction ───────────────────────────────────────────────────────────
@@ -2638,6 +2728,27 @@ def build_prediction_row(
             team_abbrev, opp_team, factor_date))
     except Exception:
         feats.update(_REB_CONTEXT_DEFAULTS)
+    # Cycle 96a (loop 5) — pre-game home_spread lookup so the live
+    # prediction path (predict_player / predict_slate / compare_to_lines)
+    # receives the same T1-A garbage-time haircut wired into predict_pergame.
+    # Sign convention mirrors build_pergame_dataset: row["home_spread"] is
+    # from THIS PLAYER'S perspective (negative when their team is favoured).
+    # Defaults to None when the parquet is absent or the matchup isn't
+    # cached — apply_garbage_time_haircut is then a no-op.
+    try:
+        last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
+        team_abbrev = last_matchup.split()[0] if last_matchup.split() else ""
+        if is_home:
+            sp_home, sp_away, sign = team_abbrev, opp_team, 1.0
+        else:
+            sp_home, sp_away, sign = opp_team, team_abbrev, -1.0
+        sp_feats = _get_pregame_spreads().features(sp_home, sp_away, factor_date)
+        hs = sp_feats.get("home_spread")
+        feats["home_spread"] = (sign * float(hs)) if hs is not None else None
+        feats["total"] = sp_feats.get("total")
+    except Exception:
+        feats["home_spread"] = None
+        feats["total"] = None
     return feats
 
 
