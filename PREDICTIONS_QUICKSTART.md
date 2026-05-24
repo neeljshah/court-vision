@@ -21,14 +21,19 @@ WinProb walk-forward: **0.71 acc / 0.193 Brier**. Single-split: **0.717 / 0.188*
 ### 1. Predict one player vs one opponent
 ```bash
 python scripts/predict_player.py --name "Nikola Jokic" --opp LAL --home --rest 2
+python scripts/predict_player.py --name "Some Bench" --opp LAL --home --require-starter   # skip if rate <40%
+python scripts/predict_player.py --name "Nikola Jokic" --opp LAL --home --save             # append to daily ledger
 ```
 - `--name` accepts diacritics insensitively (Jokic → Jokić)
 - `--opp` is the OPPONENT team abbreviation
 - `--home / --away` is the PLAYER's team's venue
 - `--rest` is days rest (default 2)
 - `--pid <int>` works if name lookup fails
+- `--lookback-games N` (cycle 46) controls the starter-rate window (default 5)
+- `--require-starter` (cycle 46) exits 2 when starter_rate < 0.4 — for batch flows
+- `--save [PATH]` (cycle 49) appends to `data/predictions/<date>.csv`, same schema as `predict_slate --save`
 
-Output: 7 stat predictions + 80% intervals (q10..q90) + L5/L10 baselines + bet recommendation if |edge| > 0.5.
+Output: a "Recent role" line (cycle 46 — full starter / rotation player / out of rotation), then 7 stat predictions + 80% intervals (q10..q90) + L5/L10 baselines + bet recommendation if |edge| > 0.5.
 
 ### 2. Predict every player in tonight's slate
 ```bash
@@ -82,6 +87,36 @@ python scripts/fetch_injury_report.py --date 2026-05-24 --time 05PM
 Scrapes the NBA Official Injury Report PDF (cached at `data/cache/injuries/`)
 and writes `data/injuries_<date>.json` with per-player team/name/status/reason.
 Status feature wiring into prop_pergame is deferred to a future cycle.
+
+### 7. Verify production matches the honest baseline (cycle 48)
+```bash
+python scripts/verify_production_mae.py
+```
+Loads the same 80/20 chronological holdout `prop_pergame.train` uses and
+scores the production model per stat in one vectorized pass. Respects the
+cycle-27 `_USE_Q50_STATS` dispatch. Exits 0 if all 7 stats are within ±0.02
+MAE of the honest baseline above; exits 1 (with drift report) otherwise so
+a bot loop catches quickstart staleness automatically.
+
+## Daily ops workflow (recommended)
+
+```bash
+# 1. Pull tonight's injury report
+python scripts/fetch_injury_report.py
+
+# 2. Build slate predictions + write daily ledger
+python scripts/predict_slate.py --save
+
+# 3. For each player you actually care about, get full intervals + role check
+python scripts/predict_player.py --name "Nikola Jokic" --opp LAL --home --save
+
+# 4. Compare to your sportsbook lines
+python scripts/normalize_lines.py raw_dk.csv -o tonight.csv
+python scripts/compare_to_lines.py tonight.csv --kelly --bankroll 1000
+```
+Steps 2-3 both append to the same `data/predictions/<date>.csv` ledger (shared
+schema), so a future closing-line backtest can join on `(date, player_id, stat)`
+when actuals land.
 
 ## Retraining
 
