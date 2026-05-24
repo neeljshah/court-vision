@@ -59,6 +59,25 @@ _LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
 # predict_pergame's contract is unchanged from the caller's perspective.
 _LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov", "fg3m", "reb", "ast"}
 
+# Cycle 27 (loop 5) — Quantile-median (q50) PRIMARY predictor for stats where
+# the blend's mean-optimal predictions diverge meaningfully from the
+# MAE-optimal median. Walk-forward (4 folds) confirmed q50 SOLO beats the
+# XGB+LGB+MLP NNLS blend with 4/4 folds positive AND large effect size:
+#   BLK  -0.0864 +- 0.0039  (-16.6% MAE, biggest single-stat win of the loop)
+#   STL  -0.0395 +- 0.0103  (-5.6%)
+#   FG3M -0.0229 +- 0.0041  (-2.6%)
+#   TOV  -0.0187 +- 0.0100  (-2.1%)
+#   AST  -0.0093 +- 0.0058  (-0.7%)  — WF passed BUT production single-split
+#                                       regressed +0.0157 MAE, so NOT shipped.
+# REB was marginal (3/4 folds); PTS regressed (high-volume stat where mean
+# and median coincide). Of the WF winners, only stats that ALSO pass the
+# production single-split MAE-strictly-down gate ship. predict_pergame
+# dispatches to the q50 model (persisted by prop_quantiles) for these stats,
+# bypassing the cycle-23 3-way NNLS blend entirely. Note: q50 R² is much
+# lower than blend R² because q50 minimises MAE (median-optimal) not MSE
+# (mean-optimal); R² is the wrong metric for sportsbook prop predictions.
+_USE_Q50_STATS: set = {"fg3m", "stl", "blk", "tov"}
+
 # Cycle 19 (loop 5): per-stat Huber-on-log1p infrastructure. Tested with the
 # six log1p stats — only FG3M showed a clean WF 4/4-folds MAE win
 # (-0.0024 +- 0.0013), but on the production single-split MAE was a wash
@@ -1600,6 +1619,25 @@ def _load_pergame_calibrator(stat: str, model_dir: str):
 _META_WEIGHTS_CACHE: Optional[Dict[str, dict]] = None
 
 
+def _load_q50_model(stat: str, model_dir: str):
+    """Load the cycle-27 q=0.5 XGB quantile model for `stat`, or None on miss.
+
+    Persisted by src.prediction.prop_quantiles.train_quantile_models at
+    data/models/quantile_pergame_<stat>_q50.json. Same per-stat target
+    transform as the rest of the prop_pergame stack.
+    """
+    path = os.path.join(model_dir, f"quantile_pergame_{stat}_q50.json")
+    if not os.path.exists(path):
+        return None
+    try:
+        import xgboost as xgb  # noqa: PLC0415
+        m = xgb.XGBRegressor()
+        m.load_model(path)
+        return m
+    except Exception:
+        return None
+
+
 def _get_pergame_meta_weights(model_dir: str) -> Dict[str, dict]:
     """Return the per-stat meta-stacker weights dict (process-cached)."""
     global _META_WEIGHTS_CACHE
@@ -1618,15 +1656,38 @@ def _get_pergame_meta_weights(model_dir: str) -> Dict[str, dict]:
 
 def predict_pergame(stat: str, feature_row: Dict[str, float],
                     model_dir: Optional[str] = None) -> Optional[float]:
-    """Predict one stat for one game — calibrated meta-blend of the per-game base learners.
+    """Predict one stat for one game — q50 dispatch or calibrated meta-blend.
 
-    Applies the per-stat meta-stacker weights from meta_weights_pergame.json
-    when present, otherwise falls back to a simple mean of whatever models
-    are on disk. Then applies the per-game isotonic calibrator
-    (calibration_pergame_<stat>.joblib) when present."""
+    Cycle 27: for stats in _USE_Q50_STATS the quantile-median model is the
+    sole predictor (walk-forward 4/4 folds positive, MAE wins -0.7% on AST
+    up to -16.6% on BLK). For all other stats this returns the per-stat
+    meta-stacker weighted blend (cycle 23 multitask MLP for AST/STL keys
+    are no-ops since AST/STL are in _USE_Q50_STATS now — kept around for
+    rollback safety). The isotonic calibrator
+    (calibration_pergame_<stat>.joblib) is applied at the end when present
+    AND when the stat uses the blend (not q50)."""
     import numpy as np
 
     model_dir = model_dir or _MODEL_DIR
+
+    # Cycle 27 q50 dispatch — bypasses the entire 3-way blend.
+    if stat in _USE_Q50_STATS:
+        q50 = _load_q50_model(stat, model_dir)
+        if q50 is not None:
+            cols = feature_columns()
+            if getattr(q50, "n_features_in_", None) not in (None, len(cols)):
+                return None
+            X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
+            pred_t = float(q50.predict(X)[0])
+            # Inverse-transform back to raw-count scale (same as training inv).
+            if stat in _SQRT_HUBER_STATS:
+                return round(max(0.0, pred_t) ** 2, 2)
+            if stat in _LOG_TRANSFORM_STATS:
+                return round(max(0.0, float(np.expm1(pred_t))), 2)
+            return round(max(0.0, pred_t), 2)
+        # q50 model missing on disk — fall through to the legacy blend so
+        # predict_pergame still returns SOMETHING.
+
     models = load_pergame_model(stat, model_dir)
     if not models:
         return None
