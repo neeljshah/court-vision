@@ -52,6 +52,14 @@ from src.prediction.prop_quantiles import (  # noqa: E402
     predict_pergame_quantiles,
 )
 from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
+# Cycle 90f (loop 5), T4-A: rolling-window calibration, opt-in via --rolling-cal.
+# Import is wrapped so the script still runs on installs without the parquet.
+try:
+    from scripts.quantile_calibration_rolling import (  # noqa: E402
+        apply_rolling as apply_quantile_calibration_rolling,
+    )
+except Exception:
+    apply_quantile_calibration_rolling = None  # type: ignore
 from src.data.injuries import load_unavailable_players  # noqa: E402
 from src.data.lineups import (  # noqa: E402
     build_starter_index, classify_starter, STATUS_SCALE,
@@ -102,7 +110,8 @@ def _american_payout(odds: int, stake: float = 1.0) -> float:
     return stake * (100 / -odds)
 
 
-def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side: str) -> float:
+def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side: str,
+                    use_rolling: bool = False, on_or_before: str = None) -> float:
     """Approximate the model's predicted probability of WINNING the side at the given line.
 
     Centers a normal distribution at the BLEND's point prediction and uses the
@@ -110,11 +119,21 @@ def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side:
     each stat's interval to actually-80% coverage (raw was 71-91%) — without
     it the Kelly probability estimates are systematically off (PTS/AST under-
     cover means too-confident bets; STL/BLK over-cover means too-cautious).
+
+    Cycle 90f T4-A: when ``use_rolling`` is True and the rolling parquet exists,
+    use the prior-60-game window scale for ``on_or_before`` instead of the
+    global cycle-40 scale. Default (False) preserves cycle-40 behaviour.
     """
     q10 = qint.get("q10"); q50 = qint.get("q50"); q90 = qint.get("q90")
     if q10 is None or q90 is None or point_pred is None:
         return None
-    cal_q10, cal_q90 = apply_quantile_calibration(stat, q10, q50 or point_pred, q90)
+    if use_rolling and apply_quantile_calibration_rolling is not None:
+        cal_q10, cal_q90 = apply_quantile_calibration_rolling(
+            stat, q10, q50 or point_pred, q90,
+            on_or_before=on_or_before or _date.today().isoformat(),
+        )
+    else:
+        cal_q10, cal_q90 = apply_quantile_calibration(stat, q10, q50 or point_pred, q90)
     sigma = max((cal_q90 - cal_q10) / (2 * 1.2816), 1e-6)
     from math import erf, sqrt
     z = (line - point_pred) / sigma
@@ -192,6 +211,10 @@ def main():
                     help="Cycle 68. Append recommended bets (positive EV) to a CSV for later "
                          "CLV / settlement analysis. Bare flag → data/bets/<today>.csv; with "
                          "arg → that path.")
+    ap.add_argument("--rolling-cal", action="store_true",
+                    help="Cycle 90f T4-A. Use prior-60-game rolling quantile calibration "
+                         "(data/models/quantile_cal_rolling.parquet) instead of the global "
+                         "cycle-40 scales. Default off; cycle-40 stays canonical.")
     args = ap.parse_args()
 
     inj_unavail: dict = {}
@@ -277,7 +300,9 @@ def main():
             continue
         side = "OVER" if edge > 0 else "UNDER"
         odds = over_odds if side == "OVER" else under_odds
-        prob = _model_hit_prob(stat, model_pred, qint, line, side)
+        prob = _model_hit_prob(stat, model_pred, qint, line, side,
+                               use_rolling=args.rolling_cal,
+                               on_or_before=_date.today().isoformat())
         net_payout = _american_payout(odds, 1.0)
         ev_per_dollar = prob * net_payout - (1 - prob) * 1.0 if prob is not None else 0.0
         kf = _kelly_fraction(prob, odds) if prob is not None else 0.0
