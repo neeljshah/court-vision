@@ -707,6 +707,75 @@ def build_officials_crew(parquet_path: Optional[str] = None) -> _OfficialsCrew:
     return _OfficialsCrew(lookup)
 
 
+# ── pre-game sportsbook spreads (cycle 91c loop 5) ────────────────────────────
+# Source: data/pregame_spreads.parquet — built by
+# scripts/aggregate_spreads_to_parquet.py from ESPN scoreboard caches under
+# data/cache/spreads/. Each row: (game_date, home_team, away_team, home_spread,
+# total). Sign convention: home_spread < 0 ⇒ home favoured by |home_spread|
+# points. Strictly pre-game (ESPN publishes the posted line on the scoreboard
+# before tip-off). Additive-only on row dict — NOT in feature_columns() yet;
+# T1-A garbage-time haircut probe reads row["home_spread"] directly.
+# Gated on parquet existence so fresh checkouts have a no-op join.
+
+_PREGAME_SPREADS_PATH = os.path.join(PROJECT_DIR, "data", "pregame_spreads.parquet")
+
+
+class _PregameSpreads:
+    """Lookup of (game_date_iso, home_team, away_team) → {home_spread, total}.
+
+    Empty wrapper yields None on every lookup so callers can branch on missing
+    coverage without try/except.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, home_abbr: str, away_abbr: str,
+                 gdate: datetime) -> Dict[str, Optional[float]]:
+        key = (gdate.date().isoformat(),
+               str(home_abbr).upper(),
+               str(away_abbr).upper())
+        rec = self._lookup.get(key)
+        if rec is None:
+            return {"home_spread": None, "total": None}
+        return {"home_spread": rec.get("home_spread"),
+                "total":       rec.get("total")}
+
+    def __len__(self) -> int:
+        return len(self._lookup)
+
+
+def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads:
+    """Load data/pregame_spreads.parquet into a _PregameSpreads wrapper.
+
+    Returns an empty wrapper (every lookup yields None) when the parquet is
+    absent or pandas/pyarrow fails. Never raises.
+    """
+    path = parquet_path or _PREGAME_SPREADS_PATH
+    lookup: Dict[Tuple[str, str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _PregameSpreads(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            try:
+                key = (str(r["game_date"]),
+                       str(r["home_team"]).upper(),
+                       str(r["away_team"]).upper())
+                hs = r.get("home_spread")
+                tot = r.get("total")
+                lookup[key] = {
+                    "home_spread": float(hs) if hs is not None and hs == hs else None,
+                    "total":       float(tot) if tot is not None and tot == tot else None,
+                }
+            except Exception:
+                continue
+    except Exception:
+        return _PregameSpreads(lookup)
+    return _PregameSpreads(lookup)
+
+
 # ── play-type features ────────────────────────────────────────────────────────
 
 class _PlayTypes:
@@ -1258,6 +1327,12 @@ def build_pergame_dataset(
     # a separate retrain cycle). Probes (cycle 89c) can re-run once the
     # parquet is populated.
     positions = build_player_positions()
+    # Cycle 91c (loop 5) — pre-game sportsbook spreads (2025-26 holdout).
+    # GATED on data/pregame_spreads.parquet existence; empty wrapper makes
+    # the join a no-op on fresh checkouts. Sign convention:
+    #   home_spread < 0  ⇒ home favoured; row["home_spread"] negates for away.
+    # T1-A garbage-time haircut probe reads row["home_spread"] directly.
+    pregame_spreads = build_pregame_spreads()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -1332,6 +1407,22 @@ def build_pergame_dataset(
                 # feature_cols). None when the parquet is absent or the pid
                 # is uncached. Probes consume row["position"] directly.
                 row["position"] = positions.position(file_player_id)
+                # Cycle 91c (loop 5) — pre-game sportsbook spread join.
+                # Derive home/away codes from the matchup string:
+                #   "TEAM vs. OPP"  -> team_abbrev is HOME
+                #   "TEAM @ OPP"    -> team_abbrev is AWAY
+                # row["home_spread"] is the spread FROM THIS PLAYER'S PERSPECTIVE
+                # (negative when their team is favoured), so an away-team row
+                # receives the sign-flipped value. row["total"] is symmetric.
+                opp_abbrev = _opponent_from_matchup(matchup)
+                if is_home:
+                    sp_home, sp_away, sign = team_abbrev, opp_abbrev, 1.0
+                else:
+                    sp_home, sp_away, sign = opp_abbrev, team_abbrev, -1.0
+                sp_feats = pregame_spreads.features(sp_home, sp_away, gdate)
+                hs = sp_feats.get("home_spread")
+                row["home_spread"] = (sign * float(hs)) if hs is not None else None
+                row["total"] = sp_feats.get("total")
                 rows.append(row)
 
             if played:
