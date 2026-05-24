@@ -610,6 +610,159 @@ def build_player_positions(parquet_path: Optional[str] = None) -> _PlayerPositio
     return _PlayerPositions(lookup)
 
 
+# ── per-quarter stats (cycle 91a loop 5) ──────────────────────────────────────
+# Source: data/player_quarter_stats.parquet — built by
+# scripts/aggregate_quarter_boxscores.py from
+# data/cache/quarter_box/<gid>_q<p>.json (fetched by
+# scripts/fetch_per_quarter_boxscores.py). Per-(game_id, player_id, period)
+# box-score slice: min, pts, reb, ast, fg3m, stl, blk, tov, pf, plus_minus.
+#
+# This scaffold (cycle 91a) provides the wrapper + a date-keyed lookup so
+# build_pergame_dataset can attach rolling-Q1 prior-5 features to each row.
+# The parquet is OPTIONAL — when absent (fresh checkout, or before the
+# fetch daemon has run), the wrapper is empty and every row gets q1_*_l5
+# defaults of None. Probes in cycle 91+ consume these via row["q1_pts_l5"]
+# etc.; nothing is appended to feature_columns() until a separate retrain
+# cycle wires the signal in.
+_PLAYER_QUARTER_STATS_PATH = os.path.join(
+    PROJECT_DIR, "data", "player_quarter_stats.parquet"
+)
+_Q1_STAT_KEYS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov", "min")
+_Q1_FEATURE_KEYS = tuple(f"q1_{s}_l5" for s in _Q1_STAT_KEYS)
+
+
+class _PlayerQuarterStats:
+    """Per-(player_id, period) per-quarter stat lookup, keyed by date.
+
+    Joining quarter boxscores to per-game rows is tricky: the gamelog
+    cache has no GAME_ID column, so the wrapper exposes a date-based
+    lookup. We construct (player_id, game_date_iso) -> period -> stats
+    by walking season_games_*.json once at load time and pairing each
+    quarter row's game_id with its date.
+
+    All methods are NO-OPs on a fresh checkout (empty wrapper). They
+    yield None for unknown keys and never raise.
+    """
+
+    def __init__(self, by_pid_date_period: Dict[Tuple[int, str, int],
+                                                Dict[str, float]]):
+        self._lookup = by_pid_date_period
+
+    def __len__(self) -> int:
+        return len(self._lookup)
+
+    def quarter(self, player_id, gdate: datetime, period: int) -> Optional[Dict[str, float]]:
+        """Return the player's Q<period> stat dict for ``gdate`` or None."""
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return None
+        key = (pid, gdate.date().isoformat(), int(period))
+        row = self._lookup.get(key)
+        if not row:
+            return None
+        return dict(row)
+
+    def rolling_q1_prior(self, player_id, prior_dates: List[datetime],
+                         window: int = 5) -> Dict[str, Optional[float]]:
+        """Mean Q1 stats over the last `window` prior games that have Q1 data.
+
+        ``prior_dates`` is the player's already-played game dates (sorted
+        oldest -> newest). We walk it BACKWARDS, picking up to `window`
+        games that exist in the parquet, then average each stat. Returns
+        defaults of None for every key when nothing is found (preserves
+        the "no leak / no data" semantics — downstream code can treat
+        None as missing without an arithmetic crash).
+        """
+        out: Dict[str, Optional[float]] = {k: None for k in _Q1_FEATURE_KEYS}
+        if not self._lookup or not prior_dates:
+            return out
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return out
+        # Walk newest -> oldest, picking up to `window` matching games.
+        picked: List[Dict[str, float]] = []
+        for d in reversed(prior_dates):
+            key = (pid, d.date().isoformat(), 1)
+            row = self._lookup.get(key)
+            if row is not None:
+                picked.append(row)
+                if len(picked) >= window:
+                    break
+        if not picked:
+            return out
+        for stat in _Q1_STAT_KEYS:
+            vals = [r.get(stat) for r in picked if r.get(stat) is not None]
+            if vals:
+                out[f"q1_{stat}_l5"] = float(sum(vals)) / float(len(vals))
+        return out
+
+
+def build_player_quarter_stats(
+    parquet_path: Optional[str] = None,
+    season_games_dir: Optional[str] = None,
+) -> _PlayerQuarterStats:
+    """Load player_quarter_stats.parquet keyed by (pid, date, period).
+
+    GATED on file existence — returns an empty wrapper when the parquet
+    is absent so build_pergame_dataset stays back-compat. Pairs each
+    quarter row's game_id with the corresponding game_date from the
+    season_games_*.json cache; rows whose game_id is unknown are
+    silently dropped (defensive — never raises).
+    """
+    path = parquet_path or _PLAYER_QUARTER_STATS_PATH
+    cache_dir = season_games_dir or _NBA_CACHE
+    lookup: Dict[Tuple[int, str, int], Dict[str, float]] = {}
+    if not os.path.exists(path):
+        return _PlayerQuarterStats(lookup)
+    # Build game_id -> game_date map from every season_games_*.json.
+    gid_to_date: Dict[str, str] = {}
+    try:
+        for fname in sorted(os.listdir(cache_dir)):
+            if not fname.startswith("season_games_") or not fname.endswith(".json"):
+                continue
+            try:
+                with open(os.path.join(cache_dir, fname), encoding="utf-8") as f:
+                    payload = json.load(f)
+            except Exception:
+                continue
+            rows = payload["rows"] if isinstance(payload, dict) else payload
+            for g in rows or []:
+                gid = g.get("game_id") or g.get("GAME_ID")
+                gdate = g.get("game_date") or g.get("GAME_DATE")
+                if gid and gdate:
+                    gid_to_date[str(gid).zfill(10)] = str(gdate)[:10]
+    except FileNotFoundError:
+        pass
+    try:
+        import pandas as pd  # noqa: PLC0415
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+                period = int(r["period"])
+                gid = str(r["game_id"]).zfill(10)
+            except (TypeError, ValueError, KeyError):
+                continue
+            gdate = gid_to_date.get(gid)
+            if not gdate:
+                continue
+            entry = {}
+            for k in _Q1_STAT_KEYS:
+                v = r.get(k)
+                if v is None:
+                    continue
+                try:
+                    entry[k] = float(v)
+                except (TypeError, ValueError):
+                    continue
+            lookup[(pid, gdate, period)] = entry
+    except Exception:
+        return _PlayerQuarterStats(lookup)
+    return _PlayerQuarterStats(lookup)
+
+
 _REST_TRAVEL_PATH = os.path.join(PROJECT_DIR, "data", "rest_travel.parquet")
 _REST_TRAVEL_DEFAULTS: Dict[str, float] = {
     "is_b2b": 0.0, "is_b3b": 0.0, "miles_traveled": 0.0, "altitude_ft": 0.0,
@@ -1449,6 +1602,12 @@ def build_pergame_dataset(
     # cycle-90c T1-B foul-rate probe (PF absent from gamelog cache → probe
     # silently degraded to a BLK proxy).
     player_pf = build_player_pf()
+    # Cycle 91a (loop 5) — per-quarter stats wrapper for rolling-Q1
+    # prior-5 features. GATED on data/player_quarter_stats.parquet; empty
+    # wrapper → every q1_*_l5 row key is None on fresh checkouts. Probes
+    # consume row["q1_pts_l5"] etc. directly; NOT in feature_columns()
+    # until a separate retrain cycle wires them in.
+    qstats = build_player_quarter_stats()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -1547,6 +1706,19 @@ def build_pergame_dataset(
                 row["pf"] = player_pf.pf(file_player_id, gd_iso)
                 row["season_pf_per_36"] = player_pf.season_pf_per_36(
                     file_player_id, gd_iso)
+                # Cycle 91a (loop 5) — rolling-Q1 prior-5 stats. NO leakage:
+                # only PRIOR played-game dates are passed in. Defaults to
+                # None for every key when the parquet is absent OR none of
+                # the player's prior games appear in it. Additive only;
+                # NOT in feature_columns() until a probe cycle wires them.
+                prior_dates = [
+                    d for d in (_parse_date(p.get("GAME_DATE"))
+                                for p in prior_played)
+                    if d is not None
+                ]
+                q1_feats = qstats.rolling_q1_prior(file_player_id, prior_dates)
+                for k, v in q1_feats.items():
+                    row[k] = v
                 rows.append(row)
 
             if played:
