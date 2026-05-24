@@ -29,6 +29,7 @@ data/models/
 !data/models/props_stl_v2_metrics.json
 !data/models/matchup_model_meta.json
 !data/models/dnp_model_meta.json
+!data/models/probe_defender_feature.json
 !data/models/bet_log.json
 !data/models/load_management.json
 
