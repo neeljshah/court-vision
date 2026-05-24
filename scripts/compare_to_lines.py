@@ -29,11 +29,18 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, date as _date
 
 import numpy as np
+
+# Cycle 51: injury statuses that mean "don't bet this player". QUESTIONABLE
+# is intentionally NOT in this set — the player is more likely than not to
+# play, and the model's L5/L10 features already partially account for limited
+# minutes. PROBABLE / AVAILABLE / NOT-LISTED never skip.
+_UNAVAILABLE_STATUSES = {"OUT", "DOUBTFUL", "NOT WITH TEAM"}
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
@@ -120,6 +127,29 @@ def _kelly_fraction(prob: float, odds: int) -> float:
     return max(0.0, f)
 
 
+def load_injury_unavailable(path: str) -> dict:
+    """Read a data/injuries_<date>.json (cycle 43 schema) and return a map
+    of diacritic-stripped lowercase player name → status for players whose
+    status is in _UNAVAILABLE_STATUSES. Returns {} on missing/malformed file.
+    """
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            payload = json.load(f)
+    except Exception:
+        return {}
+    out = {}
+    for p in payload.get("players", []) or []:
+        status = str(p.get("status", "")).upper().strip()
+        name = str(p.get("name", "")).strip()
+        if not name or status not in _UNAVAILABLE_STATUSES:
+            continue
+        key = _strip_accents(name).lower()
+        out[key] = status
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("csv", help="CSV file with prop lines")
@@ -129,7 +159,21 @@ def main():
     ap.add_argument("--bankroll", type=float, default=1000.0,
                     help="Bankroll for Kelly stake sizing (default $1000)")
     ap.add_argument("--season", default=None)
+    ap.add_argument("--injuries", nargs="?", const="__default__", default=None,
+                    help="Skip players listed OUT/DOUBTFUL in the injury JSON. "
+                         "Bare flag → data/injuries_<today>.json; with arg → that path.")
+    ap.add_argument("--include-injured", action="store_true",
+                    help="Override --injuries: include all players regardless of status.")
     args = ap.parse_args()
+
+    inj_unavail: dict = {}
+    if args.injuries is not None and not args.include_injured:
+        inj_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"injuries_{_date.today().isoformat()}.json")
+                    if args.injuries == "__default__" else args.injuries)
+        inj_unavail = load_injury_unavailable(inj_path)
+        print(f"  [injuries] loaded {len(inj_unavail)} unavailable player(s) from "
+              f"{os.path.basename(inj_path)}")
 
     season_default = args.season or _current_season()
     gamelog_dir = os.path.join(PROJECT_DIR, "data", "nba")
@@ -144,6 +188,7 @@ def main():
         print("[fail] empty CSV"); sys.exit(1)
 
     results = []
+    skipped_inj = []
     for r in rows_in:
         name = r.get("player", ""); opp = r.get("opp", "").upper()
         venue = r.get("venue", "home").lower(); stat = r.get("stat", "").lower()
@@ -153,6 +198,11 @@ def main():
             line = float("nan")
         if not (name and opp and stat in STATS and not np.isnan(line)):
             print(f"  [skip] bad row: {r}"); continue
+        if inj_unavail:
+            key = _strip_accents(name).lower()
+            if key in inj_unavail:
+                skipped_inj.append((name, inj_unavail[key]))
+                continue
         rest_days = float(r.get("rest_days") or 2.0)
         season = r.get("season") or season_default
         is_home = (venue.startswith("h"))
@@ -188,6 +238,16 @@ def main():
             "kelly_pct": round(kf * 100, 2),
             "kelly_stake": round(kf * args.bankroll, 2),
         })
+
+    if skipped_inj:
+        print(f"\n  [injuries] skipped {len(skipped_inj)} line(s) for OUT/DOUBTFUL players:")
+        # De-duplicate (a player has multiple lines) before printing.
+        seen = set()
+        for n, s in skipped_inj:
+            if n in seen:
+                continue
+            seen.add(n)
+            print(f"    - {n} ({s})")
 
     if not results:
         print("[done] no bets passed --min-edge filter"); return
