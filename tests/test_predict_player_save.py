@@ -37,9 +37,11 @@ def test_append_writes_header_then_rows():
             rows = list(csv.DictReader(fh))
         assert len(rows) == 7
         # Schema parity with predict_slate.save_predictions_csv
+        # Cycle 80: added lineup_status, lineup_class, play_pct, injury_status
         assert set(rows[0].keys()) == {
             "date", "game_id", "player_id", "player",
             "team", "opp", "venue", "stat", "pred",
+            "lineup_status", "lineup_class", "play_pct", "injury_status",
         }
         assert {r["stat"] for r in rows} == set(pp.STATS)
         assert all(r["venue"] == "home" for r in rows)
@@ -86,6 +88,39 @@ def test_append_creates_parent_dir():
                                        is_home=True, stat_preds=_preds())
         assert n == 7
         assert os.path.exists(out)
+
+
+# ─── cycle 80: context columns ───────────────────────────────────────────────
+
+def test_append_writes_context_columns_when_provided():
+    """When the CLI knows lineup + injury context, the ledger captures it."""
+    with tempfile.TemporaryDirectory() as tmp:
+        out = os.path.join(tmp, "preds.csv")
+        n = pp.append_predictions_csv(
+            out, 203999, "Nikola Jokic", "LAL",
+            is_home=True, stat_preds=_preds(),
+            lineup_status="Expected", lineup_class="questionable",
+            play_pct="50", injury_status="QUESTIONABLE",
+        )
+        assert n == 7
+        with open(out) as fh:
+            row = next(csv.DictReader(fh))
+    assert row["lineup_status"] == "Expected"
+    assert row["lineup_class"] == "questionable"
+    assert row["play_pct"] == "50"
+    assert row["injury_status"] == "QUESTIONABLE"
+
+
+def test_append_defaults_context_columns_to_blank():
+    """Cycle 49 callers that don't pass context still work — blank values."""
+    with tempfile.TemporaryDirectory() as tmp:
+        out = os.path.join(tmp, "preds.csv")
+        pp.append_predictions_csv(out, 99, "X. Player", "LAL",
+                                    is_home=True, stat_preds=_preds())
+        with open(out) as fh:
+            row = next(csv.DictReader(fh))
+    for col in ("lineup_status", "lineup_class", "play_pct", "injury_status"):
+        assert row[col] == ""
 
 
 if __name__ == "__main__":

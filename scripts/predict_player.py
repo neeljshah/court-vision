@@ -305,13 +305,27 @@ def _format_starter_line(sig: dict) -> str:
 def append_predictions_csv(
     out_path: str, player_id: int, name: str, opp: str,
     is_home: bool, stat_preds: dict,
+    lineup_status: str = "", lineup_class: str = "",
+    play_pct: str = "", injury_status: str = "",
 ) -> int:
     """Append one row per stat to out_path. Creates the file + header when absent.
 
-    Schema matches scripts/predict_slate.py save_predictions_csv:
-    date,game_id,player_id,player,team,opp,venue,stat,pred
-    `game_id` is empty for single-player runs (slate runs include it).
-    `team` is empty for single-player runs — we don't ask the user for it.
+    Schema (cycle 49 + 80):
+        date, game_id, player_id, player, team, opp, venue, stat, pred,
+        lineup_status, lineup_class, play_pct, injury_status
+
+    Matches scripts/predict_slate.py save_predictions_csv. Cycle 80 added
+    the four context columns so the daily ledger captures the lineup +
+    injury context at PREDICTION time, enabling future empirical validation
+    of any post-prediction adjustment (cycle 66/67 scale-by-status etc.)
+    once 30+ days of predictions + actuals accumulate.
+
+    Context columns default to "" — cycle 49 callers that don't pass them
+    still produce a valid CSV with blank context, and append-mode against
+    an existing pre-cycle-80 file would only mismatch the header (the
+    header is only written on first-creation).
+
+    `game_id` and `team` are empty for single-player runs (slate runs fill them).
     """
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     file_exists = os.path.exists(out_path) and os.path.getsize(out_path) > 0
@@ -324,6 +338,7 @@ def append_predictions_csv(
             w.writerow([
                 "date", "game_id", "player_id", "player",
                 "team", "opp", "venue", "stat", "pred",
+                "lineup_status", "lineup_class", "play_pct", "injury_status",
             ])
         for stat in STATS:
             v = stat_preds.get(stat)
@@ -332,6 +347,7 @@ def append_predictions_csv(
             w.writerow([
                 date_str, "", player_id, name,
                 "", opp, venue, stat, f"{float(v):.4f}",
+                lineup_status, lineup_class, play_pct, injury_status,
             ])
             n += 1
     return n
@@ -392,7 +408,10 @@ def main():
 
     # Lineup cross-reference (cycle 63) — runs before injury / playergamelog
     # so no-game players exit before any expensive nba_api fetch.
+    # Cycle 80: also captures context for the predictions ledger.
     lineup_cls = "unknown"
+    ctx_lineup_status = ""
+    ctx_play_pct = ""
     if args.lineups is not None:
         lu_path = (os.path.join(PROJECT_DIR, "data",
                                   f"lineups_{_date.today().isoformat()}.json")
@@ -404,6 +423,8 @@ def main():
         lineup_cls = classify_starter(name, starter_idx, teams_tonight=tonight)
         rec = starter_idx.get(name.lower())
         if rec:
+            ctx_lineup_status = rec["lineup_status"]
+            ctx_play_pct = str(rec["play_pct"])
             print(f"  Lineup:   {lineup_cls.upper()} ({rec['lineup_status']}, "
                   f"{rec['pos']}, play_pct={rec['play_pct']}"
                   + (f", inj={rec['injury']}" if rec['injury'] else "") + ")")
@@ -419,6 +440,7 @@ def main():
 
     # Injury cross-reference (cycle 53) — runs before the starter signal so a
     # listed-OUT player exits before the expensive playergamelog fetch.
+    ctx_injury_status = ""
     if args.injuries is not None and not args.include_injured:
         inj_path = (os.path.join(PROJECT_DIR, "data",
                                   f"injuries_{_date.today().isoformat()}.json")
@@ -426,6 +448,8 @@ def main():
         unav = load_unavailable_players(inj_path)
         soft = load_soft_warn_players(inj_path)
         status = lookup_status(name, unav, soft)
+        if status:
+            ctx_injury_status = status
         if status in unav.values():
             print(f"  [skip] {name} listed {status} in injury report — exiting (use --include-injured to override).")
             sys.exit(2)
@@ -500,7 +524,13 @@ def main():
         out = (os.path.join(PROJECT_DIR, "data", "predictions",
                             f"{_date.today().isoformat()}.csv")
                if args.save == "__default__" else args.save)
-        n = append_predictions_csv(out, pid, name, args.opp, is_home, stat_preds)
+        n = append_predictions_csv(
+            out, pid, name, args.opp, is_home, stat_preds,
+            lineup_status=ctx_lineup_status,
+            lineup_class=(lineup_cls if args.lineups is not None else ""),
+            play_pct=ctx_play_pct,
+            injury_status=ctx_injury_status,
+        )
         print(f"  Wrote {n} prediction rows → {out}")
 
 
