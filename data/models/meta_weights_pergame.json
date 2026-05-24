@@ -6,22 +6,22 @@
     "w_mlp": 0.5339
   },
   "reb": {
-    "w_xgb": 0.5546,
-    "w_lgb": 0.0548,
+    "w_xgb": 0.4267,
+    "w_lgb": 0.4837,
     "source": "val_nnls_3way",
-    "w_mlp": 0.402
+    "w_mlp": 0.2193
   },
   "ast": {
-    "w_xgb": 0.1896,
-    "w_lgb": 0.2797,
+    "w_xgb": 0.4902,
+    "w_lgb": 0.4097,
     "source": "val_nnls_3way",
-    "w_mlp": 0.5454
+    "w_mlp": 0.2611
   },
   "fg3m": {
-    "w_xgb": 0.1761,
-    "w_lgb": 0.2985,
+    "w_xgb": 0.4478,
+    "w_lgb": 0.3284,
     "source": "val_nnls_3way",
-    "w_mlp": 0.5309
+    "w_mlp": 0.4621
   },
   "stl": {
     "w_xgb": 0.5824,

@@ -49,15 +49,17 @@ STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 # making the "blend" a single-model prediction.
 _LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
 
-# Cycle 16 (loop 5): per-stat log1p label transform for low-rate / right-skewed
-# count stats. Walk-forward (4 folds) showed clean MAE wins for all three with
-# 4/4 folds positive: STL -0.0023, BLK -0.0072 (-1.4%), TOV -0.0057. R² loss
-# is small (-0.0010 to -0.0034) and within fold-to-fold noise. XGB and LGB
-# switch objective to squared error when log1p is in play (Poisson assumes
-# raw counts). The blend output is expm1'd back to raw-count scale before
-# NNLS, calibration, and persistence so predict_pergame's contract is
-# unchanged from the caller's perspective.
-_LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov"}
+# Per-stat log1p label transform for right-skewed count stats. Walk-forward
+# (4 folds) confirmed MAE wins on each stat below with 4/4 folds positive:
+#   Cycle 16 — STL -0.0023, BLK -0.0072 (-1.4%), TOV -0.0057
+#   Cycle 17 — FG3M -0.0079, REB -0.0160 (-0.8%), AST -0.0120 (-0.9%)
+# PTS was tested for cycle 17 and excluded — per-fold variance is too high
+# (range -0.0206 to +0.0270) and R² loss -0.0181 is too large vs noise.
+# XGB / LGB switch objective from Poisson to squared error when log1p is in
+# play (Poisson assumes raw counts). The blend output is expm1'd back to
+# raw-count scale before NNLS, calibration, and persistence so
+# predict_pergame's contract is unchanged from the caller's perspective.
+_LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov", "fg3m", "reb", "ast"}
 _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
