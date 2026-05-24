@@ -115,6 +115,31 @@ def make_pull_to_l10(weight: float = 0.3) -> AdjustFn:
     return fn
 
 
+def make_pull_l10_when_low_pred(weight: float = 0.3, threshold: float = 8.0) -> AdjustFn:
+    """Cycle 84 probe. Strata showed low-prediction players have higher
+    RELATIVE error (3.55 MAE at pred<8 is ~45% relative; 6.35 at pred>22 is ~30%).
+    Hypothesis: low-prediction players are inconsistent — pulling them toward
+    their L10 average should be more stable than the model's point estimate.
+    Test: only apply pull when pred < threshold.
+    """
+    def fn(pred: np.ndarray, rows: List[dict], stat: str) -> np.ndarray:
+        l10_key = f"l10_{stat}"
+        out = pred.copy()
+        for i, r in enumerate(rows):
+            if pred[i] >= threshold:
+                continue
+            l10 = r.get(l10_key)
+            if l10 is None:
+                continue
+            try:
+                l10f = float(l10)
+            except (TypeError, ValueError):
+                continue
+            out[i] = (1.0 - weight) * pred[i] + weight * l10f
+        return np.clip(out, 0.0, None)
+    return fn
+
+
 def make_b2b_penalty(factor: float = 0.96) -> AdjustFn:
     """Back-to-back games typically see reduced player output (fatigue).
 
@@ -295,8 +320,11 @@ def print_report(name: str, results: Dict[str, Dict[str, float]]) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--adjust", choices=["none", "constant", "min_ratio",
-                                          "pull_l5", "pull_l10", "b2b"],
+                                          "pull_l5", "pull_l10", "b2b",
+                                          "pull_l10_low"],
                     default="none")
+    ap.add_argument("--threshold", type=float, default=8.0,
+                    help="pull_l10_low: apply only when pred < threshold (default 8.0)")
     ap.add_argument("--factor", type=float, default=0.95)
     ap.add_argument("--factor-low", type=float, default=0.50,
                     help="min_ratio: scale for ratio < low_thr (default 0.50)")
@@ -336,6 +364,11 @@ def main() -> int:
     elif args.adjust == "b2b":
         fn = make_b2b_penalty(factor=args.factor)
         name = f"B2B penalty — back_to_back game * {args.factor:.3f}"
+    elif args.adjust == "pull_l10_low":
+        fn = make_pull_l10_when_low_pred(weight=args.weight,
+                                            threshold=args.threshold)
+        name = (f"Pull to L10 ONLY when pred < {args.threshold} "
+                f"(weight {args.weight:.2f}) — strata-informed magnitude probe")
 
     results = validate(fn, holdout, X)
     print_report(name, results)
