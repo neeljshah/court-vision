@@ -2113,7 +2113,11 @@ def _compute_opp_adjusted_rolling(gl: "pd.DataFrame", team_stats: dict) -> dict:
     """
     Build (team_id, game_id) → rolling off_rtg vs top-10 defensive teams (last 10 qualifying).
 
-    Top-10 = teams with lowest def_rtg in team_stats. shift(1), default 112.0.
+    Per-date top-10 ranking: for each game's date D, the top-10 def_rtg teams are
+    re-determined using each team's expanding-window def_rtg through games strictly
+    before D (shift(1)). This eliminates the loop-5-cycle-3 secondary leak where
+    the ranking used season-FINAL def_rtg from team_stats — the team_stats
+    parameter is now ignored (kept in the signature for back-compat).
     """
     needed = {"TEAM_ID", "GAME_ID", "GAME_DATE", "PTS", "FGA", "FTA", "TOV", "OREB"}
     if not needed.issubset(gl.columns):
@@ -2125,22 +2129,72 @@ def _compute_opp_adjusted_rolling(gl: "pd.DataFrame", team_stats: dict) -> dict:
     df["poss"]    = (df["FGA"] + 0.44 * df["FTA"] + df["TOV"] - df["OREB"]).clip(lower=1)
     df["off_raw"] = (df["PTS"] / df["poss"] * 100).round(2)
 
-    def_sorted = sorted(team_stats.items(), key=lambda x: x[1].get("def_rtg", 999.0))
-    top10_def  = {int(tid) for tid, _ in def_sorted[:10]}
-
-    opp_tid_map: dict = {}
+    # Build (game_id) -> {team_id: {pts, poss}} for opp_pts/opp_poss lookup.
+    by_game: dict = {}
     for _, r in df.iterrows():
-        opp_tid_map.setdefault(r["GAME_ID"], {})[r["TEAM_ID"]] = True
-    df["_opp_tid"] = df.apply(
-        lambda r: next((t for t in opp_tid_map.get(r["GAME_ID"], {}) if t != r["TEAM_ID"]), 0),
-        axis=1,
-    ).astype(int)
-    df["_vs_top"] = df["_opp_tid"].isin(top10_def)
+        by_game.setdefault(r["GAME_ID"], {})[int(r["TEAM_ID"])] = {
+            "pts":  float(r["PTS"]),
+            "poss": float(r["poss"]),
+        }
+
+    def _opp_info(r):
+        d = {t: v for t, v in by_game.get(r["GAME_ID"], {}).items()
+             if t != int(r["TEAM_ID"])}
+        if d:
+            v = next(iter(d.values()))
+            return v["pts"], v["poss"], next(iter(d.keys()))
+        return 0.0, 0.0, 0
+
+    df[["_opp_pts", "_opp_poss", "_opp_tid"]] = df.apply(
+        _opp_info, axis=1, result_type="expand"
+    )
+    df["_opp_tid"] = df["_opp_tid"].astype(int)
+
+    # Per-team expanding def_rtg (cumulative opp_pts / cumulative opp_poss) at the
+    # time-of-game level. shift(1) so we get the def_rtg through games strictly
+    # PRIOR to the current one. >= 5 prior games required to be ranked at all
+    # (otherwise the team can't be in/out of the top-10 set).
     df = df.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
+    df["_cum_opp_pts"]  = df.groupby("TEAM_ID")["_opp_pts"].shift(1).groupby(df["TEAM_ID"]).cumsum()
+    df["_cum_opp_poss"] = df.groupby("TEAM_ID")["_opp_poss"].shift(1).groupby(df["TEAM_ID"]).cumsum()
+    df["_n_prior"]      = df.groupby("TEAM_ID").cumcount()
+    df["_def_rtg_pit"]  = (df["_cum_opp_pts"] / df["_cum_opp_poss"].clip(lower=1) * 100.0).round(2)
+    df.loc[df["_n_prior"] < 5, "_def_rtg_pit"] = float("nan")
+
+    # For each unique game date D, snapshot each team's most-recent _def_rtg_pit
+    # entry where _dt < D and rank the top-10 lowest. Date snapshots speed up
+    # the per-game vs-top lookup that follows.
+    df_sorted_date = df.sort_values("_dt")
+    team_last_def: dict = {}            # team_id -> latest def_rtg seen
+    date_snapshots: dict = {}            # date -> set of top-10 team_ids
+    seen_dates: set = set()
+    prev_date = None
+    for _, r in df_sorted_date.iterrows():
+        cur_date = r["_dt"]
+        if cur_date != prev_date:
+            # Compute top-10 snapshot for the NEW date using whatever team_last_def
+            # values are recorded from games on STRICTLY earlier dates. Teams with
+            # NaN (fewer than 5 prior games) are excluded from the ranking.
+            ranked = sorted(
+                [(t, v) for t, v in team_last_def.items() if not (v != v)],
+                key=lambda kv: kv[1],
+            )
+            date_snapshots[cur_date] = {t for t, _ in ranked[:10]}
+            prev_date = cur_date
+        # After snapshot is taken for cur_date, record this row's def_rtg (which
+        # applies to FUTURE dates' snapshots).
+        if not (r["_def_rtg_pit"] != r["_def_rtg_pit"]):
+            team_last_def[int(r["TEAM_ID"])] = float(r["_def_rtg_pit"])
+
+    # Each row: is its opponent in the top-10 set AS OF this game's date?
+    df["_vs_top"] = df.apply(
+        lambda r: int(r["_opp_tid"]) in date_snapshots.get(r["_dt"], set()),
+        axis=1,
+    )
 
     lookup: dict = {}
     for tid, grp in df.groupby("TEAM_ID"):
-        grp = grp.reset_index(drop=True)
+        grp = grp.sort_values("_dt").reset_index(drop=True)
         top = grp[grp["_vs_top"]].copy().reset_index(drop=True)
         top["_roll"] = top["off_raw"].shift(1).rolling(10, min_periods=1).mean().fillna(112.0).round(2)
         top_map = dict(zip(top["GAME_ID"].astype(str), top["_roll"]))
