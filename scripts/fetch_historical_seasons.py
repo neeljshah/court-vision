@@ -83,6 +83,47 @@ def _load_stars_available(season: str) -> dict:
         return {}
 
 
+def _load_ref_data(season: str):
+    """Read officials + ref_stats caches if present.
+
+    Returns (officials_per_game, ref_stats):
+      officials_per_game: {game_id: [ref_name, ...]}
+      ref_stats: {ref_name: {games_officiated, home_win_rate, avg_total_fouls, avg_total_fta}}
+    Both empty dicts if caches not built yet — row builder falls back to
+    league-average defaults.
+    """
+    off_path = os.path.join(_NBA_CACHE, "officials", f"officials_{season}.json")
+    stats_path = os.path.join(_NBA_CACHE, "officials", f"ref_stats_{season}.json")
+    officials = {}
+    ref_stats = {}
+    if os.path.exists(off_path):
+        try:
+            with open(off_path) as f:
+                officials = json.load(f) or {}
+        except Exception:
+            pass
+    if os.path.exists(stats_path):
+        try:
+            with open(stats_path) as f:
+                ref_stats = json.load(f) or {}
+        except Exception:
+            pass
+    return officials, ref_stats
+
+
+def _crew_avg(refs: list, ref_stats: dict, field: str, default: float) -> float:
+    """Mean of `field` across the refs in the crew that have stats. Falls
+    back to `default` when nobody has data."""
+    vals = []
+    for r in refs or []:
+        s = ref_stats.get(r)
+        if s and field in s:
+            vals.append(float(s[field]))
+    if not vals:
+        return default
+    return round(sum(vals) / len(vals), 4)
+
+
 def _fetch_one_season(season: str) -> int:
     """Fetch one season, build rows (no sim Monte Carlo), persist cache.
 
@@ -146,6 +187,7 @@ def _fetch_one_season(season: str) -> int:
     _pv["_dt"] = pd.to_datetime(_pv["GAME_DATE"], errors="coerce")
     _pv = _pv.sort_values(["TEAM_ID", "_dt"]).reset_index(drop=True)
     stars_available_lookup = _load_stars_available(season)
+    officials_per_game, ref_stats = _load_ref_data(season)
     pace_var_lookup: dict = {}
     for _tid, _grp in _pv.groupby("TEAM_ID"):
         _grp = _grp.reset_index(drop=True)
@@ -218,13 +260,18 @@ def _fetch_one_season(season: str) -> int:
             "home_advantage": 1.0,
             "home_top_lineup_net_rtg": _get_top_lineup_net_rtg(h["TEAM_ABBREVIATION"], season),
             "away_top_lineup_net_rtg": _get_top_lineup_net_rtg(a["TEAM_ABBREVIATION"], season),
-            "ref_avg_fouls":    42.0,
-            "ref_home_win_pct": 0.5,
+            # Ref crew tendencies — mean of the 3 refs' historical stats.
+            # Falls back to league averages when no ref data for the crew.
+            "ref_avg_fouls":    _crew_avg(officials_per_game.get(str(gid), []),
+                                          ref_stats, "avg_total_fouls", 42.0),
+            "ref_home_win_pct": _crew_avg(officials_per_game.get(str(gid), []),
+                                          ref_stats, "home_win_rate", 0.5),
             "iso_matchup_edge": (
                 _synergy_team_iso_ppp(h["TEAM_ABBREVIATION"], season)
                 - _synergy_team_def_iso_ppp(a["TEAM_ABBREVIATION"], season)
             ),
-            "ref_fta_tendency": 0.0,
+            "ref_fta_tendency": _crew_avg(officials_per_game.get(str(gid), []),
+                                          ref_stats, "avg_total_fta", 0.0),
             "home_elo":          elo_lookup.get(str(gid), {}).get("home_elo", 1500.0),
             "away_elo":          elo_lookup.get(str(gid), {}).get("away_elo", 1500.0),
             "elo_differential":  (
