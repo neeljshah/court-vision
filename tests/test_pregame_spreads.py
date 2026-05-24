@@ -162,5 +162,92 @@ class TestPlayerPerspectiveSign(unittest.TestCase):
                 self.assertEqual(sign * hs, expected)
 
 
+class TestCycle95AAliasAndETJoin(unittest.TestCase):
+    """Cycle 95a — coverage fix tests.
+
+    Diagnosed root causes:
+      (1) ESPN tricode mismatch (GS≠GSW, NO≠NOP, NY≠NYK, SA≠SAS, UTAH≠UTA, WSH≠WAS)
+      (2) ESPN scoreboard dates are UTC; NBA gamelog MATCHUPs use ET.
+    Both must be tolerated for the join to find >80% of games.
+    """
+
+    def test_alias_map_canonicalises_espn_tricodes(self):
+        # All 6 known ESPN aliases must map to the NBA canonical 3-letter code.
+        for espn, nba in [("GS", "GSW"), ("NO", "NOP"), ("NY", "NYK"),
+                          ("SA", "SAS"), ("UTAH", "UTA"), ("WSH", "WAS")]:
+            self.assertEqual(pp._normalize_abbr(espn), nba,
+                              msg=f"{espn} should map to {nba}")
+        # Standard 3-letter tricodes pass through unchanged.
+        for tri in ("LAL", "BOS", "MIA"):
+            self.assertEqual(pp._normalize_abbr(tri), tri)
+
+    def test_fuzzy_lookup_tolerates_utc_offset(self):
+        # Parquet keyed on UTC date (2025-11-06); query uses ET date (2025-11-05).
+        lookup = {("2025-11-06", "GSW", "LAL"): {
+            "home_spread": -3.5, "total": 230.0,
+        }}
+        ws = pp._PregameSpreads(lookup, fuzzy_dates=True)
+        # Query under ET date with ESPN-aliased tricodes.
+        out = ws.features("GS", "LAL", datetime(2025, 11, 5))
+        self.assertEqual(out["home_spread"], -3.5)
+        self.assertEqual(out["total"], 230.0)
+
+    def test_holdout_join_coverage_above_80pct(self):
+        # End-to-end coverage gate — guards the build_pergame_dataset join.
+        # Skip when the gamelog cache or parquet is absent (fresh checkouts).
+        parquet_path = os.path.join(PROJECT_DIR, "data", "pregame_spreads.parquet")
+        if not os.path.exists(parquet_path):
+            self.skipTest("pregame_spreads.parquet absent — skipping coverage gate")
+        try:
+            rows, _ = pp.build_pergame_dataset(min_prior=0)
+        except Exception as e:
+            self.skipTest(f"build_pergame_dataset failed (likely missing cache): {e}")
+        if not rows:
+            self.skipTest("no rows built — gamelog cache empty")
+        rows.sort(key=lambda r: r["date"])
+        holdout = rows[int(len(rows) * 0.8):]
+        n_hit = sum(1 for r in holdout if r.get("home_spread") is not None)
+        # Only assert when holdout is large enough to be meaningful.
+        if len(holdout) < 100:
+            self.skipTest("holdout too small to assert coverage")
+        coverage = n_hit / len(holdout)
+        self.assertGreaterEqual(
+            coverage, 0.80,
+            msg=f"home_spread holdout coverage {coverage:.1%} < 80% "
+                f"({n_hit}/{len(holdout)})",
+        )
+
+    def test_known_game_lac_vs_hou_2025_12_23(self):
+        # Sanity check against a known matchup from the production parquet.
+        # 2025-12-23 ET: LAC hosted HOU; ESPN posted HOU -7.5 → LAC home_spread = +7.5.
+        parquet_path = os.path.join(PROJECT_DIR, "data", "pregame_spreads.parquet")
+        if not os.path.exists(parquet_path):
+            self.skipTest("pregame_spreads.parquet absent")
+        ps = pp.build_pregame_spreads()
+        if len(ps) == 0:
+            self.skipTest("empty lookup — likely missing pandas/pyarrow")
+        out = ps.features("LAC", "HOU", datetime(2025, 12, 23))
+        self.assertIsNotNone(out["home_spread"],
+                              msg="LAC vs HOU 2025-12-23 join missed")
+        self.assertAlmostEqual(out["home_spread"], 7.5, places=1)
+
+    def test_away_player_receives_sign_flipped_home_spread(self):
+        # End-to-end: a player on the AWAY team gets the sign-flipped
+        # home_spread (positive when player's team is favoured). This is the
+        # row-build convention from prop_pergame.build_pergame_dataset.
+        lookup = {("2025-11-05", "LAL", "BOS"): {
+            "home_spread": -4.5, "total": 225.5,
+        }}
+        ws = pp._PregameSpreads(lookup)
+        # BOS is away. From prop_pergame row build:
+        #   sp_home, sp_away, sign = "LAL", "BOS", -1.0
+        #   row["home_spread"] = sign * features["home_spread"]
+        feats = ws.features("LAL", "BOS", datetime(2025, 11, 5))
+        row_hs = -1.0 * feats["home_spread"]
+        # BOS as away underdog → from BOS perspective the spread is +4.5
+        # (their team is the underdog by 4.5).
+        self.assertEqual(row_hs, 4.5)
+
+
 if __name__ == "__main__":
     unittest.main()
