@@ -52,6 +52,7 @@ from src.data.injuries import (  # noqa: E402
 )
 from src.data.lineups import (  # noqa: E402
     build_starter_index, classify_starter,
+    apply_minutes_scaling, STATUS_SCALE,
 )
 
 
@@ -59,6 +60,22 @@ _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _PRED_DIR  = os.path.join(PROJECT_DIR, "data", "predictions")
 _API_SLEEP = 0.6  # polite delay between nba_api calls
+
+
+def _scale_lineup_preds(rows: List[Dict], starter_idx: Dict[str, dict]) -> List[Dict]:
+    """Scale each player's preds dict by their lineup classification (cycle 67).
+
+    Uses the original name (before _tag_lineup added '[BENCH]' etc) for the
+    classification lookup. Returns NEW dicts — caller's rows are unmutated.
+    """
+    out = []
+    for r in rows:
+        raw_name = r["name"].split(" [")[0]   # strip any trailing tag
+        cls = classify_starter(raw_name, starter_idx)
+        scaled = apply_minutes_scaling(r["preds"], cls)
+        r = dict(r); r["preds"] = scaled
+        out.append(r)
+    return out
 
 
 def _tag_lineup(rows: List[Dict], starter_idx: Dict[str, dict]) -> List[Dict]:
@@ -361,6 +378,9 @@ def main() -> int:
                          "cycle-61 rotowire scrape. Non-starters get a [BENCH] tag "
                          "in the printed output instead of being skipped (slate view "
                          "is informational, unlike compare_to_lines which is for betting).")
+    ap.add_argument("--scale-by-status", action="store_true",
+                    help="Cycle 67. Scale every stat prediction by lineup classification "
+                         "(questionable*0.75, bench*0.30, no-game*0.0). Requires --lineups.")
     args = ap.parse_args()
 
     if args.date:
@@ -422,6 +442,9 @@ def main() -> int:
             # Tag non-starters in name (slate is informational — never drop).
             home_rows = _tag_lineup(home_rows, starter_idx)
             away_rows = _tag_lineup(away_rows, starter_idx)
+            if args.scale_by_status:
+                home_rows = _scale_lineup_preds(home_rows, starter_idx)
+                away_rows = _scale_lineup_preds(away_rows, starter_idx)
         print_game(home_abbrev, away_abbrev, date_str, home_rows, away_rows)
         per_game_rows.append((g, home_rows, away_rows))
 

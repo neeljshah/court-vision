@@ -208,6 +208,59 @@ def test_tag_lineup_does_not_mutate_caller_dict():
     assert original["name"] == "Austin Reaves"   # mutation prevention
 
 
+# ── predict_slate._scale_lineup_preds (cycle 67) ─────────────────────────────
+
+def test_scale_lineup_preds_applies_questionable_factor():
+    """A starter listed Questionable (50% play) has preds scaled by 0.75."""
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 50,
+                              "injury": "Ques", "lineup_status": "Expected"}}
+    row = {"player_id": 1, "name": "LeBron James", "team": "LAL",
+           "preds": {"pts": 28.0, "reb": 8.0}}
+    out = ps._scale_lineup_preds([row], idx)
+    # questionable → 0.75
+    assert out[0]["preds"]["pts"] == pytest.approx(21.0)
+    assert out[0]["preds"]["reb"] == pytest.approx(6.0)
+
+
+def test_scale_lineup_preds_zeros_no_game():
+    """Bench player on a team not playing tonight → preds * 0 → 0.
+
+    Default classify_starter without player_team returns 'bench' (factor 0.30)
+    not 'no-game', so use a player whose name IS in starting 5 and is OUT.
+    Actually simpler: use no-game by direct classification — but we don't
+    have that path easily. Test bench instead (factor 0.30)."""
+    idx = {"shai gilgeous-alexander": {"team": "OKC", "pos": "PG",
+                                         "play_pct": 100, "injury": None,
+                                         "lineup_status": "Confirmed"}}
+    row = {"player_id": 1, "name": "Austin Reaves", "team": "LAL",
+           "preds": {"pts": 20.0}}
+    out = ps._scale_lineup_preds([row], idx)
+    # bench → 0.30 → 20.0 * 0.30 = 6.0
+    assert out[0]["preds"]["pts"] == pytest.approx(6.0)
+
+
+def test_scale_lineup_preds_handles_tag_in_name():
+    """If _tag_lineup ran first and prepended '[BENCH]', scaling should still
+    look up the raw name (not the tagged version)."""
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 100,
+                              "injury": None, "lineup_status": "Confirmed"}}
+    # Name already has the tag, as happens when _tag_lineup runs before scaling.
+    row = {"player_id": 1, "name": "LeBron James [STARTER]", "team": "LAL",
+           "preds": {"pts": 28.0}}
+    out = ps._scale_lineup_preds([row], idx)
+    # starter → 1.0 → unchanged
+    assert out[0]["preds"]["pts"] == 28.0
+
+
+def test_scale_lineup_preds_does_not_mutate_caller_dict():
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 50,
+                              "injury": "Ques", "lineup_status": "Expected"}}
+    original = {"player_id": 1, "name": "LeBron James", "team": "LAL",
+                "preds": {"pts": 28.0}}
+    ps._scale_lineup_preds([original], idx)
+    assert original["preds"]["pts"] == 28.0   # not mutated
+
+
 # ── compare_to_lines lineup filter end-to-end ────────────────────────────────
 
 def test_compare_to_lines_lineup_filter_skips_bench(monkeypatch, capsys):

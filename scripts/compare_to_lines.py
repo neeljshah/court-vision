@@ -53,7 +53,9 @@ from src.prediction.prop_quantiles import (  # noqa: E402
 )
 from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
 from src.data.injuries import load_unavailable_players  # noqa: E402
-from src.data.lineups import build_starter_index, classify_starter  # noqa: E402
+from src.data.lineups import (  # noqa: E402
+    build_starter_index, classify_starter, STATUS_SCALE,
+)
 
 
 def _strip_accents(s: str) -> str:
@@ -154,6 +156,9 @@ def main():
     ap.add_argument("--lineups", nargs="?", const="__default__", default=None,
                     help="Cycle 64. Skip players not classified starter/questionable in the "
                          "cycle-61 rotowire lineup JSON. Bare flag → data/lineups_<today>.json.")
+    ap.add_argument("--scale-by-status", action="store_true",
+                    help="Cycle 67. Scale model_pred + q10/q90 by the lineup classification "
+                         "(questionable*0.75) before computing edge / EV. Requires --lineups.")
     args = ap.parse_args()
 
     inj_unavail: dict = {}
@@ -225,6 +230,15 @@ def main():
         qint = predict_pergame_quantiles(stat, prow, model_dir)
         if model_pred is None or qint is None:
             print(f"  [skip] {name} {stat}: no model output"); continue
+        # Cycle 67: scale by lineup classification before EV math.
+        if args.scale_by_status and starter_idx:
+            cls = classify_starter(name, starter_idx)
+            factor = STATUS_SCALE.get(cls, 1.0)
+            if factor != 1.0:
+                model_pred = round(float(model_pred) * factor, 2)
+                qint = {k: (round(float(v) * factor, 2)
+                            if isinstance(v, (int, float)) else v)
+                        for k, v in qint.items()}
         edge = model_pred - line
         if abs(edge) < args.min_edge:
             continue
