@@ -1,9 +1,9 @@
 {
   "pts": {
-    "w_xgb": 0.4447,
-    "w_lgb": 0.0325,
+    "w_xgb": 0.7774,
+    "w_lgb": 0.0,
     "source": "val_nnls_3way",
-    "w_mlp": 0.5339
+    "w_mlp": 0.287
   },
   "reb": {
     "w_xgb": 0.4267,

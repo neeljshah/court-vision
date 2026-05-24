@@ -53,13 +53,20 @@ _LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
 # (4 folds) confirmed MAE wins on each stat below with 4/4 folds positive:
 #   Cycle 16 — STL -0.0023, BLK -0.0072 (-1.4%), TOV -0.0057
 #   Cycle 17 — FG3M -0.0079, REB -0.0160 (-0.8%), AST -0.0120 (-0.9%)
-# PTS was tested for cycle 17 and excluded — per-fold variance is too high
-# (range -0.0206 to +0.0270) and R² loss -0.0181 is too large vs noise.
 # XGB / LGB switch objective from Poisson to squared error when log1p is in
 # play (Poisson assumes raw counts). The blend output is expm1'd back to
 # raw-count scale before NNLS, calibration, and persistence so
 # predict_pergame's contract is unchanged from the caller's perspective.
 _LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov", "fg3m", "reb", "ast"}
+
+# Cycle 18 (loop 5): PTS-specific recipe — sqrt label transform + Huber loss.
+# log1p was tested for PTS in cycle 17 and rejected (per-fold mae sign flips,
+# range -0.0206..+0.0270). For PTS (mean ~12 per game), sqrt compresses less
+# aggressively than log1p; combined with Huber (smooth L1, robust to outliers)
+# it wins -0.0241 +- 0.0152 MAE and -0.0081 +- 0.0019 R² across 4 walk-forward
+# folds, 4/4 folds positive. The largest single-stat MAE improvement of the
+# session. XGB uses reg:pseudohubererror; LGB uses 'huber' objective.
+_SQRT_HUBER_STATS: set = {"pts"}
 _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
@@ -1142,25 +1149,36 @@ def train_pergame_models(
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
         y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
         is_count = stat in ("stl", "blk")
-        use_log = stat in _LOG_TRANSFORM_STATS
+        use_log   = stat in _LOG_TRANSFORM_STATS
+        use_sqrt_huber = stat in _SQRT_HUBER_STATS
 
         # When log1p is on, all three learners train on log1p(y) and the
         # base-learner predictions are expm1'd before the NNLS stacker fits.
-        # This lets the NNLS blend on the raw-count scale (same units as
-        # the final prediction) while the learners' loss-surface fitting
-        # happens in the log-compressed space that better matches the
-        # right-skewed count distributions.
-        y_tr_t  = np.log1p(y_tr)  if use_log else y_tr
-        y_val_t = np.log1p(y_val) if use_log else y_val
+        # When sqrt+Huber is on (PTS only), the learners train on sqrt(y),
+        # predictions are squared back, and XGB/LGB use Huber loss instead
+        # of squared error. NNLS / calibration / persistence all sit on the
+        # raw-count scale, identical to log1p stats.
+        if use_log:
+            y_tr_t, y_val_t = np.log1p(y_tr), np.log1p(y_val)
+        elif use_sqrt_huber:
+            y_tr_t, y_val_t = np.sqrt(y_tr), np.sqrt(y_val)
+        else:
+            y_tr_t, y_val_t = y_tr, y_val
 
         params = {**(_DEFAULT_COUNT if is_count else _DEFAULT_REG),
                   **effective_params.get(stat, {})}
 
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
-        # Poisson objective only makes sense on raw counts; log1p targets use
-        # squared-error.
-        xgb_obj = ("reg:squarederror" if use_log
-                   else ("count:poisson" if is_count else "reg:squarederror"))
+        # Poisson objective only makes sense on raw counts; log1p / sqrt targets
+        # use squared-error or Huber.
+        if use_sqrt_huber:
+            xgb_obj = "reg:pseudohubererror"
+        elif use_log:
+            xgb_obj = "reg:squarederror"
+        elif is_count:
+            xgb_obj = "count:poisson"
+        else:
+            xgb_obj = "reg:squarederror"
         xgb_model = xgb.XGBRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
@@ -1176,8 +1194,14 @@ def train_pergame_models(
                       sample_weight=sample_w_tr, verbose=False)
 
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
-        lgb_obj = ("regression" if use_log
-                   else ("poisson" if is_count else "regression"))
+        if use_sqrt_huber:
+            lgb_obj = "huber"
+        elif use_log:
+            lgb_obj = "regression"
+        elif is_count:
+            lgb_obj = "poisson"
+        else:
+            lgb_obj = "regression"
         lgb_model = lgb.LGBMRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
@@ -1214,13 +1238,17 @@ def train_pergame_models(
         # disagree and the fit doesn't generalise.
         lgb_only = stat in _LGB_ONLY_STATS
 
-        # When log1p is on, base learners output log-space predictions; expm1
-        # them back to raw-count scale before NNLS fits on raw-y target. This
-        # also fixes calibration + persistence so predict_pergame's saved
-        # models, run through xgb.predict / lgb.predict directly, still need
-        # the expm1 at inference time (see load_pergame_model / predict_pergame).
+        # When log1p / sqrt is on, base learners output transformed-space
+        # predictions; invert them back to raw-count scale before NNLS fits on
+        # raw-y target. Also fixes calibration + persistence so
+        # predict_pergame's saved models still need the inverse at inference
+        # (see load_pergame_model / predict_pergame).
         def _inv(v):
-            return np.clip(np.expm1(v), 0.0, None) if use_log else v
+            if use_log:
+                return np.clip(np.expm1(v), 0.0, None)
+            if use_sqrt_huber:
+                return np.clip(v, 0.0, None) ** 2
+            return v
 
         xgb_ho = _inv(xgb_model.predict(X_ho))
         lgb_ho = _inv(lgb_model.predict(X_ho))
@@ -1497,15 +1525,17 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
 
-    # When the stat was trained with log1p target, each base learner outputs
-    # log-space predictions; expm1 them back to raw-count scale before NNLS
-    # weighting (matches the training-time inversion).
+    # When the stat was trained with log1p or sqrt target, each base learner
+    # outputs transformed-space predictions; invert them back to raw-count
+    # scale before NNLS weighting (matches training-time inversion).
     use_log = stat in _LOG_TRANSFORM_STATS
+    use_sqrt_huber = stat in _SQRT_HUBER_STATS
     def _inv_pred(v: float) -> float:
-        if not use_log:
-            return v
-        # clip negative to 0 (matches training-side clip)
-        return max(0.0, float(np.expm1(v)))
+        if use_log:
+            return max(0.0, float(np.expm1(v)))
+        if use_sqrt_huber:
+            return max(0.0, float(v)) ** 2
+        return v
 
     # load_pergame_model returns [XGB, LGB, (scaler, MLP)] when all are present,
     # or a subset (e.g. [LGB] for _LGB_ONLY_STATS, [XGB, LGB] when MLP weight
