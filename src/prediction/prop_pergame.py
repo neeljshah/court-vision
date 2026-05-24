@@ -709,6 +709,8 @@ def train_pergame_models(
     import xgboost as xgb
     from sklearn.isotonic import IsotonicRegression
     from sklearn.metrics import mean_absolute_error, r2_score
+    from sklearn.neural_network import MLPRegressor
+    from sklearn.preprocessing import StandardScaler
 
     model_dir = model_dir or _MODEL_DIR
     rows, feature_cols = build_pergame_dataset(gamelog_dir, min_prior=min_prior)
@@ -847,41 +849,66 @@ def train_pergame_models(
                       sample_weight=sample_w_tr,
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
+        # Base learner 3 — MLP on standardised features. Different bias
+        # (smooth function approximator) — the cycle-5 screen showed PTS
+        # gains -0.0207 MAE / +0.0046 R² and AST -0.0046 MAE / +0.0041 R²
+        # vs the 2-way blend; REB and FG3M are nearly a wash (NNLS picks
+        # a small w_mlp). 5-seed ensemble would be more stable but doubles
+        # train time; a single seed is fine because NNLS shrinks any
+        # seed-unstable learner toward 0 on the val fit.
+        mlp_scaler = StandardScaler()
+        X_tr_s  = mlp_scaler.fit_transform(X_tr)
+        X_val_s = mlp_scaler.transform(X_val)
+        X_ho_s  = mlp_scaler.transform(X_ho)
+        mlp_model = MLPRegressor(
+            hidden_layer_sizes=(128, 64), activation="relu", solver="adam",
+            learning_rate_init=1e-3, alpha=1e-4, batch_size=512,
+            max_iter=80, random_state=42, early_stopping=True,
+            validation_fraction=0.15, n_iter_no_change=10,
+        )
+        mlp_model.fit(X_tr_s, y_tr)
+
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
-        # weighted combo of XGB + LGB. Weights are fit per-stat on the val
-        # slice via non-negative least squares (sklearn LinearRegression
-        # with positive=True, fit_intercept=False). Falls back to the
-        # fixed 0.5/0.5 mean when the val fit gives wildly skewed weights
-        # (sum outside [0.5, 1.5]) — that usually means val and holdout
+        # 3-way weighted combo of XGB + LGB + MLP fit per-stat on the val
+        # slice via non-negative least squares. Falls back to the fixed
+        # equal-mean when the val fit gives wildly skewed weights (sum
+        # outside [0.5, 1.5]) — that usually means val and holdout
         # disagree and the fit doesn't generalise.
         lgb_only = stat in _LGB_ONLY_STATS
 
         xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
+        mlp_ho = mlp_model.predict(X_ho_s)
 
         if lgb_only:
-            w_xgb, w_lgb = 0.0, 1.0
+            w_xgb, w_lgb, w_mlp = 0.0, 1.0, 0.0
             meta_fit_source = "lgb_only"
         else:
             xgb_val = xgb_model.predict(X_val)
             lgb_val = lgb_model.predict(X_val)
+            mlp_val = mlp_model.predict(X_val_s)
             from sklearn.linear_model import LinearRegression
             stacker = LinearRegression(positive=True, fit_intercept=False)
-            stacker.fit(np.column_stack([xgb_val, lgb_val]), y_val)
-            w_xgb, w_lgb = float(stacker.coef_[0]), float(stacker.coef_[1])
-            w_sum = w_xgb + w_lgb
+            stacker.fit(np.column_stack([xgb_val, lgb_val, mlp_val]), y_val)
+            w_xgb, w_lgb, w_mlp = (float(stacker.coef_[0]),
+                                   float(stacker.coef_[1]),
+                                   float(stacker.coef_[2]))
+            w_sum = w_xgb + w_lgb + w_mlp
             if not (0.5 <= w_sum <= 1.5):
-                w_xgb, w_lgb = 0.5, 0.5
-                meta_fit_source = "fallback_05_05"
+                w_xgb, w_lgb, w_mlp = 1/3, 1/3, 1/3
+                meta_fit_source = "fallback_third"
             else:
-                meta_fit_source = "val_nnls"
+                meta_fit_source = "val_nnls_3way"
 
-        def _blend(X):
+        def _blend(X, Xs):
             if lgb_only:
                 return lgb_model.predict(X)
-            return w_xgb * xgb_model.predict(X) + w_lgb * lgb_model.predict(X)
+            return (w_xgb * xgb_model.predict(X)
+                    + w_lgb * lgb_model.predict(X)
+                    + w_mlp * mlp_model.predict(Xs))
 
-        blend_ho = lgb_ho if lgb_only else (w_xgb * xgb_ho + w_lgb * lgb_ho)
-        blend_tr = _blend(X_tr)
+        blend_ho = (lgb_ho if lgb_only
+                    else w_xgb * xgb_ho + w_lgb * lgb_ho + w_mlp * mlp_ho)
+        blend_tr = _blend(X_tr, X_tr_s)
 
         # Isotonic calibration — k-fold cross-fitted on the holdout.
         #
@@ -938,6 +965,7 @@ def train_pergame_models(
             "train_r2":        round(float(r2_score(y_tr, blend_tr)), 4),
             "xgb_holdout_r2":  round(float(r2_score(y_ho, xgb_ho)), 4),
             "lgb_holdout_r2":  round(float(r2_score(y_ho, lgb_ho)), 4),
+            "mlp_holdout_r2":  round(float(r2_score(y_ho, mlp_ho)), 4),
             # Diagnostics — pre-calibration blend and the cross-fitted lift.
             "uncal_holdout_r2":  round(uncal_r2, 4),
             "uncal_holdout_mae": round(uncal_mae, 4),
@@ -945,14 +973,16 @@ def train_pergame_models(
             "calibration_lift_mae": round(uncal_mae - cal_mae, 4),
             "calibration_used":  cal_used,
             # Meta-stacker weights — what predict_pergame applies to the
-            # XGB + LGB base learner outputs before calibration.
+            # XGB + LGB + MLP base learner outputs before calibration.
             "meta_w_xgb":     round(w_xgb, 4),
             "meta_w_lgb":     round(w_lgb, 4),
+            "meta_w_mlp":     round(w_mlp, 4),
             "meta_fit_source": meta_fit_source,
         }
         m["gap"] = round(m["train_r2"] - m["holdout_r2"], 4)
         m["ensemble_lift"] = round(m["holdout_r2"] - max(m["xgb_holdout_r2"],
-                                                         m["lgb_holdout_r2"]), 4)
+                                                         m["lgb_holdout_r2"],
+                                                         m["mlp_holdout_r2"]), 4)
         metrics["stats"][stat] = m
         # For stats listed in _LGB_ONLY_STATS the XGB Poisson learner drags
         # the blend (ensemble_lift is negative). Save only LGB so that
@@ -965,10 +995,23 @@ def train_pergame_models(
         else:
             xgb_model.save_model(xgb_path)
         joblib.dump(lgb_model, os.path.join(model_dir, f"props_pg_lgb_{stat}.pkl"))
+        # Persist MLP + its scaler. Skip when NNLS picks ~0 weight for MLP
+        # (no point keeping a learner the meta-stacker ignores).
+        mlp_path = os.path.join(model_dir, f"props_pg_mlp_{stat}.pkl")
+        mlp_scaler_path = os.path.join(model_dir, f"props_pg_mlp_scaler_{stat}.pkl")
+        if w_mlp >= 0.05 and not lgb_only:
+            joblib.dump(mlp_model, mlp_path)
+            joblib.dump(mlp_scaler, mlp_scaler_path)
+        else:
+            for p in (mlp_path, mlp_scaler_path):
+                if os.path.exists(p):
+                    os.remove(p)
         cal_tag = "cal" if cal_used else "raw"
         print(f"  [prop_pergame] {stat.upper():4s} {cal_tag} R²={m['holdout_r2']:.3f} "
               f"MAE={m['holdout_mae']:.2f}  (xgb={m['xgb_holdout_r2']:.3f}, "
-              f"lgb={m['lgb_holdout_r2']:.3f}, lift={m['ensemble_lift']:+.3f}, "
+              f"lgb={m['lgb_holdout_r2']:.3f}, mlp={m['mlp_holdout_r2']:.3f}, "
+              f"lift={m['ensemble_lift']:+.3f}, "
+              f"w=[{w_xgb:.2f}/{w_lgb:.2f}/{w_mlp:.2f}], "
               f"cal_lift_mae={m['calibration_lift_mae']:+.3f})")
 
     metrics["feature_cols"] = feature_cols
@@ -1001,11 +1044,14 @@ def _persist_meta_weights(model_dir: str, metrics: dict) -> None:
             existing = {}
     for stat, m in metrics.get("stats", {}).items():
         if "meta_w_xgb" in m and "meta_w_lgb" in m:
-            existing[stat] = {
+            entry = {
                 "w_xgb": float(m["meta_w_xgb"]),
                 "w_lgb": float(m["meta_w_lgb"]),
                 "source": m.get("meta_fit_source", "unknown"),
             }
+            if "meta_w_mlp" in m:
+                entry["w_mlp"] = float(m["meta_w_mlp"])
+            existing[stat] = entry
     with open(path, "w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2)
 
@@ -1013,10 +1059,12 @@ def _persist_meta_weights(model_dir: str, metrics: dict) -> None:
 # ── inference ─────────────────────────────────────────────────────────────────
 
 def load_pergame_model(stat: str, model_dir: Optional[str] = None) -> list:
-    """Load the per-game base learners (XGBoost + LightGBM) for a stat.
+    """Load the per-game base learners (XGBoost + LightGBM + MLP) for a stat.
 
-    Returns a list of fitted models — empty when none are trained. The blend
-    of whatever is present is what predict_pergame uses.
+    Returns a list of fitted models — empty when none are trained. The MLP
+    entry, when present, is a tuple (scaler, model) since the MLP needs
+    standardised input — the rest receive raw X. predict_pergame disambiguates
+    by class name / tuple shape.
     """
     model_dir = model_dir or _MODEL_DIR
     models: list = []
@@ -1034,6 +1082,14 @@ def load_pergame_model(stat: str, model_dir: Optional[str] = None) -> list:
         try:
             import joblib
             models.append(joblib.load(lgb_path))
+        except Exception:
+            pass
+    mlp_path = os.path.join(model_dir, f"props_pg_mlp_{stat}.pkl")
+    mlp_scaler_path = os.path.join(model_dir, f"props_pg_mlp_scaler_{stat}.pkl")
+    if os.path.exists(mlp_path) and os.path.exists(mlp_scaler_path):
+        try:
+            import joblib
+            models.append((joblib.load(mlp_scaler_path), joblib.load(mlp_path)))
         except Exception:
             pass
     return models
@@ -1088,35 +1144,52 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     expected_n = len(cols)
     # Guard: stale model trained on a different feature set — refuse to predict.
     for m in models:
-        n_feats = getattr(m, "n_features_in_", None)
+        target = m[1] if isinstance(m, tuple) else m  # MLP entries are (scaler, model)
+        n_feats = getattr(target, "n_features_in_", None)
         if n_feats is not None and n_feats != expected_n:
             return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
 
-    # load_pergame_model returns [XGB, LGB] when both exist (in that order),
-    # or [LGB] only for stats in _LGB_ONLY_STATS. Disambiguate by class
-    # name rather than position so we don't silently mis-weight if the load
-    # order changes.
+    # load_pergame_model returns [XGB, LGB, (scaler, MLP)] when all are present,
+    # or a subset (e.g. [LGB] for _LGB_ONLY_STATS, [XGB, LGB] when MLP weight
+    # was below the keep threshold). Disambiguate by class/tuple shape.
     weights = _get_pergame_meta_weights(model_dir).get(stat)
     blend = 0.0
-    if weights and len(models) >= 2:
-        xgb_pred = lgb_pred = None
+    if weights:
+        xgb_pred = lgb_pred = mlp_pred = None
         for m in models:
+            if isinstance(m, tuple):
+                scaler, mlp_model = m
+                if mlp_pred is None:
+                    mlp_pred = float(mlp_model.predict(scaler.transform(X))[0])
+                continue
             cls = type(m).__name__.lower()
             if "xgb" in cls and xgb_pred is None:
                 xgb_pred = float(m.predict(X)[0])
             elif "lgb" in cls and lgb_pred is None:
                 lgb_pred = float(m.predict(X)[0])
-        if xgb_pred is not None and lgb_pred is not None:
-            blend = float(weights["w_xgb"]) * xgb_pred + float(weights["w_lgb"]) * lgb_pred
+        w_xgb = float(weights.get("w_xgb", 0.0))
+        w_lgb = float(weights.get("w_lgb", 0.0))
+        w_mlp = float(weights.get("w_mlp", 0.0))
+        parts: List[float] = []
+        if xgb_pred is not None: parts.append(w_xgb * xgb_pred)
+        if lgb_pred is not None: parts.append(w_lgb * lgb_pred)
+        if mlp_pred is not None: parts.append(w_mlp * mlp_pred)
+        if parts:
+            blend = sum(parts)
         else:
-            preds = [float(m.predict(X)[0]) for m in models]
-            blend = sum(preds) / len(preds)
+            blend = 0.0
     else:
-        # Single model on disk (e.g. STL LGB-only) or no weights file —
-        # mean is the safe default.
-        preds = [float(m.predict(X)[0]) for m in models]
-        blend = sum(preds) / len(preds)
+        # No weights file — mean of whatever predict surfaces (MLP entries
+        # need scaling first).
+        preds = []
+        for m in models:
+            if isinstance(m, tuple):
+                scaler, mlp_model = m
+                preds.append(float(mlp_model.predict(scaler.transform(X))[0]))
+            else:
+                preds.append(float(m.predict(X)[0]))
+        blend = sum(preds) / len(preds) if preds else 0.0
 
     calibrator = _load_pergame_calibrator(stat, model_dir)
     if calibrator is not None:
