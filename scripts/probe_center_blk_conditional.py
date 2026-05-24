@@ -1,5 +1,11 @@
 """probe_center_blk_conditional.py — Cycle 98b (loop 5) T1-F-1.
 
+REJECT verdict on run-1 (best factor=1.25): single-split BLK delta -0.0001
+(passes SS gate marginally) but WF 4-fold only 2/4 folds negative (mean
+-0.0001). The opp_def_blk proxy is too noisy a signal for paint-shot
+opportunity; recommend building data/team_advanced_stats.parquet with
+opp_paint_fga_rate (from boxscore_adv team entries) before re-running.
+
 Cycle 97b REJECTED a flat center-BLK scale (factor 1.30..1.74 all REGRESSED:
 +0.0031 .. +0.0137 BLK delta). Root cause: BLK uses q50 (median-optimal) head,
 so the +85% MAE in center buckets is a RIGHT-TAIL OUTLIER problem, not a
