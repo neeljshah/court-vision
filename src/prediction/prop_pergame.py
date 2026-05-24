@@ -776,6 +776,115 @@ def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads
     return _PregameSpreads(lookup)
 
 
+# ── per-player personal fouls (cycle 91b loop 5) ──────────────────────────────
+# Source: data/player_pf.parquet — built by
+# scripts/aggregate_player_pf_from_boxscores.py from cached
+# data/nba/boxscore_<gid>.json. Each row: (game_id, player_id,
+# team_abbreviation, game_date, pf, min). Companion rolling lookup at
+# data/player_pf_per36.parquet is built by scripts/aggregate_pf_per_36.py:
+# per-(player_id, game_date) expanding PF/36 EXCLUDING the target game.
+#
+# GATED on file existence: when the parquet is absent the wrapper returns
+# None for every query so build_pergame_dataset is a strict no-op back-compat
+# path. pf is NOT yet appended to feature_columns() — this is the cycle 91b
+# backfill that unblocks the cycle-90c T1-B foul-rate probe (which silently
+# degraded to a BLK proxy because PF was absent from the gamelog cache).
+_PLAYER_PF_PATH = os.path.join(PROJECT_DIR, "data", "player_pf.parquet")
+_PLAYER_PF_PER36_PATH = os.path.join(PROJECT_DIR, "data", "player_pf_per36.parquet")
+
+
+class _PlayerPF:
+    """Per-(player_id, game_date) PF + rolling expanding PF/36 lookup.
+
+    Both queries return None on miss so callers can NaN-fill or substitute
+    a default without a try/except. season_pf_per_36 is strictly
+    point-in-time (excludes the target game) — built by
+    scripts/aggregate_pf_per_36.py with pandas expanding+shift(1).
+    """
+
+    def __init__(
+        self,
+        pf_lookup: Dict[Tuple[int, str], float],
+        per36_lookup: Dict[Tuple[int, str], float],
+    ):
+        self._pf = pf_lookup
+        self._per36 = per36_lookup
+
+    def __len__(self) -> int:
+        return len(self._pf)
+
+    def pf(self, player_id, gdate_iso: str) -> Optional[float]:
+        """Realised PF for (player_id, game_date_iso) — None when unknown."""
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return None
+        return self._pf.get((pid, str(gdate_iso)))
+
+    def season_pf_per_36(self, player_id, gdate_iso: str) -> Optional[float]:
+        """Rolling expanding PF/36 EXCLUDING the target game (no leakage).
+
+        None when the player has no prior game or the parquet is absent.
+        """
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return None
+        return self._per36.get((pid, str(gdate_iso)))
+
+
+def build_player_pf(
+    pf_path: Optional[str] = None,
+    per36_path: Optional[str] = None,
+) -> _PlayerPF:
+    """Load data/player_pf.parquet (+ optional per36) into a _PlayerPF wrapper.
+
+    GATED on file existence: missing pf parquet collapses to the empty
+    wrapper so build_pergame_dataset is a no-op back-compat path. Missing
+    per36 parquet only disables the rolling lookup (raw pf still works).
+    Never raises — pandas/pyarrow import failures fall through to empty.
+    """
+    pf_path = pf_path or _PLAYER_PF_PATH
+    per36_path = per36_path or _PLAYER_PF_PER36_PATH
+    pf_lookup: Dict[Tuple[int, str], float] = {}
+    per36_lookup: Dict[Tuple[int, str], float] = {}
+    if not os.path.exists(pf_path):
+        return _PlayerPF(pf_lookup, per36_lookup)
+    try:
+        import pandas as pd  # noqa: PLC0415
+        df = pd.read_parquet(pf_path)
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            gdate = str(r.get("game_date", ""))
+            if not gdate:
+                continue
+            try:
+                pf_lookup[(pid, gdate)] = float(r.get("pf", 0.0) or 0.0)
+            except (TypeError, ValueError):
+                continue
+        if os.path.exists(per36_path):
+            df36 = pd.read_parquet(per36_path)
+            for _, r in df36.iterrows():
+                try:
+                    pid = int(r["player_id"])
+                except (TypeError, ValueError, KeyError):
+                    continue
+                v = r.get("season_pf_per_36")
+                try:
+                    v_f = float(v)
+                except (TypeError, ValueError):
+                    continue
+                if v_f != v_f:  # NaN
+                    continue
+                per36_lookup[(pid, str(r["game_date"]))] = v_f
+    except Exception:
+        return _PlayerPF(pf_lookup, per36_lookup)
+    return _PlayerPF(pf_lookup, per36_lookup)
+
+
 # ── play-type features ────────────────────────────────────────────────────────
 
 class _PlayTypes:
@@ -1333,6 +1442,13 @@ def build_pergame_dataset(
     #   home_spread < 0  ⇒ home favoured; row["home_spread"] negates for away.
     # T1-A garbage-time haircut probe reads row["home_spread"] directly.
     pregame_spreads = build_pregame_spreads()
+    # Cycle 91b (loop 5) — per-(player_id, game_date) PF + rolling PF/36.
+    # GATED on data/player_pf.parquet existence; missing parquet collapses
+    # to None on every row so build_pergame_dataset is a no-op back-compat
+    # path. pf is NOT in feature_columns() yet — this backfill unblocks the
+    # cycle-90c T1-B foul-rate probe (PF absent from gamelog cache → probe
+    # silently degraded to a BLK proxy).
+    player_pf = build_player_pf()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -1423,6 +1539,14 @@ def build_pergame_dataset(
                 hs = sp_feats.get("home_spread")
                 row["home_spread"] = (sign * float(hs)) if hs is not None else None
                 row["total"] = sp_feats.get("total")
+                # Cycle 91b (loop 5) — per-row PF + rolling expanding PF/36.
+                # Both are None when the parquet is absent or the (pid, date)
+                # is uncached. The per36 value is strictly point-in-time
+                # (target game excluded) — safe to consume as a feature later.
+                gd_iso = gdate.date().isoformat()
+                row["pf"] = player_pf.pf(file_player_id, gd_iso)
+                row["season_pf_per_36"] = player_pf.season_pf_per_36(
+                    file_player_id, gd_iso)
                 rows.append(row)
 
             if played:
