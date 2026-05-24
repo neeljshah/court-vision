@@ -100,6 +100,8 @@ def train_quantile_models(
     (point-comparison via q=0.5). Writes one model file per (stat, q).
     """
     import xgboost as xgb
+    import lightgbm as lgb
+    import joblib
     from sklearn.metrics import mean_absolute_error
 
     model_dir = model_dir or _MODEL_DIR
@@ -131,6 +133,7 @@ def train_quantile_models(
         params = _per_stat_xgb_params(stat)
         per_q = {}
         for q in quantiles:
+            # XGB quantile (always trained)
             m = xgb.XGBRegressor(
                 **{k: v for k, v in params.items() if k != "random_state"},
                 random_state=42,
@@ -143,12 +146,31 @@ def train_quantile_models(
                   sample_weight=sw, verbose=False)
             preds_ho = _inverse(stat, m.predict(X_ho))
             mae_q = float(mean_absolute_error(y_ho, preds_ho))
-            # Pinball loss on validation (the actual quantile-fit objective)
             pred_val = _inverse(stat, m.predict(X_val))
             err = y_val - pred_val
             pinball = float(np.mean(np.maximum(q * err, (q - 1) * err)))
             per_q[str(q)] = {"mae_q": mae_q, "pinball_val": pinball}
             m.save_model(os.path.join(model_dir, f"quantile_pergame_{stat}_q{int(q*100):02d}.json"))
+
+            # LGB quantile (cycle 29 — REB ships off the LGB-q50 variant
+            # which wins 4/4 WF folds where XGB-q50 was 3/4). Cheap to train
+            # for every stat in case future cycles need them.
+            lgb_m = lgb.LGBMRegressor(
+                n_estimators=params["n_estimators"], max_depth=params["max_depth"],
+                learning_rate=params["learning_rate"],
+                subsample=params["subsample"], subsample_freq=1,
+                colsample_bytree=params["colsample_bytree"],
+                min_child_samples=max(20, params["min_child_weight"] * 2),
+                reg_lambda=params["reg_lambda"], reg_alpha=params["reg_alpha"],
+                random_state=42, objective="quantile", alpha=q,
+                n_jobs=-1, verbosity=-1,
+            )
+            lgb_m.fit(X_tr, yt_tr, eval_set=[(X_val, yt_val)],
+                      sample_weight=sw,
+                      callbacks=[lgb.early_stopping(40, verbose=False)])
+            joblib.dump(lgb_m, os.path.join(model_dir, f"quantile_pergame_lgb_{stat}_q{int(q*100):02d}.pkl"))
+            preds_ho_lgb = _inverse(stat, lgb_m.predict(X_ho))
+            per_q[str(q)]["mae_q_lgb"] = float(mean_absolute_error(y_ho, preds_ho_lgb))
         # Coverage check: fraction of holdout y in [q10, q90] should be ~0.8
         m10 = xgb.XGBRegressor(); m10.load_model(os.path.join(model_dir, f"quantile_pergame_{stat}_q10.json"))
         m90 = xgb.XGBRegressor(); m90.load_model(os.path.join(model_dir, f"quantile_pergame_{stat}_q90.json"))
