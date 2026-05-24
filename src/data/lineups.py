@@ -13,6 +13,10 @@ Status taxonomy (from rotowire, matches what fetch_lineups writes):
   Expected  → confidence medium-high (writer's best guess)
   Projected → confidence medium (more speculative)
   Unknown   → no status header — treat like Projected
+
+Cycle 67: classification → minutes-scale factor for prediction adjustment
+lives here too (originally in scripts/predict_player.py cycle 66) so
+predict_slate + compare_to_lines can share the same scaling table.
 """
 from __future__ import annotations
 
@@ -21,6 +25,32 @@ import os
 import unicodedata
 from datetime import date as _date
 from typing import Dict, List, Optional
+
+
+# Cycle 66/67: post-prediction scaling by lineup classification. The model
+# is trained on rows where the player played (_MIN_PLAYED >= 1) so its
+# predictions assume the role implied by their L5/L10 history. When tonight's
+# role differs materially these factors adjust the prediction.
+STATUS_SCALE: Dict[str, float] = {
+    "starter":      1.00,
+    "questionable": 0.75,
+    "bench":        0.30,
+    "no-game":      0.00,
+    "unknown":      1.00,
+}
+
+
+def apply_minutes_scaling(stat_preds: Dict[str, float],
+                            classification: str) -> Dict[str, float]:
+    """Scale stat predictions by the per-classification factor.
+
+    Pure function — unrecognised classifications default to 1.0 (do not
+    silently zero predictions on a typo'd state).
+    """
+    factor = STATUS_SCALE.get(classification, 1.0)
+    if factor == 1.0:
+        return dict(stat_preds)
+    return {k: round(float(v) * factor, 2) for k, v in stat_preds.items()}
 
 
 def _strip_accents(s: str) -> str:

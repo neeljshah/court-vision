@@ -49,37 +49,9 @@ from src.data.injuries import (  # noqa: E402
 )
 from src.data.lineups import (  # noqa: E402
     build_starter_index, teams_playing, classify_starter,
+    STATUS_SCALE as _STATUS_SCALE,
+    apply_minutes_scaling,
 )
-
-
-# Cycle 66: post-prediction scaling by lineup classification. The model
-# predicts as if the player is in their L5/L10 minutes role; these factors
-# adjust when tonight's role is materially different.
-#
-# Sourced from rough projected-minutes-vs-typical ratios on bench/questionable
-# starts. Calibrated from rotowire's projected minutes ranges (Confirmed
-# starter ~32-38min vs bench rotation player ~10-18min) divided by typical
-# starter L10 minutes (~30-35).
-_STATUS_SCALE = {
-    "starter":      1.00,
-    "questionable": 0.75,
-    "bench":        0.30,
-    "no-game":      0.00,
-    "unknown":      1.00,
-}
-
-
-def apply_minutes_scaling(stat_preds: dict, classification: str) -> dict:
-    """Scale every stat prediction by the lineup-classification factor.
-
-    Pure function — testable without touching model files. classification
-    must be one of _STATUS_SCALE keys; unrecognised values default to 1.0
-    (no scaling) so unfamiliar lineup states don't silently zero predictions.
-    """
-    factor = _STATUS_SCALE.get(classification, 1.0)
-    if factor == 1.0:
-        return dict(stat_preds)
-    return {k: round(float(v) * factor, 2) for k, v in stat_preds.items()}
 
 
 def _strip_accents(s: str) -> str:
