@@ -316,6 +316,66 @@ class _MLPSeedEnsemble:
         return np.mean([m.predict(X) for m in self.models], axis=0)
 
 
+# Cycle 23 (loop 5) — Multitask MLP. One 5-seed multi-output MLPRegressor
+# trained on a (n_samples, len(STATS)) target matrix with per-stat transforms
+# applied (sqrt for PTS, log1p for the log1p stats, identity for any non-
+# transformed stat). Shared (128, 64) hidden layers capture cross-stat
+# correlations. The walk-forward probe shipped this ONLY for AST and STL
+# (4/4 folds positive MAE: AST -0.0022, STL -0.0014); PTS/REB/FG3M/BLK/TOV
+# either washed or regressed on WF and kept their independent _MLPSeedEnsemble.
+_USE_MULTITASK_MLP_STATS: set = {"ast", "stl"}
+
+
+class _MultitaskMLPEnsemble:
+    """5-seed multi-output MLP wrapper. .predict(X) returns (n_samples, n_outputs)."""
+
+    def __init__(self, hidden_layer_sizes=(128, 64), seeds=_MLP_SEEDS):
+        from sklearn.neural_network import MLPRegressor  # noqa: PLC0415
+        self.models = [
+            MLPRegressor(
+                hidden_layer_sizes=hidden_layer_sizes, activation="relu",
+                solver="adam", learning_rate_init=1e-3, alpha=1e-4,
+                batch_size=512, max_iter=80, random_state=int(s),
+                early_stopping=True, validation_fraction=0.15,
+                n_iter_no_change=10,
+            )
+            for s in seeds
+        ]
+        self.n_features_in_ = None
+        self.n_outputs_ = None
+
+    def fit(self, X, Y):
+        for m in self.models:
+            m.fit(X, Y)
+        self.n_features_in_ = int(getattr(self.models[0], "n_features_in_", X.shape[1]))
+        self.n_outputs_ = Y.shape[1] if Y.ndim > 1 else 1
+        return self
+
+    def predict(self, X):
+        import numpy as np  # noqa: PLC0415
+        return np.mean([m.predict(X) for m in self.models], axis=0)
+
+
+class _MultitaskMLPProxy:
+    """Thin wrapper exposing a single-stat .predict() over a multitask ensemble.
+
+    load_pergame_model + predict_pergame already expect (scaler, model) tuples
+    with a 1D .predict() output; this proxy provides exactly that interface
+    by selecting one column from the multitask ensemble's output.
+    """
+
+    def __init__(self, ensemble: "_MultitaskMLPEnsemble", stat_idx: int):
+        self.ensemble = ensemble
+        self.stat_idx = int(stat_idx)
+        self.n_features_in_ = getattr(ensemble, "n_features_in_", None)
+
+    def predict(self, X):
+        out = self.ensemble.predict(X)
+        if out.ndim == 1:
+            return out
+        return out[:, self.stat_idx]
+
+
 # ── rest / travel features ────────────────────────────────────────────────────
 
 _REST_TRAVEL_PATH = os.path.join(PROJECT_DIR, "data", "rest_travel.parquet")
@@ -1155,6 +1215,36 @@ def train_pergame_models(
     if stat_params_override:
         effective_params.update(stat_params_override)
 
+    # Cycle 23 (loop 5) — train the multitask MLP ONCE on a (n_samples, len(STATS))
+    # target matrix when any stat in stats_to_train belongs to _USE_MULTITASK_MLP_STATS.
+    # Per-stat columns apply the same per-stat transform used downstream (sqrt for
+    # PTS, log1p for the log1p stats, identity for the rest). The proxy that gets
+    # persisted per multitask-stat holds the full ensemble + a stat_idx so
+    # predict_pergame's single-column output is sliced correctly.
+    multitask_proxy_for_stat: Dict[str, "_MultitaskMLPProxy"] = {}
+    multitask_scaler = None
+    if any(s in _USE_MULTITASK_MLP_STATS for s in stats_to_train):
+        # Build the full target matrix for ALL stats (not just stats_to_train),
+        # so cross-stat structure is preserved.
+        Y_tr_mt = np.zeros((len(y_tr_check := np.array([r["target_pts"] for r in rows[:train_end]], dtype=float)),
+                            len(STATS)), dtype=float)
+        for i, s in enumerate(STATS):
+            ys = np.array([r[f"target_{s}"] for r in rows[:train_end]], dtype=float)
+            if s in _SQRT_HUBER_STATS:
+                Y_tr_mt[:, i] = np.sqrt(ys)
+            elif s in _LOG_TRANSFORM_STATS:
+                Y_tr_mt[:, i] = np.log1p(ys)
+            else:
+                Y_tr_mt[:, i] = ys
+        multitask_scaler = StandardScaler()
+        Xs_tr_mt = multitask_scaler.fit_transform(X_tr)
+        multitask_ensemble = _MultitaskMLPEnsemble().fit(Xs_tr_mt, Y_tr_mt)
+        for s in stats_to_train:
+            if s in _USE_MULTITASK_MLP_STATS:
+                multitask_proxy_for_stat[s] = _MultitaskMLPProxy(
+                    multitask_ensemble, STATS.index(s)
+                )
+
     for stat in stats_to_train:
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
         y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
@@ -1236,11 +1326,24 @@ def train_pergame_models(
         # 5-seed averaging buys PTS solo R² 0.5107 -> 0.5134 (+0.0027) and
         # 3-way blend MAE -0.0033 vs the single seed. The wrapper persists
         # all 5 fitted models via joblib.
-        mlp_scaler = StandardScaler()
-        X_tr_s  = mlp_scaler.fit_transform(X_tr)
-        X_val_s = mlp_scaler.transform(X_val)
-        X_ho_s  = mlp_scaler.transform(X_ho)
-        mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr_t)
+        #
+        # Cycle 23: for stats in _USE_MULTITASK_MLP_STATS (currently {ast, stl})
+        # we re-use the pre-trained multitask MLP via a thin proxy that selects
+        # this stat's output column. The same scaler is shared (it was fit on
+        # X_tr above in the multitask block). Independent MLP stays for every
+        # other stat.
+        if stat in _USE_MULTITASK_MLP_STATS and stat in multitask_proxy_for_stat:
+            mlp_scaler = multitask_scaler
+            X_tr_s  = mlp_scaler.transform(X_tr)
+            X_val_s = mlp_scaler.transform(X_val)
+            X_ho_s  = mlp_scaler.transform(X_ho)
+            mlp_model = multitask_proxy_for_stat[stat]
+        else:
+            mlp_scaler = StandardScaler()
+            X_tr_s  = mlp_scaler.fit_transform(X_tr)
+            X_val_s = mlp_scaler.transform(X_val)
+            X_ho_s  = mlp_scaler.transform(X_ho)
+            mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr_t)
 
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
         # 3-way weighted combo of XGB + LGB + MLP fit per-stat on the val
