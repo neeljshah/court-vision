@@ -88,15 +88,35 @@ Scrapes the NBA Official Injury Report PDF (cached at `data/cache/injuries/`)
 and writes `data/injuries_<date>.json` with per-player team/name/status/reason.
 Status feature wiring into prop_pergame is deferred to a future cycle.
 
-### 7. Verify production matches the honest baseline (cycle 48)
+### 7. Verify production matches the honest baseline (cycles 48 + 56)
 ```bash
-python scripts/verify_production_mae.py
+python scripts/verify_production_mae.py    # prop_pergame 7 stats vs claim
+python scripts/verify_winprob.py           # WinProb WF acc/brier vs claim
+python scripts/verify_winprob.py --retrain # also fail if results > 30 days old
 ```
-Loads the same 80/20 chronological holdout `prop_pergame.train` uses and
-scores the production model per stat in one vectorized pass. Respects the
-cycle-27 `_USE_Q50_STATS` dispatch. Exits 0 if all 7 stats are within ±0.02
-MAE of the honest baseline above; exits 1 (with drift report) otherwise so
-a bot loop catches quickstart staleness automatically.
+`verify_production_mae.py` loads the same 80/20 chronological holdout
+`prop_pergame.train` uses and scores the production model per stat in one
+vectorized pass. Respects the cycle-27 `_USE_Q50_STATS` dispatch.
+
+`verify_winprob.py` reads cached `data/models/winprob_walk_forward_results.json`
+(written by `scripts/winprob_walk_forward.py`) and compares to the 0.71 acc /
+0.193 brier claim. Both scripts exit 0 within tolerance, 1 with drift report
+otherwise — safe for CI wiring.
+
+### 8. One-shot daily orchestrator (cycle 54)
+```bash
+python scripts/daily_run.py                           # injuries + slate
+python scripts/daily_run.py --lines tonight.csv       # full pipeline
+python scripts/daily_run.py --lines t.csv --kelly --bankroll 1000
+python scripts/daily_run.py --dry-run                 # print the plan only
+python scripts/daily_run.py --skip-injuries           # if injury JSON already exists
+python scripts/daily_run.py --date 2026-05-24         # historical replay
+```
+Chains `fetch_injury_report.py` → `predict_slate.py --save --injuries` →
+optionally `compare_to_lines.py --injuries` via subprocess. Injury fetch
+failure is warned but non-fatal; predict_slate failure aborts; bet count
+parsed from compare_to_lines stdout. Final 4-line summary: injuries flagged,
+predictions written, bets selected, elapsed.
 
 ## Daily ops workflow (recommended)
 
