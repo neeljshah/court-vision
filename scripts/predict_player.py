@@ -21,11 +21,17 @@ Output (one row per stat):
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
+import time
 from datetime import datetime
 
 import numpy as np
+
+
+# Cache TTL for playergamelog (seconds): 6 hours.
+_PLAYERLOG_TTL_SEC = 6 * 60 * 60
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
@@ -112,6 +118,181 @@ def _player_l5_l10(player_id: int, season: str, gamelog_dir: str) -> dict:
     return out
 
 
+def _playerlog_cache_path(player_id: int, season: str) -> str:
+    """Path under data/cache/playerlogs/<pid>_<season>.json."""
+    cache_dir = os.path.join(PROJECT_DIR, "data", "cache", "playerlogs")
+    os.makedirs(cache_dir, exist_ok=True)
+    return os.path.join(cache_dir, f"{int(player_id)}_{season}.json")
+
+
+def _load_playerlog_cached(player_id: int, season: str,
+                           ttl_sec: int = _PLAYERLOG_TTL_SEC,
+                           now: float | None = None) -> list | None:
+    """Read cached playergamelog rows if file exists and is fresh.
+
+    Returns the list of row-dicts (each with at least GAME_DATE / MIN /
+    START_POSITION) or None if cache miss / expired / unreadable.
+    """
+    path = _playerlog_cache_path(player_id, season)
+    if not os.path.exists(path):
+        return None
+    now = time.time() if now is None else now
+    try:
+        age = now - os.path.getmtime(path)
+    except OSError:
+        return None
+    if age > ttl_sec:
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return None
+
+
+def _save_playerlog_cache(player_id: int, season: str, rows: list) -> None:
+    """Write playergamelog rows to disk cache (json, utf-8)."""
+    path = _playerlog_cache_path(player_id, season)
+    try:
+        with open(path, "w", encoding="utf-8") as fh:
+            json.dump(rows, fh)
+    except Exception:
+        pass
+
+
+def _fetch_playerlog(player_id: int, season: str,
+                     lookback: int = 5) -> list | None:
+    """Pull a starter-signal-shaped row list from nba_api.
+
+    PlayerGameLog has MIN + GAME_DATE but NOT START_POSITION. To get the
+    starter flag we look up the per-game traditional boxscore for the most
+    recent `lookback` games and read START_POSITION from there.
+
+    Returns a list of dicts with keys: GAME_DATE, MIN, START_POSITION,
+    GAME_ID. None on failure. Cache-wrapped by _get_playerlog.
+    """
+    try:
+        from nba_api.stats.endpoints import (  # noqa: PLC0415
+            playergamelog, boxscoretraditionalv2,
+        )
+    except Exception:
+        return None
+    try:
+        log = playergamelog.PlayerGameLog(player_id=int(player_id),
+                                          season=season, timeout=10)
+        gl_rows = log.get_normalized_dict().get("PlayerGameLog") or []
+    except Exception:
+        return None
+    # Most-recent-first is the PlayerGameLog default; take top N.
+    recent = gl_rows[: max(1, int(lookback))]
+    out = []
+    for gl in recent:
+        gid = gl.get("Game_ID") or gl.get("GAME_ID")
+        row = {
+            "GAME_DATE": gl.get("GAME_DATE"),
+            "MIN": gl.get("MIN"),
+            "GAME_ID": gid,
+            "START_POSITION": "",
+        }
+        if gid:
+            try:
+                bx = boxscoretraditionalv2.BoxScoreTraditionalV2(
+                    game_id=gid, timeout=10)
+                stats = bx.get_normalized_dict().get(
+                    "PlayerStats") or []
+                for s in stats:
+                    if int(s.get("PLAYER_ID") or 0) == int(player_id):
+                        row["START_POSITION"] = (
+                            s.get("START_POSITION") or "")
+                        # Prefer boxscore MIN if available (string fmt).
+                        if s.get("MIN"):
+                            row["MIN"] = s.get("MIN")
+                        break
+            except Exception:
+                # Leave START_POSITION="" if boxscore fetch fails.
+                pass
+        out.append(row)
+    return out
+
+
+def _get_playerlog(player_id: int, season: str) -> list | None:
+    """Cached playergamelog fetch. Reads disk cache if fresh, otherwise
+    hits nba_api and writes the response back to disk."""
+    cached = _load_playerlog_cached(player_id, season)
+    if cached is not None:
+        return cached
+    rows = _fetch_playerlog(player_id, season)
+    if rows is not None:
+        _save_playerlog_cache(player_id, season, rows)
+    return rows
+
+
+def _starter_signal(rows: list, lookback: int = 5) -> dict:
+    """Compute starter_rate, played_rate, and a human band label from the
+    last `lookback` rows of a playergamelog response.
+
+    START_POSITION is 'G'/'F'/'C' for starters and empty string for bench
+    in the nba_api schema. MIN > 0 (or non-empty) = appeared.
+    """
+    if not rows:
+        return {"games": 0, "starts": 0, "played": 0,
+                "starter_rate": 0.0, "played_rate": 0.0,
+                "band": "unknown", "message": "no recent gamelog rows"}
+    recent = list(rows)[:max(1, int(lookback))]
+    n = len(recent)
+    starts = 0
+    played = 0
+    for r in recent:
+        sp = r.get("START_POSITION") or ""
+        if isinstance(sp, str) and sp.strip().upper() in {"G", "F", "C"}:
+            starts += 1
+        minv = r.get("MIN")
+        # MIN can be int/float (PlayerGameLog) or "MM:SS" string (boxscore).
+        # Treat 0 / "" / None / "0:00" as DNP.
+        appeared = False
+        if isinstance(minv, (int, float)):
+            appeared = minv > 0
+        elif isinstance(minv, str):
+            s = minv.strip()
+            if s and s not in {"0", "0:00", "0.0", "00:00"}:
+                # "MM:SS" or "MM.SS" or "MM" — any leading-int > 0 counts.
+                head = s.split(":")[0].split(".")[0]
+                try:
+                    appeared = int(head) > 0
+                except ValueError:
+                    appeared = True  # non-numeric but non-empty
+        if appeared:
+            played += 1
+    starter_rate = starts / n
+    played_rate = played / n
+    if starter_rate >= 0.80 and played_rate >= 1.0:
+        band = "full"
+        message = "full starter confidence"
+    elif starter_rate >= 0.40 or played_rate >= 0.60:
+        band = "rotation"
+        message = "rotation player — prediction assumes typical workload"
+    else:
+        band = "bench"
+        message = ("WARNING: bench / out of rotation — predictions likely "
+                   "overestimate")
+    return {"games": n, "starts": starts, "played": played,
+            "starter_rate": starter_rate, "played_rate": played_rate,
+            "band": band, "message": message}
+
+
+def _format_starter_line(sig: dict) -> str:
+    """Render the starter_signal dict as a single-line indicator."""
+    n = sig.get("games", 0)
+    if n == 0:
+        return f"  Recent role: {sig.get('message', 'unknown')}"
+    starts = sig.get("starts", 0)
+    played = sig.get("played", 0)
+    sr = sig.get("starter_rate", 0.0) * 100
+    pr = sig.get("played_rate", 0.0) * 100
+    return (f"  Recent role: started {starts}/{n} games ({sr:.0f}%), "
+            f"played {played}/{n} ({pr:.0f}%) — {sig['message']}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     grp = ap.add_mutually_exclusive_group(required=True)
@@ -123,6 +304,10 @@ def main():
     ven.add_argument("--away", action="store_true", help="Player's team is AWAY")
     ap.add_argument("--rest", type=float, default=2.0, help="Days rest (default 2)")
     ap.add_argument("--season", default=None, help="Season override (e.g. '2024-25'). Default: current.")
+    ap.add_argument("--lookback-games", type=int, default=5,
+                    help="N recent games to compute starter_rate over (default 5)")
+    ap.add_argument("--require-starter", action="store_true",
+                    help="Exit 2 if starter_rate < 0.4 (skips non-starters in batch flows)")
     args = ap.parse_args()
 
     season = args.season or _detect_current_season()
@@ -141,7 +326,17 @@ def main():
     model_dir = os.path.join(PROJECT_DIR, "data", "models")
 
     print(f"\n  Player: {name}  (id={pid})")
-    print(f"  Game:   {'home' if is_home else 'away'} vs {args.opp}    season={season}    rest={args.rest}d\n")
+    print(f"  Game:   {'home' if is_home else 'away'} vs {args.opp}    season={season}    rest={args.rest}d")
+
+    # Starter / playing-time signal — uses live playergamelog (cached 6h).
+    log_rows = _get_playerlog(pid, season)
+    sig = _starter_signal(log_rows or [], lookback=args.lookback_games)
+    print(_format_starter_line(sig))
+    if args.require_starter and sig.get("starter_rate", 0.0) < 0.4:
+        print(f"  [skip] --require-starter set and starter_rate="
+              f"{sig['starter_rate']:.2f} < 0.40 — exiting.")
+        sys.exit(2)
+    print()
 
     row = build_prediction_row(pid, args.opp, season, is_home=is_home,
                                rest_days=args.rest, gamelog_dir=gamelog_dir)
