@@ -21,11 +21,12 @@ Output (one row per stat):
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import sys
 import time
-from datetime import datetime
+from datetime import datetime, date as _date
 
 import numpy as np
 
@@ -293,6 +294,41 @@ def _format_starter_line(sig: dict) -> str:
             f"played {played}/{n} ({pr:.0f}%) — {sig['message']}")
 
 
+def append_predictions_csv(
+    out_path: str, player_id: int, name: str, opp: str,
+    is_home: bool, stat_preds: dict,
+) -> int:
+    """Append one row per stat to out_path. Creates the file + header when absent.
+
+    Schema matches scripts/predict_slate.py save_predictions_csv:
+    date,game_id,player_id,player,team,opp,venue,stat,pred
+    `game_id` is empty for single-player runs (slate runs include it).
+    `team` is empty for single-player runs — we don't ask the user for it.
+    """
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    file_exists = os.path.exists(out_path) and os.path.getsize(out_path) > 0
+    date_str = _date.today().isoformat()
+    venue = "home" if is_home else "away"
+    n = 0
+    with open(out_path, "a", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        if not file_exists:
+            w.writerow([
+                "date", "game_id", "player_id", "player",
+                "team", "opp", "venue", "stat", "pred",
+            ])
+        for stat in STATS:
+            v = stat_preds.get(stat)
+            if v is None:
+                continue
+            w.writerow([
+                date_str, "", player_id, name,
+                "", opp, venue, stat, f"{float(v):.4f}",
+            ])
+            n += 1
+    return n
+
+
 def main():
     ap = argparse.ArgumentParser()
     grp = ap.add_mutually_exclusive_group(required=True)
@@ -308,6 +344,9 @@ def main():
                     help="N recent games to compute starter_rate over (default 5)")
     ap.add_argument("--require-starter", action="store_true",
                     help="Exit 2 if starter_rate < 0.4 (skips non-starters in batch flows)")
+    ap.add_argument("--save", nargs="?", const="__default__", default=None,
+                    help="Append predictions to CSV. Bare flag → data/predictions/<today>.csv "
+                         "(same path/schema as predict_slate --save). With arg → that path.")
     args = ap.parse_args()
 
     season = args.season or _detect_current_season()
@@ -348,11 +387,13 @@ def main():
 
     print(f"  {'stat':4s} | {'pred':>6s} | {'L5':>5s} | {'L10':>5s} | {'edge':>6s} | {'q10':>5s} {'q90':>5s} | bet @ -110")
     print(f"  -----+--------+-------+-------+--------+-----------+-------------------")
+    stat_preds = {}
     for stat in STATS:
         pred = predict_pergame(stat, row, model_dir)
         if pred is None:
             print(f"  {stat.upper():4s} | (no model)")
             continue
+        stat_preds[stat] = pred
         l5_val = l5.get(f"l5_{stat}", None)
         l10_val = l5.get(f"l10_{stat}", None)
         edge = (pred - l5_val) if l5_val is not None else None
@@ -375,6 +416,15 @@ def main():
                 bet = "  (no edge)"
         print(f"  {stat.upper():4s} | {pred:6.2f} | {l5s:>5s} | {l10s:>5s} | {edge_s:>6s} | {q10_s:>5s} {q90_s:>5s} | {bet}")
     print()
+
+    if args.save is not None and stat_preds:
+        # Schema mirrors predict_slate so single-player + slate runs append to
+        # the same daily ledger; backtest harness can join on (date, player_id, stat).
+        out = (os.path.join(PROJECT_DIR, "data", "predictions",
+                            f"{_date.today().isoformat()}.csv")
+               if args.save == "__default__" else args.save)
+        n = append_predictions_csv(out, pid, name, args.opp, is_home, stat_preds)
+        print(f"  Wrote {n} prediction rows → {out}")
 
 
 if __name__ == "__main__":
