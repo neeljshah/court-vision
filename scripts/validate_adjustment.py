@@ -76,6 +76,65 @@ def make_scale_constant(factor: float) -> AdjustFn:
     return fn
 
 
+def make_pull_to_l5(weight: float = 0.3) -> AdjustFn:
+    """Cycle 81 probe. Pull each prediction toward the player's L5 average:
+        adjusted = (1 - weight) * pred + weight * l5_<stat>
+    Hypothesis: model overshoots; pulling toward player baseline reduces MAE.
+    """
+    def fn(pred: np.ndarray, rows: List[dict], stat: str) -> np.ndarray:
+        l5_key = f"l5_{stat}"
+        out = pred.copy()
+        for i, r in enumerate(rows):
+            l5 = r.get(l5_key)
+            if l5 is None:
+                continue
+            try:
+                l5f = float(l5)
+            except (TypeError, ValueError):
+                continue
+            out[i] = (1.0 - weight) * pred[i] + weight * l5f
+        return np.clip(out, 0.0, None)
+    return fn
+
+
+def make_pull_to_l10(weight: float = 0.3) -> AdjustFn:
+    """Cycle 81 probe. L10 variant of pull_to_l5 — less noisy player baseline."""
+    def fn(pred: np.ndarray, rows: List[dict], stat: str) -> np.ndarray:
+        l10_key = f"l10_{stat}"
+        out = pred.copy()
+        for i, r in enumerate(rows):
+            l10 = r.get(l10_key)
+            if l10 is None:
+                continue
+            try:
+                l10f = float(l10)
+            except (TypeError, ValueError):
+                continue
+            out[i] = (1.0 - weight) * pred[i] + weight * l10f
+        return np.clip(out, 0.0, None)
+    return fn
+
+
+def make_b2b_penalty(factor: float = 0.96) -> AdjustFn:
+    """Cycle 81 probe. Back-to-back games typically see reduced player output
+    (fatigue). The dataset has home_back_to_back / away_back_to_back features
+    but predicting a SCALAR factor on the row-level might be miscalibrated.
+    Test: scale by `factor` when EITHER side flags back-to-back.
+    """
+    def fn(pred: np.ndarray, rows: List[dict], stat: str) -> np.ndarray:
+        out = pred.copy()
+        for i, r in enumerate(rows):
+            try:
+                hb2b = float(r.get("home_back_to_back", 0) or 0)
+                ab2b = float(r.get("away_back_to_back", 0) or 0)
+            except (TypeError, ValueError):
+                continue
+            if hb2b >= 0.5 or ab2b >= 0.5:
+                out[i] = pred[i] * factor
+        return np.clip(out, 0.0, None)
+    return fn
+
+
 def make_scale_by_min_ratio(
     low_thr: float = 0.5,
     mid_thr: float = 0.9,
@@ -234,13 +293,16 @@ def print_report(name: str, results: Dict[str, Dict[str, float]]) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--adjust", choices=["none", "constant", "min_ratio"],
+    ap.add_argument("--adjust", choices=["none", "constant", "min_ratio",
+                                          "pull_l5", "pull_l10", "b2b"],
                     default="none")
     ap.add_argument("--factor", type=float, default=0.95)
     ap.add_argument("--factor-low", type=float, default=0.50,
                     help="min_ratio: scale for ratio < low_thr (default 0.50)")
     ap.add_argument("--factor-mid", type=float, default=0.85,
                     help="min_ratio: scale for low_thr <= ratio < mid_thr (default 0.85)")
+    ap.add_argument("--weight", type=float, default=0.3,
+                    help="pull_l5/pull_l10: blending weight (default 0.3)")
     args = ap.parse_args()
 
     print("Loading pergame dataset...", flush=True)
@@ -264,6 +326,15 @@ def main() -> int:
                                        factor_mid=args.factor_mid)
         name = (f"Min-ratio scaling — prev_min/l10_min<0.5 -> *{args.factor_low:.2f}, "
                 f"<0.9 -> *{args.factor_mid:.2f}")
+    elif args.adjust == "pull_l5":
+        fn = make_pull_to_l5(weight=args.weight)
+        name = f"Pull to L5 — pred = {1-args.weight:.2f}*pred + {args.weight:.2f}*l5"
+    elif args.adjust == "pull_l10":
+        fn = make_pull_to_l10(weight=args.weight)
+        name = f"Pull to L10 — pred = {1-args.weight:.2f}*pred + {args.weight:.2f}*l10"
+    elif args.adjust == "b2b":
+        fn = make_b2b_penalty(factor=args.factor)
+        name = f"B2B penalty — back_to_back game * {args.factor:.3f}"
 
     results = validate(fn, holdout, X)
     print_report(name, results)
