@@ -128,6 +128,15 @@ def compose_settle_cmd(date_str: str, project_dir: str = PROJECT_DIR,
     ]
 
 
+def compose_report_cmd(date_str: str, python_exe: str = sys.executable) -> List[str]:
+    """Cycle 74: nightly Markdown summary."""
+    return [
+        python_exe,
+        os.path.join(SCRIPTS_DIR, "nightly_report.py"),
+        "--date", date_str,
+    ]
+
+
 def compose_slate_cmd(date_str: str, top: Optional[int] = None,
                       with_lineups: bool = False,
                       python_exe: str = sys.executable) -> List[str]:
@@ -373,6 +382,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--settle", action="store_true",
                     help="Cycle 71: post-game mode. Skips slate/compare; runs fetch_actuals "
                          "+ settle_bets for --date. Use this AFTER games complete.")
+    ap.add_argument("--report", action="store_true",
+                    help="Cycle 74: also run nightly_report.py at the end of the chosen mode "
+                         "(works with both morning + --settle).")
     ap.add_argument("--dry-run", action="store_true",
                     help="Print the commands that would run and exit.")
     args = ap.parse_args(argv)
@@ -387,10 +399,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.settle:
         actuals_cmd = compose_actuals_cmd(date_str)
         settle_cmd = compose_settle_cmd(date_str)
+        report_cmd = compose_report_cmd(date_str) if args.report else None
         if args.dry_run:
             print(f"[daily_run] dry-run SETTLE plan for {date_str}:")
             _print_cmd("[A] fetch_actuals", actuals_cmd)
             _print_cmd("[B] settle_bets", settle_cmd)
+            if report_cmd is not None:
+                _print_cmd("[C] nightly_report", report_cmd)
             return 0
         t0 = time.time()
         rc, _ = _run_step("fetch_actuals", actuals_cmd, capture_stdout=False)
@@ -400,9 +415,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         rc, _ = _run_step("settle_bets", settle_cmd, capture_stdout=False)
         if rc != 0:
             print(f"[daily_run] warn: settle_bets exited {rc}")
-            return rc
+        if report_cmd is not None:
+            _run_step("nightly_report", report_cmd, capture_stdout=False)
         print(f"\n[daily_run] settle complete in {time.time()-t0:.1f}s")
-        return 0
+        return rc
 
     # Cycle 65: auto-lines uses fetch_dk_props output as the --lines path.
     effective_lines = args.lines
@@ -438,6 +454,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             _print_cmd("[3] compare_to_lines", compare_cmd)
         else:
             print("  [3] (skipped — no --lines / --auto-lines)")
+        if args.report:
+            _print_cmd("[4] nightly_report", compose_report_cmd(date_str))
         return 0
 
     t0 = time.time()
@@ -484,6 +502,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         if rc != 0:
             print(f"[daily_run] warn: compare_to_lines exited {rc}")
         bets_count = parse_bet_count(captured)
+
+    # --- Step 4 (cycle 74): nightly Markdown report (optional) ---
+    if args.report:
+        _run_step("nightly_report", compose_report_cmd(date_str), capture_stdout=False)
 
     elapsed = time.time() - t0
     _print_summary(
