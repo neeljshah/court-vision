@@ -129,5 +129,51 @@ class TestDryRunWithAutoFlags(unittest.TestCase):
         self.assertNotIn("/explicit/path.csv", out)
 
 
+class TestSettleMode(unittest.TestCase):
+    """Cycle 71: --settle is a separate post-game mode."""
+
+    def _run_dry(self, argv):
+        buf = io.StringIO()
+        with mock.patch("scripts.daily_run.subprocess.run") as mock_run, \
+             redirect_stdout(buf):
+            try:
+                rc = dr.main(argv)
+            except SystemExit as e:
+                rc = e.code
+        self.assertEqual(mock_run.call_count, 0)
+        return rc, buf.getvalue()
+
+    def test_settle_dry_run_omits_slate_and_compare_steps(self):
+        rc, out = self._run_dry(["--dry-run", "--settle", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        # Settle plan header replaces normal plan header.
+        self.assertIn("SETTLE plan", out)
+        # Only the two settle steps appear, not slate / compare.
+        self.assertIn("[A]", out)
+        self.assertIn("fetch_actuals.py", out)
+        self.assertIn("[B]", out)
+        self.assertIn("settle_bets.py", out)
+        # Normal-flow markers must NOT appear.
+        self.assertNotIn("predict_slate.py", out)
+        self.assertNotIn("compare_to_lines.py", out)
+
+    def test_compose_actuals_cmd_basic(self):
+        cmd = dr.compose_actuals_cmd("2026-05-24", python_exe="python")
+        self.assertEqual(cmd[0], "python")
+        self.assertTrue(cmd[1].endswith(os.path.join("scripts", "fetch_actuals.py")))
+        self.assertIn("--date", cmd)
+        self.assertIn("2026-05-24", cmd)
+
+    def test_compose_settle_cmd_points_at_canonical_paths(self):
+        cmd = dr.compose_settle_cmd("2026-05-24", project_dir="/proj",
+                                      python_exe="python")
+        # Args: python, settle_bets.py, bet_log_path, actuals_path
+        self.assertEqual(len(cmd), 4)
+        self.assertTrue(cmd[1].endswith(os.path.join("scripts", "settle_bets.py")))
+        # Both paths follow the canonical data/bets and data/actuals layout.
+        self.assertIn(os.path.join("data", "bets", "2026-05-24.csv"), cmd[2])
+        self.assertIn(os.path.join("data", "actuals", "2026-05-24.csv"), cmd[3])
+
+
 if __name__ == "__main__":
     unittest.main()
