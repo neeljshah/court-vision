@@ -2,7 +2,31 @@
 
 Honest production state at master `d87a76b3` (loop 5, cycle 47). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
 
-## Honest baseline
+> ## Empirical testing protocol (cycle 78-82)
+>
+> Any cycle proposing a post-prediction adjustment MUST validate against
+> `scripts/validate_adjustment.py` before shipping. The harness reproduces
+> the cycle-48 verified MAE exactly on no-op (PTS 4.6209 etc.) and reports
+> per-stat delta when applied. As of cycle 82, six adjustment hypotheses
+> have been tested — ALL REJECT on the existing holdout:
+>
+> | adjustment | sum delta | stats improved | verdict |
+> |---|---|---|---|
+> | scale-by-status aggressive (0.50/0.85, cycle 66/67 proxy) | +0.101 | 0/7 | REJECT |
+> | scale-by-status mild (0.90/0.97) | -0.002 | 1/7 | noise |
+> | pull to L5 (w=0.2) | +0.051 | 0/7 | REJECT |
+> | pull to L10 (w=0.2) | +0.034 | 0/7 | REJECT |
+> | back-to-back penalty (factor 0.96) | (b2b too rare in holdout) | — | inconclusive |
+> | constant 0.95 (sanity check) | (expected MAE shift) | — | sanity |
+>
+> Stratified error analysis (`scripts/probe_error_strata.py`) confirms the model
+> is well-calibrated across L5 minutes, rest days, opp defense, and predicted
+> magnitude. Real prediction improvement requires EXTERNAL data not yet flowing
+> into training (lineups, real-time injuries, vegas lines, defender matchups)
+> OR model retrain with new features — both gated on cycle-80 context-enriched
+> ledger + cycle-69/70 settled bets accumulating 30+ days of forward data.
+>
+> ## Honest baseline
 
 | stat | MAE | recipe |
 |---|---|---|
@@ -103,7 +127,7 @@ injury tag, lineup status (Confirmed / Expected / Projected). Wired into
 all three CLIs:
 - `--lineups` flag prints classification (STARTER / QUESTIONABLE / BENCH / NO-GAME)
 - `--require-starter-lineup` (predict_player) — exits 2 for bench/no-game
-- `--scale-by-status` (cycle 66+67) — applies factor to predictions:
+- `--scale-by-status` (cycle 66+67) — **EMPIRICALLY UNVALIDATED, may HURT MAE.** Tested via prev_min/l10_min proxy in cycle 79: aggressive factors (0.50/0.85) hurt sum +0.101 MAE across 7 stats, mild factors (0.90/0.97) tiny -0.002 noise. Real rotowire-derived classification can only be empirically validated once 30+ days of cycle-80 context-enriched ledger accumulate. Use at your own risk for now. Factors:
   starter ×1.00, questionable ×0.75, bench ×0.30, no-game ×0.00
 
 ### 6c. Sportsbook lines (cycle 44 + 59)
