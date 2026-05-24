@@ -85,12 +85,36 @@ def compose_injury_cmd(date_str: str, python_exe: str = sys.executable) -> List[
     ]
 
 
+def compose_lineups_cmd(date_str: str, python_exe: str = sys.executable) -> List[str]:
+    """Cycle 65: rotowire lineup scrape command."""
+    return [
+        python_exe,
+        os.path.join(SCRIPTS_DIR, "fetch_lineups.py"),
+        "--date", date_str,
+    ]
+
+
+def compose_dk_props_cmd(date_str: str, books: Optional[List[str]] = None,
+                          python_exe: str = sys.executable) -> List[str]:
+    """Cycle 65: DraftKings/FanDuel props scrape command."""
+    cmd = [
+        python_exe,
+        os.path.join(SCRIPTS_DIR, "fetch_dk_props.py"),
+        "--date", date_str,
+    ]
+    for b in (books or ["draftkings"]):
+        cmd += ["--book", b]
+    return cmd
+
+
 def compose_slate_cmd(date_str: str, top: Optional[int] = None,
+                      with_lineups: bool = False,
                       python_exe: str = sys.executable) -> List[str]:
     """Build the argv list for the predict_slate subprocess.
 
     --save and --injuries are always passed (bare flags) — that is the
-    whole point of running this orchestrator over the raw scripts.
+    whole point of running this orchestrator over the raw scripts. Cycle 65:
+    --lineups added when auto-lineups was successful.
     """
     cmd = [
         python_exe,
@@ -99,6 +123,8 @@ def compose_slate_cmd(date_str: str, top: Optional[int] = None,
         "--save",
         "--injuries",
     ]
+    if with_lineups:
+        cmd.append("--lineups")
     if top is not None:
         cmd += ["--top", str(top)]
     return cmd
@@ -106,6 +132,7 @@ def compose_slate_cmd(date_str: str, top: Optional[int] = None,
 
 def compose_compare_cmd(lines_path: str, kelly: bool = False,
                         bankroll: Optional[float] = None,
+                        with_lineups: bool = False,
                         python_exe: str = sys.executable) -> List[str]:
     """Build the argv list for the compare_to_lines subprocess."""
     cmd = [
@@ -114,6 +141,8 @@ def compose_compare_cmd(lines_path: str, kelly: bool = False,
         lines_path,
         "--injuries",
     ]
+    if with_lineups:
+        cmd.append("--lineups")
     if kelly:
         cmd.append("--kelly")
     if bankroll is not None:
@@ -313,6 +342,13 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="Pass --bankroll N to compare_to_lines.")
     ap.add_argument("--skip-injuries", action="store_true",
                     help="Skip fetch_injury_report (use the JSON you already have).")
+    ap.add_argument("--auto-lineups", action="store_true",
+                    help="Cycle 65: also run scripts/fetch_lineups.py and pass --lineups "
+                         "through to predict_slate + compare_to_lines.")
+    ap.add_argument("--auto-lines", action="store_true",
+                    help="Cycle 65: also run scripts/fetch_dk_props.py and use its output "
+                         "(data/lines/<date>.csv) as the --lines input to compare_to_lines. "
+                         "Overrides --lines if both are passed.")
     ap.add_argument("--dry-run", action="store_true",
                     help="Print the commands that would run and exit.")
     args = ap.parse_args(argv)
@@ -323,26 +359,40 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"[fail] bad --date format '{args.date}' (need YYYY-MM-DD)")
         return 2
 
+    # Cycle 65: auto-lines uses fetch_dk_props output as the --lines path.
+    effective_lines = args.lines
+    if args.auto_lines:
+        effective_lines = os.path.join(PROJECT_DIR, "data", "lines", f"{date_str}.csv")
+
     # Build all commands up front so --dry-run can show them and tests can
     # assert on the exact argv lists without invoking subprocess.
     inj_cmd = compose_injury_cmd(date_str)
-    slate_cmd = compose_slate_cmd(date_str, top=args.top)
+    lineups_cmd = compose_lineups_cmd(date_str) if args.auto_lineups else None
+    dk_cmd = compose_dk_props_cmd(date_str) if args.auto_lines else None
+    slate_cmd = compose_slate_cmd(date_str, top=args.top,
+                                    with_lineups=args.auto_lineups)
     compare_cmd = (
-        compose_compare_cmd(args.lines, kelly=args.kelly, bankroll=args.bankroll)
-        if args.lines else None
+        compose_compare_cmd(effective_lines, kelly=args.kelly,
+                              bankroll=args.bankroll,
+                              with_lineups=args.auto_lineups)
+        if effective_lines else None
     )
 
     if args.dry_run:
         print(f"[daily_run] dry-run plan for {date_str}:")
         if not args.skip_injuries:
-            _print_cmd("[1]", inj_cmd)
+            _print_cmd("[1] injuries", inj_cmd)
         else:
             print("  [1] (skipped — --skip-injuries)")
-        _print_cmd("[2]", slate_cmd)
+        if lineups_cmd is not None:
+            _print_cmd("[1b] lineups", lineups_cmd)
+        if dk_cmd is not None:
+            _print_cmd("[1c] dk_props", dk_cmd)
+        _print_cmd("[2] predict_slate", slate_cmd)
         if compare_cmd is not None:
-            _print_cmd("[3]", compare_cmd)
+            _print_cmd("[3] compare_to_lines", compare_cmd)
         else:
-            print("  [3] (skipped — no --lines)")
+            print("  [3] (skipped — no --lines / --auto-lines)")
         return 0
 
     t0 = time.time()
@@ -354,6 +404,27 @@ def main(argv: Optional[List[str]] = None) -> int:
             # Non-fatal — predictions still ship without latest injuries.
             print(f"[daily_run] warn: fetch_injury_report exited {rc} "
                   f"(continuing without the latest report)")
+
+    # --- Step 1b: lineups (cycle 65) ---
+    if lineups_cmd is not None:
+        rc, _ = _run_step("fetch_lineups", lineups_cmd, capture_stdout=False)
+        if rc != 0:
+            print(f"[daily_run] warn: fetch_lineups exited {rc} "
+                  f"(slate + compare will run without --lineups context)")
+            # Strip --lineups from downstream commands so they don't try to
+            # read a JSON that wasn't created.
+            slate_cmd = [a for a in slate_cmd if a != "--lineups"]
+            if compare_cmd:
+                compare_cmd = [a for a in compare_cmd if a != "--lineups"]
+
+    # --- Step 1c: DraftKings props (cycle 65) ---
+    if dk_cmd is not None:
+        rc, _ = _run_step("fetch_dk_props", dk_cmd, capture_stdout=False)
+        if rc != 0:
+            print(f"[daily_run] warn: fetch_dk_props exited {rc} "
+                  f"(compare step will be skipped if --auto-lines was the only line source)")
+            if args.lines is None:
+                compare_cmd = None
 
     # --- Step 2: slate predictions ---
     rc, _ = _run_step("predict_slate", slate_cmd, capture_stdout=False)

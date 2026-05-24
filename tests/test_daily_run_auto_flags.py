@@ -1,0 +1,133 @@
+"""Cycle 65: tests for --auto-lineups / --auto-lines in scripts/daily_run.py.
+
+The cycle-54 daily_run.py tests live in test_daily_run_orchestrator.py and
+lock down the original injuries→slate→compare composition. This file
+covers the new cycle-65 helpers (compose_lineups_cmd, compose_dk_props_cmd)
+and the wiring that activates them.
+
+All tests mock subprocess.run and never let the orchestrator actually
+shell out — same discipline as the cycle-54 tests.
+"""
+from __future__ import annotations
+
+import io
+import os
+import sys
+import unittest
+from contextlib import redirect_stdout
+from unittest import mock
+
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
+import scripts.daily_run as dr  # noqa: E402
+
+
+class TestNewComposeHelpers(unittest.TestCase):
+    """compose_lineups_cmd + compose_dk_props_cmd are pure — no mocks needed."""
+
+    def test_lineups_cmd_basic(self):
+        cmd = dr.compose_lineups_cmd("2026-05-24", python_exe="python")
+        # Must call fetch_lineups.py with --date
+        self.assertEqual(cmd[0], "python")
+        self.assertTrue(cmd[1].endswith(os.path.join("scripts", "fetch_lineups.py")))
+        self.assertIn("--date", cmd)
+        self.assertIn("2026-05-24", cmd)
+
+    def test_dk_props_cmd_defaults_to_draftkings(self):
+        cmd = dr.compose_dk_props_cmd("2026-05-24", python_exe="python")
+        self.assertTrue(cmd[1].endswith(os.path.join("scripts", "fetch_dk_props.py")))
+        # Default books list is just draftkings
+        self.assertIn("--book", cmd)
+        self.assertIn("draftkings", cmd)
+        self.assertEqual(cmd.count("--book"), 1)
+
+    def test_dk_props_cmd_multi_book(self):
+        cmd = dr.compose_dk_props_cmd("2026-05-24",
+                                        books=["draftkings", "fanduel"],
+                                        python_exe="python")
+        # One --book per book name
+        self.assertEqual(cmd.count("--book"), 2)
+        self.assertIn("draftkings", cmd)
+        self.assertIn("fanduel", cmd)
+
+    def test_slate_cmd_with_lineups_adds_flag(self):
+        cmd = dr.compose_slate_cmd("2026-05-24", with_lineups=True,
+                                     python_exe="python")
+        self.assertIn("--lineups", cmd)
+        self.assertIn("--injuries", cmd)
+        self.assertIn("--save", cmd)
+
+    def test_slate_cmd_without_lineups_omits_flag(self):
+        cmd = dr.compose_slate_cmd("2026-05-24", with_lineups=False,
+                                     python_exe="python")
+        self.assertNotIn("--lineups", cmd)
+        self.assertIn("--injuries", cmd)
+
+    def test_compare_cmd_with_lineups_adds_flag(self):
+        cmd = dr.compose_compare_cmd("/x/lines.csv", kelly=True,
+                                       bankroll=1000.0, with_lineups=True,
+                                       python_exe="python")
+        self.assertIn("--lineups", cmd)
+        self.assertIn("--injuries", cmd)
+        self.assertIn("--kelly", cmd)
+        self.assertIn("--bankroll", cmd)
+        self.assertIn("1000.0", cmd)
+
+
+class TestDryRunWithAutoFlags(unittest.TestCase):
+    """--dry-run + --auto-* should print the new step lines and skip subprocess."""
+
+    def _run_dry(self, argv):
+        buf = io.StringIO()
+        with mock.patch("scripts.daily_run.subprocess.run") as mock_run, \
+             redirect_stdout(buf):
+            try:
+                rc = dr.main(argv)
+            except SystemExit as e:
+                rc = e.code
+        # Hard invariant: dry-run never actually invokes subprocess.
+        self.assertEqual(mock_run.call_count, 0)
+        return rc, buf.getvalue()
+
+    def test_dry_run_auto_lineups_prints_step_1b(self):
+        rc, out = self._run_dry(["--dry-run", "--auto-lineups", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertIn("[1b]", out)
+        self.assertIn("fetch_lineups.py", out)
+        # slate command should also carry --lineups in dry-run print
+        self.assertIn("--lineups", out)
+
+    def test_dry_run_auto_lines_prints_step_1c_and_uses_lines_path(self):
+        rc, out = self._run_dry(["--dry-run", "--auto-lines", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertIn("[1c]", out)
+        self.assertIn("fetch_dk_props.py", out)
+        # compare_to_lines step should appear and reference data/lines/<date>.csv
+        self.assertIn("compare_to_lines.py", out)
+        self.assertIn(os.path.join("data", "lines", "2026-05-24.csv"), out)
+
+    def test_dry_run_neither_auto_flag_skips_new_steps(self):
+        rc, out = self._run_dry(["--dry-run", "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        self.assertNotIn("[1b]", out)
+        self.assertNotIn("[1c]", out)
+        # No --lineups in any composed command
+        self.assertNotIn("--lineups", out)
+
+    def test_dry_run_explicit_lines_overrides_auto(self):
+        """When --lines /path is given AND --auto-lines, auto-lines path wins
+        per cycle-65 semantics (auto-lines is opinionated about where it puts the file)."""
+        rc, out = self._run_dry(["--dry-run", "--auto-lines",
+                                  "--lines", "/explicit/path.csv",
+                                  "--date", "2026-05-24"])
+        self.assertEqual(rc, 0)
+        # The auto-lines path should be the one passed to compare_to_lines.
+        self.assertIn(os.path.join("data", "lines", "2026-05-24.csv"), out)
+        # Explicit path should NOT appear.
+        self.assertNotIn("/explicit/path.csv", out)
+
+
+if __name__ == "__main__":
+    unittest.main()
