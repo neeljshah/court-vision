@@ -24,21 +24,21 @@
     "w_mlp": 0.5309
   },
   "stl": {
-    "w_xgb": 0.3112,
-    "w_lgb": 0.2816,
+    "w_xgb": 0.5824,
+    "w_lgb": 0.4874,
     "source": "val_nnls_3way",
-    "w_mlp": 0.3796
+    "w_mlp": 0.1654
   },
   "blk": {
-    "w_xgb": 0.3921,
-    "w_lgb": 0.0,
+    "w_xgb": 0.0331,
+    "w_lgb": 0.7032,
     "source": "val_nnls_3way",
-    "w_mlp": 0.5644
+    "w_mlp": 0.5125
   },
   "tov": {
-    "w_xgb": 0.0,
-    "w_lgb": 0.5882,
+    "w_xgb": 0.2472,
+    "w_lgb": 0.7099,
     "source": "val_nnls_3way",
-    "w_mlp": 0.3785
+    "w_mlp": 0.2001
   }
 }
