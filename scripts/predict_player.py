@@ -52,6 +52,36 @@ from src.data.lineups import (  # noqa: E402
 )
 
 
+# Cycle 66: post-prediction scaling by lineup classification. The model
+# predicts as if the player is in their L5/L10 minutes role; these factors
+# adjust when tonight's role is materially different.
+#
+# Sourced from rough projected-minutes-vs-typical ratios on bench/questionable
+# starts. Calibrated from rotowire's projected minutes ranges (Confirmed
+# starter ~32-38min vs bench rotation player ~10-18min) divided by typical
+# starter L10 minutes (~30-35).
+_STATUS_SCALE = {
+    "starter":      1.00,
+    "questionable": 0.75,
+    "bench":        0.30,
+    "no-game":      0.00,
+    "unknown":      1.00,
+}
+
+
+def apply_minutes_scaling(stat_preds: dict, classification: str) -> dict:
+    """Scale every stat prediction by the lineup-classification factor.
+
+    Pure function — testable without touching model files. classification
+    must be one of _STATUS_SCALE keys; unrecognised values default to 1.0
+    (no scaling) so unfamiliar lineup states don't silently zero predictions.
+    """
+    factor = _STATUS_SCALE.get(classification, 1.0)
+    if factor == 1.0:
+        return dict(stat_preds)
+    return {k: round(float(v) * factor, 2) for k, v in stat_preds.items()}
+
+
 def _strip_accents(s: str) -> str:
     """Drop non-ASCII diacritics so 'Jokic' matches 'Nikola Jokic'."""
     import unicodedata  # noqa: PLC0415
@@ -365,6 +395,9 @@ def main():
     ap.add_argument("--require-starter-lineup", action="store_true",
                     help="Exit 2 if the player isn't classified 'starter' or 'questionable' "
                          "in tonight's lineup data — for batch flows that only want starters.")
+    ap.add_argument("--scale-by-status", action="store_true",
+                    help="Cycle 66. Scale every stat prediction by the lineup classification: "
+                         "questionable*0.75, bench*0.30, no-game*0.0, starter*1.0. Requires --lineups.")
     args = ap.parse_args()
 
     season = args.season or _detect_current_season()
@@ -387,6 +420,7 @@ def main():
 
     # Lineup cross-reference (cycle 63) — runs before injury / playergamelog
     # so no-game players exit before any expensive nba_api fetch.
+    lineup_cls = "unknown"
     if args.lineups is not None:
         lu_path = (os.path.join(PROJECT_DIR, "data",
                                   f"lineups_{_date.today().isoformat()}.json")
@@ -395,18 +429,21 @@ def main():
         tonight = teams_playing(lu_path)
         # We don't know the player's team here without an API call; pass None
         # so classify_starter falls back to the "bench if in-index else default" branch.
-        cls = classify_starter(name, starter_idx, teams_tonight=tonight)
+        lineup_cls = classify_starter(name, starter_idx, teams_tonight=tonight)
         rec = starter_idx.get(name.lower())
         if rec:
-            print(f"  Lineup:   {cls.upper()} ({rec['lineup_status']}, "
+            print(f"  Lineup:   {lineup_cls.upper()} ({rec['lineup_status']}, "
                   f"{rec['pos']}, play_pct={rec['play_pct']}"
                   + (f", inj={rec['injury']}" if rec['injury'] else "") + ")")
         else:
-            print(f"  Lineup:   {cls.upper()} (not in tonight's starter list)")
-        if args.require_starter_lineup and cls not in ("starter", "questionable"):
+            print(f"  Lineup:   {lineup_cls.upper()} (not in tonight's starter list)")
+        if args.require_starter_lineup and lineup_cls not in ("starter", "questionable"):
             print(f"  [skip] --require-starter-lineup set and classification "
-                  f"is '{cls}' — exiting.")
+                  f"is '{lineup_cls}' — exiting.")
             sys.exit(2)
+    elif args.scale_by_status:
+        print("  [warn] --scale-by-status set without --lineups; "
+              "scaling defaults to 1.0 (no effect).")
 
     # Injury cross-reference (cycle 53) — runs before the starter signal so a
     # listed-OUT player exits before the expensive playergamelog fetch.
@@ -472,6 +509,18 @@ def main():
                 bet = "  (no edge)"
         print(f"  {stat.upper():4s} | {pred:6.2f} | {l5s:>5s} | {l10s:>5s} | {edge_s:>6s} | {q10_s:>5s} {q90_s:>5s} | {bet}")
     print()
+
+    # Cycle 66: apply minutes-status scaling before save. Prints an
+    # explainer line if any scaling factor != 1.0 was applied.
+    if args.scale_by_status and lineup_cls in _STATUS_SCALE \
+            and _STATUS_SCALE[lineup_cls] != 1.0:
+        scaled = apply_minutes_scaling(stat_preds, lineup_cls)
+        factor = _STATUS_SCALE[lineup_cls]
+        print(f"  [scale] applied {factor:.2f}x scaling for '{lineup_cls}' classification:")
+        for stat in STATS:
+            if stat in stat_preds and stat in scaled:
+                print(f"    {stat.upper():4s} {stat_preds[stat]:>6.2f} -> {scaled[stat]:>6.2f}")
+        stat_preds = scaled
 
     if args.save is not None and stat_preds:
         # Schema mirrors predict_slate so single-player + slate runs append to
