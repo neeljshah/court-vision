@@ -48,6 +48,16 @@ STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 # LGB model and predict_pergame's load_pergame_model returns just LGB,
 # making the "blend" a single-model prediction.
 _LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
+
+# Cycle 16 (loop 5): per-stat log1p label transform for low-rate / right-skewed
+# count stats. Walk-forward (4 folds) showed clean MAE wins for all three with
+# 4/4 folds positive: STL -0.0023, BLK -0.0072 (-1.4%), TOV -0.0057. R² loss
+# is small (-0.0010 to -0.0034) and within fold-to-fold noise. XGB and LGB
+# switch objective to squared error when log1p is in play (Poisson assumes
+# raw counts). The blend output is expm1'd back to raw-count scale before
+# NNLS, calibration, and persistence so predict_pergame's contract is
+# unchanged from the caller's perspective.
+_LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov"}
 _BOX_COL = {"pts": "PTS", "reb": "REB", "ast": "AST", "fg3m": "FG3M",
             "stl": "STL", "blk": "BLK", "tov": "TOV", "min": "MIN"}
 _FORM_STATS = STATS + ["min"]          # min drives every counting stat
@@ -1130,11 +1140,25 @@ def train_pergame_models(
         y = np.array([r[f"target_{stat}"] for r in rows], dtype=float)
         y_tr, y_val, y_ho = y[:train_end], y[train_end:val_end], y[val_end:]
         is_count = stat in ("stl", "blk")
+        use_log = stat in _LOG_TRANSFORM_STATS
+
+        # When log1p is on, all three learners train on log1p(y) and the
+        # base-learner predictions are expm1'd before the NNLS stacker fits.
+        # This lets the NNLS blend on the raw-count scale (same units as
+        # the final prediction) while the learners' loss-surface fitting
+        # happens in the log-compressed space that better matches the
+        # right-skewed count distributions.
+        y_tr_t  = np.log1p(y_tr)  if use_log else y_tr
+        y_val_t = np.log1p(y_val) if use_log else y_val
 
         params = {**(_DEFAULT_COUNT if is_count else _DEFAULT_REG),
                   **effective_params.get(stat, {})}
 
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
+        # Poisson objective only makes sense on raw counts; log1p targets use
+        # squared-error.
+        xgb_obj = ("reg:squarederror" if use_log
+                   else ("count:poisson" if is_count else "reg:squarederror"))
         xgb_model = xgb.XGBRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
@@ -1143,13 +1167,15 @@ def train_pergame_models(
             min_child_weight=params["min_child_weight"], reg_lambda=params["reg_lambda"],
             reg_alpha=params.get("reg_alpha", 0.5),
             gamma=params["gamma"], random_state=42,
-            objective="count:poisson" if is_count else "reg:squarederror",
+            objective=xgb_obj,
             early_stopping_rounds=40, eval_metric="mae",
         )
-        xgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
+        xgb_model.fit(X_tr, y_tr_t, eval_set=[(X_val, y_val_t)],
                       sample_weight=sample_w_tr, verbose=False)
 
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
+        lgb_obj = ("regression" if use_log
+                   else ("poisson" if is_count else "regression"))
         lgb_model = lgb.LGBMRegressor(
             n_estimators=params["n_estimators"], max_depth=params["max_depth"],
             learning_rate=params.get("learning_rate", 0.04),
@@ -1159,10 +1185,10 @@ def train_pergame_models(
             min_child_samples=max(20, params["min_child_weight"] * 2),
             reg_lambda=params["reg_lambda"],
             reg_alpha=params.get("reg_alpha", 0.5), random_state=42,
-            objective="poisson" if is_count else "regression",
+            objective=lgb_obj,
             n_jobs=-1, verbosity=-1,
         )
-        lgb_model.fit(X_tr, y_tr, eval_set=[(X_val, y_val)],
+        lgb_model.fit(X_tr, y_tr_t, eval_set=[(X_val, y_val_t)],
                       sample_weight=sample_w_tr,
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
@@ -1176,7 +1202,7 @@ def train_pergame_models(
         X_tr_s  = mlp_scaler.fit_transform(X_tr)
         X_val_s = mlp_scaler.transform(X_val)
         X_ho_s  = mlp_scaler.transform(X_ho)
-        mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr)
+        mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr_t)
 
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
         # 3-way weighted combo of XGB + LGB + MLP fit per-stat on the val
@@ -1186,16 +1212,25 @@ def train_pergame_models(
         # disagree and the fit doesn't generalise.
         lgb_only = stat in _LGB_ONLY_STATS
 
-        xgb_ho, lgb_ho = xgb_model.predict(X_ho), lgb_model.predict(X_ho)
-        mlp_ho = mlp_model.predict(X_ho_s)
+        # When log1p is on, base learners output log-space predictions; expm1
+        # them back to raw-count scale before NNLS fits on raw-y target. This
+        # also fixes calibration + persistence so predict_pergame's saved
+        # models, run through xgb.predict / lgb.predict directly, still need
+        # the expm1 at inference time (see load_pergame_model / predict_pergame).
+        def _inv(v):
+            return np.clip(np.expm1(v), 0.0, None) if use_log else v
+
+        xgb_ho = _inv(xgb_model.predict(X_ho))
+        lgb_ho = _inv(lgb_model.predict(X_ho))
+        mlp_ho = _inv(mlp_model.predict(X_ho_s))
 
         if lgb_only:
             w_xgb, w_lgb, w_mlp = 0.0, 1.0, 0.0
             meta_fit_source = "lgb_only"
         else:
-            xgb_val = xgb_model.predict(X_val)
-            lgb_val = lgb_model.predict(X_val)
-            mlp_val = mlp_model.predict(X_val_s)
+            xgb_val = _inv(xgb_model.predict(X_val))
+            lgb_val = _inv(lgb_model.predict(X_val))
+            mlp_val = _inv(mlp_model.predict(X_val_s))
             from sklearn.linear_model import LinearRegression
             stacker = LinearRegression(positive=True, fit_intercept=False)
             stacker.fit(np.column_stack([xgb_val, lgb_val, mlp_val]), y_val)
@@ -1211,10 +1246,10 @@ def train_pergame_models(
 
         def _blend(X, Xs):
             if lgb_only:
-                return lgb_model.predict(X)
-            return (w_xgb * xgb_model.predict(X)
-                    + w_lgb * lgb_model.predict(X)
-                    + w_mlp * mlp_model.predict(Xs))
+                return _inv(lgb_model.predict(X))
+            return (w_xgb * _inv(xgb_model.predict(X))
+                    + w_lgb * _inv(lgb_model.predict(X))
+                    + w_mlp * _inv(mlp_model.predict(Xs)))
 
         blend_ho = (lgb_ho if lgb_only
                     else w_xgb * xgb_ho + w_lgb * lgb_ho + w_mlp * mlp_ho)
@@ -1460,6 +1495,16 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             return None
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
 
+    # When the stat was trained with log1p target, each base learner outputs
+    # log-space predictions; expm1 them back to raw-count scale before NNLS
+    # weighting (matches the training-time inversion).
+    use_log = stat in _LOG_TRANSFORM_STATS
+    def _inv_pred(v: float) -> float:
+        if not use_log:
+            return v
+        # clip negative to 0 (matches training-side clip)
+        return max(0.0, float(np.expm1(v)))
+
     # load_pergame_model returns [XGB, LGB, (scaler, MLP)] when all are present,
     # or a subset (e.g. [LGB] for _LGB_ONLY_STATS, [XGB, LGB] when MLP weight
     # was below the keep threshold). Disambiguate by class/tuple shape.
@@ -1471,13 +1516,13 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             if isinstance(m, tuple):
                 scaler, mlp_model = m
                 if mlp_pred is None:
-                    mlp_pred = float(mlp_model.predict(scaler.transform(X))[0])
+                    mlp_pred = _inv_pred(float(mlp_model.predict(scaler.transform(X))[0]))
                 continue
             cls = type(m).__name__.lower()
             if "xgb" in cls and xgb_pred is None:
-                xgb_pred = float(m.predict(X)[0])
+                xgb_pred = _inv_pred(float(m.predict(X)[0]))
             elif "lgb" in cls and lgb_pred is None:
-                lgb_pred = float(m.predict(X)[0])
+                lgb_pred = _inv_pred(float(m.predict(X)[0]))
         w_xgb = float(weights.get("w_xgb", 0.0))
         w_lgb = float(weights.get("w_lgb", 0.0))
         w_mlp = float(weights.get("w_mlp", 0.0))
@@ -1496,9 +1541,9 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
         for m in models:
             if isinstance(m, tuple):
                 scaler, mlp_model = m
-                preds.append(float(mlp_model.predict(scaler.transform(X))[0]))
+                preds.append(_inv_pred(float(mlp_model.predict(scaler.transform(X))[0])))
             else:
-                preds.append(float(m.predict(X)[0]))
+                preds.append(_inv_pred(float(m.predict(X)[0])))
         blend = sum(preds) / len(preds) if preds else 0.0
 
     calibrator = _load_pergame_calibrator(stat, model_dir)
