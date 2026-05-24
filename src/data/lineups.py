@@ -118,8 +118,11 @@ def classify_starter(name: str, index: Dict[str, dict],
     # Player not in any starting lineup.
     if not index:
         return "unknown"
-    if teams_tonight is None and player_team is None:
-        return "bench"     # lineup data exists; player just not starting
-    if player_team and teams_tonight and player_team in teams_tonight:
+    # Distinguishing "bench" from "no-game" needs the player's team. Without
+    # it the safest answer is "bench" — refusing to claim no-game when we
+    # can't actually verify the team isn't on tonight's slate.
+    if not player_team:
+        return "bench"
+    if not teams_tonight or player_team in teams_tonight:
         return "bench"
     return "no-game"

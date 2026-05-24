@@ -47,6 +47,9 @@ from src.prediction.prop_quantiles import (  # noqa: E402
 from src.data.injuries import (  # noqa: E402
     load_unavailable_players, load_soft_warn_players, lookup_status,
 )
+from src.data.lineups import (  # noqa: E402
+    build_starter_index, teams_playing, classify_starter,
+)
 
 
 def _strip_accents(s: str) -> str:
@@ -356,6 +359,12 @@ def main():
                          "QUESTIONABLE players proceed with a soft-warn line.")
     ap.add_argument("--include-injured", action="store_true",
                     help="Override --injuries: continue prediction even when the player is OUT.")
+    ap.add_argument("--lineups", nargs="?", const="__default__", default=None,
+                    help="Cross-reference data/lineups_<today>.json (cycle 61 rotowire scrape). "
+                         "Prints a one-line classification (starter / questionable / bench / no-game).")
+    ap.add_argument("--require-starter-lineup", action="store_true",
+                    help="Exit 2 if the player isn't classified 'starter' or 'questionable' "
+                         "in tonight's lineup data — for batch flows that only want starters.")
     args = ap.parse_args()
 
     season = args.season or _detect_current_season()
@@ -375,6 +384,29 @@ def main():
 
     print(f"\n  Player: {name}  (id={pid})")
     print(f"  Game:   {'home' if is_home else 'away'} vs {args.opp}    season={season}    rest={args.rest}d")
+
+    # Lineup cross-reference (cycle 63) — runs before injury / playergamelog
+    # so no-game players exit before any expensive nba_api fetch.
+    if args.lineups is not None:
+        lu_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"lineups_{_date.today().isoformat()}.json")
+                    if args.lineups == "__default__" else args.lineups)
+        starter_idx = build_starter_index(lu_path)
+        tonight = teams_playing(lu_path)
+        # We don't know the player's team here without an API call; pass None
+        # so classify_starter falls back to the "bench if in-index else default" branch.
+        cls = classify_starter(name, starter_idx, teams_tonight=tonight)
+        rec = starter_idx.get(name.lower())
+        if rec:
+            print(f"  Lineup:   {cls.upper()} ({rec['lineup_status']}, "
+                  f"{rec['pos']}, play_pct={rec['play_pct']}"
+                  + (f", inj={rec['injury']}" if rec['injury'] else "") + ")")
+        else:
+            print(f"  Lineup:   {cls.upper()} (not in tonight's starter list)")
+        if args.require_starter_lineup and cls not in ("starter", "questionable"):
+            print(f"  [skip] --require-starter-lineup set and classification "
+                  f"is '{cls}' — exiting.")
+            sys.exit(2)
 
     # Injury cross-reference (cycle 53) — runs before the starter signal so a
     # listed-OUT player exits before the expensive playergamelog fetch.
