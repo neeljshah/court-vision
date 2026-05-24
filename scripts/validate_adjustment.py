@@ -116,20 +116,21 @@ def make_pull_to_l10(weight: float = 0.3) -> AdjustFn:
 
 
 def make_b2b_penalty(factor: float = 0.96) -> AdjustFn:
-    """Cycle 81 probe. Back-to-back games typically see reduced player output
-    (fatigue). The dataset has home_back_to_back / away_back_to_back features
-    but predicting a SCALAR factor on the row-level might be miscalibrated.
-    Test: scale by `factor` when EITHER side flags back-to-back.
+    """Back-to-back games typically see reduced player output (fatigue).
+
+    Cycle 82 fix: uses `is_b2b` field — the cycle-81 attempt checked
+    non-existent `home_back_to_back` / `away_back_to_back` fields and the
+    adjustment never fired. The dataset has PER-PLAYER rest (rest_days,
+    days_since_last_game, is_b2b), NOT per-team home/away rest.
     """
     def fn(pred: np.ndarray, rows: List[dict], stat: str) -> np.ndarray:
         out = pred.copy()
         for i, r in enumerate(rows):
             try:
-                hb2b = float(r.get("home_back_to_back", 0) or 0)
-                ab2b = float(r.get("away_back_to_back", 0) or 0)
+                b2b = float(r.get("is_b2b", 0) or 0)
             except (TypeError, ValueError):
                 continue
-            if hb2b >= 0.5 or ab2b >= 0.5:
+            if b2b >= 0.5:
                 out[i] = pred[i] * factor
         return np.clip(out, 0.0, None)
     return fn
