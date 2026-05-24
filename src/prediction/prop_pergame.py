@@ -109,11 +109,14 @@ def feature_columns() -> List[str]:
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
-    # Advanced-stat L5/L10/EWMA columns exist as infrastructure but are NOT
-    # appended here — cycle 6 (loop 5) tested wiring them in and the model
-    # regressed: the gamelog form features already span the same signal, and
-    # the pre-2023-10 zero-coverage created covariate shift. Backfilling
-    # 2022-23 boxscoreadvancedv3 + re-testing is the open follow-up.
+    # Per-player advanced-stat L5/L10/EWMA/prev features are infrastructure-
+    # ready (_AdvancedStats + data/player_adv_stats.parquet, 77k player-game
+    # rows across 3 seasons), but disabled here. Cycle 8 (loop 5) verified
+    # that even with full coverage, adding the 20 adv columns regresses 5
+    # of 7 stats (PTS R² -0.0054, TOV R² -0.0089 worst) — gamelog form
+    # features already span the same signal. Future angles: season-to-date
+    # aggregation, per-opponent split, or use raw values without rolling.
+    # cols += list(_ADV_FEATURE_COLS)  # disabled — see _AdvancedStats docstring
     return cols
 
 
