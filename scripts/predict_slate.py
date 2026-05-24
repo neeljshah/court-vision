@@ -50,12 +50,29 @@ from src.prediction.prop_pergame import (  # noqa: E402
 from src.data.injuries import (  # noqa: E402
     load_unavailable_players, load_soft_warn_players, lookup_status,
 )
+from src.data.lineups import (  # noqa: E402
+    build_starter_index, classify_starter,
+)
 
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _PRED_DIR  = os.path.join(PROJECT_DIR, "data", "predictions")
 _API_SLEEP = 0.6  # polite delay between nba_api calls
+
+
+def _tag_lineup(rows: List[Dict], starter_idx: Dict[str, dict]) -> List[Dict]:
+    """Append lineup classification tag to each row's name (informational)."""
+    out = []
+    for r in rows:
+        cls = classify_starter(r["name"], starter_idx)
+        if cls == "starter":
+            # Don't tag — starter is the default expectation.
+            out.append(r); continue
+        tag = cls.upper().replace("-", " ")
+        r = dict(r); r["name"] = f"{r['name']} [{tag}]"
+        out.append(r)
+    return out
 
 
 def _filter_injuries(rows: List[Dict], unav: Dict[str, str],
@@ -339,6 +356,11 @@ def main() -> int:
                     help="Cross-reference data/injuries_<date>.json. Players listed "
                          "OUT/DOUBTFUL/NOT-WITH-TEAM are skipped; QUESTIONABLE players "
                          "get a soft-warn tag in the printed output.")
+    ap.add_argument("--lineups", nargs="?", const="__default__", default=None,
+                    help="Cycle 64. Cross-reference data/lineups_<date>.json from the "
+                         "cycle-61 rotowire scrape. Non-starters get a [BENCH] tag "
+                         "in the printed output instead of being skipped (slate view "
+                         "is informational, unlike compare_to_lines which is for betting).")
     args = ap.parse_args()
 
     if args.date:
@@ -371,6 +393,15 @@ def main() -> int:
         inj_soft = load_soft_warn_players(inj_path)
         print(f"  [injuries] {len(inj_unav)} unavailable, {len(inj_soft)} questionable")
 
+    # Cycle 64: lineup cross-reference. Tags non-starters in output.
+    starter_idx: Dict[str, dict] = {}
+    if args.lineups is not None:
+        lu_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"lineups_{date_str}.json")
+                    if args.lineups == "__default__" else args.lineups)
+        starter_idx = build_starter_index(lu_path)
+        print(f"  [lineups] {len(starter_idx)} starters across all teams tonight")
+
     per_game_rows: List[Tuple[Dict, List[Dict], List[Dict]]] = []
     for g in games:
         home_abbrev = g["home_abbrev"] or f"T{g['home_id']}"
@@ -387,6 +418,10 @@ def main() -> int:
             # Skip unavailable players, tag soft-warn players in-place.
             home_rows = _filter_injuries(home_rows, inj_unav, inj_soft)
             away_rows = _filter_injuries(away_rows, inj_unav, inj_soft)
+        if starter_idx:
+            # Tag non-starters in name (slate is informational — never drop).
+            home_rows = _tag_lineup(home_rows, starter_idx)
+            away_rows = _tag_lineup(away_rows, starter_idx)
         print_game(home_abbrev, away_abbrev, date_str, home_rows, away_rows)
         per_game_rows.append((g, home_rows, away_rows))
 
