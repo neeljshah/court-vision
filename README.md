@@ -43,6 +43,32 @@ This is the deepest moat. A competitor who copies today's 85 models gets neither
 
 ---
 
+## The 71% Result — Backtested, Not Claimed
+
+Two numbers do the work. Both are reproducible from committed JSON.
+
+**Win probability — 71.7% accuracy / 0.188 Brier** on a held-out single split; **70.94% ± 2.5pp / 0.193 Brier** on a 3-fold walk-forward (the honest number, since walk-forward never lets the model peek at the future). The model is a 5-way NNLS stack (XGB + LGB + LR + MLP + NB) trained on 2 seasons. Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json).
+
+**What 71% means in dollars.** A 19,964-game holdout backtest (loop 5, cycle 30 — re-validated cycle 39) bets every player-game where the model's projected median deviates from the L5 prop line by ≥ the edge threshold. Pure single-stat bets at -110 American odds, no parlays:
+
+| Stat | Edge ≥ 0.5 | Hit | ROI | Edge ≥ 1.0 | Hit | ROI |
+|------|-----------:|----:|----:|-----------:|----:|----:|
+| PTS  | 81.5% of games | 62.8% | **+19.9%** | 63.9% of games | 65.1% | **+24.3%** |
+| REB  | 55.0% | 64.8% | **+23.6%** | 25.8% | 69.5% | **+32.7%** |
+| AST  | 41.7% | 66.4% | **+26.8%** | 14.4% | 72.2% | **+37.9%** |
+| FG3M | 32.4% | 64.9% | **+23.9%** |  8.6% | 77.0% | **+46.9%** |
+| TOV  | 33.0% | 67.1% | **+28.1%** |  7.6% | 77.6% | **+48.2%** |
+| STL  | 34.9% | 63.7% | **+21.5%** |  8.8% | 76.5% | **+46.1%** |
+| BLK  | 27.1% | 66.3% | **+26.5%** |  4.0% | 79.6% | **+52.0%** |
+
+A −110 sportsbook needs **52.4%** to break even. The model clears that on every stat at every threshold. Source: [`data/models/betting_backtest.json`](data/models/betting_backtest.json) and [`data/models/betting_backtest_smart_line.json`](data/models/betting_backtest_smart_line.json) (smart-line variant — L5 × opp_def × home_adj — pays slightly more, same direction).
+
+**Why this isn't a fluke.** (1) Walk-forward, not random holdout — the only honest gate for time-series sports data. (2) MAE is the betting-relevant loss because prop O/U lines score against the median, not the mean — every cycle that improved MAE without improving R² (cycles 26-29, 34) was kept because R² rewards mean-fitting and the book doesn't. (3) The cycle-30 result was reproduced in cycle 38 against a smarter line proxy (L5 × opp_def × home_adj) and **still** wins 26-32% ROI at +0.5 edge, confirming the edge survives even when the comparison line gets harder.
+
+**Potential — what the 71% becomes.** The current numbers are model-quality only, against a proxy line. Three multipliers are scoped and not yet shipped: (a) real sportsbook closing-line value (CLV) measurement against six books, (b) CV `defender_distance` at scale (no other operator has this in their prop model), (c) live in-play repricing on late scratches (books take 5-15 min, the model takes seconds). Honest expectation: the +25% paper ROI compresses to +3-8% CLV against sharp lines, which is the figure that compounds in a real bankroll. See [Roadmap](#roadmap).
+
+---
+
 ## What's Built Today
 
 Numbers from the codebase, not projections. Every value below is reproducible from committed data; source files are linked. MAE is the betting-relevant metric (sportsbook prop lines score against the median, not the mean) and is what loop 5 optimised. See [PREDICTIONS_QUICKSTART.md](PREDICTIONS_QUICKSTART.md) for the live CLIs.
