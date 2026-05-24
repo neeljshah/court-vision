@@ -62,7 +62,7 @@ def _train_5way(X_tr, y_tr, X_val, y_val) -> dict:
     from sklearn.metrics import accuracy_score, brier_score_loss
 
     xgb = XGBClassifier(
-        n_estimators=300, learning_rate=0.035, max_depth=4,
+        n_estimators=300, learning_rate=0.035, max_depth=5,
         subsample=0.8, colsample_bytree=0.5, gamma=0.4,
         eval_metric="logloss", random_state=42, n_jobs=-1,
         early_stopping_rounds=20,
