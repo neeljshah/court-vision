@@ -109,6 +109,14 @@ def feature_columns() -> List[str]:
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
+    # Per-game officials crew tendency features (avg fouls/fta/home_win_pct
+    # averaged across 3-ref crew using PRIOR-season ref stats) infrastructure
+    # lives in _OfficialsCrew + data/officials_features.parquet. Cycle 15
+    # (loop 5) tested wire-in: single-split looked mixed (MAE down on 5/7
+    # but R² down on all 7), and walk-forward showed all 7 stats regress on
+    # MAE (PTS +0.0111 WF MAE). The single-split MAE wins were noise from
+    # a specific holdout slice. Disabled.
+    # cols += list(_OFFICIALS_KEYS)  # cycle 15 regressed on walk-forward
     # Per-player prior-season tracking (Drives + Passing + CatchShoot) lives in
     # data/player_tracking.parquet — _PlayerTracking wraps it. Cycle 14 (loop 5)
     # tested the wire-in and regressed 5 of 7 stats (PTS R² -0.0023, AST -0.0064)
@@ -327,6 +335,55 @@ def build_rest_travel(cache_path: Optional[str] = None) -> _RestTravel:
     except Exception:
         pass
     return _RestTravel(lookup)
+
+
+# ── officials crew features (cycle 15 loop 5) ──────────────────────────────────
+# Source: data/officials_features.parquet — built by
+# scripts/build_officials_per_team_date.py. Each game's crew is averaged across
+# its 3 refs' PRIOR-SEASON tendencies (avg_total_fouls, avg_total_fta,
+# home_win_rate from ref_stats_<prior_season>.json). Strictly point-in-time:
+# the prior season is complete before this season starts, no leak.
+
+_OFFICIALS_KEYS = ("ref_crew_fouls", "ref_crew_fta", "ref_crew_home_win_pct")
+_OFFICIALS_DEFAULTS: Dict[str, float] = {
+    "ref_crew_fouls":        42.0,
+    "ref_crew_fta":          43.5,
+    "ref_crew_home_win_pct": 0.55,
+}
+_OFFICIALS_PATH = os.path.join(PROJECT_DIR, "data", "officials_features.parquet")
+
+
+class _OfficialsCrew:
+    """Per-(team_abbreviation, game_date) lookup of crew tendency features."""
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, team_abbrev: str, gdate: datetime) -> Dict[str, float]:
+        key = (str(team_abbrev), gdate.date().isoformat())
+        return dict(self._lookup.get(key, _OFFICIALS_DEFAULTS))
+
+
+def build_officials_crew(parquet_path: Optional[str] = None) -> _OfficialsCrew:
+    """Load data/officials_features.parquet into an _OfficialsCrew wrapper.
+
+    Falls back to an empty wrapper (always-defaults) when the parquet is
+    absent or pandas/pyarrow fails. Never raises.
+    """
+    path = parquet_path or _OFFICIALS_PATH
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _OfficialsCrew(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            key = (str(r["team_abbreviation"]), str(r["game_date"]))
+            lookup[key] = {k: float(r.get(k, _OFFICIALS_DEFAULTS[k]) or _OFFICIALS_DEFAULTS[k])
+                           for k in _OFFICIALS_KEYS}
+    except Exception:
+        return _OfficialsCrew(lookup)
+    return _OfficialsCrew(lookup)
 
 
 # ── play-type features ────────────────────────────────────────────────────────
@@ -870,6 +927,7 @@ def build_pergame_dataset(
     contracts = build_contracts()
     adv_stats = build_advanced_stats()
     tracking  = build_player_tracking()
+    officials = build_officials_crew()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -924,8 +982,8 @@ def build_pergame_dataset(
                 feats.update(playtypes.features(file_player_id, file_season))
                 feats.update(bbref.features(file_player_id, file_season))
                 feats.update(contracts.features(file_player_id, file_season))
-                # tracking.features + adv_stats.features available but not
-                # appended to feature_cols — see comments above.
+                # officials.features + tracking.features + adv_stats.features
+                # available but not appended to feature_cols — see comments above.
                 row = {c: feats[c] for c in feature_cols}
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
