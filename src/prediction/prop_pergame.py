@@ -59,6 +59,16 @@ _LGB_ONLY_STATS: set = set()  # cycle 38: try NNLS meta-stacker for STL too
 # predict_pergame's contract is unchanged from the caller's perspective.
 _LOG_TRANSFORM_STATS: set = {"stl", "blk", "tov", "fg3m", "reb", "ast"}
 
+# Cycle 19 (loop 5): per-stat Huber-on-log1p infrastructure. Tested with the
+# six log1p stats — only FG3M showed a clean WF 4/4-folds MAE win
+# (-0.0024 +- 0.0013), but on the production single-split MAE was a wash
+# (+0.0000) and R² went -0.0006. REB regressed (+0.0009 mean), AST 3/4 folds
+# (-0.0013 mean), STL/BLK/TOV essentially wash. The set is empty (no stat
+# ships Huber on log1p). PTS uses sqrt+Huber via _SQRT_HUBER_STATS — that
+# is the only Huber path live in production. Add stats here only after BOTH
+# WF 4/4 win AND production single-split MAE strictly down.
+_HUBER_LOG_STATS: set = set()
+
 # Cycle 18 (loop 5): PTS-specific recipe — sqrt label transform + Huber loss.
 # log1p was tested for PTS in cycle 17 and rejected (per-fold mae sign flips,
 # range -0.0206..+0.0270). For PTS (mean ~12 per game), sqrt compresses less
@@ -1170,11 +1180,13 @@ def train_pergame_models(
 
         # Base learner 1 — XGBoost, regularised, early-stopped on the val slice.
         # Poisson objective only makes sense on raw counts; log1p / sqrt targets
-        # use squared-error or Huber.
+        # use squared-error or Huber. The _HUBER_LOG_STATS set carries log1p
+        # stats that want Huber instead of squared error on the log target.
         if use_sqrt_huber:
             xgb_obj = "reg:pseudohubererror"
         elif use_log:
-            xgb_obj = "reg:squarederror"
+            xgb_obj = ("reg:pseudohubererror"
+                       if stat in _HUBER_LOG_STATS else "reg:squarederror")
         elif is_count:
             xgb_obj = "count:poisson"
         else:
@@ -1197,7 +1209,7 @@ def train_pergame_models(
         if use_sqrt_huber:
             lgb_obj = "huber"
         elif use_log:
-            lgb_obj = "regression"
+            lgb_obj = ("huber" if stat in _HUBER_LOG_STATS else "regression")
         elif is_count:
             lgb_obj = "poisson"
         else:
