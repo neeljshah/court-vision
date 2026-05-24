@@ -139,6 +139,35 @@ def load_injury_unavailable(path: str) -> dict:
     return load_unavailable_players(path)
 
 
+def append_bet_log(out_path: str, results: list,
+                    kelly_bankroll: float = None) -> int:
+    """Cycle 68: append the ranked positive-EV bets to a CSV. Creates header
+    on first write. Returns rows written.
+
+    Schema:
+      timestamp,date,player,stat,line,side,model,edge,prob,odds,ev_per_dollar,
+      kelly_pct,kelly_stake,bankroll
+    """
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    file_exists = os.path.exists(out_path) and os.path.getsize(out_path) > 0
+    ts = datetime.now().isoformat(timespec="seconds")
+    date_str = _date.today().isoformat()
+    with open(out_path, "a", newline="", encoding="utf-8") as fh:
+        w = csv.writer(fh)
+        if not file_exists:
+            w.writerow(["timestamp", "date", "player", "stat", "line", "side",
+                        "model", "edge", "prob", "odds", "ev_per_dollar",
+                        "kelly_pct", "kelly_stake", "bankroll"])
+        for r in results:
+            w.writerow([
+                ts, date_str, r["player"], r["stat"], r["line"], r["side"],
+                r["model"], r["edge"], r["prob"], r["odds"], r["ev"],
+                r["kelly_pct"], r["kelly_stake"],
+                f"{kelly_bankroll:.2f}" if kelly_bankroll is not None else "",
+            ])
+    return len(results)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("csv", help="CSV file with prop lines")
@@ -159,6 +188,10 @@ def main():
     ap.add_argument("--scale-by-status", action="store_true",
                     help="Cycle 67. Scale model_pred + q10/q90 by the lineup classification "
                          "(questionable*0.75) before computing edge / EV. Requires --lineups.")
+    ap.add_argument("--bet-log", nargs="?", const="__default__", default=None,
+                    help="Cycle 68. Append recommended bets (positive EV) to a CSV for later "
+                         "CLV / settlement analysis. Bare flag → data/bets/<today>.csv; with "
+                         "arg → that path.")
     args = ap.parse_args()
 
     inj_unavail: dict = {}
@@ -289,6 +322,13 @@ def main():
     if args.kelly:
         total_stake = sum(r["kelly_stake"] for r in results)
         print(f"\n  Total Kelly stake on positive-EV bets: ${total_stake:.2f} of ${args.bankroll:.2f} bankroll")
+
+    if args.bet_log is not None and results:
+        bet_path = (os.path.join(PROJECT_DIR, "data", "bets",
+                                  f"{_date.today().isoformat()}.csv")
+                    if args.bet_log == "__default__" else args.bet_log)
+        n = append_bet_log(bet_path, results, args.bankroll if args.kelly else None)
+        print(f"  Logged {n} bet(s) -> {bet_path}")
 
 
 if __name__ == "__main__":
