@@ -2,6 +2,10 @@
 
 Cycle 88f (loop 5) -- live in-game adjustment for blowouts.
 
+See `tests/test_blowout_adjust.py` for the 11-case rule-branch coverage
+(each bucket, both monotonicity directions, pre-Q4 + OT + close-game
+returns 1.0, and the 12-min -> 6.6-min starter integration check).
+
 Why
 ---
 When a Q4 margin reaches ~20 points, coaches pull starters early. Star prop
