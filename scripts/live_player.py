@@ -31,6 +31,8 @@ from src.data.live import (  # noqa: E402
     find_player, find_player_by_id, clock_share_played, parse_clock,
     absolute_margin, is_blowout, is_live, is_final, _name_key,
 )
+# Cycle 89b (loop 5): unified foul-trouble table lives in src.prediction.live_factors.
+from src.prediction.live_factors import foul_trouble_factor  # noqa: E402
 
 STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
@@ -48,18 +50,11 @@ def project_final(current: float, share_played: float,
 
 
 def foul_factor_for(pf: int, period: int, clock_min_remaining: float) -> float:
-    """Mirror cycle-88e factor table (kept local so we don't depend on import path)."""
-    if pf >= 5:
-        return 0.40
-    if pf == 4:
-        if period <= 3:
-            return 0.55
-        if period == 4 and clock_min_remaining > 6.0:
-            return 0.65
-        return 0.90
-    if pf == 3 and period == 2:
-        return 0.80
-    return 1.0
+    """Backwards-compat wrapper. Cycle 89b unified the canonical table into
+    ``src.prediction.live_factors.foul_trouble_factor``; this name is kept so
+    ``save_live_predictions`` (and any other importers) don't break.
+    """
+    return foul_trouble_factor(pf, period, clock_min_remaining)
 
 
 def blowout_factor_for(margin: int, period: int, clock_min_remaining: float,
