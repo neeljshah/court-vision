@@ -24,6 +24,7 @@ from __future__ import annotations
 import bisect
 import glob
 import json
+import logging
 import os
 import sys
 from datetime import datetime
@@ -31,6 +32,29 @@ from typing import Dict, List, Optional, Tuple
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
+
+# Cycle 93b (loop 5) — module logger for silent-join honesty. Each cycle-91/92
+# join wrapper catches broad Exception so build_pergame_dataset stays robust on
+# fresh checkouts. Without logging those swallowed errors are invisible: cycle
+# 92d hit one (pyarrow missing) and silently shipped a no-op probe. We log a
+# single WARNING per join load failure (once per process) so future probes
+# notice the degradation.
+logger = logging.getLogger(__name__)
+_SILENT_JOIN_WARNED: set = set()
+
+
+def _warn_join_load_once(name: str, path: str, exc: Exception) -> None:
+    """Emit a one-shot WARNING when a cycle-91/92 parquet join fails to load.
+    Subsequent failures for the same join are suppressed to avoid stdout floods.
+    """
+    if name in _SILENT_JOIN_WARNED:
+        return
+    _SILENT_JOIN_WARNED.add(name)
+    logger.warning(
+        "prop_pergame.%s: failed to load %s (%s: %s) — collapsing to empty "
+        "wrapper; downstream probes will see all defaults/None.",
+        name, path, type(exc).__name__, exc,
+    )
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
@@ -605,7 +629,8 @@ def build_player_positions(parquet_path: Optional[str] = None) -> _PlayerPositio
                 "birth_date":    r.get("birth_date"),
                 "draft_year":    r.get("draft_year"),
             }
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_player_positions", path, exc)
         return _PlayerPositions(lookup)
     return _PlayerPositions(lookup)
 
@@ -758,7 +783,8 @@ def build_player_quarter_stats(
                 except (TypeError, ValueError):
                     continue
             lookup[(pid, gdate, period)] = entry
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_player_quarter_stats", path, exc)
         return _PlayerQuarterStats(lookup)
     return _PlayerQuarterStats(lookup)
 
@@ -924,7 +950,8 @@ def build_pregame_spreads(parquet_path: Optional[str] = None) -> _PregameSpreads
                 }
             except Exception:
                 continue
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_pregame_spreads", path, exc)
         return _PregameSpreads(lookup)
     return _PregameSpreads(lookup)
 
@@ -1033,7 +1060,8 @@ def build_player_pf(
                 if v_f != v_f:  # NaN
                     continue
                 per36_lookup[(pid, str(r["game_date"]))] = v_f
-    except Exception:
+    except Exception as exc:
+        _warn_join_load_once("build_player_pf", pf_path, exc)
         return _PlayerPF(pf_lookup, per36_lookup)
     return _PlayerPF(pf_lookup, per36_lookup)
 
