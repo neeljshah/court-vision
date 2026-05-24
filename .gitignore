@@ -82,6 +82,10 @@ data/output/
 data/game_results/
 data/props/
 data/predictions/
+data/live/
+data/defender_matchups/
+data/defender_matchups_*.parquet
+data/defender_matchups_*.json
 data/edges/
 data/model_reports/
 data/ball_yolo/
