@@ -53,6 +53,7 @@ from src.prediction.prop_quantiles import (  # noqa: E402
 )
 from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
 from src.data.injuries import load_unavailable_players  # noqa: E402
+from src.data.lineups import build_starter_index, classify_starter  # noqa: E402
 
 
 def _strip_accents(s: str) -> str:
@@ -150,6 +151,9 @@ def main():
                          "Bare flag → data/injuries_<today>.json; with arg → that path.")
     ap.add_argument("--include-injured", action="store_true",
                     help="Override --injuries: include all players regardless of status.")
+    ap.add_argument("--lineups", nargs="?", const="__default__", default=None,
+                    help="Cycle 64. Skip players not classified starter/questionable in the "
+                         "cycle-61 rotowire lineup JSON. Bare flag → data/lineups_<today>.json.")
     args = ap.parse_args()
 
     inj_unavail: dict = {}
@@ -160,6 +164,15 @@ def main():
         inj_unavail = load_injury_unavailable(inj_path)
         print(f"  [injuries] loaded {len(inj_unavail)} unavailable player(s) from "
               f"{os.path.basename(inj_path)}")
+
+    starter_idx: dict = {}
+    if args.lineups is not None:
+        lu_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"lineups_{_date.today().isoformat()}.json")
+                    if args.lineups == "__default__" else args.lineups)
+        starter_idx = build_starter_index(lu_path)
+        print(f"  [lineups] loaded {len(starter_idx)} starter(s) from "
+              f"{os.path.basename(lu_path)}")
 
     season_default = args.season or _current_season()
     gamelog_dir = os.path.join(PROJECT_DIR, "data", "nba")
@@ -175,6 +188,7 @@ def main():
 
     results = []
     skipped_inj = []
+    skipped_lu = []
     for r in rows_in:
         name = r.get("player", ""); opp = r.get("opp", "").upper()
         venue = r.get("venue", "home").lower(); stat = r.get("stat", "").lower()
@@ -188,6 +202,11 @@ def main():
             key = _strip_accents(name).lower()
             if key in inj_unavail:
                 skipped_inj.append((name, inj_unavail[key]))
+                continue
+        if starter_idx:
+            cls = classify_starter(name, starter_idx)
+            if cls in ("bench", "no-game"):
+                skipped_lu.append((name, cls))
                 continue
         rest_days = float(r.get("rest_days") or 2.0)
         season = r.get("season") or season_default
@@ -234,6 +253,14 @@ def main():
                 continue
             seen.add(n)
             print(f"    - {n} ({s})")
+    if skipped_lu:
+        print(f"\n  [lineups] skipped {len(skipped_lu)} line(s) for non-starters:")
+        seen = set()
+        for n, c in skipped_lu:
+            if n in seen:
+                continue
+            seen.add(n)
+            print(f"    - {n} ({c})")
 
     if not results:
         print("[done] no bets passed --min-edge filter"); return

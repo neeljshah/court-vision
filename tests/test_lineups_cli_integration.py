@@ -15,6 +15,8 @@ if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
 
 import scripts.predict_player as pp  # noqa: E402
+import scripts.predict_slate as ps  # noqa: E402
+import scripts.compare_to_lines as ctl  # noqa: E402
 
 
 def _starter(pos, name, play_pct=100, injury=None):
@@ -171,6 +173,85 @@ def test_lineups_missing_file_returns_unknown(monkeypatch):
          "--lineups", "/tmp/never_exists_xyz.json"], monkeypatch)
     line = [c for c in captured if c.startswith("  Lineup:")][0]
     assert "UNKNOWN" in line
+
+
+# ── predict_slate._tag_lineup (cycle 64) ─────────────────────────────────────
+
+def _slate_row(name):
+    return {"player_id": 1, "name": name, "team": "LAL",
+            "preds": {"pts": 25.0}}
+
+
+def test_tag_lineup_leaves_starters_untagged():
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 100,
+                              "injury": None, "lineup_status": "Confirmed"}}
+    out = ps._tag_lineup([_slate_row("LeBron James")], idx)
+    assert out[0]["name"] == "LeBron James"   # no tag
+
+
+def test_tag_lineup_tags_questionable_and_bench():
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 50,
+                              "injury": "Ques", "lineup_status": "Expected"}}
+    out = ps._tag_lineup([_slate_row("LeBron James"),
+                            _slate_row("Austin Reaves")], idx)
+    lebron = next(r for r in out if "LeBron" in r["name"])
+    reaves = next(r for r in out if "Reaves" in r["name"])
+    assert "[QUESTIONABLE]" in lebron["name"]
+    assert "[BENCH]" in reaves["name"]
+
+
+def test_tag_lineup_does_not_mutate_caller_dict():
+    original = _slate_row("Austin Reaves")
+    idx = {"lebron james": {"team": "LAL", "pos": "SF", "play_pct": 100,
+                              "injury": None, "lineup_status": "Confirmed"}}
+    ps._tag_lineup([original], idx)
+    assert original["name"] == "Austin Reaves"   # mutation prevention
+
+
+# ── compare_to_lines lineup filter end-to-end ────────────────────────────────
+
+def test_compare_to_lines_lineup_filter_skips_bench(monkeypatch, capsys):
+    """compare_to_lines --lineups skips rows for bench players."""
+    # Lineup JSON has SGA but not LeBron — so SGA proceeds, LeBron is filtered.
+    lu = _lineup_json([{
+        "away_team": "OKC", "home_team": "LAL",
+        "away_lineup": {"status": "Expected", "starters": [
+            _starter("PG", "Shai Gilgeous-Alexander"),
+        ]},
+        "home_lineup": {"status": "Expected", "starters": []},
+    }])
+    lu_path = _write_tmp(lu)
+
+    # Mock the heavy lifters so the test never touches nba_api / the model.
+    monkeypatch.setattr(ctl, "_resolve_player_id", lambda n: 1)
+    monkeypatch.setattr(ctl, "build_prediction_row", lambda *a, **k: {"f": 0.0})
+    monkeypatch.setattr(ctl, "predict_pergame", lambda *a, **k: 25.0)
+    monkeypatch.setattr(ctl, "predict_pergame_quantiles",
+                          lambda *a, **k: {"q10": 20.0, "q50": 25.0, "q90": 30.0})
+
+    csv_text = ("player,opp,venue,stat,line,over_odds,under_odds\n"
+                "Shai Gilgeous-Alexander,LAL,away,pts,24.5,-110,-110\n"
+                "LeBron James,OKC,home,pts,22.5,-110,-110\n")
+    csv_path = tempfile.NamedTemporaryFile("w", delete=False, suffix=".csv",
+                                              encoding="utf-8")
+    csv_path.write(csv_text); csv_path.close()
+
+    try:
+        with mock.patch.object(sys, "argv", [
+            "compare_to_lines.py", csv_path.name, "--lineups", lu_path,
+        ]):
+            try:
+                ctl.main()
+            except SystemExit:
+                pass
+        out = capsys.readouterr().out
+        # SGA should appear in the bets table; LeBron should be in the skip list.
+        assert "Shai Gilgeous-Alexander" in out
+        assert "LeBron James" in out          # in skip line
+        assert "[lineups]" in out              # the skip header was printed
+        assert "(bench)" in out
+    finally:
+        os.unlink(csv_path.name); os.unlink(lu_path)
 
 
 if __name__ == "__main__":
