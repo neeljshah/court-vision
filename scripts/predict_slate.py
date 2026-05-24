@@ -47,12 +47,29 @@ import src.data.nba_api_headers_patch  # noqa: F401,E402
 from src.prediction.prop_pergame import (  # noqa: E402
     STATS, predict_player_pergame, _MIN_PLAYED, _num,
 )
+from src.data.injuries import (  # noqa: E402
+    load_unavailable_players, load_soft_warn_players, lookup_status,
+)
 
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
 _PRED_DIR  = os.path.join(PROJECT_DIR, "data", "predictions")
 _API_SLEEP = 0.6  # polite delay between nba_api calls
+
+
+def _filter_injuries(rows: List[Dict], unav: Dict[str, str],
+                      soft: Dict[str, str]) -> List[Dict]:
+    """Drop unavailable players; mutate name in-place to append soft-warn tag."""
+    out = []
+    for r in rows:
+        status = lookup_status(r["name"], unav, soft)
+        if status and status in unav.values():
+            continue
+        if status:
+            r = dict(r); r["name"] = f"{r['name']} [{status}]"
+        out.append(r)
+    return out
 
 
 def save_predictions_csv(
@@ -318,6 +335,10 @@ def main() -> int:
                     help="Write predictions CSV. Bare flag → data/predictions/<date>.csv; "
                          "with arg → write to that path. Schema: date,game_id,player_id,"
                          "player,team,opp,venue,stat,pred (one row per stat).")
+    ap.add_argument("--injuries", nargs="?", const="__default__", default=None,
+                    help="Cross-reference data/injuries_<date>.json. Players listed "
+                         "OUT/DOUBTFUL/NOT-WITH-TEAM are skipped; QUESTIONABLE players "
+                         "get a soft-warn tag in the printed output.")
     args = ap.parse_args()
 
     if args.date:
@@ -340,6 +361,16 @@ def main() -> int:
 
     print(f"  Found {len(games)} game(s).")
 
+    # Cycle 53: injury cross-reference. {} on missing file → no filtering applied.
+    inj_unav: Dict[str, str] = {}; inj_soft: Dict[str, str] = {}
+    if args.injuries is not None:
+        inj_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"injuries_{date_str}.json")
+                    if args.injuries == "__default__" else args.injuries)
+        inj_unav = load_unavailable_players(inj_path)
+        inj_soft = load_soft_warn_players(inj_path)
+        print(f"  [injuries] {len(inj_unav)} unavailable, {len(inj_soft)} questionable")
+
     per_game_rows: List[Tuple[Dict, List[Dict], List[Dict]]] = []
     for g in games:
         home_abbrev = g["home_abbrev"] or f"T{g['home_id']}"
@@ -352,6 +383,10 @@ def main() -> int:
             g["away_id"], away_abbrev, home_abbrev,
             season, is_home=False, top_n=args.top, rest_days=args.rest,
         )
+        if inj_unav or inj_soft:
+            # Skip unavailable players, tag soft-warn players in-place.
+            home_rows = _filter_injuries(home_rows, inj_unav, inj_soft)
+            away_rows = _filter_injuries(away_rows, inj_unav, inj_soft)
         print_game(home_abbrev, away_abbrev, date_str, home_rows, away_rows)
         per_game_rows.append((g, home_rows, away_rows))
 
