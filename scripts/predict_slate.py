@@ -110,20 +110,41 @@ def save_predictions_csv(
     out_path: str, date_str: str,
     games: List[Dict],
     per_game_rows: List[Tuple[Dict, List[Dict], List[Dict]]],
+    starter_idx: Optional[Dict[str, dict]] = None,
+    unav_inj: Optional[Dict[str, str]] = None,
+    soft_inj: Optional[Dict[str, str]] = None,
 ) -> int:
-    """Write one row per (player, stat) to CSV — schema designed so that once
-    actuals are available, a future backtest can join on (date, player_id, stat)
-    and score the model's forward-looking accuracy honestly.
+    """Write one row per (player, stat) to CSV with prediction-time context.
+
+    Cycle 80: schema now ALSO captures the lineup + injury context that
+    was known at prediction time. This enables future empirical validation
+    of any post-prediction adjustment (cycle 66/67 scale-by-status, etc.)
+    once 30+ days of predictions + actuals accumulate.
+
+    Schema:
+        date, game_id, player_id, player, team, opp, venue, stat, pred,
+        lineup_status, lineup_class, play_pct, injury_status
+
+    Context columns are BLANK when their source data wasn't loaded — so
+    the cycle-47 callers that don't pass starter_idx / inj data still work.
 
     Returns rows written.
     """
+    # Local import to avoid the heavy top-level dependency for cycle-47 callers.
+    from src.data.lineups import classify_starter as _classify
+
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     n = 0
+    starter_idx = starter_idx or {}
+    unav_inj = unav_inj or {}
+    soft_inj = soft_inj or {}
+
     with open(out_path, "w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
         w.writerow([
             "date", "game_id", "player_id", "player", "team", "opp", "venue",
             "stat", "pred",
+            "lineup_status", "lineup_class", "play_pct", "injury_status",
         ])
         for g, home_rows, away_rows in per_game_rows:
             game_id = g.get("game_id", "")
@@ -132,13 +153,23 @@ def save_predictions_csv(
             for venue, rows, opp in (("home", home_rows, away_abbrev),
                                      ("away", away_rows, home_abbrev)):
                 for r in rows:
+                    # Strip any cycle-64 [TAG] suffix when looking up context
+                    # so the lookup key matches the raw player name.
+                    raw_name = r["name"].split(" [")[0]
+                    rec = starter_idx.get(raw_name.lower())
+                    lineup_status = rec["lineup_status"] if rec else ""
+                    play_pct = rec["play_pct"] if rec else ""
+                    lineup_class = (_classify(raw_name, starter_idx)
+                                     if starter_idx else "")
+                    inj_status = lookup_status(raw_name, unav_inj, soft_inj) or ""
                     for stat in STATS:
                         v = r["preds"].get(stat)
                         if v is None:
                             continue
                         w.writerow([
-                            date_str, game_id, r["player_id"], r["name"],
+                            date_str, game_id, r["player_id"], raw_name,
                             r["team"], opp, venue, stat, f"{float(v):.4f}",
+                            lineup_status, lineup_class, play_pct, inj_status,
                         ])
                         n += 1
     return n
@@ -451,7 +482,14 @@ def main() -> int:
     if args.save is not None:
         out = (os.path.join(_PRED_DIR, f"{date_str}.csv")
                if args.save == "__default__" else args.save)
-        n = save_predictions_csv(out, date_str, games, per_game_rows)
+        # Cycle 80: pass the context that was loaded for filtering/scaling so
+        # the ledger captures it for future empirical validation.
+        n = save_predictions_csv(
+            out, date_str, games, per_game_rows,
+            starter_idx=starter_idx if args.lineups is not None else None,
+            unav_inj=inj_unav if args.injuries is not None else None,
+            soft_inj=inj_soft if args.injuries is not None else None,
+        )
         print(f"\n  Wrote {n} prediction rows → {out}")
 
     print()
