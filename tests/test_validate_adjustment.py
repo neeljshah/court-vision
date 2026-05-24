@@ -128,5 +128,21 @@ def test_validate_excludes_nan_targets(monkeypatch):
     assert out["pts"]["baseline_mae"] == 0.0
 
 
+def test_validate_treats_zero_target_as_valid_not_nan(monkeypatch):
+    """REGRESSION: the previous `r.get(...) or np.nan` idiom evaluated
+    0.0 as falsy and excluded the row. For sparse stats (BLK, STL),
+    most games HAVE a zero target — excluding them inflated MAE wildly
+    (BLK went 0.44 -> 1.19). Lock the fix in: zero target counts."""
+    pred = np.array([0.5, 0.5, 0.5])
+    monkeypatch.setattr(va, "_bulk_predict", lambda stat, X: pred.copy())
+    # Three players: actuals 0, 0, 1 (typical BLK distribution).
+    rows = [{"target_blk": 0.0}, {"target_blk": 0.0}, {"target_blk": 1.0}]
+    X = np.zeros((3, 1))
+    out = va.validate(va.no_op, rows, X, stats=["blk"])
+    # All 3 rows must be counted. MAE = (0.5 + 0.5 + 0.5) / 3 = 0.5
+    assert out["blk"]["n"] == 3
+    assert out["blk"]["baseline_mae"] == pytest.approx(0.5)
+
+
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-v"]))

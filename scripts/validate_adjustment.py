@@ -173,8 +173,14 @@ def validate(adjust_fn: AdjustFn,
     """
     results: Dict[str, Dict[str, float]] = {}
     for stat in stats:
-        y_true = np.array([float(r.get(f"target_{stat}", np.nan) or np.nan)
-                            for r in holdout], dtype=float)
+        # BUG fixed: previous `r.get(...) or np.nan` evaluated `0.0 or nan`
+        # as nan because Python treats 0.0 as falsy. That excluded every
+        # game where a player had 0 BLK / 0 STL / etc — the most-common
+        # case — and inflated MAE for sparse stats (BLK went 0.44 -> 1.19).
+        y_true = np.array([
+            np.nan if r.get(f"target_{stat}") is None else float(r[f"target_{stat}"])
+            for r in holdout
+        ], dtype=float)
         mask = ~np.isnan(y_true)
         pred = _bulk_predict(stat, X)
         if pred is None:
@@ -231,6 +237,10 @@ def main() -> int:
     ap.add_argument("--adjust", choices=["none", "constant", "min_ratio"],
                     default="none")
     ap.add_argument("--factor", type=float, default=0.95)
+    ap.add_argument("--factor-low", type=float, default=0.50,
+                    help="min_ratio: scale for ratio < low_thr (default 0.50)")
+    ap.add_argument("--factor-mid", type=float, default=0.85,
+                    help="min_ratio: scale for low_thr <= ratio < mid_thr (default 0.85)")
     args = ap.parse_args()
 
     print("Loading pergame dataset...", flush=True)
@@ -250,9 +260,10 @@ def main() -> int:
         fn = make_scale_constant(args.factor)
         name = f"Constant scale {args.factor:.3f}"
     elif args.adjust == "min_ratio":
-        fn = make_scale_by_min_ratio()
-        name = ("Min-ratio scaling (cycle 66/67 analog) — "
-                "prev_min/l10_min<0.5 -> *0.50, <0.9 -> *0.85")
+        fn = make_scale_by_min_ratio(factor_low=args.factor_low,
+                                       factor_mid=args.factor_mid)
+        name = (f"Min-ratio scaling — prev_min/l10_min<0.5 -> *{args.factor_low:.2f}, "
+                f"<0.9 -> *{args.factor_mid:.2f}")
 
     results = validate(fn, holdout, X)
     print_report(name, results)
