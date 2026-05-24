@@ -52,6 +52,7 @@ from src.prediction.prop_quantiles import (  # noqa: E402
     predict_pergame_quantiles,
 )
 from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
+from src.data.injuries import load_unavailable_players  # noqa: E402
 
 
 def _strip_accents(s: str) -> str:
@@ -128,26 +129,11 @@ def _kelly_fraction(prob: float, odds: int) -> float:
 
 
 def load_injury_unavailable(path: str) -> dict:
-    """Read a data/injuries_<date>.json (cycle 43 schema) and return a map
-    of diacritic-stripped lowercase player name → status for players whose
-    status is in _UNAVAILABLE_STATUSES. Returns {} on missing/malformed file.
+    """Cycle-51 wrapper kept for the existing test suite. Cycle 53 moved the
+    implementation to src/data/injuries.load_unavailable_players() for reuse
+    across compare_to_lines, predict_player, and predict_slate.
     """
-    if not path or not os.path.exists(path):
-        return {}
-    try:
-        with open(path, encoding="utf-8") as f:
-            payload = json.load(f)
-    except Exception:
-        return {}
-    out = {}
-    for p in payload.get("players", []) or []:
-        status = str(p.get("status", "")).upper().strip()
-        name = str(p.get("name", "")).strip()
-        if not name or status not in _UNAVAILABLE_STATUSES:
-            continue
-        key = _strip_accents(name).lower()
-        out[key] = status
-    return out
+    return load_unavailable_players(path)
 
 
 def main():

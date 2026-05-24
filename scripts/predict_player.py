@@ -44,6 +44,9 @@ from src.prediction.prop_pergame import (  # noqa: E402
 from src.prediction.prop_quantiles import (  # noqa: E402
     predict_pergame_quantiles,
 )
+from src.data.injuries import (  # noqa: E402
+    load_unavailable_players, load_soft_warn_players, lookup_status,
+)
 
 
 def _strip_accents(s: str) -> str:
@@ -347,6 +350,12 @@ def main():
     ap.add_argument("--save", nargs="?", const="__default__", default=None,
                     help="Append predictions to CSV. Bare flag → data/predictions/<today>.csv "
                          "(same path/schema as predict_slate --save). With arg → that path.")
+    ap.add_argument("--injuries", nargs="?", const="__default__", default=None,
+                    help="Cross-reference data/injuries_<today>.json. Exits 2 if the player "
+                         "is listed OUT/DOUBTFUL/NOT-WITH-TEAM (unless --include-injured). "
+                         "QUESTIONABLE players proceed with a soft-warn line.")
+    ap.add_argument("--include-injured", action="store_true",
+                    help="Override --injuries: continue prediction even when the player is OUT.")
     args = ap.parse_args()
 
     season = args.season or _detect_current_season()
@@ -366,6 +375,21 @@ def main():
 
     print(f"\n  Player: {name}  (id={pid})")
     print(f"  Game:   {'home' if is_home else 'away'} vs {args.opp}    season={season}    rest={args.rest}d")
+
+    # Injury cross-reference (cycle 53) — runs before the starter signal so a
+    # listed-OUT player exits before the expensive playergamelog fetch.
+    if args.injuries is not None and not args.include_injured:
+        inj_path = (os.path.join(PROJECT_DIR, "data",
+                                  f"injuries_{_date.today().isoformat()}.json")
+                    if args.injuries == "__default__" else args.injuries)
+        unav = load_unavailable_players(inj_path)
+        soft = load_soft_warn_players(inj_path)
+        status = lookup_status(name, unav, soft)
+        if status in unav.values():
+            print(f"  [skip] {name} listed {status} in injury report — exiting (use --include-injured to override).")
+            sys.exit(2)
+        if status:    # QUESTIONABLE
+            print(f"  [warn] {name} listed {status} in injury report — proceeding with reduced confidence.")
 
     # Starter / playing-time signal — uses live playergamelog (cached 6h).
     log_rows = _get_playerlog(pid, season)
