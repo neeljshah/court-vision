@@ -132,6 +132,12 @@ type below maps to the root cause module(s):
   `assert` in the e2e function carries an explanatory failure message
   (otherwise pytest output is useless on real failures). PASS.
 
+## Ship history
+
+* v1 shipped 2026-05-24 (loop 5, tier4-int). Initial 9-step happy-path walk.
+  Test files first landed in commit `cb39cbd6` (mixed batch-12 commit); this
+  follow-up doc revision formalises the tier4-int attribution.
+
 ## Ship verification
 
 ```
