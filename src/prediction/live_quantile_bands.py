@@ -1,4 +1,4 @@
-"""live_quantile_bands.py -- Cycle 105c + R1_D_v2 (loop 5).
+"""live_quantile_bands.py -- Cycle 105c + R1_D_v2 + R5-F + R6-A (loop 5).
 
 In-play quantile bands around the cycle-88 point projection.
 
@@ -16,7 +16,8 @@ Design rules:
   * NEVER changes the q50 point prediction (q50 == projected_final exactly).
   * Bands are ADDITIVE -- attached as q10/q50/q90 fields on each row.
   * Asymmetric branch for skewed counts (fg3m/stl/blk/tov) floors q10 at 0.
-  * endQ1 is INTENTIONALLY skipped (data too sparse for stable calibration).
+  * endQ1: calibrated via R5-F (quantile_calibration_endq1.json, 7/7 stats
+    at 0.80 coverage). Falls back to wide-open bands if artifact is absent.
   * Missing calibration artifact -> wide-open bands (q10=0, q90=2*q50).
   * Opt-in via live_engine._INCLUDE_QUANTILE_BANDS=False (default off).
 
@@ -37,7 +38,19 @@ R1_D_v2 per-player variance modulation (probe SHIP 2026-05-25):
   project_from_snapshot path that doesn't pass game_date, the legacy
   (non-per-player) bands are emitted -- back-compat preserved.
 
-Artifact: data/models/live_quantile_calibration.json. Schema:
+R6-A per-player calibration V2 (snapshot-keyed rescales, 2026-05-25):
+  Prefers data/models/per_player_quantile_calibration_v2.json when present.
+  V2 schema: {endQ1: {per_stat_rescale: {...}, pop_mean_std: {...}}, endQ2: {...}, endQ3: {...}}
+  V1 schema (flat, fallback): {per_stat_rescale: {...}, pop_mean_std: {...}, version: ..., ratio_clip: [...]}
+  When V2 is active, per_stat_rescale and pop_mean_std are looked up from the
+  matching snapshot_point bucket; ratio_clip defaults to [0.6, 1.8].
+
+Artifacts:
+  data/models/live_quantile_calibration.json (endQ2/endQ3).
+  data/models/quantile_calibration_endq1.json (endQ1 -- flat per-stat dict,
+    shipped R5-F 2026-05-25, 7/7 stats at 0.80 coverage).
+
+Schema (live_quantile_calibration.json):
 
     {
       "endQ2": {
@@ -48,7 +61,7 @@ Artifact: data/models/live_quantile_calibration.json. Schema:
       "endQ3": { ... }
     }
 
-Per-player calibration artifact: data/models/per_player_quantile_calibration.json.
+Per-player calibration artifact (V1): data/models/per_player_quantile_calibration.json.
 Schema:
 
     {
@@ -56,6 +69,15 @@ Schema:
       "pop_mean_std":     {"pts": 5.664, ...},
       "version": "R1_D_v2",
       "ratio_clip": [0.6, 1.8]
+    }
+
+Per-player calibration artifact (V2): data/models/per_player_quantile_calibration_v2.json.
+Schema:
+
+    {
+      "endQ1": {"per_stat_rescale": {"pts": 0.991, ...}, "pop_mean_std": {"pts": 5.664, ...}},
+      "endQ2": {"per_stat_rescale": {"pts": 0.964, ...}, "pop_mean_std": {"pts": 5.664, ...}},
+      "endQ3": { ... }
     }
 
 The Gaussian assumption is intentional -- the residuals after pace + foul +
@@ -77,8 +99,13 @@ import numpy as np
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _CAL_PATH = os.path.join(PROJECT_DIR, "data", "models", "live_quantile_calibration.json")
+_CAL_PATH_ENDq1 = os.path.join(PROJECT_DIR, "data", "models", "quantile_calibration_endq1.json")
 _PP_CAL_PATH = os.path.join(PROJECT_DIR, "data", "models", "per_player_quantile_calibration.json")
+_PP_CAL_PATH_V2 = os.path.join(PROJECT_DIR, "data", "models", "per_player_quantile_calibration_v2.json")
 _GAMELOG_GLOB = os.path.join(PROJECT_DIR, "data", "nba", "gamelog_*.json")
+
+# Default ratio clip when V2 artifact lacks an explicit entry.
+_DEFAULT_RATIO_CLIP = (0.6, 1.8)
 
 # R1_D_v2: per-player variance modulation. Set False if game_date is never
 # available in live snapshots and per-player path cannot be exercised.
@@ -92,10 +119,10 @@ ASYMMETRIC_STATS = ("fg3m", "stl", "blk", "tov")
 # Standard-normal z-scores for symmetric 80% interval.
 _Z80 = 1.2816  # P(Z < 1.2816) ~= 0.90 -> [q10, q90] covers 80%.
 
-# Snapshot points we calibrate. endQ1 is intentionally absent (sparse data
-# yields unstable scales; one quarter of play is not enough signal).
-SUPPORTED_PERIODS = (3, 4)   # period=3 -> endQ2; period=4 -> endQ3
-_PERIOD_TO_POINT = {3: "endQ2", 4: "endQ3"}
+# Snapshot points we calibrate.
+# endQ1 (period=2) is now calibrated via R5-F -- see quantile_calibration_endq1.json.
+SUPPORTED_PERIODS = (2, 3, 4)   # period=2 -> endQ1; period=3 -> endQ2; period=4 -> endQ3
+_PERIOD_TO_POINT = {2: "endQ1", 3: "endQ2", 4: "endQ3"}
 
 
 def period_to_point(period: int) -> Optional[str]:
@@ -110,43 +137,88 @@ def period_to_point(period: int) -> Optional[str]:
 _CAL_CACHE: Optional[dict] = None
 _CAL_PATH_LOADED: Optional[str] = None
 
-# R1_D_v2 per-player calibration caches.
+# R1_D_v2 / R6-A per-player calibration caches.
 _PP_CAL_CACHE: Optional[dict] = None
 _PP_CAL_LOADED: bool = False
+_PP_CAL_IS_V2: bool = False  # True when V2 snapshot-keyed artifact is active.
 _GAMELOG_IDX: Optional[Dict[int, List[Tuple[str, Dict[str, float]]]]] = None
 _GAMELOG_IDX_LOADED: bool = False
 
 
 def load_calibration(path: str = _CAL_PATH) -> dict:
-    """Idempotent JSON loader. Returns {} when the artifact is absent."""
+    """Idempotent JSON loader. Returns {} when the artifact is absent.
+
+    Also merges endQ1 calibration from quantile_calibration_endq1.json (R5-F)
+    into the result dict under the "endQ1" key. The endQ1 artifact is a flat
+    per-stat dict; if absent the "endQ1" key is simply omitted (wide-open
+    fallback in bands_for()).
+    """
     global _CAL_CACHE, _CAL_PATH_LOADED
     if _CAL_CACHE is not None and _CAL_PATH_LOADED == path:
         return _CAL_CACHE
-    if not os.path.exists(path):
-        _CAL_CACHE = {}
-        _CAL_PATH_LOADED = path
-        return _CAL_CACHE
-    try:
-        with open(path, encoding="utf-8") as fh:
-            _CAL_CACHE = json.load(fh) or {}
-    except Exception:
-        _CAL_CACHE = {}
+    cal: dict = {}
+    if os.path.exists(path):
+        try:
+            with open(path, encoding="utf-8") as fh:
+                cal = json.load(fh) or {}
+        except Exception:
+            cal = {}
+    # Merge endQ1 calibration (R5-F) if artifact exists and not already present.
+    if "endQ1" not in cal and os.path.exists(_CAL_PATH_ENDq1):
+        try:
+            with open(_CAL_PATH_ENDq1, encoding="utf-8") as fh:
+                endq1_data = json.load(fh) or {}
+            if endq1_data:
+                cal["endQ1"] = endq1_data
+        except Exception:
+            pass  # leave "endQ1" absent -> wide-open fallback
+    _CAL_CACHE = cal
     _CAL_PATH_LOADED = path
     return _CAL_CACHE
 
 
 def _load_pp_calibration() -> Optional[dict]:
-    """Lazy loader for per-player calibration artifact. Returns None on miss."""
-    global _PP_CAL_CACHE, _PP_CAL_LOADED
+    """Lazy loader for per-player calibration artifact.
+
+    Prefers V2 (per_player_quantile_calibration_v2.json, snapshot-keyed) when
+    present; falls back to V1 (flat) otherwise.  Returns None on total miss.
+
+    The returned dict is tagged with ``_version`` so ``bands_for`` knows which
+    schema to interpret:
+      V2: {"_version": 2, "endQ1": {per_stat_rescale, pop_mean_std}, "endQ2": ..., ...}
+      V1: {"_version": 1, "per_stat_rescale": {...}, "pop_mean_std": {...}, ...}
+    """
+    global _PP_CAL_CACHE, _PP_CAL_LOADED, _PP_CAL_IS_V2
     if _PP_CAL_LOADED:
         return _PP_CAL_CACHE
     _PP_CAL_LOADED = True
+
+    # Try V2 first.
+    if os.path.exists(_PP_CAL_PATH_V2):
+        try:
+            with open(_PP_CAL_PATH_V2, encoding="utf-8") as fh:
+                data = json.load(fh) or {}
+            if data:
+                data["_version"] = 2
+                _PP_CAL_CACHE = data
+                _PP_CAL_IS_V2 = True
+                return _PP_CAL_CACHE
+        except Exception:
+            pass  # fall through to V1
+
+    # Fall back to V1.
     if not os.path.exists(_PP_CAL_PATH):
         _PP_CAL_CACHE = None
         return None
     try:
         with open(_PP_CAL_PATH, encoding="utf-8") as fh:
-            _PP_CAL_CACHE = json.load(fh) or None
+            data = json.load(fh) or {}
+        if data:
+            data["_version"] = 1
+            _PP_CAL_CACHE = data
+            _PP_CAL_IS_V2 = False
+        else:
+            _PP_CAL_CACHE = None
     except Exception:
         _PP_CAL_CACHE = None
     return _PP_CAL_CACHE
@@ -209,12 +281,13 @@ def _std_l20(pid: int, game_date: str, stat: str) -> Optional[float]:
 def reset_cache():
     """Clear all cached data -- exposed for tests."""
     global _CAL_CACHE, _CAL_PATH_LOADED
-    global _PP_CAL_CACHE, _PP_CAL_LOADED
+    global _PP_CAL_CACHE, _PP_CAL_LOADED, _PP_CAL_IS_V2
     global _GAMELOG_IDX, _GAMELOG_IDX_LOADED
     _CAL_CACHE = None
     _CAL_PATH_LOADED = None
     _PP_CAL_CACHE = None
     _PP_CAL_LOADED = False
+    _PP_CAL_IS_V2 = False
     _GAMELOG_IDX = None
     _GAMELOG_IDX_LOADED = False
 
@@ -265,7 +338,9 @@ def bands_for(stat: str, q50: float, snapshot_point: Optional[str],
     except Exception:
         return {"q10": 0.0, "q50": q50f, "q90": max(0.0, 2.0 * q50f)}
 
-    # R1_D_v2: per-player variance modulation.
+    # R1_D_v2 / R6-A: per-player variance modulation.
+    # V2: rescale and pop_mean_std are keyed by snapshot_point.
+    # V1: flat dicts (backwards compat, used when V2 is absent).
     extra_mult = 1.0
     if (_USE_PER_PLAYER_VARIANCE
             and pid is not None
@@ -273,9 +348,19 @@ def bands_for(stat: str, q50: float, snapshot_point: Optional[str],
         pp_cal = _load_pp_calibration()
         if pp_cal is not None:
             try:
-                rescale = float(pp_cal["per_stat_rescale"].get(stat, 1.0))
-                pop_std = float(pp_cal["pop_mean_std"].get(stat, 1.0))
-                clip_lo, clip_hi = float(pp_cal["ratio_clip"][0]), float(pp_cal["ratio_clip"][1])
+                version = pp_cal.get("_version", 1)
+                if version == 2 and snapshot_point and snapshot_point in pp_cal:
+                    # V2: per-snapshot rescales (R6-A).
+                    bucket = pp_cal[snapshot_point]
+                    rescale = float(bucket.get("per_stat_rescale", {}).get(stat, 1.0))
+                    pop_std = float(bucket.get("pop_mean_std", {}).get(stat, 1.0))
+                    clip_lo, clip_hi = _DEFAULT_RATIO_CLIP
+                else:
+                    # V1 (flat) or V2 with unknown snapshot_point -> flat fallback.
+                    rescale = float(pp_cal.get("per_stat_rescale", {}).get(stat, 1.0))
+                    pop_std = float(pp_cal.get("pop_mean_std", {}).get(stat, 1.0))
+                    rc = pp_cal.get("ratio_clip", list(_DEFAULT_RATIO_CLIP))
+                    clip_lo, clip_hi = float(rc[0]), float(rc[1])
                 raw_std = _std_l20(int(pid), game_date, stat)
                 if raw_std is not None and pop_std > 0:
                     ratio = float(np.clip(raw_std / pop_std, clip_lo, clip_hi))
