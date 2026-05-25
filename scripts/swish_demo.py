@@ -1,4 +1,5 @@
-"""swish_demo.py — CourtVision end-to-end walkthrough for Swish Analytics meeting.
+# -*- coding: utf-8 -*-
+"""swish_demo.py -- CourtVision end-to-end walkthrough for Swish Analytics meeting.
 
 Runs offline (offseason-safe). Uses mocked game-day data where live NBA API
 data would be unavailable. Shows the full prediction loop:
@@ -287,7 +288,7 @@ def main():
 
     print()
     print("=" * 60)
-    print("  CourtVision — NBA Prop Prediction System")
+    print("  CourtVision - NBA Prop Prediction System")
     print("  Swish Analytics Demo  |  2026-05-25 (offseason mock)")
     print("=" * 60)
     print()
