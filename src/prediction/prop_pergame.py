@@ -598,6 +598,106 @@ def build_team_reb_context(parquet_path: Optional[str] = None) -> _TeamRebContex
     return _TeamRebContext(by_team)
 
 
+# ── team advanced stats — opp-context rolling-5 (cycle 99e loop 5) ────────────
+# Source: data/team_advanced_stats.parquet — built by
+# scripts/aggregate_team_stats_from_boxscores.py from boxscore_adv_*.json
+# teams entries. Per-team-per-game advanced rates: off_rtg, def_rtg, pace,
+# oreb_pct, dreb_pct, ast_pct, efg_pct, ts_pct, tov_ratio.
+#
+# Exposes a (team_tricode, current_date) -> {opp_team_<col>_l5} lookup that
+# averages the OPPONENT's last 5 games STRICTLY before the row's date. This
+# is the rolling-5 sibling of _OpponentDefense (which uses to-date expanding
+# means of stats ALLOWED). The two are complementary: _OpponentDefense
+# captures HOW MANY pts/reb a defence allows; _TeamAdvancedL5 captures the
+# style they play (pace, ratings, rebound rates).
+#
+# Additive only — keys land on row dict (NOT in feature_columns()). Cycle
+# 99e ships the join; cycles 99a/b/c retrain the heads. Gated on parquet
+# existence so fresh checkouts get the no-op empty wrapper.
+_TEAM_ADV_STATS_PATH = os.path.join(
+    PROJECT_DIR, "data", "team_advanced_stats.parquet"
+)
+_TEAM_ADV_COLS = (
+    "off_rtg", "def_rtg", "pace",
+    "oreb_pct", "dreb_pct", "ast_pct",
+    "efg_pct", "ts_pct", "tov_ratio",
+)
+_TEAM_ADV_FEATURE_KEYS = tuple(f"opp_team_{c}_l5" for c in _TEAM_ADV_COLS)
+
+
+class _TeamAdvancedL5:
+    """Per-team time series of advanced rates with rolling-5 prior aggregation.
+
+    Keyed on team_tricode → sorted list of (date, {col: value}). For a row
+    with (opponent_tricode, current_date), returns the mean of the
+    opponent's last 5 games STRICTLY before current_date. Empty wrapper
+    yields all-None when the parquet is absent so probes/tests can branch
+    on missingness without a try/except.
+    """
+
+    def __init__(self, by_team: Dict[str, list]):
+        self._by_team = by_team
+
+    def __len__(self) -> int:
+        return sum(len(v) for v in self._by_team.values())
+
+    def features(self, opp_tricode: str,
+                 current_date) -> Dict[str, Optional[float]]:
+        out: Dict[str, Optional[float]] = {k: None for k in _TEAM_ADV_FEATURE_KEYS}
+        history = self._by_team.get(str(opp_tricode))
+        if not history:
+            return out
+        priors = []
+        for d, row in history:
+            if d < current_date:
+                priors.append(row)
+            else:
+                break
+        if not priors:
+            return out
+        last5 = priors[-5:]
+        for col in _TEAM_ADV_COLS:
+            vals = [r.get(col) for r in last5 if r.get(col) is not None]
+            if vals:
+                out[f"opp_team_{col}_l5"] = float(sum(vals)) / float(len(vals))
+        return out
+
+
+def build_team_advanced_l5(parquet_path: Optional[str] = None) -> _TeamAdvancedL5:
+    """Load data/team_advanced_stats.parquet into a _TeamAdvancedL5 wrapper.
+
+    Returns an empty wrapper (all-None lookups) when the parquet is absent
+    or pandas/pyarrow fails. Never raises.
+    """
+    path = parquet_path or _TEAM_ADV_STATS_PATH
+    by_team: Dict[str, list] = {}
+    if not os.path.exists(path):
+        return _TeamAdvancedL5(by_team)
+    try:
+        import pandas as pd  # noqa: PLC0415
+        df = pd.read_parquet(path)
+        for tcode, grp in df.groupby("team_tricode"):
+            grp_sorted = grp.sort_values("game_date")
+            hist = []
+            for _, r in grp_sorted.iterrows():
+                d = _parse_date_iso(str(r["game_date"]))
+                if d is None:
+                    continue
+                row = {}
+                for c in _TEAM_ADV_COLS:
+                    v = r.get(c)
+                    try:
+                        row[c] = float(v) if v is not None else 0.0
+                    except (TypeError, ValueError):
+                        row[c] = 0.0
+                hist.append((d, row))
+            by_team[str(tcode)] = hist
+    except Exception as exc:
+        _warn_join_load_once("build_team_advanced_l5", path, exc)
+        return _TeamAdvancedL5(by_team)
+    return _TeamAdvancedL5(by_team)
+
+
 # ── rest / travel features ────────────────────────────────────────────────────
 
 # ── player positions (cycle 90e loop 5) ───────────────────────────────────────
@@ -1563,6 +1663,37 @@ class _OpponentDefense:
                 out[f"opp_def_{stat}"] = 1.0
         return out
 
+    # ── Cycle 99e (loop 5) — rolling-5 sibling of factors() ──────────────────
+    # The existing factors() returns to-date EXPANDING ratios (mean
+    # allowed-stat / league mean). cycles 99a/b retrain BLK/FG3M heads;
+    # this rolling-5 sibling exposes the OPPONENT's last-5 raw allowed
+    # mean per stat, which captures recent-form opponent context (injuries,
+    # scheme changes) that the expanding mean averages out. Additive only:
+    # keys land on row dict (NOT in feature_columns() until a separate
+    # retrain cycle wires them in). Returns None for stats where the
+    # opponent has fewer than 1 prior games so callers can branch on
+    # missingness without arithmetic crashes.
+    def l5_allowed(self, opponent: str, date) -> Dict[str, Optional[float]]:
+        """Return {opp_def_{stat}_l5: mean} — opp's last-5 raw allowed-stat
+        averages STRICTLY before date. None per-stat when no prior games."""
+        out: Dict[str, Optional[float]] = {f"opp_def_{s}_l5": None for s in STATS}
+        team_idx = self._team.get(opponent)
+        if not team_idx:
+            return out
+        i = bisect.bisect_left(team_idx["dates"], date)
+        if i <= 0:
+            return out
+        # Window: prior 5 games (or fewer if early-season). prefix is a
+        # running cumulative sum; window-mean = (prefix[i] - prefix[i-5]) / 5.
+        lo = max(0, i - 5)
+        n = i - lo
+        if n <= 0:
+            return out
+        for stat in STATS:
+            window_sum = team_idx["prefix"][stat][i] - team_idx["prefix"][stat][lo]
+            out[f"opp_def_{stat}_l5"] = round(window_sum / n, 4)
+        return out
+
 
 def _opponent_from_matchup(matchup: str) -> str:
     """Opponent abbreviation — the last token of 'TEAM vs. OPP' / 'TEAM @ OPP'."""
@@ -1834,6 +1965,15 @@ def build_pergame_dataset(
     # consume row["q1_pts_l5"] etc. directly; NOT in feature_columns()
     # until a separate retrain cycle wires them in.
     qstats = build_player_quarter_stats()
+    # Cycle 99e (loop 5) — team_advanced_stats per-game wrapper for
+    # rolling-5 opp-context advanced rates (off_rtg, def_rtg, pace,
+    # oreb/dreb/ast pct, efg/ts pct, tov_ratio). GATED on
+    # data/team_advanced_stats.parquet; empty wrapper → every
+    # opp_team_<col>_l5 row key is None on fresh checkouts. Additive
+    # only — NOT in feature_columns() until a separate retrain cycle
+    # wires them in. Sibling to oppdef.l5_allowed which gives the rolling-5
+    # raw allowed counting stats (opp_def_pts_l5, opp_def_reb_l5, ...).
+    team_adv_l5 = build_team_advanced_l5()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -1950,6 +2090,20 @@ def build_pergame_dataset(
                 ]
                 q1_feats = qstats.rolling_q1_prior(file_player_id, prior_dates)
                 for k, v in q1_feats.items():
+                    row[k] = v
+                # Cycle 99e (loop 5) — opp-context rolling-5 features:
+                # (a) raw L5 allowed counting stats (opp_def_<stat>_l5)
+                # (b) L5 team advanced rates (opp_team_<col>_l5).
+                # Both additive — None when wrapper is empty / no prior
+                # opp data. Probes / retrain cycles can read row[k] for
+                # the 7 + 9 = 16 new keys without code changes.
+                opp_l5_allowed = oppdef.l5_allowed(
+                    _opponent_from_matchup(matchup), gdate)
+                for k, v in opp_l5_allowed.items():
+                    row[k] = v
+                opp_team_l5 = team_adv_l5.features(
+                    _opponent_from_matchup(matchup), gdate)
+                for k, v in opp_team_l5.items():
                     row[k] = v
                 rows.append(row)
 
