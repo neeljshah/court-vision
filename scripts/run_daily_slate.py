@@ -202,9 +202,24 @@ def run_predictions(
     from types import SimpleNamespace
     from src.prediction.player_props import predict_props, _get_player_season_avgs
     from src.prediction.team_total_normalizer import normalise_team_totals
+    from src.data.injuries import load_unavailable_players, load_soft_warn_players, lookup_status
+    from src.data.lineups import load_lineups, build_starter_index, classify_starter, apply_minutes_scaling
 
     _excluded = exclusion_set or set()
     all_preds: list[dict] = []
+
+    # Load live injury + lineup data (today's files, if fetched)
+    import datetime as _dt
+    _today = _dt.date.today().isoformat()
+    _inj_path = os.path.join(PROJECT_DIR, "data", f"injuries_{_today}.json")
+    _lin_path = os.path.join(PROJECT_DIR, "data", f"lineups_{_today}.json")
+    _unavailable = load_unavailable_players(_inj_path) if os.path.exists(_inj_path) else {}
+    _soft_warn = load_soft_warn_players(_inj_path) if os.path.exists(_inj_path) else {}
+    _starter_index = build_starter_index(_lin_path) if os.path.exists(_lin_path) else {}
+    if _unavailable:
+        print(f"[slate] Injury filter active: {len(_unavailable)} players OUT/DOUBTFUL")
+    if _starter_index:
+        print(f"[slate] Lineup data active: {len(_starter_index)} players classified")
 
     for game in games:
         home = game["home_team"]
@@ -234,6 +249,13 @@ def run_predictions(
                         log.info("  Skipping excluded player: %s (id=%s)", pname, _pid)
                         continue
 
+                    # Skip confirmed OUT/DOUBTFUL players from injury report
+                    if lookup_status(pname, _unavailable) is not None:
+                        log.info("  Skipping injured player: %s (OUT/DOUBTFUL)", pname)
+                        continue
+                    if lookup_status(pname, _soft_warn) is not None:
+                        log.info("  Soft-warn (QUESTIONABLE): %s", pname)
+
                     dnp_prob = _check_dnp(_pid, season)
                     if dnp_prob > 0.70:
                         continue
@@ -241,6 +263,16 @@ def run_predictions(
                     props = predict_props(pname, opp_abbr, season=season)
                     if not props:
                         continue
+
+                    # Apply lineup-based minutes scaling if classification available
+                    _lineup_cls = classify_starter(pname, _starter_index)
+                    if _lineup_cls and _lineup_cls != "unknown":
+                        _stat_keys = {s: float(props.get(s, 0) or 0)
+                                      for s in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")}
+                        _scaled = apply_minutes_scaling(_stat_keys, _lineup_cls)
+                        props.update(_scaled)
+                        if _lineup_cls != "starter":
+                            log.info("  Lineup scale applied: %s -> %s", pname, _lineup_cls)
 
                     _proj_min = float(props.get("min", _avgs.get("min", 24.0)) or 24.0)
                     ns = SimpleNamespace(
@@ -555,6 +587,42 @@ def main(season: str, date_str: str, dry_run: bool = False, build_ladder: bool =
     if exclusion_set:
         print(f"[slate] Exclusion list active: {len(exclusion_set)} entries "
               f"(from {_EXCLUSION_PATH})")
+
+    # 1b. Auto-fetch injury report + lineups (non-fatal if sources unavailable)
+    import subprocess as _sp
+    _inj_path = os.path.join(PROJECT_DIR, "data", f"injuries_{date_str}.json")
+    _lin_path = os.path.join(PROJECT_DIR, "data", f"lineups_{date_str}.json")
+    if not os.path.exists(_inj_path):
+        try:
+            _r = _sp.run(
+                [sys.executable, os.path.join(PROJECT_DIR, "scripts", "fetch_injury_espn.py"),
+                 "--date", date_str],
+                capture_output=True, text=True, timeout=30,
+            )
+            if _r.returncode == 0:
+                print(f"[slate] Injury report fetched -> {_inj_path}")
+            else:
+                log.warning("[slate] fetch_injury_espn exited %d: %s", _r.returncode, _r.stderr[:200])
+        except Exception as _e:
+            log.warning("[slate] Auto injury fetch failed (non-fatal): %s", _e)
+    else:
+        print(f"[slate] Injury report already present: {_inj_path}")
+
+    if not os.path.exists(_lin_path):
+        try:
+            _r2 = _sp.run(
+                [sys.executable, os.path.join(PROJECT_DIR, "scripts", "fetch_lineups.py"),
+                 "--date", date_str],
+                capture_output=True, text=True, timeout=30,
+            )
+            if _r2.returncode == 0:
+                print(f"[slate] Lineups fetched -> {_lin_path}")
+            else:
+                log.warning("[slate] fetch_lineups exited %d: %s", _r2.returncode, _r2.stderr[:200])
+        except Exception as _e2:
+            log.warning("[slate] Auto lineup fetch failed (non-fatal): %s", _e2)
+    else:
+        print(f"[slate] Lineups already present: {_lin_path}")
 
     # 2+3+4. Predict + normalise
     preds = run_predictions(games, season, exclusion_set=exclusion_set)
