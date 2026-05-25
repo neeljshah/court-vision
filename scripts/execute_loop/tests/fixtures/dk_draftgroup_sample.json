@@ -1,0 +1,137 @@
+{
+  "group": {
+    "draftGroupId": 12345,
+    "contestTypeId": 21,
+    "startTimeSuffix": null,
+    "salaryCap": 50000,
+    "sport": "NBA",
+    "sportId": 4,
+    "startDate": "2099-12-31T23:00:00.0000000Z",
+    "games": [
+      {
+        "gameId": "0022501001",
+        "awayTeamAbbreviation": "LAL",
+        "homeTeamAbbreviation": "BOS",
+        "startDate": "2099-12-31T23:00:00.0000000Z"
+      },
+      {
+        "gameId": "0022501002",
+        "awayTeamAbbreviation": "MIL",
+        "homeTeamAbbreviation": "MIA",
+        "startDate": "2099-12-31T23:30:00.0000000Z"
+      }
+    ]
+  },
+  "draftables": [
+    {
+      "draftableId": 100001,
+      "displayName": "LeBron James",
+      "teamAbbreviation": "LAL",
+      "rosterSlotId": 5,
+      "position": "SF",
+      "salary": 9800,
+      "status": "None",
+      "playerDkId": 214152,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100002,
+      "displayName": "Anthony Davis",
+      "teamAbbreviation": "LAL",
+      "rosterSlotId": 5,
+      "position": "PF",
+      "salary": 9200,
+      "status": "None",
+      "playerDkId": 461594,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100003,
+      "displayName": "Jayson Tatum",
+      "teamAbbreviation": "BOS",
+      "rosterSlotId": 5,
+      "position": "SF",
+      "salary": 10400,
+      "status": "None",
+      "playerDkId": 788019,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100004,
+      "displayName": "Jaylen Brown",
+      "teamAbbreviation": "BOS",
+      "rosterSlotId": 2,
+      "position": "SG",
+      "salary": 8100,
+      "status": "None",
+      "playerDkId": 823884,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100005,
+      "displayName": "Giannis Antetokounmpo",
+      "teamAbbreviation": "MIL",
+      "rosterSlotId": 5,
+      "position": "PF",
+      "salary": 11200,
+      "status": "None",
+      "playerDkId": 214130,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100006,
+      "displayName": "Damian Lillard",
+      "teamAbbreviation": "MIL",
+      "rosterSlotId": 1,
+      "position": "PG",
+      "salary": 8800,
+      "status": "None",
+      "playerDkId": 234522,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100007,
+      "displayName": "Jimmy Butler",
+      "teamAbbreviation": "MIA",
+      "rosterSlotId": 3,
+      "position": "SF",
+      "salary": 8400,
+      "status": "None",
+      "playerDkId": 512028,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100008,
+      "displayName": "Bam Adebayo",
+      "teamAbbreviation": "MIA",
+      "rosterSlotId": 5,
+      "position": "C",
+      "salary": 7900,
+      "status": "None",
+      "playerDkId": 756827,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100009,
+      "displayName": "Austin Reaves",
+      "teamAbbreviation": "LAL",
+      "rosterSlotId": 2,
+      "position": "SG",
+      "salary": 5400,
+      "status": "QUESTIONABLE",
+      "playerDkId": 3547124,
+      "draftStatAttributes": []
+    },
+    {
+      "draftableId": 100010,
+      "displayName": "Zero Salary Player",
+      "teamAbbreviation": "BOS",
+      "rosterSlotId": 1,
+      "position": "PG",
+      "salary": 0,
+      "status": "None",
+      "playerDkId": 9999999,
+      "draftStatAttributes": []
+    }
+  ]
+}
