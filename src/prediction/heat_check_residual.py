@@ -1,11 +1,21 @@
 """heat_check_residual.py -- cycle 102b (loop 5). Heat-check Q4 PPM specialist.
 
+STATUS: REJECTED on ship gate (probe heat_check PTS delta +0.24 vs the
+heuristic baseline; gate required -0.10). NOT wired into
+``live_engine.project_from_snapshot``. Artifact retained for archaeology;
+the loaded module is callable but no live consumer dispatches to it.
+See ``scripts/_results/heat_check_blend_v1.md`` for the rejection report.
+
 WHY: cycle 95b's endQ3 decomposition identified `heat_check` (Q3 pts/min >
 1.5x Q1-Q2 avg pts/min) as the SECOND-LARGEST endQ3 failure mode (after
 foul_change): +0.53 PTS MAE excess and +0.74 bias = OVERSHOOT. The cycle-88
 projector linearly extrapolates Q3's inflated PPM into Q4 but the rate mean-
 reverts (defense adjusts, makes regress to baseline). Cycle 96d shipped a
 HEURISTIC Bayesian shrinkage which was REJECTED (-0.082 vs the -0.10 gate).
+This cycle (102b) trained a LEARNED residual following the foul_residual
+pattern (cb39cbd6) -- also REJECTED. The cycle-96d heuristic shrinkage
+actually outperforms both the unadjusted heuristic AND this learned head
+on the heat_check stratum, but neither clears the ship gate.
 
 This module ships a LEARNED residual following the SHIPPED foul_residual
 pattern (tier1-2 cb39cbd6): a small LightGBM regressor that predicts the
