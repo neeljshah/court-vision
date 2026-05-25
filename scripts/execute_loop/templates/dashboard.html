@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="30">
+<title>NBA AI — Status Dashboard</title>
+<style>
+  :root {
+    --bg:       #0b0f17;
+    --card:     #141a26;
+    --border:   #1e2a3a;
+    --green:    #16a34a;
+    --red:      #dc2626;
+    --gray:     #6b7280;
+    --text:     #e2e8f0;
+    --muted:    #94a3b8;
+    --accent:   #3b82f6;
+    --yellow:   #ca8a04;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
+  a { color: var(--accent); text-decoration: none; }
+
+  /* ── layout ── */
+  .page { max-width: 1400px; margin: 0 auto; padding: 16px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 14px; }
+  .grid-wide { grid-column: 1 / -1; }
+
+  /* ── header ── */
+  .header { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.03em; }
+  .header .meta { color: var(--muted); font-size: 12px; }
+  .status-pill { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+  .status-green { background: rgba(22,163,74,0.15); color: var(--green); border: 1px solid var(--green); }
+  .status-yellow { background: rgba(202,138,4,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .status-red { background: rgba(220,38,38,0.15); color: var(--red); border: 1px solid var(--red); }
+  .status-gray { background: rgba(107,114,128,0.15); color: var(--gray); border: 1px solid var(--gray); }
+
+  /* ── card ── */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 10px; }
+  .card-missing { color: var(--gray); font-style: italic; font-size: 13px; }
+
+  /* ── bankroll ── */
+  .br-main { font-size: 28px; font-weight: 700; }
+  .br-row { display: flex; gap: 20px; margin-top: 8px; flex-wrap: wrap; }
+  .br-item label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+  .br-item span { font-size: 15px; font-weight: 600; }
+  .kill-active { display: inline-block; background: rgba(220,38,38,0.2); color: var(--red); border: 1px solid var(--red); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 700; margin-top: 6px; }
+
+  /* ── edges table ── */
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 4px 6px; border-bottom: 1px solid var(--border); }
+  td { padding: 5px 6px; border-bottom: 1px solid rgba(30,42,58,0.6); font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── clv sparkline row ── */
+  .clv-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid rgba(30,42,58,0.6); }
+  .clv-row:last-child { border-bottom: none; }
+  .clv-stat { width: 40px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--muted); }
+  .clv-val { width: 60px; font-size: 13px; font-weight: 600; }
+  .clv-spark { flex: 1; }
+
+  /* ── freshness ── */
+  .fresh-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(30,42,58,0.6); font-size: 13px; }
+  .fresh-row:last-child { border-bottom: none; }
+  .fresh-name { color: var(--muted); max-width: 55%; word-break: break-all; }
+  .fresh-age { font-weight: 600; }
+  .age-ok { color: var(--green); }
+  .age-warn { color: var(--yellow); }
+  .age-stale { color: var(--red); }
+
+  /* ── health grid ── */
+  .health-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+  .health-item { background: rgba(0,0,0,0.2); border-radius: 4px; padding: 6px 8px; font-size: 12px; }
+  .health-item .h-name { color: var(--muted); font-size: 10px; margin-bottom: 2px; }
+
+  /* ── settlements ── */
+  .settle-table td { font-size: 12px; }
+
+  /* ── misc ── */
+  .pnl-pos { color: var(--green); font-weight: 700; }
+  .pnl-neg { color: var(--red); font-weight: 700; }
+  .pnl-zero { color: var(--gray); font-weight: 700; }
+  .badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-won { background: rgba(22,163,74,0.15); color: var(--green); }
+  .badge-lost { background: rgba(220,38,38,0.15); color: var(--red); }
+  .badge-push { background: rgba(107,114,128,0.15); color: var(--gray); }
+  .badge-settled { background: rgba(59,130,246,0.15); color: var(--accent); }
+
+  .refresh-note { text-align: right; color: var(--muted); font-size: 11px; margin-top: 10px; }
+
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .br-main { font-size: 22px; }
+    .header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  $header_html
+
+  <div class="grid">
+
+    <!-- BANKROLL -->
+    $bankroll_html
+
+    <!-- POSITIONS -->
+    $positions_html
+
+    <!-- FRESHNESS -->
+    $freshness_html
+
+    <!-- HEALTH -->
+    $health_html
+
+    <!-- EDGES (wide) -->
+    $edges_html
+
+    <!-- CLV (wide) -->
+    $clv_html
+
+    <!-- SETTLEMENTS (wide) -->
+    $settlements_html
+
+  </div>
+
+  <div class="refresh-note">Auto-refresh every 30 s &mdash; $generated_at</div>
+</div>
+</body>
+</html>
