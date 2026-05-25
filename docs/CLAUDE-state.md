@@ -65,6 +65,26 @@ rsync -az -e "ssh -p <PORT>" root@<IP>:/workspace/nba-ai-system/data/events/ dat
 - YOLO prefetch batching: `advanced_tracker.py:898-935` (`_yolo_frame_buf`) wired but inactive. Add `prefetch_yolo(frames)` in `unified_pipeline.py` N=8. Expected: +50% fps. ~30 LOC. MUST quality-diff before merging.
 - HSV vectorize in `color_reid.py::classify_dyn` — second-largest hotspot.
 
+## Swish Analytics demo session 2026-05-25 (overnight prep)
+
+### Demo artifacts shipped
+- `docs/SWISH_DEMO.md` — interview cheat-sheet (headline numbers, architecture, weaknesses, next-builds)
+- `scripts/swish_demo.py` — runnable end-to-end demo (pregame→snapshot→projection→EV→Kelly→settle→CLV); runs cleanly on RunPod
+- `docs/system_metrics.html` — visual KPI dashboard (7/7 win, ROI table, pre-game MAE table, bar charts)
+- `scripts/register_bankroll.py` — fixes health_check WARN; creates `data/pnl_bankroll.csv`
+- `scripts/_results/retro_inplay_mae_v2_RERUN_runpod.md` — independent RunPod re-run confirms 5/5 win (46 games)
+- Latest master: `2bad1fca` | both origin/master and origin/bot/live pushed
+
+### RunPod health (2026-05-25)
+- health_check.py: **16 OK / 6 WARN / 0 ERROR** (6 WARNs are offseason-normal)
+- pytest: 2661 passed, ~26 failed (tracking tests + phase9 dependency failures — not prediction-critical)
+- Per-quarter boxscore fetch: ~120/1157 games done (running in background)
+
+### AST opp-context probe (directional, needs WF gate)
+- `opp_def_ast_l5` (rolling-5 opp AST allowed) shows 0.17 MAE gap on 130-row RunPod sample
+- Model under-predicts AST vs pass-friendly defenses — candidate for next wire-in
+- NOT yet WF validated — treat as signal, not shipped improvement
+
 ## Loop 5 session 2026-05-24 — in-game system + ops infra
 
 ### Production state
