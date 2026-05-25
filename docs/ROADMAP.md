@@ -2,7 +2,7 @@
 
 *Build / phase log. Last detailed update: 2026-04-15.*
 
-> **Current state (2026-05-18):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md).
+> **Current state (2026-05-24):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md).
 
 ---
 
@@ -25,7 +25,7 @@ Priority stack:
 
 ## Phase Overview
 
-*Session 36 | 2026-04-15 | Tests: 960+ pass, 93 skip | Models: 75 trained | CV: 17 quality / 29 usable / 75 attempted (target 80 CLEAN)*
+*Session 36 | 2026-05-24 | Tests: 1040 pass, 2 skip | Models: 85 trained | CV: 17 quality / 29 usable / 75 attempted (target 80 CLEAN)*
 
 | Phase | Name | Status | Key Deliverable |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Priority stack:
 | 2.5 | CV Quality Upgrades | ✅ Done | Broadcast mode, OCR brightness norm, OSNet re-ID wired |
 | 3 | NBA Data Collection | ✅ Done | 622 gamelogs, 221K shots, 98.4% PBP |
 | 3.5 | Expanded Data Collection | 🟡 Partial | BBRef advanced fetched; Odds API + full injury history pending |
-| 4 | Tier 1 ML Models | ✅ Done | Win prob 68.5%, 7 props, 5 game models, xFG v1 |
+| 4 | Tier 1 ML Models | ✅ Done | Win prob 0.7094 acc WF, 7 props, 5 game models, xFG v1 |
 | 4.5 | Betting + Lifecycle Models | ✅ Done | load_management, injury_risk/return, breakout, public_fade, soft_book_lag |
 | 4.6 | Feature Wiring | ✅ Done | Props 30→57 features, all models retrained |
 | 4.7 | Prediction Quality Stack | ✅ Done | Ridge meta-stack, temporal weighting, confidence-gated output |
@@ -71,9 +71,9 @@ Priority stack:
 - 17 quality / 29 usable / 75 attempted games (target 80 CLEAN)
 - Remaining videos queued for the 80-game RunPod run
 
-**ML Models (75 trained artifacts)**
-- Win probability: 68.5% accuracy, Brier 0.209
-- Player props × 7: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 R²
+**ML Models (85 trained artifacts)**
+- Win probability (5-way NNLS stack): 0.7094 acc / 0.193 Brier (3-fold walk-forward); 0.717 acc / 0.188 Brier (single-split)
+- Player props × 7 MAE (walk-forward, N=99,818): PTS 4.62, REB 1.90, AST 1.36, FG3M 0.89, TOV 0.89, STL 0.72, BLK 0.44
 - Game models × 5: total, spread, blowout, first-half, pace
 - xFG v1: Brier 0.226, 221K shots
 - DNP predictor: AUC 0.979
@@ -144,8 +144,8 @@ bash scripts/watch_and_sync.sh
 - 1,225+ historical closing lines, 523 contracts, 736 BBRef players
 
 ### Phase 4 — Tier 1 ML Models ✅ (2026-03-18)
-- Win prob: XGBoost, 27 features, 68.5%, Brier 0.209
-- Props × 7: holdout R² range 0.16–0.41 (pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18)
+- Win prob (5-way NNLS stack): 0.7094 acc / 0.193 Brier (3-fold walk-forward); 0.717 acc / 0.188 Brier (single-split)
+- Props × 7 MAE (walk-forward, N=99,818): PTS 4.62, REB 1.90, AST 1.36, FG3M 0.89, TOV 0.89, STL 0.72, BLK 0.44
 - xFG v1: Brier 0.226, DNP: AUC 0.979, Matchup: R²=0.796
 
 ### Phase 4.5–4.9 ✅ (2026-03-18 through 2026-04-07)

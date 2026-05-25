@@ -46,7 +46,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 | Document | Description |
 |----------|-------------|
 | [feature-inventory.md](models/feature-inventory.md) | All ~70 features across 7 classes — API, CV spatial, temporal, market microstructure |
-| [model-registry.md](models/model-registry.md) | 75 models, tiers, algorithms, current R² / ECE, production gates |
+| [model-registry.md](models/model-registry.md) | 85 models, tiers, algorithms, current R² / ECE, production gates |
 | [calibration.md](models/calibration.md) | Probability calibration — Platt scaling, isotonic regression, ECE, Shin devig |
 
 ---
@@ -78,7 +78,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 |------|----------|
 | `src/tracking/` | YOLOv8 detection, re-ID (OSNet, color), homography, Kalman/Hungarian |
 | `src/features/` | Feature engineering — CV spatial + API derived features |
-| `src/prediction/` | 75 models, calibration, Kelly sizer, CLV, backtester |
+| `src/prediction/` | 85 models, calibration, Kelly sizer, CLV, backtester |
 | `src/pipeline/` | unified_pipeline.py — the orchestrator |
 | `src/ingest/` | SQLite queue, yt-dlp wrapper, B2 sync |
 | `src/data/` | NBA API connectors, line monitor, injury scraper |

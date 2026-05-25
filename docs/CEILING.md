@@ -10,7 +10,7 @@
 
 | Phase | Prop Win% (filtered) | Avg CLV | ROI / 100 bets |
 |-------|----------------------|---------|----------------|
-| **Now** (Phase G active, 75 models, API-only features) | **55-57%** | **+2-4%** | +$4-8 per $100 |
+| **Now** (Phase G active, 85 models, API-only features) | **55-57%** | **+2-4%** | +$4-8 per $100 |
 | +80 CV games (Tier 3-4 model retrain, spatial features live) | 57-59% | +4-6% | +$8-12 per $100 |
 | +Possession simulator (Monte Carlo, full distributions) | 58-61% | +5-8% | +$10-16 per $100 |
 | +Agentic research system (signal universe 200+) | 60-63% | +7-11% | +$14-22 per $100 |
@@ -24,30 +24,30 @@
 
 ---
 
-## Current Model State (2026-05-18)
+## Current Model State (2026-05-24)
 
 ### Player Prop Models — Actual Holdout Performance
 
-Walk-forward temporal CV, 48-hr purge, N=480 observations. Source: `data/models/model_registry.json`.
+Walk-forward temporal CV, N=99,818 observations. Source: `data/models/model_registry.json`.
 
-| Stat | Holdout R² | MAE | Implied Win% vs -110 | Signal strength |
-|------|-----------|-----|----------------------|----------------|
-| PTS  | 0.41 | 4.12 pts | ~54-56% | Usable — needs CV lift |
-| REB  | 0.38 | 1.84 reb | ~54-55% | OK on role players |
-| AST  | 0.36 | 1.52 ast | ~54-55% | Good on high-usage players |
-| FG3M | 0.29 | 0.91 3pm | ~53-54% | Needs spatial (closeout speed) |
-| TOV  | 0.22 | 0.76 tov | ~53-54% | Marginal — use selectively |
-| STL  | 0.18 | 0.48 stl | ~52-53% | Near break-even — filter hard |
-| BLK  | 0.16 | 0.42 blk | ~52-53% | Near break-even — filter hard |
+| Stat | MAE | Model | Signal strength |
+|------|-----|-------|----------------|
+| PTS  | 4.62 | sqrt+Huber blend | Usable — needs CV lift |
+| REB  | 1.90 | LGB-q50 | OK on role players |
+| AST  | 1.36 | multitask MLP | Good on high-usage players |
+| FG3M | 0.89 | XGB-q50 | Needs spatial (closeout speed) |
+| TOV  | 0.89 | XGB-q50 | Marginal — use selectively |
+| STL  | 0.72 | XGB-q50 | Near break-even — filter hard |
+| BLK  | 0.44 | XGB-q50 | -16% session win |
 
-> **Holdout, not training R².** Training R²s are: pts=0.47, reb=0.43, ast=0.42. The gap reflects overfitting risk. Always report holdout.
+> **Walk-forward MAE.** q50 quantile heads beat squared-error/Huber for skewed counts because prop O/U scores against the median.
 
-### Win Probability Model
+### Win Probability Model (5-way NNLS stack)
 
-| Metric | Current | Target (post 80-game CV retrain) |
-|--------|---------|----------------------------------|
-| Accuracy | 68.5% | 71-73% |
-| Brier | 0.209 | 0.185-0.195 |
+| Metric | Current (WF) | Current (single-split) | Target (post 80-game CV retrain) |
+|--------|-------------|------------------------|----------------------------------|
+| Accuracy | 0.7094 | 0.717 | 0.73+ |
+| Brier | 0.193 | 0.188 | 0.180 |
 
 ### xFG Model (Shot Quality)
 
@@ -69,7 +69,7 @@ The single biggest ceiling expansion is not more data or more models — it's a 
 | Hypotheses tested per week | 1-3 (human-paced) | 50-100 (agent-paced) |
 | Signal retirement | Ad hoc | Systematic (IR threshold) |
 | Factor decomposition | Manual | Automated attribution |
-| Signal universe depth | 75 models | 500-5000 validated signals |
+| Signal universe depth | 85 models | 500-5000 validated signals |
 | Edge decay detection | Noticed when ROI drops | Caught by IR monitor before live |
 
 Renaissance Technologies runs ~500 signals at any time. 60-70% of newly proposed signals fail validation. The survivors compound. This is the model.
@@ -82,13 +82,13 @@ Renaissance Technologies runs ~500 signals at any time. 60-70% of newly proposed
 
 | Stat | Current holdout R² | CV lift (est) | Ceiling R² | Key signal unlock |
 |------|--------------------|---------------|-----------|------------------|
-| PTS  | 0.41 | +0.06-0.10 | 0.47-0.51 | defender_distance, minutes model, regime detection |
-| REB  | 0.38 | +0.07-0.10 | 0.45-0.48 | CV positioning, box-out detection, paint pressure |
-| AST  | 0.36 | +0.06-0.09 | 0.42-0.45 | CV spacing, play type distribution, drive kickout rate |
-| FG3M | 0.29 | +0.08-0.12 | 0.37-0.41 | closeout speed, catch-vs-pull-up classification |
-| BLK  | 0.16 | +0.05-0.08 | 0.21-0.24 | rim protection positioning, shot arc estimation |
-| TOV  | 0.22 | +0.04-0.07 | 0.26-0.29 | CV pressure at handoff, pass lane congestion |
-| STL  | 0.18 | +0.04-0.07 | 0.22-0.25 | CV deflection positioning, passing lane activity |
+| PTS  | 4.62 MAE | -0.15 to -0.25 | 4.37-4.47 MAE | defender_distance, minutes model, regime detection |
+| REB  | 1.90 MAE | -0.08 to -0.12 | 1.78-1.82 MAE | CV positioning, box-out detection, paint pressure |
+| AST  | 1.36 MAE | -0.06 to -0.10 | 1.26-1.30 MAE | CV spacing, play type distribution, drive kickout rate |
+| FG3M | 0.89 MAE | -0.05 to -0.08 | 0.81-0.84 MAE | closeout speed, catch-vs-pull-up classification |
+| BLK  | 0.44 MAE | -0.02 to -0.04 | 0.40-0.42 MAE | rim protection positioning, shot arc estimation |
+| TOV  | 0.89 MAE | -0.04 to -0.07 | 0.82-0.85 MAE | CV pressure at handoff, pass lane congestion |
+| STL  | 0.72 MAE | -0.03 to -0.05 | 0.67-0.69 MAE | CV deflection positioning, passing lane activity |
 
 ### Context Signals With Known Lift (no CV required)
 
@@ -109,9 +109,9 @@ Renaissance Technologies runs ~500 signals at any time. 60-70% of newly proposed
 - Not a "65%+ win rate guaranteed" claim. 62-66% is a long-run ceiling on filtered plays with the full research loop running.
 - Not a claim that CLV has been validated. Gate 1 has not been run yet.
 - Not a claim that the agentic system exists. It's planned, not built.
-- Not a claim that 90 models are trained. 75 are trained; the architecture targets 500-5000 signals (not 90 models).
+- Not a claim that 500 models are trained. 85 are trained; the architecture targets 500-5000 signals.
 
-The honest current position: 7 prop models with holdout R² in the 0.16-0.41 range, win probability at 68.5%/Brier 0.209, 29 usable CV games, Gate 1 pending.
+The honest current position: 7 prop models with walk-forward MAE locked in (PTS 4.62 / REB 1.90 / AST 1.36 / FG3M 0.89 / TOV 0.89 / STL 0.72 / BLK 0.44), win probability at 0.7094 acc / 0.193 Brier (WF), 29 usable CV games, Gate 1 pending.
 
 ---
 
@@ -122,7 +122,7 @@ NOW                                      CEILING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Gate 1 not run ──────────────────────► Gate 1 passed (CLV validated)
 29 usable CV games ──────────────────► 200+ clean CV games
-75 models, API-only ─────────────────► 500+ signals, CV-powered
+85 models, API-only ─────────────────► 500+ signals, CV-powered
 No agentic system ───────────────────► Agent loop running 24/7
 Underprediction bias on all props ───► Calibrated distributions
 kelly_corr matrix empty ─────────────► Full correlation matrix live
