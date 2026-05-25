@@ -89,11 +89,21 @@ _USE_FOUL_RESIDUAL = True
 # heuristic (back-compat preserved).
 _USE_BLOWOUT_RESIDUAL = True
 
+# cycle 103b (loop 5): heat_check shrinkage residual v2. When True,
+# project_from_snapshot applies a learned shrinkage factor ∈ [0.70, 1.00]
+# to the cycle-88 PTS/AST/FG3M projection on heat_check rows at endQ3.
+# Probe scripts/probe_heat_check_shrinkage_blend.py validated SHIP:
+# heat_check PTS MAE -0.43 vs heuristic, non_heat 0.0 regression, WF 4/4
+# negative (-0.37 to -0.46). Applied AFTER foul + blowout overrides
+# (multiplies projected_final, never current_stat). Missing artifact -> no-op.
+_USE_HEAT_CHECK_SHRINKAGE = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
 _FOUL_RESIDUAL_MODEL = None
 _BLOWOUT_RESIDUAL_MODEL = None
+_HEAT_CHECK_SHRINKAGE_MODEL = None
 _MODELS_LOADED = False
 
 
@@ -104,9 +114,10 @@ def _load_models_once():
     if its artifact is absent -- callers tolerate None via stratified dispatch.
     """
     global _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
-    global _MODELS_LOADED
+    global _HEAT_CHECK_SHRINKAGE_MODEL, _MODELS_LOADED
     if _MODELS_LOADED:
-        return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
+        return (_GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL,
+                _BLOWOUT_RESIDUAL_MODEL, _HEAT_CHECK_SHRINKAGE_MODEL)
     try:
         from src.prediction.minute_trajectory import MinuteTrajectoryModel
         _GLOBAL_MIN_MODEL = MinuteTrajectoryModel.load()
@@ -124,8 +135,16 @@ def _load_models_once():
         _BLOWOUT_RESIDUAL_MODEL = BlowoutResidualModel.load()
     except Exception:
         _BLOWOUT_RESIDUAL_MODEL = None
+    try:
+        from src.prediction.heat_check_shrinkage_residual import (
+            HeatCheckShrinkageResidualModel,
+        )
+        _HEAT_CHECK_SHRINKAGE_MODEL = HeatCheckShrinkageResidualModel.load()
+    except Exception:
+        _HEAT_CHECK_SHRINKAGE_MODEL = None
     _MODELS_LOADED = True
-    return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
+    return (_GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL,
+            _BLOWOUT_RESIDUAL_MODEL, _HEAT_CHECK_SHRINKAGE_MODEL)
 
 
 __all__ = [
@@ -135,6 +154,7 @@ __all__ = [
     "write_ledger",
     "_USE_FOUL_RESIDUAL",
     "_USE_BLOWOUT_RESIDUAL",
+    "_USE_HEAT_CHECK_SHRINKAGE",
 ]
 
 
@@ -202,6 +222,13 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # compose safely.
     if _USE_BLOWOUT_RESIDUAL and int(snap_period or 0) == 4:
         rows = _apply_stratified_blowout_residual(snap, rows)
+    # cycle 103b (loop 5): THIRD stratified override -- heat_check shrinkage
+    # multiplies projected_final on the REMAINING portion for pts/ast/fg3m
+    # when q3_ppm > 1.5 * q12_ppm (with q12_ppm > 0.3). Composes safely with
+    # the foul + blowout overrides above (those rewrite projected_final
+    # absolutely; this scales the REMAINING delta from current_stat).
+    if _USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4:
+        rows = _apply_heat_check_shrinkage(snap, rows)
     return rows
 
 
@@ -212,7 +239,7 @@ def _apply_stratified_foul_residual(snap: dict, rows: list) -> list:
 
     Untouched when both LightGBM artifacts are absent (graceful no-op).
     """
-    global_model, residual_model, _ = _load_models_once()
+    global_model, residual_model, _, _ = _load_models_once()
     # If NEITHER model is loaded we have nothing to add over the heuristic.
     if global_model is None and residual_model is None:
         return rows
@@ -353,7 +380,7 @@ def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
 
     Untouched when the blowout_residual artifact is absent (graceful no-op).
     """
-    _, _, blowout_model = _load_models_once()
+    _, _, blowout_model, _ = _load_models_once()
     if blowout_model is None:
         return rows
 
@@ -490,6 +517,96 @@ def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
             r["blow_factor_source"] = (
                 "blowout_residual" if gate_fires else "heuristic_blowout"
             )
+    return rows
+
+
+# ── cycle 103b: heat_check shrinkage override (PTS/AST/FG3M only) ─────────────
+
+def _apply_heat_check_shrinkage(snap: dict, rows: list) -> list:
+    """Multiply projected_final by a learned shrinkage factor ∈ [0.70, 1.00]
+    for pts/ast/fg3m on heat_check rows. Operates on the REMAINING delta
+    (projected_final - current_stat); current_stat is never altered.
+
+    Graceful no-op when the artifact is absent.
+    """
+    _, _, _, shrink_model = _load_models_once()
+    if shrink_model is None:
+        return rows
+
+    from src.prediction.heat_check_shrinkage_residual import (
+        HEAT_CHECK_STATS,
+        apply_shrinkage_to_projection,
+        heat_check_shrinkage_factor,
+    )
+
+    try:
+        home_score = float(snap.get("home_score") or 0)
+    except (TypeError, ValueError):
+        home_score = 0.0
+    try:
+        away_score = float(snap.get("away_score") or 0)
+    except (TypeError, ValueError):
+        away_score = 0.0
+    margin_abs = abs(home_score - away_score)
+
+    # Index input players by pid for per-player Q1/Q2/Q3 lookups.
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    rows_by_pid: dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            rows_by_pid.setdefault(int(pid), []).append(r)
+        except (TypeError, ValueError):
+            continue
+
+    # Per-player factor cache (one factor per player; reused for pts/ast/fg3m).
+    for pid, p in by_pid.items():
+        try:
+            q1_pts = float(p.get("pts_q1") or 0)
+            q2_pts = float(p.get("pts_q2") or 0)
+            q3_pts = float(p.get("pts_q3") or 0)
+            min_q1 = float(p.get("min_q1") or 0)
+            min_q2 = float(p.get("min_q2") or 0)
+            min_q3 = float(p.get("min_q3") or 0)
+        except (TypeError, ValueError):
+            continue
+        if min_q3 <= 0.0 or (min_q1 + min_q2) <= 0.0:
+            continue
+
+        factor = heat_check_shrinkage_factor(
+            residual_model=shrink_model,
+            q1_pts=q1_pts, q2_pts=q2_pts, q3_pts=q3_pts,
+            min_q1=min_q1, min_q2=min_q2, min_q3=min_q3,
+            season_pts_per_min=p.get("season_pts_per_min"),
+            l5_pts_per_min=p.get("l5_pts_per_min"),
+            position_proxy=p.get("position"),
+            score_margin_abs=margin_abs,
+        )
+        if factor >= 0.999:
+            # No-op (gate didn't fire or model says no shrinkage).
+            continue
+
+        out_rows = rows_by_pid.get(pid, [])
+        for r in out_rows:
+            stat = r.get("stat")
+            if stat not in HEAT_CHECK_STATS:
+                continue
+            try:
+                cur = float(r.get("current") or 0)
+                proj = float(r.get("projected_final") or 0)
+            except (TypeError, ValueError):
+                continue
+            new_proj = apply_shrinkage_to_projection(proj, cur, factor)
+            r["projected_final"] = float(new_proj)
+            r["heat_check_shrinkage"] = float(factor)
     return rows
 
 
