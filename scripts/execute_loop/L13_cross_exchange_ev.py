@@ -8,9 +8,12 @@ Public API
 ----------
     ExchangeQuote           dataclass
     EVOpportunity           dataclass
-    find_ev_opportunities(model_predictions, quotes, min_ev_pct) -> list[EVOpportunity]
+    find_ev_opportunities(model_predictions, quotes, min_ev_pct,
+                          source, market_id, exchanges) -> list[EVOpportunity]
     shop_best_price(side, quotes_for_market) -> ExchangeQuote
     load_quotes_from_snapshot(snapshot_csv_path) -> list[ExchangeQuote]
+    fetch_quotes_from_paper_clients(market_id, exchanges, player, stat, line)
+        -> dict[str, list[ExchangeQuote]]
 
 CLI
 ---
@@ -21,14 +24,27 @@ from __future__ import annotations
 
 import argparse
 import csv
+import importlib
 import json
 import logging
 import sys
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import List, Literal, Optional
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Exchange registry — maps name -> (module_path, get_orderbook_fn_name, normalizer_fn)
+# ---------------------------------------------------------------------------
+
+_EXCHANGE_REGISTRY: dict[str, tuple[str, str, str]] = {
+    "kalshi":      ("scripts.execute_loop.L09_kalshi_client",    "get_orderbook", "_normalize_kalshi"),
+    "polymarket":  ("scripts.execute_loop.L10_polymarket_client", "get_orderbook", "_normalize_polymarket"),
+    "sporttrade":  ("scripts.execute_loop.L11_sporttrade_client", "get_orderbook", "_normalize_sporttrade"),
+    "prophet":     ("scripts.execute_loop.L12_prophet_client",    "get_orderbook", "_normalize_prophet"),
+}
 
 # ---------------------------------------------------------------------------
 # Odds math helpers
@@ -140,6 +156,10 @@ def find_ev_opportunities(
     model_predictions: dict,
     quotes: list[ExchangeQuote],
     min_ev_pct: float = 2.0,
+    *,
+    source: str = "snapshot",
+    market_id: Optional[str] = None,
+    exchanges: Optional[List[str]] = None,
 ) -> list[EVOpportunity]:
     """Identify positive-EV opportunities by comparing model probs to market quotes.
 
@@ -149,13 +169,39 @@ def find_ev_opportunities(
         {(player, stat): {"p_over": float, "p_under": float}}
     quotes:
         All available ExchangeQuote objects (any book/side mix).
+        Ignored when source="paper_clients" (quotes are fetched internally).
     min_ev_pct:
         Minimum EV percentage (ev_per_dollar * 100) to include in results.
+    source:
+        "snapshot" (default, v1 behaviour) — use the *quotes* argument directly.
+        "paper_clients" — soft-import L09-L12 clients and fetch live orderbooks.
+    market_id:
+        Required when source="paper_clients"; passed to each exchange client.
+    exchanges:
+        Which exchanges to query when source="paper_clients".
+        Defaults to all registered exchanges (kalshi, polymarket, sporttrade, prophet).
 
     Returns
     -------
     List of EVOpportunity sorted by ev_per_dollar DESC.
     """
+    if source == "paper_clients":
+        if not market_id:
+            raise ValueError("market_id must be provided when source='paper_clients'")
+        # Derive player/stat/line from the first prediction key if available
+        first_player, first_stat = ("", "")
+        first_line = 0.0
+        for (p, s) in model_predictions.keys():
+            first_player, first_stat = p, s
+            break
+        client_quotes = fetch_quotes_from_paper_clients(
+            market_id=market_id,
+            exchanges=exchanges,
+            player=first_player,
+            stat=first_stat,
+            line=first_line,
+        )
+        quotes = [q for qs in client_quotes.values() for q in qs]
     opportunities: list[EVOpportunity] = []
 
     for (player, stat), probs in model_predictions.items():
@@ -291,6 +337,309 @@ def load_quotes_from_snapshot(snapshot_csv_path: str) -> list[ExchangeQuote]:
 
     log.info("Loaded %d quotes from %s", len(quotes), path)
     return quotes
+
+
+# ---------------------------------------------------------------------------
+# Per-exchange normalizers
+# ---------------------------------------------------------------------------
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _normalize_kalshi(
+    orderbook: dict,
+    market_id: str,
+    player: str,
+    stat: str,
+    line: float,
+) -> list[ExchangeQuote]:
+    """Convert Kalshi orderbook {yes_bids, yes_asks, no_bids, no_asks} to ExchangeQuotes.
+
+    Kalshi prices are cents (1-99).  Implied prob = price / 100.
+    American odds: prob >= 0.5 → -100*p/(1-p), else +100*(1-p)/p.
+    yes side → OVER, no side → UNDER.
+    """
+    quotes: list[ExchangeQuote] = []
+    ts = _now_iso()
+
+    def _cents_to_american(cents: int) -> int:
+        p = max(1, min(99, int(cents))) / 100.0
+        return prob_to_american(p)
+
+    # yes_bids → best price a backer can sell YES at
+    for level in orderbook.get("yes_bids", []):
+        price_cents, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 50), level.get("size", 0))
+        quotes.append(ExchangeQuote(
+            book="kalshi",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="OVER",
+            line=line,
+            price=_cents_to_american(price_cents),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    # no_bids → UNDER side
+    for level in orderbook.get("no_bids", []):
+        price_cents, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 50), level.get("size", 0))
+        quotes.append(ExchangeQuote(
+            book="kalshi",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="UNDER",
+            line=line,
+            price=_cents_to_american(price_cents),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    return quotes
+
+
+def _normalize_polymarket(
+    orderbook,
+    market_id: str,
+    player: str,
+    stat: str,
+    line: float,
+) -> list[ExchangeQuote]:
+    """Convert PolyOrderbook (bids/asks as [{"price": usdc_float, "size": float}]) to ExchangeQuotes.
+
+    Polymarket prices are USDC per share (0,1).  Implied prob = price.
+    Best ask represents the taker's cost to go OVER; best bid → UNDER proxy.
+    We emit one OVER quote (best ask) and one UNDER quote (1 - best ask).
+    """
+    quotes: list[ExchangeQuote] = []
+    ts = _now_iso()
+
+    # PolyOrderbook dataclass or plain dict both support attribute/key access
+    if hasattr(orderbook, "asks"):
+        asks = orderbook.asks
+        bids = orderbook.bids
+    else:
+        asks = orderbook.get("asks", [])
+        bids = orderbook.get("bids", [])
+
+    def _usdc_to_american(price_usdc: float) -> int:
+        p = max(0.01, min(0.99, float(price_usdc)))
+        return prob_to_american(p)
+
+    if asks:
+        best_ask = asks[0]
+        price_usdc = best_ask.get("price", 0.5) if isinstance(best_ask, dict) else best_ask
+        size = best_ask.get("size", 0.0) if isinstance(best_ask, dict) else 0.0
+        quotes.append(ExchangeQuote(
+            book="polymarket",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="OVER",
+            line=line,
+            price=_usdc_to_american(price_usdc),
+            liquidity=float(size),
+            ts=ts,
+        ))
+        # UNDER implied by complement
+        quotes.append(ExchangeQuote(
+            book="polymarket",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="UNDER",
+            line=line,
+            price=_usdc_to_american(1.0 - float(price_usdc)),
+            liquidity=float(size),
+            ts=ts,
+        ))
+
+    return quotes
+
+
+def _normalize_sporttrade(
+    orderbook: dict,
+    market_id: str,
+    player: str,
+    stat: str,
+    line: float,
+) -> list[ExchangeQuote]:
+    """Convert Sporttrade orderbook {bids: [[price, qty], ...], asks: ...} to ExchangeQuotes.
+
+    Sporttrade prices are cents (1-99).  back side → OVER at best ask; lay → UNDER.
+    """
+    quotes: list[ExchangeQuote] = []
+    ts = _now_iso()
+
+    def _cents_to_american(price: float) -> int:
+        p = max(0.01, min(0.99, float(price) / 100.0))
+        return prob_to_american(p)
+
+    # Best ask = cheapest price to buy (OVER)
+    asks = orderbook.get("asks", [])
+    if asks:
+        level = asks[0]
+        price_raw, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 50), level.get("size", 0))
+        quotes.append(ExchangeQuote(
+            book="sporttrade",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="OVER",
+            line=line,
+            price=_cents_to_american(price_raw),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    # Best bid = highest price to sell (UNDER complement)
+    bids = orderbook.get("bids", [])
+    if bids:
+        level = bids[0]
+        price_raw, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 50), level.get("size", 0))
+        # Complement: if bid is 55 cents, UNDER implied prob = 1 - 0.55 = 0.45
+        p_complement = max(0.01, min(0.99, 1.0 - float(price_raw) / 100.0))
+        quotes.append(ExchangeQuote(
+            book="sporttrade",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="UNDER",
+            line=line,
+            price=prob_to_american(p_complement),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    return quotes
+
+
+def _normalize_prophet(
+    orderbook: dict,
+    market_id: str,
+    player: str,
+    stat: str,
+    line: float,
+) -> list[ExchangeQuote]:
+    """Convert Prophet orderbook {bids: [[decimal, qty], ...], asks: ...} to ExchangeQuotes.
+
+    Prophet prices are decimal odds (1.01 – 100.0).
+    Best ask (lowest decimal) → OVER; best bid (highest decimal) → UNDER.
+    Decimal to American: dec >= 2.0 → +(dec-1)*100, else → -100/(dec-1).
+    """
+    quotes: list[ExchangeQuote] = []
+    ts = _now_iso()
+
+    def _decimal_to_american(dec: float) -> int:
+        dec = max(1.01, float(dec))
+        if dec >= 2.0:
+            return int(round((dec - 1.0) * 100.0))
+        return int(round(-100.0 / (dec - 1.0)))
+
+    asks = orderbook.get("asks", [])
+    if asks:
+        level = asks[0]
+        dec_raw, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 2.0), level.get("size", 0))
+        quotes.append(ExchangeQuote(
+            book="prophet",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="OVER",
+            line=line,
+            price=_decimal_to_american(dec_raw),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    bids = orderbook.get("bids", [])
+    if bids:
+        level = bids[0]
+        dec_raw, qty = (level[0], level[1]) if isinstance(level, (list, tuple)) else (level.get("price", 2.0), level.get("size", 0))
+        quotes.append(ExchangeQuote(
+            book="prophet",
+            market=market_id,
+            player=player,
+            stat=stat,
+            side="UNDER",
+            line=line,
+            price=_decimal_to_american(dec_raw),
+            liquidity=float(qty),
+            ts=ts,
+        ))
+
+    return quotes
+
+
+# Map normalizer name strings to actual functions
+_NORMALIZER_MAP: dict[str, object] = {
+    "_normalize_kalshi":     _normalize_kalshi,
+    "_normalize_polymarket": _normalize_polymarket,
+    "_normalize_sporttrade": _normalize_sporttrade,
+    "_normalize_prophet":    _normalize_prophet,
+}
+
+
+# ---------------------------------------------------------------------------
+# Paper-client quote fetcher
+# ---------------------------------------------------------------------------
+
+def fetch_quotes_from_paper_clients(
+    market_id: str,
+    exchanges: list[str] | None = None,
+    player: str = "",
+    stat: str = "",
+    line: float = 0.0,
+) -> dict[str, list[ExchangeQuote]]:
+    """Fetch orderbooks from paper-mode exchange clients and normalize to ExchangeQuotes.
+
+    Soft-imports each exchange module via importlib; skips on any failure with WARN.
+
+    Parameters
+    ----------
+    market_id:
+        Exchange-specific market identifier passed to each client's get_orderbook.
+    exchanges:
+        Which exchanges to query.  Defaults to all registered exchanges.
+    player, stat, line:
+        Metadata forwarded to normalizers for ExchangeQuote construction.
+
+    Returns
+    -------
+    dict mapping exchange name -> list[ExchangeQuote] for successful fetches only.
+    """
+    if exchanges is None:
+        exchanges = list(_EXCHANGE_REGISTRY.keys())
+
+    result: dict[str, list[ExchangeQuote]] = {}
+
+    for name in exchanges:
+        if name not in _EXCHANGE_REGISTRY:
+            log.warning("fetch_quotes_from_paper_clients: unknown exchange %r — skipping", name)
+            continue
+
+        module_path, fn_name, normalizer_name = _EXCHANGE_REGISTRY[name]
+        normalizer = _NORMALIZER_MAP.get(normalizer_name)
+
+        try:
+            mod = importlib.import_module(module_path)
+            get_ob = getattr(mod, fn_name)
+            orderbook = get_ob(market_id)
+            if normalizer is None:
+                log.warning("No normalizer found for %r — skipping", name)
+                continue
+            quotes = normalizer(orderbook, market_id, player, stat, line)  # type: ignore[operator]
+            result[name] = quotes
+            log.debug("fetch_quotes_from_paper_clients: %s → %d quote(s)", name, len(quotes))
+        except Exception as exc:
+            log.warning(
+                "fetch_quotes_from_paper_clients: %s failed (%s: %s) — skipping",
+                name, type(exc).__name__, exc,
+            )
+
+    return result
 
 
 # ---------------------------------------------------------------------------

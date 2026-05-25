@@ -22,13 +22,16 @@ CLI
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import logging
 import os
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
+import uuid
 from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -108,40 +111,193 @@ def _append_run(run: RetrainRun) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Lock helpers (cross-platform atomic via os.O_EXCL)
+# Lock helpers (JSON lock: pid + hostname + created_at + run_id)
 # ---------------------------------------------------------------------------
-_LOCK_STALE_SECONDS = 4 * 3600  # 4 hours
+_LOCK_STALE_SECONDS = 6 * 3600  # 6 hours
+
+
+def _pid_alive(pid: int) -> Optional[bool]:
+    """Check whether a process with *pid* is alive.
+
+    Returns:
+        True  — process exists (or exists but inaccessible).
+        False — process definitively does not exist.
+        None  — uncertain (unexpected exception).
+
+    On Windows, uses OpenProcess via ctypes (avoids os.kill which can hang for
+    out-of-range PIDs on some Windows builds).
+    """
+    if sys.platform == "win32":
+        return _pid_alive_windows(pid)
+
+    try:
+        os.kill(pid, 0)
+        return True
+    except PermissionError:
+        # errno EPERM: process exists, we just can't signal it
+        return True
+    except OSError as exc:
+        esrch = getattr(errno, "ESRCH", None)
+        if esrch is not None and exc.errno == esrch:
+            return False
+        return None
+    except Exception:
+        return None
+
+
+def _pid_alive_windows(pid: int) -> Optional[bool]:
+    """Windows-specific pid liveness check via OpenProcess (no hang risk)."""
+    try:
+        import ctypes
+        import ctypes.wintypes
+
+        SYNCHRONIZE = 0x00100000
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+
+        handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if handle == 0:
+            # OpenProcess failed
+            err = kernel32.GetLastError()
+            # ERROR_INVALID_PARAMETER (87): pid does not exist
+            # ERROR_NOT_FOUND (1168): pid does not exist
+            if err in (87, 1168):
+                return False
+            # ERROR_ACCESS_DENIED (5): process exists but inaccessible
+            if err == 5:
+                return True
+            # Unknown error → uncertain
+            return None
+
+        # Check exit code — if process has exited, ExitCode != STILL_ACTIVE (259)
+        exit_code = ctypes.wintypes.DWORD(0)
+        ret = kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+        kernel32.CloseHandle(handle)
+        if not ret:
+            return None
+        STILL_ACTIVE = 259
+        return exit_code.value == STILL_ACTIVE
+    except Exception:
+        return None
+
+
+def _read_lock(path: Path) -> Optional[dict]:
+    """Return parsed JSON dict from *path*, or None if missing/empty/corrupt."""
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            return None
+        return json.loads(text)
+    except (OSError, json.JSONDecodeError, ValueError):
+        return None
+
+
+def _write_lock_atomic(path: Path, payload: dict) -> None:
+    """Write *payload* as JSON to *path* atomically via a sibling temp file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_fd, tmp_name = tempfile.mkstemp(dir=str(path.parent), suffix=".lock.tmp")
+    try:
+        with os.fdopen(tmp_fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh)
+        os.replace(tmp_name, str(path))
+    except Exception:
+        # Clean up the temp file if replace failed
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
+def _is_stale(
+    lock: dict,
+    now_ts: float,
+    stale_seconds: int = _LOCK_STALE_SECONDS,
+) -> tuple[bool, str]:
+    """Return (is_stale, reason) for *lock* dict.
+
+    Reasons: "age" | "dead_pid" | "age_cross_host" | "fresh"
+    """
+    try:
+        created_ts = datetime.fromisoformat(lock["created_at"]).timestamp()
+    except (KeyError, ValueError, TypeError):
+        # Malformed created_at → treat as maximally stale
+        return True, "age"
+
+    age = now_ts - created_ts
+    current_host = socket.gethostname()
+    lock_host = lock.get("hostname", "")
+
+    if age > stale_seconds:
+        return True, "age"
+
+    if lock_host == current_host:
+        pid = lock.get("pid")
+        if pid is not None:
+            alive = _pid_alive(int(pid))
+            if alive is False:
+                return True, "dead_pid"
+            if alive is None:
+                # Uncertain — fall through to age-only (not stale yet)
+                pass
+    else:
+        # Cross-host: we already checked age > stale_seconds above (False here)
+        # so age <= stale_seconds → fresh from the cross-host perspective
+        pass
+
+    return False, "fresh"
 
 
 def _acquire_lock() -> bool:
-    """Return True if lock acquired. Clears stale locks (>4h) with a warning."""
+    """Return True if lock acquired. Reclaims stale locks with a warning."""
     lock_path = _LOCK_PATH
     lock_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Check for stale lock
+    now_ts = datetime.now(timezone.utc).timestamp()
+    payload = {
+        "pid":        os.getpid(),
+        "hostname":   socket.gethostname(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "run_id":     str(uuid.uuid4()),
+    }
+
     if lock_path.exists():
-        age = datetime.now(timezone.utc).timestamp() - lock_path.stat().st_mtime
-        if age > _LOCK_STALE_SECONDS:
+        existing = _read_lock(lock_path)
+        if existing is None:
+            log.warning("[L24] Lock file corrupt/empty — reclaiming.")
+            _write_lock_atomic(lock_path, payload)
+            return True
+
+        stale, reason = _is_stale(existing, now_ts)
+        if stale:
             log.warning(
-                "[L24] Stale lock found (age=%.0fh) — clearing.", age / 3600
+                "[L24] Stale lock found (reason=%s, holder=%s@%s) — reclaiming.",
+                reason,
+                existing.get("pid", "?"),
+                existing.get("hostname", "?"),
             )
-            try:
-                lock_path.unlink()
-            except OSError as exc:
-                log.error("[L24] Could not remove stale lock: %s", exc)
-                return False
+            _write_lock_atomic(lock_path, payload)
+            return True
         else:
-            log.info("[L24] Lock already held (age=%.0fs). Exiting.", age)
+            log.info(
+                "[L24] Lock held by pid=%s hostname=%s run_id=%s. Exiting.",
+                existing.get("pid", "?"),
+                existing.get("hostname", "?"),
+                existing.get("run_id", "?"),
+            )
             return False
 
+    # Lock does not exist — create it atomically
     try:
         fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        content = f"{os.getpid()}\n{datetime.now(timezone.utc).isoformat()}\n"
-        os.write(fd, content.encode())
-        os.close(fd)
+        try:
+            os.write(fd, json.dumps(payload).encode())
+        finally:
+            os.close(fd)
         return True
     except FileExistsError:
-        log.info("[L24] Lock contention (O_EXCL). Exiting.")
+        # Race: another process created it between our check and O_EXCL
+        log.info("[L24] Lock contention (O_EXCL race). Exiting.")
         return False
     except OSError as exc:
         log.error("[L24] Could not create lock: %s", exc)
@@ -149,9 +305,26 @@ def _acquire_lock() -> bool:
 
 
 def _release_lock() -> None:
+    """Unlink the lock only if it belongs to this process+host."""
     try:
-        if _LOCK_PATH.exists():
+        if not _LOCK_PATH.exists():
+            return
+        existing = _read_lock(_LOCK_PATH)
+        if existing is None:
+            # Corrupt/empty — safe to remove
             _LOCK_PATH.unlink()
+            return
+        if (
+            existing.get("pid") == os.getpid()
+            and existing.get("hostname") == socket.gethostname()
+        ):
+            _LOCK_PATH.unlink()
+        else:
+            log.warning(
+                "[L24] Lock is held by a different holder (pid=%s host=%s) — not releasing.",
+                existing.get("pid", "?"),
+                existing.get("hostname", "?"),
+            )
     except OSError as exc:
         log.warning("[L24] Could not release lock: %s", exc)
 

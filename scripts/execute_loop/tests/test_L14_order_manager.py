@@ -50,7 +50,8 @@ def isolate(tmp_path, monkeypatch):
 
     # Cleanup sys.modules injection between tests
     for mod in ["L09_kalshi_client", "L10_polymarket_client",
-                "L11_sporttrade_client", "L07_pnl_ledger", "L22_alerting"]:
+                "L11_sporttrade_client", "L12_prophet_client",
+                "L07_pnl_ledger", "L22_alerting"]:
         sys.modules.pop(mod, None)
 
 
@@ -304,3 +305,204 @@ def test_track_order_zero_qty_raises():
     """qty=0 should raise ValueError."""
     with pytest.raises(ValueError, match="qty must be"):
         L14.track_order("o8", "kalshi", "MKT-X", "yes", 0, 55, 0.5)
+
+
+# ===========================================================================
+# Helpers for sync_all_exchanges tests
+# ===========================================================================
+
+@dataclass
+class _FakeKalshiPos:
+    market_ticker: str
+    side: str
+    qty: int
+
+@dataclass
+class _FakePolyPos:
+    condition_id: str
+    outcome: str
+    qty: float
+
+@dataclass
+class _FakeSporttradePos:
+    market_id: str
+    side: str
+    qty: int
+
+@dataclass
+class _FakeProphetPos:
+    market_id: str
+    side: str
+    qty: float
+
+
+def _l07_l22_mocks():
+    """Return (l07_mock, l22_mock) injected into sys.modules."""
+    l07 = types.ModuleType("L07_pnl_ledger")
+
+    @dataclass
+    class FakeBetRowSync:
+        bet_id: str = ""
+        book: str = ""
+        market: str = ""
+        side: str = ""
+        stake: float = 0.0
+        odds: int = 0
+        model_p_side: float = 0.0
+
+    l07.BetRow = FakeBetRowSync
+    l07.place_bet = MagicMock(return_value="ok")
+    sys.modules["L07_pnl_ledger"] = l07
+
+    l22 = types.ModuleType("L22_alerting")
+    l22.send_fill_alert = MagicMock(return_value=True)
+    sys.modules["L22_alerting"] = l22
+    return l07, l22
+
+
+# ===========================================================================
+# Test S1 — sync_all_exchanges happy path: 4 orders, 4 fakes, all FILLED
+# ===========================================================================
+
+def test_sync_all_exchanges_happy_path():
+    """4 orders across 4 exchanges all fill from their respective mock clients."""
+    L14.track_order("s1a", "kalshi",     "MKT-K",  "yes",  10, 55, 0.6)
+    L14.track_order("s1b", "polymarket", "MKT-P",  "yes",  10, 55, 0.6)
+    L14.track_order("s1c", "sporttrade", "MKT-S",  "back", 10, 55, 0.6)
+    L14.track_order("s1d", "prophet",    "MKT-PR", "over", 10, 55, 0.6)
+
+    l07, l22 = _l07_l22_mocks()
+
+    pre_built = {
+        "kalshi":      [_FakeKalshiPos("MKT-K",  "yes",  10)],
+        "polymarket":  [_FakePolyPos("MKT-P",    "yes",  10)],
+        "sporttrade":  [_FakeSporttradePos("MKT-S",  "back", 10)],
+        "prophet":     [_FakeProphetPos("MKT-PR", "over", 10)],
+    }
+
+    changed = L14.sync_all_exchanges(positions=pre_built)
+
+    assert len(changed) == 4
+    assert all(o.status == "FILLED" for o in changed)
+    assert len(L14.get_open_orders()) == 0
+    assert l07.place_bet.call_count == 4
+
+
+# ===========================================================================
+# Test S2 — one exchange errors; 3 others succeed
+# ===========================================================================
+
+def test_sync_all_exchanges_one_exchange_errors():
+    """polymarket raises; kalshi/sporttrade/prophet still process correctly."""
+    L14.track_order("s2a", "kalshi",     "MKT-K2",  "yes",  5, 55, 0.5)
+    L14.track_order("s2b", "sporttrade", "MKT-S2",  "back", 5, 55, 0.5)
+    L14.track_order("s2c", "prophet",    "MKT-PR2", "over", 5, 55, 0.5)
+
+    _l07_l22_mocks()
+
+    # Inject all 4 clients into sys.modules so _get_exchange_client uses them.
+    # Polymarket raises; the other 3 return their positions.
+    def _make_client_mod(name, positions_ret):
+        mod = types.ModuleType(name)
+        mod.get_positions = MagicMock(return_value=positions_ret)
+        return mod
+
+    sys.modules["L09_kalshi_client"] = _make_client_mod(
+        "L09_kalshi_client", [_FakeKalshiPos("MKT-K2", "yes", 5)]
+    )
+    poly_mod = types.ModuleType("L10_polymarket_client")
+    poly_mod.get_positions = MagicMock(side_effect=RuntimeError("polymarket unreachable"))
+    sys.modules["L10_polymarket_client"] = poly_mod
+    sys.modules["L11_sporttrade_client"] = _make_client_mod(
+        "L11_sporttrade_client", [_FakeSporttradePos("MKT-S2", "back", 5)]
+    )
+    sys.modules["L12_prophet_client"] = _make_client_mod(
+        "L12_prophet_client", [_FakeProphetPos("MKT-PR2", "over", 5)]
+    )
+
+    # Use positions=None so sync_all_exchanges fetches from clients
+    changed = L14.sync_all_exchanges()
+
+    assert len(changed) == 3
+    assert len(L14.get_open_orders()) == 0
+
+
+# ===========================================================================
+# Test S3 — no positions → no changes
+# ===========================================================================
+
+def test_sync_no_positions_no_changes():
+    """Empty position dicts for all exchanges → no orders changed."""
+    L14.track_order("s3", "kalshi", "MKT-K3", "yes", 10, 55, 0.5)
+
+    pre_built = {ex: [] for ex in L14.ALL_EXCHANGES}
+    changed = L14.sync_all_exchanges(positions=pre_built)
+
+    assert changed == []
+    assert len(L14.get_open_orders()) == 1
+
+
+# ===========================================================================
+# Test S4 — dedup: same fill seen twice → L07.place_bet called once
+# ===========================================================================
+
+def test_sync_dedup_same_fill_twice():
+    """Calling sync_all_exchanges twice with the same fill emits L07 exactly once."""
+    L14.track_order("s4", "kalshi", "MKT-K4", "yes", 10, 55, 0.5)
+    l07, _ = _l07_l22_mocks()
+
+    pre_built = {"kalshi": [_FakeKalshiPos("MKT-K4", "yes", 10)]}
+
+    # First sync
+    changed1 = L14.sync_all_exchanges(positions=pre_built)
+    assert len(changed1) == 1
+    assert l07.place_bet.call_count == 1
+
+    # Second sync — order removed, no re-processing
+    changed2 = L14.sync_all_exchanges(positions=pre_built)
+    assert changed2 == []
+    assert l07.place_bet.call_count == 1  # still exactly once
+
+
+# ===========================================================================
+# Test S5 — partial then full fill
+# ===========================================================================
+
+def test_sync_partial_then_full():
+    """qty=5 partial first (no L07); then qty=10 full fill (L07 called once)."""
+    L14.track_order("s5", "kalshi", "MKT-K5", "yes", 10, 55, 0.5)
+    l07, _ = _l07_l22_mocks()
+
+    # Partial fill: qty=5
+    partial = {"kalshi": [_FakeKalshiPos("MKT-K5", "yes", 5)]}
+    changed1 = L14.sync_all_exchanges(positions=partial)
+    assert len(changed1) == 1
+    assert changed1[0].status == "PARTIAL"
+    assert l07.place_bet.call_count == 0  # PARTIAL does not trigger L07
+
+    # Full fill: qty=10
+    full = {"kalshi": [_FakeKalshiPos("MKT-K5", "yes", 10)]}
+    changed2 = L14.sync_all_exchanges(positions=full)
+    assert len(changed2) == 1
+    assert changed2[0].status == "FILLED"
+    assert l07.place_bet.call_count == 1  # FILLED triggers L07 exactly once
+    assert len(L14.get_open_orders()) == 0
+
+
+# ===========================================================================
+# Test S6 — polymarket outcome field maps to side
+# ===========================================================================
+
+def test_sync_polymarket_outcome_to_side_adapter():
+    """PolyPosition.outcome='yes' maps to NormalizedFill.side='yes'."""
+    L14.track_order("s6", "polymarket", "COND-ABC", "yes", 8, 55, 0.55)
+    l07, _ = _l07_l22_mocks()
+
+    poly_pos = _FakePolyPos(condition_id="COND-ABC", outcome="yes", qty=8)
+    pre_built = {"polymarket": [poly_pos]}
+
+    changed = L14.sync_all_exchanges(positions=pre_built)
+
+    assert len(changed) == 1
+    assert changed[0].status == "FILLED"
+    assert l07.place_bet.call_count == 1

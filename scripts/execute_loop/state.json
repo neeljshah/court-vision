@@ -1,8 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "started": "2026-05-25",
-  "rounds_completed": 5,
+  "rounds_completed": 6,
   "v1_complete": true,
+  "v2_active": true,
   "layers": {
     "L1":  {"name": "DK/FD slate ingester",          "status": "shipped", "ships": [{"round": 1, "tests": "24/24", "loc": 437}]},
     "L2":  {"name": "Fantasy points dist engine",    "status": "shipped", "ships": [{"round": 1, "tests": "9/9", "loc": 271}]},
@@ -10,16 +11,16 @@
     "L4":  {"name": "GPP optimizer (MC+ownership)",   "status": "shipped", "ships": [{"round": 2, "tests": "10/10", "loc": 532}]},
     "L5":  {"name": "DK/FD submission engine",        "status": "shipped", "ships": [{"round": 4, "tests": "10/10", "loc": 325}]},
     "L6":  {"name": "Late-swap watcher",              "status": "shipped", "ships": [{"round": 3, "tests": "6/6", "loc": 503}]},
-    "L7":  {"name": "Settlement + P&L ledger",        "status": "shipped", "ships": [{"round": 1, "tests": "19/19", "loc": 315}]},
+    "L7":  {"name": "Settlement + P&L ledger",        "status": "shipped", "ships": [{"round": 1, "tests": "19/19", "loc": 315}, {"round": 6, "version": 2, "tests": "26/26", "delta": "+ip + model_p_var + clv_units/prob/line_at_close; settle wires L19.compute_clv via load_snapshots"}]},
     "L8":  {"name": "Drift detector",                 "status": "shipped", "ships": [{"round": 2, "tests": "11/11", "loc": 345}]},
     "L9":  {"name": "Kalshi exchange client",         "status": "shipped", "ships": [{"round": 4, "tests": "20/20", "loc": 466}]},
     "L10": {"name": "Polymarket client",              "status": "shipped", "ships": [{"round": 4, "tests": "10/10", "loc": 387}]},
     "L11": {"name": "Sporttrade client",              "status": "shipped", "ships": [{"round": 4, "tests": "10/10", "loc": 355}]},
     "L12": {"name": "Prophet Exchange client",        "status": "shipped", "ships": [{"round": 5, "tests": "13/13", "loc": 314}]},
-    "L13": {"name": "Cross-exchange EV engine",       "status": "shipped", "ships": [{"round": 3, "tests": "8/8", "loc": 410}]},
-    "L14": {"name": "Order manager",                  "status": "shipped", "ships": [{"round": 4, "tests": "8/8", "loc": 533}]},
+    "L13": {"name": "Cross-exchange EV engine",       "status": "shipped", "ships": [{"round": 3, "tests": "8/8", "loc": 410}, {"round": 6, "version": 2, "tests": "17/17", "delta": "+_EXCHANGE_REGISTRY + 4 normalizers (kalshi/poly/sporttrade/prophet); fetch_quotes_from_paper_clients + source='snapshot'|'paper_clients' kwarg on find_ev_opportunities"}]},
+    "L14": {"name": "Order manager",                  "status": "shipped", "ships": [{"round": 4, "tests": "8/8", "loc": 533}, {"round": 6, "version": 2, "tests": "14/14", "delta": "+ALL_EXCHANGES; +NormalizedFill + 4 adapters; +sync_all_exchanges with per-exchange try/except + oid dedup; _apply_fill extracted helper"}]},
     "L15": {"name": "Market-making logic",            "status": "shipped", "ships": [{"round": 5, "tests": "31/31", "loc": 347}]},
-    "L16": {"name": "Live trader",                    "status": "shipped", "ships": [{"round": 4, "tests": "7/7", "loc": 560}]},
+    "L16": {"name": "Live trader",                    "status": "shipped", "ships": [{"round": 4, "tests": "7/7", "loc": 560}, {"round": 6, "version": 2, "tests": "9/9", "delta": "+full live-session integration tests (3-tick hold + exit_all; edge-collapse close)"}]},
     "L17": {"name": "Hedge calculator",               "status": "shipped", "ships": [{"round": 3, "tests": "9/9", "loc": 363}]},
     "L18": {"name": "Bankroll manager (Kelly)",       "status": "shipped", "ships": [{"round": 1, "tests": "11/11", "loc": 431}]},
     "L19": {"name": "CLV calculator + report",        "status": "shipped", "ships": [{"round": 1, "tests": "11/11", "loc": 295}]},
@@ -27,7 +28,7 @@
     "L21": {"name": "Lineup announcement watcher",    "status": "shipped", "ships": [{"round": 3, "tests": "5/5", "loc": 308}]},
     "L22": {"name": "Slack/Discord alerting",         "status": "shipped", "ships": [{"round": 1, "tests": "8/8", "loc": 409}]},
     "L23": {"name": "Status dashboard",               "status": "shipped", "ships": [{"round": 1, "tests": "5/5", "loc": 669}]},
-    "L24": {"name": "Nightly retrain cron",           "status": "shipped", "ships": [{"round": 3, "tests": "15/15", "loc": 669}]},
+    "L24": {"name": "Nightly retrain cron",           "status": "shipped", "ships": [{"round": 3, "tests": "15/15", "loc": 669}, {"round": 6, "version": 2, "tests": "22/22", "delta": "+JSON lock schema (pid/hostname/created_at/run_id); cross-platform _pid_alive with Windows ctypes path; atomic _write_lock_atomic; _is_stale with dead_pid/cross_host reasons"}]},
     "L25": {"name": "A/B shadow harness",             "status": "shipped", "ships": [{"round": 2, "tests": "10/10", "loc": 309}]},
     "L26": {"name": "Account hygiene tooling",        "status": "shipped", "ships": [{"round": 5, "tests": "30/30", "loc": 262}]},
     "L27": {"name": "Tax tracking",                   "status": "shipped", "ships": [{"round": 5, "tests": "7/7", "loc": 305}]},
@@ -43,20 +44,30 @@
     "L37": {"name": "Postmortem agent",               "status": "shipped", "ships": [{"round": 4, "tests": "7/7", "loc": 598}]},
     "L38": {"name": "Health dashboard",               "status": "shipped", "ships": [{"round": 1, "tests": "10/10", "loc": 290}]},
     "L39": {"name": "Execution backtest harness",     "status": "shipped", "ships": [{"round": 2, "tests": "17/17", "loc": 405}]},
-    "L40": {"name": "Multi-model dispatcher",         "status": "shipped", "ships": [{"round": 3, "tests": "25/25", "loc": 489}]}
+    "L40": {"name": "Multi-model dispatcher",         "status": "shipped", "ships": [{"round": 3, "tests": "25/25", "loc": 489}]},
+    "L41": {"name": "Integration harness (end-to-end)", "status": "shipped", "ships": [{"round": 6, "tests": "10/10", "loc": 527, "notes": "10-stage pipeline: ingest -> fpts -> optimize_cash -> optimize_gpp -> submit_paper -> settle -> ledger -> clv -> drift -> postmortem; SKIP_DEPENDS propagation; deterministic seed"}]},
+    "L42": {"name": "Production readiness checker",   "status": "shipped", "ships": [{"round": 6, "tests": "8/8", "loc": 275, "notes": "AST-based audit; 4 checks (paper_default/atomic_writes/env_var_docs/file_perms); first real-run found 26 FAIL gaps to fix in future rounds"}]},
+    "L43": {"name": "Runbook generator",              "status": "shipped", "ships": [{"round": 6, "tests": "7/7", "loc": 295, "notes": "AST-extracts module docstrings + public API; produces RUNBOOK.md (2539 lines / 76KB); atomic write via os.replace"}]}
   },
   "round_summaries": [
     {"round": 1, "ships": ["L1","L2","L7","L18","L19","L22","L23","L38"], "tests": "97/97"},
     {"round": 2, "ships": ["L3","L4","L8","L20","L25","L30","L31","L39"], "tests": "133/133"},
     {"round": 3, "ships": ["L6","L13","L17","L21","L24","L34","L35","L40"], "tests": "106/106"},
     {"round": 4, "ships": ["L5","L9","L10","L11","L14","L16","L36","L37"], "tests": "87/87"},
-    {"round": 5, "ships": ["L12","L15","L26","L27","L28","L32","L33"], "tests": "109/109"}
+    {"round": 5, "ships": ["L12","L15","L26","L27","L28","L32","L33"], "tests": "109/109"},
+    {"round": 6, "ships": ["L7v2","L13v2","L14v2","L16v2","L24v2","L41","L42","L43"], "tests": "113/113 (per-module isolated); 604/606 full-suite (2 L35 flakes from cross-test state pollution exposed by L41's broader fs reach; both pass in isolation)", "v2_picks": 5, "new_layers": 3, "notes": "v2 refinement opens; v1 layers strengthened (L7 CLV wire, L13 paper orderbook adapter, L14 multi-exchange sync, L16 e2e session test, L24 cross-platform JSON lock); 3 new infra layers (L41 harness, L42 audit, L43 runbook)"}
   ],
   "totals": {
-    "layers_shipped": 39,
+    "layers_shipped": 42,
     "layers_gated": 1,
-    "total_layers": 40,
-    "cumulative_tests": "532/532",
-    "v1_complete": true
-  }
+    "total_layers": 43,
+    "cumulative_tests": "645/647 (532 v1 + 113 R6; 2 L35 cross-test flakes acknowledged)",
+    "v1_complete": true,
+    "v2_picks_shipped": 5,
+    "new_v2_layers": 3
+  },
+  "known_issues": [
+    {"id": "R6-L35-FLAKE", "severity": "low", "issue": "test_L35_ruin::test_alert_warning_severity + test_alert_error_severity_above_20_pct fail when full suite runs but pass in isolation. Root cause: L41 integration harness mutates ledger dirs, and L35 reads from ledger. Fix: L41 v2 should redirect ALL its ledger writes to tmp_path more strictly, or L35 fixtures should reset state."},
+    {"id": "R6-L42-FINDINGS", "severity": "medium", "issue": "L42 first run reports 26 FAIL across 14 layers: paper_default (14), atomic_writes (9), env_var_docs (5). These are real production gaps to address in future rounds, prioritized by L42's own KPI/effort ratio."}
+  ]
 }

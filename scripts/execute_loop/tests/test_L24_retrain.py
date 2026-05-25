@@ -15,12 +15,13 @@ from __future__ import annotations
 
 import json
 import os
+import socket
 import sys
 import time
 import types
 import importlib
 from dataclasses import asdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -339,13 +340,19 @@ def test_shadow_deploy_mode(monkeypatch, isolated_paths):
 # Test 5 — Pre-existing lock → status="locked", models dir unchanged
 # ---------------------------------------------------------------------------
 def test_lock_contention_no_model_writes(monkeypatch, isolated_paths):
-    """If .retrain_lock already exists (fresh, not stale), return status='locked'."""
+    """If .retrain_lock already exists (fresh JSON lock, not stale), return status='locked'."""
     lock_path   = isolated_paths["lock_path"]
     models_dir  = isolated_paths["models_dir"]
 
-    # Create a fresh lock (not stale)
+    # Create a fresh JSON lock with current pid and hostname so it is NOT stale
     lock_path.parent.mkdir(parents=True, exist_ok=True)
-    lock_path.write_text(f"{os.getpid()}\n{datetime.now(timezone.utc).isoformat()}\n")
+    fresh_lock = {
+        "pid":        os.getpid(),
+        "hostname":   socket.gethostname(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "run_id":     "test-fresh-lock",
+    }
+    lock_path.write_text(json.dumps(fresh_lock), encoding="utf-8")
 
     # Record mtime of models dir before run
     mtime_before = models_dir.stat().st_mtime
@@ -437,14 +444,19 @@ def test_wf_failure_sets_status(monkeypatch, isolated_paths):
 # Test 9 — Stale lock is cleared automatically
 # ---------------------------------------------------------------------------
 def test_stale_lock_cleared(monkeypatch, isolated_paths):
-    """Lock older than 4h is treated as stale and cleared so run proceeds."""
+    """JSON lock with created_at 7h ago is treated as stale and cleared so run proceeds."""
     lock_path = isolated_paths["lock_path"]
     lock_path.parent.mkdir(parents=True, exist_ok=True)
-    lock_path.write_text(f"{os.getpid()}\nsome old ts\n")
 
-    # Backdate mtime to 5 hours ago
-    old_time = time.time() - 5 * 3600
-    os.utime(str(lock_path), (old_time, old_time))
+    # Write a JSON lock with created_at 7 hours ago (exceeds _LOCK_STALE_SECONDS=6h)
+    old_created_at = (datetime.now(timezone.utc) - timedelta(hours=7)).isoformat()
+    stale_lock = {
+        "pid":        99999,
+        "hostname":   socket.gethostname(),
+        "created_at": old_created_at,
+        "run_id":     "test-stale-lock",
+    }
+    lock_path.write_text(json.dumps(stale_lock), encoding="utf-8")
 
     _stub_all_games_final(monkeypatch, final=False)
     monkeypatch.setattr(L24, "_send_alert", lambda *a, **kw: None)
@@ -523,3 +535,174 @@ def test_history_written_on_gate_warn(monkeypatch, isolated_paths):
     history = L24._load_history()
     assert len(history) >= 1
     assert history[-1]["run_id"] == run.run_id
+
+
+# ===========================================================================
+# NEW lock-v2 tests (JSON schema)
+# ===========================================================================
+
+def _make_lock(lock_path: Path, *, pid: int, hostname: str, age_hours: float = 0.0) -> None:
+    """Write a JSON lock to *lock_path* with the given parameters."""
+    created_at = (datetime.now(timezone.utc) - timedelta(hours=age_hours)).isoformat()
+    payload = {
+        "pid":        pid,
+        "hostname":   hostname,
+        "created_at": created_at,
+        "run_id":     "test-lock",
+    }
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — stale by age with live pid → reclaimed
+# ---------------------------------------------------------------------------
+def test_lock_stale_by_age_reclaimed(monkeypatch, isolated_paths):
+    """Lock with created_at 7h ago is reclaimed even if the pid is this process."""
+    lock_path = isolated_paths["lock_path"]
+    _make_lock(lock_path, pid=os.getpid(), hostname=socket.gethostname(), age_hours=7)
+
+    _stub_all_games_final(monkeypatch, final=False)
+    monkeypatch.setattr(L24, "_send_alert", lambda *a, **kw: None)
+
+    run = L24.run_nightly(via_shadow=True, dry_run=False)
+
+    assert run.status != "locked", "7h-old lock should have been reclaimed"
+
+
+# ---------------------------------------------------------------------------
+# Test 15 — fresh live pid → respected (status=locked)
+# ---------------------------------------------------------------------------
+def test_lock_fresh_live_pid_respected(monkeypatch, isolated_paths):
+    """Fresh JSON lock with current pid+host is respected; run returns locked."""
+    lock_path = isolated_paths["lock_path"]
+    _make_lock(lock_path, pid=os.getpid(), hostname=socket.gethostname(), age_hours=0)
+
+    run = L24.run_nightly(via_shadow=True, dry_run=False)
+
+    assert run.status == "locked", f"Expected locked, got {run.status}"
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — dead pid → reclaimed
+# ---------------------------------------------------------------------------
+def test_lock_dead_pid_reclaimed(monkeypatch, isolated_paths):
+    """Lock held by a definitively dead pid on same host is reclaimed."""
+    lock_path = isolated_paths["lock_path"]
+    dead_pid = 2_000_000  # astronomically unlikely to exist
+
+    # Verify _pid_alive gives a definitive answer; skip if uncertain on this platform
+    alive = L24._pid_alive(dead_pid)
+    if alive is None:
+        pytest.skip("_pid_alive returned None for dead_pid on this platform — cannot test")
+
+    if alive is True:
+        pytest.skip(f"pid={dead_pid} is actually alive on this machine — cannot test")
+
+    _make_lock(lock_path, pid=dead_pid, hostname=socket.gethostname(), age_hours=0)
+
+    _stub_all_games_final(monkeypatch, final=False)
+    monkeypatch.setattr(L24, "_send_alert", lambda *a, **kw: None)
+
+    run = L24.run_nightly(via_shadow=True, dry_run=False)
+
+    assert run.status != "locked", "Dead-pid lock should have been reclaimed"
+
+
+# ---------------------------------------------------------------------------
+# Test 17 — corrupt JSON → reclaimed + warning logged
+# ---------------------------------------------------------------------------
+def test_lock_corrupt_json_reclaimed(monkeypatch, isolated_paths, caplog):
+    """Corrupt JSON lock file is reclaimed and a warning is emitted."""
+    import logging
+    lock_path = isolated_paths["lock_path"]
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path.write_text("{garbage not json", encoding="utf-8")
+
+    _stub_all_games_final(monkeypatch, final=False)
+    monkeypatch.setattr(L24, "_send_alert", lambda *a, **kw: None)
+
+    with caplog.at_level(logging.WARNING, logger="scripts.execute_loop.L24_nightly_retrain"):
+        run = L24.run_nightly(via_shadow=True, dry_run=False)
+
+    assert run.status != "locked", "Corrupt-JSON lock should have been reclaimed"
+    # A warning about corrupt/empty lock should appear
+    assert any("corrupt" in r.message.lower() or "empty" in r.message.lower()
+               for r in caplog.records), "Expected a warning about corrupt lock"
+
+
+# ---------------------------------------------------------------------------
+# Test 18 — empty file → reclaimed
+# ---------------------------------------------------------------------------
+def test_lock_empty_file_reclaimed(monkeypatch, isolated_paths):
+    """Empty lock file is treated as corrupt and reclaimed."""
+    lock_path = isolated_paths["lock_path"]
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path.write_text("", encoding="utf-8")
+
+    _stub_all_games_final(monkeypatch, final=False)
+    monkeypatch.setattr(L24, "_send_alert", lambda *a, **kw: None)
+
+    run = L24.run_nightly(via_shadow=True, dry_run=False)
+
+    assert run.status != "locked", "Empty lock file should have been reclaimed"
+
+
+# ---------------------------------------------------------------------------
+# Test 19 — atomic write: os.replace raises → tmp cleaned up, target unchanged
+# ---------------------------------------------------------------------------
+def test_lock_atomic_write_no_partial(monkeypatch, isolated_paths):
+    """If os.replace raises, the temp file is cleaned up and target is unchanged."""
+    lock_path = isolated_paths["lock_path"]
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+
+    original_replace = os.replace
+
+    def _failing_replace(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(os, "replace", _failing_replace)
+
+    payload = {
+        "pid":        os.getpid(),
+        "hostname":   socket.gethostname(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "run_id":     "test-atomic",
+    }
+
+    with pytest.raises(OSError, match="simulated replace failure"):
+        L24._write_lock_atomic(lock_path, payload)
+
+    # Target lock should not exist (was not there before)
+    assert not lock_path.exists(), "Target lock must not be created on failure"
+
+    # No stray .lock.tmp files should remain in parent dir
+    tmp_files = list(lock_path.parent.glob("*.lock.tmp"))
+    assert tmp_files == [], f"Temp files not cleaned up: {tmp_files}"
+
+
+# ---------------------------------------------------------------------------
+# Test 20 — cross-host lock: age=1h → fresh; age=7h → reclaimed
+# ---------------------------------------------------------------------------
+def test_lock_cross_host_age_only(monkeypatch, isolated_paths):
+    """Cross-host lock: 1h old stays fresh; 7h old is reclaimed by age."""
+    lock_path = isolated_paths["lock_path"]
+    other_host = "OTHER-HOST-XYZ"
+    assert other_host != socket.gethostname(), "Test requires a different hostname"
+
+    now_ts = datetime.now(timezone.utc).timestamp()
+
+    # 1h old cross-host → fresh
+    _make_lock(lock_path, pid=12345, hostname=other_host, age_hours=1)
+    lock_data_1h = L24._read_lock(lock_path)
+    assert lock_data_1h is not None
+    stale_1h, reason_1h = L24._is_stale(lock_data_1h, now_ts)
+    assert stale_1h is False, f"1h cross-host lock should be fresh, got reason={reason_1h}"
+
+    # 7h old cross-host → stale by age
+    _make_lock(lock_path, pid=12345, hostname=other_host, age_hours=7)
+    lock_data_7h = L24._read_lock(lock_path)
+    assert lock_data_7h is not None
+    stale_7h, reason_7h = L24._is_stale(lock_data_7h, now_ts)
+    assert stale_7h is True, f"7h cross-host lock should be stale, got reason={reason_7h}"
+    assert reason_7h == "age"

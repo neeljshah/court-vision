@@ -319,3 +319,153 @@ def test_settle_no_game_id_skipped():
     count = L07.settle_unsettled()
     assert count == 0
     assert L07.get_open_bets()[0].status == "OPEN"
+
+
+# ---------------------------------------------------------------------------
+# v2 field tests
+# ---------------------------------------------------------------------------
+
+def test_betrow_v2_fields_default_none():
+    """New v2 fields on BetRow all default to None."""
+    row = L07.BetRow(player="Test Player", stat="pts", line=20.0, side="OVER")
+    assert row.ip is None
+    assert row.model_p_var is None
+    assert row.clv_units is None
+    assert row.clv_prob_pts is None
+    assert row.line_at_close is None
+
+
+def test_ip_round_trip_csv(tmp_path, monkeypatch):
+    """ip field survives a CSV round-trip (forces _HAS_PARQUET=False)."""
+    monkeypatch.setattr(L07, "_HAS_PARQUET", False)
+    monkeypatch.setattr(L07, "_LEDGER_DIR", tmp_path)
+    monkeypatch.setattr(L07, "_BETS_FILE", tmp_path / "bets.parquet")
+    monkeypatch.setattr(L07, "_BETS_CSV", tmp_path / "bets.csv")
+
+    row = _jokic_bet()
+    row.ip = "192.168.1.1"
+    L07.place_bet(row)
+
+    loaded = L07.get_open_bets()
+    assert len(loaded) == 1
+    assert loaded[0].ip == "192.168.1.1"
+
+
+def test_model_p_var_round_trip(tmp_path, monkeypatch):
+    """model_p_var float field survives a CSV round-trip."""
+    monkeypatch.setattr(L07, "_HAS_PARQUET", False)
+    monkeypatch.setattr(L07, "_LEDGER_DIR", tmp_path)
+    monkeypatch.setattr(L07, "_BETS_FILE", tmp_path / "bets.parquet")
+    monkeypatch.setattr(L07, "_BETS_CSV", tmp_path / "bets.csv")
+
+    row = _jokic_bet()
+    row.model_p_var = 0.042
+    L07.place_bet(row)
+
+    loaded = L07.get_open_bets()
+    assert loaded[0].model_p_var == pytest.approx(0.042, rel=1e-4)
+
+
+def test_backward_compat_legacy_csv_load(tmp_path, monkeypatch):
+    """A CSV written with only the original (v1) columns loads without error; v2 fields are None."""
+    monkeypatch.setattr(L07, "_HAS_PARQUET", False)
+    monkeypatch.setattr(L07, "_LEDGER_DIR", tmp_path)
+    monkeypatch.setattr(L07, "_BETS_FILE", tmp_path / "bets.parquet")
+    monkeypatch.setattr(L07, "_BETS_CSV", tmp_path / "bets.csv")
+
+    # Write a CSV with only v1 columns (no ip, model_p_var, clv_*, line_at_close)
+    v1_cols = [
+        "bet_id", "placed_at_iso", "book", "market", "player", "stat",
+        "line", "side", "stake", "odds", "model_q50", "model_p_side",
+        "model_edge_pp", "test_mode", "status", "settled_at_iso",
+        "actual_value", "pnl", "game_id", "notes",
+    ]
+    legacy_df = pd.DataFrame([{c: ("" if c != "line" else "25.5") for c in v1_cols}])
+    legacy_df["bet_id"] = "legacy-001"
+    legacy_df["status"] = "OPEN"
+    legacy_df.to_csv(tmp_path / "bets.csv", index=False)
+
+    bets = L07.get_open_bets()
+    assert len(bets) == 1
+    bet = bets[0]
+    assert bet.bet_id == "legacy-001"
+    assert bet.ip is None
+    assert bet.model_p_var is None
+    assert bet.clv_units is None
+    assert bet.clv_prob_pts is None
+    assert bet.line_at_close is None
+
+
+def test_settle_invokes_l19_compute_clv(monkeypatch):
+    """settle_unsettled calls _compute_clv_for_bet and stores clv_units."""
+    import datetime as _dt
+
+    # Wire a fake boxscore so the bet actually settles
+    _stn_mod = sys.modules["scripts.validation.real_lines_check.settle_tonight"]
+    _fake_box = {
+        "nikola jokic": {"pts": 30.0, "min": "35:00"},
+    }
+    _stn_mod.fetch_boxscore_player_stats = MagicMock(return_value=_fake_box)
+
+    # Monkeypatch _compute_clv_for_bet to return fixed values
+    monkeypatch.setattr(
+        L07, "_compute_clv_for_bet",
+        lambda bet: (26.0, 0.5, 1.23),
+    )
+
+    row = _jokic_bet(side="OVER", line=25.5)
+    row.placed_at_iso = "2026-05-25T10:00:00+00:00"
+    L07.place_bet(row)
+
+    count = L07.settle_unsettled()
+    assert count == 1
+
+    df = L07._load_bets()
+    assert df.iloc[0]["status"] == "WON"
+    assert float(df.iloc[0]["clv_units"]) == pytest.approx(0.5, rel=1e-4)
+    assert float(df.iloc[0]["clv_prob_pts"]) == pytest.approx(1.23, rel=1e-4)
+    assert float(df.iloc[0]["line_at_close"]) == pytest.approx(26.0, rel=1e-4)
+
+
+def test_settle_no_snapshot_leaves_clv_none(monkeypatch):
+    """When _compute_clv_for_bet returns (None,None,None) settlement still succeeds."""
+    _stn_mod = sys.modules["scripts.validation.real_lines_check.settle_tonight"]
+    _fake_box = {
+        "nikola jokic": {"pts": 30.0, "min": "35:00"},
+    }
+    _stn_mod.fetch_boxscore_player_stats = MagicMock(return_value=_fake_box)
+
+    monkeypatch.setattr(
+        L07, "_compute_clv_for_bet",
+        lambda bet: (None, None, None),
+    )
+
+    row = _jokic_bet(side="OVER", line=25.5)
+    row.placed_at_iso = "2026-05-25T10:00:00+00:00"
+    L07.place_bet(row)
+
+    count = L07.settle_unsettled()
+    assert count == 1
+
+    df = L07._load_bets()
+    assert df.iloc[0]["status"] == "WON"
+    # v2 CLV columns should be empty/blank (None serialized to "")
+    clv_val = df.iloc[0].get("clv_units", "")
+    assert clv_val in (None, "", float("nan")) or (
+        isinstance(clv_val, float) and pd.isna(clv_val)
+    )
+
+
+def test_csv_columns_include_v2_fields(tmp_path, monkeypatch):
+    """CSV written by place_bet contains all five v2 column headers."""
+    monkeypatch.setattr(L07, "_HAS_PARQUET", False)
+    monkeypatch.setattr(L07, "_LEDGER_DIR", tmp_path)
+    monkeypatch.setattr(L07, "_BETS_FILE", tmp_path / "bets.parquet")
+    monkeypatch.setattr(L07, "_BETS_CSV", tmp_path / "bets.csv")
+
+    row = _jokic_bet()
+    L07.place_bet(row)
+
+    df = pd.read_csv(tmp_path / "bets.csv")
+    for col in ("ip", "model_p_var", "clv_units", "clv_prob_pts", "line_at_close"):
+        assert col in df.columns, f"Missing column: {col}"
