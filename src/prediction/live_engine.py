@@ -107,6 +107,21 @@ _USE_HEAT_CHECK_SHRINKAGE = True
 # q90=2*q50) when the calibration artifact is absent (back-compat).
 _INCLUDE_QUANTILE_BANDS = False
 
+# cycle 106a (loop 5): wire cycle-105b period_specific_heads into
+# project_from_snapshot. When True, at endQ1 (period=2, clock≈12:00) and
+# endQ2 (period=3, clock≈12:00) boundaries we REPLACE the cycle-88 linear
+# extrapolation per-(player, stat) with the period-specific LightGBM
+# regressor prediction (projected_final = current_stat + predict_remaining).
+# endQ3 (period=4 boundary) is INTENTIONALLY NOT wired -- cycle 105b
+# rejected endQ3 head because cycle-88 linear extrap is already near-optimal
+# at 36 min observed. Mid-quarter snapshots fall through to cycle-88. The
+# three stratified residual overrides (foul / blowout / heat_check) still
+# fire on top of whatever projection source produced the row. Each row is
+# tagged with `projection_source` ∈ {"endQ1_head", "endQ2_head",
+# "cycle_88_linear"} for downstream debugging. Missing artifacts fall
+# through transparently (back-compat preserved).
+_USE_PERIOD_HEADS = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -165,6 +180,7 @@ __all__ = [
     "_USE_BLOWOUT_RESIDUAL",
     "_USE_HEAT_CHECK_SHRINKAGE",
     "_INCLUDE_QUANTILE_BANDS",
+    "_USE_PERIOD_HEADS",
 ]
 
 
@@ -219,6 +235,17 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         # Match the cycle-88n ledger schema for downstream consumers.
         r.setdefault("snapshot_period", snap_period)
         r.setdefault("snapshot_clock", snap_clock)
+        # cycle 106a: default projection source is the cycle-88 linear
+        # extrapolator (set above by pig.project_snapshot). Overridden
+        # per-row below when a period_specific_heads artifact is wired in.
+        r.setdefault("projection_source", "cycle_88_linear")
+
+    # cycle 106a (loop 5): replace projected_final with period_specific_heads
+    # prediction at endQ1 / endQ2 boundaries when artifacts exist. endQ3 is
+    # intentionally NOT wired (cycle-88 linear is already near-optimal at
+    # 36 min observed). Mid-quarter snapshots fall through unchanged.
+    if _USE_PERIOD_HEADS:
+        rows = _apply_period_heads(snap, rows)
 
     # tier1-2 (loop 5): stratified foul_change residual override. Only
     # applies at endQ3 (period=4) snapshots where the residual model is
@@ -263,6 +290,128 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         except Exception:
             # Bands are advisory -- never break the hot path.
             pass
+    return rows
+
+
+def _apply_period_heads(snap: dict, rows: list) -> list:
+    """cycle 106a: replace projected_final using cycle-105b period-specific
+    LightGBM heads at endQ1 / endQ2 boundaries.
+
+    For each (player, stat) row, if the snapshot is at an endQ1 or endQ2
+    boundary AND the corresponding head artifact loads, set
+    ``projected_final = current_stat + predict_remaining(...)`` and tag
+    ``projection_source`` accordingly. Otherwise leave the row untouched
+    (cycle-88 linear extrap output is preserved).
+    """
+    try:
+        from src.prediction import period_specific_heads as psh
+    except Exception:
+        return rows
+
+    snap_period = snap.get("period")
+    snap_clock = snap.get("clock")
+    point = psh.snapshot_point_for(snap_period, snap_clock)
+    # Only endQ1 + endQ2 are wired; endQ3 (period=4 boundary) deliberately
+    # excluded per cycle 105b ship notes.
+    if point not in ("endQ1", "endQ2"):
+        return rows
+
+    src_tag = f"{point}_head"
+    observed_qs = psh.SNAPSHOT_QUARTERS[point]
+
+    # Index players by pid for per-row feature lookup.
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    # Score context (shared across all players in this snapshot).
+    try:
+        home_score = float(snap.get("home_score") or 0)
+    except (TypeError, ValueError):
+        home_score = 0.0
+    try:
+        away_score = float(snap.get("away_score") or 0)
+    except (TypeError, ValueError):
+        away_score = 0.0
+    margin_signed = home_score - away_score
+    margin_abs = abs(margin_signed)
+    home_team = snap.get("home_team") or ""
+    away_team = snap.get("away_team") or ""
+
+    for r in rows:
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        if pid is None or stat not in psh.STATS:
+            continue
+        try:
+            pid_i = int(pid)
+        except (TypeError, ValueError):
+            continue
+        p = by_pid.get(pid_i)
+        if p is None:
+            continue
+
+        # current stat through the snapshot.
+        try:
+            current_stat = float(p.get(stat) or 0)
+        except (TypeError, ValueError):
+            current_stat = 0.0
+
+        # min_through = sum of per-quarter min for OBSERVED quarters; fall
+        # back to player's reported `min` if per-quarter splits missing.
+        min_through = 0.0
+        any_q = False
+        for q in observed_qs:
+            v = p.get(f"min_q{q}")
+            if v is not None:
+                any_q = True
+                try:
+                    min_through += float(v or 0)
+                except (TypeError, ValueError):
+                    pass
+        if not any_q:
+            try:
+                min_through = float(p.get("min") or 0)
+            except (TypeError, ValueError):
+                min_through = 0.0
+
+        try:
+            pf_through = float(p.get("pf") or 0)
+        except (TypeError, ValueError):
+            pf_through = 0.0
+
+        team = p.get("team") or ""
+        team_is_leading = (
+            (team == home_team and margin_signed > 0)
+            or (team == away_team and margin_signed < 0)
+        )
+
+        try:
+            remaining = psh.predict_remaining(
+                stat, point,
+                current_stat=current_stat,
+                min_through=min_through,
+                pf_through=pf_through,
+                score_margin_abs=margin_abs,
+                is_leading_team=1 if team_is_leading else 0,
+                l5_stat=p.get(f"l5_{stat}"),
+                l20_stat=p.get(f"l20_{stat}"),
+                l20_min=p.get("l20_min"),
+                position_proxy=p.get("position"),
+            )
+        except Exception:
+            remaining = None
+
+        if remaining is None:
+            # Artifact missing -> keep cycle-88 linear projection.
+            continue
+
+        r["projected_final"] = float(current_stat + max(0.0, float(remaining)))
+        r["projection_source"] = src_tag
+
     return rows
 
 
