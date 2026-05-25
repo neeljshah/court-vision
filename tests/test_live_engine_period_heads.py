@@ -94,7 +94,14 @@ def test_endQ2_snapshot_uses_endQ2_head(monkeypatch):
 # ── 3. endQ3 snapshot -> projection_source stays cycle_88_linear ─────────────
 
 def test_endQ3_snapshot_keeps_cycle_88_linear(monkeypatch):
-    """cycle 105b explicitly REJECTED the endQ3 head; back-compat preserved."""
+    """cycle 105b explicitly REJECTED the endQ3 period head; back-compat preserved.
+
+    cycle R2_F update: projection_source may now carry a "+residual_head" suffix
+    at endQ3 (period=4) -- the key constraint is that NO source starts with
+    "endQ3_head" (the rejected period head) and that every source is either a
+    plain variant or one of the valid endQ3 sources (learned_q4_minutes_v1,
+    cycle_88_linear) optionally suffixed with "+residual_head".
+    """
     _stub_predict_remaining(monkeypatch)
     snap = _snapshot(period=4, clock="12:00",
                      players=[_player(pid=1, pts=26, min_q1=10.0,
@@ -102,7 +109,18 @@ def test_endQ3_snapshot_keeps_cycle_88_linear(monkeypatch):
     rows = live_engine.project_from_snapshot(snap)
     sources = {r["projection_source"] for r in rows
                if r["stat"] in psh.STATS}
-    assert sources == {"cycle_88_linear"}
+    # The endQ3 period-specific head was rejected (cycle 105b); no source should
+    # start with "endQ3_head".
+    for src in sources:
+        assert not src.startswith("endQ3_head"), (
+            f"endQ3 period head should not fire, got: {src}"
+        )
+    # Every source must be one of the valid endQ3 variants (with optional
+    # +residual_head suffix from cycle R2_F).
+    valid_bases = {"cycle_88_linear", "learned_q4_minutes_v1"}
+    for src in sources:
+        base = src.replace("+residual_head", "")
+        assert base in valid_bases, f"Unexpected projection_source at endQ3: {src}"
 
 
 # ── 4. Mid-quarter snapshot -> projection_source == cycle_88_linear ──────────
