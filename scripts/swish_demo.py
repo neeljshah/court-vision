@@ -102,7 +102,7 @@ def step_pregame(verbose: bool) -> List[Dict]:
     for name, stat, pred, line, prob, kelly in MOCK_PREGAME:
         edge = pred - line
         tag = " *" if edge > 0.3 else ""
-        print(f"  {name:<20} {stat:<6} {pred:>6.1f} {line:>6.1f} {prob:>7.3f} {kelly:>6.1f}% {edge:>+7.2f}{tag}")
+        print(f"  {name:<20} {stat:<6} {pred:>6.1f} {line:>6.1f} {prob:>7.3f} {kelly*100:>6.1f}% {edge:>+7.2f}{tag}")
         rows.append({"player": name, "stat": stat, "pred": pred, "line": line,
                      "prob": prob, "kelly": kelly, "edge": edge})
     print()
