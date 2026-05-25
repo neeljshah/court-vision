@@ -225,7 +225,7 @@ WinProb (binary home-win classifier):
 python -c "from src.prediction.win_probability import train; train()"
 ```
 
-## Architecture notes (cycle 40 production)
+## Architecture notes (loop 5 / cycle 96e production)
 
 - **q50 dispatch** lives in `prop_pergame._USE_Q50_STATS`. Stats in this set route `predict_pergame` through `_load_q50_model` instead of the 3-way blend.
 - **`_Q50_LGB_BACKEND_STATS`** controls which q50 stats load the LGB variant (currently REB only — XGB-q50 was 3/4 WF, LGB-q50 4/4).
@@ -236,7 +236,7 @@ python -c "from src.prediction.win_probability import train; train()"
 
 Cumulative MAE improvement vs the original LEAKED baseline (pre-cycle-3):
 
-| stat | leaked baseline | cycle 40 | improvement |
+| stat | leaked baseline | cycle 96e | improvement |
 |---|---|---|---|
 | PTS | 4.6442 | 4.6210 | -0.50% |
 | REB | 1.9180 | 1.9023 | -0.82% |

@@ -135,8 +135,8 @@ python scripts/batch_season.py --season 2025-26
 
 | Metric | Value |
 |--------|-------|
-| Win probability accuracy | 68.5% |
-| Player props MAE (pts) | 4.12 (holdout) |
+| Win probability accuracy | 0.7094 (WF) / 0.717 (single-split) |
+| Player props MAE (pts) | 4.62 (walk-forward, N=99,818) |
 | DNP predictor AUC | 0.979 |
 | xFG Brier score | 0.226 |
 | Shots in training data | 221,866 |
@@ -149,7 +149,7 @@ python scripts/batch_season.py --season 2025-26
 
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1–13.5 | Data infra, CV tracker, NBA data, 75 ML models, possession simulator, betting infra, FastAPI | ✅ Done |
+| 1–13.5 | Data infra, CV tracker, NBA data, 85 ML models, possession simulator, betting infra, FastAPI | ✅ Done |
 | G | Full-game CV data collection (target 80 CLEAN games) | 🟡 Active — 29 usable / 75 attempted |
 | Gate 1 | CLV validation vs Pinnacle close (≥50 bets, beat rate ≥55%, ROI ≥3%) | 🔴 Not yet run — top priority |
 | 14 | 80-game RunPod run + retrain with CV spatial features | ⏳ Next |
@@ -165,7 +165,7 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 |-----|--------------|
 | [architecture.md](architecture.md) | System design, module dependencies, data flow |
 | [CV_TRACKING.md](CV_TRACKING.md) | Tracking pipeline deep-dive: homography, re-ID, OCR |
-| [ML_MODELS.md](ML_MODELS.md) | 75 trained signals: features, training, accuracy |
+| [ML_MODELS.md](ML_MODELS.md) | 85 trained signals: features, training, accuracy |
 | [data_schema.md](data_schema.md) | PostgreSQL schema, CSV formats, API cache |
 | [API.md](API.md) | FastAPI endpoints, request/response examples |
 | [EXECUTION_GUIDE.md](EXECUTION_GUIDE.md) | Running batch jobs, training, deployment |

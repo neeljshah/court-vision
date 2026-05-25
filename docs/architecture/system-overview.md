@@ -199,7 +199,7 @@ Implementation: [`api/execution_router.py`](../../api/execution_router.py), [`sr
 
 **The moat.** Systems 1–5 are the instrument. System 6 is the research program that plays it — a multi-agent Claude loop that autonomously discovers, validates, ships, and retires prediction signals. **Status: planned — not yet built.**
 
-A competitor who copies the current 75 models doesn't get the discovery engine that generated them. The signal universe database — birth date, retirement date, IR history, P&L attribution — is not reproducible without running the full research pipeline from scratch.
+A competitor who copies the current 85 models doesn't get the discovery engine that generated them. The signal universe database — birth date, retirement date, IR history, P&L attribution — is not reproducible without running the full research pipeline from scratch.
 
 **Agent loop:**
 - **Orchestrator** — coordinates the loop, allocates research budget, logs to vault

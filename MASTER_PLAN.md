@@ -32,11 +32,11 @@ The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius
 | Props holdout R² — tov | 0.22 | same |
 | Props holdout R² — stl | 0.18 | same |
 | Props holdout R² — blk | 0.16 | same |
-| Win prob accuracy | 68.5% | `data/models/win_prob_metrics.json` |
-| Win prob Brier | 0.209 | same |
+| Win prob accuracy | 0.7094 (WF) / 0.717 (single-split) | `data/models/win_prob_metrics.json` |
+| Win prob Brier | 0.193 (WF) / 0.188 (single-split) | same |
 | xFG Brier | 0.226 (221K shots) | model registry |
 | CV games | 17 quality / 29 usable / 75 attempted | `data/ingest/queue.db` |
-| Models trained | 75 | `data/models/` |
+| Models trained | 85 | `data/models/` |
 | Gate 1 status | NOT YET RUN | — |
 
 ---
@@ -146,7 +146,7 @@ Same event priced differently on sportsbook vs P2P exchange vs Kalshi. When line
 
 ## The 6 Core Systems
 
-Everything in the system flows through these 6. Not 75 models — 6 systems. The 75 models are components that feed into them. System 6 (the agentic research layer) is the moat that discovers and retires what feeds into Systems 1-5.
+Everything in the system flows through these 6. Not 85 models — 6 systems. The 85 models are components that feed into them. System 6 (the agentic research layer) is the moat that discovers and retires what feeds into Systems 1-5.
 
 > **Signal-based reframe (2026-05-18):** The "90 models" language is deprecated. The architecture targets a signal universe of 500-5000 signals over 3-5 years — each signal tracked by information ratio (IR), birth date, and retirement date. Individual signals are like individual hypotheses in a research program: most fail, the survivors compound. This is how Renaissance Technologies worked. This is how CourtVision works.
 
@@ -275,7 +275,7 @@ The centerpiece. Everyone else predicts a number. You generate a distribution.
 6. Monitored for decay by Retirement Monitor
 7. Retired when IR drops below threshold for 60 consecutive days
 
-**Why this is the real moat:** A competitor who copies the current 75 models doesn't get the discovery engine that generated them. The signal universe database (birth date, retirement date, IR history, P&L attribution) is not reproducible without running the full research pipeline from scratch.
+**Why this is the real moat:** A competitor who copies the current 85 models doesn't get the discovery engine that generated them. The signal universe database (birth date, retirement date, IR history, P&L attribution) is not reproducible without running the full research pipeline from scratch.
 
 **Target:** 50 validated signals by month 3, 200 by month 9, 500+ by year 2. Ruthless retirement: expect 60-70% of signals to fail validation or decay within 18 months.
 

@@ -12,8 +12,8 @@
 |---|---|
 | **File** | `data/models/win_probability.pkl` |
 | **Algorithm** | XGBoost classifier |
-| **Accuracy** | 68.5% (walk-forward backtest, 3 seasons) |
-| **Brier Score** | 0.209 |
+| **Accuracy** | 0.7094 (3-fold walk-forward) / 0.717 (single-split) |
+| **Brier Score** | 0.193 (WF) / 0.188 (single-split) |
 
 ### Game-Level Models
 
@@ -25,19 +25,19 @@
 | First Half | `data/models/game_first_half.json` | First-half total |
 | Pace | `data/models/game_pace.json` | Possessions per 48 |
 
-### Player Prop Models — Actual R² (walk-forward validation)
+### Player Prop Models — Actual MAE (walk-forward validation, N=99,818)
 
-| Stat | R² | File (v2 active) |
-|------|-----|---|
-| pts | **0.41** | `data/models/props_pts_v2.json` |
-| reb | **0.38** | `data/models/props_reb_v2.json` |
-| ast | **0.36** | `data/models/props_ast_v2.json` |
-| fg3m | **0.29** | `data/models/props_fg3m_v2.json` |
-| blk | **0.16** | `data/models/props_blk_v2.json` |
-| tov | **0.22** | `data/models/props_tov_v2.json` |
-| stl | **0.18** | `data/models/props_stl_v2.json` |
+| Stat | MAE | Model | File (v2 active) |
+|------|-----|-------|---|
+| pts | **4.62** | sqrt+Huber blend | `data/models/props_pts_v2.json` |
+| reb | **1.90** | LGB-q50 | `data/models/props_reb_v2.json` |
+| ast | **1.36** | multitask MLP | `data/models/props_ast_v2.json` |
+| fg3m | **0.89** | XGB-q50 | `data/models/props_fg3m_v2.json` |
+| blk | **0.44** | XGB-q50 (-16% session win) | `data/models/props_blk_v2.json` |
+| tov | **0.89** | XGB-q50 | `data/models/props_tov_v2.json` |
+| stl | **0.72** | XGB-q50 | `data/models/props_stl_v2.json` |
 
-**Note:** R² values reflect actual walk-forward validation. STL R²=0.18 is weak — do not size aggressively. `opp_to_rate` + `opp_pace` features are planned to improve it. v1 files (`props_pts.json`, etc.) are retained as fallback.
+**Note:** MAE values reflect walk-forward validation. q50 quantile heads dominate for skewed counts because prop O/U scores against the median. v1 files (`props_pts.json`, etc.) are retained as fallback.
 
 ### xFG (Expected Field Goal)
 

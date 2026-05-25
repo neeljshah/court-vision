@@ -196,14 +196,14 @@ All NBA Stats API responses, cached to disk with smart TTL.
 
 | File | Model | Key Metric |
 |------|-------|------------|
-| `win_probability.pkl` | Pre-game win probability (XGBoost) | 68.5% acc, Brier 0.209 |
-| `props_pts.json` | Points prop model | MAE 4.12, R² 0.41 (holdout) |
-| `props_reb.json` | Rebounds prop model | MAE 1.84, R² 0.38 (holdout) |
-| `props_ast.json` | Assists prop model | MAE 1.52, R² 0.36 (holdout) |
-| `props_fg3m.json` | 3-pointers made prop model | MAE 0.91, R² 0.29 (holdout) |
-| `props_stl.json` | Steals prop model | MAE 0.48, R² 0.18 (holdout) |
-| `props_blk.json` | Blocks prop model | MAE 0.42, R² 0.16 (holdout) |
-| `props_tov.json` | Turnovers prop model | R² 0.22 (holdout) |
+| `win_probability.pkl` | Pre-game win probability (5-way NNLS stack) | 0.7094 acc / 0.193 Brier (WF); 0.717 / 0.188 (single-split) |
+| `props_pts.json` | Points prop model (sqrt+Huber blend) | MAE 4.62 (walk-forward) |
+| `props_reb.json` | Rebounds prop model (LGB-q50) | MAE 1.90 (walk-forward) |
+| `props_ast.json` | Assists prop model (multitask MLP) | MAE 1.36 (walk-forward) |
+| `props_fg3m.json` | 3-pointers made prop model (XGB-q50) | MAE 0.89 (walk-forward) |
+| `props_stl.json` | Steals prop model (XGB-q50) | MAE 0.72 (walk-forward) |
+| `props_blk.json` | Blocks prop model (XGB-q50) | MAE 0.44 (walk-forward, -16% session win) |
+| `props_tov.json` | Turnovers prop model (XGB-q50) | MAE 0.89 (walk-forward) |
 | `game_total.json` | Game total (over/under) model | Trained |
 | `game_spread.json` | Game spread model | Trained |
 | `game_blowout.json` | Blowout probability model | Trained |
