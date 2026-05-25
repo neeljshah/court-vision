@@ -1,0 +1,38 @@
+{
+  "feature_names": [
+    "pf_through_q3",
+    "q3_pf",
+    "min_q1",
+    "min_q2",
+    "min_q3",
+    "min_through_q3",
+    "period",
+    "score_margin_abs",
+    "is_leading_team",
+    "pos_C",
+    "pos_F",
+    "pos_G",
+    "l20_min",
+    "l5_min",
+    "q2_pf",
+    "total_pf_through_q3",
+    "pf_per_min_q3",
+    "q3_pf_extra"
+  ],
+  "fallback_mean": 5.9255866228070175,
+  "params": {
+    "objective": "regression",
+    "metric": "mae",
+    "learning_rate": 0.04,
+    "num_leaves": 15,
+    "min_data_in_leaf": 20,
+    "feature_pre_filter": false,
+    "verbose": -1,
+    "seed": 42
+  },
+  "gate": {
+    "q3_pf_min": 2,
+    "total_pf_min": 3,
+    "foul_out_edge": 4
+  }
+}
