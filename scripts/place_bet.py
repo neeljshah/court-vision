@@ -18,6 +18,7 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
 from src.betting.pnl_ledger import place_bet, current_bankroll  # noqa: E402
+from src.betting import ab_strategy as _AB  # noqa: E402
 
 
 def main() -> int:
@@ -38,7 +39,62 @@ def main() -> int:
     ap.add_argument("--bankroll-before", type=float, default=None,
                     help="Seed the bankroll log with this starting balance "
                          "(only used when no prior bankroll entries exist).")
+    ap.add_argument("--strategy", default=None,
+                    help="Tag this bet with an A/B strategy name (cycle b489a241). "
+                         "If set and the strategy is registered, the bet is routed "
+                         "through ab_strategy.place_strategy_bet for bankroll caps.")
     args = ap.parse_args()
+
+    if args.strategy:
+        known = {r.get("strategy") for r in _AB.list_strategies()}
+        if args.strategy in known:
+            bet_id = _AB.place_strategy_bet(
+                args.strategy,
+                game_id=args.game,
+                player=args.player,
+                stat=args.stat,
+                line=args.line,
+                side=args.side.upper(),
+                book=args.book,
+                odds=args.odds,
+                stake=args.stake,
+                model_pred=args.model_pred,
+                model_prob=args.model_prob,
+                kelly_pct=args.kelly_pct,
+                player_id=args.player_id,
+                team=args.team,
+                bankroll_before=args.bankroll_before,
+            )
+            print(f"  bet_id           = {bet_id}")
+            print(f"  player           = {args.player}")
+            print(f"  {args.stat.upper():4s} {args.side.upper()} {args.line}  @ {args.odds:+d}  stake ${args.stake:.2f}")
+            print(f"  strategy         = {args.strategy}")
+            print(f"  bankroll_after   = ${current_bankroll():.2f}")
+            return 0
+        # Unknown strategy -> fall through to plain place_bet but tag the row.
+        bet_id = place_bet(
+            game_id=args.game,
+            player=args.player,
+            stat=args.stat,
+            line=args.line,
+            side=args.side.upper(),
+            book=args.book,
+            odds=args.odds,
+            stake=args.stake,
+            model_pred=args.model_pred,
+            model_prob=args.model_prob,
+            kelly_pct=args.kelly_pct,
+            player_id=args.player_id,
+            team=args.team,
+            bankroll_before=args.bankroll_before,
+            strategy=args.strategy,
+        )
+        print(f"  bet_id           = {bet_id}")
+        print(f"  player           = {args.player}")
+        print(f"  {args.stat.upper():4s} {args.side.upper()} {args.line}  @ {args.odds:+d}  stake ${args.stake:.2f}")
+        print(f"  strategy         = {args.strategy} (unregistered -- tagged only)")
+        print(f"  bankroll_after   = ${current_bankroll():.2f}")
+        return 0
 
     bet_id = place_bet(
         game_id=args.game,

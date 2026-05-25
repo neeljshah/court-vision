@@ -49,6 +49,10 @@ from src.prediction import live_engine                          # noqa: E402
 # Reuse cycle 95d's pure betting math for Kelly + EV (same math the
 # cycle 97d backtest used, so the recommender is internally consistent).
 import backtest_inplay_edge as bie                              # noqa: E402
+from src.betting.recommendation import (                         # noqa: E402
+    format_recommendation_row, to_place_bet_command,
+    ensure_strategy_registered,
+)
 
 
 # Cycle 97d viable stats (endQ2 ROI >= 80% of endQ3 ROI at threshold 1.0).
@@ -276,23 +280,28 @@ def _header(include_pts_tov: bool, n_snapshots: int, date_iso: str) -> str:
     )
 
 
-def format_table(recs: List[Dict]) -> str:
+def format_table(recs: List[Dict], strategy: str = "endQ2_auto") -> str:
     if not recs:
         return "  (no recommendations passed the threshold + Kelly gate)\n"
     lines = [
         f"  {'player':<22s} {'team':4s} {'stat':4s} {'line':>5s} "
         f"{'proj':>6s} {'edge':>6s} {'side':5s} {'kelly$':>7s} "
-        f"{'endQ2_ROI':>9s}",
-        "  " + "-" * 80,
+        f"{'endQ2_ROI':>9s} {'strategy':<14s}",
+        "  " + "-" * 96,
     ]
     for r in recs:
+        tag = r.get("strategy", strategy)
         lines.append(
             f"  {r['player'][:22]:<22s} {r['team']:<4s} "
             f"{r['stat'].upper():<4s} {r['line']:>5.1f} "
             f"{r['projection']:>6.2f} {r['edge']:>+6.2f} {r['side']:<5s} "
             f"{r['kelly_stake']:>7.2f} "
-            f"{r['endQ2_roi_baseline']:>+9.4f}"
+            f"{r['endQ2_roi_baseline']:>+9.4f} {tag:<14s}"
         )
+    lines.append("")
+    lines.append("  --- copy-pasteable place_bet commands ---")
+    for r in recs:
+        lines.append("  " + to_place_bet_command(r, r.get("strategy", strategy)))
     return "\n".join(lines) + "\n"
 
 
@@ -308,6 +317,12 @@ def main() -> int:
                     help="Also surface PTS + TOV recommendations. Cycle 97d "
                          "showed <80%% of endQ3 ROI for these -- use only when "
                          "no Q3 data is forthcoming.")
+    ap.add_argument("--strategy", default="endQ2_auto",
+                    help="A/B strategy tag stamped on each recommendation "
+                         "(cycle 104c). Default 'endQ2_auto'.")
+    ap.add_argument("--register", action="store_true",
+                    help="If set, auto-register --strategy in ab_strategies.csv "
+                         "with bankroll $1000 / max_bet_pct 0.05 when missing.")
     ap.add_argument("--dry-run", action="store_true",
                     help="Print the resolved date + halftime-snap count, then "
                          "exit 0 even when no snapshots exist. Useful for the "
@@ -317,9 +332,17 @@ def main() -> int:
     date_iso = args.date or _date.today().isoformat()
     snaps = discover_halftime_snapshots(date_iso)
 
+    if args.register:
+        try:
+            ensure_strategy_registered(args.strategy, bankroll=1000.0,
+                                        max_bet_pct=0.05)
+        except Exception as exc:
+            print(f"[warn] could not auto-register {args.strategy!r}: {exc}")
+
     if args.dry_run:
         print(f"[dry-run] date={date_iso} halftime_snapshots={len(snaps)} "
-              f"include_pts_tov={args.include_pts_tov} threshold={args.threshold}")
+              f"include_pts_tov={args.include_pts_tov} threshold={args.threshold} "
+              f"strategy={args.strategy}")
         return 0
 
     print(_header(args.include_pts_tov, len(snaps), date_iso))
@@ -329,7 +352,9 @@ def main() -> int:
     recs = build_recommendations(
         snaps, args.threshold, args.include_pts_tov, date_iso,
     )
-    print(format_table(recs))
+    for r in recs:
+        r["strategy"] = args.strategy
+    print(format_table(recs, strategy=args.strategy))
     return 0
 
 
