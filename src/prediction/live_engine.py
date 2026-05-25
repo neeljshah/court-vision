@@ -146,6 +146,17 @@ _USE_LEARNED_Q4_MINUTES = True
 # Missing artifact dir -> transparent no-op (back-compat preserved).
 _USE_RESIDUAL_HEADS = True
 
+# cycle R3_A (loop 5): per-stat residual heads at endQ2. When True,
+# project_from_snapshot at period=3 (endQ2 boundary, after the period-specific
+# head fires via _USE_PERIOD_HEADS) adds a learned residual correction to
+# each (player, stat) projection. Applied AFTER the period_specific_heads
+# block so the residual stacks on top of the endQ2_head projection.
+# Probe scripts/probe_R3_A_residual_heads_endq2.py validated SHIP:
+# PTS MAE -0.1095, 7/7 stats win, WF 4/4 folds negative (-0.10 to -0.11).
+# Artifacts: data/models/residual_heads_endq2/{pts,reb,ast,fg3m,stl,blk,tov}.lgb
+# Missing artifact dir -> transparent no-op (back-compat preserved).
+_USE_RESIDUAL_HEADS_ENDQ2 = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -207,6 +218,7 @@ __all__ = [
     "_USE_PERIOD_HEADS",
     "_USE_LEARNED_Q4_MINUTES",
     "_USE_RESIDUAL_HEADS",
+    "_USE_RESIDUAL_HEADS_ENDQ2",
 ]
 
 
@@ -335,6 +347,21 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # 36 min observed). Mid-quarter snapshots fall through unchanged.
     if _USE_PERIOD_HEADS:
         rows = _apply_period_heads(snap, rows)
+
+    # cycle R3_A (loop 5): per-stat residual heads at endQ2. Applied AFTER
+    # period_specific_heads so the correction stacks on the endQ2_head
+    # projection (period=3 boundary). Gated identically to period_heads:
+    # only fires when snapshot_point_for(period, clock) == "endQ2" (clock
+    # near 12:00 at start of Q3). Mid-quarter period=3 snapshots fall through
+    # unchanged. Graceful no-op when artifacts are missing.
+    if _USE_RESIDUAL_HEADS_ENDQ2 and int(snap_period or 0) == 3:
+        try:
+            from src.prediction.period_specific_heads import snapshot_point_for as _spf
+            _at_endq2 = _spf(snap_period, snap_clock) == "endQ2"
+        except Exception:
+            _at_endq2 = False
+        if _at_endq2:
+            rows = _apply_residual_heads_endq2(snap, rows)
 
     # cycle 110 (loop 5): learned Q4 minutes override at endQ3. When the
     # flag is on AND the snapshot is at period=4 AND MinuteTrajectoryModel
@@ -478,6 +505,75 @@ def _apply_residual_heads(snap: dict, rows: list) -> list:
             src = str(r.get("projection_source") or "")
             if not src.endswith("+residual_head"):
                 r["projection_source"] = src + "+residual_head"
+
+    return rows
+
+
+def _apply_residual_heads_endq2(snap: dict, rows: list) -> list:
+    """cycle R3_A: add per-(player, stat) residual head correction at endQ2.
+
+    Calls ``src.prediction.residual_heads.apply_residual_correction_endq2``
+    to get updated projected_final values, then tags each modified row's
+    ``projection_source`` with "+residual_head_endq2". Graceful no-op if
+    the helper import fails or no artifacts are present.
+    """
+    try:
+        from src.prediction.residual_heads import (
+            apply_residual_correction_endq2,
+            load_heads_endq2,
+        )
+    except Exception:
+        return rows
+
+    try:
+        heads = load_heads_endq2()
+        if not heads:
+            return rows
+    except Exception:
+        return rows
+
+    # Build projs dict from current rows for the helper.
+    projs: Dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        if pid is None or stat is None:
+            continue
+        try:
+            projs[(int(pid), str(stat))] = float(r.get("projected_final") or 0.0)
+        except (TypeError, ValueError):
+            continue
+
+    try:
+        updated = apply_residual_correction_endq2(snap, projs)
+    except Exception:
+        # Never break the hot path.
+        return rows
+
+    # Apply updated projections back to rows.
+    for r in rows:
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        if pid is None or stat is None:
+            continue
+        try:
+            key = (int(pid), str(stat))
+        except (TypeError, ValueError):
+            continue
+        new_val = updated.get(key)
+        if new_val is None:
+            continue
+        old_val = r.get("projected_final")
+        # Only tag + update when the correction actually changed the value.
+        try:
+            changed = abs(float(new_val) - float(old_val or 0.0)) > 1e-9
+        except (TypeError, ValueError):
+            changed = True
+        if changed:
+            r["projected_final"] = float(new_val)
+            src = str(r.get("projection_source") or "")
+            if not src.endswith("+residual_head_endq2"):
+                r["projection_source"] = src + "+residual_head_endq2"
 
     return rows
 

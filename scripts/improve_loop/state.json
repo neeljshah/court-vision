@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 2,
+  "rounds_completed": 4,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -36,6 +36,33 @@
       "commit": "pending-commit",
       "date": "2026-05-25",
       "summary": "LightGBM residual heads on top of cycle-110 baseline at endQ3. PTS -0.0965 MAE, REB -0.046, AST -0.036, FG3M -0.048, STL -0.054, BLK -0.033, TOV -0.050. WF 4/4 folds negative (-0.082 to -0.107). 14 features (current stats + pf + min + score margin + position)."
+    },
+    {
+      "name": "R3_A_residual_heads_endq2",
+      "round": 2,
+      "delta_pts": -0.1095,
+      "stats_won": 7,
+      "commit": "pending-wire",
+      "date": "2026-05-25",
+      "summary": "Residual heads at endQ2 (mirror of R2_F at endQ3). PTS -0.1095, REB -0.082, AST -0.064, FG3M -0.046, STL -0.105, BLK -0.062, TOV -0.078. WF 4/4 negative."
+    },
+    {
+      "name": "R3_E_endq2_minute_in_head",
+      "round": 2,
+      "delta_pts": -0.025,
+      "stats_won": 6,
+      "commit": "pending-wire-defer",
+      "date": "2026-05-25",
+      "summary": "Bounded learned-minute scaling at endQ2 via minute_trajectory_q2.lgb. PTS -0.025 at endQ2, 6/7 wins. SHIP candidate but deferring to R4 to test composition with R3_A first."
+    },
+    {
+      "name": "R4_A_residual_heads_endq1",
+      "round": 3,
+      "delta_pts": -0.1182,
+      "stats_won": 7,
+      "commit": "pending-wire",
+      "date": "2026-05-25",
+      "summary": "Residual heads at endQ1 (3rd snapshot point). PTS -0.1182, REB -0.023, AST -0.051, FG3M -0.038, STL -0.056, BLK -0.080, TOV -0.026. 7/7 wins, WF 4/4 (-0.09 to -0.12)."
     }
   ],
   "rejects": [
@@ -118,6 +145,84 @@
       "reason": "multiple gates fail",
       "saturated_angle": "asymmetric per-stat tail calibration via residual quantiles",
       "round": 1
+    },
+    {
+      "name": "R3_B_residual_heads_v2",
+      "reason": "PTS -0.05 but only 3/7 wins",
+      "saturated_angle": "incremental residual heads with l5+b2b features on top of R2_F",
+      "round": 2
+    },
+    {
+      "name": "R3_C_player_specific_bias",
+      "reason": "PTS -0.009 but 1/7",
+      "saturated_angle": "per-player bias correction (top-100 shrunk-mean residual)",
+      "round": 2
+    },
+    {
+      "name": "R3_D_residual_heads_stage2",
+      "reason": "PTS +0.05 regression",
+      "saturated_angle": "stage-2 residual head boosting on R2_F",
+      "round": 2
+    },
+    {
+      "name": "R3_F_pregame_residual_heads",
+      "reason": "skipped: requires OOF cache",
+      "saturated_angle": "pregame residual heads (blocked on OOF generation)",
+      "round": 2
+    },
+    {
+      "name": "R3_G_context_aware_heads",
+      "reason": "PTS +0.02 regression",
+      "saturated_angle": "context-stratified (close/blow) residual heads",
+      "round": 2
+    },
+    {
+      "name": "R3_H_ensemble_residual_heads",
+      "reason": "PTS +0.08 regression",
+      "saturated_angle": "multi-seed (5-seed) ensemble residual heads",
+      "round": 2
+    },
+    {
+      "name": "R4_B_R3E_compose",
+      "reason": "PTS +0.01 (R3-A absorbed R3-E signal)",
+      "saturated_angle": "minute-scaling on top of residual-head baseline",
+      "round": 3
+    },
+    {
+      "name": "R4_C_asymmetric_tails_v2",
+      "reason": "cov80 over-inflated at endQ3",
+      "saturated_angle": "2D asymmetric tail bisection on post-R2_F baseline",
+      "round": 3
+    },
+    {
+      "name": "R4_D_form_only_heads",
+      "reason": "0/7 (form features add no signal)",
+      "saturated_angle": "rolling-form-only residual heads",
+      "round": 3
+    },
+    {
+      "name": "R4_E_position_stratified_heads",
+      "reason": "0/7 (10/21 heads passed gate, net zero)",
+      "saturated_angle": "position-stratified residual heads on top of R2_F",
+      "round": 3
+    },
+    {
+      "name": "R4_F_per_player_quant_v2",
+      "reason": "endQ1 baseline issue (endQ2 alone SHIPPED but combined gate fails)",
+      "saturated_angle": "per-player quantile variance extended to endQ1",
+      "round": 3
+    },
+    {
+      "name": "R4_G_learned_quantile_heads",
+      "reason": "calibration gate fail (post-R2_F baseline too tight)",
+      "saturated_angle": "LGB quantile-regression heads replacing Gaussian bands",
+      "round": 3
+    },
+    {
+      "name": "R4_H_lgb_xgb_ensemble",
+      "reason": "0/7 (XGB diverges but adds error)",
+      "saturated_angle": "LGB+XGB residual head 0.5/0.5 ensemble",
+      "round": 3
     }
   ],
   "saturated_angles": [
@@ -147,7 +252,20 @@
     "team-level B2B road Q4 dampening",
     "pts/tov-proxy pace adjustment (data limit)",
     "high-min Q4 rate fatigue dampener",
-    "asymmetric per-stat tail calibration via residual quantiles"
+    "asymmetric per-stat tail calibration via residual quantiles",
+    "incremental residual heads with l5+b2b features on top of R2_F",
+    "per-player bias correction (top-100 shrunk-mean residual)",
+    "stage-2 residual head boosting on R2_F",
+    "pregame residual heads (blocked on OOF generation)",
+    "context-stratified (close/blow) residual heads",
+    "multi-seed (5-seed) ensemble residual heads",
+    "minute-scaling on top of residual-head baseline",
+    "2D asymmetric tail bisection on post-R2_F baseline",
+    "rolling-form-only residual heads",
+    "position-stratified residual heads on top of R2_F",
+    "per-player quantile variance extended to endQ1",
+    "LGB quantile-regression heads replacing Gaussian bands",
+    "LGB+XGB residual head 0.5/0.5 ensemble"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
