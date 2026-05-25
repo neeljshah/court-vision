@@ -121,6 +121,20 @@ _INCLUDE_QUANTILE_BANDS = True
 # through transparently (back-compat preserved).
 _USE_PERIOD_HEADS = True
 
+# cycle 110 (loop 5): learned Q4 minutes at endQ3. When True,
+# project_from_snapshot at period=4 replaces the heuristic foul_trouble_factor
+# with `learned_remaining_min/12.0` from MinuteTrajectoryModel for every
+# player (not just foul-trouble). Pace + blowout + bench logic unchanged.
+# Probe scripts/probe_110_learned_q4_minutes.py validated SHIP on 1508-game
+# corpus: PTS MAE -0.2312, REB -0.1002, AST -0.1020, FG3M -0.0693,
+# STL -0.0617, BLK -0.0393, TOV -0.0752 (7/7 stats win), WF 4/4 folds
+# negative (-0.2052 to -0.2470). Because the learned-minute substitution
+# is much larger than the prior foul/blowout/heat_check residual overrides
+# (those were measured against the cycle-88 heuristic foul_factor that
+# we're now replacing), the legacy endQ3 overrides are intentionally
+# skipped when this flag is on. Missing artifact -> transparent fallback.
+_USE_LEARNED_Q4_MINUTES = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -180,7 +194,71 @@ __all__ = [
     "_USE_HEAT_CHECK_SHRINKAGE",
     "_INCLUDE_QUANTILE_BANDS",
     "_USE_PERIOD_HEADS",
+    "_USE_LEARNED_Q4_MINUTES",
 ]
+
+
+# Module-scope cache for cycle 110 learned-Q4-minutes wiring.
+_LEARNED_Q4_POSITIONS = None
+_LEARNED_Q4_LOAD_FAILED = False
+
+
+def _apply_learned_q4_minutes(snap: dict, rows: list):
+    """cycle 110: replace projected_final at period=4 with the projection
+    produced by ``probe_minute_trajectory_replacement
+    .project_snapshot_with_learned_minutes`` -- i.e. swap the heuristic
+    ``foul_trouble_factor`` for ``learned_remaining_min / 12.0`` from
+    ``MinuteTrajectoryModel`` for every player.
+
+    Returns ``(rows, applied: bool)``. ``applied=False`` triggers fallback
+    to the legacy foul/blowout/heat_check residual overrides at endQ3.
+    Any failure (missing model, missing scaffold, runtime error) is caught
+    and returns ``(rows, False)`` -- the hot path never breaks.
+    """
+    global _LEARNED_Q4_POSITIONS, _LEARNED_Q4_LOAD_FAILED
+    if _LEARNED_Q4_LOAD_FAILED:
+        return rows, False
+    model, _, _, _ = _load_models_once()
+    if model is None:
+        return rows, False
+    try:
+        # Lazy import: probe lives under scripts/ which is on sys.path via
+        # the project root append at top of this module.
+        import sys as _sys
+        scripts_dir = os.path.join(PROJECT_DIR, "scripts")
+        if scripts_dir not in _sys.path:
+            _sys.path.insert(0, scripts_dir)
+        from probe_minute_trajectory_replacement import (
+            project_snapshot_with_learned_minutes,
+        )
+        if _LEARNED_Q4_POSITIONS is None:
+            import train_minute_trajectory as tmt
+            _LEARNED_Q4_POSITIONS = tmt.load_positions() or {}
+        # L20/L5 lookups are optional features for the model -- pass empty
+        # dicts so it falls back to None internally. The retro probe used
+        # per-game date-aware lookups; live snapshots don't reliably carry
+        # game_date, so the simpler path is to omit them. Bulk of the gain
+        # is the substitution itself, not the rolling features.
+        projs = project_snapshot_with_learned_minutes(
+            snap, model, _LEARNED_Q4_POSITIONS, {}, {},
+        )
+    except Exception:
+        _LEARNED_Q4_LOAD_FAILED = True
+        return rows, False
+    if not projs:
+        return rows, False
+    for r in rows:
+        try:
+            pid = int(r.get("player_id"))
+        except (TypeError, ValueError):
+            continue
+        stat = r.get("stat")
+        new = projs.get((pid, stat))
+        if new is None:
+            continue
+        r["projected_final"] = float(new)
+        r["projection_source"] = "learned_q4_minutes_v1"
+    return rows, True
 
 
 # ── 1. project_from_snapshot ──────────────────────────────────────────────────
@@ -246,24 +324,37 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     if _USE_PERIOD_HEADS:
         rows = _apply_period_heads(snap, rows)
 
+    # cycle 110 (loop 5): learned Q4 minutes override at endQ3. When the
+    # flag is on AND the snapshot is at period=4 AND MinuteTrajectoryModel
+    # loaded, replace projected_final using `learned_remaining_min/12.0` in
+    # place of foul_trouble_factor for ALL players. Validated PTS -0.23
+    # on 1508-game corpus, 7/7 stats, WF 4/4. Returns a flag so we can
+    # skip the now-stale legacy residual overrides which were trained
+    # against the heuristic foul_factor we're replacing.
+    learned_q4_applied = False
+    if _USE_LEARNED_Q4_MINUTES and int(snap_period or 0) == 4:
+        rows, learned_q4_applied = _apply_learned_q4_minutes(snap, rows)
     # tier1-2 (loop 5): stratified foul_change residual override. Only
     # applies at endQ3 (period=4) snapshots where the residual model is
     # validated; earlier periods keep the cycle-88b heuristic path.
-    if _USE_FOUL_RESIDUAL and int(snap_period or 0) == 4:
+    if (_USE_FOUL_RESIDUAL and int(snap_period or 0) == 4
+            and not learned_q4_applied):
         rows = _apply_stratified_foul_residual(snap, rows)
     # cycle 102a (loop 5): SECOND stratified override -- blowout_flip
     # residual replaces blow_factor when the live proxy gate fires
     # (|Q3 margin| <= 18 AND |velocity| >= 4). Independent of the foul
     # override; the two override different multiplicative factors so they
     # compose safely.
-    if _USE_BLOWOUT_RESIDUAL and int(snap_period or 0) == 4:
+    if (_USE_BLOWOUT_RESIDUAL and int(snap_period or 0) == 4
+            and not learned_q4_applied):
         rows = _apply_stratified_blowout_residual(snap, rows)
     # cycle 103b (loop 5): THIRD stratified override -- heat_check shrinkage
     # multiplies projected_final on the REMAINING portion for pts/ast/fg3m
     # when q3_ppm > 1.5 * q12_ppm (with q12_ppm > 0.3). Composes safely with
     # the foul + blowout overrides above (those rewrite projected_final
     # absolutely; this scales the REMAINING delta from current_stat).
-    if _USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4:
+    if (_USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4
+            and not learned_q4_applied):
         rows = _apply_heat_check_shrinkage(snap, rows)
     # cycle 105c (loop 5): opt-in quantile bands. q50 == projected_final
     # always; q10/q90 are additive. Guarded so the existing point-only
