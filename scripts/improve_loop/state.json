@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 5,
+  "rounds_completed": 6,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -72,6 +72,15 @@
       "commit": "pending-wire",
       "date": "2026-05-25",
       "summary": "EndQ1 quantile band calibration. 7/7 stats at 0.80 coverage on held-out fold. All sigma_endQ1 > sigma_endQ2 (sanity check passes). Replaces placeholder q10=0/q90=2*q50 bands."
+    },
+    {
+      "name": "R6_A_per_player_endq1_retry",
+      "round": 5,
+      "delta_pts": 0.0,
+      "stats_won": 7,
+      "commit": "pending-wire",
+      "date": "2026-05-25",
+      "summary": "Per-player variance-modulated quantile bands at endQ1 (retry of R4-F now that R5-F shipped baseline). Spread 0.20 -> 0.06 (delta -0.137). All 7 stats at 0.80 coverage. Bucket uniformity: high-var bucket lifted 0.64-0.72 -> 0.74-0.78, low-var bucket pulled 0.87-0.93 -> 0.81-0.86. Replaces endQ1 block in per_player_quantile_calibration_v2.json."
     }
   ],
   "rejects": [
