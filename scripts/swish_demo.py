@@ -33,7 +33,7 @@ sys.path.insert(0, os.path.join(PROJECT_DIR, "scripts"))
 DEMO_DATE = "2026-05-25"
 
 # ---------------------------------------------------------------------------
-# Mock data — offseason-safe replacements for live NBA API calls
+# Mock data -- offseason-safe replacements for live NBA API calls
 # ---------------------------------------------------------------------------
 
 MOCK_PREGAME = [
@@ -90,7 +90,7 @@ MOCK_CLOSING_LINES = {
 
 def step_pregame(verbose: bool) -> List[Dict]:
     print("\n" + "=" * 60)
-    print("STEP 1 — Pre-game slate predictions")
+    print("STEP 1 -- Pre-game slate predictions")
     print("=" * 60)
     print(f"  Model: prop_pergame.py  |  5-way NNLS + q50 dispatch")
     print(f"  Date:  {DEMO_DATE}")
@@ -106,7 +106,7 @@ def step_pregame(verbose: bool) -> List[Dict]:
         rows.append({"player": name, "stat": stat, "pred": pred, "line": line,
                      "prob": prob, "kelly": kelly, "edge": edge})
     print()
-    print("  (* = edge > 0.30 — potential bet)")
+    print("  (* = edge > 0.30 -- potential bet)")
     print()
     print("  Pre-game MAE anchors (walk-forward, N=99,818):")
     for s, mae in [("pts",4.61),("reb",1.91),("ast",1.36),("fg3m",0.89),
@@ -117,7 +117,7 @@ def step_pregame(verbose: bool) -> List[Dict]:
 
 def step_inplay_projection(verbose: bool) -> List[Dict]:
     print("\n" + "=" * 60)
-    print("STEP 2 — In-game snapshot → live projection (endQ2)")
+    print("STEP 2 -- In-game snapshot -> live projection (endQ2)")
     print("=" * 60)
     snap = MOCK_SNAPSHOT
     print(f"  Game: {snap['away_team']} @ {snap['home_team']}  "
@@ -137,7 +137,7 @@ def step_inplay_projection(verbose: bool) -> List[Dict]:
         foul_shrink = FOUL_SHRINK.get(fouls, 1.0)
         live_proj = pace_proj * foul_shrink
 
-        # blowout adjustment: game within 5 pts → no blowout haircut
+        # blowout adjustment: game within 5 pts -> no blowout haircut
         blowout_factor = 1.0
         live_proj *= blowout_factor
 
@@ -156,7 +156,7 @@ def step_inplay_projection(verbose: bool) -> List[Dict]:
 
 def step_ev_sizing(projections: List[Dict], verbose: bool) -> List[Dict]:
     print("\n" + "=" * 60)
-    print("STEP 3 — EV vs live sportsbook lines + Kelly sizing")
+    print("STEP 3 -- EV vs live sportsbook lines + Kelly sizing")
     print("=" * 60)
 
     BANKROLL = 1000.0
@@ -173,12 +173,12 @@ def step_ev_sizing(projections: List[Dict], verbose: bool) -> List[Dict]:
         if live_line is None:
             continue
         edge = row["live_proj"] - live_line
-        # Gaussian approx: std ≈ 40% of mean for counting stats
+        # Gaussian approx: std ~ 40% of mean for counting stats
         sigma = row["live_proj"] * 0.40
         import math
         if sigma > 0:
             z = edge / sigma
-            # approximate Φ(z) for P(OVER)
+            # approximate Phi(z) for P(OVER)
             p_win = 0.5 * (1 + math.erf(z / math.sqrt(2)))
         else:
             p_win = 0.5
@@ -204,7 +204,7 @@ def step_ev_sizing(projections: List[Dict], verbose: bool) -> List[Dict]:
 
 def step_place(bets: List[Dict], verbose: bool):
     print("\n" + "=" * 60)
-    print("STEP 4 — Bet placement (DRY RUN — no real money)")
+    print("STEP 4 -- Bet placement (DRY RUN -- no real money)")
     print("=" * 60)
     for i, bet in enumerate(bets, 1):
         print(f"  [{i}] {bet['player']} {bet['stat'].upper()} {bet['side']} "
@@ -217,7 +217,7 @@ def step_place(bets: List[Dict], verbose: bool):
 
 def step_settle(bets: List[Dict], verbose: bool):
     print("\n" + "=" * 60)
-    print("STEP 5 — Settlement + P&L")
+    print("STEP 5 -- Settlement + P&L")
     print("=" * 60)
     # Mock final stats: Luka goes for 34 PTS 11 AST; Davis 14 REB 3 BLK
     MOCK_FINALS = {
@@ -250,7 +250,7 @@ def step_settle(bets: List[Dict], verbose: bool):
 
 def step_clv(bets: List[Dict], verbose: bool):
     print("\n" + "=" * 60)
-    print("STEP 6 — Closing-line value (CLV)")
+    print("STEP 6 -- Closing-line value (CLV)")
     print("=" * 60)
     print("  CLV = our line at bet-time vs sportsbook's closing line.")
     print("  Positive CLV = we beat the closing market (long-run profitable).")
