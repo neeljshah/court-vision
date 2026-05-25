@@ -75,22 +75,38 @@ PRED_DIR = os.path.join(PROJECT_DIR, "data", "predictions")
 # falls back to the heuristic (back-compat preserved).
 _USE_FOUL_RESIDUAL = True
 
+# cycle 102a (loop 5): blowout_flip residual head + stratified dispatch.
+# When True, project_from_snapshot consults the blowout-residual model for
+# endQ3 (period=4) snapshots and dispatches to its prediction when the
+# live-proxy gate fires (|Q3 margin| <= 18 AND |velocity| >= 4); the
+# cycle-88f blowout_factor heuristic handles the rest. Probe
+# scripts/probe_blowout_stratified_blend.py validated SHIP: PTS MAE -0.28
+# on blowout_flip stratum vs heuristic; non_blowout IMPROVES -0.08 (not a
+# regression); WF 4/4 folds negative (-0.13 to -0.26). Dispatches SECOND
+# AFTER the foul_residual override -- the two are independent (foul
+# residual overrides foul_factor, blowout residual overrides blow_factor).
+# If the artifact is missing the dispatch transparently falls back to the
+# heuristic (back-compat preserved).
+_USE_BLOWOUT_RESIDUAL = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
 _FOUL_RESIDUAL_MODEL = None
+_BLOWOUT_RESIDUAL_MODEL = None
 _MODELS_LOADED = False
 
 
 def _load_models_once():
-    """Idempotent loader for the cycle 9d3 + tier1-2 LightGBM artifacts.
+    """Idempotent loader for the cycle 9d3 + tier1-2 + cycle 102a artifacts.
 
-    Returns (global_model, residual_model). Either may be None if its
-    artifact is absent -- callers tolerate None via the stratified dispatch.
+    Returns (global_model, foul_residual, blowout_residual). Any may be None
+    if its artifact is absent -- callers tolerate None via stratified dispatch.
     """
-    global _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _MODELS_LOADED
+    global _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
+    global _MODELS_LOADED
     if _MODELS_LOADED:
-        return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL
+        return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
     try:
         from src.prediction.minute_trajectory import MinuteTrajectoryModel
         _GLOBAL_MIN_MODEL = MinuteTrajectoryModel.load()
@@ -103,8 +119,13 @@ def _load_models_once():
         _FOUL_RESIDUAL_MODEL = FoulChangeResidualModel.load()
     except Exception:
         _FOUL_RESIDUAL_MODEL = None
+    try:
+        from src.prediction.blowout_residual import BlowoutResidualModel
+        _BLOWOUT_RESIDUAL_MODEL = BlowoutResidualModel.load()
+    except Exception:
+        _BLOWOUT_RESIDUAL_MODEL = None
     _MODELS_LOADED = True
-    return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL
+    return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _BLOWOUT_RESIDUAL_MODEL
 
 
 __all__ = [
@@ -113,6 +134,7 @@ __all__ = [
     "edge_vs_pregame",
     "write_ledger",
     "_USE_FOUL_RESIDUAL",
+    "_USE_BLOWOUT_RESIDUAL",
 ]
 
 
@@ -173,6 +195,13 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # validated; earlier periods keep the cycle-88b heuristic path.
     if _USE_FOUL_RESIDUAL and int(snap_period or 0) == 4:
         rows = _apply_stratified_foul_residual(snap, rows)
+    # cycle 102a (loop 5): SECOND stratified override -- blowout_flip
+    # residual replaces blow_factor when the live proxy gate fires
+    # (|Q3 margin| <= 18 AND |velocity| >= 4). Independent of the foul
+    # override; the two override different multiplicative factors so they
+    # compose safely.
+    if _USE_BLOWOUT_RESIDUAL and int(snap_period or 0) == 4:
+        rows = _apply_stratified_blowout_residual(snap, rows)
     return rows
 
 
@@ -183,7 +212,7 @@ def _apply_stratified_foul_residual(snap: dict, rows: list) -> list:
 
     Untouched when both LightGBM artifacts are absent (graceful no-op).
     """
-    global_model, residual_model = _load_models_once()
+    global_model, residual_model, _ = _load_models_once()
     # If NEITHER model is loaded we have nothing to add over the heuristic.
     if global_model is None and residual_model is None:
         return rows
@@ -309,6 +338,159 @@ def _foul_change_gate_inline(snap_pf, q3_pf):
     if q3 == 0 and sp == 4:
         return True
     return False
+
+
+# ── cycle 102a: blowout_flip residual override ────────────────────────────────
+
+def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
+    """Re-project per-player stats using stratified_blowout_factor when the
+    blowout_flip live-proxy gate fires. Returns the same list with
+    overrides applied in-place on the original row dicts.
+
+    Composes cleanly with the foul_residual override: the foul override
+    rewrote ``foul_factor``; this one rewrites ``blow_factor``. Both
+    multiplicative inputs feed the same ``pig.project_final``.
+
+    Untouched when the blowout_residual artifact is absent (graceful no-op).
+    """
+    _, _, blowout_model = _load_models_once()
+    if blowout_model is None:
+        return rows
+
+    import predict_in_game as pig
+    from src.prediction.blowout_residual import (
+        in_blowout_flip_live_proxy,
+        stratified_blowout_factor,
+    )
+
+    period = int(snap.get("period") or 0)
+    clock_rem = pig.parse_clock(snap.get("clock"))
+    home_team = snap.get("home_team") or ""
+    away_team = snap.get("away_team") or ""
+    try:
+        home_score = float(snap.get("home_score") or 0)
+    except (TypeError, ValueError):
+        home_score = 0.0
+    try:
+        away_score = float(snap.get("away_score") or 0)
+    except (TypeError, ValueError):
+        away_score = 0.0
+    margin = home_score - away_score   # signed home POV
+
+    # The Q3 score velocity is not present in the canonical snapshot schema;
+    # snapshot supplies snap.get("score_velocity_q3") when the upstream
+    # builder included it (e.g. probe_blowout_stratified_blend.py for retro),
+    # otherwise defaults to 0 (gate won't fire). Live snapshots from
+    # src.data.live currently do NOT track Q-by-Q score history -- the
+    # override degrades to a no-op until that field is wired upstream.
+    snap_velocity = snap.get("score_velocity_q3", 0.0)
+    try:
+        velocity = float(snap_velocity or 0)
+    except (TypeError, ValueError):
+        velocity = 0.0
+
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    rows_by_pid: dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            rows_by_pid.setdefault(int(pid), []).append(r)
+        except (TypeError, ValueError):
+            continue
+
+    for pid, p in by_pid.items():
+        try:
+            snap_pf = float(p.get("pf") or 0)
+            cur_min = float(p.get("min") or 0)
+            min_q1 = float(p.get("min_q1") or 0)
+            min_q2 = float(p.get("min_q2") or 0)
+            min_q3 = float(p.get("min_q3") or 0)
+        except (TypeError, ValueError):
+            continue
+        q3_pf_proxy = max(0.0, snap_pf - 2.0)
+        team = p.get("team") or ""
+        team_is_leading = (
+            (team == home_team and margin > 0) or
+            (team == away_team and margin < 0)
+        )
+        # Signed Q3 margin from this team's POV.
+        if team == home_team:
+            signed_q3 = margin
+        elif team == away_team:
+            signed_q3 = -margin
+        else:
+            signed_q3 = 0.0
+        # Gate fires only inside the close-Q3 band with material velocity.
+        gate_fires = in_blowout_flip_live_proxy(
+            q3_margin_abs=abs(signed_q3),
+            score_velocity_q3=velocity,
+        )
+
+        share_played_game = pig.clock_played_share(period, clock_rem)
+        proj_min = ((cur_min / share_played_game)
+                    if share_played_game > 0 else cur_min)
+        is_star = proj_min >= 30.0
+        heuristic_bf = pig.blowout_factor(
+            abs(margin), period, is_star=(is_star and team_is_leading))
+
+        new_bf = stratified_blowout_factor(
+            heuristic_factor=heuristic_bf,
+            residual_model=blowout_model,
+            pf_through_q3=snap_pf, q3_pf=q3_pf_proxy,
+            min_q1=min_q1, min_q2=min_q2, min_q3=min_q3,
+            score_margin_abs=abs(signed_q3),
+            score_margin_signed_q3=signed_q3,
+            score_velocity_q3=velocity,
+            is_leading_team=1 if team_is_leading else 0,
+            position_proxy=p.get("position"),
+            l20_min=p.get("l20_min"),
+            l5_min=p.get("l5_min"),
+        )
+
+        if new_bf == heuristic_bf:
+            # Gate didn't fire -- nothing to override.
+            continue
+
+        period_elapsed_min = max(0.0, pig.PERIOD_MIN - clock_rem)
+        bench_now = pig.is_bench_in_current_period(
+            p, period, period_elapsed_min=period_elapsed_min)
+        player_basis = cur_min if bench_now else None
+
+        out_rows = rows_by_pid.get(pid, [])
+        for r in out_rows:
+            stat = r.get("stat")
+            if stat not in pig.STATS:
+                continue
+            try:
+                cur = float(p.get(stat) or 0)
+            except (TypeError, ValueError):
+                cur = 0.0
+            # Preserve the foul_factor potentially set by the earlier
+            # _apply_stratified_foul_residual override.
+            ff_existing = r.get("foul_factor", 1.0)
+            try:
+                ff = float(ff_existing)
+            except (TypeError, ValueError):
+                ff = 1.0
+            new_final = pig.project_final(
+                cur, period, clock_rem,
+                pace_factor=1.0, foul_factor=ff, blow_factor=new_bf,
+                player_clock_played_min=player_basis,
+            )
+            r["projected_final"] = float(new_final)
+            r["blow_factor"] = new_bf
+            r["blow_factor_source"] = (
+                "blowout_residual" if gate_fires else "heuristic_blowout"
+            )
+    return rows
 
 
 # ── 2. project_full_slate ─────────────────────────────────────────────────────
