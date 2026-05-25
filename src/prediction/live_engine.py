@@ -98,6 +98,15 @@ _USE_BLOWOUT_RESIDUAL = True
 # (multiplies projected_final, never current_stat). Missing artifact -> no-op.
 _USE_HEAT_CHECK_SHRINKAGE = True
 
+# cycle 105c (loop 5): in-play quantile bands (q10/q50/q90 around the point
+# projection). Default OFF -- bands are available on request via
+# src.prediction.live_quantile_bands.project_from_snapshot_with_bands or by
+# flipping this flag to True (in which case project_from_snapshot attaches
+# q10/q50/q90 to every returned row). q50 ALWAYS equals projected_final --
+# the point prediction is never altered. Bands are wide-open (q10=0,
+# q90=2*q50) when the calibration artifact is absent (back-compat).
+_INCLUDE_QUANTILE_BANDS = False
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -155,6 +164,7 @@ __all__ = [
     "_USE_FOUL_RESIDUAL",
     "_USE_BLOWOUT_RESIDUAL",
     "_USE_HEAT_CHECK_SHRINKAGE",
+    "_INCLUDE_QUANTILE_BANDS",
 ]
 
 
@@ -229,6 +239,30 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # absolutely; this scales the REMAINING delta from current_stat).
     if _USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4:
         rows = _apply_heat_check_shrinkage(snap, rows)
+    # cycle 105c (loop 5): opt-in quantile bands. q50 == projected_final
+    # always; q10/q90 are additive. Guarded so the existing point-only
+    # consumers (live_dashboard, save_live_predictions, edge_eval) see no
+    # row-shape change when the flag is off (the default).
+    if _INCLUDE_QUANTILE_BANDS:
+        try:
+            from src.prediction.live_quantile_bands import (
+                bands_for, load_calibration, period_to_point,
+            )
+            point = period_to_point(snap_period) if snap_period is not None else None
+            cal = load_calibration()
+            for r in rows:
+                stat = r.get("stat")
+                try:
+                    q50 = float(r.get("projected_final", 0.0) or 0.0)
+                except (TypeError, ValueError):
+                    q50 = 0.0
+                b = bands_for(stat, q50, point, calibration=cal)
+                r["q10"] = b["q10"]
+                r["q50"] = b["q50"]
+                r["q90"] = b["q90"]
+        except Exception:
+            # Bands are advisory -- never break the hot path.
+            pass
     return rows
 
 
