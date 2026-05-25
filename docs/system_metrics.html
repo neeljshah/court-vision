@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CourtVision — System Metrics</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0f1e; color: #e2e8f0; min-height: 100vh; padding: 2rem; }
+  h1 { font-size: 1.8rem; font-weight: 700; color: #60a5fa; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+  .subtitle { color: #64748b; font-size: 0.9rem; margin-bottom: 2.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+  .card { background: #111827; border: 1px solid #1e293b; border-radius: 12px; padding: 1.5rem; }
+  .card-title { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin-bottom: 1rem; }
+  .big-number { font-size: 2.5rem; font-weight: 800; color: #60a5fa; line-height: 1; }
+  .big-number.green { color: #34d399; }
+  .big-number.amber { color: #fbbf24; }
+  .big-label { font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  th { text-align: left; padding: 0.5rem 0.75rem; color: #64748b; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #1e293b; }
+  td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #111827; }
+  tr:last-child td { border-bottom: none; }
+  .win { color: #34d399; font-weight: 600; }
+  .tag { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+  .tag-blue { background: #1e3a5f; color: #60a5fa; }
+  .tag-green { background: #064e3b; color: #34d399; }
+  .tag-amber { background: #451a03; color: #fbbf24; }
+  .section-title { font-size: 1rem; font-weight: 700; color: #94a3b8; margin: 2rem 0 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; }
+  .bar-wrap { display: flex; align-items: center; gap: 0.75rem; }
+  .bar { height: 8px; border-radius: 4px; background: #34d399; }
+  .bar-bg { flex: 1; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
+  .bar-label { font-size: 0.8rem; color: #94a3b8; min-width: 50px; text-align: right; }
+  footer { margin-top: 3rem; color: #334155; font-size: 0.75rem; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>CourtVision</h1>
+<p class="subtitle">NBA Prop Prediction System &mdash; Live System Metrics &mdash; 2026-05-24</p>
+
+<!-- Headline KPIs -->
+<div class="grid">
+  <div class="card">
+    <div class="card-title">In-game system win</div>
+    <div class="big-number green">7/7</div>
+    <div class="big-label">stats where endQ3 beats pre-game model &mdash; 550 games</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Best in-game MAE lift (STL / BLK)</div>
+    <div class="big-number green">&minus;53%</div>
+    <div class="big-label">vs full production pre-game model at end-Q3</div>
+  </div>
+  <div class="card">
+    <div class="card-title">In-play ROI (endQ3, threshold 1.0)</div>
+    <div class="big-number green">+70&ndash;89%</div>
+    <div class="big-label">flat ROI across 7 stats vs L5 line proxy</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Period head lift (endQ1 PTS)</div>
+    <div class="big-number green">&minus;37%</div>
+    <div class="big-label">vs linear pace projection (4.55 vs 7.18 MAE)</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Commits</div>
+    <div class="big-number amber">922</div>
+    <div class="big-label">on master (5 development loops)</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Trained model artifacts</div>
+    <div class="big-number">123</div>
+    <div class="big-label">117 .pkl + 6 .lgb in data/models/</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Test coverage</div>
+    <div class="big-number">281</div>
+    <div class="big-label">test files across 14 test suites (1040 pass, 2 skip)</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Python modules</div>
+    <div class="big-number">282</div>
+    <div class="big-label">in src/ across prediction, betting, tracking, ingest, API</div>
+  </div>
+</div>
+
+<!-- Pre-game MAE table -->
+<p class="section-title">Pre-game prop MAE (walk-forward, N=99,818 rows)</p>
+<div class="card" style="margin-bottom:1.25rem;">
+<table>
+  <thead>
+    <tr><th>Stat</th><th>MAE</th><th>Model</th><th>vs leaked baseline</th><th>ROI endQ3</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>PTS</td><td>4.6104</td><td><span class="tag tag-blue">sqrt+Huber blend</span></td><td class="win">&minus;0.50%</td><td class="win">+0.70</td></tr>
+    <tr><td>REB</td><td>1.9075</td><td><span class="tag tag-blue">LGB q50</span></td><td class="win">&minus;0.55%</td><td class="win">+0.78</td></tr>
+    <tr><td>AST</td><td>1.3570</td><td><span class="tag tag-blue">Multitask MLP blend</span></td><td class="win">&minus;1.28%</td><td class="win">+0.82</td></tr>
+    <tr><td>FG3M</td><td>0.8941</td><td><span class="tag tag-blue">XGB q50</span></td><td class="win">&minus;1.04%</td><td class="win">+0.86</td></tr>
+    <tr><td>STL</td><td>0.7153</td><td><span class="tag tag-blue">XGB q50</span></td><td class="win">&minus;0.65%</td><td class="win">+0.89</td></tr>
+    <tr><td>BLK</td><td>0.4398</td><td><span class="tag tag-blue">XGB q50</span></td><td class="win">&minus;0.97%</td><td class="win">+0.89</td></tr>
+    <tr><td>TOV</td><td>0.8932</td><td><span class="tag tag-blue">XGB q50</span></td><td class="win">&minus;0.67%</td><td class="win">+0.84</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- In-game table -->
+<p class="section-title">In-game system — endQ3 vs production pre-game (550 games)</p>
+<div class="card" style="margin-bottom:1.25rem;">
+<table>
+  <thead>
+    <tr><th>Stat</th><th>Pre-game MAE</th><th>endQ1 MAE</th><th>endQ2 MAE</th><th>endQ3 MAE</th><th>endQ3 lift</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>PTS</td><td>4.2914</td><td>7.2533</td><td>4.0829</td><td>2.4647</td><td class="win">&minus;43%</td></tr>
+    <tr><td>REB</td><td>1.7761</td><td>3.0317</td><td>1.6598</td><td>1.0026</td><td class="win">&minus;44%</td></tr>
+    <tr><td>AST</td><td>1.2548</td><td>2.1706</td><td>1.1581</td><td>0.6809</td><td class="win">&minus;46%</td></tr>
+    <tr><td>FG3M</td><td>0.8367</td><td>1.4307</td><td>0.7671</td><td>0.4246</td><td class="win">&minus;49%</td></tr>
+    <tr><td>STL</td><td>0.6717</td><td>1.0456</td><td>0.5783</td><td>0.3177</td><td class="win">&minus;53%</td></tr>
+    <tr><td>BLK</td><td>0.4298</td><td>0.6591</td><td>0.3748</td><td>0.2030</td><td class="win">&minus;53%</td></tr>
+    <tr><td>TOV</td><td>0.8471</td><td>1.4616</td><td>0.7901</td><td>0.4466</td><td class="win">&minus;47%</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ROI bar chart table -->
+<p class="section-title">In-play ROI at endQ2 (halftime betting viability, threshold 1.0)</p>
+<div class="card">
+  <table>
+    <thead><tr><th>Stat</th><th>endQ2 ROI</th><th>endQ3 ROI</th><th>Ratio (endQ2/endQ3)</th><th>Viable?</th></tr></thead>
+    <tbody>
+      <tr><td>PTS</td><td>+0.52</td><td>+0.70</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:74%"></div></div><span class="bar-label">74%</span></div>
+      </td><td><span class="tag tag-amber">borderline</span></td></tr>
+      <tr><td>REB</td><td>+0.64</td><td>+0.78</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:82%"></div></div><span class="bar-label">82%</span></div>
+      </td><td><span class="tag tag-green">viable</span></td></tr>
+      <tr><td>AST</td><td>+0.68</td><td>+0.82</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:83%"></div></div><span class="bar-label">83%</span></div>
+      </td><td><span class="tag tag-green">viable</span></td></tr>
+      <tr><td>FG3M</td><td>+0.71</td><td>+0.86</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:83%"></div></div><span class="bar-label">83%</span></div>
+      </td><td><span class="tag tag-green">viable</span></td></tr>
+      <tr><td>STL</td><td>+0.78</td><td>+0.89</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:87%"></div></div><span class="bar-label">87%</span></div>
+      </td><td><span class="tag tag-green">viable</span></td></tr>
+      <tr><td>BLK</td><td>+0.83</td><td>+0.89</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:93%"></div></div><span class="bar-label">93%</span></div>
+      </td><td><span class="tag tag-green">viable</span></td></tr>
+      <tr><td>TOV</td><td>+0.66</td><td>+0.84</td><td>
+        <div class="bar-wrap"><div class="bar-bg"><div class="bar" style="width:79%"></div></div><span class="bar-label">79%</span></div>
+      </td><td><span class="tag tag-amber">borderline</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  CourtVision &mdash; github.com/neeljshah/court-vision &mdash; All numbers from committed result files in scripts/_results/ &mdash; Reproducible
+</footer>
+</body>
+</html>
