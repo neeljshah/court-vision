@@ -2754,10 +2754,22 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     are no-ops since AST/STL are in _USE_Q50_STATS now — kept around for
     rollback safety). The isotonic calibrator
     (calibration_pergame_<stat>.joblib) is applied at the end when present
-    AND when the stat uses the blend (not q50)."""
+    AND when the stat uses the blend (not q50).
+
+    R3-F pregame residual heads (reb/ast/fg3m/stl/blk/tov) are applied last,
+    after the garbage-time haircut, on both the q50 and blend paths. PTS is a
+    passthrough (gate-failed). Disable by setting
+    src.prediction.pregame_residual_heads._USE_PREGAME_RESIDUAL_HEADS = False.
+    """
     import numpy as np
 
     model_dir = model_dir or _MODEL_DIR
+
+    # Lazy import — avoids a circular dependency since pregame_residual_heads
+    # imports feature_columns() from this module.
+    from src.prediction.pregame_residual_heads import (  # noqa: PLC0415
+        apply_residual_correction,
+    )
 
     # Cycle 96a (loop 5): pull home_spread off the feature_row once so both
     # the q50 path and the blend path can apply the garbage-time haircut at
@@ -2790,6 +2802,8 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             # the q50 head + inverse transform so the multiplicative shrink
             # acts on the raw-count point estimate.
             pred = apply_garbage_time_haircut(pred, stat, hs_raw)
+            # R3-F pregame residual correction — applied last, on raw-count pred.
+            pred = apply_residual_correction(pred, feature_row, stat, model_dir=model_dir)
             return round(pred, 2)
         # q50 model missing on disk — fall through to the legacy blend so
         # predict_pergame still returns SOMETHING.
@@ -2872,6 +2886,8 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     # sits on the final raw-count blend prediction. No-op for non-volume
     # stats and for rows without a cached home_spread.
     blend = apply_garbage_time_haircut(blend, stat, hs_raw)
+    # R3-F pregame residual correction — applied last, on raw-count blend.
+    blend = apply_residual_correction(blend, feature_row, stat, model_dir=model_dir)
     return round(blend, 2)
 
 
