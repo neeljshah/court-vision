@@ -66,6 +66,9 @@ LEDGER_COLS = [
     "stat", "line", "side", "book", "american_odds", "stake",
     "model_pred", "model_prob", "model_edge", "kelly_pct",
     "status", "settled_at", "actual_stat", "profit_loss", "bankroll_after",
+    # Additive (tier4-14): strategy tag for A/B attribution. Old rows without
+    # this column default to "default" via DictReader fallback.
+    "strategy",
 ]
 
 BANKROLL_COLS = ["timestamp", "amount", "running_balance", "note"]
@@ -212,6 +215,7 @@ def place_bet(
     player_id: Optional[str] = None,
     team: Optional[str] = None,
     bankroll_before: Optional[float] = None,
+    strategy: str = "default",
 ) -> str:
     """Record a placed bet. Returns the new bet_id (UUID4)."""
     side = str(side).upper()
@@ -250,6 +254,7 @@ def place_bet(
             "actual_stat":    "",
             "profit_loss":    "",
             "bankroll_after": "",
+            "strategy":       strategy or "default",
         })
         _atomic_write_rows(LEDGER_CSV, LEDGER_COLS, rows)
 
