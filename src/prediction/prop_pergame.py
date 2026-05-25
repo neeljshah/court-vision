@@ -1912,6 +1912,7 @@ def _row_features(prior_played: List[dict], rest_days: float,
 def build_pergame_dataset(
     gamelog_dir: Optional[str] = None,
     min_prior: int = 0,
+    include_dnp: Optional[bool] = None,
 ) -> Tuple[List[dict], List[str]]:
     """Build the per-game training set from every player gamelog.
 
@@ -1920,10 +1921,23 @@ def build_pergame_dataset(
     player actually played (>= _MIN_PLAYED minutes) and has at least
     ``min_prior`` prior played games for stable rolling features.
 
+    Tier3-11 (loop 5) — ``include_dnp`` opt-in injects DNP rows from
+    ``data/dnp_rows.parquet`` (built by ``scripts/aggregate_dnp_rows.py``).
+    Each DNP row carries ``target_<stat> = 0.0`` for every stat and a
+    ``dnp_reason`` field; features are LEFT EMPTY (zeros via feature_columns
+    defaults) because there is no prior-game context for a player who did
+    not appear in any played gamelog row at that point. Default is
+    ``False`` (preserves the cycle-48 baseline). Can also be enabled via
+    the env var ``PROP_PERGAME_INCLUDE_DNP=1`` (handy for sweep scripts).
+
     Returns:
         (rows, feature_cols) — rows are dicts with the feature columns,
         target_{stat} columns, and a 'date' key for the temporal split.
     """
+    if include_dnp is None:
+        include_dnp = os.environ.get("PROP_PERGAME_INCLUDE_DNP", "0").strip() in (
+            "1", "true", "True", "yes", "YES",
+        )
     gamelog_dir = gamelog_dir or _NBA_CACHE
     feature_cols = feature_columns()
     rows: List[dict] = []
@@ -2109,6 +2123,58 @@ def build_pergame_dataset(
 
             if played:
                 prior_played.append(game)
+
+    if include_dnp:
+        # Tier3-11 (loop 5) — opt-in injection of DNP projection rows.
+        # Each emitted row has zero stats (target_<stat>=0.0), zeroed
+        # features (no prior-game context — the player did not play, so
+        # there is no leak-free rolling form to compute), and a
+        # `dnp_reason` carrier field. Probes that include these rows are
+        # validating the FULL sit-rate effect (the survivor-bias
+        # blocker that REJECTED cycles 90b + 92e). Default (no flag) is
+        # back-compat with the cycle-48 baseline.
+        try:
+            from src.data.dnp_set import load_dnp_rows  # noqa: PLC0415
+            dnp_df = load_dnp_rows()
+            n_dnp_added = 0
+            zero_feats = {c: 0.0 for c in feature_cols}
+            recs = dnp_df.to_dict("records") if hasattr(dnp_df, "to_dict") else []
+            for d in recs:
+                row = dict(zero_feats)
+                for stat in STATS:
+                    row[f"target_{stat}"] = 0.0
+                gdate_iso = str(d.get("game_date") or "").strip()
+                if not gdate_iso:
+                    continue
+                # build_pergame_dataset emits 'date' as a full isoformat
+                # datetime (e.g. "2022-10-18T00:00:00"). DNP dates from the
+                # parquet are date-only strings — promote with T00:00:00
+                # so downstream chronological splits sort consistently.
+                if "T" not in gdate_iso:
+                    gdate_iso = f"{gdate_iso}T00:00:00"
+                row["date"] = gdate_iso
+                row["player_id"] = int(d.get("player_id") or 0)
+                row["position"] = None
+                row["home_spread"] = None
+                row["total"] = None
+                row["pf"] = None
+                row["season_pf_per_36"] = None
+                row["dnp_reason"] = str(d.get("dnp_reason") or "other")
+                row["is_dnp_row"] = True
+                row["game_id"] = str(d.get("game_id") or "")
+                row["team"] = str(d.get("team") or "")
+                rows.append(row)
+                n_dnp_added += 1
+            logger.info(
+                "prop_pergame.build_pergame_dataset: injected %d DNP rows "
+                "(include_dnp=True). Total rows now %d.",
+                n_dnp_added, len(rows),
+            )
+        except Exception as exc:
+            _warn_join_load_once(
+                "build_pergame_dataset.include_dnp",
+                "src.data.dnp_set", exc,
+            )
 
     return rows, feature_cols
 
