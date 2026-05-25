@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 6,
+  "rounds_completed": 7,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -81,6 +81,15 @@
       "commit": "pending-wire",
       "date": "2026-05-25",
       "summary": "Per-player variance-modulated quantile bands at endQ1 (retry of R4-F now that R5-F shipped baseline). Spread 0.20 -> 0.06 (delta -0.137). All 7 stats at 0.80 coverage. Bucket uniformity: high-var bucket lifted 0.64-0.72 -> 0.74-0.78, low-var bucket pulled 0.87-0.93 -> 0.81-0.86. Replaces endQ1 block in per_player_quantile_calibration_v2.json."
+    },
+    {
+      "name": "R7_A_pregame_residual_heads_per_stat",
+      "round": 6,
+      "delta_pts": -0.07,
+      "stats_won": 6,
+      "commit": "pending-wire",
+      "date": "2026-05-25",
+      "summary": "PREGAME residual heads (LGB on OOF residuals). 6/7 stats SHIP per-stat (PTS gates out at 1/4 folds): REB -0.002, AST -0.008, FG3M -0.021, STL -0.039, BLK -0.072 (-14% MAE!), TOV -0.017. PTS stays on production pergame. Heads saved to data/models/pregame_residual_heads/."
     }
   ],
   "rejects": [
@@ -277,6 +286,18 @@
       "reason": "PTS -0.01 but only 2/7 wins",
       "saturated_angle": "engineered interaction features (foul_rate, usage_proxy, etc.)",
       "round": 4
+    },
+    {
+      "name": "R7_A_pregame_pts",
+      "reason": "PTS 1/4 folds, +0.008 mean",
+      "saturated_angle": "pregame residual head for PTS",
+      "round": 6
+    },
+    {
+      "name": "R7_B_pregame_anchor_endq3",
+      "reason": "PTS +0.0 9.4% join hit",
+      "saturated_angle": "OOF pregame_proj as 15th feature in endQ3 residual head",
+      "round": 6
     }
   ],
   "saturated_angles": [
@@ -325,7 +346,9 @@
     "mid-quarter residual heads (requires PBP data not in parquet)",
     "larger LightGBM residual heads (n_est=600, leaves=31, lr=0.02)",
     "stat-specific opp_l5_allowed features (data coverage gap)",
-    "engineered interaction features (foul_rate, usage_proxy, etc.)"
+    "engineered interaction features (foul_rate, usage_proxy, etc.)",
+    "pregame residual head for PTS",
+    "OOF pregame_proj as 15th feature in endQ3 residual head"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
