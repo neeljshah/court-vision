@@ -107,8 +107,14 @@ def _load_game_date_lookup() -> Dict[str, tuple]:
 
 
 def _is_dnp(player: dict) -> bool:
-    """A player is DNP when minutes is empty AND comment indicates a DNP."""
-    mins = str(player.get("minutes") or "").strip()
+    """A player is DNP when minutes is empty AND comment indicates a DNP.
+
+    Supports two boxscore schemas:
+    - boxscore_adv_*.json: 'minutes' / 'personid' / 'namei' / 'teamtricode'
+    - boxscore_*.json (cycle 93a/96b 2025-26 backfill): 'min' / 'player_id'
+      / 'player_name' / 'team_abbreviation'
+    """
+    mins = str(player.get("minutes") or player.get("min") or "").strip()
     if mins and mins not in ("0", "00:00", "0:00"):
         return False
     comment = str(player.get("comment") or "").lower().strip()
@@ -135,8 +141,23 @@ def aggregate(out_path: Optional[str] = None) -> Dict[str, int]:
     print(f"Loaded {len(date_lookup)} game_id -> date entries from season_games_*.json",
           flush=True)
 
-    paths = sorted(glob.glob(os.path.join(_NBA_CACHE, "boxscore_adv_*.json")))
-    print(f"Walking {len(paths)} boxscore_adv files...", flush=True)
+    # Walk both old (boxscore_adv_*) AND new (boxscore_*) schemas. The
+    # 2025-26 backfill from cycles 93a/96b populated boxscore_*.json with a
+    # lowercase schema (min, player_id, player_name, team_abbreviation).
+    adv_paths = sorted(glob.glob(os.path.join(_NBA_CACHE, "boxscore_adv_*.json")))
+    # Plain boxscore_*.json minus the boxscore_adv_*.json files (which would
+    # also match boxscore_*).
+    all_box_paths = sorted(glob.glob(os.path.join(_NBA_CACHE, "boxscore_*.json")))
+    plain_paths = [p for p in all_box_paths if "boxscore_adv_" not in os.path.basename(p)]
+    # Dedup: prefer adv (richer) when both exist for a game_id.
+    adv_gids = {os.path.basename(p).replace("boxscore_adv_", "").replace(".json", "")
+                for p in adv_paths}
+    plain_paths = [p for p in plain_paths
+                   if os.path.basename(p).replace("boxscore_", "").replace(".json", "")
+                   not in adv_gids]
+    paths = adv_paths + plain_paths
+    print(f"Walking {len(adv_paths)} boxscore_adv + {len(plain_paths)} "
+          f"plain boxscore files ({len(paths)} total)...", flush=True)
 
     rows: List[dict] = []
     n_games = 0
@@ -170,7 +191,7 @@ def aggregate(out_path: Optional[str] = None) -> Dict[str, int]:
             comment = str(p.get("comment") or "")
             reason = _normalise_reason(comment)
             try:
-                pid = int(p.get("personid") or 0)
+                pid = int(p.get("personid") or p.get("player_id") or 0)
             except Exception:
                 pid = 0
             if pid == 0:
@@ -180,8 +201,8 @@ def aggregate(out_path: Optional[str] = None) -> Dict[str, int]:
                 "game_date": gdate,
                 "season": season,
                 "player_id": pid,
-                "player": str(p.get("namei") or ""),
-                "team": str(p.get("teamtricode") or ""),
+                "player": str(p.get("namei") or p.get("player_name") or ""),
+                "team": str(p.get("teamtricode") or p.get("team_abbreviation") or ""),
                 "dnp_reason": reason,
                 "dnp_comment": comment,
                 "expected_to_play": True,

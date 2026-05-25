@@ -114,3 +114,23 @@ def test_missing_artifact_is_noop(tmp_path, monkeypatch):
     monkeypatch.setattr(pp, "_APPLY_PLAY_PROB", True)
     out2 = pp.apply_play_prob_blend(7.5, fr, model_dir=str(tmp_path))
     assert out2 == 7.5
+
+
+def test_dnp_parquet_covers_2025_26_holdout():
+    """cycle 105a: DNP parquet must include the 2025-26 holdout window
+    so the P(play) head trains on the same date range used for evaluation.
+
+    Pre-cycle-105a the parquet ended 2025-04-13 (cycle 104a REJECT root
+    cause). After re-aggregating against the 2025-26 boxscore backfill the
+    holdout window 2025-10-31..2026-04-12 must have non-trivial DNP rows.
+    """
+    import pandas as pd
+    parq = os.path.join(PROJECT_DIR, "data", "dnp_rows.parquet")
+    if not os.path.exists(parq):
+        pytest.skip("dnp_rows.parquet not present in this checkout")
+    df = pd.read_parquet(parq)
+    h = df[(df["game_date"] >= "2025-10-31") & (df["game_date"] <= "2026-04-12")]
+    assert len(h) > 100, (
+        f"2025-26 holdout DNP coverage too thin: {len(h)} rows. "
+        "Re-run scripts/aggregate_dnp_rows.py against the boxscore cache."
+    )
