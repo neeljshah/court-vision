@@ -5,11 +5,14 @@
 
 ---
 
-## Current State (2026-05-18)
+## Current State (2026-05-24 · loop 5 / cycle 96e)
 
 - CV pipeline: 17 quality / 29 usable / 75 attempted games (target: 80 CLEAN)
-- Models: 75 trained, real holdout R² documented in `data/models/model_registry.json`
+- Models: **85 trained**, walk-forward MAE for 7 prop heads in `data/models/quantile_pergame_metrics.json`
+- Win probability: **0.7094 acc / 0.193 Brier** walk-forward (5-way NNLS stack) — see [README §"The 71% Result"](README.md#the-71-result--backtested-not-claimed)
+- Prop backtest: **+19.9% to +28.1% ROI** at +0.5 edge across 7 stats, 19,964-game holdout
 - Validation infra: shipped 2026-05-17 (temporal CV, model registry, regression gates, e2e tests, CV benchmark, CI)
+- Production CLIs live: `predict_player.py`, `predict_slate.py`, `compare_to_lines.py`, `daily_run.py`, `nightly_report.py`, `compute_clv.py`
 - Gate 1 (CLV vs Pinnacle close): **NOT YET RUN** — top priority
 - Agentic research system: **not yet built**
 - Signal subscription / team licensing: **not yet live**

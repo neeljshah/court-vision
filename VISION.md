@@ -58,19 +58,25 @@ The substrate that makes the research machine possible is largely done:
 
 **CV Tracking Pipeline** — YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector. Converts broadcast video to court-coordinate spatial features. 29 usable games processed (target: 80 clean).
 
-**ML Signal Stack** — 85 trained models across 7 tiers. Real holdout performance (walk-forward temporal CV, 48-hr purge, N=480):
+**ML Signal Stack** — 85 trained models across 7 tiers. Honest walk-forward holdout, N=99,818 player-games (loop-5 cycle 96e production):
 
-| Signal | Holdout R² |
-|--------|-----------|
-| Points | 0.41 |
-| Rebounds | 0.38 |
-| Assists | 0.36 |
-| 3-pointers | 0.29 |
-| Turnovers | 0.22 |
-| Steals | 0.18 |
-| Blocks | 0.16 |
+| Signal | MAE | Production recipe |
+|--------|----:|-------------------|
+| PTS  | 4.62 | sqrt+Huber XGB/LGB blend + 5-seed MLP, NNLS-stacked |
+| REB  | 1.90 | log1p LGB quantile q50 |
+| AST  | 1.36 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
+| FG3M | 0.89 | log1p XGB quantile q50 |
+| TOV  | 0.89 | log1p XGB quantile q50 |
+| STL  | 0.72 | log1p XGB quantile q50 |
+| BLK  | 0.44 | log1p XGB q50 (**−16% vs prior best**) |
 
-Win probability: 68.5% accuracy, Brier 0.209. xFG (shot quality): Brier 0.226 on 221K shots.
+MAE — not R² — is the betting-relevant loss because sportsbook prop O/U lines score against the median, not the mean. 6 of 7 stats now ship q50 quantile heads as the primary predictor.
+
+**Win probability:** 70.94% accuracy / 0.193 Brier on 3-fold walk-forward; 71.7% / 0.188 on single-split. 5-way NNLS stack (XGB+LGB+LR+5-seed MLP+GaussianNB). Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json).
+
+**Backtested edge.** A 19,964-game holdout (cycle 30, re-validated cycle 38) bets every player-game where the model deviates from L5-line proxy by ≥ edge threshold. At -110 odds (break-even 52.4%): PTS +19.9% / REB +23.6% / AST +26.8% / FG3M +23.9% / TOV +28.1% / STL +21.5% / BLK +26.5% ROI at +0.5 edge; rises to +24% to +52% at +1.0 edge. Re-test against a smarter line proxy (L5 × opp_def × home_adj) still wins 26-32% ROI. Source: [`data/models/betting_backtest.json`](data/models/betting_backtest.json), [`data/models/betting_backtest_smart_line.json`](data/models/betting_backtest_smart_line.json).
+
+**xFG** (shot quality): Brier 0.226 on 221K shots. **DNP predictor:** AUC 0.979.
 
 **Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (1040 passing), CLV tracker scaffolding, CV benchmark.
 

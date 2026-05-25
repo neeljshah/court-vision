@@ -157,15 +157,40 @@ updated: {today}
 
 ## Current State at a Glance ({today})
 
-**Branch:** `{branch}` | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
+**Branch:** `{branch}` | **Loop:** 5 / cycle 96e | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
 
 | Item | Status |
 |------|--------|
 | Phase | G (CV game collection — 17 quality / 29 usable / 75 attempted) |
+| Win probability (walk-forward) | **0.7094 acc / 0.193 Brier** — see [[#The 71% Result]] |
+| Win probability (single-split) | **0.717 acc / 0.188 Brier** |
+| Prop backtest ROI @ +0.5 edge (20K-game holdout) | **+19.9% to +28.1%** across 7 stats |
 | **Gate 1: CLV vs Pinnacle close** | **NOT YET RUN — TOP PRIORITY** |
-| Signal universe | 85 models trained (target: 500-5000 signals via agentic system) |
+| Signal universe | 85 models trained (target: 500-5000 via agentic system) |
 | Top revenue surface live | None yet (signal subs targeted Q3 2026) |
-| Agentic research system | Not yet built (planned — see [[Plans/Agentic Research System]]) |
+| Agentic research system | Not yet built — see [[Plans/Agentic Research System]] |
+
+---
+
+## The 71% Result
+
+**Win prob 70.94% walk-forward / 71.7% single-split** — 5-way NNLS stack (XGB+LGB+LR+MLP+NB), 2 seasons. Source: [`data/models/win_prob_metrics.json`](../data/models/win_prob_metrics.json).
+
+**What it means in dollars** — 19,964-game holdout backtest, bet every player-game where projected median deviates from L5 line by ≥ edge threshold, -110 odds (break-even = 52.4%):
+
+| Stat | Edge ≥ 0.5 hit / ROI | Edge ≥ 1.0 hit / ROI |
+|------|---------------------|---------------------|
+| PTS  | 62.8% / **+19.9%**  | 65.1% / **+24.3%** |
+| REB  | 64.8% / **+23.6%**  | 69.5% / **+32.7%** |
+| AST  | 66.4% / **+26.8%**  | 72.2% / **+37.9%** |
+| FG3M | 64.9% / **+23.9%**  | 77.0% / **+46.9%** |
+| TOV  | 67.1% / **+28.1%**  | 77.6% / **+48.2%** |
+| STL  | 63.7% / **+21.5%**  | 76.5% / **+46.1%** |
+| BLK  | 66.3% / **+26.5%**  | 79.6% / **+52.0%** |
+
+Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.json). Re-validated cycle 38 vs smarter line proxy (L5 × opp_def × home_adj) → still 26-32% ROI at +0.5 edge. Walk-forward (not random holdout), MAE-optimized (not R²) because prop O/U scores against the median.
+
+**Honest discount.** Paper +25% ROI vs L5-proxy compresses to expected **+3-8% CLV** against sharp closing lines — that's the figure that actually compounds. Gate 1 measures it. See [[Plans/Gate 1 Validation]].
 
 ---
 
@@ -185,7 +210,7 @@ updated: {today}
 
 ---
 
-## Model Performance (cycle 40, walk-forward, per-game N=99,818)
+## Model Performance (loop 5 cycle 96e, walk-forward, per-game N=99,818)
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
