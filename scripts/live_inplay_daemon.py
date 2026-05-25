@@ -146,6 +146,9 @@ def run_one_iteration(*,
                        logger: Optional[logging.Logger] = None,
                        discover_fn: Optional[Callable[[Optional[str]], List[str]]] = None,
                        fetch_fn: Optional[Callable[[str], dict]] = None,
+                       trigger_alerts: bool = False,
+                       alert_threshold: float = 3.0,
+                       alert_min_severity: str = "high",
                        ) -> IterationResult:
     """One poll + save pass. Pure of side effects when ``dry_run=True``."""
     log = logger or configure_logger()
@@ -208,6 +211,24 @@ def run_one_iteration(*,
         except Exception as exc:  # noqa: BLE001
             log.warning("append_to_ledger failed for %s: %s", gid, exc)
 
+    # 4) (Optional) fan cycle-88k alerts through the webhook notifier.
+    if trigger_alerts:
+        try:
+            # Imported lazily so the daemon's hot path doesn't pay the
+            # cost (and so missing optional deps never block the poller).
+            from scripts.wire_live_alerts_webhook import run_once as _alert_run
+            from src.notifications.webhook_alerts import WebhookNotifier
+            notifier = WebhookNotifier(min_severity=alert_min_severity)
+            fired, posted = _alert_run(
+                notifier=notifier, date_str=date_str,
+                threshold=alert_threshold,
+            )
+            if fired:
+                log.info("[%s] alerts fired=%d posted=%d", date_str,
+                          fired, posted)
+        except Exception as exc:  # noqa: BLE001 - alerts must never crash the poller
+            log.warning("alert trigger failed: %s", exc)
+
     log.info("[%s] active=%d snapshots=%d inplay_rows=%d",
               date_str, active_count, snapshots_written, inplay_total)
     return IterationResult(active_count, snapshots_written,
@@ -226,6 +247,9 @@ def run_daemon(*,
                 pred_dir: str = PRED_DIR,
                 sleep_fn: Callable[[float], None] = time.sleep,
                 logger: Optional[logging.Logger] = None,
+                trigger_alerts: bool = False,
+                alert_threshold: float = 3.0,
+                alert_min_severity: str = "high",
                 ) -> int:
     """Drive the iteration loop. Returns total iterations executed."""
     log = logger or configure_logger()
@@ -254,6 +278,9 @@ def run_daemon(*,
                     date_str=date_str, live_dir=live_dir,
                     pred_dir=pred_dir, dry_run=dry_run,
                     sleep_fn=sleep_fn, logger=log,
+                    trigger_alerts=trigger_alerts,
+                    alert_threshold=alert_threshold,
+                    alert_min_severity=alert_min_severity,
                 )
             except KeyboardInterrupt:
                 raise
@@ -310,6 +337,16 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
                     help="Discover the slate + log the plan, write nothing.")
     ap.add_argument("--date", default=None,
                     help="Override the slate date (default: today).")
+    ap.add_argument("--trigger-alerts", action="store_true",
+                    help="After each poll, run cycle 88k alert detection "
+                         "and fan results to Slack/Discord via "
+                         "src.notifications.webhook_alerts (env: "
+                         "SLACK_ALERT_WEBHOOK / DISCORD_ALERT_WEBHOOK).")
+    ap.add_argument("--alert-threshold", type=float, default=3.0,
+                    help="PROJECTION_SHIFT threshold (stat units, default 3.0).")
+    ap.add_argument("--alert-min-severity", default="high",
+                    choices=("info", "medium", "high"),
+                    help="Drop alerts below this severity (default high).")
     return ap.parse_args(argv)
 
 
@@ -323,6 +360,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         dry_run=args.dry_run,
         date_str=args.date,
         logger=log,
+        trigger_alerts=args.trigger_alerts,
+        alert_threshold=args.alert_threshold,
+        alert_min_severity=args.alert_min_severity,
     )
     return 0 if iters >= 0 else 1
 
