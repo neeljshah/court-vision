@@ -75,5 +75,7 @@ else:
 
 if metrics:
     st.subheader("Model R² by Stat")
-    r2_rows = [{"stat": s, "R²": v.get("r2", v) if isinstance(v, dict) else v} for s, v in metrics.items()]
+    _m = metrics.get("stats", metrics)  # handle {stats: {stat: {r2: ...}}} or flat {stat: r2}
+    r2_rows = [{"stat": s, "R²": float(v.get("r2", 0)) if isinstance(v, dict) else float(v or 0)}
+               for s, v in _m.items() if isinstance(s, str) and s not in ("model", "trained_at")]
     st.dataframe(pd.DataFrame(r2_rows).sort_values("R²", ascending=False), use_container_width=True)
