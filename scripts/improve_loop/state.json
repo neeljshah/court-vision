@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 0,
+  "rounds_completed": 2,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -18,6 +18,24 @@
       "commit": "post-110-cal",
       "date": "2026-05-25",
       "summary": "Recalibrated quantile bands against new tighter endQ3 projections; 7/7 stats at endQ2 AND endQ3 hit 0.80 coverage target."
+    },
+    {
+      "name": "R1_D_v2_per_player_quantile_variance",
+      "round": 0,
+      "delta_pts": 0.0,
+      "stats_won": 7,
+      "commit": "pending-wire",
+      "date": "2026-05-25",
+      "summary": "Per-player variance-modulated quantile bands. Spread -0.0725 (gate -0.03). 7/7 stats at 0.80 overall coverage. Per-stat rescales [0.87-1.01]."
+    },
+    {
+      "name": "R2_F_residual_heads",
+      "round": 1,
+      "delta_pts": -0.0965,
+      "stats_won": 7,
+      "commit": "pending-commit",
+      "date": "2026-05-25",
+      "summary": "LightGBM residual heads on top of cycle-110 baseline at endQ3. PTS -0.0965 MAE, REB -0.046, AST -0.036, FG3M -0.048, STL -0.054, BLK -0.033, TOV -0.050. WF 4/4 folds negative (-0.082 to -0.107). 14 features (current stats + pf + min + score margin + position)."
     }
   ],
   "rejects": [
@@ -40,6 +58,66 @@
       "name": "111_l20_l5_ablation",
       "reason": "no-op (live wiring safe)",
       "saturated_angle": "L20/L5 rolling features in learned-Q4 live"
+    },
+    {
+      "name": "R1_A_endq2_learned_minutes",
+      "reason": "PTS +0.51, 2/7 wins",
+      "saturated_angle": "endQ2 learned-minutes via Q3-feature zero-fill (model OOD)",
+      "round": 0
+    },
+    {
+      "name": "R1_B_opp_def_shrinkage",
+      "reason": "PTS +0.003, 0/7 wins",
+      "saturated_angle": "multiplicative opp_def shrinkage on learned-Q4 baseline",
+      "round": 0
+    },
+    {
+      "name": "R1_C_q3_pace_adjustment",
+      "reason": "PTS -0.008 but 1/7 wins (AST/TOV regress)",
+      "saturated_angle": "Q3-observed pace adjustment on remaining (volume stats)",
+      "round": 0
+    },
+    {
+      "name": "R2_A_endq2_min_q2_model",
+      "reason": "PTS +0.58 (rate-extrap from 24min too noisy)",
+      "saturated_angle": "endQ2 learned-minute rate-based projection",
+      "round": 1
+    },
+    {
+      "name": "R2_B_foul_out_cliff",
+      "reason": "PTS -0.0004, 0/7 (pf=5 too rare)",
+      "saturated_angle": "foul-out cliff piecewise margin dampener",
+      "round": 1
+    },
+    {
+      "name": "R2_C_position_residual_shrinkage",
+      "reason": "0/7 (absorbed)",
+      "saturated_angle": "per-position residual shrinkage on learned-Q4",
+      "round": 1
+    },
+    {
+      "name": "R2_D_b2b_road_dampening",
+      "reason": "PTS +0.0005 0/7 (absorbed)",
+      "saturated_angle": "team-level B2B road Q4 dampening",
+      "round": 1
+    },
+    {
+      "name": "R2_E_possession_pace_q3",
+      "reason": "pre-flight slope 0.127<0.15",
+      "saturated_angle": "pts/tov-proxy pace adjustment (data limit)",
+      "round": 1
+    },
+    {
+      "name": "R2_G_starter_burnout",
+      "reason": "PTS +0.0003 0/7 (absorbed)",
+      "saturated_angle": "high-min Q4 rate fatigue dampener",
+      "round": 1
+    },
+    {
+      "name": "R2_H_asymmetric_quantile_tails",
+      "reason": "multiple gates fail",
+      "saturated_angle": "asymmetric per-stat tail calibration via residual quantiles",
+      "round": 1
     }
   ],
   "saturated_angles": [
@@ -59,7 +137,17 @@
     "heat-check shrinkage heuristic",
     "per-position stratified PTS",
     "blowout_residual on top of learned-Q4 (composes poorly)",
-    "foul_residual on top of learned-Q4 (trained against replaced heuristic)"
+    "foul_residual on top of learned-Q4 (trained against replaced heuristic)",
+    "endQ2 learned-minutes via Q3-feature zero-fill (model OOD)",
+    "multiplicative opp_def shrinkage on learned-Q4 baseline",
+    "Q3-observed pace adjustment on remaining (volume stats)",
+    "endQ2 learned-minute rate-based projection",
+    "foul-out cliff piecewise margin dampener",
+    "per-position residual shrinkage on learned-Q4",
+    "team-level B2B road Q4 dampening",
+    "pts/tov-proxy pace adjustment (data limit)",
+    "high-min Q4 rate fatigue dampener",
+    "asymmetric per-stat tail calibration via residual quantiles"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
