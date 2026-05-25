@@ -64,11 +64,55 @@ from src.data.live import (  # noqa: E402
 
 PRED_DIR = os.path.join(PROJECT_DIR, "data", "predictions")
 
+# tier1-2 (loop 5): foul_change residual head + stratified blend.
+# When True, project_from_snapshot consults the foul-change residual model
+# for endQ3 (period=4) snapshots and dispatches to its prediction when the
+# gate fires (q3_pf >= 2, OR pf_through_q3 >= 3, OR foul-out edge); the
+# global cycle 9d3 minute_trajectory model handles the rest. Probe
+# scripts/probe_stratified_blend.py validated SHIP: PTS MAE -0.24 on
+# foul_change stratum vs heuristic; 0.00 regression on non-foul; WF 4/4
+# folds negative. If either artifact is missing the dispatch transparently
+# falls back to the heuristic (back-compat preserved).
+_USE_FOUL_RESIDUAL = True
+
+# Module-scope lazy caches -- loaded once on first project_from_snapshot
+# call, then reused across the whole live polling loop.
+_GLOBAL_MIN_MODEL = None
+_FOUL_RESIDUAL_MODEL = None
+_MODELS_LOADED = False
+
+
+def _load_models_once():
+    """Idempotent loader for the cycle 9d3 + tier1-2 LightGBM artifacts.
+
+    Returns (global_model, residual_model). Either may be None if its
+    artifact is absent -- callers tolerate None via the stratified dispatch.
+    """
+    global _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL, _MODELS_LOADED
+    if _MODELS_LOADED:
+        return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL
+    try:
+        from src.prediction.minute_trajectory import MinuteTrajectoryModel
+        _GLOBAL_MIN_MODEL = MinuteTrajectoryModel.load()
+    except Exception:
+        _GLOBAL_MIN_MODEL = None
+    try:
+        from src.prediction.minute_trajectory_foul_residual import (
+            FoulChangeResidualModel,
+        )
+        _FOUL_RESIDUAL_MODEL = FoulChangeResidualModel.load()
+    except Exception:
+        _FOUL_RESIDUAL_MODEL = None
+    _MODELS_LOADED = True
+    return _GLOBAL_MIN_MODEL, _FOUL_RESIDUAL_MODEL
+
+
 __all__ = [
     "project_from_snapshot",
     "project_full_slate",
     "edge_vs_pregame",
     "write_ledger",
+    "_USE_FOUL_RESIDUAL",
 ]
 
 
@@ -123,7 +167,148 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         # Match the cycle-88n ledger schema for downstream consumers.
         r.setdefault("snapshot_period", snap_period)
         r.setdefault("snapshot_clock", snap_clock)
+
+    # tier1-2 (loop 5): stratified foul_change residual override. Only
+    # applies at endQ3 (period=4) snapshots where the residual model is
+    # validated; earlier periods keep the cycle-88b heuristic path.
+    if _USE_FOUL_RESIDUAL and int(snap_period or 0) == 4:
+        rows = _apply_stratified_foul_residual(snap, rows)
     return rows
+
+
+def _apply_stratified_foul_residual(snap: dict, rows: list) -> list:
+    """Re-project per-player stats using stratified_minute_factor when the
+    foul_change gate fires. Returns a new list with overrides applied
+    in-place on the original row dicts.
+
+    Untouched when both LightGBM artifacts are absent (graceful no-op).
+    """
+    global_model, residual_model = _load_models_once()
+    # If NEITHER model is loaded we have nothing to add over the heuristic.
+    if global_model is None and residual_model is None:
+        return rows
+
+    import predict_in_game as pig
+    from src.prediction.minute_trajectory_foul_residual import (
+        stratified_minute_factor,
+    )
+
+    period = int(snap.get("period") or 0)
+    clock_rem = pig.parse_clock(snap.get("clock"))
+    home_team = snap.get("home_team") or ""
+    away_team = snap.get("away_team") or ""
+    try:
+        home_score = float(snap.get("home_score") or 0)
+    except (TypeError, ValueError):
+        home_score = 0.0
+    try:
+        away_score = float(snap.get("away_score") or 0)
+    except (TypeError, ValueError):
+        away_score = 0.0
+    margin = home_score - away_score
+
+    # Index input players for fast lookup by player_id.
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    # Group output rows by player_id for in-place rewrite.
+    rows_by_pid: dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            rows_by_pid.setdefault(int(pid), []).append(r)
+        except (TypeError, ValueError):
+            continue
+
+    for pid, p in by_pid.items():
+        try:
+            snap_pf = float(p.get("pf") or 0)
+            cur_min = float(p.get("min") or 0)
+            min_q1 = float(p.get("min_q1") or 0)
+            min_q2 = float(p.get("min_q2") or 0)
+            min_q3 = float(p.get("min_q3") or 0)
+        except (TypeError, ValueError):
+            continue
+        # We don't have an authoritative q3_pf alone; approximate by the
+        # standard endQ3 heuristic used in probe_stratified_blend.py.
+        q3_pf_proxy = max(0.0, snap_pf - 2.0)
+        team = p.get("team") or ""
+        team_is_leading = (
+            (team == home_team and margin > 0) or
+            (team == away_team and margin < 0)
+        )
+        ff = stratified_minute_factor(
+            global_model=global_model,
+            residual_model=residual_model,
+            pf_through_q3=snap_pf,
+            q3_pf=q3_pf_proxy,
+            min_q1=min_q1, min_q2=min_q2, min_q3=min_q3,
+            score_margin_abs=abs(margin),
+            is_leading_team=1 if team_is_leading else 0,
+            position_proxy=p.get("position"),
+            l20_min=p.get("l20_min"),
+            l5_min=p.get("l5_min"),
+            q2_pf=p.get("q2_pf", 0),
+        )
+        share_played_game = pig.clock_played_share(period, clock_rem)
+        proj_min = ((cur_min / share_played_game)
+                    if share_played_game > 0 else cur_min)
+        is_star = proj_min >= 30.0
+        bf = pig.blowout_factor(
+            abs(margin), period, is_star=(is_star and team_is_leading))
+        period_elapsed_min = max(0.0, pig.PERIOD_MIN - clock_rem)
+        bench_now = pig.is_bench_in_current_period(
+            p, period, period_elapsed_min=period_elapsed_min)
+        player_basis = cur_min if bench_now else None
+
+        out_rows = rows_by_pid.get(pid, [])
+        for r in out_rows:
+            stat = r.get("stat")
+            if stat not in pig.STATS:
+                continue
+            try:
+                cur = float(p.get(stat) or 0)
+            except (TypeError, ValueError):
+                cur = 0.0
+            new_final = pig.project_final(
+                cur, period, clock_rem,
+                pace_factor=1.0, foul_factor=ff, blow_factor=bf,
+                player_clock_played_min=player_basis,
+            )
+            r["projected_final"] = float(new_final)
+            r["foul_factor"] = ff
+            r["blow_factor"] = bf
+            r["minute_factor_source"] = (
+                "foul_residual"
+                if (residual_model is not None
+                    and _foul_change_gate_inline(snap_pf, q3_pf_proxy))
+                else "global_min_trajectory"
+            )
+    return rows
+
+
+def _foul_change_gate_inline(snap_pf, q3_pf):
+    """Local copy of in_foul_change_stratum to avoid a tight import loop in
+    the override hot path. Mirrors src.prediction.minute_trajectory_foul_residual.
+    """
+    try:
+        sp = int(snap_pf)
+        q3 = int(q3_pf)
+    except (TypeError, ValueError):
+        return False
+    if q3 >= 2:
+        return True
+    if sp >= 3:
+        return True
+    if q3 == 0 and sp == 4:
+        return True
+    return False
 
 
 # ── 2. project_full_slate ─────────────────────────────────────────────────────
