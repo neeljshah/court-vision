@@ -211,6 +211,12 @@ def main():
                     help="Cycle 68. Append recommended bets (positive EV) to a CSV for later "
                          "CLV / settlement analysis. Bare flag → data/bets/<today>.csv; with "
                          "arg → that path.")
+    ap.add_argument("--strategy", default="pregame_auto",
+                    help="A/B strategy tag (cycle 104c) stamped on the output "
+                         "command suggestions. Default 'pregame_auto'.")
+    ap.add_argument("--register-strategy", action="store_true",
+                    help="If set, auto-register --strategy in ab_strategies.csv "
+                         "with bankroll $1000 / max_bet_pct 0.05 when missing.")
     ap.add_argument("--rolling-cal", action="store_true",
                     help="Cycle 90f T4-A. Use prior-60-game rolling quantile calibration "
                          "(data/models/quantile_cal_rolling.parquet) instead of the global "
@@ -347,6 +353,24 @@ def main():
     if args.kelly:
         total_stake = sum(r["kelly_stake"] for r in results)
         print(f"\n  Total Kelly stake on positive-EV bets: ${total_stake:.2f} of ${args.bankroll:.2f} bankroll")
+
+    # Cycle 104c: A/B strategy tagging + copy-pasteable place_bet commands.
+    if args.register_strategy:
+        try:
+            from src.betting.recommendation import ensure_strategy_registered
+            ensure_strategy_registered(args.strategy, bankroll=1000.0,
+                                        max_bet_pct=0.05)
+        except Exception as exc:
+            print(f"  [warn] could not auto-register {args.strategy!r}: {exc}")
+    print(f"\n  --- copy-pasteable place_bet commands (strategy={args.strategy}) ---")
+    try:
+        from src.betting.recommendation import to_place_bet_command
+        for r in results:
+            r_low = dict(r); r_low["stat"] = str(r["stat"]).lower()
+            print("  " + to_place_bet_command(r_low, args.strategy,
+                                              odds=int(r["odds"])))
+    except Exception as exc:
+        print(f"  [warn] could not emit commands: {exc}")
 
     if args.bet_log is not None and results:
         bet_path = (os.path.join(PROJECT_DIR, "data", "bets",
