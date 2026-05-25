@@ -135,6 +135,17 @@ _USE_PERIOD_HEADS = True
 # skipped when this flag is on. Missing artifact -> transparent fallback.
 _USE_LEARNED_Q4_MINUTES = True
 
+# cycle R2_F (loop 5): per-stat residual heads at endQ3. When True,
+# project_from_snapshot at period=4 adds a learned residual correction to
+# each (player, stat) projection AFTER the cycle 110 learned-Q4-minutes path
+# (or after period heads when cycle 110 falls back). Applied last so it
+# operates on the best available point projection.
+# Probe scripts/probe_R2_F_residual_heads.py validated SHIP:
+# PTS MAE -0.0965, 7/7 stats win, WF 4/4 folds negative.
+# Artifacts: data/models/residual_heads/{pts,reb,ast,fg3m,stl,blk,tov}.lgb
+# Missing artifact dir -> transparent no-op (back-compat preserved).
+_USE_RESIDUAL_HEADS = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -195,6 +206,7 @@ __all__ = [
     "_INCLUDE_QUANTILE_BANDS",
     "_USE_PERIOD_HEADS",
     "_USE_LEARNED_Q4_MINUTES",
+    "_USE_RESIDUAL_HEADS",
 ]
 
 
@@ -356,10 +368,22 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     if (_USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4
             and not learned_q4_applied):
         rows = _apply_heat_check_shrinkage(snap, rows)
-    # cycle 105c (loop 5): opt-in quantile bands. q50 == projected_final
+    # cycle R2_F (loop 5): per-stat residual heads at endQ3. Applied AFTER all
+    # projection source overrides (learned_q4_minutes / period_heads / legacy
+    # foul+blowout+heat_check) so the residual correction stacks on the best
+    # available point projection. Graceful no-op when artifacts are missing.
+    if _USE_RESIDUAL_HEADS and int(snap_period or 0) == 4:
+        rows = _apply_residual_heads(snap, rows)
+
+    # cycle 105c + R1_D_v2 (loop 5): opt-in quantile bands. q50 == projected_final
     # always; q10/q90 are additive. Guarded so the existing point-only
     # consumers (live_dashboard, save_live_predictions, edge_eval) see no
     # row-shape change when the flag is off (the default).
+    # R1_D_v2: pass pid + game_date per-row so bands_for can apply per-player
+    # variance modulation when the per_player_quantile_calibration artifact is
+    # present. game_date is taken from snap.get("game_date") -- if absent (the
+    # common live case today) bands_for transparently falls back to the legacy
+    # population-level band (back-compat preserved).
     if _INCLUDE_QUANTILE_BANDS:
         try:
             from src.prediction.live_quantile_bands import (
@@ -367,19 +391,94 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
             )
             point = period_to_point(snap_period) if snap_period is not None else None
             cal = load_calibration()
+            snap_game_date: Optional[str] = snap.get("game_date") or None
             for r in rows:
                 stat = r.get("stat")
                 try:
                     q50 = float(r.get("projected_final", 0.0) or 0.0)
                 except (TypeError, ValueError):
                     q50 = 0.0
-                b = bands_for(stat, q50, point, calibration=cal)
+                try:
+                    row_pid: Optional[int] = int(r["player_id"]) if r.get("player_id") is not None else None
+                except (TypeError, ValueError):
+                    row_pid = None
+                b = bands_for(stat, q50, point, calibration=cal,
+                              pid=row_pid, game_date=snap_game_date)
                 r["q10"] = b["q10"]
                 r["q50"] = b["q50"]
                 r["q90"] = b["q90"]
         except Exception:
             # Bands are advisory -- never break the hot path.
             pass
+    return rows
+
+
+def _apply_residual_heads(snap: dict, rows: list) -> list:
+    """cycle R2_F: add per-(player, stat) residual head correction at endQ3.
+
+    Calls ``src.prediction.residual_heads.apply_residual_correction`` to get
+    updated projected_final values, then tags each modified row's
+    ``projection_source`` with "+residual_head". Graceful no-op if the
+    helper import fails or no artifacts are present.
+    """
+    try:
+        from src.prediction.residual_heads import (
+            apply_residual_correction,
+            load_heads,
+        )
+    except Exception:
+        return rows
+
+    try:
+        heads = load_heads()
+        if not heads:
+            return rows
+    except Exception:
+        return rows
+
+    # Build projs dict from current rows for the helper.
+    projs: Dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        if pid is None or stat is None:
+            continue
+        try:
+            projs[(int(pid), str(stat))] = float(r.get("projected_final") or 0.0)
+        except (TypeError, ValueError):
+            continue
+
+    try:
+        updated = apply_residual_correction(snap, projs)
+    except Exception:
+        # Never break the hot path.
+        return rows
+
+    # Apply updated projections back to rows.
+    for r in rows:
+        pid = r.get("player_id")
+        stat = r.get("stat")
+        if pid is None or stat is None:
+            continue
+        try:
+            key = (int(pid), str(stat))
+        except (TypeError, ValueError):
+            continue
+        new_val = updated.get(key)
+        if new_val is None:
+            continue
+        old_val = r.get("projected_final")
+        # Only tag + update when the correction actually changed the value.
+        try:
+            changed = abs(float(new_val) - float(old_val or 0.0)) > 1e-9
+        except (TypeError, ValueError):
+            changed = True
+        if changed:
+            r["projected_final"] = float(new_val)
+            src = str(r.get("projection_source") or "")
+            if not src.endswith("+residual_head"):
+                r["projection_source"] = src + "+residual_head"
+
     return rows
 
 
