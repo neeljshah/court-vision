@@ -99,13 +99,12 @@ _USE_BLOWOUT_RESIDUAL = True
 _USE_HEAT_CHECK_SHRINKAGE = True
 
 # cycle 105c (loop 5): in-play quantile bands (q10/q50/q90 around the point
-# projection). Default OFF -- bands are available on request via
-# src.prediction.live_quantile_bands.project_from_snapshot_with_bands or by
-# flipping this flag to True (in which case project_from_snapshot attaches
-# q10/q50/q90 to every returned row). q50 ALWAYS equals projected_final --
-# the point prediction is never altered. Bands are wide-open (q10=0,
-# q90=2*q50) when the calibration artifact is absent (back-compat).
-_INCLUDE_QUANTILE_BANDS = False
+# projection). Enabled cycle 107a after v2 recalibration against live_engine
+# projections (endQ2: 7/7 SHIP, endQ3: 7/7 SHIP on held-out half).
+# q50 ALWAYS equals projected_final -- the point prediction is never altered.
+# Bands are wide-open (q10=0, q90=2*q50) for endQ1 / mid-period snapshots
+# where no calibration artifact exists (back-compat).
+_INCLUDE_QUANTILE_BANDS = True
 
 # cycle 106a (loop 5): wire cycle-105b period_specific_heads into
 # project_from_snapshot. When True, at endQ1 (period=2, clock≈12:00) and
@@ -315,6 +314,19 @@ def _apply_period_heads(snap: dict, rows: list) -> list:
     # excluded per cycle 105b ship notes.
     if point not in ("endQ1", "endQ2"):
         return rows
+
+    # cycle 107b: enrich snapshot player dicts with pregame rolling features
+    # (l5/l20/position) before head inference.  The period heads were trained
+    # on these features; without enrichment LightGBM sees NaN for 4/12 inputs
+    # and falls back to unconditional splits.  Enrichment is best-effort —
+    # if the gamelog is absent the keys stay absent (back-compat NaN path).
+    try:
+        from src.prediction.pregame_enrichment import (
+            enrich_snapshot_with_pregame_features,
+        )
+        snap = enrich_snapshot_with_pregame_features(snap)
+    except Exception:
+        pass
 
     src_tag = f"{point}_head"
     observed_qs = psh.SNAPSHOT_QUARTERS[point]
