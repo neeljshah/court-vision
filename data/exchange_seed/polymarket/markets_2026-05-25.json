@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "condition_id": "test_cid_1",
+      "question": "Will Lakers beat Nuggets?",
+      "slug": "lakers-vs-nuggets-20260525-nba",
+      "end_date": "2026-05-25T23:00Z",
+      "outcome_prices": [
+        {"outcome": "yes", "price": 0.55},
+        {"outcome": "no", "price": 0.45}
+      ],
+      "volume_24h": 1000.0
+    }
+  ]
+}
