@@ -120,6 +120,12 @@ class BetRow:
     pnl: Optional[float] = None
     game_id: str = ""
     notes: str = ""
+    # v2 fields — all Optional so existing CSVs load with None defaults
+    ip: Optional[str] = None                  # L26 IP cross-checks
+    model_p_var: Optional[float] = None       # L33 uncertainty
+    clv_units: Optional[float] = None
+    clv_prob_pts: Optional[float] = None
+    line_at_close: Optional[float] = None
 
 
 _BET_COLS = list(BetRow.__dataclass_fields__.keys())
@@ -213,7 +219,63 @@ def _dict_to_betrow(d: dict) -> BetRow:
         pnl=_flt(d.get("pnl")),
         game_id=str(d.get("game_id", "")),
         notes=str(d.get("notes", "")),
+        # v2 fields — safe defaults for legacy CSVs that lack these columns
+        ip=(str(d["ip"]) if d.get("ip") not in (None, "", "nan") else None),
+        model_p_var=_flt(d.get("model_p_var")),
+        clv_units=_flt(d.get("clv_units")),
+        clv_prob_pts=_flt(d.get("clv_prob_pts")),
+        line_at_close=_flt(d.get("line_at_close")),
     )
+
+
+def _compute_clv_for_bet(
+    bet: "BetRow",
+) -> "tuple[Optional[float], Optional[float], Optional[float]]":
+    """Try to compute CLV for a single bet via L19.
+
+    Returns (line_at_close, clv_units, clv_prob_pts) or (None, None, None) on
+    any error (missing snapshots, import failure, etc.).  Always safe to call.
+    """
+    try:
+        import importlib
+        L19 = importlib.import_module("scripts.execute_loop.L19_clv_calculator")
+
+        date = str(bet.placed_at_iso)[:10]
+        if not date:
+            return None, None, None
+
+        snaps = L19.load_snapshots(date, date)
+        if snaps.empty:
+            log.debug("_compute_clv_for_bet: no snapshots for %s", date)
+            return None, None, None
+
+        import unicodedata
+
+        def _nk(s: str) -> str:
+            nfkd = unicodedata.normalize("NFKD", str(s))
+            return "".join(c for c in nfkd if not unicodedata.combining(c)).lower().strip()
+
+        player_norm = _nk(bet.player)
+        stat_key = str(bet.stat).lower()
+
+        mask = (
+            (snaps["player_norm"] == player_norm)
+            & (snaps["stat"].str.lower() == stat_key)
+        )
+        player_snaps = snaps[mask]
+        if player_snaps.empty:
+            log.debug("_compute_clv_for_bet: no snapshot row for player=%s stat=%s", bet.player, bet.stat)
+            return None, None, None
+
+        # pick latest snapshot as closing line proxy
+        close_row = player_snaps.loc[player_snaps["snapshot_ts"].idxmax()]
+        lclose = float(close_row["line"])
+
+        clv_pt = L19.compute_clv(bet, line_at_bet=float(bet.line), line_at_close=lclose)
+        return lclose, clv_pt.clv_units, clv_pt.clv_prob_pts
+    except Exception as exc:
+        log.debug("_compute_clv_for_bet: failed for bet_id=%s: %s", getattr(bet, "bet_id", "?"), exc)
+        return None, None, None
 
 
 def get_open_bets() -> list[BetRow]:
@@ -337,6 +399,16 @@ def settle_unsettled(date: str = None) -> int:
         df.at[idx, "actual_value"] = actual
         df.at[idx, "pnl"] = pnl
         df.at[idx, "settled_at_iso"] = now_iso
+
+        # CLV enrichment (soft — never blocks settlement)
+        lclose, clv_u, clv_pp = _compute_clv_for_bet(bet)
+        if lclose is not None:
+            df.at[idx, "line_at_close"] = lclose
+        if clv_u is not None:
+            df.at[idx, "clv_units"] = clv_u
+        if clv_pp is not None:
+            df.at[idx, "clv_prob_pts"] = clv_pp
+
         settled_count += 1
         log.info("settle_unsettled: %s bet_id=%s player=%s %s %s %.1f actual=%.1f pnl=%.4f",
                  status, bet.bet_id, bet.player, stat_key, side, line, actual, pnl)

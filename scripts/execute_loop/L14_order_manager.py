@@ -32,7 +32,7 @@ import sys
 import time
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -45,9 +45,23 @@ _ORDERS_FILE = _LEDGER_DIR / "open_orders.json"
 log = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Valid exchanges
+# Exchange registry
 # ---------------------------------------------------------------------------
-_VALID_EXCHANGES = {"kalshi", "polymarket", "sporttrade"}
+ALL_EXCHANGES: Tuple[str, ...] = ("kalshi", "polymarket", "sporttrade", "prophet")
+_VALID_EXCHANGES = {"kalshi", "polymarket", "sporttrade", "prophet"}
+
+# ---------------------------------------------------------------------------
+# NormalizedFill dataclass
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class NormalizedFill:
+    exchange: str
+    market_id: str
+    side: str          # always lowercase
+    qty: float
+    exchange_order_id: str
+
 
 # ---------------------------------------------------------------------------
 # OrderState dataclass
@@ -73,7 +87,8 @@ class OrderState:
 # In-memory state (module-level; tests can replace these directly)
 # ---------------------------------------------------------------------------
 _open_orders: List[OrderState] = []
-_processed_fills: Dict[str, int] = {}   # order_id -> last known qty_filled (idempotency)
+_processed_fills: Dict[str, int] = {}         # order_id -> last known qty_filled (idempotency)
+_processed_fills_by_oid: Dict[str, float] = {}  # exchange_order_id -> cumulative qty applied
 
 # ---------------------------------------------------------------------------
 # Persistence helpers
@@ -120,8 +135,12 @@ def _get_exchange_client(exchange: str):
         "kalshi":      "L09_kalshi_client",
         "polymarket":  "L10_polymarket_client",
         "sporttrade":  "L11_sporttrade_client",
+        "prophet":     "L12_prophet_client",
     }
-    mod_name = module_map[exchange]
+    mod_name = module_map.get(exchange)
+    if mod_name is None:
+        log.warning("L14: unknown exchange %r — no client available", exchange)
+        return None
     # Allow sys.modules injection for testing
     if mod_name in sys.modules:
         return sys.modules[mod_name]
@@ -155,6 +174,103 @@ def _get_l22():
     except ImportError:
         log.warning("L14: L22_alerting not available — fill alert skipped")
         return None
+
+
+# ---------------------------------------------------------------------------
+# Per-exchange adapters: raw position -> NormalizedFill
+# ---------------------------------------------------------------------------
+
+def _adapt_kalshi(pos: object, exchange: str) -> NormalizedFill:
+    """Kalshi: KalshiPosition — market_ticker, side, qty."""
+    market_id = getattr(pos, "market_ticker", None)
+    if market_id is None and isinstance(pos, dict):
+        market_id = pos.get("market_ticker", "")
+    side = getattr(pos, "side", None)
+    if side is None and isinstance(pos, dict):
+        side = pos.get("side", "")
+    qty = getattr(pos, "qty", None)
+    if qty is None and isinstance(pos, dict):
+        qty = pos.get("qty", 0)
+    oid = f"{exchange}:{market_id}:{side}"
+    return NormalizedFill(
+        exchange=exchange,
+        market_id=str(market_id or ""),
+        side=str(side or "").lower(),
+        qty=float(qty or 0),
+        exchange_order_id=oid,
+    )
+
+
+def _adapt_polymarket(pos: object, exchange: str) -> NormalizedFill:
+    """Polymarket: PolyPosition — condition_id, outcome (maps to side), qty."""
+    market_id = getattr(pos, "condition_id", None)
+    if market_id is None and isinstance(pos, dict):
+        market_id = pos.get("condition_id", "")
+    # outcome acts as side for Polymarket
+    side = getattr(pos, "outcome", None)
+    if side is None and isinstance(pos, dict):
+        side = pos.get("outcome", "")
+    qty = getattr(pos, "qty", None)
+    if qty is None and isinstance(pos, dict):
+        qty = pos.get("qty", 0)
+    oid = f"{exchange}:{market_id}:{side}"
+    return NormalizedFill(
+        exchange=exchange,
+        market_id=str(market_id or ""),
+        side=str(side or "").lower(),
+        qty=float(qty or 0),
+        exchange_order_id=oid,
+    )
+
+
+def _adapt_sporttrade(pos: object, exchange: str) -> NormalizedFill:
+    """Sporttrade: SporttradePosition — market_id, side, qty."""
+    market_id = getattr(pos, "market_id", None)
+    if market_id is None and isinstance(pos, dict):
+        market_id = pos.get("market_id", "")
+    side = getattr(pos, "side", None)
+    if side is None and isinstance(pos, dict):
+        side = pos.get("side", "")
+    qty = getattr(pos, "qty", None)
+    if qty is None and isinstance(pos, dict):
+        qty = pos.get("qty", 0)
+    oid = f"{exchange}:{market_id}:{side}"
+    return NormalizedFill(
+        exchange=exchange,
+        market_id=str(market_id or ""),
+        side=str(side or "").lower(),
+        qty=float(qty or 0),
+        exchange_order_id=oid,
+    )
+
+
+def _adapt_prophet(pos: object, exchange: str) -> NormalizedFill:
+    """Prophet: ProphetPosition — market_id, side, qty."""
+    market_id = getattr(pos, "market_id", None)
+    if market_id is None and isinstance(pos, dict):
+        market_id = pos.get("market_id", "")
+    side = getattr(pos, "side", None)
+    if side is None and isinstance(pos, dict):
+        side = pos.get("side", "")
+    qty = getattr(pos, "qty", None)
+    if qty is None and isinstance(pos, dict):
+        qty = pos.get("qty", 0)
+    oid = f"{exchange}:{market_id}:{side}"
+    return NormalizedFill(
+        exchange=exchange,
+        market_id=str(market_id or ""),
+        side=str(side or "").lower(),
+        qty=float(qty or 0),
+        exchange_order_id=oid,
+    )
+
+
+_ADAPTERS = {
+    "kalshi":      _adapt_kalshi,
+    "polymarket":  _adapt_polymarket,
+    "sporttrade":  _adapt_sporttrade,
+    "prophet":     _adapt_prophet,
+}
 
 
 # ---------------------------------------------------------------------------
@@ -211,6 +327,33 @@ def get_open_orders() -> List[OrderState]:
     """Return all currently tracked open/partial orders."""
     _init_from_disk()
     return list(_open_orders)
+
+
+def _apply_fill(order: OrderState, matched_qty: int) -> bool:
+    """Apply a fill quantity to an order, updating status and emitting events.
+
+    Uses _processed_fills for idempotency. Returns True if qty_filled changed.
+    Caller is responsible for appending order.order_id to a to_remove list
+    when order.status == "FILLED".
+    """
+    prior_fill = _processed_fills.get(order.order_id, 0)
+    new_fill = max(prior_fill, matched_qty)
+
+    if new_fill <= order.qty_filled:
+        return False
+
+    order.qty_filled = new_fill
+
+    if order.qty_filled >= order.qty:
+        order.status = "FILLED"
+        if prior_fill < order.qty:
+            _emit_fill_events(order)
+        _processed_fills[order.order_id] = new_fill
+    else:
+        order.status = "PARTIAL"
+        _processed_fills[order.order_id] = new_fill
+
+    return True
 
 
 def update_from_exchange_fills() -> int:
@@ -270,24 +413,11 @@ def update_from_exchange_fills() -> int:
         if matched_qty_filled is None:
             continue
 
-        # Idempotent: never decrease fill count
-        prior_fill = _processed_fills.get(order.order_id, 0)
-        new_fill = max(prior_fill, matched_qty_filled)
-
-        if new_fill > order.qty_filled:
-            order.qty_filled = new_fill
+        changed = _apply_fill(order, matched_qty_filled)
+        if changed:
             updated += 1
-
-            if order.qty_filled >= order.qty:
-                order.status = "FILLED"
+            if order.status == "FILLED":
                 to_remove.append(order.order_id)
-                # Only emit fill events if this is first time reaching FILLED
-                if prior_fill < order.qty:
-                    _emit_fill_events(order)
-                _processed_fills[order.order_id] = new_fill
-            else:
-                order.status = "PARTIAL"
-                _processed_fills[order.order_id] = new_fill
 
     # Remove fully settled orders from open list
     if to_remove:
@@ -295,6 +425,99 @@ def update_from_exchange_fills() -> int:
         _save_orders(_open_orders)
 
     return updated
+
+
+def sync_all_exchanges(
+    positions: Optional[Dict[str, list]] = None,
+    exchanges: Optional[List[str]] = None,
+) -> List[OrderState]:
+    """Poll all 4 paper exchange clients and reconcile positions.
+
+    Parameters
+    ----------
+    positions:  Optional pre-fetched positions dict {exchange: [raw_pos, ...]}.
+                When None, calls client.get_positions() for each exchange.
+    exchanges:  Exchanges to poll. Defaults to list(ALL_EXCHANGES).
+
+    Returns
+    -------
+    List of OrderState objects whose qty_filled changed during this call.
+    """
+    if exchanges is None:
+        exchanges = list(ALL_EXCHANGES)
+
+    _init_from_disk()
+    changed_orders: List[OrderState] = []
+    to_remove: List[str] = []
+
+    for exchange in exchanges:
+        # Fetch raw positions
+        if positions is not None:
+            raw_positions = positions.get(exchange) or []
+        else:
+            client = _get_exchange_client(exchange)
+            if client is None:
+                continue
+            try:
+                raw_positions = client.get_positions()
+            except Exception as exc:
+                log.warning(
+                    "L14: sync_all_exchanges: get_positions failed for %s — %s",
+                    exchange, exc,
+                )
+                continue
+
+        adapter = _ADAPTERS.get(exchange)
+        if adapter is None:
+            log.warning("L14: no adapter for exchange %r — skipping", exchange)
+            continue
+
+        # Normalize each raw position into NormalizedFill
+        normalized: List[NormalizedFill] = []
+        for raw_pos in raw_positions:
+            try:
+                nf = adapter(raw_pos, exchange)
+                normalized.append(nf)
+            except Exception as exc:
+                log.warning(
+                    "L14: adapter %s failed on position %r — %s", exchange, raw_pos, exc
+                )
+
+        # Match NormalizedFills to open OrderStates
+        for nf in normalized:
+            # Dedup: only apply delta beyond what we've already processed for this oid
+            prior_oid_qty = _processed_fills_by_oid.get(nf.exchange_order_id, 0.0)
+            delta = nf.qty - prior_oid_qty
+            if delta <= 0:
+                continue
+
+            # Find matching order(s) by (exchange, market_id, side)
+            for order in list(_open_orders):
+                if order.status in ("FILLED", "CANCELLED", "REJECTED"):
+                    continue
+                if (
+                    order.exchange == nf.exchange
+                    and order.market_id == nf.market_id
+                    and order.side == nf.side
+                ):
+                    matched_qty = int(nf.qty)
+                    changed = _apply_fill(order, matched_qty)
+                    if changed:
+                        changed_orders.append(order)
+                        if order.status == "FILLED":
+                            to_remove.append(order.order_id)
+                    # Update oid tracking regardless
+                    _processed_fills_by_oid[nf.exchange_order_id] = max(
+                        prior_oid_qty, nf.qty
+                    )
+                    break
+
+    # Remove FILLED orders from open list
+    if to_remove:
+        _open_orders[:] = [o for o in _open_orders if o.order_id not in to_remove]
+        _save_orders(_open_orders)
+
+    return changed_orders
 
 
 def _emit_fill_events(order: OrderState) -> None:
@@ -471,9 +694,10 @@ def reprice_order(order: OrderState, new_price: int) -> bool:
 
 def _reset_state() -> None:
     """Clear in-memory state — intended for test isolation only."""
-    global _open_orders, _processed_fills
+    global _open_orders, _processed_fills, _processed_fills_by_oid
     _open_orders = []
     _processed_fills = {}
+    _processed_fills_by_oid = {}
 
 
 # ---------------------------------------------------------------------------

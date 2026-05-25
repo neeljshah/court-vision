@@ -298,3 +298,197 @@ def test_subscribe_live_engine_yields_nothing_when_unavailable(tmp_path, monkeyp
 
     results = list(mod.subscribe_live_engine(period="endQ1"))
     assert results == [], f"Expected empty iterator, got {results}"
+
+
+# ---------------------------------------------------------------------------
+# FakeLivePredictor — returns rising win-probs for endQ1/endQ2/endQ3
+# ---------------------------------------------------------------------------
+
+class FakeLivePredictor:
+    """Stub predictor returning a single prediction per quarter call."""
+
+    _WINPROBS = {"endQ1": 0.55, "endQ2": 0.62, "endQ3": 0.71}
+
+    def __init__(self):
+        self.calls: list[str] = []
+
+    def predict_live(self, period: str) -> list[dict]:
+        self.calls.append(period)
+        p_over = self._WINPROBS.get(period, 0.55)
+        return [
+            {
+                "player": "Team_A",
+                "stat": "winprob",
+                "period": period,
+                "q50": p_over,
+                "p_over": p_over,
+                "p_under": round(1.0 - p_over, 4),
+                "side": "OVER",
+                "market_id": "TEAM_A_WIN",
+                "market_p": 0.50,
+                "exchange": "paper",
+                "ts": "2026-05-25T20:00:00Z",
+            }
+        ]
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — Full 3-quarter trading lifecycle: open Q1, hold/add Q2, hold Q3,
+#           then exit_all_positions closes everything.
+# ---------------------------------------------------------------------------
+
+def test_full_live_session_three_quarter_hold_then_exit(tmp_path, monkeypatch):
+    """FakeLivePredictor drives endQ1 OPEN, Q2 ADD, Q3 ADD/HOLD, then exit closes 1 row."""
+    fake = FakeLivePredictor()
+
+    # Fake L18 with permissive risk limits
+    fake_l18 = types.ModuleType("scripts.execute_loop.L18_bankroll_manager")
+    fake_l18.kelly_fraction = MagicMock(return_value=0.02)
+    fake_l18.check_risk_limits = MagicMock(return_value=(True, "ok"))
+
+    # Fake L14 order manager (track_order must be a real MagicMock we can inspect)
+    fake_l14 = types.ModuleType("scripts.execute_loop.L14_order_manager")
+    fake_l14.track_order = MagicMock(return_value=None)
+
+    stubs = {
+        "src.prediction.live_engine": None,           # we'll monkeypatch _predict_live directly
+        "scripts.execute_loop.L13_cross_exchange_ev": MagicMock(),
+        "scripts.execute_loop.L14_order_manager": fake_l14,
+        "scripts.execute_loop.L18_bankroll_manager": fake_l18,
+        "scripts.execute_loop.L22_alerting": MagicMock(),
+    }
+    mod = _load_L16(extra_mocks=stubs)
+
+    ledger_path = tmp_path / "paper_live_positions.json"
+    monkeypatch.setattr(mod, "_PAPER_LEDGER", ledger_path)
+    monkeypatch.setattr(mod, "_predict_live", fake.predict_live)
+    monkeypatch.setattr(mod, "_check_risk_limits", fake_l18.check_risk_limits)
+    monkeypatch.setattr(mod, "_kelly_fraction", fake_l18.kelly_fraction)
+    monkeypatch.setattr(mod, "_track_order", fake_l14.track_order)
+    # Suppress real sleeps
+    monkeypatch.setattr(mod.time, "sleep", lambda _: None)
+
+    opened = mod.run_live_session(game_id="0042500207", polling_sec=0)
+
+    # --- predictor was called for all three periods ---
+    assert fake.calls == ["endQ1", "endQ2", "endQ3"], (
+        f"Expected calls for all three quarters, got {fake.calls}"
+    )
+
+    # --- at least 1 position opened ---
+    assert opened >= 1, f"Expected at least 1 opened position, got {opened}"
+
+    # --- ledger has exactly 1 row (upsert deduplicates by position_id) ---
+    raw = json.loads(ledger_path.read_text(encoding="utf-8"))
+    positions = raw["positions"]
+    assert len(positions) == 1, (
+        f"Expected 1 position row (upserted), got {len(positions)}: {positions}"
+    )
+
+    # --- the row is on the correct side at the correct price ---
+    row = positions[0]
+    assert row["side"] == "OVER", f"Expected side=OVER, got {row['side']}"
+    assert abs(row["avg_price"] - 0.50) < 0.01, (
+        f"Expected avg_price≈0.50, got {row['avg_price']}"
+    )
+    assert row["action"] in ("OPEN", "ADD", "HOLD"), (
+        f"Unexpected action after session: {row['action']}"
+    )
+
+    # --- _track_order was called exactly once (only for OPEN, not ADD/HOLD) ---
+    assert fake_l14.track_order.call_count == 1, (
+        f"Expected _track_order called once, got {fake_l14.track_order.call_count}"
+    )
+
+    # --- no real Kalshi client was touched ---
+    assert "L09_kalshi_client" not in sys.modules
+
+    # --- exit_all_positions closes the single position ---
+    closed = mod.exit_all_positions()
+    assert closed == 1, f"Expected 1 position closed, got {closed}"
+
+    raw2 = json.loads(ledger_path.read_text(encoding="utf-8"))
+    row2 = raw2["positions"][0]
+    assert row2["action"] == "CLOSE", f"Expected CLOSE after exit, got {row2['action']}"
+    assert abs(row2["avg_price"] - 0.50) < 0.01, (
+        f"avg_price should be unchanged after exit, got {row2['avg_price']}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — Edge collapses: Q1 opens, Q2 hold (51pp), Q3 model < market → CLOSE
+# ---------------------------------------------------------------------------
+
+def test_live_session_holds_when_edge_collapses(tmp_path, monkeypatch):
+    """Probs [0.55, 0.51, 0.49]: Q1 opens (5pp edge), Q2 insufficient edge,
+    Q3 model < market → evaluate closes the position. track_order called once."""
+
+    _WINPROBS_COLLAPSE = {"endQ1": 0.55, "endQ2": 0.51, "endQ3": 0.49}
+
+    class CollapsingPredictor:
+        def __init__(self):
+            self.calls: list[str] = []
+
+        def predict_live(self, period: str) -> list[dict]:
+            self.calls.append(period)
+            p_over = _WINPROBS_COLLAPSE.get(period, 0.50)
+            return [
+                {
+                    "player": "Team_A",
+                    "stat": "winprob",
+                    "period": period,
+                    "q50": p_over,
+                    "p_over": p_over,
+                    "p_under": round(1.0 - p_over, 4),
+                    "side": "OVER",
+                    "market_id": "TEAM_A_WIN",
+                    "market_p": 0.50,
+                    "exchange": "paper",
+                    "ts": "2026-05-25T20:00:00Z",
+                }
+            ]
+
+    fake = CollapsingPredictor()
+
+    fake_l18 = types.ModuleType("scripts.execute_loop.L18_bankroll_manager")
+    fake_l18.kelly_fraction = MagicMock(return_value=0.02)
+    fake_l18.check_risk_limits = MagicMock(return_value=(True, "ok"))
+
+    fake_l14 = types.ModuleType("scripts.execute_loop.L14_order_manager")
+    fake_l14.track_order = MagicMock(return_value=None)
+
+    stubs = {
+        "src.prediction.live_engine": None,
+        "scripts.execute_loop.L13_cross_exchange_ev": MagicMock(),
+        "scripts.execute_loop.L14_order_manager": fake_l14,
+        "scripts.execute_loop.L18_bankroll_manager": fake_l18,
+        "scripts.execute_loop.L22_alerting": MagicMock(),
+    }
+    mod = _load_L16(extra_mocks=stubs)
+
+    ledger_path = tmp_path / "paper_live_positions.json"
+    monkeypatch.setattr(mod, "_PAPER_LEDGER", ledger_path)
+    monkeypatch.setattr(mod, "_predict_live", fake.predict_live)
+    monkeypatch.setattr(mod, "_check_risk_limits", fake_l18.check_risk_limits)
+    monkeypatch.setattr(mod, "_kelly_fraction", fake_l18.kelly_fraction)
+    monkeypatch.setattr(mod, "_track_order", fake_l14.track_order)
+    monkeypatch.setattr(mod.time, "sleep", lambda _: None)
+
+    mod.run_live_session(game_id="0042500207", polling_sec=0)
+
+    # Predictor called for all three periods
+    assert fake.calls == ["endQ1", "endQ2", "endQ3"], (
+        f"Expected all three quarter calls, got {fake.calls}"
+    )
+
+    # track_order called exactly once (Q1 OPEN only; Q2/Q3 are HOLD/CLOSE)
+    assert fake_l14.track_order.call_count == 1, (
+        f"Expected track_order called once, got {fake_l14.track_order.call_count}"
+    )
+
+    # Final ledger state: position should be CLOSE (Q3 model_p=0.49 < market_p=0.50)
+    raw = json.loads(ledger_path.read_text(encoding="utf-8"))
+    assert len(raw["positions"]) == 1
+    assert raw["positions"][0]["action"] == "CLOSE", (
+        f"Expected CLOSE when edge inverts, got {raw['positions'][0]['action']}"
+    )
