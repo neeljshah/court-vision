@@ -74,8 +74,10 @@
 | EventDetector | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
 | Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 [LIVE] bug: ball_valid_pct=0% some games |
 | Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ [LIVE] |
-| 7 prop models (pts/reb/ast/fg3m/blk/tov/stl) | `src/prediction/player_props.py` | ✅ [LIVE] holdout validated |
-| Win probability (XGBoost) | `src/prediction/win_probability.py` | ✅ [LIVE] 68.5% acc, Brier 0.209 |
+| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_mlp.py` | ✅ [LIVE] walk-forward validated (MAE: pts 4.62, reb 1.90, ast 1.36, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44) |
+| Win probability (5-way NNLS stack) | `src/prediction/win_probability.py` | ✅ [LIVE] 0.7094 acc / 0.193 Brier (walk-forward), 0.717 / 0.188 (single-split) |
+| Quantile interval calibration | `src/prediction/quantile_calibration.py` | ✅ [LIVE] 80% target coverage |
+| Betting backtest harness | `scripts/betting_backtest*.py` | ✅ [LIVE] 19,964-game holdout, +20-28% ROI @ +0.5 edge |
 | xFG model | `src/prediction/` | ✅ [LIVE] Brier 0.226 on 221K shots |
 | DNP predictor | `src/prediction/` | ✅ [LIVE] AUC 0.979 |
 | Matchup model | `src/prediction/` | ✅ [LIVE] |
