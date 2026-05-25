@@ -1,0 +1,9 @@
+{
+  "condition_id": "test_cid_1",
+  "asks": [
+    {"price": 0.55, "size": 100}
+  ],
+  "bids": [
+    {"price": 0.54, "size": 200}
+  ]
+}

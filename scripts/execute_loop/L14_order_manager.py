@@ -1,0 +1,533 @@
+"""L14_order_manager.py — Order Manager (execute_loop layer 14).
+
+Tracks live orders across Kalshi / Polymarket / SportTrade, detects fills,
+triggers repricing when model probability drifts, and cancels stale orders.
+
+Storage: data/ledger/open_orders.json   (list of OrderState dicts)
+         Written atomically via .tmp + os.replace
+
+Public API
+----------
+    track_order(order_id, exchange, market_id, side, qty, price, model_p) -> OrderState
+    get_open_orders() -> list[OrderState]
+    update_from_exchange_fills() -> int
+    check_for_reprice(model_predictions: dict) -> list[OrderState]
+    cancel_stale(max_age_seconds: int = 1800) -> int
+    reprice_order(order: OrderState, new_price: int) -> bool
+
+CLI
+---
+    python L14_order_manager.py list
+    python L14_order_manager.py update
+    python L14_order_manager.py reprice --order-id X --new-price 60
+    python L14_order_manager.py cancel-stale [--max-age-sec 1800]
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import os
+import sys
+import time
+from dataclasses import dataclass, asdict, field
+from pathlib import Path
+from typing import Dict, List, Optional
+
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
+_SCRIPT_DIR = Path(__file__).resolve().parent
+_PROJECT_DIR = _SCRIPT_DIR.parents[1]
+_LEDGER_DIR = _PROJECT_DIR / "data" / "ledger"
+_ORDERS_FILE = _LEDGER_DIR / "open_orders.json"
+
+log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Valid exchanges
+# ---------------------------------------------------------------------------
+_VALID_EXCHANGES = {"kalshi", "polymarket", "sporttrade"}
+
+# ---------------------------------------------------------------------------
+# OrderState dataclass
+# ---------------------------------------------------------------------------
+
+@dataclass
+class OrderState:
+    order_id: str
+    exchange: str           # kalshi|polymarket|sporttrade
+    market_id: str
+    side: str
+    qty: int
+    qty_filled: int
+    price: int              # cents 1-99
+    status: str             # OPEN|PARTIAL|FILLED|CANCELLED|REJECTED
+    model_p: float          # original model probability 0-1
+    current_model_p: float  # latest model probability (updated by check_for_reprice callers)
+    last_repriced_at: float # unix ts (0.0 if never repriced)
+    placed_at: float        # unix ts
+
+
+# ---------------------------------------------------------------------------
+# In-memory state (module-level; tests can replace these directly)
+# ---------------------------------------------------------------------------
+_open_orders: List[OrderState] = []
+_processed_fills: Dict[str, int] = {}   # order_id -> last known qty_filled (idempotency)
+
+# ---------------------------------------------------------------------------
+# Persistence helpers
+# ---------------------------------------------------------------------------
+
+def _ensure_ledger_dir() -> None:
+    _LEDGER_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _load_orders() -> List[OrderState]:
+    """Load open_orders.json from disk. Returns [] if missing or corrupt."""
+    if not _ORDERS_FILE.exists():
+        return []
+    try:
+        raw = json.loads(_ORDERS_FILE.read_text(encoding="utf-8"))
+        return [OrderState(**d) for d in raw]
+    except Exception as exc:
+        log.warning("L14: failed to load %s — %s; starting empty", _ORDERS_FILE, exc)
+        return []
+
+
+def _save_orders(orders: List[OrderState]) -> None:
+    """Atomically write orders list to disk."""
+    _ensure_ledger_dir()
+    tmp = _ORDERS_FILE.with_suffix(".tmp")
+    tmp.write_text(json.dumps([asdict(o) for o in orders], indent=2), encoding="utf-8")
+    os.replace(str(tmp), str(_ORDERS_FILE))
+
+
+def _init_from_disk() -> None:
+    """Populate module-level _open_orders from disk on first use."""
+    global _open_orders
+    if not _open_orders:
+        _open_orders = _load_orders()
+
+
+# ---------------------------------------------------------------------------
+# Soft-import exchange clients
+# ---------------------------------------------------------------------------
+
+def _get_exchange_client(exchange: str):
+    """Return exchange client module or None on import failure."""
+    module_map = {
+        "kalshi":      "L09_kalshi_client",
+        "polymarket":  "L10_polymarket_client",
+        "sporttrade":  "L11_sporttrade_client",
+    }
+    mod_name = module_map[exchange]
+    # Allow sys.modules injection for testing
+    if mod_name in sys.modules:
+        return sys.modules[mod_name]
+    try:
+        import importlib
+        return importlib.import_module(mod_name)
+    except ImportError:
+        log.warning("L14: exchange client %r not available (ImportError) — skipping", mod_name)
+        return None
+
+
+def _get_l07():
+    """Soft-import L07 pnl_ledger."""
+    if "L07_pnl_ledger" in sys.modules:
+        return sys.modules["L07_pnl_ledger"]
+    try:
+        import importlib
+        return importlib.import_module("L07_pnl_ledger")
+    except ImportError:
+        log.warning("L14: L07_pnl_ledger not available — fill event skipped")
+        return None
+
+
+def _get_l22():
+    """Soft-import L22 alerting."""
+    if "L22_alerting" in sys.modules:
+        return sys.modules["L22_alerting"]
+    try:
+        import importlib
+        return importlib.import_module("L22_alerting")
+    except ImportError:
+        log.warning("L14: L22_alerting not available — fill alert skipped")
+        return None
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+def track_order(
+    order_id: str,
+    exchange: str,
+    market_id: str,
+    side: str,
+    qty: int,
+    price: int,
+    model_p: float,
+) -> OrderState:
+    """Create and persist a new tracked order.
+
+    Raises ValueError for unknown exchange or qty == 0.
+    """
+    if exchange not in _VALID_EXCHANGES:
+        raise ValueError(
+            f"Unknown exchange {exchange!r}. Valid: {sorted(_VALID_EXCHANGES)}"
+        )
+    if qty == 0:
+        log.warning("L14: track_order called with qty=0 for order_id=%s — ignored", order_id)
+        raise ValueError(f"qty must be > 0, got {qty}")
+
+    _init_from_disk()
+
+    order = OrderState(
+        order_id=order_id,
+        exchange=exchange,
+        market_id=market_id,
+        side=side,
+        qty=qty,
+        qty_filled=0,
+        price=price,
+        status="OPEN",
+        model_p=model_p,
+        current_model_p=model_p,
+        last_repriced_at=0.0,
+        placed_at=time.time(),
+    )
+    _open_orders.append(order)
+    _save_orders(_open_orders)
+    log.info(
+        "L14: tracked order_id=%s exchange=%s market=%s side=%s qty=%d price=%d",
+        order_id, exchange, market_id, side, qty, price,
+    )
+    return order
+
+
+def get_open_orders() -> List[OrderState]:
+    """Return all currently tracked open/partial orders."""
+    _init_from_disk()
+    return list(_open_orders)
+
+
+def update_from_exchange_fills() -> int:
+    """Poll each exchange and update fill state.
+
+    Returns the number of orders whose fill count changed.
+    """
+    _init_from_disk()
+    updated = 0
+    to_remove: List[str] = []
+
+    for order in list(_open_orders):
+        if order.status in ("FILLED", "CANCELLED", "REJECTED"):
+            continue
+
+        client = _get_exchange_client(order.exchange)
+        if client is None:
+            continue
+
+        try:
+            positions = client.get_positions()
+        except Exception as exc:
+            log.warning("L14: get_positions failed for %s — %s", order.exchange, exc)
+            continue
+
+        # Match position by market_id and side
+        matched_qty_filled: Optional[int] = None
+        order_found = False
+        for pos in positions:
+            # Support both attribute and dict access
+            pos_ticker = getattr(pos, "market_ticker", None) or (
+                pos.get("market_ticker") if isinstance(pos, dict) else None
+            )
+            pos_side = getattr(pos, "side", None) or (
+                pos.get("side") if isinstance(pos, dict) else None
+            )
+            pos_qty = getattr(pos, "qty", None)
+            if pos_qty is None and isinstance(pos, dict):
+                pos_qty = pos.get("qty")
+
+            if pos_ticker == order.market_id and pos_side == order.side:
+                order_found = True
+                matched_qty_filled = int(pos_qty) if pos_qty is not None else 0
+                break
+
+        if not order_found:
+            # Order not found at exchange — treat as cancelled
+            log.warning(
+                "L14: order_id=%s not found at exchange %s — marking CANCELLED",
+                order.order_id, order.exchange,
+            )
+            order.status = "CANCELLED"
+            to_remove.append(order.order_id)
+            updated += 1
+            continue
+
+        if matched_qty_filled is None:
+            continue
+
+        # Idempotent: never decrease fill count
+        prior_fill = _processed_fills.get(order.order_id, 0)
+        new_fill = max(prior_fill, matched_qty_filled)
+
+        if new_fill > order.qty_filled:
+            order.qty_filled = new_fill
+            updated += 1
+
+            if order.qty_filled >= order.qty:
+                order.status = "FILLED"
+                to_remove.append(order.order_id)
+                # Only emit fill events if this is first time reaching FILLED
+                if prior_fill < order.qty:
+                    _emit_fill_events(order)
+                _processed_fills[order.order_id] = new_fill
+            else:
+                order.status = "PARTIAL"
+                _processed_fills[order.order_id] = new_fill
+
+    # Remove fully settled orders from open list
+    if to_remove:
+        _open_orders[:] = [o for o in _open_orders if o.order_id not in to_remove]
+        _save_orders(_open_orders)
+
+    return updated
+
+
+def _emit_fill_events(order: OrderState) -> None:
+    """Fire L07 place_bet + L22 send_fill_alert for a newly FILLED order."""
+    l07 = _get_l07()
+    if l07 is not None:
+        try:
+            BetRow = l07.BetRow
+            row = BetRow(
+                bet_id=order.order_id,
+                book=order.exchange,
+                market=order.market_id,
+                side=order.side,
+                stake=float(order.qty_filled),
+                odds=int(order.price),
+                model_p_side=order.model_p,
+            )
+            l07.place_bet(row)
+            log.info("L14: L07.place_bet called for order_id=%s", order.order_id)
+        except Exception as exc:
+            log.warning("L14: L07.place_bet failed for order_id=%s — %s", order.order_id, exc)
+
+    l22 = _get_l22()
+    if l22 is not None:
+        try:
+            l22.send_fill_alert(
+                bet_id=order.order_id,
+                book=order.exchange,
+                stake=float(order.qty_filled),
+                status="FILLED",
+            )
+            log.info("L14: L22.send_fill_alert called for order_id=%s", order.order_id)
+        except Exception as exc:
+            log.warning("L14: L22.send_fill_alert failed for order_id=%s — %s", order.order_id, exc)
+
+
+def check_for_reprice(model_predictions: dict) -> List[OrderState]:
+    """Return orders where |current_model_p - model_predictions[market_id]| > 0.05.
+
+    Also updates current_model_p on each order from model_predictions.
+    model_predictions: {market_id: float probability}
+    """
+    _init_from_disk()
+    needs_reprice: List[OrderState] = []
+
+    for order in _open_orders:
+        if order.status not in ("OPEN", "PARTIAL"):
+            continue
+        new_p = model_predictions.get(order.market_id)
+        if new_p is None:
+            continue
+        # Update current model probability
+        order.current_model_p = float(new_p)
+        drift = abs(order.current_model_p - order.model_p)
+        if drift > 0.05:
+            needs_reprice.append(order)
+
+    if needs_reprice:
+        _save_orders(_open_orders)
+
+    return needs_reprice
+
+
+def cancel_stale(max_age_seconds: int = 1800) -> int:
+    """Cancel orders older than max_age_seconds via exchange.cancel_order.
+
+    Returns count of orders cancelled.
+    """
+    _init_from_disk()
+    now = time.time()
+    cancelled = 0
+    to_remove: List[str] = []
+
+    for order in list(_open_orders):
+        if order.status not in ("OPEN", "PARTIAL"):
+            continue
+        age = now - order.placed_at
+        if age <= max_age_seconds:
+            continue
+
+        client = _get_exchange_client(order.exchange)
+        if client is None:
+            continue
+
+        try:
+            ok = client.cancel_order(order.order_id)
+        except Exception as exc:
+            log.warning(
+                "L14: cancel_order failed for order_id=%s — %s", order.order_id, exc
+            )
+            ok = False
+
+        order.status = "CANCELLED"
+        to_remove.append(order.order_id)
+        cancelled += 1
+        log.info(
+            "L14: cancelled stale order_id=%s age=%.0fs exchange_ack=%s",
+            order.order_id, age, ok,
+        )
+
+    if to_remove:
+        _open_orders[:] = [o for o in _open_orders if o.order_id not in to_remove]
+        _save_orders(_open_orders)
+
+    return cancelled
+
+
+def reprice_order(order: OrderState, new_price: int) -> bool:
+    """Cancel existing order and post a new one at new_price.
+
+    Removes old order from tracking and creates a new tracked order.
+    Returns True on success, False if cancel or re-post fails.
+    """
+    _init_from_disk()
+
+    client = _get_exchange_client(order.exchange)
+    if client is None:
+        log.warning("L14: reprice_order: exchange client unavailable for %s", order.exchange)
+        return False
+
+    # Cancel old order
+    try:
+        client.cancel_order(order.order_id)
+    except Exception as exc:
+        log.warning("L14: reprice cancel failed for order_id=%s — %s", order.order_id, exc)
+        return False
+
+    # Remove old from open list
+    _open_orders[:] = [o for o in _open_orders if o.order_id != order.order_id]
+
+    # Post new order at new_price
+    import uuid
+    new_order_id = f"repriced_{order.order_id}_{uuid.uuid4().hex[:6]}"
+    try:
+        client.post_order(
+            market_ticker=order.market_id,
+            side=order.side,
+            qty=order.qty - order.qty_filled,
+            price=new_price,
+            idempotency_key=new_order_id,
+        )
+    except Exception as exc:
+        log.warning("L14: reprice post_order failed for %s — %s", new_order_id, exc)
+        _save_orders(_open_orders)
+        return False
+
+    # Track new order
+    new_order = OrderState(
+        order_id=new_order_id,
+        exchange=order.exchange,
+        market_id=order.market_id,
+        side=order.side,
+        qty=order.qty - order.qty_filled,
+        qty_filled=0,
+        price=new_price,
+        status="OPEN",
+        model_p=order.model_p,
+        current_model_p=order.current_model_p,
+        last_repriced_at=time.time(),
+        placed_at=time.time(),
+    )
+    _open_orders.append(new_order)
+    _save_orders(_open_orders)
+    log.info(
+        "L14: repriced order_id=%s → %s new_price=%d",
+        order.order_id, new_order_id, new_price,
+    )
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Module reset helper (used by tests)
+# ---------------------------------------------------------------------------
+
+def _reset_state() -> None:
+    """Clear in-memory state — intended for test isolation only."""
+    global _open_orders, _processed_fills
+    _open_orders = []
+    _processed_fills = {}
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def _cli() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    parser = argparse.ArgumentParser(description="L14 Order Manager")
+    sub = parser.add_subparsers(dest="cmd")
+
+    sub.add_parser("list", help="Print all open orders")
+    sub.add_parser("update", help="Poll exchanges for fills")
+
+    rp = sub.add_parser("reprice", help="Cancel + repost order at new price")
+    rp.add_argument("--order-id", required=True)
+    rp.add_argument("--new-price", required=True, type=int)
+
+    cs = sub.add_parser("cancel-stale", help="Cancel orders older than max_age_sec")
+    cs.add_argument("--max-age-sec", type=int, default=1800)
+
+    args = parser.parse_args()
+
+    if args.cmd == "list":
+        orders = get_open_orders()
+        if not orders:
+            print("No open orders.")
+        for o in orders:
+            print(
+                f"  {o.order_id:32s}  {o.exchange:12s}  {o.market_id:20s}"
+                f"  {o.side:4s}  qty={o.qty}/{o.qty_filled}"
+                f"  price={o.price}  status={o.status}"
+            )
+
+    elif args.cmd == "update":
+        n = update_from_exchange_fills()
+        print(f"Updated {n} orders from exchange fills.")
+
+    elif args.cmd == "reprice":
+        orders = {o.order_id: o for o in get_open_orders()}
+        order = orders.get(args.order_id)
+        if order is None:
+            print(f"Order {args.order_id!r} not found in open orders.")
+            sys.exit(1)
+        ok = reprice_order(order, args.new_price)
+        print("Reprice", "succeeded" if ok else "FAILED")
+
+    elif args.cmd == "cancel-stale":
+        n = cancel_stale(max_age_seconds=args.max_age_sec)
+        print(f"Cancelled {n} stale orders.")
+
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    _cli()
