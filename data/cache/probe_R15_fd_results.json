@@ -1,0 +1,13 @@
+{
+  "ran_at": "2026-05-26T12:25:43",
+  "rows": 172,
+  "by_stat": {
+    "fg3m": 54,
+    "pts": 53,
+    "ast": 20,
+    "reb": 45
+  },
+  "events": 1,
+  "ok": true,
+  "csv": "/workspace/nba-ai-system/data/lines/2026-05-26_fd.csv"
+}
