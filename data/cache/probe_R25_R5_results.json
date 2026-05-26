@@ -1,0 +1,251 @@
+{
+  "probe": "R25_R5",
+  "generated_at": "2026-05-26T18:06:07+00:00",
+  "status": "SHIP",
+  "n_dates": 28,
+  "n_recs": 140,
+  "win_rate": 0.8214,
+  "roi_pct": 56.82,
+  "n_viable_configs": 12,
+  "best_config": {
+    "min_edge": 0.03,
+    "top": 10,
+    "n_dates": 28,
+    "n_recs": 280,
+    "wins": 241,
+    "losses": 39,
+    "pushes": 0,
+    "win_rate": 0.8607,
+    "roi": 0.6432,
+    "total_profit": 180.0903
+  },
+  "headline_config": {
+    "bankroll": 1000.0,
+    "min_edge": 0.05,
+    "top": 5,
+    "n_per_date": 12,
+    "seed": 0
+  },
+  "headline_aggregate": {
+    "ok": true,
+    "n_dates": 28,
+    "n_recs": 140,
+    "wins": 115,
+    "losses": 25,
+    "pushes": 0,
+    "win_rate": 0.8214,
+    "roi": 0.5682,
+    "total_stake": 140.0,
+    "total_profit": 79.5465,
+    "by_stat": {
+      "fg3m": {
+        "n": 30,
+        "wins": 25,
+        "losses": 5,
+        "pushes": 0,
+        "profit": 17.7275,
+        "stake": 30.0,
+        "win_rate": 0.8333,
+        "roi": 0.5909
+      },
+      "blk": {
+        "n": 49,
+        "wins": 41,
+        "losses": 8,
+        "pushes": 0,
+        "profit": 29.2731,
+        "stake": 49.0,
+        "win_rate": 0.8367,
+        "roi": 0.5974
+      },
+      "reb": {
+        "n": 13,
+        "wins": 10,
+        "losses": 3,
+        "pushes": 0,
+        "profit": 6.091,
+        "stake": 13.0,
+        "win_rate": 0.7692,
+        "roi": 0.4685
+      },
+      "stl": {
+        "n": 29,
+        "wins": 23,
+        "losses": 6,
+        "pushes": 0,
+        "profit": 14.9093,
+        "stake": 29.0,
+        "win_rate": 0.7931,
+        "roi": 0.5141
+      },
+      "ast": {
+        "n": 1,
+        "wins": 1,
+        "losses": 0,
+        "pushes": 0,
+        "profit": 0.9091,
+        "stake": 1.0,
+        "win_rate": 1.0,
+        "roi": 0.9091
+      },
+      "tov": {
+        "n": 18,
+        "wins": 15,
+        "losses": 3,
+        "pushes": 0,
+        "profit": 10.6365,
+        "stake": 18.0,
+        "win_rate": 0.8333,
+        "roi": 0.5909
+      }
+    }
+  },
+  "sweep_matrix": [
+    {
+      "min_edge": 0.03,
+      "top": 3,
+      "n_dates": 28,
+      "n_recs": 84,
+      "wins": 66,
+      "losses": 18,
+      "pushes": 0,
+      "win_rate": 0.7857,
+      "roi": 0.5,
+      "total_profit": 42.0006
+    },
+    {
+      "min_edge": 0.03,
+      "top": 5,
+      "n_dates": 28,
+      "n_recs": 140,
+      "wins": 115,
+      "losses": 25,
+      "pushes": 0,
+      "win_rate": 0.8214,
+      "roi": 0.5682,
+      "total_profit": 79.5465
+    },
+    {
+      "min_edge": 0.03,
+      "top": 10,
+      "n_dates": 28,
+      "n_recs": 280,
+      "wins": 241,
+      "losses": 39,
+      "pushes": 0,
+      "win_rate": 0.8607,
+      "roi": 0.6432,
+      "total_profit": 180.0903
+    },
+    {
+      "min_edge": 0.05,
+      "top": 3,
+      "n_dates": 28,
+      "n_recs": 84,
+      "wins": 66,
+      "losses": 18,
+      "pushes": 0,
+      "win_rate": 0.7857,
+      "roi": 0.5,
+      "total_profit": 42.0006
+    },
+    {
+      "min_edge": 0.05,
+      "top": 5,
+      "n_dates": 28,
+      "n_recs": 140,
+      "wins": 115,
+      "losses": 25,
+      "pushes": 0,
+      "win_rate": 0.8214,
+      "roi": 0.5682,
+      "total_profit": 79.5465
+    },
+    {
+      "min_edge": 0.05,
+      "top": 10,
+      "n_dates": 28,
+      "n_recs": 280,
+      "wins": 241,
+      "losses": 39,
+      "pushes": 0,
+      "win_rate": 0.8607,
+      "roi": 0.6432,
+      "total_profit": 180.0903
+    },
+    {
+      "min_edge": 0.08,
+      "top": 3,
+      "n_dates": 28,
+      "n_recs": 84,
+      "wins": 66,
+      "losses": 18,
+      "pushes": 0,
+      "win_rate": 0.7857,
+      "roi": 0.5,
+      "total_profit": 42.0006
+    },
+    {
+      "min_edge": 0.08,
+      "top": 5,
+      "n_dates": 28,
+      "n_recs": 140,
+      "wins": 115,
+      "losses": 25,
+      "pushes": 0,
+      "win_rate": 0.8214,
+      "roi": 0.5682,
+      "total_profit": 79.5465
+    },
+    {
+      "min_edge": 0.08,
+      "top": 10,
+      "n_dates": 28,
+      "n_recs": 280,
+      "wins": 241,
+      "losses": 39,
+      "pushes": 0,
+      "win_rate": 0.8607,
+      "roi": 0.6432,
+      "total_profit": 180.0903
+    },
+    {
+      "min_edge": 0.12,
+      "top": 3,
+      "n_dates": 28,
+      "n_recs": 84,
+      "wins": 66,
+      "losses": 18,
+      "pushes": 0,
+      "win_rate": 0.7857,
+      "roi": 0.5,
+      "total_profit": 42.0006
+    },
+    {
+      "min_edge": 0.12,
+      "top": 5,
+      "n_dates": 28,
+      "n_recs": 140,
+      "wins": 115,
+      "losses": 25,
+      "pushes": 0,
+      "win_rate": 0.8214,
+      "roi": 0.5682,
+      "total_profit": 79.5465
+    },
+    {
+      "min_edge": 0.12,
+      "top": 10,
+      "n_dates": 28,
+      "n_recs": 280,
+      "wins": 241,
+      "losses": 39,
+      "pushes": 0,
+      "win_rate": 0.8607,
+      "roi": 0.6432,
+      "total_profit": 180.0903
+    }
+  ],
+  "diagnostic": "Synthetic lines around point-in-time q50 -- absolute ROI is optimistic. Relative ranking of (min_edge, top) is the signal.",
+  "summary": "R25_R5 backtest: n_dates=28, n_recs=140, win_rate=82.14%, ROI=+56.82%, best_config=0.03/10 -> 12 viable configs"
+}
