@@ -1512,36 +1512,26 @@ def test_mfd_run_once_finds_middle(tmp_path):
     assert one_pt[0]["free_arb"] is True
 
 
-def test_mfd_loop_max_iters_bug_r19_hb_undefined(tmp_path, monkeypatch):
-    """REGRESSION: middle_finder_daemon.loop() crashes on first tick with
-    `NameError: name '_r19_hb' is not defined`.
-
-    Cause: the R19_L3 heartbeat import (lines 6-16) was inserted INSIDE
-    the module docstring (between the line-2 description and the line-18
-    continuation). Python sees those import lines as part of a string
-    literal, so the `_r19_hb` symbol is never bound at module top-level.
-    Result: every call to `loop()` (the production runtime entry point)
-    raises NameError on tick 1.
-
-    This test documents the bug — it intentionally expects NameError.
-    Fix (NOT made here per probe rules): move the heartbeat import block
-    BELOW the closing `\"\"\"` of the docstring.
+def test_mfd_loop_heartbeat_bound_after_c3131e24_fix(tmp_path, monkeypatch):
+    """Confirms commit c3131e24 fix landed: middle_finder_daemon._r19_hb is
+    bound at module top-level (was previously trapped inside the docstring).
     """
     mfd = _import_mfd()
+    assert hasattr(mfd, "_r19_hb"), "_r19_hb missing — c3131e24 fix may have regressed"
     out = tmp_path / "middles.json"
     monkeypatch.setattr(mfd, "_today_str", lambda: "2026-05-26")
     monkeypatch.setattr(mfd, "LINES_DIR", str(tmp_path))
-    with pytest.raises(NameError, match="_r19_hb"):
-        mfd.loop(
-            interval_sec=0,
-            min_width=0.5,
-            max_juice=-135,
-            max_iters=1,
-            use_model=False,
-            min_band_prob=0.10,
-            out_json=str(out),
-            log=lambda *a, **k: None,
-        )
+    # loop should run one iteration without NameError; may exit cleanly with no rows
+    mfd.loop(
+        interval_sec=0,
+        min_width=0.5,
+        max_juice=-135,
+        max_iters=1,
+        use_model=False,
+        min_band_prob=0.10,
+        out_json=str(out),
+        log=lambda *a, **k: None,
+    )
 
 
 # =============================================================================
