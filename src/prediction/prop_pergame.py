@@ -3030,6 +3030,13 @@ def predict_player_pergame(
 
     Returns ``{stat: value}`` from the honest per-game models, or None when
     the per-game models or the player's gamelog are unavailable.
+
+    R15_W1: every returned q50 (point) prediction is multiplied at the
+    very end by the live `availability_factor` derived from the latest
+    ESPN injury snapshot (OUT=0.0 … AVAILABLE=1.0). Default 1.0 when the
+    player isn't in the feed. Set NBA_INJURY_WIRE_DISABLE=1 in the
+    environment to bypass (used by retro backtests that already encode
+    availability in the data).
     """
     row = build_prediction_row(player_id, opp_team, season, is_home=is_home,
                                rest_days=rest_days, gamelog_dir=gamelog_dir)
@@ -3041,6 +3048,21 @@ def predict_player_pergame(
         if val is None:
             return None
         out[stat] = val
+
+    # R15_W1 — multiplicative injury-availability dampener. Inference-only,
+    # so it cannot leak into training. apply_availability is a thin wrapper
+    # around the ESPN snapshot index built by injury_availability.py.
+    try:
+        from src.prediction.injury_availability import (  # noqa: PLC0415
+            apply_availability,
+        )
+        for stat, val in list(out.items()):
+            adj_q50, _, _ = apply_availability(int(player_id) if player_id is not None
+                                               else None, float(val))
+            out[stat] = round(adj_q50, 2)
+    except Exception as exc:  # never let injury wiring kill a prediction
+        print(f"[predict_player_pergame] injury-wire skipped: {exc}")
+
     return out
 
 

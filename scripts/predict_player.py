@@ -477,16 +477,30 @@ def main():
     print(f"  {'stat':4s} | {'pred':>6s} | {'L5':>5s} | {'L10':>5s} | {'edge':>6s} | {'q10':>5s} {'q90':>5s} | bet @ -110")
     print(f"  -----+--------+-------+-------+--------+-----------+-------------------")
     stat_preds = {}
+    # R15_W1: pre-fetch the live ESPN availability factor once for this player.
+    try:
+        from src.prediction.injury_availability import (
+            get_availability_factor as _avail,
+        )
+        _avail_factor = _avail(player_id=pid, player_name=name)
+    except Exception:
+        _avail_factor = 1.0
     for stat in STATS:
         pred = predict_pergame(stat, row, model_dir)
         if pred is None:
             print(f"  {stat.upper():4s} | (no model)")
             continue
+        # R15_W1: apply availability to the q50 point estimate (predict_pergame
+        # itself is player-agnostic so the dampener is applied here at the
+        # script layer the same way predict_player_pergame does internally).
+        pred = round(float(pred) * float(_avail_factor), 2)
         stat_preds[stat] = pred
         l5_val = l5.get(f"l5_{stat}", None)
         l10_val = l5.get(f"l10_{stat}", None)
         edge = (pred - l5_val) if l5_val is not None else None
-        qint = predict_pergame_quantiles(stat, row, model_dir) or {}
+        # R15_W1: pass pid so q10/q50/q90 receive the same availability dampener.
+        qint = predict_pergame_quantiles(stat, row, model_dir,
+                                         player_id=pid, player_name=name) or {}
         q10 = qint.get("q10", "—")
         q90 = qint.get("q90", "—")
         q10_s = f"{q10:.1f}" if isinstance(q10, (int, float)) else q10

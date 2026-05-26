@@ -211,8 +211,17 @@ def load_quantile_models(stat: str, model_dir: Optional[str] = None) -> Dict[flo
 
 
 def predict_pergame_quantiles(stat: str, feature_row: Dict[str, float],
-                              model_dir: Optional[str] = None) -> Optional[dict]:
-    """Predict q10/q50/q90 for one game. Returns dict or None on no model."""
+                              model_dir: Optional[str] = None,
+                              *,
+                              player_id: Optional[int] = None,
+                              player_name: Optional[str] = None) -> Optional[dict]:
+    """Predict q10/q50/q90 for one game. Returns dict or None on no model.
+
+    R15_W1: when ``player_id`` (or ``player_name``) is supplied, the
+    returned q10/q50/q90 are multiplied by the live availability_factor
+    (OUT → 0, AVAILABLE → 1, …). The band collapses to (0, 0, 0) for
+    OUT/NWT players — preserves coverage on the day they don't play.
+    """
     models = load_quantile_models(stat, model_dir)
     if not models:
         return None
@@ -227,6 +236,22 @@ def predict_pergame_quantiles(stat: str, feature_row: Dict[str, float],
     for q, m in models.items():
         pred_t = float(m.predict(X)[0])
         out[f"q{int(q*100):02d}"] = float(_inverse(stat, np.array([pred_t]))[0])
+
+    # R15_W1 — inference-time availability dampener. No-op when neither
+    # player_id nor player_name is provided (legacy callers).
+    if player_id is not None or player_name is not None:
+        try:
+            from src.prediction.injury_availability import (  # noqa: PLC0415
+                get_availability_factor,
+            )
+            factor = get_availability_factor(
+                player_id=int(player_id) if player_id is not None else None,
+                player_name=player_name,
+            )
+            for k in list(out.keys()):
+                out[k] = float(out[k]) * float(factor)
+        except Exception as exc:
+            print(f"[predict_pergame_quantiles] injury-wire skipped: {exc}")
     return out
 
 

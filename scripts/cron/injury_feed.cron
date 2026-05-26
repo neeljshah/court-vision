@@ -1,0 +1,19 @@
+# R15_W1 — local-cron snippet for ESPN injury snapshot refresh.
+#
+# Two layers run on game days:
+#   1. GitHub Actions workflow:  .github/workflows/injury-feed-scrape.yml
+#      (every 30 min during the game window — committed to master).
+#   2. This local cron (optional) — useful on a self-hosted RunPod box that
+#      reads the cache directly rather than pulling from origin.
+#
+# Install on Linux / WSL:
+#   crontab -e
+#   <paste these two lines, adjusting CWD to your checkout root>
+#
+# Daytime (game window) — every 30 min, 10:00 ET to 23:30 ET
+*/30 14-23 * * * cd /workspace/nba-ai-system && /usr/bin/env python scripts/probe_R14_H4_injury_feed.py >> logs/injury_cron.log 2>&1
+*/30  0-4 * * * cd /workspace/nba-ai-system && /usr/bin/env python scripts/probe_R14_H4_injury_feed.py >> logs/injury_cron.log 2>&1
+
+# Windows Task Scheduler equivalent:
+#   schtasks /Create /SC MINUTE /MO 30 /TN "NBA Injury Scrape" ^
+#     /TR "python C:\Users\neelj\nba-ai-system\scripts\probe_R14_H4_injury_feed.py"
