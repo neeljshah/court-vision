@@ -171,6 +171,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "NEW MODEL CLASS \u2014 game-level HOME team total points. 35 pregame features (same as M2/M2v2). 2,836 games. Naive L5-mean MAE 10.73 vs LGB ~9.5 = pooled -11.87% (vs -5% gate PASS). Per-fold: f1 -9.9%, f2 -15.5%, f3 -9.9% (3/3 valid folds positive). THIRD M2-family SHIP. Combined with M2v2 score_diff, home_pts enables team-total props AND extracts the spread implicitly. Wire morning: persist LGB model, add /predict/home_pts endpoint."
+    },
+    {
+      "name": "R11_M2v4_away_pts",
+      "round": 10,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "NEW MODEL CLASS \u2014 game-level AWAY team total points. Mirror of M2v3. 35 pregame features, 2,836 games. Naive L5-mean MAE 10.71 vs LGB 9.60 = pooled -10.30% (gate -5% PASS). Per-fold: f1 -8.9%, f2 -10.4%, f3 -11.5% (3/3 valid folds positive). FOURTH M2-family SHIP. Combined with M2v3, the system now has independent home_pts and away_pts predictors \u2014 can compose into total (M2 surface) and spread (M2v2 surface) as a sanity check on consistency. Wire morning: persist LGB model, add /predict/away_pts endpoint."
     }
   ],
   "rejects": [
