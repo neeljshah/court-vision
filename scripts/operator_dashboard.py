@@ -754,6 +754,108 @@ def _section_tracker_status(d: Dict[str, Any]) -> str:
     )
 
 
+# --------------------------------------------------------------------------- #
+# Section 7: Settlement Health (R24_Q8)                                       #
+# --------------------------------------------------------------------------- #
+DEFAULT_QB_DIR_PATH = PROJECT_DIR / "data" / "cache" / "quarter_box"
+
+
+def fetch_settlement_health(
+    *,
+    ledger_path: Path = DEFAULT_LEDGER_PATH,
+    qb_dir: Path = DEFAULT_QB_DIR_PATH,
+    days: int = 7,
+) -> Dict[str, Any]:
+    """Run the R24_Q8 settlement reconciliation over the last `days` and
+    return a small summary suitable for the operator dashboard.
+
+    Always returns a dict — never raises — so a broken reconcile path can't
+    take the whole dashboard down.
+    """
+    out: Dict[str, Any] = {
+        "ok": False, "days": int(days),
+        "n_real_settled": 0, "n_verified": 0,
+        "n_matched": 0, "n_mismatched": 0,
+        "match_rate": None, "categories": {},
+        "all_synthetic": False, "reason": "",
+    }
+    try:
+        from scripts.reconcile_settlements import reconcile  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"reconcile import failed: {exc}"
+        return out
+    try:
+        rep = reconcile(days=int(days), ledger_path=Path(ledger_path),
+                         qb_dir=Path(qb_dir), include_synthetic=False)
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"reconcile raised: {exc}"
+        return out
+    out["ok"] = True
+    out["n_real_settled"] = int(rep.get("n_real_settled", 0) or 0)
+    out["n_verified"]     = int(rep.get("n_verified", 0) or 0)
+    out["n_matched"]      = int(rep.get("n_matched", 0) or 0)
+    out["n_mismatched"]   = int(rep.get("n_mismatched", 0) or 0)
+    out["categories"]     = rep.get("mismatch_categories", {}) or {}
+    out["all_synthetic"]  = bool(rep.get("all_synthetic", False))
+    if out["n_verified"] > 0:
+        out["match_rate"] = out["n_matched"] / out["n_verified"]
+    if out["n_real_settled"] == 0:
+        out["reason"] = ("no real settled bets in window"
+                         if not out["all_synthetic"]
+                         else "all settled bets in window are synthetic")
+    return out
+
+
+def _section_settlement_health(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return ('<h2>Settlement Health</h2>'
+                f'<p class="muted">(reconcile unavailable: '
+                f'{_html_escape(d.get("reason",""))})</p>')
+    days = d.get("days", 7)
+    if d.get("n_real_settled", 0) == 0:
+        return ('<h2>Settlement Health</h2>'
+                f'<p class="muted">no real settled bets in last {days}d'
+                + (' (all synthetic)' if d.get("all_synthetic") else '')
+                + '</p>')
+    mr = d.get("match_rate")
+    if mr is None:
+        rate_str = "—"
+        color = _STATUS_COLOR.get("yellow", "#8b949e")
+    else:
+        rate_str = f"{mr * 100:.1f}%"
+        if mr >= 0.99:
+            color = _STATUS_COLOR.get("green", "#3fb950")
+        elif mr >= 0.95:
+            color = _STATUS_COLOR.get("yellow", "#d29922")
+        else:
+            color = _STATUS_COLOR.get("red", "#f85149")
+    cats_html = ""
+    cats = d.get("categories", {}) or {}
+    interesting = {k: v for k, v in cats.items() if k != "ok"}
+    if interesting:
+        rows = "".join(
+            f'<tr><td>{_html_escape(k)}</td><td>{int(v)}</td></tr>'
+            for k, v in sorted(interesting.items(), key=lambda x: -x[1])
+        )
+        cats_html = (
+            '<p class="muted">Mismatch categories:</p>'
+            '<table><thead><tr><th>category</th><th>n</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table>'
+        )
+    return (
+        '<h2>Settlement Health</h2>'
+        f'<p><span class="dot" style="background:{color}"></span>'
+        f'Match rate (last {days}d): <strong>{rate_str}</strong></p>'
+        '<table><tbody>'
+        f'<tr><th>Real settled (in window)</th><td>{d["n_real_settled"]}</td></tr>'
+        f'<tr><th>Verified vs boxscore</th><td>{d["n_verified"]}</td></tr>'
+        f'<tr><th>Matched</th><td>{d["n_matched"]}</td></tr>'
+        f'<tr><th>Mismatched</th><td>{d["n_mismatched"]}</td></tr>'
+        '</tbody></table>'
+        + cats_html
+    )
+
+
 # Section IDs/titles — also used by tests / probe to assert presence.
 SECTION_TITLES = (
     "System Health",
@@ -770,6 +872,9 @@ LIVE_RECS_SECTION_TITLE = "What to bet right now"
 # with `include_rec_perf=True` (default). Degrades gracefully when the
 # rec_settled.parquet file does not exist yet (first-7-days warm-up).
 REC_PERF_SECTION_TITLE = "Recent Rec Performance"
+# R24_Q8 — optional section, rendered when collect_and_render is called with
+# `include_settlement_health=True` (the default).
+SETTLEMENT_HEALTH_SECTION_TITLE = "Settlement Health"
 
 
 # --------------------------------------------------------------------------- #
@@ -1012,8 +1117,9 @@ def render_operator_html(
     bets: Dict[str, Any],
     slate: Dict[str, Any],
     tracker: Dict[str, Any],
-    live_recs: Optional[Dict[str, Any]] = None,  # R23_P8
-    rec_perf: Optional[Dict[str, Any]] = None,   # R24_Q4
+    live_recs: Optional[Dict[str, Any]] = None,    # R23_P8
+    rec_perf: Optional[Dict[str, Any]] = None,     # R24_Q4
+    settlement: Optional[Dict[str, Any]] = None,   # R24_Q8
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -1027,6 +1133,8 @@ def render_operator_html(
         + _section_today_slate(slate)
         + _section_tracker_status(tracker)
     )
+    if settlement is not None:
+        body += _section_settlement_health(settlement)
     if live_recs is not None:
         body += _section_live_recs(live_recs)
     if rec_perf is not None:
@@ -1065,9 +1173,12 @@ def collect_and_render(
     live_recs_bankroll: float = 1000.0,
     live_recs_top: int = 5,
     live_recs_min_edge: float = 0.05,
-    include_rec_perf: bool = True,     # R24_Q4
+    include_rec_perf: bool = True,            # R24_Q4
     rec_perf_settled_path: Optional[Path] = None,
     rec_perf_days: int = 7,
+    include_settlement_health: bool = True,   # R24_Q8
+    settlement_window_days: int = 7,
+    qb_dir: Path = DEFAULT_QB_DIR_PATH,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -1111,11 +1222,21 @@ def collect_and_render(
         )
         rec_perf.setdefault("ok", False)
 
+    settlement = None
+    if include_settlement_health:
+        settlement = _safe(
+            fetch_settlement_health,
+            ledger_path=ledger_path, qb_dir=qb_dir,
+            days=settlement_window_days,
+        )
+        settlement.setdefault("ok", False)
+
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
 
     return render_operator_html(
-        health, bankroll, alerts, bets, slate, tracker, live_recs, rec_perf,
+        health, bankroll, alerts, bets, slate, tracker,
+        live_recs, rec_perf, settlement,
         auto_refresh_sec=auto_refresh_sec,
     )
