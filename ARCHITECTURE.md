@@ -187,6 +187,12 @@ FastAPI (api/main.py)
 | API serving | `api/main.py` |
 | Ingest queue | `src/ingest/` |
 | Batch runner | `scripts/batch_season.py` |
+| Live engine + residual heads | `src/prediction/live_engine.py`, `residual_heads.py`, `multitask_residual_head.py` |
+| Live quantile bands | `src/prediction/live_quantile_bands.py` |
+| Minute trajectory (Q4) | `src/prediction/minute_trajectory.py` |
+| Daily ops chain | `scripts/daily_run.py`, `predict_player.py`, `predict_slate.py`, `compare_to_lines.py` |
+| Live data feeds | `scripts/fetch_live_prop_lines.py`, `fetch_dk_props.py`, `update_inactives.py` |
+| Health check | `scripts/health_check.py` |
 
 ---
 
@@ -200,13 +206,6 @@ FastAPI (api/main.py)
 - PostgreSQL and CV clusters are isolated — never mix in same process
 
 ---
-
-| Live engine + residual heads | `src/prediction/live_engine.py`, `residual_heads.py`, `multitask_residual_head.py` |
-| Live quantile bands | `src/prediction/live_quantile_bands.py` |
-| Minute trajectory (Q4) | `src/prediction/minute_trajectory.py` |
-| Daily ops chain | `scripts/daily_run.py`, `predict_player.py`, `predict_slate.py`, `compare_to_lines.py` |
-| Live data feeds | `scripts/fetch_live_prop_lines.py`, `fetch_dk_props.py`, `update_inactives.py` |
-| Health check | `scripts/health_check.py` |
 
 *Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [docs/CLAUDE-state.md](docs/CLAUDE-state.md) · [CHANGELOG.md](CHANGELOG.md)*
 

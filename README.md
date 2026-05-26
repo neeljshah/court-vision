@@ -435,7 +435,7 @@ Every system has open edges. CourtVision's are scoped, owned, and on the build q
 
 | Open edge | The plan to close it | Phase |
 |-----------|----------------------|-------|
-| **CV corpus depth** — 29 clean games; tier 3–4 models need a deeper corpus for tight confidence intervals | 29 → 80-game RunPod run, scoped at ~7–9 GPU-hours / ~$5; tier 3–4 models retrain on completion | 1 |
+| **CV corpus depth** — 29 usable games (9 CLEAN + 20 PARTIAL) of 75 attempted; tier 3–4 models need a deeper corpus for tight confidence intervals | 29 → 80-game RunPod run, scoped at ~7–9 GPU-hours / ~$5; tier 3–4 models retrain on completion | 1 |
 | **Steals model** — holdout R² 0.18, zero-inflated and high-variance (the weakest prop) | Zero-inflated specification designed; until it ships, STL predictions are sized ≤25% Kelly so a weak signal can't overstake | 1–2 |
 | **Fill-price CLV** — measured vs Pinnacle close, not real DK/FD fills | Fill-price simulation layer (in flight) reports CLV net of realistic book vig | 3 |
 | **Real-time correlation** — per-bet Kelly today, no joint optimizer | QP optimizer is built and tested; it activates once `prop_residuals.json` lands from the 80-game run | 1 → 3 |
