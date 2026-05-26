@@ -362,9 +362,11 @@ _SIFT_SCALE         = 0.35  # downsample frame before SIFT detect (0.5→0.35: ~
 _SIFT_CUT_THRESH    = 0.20  # OPTIMIZATION: 0.15→0.20. Stricter histogram gate, skip more non-cut frames
 
 # Replay/cut detector — suspend homography on scene cuts, replays, or overlay graphics
-_REPLAY_SSIM_THRESH    = 0.6   # SSIM below this = scene cut (frame-to-frame)
-_REPLAY_BRIGHT_FACTOR  = 1.4   # mean-V ratio above this = replay graphic overlay
-_REPLAY_SUSPEND_FRAMES = 30    # frames to hold homography after trigger
+# BUG3 fix: raised thresholds to reduce false-positive triggers from NBA lower-third graphics.
+# L1 gate: 0.4→0.5 (1-_REPLAY_SSIM_THRESH), bright factor: 1.4→1.55, suspend: 30→20 frames.
+_REPLAY_SSIM_THRESH    = 0.5   # SSIM below this = scene cut (was 0.6 → L1 gate 0.5 instead of 0.4)
+_REPLAY_BRIGHT_FACTOR  = 1.55  # mean-V ratio above this = replay graphic overlay (was 1.4)
+_REPLAY_SUSPEND_FRAMES = 20    # frames to hold homography after trigger (was 30)
 
 # Checkpoint — flush tracking rows to CSV every N frames so a crash doesn't lose all data
 _CHECKPOINT_INTERVAL = 2000  # ~6 min of gameplay at 5.7fps
@@ -678,6 +680,8 @@ class UnifiedPipeline:
         self._homography_suspend_cnt:  int              = 0
         self._replay_prev_gray_small:  Optional[np.ndarray] = None
         self._replay_prev_brightness:  float            = -1.0
+        # BUG3: 2-consecutive-frame confirmation gate — only suspend after 2 frames trigger
+        self._replay_trigger_pending_count: int         = 0
         self._last_sb_conf:            float            = 0.0
 
         self.event_det = EventDetector(map_w=self.map_2d.shape[1],
@@ -1671,14 +1675,20 @@ class UnifiedPipeline:
 
             # Replay/cut detector — update homography suspension state BEFORE _get_homography
             # so the suspension is applied to this frame's SIFT update.
+            # BUG3 fix: 2-consecutive-frame confirmation gate prevents single-graphic flashes
+            # from triggering suspension (NBA lower-third stat overlays fire one-frame spikes).
             if self._is_replay_or_cut(frame):
-                self._homography_suspended = True
-                self._homography_suspend_cnt = _REPLAY_SUSPEND_FRAMES
-            elif self._homography_suspend_cnt > 0:
-                self._homography_suspend_cnt -= 1
-                self._homography_suspended = self._homography_suspend_cnt > 0
+                self._replay_trigger_pending_count += 1
+                if self._replay_trigger_pending_count >= 2:
+                    self._homography_suspended = True
+                    self._homography_suspend_cnt = _REPLAY_SUSPEND_FRAMES
             else:
-                self._homography_suspended = False
+                self._replay_trigger_pending_count = 0
+                if self._homography_suspend_cnt > 0:
+                    self._homography_suspend_cnt -= 1
+                    self._homography_suspended = self._homography_suspend_cnt > 0
+                else:
+                    self._homography_suspended = False
 
             M = self._get_homography(frame)
             if M is None:
@@ -2212,10 +2222,18 @@ class UnifiedPipeline:
                 # within 3 seconds — eliminates pump-fake / drive-then-shoot double-counts.
                 _poss_last = shot_poss_last_ts.get(possession_id)
                 _poss_ok   = (_poss_last is None or (timestamp_sec - _poss_last) > 3.0)
-                # Global cooldown: prevents back-to-back shots across possession boundaries
-                # caused by over-fragmentation.  Real shots are ≥3s apart game-wide.
-                _global_ok = (timestamp_sec - _last_global_shot_ts) > 3.0
-                _shot_allowed = _poss_ok and _global_ok
+                # BUG2 fix: global gate raised 3.0→8.0s to match EventDetector._SHOT_DEBOUNCE.
+                # Min observed inter-shot gap in game 0022500568 was exactly 90 frames = 3.0s
+                # @ 30fps — possession fragmentation caused each new slot to independently
+                # pass the old 3s gate, producing ~37% false-positive rate.
+                _global_ok = (timestamp_sec - _last_global_shot_ts) > 8.0
+                # BUG2 fix: basket-proximity gate — shots must originate within 30 ft of basket.
+                # Passes/handoffs flagged as catch_and_shoot fire at mid-court; this eliminates
+                # the 97.7% catch_and_shoot rate by gating on court position.
+                _shot_dist_ft = UnifiedPipeline._dist_to_basket(
+                    shooter["x2d"], shooter["y2d"], map_w, map_h)
+                _proximity_ok = _shot_dist_ft <= 30.0
+                _shot_allowed = _poss_ok and _global_ok and _proximity_ok
                 if _shot_allowed:
                     shot_poss_last_ts[possession_id] = timestamp_sec
                     _last_global_shot_ts = timestamp_sec
@@ -2256,6 +2274,12 @@ class UnifiedPipeline:
                         "timestamp":          timestamp_sec,
                         "player_id":          shooter["player_id"],
                         "team":               shooter["team"],
+                        # BUG1 fix: write team_abbrev on every flush so mid-loop disk
+                        # rows are not stranded with raw color labels ('green'/'white').
+                        # At emit time _team_map/color_map is not yet resolved (end-of-run
+                        # only), so we write "" here; _backfill_shot_log_team_abbrev() at
+                        # end-of-run rewrites the column using the final resolved map.
+                        "team_abbrev":        "",
                         "x_position":         shooter["x2d"],
                         "y_position":         shooter["y2d"],
                         "x_norm":             round(max(0.0, min(1.0, shooter["x2d"] / max(map_w, 1))), 4),
@@ -2684,6 +2708,9 @@ class UnifiedPipeline:
         )
         if _abbrev_map:
             self._backfill_team_abbrev(_abbrev_map)
+            # BUG1 fix: rewrite shot_log.csv on disk so mid-loop flushed rows get
+            # canonical team abbreviations (team column) + populated team_abbrev column.
+            self._backfill_shot_log_team_abbrev(_abbrev_map)
 
         # DB writes (SQLite by default, PostgreSQL when DATABASE_URL is set)
         self._db_write_shot_log(shot_log_rows)
@@ -3225,7 +3252,8 @@ class UnifiedPipeline:
         path   = os.path.join(self._data_dir, "shot_log.csv")
         fields = [
             "game_id", "shot_id", "frame", "timestamp", "player_id", "player_name",
-            "team", "x_position", "y_position", "x_norm", "y_norm", "court_zone",
+            "team", "team_abbrev",  # BUG1 fix: team_abbrev written on every flush (raw color in team)
+            "x_position", "y_position", "x_norm", "y_norm", "court_zone",
             "defender_distance", "defender_dist_norm", "team_spacing",
             "possession_id", "possession_duration", "made",
             "shot_clock", "contest_arm_angle", "closeout_speed", "fatigue_proxy",
@@ -3875,6 +3903,52 @@ class UnifiedPipeline:
             print(f"  [team_abbrev] backfilled {len(_rows)} rows; {unk_after} UNK remaining")
         except Exception as _e:
             print(f"  [team_abbrev] backfill failed: {_e}")
+
+    def _backfill_shot_log_team_abbrev(self, color_map: dict) -> None:
+        """BUG1 fix: Post-run disk rewrite of shot_log.csv team_abbrev + team columns.
+
+        Mid-loop flushes write raw HSV color labels ('green'/'white') to the `team`
+        column and empty string to `team_abbrev`.  This method reads the on-disk CSV,
+        applies the resolved color→abbrev map to BOTH columns, and writes back
+        atomically.  Called after _backfill_team_abbrev() so the same resolved map
+        (ct_map or team_map) is used consistently.
+        """
+        if not color_map:
+            return
+        _path = os.path.join(self._data_dir, "shot_log.csv")
+        if not os.path.exists(_path):
+            return
+        try:
+            with open(_path, newline="", encoding="utf-8") as _f:
+                reader = csv.DictReader(_f)
+                _fields = list(reader.fieldnames or [])
+                _rows   = list(reader)
+            # Ensure team_abbrev column exists in header
+            if "team_abbrev" not in _fields:
+                # Insert after 'team' if present, else append
+                _ti = _fields.index("team") + 1 if "team" in _fields else len(_fields)
+                _fields.insert(_ti, "team_abbrev")
+            # Apply map: rewrite team (raw color → abbrev) and team_abbrev
+            _resolved = 0
+            for _row in _rows:
+                _color = _row.get("team", "")
+                _abbrev = color_map.get(_color, "")
+                if _abbrev:
+                    _row["team"] = _abbrev          # fix legacy 'team' column
+                    _row["team_abbrev"] = _abbrev   # also populate new column
+                    _resolved += 1
+                elif not _row.get("team_abbrev"):
+                    _row["team_abbrev"] = ""
+            # Atomic write: write to tmp then rename
+            _tmp = _path + ".tmp"
+            with open(_tmp, "w", newline="", encoding="utf-8") as _f:
+                w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                w.writeheader()
+                w.writerows(_rows)
+            os.replace(_tmp, _path)
+            print(f"  [shot_log team_abbrev] rewrote {len(_rows)} rows; {_resolved} resolved")
+        except Exception as _e:
+            print(f"  [shot_log team_abbrev] rewrite failed: {_e}")
 
     @staticmethod
     def _classify_shot_creation(
