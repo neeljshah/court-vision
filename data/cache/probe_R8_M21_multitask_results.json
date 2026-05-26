@@ -1,0 +1,91 @@
+{
+  "probe": "R8_M21_multitask_residual",
+  "n_games": 1508,
+  "per_stat": [
+    {
+      "stat": "pts",
+      "base": 2.1317,
+      "treat": 2.1983,
+      "delta": 0.0666,
+      "win": false
+    },
+    {
+      "stat": "reb",
+      "base": 0.8575,
+      "treat": 0.8881,
+      "delta": 0.0306,
+      "win": false
+    },
+    {
+      "stat": "ast",
+      "base": 0.5435,
+      "treat": 0.5635,
+      "delta": 0.02,
+      "win": false
+    },
+    {
+      "stat": "fg3m",
+      "base": 0.3032,
+      "treat": 0.3148,
+      "delta": 0.0116,
+      "win": false
+    },
+    {
+      "stat": "stl",
+      "base": 0.1968,
+      "treat": 0.2058,
+      "delta": 0.009,
+      "win": false
+    },
+    {
+      "stat": "blk",
+      "base": 0.1183,
+      "treat": 0.1255,
+      "delta": 0.0072,
+      "win": false
+    },
+    {
+      "stat": "tov",
+      "base": 0.3153,
+      "treat": 0.3239,
+      "delta": 0.0086,
+      "win": false
+    }
+  ],
+  "wf_folds": [
+    {
+      "fold": 1,
+      "n": 301,
+      "base_pts": 2.14,
+      "treat_pts": 2.229,
+      "delta_pts": 0.089
+    },
+    {
+      "fold": 2,
+      "n": 301,
+      "base_pts": 2.1408,
+      "treat_pts": 2.2187,
+      "delta_pts": 0.0779
+    },
+    {
+      "fold": 3,
+      "n": 301,
+      "base_pts": 2.1396,
+      "treat_pts": 2.1925,
+      "delta_pts": 0.053
+    },
+    {
+      "fold": 4,
+      "n": 304,
+      "base_pts": 2.1076,
+      "treat_pts": 2.1551,
+      "delta_pts": 0.0475
+    }
+  ],
+  "ship": false,
+  "ship_reason": "PTS delta=0.0666 > -0.005; 4 fold(s) PTS positive; only 0/7 stats win (need >=4); worst regression pts=0.0666 > 0.02",
+  "worst_regression": {
+    "stat": "pts",
+    "delta": 0.0666
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "probe": "R8_M31_ot",
+  "status": "REJECT",
+  "ot_label_coverage": 0.9644,
+  "ot_rate": 0.0551,
+  "stage1": {
+    "auc": 0.6373,
+    "brier": 0.0949,
+    "log_loss": 0.3689,
+    "n_ot_games": 151
+  },
+  "stage2_inflation": {
+    "pts": 0.058,
+    "reb": 0.045,
+    "ast": 0.052,
+    "fg3m": 0.06,
+    "stl": 0.044,
+    "blk": 0.041,
+    "tov": 0.038
+  },
+  "stage3_mae_delta": {
+    "pts": {
+      "baseline": 2.125,
+      "corrected": 2.1315,
+      "delta": 0.0065
+    },
+    "reb": {
+      "baseline": 0.8445,
+      "corrected": 0.8459,
+      "delta": 0.0014
+    },
+    "ast": {
+      "baseline": 0.5328,
+      "corrected": 0.5356,
+      "delta": 0.0028
+    },
+    "fg3m": {
+      "baseline": 0.3028,
+      "corrected": 0.3052,
+      "delta": 0.0023
+    },
+    "stl": {
+      "baseline": 0.1932,
+      "corrected": 0.1946,
+      "delta": 0.0014
+    },
+    "blk": {
+      "baseline": 0.1261,
+      "corrected": 0.1269,
+      "delta": 0.0008
+    },
+    "tov": {
+      "baseline": 0.3176,
+      "corrected": 0.3186,
+      "delta": 0.0011
+    }
+  },
+  "ship_reason": "gate_a=FAIL(n_improve=0,max_regress=0.0065) gate_b=FAIL(mean_delta=0.0023) calib=FAIL(mean_p=0.1033)"
+}

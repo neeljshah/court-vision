@@ -1,0 +1,54 @@
+{
+  "verdict": "REJECT",
+  "mechanism": "pinball_tau_0.5",
+  "lgb_params": {
+    "n_estimators": 200,
+    "learning_rate": 0.03,
+    "num_leaves": 15,
+    "min_child_samples": 80,
+    "objective": "quantile",
+    "alpha": 0.5,
+    "random_state": 42,
+    "verbosity": -1,
+    "n_jobs": -1
+  },
+  "pts_fold_wins": 1,
+  "pts_mean_delta": 0.00844,
+  "pts_baseline_mean_mae": 4.55766,
+  "pts_adjusted_mean_mae": 4.5661,
+  "folds": [
+    {
+      "fold": 1,
+      "n": 11979,
+      "mae_adj": 4.45745,
+      "mae_base": 4.45204,
+      "delta": 0.00541
+    },
+    {
+      "fold": 2,
+      "n": 11978,
+      "mae_adj": 4.53065,
+      "mae_base": 4.52035,
+      "delta": 0.0103
+    },
+    {
+      "fold": 3,
+      "n": 11979,
+      "mae_adj": 4.69376,
+      "mae_base": 4.67406,
+      "delta": 0.0197
+    },
+    {
+      "fold": 4,
+      "n": 11979,
+      "mae_adj": 4.58253,
+      "mae_base": 4.58419,
+      "delta": -0.00166
+    }
+  ],
+  "gate": {
+    "fold_wins_required": 4,
+    "mean_delta_required": -0.005
+  },
+  "notes": "Pinball tau=0.5 re-attempt of R7-A PTS head. R7-A baseline: fold_wins=1, mean_delta=+0.00832. This run: fold_wins=1, mean_delta=+0.00844."
+}
