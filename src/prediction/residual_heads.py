@@ -48,6 +48,20 @@ HEAD_DIR_ENDQ2 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_end
 HEAD_DIR_ENDQ1 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_endq1")
 STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
+# R12_F3 cross-stat covariance: per-stat ship (fg3m, stl, blk, tov).
+# Probe scripts/probe_R12_F3_cross_stat_covariance.py — 4/4 WF folds positive,
+# mean delta -0.010 to -0.054. Artifacts:
+#   data/models/residual_heads/<stat>_xstat.lgb       (LGB booster)
+#   data/models/residual_heads/<stat>_xstat_meta.json (feature list, audit)
+# Feature schema: 6 cross-stat z columns (target's own z EXCLUDED) +
+# n_prior_xstat. Z residuals come from the player's L5 PRIOR games in the
+# OOF parquet at data/cache/pregame_oof.parquet (strict shift(1) on date).
+XSTAT_SHIP_STATS: Tuple[str, ...] = ("fg3m", "stl", "blk", "tov")
+_OOF_PARQUET_PATH = os.path.join(
+    PROJECT_DIR, "data", "cache", "pregame_oof.parquet"
+)
+_XSTAT_L5 = 5
+
 # Legacy 14-feature schema used by R2_F endQ3 heads. PER-STAT meta JSON
 # (data/models/residual_heads/<stat>_meta.json) can override this on a
 # per-stat basis to add R10_M16 streak features.
@@ -64,6 +78,10 @@ _HEAD_META_CACHE: Optional[Dict[str, Dict]] = None
 _HEAD_CACHE_ENDQ2: Optional[Dict[str, object]] = None
 _HEAD_CACHE_ENDQ1: Optional[Dict[str, object]] = None
 _POSITIONS_CACHE: Optional[Dict[int, str]] = None
+_XSTAT_HEAD_CACHE: Optional[Dict[str, object]] = None
+_XSTAT_META_CACHE: Optional[Dict[str, Dict]] = None
+_XSTAT_HISTORY_CACHE: Optional[Dict[int, list]] = None
+_XSTAT_SIGMAS_CACHE: Optional[Dict[str, float]] = None
 
 
 def load_heads() -> Dict[str, object]:
@@ -135,10 +153,16 @@ def _feature_names_for_stat(stat: str) -> Tuple[str, ...]:
 def reset_head_caches() -> None:
     """Drop the lazy head + meta caches. Test-only."""
     global _HEAD_CACHE, _HEAD_META_CACHE, _HEAD_CACHE_ENDQ2, _HEAD_CACHE_ENDQ1
+    global _XSTAT_HEAD_CACHE, _XSTAT_META_CACHE, _XSTAT_HISTORY_CACHE
+    global _XSTAT_SIGMAS_CACHE
     _HEAD_CACHE = None
     _HEAD_META_CACHE = None
     _HEAD_CACHE_ENDQ2 = None
     _HEAD_CACHE_ENDQ1 = None
+    _XSTAT_HEAD_CACHE = None
+    _XSTAT_META_CACHE = None
+    _XSTAT_HISTORY_CACHE = None
+    _XSTAT_SIGMAS_CACHE = None
 
 
 def load_heads_endq2() -> Dict[str, object]:
@@ -477,6 +501,270 @@ def apply_residual_correction_endq2(
             adjusted = max(float(projected) + lo, min(float(projected) + hi, adjusted))
             adjusted = max(0.0, adjusted)
 
+            out[key] = adjusted
+
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# R12_F3 cross-stat covariance: xstat residual heads (fg3m, stl, blk, tov).
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def load_xstat_heads() -> Dict[str, object]:
+    """Load all *_xstat.lgb residual heads (lazy, cached). Returns {} if
+    artifacts missing or lightgbm absent."""
+    global _XSTAT_HEAD_CACHE
+    if _XSTAT_HEAD_CACHE is not None:
+        return _XSTAT_HEAD_CACHE
+    try:
+        import lightgbm as lgb
+    except ImportError:
+        _XSTAT_HEAD_CACHE = {}
+        return _XSTAT_HEAD_CACHE
+    heads: Dict[str, object] = {}
+    if os.path.isdir(HEAD_DIR):
+        for stat in XSTAT_SHIP_STATS:
+            path = os.path.join(HEAD_DIR, f"{stat}_xstat.lgb")
+            if os.path.exists(path):
+                try:
+                    heads[stat] = lgb.Booster(model_file=path)
+                except Exception as exc:
+                    print(f"  WARN residual_heads xstat: could not load {path}: {exc}")
+    _XSTAT_HEAD_CACHE = heads
+    return _XSTAT_HEAD_CACHE
+
+
+def load_xstat_metas() -> Dict[str, Dict]:
+    """Load per-stat xstat meta JSONs (lazy, cached)."""
+    global _XSTAT_META_CACHE
+    if _XSTAT_META_CACHE is not None:
+        return _XSTAT_META_CACHE
+    metas: Dict[str, Dict] = {}
+    if os.path.isdir(HEAD_DIR):
+        for stat in XSTAT_SHIP_STATS:
+            path = os.path.join(HEAD_DIR, f"{stat}_xstat_meta.json")
+            if os.path.exists(path):
+                try:
+                    with open(path, encoding="utf-8") as fh:
+                        metas[stat] = json.load(fh) or {}
+                except Exception as exc:
+                    print(
+                        f"  WARN residual_heads xstat: could not load meta "
+                        f"{path}: {exc}"
+                    )
+    _XSTAT_META_CACHE = metas
+    return _XSTAT_META_CACHE
+
+
+def _xstat_feature_names_for(stat: str) -> List[str]:
+    """6 cross-stat z columns (target's own EXCLUDED) + n_prior_xstat.
+    Falls back to the canonical layout when meta JSON is missing.
+    """
+    metas = load_xstat_metas()
+    meta = metas.get(stat) or {}
+    features = meta.get("features")
+    if isinstance(features, (list, tuple)) and features:
+        return list(features)
+    return [f"xstat_z_{s}" for s in STATS if s != stat] + ["n_prior_xstat"]
+
+
+def _is_nan_xstat(v) -> bool:
+    """Return True iff v is float NaN."""
+    try:
+        return v != v
+    except Exception:
+        return False
+
+
+def _load_xstat_history_index() -> Tuple[Dict[int, list], Dict[str, float]]:
+    """Build a per-player history of (date, {stat: z}) from the OOF parquet.
+
+    Returns
+    -------
+    histories : {player_id -> [(date, {stat: z, ...}), ...]} sorted oldest->newest.
+    sigmas    : {stat -> global_actual_std}.
+
+    Cached at module level after first call.
+    """
+    global _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+    if _XSTAT_HISTORY_CACHE is not None and _XSTAT_SIGMAS_CACHE is not None:
+        return _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+
+    if not os.path.exists(_OOF_PARQUET_PATH):
+        _XSTAT_HISTORY_CACHE = {}
+        _XSTAT_SIGMAS_CACHE = {s: 1.0 for s in STATS}
+        return _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+
+    try:
+        import pandas as pd
+    except ImportError:
+        _XSTAT_HISTORY_CACHE = {}
+        _XSTAT_SIGMAS_CACHE = {s: 1.0 for s in STATS}
+        return _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+
+    try:
+        oof = pd.read_parquet(_OOF_PARQUET_PATH)
+    except Exception as exc:
+        print(f"  WARN residual_heads xstat: could not load OOF parquet: {exc}")
+        _XSTAT_HISTORY_CACHE = {}
+        _XSTAT_SIGMAS_CACHE = {s: 1.0 for s in STATS}
+        return _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+
+    wide = oof.pivot_table(
+        index=["player_id", "game_id", "game_date"],
+        columns="stat",
+        values=["actual", "oof_pred"],
+        aggfunc="first",
+    ).reset_index()
+    wide.columns = [f"{a}_{b}" if b else a for a, b in wide.columns]
+    wide["game_date"] = pd.to_datetime(wide["game_date"])
+
+    sigmas: Dict[str, float] = {}
+    for s in STATS:
+        col = f"actual_{s}"
+        if col in wide.columns:
+            sigmas[s] = max(float(wide[col].dropna().std()), 1e-6)
+        else:
+            sigmas[s] = 1.0
+
+    for s in STATS:
+        a, p = f"actual_{s}", f"oof_pred_{s}"
+        if a in wide.columns and p in wide.columns:
+            wide[f"z_{s}"] = (wide[a] - wide[p]) / sigmas[s]
+        else:
+            wide[f"z_{s}"] = 0.0
+
+    histories: Dict[int, list] = {}
+    for pid, grp in wide.groupby("player_id", sort=False):
+        sub = grp.sort_values("game_date")
+        entries: list = []
+        for _, row in sub.iterrows():
+            gd = row["game_date"]
+            if hasattr(gd, "to_pydatetime"):
+                gd = gd.to_pydatetime()
+            z_map: Dict[str, float] = {}
+            for s in STATS:
+                v = row.get(f"z_{s}", 0.0)
+                z_map[s] = 0.0 if _is_nan_xstat(v) else float(v)
+            entries.append((gd, z_map))
+        histories[int(pid)] = entries
+
+    _XSTAT_HISTORY_CACHE = histories
+    _XSTAT_SIGMAS_CACHE = sigmas
+    return _XSTAT_HISTORY_CACHE, _XSTAT_SIGMAS_CACHE
+
+
+def _coerce_xstat_target_date(value):
+    """Parse snap['game_date'] -> datetime. Returns None on failure."""
+    if value is None:
+        return None
+    if hasattr(value, "year") and hasattr(value, "month") and hasattr(value, "day"):
+        return value
+    try:
+        from datetime import datetime as _dt
+        s = str(value).strip()
+        if not s:
+            return None
+        return _dt.strptime(s[:10], "%Y-%m-%d")
+    except Exception:
+        return None
+
+
+def _compute_xstat_z_for_player(
+    pid: int,
+    target_date,
+    histories: Dict[int, list],
+) -> Tuple[Dict[str, float], int]:
+    """Return per-stat L5 mean z residual + n_prior count."""
+    entries = histories.get(pid) or []
+    prior = [e for e in entries if e[0] < target_date]
+    n_prior = len(prior)
+    window = prior[-_XSTAT_L5:] if prior else []
+    z_means: Dict[str, float] = {}
+    for s in STATS:
+        if window:
+            z_means[f"xstat_z_{s}"] = float(
+                sum(w[1].get(s, 0.0) for w in window) / len(window)
+            )
+        else:
+            z_means[f"xstat_z_{s}"] = 0.0
+    return z_means, n_prior
+
+
+def apply_xstat_residual_correction(
+    snap: dict,
+    projs: Dict[Tuple[int, str], float],
+) -> Dict[Tuple[int, str], float]:
+    """Apply the R12_F3 cross-stat residual head correction to projections.
+
+    For each player in snap, compute the 6 cross-stat z residuals (target
+    stat's own z EXCLUDED) plus n_prior_xstat from the player's L5 PRIOR games
+    in the OOF parquet (strict shift(1) on snap['game_date']). For each
+    shipping stat (fg3m, stl, blk, tov), if a head exists, add the head's
+    prediction to the projection with the same clipping discipline used by
+    the legacy in-game heads.
+
+    Returns a fresh dict (caller's dict is not mutated). Missing artifacts,
+    OOF parquet, or player history result in a graceful no-op.
+    """
+    heads = load_xstat_heads()
+    if not heads:
+        return projs
+
+    try:
+        import numpy as np
+    except ImportError:
+        return projs
+
+    target_date = _coerce_xstat_target_date(snap.get("game_date"))
+    histories, _sigmas = _load_xstat_history_index()
+
+    out = dict(projs)
+    for player in snap.get("players") or []:
+        try:
+            pid = int(player["player_id"])
+        except (TypeError, ValueError, KeyError):
+            continue
+
+        if target_date is None or not histories:
+            z_means = {f"xstat_z_{s}": 0.0 for s in STATS}
+            n_prior = 0
+        else:
+            z_means, n_prior = _compute_xstat_z_for_player(
+                pid, target_date, histories,
+            )
+
+        for stat in XSTAT_SHIP_STATS:
+            head = heads.get(stat)
+            if head is None:
+                continue
+            key = (pid, stat)
+            projected = out.get(key)
+            if projected is None:
+                continue
+
+            feat_names = _xstat_feature_names_for(stat)
+            row: List[float] = []
+            for name in feat_names:
+                if name == "n_prior_xstat":
+                    row.append(float(n_prior))
+                elif name in z_means:
+                    row.append(float(z_means[name]))
+                else:
+                    row.append(0.0)
+            feat = np.array([row], dtype=np.float32)
+
+            residual_pred = float(head.predict(feat)[0])
+            cur_stat = float(player.get(stat, 0) or 0)
+
+            lo = -cur_stat
+            hi = max(0.0, 2.0 * projected)
+            adjusted = float(projected) + residual_pred
+            adjusted = max(
+                float(projected) + lo, min(float(projected) + hi, adjusted)
+            )
+            adjusted = max(0.0, adjusted)
             out[key] = adjusted
 
     return out
