@@ -1,0 +1,40 @@
+{
+  "probe": "R11_M2v41_total_O213",
+  "kind": "binary",
+  "label": "over_213",
+  "label_desc": "P(total > 213)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2061 delta -4.94%; AUC 0.6127",
+  "n_games": 2836,
+  "pos_rate": 0.7612834978843441,
+  "pooled_naive_brier": 0.21677,
+  "pooled_lgb_brier": 0.20606,
+  "pooled_lgb_acc": 0.74283,
+  "pooled_lgb_auc": 0.61271,
+  "brier_delta_pct": -4.943,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_test": 709,
+      "naive_brier": 0.21145,
+      "lgb_brier": 0.21497,
+      "lgb_acc": 0.7504
+    },
+    {
+      "fold": 2,
+      "n_test": 709,
+      "naive_brier": 0.19377,
+      "lgb_brier": 0.1805,
+      "lgb_acc": 0.7743
+    },
+    {
+      "fold": 3,
+      "n_test": 709,
+      "naive_brier": 0.2451,
+      "lgb_brier": 0.2227,
+      "lgb_acc": 0.7038
+    }
+  ],
+  "elapsed_s": 1.0
+}

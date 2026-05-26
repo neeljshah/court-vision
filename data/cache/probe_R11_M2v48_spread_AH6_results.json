@@ -1,0 +1,40 @@
+{
+  "probe": "R11_M2v48_spread_AH6",
+  "kind": "binary",
+  "label": "home_cover_AH6",
+  "label_desc": "P(home covers -6)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2288 delta -11.87%; AUC 0.6866",
+  "n_games": 2836,
+  "pos_rate": 0.6942877291960508,
+  "pooled_naive_brier": 0.25959,
+  "pooled_lgb_brier": 0.22877,
+  "pooled_lgb_acc": 0.70052,
+  "pooled_lgb_auc": 0.68665,
+  "brier_delta_pct": -11.873,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_test": 709,
+      "naive_brier": 0.26159,
+      "lgb_brier": 0.23325,
+      "lgb_acc": 0.6996
+    },
+    {
+      "fold": 2,
+      "n_test": 709,
+      "naive_brier": 0.25996,
+      "lgb_brier": 0.2318,
+      "lgb_acc": 0.6982
+    },
+    {
+      "fold": 3,
+      "n_test": 709,
+      "naive_brier": 0.25722,
+      "lgb_brier": 0.22127,
+      "lgb_acc": 0.7038
+    }
+  ],
+  "elapsed_s": 1.0
+}

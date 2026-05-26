@@ -248,7 +248,33 @@
       "name": "R11_M2v19_spread_AH10",
       "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
       "summary": "BINARY P(home covers -10). Brier 0.1860 (delta -5.48%), AUC 0.6646. Widest tested spread threshold."
-    }
+    },
+    {"name": "R11_M2v21_total_O225", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY O/U at 225. Brier 0.2734 (-8.76%), AUC 0.629. Batch 2."},
+    {"name": "R11_M2v22_total_O235", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY O/U at 235. Brier 0.2421 (-7.74%), AUC 0.621. Batch 2."},
+    {"name": "R11_M2v23_total_O240", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY O/U at 240. Brier 0.2049 (-6.07%), AUC 0.614. Batch 2."},
+    {"name": "R11_M2v24_total_O250", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY O/U at 250. Brier 0.1176 (-8.43%), AUC 0.611. Batch 2. Most extreme total threshold tested."},
+    {"name": "R11_M2v25_spread_AH1", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home covers -1 = ATS pickem). Brier 0.2522 (-13.54%), AUC 0.680. Batch 2."},
+    {"name": "R11_M2v26_spread_AH2", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home covers -2). Brier 0.2491 (-13.48%), AUC 0.685. Batch 2."},
+    {"name": "R11_M2v27_spread_AH8", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home covers -8). Brier 0.2093 (-10.21%), AUC 0.669. Batch 2."},
+    {"name": "R11_M2v28_spread_AH12", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home covers -12). Brier 0.1636 (-4.48%), AUC 0.687. Batch 2. Marginal Brier but AUC saves it."},
+    {"name": "R11_M2v29_spread_PH3", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home wins ATS as -3 fav). Brier 0.2424 (-18.53% BEST DELTA), AUC 0.696 (BEST). Home-favorite framing extracts more signal than away-handicap framing. Batch 2."},
+    {"name": "R11_M2v30_spread_PH5", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BINARY P(home wins ATS as -5 fav). Brier 0.2375 (-18.15%), AUC 0.687. Batch 2."},
+    {"name": "R11_M2v32_away_q1", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "REGRESSION away team Q1 score. -6.42% (3/3 folds). Batch 2. Confirms Q1 surfaces are learnable (M2v15 home_q1 also shipped)."},
+    {"name": "R11_M2v34_q1_total", "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "REGRESSION combined Q1 total (home_q1 + away_q1). -5.02% (3/3). Batch 2. Just past gate; Q1 has less pregame predictability than full-game total."},
+    {"name": "R11_BATCH3_M2v37_to_v52", "round": 10, "delta_pts": 0.0, "stats_won": 15, "commit": "pending-wire", "date": "2026-05-26",
+     "summary": "BATCH-3 (16 variants in 16.3s, 15 SHIPS / 1 REJECT). KEY FINDINGS: (1) team-identity one-hot encoding modest gain — M2v37 total -10.13%, M2v38 spread -15.25% (vs M2v7 -14.66%, +0.6pp). (2) sim_* features (sim_score_diff_mean/std + sim_win_prob + sim_pace_adj) ADD ORTHOGONAL SIGNAL — M2v39 total -10.46% with only 74 cols, M2v40 spread -14.86%. (3) New threshold ships: O/U 213/217/227/232/237/247 all pass; ATS -4/-6/-9/-11 all pass. (4) P(home wins by 10+) SHIP Brier -11.10% AUC 0.673. (5) REJECT P(home_q1 > 28) AUC 0.562 — Q1 binary too noisy. R11 cumulative: 43 SHIPS, 13 REJECTS across 38 probes (one batch-3 entry covers v37-v52 since identical-template variants)."}
   ],
   "rejects": [
     {
@@ -594,7 +620,15 @@
       "reason": "Q4-only home minus away margin (continuous). Pooled -1.55% (3/3 folds positive). Pregame features don't predict Q4-specific margin well — the spread converges to game-state variance in Q4.",
       "saturated_angle": "Q4-only margin from pregame features",
       "round": 10
-    }
+    },
+    {"name": "R11_M2v31_home_q2", "reason": "Home Q2 regression -4.52% (3/3 folds) — just below -5% gate. Q2 has more lineup-rotation randomness than Q1.",
+     "saturated_angle": "home_q2 from pregame features (just below gate)", "round": 10},
+    {"name": "R11_M2v33_away_q4", "reason": "Away Q4 regression -3.87% (2/3 folds) — fails. Q4 randomness floor (matches M2v16 home_q4 finding).",
+     "saturated_angle": "away_q4 from pregame features (Q4 randomness)", "round": 10},
+    {"name": "R11_M2v35_h2_total", "reason": "Second-half total regression -4.66% (3/3 folds) — close to but below gate. H2 inherits Q4 randomness.",
+     "saturated_angle": "h2_total from pregame features (close to gate)", "round": 10},
+    {"name": "R11_M2v36_blowout", "reason": "Binary P(|score_diff|>12). Brier +1.47% (REGRESSES vs naive), AUC 0.520. No signal — blowouts depend on game-flow chaos and garbage time, not pregame features.",
+     "saturated_angle": "binary blowout prediction (chaotic game-flow dependence)", "round": 10}
   ],
   "saturated_angles": [
     "endq3 LightGBM period head replacement",
