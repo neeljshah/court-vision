@@ -1,18 +1,32 @@
 {
-  "as_of": "2026-05-26T15:00:29+00:00",
+  "as_of": "2026-05-26T15:58:02+00:00",
   "start_bankroll": 1000.0,
-  "current_bankroll": 3670097.4800000004,
+  "current_bankroll": 1000.0,
   "pending_exposure": 0.0,
-  "available_bankroll": 3670097.4800000004,
+  "available_bankroll": 1000.0,
   "daily_pnl": 0.0,
   "weekly_pnl": 0.0,
   "monthly_pnl": 0.0,
-  "max_drawdown": 1153.2399999992922,
-  "max_drawdown_pct": 0.0005646852363573776,
+  "max_drawdown": 0.0,
+  "max_drawdown_pct": 0.0,
   "n_open_positions": 0,
   "max_stake_in_one_game": 0.0,
   "position_concentration_pct": 0.0,
   "kelly_overhang": 0.0,
-  "n_settled": 335139,
-  "alarms": []
+  "n_settled": 0,
+  "alarms": [],
+  "filter_info": {
+    "exclude_synthetic": true,
+    "start_date": "2026-05-25",
+    "n_total": 335141,
+    "n_synth_excluded": 335139,
+    "n_date_excluded": 0,
+    "n_kept": 2
+  },
+  "roi": {
+    "n_bets": 0,
+    "total_stake": 0.0,
+    "total_pnl": 0.0,
+    "roi_pct": 0.0
+  }
 }
