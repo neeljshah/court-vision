@@ -65,6 +65,8 @@ _BOOK_ALIASES = {
     "betmgm":      "betmgm",
     "odds-api":    "odds-api",
     "oddsapi":     "odds-api",
+    "pp":          "prizepicks",
+    "prizepicks":  "prizepicks",
 }
 
 
