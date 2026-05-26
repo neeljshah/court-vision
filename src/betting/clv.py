@@ -67,6 +67,10 @@ _BOOK_ALIASES = {
     "oddsapi":     "odds-api",
     "pp":          "prizepicks",
     "prizepicks":  "prizepicks",
+    "bov":         "bovada",
+    "bovada":      "bovada",
+    "pin":         "pinnacle",
+    "pinnacle":    "pinnacle",
 }
 
 
