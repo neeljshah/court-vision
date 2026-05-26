@@ -1,0 +1,25 @@
+{
+  "probe": "R12_B23_perm_inner_cv_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_games": 2865,
+  "pos_rate": 0.4205933682373473,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2442 (-16.49%); AUC 0.6674",
+  "pooled_lgb_brier": 0.24422,
+  "pooled_naive_brier": 0.29245,
+  "pooled_lgb_auc": 0.66739,
+  "brier_delta_pct": -16.491,
+  "n_valid_folds": 3,
+  "beat_live": false,
+  "baseline_src": "B21 LIVE (binary)",
+  "baseline_brier": 0.2418,
+  "baseline_auc": 0.6722,
+  "elapsed_s": 53.4,
+  "fc_len_per_fold": [
+    50,
+    50,
+    50
+  ]
+}
