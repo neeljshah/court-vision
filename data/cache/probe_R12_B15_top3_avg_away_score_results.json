@@ -1,0 +1,64 @@
+{
+  "probe": "R12_B15_top3_avg_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 153,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.51%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.1522,
+  "pooled_delta_pct": -14.51,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.2331,
+      "delta": -1.26,
+      "delta_pct": -12.01
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.1994,
+      "delta": -1.5194,
+      "delta_pct": -14.17
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.0242,
+      "delta": -1.8796,
+      "delta_pct": -17.24
+    }
+  ],
+  "beat_canonical": true,
+  "canonical_src": "B13 avg_blend(halflife2+all)",
+  "vs_canonical_pp": -0.09,
+  "variant": {
+    "variant": "top3_avg",
+    "models_used": [
+      "halflife2_only",
+      "all_b9",
+      "interactions_only"
+    ],
+    "weights_per_fold": [
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ]
+    ]
+  }
+}

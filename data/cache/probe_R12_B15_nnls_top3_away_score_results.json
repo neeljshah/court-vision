@@ -1,0 +1,64 @@
+{
+  "probe": "R12_B15_nnls_top3_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 153,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.51%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.1523,
+  "pooled_delta_pct": -14.51,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.2275,
+      "delta": -1.2656,
+      "delta_pct": -12.06
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.204,
+      "delta": -1.5148,
+      "delta_pct": -14.13
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.0255,
+      "delta": -1.8783,
+      "delta_pct": -17.23
+    }
+  ],
+  "beat_canonical": true,
+  "canonical_src": "B13 avg_blend(halflife2+all)",
+  "vs_canonical_pp": -0.09,
+  "variant": {
+    "variant": "nnls_top3",
+    "models_used": [
+      "halflife2_only",
+      "all_b9",
+      "interactions_only"
+    ],
+    "weights_per_fold": [
+      [
+        0.3772799486733874,
+        0.3756205369400721,
+        0.24709951438654054
+      ],
+      [
+        0.6189015817860539,
+        0.381098418213946,
+        0.0
+      ],
+      [
+        0.254605754048772,
+        0.373330389281833,
+        0.37206385666939507
+      ]
+    ]
+  }
+}
