@@ -1,0 +1,22 @@
+{
+  "probe": "R12_B29_avg_blend_top2_fg3m",
+  "kind": "regression",
+  "label": "target_fg3m",
+  "stat": "fg3m",
+  "n_features": 85,
+  "status": "SHIP",
+  "pooled_lgb_mae": 0.9084,
+  "baseline_mae": 0.9091,
+  "prod_reference_mae": 0.89,
+  "beat_baseline": true,
+  "beat_prod": false,
+  "vs_baseline_pct": -0.08,
+  "variant": {
+    "variant": "avg_blend_top2",
+    "models_used": [
+      "baseline_full",
+      "form_only"
+    ],
+    "stat": "fg3m"
+  }
+}
