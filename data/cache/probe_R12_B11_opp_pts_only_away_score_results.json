@@ -1,0 +1,40 @@
+{
+  "probe": "R12_B11_opp_pts_only_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 154,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.25%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.1799,
+  "pooled_delta_pct": -14.25,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.2063,
+      "delta": -1.2868,
+      "delta_pct": -12.26
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.2511,
+      "delta": -1.4676,
+      "delta_pct": -13.69
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.0821,
+      "delta": -1.8217,
+      "delta_pct": -16.71
+    }
+  ],
+  "beat_b9": false,
+  "b9_baseline_delta_pct": -14.35,
+  "vs_b9_pp": 0.1,
+  "elapsed_s": 27.6
+}

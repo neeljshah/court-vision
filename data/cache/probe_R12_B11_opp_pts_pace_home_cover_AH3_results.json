@@ -1,0 +1,37 @@
+{
+  "probe": "R12_B11_opp_pts_pace_home_cover_AH3",
+  "kind": "binary",
+  "label": "home_cover_AH3",
+  "label_desc": "P(home covers -3)",
+  "n_features": 157,
+  "n_games": 2836,
+  "pos_rate": 0.6297602256699577,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2294 (-19.17%); AUC 0.7058",
+  "pooled_lgb_brier": 0.22942,
+  "pooled_naive_brier": 0.28382,
+  "pooled_lgb_auc": 0.70581,
+  "brier_delta_pct": -19.165,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29141,
+      "lgb_brier": 0.25873
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.28461,
+      "lgb_brier": 0.21345
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27544,
+      "lgb_brier": 0.2161
+    }
+  ],
+  "beat_b9": true,
+  "b9_baseline_brier": 0.2302,
+  "b9_baseline_auc": 0.7065,
+  "elapsed_s": 24.2
+}
