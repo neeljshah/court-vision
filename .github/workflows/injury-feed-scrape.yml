@@ -1,0 +1,54 @@
+name: Injury Feed Scrape (R15_W1)
+
+# R15_W1 — refresh the ESPN injury snapshot every 30 minutes during a
+# wide game-day window (15:00–04:00 UTC = 10:00 ET to 23:00 ET). The
+# inference path also has an in-line stale-check (>6h triggers an
+# on-demand scrape), so this cron is the proactive layer.
+#
+# The committed-snapshot pattern lets the production prop pipeline read
+# the latest data/cache/injury_status_<date>.json straight from origin/
+# master on RunPod between scheduled retrains.
+
+on:
+  schedule:
+    # Every 30 min from 15:00–23:59 UTC (covers 10:00 AM – 18:59 ET)
+    - cron: "*/30 15-23 * * *"
+    # Every 30 min from 00:00–04:59 UTC (covers 19:00 ET – 23:59 ET overlap)
+    - cron: "*/30 0-4 * * *"
+  workflow_dispatch: {}     # also manually triggerable from the Actions UI
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need write perms to commit the refreshed snapshot.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: pip
+
+      - name: Install minimal deps
+        run: |
+          pip install requests pandas
+
+      - name: Run R14_H4 injury probe
+        run: |
+          python scripts/probe_R14_H4_injury_feed.py
+
+      - name: Commit refreshed snapshot
+        run: |
+          git config user.name  "injury-bot"
+          git config user.email "injury-bot@users.noreply.github.com"
+          git add data/cache/injury_status_*.json data/nba/injury_report.json \
+                  data/cache/probe_R14_H4_injury_feed_results.json || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(injury): R15_W1 30-min ESPN snapshot refresh"
+            git push
+          else
+            echo "no snapshot change"
+          fi
