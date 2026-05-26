@@ -1,0 +1,37 @@
+{
+  "probe": "R12_B3_total_with_pace",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "n_features": 79,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -11.87%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.0618,
+  "pooled_delta_pct": -11.87,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.4933,
+      "delta": -1.7738,
+      "delta_pct": -10.27
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.5855,
+      "delta": -2.8258,
+      "delta_pct": -16.23
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.1065,
+      "delta": -1.4836,
+      "delta_pct": -8.94
+    }
+  ],
+  "elapsed_s": 3.2
+}
