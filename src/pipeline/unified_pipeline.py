@@ -437,12 +437,13 @@ def _px_to_ft(px_dist: float, map_w: int) -> float:
 def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
     """Defender distance for shot log in FEET.
 
-    Pulls from spatial._isolation when available (already converted to ft by
-    _frame_spatial).  Falls back to shooter-centric np.hypot and converts to ft.
+    R9: returns "" for any missing / out-of-physical-range value (< 0.5 ft or
+    >= 99 ft). NBA min real defender distance is ~0.5 ft; 0.0 was a sentinel
+    that leaked into ML and inflated xFG by 15-25% on those rows.
     """
     import math as _math
     iso = spatial.get("_isolation")
-    if iso is not None and iso != _ISOLATION_DEFAULT:
+    if iso is not None and iso != _ISOLATION_DEFAULT and iso >= 0.5:
         # _isolation is already in ft after _frame_spatial fix — return as-is
         return round(iso, 1)
     # Fallback: compute from shooter position to nearest non-same-team player in frame
@@ -454,6 +455,7 @@ def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
         for t in frame_tracks
         if t.get("team") is not None
         and t.get("team") not in ("referee", shooter.get("team"))
+        and (t.get("x2d"), t.get("y2d")) != (sx, sy)   # R9: exclude shooter duplicate
         and t.get("x2d") is not None and t.get("y2d") is not None
     ]
     if not opp:
@@ -467,7 +469,9 @@ def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
     if not opp:
         return ""
     px_dist = min(_math.hypot(sx - x, sy - y) for x, y in opp)
-    return _px_to_ft(px_dist, map_w)
+    ft = _px_to_ft(px_dist, map_w)
+    # R9: reject below-physical-min (defender literally on top → coincident track artifact)
+    return "" if ft < 0.5 else ft
 
 
 def _shot_defender_dist_norm(spatial, shooter, frame_tracks, map_w):
@@ -2378,9 +2382,12 @@ class UnifiedPipeline:
                                                   spatial, shooter, frame_tracks, map_w),
                         "defender_dist_norm": _shot_defender_dist_norm(
                                                   spatial, shooter, frame_tracks, map_w),
-                        "team_spacing":       round(
-                                                  spatial.get(shooter["team"], {})
-                                                        .get("spacing", 0.0), 1),
+                        "team_spacing":       (
+                                                  "" if (not spatial)
+                                                       or (shooter["team"] not in spatial)
+                                                       or not spatial[shooter["team"]].get("spacing")
+                                                  else round(spatial[shooter["team"]]["spacing"], 1)
+                                              ),  # R9: empty on missing instead of misleading 0.0
                         "possession_id":      possession_id,
                         "possession_duration": possession_dur,
                         "made":               "",   # filled by nba_enricher
@@ -2524,9 +2531,9 @@ class UnifiedPipeline:
                     "nearest_opponent":   _px_to_ft(min(opp_d), map_w) if opp_d else "",
                     "nearest_teammate":   _px_to_ft(min(tm_d), map_w)  if tm_d  else "",
                     "event":              event if track["has_ball"] else "none",
-                    # Spatial — own team
-                    "team_spacing":       round(ts.get("spacing", 0.0), 1),
-                    "spacing_hull_area":  round(ts.get("hull_area", 0.0), 1),  # FIX 9
+                    # R9: empty on missing instead of misleading 0.0 (was 66% of shots in R5 batch)
+                    "team_spacing":       ("" if not ts.get("spacing") else round(ts["spacing"], 1)),
+                    "spacing_hull_area":  ("" if not ts.get("hull_area") else round(ts["hull_area"], 1)),
                     "team_centroid_x":    round(ts.get("cx", 0.0), 1),
                     "team_centroid_y":    round(ts.get("cy", 0.0), 1),
                     "paint_count_own":    ts.get("paint_n", 0),
