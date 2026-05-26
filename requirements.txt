@@ -1,74 +1,90 @@
 # =============================================================================
-# CourtVision — Python 3.9 Dependencies
-# conda activate basketball_ai && pip install -r requirements.txt
+# CourtVision — Python 3.12 Dependencies (RunPod) / 3.9 (local conda)
+# Pinned 2026-05-26 (R16) to actual running pod versions for reproducibility.
+# Install: pip install --break-system-packages -r requirements.txt
+# (CUDA 12.x wheels — see runpod_bootstrap.sh for the full bootstrap.)
 # =============================================================================
 
-# ── Computer Vision ───────────────────────────────────────────────────────────
-ultralytics>=8.0          # YOLOv8 detection + pose estimation
-opencv-python>=4.8        # Frame processing, Hough circles, optical flow
-easyocr>=1.7              # Jersey OCR (dual-pass)
+# ── Computer Vision (pinned R16) ──────────────────────────────────────────────
+ultralytics==8.4.53            # YOLOv8 detection + pose estimation
+opencv-python==4.13.0.92       # Frame processing
+opencv-python-headless==4.13.0.92  # Headless (no GUI) — required on RunPod
+opencv-contrib-python==4.10.0.84   # CSRT tracker + ximgproc
+easyocr==1.7.2                 # Jersey OCR (dual-pass)
+paddleocr==3.5.0               # Scoreboard OCR
+kornia==0.8.3                  # GPU image ops (ball blob detection)
+kornia_rs==0.1.14              # Rust acceleration for kornia
+decord==0.6.0                  # Fast video decoding
+av==17.0.1                     # PyAV (fallback video decoder)
 
-# ── Deep Learning ─────────────────────────────────────────────────────────────
-torch>=2.0                # PyTorch (CUDA 11.8 build recommended)
-torchvision>=0.15         # Image transforms for re-ID
-numpy>=1.24               # Numerical ops
-scipy>=1.11               # Hungarian algorithm, spatial distance
+# ── Deep Learning (pinned R16) ────────────────────────────────────────────────
+# CUDA 12.x wheels — install from PyTorch CDN:
+#   pip install torch==2.8.0+cu128 torchvision==0.23.0+cu128 torchaudio==2.8.0+cu128 \
+#               --index-url https://download.pytorch.org/whl/cu128
+torch==2.8.0+cu128             # PyTorch (CUDA 12.8)
+torchvision==0.23.0+cu128      # Image transforms
+torchaudio==2.8.0+cu128        # Pinned for consistency
+torchreid==0.2.5               # OSNet re-ID (512-d)
+onnxruntime-gpu==1.26.0        # ONNX inference for OSNet TRT fallback
+numpy==2.1.2                   # Numerical ops (R16 pinned — numpy 2.x breaking)
+scipy==1.17.1                  # Hungarian algorithm, spatial distance
 
 # ── Re-Identification ─────────────────────────────────────────────────────────
-deep-sort-realtime>=1.3   # DeepSORT tracker baseline
-# torchreid                # OSNet — install from source: pip install torchreid
+deep-sort-realtime>=1.3        # DeepSORT tracker baseline
 
-# ── Machine Learning ──────────────────────────────────────────────────────────
-scikit-learn>=1.4         # LogisticRegression, Ridge, preprocessing, metrics
-xgboost>=1.7              # XGBoost classifiers / regressors
-joblib>=1.3               # Model serialization / parallel jobs
-lightgbm>=4.0             # LightGBM (alt prop model)
+# ── Machine Learning (pinned R16) ─────────────────────────────────────────────
+scikit-learn==1.8.0            # LogisticRegression, Ridge, preprocessing, metrics
+xgboost==3.2.0                 # XGBoost classifiers / regressors
+lightgbm==4.6.0                # LightGBM (alt prop model)
+joblib>=1.3                    # Model serialization / parallel jobs
 
 # ── Data Processing ───────────────────────────────────────────────────────────
-pandas>=2.1               # DataFrames, CSV/JSON I/O
-pyarrow>=14.0             # Parquet support for large datasets
-networkx>=3.2             # Passing network graph analysis
+pandas==3.0.3                  # DataFrames (R16 pinned — pandas 3.x breaking)
+pyarrow>=14.0                  # Parquet support for large datasets
+networkx>=3.2                  # Passing network graph analysis
 
 # ── NBA Data ──────────────────────────────────────────────────────────────────
-nba_api>=1.4              # Official NBA stats API client
+nba_api==1.11.4                # Official NBA stats API client (pinned)
 
 # ── Web Scraping ──────────────────────────────────────────────────────────────
-requests>=2.31            # HTTP requests (BBRef, odds scrapers)
-beautifulsoup4>=4.12      # HTML parsing (BBRef, HoopsHype)
-lxml>=4.9                 # Fast XML/HTML parser backend
-aiohttp>=3.9              # Async HTTP (injury monitor)
+requests>=2.31                 # HTTP requests
+beautifulsoup4>=4.12           # HTML parsing
+lxml>=4.9                      # Fast XML/HTML parser backend
+aiohttp>=3.9                   # Async HTTP
 
 # ── Database ──────────────────────────────────────────────────────────────────
-psycopg2-binary>=2.9      # PostgreSQL client
-sqlalchemy>=2.0           # ORM / query builder
+psycopg2-binary>=2.9           # PostgreSQL client
+sqlalchemy>=2.0                # ORM / query builder
 
 # ── Task Queue ────────────────────────────────────────────────────────────────
-celery>=5.3               # Async task queue (batch processing)
-redis>=5.0                # Redis client (Celery broker + cache)
+celery>=5.3                    # Async task queue
+redis>=5.0                     # Redis client
 
 # ── API ───────────────────────────────────────────────────────────────────────
-fastapi>=0.110.0          # REST API framework
-uvicorn>=0.29.0           # ASGI server
-pydantic>=2.0             # Request/response validation
-httpx>=0.27               # Async HTTP client (API testing)
+fastapi>=0.110.0               # REST API framework
+uvicorn>=0.29.0                # ASGI server
+pydantic>=2.0                  # Request/response validation
+httpx>=0.27                    # Async HTTP client
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
-streamlit>=1.32           # Analytics dashboard
-plotly>=5.18              # Interactive charts
-matplotlib>=3.8           # Static charts, shot chart heatmaps
-flask>=3.0                # Lightweight web server (legacy endpoints)
+streamlit>=1.32                # Analytics dashboard
+plotly>=5.18                   # Interactive charts
+matplotlib>=3.8                # Static charts, shot chart heatmaps
+flask>=3.0                     # Lightweight web server (legacy)
 
 # ── NLP ───────────────────────────────────────────────────────────────────────
-anthropic>=0.21           # Claude API (Phase 15 AI chat)
+anthropic>=0.21                # Claude API
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
-python-dotenv>=1.0        # .env loading
-tqdm>=4.66                # Progress bars for batch jobs
-loguru>=0.7               # Structured logging (optional, replaces logging)
-tenacity>=8.2             # Retry logic for API calls
-schedule>=1.2             # Simple job scheduler
+python-dotenv>=1.0             # .env loading
+tqdm>=4.66                     # Progress bars
+loguru>=0.7                    # Structured logging
+tenacity>=8.2                  # Retry logic
+schedule>=1.2                  # Simple job scheduler
+gdown>=5.1                     # Google Drive download (model fetch)
+tensorboard>=2.15              # Training visualization
 
 # ── Testing ───────────────────────────────────────────────────────────────────
-pytest>=7.4               # Test framework
-pytest-cov>=4.1           # Coverage reporting
-pytest-asyncio>=0.23      # Async test support
+pytest>=7.4                    # Test framework
+pytest-cov>=4.1                # Coverage reporting
+pytest-asyncio>=0.23           # Async test support
