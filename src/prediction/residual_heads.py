@@ -43,9 +43,34 @@ SCRIPTS_DIR = os.path.join(PROJECT_DIR, "scripts")
 if SCRIPTS_DIR not in sys.path:
     sys.path.insert(0, SCRIPTS_DIR)
 
-HEAD_DIR = os.path.join(PROJECT_DIR, "data", "models", "residual_heads")
-HEAD_DIR_ENDQ2 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_endq2")
-HEAD_DIR_ENDQ1 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_endq1")
+# R31_X2: each residual-head dir resolves INDEPENDENTLY because they ship
+# separately (endQ3 is the original R2_F; endQ2 / endQ1 are R3_A / R4_A).
+# Each canary is the smallest-stat .lgb a populated dir is guaranteed to
+# contain so we never "promote" an empty subdir. Honours NBA_MODEL_DIR
+# and NBA_DATA_DIR via the shared resolver.
+from src.prediction._paths import resolve_model_dir  # noqa: E402
+
+HEAD_DIR = os.path.join(
+    resolve_model_dir(
+        canary=os.path.join("residual_heads", "pts.lgb"),
+        project_dir=PROJECT_DIR,
+    ),
+    "residual_heads",
+)
+HEAD_DIR_ENDQ2 = os.path.join(
+    resolve_model_dir(
+        canary=os.path.join("residual_heads_endq2", "pts.lgb"),
+        project_dir=PROJECT_DIR,
+    ),
+    "residual_heads_endq2",
+)
+HEAD_DIR_ENDQ1 = os.path.join(
+    resolve_model_dir(
+        canary=os.path.join("residual_heads_endq1", "pts.lgb"),
+        project_dir=PROJECT_DIR,
+    ),
+    "residual_heads_endq1",
+)
 STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
 # R12_F3 cross-stat covariance: per-stat ship (fg3m, stl, blk, tov).
@@ -57,8 +82,18 @@ STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 # n_prior_xstat. Z residuals come from the player's L5 PRIOR games in the
 # OOF parquet at data/cache/pregame_oof.parquet (strict shift(1) on date).
 XSTAT_SHIP_STATS: Tuple[str, ...] = ("fg3m", "stl", "blk", "tov")
+# R31_X2: OOF parquet ships under data/cache/. Resolve worktree-aware so
+# the same parquet on the host can be re-used by every worktree (it's
+# read-only at inference time). Falls back to the local path if NBA_DATA_DIR
+# / host fallback don't apply or the parquet isn't there either.
+from src.prediction._paths import resolve_data_dir as _resolve_data_dir  # noqa: E402
 _OOF_PARQUET_PATH = os.path.join(
-    PROJECT_DIR, "data", "cache", "pregame_oof.parquet"
+    _resolve_data_dir(
+        "cache",
+        canary="pregame_oof.parquet",
+        project_dir=PROJECT_DIR,
+    ),
+    "pregame_oof.parquet",
 )
 _XSTAT_L5 = 5
 
