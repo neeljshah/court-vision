@@ -1,9 +1,9 @@
 {
   "slate_id": "sas_okc_2026-05-26",
   "label": "SAS @ OKC Game 7 WCF",
-  "captured_at": "2026-05-26T15:02:10.255595+00:00",
-  "tick_idx": 216,
-  "tick_latency_ms": 6726,
+  "captured_at": "2026-05-26T15:02:38.670488+00:00",
+  "tick_idx": 217,
+  "tick_latency_ms": 3559,
   "pretip": true,
   "bankroll": 1000.0,
   "books_used": [
@@ -120,7 +120,7 @@
       "from_line": 5.5,
       "to_line": 3.5,
       "from_odds": 164,
-      "to_odds": -280,
+      "to_odds": -290,
       "arrow": "\u2193LINE"
     },
     {
@@ -170,22 +170,6 @@
       "from_odds": 240,
       "to_odds": -106,
       "arrow": "\u2193LINE"
-    },
-    {
-      "key": "Keldon Johnson|reb|bov|OVER",
-      "from_line": 2.5,
-      "to_line": 3.5,
-      "from_odds": -135,
-      "to_odds": 165,
-      "arrow": "\u2191LINE"
-    },
-    {
-      "key": "Keldon Johnson|reb|bov|UNDER",
-      "from_line": 2.5,
-      "to_line": 3.5,
-      "from_odds": 105,
-      "to_odds": -220,
-      "arrow": "\u2191LINE"
     },
     {
       "key": "Victor Wembanyama|reb|bov|OVER",
@@ -700,6 +684,22 @@
       "arrow": "\u2191LINE"
     },
     {
+      "key": "Keldon Johnson|reb|bov|OVER",
+      "from_line": 2.5,
+      "to_line": 3.5,
+      "from_odds": -135,
+      "to_odds": 165,
+      "arrow": "\u2191LINE"
+    },
+    {
+      "key": "Keldon Johnson|reb|bov|UNDER",
+      "from_line": 2.5,
+      "to_line": 3.5,
+      "from_odds": 105,
+      "to_odds": -220,
+      "arrow": "\u2191LINE"
+    },
+    {
       "key": "Luguentz Dort|reb|bov|OVER",
       "from_line": 2.5,
       "to_line": 3.5,
@@ -1040,10 +1040,6 @@
         "line": 5.5,
         "odds": -350
       },
-      "Cason Wallace|reb|fd|OVER": {
-        "line": 3.5,
-        "odds": 108
-      },
       "Cason Wallace|reb|pin|OVER": {
         "line": 3.5,
         "odds": 108
@@ -1055,6 +1051,10 @@
       "Julian Champagnie|fg3m|pin|UNDER": {
         "line": 2.5,
         "odds": -180
+      },
+      "Cason Wallace|reb|fd|OVER": {
+        "line": 3.5,
+        "odds": 106
       },
       "Cason Wallace|reb|bov|UNDER": {
         "line": 2.5,
@@ -1306,7 +1306,7 @@
       },
       "Julian Champagnie|reb|fd|OVER": {
         "line": 7.5,
-        "odds": 390
+        "odds": 370
       },
       "Julian Champagnie|reb|pin|OVER": {
         "line": 5.5,
@@ -1467,10 +1467,10 @@
       "Chet Holmgren|reb|OVER|bov|6.5": -1.52,
       "Chet Holmgren|reb|OVER|fd|7.5": -1.29,
       "Chet Holmgren|reb|OVER|bov|5.5": -1.96,
-      "Cason Wallace|reb|OVER|fd|3.5": -1.28,
       "Cason Wallace|reb|OVER|pin|3.5": -1.28,
       "Devin Vassell|fg3m|OVER|pin|2.5": -1.74,
       "Julian Champagnie|fg3m|UNDER|pin|2.5": -2.21,
+      "Cason Wallace|reb|OVER|fd|3.5": -1.75,
       "Cason Wallace|reb|UNDER|bov|4.5": -2.68,
       "Devin Vassell|fg3m|OVER|fd|1.5": -2.92,
       "Devin Vassell|fg3m|OVER|fd|2.5": -1.98,
@@ -1512,7 +1512,7 @@
       "De'Aaron Fox|reb|UNDER|pin|3.5": -12.14,
       "Shai Gilgeous-Alexander|fg3m|UNDER|pin|1.5": -15.03,
       "Alex Caruso|reb|UNDER|bov|3.5": -19.51,
-      "Devin Vassell|reb|OVER|fd|3.5": -22.12,
+      "Devin Vassell|reb|OVER|fd|3.5": -22.8,
       "Victor Wembanyama|stl|OVER|bov|1.5": -9.75,
       "Keldon Johnson|fg3m|UNDER|pin|0.5": -14.05,
       "Alex Caruso|reb|UNDER|bov|2.5": -16.29,
@@ -1588,7 +1588,7 @@
       "Victor Wembanyama|blk|OVER|bov|2.5": -57.74,
       "Alex Caruso|fg3m|OVER|fd|2.5": -19.73,
       "Stephon Castle|fg3m|OVER|fd|2.5": -17.33,
-      "Julian Champagnie|reb|OVER|fd|7.5": -17.45,
+      "Julian Champagnie|reb|OVER|fd|7.5": -18.32,
       "Jaylin Williams|fg3m|OVER|fd|2.5": -19.43,
       "Victor Wembanyama|blk|OVER|bov|3.5": -52.31,
       "Victor Wembanyama|blk|OVER|bov|4.5": -32.79
