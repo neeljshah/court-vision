@@ -117,6 +117,24 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "In-play win-prob update at endQ3: mean Brier 0.1350 vs gate 0.183, mean accuracy 81.33% vs gate 72%, AUC 0.901. Pregame baseline Brier 0.2653 — endQ3 is +0.130 improvement. endQ1 Brier 0.2323 (fails gate), endQ2 Brier 0.1903 (fails gate marginally). Snapshot-conditional features dominate at endQ3 (3-quarter score margin + total + pace + pregame_winprob). Wire: retrain model on full data, persist to data/models/inplay_winprob_endq3.lgb, surface via src/prediction/live_engine.py for live API."
+    },
+    {
+      "name": "R10_M16_streak_per_stat",
+      "round": 9,
+      "delta_pts": 0.0,
+      "stats_won": 4,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "Hot-hand / streak features (z-score trend and consec-above-avg over L3/L20) — PER-STAT SHIP for FG3M (-0.012, 4/4), STL (-0.022, 4/4), BLK (-0.053, 4/4, -34% MAE!), TOV (-0.011, 4/4). REJECT for PTS (+0.011, 0/4), REB (-0.0002, 2/4), AST (-0.0015, 2/4). Overall gate fails (3 stats below 4/4 WF) but per-stat ship pattern matches R7_A. Wire: add streak feature computation to live_engine endQ3 residual head pipeline, gated to the 4 winning stats."
+    },
+    {
+      "name": "R10_M14_playtype",
+      "round": 9,
+      "delta_pts": -0.0273,
+      "stats_won": 6,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "Synergy play-type features (8 cols: spotup, transition, cut, prballhandler, handoff, prrollman, isolation, offscreen) joined PRIOR-SEASON only (S-1 → S) for per-game prop prediction. 6/7 stats improving (PTS -0.027, REB -0.013, AST -0.004, FG3M -0.011, STL -0.003, BLK 0.0). 2/7 stats hit WF 4/4 (PTS, FG3M). Mean delta -0.0098 passes gate. TOV mildly regresses (+0.001). Tested on 24322 player-games (S-1 join filter). Wire: add to player_props.py pregame feature set, gated by PTS+FG3M shipping cleanly."
     }
   ],
   "rejects": [

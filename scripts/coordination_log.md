@@ -23,3 +23,9 @@ Append-only; one event per line.
 [2026-05-25 S2] REJECT — C3: data/pnl_ledger.csv has fake (synthetic) player_ids/game_ids so Tier-3 OOF join can't fire; all 50,986 bets land in Tier 4. Probe code correct. R10: rebuild ledger from OOF parquet rows.
 [2026-05-25 S2] WAVE2 — C5 + C6 dispatched (band-Kelly + portfolio-Kelly). C7 deferred (synthetic CLV has no timestamp variance for timing analysis; revisit after more snapshot accumulation).
 [2026-05-25 S2] NOTE — M31 RESUMED: 2 probe bugs patched (ot_labels cache reuse + None team_id), reran end-to-end. AUC 0.637, mean P(OT) 0.103 vs actual 0.055 (overcalibrated); all 7 stats regress under inflation correction (mean_delta +0.0023, max +0.0065 PTS). Final REJECT. Round 1 (R8) now fully closed: 0/8 ships. No live wiring changes.
+[2026-05-26 S2] NOTE — R10 Round 2 launched, 8 probes (M5 M7 M9 M13 M14 M16 M19 M30v2). Memory pressure (15 GB host, 3 GB free with 6 procs) killed parallel runs; switched to serial.
+[2026-05-26 S2] SHIP — R10_M5_inplay_winprob: endQ3 Brier 0.135 < 0.183 gate, accuracy 81.3% > 72% gate. Pregame baseline Brier 0.265. Pending wire to live_engine.
+[2026-05-26 S2] REJECT — R10_M19_foul_markov: all 7 stats regress under Q4-min multiplier despite Q4-min regression model having lower MAE than per-player baseline.
+[2026-05-26 S2] REJECT — R10_M30v2_foulout: classifier AUC 0.92 (vs M30 v1 AUC 0.30), 7/7 stats directionally improve but mean volume delta -0.0026 misses -0.005 gate; selection bias on pf>=5 (stars who keep playing).
+[2026-05-26 S2] SHIP-PER-STAT — R10_M16_streak: FG3M -0.012, STL -0.022, BLK -0.053, TOV -0.011 (all 4/4 WF). PTS/REB/AST fail. R7_A-style per-stat ship.
+[2026-05-26 S2] SHIP — R10_M14_playtype: prior-season Synergy playtype freq, 6/7 stats improving, PTS WF 4/4 (-0.027), FG3M WF 4/4 (-0.011), mean -0.0098. Wire to player_props pregame.
