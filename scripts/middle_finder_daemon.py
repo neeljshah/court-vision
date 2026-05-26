@@ -181,14 +181,17 @@ def classify_market_tier(rows, csv_alt_present=False):
 
     Heuristic (book-agnostic, used WHENEVER `csv_alt_present=False`):
       1. If only one rung exists, it is `primary`.
-      2. Otherwise, score each rung by total implied vig
-         (|implied_prob(over) + implied_prob(under) - 1|). The rung with the
-         smallest vig — i.e. the closest to a fair -110/-110 line — is
-         `primary`; all others are `alt`.
-      3. Tie-break by smallest |over_implied - under_implied| (most balanced),
-         then by line value closest to the cluster median (don't crown an
-         edge rung primary on a numerical tie).
-      4. If a rung is missing one side (no over OR no under price), it
+      2. Otherwise, score each rung by (in order, lower = better):
+           a. is_one_sided (two-sided rungs always beat one-sided).
+           b. R24_Q1: |line - ladder_median_line| — the realistic anchor
+              sits near the cluster center; alt rungs fan out around it.
+              This is the primary tiebreaker (was previously fourth),
+              because a symmetric edge alt rung (e.g. 3.5 @ -115/-115)
+              can game a spread-only score.
+           c. |over_implied - under_implied| (balance) — carried forward.
+           d. |over_implied + under_implied - 1| (total vig) — final
+              tiebreaker so the lower-vig rung wins on a perfect tie.
+      3. If a rung is missing one side (no over OR no under price), it
          cannot be primary (single-sided ladder rungs are alts).
 
     When `csv_alt_present=True`, trust the CSV column (writer already
@@ -226,16 +229,26 @@ def classify_market_tier(rows, csv_alt_present=False):
               if numeric_lines else 0.0)
 
     def _score(r):
-        # R20_M1: PRIMARY = the most balanced two-sided rung. A symmetric
-        # alt-line ladder can have low total vig at the edge rungs (heavy
-        # juice on one side cancels +money on the other), so total vig
-        # alone picks the wrong rung. SPREAD (|over_prob - under_prob|) is
-        # the cleaner signal: the rung the book is actually anchoring is
-        # the one where both sides are priced ~symmetrically (spread → 0).
+        # R24_Q1: distance-from-ladder-median is the PRIMARY tiebreaker,
+        # ahead of spread/vig. R20_M1's spread-first ordering picked the
+        # wrong rung when a low-line symmetric alt rung (e.g. 3.5 PTS at
+        # -115/-115 for an NBA SF) had a perfectly-balanced 0 spread that
+        # beat the realistic mid-ladder line. The book's true anchor sits
+        # near the cluster median; alt rungs fan out around it. So:
+        #   1. is_one_sided: two-sided rungs always beat one-sided
+        #      (preserves the existing FD over-only safety net).
+        #   2. distance_from_ladder_median: rung closest to the cluster
+        #      center wins (NEW — fixes Vassell + Dort cases).
+        #   3. spread |over_prob - under_prob|: balance tiebreaker
+        #      (carried forward from R20_M1).
+        #   4. total_vig |over_prob + under_prob - 1|: final tiebreaker
+        #      so the lower-vig rung wins on a clean distance+spread tie
+        #      (the test_R24_Q1 even-rung-count expectation).
         v = _vig(r)
         line_val = float(r.get("line") or 0.0)
-        # (spread, total_vig, distance_from_median): minimise.
-        return (v[1], v[0], abs(line_val - median))
+        one_sided = 1 if (r.get("over_price") is None
+                          or r.get("under_price") is None) else 0
+        return (one_sided, abs(line_val - median), v[1], v[0])
 
     primary = min(rows, key=_score)
     # Guard: primary must have BOTH sides priced. If the winning rung is
