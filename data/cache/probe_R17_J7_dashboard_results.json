@@ -1,0 +1,23 @@
+{
+  "phase": "R17_J7",
+  "description": "Single-pane-of-glass vault dashboard daemon",
+  "output_path": "vault/TONIGHT.md",
+  "n_sections": 8,
+  "rendered_at": "2026-05-26T14:04:02+00:00",
+  "available_sources": [
+    "live_bets",
+    "middles",
+    "clv",
+    "bankroll",
+    "lineups",
+    "health"
+  ],
+  "missing_sources": [
+    "urgent",
+    "line_moves"
+  ],
+  "bytes_written": 2920,
+  "atomic_write": true,
+  "tests_passed": 6,
+  "tests_total": 6
+}
