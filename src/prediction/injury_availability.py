@@ -1,6 +1,11 @@
 """injury_availability.py — inference-time multiplicative `availability_factor`.
 
 R15_W1 wiring of the R14_H4 ESPN injury feed into prop_pergame predictions.
+R22_O8 extends this with an authoritative-source lookup: when a
+`data/cache/nba_injuries_<today>.parquet` exists (written by
+`scripts/nba_injury_report_scraper.py` / its daemon), that columnar
+artifact is consulted FIRST — it is fresher and source-of-truth (NBA
+PDF preferred, ESPN fallback, rotowire last-resort).
 
 This is INFERENCE-ONLY logic — the underlying model is not retrained. At
 predict-time we look up the most-recent injury status for a player and
@@ -12,6 +17,11 @@ multiply the model's q50/q10/q90 outputs by an availability_factor in
     QUESTIONABLE        → 0.60
     PROBABLE            → 0.90
     AVAILABLE           → 1.00
+
+Lookup order (R22_O8):
+    1. data/cache/nba_injuries_<today>.parquet     (authoritative, fresh)
+    2. data/cache/injury_status_<latest>.json      (legacy ESPN snapshot)
+    3. Trigger fresh scrape if both stale → re-check.
 
 When the injury cache is older than _STALE_HOURS we trigger a fresh
 scrape via `scripts/probe_R14_H4_injury_feed.py` so the prediction is
@@ -149,18 +159,45 @@ def _name_key(name: str) -> str:
     return " ".join(s.split())
 
 
-def _rebuild_indices() -> None:
-    """Reload {player_id: factor} and {name_key: factor} from the latest snap."""
-    payload = load_latest_snapshot() or {}
+def _latest_parquet_path() -> Optional[str]:
+    """R22_O8 — return nba_injuries_<isodate>.parquet for today or None.
+
+    The daemon writes today's parquet atomically; we never read
+    yesterday's file when today's is missing (would be inference-stale).
+    """
+    today = _date_cls.today().isoformat()
+    candidate = os.path.join(_CACHE_DIR, f"nba_injuries_{today}.parquet")
+    return candidate if os.path.exists(candidate) else None
+
+
+def _load_parquet_indices() -> Optional[Tuple[Dict[int, float], Dict[str, float], float]]:
+    """R22_O8 — load (by_pid, by_name, mtime) from today's parquet.
+
+    Returns None when:
+      * pandas can't import (shouldn't happen — prop pipeline imports it).
+      * The file is empty / missing the required columns.
+      * Read errors (corrupt mid-write — caller falls back to legacy JSON).
+    """
+    pq_path = _latest_parquet_path()
+    if pq_path is None:
+        return None
+    try:
+        import pandas as pd
+        df = pd.read_parquet(pq_path)
+    except Exception as exc:
+        print(f"[injury_availability] parquet read failed: {exc}")
+        return None
+    if df.empty or "status" not in df.columns:
+        return None
     by_pid: Dict[int, float] = {}
     by_name: Dict[str, float] = {}
-    for rec in payload.get("players") or []:
+    for _, rec in df.iterrows():
         status = str(rec.get("status") or "").upper().strip()
         factor = AVAILABILITY_FACTOR.get(status)
         if factor is None:
-            continue          # unknown bucket → skip, default 1.0 downstream
+            continue
         pid_raw = rec.get("player_id")
-        if pid_raw is not None:
+        if pid_raw is not None and pd.notna(pid_raw):
             try:
                 by_pid[int(pid_raw)] = float(factor)
             except (TypeError, ValueError):
@@ -168,26 +205,73 @@ def _rebuild_indices() -> None:
         nm = _name_key(rec.get("player_name", ""))
         if nm:
             by_name[nm] = float(factor)
+    try:
+        mtime = os.path.getmtime(pq_path)
+    except OSError:
+        mtime = 0.0
+    return by_pid, by_name, mtime
+
+
+def _rebuild_indices() -> None:
+    """Reload {player_id: factor} and {name_key: factor} from the freshest source.
+
+    R22_O8 lookup order:
+      1. Today's nba_injuries_<date>.parquet (authoritative, daemon-written).
+      2. Legacy injury_status_<date>.json snapshot (ESPN-only fallback).
+    """
+    by_pid: Dict[int, float] = {}
+    by_name: Dict[str, float] = {}
+    mtime: float = 0.0
+
+    parquet_load = _load_parquet_indices()
+    if parquet_load is not None:
+        by_pid, by_name, mtime = parquet_load
+    else:
+        payload = load_latest_snapshot() or {}
+        for rec in payload.get("players") or []:
+            status = str(rec.get("status") or "").upper().strip()
+            factor = AVAILABILITY_FACTOR.get(status)
+            if factor is None:
+                continue
+            pid_raw = rec.get("player_id")
+            if pid_raw is not None:
+                try:
+                    by_pid[int(pid_raw)] = float(factor)
+                except (TypeError, ValueError):
+                    pass
+            nm = _name_key(rec.get("player_name", ""))
+            if nm:
+                by_name[nm] = float(factor)
+        snap_path = _latest_snapshot_path()
+        mtime = (
+            os.path.getmtime(snap_path) if snap_path
+            and os.path.exists(snap_path) else 0.0
+        )
+
     _CACHED["by_player_id"]   = by_pid
     _CACHED["by_name"]        = by_name
     _CACHED["loaded_at"]      = time.time()
-    snap_path = _latest_snapshot_path()
-    _CACHED["snapshot_mtime"] = (
-        os.path.getmtime(snap_path) if snap_path
-        and os.path.exists(snap_path) else 0.0
-    )
+    _CACHED["snapshot_mtime"] = mtime
 
 
 def _ensure_loaded(force: bool = False) -> None:
-    """Lazy-load (or refresh) the in-process index."""
+    """Lazy-load (or refresh) the in-process index.
+
+    R22_O8 — invalidate when either today's parquet or the legacy JSON
+    snapshot has a newer mtime than what's cached, so daemon-driven
+    parquet refreshes are picked up on the next prediction call.
+    """
     if force or _CACHED["by_player_id"] is None:
         _rebuild_indices()
         return
+    # Pick whichever source the rebuilt cache *would* use right now.
+    parquet_path = _latest_parquet_path()
     snap_path = _latest_snapshot_path()
-    if snap_path is None:
+    active_path = parquet_path or snap_path
+    if active_path is None:
         return
     try:
-        current_mtime = os.path.getmtime(snap_path)
+        current_mtime = os.path.getmtime(active_path)
     except OSError:
         return
     if current_mtime > float(_CACHED["snapshot_mtime"]):
