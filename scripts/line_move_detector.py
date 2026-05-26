@@ -440,16 +440,22 @@ def run_once(isodate: str, threshold_line: float, threshold_odds_pct: float,
     render_vault_feed(cache_path, vault_path, limit=50)
     consensus_new = [ev for ev in new_events if ev.get("consensus")]
     fired = fire_webhook(consensus_new)
-    # R18_K3 — Discord push on CONSENSUS_STEAM only (graceful no-op if env unset)
+    # R21_N3 — layered alert (vault + critical-stack always; Discord if URL set).
     try:
-        from src.alerts.discord_webhook import post_alert
+        from src.alerts.discord_webhook import alert
         for ev in consensus_new:
-            post_alert("STEAM", "line_move_detector",
-                       f"STEAM: {ev.get('player_name', '?')} {ev.get('stat', '?')}",
-                       f"book={ev.get('book', '?')}  line {ev.get('line_from', '?')}→{ev.get('line_to', '?')}  "
-                       f"odds {ev.get('over_from', '?')}→{ev.get('over_to', '?')}",
-                       fields=[{"name": "book", "value": str(ev.get('book', '?'))},
-                               {"name": "tags", "value": ",".join(ev.get('tags', []))[:1024] or "-"}])
+            alert(
+                f"STEAM: {ev.get('player_name', '?')} {ev.get('stat', '?')}",
+                level="warn",
+                tag="line_move_detector",
+                source="line_move_detector",
+                severity="STEAM",  # preserve R18_K3 blue embed color for consensus moves
+                body=(f"book={ev.get('book', '?')}  "
+                      f"line {ev.get('line_from', '?')}→{ev.get('line_to', '?')}  "
+                      f"odds {ev.get('over_from', '?')}→{ev.get('over_to', '?')}"),
+                fields=[{"name": "book", "value": str(ev.get('book', '?'))},
+                        {"name": "tags", "value": ",".join(ev.get('tags', []))[:1024] or "-"}],
+            )
     except Exception:
         pass
     return {

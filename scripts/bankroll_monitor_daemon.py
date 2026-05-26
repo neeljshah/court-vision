@@ -389,15 +389,20 @@ def append_alerts(path: Path, metrics: Dict) -> None:
             f.write("# Risk Alerts Log\n\n")
         for a in metrics["alarms"]:
             f.write(f"- {metrics['as_of']} [{a['level']}] {a['rule']}: {a['msg']}\n")
-    # R18_K3 — push only URGENT alarms (graceful no-op if env unset)
+    # R21_N3 — layered alert (vault + critical-stack always; Discord if URL set).
     try:
-        from src.alerts.discord_webhook import post_alert
+        from src.alerts.discord_webhook import alert
         for a in metrics["alarms"]:
             if str(a.get("level", "")).upper() == "URGENT":
-                post_alert("URGENT", "bankroll_monitor_daemon",
-                           f"Risk alarm: {a.get('rule', '?')}", str(a.get("msg", "")),
-                           fields=[{"name": "rule", "value": str(a.get("rule", "?"))},
-                                   {"name": "as_of", "value": str(metrics.get("as_of", "?"))}])
+                alert(
+                    f"Risk alarm: {a.get('rule', '?')} — {a.get('msg', '')}",
+                    level="critical",
+                    tag="bankroll_monitor_daemon",
+                    source="bankroll_monitor_daemon",
+                    body=str(a.get("msg", "")),
+                    fields=[{"name": "rule", "value": str(a.get("rule", "?"))},
+                            {"name": "as_of", "value": str(metrics.get("as_of", "?"))}],
+                )
     except Exception:
         pass
 
