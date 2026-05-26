@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 39,
+  "rounds_completed": 40,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -639,6 +639,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-26 (ensemble serialization \u2014 2/2 smoke PASS). All 6 production canonicals now have joblib artifacts in data/models/m2_family/.\nDataset has grown to 3867 games (was 3369 at B25, 3045 at B24, 2839 at B19 \u2014 R26-R29 backfills from parallel session added ~1000 games).\nSerialized bundles:\n  r12_AH3_canonical_top4_avg.joblib (11.8 MB, 4 component models)\n    recipe: equal_weight_avg of [intersection, opp_pts_pace, opp_full, all_b9]\n    smoke: 50 preds mean prob 0.524, range [0.091, 0.982]\n  r12_away_score_canonical.joblib (8.66 MB, 3 component models)\n    recipe: nnls of [halflife2_only, all_b9, interactions_only]\n    weights (full-train NNLS): [0.522, 0.159, 0.319]\n    tail-200 selection: ensemble MAE 9.9751 BEATS single-model 10.0319 (delta -0.06)\n    smoke: 50 preds mean 114.093, range [88.37, 147.47]\nINTERESTING NUANCE on away_score ensemble: B25 found NNLS weights swing wildly per CV fold (suggesting brittleness), but tail-holdout shows the ensemble narrowly wins anyway. Hypothesis: NNLS is unstable when fit per-fold on noisy outer-train OOF, but more stable when fit on the full training set with more samples. Both findings are true \u2014 the per-fold WF metric over-pessimizes the ensemble case.\nBUNDLE FORMAT: each ensemble bundle has {models: list, feature_columns_per_model: list, recipe: {type, components, [weights]}, training_meta}. Recipe types: equal_weight_avg, nnls (with weights), single. Reusable predict_ensemble() helper in the probe script.\nPRODUCTION CLI: predict_game.py can now load any of the 6 r12_*_canonical.joblib bundles and report predictions for total / score_diff / home_score / away_score / over_230 / AH3 \u2014 no retraining at inference time.\nStop counter UNCHANGED at 1/5 (serialization batch doesn't count)."
+    },
+    {
+      "name": "R12_BATCH27_predict_utility",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 6,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-27 (production loading utility - 6/6 PASS). Dataset grew to 4315 games (R29_V2 100% linescore coverage backfill landed).\nADDED TO src/prediction/r12_canonical_predictor.py:\n  load_canonical_bundle(target) - reads r12_{target}_canonical.joblib from disk\n  predict_canonical_bundle(bundle, df) - dispatches on bundle shape + recipe.type:\n    * single-model bundle: predict_canonical on the one model\n    * ensemble equal_weight_avg: mean across component predictions\n    * ensemble nnls: weighted sum using recipe['weights']\n    * ensemble single: predict on first component only\nPerformance (all 6 bundles):\n  Single-model: load 20-30ms, predict 14-30ms\n  Ensemble (3-4 components): load 71-98ms, predict 82-104ms\nSanity verified - all 6 targets' predictions on last 50 games in expected ranges:\n  total_pts_box  mean 226.7 range [209.1, 244.8]\n  score_diff     mean 1.99  range [-12.2, 20.7]\n  home_score     mean 114.8 range [104.7, 127.9]\n  away_score     mean 113.1 range [102.1, 126.4]\n  over_230       mean 0.407 range [0.031, 0.899]\n  home_cover_AH3 mean 0.618 range [0.134, 0.952]\nPRODUCTION HANDOFF UNBLOCKED - any caller can now do:\n  df = build_r12_features(season_games_df)\n  bundle = load_canonical_bundle('total_pts_box')\n  preds = predict_canonical_bundle(bundle, df)\nNo retraining at inference time; 6 markets per game via 6 .joblib files.\nStop counter UNCHANGED at 1/5 (wiring batch doesn't count)."
     }
   ],
   "rejects": [
