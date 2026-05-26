@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 28,
+  "rounds_completed": 29,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -540,6 +540,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-15 (18 variants in 1023s \u2014 18/18 SHIP, 13/18 BEAT_CANONICAL). STRONGEST WIN RATE YET. Top-4 simple-average blends consistently beat top-2 across 5 of 6 targets. Stop counter: 0/5.\nPer-variant beat-canonical count:\n  top3_avg: 4/6 beat \u2014 score_diff -17.52%, home_score -16.48%, away_score -14.51%, O230 Brier 0.2366, AH3 Brier 0.2272.\n  top4_avg: 5/6 beat \u2014 score_diff -17.59%, home_score -16.52%, away_score -14.45%, O230 Brier 0.2363, AH3 Brier 0.2271 AUC 0.7115.\n  nnls_top3: 4/6 beat \u2014 score_diff -17.61% (best score_diff overall), away_score -14.51%, AH3 Brier 0.2277.\nOnly total_pts_box keeps B9 interactions_only as champion \u2014 single-model beats all blends by 0.30-0.34pp. Interesting outlier: total benefits from FOCUSED feature set while every other target benefits from model diversity.\nNEW PRODUCTION CANONICAL:\n  total: B9 interactions_only -16.27% UNCHANGED (blends regress)\n  spread: B15 nnls_top3 -17.61% (-0.17pp vs B11 opp_full)\n  home_score: B15 top4_avg -16.52% (-0.14pp vs B13)\n  away_score: B15 nnls_top3 -14.51% (-0.09pp vs B13)\n  O230: B15 top4_avg Brier 0.2363 AUC 0.6760 (-0.0009 Brier vs B13)\n  AH3: B15 top4_avg Brier 0.2271 AUC 0.7115 (-0.0015 Brier, +0.0017 AUC vs B13)\nARCHITECTURAL FINDING: model-level ensembling gains compound with more diverse models. Top-4 wins more than top-3 wins more than top-2 (all simple equal-weight). NNLS-weighted is competitive with simple average but doesn't always win \u2014 equal-weight averaging is surprisingly robust because all per-target models have similar absolute performance.\nPRACTICAL LIMIT: at top-4 with same architecture, diminishing returns kick in. Further gains likely require architecturally diverse base learners (CatBoost, MLP, linear)."
+    },
+    {
+      "name": "R12_BATCH16_diverse_learners_3arch",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 18,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-16 (18 variants in 226s \u2014 18/18 SHIP gates but 0/18 BEAT_CANONICAL). Zero-architectural-gain round (stop counter: 1/5).\nCatBoost not installed in basketball_ai env \u2014 proceeded with 3-arch blend (LGB+XGB+HGB) instead of planned 4.\nAll 3 blend variants (all4_avg, all4_nnls, drop_worst) regress vs canonicals by +1.4-2.0pp on every regression target and worse Brier on binary targets.\nSample deltas vs B15 canonicals (per-target):\n  total -14.30% vs B9 -16.27% (+1.97pp regression)\n  score_diff -16.20% vs B15 nnls_top3 -17.61% (+1.41pp)\n  home_score -14.82% vs B15 top4_avg -16.52% (+1.70pp)\n  away_score -12.84% vs B15 nnls_top3 -14.51% (+1.67pp)\n  O230 Brier 0.2438 vs B15 top4_avg 0.2363 (regress)\n  AH3 Brier 0.2305 vs B15 top4_avg 0.2271 (regress)\nARCHITECTURAL FINDING: simple 3-arch SINGLE-MODEL blends do NOT beat the B15 OOF-stack-of-feature-blends. Three confounds: (1) B16 models are single-layer (no inner OOF stacking); (2) all 3 archs see the SAME feature set, so diversity is purely algorithmic not informational; (3) CatBoost missing reduces ensemble width. The B15 canonicals win because they combine BOTH feature-set diversity AND OOF-stack architecture \u2014 arch diversity at single-model level can't compensate.\nPRODUCTION CANONICAL UNCHANGED.\nStop counter: 1/5."
     }
   ],
   "rejects": [
@@ -958,6 +967,12 @@
       "reason": "11/12 H2H-feature variants regress vs canonical per-target winners. H2H L5 window is too noisy (~4 games/pair/season, 2+ season span) to add signal beyond what general team-form features already capture. Only h2h_full + score_diff squeaks by -0.07pp vs B11 opp_full.",
       "saturated_angle": "head-to-head L5 streak features on top of B11 opp_full",
       "round": 12
+    },
+    {
+      "name": "R12_BATCH16_diverse_learners_vs_canonical",
+      "reason": "3-arch single-model blends (LGB+XGB+HGB) regress +1.4-2.0pp vs B15 OOF-stack-of-feature-blends. Architectural diversity at SINGLE-MODEL layer can't compensate for B15's feature-set diversity \u00d7 OOF-stack architecture combination. CatBoost missing in env reduced ensemble width from planned 4 to 3.",
+      "saturated_angle": "3-arch single-model blending on canonical feature sets",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -1025,7 +1040,8 @@
     "streak features for high-volume stats (PTS/REB/AST) at any window length",
     "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)",
     "30-team SVD identity embeddings (8-16 dim) on B5+B6 base",
-    "H2H L5 ordered/unordered streak features (too noisy at game-level)"
+    "H2H L5 ordered/unordered streak features (too noisy at game-level)",
+    "3-arch (LGB+XGB+HGB) single-model blends on canonical feature sets"
   ],
   "current_baseline_mae": {
     "pts": 2.214,

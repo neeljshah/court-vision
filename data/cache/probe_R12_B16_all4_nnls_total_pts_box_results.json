@@ -1,0 +1,81 @@
+{
+  "probe": "R12_B16_all4_nnls_total_pts_box",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.76%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 14.5677,
+  "pooled_delta_pct": -14.76,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.168,
+      "delta": -2.0992,
+      "delta_pct": -12.16
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.3211,
+      "delta": -3.0902,
+      "delta_pct": -17.75
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 14.2142,
+      "delta": -2.376,
+      "delta_pct": -14.32
+    }
+  ],
+  "beat_canonical": false,
+  "canonical_src": "B9 interactions_only (single)",
+  "vs_canonical_pp": 1.51,
+  "variant": {
+    "variant": "all4_nnls",
+    "archs": [
+      "lgb",
+      "xgb",
+      "hgb"
+    ],
+    "fc_used": "interactions_only",
+    "weights_per_fold": [
+      [
+        0.0586541874925879,
+        0.5988506508447374,
+        0.34249516166267463
+      ],
+      [
+        0.12329579769546169,
+        0.7208049966115714,
+        0.15589920569296686
+      ],
+      [
+        0.0569470212966666,
+        0.6863679458683124,
+        0.2566850328350211
+      ]
+    ],
+    "archs_used_per_fold": [
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ],
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ],
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ]
+    ]
+  }
+}
