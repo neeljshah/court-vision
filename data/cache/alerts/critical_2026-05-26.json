@@ -1,0 +1,326 @@
+[
+  {
+    "ts": "2026-05-26T17:15:02.810874+00:00",
+    "level": "WARN",
+    "tag": "line_move_detector",
+    "source": "line_move_detector",
+    "message": "STEAM: Star pts",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[STEAM] STEAM: Star pts",
+          "description": "book=bov  line 24.5\u219225.5  odds ?\u2192?",
+          "color": 3447003,
+          "footer": {
+            "text": "source: line_move_detector"
+          },
+          "timestamp": "2026-05-26T17:15:02.809874+00:00",
+          "fields": [
+            {
+              "name": "book",
+              "value": "bov",
+              "inline": true
+            },
+            {
+              "name": "tags",
+              "value": "LINE_UP,CONSENSUS_STEAM",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:15:02.812873+00:00",
+    "level": "WARN",
+    "tag": "line_move_detector",
+    "source": "line_move_detector",
+    "message": "STEAM: Star pts",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[STEAM] STEAM: Star pts",
+          "description": "book=fd  line 24.5\u219225.5  odds ?\u2192?",
+          "color": 3447003,
+          "footer": {
+            "text": "source: line_move_detector"
+          },
+          "timestamp": "2026-05-26T17:15:02.811874+00:00",
+          "fields": [
+            {
+              "name": "book",
+              "value": "fd",
+              "inline": true
+            },
+            {
+              "name": "tags",
+              "value": "LINE_UP,CONSENSUS_STEAM",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:15:11.977208+00:00",
+    "level": "CRITICAL",
+    "tag": "auto_place_daemon",
+    "source": "auto_place_daemon",
+    "message": "LIVE FIRE \u2014 Keldon Johnson REB OVER 3.5",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] LIVE FIRE \u2014 Keldon Johnson REB OVER 3.5",
+          "description": "@pin +157  edge=35.04%  stake=$50.00",
+          "color": 15158332,
+          "footer": {
+            "text": "source: auto_place_daemon"
+          },
+          "timestamp": "2026-05-26T17:15:11.977208+00:00",
+          "fields": [
+            {
+              "name": "kelly_pct",
+              "value": "5.0%",
+              "inline": true
+            },
+            {
+              "name": "model_prob",
+              "value": "0.7395",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:15:11.991206+00:00",
+    "level": "CRITICAL",
+    "tag": "auto_place_daemon",
+    "source": "auto_place_daemon",
+    "message": "LIVE FIRE \u2014 Keldon Johnson REB OVER 3.5",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] LIVE FIRE \u2014 Keldon Johnson REB OVER 3.5",
+          "description": "@pin +157  edge=35.04%  stake=$50.00",
+          "color": 15158332,
+          "footer": {
+            "text": "source: auto_place_daemon"
+          },
+          "timestamp": "2026-05-26T17:15:11.991206+00:00",
+          "fields": [
+            {
+              "name": "kelly_pct",
+              "value": "5.0%",
+              "inline": true
+            },
+            {
+              "name": "model_prob",
+              "value": "0.7395",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:15:12.008206+00:00",
+    "level": "CRITICAL",
+    "tag": "auto_place_daemon",
+    "source": "auto_place_daemon",
+    "message": "DRY FIRE \u2014 Keldon Johnson REB OVER 3.5",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] DRY FIRE \u2014 Keldon Johnson REB OVER 3.5",
+          "description": "@pin +157  edge=35.04%  stake=$50.00",
+          "color": 15158332,
+          "footer": {
+            "text": "source: auto_place_daemon"
+          },
+          "timestamp": "2026-05-26T17:15:12.007206+00:00",
+          "fields": [
+            {
+              "name": "kelly_pct",
+              "value": "5.0%",
+              "inline": true
+            },
+            {
+              "name": "model_prob",
+              "value": "0.7395",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:15:13.362329+00:00",
+    "level": "CRITICAL",
+    "tag": "bankroll_monitor_daemon",
+    "source": "bankroll_monitor_daemon",
+    "message": "Risk alarm: kelly_overhang > 30% \u2014 Total pending Kelly 40.0% exceeds 30% ceiling",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] Risk alarm: kelly_overhang > 30% \u2014 Total pending Kelly 40.0% exceeds 30% ceiling",
+          "description": "Total pending Kelly 40.0% exceeds 30% ceiling",
+          "color": 15158332,
+          "footer": {
+            "text": "source: bankroll_monitor_daemon"
+          },
+          "timestamp": "2026-05-26T17:15:13.362329+00:00",
+          "fields": [
+            {
+              "name": "rule",
+              "value": "kelly_overhang > 30%",
+              "inline": true
+            },
+            {
+              "name": "as_of",
+              "value": "2026-05-26T18:00:00+00:00",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.726598+00:00",
+    "level": "CRITICAL",
+    "tag": "auto_place_daemon",
+    "source": "auto_place_daemon",
+    "message": "FIRED Jokic OVER 28.5",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] FIRED Jokic OVER 28.5",
+          "description": "kelly=2.3%  stake=$57.50",
+          "color": 15158332,
+          "footer": {
+            "text": "source: auto_place_daemon"
+          },
+          "timestamp": "2026-05-26T17:16:54.724597+00:00",
+          "fields": [
+            {
+              "name": "edge_pct",
+              "value": "6.4%",
+              "inline": true
+            },
+            {
+              "name": "book",
+              "value": "fanduel",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.740597+00:00",
+    "level": "CRITICAL",
+    "tag": "smoke",
+    "source": "smoke",
+    "message": "URGENT test",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] URGENT test",
+          "description": "body",
+          "color": 15158332,
+          "footer": {
+            "text": "source: smoke"
+          },
+          "timestamp": "2026-05-26T17:16:54.740597+00:00"
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.761040+00:00",
+    "level": "CRITICAL",
+    "tag": "test",
+    "source": "test",
+    "message": "should not fire",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] should not fire",
+          "description": "...",
+          "color": 15158332,
+          "footer": {
+            "text": "source: test"
+          },
+          "timestamp": "2026-05-26T17:16:54.760040+00:00"
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.774040+00:00",
+    "level": "INFO",
+    "tag": "t",
+    "source": "t",
+    "message": "t",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[INFO] t",
+          "description": "b",
+          "color": 3066993,
+          "footer": {
+            "text": "source: t"
+          },
+          "timestamp": "2026-05-26T17:16:54.773040+00:00"
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.826041+00:00",
+    "level": "CRITICAL",
+    "tag": "fail-test",
+    "source": "fail-test",
+    "message": "boom",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] boom",
+          "description": "down",
+          "color": 15158332,
+          "footer": {
+            "text": "source: fail-test"
+          },
+          "timestamp": "2026-05-26T17:16:54.825038+00:00"
+        }
+      ]
+    }
+  },
+  {
+    "ts": "2026-05-26T17:16:54.852038+00:00",
+    "level": "CRITICAL",
+    "tag": "smoke",
+    "source": "smoke",
+    "message": "URGENT headline",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] URGENT headline",
+          "description": "URGENT body",
+          "color": 15158332,
+          "footer": {
+            "text": "source: smoke"
+          },
+          "timestamp": "2026-05-26T17:16:54.852038+00:00"
+        }
+      ]
+    }
+  }
+]
