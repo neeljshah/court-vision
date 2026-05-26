@@ -34,9 +34,22 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__
 sys.path.insert(0, PROJECT_DIR)
 
 from src.data.schedule_context import compute_travel_distance
+from src.prediction._paths import resolve_data_dir, resolve_model_dir
 
-_MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
-_NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
+# R31_X2: worktree-aware resolver. `_MODEL_DIR` resolves the legacy
+# single-XGB heads (game_*.json, *.pkl), `_M2_FAMILY_DIR` resolves the
+# 20-model ensemble. Both honour `NBA_MODEL_DIR` / `NBA_DATA_DIR` env
+# overrides and fall back to the host repo when this worktree's
+# `data/models/` is empty. `_NBA_CACHE` participates in the same scheme
+# so season_games_*.json lookups also resolve to host artifacts.
+# Canary `game_game_total.json` is the smallest legacy artifact present
+# whenever the host has trained game-level models; if missing, the dir is
+# still returned (callers raise FileNotFoundError as before).
+_MODEL_DIR = resolve_model_dir(
+    canary="game_game_total.json",
+    project_dir=PROJECT_DIR,
+)
+_NBA_CACHE = resolve_data_dir("nba", project_dir=PROJECT_DIR)
 
 # Bump when scored_games cache schema changes to force re-fetch.
 # v6: game_pace target switched from season-pace average to realised
@@ -348,7 +361,17 @@ def load_models() -> GameModels:
 # feature row is fully populated, the m2_family ensemble overrides total_est /
 # spread_est on the predict() return. blowout_prob, first_half_est, pace_est
 # stay on the legacy single-XGB heads (no m2 ship for those yet).
-_M2_FAMILY_DIR = os.path.join(_MODEL_DIR, "m2_family")
+# R31_X2: m2_family resolves INDEPENDENTLY of the legacy `_MODEL_DIR` so
+# a worktree that happens to have legacy single-XGB heads but not the 20-
+# model ensemble still finds the host-repo m2_family. Canary is the
+# manifest.json that _try_load_m2_family below requires anyway.
+_M2_FAMILY_DIR = os.path.join(
+    resolve_model_dir(
+        canary=os.path.join("m2_family", "manifest.json"),
+        project_dir=PROJECT_DIR,
+    ),
+    "m2_family",
+)
 _M2_FAMILY_CACHE: Optional[Dict[str, list]] = None
 _M2_FAMILY_FEATS: Optional[List[str]] = None
 _M2_FAMILY_MANIFEST: Optional[dict] = None
@@ -358,6 +381,9 @@ _M2_FAMILY_MANIFEST: Optional[dict] = None
 # cached value was written. Cache lives in data/cache/ (gitignored) and is
 # written atomically (tmpfile + os.replace) so concurrent callers can't tear
 # the JSON.
+# R31_X2: prediction cache writes ALWAYS go to the local worktree's
+# data/cache (never to a host-repo dir we may have only READ models from).
+# This preserves isolation — each worktree's cache stays its own.
 _M2_PRED_CACHE_PATH = os.path.join(
     PROJECT_DIR, "data", "cache", "m2_family_predictions_cache.json"
 )

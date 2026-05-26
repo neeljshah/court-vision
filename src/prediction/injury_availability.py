@@ -49,7 +49,21 @@ from typing import Dict, Optional, Tuple
 PROJECT_DIR = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 )
-_CACHE_DIR = os.path.join(PROJECT_DIR, "data", "cache")
+
+# R31_X2: worktree-aware cache-dir resolver. Honours NBA_DATA_DIR /
+# explicit NBA_INJURY_CACHE_DIR env override. The canary is the parquet
+# pattern WITHOUT a date (matching the daemon's recent output) — when
+# missing we accept any populated `data/cache/` (including just legacy
+# JSON snapshots). The canary is `None` because daily parquet filenames
+# embed the date and a fresh worktree may have only the legacy JSON.
+# Behaviour preserved: with no env vars and a local data/cache/ that's
+# at least a directory, the local dir wins (unchanged from today).
+from src.prediction._paths import resolve_data_dir  # noqa: E402
+_CACHE_DIR = resolve_data_dir(
+    "cache",
+    env_var="NBA_INJURY_CACHE_DIR",
+    project_dir=PROJECT_DIR,
+)
 
 # Match R14_H4 probe taxonomy exactly so a snapshot built by the probe
 # round-trips here byte-for-byte without re-normalisation.
