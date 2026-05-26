@@ -1,6 +1,6 @@
 # Predictions Quickstart
 
-Honest production state at master `7b43dff1` (improve_loop R7 / execute_loop R8, post-cycle-110). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
+Honest production state at master `c17554e7` (improve_loop R7 / execute_loop R10, post-cycle-110). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
 
 > **Polished end-to-end demo flow:** see [docs/SWISH_DEMO.md](docs/SWISH_DEMO.md) (interview cheat-sheet) and `python scripts/swish_demo.py` (runnable pregame → snapshot → projection → EV → Kelly → settle → CLV).
 > **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture (endQ3 -43% to -55% MAE vs pregame, 7/7 stats), see `src/prediction/live_engine.py` and CHANGELOG.md 0.15.0.

@@ -18,7 +18,7 @@ The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius
 - Multi-surface monetization (6 revenue streams) made explicit — betting is surface 1, not the product
 - Renaissance-style methodology added as core intellectual framework
 - Multi-agent Claude research system added as the 6th system (the moat)
-- Canonical R² corrected: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 (superseded by 0.5105 in cycle 18 sqrt+Huber blend, see Canonical Facts table)
+- Canonical R² corrected on 2026-05-18: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18 — **all superseded** by post-cycle-18 loss-surface work (sqrt+Huber for PTS → 0.5105) and q50 quantile-head dispatch (cycles 26-29) for REB/AST/FG3M/STL/BLK/TOV. Current values live in Canonical Facts (2026-05-25) below; honest MAE is the betting-relevant metric, not R²
 - Gate 1 status clarified: NOT YET RUN — top priority
 
 ## Canonical Facts (2026-05-25)
