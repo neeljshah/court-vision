@@ -82,8 +82,8 @@ Renaissance Technologies runs ~500 signals at any time. 60-70% of newly proposed
 
 ### Prop Ceilings (with full signal architecture)
 
-| Stat | Current holdout R² | CV lift (est) | Ceiling R² | Key signal unlock |
-|------|--------------------|---------------|-----------|------------------|
+| Stat | Current holdout MAE | CV lift (est) | Ceiling MAE | Key signal unlock |
+|------|---------------------|---------------|-------------|------------------|
 | PTS  | 4.62 MAE | -0.15 to -0.25 | 4.37-4.47 MAE | defender_distance, minutes model, regime detection |
 | REB  | 1.90 MAE | -0.08 to -0.12 | 1.78-1.82 MAE | CV positioning, box-out detection, paint pressure |
 | AST  | 1.36 MAE | -0.06 to -0.10 | 1.26-1.30 MAE | CV spacing, play type distribution, drive kickout rate |

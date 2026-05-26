@@ -90,10 +90,10 @@
 | Shin devig | `src/prediction/devig.py` | ✅ [LIVE] |
 | Risk guards | `src/prediction/risk_guards.py` | ✅ [LIVE] |
 | Ingest queue (SQLite) | `src/ingest/` | ✅ [LIVE] |
-| FastAPI serving | `api/main.py` | ✅ [LIVE] 6 endpoints + 5 routers |
+| FastAPI serving | `api/main.py` | ✅ [LIVE] ~49 endpoints across 7 routers |
 | Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
 | Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
-| Regression test suite | `tests/` | ✅ [LIVE] 1040 passing |
+| Regression test suite | `tests/` | ✅ [LIVE] 2,661 pass on RunPod (1040+ on the core suite locally) |
 | CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Gate 1 not run |
 | Line evaluator | `src/prediction/devig.py` + analytics | 🟡 [SCAFFOLDED] live pipeline pending |
 | Correlation engine | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] kelly_corr not populated |

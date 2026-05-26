@@ -75,7 +75,7 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 | [MASTER_PLAN.md](../MASTER_PLAN.md) | Long-form strategic context (canonical-facts table) |
 | [CHANGELOG.md](../CHANGELOG.md) | Versioned ship log |
 | [START_HERE.md](START_HERE.md) | Human onboarding shortcut |
-| [.planning/ROADMAP.md](../.planning/ROADMAP.md) | Full internal phase roadmap (125K; gitignored locally — grep/section-read) |
+| `.planning/ROADMAP.md` | Full internal phase roadmap (167KB; gitignored — present only in the maintainer's local working copy, not on GitHub) |
 
 ---
 

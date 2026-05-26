@@ -8,7 +8,9 @@
 
 **The window:** 1-3 years before Genius Sports or Sportradar ships a tracking-integrated prop pricing API. The AI-native operator who builds the research machine first establishes category dominance for 5-10 years.
 
-For the full strategic thesis: [VISION.md](VISION.md). For technical architecture: [ARCHITECTURE.md](ARCHITECTURE.md). For build sequence: [ROADMAP.md](ROADMAP.md).
+For the full strategic thesis: [VISION.md](VISION.md). For technical architecture: [ARCHITECTURE.md](ARCHITECTURE.md). For build sequence: [ROADMAP.md](ROADMAP.md). To run a prediction in <5 minutes: [PREDICTIONS_QUICKSTART.md](PREDICTIONS_QUICKSTART.md). For the end-to-end demo flow (pregame → snapshot → projection → EV → Kelly → settle → CLV): [docs/SWISH_DEMO.md](docs/SWISH_DEMO.md).
+
+**Current state (2026-05-25):** 85 trained ML artifacts (119 `.pkl`) across ~120 prediction modules. FastAPI serving layer with ~49 endpoints across 7 routers. 2,661 tests pass on RunPod. Walk-forward holdout: 71% game-win accuracy, +20-28% backtested prop ROI at the +0.5 edge threshold across 7 stats (N=19,964 player-games). Gate 1 (CLV vs Pinnacle close) not yet run — top priority.
 
 ---
 
