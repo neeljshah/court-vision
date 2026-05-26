@@ -1,9 +1,26 @@
-# Model Deployment Audit — R20_M7
+# Model Deployment Audit — R20_M7 (R30_W6 refresh)
 
-**Date:** 2026-05-26  
-**Worktree:** `agent-a29341ca816d8067d`  
-**Probe script:** `scripts/improve_loop/probe_R20_M7_model_audit.py`  
-**State source:** `scripts/improve_loop/state.json` (51 ships across rounds 0-12)
+**Date:** 2026-05-26 (R30_W6 refresh)  
+**Original ship:** R20_M7 (round 20)  
+**Refresh ship:** R30_W6 (round 30, after the R21-R29 wave)  
+**Worktree (original):** `agent-a29341ca816d8067d`  
+**Worktree (refresh):** `agent-a29f374f14a49a823`  
+**Probe script (original):** `scripts/improve_loop/probe_R20_M7_model_audit.py`  
+**Probe script (refresh):** `scripts/improve_loop/probe_R30_W6_audit_refresh.py`  
+**State source:** `scripts/improve_loop/state.json` (71+ ships across rounds 0-29)
+
+## R30_W6 refresh result — headline
+
+- **0 regressions** in the wire layer vs the R20_M7 baseline (22 surfaces wired, 6 probe-only ships with no persisted artifact).
+- All 5 R21-R29 wire-layer touches still present and active:
+  - **R21_N1** — `prop_pergame._resolve_model_dir` worktree fallback for gitignored prop-model artifacts.
+  - **R21_N5** — per-(game_id, models_mtime) m2_family prediction cache.
+  - **R22_O8** — `injury_availability` parquet-first lookup.
+  - **R23_P2** — `inplay_bet_ranker` injury-kill guard (drops OUT players from ranked output).
+  - **R28_U2** + **R29_V3** — pace + residual-drift triage patches (data layer, no wire-layer change).
+- 5/5 smoke tests pass: m2_family pregame predict, per-stat heads, injury factor, endQ3 residual head load, R21_N5 cache byte-identity.
+
+R30_W6 refresh payload: `data/cache/probe_R30_W6_results.json`
 
 ## Headline
 
@@ -160,3 +177,95 @@ Saved to `data/cache/probe_R20_M7_before_after.json`.
   caller passes a `game_id` or matches a season_games row)
 - `tests/test_pergame_live_wiring.py` + `tests/test_prop_pergame.py` —
   22 passed, 0 failed
+- `tests/test_R30_W6_audit_refresh.py` — 12 passed, 0 failed (refresh-round
+  regression suite covering R20_M7 wire + R21_N1/N5 + R22_O8 + R23_P2)
+
+## R30_W6 refresh — R21-R29 patches per stage
+
+This section documents the post-R20_M7 wire-layer touches and their
+current status, verified by `probe_R30_W6_audit_refresh.py`.
+
+### R21_N1 — prop_pergame worktree-fallback resolver
+
+- **File:** `src/prediction/prop_pergame.py`
+- **Symbol added:** `_resolve_model_dir()` (lines 62-105)
+- **Why:** PTS + AST were the only two stats whose 3-way blend depends on
+  multi-file pkl/json artifacts that ARE gitignored. In a worktree
+  without these, `load_pergame_model` silently returns 0 learners and
+  `predict_pergame` returned None for PTS+AST — but produced values for
+  the other 5 stats whose q50 backends are checked into git as JSON.
+- **Wire test:** `tests/test_R21_N1_pts_ast_load.py` + new
+  `test_R21_N1_resolver_*` in `tests/test_R30_W6_audit_refresh.py`.
+- **R30_W6 status:** WIRED. Resolver returns host-repo `data/models/`
+  when called from a worktree without local PTS artifacts; all 7 stats
+  predict non-None.
+
+### R21_N5 — m2_family per-(game_id, mtime) prediction cache
+
+- **File:** `src/prediction/game_models.py`
+- **Symbols added:** `_M2_PRED_CACHE_PATH`, `_m2_family_models_mtime()`,
+  `_load_m2_pred_cache()`, `_save_m2_pred_cache()`, `clear_m2_pred_cache()`.
+- **Why:** R20_M7 wired the m2_family bundle but the cold path runs 20
+  joblib `.predict` calls per game per request. Same (game_id, models_mtime)
+  reads return byte-identical values, so caching is safe and saves ~150ms
+  per warm call.
+- **Wire test:** `test_R21_N5_m2_family_cache_still_present` +
+  `test_R21_N5_cache_byte_identical_repeat`.
+- **R30_W6 status:** WIRED. Second predict() call on the same game_id
+  returns byte-identical total/spread/home_pts/away_pts.
+
+### R22_O8 — injury_availability parquet-first lookup
+
+- **File:** `src/prediction/injury_availability.py`
+- **Symbols added:** `_latest_parquet_path()`, `_load_parquet_indices()`.
+- **Why:** ESPN JSON snapshot lags behind the NBA-PDF-derived parquet
+  written by `scripts/nba_injury_report_scraper.py`. R22_O8 makes the
+  parquet authoritative (consulted first); legacy JSON is the fallback.
+- **Wire test:** `test_R22_O8_injury_parquet_wire_still_present` +
+  `test_R22_O8_injury_wire_returns_zero_for_OUT`.
+- **R30_W6 status:** WIRED. Today's parquet shows 126 OUT players; all
+  sampled lookups return factor=0.0.
+
+### R23_P2 — inplay_bet_ranker injury-kill guard
+
+- **File:** `scripts/inplay_bet_ranker.py`
+- **Symbols added:** `_availability_factor()` helper; per-bet kill loop
+  with `n_killed_by_injury` telemetry.
+- **Why:** Before R23_P2, a player declared inactive 30 min before tip
+  would still surface in ranked output because the in-play ranker had no
+  injury awareness. Now bets with availability_factor < 1.0 are tracked,
+  factor==0.0 bets are dropped, and the killed-list is returned in the
+  payload for downstream auditing.
+- **Wire test:** `test_R23_P2_inplay_injury_kill_still_present`.
+- **R30_W6 status:** WIRED.
+
+### R28_U2 — pace feature reference-mean patch
+
+- **File:** `scripts/patch_R28_U2_pace.py` (data layer, no wire-layer change).
+- **Why:** R27_T3 residual-drift triage flagged pace as MAJOR-drifted; R28_U2
+  patched the reference computation.
+- **R30_W6 status:** N/A for wire audit (this round was data-only); pace
+  feature still consumed by m2_family + per-stat heads as before.
+
+### R29_V3 — synergy / sim residual-drift triage
+
+- **File:** `scripts/patch_R29_V3_residual_drift.py` (data layer).
+- **Why:** Triaged 35 → 28 MAJOR-drifted features into 3 artifact categories
+  (computation_artifact / data_source_drift / window_artifact).
+- **R30_W6 status:** N/A for wire audit. No production loaders touched.
+
+## R30_W6 summary table
+
+| Wire / surface | R20_M7 status | R30_W6 status | Test |
+|---|---|---|---|
+| m2_family multi5 ensemble (total/spread/home/away) | WIRED | WIRED | test_m2_family_predict_all_nonzero |
+| 7 per-stat prop heads (pts/reb/ast/fg3m/stl/blk/tov) | WIRED | WIRED | test_per_stat_heads_all_predict_nonzero |
+| Pregame residual heads (6 stats) | WIRED | WIRED | (covered by audit table) |
+| In-play residual heads (endQ1/Q2/Q3 + xstat) | WIRED | WIRED | test_endq3_residual_heads_loadable_and_callable |
+| Inplay winprob v1/v2/v3 | WIRED | WIRED | (covered by audit table) |
+| Legacy game heads (blowout/first_half/pace) | WIRED | WIRED | (covered by audit table) |
+| R21_N1 worktree resolver | new | WIRED | test_R21_N1_resolver_returns_populated_dir |
+| R21_N5 m2_family cache | new | WIRED | test_R21_N5_cache_byte_identical_repeat |
+| R22_O8 injury parquet | new | WIRED | test_R22_O8_injury_wire_returns_zero_for_OUT |
+| R23_P2 inplay injury kill | new | WIRED | test_R23_P2_inplay_injury_kill_still_present |
+| Probe-only ships (binary O/U + ATS + Q1/H1 + tracking_pts) | NO_ARTIFACT | NO_ARTIFACT | (expected — no persisted artifact) |
