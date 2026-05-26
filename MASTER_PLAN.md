@@ -21,22 +21,32 @@ The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius
 - Canonical R² corrected: pts=0.41, reb=0.38, ast=0.36, fg3m=0.29, blk=0.16, tov=0.22, stl=0.18
 - Gate 1 status clarified: NOT YET RUN — top priority
 
-## Canonical Facts (2026-05-18)
+## Canonical Facts (2026-05-25)
+
+> **Honest framing.** R² rows below come from `data/models/model_registry.json` (squared-error fit quality). MAE rows come from `data/models/quantile_pergame_metrics.json` / `verify_production_mae.py` (median absolute error). For the q50 stats (REB/FG3M/STL/BLK/TOV — 5 of 7), **R² gets worse but MAE wins decisively** because sportsbook prop O/U lines score against the median, not the mean, and q50 pinball loss targets the median directly. The MAE numbers are the betting-relevant ones.
 
 | Metric | Canonical value | Source |
 |--------|----------------|--------|
-| Props holdout R² — pts | 0.41 | `data/models/model_registry.json` |
-| Props holdout R² — reb | 0.38 | same |
-| Props holdout R² — ast | 0.36 | same |
-| Props holdout R² — fg3m | 0.29 | same |
-| Props holdout R² — tov | 0.22 | same |
-| Props holdout R² — stl | 0.18 | same |
-| Props holdout R² — blk | 0.16 | same |
+| Props holdout R² — pts | 0.5105 | `data/models/model_registry.json` |
+| Props holdout MAE — pts | 4.6210 (sqrt+Huber blend) | `data/models/quantile_pergame_metrics.json` |
+| Props holdout R² — reb | 0.38 (q50 — R² regresses, MAE wins) | `data/models/model_registry.json` |
+| Props holdout MAE — reb | 1.9023 (LGB-q50) | `quantile_pergame_metrics.json` |
+| Props holdout R² — ast | 0.4988 | `model_registry.json` |
+| Props holdout MAE — ast | 1.3559 (multitask MLP blend) | `quantile_pergame_metrics.json` |
+| Props holdout R² — fg3m | 0.29 (q50 — R² regresses, MAE wins) | `model_registry.json` |
+| Props holdout MAE — fg3m | 0.8943 (XGB-q50) | `quantile_pergame_metrics.json` |
+| Props holdout R² — stl | 0.18 (q50 — R² regresses, MAE wins) | `model_registry.json` |
+| Props holdout MAE — stl | 0.7153 (XGB-q50) | `quantile_pergame_metrics.json` |
+| Props holdout R² — blk | 0.16 (q50 — R² regresses, MAE wins) | `model_registry.json` |
+| Props holdout MAE — blk | 0.4398 (XGB-q50, -16% session win) | `quantile_pergame_metrics.json` |
+| Props holdout R² — tov | 0.22 (q50 — R² regresses, MAE wins) | `model_registry.json` |
+| Props holdout MAE — tov | 0.8932 (XGB-q50) | `quantile_pergame_metrics.json` |
 | Win prob accuracy | 0.7094 (WF) / 0.717 (single-split) | `data/models/win_prob_metrics.json` |
 | Win prob Brier | 0.193 (WF) / 0.188 (single-split) | same |
 | xFG Brier | 0.226 (221K shots) | model registry |
+| In-play endQ3 MAE vs pregame | -43% to -55% across 7/7 stats (550-game retro) | `retro_inplay_mae_v2.json` |
 | CV games | 17 quality / 29 usable / 75 attempted | `data/ingest/queue.db` |
-| Models trained | 85 | `data/models/` |
+| Models trained | 85+ trained ML artifacts (119 .pkl files incl. residual heads, period heads, calibration) | `data/models/` |
 | Gate 1 status | NOT YET RUN | — |
 
 ---

@@ -1,6 +1,9 @@
 # Predictions Quickstart
 
-Honest production state at master `d87a76b3` (loop 5, cycle 47). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
+Honest production state at master `7b43dff1` (improve_loop R7 / execute_loop R8, post-cycle-110). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
+
+> **Polished end-to-end demo flow:** see [docs/SWISH_DEMO.md](docs/SWISH_DEMO.md) (interview cheat-sheet) and `python scripts/swish_demo.py` (runnable pregame → snapshot → projection → EV → Kelly → settle → CLV).
+> **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture (endQ3 -43% to -55% MAE vs pregame, 7/7 stats), see `src/prediction/live_engine.py` and CHANGELOG.md 0.15.0.
 
 > ## Empirical testing protocol (cycle 78-82)
 >
@@ -225,7 +228,7 @@ WinProb (binary home-win classifier):
 python -c "from src.prediction.win_probability import train; train()"
 ```
 
-## Architecture notes (loop 5 / cycle 96e production)
+## Architecture notes (loop 5 / cycle 96e pregame production; cycles 103-110 in-play)
 
 - **q50 dispatch** lives in `prop_pergame._USE_Q50_STATS`. Stats in this set route `predict_pergame` through `_load_q50_model` instead of the 3-way blend.
 - **`_Q50_LGB_BACKEND_STATS`** controls which q50 stats load the LGB variant (currently REB only — XGB-q50 was 3/4 WF, LGB-q50 4/4).
@@ -256,3 +259,7 @@ The single biggest lesson of the loop: **q50 quantile regression beats squared-e
 2. **Real sportsbook closing lines** — for actual backtesting (currently synthetic). Need scraping or CSV ingest from sportsbook.
 3. **CV `defender_distance` at scale** — currently 10 games processed. Process 50+ → unlocks shot-quality features (CLAUDE.md moat).
 4. **Lineup projection** — predict who's starting, not assume L5 = starter.
+
+---
+
+*Last verified: 2026-05-25*

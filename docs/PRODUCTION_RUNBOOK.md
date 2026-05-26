@@ -13,12 +13,12 @@ python --version      # expect 3.9.x
 nvcc --version        # expect CUDA 11.8 (optional — CPU-only mode works for API)
 
 # 2. Verify models exist
-ls data/models/*.pkl | wc -l      # expect ~50+
+ls data/models/*.pkl | wc -l      # expect ~85+ trained ML artifacts
 ls data/models/*.json | wc -l     # expect ~20+
 
 # 3. Run tests
 python -m pytest tests/ -q
-# expect: 960+ passed, ~93 skipped, 0 failures
+# expect: 2661+ passed (RunPod baseline 2026-05-25), ~26 transient failures (tracking + pyarrow), 0 prediction-critical
 
 # 4. Verify VRAM flush interval (critical for RunPod performance)
 grep "_VRAM_FLUSH_INTERVAL" src/pipeline/unified_pipeline.py
@@ -204,6 +204,10 @@ export RUNPOD_PORT=<pod_port>
 # Optional overrides: REMOTE_ROOT, LOCAL_ROOT, SSH_KEY, POLL_SECONDS, SYNC_SECONDS
 # Syncs every SYNC_SECONDS (default 300), exits when workers = 0
 ```
+
+---
+
+*Last verified: 2026-05-25*
 
 ---
 

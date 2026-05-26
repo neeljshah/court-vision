@@ -24,7 +24,9 @@
 
 ---
 
-## Current Model State (2026-05-24)
+## Current Model State (2026-05-25)
+
+> **Post-in-play-system shift (cycles 103-110, improve_loop R7):** The pregame ceiling outlined below is now augmented by the in-play prediction architecture — residual heads stacked on base models, endQ1/endQ2 period-specific projection layers, learned Q4 minutes trajectory (`minute_trajectory.py`, PTS -0.2312 MAE), and live quantile bands calibrated to 80% empirical coverage. On a 550-game retro the endQ3 in-play system beats pregame by -43% to -55% MAE across 7/7 stats, and in-play betting wins 7/7 stats at threshold 1.0. Pregame still hits the architecture/feature ceiling; remaining gains there are DATA-bound (live injury feed, real sportsbook lines, CV defender_distance at scale, lineup projection).
 
 ### Player Prop Models — Actual Holdout Performance
 
@@ -137,3 +139,7 @@ Every step is an engineering checklist, not a fantasy. The hardest part (CV pipe
 *For the full signal architecture: [vault/Plans/Signal Architecture.md](../vault/Plans/Signal%20Architecture.md)*
 *For Gate 1 step-by-step: [vault/Plans/Gate 1 Validation.md](../vault/Plans/Gate%201%20Validation.md)*
 *For Renaissance methodology context: [vault/Research/Renaissance Methodology.md](../vault/Research/Renaissance%20Methodology.md)*
+
+---
+
+*Last verified: 2026-05-25*
