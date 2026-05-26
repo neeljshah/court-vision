@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 36,
+  "rounds_completed": 37,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -612,6 +612,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-23 (4 variants in 201s \u2014 4/4 SHIP gate but 0/4 BEAT_LIVE). Zero-architectural-gain round. Stop counter: 1/5.\nperm_inner_cv top-50 trim DOES NOT GENERALIZE to home_score/away_score/over_230/AH3:\n  home_score:  -14.43% vs B21 LIVE -14.49% (+0.06pp regress, same as B22 result \u2014 within noise)\n  away_score:  -12.93% vs B15 frozen -14.51% (+1.58pp regress; note B15 was 3-model nnls_top3 ensemble \u2014 unfair single-model comparison)\n  over_230:    Brier 0.2442 AUC 0.6674 vs LIVE 0.2418/0.6722 (both regress)\n  AH3:         Brier 0.2360 AUC 0.6941 vs B15 frozen 0.2271/0.7115 (both regress; B15 was 4-model ensemble)\nARCHITECTURAL FINDING: perm_inner_cv top-50 trim is TARGET-SPECIFIC. score_diff benefits significantly (B22: -1.59pp), total ties, but home_score/away_score/binary targets prefer the FULL feature set (or ensemble for the ensemble canonicals). The score_diff win is real but specific \u2014 the trim isn't a universal architectural unlock.\nPRODUCTION MODULE UPDATE (shipped this batch):\n  + Added get_canonical_feature_set_stable() to r12_canonical_predictor.py\n    Uses _compute_perm_importance_inner_cv (3-fold inner CV averaging) \u2014 leak-free.\n  + Kept get_canonical_feature_set as the legacy single-pass version with explicit\n    docstring noting B21 leakage finding. Callers can choose.\nRECOMMENDATION: production use should choose trim strategy PER TARGET:\n  total/away_score/home_score: NO TRIM (full canonical feature set)\n  score_diff:                   USE perm_inner_cv top-50 (B22 win)\n  over_230/AH3:                 USE ENSEMBLE (B15) \u2014 single-model trim loses\nStop counter: 1/5."
+    },
+    {
+      "name": "R12_BATCH24_serialize_canonicals",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 4,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-24 (joblib serialization for CLI integration - 4/4 smoke PASS).\nDataset grew to 3045 games (was 2865 at B21, R26 backfills continuing).\nSerialized 4 single-model/top50 canonical bundles to data/models/m2_family/ (gitignored - local artifacts only):\n  r12_total_pts_box_canonical.joblib    141 feats, mean pred 228.46\n  r12_score_diff_canonical.joblib       50 feats (perm_inner_cv trim of opp_full), mean 1.87\n  r12_home_score_canonical.joblib       153 feats, mean 114.86\n  r12_over_230_canonical.joblib         162 feats, mean prob 0.449\nEach bundle contains: trained model dict (l1_full, l2_lgb, l2_xgb), feature_columns list, recipe metadata (source probe, trim strategy), training metadata (n_games, training_date, module_version). Reloaded each via joblib.load + predict on last 50 games - all sane and finite predictions confirmed.\nENSEMBLE TARGETS DEFERRED: away_score (B15 nnls_top3) and AH3 (B15 top4_avg) - logged for B26.\nPRODUCTION CLI INTEGRATION PATH: predict_game.py can now load these bundles directly via joblib.load(path), call predict_canonical(bundle['model'], X[bundle['feature_columns']]) for fresh games. No retraining at predict time - full speed inference.\nStop counter UNCHANGED at 1/5 (serialization batch doesn't count)."
     }
   ],
   "rejects": [
