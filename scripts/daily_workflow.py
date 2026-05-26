@@ -75,6 +75,10 @@ DEFAULT_DASHBOARD_CACHE = (
 DEFAULT_SNAPSHOT_DIR = PROJECT_DIR / "data" / "cache" / "rec_tracker"
 DEFAULT_SETTLED_PATH = DEFAULT_SNAPSHOT_DIR / "rec_settled.parquet"
 DEFAULT_QB_DIR = PROJECT_DIR / "data" / "cache" / "quarter_box"
+# R27_T7 — ledger insurance defaults.
+DEFAULT_LEDGER_PATH = PROJECT_DIR / "data" / "pnl_ledger.csv"
+DEFAULT_BACKUP_DIR  = PROJECT_DIR / "data" / "backups"
+DEFAULT_BACKUP_KEEP = 30
 
 # Stages this orchestrator knows how to run.
 STAGES = ("evening", "morning", "all")
@@ -365,6 +369,63 @@ def _step_refresh_dashboard(
         return False, {}, f"dashboard render raised: {exc!r}"
 
 
+def _step_ledger_backup(
+    *,
+    ledger_path: Path,
+    backup_dir: Path,
+    keep: int,
+    today: Optional[str],
+    dry_run: bool,
+) -> Tuple[bool, Dict[str, Any], Optional[str]]:
+    """R27_T7 — snapshot data/pnl_ledger.csv to data/backups/.
+
+    Runs BEFORE reconcile in the morning stage so a bad reconcile (or any
+    other downstream mutation) can never wipe the only copy of the ledger.
+
+    Failure-mode contract:
+        * On --dry-run: never touches the disk.
+        * On real run: a backup failure returns ok=False so the stage's
+          existing critical-alert path fires (with R26_S5 dedup). The
+          workflow keeps going — never blocks evening/morning on a
+          backup hiccup.
+        * Ledger missing on a fresh clone is reported but NOT critical
+          (returns ok=True with a 'no_ledger' reason) — fresh dev boxes
+          shouldn't alarm.
+    """
+    if dry_run:
+        return True, {
+            "would_call":  "ledger_insurance.backup",
+            "ledger_path": str(ledger_path),
+            "backup_dir":  str(backup_dir),
+            "keep":        int(keep),
+            "today":       today,
+        }, None
+    try:
+        from scripts.ledger_insurance import backup as _backup  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        return False, {}, f"ledger_insurance import failed: {exc!r}"
+    try:
+        res = _backup(
+            ledger_path=Path(ledger_path), backup_dir=Path(backup_dir),
+            keep=int(keep), today=today,
+        )
+    except Exception as exc:  # noqa: BLE001
+        return False, {}, f"backup raised: {exc!r}"
+    if res.get("ok"):
+        return True, {
+            "date":       res.get("date"),
+            "gz_path":    res.get("gz_path"),
+            "size_bytes": res.get("size_bytes"),
+            "sha256":     (res.get("sha256") or "")[:16],
+            "n_rotated":  len(res.get("rotated") or []),
+        }, None
+    # Distinguish "no ledger yet on a fresh clone" from a real failure.
+    reason = res.get("reason", "")
+    if "ledger missing" in reason:
+        return True, {"skipped": True, "reason": reason}, None
+    return False, {"reason": reason}, f"backup not-ok: {reason}"
+
+
 def _step_settle_recs(
     *,
     date_str: str,
@@ -591,12 +652,25 @@ def run_morning(
     yesterday: Optional[str] = None,
     alert_fn: Optional[Callable[..., Any]] = None,
     collect_fn: Optional[Callable[..., str]] = None,
+    ledger_path: Path = DEFAULT_LEDGER_PATH,
+    backup_dir: Path = DEFAULT_BACKUP_DIR,
+    backup_keep: int = DEFAULT_BACKUP_KEEP,
 ) -> Dict[str, Any]:
     """Run the morning workflow. Returns a result dict (never raises)."""
     started_at = _iso_now()
     started = time.monotonic()
     steps: List[Dict[str, Any]] = []
     yesterday = yesterday or _yesterday_iso()
+
+    # 0. R27_T7 ledger insurance — snapshot pnl_ledger.csv BEFORE
+    #    anything downstream can touch it. If this step fails the
+    #    critical-alert path below will fire (with R26_S5 dedup),
+    #    but the rest of the workflow still runs.
+    steps.append(_run_step(
+        "ledger_backup", _step_ledger_backup,
+        ledger_path=ledger_path, backup_dir=backup_dir,
+        keep=int(backup_keep), today=None, dry_run=dry_run,
+    ))
 
     # 1. Settle yesterday.
     steps.append(_run_step(
@@ -624,9 +698,11 @@ def run_morning(
     ))
 
     # 5. Morning info alert with summary fields.
-    settle_d = steps[0].get("details") or {}
-    recon_d  = steps[1].get("details") or {}
-    rep_d    = steps[2].get("details") or {}
+    # NB: steps[0] is now ledger_backup (R27_T7) — settle/reconcile/report
+    # shifted by +1.
+    settle_d = steps[1].get("details") or {}
+    recon_d  = steps[2].get("details") or {}
+    rep_d    = steps[3].get("details") or {}
     n_settled    = int(settle_d.get("n_settled", 0) or 0)
     win_rate     = float(rep_d.get("win_rate", 0.0) or 0.0)
     roi          = float(rep_d.get("roi", 0.0) or 0.0)
@@ -739,6 +815,10 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     ap.add_argument("--qb-dir",       type=str, default=str(DEFAULT_QB_DIR))
     ap.add_argument("--dashboard-cache", type=str, default=str(DEFAULT_DASHBOARD_CACHE))
     ap.add_argument("--log-path",     type=str, default=str(DEFAULT_LOG_PATH))
+    # R27_T7 — ledger insurance knobs.
+    ap.add_argument("--ledger-path",  type=str, default=str(DEFAULT_LEDGER_PATH))
+    ap.add_argument("--backup-dir",   type=str, default=str(DEFAULT_BACKUP_DIR))
+    ap.add_argument("--backup-keep",  type=int, default=DEFAULT_BACKUP_KEEP)
     ap.add_argument("--json", action="store_true",
                     help="Emit JSON result instead of human text.")
     return ap.parse_args(argv)
@@ -794,7 +874,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             qb_dir=Path(args.qb_dir),
             reconcile_days=args.reconcile_days,
             report_days=args.report_days,
-            yesterday=args.yesterday, **common_kwargs,
+            yesterday=args.yesterday,
+            ledger_path=Path(args.ledger_path),
+            backup_dir=Path(args.backup_dir),
+            backup_keep=int(args.backup_keep),
+            **common_kwargs,
         )
     elif args.stage == "all":
         result = run_all(
@@ -804,6 +888,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             qb_dir=Path(args.qb_dir),
             reconcile_days=args.reconcile_days,
             report_days=args.report_days,
+            ledger_path=Path(args.ledger_path),
+            backup_dir=Path(args.backup_dir),
+            backup_keep=int(args.backup_keep),
             **common_kwargs,
         )
     else:
