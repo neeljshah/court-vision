@@ -1,0 +1,46 @@
+{
+  "probe": "R11_M2v19_spread_AH10",
+  "kind": "binary",
+  "label": "home_cover_AH10",
+  "label_desc": "P(home covers -10)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.1860 delta -5.48% pass; AUC 0.6646 pass (>=0.60)",
+  "n_games": 2836,
+  "pos_rate": 0.7976022566995769,
+  "pooled_naive_brier": 0.19676,
+  "pooled_lgb_brier": 0.18598,
+  "pooled_lgb_acc": 0.77104,
+  "pooled_lgb_auc": 0.66462,
+  "brier_delta_pct": -5.477,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_brier": 0.18923,
+      "lgb_brier": 0.17844,
+      "lgb_acc": 0.7884,
+      "lgb_auc": 0.6348
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_brier": 0.19636,
+      "lgb_brier": 0.19845,
+      "lgb_acc": 0.763,
+      "lgb_auc": 0.6429
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_brier": 0.20468,
+      "lgb_brier": 0.18105,
+      "lgb_acc": 0.7616,
+      "lgb_auc": 0.7163
+    }
+  ],
+  "elapsed_s": 0.9
+}

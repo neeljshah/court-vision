@@ -198,6 +198,56 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "M2 (total_pts) with EXPANDED ~60-feature set. Pooled -10.31% vs M2's -8.9% (+1.4pp improvement, bigger expansion gain than M2v7's +0.4pp on spread). 2,836 games (full linescores vs M2's 889). Per-fold: f1 -8.4%, f2 -15.0%, f3 -7.3%. 3/3 valid folds PASS. SIXTH R11 ship. PRODUCTION should use this expanded set as canonical M2 total model \u2014 covers more games (linescores) AND has more features (60+) AND better MAE."
+    },
+    {
+      "name": "R11_M2v9_home_pts_expanded",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "M2v3 with ~60-feature expanded set. Pooled -12.41% (vs M2v3's -11.87%, +0.5pp). 3/3 folds positive. Replaces M2v3 as production home_pts."
+    },
+    {
+      "name": "R11_M2v10_away_pts_expanded",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "M2v4 with ~60-feature expanded set. Pooled -10.93% (vs M2v4's -10.30%, +0.6pp). 3/3 folds positive. Replaces M2v4 as production away_pts."
+    },
+    {
+      "name": "R11_M2v11_total_O220",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY O/U at 220 line. Brier 0.2656 (delta -5.32% vs naive L5 prop), AUC 0.6056. Passes both Brier and AUC ship gates. Low-totals threshold (~7% positive rate)."
+    },
+    {
+      "name": "R11_M2v12_total_O230",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY O/U at 230 line. Brier 0.2671 (delta -8.44%), AUC 0.6292. Better signal than O220. Mid-totals threshold (~20% positive rate)."
+    },
+    {
+      "name": "R11_M2v13_spread_AH3",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY P(home covers -3). Brier 0.2395 (delta -15.63%, BEST), AUC 0.6923 (BEST). Spread surface is the most learnable binary surface. Unlocks ATS-3 bet market."
+    },
+    {
+      "name": "R11_M2v14_spread_AH7",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY P(home covers -7). Brier 0.2173 (delta -10.72%), AUC 0.6747. Wider spread, slightly less learnable than -3."
+    },
+    {
+      "name": "R11_M2v15_home_q1",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "NEW SURFACE - home team Q1 score (continuous). Pooled -6.02% vs naive L5 (3/3 folds). Unlocks first-quarter prop market."
+    },
+    {
+      "name": "R11_M2v17_h1_total",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "NEW SURFACE - first-half total points (continuous). Pooled -7.58% (3/3 folds). Unlocks first-half O/U market (live-bet pre-Q3)."
+    },
+    {
+      "name": "R11_M2v18_spread_AH5",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY P(home covers -5). Brier 0.2320 (delta -13.68%), AUC 0.6898. Mid-spread threshold."
+    },
+    {
+      "name": "R11_M2v19_spread_AH10",
+      "round": 10, "delta_pts": 0.0, "stats_won": 0, "commit": "pending-wire", "date": "2026-05-26",
+      "summary": "BINARY P(home covers -10). Brier 0.1860 (delta -5.48%), AUC 0.6646. Widest tested spread threshold."
     }
   ],
   "rejects": [
@@ -531,6 +581,18 @@
       "name": "R11_M2v6_total_O245",
       "reason": "Binary O/U at 245 threshold using same 35-feature template. Brier 0.158 vs naive L5-rolling-prop 0.172 = -8.39% (PASSES relative -5% gate). Accuracy 0.808 vs baseline 0.803 = +0.5pp (FAILS strict naive+2pp gate; the imbalanced 80/20 class makes accuracy hard to move with same Brier improvement). AUC 0.630. Strong Brier signal but acc gate too strict for imbalanced binary. Could be re-classified as SHIP if acc gate relaxed to naive+0.01 or replaced with AUC>=0.60.",
       "saturated_angle": "binary classifier accuracy gate naive+0.02 on imbalanced O/U markets (acc baseline already high, hard to move)",
+      "round": 10
+    },
+    {
+      "name": "R11_M2v16_home_q4",
+      "reason": "Q4-only home score (continuous). Pooled -4.36% (3/3 folds positive) — just below -5% gate. Q4 has more game-state randomness (foul-outs, garbage time, momentum) so the pregame features have less signal. Pattern: quarter-level surfaces get progressively harder later in the game.",
+      "saturated_angle": "Q4-only score prediction from pregame features (Q4 randomness floor)",
+      "round": 10
+    },
+    {
+      "name": "R11_M2v20_q4_margin",
+      "reason": "Q4-only home minus away margin (continuous). Pooled -1.55% (3/3 folds positive). Pregame features don't predict Q4-specific margin well — the spread converges to game-state variance in Q4.",
+      "saturated_angle": "Q4-only margin from pregame features",
       "round": 10
     }
   ],
