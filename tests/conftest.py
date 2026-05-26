@@ -186,6 +186,27 @@ def _clean_milestone_state(tmp_path, monkeypatch):
         pass
 
 
+@pytest.fixture(autouse=True)
+def _clean_alert_dedup_state(tmp_path, monkeypatch):
+    """R26_S5 — pin the alert dedup sidecar to a per-test tmp path AND
+    flush the in-process LRU before each test.
+
+    Without this, the in-process dedup LRU (and the on-disk sidecar at
+    ``data/cache/alerts/alert_dedup_state.json``) would carry state
+    across tests — causing R21_N3 tests that fire repeated alerts to be
+    silently suppressed by the R26_S5 layer.
+    """
+    try:
+        import src.alerts.discord_webhook as dw_mod
+        dedup_path = str(tmp_path / "alert_dedup_state.json")
+        if hasattr(dw_mod, "_DEDUP_STATE_PATH"):
+            monkeypatch.setattr(dw_mod, "_DEDUP_STATE_PATH", dedup_path)
+        if hasattr(dw_mod, "flush_dedup"):
+            dw_mod.flush_dedup(dedup_path)
+    except ImportError:
+        pass
+
+
 @pytest.fixture
 def mock_feature_importance() -> dict:
     """Return two feature-importance snapshots: baseline and drifted.
