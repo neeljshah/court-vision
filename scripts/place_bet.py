@@ -50,6 +50,10 @@ from src.betting.pnl_ledger import (   # noqa: E402
     VALID_SIDES,
     VALID_STATS,
 )
+from src.betting.line_validator import (   # noqa: E402
+    validate_bet_line,
+    DEFAULT_MAX_STALENESS_SEC,
+)
 
 DEFAULT_SLATE = os.path.join(
     PROJECT_DIR, "data", "cache", "probe_R15_tonight_slate_bets.json",
@@ -262,6 +266,12 @@ def _build_parser() -> argparse.ArgumentParser:
                     help="Skip the slate (player, stat, book) cross-check")
     ap.add_argument("--allow-duplicate", action="store_true",
                     help="Allow placing even if an OPEN duplicate row already exists")
+    ap.add_argument("--force-stale", action="store_true",
+                    help="Bypass the line-freshness validator (emergency / manual override)")
+    ap.add_argument("--max-staleness-sec", type=int, default=DEFAULT_MAX_STALENESS_SEC,
+                    help=f"Max snapshot age to accept (default {DEFAULT_MAX_STALENESS_SEC}s)")
+    ap.add_argument("--lines-dir", default=None,
+                    help="Override line-snapshot directory (for tests / probes)")
     # Optional overrides / fallbacks when not in slate
     ap.add_argument("--game",       default=None, help="NBA game_id (overrides slate)")
     ap.add_argument("--player-id",  default=None)
@@ -348,6 +358,46 @@ def main(argv: Optional[List[str]] = None) -> int:
         if team is None: team = slate_row.get("team")
     if player_id is None:
         player_id = resolve_player_id(args.player)
+
+    # ---- Line-freshness validator (probe R17_J2) ----
+    # Confirms the (book, player, stat, line, odds) tuple still exists in a
+    # snapshot newer than `max_staleness_sec`. Aborts before the ledger row is
+    # written if the line / odds moved. `--force-stale` bypasses the check.
+    validator_snapshot: Optional[Dict] = None
+    validator_reason = "skipped (--force-stale)"
+    validator_ok = True
+    if not args.force_stale:
+        validator_kwargs = {"max_staleness_sec": int(args.max_staleness_sec)}
+        if args.lines_dir:
+            validator_kwargs["lines_dir"] = args.lines_dir
+        validator_ok, validator_reason, validator_snapshot = validate_bet_line(
+            book=args.book,
+            player_name=args.player,
+            stat=stat_l,
+            line=float(args.line),
+            side=side_u,
+            odds=int(args.odds),
+            **validator_kwargs,
+        )
+        if not validator_ok:
+            print(f"[fail] line-validator: {validator_reason}")
+            if validator_snapshot:
+                live_line = validator_snapshot.get("line")
+                live_odds = validator_snapshot.get("odds_current")
+                live_age  = validator_snapshot.get("age_sec")
+                bits = []
+                if live_line is not None:
+                    bits.append(f"line={live_line:g}")
+                if live_odds is not None:
+                    bits.append(f"odds={live_odds:+d}")
+                if live_age is not None:
+                    bits.append(f"age={live_age:.0f}s")
+                if bits:
+                    print(f"       live snapshot: {' '.join(bits)} "
+                          f"(captured_at={validator_snapshot.get('captured_at')})")
+            print( "       use --force-stale to override (emergency only)")
+            return 6
+        print(f"[ok] line-validator: {validator_reason}")
 
     # ---- Dry-run preview ----
     if args.dry_run:
