@@ -1724,12 +1724,34 @@ class UnifiedPipeline:
                     # shot_clock_est = 24 - (Q3_frame - Q2_start_frame)/fps → negative.
                     if _gperiod > 0 and _gperiod != _last_scoreboard_period:
                         if _last_scoreboard_period is not None:
-                            # Genuine new period — anchor clock and create possession boundary
+                            # Genuine new period — finalize prev possession FIRST so its
+                            # frames don't span the quarter break (R18 fix: this was the
+                            # root cause of 20% of possessions exceeding 60s and 49%
+                            # exceeding the 24s shot clock — they were Q1+Q2 merged).
+                            if poss_team_prev and possession_buf:
+                                from collections import Counter as _CtrR18
+                                _dom_lineup_r18 = _CtrR18(_poss_lineup_buf).most_common(1)[0][0] if _poss_lineup_buf else 0
+                                _row_r18 = UnifiedPipeline._summarize_possession(
+                                    possession_id, poss_team_prev,
+                                    possession_start, frame_idx - 1,
+                                    possession_buf, fps, self.game_id,
+                                    lineup_id=_dom_lineup_r18,
+                                    transition_frames=_transition_frames,
+                                    offensive_rebound_poss=_poss_is_off_rebound,
+                                )
+                                if _row_r18:
+                                    possession_rows.append(_row_r18)
+                                possession_buf       = []
+                                _poss_lineup_buf     = []
+                                _transition_frames   = None
+                                _poss_is_off_rebound = False
+                            # Anchor clock and create possession boundary
                             possession_start = frame_idx
                             possession_id   += 1
                             _last_real_poss_team = ""  # force re-detection of ball handler
-                            print(f"[shot_clock] Period {_last_scoreboard_period}→{_gperiod}: "
-                                  f"possession_start reset to frame {frame_idx}")
+                            poss_team_prev = ""        # force possession-team re-detection on next frame
+                            print(f"[period_boundary] Q{_last_scoreboard_period}→Q{_gperiod} "
+                                  f"at frame {frame_idx}: finalized prev possession + reset")
                         _last_scoreboard_period = _gperiod
 
                     if (not _period_start_detected
@@ -3397,7 +3419,17 @@ class UnifiedPipeline:
             "drive_attempts":          sum(1 for b in buf if b.get("drive")),
             "shot_attempted":          int(bool(shot_frames)),
             "shot_frame":              shot_frames[0] if shot_frames else "",
-            "fast_break":              int(any(b["fast_break"] for b in buf)),
+            # R17: strict fast-break definition. Previously `any(b["fast_break"] for b in buf)`
+            # OR'd every per-frame _fast_break_flag (3 same-team players pushing toward rim
+            # for a momentary frame), flagging 56% of possessions as fast-break vs NBA-typical
+            # ~5-9%. New rule: NOT off-rebound + crossed half-court in <2.5s + total
+            # possession duration <10s — matches the canonical NBA-Synergy definition.
+            "fast_break":              int(
+                not offensive_rebound_poss
+                and transition_frames is not None
+                and transition_frames < int(2.5 * fps)
+                and (end_f - start_f) / fps < 10.0
+            ),
             "play_type":               dominant_play_type,
             "result":                  "",   # filled by nba_enricher
             "outcome_score":           "",   # filled by nba_enricher
