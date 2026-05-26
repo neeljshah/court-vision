@@ -1,0 +1,108 @@
+{
+  "probe_id": "R30_W4",
+  "timestamp_utc": "2026-05-26T19:11:08Z",
+  "today": "2026-05-26",
+  "n_total": 13,
+  "n_green": 7,
+  "n_yellow": 0,
+  "n_red": 6,
+  "sources": [
+    {
+      "name": "predictions_cache",
+      "status": "green",
+      "exists": true,
+      "age_sec": 236.0,
+      "threshold_sec": 43200.0
+    },
+    {
+      "name": "nba_injuries",
+      "status": "green",
+      "exists": true,
+      "age_sec": 236.5,
+      "threshold_sec": 3600.0
+    },
+    {
+      "name": "lineups",
+      "status": "green",
+      "exists": true,
+      "age_sec": 234.5,
+      "threshold_sec": 1800.0
+    },
+    {
+      "name": "lines_fd",
+      "status": "red",
+      "exists": true,
+      "age_sec": 234.5,
+      "threshold_sec": 60.0
+    },
+    {
+      "name": "lines_bov",
+      "status": "red",
+      "exists": true,
+      "age_sec": 234.5,
+      "threshold_sec": 60.0
+    },
+    {
+      "name": "lines_pin",
+      "status": "red",
+      "exists": true,
+      "age_sec": 234.5,
+      "threshold_sec": 60.0
+    },
+    {
+      "name": "bankroll_state",
+      "status": "green",
+      "exists": true,
+      "age_sec": 236.5,
+      "threshold_sec": 300.0
+    },
+    {
+      "name": "middles_live",
+      "status": "red",
+      "exists": true,
+      "age_sec": 236.5,
+      "threshold_sec": 60.0
+    },
+    {
+      "name": "m2_family_cache",
+      "status": "green",
+      "exists": true,
+      "age_sec": 236.5,
+      "threshold_sec": 43200.0
+    },
+    {
+      "name": "feature_drift",
+      "status": "green",
+      "exists": true,
+      "age_sec": 4.7,
+      "threshold_sec": 86400.0
+    },
+    {
+      "name": "pnl_ledger_backup",
+      "status": "red",
+      "exists": false,
+      "age_sec": null,
+      "threshold_sec": 86400.0
+    },
+    {
+      "name": "morning_md",
+      "status": "red",
+      "exists": false,
+      "age_sec": null,
+      "threshold_sec": 86400.0
+    },
+    {
+      "name": "e2e_smoke",
+      "status": "green",
+      "exists": true,
+      "age_sec": 236.5,
+      "threshold_sec": 86400.0
+    }
+  ],
+  "section_html_bytes": 2056,
+  "section_renders": true,
+  "full_html_bytes": 9554,
+  "full_dashboard_includes_freshness": true,
+  "full_render_error": null,
+  "ship": true
+}
