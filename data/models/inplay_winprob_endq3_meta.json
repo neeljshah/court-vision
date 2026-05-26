@@ -1,0 +1,40 @@
+{
+  "snapshot": "endQ3",
+  "feature_cols": [
+    "score_margin",
+    "total_pts",
+    "pace_so_far",
+    "q1_delta",
+    "q2_delta",
+    "q3_delta",
+    "last_q_margin",
+    "pregame_win_prob",
+    "home_team_id",
+    "season"
+  ],
+  "categorical_cols": [
+    "home_team_id",
+    "season"
+  ],
+  "n_train_rows": 449,
+  "home_win_rate": 0.5233853006681515,
+  "in_sample": {
+    "auc": 1.0,
+    "brier": 0.006852771566767228,
+    "log_loss": 0.058407238753921335,
+    "accuracy": 1.0
+  },
+  "trained_at": "2026-05-26T05:23:25Z",
+  "probe": "R10_M5_inplay_winprob",
+  "hyperparams": {
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "num_leaves": 31,
+    "min_child_samples": 20,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "random_state": 42
+  }
+}
