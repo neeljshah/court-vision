@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 42,
+  "rounds_completed": 43,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -666,6 +666,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-29 (player-prop avg_blend extended to REB/AST/FG3M - 2/15 SHIP, 0/15 BEAT_PROD memory ref). 89307 player-game rows, 85 feature cols.\nStop counter: 2/5.\nPer-stat within-probe baseline_full MAE:\n  REB:  1.9239 (memory ref 1.90 - slightly worse, within range)\n  AST:  1.3721 (memory ref 1.36 - essentially tied)\n  FG3M: 0.9084 (memory ref 0.89 - slightly worse)\nPer-stat avg_blend_top2 vs baseline_full:\n  REB:  +0.05% (loses, baseline wins)\n  AST:  -0.03% (SHIP marginal, within noise)\n  FG3M: -0.08% (SHIP marginal, within noise)\nform_only alone vs baseline_full: +0.36-0.49% across all 3 stats (loses).\nopp_only alone vs baseline_full: +28-42% (catastrophically worse).\nARCHITECTURAL FINDING (cross-stat confirmation of B18):\nForm-feature DOMINANCE is UNIVERSAL at player-prop level - applies to all 4 tested\nstats (PTS B18, REB B29, AST B29, FG3M B29). The marginal -0.03/-0.08% wins on\nAST/FG3M from avg_blend_top2 are noise-level - lighter-tail stats happen to have\never-so-slightly less form-feature dominance, but the architectural lesson holds:\navg_blend pattern requires COMPARABLY-STRONG feature subsets to add value. Game-level\nhad that property (3 subsets within 0.3pp); player-prop level does NOT (form_only is\nthe only competitive subset; opp_only is 30-40% worse alone). Blending weaker subsets\ninto stronger ones dilutes signal more than it diversifies.\nPLAYER-PROP CROSS-DOMAIN TRANSFER OF R12 PATTERNS = SATURATED on 4/4 stats tested.\nFuture player-prop gains likely need feature engineering at the SAME level as B5+B9\ndid for game-level (per-team interactions/halflife2/opp_allowed) - not architectural\nborrowing.\nStop counter: 2/5."
+    },
+    {
+      "name": "R12_BATCH30_inplay_serialize",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 4,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-30 (in-play serialization - 4/4 smoke PASS). Dataset 4910 games.\nSerialized 4 in-play bundles to data/models/m2_family/ with baked-in calibrators:\n  r12_inplay_winprob_endQ1.joblib    3.0 MB, raw 0.65 -> Platt 0.62 mean\n  r12_inplay_winprob_endQ2.joblib    2.97 MB, raw 0.653 -> Platt 0.635\n  r12_inplay_winprob_endQ3.joblib    2.91 MB, raw 0.670 -> Platt 0.651\n  r12_inplay_remaining_total_endQ2.joblib  2.91 MB, isotonic 63-knot interp\nCalibrators serialized as plain Python dicts (no sklearn dependency at load):\n  Platt: {type, lr_coef, lr_intercept}  (apply: sigmoid(coef*logodds(raw)+intercept))\n  Isotonic: {type, x[], y[]}            (apply: np.interp(raw, x, y))\nADDED TO src/prediction/r12_canonical_predictor.py:\n  load_inplay_bundle(key) - key=1/2/3 or 'remaining_total_endQ2'\n  apply_calibrator(raw, calibrator_dict)\n  predict_inplay(bundle, df) - one-liner: predict_canonical + apply_calibrator\nPlatt coef 0.6163 < 1 confirms raw model is OVER-CONFIDENT - calibrator correctly\ndampens probs toward 0.5. Isotonic uses 63 knot points for monotonic adjustment of\nremaining-total predictions.\nPRODUCTION COMPLETE: 6 pregame canonical bundles + 4 in-play bundles + load utilities\nfor both. Total 10 serialized models covering all R12 markets.\nStop counter UNCHANGED at 2/5 (serialization batch doesn't count)."
     }
   ],
   "rejects": [
