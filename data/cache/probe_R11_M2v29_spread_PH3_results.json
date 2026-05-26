@@ -1,0 +1,46 @@
+{
+  "probe": "R11_M2v29_spread_PH3",
+  "kind": "binary",
+  "label": "home_cover_PH3",
+  "label_desc": "P(home wins ATS as -3 fav)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2423 delta -18.53% pass; AUC 0.6961 pass",
+  "n_games": 2836,
+  "pos_rate": 0.46544428772919605,
+  "pooled_naive_brier": 0.29745,
+  "pooled_lgb_brier": 0.24235,
+  "pooled_lgb_acc": 0.64175,
+  "pooled_lgb_auc": 0.69614,
+  "brier_delta_pct": -18.526,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_brier": 0.30387,
+      "lgb_brier": 0.26792,
+      "lgb_acc": 0.5994,
+      "lgb_auc": 0.657
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_brier": 0.30376,
+      "lgb_brier": 0.2238,
+      "lgb_acc": 0.6841,
+      "lgb_auc": 0.7311
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_brier": 0.28472,
+      "lgb_brier": 0.23531,
+      "lgb_acc": 0.6417,
+      "lgb_auc": 0.7039
+    }
+  ],
+  "elapsed_s": 1.2
+}

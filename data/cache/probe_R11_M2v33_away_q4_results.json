@@ -1,0 +1,43 @@
+{
+  "probe": "R11_M2v33_away_q4",
+  "kind": "regression",
+  "label": "away_q4",
+  "status": "REJECT",
+  "ship_reason": "WF 2/3 fail, delta -3.87% fail (-5%)",
+  "n_games": 2836,
+  "pooled_naive_mae": 5.39,
+  "pooled_lgb_mae": 5.1813,
+  "pooled_delta_pct": -3.87,
+  "n_folds_positive": 2,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_mae": 5.3992,
+      "lgb_mae": 5.4037,
+      "delta": 0.0046,
+      "delta_pct": 0.08
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_mae": 5.5724,
+      "lgb_mae": 5.185,
+      "delta": -0.3874,
+      "delta_pct": -6.95
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_mae": 5.1986,
+      "lgb_mae": 4.9552,
+      "delta": -0.2434,
+      "delta_pct": -4.68
+    }
+  ],
+  "elapsed_s": 1.0
+}

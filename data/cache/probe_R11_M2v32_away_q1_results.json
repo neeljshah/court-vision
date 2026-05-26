@@ -1,0 +1,43 @@
+{
+  "probe": "R11_M2v32_away_q1",
+  "kind": "regression",
+  "label": "away_q1",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3 pass, delta -6.42% pass (-5%)",
+  "n_games": 2836,
+  "pooled_naive_mae": 5.2937,
+  "pooled_lgb_mae": 4.9538,
+  "pooled_delta_pct": -6.42,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_mae": 5.4446,
+      "lgb_mae": 5.1798,
+      "delta": -0.2648,
+      "delta_pct": -4.86
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_mae": 5.0719,
+      "lgb_mae": 4.7808,
+      "delta": -0.2911,
+      "delta_pct": -5.74
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_mae": 5.3645,
+      "lgb_mae": 4.9009,
+      "delta": -0.4635,
+      "delta_pct": -8.64
+    }
+  ],
+  "elapsed_s": 1.0
+}
