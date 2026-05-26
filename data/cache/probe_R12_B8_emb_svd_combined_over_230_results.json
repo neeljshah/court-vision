@@ -1,0 +1,43 @@
+{
+  "probe": "R12_B8_emb_svd_combined_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 169,
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2480 (-15.02%); AUC 0.6549",
+  "pooled_lgb_brier": 0.24795,
+  "pooled_naive_brier": 0.29178,
+  "pooled_lgb_auc": 0.65494,
+  "brier_delta_pct": -15.021,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.30085,
+      "lgb_brier": 0.26786
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.30285,
+      "lgb_brier": 0.23724
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27163,
+      "lgb_brier": 0.23875
+    }
+  ],
+  "variant": {
+    "variant": "emb_svd",
+    "emb_targets": [
+      "score_diff",
+      "total_pts_box"
+    ],
+    "k_dim": 8,
+    "n_emb_features": 32
+  },
+  "elapsed_s": 23.8
+}

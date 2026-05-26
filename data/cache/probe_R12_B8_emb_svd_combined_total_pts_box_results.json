@@ -1,0 +1,47 @@
+{
+  "probe": "R12_B8_emb_svd_combined_total_pts_box",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "n_features": 169,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -13.54%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 14.7755,
+  "pooled_delta_pct": -13.54,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.4422,
+      "delta": -1.825,
+      "delta_pct": -10.57
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.3211,
+      "delta": -3.0902,
+      "delta_pct": -17.75
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 14.5633,
+      "delta": -2.0268,
+      "delta_pct": -12.22
+    }
+  ],
+  "fold_delta_pct_std": 3.071,
+  "variant": {
+    "variant": "emb_svd",
+    "emb_targets": [
+      "score_diff",
+      "total_pts_box"
+    ],
+    "k_dim": 8,
+    "n_emb_features": 32
+  },
+  "elapsed_s": 28.0
+}

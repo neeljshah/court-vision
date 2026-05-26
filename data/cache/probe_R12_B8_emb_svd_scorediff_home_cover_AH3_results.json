@@ -1,0 +1,42 @@
+{
+  "probe": "R12_B8_emb_svd_scorediff_home_cover_AH3",
+  "kind": "binary",
+  "label": "home_cover_AH3",
+  "label_desc": "P(home covers -3)",
+  "n_features": 153,
+  "n_games": 2836,
+  "pos_rate": 0.6297602256699577,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2349 (-17.24%); AUC 0.6971",
+  "pooled_lgb_brier": 0.23489,
+  "pooled_naive_brier": 0.28382,
+  "pooled_lgb_auc": 0.69712,
+  "brier_delta_pct": -17.238,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29141,
+      "lgb_brier": 0.26995
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.28461,
+      "lgb_brier": 0.21743
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27544,
+      "lgb_brier": 0.2173
+    }
+  ],
+  "variant": {
+    "variant": "emb_svd",
+    "emb_targets": [
+      "score_diff"
+    ],
+    "k_dim": 8,
+    "n_emb_features": 16
+  },
+  "elapsed_s": 23.8
+}
