@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import io
+import os
 import sys
 import types
 from pathlib import Path
@@ -413,3 +414,50 @@ def test_normal_cdf_midpoint():
 def test_normal_cdf_large_positive():
     """CDF at large positive z should be very close to 1."""
     assert L39._normal_cdf(10.0) == pytest.approx(1.0, abs=1e-6)
+
+
+# ---------------------------------------------------------------------------
+# Atomic-write hardening tests (v2)
+# ---------------------------------------------------------------------------
+
+def test_atomic_write_replaces_existing_file(tmp_path):
+    """_atomic_write_json atomically replaces an existing file with new content."""
+    target = tmp_path / "report.json"
+    # Write original content via the helper itself
+    L39._atomic_write_json(target, {"version": 1})
+    assert target.exists()
+    original_text = target.read_text(encoding="utf-8")
+    assert '"version": 1' in original_text
+
+    # Now overwrite with new payload
+    L39._atomic_write_json(target, {"version": 2, "score": 99})
+    new_text = target.read_text(encoding="utf-8")
+    assert '"version": 2' in new_text
+    assert '"score": 99' in new_text
+    # No leftover .tmp files
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Unexpected .tmp files left behind: {tmp_files}"
+
+
+def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
+    """If os.replace raises, the original file is unchanged and .tmp is cleaned up."""
+    target = tmp_path / "report.json"
+    original_payload = {"original": True}
+    # Seed the file with known content
+    L39._atomic_write_json(target, original_payload)
+    original_text = target.read_text(encoding="utf-8")
+
+    # Monkeypatch os.replace to simulate a failure (e.g. cross-device rename)
+    def _failing_replace(src, dst):
+        raise OSError("simulated rename failure")
+
+    monkeypatch.setattr(os, "replace", _failing_replace)
+
+    with pytest.raises(OSError, match="simulated rename failure"):
+        L39._atomic_write_json(target, {"corrupted": True})
+
+    # Original file must be untouched
+    assert target.read_text(encoding="utf-8") == original_text
+    # The .tmp file must have been cleaned up
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f".tmp file not cleaned up: {tmp_files}"

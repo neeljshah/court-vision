@@ -25,6 +25,12 @@ CLI
     python L11_sporttrade_client.py orderbook --market_id mkt_test
     python L11_sporttrade_client.py positions
     python L11_sporttrade_client.py post --market_id X --side back --qty 10 --price 55 [--live]
+
+Environment Variables
+---------------------
+    SPORTTRADE_LIVE_ENABLED  — set to "1" to activate live (HTTP) mode; default paper.
+    SPORTTRADE_API_KEY       — bearer token for live REST/WS calls; required when
+                               SPORTTRADE_LIVE_ENABLED=1.
 """
 from __future__ import annotations
 
@@ -33,6 +39,7 @@ import json
 import logging
 import os
 import sys
+import tempfile
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -156,11 +163,27 @@ def _load_paper_orders() -> list[dict]:
             return []
 
 
+def _atomic_write_json(path: Path, payload: object) -> None:
+    """Write *payload* as JSON to *path* atomically via tempfile + os.replace.
+
+    On failure the original file is left untouched and the temp file is removed.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=2)
+        os.replace(tmp, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
 def _save_paper_orders(orders: list[dict]) -> None:
-    p = _paper_orders_path()
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with p.open("w", encoding="utf-8") as fh:
-        json.dump(orders, fh, indent=2)
+    _atomic_write_json(_paper_orders_path(), orders)
 
 
 # ---------------------------------------------------------------------------

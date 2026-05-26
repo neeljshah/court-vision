@@ -1,6 +1,7 @@
 """test_L11_sporttrade.py — Tests for L11_sporttrade_client.py (paper mode only).
 
-All 8 required tests. No HTTP calls; seed dirs and ledger redirected to tmp_path.
+All 8 required tests + 2 atomic-write hardening tests.
+No HTTP calls; seed dirs and ledger redirected to tmp_path.
 """
 from __future__ import annotations
 
@@ -8,6 +9,7 @@ import json
 import os
 import sys
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -221,3 +223,49 @@ def test_get_orderbook_missing_market_raises_key_error(seed_dir, ledger_dir):
 def test_post_order_zero_qty_raises(seed_dir, ledger_dir):
     with pytest.raises(ValueError, match="qty must be > 0"):
         L11.post_order("mkt_test", "back", 0, 55.0)
+
+
+# ---------------------------------------------------------------------------
+# Atomic-write Test 1: _atomic_write_json replaces an existing file correctly
+# ---------------------------------------------------------------------------
+
+def test_atomic_write_replaces_existing_file(tmp_path):
+    target = tmp_path / "orders.json"
+    # Write initial content
+    target.write_text(json.dumps([{"old": True}]), encoding="utf-8")
+
+    new_payload = [{"order_id": "paper-st-abc", "status": "filled"}]
+    L11._atomic_write_json(target, new_payload)
+
+    assert target.exists()
+    result = json.loads(target.read_text(encoding="utf-8"))
+    assert result == new_payload
+    # No .tmp files left behind
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == []
+
+
+# ---------------------------------------------------------------------------
+# Atomic-write Test 2: on os.replace failure, original file is unchanged
+#                       and .tmp file is cleaned up
+# ---------------------------------------------------------------------------
+
+def test_atomic_write_no_partial_on_failure(tmp_path):
+    target = tmp_path / "orders.json"
+    original_payload = [{"order_id": "paper-st-original"}]
+    target.write_text(json.dumps(original_payload), encoding="utf-8")
+
+    new_payload = [{"order_id": "paper-st-new"}]
+
+    with patch("L11_sporttrade_client.os.replace", side_effect=OSError("simulated failure")):
+        with pytest.raises(OSError, match="simulated failure"):
+            L11._atomic_write_json(target, new_payload)
+
+    # Original file must be intact
+    assert target.exists()
+    result = json.loads(target.read_text(encoding="utf-8"))
+    assert result == original_payload
+
+    # No orphaned .tmp files
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == []

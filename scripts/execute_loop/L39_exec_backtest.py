@@ -10,6 +10,9 @@ Public API:
 Run:
     python L39_exec_backtest.py run --lines path.csv --kelly 0.25 --edge 5.0
     python L39_exec_backtest.py compare --runs id1,id2
+
+Environment Variables:
+    none
 """
 from __future__ import annotations
 
@@ -22,6 +25,7 @@ import math
 import os
 import random
 import sys
+import tempfile
 import warnings
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -532,12 +536,46 @@ def _compute_sharpe(bets_log: List[Dict[str, Any]]) -> float:
     return (mean / std) * math.sqrt(252.0)
 
 
+def _atomic_write_json(path: Path, payload: Any, *, indent: int = 2) -> None:
+    """Write *payload* as JSON to *path* atomically via a sibling temp file.
+
+    Uses tempfile.mkstemp so the temp file lives on the same filesystem as
+    *path*, making os.replace an atomic rename rather than a cross-device copy.
+    Cleans up the temp file on any failure.
+    """
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=indent)
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    """Write *text* to *path* atomically via a sibling temp file."""
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
 def _save_result(result: BacktestRun, bets_log: List[Dict]) -> None:
     out = result.to_dict()
     out["bets"] = bets_log
     path = _RESULTS_DIR / f"exec_backtest_{result.run_id}.json"
-    with path.open("w", encoding="utf-8") as fh:
-        json.dump(out, fh, indent=2)
+    _atomic_write_json(path, out)
     logger.info("Saved backtest results → %s", path)
 
 

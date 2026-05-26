@@ -303,9 +303,23 @@ def alert_on_high_ruin_risk(report: RuinReport, threshold: float = 0.05) -> bool
     Severity escalates to 'error' when p_ruin > 0.20.
     Returns False when no alert is warranted or L22 is unavailable.
     """
-    try:
-        import scripts.execute_loop.L22_alerting as L22
-    except ImportError:
+    # Look up L22 via sys.modules so that monkeypatch.setitem works in tests.
+    # Using `import ... as X` would bind X to the parent package attribute, not
+    # sys.modules, making the mock invisible to the import statement.
+    import sys as _sys
+    _L22_KEY = "scripts.execute_loop.L22_alerting"
+    _sentinel = object()
+    L22 = _sys.modules.get(_L22_KEY, _sentinel)
+    if L22 is _sentinel:
+        # Not yet imported — trigger the real import, then fetch from sys.modules
+        try:
+            import scripts.execute_loop.L22_alerting  # noqa: F401
+            L22 = _sys.modules.get(_L22_KEY)
+        except ImportError:
+            log.warning("[L35] L22_alerting not importable — skipping alert")
+            return False
+    if L22 is None:
+        # monkeypatch set to None to simulate ImportError
         log.warning("[L35] L22_alerting not importable — skipping alert")
         return False
 
