@@ -409,6 +409,24 @@
       "reason": "BLOCKED: wiring works end-to-end (synthetic PP bet resolves through new alias patch + ETL). ETL writes 26,071 rows to data/lines/2026-05-25_pp.csv with canonical schema. clv.py patched with pp/prizepicks aliases. But ledger book is DK-only and all snapshots are PP-only — structural mismatch. Gate flips SHIP automatically once C1 (DK historical) or C2 (DK live) provides DK lines OR ledger contains PP bets.",
       "saturated_angle": "DK-ledger-vs-PP-snapshot book mismatch (data, not code)",
       "round": 7
+    },
+    {
+      "name": "R10_M19_foul_markov",
+      "reason": "Q4-min regression model itself ok (MAE 2.24 vs baseline 2.35) but downstream stat-MAE deltas all POSITIVE across all 4 folds and all 7 stats (pts +0.04 .. +0.05, reb +0.02, ast +0.01, fg3m +0.007, stl +0.004, blk +0.003, tov +0.005). The minute multiplier amplifies wrong-direction noise — when model predicts MORE Q4 minutes, players who actually got fewer also score more on a per-min basis, so the multiplier widens error rather than narrowing it.",
+      "saturated_angle": "Q4-minutes-multiplier downstream stat correction (Markov-style foul-trouble conditioning)",
+      "round": 9
+    },
+    {
+      "name": "R10_M30v2_foulout",
+      "reason": "Stage 1 classifier AUC 0.92 (vs M30 v1 AUC 0.30) thanks to pf>=5 target + multi-season data (1,482 positives at 4.6% prevalence). Stage 2 dampener applies correctly (-5% volume, -3% other). Stage 3: all 7 stats directionally improve but mean volume delta -0.0026 misses -0.005 gate. Calibration ratios show foul-out players are actually high-output stars who keep playing (PTS ratio 1.13, REB 1.43, BLK 1.35) so the dampener fights selection bias. Next try: per-stat calibrated multiplier instead of fixed 5%/3%, or tighter threshold (0.35+).",
+      "saturated_angle": "fixed-rate foul-out dampener on multi-season pf>=5 classifier (signal real but effect-size below gate due to selection bias)",
+      "round": 9
+    },
+    {
+      "name": "R10_M7_ref_features",
+      "reason": "Per-stat ref-crew features (ref_crew_fouls, ref_crew_fta, ref_crew_home_win_pct) added as residual-head inputs at endQ3. PTS folds_pos=1/3 (delta +0.0084), REB folds_pos=0/3 (delta +0.0037). Repeats cycle-15 pattern: ref-crew priors saturated; existing form/role features already encode the same information. (Pending full sweep completion; recorded preliminarily — if late stats unexpectedly ship per-stat, edit entry on commit.)",
+      "saturated_angle": "ref-crew prior features as endQ3 residual-head additions",
+      "round": 9
     }
   ],
   "saturated_angles": [
@@ -467,7 +485,10 @@
     "pregame PTS L1/pinball residual head retry",
     "foulout dampener v2 with pf=6 binary target on single season",
     "DNP availability classifier at F1@0.5 (model ranks well via AUC but fails F1 gate; revisit with threshold-tuned ship gate)",
-    "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)"
+    "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)",
+    "Q4-minutes-multiplier downstream stat correction (Markov-style foul-trouble conditioning)",
+    "fixed-rate foul-out dampener on multi-season pf>=5 classifier (selection bias on foul-prone stars)",
+    "ref-crew prior features as endQ3 residual-head additions"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
