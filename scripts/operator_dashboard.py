@@ -990,6 +990,10 @@ REC_PERF_SECTION_TITLE = "Recent Rec Performance"
 # R24_Q8 — optional section, rendered when collect_and_render is called with
 # `include_settlement_health=True` (the default).
 SETTLEMENT_HEALTH_SECTION_TITLE = "Settlement Health"
+# R30_W4 — optional section, rendered when collect_and_render is called with
+# `include_data_freshness=True` (default). Surfaces age of every operator-
+# critical data source so a stale feed is caught at a glance.
+DATA_FRESHNESS_SECTION_TITLE = "Data Freshness"
 
 
 # --------------------------------------------------------------------------- #
@@ -1248,6 +1252,246 @@ def _section_rec_perf(d: Dict[str, Any]) -> str:
     )
 
 
+# --------------------------------------------------------------------------- #
+# Section 9: Data Freshness (R30_W4)                                          #
+# --------------------------------------------------------------------------- #
+DEFAULT_DATA_DIR     = PROJECT_DIR / "data"
+DEFAULT_CACHE_DIR    = PROJECT_DIR / "data" / "cache"
+DEFAULT_LINEUPS_DIR  = PROJECT_DIR / "data" / "lineups"
+DEFAULT_LINES_DIR    = PROJECT_DIR / "data" / "lines"
+DEFAULT_BACKUPS_DIR  = PROJECT_DIR / "data" / "backups"
+DEFAULT_VAULT_DIR    = PROJECT_DIR / "vault"
+
+
+def _build_freshness_sources(
+    *,
+    cache_dir: Path,
+    lineups_dir: Path,
+    lines_dir: Path,
+    backups_dir: Path,
+    vault_dir: Path,
+    today: str,
+) -> List[Dict[str, Any]]:
+    """Build the (name, path, threshold_sec, kind) tuples for the 13 sources."""
+    HOUR = 3600
+    MINUTE = 60
+    DAY = 86400
+    sources: List[Dict[str, Any]] = [
+        {"name": "predictions_cache", "kind": "file",
+         "path": cache_dir / f"predictions_cache_{today}.parquet",
+         "threshold_sec": 12 * HOUR},
+        {"name": "nba_injuries", "kind": "file",
+         "path": cache_dir / f"nba_injuries_{today}.parquet",
+         "threshold_sec": 1 * HOUR},
+        {"name": "lineups", "kind": "file",
+         "path": lineups_dir / f"{today}.json",
+         "threshold_sec": 30 * MINUTE},
+        {"name": "lines_fd", "kind": "file",
+         "path": lines_dir / f"{today}_fd.csv",
+         "threshold_sec": 60},
+        {"name": "lines_bov", "kind": "file",
+         "path": lines_dir / f"{today}_bov.csv",
+         "threshold_sec": 60},
+        {"name": "lines_pin", "kind": "file",
+         "path": lines_dir / f"{today}_pin.csv",
+         "threshold_sec": 60},
+        {"name": "bankroll_state", "kind": "file",
+         "path": cache_dir / "bankroll_state.json",
+         "threshold_sec": 5 * MINUTE},
+        {"name": "middles_live", "kind": "file",
+         "path": cache_dir / "middles_live.json",
+         "threshold_sec": 60},
+        {"name": "m2_family_cache", "kind": "glob",
+         "path": cache_dir, "glob": "m2_family_predictions_*.json",
+         "threshold_sec": 12 * HOUR},
+        {"name": "feature_drift", "kind": "file",
+         "path": cache_dir / "feature_drift_latest.json",
+         "threshold_sec": 24 * HOUR},
+        {"name": "pnl_ledger_backup", "kind": "glob",
+         "path": backups_dir, "glob": "pnl_ledger.csv.*.gz",
+         "threshold_sec": 24 * HOUR},
+        {"name": "morning_md", "kind": "file",
+         "path": vault_dir / "MORNING.md",
+         "threshold_sec": 24 * HOUR},
+        {"name": "e2e_smoke", "kind": "glob",
+         "path": cache_dir, "glob": "e2e_smoke_*.json",
+         "threshold_sec": 24 * HOUR},
+    ]
+    return sources
+
+
+def _resolve_freshness_source(
+    src: Dict[str, Any], now_ts: float
+) -> Dict[str, Any]:
+    """For a single source spec, return {name, path, age_sec, status, exists, threshold_sec}."""
+    name = src["name"]
+    threshold = float(src["threshold_sec"])
+    kind = src.get("kind", "file")
+    path: Optional[Path] = None
+    age_sec: Optional[float] = None
+    exists = False
+
+    try:
+        if kind == "file":
+            path = Path(src["path"])
+            if path.exists() and path.is_file():
+                exists = True
+                age_sec = now_ts - path.stat().st_mtime
+        elif kind == "glob":
+            base = Path(src["path"])
+            pattern = src.get("glob", "*")
+            if base.exists() and base.is_dir():
+                matches = list(base.glob(pattern))
+                if matches:
+                    # newest match wins
+                    newest = max(matches, key=lambda p: p.stat().st_mtime)
+                    path = newest
+                    exists = True
+                    age_sec = now_ts - newest.stat().st_mtime
+                else:
+                    path = base / pattern
+            else:
+                path = base / pattern
+    except OSError:
+        pass
+
+    # Status classification — missing file is red. Fresh = green. Stale within
+    # 2x threshold = yellow. Beyond 2x = red.
+    if not exists or age_sec is None:
+        status = "red"
+    elif age_sec <= threshold:
+        status = "green"
+    elif age_sec <= threshold * 2.0:
+        status = "yellow"
+    else:
+        status = "red"
+
+    return {
+        "name": name,
+        "path": str(path) if path is not None else "",
+        "age_sec": age_sec,
+        "threshold_sec": threshold,
+        "status": status,
+        "exists": exists,
+    }
+
+
+def fetch_data_freshness(
+    *,
+    cache_dir: Path = DEFAULT_CACHE_DIR,
+    lineups_dir: Path = DEFAULT_LINEUPS_DIR,
+    lines_dir: Path = DEFAULT_LINES_DIR,
+    backups_dir: Path = DEFAULT_BACKUPS_DIR,
+    vault_dir: Path = DEFAULT_VAULT_DIR,
+    today: Optional[str] = None,
+    now: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Inventory operator-critical data sources + classify freshness.
+
+    Result schema:
+        {
+          "ok": bool,
+          "n_total": int,
+          "n_green": int,
+          "n_yellow": int,
+          "n_red": int,
+          "sources": [
+            {"name": str, "path": str, "age_sec": float|None,
+             "threshold_sec": float, "status": "green"|"yellow"|"red",
+             "exists": bool},
+            ...
+          ]
+        }
+
+    Always returns a dict — never raises — so a missing data dir cannot
+    take the dashboard down.
+    """
+    out: Dict[str, Any] = {
+        "ok": False, "n_total": 0, "n_green": 0, "n_yellow": 0,
+        "n_red": 0, "sources": [],
+    }
+    today = today or _today_iso()
+    now_ts = now if now is not None else time.time()
+
+    try:
+        specs = _build_freshness_sources(
+            cache_dir=Path(cache_dir),
+            lineups_dir=Path(lineups_dir),
+            lines_dir=Path(lines_dir),
+            backups_dir=Path(backups_dir),
+            vault_dir=Path(vault_dir),
+            today=today,
+        )
+    except Exception:  # noqa: BLE001
+        return out
+
+    for spec in specs:
+        try:
+            row = _resolve_freshness_source(spec, now_ts)
+        except Exception:  # noqa: BLE001
+            row = {
+                "name": spec.get("name", "?"),
+                "path": "",
+                "age_sec": None,
+                "threshold_sec": float(spec.get("threshold_sec", 0)),
+                "status": "red",
+                "exists": False,
+            }
+        out["sources"].append(row)
+        out[f"n_{row['status']}"] += 1
+
+    out["n_total"] = len(out["sources"])
+    out["ok"] = out["n_total"] > 0
+    return out
+
+
+def _fmt_threshold(seconds: float) -> str:
+    s = int(seconds)
+    if s < 60:
+        return f"{s}s"
+    if s < 3600:
+        return f"{s // 60}m"
+    if s < 86400:
+        return f"{s // 3600}h"
+    return f"{s // 86400}d"
+
+
+def _section_data_freshness(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return (f'<h2>{DATA_FRESHNESS_SECTION_TITLE}</h2>'
+                '<p class="muted">(no data sources resolved)</p>')
+    rows_html = []
+    for r in d.get("sources", []):
+        color = _STATUS_COLOR.get(r["status"], "#8b949e")
+        age = _fmt_age(r["age_sec"])
+        threshold = _fmt_threshold(r["threshold_sec"])
+        exists = "yes" if r.get("exists") else "no"
+        rows_html.append(
+            f'<tr>'
+            f'<td><span class="dot" style="background:{color}"></span>'
+            f'{_html_escape(r["name"])}</td>'
+            f'<td>{_html_escape(age)}</td>'
+            f'<td>{_html_escape(threshold)}</td>'
+            f'<td>{exists}</td>'
+            f'<td>{_html_escape(r["status"].upper())}</td>'
+            f'</tr>'
+        )
+    summary = (
+        f'<span style="color:{_STATUS_COLOR["green"]}">{d["n_green"]} green</span> · '
+        f'<span style="color:{_STATUS_COLOR["yellow"]}">{d["n_yellow"]} yellow</span> · '
+        f'<span style="color:{_STATUS_COLOR["red"]}">{d["n_red"]} red</span> '
+        f'<span class="muted">of {d["n_total"]} sources</span>'
+    )
+    return (
+        f'<h2>{DATA_FRESHNESS_SECTION_TITLE}</h2>'
+        f'<p>{summary}</p>'
+        '<table><thead><tr><th>Source</th><th>Age</th><th>Threshold</th>'
+        '<th>Exists</th><th>Status</th></tr></thead><tbody>'
+        + "".join(rows_html) +
+        '</tbody></table>'
+    )
+
+
 _OPERATOR_CSS = """
 * { box-sizing: border-box; }
 html, body {
@@ -1308,6 +1552,7 @@ def render_operator_html(
     rec_perf: Optional[Dict[str, Any]] = None,     # R24_Q4
     settlement: Optional[Dict[str, Any]] = None,   # R24_Q8
     drift: Optional[Dict[str, Any]] = None,        # R27_T3
+    data_freshness: Optional[Dict[str, Any]] = None,  # R30_W4
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -1321,6 +1566,8 @@ def render_operator_html(
         + _section_today_slate(slate)
         + _section_tracker_status(tracker)
     )
+    if data_freshness is not None:
+        body += _section_data_freshness(data_freshness)
     if drift is not None:
         body += _section_feature_drift(drift)
     if settlement is not None:
@@ -1371,6 +1618,12 @@ def collect_and_render(
     qb_dir: Path = DEFAULT_QB_DIR_PATH,
     include_feature_drift: bool = True,       # R27_T3
     drift_cache_path: Path = DEFAULT_DRIFT_CACHE,
+    include_data_freshness: bool = True,      # R30_W4
+    freshness_cache_dir: Optional[Path] = None,
+    freshness_lineups_dir: Optional[Path] = None,
+    freshness_lines_dir: Optional[Path] = None,
+    freshness_backups_dir: Optional[Path] = None,
+    freshness_vault_dir: Optional[Path] = None,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -1428,12 +1681,25 @@ def collect_and_render(
         drift = _safe(fetch_feature_drift, cache_path=drift_cache_path)
         drift.setdefault("ok", False)
 
+    data_freshness = None
+    if include_data_freshness:
+        data_freshness = _safe(
+            fetch_data_freshness,
+            cache_dir=freshness_cache_dir or DEFAULT_CACHE_DIR,
+            lineups_dir=freshness_lineups_dir or DEFAULT_LINEUPS_DIR,
+            lines_dir=freshness_lines_dir or DEFAULT_LINES_DIR,
+            backups_dir=freshness_backups_dir or DEFAULT_BACKUPS_DIR,
+            vault_dir=freshness_vault_dir or DEFAULT_VAULT_DIR,
+            today=today,
+        )
+        data_freshness.setdefault("ok", False)
+
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
 
     return render_operator_html(
         health, bankroll, alerts, bets, slate, tracker,
-        live_recs, rec_perf, settlement, drift,
+        live_recs, rec_perf, settlement, drift, data_freshness,
         auto_refresh_sec=auto_refresh_sec,
     )
