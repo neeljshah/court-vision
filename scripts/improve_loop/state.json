@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 25,
+  "rounds_completed": 26,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -513,6 +513,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-12 (12 variants in 296s \u2014 12/12 SHIP, 1/12 beat canonical). H2H L5 streak features barely move the needle.\n  h2h_ordered_only (+7 feats, 170 total): 0/6 beat canonical. All targets regress +0.61-1.94pp vs respective canonical winners.\n  h2h_full (+9 feats incl. unordered any-pair, 172 total): 1/6 beat \u2014 score_diff -17.51% (-0.07pp vs B11 opp_full -17.44%, marginal squeak).\nArchitectural finding: H2H signal is too WEAK relative to current B5+B9+B11 stack. Each team-pair has only ~4 games per season; L5 H2H window spans 2+ seasons of stale matchups. The general team-form features (off_rtg, opp_def_adj_ortg, L10 splits, opp_allowed_PTS_l5) already capture matchup signal more reliably than the noisy low-N H2H average. Unordered any-pair (h2h_full) marginally helps because it captures BOTH orientations of last 5 meetings, doubling effective sample size.\nPRODUCTION CANONICAL UNCHANGED. \nStop counter: 1/5 zero-architectural-gain rounds. (B11 was modest +3 wins; B12 marginal +1.)"
+    },
+    {
+      "name": "R12_BATCH13_hybrid_winners",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 18,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-13 (18 variants in 522s \u2014 18/18 SHIP, 5/18 BEAT_CANONICAL). PREDICTION-LEVEL ENSEMBLING WINS. Stop counter RESET to 0/5.\nPer-variant beat-canonical count:\n  union_all (174 kitchen-sink feats): 0/6 beat. All targets +0.42-1.16pp regress \u2014 adding all features hurts (noise > signal at large feature counts).\n  intersection (141 feats present in >=3 canonical sets): 1/6 beat \u2014 AH3 Brier 0.2286 AUC 0.7098 (BOTH metrics beat B11 opp_pts_pace 0.2294/0.7058).\n  avg_blend (50/50 prediction avg of per-target top-2): 4/6 beat \u2014 home_score -16.38% (-0.28pp), away_score -14.42% (-0.07pp), O230 Brier 0.2372 AUC 0.6765 (Brier wins, AUC ties), AH3 Brier 0.2283 AUC 0.7062 (Brier wins).\nNEW PRODUCTION CANONICAL UPDATES:\n  total: B9 interactions_only -16.27% STILL BEST (avg_blend regressed)\n  spread: B11 opp_full -17.44% STILL BEST (avg_blend ties at -17.42%)\n  home_score: B13 avg_blend(all + interactions_only) -16.38% NEW BEST\n  away_score: B13 avg_blend(halflife2 + all) -14.42% NEW BEST\n  O230: B13 avg_blend(opp_full + opp_pts_pace) Brier 0.2372 NEW BEST\n  AH3: B13 intersection (>=3 canonical agreement, 141 feats) Brier 0.2286 AUC 0.7098 NEW BEST\nARCHITECTURAL FINDING: prediction-level averaging across DIVERSE feature subsets (diff feature sets, same B6 OOF-stack architecture) consistently beats any single best feature set \u2014 model-level ensembling is the unlock, not more features. The union_all kitchen-sink regresses everywhere; the >=3-agreement intersection wins on the lowest-noise binary target (AH3) where 'feature agreement = signal' holds. Stop counter: RESET to 0/5."
     }
   ],
   "rejects": [
