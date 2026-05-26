@@ -153,11 +153,13 @@ updated: {today}
 > AI-native sports intelligence platform. Claude agents autonomously discover, validate, ship, and retire prediction signals across multiple monetization surfaces.
 > *Auto-updated by `scripts/update_vault.py` · {today}*
 
+> **Start here:** [[Lessons]] (synthesis — read before scoping any change) · [[_indexes/full_inventory]] (full vault map) · [[Strategy/Now]] (current focus) · [[Memory/Phase Status]] (loop status)
+
 ---
 
 ## Current State at a Glance ({today})
 
-**Branch:** `{branch}` | **Loop:** 5 / cycle 96e | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
+**Branch:** `{branch}` | **Loop:** 5 cycle 112 · improve_loop R7 · execute_loop R13 | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
 
 | Item | Status |
 |------|--------|
@@ -165,10 +167,24 @@ updated: {today}
 | Win probability (walk-forward) | **0.7094 acc / 0.193 Brier** — see [[#The 71% Result]] |
 | Win probability (single-split) | **0.717 acc / 0.188 Brier** |
 | Prop backtest ROI @ +0.5 edge (20K-game holdout) | **+19.9% to +28.1%** across 7 stats |
+| **In-game projection (improve_loop R7)** | Residual heads SHIPPED 6/7 · endQ3 MAE **-43% to -55%** · cycle 110 learned Q4-minutes |
 | **Gate 1: CLV vs Pinnacle close** | **NOT YET RUN — TOP PRIORITY** |
 | Signal universe | 85 models trained (target: 500-5000 via agentic system) |
 | Top revenue surface live | None yet (signal subs targeted Q3 2026) |
 | Agentic research system | Not yet built — see [[Plans/Agentic Research System]] |
+| **Swish Analytics demo (2026-05-26)** | Pack ready — see [[docs/SWISH_DEMO]] · `scripts/swish_demo.py` · `docs/system_metrics.html` |
+
+---
+
+## In-Game Improvement System (improve_loop R1-R7)
+
+> Biggest single-batch wins of the project. Pregame projections are at ceiling; in-game residual heads layered on top of pregame are unlocking 13-55% MAE reductions through Q4.
+
+- **Pregame → in-game residual heads** layer per-quarter residual learners on top of pregame medians, conditioned on elapsed-minute / score-margin / pace-so-far / Q4-minutes-learned (cycle 110).
+- **endQ3 MAE delta vs pregame baseline:** -43% to -55% across the 6 stats that shipped (PTS, REB, AST, FG3M, STL, TOV).
+- **Cycle 110** (improve_loop R7): learned Q4-minutes prior (replaces naive 12-minute assumption) — biggest in-game lever so far.
+- **execute_loop R13** wired residual heads into the live projection surface and observability artifacts.
+- Source: `scripts/improve_loop/` · loop memos in `vault/Sessions/` · synthesis in [[Lessons]].
 
 ---
 
@@ -198,6 +214,12 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 | Domain | Entry Point | What's There |
 |--------|------------|--------------|
+| **Synthesis** | [[Lessons]] | Durable lessons across all loops — read before scoping any change |
+| **Vault Inventory** | [[_indexes/full_inventory]] | Hand-curated ~270-note map across ~25 folders |
+| **Now / Focus** | [[Strategy/Now]] | Current sprint, blockers, next actions |
+| **Phase status** | [[Memory/Phase Status]] | Loop status, what blocks what |
+| **Swish demo** | [[docs/SWISH_DEMO]] | Interview cheat-sheet + runnable end-to-end demo |
+| **Model perf** | [[Models/Model Performance]] | Full honest walk-forward MAE / R² table |
 | Strategy | [[Plans/Project Vision]] | Full product picture + 6 surfaces |
 | Renaissance thesis | [[Plans/Renaissance Comparison]] | Similarities + differences with RenTech |
 | Agentic system | [[Plans/Agentic Research System]] | Multi-agent Claude architecture |
@@ -210,7 +232,7 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 ---
 
-## Model Performance (loop 5 cycle 96e, walk-forward, per-game N=99,818)
+## Model Performance (loop 5 cycle 112, walk-forward, per-game N=99,818)
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
@@ -296,15 +318,18 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 | Note | What's There |
 |------|-------------|
+| [[Lessons]] | **Durable synthesis** — read before scoping any model change |
+| [[Sessions/2026-05-24_loop5_memo]] | Most recent strategic memo (loop 5 state + Swish framing) |
 | [[Sessions/Timeline]] | Condensed project history, milestones, metric progression |
 | [[Sessions/Decision Log]] | Key decisions and fixes with impact |
 | [[Sessions/Game Log]] | All CV-processed games with grades and metrics |
 | [[Tracking/Tracker Improvements]] | Chronological CV fix log |
+| [[_indexes/full_inventory]] | Hand-curated full vault inventory (~270 notes) |
 
 ---
 
-*Session log: [[Sessions/Decision Log]] · Full archive: `Sessions/_archive/`*
-*Git repo: README.md · VISION.md · ARCHITECTURE.md · ROADMAP.md · MASTER_PLAN.md*
+*Session log: [[Sessions/Decision Log]] · Full archive: `Sessions/_archive/` · Synthesis: [[Lessons]] · Inventory: [[_indexes/full_inventory]]*
+*Git repo: README.md · VISION.md · ARCHITECTURE.md · ROADMAP.md · MASTER_PLAN.md · Demo: docs/SWISH_DEMO.md*
 """
 
 
