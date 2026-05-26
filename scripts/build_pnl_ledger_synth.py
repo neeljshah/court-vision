@@ -126,9 +126,9 @@ def _kelly_pct(edge_pct: float) -> Optional[float]:
     # Cap to a sensible band
     if abs(e) > 50:
         return None
-    # Treat edge_pct as % advantage -> kelly fraction (heavy-handed shrink)
-    k = max(0.0, min(5.0, abs(e) * 0.5))
-    return round(k, 4)
+    from src.prediction.betting_portfolio import clamp_kelly_pct
+    k = clamp_kelly_pct(abs(e) * 0.005)
+    return None if k is None else round(k, 4)
 
 
 def build_rows() -> List[dict]:
