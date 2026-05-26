@@ -22,6 +22,7 @@ from src.data.nba_enricher import (
     _infer_clip_start_sec,
     _infer_period_count,
     _infer_fps,
+    _build_video_to_pbp_mapper,
     enrich_possessions,
 )
 
@@ -301,3 +302,150 @@ class TestEnrichPossessionsInPlace:
 
         rows = list(csv.DictReader(open(poss_path)))
         assert "score_diff" in rows[0]
+
+
+# ── _build_video_to_pbp_mapper ────────────────────────────────────────────────
+
+class TestBuildVideoToPbpMapper:
+    """Tests for the canonical _build_video_to_pbp_mapper (data_dir, fps) -> (mapper, anchors).
+
+    The canonical function requires >= 20 anchors with video_span >= 600s and
+    >= 10 unique pbp_sec values to build a mapper; sparse data returns (None, []).
+    """
+
+    def _write_scoreboard_log(self, tmp_path: Path, rows: list[dict]) -> None:
+        """Write rows to scoreboard_log.csv inside tmp_path (canonical reads data_dir)."""
+        log_path = tmp_path / "scoreboard_log.csv"
+        fieldnames = ["frame", "game_clock", "shot_clock", "home_score",
+                      "away_score", "period", "confidence"]
+        with open(log_path, "w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames)
+            w.writeheader()
+            w.writerows(rows)
+
+    def _make_dense_anchors(self, n: int = 30, fps: float = 30.0) -> list[dict]:
+        """Generate n rows spanning Q1+Q2 (>600s video, >10 unique pbp values).
+
+        Each row is one second of game time apart.  Q1 lasts 720s game time
+        (frames 0-21600 at 30fps), Q2 from game 720s onward.
+
+        Frame spacing = fps * 1s video/row, so video_span = (n-1) * 1s >= n-1 s.
+        Use n=30 for a safe margin above the 20-anchor + 600s thresholds.
+        We simulate Q1 rows over 720s video (~7200s game time range is wrong; use
+        realistic: Q1 is 720 game-sec at 1:1 ratio).  Space frames 1000 apart
+        (33.3s video between each) so 30 rows = 29 * 33.3s = 966s video span.
+        """
+        rows = []
+        for i in range(n):
+            frame = i * 1000  # 33.3s video per row at 30fps
+            # Simulate Q1 counting down from 12:00 (720s) at ~1s/row
+            remaining = max(0, 720 - i * 24)  # 24s game-time per row
+            mm = remaining // 60
+            ss = remaining % 60
+            rows.append({
+                "frame": frame,
+                "game_clock": f"{mm}:{ss:02d}",
+                "shot_clock": "",
+                "home_score": i,
+                "away_score": i,
+                "period": 1,
+                "confidence": 0.9,
+            })
+        return rows
+
+    def test_returns_none_when_file_missing(self, tmp_path):
+        """No scoreboard_log.csv inside data_dir → (None, [])."""
+        mapper, anchors = _build_video_to_pbp_mapper(str(tmp_path))
+        assert mapper is None
+        assert anchors == []
+
+    def test_returns_none_when_too_few_anchors(self, tmp_path):
+        """Only 3 high-confidence anchors (< 20) → (None, [])."""
+        self._write_scoreboard_log(tmp_path, [
+            {"frame": 3000,  "game_clock": "10:00", "shot_clock": "", "home_score": 5,
+             "away_score": 3, "period": 1, "confidence": 0.9},
+            {"frame": 6000,  "game_clock": "08:00", "shot_clock": "", "home_score": 10,
+             "away_score": 8, "period": 1, "confidence": 0.9},
+            {"frame": 9000,  "game_clock": "06:00", "shot_clock": "", "home_score": 15,
+             "away_score": 13, "period": 1, "confidence": 0.9},
+        ])
+        mapper, anchors = _build_video_to_pbp_mapper(str(tmp_path))
+        assert mapper is None
+        assert anchors == []
+
+    def test_returns_none_when_video_span_too_short(self, tmp_path):
+        """20 anchors but all within 100s video (< 600s span) → (None, [])."""
+        rows = []
+        for i in range(20):
+            frame = i * 150  # 5s apart at 30fps → 19*5=95s span
+            remaining = 720 - i * 2
+            mm = remaining // 60
+            ss = remaining % 60
+            rows.append({
+                "frame": frame, "game_clock": f"{mm}:{ss:02d}", "shot_clock": "",
+                "home_score": i, "away_score": i, "period": 1, "confidence": 0.9,
+            })
+        self._write_scoreboard_log(tmp_path, rows)
+        mapper, anchors = _build_video_to_pbp_mapper(str(tmp_path))
+        assert mapper is None
+        assert anchors == []
+
+    def test_mapper_built_from_dense_full_game_anchors(self, tmp_path):
+        """30 anchors spanning ~966s video → mapper callable, anchors non-empty.
+
+        At anchor midpoint the mapper must return a pbp_sec > 0 and consistent
+        with Q1 elapsed time (not the raw video timestamp).
+        """
+        rows = self._make_dense_anchors(n=30, fps=30.0)
+        self._write_scoreboard_log(tmp_path, rows)
+        mapper, anchors = _build_video_to_pbp_mapper(str(tmp_path), fps=30.0)
+
+        assert mapper is not None, "Expected mapper to be built with 30 dense anchors"
+        assert len(anchors) >= 20
+
+        # Mid-anchor: frame 15000 → video_sec=500s → Q1 elapsed ~(720 - (720 - 15*24)) = 360s
+        pbp_at_500 = mapper(500.0)
+        assert pbp_at_500 is not None
+        assert 0 < pbp_at_500 < 800, f"pbp_sec={pbp_at_500:.1f} out of expected Q1 range"
+
+    def test_mapper_accounts_for_halftime_gap(self, tmp_path):
+        """Anchors spanning Q1+Q2 with halftime gap: post-Q2 video_sec maps to pbp > 720.
+
+        Build 30 rows in two blocks:
+          - Block A (Q1): frames 0-14000 (0-467s video), game_clock counting from 12:00
+          - Block B (Q2): frames 32000-46000 (1067-1533s video), game_clock Q2 counting down
+        Video gap of 32000-14000=18000 frames (600s) simulates halftime broadcast.
+        A post-halftime video_sec=1200 must map to pbp_sec > 720 (into Q2).
+        """
+        rows = []
+        fps = 30.0
+        # Q1 block: 15 rows, frames 0..14000 step 1000
+        for i in range(15):
+            frame = i * 1000
+            remaining = max(0, 720 - i * 48)  # count down faster to reach 0 in 15 steps
+            mm = remaining // 60
+            ss = remaining % 60
+            rows.append({
+                "frame": frame, "game_clock": f"{mm}:{ss:02d}", "shot_clock": "",
+                "home_score": i * 2, "away_score": i * 2, "period": 1, "confidence": 0.9,
+            })
+        # Q2 block: 15 rows, frames 32000..46000 step 1000
+        for i in range(15):
+            frame = 32000 + i * 1000
+            remaining = max(0, 720 - i * 48)
+            mm = remaining // 60
+            ss = remaining % 60
+            rows.append({
+                "frame": frame, "game_clock": f"{mm}:{ss:02d}", "shot_clock": "",
+                "home_score": 30 + i * 2, "away_score": 28 + i * 2, "period": 2, "confidence": 0.9,
+            })
+        self._write_scoreboard_log(tmp_path, rows)
+        mapper, anchors = _build_video_to_pbp_mapper(str(tmp_path), fps=fps)
+
+        assert mapper is not None, "Expected mapper with 30 anchors spanning Q1+Q2"
+        # Q2 anchor at frame 32000 → video_sec=1066.7s → pbp should be > 720 (into Q2)
+        pbp_q2_start = mapper(32000 / fps)
+        assert pbp_q2_start > 720, (
+            f"Expected pbp_sec > 720 (Q2 territory) for video_sec={32000/fps:.0f}s, "
+            f"got {pbp_q2_start:.1f}.  Halftime gap not accounted for."
+        )

@@ -396,16 +396,43 @@ _PANO_STITCH_FRAMES  = 30    # consecutive frames to stitch into panorama
 _BASKET_L            = (0.045, 0.5)   # left-baseline basket
 _BASKET_R            = (0.955, 0.5)   # right-baseline basket
 _DRIVE_VEL_THRESHOLD  = 3.0           # px/frame toward basket → counts as a drive
-_ISOLATION_DEFAULT    = 200.0         # px — "wide open" sentinel when no opponents detected
+_ISOLATION_DEFAULT    = 99.0          # ft — "wide open" sentinel when no opponents detected
+                                      # (was 200.0 px before unit-normalization fix 2026-05-26;
+                                      #  99 ft = wider than half-court → physically impossible real value)
 _SPACING_NORM         = 4700.0        # ft² reference area (half-court ≈ 47×50 ft = 2350 ft², ×2 for full)
 _FAST_BREAK_VEL_MIN  = 3.5            # px/frame team-mean toward basket → fast break
 
 
+def _px_to_ft(px_dist: float, map_w: int) -> float:
+    """Convert a 2-D court pixel distance to feet using the long-axis scale (94 ft).
+
+    The panorama long axis corresponds to the court length (94 ft).  All
+    distance fields (defender_distance, shot_distance, nearest_opponent, etc.)
+    must pass through this helper before being written to CSV so that consumers
+    and UIs receive values in feet rather than pixels.
+
+    Args:
+        px_dist: Distance in court-2D pixels.
+        map_w:   Panorama width in pixels (varies per clip; do NOT use a constant).
+
+    Returns:
+        Distance in feet, rounded to one decimal place.
+    """
+    if map_w <= 0:
+        return round(float(px_dist), 1)
+    return round(float(px_dist) * 94.0 / map_w, 1)
+
+
 def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
-    """Defender distance for shot log. Falls back to shooter-centric calc when spatial sentinel fires."""
+    """Defender distance for shot log in FEET.
+
+    Pulls from spatial._isolation when available (already converted to ft by
+    _frame_spatial).  Falls back to shooter-centric np.hypot and converts to ft.
+    """
     import math as _math
     iso = spatial.get("_isolation")
     if iso is not None and iso != _ISOLATION_DEFAULT:
+        # _isolation is already in ft after _frame_spatial fix — return as-is
         return round(iso, 1)
     # Fallback: compute from shooter position to nearest non-same-team player in frame
     sx, sy = shooter.get("x2d"), shooter.get("y2d")
@@ -428,15 +455,17 @@ def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
         ]
     if not opp:
         return ""
-    return round(min(_math.hypot(sx - x, sy - y) for x, y in opp), 1)
+    px_dist = min(_math.hypot(sx - x, sy - y) for x, y in opp)
+    return _px_to_ft(px_dist, map_w)
 
 
 def _shot_defender_dist_norm(spatial, shooter, frame_tracks, map_w):
-    """Normalised defender distance (0–1 of court width)."""
+    """Normalised defender distance (0–1 of court length = 94 ft)."""
     d = _shot_defender_dist(spatial, shooter, frame_tracks, map_w)
     if d == "":
         return ""
-    return round(d / max(map_w, 1), 4)
+    # d is now in feet; normalise to 0–1 over 94 ft court length
+    return round(d / 94.0, 4)
 
 
 # ── YOLO-NAS wrapper (optional) ───────────────────────────────────────────────
@@ -1323,14 +1352,19 @@ class UnifiedPipeline:
     def _vision_probe_resume(self, frame: np.ndarray, frame_idx: int) -> bool:
         """Probe YOLO every 150 frames to clear a vision-based suspension.
 
-        When ball-track was suspended by the vision fallback (no OCR scoreboard +
-        long ball-absent streak + low person count), we periodically re-run YOLO
-        on a single frame to check whether the scene has returned to live play
-        (≥8 persons visible).  Returns True and clears suspension when that
-        threshold is met; returns False with no state change otherwise.
+        When ball-track was suspended (OCR-absent threshold fired OR vision
+        fallback), periodically re-run YOLO on a single frame to check whether
+        the scene has returned to live play (≥8 persons visible).  Returns True
+        and clears suspension when that threshold is met; returns False with no
+        state change otherwise.
+
+        v33 fix: removed `and not self._sc_ever_seen` guard — the probe must
+        run whenever suspension is latched, regardless of whether the scoreboard
+        was ever seen.  The old guard blocked recovery when OCR fired briefly
+        early in the clip (setting _sc_ever_seen=True) and then went absent,
+        leaving _ball_track_suspended permanently set.
         """
         if not (self._ball_track_suspended
-                and not self._sc_ever_seen
                 and frame_idx % 150 == 0
                 and self.yolo.available):
             return False
@@ -2331,9 +2365,9 @@ class UnifiedPipeline:
                 vtb     = UnifiedPipeline._vel_toward_basket(x2d, y2d, dx_v, dy_v, map_w, map_h)
                 drv_flg = int(bool(track["has_ball"]) and vtb > _DRIVE_VEL_THRESHOLD)
 
-                dist_ball = round(float(np.hypot(
+                dist_ball = _px_to_ft(float(np.hypot(
                     x2d - ball_pos[0], y2d - ball_pos[1]
-                )), 1) if ball_pos else ""
+                )), map_w) if ball_pos else ""
 
                 opp_d = [float(np.hypot(x2d - ox, y2d - oy))
                          for uid, (ut, ox, oy) in team_pos.items()
@@ -2362,8 +2396,8 @@ class UnifiedPipeline:
                     "court_zone":         self._court_zone(x2d, y2d, map_w, map_h),
                     "ball_possession":    int(track["has_ball"]),
                     "distance_to_ball":   dist_ball,
-                    "nearest_opponent":   round(min(opp_d), 1) if opp_d else "",
-                    "nearest_teammate":   round(min(tm_d), 1)  if tm_d  else "",
+                    "nearest_opponent":   _px_to_ft(min(opp_d), map_w) if opp_d else "",
+                    "nearest_teammate":   _px_to_ft(min(tm_d), map_w)  if tm_d  else "",
                     "event":              event if track["has_ball"] else "none",
                     # Spatial — own team
                     "team_spacing":       round(ts.get("spacing", 0.0), 1),
@@ -2831,11 +2865,11 @@ class UnifiedPipeline:
         else:
             result["_ball_side"] = ""
 
-        # Handler isolation — nearest opponent distance.
-        # Default: _ISOLATION_DEFAULT (wide open) so that frames where opponents
-        # are not yet tracked don't falsely register as maximum defensive pressure.
-        # 0.0 would mean "defender is standing on the handler" — never a safe default.
-        isolation = _ISOLATION_DEFAULT
+        # Handler isolation — nearest opponent distance, stored in FEET.
+        # Default: _ISOLATION_DEFAULT (99 ft, wider than half-court → off-court sentinel)
+        # so that frames where opponents are not yet tracked don't falsely register as
+        # maximum defensive pressure.  0.0 would mean "defender on handler" — not safe.
+        isolation = _ISOLATION_DEFAULT  # ft sentinel
         if handler_pos and handler_team:
             opp_pts = [
                 (x, y)
@@ -2846,7 +2880,7 @@ class UnifiedPipeline:
             if opp_pts:
                 dists = [float(np.hypot(handler_pos[0] - x, handler_pos[1] - y))
                          for x, y in opp_pts]
-                isolation = min(dists)
+                isolation = _px_to_ft(min(dists), map_w)  # convert px→ft
             else:
                 # Fallback: only activate when we have strong evidence that team
                 # classification merged all players under one label (6+ non-referee
@@ -2864,8 +2898,8 @@ class UnifiedPipeline:
                     if all_non_handler:
                         dists = [float(np.hypot(handler_pos[0] - x, handler_pos[1] - y))
                                  for x, y in all_non_handler]
-                        isolation = min(dists)
-        result["_isolation"] = isolation
+                        isolation = _px_to_ft(min(dists), map_w)  # convert px→ft
+        result["_isolation"] = isolation  # ft value (or _ISOLATION_DEFAULT=99 ft sentinel)
 
         return result
 
@@ -2890,13 +2924,14 @@ class UnifiedPipeline:
 
     @staticmethod
     def _dist_to_basket(x2d: int, y2d: int, map_w: int, map_h: int) -> float:
-        """Euclidean distance to the nearest basket in 2D court pixels."""
+        """Euclidean distance to the nearest basket in FEET (converted from pixels)."""
         bl = (_BASKET_L[0] * map_w, _BASKET_L[1] * map_h)
         br = (_BASKET_R[0] * map_w, _BASKET_R[1] * map_h)
-        return round(min(
+        px_dist = min(
             float(np.hypot(x2d - bl[0], y2d - bl[1])),
             float(np.hypot(x2d - br[0], y2d - br[1])),
-        ), 1)
+        )
+        return _px_to_ft(px_dist, map_w)
 
     @staticmethod
     def _vel_toward_basket(

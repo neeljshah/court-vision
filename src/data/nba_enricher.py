@@ -294,11 +294,214 @@ def build_live_mask(game_id: str, video_fps: float = 30.0) -> Dict[int, str]:
 
 # ── Main enrichment functions ─────────────────────────────────────────────────
 
+def _parse_game_clock(s: str) -> float:
+    """Parse "M:SS" or "MM:SS" or "S.S" game-clock string to seconds remaining.
+
+    Returns None on failure.
+    """
+    if not s:
+        return None
+    s = str(s).strip()
+    if not s or s.lower() in ("none", "nan", ""):
+        return None
+    try:
+        if ":" in s:
+            parts = s.split(":")
+            mins = int(parts[0])
+            secs = float(parts[1])
+            return mins * 60.0 + secs
+        return float(s)
+    except (ValueError, TypeError):
+        return None
+
+
+def _build_video_to_pbp_mapper(data_dir: str, fps: float = 30.0):
+    """Build a piecewise-linear mapper from video time (seconds) to PBP elapsed game time.
+
+    Uses scoreboard_log.csv (frame, game_clock, period?, confidence) to derive:
+      - period boundaries (game_clock reset from < 30s to > 700s)
+      - per-frame PBP time = period_offset + (period_length - clock_remaining)
+
+    Returns:
+        (mapper, anchors) where:
+          mapper(video_sec: float) -> Optional[float]   piecewise-linear PBP time
+          anchors: list[(video_sec, pbp_sec, period)]   raw anchors used
+        Returns (None, []) if scoreboard data is insufficient.
+
+    The mapper enables shot/possession matching across periods even when
+    halftime + timeouts make clip_start_sec unreliable as a single offset.
+    """
+    sb_csv = os.path.join(data_dir, "scoreboard_log.csv")
+    if not os.path.exists(sb_csv):
+        return None, []
+
+    raw_rows = []
+    try:
+        with open(sb_csv, newline="") as f:
+            for row in csv.DictReader(f):
+                try:
+                    fr = int(float(row.get("frame", 0)))
+                    conf = float(row.get("confidence", 0) or 0)
+                except (ValueError, TypeError):
+                    continue
+                if conf < 0.6:
+                    continue
+                clk = _parse_game_clock(row.get("game_clock", ""))
+                if clk is None or clk < 0 or clk > 750:
+                    continue
+                per_str = str(row.get("period", "")).strip()
+                per = None
+                if per_str and per_str.lower() not in ("none", "nan"):
+                    try:
+                        per = int(float(per_str))
+                        if per < 1 or per > 8:
+                            per = None
+                    except (ValueError, TypeError):
+                        per = None
+                raw_rows.append((fr, clk, per))
+    except Exception:
+        return None, []
+
+    if len(raw_rows) < 5:
+        return None, []
+
+    raw_rows.sort(key=lambda r: r[0])
+
+    # Filter single-row OCR outliers: a row's clock must not deviate by more than
+    # 60s from BOTH neighbors. (Two consecutive rows tend to be within 1-2s
+    # of each other in real OCR; large bidirectional spikes are misreads.)
+    if len(raw_rows) >= 5:
+        filtered_raw = [raw_rows[0]]
+        for i in range(1, len(raw_rows) - 1):
+            fr, clk, per = raw_rows[i]
+            pfr, pclk, _ = raw_rows[i-1]
+            nfr, nclk, _ = raw_rows[i+1]
+            # Drop if this row is wildly off from both neighbors AND neighbors agree
+            if abs(clk - pclk) > 120 and abs(clk - nclk) > 120 and abs(pclk - nclk) < 60:
+                continue
+            filtered_raw.append((fr, clk, per))
+        filtered_raw.append(raw_rows[-1])
+        raw_rows = filtered_raw
+
+    # Infer period number by detecting clock resets.
+    # Two kinds of period boundary:
+    #   1. Tight reset: clock was near 0, then jumped to near 720 (typical)
+    #   2. Sparse reset: scoreboard wasn't read in the final 60s of a period --
+    #      we just see a large positive jump (clk - prev_clk > 500)
+    # NBA periods reset to 12:00 = 720, so a +500 jump is unambiguous.
+    cur_period = raw_rows[0][2] if raw_rows[0][2] else 1
+    prev_clk = raw_rows[0][1]
+    anchors = []  # (frame, video_sec, pbp_sec, period)
+
+    for fr, clk, per_seen in raw_rows:
+        if per_seen and per_seen >= cur_period:
+            cur_period = per_seen
+        else:
+            # Any positive jump >= 500s = period reset (clock can only INCREASE
+            # at period boundaries; mid-period it counts down).
+            if clk - prev_clk >= 500:
+                cur_period = min(cur_period + 1, 8)
+        prev_clk = clk
+        period_len = 5 * 60 if cur_period > 4 else 12 * 60
+        elapsed_in_period = period_len - clk
+        if elapsed_in_period < 0:
+            elapsed_in_period = 0
+        period_offset = sum(
+            (5 * 60 if q > 4 else 12 * 60) for q in range(1, cur_period)
+        )
+        pbp_sec = period_offset + elapsed_in_period
+        video_sec = fr / max(1.0, fps)
+        anchors.append((video_sec, pbp_sec, cur_period))
+
+    if not anchors:
+        return None, []
+
+    # Robust filter: drop anchors whose pbp_sec deviates strongly from the
+    # MEDIAN of a local window. This handles OCR misreads in BOTH directions
+    # (forward and backward jumps) without trapping the mapper at a single
+    # bad reading. Window = +-10 anchors (~20s of video in dense regions).
+    filtered = []
+    win = 10
+    sorted_anchors = sorted(anchors, key=lambda a: a[0])
+    for i, a in enumerate(sorted_anchors):
+        lo = max(0, i - win)
+        hi = min(len(sorted_anchors), i + win + 1)
+        window_pbp = sorted(b[1] for b in sorted_anchors[lo:hi])
+        med = window_pbp[len(window_pbp)//2]
+        # Tolerance: allow +-30s deviation from window median (OCR noise + real progression)
+        if abs(a[1] - med) <= 30.0:
+            filtered.append(a)
+    if len(filtered) < 3:
+        filtered = anchors  # fall back if filter killed too many
+
+    # Quality check: refuse to build a mapper when scoreboard data is too sparse
+    # or too uniform (OCR returned the same clock value repeatedly -- common when
+    # a frame artifact is being misread as a clock).
+    if len(filtered) < 20:
+        return None, []
+    pbp_vals_unique = len(set(int(a[1]) for a in filtered))
+    video_span = filtered[-1][0] - filtered[0][0] if len(filtered) > 1 else 0
+    if pbp_vals_unique < 10 or video_span < 600:
+        return None, []
+
+    # Build sorted unique-video-sec anchor arrays for fast interpolation.
+    filtered.sort(key=lambda a: a[0])
+    vs_arr  = [a[0] for a in filtered]
+    ps_arr  = [a[1] for a in filtered]
+    per_arr = [a[2] for a in filtered]
+
+    # Slopes for extrapolation beyond anchor range (defaults near 1.0).
+    if len(vs_arr) >= 5:
+        # Slope at start: use first 5 anchors
+        _v0, _v1 = vs_arr[0], vs_arr[min(4, len(vs_arr)-1)]
+        _p0, _p1 = ps_arr[0], ps_arr[min(4, len(vs_arr)-1)]
+        _slope_start = (_p1 - _p0) / (_v1 - _v0) if _v1 != _v0 else 1.0
+        # Slope at end: use last 5 anchors
+        _v0e, _v1e = vs_arr[max(0, len(vs_arr)-5)], vs_arr[-1]
+        _p0e, _p1e = ps_arr[max(0, len(vs_arr)-5)], ps_arr[-1]
+        _slope_end = (_p1e - _p0e) / (_v1e - _v0e) if _v1e != _v0e else 1.0
+        # Clamp slopes to sane range (game time can't compress faster than 1x or slower than 0.2x)
+        _slope_start = max(0.2, min(1.0, _slope_start))
+        _slope_end   = max(0.2, min(1.0, _slope_end))
+    else:
+        _slope_start = _slope_end = 1.0
+
+    def mapper(video_sec: float):
+        if video_sec is None:
+            return None
+        if video_sec <= vs_arr[0]:
+            # Linear extrapolate backward from first anchor
+            v = ps_arr[0] - (vs_arr[0] - video_sec) * _slope_start
+            return max(0.0, v)
+        if video_sec >= vs_arr[-1]:
+            # Linear extrapolate forward from last anchor (capped at last pbp + 60s)
+            v = ps_arr[-1] + (video_sec - vs_arr[-1]) * _slope_end
+            return min(ps_arr[-1] + 60.0, v)
+        import bisect
+        i = bisect.bisect_left(vs_arr, video_sec)
+        if i == 0:
+            return ps_arr[0]
+        v0, v1 = vs_arr[i-1], vs_arr[i]
+        p0, p1 = ps_arr[i-1], ps_arr[i]
+        if v1 == v0:
+            return p0
+        # Clamp dt: if anchors are >120s apart (broadcast went dead -- halftime, etc.),
+        # linear interp may bridge a discontinuity. Cap interpolation distance.
+        if v1 - v0 > 120.0:
+            # Use nearest anchor instead of linear interp
+            return p0 if (video_sec - v0) < (v1 - video_sec) else p1
+        t = (video_sec - v0) / (v1 - v0)
+        return p0 + t * (p1 - p0)
+
+    return mapper, filtered
+
+
 def enrich_shot_log(
     pbp: List[dict],
     shot_log_path: str,
     clip_start_sec: float,
     fps: float = 30.0,
+    video_to_pbp=None,
 ) -> str:
     """
     Fill in the `made` column in shot_log.csv.
@@ -326,12 +529,18 @@ def enrich_shot_log(
     # Only FG events (made=1, missed=2)
     fg_events = [e for e in pbp if e["event_type"] in (1, 2)]
 
+    # Resolve timestamp converter: use piecewise-linear mapper when available,
+    # otherwise fall back to simple linear offset (clip_start_sec + video_ts).
+    _ts_convert = video_to_pbp if video_to_pbp is not None else (
+        lambda v: clip_start_sec + v
+    )
+
     # Build tracker timestamp list for recall computation
     tracker_ts = []
     max_tracker_ts = 0.0
     for shot in shots:
         try:
-            ts = clip_start_sec + float(shot.get("timestamp", 0))
+            ts = _ts_convert(float(shot.get("timestamp", 0)))
             tracker_ts.append(ts)
             if ts > max_tracker_ts:
                 max_tracker_ts = ts
@@ -341,7 +550,7 @@ def enrich_shot_log(
     # --- Shot-side matching: label each tracker shot with made/missed ---
     for shot in shots:
         try:
-            ts = clip_start_sec + float(shot.get("timestamp", 0))
+            ts = _ts_convert(float(shot.get("timestamp", 0)))
         except (ValueError, TypeError):
             continue
         best_ev, best_dt = None, _SHOT_MATCH_WINDOW_SEC + 1
@@ -398,6 +607,7 @@ def enrich_possessions(
     possessions_path: str,
     clip_start_sec: float,
     fps: float = 30.0,
+    video_to_pbp=None,
 ) -> str:
     """
     Fill in `result` and `outcome_score` in possessions.csv.
@@ -422,6 +632,11 @@ def enrich_possessions(
     if not possessions:
         return possessions_path
 
+    # Resolve timestamp converter: piecewise-linear mapper or linear fallback
+    _ts_convert = video_to_pbp if video_to_pbp is not None else (
+        lambda v: clip_start_sec + v
+    )
+
     # Build score-margin lookup: game_clock_sec → score_margin
     scored_events  = [e for e in pbp if e["event_type"] in (1, 2, 5, 6)]
     scoring_events = [e for e in pbp if e["event_type"] == 1 and e.get("score_margin") not in ("", None)]
@@ -429,7 +644,7 @@ def enrich_possessions(
     for poss in possessions:
         try:
             end_f = int(poss.get("end_frame", 0))
-            poss_end_sec = clip_start_sec + end_f / max(1.0, fps)
+            poss_end_sec = _ts_convert(end_f / max(1.0, fps))
         except (ValueError, TypeError):
             continue
 
@@ -515,7 +730,7 @@ def enrich_possessions(
             continue
         try:
             end_f = int(poss.get("end_frame", 0))
-            poss_end_sec = clip_start_sec + end_f / max(1.0, fps)
+            poss_end_sec = _ts_convert(end_f / max(1.0, fps))
         except (ValueError, TypeError):
             continue
         best_ev2, best_dt2 = None, _POSS_MATCH_WINDOW_SEC_2 + 1
@@ -581,7 +796,7 @@ def enrich_possessions(
         for _p in possessions:
             try:
                 _ef = int(_p.get("end_frame", 0))
-                _ts = clip_start_sec + _ef / max(1.0, fps)
+                _ts = _ts_convert(_ef / max(1.0, fps))
                 _cv_ts_set.add(_ts)
             except (ValueError, TypeError):
                 pass
@@ -849,16 +1064,29 @@ def enrich(
               "skipping enrichment (tracking data is still complete).")
         return {}
 
+    # ── Build video→PBP mapper when scoreboard_log.csv is present ────────────
+    # Full-game broadcasts accumulate ~1200 s of error by Q3 when using a simple
+    # linear offset because video timestamps include halftime.  The mapper reads
+    # OCR scoreboard anchors to build a piecewise-linear correction.
+    # Returns (None, []) when the file is absent or has insufficient anchors.
+    video_to_pbp, _v2p_anchors = _build_video_to_pbp_mapper(d, fps=fps)
+    if video_to_pbp is not None:
+        print(f"  [enrichment] Built video→PBP mapper from {len(_v2p_anchors)} scoreboard anchors")
+    else:
+        print("  [enrichment] No video→PBP mapper (insufficient scoreboard data); using clip_start_sec fallback")
+
     results = {}
     results["shot_log_enriched"] = enrich_shot_log(
         pbp,
         os.path.join(d, "shot_log.csv"),
         clip_start_sec, fps,
+        video_to_pbp=video_to_pbp,
     )
     results["possessions_enriched"] = enrich_possessions(
         pbp,
         os.path.join(d, "possessions.csv"),
         clip_start_sec, fps,
+        video_to_pbp=video_to_pbp,
     )
     return results
 
