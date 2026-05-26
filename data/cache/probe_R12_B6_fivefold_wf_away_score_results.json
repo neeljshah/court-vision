@@ -1,0 +1,49 @@
+{
+  "probe": "R12_B6_fivefold_wf_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 136,
+  "status": "SHIP",
+  "ship_reason": "WF 4/4, delta -12.40%",
+  "pooled_naive_mae": 10.5785,
+  "pooled_lgb_mae": 9.2665,
+  "pooled_delta_pct": -12.4,
+  "n_folds_positive": 4,
+  "n_valid_folds": 4,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 9.625,
+      "lgb_mae": 9.1819,
+      "delta": -0.4432,
+      "delta_pct": -4.6
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.8942,
+      "lgb_mae": 9.2887,
+      "delta": -1.6055,
+      "delta_pct": -14.74
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.6423,
+      "lgb_mae": 9.432,
+      "delta": -1.2103,
+      "delta_pct": -11.37
+    },
+    {
+      "fold": 4,
+      "naive_mae": 11.1514,
+      "lgb_mae": 9.1637,
+      "delta": -1.9877,
+      "delta_pct": -17.82
+    }
+  ],
+  "fold_delta_pct_std": 4.911,
+  "variant": {
+    "variant": "fivefold_wf",
+    "outer_k": 5
+  },
+  "elapsed_s": 14.0
+}
