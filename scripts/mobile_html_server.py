@@ -319,6 +319,44 @@ async def handle_healthz(request: web.Request) -> web.Response:
 
 
 # --------------------------------------------------------------------------- #
+# R22_O5 — /operator and /morning single-pane daily dashboard                 #
+# --------------------------------------------------------------------------- #
+async def handle_operator(request: web.Request) -> web.Response:
+    """Render the R22_O5 operator dashboard.
+
+    Imports the dashboard module lazily so import failures do not break the
+    other (already working) routes.
+    """
+    try:
+        # Late import — keeps original routes working even if the dashboard
+        # module has a bug.
+        from scripts import operator_dashboard as od  # type: ignore
+    except Exception:  # noqa: BLE001
+        # Fall back to a single-file import path (tests/probe import directly).
+        try:
+            import operator_dashboard as od  # type: ignore
+        except Exception as exc:  # noqa: BLE001
+            return web.Response(
+                status=500,
+                text=f"operator_dashboard import failed: {exc!r}",
+            )
+
+    refresh = request.app.get("operator_refresh_sec", 60)
+    overrides = request.app.get("operator_overrides") or {}
+    try:
+        html = od.collect_and_render(
+            auto_refresh_sec=refresh,
+            **overrides,
+        )
+    except Exception as exc:  # noqa: BLE001 — never let the page 500
+        return web.Response(
+            status=500,
+            text=f"operator dashboard render error: {exc!r}",
+        )
+    return web.Response(text=html, content_type="text/html", charset="utf-8")
+
+
+# --------------------------------------------------------------------------- #
 # App factory                                                                 #
 # --------------------------------------------------------------------------- #
 def create_app(
@@ -329,6 +367,8 @@ def create_app(
     lineups_dir: Path = DEFAULT_LINEUPS_DIR,
     refresh_sec: int = 30,
     token: Optional[str] = None,
+    operator_refresh_sec: int = 60,
+    operator_overrides: Optional[dict] = None,
 ) -> web.Application:
     """Build (but don't run) the aiohttp Application — used by tests + CLI."""
     app = web.Application(middlewares=[auth_middleware])
@@ -338,10 +378,16 @@ def create_app(
     app["lineups_dir"] = Path(lineups_dir)
     app["refresh_sec"] = int(refresh_sec)
     app["token"] = token or os.environ.get(ENV_TOKEN) or None
+    # R22_O5 — operator dashboard config (per-source overrides for tests).
+    app["operator_refresh_sec"] = int(operator_refresh_sec)
+    app["operator_overrides"] = operator_overrides or {}
 
     app.router.add_get("/", handle_index)
     app.router.add_get("/api/state", handle_api_state)
     app.router.add_get("/healthz", handle_healthz)
+    # R22_O5 — single-pane operator dashboard with /morning alias.
+    app.router.add_get("/operator", handle_operator)
+    app.router.add_get("/morning", handle_operator)
     return app
 
 
