@@ -22,7 +22,8 @@ _DRIBBLE_MAX_DIST = 70    # max ball-to-handler 2D distance (px) for dribble
 # broadcast zoom on non-strided clips; strided clips (2× velocity) fire at
 # 4+ real px/frame.  Lowered 18.0→12.0→8.0 — passes detection gate
 # (possession-loss + upper-half) keeps false-positive rate low.
-_PIXEL_SHOT_VEL   = 8.0
+_PIXEL_SHOT_VEL       = 8.0   # global default — perimeter shots
+_PIXEL_SHOT_VEL_PAINT = 4.0   # R13: relaxed for layups/dunks (handler within 6 ft of basket)
 
 
 class EventDetector:
@@ -50,10 +51,11 @@ class EventDetector:
         """
         self.map_w = map_w
         self.map_h = map_h
-        # NBA basket positions: ~6.5% and ~93.5% from left baseline, centred
+        # R13: align with pipeline `_BASKET_L/R = (0.045, 0.955)` — was (0.065, 0.935),
+        # a 2-ft mismatch that suppressed near-basket triggers.
         self._baskets: List[Tuple[int, int]] = [
-            (int(0.065 * map_w), int(0.5 * map_h)),
-            (int(0.935 * map_w), int(0.5 * map_h)),
+            (int(0.045 * map_w), int(0.5 * map_h)),
+            (int(0.955 * map_w), int(0.5 * map_h)),
         ]
 
         # fps / stride — set via configure(); defaults match original 60fps design
@@ -115,6 +117,8 @@ class EventDetector:
         # Initialized to -(DEBOUNCE+1) so frame 0 can always trigger a shot.
         # Now 8.0s to reduce over-detection (raised from 3.5s).
         self._last_shot_frame: int = -(int(8.0 * self._fps) + 1)  # = -481 at 60fps
+        # R13: track last shooter for tip-in window (debounce override when shooter changes)
+        self._last_shot_shooter: Optional[int] = None
 
         # Court scale (pixels per foot, approximate from basket span)
         _span = 0.87 * map_w            # ~80.5 ft between baskets in pixels
@@ -257,6 +261,7 @@ class EventDetector:
         _possessor_now = next((t for t in frame_tracks if t.get("has_ball")), None)
         _recent_handler = (_possessor_now is not None) or (self._possessor is not None)
         _handler_in_range = False
+        _hdist_px = float("inf")
         if _possessor_now is not None:
             _hx = float(_possessor_now.get("x2d", 0))
             _hy = float(_possessor_now.get("y2d", 0))
@@ -267,16 +272,34 @@ class EventDetector:
             # No live possessor this frame — allow but only if state-machine had one recently
             _handler_in_range = True
 
-        if (pixel_vel > max(8.0, self._PIXEL_SHOT_VEL * 0.6)   # stride scaling halved
+        # R13: paint relaxation. When handler is within 6 ft of basket, lower the
+        # pixel-vel bar (layups/dunks have lower release velocity at broadcast zoom),
+        # accept stationary handlers (vtb≈0 under the rim), and allow second shot
+        # within 1.5s if shooter changed (tip-ins).
+        _in_paint = _handler_in_range and _hdist_px <= 6.0 * self._ft
+        _pv_thr = (_PIXEL_SHOT_VEL_PAINT * self._stride) if _in_paint \
+                  else max(8.0, self._PIXEL_SHOT_VEL * 0.6)
+        _tip_window = int(1.5 * self._fps)
+        _is_tipin = (
+            _possessor_now is not None
+            and self._last_shot_shooter is not None
+            and _possessor_now["player_id"] != self._last_shot_shooter
+            and frame_idx - self._last_shot_frame < _tip_window
+        )
+        _debounce_ok = (frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE) or _is_tipin
+
+        if (pixel_vel > _pv_thr
                 and ball_y_pixel is not None
                 and frame_height is not None
                 and ball_y_pixel > frame_height * 0.15       # not scoreboard artifact at top
                 and ball_y_pixel < frame_height * 0.75       # reject floor-level balls
                 and _recent_handler                          # R11: gate A
                 and _handler_in_range                        # R11: gate B
-                and _handler_toward_basket                   # R11: gate C
-                and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE):
+                and (_handler_toward_basket or _in_paint)    # R11/R13: vtb~0 under basket OK
+                and _debounce_ok):                           # R13: tip-in override
             self._last_shot_frame = frame_idx
+            if _possessor_now is not None:
+                self._last_shot_shooter = _possessor_now["player_id"]
             self._prev_ball_y_pixel = ball_y_pixel
             self._prev_ball = ball_pos
             return "shot"
@@ -509,9 +532,17 @@ class EventDetector:
         dx_basket = nearest[0]  - ball_pos[0]
         dy_basket = nearest[1]  - ball_pos[1]
 
+        # R13: paint exception — when ball is <6 ft from basket, the direction
+        # vector (basket - ball) collapses and the cos-similarity gate degenerates
+        # (always fails). Accept on ball-velocity magnitude alone in that band so
+        # layups/dunks/tip-ins aren't structurally rejected.
+        _b2basket = float(np.hypot(dx_basket, dy_basket))
+        if _b2basket < 6.0 * self._ft and np.hypot(dx_ball, dy_ball) >= _SHOT_MIN_VEL:
+            self._last_shot_frame = frame_idx
+            return "shot"
         # cos>0.75 ≈ within 41° of direct basket line — tight enough to reject most
         # passes and arm raises while keeping corner 3s and pull-ups (raised 0.5→0.75).
-        if dx_ball * dx_basket + dy_ball * dy_basket > 0.75 * (np.hypot(dx_ball, dy_ball) * np.hypot(dx_basket, dy_basket) + 1e-6):
+        if dx_ball * dx_basket + dy_ball * dy_basket > 0.75 * (np.hypot(dx_ball, dy_ball) * _b2basket + 1e-6):
             self._last_shot_frame = frame_idx
             return "shot"
 
