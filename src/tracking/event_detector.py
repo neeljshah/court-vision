@@ -138,6 +138,21 @@ class EventDetector:
         # over-detection; NBA shot clock is 24s so 8s minimum between attempts is safe)
         self._SHOT_DEBOUNCE: int = int(8.0 * self._fps)
 
+        # ── R16 missing-event detectors: steal / block / rebound / post_up ──
+        # Per-event debounce state (initialized to large negative so first frame can fire).
+        self._steal_last:   Dict[Tuple[int, int], int] = {}    # (thief, victim) → frame
+        self._block_last:   int = -10_000                       # last frame a block fired
+        # Pending shots awaiting rebound resolution.
+        # List of dicts: {shot_frame, shooter_id, shooter_team, basket}
+        self._pending_shots: List[dict] = []
+        self._rebound_last_shot: int = -1                       # last shot_frame settled
+        self._post_up_last: Dict[int, int] = {}                 # handler_id → last fire frame
+        # Cumulative frames each handler has spent in the post-up window for the
+        # CURRENT qualifying streak; reset whenever they break the conditions.
+        self._post_up_streak: Dict[int, int] = defaultdict(int)
+        # Team membership cache (player_id → team) — populated each frame for cross-method use.
+        self._team_of: Dict[int, str] = {}
+
     @property
     def dribble_count(self) -> int:
         """Current dribble count for the active possession."""
@@ -304,6 +319,14 @@ class EventDetector:
                 self._last_shot_shooter = _possessor_now["player_id"]
             self._prev_ball_y_pixel = ball_y_pixel
             self._prev_ball = ball_pos
+            # R16: refresh team cache so block/rebound have it, then fire block
+            # detection on the SAME frame and queue the shot for rebound polling.
+            self._team_of = {
+                t["player_id"]: t.get("team", "")
+                for t in frame_tracks if "player_id" in t
+            }
+            self._detect_block(frame_idx, frame_tracks, ball_pos)
+            self._register_pending_shot(frame_idx, frame_tracks, ball_pos)
             return "shot"
         self._prev_ball_y_pixel = ball_y_pixel if ball_y_pixel is not None else getattr(self, "_prev_ball_y_pixel", None)
 
@@ -323,12 +346,21 @@ class EventDetector:
         # Update player position history before classification
         self._update_player_hist(frame_idx, frame_tracks)
 
+        # R16: refresh team cache (used by steal / block / rebound / post_up).
+        self._team_of = {
+            t["player_id"]: t.get("team", "")
+            for t in frame_tracks if "player_id" in t
+        }
+
         event = self._classify(frame_idx, ball_pos, possessor_id, possessor_pos)
 
         # Shot-triggered rich events (use self._possessor = shooter before update)
         if event == "shot":
             self._detect_closeout(frame_idx, frame_tracks)
             self._detect_rebound_positions(frame_idx, frame_tracks)
+            # R16: block + queue for later rebound polling
+            self._detect_block(frame_idx, frame_tracks, ball_pos)
+            self._register_pending_shot(frame_idx, frame_tracks, ball_pos)
 
         # When gap was ≤20 frames and ball_pos is not None, record new position.
         # Large-gap case: _prev_ball already cleared to None above.
@@ -344,6 +376,9 @@ class EventDetector:
         self._detect_cuts(frame_idx, frame_tracks)
         self._detect_drives(frame_idx, frame_tracks)
         self._detect_help_defense(frame_idx, frame_tracks)
+        # R16: post-up + rebound polling (run every frame)
+        self._detect_post_up(frame_idx, frame_tracks)
+        self._detect_rebound(frame_idx, frame_tracks, ball_pos)
 
         # Prune stale _pending entries (retroactive writes whose target frame has
         # already been consumed). Prevents unbounded growth on long game sequences.
@@ -404,6 +439,11 @@ class EventDetector:
                 self._dribble_count = 0
                 self._loss_frame = None
                 self._possession_held_frames = 1
+                # R16: tag steal when ball changes hands across teams AND the new
+                # possessor closed in from >6 ft within the last 8 frames AND the
+                # ball was moving fast enough that it wasn't a passive pickup.
+                if self._detect_steal(frame_idx, prev_id, possessor_id):
+                    return "steal"
                 if self._ball_vel >= _PASS_MIN_VEL:
                     return "pass"
                 return "none"
@@ -892,3 +932,355 @@ class EventDetector:
                 "handler_id":    self._possessor,
                 "rotation_dist": round(dist_now, 1),
             })
+
+    # ── R16: missing event detectors (steal / block / rebound / post_up) ───
+
+    def _detect_steal(
+        self, frame_idx: int, victim_id: int, thief_id: int
+    ) -> bool:
+        """Return True (and append a "steal" event) when possession flipped to
+        a defender who closed in from >6 ft within the last 8 processed frames.
+
+        Conditions:
+          1. Thief and victim are on different teams (defensive takeaway).
+          2. Thief was ≥6 ft away within the last 8 frames (approached fast).
+          3. Ball velocity at takeaway ≥ _PASS_MIN_VEL (not a passive pickup).
+          4. Per-pair debounce of 1.0s prevents the same flip firing twice.
+        """
+        t_team = self._team_of.get(thief_id, "")
+        v_team = self._team_of.get(victim_id, "")
+        if not t_team or not v_team or t_team == v_team or "referee" in (t_team, v_team):
+            return False
+
+        thief_hist = self._phist.get(thief_id)
+        victim_hist = self._phist.get(victim_id)
+        if not thief_hist or not victim_hist or len(thief_hist) < 2:
+            return False
+
+        # Closure check: thief was >6 ft from victim somewhere in the last 8
+        # processed frames AND is now within steal range.
+        tx_now, ty_now = thief_hist[-1][1], thief_hist[-1][2]
+        vx_now, vy_now = victim_hist[-1][1], victim_hist[-1][2]
+        STEAL_RANGE = 6.0 * self._ft
+        CLOSE_FROM  = 6.0 * self._ft
+
+        lookback = list(thief_hist)[-min(8, len(thief_hist)):]
+        # Match each thief sample to the closest-in-time victim sample.
+        vlist = list(victim_hist)
+        was_far = False
+        for f_t, xt, yt, _ in lookback:
+            # nearest victim sample by frame index
+            closest = min(vlist, key=lambda v: abs(v[0] - f_t))
+            d_then = float(np.hypot(xt - closest[1], yt - closest[2]))
+            if d_then > CLOSE_FROM:
+                was_far = True
+                break
+        if not was_far:
+            return False
+
+        d_now = float(np.hypot(tx_now - vx_now, ty_now - vy_now))
+        if d_now > STEAL_RANGE:
+            return False
+
+        # Ball must have been moving (not a quiet floor pickup).
+        if self._ball_vel < _PASS_MIN_VEL:
+            return False
+
+        # Debounce per (thief, victim) pair — 1.0s of processed frames.
+        deb = max(15, int(1.0 * self._fps / max(1, self._stride)))
+        key = (thief_id, victim_id)
+        if frame_idx - self._steal_last.get(key, -10_000) < deb:
+            return False
+        self._steal_last[key] = frame_idx
+
+        self.events.append({
+            "type":      "steal",
+            "frame":     frame_idx,
+            "thief_id":  thief_id,
+            "victim_id": victim_id,
+            "thief_team":  t_team,
+            "victim_team": v_team,
+        })
+        return True
+
+    def _detect_block(
+        self,
+        frame_idx: int,
+        frame_tracks: List[dict],
+        ball_pos: Optional[Tuple[float, float]],
+    ) -> None:
+        """Append a "block" event when a defender is within 3 ft of the shooter
+        at release AND the ball direction reverses sharply (cos < -0.5) within
+        the next 8 processed frames.
+
+        Called on the same frame as the shot.  The reversal check uses the
+        ball velocity history available in `_ball_buf`: we compare the pre-shot
+        direction (entries before frame_idx) against the immediate post-shot
+        direction (entries at/after frame_idx).
+        """
+        # Debounce: at most one block per 1.0s.
+        deb = max(15, int(1.0 * self._fps / max(1, self._stride)))
+        if frame_idx - self._block_last < deb:
+            return
+
+        shooter_id = self._last_shot_shooter if self._last_shot_shooter is not None \
+                     else self._possessor
+        if shooter_id is None:
+            return
+        shooter_team = self._team_of.get(shooter_id, "")
+        if not shooter_team or shooter_team == "referee":
+            return
+        shist = self._phist.get(shooter_id)
+        if not shist:
+            return
+        sx, sy = shist[-1][1], shist[-1][2]
+
+        # Find a defender (opposite team) within 3 ft of the shooter at release.
+        BLOCK_RANGE = 3.0 * self._ft
+        blocker = None
+        for t in frame_tracks:
+            team = t.get("team", "")
+            if team == shooter_team or team == "referee":
+                continue
+            pid = t["player_id"]
+            if pid == shooter_id:
+                continue
+            d = float(np.hypot(float(t.get("x2d", 0)) - sx,
+                               float(t.get("y2d", 0)) - sy))
+            if d <= BLOCK_RANGE:
+                blocker = (pid, team, d)
+                break
+        if blocker is None:
+            return
+
+        # Direction-reversal check using recent ball trajectory in _ball_buf.
+        # Need at least 4 samples spanning before/after the shot.
+        buf = list(self._ball_buf)
+        if len(buf) < 4:
+            return
+        # pre-shot direction: last 3 samples ending at-or-before frame_idx
+        pre = [b for b in buf if b[0] <= frame_idx][-3:]
+        # post-shot direction: first 3 samples at-or-after frame_idx
+        post = [b for b in buf if b[0] >= frame_idx][:3]
+        if len(pre) < 2 or len(post) < 2:
+            # Not enough post-shot samples yet — fall back to ball_pos vs prev_ball.
+            if ball_pos is None or self._prev_ball is None:
+                return
+            pre_dx = ball_pos[0] - self._prev_ball[0]
+            pre_dy = ball_pos[1] - self._prev_ball[1]
+            # No post-direction available yet → defer.
+            # (Block will simply not fire on this exact frame; that's acceptable.)
+            return
+        pre_dx = pre[-1][1] - pre[0][1]
+        pre_dy = pre[-1][2] - pre[0][2]
+        post_dx = post[-1][1] - post[0][1]
+        post_dy = post[-1][2] - post[0][2]
+        pre_mag = float(np.hypot(pre_dx, pre_dy))
+        post_mag = float(np.hypot(post_dx, post_dy))
+        if pre_mag < 1e-3 or post_mag < 1e-3:
+            return
+        cos_a = (pre_dx * post_dx + pre_dy * post_dy) / (pre_mag * post_mag + 1e-9)
+        if cos_a >= -0.5:
+            return
+
+        pid, team, d = blocker
+        self._block_last = frame_idx
+        self.events.append({
+            "type":          "block",
+            "frame":         frame_idx,
+            "blocker_id":    pid,
+            "blocker_team":  team,
+            "shooter_id":    shooter_id,
+            "shooter_team":  shooter_team,
+            "blocker_dist":  round(d, 1),
+        })
+
+    def _register_pending_shot(
+        self,
+        frame_idx: int,
+        frame_tracks: List[dict],
+        ball_pos: Optional[Tuple[float, float]],
+    ) -> None:
+        """Queue a shot so _detect_rebound can resolve it ~30 frames later."""
+        shooter_id = self._last_shot_shooter if self._last_shot_shooter is not None \
+                     else self._possessor
+        if shooter_id is None:
+            return
+        shooter_team = self._team_of.get(shooter_id, "")
+        if not shooter_team or shooter_team == "referee":
+            return
+        bx, by = ball_pos if ball_pos is not None else (self.map_w / 2, self.map_h / 2)
+        basket = self._nearest_basket(float(bx), float(by))
+        self._pending_shots.append({
+            "shot_frame":   frame_idx,
+            "shooter_id":   shooter_id,
+            "shooter_team": shooter_team,
+            "basket":       basket,
+        })
+
+    def _detect_rebound(
+        self,
+        frame_idx: int,
+        frame_tracks: List[dict],
+        ball_pos: Optional[Tuple[float, float]],
+    ) -> None:
+        """Resolve a pending shot ~1s after release: find the closest player to
+        the ball, classify offensive vs defensive based on team match with shooter.
+
+        Fires once per shot — drains the entry from _pending_shots on emit
+        (or after a hard timeout to avoid leaks).
+        """
+        if not self._pending_shots:
+            return
+        # 30 source-frames after the shot in PROCESSED frames.
+        target_lag = max(10, int(30.0 / max(1, self._stride)))
+        # Hard timeout: 5s in processed frames — abandon unresolved shots.
+        timeout = max(60, int(5.0 * self._fps / max(1, self._stride)))
+
+        keep: List[dict] = []
+        for shot in self._pending_shots:
+            age = frame_idx - shot["shot_frame"]
+            if age < target_lag:
+                keep.append(shot)
+                continue
+            if age > timeout:
+                # Drop — don't keep, don't emit.
+                continue
+            if frame_idx == shot["shot_frame"]:
+                keep.append(shot)
+                continue
+
+            # Resolve: find the player closest to the ball (or to the basket
+            # when ball is missing) and classify by team.
+            ref_x, ref_y = (
+                (float(ball_pos[0]), float(ball_pos[1]))
+                if ball_pos is not None
+                else (float(shot["basket"][0]), float(shot["basket"][1]))
+            )
+            best_pid: Optional[int] = None
+            best_team: Optional[str] = None
+            best_d = float("inf")
+            MAX_RANGE = 12.0 * self._ft  # ignore players >12 ft from ball
+            for t in frame_tracks:
+                team = t.get("team", "")
+                if team == "referee" or not team:
+                    continue
+                d = float(np.hypot(float(t.get("x2d", 0)) - ref_x,
+                                   float(t.get("y2d", 0)) - ref_y))
+                if d < best_d:
+                    best_d = d
+                    best_pid = t["player_id"]
+                    best_team = team
+            if best_pid is None or best_d > MAX_RANGE:
+                # No nearby player — emit "team rebound" (loose), don't refire.
+                self.events.append({
+                    "type":       "rebound",
+                    "subtype":    "team_rebound",
+                    "frame":      frame_idx,
+                    "shot_frame": shot["shot_frame"],
+                    "shooter_id": shot["shooter_id"],
+                    "player_id":  None,
+                    "team":       None,
+                })
+                self._rebound_last_shot = shot["shot_frame"]
+                continue
+
+            subtype = (
+                "offensive_rebound"
+                if best_team == shot["shooter_team"]
+                else "defensive_rebound"
+            )
+            self.events.append({
+                "type":       "rebound",
+                "subtype":    subtype,
+                "frame":      frame_idx,
+                "shot_frame": shot["shot_frame"],
+                "shooter_id": shot["shooter_id"],
+                "player_id":  best_pid,
+                "team":       best_team,
+                "dist_to_ball": round(best_d, 1),
+            })
+            self._rebound_last_shot = shot["shot_frame"]
+
+        self._pending_shots = keep
+
+    def _detect_post_up(
+        self, frame_idx: int, frame_tracks: List[dict]
+    ) -> None:
+        """Emit "post_up" when the ball-handler stays within 8 ft of the basket
+        for ≥2.0s, with vtb < 0 (backing down — moving AWAY from basket) AND an
+        opponent defender within 5 ft.
+
+        Streak is accumulated in _post_up_streak[handler_id]; resets the moment
+        the handler breaks any of the gates.  Debounce: one post_up per handler
+        per 5.0s once they qualify.
+        """
+        POST_DIST = 8.0 * self._ft       # within 8 ft of basket
+        DEF_DIST  = 5.0 * self._ft       # opponent within 5 ft
+        STREAK    = max(30, int(2.0 * self._fps / max(1, self._stride)))
+        DEBOUNCE  = max(STREAK * 2, int(5.0 * self._fps / max(1, self._stride)))
+
+        active_handlers = set()
+        for t in frame_tracks:
+            if not t.get("has_ball"):
+                continue
+            team = t.get("team", "")
+            if not team or team == "referee":
+                continue
+            pid = t["player_id"]
+            active_handlers.add(pid)
+
+            x = float(t.get("x2d", 0))
+            y = float(t.get("y2d", 0))
+            bx, by = self._nearest_basket(x, y)
+            d_basket = float(np.hypot(x - bx, y - by))
+
+            # Velocity toward basket (negative = backing AWAY).
+            hist = self._phist.get(pid)
+            vtb = 0.0
+            if hist and len(hist) >= 2:
+                px, py = hist[-2][1], hist[-2][2]
+                dx, dy = x - px, y - py
+                nb = self._nearest_basket(x, y)
+                dbx, dby = nb[0] - x, nb[1] - y
+                nd = float(np.hypot(dbx, dby)) + 1e-6
+                vtb = (dx * dbx + dy * dby) / nd
+
+            # Nearest opposing defender distance.
+            min_def = float("inf")
+            for o in frame_tracks:
+                o_team = o.get("team", "")
+                if o_team == team or o_team == "referee" or not o_team:
+                    continue
+                od = float(np.hypot(float(o.get("x2d", 0)) - x,
+                                    float(o.get("y2d", 0)) - y))
+                if od < min_def:
+                    min_def = od
+
+            if d_basket <= POST_DIST and vtb < 0.0 and min_def <= DEF_DIST:
+                self._post_up_streak[pid] += 1
+            else:
+                self._post_up_streak[pid] = 0
+                continue
+
+            if self._post_up_streak[pid] >= STREAK:
+                last = self._post_up_last.get(pid, -10_000)
+                if frame_idx - last >= DEBOUNCE:
+                    self._post_up_last[pid] = frame_idx
+                    self.events.append({
+                        "type":      "post_up",
+                        "frame":     frame_idx,
+                        "player_id": pid,
+                        "team":      team,
+                        "dist_to_basket": round(d_basket, 1),
+                        "defender_dist":  round(min_def, 1),
+                        "duration_frames": int(self._post_up_streak[pid]),
+                    })
+                    # Reset streak after firing so we require another 2s
+                    # before the same player can fire again.
+                    self._post_up_streak[pid] = 0
+
+        # Reset streak for any handler who is no longer in possession.
+        for pid in list(self._post_up_streak.keys()):
+            if pid not in active_handlers:
+                self._post_up_streak[pid] = 0
