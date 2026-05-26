@@ -1,0 +1,45 @@
+{
+  "probe": "R12_B17_lgb_plus_hgb_oof_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 132,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.14%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.1912,
+  "pooled_delta_pct": -14.14,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.2516,
+      "delta": -1.2415,
+      "delta_pct": -11.83
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.2452,
+      "delta": -1.4735,
+      "delta_pct": -13.75
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.0769,
+      "delta": -1.8269,
+      "delta_pct": -16.76
+    }
+  ],
+  "beat_canonical": false,
+  "canonical_src": "B15 nnls_top3",
+  "vs_canonical_pp": 0.37,
+  "variant": {
+    "variant": "lgb_plus_hgb_oof",
+    "fc_used": "halflife2_only",
+    "n_extra_oof_features": 2
+  },
+  "elapsed_s": 31.7
+}
