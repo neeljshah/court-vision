@@ -54,6 +54,7 @@ Design rules
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
@@ -61,9 +62,9 @@ import threading
 import time
 import urllib.error
 import urllib.request
-from collections import deque
+from collections import OrderedDict, deque
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 log = logging.getLogger(__name__)
 
@@ -97,6 +98,31 @@ _FALLBACK_QUEUE = os.path.join(_PROJECT_DIR, "data", "cache", "discord_fallback_
 # R21_N3 — durable + critical-stack defaults.
 _VAULT_ALERTS_MD = os.path.join(_PROJECT_DIR, "vault", "Improvements", "alerts.md")
 _CRITICAL_STACK_DIR = os.path.join(_PROJECT_DIR, "data", "cache", "alerts")
+
+# R26_S5 — rate-limit + de-duplication defaults.
+_DEDUP_STATE_PATH = os.path.join(
+    _PROJECT_DIR, "data", "cache", "alerts", "alert_dedup_state.json"
+)
+# Window over which the per-key cap applies (wall-clock seconds).
+_DEDUP_WINDOW_SEC = 3600.0  # 1 hour
+# Per-level cap of fires allowed inside a single window.
+_DEDUP_LEVEL_CAPS: Dict[str, int] = {
+    "info":     1,
+    "warn":     3,
+    "warning":  3,
+    "critical": 5,
+}
+_DEDUP_DEFAULT_CAP = 3
+# Length of the message PREFIX hashed into the dedup key (so similar
+# messages — e.g. "watchdog restarted middle_finder (pid=1234)" /
+# "watchdog restarted middle_finder (pid=5678)" — collapse if the first
+# N chars match).
+_DEDUP_KEY_PREFIX_LEN = 64
+# Cap on entries kept in the in-process LRU before old keys are evicted.
+_DEDUP_LRU_MAX = 1024
+# Every Nth suppression of the SAME key emits a meta-alert so persistent
+# issues never go completely dark.
+_DEDUP_META_EVERY = 10
 
 # ---------------------------------------------------------------------------
 # Rate limiter — module-level so all callers share the bucket
@@ -132,6 +158,246 @@ def _reset_rate_limit() -> None:
     """Test hook — clear the rate-limit bucket between tests."""
     with _RATE_LOCK:
         _RATE_TIMESTAMPS.clear()
+
+
+# ---------------------------------------------------------------------------
+# R26_S5 — dedup state (in-process LRU + persistent sidecar)
+# ---------------------------------------------------------------------------
+
+_DEDUP_LOCK = threading.RLock()
+# In-process LRU keyed by dedup_key → record dict. Ordered for cheap eviction
+# of the oldest seen key when we exceed _DEDUP_LRU_MAX.
+_DEDUP_STATE: "OrderedDict[str, Dict[str, Any]]" = OrderedDict()
+# Last path we loaded persistent state from; we keep one in-memory state
+# per process even if tests swap the path between calls.
+_DEDUP_LOADED_FROM: Optional[str] = None
+
+
+def _dedup_key(message: str, level: str, tag: Optional[str]) -> str:
+    """SHA1 of (message prefix + level + tag). 64-char message window so
+    near-identical alerts (only a trailing pid / counter differs) collapse
+    onto one key while the FULL message is still logged via the vault."""
+    msg_prefix = (message or "")[:_DEDUP_KEY_PREFIX_LEN]
+    tag_str = (tag or "").lower()
+    raw = f"{msg_prefix}\x1f{(level or '').lower()}\x1f{tag_str}".encode("utf-8")
+    return hashlib.sha1(raw).hexdigest()
+
+
+def _level_cap(level: str) -> int:
+    return _DEDUP_LEVEL_CAPS.get((level or "").lower(), _DEDUP_DEFAULT_CAP)
+
+
+def _load_dedup_state(path: str) -> None:
+    """Hydrate the in-process LRU from the sidecar JSON. Tolerant of a
+    missing/corrupt file (treated as empty)."""
+    global _DEDUP_LOADED_FROM
+    with _DEDUP_LOCK:
+        _DEDUP_STATE.clear()
+        _DEDUP_LOADED_FROM = path
+        if not os.path.exists(path):
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as fh:
+                blob = json.load(fh)
+        except (json.JSONDecodeError, OSError) as exc:
+            log.warning("dedup state load failed (%s) — starting empty", exc)
+            return
+        if not isinstance(blob, dict):
+            return
+        entries = blob.get("entries", {})
+        if not isinstance(entries, dict):
+            return
+        # Restore insertion order by last_fire_ts so the oldest evicts first.
+        sortable = []
+        for k, v in entries.items():
+            if not isinstance(v, dict):
+                continue
+            sortable.append((float(v.get("last_fire_ts", 0.0)), k, v))
+        sortable.sort(key=lambda x: x[0])
+        for _, k, v in sortable[-_DEDUP_LRU_MAX:]:
+            _DEDUP_STATE[k] = v
+
+
+def _save_dedup_state(path: str) -> bool:
+    """Atomic write of the in-process LRU to the sidecar JSON. Uses
+    tmp-file + os.replace so concurrent readers never see a torn file."""
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with _DEDUP_LOCK:
+            blob = {
+                "version": 1,
+                "saved_ts": datetime.now(timezone.utc).isoformat(),
+                "entries": dict(_DEDUP_STATE),
+            }
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump(blob, fh, default=str, indent=2)
+        os.replace(tmp, path)
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log.warning("dedup state save failed: %s", exc)
+        return False
+
+
+def _evict_lru_if_needed() -> None:
+    """Drop the oldest entry if the LRU is over capacity."""
+    while len(_DEDUP_STATE) > _DEDUP_LRU_MAX:
+        _DEDUP_STATE.popitem(last=False)
+
+
+def _check_and_record_dedup(
+    *,
+    message: str,
+    level: str,
+    tag: Optional[str],
+    state_path: str,
+    now: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Atomic check-and-record under _DEDUP_LOCK.
+
+    Returns a dict::
+
+        {
+            "allowed":  bool,                # True → caller should fire
+            "key":      str,                 # sha1 dedup key
+            "fire_count": int,               # post-decision count
+            "suppressed_count": int,         # post-decision count
+            "should_emit_meta": bool,        # True → caller fires meta
+            "meta_message": str | None,      # text for the meta alert
+        }
+
+    The function ALWAYS rotates the window when last_fire_ts is older
+    than ``_DEDUP_WINDOW_SEC`` so persistent-but-bursty issues recover
+    cleanly without operator intervention.
+    """
+    now = now if now is not None else time.time()
+    key = _dedup_key(message, level, tag)
+    cap = _level_cap(level)
+
+    global _DEDUP_LOADED_FROM
+    with _DEDUP_LOCK:
+        # Lazily hydrate from the sidecar if we haven't yet, OR if the
+        # caller switched paths (tests pin tmp paths).
+        if _DEDUP_LOADED_FROM != state_path:
+            _load_dedup_state(state_path)
+
+        rec = _DEDUP_STATE.get(key)
+        # Move to end (most-recently-used) for LRU eviction order.
+        if rec is not None:
+            _DEDUP_STATE.move_to_end(key, last=True)
+
+        window_start = now - _DEDUP_WINDOW_SEC
+        if rec is None or float(rec.get("window_start_ts", 0.0)) <= window_start:
+            # New key OR the window expired → fresh window.
+            rec = {
+                "key": key,
+                "level": (level or "").lower(),
+                "tag": tag,
+                "message_prefix": (message or "")[:_DEDUP_KEY_PREFIX_LEN],
+                "window_start_ts": now,
+                "first_fire_ts": now,
+                "last_fire_ts": now,
+                "fire_count": 1,
+                "suppressed_count": 0,
+            }
+            _DEDUP_STATE[key] = rec
+            _evict_lru_if_needed()
+            _save_dedup_state(state_path)
+            return {
+                "allowed": True,
+                "key": key,
+                "fire_count": 1,
+                "suppressed_count": 0,
+                "should_emit_meta": False,
+                "meta_message": None,
+            }
+
+        # Inside the active window — apply cap.
+        if int(rec.get("fire_count", 0)) < cap:
+            rec["fire_count"] = int(rec.get("fire_count", 0)) + 1
+            rec["last_fire_ts"] = now
+            _DEDUP_STATE[key] = rec
+            _save_dedup_state(state_path)
+            return {
+                "allowed": True,
+                "key": key,
+                "fire_count": rec["fire_count"],
+                "suppressed_count": int(rec.get("suppressed_count", 0)),
+                "should_emit_meta": False,
+                "meta_message": None,
+            }
+
+        # Suppressed.
+        rec["suppressed_count"] = int(rec.get("suppressed_count", 0)) + 1
+        rec["last_fire_ts"] = now
+        _DEDUP_STATE[key] = rec
+        suppressed = int(rec["suppressed_count"])
+
+        should_emit_meta = (suppressed > 0) and (suppressed % _DEDUP_META_EVERY == 0)
+        meta_message = None
+        if should_emit_meta:
+            meta_message = (
+                f"{suppressed} identical alerts suppressed in last hour: "
+                f"{rec.get('message_prefix') or '(no prefix)'}"
+            )
+        _save_dedup_state(state_path)
+        return {
+            "allowed": False,
+            "key": key,
+            "fire_count": int(rec.get("fire_count", 0)),
+            "suppressed_count": suppressed,
+            "should_emit_meta": should_emit_meta,
+            "meta_message": meta_message,
+        }
+
+
+def flush_dedup(state_path: Optional[str] = None) -> bool:
+    """Admin helper — wipe the in-process LRU AND the persistent sidecar.
+
+    Used by operator tooling when the dedup state has gotten "stuck" or
+    after a planned daemon restart so old keys don't suppress new
+    legitimate alerts. Returns True on a clean wipe.
+    """
+    path = state_path or _DEDUP_STATE_PATH
+    global _DEDUP_LOADED_FROM
+    ok = True
+    with _DEDUP_LOCK:
+        _DEDUP_STATE.clear()
+        _DEDUP_LOADED_FROM = path
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+        except OSError as exc:
+            log.warning("flush_dedup remove failed: %s", exc)
+            ok = False
+    return ok
+
+
+def get_dedup_stats(state_path: Optional[str] = None) -> Dict[str, Any]:
+    """Admin helper — snapshot of current LRU contents + aggregates.
+
+    Lazily hydrates from disk if the process hasn't touched dedup yet.
+    """
+    path = state_path or _DEDUP_STATE_PATH
+    global _DEDUP_LOADED_FROM
+    with _DEDUP_LOCK:
+        if _DEDUP_LOADED_FROM != path:
+            _load_dedup_state(path)
+        total_fired = sum(int(r.get("fire_count", 0)) for r in _DEDUP_STATE.values())
+        total_suppressed = sum(
+            int(r.get("suppressed_count", 0)) for r in _DEDUP_STATE.values()
+        )
+        return {
+            "state_path": path,
+            "keys_tracked": len(_DEDUP_STATE),
+            "total_fired": total_fired,
+            "total_suppressed": total_suppressed,
+            "window_sec": _DEDUP_WINDOW_SEC,
+            "level_caps": dict(_DEDUP_LEVEL_CAPS),
+            "default_cap": _DEDUP_DEFAULT_CAP,
+            "meta_every": _DEDUP_META_EVERY,
+            "entries": [dict(r) for r in _DEDUP_STATE.values()],
+        }
 
 
 # ---------------------------------------------------------------------------
@@ -337,19 +603,82 @@ def _layered_dispatch(
     fallback_path: Optional[str],
     vault_path: Optional[str],
     critical_stack_dir: Optional[str],
+    dedup_state_path: Optional[str] = None,
+    _bypass_dedup: bool = False,
 ) -> Dict[str, Any]:
     """Shared core: vault append + critical stack + Discord POST.
 
     Returns ``{"discord_sent": bool, "file_written": bool,
-               "vault_appended": bool}``.
+               "vault_appended": bool, "suppressed": bool,
+               "dedup_key": str | None, "fire_count": int,
+               "suppressed_count": int, "meta_alert_fired": bool}``.
+
+    R26_S5: dedup check runs FIRST. Suppressed alerts return early with
+    every layer flag False (so callers can introspect). Every Nth
+    suppression emits a meta-alert via a single recursive dispatch with
+    ``_bypass_dedup=True`` so the meta itself never recurses.
     """
     vault_path = vault_path or _VAULT_ALERTS_MD
     stack_dir = critical_stack_dir or _CRITICAL_STACK_DIR
     fallback = fallback_path or _FALLBACK_QUEUE
+    dedup_path = dedup_state_path or _DEDUP_STATE_PATH
 
     norm_level = (level or "info").lower()
     if norm_level not in {"info", "warn", "warning", "critical"}:
         norm_level = "info"
+
+    # 0) Dedup gate — admin helpers + meta-alert bypass it.
+    suppressed = False
+    dedup_key: Optional[str] = None
+    fire_count = 0
+    suppressed_count = 0
+    meta_alert_fired = False
+    if not _bypass_dedup:
+        decision = _check_and_record_dedup(
+            message=message,
+            level=norm_level,
+            tag=tag,
+            state_path=dedup_path,
+        )
+        dedup_key = decision["key"]
+        fire_count = decision["fire_count"]
+        suppressed_count = decision["suppressed_count"]
+        if not decision["allowed"]:
+            suppressed = True
+            # Meta-alert every Nth suppression so persistent issues stay
+            # visible. Bypass dedup for the meta so it never recurses.
+            if decision["should_emit_meta"] and decision["meta_message"]:
+                meta_result = _layered_dispatch(
+                    message=decision["meta_message"],
+                    level="warn",
+                    tag=(tag or source or "alert_dedup") + "_meta",
+                    source=source,
+                    severity="WARN",
+                    title=decision["meta_message"],
+                    body=decision["meta_message"],
+                    fields=None,
+                    webhook_url=webhook_url,
+                    fallback_path=fallback,
+                    vault_path=vault_path,
+                    critical_stack_dir=stack_dir,
+                    dedup_state_path=dedup_path,
+                    _bypass_dedup=True,
+                )
+                meta_alert_fired = bool(
+                    meta_result.get("vault_appended")
+                    or meta_result.get("file_written")
+                    or meta_result.get("discord_sent")
+                )
+            return {
+                "discord_sent": False,
+                "file_written": False,
+                "vault_appended": False,
+                "suppressed": True,
+                "dedup_key": dedup_key,
+                "fire_count": fire_count,
+                "suppressed_count": suppressed_count,
+                "meta_alert_fired": meta_alert_fired,
+            }
 
     payload = build_embed(severity, source, title, body, fields)
 
@@ -382,6 +711,11 @@ def _layered_dispatch(
         "discord_sent": discord_sent,
         "file_written": file_written,
         "vault_appended": vault_appended,
+        "suppressed": suppressed,
+        "dedup_key": dedup_key,
+        "fire_count": fire_count,
+        "suppressed_count": suppressed_count,
+        "meta_alert_fired": meta_alert_fired,
     }
 
 
@@ -403,6 +737,7 @@ def alert(
     fallback_path: Optional[str] = None,
     vault_path: Optional[str] = None,
     critical_stack_dir: Optional[str] = None,
+    dedup_state_path: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Layered alert: durable vault record + critical fallback + Discord.
 
@@ -449,6 +784,7 @@ def alert(
         fallback_path=fallback_path,
         vault_path=vault_path,
         critical_stack_dir=critical_stack_dir,
+        dedup_state_path=dedup_state_path,
     )
 
 
@@ -468,6 +804,7 @@ def post_alert(
     fallback_path: Optional[str] = None,
     vault_path: Optional[str] = None,
     critical_stack_dir: Optional[str] = None,
+    dedup_state_path: Optional[str] = None,
 ) -> bool:
     """Format and POST an alert to the configured Discord webhook.
 
@@ -508,6 +845,7 @@ def post_alert(
         fallback_path=fallback_path,
         vault_path=vault_path,
         critical_stack_dir=critical_stack_dir,
+        dedup_state_path=dedup_state_path,
     )
     # Legacy contract: return True ONLY when the Discord POST landed.
     # R18_K3 callers (test_discord_webhook.py) gate on this exact bool.
@@ -518,6 +856,8 @@ __all__ = [
     "alert",
     "post_alert",
     "build_embed",
+    "flush_dedup",
+    "get_dedup_stats",
     "_do_post",
     "_spill_to_fallback",
     "_within_rate_limit",
@@ -525,4 +865,8 @@ __all__ = [
     "_append_vault",
     "_push_critical_stack",
     "_layered_dispatch",
+    "_check_and_record_dedup",
+    "_dedup_key",
+    "_load_dedup_state",
+    "_save_dedup_state",
 ]
