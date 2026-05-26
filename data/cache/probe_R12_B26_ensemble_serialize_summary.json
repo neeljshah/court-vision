@@ -1,0 +1,25 @@
+{
+  "n_serialized": 2,
+  "n_smoke_pass": 2,
+  "entries": [
+    {
+      "target": "home_cover_AH3",
+      "path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\m2_family\\r12_AH3_canonical_top4_avg.joblib",
+      "recipe": "equal_weight_avg of 4 components",
+      "n_train": 3867,
+      "smoke_pass": true,
+      "elapsed_s": 43.8
+    },
+    {
+      "target": "away_score",
+      "path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\m2_family\\r12_away_score_canonical.joblib",
+      "recipe": "nnls_top3 ensemble",
+      "tail_mae_single": 10.0319,
+      "tail_mae_ensemble": 9.9751,
+      "n_train": 3867,
+      "smoke_pass": true,
+      "elapsed_s": 170.8
+    }
+  ],
+  "models_dir": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\m2_family"
+}

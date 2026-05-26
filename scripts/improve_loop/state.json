@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 38,
+  "rounds_completed": 39,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -630,6 +630,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-25 (ensemble re-baseline on current 3369-game dataset \u2014 MIXED RESULTS).\nDataset grew massively: 2839 (B15) -> 3045 (B24) -> 3369 (B25 now).\nAWAY_SCORE nnls_top3 (3 models: halflife2_only, all_b9, interactions_only):\n  LIVE -13.47% vs frozen -14.51% (drift +1.04pp REGRESSION).\n  Weights per fold: [0.21, 0.03, 0.76] / [0.17, 0.67, 0.17] / [0.20, 0.41, 0.39]\n  NNLS weights swing wildly per outer fold \u2014 sign the 3 models aren't consistently\n  differently good. The ensemble is FRAGILE; on more data the weight instability\n  hurts more than the diversity helps.\nAH3 top4_avg (4 models: intersection + opp_pts_pace + opp_full + all_b9, equal weights):\n  LIVE Brier 0.2221 (frozen 0.2271, drift -0.00498 BETTER)\n  LIVE AUC 0.7182 (frozen 0.7115, drift +0.00672 BETTER)\n  Both metrics improved on bigger data \u2014 simple equal-weight averaging is STABLE\n  and benefits from more samples per component model.\nARCHITECTURAL FINDING: NNLS weighting at ensemble level is BRITTLE on growing data.\nEqual-weight averaging is more robust because it doesn't try to learn weights from\nnoisy outer-train OOF (which has variance that the NNLS over-fits per fold).\nNEW PRODUCTION CANONICAL:\n  away_score: B25 nnls_top3 -13.47% LIVE (honest, replaces frozen -14.51% claim)\n             \u2014 consider switching to single-model (e.g. interactions_only) for\n             stability before serialization in B26.\n  AH3:        B25 top4_avg Brier 0.2221 AUC 0.7182 \u2014 NEW HONEST BEST (replaces frozen)\nStop counter UNCHANGED at 1/5 (re-baseline doesn't count)."
+    },
+    {
+      "name": "R12_BATCH26_serialize_ensembles",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 2,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-26 (ensemble serialization \u2014 2/2 smoke PASS). All 6 production canonicals now have joblib artifacts in data/models/m2_family/.\nDataset has grown to 3867 games (was 3369 at B25, 3045 at B24, 2839 at B19 \u2014 R26-R29 backfills from parallel session added ~1000 games).\nSerialized bundles:\n  r12_AH3_canonical_top4_avg.joblib (11.8 MB, 4 component models)\n    recipe: equal_weight_avg of [intersection, opp_pts_pace, opp_full, all_b9]\n    smoke: 50 preds mean prob 0.524, range [0.091, 0.982]\n  r12_away_score_canonical.joblib (8.66 MB, 3 component models)\n    recipe: nnls of [halflife2_only, all_b9, interactions_only]\n    weights (full-train NNLS): [0.522, 0.159, 0.319]\n    tail-200 selection: ensemble MAE 9.9751 BEATS single-model 10.0319 (delta -0.06)\n    smoke: 50 preds mean 114.093, range [88.37, 147.47]\nINTERESTING NUANCE on away_score ensemble: B25 found NNLS weights swing wildly per CV fold (suggesting brittleness), but tail-holdout shows the ensemble narrowly wins anyway. Hypothesis: NNLS is unstable when fit per-fold on noisy outer-train OOF, but more stable when fit on the full training set with more samples. Both findings are true \u2014 the per-fold WF metric over-pessimizes the ensemble case.\nBUNDLE FORMAT: each ensemble bundle has {models: list, feature_columns_per_model: list, recipe: {type, components, [weights]}, training_meta}. Recipe types: equal_weight_avg, nnls (with weights), single. Reusable predict_ensemble() helper in the probe script.\nPRODUCTION CLI: predict_game.py can now load any of the 6 r12_*_canonical.joblib bundles and report predictions for total / score_diff / home_score / away_score / over_230 / AH3 \u2014 no retraining at inference time.\nStop counter UNCHANGED at 1/5 (serialization batch doesn't count)."
     }
   ],
   "rejects": [
