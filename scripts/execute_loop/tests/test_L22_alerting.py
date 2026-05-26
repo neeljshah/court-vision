@@ -312,3 +312,145 @@ def test_atomic_write_no_partial_on_failure(mod, monkeypatch, tmp_path):
     # No orphaned .tmp files should remain in tmp_path
     tmp_files = list(tmp_path.glob("*.tmp"))
     assert tmp_files == [], f"Orphaned temp files found: {tmp_files}"
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# L46 EventBus subscriber tests (tests 11–15)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Helper: import L46 and L22 fresh, wiring them together on a clean bus.
+def _fresh_modules_with_bus(monkeypatch, tmp_path):
+    """Return (L22_mod, L46_mod, fresh_bus) with all singletons reset."""
+    # Purge both modules from cache
+    for key in list(sys.modules.keys()):
+        if "L22_alerting" in key or "L46_event_bus" in key:
+            del sys.modules[key]
+
+    import scripts.execute_loop.L46_event_bus as L46
+    import scripts.execute_loop.L22_alerting as L22
+
+    # Give L22 a clean bus (not the global default) so tests are isolated
+    bus = L46.EventBus()
+
+    # Reset module-level state
+    L22._router = None
+    L22._subscribed = False
+
+    # Redirect file I/O to tmp_path
+    monkeypatch.setattr(L22, "_QUEUE_PATH", tmp_path / "alert_queue.json")
+    monkeypatch.setattr(L22, "_LOG_DIR", tmp_path / "logs" / "alerts")
+    (tmp_path / "logs" / "alerts").mkdir(parents=True, exist_ok=True)
+
+    return L22, L46, bus
+
+
+# ── test 11: register_subscribers creates handlers on the bus ─────────────────
+def test_register_subscribers_creates_handlers(monkeypatch, tmp_path):
+    L22, L46, bus = _fresh_modules_with_bus(monkeypatch, tmp_path)
+
+    # Ensure ALERTS_VERBOSE_FILLS is off so we get exactly 4 subs
+    monkeypatch.delenv("ALERTS_VERBOSE_FILLS", raising=False)
+
+    L22.register_alert_subscribers(bus=bus)
+
+    subs = [s for s in bus._subscriptions if s.layer == "L22"]
+    assert len(subs) == 4, f"Expected 4 L22 subscribers, got {len(subs)}"
+    patterns = {s.name_pattern for s in subs}
+    assert "incident.opened"     in patterns
+    assert "incident.classified" in patterns
+    assert "drift.detected"      in patterns
+    assert "risk_limit.breached" in patterns
+
+
+# ── test 12: incident.opened P1 → send_alert called with level=error ──────────
+def test_incident_opened_p1_triggers_error_alert(monkeypatch, tmp_path):
+    L22, L46, bus = _fresh_modules_with_bus(monkeypatch, tmp_path)
+    monkeypatch.delenv("ALERTS_VERBOSE_FILLS", raising=False)
+
+    captured: list[dict] = []
+
+    def fake_send_alert(channel, level, title, body, fields=None):
+        captured.append({"channel": channel, "level": level, "title": title})
+        return True
+
+    monkeypatch.setattr(L22, "send_alert", fake_send_alert)
+
+    L22.register_alert_subscribers(bus=bus)
+
+    bus.publish(
+        "incident.opened",
+        source="L37",
+        payload={"severity": "P1", "incident_id": "INC-001",
+                 "description": "Executor heartbeat lost."},
+    )
+
+    assert len(captured) == 1
+    assert captured[0]["level"] == "error"
+    assert "INC-001" in captured[0]["title"]
+
+
+# ── test 13: drift.detected error severity → send_alert called with level=warning
+def test_drift_detected_error_triggers_warning_alert(monkeypatch, tmp_path):
+    L22, L46, bus = _fresh_modules_with_bus(monkeypatch, tmp_path)
+    monkeypatch.delenv("ALERTS_VERBOSE_FILLS", raising=False)
+
+    captured: list[dict] = []
+
+    def fake_send_alert(channel, level, title, body, fields=None):
+        captured.append({"channel": channel, "level": level, "title": title})
+        return True
+
+    monkeypatch.setattr(L22, "send_alert", fake_send_alert)
+
+    L22.register_alert_subscribers(bus=bus)
+
+    bus.publish(
+        "drift.detected",
+        source="L18",
+        payload={"severity": "error", "stat": "PTS",
+                 "observed_mae": 5.1, "expected_mae": 4.6},
+    )
+
+    assert len(captured) == 1
+    assert captured[0]["level"] == "warning"
+    assert captured[0]["channel"] == "drift"
+
+
+# ── test 14: risk_limit.breached → send_alert called with level=error ─────────
+def test_risk_limit_breached_triggers_error_alert(monkeypatch, tmp_path):
+    L22, L46, bus = _fresh_modules_with_bus(monkeypatch, tmp_path)
+    monkeypatch.delenv("ALERTS_VERBOSE_FILLS", raising=False)
+
+    captured: list[dict] = []
+
+    def fake_send_alert(channel, level, title, body, fields=None):
+        captured.append({"channel": channel, "level": level, "title": title})
+        return True
+
+    monkeypatch.setattr(L22, "send_alert", fake_send_alert)
+
+    L22.register_alert_subscribers(bus=bus)
+
+    bus.publish(
+        "risk_limit.breached",
+        source="L14",
+        payload={"limit_type": "daily_loss", "current_value": -600, "threshold": -500},
+    )
+
+    assert len(captured) == 1
+    assert captured[0]["level"] == "error"
+    assert captured[0]["channel"] == "drawdown"
+
+
+# ── test 15: register_alert_subscribers is idempotent ────────────────────────
+def test_register_is_idempotent(monkeypatch, tmp_path):
+    L22, L46, bus = _fresh_modules_with_bus(monkeypatch, tmp_path)
+    monkeypatch.delenv("ALERTS_VERBOSE_FILLS", raising=False)
+
+    L22.register_alert_subscribers(bus=bus)
+    L22.register_alert_subscribers(bus=bus)  # second call — must be a no-op
+
+    subs = [s for s in bus._subscriptions if s.layer == "L22"]
+    assert len(subs) == 4, (
+        f"Idempotency broken: expected 4 subs after 2 register calls, got {len(subs)}"
+    )

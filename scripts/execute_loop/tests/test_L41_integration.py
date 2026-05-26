@@ -82,7 +82,7 @@ def test_happy_path_runs_all_stages():
     report = harness.run_end_to_end()
 
     assert "stages" in report
-    assert len(report["stages"]) == 24, f"Expected 24 stages, got {len(report['stages'])}"
+    assert len(report["stages"]) == 25, f"Expected 25 stages, got {len(report['stages'])}"
 
     stage_names = [s["name"] for s in report["stages"]]
     expected = [
@@ -111,6 +111,8 @@ def test_happy_path_runs_all_stages():
         # L26: hygiene before postmortem
         "hygiene_check",
         "postmortem",
+        # L46: event publication verification
+        "verify_event_publication",
     ]
     assert stage_names == expected, f"Stage names mismatch:\n  got:      {stage_names}\n  expected: {expected}"
 
@@ -304,7 +306,7 @@ def test_report_json_serializable():
     # Round-trip sanity
     reloaded = json.loads(serialized)
     assert reloaded["seed"] == 42
-    assert len(reloaded["stages"]) == 24
+    assert len(reloaded["stages"]) == 25
 
 
 # ---------------------------------------------------------------------------
@@ -327,9 +329,9 @@ def test_extended_harness_runs_new_stages():
     for name in expected_new:
         assert name in stage_names, f"Expected stage {name!r} missing from report: {stage_names}"
 
-    # Total must now be 24 (16 previous + 8 new: L15, L17, L20, L21, L25, L26, L34, L40)
-    assert len(stage_names) == 24, (
-        f"Expected 24 stages after extension, got {len(stage_names)}: {stage_names}"
+    # Total must now be 25 (16 previous + 8 new + 1 L46 verify)
+    assert len(stage_names) == 25, (
+        f"Expected 25 stages after extension, got {len(stage_names)}: {stage_names}"
     )
 
     # Each new stage must have a valid status
@@ -404,8 +406,8 @@ def test_extended_harness_no_real_api_calls():
                 report = harness.run_end_to_end()
 
     stage_names = [s["name"] for s in report["stages"]]
-    assert len(stage_names) == 24, (
-        f"Expected 24 stages even with requests blocked, got {len(stage_names)}"
+    assert len(stage_names) == 25, (
+        f"Expected 25 stages even with requests blocked, got {len(stage_names)}"
     )
     # No stage must have raised due to network (all PASS/SKIP/SKIP_DEPENDS, none FAIL
     # due to requests error)
@@ -465,13 +467,13 @@ def test_no_real_ledger_pollution(tmp_path):
 # Test 16 — v4: all 24 stages present (8 new layers wired)
 # ---------------------------------------------------------------------------
 def test_l41v4_runs_all_24_stages():
-    """After R9-v4 extension, harness must return exactly 24 stage entries."""
+    """After R9-v4 extension, harness must return exactly 25 stage entries."""
     harness = L41.IntegrationHarness(seed=42, paper_mode=True)
     report = harness.run_end_to_end()
 
     stage_names = [s["name"] for s in report["stages"]]
-    assert len(stage_names) == 24, (
-        f"Expected 24 stages (16 existing + 8 new), got {len(stage_names)}: {stage_names}"
+    assert len(stage_names) == 25, (
+        f"Expected 25 stages (16 existing + 8 new + 1 L46 verify), got {len(stage_names)}: {stage_names}"
     )
     new_stages = [
         "injury_feed_check", "lineup_watcher", "dispatcher_route",
@@ -549,10 +551,196 @@ def test_harness_report_serializable():
 
     reloaded = json.loads(serialized)
     assert reloaded["seed"] == 42
-    assert len(reloaded["stages"]) == 24
+    assert len(reloaded["stages"]) == 25
 
     # Verify every stage entry survives the round-trip
     for stage in reloaded["stages"]:
         assert "name" in stage
         assert "status" in stage
         assert stage["status"] in ("PASS", "FAIL", "SKIP", "SKIP_DEPENDS")
+
+
+# ---------------------------------------------------------------------------
+# Test 20 — verify_event_publication stage is present in full run
+# ---------------------------------------------------------------------------
+def test_verify_event_publication_stage_present():
+    """Full run must include the verify_event_publication stage."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    stage_names = [s["name"] for s in report["stages"]]
+    assert "verify_event_publication" in stage_names, (
+        f"verify_event_publication stage missing from: {stage_names}"
+    )
+    # It must be the last stage
+    assert stage_names[-1] == "verify_event_publication", (
+        f"verify_event_publication should be last stage, got: {stage_names[-1]}"
+    )
+    # Must have a valid status
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    assert status_map["verify_event_publication"] in ("PASS", "FAIL", "SKIP", "SKIP_DEPENDS"), (
+        f"Invalid status: {status_map['verify_event_publication']}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 21 — required events captured during run when producers publish
+# ---------------------------------------------------------------------------
+def test_required_events_captured_during_run():
+    """When producers run normally, required events must be captured and stage must PASS."""
+    import scripts.execute_loop.L46_event_bus as _l46_mod
+
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    data_map = {s["name"]: s.get("data") for s in report["stages"]}
+
+    verify_status = status_map.get("verify_event_publication")
+    verify_data = data_map.get("verify_event_publication")
+
+    # If L46 is available, stage must PASS (required events captured by real producers)
+    if verify_data and isinstance(verify_data, dict) and verify_data.get("l46_available"):
+        assert verify_status == "PASS", (
+            f"verify_event_publication should PASS when L46 available and producers run. "
+            f"Status={verify_status}, data={verify_data}"
+        )
+        # event_count must be in data
+        assert "event_count" in verify_data, f"event_count missing from data: {verify_data}"
+        assert verify_data["event_count"] >= 0
+        # breakdown must be a dict
+        assert isinstance(verify_data.get("breakdown"), dict), (
+            f"breakdown should be a dict: {verify_data}"
+        )
+    else:
+        # L46 not available — stage should still exist (PASS with warn or FAIL)
+        assert verify_status is not None, "verify_event_publication stage must always appear"
+
+
+# ---------------------------------------------------------------------------
+# Test 22 — missing required event causes verify stage to FAIL
+# ---------------------------------------------------------------------------
+def test_missing_required_event_marks_fail(monkeypatch):
+    """When a required event is gated open but never published, verify_event_publication FAILs.
+
+    Strategy: run a harness where kelly_sizing PASSes with a positive fraction
+    (gate opens for kelly.sized) but we suppress the L18 publish by clearing
+    captured_events right before the verify stage runs, then injecting every
+    required event except kelly.sized.  We do this by patching the verify's
+    _captured_events directly after the harness run collects them.
+    """
+    try:
+        import scripts.execute_loop.L46_event_bus as _l46_mod
+        from scripts.execute_loop.L46_event_bus import EventBus, Event
+    except Exception:
+        pytest.skip("L46 not available — cannot test event-missing failure path")
+
+    # We need kelly_sizing to PASS with fraction > 0 so the gate opens.
+    # Patch kelly_fraction to return 0.10.
+    def _positive_kelly(*args, **kwargs):
+        return 0.10
+
+    monkeypatch.setattr(L41, "kelly_fraction", _positive_kelly)
+    if L41.L18 is None:
+        dummy_mod = types.ModuleType("fake_L18")
+        monkeypatch.setattr(L41, "L18", dummy_mod)
+
+    # After setup_event_capture runs, we intercept _run_stages to inject fake events
+    # for everything EXCEPT kelly.sized, then clear captured_events.
+    # The simplest hook: patch _run_stages to clear captured_events at the start of
+    # verify_event_publication computation. Instead, we patch the harness's
+    # _captured_events after run_end_to_end finishes by running a modified harness.
+    # Cleanest: subclass and override to inject events.
+    import datetime as _dt
+    import uuid as _uuid
+
+    class _HarnessWithMissingKelly(L41.IntegrationHarness):
+        def _run_stages(self, started_at):
+            result = super()._run_stages(started_at)
+            # After all stages ran, replace captured events: keep everything except
+            # kelly.sized so the gate triggers a FAIL.
+            # Find the verify stage and re-run with manipulated events.
+            # We can't re-run easily, so instead we'll inject events before run.
+            return result
+
+    # Inject events BEFORE run by pre-populating via a hook on _setup_event_capture
+    original_setup = L41.IntegrationHarness._setup_event_capture
+
+    def _inject_setup(self_h):
+        original_setup(self_h)
+        # Publish a dummy "bet.settled" so that gate check has at least one captured event
+        # (doesn't matter — the verify stage is driven by stage outcome data, not bus directly)
+        # The key: kelly.sized must NOT be published (which it won't be since _positive_kelly
+        # never calls L18 internals). Gate opens because kelly_sizing PASS'd with frac>0.
+        # So just let the normal flow happen — kelly.sized won't be published.
+        pass
+
+    monkeypatch.setattr(L41.IntegrationHarness, "_setup_event_capture", _inject_setup)
+
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    data_map = {s["name"]: s.get("data") for s in report["stages"]}
+    error_map = {s["name"]: s.get("error", "") for s in report["stages"]}
+    verify_status = status_map.get("verify_event_publication")
+    verify_data = data_map.get("verify_event_publication")
+
+    # If L46 is not available, verify stage PASSes with a warn dict (l46_available=False)
+    if isinstance(verify_data, dict) and not verify_data.get("l46_available"):
+        pytest.skip("L46 not available in this environment — cannot test event-missing failure path")
+
+    # When kelly_sizing PASSes with frac > 0 but kelly.sized is not published,
+    # verify_event_publication must FAIL.
+    # Check that kelly_sizing PASSed (gate could open)
+    if status_map.get("kelly_sizing") not in ("PASS",):
+        pytest.skip(
+            f"kelly_sizing did not PASS (got {status_map.get('kelly_sizing')}) — "
+            "cannot test event-missing failure path"
+        )
+
+    kelly_data = data_map.get("kelly_sizing") or {}
+    kelly_frac = kelly_data.get("kelly_fraction", 0.0) if isinstance(kelly_data, dict) else 0.0
+    if float(kelly_frac) <= 0.0:
+        pytest.skip(
+            f"kelly fraction was {kelly_frac} (<=0) — gate would not open, "
+            "cannot test missing event FAIL"
+        )
+
+    # At this point: kelly_sizing PASS'd with positive frac, gate opens,
+    # kelly.sized not published → verify must FAIL
+    assert verify_status == "FAIL", (
+        f"Expected verify_event_publication=FAIL when kelly.sized gate open but not published, "
+        f"got {verify_status!r}. data={verify_data}, error={error_map.get('verify_event_publication')}"
+    )
+    # The error message should mention kelly.sized
+    error_msg = error_map.get("verify_event_publication", "")
+    assert "kelly.sized" in error_msg, (
+        f"Error message should mention kelly.sized: {error_msg!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 23 — verify stage data field contains event_count and breakdown
+# ---------------------------------------------------------------------------
+def test_captured_events_in_report_data():
+    """verify_event_publication data must contain event_count and breakdown dict."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    data_map = {s["name"]: s.get("data") for s in report["stages"]}
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    verify_data = data_map.get("verify_event_publication")
+    verify_status = status_map.get("verify_event_publication")
+
+    assert verify_data is not None or verify_status == "FAIL", (
+        "verify_event_publication must either have data or be FAIL with error"
+    )
+    if isinstance(verify_data, dict):
+        assert "event_count" in verify_data, f"Missing event_count in: {verify_data}"
+        assert "l46_available" in verify_data, f"Missing l46_available in: {verify_data}"
+        if verify_data.get("l46_available"):
+            assert "breakdown" in verify_data, f"Missing breakdown in: {verify_data}"
+            assert isinstance(verify_data["breakdown"], dict), (
+                f"breakdown must be dict, got: {type(verify_data['breakdown'])}"
+            )

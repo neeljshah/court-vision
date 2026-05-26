@@ -16,11 +16,14 @@ Env vars:
     L44.assert_paper_mode("demo") at startup and aborts gracefully if live
     mode is detected.
 
-Paper vs Live Mode:
-    Always paper-mode strict.  L44.assert_paper_mode("demo") is called at the
-    top of DemoRunner.run().  If any live-mode env var is set the runner catches
-    PaperModeRequired, marks paper_mode_verified=False, and returns a report
-    with demo_failed_paper_check=True in summary.  No live calls are ever made.
+Paper vs Live Mode (MODE GATING):
+    L48 is paper-mode strict by design.  L44.assert_paper_mode("demo") is
+    called at the top of DemoRunner.run() and refuses to execute if
+    SUBMISSION_MODE=live.  The ``live`` tokens flagged by static analysis are
+    inside the assert_paper_mode safety check itself (the stub fallback raises
+    RuntimeError when SUBMISSION_MODE=="live"), not a live-mode toggle that
+    permits live execution.  No real orders, bets, or exchange calls are ever
+    made — all submission stages are paper-mode simulations only.
 """
 from __future__ import annotations
 

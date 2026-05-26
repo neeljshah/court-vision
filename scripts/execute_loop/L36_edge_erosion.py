@@ -13,6 +13,32 @@ CLI:
     python L36_edge_erosion.py quarantine --angle-key X --reason "manual"
     python L36_edge_erosion.py unquarantine --angle-key X --token UNQUARANTINE_OK
     python L36_edge_erosion.py list-quarantined
+
+Event Publication
+-----------------
+When a per-stat erosion crosses the detection threshold, L36 publishes to
+the shared L46 EventBus (if one has been injected via ``set_event_bus``):
+
+    Event name : "edge_erosion.detected"
+    Payload fields:
+        stat          – stat name derived from angle_key (str)
+        current_edge  – observed_ev_pct for this angle (float)
+        baseline_edge – expected_ev_pct for this angle (float)
+        erosion_pct   – absolute gap (baseline - current, float)
+        threshold     – the erosion gap threshold used (float, default 5.0)
+        severity      – "QUARANTINED" | "WARN" (str)
+        window_days   – window_n used when computing metrics (int)
+        detected_at   – ISO 8601 UTC timestamp (str)
+
+Publisher failures are silently swallowed so reports are never interrupted.
+
+Environment Variables
+---------------------
+None required.  All configuration is provided programmatically:
+    • L36 reads ledger paths from module-level constants (_BETS_PARQUET,
+      _BETS_CSV, _QUARANTINE_FILE) which tests monkeypatch via module attrs.
+    • The L46 EventBus instance is injected via set_event_bus(); L36 does
+      NOT read any env vars at import time.
 """
 from __future__ import annotations
 
@@ -29,6 +55,20 @@ from typing import Optional
 import pandas as pd
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L46 EventBus integration (optional; injected at runtime)
+# ---------------------------------------------------------------------------
+_L46 = None  # type: ignore[assignment]  # set by set_event_bus()
+
+_EROSION_EVENT_THRESHOLD = 5.0  # pp gap (baseline - current) that triggers event
+
+
+def set_event_bus(bus) -> None:  # type: ignore[type-arg]
+    """Inject an L46 EventBus instance for edge_erosion.detected events."""
+    global _L46  # noqa: PLW0603
+    _L46 = bus
+
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -106,6 +146,25 @@ def _load_bets() -> Optional[pd.DataFrame]:
 
 
 # ---------------------------------------------------------------------------
+# Atomic write helper (shared by quarantine + report writers)
+# ---------------------------------------------------------------------------
+def _atomic_write_json(path: Path, data: dict, *, indent: int = 2) -> None:
+    """Write *data* as JSON to *path* via a .tmp sibling + os.replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp.json")
+    try:
+        tmp.write_text(json.dumps(data, indent=indent), encoding="utf-8")
+        os.replace(str(tmp), str(path))
+    except OSError as exc:
+        log.error("L36: atomic write failed for %s: %s", path, exc)
+        try:
+            tmp.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise
+
+
+# ---------------------------------------------------------------------------
 # Quarantine state helpers
 # ---------------------------------------------------------------------------
 def _load_quarantine() -> dict:
@@ -120,18 +179,11 @@ def _load_quarantine() -> dict:
 
 
 def _save_quarantine(state: dict) -> None:
-    """Atomic write via .tmp + os.replace."""
-    _LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-    tmp = _QUARANTINE_FILE.with_suffix(".tmp.json")
+    """Atomic write via _atomic_write_json helper."""
     try:
-        tmp.write_text(json.dumps(state, indent=2), encoding="utf-8")
-        os.replace(str(tmp), str(_QUARANTINE_FILE))
-    except OSError as exc:
-        log.error("L36: failed to save quarantine file: %s", exc)
-        try:
-            tmp.unlink(missing_ok=True)
-        except OSError:
-            pass
+        _atomic_write_json(_QUARANTINE_FILE, state)
+    except OSError:
+        pass  # already logged inside helper
 
 
 # ---------------------------------------------------------------------------
@@ -299,6 +351,30 @@ def compute_angle_metrics(
                 observed_ev=observed_ev_pct,
             )
 
+        # L46 event publication for erosion events (WARN or QUARANTINED)
+        if status in ("WARN", "QUARANTINED") and _L46 is not None:
+            erosion_pct = expected_ev_pct - observed_ev_pct
+            # Derive stat name from angle_key (format: book_stat_side_line)
+            parts = str(angle_key).split("_")
+            stat_name = parts[1] if len(parts) > 1 else str(angle_key)
+            try:
+                _L46.publish(
+                    "edge_erosion.detected",
+                    source="L36",
+                    payload={
+                        "stat": stat_name,
+                        "current_edge": round(observed_ev_pct, 4),
+                        "baseline_edge": round(expected_ev_pct, 4),
+                        "erosion_pct": round(erosion_pct, 4),
+                        "threshold": _EROSION_EVENT_THRESHOLD,
+                        "severity": status,
+                        "window_days": window_n,
+                        "detected_at": datetime.now(timezone.utc).isoformat(),
+                    },
+                )
+            except Exception:  # noqa: BLE001
+                pass
+
     # Auto-review check (logs only, never restores)
     _auto_review_quarantines(state, angle_metrics_map, df)
 
@@ -381,12 +457,49 @@ def daily_edge_report() -> dict:
     """Compute all angle metrics and write a dated JSON snapshot.
 
     Returns the report dict (also written to data/ledger/edge_erosion_report_<date>.json).
+
+    The report includes:
+    - Aggregate summary fields (n_angles, n_quarantined, n_warn, n_ok, n_insufficient)
+      for backward compatibility.
+    - ``metrics`` — full list of per-angle AngleMetric dicts.
+    - ``per_stat_erosion`` — per-stat breakdown: for each distinct stat name derived
+      from angle_keys, reports the worst (most eroded) angle, aggregated observed_ev,
+      and a count of WARN/QUARANTINED angles. This is the primary v2 addition.
     """
     metrics = compute_angle_metrics()
     quarantined = [m for m in metrics if m.status == "QUARANTINED"]
     warned = [m for m in metrics if m.status == "WARN"]
     ok = [m for m in metrics if m.status == "OK"]
     insufficient = [m for m in metrics if m.status == "INSUFFICIENT"]
+
+    # ------------------------------------------------------------------
+    # Per-stat erosion breakdown (v2 addition)
+    # ------------------------------------------------------------------
+    stat_groups: dict[str, list[AngleMetric]] = {}
+    for m in metrics:
+        # Angle key format: book_stat_side_line → stat is index 1
+        parts = m.angle_key.split("_")
+        stat_name = parts[1] if len(parts) > 1 else m.angle_key
+        stat_groups.setdefault(stat_name, []).append(m)
+
+    per_stat_erosion: list[dict] = []
+    for stat_name, stat_metrics in sorted(stat_groups.items()):
+        n_eroded = sum(1 for m in stat_metrics if m.status in ("WARN", "QUARANTINED"))
+        # Worst angle = largest (expected - observed) gap
+        worst = max(stat_metrics, key=lambda m: m.expected_ev_pct - m.observed_ev_pct)
+        avg_observed = (
+            sum(m.observed_ev_pct for m in stat_metrics) / len(stat_metrics)
+        )
+        per_stat_erosion.append({
+            "stat": stat_name,
+            "n_angles": len(stat_metrics),
+            "n_eroded": n_eroded,
+            "avg_observed_ev_pct": round(avg_observed, 4),
+            "worst_angle_key": worst.angle_key,
+            "worst_observed_ev_pct": worst.observed_ev_pct,
+            "worst_expected_ev_pct": worst.expected_ev_pct,
+            "worst_status": worst.status,
+        })
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -397,19 +510,17 @@ def daily_edge_report() -> dict:
         "n_ok": len(ok),
         "n_insufficient": len(insufficient),
         "metrics": [asdict(m) for m in metrics],
+        "per_stat_erosion": per_stat_erosion,
         "quarantine_list": _load_quarantine().get("angles", []),
     }
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     report_path = _LEDGER_DIR / f"edge_erosion_report_{today}.json"
-    _LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-    tmp = report_path.with_suffix(".tmp.json")
     try:
-        tmp.write_text(json.dumps(report, indent=2), encoding="utf-8")
-        os.replace(str(tmp), str(report_path))
+        _atomic_write_json(report_path, report)
         log.info("L36: edge report written to %s", report_path)
-    except OSError as exc:
-        log.error("L36: failed to write edge report: %s", exc)
+    except OSError:
+        pass  # already logged inside helper
 
     return report
 

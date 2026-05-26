@@ -9,8 +9,10 @@ from __future__ import annotations
 import json
 import sys
 import types
+from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
@@ -350,3 +352,153 @@ def test_window_truncation(monkeypatch):
     assert m.n_bets_in_window == 50
     assert m.observed_ev_pct > 0, f"Expected positive EV from recent wins, got {m.observed_ev_pct}"
     assert m.status == "OK"
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — per_stat_erosion breakdown in daily_edge_report (3 distinct stats)
+# ---------------------------------------------------------------------------
+def test_per_stat_breakdown_in_report(monkeypatch):
+    """daily_edge_report should include per_stat_erosion with one entry per distinct stat."""
+    df_pts = _make_ledger(n=50, stat="pts", side="over", line=20.0, n_won=40)
+    df_reb = _make_ledger(n=50, stat="reb", side="over", line=5.5, n_won=35)
+    df_ast = _make_ledger(n=50, stat="ast", side="under", line=3.0, n_won=0)
+    combined = pd.concat([df_pts, df_reb, df_ast], ignore_index=True)
+    monkeypatch.setattr(L36, "_load_bets", lambda: combined)
+
+    report = L36.daily_edge_report()
+
+    assert "per_stat_erosion" in report, "Report missing per_stat_erosion key"
+    stat_entries = report["per_stat_erosion"]
+    stat_names = {e["stat"] for e in stat_entries}
+
+    assert "pts" in stat_names, f"Missing 'pts' in per_stat_erosion: {stat_names}"
+    assert "reb" in stat_names, f"Missing 'reb' in per_stat_erosion: {stat_names}"
+    assert "ast" in stat_names, f"Missing 'ast' in per_stat_erosion: {stat_names}"
+    assert len(stat_entries) == 3, f"Expected 3 stat entries, got {len(stat_entries)}"
+
+    # ast had 0 wins → should be eroded
+    ast_entry = next(e for e in stat_entries if e["stat"] == "ast")
+    assert ast_entry["n_eroded"] >= 1, "ast angle should be marked as eroded"
+
+    # Each entry must have the required fields
+    required = {
+        "stat", "n_angles", "n_eroded", "avg_observed_ev_pct",
+        "worst_angle_key", "worst_observed_ev_pct", "worst_expected_ev_pct", "worst_status",
+    }
+    for entry in stat_entries:
+        missing = required - entry.keys()
+        assert not missing, f"per_stat_erosion entry missing fields: {missing}"
+
+
+# ---------------------------------------------------------------------------
+# Test 17 — erosion detected publishes event to L46
+# ---------------------------------------------------------------------------
+def test_erosion_detected_publishes_event(monkeypatch):
+    """High-erosion data (all LOST, model_edge_pp=15) should publish edge_erosion.detected."""
+    # All-LOST bets with high model edge → extreme erosion
+    df = _make_ledger(n=50, stat="pts", n_won=0, pnl_loss=-10.0, model_edge_pp=15.0)
+    monkeypatch.setattr(L36, "_load_bets", lambda: df)
+
+    received: list = []
+    mock_bus = MagicMock()
+    mock_bus.publish.side_effect = lambda name, source, payload: received.append(
+        {"name": name, "source": source, "payload": payload}
+    )
+
+    L36.set_event_bus(mock_bus)
+    try:
+        L36.compute_angle_metrics(window_n=50, min_n=30)
+    finally:
+        L36.set_event_bus(None)  # always reset so other tests are unaffected
+
+    assert len(received) >= 1, "Expected at least one edge_erosion.detected event"
+    evt = received[0]
+    assert evt["name"] == "edge_erosion.detected"
+    assert evt["source"] == "L36"
+    payload = evt["payload"]
+    assert payload["stat"] == "pts"
+    assert payload["severity"] in ("WARN", "QUARANTINED")
+    assert payload["erosion_pct"] > 0
+    required_keys = {
+        "stat", "current_edge", "baseline_edge", "erosion_pct",
+        "threshold", "severity", "window_days", "detected_at",
+    }
+    assert required_keys <= payload.keys(), f"Missing payload keys: {required_keys - payload.keys()}"
+
+
+# ---------------------------------------------------------------------------
+# Test 18 — no erosion publishes nothing
+# ---------------------------------------------------------------------------
+def test_no_erosion_publishes_nothing(monkeypatch):
+    """All-winning bets with positive EV should not publish any edge_erosion events."""
+    df = _make_ledger(n=50, stat="pts", n_won=50, pnl_win=9.09, model_edge_pp=5.0)
+    monkeypatch.setattr(L36, "_load_bets", lambda: df)
+
+    mock_bus = MagicMock()
+    L36.set_event_bus(mock_bus)
+    try:
+        L36.compute_angle_metrics(window_n=50, min_n=30)
+    finally:
+        L36.set_event_bus(None)
+
+    mock_bus.publish.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# Test 19 — publish failure does not break report generation
+# ---------------------------------------------------------------------------
+def test_publish_failure_does_not_break_report(monkeypatch):
+    """If the L46 bus raises on publish, daily_edge_report should still return successfully."""
+    df = _make_ledger(n=50, stat="pts", n_won=0, pnl_loss=-10.0, model_edge_pp=15.0)
+    monkeypatch.setattr(L36, "_load_bets", lambda: df)
+
+    exploding_bus = MagicMock()
+    exploding_bus.publish.side_effect = RuntimeError("bus exploded")
+
+    L36.set_event_bus(exploding_bus)
+    try:
+        report = L36.daily_edge_report()
+    finally:
+        L36.set_event_bus(None)
+
+    # Report must still be returned correctly despite bus failure
+    assert "n_angles" in report
+    assert report["n_angles"] >= 1
+    assert "per_stat_erosion" in report
+
+
+# ---------------------------------------------------------------------------
+# Test 20 — atomic write: report file written via .tmp sibling (no partial writes)
+# ---------------------------------------------------------------------------
+def test_atomic_write(monkeypatch, tmp_path):
+    """daily_edge_report should write via .tmp file + os.replace (atomic)."""
+    import os
+
+    df = _make_ledger(n=50, n_won=35)
+    monkeypatch.setattr(L36, "_load_bets", lambda: df)
+
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    report_path = tmp_path / f"edge_erosion_report_{today}.json"
+    tmp_path_sibling = report_path.with_suffix(".tmp.json")
+
+    written_via_tmp = []
+    original_replace = os.replace
+
+    def spy_replace(src, dst):
+        if "edge_erosion_report" in str(dst):
+            written_via_tmp.append((src, dst))
+        return original_replace(src, dst)
+
+    monkeypatch.setattr(os, "replace", spy_replace)
+
+    report = L36.daily_edge_report()
+
+    # The file must exist and be valid JSON
+    assert report_path.exists(), "Report file should exist after daily_edge_report()"
+    loaded = json.loads(report_path.read_text(encoding="utf-8"))
+    assert "metrics" in loaded
+
+    # os.replace must have been called (proving atomic pattern)
+    assert len(written_via_tmp) >= 1, "Expected os.replace call for atomic report write"
+    # tmp file must no longer exist (was replaced/moved)
+    assert not tmp_path_sibling.exists(), ".tmp file should be gone after os.replace"
