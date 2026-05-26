@@ -537,6 +537,121 @@ def fetch_tracker_status(
 
 
 # --------------------------------------------------------------------------- #
+# Section 6b: Feature Drift (R27_T3)                                          #
+# --------------------------------------------------------------------------- #
+DEFAULT_DRIFT_CACHE = PROJECT_DIR / "data" / "cache" / "feature_drift_latest.json"
+
+
+def fetch_feature_drift(
+    *,
+    cache_path: Path = DEFAULT_DRIFT_CACHE,
+    feature_set: str = "m2",
+    current_days: int = 14,
+    live_run: bool = False,
+    run_fn: Optional[Any] = None,
+) -> Dict[str, Any]:
+    """Read the latest feature_drift_detector.py report.
+
+    Reads the JSON cache at ``cache_path`` (written by the drift detector
+    CLI / daily_workflow). When ``live_run=True`` AND the cache is missing,
+    invokes the detector in-process via ``run_fn`` (defaults to
+    ``feature_drift_detector.run``). Always returns a dict — never raises —
+    so a broken detector path can't take the whole dashboard down.
+    """
+    out: Dict[str, Any] = {
+        "ok": False, "feature_set": feature_set,
+        "n_features_analyzed": 0, "n_stable": 0,
+        "n_drift_minor": 0, "n_drift_major": 0,
+        "top_drifted": [], "reason": "",
+        "ts": "", "status": "missing",
+    }
+    payload = _safe_load_json(Path(cache_path))
+    if payload is None and live_run:
+        try:
+            if run_fn is None:
+                from scripts.feature_drift_detector import run as run_fn  # noqa: PLC0415,E501
+            payload = run_fn(
+                feature_set=feature_set,
+                current_days=int(current_days),
+            )
+        except Exception as exc:  # noqa: BLE001
+            out["reason"] = f"live drift run failed: {exc}"
+            return out
+    if not isinstance(payload, dict):
+        out["reason"] = "no drift cache and live_run=False"
+        return out
+    out["ok"] = True
+    out["ts"] = str(payload.get("ts", ""))
+    out["feature_set"] = str(payload.get("feature_set", feature_set))
+    out["status"] = str(payload.get("status", "OK"))
+    out["reason"] = str(payload.get("blocked_reason", "") or "")
+    out["n_features_analyzed"] = int(payload.get("n_features_analyzed", 0) or 0)
+    out["n_stable"]      = int(payload.get("n_stable", 0) or 0)
+    out["n_drift_minor"] = int(payload.get("n_drift_minor", 0) or 0)
+    out["n_drift_major"] = int(payload.get("n_drift_major", 0) or 0)
+    feats = payload.get("features") or []
+    # The detector pre-sorts majors first; just take the head as "top drifted".
+    top: List[Dict[str, Any]] = []
+    for r in feats[:5]:
+        top.append({
+            "feature":  str(r.get("feature", "")),
+            "class":    str(r.get("class", "")),
+            "ks_stat":  r.get("ks_stat"),
+            "p_value":  r.get("p_value"),
+            "mean_z":   r.get("mean_z"),
+        })
+    out["top_drifted"] = top
+    return out
+
+
+def _section_feature_drift(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return ('<h2>Feature Drift</h2>'
+                f'<p class="muted">(no drift report cached: '
+                f'{_html_escape(d.get("reason",""))})</p>')
+    n_major = int(d.get("n_drift_major", 0))
+    n_minor = int(d.get("n_drift_minor", 0))
+    n_stable = int(d.get("n_stable", 0))
+    n_total = int(d.get("n_features_analyzed", 0))
+    if d.get("status") != "OK":
+        color = _STATUS_COLOR["yellow"]
+    elif n_major > 15:
+        color = _STATUS_COLOR["red"]
+    elif n_major > 5:
+        color = _STATUS_COLOR["yellow"]
+    else:
+        color = _STATUS_COLOR["green"]
+    rows = []
+    for r in (d.get("top_drifted") or []):
+        try:
+            ks = float(r.get("ks_stat") or 0.0)
+            pv = float(r.get("p_value") or 0.0)
+            mz = float(r.get("mean_z") or 0.0)
+        except (TypeError, ValueError):
+            ks = pv = mz = 0.0
+        rows.append(
+            f'<tr><td>{_html_escape(r.get("feature",""))}</td>'
+            f'<td>{_html_escape(r.get("class",""))}</td>'
+            f'<td>{ks:.3f}</td><td>{pv:.2e}</td>'
+            f'<td>{mz:+.2f}</td></tr>'
+        )
+    table = (
+        '<table><thead><tr><th>feature</th><th>class</th>'
+        '<th>ks</th><th>p</th><th>mean_z</th></tr></thead><tbody>'
+        + "".join(rows) +
+        '</tbody></table>'
+    ) if rows else '<p class="muted">no per-feature rows</p>'
+    return (
+        '<h2>Feature Drift</h2>'
+        f'<p><span class="dot" style="background:{color}"></span>'
+        f'set={_html_escape(d.get("feature_set",""))} · '
+        f'analyzed={n_total} · '
+        f'stable={n_stable} · minor={n_minor} · <b>MAJOR={n_major}</b></p>'
+        + table
+    )
+
+
+# --------------------------------------------------------------------------- #
 # HTML rendering                                                              #
 # --------------------------------------------------------------------------- #
 _STATUS_COLOR = {
@@ -1192,6 +1307,7 @@ def render_operator_html(
     live_recs: Optional[Dict[str, Any]] = None,    # R23_P8
     rec_perf: Optional[Dict[str, Any]] = None,     # R24_Q4
     settlement: Optional[Dict[str, Any]] = None,   # R24_Q8
+    drift: Optional[Dict[str, Any]] = None,        # R27_T3
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -1205,6 +1321,8 @@ def render_operator_html(
         + _section_today_slate(slate)
         + _section_tracker_status(tracker)
     )
+    if drift is not None:
+        body += _section_feature_drift(drift)
     if settlement is not None:
         body += _section_settlement_health(settlement)
     if live_recs is not None:
@@ -1251,6 +1369,8 @@ def collect_and_render(
     include_settlement_health: bool = True,   # R24_Q8
     settlement_window_days: int = 7,
     qb_dir: Path = DEFAULT_QB_DIR_PATH,
+    include_feature_drift: bool = True,       # R27_T3
+    drift_cache_path: Path = DEFAULT_DRIFT_CACHE,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -1303,12 +1423,17 @@ def collect_and_render(
         )
         settlement.setdefault("ok", False)
 
+    drift = None
+    if include_feature_drift:
+        drift = _safe(fetch_feature_drift, cache_path=drift_cache_path)
+        drift.setdefault("ok", False)
+
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
 
     return render_operator_html(
         health, bankroll, alerts, bets, slate, tracker,
-        live_recs, rec_perf, settlement,
+        live_recs, rec_perf, settlement, drift,
         auto_refresh_sec=auto_refresh_sec,
     )
