@@ -79,6 +79,9 @@ data/*.json
 data/chain_*.txt
 !data/jersey_name_map.json
 !data/team_colors.json
+
+# -- R21_N5 m2_family prediction cache (per-machine runtime artifact) ---------
+data/cache/m2_family_predictions_cache.json
 data/output/
 data/game_results/
 data/props/
