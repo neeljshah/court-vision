@@ -1,0 +1,28 @@
+{
+  "daemon_pid": 1492637,
+  "n_starters": 10,
+  "n_pending_bets_killed": 2,
+  "source": "rotowire",
+  "snapshot_path": "data/lineups/2026-05-26.json",
+  "alerts_path": "vault/Improvements/lineup_alerts.md",
+  "urgent_killers": [
+    {
+      "player": "Keldon Johnson",
+      "reason": "not_starting"
+    }
+  ],
+  "sas_starters": [
+    "PG: De'Aaron Fox",
+    "SG: Stephon Castle",
+    "SF: Devin Vassell",
+    "PF: Julian Champagnie",
+    "C: Victor Wembanyama"
+  ],
+  "okc_starters": [
+    "PG: Shai Gilgeous-Alexander (PROJECTED)",
+    "SG: Luguentz Dort (PROJECTED)",
+    "SF: Jalen Williams (QUESTIONABLE Ques)",
+    "PF: Chet Holmgren (PROJECTED)",
+    "C: Isaiah Hartenstein (PROJECTED)"
+  ]
+}
