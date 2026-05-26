@@ -454,6 +454,12 @@
       "reason": "M16 with L5/L10 windows instead of L3/L20 to test whether shorter+medium windows would catch streak signal for PTS/REB/AST (the 3 stats M16 missed). Result: IDENTICAL per-stat ship pattern as M16 \u2014 FG3M (-0.01112, 4/4), STL (-0.02142, 4/4), BLK (-0.05311, 4/4), TOV (-0.01071, 4/4) all SHIP per-stat. PTS (+0.00802, 0/4) WORSE than M16. REB (+0.00209, 2/4) WORSE. AST (-0.00136, 3/4) better but still misses gate. Overall verdict REJECT \u2014 same gate-fail as M16. Confirms structural saturation: streak features just don't have signal for PTS/REB/AST regardless of window choice. The signal is in raw recent stats for high-volume targets; only count-stats (BLK/STL/TOV) benefit from z-score trend.",
       "saturated_angle": "streak features for high-volume stats (PTS/REB/AST) at any window length \u2014 z-score trend information is absorbed by existing l5/l10/ewma features",
       "round": 10
+    },
+    {
+      "name": "R11_M13v2_tracking_broader",
+      "reason": "Extended M13's 4-feature tracking set to 10 features (added drv_passes, drv_ast, pas_passes_made, pas_ast_points_created, pas_secondary_ast, cs_fga) hoping to push AST/FG3M over gate. Result: PTS LOST its ship (4/4 \u2192 3/4 WF, -0.00736 \u2192 -0.00493; passes WF gate fail). REB improved (-0.00240 vs -0.00077) and now WF 4/4 but mean delta still misses. AST same (-0.00477, 4/4 WF, misses mean). FG3M/BLK/TOV unchanged. STL still regresses. stats_fully_pass=0/7 (M13 had 1/7). Lesson: broader feature set = capacity for overfitting, dilutes signal. M13's 4-feature set was optimal \u2014 keep production at M13 config.",
+      "saturated_angle": "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)",
+      "round": 10
     }
   ],
   "saturated_angles": [
@@ -518,7 +524,8 @@
     "ref-crew prior features as endQ3 residual-head additions",
     "schedule-fatigue features as endQ3 residual-head additions (proj_base+residual composition unstable)",
     "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
-    "streak features for high-volume stats (PTS/REB/AST) at any window length"
+    "streak features for high-volume stats (PTS/REB/AST) at any window length",
+    "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
