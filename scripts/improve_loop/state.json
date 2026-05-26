@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 41,
+  "rounds_completed": 42,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -657,6 +657,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-28 (auto-train fallback + list_available_bundles - all_pass=True). Dataset has grown to 4515 games (was 4315 at B27, parallel session backfills continuing). Production module now complete with full toolkit.\nADDED TO src/prediction/r12_canonical_predictor.py:\n  list_available_bundles() -> Dict[target, bool] - disk-presence check for all 6\n  load_canonical_bundle(target, auto_train=False, training_df=None) - now accepts\n    auto_train flag. If True and joblib missing, trains+saves on-the-fly via\n    canonical recipe. Requires feature-augmented training_df.\n  _auto_train_and_save() helper handles all 3 recipe types (single/top50/ensemble).\nSMOKE VERIFICATION (all 4 steps PASS):\n  1. list_available_bundles correctly shows all 6 True before, home_score=False during outage\n  2. load_canonical_bundle without auto_train correctly raises FileNotFoundError\n  3. auto_train=True succeeded in 43s on 4515 games, returned valid bundle\n  4. Predict via auto-trained bundle: mean 117.57 range [100.4, 138.6] (sane home_score)\n  5. Reload via plain load_canonical_bundle confirms persistence works\n  6. Original bundle restored from .bak\nPRODUCTION MODULE COMPLETE - r12_canonical_predictor.py now exports:\n  build_r12_features            - feature engineering pipeline\n  get_canonical_feature_set     - legacy single-pass perm-importance (kept for compat)\n  get_canonical_feature_set_stable - leak-free per-fold trim (B22 finding)\n  train_canonical_model         - B6 OOF-stack training\n  predict_canonical             - blended level-2 prediction\n  load_canonical_bundle         - load joblib (auto_train fallback)\n  predict_canonical_bundle      - recipe-dispatching predict\n  list_available_bundles        - disk-presence map\n  calibrate_inplay_platt        - Platt sigmoid calibrator\n  CANONICAL_RECIPES dict        - per-target recipe metadata\nStop counter UNCHANGED at 1/5 (utility extension doesn't count)."
+    },
+    {
+      "name": "R12_BATCH29_player_prop_other_stats",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 2,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-29 (player-prop avg_blend extended to REB/AST/FG3M - 2/15 SHIP, 0/15 BEAT_PROD memory ref). 89307 player-game rows, 85 feature cols.\nStop counter: 2/5.\nPer-stat within-probe baseline_full MAE:\n  REB:  1.9239 (memory ref 1.90 - slightly worse, within range)\n  AST:  1.3721 (memory ref 1.36 - essentially tied)\n  FG3M: 0.9084 (memory ref 0.89 - slightly worse)\nPer-stat avg_blend_top2 vs baseline_full:\n  REB:  +0.05% (loses, baseline wins)\n  AST:  -0.03% (SHIP marginal, within noise)\n  FG3M: -0.08% (SHIP marginal, within noise)\nform_only alone vs baseline_full: +0.36-0.49% across all 3 stats (loses).\nopp_only alone vs baseline_full: +28-42% (catastrophically worse).\nARCHITECTURAL FINDING (cross-stat confirmation of B18):\nForm-feature DOMINANCE is UNIVERSAL at player-prop level - applies to all 4 tested\nstats (PTS B18, REB B29, AST B29, FG3M B29). The marginal -0.03/-0.08% wins on\nAST/FG3M from avg_blend_top2 are noise-level - lighter-tail stats happen to have\never-so-slightly less form-feature dominance, but the architectural lesson holds:\navg_blend pattern requires COMPARABLY-STRONG feature subsets to add value. Game-level\nhad that property (3 subsets within 0.3pp); player-prop level does NOT (form_only is\nthe only competitive subset; opp_only is 30-40% worse alone). Blending weaker subsets\ninto stronger ones dilutes signal more than it diversifies.\nPLAYER-PROP CROSS-DOMAIN TRANSFER OF R12 PATTERNS = SATURATED on 4/4 stats tested.\nFuture player-prop gains likely need feature engineering at the SAME level as B5+B9\ndid for game-level (per-team interactions/halflife2/opp_allowed) - not architectural\nborrowing.\nStop counter: 2/5."
     }
   ],
   "rejects": [
@@ -1099,6 +1108,12 @@
       "reason": "perm_inner_cv top-50 trim does NOT generalize beyond score_diff. All other 4 sweep targets (home_score, away_score, over_230, AH3) regress vs their current canonical. The B22 score_diff win is real but target-specific \u2014 not a universal feature-selection technique.",
       "saturated_angle": "perm_inner_cv top-50 trim as cross-target architecture",
       "round": 12
+    },
+    {
+      "name": "R12_BATCH29_player_prop_avg_blend_universal_test",
+      "reason": "avg_blend cross-domain pattern saturated at player-prop level. 2/15 SHIPs are within-noise (AST -0.03%, FG3M -0.08%). 0/15 beat memory production references. Form-feature dominance is universal across PTS/REB/AST/FG3M - avg_blend pattern requires comparably-strong feature subsets, which player-prop level does NOT have (opp_only is 28-42% worse alone).",
+      "saturated_angle": "avg_blend cross-domain (game -> player-prop) - confirmed saturated across 4 stats",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -1172,7 +1187,8 @@
     "avg_blend at player-prop level (form-feature dominance breaks the pattern)",
     "global permutation-importance ranking on held-out slice (causes leakage; B19 numbers overstated ~1.5pp)",
     "perm_inner_cv top-50 trim across all 6 targets (only wins on score_diff)",
-    "NNLS-weighted ensemble blending on growing dataset (unstable weights per fold; equal-weight averaging is more robust)"
+    "NNLS-weighted ensemble blending on growing dataset (unstable weights per fold; equal-weight averaging is more robust)",
+    "player-prop avg_blend across all 7-stat-lineup stats (form-feature dominance breaks the pattern universally)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,

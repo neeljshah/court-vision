@@ -1,0 +1,22 @@
+{
+  "probe": "R12_B29_avg_blend_top2_reb",
+  "kind": "regression",
+  "label": "target_reb",
+  "stat": "reb",
+  "n_features": 85,
+  "status": "REJECT",
+  "pooled_lgb_mae": 1.9239,
+  "baseline_mae": 1.923,
+  "prod_reference_mae": 1.9,
+  "beat_baseline": false,
+  "beat_prod": false,
+  "vs_baseline_pct": 0.05,
+  "variant": {
+    "variant": "avg_blend_top2",
+    "models_used": [
+      "baseline_full",
+      "form_only"
+    ],
+    "stat": "reb"
+  }
+}

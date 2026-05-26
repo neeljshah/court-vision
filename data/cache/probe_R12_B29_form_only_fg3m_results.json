@@ -1,0 +1,20 @@
+{
+  "probe": "R12_B29_form_only_fg3m",
+  "kind": "regression",
+  "label": "target_fg3m",
+  "stat": "fg3m",
+  "n_features": 40,
+  "status": "REJECT",
+  "pooled_lgb_mae": 0.9123,
+  "baseline_mae": 0.9091,
+  "prod_reference_mae": 0.89,
+  "beat_baseline": false,
+  "beat_prod": false,
+  "vs_baseline_pct": 0.36,
+  "variant": {
+    "variant": "form_only",
+    "n_features": 40,
+    "stat": "fg3m"
+  },
+  "elapsed_s": 9.0
+}

@@ -1,0 +1,20 @@
+{
+  "probe": "R12_B29_opp_only_reb",
+  "kind": "regression",
+  "label": "target_reb",
+  "stat": "reb",
+  "n_features": 16,
+  "status": "REJECT",
+  "pooled_lgb_mae": 2.5844,
+  "baseline_mae": 1.923,
+  "prod_reference_mae": 1.9,
+  "beat_baseline": false,
+  "beat_prod": false,
+  "vs_baseline_pct": 34.4,
+  "variant": {
+    "variant": "opp_only",
+    "n_features": 16,
+    "stat": "reb"
+  },
+  "elapsed_s": 6.5
+}
