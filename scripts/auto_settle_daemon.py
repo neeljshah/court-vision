@@ -77,6 +77,14 @@ SEEN_PATH      = Path(PROJECT_DIR) / "data" / "cache" / "auto_settle_seen.json"
 LOG_MD         = Path(PROJECT_DIR) / "vault" / "Improvements" / "auto_settle.md"
 PROBE_PATH     = Path(PROJECT_DIR) / "data" / "cache" / "probe_R18_K8_auto_settle_results.json"
 
+# R25_R2: full-game boxscore_<gid>.json fallback dir. Lives at data/nba/.
+# Per-period quarter_box JSONs occasionally omit garbage-time low-minute
+# players whose minutes never round to a per-period bucket -> daemon used to
+# void those bets as DNP even when the player did play. Fall back to the
+# full-game traditional boxscore (which reflects official-corrected totals)
+# before declaring DNP.
+DEFAULT_FULL_BOX_DIR = Path(PROJECT_DIR) / "data" / "nba"
+
 # ---- Logger ---- #
 logger = logging.getLogger("auto_settle")
 if not logger.handlers:
@@ -198,6 +206,55 @@ def _match_player(bet: Dict[str, Any], totals: Dict[str, Dict[str, Any]],
 
 
 # --------------------------------------------------------------------------- #
+# R25_R2: Full-game boxscore fallback. The per-period quarter_box files       #
+# occasionally drop low-minute garbage-time players (e.g. < 1 min in any      #
+# single quarter). Before voiding a bet as DNP, consult the                   #
+# traditional boxscore_<gid>.json which carries the official-final totals.   #
+# --------------------------------------------------------------------------- #
+_FULL_BOX_STAT_MAP = {
+    "pts": "pts", "reb": "reb", "ast": "ast",
+    "fg3m": "fg3m", "stl": "stl", "blk": "blk", "tov": "to",
+}
+
+
+def _load_full_box_player(game_id: str,
+                            bet: Dict[str, Any],
+                            full_box_dir: Optional[Path] = None,
+                            ) -> Optional[Dict[str, Any]]:
+    """Return a totals-shaped dict for `bet`'s player from the full-game box.
+
+    Returns None when (a) no full-box file exists, (b) it's unreadable, or
+    (c) the player is absent from the full box too (= true DNP).
+    """
+    full_box_dir = Path(full_box_dir or DEFAULT_FULL_BOX_DIR)
+    fp = full_box_dir / f"boxscore_{game_id}.json"
+    if not fp.exists():
+        return None
+    try:
+        data = json.load(open(fp, encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    pname = bet.get("player", "")
+    pkey  = _player_key(pname)
+    pid   = str(bet.get("player_id") or "").strip()
+    for pl in data.get("players", []) or []:
+        nm = pl.get("player_name", "") or ""
+        if _player_key(nm) == pkey or (pid and str(pl.get("player_id") or "") == pid):
+            row: Dict[str, Any] = {
+                "player_id": pl.get("player_id"),
+                "team":      pl.get("team_abbreviation"),
+            }
+            for ledger_stat, box_field in _FULL_BOX_STAT_MAP.items():
+                v = pl.get(box_field, 0) or 0
+                try:
+                    row[ledger_stat] = float(v)
+                except (TypeError, ValueError):
+                    row[ledger_stat] = 0.0
+            return row
+    return None
+
+
+# --------------------------------------------------------------------------- #
 # Game settlement (settle won/lost/push + void DNPs).                         #
 # --------------------------------------------------------------------------- #
 def settle_game(game_id: str, qb_dir: Optional[Path] = None,
@@ -242,7 +299,15 @@ def settle_game(game_id: str, qb_dir: Optional[Path] = None,
         bid = bet["bet_id"]
         match = _match_player(bet, totals)
         if match is None:
-            # DNP — player didn't appear in any quarter -> void + refund stake.
+            # R25_R2 fix: before voiding, try the full-game traditional
+            # boxscore. Per-period files occasionally omit low-minute
+            # garbage-time players whose minutes were never recorded in any
+            # single quarter (R25_R2 audit found this on game 0022500005
+            # for Johnny Furphy — full box has him at 0/0/0, quarter_box
+            # has him in zero periods).
+            match = _load_full_box_player(game_id, bet, DEFAULT_FULL_BOX_DIR)
+        if match is None:
+            # DNP — player didn't appear in quarter box OR full box -> void + refund stake.
             if dry_run:
                 result["voided"].append({"bet_id": bid, "reason": "dnp_dryrun"})
                 continue
