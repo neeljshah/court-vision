@@ -1,0 +1,37 @@
+{
+  "probe": "R12_B2_spread_with_injury",
+  "kind": "regression",
+  "label": "score_diff",
+  "n_features": 76,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -15.59%",
+  "pooled_naive_mae": 12.9981,
+  "pooled_lgb_mae": 10.9718,
+  "pooled_delta_pct": -15.59,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 12.4045,
+      "lgb_mae": 10.6063,
+      "delta": -1.7982,
+      "delta_pct": -14.5
+    },
+    {
+      "fold": 2,
+      "naive_mae": 13.7413,
+      "lgb_mae": 11.4535,
+      "delta": -2.2878,
+      "delta_pct": -16.65
+    },
+    {
+      "fold": 3,
+      "naive_mae": 12.8485,
+      "lgb_mae": 10.8556,
+      "delta": -1.9929,
+      "delta_pct": -15.51
+    }
+  ],
+  "elapsed_s": 2.9
+}
