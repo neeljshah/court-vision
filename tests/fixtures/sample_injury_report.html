@@ -1,0 +1,24 @@
+<!--
+sample_injury_report.html — R22_O8 fixture for tests/test_nba_injury_report_scraper.py.
+
+This file mimics the layout of an NBA-style injury report so the
+HTML-pathway tests can run without a real binary PDF in the repo. The
+PDF-pathway tests use a canned text string monkey-patched into
+fetch_injury_report._extract_text (no binary blob committed).
+-->
+<html>
+<body>
+<table id="injury-report">
+  <thead>
+    <tr><th>Player</th><th>Team</th><th>Status</th><th>Reason</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Jayson Tatum</td><td>BOS</td><td>OUT</td><td>Knee; Surgery</td></tr>
+    <tr><td>Jaylen Brown</td><td>BOS</td><td>QUESTIONABLE</td><td>Wrist</td></tr>
+    <tr><td>Anthony Edwards</td><td>MIN</td><td>PROBABLE</td><td>Ankle</td></tr>
+    <tr><td>Nikola Jokic</td><td>DEN</td><td>AVAILABLE</td><td>Rest Mgmt</td></tr>
+    <tr><td>LeBron James</td><td>LAL</td><td>DOUBTFUL</td><td>Foot</td></tr>
+  </tbody>
+</table>
+</body>
+</html>
