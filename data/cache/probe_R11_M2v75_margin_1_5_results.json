@@ -1,0 +1,34 @@
+{
+  "probe": "R11_M2v75_margin_1_5",
+  "kind": "binary",
+  "model": "lgb",
+  "label": "margin_1_5",
+  "label_desc": "P(margin 1-5)",
+  "status": "REJECT",
+  "ship_reason": "Brier 0.2034 (-0.46%); AUC 0.5079",
+  "n_games": 2836,
+  "pos_rate": 0.22566995768688294,
+  "pooled_lgb_brier": 0.20343,
+  "pooled_naive_brier": 0.20438,
+  "pooled_lgb_auc": 0.5079,
+  "brier_delta_pct": -0.464,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.2209,
+      "lgb_brier": 0.21762
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.1879,
+      "lgb_brier": 0.19226
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.20435,
+      "lgb_brier": 0.20042
+    }
+  ],
+  "elapsed_s": 1.0
+}
