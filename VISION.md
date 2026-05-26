@@ -78,7 +78,7 @@ MAE — not R² — is the betting-relevant loss because sportsbook prop O/U lin
 
 **xFG** (shot quality): Brier 0.226 on 221K shots. **DNP predictor:** AUC 0.979.
 
-**Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (1040 passing), CLV tracker scaffolding, CV benchmark.
+**Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (2,661 pass on RunPod / 1040+ on core suite locally; ~26 transient failures, none prediction-critical), CLV tracker scaffolding, CV benchmark.
 
 **Execution Layer** — Fractional Kelly + Ledoit-Wolf shrinkage, Shin devig, CLV vs Pinnacle close, multi-book routing, paper-trading harness.
 
@@ -155,4 +155,4 @@ In priority order:
 *For technical architecture: [ARCHITECTURE.md](ARCHITECTURE.md)*
 *For the build sequence: [ROADMAP.md](ROADMAP.md)*
 *For the full strategic plan: [MASTER_PLAN.md](MASTER_PLAN.md)*
-*For Renaissance methodology references: [vault/Research/Renaissance Methodology.md](vault/Research/Renaissance%20Methodology.md)*
+*Renaissance methodology references live in the maintainer's local `vault/Research/` (gitignored — not present on GitHub).*

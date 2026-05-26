@@ -188,7 +188,9 @@ result = stack_predict("Jayson Tatum", game_context={"away_team": "MIL", "season
 
 ---
 
-## 7-Model Possession Chain (Simulator Core)
+## 7-Model Possession Chain (Simulator Core) (planned — vision target)
+
+Current status: foundation components exist (possession events, shot quality, transition detection); end-to-end 10K-sim integration is roadmap'd, not shipped.
 
 ```
 [1] PlayTypeSelector     → What kind of possession is this?

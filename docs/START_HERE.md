@@ -83,9 +83,9 @@ nba-ai-system/
 │   ├── analytics/         # Betting edge, spacing, momentum, shot quality
 │   ├── data/              # NBA API scrapers, enrichment, database helpers
 │   └── simulation/        # Possession simulator (Monte Carlo)
-├── api/                   # FastAPI REST backend (10 endpoints)
+├── api/                   # FastAPI REST backend (~49 endpoints across 7 routers)
 ├── scripts/               # Operational scripts (batch runs, training, backfills)
-├── tests/                 # 1040+ tests
+├── tests/                 # 2,661 pass on RunPod / 1040+ on core suite locally
 ├── database/              # PostgreSQL schema + migrations
 ├── docs/                  # Documentation (you are here)
 └── .github/workflows/     # CI/CD (GitHub Actions)

@@ -40,7 +40,7 @@ src/features/feature_engineering.py # 60+ features
 src/prediction/win_probability.py   # XGBoost win prob
 src/prediction/player_props.py      # 7 prop models
 src/prediction/betting_portfolio.py # Kelly + CLV
-api/main.py                         # FastAPI (9 endpoints, 5 routers)
+api/main.py                         # FastAPI (~49 endpoints across 7 routers)
 scripts/batch_season.py             # Batch runner
 database/schema.sql                 # PostgreSQL
 ```

@@ -128,6 +128,5 @@ The agentic system is designed to invalidate this roadmap gracefully — by find
 
 ---
 
-*Full planning detail: `.planning/ROADMAP.md` (167KB — grep/section-read only)*
-*Gate 1 step-by-step: `vault/Plans/Gate 1 Validation.md`*
-*Agentic system design: `vault/Plans/Agentic Research System.md`*
+*Full planning detail lives in the maintainer's local `.planning/ROADMAP.md` (167KB; gitignored — not present on GitHub).*
+*Gate 1 step-by-step and the agentic system design live in `vault/Plans/` (gitignored — not present on GitHub).*
