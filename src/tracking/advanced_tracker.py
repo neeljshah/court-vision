@@ -581,19 +581,31 @@ class AdvancedFeetDetector(FeetDetector):
         else:
             self._appearances[slot] = emb
 
+    # Fix C: sticky binding threshold.  A slot must be absent for at least this
+    # many frames before its jersey confirmation is cleared.  Below this threshold
+    # the re-activation is just a brief occlusion, not a real substitution — do
+    # not wipe the hard-won jersey vote so re-binding can't fire on a bad OCR
+    # read from the moment the player returns into frame.
+    _STICKY_REBIND_MIN_ABSENCE = 90  # frames (~3 s at 30 fps)
+
     def _activate_slot(self, slot: int, det: dict, timestamp: int, stride: int = 1):
         """
         Assign a detection to a player slot and update all state.
 
-        Resets the jersey voting buffer for the slot when it was previously
-        occupied, preventing stale vote counts from a prior occupant carrying
-        over to a new player (RESEARCH.md Pitfall 3).
+        Resets the jersey voting buffer for the slot only when the slot has been
+        absent for > _STICKY_REBIND_MIN_ABSENCE frames (true substitution event).
+        Brief disappearances (occlusion, YOLO miss) keep the existing confirmed
+        jersey so re-binding cannot fire on a single noisy OCR read when the
+        player returns (Fix C — audit 2026-05-26, pid=10 cycling 4 names).
         """
-        # Reset jersey voting state for evicted slot (RESEARCH.md Pitfall 3)
+        # Fix C: only reset jersey when the slot has been absent long enough to
+        # represent a real substitution (not a brief occlusion / YOLO miss).
+        _absent_frames = self._lost_ages.get(slot, 0)
         if (_HAS_VOTING
                 and hasattr(self, "_jersey_buf")
                 and self._jersey_buf is not None
-                and self.players[slot].previous_bb is not None):
+                and self.players[slot].previous_bb is not None
+                and _absent_frames >= self._STICKY_REBIND_MIN_ABSENCE):
             _reset_confirmed_slot(slot, self._jersey_buf)
 
         p = self.players[slot]

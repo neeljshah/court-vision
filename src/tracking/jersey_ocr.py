@@ -31,7 +31,7 @@ from typing import Optional
 import cv2
 import numpy as np
 
-_OCR_CONF_MIN    = 0.45  # minimum confidence to accept a digit read (ISSUE-057: lowered 0.65→0.45)
+_OCR_CONF_MIN    = 0.55  # minimum confidence to accept a digit read (raised back toward 0.65; 0.45 let too much noise through)
 _MIN_CROP_PIXELS = 600   # below this, fall back from k-means to mean color
 _KMEANS_K        = 3     # number of clusters for jersey color
 
@@ -104,7 +104,8 @@ def preprocess_crop(crop_bgr: np.ndarray) -> np.ndarray:
     Preprocess a player bounding-box crop for jersey number OCR.
 
     Steps:
-      1. Slice rows 20%-70% of crop height (jersey number zone)
+      1. Slice central 60% width × rows 25%-55% height (torso-only — avoids
+         reading neighbouring players' jersey pixels, Fix A, audit 2026-05-26)
       2. Upscale to at least 64 px tall using bicubic interpolation
       3. Convert to grayscale and apply CLAHE (local contrast enhancement)
       4. Adaptive threshold to binarize (handles dark and light jerseys)
@@ -118,10 +119,16 @@ def preprocess_crop(crop_bgr: np.ndarray) -> np.ndarray:
     """
     h, w = crop_bgr.shape[:2]
 
-    # Slice jersey number region (rows 20%-70%)
-    y0 = int(h * 0.20)
-    y1 = int(h * 0.70)
-    roi = crop_bgr[y0:y1]
+    # Fix A: torso-only crop — narrow width to central 60% AND restrict rows to
+    # 25%-55% of bbox height.  The previous full-width slice at 20%-70% read
+    # pixels from neighbouring players' jerseys when bboxes overlapped, producing
+    # the 17-35% dominant-jersey rates documented in the 2026-05-26 audit.
+    x0 = int(w * 0.20)   # 20% from left — skip arm/shoulder of left neighbour
+    x1 = int(w * 0.80)   # 80% from left — skip arm/shoulder of right neighbour
+    x1 = max(x1, x0 + 1)  # ensure non-empty even on very narrow crops
+    y0 = int(h * 0.25)   # 25% from top  — skip head/chin
+    y1 = int(h * 0.55)   # 55% from top  — torso only (avoids shorts)
+    roi = crop_bgr[y0:y1, x0:x1]
 
     if roi.size == 0 or roi.shape[0] < 2:
         return np.zeros((64, 32), dtype=np.uint8)

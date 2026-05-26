@@ -3202,10 +3202,21 @@ class UnifiedPipeline:
             dominant_play_type = "half_court"
 
         # FIX 2: poss_ctx aggregates
+        # BUG-A fix: coerce shot_clock_est safely — buf entries may carry "" or None
+        # (e.g. from a prior-version checkpoint or a non-standard code path).
+        # _to_float converts any non-numeric value to the given default before comparison.
+        def _to_float(v, default: float = 24.0) -> float:
+            try:
+                return float(v) if v not in ("", None) else default
+            except (ValueError, TypeError):
+                return default
+
         max_paint_touches = max((b.get("paint_touches", 0) for b in buf), default=0)
         _off_dists = [b.get("off_ball_distance", 0.0) for b in buf if b.get("off_ball_distance", 0.0) > 0]
         avg_off_ball_distance = round(float(sum(_off_dists) / len(_off_dists)), 1) if _off_dists else ""
-        min_shot_clock_est = min((b.get("shot_clock_est", 24.0) for b in buf), default=24.0)
+        min_shot_clock_est = min(
+            (_to_float(b.get("shot_clock_est")) for b in buf), default=24.0
+        )
 
         # FIX 2: dominant handler zone (only frames where handler exists)
         _zones = [b["handler_zone"] for b in buf if b.get("handler_zone") is not None]
