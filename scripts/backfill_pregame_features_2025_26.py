@@ -335,6 +335,47 @@ def _atomic_write(path: str, payload: dict) -> None:
     os.replace(tmp, path)
 
 
+def _apply_pace_calibration(path: str) -> int:
+    """R28_U2 post-pass: rescale per-team pace onto the NBA Stats PACE scale.
+
+    The simple Oliver possession formula used inside
+    ``_compute_season_to_date_team_stats`` over-counts possessions by ~2.2%
+    versus the NBA Stats ``leaguedashteamstats`` Advanced PACE field that the
+    2021-22 → 2024-25 historical season files store. Without this rescaling
+    the 2025-26 file's home_pace/away_pace mean drifts +2.8 possessions
+    relative to historical seasons — purely a method mismatch, not a real
+    league shift — which fires R27_T3 drift_major alerts on every row.
+
+    Calibration multiplies each team's expanding-window pace by
+    ``NBA_Stats_PACE[team_id] / mean(custom_pace[team_id]_this_file)``,
+    preserving the leakage-free PER-GAME variation while shifting the
+    GLOBAL SCALE onto historical-file parity. Idempotent via the
+    ``pace_calibration_R28_U2`` marker.
+
+    Returns the number of rows patched.
+    """
+    try:
+        from scripts.patch_R28_U2_pace_calibration import patch_file as _patch  # type: ignore
+    except Exception:
+        # Fall back to module-relative import when invoked as a script.
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from patch_R28_U2_pace_calibration import patch_file as _patch  # type: ignore
+    from pathlib import Path as _P
+    sg = _P(path)
+    ts = sg.parent / f"team_stats_{SEASON}.json"
+    bk = sg.with_suffix(sg.suffix + ".bak_R28_U2")
+    res = _patch(sg, ts, backup_path=bk)
+    if res.get("status") == "OK":
+        n = int(res.get("n_rows_patched", 0))
+        print(f"  [pace-calib] rescaled {n} rows (league_ratio={res.get('league_mean_ratio')})")
+        return n
+    if res.get("status") == "ALREADY_APPLIED":
+        print(f"  [pace-calib] already applied — skipping (idempotent)")
+        return 0
+    print(f"  [pace-calib] BLOCKED: {res.get('reason','')}")
+    return 0
+
+
 def patch_elo(path: str) -> int:
     """Re-compute ELO over the just-written rich rows and patch home_elo/
     away_elo/elo_differential/elo_pace_interaction in-place.
@@ -407,6 +448,9 @@ def main() -> int:
     # Second pass: now that the file has home_win populated for every game,
     # walk-forward ELO produces real per-game pre-tip snapshots.
     patch_elo(OUT_PATH)
+    # Third pass (R28_U2): rescale per-team pace onto NBA Stats PACE scale
+    # so the file is comparable to historical seasons 2021-22 → 2024-25.
+    _apply_pace_calibration(OUT_PATH)
 
     enriched = sum(1 for r in rows if r.get("home_off_rtg") is not None
                    and "home_off_rtg" in r)
