@@ -24,6 +24,8 @@ check_env_var_documentation = _mod.check_env_var_documentation
 check_file_perms = _mod.check_file_perms
 ReadinessChecker = _mod.ReadinessChecker
 CheckResult = _mod.CheckResult
+ReadinessReport = _mod.ReadinessReport
+LayerKPI = _mod.LayerKPI
 
 
 # ---------------------------------------------------------------------------
@@ -323,3 +325,167 @@ def _send_live(order):
     assert result.status == "FAIL", (
         f"Expected FAIL for runtime live branch, got {result.status}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Tests: KPI scoring — LayerKPI + compute_layer_kpis + kpi_summary_markdown
+# ---------------------------------------------------------------------------
+
+def _make_report_with_results(layers_results: dict) -> "ReadinessReport":
+    """Build a ReadinessReport from a dict of layer -> list[CheckResult]."""
+    from datetime import datetime, timezone
+    counts: dict = {"pass": 0, "fail": 0, "skip": 0, "n_a": 0}
+    for results in layers_results.values():
+        for r in results:
+            key = r.status.lower()
+            if key == "n/a":
+                counts["n_a"] += 1
+            elif key in counts:
+                counts[key] += 1
+    # exclude 'global' from shipped count
+    shipped = [k for k in layers_results if k != "global"]
+    counts["layers"] = len(shipped)
+    return ReadinessReport(
+        layers=layers_results,
+        summary=counts,
+        generated_at=datetime.now(timezone.utc).isoformat(),
+    )
+
+
+def test_compute_layer_kpis_basic(tmp_path):
+    """Mixed PASS/FAIL/SKIP/N/A results → correct counts and stability_score."""
+    state = {
+        "version": 2,
+        "layers": {
+            "L1": {"name": "Ingester", "status": "shipped",
+                   "ships": [{"round": 1, "tests": "5/5"}]},
+            "L2": {"name": "Optimizer", "status": "shipped",
+                   "ships": [{"round": 1, "tests": "3/3"},
+                              {"round": 2, "version": 2, "tests": "6/6"}]},
+        },
+    }
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    layers = {
+        # L1: 1 PASS, 1 FAIL, 1 SKIP, 1 N/A → total=2, pass=1, fail=1, score=50.0
+        "L1": [
+            CheckResult("L1", "paper_default", "PASS", "ok"),
+            CheckResult("L1", "atomic_writes", "FAIL", "bad write"),
+            CheckResult("L1", "env_var_docs", "SKIP", "unreadable"),
+            CheckResult("L1", "extra_check", "N/A", "not applicable"),
+        ],
+        # L2: 2 PASS → total=2, score=100.0
+        "L2": [
+            CheckResult("L2", "paper_default", "PASS", "ok"),
+            CheckResult("L2", "atomic_writes", "PASS", "ok"),
+        ],
+    }
+    report = _make_report_with_results(layers)
+    kpis = report.compute_layer_kpis(state_path)
+
+    assert "L1" in kpis and "L2" in kpis
+    k1 = kpis["L1"]
+    assert k1.checks_total == 2
+    assert k1.checks_pass == 1
+    assert k1.checks_fail == 1
+    assert k1.stability_score == 50.0
+    assert k1.v1_tests == "5/5"
+    assert k1.v2_tests is None
+    assert k1.ships == 1
+
+    k2 = kpis["L2"]
+    assert k2.checks_total == 2
+    assert k2.checks_pass == 2
+    assert k2.stability_score == 100.0
+    assert k2.v1_tests == "3/3"
+    assert k2.v2_tests == "6/6"
+    assert k2.ships == 2
+
+
+def test_stability_score_skip_only_returns_100(tmp_path):
+    """All SKIP/N/A checks → stability_score == 100.0."""
+    state = {"version": 2, "layers": {
+        "L5": {"name": "Skipper", "status": "shipped",
+               "ships": [{"round": 1, "tests": "2/2"}]},
+    }}
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    layers = {
+        "L5": [
+            CheckResult("L5", "paper_default", "SKIP", "unreadable"),
+            CheckResult("L5", "atomic_writes", "N/A", "no writes"),
+        ],
+    }
+    report = _make_report_with_results(layers)
+    kpis = report.compute_layer_kpis(state_path)
+    assert kpis["L5"].stability_score == 100.0
+    assert kpis["L5"].checks_total == 0
+
+
+def test_stability_score_all_fail_returns_zero(tmp_path):
+    """All FAIL checks → stability_score == 0.0."""
+    state = {"version": 2, "layers": {
+        "L9": {"name": "Failing Layer", "status": "shipped",
+               "ships": [{"round": 1, "tests": "0/5"}]},
+    }}
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+
+    layers = {
+        "L9": [
+            CheckResult("L9", "paper_default", "FAIL", "no paper"),
+            CheckResult("L9", "atomic_writes", "FAIL", "bad writes"),
+            CheckResult("L9", "env_var_docs", "FAIL", "undocumented"),
+        ],
+    }
+    report = _make_report_with_results(layers)
+    kpis = report.compute_layer_kpis(state_path)
+    assert kpis["L9"].stability_score == 0.0
+    assert kpis["L9"].checks_fail == 3
+
+
+def test_kpi_summary_markdown_includes_all_layers(tmp_path):
+    """Integration: real state.json → every shipped layer appears in markdown output."""
+    real_layers_dir = Path(__file__).resolve().parents[1]
+    real_state_json = real_layers_dir / "state.json"
+    if not real_state_json.exists():
+        pytest.skip("state.json not found — skipping integration test")
+
+    checker = ReadinessChecker(layers_dir=real_layers_dir, state_json_path=real_state_json)
+    report = checker.run_all_checks()
+    kpis = report.compute_layer_kpis(real_state_json)
+    md = report.kpi_summary_markdown(kpis)
+
+    # Every layer in the KPI dict must appear in the table
+    for layer in kpis:
+        assert layer in md, f"Layer {layer} missing from kpi_summary_markdown output"
+
+    # Sanity: must have a header row and at least one data row
+    assert "| Layer |" in md
+    assert "Stability" in md
+
+
+def test_kpi_cli_writes_json(tmp_path):
+    """kpi --json <path> creates a valid JSON file with expected keys."""
+    real_layers_dir = Path(__file__).resolve().parents[1]
+    real_state_json = real_layers_dir / "state.json"
+    if not real_state_json.exists():
+        pytest.skip("state.json not found — skipping integration test")
+
+    out_path = tmp_path / "kpi_out.json"
+    # Call _cli directly via the module (argv injection)
+    _cli = _mod._cli
+    _cli(["kpi", "--json", str(out_path)])
+
+    assert out_path.exists(), "JSON output file was not created"
+    payload = json.loads(out_path.read_text(encoding="utf-8"))
+    assert len(payload) > 0, "KPI JSON payload is empty"
+
+    # Pick a known shipped layer and check required keys exist
+    first_key = next(iter(payload))
+    first_kpi = payload[first_key]
+    for key in ("layer", "name", "checks_total", "checks_pass", "checks_fail",
+                "stability_score", "v1_tests", "v2_tests", "ships"):
+        assert key in first_kpi, f"Missing key '{key}' in KPI JSON for {first_key}"

@@ -4,6 +4,9 @@ Reads NBA prediction markets from Polymarket's Gamma + CLOB APIs.
 Default mode is PAPER — never touches private keys or real funds.
 LIVE mode requires explicit env vars AND --live flag from caller.
 
+Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('polymarket');
+see L44 for the canonical list of env vars.
+
 Public API
 ----------
     PolyMarket           dataclass
@@ -23,6 +26,8 @@ CLI
     python L10_polymarket_client.py cancel --order_id X
 
 Environment Variables:
+    POLYMARKET_LIVE_ENABLED  Set to "1" to activate live (HTTP) mode; default paper.
+                             Canonical flag read via L44_paper_mode.is_live_for_layer('polymarket').
     POLYMARKET_PRIVATE_KEY   EIP-712 signing key for the funded Polymarket wallet.
                              Required to enable live order submission and cancellation.
                              Default: absent (paper mode only; live calls raise PermissionError).
@@ -53,6 +58,23 @@ from pathlib import Path
 from typing import Optional
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — delegates paper/live mode to the canonical library
+# ---------------------------------------------------------------------------
+
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44
+except Exception:
+    _L44 = None
+
+
+def _is_live_mode() -> bool:
+    if _L44 is not None:
+        return _L44.is_live_for_layer("polymarket")
+    # fallback to inline env read (preserves backward compat if L44 absent)
+    return os.environ.get("POLYMARKET_LIVE_ENABLED", "0").lower() in ("1", "true")
+
 
 # ---------------------------------------------------------------------------
 # Repo-root resolution
