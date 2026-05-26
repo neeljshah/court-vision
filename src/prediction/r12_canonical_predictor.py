@@ -351,6 +351,79 @@ def predict_canonical(model: Dict, X: np.ndarray) -> np.ndarray:
            0.5 * model["l2_xgb"].predict_proba(X_aug)[:, 1]
 
 
+_MODELS_DIR = os.path.join(PROJECT_DIR, "data", "models", "m2_family")
+# Map target → on-disk artifact filename produced by B24/B26 serialization probes.
+_BUNDLE_FILENAMES = {
+    "total_pts_box":   "r12_total_pts_box_canonical.joblib",
+    "score_diff":      "r12_score_diff_canonical.joblib",
+    "home_score":      "r12_home_score_canonical.joblib",
+    "away_score":      "r12_away_score_canonical.joblib",
+    "over_230":        "r12_over_230_canonical.joblib",
+    "home_cover_AH3":  "r12_AH3_canonical_top4_avg.joblib",
+}
+
+
+def load_canonical_bundle(target: str) -> Dict:
+    """Load a serialized canonical bundle for `target` from data/models/m2_family/.
+
+    Returns the joblib bundle as a dict. Bundles fall into two shapes:
+      single-model (B24): {"model": {...}, "feature_columns": [...], "recipe": {...}, ...}
+      ensemble (B26):     {"models": [...], "feature_columns_per_model": [...],
+                           "recipe": {"type": "equal_weight_avg" | "nnls" | "single",
+                                      "components": [...], optionally "weights": [...]},
+                           ...}
+    Raises FileNotFoundError if the bundle hasn't been serialized yet.
+    """
+    import joblib
+    if target not in _BUNDLE_FILENAMES:
+        raise KeyError(f"Unknown target {target}; bundles: {list(_BUNDLE_FILENAMES)}")
+    path = os.path.join(_MODELS_DIR, _BUNDLE_FILENAMES[target])
+    if not os.path.isfile(path):
+        raise FileNotFoundError(
+            f"No serialized bundle at {path}. Run scripts/probe_R12_batch24_serialize_models.py "
+            f"(single-model targets) or scripts/probe_R12_batch26_serialize_ensembles.py "
+            f"(ensemble targets) to create it.")
+    return joblib.load(path)
+
+
+def predict_canonical_bundle(bundle: Dict, df: pd.DataFrame) -> np.ndarray:
+    """Predict via a loaded canonical bundle on the rows of `df`.
+
+    Dispatches on bundle shape:
+      - single-model bundle ({"model", "feature_columns"}): uses predict_canonical.
+      - ensemble bundle ({"models", "feature_columns_per_model", "recipe"}):
+          * recipe.type == "equal_weight_avg": equal-weight mean across components
+          * recipe.type == "nnls":             recipe["weights"] linear combination
+          * recipe.type == "single":           predict on the first model only
+
+    The caller must have already augmented `df` with build_r12_features() — this
+    function only does column selection and missing-value fills.
+    """
+    # Shape 1: single-model bundle (B24-style)
+    if "model" in bundle and "feature_columns" in bundle:
+        fc = bundle["feature_columns"]
+        df_local = df.copy(); df_local[fc] = df_local[fc].fillna(0.0)
+        return predict_canonical(bundle["model"], df_local[fc].values)
+    # Shape 2: ensemble bundle (B26-style)
+    if "models" in bundle and "feature_columns_per_model" in bundle:
+        recipe = bundle["recipe"]
+        preds = []
+        for model, fc in zip(bundle["models"], bundle["feature_columns_per_model"]):
+            df_local = df.copy(); df_local[fc] = df_local[fc].fillna(0.0)
+            preds.append(predict_canonical(model, df_local[fc].values))
+        P = np.column_stack(preds)
+        t = recipe["type"]
+        if t == "equal_weight_avg":
+            return P.mean(axis=1)
+        if t == "nnls":
+            w = np.asarray(recipe["weights"], dtype=float)
+            return P @ w
+        if t == "single":
+            return preds[0]
+        raise ValueError(f"Unknown ensemble recipe type: {t}")
+    raise ValueError(f"Unrecognized bundle shape; keys = {sorted(bundle.keys())}")
+
+
 def calibrate_inplay_platt(raw_probs: np.ndarray, oof_probs: np.ndarray,
                              oof_y: np.ndarray) -> np.ndarray:
     """Platt sigmoid calibration via logistic regression on log-odds."""
