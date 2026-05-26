@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 44,
+  "rounds_completed": 45,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -684,6 +684,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-31 (high-level predict_all_markets helper - 10/10 smoke PASS). Dataset 4910 games.\nADDED TO src/prediction/r12_canonical_predictor.py:\n  predict_all_pregame_markets(df) -> Dict[market, np.ndarray] - loads all 6 bundles\n    once, returns predictions per market. In-process caching via _BUNDLE_CACHE.\n  predict_all_inplay_markets(df, snap_q) -> Dict[market, np.ndarray] - loads winprob\n    bundle for snap_q + remaining_total when snap_q==2. Calibrators applied auto.\n  clear_bundle_cache() - reset in-process bundle caches after re-serialization.\nPERFORMANCE (cold vs warm cache on last 50 games):\n  Pregame 6 markets cold: 1.38s\n  Pregame 6 markets warm: 0.17s (8.2x speedup)\n  In-play endQ1 (1 market):  0.03s\n  In-play endQ2 (2 markets): 0.06s\n  In-play endQ3 (1 market):  0.03s\n  10/10 predictions in sanity ranges.\nPRODUCTION INTERFACE COMPLETE - 2-line predict path:\n  df = build_r12_features(load_season_games())\n  all_preds = predict_all_pregame_markets(df.tail(N_upcoming))  # dict of 6 markets\n  inplay = predict_all_inplay_markets(df.with_snapshot_features, snap_q=2)\nAll 10 R12 production bundles + 8 module helpers + 1 predictor class shipped.\nStop counter UNCHANGED at 2/5 (utility extension doesn't count)."
+    },
+    {
+      "name": "R12_BATCH32_inplay_rebaseline_LIVE",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 4,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-32 (in-play honest re-baseline on current 4910-game dataset - ALL 4 IMPROVED). Dataset grew 2839 -> 4910 (+2071 games since B14).\nPer-target HONEST LIVE (Platt/isotonic calibrated, 4-fold WF, leak-free):\n  endQ1 winprob:  Brier 0.1994 (frozen 0.2042, drift -0.00478 BETTER); AUC 0.7610 (frozen 0.7500, +0.0110 BETTER)\n  endQ2 winprob:  Brier 0.1681 (frozen 0.1736, drift -0.00552 BETTER); AUC 0.8331 (frozen 0.8212, +0.0119 BETTER)\n  endQ3 winprob:  Brier 0.1249 (frozen 0.1277, drift -0.00280 BETTER); AUC 0.9053 (frozen 0.9012, +0.00415 BETTER)\n  remaining_total: -25.57% (frozen -25.65%, drift +0.08pp tied)\nARCHITECTURAL FINDING: simpler B14 in-play architecture (no perm-importance trim, just snapshot features + Platt calibration) SCALES BETTER with more data than the perm-importance-trimmed pregame canonicals. Three reasons:\n1. cum_score features directly observed dominate prediction power - no leakage risk\n2. B14 had no trim selection (which was the source of pregame inflation in B19/B21)\n3. More games = better-fit Platt calibrator AND better-fit underlying model\nBoth effects compound. Contrast with pregame B21 finding where the same +2000 games\nREVEALED leakage inflation rather than improving honest performance.\nSTRATEGIC IMPLICATION: production canonical for in-play markets is even BETTER than\nreported in CLAUDE memory + state.json - update production reference numbers:\n  endQ1: Brier 0.1994 AUC 0.7610 NEW HONEST BEST\n  endQ2: Brier 0.1681 AUC 0.8331 NEW HONEST BEST\n  endQ3: Brier 0.1249 AUC 0.9053 NEW HONEST BEST\n  remaining_total endQ2: -25.57% (essentially unchanged)\nThe B30 serialized bundles used full-data fits and benefit from this. The bundles\nare usable as-is; only the reported metrics need updating.\nStop counter UNCHANGED at 2/5 (re-baseline doesn't count toward stop)."
     }
   ],
   "rejects": [

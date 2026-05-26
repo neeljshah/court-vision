@@ -1,0 +1,16 @@
+{
+  "target": "home_wins",
+  "snap_q": 3,
+  "n_games": 4910,
+  "n_folds": 3,
+  "live_raw_brier": 0.13092,
+  "live_cal_brier": 0.1249,
+  "live_raw_auc": 0.9052,
+  "live_cal_auc": 0.90535,
+  "naive_brier": 0.12754,
+  "frozen_brier": 0.1277,
+  "frozen_auc": 0.9012,
+  "drift_brier": -0.0028,
+  "drift_auc": 0.00415,
+  "elapsed_s": 72.8
+}

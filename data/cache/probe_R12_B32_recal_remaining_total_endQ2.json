@@ -1,0 +1,14 @@
+{
+  "target": "remaining_total",
+  "snap_q": 2,
+  "n_games": 4910,
+  "n_folds": 3,
+  "live_raw_mae": 10.3996,
+  "live_cal_mae": 10.3532,
+  "naive_mae": 13.9099,
+  "live_raw_delta_pct": -25.24,
+  "live_cal_delta_pct": -25.57,
+  "frozen_delta_pct": -25.65,
+  "drift_pp": 0.08,
+  "elapsed_s": 80.6
+}
