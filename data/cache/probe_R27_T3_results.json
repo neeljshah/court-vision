@@ -1,0 +1,105 @@
+{
+  "probe": "R27_T3",
+  "ts": "2026-05-26T18:32:24Z",
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "current_days": 14,
+  "per_set": {
+    "m2": {
+      "status": "OK",
+      "blocked_reason": "",
+      "n_reference": 3685,
+      "n_current": 111,
+      "n_features_analyzed": 75,
+      "n_stable": 33,
+      "n_drift_minor": 7,
+      "n_drift_major": 35,
+      "top_5_drifted": [
+        {
+          "feature": "away_pace",
+          "class": "drift_major",
+          "ks_stat": 0.525720292884472,
+          "p_value": 3.2165050127425414e-28,
+          "mean_z": 1.4645855322043002
+        },
+        {
+          "feature": "home_pace",
+          "class": "drift_major",
+          "ks_stat": 0.43590157321500606,
+          "p_value": 4.0532334506865307e-19,
+          "mean_z": 1.258633052707268
+        },
+        {
+          "feature": "home_def_rtg",
+          "class": "drift_major",
+          "ks_stat": 0.28702678254917063,
+          "p_value": 2.373048441399857e-08,
+          "mean_z": -0.5597270852071332
+        },
+        {
+          "feature": "away_def_rtg",
+          "class": "drift_major",
+          "ks_stat": 0.3058564670504969,
+          "p_value": 1.9239200110210055e-09,
+          "mean_z": -0.5504639346373702
+        },
+        {
+          "feature": "away_off_rtg",
+          "class": "drift_major",
+          "ks_stat": 0.29711638368354787,
+          "p_value": 6.315152387315464e-09,
+          "mean_z": -0.45884527892846255
+        }
+      ]
+    },
+    "prop_pergame": {
+      "status": "OK",
+      "blocked_reason": "",
+      "n_reference": 57040,
+      "n_current": 127,
+      "n_features_analyzed": 8,
+      "n_stable": 8,
+      "n_drift_minor": 0,
+      "n_drift_major": 0,
+      "top_5_drifted": [
+        {
+          "feature": "BLK",
+          "class": "stable",
+          "ks_stat": 0.09388590407615593,
+          "p_value": 0.1999114254166965,
+          "mean_z": -0.18023452272624332
+        },
+        {
+          "feature": "FG3M",
+          "class": "stable",
+          "ks_stat": 0.10026725270841846,
+          "p_value": 0.14528703151811095,
+          "mean_z": 0.16822977256805619
+        },
+        {
+          "feature": "TOV",
+          "class": "stable",
+          "ks_stat": 0.0574591942662146,
+          "p_value": 0.7738153741416519,
+          "mean_z": 0.12715275158569514
+        },
+        {
+          "feature": "AST",
+          "class": "stable",
+          "ks_stat": 0.043687811288666056,
+          "p_value": 0.9598937278577091,
+          "mean_z": 0.10131412507718542
+        },
+        {
+          "feature": "PTS",
+          "class": "stable",
+          "ks_stat": 0.06400329648485392,
+          "p_value": 0.6516483144369132,
+          "mean_z": 0.09059051970582471
+        }
+      ]
+    }
+  },
+  "ship_ok": true,
+  "raised": false,
+  "error_repr": ""
+}

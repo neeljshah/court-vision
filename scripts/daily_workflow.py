@@ -79,6 +79,10 @@ DEFAULT_QB_DIR = PROJECT_DIR / "data" / "cache" / "quarter_box"
 DEFAULT_LEDGER_PATH = PROJECT_DIR / "data" / "pnl_ledger.csv"
 DEFAULT_BACKUP_DIR  = PROJECT_DIR / "data" / "backups"
 DEFAULT_BACKUP_KEEP = 30
+# R27_T3 — feature drift detector defaults.
+DEFAULT_DRIFT_CACHE = PROJECT_DIR / "data" / "cache" / "feature_drift_latest.json"
+DEFAULT_DRIFT_WARN_THRESHOLD = 5
+DEFAULT_DRIFT_CRITICAL_THRESHOLD = 15
 
 # Stages this orchestrator knows how to run.
 STAGES = ("evening", "morning", "all")
@@ -513,6 +517,89 @@ def _step_report_recs(
         return False, {}, f"report raised: {exc!r}"
 
 
+def _step_feature_drift(
+    *,
+    cache_path: Path,
+    feature_set: str,
+    current_days: int,
+    warn_threshold: int,
+    critical_threshold: int,
+    dry_run: bool,
+    alert_fn: Optional[Callable[..., Any]] = None,
+    run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+) -> Tuple[bool, Dict[str, Any], Optional[str]]:
+    """R27_T3 — run drift detector + fire warn/critical when thresholds breach.
+
+    Always writes its JSON report to ``cache_path`` so the operator dashboard's
+    ``fetch_feature_drift`` picks it up. Uses the R26_S5 layered alert helper
+    (dedup-aware) so daily firing on the same persistent drift won't spam.
+    """
+    if dry_run:
+        return True, {
+            "would_call": "feature_drift_detector.run",
+            "feature_set": feature_set,
+            "current_days": int(current_days),
+            "out": str(cache_path),
+        }, None
+    try:
+        if run_fn is None:
+            from scripts.feature_drift_detector import run as run_fn  # noqa: PLC0415
+        report = run_fn(
+            feature_set=feature_set,
+            current_days=int(current_days),
+        )
+    except Exception as exc:  # noqa: BLE001
+        return False, {}, f"drift detector raised: {exc!r}"
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(cache_path, "w", encoding="utf-8") as fh:
+            json.dump(report, fh, indent=2, default=str)
+    except Exception as exc:  # noqa: BLE001
+        return False, {"report": report}, f"failed to persist report: {exc!r}"
+
+    n_major = int(report.get("n_drift_major", 0) or 0)
+    n_minor = int(report.get("n_drift_minor", 0) or 0)
+    n_stable = int(report.get("n_stable", 0) or 0)
+    top = list((report.get("features") or [])[:5])
+    top_names = [str(r.get("feature", "")) for r in top]
+    fields = [
+        {"name": "feature_set", "value": str(feature_set)},
+        {"name": "n_major",     "value": str(n_major)},
+        {"name": "n_minor",     "value": str(n_minor)},
+        {"name": "n_stable",    "value": str(n_stable)},
+        {"name": "top_drifted", "value": ", ".join(top_names)[:200]},
+    ]
+    level: Optional[str] = None
+    if n_major > int(critical_threshold):
+        level = "critical"
+    elif n_major > int(warn_threshold):
+        level = "warn"
+    fire_res: Dict[str, Any] = {"fired": False}
+    if level is not None and report.get("status") == "OK":
+        msg = (
+            f"R27_T3 feature drift {feature_set}: "
+            f"n_major={n_major} (threshold warn>{warn_threshold} "
+            f"crit>{critical_threshold})"
+        )
+        fire_res = _safe_alert(msg, level=level, tag="feature_drift",
+                               fields=fields, alert_fn=alert_fn)
+        fire_res["fired"] = True
+        fire_res["level"] = level
+    details = {
+        "feature_set":         feature_set,
+        "status":              report.get("status"),
+        "blocked_reason":      report.get("blocked_reason", ""),
+        "n_features_analyzed": int(report.get("n_features_analyzed", 0) or 0),
+        "n_stable":            n_stable,
+        "n_drift_minor":       n_minor,
+        "n_drift_major":       n_major,
+        "top_drifted":         top_names,
+        "cache_path":          str(cache_path),
+        "alert":               fire_res,
+    }
+    return True, details, None
+
+
 def _step_alert(
     *,
     message: str,
@@ -655,6 +742,12 @@ def run_morning(
     ledger_path: Path = DEFAULT_LEDGER_PATH,
     backup_dir: Path = DEFAULT_BACKUP_DIR,
     backup_keep: int = DEFAULT_BACKUP_KEEP,
+    drift_cache: Path = DEFAULT_DRIFT_CACHE,
+    drift_feature_set: str = "m2",
+    drift_current_days: int = 14,
+    drift_warn_threshold: int = DEFAULT_DRIFT_WARN_THRESHOLD,
+    drift_critical_threshold: int = DEFAULT_DRIFT_CRITICAL_THRESHOLD,
+    drift_run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """Run the morning workflow. Returns a result dict (never raises)."""
     started_at = _iso_now()
@@ -691,6 +784,19 @@ def run_morning(
         settled_path=settled_path, days=int(report_days), dry_run=dry_run,
     ))
 
+    # 3b. R27_T3 — feature drift detector (writes cache, fires warn/critical).
+    steps.append(_run_step(
+        "feature_drift", _step_feature_drift,
+        cache_path=drift_cache,
+        feature_set=str(drift_feature_set),
+        current_days=int(drift_current_days),
+        warn_threshold=int(drift_warn_threshold),
+        critical_threshold=int(drift_critical_threshold),
+        dry_run=dry_run,
+        alert_fn=alert_fn,
+        run_fn=drift_run_fn,
+    ))
+
     # 4. Refresh dashboard.
     steps.append(_run_step(
         "refresh_dashboard", _step_refresh_dashboard,
@@ -698,27 +804,31 @@ def run_morning(
     ))
 
     # 5. Morning info alert with summary fields.
-    # NB: steps[0] is now ledger_backup (R27_T7) — settle/reconcile/report
-    # shifted by +1.
+    # Step order: [0]=ledger_backup (R27_T7), [1]=settle, [2]=reconcile,
+    # [3]=report, [4]=feature_drift (R27_T3), [5]=refresh_dashboard.
     settle_d = steps[1].get("details") or {}
     recon_d  = steps[2].get("details") or {}
     rep_d    = steps[3].get("details") or {}
+    drift_d  = steps[4].get("details") or {}
     n_settled    = int(settle_d.get("n_settled", 0) or 0)
     win_rate     = float(rep_d.get("win_rate", 0.0) or 0.0)
     roi          = float(rep_d.get("roi", 0.0) or 0.0)
     n_mismatched = int(recon_d.get("n_mismatched", 0) or 0)
+    n_drift_major = int(drift_d.get("n_drift_major", 0) or 0)
     fields = [
         {"name": "date",          "value": str(yesterday)},
         {"name": "n_recs_settled","value": str(n_settled)},
         {"name": "win_rate",      "value": f"{win_rate*100:.2f}%"},
         {"name": "roi",           "value": f"{roi*100:+.2f}%"},
         {"name": "n_mismatched",  "value": str(n_mismatched)},
+        {"name": "n_drift_major", "value": str(n_drift_major)},
         {"name": "dry_run",       "value": str(bool(dry_run))},
     ]
     msg = (
         f"R26_S3 morning summary {yesterday}: "
         f"settled={n_settled} win_rate={win_rate*100:.1f}% "
-        f"roi={roi*100:+.2f}% mismatched={n_mismatched}"
+        f"roi={roi*100:+.2f}% mismatched={n_mismatched} "
+        f"drift_major={n_drift_major}"
     )
     steps.append(_run_step(
         "alert_morning", _step_alert,
