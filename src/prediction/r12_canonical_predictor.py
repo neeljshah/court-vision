@@ -363,7 +363,65 @@ _BUNDLE_FILENAMES = {
 }
 
 
-def load_canonical_bundle(target: str) -> Dict:
+def list_available_bundles() -> Dict[str, bool]:
+    """Return {target: is_on_disk} for every known canonical target."""
+    return {t: os.path.isfile(os.path.join(_MODELS_DIR, fn))
+            for t, fn in _BUNDLE_FILENAMES.items()}
+
+
+def _auto_train_and_save(target: str, training_df: pd.DataFrame, path: str) -> Dict:
+    """Train + serialize the canonical bundle for `target` from a feature-augmented df."""
+    import joblib
+    from datetime import datetime
+    recipe = CANONICAL_RECIPES[target]
+    fset = _all_feature_sets(training_df)
+    if recipe["type"] in ("single", "top50"):
+        fc_full = fset[recipe["fc"]]
+        if recipe["type"] == "top50":
+            fc = get_canonical_feature_set_stable(target, training_df, fset, top_k=50)
+        else:
+            fc = fc_full
+        kind = recipe.get("kind", "reg")
+        model = train_canonical_model(training_df, target, fc=fc, kind=kind)
+        bundle = {
+            "model": model, "feature_columns": fc,
+            "recipe": {"target": target, "kind": kind, "fc_name": recipe["fc"],
+                       "trim": "perm_inner_cv_top50" if recipe["type"] == "top50" else None,
+                       "source_probe": "auto_train via load_canonical_bundle(auto_train=True)"},
+            "training_meta": {
+                "n_train_games": len(training_df),
+                "training_date": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "module_version": "r12_canonical_predictor v2 (B27 utility + B28 auto_train)",
+            },
+        }
+    elif recipe["type"] == "ensemble":
+        kind = recipe.get("kind", "reg")
+        models = []; fcs_used = []
+        for fc_name in recipe["fcs"]:
+            fc = fset[fc_name]
+            models.append(train_canonical_model(training_df, target, fc=fc, kind=kind))
+            fcs_used.append(fc)
+        # Default ensemble recipe = equal_weight_avg (matches B25/B26 finding for AH3 / safer than NNLS)
+        bundle = {
+            "models": models, "feature_columns_per_model": fcs_used,
+            "recipe": {"type": "equal_weight_avg", "components": recipe["fcs"],
+                       "target": target, "kind": kind,
+                       "source_probe": "auto_train via load_canonical_bundle(auto_train=True)"},
+            "training_meta": {
+                "n_train_games": len(training_df),
+                "training_date": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "module_version": "r12_canonical_predictor v2 (B27 utility + B28 auto_train)",
+            },
+        }
+    else:
+        raise ValueError(f"Unknown recipe type for {target}: {recipe['type']}")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    joblib.dump(bundle, path)
+    return bundle
+
+
+def load_canonical_bundle(target: str, auto_train: bool = False,
+                            training_df: pd.DataFrame = None) -> Dict:
     """Load a serialized canonical bundle for `target` from data/models/m2_family/.
 
     Returns the joblib bundle as a dict. Bundles fall into two shapes:
@@ -372,18 +430,30 @@ def load_canonical_bundle(target: str) -> Dict:
                            "recipe": {"type": "equal_weight_avg" | "nnls" | "single",
                                       "components": [...], optionally "weights": [...]},
                            ...}
-    Raises FileNotFoundError if the bundle hasn't been serialized yet.
+
+    If `auto_train=True` and the joblib is missing, this function will train and
+    serialize the bundle on the fly using the canonical recipe (30s-3min per
+    bundle). A feature-augmented `training_df` (already through build_r12_features)
+    is required when auto_train is True.
+
+    Raises FileNotFoundError if the bundle is missing and auto_train is False.
     """
     import joblib
     if target not in _BUNDLE_FILENAMES:
         raise KeyError(f"Unknown target {target}; bundles: {list(_BUNDLE_FILENAMES)}")
     path = os.path.join(_MODELS_DIR, _BUNDLE_FILENAMES[target])
-    if not os.path.isfile(path):
+    if os.path.isfile(path):
+        return joblib.load(path)
+    if not auto_train:
         raise FileNotFoundError(
-            f"No serialized bundle at {path}. Run scripts/probe_R12_batch24_serialize_models.py "
-            f"(single-model targets) or scripts/probe_R12_batch26_serialize_ensembles.py "
-            f"(ensemble targets) to create it.")
-    return joblib.load(path)
+            f"No serialized bundle at {path}. Either run "
+            f"scripts/probe_R12_batch24_serialize_models.py / probe_R12_batch26_serialize_ensembles.py, "
+            f"or call load_canonical_bundle(target, auto_train=True, training_df=df) "
+            f"to train it on the fly.")
+    if training_df is None:
+        raise ValueError("auto_train=True requires training_df (already feature-augmented "
+                         "via build_r12_features).")
+    return _auto_train_and_save(target, training_df, path)
 
 
 def predict_canonical_bundle(bundle: Dict, df: pd.DataFrame) -> np.ndarray:

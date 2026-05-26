@@ -59,7 +59,25 @@
     "combined_real_vegas_sample": {
       "total_bets": 8547,
       "books_covered": ["draftkings", "fanduel", "mgm", "betrivers"],
-      "windows": ["2024 NBA playoffs", "2025-26 regular season", "2026 playoffs"]
+      "windows": ["2024 NBA playoffs", "2025-26 regular season Jan-Apr", "2026 playoffs"],
+      "coverage_gap_disclosure": "Full 2024-25 season, early 2025-26 (Oct-Jan), and 2025 NBA playoffs have NO free public archive. The 8,360-bet sample is partial-season, not multi-full-season."
+    },
+    "combined_directional_strategy": {
+      "description": "Combined 2024 playoffs + 2025-26 mainline against L10 baseline, UNDER-only strategy. Real DK/FanDuel/MGM/BetRivers closes.",
+      "reproduce": "python scripts/run_gate1_full_analysis.py",
+      "n_bets": 3512,
+      "beat_rate_pct": 58.46,
+      "roi_pct": 7.70,
+      "pnl_usd": 27041,
+      "per_stat": {
+        "blk":  {"n": 343, "beat_pct": 74.05, "roi_pct": 41.37},
+        "stl":  {"n": 221, "beat_pct": 66.06, "roi_pct": 26.12},
+        "ast":  {"n": 548, "beat_pct": 60.58, "roi_pct": 9.98},
+        "fg3m": {"n": 584, "beat_pct": 60.45, "roi_pct": 5.55},
+        "reb":  {"n": 947, "beat_pct": 53.85, "roi_pct": -0.57},
+        "pts":  {"n": 869, "beat_pct": 52.70, "roi_pct": -1.26}
+      },
+      "why": "Rolling-average baselines systematically over-project player counting stats (no blowout sits, garbage time, load management). Books price for over-bias. The intersection is a structural UNDER edge — well-known in industry, here measured at real DK/FanDuel/MGM closes."
     }
   },
   "prop_models_walk_forward_mae": {
