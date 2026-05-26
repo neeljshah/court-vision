@@ -1,0 +1,33 @@
+{
+  "probe": "R11_M2x_total_O224",
+  "kind": "binary",
+  "label": "over_224",
+  "label_desc": "P(total > 224)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2720 (-8.33%); AUC 0.6102",
+  "n_games": 2836,
+  "pos_rate": 0.5490126939351199,
+  "pooled_lgb_brier": 0.27204,
+  "pooled_naive_brier": 0.29676,
+  "pooled_lgb_auc": 0.61021,
+  "brier_delta_pct": -8.33,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29956,
+      "lgb_brier": 0.29022
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.29028,
+      "lgb_brier": 0.25015
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.30046,
+      "lgb_brier": 0.27576
+    }
+  ],
+  "elapsed_s": 2.1
+}
