@@ -1,0 +1,40 @@
+{
+  "details": {
+    "gates": {
+      "all_sections": true,
+      "enough_rounds": true,
+      "shas_resolve": true,
+      "size_in_range": true
+    },
+    "n_rounds_documented": 14,
+    "note_size_bytes": 21718,
+    "rounds_seen": [
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28"
+    ],
+    "sections_rendered": 5,
+    "sections_total": 5,
+    "sha_checked": 40,
+    "sha_total_cited": 111,
+    "sha_unknown_sample": [],
+    "sha_valid": 40,
+    "size_in_range": true
+  },
+  "ended_at": "2026-05-26T19:00:49Z",
+  "probe": "R29_V4_session_note",
+  "started_at": "2026-05-26T19:00:46Z",
+  "status": "ok",
+  "verdict": "SHIP"
+}
