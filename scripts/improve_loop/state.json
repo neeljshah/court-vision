@@ -98,7 +98,7 @@
       "stats_won": 0,
       "commit": "pending",
       "date": "2026-05-25",
-      "summary": "PrizePicks scraper extended via fetch_live_prop_lines.py + new probe_R9_C2_multibook_scraper.py. 41 PP snapshots over 1 day = 27,111 rows / 6,616 deduped. Synthetic-50 CLV join test 100%. DK + FD blocked on missing ODDS_API_KEY ($30/mo). Persistent daemon running locally PID 22608, 15min cadence. SHIP downgraded — PP path works, DK/FD pending API key."
+      "summary": "PrizePicks scraper extended via fetch_live_prop_lines.py + new probe_R9_C2_multibook_scraper.py. 41 PP snapshots over 1 day = 27,111 rows / 6,616 deduped. Synthetic-50 CLV join test 100%. DK + FD blocked on missing ODDS_API_KEY ($30/mo). Persistent daemon running locally PID 22608, 15min cadence. SHIP downgraded \u2014 PP path works, DK/FD pending API key."
     },
     {
       "name": "R9_C8_clv_ship_gate",
@@ -116,7 +116,7 @@
       "stats_won": 0,
       "commit": "pending-wire",
       "date": "2026-05-26",
-      "summary": "In-play win-prob update at endQ3: mean Brier 0.1350 vs gate 0.183, mean accuracy 81.33% vs gate 72%, AUC 0.901. Pregame baseline Brier 0.2653 — endQ3 is +0.130 improvement. endQ1 Brier 0.2323 (fails gate), endQ2 Brier 0.1903 (fails gate marginally). Snapshot-conditional features dominate at endQ3 (3-quarter score margin + total + pace + pregame_winprob). Wire: retrain model on full data, persist to data/models/inplay_winprob_endq3.lgb, surface via src/prediction/live_engine.py for live API."
+      "summary": "In-play win-prob update at endQ3: mean Brier 0.1350 vs gate 0.183, mean accuracy 81.33% vs gate 72%, AUC 0.901. Pregame baseline Brier 0.2653 \u2014 endQ3 is +0.130 improvement. endQ1 Brier 0.2323 (fails gate), endQ2 Brier 0.1903 (fails gate marginally). Snapshot-conditional features dominate at endQ3 (3-quarter score margin + total + pace + pregame_winprob). Wire: retrain model on full data, persist to data/models/inplay_winprob_endq3.lgb, surface via src/prediction/live_engine.py for live API."
     },
     {
       "name": "R10_M16_streak_per_stat",
@@ -125,16 +125,16 @@
       "stats_won": 4,
       "commit": "pending-wire",
       "date": "2026-05-26",
-      "summary": "Hot-hand / streak features (z-score trend and consec-above-avg over L3/L20) — PER-STAT SHIP for FG3M (-0.012, 4/4), STL (-0.022, 4/4), BLK (-0.053, 4/4, -34% MAE!), TOV (-0.011, 4/4). REJECT for PTS (+0.011, 0/4), REB (-0.0002, 2/4), AST (-0.0015, 2/4). Overall gate fails (3 stats below 4/4 WF) but per-stat ship pattern matches R7_A. Wire: add streak feature computation to live_engine endQ3 residual head pipeline, gated to the 4 winning stats."
+      "summary": "Hot-hand / streak features (z-score trend and consec-above-avg over L3/L20) \u2014 PER-STAT SHIP for FG3M (-0.012, 4/4), STL (-0.022, 4/4), BLK (-0.053, 4/4, -34% MAE!), TOV (-0.011, 4/4). REJECT for PTS (+0.011, 0/4), REB (-0.0002, 2/4), AST (-0.0015, 2/4). Overall gate fails (3 stats below 4/4 WF) but per-stat ship pattern matches R7_A. Wire: add streak feature computation to live_engine endQ3 residual head pipeline, gated to the 4 winning stats."
     },
     {
       "name": "R10_M14_playtype",
       "round": 9,
       "delta_pts": -0.0273,
       "stats_won": 6,
-      "commit": "pending-wire",
+      "commit": "pending-commit",
       "date": "2026-05-26",
-      "summary": "Synergy play-type features (8 cols: spotup, transition, cut, prballhandler, handoff, prrollman, isolation, offscreen) joined PRIOR-SEASON only (S-1 → S) for per-game prop prediction. 6/7 stats improving (PTS -0.027, REB -0.013, AST -0.004, FG3M -0.011, STL -0.003, BLK 0.0). 2/7 stats hit WF 4/4 (PTS, FG3M). Mean delta -0.0098 passes gate. TOV mildly regresses (+0.001). Tested on 24322 player-games (S-1 join filter). Wire: add to player_props.py pregame feature set, gated by PTS+FG3M shipping cleanly."
+      "summary": "Synergy play-type features (8 cols: spotup, transition, cut, prballhandler, handoff, prrollman, isolation, offscreen) joined PRIOR-SEASON only (S-1 \u2192 S) for per-game prop prediction. 6/7 stats improving (PTS -0.027, REB -0.013, AST -0.004, FG3M -0.011, STL -0.003, BLK 0.0). 2/7 stats hit WF 4/4 (PTS, FG3M). Mean delta -0.0098 passes gate. TOV mildly regresses (+0.001). Tested on 24322 player-games (S-1 join filter). Wire: add to player_props.py pregame feature set, gated by PTS+FG3M shipping cleanly. PRODUCTION WIRE: prior-season join (S-1) activated via _PLAYTYPE_PRIOR_SEASON_JOIN=True flag (default on; rollback by flipping False). Retrained PTS+FG3M on prior-season values: PTS new model REVERTED (would activate dormant prop_pergame PTS path at 4.91 MAE vs anchor 4.62, +0.29 drift); FG3M retrain REVERTED (apples-to-apples vs old XGB delta +0.0016, LGB delta +0.0007 - no production gain materialized despite probe predicting -0.011). Code change ships the leak fix only; existing q50 models for reb/stl/blk/tov passively receive prior-season values. Anchor test SKIPS (preexisting: AST missing prop_pg artifacts). Magnitude of code-only change (flag on vs off): REB +0.014, FG3M -0.001, others wash. Probe simulation overpredicted production gain."
     },
     {
       "name": "R10_M13_tracking_pts_per_stat",
@@ -143,7 +143,7 @@
       "stats_won": 1,
       "commit": "pending-wire",
       "date": "2026-05-26",
-      "summary": "Prior-season player tracking features (drives, passing, catch-shoot — strict S-1 only). PTS PER-STAT SHIP: WF 4/4 positive AND mean delta -0.00736 (passes both gates). Four other stats hit WF 4/4 but miss -0.005 mean threshold: AST -0.00491, FG3M -0.00168, BLK -0.00068, TOV -0.00118. REB 3/4 WF -0.00077. STL 1/4 WF +0.00014 (regress). Stats_fully_pass=1/7 (PTS only). Cycle 14 attempted current-season tracking + regressed; this v2 with strict prior-season discipline produces honest PTS gain. Wire: add tracking features to PTS endQ3 residual head only."
+      "summary": "Prior-season player tracking features (drives, passing, catch-shoot \u2014 strict S-1 only). PTS PER-STAT SHIP: WF 4/4 positive AND mean delta -0.00736 (passes both gates). Four other stats hit WF 4/4 but miss -0.005 mean threshold: AST -0.00491, FG3M -0.00168, BLK -0.00068, TOV -0.00118. REB 3/4 WF -0.00077. STL 1/4 WF +0.00014 (regress). Stats_fully_pass=1/7 (PTS only). Cycle 14 attempted current-season tracking + regressed; this v2 with strict prior-season discipline produces honest PTS gain. Wire: add tracking features to PTS endQ3 residual head only."
     }
   ],
   "rejects": [
@@ -391,13 +391,13 @@
     },
     {
       "name": "R8_M27_availability",
-      "reason": "Initial F1=0.998 was LEAKAGE (last5_min_avg=0 for all DNP rows via merge construction). Audit fix produced honest model: AUC 0.8476 (vs baseline 0.7301, +0.117), logloss 0.4244, Brier 0.1271 — model ranks well but F1=0.2568 fails ship gate (need >=0.307). Threshold calibration could recover. Probe now audit-clean.",
+      "reason": "Initial F1=0.998 was LEAKAGE (last5_min_avg=0 for all DNP rows via merge construction). Audit fix produced honest model: AUC 0.8476 (vs baseline 0.7301, +0.117), logloss 0.4244, Brier 0.1271 \u2014 model ranks well but F1=0.2568 fails ship gate (need >=0.307). Threshold calibration could recover. Probe now audit-clean.",
       "saturated_angle": "DNP availability classifier at F1@0.5 (model ranks well via AUC but fails F1 gate; revisit with threshold-tuned ship gate)",
       "round": 7
     },
     {
       "name": "R8_M31_ot",
-      "reason": "Stage1 AUC 0.637 / mean_p_ot 0.103 (overcalibrated vs actual 5.5%); Stage3 all 7 stats regress under inflation correction (mean_delta +0.0023, max +0.0065 PTS). Gates: calib FAIL (mean_p outside [0.05,0.10]), gate_a FAIL (n_improve=0/7), gate_b FAIL. Two latent probe bugs fixed in this run: ot_labels cache wasn't reused (Stage 0 would have hit NBA API for ~28min) and home_team_id None crashed feature build. Underlying issue: 6 raw linescore features + only 151 OT positives across 2738 games — classifier can't outperform base rate, so inflation correction drags projections in wrong direction.",
+      "reason": "Stage1 AUC 0.637 / mean_p_ot 0.103 (overcalibrated vs actual 5.5%); Stage3 all 7 stats regress under inflation correction (mean_delta +0.0023, max +0.0065 PTS). Gates: calib FAIL (mean_p outside [0.05,0.10]), gate_a FAIL (n_improve=0/7), gate_b FAIL. Two latent probe bugs fixed in this run: ot_labels cache wasn't reused (Stage 0 would have hit NBA API for ~28min) and home_team_id None crashed feature build. Underlying issue: 6 raw linescore features + only 151 OT positives across 2738 games \u2014 classifier can't outperform base rate, so inflation correction drags projections in wrong direction.",
       "saturated_angle": "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)",
       "round": 7
     },
@@ -415,13 +415,13 @@
     },
     {
       "name": "R9_C4_clv_join_repair",
-      "reason": "BLOCKED: wiring works end-to-end (synthetic PP bet resolves through new alias patch + ETL). ETL writes 26,071 rows to data/lines/2026-05-25_pp.csv with canonical schema. clv.py patched with pp/prizepicks aliases. But ledger book is DK-only and all snapshots are PP-only — structural mismatch. Gate flips SHIP automatically once C1 (DK historical) or C2 (DK live) provides DK lines OR ledger contains PP bets.",
+      "reason": "BLOCKED: wiring works end-to-end (synthetic PP bet resolves through new alias patch + ETL). ETL writes 26,071 rows to data/lines/2026-05-25_pp.csv with canonical schema. clv.py patched with pp/prizepicks aliases. But ledger book is DK-only and all snapshots are PP-only \u2014 structural mismatch. Gate flips SHIP automatically once C1 (DK historical) or C2 (DK live) provides DK lines OR ledger contains PP bets.",
       "saturated_angle": "DK-ledger-vs-PP-snapshot book mismatch (data, not code)",
       "round": 7
     },
     {
       "name": "R10_M19_foul_markov",
-      "reason": "Q4-min regression model itself ok (MAE 2.24 vs baseline 2.35) but downstream stat-MAE deltas all POSITIVE across all 4 folds and all 7 stats (pts +0.04 .. +0.05, reb +0.02, ast +0.01, fg3m +0.007, stl +0.004, blk +0.003, tov +0.005). The minute multiplier amplifies wrong-direction noise — when model predicts MORE Q4 minutes, players who actually got fewer also score more on a per-min basis, so the multiplier widens error rather than narrowing it.",
+      "reason": "Q4-min regression model itself ok (MAE 2.24 vs baseline 2.35) but downstream stat-MAE deltas all POSITIVE across all 4 folds and all 7 stats (pts +0.04 .. +0.05, reb +0.02, ast +0.01, fg3m +0.007, stl +0.004, blk +0.003, tov +0.005). The minute multiplier amplifies wrong-direction noise \u2014 when model predicts MORE Q4 minutes, players who actually got fewer also score more on a per-min basis, so the multiplier widens error rather than narrowing it.",
       "saturated_angle": "Q4-minutes-multiplier downstream stat correction (Markov-style foul-trouble conditioning)",
       "round": 9
     },
@@ -440,19 +440,19 @@
     {
       "name": "R10_M9_fatigue",
       "reason": "Schedule-fatigue features (games_last_10_days, total_miles_last_5_days, altitude_delta, tz_change_proxy, is_b2b, is_b3b, altitude_ft, miles_traveled) added as residual-head inputs at endQ3. All 7 stats regress by +0.06 to +0.15 (huge) in every fold; mean_delta +0.1047. 0/7 stats improving. The residual head with 8 added features overfits per-stat targets and the (proj_base + residual) composition explodes. Likely cause: residual head trained on (actual - proj_base) where proj_base is already a strong learned-Q4 estimate, so the head fits noise; fatigue features add capacity to overfit.",
-      "saturated_angle": "schedule-fatigue features as endQ3 residual-head additions (overfits — proj_base+residual composition is unstable when residual head capacity grows)",
+      "saturated_angle": "schedule-fatigue features as endQ3 residual-head additions (overfits \u2014 proj_base+residual composition is unstable when residual head capacity grows)",
       "round": 9
     },
     {
       "name": "R11_M30v3_per_stat_dampener",
-      "reason": "Per-stat dampener computed PER FOLD from training-data ratios (clipped [0.70, 1.10]). Calibration ratios all > 0.91, most > 1.0 (PTS 1.13, REB 1.43, AST 1.21, FG3M 0.92, STL 1.12, BLK 1.35, TOV 1.61) so multipliers clip to 1.10 ceiling and become PROTECTIVE rather than dampening. Result: mean vol delta +0.00727 (WORSE than M30v2's -0.0026), 0/7 stats improving, 0/4 WF folds positive. Definitively confirms selection bias: foul-out players in training set are stars who outscore — using their ratios as multipliers actively hurts predictions because at TEST time we're flagging players LIKELY to foul out (different population from those who actually did).",
+      "reason": "Per-stat dampener computed PER FOLD from training-data ratios (clipped [0.70, 1.10]). Calibration ratios all > 0.91, most > 1.0 (PTS 1.13, REB 1.43, AST 1.21, FG3M 0.92, STL 1.12, BLK 1.35, TOV 1.61) so multipliers clip to 1.10 ceiling and become PROTECTIVE rather than dampening. Result: mean vol delta +0.00727 (WORSE than M30v2's -0.0026), 0/7 stats improving, 0/4 WF folds positive. Definitively confirms selection bias: foul-out players in training set are stars who outscore \u2014 using their ratios as multipliers actively hurts predictions because at TEST time we're flagging players LIKELY to foul out (different population from those who actually did).",
       "saturated_angle": "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
       "round": 10
     },
     {
       "name": "R11_M16v2_streak_l5l10",
-      "reason": "M16 with L5/L10 windows instead of L3/L20 to test whether shorter+medium windows would catch streak signal for PTS/REB/AST (the 3 stats M16 missed). Result: IDENTICAL per-stat ship pattern as M16 — FG3M (-0.01112, 4/4), STL (-0.02142, 4/4), BLK (-0.05311, 4/4), TOV (-0.01071, 4/4) all SHIP per-stat. PTS (+0.00802, 0/4) WORSE than M16. REB (+0.00209, 2/4) WORSE. AST (-0.00136, 3/4) better but still misses gate. Overall verdict REJECT — same gate-fail as M16. Confirms structural saturation: streak features just don't have signal for PTS/REB/AST regardless of window choice. The signal is in raw recent stats for high-volume targets; only count-stats (BLK/STL/TOV) benefit from z-score trend.",
-      "saturated_angle": "streak features for high-volume stats (PTS/REB/AST) at any window length — z-score trend information is absorbed by existing l5/l10/ewma features",
+      "reason": "M16 with L5/L10 windows instead of L3/L20 to test whether shorter+medium windows would catch streak signal for PTS/REB/AST (the 3 stats M16 missed). Result: IDENTICAL per-stat ship pattern as M16 \u2014 FG3M (-0.01112, 4/4), STL (-0.02142, 4/4), BLK (-0.05311, 4/4), TOV (-0.01071, 4/4) all SHIP per-stat. PTS (+0.00802, 0/4) WORSE than M16. REB (+0.00209, 2/4) WORSE. AST (-0.00136, 3/4) better but still misses gate. Overall verdict REJECT \u2014 same gate-fail as M16. Confirms structural saturation: streak features just don't have signal for PTS/REB/AST regardless of window choice. The signal is in raw recent stats for high-volume targets; only count-stats (BLK/STL/TOV) benefit from z-score trend.",
+      "saturated_angle": "streak features for high-volume stats (PTS/REB/AST) at any window length \u2014 z-score trend information is absorbed by existing l5/l10/ewma features",
       "round": 10
     }
   ],

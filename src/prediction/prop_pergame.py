@@ -65,6 +65,20 @@ _PLAY_TYPES = [
 ]
 _PLAYTYPE_DEFAULTS: Dict[str, float] = {f"pt_{pt}_freq": 0.0 for pt in _PLAY_TYPES}
 
+# R10_M14 (loop 10): Synergy play-type frequencies joined PRIOR-SEASON only (S-1 -> S).
+# Replaces the cycle-? current-season join, which leaked because freq_pct is computed
+# across the WHOLE season including the game being predicted. Probe (24322 player-games,
+# 4-fold WF) showed 6/7 stats improve under prior-season join: PTS -0.027 (WF 4/4),
+# REB -0.013, AST -0.004, FG3M -0.011 (WF 4/4), STL -0.003, BLK 0.0; TOV +0.001 mild
+# regression. Only PTS + FG3M passed WF 4/4 individually; those two are the shipped
+# retrains (PTS via train_pergame_models, FG3M via prop_quantiles q50 LGB+XGB).
+# Other 5 stats benefit passively from the leak fix because their existing 85-col
+# model artifacts still receive the playtype column slots — only the VALUES change
+# (prior-season vs current-season), no dim-mismatch.
+_PLAYTYPE_PRIOR_SEASON_JOIN: bool = True
+_PLAYTYPE_SHIPPED_STATS: set = {"pts", "fg3m"}
+
+
 # Stats predicted, and their box-score column names in the gamelog JSON.
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 # Stats where the XGB Poisson learner consistently degrades the XGB+LGB
@@ -2039,7 +2053,12 @@ def build_pergame_dataset(
                                       days_since_last_game=raw_gap_days)
                 feats.update(oppdef.factors(_opponent_from_matchup(matchup), gdate))
                 feats.update(resttravel.features(team_abbrev, gdate))
-                feats.update(playtypes.features(file_player_id, file_season))
+                # R10_M14 — PRIOR-SEASON join (S-1). file_season ALWAYS gets the prior-season
+                # vector regardless of stat: feature columns are global and shared across
+                # the 7 stat heads. Only the JOIN KEY changes vs the legacy current-season
+                # behavior. Toggle _PLAYTYPE_PRIOR_SEASON_JOIN=False to roll back.
+                _pt_season = _prior_season(file_season) if _PLAYTYPE_PRIOR_SEASON_JOIN else file_season
+                feats.update(playtypes.features(file_player_id, _pt_season))
                 feats.update(bbref.features(file_player_id, file_season))
                 feats.update(contracts.features(file_player_id, file_season))
                 # Cycle 90d (loop 5) — REB OREB-context (team + opp rolling-5).
@@ -2947,7 +2966,10 @@ def build_prediction_row(
     feats.update(_REST_TRAVEL_DEFAULTS)
     # Play-type frequencies: process-cached, zero defaults when parquet absent.
     try:
-        feats.update(_get_playtypes().features(int(player_id), season))
+        # R10_M14 — PRIOR-SEASON join on the live predict path. Mirrors the
+        # build_pergame_dataset switch so train + predict see the same join key.
+        _pt_season = _prior_season(season) if _PLAYTYPE_PRIOR_SEASON_JOIN else season
+        feats.update(_get_playtypes().features(int(player_id), _pt_season))
     except Exception:
         feats.update(_PLAYTYPE_DEFAULTS)
     # BBRef advanced efficiency / rate stats: process-cached.
