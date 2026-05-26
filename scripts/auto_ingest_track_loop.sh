@@ -86,6 +86,7 @@ _inc_attempts() {
   local n
   n=$(_get_attempts "$gid")
   n=$((n + 1))
+  mkdir -p "$ATTEMPT_DIR"
   echo "$n" > "$f"
   echo "$n"
 }
