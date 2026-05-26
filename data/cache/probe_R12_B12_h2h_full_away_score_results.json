@@ -1,0 +1,40 @@
+{
+  "probe": "R12_B12_h2h_full_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 172,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -13.53%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.2563,
+  "pooled_delta_pct": -13.53,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.1399,
+      "delta": -1.3532,
+      "delta_pct": -12.9
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.3876,
+      "delta": -1.3312,
+      "delta_pct": -12.42
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.2414,
+      "delta": -1.6624,
+      "delta_pct": -15.25
+    }
+  ],
+  "beat_canonical": false,
+  "canonical_src": "B9 halflife2_only",
+  "vs_canonical_pp": 0.82,
+  "elapsed_s": 23.8
+}
