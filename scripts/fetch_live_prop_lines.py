@@ -83,7 +83,7 @@ _FIELDS = ["captured_at", "book", "game_id", "player_id", "player_name",
            "market_status"]
 
 _VALID_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
-_BOOK_MAP = {"dk": "draftkings", "fd": "fanduel", "pp": "prizepicks"}
+_BOOK_MAP = {"dk": "draftkings", "fd": "fanduel", "pp": "prizepicks", "bov": "bovada"}
 _LINES_DIR = os.path.join(PROJECT_DIR, "data", "lines")
 
 # PrizePicks is fixed-payout. Encode both sides as -119 (fair 50/50 with juice)
@@ -174,6 +174,20 @@ def _fetch_book(book_short: str, fetch_fn=None) -> List[Dict]:
         except Exception as e:  # noqa: BLE001
             log.warning("prizepicks fetch error: %s", e)
             return []
+
+    # Bovada is the only US-facing book whose public coupon JSON we can pull
+    # without WAF blocks (R14_H1). Its own scraper lives in
+    # scripts/bov_scraper_daemon.py; here we just call its fetch_cycle for one
+    # snapshot. Note: bov_scraper writes its CSV directly to
+    # data/lines/<date>_bov.csv, so we return [] here on purpose - the rows
+    # have already been persisted.
+    if book_short == "bov":
+        try:
+            from scripts.bov_scraper_daemon import fetch_cycle as _bov_fetch_cycle  # noqa: PLC0415
+            _bov_fetch_cycle(["nba", "wnba", "mlb"])
+        except Exception as e:  # noqa: BLE001
+            log.warning("bovada fetch error: %s", e)
+        return []
 
     book_full = _BOOK_MAP.get(book_short, book_short)
     if fetch_fn is None:
@@ -378,10 +392,10 @@ def _expand_books(book_arg: str) -> List[str]:
     if book_arg == "both":
         return ["dk", "fd"]
     if book_arg == "all":
-        return ["dk", "fd", "pp"]
+        return ["dk", "fd", "pp", "bov"]
     if book_arg not in _BOOK_MAP:
         raise SystemExit(
-            f"--book must be dk, fd, pp, both, or all (got {book_arg!r})"
+            f"--book must be dk, fd, pp, bov, both, or all (got {book_arg!r})"
         )
     return [book_arg]
 
@@ -474,9 +488,9 @@ def main(argv: Optional[List[str]] = None) -> int:
         description="LIVE DraftKings + FanDuel player-prop snapshotter."
     )
     ap.add_argument("--book",
-                    choices=["dk", "fd", "pp", "both", "all"],
+                    choices=["dk", "fd", "pp", "bov", "both", "all"],
                     default="all",
-                    help="Which book(s) to scrape (default: all = dk+fd+pp).")
+                    help="Which book(s) to scrape (default: all = dk+fd+pp+bov).")
     ap.add_argument("--date", default=None,
                     help="Schedule date YYYY-MM-DD (default: today).")
     ap.add_argument("--stats", default=",".join(_VALID_STATS),
