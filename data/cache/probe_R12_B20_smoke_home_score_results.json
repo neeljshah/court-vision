@@ -1,0 +1,10 @@
+{
+  "target": "home_score",
+  "kind": "reg",
+  "fc_len": 50,
+  "expected_delta_pct": -16.86,
+  "observed_delta_pct": -15.0,
+  "tolerance": 0.3,
+  "diff": 1.86,
+  "passed": false
+}

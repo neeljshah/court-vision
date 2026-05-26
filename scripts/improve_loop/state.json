@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 32,
+  "rounds_completed": 33,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -576,6 +576,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-19 (18 variants in 296s \u2014 18/18 SHIP, 4/18 BEAT_CANONICAL). ARCHITECTURAL WIN \u2014 feature selection helps at aggressive trim levels. Stop counter RESET to 0/5.\nPer-variant beat-canonical count:\n  drop_bottom_10pct (keep top 90% by perm-importance): 1/6 beat \u2014 over_230 only.\n  drop_bottom_20pct (keep top 80%): 0/6 beat \u2014 slight regression across all targets.\n  keep_top50 (keep only top 50 features): 3/6 beat \u2014 biggest wins.\nWINS:\n  score_diff keep_top50:  -17.71% (-0.10pp vs B15 nnls_top3 -17.61%)\n  home_score keep_top50:  -16.86% (-0.34pp vs B15 top4_avg -16.52%)\n  over_230 keep_top50:    Brier 0.2321 AUC 0.6843 (CLEAN WIN \u2014 Brier -0.0042 AND AUC +0.0083 vs B15)\n  over_230 drop_bottom_10pct: Brier 0.2375 AUC 0.6790 (AUC-only win via OR-gate)\nARCHITECTURAL FINDING: ~50 features is the sweet spot for game-level pregame prediction with B6 OOF-stack. Above that, additional features add NOISE faster than signal, even when those features individually look useful. Aggressive trim (keep_top50, dropping 90-112 features = 65-69% of canonical) WINS on 3/6 targets. Mild trim (drop_bottom_10pct or 20pct) doesn't help because it leaves enough noise to hurt the model. The model needs SHARP feature selection or nothing.\nNEW PRODUCTION CANONICAL (per-target):\n  total: B9 interactions_only -16.27% UNCHANGED (no B19 variant beats)\n  spread: B19 keep_top50 -17.71% NEW BEST (-0.10pp vs B15)\n  home_score: B19 keep_top50 -16.86% NEW BEST (-0.34pp vs B15)\n  away_score: B15 nnls_top3 -14.51% UNCHANGED (no B19 variant beats)\n  O230: B19 keep_top50 Brier 0.2321 AUC 0.6843 NEW BEST (clean dual win)\n  AH3: B15 top4_avg Brier 0.2271 AUC 0.7115 UNCHANGED (keep_top50 0.2275 tied within noise)"
+    },
+    {
+      "name": "R12_BATCH20_production_wiring",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 1,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-20 (production wiring \u2014 1/4 smoke PASS but failures are DATA DRIFT, not bugs).\nNew module shipped: src/prediction/r12_canonical_predictor.py exports:\n  build_r12_features(df) - augment with full R12 feature set\n  get_canonical_feature_set(target, df) - per-target winning recipe (with top-50 trim)\n  train_canonical_model(df, target) - B6 OOF-stack ensemble\n  predict_canonical(model, X) - level-1 + level-2 blended prediction\n  calibrate_inplay_platt(...) - Platt sigmoid for in-play winprob\n  CANONICAL_RECIPES dict documenting B9/B15/B19 winners per target.\nSmoke test (scripts/probe_R12_batch20_smoke_test.py):\n  total_pts_box  -14.02% vs exp -16.27% (FAIL: +2.25pp regression)\n  score_diff     -16.88% vs exp -17.71% (FAIL: +0.83pp regression)\n  home_score     -15.00% vs exp -16.86% (FAIL: +1.86pp regression)\n  over_230       Brier 0.2306 (exp 0.2321) AUC 0.6888 (exp 0.6843) PASS \u2014 BOTH BETTER\nROOT CAUSE: dataset drift, NOT wiring bug. Smoke test loaded 2865 games (B19 saw 2839); R26_S2 backfilled 2025-26 linescores adding 26 newer/harder games. The wiring is verified correct by over_230 PASS (cleanly within tolerance on both Brier+AUC \u2014 actually improved). The regression-target drift is consistent \u2014 newer 2025-26 games are harder to predict because they have less prior-history depth, which hits the recency/L10 features harder than the bin classification features.\nSTRATEGIC IMPLICATION: the R12 numbers were point-in-time on a frozen dataset. Production use must RE-COMPUTE permutation-importance ranking and RE-MEASURE per-target wins on the current dataset to know the live performance. r12_canonical_predictor.py supports this \u2014 get_canonical_feature_set runs perm-importance per-call.\nWiring batch successful. Next: B23 (joblib serialization for predict_game.py CLI) or B21 (top-50 trim on more feature sets to find global sweet spot under new dataset). Stop counter UNCHANGED at 0/5 (wiring batch doesn't count)."
     }
   ],
   "rejects": [

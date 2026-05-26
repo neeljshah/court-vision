@@ -1,0 +1,10 @@
+{
+  "target": "total_pts_box",
+  "kind": "reg",
+  "fc_len": 141,
+  "expected_delta_pct": -16.27,
+  "observed_delta_pct": -14.02,
+  "tolerance": 0.3,
+  "diff": 2.25,
+  "passed": false
+}
