@@ -1,0 +1,68 @@
+{
+  "stats": {
+    "pts": {
+      "coverage_80_baseline": 0.8622,
+      "coverage_80_probe": 0.7999,
+      "mean_width_baseline": 9.553,
+      "mean_width_probe": 7.233,
+      "width_reduction_pct": 24.29,
+      "k_calibrated": 1.6063
+    },
+    "reb": {
+      "coverage_80_baseline": 0.8435,
+      "coverage_80_probe": 0.8,
+      "mean_width_baseline": 3.813,
+      "mean_width_probe": 3.129,
+      "width_reduction_pct": 17.93,
+      "k_calibrated": 1.7351
+    },
+    "ast": {
+      "coverage_80_baseline": 0.7886,
+      "coverage_80_probe": 0.8,
+      "mean_width_baseline": 2.231,
+      "mean_width_probe": 2.016,
+      "width_reduction_pct": 9.67,
+      "k_calibrated": 1.6841
+    },
+    "fg3m": {
+      "coverage_80_baseline": 0.7735,
+      "coverage_80_probe": 0.8002,
+      "mean_width_baseline": 1.14,
+      "mean_width_probe": 0.739,
+      "width_reduction_pct": 35.2,
+      "k_calibrated": 1.0505
+    },
+    "stl": {
+      "coverage_80_baseline": 0.6794,
+      "coverage_80_probe": 0.8063,
+      "mean_width_baseline": 0.554,
+      "mean_width_probe": 0.429,
+      "width_reduction_pct": 22.47,
+      "k_calibrated": 1.0
+    },
+    "blk": {
+      "coverage_80_baseline": 0.6565,
+      "coverage_80_probe": 0.6638,
+      "mean_width_baseline": 0.205,
+      "mean_width_probe": 0.225,
+      "width_reduction_pct": -9.33,
+      "k_calibrated": 1.0
+    },
+    "tov": {
+      "coverage_80_baseline": 0.7709,
+      "coverage_80_probe": 0.7883,
+      "mean_width_baseline": 1.23,
+      "mean_width_probe": 0.905,
+      "width_reduction_pct": 26.43,
+      "k_calibrated": 1.3389
+    }
+  },
+  "summary": {
+    "mean_width_reduction_pct": 18.09,
+    "min_coverage": 0.6638,
+    "ship_gate_passed": false,
+    "folds": 4,
+    "n_player_games": 183876,
+    "lgbm_used": true
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "probe": "R8_M4_winprob_v2",
+  "n_eval": 300,
+  "n_features": 30,
+  "feature_list": [
+    "home_net_rtg_L10",
+    "away_net_rtg_L10",
+    "home_off_rtg_L10",
+    "away_off_rtg_L10",
+    "home_def_rtg_L10",
+    "away_def_rtg_L10",
+    "home_pace",
+    "away_pace",
+    "pace_diff",
+    "home_rest_days",
+    "away_rest_days",
+    "b2b_diff",
+    "home_back_to_back",
+    "away_back_to_back",
+    "home_travel_miles",
+    "away_travel_miles",
+    "home_elo",
+    "away_elo",
+    "elo_differential",
+    "home_srs",
+    "away_srs",
+    "home_efg_L10",
+    "away_efg_L10",
+    "home_tov_pct_L10",
+    "away_tov_pct_L10",
+    "home_stars_available",
+    "away_stars_available",
+    "home_advantage",
+    "home_dnp_count",
+    "away_dnp_count"
+  ],
+  "probe_brier": 0.2065,
+  "probe_accuracy": 0.6767,
+  "probe_logloss": 0.6001,
+  "baseline_model": "win_prob_v3",
+  "baseline_brier": 0.2172,
+  "baseline_accuracy": 0.67,
+  "delta_brier": -0.0107,
+  "delta_acc": 0.0067,
+  "ship_gate_brier": false,
+  "ship_gate_acc": false,
+  "shipped": false,
+  "fold_metrics": [
+    {
+      "fold": 1,
+      "n": 100,
+      "brier": 0.2168,
+      "accuracy": 0.64
+    },
+    {
+      "fold": 2,
+      "n": 100,
+      "brier": 0.2071,
+      "accuracy": 0.67
+    },
+    {
+      "fold": 3,
+      "n": 100,
+      "brier": 0.1955,
+      "accuracy": 0.72
+    }
+  ],
+  "top10_feature_importance": [
+    {
+      "feature": "elo_differential",
+      "importance": 102.67
+    },
+    {
+      "feature": "home_def_rtg_L10",
+      "importance": 78.67
+    },
+    {
+      "feature": "away_def_rtg_L10",
+      "importance": 73.67
+    },
+    {
+      "feature": "away_tov_pct_L10",
+      "importance": 61.0
+    },
+    {
+      "feature": "away_efg_L10",
+      "importance": 61.0
+    },
+    {
+      "feature": "away_off_rtg_L10",
+      "importance": 60.67
+    },
+    {
+      "feature": "home_tov_pct_L10",
+      "importance": 59.67
+    },
+    {
+      "feature": "pace_diff",
+      "importance": 57.67
+    },
+    {
+      "feature": "away_net_rtg_L10",
+      "importance": 55.0
+    },
+    {
+      "feature": "home_net_rtg_L10",
+      "importance": 53.33
+    }
+  ]
+}

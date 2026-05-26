@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 7,
+  "rounds_completed": 8,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -298,6 +298,54 @@
       "reason": "PTS +0.0 9.4% join hit",
       "saturated_angle": "OOF pregame_proj as 15th feature in endQ3 residual head",
       "round": 6
+    },
+    {
+      "name": "R8_M3_compound",
+      "reason": "0/3 markets pass; tail miscalibration in piecewise CDF (parlay/anytime/exact-score)",
+      "saturated_angle": "compound-market probabilities from piecewise CDF of independent stat quantiles",
+      "round": 7
+    },
+    {
+      "name": "R8_M4_winprob_v2",
+      "reason": "Brier 0.206 vs gate 0.183 (beat baseline +5% but missed absolute gate)",
+      "saturated_angle": "winprob v2 stack rebuild with extra pregame features",
+      "round": 7
+    },
+    {
+      "name": "R8_M21_multitask",
+      "reason": "0/7 wins; PTS +0.0666; MLP can't match 7 per-stat LightGBM heads",
+      "saturated_angle": "multitask MLP residual head replacing per-stat LGB heads",
+      "round": 7
+    },
+    {
+      "name": "R8_M22_sharper_bands",
+      "reason": "BLK width +9.3% regression, min coverage 0.66 (below 0.78 floor); 6/7 stats look great but BLK kills the gate",
+      "saturated_angle": "lgbm-calibrated quantile band sharpening across all 7 stats simultaneously",
+      "round": 7
+    },
+    {
+      "name": "R8_M25_pregame_pts",
+      "reason": "PTS 1/4 folds, +0.0084 mean; pinball-loss ~= L1 for PTS; pregame residuals not learnable",
+      "saturated_angle": "pregame PTS L1/pinball residual head retry",
+      "round": 7
+    },
+    {
+      "name": "R8_M30_foulout",
+      "reason": "Stage 1 AUC 0.295 (only 10 foulout positives); Stage 2 dampener works (-0.053 PTS) but useless without classifier. Re-attempt with pf>=5 target + multi-season data.",
+      "saturated_angle": "foulout dampener v2 with pf=6 binary target on single season",
+      "round": 7
+    },
+    {
+      "name": "R8_M27_availability",
+      "reason": "Initial F1=0.998 was LEAKAGE (last5_min_avg=0 for all DNP rows via merge construction). Audit fix produced honest model: AUC 0.8476 (vs baseline 0.7301, +0.117), logloss 0.4244, Brier 0.1271 — model ranks well but F1=0.2568 fails ship gate (need >=0.307). Threshold calibration could recover. Probe now audit-clean.",
+      "saturated_angle": "DNP availability classifier at F1@0.5 (model ranks well via AUC but fails F1 gate; revisit with threshold-tuned ship gate)",
+      "round": 7
+    },
+    {
+      "name": "R8_M31_ot",
+      "reason": "Stage1 AUC 0.637 / mean_p_ot 0.103 (overcalibrated vs actual 5.5%); Stage3 all 7 stats regress under inflation correction (mean_delta +0.0023, max +0.0065 PTS). Gates: calib FAIL (mean_p outside [0.05,0.10]), gate_a FAIL (n_improve=0/7), gate_b FAIL. Two latent probe bugs fixed in this run: ot_labels cache wasn't reused (Stage 0 would have hit NBA API for ~28min) and home_team_id None crashed feature build. Underlying issue: 6 raw linescore features + only 151 OT positives across 2738 games — classifier can't outperform base rate, so inflation correction drags projections in wrong direction.",
+      "saturated_angle": "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)",
+      "round": 7
     }
   ],
   "saturated_angles": [
@@ -348,7 +396,15 @@
     "stat-specific opp_l5_allowed features (data coverage gap)",
     "engineered interaction features (foul_rate, usage_proxy, etc.)",
     "pregame residual head for PTS",
-    "OOF pregame_proj as 15th feature in endQ3 residual head"
+    "OOF pregame_proj as 15th feature in endQ3 residual head",
+    "compound-market probabilities from piecewise CDF of independent stat quantiles",
+    "winprob v2 stack rebuild with extra pregame features",
+    "multitask MLP residual head replacing per-stat LGB heads",
+    "lgbm-calibrated quantile band sharpening across all 7 stats simultaneously",
+    "pregame PTS L1/pinball residual head retry",
+    "foulout dampener v2 with pf=6 binary target on single season",
+    "DNP availability classifier at F1@0.5 (model ranks well via AUC but fails F1 gate; revisit with threshold-tuned ship gate)",
+    "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,

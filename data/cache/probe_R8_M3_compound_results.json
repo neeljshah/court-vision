@@ -1,0 +1,33 @@
+{
+  "markets": {
+    "double-double": {
+      "n": 3663,
+      "brier_baseline": 0.06084757851956244,
+      "brier_model": 0.06123589579055607,
+      "brier_improve_pct": -0.64,
+      "ll_baseline": 0.2986301337181913,
+      "ll_model": 0.5823221981630455,
+      "ship": false
+    },
+    "triple-double": {
+      "n": 3663,
+      "brier_baseline": 0.005639523145923274,
+      "brier_model": 0.00549735369315635,
+      "brier_improve_pct": 2.52,
+      "ll_baseline": 0.03613492919198771,
+      "ll_model": 0.05180262892295286,
+      "ship": false
+    },
+    "30-point": {
+      "n": 3663,
+      "brier_baseline": 0.03243918271323677,
+      "brier_model": 0.03228690250702918,
+      "brier_improve_pct": 0.47,
+      "ll_baseline": 0.16284258728491813,
+      "ll_model": 0.3127075416614707,
+      "ship": false
+    }
+  },
+  "overall_ship": false,
+  "markets_shipped": 0
+}
