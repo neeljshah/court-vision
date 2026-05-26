@@ -1,0 +1,46 @@
+{
+  "probe_id": "R17_J4",
+  "description": "continuous bankroll & portfolio-risk monitor",
+  "tests_passed": 14,
+  "tests_total": 14,
+  "smoke_observations": [
+    {
+      "tick": "initial",
+      "as_of": "2026-05-26T13:59:37+00:00",
+      "pending_exposure": 100.0,
+      "n_open_positions": 2,
+      "note": "Two pending Keldon REB OVER 3.5 bets (R16_E7 smoke + place_bet CLI) totaling 00",
+      "alarms": [
+        "URGENT kelly_overhang 502.5% (CLI bet had kelly_pct=5.0, off-scale)"
+      ]
+    },
+    {
+      "tick": "post-line-kill",
+      "as_of": "2026-05-26T14:04:50+00:00",
+      "pending_exposure": 0.0,
+      "n_open_positions": 0,
+      "note": "Live line-kill watcher voided both pending bets to status=line_killed between ticks - daemon correctly drops them from pending exposure",
+      "alarms": []
+    }
+  ],
+  "current_state": {
+    "as_of": "2026-05-26T14:04:50+00:00",
+    "start_bankroll": 1000.0,
+    "current_bankroll": 3670097.4800000004,
+    "pending_exposure": 0.0,
+    "available_bankroll": 3670097.4800000004,
+    "daily_pnl": 0.0,
+    "weekly_pnl": 0.0,
+    "monthly_pnl": 0.0,
+    "max_drawdown": 1153.2399999992922,
+    "max_drawdown_pct": 0.0005646852363573776,
+    "n_open_positions": 0,
+    "max_stake_in_one_game": 0.0,
+    "position_concentration_pct": 0.0,
+    "kelly_overhang": 0.0,
+    "n_settled": 335139,
+    "alarms": []
+  },
+  "daemon_pid": 1642073,
+  "verdict": "SHIP"
+}
