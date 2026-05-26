@@ -1,0 +1,13 @@
+{
+  "probe": "R31_X4",
+  "started_at": "2026-05-26T19:27:43Z",
+  "keep_days": 7,
+  "really_archive": false,
+  "scan_root": "C:\\Users\\neelj\\nba-ai-system",
+  "n_eligible_files": 0,
+  "archive_size_mb_estimate": 0.0,
+  "dry_run_archive_path": null,
+  "dry_run_warnings": [],
+  "ship_ok": true,
+  "ended_at": "2026-05-26T19:27:43Z"
+}
