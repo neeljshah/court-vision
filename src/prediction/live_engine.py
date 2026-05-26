@@ -157,6 +157,20 @@ _USE_RESIDUAL_HEADS = True
 # Missing artifact dir -> transparent no-op (back-compat preserved).
 _USE_RESIDUAL_HEADS_ENDQ2 = True
 
+# R10_M5 (loop 5): in-play home-team WIN PROBABILITY at endQ1/endQ2/endQ3.
+# When True, project_from_snapshot stamps every row with the snapshot-conditional
+# home win probability produced by src.prediction.inplay_winprob (LightGBM
+# boosters under data/models/inplay_winprob_<snap>.lgb). Probe R10_M5 validated
+# SHIP at endQ3: walk-forward mean Brier 0.1350 (gate 0.183), accuracy 81.33%,
+# AUC 0.901 vs pregame baseline Brier 0.2653. endQ1/endQ2 fail the ship gate
+# but are still loaded as priors over the naive home-rate baseline (0.523).
+# Each row gets two new fields: ``home_win_prob_inplay`` (the model output,
+# None at non-boundary snapshots or when the artifact is missing) and
+# ``inplay_winprob_snapshot`` (one of {"endQ1", "endQ2", "endQ3", None}).
+# Existing consumers (live_dashboard, save_live_predictions, edge_eval)
+# tolerate the extra keys (they only read declared columns).
+_USE_INPLAY_WINPROB = True
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -219,6 +233,7 @@ __all__ = [
     "_USE_LEARNED_Q4_MINUTES",
     "_USE_RESIDUAL_HEADS",
     "_USE_RESIDUAL_HEADS_ENDQ2",
+    "_USE_INPLAY_WINPROB",
 ]
 
 
@@ -437,6 +452,38 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         except Exception:
             # Bands are advisory -- never break the hot path.
             pass
+
+    # R10_M5 (loop 5): stamp every row with the snapshot-conditional in-play
+    # home-team win probability. Computed ONCE per snapshot then broadcast to
+    # all (player, stat) rows so per-row consumers (UI, ledger, edge eval) can
+    # condition on it without re-running the booster. SHIP gate cleared at
+    # endQ3 (Brier 0.1350); endQ1/endQ2 outputs are below-gate but still
+    # better-than-baseline priors over the 0.523 home rate. Falls back to None
+    # when artifacts are missing OR the snapshot is mid-quarter -- callers
+    # that need a WP at non-boundary snapshots should keep using the pregame
+    # WP. Never breaks the hot path.
+    if _USE_INPLAY_WINPROB:
+        try:
+            from src.prediction.inplay_winprob import (
+                features_from_snapshot as _iwp_features,
+                predict_home_win_prob as _iwp_predict,
+                _period_to_snapshot as _iwp_snap_for,
+            )
+            iwp_snap_name = _iwp_snap_for(snap_period, snap_clock)
+            iwp_prob: Optional[float] = None
+            if iwp_snap_name is not None:
+                iwp_features = _iwp_features(snap)
+                if iwp_features:
+                    iwp_prob = _iwp_predict(iwp_features, iwp_snap_name)
+            for r in rows:
+                r["home_win_prob_inplay"] = iwp_prob
+                r["inplay_winprob_snapshot"] = iwp_snap_name
+        except Exception:
+            # WP is advisory -- never break the hot path. Stamp Nones so
+            # downstream schema stays uniform across rows.
+            for r in rows:
+                r.setdefault("home_win_prob_inplay", None)
+                r.setdefault("inplay_winprob_snapshot", None)
     return rows
 
 
