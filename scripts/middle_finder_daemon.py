@@ -2,19 +2,6 @@
 
 Loops every --interval-sec, reads the latest snapshot per (book, player, stat)
 from data/lines/<today>_<book>.csv, pairs OVER@A with UNDER@B on the same
-
-# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
-# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
-try:
-    import os as _r19_os, sys as _r19_sys
-    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
-    if _r19_root not in _r19_sys.path:
-        _r19_sys.path.insert(0, _r19_root)
-    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
-except Exception:
-    def _r19_hb(_name):
-        return False
-
 (player, stat) where lineB > lineA — i.e. an actual outcome between lineA and
 lineB wins BOTH legs (the "middle"). Filters by minimum middle width and
 worst-case juice. Free arbs (both sides positive American odds) are flagged
@@ -32,6 +19,18 @@ CLI:
         --interval-sec 30 --min-width 0.5 --max-juice-each-side -135
 """
 from __future__ import annotations
+
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
 
 import argparse
 import csv
