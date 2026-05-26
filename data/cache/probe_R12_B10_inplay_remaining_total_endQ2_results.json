@@ -1,0 +1,38 @@
+{
+  "probe": "R12_B10_inplay_remaining_total_endQ2",
+  "kind": "regression",
+  "label": "remaining_total",
+  "n_features": 149,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -25.38%",
+  "pooled_naive_mae": 13.8068,
+  "pooled_lgb_mae": 10.3033,
+  "pooled_delta_pct": -25.38,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 13.615,
+      "lgb_mae": 10.6976,
+      "delta": -2.9174,
+      "delta_pct": -21.43
+    },
+    {
+      "fold": 2,
+      "naive_mae": 13.8533,
+      "lgb_mae": 9.97,
+      "delta": -3.8834,
+      "delta_pct": -28.03
+    },
+    {
+      "fold": 3,
+      "naive_mae": 13.952,
+      "lgb_mae": 10.2423,
+      "delta": -3.7097,
+      "delta_pct": -26.59
+    }
+  ],
+  "snap_q": 2,
+  "elapsed_s": 25.4
+}

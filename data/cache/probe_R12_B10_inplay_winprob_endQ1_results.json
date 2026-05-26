@@ -1,0 +1,35 @@
+{
+  "probe": "R12_B10_inplay_winprob_endQ1",
+  "kind": "binary",
+  "label": "home_wins",
+  "label_desc": "P(home_wins) at endQ1",
+  "n_features": 149,
+  "n_games": 2836,
+  "pos_rate": 0.5306770098730607,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2191 (+0.62%); AUC 0.7498",
+  "pooled_lgb_brier": 0.21906,
+  "pooled_naive_brier": 0.21771,
+  "pooled_lgb_auc": 0.74984,
+  "brier_delta_pct": 0.616,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.22405,
+      "lgb_brier": 0.246
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.21054,
+      "lgb_brier": 0.20369
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.21855,
+      "lgb_brier": 0.20747
+    }
+  ],
+  "snap_q": 1,
+  "elapsed_s": 24.3
+}

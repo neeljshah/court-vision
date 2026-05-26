@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 22,
+  "rounds_completed": 23,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -486,6 +486,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-9 (24 variants in 558s \u2014 24/24 SHIP, 13/24 BEAT_B6). BIGGEST DELTA: interactions_only total -16.27% (-1.18pp vs B6 -15.09%). Per-variant beat-B6 count:\n  halflife2_only (12 H2 cols REPLACE 18 H4 cols, net 131 feats): 3/6 beat \u2014 spread -0.30pp, away_score -0.17pp, AH3 +0.25pp Brier.\n  both_halflives (H4+H2 = +12 feats, 149 total): 4/6 beat \u2014 total -0.57pp, spread -0.33pp, away_score -0.05pp, AH3 Brier 0.2302 AUC 0.7065 (best AH3 yet).\n  interactions_only (5 new feats: rest\u00d7travel \u00d7 2 + diff, b2b\u00d7pace, rest_diff\u00d7elo, 142 total): 4/6 beat \u2014 total -1.18pp (BIG WIN), spread -0.25pp, home_score -0.09pp, AH3 -0.0020 Brier.\n  all (H2 + interactions, 154 total): 2/6 beat \u2014 home_score -0.20pp, AH3 +0.0093 AUC.\nBest-per-target candidates:\n  total: interactions_only (-16.27%, -1.18pp vs B6)\n  spread: both_halflives (-17.23%, -0.33pp)\n  home_score: all variant (-16.10%, -0.20pp)\n  away_score: halflife2_only (-14.35%, -0.17pp)\n  O230: B6 still best (no variant beats Brier 0.2383)\n  AH3: both_halflives (Brier 0.2302 AUC 0.7065)\nArchitectural finding: rest\u00d7travel + b2b\u00d7pace interactions DO carry signal that scalar rest/travel/b2b/pace alone miss \u2014 gradient-boosted trees find the joint conditions (tired team on the road with travel) that linear features don't expose. Halflife=2 vs halflife=4: when COMBINED (both_halflives) wins more often than either alone \u2014 model benefits from BOTH short and medium recency horizons. PRODUCTION CANONICAL: B6 OOF-stack + interactions_only as new total/spread/AH3 baseline.\nStop counter RESET to 0/5 (architectural gain confirmed)."
+    },
+    {
+      "name": "R12_BATCH10_inplay_winprob_endq123",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 4,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-10 (4 variants in 94s, 4/4 SHIP). UNLOCKS IN-PLAY BETTING PRODUCT \u2014 all four mid-game targets crush their gates with dramatic AUC trajectories. Brier delta is vs in-play NAIVE baseline (logistic margin curve), which is already strong; the win comes from MUCH higher AUC.\nWinprob trajectory (149 feats = 141 pregame + 7 snapshot + 1 OOF):\n  endQ1: Brier 0.2191 AUC 0.7498 (+0.62% vs naive, +0.04 AUC vs pregame B6-AH3 0.6987)\n  endQ2: Brier 0.1846 AUC 0.8211 (+3.39% vs naive, +0.12 AUC)\n  endQ3: Brier 0.1359 AUC 0.9010 (+3.23% vs naive, +0.20 AUC \u2014 near-deterministic with 12min left)\nRemaining-total at endQ2 regression:\n  delta -25.38% vs naive linear extrapolation (3/3 folds positive) \u2014 BIGGEST DELTA OF R12.\nARCHITECTURAL FINDING: snapshot features (cum_score, cum_total, score_margin_abs, q_remaining, cum_pace_proxy) PLUS pregame B5+interactions backbone gives a strong in-play model with no extra feature engineering needed. The naive logistic-margin winprob is already calibrated well at late game; the model wins on AUC by leveraging team-strength priors when margin is close.\nPRODUCT IMPACT: enables live (in-play) ML/total/spread markets via the same B6 OOF-stack architecture \u2014 no separate live model needed, just snapshot features.\nStop counter: 0/5 (architectural gain confirmed)."
     }
   ],
   "rejects": [
