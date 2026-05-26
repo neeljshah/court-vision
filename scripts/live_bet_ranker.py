@@ -280,6 +280,35 @@ class ModelCache:
         pid = self._resolve(name)
         if pid is None:
             return None
+        # R16_E3 fast-path: try the prediction-cache lookup first (~0.1ms).
+        # Falls through to the slow per-call build_prediction_row + model
+        # inference path only on cache miss (e.g. player not in todays cache).
+        try:
+            from scripts.serve_prediction import get_prediction as _sp_get  # noqa: PLC0415
+            cached_out: dict[str, dict] = {}
+            for s in self._STATS:
+                rec = _sp_get(pid, s, apply_injury=True, player_name=name)
+                if rec is None:
+                    cached_out = {}
+                    break
+                q50 = rec.get('q50')
+                if q50 is None or (isinstance(q50, float) and q50 != q50):
+                    # NaN/None q50 — skip this player so the slow path retries.
+                    cached_out = {}
+                    break
+                cached_out[s] = {
+                    'point': float(q50),
+                    'q10':   rec.get('q10'),
+                    'q50':   q50,
+                    'q90':   rec.get('q90'),
+                    'availability_factor': rec.get('availability_factor', 1.0),
+                }
+            if cached_out:
+                self.preds[name] = cached_out
+                self.last_factor[name] = cached_out[self._STATS[0]]['availability_factor']
+                return cached_out
+        except Exception:
+            pass  # any cache error → fall through to slow path
         prow = self._build_pred(pid, opp, SEASON, is_home=is_home,
                                  rest_days=2.0, gamelog_dir=self.gamelog_dir)
         if prow is None:
