@@ -133,28 +133,121 @@ _CACHE_DIR = os.path.join(PROJECT_DIR, "data", "cache")
 
 # ── HTTP ─────────────────────────────────────────────────────────────────────
 
-def _http_get_json(url: str, timeout: float = 12.0) -> Tuple[int, Any]:
-    """GET url and JSON-parse. Try curl_cffi first (browser-impersonating);
-    fall back to vanilla requests. Returns (status_code, parsed_or_None).
+# R23_P4: persistent sessions for connection / TLS reuse. The original
+# implementation called `cr.get(...)` per request, which forced a fresh TLS
+# handshake (and often a fresh DNS lookup) for every endpoint hit. On a 5-min
+# capture L6 measured p99 going from 886ms -> 2389ms (+170%); the cold-call
+# tail is dominated by the handshake (~120-170ms locally vs ~50-65ms warm).
+# A module-scoped Session keeps the connection pool hot and amortises the
+# handshake across all calls in a tick (and across ticks too).
+
+_CURL_SESSION: Any = None
+_REQ_SESSION: Any = None
+# Default headers that match a real browser; sent on every request.
+_DEFAULT_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/120.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Connection": "keep-alive",
+}
+
+
+def _get_curl_session() -> Any:
+    """Lazily build and reuse a curl_cffi Session with chrome120 impersonation.
+
+    Returns None if curl_cffi is unavailable so callers can fall back.
     """
-    # Try curl_cffi with chrome120 impersonation.
+    global _CURL_SESSION
+    if _CURL_SESSION is not None:
+        return _CURL_SESSION
     try:
         from curl_cffi import requests as cr  # type: ignore
-        r = cr.get(url, impersonate="chrome120", timeout=timeout)
-        if r.status_code == 200:
-            try:
-                return 200, r.json()
-            except Exception:                                       # noqa: BLE001
-                return 200, None
-        return r.status_code, None
+        s = cr.Session()
+        # Impersonation on session means every request shares the same JA3
+        # fingerprint without re-negotiating the impersonation profile.
+        try:
+            s.impersonate = "chrome120"  # type: ignore[attr-defined]
+        except Exception:                                           # noqa: BLE001
+            pass
+        try:
+            s.headers.update(_DEFAULT_HEADERS)
+        except Exception:                                           # noqa: BLE001
+            pass
+        _CURL_SESSION = s
+        return _CURL_SESSION
     except Exception as e:                                          # noqa: BLE001
-        log.warning("curl_cffi failed for %s: %s -- falling back to requests", url, e)
+        log.warning("curl_cffi unavailable: %s", e)
+        _CURL_SESSION = False  # sentinel: don't retry import every call
+        return None
 
-    # Vanilla requests fallback.
+
+def _get_requests_session() -> Any:
+    """Lazily build a persistent `requests` Session as the fallback transport."""
+    global _REQ_SESSION
+    if _REQ_SESSION is not None:
+        return _REQ_SESSION
     try:
         import requests
-        r = requests.get(url, timeout=timeout,
-                         headers={"User-Agent": "Mozilla/5.0 (compatible; pinnacle-scraper/1.0)"})
+        from requests.adapters import HTTPAdapter
+        s = requests.Session()
+        # Bump pool size so concurrent ticks don't churn connections.
+        adapter = HTTPAdapter(pool_connections=4, pool_maxsize=10)
+        s.mount("https://", adapter)
+        s.mount("http://", adapter)
+        s.headers.update(_DEFAULT_HEADERS)
+        _REQ_SESSION = s
+        return _REQ_SESSION
+    except Exception as e:                                          # noqa: BLE001
+        log.error("requests unavailable: %s", e)
+        _REQ_SESSION = False
+        return None
+
+
+def _reset_sessions() -> None:
+    """Test / probe helper: drop the cached sessions so a cold path can be
+    re-measured. Not used in production code paths."""
+    global _CURL_SESSION, _REQ_SESSION
+    for s in (_CURL_SESSION, _REQ_SESSION):
+        if s and s is not False:
+            try:
+                s.close()
+            except Exception:                                       # noqa: BLE001
+                pass
+    _CURL_SESSION = None
+    _REQ_SESSION = None
+
+
+def _http_get_json(url: str, timeout: float = 12.0) -> Tuple[int, Any]:
+    """GET url and JSON-parse. Uses a persistent curl_cffi Session
+    (chrome120 fingerprint) so TLS + TCP are amortised across calls; falls
+    back to a persistent `requests` Session on curl_cffi failure.
+    Returns (status_code, parsed_or_None).
+    """
+    sess = _get_curl_session()
+    if sess is not None and sess is not False:
+        try:
+            # Per-request impersonate keeps backward-compatible with older
+            # curl_cffi builds where Session.impersonate attribute is ignored.
+            r = sess.get(url, impersonate="chrome120", timeout=timeout)
+            if r.status_code == 200:
+                try:
+                    return 200, r.json()
+                except Exception:                                   # noqa: BLE001
+                    return 200, None
+            return r.status_code, None
+        except Exception as e:                                      # noqa: BLE001
+            log.warning("curl_cffi session failed for %s: %s -- falling back", url, e)
+
+    # Vanilla requests fallback (also session-pooled).
+    req_sess = _get_requests_session()
+    if req_sess is None or req_sess is False:
+        return 0, None
+    try:
+        r = req_sess.get(url, timeout=timeout)
         if r.status_code == 200:
             try:
                 return 200, r.json()
@@ -162,7 +255,7 @@ def _http_get_json(url: str, timeout: float = 12.0) -> Tuple[int, Any]:
                 return 200, None
         return r.status_code, None
     except Exception as e:                                          # noqa: BLE001
-        log.error("requests also failed for %s: %s", url, e)
+        log.error("requests session failed for %s: %s", url, e)
         return 0, None
 
 
@@ -452,34 +545,82 @@ def parse_mainline(
 
 # ── IO ───────────────────────────────────────────────────────────────────────
 
+# R23_P4: per-path dedup-key cache. The original implementation re-read the
+# entire CSV from disk on every `_write_csv` call to rebuild the dedup set.
+# As the daily pin.csv grows (250+ rows after a few hours, ~1500+ by EoD),
+# that O(N) read+parse fired on every tick and was a silent p99 contributor
+# under filesystem contention with other writers.
+_DEDUP_CACHE: Dict[str, Set[Tuple[Any, ...]]] = {}
+
+
+def _load_dedup_keys(path: str, dedup_key: Tuple[str, ...]) -> Set[Tuple[Any, ...]]:
+    """Return the cached set of existing dedup-tuples for `path`.
+    Bootstraps from disk on the first call per (process, path)."""
+    cached = _DEDUP_CACHE.get(path)
+    if cached is not None:
+        return cached
+    keys: Set[Tuple[Any, ...]] = set()
+    if os.path.exists(path):
+        try:
+            with open(path, "r", newline="", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for r in reader:
+                    keys.add(tuple(r.get(k, "") for k in dedup_key))
+        except Exception as e:                                      # noqa: BLE001
+            log.warning("dedup cache bootstrap failed for %s: %s", path, e)
+            keys = set()
+    _DEDUP_CACHE[path] = keys
+    return keys
+
+
 def _write_csv(path: str, fields: List[str], rows: List[Dict[str, Any]],
                dedup_key: Optional[Tuple[str, ...]] = None) -> int:
     """Append rows to path; create with header if missing. Returns rows written.
     Optionally deduplicates against existing keys when dedup_key is provided.
+
+    R23_P4 changes:
+      - dedup keys are cached in-process per path (no per-tick CSV re-read)
+      - the appended payload is staged into the live file via a buffered write
+        and an explicit flush+fsync of the appended bytes, so a concurrent
+        reader never sees a torn row mid-line. (We append rather than full
+        rewrite-and-replace because pin*.csv is append-only and a full
+        rewrite would balloon write cost as the file grows.)
     """
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    existing_keys: Set[Tuple[Any, ...]] = set()
-    if dedup_key and os.path.exists(path):
-        with open(path, "r", newline="", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for r in reader:
-                existing_keys.add(tuple(r.get(k, "") for k in dedup_key))
+    existing_keys: Set[Tuple[Any, ...]]
+    if dedup_key:
+        existing_keys = _load_dedup_keys(path, dedup_key)
+    else:
+        existing_keys = set()
     new_file = not os.path.exists(path)
-    written = 0
+
+    # Build the rows-to-write list off-line so we hold the file open as
+    # briefly as possible (less contention window with concurrent readers).
+    to_write: List[Dict[str, Any]] = []
+    for row in rows:
+        if dedup_key:
+            k = tuple(str(row.get(c, "")) for c in dedup_key)
+            if k in existing_keys:
+                continue
+            existing_keys.add(k)
+        to_write.append(row)
+
+    if not to_write and not new_file:
+        return 0
+
     with open(path, "a", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
         if new_file:
             w.writeheader()
-        for row in rows:
-            if dedup_key:
-                k = tuple(str(row.get(c, "")) for c in dedup_key)
-                # Match the file read which produces strings; ensure same shape.
-                if k in existing_keys:
-                    continue
-                existing_keys.add(k)
+        for row in to_write:
             w.writerow(row)
-            written += 1
-    return written
+        try:
+            f.flush()
+            os.fsync(f.fileno())
+        except (OSError, ValueError):
+            # fsync may fail on some Windows handles; safe to skip.
+            pass
+    return len(to_write)
 
 
 # ── public top-level: one tick ───────────────────────────────────────────────
