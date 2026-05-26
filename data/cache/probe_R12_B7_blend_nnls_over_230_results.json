@@ -1,0 +1,51 @@
+{
+  "probe": "R12_B7_blend_nnls_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 136,
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2409 (-17.43%); AUC 0.6678",
+  "pooled_lgb_brier": 0.24093,
+  "pooled_naive_brier": 0.29178,
+  "pooled_lgb_auc": 0.66783,
+  "brier_delta_pct": -17.427,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.30085,
+      "lgb_brier": 0.25226
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.30285,
+      "lgb_brier": 0.23754
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27163,
+      "lgb_brier": 0.233
+    }
+  ],
+  "variant": {
+    "variant": "blend_nnls",
+    "weights_per_fold": [
+      [
+        0.357,
+        0.643
+      ],
+      [
+        0.6504,
+        0.3496
+      ],
+      [
+        0.3475,
+        0.6525
+      ]
+    ]
+  },
+  "elapsed_s": 125.9
+}
