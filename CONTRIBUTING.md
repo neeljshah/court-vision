@@ -26,7 +26,7 @@ python -m pytest tests/ -q
 1. Create a focused branch from your main working branch.
 2. Implement one logical change per PR.
 3. Add or update tests for behavior changes.
-4. Update relevant docs (`README.md`, `PLAN.md`, `docs/`) when interfaces or workflows change.
+4. Update relevant docs (`README.md`, `ROADMAP.md`, `CHANGELOG.md`, `docs/`) when interfaces or workflows change.
 5. Open a PR with:
    - problem statement
    - implementation summary
@@ -80,3 +80,6 @@ When filing issues, include:
 - reproduction steps
 - relevant logs or traceback excerpts
 - environment details (OS, Python, GPU if relevant)
+
+---
+*Last verified: 2026-05-25*

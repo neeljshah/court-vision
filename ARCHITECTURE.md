@@ -74,7 +74,12 @@
 | EventDetector | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
 | Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 [LIVE] bug: ball_valid_pct=0% some games |
 | Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ [LIVE] |
-| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_mlp.py` | ✅ [LIVE] walk-forward validated (MAE: pts 4.62, reb 1.90, ast 1.36, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44) |
+| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_props.py` | ✅ [LIVE] walk-forward validated (MAE: pts 4.62, reb 1.90, ast 1.36, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44) |
+| Residual heads (pregame + period-specific) | `src/prediction/residual_heads.py`, `multitask_residual_head.py` | ✅ [LIVE] 6/7 stats SHIP pregame; endQ1+endQ2 wired into `live_engine` |
+| Live engine + in-play projection | `src/prediction/live_engine.py` | ✅ [LIVE] endQ1/endQ2/endQ3 snapshots; 7/7 stats win vs pregame at endQ3 |
+| Live quantile bands | `src/prediction/live_quantile_bands.py` | ✅ [LIVE] 80% empirical coverage on in-play projections |
+| Learned Q4 minute trajectory | `src/prediction/minute_trajectory.py` | ✅ [LIVE] endQ3 head: PTS -0.2312 MAE |
+| Overtime probability | `src/prediction/overtime_probability.py` | ✅ [LIVE] |
 | Win probability (5-way NNLS stack) | `src/prediction/win_probability.py` | ✅ [LIVE] 0.7094 acc / 0.193 Brier (walk-forward), 0.717 / 0.188 (single-split) |
 | Quantile interval calibration | `src/prediction/quantile_calibration.py` | ✅ [LIVE] 80% target coverage |
 | Betting backtest harness | `scripts/betting_backtest*.py` | ✅ [LIVE] 19,964-game holdout, +20-28% ROI @ +0.5 edge |
@@ -144,8 +149,7 @@ betting_portfolio.py
     │
     ▼
 FastAPI (api/main.py)
-    └─ 6 endpoints: health, simulate_game, over_prob, simulate, props, edge
-       + 5 routers: predictions, analytics, stitch, dashboard
+    └─ ~49 endpoints across 7 routers (main, predictions, models, analytics, dashboard, execution, stitch)
 ```
 
 ---
@@ -197,4 +201,14 @@ FastAPI (api/main.py)
 
 ---
 
-*Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [vault/Pipeline/System Architecture.md](vault/Pipeline/System%20Architecture.md)*
+| Live engine + residual heads | `src/prediction/live_engine.py`, `residual_heads.py`, `multitask_residual_head.py` |
+| Live quantile bands | `src/prediction/live_quantile_bands.py` |
+| Minute trajectory (Q4) | `src/prediction/minute_trajectory.py` |
+| Daily ops chain | `scripts/daily_run.py`, `predict_player.py`, `predict_slate.py`, `compare_to_lines.py` |
+| Live data feeds | `scripts/fetch_live_prop_lines.py`, `fetch_dk_props.py`, `update_inactives.py` |
+| Health check | `scripts/health_check.py` |
+
+*Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [docs/CLAUDE-state.md](docs/CLAUDE-state.md) · [CHANGELOG.md](CHANGELOG.md)*
+
+---
+*Last verified: 2026-05-25*
