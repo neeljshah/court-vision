@@ -1541,6 +1541,131 @@ tr:nth-child(odd) td { background: #11161d; }
 """
 
 
+# --------------------------------------------------------------------------- #
+# Section 11: "Multi5 vs MLP Mode Compare" (R32_Y6)                            #
+# --------------------------------------------------------------------------- #
+ENGINE_MODE_COMPARE_TITLE = "Multi5 vs MLP Mode Compare"
+
+
+def fetch_engine_mode_compare(
+    *,
+    bankroll: float = 1000.0,
+    top: int = 5,
+    today: Optional[str] = None,
+    min_edge: float = 0.05,
+    top_overlap_k: Tuple[int, ...] = (5, 10, 20),
+) -> Dict[str, Any]:
+    """Call the R32_Y6 mode-compare helper for today's recs.
+
+    Always returns a dict — defensive even when the engine, predictions
+    cache, or comparison helper raises, so a broken downstream never takes
+    the dashboard down.
+    """
+    out: Dict[str, Any] = {
+        "ok":            False,
+        "date":          today or _today_iso(),
+        "reason":        "",
+        "top_multi5":    [],
+        "top_mlp":       [],
+        "overlap":       {},
+        "n_recs_multi5": 0,
+        "n_recs_mlp":    0,
+        "operator_would_change_bets": False,
+    }
+    try:
+        # Local import — keeps the dashboard cold-start light when the
+        # compare helper is unavailable (e.g. fresh clone w/o scripts).
+        from scripts.compare_engine_modes import compare_modes  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"compare import failed: {exc}"
+        return out
+    try:
+        payload = compare_modes(
+            bankroll=float(bankroll),
+            top=int(top),
+            date=out["date"],
+            min_edge=float(min_edge),
+            top_overlap_k=tuple(int(k) for k in top_overlap_k),
+        )
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"compare raised: {exc}"
+        return out
+    out["ok"] = True
+    out["top_multi5"] = payload.get("top_multi5", []) or []
+    out["top_mlp"]    = payload.get("top_mlp", []) or []
+    out["overlap"]    = payload.get("overlap", {}) or {}
+    out["shared_bets"] = payload.get("shared_bets", {}) or {}
+    out["only_in_multi5"] = payload.get("only_in_multi5", []) or []
+    out["only_in_mlp"]    = payload.get("only_in_mlp", []) or []
+    out["n_recs_multi5"] = (payload.get("multi5", {}) or {}).get("n_recs", 0) or 0
+    out["n_recs_mlp"]    = (payload.get("mlp", {}) or {}).get("n_recs", 0) or 0
+    out["operator_would_change_bets"] = bool(
+        payload.get("operator_would_change_bets", False)
+    )
+    return out
+
+
+def _section_engine_mode_compare(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return (
+            f'<h2>{ENGINE_MODE_COMPARE_TITLE}</h2>'
+            f'<p class="muted">(compare unavailable: '
+            f'{_html_escape(d.get("reason",""))})</p>'
+        )
+    recs_a = d.get("top_multi5", []) or []
+    recs_b = d.get("top_mlp", []) or []
+    overlap = d.get("overlap", {}) or {}
+
+    # Build the side-by-side top-5 table. Render up to 5 rows even if one
+    # side is shorter — empty cells where no rec exists.
+    n_rows = max(len(recs_a[:5]), len(recs_b[:5]), 1)
+    side_rows = []
+    for i in range(n_rows):
+        a = recs_a[i] if i < len(recs_a) else None
+        b = recs_b[i] if i < len(recs_b) else None
+        def _cell(rec):
+            if rec is None:
+                return '<td colspan="4" class="muted">—</td>'
+            return (
+                f'<td>{_html_escape(rec.get("player",""))}</td>'
+                f'<td>{_html_escape(str(rec.get("stat","")).upper())}</td>'
+                f'<td>{_html_escape(rec.get("side",""))}</td>'
+                f'<td>{float(rec.get("edge_pct",0)):+.2f}%</td>'
+            )
+        side_rows.append(f'<tr><td>{i+1}</td>{_cell(a)}{_cell(b)}</tr>')
+
+    # Jaccard ribbon
+    ribbon_parts = []
+    for k_label, bucket in overlap.items():
+        ribbon_parts.append(
+            f'{_html_escape(k_label)}: J={float(bucket.get("jaccard",0)):.2f} '
+            f'({int(bucket.get("overlap",0))} shared)'
+        )
+    ribbon = " · ".join(ribbon_parts) if ribbon_parts else "(no overlap data)"
+
+    changed_flag = (
+        "YES" if d.get("operator_would_change_bets") else "no"
+    )
+    n_added = len(d.get("only_in_mlp", []) or [])
+    n_dropped = len(d.get("only_in_multi5", []) or [])
+    shared = d.get("shared_bets", {}) or {}
+    return (
+        f'<h2>{ENGINE_MODE_COMPARE_TITLE}</h2>'
+        f'<p>multi5 n_recs={int(d.get("n_recs_multi5",0))} · '
+        f'MLP n_recs={int(d.get("n_recs_mlp",0))} · '
+        f'operator would change bets: <strong>{changed_flag}</strong> '
+        f'(added={n_added} · dropped={n_dropped} · shared={int(shared.get("n_shared",0))})</p>'
+        f'<p class="muted">{ribbon}</p>'
+        '<table><thead><tr><th>#</th>'
+        '<th colspan="4">multi5 (M2_FAMILY_USE_MLP=0)</th>'
+        '<th colspan="4">MLP (M2_FAMILY_USE_MLP=1)</th></tr>'
+        '<tr><th></th>'
+        '<th>Player</th><th>Stat</th><th>Side</th><th>Edge</th>'
+        '<th>Player</th><th>Stat</th><th>Side</th><th>Edge</th></tr></thead>'
+        '<tbody>' + "".join(side_rows) + '</tbody></table>'
+    )
+
+
 def render_operator_html(
     health: Dict[str, Any],
     bankroll: Dict[str, Any],
@@ -1553,6 +1678,7 @@ def render_operator_html(
     settlement: Optional[Dict[str, Any]] = None,   # R24_Q8
     drift: Optional[Dict[str, Any]] = None,        # R27_T3
     data_freshness: Optional[Dict[str, Any]] = None,  # R30_W4
+    engine_mode_compare: Optional[Dict[str, Any]] = None,  # R32_Y6
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -1576,6 +1702,8 @@ def render_operator_html(
         body += _section_live_recs(live_recs)
     if rec_perf is not None:
         body += _section_rec_perf(rec_perf)
+    if engine_mode_compare is not None:
+        body += _section_engine_mode_compare(engine_mode_compare)
     return (
         "<!DOCTYPE html>\n"
         '<html lang="en"><head>'
@@ -1624,6 +1752,10 @@ def collect_and_render(
     freshness_lines_dir: Optional[Path] = None,
     freshness_backups_dir: Optional[Path] = None,
     freshness_vault_dir: Optional[Path] = None,
+    include_engine_mode_compare: bool = True,  # R32_Y6
+    engine_mode_compare_bankroll: float = 1000.0,
+    engine_mode_compare_top: int = 5,
+    engine_mode_compare_min_edge: float = 0.05,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -1694,6 +1826,17 @@ def collect_and_render(
         )
         data_freshness.setdefault("ok", False)
 
+    engine_mode_compare = None
+    if include_engine_mode_compare:
+        engine_mode_compare = _safe(
+            fetch_engine_mode_compare,
+            bankroll=engine_mode_compare_bankroll,
+            top=int(engine_mode_compare_top),
+            today=today,
+            min_edge=float(engine_mode_compare_min_edge),
+        )
+        engine_mode_compare.setdefault("ok", False)
+
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
@@ -1701,5 +1844,6 @@ def collect_and_render(
     return render_operator_html(
         health, bankroll, alerts, bets, slate, tracker,
         live_recs, rec_perf, settlement, drift, data_freshness,
+        engine_mode_compare,
         auto_refresh_sec=auto_refresh_sec,
     )
