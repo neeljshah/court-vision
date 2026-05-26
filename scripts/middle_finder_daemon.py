@@ -590,8 +590,176 @@ def run_once(date_str, min_width, max_juice, predictor=None,
     return middles, index
 
 
+# ---------------------------------------------------------------------------
+# R26_S7 — free-arb critical alert wire (with local dedup fallback).
+#
+# A true free arb (`free_arb=True` AND surviving the R20_M1 + R24_Q1
+# primary-only classifier in `find_middles`) is a guaranteed +EV event
+# that may materialize at 2am with no operator awake. We fire a CRITICAL
+# alert via R21_N3's `alert()` so it lands in the vault ledger + critical
+# stack + Discord (if configured).
+#
+# Dedup: same arb persisting across many 30s ticks must not spam. The
+# canonical key is `free_arb:{player}:{stat}`. R26_S5 is an upstream
+# rate-limit/dedup module shipping in parallel — if importable, we delegate
+# to it; otherwise we use a process-local TTL dedup so behaviour is
+# identical with or without R26_S5 merged. Default TTL: 30 minutes
+# (re-fire if the arb is still live half an hour later — a rare and
+# operator-worthy event).
+# ---------------------------------------------------------------------------
+FREE_ARB_DEDUP_TTL_SEC = 30 * 60  # 30 min — re-fire if still live after that
+
+
+def _free_arb_dedup_key(middle):
+    """Canonical dedup key for a free-arb middle. R26_S5 will key on the
+    same string when it ships, so a single tag-prefix is the contract."""
+    return (f"free_arb:{middle.get('player', '?')}:"
+            f"{middle.get('stat', '?')}")
+
+
+def _free_arb_alert_message(middle):
+    """Build the spec-mandated headline for a free-arb middle.
+
+    Format (single line — vault ledger / Discord title compatible):
+        FREE ARB: {player} {stat} — {over_book} OVER {over_line}@{over_price}
+        / {under_book} UNDER {under_line}@{under_price}
+    """
+    ev_pct = middle.get("arb_profit_pct")
+    ev_str = f"+{ev_pct:.2f}%" if isinstance(ev_pct, (int, float)) else "n/a"
+    width = middle.get("middle_width", 0.0)
+    try:
+        width_str = f"{float(width):.1f}"
+    except (TypeError, ValueError):
+        width_str = str(width)
+    headline = (
+        f"FREE ARB: {middle.get('player', '?')} "
+        f"{middle.get('stat', '?')} — "
+        f"{middle.get('over_book', '?')} OVER "
+        f"{middle.get('over_line', '?')}@{middle.get('over_price', '?')} / "
+        f"{middle.get('under_book', '?')} UNDER "
+        f"{middle.get('under_line', '?')}@{middle.get('under_price', '?')}"
+    )
+    body = f"Width: {width_str}, EV: {ev_str}"
+    return headline, body
+
+
+def _try_r26_s5_dedup(key, ttl_sec):
+    """Try to delegate to R26_S5's dedup if it's merged; return either
+    (True, False) — allowed-and-handled, (False, False) — suppressed, or
+    (None, True) — module not present, caller must use local fallback.
+
+    Contract assumed for R26_S5 (matches `free_arb:` tag prefix):
+        from src.alerts.alert_dedup import should_fire
+        should_fire(key: str, ttl_sec: int) -> bool
+    Any other shape => fall back to local dedup.
+    """
+    try:
+        from src.alerts import alert_dedup  # type: ignore
+    except Exception:
+        return (None, True)
+    fn = getattr(alert_dedup, "should_fire", None)
+    if fn is None or not callable(fn):
+        return (None, True)
+    try:
+        ok = bool(fn(key, ttl_sec))
+        return (ok, False)
+    except Exception:
+        return (None, True)
+
+
+def _local_dedup_should_fire(key, state, ttl_sec, now=None):
+    """Process-local TTL dedup: returns True iff `key` hasn't fired in
+    the last `ttl_sec` seconds; updates `state` in place on True.
+
+    `state` is a plain dict {key: last_fired_monotonic_seconds} owned by
+    the caller (so loop() can keep its own bucket across ticks)."""
+    t = now if now is not None else time.monotonic()
+    last = state.get(key)
+    if last is not None and (t - last) < ttl_sec:
+        return False
+    state[key] = t
+    return True
+
+
+def _fire_free_arb_alert(middle, dedup_state, ttl_sec=FREE_ARB_DEDUP_TTL_SEC,
+                         alert_fn=None, log=print):
+    """Emit a single CRITICAL alert for one free-arb middle, respecting
+    dedup. Returns True iff an alert was actually fired (i.e. not deduped
+    and no exception). Never raises into the caller.
+
+    `alert_fn` overrides the imported `alert` symbol — used by tests so
+    they don't need to monkeypatch the discord_webhook module.
+    """
+    # Guard: only fire for TRUE free arbs that survived the primary-only
+    # classifier. `find_middles(allow_alt_lines=False)` (the default in
+    # `run_once`) is what enforces is_real_arb here — we re-assert as
+    # defence-in-depth in case a caller wires us up with allow_alt_lines.
+    if not middle.get("free_arb"):
+        return False
+    if middle.get("is_alt_line") or (
+        middle.get("market_tier") not in (None, "primary")
+    ):
+        return False
+    op = middle.get("over_price")
+    up = middle.get("under_price")
+    if not (isinstance(op, int) and isinstance(up, int)
+            and op > 0 and up > 0):
+        # is_free_arb invariant — both legs must be positive American odds.
+        return False
+
+    key = _free_arb_dedup_key(middle)
+
+    # 1) Try R26_S5 (if shipped). 2) Else local TTL dedup.
+    ok, used_fallback = _try_r26_s5_dedup(key, ttl_sec)
+    if used_fallback:
+        if not _local_dedup_should_fire(key, dedup_state, ttl_sec):
+            return False
+    else:
+        if not ok:
+            return False
+
+    headline, body = _free_arb_alert_message(middle)
+    metadata = {
+        "player": middle.get("player"),
+        "stat": middle.get("stat"),
+        "over_book": middle.get("over_book"),
+        "over_line": middle.get("over_line"),
+        "over_price": middle.get("over_price"),
+        "under_book": middle.get("under_book"),
+        "under_line": middle.get("under_line"),
+        "under_price": middle.get("under_price"),
+        "middle_width": middle.get("middle_width"),
+        "arb_profit_pct": middle.get("arb_profit_pct"),
+        "dedup_key": key,
+    }
+    # `alert()` doesn't take a freeform `metadata=` kwarg; encode the
+    # structured payload as Discord embed fields + a metadata JSON line
+    # in the body so operators and downstream parsers both get it.
+    fields = [{"name": k, "value": str(v)} for k, v in metadata.items()
+              if v is not None]
+    full_body = f"{body}\n\nmetadata: {json.dumps(metadata, default=str)}"
+
+    fn = alert_fn
+    if fn is None:
+        try:
+            from src.alerts.discord_webhook import alert as _alert
+            fn = _alert
+        except Exception as exc:
+            log(f"[warn] alert import failed: {exc}; skipping free-arb fire.")
+            return False
+    try:
+        fn(headline, level="critical", tag="free_arb",
+           source="middle_finder_daemon", body=full_body, fields=fields)
+        return True
+    except Exception as exc:
+        log(f"[warn] free-arb alert fire failed: {exc}")
+        return False
+
+
 def loop(interval_sec, min_width, max_juice, max_iters=None,
-          use_model=True, min_band_prob=0.10, out_json=OUT_JSON, log=print):
+          use_model=True, min_band_prob=0.10, out_json=OUT_JSON, log=print,
+          dedup_ttl_sec=FREE_ARB_DEDUP_TTL_SEC, alert_fn=None,
+          dedup_state=None):
     predictor = None
     if use_model and _MODEL_OK:
         try:
@@ -599,8 +767,12 @@ def loop(interval_sec, min_width, max_juice, max_iters=None,
         except Exception as exc:
             log(f"[warn] model init failed: {exc}; continuing without model.")
             predictor = None
+    # R26_S7 — local-fallback dedup bucket (used when R26_S5 isn't merged).
+    if dedup_state is None:
+        dedup_state = {}
     stats = {"ticks": 0, "total_middles": 0, "max_middles_in_tick": 0,
-              "free_arbs_total": 0, "model_confirmed_total": 0}
+              "free_arbs_total": 0, "model_confirmed_total": 0,
+              "free_arb_alerts_fired": 0}
     signal.signal(signal.SIGTERM, _on_signal)
     try:
         signal.signal(signal.SIGINT, _on_signal)
@@ -645,24 +817,18 @@ def loop(interval_sec, min_width, max_juice, max_iters=None,
             atomic_write_json(out_json, payload)
         except Exception as exc:
             log(f"[err] atomic write failed: {exc}")
-        # R21_N3 — layered alert (vault + critical-stack always; Discord if URL set).
+        # R26_S7 — critical alert wire for free arbs (with R26_S5 dedup
+        # fallback). The vault append + critical-stack push happen inside
+        # `alert()` so a 2am free arb leaves a durable trail even with no
+        # Discord URL configured.
         try:
-            from src.alerts.discord_webhook import alert
             for m in (mm for mm in middles if mm.get("free_arb")):
-                alert(
-                    f"FREE ARB: {m.get('player', '?')} {m.get('stat', '?')}",
-                    level="critical",
-                    tag="middle_finder_daemon",
-                    source="middle_finder_daemon",
-                    body=(f"width={m.get('middle_width', '?')}  "
-                          f"legs: {m.get('over_book', '?')}/{m.get('under_book', '?')}"),
-                    fields=[{"name": "over",
-                             "value": f"{m.get('over_book', '?')} {m.get('over_line', '?')} @ {m.get('over_price', '?')}"},
-                            {"name": "under",
-                             "value": f"{m.get('under_book', '?')} {m.get('under_line', '?')} @ {m.get('under_price', '?')}"}],
-                )
-        except Exception:
-            pass
+                if _fire_free_arb_alert(m, dedup_state,
+                                         ttl_sec=dedup_ttl_sec,
+                                         alert_fn=alert_fn, log=log):
+                    stats["free_arb_alerts_fired"] += 1
+        except Exception as exc:
+            log(f"[warn] free-arb alert loop failed: {exc}")
         log(f"[tick {stats['ticks']}] middles={len(middles)} "
             f"free_arbs={n_free} model_confirmed={n_conf} "
             f"(took {time.time() - t0:.2f}s)")

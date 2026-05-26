@@ -1,0 +1,79 @@
+[
+  {
+    "ts": "2026-05-26T18:15:36.764776+00:00",
+    "level": "CRITICAL",
+    "tag": "free_arb",
+    "source": "middle_finder_daemon",
+    "message": "FREE ARB: Probe Player pts \u2014 fd OVER 24.5@105 / bov UNDER 25.5@110",
+    "payload": {
+      "embeds": [
+        {
+          "title": "[URGENT] FREE ARB: Probe Player pts \u2014 fd OVER 24.5@105 / bov UNDER 25.5@110",
+          "description": "Width: 1.0, EV: +2.34%\n\nmetadata: {\"player\": \"Probe Player\", \"stat\": \"pts\", \"over_book\": \"fd\", \"over_line\": 24.5, \"over_price\": 105, \"under_book\": \"bov\", \"under_line\": 25.5, \"under_price\": 110, \"middle_width\": 1.0, \"arb_profit_pct\": 2.34, \"dedup_key\": \"free_arb:Probe Player:pts\"}",
+          "color": 15158332,
+          "footer": {
+            "text": "source: middle_finder_daemon"
+          },
+          "timestamp": "2026-05-26T18:15:36.762778+00:00",
+          "fields": [
+            {
+              "name": "player",
+              "value": "Probe Player",
+              "inline": true
+            },
+            {
+              "name": "stat",
+              "value": "pts",
+              "inline": true
+            },
+            {
+              "name": "over_book",
+              "value": "fd",
+              "inline": true
+            },
+            {
+              "name": "over_line",
+              "value": "24.5",
+              "inline": true
+            },
+            {
+              "name": "over_price",
+              "value": "105",
+              "inline": true
+            },
+            {
+              "name": "under_book",
+              "value": "bov",
+              "inline": true
+            },
+            {
+              "name": "under_line",
+              "value": "25.5",
+              "inline": true
+            },
+            {
+              "name": "under_price",
+              "value": "110",
+              "inline": true
+            },
+            {
+              "name": "middle_width",
+              "value": "1.0",
+              "inline": true
+            },
+            {
+              "name": "arb_profit_pct",
+              "value": "2.34",
+              "inline": true
+            },
+            {
+              "name": "dedup_key",
+              "value": "free_arb:Probe Player:pts",
+              "inline": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+]
