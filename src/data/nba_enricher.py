@@ -437,11 +437,19 @@ def _build_video_to_pbp_mapper(data_dir: str, fps: float = 30.0):
     # Quality check: refuse to build a mapper when scoreboard data is too sparse
     # or too uniform (OCR returned the same clock value repeatedly -- common when
     # a frame artifact is being misread as a clock).
-    if len(filtered) < 20:
+    # Threshold lowered from < 20 to < 5: sparse OCR (e.g. 6 rows for game
+    # 0022500757) is still better than no mapper at all; the linear clip_start_sec
+    # fallback is broken for full-game broadcasts past halftime.
+    if len(filtered) < 5:
         return None, []
     pbp_vals_unique = len(set(int(a[1]) for a in filtered))
     video_span = filtered[-1][0] - filtered[0][0] if len(filtered) > 1 else 0
-    if pbp_vals_unique < 10 or video_span < 600:
+    # Secondary quality checks scale with anchor count: if we have few anchors
+    # (5-19), relax uniqueness and span requirements proportionally so sparse
+    # OCR (e.g. 6 rows from game 0022500757) still builds a useful mapper.
+    _min_unique = min(10, max(3, len(filtered) // 2))
+    _min_span   = 600 if len(filtered) >= 20 else 60
+    if pbp_vals_unique < _min_unique or video_span < _min_span:
         return None, []
 
     # Build sorted unique-video-sec anchor arrays for fast interpolation.
@@ -494,6 +502,41 @@ def _build_video_to_pbp_mapper(data_dir: str, fps: float = 30.0):
         return p0 + t * (p1 - p0)
 
     return mapper, filtered
+
+
+def _build_pbp_to_video_mapper(anchors):
+    """Inverse of _build_video_to_pbp_mapper.
+
+    anchors = list of (video_sec, pbp_sec, period) as returned by
+    _build_video_to_pbp_mapper.  Builds a piecewise-linear function
+    pbp_sec → video_sec so that pbp_fill frame numbers are computed
+    from PBP game-clock time rather than from the game-clock value
+    treated as if it were video time (which is wrong).
+
+    Returns None when anchors is empty.
+    """
+    if not anchors:
+        return None
+    # Sort by pbp_sec, build piecewise-linear pbp→video mapping
+    pairs = sorted([(a[1], a[0]) for a in anchors])
+    pbp_arr = [p[0] for p in pairs]
+    vid_arr = [p[1] for p in pairs]
+
+    def mapper(pbp_sec):
+        import bisect
+        if pbp_sec <= pbp_arr[0]:
+            return vid_arr[0]
+        if pbp_sec >= pbp_arr[-1]:
+            return vid_arr[-1]
+        i = bisect.bisect_left(pbp_arr, pbp_sec)
+        v0, v1 = vid_arr[i - 1], vid_arr[i]
+        p0, p1 = pbp_arr[i - 1], pbp_arr[i]
+        if p1 == p0:
+            return v0
+        t = (pbp_sec - p0) / (p1 - p0)
+        return v0 + t * (v1 - v0)
+
+    return mapper
 
 
 def enrich_shot_log(
@@ -608,6 +651,7 @@ def enrich_possessions(
     clip_start_sec: float,
     fps: float = 30.0,
     video_to_pbp=None,
+    v2p_anchors=None,
 ) -> str:
     """
     Fill in `result` and `outcome_score` in possessions.csv.
@@ -637,15 +681,44 @@ def enrich_possessions(
         lambda v: clip_start_sec + v
     )
 
+    # BUG 2 fix: build inverse mapper (pbp_sec → video_sec) for computing
+    # pbp_fill frame numbers correctly.  Without this, fill rows were setting
+    # end_frame = int(game_clock_sec * fps), treating PBP game-clock time as
+    # video time — wrong for any broadcast with halftime or clock drift.
+    _pbp_to_video = _build_pbp_to_video_mapper(v2p_anchors or [])
+
     # Build score-margin lookup: game_clock_sec → score_margin
     scored_events  = [e for e in pbp if e["event_type"] in (1, 2, 5, 6)]
     scoring_events = [e for e in pbp if e["event_type"] == 1 and e.get("score_margin") not in ("", None)]
 
     for poss in possessions:
+        # BUG 2 fix: pbp_fill rows are already synthetic — skip re-match so
+        # pbp_matched is never overwritten to False on a second enrichment pass.
+        if poss.get("source") == "pbp_fill":
+            continue
+
         try:
             end_f = int(poss.get("end_frame", 0))
             poss_end_sec = _ts_convert(end_f / max(1.0, fps))
         except (ValueError, TypeError):
+            continue
+
+        # BUG 4 fix: reject tracker artifacts with absurdly long duration.
+        # Any real NBA possession is at most 24s (shot-clock) plus a few seconds
+        # of clock-running disagreement between tracker and PBP timestamps.
+        # A duration > 60s is a clip-boundary artifact — refuse to match.
+        try:
+            _dur = float(poss.get("duration_sec", 0) or 0)
+        except (ValueError, TypeError):
+            _dur = 0.0
+        if _dur > 60.0:
+            poss["result"]        = "unknown"
+            poss["outcome_score"] = ""
+            poss["pbp_play_type"] = ""
+            poss["pbp_score_home"] = ""
+            poss["pbp_score_away"] = ""
+            poss["pbp_period"]    = ""
+            poss["pbp_matched"]   = False
             continue
 
         best_ev, best_dt = None, _POSS_MATCH_WINDOW_SEC + 1
@@ -727,6 +800,17 @@ def enrich_possessions(
     _n_pass2 = 0
     for poss in possessions:
         if poss.get("pbp_matched"):
+            continue
+        # BUG 2 fix: never attempt to re-match synthetic fill rows in pass 2 either.
+        if poss.get("source") == "pbp_fill":
+            continue
+        # BUG 4 fix: phantom possessions (duration > 60s) are already marked False
+        # in pass 1; skip them in pass 2 as well to prevent erroneous late matching.
+        try:
+            _dur2 = float(poss.get("duration_sec", 0) or 0)
+        except (ValueError, TypeError):
+            _dur2 = 0.0
+        if _dur2 > 60.0:
             continue
         try:
             end_f = int(poss.get("end_frame", 0))
@@ -822,12 +906,23 @@ def enrich_possessions(
                 # Check if any CV possession covers this timestamp
                 _covered = any(abs(_ts - _ev_ts) <= _GAP_FILL_WINDOW for _ts in _cv_ts_set)
                 if not _covered:
+                    # BUG 2 fix: use inverse mapper to convert PBP game-clock time
+                    # to video seconds before multiplying by fps.  The old code used
+                    # int(_ev_ts * fps) which treats PBP game-clock as video time —
+                    # wrong for full-game broadcasts where halftime shifts timestamps
+                    # by ~1200s relative to video.
+                    if _pbp_to_video is not None:
+                        _fill_vid_end = _pbp_to_video(_ev_ts)
+                        _fill_vid_start = _pbp_to_video(max(0.0, _ev_ts - 12.0))
+                    else:
+                        _fill_vid_end = _ev_ts
+                        _fill_vid_start = max(0.0, _ev_ts - 12.0)
                     _fill_rows.append({
                         "game_id":       "",  # not available from PBP alone
                         "team":          _ev.get("team_abbrev", ""),
-                        "start_frame":   int((_ev_ts - 12.0) * fps),
-                        "end_frame":     int(_ev_ts * fps),
-                        "start_time":    max(0.0, _ev_ts - 12.0),
+                        "start_frame":   int(_fill_vid_start * fps),
+                        "end_frame":     int(_fill_vid_end * fps),
+                        "start_time":    _fill_vid_start,
                         "duration_sec":  12.0,
                         "pbp_matched":   True,
                         "pbp_play_type": _play_type_map.get(_ev["event_type"], ""),
@@ -1044,8 +1139,11 @@ def enrich(
             # Convert game_clock_sec (elapsed within period) to absolute game time
             # so enrich_shot_log / enrich_possessions can match against a tracker
             # timestamp that is already measured from the start of the broadcast.
+            # q > 4 (strict) correctly identifies OT periods (Q5, Q6, …) as 5-min;
+            # q >= 4 was wrong — it treated Q4 as a 5-min period, placing OT events
+            # 420 seconds (7 minutes) too early.
             period_offset = sum(
-                (5 * 60 if q >= 4 else 12 * 60) for q in range(1, p)
+                (5 * 60 if q > 4 else 12 * 60) for q in range(1, p)
             )
             for row in p_rows:
                 row = dict(row)
@@ -1087,6 +1185,7 @@ def enrich(
         os.path.join(d, "possessions.csv"),
         clip_start_sec, fps,
         video_to_pbp=video_to_pbp,
+        v2p_anchors=_v2p_anchors,
     )
     return results
 
