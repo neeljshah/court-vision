@@ -1,0 +1,79 @@
+{
+  "probe": "R28_U2",
+  "ts": "2026-05-26T18:47:24Z",
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a2de7132fac1c9ee5\\data",
+  "per_season": {
+    "2021-22": {
+      "n_rows": 0,
+      "stored_home_pace_mean": null,
+      "stored_home_pace_std": null,
+      "stored_home_pace_min": null,
+      "stored_home_pace_max": null,
+      "stored_away_pace_mean": null,
+      "stored_away_pace_std": null,
+      "nba_stats_pace_mean": null,
+      "plausible": false
+    },
+    "2022-23": {
+      "n_rows": 1230,
+      "stored_home_pace_mean": 99.79166666666667,
+      "stored_home_pace_std": 1.735530818574601,
+      "stored_home_pace_min": 96.27,
+      "stored_home_pace_max": 102.54,
+      "stored_away_pace_mean": 99.79166666666667,
+      "stored_away_pace_std": 1.735530818574601,
+      "nba_stats_pace_mean": 99.79166666666667,
+      "plausible": true
+    },
+    "2023-24": {
+      "n_rows": 1230,
+      "stored_home_pace_mean": 99.15189430894308,
+      "stored_home_pace_std": 1.74487665514641,
+      "stored_home_pace_min": 95.96,
+      "stored_home_pace_max": 103.07,
+      "stored_away_pace_mean": 99.14743902439024,
+      "stored_away_pace_std": 1.7425772038342002,
+      "nba_stats_pace_mean": 99.14966666666666,
+      "plausible": true
+    },
+    "2024-25": {
+      "n_rows": 1225,
+      "stored_home_pace_mean": 99.57287346938776,
+      "stored_home_pace_std": 1.9178808639954141,
+      "stored_home_pace_min": 96.51,
+      "stored_home_pace_max": 103.69,
+      "stored_away_pace_mean": 99.57989387755102,
+      "stored_away_pace_std": 1.92043045476663,
+      "nba_stats_pace_mean": 99.57966666666667,
+      "plausible": true
+    },
+    "2025-26": {
+      "n_rows": 1230,
+      "stored_home_pace_mean": 100.19769142857143,
+      "stored_home_pace_std": 2.4133866250409466,
+      "stored_home_pace_min": 94.518,
+      "stored_home_pace_max": 107.407,
+      "stored_away_pace_mean": 100.2322106122449,
+      "stored_away_pace_std": 2.427738433892248,
+      "nba_stats_pace_mean": 100.21666666666667,
+      "plausible": true
+    }
+  },
+  "verdict": "computation_artifact",
+  "current_state_verdict": "window_artifact",
+  "explanation": "current stored gap 0.02, hist gap 0.00, real shift +0.71 \u2014 neither method-mismatch nor meaningful league shift; remaining z-score is window noise.",
+  "pre_fix_pace": {
+    "home_pace_mean_before": 102.39639183673486,
+    "home_pace_mean_after": 100.1976914285713,
+    "away_pace_mean_before": 102.43402448979592,
+    "away_pace_mean_after": 100.23221061224488,
+    "league_mean_ratio": 0.9785,
+    "n_rows_patched": 1225
+  },
+  "fix_applied": "yes (R28_U2 calibration marker present)",
+  "current_season": "2025-26",
+  "plausible_pace_range": [
+    95.0,
+    105.0
+  ]
+}
