@@ -94,8 +94,9 @@ OF_MAX_LEVEL = 2          # pyramid levels
 OF_MAX_AGE   = 8          # max lost frames before stopping optical flow propagation
 
 # ── Pose cadence ──────────────────────────────────────────────────────────────
-_POSE_INTERVAL           = 15  # OPTIMIZATION: 10→15. Pose every 1.5s real-time (stride=3/30fps); keypoints stable
-_POSE_INTERVAL_SUSPENDED = 30  # OPTIMIZATION: 25→30. Slower cadence when no ball holder + game suspended
+_POSE_INTERVAL_ACTIVE    = 5   # R15: in-play with ball holder — keypoints fresh at shot release
+_POSE_INTERVAL           = 15  # in-play no ball holder — keypoints still reasonably current
+_POSE_INTERVAL_SUSPENDED = 30  # Slower cadence when no ball holder + game suspended
 
 
 # ── Kalman filter helpers ─────────────────────────────────────────────────────
@@ -1154,11 +1155,16 @@ class AdvancedFeetDetector(FeetDetector):
         # Task 3: use a longer pose interval when the game is suspended (replay /
         # halftime) AND no player currently holds the ball — pose adds little value
         # in those frames and costs ~15% of per-frame GPU time.
+        # R15: three-tier cadence — active (ball holder exists) gets 5-frame interval
+        # so defender pose is fresh at shot release (was 15-frame, allowing 0-14 frames
+        # stale at shot moment). Suspended uses 30, otherwise 15. Net GPU cost ~7%.
         _pose_any_ball = any(p.has_ball for p in self.players)
-        _pose_ivl = (
-            _POSE_INTERVAL if (_pose_any_ball or not suspended)
-            else _POSE_INTERVAL_SUSPENDED
-        )
+        if _pose_any_ball:
+            _pose_ivl = _POSE_INTERVAL_ACTIVE
+        elif suspended:
+            _pose_ivl = _POSE_INTERVAL_SUSPENDED
+        else:
+            _pose_ivl = _POSE_INTERVAL
         _run_pose = (
             self._use_pose
             and self._pose_model is not None
