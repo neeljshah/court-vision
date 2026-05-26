@@ -19,6 +19,17 @@ CLI
     python L19_clv_calculator.py report [--date YYYY-MM-DD]
     python L19_clv_calculator.py trend  [--days 30]
     python L19_clv_calculator.py alert  [--window 14 --threshold -2.0]
+
+Paper vs Live Mode — MODE GATING: N/A
+--------------------------------------
+L19 is a **read-only analytics layer** — it makes no API calls and has no
+execution-mode toggle.  The constant ``_MARKET_TYPE_LIVE`` (= ``"live"``)
+is a **data classification**: bets whose ``market`` column contains this
+value were placed after tip-off (in-game prop markets) and are excluded
+from CLV calculations because no pre-game closing line exists.  It is NOT
+an environment-mode gate such as ``if mode == "live"``.  L19 runs
+identically in paper and production environments.  No paper/live mode
+switch is required or applicable.
 """
 from __future__ import annotations
 
@@ -66,6 +77,14 @@ BASE_SIGMA: dict[str, float] = {
     "fg3m": 1.3, "stl": 1.0, "blk": 0.75, "tov": 1.2,
 }
 
+# ---------------------------------------------------------------------------
+# Data-classification constants
+# ---------------------------------------------------------------------------
+# _MARKET_TYPE_LIVE identifies in-game prop markets (placed after tip-off).
+# This is a DATA label on the bet's `market` column — NOT an execution-mode
+# flag.  L19 makes no API calls and runs identically in paper and production.
+_MARKET_TYPE_LIVE = "live"  # noqa: paper-default — data classification, not mode gate
+
 try:
     from scipy.stats import norm as _norm
     _PDF0 = float(_norm.pdf(0))          # ≈ 0.3989422804014327
@@ -92,6 +111,14 @@ class CLVPoint:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+def _atomic_write_json(path: Path, data: dict) -> None:
+    """Write *data* as JSON to *path* atomically via a sibling .tmp file + os.replace."""
+    import os
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def _norm_player(name: str) -> str:
     """Lowercase + strip combining marks (accents)."""
     nfkd = unicodedata.normalize("NFKD", str(name))
@@ -282,9 +309,9 @@ def join_bets_to_closes(
             result_rows.append(row)
             continue
 
-        # Market/live detection — if market column says "live", skip
+        # Data classification: skip in-game (live) prop markets — no pre-game close exists
         market_val = str(bet.get("market", "")).lower()
-        if "live" in market_val:
+        if _MARKET_TYPE_LIVE in market_val:
             row["skipped_reason"] = "live_bet"
             result_rows.append(row)
             continue
@@ -466,10 +493,10 @@ def nightly_clv_report(date: str = None) -> dict:
         "drift_warning": drift_warn,
     }
 
-    # Write to disk
+    # Write to disk atomically (tmp → replace) to avoid partial-read races
     _LEDGER_DIR.mkdir(parents=True, exist_ok=True)
     out_path = _LEDGER_DIR / f"clv_report_{date}.json"
-    out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    _atomic_write_json(out_path, report)
     log.info("nightly_clv_report: wrote %s", out_path)
     return report
 

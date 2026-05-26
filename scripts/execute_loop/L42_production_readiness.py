@@ -14,7 +14,7 @@ import json
 import os
 import re
 import stat
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Set
@@ -39,10 +39,97 @@ class CheckResult:
 
 
 @dataclass
+class LayerKPI:
+    layer: str
+    name: str                   # human-readable name from state.json
+    checks_total: int           # non-SKIP, non-N/A checks
+    checks_pass: int
+    checks_fail: int
+    stability_score: float      # 0.0 – 100.0
+    v1_tests: str               # e.g. "10/10" from first ship in state.json
+    v2_tests: Optional[str]     # e.g. "12/12" from last v2 ship; None if no v2
+    ships: int                  # number of ship entries in state.json
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
 class ReadinessReport:
     layers: dict[str, list[CheckResult]]
     summary: dict[str, int]   # pass, fail, skip, n_a, layers
     generated_at: str
+
+    # ------------------------------------------------------------------
+    # KPI helpers
+    # ------------------------------------------------------------------
+
+    def compute_layer_kpis(self, state_json_path: Path) -> dict[str, LayerKPI]:
+        """Return a LayerKPI per layer (including 'global') keyed by layer name."""
+        state = json.loads(state_json_path.read_text(encoding="utf-8"))
+        state_layers: dict = state.get("layers", {})
+
+        kpis: dict[str, LayerKPI] = {}
+        for layer, results in self.layers.items():
+            # Tally checks (exclude SKIP and N/A)
+            n_pass = sum(1 for r in results if r.status == "PASS")
+            n_fail = sum(1 for r in results if r.status == "FAIL")
+            total = n_pass + n_fail
+            score = (100.0 * n_pass / total) if total > 0 else 100.0
+
+            # Pull data from state.json (skip for 'global' pseudo-layer)
+            layer_info = state_layers.get(layer, {})
+            layer_name = layer_info.get("name", layer)
+            ships_list: list[dict] = layer_info.get("ships", [])
+            n_ships = len(ships_list)
+
+            # v1_tests: first ship's tests field
+            v1_tests = ships_list[0].get("tests", "") if ships_list else ""
+
+            # v2_tests: last ship that has a "version" field
+            v2_ship = None
+            for s in reversed(ships_list):
+                if "version" in s:
+                    v2_ship = s
+                    break
+            v2_tests: Optional[str] = v2_ship.get("tests") if v2_ship else None
+
+            kpis[layer] = LayerKPI(
+                layer=layer,
+                name=layer_name,
+                checks_total=total,
+                checks_pass=n_pass,
+                checks_fail=n_fail,
+                stability_score=round(score, 1),
+                v1_tests=v1_tests,
+                v2_tests=v2_tests,
+                ships=n_ships,
+            )
+        return kpis
+
+    def kpi_summary_markdown(self, kpis: dict[str, LayerKPI]) -> str:
+        """Render a markdown table of per-layer KPI data."""
+        lines: list[str] = [
+            "# L42 Layer KPI Summary",
+            f"Generated: {self.generated_at}", "",
+            "| Layer | Name | Stability | Pass | Fail | Tests (v1→v2) | Ships | Notes |",
+            "|-------|------|----------:|-----:|-----:|---------------|------:|-------|",
+        ]
+        for layer, kpi in sorted(kpis.items(), key=lambda kv: _sort_key(kv[0])):
+            tests_col = kpi.v1_tests
+            if kpi.v2_tests and kpi.v2_tests != kpi.v1_tests:
+                tests_col = f"{kpi.v1_tests}→{kpi.v2_tests}"
+            note = ""
+            if kpi.checks_fail > 0:
+                note = f"{kpi.checks_fail} FAIL(s) need attention"
+            elif kpi.checks_total == 0:
+                note = "all SKIP/N/A"
+            lines.append(
+                f"| {layer} | {kpi.name} | {kpi.stability_score:.1f}% "
+                f"| {kpi.checks_pass} | {kpi.checks_fail} "
+                f"| {tests_col} | {kpi.ships} | {note} |"
+            )
+        return "\n".join(lines)
 
     def to_markdown(self) -> str:
         lines: list[str] = [
@@ -418,32 +505,69 @@ class ReadinessChecker:
         )
 
 
-def _cli() -> None:
+def _cli(argv: Optional[list[str]] = None) -> None:
     parser = argparse.ArgumentParser(description="Audit L1-L40 execute_loop layers for production readiness.")
     sub = parser.add_subparsers(dest="cmd")
+
     audit_p = sub.add_parser("audit", help="Run all checks and print report")
     audit_p.add_argument("--json", metavar="OUT", help="Write JSON report to file")
     audit_p.add_argument("--strict", action="store_true", help="Exit 1 if any FAIL found")
-    args = parser.parse_args()
-    if args.cmd != "audit":
-        parser.print_help()
-        return
+
+    kpi_p = sub.add_parser("kpi", help="Print per-layer KPI stability scores")
+    kpi_p.add_argument("--top", metavar="N", type=int, default=0,
+                        help="Show only top-N highest-stability layers")
+    kpi_p.add_argument("--bottom", metavar="N", type=int, default=0,
+                        help="Show only bottom-N lowest-stability layers")
+    kpi_p.add_argument("--json", metavar="OUT", dest="json_out",
+                        help="Write KPI dict as JSON to file")
+
+    args = parser.parse_args(argv)
+
     data_dir_env = os.environ.get("L42_DATA_DIR")
-    strict = args.strict or os.environ.get("L42_STRICT", "") == "1"
+    state_json = _HERE / "state.json"
     checker = ReadinessChecker(
         layers_dir=_HERE,
-        state_json_path=_HERE / "state.json",
+        state_json_path=state_json,
         data_dir=Path(data_dir_env) if data_dir_env else None,
     )
-    report = checker.run_all_checks()
-    if args.json:
-        out = Path(args.json)
-        out.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
-        print(f"JSON report written to {out}")
+
+    if args.cmd == "audit":
+        strict = args.strict or os.environ.get("L42_STRICT", "") == "1"
+        report = checker.run_all_checks()
+        if args.json:
+            out = Path(args.json)
+            out.write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+            print(f"JSON report written to {out}")
+        else:
+            print(report.to_markdown())
+        if strict and report.summary["fail"] > 0:
+            raise SystemExit(1)
+
+    elif args.cmd == "kpi":
+        report = checker.run_all_checks()
+        kpis = report.compute_layer_kpis(state_json)
+
+        # Apply --top / --bottom filters
+        sorted_layers = sorted(kpis.items(), key=lambda kv: kpis[kv[0]].stability_score)
+        if args.top and args.bottom:
+            parser.error("Use --top or --bottom, not both")
+        elif args.bottom > 0:
+            selected = dict(sorted_layers[: args.bottom])
+        elif args.top > 0:
+            selected = dict(sorted_layers[-args.top :])
+        else:
+            selected = kpis
+
+        if args.json_out:
+            out = Path(args.json_out)
+            payload = {k: v.to_dict() for k, v in selected.items()}
+            out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+            print(f"KPI JSON written to {out}")
+        else:
+            print(report.kpi_summary_markdown(selected))
+
     else:
-        print(report.to_markdown())
-    if strict and report.summary["fail"] > 0:
-        raise SystemExit(1)
+        parser.print_help()
 
 
 if __name__ == "__main__":

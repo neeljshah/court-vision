@@ -18,6 +18,19 @@ CLI
     python L24_nightly_retrain.py dry-run
     python L24_nightly_retrain.py status
     python L24_nightly_retrain.py rollback --to <run_id>
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+    Default deploy path is always ``via_shadow=True`` (paper/shadow observation
+    via L25 for 50 games) unless the caller explicitly passes ``via_shadow=False``.
+    Live copy to the production WF JSON requires RETRAIN_DEPLOY_TOKEN to be set;
+    without the token the live branch is a no-op. Never default to live.
+
+Environment Variables
+---------------------
+    RETRAIN_DEPLOY_TOKEN  Token required to authorise a direct live deploy
+                          (via_shadow=False path). If unset, live deploy is
+                          aborted and deploy_mode remains "none".
 """
 from __future__ import annotations
 
@@ -287,17 +300,13 @@ def _acquire_lock() -> bool:
             )
             return False
 
-    # Lock does not exist — create it atomically
+    # Lock does not exist — create it atomically via helper (tmp + os.replace)
     try:
-        fd = os.open(str(lock_path), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        try:
-            os.write(fd, json.dumps(payload).encode())
-        finally:
-            os.close(fd)
+        _write_lock_atomic(lock_path, payload)
         return True
     except FileExistsError:
-        # Race: another process created it between our check and O_EXCL
-        log.info("[L24] Lock contention (O_EXCL race). Exiting.")
+        # Race: another process created it between our check and the write
+        log.info("[L24] Lock contention (race). Exiting.")
         return False
     except OSError as exc:
         log.error("[L24] Could not create lock: %s", exc)

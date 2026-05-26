@@ -1,20 +1,7 @@
-"""L41_integration_harness.py — End-to-end integration harness for the autonomous NBA execution loop.
+"""L41_integration_harness.py — End-to-end integration harness for the NBA execution loop.
 
-Purpose
--------
-Wire every shipped layer (L01–L37) end-to-end against a deterministic stub slate
-and verify the full pipeline executes without live API calls.
-
-Environment variables
----------------------
-SUBMISSION_MODE : forced to "paper" for every run (never "live" inside the harness).
-
-Invariants
-----------
-- No live API calls are made; all HTTP is blocked by design in stub mode.
-- All RNG is seeded via np.random.default_rng(seed) for full reproducibility.
-- Missing layers are soft-imported and result in SKIP stages, not failures.
-- Critical-stage failures propagate as SKIP_DEPENDS to downstream stages.
+Wires L01–L41 layers against a deterministic stub slate; no live API calls.
+SUBMISSION_MODE forced to "paper". Missing layers → SKIP. Critical failures → SKIP_DEPENDS.
 """
 from __future__ import annotations
 
@@ -33,16 +20,12 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
 # Project path wiring
-# ---------------------------------------------------------------------------
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT_DIR = _SCRIPT_DIR.parents[1]
 sys.path.insert(0, str(_PROJECT_DIR))
 
-# ---------------------------------------------------------------------------
-# Soft imports — each in its own try/except; None on failure
-# ---------------------------------------------------------------------------
+# Soft-imports (L01–L41): missing layers → None; no live imports, no HTTP
 try:
     from scripts.execute_loop.L01_slate_ingester import SlateContest as _SlateContest
     L01 = sys.modules.get("scripts.execute_loop.L01_slate_ingester")
@@ -131,8 +114,49 @@ except Exception:
     detect_incidents = None  # type: ignore[assignment]
     run_postmortem = None  # type: ignore[assignment]
 
+try:
+    from scripts.execute_loop.L09_kalshi_client import get_orderbook as kalshi_get_orderbook
+    L09 = sys.modules.get("scripts.execute_loop.L09_kalshi_client")
+except Exception:
+    L09 = None; kalshi_get_orderbook = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L10_polymarket_client import get_orderbook as poly_get_orderbook
+    L10 = sys.modules.get("scripts.execute_loop.L10_polymarket_client")
+except Exception:
+    L10 = None; poly_get_orderbook = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L13_cross_exchange_ev import find_ev_opportunities
+    L13 = sys.modules.get("scripts.execute_loop.L13_cross_exchange_ev")
+except Exception:
+    L13 = None; find_ev_opportunities = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L14_order_manager import sync_all_exchanges
+    L14 = sys.modules.get("scripts.execute_loop.L14_order_manager")
+except Exception:
+    L14 = None; sync_all_exchanges = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L18_bankroll_manager import kelly_fraction
+    L18 = sys.modules.get("scripts.execute_loop.L18_bankroll_manager")
+except Exception:
+    L18 = None; kelly_fraction = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L33_sell_to_close import evaluate_close_decision
+    L33 = sys.modules.get("scripts.execute_loop.L33_sell_to_close")
+except Exception:
+    L33 = None; evaluate_close_decision = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L36_edge_erosion import daily_edge_report
+    L36 = sys.modules.get("scripts.execute_loop.L36_edge_erosion")
+except Exception:
+    L36 = None; daily_edge_report = None  # type: ignore[assignment]
+
 # ---------------------------------------------------------------------------
-# Critical stages — failure here propagates SKIP_DEPENDS downstream
 # ---------------------------------------------------------------------------
 _CRITICAL = {"ingest_slate", "fpts_distribution", "optimize_cash", "submit_paper", "settle_bets"}
 
@@ -144,87 +168,39 @@ _CRITICAL = {"ingest_slate", "fpts_distribution", "optimize_cash", "submit_paper
 def _build_stub_slate(seed: int = 42) -> Any:
     """Return a SlateContest (or duck-typed dict) with 10 stub players."""
     rng = np.random.default_rng(seed)
-    positions = ["PG", "SG", "SF", "PF", "C"]
-    teams = ["FAKEA", "FAKEB"]
-    players = []
-    for i in range(10):
-        pos = positions[i % 5]
-        team = teams[i % 2]
-        salary = int(rng.integers(4000, 9001))
-        players.append({
-            "player_id": f"stub_{i:03d}",
-            "name": f"Player{i:02d}",
-            "team": team,
-            "position": pos,
-            "salary": salary,
-            "status": "",
-        })
-
-    lock_iso = (datetime.now(timezone.utc) + timedelta(hours=6)).isoformat()
-
-    if SlateContest is not None:
-        return SlateContest(
-            contest_id="stub_contest_001",
-            book="dk",
-            sport="NBA",
-            slate_type="classic",
-            salary_cap=50000,
-            roster_slots=["PG", "SG", "SF", "PF", "C", "G", "F", "UTIL"],
-            lock_time=lock_iso,
-            game_ids=["stub_game_001"],
-            players=players,
-        )
-
-    # Fallback: plain dict that satisfies the L03/L04 interface
-    return {
-        "contest_id": "stub_contest_001",
-        "book": "dk",
-        "sport": "NBA",
-        "slate_type": "classic",
-        "salary_cap": 50000,
-        "roster_slots": ["PG", "SG", "SF", "PF", "C", "G", "F", "UTIL"],
-        "lock_time": lock_iso,
-        "game_ids": ["stub_game_001"],
-        "players": players,
-    }
+    pos_cycle = ["PG", "SG", "SF", "PF", "C"]
+    players = [
+        {"player_id": f"stub_{i:03d}", "name": f"Player{i:02d}",
+         "team": ["FAKEA", "FAKEB"][i % 2], "position": pos_cycle[i % 5],
+         "salary": int(rng.integers(4000, 9001)), "status": ""}
+        for i in range(10)
+    ]
+    kw = dict(
+        contest_id="stub_contest_001", book="dk", sport="NBA", slate_type="classic",
+        salary_cap=50000, roster_slots=["PG", "SG", "SF", "PF", "C", "G", "F", "UTIL"],
+        lock_time=(datetime.now(timezone.utc) + timedelta(hours=6)).isoformat(),
+        game_ids=["stub_game_001"], players=players,
+    )
+    return SlateContest(**kw) if SlateContest is not None else kw
 
 
 def _build_stub_fpts(slate: Any, seed: int = 42) -> Dict[str, Any]:
-    """Return Dict[player_id, FPTSDistribution] using deterministic RNG."""
+    """Return Dict[player_id, FPTSDistribution] (also keyed by name) via deterministic RNG."""
     rng = np.random.default_rng(seed)
     players = slate.players if hasattr(slate, "players") else slate["players"]
     result: Dict[str, Any] = {}
-
+    _cls = FPTSDistribution if FPTSDistribution is not None else types.SimpleNamespace
     for p in players:
-        pid = str(p["player_id"])
-        name = str(p["name"])
-        mean_fpts = float(rng.uniform(15.0, 50.0))
-        std_fpts = float(rng.uniform(3.0, 10.0))
-        samples = rng.normal(mean_fpts, std_fpts, 2000).clip(0)
-
-        if FPTSDistribution is not None:
-            dist = FPTSDistribution(
-                mean=mean_fpts,
-                std=std_fpts,
-                q10=float(np.quantile(samples, 0.10)),
-                q50=float(np.quantile(samples, 0.50)),
-                q90=float(np.quantile(samples, 0.90)),
-                samples=samples,
-            )
-        else:
-            # Duck-typed namespace
-            dist = types.SimpleNamespace(
-                mean=mean_fpts,
-                std=std_fpts,
-                q10=float(np.quantile(samples, 0.10)),
-                q50=float(np.quantile(samples, 0.50)),
-                q90=float(np.quantile(samples, 0.90)),
-                samples=samples,
-            )
-
-        result[pid] = dist
-        result[name] = dist  # keyed by both player_id and name
-
+        mu = float(rng.uniform(15.0, 50.0))
+        sigma = float(rng.uniform(3.0, 10.0))
+        samp = rng.normal(mu, sigma, 2000).clip(0)
+        dist = _cls(mean=mu, std=sigma,
+                    q10=float(np.quantile(samp, 0.10)),
+                    q50=float(np.quantile(samp, 0.50)),
+                    q90=float(np.quantile(samp, 0.90)),
+                    samples=samp)
+        result[str(p["player_id"])] = dist
+        result[str(p["name"])] = dist
     return result
 
 
@@ -249,16 +225,12 @@ class IntegrationHarness:
         self.paper_mode = paper_mode
         self.isolated_dir = isolated_dir
         self._prev_submission_mode: Optional[str] = None
-        # Saved originals for path constants we monkeypatch
-        self._saved_attrs: List[tuple] = []  # (module, attr_name, original_value)
-        self._tmp_dir: Optional[str] = None  # created per run; cleaned up after
-        # sys.modules keys present before the run (for import-state cleanup)
+        self._saved_attrs: List[tuple] = []
+        self._tmp_dir: Optional[str] = None
         self._modules_before: Optional[set] = None
 
-    # ------------------------------------------------------------------ helpers
-
     def _assert_paper_mode(self) -> None:
-        """Force SUBMISSION_MODE=paper; raise if live mode was set and paper_mode=True."""
+        """Force SUBMISSION_MODE=paper; raise RuntimeError if live mode set with paper_mode=True."""
         current = os.environ.get("SUBMISSION_MODE", "paper")
         if self.paper_mode and current.lower() == "live":
             raise RuntimeError(
@@ -275,142 +247,127 @@ class IntegrationHarness:
     # ------------------------------------------------------------------ isolation
 
     def _patch_attr(self, module: Any, attr: str, value: Any) -> None:
-        """Save original value of module.attr and set it to value."""
         if module is None:
             return
         original = getattr(module, attr, None)
         if original is None:
-            # Attribute doesn't exist; skip
             return
         self._saved_attrs.append((module, attr, original))
         setattr(module, attr, value)
 
     def _redirect_paths_to_tmp(self, tmp: Path) -> None:
-        """Monkeypatch all downstream module-level path constants to write into tmp.
-
-        Also snapshots sys.modules so we can clean up newly-imported submodules
-        after the run — preventing package-attribute pollution that breaks
-        downstream tests using sys.modules patching (e.g. L35 → L22 mocking).
-        """
+        """Redirect all module-level path constants to isolated tmp dir."""
         tmp.mkdir(parents=True, exist_ok=True)
-        # Snapshot sys.modules BEFORE any stage imports happen
         self._modules_before = set(sys.modules.keys())
+        _p = tmp  # alias for brevity
 
-        # -- L05 --
         if L05 is not None:
-            self._patch_attr(L05, "_LEDGER_DIR", tmp)
-            self._patch_attr(L05, "_CACHE_FILE", tmp / "submission_cache.json")
-            self._patch_attr(L05, "_PAPER_FILE", tmp / "paper_submissions.json")
-            # Clear token bucket state so idempotency cache doesn't bleed across runs
+            self._patch_attr(L05, "_LEDGER_DIR", _p)
+            self._patch_attr(L05, "_CACHE_FILE", _p / "submission_cache.json")
+            self._patch_attr(L05, "_PAPER_FILE", _p / "paper_submissions.json")
             buckets = getattr(L05, "_buckets", None)
             if isinstance(buckets, dict):
                 buckets.clear()
 
-        # -- L07 --
         if L07 is not None:
-            self._patch_attr(L07, "_LEDGER_DIR", tmp)
-            self._patch_attr(L07, "_BETS_FILE", tmp / "bets.parquet")
-            self._patch_attr(L07, "_BETS_CSV", tmp / "bets.csv")
-            self._patch_attr(L07, "_CONTESTS_FILE", tmp / "contests.parquet")
-            self._patch_attr(L07, "_CONTESTS_CSV", tmp / "contests.csv")
+            for _a, _v in [("_LEDGER_DIR", _p), ("_BETS_FILE", _p / "bets.parquet"),
+                           ("_BETS_CSV", _p / "bets.csv"), ("_CONTESTS_FILE", _p / "contests.parquet"),
+                           ("_CONTESTS_CSV", _p / "contests.csv")]:
+                self._patch_attr(L07, _a, _v)
 
-        # -- L08 --
-        if L08 is not None:
-            self._patch_attr(L08, "_LEDGER_DIR", tmp)
-            self._patch_attr(L08, "_BETS_PARQUET", tmp / "bets.parquet")
-            self._patch_attr(L08, "_BETS_CSV", tmp / "bets.csv")
+        for _m in (L08, L19):
+            if _m is not None:
+                self._patch_attr(_m, "_LEDGER_DIR", _p)
+                self._patch_attr(_m, "_BETS_PARQUET", _p / "bets.parquet")
+                self._patch_attr(_m, "_BETS_CSV", _p / "bets.csv")
 
-        # -- L19 --
         if L19 is not None:
-            self._patch_attr(L19, "_LEDGER_DIR", tmp)
-            self._patch_attr(L19, "_BETS_PARQUET", tmp / "bets.parquet")
-            self._patch_attr(L19, "_BETS_CSV", tmp / "bets.csv")
-            self._patch_attr(L19, "_SNAPSHOT_DIR", tmp / "snapshots")
+            self._patch_attr(L19, "_SNAPSHOT_DIR", _p / "snapshots")
 
-        # -- L37 --
         if L37 is not None:
-            self._patch_attr(L37, "_LEDGER_DIR", tmp)
-            self._patch_attr(L37, "_BETS_PARQUET", tmp / "bets.parquet")
-            self._patch_attr(L37, "_BETS_CSV", tmp / "bets.csv")
-            self._patch_attr(L37, "_POSTMORTEM_DIR", tmp / "postmortems")
-            self._patch_attr(L37, "_BANKROLL_STATE", tmp / "bankroll_state.json")
+            for _a, _v in [("_LEDGER_DIR", _p), ("_BETS_PARQUET", _p / "bets.parquet"),
+                           ("_BETS_CSV", _p / "bets.csv"), ("_POSTMORTEM_DIR", _p / "postmortems"),
+                           ("_BANKROLL_STATE", _p / "bankroll_state.json")]:
+                self._patch_attr(L37, _a, _v)
+
+        if L09 is not None:
+            self._patch_attr(L09, "_SEED_DIR", _p / "exchange_seed" / "kalshi")
+            self._patch_attr(L09, "_LEDGER_DIR", _p)
+            self._patch_attr(L09, "_PAPER_ORDERS_FILE", _p / "paper_kalshi_orders.json")
+
+        if L10 is not None:
+            self._patch_attr(L10, "_SEED_DIR", _p / "exchange_seed" / "polymarket")
+            self._patch_attr(L10, "_OB_DIR", _p / "exchange_seed" / "polymarket" / "orderbooks")
+            self._patch_attr(L10, "_LEDGER_DIR", _p)
+            self._patch_attr(L10, "_LEDGER_FILE", _p / "paper_polymarket_orders.json")
+
+        if L14 is not None:
+            self._patch_attr(L14, "_LEDGER_DIR", _p)
+            self._patch_attr(L14, "_ORDERS_FILE", _p / "open_orders.json")
+            try:
+                sys.modules.get("scripts.execute_loop.L14_order_manager")._reset_state()  # type: ignore[union-attr]
+            except Exception:
+                pass
+
+        if L18 is not None:
+            import scripts.execute_loop.L18_bankroll_manager as _l18m
+            _orig = _l18m.CONFIG.get("ledger_path", "data/ledger/bankroll_state.json")
+            self._saved_attrs.append((_l18m.CONFIG, "ledger_path", _orig))
+            _l18m.CONFIG["ledger_path"] = str(_p / "bankroll_state.json")
+
+        if L36 is not None:
+            for _a, _v in [("_LEDGER_DIR", _p), ("_BETS_PARQUET", _p / "bets.parquet"),
+                           ("_BETS_CSV", _p / "bets.csv"),
+                           ("_QUARANTINE_FILE", _p / "quarantined_angles.json")]:
+                self._patch_attr(L36, _a, _v)
 
     def _restore_paths(self) -> None:
-        """Restore all saved module-level path constants and clean up import state.
-
-        Removes any submodules of scripts.execute_loop that were newly imported
-        during the run from sys.modules AND from the parent package's __dict__,
-        so that subsequent tests using sys.modules-only patching (e.g. for L22)
-        work correctly regardless of run order.
-        """
-        for module, attr, original in self._saved_attrs:
+        """Restore saved module-level constants; clean up newly-imported submodules."""
+        for obj, attr, original in self._saved_attrs:
             try:
-                setattr(module, attr, original)
+                (obj.__setitem__(attr, original) if isinstance(obj, dict)
+                 else setattr(obj, attr, original))
             except Exception as exc:
-                log.debug("_restore_paths: could not restore %r.%r: %s", module, attr, exc)
+                log.debug("_restore_paths: could not restore %r.%r: %s", obj, attr, exc)
         self._saved_attrs.clear()
 
-        # Clean up newly-imported execute_loop submodules from sys.modules and
-        # from the parent package attribute, preventing package-level caching
-        # that bypasses sys.modules patching in test mocks.
         if self._modules_before is not None:
-            _EL_PREFIX = "scripts.execute_loop."
-            newly_added = [
-                k for k in list(sys.modules.keys())
-                if k not in self._modules_before and k.startswith(_EL_PREFIX)
-            ]
-            parent_pkg = sys.modules.get("scripts.execute_loop")
-            for key in newly_added:
-                # Remove from sys.modules
+            _PFX = "scripts.execute_loop."
+            parent = sys.modules.get("scripts.execute_loop")
+            for key in [k for k in list(sys.modules) if k not in self._modules_before and k.startswith(_PFX)]:
                 sys.modules.pop(key, None)
-                # Remove the attribute from the parent package so that the next
-                # 'import scripts.execute_loop.Lxx as Lxx' does a fresh lookup
-                # rather than returning the stale cached attribute.
-                if parent_pkg is not None:
-                    submod_name = key[len(_EL_PREFIX):]  # e.g. "L22_alerting"
-                    if hasattr(parent_pkg, submod_name):
-                        try:
-                            delattr(parent_pkg, submod_name)
-                        except AttributeError:
-                            pass
+                if parent is not None:
+                    try:
+                        delattr(parent, key[len(_PFX):])
+                    except AttributeError:
+                        pass
             self._modules_before = None
 
     def _snapshot_real_ledger_mtimes(self) -> Dict[str, float]:
-        """Record mtimes of real data/ledger files before a run."""
-        real_ledger = _PROJECT_DIR / "data" / "ledger"
-        mtimes: Dict[str, float] = {}
-        if real_ledger.is_dir():
-            for p in real_ledger.iterdir():
-                if p.is_file():
-                    try:
-                        mtimes[str(p)] = p.stat().st_mtime
-                    except OSError:
-                        pass
-        return mtimes
+        rl = _PROJECT_DIR / "data" / "ledger"
+        out: Dict[str, float] = {}
+        for p in (rl.iterdir() if rl.is_dir() else []):
+            if p.is_file():
+                try:
+                    out[str(p)] = p.stat().st_mtime
+                except OSError:
+                    pass
+        return out
 
-    def _check_ledger_pollution(
-        self, before: Dict[str, float], report: dict
-    ) -> None:
-        """Warn in report summary if any real ledger file changed during the run."""
-        real_ledger = _PROJECT_DIR / "data" / "ledger"
-        changed = []
-        if real_ledger.is_dir():
-            for p in real_ledger.iterdir():
-                if p.is_file():
-                    try:
-                        mtime_after = p.stat().st_mtime
-                    except OSError:
-                        continue
-                    mtime_before = before.get(str(p), mtime_after)
-                    if mtime_after != mtime_before:
-                        changed.append(str(p))
+    def _check_ledger_pollution(self, before: Dict[str, float], report: dict) -> None:
+        rl = _PROJECT_DIR / "data" / "ledger"
+        changed: List[str] = []
+        for p in (rl.iterdir() if rl.is_dir() else []):
+            if not p.is_file():
+                continue
+            try:
+                if str(p) in before and p.stat().st_mtime != before[str(p)]:
+                    changed.append(str(p))
+            except OSError:
+                pass
         if changed:
-            log.warning(
-                "IntegrationHarness: real data/ledger files mutated during run: %s", changed
-            )
-            report.setdefault("warnings", []).append(
-                {"type": "real_ledger_pollution", "files": changed}
-            )
+            log.warning("IntegrationHarness: real data/ledger mutated: %s", changed)
+            report.setdefault("warnings", []).append({"type": "real_ledger_pollution", "files": changed})
 
     def _run_stage(self, name: str, fn: Callable[[], Any]) -> dict:
         """Time and run fn(); return a normalized stage entry."""
@@ -443,36 +400,22 @@ class IntegrationHarness:
             return {k: IntegrationHarness._safe_data(v) for k, v in data.items()}
         if isinstance(data, (list, tuple)):
             return [IntegrationHarness._safe_data(v) for v in data]
-        # Dataclasses / objects — convert to string summary
         try:
             return str(data)[:200]
         except Exception:
             return "<unserializable>"
 
-    # ------------------------------------------------------------------ run
-
     def run_end_to_end(self) -> dict:
-        """Execute all integration stages and return the report dict.
-
-        Always writes to an isolated temp directory; never touches data/ledger/.
-        Originals are restored in a try/finally even if a stage raises.
-        """
+        """Execute all stages in an isolated tmp dir; restore originals in finally."""
         self._assert_paper_mode()
-
-        # Create isolated temp dir
         if self.isolated_dir is not None:
             self.isolated_dir.mkdir(parents=True, exist_ok=True)
             tmp_path = Path(tempfile.mkdtemp(prefix="L41_run_", dir=str(self.isolated_dir)))
         else:
             tmp_path = Path(tempfile.mkdtemp(prefix="L41_run_"))
         self._tmp_dir = str(tmp_path)
-
-        # Snapshot real ledger mtimes before any writes
         before_mtimes = self._snapshot_real_ledger_mtimes()
-
-        # Redirect all downstream path constants to isolated dir
         self._redirect_paths_to_tmp(tmp_path)
-
         started_at = datetime.now(timezone.utc).isoformat()
         report: dict = {}
         try:
@@ -480,21 +423,15 @@ class IntegrationHarness:
         finally:
             self._restore_paths()
             self._restore_mode()
-
-        # Check for real ledger pollution and annotate report
         self._check_ledger_pollution(before_mtimes, report)
         return report
 
     def _run_stages(self, started_at: str) -> dict:
-        """Internal: execute all stages; called from within try/finally in run_end_to_end."""
-
-        # Shared pipeline state
         slate: Any = None
         fpts: Dict[str, Any] = {}
         cash_lineups: List[Any] = []
         gpp_lineups: List[Any] = []
         sub_result: Any = None
-
         stages: List[dict] = []
         failed_critical: set = set()
 
@@ -504,7 +441,6 @@ class IntegrationHarness:
         def _skip_depends(name: str) -> dict:
             return {"name": name, "status": "SKIP_DEPENDS", "duration_ms": 0.0}
 
-        # ── 1. ingest_slate ────────────────────────────────────────────────
         def _ingest():
             nonlocal slate
             slate = _build_stub_slate(self.seed)
@@ -518,7 +454,6 @@ class IntegrationHarness:
         if e["status"] == "FAIL":
             failed_critical.add("ingest_slate")
 
-        # ── 2. fpts_distribution ───────────────────────────────────────────
         def _fpts_dist():
             nonlocal fpts
             if "ingest_slate" in failed_critical:
@@ -536,7 +471,6 @@ class IntegrationHarness:
             if e["status"] == "FAIL":
                 failed_critical.add("fpts_distribution")
 
-        # ── 3. optimize_cash ───────────────────────────────────────────────
         def _opt_cash():
             nonlocal cash_lineups
             if optimize_cash is None:
@@ -557,7 +491,6 @@ class IntegrationHarness:
             if e["status"] == "FAIL":
                 failed_critical.add("optimize_cash")
 
-        # ── 4. optimize_gpp ────────────────────────────────────────────────
         def _opt_gpp():
             nonlocal gpp_lineups
             if optimize_gpp is None:
@@ -573,7 +506,6 @@ class IntegrationHarness:
             e = self._run_stage("optimize_gpp", _opt_gpp)
             stages.append(e)
 
-        # ── 5. submit_paper ────────────────────────────────────────────────
         def _submit():
             nonlocal sub_result
             if submit_lineup is None:
@@ -605,7 +537,74 @@ class IntegrationHarness:
             if e["status"] == "FAIL":
                 failed_critical.add("submit_paper")
 
-        # ── 6. settle_bets ─────────────────────────────────────────────────
+        def _fetch_orderbooks():
+            out: dict = {}
+            if kalshi_get_orderbook is not None:
+                try:
+                    ob = kalshi_get_orderbook("STUB-NBA-001")
+                    out["kalshi"] = {"keys": list(ob.keys()) if isinstance(ob, dict) else str(ob)}
+                except KeyError:
+                    out["kalshi"] = None   # no seed file — paper-mode allowed-empty
+            if poly_get_orderbook is not None:
+                ob = poly_get_orderbook("stub_condition_001")
+                out["polymarket"] = str(ob) if ob is not None else None
+            return out
+
+        stages.append(self._run_stage("fetch_exchange_orderbooks", _fetch_orderbooks))
+
+        def _cross_ev():
+            if find_ev_opportunities is None:
+                raise RuntimeError("L13 not available")
+            opps = find_ev_opportunities(
+                {("StubPlayer", "PTS"): {"p_over": 0.60, "p_under": 0.40}},
+                quotes=[], min_ev_pct=2.0,
+                source="paper_clients", market_id="STUB-NBA-001",
+            )
+            assert isinstance(opps, list)
+            return {"n_opportunities": len(opps)}
+
+        stages.append(self._run_stage("cross_exchange_ev", _cross_ev) if L13 else _skip("cross_exchange_ev"))
+
+        def _sync_positions():
+            if sync_all_exchanges is None:
+                raise RuntimeError("L14 not available")
+            changed = sync_all_exchanges()   # no open orders in stub → []
+            assert isinstance(changed, list)
+            return {"n_changed": len(changed)}
+
+        stages.append(self._run_stage("sync_exchange_positions", _sync_positions) if L14 else _skip("sync_exchange_positions"))
+
+        def _kelly():
+            if kelly_fraction is None:
+                raise RuntimeError("L18 not available")
+            frac = float(kelly_fraction(prob=0.55, odds_american=+100))
+            assert 0.0 <= frac <= 1.0, f"Kelly fraction {frac!r} out of [0,1]"
+            return {"kelly_fraction": frac}
+
+        stages.append(self._run_stage("kelly_sizing", _kelly) if L18 else _skip("kelly_sizing"))
+
+        def _sell_to_close():
+            if evaluate_close_decision is None:
+                raise RuntimeError("L33 not available")
+            dec = evaluate_close_decision(
+                position={"position_id": "stub_pos_001", "qty": 100.0, "entry_price": 0.50, "side": "YES"},
+                current_quote={"bid_price": 0.65, "ask_price": 0.67, "bid_size": 50.0},
+                model_p=0.60, time_to_settle_min=30,
+            )
+            assert dec.action in ("HOLD", "SELL", "SELL_PARTIAL")
+            return {"action": dec.action, "reason": dec.decision_reason}
+
+        stages.append(self._run_stage("sell_to_close", _sell_to_close) if L33 else _skip("sell_to_close"))
+
+        def _edge_erosion():
+            if daily_edge_report is None:
+                raise RuntimeError("L36 not available")
+            rpt = daily_edge_report()
+            assert isinstance(rpt, dict) and "n_angles" in rpt
+            return {"n_angles": rpt.get("n_angles", 0)}
+
+        stages.append(self._run_stage("edge_erosion", _edge_erosion) if L36 else _skip("edge_erosion"))
+
         def _settle():
             if settle_unsettled is None:
                 raise RuntimeError("L07 not available")
@@ -621,7 +620,6 @@ class IntegrationHarness:
             if e["status"] == "FAIL":
                 failed_critical.add("settle_bets")
 
-        # ── 7. ledger_summary ──────────────────────────────────────────────
         def _ledger():
             if get_pnl_summary is None:
                 raise RuntimeError("L07 not available")
@@ -633,7 +631,6 @@ class IntegrationHarness:
         else:
             stages.append(self._run_stage("ledger_summary", _ledger))
 
-        # ── 8. clv_report ──────────────────────────────────────────────────
         def _clv():
             if nightly_clv_report is None:
                 raise RuntimeError("L19 not available")
@@ -645,7 +642,6 @@ class IntegrationHarness:
         else:
             stages.append(self._run_stage("clv_report", _clv))
 
-        # ── 9. drift_check ─────────────────────────────────────────────────
         def _drift():
             if daily_drift_report is None:
                 raise RuntimeError("L08 not available")
@@ -657,7 +653,6 @@ class IntegrationHarness:
         else:
             stages.append(self._run_stage("drift_check", _drift))
 
-        # ── 10. postmortem ─────────────────────────────────────────────────
         def _postmortem():
             if detect_incidents is None or run_postmortem is None:
                 raise RuntimeError("L37 not available")

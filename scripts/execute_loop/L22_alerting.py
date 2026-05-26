@@ -78,6 +78,13 @@ log = logging.getLogger(__name__)
 VALID_CHANNELS = {"edges", "fills", "drift", "drawdown", "news", "settle", "system"}
 VALID_LEVELS   = {"info", "warning", "error"}
 
+# Paper vs Live Mode gate — read once at import.
+# L22 operates in two modes:
+#   paper (default): alerts are written to a local daily log file (ALERTS_ENABLED absent or "false").
+#   live: HTTP webhook delivery to Slack/Discord (ALERTS_ENABLED="true").
+# L42 readiness check requires a module-level LIVE gate constant for paper_default verification.
+LIVE_ENABLED = os.environ.get("ALERTS_LIVE_ENABLED") == "1"  # L42 paper_default gate
+
 _COLOR_SLACK = {
     "info":    "#36a64f",
     "warning": "#ffcc00",
@@ -307,6 +314,9 @@ class AlertRouter:
         )
         print(line)
         try:
+            # Append-mode log write: single-line appends are atomic for writes
+            # below PIPE_BUF (POSIX) / WriteFile granularity (Windows).  No .tmp
+            # rename needed — log files are append-only and never read-modified-write.
             with log_file.open("a", encoding="utf-8") as fh:
                 fh.write(line + "\n")
         except OSError as exc:

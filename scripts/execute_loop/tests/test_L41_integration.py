@@ -82,12 +82,17 @@ def test_happy_path_runs_all_stages():
     report = harness.run_end_to_end()
 
     assert "stages" in report
-    assert len(report["stages"]) == 10, f"Expected 10 stages, got {len(report['stages'])}"
+    assert len(report["stages"]) == 16, f"Expected 16 stages, got {len(report['stages'])}"
 
     stage_names = [s["name"] for s in report["stages"]]
     expected = [
         "ingest_slate", "fpts_distribution", "optimize_cash", "optimize_gpp",
-        "submit_paper", "settle_bets", "ledger_summary", "clv_report",
+        "submit_paper",
+        # 6 new mid-flow stages (L9+L10 combined, L13, L14, L18, L33, L36)
+        "fetch_exchange_orderbooks", "cross_exchange_ev", "sync_exchange_positions",
+        "kelly_sizing", "sell_to_close", "edge_erosion",
+        # original post-game stages
+        "settle_bets", "ledger_summary", "clv_report",
         "drift_check", "postmortem",
     ]
     assert stage_names == expected, f"Stage names mismatch: {stage_names}"
@@ -282,7 +287,118 @@ def test_report_json_serializable():
     # Round-trip sanity
     reloaded = json.loads(serialized)
     assert reloaded["seed"] == 42
-    assert len(reloaded["stages"]) == 10
+    assert len(reloaded["stages"]) == 16
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — extended harness: all 16 stage entries present
+# ---------------------------------------------------------------------------
+def test_extended_harness_runs_new_stages():
+    """Happy path: harness must return entries for all 16 stages (10 original + 6 new)."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    stage_names = [s["name"] for s in report["stages"]]
+    expected_new = [
+        "fetch_exchange_orderbooks",
+        "cross_exchange_ev",
+        "sync_exchange_positions",
+        "kelly_sizing",
+        "sell_to_close",
+        "edge_erosion",
+    ]
+    for name in expected_new:
+        assert name in stage_names, f"Expected stage {name!r} missing from report: {stage_names}"
+
+    # Total must now be 16 (10 original + 6 new: L9+L10 combined, L13, L14, L18, L33, L36)
+    assert len(stage_names) == 16, (
+        f"Expected 16 stages after extension, got {len(stage_names)}: {stage_names}"
+    )
+
+    # Each new stage must have a valid status
+    valid_statuses = {"PASS", "FAIL", "SKIP", "SKIP_DEPENDS"}
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    for name in expected_new:
+        assert status_map[name] in valid_statuses, (
+            f"Stage {name!r} has invalid status {status_map[name]!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — orderbook stage handles missing seed gracefully (PASS not FAIL)
+# ---------------------------------------------------------------------------
+def test_orderbook_stage_handles_missing_seed():
+    """L9/L10 have no seed files for the stub market; stage must PASS (allowed-empty)."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    # The stage should PASS even when both exchanges return no data (KeyError/None)
+    assert status_map["fetch_exchange_orderbooks"] == "PASS", (
+        f"fetch_exchange_orderbooks should PASS when seed files absent, "
+        f"got {status_map['fetch_exchange_orderbooks']}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — kelly_sizing stage returns float in [0, 0.5]
+# ---------------------------------------------------------------------------
+def test_kelly_sizing_stage_returns_float():
+    """kelly_fraction(model_p=0.55, +100) must return a float in [0, 0.5]."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    data_map = {s["name"]: s.get("data") for s in report["stages"]}
+
+    if status_map.get("kelly_sizing") == "SKIP":
+        pytest.skip("L18 not available — skipping kelly_sizing assertion")
+
+    assert status_map["kelly_sizing"] == "PASS", (
+        f"kelly_sizing stage FAILed: {data_map.get('kelly_sizing')}"
+    )
+    kelly_data = data_map["kelly_sizing"]
+    assert kelly_data is not None and "kelly_fraction" in str(kelly_data), (
+        f"kelly_sizing data missing kelly_fraction key: {kelly_data}"
+    )
+    # Extract the fraction value (data is serialized to safe primitives)
+    if isinstance(kelly_data, dict):
+        frac = kelly_data.get("kelly_fraction", -1)
+    else:
+        # data was stringified — just verify stage passed
+        frac = 0.0
+    assert 0.0 <= float(frac) <= 0.5, f"Kelly fraction {frac!r} outside [0, 0.5]"
+
+
+# ---------------------------------------------------------------------------
+# Test 15 — extended harness: no real API calls even with new stages
+# ---------------------------------------------------------------------------
+def test_extended_harness_no_real_api_calls():
+    """Patch requests.* to fail-loud; all 16 stages must complete without hitting real APIs."""
+    import unittest.mock as mock
+
+    def _fail(*args, **kwargs):
+        raise AssertionError("real HTTP call attempted during harness run")
+
+    with mock.patch.object(_requests_stub, "get", side_effect=_fail):
+        with mock.patch.object(_requests_stub, "post", side_effect=_fail):
+            with mock.patch.object(_requests_stub, "delete", side_effect=_fail):
+                harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+                report = harness.run_end_to_end()
+
+    stage_names = [s["name"] for s in report["stages"]]
+    assert len(stage_names) == 16, (
+        f"Expected 16 stages even with requests blocked, got {len(stage_names)}"
+    )
+    # No stage must have raised due to network (all PASS/SKIP/SKIP_DEPENDS, none FAIL
+    # due to requests error)
+    fail_stages = [s for s in report["stages"] if s["status"] == "FAIL"]
+    # Allow FAILs only for non-network reasons (e.g. missing optional deps)
+    for s in fail_stages:
+        err = s.get("error", "")
+        assert "real HTTP call attempted" not in err, (
+            f"Stage {s['name']} triggered a real HTTP call: {err}"
+        )
 
 
 # ---------------------------------------------------------------------------

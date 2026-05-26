@@ -5,6 +5,31 @@ paper positions in data/ledger/paper_live_positions.json.  Real order
 submission is permanently gated behind the LIVE_TRADING_ENABLED env var
 (which should never be set in normal operation).
 
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L16 is paper-mode by default.  The module-level ``LIVE_TRADING_ENABLED``
+constant (see Config section below) is ``False`` unless the env var is
+explicitly set.  When ``LIVE_TRADING_ENABLED`` is ``False``:
+
+* ``run_live_session`` logs a reminder and continues in paper mode.
+* All order routing goes through L14 OrderManager → L9-L12 paper clients;
+  no real exchange API calls are made at any point in the chain.
+
+To enable live trading (intended only for production deployments):
+
+    export LIVE_TRADING_ENABLED=1   # or "true"
+
+Even with ``LIVE_TRADING_ENABLED=1`` set, L16 itself does not make direct
+exchange calls — it delegates to L14, which checks per-exchange flags at the
+L9-L12 client layer.  The flag is documented here so L42 audits can confirm
+the paper default is explicit at L16's own level.
+
+Environment Variables
+---------------------
+    LIVE_TRADING_ENABLED   Set to "1" or "true" to enable live order routing
+                           (default: "0" → paper mode).  Must be set at the
+                           process level; L16 never writes this var.
+
 Public API
 ----------
     LivePosition            dataclass
@@ -79,7 +104,10 @@ except ImportError:
 # Config
 # ---------------------------------------------------------------------------
 _PAPER_LEDGER: Path = _REPO_ROOT / "data" / "ledger" / "paper_live_positions.json"
-_LIVE_ENABLED: bool = os.environ.get("LIVE_TRADING_ENABLED", "").lower() in {"1", "true", "yes"}
+
+# Paper-mode gate — False by default (paper mode).  See module docstring.
+LIVE_TRADING_ENABLED: bool = os.environ.get("LIVE_TRADING_ENABLED", "0").lower() in ("1", "true")
+_LIVE_ENABLED: bool = LIVE_TRADING_ENABLED  # internal alias kept for back-compat
 
 _EDGE_OPEN_PCT: float = 5.0       # min edge to open a new position
 _EDGE_ADD_PCT: float = 5.0        # min edge to add to existing position

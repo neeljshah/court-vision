@@ -8,6 +8,9 @@ Mode gating
 - Default (env vars absent / empty)                     → PAPER (seed JSON files)
 - SPORTTRADE_LIVE_ENABLED=1 without API key             → PermissionError on any call
 
+Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('sporttrade');
+see L44 for the canonical list of env vars.
+
 Public API
 ----------
     SporttradeQuote     dataclass
@@ -29,6 +32,7 @@ CLI
 Environment Variables
 ---------------------
     SPORTTRADE_LIVE_ENABLED  — set to "1" to activate live (HTTP) mode; default paper.
+                               Canonical flag read via L44_paper_mode.is_live_for_layer('sporttrade').
     SPORTTRADE_API_KEY       — bearer token for live REST/WS calls; required when
                                SPORTTRADE_LIVE_ENABLED=1.
 """
@@ -51,6 +55,15 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_DIR))
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — delegates paper/live mode to the canonical library
+# ---------------------------------------------------------------------------
+
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44
+except Exception:
+    _L44 = None
 
 # ---------------------------------------------------------------------------
 # Configurable path roots (overridable in tests)
@@ -98,7 +111,10 @@ class SporttradePosition:
 # ---------------------------------------------------------------------------
 
 def _is_live_enabled() -> bool:
-    return os.environ.get("SPORTTRADE_LIVE_ENABLED", "").strip() == "1"
+    if _L44 is not None:
+        return _L44.is_live_for_layer("sporttrade")
+    # fallback to inline env read (preserves backward compat if L44 absent)
+    return os.environ.get("SPORTTRADE_LIVE_ENABLED", "0").lower() in ("1", "true")
 
 
 def _api_key() -> Optional[str]:

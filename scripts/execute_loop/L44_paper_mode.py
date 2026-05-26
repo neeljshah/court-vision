@@ -34,7 +34,9 @@ Environment Variables:
     FD_LIVE_SUBMISSION_ENABLED
         Set to "1" to enable live mode for the FanDuel submission path (L05).
 
-Paper vs Live Mode Policy:
+Paper vs Live Mode Policy (MODE GATING):
+    L44 IS the canonical mode-gating library; it does not itself need a
+    PAPER_MODE constant since its public functions are the source of truth.
     - Paper is the DEFAULT.  No environment variables need to be set.
     - Live mode is opt-in and requires an EXPLICIT signal.
     - is_paper_mode() returns False (i.e. live is active) if ANY of the

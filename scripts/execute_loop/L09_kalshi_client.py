@@ -5,6 +5,9 @@ MODE GATING
   KALSHI_LIVE_ENABLED=1  AND  KALSHI_API_KEY  AND  KALSHI_API_KEY_ID  → LIVE
   Else → PAPER (default)
 
+  Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('kalshi');
+  see L44 for the canonical list of env vars.
+
 PAPER BEHAVIOUR
 ---------------
   Orderbook:   read data/exchange_seed/kalshi/<ticker>.json
@@ -26,6 +29,12 @@ CLI
     python L09_kalshi_client.py orderbook --ticker NBA-TEST
     python L09_kalshi_client.py positions
     python L09_kalshi_client.py post --ticker X --side yes --qty 10 --price 60 [--live]
+
+Environment Variables
+---------------------
+    KALSHI_LIVE_ENABLED   Set to "1" to activate live (HTTP) mode; default paper.
+    KALSHI_API_KEY        API key for live REST calls; required when KALSHI_LIVE_ENABLED=1.
+    KALSHI_API_KEY_ID     API key ID for live REST calls; required when KALSHI_LIVE_ENABLED=1.
 """
 from __future__ import annotations
 
@@ -44,6 +53,15 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_DIR))
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — delegates paper/live mode to the canonical library
+# ---------------------------------------------------------------------------
+
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44
+except Exception:
+    _L44 = None
 
 # ---------------------------------------------------------------------------
 # Paths (module-level so tests can monkeypatch)
@@ -87,7 +105,10 @@ class KalshiPosition:
 # ---------------------------------------------------------------------------
 
 def _is_live_mode() -> bool:
-    return os.environ.get("KALSHI_LIVE_ENABLED", "").strip() == "1"
+    if _L44 is not None:
+        return _L44.is_live_for_layer("kalshi")
+    # fallback to inline env read (preserves backward compat if L44 absent)
+    return os.environ.get("KALSHI_LIVE_ENABLED", "0").lower() in ("1", "true")
 
 
 def _live_credentials_present() -> bool:
