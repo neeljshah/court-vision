@@ -1,0 +1,51 @@
+{
+  "probe": "R12_B7_blend_nnls_home_cover_AH3",
+  "kind": "binary",
+  "label": "home_cover_AH3",
+  "label_desc": "P(home covers -3)",
+  "n_features": 136,
+  "n_games": 2836,
+  "pos_rate": 0.6297602256699577,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2311 (-18.56%); AUC 0.6984",
+  "pooled_lgb_brier": 0.23113,
+  "pooled_naive_brier": 0.28382,
+  "pooled_lgb_auc": 0.69844,
+  "brier_delta_pct": -18.562,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29141,
+      "lgb_brier": 0.26662
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.28461,
+      "lgb_brier": 0.21496
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27544,
+      "lgb_brier": 0.21182
+    }
+  ],
+  "variant": {
+    "variant": "blend_nnls",
+    "weights_per_fold": [
+      [
+        0.0,
+        1.0
+      ],
+      [
+        0.0855,
+        0.9145
+      ],
+      [
+        0.5736,
+        0.4264
+      ]
+    ]
+  },
+  "elapsed_s": 120.7
+}

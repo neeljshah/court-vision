@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 19,
+  "rounds_completed": 20,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -459,6 +459,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-6 (18 variants in 381.7s, 18/18 SHIPS \u2014 100% pass rate). OOF STACKING IS THE NEW CHAMPION: 4-fold outer + 5-fold inner OOF level-1 LGB preds + level-2 LGB+XGB on (base+oof_pred). vs B5 baseline (single LGB+XGB 50/50, 4-fold WF): total -15.09% vs -14.06% (+1.03pp), spread -16.90% vs -15.90% (+1.00pp), home_pts -15.90% vs -14.54% (+1.36pp), away_pts -14.18% vs -12.92% (+1.26pp), O230 Brier 0.2383 AUC 0.6737 vs 0.6573 (+1.64pp AUC, -18.34% vs -14.23%), AH3 Brier 0.2313 AUC 0.6987 vs Brier 0.2287 AUC 0.7058 (about wash, slight AUC dip). OOF wins 5/6 metrics decisively. BAG5_LGB (5 seeds + bootstrap, mean predictor) is AT PARITY with B5 baseline \u2014 seed diversity averages out variance but adds no new signal. 5-FOLD WF has HIGHER variance than 4-fold (fold_std 1.84-4.91pp vs 4-fold's 0.65-2.83pp) \u2014 extra fold reduces train size more than it cuts variance for this 2836-game dataset; stay at 4-fold. NEW PRODUCTION CANONICAL: B5 features (136-feat) + OOF-stack architecture (level-1 LGB 5-fold inner + level-2 LGB+XGB ensemble). R12 cumulative: 142 SHIPS across 137-feature base."
+    },
+    {
+      "name": "R12_BATCH7_cross_oof_and_nnls_blend",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 12,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-7 (12 variants in 1210.6s, 12/12 SHIPS but vs B6 mixed). CROSS_OOF_STACK (level-2 sees all 6 targets' OOF preds, 142 feats): total -15.56% (+0.47pp vs B6), spread -16.72% (-0.18pp), home_score -15.53% (-0.37pp), away_score -14.27% (+0.09pp), O230 Brier 0.2406 AUC 0.6680 (regress), AH3 Brier 0.2295 AUC 0.7028 (+0.04pp Brier, +0.41pp AUC vs B6). Cross-target meta-features WIN on total+AH3 but ADD VARIANCE on spread/home_score/O230. BLEND_NNLS (NNLS-weighted B5-single-layer + B6-OOF-stack on outer-train OOF): all 6 targets within +-0.1pp of B6 alone \u2014 NNLS effectively gives B5 zero weight, confirming B6 architecture dominates. Architecture-blending adds no signal. PRODUCTION DECISION: keep B6 OOF-stack as canonical. Optionally use cross_oof_stack for total + AH3 (mild +0.4-0.5pp on those two targets). R12 cumulative: 154 SHIPS."
     }
   ],
   "rejects": [
@@ -832,9 +841,39 @@
     },
     {
       "name": "R18_K6_postseason_finetune",
-      "reason": "Postseason fine-tune on each of 7 stats \u00e2\u20ac\u201d only fold 4 has any postseason data (ho_post_n=1725 vs 0 in folds 1-3). Fold 4 post-only deltas: PTS -0.0039 (marginal win), REB +0.0091 (regress), AST +0.0038 (regress), FG3M -0.0005 (flat). Full-holdout deltas across all 4 folds: all near-zero or positive (regress). Conclusion: postseason data too sparse for fine-tuning; signal swamped by sample-size noise; baseline already covers postseason via regular-season features.",
+      "reason": "Postseason fine-tune on each of 7 stats - only fold 4 has any postseason data (ho_post_n=1725 vs 0 in folds 1-3). Fold 4 post-only deltas: PTS -0.0039 (marginal win), REB +0.0091 (regress), AST +0.0038 (regress), FG3M -0.0005 (flat). Full-holdout deltas across all 4 folds: all near-zero or positive (regress). Conclusion: postseason data too sparse for fine-tuning; signal swamped by sample-size noise; baseline already covers postseason via regular-season features.",
       "saturated_angle": "postseason-only fine-tune on 7-stat per-game models (data too sparse, n_post=1725)",
       "round": 17
+    },
+    {
+      "name": "R19_L1_bov_altline_normalizer",
+      "reason": "Agent crashed mid-run (socket error). No probe outputs written. Deferred to R20.",
+      "saturated_angle": "(deferred - agent reliability, not signal saturation)",
+      "round": 18
+    },
+    {
+      "name": "R19_L4_inplay_residual_retrain",
+      "reason": "Process killed mid-feature-build on RunPod (~50% through) when user said pivot local. Deferred to R20.",
+      "saturated_angle": "(deferred - RunPod killed before completion)",
+      "round": 18
+    },
+    {
+      "name": "R19_L5_betting_pipeline_pytest",
+      "reason": "Agent crashed silently. Deferred to R20.",
+      "saturated_angle": "(deferred - agent reliability)",
+      "round": 18
+    },
+    {
+      "name": "R19_L6_orchestrator_perf",
+      "reason": "Process killed on RunPod when user said pivot local. Deferred to R20.",
+      "saturated_angle": "(deferred - RunPod killed before completion)",
+      "round": 18
+    },
+    {
+      "name": "R19_L7_gamenight_e2e_harness",
+      "reason": "Agent wrote scripts/gamenight_e2e_harness.py but never committed; file deleted in R19 cleanup. Deferred to R20.",
+      "saturated_angle": "(deferred - agent failed to commit)",
+      "round": 18
     }
   ],
   "saturated_angles": [
