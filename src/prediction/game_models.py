@@ -353,6 +353,77 @@ _M2_FAMILY_CACHE: Optional[Dict[str, list]] = None
 _M2_FAMILY_FEATS: Optional[List[str]] = None
 _M2_FAMILY_MANIFEST: Optional[dict] = None
 
+# R21_N5: per-(game_id, models_mtime) prediction cache. Skips feature build +
+# 20 model `.predict` calls when the artifact dir hasn't changed since the
+# cached value was written. Cache lives in data/cache/ (gitignored) and is
+# written atomically (tmpfile + os.replace) so concurrent callers can't tear
+# the JSON.
+_M2_PRED_CACHE_PATH = os.path.join(
+    PROJECT_DIR, "data", "cache", "m2_family_predictions_cache.json"
+)
+
+
+def _m2_family_models_mtime() -> float:
+    """Max mtime across files in data/models/m2_family/. Returns 0.0 when
+    the dir doesn't exist (cache key will still be deterministic)."""
+    if not os.path.isdir(_M2_FAMILY_DIR):
+        return 0.0
+    max_mt = 0.0
+    try:
+        for fn in os.listdir(_M2_FAMILY_DIR):
+            p = os.path.join(_M2_FAMILY_DIR, fn)
+            try:
+                mt = os.path.getmtime(p)
+                if mt > max_mt:
+                    max_mt = mt
+            except OSError:
+                continue
+    except OSError:
+        return 0.0
+    return max_mt
+
+
+def _load_m2_pred_cache() -> dict:
+    """Read the on-disk JSON cache. Returns {} on any read error so callers
+    treat it as cold miss instead of crashing."""
+    if not os.path.exists(_M2_PRED_CACHE_PATH):
+        return {}
+    try:
+        with open(_M2_PRED_CACHE_PATH, encoding="utf-8") as f:
+            d = json.load(f)
+        return d if isinstance(d, dict) else {}
+    except (OSError, ValueError, json.JSONDecodeError):
+        return {}
+
+
+def _save_m2_pred_cache(cache: dict) -> None:
+    """Atomic write: tmp + os.replace so a crashed writer never leaves a
+    half-written JSON behind for the next reader."""
+    os.makedirs(os.path.dirname(_M2_PRED_CACHE_PATH), exist_ok=True)
+    tmp = _M2_PRED_CACHE_PATH + f".tmp.{os.getpid()}"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(cache, f)
+        os.replace(tmp, _M2_PRED_CACHE_PATH)
+    except OSError:
+        # Best-effort cleanup; never raise from the cache writer.
+        try:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+        except OSError:
+            pass
+
+
+def clear_m2_pred_cache() -> bool:
+    """Delete the on-disk cache. Returns True iff something was removed."""
+    if os.path.exists(_M2_PRED_CACHE_PATH):
+        try:
+            os.remove(_M2_PRED_CACHE_PATH)
+            return True
+        except OSError:
+            return False
+    return False
+
 
 def _try_load_m2_family() -> bool:
     """Lazy-load the M2 family ensemble. Returns True iff usable."""
@@ -435,11 +506,41 @@ def _lookup_season_games_row(
     return None
 
 
-def _predict_m2_family(row: dict) -> Optional[Dict[str, float]]:
+def _predict_m2_family(
+    row: dict, game_id: Optional[str] = None
+) -> Optional[Dict[str, float]]:
     """Run the 4-target m2_family ensemble on a season_games row. Returns
-    {total_est, spread_est, home_pts_est, away_pts_est} or None on failure."""
+    {total_est, spread_est, home_pts_est, away_pts_est} or None on failure.
+
+    R21_N5: caches the 4-value tuple per (game_id, models_mtime). On cache
+    hit (same models_mtime) we skip the 20 model `.predict` calls + the
+    feature vector build entirely. Cache invalidates automatically when any
+    file in data/models/m2_family/ is rewritten (re-trained).
+    """
     if not _try_load_m2_family() or _M2_FAMILY_FEATS is None:
         return None
+
+    # ── R21_N5 cache hit path ────────────────────────────────────────────────
+    gid = str(game_id) if game_id else (str(row.get("game_id")) if row.get("game_id") else None)
+    current_mtime = _m2_family_models_mtime()
+    cache: dict = {}
+    if gid:
+        cache = _load_m2_pred_cache()
+        entry = cache.get(gid)
+        if (
+            isinstance(entry, dict)
+            and entry.get("models_mtime") == current_mtime
+            and all(k in entry for k in ("total_est", "spread_est",
+                                         "home_pts_est", "away_pts_est"))
+        ):
+            return {
+                "total_est":    float(entry["total_est"]),
+                "spread_est":   float(entry["spread_est"]),
+                "home_pts_est": float(entry["home_pts_est"]),
+                "away_pts_est": float(entry["away_pts_est"]),
+            }
+
+    # ── Cold path: build features + run 20 model predict calls ───────────────
     try:
         vals = []
         for c in _M2_FAMILY_FEATS:
@@ -460,9 +561,29 @@ def _predict_m2_family(row: dict) -> Optional[Dict[str, float]]:
             for m in models:
                 preds += m.predict(X)
             out[out_key] = round(float(preds[0]) / len(models), 1)
-        return out
     except Exception:
         return None
+
+    # ── Persist into cache (best-effort; never break the prediction) ─────────
+    if gid:
+        try:
+            from datetime import datetime, timezone
+            # Re-read just before write to avoid clobbering another writer's
+            # row for a different game_id.
+            fresh = _load_m2_pred_cache()
+            fresh[gid] = {
+                "models_mtime": current_mtime,
+                "total_est":    out["total_est"],
+                "spread_est":   out["spread_est"],
+                "home_pts_est": out["home_pts_est"],
+                "away_pts_est": out["away_pts_est"],
+                "computed_at":  datetime.now(timezone.utc).isoformat(),
+            }
+            _save_m2_pred_cache(fresh)
+        except Exception:
+            pass
+
+    return out
 
 
 def predict(
@@ -543,7 +664,11 @@ def predict(
     try:
         row = _lookup_season_games_row(game_id, home_team, away_team, game_date)
         if row is not None:
-            m2_pred = _predict_m2_family(row)
+            # Prefer the explicit caller-supplied game_id; fall back to the
+            # row's own game_id so cache keys stay stable when callers pass
+            # (home, away, date) tuples instead of game_id directly.
+            gid_for_cache = game_id or row.get("game_id")
+            m2_pred = _predict_m2_family(row, game_id=gid_for_cache)
             if m2_pred is not None:
                 m2_out = m2_pred
                 # Override total + spread with the multi5 ensemble.
