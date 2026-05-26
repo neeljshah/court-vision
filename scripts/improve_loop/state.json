@@ -162,6 +162,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "NEW MODEL CLASS \u2014 game-level score margin (home - away) for SPREAD bets. 35 pregame features (same as M2). 2,836 games (3 full seasons via linescores_all.json regulation totals). Naive L5-mean MAE 12.60 vs LGB ~11.0 = pooled -14.26% (far past -5% gate). Per-fold: f1 -14.2%, f2 -14.4%, f3 -14.3% (3/3 valid folds \u2014 extremely consistent). Fold 0 properly skipped (empty train) under fixed gate logic. SECOND M2-family SHIP \u2014 spread market is even more learnable than total because pregame ortg/drtg diffs directly index team strength. Wire morning: persist LGB model, add /predict/score_diff endpoint."
+    },
+    {
+      "name": "R11_M2v3_home_pts",
+      "round": 10,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "NEW MODEL CLASS \u2014 game-level HOME team total points. 35 pregame features (same as M2/M2v2). 2,836 games. Naive L5-mean MAE 10.73 vs LGB ~9.5 = pooled -11.87% (vs -5% gate PASS). Per-fold: f1 -9.9%, f2 -15.5%, f3 -9.9% (3/3 valid folds positive). THIRD M2-family SHIP. Combined with M2v2 score_diff, home_pts enables team-total props AND extracts the spread implicitly. Wire morning: persist LGB model, add /predict/home_pts endpoint."
     }
   ],
   "rejects": [
