@@ -28,6 +28,25 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
+KELLY_PCT_MAX = 0.25
+
+
+def clamp_kelly_pct(x: Optional[float]) -> Optional[float]:
+    """Clamp a Kelly fraction to [0, KELLY_PCT_MAX]. Pass-through for None/NaN."""
+    if x is None:
+        return None
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return None
+    if v != v:
+        return None
+    if v < 0.0:
+        return 0.0
+    if v > KELLY_PCT_MAX:
+        return KELLY_PCT_MAX
+    return v
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
 

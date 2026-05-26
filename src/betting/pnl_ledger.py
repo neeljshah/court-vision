@@ -54,6 +54,8 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import Dict, Iterable, List, Optional
 
+from src.prediction.betting_portfolio import clamp_kelly_pct
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, PROJECT_DIR)
 
@@ -248,7 +250,7 @@ def place_bet(
             "model_pred":     "" if model_pred is None else f"{float(model_pred):.4f}",
             "model_prob":     "" if model_prob is None else f"{float(model_prob):.4f}",
             "model_edge":     "" if edge is None else f"{edge:+.4f}",
-            "kelly_pct":      "" if kelly_pct is None else f"{float(kelly_pct):.4f}",
+            "kelly_pct":      "" if kelly_pct is None else f"{clamp_kelly_pct(kelly_pct):.4f}",
             "status":         "open",
             "settled_at":     "",
             "actual_stat":    "",
