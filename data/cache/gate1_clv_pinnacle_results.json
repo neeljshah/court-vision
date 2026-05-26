@@ -1,0 +1,66 @@
+{
+  "probe": "R29_V8",
+  "ts": "2026-05-26T18:57:51Z",
+  "days_window": 30,
+  "min_stat_coverage": 5,
+  "n_pin_files_scanned": 1,
+  "n_eligible_bets": 58,
+  "n_distinct_dates": 1,
+  "n_stats_with_coverage": 4,
+  "stats_with_coverage": [
+    "reb",
+    "fg3m",
+    "ast",
+    "pts"
+  ],
+  "overall": {
+    "n_bets": 58,
+    "n_distinct_dates": 1,
+    "mean_clv_pct": -2.1132,
+    "n_positive_clv": 1,
+    "positive_clv_rate": 0.0172
+  },
+  "per_stat": {
+    "reb": {
+      "n_bets": 16,
+      "n_positive_clv": 1,
+      "mean_edge_units": 0.5138,
+      "mean_clv_pct": -1.5337,
+      "positive_clv_rate": 0.0625
+    },
+    "fg3m": {
+      "n_bets": 14,
+      "n_positive_clv": 0,
+      "mean_edge_units": 0.48,
+      "mean_clv_pct": -2.4654,
+      "positive_clv_rate": 0.0
+    },
+    "ast": {
+      "n_bets": 12,
+      "n_positive_clv": 0,
+      "mean_edge_units": 0.3777,
+      "mean_clv_pct": -1.7584,
+      "positive_clv_rate": 0.0
+    },
+    "pts": {
+      "n_bets": 16,
+      "n_positive_clv": 0,
+      "mean_edge_units": 1.2293,
+      "mean_clv_pct": -2.6505,
+      "positive_clv_rate": 0.0
+    }
+  },
+  "per_date_diagnostic": [
+    {
+      "date": "2026-05-26",
+      "n_raw_rows": 276,
+      "n_paired": 62,
+      "n_with_prediction": 62,
+      "n_not_out": 58,
+      "n_eligible": 58,
+      "reason_skipped": {
+        "player_out": 4
+      }
+    }
+  ]
+}
