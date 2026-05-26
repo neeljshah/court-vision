@@ -48,6 +48,19 @@ import unicodedata
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
@@ -422,6 +435,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     logger.info("start  interval=%ds  qb_dir=%s  dry_run=%s",
                  args.interval_sec, qb_dir, args.dry_run)
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('auto_settle_daemon')
         try:
             cycle = tick(qb_dir, seen_path, dry_run=args.dry_run,
                           start_bankroll=args.start_bankroll)

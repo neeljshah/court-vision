@@ -60,6 +60,19 @@ from datetime import date as _date
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
@@ -69,10 +82,14 @@ LOG_PATH = os.path.join(PROJECT_DIR, "vault", "Improvements", "bov_scraper.log")
 os.makedirs(LINES_DIR, exist_ok=True)
 os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
-# Canonical 11-column schema (matches scripts/fetch_live_prop_lines.py).
+# Canonical 12-column schema (R19_L1: added `is_alt_line` to mark alt-line
+# ladder rungs vs the book's primary line for a given (player, stat). Bovada
+# exposes a full ladder per market (e.g. PTS over 3.5 / 4.5 / ... / 30.5);
+# the rung closest to fair juice is the primary, the rest are alts. The arb
+# engine MUST ignore alt-line rows or it produces bogus "free arb" signals.)
 _FIELDS = ["captured_at", "book", "game_id", "player_id", "player_name",
            "team", "stat", "line", "over_price", "under_price",
-           "market_status"]
+           "market_status", "is_alt_line"]
 
 _VALID_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
@@ -218,6 +235,65 @@ def _bov_team_from_desc(desc: str) -> str:
     return ""
 
 
+def _american_implied_prob(odds: Any) -> Optional[float]:
+    """Return implied probability for an American-odds price, or None if junk."""
+    try:
+        o = int(odds)
+    except (TypeError, ValueError):
+        return None
+    if o > 0:
+        return 100.0 / (o + 100.0)
+    if o < 0:
+        return (-o) / ((-o) + 100.0)
+    return None
+
+
+def _classify_primary_line(buckets: Dict[Any, Dict[str, Any]],
+                            line_keys: List[Any]) -> Any:
+    """Pick which rung in a Bovada player-prop ladder is the PRIMARY line.
+
+    The primary line is the rung whose total implied vig is smallest (closest
+    to a fair, -110/-110-style line — the book's "main" market). Alt rungs
+    further from the central tendency carry asymmetric, ladder-style juice
+    (e.g. OVER 3.5 +120 / UNDER 3.5 -215). Tie-break by smallest absolute
+    price spread, then by line value closest to the median of the cluster.
+
+    If only one rung exists, that rung is primary by definition.
+    Returns the bucket key (a float when handicaps parse, otherwise the raw
+    value) corresponding to the primary line.
+    """
+    if not line_keys:
+        return None
+    if len(line_keys) == 1:
+        return line_keys[0]
+
+    def _score(k: Any) -> Tuple[float, float, float]:
+        b = buckets.get(k, {})
+        po = _american_implied_prob(b.get("over"))
+        pu = _american_implied_prob(b.get("under"))
+        if po is None or pu is None:
+            # Single-sided rung can't be primary; sink it.
+            return (9.99, 9.99, 9.99)
+        total_vig = abs((po + pu) - 1.0)
+        spread = abs(po - pu)
+        line_val = float(k) if isinstance(k, (int, float)) else 0.0
+        return (total_vig, spread, line_val)
+
+    # Pick lowest (total_vig, spread); for true ties, prefer line closest to
+    # cluster median so we don't accidentally crown an edge rung primary.
+    numeric_lines = [float(k) for k in line_keys
+                     if isinstance(k, (int, float))]
+    median = (sorted(numeric_lines)[len(numeric_lines) // 2]
+              if numeric_lines else 0.0)
+
+    def _final_score(k: Any) -> Tuple[float, float, float]:
+        base = _score(k)
+        line_val = float(k) if isinstance(k, (int, float)) else 0.0
+        return (base[0], base[1], abs(line_val - median))
+
+    return min(line_keys, key=_final_score)
+
+
 def _bov_stat_from_market(dg_desc: str, mk_desc: str) -> Optional[str]:
     """Map a Bovada (displayGroup, market) pair to our 7 canonical stats."""
     if dg_desc.strip() not in _PLAYER_PROP_DGS:
@@ -284,9 +360,19 @@ def _parse_event_detail(d_payload: Any,
                         elif "under" in side:
                             b["under"] = american
                             b["line"] = hcap_key
+                    # R19_L1: classify primary vs alt-line within this market.
+                    # Each market block in Bovada's payload IS one (player, stat)
+                    # cluster; the primary line is the rung with the lowest
+                    # absolute total-vig (closest to a fair -110/-110 line).
+                    # All other rungs are alts. If only one rung exists, it's
+                    # primary by default.
+                    line_keys = [k for k, b in buckets.items()
+                                 if b.get("line") is not None]
+                    primary_key = _classify_primary_line(buckets, line_keys)
                     for hcap_key, b in buckets.items():
                         if b.get("line") is None:
                             continue
+                        is_alt = (hcap_key != primary_key)
                         rows.append({
                             "captured_at":   captured_at,
                             "book":          "bov",
@@ -299,6 +385,7 @@ def _parse_event_detail(d_payload: Any,
                             "over_price":    b.get("over"),
                             "under_price":   b.get("under"),
                             "market_status": market_status,
+                            "is_alt_line":   is_alt,
                         })
     return rows
 
@@ -421,11 +508,65 @@ def _load_existing_keys(path: str) -> Set[Tuple[str, str, str, str, str]]:
 def _stringify(v: Any) -> str:
     if v is None:
         return ""
-    if isinstance(v, float):
-        return f"{v:g}"
+    # bool must be checked BEFORE int/float (bool is subclass of int).
     if isinstance(v, bool):
         return str(v).lower()
+    if isinstance(v, float):
+        return f"{v:g}"
     return str(v)
+
+
+def _maybe_upgrade_header(path: str) -> None:
+    """R19_L1: if the existing file has the pre-R19 11-col header (no
+    `is_alt_line`), rewrite it in-place adding the column and defaulting
+    every legacy row to is_alt_line=false. No-op on new files or files
+    already on the 12-col schema.
+    """
+    if not os.path.exists(path):
+        return
+    try:
+        with open(path, encoding="utf-8", newline="") as fh:
+            reader = csv.reader(fh)
+            try:
+                header = next(reader)
+            except StopIteration:
+                return
+            if "is_alt_line" in header:
+                return  # already upgraded
+            body = list(reader)
+    except Exception as e:  # noqa: BLE001
+        log.warning("header-upgrade read failed for %s: %s", path, e)
+        return
+    upgraded = path + ".upgrading"
+    try:
+        with open(upgraded, "w", newline="", encoding="utf-8") as fh:
+            w = csv.writer(fh)
+            w.writerow(_FIELDS)
+            for row in body:
+                # Pad legacy 10-col or 11-col rows to 12 cols. Default
+                # is_alt_line=false so the arb engine treats legacy data
+                # as primary (safe / conservative — they were the only
+                # rows previously joined and most legacy days are
+                # alt-line-free for non-Bov books).
+                if len(row) == 11:
+                    w.writerow(row + ["false"])
+                elif len(row) == 10:
+                    # 10-col legacy: missing `team` AND `is_alt_line`. Insert
+                    # blank team at index 5 to align with new schema.
+                    w.writerow(row[:5] + [""] + row[5:] + ["false"])
+                elif len(row) == 12:
+                    w.writerow(row)
+                else:
+                    # Unknown shape — skip to avoid corrupting downstream.
+                    continue
+        os.replace(upgraded, path)
+        log.info("upgraded %s to 12-col schema (added is_alt_line)", path)
+    except Exception as e:  # noqa: BLE001
+        log.warning("header-upgrade write failed for %s: %s", path, e)
+        try:
+            os.remove(upgraded)
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def append_rows(rows: List[Dict[str, Any]], path: str) -> int:
@@ -434,6 +575,7 @@ def append_rows(rows: List[Dict[str, Any]], path: str) -> int:
     Returns count actually written.
     """
     os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    _maybe_upgrade_header(path)
     existing = _load_existing_keys(path)
     new_file = not os.path.exists(path)
     written = 0
@@ -558,6 +700,8 @@ def run_daemon(sports: List[str],
 
     log.info("bov daemon starting: sports=%s interval=%dmin", sports, interval_min)
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('bov_scraper')
         captured_at = clock_fn().strftime("%Y-%m-%dT%H:%M:%S")
         try:
             summary = fetch_cycle(sports, lines_dir=lines_dir,

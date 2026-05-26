@@ -42,8 +42,13 @@ from typing import Dict, Optional
 
 import pandas as pd
 
-# R19_L3 heartbeat import
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
 try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
     from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
 except Exception:
     def _r19_hb(_name):

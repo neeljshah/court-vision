@@ -45,6 +45,19 @@ from typing import Any, Dict, List, Optional
 
 from curl_cffi import requests as cf_req
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
@@ -205,6 +218,8 @@ def main() -> int:
 
     print(f"[fd-daemon] start interval={args.interval}s", flush=True)
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('fd_scraper')
         try:
             s = one_snapshot()
             with open(STATUS_PATH, "w", encoding="utf-8") as f:

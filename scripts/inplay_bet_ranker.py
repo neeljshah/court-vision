@@ -47,6 +47,19 @@ from datetime import datetime, timezone
 from math import erf, sqrt
 from typing import Any, Dict, List, Optional, Tuple
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
@@ -708,6 +721,8 @@ def run_daemon(game_id: str,
     summary = {"daemon_pid": pid, "ticks_observed": 0,
                "n_positive_ev_per_tick": [], "latency_ms": []}
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('inplay_bet_ranker')
         t_start = time.time()
         try:
             payload = run_tick(game_id, date_str, bankroll,
