@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -46,16 +47,32 @@ def _fresh_module(env_overrides: dict | None = None):
 
 
 # ── fixtures ──────────────────────────────────────────────────────────────────
+def _clear_l22_pkg_attr() -> None:
+    """Remove the L22_alerting attribute from the scripts.execute_loop package.
+
+    This is necessary because ``import scripts.execute_loop.L22_alerting as X``
+    binds X to the *package attribute*, not sys.modules, so deleting from
+    sys.modules alone leaves a stale cached reference on the parent package.
+    Subsequent tests that mock sys.modules["scripts.execute_loop.L22_alerting"]
+    would still get the real module through the package attribute.
+    """
+    pkg = sys.modules.get("scripts.execute_loop")
+    if pkg is not None:
+        pkg.__dict__.pop("L22_alerting", None)
+
+
 @pytest.fixture(autouse=True)
 def _reset_singleton():
-    """Ensure module singleton is reset between tests."""
+    """Ensure module singleton and package attribute are reset between tests."""
     for key in list(sys.modules.keys()):
         if "L22_alerting" in key:
             del sys.modules[key]
+    _clear_l22_pkg_attr()
     yield
     for key in list(sys.modules.keys()):
         if "L22_alerting" in key:
             del sys.modules[key]
+    _clear_l22_pkg_attr()
 
 
 @pytest.fixture()
@@ -248,3 +265,50 @@ def test_discord_per_channel_override(mod, monkeypatch):
 
     assert len(used_urls) == 1
     assert used_urls[0] == "https://discord.com/edges-channel"
+
+
+# ── test 9: atomic write replaces pre-existing queue file ────────────────────
+def test_atomic_write_replaces_existing_file(mod, monkeypatch, tmp_path):
+    """_save_queue must replace an existing queue file atomically (no append)."""
+    queue_path = tmp_path / "alert_queue.json"
+    monkeypatch.setattr(mod, "_QUEUE_PATH", queue_path)
+
+    # Pre-populate with stale data
+    queue_path.write_text(json.dumps([{"stale": True}]), encoding="utf-8")
+
+    router = mod._get_router()
+    # _save_queue with an empty list should fully overwrite the file
+    router._save_queue([])
+
+    result = json.loads(queue_path.read_text(encoding="utf-8"))
+    assert result == []
+
+
+# ── test 10: atomic write leaves no partial file on os.replace failure ────────
+def test_atomic_write_no_partial_on_failure(mod, monkeypatch, tmp_path):
+    """If os.replace raises, the temp file is cleaned up and queue is unchanged."""
+    queue_path = tmp_path / "alert_queue.json"
+    original_data = [{"channel": "system", "level": "info", "title": "original",
+                       "body": "b", "fields": None, "queued_at": "2026-01-01T00:00:00+00:00"}]
+    queue_path.write_text(json.dumps(original_data), encoding="utf-8")
+    monkeypatch.setattr(mod, "_QUEUE_PATH", queue_path)
+
+    # Patch os.replace to simulate a mid-write failure
+    original_replace = os.replace
+
+    def boom(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(os, "replace", boom)
+
+    router = mod._get_router()
+    # _save_queue swallows OSError via log.error — verify queue unchanged
+    router._save_queue([{"new": "item"}])
+
+    # Original file must be intact
+    result = json.loads(queue_path.read_text(encoding="utf-8"))
+    assert result == original_data
+
+    # No orphaned .tmp files should remain in tmp_path
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Orphaned temp files found: {tmp_files}"

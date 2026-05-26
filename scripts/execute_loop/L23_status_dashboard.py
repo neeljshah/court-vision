@@ -13,6 +13,13 @@ Public API
     format_pct(x) -> str
     svg_sparkline(values, width, height) -> str
     staleness_days(path) -> int | None
+    _atomic_write_text(path, text) -> None
+    _atomic_write_json(path, payload) -> None
+
+Environment Variables
+---------------------
+    none — this module reads no environment variables directly.
+    (Flask/http.server host/port are passed as arguments, not env vars.)
 """
 from __future__ import annotations
 
@@ -20,9 +27,11 @@ import argparse
 import glob
 import json
 import logging
+import os
 import pathlib
 import string
 import sys
+import tempfile
 import time
 from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -44,6 +53,35 @@ _TEMPLATE = _HERE.parent / "templates" / "dashboard.html"
 # Cache
 # ---------------------------------------------------------------------------
 _CACHE: Tuple[float, dict] = (0.0, {})
+
+
+# ---------------------------------------------------------------------------
+# Atomic write helpers (v2 hardened pattern — used for any future file output)
+# ---------------------------------------------------------------------------
+
+def _atomic_write_text(path: pathlib.Path, text: str) -> None:
+    """Write *text* to *path* atomically via a sibling temp file.
+
+    Guarantees readers never see a partial write.  On failure the original
+    file is left untouched and the temp file is cleaned up.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.replace(tmp, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _atomic_write_json(path: pathlib.Path, payload: Any) -> None:
+    """Serialize *payload* as indented JSON and write to *path* atomically."""
+    _atomic_write_text(path, json.dumps(payload, indent=2, default=str))
 _CACHE_TTL = 10.0  # seconds
 
 

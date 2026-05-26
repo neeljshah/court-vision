@@ -7,6 +7,7 @@ Run:
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import time
@@ -273,3 +274,45 @@ with patch.object(L38, "run_all_checks", return_value=fake), \\
         f"Expected exit {expected_code} for {overall}, got {proc.returncode}\n"
         f"stdout: {proc.stdout}\nstderr: {proc.stderr}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — _atomic_write_text replaces an existing file atomically
+# ---------------------------------------------------------------------------
+
+def test_atomic_write_replaces_existing_file(tmp_path):
+    """_atomic_write_text must overwrite an existing file with new content."""
+    target = tmp_path / "out.json"
+    target.write_text("old content", encoding="utf-8")
+
+    L38._atomic_write_text(target, "new content")
+
+    assert target.exists()
+    assert target.read_text(encoding="utf-8") == "new content"
+    # No leftover .tmp files
+    tmps = list(tmp_path.glob("*.tmp"))
+    assert tmps == [], f"Leftover tmp files: {tmps}"
+
+
+# ---------------------------------------------------------------------------
+# Test 10 — _atomic_write_text cleans up .tmp and leaves original on failure
+# ---------------------------------------------------------------------------
+
+def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
+    """When os.replace raises, the original file must be unchanged and .tmp cleaned up."""
+    target = tmp_path / "out.json"
+    target.write_text("original", encoding="utf-8")
+
+    def _failing_replace(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(os, "replace", _failing_replace)
+
+    with pytest.raises(OSError, match="simulated replace failure"):
+        L38._atomic_write_text(target, "should not appear")
+
+    # Original must be untouched
+    assert target.read_text(encoding="utf-8") == "original"
+    # Temp file must have been cleaned up
+    tmps = list(tmp_path.glob("out.json.*.tmp"))
+    assert tmps == [], f"Leftover tmp files after failure: {tmps}"

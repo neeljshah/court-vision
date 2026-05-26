@@ -22,6 +22,7 @@ import json
 import logging
 import os
 import sys
+import tempfile
 import time
 import types
 from datetime import datetime, timezone, timedelta
@@ -240,12 +241,19 @@ class IntegrationHarness:
         bankroll: float = 1000.0,
         seed: int = 42,
         paper_mode: bool = True,
+        isolated_dir: Optional[Path] = None,
     ) -> None:
         self.slate_path = slate_path
         self.bankroll = bankroll
         self.seed = seed
         self.paper_mode = paper_mode
+        self.isolated_dir = isolated_dir
         self._prev_submission_mode: Optional[str] = None
+        # Saved originals for path constants we monkeypatch
+        self._saved_attrs: List[tuple] = []  # (module, attr_name, original_value)
+        self._tmp_dir: Optional[str] = None  # created per run; cleaned up after
+        # sys.modules keys present before the run (for import-state cleanup)
+        self._modules_before: Optional[set] = None
 
     # ------------------------------------------------------------------ helpers
 
@@ -263,6 +271,146 @@ class IntegrationHarness:
     def _restore_mode(self) -> None:
         if self._prev_submission_mode is not None:
             os.environ["SUBMISSION_MODE"] = self._prev_submission_mode
+
+    # ------------------------------------------------------------------ isolation
+
+    def _patch_attr(self, module: Any, attr: str, value: Any) -> None:
+        """Save original value of module.attr and set it to value."""
+        if module is None:
+            return
+        original = getattr(module, attr, None)
+        if original is None:
+            # Attribute doesn't exist; skip
+            return
+        self._saved_attrs.append((module, attr, original))
+        setattr(module, attr, value)
+
+    def _redirect_paths_to_tmp(self, tmp: Path) -> None:
+        """Monkeypatch all downstream module-level path constants to write into tmp.
+
+        Also snapshots sys.modules so we can clean up newly-imported submodules
+        after the run — preventing package-attribute pollution that breaks
+        downstream tests using sys.modules patching (e.g. L35 → L22 mocking).
+        """
+        tmp.mkdir(parents=True, exist_ok=True)
+        # Snapshot sys.modules BEFORE any stage imports happen
+        self._modules_before = set(sys.modules.keys())
+
+        # -- L05 --
+        if L05 is not None:
+            self._patch_attr(L05, "_LEDGER_DIR", tmp)
+            self._patch_attr(L05, "_CACHE_FILE", tmp / "submission_cache.json")
+            self._patch_attr(L05, "_PAPER_FILE", tmp / "paper_submissions.json")
+            # Clear token bucket state so idempotency cache doesn't bleed across runs
+            buckets = getattr(L05, "_buckets", None)
+            if isinstance(buckets, dict):
+                buckets.clear()
+
+        # -- L07 --
+        if L07 is not None:
+            self._patch_attr(L07, "_LEDGER_DIR", tmp)
+            self._patch_attr(L07, "_BETS_FILE", tmp / "bets.parquet")
+            self._patch_attr(L07, "_BETS_CSV", tmp / "bets.csv")
+            self._patch_attr(L07, "_CONTESTS_FILE", tmp / "contests.parquet")
+            self._patch_attr(L07, "_CONTESTS_CSV", tmp / "contests.csv")
+
+        # -- L08 --
+        if L08 is not None:
+            self._patch_attr(L08, "_LEDGER_DIR", tmp)
+            self._patch_attr(L08, "_BETS_PARQUET", tmp / "bets.parquet")
+            self._patch_attr(L08, "_BETS_CSV", tmp / "bets.csv")
+
+        # -- L19 --
+        if L19 is not None:
+            self._patch_attr(L19, "_LEDGER_DIR", tmp)
+            self._patch_attr(L19, "_BETS_PARQUET", tmp / "bets.parquet")
+            self._patch_attr(L19, "_BETS_CSV", tmp / "bets.csv")
+            self._patch_attr(L19, "_SNAPSHOT_DIR", tmp / "snapshots")
+
+        # -- L37 --
+        if L37 is not None:
+            self._patch_attr(L37, "_LEDGER_DIR", tmp)
+            self._patch_attr(L37, "_BETS_PARQUET", tmp / "bets.parquet")
+            self._patch_attr(L37, "_BETS_CSV", tmp / "bets.csv")
+            self._patch_attr(L37, "_POSTMORTEM_DIR", tmp / "postmortems")
+            self._patch_attr(L37, "_BANKROLL_STATE", tmp / "bankroll_state.json")
+
+    def _restore_paths(self) -> None:
+        """Restore all saved module-level path constants and clean up import state.
+
+        Removes any submodules of scripts.execute_loop that were newly imported
+        during the run from sys.modules AND from the parent package's __dict__,
+        so that subsequent tests using sys.modules-only patching (e.g. for L22)
+        work correctly regardless of run order.
+        """
+        for module, attr, original in self._saved_attrs:
+            try:
+                setattr(module, attr, original)
+            except Exception as exc:
+                log.debug("_restore_paths: could not restore %r.%r: %s", module, attr, exc)
+        self._saved_attrs.clear()
+
+        # Clean up newly-imported execute_loop submodules from sys.modules and
+        # from the parent package attribute, preventing package-level caching
+        # that bypasses sys.modules patching in test mocks.
+        if self._modules_before is not None:
+            _EL_PREFIX = "scripts.execute_loop."
+            newly_added = [
+                k for k in list(sys.modules.keys())
+                if k not in self._modules_before and k.startswith(_EL_PREFIX)
+            ]
+            parent_pkg = sys.modules.get("scripts.execute_loop")
+            for key in newly_added:
+                # Remove from sys.modules
+                sys.modules.pop(key, None)
+                # Remove the attribute from the parent package so that the next
+                # 'import scripts.execute_loop.Lxx as Lxx' does a fresh lookup
+                # rather than returning the stale cached attribute.
+                if parent_pkg is not None:
+                    submod_name = key[len(_EL_PREFIX):]  # e.g. "L22_alerting"
+                    if hasattr(parent_pkg, submod_name):
+                        try:
+                            delattr(parent_pkg, submod_name)
+                        except AttributeError:
+                            pass
+            self._modules_before = None
+
+    def _snapshot_real_ledger_mtimes(self) -> Dict[str, float]:
+        """Record mtimes of real data/ledger files before a run."""
+        real_ledger = _PROJECT_DIR / "data" / "ledger"
+        mtimes: Dict[str, float] = {}
+        if real_ledger.is_dir():
+            for p in real_ledger.iterdir():
+                if p.is_file():
+                    try:
+                        mtimes[str(p)] = p.stat().st_mtime
+                    except OSError:
+                        pass
+        return mtimes
+
+    def _check_ledger_pollution(
+        self, before: Dict[str, float], report: dict
+    ) -> None:
+        """Warn in report summary if any real ledger file changed during the run."""
+        real_ledger = _PROJECT_DIR / "data" / "ledger"
+        changed = []
+        if real_ledger.is_dir():
+            for p in real_ledger.iterdir():
+                if p.is_file():
+                    try:
+                        mtime_after = p.stat().st_mtime
+                    except OSError:
+                        continue
+                    mtime_before = before.get(str(p), mtime_after)
+                    if mtime_after != mtime_before:
+                        changed.append(str(p))
+        if changed:
+            log.warning(
+                "IntegrationHarness: real data/ledger files mutated during run: %s", changed
+            )
+            report.setdefault("warnings", []).append(
+                {"type": "real_ledger_pollution", "files": changed}
+            )
 
     def _run_stage(self, name: str, fn: Callable[[], Any]) -> dict:
         """Time and run fn(); return a normalized stage entry."""
@@ -304,9 +452,41 @@ class IntegrationHarness:
     # ------------------------------------------------------------------ run
 
     def run_end_to_end(self) -> dict:
-        """Execute all integration stages and return the report dict."""
+        """Execute all integration stages and return the report dict.
+
+        Always writes to an isolated temp directory; never touches data/ledger/.
+        Originals are restored in a try/finally even if a stage raises.
+        """
         self._assert_paper_mode()
+
+        # Create isolated temp dir
+        if self.isolated_dir is not None:
+            self.isolated_dir.mkdir(parents=True, exist_ok=True)
+            tmp_path = Path(tempfile.mkdtemp(prefix="L41_run_", dir=str(self.isolated_dir)))
+        else:
+            tmp_path = Path(tempfile.mkdtemp(prefix="L41_run_"))
+        self._tmp_dir = str(tmp_path)
+
+        # Snapshot real ledger mtimes before any writes
+        before_mtimes = self._snapshot_real_ledger_mtimes()
+
+        # Redirect all downstream path constants to isolated dir
+        self._redirect_paths_to_tmp(tmp_path)
+
         started_at = datetime.now(timezone.utc).isoformat()
+        report: dict = {}
+        try:
+            report = self._run_stages(started_at)
+        finally:
+            self._restore_paths()
+            self._restore_mode()
+
+        # Check for real ledger pollution and annotate report
+        self._check_ledger_pollution(before_mtimes, report)
+        return report
+
+    def _run_stages(self, started_at: str) -> dict:
+        """Internal: execute all stages; called from within try/finally in run_end_to_end."""
 
         # Shared pipeline state
         slate: Any = None
@@ -492,8 +672,6 @@ class IntegrationHarness:
             stages.append(_skip("postmortem"))
         else:
             stages.append(self._run_stage("postmortem", _postmortem))
-
-        self._restore_mode()
 
         finished_at = datetime.now(timezone.utc).isoformat()
         n_pass = sum(1 for s in stages if s["status"] == "PASS")

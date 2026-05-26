@@ -12,13 +12,39 @@ Public API
     send_drift_alert(stat, observed_mae, expected_mae, days_window) -> bool
     flush_pending() -> int
 
-ENV VARS
---------
-    SLACK_WEBHOOK_URL            (optional)
-    DISCORD_WEBHOOK_URL          (optional)
-    DISCORD_<CHANNEL>_WEBHOOK_URL (per-channel Discord override)
-    ALERTS_ENABLED               "true"|"false", default "false"
-    ALERTS_RATE_LIMIT_PER_MIN    int, default 30
+Environment Variables
+---------------------
+    SLACK_WEBHOOK_URL
+        Incoming-webhook URL for Slack. When absent (or empty) Slack delivery
+        is skipped; test-mode local write is used instead.
+
+    DISCORD_WEBHOOK_URL
+        Default incoming-webhook URL for Discord. Applies to all channels
+        unless overridden by a per-channel variable. When absent, Discord
+        delivery is skipped.
+
+    DISCORD_<CHANNEL>_WEBHOOK_URL
+        Per-channel Discord webhook override (e.g. DISCORD_EDGES_WEBHOOK_URL).
+        ``<CHANNEL>`` is the upper-cased channel name (edges, fills, drift,
+        drawdown, news, settle, system). Takes precedence over
+        DISCORD_WEBHOOK_URL for that channel.
+
+    ALERTS_ENABLED
+        Set to "true" to enable live HTTP delivery to Slack/Discord.
+        Any other value (including absent) disables live delivery and
+        writes alerts to the local log file in test mode (default: "false").
+
+    ALERTS_RATE_LIMIT_PER_MIN
+        Maximum number of alerts dispatched per 60-second rolling window via
+        the token-bucket limiter. Excess alerts are enqueued and replayed via
+        flush_pending(). Integer; default 30.
+
+Atomic writes
+-------------
+    alert_queue.json is written atomically via a sibling temp file +
+    os.replace() so a crash mid-write never leaves a partial/corrupt queue.
+    The daily log file in _LOG_DIR uses append mode; partial appends are
+    benign for log-only files and do not require atomic replacement.
 
 CLI
 ---
@@ -32,6 +58,7 @@ import json
 import logging
 import os
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -63,6 +90,28 @@ _COLOR_DISCORD = {
 }
 _MAX_BODY = 4000
 _HTTP_BACKOFF_CAPS = [1, 2, 4, 8, 16, 32, 60]
+
+
+# ── atomic file helper ────────────────────────────────────────────────────────
+def _atomic_write_json(path: Path, payload: object, *, indent: int = 2) -> None:
+    """Write *payload* as JSON to *path* atomically via a sibling temp file.
+
+    Uses tempfile.mkstemp + os.replace so a crash mid-write never leaves a
+    partial or corrupt file.  Raises OSError / IOError on failure after
+    cleaning up the temp file.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=indent)
+        os.replace(tmp, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 # ── rate limiter ──────────────────────────────────────────────────────────────
@@ -283,7 +332,7 @@ class AlertRouter:
 
     def _save_queue(self, items: List[dict]) -> None:
         try:
-            _QUEUE_PATH.write_text(json.dumps(items, indent=2), encoding="utf-8")
+            _atomic_write_json(_QUEUE_PATH, items)
         except OSError as exc:
             log.error("[L22] Failed to persist alert queue: %s", exc)
 

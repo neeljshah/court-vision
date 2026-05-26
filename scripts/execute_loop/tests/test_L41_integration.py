@@ -54,62 +54,23 @@ import scripts.execute_loop.L07_pnl_ledger as L07  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
-# Shared fixture — redirect all ledger + paper I/O to tmp_path
+# Shared fixture — ensure paper mode and clean env vars for every test.
+# Path isolation is now handled internally by IntegrationHarness (isolated_dir
+# param or default tempfile.mkdtemp), so we no longer need monkeypatch to
+# redirect module-level constants here.  We still clear env vars and buckets
+# to guard against cross-test token state.
 # ---------------------------------------------------------------------------
 @pytest.fixture(autouse=True)
 def isolated_env(tmp_path, monkeypatch):
-    """Redirect file I/O, ensure paper mode, reset buckets."""
+    """Ensure paper mode env vars; harness self-isolates file I/O."""
     monkeypatch.setenv("SUBMISSION_MODE", "paper")
     monkeypatch.delenv("USER_TOKEN", raising=False)
     monkeypatch.delenv("DK_LIVE_ENABLED", raising=False)
     monkeypatch.delenv("FD_LIVE_ENABLED", raising=False)
     monkeypatch.delenv("DK_API_KEY", raising=False)
     monkeypatch.delenv("FD_API_KEY", raising=False)
-
-    # Redirect L05 file paths
-    monkeypatch.setattr(L05, "_LEDGER_DIR", tmp_path)
-    monkeypatch.setattr(L05, "_CACHE_FILE", tmp_path / "submission_cache.json")
-    monkeypatch.setattr(L05, "_PAPER_FILE", tmp_path / "paper_submissions.json")
+    # Clear L05 token buckets so rate-limiting doesn't bleed across tests
     L05._buckets.clear()
-
-    # Redirect L07 file paths
-    monkeypatch.setattr(L07, "_LEDGER_DIR", tmp_path)
-    monkeypatch.setattr(L07, "_BETS_FILE", tmp_path / "bets.parquet")
-    monkeypatch.setattr(L07, "_BETS_CSV", tmp_path / "bets.csv")
-
-    # Redirect L08 if available
-    if L41.L08 is not None:
-        try:
-            import scripts.execute_loop.L08_drift_detector as L08
-            monkeypatch.setattr(L08, "_LEDGER_DIR", tmp_path)
-            monkeypatch.setattr(L08, "_BETS_PARQUET", tmp_path / "bets.parquet")
-            monkeypatch.setattr(L08, "_BETS_CSV", tmp_path / "bets.csv")
-        except Exception:
-            pass
-
-    # Redirect L19 if available
-    if L41.L19 is not None:
-        try:
-            import scripts.execute_loop.L19_clv_calculator as L19
-            monkeypatch.setattr(L19, "_LEDGER_DIR", tmp_path)
-            monkeypatch.setattr(L19, "_BETS_PARQUET", tmp_path / "bets.parquet")
-            monkeypatch.setattr(L19, "_BETS_CSV", tmp_path / "bets.csv")
-            monkeypatch.setattr(L19, "_SNAPSHOT_DIR", tmp_path / "snapshots")
-        except Exception:
-            pass
-
-    # Redirect L37 if available
-    if L41.L37 is not None:
-        try:
-            import scripts.execute_loop.L37_postmortem as L37
-            monkeypatch.setattr(L37, "_LEDGER_DIR", tmp_path)
-            monkeypatch.setattr(L37, "_BETS_PARQUET", tmp_path / "bets.parquet")
-            monkeypatch.setattr(L37, "_BETS_CSV", tmp_path / "bets.csv")
-            monkeypatch.setattr(L37, "_POSTMORTEM_DIR", tmp_path / "postmortems")
-            monkeypatch.setattr(L37, "_BANKROLL_STATE", tmp_path / "bankroll_state.json")
-        except Exception:
-            pass
-
     yield
 
 
@@ -322,3 +283,46 @@ def test_report_json_serializable():
     reloaded = json.loads(serialized)
     assert reloaded["seed"] == 42
     assert len(reloaded["stages"]) == 10
+
+
+# ---------------------------------------------------------------------------
+# Test 11 — no real data/ledger/ files are written during a harness run
+# ---------------------------------------------------------------------------
+def test_no_real_ledger_pollution(tmp_path):
+    """Harness must not touch any files in the real data/ledger/ directory."""
+    from pathlib import Path
+
+    real_ledger = Path(__file__).resolve().parents[4] / "data" / "ledger"
+
+    # Snapshot mtimes before run
+    before: dict = {}
+    if real_ledger.is_dir():
+        for p in real_ledger.iterdir():
+            if p.is_file():
+                try:
+                    before[str(p)] = p.stat().st_mtime
+                except OSError:
+                    pass
+
+    # Run harness with isolated_dir pointing to tmp_path
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True, isolated_dir=tmp_path)
+    report = harness.run_end_to_end()
+
+    # Assert no real ledger file was modified
+    if real_ledger.is_dir():
+        for p in real_ledger.iterdir():
+            if p.is_file():
+                try:
+                    mtime_after = p.stat().st_mtime
+                except OSError:
+                    continue
+                mtime_before = before.get(str(p), mtime_after)
+                assert mtime_after == mtime_before, (
+                    f"Real ledger file was mutated during harness run: {p}\n"
+                    f"  before={mtime_before}  after={mtime_after}"
+                )
+
+    # Confirm the report itself carries no pollution warning
+    assert "warnings" not in report or all(
+        w.get("type") != "real_ledger_pollution" for w in report.get("warnings", [])
+    ), f"Harness reported real_ledger_pollution: {report.get('warnings')}"

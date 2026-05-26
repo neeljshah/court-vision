@@ -373,3 +373,58 @@ def test_alert_on_drift_no_l22(monkeypatch):
         count = L08.alert_on_drift([drift_metric])
 
     assert count == 0
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — _atomic_write_json replaces existing file with new content
+# ---------------------------------------------------------------------------
+def test_atomic_write_replaces_existing_file(tmp_path):
+    """Write v1, then write v2; the file must contain v2."""
+    target = tmp_path / "drift_report_test.json"
+
+    v1 = {"version": 1, "data": "first"}
+    v2 = {"version": 2, "data": "second"}
+
+    L08._atomic_write_json(target, v1)
+    assert target.exists()
+    with target.open(encoding="utf-8") as fh:
+        loaded = json.load(fh)
+    assert loaded["version"] == 1
+
+    L08._atomic_write_json(target, v2)
+    with target.open(encoding="utf-8") as fh:
+        loaded = json.load(fh)
+    assert loaded["version"] == 2, "File should contain v2 after second write"
+    assert loaded["data"] == "second"
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — _atomic_write_json leaves original unchanged on failure + cleans tmp
+# ---------------------------------------------------------------------------
+def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
+    """If os.replace raises, the original file is unchanged and .tmp is cleaned up."""
+    import os as _os
+
+    target = tmp_path / "drift_report_test.json"
+    original_payload = {"version": "original", "safe": True}
+
+    # Write initial content the normal way so there is an existing file to protect.
+    L08._atomic_write_json(target, original_payload)
+
+    # Monkeypatch os.replace to raise after the temp file is written.
+    def _failing_replace(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(_os, "replace", _failing_replace)
+
+    with pytest.raises(OSError, match="simulated replace failure"):
+        L08._atomic_write_json(target, {"version": "corrupted"})
+
+    # Original file must still contain the original content.
+    with target.open(encoding="utf-8") as fh:
+        loaded = json.load(fh)
+    assert loaded["version"] == "original", "Original file must be untouched after failed write"
+
+    # No leftover .tmp files in the directory.
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Leftover .tmp files found: {tmp_files}"

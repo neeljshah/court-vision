@@ -16,6 +16,15 @@ CLI
     python L38_health_dashboard.py check [--name <check>]
     python L38_health_dashboard.py serve [--port 9876]
     python L38_health_dashboard.py once   # exit 0/1/2 = HEALTHY/DEGRADED/FAILED
+
+Environment Variables
+---------------------
+    HEALTH_FILE     — Override path for system_health.json persistence file.
+                      Default: <project_root>/data/ledger/system_health.json
+    HEALTH_CACHE_TTL — In-process cache TTL in seconds before re-reading disk.
+                      Default: 60
+    HEALTH_PORT     — Default HTTP server port when --port is not given.
+                      Default: 9876
 """
 from __future__ import annotations
 
@@ -26,6 +35,7 @@ import logging
 import os
 import shutil
 import sys
+import tempfile
 import time
 import traceback
 from dataclasses import dataclass, asdict
@@ -62,12 +72,42 @@ def _color(status: str, text: str) -> str:
 
 
 # ── persistence path ──────────────────────────────────────────────────────────
-_HEALTH_FILE = PROJECT_DIR / "data" / "ledger" / "system_health.json"
+_HEALTH_FILE = Path(
+    os.environ.get("HEALTH_FILE",
+                   str(PROJECT_DIR / "data" / "ledger" / "system_health.json"))
+)
 
 # ── in-process cache ──────────────────────────────────────────────────────────
 _CACHE: Optional["HealthReport"] = None
 _CACHE_TS: float = 0.0
-_CACHE_TTL = 60.0
+_CACHE_TTL = float(os.environ.get("HEALTH_CACHE_TTL", "60"))
+
+
+# =============================================================================
+# Atomic I/O helpers
+# =============================================================================
+
+def _atomic_write_text(path: Path, content: str, encoding: str = "utf-8") -> None:
+    """Write *content* to *path* atomically via a sibling temp file."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent),
+                               prefix=path.name + ".",
+                               suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding=encoding) as fh:
+            fh.write(content)
+        os.replace(tmp, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _atomic_write_json(path: Path, payload: object, indent: int = 2) -> None:
+    """Serialize *payload* as JSON and write atomically to *path*."""
+    _atomic_write_text(path, json.dumps(payload, indent=indent))
 
 
 # =============================================================================
@@ -417,16 +457,12 @@ def run_check(name: str) -> HealthCheck:
 
 
 def _persist(report: HealthReport) -> None:
-    _HEALTH_FILE.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(
-        {"timestamp": report.timestamp,
-         "overall_status": report.overall_status,
-         "checks": [asdict(c) for c in report.checks]},
-        indent=2,
-    )
-    tmp = _HEALTH_FILE.with_suffix(".tmp.json")
-    tmp.write_text(payload, encoding="utf-8")
-    os.replace(tmp, _HEALTH_FILE)
+    payload = {
+        "timestamp": report.timestamp,
+        "overall_status": report.overall_status,
+        "checks": [asdict(c) for c in report.checks],
+    }
+    _atomic_write_json(_HEALTH_FILE, payload)
 
 
 # =============================================================================

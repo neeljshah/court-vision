@@ -7,6 +7,7 @@ Run:
 from __future__ import annotations
 
 import csv
+import os
 import sys
 import types
 from pathlib import Path
@@ -219,3 +220,43 @@ def test_negative_net_zero_tax(monkeypatch):
     assert dfs.net == pytest.approx(-80.0)
     assert dfs.fed_tax_estimated == pytest.approx(0.0)
     assert dfs.state_tax_estimated == pytest.approx(0.0)
+
+
+# ---------------------------------------------------------------------------
+# Test 8: _atomic_write_text replaces an existing file with new content
+# ---------------------------------------------------------------------------
+def test_atomic_write_replaces_existing_file(tmp_path):
+    dest = tmp_path / "out.csv"
+    dest.write_text("old content", encoding="utf-8")
+
+    L27._atomic_write_text(dest, "new content")
+
+    assert dest.read_text(encoding="utf-8") == "new content"
+    # No leftover .tmp files
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Unexpected .tmp files: {tmp_files}"
+
+
+# ---------------------------------------------------------------------------
+# Test 9: _atomic_write_text leaves original intact and cleans .tmp on failure
+# ---------------------------------------------------------------------------
+def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
+    dest = tmp_path / "safe.csv"
+    dest.write_text("original", encoding="utf-8")
+
+    # Patch os.replace to simulate a failure after the temp file is written
+    real_replace = os.replace
+
+    def _boom(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(os, "replace", _boom)
+
+    with pytest.raises(OSError, match="simulated replace failure"):
+        L27._atomic_write_text(dest, "should not land")
+
+    # Original file must be unchanged
+    assert dest.read_text(encoding="utf-8") == "original"
+    # Temp file must have been cleaned up
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Leaked .tmp files: {tmp_files}"

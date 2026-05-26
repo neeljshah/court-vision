@@ -14,14 +14,18 @@ Public API
 CLI:
     python L08_drift_detector.py check         # prints summary table
     python L08_drift_detector.py report [--window 7]
+
+Environment Variables: none
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
 import re
 import sys
+import tempfile
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -65,6 +69,35 @@ _MIN_N = 30
 _SIGMA_FACTOR = 0.15   # 15% of expected_mae as std-error unit
 
 _MARKET_RE = re.compile(r"player_prop_(\w+)")
+
+
+# ---------------------------------------------------------------------------
+# Atomic-write helper
+# ---------------------------------------------------------------------------
+def _atomic_write_json(path: Path, payload: dict, indent: int = 2) -> None:
+    """Write *payload* as JSON to *path* atomically via a sibling temp file.
+
+    Uses tempfile.mkstemp + os.replace so a crashed write never leaves a
+    corrupted file at the target path.  Any pre-existing file is replaced
+    only after the new content is fully written and flushed.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(
+        dir=str(path.parent),
+        prefix=path.name + ".",
+        suffix=".tmp",
+    )
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(payload, fh, indent=indent)
+        os.replace(tmp_path, str(path))
+    except Exception:
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise
+
 
 # ---------------------------------------------------------------------------
 # DriftMetric dataclass
@@ -303,9 +336,7 @@ def daily_drift_report(window_days: int = 7) -> dict:
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out_path = _LEDGER_DIR / f"drift_report_{today}.json"
     try:
-        _LEDGER_DIR.mkdir(parents=True, exist_ok=True)
-        with out_path.open("w") as fh:
-            json.dump(report, fh, indent=2)
+        _atomic_write_json(out_path, report)
         log.info("drift report written: %s", out_path)
     except Exception as exc:  # noqa: BLE001
         log.warning("Could not write drift report: %s", exc)

@@ -7,6 +7,13 @@ CLI:
     python L27_tax_tracking.py report --year 2026
     python L27_tax_tracking.py quarterly --year 2026 --quarter 2
     python L27_tax_tracking.py export-1099 --year 2026 [--out path.csv]
+
+Environment Variables:
+    FEDERAL_TAX_RATE  — Federal marginal tax rate applied to net gambling winnings.
+                        Float in [0, 1]. Default: 0.24 (24% bracket).
+    STATE_TAX_RATE    — State marginal tax rate applied to net gambling winnings.
+                        Float in [0, 1]. Default: 0.00 (no state tax; set for
+                        your jurisdiction, e.g. 0.05 for 5%).
 """
 from __future__ import annotations
 
@@ -16,6 +23,7 @@ import json
 import logging
 import os
 import sys
+import tempfile
 import types
 from dataclasses import dataclass, asdict
 from datetime import date, datetime, timezone
@@ -86,6 +94,29 @@ class TaxBucket:
     fed_tax_estimated: float
     state_tax_estimated: float
     ytd_total: float
+
+
+# ---------------------------------------------------------------------------
+# Atomic-write helpers (L24 v2 pattern)
+# ---------------------------------------------------------------------------
+def _atomic_write_text(path: Path, text: str, encoding: str = "utf-8") -> None:
+    """Write *text* to *path* atomically via a sibling temp file.
+
+    Uses tempfile.mkstemp so the temp file is always in the same directory
+    (guaranteeing same-filesystem rename on every OS).  Cleans up the temp
+    file if os.replace raises.
+    """
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=path.name + ".", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding=encoding) as fh:
+            fh.write(text)
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 # ---------------------------------------------------------------------------
@@ -274,21 +305,22 @@ def export_1099_ready(year: int, out_path: Optional[str] = None) -> str:
         dest = Path(out_path)
         dest.parent.mkdir(parents=True, exist_ok=True)
 
+    import io
     fieldnames = ["source_type", "gross_winnings", "gross_losses", "net", "year"]
-    with open(dest, "w", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames)
-        writer.writeheader()
-        for b in buckets:
-            writer.writerow(
-                {
-                    "source_type": b.source_type,
-                    "gross_winnings": b.gross_winnings,
-                    "gross_losses": b.gross_losses,
-                    "net": b.net,
-                    "year": year,
-                }
-            )
-
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=fieldnames, lineterminator="\r\n")
+    writer.writeheader()
+    for b in buckets:
+        writer.writerow(
+            {
+                "source_type": b.source_type,
+                "gross_winnings": b.gross_winnings,
+                "gross_losses": b.gross_losses,
+                "net": b.net,
+                "year": year,
+            }
+        )
+    _atomic_write_text(dest, buf.getvalue())
     log.info("export_1099_ready: wrote %d rows to %s", len(buckets), dest)
     return str(dest)
 

@@ -11,6 +11,7 @@ Five tests covering:
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import sys
 import tempfile
@@ -280,3 +281,61 @@ def test_serve_smoke(monkeypatch):
             server_obj.shutdown()
         except Exception:
             pass
+
+
+# ── test 6: atomic write replaces existing file ───────────────────────────────
+
+def test_atomic_write_replaces_existing_file(tmp_path):
+    """Second atomic write must overwrite v1 content with v2 content atomically."""
+    target = tmp_path / "dashboard_snapshot.json"
+
+    # Write v1
+    v1 = {"version": 1, "status": "old"}
+    D._atomic_write_json(target, v1)
+    assert target.exists(), "v1 file must exist after first write"
+    assert json.loads(target.read_text(encoding="utf-8"))["version"] == 1
+
+    # Write v2 — must replace v1 entirely
+    v2 = {"version": 2, "status": "new", "score": 42}
+    D._atomic_write_json(target, v2)
+    result = json.loads(target.read_text(encoding="utf-8"))
+    assert result["version"] == 2, f"Expected version=2, got {result}"
+    assert result["status"] == "new"
+
+    # No stray .tmp files left behind
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Stray .tmp files remain: {tmp_files}"
+
+
+# ── test 7: atomic write leaves original unchanged on failure ─────────────────
+
+def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
+    """If os.replace raises, the original file must be unchanged and .tmp cleaned up."""
+    target = tmp_path / "status.html"
+
+    # Establish original content
+    original_content = "<html><body>v1</body></html>"
+    D._atomic_write_text(target, original_content)
+    assert target.read_text(encoding="utf-8") == original_content
+
+    # Monkeypatch os.replace to simulate a failure (e.g., cross-device rename)
+    real_replace = os.replace
+
+    def _failing_replace(src, dst):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(os, "replace", _failing_replace)
+
+    # Attempt a second write — must raise and leave original intact
+    with pytest.raises(OSError, match="simulated replace failure"):
+        D._atomic_write_text(target, "<html><body>v2</body></html>")
+
+    # Original untouched
+    assert target.read_text(encoding="utf-8") == original_content, (
+        "Original file was modified despite os.replace failure"
+    )
+
+    # .tmp file must have been cleaned up
+    monkeypatch.setattr(os, "replace", real_replace)  # restore so glob can run
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Stray .tmp file not cleaned up: {tmp_files}"
