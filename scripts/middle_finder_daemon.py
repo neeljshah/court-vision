@@ -170,17 +170,111 @@ def _parse_dt(s):
         return None
 
 
+def classify_market_tier(rows, csv_alt_present=False):
+    """R20_M1: classify a (player, stat, book) ladder into primary vs alt rungs.
+
+    The Bov scraper already writes `is_alt_line` (R19_L1), but:
+      * legacy on-disk CSVs for ANY book may be missing the column, and
+      * FD / Pin scrapers DO NOT write the flag — they emit ladders too
+        (e.g. FD writes SGA pts at 19.5, 24.5, 29.5 all as primary-looking
+        rows). Without re-classification at load time, the arb engine pairs
+        FD-OVER-19.5 with Pin-UNDER-28.5 and reports a bogus 'free arb'.
+
+    Heuristic (book-agnostic, used WHENEVER `csv_alt_present=False`):
+      1. If only one rung exists, it is `primary`.
+      2. Otherwise, score each rung by total implied vig
+         (|implied_prob(over) + implied_prob(under) - 1|). The rung with the
+         smallest vig — i.e. the closest to a fair -110/-110 line — is
+         `primary`; all others are `alt`.
+      3. Tie-break by smallest |over_implied - under_implied| (most balanced),
+         then by line value closest to the cluster median (don't crown an
+         edge rung primary on a numerical tie).
+      4. If a rung is missing one side (no over OR no under price), it
+         cannot be primary (single-sided ladder rungs are alts).
+
+    When `csv_alt_present=True`, trust the CSV column (writer already
+    classified) — only fill in the `market_tier` string equivalent.
+
+    Mutates `rows` in place: each row gets `is_alt_line: bool` and
+    `market_tier: 'primary'|'alt'`. Returns the same list for chaining.
+    """
+    if not rows:
+        return rows
+
+    # Trust writer-side classification when present.
+    if csv_alt_present:
+        for r in rows:
+            alt = bool(r.get("is_alt_line"))
+            r["is_alt_line"] = alt
+            r["market_tier"] = "alt" if alt else "primary"
+        return rows
+
+    def _vig(r):
+        po = implied_prob(r.get("over_price"))
+        pu = implied_prob(r.get("under_price"))
+        if po is None or pu is None:
+            # Single-sided rung: cannot be primary.
+            return (9.99, 9.99)
+        return (abs(po + pu - 1.0), abs(po - pu))
+
+    if len(rows) == 1:
+        rows[0]["is_alt_line"] = False
+        rows[0]["market_tier"] = "primary"
+        return rows
+
+    numeric_lines = [float(r["line"]) for r in rows if r.get("line") is not None]
+    median = (sorted(numeric_lines)[len(numeric_lines) // 2]
+              if numeric_lines else 0.0)
+
+    def _score(r):
+        # R20_M1: PRIMARY = the most balanced two-sided rung. A symmetric
+        # alt-line ladder can have low total vig at the edge rungs (heavy
+        # juice on one side cancels +money on the other), so total vig
+        # alone picks the wrong rung. SPREAD (|over_prob - under_prob|) is
+        # the cleaner signal: the rung the book is actually anchoring is
+        # the one where both sides are priced ~symmetrically (spread → 0).
+        v = _vig(r)
+        line_val = float(r.get("line") or 0.0)
+        # (spread, total_vig, distance_from_median): minimise.
+        return (v[1], v[0], abs(line_val - median))
+
+    primary = min(rows, key=_score)
+    # Guard: primary must have BOTH sides priced. If the winning rung is
+    # one-sided (vig sentinel 9.99), no rung qualifies as primary — mark all
+    # as alt so the arb engine ignores the whole cluster (safe default).
+    primary_has_both = (primary.get("over_price") is not None
+                        and primary.get("under_price") is not None)
+    for r in rows:
+        is_alt = (not primary_has_both) or (r is not primary)
+        r["is_alt_line"] = is_alt
+        r["market_tier"] = "alt" if is_alt else "primary"
+    return rows
+
+
 def load_latest_snapshots(date_str, lines_dir=LINES_DIR, books=BOOKS):
-    """Return dict[(player, stat)][book] -> list of {line, over_price, under_price, is_alt_line}.
+    """Return dict[(player, stat)][book] -> list of
+    {line, over_price, under_price, is_alt_line, market_tier}.
 
     For each (book, player, stat, line) keep only the latest captured_at.
     R19_L1: `is_alt_line` is propagated into the index so the arb engine can
     filter ladder rungs out of cross-book joins.
+    R20_M1: AFTER loading, run `classify_market_tier` per (player, stat, book)
+    cluster so FD/Pin/legacy-bov ladders (which lack the CSV column) get
+    correctly tagged. This is what fixes the PTS-OVER-3.5 false-arb bug.
     """
     index = {}
+    # Track whether each book's CSV actually has the is_alt_line column
+    # so we know whether to trust it or re-classify.
+    book_has_alt_col = {}
     for book in books:
         path = os.path.join(lines_dir, f"{date_str}_{book}.csv")
         rows = _read_lines_csv(path)
+        # Detect if any row has a non-default is_alt_line value (i.e. the
+        # writer actually classified). _read_lines_csv defaults to "false"
+        # for legacy rows, so we look for ANY "true" as the signal that the
+        # column is being populated.
+        has_alt_col = any(_is_alt_truthy(r.get("is_alt_line")) for r in rows)
+        book_has_alt_col[book] = has_alt_col
         # latest per (player, stat, line, side) — keep both sides
         latest = {}
         for r in rows:
@@ -213,6 +307,14 @@ def load_latest_snapshots(date_str, lines_dir=LINES_DIR, books=BOOKS):
                 "over_price": v["over_price"],
                 "under_price": v["under_price"],
             })
+
+    # R20_M1: per-(player,stat,book) cluster — classify market_tier. For
+    # books where the writer flagged is_alt_line in-row, trust it. For
+    # books that didn't (FD/Pin always, legacy-bov before R19_L1 rewrite),
+    # apply the vig-based heuristic.
+    for pkey, bdict in index.items():
+        for book, rows in bdict.items():
+            classify_market_tier(rows, csv_alt_present=book_has_alt_col.get(book, False))
     return index
 
 
@@ -290,8 +392,17 @@ def find_middles(index, min_width=0.5, max_juice_each_side=-135,
         unders = []
         for book, rows in books_dict.items():
             for r in rows:
-                if not allow_alt_lines and r.get("is_alt_line"):
-                    continue
+                # R20_M1: primary-only join unless caller explicitly opts in.
+                # Tier check is the strict version: market_tier must equal
+                # 'primary' (or be missing — back-compat for legacy callers
+                # that build rows manually without the tier column). The
+                # is_alt_line check remains as a defense-in-depth fallback.
+                if not allow_alt_lines:
+                    if r.get("is_alt_line"):
+                        continue
+                    tier = r.get("market_tier")
+                    if tier is not None and tier != "primary":
+                        continue
                 if r["over_price"] is not None:
                     overs.append((book, r["line"], r["over_price"]))
                 if r["under_price"] is not None:
