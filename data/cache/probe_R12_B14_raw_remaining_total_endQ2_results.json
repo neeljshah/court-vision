@@ -1,0 +1,16 @@
+{
+  "probe": "R12_B14_raw_remaining_total_endQ2",
+  "kind": "regression",
+  "label": "remaining_total",
+  "snap_q": 2,
+  "n_features": 149,
+  "status": "REJECT",
+  "ship_reason": "delta -25.38% vs raw B10 -25.38",
+  "pooled_naive_mae": 13.8068,
+  "pooled_lgb_mae": 10.3033,
+  "pooled_delta_pct": -25.38,
+  "n_valid_folds": 3,
+  "beat_b10": false,
+  "b10_baseline_delta_pct": -25.38,
+  "elapsed_s": 40.2
+}

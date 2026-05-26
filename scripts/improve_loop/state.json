@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 26,
+  "rounds_completed": 27,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -522,6 +522,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-13 (18 variants in 522s \u2014 18/18 SHIP, 5/18 BEAT_CANONICAL). PREDICTION-LEVEL ENSEMBLING WINS. Stop counter RESET to 0/5.\nPer-variant beat-canonical count:\n  union_all (174 kitchen-sink feats): 0/6 beat. All targets +0.42-1.16pp regress \u2014 adding all features hurts (noise > signal at large feature counts).\n  intersection (141 feats present in >=3 canonical sets): 1/6 beat \u2014 AH3 Brier 0.2286 AUC 0.7098 (BOTH metrics beat B11 opp_pts_pace 0.2294/0.7058).\n  avg_blend (50/50 prediction avg of per-target top-2): 4/6 beat \u2014 home_score -16.38% (-0.28pp), away_score -14.42% (-0.07pp), O230 Brier 0.2372 AUC 0.6765 (Brier wins, AUC ties), AH3 Brier 0.2283 AUC 0.7062 (Brier wins).\nNEW PRODUCTION CANONICAL UPDATES:\n  total: B9 interactions_only -16.27% STILL BEST (avg_blend regressed)\n  spread: B11 opp_full -17.44% STILL BEST (avg_blend ties at -17.42%)\n  home_score: B13 avg_blend(all + interactions_only) -16.38% NEW BEST\n  away_score: B13 avg_blend(halflife2 + all) -14.42% NEW BEST\n  O230: B13 avg_blend(opp_full + opp_pts_pace) Brier 0.2372 NEW BEST\n  AH3: B13 intersection (>=3 canonical agreement, 141 feats) Brier 0.2286 AUC 0.7098 NEW BEST\nARCHITECTURAL FINDING: prediction-level averaging across DIVERSE feature subsets (diff feature sets, same B6 OOF-stack architecture) consistently beats any single best feature set \u2014 model-level ensembling is the unlock, not more features. The union_all kitchen-sink regresses everywhere; the >=3-agreement intersection wins on the lowest-noise binary target (AH3) where 'feature agreement = signal' holds. Stop counter: RESET to 0/5."
+    },
+    {
+      "name": "R12_BATCH14_isotonic_platt_calibration",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 8,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-14 (11 variants in 350s \u2014 8/11 SHIP, 3/11 REJECT). The 3 rejects are 'raw' sanity-check rounds correctly failing the strict 'beat B10 uncalibrated' gate (raw is the baseline, can't beat itself). All 8 calibrated variants SHIP and BEAT_B10 \u2014 calibration improves Brier 4-7% at every quarter without hurting AUC.\nPer-quarter Brier improvements (raw \u2192 isotonic \u2192 platt):\n  endQ1: 0.2191 \u2192 0.2057 (iso, -6.12%) \u2192 0.2042 (platt, -6.80%)\n  endQ2: 0.1846 \u2192 0.1745 (iso, -5.47%) \u2192 0.1736 (platt, -5.96%)\n  endQ3: 0.1359 \u2192 0.1303 (iso, -4.12%) \u2192 0.1277 (platt, -6.03%)\n  remaining_total endQ2 (reg): -25.38% \u2192 -25.65% (isotonic, marginal -0.27pp)\nAUC essentially unchanged at all snapshots (calibration doesn't reorder predictions, as expected \u2014 it monotonically maps raw probs to calibrated probs).\nARCHITECTURAL FINDING: Platt sigmoid CONSISTENTLY beats isotonic at every quarter (by 0.0006-0.0026 Brier). Likely because the underlying LGB+XGB output is not pathologically miscalibrated, so the SMOOTHER Platt logistic generalizes better than the staircase isotonic. For betting purposes Brier is more important than AUC (stake sizing depends on absolute probability not relative ranking).\nNEW PRODUCTION CANONICAL (in-play, replaces B10):\n  winprob endQ1: B14 platt   Brier 0.2042 AUC 0.7500\n  winprob endQ2: B14 platt   Brier 0.1736 AUC 0.8212\n  winprob endQ3: B14 platt   Brier 0.1277 AUC 0.9012\n  remaining_total endQ2: B14 isotonic delta -25.65%\nStop counter: 0/5 (calibration is a real architectural win)."
     }
   ],
   "rejects": [

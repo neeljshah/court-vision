@@ -1,0 +1,21 @@
+{
+  "probe": "R12_B14_isotonic_winprob_endQ3",
+  "kind": "binary",
+  "label": "home_wins",
+  "label_desc": "P(home_wins) at endQ3 via isotonic",
+  "snap_q": 3,
+  "n_features": 149,
+  "n_games": 2836,
+  "pos_rate": 0.5306770098730607,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.1303 vs raw B10 0.1359; AUC 0.8983",
+  "pooled_lgb_brier": 0.13027,
+  "pooled_naive_brier": 0.13166,
+  "pooled_lgb_auc": 0.89827,
+  "brier_delta_pct": -1.056,
+  "n_valid_folds": 3,
+  "beat_b10": true,
+  "b10_baseline_brier": 0.1359,
+  "b10_baseline_auc": 0.901,
+  "elapsed_s": 30.2
+}
