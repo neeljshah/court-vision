@@ -1,0 +1,110 @@
+{
+  "task": "R32_Y1 m2_family MLP wire-through validation",
+  "sample_game": {
+    "game_id": "0022500001",
+    "home": "OKC",
+    "away": "HOU",
+    "season": "2025-26",
+    "date": "2025-10-21"
+  },
+  "consumers": {
+    "game_models.predict": {
+      "modes": {
+        "unset": {
+          "total_est": 217.1,
+          "spread_est": 4.7,
+          "home_pts_est": 108.8,
+          "away_pts_est": 108.3,
+          "ensemble": "M2_family_v1 (5 models \u00d7 4 targets, equal-weight)",
+          "m2_family_used": true,
+          "confidence": "m2_family"
+        },
+        "zero": {
+          "total_est": 217.1,
+          "spread_est": 4.7,
+          "home_pts_est": 108.8,
+          "away_pts_est": 108.3,
+          "ensemble": "M2_family_v1 (5 models \u00d7 4 targets, equal-weight)",
+          "m2_family_used": true,
+          "confidence": "m2_family"
+        },
+        "one": {
+          "total_est": 216.2,
+          "spread_est": 4.2,
+          "home_pts_est": 110.5,
+          "away_pts_est": 105.3,
+          "ensemble": "M2_family_mlp_v1_R31_X3 (multitask MLP, 3-seed ensemble)",
+          "m2_family_used": true,
+          "confidence": "m2_family"
+        }
+      },
+      "unset_equals_zero": true,
+      "mlp_differs_from_off": true,
+      "deltas_mlp_minus_off": {
+        "total_est": -0.9,
+        "spread_est": -0.5,
+        "home_pts_est": 1.7,
+        "away_pts_est": -3.0
+      },
+      "no_nan_under_mlp": true,
+      "ship_gate": true
+    },
+    "game_orchestrator.predict_game": {
+      "modes": {
+        "unset": {
+          "total_est": 217.1,
+          "spread_est": 4.7,
+          "home_pts_est": 108.8,
+          "away_pts_est": 108.3,
+          "ensemble": "M2_family_v1 (5 models \u00d7 4 targets, equal-weight)",
+          "m2_family_used": true
+        },
+        "zero": {
+          "total_est": 217.1,
+          "spread_est": 4.7,
+          "home_pts_est": 108.8,
+          "away_pts_est": 108.3,
+          "ensemble": "M2_family_v1 (5 models \u00d7 4 targets, equal-weight)",
+          "m2_family_used": true
+        },
+        "one": {
+          "total_est": 216.2,
+          "spread_est": 4.2,
+          "home_pts_est": 110.5,
+          "away_pts_est": 105.3,
+          "ensemble": "M2_family_mlp_v1_R31_X3 (multitask MLP, 3-seed ensemble)",
+          "m2_family_used": true
+        }
+      },
+      "unset_equals_zero": true,
+      "mlp_differs_from_off": true,
+      "deltas_mlp_minus_off": {
+        "total_est": -0.9,
+        "spread_est": -0.5,
+        "home_pts_est": 1.7,
+        "away_pts_est": -3.0
+      },
+      "no_nan_under_mlp": true,
+      "ship_gate": true
+    },
+    "scripts/predict_slate.py": {
+      "unaffected_by_flag": true,
+      "rationale": "scripts/predict_slate.py consumes player-prop predictions only",
+      "ship_gate": true
+    },
+    "scripts/build_prediction_cache.py": {
+      "unaffected_by_flag": true,
+      "rationale": "scripts/build_prediction_cache.py consumes player-prop predictions only",
+      "ship_gate": true
+    },
+    "scripts/live_recommendation_engine.py": {
+      "unaffected_by_flag": true,
+      "rationale": "scripts/live_recommendation_engine.py consumes player-prop predictions only",
+      "ship_gate": true
+    }
+  },
+  "consumers_total": 5,
+  "consumers_passed": 5,
+  "ship_gate_overall": true,
+  "runtime_sec": 4.12
+}
