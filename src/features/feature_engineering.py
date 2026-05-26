@@ -768,14 +768,20 @@ def add_external_player_features(
         pass
 
     # ── On/Off Splits ───────────────────────────────────────────────────────
+    # NBA VS_PLAYER_NAME returns "Last, First" — tracking writes "First Last".
+    # Index both formats so the per-player merge below succeeds either way.
     on_off_lookup: dict = {}
     try:
         from src.data.nba_tracking_stats import get_on_off_splits
         on_off = get_on_off_splits(season)
         for r in on_off:
-            name = r.get("player_name", "").lower()
-            if name:
-                on_off_lookup[name] = r
+            name = r.get("player_name", "").strip()
+            if not name:
+                continue
+            on_off_lookup[name.lower()] = r
+            if "," in name:
+                last, first = [p.strip() for p in name.split(",", 1)]
+                on_off_lookup[f"{first} {last}".lower()] = r
     except Exception:
         pass
 
@@ -787,8 +793,9 @@ def add_external_player_features(
         for pt in ("offensive_Isolation", "offensive_PRBallHandler", "offensive_Spotup"):
             key = f"synergy_offensive_{pt.split('_', 1)[1]}_*" if "_" in pt else pt
             cache_dir = _os.path.join(_DATA_DIR, "..", "data", "nba")
-            # Try loading cached synergy files directly
-            for s_key in [f"synergy_offensive_{pt.split('_')[1]}_{season.replace('-', '_')}"]:
+            # Try loading cached synergy files directly. Cache filenames use the
+            # raw season string (e.g. "2024-25.json"), NOT underscore-substituted.
+            for s_key in [f"synergy_offensive_{pt.split('_')[1]}_{season}"]:
                 s_path = _os.path.join(cache_dir, f"{s_key}.json")
                 if _os.path.exists(s_path):
                     with open(s_path) as _f:

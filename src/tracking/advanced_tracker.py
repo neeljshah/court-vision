@@ -259,6 +259,13 @@ class AdvancedFeetDetector(FeetDetector):
         # YOLO model + image size — configurable for post-game high-quality runs
         _yolo_stem = _cfg.get("yolo_model", "yolov8n")
         self._yolo_imgsz: int = int(_cfg.get("yolo_imgsz", 640))
+        # Pose model — configurable separately. NOTE: standalone tests at 960
+        # produce 3-11 ankle detections with conf ~0.4 vs 1 detection at conf
+        # 0.005 at imgsz=640. But running pose at 960 in the live pipeline
+        # zeroed contest_arm_angle (was 45% at 640). Root cause not yet found;
+        # see vault/Tracking/100game-readiness.md "Pose at imgsz=960 anomaly".
+        # Keeping default at 640 until the pipeline-side issue is traced.
+        self._pose_imgsz: int = int(_cfg.get("pose_imgsz", 640))
         self._yolo_device = 0 if self._use_half else "cpu"
         if _yolo_stem != "yolov8n":
             try:
@@ -419,7 +426,7 @@ class AdvancedFeetDetector(FeetDetector):
                 _pimgs = [frames[i] for i in _pose_idx]
                 _pres = list(self._pose_model(
                     _pimgs, classes=[0], conf=self._fill_conf_threshold,
-                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                    verbose=False, imgsz=self._pose_imgsz, half=self._use_half, device=_dev
                 ))
                 for _j, _r in zip(_pose_idx, _pres):
                     _pending[_j] = ([_r], True)
@@ -1202,7 +1209,7 @@ class AdvancedFeetDetector(FeetDetector):
                 _pimgs = [_batch[i][0] for i in _pose_idx]
                 _pres  = list(self._pose_model(
                     _pimgs, classes=[0], conf=self._fill_conf_threshold,
-                    verbose=False, imgsz=_imgsz, half=self._use_half, device=_dev
+                    verbose=False, imgsz=self._pose_imgsz, half=self._use_half, device=_dev
                 ))
                 for _j, _r in zip(_pose_idx, _pres):
                     _pending[_j] = ([_r], True)
