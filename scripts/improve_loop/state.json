@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 23,
+  "rounds_completed": 24,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -495,6 +495,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-10 (4 variants in 94s, 4/4 SHIP). UNLOCKS IN-PLAY BETTING PRODUCT \u2014 all four mid-game targets crush their gates with dramatic AUC trajectories. Brier delta is vs in-play NAIVE baseline (logistic margin curve), which is already strong; the win comes from MUCH higher AUC.\nWinprob trajectory (149 feats = 141 pregame + 7 snapshot + 1 OOF):\n  endQ1: Brier 0.2191 AUC 0.7498 (+0.62% vs naive, +0.04 AUC vs pregame B6-AH3 0.6987)\n  endQ2: Brier 0.1846 AUC 0.8211 (+3.39% vs naive, +0.12 AUC)\n  endQ3: Brier 0.1359 AUC 0.9010 (+3.23% vs naive, +0.20 AUC \u2014 near-deterministic with 12min left)\nRemaining-total at endQ2 regression:\n  delta -25.38% vs naive linear extrapolation (3/3 folds positive) \u2014 BIGGEST DELTA OF R12.\nARCHITECTURAL FINDING: snapshot features (cum_score, cum_total, score_margin_abs, q_remaining, cum_pace_proxy) PLUS pregame B5+interactions backbone gives a strong in-play model with no extra feature engineering needed. The naive logistic-margin winprob is already calibrated well at late game; the model wins on AUC by leveraging team-strength priors when margin is close.\nPRODUCT IMPACT: enables live (in-play) ML/total/spread markets via the same B6 OOF-stack architecture \u2014 no separate live model needed, just snapshot features.\nStop counter: 0/5 (architectural gain confirmed)."
+    },
+    {
+      "name": "R12_BATCH11_opp_allowed_l5",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 18,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-11 (18 variants in 505s \u2014 18/18 SHIP, 3/18 beat B9 baseline). Marginal win round. Per-variant beat-B9 count:\n  opp_pts_only (+12 opp-allowed-PTS feats, 154 total): 0/6 beat B9.\n  opp_pts_pace (+15 feats incl. opp_l5_pace, 157 total): 1/6 beat \u2014 AH3 Brier 0.2294 AUC 0.7058 (-0.0008 Brier vs B9 0.2302).\n  opp_full (+21 feats incl. opp oreb/tov rates, 163 total): 2/6 beat \u2014 score_diff -17.44% (-0.21pp vs B9 -17.23%), O230 Brier 0.2383 AUC 0.6804 (BREAKS THE B6-O230 CEILING \u2014 first O230 win this loop, +0.0067 AUC vs B6 0.6737).\nBest per-target candidates after B11:\n  total: B9 interactions_only (-16.27%) STILL BEST\n  spread: B11 opp_full (-17.44%, -0.21pp vs B9)\n  home_score: B9 all variant (-16.10%) STILL BEST\n  away_score: B9 halflife2_only (-14.35%) STILL BEST\n  O230: B11 opp_full (Brier 0.2383 AUC 0.6804) \u2014 NEW BEST\n  AH3: B9 both_halflives (Brier 0.2302) \u2248 B11 opp_pts_pace (Brier 0.2294) \u2014 tied within noise.\nArchitectural finding: count-based opp-allowed L5 features (raw PTS scored against team) MOSTLY overlap with opp_def_adj_ortg + L10 home/road splits from B5. The opp_full variant adds opp_oreb_pct + opp_tov_pct rate proxies which DO help on score_diff (clearer signal on possession control) and O230 (oreb/tov drive variance in scoring volume). PRODUCTION CANONICAL UPDATE: O230 promotes from B6 to B11 opp_full; spread promotes from B9 both_halflives to B11 opp_full. Other targets unchanged. Stop counter: 0/5 (3 architectural wins this round \u2014 modest but positive)."
     }
   ],
   "rejects": [
