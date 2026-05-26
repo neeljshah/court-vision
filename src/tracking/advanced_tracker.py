@@ -259,12 +259,18 @@ class AdvancedFeetDetector(FeetDetector):
         # YOLO model + image size — configurable for post-game high-quality runs
         _yolo_stem = _cfg.get("yolo_model", "yolov8n")
         self._yolo_imgsz: int = int(_cfg.get("yolo_imgsz", 640))
-        # Pose model — configurable separately. NOTE: standalone tests at 960
-        # produce 3-11 ankle detections with conf ~0.4 vs 1 detection at conf
-        # 0.005 at imgsz=640. But running pose at 960 in the live pipeline
-        # zeroed contest_arm_angle (was 45% at 640). Root cause not yet found;
-        # see vault/Tracking/100game-readiness.md "Pose at imgsz=960 anomaly".
-        # Keeping default at 640 until the pipeline-side issue is traced.
+        # Pose model — configurable separately. Investigated 2026-05-26:
+        # - At imgsz=640: ankle keypoint conf ~0.005 (model literally cannot
+        #   see ankles in 640x360 broadcast — ankle_x/y stays NaN), but
+        #   contest_arm_angle works (45% nonzero) because nose/wrist/hip
+        #   conf is fine at 640.
+        # - At imgsz=960 (rebuilt engine, see .bak_640 + new engine): standalone
+        #   tests show ankle conf rises to 0.4-0.7. BUT in-pipeline contest_arm
+        #   drops to 0% — some dispatch-side regression we couldn't trace in
+        #   that session. Default reverted to 640 to preserve the 45% contest
+        #   feature until the pipeline-side issue is found. See Open Issues #10.
+        # To experiment: pass `pose_imgsz: 960` in _cfg and ensure
+        # resources/yolov8n-pose.engine is the 960-built one (or use .bak_640).
         self._pose_imgsz: int = int(_cfg.get("pose_imgsz", 640))
         self._yolo_device = 0 if self._use_half else "cpu"
         if _yolo_stem != "yolov8n":

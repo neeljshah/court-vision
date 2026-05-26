@@ -553,8 +553,20 @@ def main():
                     help="Seconds to download per game in segment mode (default 900 = 15 min)")
     ap.add_argument("--process",  action="store_true",
                     help="Run run_phase_g.py on downloaded games after download")
+    ap.add_argument("--game-id",  dest="game_id", default=None,
+                    help="Download exactly this NBA game ID (e.g. 0022500279). "
+                         "When set, --count is ignored and only this game is "
+                         "fetched. Matchup is looked up via NBA API.")
+    ap.add_argument("--out-dir",  dest="out_dir", default=None,
+                    help="Override download directory "
+                         "(default: data/videos/full_games). Pod orchestrator "
+                         "uses /root/nba_videos.")
     args = ap.parse_args()
 
+    # Allow per-call override of the videos directory (for orchestrators).
+    global VIDEOS_DIR
+    if args.out_dir:
+        VIDEOS_DIR = Path(args.out_dir)
     VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
 
     # Load already-processed game IDs so we never re-download PREFLIGHT_FAIL or
@@ -589,8 +601,38 @@ def main():
     from_date = args.from_date or _default_from
     to_date   = args.to_date   or _default_to
 
-    print(f"Fetching {args.count} games ({from_date} → {to_date}) ...")
-    games = _get_recent_games(args.count, from_date, to_date)
+    # --game-id mode: download exactly one game; look up matchup via NBA API.
+    if args.game_id:
+        print(f"Single-game mode: fetching matchup for {args.game_id}")
+        # Search a wide window — the game could be anywhere in the season.
+        wide_games = _get_recent_games(
+            count=10000,
+            from_date=_NBA_SEASON_START,
+            to_date=_NBA_SEASON_END,
+        )
+        match = next((g for g in wide_games if g["game_id"] == args.game_id),
+                     None)
+        if not match:
+            # Maybe a prior season — try one season back.
+            prev_start_year = _start_year - 1
+            prev_start = f"{prev_start_year}-10-01"
+            prev_end   = f"{prev_start_year + 1}-04-30"
+            print(f"  not found in current season — trying {prev_start_year}-"
+                  f"{prev_start_year + 1}")
+            wide_games = _get_recent_games(
+                count=10000, from_date=prev_start, to_date=prev_end,
+            )
+            match = next((g for g in wide_games if g["game_id"] == args.game_id),
+                         None)
+        if not match:
+            print(f"[ERR] game_id {args.game_id} not in NBA API for current or "
+                  f"previous season. Aborting.")
+            return
+        games = [match]
+        args.count = 1
+    else:
+        print(f"Fetching {args.count} games ({from_date} → {to_date}) ...")
+        games = _get_recent_games(args.count, from_date, to_date)
 
     if not games:
         print("No games returned from NBA API. Check your internet connection.")
