@@ -1,6 +1,6 @@
 {
   "task": "R27_T5 end-to-end smoke test",
-  "ts": "2026-05-26T19:40:41+00:00",
+  "ts": "2026-05-26T19:40:21+00:00",
   "ok": true,
   "status": "PASS",
   "n_stages": 12,
@@ -9,7 +9,7 @@
   "n_skipped": 0,
   "n_timeout": 0,
   "failed_stage_names": [],
-  "runtime_sec": 0.642,
+  "runtime_sec": 0.757,
   "overall_cap_sec": 300.0,
   "per_stage_cap_sec": 30.0,
   "ship_gate_min_passes": 8,
@@ -20,9 +20,9 @@
       "detail": {
         "rows_written": 1,
         "rows_deduped": 0,
-        "out_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_w7u1ka27\\scraper_bov\\bov_lines\\2099-01-01_bov.csv"
+        "out_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_4cl5fgmr\\scraper_bov\\bov_lines\\2099-01-01_bov.csv"
       },
-      "runtime_sec": 0.038,
+      "runtime_sec": 0.05,
       "name": "SCRAPER_BOV"
     },
     {
@@ -32,7 +32,7 @@
         "stat_map_works": true,
         "player_parse_works": true
       },
-      "runtime_sec": 0.0,
+      "runtime_sec": 0.004,
       "name": "SCRAPER_PIN"
     },
     {
@@ -52,7 +52,7 @@
           "report_date"
         ]
       },
-      "runtime_sec": 0.377,
+      "runtime_sec": 0.388,
       "name": "INJURY_FEED"
     },
     {
@@ -63,7 +63,7 @@
         "n_rows": 4053,
         "is_today": true
       },
-      "runtime_sec": 0.021,
+      "runtime_sec": 0.022,
       "name": "PREDICTIONS"
     },
     {
@@ -80,7 +80,7 @@
           "pin"
         ]
       },
-      "runtime_sec": 0.135,
+      "runtime_sec": 0.178,
       "name": "LIVE_REC_ENGINE"
     },
     {
@@ -90,20 +90,20 @@
         "game_id": "0022400001",
         "status": "IN_PLAY_STALE",
         "n_props_evaluated": 0,
-        "tick_latency_ms": 8
+        "tick_latency_ms": 11
       },
-      "runtime_sec": 0.014,
+      "runtime_sec": 0.032,
       "name": "INPLAY_RANKER"
     },
     {
       "status": "PASS",
       "reason": null,
       "detail": {
-        "bet_id": "0d821e78-3eae-4541-8148-8ead8ff864c0",
+        "bet_id": "a534eebf-965c-4ebd-8a34-8eb6818de85c",
         "n_bets_in_ledger": 1,
-        "test_ledger": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_w7u1ka27\\shared_bet_flow\\pnl_ledger_test.csv"
+        "test_ledger": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_4cl5fgmr\\shared_bet_flow\\pnl_ledger_test.csv"
       },
-      "runtime_sec": 0.016,
+      "runtime_sec": 0.027,
       "name": "PLACE_BET"
     },
     {
@@ -113,7 +113,7 @@
         "n_games_processed": 0,
         "dry_run": true
       },
-      "runtime_sec": 0.015,
+      "runtime_sec": 0.025,
       "name": "AUTO_SETTLE"
     },
     {
@@ -124,7 +124,7 @@
         "n_real_settled": 0,
         "n_mismatched": 0
       },
-      "runtime_sec": 0.002,
+      "runtime_sec": 0.004,
       "name": "RECONCILE"
     },
     {
@@ -132,9 +132,9 @@
       "reason": null,
       "detail": {
         "html_len": 2869,
-        "out_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_w7u1ka27\\dashboard_render\\smoke_dashboard.html"
+        "out_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\r27_t5_smoke_4cl5fgmr\\dashboard_render\\smoke_dashboard.html"
       },
-      "runtime_sec": 0.003,
+      "runtime_sec": 0.008,
       "name": "DASHBOARD_RENDER"
     },
     {
@@ -146,21 +146,22 @@
         "discord_sent": false,
         "suppressed": false
       },
-      "runtime_sec": 0.005,
+      "runtime_sec": 0.007,
       "name": "ALERT_FIRE"
     },
     {
       "status": "PASS",
       "reason": null,
       "detail": {
-        "heartbeat_age_sec": 2.384185791015625e-07,
+        "heartbeat_age_sec": 0.0,
         "heartbeat_stale": false,
         "dead": true,
         "reason": "process_gone"
       },
-      "runtime_sec": 0.002,
+      "runtime_sec": 0.004,
       "name": "WATCHDOG_HEARTBEAT"
     }
   ],
-  "sandbox_cleaned": true
+  "sandbox_cleaned": true,
+  "results_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a99b9bb7a63fbfab3\\data\\cache\\e2e_smoke_2026-05-26.json"
 }

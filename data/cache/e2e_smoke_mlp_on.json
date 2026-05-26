@@ -162,5 +162,6 @@
       "name": "WATCHDOG_HEARTBEAT"
     }
   ],
-  "sandbox_cleaned": true
+  "sandbox_cleaned": true,
+  "results_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a99b9bb7a63fbfab3\\data\\cache\\e2e_smoke_2026-05-26.json"
 }
