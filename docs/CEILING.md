@@ -2,7 +2,7 @@
 
 > What the system can realistically achieve — by phase, by market, by model.
 > Honest numbers. No inflated projections. All win% at standard -110 vig (break-even = 52.4%).
-> Updated 2026-05-18 to reflect real holdout performance and signal-based architecture.
+> Updated 2026-05-25 (originally 2026-05-18) to reflect real holdout performance, signal-based architecture, and the post-in-play-system shift (residual heads, period heads, learned-Q4-minutes, live quantile bands).
 
 ---
 
