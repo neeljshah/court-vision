@@ -26,6 +26,7 @@ _api_stub = types.ModuleType("src.data.nba_api_headers_patch")
 sys.modules.setdefault("src.data.nba_api_headers_patch", _api_stub)
 
 import scripts.execute_loop.L37_postmortem as L37  # noqa: E402
+import scripts.execute_loop.L46_event_bus as L46  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -451,3 +452,135 @@ def test_run_postmortem_includes_classification(isolated_paths):
     assert report.incident_class == "stale_line"
     assert report.severity == "P2"
     assert report.remediation is not None and len(report.remediation) > 0
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — detect_incidents publishes "incident.opened" via L46
+# ---------------------------------------------------------------------------
+def test_detect_incidents_publishes_incident_opened(isolated_paths):
+    """detect_incidents() emits an 'incident.opened' event per detected incident."""
+    ledger_dir = L37._LEDGER_DIR
+    bus = L46.get_default_bus()
+    bus.clear_subscribers()
+
+    received: list = []
+    bus.subscribe("incident.opened", lambda e: received.append(e), layer="test_L37")
+
+    # Write bankroll and losing bets that trigger a large_loss incident
+    state = {"current_bankroll": 50_000.0}
+    (ledger_dir / "bankroll_state.json").write_text(json.dumps(state), encoding="utf-8")
+
+    rows = [
+        {
+            "bet_id": f"ev{i}",
+            "player": "Test Player",
+            "stat": "pts",
+            "status": "LOST",
+            "pnl": -1000.0,
+            "model_p_side": 0.55,
+            "settled_at_iso": _now_iso(30),
+        }
+        for i in range(5)
+    ]
+    pd.DataFrame(rows).to_csv(ledger_dir / "bets.csv", index=False)
+
+    incidents = L37.detect_incidents(window_days=1)
+    large_loss = [i for i in incidents if i["trigger_type"] == "large_loss"]
+    assert len(large_loss) >= 1, "Expected at least one large_loss incident"
+
+    # Each incident should have fired one event
+    assert len(received) >= 1, "Expected at least one incident.opened event"
+    evt = received[0]
+    assert evt.name == "incident.opened"
+    assert evt.source == "L37"
+    assert "incident_id" in evt.payload
+    assert "loss_pattern" in evt.payload
+    assert "bet_count" in evt.payload
+    assert "total_loss" in evt.payload
+    assert "incident_class" in evt.payload
+    assert "severity" in evt.payload
+
+    bus.clear_subscribers()
+
+
+# ---------------------------------------------------------------------------
+# Test 15 — run_postmortem publishes "incident.classified" via L46
+# ---------------------------------------------------------------------------
+def test_run_postmortem_publishes_incident_classified(isolated_paths):
+    """run_postmortem() emits an 'incident.classified' event after classification."""
+    bus = L46.get_default_bus()
+    bus.clear_subscribers()
+
+    received: list = []
+    bus.subscribe("incident.classified", lambda e: received.append(e), layer="test_L37")
+
+    bets = [_bet(bet_id="cls1", model_p_side=0.56)]
+    incident_ctx = {
+        "avg_clv": -0.10,   # → stale_line classification
+        "bets": bets,
+        "bankroll": 100_000.0,
+        "trigger_type": "large_loss",
+        "pnl": -500.0,
+    }
+    report = L37.run_postmortem(
+        losing_bets=bets,
+        trigger_type="large_loss",
+        pnl=-500.0,
+        bankroll=100_000.0,
+        incident=incident_ctx,
+    )
+
+    assert len(received) == 1, "Expected exactly one incident.classified event"
+    evt = received[0]
+    assert evt.name == "incident.classified"
+    assert evt.source == "L37"
+    assert evt.payload["incident_id"] == report.incident_id
+    assert evt.payload["incident_class"] == "stale_line"
+    assert evt.payload["severity"] == "P2"
+    assert evt.payload["remediation"] is not None
+    assert evt.payload["trigger_type"] == "large_loss"
+
+    bus.clear_subscribers()
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — L46 publish failure does not break detection
+# ---------------------------------------------------------------------------
+def test_publish_failure_does_not_break_detection(isolated_paths, monkeypatch):
+    """If L46.publish raises, detect_incidents still returns incidents normally."""
+    ledger_dir = L37._LEDGER_DIR
+
+    # Write bankroll + losing bets for a large_loss incident
+    state = {"current_bankroll": 50_000.0}
+    (ledger_dir / "bankroll_state.json").write_text(json.dumps(state), encoding="utf-8")
+
+    rows = [
+        {
+            "bet_id": f"br{i}",
+            "player": "Test Player",
+            "stat": "pts",
+            "status": "LOST",
+            "pnl": -1000.0,
+            "model_p_side": 0.55,
+            "settled_at_iso": _now_iso(30),
+        }
+        for i in range(5)
+    ]
+    pd.DataFrame(rows).to_csv(ledger_dir / "bets.csv", index=False)
+
+    # Monkeypatch L46 publish to raise unconditionally
+    import scripts.execute_loop.L46_event_bus as _real_L46
+
+    original_publish = _real_L46.EventBus.publish
+
+    def _exploding_publish(self, name, source, payload):
+        raise RuntimeError("Simulated L46 publish failure")
+
+    monkeypatch.setattr(_real_L46.EventBus, "publish", _exploding_publish)
+
+    # Detection must still work and return the incident
+    incidents = L37.detect_incidents(window_days=1)
+    large_loss = [i for i in incidents if i["trigger_type"] == "large_loss"]
+    assert len(large_loss) >= 1, "detect_incidents must succeed even when L46 publish raises"
+
+    # Restore (monkeypatch handles this automatically at test end)

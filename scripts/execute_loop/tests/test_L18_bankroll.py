@@ -236,3 +236,152 @@ def test_auto_trip_kill_switch_daily(bm):
     state = bm.get_bankroll_state()
     assert state.kill_switch_active is True
     assert "daily_loss_limit" in state.kill_switch_reason
+
+
+# ===========================================================================
+# v2 tests: edge-case hardening + L46 event publication
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Test 12: kelly_fraction raises ValueError on invalid model_p
+# ---------------------------------------------------------------------------
+
+def test_kelly_fraction_raises_on_invalid_model_p(bm):
+    """model_p outside [0,1] or non-finite must raise ValueError."""
+    import math
+    import pytest
+
+    # Negative probability
+    with pytest.raises(ValueError, match="model_p"):
+        bm.kelly_fraction(-0.1, -110)
+
+    # Probability > 1
+    with pytest.raises(ValueError, match="model_p"):
+        bm.kelly_fraction(1.01, -110)
+
+    # NaN
+    with pytest.raises(ValueError, match="model_p"):
+        bm.kelly_fraction(float("nan"), -110)
+
+    # Positive infinity
+    with pytest.raises(ValueError, match="model_p"):
+        bm.kelly_fraction(float("inf"), -110)
+
+    # Negative infinity
+    with pytest.raises(ValueError, match="model_p"):
+        bm.kelly_fraction(float("-inf"), -110)
+
+
+# ---------------------------------------------------------------------------
+# Test 13: kelly_fraction returns 0 when american_odds == 0
+# ---------------------------------------------------------------------------
+
+def test_kelly_fraction_zero_on_zero_odds(bm):
+    """american_odds=0 is not a valid American odds value → return 0.0."""
+    frac = bm.kelly_fraction(0.9, 0)
+    assert frac == 0.0, f"Expected 0.0 for zero odds, got {frac}"
+
+
+# ---------------------------------------------------------------------------
+# Test 14: kelly_fraction returns 0 when bankroll <= 0 (explicit)
+# ---------------------------------------------------------------------------
+
+def test_kelly_fraction_zero_on_negative_bankroll(bm):
+    """Explicitly passing a non-positive bankroll → 0.0 regardless of edge."""
+    # Negative bankroll
+    frac = bm.kelly_fraction(0.8, +200, bankroll=-500.0)
+    assert frac == 0.0, f"Expected 0.0 for negative bankroll, got {frac}"
+
+    # Zero bankroll
+    frac = bm.kelly_fraction(0.8, +200, bankroll=0.0)
+    assert frac == 0.0, f"Expected 0.0 for zero bankroll, got {frac}"
+
+    # Positive bankroll → should be non-zero for this strong edge
+    frac_pos = bm.kelly_fraction(0.8, +200, bankroll=10_000.0)
+    assert frac_pos > 0.0, f"Expected positive fraction for valid bankroll, got {frac_pos}"
+
+
+# ---------------------------------------------------------------------------
+# Test 15: kelly.sized event is published via L46 when fraction > 0
+# ---------------------------------------------------------------------------
+
+def test_kelly_sized_event_published(bm, monkeypatch):
+    """kelly_fraction() publishes 'kelly.sized' via L46 when edge exists."""
+    published_events = []
+
+    # Build a minimal fake L46 module with a .publish() function
+    import types
+    fake_l46 = types.ModuleType("fake_L46")
+
+    def _capture_publish(name, source, payload):
+        published_events.append({"name": name, "source": source, "payload": payload})
+
+    fake_l46.publish = _capture_publish
+
+    # Inject the fake module as the module-level _L46 global
+    monkeypatch.setattr(bm, "_L46", fake_l46)
+
+    # Call with a clear positive edge (p=0.65, +100 → implied=0.50)
+    frac = bm.kelly_fraction(0.65, 100, bankroll=10_000.0)
+    assert frac > 0.0
+
+    assert len(published_events) == 1, f"Expected 1 event, got {published_events}"
+    evt = published_events[0]
+    assert evt["name"] == "kelly.sized"
+    assert evt["source"] == "L18"
+    assert evt["payload"]["model_p"] == pytest.approx(0.65)
+    assert evt["payload"]["american_odds"] == 100
+    assert evt["payload"]["bankroll"] == pytest.approx(10_000.0)
+    assert evt["payload"]["kelly_fraction"] == pytest.approx(frac)
+
+
+# ---------------------------------------------------------------------------
+# Test 16: risk_limit.breached event is published when a limit is violated
+# ---------------------------------------------------------------------------
+
+def test_risk_limit_breached_event_published(bm, monkeypatch):
+    """check_risk_limits() publishes 'risk_limit.breached' via L46 on breach."""
+    published_events = []
+
+    import types
+    fake_l46 = types.ModuleType("fake_L46")
+
+    def _capture_publish(name, source, payload):
+        published_events.append({"name": name, "source": source, "payload": payload})
+
+    fake_l46.publish = _capture_publish
+    monkeypatch.setattr(bm, "_L46", fake_l46)
+
+    state = bm.get_bankroll_state()
+    oversized = state.current_bankroll * 0.05  # 5% > 2% limit → single-bet breach
+
+    ok, msg = bm.check_risk_limits(oversized)
+    assert not ok
+
+    assert len(published_events) >= 1, "Expected at least one breach event"
+    breach_events = [e for e in published_events if e["name"] == "risk_limit.breached"]
+    assert len(breach_events) == 1
+    evt = breach_events[0]
+    assert evt["source"] == "L18"
+    assert evt["payload"]["limit_type"] == "max_single_bet"
+    assert evt["payload"]["proposed_stake"] == pytest.approx(oversized)
+
+
+# ---------------------------------------------------------------------------
+# Test 17: Regression guard — canonical inputs produce unchanged result
+# ---------------------------------------------------------------------------
+
+def test_existing_kelly_behavior_unchanged_at_typical_inputs(bm):
+    """Regression: p=0.55, odds=+100, no bankroll → same quarter-Kelly as before v2.
+
+    Full Kelly: b=1.0, f* = (1.0*0.55 - 0.45) / 1.0 = 0.10
+    Quarter-Kelly: 0.10 * 0.25 = 0.025
+    """
+    frac = bm.kelly_fraction(0.55, 100)
+    assert abs(frac - 0.025) < 1e-9, f"Expected exactly 0.025, got {frac}"
+
+    # With explicit positive bankroll the result must be identical
+    frac_with_br = bm.kelly_fraction(0.55, 100, bankroll=1000.0)
+    assert abs(frac_with_br - 0.025) < 1e-9, (
+        f"Expected 0.025 with bankroll=1000, got {frac_with_br}"
+    )

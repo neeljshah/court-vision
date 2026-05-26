@@ -181,16 +181,18 @@ class TestPersistenceAndReplay:
             assert evt.event_id
 
     def test_replay_filtered_by_since(self, persisted_bus: EventBus):
-        """replay(since=middle_ts) returns only events at or after that timestamp."""
+        """replay(since=middle_ts) returns only events strictly after that timestamp."""
+        import time
         # Publish first event
         e1 = persisted_bus.publish("bet.placed", "L16", {})
 
-        # Fabricate a "middle" timestamp slightly after e1
+        # Sleep to guarantee ts ordering on fast Windows clocks
+        # (datetime.now() resolution can be 15.6ms on Windows; sub-ms publishes
+        # can share an ISO string otherwise).
+        time.sleep(0.02)
         middle_ts = datetime.now(timezone.utc).isoformat()
+        time.sleep(0.02)
 
-        # Small sleep to guarantee ts ordering on fast machines; use monotonic
-        # by injecting events with explicit ts via the internal append helper
-        # instead — but since Event is frozen we publish and check relative ts.
         e2 = persisted_bus.publish("fill.received", "L14", {})
         e3 = persisted_bus.publish("bet.settled", "L7", {})
 

@@ -8,6 +8,28 @@ CLI:
     python L07_pnl_ledger.py summary [--start YYYY-MM-DD] [--end YYYY-MM-DD]
                                      [--by stat|book|day]
     python L07_pnl_ledger.py open
+
+Event Publication
+-----------------
+L07 publishes the following events via L46 EventBus (additive — does not replace
+existing direct calls to L22 alerting):
+
+``bet.settled``
+    Emitted for each bet that transitions from OPEN → WON / LOST / PUSH.
+    Source: ``"L7"``
+    Payload schema::
+
+        {
+            "bet_id":     str,   # unique bet identifier
+            "status":     str,   # "WON" | "LOST" | "PUSH"
+            "stake":      float, # stake in units
+            "pnl":        float, # realised P&L in units
+            "player":     str,   # player name
+            "stat":       str,   # stat key, e.g. "pts"
+            "settled_at": str,   # ISO 8601 UTC timestamp of settlement
+        }
+
+    NOTE: VOID (DNP) outcomes do NOT emit ``bet.settled``.
 """
 from __future__ import annotations
 
@@ -27,6 +49,12 @@ sys.path.insert(0, str(PROJECT_DIR))
 import src.data.nba_api_headers_patch  # noqa: F401, E402
 
 import pandas as pd
+
+# Soft-import L46 EventBus — non-fatal if unavailable (e.g. in isolated tests)
+try:
+    from scripts.execute_loop import L46_event_bus as _L46
+except Exception:
+    _L46 = None
 
 log = logging.getLogger(__name__)
 
@@ -399,6 +427,21 @@ def settle_unsettled(date: str = None) -> int:
         df.at[idx, "actual_value"] = actual
         df.at[idx, "pnl"] = pnl
         df.at[idx, "settled_at_iso"] = now_iso
+
+        # Publish bet.settled event via L46 EventBus (additive — non-fatal)
+        if _L46 is not None:
+            try:
+                _L46.publish("bet.settled", source="L7", payload={
+                    "bet_id": bet.bet_id,
+                    "status": status,
+                    "stake": float(bet.stake),
+                    "pnl": pnl,
+                    "player": bet.player,
+                    "stat": bet.stat,
+                    "settled_at": now_iso,
+                })
+            except Exception:
+                log.debug("L46 publish failed (non-fatal)", exc_info=True)
 
         # CLV enrichment (soft — never blocks settlement)
         lclose, clv_u, clv_pp = _compute_clv_for_bet(bet)

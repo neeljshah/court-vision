@@ -469,3 +469,102 @@ def test_csv_columns_include_v2_fields(tmp_path, monkeypatch):
     df = pd.read_csv(tmp_path / "bets.csv")
     for col in ("ip", "model_p_var", "clv_units", "clv_prob_pts", "line_at_close"):
         assert col in df.columns, f"Missing column: {col}"
+
+
+# ---------------------------------------------------------------------------
+# L46 EventBus integration tests
+# ---------------------------------------------------------------------------
+
+def test_settle_publishes_event_when_l46_present(monkeypatch):
+    """settle_unsettled publishes bet.settled with correct fields when L46 is available."""
+    import scripts.execute_loop.L46_event_bus as real_L46
+
+    # Use a fresh EventBus so this test is isolated from any prior subscribers
+    fresh_bus = real_L46.EventBus()
+
+    # Build a fake L46 module that delegates publish/subscribe to the fresh bus
+    import types
+    fake_L46 = types.SimpleNamespace(
+        publish=fresh_bus.publish,
+        subscribe=fresh_bus.subscribe,
+        get_default_bus=lambda: fresh_bus,
+    )
+    monkeypatch.setattr(L07, "_L46", fake_L46)
+
+    received: list = []
+
+    def _handler(event):
+        received.append(event)
+
+    fresh_bus.subscribe("bet.settled", _handler, layer="test")
+
+    # Wire boxscore
+    _stn_mod = sys.modules["scripts.validation.real_lines_check.settle_tonight"]
+    _stn_mod.fetch_boxscore_player_stats = MagicMock(return_value={
+        "nikola jokic": {"pts": 30.0, "min": "35:00"},
+    })
+    monkeypatch.setattr(L07, "_compute_clv_for_bet", lambda bet: (None, None, None))
+
+    row = _jokic_bet(side="OVER", line=25.5, stake=5.0, odds=-110)
+    L07.place_bet(row)
+
+    count = L07.settle_unsettled()
+    assert count == 1, f"Expected 1 settled bet, got {count}"
+
+    assert len(received) == 1, f"Expected 1 event, got {len(received)}"
+    evt = received[0]
+    assert evt.name == "bet.settled"
+    assert evt.source == "L7"
+    assert evt.payload["status"] == "WON"
+    assert evt.payload["stake"] == pytest.approx(5.0)
+    assert evt.payload["player"] == "Nikola Jokic"
+    assert evt.payload["stat"] == "pts"
+    assert "settled_at" in evt.payload
+    assert evt.payload["pnl"] == pytest.approx(5.0 * 100 / 110, rel=1e-3)
+
+
+def test_settle_works_when_l46_absent(monkeypatch):
+    """settle_unsettled succeeds (no exception) when _L46 is None."""
+    monkeypatch.setattr(L07, "_L46", None)
+
+    _stn_mod = sys.modules["scripts.validation.real_lines_check.settle_tonight"]
+    _stn_mod.fetch_boxscore_player_stats = MagicMock(return_value={
+        "nikola jokic": {"pts": 20.0, "min": "30:00"},
+    })
+    monkeypatch.setattr(L07, "_compute_clv_for_bet", lambda bet: (None, None, None))
+
+    row = _jokic_bet(side="OVER", line=25.5)
+    L07.place_bet(row)
+
+    count = L07.settle_unsettled()
+    assert count == 1
+
+    df = L07._load_bets()
+    assert df.iloc[0]["status"] == "LOST"
+
+
+def test_settle_publish_failure_does_not_break_settlement(monkeypatch):
+    """If L46.publish raises, the settlement still completes successfully."""
+    import types
+
+    def _boom(*args, **kwargs):
+        raise RuntimeError("simulated L46 publish failure")
+
+    fake_L46 = types.SimpleNamespace(publish=_boom)
+    monkeypatch.setattr(L07, "_L46", fake_L46)
+
+    _stn_mod = sys.modules["scripts.validation.real_lines_check.settle_tonight"]
+    _stn_mod.fetch_boxscore_player_stats = MagicMock(return_value={
+        "nikola jokic": {"pts": 30.0, "min": "35:00"},
+    })
+    monkeypatch.setattr(L07, "_compute_clv_for_bet", lambda bet: (None, None, None))
+
+    row = _jokic_bet(side="OVER", line=25.5)
+    L07.place_bet(row)
+
+    # Must not raise
+    count = L07.settle_unsettled()
+    assert count == 1
+
+    df = L07._load_bets()
+    assert df.iloc[0]["status"] == "WON"

@@ -38,6 +38,23 @@ Environment Variables
 ---------------------
 None. This module reads no environment variables directly. All paper/live
 gating is delegated to the L9-L12 exchange clients it composes.
+
+Event Publication (L46 EventBus)
+---------------------------------
+L14 publishes two event types through the L46 EventBus singleton so that
+downstream layers (L7 ledger, L22 alerts) can subscribe without L14 needing
+direct knowledge of them.  L46 is soft-imported; if unavailable, all
+existing direct-call paths continue to function unchanged.
+
+    "fill.received"  — emitted on every successful _apply_fill call
+        payload keys: order_id, exchange, market_id, side,
+                      matched_qty, qty_filled_now, status
+
+    "order.filled"   — emitted when an order transitions to FILLED status
+                       (qty_filled >= qty); fired once per fill event,
+                       immediately after "fill.received"
+        payload keys: order_id, exchange, market_id, side,
+                      qty_filled, qty, price, model_p
 """
 from __future__ import annotations
 
@@ -191,6 +208,40 @@ def _get_l22():
     except ImportError:
         log.warning("L14: L22_alerting not available — fill alert skipped")
         return None
+
+
+# ---------------------------------------------------------------------------
+# Soft-import L46 EventBus — lazy helper (avoids dual-singleton on sys.path)
+# ---------------------------------------------------------------------------
+
+def _get_l46():
+    """Return L46_event_bus module or None.
+
+    Uses a lazy lookup via sys.modules so that tests can inject a module under
+    either canonical name ('L46_event_bus' or 'scripts.execute_loop.L46_event_bus')
+    and L14 will always resolve to the same object — avoiding the dual-singleton
+    problem that arises when pytest adds 'scripts/execute_loop' to sys.path
+    after the package-form import has already been cached.
+    """
+    for _name in ("L46_event_bus", "scripts.execute_loop.L46_event_bus"):
+        _mod = sys.modules.get(_name)
+        if _mod is not None:
+            return _mod
+    # Not yet imported — attempt to load
+    import importlib as _il
+    try:
+        return _il.import_module("L46_event_bus")
+    except ImportError:
+        pass
+    try:
+        return _il.import_module("scripts.execute_loop.L46_event_bus")
+    except ImportError:
+        pass
+    return None
+
+
+# Module-level alias kept for monkeypatching in tests (test_publish_failure_does_not_break_fill_apply)
+_L46 = None  # resolved lazily via _get_l46() in _apply_fill
 
 
 # ---------------------------------------------------------------------------
@@ -352,6 +403,10 @@ def _apply_fill(order: OrderState, matched_qty: int) -> bool:
     Uses _processed_fills for idempotency. Returns True if qty_filled changed.
     Caller is responsible for appending order.order_id to a to_remove list
     when order.status == "FILLED".
+
+    Publishes via L46 EventBus (non-fatal if unavailable):
+        "fill.received" — always, when qty_filled advances
+        "order.filled"  — additionally, when status transitions to FILLED
     """
     prior_fill = _processed_fills.get(order.order_id, 0)
     new_fill = max(prior_fill, matched_qty)
@@ -369,6 +424,40 @@ def _apply_fill(order: OrderState, matched_qty: int) -> bool:
     else:
         order.status = "PARTIAL"
         _processed_fills[order.order_id] = new_fill
+
+    # --- L46 EventBus: resolve module (monkeypatch-aware for tests) ---
+    _l46 = _L46 if _L46 is not None else _get_l46()
+
+    # --- L46 EventBus: publish fill.received ---
+    if _l46 is not None:
+        try:
+            _l46.publish("fill.received", source="L14", payload={
+                "order_id": order.order_id,
+                "exchange": order.exchange,
+                "market_id": order.market_id,
+                "side": order.side,
+                "matched_qty": matched_qty,
+                "qty_filled_now": order.qty_filled,
+                "status": order.status,
+            })
+        except Exception:
+            log.debug("L46 publish fill.received failed (non-fatal)", exc_info=True)
+
+    # --- L46 EventBus: publish order.filled on FILLED transition ---
+    if order.status == "FILLED" and _l46 is not None:
+        try:
+            _l46.publish("order.filled", source="L14", payload={
+                "order_id": order.order_id,
+                "exchange": order.exchange,
+                "market_id": order.market_id,
+                "side": order.side,
+                "qty_filled": order.qty_filled,
+                "qty": order.qty,
+                "price": order.price,
+                "model_p": order.model_p,
+            })
+        except Exception:
+            log.debug("L46 publish order.filled failed (non-fatal)", exc_info=True)
 
     return True
 

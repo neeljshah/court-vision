@@ -27,6 +27,7 @@ _api_stub = types.ModuleType("src.data.nba_api_headers_patch")
 sys.modules.setdefault("src.data.nba_api_headers_patch", _api_stub)
 
 import scripts.execute_loop.L08_drift_detector as L08  # noqa: E402
+import scripts.execute_loop.L46_event_bus as L46  # noqa: E402
 
 # Capture the real _load_expected_mae before any autouse fixture can patch it
 _REAL_LOAD_EXPECTED_MAE = L08._load_expected_mae
@@ -428,3 +429,91 @@ def test_atomic_write_no_partial_on_failure(tmp_path, monkeypatch):
     # No leftover .tmp files in the directory.
     tmp_files = list(tmp_path.glob("*.tmp"))
     assert tmp_files == [], f"Leftover .tmp files found: {tmp_files}"
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — drifty data: subscriber receives drift.detected event
+# ---------------------------------------------------------------------------
+def test_drift_detected_publishes_event(monkeypatch, tmp_path):
+    """When drift is detected, daily_drift_report publishes drift.detected via L46."""
+    # Reset the default bus so this test starts clean
+    L46.get_default_bus().clear_subscribers()
+
+    received: list = []
+    L46.subscribe("drift.detected", received.append, layer="test_L14")
+
+    # 30 PTS rows with MAE ≈ 8.0 → DRIFT (z ≈ 4.87)
+    actual_vals = [25.0 + 8.0] * 30
+    df = _make_bets_df(n=30, stat="pts", actual_values=actual_vals, model_q50=25.0)
+    monkeypatch.setattr(L08, "_load_ledger", lambda: df)
+    monkeypatch.setattr(L08, "_LEDGER_DIR", tmp_path)
+    # Ensure L08 uses the real (live) L46 module
+    import scripts.execute_loop.L46_event_bus as _live_l46
+    monkeypatch.setattr(L08, "_L46", _live_l46)
+
+    L08.daily_drift_report(window_days=7)
+
+    # Clean up subscription
+    L46.get_default_bus().clear_subscribers()
+
+    assert len(received) >= 1, "Expected at least one drift.detected event"
+    evt = received[0]
+    assert evt.name == "drift.detected"
+    assert evt.source == "L8"
+    payload = evt.payload
+    assert payload["stat"] == "pts"
+    assert payload["severity"] == "error"
+    assert isinstance(payload["drift_metric"], float)
+    assert isinstance(payload["threshold"], float)
+    assert isinstance(payload["window_days"], int)
+    assert "detected_at" in payload
+
+
+# ---------------------------------------------------------------------------
+# Test 15 — clean data: no event published when no drift
+# ---------------------------------------------------------------------------
+def test_no_drift_publishes_nothing(monkeypatch, tmp_path):
+    """When all stats are OK or LOW_N, no drift.detected event is published."""
+    L46.get_default_bus().clear_subscribers()
+
+    received: list = []
+    L46.subscribe("drift.detected", received.append, layer="test_L15")
+
+    # 30 PTS rows with MAE ≈ 5.0 vs expected 4.62 → z ≈ 0.55 → OK
+    actual_vals = [25.0 + 5.0] * 30
+    df = _make_bets_df(n=30, stat="pts", actual_values=actual_vals, model_q50=25.0)
+    monkeypatch.setattr(L08, "_load_ledger", lambda: df)
+    monkeypatch.setattr(L08, "_LEDGER_DIR", tmp_path)
+    import scripts.execute_loop.L46_event_bus as _live_l46
+    monkeypatch.setattr(L08, "_L46", _live_l46)
+
+    L08.daily_drift_report(window_days=7)
+
+    L46.get_default_bus().clear_subscribers()
+
+    # The pts stat is OK; all other stats have NO_DATA — none trigger an event
+    assert len(received) == 0, f"Expected 0 events for clean data, got {len(received)}"
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — L46 publish failure: report still completes normally
+# ---------------------------------------------------------------------------
+def test_publish_failure_does_not_break_report(monkeypatch, tmp_path):
+    """If L46.publish raises, daily_drift_report still returns a valid report."""
+    # Build a mock L46 module whose publish always raises
+    fake_l46 = types.ModuleType("scripts.execute_loop.L46_event_bus_mock")
+    fake_l46.publish = MagicMock(side_effect=RuntimeError("bus exploded"))
+    monkeypatch.setattr(L08, "_L46", fake_l46)
+
+    # Drifty data so publish is actually attempted
+    actual_vals = [25.0 + 8.0] * 30
+    df = _make_bets_df(n=30, stat="pts", actual_values=actual_vals, model_q50=25.0)
+    monkeypatch.setattr(L08, "_load_ledger", lambda: df)
+    monkeypatch.setattr(L08, "_LEDGER_DIR", tmp_path)
+
+    # Should not raise despite the publish failure
+    report = L08.daily_drift_report(window_days=7)
+
+    assert "metrics" in report
+    assert "n_drift" in report
+    assert report["n_drift"] >= 1, "PTS should still be flagged as DRIFT"
