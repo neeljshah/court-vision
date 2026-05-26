@@ -1,0 +1,238 @@
+{
+  "probe": "R15_curl_cffi_alt_books",
+  "ran_at": "2026-05-26T12:22:42.283339Z",
+  "endpoints": [
+    {
+      "book": "dk",
+      "name": "DraftKings eventgroup 42648",
+      "url": "https://sportsbook-nash.draftkings.com/sites/US-SB/api/v5/eventgroups/42648?format=json",
+      "attempts": [
+        {
+          "impersonate": "chrome120",
+          "status_code": 403,
+          "content_length": 453,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;c5931102&#46;1779798162&#46;1038a06f\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;c5931102&#46;1779798162&#46;1038a06f</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.036
+        },
+        {
+          "impersonate": "chrome116",
+          "status_code": 403,
+          "content_length": 453,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;cc931102&#46;1779798162&#46;17d408bf\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;cc931102&#46;1779798162&#46;17d408bf</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.071
+        },
+        {
+          "impersonate": "safari17_0",
+          "status_code": 403,
+          "content_length": 453,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;c5931102&#46;1779798162&#46;1038a0a2\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;c5931102&#46;1779798162&#46;1038a0a2</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.047
+        },
+        {
+          "impersonate": "firefox133",
+          "status_code": null,
+          "content_length": 0,
+          "body_head": "",
+          "error": "ImpersonateError: Impersonating firefox133 is not supported",
+          "is_json": false,
+          "elapsed_s": 0.0
+        }
+      ],
+      "best": null
+    },
+    {
+      "book": "dk_pts",
+      "name": "DraftKings eventgroup 42648 / category 583 (player points)",
+      "url": "https://sportsbook-nash.draftkings.com/sites/US-SB/api/v5/eventgroups/42648/categories/583?format=json",
+      "attempts": [
+        {
+          "impersonate": "chrome120",
+          "status_code": 403,
+          "content_length": 476,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#47;categories&#47;583&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;c5931102&#46;1779798162&#46;1038a0b6\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;c5931102&#46;1779798162&#46;1038a0b6</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.048
+        },
+        {
+          "impersonate": "chrome116",
+          "status_code": 403,
+          "content_length": 476,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#47;categories&#47;583&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;cc931102&#46;1779798162&#46;17d408f0\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;cc931102&#46;1779798162&#46;17d408f0</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.046
+        },
+        {
+          "impersonate": "safari17_0",
+          "status_code": 403,
+          "content_length": 476,
+          "body_head": "<HTML><HEAD>\n<TITLE>Access Denied</TITLE>\n</HEAD><BODY>\n<H1>Access Denied</H1>\n \nYou don't have permission to access \"http&#58;&#47;&#47;sportsbook&#45;nash&#46;draftkings&#46;com&#47;sites&#47;US&#45;SB&#47;api&#47;v5&#47;eventgroups&#47;42648&#47;categories&#47;583&#63;\" on this server.<P>\nReference&#32;&#35;18&#46;c5931102&#46;1779798162&#46;1038a0d5\n<P>https&#58;&#47;&#47;errors&#46;edgesuite&#46;net&#47;18&#46;c5931102&#46;1779798162&#46;1038a0d5</P>\n</BODY>\n</HTML>\n",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.041
+        },
+        {
+          "impersonate": "firefox133",
+          "status_code": null,
+          "content_length": 0,
+          "body_head": "",
+          "error": "ImpersonateError: Impersonating firefox133 is not supported",
+          "is_json": false,
+          "elapsed_s": 0.0
+        }
+      ],
+      "best": null
+    },
+    {
+      "book": "fd",
+      "name": "FanDuel NJ NBA event-page",
+      "url": "https://sbapi.nj.sportsbook.fanduel.com/api/content-managed-page?page=CUSTOM&customPageId=nba&pbHorizontal=false&_ak=FhMFpcPWXMeyZxOx&timezone=America%2FNew_York",
+      "attempts": [
+        {
+          "impersonate": "chrome120",
+          "status_code": 200,
+          "content_length": 387782,
+          "body_head": "{\"layout\":{\"links\":{\"7231\":{\"id\":7231,\"linkIdentifier\":{\"options\":{\"title\":\"Play FanDuel Casino!\"},\"url\":\"https://sportsbook.fanduel.com/casino\"},\"linkType\":\"EXTERNAL\",\"target\":\"_self\",\"attachmentsDependent\":false,\"attachmentsFullyLoaded\":false}},\"coupons\":{\"1413\":{\"display\":[],\"attachmentsDependent\":true,\"attachmentsFullyLoaded\":true,\"id\":1413,\"type\":\"OUTRIGHTS\",\"competitionIds\":[12739957],\"eventId\":34409523,\"externalMarketId\":\"42.515158319\",\"eventTypeId\":7522,\"displayOrder\":6,\"hasAttachments\":",
+          "error": null,
+          "is_json": true,
+          "elapsed_s": 0.323
+        },
+        {
+          "impersonate": "chrome116",
+          "status_code": 200,
+          "content_length": 387782,
+          "body_head": "{\"layout\":{\"links\":{\"7231\":{\"id\":7231,\"linkIdentifier\":{\"options\":{\"title\":\"Play FanDuel Casino!\"},\"url\":\"https://sportsbook.fanduel.com/casino\"},\"linkType\":\"EXTERNAL\",\"target\":\"_self\",\"attachmentsDependent\":false,\"attachmentsFullyLoaded\":false}},\"coupons\":{\"1413\":{\"display\":[],\"attachmentsDependent\":true,\"attachmentsFullyLoaded\":true,\"id\":1413,\"type\":\"OUTRIGHTS\",\"competitionIds\":[12739957],\"eventId\":34409523,\"externalMarketId\":\"42.515158319\",\"eventTypeId\":7522,\"displayOrder\":6,\"hasAttachments\":",
+          "error": null,
+          "is_json": true,
+          "elapsed_s": 0.056
+        },
+        {
+          "impersonate": "safari17_0",
+          "status_code": 200,
+          "content_length": 387782,
+          "body_head": "{\"layout\":{\"links\":{\"7231\":{\"id\":7231,\"linkIdentifier\":{\"options\":{\"title\":\"Play FanDuel Casino!\"},\"url\":\"https://sportsbook.fanduel.com/casino\"},\"linkType\":\"EXTERNAL\",\"target\":\"_self\",\"attachmentsDependent\":false,\"attachmentsFullyLoaded\":false}},\"coupons\":{\"1413\":{\"display\":[],\"attachmentsDependent\":true,\"attachmentsFullyLoaded\":true,\"id\":1413,\"type\":\"OUTRIGHTS\",\"competitionIds\":[12739957],\"eventId\":34409523,\"externalMarketId\":\"42.515158319\",\"eventTypeId\":7522,\"displayOrder\":6,\"hasAttachments\":",
+          "error": null,
+          "is_json": true,
+          "elapsed_s": 0.052
+        },
+        {
+          "impersonate": "firefox133",
+          "status_code": null,
+          "content_length": 0,
+          "body_head": "",
+          "error": "ImpersonateError: Impersonating firefox133 is not supported",
+          "is_json": false,
+          "elapsed_s": 0.0
+        }
+      ],
+      "best": {
+        "impersonate": "chrome120",
+        "status_code": 200,
+        "content_length": 387782,
+        "body_head": "{\"layout\":{\"links\":{\"7231\":{\"id\":7231,\"linkIdentifier\":{\"options\":{\"title\":\"Play FanDuel Casino!\"},\"url\":\"https://sportsbook.fanduel.com/casino\"},\"linkType\":\"EXTERNAL\",\"target\":\"_self\",\"attachmentsDependent\":false,\"attachmentsFullyLoaded\":false}},\"coupons\":{\"1413\":{\"display\":[],\"attachmentsDependent\":true,\"attachmentsFullyLoaded\":true,\"id\":1413,\"type\":\"OUTRIGHTS\",\"competitionIds\":[12739957],\"eventId\":34409523,\"externalMarketId\":\"42.515158319\",\"eventTypeId\":7522,\"displayOrder\":6,\"hasAttachments\":",
+        "error": null,
+        "is_json": true,
+        "elapsed_s": 0.323,
+        "_imp": "chrome120",
+        "row_count_est": 0
+      }
+    },
+    {
+      "book": "mgm",
+      "name": "BetMGM NJ basketball fixtures",
+      "url": "https://sports.nj.betmgm.com/cds-api/bettingoffer/fixtures?x-bwin-accessId=ABCDE&lang=en-us&country=US&userCountry=US&subdivision=US-NJ&fixtureTypes=Standard&state=Latest&offerMapping=Filtered&offerCategories=Gridable&fixtureCategories=Gridable,NonGridable,Other&competitionIds=103",
+      "attempts": [
+        {
+          "impersonate": "chrome120",
+          "status_code": 403,
+          "content_length": 9885,
+          "body_head": "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes\" name=\"viewport\">\r\n<meta name=\"robots\" content=\"noindex,nofollow\">\r\n  \r\n<title>betmgm.com</title>\r\n<style>\r\n\r\nbody, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {margin:0; padding:0;box-sizing:border-box;}\r",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.05
+        },
+        {
+          "impersonate": "chrome116",
+          "status_code": 403,
+          "content_length": 9885,
+          "body_head": "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes\" name=\"viewport\">\r\n<meta name=\"robots\" content=\"noindex,nofollow\">\r\n  \r\n<title>betmgm.com</title>\r\n<style>\r\n\r\nbody, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {margin:0; padding:0;box-sizing:border-box;}\r",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.045
+        },
+        {
+          "impersonate": "safari17_0",
+          "status_code": 403,
+          "content_length": 9885,
+          "body_head": "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n<head>\r\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes\" name=\"viewport\">\r\n<meta name=\"robots\" content=\"noindex,nofollow\">\r\n  \r\n<title>betmgm.com</title>\r\n<style>\r\n\r\nbody, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {margin:0; padding:0;box-sizing:border-box;}\r",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.054
+        },
+        {
+          "impersonate": "firefox133",
+          "status_code": null,
+          "content_length": 0,
+          "body_head": "",
+          "error": "ImpersonateError: Impersonating firefox133 is not supported",
+          "is_json": false,
+          "elapsed_s": 0.0
+        }
+      ],
+      "best": null
+    },
+    {
+      "book": "czr",
+      "name": "Caesars NJ basketball schedule",
+      "url": "https://api.americanwagering.com/regions/us/locations/nj/brands/czr/sb/v3/sports/basketball/events/schedule",
+      "attempts": [
+        {
+          "impersonate": "chrome120",
+          "status_code": 403,
+          "content_length": 919,
+          "body_head": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>403 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nRequest blocked.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.036
+        },
+        {
+          "impersonate": "chrome116",
+          "status_code": 403,
+          "content_length": 919,
+          "body_head": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>403 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nRequest blocked.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.036
+        },
+        {
+          "impersonate": "safari17_0",
+          "status_code": 403,
+          "content_length": 919,
+          "body_head": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">\n<TITLE>ERROR: The request could not be satisfied</TITLE>\n</HEAD><BODY>\n<H1>403 ERROR</H1>\n<H2>The request could not be satisfied.</H2>\n<HR noshade size=\"1px\">\nRequest blocked.\nWe can't connect to the server for this app or website at this time. There might be too much traffic or a configuration error. Try again",
+          "error": null,
+          "is_json": false,
+          "elapsed_s": 0.037
+        },
+        {
+          "impersonate": "firefox133",
+          "status_code": null,
+          "content_length": 0,
+          "body_head": "",
+          "error": "ImpersonateError: Impersonating firefox133 is not supported",
+          "is_json": false,
+          "elapsed_s": 0.0
+        }
+      ],
+      "best": null
+    }
+  ],
+  "any_cracked": false,
+  "winners": []
+}
