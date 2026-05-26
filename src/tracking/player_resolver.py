@@ -35,6 +35,11 @@ _WARMUP_FRAMES = 300
 _SAMPLE_EVERY       = 15
 # Confidence-weighted majority vote: keep the last N OCR samples per slot
 _CONF_VOTE_WINDOW   = 60  # last 60 OCR samples ≈ 30s of gameplay at 2 samples/s
+# Fix B: minimum fraction of total confidence-weight that the dominant candidate
+# must hold before we accept it.  If the OCR is reading random noise the weight
+# is spread across 5-14 different values → dominant fraction ~10-20%.  A real
+# jersey number should dominate ≥50% of the accumulated confidence weight.
+_MIN_DOMINANT_FRACTION = 0.50
 
 
 class PlayerResolver:
@@ -74,6 +79,11 @@ class PlayerResolver:
         self._roster_loaded = False
         self._warmup_done   = False
         self._frame_count   = 0
+        # Fix D: learned mapping of team abbreviation → colour label ("green"/"white").
+        # Populated lazily from high-confidence slot resolutions (jersey # unique to
+        # one team abbrev, slot has a stable colour label).  Once two abbrevs are
+        # mapped (one per colour), the guard blocks cross-team name assignments.
+        self._abbrev_to_colour: Dict[str, str] = {}
 
     # ── public ────────────────────────────────────────────────────────────────
 
@@ -132,8 +142,12 @@ class PlayerResolver:
         """Return the confidence-weighted majority-vote jersey number for slot, or None.
 
         Sums OCR confidence scores across the last _CONF_VOTE_WINDOW samples per slot
-        so high-confidence reads outweigh uncertain ones.  Falls back to plain vote
-        count (legacy Counter) when the confidence buffer is empty.
+        so high-confidence reads outweigh uncertain ones.  Returns None (instead of
+        the highest-weighted candidate) when the dominant candidate holds less than
+        _MIN_DOMINANT_FRACTION of the total weight — this rejects noisy reads where
+        confidence is spread across 5-14 different jersey values (audit: 17-35%
+        dominant rate = random noise).  Falls back to plain vote count (legacy
+        Counter) when the confidence buffer is empty.
         """
         buf = self._conf_bufs.get(slot)
         if buf:
@@ -141,18 +155,38 @@ class PlayerResolver:
             weighted: Dict[int, float] = {}
             for num, conf in buf:
                 weighted[num] = weighted.get(num, 0.0) + conf
-            return max(weighted, key=lambda n: weighted[n])
+            total = sum(weighted.values())
+            if total <= 0:
+                return None
+            best = max(weighted, key=lambda n: weighted[n])
+            # Fix B: reject if dominant candidate does not own ≥ MIN_DOMINANT_FRACTION
+            # of total confidence weight.  Noisy OCR spreads weight; a real jersey
+            # number should be a clear winner.
+            if weighted[best] / total < _MIN_DOMINANT_FRACTION:
+                return None
+            return best
         # Fallback: legacy unweighted counter
         counter = self._votes.get(slot)
         if not counter:
             return None
-        return counter.most_common(1)[0][0]
+        total_votes = sum(counter.values())
+        top, top_count = counter.most_common(1)[0]
+        if total_votes > 0 and top_count / total_votes < _MIN_DOMINANT_FRACTION:
+            return None
+        return top
 
     def resolve_player(self, slot: int, team: Optional[str] = None) -> Optional[dict]:
         """
         Return NBA player dict for a slot, or None if not yet resolved.
 
         Triggers roster fetch on first call if not already loaded.
+
+        Fix D — team-colour guard: after resolving a jersey number to a player
+        dict, check that the player's team abbreviation is consistent with the
+        slot's colour label ("green"/"white").  The guard learns which abbreviation
+        belongs to which colour from the first unambiguous resolutions and then
+        rejects candidates that cross teams (audit 2026-05-26: 4/10 pids had
+        cross-team name assignments).
 
         Returns:
             {"player_id": int, "player_name": str, "team": str, "jersey": int}
@@ -167,7 +201,49 @@ class PlayerResolver:
 
         tm = team or self._slot_team.get(slot, "")
         key = (jersey, tm)
-        return self._roster.get(key)
+        info = self._roster.get(key)
+        if info is None:
+            return None
+
+        # Fix D: team-colour guard.
+        # When the roster was fetched without jersey-number data (fallback json),
+        # info["team"] may be empty — skip the guard in that case.
+        abbr = info.get("team", "")
+        if abbr and tm:
+            # Learn the abbrev→colour mapping on the fly from unambiguous slots.
+            # A slot is unambiguous when its jersey vote passes the dominant-fraction
+            # gate AND the roster has exactly one abbrev for that jersey (no cross-
+            # team collision).  Store in _abbrev_to_colour both ways.
+            if abbr not in self._abbrev_to_colour:
+                # Count how many distinct abbrevs own this jersey across the whole
+                # roster (it should be exactly 1; jersey numbers unique per team).
+                other_abbrevs = {
+                    v["team"] for (jn, _), v in self._roster.items()
+                    if jn == jersey and v.get("team") and v["team"] != abbr
+                }
+                if not other_abbrevs:
+                    # Unambiguous: this jersey belongs only to `abbr` → learn colour.
+                    self._abbrev_to_colour[abbr] = tm
+                    log.debug(
+                        "PlayerResolver: learned %s → colour=%s from slot %d jersey #%d",
+                        abbr, tm, slot, jersey,
+                    )
+
+            # Apply the guard only once we have learned mappings for BOTH colours.
+            green_abbrevs = {a for a, c in self._abbrev_to_colour.items() if c == "green"}
+            white_abbrevs = {a for a, c in self._abbrev_to_colour.items() if c == "white"}
+            if green_abbrevs and white_abbrevs:
+                # Both sides known — enforce strict colour match.
+                expected_colour = self._abbrev_to_colour.get(abbr)
+                if expected_colour is not None and expected_colour != tm:
+                    log.debug(
+                        "resolve_player: slot %d jersey #%d → %s abbr=%s REJECTED "
+                        "(team colour guard: abbr=%s is %s but slot is %s)",
+                        slot, jersey, info.get("player_name"), abbr,
+                        abbr, expected_colour, tm,
+                    )
+                    return None
+        return info
 
     def finalize(self) -> None:
         """
