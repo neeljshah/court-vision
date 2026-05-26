@@ -256,17 +256,22 @@ class TestDedup(unittest.TestCase):
 
 
 class TestSchemaValidation(unittest.TestCase):
-    """All 11 canonical columns present on every written row."""
+    """All 12 canonical columns present on every written row.
+
+    R19_L1 added `is_alt_line` (bool) to mark Bovada alt-line ladder
+    rungs vs the primary line. R20_M1 keeps this column and adds the
+    in-memory derived `market_tier` ('primary'|'alt') in the readers.
+    """
 
     EXPECTED_COLS = [
         "captured_at", "book", "game_id", "player_id", "player_name",
         "team", "stat", "line", "over_price", "under_price",
-        "market_status",
+        "market_status", "is_alt_line",
     ]
 
     def test_eleven_canonical_columns(self):
         self.assertEqual(bsd._FIELDS, self.EXPECTED_COLS)
-        self.assertEqual(len(bsd._FIELDS), 11)
+        self.assertEqual(len(bsd._FIELDS), 12)
 
     def test_csv_header_matches(self):
         with tempfile.TemporaryDirectory() as td:
