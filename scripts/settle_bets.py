@@ -1,55 +1,82 @@
-"""settle_bets.py — score the cycle-68 bet log against post-game actuals.
+"""settle_bets.py - settle open bets in data/pnl_ledger.csv (probe R16_E7).
 
-The cycle-68 --bet-log flag accumulates recommended bets to
-data/bets/<date>.csv. Once games complete and you have actual stat lines
-(NBA Stats API, sportsbook settlement, manual entry, etc.), this script
-matches bets to actuals and computes real P&L.
+Two modes:
 
-Input bet log schema (cycle 68):
-    timestamp, date, player, stat, line, side, model, edge, prob, odds,
-    ev_per_dollar, kelly_pct, kelly_stake, bankroll
+  (1) Quarter-box mode (R16_E7 design):
+      python scripts/settle_bets.py --from-quarter-box
 
-Input actuals CSV (user-supplied):
-    date, player, stat, actual_value
+      Scans data/pnl_ledger.csv for open bets, then for each unique game_id
+      looks for data/cache/quarter_box/<gid>_q4.json. If present, sums q1-q4
+      stats per player and resolves each open bet for that game by calling
+      src.betting.pnl_ledger.settle_bet(bet_id, actual_stat).
 
-Output bet log w/ settlement (extra columns):
-    ..., actual_value, result ("W"|"L"|"P"|"NA"), payout, pnl
+      Open bets with empty game_id can be settled by --player + date too,
+      via fallback to gamelog auto-settle.
 
-Summary printed to stdout:
-    bets: N matched / M unmatched
-    won: W / N = X%   |   ROI: Y%   |   Total P&L: $Z
+  (2) Legacy bet-log mode (cycle 68):
+      python scripts/settle_bets.py data/bets/2026-05-24.csv \\
+          data/actuals/2026-05-24.csv --out data/bets/2026-05-24_settled.csv
 
-Run:
-    python scripts/settle_bets.py data/bets/2026-05-24.csv \\
-        data/actuals/2026-05-24.csv \\
-        --out data/bets/2026-05-24_settled.csv
+      Input bet log (timestamp,date,player,stat,line,side,model,edge,prob,
+      odds,ev_per_dollar,kelly_pct,kelly_stake,bankroll) gets matched to an
+      actuals CSV (date,player,stat,actual_value) and an enriched CSV is
+      written. Used by the legacy compare_to_lines --bet-log flow.
+
+Public API:
+    settle(bet, actual)            -> (result, pnl)               # legacy
+    settle_log(bets, actuals)      -> (enriched, summary)         # legacy
+    load_actuals(path)             -> dict[(date,player,stat) -> val]
+    sum_quarter_box(game_id, qb_dir=None) -> dict[player_name -> dict[stat -> val]]
+    settle_from_quarter_box(qb_dir=None, dry_run=False) -> list[dict]
 """
 from __future__ import annotations
 
 import argparse
 import csv
+import glob
+import json
 import os
 import sys
-from typing import Dict, List, Tuple
+import unicodedata
+from typing import Dict, List, Optional, Tuple
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_DIR not in sys.path:
+    sys.path.insert(0, PROJECT_DIR)
+
+DEFAULT_QB_DIR = os.path.join(PROJECT_DIR, "data", "cache", "quarter_box")
 
 
-# Stat names in bet log may be uppercase; in actuals lowercase. Normalize both.
+# --------------------------------------------------------------------------- #
+# String normalization                                                        #
+# --------------------------------------------------------------------------- #
 def _stat_key(s: str) -> str:
     return s.strip().lower()
 
 
 def _player_key(s: str) -> str:
-    # Match the cycle-53 src/data/injuries name-key convention.
-    import unicodedata
     nfkd = unicodedata.normalize("NFKD", str(s or ""))
     stripped = "".join(c for c in nfkd if not unicodedata.combining(c))
     return stripped.lower().strip()
 
 
+# Map ledger stat names to NBA box-score field names (per-quarter JSON uses
+# lowercase keys: pts, reb, ast, fg3m, stl, blk, tov -> "to").
+_STAT_TO_BOX_FIELD = {
+    "pts":  "pts",
+    "reb":  "reb",
+    "ast":  "ast",
+    "fg3m": "fg3m",
+    "stl":  "stl",
+    "blk":  "blk",
+    "tov":  "to",
+}
+
+
+# --------------------------------------------------------------------------- #
+# Legacy bet-log API (cycle 68 surface, preserved verbatim)                   #
+# --------------------------------------------------------------------------- #
 def load_actuals(path: str) -> Dict[Tuple[str, str, str], float]:
-    """Return {(date, player_key, stat_key): actual_value}."""
     out: Dict[Tuple[str, str, str], float] = {}
     if not os.path.exists(path):
         return out
@@ -74,22 +101,15 @@ def _american_payout(odds: int, stake: float = 1.0) -> float:
 
 
 def settle(bet: dict, actual: float) -> Tuple[str, float]:
-    """Return (result, pnl) for one bet vs the actual stat value.
-
-    result: 'W' win, 'L' loss, 'P' push (line == actual).
-    pnl assumes stake of 1.0 unit (or kelly_stake if non-empty / >0).
-    """
     line = float(bet.get("line", 0.0) or 0.0)
     side = (bet.get("side", "") or "").upper()
     odds = int(bet.get("odds", -110) or -110)
-    # Prefer kelly_stake when present; otherwise flat $1.
     try:
         stake = float(bet.get("kelly_stake") or 0.0)
         if stake <= 0:
             stake = 1.0
     except ValueError:
         stake = 1.0
-
     if actual == line:
         return "P", 0.0
     won = (actual > line) if side == "OVER" else (actual < line)
@@ -98,9 +118,9 @@ def settle(bet: dict, actual: float) -> Tuple[str, float]:
     return "L", round(-stake, 4)
 
 
-def settle_log(bets: List[dict], actuals: Dict[Tuple[str, str, str], float]
-                 ) -> Tuple[List[dict], dict]:
-    """Settle each bet; return (enriched_bets, summary_dict)."""
+def settle_log(
+    bets: List[dict], actuals: Dict[Tuple[str, str, str], float],
+) -> Tuple[List[dict], dict]:
     out: List[dict] = []
     matched = 0; wins = 0; pushes = 0
     total_pnl = 0.0; total_stake = 0.0
@@ -146,7 +166,6 @@ def settle_log(bets: List[dict], actuals: Dict[Tuple[str, str, str], float]
 
 
 def write_settled(out_path: str, rows: List[dict]) -> int:
-    """Write settled bets to CSV. Header from first row's keys."""
     if not rows:
         return 0
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
@@ -169,14 +188,164 @@ def print_summary(s: dict) -> None:
         print(f"ROI: {s['roi_pct']:+.2f}%   |   Total P&L: ${s['total_pnl']:+.2f}")
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("bet_log", help="bet log CSV from compare_to_lines --bet-log")
-    ap.add_argument("actuals", help="actuals CSV: date,player,stat,actual_value")
-    ap.add_argument("--out", default=None,
-                    help="Output path (default: <bet_log>_settled.csv)")
-    args = ap.parse_args()
+# --------------------------------------------------------------------------- #
+# Quarter-box settlement (R16_E7)                                             #
+# --------------------------------------------------------------------------- #
+def sum_quarter_box(
+    game_id: str, qb_dir: Optional[str] = None,
+) -> Dict[str, Dict[str, float]]:
+    """Sum q1-q4 player stats for a game.
 
+    Returns {player_name: {pts, reb, ast, fg3m, stl, blk, tov, player_id}}.
+    Returns {} if any of q1-q4 is missing (game not final).
+    """
+    qb_dir = qb_dir or DEFAULT_QB_DIR
+    totals: Dict[str, Dict[str, float]] = {}
+    for q in (1, 2, 3, 4):
+        p = os.path.join(qb_dir, f"{game_id}_q{q}.json")
+        if not os.path.exists(p):
+            return {}
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return {}
+        for pl in d.get("players", []) or []:
+            name = pl.get("player_name", "")
+            if not name:
+                continue
+            row = totals.setdefault(name, {
+                "pts": 0.0, "reb": 0.0, "ast": 0.0, "fg3m": 0.0,
+                "stl": 0.0, "blk": 0.0, "tov": 0.0,
+                "player_id": pl.get("player_id"),
+                "team": pl.get("team_abbreviation"),
+            })
+            for ledger_stat, box_field in _STAT_TO_BOX_FIELD.items():
+                v = pl.get(box_field, 0) or 0
+                try:
+                    row[ledger_stat] += float(v)
+                except (TypeError, ValueError):
+                    continue
+    return totals
+
+
+def is_game_final(game_id: str, qb_dir: Optional[str] = None) -> bool:
+    """All four quarter_box JSON files exist on disk."""
+    qb_dir = qb_dir or DEFAULT_QB_DIR
+    return all(
+        os.path.exists(os.path.join(qb_dir, f"{game_id}_q{q}.json"))
+        for q in (1, 2, 3, 4)
+    )
+
+
+def settle_from_quarter_box(
+    qb_dir: Optional[str] = None, dry_run: bool = False,
+) -> List[Dict]:
+    """Iterate open bets in data/pnl_ledger.csv, settle ones whose game is final.
+
+    Returns list of result dicts:
+        {bet_id, status, profit_loss, actual_stat, bankroll_after}  on success
+        {bet_id, skipped: "<reason>"}                               on skip
+    """
+    from src.betting.pnl_ledger import open_bets, settle_bet
+    qb_dir = qb_dir or DEFAULT_QB_DIR
+    results: List[Dict] = []
+    # Group open bets by game_id to amortise the quarter-box sum per game.
+    open_now = open_bets()
+    games: Dict[str, Dict[str, Dict[str, float]]] = {}
+    for bet in open_now:
+        gid = (bet.get("game_id") or "").strip()
+        if not gid:
+            results.append({"bet_id": bet["bet_id"],
+                             "skipped": "no_game_id_in_ledger"})
+            continue
+        if not is_game_final(gid, qb_dir):
+            results.append({"bet_id": bet["bet_id"],
+                             "skipped": f"game_{gid}_not_final"})
+            continue
+        if gid not in games:
+            games[gid] = sum_quarter_box(gid, qb_dir)
+        totals = games[gid]
+        # Match player by name_key, fall back to player_id when present.
+        pname = bet.get("player", "")
+        pkey = _player_key(pname)
+        match = None
+        for nm, row in totals.items():
+            if _player_key(nm) == pkey:
+                match = row; break
+        if match is None and bet.get("player_id"):
+            pid = str(bet["player_id"])
+            for row in totals.values():
+                if str(row.get("player_id") or "") == pid:
+                    match = row; break
+        if match is None:
+            results.append({"bet_id": bet["bet_id"],
+                             "skipped": f"player_{pname}_not_in_box"})
+            continue
+        stat = str(bet.get("stat", "")).lower()
+        actual = match.get(stat)
+        if actual is None:
+            results.append({"bet_id": bet["bet_id"],
+                             "skipped": f"stat_{stat}_missing"})
+            continue
+        if dry_run:
+            results.append({"bet_id": bet["bet_id"],
+                             "would_settle": True, "actual_stat": float(actual)})
+            continue
+        try:
+            r = settle_bet(bet["bet_id"], float(actual))
+            r["bet_id"] = bet["bet_id"]
+            r["actual_stat"] = float(actual)
+            results.append(r)
+        except (KeyError, ValueError) as exc:
+            results.append({"bet_id": bet["bet_id"], "error": str(exc)})
+    return results
+
+
+# --------------------------------------------------------------------------- #
+# CLI                                                                         #
+# --------------------------------------------------------------------------- #
+def main(argv: Optional[List[str]] = None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("bet_log", nargs="?", default=None,
+                    help="(legacy mode) bet log CSV from compare_to_lines --bet-log")
+    ap.add_argument("actuals", nargs="?", default=None,
+                    help="(legacy mode) actuals CSV: date,player,stat,actual_value")
+    ap.add_argument("--out", default=None,
+                    help="(legacy mode) output path (default: <bet_log>_settled.csv)")
+    ap.add_argument("--from-quarter-box", action="store_true",
+                    help="R16_E7 mode: settle pnl_ledger.csv open bets from quarter_box JSON")
+    ap.add_argument("--qb-dir", default=DEFAULT_QB_DIR,
+                    help="quarter_box dir (default: data/cache/quarter_box)")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="quarter-box mode: report what would happen, don't write ledger")
+    args = ap.parse_args(argv)
+
+    if args.from_quarter_box:
+        results = settle_from_quarter_box(args.qb_dir, dry_run=args.dry_run)
+        settled = [r for r in results if r.get("status")
+                                            in ("won", "lost", "push")]
+        would = [r for r in results if r.get("would_settle")]
+        skipped = [r for r in results if "skipped" in r]
+        errored = [r for r in results if "error" in r]
+        print(f"== Quarter-box settlement {'(dry-run)' if args.dry_run else ''} ==")
+        print(f"  settled:  {len(settled)}")
+        if args.dry_run:
+            print(f"  would-settle: {len(would)}")
+        print(f"  skipped:  {len(skipped)}")
+        print(f"  errored:  {len(errored)}")
+        for r in settled[:10]:
+            print(f"   - {r['bet_id'][:8]}  {r['status']:5s}  "
+                  f"actual={r['actual_stat']:.2f}  pnl={r['profit_loss']:+.2f}")
+        for r in would[:10]:
+            print(f"   - {r['bet_id'][:8]}  would-settle actual={r['actual_stat']:.2f}")
+        for r in skipped[:10]:
+            print(f"   - {r['bet_id'][:8]}  SKIP {r['skipped']}")
+        return 0
+
+    # Legacy mode
+    if not args.bet_log or not args.actuals:
+        ap.error("legacy mode requires positional bet_log + actuals; "
+                  "use --from-quarter-box for ledger mode")
     if not os.path.exists(args.bet_log):
         print(f"[fail] bet log not found: {args.bet_log}")
         return 1
@@ -185,14 +354,12 @@ def main() -> int:
         bets = list(csv.DictReader(fh))
     if not bets:
         print("[done] bet log is empty"); return 0
-
     actuals = load_actuals(args.actuals)
     if not actuals:
         print(f"[warn] actuals file empty or missing: {args.actuals}")
-
-    settled, summary = settle_log(bets, actuals)
+    settled_rows, summary = settle_log(bets, actuals)
     out = args.out or args.bet_log.replace(".csv", "_settled.csv")
-    n = write_settled(out, settled)
+    n = write_settled(out, settled_rows)
     print(f"  Wrote {n} settled rows -> {out}")
     print_summary(summary)
     return 0
