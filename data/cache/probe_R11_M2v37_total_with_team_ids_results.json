@@ -1,0 +1,44 @@
+{
+  "probe": "R11_M2v37_total_with_team_ids",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -10.13%",
+  "n_games": 2836,
+  "n_features": 130,
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.3582,
+  "pooled_delta_pct": -10.13,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.9585,
+      "delta": -1.3086,
+      "delta_pct": -7.58
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.8313,
+      "delta": -2.5799,
+      "delta_pct": -14.82
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.2846,
+      "delta": -1.3056,
+      "delta_pct": -7.87
+    }
+  ],
+  "elapsed_s": 1.6
+}

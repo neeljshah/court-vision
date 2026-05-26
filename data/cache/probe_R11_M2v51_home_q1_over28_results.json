@@ -1,0 +1,40 @@
+{
+  "probe": "R11_M2v51_home_q1_over28",
+  "kind": "binary",
+  "label": "home_q1_over28",
+  "label_desc": "P(home Q1 > 28)",
+  "status": "REJECT",
+  "ship_reason": "Brier 0.2922 delta -1.87%; AUC 0.5623",
+  "n_games": 2836,
+  "pos_rate": 0.5275035260930888,
+  "pooled_naive_brier": 0.29772,
+  "pooled_lgb_brier": 0.29217,
+  "pooled_lgb_acc": 0.56135,
+  "pooled_lgb_auc": 0.56225,
+  "brier_delta_pct": -1.865,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_test": 709,
+      "naive_brier": 0.2997,
+      "lgb_brier": 0.31365,
+      "lgb_acc": 0.5472
+    },
+    {
+      "fold": 2,
+      "n_test": 709,
+      "naive_brier": 0.30367,
+      "lgb_brier": 0.29128,
+      "lgb_acc": 0.574
+    },
+    {
+      "fold": 3,
+      "n_test": 709,
+      "naive_brier": 0.28979,
+      "lgb_brier": 0.27157,
+      "lgb_acc": 0.5628
+    }
+  ],
+  "elapsed_s": 1.0
+}

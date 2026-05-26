@@ -1,0 +1,44 @@
+{
+  "probe": "R11_M2v39_total_with_sim",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -10.46%",
+  "n_games": 2836,
+  "n_features": 74,
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.3016,
+  "pooled_delta_pct": -10.46,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.8174,
+      "delta": -1.4498,
+      "delta_pct": -8.4
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.6896,
+      "delta": -2.7217,
+      "delta_pct": -15.63
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.3978,
+      "delta": -1.1923,
+      "delta_pct": -7.19
+    }
+  ],
+  "elapsed_s": 1.0
+}
