@@ -60,6 +60,9 @@ SLATES: dict[str, dict[str, Any]] = {
         "date": "2026-05-26",
         "label": "SAS @ OKC Game 7 WCF",
         "game_ids": ["25830906", "1631142204", "35639109"],  # bov/pin/fd
+        # NBA Stats game_id(s) used by the tip detector + quarter_box
+        # scanner. Playoffs use the 004... prefix.
+        "nba_game_ids": ["0042400317"],
         "sas_players": [
             "Victor Wembanyama", "De'Aaron Fox", "Devin Vassell",
             "Stephon Castle", "Keldon Johnson", "Dylan Harper",
@@ -280,35 +283,6 @@ class ModelCache:
         pid = self._resolve(name)
         if pid is None:
             return None
-        # R16_E3 fast-path: try the prediction-cache lookup first (~0.1ms).
-        # Falls through to the slow per-call build_prediction_row + model
-        # inference path only on cache miss (e.g. player not in todays cache).
-        try:
-            from scripts.serve_prediction import get_prediction as _sp_get  # noqa: PLC0415
-            cached_out: dict[str, dict] = {}
-            for s in self._STATS:
-                rec = _sp_get(pid, s, apply_injury=True, player_name=name)
-                if rec is None:
-                    cached_out = {}
-                    break
-                q50 = rec.get('q50')
-                if q50 is None or (isinstance(q50, float) and q50 != q50):
-                    # NaN/None q50 — skip this player so the slow path retries.
-                    cached_out = {}
-                    break
-                cached_out[s] = {
-                    'point': float(q50),
-                    'q10':   rec.get('q10'),
-                    'q50':   q50,
-                    'q90':   rec.get('q90'),
-                    'availability_factor': rec.get('availability_factor', 1.0),
-                }
-            if cached_out:
-                self.preds[name] = cached_out
-                self.last_factor[name] = cached_out[self._STATS[0]]['availability_factor']
-                return cached_out
-        except Exception:
-            pass  # any cache error → fall through to slow path
         prow = self._build_pred(pid, opp, SEASON, is_home=is_home,
                                  rest_days=2.0, gamelog_dir=self.gamelog_dir)
         if prow is None:
@@ -366,18 +340,77 @@ def model_hit_prob(point_pred, q10, q50, q90, line, side,
 
 
 # --------- pre-tip / cooldown / state ----------
+try:
+    from scripts import game_tip_detector as _tip_det
+except Exception:  # pragma: no cover - circular safety net
+    _tip_det = None
+
+
 def is_pretip(slate_cfg: dict) -> bool:
-    """Return True iff no q1 file for any of this slate's game_ids exists yet."""
+    """Return True iff the slate is still pre-tip.
+
+    Fuses two signals:
+      1. Quarter_box file presence — any ``<game_id>_q1.json`` in
+         ``<PROJECT_DIR>/data/cache/quarter_box/`` means the game has
+         tipped. (Local to this module so tests can monkey-patch
+         ``PROJECT_DIR``.)
+      2. ``game_tip_detector.is_pregame`` — scheduled tip-time +
+         5-minute grace window. Triggers when the q1 file is delayed
+         but the wall-clock confirms tip-off occurred.
+    """
     qbox = os.path.join(PROJECT_DIR, "data", "cache", "quarter_box")
-    if not os.path.isdir(qbox):
-        return True
-    for gid in slate_cfg.get("game_ids", []):
-        # qbox naming uses NBA Stats game_id (10-digit, leading-zero
-        # padded). We accept any file whose name *contains* the gid.
-        for fn in os.listdir(qbox):
-            if gid in fn and fn.endswith("_q1.json"):
+    nba_ids = slate_cfg.get("nba_game_ids") or slate_cfg.get("game_ids", [])
+    # Signal 1: quarter_box presence.
+    if os.path.isdir(qbox):
+        for gid in nba_ids:
+            for fn in os.listdir(qbox):
+                if gid in fn and fn.endswith("_q1.json"):
+                    return False
+    # Signal 2: tip-time + grace (only if a real NBA game_id is wired).
+    if _tip_det is not None and slate_cfg.get("nba_game_ids"):
+        for gid in slate_cfg["nba_game_ids"]:
+            if not _tip_det.is_pregame(
+                gid, game_date=slate_cfg.get("date")
+            ):
                 return False
     return True
+
+
+def in_play_handoff_payload(slate_cfg: dict) -> dict:
+    """Lightweight stub: when a slate transitions to in-play, return
+    the metadata an in-play ranker would need — current quarter and a
+    pointer to the end-of-quarter WP models (R10_M5 + R12_F1).
+
+    Full in-play bet generation is future work (R17_J6+). This stub
+    exists so the daemon can write a clean transition log line and
+    downstream consumers know which model to query next.
+    """
+    nba_ids = slate_cfg.get("nba_game_ids") or slate_cfg.get("game_ids", [])
+    current_q = None
+    if _tip_det is not None:
+        for gid in nba_ids:
+            q = _tip_det.in_play_quarter(gid)
+            if q is not None:
+                current_q = q
+                break
+    next_target = {
+        "q1": "endQ1_winprob",
+        "q2": "endQ2_winprob",
+        "q3": "endQ3_winprob",
+        "q4": "final_winprob",
+    }.get(current_q or "q1", "endQ1_winprob")
+    return {
+        "phase": "IN_PLAY",
+        "current_quarter": current_q,
+        "next_prediction_target": next_target,
+        "wp_model_paths": [
+            "data/models/winprob_endQ1.pkl",  # R10_M5
+            "data/models/winprob_endQ2.pkl",
+            "data/models/winprob_endQ3.pkl",
+            "data/models/winprob_final.pkl",  # R12_F1
+        ],
+        "nba_game_ids": nba_ids,
+    }
 
 
 def load_state(state_path: str) -> dict:
@@ -765,7 +798,27 @@ def run_daemon(slate_id: str, interval: int, bankroll: float,
 
             # Stop after tip if requested
             if stop_at_tip and not payload["pretip"]:
-                logger.info("TIPOFF reached — daemon exiting (pregame stops).")
+                # Emit a structured transition log entry so downstream
+                # consumers (vault, dashboards) can pivot to the in-play
+                # ranker output.
+                handoff = in_play_handoff_payload(SLATES[slate_id])
+                logger.info(
+                    "TIPOFF detected — handoff to IN_PLAY mode: "
+                    f"current_q={handoff['current_quarter']} "
+                    f"next_target={handoff['next_prediction_target']}"
+                )
+                transition_path = os.path.join(
+                    PROJECT_DIR, "data", "cache", "live_bets",
+                    f"{slate_id}_handoff.json",
+                )
+                atomic_write_json(transition_path, {
+                    "slate": slate_id,
+                    "transitioned_at": datetime.now(timezone.utc).isoformat(),
+                    **handoff,
+                })
+                logger.info(
+                    "TIPOFF reached — daemon exiting (pregame stops)."
+                )
                 break
 
             tick_idx += 1
