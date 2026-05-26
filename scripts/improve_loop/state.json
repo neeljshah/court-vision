@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 20,
+  "rounds_completed": 21,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -468,6 +468,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-7 (12 variants in 1210.6s, 12/12 SHIPS but vs B6 mixed). CROSS_OOF_STACK (level-2 sees all 6 targets' OOF preds, 142 feats): total -15.56% (+0.47pp vs B6), spread -16.72% (-0.18pp), home_score -15.53% (-0.37pp), away_score -14.27% (+0.09pp), O230 Brier 0.2406 AUC 0.6680 (regress), AH3 Brier 0.2295 AUC 0.7028 (+0.04pp Brier, +0.41pp AUC vs B6). Cross-target meta-features WIN on total+AH3 but ADD VARIANCE on spread/home_score/O230. BLEND_NNLS (NNLS-weighted B5-single-layer + B6-OOF-stack on outer-train OOF): all 6 targets within +-0.1pp of B6 alone \u2014 NNLS effectively gives B5 zero weight, confirming B6 architecture dominates. Architecture-blending adds no signal. PRODUCTION DECISION: keep B6 OOF-stack as canonical. Optionally use cross_oof_stack for total + AH3 (mild +0.4-0.5pp on those two targets). R12 cumulative: 154 SHIPS."
+    },
+    {
+      "name": "R12_BATCH8_team_svd_embeddings",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 12,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-8 (12 variants in 308.8s \u2014 12/12 pass naive-baseline ship gate but 0/12 beat B6 OOF-stack baseline). 30-team SVD identity embeddings (8-dim home + 8-dim away) added on top of B6 OOF-stack:\nemb_svd_scorediff (+16 emb feats, 153 total): total -14.56% (-0.53pp vs B6), spread -16.05% (-0.85pp), home_score -14.61% (-1.29pp), away_score -13.84% (-0.34pp), O230 Brier 0.2435 AUC 0.6623 (regress), AH3 Brier 0.2349 AUC 0.6971 (slight regress).\nemb_svd_combined (+32 emb feats from score_diff+total matrices, 169 total): total -13.54% (-1.55pp), spread -16.03% (-0.87pp), home_score -15.02% (-0.88pp), away_score -12.59% (-1.59pp), O230 Brier 0.2480 (regress), AH3 Brier 0.2312 (tied).\nARCHITECTURAL CONCLUSION: SVD team embeddings ADD NOISE not signal on top of B5's opp_def_adj_ortg + L10 home/road splits + win_quality_elo. The scalar team-strength features already capture team identity better than 8-dim SVD of the head-to-head score-diff matrix (which is sparse: 30^2=900 cells but only ~2836 games means each cell has avg ~3 samples). FIRST ZERO-ARCHITECTURAL-GAIN BATCH OF THIS LOOP. Stop counter: 1/5."
     }
   ],
   "rejects": [
@@ -874,6 +883,12 @@
       "reason": "Agent wrote scripts/gamenight_e2e_harness.py but never committed; file deleted in R19 cleanup. Deferred to R20.",
       "saturated_angle": "(deferred - agent failed to commit)",
       "round": 18
+    },
+    {
+      "name": "R12_BATCH8_team_svd_embeddings_vs_B6",
+      "reason": "All 12 SVD-embedding variants regress vs B6 OOF-stack. Scalar opp_def_adj_ortg + L10 home/road splits + win_quality_elo already saturate team-identity signal. Head-to-head matrix is too sparse (30x30=900 cells, ~2836 games, avg 3 samples/cell) for stable SVD beyond what scalars capture.",
+      "saturated_angle": "SVD team identity embeddings on top of B5 quality+opp features",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -939,7 +954,8 @@
     "schedule-fatigue features as endQ3 residual-head additions (proj_base+residual composition unstable)",
     "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
     "streak features for high-volume stats (PTS/REB/AST) at any window length",
-    "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)"
+    "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)",
+    "30-team SVD identity embeddings (8-16 dim) on B5+B6 base"
   ],
   "current_baseline_mae": {
     "pts": 2.214,

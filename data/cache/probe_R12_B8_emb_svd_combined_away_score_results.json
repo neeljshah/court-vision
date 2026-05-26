@@ -1,0 +1,47 @@
+{
+  "probe": "R12_B8_emb_svd_combined_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 169,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -12.59%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.3576,
+  "pooled_delta_pct": -12.59,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.5544,
+      "delta": -0.9387,
+      "delta_pct": -8.95
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.3268,
+      "delta": -1.392,
+      "delta_pct": -12.99
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.1917,
+      "delta": -1.7122,
+      "delta_pct": -15.7
+    }
+  ],
+  "fold_delta_pct_std": 2.773,
+  "variant": {
+    "variant": "emb_svd",
+    "emb_targets": [
+      "score_diff",
+      "total_pts_box"
+    ],
+    "k_dim": 8,
+    "n_emb_features": 32
+  },
+  "elapsed_s": 27.1
+}

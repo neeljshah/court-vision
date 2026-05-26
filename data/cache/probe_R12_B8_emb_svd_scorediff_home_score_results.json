@@ -1,0 +1,46 @@
+{
+  "probe": "R12_B8_emb_svd_scorediff_home_score",
+  "kind": "regression",
+  "label": "home_score",
+  "n_features": 153,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -14.61%",
+  "pooled_naive_mae": 10.7288,
+  "pooled_lgb_mae": 9.1608,
+  "pooled_delta_pct": -14.61,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.6482,
+      "lgb_mae": 9.2465,
+      "delta": -1.4017,
+      "delta_pct": -13.16
+    },
+    {
+      "fold": 2,
+      "naive_mae": 11.3047,
+      "lgb_mae": 9.3031,
+      "delta": -2.0016,
+      "delta_pct": -17.71
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.2336,
+      "lgb_mae": 8.933,
+      "delta": -1.3006,
+      "delta_pct": -12.71
+    }
+  ],
+  "fold_delta_pct_std": 2.258,
+  "variant": {
+    "variant": "emb_svd",
+    "emb_targets": [
+      "score_diff"
+    ],
+    "k_dim": 8,
+    "n_emb_features": 16
+  },
+  "elapsed_s": 23.3
+}
