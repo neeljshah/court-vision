@@ -372,7 +372,10 @@ _REPLAY_SUSPEND_FRAMES = 20    # frames to hold homography after trigger (was 30
 _CHECKPOINT_INTERVAL = 2000  # ~6 min of gameplay at 5.7fps
 
 # Frame stride — process every Nth frame on long clips to cut compute on broadcast footage
-_FRAME_STRIDE       = 3      # process every 3rd frame on full-game clips (10fps @ 30fps source)
+# Configurable via env: NBA_FRAME_STRIDE=5 gives ~35% fewer frames (6fps from 30fps source).
+# Acceptable for batch backfill of prop-model features (needs 5-10 fps, not 30/3=10 fps).
+# Default stays at 3 — stride=5 is an operator decision for bulk runs, not live inference.
+_FRAME_STRIDE       = int(os.environ.get("NBA_FRAME_STRIDE", "3"))
                              # Raised 2→3: players can't meaningfully move in 100ms; events still
                              # detected via accumulation (ball arc, possession change, CSRT tracker).
 _FRAME_STRIDE_THRESH = 3000  # frame count above which stride kicks in (~50s @ 60fps)
@@ -491,7 +494,15 @@ class YoloDetector:
             except Exception as e:
                 print(f"YOLO-NAS load failed ({e}) — using Hough fallback")
         else:
-            print("No YOLO weights found — using Hough+CSRT for ball detection")
+            _msg = (
+                "WARN: YOLO-NAS shot-detection weights not found "
+                f"(looked for: {weight_path!r}). "
+                "Shot-attempt / made-basket detection will be disabled. "
+                "Ball tracking is unaffected (uses separate yolov8n_ball engine). "
+                "To restore: place YOLO-NAS weights at the configured path."
+            )
+            log.warning(_msg)
+            print(_msg, file=sys.stderr)
 
     @property
     def available(self) -> bool:
@@ -1514,6 +1525,7 @@ class UnifiedPipeline:
         # FIX 4: transition time tracking
         _transition_frames: Optional[int] = None
         _poss_crossed_halfcourt: bool = False
+        _last_real_poss_team: str = ""  # FIX-POSS: last non-empty team to hold ball
         # FIX 5: second chance tracking
         _poss_shot_count: Dict[int, int] = {}
         # Fix 1: Replay detection — track previous OCR clock value per period.
@@ -2148,7 +2160,15 @@ class UnifiedPipeline:
                 # Wire flag into possession classifier so shot clock resets to 14s on off-rebound
                 self.poss_cls._poss_is_off_rebound = _poss_is_off_rebound
 
-                possession_id   += 1
+                # FIX-POSS: only increment when a NEW non-empty team gets the ball.
+                # Empty frames are transient (briefly lost ball detection — same
+                # possession continues).  team→empty must NOT end a possession; only
+                # a different real team taking the ball should increment.
+                # Previous guard `(curr_poss or poss_team_prev)` wrongly fired on
+                # team→empty transitions, inflating possession_id on every ball loss.
+                if curr_poss and curr_poss != _last_real_poss_team:
+                    possession_id        += 1
+                    _last_real_poss_team  = curr_poss
                 possession_start = frame_idx
                 possession_buf   = []
                 possession_dur   = 1 if curr_poss else 0
@@ -2711,6 +2731,10 @@ class UnifiedPipeline:
             # BUG1 fix: rewrite shot_log.csv on disk so mid-loop flushed rows get
             # canonical team abbreviations (team column) + populated team_abbrev column.
             self._backfill_shot_log_team_abbrev(_abbrev_map)
+
+        # BUG-FIX: remap frame-based possession_id → sequential 0-based IDs so
+        # tracking_data + shot_log join cleanly to possessions.csv (was 97% mismatch).
+        self._remap_possession_ids_for_join()
 
         # DB writes (SQLite by default, PostgreSQL when DATABASE_URL is set)
         self._db_write_shot_log(shot_log_rows)
@@ -3949,6 +3973,77 @@ class UnifiedPipeline:
             print(f"  [shot_log team_abbrev] rewrote {len(_rows)} rows; {_resolved} resolved")
         except Exception as _e:
             print(f"  [shot_log team_abbrev] rewrite failed: {_e}")
+
+    def _remap_possession_ids_for_join(self) -> None:
+        """BUG-FIX: Remap frame-based possession_id to sequential 0-based IDs so
+        tracking_data.csv and shot_log.csv join cleanly to possessions.csv.
+
+        After _export_possessions_csv runs, possessions.csv contains the surviving
+        possessions (filtered, merged) with their original frame-based IDs.  This
+        method reads possessions.csv, builds a {frame_based_pid -> sequential_pid}
+        dict (0..N-1 in row order), then rewrites tracking_data.csv and shot_log.csv
+        atomically via temp-file replace.  Called near the end of process(), after all
+        other backfill methods.
+        """
+        poss_path     = os.path.join(self._data_dir, "possessions.csv")
+        tracking_path = os.path.join(self._data_dir, "tracking_data.csv")
+        shot_path     = os.path.join(self._data_dir, "shot_log.csv")
+
+        if not os.path.exists(poss_path):
+            return
+
+        # Build frame_pid -> sequential_pid map from possessions.csv
+        try:
+            with open(poss_path, newline="", encoding="utf-8") as _f:
+                _poss_rows = list(csv.DictReader(_f))
+        except Exception as _e:
+            print(f"  [poss_id_remap] failed reading possessions.csv: {_e}")
+            return
+
+        pid_map: dict = {}
+        for _seq, _prow in enumerate(_poss_rows):
+            _frame_pid = _prow.get("possession_id")
+            if _frame_pid is not None:
+                try:
+                    pid_map[int(_frame_pid)] = _seq
+                except ValueError:
+                    pass
+
+        if not pid_map:
+            print("  [poss_id_remap] no possession_id found in possessions.csv — skipped")
+            return
+
+        def _rewrite(path: str) -> None:
+            if not os.path.exists(path):
+                return
+            try:
+                with open(path, newline="", encoding="utf-8") as _f:
+                    reader = csv.DictReader(_f)
+                    _fields = list(reader.fieldnames or [])
+                    _rows   = list(reader)
+                _remapped = 0
+                for _row in _rows:
+                    _old = _row.get("possession_id")
+                    if _old is not None and _old != "":
+                        try:
+                            _new = pid_map.get(int(_old))
+                            if _new is not None:
+                                _row["possession_id"] = str(_new)
+                                _remapped += 1
+                        except ValueError:
+                            pass
+                _tmp = path + ".tmp"
+                with open(_tmp, "w", newline="", encoding="utf-8") as _f:
+                    w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                    w.writeheader()
+                    w.writerows(_rows)
+                os.replace(_tmp, path)
+                print(f"  [poss_id_remap] {os.path.basename(path)}: {_remapped}/{len(_rows)} rows remapped")
+            except Exception as _e:
+                print(f"  [poss_id_remap] {os.path.basename(path)} rewrite failed: {_e}")
+
+        _rewrite(tracking_path)
+        _rewrite(shot_path)
 
     @staticmethod
     def _classify_shot_creation(
