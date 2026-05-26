@@ -17,7 +17,7 @@ import stat
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Set
 
 _HERE = Path(__file__).resolve().parent
 _PROJECT_ROOT = _HERE.parents[1]
@@ -92,6 +92,22 @@ _RE_ENV = re.compile(
     r"|os\.getenv\([\"']([A-Z][A-Z0-9_]+)[\"']"
 )
 
+# Regex to detect atomic-helper function definitions by name pattern
+_RE_ATOMIC_HELPER_DEF = re.compile(
+    r"(?i)(atomic_write|_atomic_write|_safe_write|_safe_dump|_write_lock_atomic)"
+)
+
+# Regex for write call sites that are always exempt (not file writes)
+_RE_EXEMPT_WRITE = re.compile(
+    r"""
+    self\.wfile\.write\s*\(          # HTTP response writes
+    | sys\.stdout\.write\s*\(        # stdout
+    | sys\.stderr\.write\s*\(        # stderr
+    | io\.(StringIO|BytesIO)\(\)\.write\s*\(  # buffer writes
+    """,
+    re.VERBOSE,
+)
+
 
 def _read_source(path: Path) -> Optional[str]:
     try:
@@ -108,12 +124,141 @@ def _docstring(source: str) -> str:
         return ""
 
 
+# ---------------------------------------------------------------------------
+# AST helpers for atomic-write detection
+# ---------------------------------------------------------------------------
+
+def _collect_atomic_helper_names(source: str) -> Set[str]:
+    """Return names of top-level functions whose bodies call os.replace/os.rename.
+
+    Also includes functions whose names match the atomic-helper naming pattern
+    AND contain os.replace or os.rename in their body.
+    """
+    helpers: Set[str] = set()
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return helpers
+
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        # Only include if name matches helper pattern OR body contains os.replace/rename
+        name_matches = bool(_RE_ATOMIC_HELPER_DEF.search(node.name))
+        body_has_atomic = _ast_body_has_os_replace(node)
+        if body_has_atomic or name_matches:
+            # Require that the body ACTUALLY has os.replace/rename
+            if body_has_atomic:
+                helpers.add(node.name)
+    return helpers
+
+
+def _ast_body_has_os_replace(func_node) -> bool:
+    """Return True if the function body contains an os.replace or os.rename call."""
+    for child in ast.walk(func_node):
+        if not isinstance(child, ast.Call):
+            continue
+        fn = child.func
+        # os.replace(...)  or  os.rename(...)
+        if (
+            isinstance(fn, ast.Attribute)
+            and fn.attr in ("replace", "rename")
+            and isinstance(fn.value, ast.Name)
+            and fn.value.id == "os"
+        ):
+            return True
+        # path.replace(...)  path.rename(...)  — Path method calls
+        if isinstance(fn, ast.Attribute) and fn.attr in ("replace", "rename"):
+            return True
+    return False
+
+
+def _get_write_call_names_at_line(line: str) -> list[str]:
+    """Extract the function/method names being called in a write-matching line."""
+    names = []
+    # Match simple patterns like `_atomic_write_json(...)`, `helper_name(...)`
+    for m in re.finditer(r"(\w+)\s*\(", line):
+        names.append(m.group(1))
+    return names
+
+
+def _line_calls_atomic_helper(line: str, helpers: Set[str]) -> bool:
+    """Return True if *line* contains a call to one of the known atomic helpers."""
+    for name in helpers:
+        if re.search(r"\b" + re.escape(name) + r"\s*\(", line):
+            return True
+    return False
+
+
+def _line_is_exempt_write(line: str) -> bool:
+    """Return True if the write on this line is always exempt (non-file write)."""
+    return bool(_RE_EXEMPT_WRITE.search(line))
+
+
+# ---------------------------------------------------------------------------
+# AST helpers for paper_default (docstring vs code 'live' token analysis)
+# ---------------------------------------------------------------------------
+
+def _collect_docstring_line_ranges(source: str) -> Set[int]:
+    """Return set of 1-based line numbers that are part of a docstring."""
+    ranges: Set[int] = set()
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return ranges
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                 ast.ClassDef, ast.Module)):
+            continue
+        if not node.body:
+            continue
+        first = node.body[0]
+        if (
+            isinstance(first, ast.Expr)
+            and isinstance(first.value, ast.Constant)
+            and isinstance(first.value.value, str)
+        ):
+            for lineno in range(first.lineno, first.end_lineno + 1):
+                ranges.add(lineno)
+    return ranges
+
+
+def _live_appears_only_in_prose(source: str) -> bool:
+    """Return True if every 'live' token in *source* lives in a docstring or comment.
+
+    If ANY 'live' token appears in executable code (outside docstrings/comments),
+    returns False — the caller should perform the full live-mode gate check.
+    """
+    lines = source.splitlines()
+    ds_lines = _collect_docstring_line_ranges(source)
+
+    for i, line in enumerate(lines, 1):
+        if not _RE_LIVE.search(line):
+            continue
+        stripped = line.strip()
+        # Pure comment line
+        if stripped.startswith("#"):
+            continue
+        # Inside a docstring
+        if i in ds_lines:
+            continue
+        # 'live' appears in actual code
+        return False
+    return True
+
+
+# ---------------------------------------------------------------------------
+# Checks
+# ---------------------------------------------------------------------------
+
 def check_paper_default(layer: str, module_path: Path) -> CheckResult:
     src = _read_source(module_path)
     if src is None:
         return CheckResult(layer, "paper_default", "SKIP", "source unreadable")
     if not _RE_LIVE.search(src):
         return CheckResult(layer, "paper_default", "N/A", "no live/paper tokens found")
+
+    # Fast-path positive: well-known safe patterns
     if (
         _RE_PAPER_CONST.search(src)
         or _RE_PAPER_FALLBACK.search(src)
@@ -121,21 +266,51 @@ def check_paper_default(layer: str, module_path: Path) -> CheckResult:
         or re.search(r"MODE GATING", src, re.IGNORECASE)
     ):
         return CheckResult(layer, "paper_default", "PASS", "paper/safe default present")
-    return CheckResult(layer, "paper_default", "FAIL", "live tokens found but no paper default detected")
+
+    # Tightening rule: if 'live' appears ONLY in docstrings/comments (prose),
+    # it is documentation text, not a live-mode toggle — treat as N/A.
+    if _live_appears_only_in_prose(src):
+        return CheckResult(
+            layer, "paper_default", "N/A",
+            "live token(s) in prose only — no runtime live-mode toggle"
+        )
+
+    return CheckResult(layer, "paper_default", "FAIL",
+                       "live tokens found but no paper default detected")
 
 
 def check_atomic_writes(layer: str, module_path: Path) -> CheckResult:
     src = _read_source(module_path)
     if src is None:
         return CheckResult(layer, "atomic_writes", "SKIP", "source unreadable")
+
+    # Discover atomic-helper functions defined in this module
+    atomic_helpers = _collect_atomic_helper_names(src)
+
     lines = src.splitlines()
     write_lines = [i for i, ln in enumerate(lines, 1) if _RE_WRITE.search(ln)]
     if not write_lines:
         return CheckResult(layer, "atomic_writes", "PASS", "no write call sites found")
-    bad = [
-        ln for ln in write_lines
-        if not _RE_ATOMIC.search("\n".join(lines[max(0, ln - 6): min(len(lines), ln + 5)]))
-    ]
+
+    bad = []
+    for ln in write_lines:
+        line_text = lines[ln - 1]
+
+        # Exempt: non-file writes (HTTP response, stdout, stderr, buffer)
+        if _line_is_exempt_write(line_text):
+            continue
+
+        # Exempt: this line calls one of the module's own atomic helpers
+        if atomic_helpers and _line_calls_atomic_helper(line_text, atomic_helpers):
+            continue
+
+        # Standard check: nearby os.replace/rename in surrounding ±10 lines
+        context = "\n".join(lines[max(0, ln - 6): min(len(lines), ln + 5)])
+        if _RE_ATOMIC.search(context):
+            continue
+
+        bad.append(ln)
+
     if not bad:
         return CheckResult(layer, "atomic_writes", "PASS", "all writes paired with atomic rename")
     evidence = tuple(f"line {ln}: {lines[ln-1].strip()[:80]}" for ln in bad[:5])

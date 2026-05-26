@@ -11,12 +11,27 @@ Public API
     parse_fd_contest(fd_json) -> SlateContest
     save_slate(slate, out_dir) -> str
     main()   CLI --book {dk,fd,both} --date YYYY-MM-DD --out --paper
+
+Paper vs Live Mode
+------------------
+When PAPER_MODE is True (the default), the module skips all live HTTP
+requests to DraftKings and FanDuel endpoints and falls back immediately
+to the local cache or seed file.  No network calls are made in paper mode.
+When PAPER_MODE is False (SUBMISSION_MODE=live), live HTTP is attempted
+first, then cache, then seed.
+
+    PAPER_MODE = (SUBMISSION_MODE != "live")   # module-level constant
+
+Environment Variables:
+    SUBMISSION_MODE   "paper" (default) → skip HTTP; "live" → attempt HTTP first.
+                      Any value other than "live" is treated as paper mode.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -24,6 +39,9 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
+
+# Paper vs live mode gate — default is paper (no HTTP calls).
+PAPER_MODE: bool = os.environ.get("SUBMISSION_MODE", "paper").lower() != "live"
 
 _SCRIPT_DIR  = Path(__file__).resolve().parent
 _PROJECT_DIR = _SCRIPT_DIR.parent.parent
@@ -350,7 +368,7 @@ def _parse_fd_payload(payload: dict) -> List[SlateContest]:
 def get_dfs_slate(
     book: str,
     date: str,
-    paper: bool = False,
+    paper: Optional[bool] = None,
     out_dir: str = "data/dfs_slates",
 ) -> Optional[List[SlateContest]]:
     """
@@ -363,6 +381,9 @@ def get_dfs_slate(
     Returns:
         List[SlateContest] (may be empty if all locked), or None if all tiers fail.
     """
+    # Resolve paper flag: explicit caller override → else module-level PAPER_MODE.
+    if paper is None:
+        paper = PAPER_MODE
     book = book.lower()
     cache_p = _cache_path(book, date, out_dir)
     seed_p  = _seed_path(book, date, out_dir)

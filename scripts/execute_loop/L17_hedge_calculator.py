@@ -17,6 +17,22 @@ CLI
     python L17_hedge_calculator.py recommend \\
         --bet '{"bet_id":"X","side":"OVER","stake":100,"odds_american":-110,"status":"OPEN"}' \\
         --market '{"opposite_side":"UNDER","odds_american_opposite":200,"book":"DK"}'
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+which control paper-vs-live behaviour individually. This module makes no
+live API calls of its own — hedge math is pure arithmetic over input dicts
+(open_bet, live_market) and does not touch any exchange client directly.
+
+Live mode for downstream calls is enabled only when the per-exchange env var
+(e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+defers to those defaults.
+
+Environment Variables
+---------------------
+None. This module reads no environment variables directly. All paper/live
+gating is delegated to the L9-L12 exchange clients it composes.
 """
 from __future__ import annotations
 

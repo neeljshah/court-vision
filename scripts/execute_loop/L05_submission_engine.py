@@ -9,6 +9,44 @@ Mode: SUBMISSION_MODE=paper (default) | live (requires USER_TOKEN + book gates).
 CLI:
     python L05_submission_engine.py submit --book {dk|fd} --contest_id X --lineup PATH [--live]
     python L05_submission_engine.py status --submission_id X
+
+Environment Variables:
+    SUBMISSION_MODE — Controls paper vs live submission routing.
+        "paper" (default when absent): all submissions are logged locally to
+        data/ledger/paper_submissions.json and no real money is wagered.
+        "live": activates real API calls; requires USER_TOKEN + book-specific gates.
+
+    USER_TOKEN — Bearer token used in the Authorization header for all live API
+        requests (DraftKings and FanDuel). Required when SUBMISSION_MODE=live;
+        if absent in live mode, _check_live_gates raises PermissionError and
+        the submission is blocked. Defaults to empty string (disables live calls).
+
+    DK_API_KEY — DraftKings API key sent as the X-Api-Key header for DK live
+        submissions. Must be non-empty when SUBMISSION_MODE=live and book=dk.
+        Absent value causes _check_live_gates to block the submission.
+
+    DK_LIVE_ENABLED — Safety flag that must equal "1" to permit live DraftKings
+        submissions. When absent or set to any other value, DK live submissions
+        are blocked regardless of DK_API_KEY. Defaults to disabled (not "1").
+
+    FD_API_KEY — FanDuel API key sent as the X-Api-Key header for FD live
+        submissions. Must be non-empty when SUBMISSION_MODE=live and book=fd.
+        Absent value causes _check_live_gates to block the submission.
+
+    FD_LIVE_ENABLED — Safety flag that must equal "1" to permit live FanDuel
+        submissions. When absent or set to any other value, FD live submissions
+        are blocked regardless of FD_API_KEY. Defaults to disabled (not "1").
+
+Paper vs Live Mode:
+    Default behavior is paper mode — no environment variables need to be set.
+    Live submission is gated by ALL of the following conditions being true:
+      1. SUBMISSION_MODE=live
+      2. USER_TOKEN is non-empty
+      3. For DK: DK_LIVE_ENABLED=1 AND DK_API_KEY is non-empty
+         For FD: FD_LIVE_ENABLED=1 AND FD_API_KEY is non-empty
+    If any gate is unsatisfied, _check_live_gates raises PermissionError and
+    submit_lineup falls back to no submission (error propagates to caller).
+    The --live CLI flag sets SUBMISSION_MODE=live in the current process only.
 """
 from __future__ import annotations
 

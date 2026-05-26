@@ -1,6 +1,6 @@
 # Execute Loop Runbook
 
-_Generated 2026-05-25 23:14 UTC — do not edit by hand._
+_Generated 2026-05-26 01:25 UTC — do not edit by hand._
 
 ## Table of Contents
 
@@ -44,6 +44,9 @@ _Generated 2026-05-25 23:14 UTC — do not edit by hand._
 - [L38 — Health dashboard](#l38--health-dashboard)
 - [L39 — Execution backtest harness](#l39--execution-backtest-harness)
 - [L40 — Multi-model dispatcher](#l40--multi-model-dispatcher)
+- [L41 — Integration harness (end-to-end)](#l41--integration-harness-(end-to-end))
+- [L42 — Production readiness checker](#l42--production-readiness-checker)
+- [L43 — Runbook generator](#l43--runbook-generator)
 - [Cross-Reference Table](#cross-reference-table)
 
 ## L01 — DK/FD slate ingester
@@ -62,6 +65,20 @@ _Generated 2026-05-25 23:14 UTC — do not edit by hand._
 >     parse_fd_contest(fd_json) -> SlateContest
 >     save_slate(slate, out_dir) -> str
 >     main()   CLI --book {dk,fd,both} --date YYYY-MM-DD --out --paper
+> 
+> Paper vs Live Mode
+> ------------------
+> When PAPER_MODE is True (the default), the module skips all live HTTP
+> requests to DraftKings and FanDuel endpoints and falls back immediately
+> to the local cache or seed file.  No network calls are made in paper mode.
+> When PAPER_MODE is False (SUBMISSION_MODE=live), live HTTP is attempted
+> first, then cache, then seed.
+> 
+>     PAPER_MODE = (SUBMISSION_MODE != "live")   # module-level constant
+> 
+> Environment Variables:
+>     SUBMISSION_MODE   "paper" (default) → skip HTTP; "live" → attempt HTTP first.
+>                       Any value other than "live" is treated as paper mode.
 
 ### Public API
 
@@ -85,12 +102,30 @@ def save_slate(slate: SlateContest, out_dir: str='data/dfs_slates') -> str
 _Write SlateContest to <out_dir>/<book>_<date>_<slate_type>.json; return path._
 
 ```python
-def get_dfs_slate(book: str, date: str, paper: bool=False, out_dir: str='data/dfs_slates') -> Optional[List[SlateContest]]
+def get_dfs_slate(book: str, date: str, paper: Optional[bool]=None, out_dir: str='data/dfs_slates') -> Optional[List[SlateContest]]
 ```
 _Fetch/parse DFS slate(s) for book on date. Three-tier fallback: HTTP → cache → seed._
 
 ```python
 def main(argv: Optional[List[str]]=None) -> None
+```
+
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `SUBMISSION_MODE` | `'paper'` |
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode
+------------------
+When PAPER_MODE is True (the default), the module skips all live HTTP
+requests to DraftKings and FanDuel endpoints and falls back immediately
+to the local cache or seed file.  No network calls are made in paper mode.
+When PAPER_MODE is False (SUBMISSION_MODE=live), live HTTP is attempted
+first, then cache, then seed.
 ```
 
 ### How to Run
@@ -244,6 +279,44 @@ conda run -n basketball_ai python scripts\execute_loop\L04_gpp_optimizer.py
 > CLI:
 >     python L05_submission_engine.py submit --book {dk|fd} --contest_id X --lineup PATH [--live]
 >     python L05_submission_engine.py status --submission_id X
+> 
+> Environment Variables:
+>     SUBMISSION_MODE — Controls paper vs live submission routing.
+>         "paper" (default when absent): all submissions are logged locally to
+>         data/ledger/paper_submissions.json and no real money is wagered.
+>         "live": activates real API calls; requires USER_TOKEN + book-specific gates.
+> 
+>     USER_TOKEN — Bearer token used in the Authorization header for all live API
+>         requests (DraftKings and FanDuel). Required when SUBMISSION_MODE=live;
+>         if absent in live mode, _check_live_gates raises PermissionError and
+>         the submission is blocked. Defaults to empty string (disables live calls).
+> 
+>     DK_API_KEY — DraftKings API key sent as the X-Api-Key header for DK live
+>         submissions. Must be non-empty when SUBMISSION_MODE=live and book=dk.
+>         Absent value causes _check_live_gates to block the submission.
+> 
+>     DK_LIVE_ENABLED — Safety flag that must equal "1" to permit live DraftKings
+>         submissions. When absent or set to any other value, DK live submissions
+>         are blocked regardless of DK_API_KEY. Defaults to disabled (not "1").
+> 
+>     FD_API_KEY — FanDuel API key sent as the X-Api-Key header for FD live
+>         submissions. Must be non-empty when SUBMISSION_MODE=live and book=fd.
+>         Absent value causes _check_live_gates to block the submission.
+> 
+>     FD_LIVE_ENABLED — Safety flag that must equal "1" to permit live FanDuel
+>         submissions. When absent or set to any other value, FD live submissions
+>         are blocked regardless of FD_API_KEY. Defaults to disabled (not "1").
+> 
+> Paper vs Live Mode:
+>     Default behavior is paper mode — no environment variables need to be set.
+>     Live submission is gated by ALL of the following conditions being true:
+>       1. SUBMISSION_MODE=live
+>       2. USER_TOKEN is non-empty
+>       3. For DK: DK_LIVE_ENABLED=1 AND DK_API_KEY is non-empty
+>          For FD: FD_LIVE_ENABLED=1 AND FD_API_KEY is non-empty
+>     If any gate is unsatisfied, _check_live_gates raises PermissionError and
+>     submit_lineup falls back to no submission (error propagates to caller).
+>     The --live CLI flag sets SUBMISSION_MODE=live in the current process only.
 
 ### Public API
 
@@ -352,7 +425,7 @@ conda run -n basketball_ai python scripts\execute_loop\L06_late_swap.py
 
 ## L07 — Settlement + P&L ledger
 
-**Status:** `shipped` | **Tests:** 19/19 | **LOC:** 315
+**Status:** `shipped` | **Tests:** 26/26 | **LOC:** —
 
 > L07_pnl_ledger.py — Settlement + P&L Ledger (execute_loop layer 7).
 > 
@@ -408,7 +481,7 @@ conda run -n basketball_ai python scripts\execute_loop\L07_pnl_ledger.py
 
 ## L08 — Drift detector
 
-**Status:** `shipped` | **Tests:** 11/11 | **LOC:** 345
+**Status:** `shipped` | **Tests:** 13/13 | **LOC:** —
 
 > L08_drift_detector.py — Model drift detection for player-prop predictions.
 > 
@@ -426,6 +499,8 @@ conda run -n basketball_ai python scripts\execute_loop\L07_pnl_ledger.py
 > CLI:
 >     python L08_drift_detector.py check         # prints summary table
 >     python L08_drift_detector.py report [--window 7]
+> 
+> Environment Variables: none
 
 ### Public API
 
@@ -582,6 +657,22 @@ conda run -n basketball_ai python scripts\execute_loop\L09_kalshi_client.py
 >     python L10_polymarket_client.py orderbook --condition_id X
 >     python L10_polymarket_client.py post --condition_id X --outcome yes --qty 100 --price 0.55 [--live]
 >     python L10_polymarket_client.py cancel --order_id X
+> 
+> Environment Variables:
+>     POLYMARKET_PRIVATE_KEY   EIP-712 signing key for the funded Polymarket wallet.
+>                              Required to enable live order submission and cancellation.
+>                              Default: absent (paper mode only; live calls raise PermissionError).
+>     POLYMARKET_USDC_FUNDED   Confirmation flag that the wallet holds sufficient USDC.
+>                              Must be set to exactly "true" (lowercase) to permit live trading.
+>                              Default: absent / any other value (live calls raise PermissionError).
+> 
+> Paper vs Live Mode:
+>     Default is PAPER.  All write operations (post_order, cancel_order) record to a local
+>     JSON ledger at data/ledger/paper_polymarket_orders.json and never contact the CLOB.
+>     Live mode is gated by _is_live_permitted(): BOTH POLYMARKET_PRIVATE_KEY (non-empty)
+>     AND POLYMARKET_USDC_FUNDED == "true" must be set, AND the caller must explicitly pass
+>     live=True to post_order() / cancel_order().  Missing either env var raises PermissionError
+>     before any network call is attempted.
 
 ### Public API
 
@@ -654,7 +745,7 @@ conda run -n basketball_ai python scripts\execute_loop\L10_polymarket_client.py
 
 ## L11 — Sporttrade client
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 355
+**Status:** `shipped` | **Tests:** 12/12 | **LOC:** —
 
 > L11_sporttrade_client.py — Sporttrade Exchange Client (PAPER / LIVE).
 > 
@@ -683,6 +774,12 @@ conda run -n basketball_ai python scripts\execute_loop\L10_polymarket_client.py
 >     python L11_sporttrade_client.py orderbook --market_id mkt_test
 >     python L11_sporttrade_client.py positions
 >     python L11_sporttrade_client.py post --market_id X --side back --qty 10 --price 55 [--live]
+> 
+> Environment Variables
+> ---------------------
+>     SPORTTRADE_LIVE_ENABLED  — set to "1" to activate live (HTTP) mode; default paper.
+>     SPORTTRADE_API_KEY       — bearer token for live REST/WS calls; required when
+>                                SPORTTRADE_LIVE_ENABLED=1.
 
 ### Public API
 
@@ -849,7 +946,7 @@ conda run -n basketball_ai python scripts\execute_loop\L12_prophet_client.py
 
 ## L13 — Cross-exchange EV engine
 
-**Status:** `shipped` | **Tests:** 8/8 | **LOC:** 410
+**Status:** `shipped` | **Tests:** 17/17 | **LOC:** —
 
 > L13_cross_exchange_ev.py — Cross-Exchange EV Engine (PAPER MODE).
 > 
@@ -872,6 +969,22 @@ conda run -n basketball_ai python scripts\execute_loop\L12_prophet_client.py
 > ---
 >     python L13_cross_exchange_ev.py find --snapshot path.csv --model preds.json [--min-ev 2.0]
 >     python L13_cross_exchange_ev.py rank --snapshot path.csv --model preds.json --top 20
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+> which control paper-vs-live behaviour individually. This module contains no
+> live API calls of its own — it only normalises orderbook data returned by
+> those clients.
+> 
+> Live mode for downstream calls is enabled only when the per-exchange env var
+> (e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+> defers to those defaults.
+> 
+> Environment Variables
+> ---------------------
+> None. This module reads no environment variables directly. All paper/live
+> gating is delegated to the L9-L12 exchange clients it composes.
 
 ### Public API
 
@@ -937,7 +1050,7 @@ conda run -n basketball_ai python scripts\execute_loop\L13_cross_exchange_ev.py
 
 ## L14 — Order manager
 
-**Status:** `shipped` | **Tests:** 8/8 | **LOC:** 533
+**Status:** `shipped` | **Tests:** 14/14 | **LOC:** —
 
 > L14_order_manager.py — Order Manager (execute_loop layer 14).
 > 
@@ -962,6 +1075,23 @@ conda run -n basketball_ai python scripts\execute_loop\L13_cross_exchange_ev.py
 >     python L14_order_manager.py update
 >     python L14_order_manager.py reprice --order-id X --new-price 60
 >     python L14_order_manager.py cancel-stale [--max-age-sec 1800]
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+> which control paper-vs-live behaviour individually. This module makes no
+> live API calls of its own — order tracking, fill detection, repricing, and
+> cancellation all delegate to the exchange clients in L9-L12, which each
+> carry their own paper/live gate.
+> 
+> Live mode for downstream calls is enabled only when the per-exchange env var
+> (e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+> defers to those defaults.
+> 
+> Environment Variables
+> ---------------------
+> None. This module reads no environment variables directly. All paper/live
+> gating is delegated to the L9-L12 exchange clients it composes.
 
 ### Public API
 
@@ -1007,6 +1137,18 @@ _Cancel orders older than max_age_seconds via exchange.cancel_order._
 def reprice_order(order: OrderState, new_price: int) -> bool
 ```
 _Cancel existing order and post a new one at new_price._
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+which control paper-vs-live behaviour individually. This module makes no
+live API calls of its own — order tracking, fill detection, repricing, and
+cancellation all delegate to the exchange clients in L9-L12, which each
+carry their own paper/live gate.
+```
 
 ### How to Run
 
@@ -1093,7 +1235,7 @@ conda run -n basketball_ai python scripts\execute_loop\L15_market_making.py
 
 ## L16 — Live trader
 
-**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 560
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** —
 
 > L16_live_trader.py — Live Trader (PAPER MODE STRICT).
 > 
@@ -1188,6 +1330,22 @@ conda run -n basketball_ai python scripts\execute_loop\L16_live_trader.py
 >     python L17_hedge_calculator.py recommend \
 >         --bet '{"bet_id":"X","side":"OVER","stake":100,"odds_american":-110,"status":"OPEN"}' \
 >         --market '{"opposite_side":"UNDER","odds_american_opposite":200,"book":"DK"}'
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+> which control paper-vs-live behaviour individually. This module makes no
+> live API calls of its own — hedge math is pure arithmetic over input dicts
+> (open_bet, live_market) and does not touch any exchange client directly.
+> 
+> Live mode for downstream calls is enabled only when the per-exchange env var
+> (e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+> defers to those defaults.
+> 
+> Environment Variables
+> ---------------------
+> None. This module reads no environment variables directly. All paper/live
+> gating is delegated to the L9-L12 exchange clients it composes.
 
 ### Public API
 
@@ -1212,6 +1370,17 @@ _Recommend a hedge action for an open bet given a live opposite-side market._
 
 ```python
 def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+which control paper-vs-live behaviour individually. This module makes no
+live API calls of its own — hedge math is pure arithmetic over input dicts
+(open_bet, live_market) and does not touch any exchange client directly.
 ```
 
 ### How to Run
@@ -1493,7 +1662,7 @@ conda run -n basketball_ai python scripts\execute_loop\L21_lineup_watcher.py
 
 ## L22 — Slack/Discord alerting
 
-**Status:** `shipped` | **Tests:** 8/8 | **LOC:** 409
+**Status:** `shipped` | **Tests:** 10/10 | **LOC:** —
 
 > L22_alerting.py — Slack / Discord alerting wrapper (BUILD L22).
 > 
@@ -1509,13 +1678,39 @@ conda run -n basketball_ai python scripts\execute_loop\L21_lineup_watcher.py
 >     send_drift_alert(stat, observed_mae, expected_mae, days_window) -> bool
 >     flush_pending() -> int
 > 
-> ENV VARS
-> --------
->     SLACK_WEBHOOK_URL            (optional)
->     DISCORD_WEBHOOK_URL          (optional)
->     DISCORD_<CHANNEL>_WEBHOOK_URL (per-channel Discord override)
->     ALERTS_ENABLED               "true"|"false", default "false"
->     ALERTS_RATE_LIMIT_PER_MIN    int, default 30
+> Environment Variables
+> ---------------------
+>     SLACK_WEBHOOK_URL
+>         Incoming-webhook URL for Slack. When absent (or empty) Slack delivery
+>         is skipped; test-mode local write is used instead.
+> 
+>     DISCORD_WEBHOOK_URL
+>         Default incoming-webhook URL for Discord. Applies to all channels
+>         unless overridden by a per-channel variable. When absent, Discord
+>         delivery is skipped.
+> 
+>     DISCORD_<CHANNEL>_WEBHOOK_URL
+>         Per-channel Discord webhook override (e.g. DISCORD_EDGES_WEBHOOK_URL).
+>         ``<CHANNEL>`` is the upper-cased channel name (edges, fills, drift,
+>         drawdown, news, settle, system). Takes precedence over
+>         DISCORD_WEBHOOK_URL for that channel.
+> 
+>     ALERTS_ENABLED
+>         Set to "true" to enable live HTTP delivery to Slack/Discord.
+>         Any other value (including absent) disables live delivery and
+>         writes alerts to the local log file in test mode (default: "false").
+> 
+>     ALERTS_RATE_LIMIT_PER_MIN
+>         Maximum number of alerts dispatched per 60-second rolling window via
+>         the token-bucket limiter. Excess alerts are enqueued and replayed via
+>         flush_pending(). Integer; default 30.
+> 
+> Atomic writes
+> -------------
+>     alert_queue.json is written atomically via a sibling temp file +
+>     os.replace() so a crash mid-write never leaves a partial/corrupt queue.
+>     The daily log file in _LOG_DIR uses append mode; partial appends are
+>     benign for log-only files and do not require atomic replacement.
 > 
 > CLI
 > ---
@@ -1569,7 +1764,7 @@ conda run -n basketball_ai python scripts\execute_loop\L22_alerting.py
 
 ## L23 — Status dashboard
 
-**Status:** `shipped` | **Tests:** 5/5 | **LOC:** 669
+**Status:** `shipped` | **Tests:** 7/7 | **LOC:** —
 
 > L23_status_dashboard.py — Local HTTP Status Dashboard (BUILD L23).
 > 
@@ -1586,6 +1781,13 @@ conda run -n basketball_ai python scripts\execute_loop\L22_alerting.py
 >     format_pct(x) -> str
 >     svg_sparkline(values, width, height) -> str
 >     staleness_days(path) -> int | None
+>     _atomic_write_text(path, text) -> None
+>     _atomic_write_json(path, payload) -> None
+> 
+> Environment Variables
+> ---------------------
+>     none — this module reads no environment variables directly.
+>     (Flask/http.server host/port are passed as arguments, not env vars.)
 
 ### Public API
 
@@ -1636,7 +1838,7 @@ conda run -n basketball_ai python scripts\execute_loop\L23_status_dashboard.py
 
 ## L24 — Nightly retrain cron
 
-**Status:** `shipped` | **Tests:** 15/15 | **LOC:** 669
+**Status:** `shipped` | **Tests:** 22/22 | **LOC:** —
 
 > L24_nightly_retrain.py — Nightly model retrain cron (BUILD L24).
 > 
@@ -1835,7 +2037,7 @@ conda run -n basketball_ai python scripts\execute_loop\L26_account_hygiene.py
 
 ## L27 — Tax tracking
 
-**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 305
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** —
 
 > L27_tax_tracking.py — Tax estimation and 1099-ready export (execute_loop layer 27).
 > 
@@ -1846,6 +2048,13 @@ conda run -n basketball_ai python scripts\execute_loop\L26_account_hygiene.py
 >     python L27_tax_tracking.py report --year 2026
 >     python L27_tax_tracking.py quarterly --year 2026 --quarter 2
 >     python L27_tax_tracking.py export-1099 --year 2026 [--out path.csv]
+> 
+> Environment Variables:
+>     FEDERAL_TAX_RATE  — Federal marginal tax rate applied to net gambling winnings.
+>                         Float in [0, 1]. Default: 0.24 (24% bracket).
+>     STATE_TAX_RATE    — State marginal tax rate applied to net gambling winnings.
+>                         Float in [0, 1]. Default: 0.00 (no state tax; set for
+>                         your jurisdiction, e.g. 0.05 for 5%).
 
 ### Public API
 
@@ -1910,6 +2119,18 @@ conda run -n basketball_ai python scripts\execute_loop\L27_tax_tracking.py
 >     python L28_withdrawal_automation.py queue --book dk --amount 5000
 >     python L28_withdrawal_automation.py execute --queue-id X --token WITHDRAW_AUTHORIZED
 >     python L28_withdrawal_automation.py list-pending
+> 
+> Paper vs Live Mode:
+>     This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
+>     expresses this intent. All withdrawal executions record entries with
+>     status='queued_paper' unless live mode is explicitly enabled via the env var
+>     below. Live mode must never be enabled in automated/CI contexts.
+> 
+> Environment Variables:
+>     WITHDRAWAL_LIVE_ENABLED — Set to "1" to enable live withdrawal execution.
+>         Default: "0" (paper mode). When unset or "0", execute_withdrawal records
+>         entries with status='queued_paper' and does not call any book API.
+>         Required to be absent (or "0") for all paper / simulation runs.
 
 ### Public API
 
@@ -1945,7 +2166,18 @@ def main() -> None
 
 | Name | Default / Value |
 |------|----------------|
+| `PAPER_MODE` | `True` |
 | `WITHDRAWAL_LIVE_ENABLED` | `'0'` |
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode:
+    This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
+    expresses this intent. All withdrawal executions record entries with
+    status='queued_paper' unless live mode is explicitly enabled via the env var
+    below. Live mode must never be enabled in automated/CI contexts.
+```
 
 ### How to Run
 
@@ -2192,7 +2424,7 @@ conda run -n basketball_ai python scripts\execute_loop\L34_variance_budgeter.py
 
 ## L35 — Risk-of-ruin monitor
 
-**Status:** `shipped` | **Tests:** 11/11 | **LOC:** 335
+**Status:** `shipped` | **Tests:** 11/11 | **LOC:** —
 
 > L35_risk_of_ruin.py — Risk-of-Ruin Monitor (BUILD L35).
 > 
@@ -2356,7 +2588,7 @@ conda run -n basketball_ai python scripts\execute_loop\L37_postmortem.py
 
 ## L38 — Health dashboard
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 290
+**Status:** `shipped` | **Tests:** 12/12 | **LOC:** —
 
 > L38_health_dashboard.py — System Health Dashboard (execute_loop layer 38).
 > 
@@ -2376,6 +2608,15 @@ conda run -n basketball_ai python scripts\execute_loop\L37_postmortem.py
 >     python L38_health_dashboard.py check [--name <check>]
 >     python L38_health_dashboard.py serve [--port 9876]
 >     python L38_health_dashboard.py once   # exit 0/1/2 = HEALTHY/DEGRADED/FAILED
+> 
+> Environment Variables
+> ---------------------
+>     HEALTH_FILE     — Override path for system_health.json persistence file.
+>                       Default: <project_root>/data/ledger/system_health.json
+>     HEALTH_CACHE_TTL — In-process cache TTL in seconds before re-reading disk.
+>                       Default: 60
+>     HEALTH_PORT     — Default HTTP server port when --port is not given.
+>                       Default: 9876
 
 ### Public API
 
@@ -2408,6 +2649,13 @@ def run_check(name: str) -> HealthCheck
 def main(argv=None)
 ```
 
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `HEALTH_FILE` | `str(PROJECT_DIR / 'data' / 'ledger' / 'system_health.json')` |
+| `HEALTH_CACHE_TTL` | `'60'` |
+
 ### How to Run
 
 ```bash
@@ -2416,7 +2664,7 @@ conda run -n basketball_ai python scripts\execute_loop\L38_health_dashboard.py
 
 ## L39 — Execution backtest harness
 
-**Status:** `shipped` | **Tests:** 17/17 | **LOC:** 405
+**Status:** `shipped` | **Tests:** 19/19 | **LOC:** —
 
 > L39 Execution Backtest Harness — simulate historical bet execution vs real closing lines.
 > 
@@ -2429,6 +2677,9 @@ conda run -n basketball_ai python scripts\execute_loop\L38_health_dashboard.py
 > Run:
 >     python L39_exec_backtest.py run --lines path.csv --kelly 0.25 --edge 5.0
 >     python L39_exec_backtest.py compare --runs id1,id2
+> 
+> Environment Variables:
+>     none
 
 ### Public API
 
@@ -2529,6 +2780,145 @@ def main(argv=None) -> None
 
 ```bash
 conda run -n basketball_ai python scripts\execute_loop\L40_multi_model_dispatcher.py
+```
+
+## L41 — Integration harness (end-to-end)
+
+**Status:** `shipped` | **Tests:** 11/11 | **LOC:** —
+
+> L41_integration_harness.py — End-to-end integration harness for the autonomous NBA execution loop.
+> 
+> Purpose
+> -------
+> Wire every shipped layer (L01–L37) end-to-end against a deterministic stub slate
+> and verify the full pipeline executes without live API calls.
+> 
+> Environment variables
+> ---------------------
+> SUBMISSION_MODE : forced to "paper" for every run (never "live" inside the harness).
+> 
+> Invariants
+> ----------
+> - No live API calls are made; all HTTP is blocked by design in stub mode.
+> - All RNG is seeded via np.random.default_rng(seed) for full reproducibility.
+> - Missing layers are soft-imported and result in SKIP stages, not failures.
+> - Critical-stage failures propagate as SKIP_DEPENDS to downstream stages.
+
+### Public API
+
+```python
+class IntegrationHarness
+```
+_End-to-end integration harness for the NBA execution loop._
+
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `SUBMISSION_MODE` | `'paper'` |
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L41_integration_harness.py
+```
+
+## L42 — Production readiness checker
+
+**Status:** `shipped` | **Tests:** 8/8 | **LOC:** 275
+
+> L42_production_readiness.py — Production Readiness Checker for L1-L40.
+> 
+> Read-only: never modifies any audited module or data file.
+> 
+> Environment variables:
+>     L42_DATA_DIR   Override project data/ path (default: PROJECT_ROOT/data/)
+>     L42_STRICT     Set to "1" to exit 1 if any FAIL found (same as --strict CLI flag)
+
+### Public API
+
+```python
+class CheckResult
+```
+
+```python
+class ReadinessReport
+```
+
+```python
+def check_paper_default(layer: str, module_path: Path) -> CheckResult
+```
+
+```python
+def check_atomic_writes(layer: str, module_path: Path) -> CheckResult
+```
+
+```python
+def check_env_var_documentation(layer: str, module_path: Path) -> CheckResult
+```
+
+```python
+def check_file_perms(data_dir: Path) -> list[CheckResult]
+```
+
+```python
+class ReadinessChecker
+```
+
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `L42_DATA_DIR` | `None` |
+| `L42_STRICT` | `''` |
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L42_production_readiness.py
+```
+
+## L43 — Runbook generator
+
+**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 295
+
+> L43_runbook_generator.py — Runbook documentation generator for the execute_loop.
+> 
+> Reads every L*.py module via AST (never imports them) and writes RUNBOOK.md.
+> 
+> Environment variables
+> ---------------------
+>   None required. Defaults work out-of-the-box.
+> 
+> Invariants
+> ----------
+>   - Pure stdlib; no third-party imports.
+>   - Only top-level (non-private) symbols are documented.
+>   - Write is atomic: tmp file + os.replace so no partial state.
+>   - L29 (gated, no module file) renders as a placeholder section.
+
+### Public API
+
+```python
+class PublicSymbol
+```
+
+```python
+class LayerInfo
+```
+
+```python
+class RunbookGenerator
+```
+
+```python
+def main(argv: Optional[list[str]]=None) -> int
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L43_runbook_generator.py
 ```
 
 ## Cross-Reference Table

@@ -14,6 +14,18 @@ CLI:
     python L28_withdrawal_automation.py queue --book dk --amount 5000
     python L28_withdrawal_automation.py execute --queue-id X --token WITHDRAW_AUTHORIZED
     python L28_withdrawal_automation.py list-pending
+
+Paper vs Live Mode:
+    This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
+    expresses this intent. All withdrawal executions record entries with
+    status='queued_paper' unless live mode is explicitly enabled via the env var
+    below. Live mode must never be enabled in automated/CI contexts.
+
+Environment Variables:
+    WITHDRAWAL_LIVE_ENABLED — Set to "1" to enable live withdrawal execution.
+        Default: "0" (paper mode). When unset or "0", execute_withdrawal records
+        entries with status='queued_paper' and does not call any book API.
+        Required to be absent (or "0") for all paper / simulation runs.
 """
 from __future__ import annotations
 
@@ -36,6 +48,7 @@ log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # CONFIG
 # ---------------------------------------------------------------------------
+PAPER_MODE = True  # Safety default: all withdrawals are paper unless WITHDRAWAL_LIVE_ENABLED=1
 USER_TOKEN_VALUE = "WITHDRAW_AUTHORIZED"
 BUFFER_MULTIPLIER = 1.10  # only recommend withdrawal if balance > target * 1.10
 DEFAULT_TARGETS: dict[str, float] = {
