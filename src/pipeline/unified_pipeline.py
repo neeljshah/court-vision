@@ -1616,11 +1616,34 @@ class UnifiedPipeline:
             sb_state = self.scoreboard_ocr.read(frame)
             _sc_result = self.scoreboard_ocr.current_scan_result  # None|True|False
             if _sc_result is not None:   # an actual OCR scan ran this frame
+                # R8: Always log any scan that parsed ≥1 field. Previously gated on
+                # _sc_result (shot_clock parsed) which dropped 99% of scoreboard reads.
+                _gclock  = (sb_state.get("game_clock_sec") or -1.0) if sb_state else -1.0
+                _gperiod = (sb_state.get("period") or -1)           if sb_state else -1
+                _sc_fields = [
+                    _gclock  > 0,
+                    sb_state.get("shot_clock",  -1) > 0,
+                    sb_state.get("home_score",  -1) >= 0,
+                    sb_state.get("away_score",  -1) >= 0,
+                    _gperiod > 0,
+                ]
+                _sc_conf = sum(_sc_fields) / len(_sc_fields)
+                _sb_conf = _sc_conf   # preserved for shot_log gate downstream (line ~2328)
+                self._last_sb_conf = _sc_conf
+                if any(_sc_fields):
+                    scoreboard_log_rows.append({
+                        "frame":       frame_idx,
+                        "game_clock":  f"{int(_gclock)//60}:{int(_gclock)%60:02d}" if _gclock > 0 else "",
+                        "shot_clock":  sb_state.get("shot_clock", "") if sb_state.get("shot_clock", -1) > 0 else "",
+                        "home_score":  sb_state.get("home_score", "") if sb_state.get("home_score", -1) >= 0 else "",
+                        "away_score":  sb_state.get("away_score", "") if sb_state.get("away_score", -1) >= 0 else "",
+                        "period":      _gperiod if _gperiod > 0 else "",
+                        "confidence":  round(_sc_conf, 3),
+                    })
+
                 if _sc_result:
                     self._sc_absent_streak     = 0
                     self._sc_ever_seen         = True
-                    _gclock  = (sb_state.get("game_clock_sec") or -1.0) if sb_state else -1.0
-                    _gperiod = (sb_state.get("period") or -1)           if sb_state else -1
                     if (_gclock > 0 and _prev_game_clock_sec > 0
                             and _gperiod > 0 and _gperiod == _prev_period
                             and _gclock > _prev_game_clock_sec + 2.0):
@@ -1653,27 +1676,6 @@ class UnifiedPipeline:
                             print(f"[shot_clock] Period {_last_scoreboard_period}→{_gperiod}: "
                                   f"possession_start reset to frame {frame_idx}")
                         _last_scoreboard_period = _gperiod
-
-                    # ── Scoreboard log + period-start auto-detection ──────
-                    _sc_fields = [
-                        _gclock  > 0,
-                        sb_state.get("shot_clock",  -1) > 0,
-                        sb_state.get("home_score",  -1) >= 0,
-                        sb_state.get("away_score",  -1) >= 0,
-                        _gperiod > 0,
-                    ]
-                    _sc_conf = sum(_sc_fields) / len(_sc_fields)
-                    _sb_conf = _sc_conf
-                    self._last_sb_conf = _sb_conf
-                    scoreboard_log_rows.append({
-                        "frame":       frame_idx,
-                        "game_clock":  f"{int(_gclock)//60}:{int(_gclock)%60:02d}" if _gclock > 0 else "",
-                        "shot_clock":  sb_state.get("shot_clock", "") if sb_state.get("shot_clock", -1) > 0 else "",
-                        "home_score":  sb_state.get("home_score", "") if sb_state.get("home_score", -1) >= 0 else "",
-                        "away_score":  sb_state.get("away_score", "") if sb_state.get("away_score", -1) >= 0 else "",
-                        "period":      _gperiod if _gperiod > 0 else "",
-                        "confidence":  round(_sc_conf, 3),
-                    })
 
                     if (not _period_start_detected
                             and _sc_conf >= 0.7
@@ -2321,12 +2323,27 @@ class UnifiedPipeline:
                             _jnum = self._player_resolver.get_jersey_number(shooter["player_id"])
                             if _jnum:
                                 _shooter_name = f"#{_jnum}"
-                    # FIX 6: gate shot_clock by scoreboard confidence
-                    _shot_clock_val = (
-                        sb_state.get("shot_clock", "")
-                        if (sb_state.get("shot_clock", -1) > 0 and _sb_conf >= 0.4)
-                        else ""
-                    )
+                    # R8: shot_clock cascade — OCR (high-conf) → derived est → recent log
+                    _shot_clock_val = ""
+                    if sb_state.get("shot_clock", -1) > 0 and _sb_conf >= 0.4:
+                        _shot_clock_val = sb_state["shot_clock"]
+                    else:
+                        # Derived from possession_start (same formula as tracking_data rows :2247)
+                        _sc_est = min(24.0, max(0.0, (
+                            14.0 - (frame_idx - possession_start) / fps
+                            if _poss_is_off_rebound
+                            else 24.0 - (frame_idx - possession_start) / fps
+                        )))
+                        if _sc_est > 0:
+                            _shot_clock_val = round(_sc_est, 1)
+                        else:
+                            # Last resort: scan recent scoreboard log for confident shot_clock
+                            for _slog in reversed(scoreboard_log_rows[-30:]):
+                                _slog_sc = _slog.get("shot_clock", "")
+                                _slog_cf = _slog.get("confidence", 0) or 0
+                                if _slog_sc not in ("", None) and float(_slog_cf) >= 0.4:
+                                    _shot_clock_val = _slog_sc
+                                    break
                     # FIX 8: use snapshotted _shot_arc_angle (not live parabola)
                     _arc_val = self.ball_det._shot_arc_angle if self.ball_det._shot_arc_angle is not None else ""
                     # closeout lookup: events flushed to _events_log_rows in FIX 1 above
@@ -2348,12 +2365,10 @@ class UnifiedPipeline:
                         "timestamp":          timestamp_sec,
                         "player_id":          shooter["player_id"],
                         "team":               shooter["team"],
-                        # BUG1 fix: write team_abbrev on every flush so mid-loop disk
-                        # rows are not stranded with raw color labels ('green'/'white').
-                        # At emit time _team_map/color_map is not yet resolved (end-of-run
-                        # only), so we write "" here; _backfill_shot_log_team_abbrev() at
-                        # end-of-run rewrites the column using the final resolved map.
-                        "team_abbrev":        "",
+                        # R8: never leave team_abbrev blank — fall back to raw color label
+                        # so downstream joins always have SOMETHING. _backfill_shot_log_team_abbrev()
+                        # rewrites this with the canonical NBA abbrev when name resolution succeeds.
+                        "team_abbrev":        shooter["team"],
                         "x_position":         shooter["x2d"],
                         "y_position":         shooter["y2d"],
                         "x_norm":             round(max(0.0, min(1.0, shooter["x2d"] / max(map_w, 1))), 4),
@@ -2376,22 +2391,32 @@ class UnifiedPipeline:
                         "fatigue_proxy":      round(
                                                  _player_dist_run.get(
                                                      shooter["player_id"], 0.0), 1),
-                        "dribble_count":      self.event_det.dribble_count,  # FIX 2
-                        "ball_shot_arc_angle": _arc_val,                     # FIX 8
-                        "catch_and_shoot":    int(self.event_det.dribble_count == 0),  # FIX 3
+                        "dribble_count":      self.event_det.dribble_count,
+                        "ball_shot_arc_angle": _arc_val,
+                        # R8: catch_and_shoot now mirrors the classifier output, not the broken dribble counter
+                        "catch_and_shoot":    0,   # filled below after _shot_creation_val is computed
                         "shot_distance":      UnifiedPipeline._dist_to_basket(
                                                   shooter["x2d"], shooter["y2d"],
-                                                  map_w, map_h),  # FIX 3
-                        "second_chance":      _second_chance,  # FIX 5
-                        "shot_creation":      UnifiedPipeline._classify_shot_creation(
-                                                  dribble_count=self.event_det.dribble_count,
-                                                  shot_zone=_shot_zone,
-                                                  vel_toward_basket=handler_vtb,
-                                                  defender_distance=(_shot_defender_dist(
-                                                      spatial, shooter, frame_tracks, map_w) or None),
-                                                  ball_shot_arc_angle=self.ball_det._shot_arc_angle or 0.0,
-                                              ),  # FIX 8
+                                                  map_w, map_h),
+                        "second_chance":      _second_chance,
+                        "shot_creation":      "",   # filled below
                     })
+                    # R8: compute classifier with per-possession event counts (reroute off dribble_count)
+                    _shot_dist_ft_local = _px_to_ft(
+                        UnifiedPipeline._dist_to_basket(shooter["x2d"], shooter["y2d"], map_w, map_h),
+                        map_w,
+                    )
+                    _shot_creation_val = UnifiedPipeline._classify_shot_creation(
+                        poss_counts=_poss_event_counts.get(possession_id, {}),
+                        shot_zone=_shot_zone,
+                        vel_toward_basket=handler_vtb,
+                        shot_dist_ft=_shot_dist_ft_local,
+                        possession_duration=possession_dur,
+                        ball_shot_arc_angle=self.ball_det._shot_arc_angle or 0.0,
+                        dribble_count=self.event_det.dribble_count,
+                    )
+                    shot_log_rows[-1]["shot_creation"]  = _shot_creation_val
+                    shot_log_rows[-1]["catch_and_shoot"] = int(_shot_creation_val == "catch_and_shoot")
 
             # ── Ball velocity (2D court px/frame) ─────────────────────────
             ball_vel_2d = 0.0
@@ -4161,27 +4186,52 @@ class UnifiedPipeline:
 
     @staticmethod
     def _classify_shot_creation(
-        dribble_count: int,
+        poss_counts: dict,
         shot_zone: str,
         vel_toward_basket: float,
-        defender_distance: float,
+        shot_dist_ft: float,
+        possession_duration: float,
         ball_shot_arc_angle: float,
+        dribble_count: int = 0,
     ) -> str:
         """
-        Returns: "catch_and_shoot" | "pull_up" | "step_back" | "floater" | "drive_layup" | "post_up" | "other"
+        R8 rewrite — uses per-possession event counts instead of the broken dribble_count
+        signal. Buckets: transition, pick_and_roll, post_up, drive_layup, floater, pull_up,
+        isolation, catch_and_shoot, other.
         """
-        if dribble_count == 0:
-            return "catch_and_shoot"
+        pc       = poss_counts or {}
+        pass_n   = pc.get("pass_count",   0)
+        screen_n = pc.get("screen_count", 0)
+        drive_n  = pc.get("drive_count",  0)
+        cut_n    = pc.get("cut_count",    0)
+        dur      = float(possession_duration or 0.0)
+        # Transition: short possession, ball moving fast at the rim
+        if 0.0 < dur < 7.0 and vel_toward_basket > 3.0:
+            return "transition"
+        # PnR: at least one screen + handler took it
+        if screen_n >= 1 and (drive_n >= 1 or dribble_count >= 2):
+            return "pick_and_roll"
+        # Drive at the rim — paint with forward velocity
         if shot_zone == "paint" and vel_toward_basket > 2.0:
             if ball_shot_arc_angle and ball_shot_arc_angle > 55:
                 return "floater"
             return "drive_layup"
-        if shot_zone in ("paint", "mid_range") and vel_toward_basket < 0.5:
+        # Post-up: paint/mid, low velocity, no drives, no cuts
+        if shot_zone in ("paint", "mid_range") and vel_toward_basket < 0.5 and drive_n == 0 and cut_n == 0:
             return "post_up"
-        if dribble_count >= 2 and vel_toward_basket < 0:
-            return "step_back"
-        if dribble_count >= 1:
+        # Pull-up: handler drove this possession
+        if drive_n >= 1 or dribble_count >= 2:
             return "pull_up"
+        # Iso: long possession, no screens, no cuts, low pass count
+        if pass_n <= 1 and screen_n == 0 and cut_n == 0 and dur >= 6.0:
+            return "isolation"
+        # Catch & shoot: pass came in, no drive, no screen (this is the strict definition)
+        if pass_n >= 1 and drive_n == 0 and screen_n == 0:
+            return "catch_and_shoot"
+        # Fallback bucket — when the upstream signals (dribble_count, events) are stale,
+        # default to catch_and_shoot ONLY if there were no plays at all; otherwise "other".
+        if dribble_count == 0 and pass_n == 0 and screen_n == 0:
+            return "catch_and_shoot"
         return "other"
 
 

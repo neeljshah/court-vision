@@ -113,7 +113,7 @@ log = logging.getLogger(__name__)
 
 _OCR_INTERVAL = 15      # FIX-J: 30→15 — halves max stale-clock gap; PBP mapper needs ±2s tolerance
 _TOP_FRAC     = 0.06    # top 6% of frame — ESPN/TNT scoreboard always in top ~5%
-_OCR_CONF_MIN = 0.35    # minimum EasyOCR confidence to accept a text token
+_OCR_CONF_MIN = 0.30    # R8: PaddleOCR clusters 0.8-0.95 — 0.30 only filters obvious garbage
 
 _DEFAULT_STATE: Dict = {
     "game_clock_sec": -1.0,
@@ -378,7 +378,7 @@ def _parse_scoreboard_text(text: str) -> Dict:
     #   "Q1", "Q 1", "Q-1", "1st", "1 ST", "1ST", "1stQTR", "FIRST", "FOURTH"
     # Group layout: g1=Q-prefixed, g2=ordinal(digit), g3=ordinal(word), g4=OT
     period = re.search(
-        r"\bQ[\s\-]?([1-4])\b"                    # Q1 / Q 1 / Q-1
+        r"Q[\s\-]?([1-4])(?:\b|ST|ND|RD|TH|QTR|QUARTER)"  # R8: Q1, Q1ST, Q1QTR stuck-together
         r"|\b([1-4])\s*(?:st|nd|rd|th)\b"         # 1st / 1 ST / 1stQTR
         r"|\b(FIRST|SECOND|THIRD|FOURTH)\b"        # spelled-out period names
         r"|\b(OT\d?)\b",                           # OT / OT1 / OT2
@@ -407,11 +407,12 @@ def _parse_scoreboard_text(text: str) -> Dict:
 
     # Cap at 120: max realistic NBA score. Prevents shot clock (1-24) and game
     # clock digits from being mistaken for team scores.
-    _score_cands_30 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 30 <= int(m) <= 120]
+    # R8: lowered floor 30→25 to accept late Q1/early Q2 broadcasts where both teams are in mid-20s
+    _score_cands_30 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 25 <= int(m) <= 175]
     _hs, _as = _find_score_pair(_score_cands_30)
     if _hs is None:
-        # Fallback: early game — allow ≥ 10, still cap at 120
-        _score_cands_10 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 10 <= int(m) <= 120]
+        # R8: fallback lowered 10→5 for early-game scores. Stays above shot-clock (1-24) and game-clock seconds tail digits.
+        _score_cands_10 = [int(m) for m in re.findall(r"\b(\d{1,3})\b", text) if 5 <= int(m) <= 175]
         _hs, _as = _find_score_pair(_score_cands_10)
     if _hs is not None:
         state["home_score"] = _hs
