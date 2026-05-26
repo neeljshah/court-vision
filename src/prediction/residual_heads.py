@@ -1,4 +1,4 @@
-"""src/prediction/residual_heads.py -- cycle R2_F (loop 5) + R3_A (loop 5) + R4_A (loop 5).
+"""src/prediction/residual_heads.py -- cycle R2_F (loop 5) + R3_A + R4_A + R10_M16.
 
 Helper module: load + apply the 7 per-stat residual LightGBM heads trained
 by train_residual_heads.py. Wired into live_engine.project_from_snapshot
@@ -9,6 +9,14 @@ apply_residual_correction_endq1.
 Artifacts (endQ3): data/models/residual_heads/{pts,reb,ast,fg3m,stl,blk,tov}.lgb
 Probe reference: scripts/probe_R2_F_residual_heads.py (SHIP=True)
 Result: PTS MAE -0.0965, 7/7 stats win, WF 4/4 folds negative.
+
+R10_M16 hot-hand streak features (this module ONLY -- endQ3 path):
+  PER-STAT SHIP for fg3m / stl / blk / tov (4/4 WF folds positive).
+  PTS / REB / AST keep the legacy 14-feature schema (probe REJECT).
+  Streak inputs (z-score L3 vs L20, consec-above-mean, n_prior) come
+  from src.prediction.streak_features; loader detects per-stat feature
+  schema via data/models/residual_heads/<stat>_meta.json. Stats with no
+  meta JSON fall back to the legacy 14-feature schema (back-compat).
 
 Artifacts (endQ2): data/models/residual_heads_endq2/{pts,reb,ast,fg3m,stl,blk,tov}.lgb
 Probe reference: scripts/probe_R3_A_residual_heads_endq2.py (SHIP=True)
@@ -23,9 +31,10 @@ Features: same 14-feature schema as endQ2 but min_through_q1 (Q1 only).
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if PROJECT_DIR not in sys.path:
@@ -39,8 +48,19 @@ HEAD_DIR_ENDQ2 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_end
 HEAD_DIR_ENDQ1 = os.path.join(PROJECT_DIR, "data", "models", "residual_heads_endq1")
 STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 
+# Legacy 14-feature schema used by R2_F endQ3 heads. PER-STAT meta JSON
+# (data/models/residual_heads/<stat>_meta.json) can override this on a
+# per-stat basis to add R10_M16 streak features.
+_LEGACY_ENDQ3_FEATURES: Tuple[str, ...] = (
+    "cur_pts", "cur_reb", "cur_ast", "cur_fg3m",
+    "cur_stl", "cur_blk", "cur_tov", "cur_pf",
+    "min_through_q3", "score_margin_abs", "is_leading",
+    "pos_C", "pos_F", "pos_G",
+)
+
 # Module-level lazy caches.
 _HEAD_CACHE: Optional[Dict[str, object]] = None
+_HEAD_META_CACHE: Optional[Dict[str, Dict]] = None
 _HEAD_CACHE_ENDQ2: Optional[Dict[str, object]] = None
 _HEAD_CACHE_ENDQ1: Optional[Dict[str, object]] = None
 _POSITIONS_CACHE: Optional[Dict[int, str]] = None
@@ -71,6 +91,54 @@ def load_heads() -> Dict[str, object]:
                     print(f"  WARN residual_heads: could not load {path}: {exc}")
     _HEAD_CACHE = heads
     return _HEAD_CACHE
+
+
+def load_head_metas() -> Dict[str, Dict]:
+    """Load per-stat endQ3 head meta JSONs (lazy, cached).
+
+    File format: data/models/residual_heads/<stat>_meta.json containing
+    at minimum {"features": [name, ...]}. Stats without a meta JSON fall
+    back to the legacy 14-feature schema at predict time.
+    """
+    global _HEAD_META_CACHE
+    if _HEAD_META_CACHE is not None:
+        return _HEAD_META_CACHE
+    metas: Dict[str, Dict] = {}
+    if os.path.isdir(HEAD_DIR):
+        for stat in STATS:
+            path = os.path.join(HEAD_DIR, f"{stat}_meta.json")
+            if os.path.exists(path):
+                try:
+                    with open(path, encoding="utf-8") as fh:
+                        metas[stat] = json.load(fh) or {}
+                except Exception as exc:
+                    print(f"  WARN residual_heads: could not load meta {path}: {exc}")
+    _HEAD_META_CACHE = metas
+    return _HEAD_META_CACHE
+
+
+def _feature_names_for_stat(stat: str) -> Tuple[str, ...]:
+    """Return the feature schema for stat's endQ3 head.
+
+    If a meta JSON declares a 'features' list, use it; otherwise fall back
+    to the legacy 14-feature schema. This lets us extend ONLY fg3m/stl/blk/tov
+    with R10_M16 streak features while pts/reb/ast keep the legacy schema.
+    """
+    metas = load_head_metas()
+    meta = metas.get(stat) or {}
+    features = meta.get("features")
+    if isinstance(features, (list, tuple)) and features:
+        return tuple(features)
+    return _LEGACY_ENDQ3_FEATURES
+
+
+def reset_head_caches() -> None:
+    """Drop the lazy head + meta caches. Test-only."""
+    global _HEAD_CACHE, _HEAD_META_CACHE, _HEAD_CACHE_ENDQ2, _HEAD_CACHE_ENDQ1
+    _HEAD_CACHE = None
+    _HEAD_META_CACHE = None
+    _HEAD_CACHE_ENDQ2 = None
+    _HEAD_CACHE_ENDQ1 = None
 
 
 def load_heads_endq2() -> Dict[str, object]:
@@ -124,6 +192,33 @@ def _pos_flags(pos_str: str) -> Tuple[float, float, float]:
     return 0.0, 0.0, 0.0
 
 
+def _build_base_feature_map(
+    player: dict,
+    margin: float,
+    raw_margin: float,
+    pos_c: float,
+    pos_f: float,
+    pos_g: float,
+) -> Dict[str, float]:
+    """Build the legacy 14-feature lookup map for one player at endQ3."""
+    return {
+        "cur_pts":          float(player.get("pts",  0) or 0),
+        "cur_reb":          float(player.get("reb",  0) or 0),
+        "cur_ast":          float(player.get("ast",  0) or 0),
+        "cur_fg3m":         float(player.get("fg3m", 0) or 0),
+        "cur_stl":          float(player.get("stl",  0) or 0),
+        "cur_blk":          float(player.get("blk",  0) or 0),
+        "cur_tov":          float(player.get("tov",  0) or 0),
+        "cur_pf":           float(player.get("pf",   0) or 0),
+        "min_through_q3":   float(player.get("min",  0) or 0),
+        "score_margin_abs": float(margin),
+        "is_leading":       float(raw_margin > 0),
+        "pos_C":            float(pos_c),
+        "pos_F":            float(pos_f),
+        "pos_G":            float(pos_g),
+    }
+
+
 def apply_residual_correction(
     snap: dict,
     projs: Dict[Tuple[int, str], float],
@@ -135,10 +230,16 @@ def apply_residual_correction(
     [-cur_stat, 2 * projected] so the adjusted value stays non-negative and
     doesn't balloon more than 2x the incoming projection.
 
+    R10_M16 ship: per-stat schema selection. fg3m / stl / blk / tov heads
+    additionally consume hot_streak / cold_streak / consec_above / n_prior
+    streak features when their meta JSON declares them. pts / reb / ast
+    heads always use the legacy 14-feature schema (probe REJECT for streaks).
+
     Parameters
     ----------
     snap : dict
-        Canonical snapshot dict (same shape as live_engine uses).
+        Canonical snapshot dict (same shape as live_engine uses). May
+        include ``game_date`` (ISO 'YYYY-MM-DD') used for streak lookups.
     projs : dict[(pid, stat) -> float]
         Current projected_final values keyed by (player_id int, stat str).
         Updated copy is returned; caller's dict is not mutated.
@@ -158,6 +259,33 @@ def apply_residual_correction(
         return projs
 
     positions = _load_positions()
+
+    # Lazy-load streak machinery only if any shipping head needs it.
+    streak_stats_active: List[str] = []
+    try:
+        from src.prediction import streak_features as _sf
+        for stat in heads:
+            if stat in _sf.SHIP_STREAK_STATS:
+                feat_names = _feature_names_for_stat(stat)
+                if any(name in feat_names for name in _sf.STREAK_FEATURE_NAMES_PER_STAT[stat]):
+                    streak_stats_active.append(stat)
+    except Exception:
+        _sf = None  # type: ignore[assignment]
+        streak_stats_active = []
+
+    histories: Dict[int, list] = {}
+    target_date = None
+    if streak_stats_active and _sf is not None:
+        target_date = _sf.coerce_target_date(snap.get("game_date"))
+        if target_date is not None:
+            try:
+                histories = _sf.load_player_histories()
+            except Exception:
+                histories = {}
+        else:
+            # No game_date => no streak inputs available. Zero-fill so the
+            # head still evaluates (graceful no-op rather than skip).
+            streak_stats_active = []
 
     home_pts = float(snap.get("home_score", 0) or 0)
     away_pts = float(snap.get("away_score", 0) or 0)
@@ -183,22 +311,24 @@ def apply_residual_correction(
 
         pos_c, pos_f, pos_g = _pos_flags(positions.get(pid, ""))
 
-        feat = np.array([[
-            float(player.get("pts", 0) or 0),
-            float(player.get("reb", 0) or 0),
-            float(player.get("ast", 0) or 0),
-            float(player.get("fg3m", 0) or 0),
-            float(player.get("stl", 0) or 0),
-            float(player.get("blk", 0) or 0),
-            float(player.get("tov", 0) or 0),
-            float(player.get("pf", 0) or 0),
-            float(player.get("min", 0) or 0),
-            margin,
-            float(raw_margin > 0),
-            pos_c,
-            pos_f,
-            pos_g,
-        ]], dtype=np.float32)
+        base_map = _build_base_feature_map(
+            player, margin, raw_margin, pos_c, pos_f, pos_g
+        )
+
+        # Pre-compute streak feature map for this player ONCE per snap,
+        # gated to the active streak stats. Missing history -> zero-fill
+        # so downstream feature lookup still finds the names.
+        streak_map: Dict[str, float] = {}
+        if streak_stats_active and _sf is not None and target_date is not None:
+            history = histories.get(pid) or []
+            for stat in streak_stats_active:
+                if history:
+                    streak_map.update(
+                        _sf.compute_streak_features_for_stat(history, target_date, stat)
+                    )
+                else:
+                    for name in _sf.STREAK_FEATURE_NAMES_PER_STAT[stat]:
+                        streak_map[name] = 0.0
 
         for stat in STATS:
             head = heads.get(stat)
@@ -208,6 +338,16 @@ def apply_residual_correction(
             projected = out.get(key)
             if projected is None:
                 continue
+
+            feat_names = _feature_names_for_stat(stat)
+            row = [0.0] * len(feat_names)
+            for i, name in enumerate(feat_names):
+                if name in base_map:
+                    row[i] = base_map[name]
+                elif name in streak_map:
+                    row[i] = streak_map[name]
+                # else: leave 0.0 (forward-compat for unknown feature names)
+            feat = np.array([row], dtype=np.float32)
 
             residual_pred = float(head.predict(feat)[0])
             cur_stat = float(player.get(stat, 0) or 0)
