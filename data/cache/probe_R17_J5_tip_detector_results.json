@@ -1,0 +1,55 @@
+{
+  "probe_id": "R17_J5_tip_detector",
+  "slate": "sas_okc_2026-05-26",
+  "nba_game_id": "0042400317",
+  "game_date": "2026-05-26",
+  "label": "SAS @ OKC Game 7 WCF",
+  "resolved_at": "2026-05-26T14:02:38.376642+00:00",
+  "tip_time_utc": "2026-05-27T00:30:00+00:00",
+  "tip_time_et_human": "8:30 PM ET (default \u2014 scoreboardv2 returned 0 rows for this playoff date)",
+  "grace_minutes": 5,
+  "currently_pregame": true,
+  "quarter_box_present": false,
+  "in_play_quarter": null,
+  "is_pretip_via_ranker": true,
+  "handoff_payload": {
+    "phase": "IN_PLAY",
+    "current_quarter": null,
+    "next_prediction_target": "endQ1_winprob",
+    "wp_model_paths": [
+      "data/models/winprob_endQ1.pkl",
+      "data/models/winprob_endQ2.pkl",
+      "data/models/winprob_endQ3.pkl",
+      "data/models/winprob_final.pkl"
+    ],
+    "nba_game_ids": [
+      "0042400317"
+    ]
+  },
+  "tests": {
+    "schedule_lookup": "PASS (12 unit tests in test_game_tip_detector.py)",
+    "live_bet_ranker_regression": "PASS (19/19 existing tests still green)"
+  },
+  "simulated_transitions": {
+    "60min_before_tip": {
+      "wallclock_utc": "2026-05-26T23:30:00+00:00",
+      "is_pregame": true
+    },
+    "1min_before_tip": {
+      "wallclock_utc": "2026-05-27T00:29:00+00:00",
+      "is_pregame": true
+    },
+    "at_tip": {
+      "wallclock_utc": "2026-05-27T00:30:00+00:00",
+      "is_pregame": true
+    },
+    "grace_inside": {
+      "wallclock_utc": "2026-05-27T00:34:00+00:00",
+      "is_pregame": true
+    },
+    "grace_exceeded": {
+      "wallclock_utc": "2026-05-27T00:36:00+00:00",
+      "is_pregame": false
+    }
+  }
+}
