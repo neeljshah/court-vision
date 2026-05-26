@@ -14,11 +14,15 @@ Environment Variables
 None required.  The EventBus is configuration-free by design: callers pass a
 ``persistence_path`` at construction time when durable replay is needed.
 
-Paper vs Live Mode
-------------------
-N/A — L46 is a pure observability/routing layer.  It carries no game-day
-execution logic and does not gate behaviour on paper vs live mode.  It operates
-identically in both modes.
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L46 is mode-agnostic — it routes events but has no live-mode behaviour itself.
+The ``live`` tokens that appear in payload examples (e.g. event names such as
+``"bet.live"``) are arbitrary publisher-defined strings, not mode gates.
+L46 neither reads nor writes any SUBMISSION_MODE / LIVE_MODE environment
+variable and carries no conditional logic that differs between paper and live
+deployments.  Mode enforcement is the responsibility of the publishing layer
+(e.g. L44 asserts paper mode before any submission layer publishes).
 
 Persistence Policy
 ------------------
@@ -46,6 +50,8 @@ from __future__ import annotations
 import fnmatch
 import json
 import logging
+import os
+import tempfile
 import uuid
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
@@ -270,14 +276,34 @@ class EventBus:
     def _append_event(self, event: Event) -> None:
         """Append *event* as a single JSONL line to the persistence file.
 
-        Uses plain append mode; see module docstring for the rationale.
+        Uses a read-append-write-replace pattern (temp file + os.replace) to
+        ensure the JSONL file is never left in a partially-written state.
+        Each published Event is appended as a self-contained JSON object
+        terminated by ``\\n``; on crash the previous content is preserved.
         """
         if self._persistence_path is None:
             return
         self._persistence_path.parent.mkdir(parents=True, exist_ok=True)
         line = json.dumps(asdict(event)) + "\n"
-        with open(self._persistence_path, "a", encoding="utf-8") as fh:
-            fh.write(line)
+        # Read existing content, append new line, atomically replace the file.
+        existing = b""
+        if self._persistence_path.exists():
+            existing = self._persistence_path.read_bytes()
+        tmp_fd, tmp_path = tempfile.mkstemp(
+            dir=self._persistence_path.parent,
+            prefix=".tmp_L46_",
+            suffix=".jsonl",
+        )
+        try:
+            with os.fdopen(tmp_fd, "wb") as fh:
+                fh.write(existing + line.encode("utf-8"))
+            os.replace(tmp_path, self._persistence_path)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise
 
 
 # ---------------------------------------------------------------------------

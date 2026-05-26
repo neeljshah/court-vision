@@ -24,6 +24,7 @@ N/A — observability only; no money movement or mode gating required.
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import os
 import sys
@@ -86,6 +87,9 @@ class LoopSnapshot:
     bottom_layers: list             # bottom-5 stability from L42 KPI
     rounds: list                    # round_summaries from state.json
     new_layers_by_round: dict       # {round_int: [layer_name, ...]}
+    event_producers: dict           # {"L7": ["bet.settled"], "L8": ["drift.detected"], ...}
+    event_subscribers: dict         # {"L22": ["incident.opened", "drift.detected", ...]}
+    total_event_types: int          # distinct event names across all producers
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +135,85 @@ def _new_layers_by_round(state: dict) -> dict:
     for rnd in result:
         result[rnd].sort()
     return dict(sorted(result.items()))
+
+
+def _collect_event_metadata(layers_dir: Path) -> tuple[dict, dict]:
+    """AST-scan each L*.py in layers_dir for publish/subscribe calls.
+
+    Returns
+    -------
+    producers : dict[str, list[str]]
+        e.g. {"L7": ["bet.settled"], "L14": ["fill.received", "order.filled"]}
+    subscribers : dict[str, list[str]]
+        e.g. {"L22": ["incident.opened", "drift.detected", ...]}
+
+    Detection strategy
+    ------------------
+    Producers  — any ``Call`` node where the callee ends in ``.publish`` and
+                 the first positional arg is a string literal.  Handles both
+                 ``_L46.publish(...)`` and ``_get_l46().publish(...)`` patterns.
+    Subscribers — ``bus.subscribe("name", ...)`` or
+                  ``register_alert_subscribers`` docstring pattern: we scan
+                  for ``Call`` nodes where the callee ends in ``.subscribe``
+                  and the first positional arg is a string literal, plus
+                  any string literals passed directly to ``subscribe`` at
+                  module level.
+    Layer label is derived from the filename stem (e.g. "L07_pnl_ledger" → "L7").
+    """
+    import re
+
+    def _stem_to_layer(stem: str) -> str:
+        """'L07_pnl_ledger' -> 'L7', 'L14_order_manager' -> 'L14'."""
+        m = re.match(r"L0*(\d+)", stem, re.IGNORECASE)
+        return f"L{m.group(1)}" if m else stem
+
+    def _first_str_arg(node: ast.Call) -> Optional[str]:
+        """Return the first positional arg if it is a string constant."""
+        if node.args and isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str):
+            return node.args[0].value
+        return None
+
+    def _callee_ends_with(node: ast.Call, attr: str) -> bool:
+        """Return True if the call's function chain ends with `attr`."""
+        func = node.func
+        if isinstance(func, ast.Attribute):
+            return func.attr == attr
+        return False
+
+    producers: dict = {}
+    subscribers: dict = {}
+
+    for py_file in sorted(layers_dir.glob("L*.py")):
+        # Skip L46 itself (it defines publish/subscribe, not uses them as a producer)
+        if py_file.stem.startswith("L46"):
+            continue
+        try:
+            source = py_file.read_text(encoding="utf-8", errors="replace")
+            tree = ast.parse(source, filename=str(py_file))
+        except SyntaxError:
+            continue
+
+        layer = _stem_to_layer(py_file.stem)
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+
+            if _callee_ends_with(node, "publish"):
+                event_name = _first_str_arg(node)
+                if event_name:
+                    producers.setdefault(layer, [])
+                    if event_name not in producers[layer]:
+                        producers[layer].append(event_name)
+
+            if _callee_ends_with(node, "subscribe"):
+                event_name = _first_str_arg(node)
+                if event_name:
+                    subscribers.setdefault(layer, [])
+                    if event_name not in subscribers[layer]:
+                        subscribers[layer].append(event_name)
+
+    return producers, subscribers
 
 
 def _fetch_l42(state_json_path: Path, layers_dir: Path) -> tuple[dict, list]:
@@ -254,6 +337,13 @@ class LoopSummarizer:
         rounds = state.get("round_summaries", [])
         new_layers = _new_layers_by_round(state)
 
+        # Event-driven architecture metadata
+        event_producers, event_subscribers = _collect_event_metadata(self.layers_dir)
+        all_event_names: set = set()
+        for events in event_producers.values():
+            all_event_names.update(events)
+        total_event_types = len(all_event_names)
+
         return LoopSnapshot(
             generated_at=generated_at,
             rounds_completed=rounds_completed,
@@ -267,6 +357,9 @@ class LoopSummarizer:
             bottom_layers=bottom_layers,
             rounds=rounds,
             new_layers_by_round=new_layers,
+            event_producers=event_producers,
+            event_subscribers=event_subscribers,
+            total_event_types=total_event_types,
         )
 
     # ------------------------------------------------------------------
@@ -434,6 +527,38 @@ class LoopSummarizer:
                 cat = reg.get("category", "??")
                 detail = reg.get("detail", "")
                 lines.append(f"- **[{sev}]** `{layer}` | {cat}: {detail}")
+        lines.append("")
+
+        # --- Event-Driven Architecture ---
+        lines += ["## Event-Driven Architecture", ""]
+
+        # Producers table
+        lines += ["### Event Producers", ""]
+        if snap.event_producers:
+            prod_rows = [
+                [layer, ", ".join(events)]
+                for layer, events in sorted(snap.event_producers.items())
+            ]
+            lines.append(_md_table(["Layer", "Event Names"], prod_rows))
+        else:
+            lines.append("_(no event producers detected)_")
+        lines.append("")
+
+        # Subscribers table
+        lines += ["### Event Subscribers", ""]
+        if snap.event_subscribers:
+            sub_rows = [
+                [layer, ", ".join(events)]
+                for layer, events in sorted(snap.event_subscribers.items())
+            ]
+            lines.append(_md_table(["Layer", "Subscribes To"], sub_rows))
+        else:
+            lines.append("_(no event subscribers detected)_")
+        lines.append("")
+
+        lines.append(
+            f"Total event types in system: **{snap.total_event_types}**"
+        )
         lines.append("")
 
         return "\n".join(lines)

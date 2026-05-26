@@ -212,9 +212,20 @@ try:
 except Exception:
     L40 = None; get_routing = None  # type: ignore[assignment]
 
+try:
+    from scripts.execute_loop import L46_event_bus as _L46_MOD
+except Exception:
+    _L46_MOD = None  # type: ignore[assignment]
+
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 _CRITICAL = {"ingest_slate", "fpts_distribution", "optimize_cash", "submit_paper", "settle_bets"}
+
+# Events that MUST be captured during a full run for verify_event_publication to PASS.
+# "fill.received" or "order.filled" counts as one required slot.
+_REQUIRED_EVENTS = frozenset({"bet.settled", "kelly.sized"})
+_FILL_EVENTS = frozenset({"fill.received", "order.filled"})   # at least one required
+_OPTIONAL_EVENTS = frozenset({"drift.detected", "incident.opened", "incident.classified"})
 
 
 # ---------------------------------------------------------------------------
@@ -284,6 +295,10 @@ class IntegrationHarness:
         self._saved_attrs: List[tuple] = []
         self._tmp_dir: Optional[str] = None
         self._modules_before: Optional[set] = None
+        # L46 event capture
+        self._captured_events: List[Any] = []
+        self._capture_bus: Optional[Any] = None   # fresh EventBus for this run
+        self._orig_get_default_bus: Optional[Any] = None
 
     def _assert_paper_mode(self) -> None:
         """Force SUBMISSION_MODE=paper; raise RuntimeError if live mode set with paper_mode=True."""
@@ -392,6 +407,44 @@ class IntegrationHarness:
             self._patch_attr(L26, "_BETS_FILE", _p / "bets.parquet")
             self._patch_attr(L26, "_BETS_CSV", _p / "bets.csv")
 
+    def _setup_event_capture(self) -> None:
+        """Install a fresh EventBus and monkey-patch L46's get_default_bus to return it.
+
+        All producer layers call _L46.publish(...) which internally delegates to
+        get_default_bus().publish(...).  By replacing get_default_bus on the
+        already-imported module object we redirect every publish call to our
+        capture bus without touching any producer module.  The original function
+        is restored in _teardown_event_capture via try/finally.
+        """
+        if _L46_MOD is None:
+            return
+        from scripts.execute_loop.L46_event_bus import EventBus
+        self._capture_bus = EventBus()
+        self._captured_events = []
+
+        def _capture_handler(event: Any) -> None:
+            self._captured_events.append(event)
+
+        self._capture_bus.subscribe("*", _capture_handler, layer="L41_harness")
+
+        # Save original and patch module-level get_default_bus
+        self._orig_get_default_bus = _L46_MOD.get_default_bus
+        _capture_bus_ref = self._capture_bus
+
+        def _patched_get_default_bus() -> Any:
+            return _capture_bus_ref
+
+        _L46_MOD.get_default_bus = _patched_get_default_bus  # type: ignore[method-assign]
+
+    def _teardown_event_capture(self) -> None:
+        """Restore original get_default_bus; clear capture state."""
+        if _L46_MOD is None:
+            return
+        if self._orig_get_default_bus is not None:
+            _L46_MOD.get_default_bus = self._orig_get_default_bus  # type: ignore[method-assign]
+            self._orig_get_default_bus = None
+        self._capture_bus = None
+
     def _restore_paths(self) -> None:
         """Restore saved module-level constants; clean up newly-imported submodules."""
         for obj, attr, original in self._saved_attrs:
@@ -487,11 +540,13 @@ class IntegrationHarness:
         self._tmp_dir = str(tmp_path)
         before_mtimes = self._snapshot_real_ledger_mtimes()
         self._redirect_paths_to_tmp(tmp_path)
+        self._setup_event_capture()
         started_at = datetime.now(timezone.utc).isoformat()
         report: dict = {}
         try:
             report = self._run_stages(started_at)
         finally:
+            self._teardown_event_capture()
             self._restore_paths()
             self._restore_mode()
         self._check_ledger_pollution(before_mtimes, report)
@@ -716,7 +771,7 @@ class IntegrationHarness:
         def _kelly():
             if kelly_fraction is None:
                 raise RuntimeError("L18 not available")
-            frac = float(kelly_fraction(prob=0.55, odds_american=+100))
+            frac = float(kelly_fraction(model_p=0.55, american_odds=+100))
             assert 0.0 <= frac <= 1.0, f"Kelly fraction {frac!r} out of [0,1]"
             return {"kelly_fraction": frac}
 
@@ -825,6 +880,89 @@ class IntegrationHarness:
             stages.append(_skip("postmortem"))
         else:
             stages.append(self._run_stage("postmortem", _postmortem))
+
+        # ---------------------------------------------------------------- L46
+        def _verify_event_publication() -> dict:
+            """Assert required L46 events were published during this run.
+
+            Required events are gated on whether their source stage PASS'd with
+            meaningful output — e.g. kelly.sized is only required if kelly_sizing
+            PASS'd with a positive fraction, bet.settled only if settle_bets PASS'd
+            with settled > 0, fill.received|order.filled only if sync_exchange_positions
+            PASS'd with n_changed > 0.
+            """
+            captured_names = {getattr(e, "name", None) for e in self._captured_events}
+            breakdown: Dict[str, int] = {}
+            for e in self._captured_events:
+                n = getattr(e, "name", "<unknown>")
+                breakdown[n] = breakdown.get(n, 0) + 1
+
+            # Build stage-status and data lookups from already-run stages
+            _stage_status = {s["name"]: s.get("status") for s in stages}
+            _stage_data = {s["name"]: s.get("data") for s in stages}
+
+            # kelly.sized: required only if kelly_sizing PASS'd with fraction > 0
+            _kelly_data = _stage_data.get("kelly_sizing") or {}
+            _kelly_frac = (_kelly_data.get("kelly_fraction", 0.0)
+                           if isinstance(_kelly_data, dict) else 0.0)
+            _need_kelly = (
+                _stage_status.get("kelly_sizing") == "PASS" and float(_kelly_frac) > 0.0
+            )
+
+            # bet.settled: required only if settle_bets PASS'd with settled > 0
+            _settle_data = _stage_data.get("settle_bets") or {}
+            _settle_n = (_settle_data.get("settled", 0)
+                         if isinstance(_settle_data, dict) else 0)
+            _need_bet_settled = (
+                _stage_status.get("settle_bets") == "PASS" and int(_settle_n) > 0
+            )
+
+            # fill: required only if sync_exchange_positions PASS'd with n_changed > 0
+            _sync_data = _stage_data.get("sync_exchange_positions") or {}
+            _sync_n = (_sync_data.get("n_changed", 0)
+                       if isinstance(_sync_data, dict) else 0)
+            _need_fill = (
+                _stage_status.get("sync_exchange_positions") == "PASS"
+                and int(_sync_n) > 0
+            )
+
+            missing_required: List[str] = []
+            if _need_kelly and "kelly.sized" not in captured_names:
+                missing_required.append("kelly.sized")
+            if _need_bet_settled and "bet.settled" not in captured_names:
+                missing_required.append("bet.settled")
+            if _need_fill and not (_FILL_EVENTS & captured_names):
+                missing_required.append("fill.received|order.filled")
+
+            missing_optional: List[str] = [
+                ev for ev in sorted(_OPTIONAL_EVENTS) if ev not in captured_names
+            ]
+
+            data: Dict[str, Any] = {
+                "event_count": len(self._captured_events),
+                "breakdown": breakdown,
+                "missing_required": missing_required,
+                "missing_optional": missing_optional,
+                "l46_available": _L46_MOD is not None,
+                "gates": {
+                    "need_kelly_sized": _need_kelly,
+                    "need_bet_settled": _need_bet_settled,
+                    "need_fill": _need_fill,
+                },
+            }
+
+            if _L46_MOD is None:
+                data["warn"] = "L46 not available; event capture skipped"
+                return data
+
+            if missing_required:
+                raise AssertionError(
+                    f"Required L46 events not captured: {missing_required}. "
+                    f"Captured: {sorted(captured_names)}"
+                )
+            return data
+
+        stages.append(self._run_stage("verify_event_publication", _verify_event_publication))
 
         finished_at = datetime.now(timezone.utc).isoformat()
         n_pass = sum(1 for s in stages if s["status"] == "PASS")

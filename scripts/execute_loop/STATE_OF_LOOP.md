@@ -1,11 +1,11 @@
 # Execute Loop — State of the Loop
-_Generated 2026-05-26T02:43:04.396941+00:00_
+_Generated 2026-05-26T03:01:02.696779+00:00_
 
 ## Headline
-- 47 layers shipped (1 gated), 716/716 full suite (confirmed; 3 skips, 0 failures) tests passing
-- L42 audit: 2 FAIL(s) need attention
-- L47 regression scan: 0 regressions across 10 rounds
-- L41 e2e coverage: 24 of 47 layers (51%)
+- 48 layers shipped (1 gated), 740/740 full suite (1 L46 timestamp-resolution test flake fixed mid-round); 3 skips; 0 failures tests passing
+- L42 audit: clean (0 FAILs)
+- L47 regression scan: 0 regressions across 11 rounds
+- L41 e2e coverage: 24 of 48 layers (50%)
 
 ## Round-by-Round Narrative
 | Round | Ships | Tests | Notes |
@@ -20,6 +20,7 @@ _Generated 2026-05-26T02:43:04.396941+00:00_
 | R8 | L1v2, L5v2, L10v2, L13v2-doc, L14v2-doc, L17v2, L28v2, L42v2, L43v2.1, L44 | +5 L42 v2 + 19 L44 new tests; audit 21 FAIL -> 7 FAIL (remaining 7 confirmed-genuine) | L42 v2 heuristic upgrades eliminate false positives (helper-call detection, p... |
 | R9 | L16v2.1, L19v2, L22v2.1, L24v2.1, L9-l44, L10-l44, L11-l44, L12-l44, L41v3, L42v2.1, L44-fix, L45 | +10 new (4 L41 v3 + 5 L42 v2.1 + 10 L45 NEW = 19 new but L41 base 11+4=15) | Closed all 7 remaining-genuine L42 FAILs from R8 (L16/L19/L22/L24); L44 adopt... |
 | R10 | L5-l44b, L16-l44b, L22-fix, L25v2, L28-l44b, L34v2, L37v2, L41v4, L45-fix, L46, L47, L48 | +53 new tests (3 L25 + 8 L34 + 6 L37 + 4 L41 v4 + 18 L46 + 7 L47 + 7 L48) | L42 audit FULLY clean (0 FAILs); L44 adoption complete across 7 layers; L41 v... |
+| R11 | L7-l46, L8-l46, L14-l46, L18v2, L37-l46, L49, L46-test-fix | +21 new tests; 1 fix to L46 test_replay_filtered_by_since (Windows datetime resolution flake — added time.sleep(0.02) around middle_ts capture) | L46 EventBus adoption sweep across 4 producer layers (L7 bet.settled, L8 drif... |
 
 ## Top Layers (highest stability)
 
@@ -35,11 +36,11 @@ _Generated 2026-05-26T02:43:04.396941+00:00_
 
 | Layer | Name | Stability | Pass | Fail | Ships |
 | --- | --- | --- | --- | --- | --- |
-| L46 | EventBus (cross-layer routing) | 0.0% | 0 | 1 | 1 |
-| L48 | Swish demo runner | 66.7% | 2 | 1 | 1 |
+| L49 | State-of-loop summary generator | 100.0% | 2 | 0 | 1 |
+| L48 | Swish demo runner | 100.0% | 3 | 0 | 1 |
 | L47 | Regression / drift detector | 100.0% | 2 | 0 | 1 |
+| L46 | EventBus (cross-layer routing) | 100.0% | 2 | 0 | 1 |
 | L45 | Daily operator checklist | 100.0% | 2 | 0 | 2 |
-| L44 | Paper-mode helper library | 100.0% | 2 | 0 | 3 |
 
 ## New Layers Built (by round)
 
@@ -108,20 +109,23 @@ _Generated 2026-05-26T02:43:04.396941+00:00_
 - L47 — Regression / drift detector
 - L48 — Swish demo runner
 
+### R11
+- L49 — State-of-loop summary generator
+
 ## L42 Production Readiness
 
-- PASS: 81
-- FAIL: 2
+- PASS: 86
+- FAIL: 0
 - SKIP: 1
 - N/A:  58
 
-**Status: 2 FAIL(s) need attention**
+**Status: clean (0 FAILs)**
 
 Run `python -m scripts.execute_loop.L42_production_readiness audit` for the full per-layer breakdown.
 
 ## L41 Integration Coverage
 
-- 24 of 47 layers exercised end-to-end (51%)
+- 24 of 48 layers exercised end-to-end (50%)
 
 Covered layers (from latest L41 v4 ship, round 10):
 L01 ingest, L02 fpts, L03 cash-opt, L04 gpp-opt, L05 submit, L07 ledger,
@@ -136,3 +140,25 @@ Run `python -m scripts.execute_loop.L41_integration_harness` to re-verify.
 **Clean — 0 regressions detected across all 10 rounds.**
 
 Run `python -m scripts.execute_loop.L47_regression_detector detect` to re-verify.
+
+## Event-Driven Architecture
+
+### Event Producers
+
+| Layer | Event Names |
+| --- | --- |
+| L14 | fill.received, order.filled |
+| L18 | risk_limit.breached, kelly.sized |
+| L36 | edge_erosion.detected |
+| L37 | incident.classified, incident.opened |
+| L7 | bet.settled |
+| L8 | drift.detected |
+
+### Event Subscribers
+
+| Layer | Subscribes To |
+| --- | --- |
+| L22 | incident.opened, incident.classified, drift.detected, risk_limit.breached, order.filled |
+| L41 | * |
+
+Total event types in system: **9**

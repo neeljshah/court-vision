@@ -31,6 +31,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 from scripts.execute_loop.L49_state_summary import (  # noqa: E402
     LoopSnapshot,
     LoopSummarizer,
+    _collect_event_metadata,
     main,
     _DEFAULT_OUT,
     _DEFAULT_STATE,
@@ -238,3 +239,79 @@ def test_snapshot_handles_missing_l42_l47_gracefully(
     md = summarizer.to_markdown(snap)
     assert "## Headline" in md
     assert "## L47 Regression Status" in md
+
+
+# ---------------------------------------------------------------------------
+# Test 7 — _collect_event_metadata finds producer from a synthetic module
+# ---------------------------------------------------------------------------
+def test_event_metadata_collection(tmp_path: Path):
+    """A synthetic L*.py with _L46.publish('foo.bar', ...) should produce an entry."""
+    synthetic = tmp_path / "L99_synthetic.py"
+    synthetic.write_text(
+        """\
+_L46 = None
+
+def do_thing():
+    if _L46 is not None:
+        _L46.publish("foo.bar", source="L99", payload={"x": 1})
+        _L46.publish("foo.baz", source="L99", payload={"y": 2})
+""",
+        encoding="utf-8",
+    )
+
+    producers, subscribers = _collect_event_metadata(tmp_path)
+
+    assert "L99" in producers, f"Expected L99 in producers, got {producers}"
+    assert "foo.bar" in producers["L99"]
+    assert "foo.baz" in producers["L99"]
+    # No subscribes in this file
+    assert "L99" not in subscribers
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — to_markdown includes ## Event-Driven Architecture section
+# ---------------------------------------------------------------------------
+def test_to_markdown_includes_event_section(summarizer: LoopSummarizer):
+    snap = summarizer.snapshot()
+    md = summarizer.to_markdown(snap)
+    assert "## Event-Driven Architecture" in md
+    assert "### Event Producers" in md
+    assert "### Event Subscribers" in md
+    assert "Total event types in system:" in md
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — total_event_types counts distinct event names across all producers
+# ---------------------------------------------------------------------------
+def test_total_event_types_count_correct(tmp_path: Path, state_file: Path):
+    """Two producers sharing one event name → total_event_types counts it once."""
+    # Write two synthetic layer files
+    (tmp_path / "L10_alpha.py").write_text(
+        """\
+_L46 = None
+def go():
+    _L46.publish("shared.event", source="L10", payload={})
+    _L46.publish("unique.alpha", source="L10", payload={})
+""",
+        encoding="utf-8",
+    )
+    (tmp_path / "L11_beta.py").write_text(
+        """\
+_L46 = None
+def go():
+    _L46.publish("shared.event", source="L11", payload={})
+    _L46.publish("unique.beta", source="L11", payload={})
+""",
+        encoding="utf-8",
+    )
+
+    producers, subscribers = _collect_event_metadata(tmp_path)
+
+    # Both layers see "shared.event" but total_event_types counts unique names
+    all_events: set = set()
+    for evts in producers.values():
+        all_events.update(evts)
+    total = len(all_events)
+
+    # shared.event + unique.alpha + unique.beta = 3 distinct types
+    assert total == 3, f"Expected 3 distinct event types, got {total}: {all_events}"

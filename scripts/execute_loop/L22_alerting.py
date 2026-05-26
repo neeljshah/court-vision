@@ -11,6 +11,7 @@ Public API
     send_drawdown_alert(current_bankroll, starting, pct_drop) -> bool
     send_drift_alert(stat, observed_mae, expected_mae, days_window) -> bool
     flush_pending() -> int
+    register_alert_subscribers(bus=None) -> None
 
 Environment Variables
 ---------------------
@@ -46,6 +47,28 @@ Environment Variables
         the token-bucket limiter. Excess alerts are enqueued and replayed via
         flush_pending(). Integer; default 30.
 
+    ALERTS_VERBOSE_FILLS
+        Set to "1" to subscribe L22 to "order.filled" EventBus events and emit
+        an INFO alert for each fill.  Default off (any other value or absent).
+
+Event Subscriptions (L46 EventBus)
+-----------------------------------
+    Call ``register_alert_subscribers(bus)`` once at harness startup to wire
+    L22 as an L46 EventBus subscriber.  The function is IDEMPOTENT — calling
+    it multiple times registers handlers exactly once.
+
+    Event name           Condition                     Alert level
+    ─────────────────────────────────────────────────────────────
+    incident.opened      payload["severity"] in P0/P1  ERROR
+    incident.classified  payload["severity"] == "P0"   CRITICAL (→ error)
+    drift.detected       payload["severity"] == "error" WARNING
+    risk_limit.breached  (always)                       ERROR
+    order.filled         ALERTS_VERBOSE_FILLS=1 only    INFO
+
+    L22 does NOT auto-register at import time; the operator / L41 harness
+    must call register_alert_subscribers() explicitly to avoid noisy behaviour
+    in tests that import L22 without intending to subscribe to the bus.
+
 Atomic writes
 -------------
     alert_queue.json is written atomically via a sibling temp file +
@@ -72,6 +95,12 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
+
+# ── soft-import L46 EventBus (absent in minimal test environments) ────────────
+try:
+    from scripts.execute_loop import L46_event_bus as _L46
+except Exception:  # noqa: BLE001
+    _L46 = None  # type: ignore[assignment]
 
 # ── paths ────────────────────────────────────────────────────────────────────
 _SCRIPT_DIR = Path(__file__).resolve().parent
@@ -447,6 +476,170 @@ def send_drift_alert(
 
 def flush_pending() -> int:
     return _get_router().flush_pending()
+
+
+# ── L46 EventBus subscriber registration ─────────────────────────────────────
+
+# Idempotency guard — True once register_alert_subscribers() has run.
+_subscribed: bool = False
+
+
+def register_alert_subscribers(bus=None) -> None:  # type: ignore[type-arg]
+    """Subscribe L22 alert handlers to the L46 EventBus.
+
+    Parameters
+    ----------
+    bus:
+        An ``L46_event_bus.EventBus`` instance to subscribe to.  When
+        ``None`` (default), the module-level default bus singleton is used
+        (``L46_event_bus.get_default_bus()``).
+
+    Idempotency
+    -----------
+    Calling this function more than once is safe — subsequent calls are
+    no-ops.  The guard is a module-level ``_subscribed`` flag; pass a
+    different ``bus`` instance explicitly if you need to register on
+    multiple buses (uncommon).
+
+    Event → Level mapping
+    ----------------------
+    incident.opened      severity in {P0, P1}  → ERROR
+    incident.classified  severity == P0         → CRITICAL (sent as error)
+    drift.detected       severity == "error"    → WARNING
+    risk_limit.breached  (always)               → ERROR
+    order.filled         ALERTS_VERBOSE_FILLS=1 → INFO  (opt-in)
+    """
+    global _subscribed  # noqa: PLW0603
+    if _subscribed:
+        return
+
+    # Resolve the bus: use provided instance, fall back to default singleton.
+    if bus is None:
+        if _L46 is None:
+            log.warning("[L22] L46 EventBus not available; skipping subscriber registration.")
+            return
+        bus = _L46.get_default_bus()
+
+    # ── handler: incident.opened ──────────────────────────────────────────────
+    def _on_incident_opened(event) -> None:
+        payload = event.payload
+        severity = str(payload.get("severity", "")).upper()
+        if severity not in ("P0", "P1"):
+            return
+        incident_id = payload.get("incident_id", "unknown")
+        description = payload.get("description", "No description provided.")
+        fields: Dict[str, str] = {
+            "Incident ID": str(incident_id),
+            "Severity": severity,
+            "Source": event.source,
+        }
+        if payload.get("layer"):
+            fields["Layer"] = str(payload["layer"])
+        send_alert(
+            channel="system",
+            level="error",
+            title=f"Incident Opened [{severity}]: {incident_id}",
+            body=description,
+            fields=fields,
+        )
+
+    # ── handler: incident.classified ─────────────────────────────────────────
+    def _on_incident_classified(event) -> None:
+        payload = event.payload
+        severity = str(payload.get("severity", "")).upper()
+        if severity != "P0":
+            return
+        incident_id = payload.get("incident_id", "unknown")
+        description = payload.get("description", "P0 incident classified.")
+        fields: Dict[str, str] = {
+            "Incident ID": str(incident_id),
+            "Severity": "P0 (CRITICAL)",
+            "Source": event.source,
+        }
+        send_alert(
+            channel="system",
+            level="error",  # L22 VALID_LEVELS has no "critical"; map to "error"
+            title=f"CRITICAL Incident Classified [P0]: {incident_id}",
+            body=description,
+            fields=fields,
+        )
+
+    # ── handler: drift.detected ───────────────────────────────────────────────
+    def _on_drift_detected(event) -> None:
+        payload = event.payload
+        drift_severity = str(payload.get("severity", "")).lower()
+        if drift_severity != "error":
+            return
+        stat = payload.get("stat", "unknown")
+        observed = payload.get("observed_mae", payload.get("observed", "?"))
+        expected = payload.get("expected_mae", payload.get("expected", "?"))
+        fields: Dict[str, str] = {
+            "Stat": str(stat),
+            "Observed": str(observed),
+            "Expected": str(expected),
+            "Source": event.source,
+        }
+        send_alert(
+            channel="drift",
+            level="warning",
+            title=f"Model Drift Detected: {stat}",
+            body=f"{stat} MAE drifted beyond threshold (observed={observed}, expected={expected})",
+            fields=fields,
+        )
+
+    # ── handler: risk_limit.breached ─────────────────────────────────────────
+    def _on_risk_limit_breached(event) -> None:
+        payload = event.payload
+        limit_type = payload.get("limit_type", "unknown")
+        current = payload.get("current_value", "?")
+        threshold = payload.get("threshold", "?")
+        fields: Dict[str, str] = {
+            "Limit Type": str(limit_type),
+            "Current Value": str(current),
+            "Threshold": str(threshold),
+            "Source": event.source,
+        }
+        send_alert(
+            channel="drawdown",
+            level="error",
+            title=f"Risk Limit Breached: {limit_type}",
+            body=f"Risk limit '{limit_type}' breached (current={current}, threshold={threshold})",
+            fields=fields,
+        )
+
+    # ── register core subscribers ─────────────────────────────────────────────
+    bus.subscribe("incident.opened",     _on_incident_opened,     layer="L22")
+    bus.subscribe("incident.classified", _on_incident_classified, layer="L22")
+    bus.subscribe("drift.detected",      _on_drift_detected,      layer="L22")
+    bus.subscribe("risk_limit.breached", _on_risk_limit_breached, layer="L22")
+
+    # ── optional: order.filled (ALERTS_VERBOSE_FILLS=1) ───────────────────────
+    if os.environ.get("ALERTS_VERBOSE_FILLS") == "1":
+        def _on_order_filled(event) -> None:
+            payload = event.payload
+            bet_id = payload.get("bet_id", payload.get("order_id", "unknown"))
+            book   = payload.get("book", "?")
+            stake  = payload.get("stake", "?")
+            status = payload.get("status", "filled")
+            fields: Dict[str, str] = {
+                "Bet ID": str(bet_id),
+                "Book": str(book),
+                "Stake": str(stake),
+                "Status": str(status),
+                "Source": event.source,
+            }
+            send_alert(
+                channel="fills",
+                level="info",
+                title=f"Order Filled: {bet_id}",
+                body=f"Bet {bet_id} at {book} — stake={stake} status={status}",
+                fields=fields,
+            )
+
+        bus.subscribe("order.filled", _on_order_filled, layer="L22")
+
+    _subscribed = True
+    log.debug("[L22] EventBus subscribers registered.")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
