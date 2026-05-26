@@ -1,0 +1,41 @@
+{
+  "probe": "R11_M2v84_stack_away_pts",
+  "kind": "regression",
+  "model": "stack",
+  "label": "away_score",
+  "base_targets": [
+    "away_score",
+    "away_score"
+  ],
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -10.17% (vs naive)",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.6161,
+  "pooled_delta_pct": -10.17,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.7091,
+      "delta": -0.784,
+      "delta_pct": -7.47
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.6715,
+      "delta": -1.0473,
+      "delta_pct": -9.77
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.4677,
+      "delta": -1.4361,
+      "delta_pct": -13.17
+    }
+  ],
+  "elapsed_s": 4.2
+}

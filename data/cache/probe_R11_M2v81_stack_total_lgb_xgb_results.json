@@ -1,0 +1,41 @@
+{
+  "probe": "R11_M2v81_stack_total_lgb_xgb",
+  "kind": "regression",
+  "model": "stack",
+  "label": "total_pts_box",
+  "base_targets": [
+    "total_pts_box",
+    "total_pts_box"
+  ],
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -9.56% (vs naive)",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.4551,
+  "pooled_delta_pct": -9.56,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.9483,
+      "delta": -1.3188,
+      "delta_pct": -7.64
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 15.0698,
+      "delta": -2.3415,
+      "delta_pct": -13.45
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.3473,
+      "delta": -1.2428,
+      "delta_pct": -7.49
+    }
+  ],
+  "elapsed_s": 5.0
+}

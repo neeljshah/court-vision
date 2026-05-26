@@ -1,0 +1,44 @@
+{
+  "probe": "R11_M2v85_stack_5way_total",
+  "kind": "regression",
+  "model": "stack",
+  "label": "total_pts_box",
+  "base_targets": [
+    "total_pts_box",
+    "total_pts_box",
+    "score_diff",
+    "home_score",
+    "away_score"
+  ],
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -9.97% (vs naive)",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.3857,
+  "pooled_delta_pct": -9.97,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.8549,
+      "delta": -1.4123,
+      "delta_pct": -8.18
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.9992,
+      "delta": -2.4121,
+      "delta_pct": -13.85
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.303,
+      "delta": -1.2872,
+      "delta_pct": -7.76
+    }
+  ],
+  "elapsed_s": 7.5
+}
