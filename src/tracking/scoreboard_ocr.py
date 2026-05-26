@@ -111,7 +111,7 @@ def _one_shot_ocr(frame: "np.ndarray") -> Dict:
 
 log = logging.getLogger(__name__)
 
-_OCR_INTERVAL = 30      # run OCR every N frames (raised 15→30: score/clock at 1fps is plenty)
+_OCR_INTERVAL = 15      # FIX-J: 30→15 — halves max stale-clock gap; PBP mapper needs ±2s tolerance
 _TOP_FRAC     = 0.06    # top 6% of frame — ESPN/TNT scoreboard always in top ~5%
 _OCR_CONF_MIN = 0.35    # minimum EasyOCR confidence to accept a text token
 
@@ -195,6 +195,10 @@ class ScoreboardOCR:
         # True when OCR ran and found a shot clock, False when OCR ran but didn't.
         # Callers poll this after read() to drive non-live detection.
         self._current_scan_result: Optional[bool] = None
+        # BUG 1+2 FIX: monotonic score enforcement — scores can never decrease.
+        # -1 means "no valid score seen yet" (first real read will always be accepted).
+        self._prev_home_score: int = -1
+        self._prev_away_score: int = -1
 
     def configure(self, fps: float, stride: int = 1) -> None:
         """Set OCR cadence based on video fps and processing stride."""
@@ -234,6 +238,49 @@ class ScoreboardOCR:
         parsed = self._ocr_frame(frame)
         # Track whether this scan found a shot clock (before merging into cache)
         self._current_scan_result = (parsed.get("shot_clock", -1.0) != -1.0)
+
+        # ── BUG 1+2 FIX: score validation before merging into cache ──────────
+        raw_hs  = parsed.get("home_score", -1)
+        raw_as_ = parsed.get("away_score", -1)
+
+        # BUG 2: if BOTH parsed scores land in shot-clock range [1,24] this
+        # frame, the parser almost certainly grabbed shot-clock digits as scores.
+        # Discard both for this frame; do NOT update _prev_* counters.
+        if (raw_hs != -1 and raw_as_ != -1
+                and 1 <= raw_hs <= 24 and 1 <= raw_as_ <= 24):
+            log.debug(
+                "ScoreboardOCR frame %d: both scores in shot-clock range "
+                "(%d, %d) — treating as shot-clock misread, discarding",
+                self._frame_counter, raw_hs, raw_as_,
+            )
+            parsed["home_score"] = -1
+            parsed["away_score"] = -1
+        else:
+            # BUG 1: monotonic enforcement — scores may only stay same or increase.
+            if raw_hs != -1:
+                if self._prev_home_score >= 0 and raw_hs < self._prev_home_score:
+                    log.debug(
+                        "ScoreboardOCR frame %d: home_score decreased %d→%d — "
+                        "rejecting, keeping prev=%d",
+                        self._frame_counter, self._prev_home_score, raw_hs,
+                        self._prev_home_score,
+                    )
+                    parsed["home_score"] = -1   # suppress this read
+                else:
+                    self._prev_home_score = raw_hs
+
+            if raw_as_ != -1:
+                if self._prev_away_score >= 0 and raw_as_ < self._prev_away_score:
+                    log.debug(
+                        "ScoreboardOCR frame %d: away_score decreased %d→%d — "
+                        "rejecting, keeping prev=%d",
+                        self._frame_counter, self._prev_away_score, raw_as_,
+                        self._prev_away_score,
+                    )
+                    parsed["away_score"] = -1   # suppress this read
+                else:
+                    self._prev_away_score = raw_as_
+        # ─────────────────────────────────────────────────────────────────────
 
         # Merge — only overwrite fields that were successfully read this frame
         for k, v in parsed.items():
@@ -326,14 +373,23 @@ def _parse_scoreboard_text(text: str) -> Dict:
             if 1 <= val <= 24:
                 state["shot_clock"] = float(val)
 
-    # ── Period: Q1-Q4 / 1st-4th / OT ─────────────────────────────────────
+    # ── Period: Q1-Q4 / 1st-4th / FIRST-FOURTH / OT ─────────────────────
+    # BUG 3 FIX: widened to handle broadcast variants:
+    #   "Q1", "Q 1", "Q-1", "1st", "1 ST", "1ST", "1stQTR", "FIRST", "FOURTH"
+    # Group layout: g1=Q-prefixed, g2=ordinal(digit), g3=ordinal(word), g4=OT
     period = re.search(
-        r"\bQ([1-4])\b|\b([1-4])(?:st|nd|rd|th)\b|\b(OT\d?)\b",
+        r"\bQ[\s\-]?([1-4])\b"                    # Q1 / Q 1 / Q-1
+        r"|\b([1-4])\s*(?:st|nd|rd|th)\b"         # 1st / 1 ST / 1stQTR
+        r"|\b(FIRST|SECOND|THIRD|FOURTH)\b"        # spelled-out period names
+        r"|\b(OT\d?)\b",                           # OT / OT1 / OT2
         text, re.IGNORECASE
     )
+    _WORD_PERIOD = {"first": 1, "second": 2, "third": 3, "fourth": 4}
     if period:
-        if period.group(3):                         # overtime
+        if period.group(4):                         # overtime
             state["period"] = 5
+        elif period.group(3):                       # spelled-out word
+            state["period"] = _WORD_PERIOD[period.group(3).lower()]
         else:
             state["period"] = int(period.group(1) or period.group(2))
 

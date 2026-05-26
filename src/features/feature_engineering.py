@@ -141,7 +141,12 @@ def compute_spatial_features(df: pd.DataFrame) -> pd.DataFrame:
 
     if "team_spacing" in df.columns:
         df["team_spacing"] = pd.to_numeric(df["team_spacing"], errors="coerce")
-        df.loc[df["team_spacing"] == 0.0, "team_spacing"] = np.nan
+        df.loc[df["team_spacing"] == 0.0, "team_spacing"] = np.nan  # sentinel → NaN (lines 142-144, do NOT change)
+
+    # BUG 2 FIX: forward-fill imputed spacing per (game_id, team) for downstream use.
+    # impute_team_spacing adds team_spacing_imputed + is_spacing_imputed columns without
+    # modifying the team_spacing NaN conversion above (lines 142-144 stay intact).
+    df = impute_team_spacing(df)
 
     # Velocity clamp — tracking re-ID jumps produce physically impossible spikes
     # (p99 ~106 px/frame observed; NBA max sprint ~20 px/frame at 30fps/1294px court).
@@ -531,7 +536,12 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
         if not _xfg_model_used:
             zone_w    = df["court_zone"].map(_zone_weight).fillna(0.5)
             opp_d     = pd.to_numeric(df["nearest_opponent"], errors="coerce").fillna(50.0)
-            spacing   = pd.to_numeric(df.get("team_spacing", 0), errors="coerce").fillna(0.0)
+            # Sentinel cleanup: team_spacing == 0.0 means invalid hull (not real tight spacing).
+            # Replace sentinel with median before normalising so shot_quality_proxy is not
+            # artificially suppressed on the 50-79% of shots where hull detection fails.
+            _ts_raw   = pd.to_numeric(df.get("team_spacing", pd.Series(dtype=float)), errors="coerce").replace(0.0, np.nan)
+            _ts_med   = _ts_raw.median()
+            spacing   = _ts_raw.fillna(_ts_med if not np.isnan(_ts_med) else 0.0)
             spacing_n = (spacing / (spacing.max() + 1e-6)).clip(0.0, 1.0)
             sq_proxy  = (zone_w * (1.0 / (1.0 + opp_d / 50.0)) * (0.5 + 0.5 * spacing_n)).round(3)
             df["shot_quality_proxy"] = np.where(shot_mask, sq_proxy, 0.0)
@@ -1126,6 +1136,52 @@ def fill_spatial_gaps(df: pd.DataFrame) -> pd.DataFrame:
                 df["handler_isolation"] = new_iso
                 filled = int(np.sum(need_iso & ~np.isnan(new_iso)))
                 print(f"  [fill_spatial] handler_isolation: filled {filled} blank frames")
+
+    return df
+
+
+def impute_team_spacing(df: pd.DataFrame) -> pd.DataFrame:
+    """Forward-fill team_spacing per (game_id, team) for invalid-hull frames.
+
+    team_spacing == 0.0 is the tracker sentinel meaning "fewer than 3 players
+    visible — convex hull undefined".  It is NOT a real tight-spacing signal.
+    This function replaces the sentinel with NaN, then forward-fills within each
+    (game_id, team) group up to a 90-frame cap (~3 s at 30 fps).  Gaps longer
+    than 90 frames are left as NaN to signal genuine data loss.
+
+    Adds two new columns (additive — does not modify team_spacing in-place):
+      team_spacing_imputed  — float; imputed value or NaN when no prior exists / gap > 90 frames
+      is_spacing_imputed    — bool; True when forward-fill was applied (original was sentinel/NaN)
+
+    Args:
+        df: Tracking DataFrame.  Must contain ``team_spacing``.  If
+            ``game_id`` and ``team`` are present they are used as group keys;
+            otherwise falls back to whole-column ffill.
+
+    Returns:
+        Copy of df with the two new columns appended.
+    """
+    df = df.copy()
+
+    if "team_spacing" not in df.columns:
+        df["team_spacing_imputed"] = np.nan
+        df["is_spacing_imputed"]   = False
+        return df
+
+    orig = pd.to_numeric(df["team_spacing"], errors="coerce").replace(0.0, np.nan)
+
+    # Mark frames that need imputation: original value was sentinel (0.0) or NaN
+    df["is_spacing_imputed"] = orig.isna()
+
+    if "game_id" in df.columns and "team" in df.columns:
+        df["_orig_spacing_tmp"] = orig
+        df["team_spacing_imputed"] = (
+            df.groupby(["game_id", "team"], group_keys=False)["_orig_spacing_tmp"]
+              .transform(lambda s: s.ffill(limit=90))
+        )
+        df = df.drop(columns=["_orig_spacing_tmp"])
+    else:
+        df["team_spacing_imputed"] = orig.ffill(limit=90)
 
     return df
 
