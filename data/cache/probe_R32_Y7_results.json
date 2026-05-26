@@ -1,0 +1,49 @@
+{
+  "doc_exists": true,
+  "doc_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a41172a1006eaf748\\docs\\operator_runbook.md",
+  "non_blank_lines": 285,
+  "probe": "R32_Y7",
+  "referenced_scripts_cited": [
+    "scripts/daily_workflow.py",
+    "scripts/operator_dashboard.py",
+    "scripts/mobile_html_server.py",
+    "scripts/live_recommendation_engine.py",
+    "scripts/ledger_insurance.py",
+    "scripts/nightly_cleanup.py",
+    "scripts/daemon_registry.json",
+    "scripts/daemon_watchdog.py",
+    "scripts/reconcile_settlements.py",
+    "scripts/live_rec_tracker.py",
+    "scripts/feature_drift_detector.py",
+    "scripts/nba_injury_report_scraper.py",
+    "scripts/recover_line_killed.py",
+    "scripts/place_bet.py"
+  ],
+  "referenced_scripts_count": 14,
+  "referenced_scripts_missing_on_disk": [],
+  "referenced_scripts_not_cited": [],
+  "referenced_scripts_target": 14,
+  "sections_found": [
+    "TL;DR",
+    "Architecture",
+    "Daily timeline",
+    "Files to open",
+    "Cron setup",
+    "Common operations",
+    "Incident response"
+  ],
+  "sections_rendered": 7,
+  "sections_required": [
+    "TL;DR",
+    "Architecture",
+    "Daily timeline",
+    "Files to open",
+    "Cron setup",
+    "Common operations",
+    "Incident response"
+  ],
+  "sections_target": 7,
+  "status": "SHIP",
+  "total_lines": 359,
+  "ts": "2026-05-26T19:41:09Z"
+}
