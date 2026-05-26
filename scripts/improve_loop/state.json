@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 37,
+  "rounds_completed": 38,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -621,6 +621,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-24 (joblib serialization for CLI integration - 4/4 smoke PASS).\nDataset grew to 3045 games (was 2865 at B21, R26 backfills continuing).\nSerialized 4 single-model/top50 canonical bundles to data/models/m2_family/ (gitignored - local artifacts only):\n  r12_total_pts_box_canonical.joblib    141 feats, mean pred 228.46\n  r12_score_diff_canonical.joblib       50 feats (perm_inner_cv trim of opp_full), mean 1.87\n  r12_home_score_canonical.joblib       153 feats, mean 114.86\n  r12_over_230_canonical.joblib         162 feats, mean prob 0.449\nEach bundle contains: trained model dict (l1_full, l2_lgb, l2_xgb), feature_columns list, recipe metadata (source probe, trim strategy), training metadata (n_games, training_date, module_version). Reloaded each via joblib.load + predict on last 50 games - all sane and finite predictions confirmed.\nENSEMBLE TARGETS DEFERRED: away_score (B15 nnls_top3) and AH3 (B15 top4_avg) - logged for B26.\nPRODUCTION CLI INTEGRATION PATH: predict_game.py can now load these bundles directly via joblib.load(path), call predict_canonical(bundle['model'], X[bundle['feature_columns']]) for fresh games. No retraining at predict time - full speed inference.\nStop counter UNCHANGED at 1/5 (serialization batch doesn't count)."
+    },
+    {
+      "name": "R12_BATCH25_ensemble_rebaseline_LIVE",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 2,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-25 (ensemble re-baseline on current 3369-game dataset \u2014 MIXED RESULTS).\nDataset grew massively: 2839 (B15) -> 3045 (B24) -> 3369 (B25 now).\nAWAY_SCORE nnls_top3 (3 models: halflife2_only, all_b9, interactions_only):\n  LIVE -13.47% vs frozen -14.51% (drift +1.04pp REGRESSION).\n  Weights per fold: [0.21, 0.03, 0.76] / [0.17, 0.67, 0.17] / [0.20, 0.41, 0.39]\n  NNLS weights swing wildly per outer fold \u2014 sign the 3 models aren't consistently\n  differently good. The ensemble is FRAGILE; on more data the weight instability\n  hurts more than the diversity helps.\nAH3 top4_avg (4 models: intersection + opp_pts_pace + opp_full + all_b9, equal weights):\n  LIVE Brier 0.2221 (frozen 0.2271, drift -0.00498 BETTER)\n  LIVE AUC 0.7182 (frozen 0.7115, drift +0.00672 BETTER)\n  Both metrics improved on bigger data \u2014 simple equal-weight averaging is STABLE\n  and benefits from more samples per component model.\nARCHITECTURAL FINDING: NNLS weighting at ensemble level is BRITTLE on growing data.\nEqual-weight averaging is more robust because it doesn't try to learn weights from\nnoisy outer-train OOF (which has variance that the NNLS over-fits per fold).\nNEW PRODUCTION CANONICAL:\n  away_score: B25 nnls_top3 -13.47% LIVE (honest, replaces frozen -14.51% claim)\n             \u2014 consider switching to single-model (e.g. interactions_only) for\n             stability before serialization in B26.\n  AH3:        B25 top4_avg Brier 0.2221 AUC 0.7182 \u2014 NEW HONEST BEST (replaces frozen)\nStop counter UNCHANGED at 1/5 (re-baseline doesn't count)."
     }
   ],
   "rejects": [
@@ -1135,7 +1144,8 @@
     "HGB-as-inner-OOF (alone or alongside LGB) vs feature-set diversity ensembles",
     "avg_blend at player-prop level (form-feature dominance breaks the pattern)",
     "global permutation-importance ranking on held-out slice (causes leakage; B19 numbers overstated ~1.5pp)",
-    "perm_inner_cv top-50 trim across all 6 targets (only wins on score_diff)"
+    "perm_inner_cv top-50 trim across all 6 targets (only wins on score_diff)",
+    "NNLS-weighted ensemble blending on growing dataset (unstable weights per fold; equal-weight averaging is more robust)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,

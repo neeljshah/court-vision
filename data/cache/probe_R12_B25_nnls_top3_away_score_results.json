@@ -1,0 +1,49 @@
+{
+  "probe": "R12_B25_nnls_top3_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "live_pooled_mae": 9.2119,
+  "live_pooled_naive_mae": 10.646,
+  "live_pooled_delta_pct": -13.47,
+  "frozen_delta_pct": -14.51,
+  "drift_pp": 1.04,
+  "n_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "fold_mae": 9.377
+    },
+    {
+      "fold": 2,
+      "fold_mae": 9.109
+    },
+    {
+      "fold": 3,
+      "fold_mae": 9.1499
+    }
+  ],
+  "frozen_src": "B15 nnls_top3 frozen (2839 games)",
+  "elapsed_s": 114.7,
+  "weights_per_fold": [
+    [
+      0.2145067651149061,
+      0.03049055132065767,
+      0.7550026835644363
+    ],
+    [
+      0.16506645042548798,
+      0.6688407835192628,
+      0.16609276605524922
+    ],
+    [
+      0.19761717954940916,
+      0.4128602237173873,
+      0.38952259673320355
+    ]
+  ],
+  "fc_names": [
+    "halflife2_only",
+    "all_b9",
+    "interactions_only"
+  ]
+}
