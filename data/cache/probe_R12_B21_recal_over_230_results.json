@@ -1,0 +1,17 @@
+{
+  "target": "over_230",
+  "kind": "bin",
+  "live_pooled_brier": 0.24183,
+  "live_pooled_naive_brier": 0.29245,
+  "live_pooled_auc": 0.67219,
+  "reference_brier": 0.2321,
+  "reference_auc": 0.6843,
+  "reference_src": "B19 keep_top50/opp_full (frozen 2839g)",
+  "n_folds": 3,
+  "fc_len_per_fold": [
+    50,
+    50,
+    50
+  ],
+  "elapsed_s": 18.5
+}
