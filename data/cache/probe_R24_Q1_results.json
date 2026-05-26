@@ -1,0 +1,36 @@
+{
+  "probe": "R24_Q1_classifier_tighten",
+  "vassell": {
+    "rung_3_5_tier": "alt",
+    "rung_13_5_tier": "primary",
+    "primary_line": 13.5,
+    "correct": true
+  },
+  "dort": {
+    "rung_0_5_tier": "alt",
+    "rung_5_5_tier": "primary",
+    "primary_line": 5.5,
+    "correct": true
+  },
+  "vassell_correct": true,
+  "dort_correct": true,
+  "audit_post_R24_Q1": {
+    "dates_scanned": [
+      "2026-05-26"
+    ],
+    "n_real_arbs": 0,
+    "n_suspect_remaining": 0,
+    "n_blocked_false_arbs": 1
+  },
+  "R23_P5_baseline": {
+    "n_real_arbs_post_M1": 0,
+    "n_would_be_false_arbs_pre_M1": 1,
+    "n_remaining_suspect_arbs": 0
+  },
+  "delta_vs_R23_P5": {
+    "real_arbs_change": 0,
+    "suspect_change": 0
+  },
+  "ship_gate": "vassell_correct AND dort_correct AND suspect_count_not_worse_than_R23_P5",
+  "ship_gate_pass": true
+}
