@@ -191,6 +191,10 @@ src/pipeline/gpu_dataframe.py
 *.bak
 *.orig
 *.tmp
+.tmp_*
+agent_*.py
+agent_*.log
+scratch_*.py
 apps/portfolio-site/node_modules/
 apps/portfolio-site/.next/
 apps/portfolio-site/out/
