@@ -108,6 +108,15 @@
       "commit": "pending",
       "date": "2026-05-25",
       "summary": "CLV ship gate retrofit: scripts/improve_loop/clv_gate.py (check_clv_gate + compose_with_mae) wired into scaffold.py post-MAE gate. Legacy R0-R8 probes pass-through via 'CLV unavailable -- legacy probe'. 12/12 unit tests pass. Integration regression replay on R8_M22 preserves historical REJECT. Plus weekly report: scripts/clv_weekly_report.py."
+    },
+    {
+      "name": "R10_M5_inplay_winprob",
+      "round": 9,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "In-play win-prob update at endQ3: mean Brier 0.1350 vs gate 0.183, mean accuracy 81.33% vs gate 72%, AUC 0.901. Pregame baseline Brier 0.2653 — endQ3 is +0.130 improvement. endQ1 Brier 0.2323 (fails gate), endQ2 Brier 0.1903 (fails gate marginally). Snapshot-conditional features dominate at endQ3 (3-quarter score margin + total + pace + pregame_winprob). Wire: retrain model on full data, persist to data/models/inplay_winprob_endq3.lgb, surface via src/prediction/live_engine.py for live API."
     }
   ],
   "rejects": [

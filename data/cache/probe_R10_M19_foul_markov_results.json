@@ -1,0 +1,106 @@
+{
+  "probe": "R10_M19_foul_markov",
+  "n_rows": 22222,
+  "markov_q4_min_regression": {
+    "mae_per_fold": [
+      NaN,
+      2.2533650023964165,
+      2.242884818602023,
+      2.221597212560785
+    ],
+    "mae_baseline_per_fold": [
+      NaN,
+      2.347280250253386,
+      2.38144293581837,
+      2.3162779374240867
+    ],
+    "mae_model_mean": 2.2393,
+    "mae_baseline_mean": 2.3483
+  },
+  "downstream_endQ3": {
+    "folds": [
+      {
+        "fold": 0,
+        "n_games": 377,
+        "mae_delta": {
+          "pts": 0.04706,
+          "reb": 0.02305,
+          "ast": 0.01303,
+          "fg3m": 0.00695,
+          "stl": 0.00451,
+          "blk": 0.00307,
+          "tov": 0.0049
+        },
+        "all_stats_positive": false
+      },
+      {
+        "fold": 1,
+        "n_games": 377,
+        "mae_delta": {
+          "pts": 0.03057,
+          "reb": 0.01969,
+          "ast": 0.00975,
+          "fg3m": 0.00437,
+          "stl": 0.00422,
+          "blk": 0.00173,
+          "tov": 0.00313
+        },
+        "all_stats_positive": false
+      },
+      {
+        "fold": 2,
+        "n_games": 376,
+        "mae_delta": {
+          "pts": 0.04717,
+          "reb": 0.01879,
+          "ast": 0.01057,
+          "fg3m": 0.00772,
+          "stl": 0.00455,
+          "blk": 0.00268,
+          "tov": 0.00352
+        },
+        "all_stats_positive": false
+      },
+      {
+        "fold": 3,
+        "n_games": 376,
+        "mae_delta": {
+          "pts": 0.0523,
+          "reb": 0.02088,
+          "ast": 0.01273,
+          "fg3m": 0.00683,
+          "stl": 0.00412,
+          "blk": 0.00234,
+          "tov": 0.00265
+        },
+        "all_stats_positive": false
+      }
+    ],
+    "mean_delta": {
+      "pts": 0.04427,
+      "reb": 0.0206,
+      "ast": 0.01152,
+      "fg3m": 0.00647,
+      "stl": 0.00435,
+      "blk": 0.00245,
+      "tov": 0.00355
+    },
+    "folds_all_positive": 0,
+    "n_stats_improving": 0,
+    "overall_mean_delta": 0.01332,
+    "wf_pass": false,
+    "delta_pass": false,
+    "stats_pass": false,
+    "ship": false
+  },
+  "baseline_mae": {
+    "pts": 2.214,
+    "reb": 0.8987,
+    "ast": 0.5755,
+    "fg3m": 0.3528,
+    "stl": 0.2506,
+    "blk": 0.1543,
+    "tov": 0.3663
+  },
+  "ship": false
+}
