@@ -29,3 +29,7 @@ Append-only; one event per line.
 [2026-05-26 S2] REJECT — R10_M30v2_foulout: classifier AUC 0.92 (vs M30 v1 AUC 0.30), 7/7 stats directionally improve but mean volume delta -0.0026 misses -0.005 gate; selection bias on pf>=5 (stars who keep playing).
 [2026-05-26 S2] SHIP-PER-STAT — R10_M16_streak: FG3M -0.012, STL -0.022, BLK -0.053, TOV -0.011 (all 4/4 WF). PTS/REB/AST fail. R7_A-style per-stat ship.
 [2026-05-26 S2] SHIP — R10_M14_playtype: prior-season Synergy playtype freq, 6/7 stats improving, PTS WF 4/4 (-0.027), FG3M WF 4/4 (-0.011), mean -0.0098. Wire to player_props pregame.
+[2026-05-26 S2] REJECT — R10_M7_ref_features: full sweep done, mean_delta +0.00229, only 1/7 improving (STL marginal -0.0007); cycle-15 pattern confirmed (ref-crew priors absorbed by form/role).
+[2026-05-26 S2] REJECT — R10_M9_fatigue: all 7 stats explode +0.06 to +0.15 mean delta when fatigue features added to residual head (overfits proj_base+residual composition).
+[2026-05-26 S2] SHIP-PER-STAT — R10_M13_tracking: PTS strict WF 4/4 + mean -0.00736 (passes both gates). 4 more stats hit 4/4 WF but miss mean gate (AST/FG3M/BLK/TOV marginal). Cycle 14 v2 with strict prior-season discipline works for PTS only.
+[2026-05-26 S2] R10 ROUND CLOSED: 4 ships (M5/M14/M16-per-stat/M13-PTS), 4 rejects (M19/M30v2/M7/M9). Best round since R7. Live wiring deferred to maintain stability overnight.

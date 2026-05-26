@@ -135,6 +135,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "Synergy play-type features (8 cols: spotup, transition, cut, prballhandler, handoff, prrollman, isolation, offscreen) joined PRIOR-SEASON only (S-1 → S) for per-game prop prediction. 6/7 stats improving (PTS -0.027, REB -0.013, AST -0.004, FG3M -0.011, STL -0.003, BLK 0.0). 2/7 stats hit WF 4/4 (PTS, FG3M). Mean delta -0.0098 passes gate. TOV mildly regresses (+0.001). Tested on 24322 player-games (S-1 join filter). Wire: add to player_props.py pregame feature set, gated by PTS+FG3M shipping cleanly."
+    },
+    {
+      "name": "R10_M13_tracking_pts_per_stat",
+      "round": 9,
+      "delta_pts": -0.00736,
+      "stats_won": 1,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "Prior-season player tracking features (drives, passing, catch-shoot — strict S-1 only). PTS PER-STAT SHIP: WF 4/4 positive AND mean delta -0.00736 (passes both gates). Four other stats hit WF 4/4 but miss -0.005 mean threshold: AST -0.00491, FG3M -0.00168, BLK -0.00068, TOV -0.00118. REB 3/4 WF -0.00077. STL 1/4 WF +0.00014 (regress). Stats_fully_pass=1/7 (PTS only). Cycle 14 attempted current-season tracking + regressed; this v2 with strict prior-season discipline produces honest PTS gain. Wire: add tracking features to PTS endQ3 residual head only."
     }
   ],
   "rejects": [
