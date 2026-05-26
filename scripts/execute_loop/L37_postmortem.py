@@ -27,7 +27,7 @@ import uuid
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 _SCRIPT_DIR = Path(__file__).resolve().parent
 _PROJECT_DIR = _SCRIPT_DIR.parents[1]
@@ -89,6 +89,151 @@ _INVESTIGATION_MAP: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Dataclass
 # ---------------------------------------------------------------------------
+@dataclass(frozen=True)
+class IncidentClass:
+    name: str          # e.g. "model_drift", "stale_line", ...
+    severity: str      # "P0" | "P1" | "P2"
+    description: str
+
+
+@dataclass(frozen=True)
+class Remediation:
+    class_name: str
+    suggestion: str
+    runbook_link: Optional[str] = None
+
+
+_BUILTIN_CLASSES: tuple[IncidentClass, ...] = (
+    IncidentClass("model_drift",            "P1", "predictions consistently off-target"),
+    IncidentClass("stale_line",             "P2", "line moved before bet placed"),
+    IncidentClass("injury_unaccounted",     "P1", "key player injury announced post-bet"),
+    IncidentClass("ev_calc_bug",            "P0", "EV calculation produced negative-EV bet"),
+    IncidentClass("slippage_underestimate", "P2", "fill price worse than expected"),
+    IncidentClass("kelly_oversized",        "P1", "bet sized above max Kelly cap"),
+)
+
+_BUILTIN_REMEDIATIONS: dict[str, Remediation] = {
+    "model_drift": Remediation(
+        class_name="model_drift",
+        suggestion="Trigger L24 nightly retrain for drifting stats; run walk-forward validation",
+        runbook_link=None,
+    ),
+    "stale_line": Remediation(
+        class_name="stale_line",
+        suggestion="Tighten L19 CLV alert threshold; snap lines closer to close",
+        runbook_link=None,
+    ),
+    "injury_unaccounted": Remediation(
+        class_name="injury_unaccounted",
+        suggestion="Increase L20 scrape frequency to 5 min during pregame window",
+        runbook_link=None,
+    ),
+    "ev_calc_bug": Remediation(
+        class_name="ev_calc_bug",
+        suggestion="HALT betting immediately; audit EV calculation formula and unit tests",
+        runbook_link=None,
+    ),
+    "slippage_underestimate": Remediation(
+        class_name="slippage_underestimate",
+        suggestion="Recalibrate L18 slippage model with recent fill-price vs requested-price data",
+        runbook_link=None,
+    ),
+    "kelly_oversized": Remediation(
+        class_name="kelly_oversized",
+        suggestion="Reduce Kelly fraction cap; check L18 stake sizing logic for max_stake guard",
+        runbook_link=None,
+    ),
+}
+
+# Registry for custom classifiers and remediations (extended at runtime)
+_custom_classes: dict[str, IncidentClass] = {}
+_custom_classifiers: dict[str, Callable[[dict], bool]] = {}
+_custom_remediations: dict[str, Remediation] = {}
+
+
+def classify_incident(incident: dict) -> Optional[IncidentClass]:
+    """Heuristic classification of an incident dict.
+
+    Uses avg_clv, model_p, total stake vs bankroll, and model_p_side fields.
+    Returns None if no class can be confidently assigned.
+    """
+    # --- custom classifiers take priority (registered first = highest priority) ---
+    for class_name, fn in _custom_classifiers.items():
+        try:
+            if fn(incident):
+                # Return from custom registry, then fallback to builtin classes
+                cls = _custom_classes.get(class_name)
+                if cls is None:
+                    cls = next((c for c in _BUILTIN_CLASSES if c.name == class_name), None)
+                if cls is not None:
+                    return cls
+        except Exception:
+            log.warning("[L37] Custom classifier %r raised an exception", class_name)
+
+    bets: list[dict] = incident.get("bets", [])
+
+    # --- ev_calc_bug (P0): any bet has model_p_side < 0.5 with an EV in the bet record ---
+    for b in bets:
+        mp = float(b.get("model_p_side", 1.0) or 1.0)
+        ev = b.get("ev", b.get("expected_value", None))
+        if mp < 0.5 and ev is not None and float(ev) > 0:
+            return next(c for c in _BUILTIN_CLASSES if c.name == "ev_calc_bug")
+
+    # --- stale_line: avg_clv < -0.05 ---
+    avg_clv = incident.get("avg_clv", None)
+    if avg_clv is not None and float(avg_clv) < -0.05:
+        return next(c for c in _BUILTIN_CLASSES if c.name == "stale_line")
+
+    # --- model_drift: model_p_side < market_p for all losses ---
+    if bets:
+        all_model_below_market = all(
+            float(b.get("model_p_side", 0.5) or 0.5) < float(b.get("market_p", 0.5) or 0.5)
+            for b in bets
+            if b.get("market_p") is not None
+        ) and any(b.get("market_p") is not None for b in bets)
+        if all_model_below_market:
+            return next(c for c in _BUILTIN_CLASSES if c.name == "model_drift")
+
+    # --- kelly_oversized: sum(stake) > bankroll * 0.1 ---
+    bankroll = float(incident.get("bankroll", _get_bankroll()))
+    total_stake = sum(float(b.get("stake", 0.0) or 0.0) for b in bets)
+    if total_stake > bankroll * 0.1:
+        return next(c for c in _BUILTIN_CLASSES if c.name == "kelly_oversized")
+
+    return None
+
+
+def suggest_remediation(incident_class: IncidentClass) -> Optional[Remediation]:
+    """Return the remediation suggestion for a given IncidentClass.
+
+    Checks custom remediations first, then builtin table.
+    """
+    custom = _custom_remediations.get(incident_class.name)
+    if custom is not None:
+        return custom
+    return _BUILTIN_REMEDIATIONS.get(incident_class.name)
+
+
+def register_classifier(
+    class_def: IncidentClass,
+    classifier_fn: Callable[[dict], bool],
+) -> None:
+    """Register a custom incident class and its classifier function.
+
+    The classifier_fn receives an incident dict and returns True if the
+    incident matches this class.  Custom classifiers run before builtins.
+    """
+    _custom_classes[class_def.name] = class_def
+    _custom_classifiers[class_def.name] = classifier_fn
+    log.info("[L37] Registered custom classifier: %s (%s)", class_def.name, class_def.severity)
+
+
+def register_remediation(remediation: Remediation) -> None:
+    """Register or override a remediation for a given class_name."""
+    _custom_remediations[remediation.class_name] = remediation
+    log.info("[L37] Registered custom remediation for: %s", remediation.class_name)
+
+
 @dataclass
 class PostmortemReport:
     incident_id: str
@@ -99,6 +244,10 @@ class PostmortemReport:
     root_cause_hypothesis: str
     recommended_investigation: str
     written_to: str
+    # v2 classification fields (additive — None when classification is uncertain)
+    incident_class: Optional[str] = None        # IncidentClass.name
+    severity: Optional[str] = None              # "P0" | "P1" | "P2"
+    remediation: Optional[str] = None           # Remediation.suggestion
 
 
 # ---------------------------------------------------------------------------
@@ -478,8 +627,13 @@ def run_postmortem(
     trigger_type: str = "large_loss",
     pnl: Optional[float] = None,
     bankroll: Optional[float] = None,
+    incident: Optional[dict] = None,
 ) -> PostmortemReport:
-    """Categorise *losing_bets*, build the report, write Markdown, return dataclass."""
+    """Categorise *losing_bets*, build the report, write Markdown, return dataclass.
+
+    v2: also classifies the incident into a known IncidentClass and attaches
+    a remediation suggestion.  Existing callers are unaffected (additive only).
+    """
     _POSTMORTEM_DIR.mkdir(parents=True, exist_ok=True)
 
     incident_id = str(uuid.uuid4())[:8]
@@ -487,6 +641,16 @@ def run_postmortem(
 
     categorized = categorize_losses(losing_bets)
     root_cause, investigation = _derive_root_cause(categorized)
+
+    # --- v2: structured classification ---
+    _incident_ctx = incident or {
+        "bets": losing_bets,
+        "bankroll": bankroll or _get_bankroll(),
+        "trigger_type": trigger_type,
+        "pnl": pnl,
+    }
+    inc_class = classify_incident(_incident_ctx)
+    remediation_obj = suggest_remediation(inc_class) if inc_class else None
 
     # Build magnitude line
     if pnl is not None and bankroll:
@@ -539,6 +703,9 @@ def run_postmortem(
         root_cause_hypothesis=root_cause,
         recommended_investigation=investigation,
         written_to=str(out_path),
+        incident_class=inc_class.name if inc_class else None,
+        severity=inc_class.severity if inc_class else None,
+        remediation=remediation_obj.suggestion if remediation_obj else None,
     )
 
 

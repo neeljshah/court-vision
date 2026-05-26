@@ -6,6 +6,17 @@ Storage:
         predictions.parquet             — (game_id, player, stat, predicted_q50, ts)
         summary.json                    — written only when settled
 
+All disk writes use atomic tmp → replace so a crash never leaves a partial file.
+
+Environment Variables:
+    L25_SHADOW_ROOT   Override shadow storage directory (default: data/shadow/).
+    L25_LEDGER_DIR    Override ledger directory (default: data/ledger/).
+
+Paper vs Live Mode:
+    This module is data-only — it writes shadow predictions and reads the L07
+    ledger for settlement.  It does NOT place bets.  No paper/live distinction
+    is needed; all shadow runs are inherently paper (observation only).
+
 CLI:
     python L25_ab_shadow.py status                   # list_active_shadows table
     python L25_ab_shadow.py settle --variant <name>
@@ -478,6 +489,97 @@ def list_active_shadows() -> list[ShadowRun]:
             predictor_repr=entry.get("predictor_repr", ""),
         ))
     return out
+
+
+# ---------------------------------------------------------------------------
+# L41 integration
+# ---------------------------------------------------------------------------
+def shadow_compare_from_l41(harness_report: dict) -> dict:
+    """Run a shadow comparison driven by an L41 IntegrationHarness report.
+
+    Takes a harness_report dict as produced by L41.IntegrationHarness and
+    extracts champion / challenger variant names, then calls compare_to_prod
+    on the challenger (if present) and settle_shadow on both variants.
+
+    Expected harness_report structure (all keys optional — function degrades
+    gracefully if keys are absent)::
+
+        {
+            "champion_variant": "model_v3",       # name in shadow registry
+            "challenger_variant": "model_v4",     # name to compare
+            "game_ids": ["00225..."],             # unused here, for context
+            ...
+        }
+
+    Returns
+    -------
+    dict with keys:
+        champion_variant   : str | None
+        challenger_variant : str | None
+        champion_summary   : ShadowSummary as dict | None
+        challenger_compare : ComparisonResult as dict | None
+        verdict            : "PROMOTE" | "REJECT" | "INCONCLUSIVE" | "NO_CHALLENGER"
+        reason             : str
+    """
+    from dataclasses import asdict
+
+    champion_variant: Optional[str] = harness_report.get("champion_variant")
+    challenger_variant: Optional[str] = harness_report.get("challenger_variant")
+
+    result: dict = {
+        "champion_variant": champion_variant,
+        "challenger_variant": challenger_variant,
+        "champion_summary": None,
+        "challenger_compare": None,
+        "verdict": "NO_CHALLENGER",
+        "reason": "no_challenger_in_harness_report",
+    }
+
+    if not challenger_variant:
+        log.info(
+            "shadow_compare_from_l41: no challenger_variant in report — skipping"
+        )
+        return result
+
+    # Settle champion if present
+    if champion_variant:
+        registry = _load_registry()
+        if champion_variant in registry:
+            champ_summary = settle_shadow(champion_variant)
+            result["champion_summary"] = asdict(champ_summary)
+        else:
+            log.info(
+                "shadow_compare_from_l41: champion=%s not in shadow registry",
+                champion_variant,
+            )
+
+    # Compare challenger
+    registry = _load_registry()
+    if challenger_variant not in registry:
+        result["verdict"] = "INCONCLUSIVE"
+        result["reason"] = f"challenger {challenger_variant!r} not in shadow registry"
+        log.warning(
+            "shadow_compare_from_l41: challenger=%s not in registry", challenger_variant
+        )
+        return result
+
+    comp = compare_to_prod(challenger_variant)
+    result["challenger_compare"] = {
+        "variant_name": comp.variant_name,
+        "per_stat": comp.per_stat,
+        "verdict": comp.verdict,
+        "reason": comp.reason,
+    }
+    result["verdict"] = comp.verdict
+    result["reason"] = comp.reason
+
+    log.info(
+        "shadow_compare_from_l41: challenger=%s verdict=%s reason=%s",
+        challenger_variant,
+        comp.verdict,
+        comp.reason,
+    )
+    return result
 
 
 # ---------------------------------------------------------------------------

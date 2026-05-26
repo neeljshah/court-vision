@@ -1,5 +1,10 @@
 """L16_live_trader.py — Live Trader (PAPER MODE STRICT).
 
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  L16 uses ``not _L44.is_paper_mode()`` as the live gate, with
+LIVE_TRADING_ENABLED env var as the fallback when L44 is absent (soft-import
+pattern ensures behavior is identical if L44 is absent).
+
 Polls a live prediction engine, evaluates edge vs market quotes, and manages
 paper positions in data/ledger/paper_live_positions.json.  Real order
 submission is permanently gated behind the LIVE_TRADING_ENABLED env var
@@ -99,6 +104,22 @@ try:
     from scripts.execute_loop.L22_alerting import send_fill_alert as _send_fill_alert  # type: ignore
 except ImportError:
     _send_fill_alert = None  # type: ignore
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — paper/live mode delegation
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44  # type: ignore
+except Exception:
+    _L44 = None  # type: ignore
+
+
+def _is_live_trading() -> bool:
+    """Return True if live trading is enabled (via L44 or fallback env var)."""
+    if _L44 is not None:
+        return not _L44.is_paper_mode()
+    return os.environ.get("LIVE_TRADING_ENABLED", "0").lower() in ("1", "true")
+
 
 # ---------------------------------------------------------------------------
 # Config
@@ -420,7 +441,7 @@ def run_live_session(game_id: str, polling_sec: int = 30) -> int:
     int
         Total number of positions opened during the session.
     """
-    if _LIVE_ENABLED:
+    if _is_live_trading():
         logger.warning("LIVE_TRADING_ENABLED=true — still operating in paper mode for L16")
 
     opened_count = 0

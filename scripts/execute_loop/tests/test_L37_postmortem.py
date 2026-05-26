@@ -303,3 +303,151 @@ def test_root_cause_multi_factor(isolated_paths):
     equal_tallies = {"missing_injury_news": 2, "stat_drift": 2}
     hyp2, _ = L37._derive_root_cause(equal_tallies)
     assert "multi-factor" in hyp2
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — classify_incident: stale_line when avg_clv < -0.05
+# ---------------------------------------------------------------------------
+def test_classify_stale_line(isolated_paths):
+    """Incident with avg_clv = -0.08 → classify_incident returns stale_line."""
+    incident = {
+        "trigger_type": "large_loss",
+        "avg_clv": -0.08,
+        "bets": [_bet(model_p_side=0.58, bet_id="sl1")],
+        "bankroll": 100_000.0,
+    }
+    result = L37.classify_incident(incident)
+
+    assert result is not None
+    assert result.name == "stale_line"
+    assert result.severity == "P2"
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — classify_incident: kelly_oversized when total stake > 10% bankroll
+# ---------------------------------------------------------------------------
+def test_classify_kelly_oversized(isolated_paths):
+    """Incident where total stake exceeds 10% of bankroll → kelly_oversized."""
+    # bankroll=10_000, total_stake=1_200 → 12% > 10% threshold
+    bets = [
+        {**_bet(bet_id=f"ko{i}"), "stake": 400.0}
+        for i in range(3)
+    ]
+    incident = {
+        "trigger_type": "large_loss",
+        "bets": bets,
+        "bankroll": 10_000.0,
+    }
+    result = L37.classify_incident(incident)
+
+    assert result is not None
+    assert result.name == "kelly_oversized"
+    assert result.severity == "P1"
+
+
+# ---------------------------------------------------------------------------
+# Test 10 — classify_incident: returns None when no heuristic fires
+# ---------------------------------------------------------------------------
+def test_classify_returns_none_when_uncertain(isolated_paths):
+    """Incident with no strong signals → classify_incident returns None."""
+    incident = {
+        "trigger_type": "losing_streak",
+        "avg_clv": 0.01,   # slightly positive CLV — not stale
+        "bets": [
+            {**_bet(model_p_side=0.55, bet_id="nc1"), "stake": 10.0, "market_p": 0.54},
+        ],
+        "bankroll": 100_000.0,  # tiny stake, no kelly issue
+    }
+    result = L37.classify_incident(incident)
+
+    assert result is None
+
+
+# ---------------------------------------------------------------------------
+# Test 11 — suggest_remediation returns a Remediation for every builtin class
+# ---------------------------------------------------------------------------
+def test_suggest_remediation_for_each_builtin_class(isolated_paths):
+    """Every builtin IncidentClass must have a corresponding Remediation."""
+    for inc_class in L37._BUILTIN_CLASSES:
+        remediation = L37.suggest_remediation(inc_class)
+        assert remediation is not None, f"No remediation for class: {inc_class.name}"
+        assert isinstance(remediation, L37.Remediation)
+        assert remediation.class_name == inc_class.name
+        assert len(remediation.suggestion) > 0
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — register_classifier: custom class fires before builtins
+# ---------------------------------------------------------------------------
+def test_register_custom_classifier(isolated_paths, monkeypatch):
+    """Custom classifier and remediation are used when registered."""
+    # Clear registries for isolation
+    monkeypatch.setattr(L37, "_custom_classes", {})
+    monkeypatch.setattr(L37, "_custom_classifiers", {})
+    monkeypatch.setattr(L37, "_custom_remediations", {})
+
+    custom_class = L37.IncidentClass(
+        name="test_custom",
+        severity="P2",
+        description="custom test class",
+    )
+    custom_remediation = L37.Remediation(
+        class_name="test_custom",
+        suggestion="Run the custom fix script",
+        runbook_link="https://example.com/runbook",
+    )
+
+    # Classifier fires whenever incident has a "custom_flag" key set to True
+    L37.register_classifier(custom_class, lambda inc: inc.get("custom_flag") is True)
+    L37.register_remediation(custom_remediation)
+
+    incident_match = {"bets": [], "bankroll": 100_000.0, "custom_flag": True}
+    incident_no_match = {"bets": [], "bankroll": 100_000.0}
+
+    result_match = L37.classify_incident(incident_match)
+    result_no_match = L37.classify_incident(incident_no_match)
+
+    assert result_match is not None
+    assert result_match.name == "test_custom"
+    assert result_match.severity == "P2"
+
+    remediation = L37.suggest_remediation(result_match)
+    assert remediation is not None
+    assert remediation.suggestion == "Run the custom fix script"
+    assert remediation.runbook_link == "https://example.com/runbook"
+
+    # Without the flag, custom classifier should not fire
+    assert result_no_match is None or result_no_match.name != "test_custom"
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — run_postmortem populates incident_class, severity, remediation
+# ---------------------------------------------------------------------------
+def test_run_postmortem_includes_classification(isolated_paths):
+    """run_postmortem with a stale-line incident populates v2 classification fields."""
+    # avg_clv = -0.10 → stale_line classification expected
+    incident_ctx = {
+        "avg_clv": -0.10,
+        "bets": [_bet(bet_id="rc1", model_p_side=0.56)],
+        "bankroll": 100_000.0,
+        "trigger_type": "large_loss",
+        "pnl": -500.0,
+    }
+    bets = incident_ctx["bets"]
+    report = L37.run_postmortem(
+        losing_bets=bets,
+        trigger_type="large_loss",
+        pnl=-500.0,
+        bankroll=100_000.0,
+        incident=incident_ctx,
+    )
+
+    # All three new fields must be present on the report
+    assert hasattr(report, "incident_class")
+    assert hasattr(report, "severity")
+    assert hasattr(report, "remediation")
+
+    # With avg_clv = -0.10, stale_line should be classified
+    assert report.incident_class == "stale_line"
+    assert report.severity == "P2"
+    assert report.remediation is not None and len(report.remediation) > 0

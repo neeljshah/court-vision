@@ -1,5 +1,10 @@
 """L28_withdrawal_automation.py — Withdrawal Automation (execute_loop layer 28).
 
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  Per-layer flag checked: withdrawal (WITHDRAWAL_LIVE_ENABLED).
+Env var is kept as fallback for backward compatibility when L44 is absent
+(soft-import pattern ensures behavior is identical if L44 is absent).
+
 Monitors per-book balances and recommends / queues / executes withdrawals when
 a balance exceeds the per-book target by more than the configured buffer.
 
@@ -15,7 +20,7 @@ CLI:
     python L28_withdrawal_automation.py execute --queue-id X --token WITHDRAW_AUTHORIZED
     python L28_withdrawal_automation.py list-pending
 
-Paper vs Live Mode:
+Paper vs Live Mode (MODE GATING):
     This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
     expresses this intent. All withdrawal executions record entries with
     status='queued_paper' unless live mode is explicitly enabled via the env var
@@ -44,6 +49,22 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_DIR))
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — paper/live mode delegation
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44  # type: ignore
+except Exception:
+    _L44 = None  # type: ignore
+
+
+def _is_live_withdrawal() -> bool:
+    """Return True if live withdrawal execution is enabled (via L44 or fallback env var)."""
+    if _L44 is not None:
+        return _L44.is_live_for_layer("withdrawal")
+    return os.environ.get("WITHDRAWAL_LIVE_ENABLED", "0") == "1"
+
 
 # ---------------------------------------------------------------------------
 # CONFIG
@@ -185,7 +206,7 @@ def execute_withdrawal(
     if user_token != USER_TOKEN_VALUE:
         raise PermissionError(f"Invalid user_token — expected {USER_TOKEN_VALUE!r}")
 
-    live_enabled = os.environ.get("WITHDRAWAL_LIVE_ENABLED", "0") == "1"
+    live_enabled = _is_live_withdrawal()
 
     if live_enabled:
         status = "live_executed"

@@ -156,6 +156,62 @@ try:
 except Exception:
     L36 = None; daily_edge_report = None  # type: ignore[assignment]
 
+try:
+    from scripts.execute_loop.L15_market_making import compute_mm_quote as _compute_mm_quote
+    L15 = sys.modules.get("scripts.execute_loop.L15_market_making")
+    compute_mm_quote = _compute_mm_quote
+except Exception:
+    L15 = None; compute_mm_quote = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L17_hedge_calculator import recommend_hedge as _recommend_hedge
+    L17 = sys.modules.get("scripts.execute_loop.L17_hedge_calculator")
+    recommend_hedge = _recommend_hedge
+except Exception:
+    L17 = None; recommend_hedge = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L20_injury_feed import fetch_nba_official_injuries as _fetch_nba_official_injuries
+    L20 = sys.modules.get("scripts.execute_loop.L20_injury_feed")
+    fetch_nba_official_injuries = _fetch_nba_official_injuries
+except Exception:
+    L20 = None; fetch_nba_official_injuries = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L21_lineup_watcher import fetch_confirmed_lineups as _fetch_confirmed_lineups
+    L21 = sys.modules.get("scripts.execute_loop.L21_lineup_watcher")
+    fetch_confirmed_lineups = _fetch_confirmed_lineups
+except Exception:
+    L21 = None; fetch_confirmed_lineups = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L25_ab_shadow import list_active_shadows as _list_active_shadows
+    L25 = sys.modules.get("scripts.execute_loop.L25_ab_shadow")
+    list_active_shadows = _list_active_shadows
+except Exception:
+    L25 = None; list_active_shadows = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L26_account_hygiene import daily_hygiene_report as _daily_hygiene_report
+    L26 = sys.modules.get("scripts.execute_loop.L26_account_hygiene")
+    daily_hygiene_report = _daily_hygiene_report
+except Exception:
+    L26 = None; daily_hygiene_report = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L34_variance_budgeter import compute_daily_allocation as _compute_daily_allocation
+    L34 = sys.modules.get("scripts.execute_loop.L34_variance_budgeter")
+    compute_daily_allocation = _compute_daily_allocation
+except Exception:
+    L34 = None; compute_daily_allocation = None  # type: ignore[assignment]
+
+try:
+    from scripts.execute_loop.L40_multi_model_dispatcher import get_routing as _get_routing
+    L40 = sys.modules.get("scripts.execute_loop.L40_multi_model_dispatcher")
+    get_routing = _get_routing
+except Exception:
+    L40 = None; get_routing = None  # type: ignore[assignment]
+
 # ---------------------------------------------------------------------------
 # ---------------------------------------------------------------------------
 _CRITICAL = {"ingest_slate", "fpts_distribution", "optimize_cash", "submit_paper", "settle_bets"}
@@ -321,6 +377,21 @@ class IntegrationHarness:
                            ("_QUARANTINE_FILE", _p / "quarantined_angles.json")]:
                 self._patch_attr(L36, _a, _v)
 
+        if L20 is not None:
+            # Redirect seen-hashes and external injury file to tmp; no HTTP in harness mode
+            self._patch_attr(L20, "_SEEN_PATH", _p / "injury_seen.json")
+            self._patch_attr(L20, "_EXTERNAL", _p / "nba_official_injury.json")
+
+        if L21 is not None:
+            # Redirect lineup dir and suppress HTTP by patching _http_get to return ""
+            self._patch_attr(L21, "_LINEUP_DIR", _p / "lineup_announcements")
+            self._patch_attr(L21, "_http_get", lambda url: "")  # type: ignore[arg-type]
+
+        if L26 is not None:
+            self._patch_attr(L26, "_LEDGER_DIR", _p)
+            self._patch_attr(L26, "_BETS_FILE", _p / "bets.parquet")
+            self._patch_attr(L26, "_BETS_CSV", _p / "bets.csv")
+
     def _restore_paths(self) -> None:
         """Restore saved module-level constants; clean up newly-imported submodules."""
         for obj, attr, original in self._saved_attrs:
@@ -454,6 +525,24 @@ class IntegrationHarness:
         if e["status"] == "FAIL":
             failed_critical.add("ingest_slate")
 
+        def _injury_feed():
+            if fetch_nba_official_injuries is None:
+                raise RuntimeError("L20 not available")
+            updates = fetch_nba_official_injuries()
+            assert isinstance(updates, list)
+            return {"n_updates": len(updates)}
+
+        stages.append(self._run_stage("injury_feed_check", _injury_feed) if L20 else _skip("injury_feed_check"))
+
+        def _lineup_watcher():
+            if fetch_confirmed_lineups is None:
+                raise RuntimeError("L21 not available")
+            confs = fetch_confirmed_lineups()
+            assert isinstance(confs, list)
+            return {"n_teams_confirmed": len(confs)}
+
+        stages.append(self._run_stage("lineup_watcher", _lineup_watcher) if L21 else _skip("lineup_watcher"))
+
         def _fpts_dist():
             nonlocal fpts
             if "ingest_slate" in failed_critical:
@@ -470,6 +559,24 @@ class IntegrationHarness:
             stages.append(e)
             if e["status"] == "FAIL":
                 failed_critical.add("fpts_distribution")
+
+        def _dispatcher_route():
+            if get_routing is None:
+                raise RuntimeError("L40 not available")
+            routes = get_routing()
+            assert isinstance(routes, dict) and len(routes) > 0
+            return {"n_routes": len(routes), "stats": list(routes.keys())}
+
+        stages.append(self._run_stage("dispatcher_route", _dispatcher_route) if L40 else _skip("dispatcher_route"))
+
+        def _shadow_compare():
+            if list_active_shadows is None:
+                raise RuntimeError("L25 not available")
+            shadows = list_active_shadows()
+            assert isinstance(shadows, list)
+            return {"n_active_shadows": len(shadows)}
+
+        stages.append(self._run_stage("shadow_compare", _shadow_compare) if L25 else _skip("shadow_compare"))
 
         def _opt_cash():
             nonlocal cash_lineups
@@ -565,6 +672,17 @@ class IntegrationHarness:
 
         stages.append(self._run_stage("cross_exchange_ev", _cross_ev) if L13 else _skip("cross_exchange_ev"))
 
+        def _market_making_quote():
+            if compute_mm_quote is None:
+                raise RuntimeError("L15 not available")
+            quote = compute_mm_quote(model_p=0.55, model_p_std=0.02, target_spread_pp=3, market_id="STUB-NBA-001")
+            # may return None if guard rails reject — that's still a valid result
+            if quote is not None:
+                assert hasattr(quote, "bid_price") and hasattr(quote, "ask_price")
+            return {"quote_generated": quote is not None}
+
+        stages.append(self._run_stage("market_making_quote", _market_making_quote) if L15 else _skip("market_making_quote"))
+
         def _sync_positions():
             if sync_all_exchanges is None:
                 raise RuntimeError("L14 not available")
@@ -574,6 +692,27 @@ class IntegrationHarness:
 
         stages.append(self._run_stage("sync_exchange_positions", _sync_positions) if L14 else _skip("sync_exchange_positions"))
 
+        def _hedge_calculate():
+            if recommend_hedge is None:
+                raise RuntimeError("L17 not available")
+            open_bet = {
+                "bet_id": "stub_bet_001",
+                "side": "OVER",
+                "stake": 50.0,
+                "odds_american": -110,
+                "status": "OPEN",
+            }
+            live_market = {
+                "opposite_side": "UNDER",
+                "odds_american_opposite": 120,
+                "book": "stub_book",
+            }
+            rec = recommend_hedge(open_bet, live_market)
+            assert rec is not None and rec.decision in ("hedge_full", "hedge_partial", "no_hedge")
+            return {"decision": rec.decision, "hedge_stake": rec.hedge_stake}
+
+        stages.append(self._run_stage("hedge_calculate", _hedge_calculate) if L17 else _skip("hedge_calculate"))
+
         def _kelly():
             if kelly_fraction is None:
                 raise RuntimeError("L18 not available")
@@ -582,6 +721,15 @@ class IntegrationHarness:
             return {"kelly_fraction": frac}
 
         stages.append(self._run_stage("kelly_sizing", _kelly) if L18 else _skip("kelly_sizing"))
+
+        def _variance_budget():
+            if compute_daily_allocation is None:
+                raise RuntimeError("L34 not available")
+            allocs = compute_daily_allocation(total_bankroll=self.bankroll)
+            assert isinstance(allocs, list)
+            return {"n_buckets": len(allocs), "total_dollars": sum(a.target_dollars for a in allocs)}
+
+        stages.append(self._run_stage("variance_budget", _variance_budget) if L34 else _skip("variance_budget"))
 
         def _sell_to_close():
             if evaluate_close_decision is None:
@@ -652,6 +800,16 @@ class IntegrationHarness:
             stages.append(_skip("drift_check"))
         else:
             stages.append(self._run_stage("drift_check", _drift))
+
+        def _hygiene_check():
+            if daily_hygiene_report is None:
+                raise RuntimeError("L26 not available")
+            # Pass empty recent_bets to avoid reading real ledger
+            report = daily_hygiene_report(recent_bets=[])
+            assert isinstance(report, dict) and "status" in report
+            return {"status": report.get("status", "unknown"), "n_checks": len(report.get("checks", []))}
+
+        stages.append(self._run_stage("hygiene_check", _hygiene_check) if L26 else _skip("hygiene_check"))
 
         def _postmortem():
             if detect_incidents is None or run_postmortem is None:

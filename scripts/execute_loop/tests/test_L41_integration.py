@@ -82,20 +82,37 @@ def test_happy_path_runs_all_stages():
     report = harness.run_end_to_end()
 
     assert "stages" in report
-    assert len(report["stages"]) == 16, f"Expected 16 stages, got {len(report['stages'])}"
+    assert len(report["stages"]) == 24, f"Expected 24 stages, got {len(report['stages'])}"
 
     stage_names = [s["name"] for s in report["stages"]]
     expected = [
-        "ingest_slate", "fpts_distribution", "optimize_cash", "optimize_gpp",
+        "ingest_slate",
+        # L20, L21: pre-game info
+        "injury_feed_check", "lineup_watcher",
+        "fpts_distribution",
+        # L40, L25: dispatch + shadow
+        "dispatcher_route", "shadow_compare",
+        "optimize_cash", "optimize_gpp",
         "submit_paper",
-        # 6 new mid-flow stages (L9+L10 combined, L13, L14, L18, L33, L36)
-        "fetch_exchange_orderbooks", "cross_exchange_ev", "sync_exchange_positions",
-        "kelly_sizing", "sell_to_close", "edge_erosion",
-        # original post-game stages
+        # exchange mid-flow
+        "fetch_exchange_orderbooks", "cross_exchange_ev",
+        # L15: market making
+        "market_making_quote",
+        "sync_exchange_positions",
+        # L17: hedge
+        "hedge_calculate",
+        "kelly_sizing",
+        # L34: variance budget
+        "variance_budget",
+        "sell_to_close", "edge_erosion",
+        # post-game stages
         "settle_bets", "ledger_summary", "clv_report",
-        "drift_check", "postmortem",
+        "drift_check",
+        # L26: hygiene before postmortem
+        "hygiene_check",
+        "postmortem",
     ]
-    assert stage_names == expected, f"Stage names mismatch: {stage_names}"
+    assert stage_names == expected, f"Stage names mismatch:\n  got:      {stage_names}\n  expected: {expected}"
 
     # At minimum, ingest_slate and fpts_distribution should PASS (stub always works)
     status_map = {s["name"]: s["status"] for s in report["stages"]}
@@ -287,7 +304,7 @@ def test_report_json_serializable():
     # Round-trip sanity
     reloaded = json.loads(serialized)
     assert reloaded["seed"] == 42
-    assert len(reloaded["stages"]) == 16
+    assert len(reloaded["stages"]) == 24
 
 
 # ---------------------------------------------------------------------------
@@ -310,9 +327,9 @@ def test_extended_harness_runs_new_stages():
     for name in expected_new:
         assert name in stage_names, f"Expected stage {name!r} missing from report: {stage_names}"
 
-    # Total must now be 16 (10 original + 6 new: L9+L10 combined, L13, L14, L18, L33, L36)
-    assert len(stage_names) == 16, (
-        f"Expected 16 stages after extension, got {len(stage_names)}: {stage_names}"
+    # Total must now be 24 (16 previous + 8 new: L15, L17, L20, L21, L25, L26, L34, L40)
+    assert len(stage_names) == 24, (
+        f"Expected 24 stages after extension, got {len(stage_names)}: {stage_names}"
     )
 
     # Each new stage must have a valid status
@@ -387,8 +404,8 @@ def test_extended_harness_no_real_api_calls():
                 report = harness.run_end_to_end()
 
     stage_names = [s["name"] for s in report["stages"]]
-    assert len(stage_names) == 16, (
-        f"Expected 16 stages even with requests blocked, got {len(stage_names)}"
+    assert len(stage_names) == 24, (
+        f"Expected 24 stages even with requests blocked, got {len(stage_names)}"
     )
     # No stage must have raised due to network (all PASS/SKIP/SKIP_DEPENDS, none FAIL
     # due to requests error)
@@ -442,3 +459,100 @@ def test_no_real_ledger_pollution(tmp_path):
     assert "warnings" not in report or all(
         w.get("type") != "real_ledger_pollution" for w in report.get("warnings", [])
     ), f"Harness reported real_ledger_pollution: {report.get('warnings')}"
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — v4: all 24 stages present (8 new layers wired)
+# ---------------------------------------------------------------------------
+def test_l41v4_runs_all_24_stages():
+    """After R9-v4 extension, harness must return exactly 24 stage entries."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    stage_names = [s["name"] for s in report["stages"]]
+    assert len(stage_names) == 24, (
+        f"Expected 24 stages (16 existing + 8 new), got {len(stage_names)}: {stage_names}"
+    )
+    new_stages = [
+        "injury_feed_check", "lineup_watcher", "dispatcher_route",
+        "shadow_compare", "market_making_quote", "hedge_calculate",
+        "variance_budget", "hygiene_check",
+    ]
+    for name in new_stages:
+        assert name in stage_names, f"New stage {name!r} missing from: {stage_names}"
+
+    valid_statuses = {"PASS", "FAIL", "SKIP", "SKIP_DEPENDS"}
+    for s in report["stages"]:
+        assert s["status"] in valid_statuses, (
+            f"Stage {s['name']} has invalid status {s['status']!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 17 — new stages SKIP when module is absent (L20 = None)
+# ---------------------------------------------------------------------------
+def test_new_stages_skip_when_module_absent(monkeypatch):
+    """When L20 is patched to None, injury_feed_check must be SKIP (not FAIL)."""
+    monkeypatch.setattr(L41, "L20", None)
+    monkeypatch.setattr(L41, "fetch_nba_official_injuries", None)
+
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    assert status_map["injury_feed_check"] in ("SKIP", "SKIP_DEPENDS"), (
+        f"Expected SKIP for injury_feed_check when L20=None, got {status_map['injury_feed_check']}"
+    )
+    # Other new stages are unaffected — they must still appear
+    assert "lineup_watcher" in status_map
+    assert "variance_budget" in status_map
+
+
+# ---------------------------------------------------------------------------
+# Test 18 — new stage failure isolates (shadow_compare FAIL, rest continue)
+# ---------------------------------------------------------------------------
+def test_new_stages_failure_isolates(monkeypatch):
+    """When shadow_compare raises, it should FAIL while all later stages still run."""
+    def _bad_shadows(*args, **kwargs):
+        raise RuntimeError("Simulated L25 evaluate failure")
+
+    monkeypatch.setattr(L41, "list_active_shadows", _bad_shadows)
+    # Ensure L25 is not None so the stage is attempted
+    if L41.L25 is None:
+        dummy_mod = types.ModuleType("fake_L25")
+        monkeypatch.setattr(L41, "L25", dummy_mod)
+
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    status_map = {s["name"]: s["status"] for s in report["stages"]}
+    assert status_map["shadow_compare"] == "FAIL", (
+        f"Expected shadow_compare=FAIL, got {status_map['shadow_compare']}"
+    )
+    # Later stages must still have been attempted
+    for later_stage in ["optimize_cash", "kelly_sizing", "settle_bets", "postmortem"]:
+        assert later_stage in status_map, f"Stage {later_stage!r} missing after shadow_compare FAIL"
+
+
+# ---------------------------------------------------------------------------
+# Test 19 — full 24-stage report is JSON-serializable
+# ---------------------------------------------------------------------------
+def test_harness_report_serializable():
+    """Full 24-stage report must survive a json.dumps / json.loads round-trip."""
+    harness = L41.IntegrationHarness(seed=42, paper_mode=True)
+    report = harness.run_end_to_end()
+
+    try:
+        serialized = json.dumps(report)
+    except (TypeError, ValueError) as exc:
+        pytest.fail(f"24-stage report is not JSON-serializable: {exc}")
+
+    reloaded = json.loads(serialized)
+    assert reloaded["seed"] == 42
+    assert len(reloaded["stages"]) == 24
+
+    # Verify every stage entry survives the round-trip
+    for stage in reloaded["stages"]:
+        assert "name" in stage
+        assert "status" in stage
+        assert stage["status"] in ("PASS", "FAIL", "SKIP", "SKIP_DEPENDS")

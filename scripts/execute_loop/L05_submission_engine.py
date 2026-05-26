@@ -1,5 +1,10 @@
 """L05_submission_engine.py — DFS Lineup Submission Engine (PAPER MODE).
 
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  Per-layer flags checked: dk_submission, fd_submission.
+Env vars below are kept as fallbacks for backward compatibility when L44 is
+absent (soft-import pattern).
+
 Storage:
     data/ledger/submission_cache.json   — idempotency cache (TTL 24 h)
     data/ledger/paper_submissions.json  — paper-mode log
@@ -28,6 +33,7 @@ Environment Variables:
     DK_LIVE_ENABLED — Safety flag that must equal "1" to permit live DraftKings
         submissions. When absent or set to any other value, DK live submissions
         are blocked regardless of DK_API_KEY. Defaults to disabled (not "1").
+        Also controlled via L44: DK_LIVE_SUBMISSION_ENABLED=1.
 
     FD_API_KEY — FanDuel API key sent as the X-Api-Key header for FD live
         submissions. Must be non-empty when SUBMISSION_MODE=live and book=fd.
@@ -36,14 +42,15 @@ Environment Variables:
     FD_LIVE_ENABLED — Safety flag that must equal "1" to permit live FanDuel
         submissions. When absent or set to any other value, FD live submissions
         are blocked regardless of FD_API_KEY. Defaults to disabled (not "1").
+        Also controlled via L44: FD_LIVE_SUBMISSION_ENABLED=1.
 
-Paper vs Live Mode:
+Paper vs Live Mode (MODE GATING):
     Default behavior is paper mode — no environment variables need to be set.
     Live submission is gated by ALL of the following conditions being true:
       1. SUBMISSION_MODE=live
       2. USER_TOKEN is non-empty
-      3. For DK: DK_LIVE_ENABLED=1 AND DK_API_KEY is non-empty
-         For FD: FD_LIVE_ENABLED=1 AND FD_API_KEY is non-empty
+      3. For DK: DK_LIVE_ENABLED=1 (or L44 dk_submission live) AND DK_API_KEY is non-empty
+         For FD: FD_LIVE_ENABLED=1 (or L44 fd_submission live) AND FD_API_KEY is non-empty
     If any gate is unsatisfied, _check_live_gates raises PermissionError and
     submit_lineup falls back to no submission (error propagates to caller).
     The --live CLI flag sets SUBMISSION_MODE=live in the current process only.
@@ -67,6 +74,36 @@ PROJECT_DIR = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(PROJECT_DIR))
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# L44 soft-import — paper/live mode delegation
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L44_paper_mode as _L44  # type: ignore
+except Exception:
+    _L44 = None  # type: ignore
+
+
+def _is_live_dk() -> bool:
+    """Return True if DraftKings live submission is enabled.
+
+    Checks L44 per-layer flag first; always also accepts the legacy
+    DK_LIVE_ENABLED=1 env var for backward compatibility.
+    """
+    if _L44 is not None and _L44.is_live_for_layer("dk_submission"):
+        return True
+    return os.environ.get("DK_LIVE_ENABLED", "0").lower() in ("1", "true")
+
+
+def _is_live_fd() -> bool:
+    """Return True if FanDuel live submission is enabled.
+
+    Checks L44 per-layer flag first; always also accepts the legacy
+    FD_LIVE_ENABLED=1 env var for backward compatibility.
+    """
+    if _L44 is not None and _L44.is_live_for_layer("fd_submission"):
+        return True
+    return os.environ.get("FD_LIVE_ENABLED", "0").lower() in ("1", "true")
 
 _LEDGER_DIR = PROJECT_DIR / "data" / "ledger"
 _CACHE_FILE = _LEDGER_DIR / "submission_cache.json"
@@ -163,9 +200,9 @@ def _check_live_gates(book: str) -> None:
     if not os.environ.get("USER_TOKEN"):
         raise PermissionError(_ERR)
     b = book.upper()
-    if b == "DK" and (os.environ.get("DK_LIVE_ENABLED") != "1" or not os.environ.get("DK_API_KEY")):
+    if b == "DK" and (not _is_live_dk() or not os.environ.get("DK_API_KEY")):
         raise PermissionError(_ERR)
-    elif b == "FD" and (os.environ.get("FD_LIVE_ENABLED") != "1" or not os.environ.get("FD_API_KEY")):
+    elif b == "FD" and (not _is_live_fd() or not os.environ.get("FD_API_KEY")):
         raise PermissionError(_ERR)
     elif b not in ("DK", "FD"):
         raise PermissionError(_ERR)
