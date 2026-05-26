@@ -406,6 +406,12 @@ _ISOLATION_DEFAULT    = 99.0          # ft — "wide open" sentinel when no oppo
                                       #  99 ft = wider than half-court → physically impossible real value)
 _SPACING_NORM         = 4700.0        # ft² reference area (half-court ≈ 47×50 ft = 2350 ft², ×2 for full)
 _FAST_BREAK_VEL_MIN  = 3.5            # px/frame team-mean toward basket → fast break
+# Directional gate: ball velocity must point within arccos(threshold) of the
+# nearest basket to count as a shot.  Pass arcs aimed at a teammate score near 0.
+# Tunable via NBA_SHOT_DIRECTIONAL_COS_MIN env var (float, default 0.3 ≈ 72°).
+_SHOT_DIRECTIONAL_COS_MIN: float = float(
+    os.environ.get("NBA_SHOT_DIRECTIONAL_COS_MIN", "0.3")
+)
 
 
 def _px_to_ft(px_dist: float, map_w: int) -> float:
@@ -1501,6 +1507,10 @@ class UnifiedPipeline:
         possession_dur:   int            = 0
         last_handler:     Optional[dict] = None   # last player who had ball (for shot log)
         prev_ball_2d_f:   Optional[tuple] = None
+        # Directional gate: rolling 5-frame ball position history (pixel space).
+        # Kept small so memory impact is negligible; deque auto-evicts oldest.
+        from collections import deque as _dq
+        _ball_pos_hist: _dq = _dq(maxlen=5)
         possession_id:    int            = 0
         possession_start: int            = 0
         possession_buf:   List[dict]     = []
@@ -2273,7 +2283,31 @@ class UnifiedPipeline:
                 _shot_dist_ft = UnifiedPipeline._dist_to_basket(
                     shooter["x2d"], shooter["y2d"], map_w, map_h)
                 _proximity_ok = _shot_dist_ft <= 30.0
-                _shot_allowed = _poss_ok and _global_ok and _proximity_ok
+                # Directional gate: ball velocity vector must point toward the nearest
+                # basket (cos_sim > _SHOT_DIRECTIONAL_COS_MIN).  Pass arcs aimed at
+                # teammates have cos_sim near 0 or negative.  Falls back to True when
+                # ball position history is unavailable (don't block on missing data).
+                _directional_ok = True
+                if len(_ball_pos_hist) >= 2:
+                    _bh_old = _ball_pos_hist[0]  # oldest sample in deque (up to 5 frames back)
+                    _bh_now = _ball_pos_hist[-1]
+                    _vx_b = float(_bh_now[0] - _bh_old[0])
+                    _vy_b = float(_bh_now[1] - _bh_old[1])
+                    _v_mag = float(np.hypot(_vx_b, _vy_b))
+                    if _v_mag > 0.5:  # ignore near-zero velocity — ball held or tracker jitter
+                        # Use the same nearest-basket logic as _vel_toward_basket
+                        _bl = (_BASKET_L[0] * map_w, _BASKET_L[1] * map_h)
+                        _br = (_BASKET_R[0] * map_w, _BASKET_R[1] * map_h)
+                        _dl = float(np.hypot(_bh_now[0] - _bl[0], _bh_now[1] - _bl[1]))
+                        _dr = float(np.hypot(_bh_now[0] - _br[0], _bh_now[1] - _br[1]))
+                        _tbx, _tby = (_bl if _dl <= _dr else _br)
+                        _b_mag = min(_dl, _dr)
+                        if _b_mag > 1e-6:
+                            _cos_sim = (
+                                _vx_b * (_tbx - _bh_now[0]) + _vy_b * (_tby - _bh_now[1])
+                            ) / (_v_mag * _b_mag)
+                            _directional_ok = _cos_sim >= _SHOT_DIRECTIONAL_COS_MIN
+                _shot_allowed = _poss_ok and _global_ok and _proximity_ok and _directional_ok
                 if _shot_allowed:
                     shot_poss_last_ts[possession_id] = timestamp_sec
                     _last_global_shot_ts = timestamp_sec
@@ -2367,6 +2401,8 @@ class UnifiedPipeline:
                     ball_pos[1] - prev_ball_2d_f[1],
                 )), 2)
             prev_ball_2d_f = ball_pos
+            if ball_pos:
+                _ball_pos_hist.append(ball_pos)
 
             # ── Fast-break flag (frame-level) ─────────────────────────────
             fast_break = UnifiedPipeline._fast_break_flag(
