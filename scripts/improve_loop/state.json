@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 34,
+  "rounds_completed": 35,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -594,6 +594,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-21 (re-baseline on current 2865-game dataset using r12_canonical_predictor module exclusively \u2014 IMPORTANT FINDING).\nLIVE per-target metrics with LEAK-FREE per-fold permutation importance:\n  total_pts_box  delta -14.02% (B19 ref -16.27%, drift +2.25pp)\n  score_diff     delta -13.79% (B19 ref -17.71%, drift +3.92pp)\n  home_score     delta -14.49% (B19 ref -16.86%, drift +2.37pp)\n  over_230       Brier 0.2418 AUC 0.6722 (B19 ref 0.2321/0.6843, drift Brier +0.0097, AUC -0.012)\n\nROOT CAUSE FINDING \u2014 B19's reported numbers were inflated by perm-importance LEAKAGE.\nB19 trim used a SINGLE permutation-importance ranking computed by training LGB on the first 75%% of data and scoring on the LAST 25%%. That 25%% test slice OVERLAPS with WF folds 3 and 4's held-out portions. So the trim selection was partially informed by the data it would later predict. B21 fixes this by computing perm-importance PER OUTER FOLD on outer-train only (the honest production protocol).\nDRIFT ALSO MATTERS \u2014 dataset grew 2839 -> 2865 games (R26_S2 backfilled 2025-26). Newer games have shorter prior-history for L10/recency features.\nDECOMPOSITION (rough): of the +2-4pp drift, ~1.5pp is leakage correction, ~1pp is data drift.\n\nSTRATEGIC IMPLICATIONS:\n1. R12 final numbers are NOT live production performance. The published B19 numbers    over-stated by ~1.5pp (leakage) and were captured on a smaller dataset.\n2. Honest live performance is still GREAT vs naive baseline (-13 to -15%% MAE reduction    and Brier 0.24 / AUC 0.67) \u2014 just less than B19's frozen-and-leaky claim.\n3. Future probes MUST use per-fold leak-free perm-importance for any feature-selection    step. Saturated angle logged: 'global perm-importance ranking on held-out slice'.\n4. The r12_canonical_predictor.py module's get_canonical_feature_set CORRECTLY does    per-fold trim \u2014 so PRODUCTION use of the module gets honest numbers automatically.\n\nNEW PRODUCTION CANONICAL \u2014 LIVE (replaces B19 frozen):\n  total_pts_box  -14.02%% (interactions_only, 141 feats, single model)\n  score_diff     -13.79%% (top50 of opp_full, per-fold leak-free)\n  home_score     -14.49%% (top50 of all_b9, per-fold leak-free)\n  over_230       Brier 0.2418 AUC 0.6722 (top50 of opp_full, per-fold leak-free)\n  away_score, AH3: ensemble canonicals (B15) \u2014 not re-baselined here, still reference values\n\nStop counter UNCHANGED at 0/5 (re-baseline doesn't count)."
+    },
+    {
+      "name": "R12_BATCH22_stable_feat_select",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 12,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-22 (12 variants in 345s \u2014 12/12 SHIP, 3/12 BEAT_LIVE). Leak-free trim strategies properly compared. Stop counter: 0/5.\nPer-strategy beat-LIVE count:\n  lgb_importance: 0/4 beat \u2014 regresses +1.4 to +2.9pp on every target.\n  perm_inner_cv:  2/4 beat \u2014 total tied (-0.02pp), score_diff -1.59pp WIN.\n  rfe_lgb:        1/4 beat \u2014 score_diff -0.56pp.\nBIGGEST WIN: score_diff perm_inner_cv -15.38% vs B21 LIVE -13.79% (recovers 1.59pp of the leakage correction \u2014 perm_inner_cv is more stable than the leaky B19 single-pass perm-importance OR LGB built-in importance).\nARCHITECTURAL FINDING: averaging permutation importance across 3 INNER CV folds (perm_inner_cv) produces a MORE STABLE feature ranking than single-pass perm-imp or model-internal gain-based importance. The inner-CV averaging smooths noise that single-pass importance picks up. LGB built-in feature_importances_ is gain-based (splits) and disagrees with prediction-relevance \u2014 consistently the worst trim.\nNEW PRODUCTION CANONICAL UPDATES:\n  total_pts_box  -14.04% (B22 perm_inner_cv, tied with LIVE -14.02%)\n  score_diff     -15.38% (B22 perm_inner_cv, BEATS LIVE -13.79% by 1.59pp) NEW HONEST BEST\n  home_score     -14.49% UNCHANGED (B21 LIVE \u2014 no B22 variant beats)\n  away_score     -14.51% UNCHANGED (B15 frozen ref)\n  over_230, AH3: unchanged\nRECOVERY ARC: B19 reported spread -17.71% (with leakage) \u2192 B21 honest -13.79% \u2192 B22 honest -15.38%. Net: the loop has now produced an honest result 1.59pp better than honest baseline using a stable trim \u2014 about half-way back to the leaky claim, without leakage."
     }
   ],
   "rejects": [
