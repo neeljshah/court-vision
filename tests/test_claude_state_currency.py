@@ -20,10 +20,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DOC_PATH = REPO_ROOT / "docs" / "CLAUDE-state.md"
 
 
-def _git_head_short() -> str:
-    """Return the 8-char prefix of HEAD; raise if git unavailable."""
+def _git_rev_short(rev: str) -> str:
+    """Return the 8-char prefix of the given rev; raise if git unavailable."""
     out = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
+        ["git", "rev-parse", rev],
         cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,
@@ -33,17 +33,29 @@ def _git_head_short() -> str:
 
 
 def test_claude_state_mentions_current_master_commit() -> None:
-    """`docs/CLAUDE-state.md` must reference the current HEAD commit prefix."""
+    """`docs/CLAUDE-state.md` must reference the HEAD commit prefix.
+
+    Because the doc is necessarily written BEFORE the commit that lands it,
+    the doc records the *prior* HEAD at write time. To stay green across
+    the commit boundary, we accept either HEAD or HEAD~1 (the snapshot the
+    doc was refreshed against). Any older mismatch means the doc drifted.
+    """
     if not DOC_PATH.exists():
         pytest.skip("docs/CLAUDE-state.md is local-only and not present in this checkout")
 
     try:
-        head_short = _git_head_short()
+        head_short = _git_rev_short("HEAD")
     except (subprocess.CalledProcessError, FileNotFoundError):
         pytest.skip("git not available; cannot verify currency")
 
+    try:
+        parent_short = _git_rev_short("HEAD~1")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        parent_short = ""
+
     text = DOC_PATH.read_text(encoding="utf-8", errors="replace")
-    assert head_short in text, (
-        f"docs/CLAUDE-state.md does not mention HEAD {head_short}; "
-        "refresh it (R22_O3 pattern) so future sessions inherit the right context."
+    acceptable = [s for s in (head_short, parent_short) if s]
+    assert any(s in text for s in acceptable), (
+        f"docs/CLAUDE-state.md does not mention HEAD ({head_short}) "
+        f"or HEAD~1 ({parent_short}); refresh it (R22_O3 pattern)."
     )
