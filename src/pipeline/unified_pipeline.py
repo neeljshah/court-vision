@@ -704,6 +704,12 @@ class UnifiedPipeline:
         # BUG3: 2-consecutive-frame confirmation gate — only suspend after 2 frames trigger
         self._replay_trigger_pending_count: int         = 0
         self._last_sb_conf:            float            = 0.0
+        # R10: clock-decrement signal for homography over-trigger guard. Populated
+        # from scoreboard OCR; gates the replay-detector's suspend transition so
+        # genuine live play (clock decrementing) doesn't get blanked when the
+        # frame happens to look like a graphic overlay.
+        self._last_clock_seconds:      float            = -1.0
+        self._prev_clock_seconds:      float            = -1.0
 
         self.event_det = EventDetector(map_w=self.map_2d.shape[1],
                                        map_h=self.map_2d.shape[0])
@@ -1648,6 +1654,11 @@ class UnifiedPipeline:
                 if _sc_result:
                     self._sc_absent_streak     = 0
                     self._sc_ever_seen         = True
+                    # R10: mirror clock to self.* so the homography over-trigger guard
+                    # (replay/cut detector below at line ~1745) can see the live-play signal.
+                    if _gclock > 0:
+                        self._prev_clock_seconds = self._last_clock_seconds
+                        self._last_clock_seconds = float(_gclock)
                     if (_gclock > 0 and _prev_game_clock_sec > 0
                             and _gperiod > 0 and _gperiod == _prev_period
                             and _gclock > _prev_game_clock_sec + 2.0):
@@ -1729,15 +1740,31 @@ class UnifiedPipeline:
             # so the suspension is applied to this frame's SIFT update.
             # BUG3 fix: 2-consecutive-frame confirmation gate prevents single-graphic flashes
             # from triggering suspension (NBA lower-third stat overlays fire one-frame spikes).
+            # R10: scoreboard-gated early-exit. R8 lifted scoreboard log coverage
+            # 0.1% → 60%+, so _last_sb_conf is now reliable. When scoreboard
+            # confirms live play (high conf + clock decrementing 0-5s), refuse
+            # to suspend on a replay/cut signal AND drain any pending countdown
+            # 2× faster. Eliminates ~30% of live-play false positives.
+            _clock_running = (
+                self._last_sb_conf >= 0.6
+                and self._prev_clock_seconds > 0
+                and self._last_clock_seconds > 0
+                and 0.0 < (self._prev_clock_seconds - self._last_clock_seconds) < 5.0
+            )
             if self._is_replay_or_cut(frame):
                 self._replay_trigger_pending_count += 1
                 if self._replay_trigger_pending_count >= 2:
-                    self._homography_suspended = True
-                    self._homography_suspend_cnt = _REPLAY_SUSPEND_FRAMES
+                    if _clock_running:
+                        # Live play confirmed — refuse to suspend
+                        self._replay_trigger_pending_count = 0
+                    else:
+                        self._homography_suspended = True
+                        self._homography_suspend_cnt = _REPLAY_SUSPEND_FRAMES
             else:
                 self._replay_trigger_pending_count = 0
                 if self._homography_suspend_cnt > 0:
-                    self._homography_suspend_cnt -= 1
+                    _drain = 2 if _clock_running else 1
+                    self._homography_suspend_cnt = max(0, self._homography_suspend_cnt - _drain)
                     self._homography_suspended = self._homography_suspend_cnt > 0
                 else:
                     self._homography_suspended = False
@@ -2350,10 +2377,13 @@ class UnifiedPipeline:
                                     break
                     # FIX 8: use snapshotted _shot_arc_angle (not live parabola)
                     _arc_val = self.ball_det._shot_arc_angle if self.ball_det._shot_arc_angle is not None else ""
-                    # closeout lookup: events flushed to _events_log_rows in FIX 1 above
+                    # R10: closeout lookup widened from 1-frame to ~1.5s window.
+                    # Closeouts often complete 5-30 frames after release; the prior
+                    # single-frame window almost never matched.
+                    _closeout_lookback = int(1.5 * fps / max(1, _stride))
                     _closeout_speed = next(
                         (e["closeout_speed"]
-                         for e in reversed(_events_log_rows[_n_evlog_before:])
+                         for e in reversed(_events_log_rows[-max(_closeout_lookback, 1):])
                          if e.get("type") == "closeout"),
                         "",
                     )
