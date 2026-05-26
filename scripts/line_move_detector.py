@@ -427,6 +427,18 @@ def run_once(isodate: str, threshold_line: float, threshold_odds_pct: float,
     render_vault_feed(cache_path, vault_path, limit=50)
     consensus_new = [ev for ev in new_events if ev.get("consensus")]
     fired = fire_webhook(consensus_new)
+    # R18_K3 — Discord push on CONSENSUS_STEAM only (graceful no-op if env unset)
+    try:
+        from src.alerts.discord_webhook import post_alert
+        for ev in consensus_new:
+            post_alert("STEAM", "line_move_detector",
+                       f"STEAM: {ev.get('player_name', '?')} {ev.get('stat', '?')}",
+                       f"book={ev.get('book', '?')}  line {ev.get('line_from', '?')}→{ev.get('line_to', '?')}  "
+                       f"odds {ev.get('over_from', '?')}→{ev.get('over_to', '?')}",
+                       fields=[{"name": "book", "value": str(ev.get('book', '?'))},
+                               {"name": "tags", "value": ",".join(ev.get('tags', []))[:1024] or "-"}])
+    except Exception:
+        pass
     return {
         "events_new": len(new_events),
         "events_total_today": len(existing) + len(new_events),

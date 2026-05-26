@@ -299,6 +299,17 @@ def append_alert_md(killed: List[Dict[str, Any]],
                 f"- **URGENT** [{ts}] `{k['player']}` line-killed "
                 f"(reason: {k['reason']}) — kill all pending bets.\n"
             )
+    # R18_K3 — push notification (graceful no-op if DISCORD_WEBHOOK_URL unset)
+    try:
+        from src.alerts.discord_webhook import post_alert
+        for k in killed:
+            post_alert("URGENT", "nba_lineup_daemon",
+                       f"Line-killer: {k['player']}",
+                       f"Reason: {k['reason']} — kill all pending bets.",
+                       fields=[{"name": "player", "value": str(k.get('player', '?'))},
+                               {"name": "reason", "value": str(k.get('reason', '?'))}])
+    except Exception as exc:  # never block alert ledger on push-notify failure
+        log.warning("discord push failed: %s", exc)
     return len(killed)
 
 
