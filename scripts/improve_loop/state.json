@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 24,
+  "rounds_completed": 25,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -504,6 +504,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-11 (18 variants in 505s \u2014 18/18 SHIP, 3/18 beat B9 baseline). Marginal win round. Per-variant beat-B9 count:\n  opp_pts_only (+12 opp-allowed-PTS feats, 154 total): 0/6 beat B9.\n  opp_pts_pace (+15 feats incl. opp_l5_pace, 157 total): 1/6 beat \u2014 AH3 Brier 0.2294 AUC 0.7058 (-0.0008 Brier vs B9 0.2302).\n  opp_full (+21 feats incl. opp oreb/tov rates, 163 total): 2/6 beat \u2014 score_diff -17.44% (-0.21pp vs B9 -17.23%), O230 Brier 0.2383 AUC 0.6804 (BREAKS THE B6-O230 CEILING \u2014 first O230 win this loop, +0.0067 AUC vs B6 0.6737).\nBest per-target candidates after B11:\n  total: B9 interactions_only (-16.27%) STILL BEST\n  spread: B11 opp_full (-17.44%, -0.21pp vs B9)\n  home_score: B9 all variant (-16.10%) STILL BEST\n  away_score: B9 halflife2_only (-14.35%) STILL BEST\n  O230: B11 opp_full (Brier 0.2383 AUC 0.6804) \u2014 NEW BEST\n  AH3: B9 both_halflives (Brier 0.2302) \u2248 B11 opp_pts_pace (Brier 0.2294) \u2014 tied within noise.\nArchitectural finding: count-based opp-allowed L5 features (raw PTS scored against team) MOSTLY overlap with opp_def_adj_ortg + L10 home/road splits from B5. The opp_full variant adds opp_oreb_pct + opp_tov_pct rate proxies which DO help on score_diff (clearer signal on possession control) and O230 (oreb/tov drive variance in scoring volume). PRODUCTION CANONICAL UPDATE: O230 promotes from B6 to B11 opp_full; spread promotes from B9 both_halflives to B11 opp_full. Other targets unchanged. Stop counter: 0/5 (3 architectural wins this round \u2014 modest but positive)."
+    },
+    {
+      "name": "R12_BATCH12_h2h_streak",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 12,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-12 (12 variants in 296s \u2014 12/12 SHIP, 1/12 beat canonical). H2H L5 streak features barely move the needle.\n  h2h_ordered_only (+7 feats, 170 total): 0/6 beat canonical. All targets regress +0.61-1.94pp vs respective canonical winners.\n  h2h_full (+9 feats incl. unordered any-pair, 172 total): 1/6 beat \u2014 score_diff -17.51% (-0.07pp vs B11 opp_full -17.44%, marginal squeak).\nArchitectural finding: H2H signal is too WEAK relative to current B5+B9+B11 stack. Each team-pair has only ~4 games per season; L5 H2H window spans 2+ seasons of stale matchups. The general team-form features (off_rtg, opp_def_adj_ortg, L10 splits, opp_allowed_PTS_l5) already capture matchup signal more reliably than the noisy low-N H2H average. Unordered any-pair (h2h_full) marginally helps because it captures BOTH orientations of last 5 meetings, doubling effective sample size.\nPRODUCTION CANONICAL UNCHANGED. \nStop counter: 1/5 zero-architectural-gain rounds. (B11 was modest +3 wins; B12 marginal +1.)"
     }
   ],
   "rejects": [
@@ -916,6 +925,12 @@
       "reason": "All 12 SVD-embedding variants regress vs B6 OOF-stack. Scalar opp_def_adj_ortg + L10 home/road splits + win_quality_elo already saturate team-identity signal. Head-to-head matrix is too sparse (30x30=900 cells, ~2836 games, avg 3 samples/cell) for stable SVD beyond what scalars capture.",
       "saturated_angle": "SVD team identity embeddings on top of B5 quality+opp features",
       "round": 12
+    },
+    {
+      "name": "R12_BATCH12_h2h_streak_vs_canonical",
+      "reason": "11/12 H2H-feature variants regress vs canonical per-target winners. H2H L5 window is too noisy (~4 games/pair/season, 2+ season span) to add signal beyond what general team-form features already capture. Only h2h_full + score_diff squeaks by -0.07pp vs B11 opp_full.",
+      "saturated_angle": "head-to-head L5 streak features on top of B11 opp_full",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -982,7 +997,8 @@
     "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
     "streak features for high-volume stats (PTS/REB/AST) at any window length",
     "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)",
-    "30-team SVD identity embeddings (8-16 dim) on B5+B6 base"
+    "30-team SVD identity embeddings (8-16 dim) on B5+B6 base",
+    "H2H L5 ordered/unordered streak features (too noisy at game-level)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
