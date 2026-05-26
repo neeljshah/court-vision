@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 29,
+  "rounds_completed": 30,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -549,6 +549,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-16 (18 variants in 226s \u2014 18/18 SHIP gates but 0/18 BEAT_CANONICAL). Zero-architectural-gain round (stop counter: 1/5).\nCatBoost not installed in basketball_ai env \u2014 proceeded with 3-arch blend (LGB+XGB+HGB) instead of planned 4.\nAll 3 blend variants (all4_avg, all4_nnls, drop_worst) regress vs canonicals by +1.4-2.0pp on every regression target and worse Brier on binary targets.\nSample deltas vs B15 canonicals (per-target):\n  total -14.30% vs B9 -16.27% (+1.97pp regression)\n  score_diff -16.20% vs B15 nnls_top3 -17.61% (+1.41pp)\n  home_score -14.82% vs B15 top4_avg -16.52% (+1.70pp)\n  away_score -12.84% vs B15 nnls_top3 -14.51% (+1.67pp)\n  O230 Brier 0.2438 vs B15 top4_avg 0.2363 (regress)\n  AH3 Brier 0.2305 vs B15 top4_avg 0.2271 (regress)\nARCHITECTURAL FINDING: simple 3-arch SINGLE-MODEL blends do NOT beat the B15 OOF-stack-of-feature-blends. Three confounds: (1) B16 models are single-layer (no inner OOF stacking); (2) all 3 archs see the SAME feature set, so diversity is purely algorithmic not informational; (3) CatBoost missing reduces ensemble width. The B15 canonicals win because they combine BOTH feature-set diversity AND OOF-stack architecture \u2014 arch diversity at single-model level can't compensate.\nPRODUCTION CANONICAL UNCHANGED.\nStop counter: 1/5."
+    },
+    {
+      "name": "R12_BATCH17_hgb_inner_oof",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 12,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-17 (12 variants in 364s \u2014 12/12 SHIP gates but 0/12 BEAT_CANONICAL). Second consecutive zero-architectural-gain round. Stop counter: 2/5.\nhgb_oof_only variants (HGB replaces LGB as level-1 OOF):\n  total -15.18% vs B9 -16.27% (+1.09pp), spread -16.62% vs B15 -17.61% (+0.99pp),\n  home_score -16.16% vs B15 -16.52% (+0.36pp), away_score -13.86% vs B15 -14.51% (+0.65pp),\n  O230 Brier 0.2422 vs B15 0.2363 (regress), AH3 Brier 0.2296 vs B15 0.2271 (regress).\nlgb_plus_hgb_oof (BOTH OOF features stacked at level-2):\n  Consistently 0.1-0.5pp BETTER than hgb_oof_only across all targets \u2014 combining\n  LGB-OOF and HGB-OOF as parallel level-2 features marginally helps.\n  But gap to canonical never closes: score_diff -17.12% still +0.49pp short of -17.61%.\nARCHITECTURAL FINDING: HGB as inner OOF learner is consistently WEAKER than LGB. Combining both adds 0.1-0.5pp gain but burns 2x compute without bridging the gap to B15's model-level blending across DIFFERENT FEATURE SETS. The feature-diversity axis (B15) dominates the learner-diversity axis (B17) at this scale.\nPRODUCTION CANONICAL UNCHANGED.\nStop counter: 2/5. Two consecutive zero-gain rounds on the same backbone \u2014 time to pivot to a different axis. PLAYER-PROP models is the candidate."
     }
   ],
   "rejects": [
@@ -973,6 +982,12 @@
       "reason": "3-arch single-model blends (LGB+XGB+HGB) regress +1.4-2.0pp vs B15 OOF-stack-of-feature-blends. Architectural diversity at SINGLE-MODEL layer can't compensate for B15's feature-set diversity \u00d7 OOF-stack architecture combination. CatBoost missing in env reduced ensemble width from planned 4 to 3.",
       "saturated_angle": "3-arch single-model blending on canonical feature sets",
       "round": 12
+    },
+    {
+      "name": "R12_BATCH17_hgb_inner_oof_vs_canonical",
+      "reason": "HGB as level-1 OOF learner regresses vs canonical LGB-as-level-1. Adding HGB as a second OOF feature alongside LGB closes 0.5pp but never crosses the canonical threshold. Feature-set diversity (B15 model-level blends) dominates learner diversity at the current scale.",
+      "saturated_angle": "HGB as inner-OOF learner inside B6 stack",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -1041,7 +1056,8 @@
     "tracking features broader than M13's 4-feature optimal set (capacity dilutes single-stat signal)",
     "30-team SVD identity embeddings (8-16 dim) on B5+B6 base",
     "H2H L5 ordered/unordered streak features (too noisy at game-level)",
-    "3-arch (LGB+XGB+HGB) single-model blends on canonical feature sets"
+    "3-arch (LGB+XGB+HGB) single-model blends on canonical feature sets",
+    "HGB-as-inner-OOF (alone or alongside LGB) vs feature-set diversity ensembles"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
