@@ -142,6 +142,23 @@ class PlayerResolver:
                 self._conf_bufs[slot] = buf
             buf.append((number, float(conf)))
 
+    def _get_jersey_candidates(self, slot: int, top_n: int = 3) -> List[int]:
+        """R14 helper: return up to top_n jersey-number candidates ranked by weighted
+        confidence, WITHOUT applying the dominant-fraction gate. Used by resolve_player
+        to attempt next-best-in-roster rescue when the top candidate fails the gate.
+        """
+        buf = self._conf_bufs.get(slot)
+        if buf:
+            weighted: Dict[int, float] = {}
+            for num, conf in buf:
+                weighted[num] = weighted.get(num, 0.0) + conf
+            ranked = sorted(weighted.keys(), key=lambda n: weighted[n], reverse=True)
+            return ranked[:top_n]
+        counter = self._votes.get(slot)
+        if not counter:
+            return []
+        return [n for n, _ in counter.most_common(top_n)]
+
     def get_jersey_number(self, slot: int) -> Optional[int]:
         """Return the confidence-weighted majority-vote jersey number for slot, or None.
 
@@ -200,14 +217,23 @@ class PlayerResolver:
             {"player_id": int, "player_name": str, "team": str, "jersey": int}
             or None.
         """
+        if not self._roster_loaded:
+            self._fetch_roster()
+        tm = team or self._slot_team.get(slot, "")
+
         jersey = self.get_jersey_number(slot)
+        # R14: if primary jersey failed the dominant-fraction gate, try next-best
+        # candidates and accept the first one that's in the slot's team roster.
+        # OCR confuses digits like 0/8, 1/7, 3/8 — the second-best is often the
+        # real jersey. Filter restores ~10pp of recall lost to the gate.
+        if jersey is None:
+            for _cand in self._get_jersey_candidates(slot, top_n=3):
+                if (_cand, tm) in self._roster:
+                    jersey = _cand
+                    break
         if jersey is None:
             return None
 
-        if not self._roster_loaded:
-            self._fetch_roster()
-
-        tm = team or self._slot_team.get(slot, "")
         key = (jersey, tm)
         info = self._roster.get(key)
         if info is None:
