@@ -16,9 +16,16 @@
 ## Gate Status
 | Gate | Status | Blocker |
 |------|--------|---------|
-| Gate 1: CLV vs Pinnacle close (≥50 bets, beat rate ≥55%, ROI ≥3%) | **NOT YET RUN** | Top priority — run this week |
+| Gate 1 (real Pinnacle) | **INSUFFICIENT DATA** | Offseason — no historical Pinnacle closes in `prop_lines`. Daemon ready, awaits Oct 2026. |
+| Gate 1 (synthetic CLV, audit fold) | **PASS** — N=33,502, beat 66.55%, ROI +22.47% (2026-05-26) | Synthetic close (OOF q50, tier 3). Internal consistency check, NOT market-real. |
 | Gate CV: 80 clean games | In progress (29/80 usable) | RunPod run next |
-| Gate G: paper-trading harness | Scaffolded | Needs Gate 1 first |
+| Gate G: paper-trading harness | Scaffolded | Needs real-Pinnacle Gate 1 |
+
+### Gate 1 plumbing fixed 2026-05-26
+- `data/models/prop_residuals.json` rebuilt with proper `(player_id, game_date)` join keys — 330,078 rows across 7 stats. Old edge-history version preserved at `prop_residuals_edge_history.json`.
+- `scripts/run_gate1.py` patched: (a) NBA Stats game_id → date lookup via `season_games_*.json`, (b) new `--mode ledger [--audit-only]` reads `pnl_ledger_clv_synthetic.csv` directly.
+- All 9 existing `tests/test_gate1.py` tests pass.
+- Real-Pinnacle Gate 1 will execute one-shot when `prop_lines` populates during Oct 2026 preseason.
 
 ## Open Issues
 1. **Gate 1 not run** — no CLV validation against real closing lines yet. Everything else is theory.
