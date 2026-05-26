@@ -1,0 +1,37 @@
+{
+  "probe": "R12_B9_halflife2_only_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 131,
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2442 (-16.32%); AUC 0.6663",
+  "pooled_lgb_brier": 0.24416,
+  "pooled_naive_brier": 0.29178,
+  "pooled_lgb_auc": 0.6663,
+  "brier_delta_pct": -16.321,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.30085,
+      "lgb_brier": 0.25677
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.30285,
+      "lgb_brier": 0.23288
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27163,
+      "lgb_brier": 0.24282
+    }
+  ],
+  "beat_b6": false,
+  "b6_baseline_brier": 0.2383,
+  "b6_baseline_auc": 0.6737,
+  "elapsed_s": 18.1
+}

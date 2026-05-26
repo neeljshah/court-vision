@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 21,
+  "rounds_completed": 22,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -477,6 +477,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-8 (12 variants in 308.8s \u2014 12/12 pass naive-baseline ship gate but 0/12 beat B6 OOF-stack baseline). 30-team SVD identity embeddings (8-dim home + 8-dim away) added on top of B6 OOF-stack:\nemb_svd_scorediff (+16 emb feats, 153 total): total -14.56% (-0.53pp vs B6), spread -16.05% (-0.85pp), home_score -14.61% (-1.29pp), away_score -13.84% (-0.34pp), O230 Brier 0.2435 AUC 0.6623 (regress), AH3 Brier 0.2349 AUC 0.6971 (slight regress).\nemb_svd_combined (+32 emb feats from score_diff+total matrices, 169 total): total -13.54% (-1.55pp), spread -16.03% (-0.87pp), home_score -15.02% (-0.88pp), away_score -12.59% (-1.59pp), O230 Brier 0.2480 (regress), AH3 Brier 0.2312 (tied).\nARCHITECTURAL CONCLUSION: SVD team embeddings ADD NOISE not signal on top of B5's opp_def_adj_ortg + L10 home/road splits + win_quality_elo. The scalar team-strength features already capture team identity better than 8-dim SVD of the head-to-head score-diff matrix (which is sparse: 30^2=900 cells but only ~2836 games means each cell has avg ~3 samples). FIRST ZERO-ARCHITECTURAL-GAIN BATCH OF THIS LOOP. Stop counter: 1/5."
+    },
+    {
+      "name": "R12_BATCH9_halflife2_interactions",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 24,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-9 (24 variants in 558s \u2014 24/24 SHIP, 13/24 BEAT_B6). BIGGEST DELTA: interactions_only total -16.27% (-1.18pp vs B6 -15.09%). Per-variant beat-B6 count:\n  halflife2_only (12 H2 cols REPLACE 18 H4 cols, net 131 feats): 3/6 beat \u2014 spread -0.30pp, away_score -0.17pp, AH3 +0.25pp Brier.\n  both_halflives (H4+H2 = +12 feats, 149 total): 4/6 beat \u2014 total -0.57pp, spread -0.33pp, away_score -0.05pp, AH3 Brier 0.2302 AUC 0.7065 (best AH3 yet).\n  interactions_only (5 new feats: rest\u00d7travel \u00d7 2 + diff, b2b\u00d7pace, rest_diff\u00d7elo, 142 total): 4/6 beat \u2014 total -1.18pp (BIG WIN), spread -0.25pp, home_score -0.09pp, AH3 -0.0020 Brier.\n  all (H2 + interactions, 154 total): 2/6 beat \u2014 home_score -0.20pp, AH3 +0.0093 AUC.\nBest-per-target candidates:\n  total: interactions_only (-16.27%, -1.18pp vs B6)\n  spread: both_halflives (-17.23%, -0.33pp)\n  home_score: all variant (-16.10%, -0.20pp)\n  away_score: halflife2_only (-14.35%, -0.17pp)\n  O230: B6 still best (no variant beats Brier 0.2383)\n  AH3: both_halflives (Brier 0.2302 AUC 0.7065)\nArchitectural finding: rest\u00d7travel + b2b\u00d7pace interactions DO carry signal that scalar rest/travel/b2b/pace alone miss \u2014 gradient-boosted trees find the joint conditions (tired team on the road with travel) that linear features don't expose. Halflife=2 vs halflife=4: when COMBINED (both_halflives) wins more often than either alone \u2014 model benefits from BOTH short and medium recency horizons. PRODUCTION CANONICAL: B6 OOF-stack + interactions_only as new total/spread/AH3 baseline.\nStop counter RESET to 0/5 (architectural gain confirmed)."
     }
   ],
   "rejects": [

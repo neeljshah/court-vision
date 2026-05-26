@@ -1,0 +1,40 @@
+{
+  "probe": "R12_B9_interactions_only_away_score",
+  "kind": "regression",
+  "label": "away_score",
+  "n_features": 142,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -13.88%",
+  "pooled_naive_mae": 10.7052,
+  "pooled_lgb_mae": 9.2189,
+  "pooled_delta_pct": -13.88,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 10.4931,
+      "lgb_mae": 9.314,
+      "delta": -1.1791,
+      "delta_pct": -11.24
+    },
+    {
+      "fold": 2,
+      "naive_mae": 10.7188,
+      "lgb_mae": 9.2575,
+      "delta": -1.4613,
+      "delta_pct": -13.63
+    },
+    {
+      "fold": 3,
+      "naive_mae": 10.9038,
+      "lgb_mae": 9.0851,
+      "delta": -1.8187,
+      "delta_pct": -16.68
+    }
+  ],
+  "beat_b6": false,
+  "b6_baseline_delta_pct": -14.18,
+  "vs_b6_pp": 0.3,
+  "elapsed_s": 21.6
+}
