@@ -1,0 +1,43 @@
+{
+  "probe": "R12_B6_fivefold_wf_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 136,
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2478 (-15.25%); AUC 0.6658",
+  "pooled_lgb_brier": 0.24779,
+  "pooled_naive_brier": 0.29236,
+  "pooled_lgb_auc": 0.66584,
+  "brier_delta_pct": -15.247,
+  "n_valid_folds": 4,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29845,
+      "lgb_brier": 0.27454
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.29905,
+      "lgb_brier": 0.24223
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.29196,
+      "lgb_brier": 0.234
+    },
+    {
+      "fold": 4,
+      "naive_brier": 0.28001,
+      "lgb_brier": 0.24039
+    }
+  ],
+  "variant": {
+    "variant": "fivefold_wf",
+    "outer_k": 5
+  },
+  "elapsed_s": 9.4
+}
