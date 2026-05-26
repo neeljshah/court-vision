@@ -1,0 +1,63 @@
+{
+  "probe": "R23_P8",
+  "ran_at": "2026-05-26T17:36:48+00:00",
+  "target_date": "2026-05-26",
+  "bankroll": 1000.0,
+  "top": 10,
+  "min_edge": 0.05,
+  "engine_payload_summary": {
+    "engine_version": "R23_P8",
+    "n_predictions_available": 4053,
+    "n_snapshots_loaded": 460,
+    "n_out_players_in_feed": 126,
+    "n_evaluated": 603,
+    "n_filtered_out": 31,
+    "n_filtered_no_pred": 0,
+    "n_filtered_min_edge": 449,
+    "n_candidates_pos_edge": 154,
+    "n_recs": 10,
+    "n_filtered_kelly_cap": 10,
+    "books_loaded": [
+      "bov",
+      "fd",
+      "pin"
+    ],
+    "slate_cap_dollars": 250.0,
+    "total_stake_post_cap": 250.0,
+    "reason": "10 recs ranked; slate exposure $250.00 of $250.00 cap"
+  },
+  "top_3_recs": [
+    {
+      "player": "Victor Wembanyama",
+      "stat": "blk",
+      "side": "UNDER",
+      "book": "bov",
+      "edge": 0.495,
+      "edge_pct": 49.5,
+      "kelly_pct": 0.025,
+      "stake_dollars": 25.0
+    },
+    {
+      "player": "De'Aaron Fox",
+      "stat": "pts",
+      "side": "OVER",
+      "book": "bov",
+      "edge": 0.4857,
+      "edge_pct": 48.57,
+      "kelly_pct": 0.025,
+      "stake_dollars": 25.0
+    },
+    {
+      "player": "Victor Wembanyama",
+      "stat": "blk",
+      "side": "UNDER",
+      "book": "bov",
+      "edge": 0.4539,
+      "edge_pct": 45.39,
+      "kelly_pct": 0.025,
+      "stake_dollars": 25.0
+    }
+  ],
+  "ship": true,
+  "ship_blockers": []
+}
