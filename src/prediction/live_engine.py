@@ -1168,6 +1168,11 @@ def project_full_slate(date_iso: Optional[str] = None) -> Dict[str, List[Dict]]:
         game_id = str(snap.get("game_id") or "")
         if not game_id:
             continue
+        # R10_M16: inject game_date into the snap so the endQ3 residual
+        # heads can look up prior-game streak features for fg3m/stl/blk/tov.
+        # No-op for snapshots that already carry game_date.
+        if not snap.get("game_date"):
+            snap["game_date"] = date_iso
         rows = project_from_snapshot(snap)
         out[game_id] = rows
     return out
