@@ -1,0 +1,18 @@
+{
+  "as_of": "2026-05-26T14:04:50+00:00",
+  "start_bankroll": 1000.0,
+  "current_bankroll": 3670097.4800000004,
+  "pending_exposure": 0.0,
+  "available_bankroll": 3670097.4800000004,
+  "daily_pnl": 0.0,
+  "weekly_pnl": 0.0,
+  "monthly_pnl": 0.0,
+  "max_drawdown": 1153.2399999992922,
+  "max_drawdown_pct": 0.0005646852363573776,
+  "n_open_positions": 0,
+  "max_stake_in_one_game": 0.0,
+  "position_concentration_pct": 0.0,
+  "kelly_overhang": 0.0,
+  "n_settled": 335139,
+  "alarms": []
+}
