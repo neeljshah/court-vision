@@ -1,0 +1,262 @@
+{
+  "probe": "R10_M9_fatigue",
+  "description": "Schedule fatigue features: games_last_10_days, total_miles_last_5_days, altitude_delta, tz_change_proxy as LGB residual head features",
+  "timestamp": "2026-05-26T05:19:57Z",
+  "elapsed_s": 264.3,
+  "ship": false,
+  "ship_reason": "PTS WF 4/4: NO (mean delta +0.1486); stats_improving (delta<=-0.005): 0/7 = []; mean_delta_all: +0.1047; stats_with_full_WF_4/4: []",
+  "pts_wf_all_nonpos": false,
+  "pts_wf_mean_delta": 0.14865,
+  "stats_improving": [],
+  "mean_delta_all_stats": 0.1047,
+  "stats_with_full_wf_4_4": [],
+  "per_stat": {
+    "pts": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 2.15826,
+          "treat_mae": 2.32209,
+          "delta": 0.16383
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 2.14867,
+          "treat_mae": 2.28311,
+          "delta": 0.13443
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 2.10691,
+          "treat_mae": 2.25459,
+          "delta": 0.14768
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 2.13752,
+      "overall_treat_mae": 2.28608,
+      "overall_delta": 0.14856
+    },
+    "reb": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.86817,
+          "treat_mae": 0.92851,
+          "delta": 0.06034
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.86597,
+          "treat_mae": 0.92907,
+          "delta": 0.0631
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.84369,
+          "treat_mae": 0.90975,
+          "delta": 0.06606
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.85907,
+      "overall_treat_mae": 0.92228,
+      "overall_delta": 0.06321
+    },
+    "ast": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.5459,
+          "treat_mae": 0.64017,
+          "delta": 0.09428
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.54949,
+          "treat_mae": 0.64903,
+          "delta": 0.09954
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.53555,
+          "treat_mae": 0.6354,
+          "delta": 0.09986
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.54355,
+      "overall_treat_mae": 0.64148,
+      "overall_delta": 0.09793
+    },
+    "fg3m": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.30739,
+          "treat_mae": 0.41562,
+          "delta": 0.10823
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.30619,
+          "treat_mae": 0.41873,
+          "delta": 0.11254
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.29831,
+          "treat_mae": 0.4218,
+          "delta": 0.1235
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.30389,
+      "overall_treat_mae": 0.41876,
+      "overall_delta": 0.11488
+    },
+    "stl": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.1935,
+          "treat_mae": 0.30635,
+          "delta": 0.11284
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.1964,
+          "treat_mae": 0.30919,
+          "delta": 0.1128
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.19679,
+          "treat_mae": 0.30699,
+          "delta": 0.1102
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.19559,
+      "overall_treat_mae": 0.30751,
+      "overall_delta": 0.11192
+    },
+    "blk": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.12362,
+          "treat_mae": 0.2109,
+          "delta": 0.08729
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.1147,
+          "treat_mae": 0.20131,
+          "delta": 0.08661
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.11618,
+          "treat_mae": 0.19696,
+          "delta": 0.08078
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.11812,
+      "overall_treat_mae": 0.20296,
+      "overall_delta": 0.08484
+    },
+    "tov": {
+      "n_rows": 29588,
+      "n_games": 1506,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 7360,
+          "n_val": 7258,
+          "baseline_mae": 0.30755,
+          "treat_mae": 0.42508,
+          "delta": 0.11753
+        },
+        {
+          "fold": 3,
+          "n_train": 14618,
+          "n_val": 7370,
+          "baseline_mae": 0.31392,
+          "treat_mae": 0.42436,
+          "delta": 0.11044
+        },
+        {
+          "fold": 4,
+          "n_train": 21988,
+          "n_val": 7600,
+          "baseline_mae": 0.32011,
+          "treat_mae": 0.42708,
+          "delta": 0.10697
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.31396,
+      "overall_treat_mae": 0.42552,
+      "overall_delta": 0.11157
+    }
+  },
+  "baseline_ref": {
+    "pts": 2.214,
+    "reb": 0.8987,
+    "ast": 0.5755,
+    "fg3m": 0.3528,
+    "stl": 0.2506,
+    "blk": 0.1543,
+    "tov": 0.3663
+  }
+}

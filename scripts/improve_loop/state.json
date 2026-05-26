@@ -424,8 +424,14 @@
     },
     {
       "name": "R10_M7_ref_features",
-      "reason": "Per-stat ref-crew features (ref_crew_fouls, ref_crew_fta, ref_crew_home_win_pct) added as residual-head inputs at endQ3. PTS folds_pos=1/3 (delta +0.0084), REB folds_pos=0/3 (delta +0.0037). Repeats cycle-15 pattern: ref-crew priors saturated; existing form/role features already encode the same information. (Pending full sweep completion; recorded preliminarily — if late stats unexpectedly ship per-stat, edit entry on commit.)",
+      "reason": "Full sweep complete: mean_delta +0.00229, n_improving 1/7, gate_4of4_per_stat FAIL. Per-stat folds_pos: pts 1/3 +0.0084, reb 0/3 +0.0037, ast 1/3 +0.0015, fg3m 0/3 +0.0020, stl 2/3 -0.0007 (only stat directionally improving), blk 1/3 +0.0006, tov 1/3 +0.0005. Confirms cycle-15 observation: ref-crew priors absorbed by existing form/role features.",
       "saturated_angle": "ref-crew prior features as endQ3 residual-head additions",
+      "round": 9
+    },
+    {
+      "name": "R10_M9_fatigue",
+      "reason": "Schedule-fatigue features (games_last_10_days, total_miles_last_5_days, altitude_delta, tz_change_proxy, is_b2b, is_b3b, altitude_ft, miles_traveled) added as residual-head inputs at endQ3. All 7 stats regress by +0.06 to +0.15 (huge) in every fold; mean_delta +0.1047. 0/7 stats improving. The residual head with 8 added features overfits per-stat targets and the (proj_base + residual) composition explodes. Likely cause: residual head trained on (actual - proj_base) where proj_base is already a strong learned-Q4 estimate, so the head fits noise; fatigue features add capacity to overfit.",
+      "saturated_angle": "schedule-fatigue features as endQ3 residual-head additions (overfits — proj_base+residual composition is unstable when residual head capacity grows)",
       "round": 9
     }
   ],
@@ -488,7 +494,8 @@
     "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)",
     "Q4-minutes-multiplier downstream stat correction (Markov-style foul-trouble conditioning)",
     "fixed-rate foul-out dampener on multi-season pf>=5 classifier (selection bias on foul-prone stars)",
-    "ref-crew prior features as endQ3 residual-head additions"
+    "ref-crew prior features as endQ3 residual-head additions",
+    "schedule-fatigue features as endQ3 residual-head additions (proj_base+residual composition unstable)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
