@@ -1,0 +1,22 @@
+{
+  "target": "home_score",
+  "kind": "reg",
+  "live_pooled_delta_pct": -14.49,
+  "live_pooled_naive_mae": 10.6691,
+  "live_pooled_lgb_mae": 9.1228,
+  "reference_delta_pct": -16.86,
+  "reference_src": "B19 keep_top50/all_b9 (frozen 2839g)",
+  "delta_vs_reference_pp": 2.37,
+  "fold_delta_pcts": [
+    -13.17,
+    -17.17,
+    -12.99
+  ],
+  "n_folds": 3,
+  "fc_len_per_fold": [
+    50,
+    50,
+    50
+  ],
+  "elapsed_s": 18.4
+}
