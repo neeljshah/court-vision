@@ -1,0 +1,75 @@
+{
+  "probe": "R21_N1",
+  "timestamp": "2026-05-26T16:51:52Z",
+  "model_dir": "C:/Users/neelj/nba-ai-system\\data\\models",
+  "n_stats_with_pred": 7,
+  "n_stats_total": 7,
+  "coverage": {
+    "pts": "NON_NONE",
+    "reb": "NON_NONE",
+    "ast": "NON_NONE",
+    "fg3m": "NON_NONE",
+    "stl": "NON_NONE",
+    "blk": "NON_NONE",
+    "tov": "NON_NONE"
+  },
+  "per_stat": {
+    "pts": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 18.26,
+      "pred_is_none": false,
+      "path": "blend",
+      "error": null
+    },
+    "reb": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 3.31,
+      "pred_is_none": false,
+      "path": "q50",
+      "error": null
+    },
+    "ast": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 2.78,
+      "pred_is_none": false,
+      "path": "blend",
+      "error": null
+    },
+    "fg3m": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 0.23,
+      "pred_is_none": false,
+      "path": "q50",
+      "error": null
+    },
+    "stl": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 0.24,
+      "pred_is_none": false,
+      "path": "q50",
+      "error": null
+    },
+    "blk": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 0.0,
+      "pred_is_none": false,
+      "path": "q50",
+      "error": null
+    },
+    "tov": {
+      "n_base_learners": 3,
+      "q50_present": true,
+      "pred": 1.22,
+      "pred_is_none": false,
+      "path": "q50",
+      "error": null
+    }
+  },
+  "L7_regression_present": false
+}
