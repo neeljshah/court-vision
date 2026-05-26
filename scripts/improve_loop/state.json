@@ -448,6 +448,12 @@
       "reason": "Per-stat dampener computed PER FOLD from training-data ratios (clipped [0.70, 1.10]). Calibration ratios all > 0.91, most > 1.0 (PTS 1.13, REB 1.43, AST 1.21, FG3M 0.92, STL 1.12, BLK 1.35, TOV 1.61) so multipliers clip to 1.10 ceiling and become PROTECTIVE rather than dampening. Result: mean vol delta +0.00727 (WORSE than M30v2's -0.0026), 0/7 stats improving, 0/4 WF folds positive. Definitively confirms selection bias: foul-out players in training set are stars who outscore — using their ratios as multipliers actively hurts predictions because at TEST time we're flagging players LIKELY to foul out (different population from those who actually did).",
       "saturated_angle": "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
       "round": 10
+    },
+    {
+      "name": "R11_M16v2_streak_l5l10",
+      "reason": "M16 with L5/L10 windows instead of L3/L20 to test whether shorter+medium windows would catch streak signal for PTS/REB/AST (the 3 stats M16 missed). Result: IDENTICAL per-stat ship pattern as M16 — FG3M (-0.01112, 4/4), STL (-0.02142, 4/4), BLK (-0.05311, 4/4), TOV (-0.01071, 4/4) all SHIP per-stat. PTS (+0.00802, 0/4) WORSE than M16. REB (+0.00209, 2/4) WORSE. AST (-0.00136, 3/4) better but still misses gate. Overall verdict REJECT — same gate-fail as M16. Confirms structural saturation: streak features just don't have signal for PTS/REB/AST regardless of window choice. The signal is in raw recent stats for high-volume targets; only count-stats (BLK/STL/TOV) benefit from z-score trend.",
+      "saturated_angle": "streak features for high-volume stats (PTS/REB/AST) at any window length — z-score trend information is absorbed by existing l5/l10/ewma features",
+      "round": 10
     }
   ],
   "saturated_angles": [
@@ -510,7 +516,9 @@
     "Q4-minutes-multiplier downstream stat correction (Markov-style foul-trouble conditioning)",
     "fixed-rate foul-out dampener on multi-season pf>=5 classifier (selection bias on foul-prone stars)",
     "ref-crew prior features as endQ3 residual-head additions",
-    "schedule-fatigue features as endQ3 residual-head additions (proj_base+residual composition unstable)"
+    "schedule-fatigue features as endQ3 residual-head additions (proj_base+residual composition unstable)",
+    "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
+    "streak features for high-volume stats (PTS/REB/AST) at any window length"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
