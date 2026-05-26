@@ -474,6 +474,46 @@ def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
     return "" if ft < 0.5 else ft
 
 
+def _shot_defender_contest(shooter, frame_tracks, map_w):
+    """R11: contest_arm_angle = max arm-raise among defenders within 8 ft of shooter.
+
+    Previous code wrote the SHOOTER's arm-raise here, which is misnamed and
+    almost always 0.0 (shooter is in release/follow-through, arms down post-shot
+    or arms-at-hip pre-shot). Consumer in `feature_engineering.py:1029-1035`
+    treats this as a DEFENDER pressure signal — this realigns producer to match.
+
+    Returns "" if no defenders are within range OR pose data missing for all
+    candidates (preserves the R8 missing-vs-zero convention).
+    """
+    sx, sy = shooter.get("x2d"), shooter.get("y2d")
+    if sx is None or sy is None or map_w <= 0:
+        return ""
+    # 8 ft in court px (94 ft = map_w)
+    _near_px = 8.0 * map_w / 94.0
+    _near_px_sq = _near_px * _near_px
+    max_arm = 0.0
+    have_any = False
+    for t in frame_tracks:
+        if t.get("team") in (None, "referee", shooter.get("team")):
+            continue
+        tx, ty = t.get("x2d"), t.get("y2d")
+        if tx is None or ty is None:
+            continue
+        if (sx - tx) ** 2 + (sy - ty) ** 2 > _near_px_sq:
+            continue
+        _raw = t.get("contest_arm_angle")
+        if _raw in (None, ""):
+            continue
+        try:
+            _v = float(_raw)
+        except (ValueError, TypeError):
+            continue
+        have_any = True
+        if _v > max_arm:
+            max_arm = _v
+    return round(max_arm, 3) if have_any else ""
+
+
 def _shot_defender_dist_norm(spatial, shooter, frame_tracks, map_w):
     """Normalised defender distance (0–1 of court length = 94 ft)."""
     d = _shot_defender_dist(spatial, shooter, frame_tracks, map_w)
@@ -2315,7 +2355,9 @@ class UnifiedPipeline:
                 # the 97.7% catch_and_shoot rate by gating on court position.
                 _shot_dist_ft = UnifiedPipeline._dist_to_basket(
                     shooter["x2d"], shooter["y2d"], map_w, map_h)
-                _proximity_ok = _shot_dist_ft <= 30.0
+                # R11: tightened 30→28 ft (corner-3 max 23.75 + 4.25 ft homography
+                # drift tolerance). Drops half-court "shot" artifacts at 40+ ft.
+                _proximity_ok = _shot_dist_ft <= 28.0
                 # Directional gate: ball velocity vector must point toward the nearest
                 # basket (cos_sim > _SHOT_DIRECTIONAL_COS_MIN).  Pass arcs aimed at
                 # teammates have cos_sim near 0 or negative.  Falls back to True when
@@ -2423,7 +2465,8 @@ class UnifiedPipeline:
                         "made":               "",   # filled by nba_enricher
                         "player_name":        _shooter_name,
                         "shot_clock":         _shot_clock_val,
-                        "contest_arm_angle":  shooter.get("contest_arm_angle", ""),
+                        # R11: defender-pressure semantics (max arm-raise of defenders within 8 ft)
+                        "contest_arm_angle":  _shot_defender_contest(shooter, frame_tracks, map_w),
                         "closeout_speed":     _closeout_speed,
                         "fatigue_proxy":      round(
                                                  _player_dist_run.get(

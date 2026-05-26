@@ -247,11 +247,34 @@ class EventDetector:
         # _y_drop / _ref_y rise check removed — fails for long frame gaps;
         # pixel_vel > threshold already ensures the ball is actually moving fast.
 
+        # R11: gate the pixel-velocity fast-path. Previously this branch fired
+        # on any fast upward ball motion with NO possessor / court-position /
+        # direction check — causing 2.1x over-detection (357 shots vs ~170
+        # expected on game 0022500119). Add three gates:
+        #   A: recent possessor exists (real shot just left a player's hands)
+        #   B: handler within 30 ft of nearest basket (court coords)
+        #   C: handler was approaching basket (existing _handler_toward_basket)
+        _possessor_now = next((t for t in frame_tracks if t.get("has_ball")), None)
+        _recent_handler = (_possessor_now is not None) or (self._possessor is not None)
+        _handler_in_range = False
+        if _possessor_now is not None:
+            _hx = float(_possessor_now.get("x2d", 0))
+            _hy = float(_possessor_now.get("y2d", 0))
+            _nb = min(self._baskets, key=lambda b: np.hypot(_hx - b[0], _hy - b[1]))
+            _hdist_px = float(np.hypot(_hx - _nb[0], _hy - _nb[1]))
+            _handler_in_range = _hdist_px <= 30.0 * self._ft
+        elif self._possessor is not None:
+            # No live possessor this frame — allow but only if state-machine had one recently
+            _handler_in_range = True
+
         if (pixel_vel > max(8.0, self._PIXEL_SHOT_VEL * 0.6)   # stride scaling halved
                 and ball_y_pixel is not None
                 and frame_height is not None
                 and ball_y_pixel > frame_height * 0.15       # not scoreboard artifact at top
                 and ball_y_pixel < frame_height * 0.75       # reject floor-level balls
+                and _recent_handler                          # R11: gate A
+                and _handler_in_range                        # R11: gate B
+                and _handler_toward_basket                   # R11: gate C
                 and frame_idx - self._last_shot_frame >= self._SHOT_DEBOUNCE):
             self._last_shot_frame = frame_idx
             self._prev_ball_y_pixel = ball_y_pixel
