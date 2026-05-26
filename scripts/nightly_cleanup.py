@@ -239,6 +239,53 @@ def cleanup_worktrees(
             "n_skipped": n_skipped, "warnings": warns}
 
 
+def _archive_probes_category(
+    *, root: Path, commit: bool, age_override: Optional[int],
+) -> Dict[str, Any]:
+    """R31_X4 integration — archive (not delete) probe results.
+
+    Imports lazily so the rest of nightly_cleanup remains importable even
+    if the archiver module is renamed or moved.
+    """
+    try:
+        from scripts import archive_probe_results as apr  # noqa: WPS433
+    except ImportError as exc:
+        return {
+            "n_eligible":  0,
+            "mb_eligible": 0.0,
+            "n_total":     0,
+            "glob_pattern": "data/cache/probe_R*_results.json",
+            "age_days":    int(age_override or apr_default_keep()),
+            "min_keep":    0,
+            "warnings":    [f"archive_probe_results import failed: {exc!r}"],
+            "records":     [],
+        }
+    keep_days = int(age_override if age_override is not None
+                    else apr.DEFAULT_KEEP_DAYS)
+    res = apr.archive_probes(
+        root=root, keep_days=keep_days,
+        min_keep=apr.DEFAULT_MIN_KEEP, commit=commit,
+    )
+    return {
+        "n_eligible":   int(res.get("n_eligible", 0) or 0),
+        "mb_eligible":  float(res.get("size_mb_estimate", 0.0) or 0.0),
+        "n_total":      int(res.get("n_eligible", 0) or 0),
+        "glob_pattern": "data/cache/probe_R*_results.json",
+        "age_days":     keep_days,
+        "min_keep":     apr.DEFAULT_MIN_KEEP,
+        "warnings":     list(res.get("warnings", []) or []),
+        "archive":      res.get("archive"),
+        "n_archived":   int(res.get("n_archived", 0) or 0),
+        "n_deleted":    int(res.get("n_deleted", 0) or 0),
+        "records":      [],
+    }
+
+
+def apr_default_keep() -> int:
+    """Fallback default if the archiver module fails to import."""
+    return 7
+
+
 def run_cleanup(
     *, root: Path,
     categories: Tuple[Category, ...] = DEFAULT_CATEGORIES,
@@ -247,8 +294,14 @@ def run_cleanup(
     age_override: Optional[int] = None,
     include_worktrees: bool = True,
     worktree_age_days: int = 3,
+    include_archive_probes: bool = True,
 ) -> Dict[str, Any]:
-    """Run every category. Returns a result dict (never raises)."""
+    """Run every category. Returns a result dict (never raises).
+
+    The legacy ``probes`` category (delete-on-age) is still listed but
+    is best left at age_days=30 so the new ``archive_probes`` category
+    catches the in-between window (7-30d) and preserves history.
+    """
     now = time.time()
     per_cat: Dict[str, Dict[str, Any]] = {}
     total_n = 0
@@ -272,6 +325,16 @@ def run_cleanup(
         total_n += n
         total_mb += mb
         all_warns.extend(warns)
+    if include_archive_probes and (
+        only_category is None or only_category == "archive_probes"
+    ):
+        ap_info = _archive_probes_category(
+            root=root, commit=commit, age_override=age_override,
+        )
+        per_cat["archive_probes"] = ap_info
+        total_n += int(ap_info.get("n_eligible", 0) or 0)
+        total_mb += float(ap_info.get("mb_eligible", 0.0) or 0.0)
+        all_warns.extend(ap_info.get("warnings", []) or [])
     wt: Dict[str, Any] = {}
     if include_worktrees and (only_category is None or only_category == "worktrees"):
         wt = cleanup_worktrees(repo_root=root, age_days=worktree_age_days, commit=commit)
@@ -293,6 +356,8 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     ap.add_argument("--category", type=str, default=None)
     ap.add_argument("--max-age-days", type=int, default=None)
     ap.add_argument("--no-worktrees", action="store_true")
+    ap.add_argument("--no-archive-probes", action="store_true",
+                    help="skip R31_X4 probe-results archiver step")
     ap.add_argument("--worktree-age-days", type=int, default=3)
     ap.add_argument("--root", type=str, default=_ROOT)
     ap.add_argument("--json", action="store_true")
@@ -324,6 +389,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         age_override=args.max_age_days,
         include_worktrees=not args.no_worktrees,
         worktree_age_days=int(args.worktree_age_days),
+        include_archive_probes=not args.no_archive_probes,
     )
     if args.json:
         slim = json.loads(json.dumps(result, default=str))
