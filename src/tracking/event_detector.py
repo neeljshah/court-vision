@@ -81,7 +81,7 @@ class EventDetector:
         # Ball pixel-space y buffer for dribble floor-bounce detection.
         # Stores recent ball_y_pixel values (raw image y, increases downward).
         # Bounce signature: ball was falling (vy > 0) then rising/stationary (vy ≤ 0).
-        self._bvybuf:     deque = deque(maxlen=3)   # last 3 ball_y_pixel values
+        self._bvybuf:     deque = deque(maxlen=8)   # R10: 3→8; survives stride-3 jitter
 
         # Handler vel-toward-basket history: last 10 processed frames.
         # Used by both shot detectors to require the ball-handler was actually
@@ -122,8 +122,8 @@ class EventDetector:
 
         # Distance thresholds in court pixels (static — not fps-dependent)
         self._SCREEN_DIST    = 3.0 * self._ft   # 3 ft
-        self._CLOSEOUT_FAR   = 6.0 * self._ft   # 6 ft
-        self._CLOSEOUT_NEAR  = 3.0 * self._ft   # 3 ft
+        self._CLOSEOUT_FAR   = 8.0 * self._ft   # R10: 6→8 ft (homography jitter ±1-2 ft RMS)
+        self._CLOSEOUT_NEAR  = 4.0 * self._ft   # R10: 3→4 ft
 
         # fps-dependent thresholds — recomputed by configure(); defaults = 60fps
         # 8 mph → ft/s → ft/abs-frame (at fps) → px/abs-frame
@@ -375,30 +375,30 @@ class EventDetector:
                 ball_pos[1] - possessor_pos[1],
             ))
             if dist <= _DRIBBLE_MAX_DIST and self._ball_vel <= _DRIBBLE_MAX_VEL:
-                # Require floor-bounce confirmation: ball_y_pixel must have been
-                # falling (vy_prev > 0.5, i.e. y increasing downward in image space)
-                # and now rising/stationary (vy_curr ≤ 0).  This rejects stationary
-                # ball-handling, tips, and shot releases from inflating dribble_count.
+                # R10: Replace the strict 3-of-3 OR all-None dead-zone gate. The old
+                # gate fired on neither branch when CSRT had partial loss (mixed
+                # None/value buffer) — which is the COMMON case — so dribble_count
+                # was structurally ≈0. New strategy:
+                #  1. Look for any falling→rising oscillation in the last 8 non-None
+                #     samples (strict bounce signature, jitter-tolerant).
+                #  2. Cadence fallback as DEFAULT when no strict bounce — 1.5s at
+                #     current fps/stride, regardless of CSRT state.
+                # Capped at 24 (24-second shot clock physical ceiling).
                 _bounce = False
-                _by = list(self._bvybuf)
-                if (len(_by) >= 3
-                        and _by[-3] is not None
-                        and _by[-2] is not None
-                        and _by[-1] is not None):
-                    _vy_prev = _by[-2] - _by[-3]   # falling → positive (y down)
-                    _vy_curr = _by[-1] - _by[-2]
-                    _bounce  = _vy_prev > 0.5 and _vy_curr <= 0.0
-                elif len(_by) >= 2 and _by[-2] is not None and _by[-1] is not None:
-                    # Two-frame fallback: at least check current frame is not falling
-                    _bounce = (_by[-1] - _by[-2]) <= 0.0
-                # Fallback: when ball_y_pixel is unavailable (CSRT not tracking),
-                # count a dribble every 15 frames of stable close possession —
-                # ~0.5s at 30fps, roughly one dribble cadence.
-                if not _bounce and all(v is None for v in _by[-3:]):
-                    _bounce = (self._possession_held_frames % 15 == 0
-                               and self._possession_held_frames > 0)
+                _by_valid = [v for v in self._bvybuf if v is not None]
+                if len(_by_valid) >= 3:
+                    _diffs = np.diff(_by_valid)
+                    for _i in range(len(_diffs) - 1):
+                        if _diffs[_i] > 0.2 and _diffs[_i + 1] <= 0.0:
+                            _bounce = True
+                            break
+                if not _bounce and self._possession_held_frames > 0:
+                    _cadence = max(1, int(1.5 * self._fps / max(1, self._stride)))
+                    if (self._possession_held_frames % _cadence == 0
+                            and self._dribble_count < 24):
+                        _bounce = True
                 if _bounce:
-                    self._dribble_count += 1
+                    self._dribble_count = min(24, self._dribble_count + 1)
                 return "dribble"
 
         # ── Ball in flight, nobody has it ────────────────────────────────
@@ -693,9 +693,14 @@ class EventDetector:
             if not dhist or len(dhist) < 5:
                 continue
             pts = list(dhist)
+            # R10: widen lookback 10 frames → 1.5s window. Closeouts complete
+            # 5-30 frames AFTER release; the 10-frame fixed window was ~1s at
+            # stride=3 and missed nearly every legitimate closeout.
+            _lookback = max(5, int(1.5 * self._fps / max(1, self._stride)))
             dist_now  = float(np.hypot(pts[-1][1] - sx, pts[-1][2] - sy))
-            dist_then = float(np.hypot(pts[-min(10, len(pts))][1] - sx,
-                                       pts[-min(10, len(pts))][2] - sy))
+            _idx_then = -min(_lookback, len(pts))
+            dist_then = float(np.hypot(pts[_idx_then][1] - sx,
+                                       pts[_idx_then][2] - sy))
             if dist_then > self._CLOSEOUT_FAR and dist_now < self._CLOSEOUT_NEAR:
                 avg_speed = float(np.mean([pts[-i][3]
                                            for i in range(1, min(6, len(pts) + 1))]))
