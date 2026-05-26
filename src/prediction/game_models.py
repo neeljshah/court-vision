@@ -334,23 +334,163 @@ def load_models() -> GameModels:
     return gm
 
 
+# ── R20_M7: M2 family multi5 ensemble loader (R11 BATCH-6/7 ship) ─────────────
+# The 20-model M2 family ensemble (5 models × 4 targets = total/spread/home_pts/
+# away_pts) lives in data/models/m2_family/ and was trained by
+# scripts/train_final_M2_family.py — see manifest.json for ancestry. Prior to
+# R20_M7 it was ONLY callable from scripts/predict_game.py CLI; every production
+# caller (api/predictions_router → game_orchestrator → game_models.predict,
+# scripts/run_daily_slate.py team-total normalization) was still loading the
+# legacy single-XGB game_game_total.json / game_spread.json artifacts.
+#
+# Wire policy: when a game_id is supplied OR we can resolve one from
+# (home_team, away_team, game_date) via season_games_*.json, AND the 74-col
+# feature row is fully populated, the m2_family ensemble overrides total_est /
+# spread_est on the predict() return. blowout_prob, first_half_est, pace_est
+# stay on the legacy single-XGB heads (no m2 ship for those yet).
+_M2_FAMILY_DIR = os.path.join(_MODEL_DIR, "m2_family")
+_M2_FAMILY_CACHE: Optional[Dict[str, list]] = None
+_M2_FAMILY_FEATS: Optional[List[str]] = None
+_M2_FAMILY_MANIFEST: Optional[dict] = None
+
+
+def _try_load_m2_family() -> bool:
+    """Lazy-load the M2 family ensemble. Returns True iff usable."""
+    global _M2_FAMILY_CACHE, _M2_FAMILY_FEATS, _M2_FAMILY_MANIFEST
+    if _M2_FAMILY_CACHE is not None:
+        return bool(_M2_FAMILY_CACHE)
+    manifest_path = os.path.join(_M2_FAMILY_DIR, "manifest.json")
+    cols_path     = os.path.join(_M2_FAMILY_DIR, "feature_cols.json")
+    if not (os.path.exists(manifest_path) and os.path.exists(cols_path)):
+        _M2_FAMILY_CACHE = {}
+        return False
+    try:
+        import joblib  # noqa: PLC0415
+        with open(manifest_path, encoding="utf-8") as f:
+            man = json.load(f)
+        with open(cols_path, encoding="utf-8") as f:
+            cols = json.load(f)
+        bundle: Dict[str, list] = {}
+        for target in ("total", "spread", "home_pts", "away_pts"):
+            labels = man["targets"][target]["models"]
+            models = []
+            for lab in labels:
+                p = os.path.join(_M2_FAMILY_DIR, f"{target}_{lab}.joblib")
+                if not os.path.exists(p):
+                    raise FileNotFoundError(p)
+                models.append(joblib.load(p))
+            bundle[target] = models
+        _M2_FAMILY_CACHE = bundle
+        _M2_FAMILY_FEATS = cols
+        _M2_FAMILY_MANIFEST = man
+        return True
+    except Exception:
+        _M2_FAMILY_CACHE = {}
+        return False
+
+
+def _lookup_season_games_row(
+    game_id: Optional[str],
+    home_team: Optional[str],
+    away_team: Optional[str],
+    game_date: Optional[str],
+) -> Optional[dict]:
+    """Resolve a fully-featured row from season_games_*.json.
+
+    Tries (in order): explicit game_id → (home, away, date) match → None.
+    Returns the raw row dict or None when not found / missing required cols.
+    """
+    candidate_files = [
+        "season_games_2025-26.json",
+        "season_games_2024-25.json",
+        "season_games_2023-24.json",
+        "season_games_2022-23.json",
+    ]
+    for fname in candidate_files:
+        p = os.path.join(_NBA_CACHE, fname)
+        if not os.path.exists(p):
+            continue
+        try:
+            with open(p, encoding="utf-8") as f:
+                d = json.load(f)
+        except Exception:
+            continue
+        rows = d.get("rows", d) if isinstance(d, dict) else d
+        if not isinstance(rows, list):
+            continue
+        for r in rows:
+            if not isinstance(r, dict):
+                continue
+            if game_id and str(r.get("game_id", "")) == str(game_id):
+                # Require minimum feature presence (m2 fails on near-empty rows).
+                if "home_off_rtg" in r:
+                    return r
+                return None
+            if (home_team and away_team
+                    and str(r.get("home_team", "")).upper() == home_team.upper()
+                    and str(r.get("away_team", "")).upper() == away_team.upper()):
+                if game_date is None or str(r.get("game_date", ""))[:10] == str(game_date)[:10]:
+                    if "home_off_rtg" in r:
+                        return r
+    return None
+
+
+def _predict_m2_family(row: dict) -> Optional[Dict[str, float]]:
+    """Run the 4-target m2_family ensemble on a season_games row. Returns
+    {total_est, spread_est, home_pts_est, away_pts_est} or None on failure."""
+    if not _try_load_m2_family() or _M2_FAMILY_FEATS is None:
+        return None
+    try:
+        vals = []
+        for c in _M2_FAMILY_FEATS:
+            v = row.get(c, 0.0)
+            try:
+                vals.append(float(v) if v is not None else 0.0)
+            except (TypeError, ValueError):
+                vals.append(0.0)
+        X = np.array([vals], dtype=np.float32)
+        out: Dict[str, float] = {}
+        for target_key, out_key in (("total", "total_est"), ("spread", "spread_est"),
+                                     ("home_pts", "home_pts_est"),
+                                     ("away_pts", "away_pts_est")):
+            models = _M2_FAMILY_CACHE.get(target_key) if _M2_FAMILY_CACHE else None
+            if not models:
+                return None
+            preds = np.zeros(X.shape[0])
+            for m in models:
+                preds += m.predict(X)
+            out[out_key] = round(float(preds[0]) / len(models), 1)
+        return out
+    except Exception:
+        return None
+
+
 def predict(
     home_team: str,
     away_team: str,
     season: str = "2024-25",
     game_date: Optional[str] = None,
     ref_names: Optional[List[str]] = None,
+    game_id: Optional[str] = None,
 ) -> dict:
     """
     Run all 5 game-level models for a single matchup.
 
     Falls back to formula-based estimates when models are not trained.
 
+    R20_M7: when game_id (or a (home, away, date) match) resolves a populated
+    season_games row, the M2-family multi5 ensemble (R11 BATCH-6/7 ship) overrides
+    total_est + spread_est. blowout_prob / first_half / pace stay on the legacy
+    single-XGB heads. Result dict gains "ensemble" and "home_pts_est" / "away_pts_est"
+    keys when the m2 path fires.
+
     Args:
         home_team:  Team abbreviation (e.g. 'GSW').
         away_team:  Team abbreviation (e.g. 'BOS').
         season:     NBA season string.
         game_date:  ISO date string for rest/travel context (optional).
+        game_id:    NBA game_id, enables the m2_family ensemble override when
+                    a featured row is available.
 
     Returns:
         {
@@ -362,8 +502,13 @@ def predict(
           "first_half_est":  float,   # projected first-half total
           "pace_est":        float,   # projected game pace (possessions)
           "over_prob_est":   float,   # stub — 0.50 until odds wired in Phase 11
-          "confidence":      str,     # "model" | "formula"
+          "confidence":      str,     # "model" | "formula" | "model+m2_family"
           "features":        dict,
+          # Added when m2_family fires:
+          "ensemble":        str,
+          "home_pts_est":    float,
+          "away_pts_est":    float,
+          "m2_family_used":  bool,
         }
     """
     feats = _build_features(home_team, away_team, season, game_date, ref_names)
@@ -391,7 +536,34 @@ def predict(
         pace_est      = round(feats["pace_avg"], 1)
         confidence    = "formula"
 
-    return {
+    # R20_M7: try m2_family ensemble override (only when a season_games row is
+    # available). Never raises — falls back to legacy values on any failure.
+    m2_out: Optional[Dict[str, float]] = None
+    m2_extras: Dict[str, float] = {}
+    try:
+        row = _lookup_season_games_row(game_id, home_team, away_team, game_date)
+        if row is not None:
+            m2_pred = _predict_m2_family(row)
+            if m2_pred is not None:
+                m2_out = m2_pred
+                # Override total + spread with the multi5 ensemble.
+                total_est = m2_pred["total_est"]
+                spread_est = m2_pred["spread_est"]
+                # Recompute the derived blowout_prob from the new spread when
+                # we fell back to formula (keep model blowout_prob otherwise).
+                if confidence == "formula":
+                    blowout_prob = round(max(abs(spread_est) - 10, 0) / 25, 3)
+                m2_extras = {
+                    "home_pts_est":  m2_pred["home_pts_est"],
+                    "away_pts_est":  m2_pred["away_pts_est"],
+                    "ensemble":      "M2_family_v1 (5 models × 4 targets, equal-weight)",
+                    "m2_family_used": True,
+                }
+                confidence = (confidence + "+m2_family") if confidence == "model" else "m2_family"
+    except Exception:
+        m2_out = None
+
+    result = {
         "home_team":      home_team,
         "away_team":      away_team,
         "total_est":      total_est,
@@ -403,6 +575,9 @@ def predict(
         "confidence":     confidence,
         "features":       feats,
     }
+    if m2_extras:
+        result.update(m2_extras)
+    return result
 
 
 # ── Feature construction ───────────────────────────────────────────────────────
