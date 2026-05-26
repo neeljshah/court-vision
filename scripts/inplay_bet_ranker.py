@@ -415,6 +415,31 @@ def build_pred_index(rows: List[Dict]) -> Dict[Tuple[str, str], Dict]:
     return out
 
 
+# R23_P2 — injury-kill guard. Pulls the multiplicative availability_factor
+# from the R22_O8 nba_injuries_<date>.parquet (via injury_availability) so
+# any OUT / NOT-WITH-TEAM player surfaced by the projection engine gets
+# their bet excluded from ranked output. The legacy in-play ranker had NO
+# injury wire — once a player went on the inactive list mid-day, their
+# pregame quarter-box totals would still produce a rec.
+def _availability_factor(pid: Optional[int], pname: str) -> float:
+    """Return availability factor in [0, 1]. 1.0 on any lookup error so we
+    never kill a real bet because the injury cache is unreadable."""
+    try:
+        from src.prediction.injury_availability import (  # noqa: PLC0415
+            get_availability_factor,
+        )
+        pid_int: Optional[int] = None
+        if pid is not None:
+            try:
+                pid_int = int(pid)
+            except (TypeError, ValueError):
+                pid_int = None
+        return float(get_availability_factor(player_id=pid_int,
+                                             player_name=pname))
+    except Exception:
+        return 1.0
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Pretip + tick
 # ─────────────────────────────────────────────────────────────────────────────
@@ -494,6 +519,8 @@ def run_tick(game_id: str,
 
     bets: List[Dict] = []
     n_evaluated = 0
+    n_killed_by_injury = 0
+    killed_players: Dict[str, float] = {}
     margin = float(snap.get("home_score", 0)) - float(snap.get("away_score", 0))
 
     for ln in lines:
@@ -502,6 +529,15 @@ def run_tick(game_id: str,
         nm = _normalize_name(pname)
         pred = pred_idx.get((nm, stat))
         if pred is None:
+            continue
+        # R23_P2 — kill bets for OUT / NOT-WITH-TEAM players. We do this
+        # BEFORE the pricing math so an OUT player's stat-line never
+        # contributes to n_evaluated either.
+        pid_for_avail = pred.get("player_id")
+        factor = _availability_factor(pid_for_avail, pname)
+        if factor == 0.0:
+            n_killed_by_injury += 1
+            killed_players[pname] = 0.0
             continue
         try:
             line = float(ln.get("line") or 0)
@@ -568,6 +604,7 @@ def run_tick(game_id: str,
                 "snapshot_period": snap["period"],
                 "home_win_prob_inplay": pred.get("home_win_prob_inplay"),
                 "garbage_time_applied": pred.get("garbage_time_applied", False),
+                "availability_factor": factor,
                 "stale": stale,
             })
 
@@ -614,6 +651,9 @@ def run_tick(game_id: str,
         ),
         "total_recommended_exposure_$": round(total, 2),
         "ranked_bets": capped,
+        # R23_P2 — injury kill telemetry.
+        "n_killed_by_injury": n_killed_by_injury,
+        "killed_by_injury_players": sorted(killed_players.keys()),
         "tick_latency_ms": int((time.time() - t0) * 1000),
     }
     return payload
