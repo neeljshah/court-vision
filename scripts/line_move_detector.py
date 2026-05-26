@@ -53,6 +53,19 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LINES_DIR    = os.path.join(PROJECT_DIR, "data", "lines")
 CACHE_DIR    = os.path.join(PROJECT_DIR, "data", "cache")
@@ -461,6 +474,8 @@ def main():
     args = ap.parse_args()
 
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('line_move_detector')
         isodate = args.date or datetime.utcnow().strftime("%Y-%m-%d")
         try:
             summary = run_once(isodate, args.threshold_line,

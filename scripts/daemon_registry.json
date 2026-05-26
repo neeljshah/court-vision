@@ -1,0 +1,120 @@
+{
+  "_comment": "R19_L3 daemon registry consumed by scripts/daemon_watchdog.py. Each entry maps a logical daemon name to its launch + heartbeat config. expected_interval_sec mirrors the daemon's --interval-sec; the watchdog considers the daemon dead if the heartbeat file is older than expected_interval_sec * 3.",
+  "daemons": [
+    {
+      "name": "vault_dashboard_daemon",
+      "command": "python -u scripts/vault_dashboard_daemon.py --interval-sec 30",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/vault_dashboard_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u scripts/vault_dashboard_daemon.py --interval-sec 30 > logs/vault_dashboard.log 2>&1 &",
+      "process_match": "vault_dashboard_daemon.py",
+      "harmless_for_probe": true
+    },
+    {
+      "name": "clv_tracker_daemon",
+      "command": "python -u scripts/clv_tracker_daemon.py --interval-sec 60",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/clv_tracker_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python -u scripts/clv_tracker_daemon.py --interval-sec 60 > logs/clv_tracker.log 2>&1 &",
+      "process_match": "clv_tracker_daemon.py"
+    },
+    {
+      "name": "middle_finder_daemon",
+      "command": "python scripts/middle_finder_daemon.py --interval-sec 30 --min-width 0.5 --max-juice-each-side -135",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/middle_finder_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p vault/Improvements && nohup python scripts/middle_finder_daemon.py --interval-sec 30 --min-width 0.5 --max-juice-each-side -135 > vault/Improvements/middle_finder.log 2>&1 &",
+      "process_match": "middle_finder_daemon.py"
+    },
+    {
+      "name": "line_move_detector",
+      "command": "python -u scripts/line_move_detector.py --interval-sec 30 --threshold-line 0.5 --threshold-odds-pct 10",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/line_move_detector.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u scripts/line_move_detector.py --interval-sec 30 --threshold-line 0.5 --threshold-odds-pct 10 > logs/line_move_detector.log 2>&1 &",
+      "process_match": "line_move_detector.py"
+    },
+    {
+      "name": "nba_lineup_daemon",
+      "command": "python scripts/nba_lineup_daemon.py --interval-sec 60",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/nba_lineup_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python scripts/nba_lineup_daemon.py --interval-sec 60 > logs/nba_lineup_daemon.log 2>&1 &",
+      "process_match": "nba_lineup_daemon.py"
+    },
+    {
+      "name": "bankroll_monitor_daemon",
+      "command": "python scripts/bankroll_monitor_daemon.py --interval-sec 300 --start-bankroll 1000",
+      "expected_interval_sec": 300,
+      "heartbeat_file": "data/cache/daemon_heartbeats/bankroll_monitor_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/bankroll_monitor_daemon.py --interval-sec 300 --start-bankroll 1000 > logs/bankroll_monitor.log 2>&1 &",
+      "process_match": "bankroll_monitor_daemon.py"
+    },
+    {
+      "name": "auto_settle_daemon",
+      "command": "python scripts/auto_settle_daemon.py --interval-sec 300 --start-bankroll 1000",
+      "expected_interval_sec": 300,
+      "heartbeat_file": "data/cache/daemon_heartbeats/auto_settle_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/auto_settle_daemon.py --interval-sec 300 --start-bankroll 1000 >> vault/Improvements/auto_settle_daemon.stdout.log 2>&1 &",
+      "process_match": "auto_settle_daemon.py"
+    },
+    {
+      "name": "auto_place_daemon",
+      "command": "python scripts/auto_place_daemon.py --slate sas_okc_2026-05-26 --interval-sec 60 --max-daily-bets 5 --confidence-floor 0.08",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/auto_place_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/auto_place_daemon.py --slate sas_okc_2026-05-26 --interval-sec 60 --max-daily-bets 5 --confidence-floor 0.08 > logs/auto_place.log 2>&1 &",
+      "process_match": "auto_place_daemon.py"
+    },
+    {
+      "name": "unified_scraper_orchestrator",
+      "command": "python scripts/unified_scraper_orchestrator.py --books fd,bov,pin --fd-interval-sec 60 --bov-interval-sec 60 --pin-interval-sec 30 --health-port 8765",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/unified_scraper_orchestrator.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python /workspace/nba-ai-system/scripts/unified_scraper_orchestrator.py --books fd,bov,pin --fd-interval-sec 60 --bov-interval-sec 60 --pin-interval-sec 30 --health-port 8765 > logs/orchestrator.log 2>&1 &",
+      "process_match": "unified_scraper_orchestrator.py",
+      "heartbeat_optional": true,
+      "_note": "async orchestrator; not auto-patched. process-alive check only."
+    },
+    {
+      "name": "live_bet_ranker",
+      "command": "python scripts/live_bet_ranker.py --slate sas_okc_2026-05-26 --interval-sec 30 --bankroll 1000 --no-stop-at-tip",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/live_bet_ranker.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/live_bet_ranker.py --slate sas_okc_2026-05-26 --interval-sec 30 --bankroll 1000 --no-stop-at-tip >> vault/Improvements/live_bet_ranker.stdout.log 2>&1 &",
+      "process_match": "live_bet_ranker.py"
+    },
+    {
+      "name": "inplay_bet_ranker",
+      "command": "python scripts/inplay_bet_ranker.py --game-id 0042400317 --date 2026-05-26 --interval-sec 30 --bankroll 1000",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/inplay_bet_ranker.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && nohup python scripts/inplay_bet_ranker.py --game-id 0042400317 --date 2026-05-26 --interval-sec 30 --bankroll 1000 --pregame-win-prob 0.55 --season 2024-25 --max-wait-sec 14400 --log vault/Improvements/inplay_bet_ranker.log >> logs/inplay_bet_ranker.stdout.log 2>&1 &",
+      "process_match": "inplay_bet_ranker.py"
+    },
+    {
+      "name": "fd_scraper",
+      "command": "python3 -u scripts/probe_R15_curl_cffi_fanduel.py --daemon --interval-sec 60",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/fd_scraper.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs/R16 && tmux new-session -d -s fd_daemon 'python3 -u scripts/probe_R15_curl_cffi_fanduel.py --daemon --interval-sec 60 >> logs/R16/fd.log 2>&1'",
+      "process_match": "probe_R15_curl_cffi_fanduel.py"
+    },
+    {
+      "name": "bov_scraper",
+      "command": "python3 -u scripts/bov_scraper_daemon.py --interval-sec 60 --sports nba",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/bov_scraper.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs/R16 && tmux new-session -d -s bov_daemon 'python3 -u scripts/bov_scraper_daemon.py --interval-sec 60 --sports nba >> logs/R16/bov.log 2>&1'",
+      "process_match": "bov_scraper_daemon.py"
+    },
+    {
+      "name": "pinnacle_scraper",
+      "command": "python3 -u scripts/pinnacle_scraper.py --interval-sec 30",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/pinnacle_scraper.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs/R16 && tmux new-session -d -s pin_daemon 'python3 -u scripts/pinnacle_scraper.py --interval-sec 30 >> logs/R16/pin.log 2>&1'",
+      "process_match": "pinnacle_scraper.py"
+    }
+  ]
+}

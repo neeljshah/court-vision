@@ -2,6 +2,19 @@
 
 Loops every --interval-sec, reads the latest snapshot per (book, player, stat)
 from data/lines/<today>_<book>.csv, pairs OVER@A with UNDER@B on the same
+
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
 (player, stat) where lineB > lineA — i.e. an actual outcome between lineA and
 lineB wins BOTH legs (the "middle"). Filters by minimum middle width and
 worst-case juice. Free arbs (both sides positive American odds) are flagged
@@ -61,7 +74,9 @@ except Exception as _exc:  # pragma: no cover - model is optional
 
 
 # ---------------------------------------------------------------------------
-# CSV loading — robust to Bovada schema drift (10 or 11 cols).
+# CSV loading — robust to Bovada schema drift (10 / 11 / 12 cols).
+# R19_L1: 12-col schema adds `is_alt_line` (true/false string). Older 10/11-col
+# rows are treated as primary (is_alt_line=false) for back-compat.
 # ---------------------------------------------------------------------------
 _CANON = ["captured_at", "book", "game_id", "player_id", "player_name",
           "stat", "line", "over_price", "under_price", "start_time"]
@@ -74,12 +89,18 @@ def _read_lines_csv(path):
     with open(path, encoding="utf-8", newline="") as f:
         reader = csv.reader(f)
         try:
-            next(reader)
+            header = next(reader)
         except StopIteration:
             return rows
+        # Detect column index of is_alt_line from header, if present.
+        try:
+            alt_idx = header.index("is_alt_line")
+        except ValueError:
+            alt_idx = None
         for row in reader:
             if len(row) == 10:
                 d = dict(zip(_CANON, row))
+                d["is_alt_line"] = "false"  # legacy default
             elif len(row) == 11:
                 d = {
                     "captured_at": row[0], "book": row[1],
@@ -88,11 +109,38 @@ def _read_lines_csv(path):
                     "stat": row[6], "line": row[7],
                     "over_price": row[8], "under_price": row[9],
                     "start_time": row[10],
+                    "is_alt_line": "false",  # legacy 11-col default
+                }
+            elif len(row) == 12:
+                # New schema: captured_at, book, game_id, player_id,
+                # player_name, team, stat, line, over_price, under_price,
+                # market_status, is_alt_line. `start_time` lives in
+                # market_status slot under new schema; keep both keys for
+                # back-compat downstream.
+                d = {
+                    "captured_at": row[0], "book": row[1],
+                    "game_id": row[2], "player_id": row[3],
+                    "player_name": row[4],
+                    "stat": row[6], "line": row[7],
+                    "over_price": row[8], "under_price": row[9],
+                    "start_time": row[10],
+                    "market_status": row[10],
+                    "is_alt_line": (row[alt_idx] if alt_idx is not None
+                                     and alt_idx < len(row) else row[11]),
                 }
             else:
                 continue
             rows.append(d)
     return rows
+
+
+def _is_alt_truthy(v):
+    """Lenient bool-parse for the is_alt_line column (csv values come in as
+    'true'/'false' strings, may also be empty for legacy rows)."""
+    if v is None:
+        return False
+    s = str(v).strip().lower()
+    return s in ("true", "1", "yes", "y", "t")
 
 
 def _to_int(s):
@@ -123,9 +171,11 @@ def _parse_dt(s):
 
 
 def load_latest_snapshots(date_str, lines_dir=LINES_DIR, books=BOOKS):
-    """Return dict[(player, stat)][book] -> list of {line, over_price, under_price}.
+    """Return dict[(player, stat)][book] -> list of {line, over_price, under_price, is_alt_line}.
 
     For each (book, player, stat, line) keep only the latest captured_at.
+    R19_L1: `is_alt_line` is propagated into the index so the arb engine can
+    filter ladder rungs out of cross-book joins.
     """
     index = {}
     for book in books:
@@ -151,12 +201,14 @@ def load_latest_snapshots(date_str, lines_dir=LINES_DIR, books=BOOKS):
                     "line": line,
                     "over_price": _to_int(r.get("over_price")),
                     "under_price": _to_int(r.get("under_price")),
+                    "is_alt_line": _is_alt_truthy(r.get("is_alt_line")),
                 }
         for (player, stat, _line), v in latest.items():
             pkey = (player, stat)
             bdict = index.setdefault(pkey, {})
             blist = bdict.setdefault(book, [])
             blist.append({
+                "is_alt_line": v.get("is_alt_line", False),
                 "line": v["line"],
                 "over_price": v["over_price"],
                 "under_price": v["under_price"],
@@ -209,7 +261,8 @@ def arb_profit_pct(over_price, under_price):
     return (1.0 / s - 1.0) * 100.0
 
 
-def find_middles(index, min_width=0.5, max_juice_each_side=-135):
+def find_middles(index, min_width=0.5, max_juice_each_side=-135,
+                  allow_alt_lines=False):
     """Scan the latest-snapshot index for cross-book middles.
 
     A middle is: book_A OVER X paired with book_B UNDER Y, where Y > X.
@@ -221,6 +274,13 @@ def find_middles(index, min_width=0.5, max_juice_each_side=-135):
         - gap >= min_width (default 0.5)
         - over_price >= max_juice_each_side AND under_price >= max_juice_each_side
           (e.g. -135 means we tolerate down to -135 on each leg)
+        - R19_L1: BOTH legs must be primary (is_alt_line=False) unless
+          `allow_alt_lines=True`. Bovada's alt-line ladder routinely produces
+          rungs with both-positive American odds (e.g. PTS over 3.5 +120 /
+          under 25.5 +110 across books) that look like free arbs but are
+          actually two independent skewed-juice rungs — pairing them across
+          books gives a bogus "guaranteed +EV" signal. Primary-only joins
+          eliminate this entire class of false positives.
 
     Returns a list of dicts sorted by (free_arb desc, width desc).
     """
@@ -230,6 +290,8 @@ def find_middles(index, min_width=0.5, max_juice_each_side=-135):
         unders = []
         for book, rows in books_dict.items():
             for r in rows:
+                if not allow_alt_lines and r.get("is_alt_line"):
+                    continue
                 if r["over_price"] is not None:
                     overs.append((book, r["line"], r["over_price"]))
                 if r["under_price"] is not None:
@@ -422,6 +484,8 @@ def loop(interval_sec, min_width, max_juice, max_iters=None,
     except Exception:
         pass
     while not _STOP:
+        # R19_L3 heartbeat
+        _r19_hb('middle_finder_daemon')
         t0 = time.time()
         try:
             middles, index = run_once(_today_str(), min_width, max_juice,

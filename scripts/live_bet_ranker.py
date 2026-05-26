@@ -36,6 +36,19 @@ from typing import Any
 
 import pandas as pd
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_DIR)
 
@@ -150,24 +163,31 @@ def atomic_write_text(path: str, text: str) -> None:
         raise
 
 
-# --------- line CSV reader (handles Bovada 10/11-col schema drift) ----------
+# --------- line CSV reader (handles Bovada 10/11/12-col schema drift) ------
+# R19_L1: 12-col schema adds `is_alt_line` (true/false). Older rows default
+# to is_alt_line=False (primary), keeping legacy ranking behavior unchanged.
 def _read_lines_csv(path: str) -> pd.DataFrame:
     import csv as _csv
     canon = ["captured_at", "book", "game_id", "player_id",
              "player_name", "stat", "line", "over_price",
-             "under_price", "start_time"]
+             "under_price", "start_time", "is_alt_line"]
     rows = []
     if not os.path.exists(path):
         return pd.DataFrame(columns=canon)
     with open(path, encoding="utf-8") as f:
         reader = _csv.reader(f)
         try:
-            next(reader)
+            header = next(reader)
         except StopIteration:
             return pd.DataFrame(columns=canon)
+        try:
+            alt_idx = header.index("is_alt_line")
+        except ValueError:
+            alt_idx = None
         for row in reader:
             if len(row) == 10:
-                d = dict(zip(canon, row))
+                d = dict(zip(canon[:-1], row))
+                d["is_alt_line"] = "false"
             elif len(row) == 11:
                 d = {
                     "captured_at": row[0], "book": row[1],
@@ -176,6 +196,18 @@ def _read_lines_csv(path: str) -> pd.DataFrame:
                     "stat": row[6], "line": row[7],
                     "over_price": row[8], "under_price": row[9],
                     "start_time": row[10],
+                    "is_alt_line": "false",
+                }
+            elif len(row) == 12:
+                d = {
+                    "captured_at": row[0], "book": row[1],
+                    "game_id": row[2], "player_id": row[3],
+                    "player_name": row[4],
+                    "stat": row[6], "line": row[7],
+                    "over_price": row[8], "under_price": row[9],
+                    "start_time": row[10],
+                    "is_alt_line": (row[alt_idx] if alt_idx is not None
+                                     and alt_idx < len(row) else row[11]),
                 }
             else:
                 continue
@@ -187,6 +219,9 @@ def _read_lines_csv(path: str) -> pd.DataFrame:
     df["line"] = pd.to_numeric(df["line"], errors="coerce")
     df["over_price"] = pd.to_numeric(df["over_price"], errors="coerce")
     df["under_price"] = pd.to_numeric(df["under_price"], errors="coerce")
+    df["is_alt_line"] = df["is_alt_line"].astype(str).str.strip().str.lower().isin(
+        ["true", "1", "yes", "y", "t"]
+    )
     return df
 
 
@@ -751,6 +786,8 @@ def run_daemon(slate_id: str, interval: int, bankroll: float,
                 f"bankroll=${bankroll}")
     try:
         while True:
+            # R19_L3 heartbeat
+            _r19_hb('live_bet_ranker')
             t_start = time.time()
             try:
                 payload = run_tick(slate_id, bankroll, cache, state,

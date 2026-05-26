@@ -47,6 +47,19 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
+# R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
+# 'python -u scripts/<name>.py' can still find src.monitor at the project root).
+try:
+    import os as _r19_os, sys as _r19_sys
+    _r19_root = _r19_os.path.dirname(_r19_os.path.dirname(_r19_os.path.abspath(__file__)))
+    if _r19_root not in _r19_sys.path:
+        _r19_sys.path.insert(0, _r19_root)
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
+
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
@@ -699,6 +712,8 @@ def run_daemon(args: argparse.Namespace) -> Dict[str, Any]:
     tick = 0
     try:
         while True:
+            # R19_L3 heartbeat
+            _r19_hb('auto_place_daemon')
             t_start = time.time()
             tick += 1
 
