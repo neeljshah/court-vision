@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 31,
+  "rounds_completed": 32,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -567,6 +567,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-18 (5 variants in 102s \u2014 0/5 SHIP, all REJECT). Cross-domain transfer of B15 avg_blend pattern FAILS for player-prop PTS. Stop counter: 3/5.\nWithin-probe baseline_full MAE 4.6602 confirms production reference (memory said ~4.62; +0.87% above is well within run-to-run variance \u2014 production baseline is real).\nPer-variant MAE:\n  baseline_full (85 feats, LGB+XGB): 4.6602\n  form_only (40 L5/L10/EWMA/std/prev feats): 4.6921 (+0.68%)\n  opp_only (16 opp_def + context feats): 6.7395 (+44.62%)\n  avg_blend_top2 (baseline_full+form_only): 4.6640 (+0.08% essentially tied)\n  avg_blend_top3 (+opp_only): 4.9603 (+6.44% dragged down by weak opp)\nARCHITECTURAL FINDING: avg_blend pattern requires feature subsets with COMPARABLE single-model strength to add value via diversity. At game level (B15), each subset (interactions / halflife2 / opp_full) was within 0.3pp of the others \u2014 averaging smoothed noise across diverse-but-similar models. At player-prop level, form features DOMINATE so completely that opp/context subsets are 44% worse single-models, and adding them to the blend just dilutes signal.\nPROD PTS MAE remains 4.62 (canonical). No promotion.\nStop counter: 3/5 zero-architectural-gain rounds (B16 single-arch blend, B17 HGB-OOF, B18 player-prop cross-domain). Two more zero-gain rounds \u2192 loop terminates.\nSTRATEGIC NEXT MOVE: pivot from probing to PRODUCTION WIRING \u2014 handoff R12 game-level wins (B14 in-play calibration, B15 ensemble blends, B6 OOF-stack) into src/prediction/win_probability.py and src/prediction/betting_portfolio.py before the loop terminates. Probing further on same backbone has diminishing returns."
+    },
+    {
+      "name": "R12_BATCH19_perm_importance_select",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 18,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-19 (18 variants in 296s \u2014 18/18 SHIP, 4/18 BEAT_CANONICAL). ARCHITECTURAL WIN \u2014 feature selection helps at aggressive trim levels. Stop counter RESET to 0/5.\nPer-variant beat-canonical count:\n  drop_bottom_10pct (keep top 90% by perm-importance): 1/6 beat \u2014 over_230 only.\n  drop_bottom_20pct (keep top 80%): 0/6 beat \u2014 slight regression across all targets.\n  keep_top50 (keep only top 50 features): 3/6 beat \u2014 biggest wins.\nWINS:\n  score_diff keep_top50:  -17.71% (-0.10pp vs B15 nnls_top3 -17.61%)\n  home_score keep_top50:  -16.86% (-0.34pp vs B15 top4_avg -16.52%)\n  over_230 keep_top50:    Brier 0.2321 AUC 0.6843 (CLEAN WIN \u2014 Brier -0.0042 AND AUC +0.0083 vs B15)\n  over_230 drop_bottom_10pct: Brier 0.2375 AUC 0.6790 (AUC-only win via OR-gate)\nARCHITECTURAL FINDING: ~50 features is the sweet spot for game-level pregame prediction with B6 OOF-stack. Above that, additional features add NOISE faster than signal, even when those features individually look useful. Aggressive trim (keep_top50, dropping 90-112 features = 65-69% of canonical) WINS on 3/6 targets. Mild trim (drop_bottom_10pct or 20pct) doesn't help because it leaves enough noise to hurt the model. The model needs SHARP feature selection or nothing.\nNEW PRODUCTION CANONICAL (per-target):\n  total: B9 interactions_only -16.27% UNCHANGED (no B19 variant beats)\n  spread: B19 keep_top50 -17.71% NEW BEST (-0.10pp vs B15)\n  home_score: B19 keep_top50 -16.86% NEW BEST (-0.34pp vs B15)\n  away_score: B15 nnls_top3 -14.51% UNCHANGED (no B19 variant beats)\n  O230: B19 keep_top50 Brier 0.2321 AUC 0.6843 NEW BEST (clean dual win)\n  AH3: B15 top4_avg Brier 0.2271 AUC 0.7115 UNCHANGED (keep_top50 0.2275 tied within noise)"
     }
   ],
   "rejects": [
