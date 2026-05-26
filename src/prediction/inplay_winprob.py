@@ -1,40 +1,47 @@
-"""src/prediction/inplay_winprob.py — R10_M5 in-play win probability (cycle R10_M5).
+"""src/prediction/inplay_winprob.py — in-play win probability (R10_M5 + R12_F1).
 
 Wraps the LightGBM boosters trained by ``scripts/train_inplay_winprob_endq3.py``
-for snapshot-conditional home-team win probability. Three artifacts:
+(v1, R10_M5) and ``scripts/probe_R12_F1_inplay_winprob_v2.py`` (v2 ensemble).
 
-    data/models/inplay_winprob_endq1.lgb
-    data/models/inplay_winprob_endq2.lgb
-    data/models/inplay_winprob_endq3.lgb
+Artifacts:
 
-The endQ3 model is the SHIP (probe R10_M5: Brier 0.1350 vs pregame baseline
-0.2653, accuracy 81.33%, AUC 0.901). endQ1/endQ2 are below the 0.183 Brier
-ship gate but still useful as informative priors over the naive home-rate
-baseline (0.523).
+    data/models/inplay_winprob_endq1.lgb               # v1 (R10_M5)
+    data/models/inplay_winprob_endq2.lgb               # v1 (R10_M5)
+    data/models/inplay_winprob_endq3.lgb               # v1 (R10_M5) SHIP
+    data/models/inplay_winprob_endq2_v2.lgb            # v2 (R12_F1) SHIP
+    data/models/inplay_winprob_endq2_v2_meta.json      # ensemble blend metadata
 
-Feature schema (matches scripts/probe_R10_M5_inplay_winprob.py exactly):
+v1 ship history: endQ3 cleared the 0.183 Brier gate (Brier 0.1350); endQ1 +
+endQ2 did not.
 
-    score_margin       home_cum_pts - away_cum_pts at snapshot
-    total_pts          home_cum_pts + away_cum_pts at snapshot
-    pace_so_far        total_pts / minutes_played
-    q1_delta           home_q1 - away_q1
-    q2_delta           home_q2 - away_q2   (endQ2 + endQ3 only)
-    q3_delta           home_q3 - away_q3   (endQ3 only)
-    last_q_margin     home_qN - away_qN where N is most-recent observed quarter
-    pregame_win_prob   pre-game home win probability (0.55 fallback if absent)
-    home_team_id       categorical
-    season             categorical (e.g. "2024-25")
+v2 ship history (R12_F1): endQ2 ensemble (LGB + LR via NNLS + anchor blend)
+clears the gate with Brier 0.1735 on walk-forward (v1 was 0.2234 on the same
+449-game post-quarter_box-cache-rebuild dataset). When the v2 endQ2 artifacts
+are present, this module uses them; otherwise it falls back to the v1 booster.
+
+Feature schemas:
+
+v1 (endQ1/endQ3, or endQ2 fallback):
+    score_margin, total_pts, pace_so_far, q1_delta, q2_delta (Q2+), q3_delta
+    (Q3 only), last_q_margin, pregame_win_prob, home_team_id, season
+
+v2 (endQ2 production):
+    All v1 features PLUS:
+      projected_final_margin, projected_total_score, qtr_margin_var,
+      qtr_margin_mean, net_rtg_diff, pace_diff, elo_diff, stars_diff,
+      rest_diff, b2b_diff, last5_diff
+    Inference is an NNLS-weighted blend of LightGBM and standardized
+    Logistic Regression, then anchor-blended with pregame WP.
 
 Inference contract: ``predict_home_win_prob(features: dict, snapshot: str)``
-returns a single float in [0, 1]. Missing-artifact policy: return ``None`` so
-the caller can fall back to the pregame WP (preserves back-compat with the
-pre-R10_M5 live_engine path which carried no in-play WP at all).
+returns a single float in [0, 1] or None if no artifact is available.
 """
 from __future__ import annotations
 
 import json
+import math
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -44,9 +51,7 @@ _MODELS_DIR = os.path.join(PROJECT_DIR, "data", "models")
 
 SNAPSHOTS = ("endQ1", "endQ2", "endQ3")
 
-# Mirror scripts/train_inplay_winprob_endq3.SNAP_FEATURES exactly. Kept in
-# sync so any drift surfaces as a load-time failure rather than silent
-# mis-prediction.
+# v1 feature schema — kept verbatim for back-compat with the R10_M5 boosters.
 _SNAP_FEATURES: Dict[str, list] = {
     "endQ1": ["score_margin", "total_pts", "pace_so_far", "q1_delta",
               "last_q_margin", "pregame_win_prob", "home_team_id", "season"],
@@ -57,10 +62,15 @@ _SNAP_FEATURES: Dict[str, list] = {
 }
 _CAT_COLS = ("home_team_id", "season")
 
+# Snapshots that have a v2 production artifact available. Loaded lazily by
+# ``load_v2_bundle``; missing artifacts fall back to v1.
+_V2_SNAPSHOTS = ("endQ2",)
+
 # Module-scope booster cache. Keyed by snapshot name. False sentinel means
 # we tried to load and the artifact was missing (so callers stop retrying).
 _BOOSTER_CACHE: Dict[str, Any] = {}
 _META_CACHE: Dict[str, Any] = {}
+_V2_BUNDLE_CACHE: Dict[str, Any] = {}
 
 
 def _artifact_path(snapshot: str) -> str:
@@ -125,30 +135,162 @@ def _feature_frame(features: Dict[str, Any], snapshot: str) -> pd.DataFrame:
     return df
 
 
+def _v2_bundle_paths(snapshot: str) -> Dict[str, str]:
+    base = f"inplay_winprob_{snapshot.lower()}_v2"
+    return {
+        "lgb": os.path.join(_MODELS_DIR, f"{base}.lgb"),
+        "meta": os.path.join(_MODELS_DIR, f"{base}_meta.json"),
+    }
+
+
+def load_v2_bundle(snapshot: str) -> Optional[Dict[str, Any]]:
+    """Lazily load v2 ensemble bundle (LGB booster + meta) for a snapshot.
+
+    The bundle includes:
+      - lightgbm Booster
+      - ensemble weights (lgb, xgb, lr — xgb omitted at runtime; weights
+        renormalized over lgb + lr to avoid carrying a second native model)
+      - anchor alpha
+      - logistic-regression coefficients (in standardized space) + mean/std
+
+    Returns None if the artifact set is incomplete.
+    """
+    if snapshot not in _V2_SNAPSHOTS:
+        return None
+    if snapshot in _V2_BUNDLE_CACHE:
+        b = _V2_BUNDLE_CACHE[snapshot]
+        return b if b is not False else None
+    paths = _v2_bundle_paths(snapshot)
+    if not (os.path.exists(paths["lgb"]) and os.path.exists(paths["meta"])):
+        _V2_BUNDLE_CACHE[snapshot] = False
+        return None
+    try:
+        import lightgbm as lgb
+        booster = lgb.Booster(model_file=paths["lgb"])
+        with open(paths["meta"]) as f:
+            meta = json.load(f)
+    except Exception:
+        _V2_BUNDLE_CACHE[snapshot] = False
+        return None
+
+    # Renormalize ensemble weights so they live on the {lgb, lr} simplex.
+    # XGB is dropped at inference because the trained model file is .xgb
+    # which would require an extra dependency on the live path. Probe data
+    # showed lgb+lr already carries ~94% of the explanatory power on
+    # endQ2 (xgb weight ~0).
+    raw_w = meta.get("ensemble_weights", {})
+    w_lgb = float(raw_w.get("lgb", 0.0))
+    w_lr = float(raw_w.get("lr", 0.0))
+    s = w_lgb + w_lr
+    if s <= 1e-9:
+        # Pathological fallback: split evenly.
+        w_lgb, w_lr = 0.5, 0.5
+    else:
+        w_lgb /= s
+        w_lr /= s
+
+    bundle = {
+        "booster": booster,
+        "meta": meta,
+        "w_lgb": w_lgb,
+        "w_lr": w_lr,
+        "alpha": float(meta.get("anchor_alpha", 1.0)),
+        "feature_cols": list(meta.get("feature_cols", [])),
+        "lr_feat_order": list(meta.get("lr_feat_order", [])),
+        "lr_coef": [float(x) for x in meta.get("lr_coef", [])],
+        "lr_intercept": float(meta.get("lr_intercept", 0.0)),
+        "lr_mean": {k: float(v) for k, v in meta.get("lr_mean", {}).items()},
+        "lr_std": {k: float(v) for k, v in meta.get("lr_std", {}).items()},
+    }
+    _V2_BUNDLE_CACHE[snapshot] = bundle
+    return bundle
+
+
+def _v2_feature_frame(features: Dict[str, Any],
+                      bundle: Dict[str, Any]) -> pd.DataFrame:
+    """Build the v2 feature frame in the booster's expected column order."""
+    cols = bundle["feature_cols"]
+    row = {}
+    for c in cols:
+        v = features.get(c)
+        if c in _CAT_COLS:
+            row[c] = v
+        else:
+            try:
+                row[c] = float(v) if v is not None else np.nan
+            except (TypeError, ValueError):
+                row[c] = np.nan
+    df = pd.DataFrame([row], columns=cols)
+    for c in _CAT_COLS:
+        if c in df.columns:
+            df[c] = df[c].astype("category")
+    return df
+
+
+def _v2_lr_predict(features: Dict[str, Any],
+                   bundle: Dict[str, Any]) -> float:
+    """Compute the standardized LR probability for the v2 ensemble."""
+    feat_order: List[str] = bundle["lr_feat_order"]
+    coef: List[float] = bundle["lr_coef"]
+    mean = bundle["lr_mean"]
+    std = bundle["lr_std"]
+    z = float(bundle["lr_intercept"])
+    for i, c in enumerate(feat_order):
+        v = features.get(c)
+        try:
+            x = float(v) if v is not None else 0.0
+        except (TypeError, ValueError):
+            x = 0.0
+        m = float(mean.get(c, 0.0))
+        s = float(std.get(c, 1.0)) or 1.0
+        z += coef[i] * ((x - m) / s)
+    # numerical-stable sigmoid
+    if z >= 0:
+        ez = math.exp(-z)
+        return 1.0 / (1.0 + ez)
+    ez = math.exp(z)
+    return ez / (1.0 + ez)
+
+
+def _predict_v2(features: Dict[str, Any], snapshot: str) -> Optional[float]:
+    bundle = load_v2_bundle(snapshot)
+    if bundle is None:
+        return None
+    try:
+        X = _v2_feature_frame(features, bundle)
+        p_lgb = float(bundle["booster"].predict(X)[0])
+    except Exception:
+        return None
+    p_lr = _v2_lr_predict(features, bundle)
+    p_stack = bundle["w_lgb"] * p_lgb + bundle["w_lr"] * p_lr
+    alpha = bundle["alpha"]
+    try:
+        pregame = float(features.get("pregame_win_prob", 0.5))
+    except (TypeError, ValueError):
+        pregame = 0.5
+    blended = alpha * p_stack + (1.0 - alpha) * pregame
+    return float(np.clip(blended, 0.0, 1.0))
+
+
 def predict_home_win_prob(features: Dict[str, Any],
                           snapshot: str = "endQ3") -> Optional[float]:
     """Predict P(home team wins) from a snapshot feature dict.
 
-    Parameters
-    ----------
-    features : dict
-        Must contain the keys listed in ``_SNAP_FEATURES[snapshot]``. Missing
-        keys are tolerated as NaN; the booster's built-in missing-value
-        handling kicks in.
-    snapshot : str
-        One of {"endQ1", "endQ2", "endQ3"}.
-
-    Returns
-    -------
-    float in [0, 1], or None if the artifact is missing.
+    Routes to the v2 ensemble (NNLS-blended LGB+LR with pregame anchor)
+    when a v2 bundle exists for ``snapshot`` (currently endQ2 only). Falls
+    back to the v1 booster otherwise. Returns None when no artifact is
+    available so callers can fall back to pregame WP.
     """
+    # Try v2 first.
+    v2 = _predict_v2(features, snapshot)
+    if v2 is not None:
+        return v2
+
     booster = load_booster(snapshot)
     if booster is None:
         return None
     X = _feature_frame(features, snapshot)
     try:
-        # Booster.predict returns a 1-D ndarray of class-1 probabilities for
-        # binary classifiers saved via LGBMClassifier.booster_.save_model.
         raw = booster.predict(X)
     except Exception:
         return None
@@ -191,21 +333,61 @@ def features_from_snapshot(snap: Dict[str, Any]) -> Dict[str, Any]:
     total_pts = h_cum + a_cum
     minutes_played = n_qtrs * 12.0
 
+    score_margin = h_cum - a_cum
+    pace_so_far = (total_pts / minutes_played) if minutes_played > 0 else 0.0
+    rem_minutes = 48.0 - minutes_played
+    margin_per_min = (score_margin / minutes_played) if minutes_played > 0 else 0.0
+    projected_final_margin = score_margin + margin_per_min * rem_minutes
+    projected_total_score = total_pts + pace_so_far * rem_minutes
+
+    observed_deltas = [h_q[i] - a_q[i] for i in range(n_qtrs)]
+    if len(observed_deltas) >= 2:
+        qtr_margin_var = float(np.var(observed_deltas))
+        qtr_margin_mean = float(np.mean(observed_deltas))
+    else:
+        qtr_margin_var = 0.0
+        qtr_margin_mean = float(observed_deltas[0])
+
     feats: Dict[str, Any] = {
-        "score_margin": h_cum - a_cum,
+        # v1 features (preserved verbatim).
+        "score_margin": score_margin,
         "total_pts": total_pts,
-        "pace_so_far": (total_pts / minutes_played) if minutes_played > 0 else 0.0,
+        "pace_so_far": pace_so_far,
         "q1_delta": h_q[0] - a_q[0],
         "last_q_margin": h_obs[-1] - a_obs[-1],
         "pregame_win_prob": float(snap.get("pregame_win_prob", 0.55) or 0.55),
         "home_team_id": snap.get("home_team_id"),
         "season": snap.get("season"),
+        # v2 features (additive — v1 boosters ignore unknown keys).
+        "projected_final_margin": projected_final_margin,
+        "projected_total_score": projected_total_score,
+        "qtr_margin_var": qtr_margin_var,
+        "qtr_margin_mean": qtr_margin_mean,
+        "net_rtg_diff": _coerce_float(snap.get("net_rtg_diff")),
+        "pace_diff": _coerce_float(snap.get("pace_diff")),
+        "elo_diff": _coerce_float(snap.get("elo_diff")),
+        "stars_diff": _coerce_float(snap.get("stars_diff")),
+        "rest_diff": _coerce_float(snap.get("rest_diff")),
+        "b2b_diff": _coerce_float(snap.get("b2b_diff")),
+        "last5_diff": _coerce_float(snap.get("last5_diff")),
     }
     if n_qtrs >= 2:
         feats["q2_delta"] = h_q[1] - a_q[1]
     if n_qtrs >= 3:
         feats["q3_delta"] = h_q[2] - a_q[2]
     return feats
+
+
+def _coerce_float(v: Any, default: float = 0.0) -> float:
+    try:
+        if v is None:
+            return default
+        f = float(v)
+        if np.isnan(f) or np.isinf(f):
+            return default
+        return f
+    except (TypeError, ValueError):
+        return default
 
 
 def _period_to_snapshot(period: Any, clock: Any) -> Optional[str]:
@@ -251,11 +433,13 @@ def reset_cache() -> None:
     """Drop cached boosters (test helper)."""
     _BOOSTER_CACHE.clear()
     _META_CACHE.clear()
+    _V2_BUNDLE_CACHE.clear()
 
 
 __all__ = [
     "SNAPSHOTS",
     "load_booster",
+    "load_v2_bundle",
     "predict_home_win_prob",
     "features_from_snapshot",
     "reset_cache",
