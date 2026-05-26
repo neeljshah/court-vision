@@ -1,0 +1,21 @@
+{
+  "probe": "R12_B14_raw_winprob_endQ2",
+  "kind": "binary",
+  "label": "home_wins",
+  "label_desc": "P(home_wins) at endQ2 via raw",
+  "snap_q": 2,
+  "n_features": 149,
+  "n_games": 2836,
+  "pos_rate": 0.5306770098730607,
+  "status": "REJECT",
+  "ship_reason": "Brier 0.1846 vs raw B10 0.1846; AUC 0.8211",
+  "pooled_lgb_brier": 0.18461,
+  "pooled_naive_brier": 0.17856,
+  "pooled_lgb_auc": 0.8211,
+  "brier_delta_pct": 3.388,
+  "n_valid_folds": 3,
+  "beat_b10": false,
+  "b10_baseline_brier": 0.1846,
+  "b10_baseline_auc": 0.8211,
+  "elapsed_s": 29.4
+}

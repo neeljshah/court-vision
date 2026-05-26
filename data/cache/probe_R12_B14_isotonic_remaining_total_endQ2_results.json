@@ -1,0 +1,16 @@
+{
+  "probe": "R12_B14_isotonic_remaining_total_endQ2",
+  "kind": "regression",
+  "label": "remaining_total",
+  "snap_q": 2,
+  "n_features": 149,
+  "status": "SHIP",
+  "ship_reason": "delta -25.65% vs raw B10 -25.38",
+  "pooled_naive_mae": 13.8068,
+  "pooled_lgb_mae": 10.2657,
+  "pooled_delta_pct": -25.65,
+  "n_valid_folds": 3,
+  "beat_b10": true,
+  "b10_baseline_delta_pct": -25.38,
+  "elapsed_s": 40.6
+}
