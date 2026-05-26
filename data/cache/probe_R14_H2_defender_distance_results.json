@@ -1,0 +1,40 @@
+{
+  "timestamp_utc": "2026-05-26T08:00:27.749495+00:00",
+  "n_shot_log_files": 77,
+  "n_games": 41,
+  "sentinel_fraction": 0.4524,
+  "ship_status": "DATA_BLOCKED_STOP",
+  "by_stat_mae_delta": null,
+  "audit": {
+    "n_shots": 14332,
+    "n_games_total": 76,
+    "n_games_usable": 41,
+    "n_players_usable": 68,
+    "n_player_game_cells_usable": 79,
+    "null_fraction": 0.2507,
+    "sentinel_strict_200_fraction": 0.0003,
+    "sentinel_band_ge199p5_fraction": 0.4524,
+    "n_usable_rows": 595,
+    "n_real_name_rows": 2116
+  },
+  "decision": {
+    "ship_status": "DATA_BLOCKED_STOP",
+    "proceeded_to_feature_engineering": false,
+    "reasons": [
+      "n_games_usable=41 < 100 required",
+      "player_game_cells=79 too few to support L5 rolling avg"
+    ],
+    "by_stat_mae_delta": null
+  },
+  "gate_thresholds": {
+    "min_usable_games": 100,
+    "max_sentinel_fraction": 0.5
+  },
+  "notes": [
+    "shot_log player_id is per-game local track id (1-10), not NBA player_id;",
+    "shooter identity must come from player_name. Most resolver outputs are",
+    "'TEAM#?' or '#N' jersey placeholders, blocking cross-game aggregation.",
+    "ISSUE-022 sentinel-200 fix belongs in the tracking writer; no",
+    "production code paths were modified by this probe."
+  ]
+}
