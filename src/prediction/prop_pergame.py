@@ -57,7 +57,55 @@ def _warn_join_load_once(name: str, path: str, exc: Exception) -> None:
     )
 
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
-_MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models")
+
+
+def _resolve_model_dir() -> str:
+    """Resolve the prop-model artifact directory with worktree-aware fallback.
+
+    R21_N1 fix: gitignored model artifacts (`props_pg_pts.json`,
+    `props_pg_mlp_pts.pkl`, `props_pg_lgb_ast.pkl`, ...) don't exist in fresh
+    git worktrees under `.claude/worktrees/<wt>/data/models/`. Production code
+    silently load-fails — `load_pergame_model` returns `[]`, then
+    `predict_pergame` returns None for PTS/AST (the only stats that depend on
+    the legacy 3-way blend rather than the quantile-q50 path which IS shipped
+    in-tree per quantile_pergame_*.json).
+
+    Resolution order:
+      1. `NBA_MODEL_DIR` env override (operator-controlled; absolute path).
+      2. The default `<PROJECT_DIR>/data/models` (the worktree's own copy).
+      3. If we're inside a `.claude/worktrees/<...>` subtree AND the default
+         is missing PTS base-learner artifacts, walk up to the host repo's
+         `data/models/` (the sibling of `.claude/`).
+
+    Returns the first path that exists. If none exist, returns the default
+    (downstream code already handles missing files gracefully via os.path.exists
+    guards — this only ensures we PICK the right populated dir when one is
+    reachable).
+    """
+    env = os.environ.get("NBA_MODEL_DIR")
+    if env and os.path.isdir(env):
+        return env
+
+    default = os.path.join(PROJECT_DIR, "data", "models")
+    pts_canary = os.path.join(default, "props_pg_pts.json")
+    if os.path.exists(pts_canary):
+        return default
+
+    # Worktree fallback: detect `.claude/worktrees/<wt>/` and walk up to the
+    # host repo's data/models. PROJECT_DIR examples:
+    #   ...\nba-ai-system\.claude\worktrees\agent-xyz   -> host: ...\nba-ai-system
+    norm = os.path.normpath(PROJECT_DIR).replace("\\", "/")
+    marker = "/.claude/worktrees/"
+    if marker in norm:
+        host = norm.split(marker, 1)[0]
+        host_models = os.path.join(host, "data", "models")
+        if os.path.exists(os.path.join(host_models, "props_pg_pts.json")):
+            return host_models
+
+    return default
+
+
+_MODEL_DIR = _resolve_model_dir()
 _PLAYTYPE_PATH = os.path.join(PROJECT_DIR, "data", "playtypes.parquet")
 _PLAY_TYPES = [
     "isolation", "prballhandler", "prrollman", "postup",
