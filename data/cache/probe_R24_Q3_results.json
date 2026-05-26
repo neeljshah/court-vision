@@ -1,0 +1,91 @@
+{
+  "probe": "R24_Q3_m2_family_retrain",
+  "ran_at": "2026-05-26T17:44:00.443985+00:00",
+  "root_dir": "C:\\Users\\neelj\\nba-ai-system",
+  "n_train_rows": 2836,
+  "n_features_used": 74,
+  "season_distribution": {
+    "2022-23": 1230,
+    "2023-24": 1230,
+    "2024-25": 376
+  },
+  "raw_season_games_counts": {
+    "season_games_2022-23.json": 1230,
+    "season_games_2023-24.json": 1230,
+    "season_games_2024-25.json": 1225,
+    "season_games_2025-26.json": 1230
+  },
+  "n_2025_26_with_features_and_score": 0,
+  "blocked_on_data": true,
+  "blocked_reason": "only 0 fully-featured 2025-26 game rows available (need >=100 for a meaningful 2025-26 holdout). R17_J8 backfilled per-PLAYER gamelogs for prop_pergame, NOT game-level pregame features (home_off_rtg / home_pace / etc.) which is what scripts/train_final_M2_family.py consumes. The 2025-26 row in linescores_all.json only has 3 game results. Existing m2_family manifest already reflects max-available data (2836 games, trained 2026-05-26).",
+  "per_target_mae_old": {
+    "total": 4.416267607541549,
+    "spread": 3.358555964499136,
+    "home_pts": 2.7596669918606254,
+    "away_pts": 2.8319499864065447
+  },
+  "per_target_mae_new": {
+    "total": 15.021148546411643,
+    "spread": 10.994647614295209,
+    "home_pts": 9.30266290851164,
+    "away_pts": 9.437959423426141
+  },
+  "per_target_delta_pct": {
+    "total": 240.132,
+    "spread": 227.362,
+    "home_pts": 237.094,
+    "away_pts": 233.267
+  },
+  "n_targets_improving": 0,
+  "wf_fold_results": [
+    {
+      "fold": 0,
+      "n_train": 567,
+      "n_val": 567,
+      "val_date_start": "2023-01-04",
+      "val_date_end": "2023-03-28",
+      "mae_total": 15.100191098590367,
+      "mae_spread": 10.649146418367929,
+      "mae_home_pts": 9.357518578707682,
+      "mae_away_pts": 9.12039122346483
+    },
+    {
+      "fold": 1,
+      "n_train": 1134,
+      "n_val": 567,
+      "val_date_start": "2023-03-28",
+      "val_date_end": "2023-12-30",
+      "mae_total": 14.833396802061502,
+      "mae_spread": 10.456294191803492,
+      "mae_home_pts": 8.913954229305103,
+      "mae_away_pts": 9.67795631505461
+    },
+    {
+      "fold": 2,
+      "n_train": 1701,
+      "n_val": 567,
+      "val_date_start": "2023-12-30",
+      "val_date_end": "2024-03-21",
+      "mae_total": 15.502289556832219,
+      "mae_spread": 11.764408431345522,
+      "mae_home_pts": 9.735420640936091,
+      "mae_away_pts": 9.720325641656679
+    },
+    {
+      "fold": 3,
+      "n_train": 2268,
+      "n_val": 568,
+      "val_date_start": "2024-03-21",
+      "val_date_end": "2025-04-13",
+      "mae_total": 15.021148546411643,
+      "mae_spread": 10.994647614295209,
+      "mae_home_pts": 9.30266290851164,
+      "mae_away_pts": 9.437959423426141
+    }
+  ],
+  "n_val_rows": 568,
+  "decision": "REJECT",
+  "ship_gate_pass": false,
+  "summary": "BLOCKED: no fresh 2025-26 game-level data. n_2025_26_featured=0; need feature build for season_games_2025-26.json + linescores backfill before retrain is meaningful.",
+  "elapsed_seconds": 44.73
+}
