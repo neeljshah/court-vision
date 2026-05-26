@@ -1,0 +1,153 @@
+{
+  "probe": "R11_M30v3_per_stat_dampener",
+  "stage1": {
+    "auc_per_fold": [
+      0.924035,
+      0.923752,
+      0.915514,
+      0.924532
+    ],
+    "auc_mean": 0.921958,
+    "n_positives": 1482,
+    "n_total": 32489,
+    "prevalence": 0.04562,
+    "threshold": 0.2,
+    "gate_pass": true
+  },
+  "stage2": {
+    "dampener_mode": "per_stat_calibrated_from_training",
+    "per_fold_multipliers": [
+      {
+        "pts": 1.1,
+        "reb": 1.1,
+        "ast": 1.1,
+        "fg3m": 1.1,
+        "stl": 1.1,
+        "blk": 1.1,
+        "tov": 1.1
+      },
+      {
+        "pts": 1.1,
+        "reb": 1.1,
+        "ast": 1.1,
+        "fg3m": 1.1,
+        "stl": 1.1,
+        "blk": 1.1,
+        "tov": 1.1
+      },
+      {
+        "pts": 1.1,
+        "reb": 1.1,
+        "ast": 1.1,
+        "fg3m": 1.1,
+        "stl": 1.1,
+        "blk": 1.1,
+        "tov": 1.1
+      },
+      {
+        "pts": 1.1,
+        "reb": 1.1,
+        "ast": 1.1,
+        "fg3m": 1.1,
+        "stl": 1.1,
+        "blk": 1.1,
+        "tov": 1.1
+      }
+    ],
+    "fallback_volume": 0.95,
+    "fallback_other": 0.97,
+    "clip_lo": 0.7,
+    "clip_hi": 1.1,
+    "folds": [
+      {
+        "fold": 0,
+        "mae_delta": {
+          "pts": 0.01266,
+          "reb": 0.00507,
+          "ast": 0.00432,
+          "fg3m": 0.00264,
+          "stl": 0.00304,
+          "blk": 0.00245,
+          "tov": 0.00312
+        },
+        "n_games": 151
+      },
+      {
+        "fold": 1,
+        "mae_delta": {
+          "pts": 0.01848,
+          "reb": 0.00953,
+          "ast": 0.00449,
+          "fg3m": 0.00435,
+          "stl": 0.0037,
+          "blk": 0.00319,
+          "tov": 0.00352
+        },
+        "n_games": 151
+      },
+      {
+        "fold": 2,
+        "mae_delta": {
+          "pts": 0.01244,
+          "reb": 0.01043,
+          "ast": 0.00391,
+          "fg3m": 0.00361,
+          "stl": 0.00407,
+          "blk": 0.00325,
+          "tov": 0.00437
+        },
+        "n_games": 151
+      },
+      {
+        "fold": 3,
+        "mae_delta": {
+          "pts": 0.01249,
+          "reb": 0.00537,
+          "ast": 0.00375,
+          "fg3m": 0.00273,
+          "stl": 0.00343,
+          "blk": 0.00251,
+          "tov": 0.00306
+        },
+        "n_games": 151
+      }
+    ],
+    "mean_delta": {
+      "pts": 0.01402,
+      "reb": 0.0076,
+      "ast": 0.00412,
+      "fg3m": 0.00333,
+      "stl": 0.00356,
+      "blk": 0.00285,
+      "tov": 0.00352
+    },
+    "calibration_ratios": {
+      "pts": 1.1279,
+      "reb": 1.4251,
+      "ast": 1.2077,
+      "fg3m": 0.9175,
+      "stl": 1.1165,
+      "blk": 1.3505,
+      "tov": 1.607
+    }
+  },
+  "stage3": {
+    "gate_auc": true,
+    "gate_4of4_wf": false,
+    "gate_volume_delta_le_neg005": false,
+    "mean_volume_delta": 0.007268,
+    "gate_no_regression": true,
+    "gate_3of7_improving": false,
+    "n_stats_improving": 0,
+    "mean_delta_by_stat": {
+      "pts": 0.01402,
+      "reb": 0.0076,
+      "ast": 0.00412,
+      "fg3m": 0.00333,
+      "stl": 0.00356,
+      "blk": 0.00285,
+      "tov": 0.00352
+    }
+  },
+  "ship": false
+}

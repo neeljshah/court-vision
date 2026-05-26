@@ -33,3 +33,4 @@ Append-only; one event per line.
 [2026-05-26 S2] REJECT — R10_M9_fatigue: all 7 stats explode +0.06 to +0.15 mean delta when fatigue features added to residual head (overfits proj_base+residual composition).
 [2026-05-26 S2] SHIP-PER-STAT — R10_M13_tracking: PTS strict WF 4/4 + mean -0.00736 (passes both gates). 4 more stats hit 4/4 WF but miss mean gate (AST/FG3M/BLK/TOV marginal). Cycle 14 v2 with strict prior-season discipline works for PTS only.
 [2026-05-26 S2] R10 ROUND CLOSED: 4 ships (M5/M14/M16-per-stat/M13-PTS), 4 rejects (M19/M30v2/M7/M9). Best round since R7. Live wiring deferred to maintain stability overnight.
+[2026-05-26 S2] REJECT — R11_M30v3 (1st R11 probe): per-stat dampener from training ratios fails because foul-out players are stars who OUTSCORE — multipliers clip to ceiling and boost wrong-direction. Mean delta +0.00727 (worse than M30v2 -0.0026). Foul-out angle definitively saturated via selection bias.
