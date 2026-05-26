@@ -494,6 +494,57 @@ def predict_canonical_bundle(bundle: Dict, df: pd.DataFrame) -> np.ndarray:
     raise ValueError(f"Unrecognized bundle shape; keys = {sorted(bundle.keys())}")
 
 
+_INPLAY_BUNDLE_FILENAMES = {
+    1: "r12_inplay_winprob_endQ1.joblib",
+    2: "r12_inplay_winprob_endQ2.joblib",
+    3: "r12_inplay_winprob_endQ3.joblib",
+    "remaining_total_endQ2": "r12_inplay_remaining_total_endQ2.joblib",
+}
+
+
+def load_inplay_bundle(key) -> Dict:
+    """Load a B30 in-play bundle.
+
+    `key` is 1/2/3 for winprob at endQ1/Q2/Q3, or the string
+    'remaining_total_endQ2' for the regression model.
+
+    Bundle shape: {model, feature_columns, snap_q, calibrator (dict),
+    recipe, training_meta}. The calibrator dict has type 'platt' (with
+    lr_coef + lr_intercept) or 'isotonic' (with x + y knot arrays).
+    """
+    import joblib
+    if key not in _INPLAY_BUNDLE_FILENAMES:
+        raise KeyError(f"Unknown in-play key {key}; options: {list(_INPLAY_BUNDLE_FILENAMES)}")
+    path = os.path.join(_MODELS_DIR, _INPLAY_BUNDLE_FILENAMES[key])
+    if not os.path.isfile(path):
+        raise FileNotFoundError(
+            f"No in-play bundle at {path}. Run scripts/probe_R12_batch30_serialize_inplay.py.")
+    return joblib.load(path)
+
+
+def apply_calibrator(raw: np.ndarray, calibrator: Dict) -> np.ndarray:
+    """Apply a serialized calibrator dict from a B30 bundle."""
+    if calibrator["type"] == "platt":
+        R = np.clip(raw, 1e-6, 1 - 1e-6)
+        lo = np.log(R / (1 - R))
+        z = calibrator["lr_coef"] * lo + calibrator["lr_intercept"]
+        return 1.0 / (1.0 + np.exp(-z))
+    if calibrator["type"] == "isotonic":
+        x = np.asarray(calibrator["x"]); y = np.asarray(calibrator["y"])
+        return np.interp(np.asarray(raw), x, y)
+    raise ValueError(f"Unknown calibrator type: {calibrator['type']}")
+
+
+def predict_inplay(bundle: Dict, df: pd.DataFrame) -> np.ndarray:
+    """Predict via an in-play bundle on `df` (must already have snapshot features
+    + pregame features applied via build_r12_features + add_interactions +
+    add_snapshot_features). Applies the bundle's baked-in calibrator."""
+    fc = bundle["feature_columns"]
+    df_local = df.copy(); df_local[fc] = df_local[fc].fillna(0.0)
+    raw = predict_canonical(bundle["model"], df_local[fc].values)
+    return apply_calibrator(raw, bundle["calibrator"])
+
+
 def calibrate_inplay_platt(raw_probs: np.ndarray, oof_probs: np.ndarray,
                              oof_y: np.ndarray) -> np.ndarray:
     """Platt sigmoid calibration via logistic regression on log-odds."""
