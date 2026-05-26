@@ -1,0 +1,3002 @@
+{
+  "0022400988": {
+    "game_id": "0022400988",
+    "game_date": "2025-04-01",
+    "home_team": "SAS",
+    "away_team": "ORL",
+    "predictions": {
+      "total_pts": 215.41,
+      "score_diff": 2.96,
+      "home_pts": 107.18,
+      "away_pts": 107.06,
+      "p_home_win": 0.6062
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5149,
+      "P(over_220)": 0.3383,
+      "P(over_225)": 0.1917,
+      "P(over_230)": 0.0924,
+      "P(over_235)": 0.0375,
+      "P(over_240)": 0.0127,
+      "P(over_245)": 0.0036
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5709,
+      "P(home_covers_-3)": 0.4987,
+      "P(home_covers_-5)": 0.4266,
+      "P(home_covers_-7)": 0.3568,
+      "P(home_covers_-10)": 0.2612
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401100": {
+    "game_id": "0022401100",
+    "game_date": "2025-04-01",
+    "home_team": "MEM",
+    "away_team": "GSW",
+    "predictions": {
+      "total_pts": 225.64,
+      "score_diff": 0.69,
+      "home_pts": 114.61,
+      "away_pts": 111.57,
+      "p_home_win": 0.525
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8332,
+      "P(over_220)": 0.6958,
+      "P(over_225)": 0.523,
+      "P(over_230)": 0.3458,
+      "P(over_235)": 0.1973,
+      "P(over_240)": 0.0958,
+      "P(over_245)": 0.0392
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4887,
+      "P(home_covers_-3)": 0.4168,
+      "P(home_covers_-5)": 0.3476,
+      "P(home_covers_-7)": 0.2831,
+      "P(home_covers_-10)": 0.1987
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401109": {
+    "game_id": "0022401109",
+    "game_date": "2025-04-02",
+    "home_team": "DAL",
+    "away_team": "ATL",
+    "predictions": {
+      "total_pts": 244.4,
+      "score_diff": -0.21,
+      "home_pts": 121.21,
+      "away_pts": 118.35,
+      "p_home_win": 0.4923
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9962,
+      "P(over_220)": 0.9867,
+      "P(over_225)": 0.9611,
+      "P(over_230)": 0.9048,
+      "P(over_235)": 0.8036,
+      "P(over_240)": 0.6554,
+      "P(over_245)": 0.4783
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4562,
+      "P(home_covers_-3)": 0.3852,
+      "P(home_covers_-5)": 0.3178,
+      "P(home_covers_-7)": 0.2561,
+      "P(home_covers_-10)": 0.1766
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401106": {
+    "game_id": "0022401106",
+    "game_date": "2025-04-02",
+    "home_team": "BOS",
+    "away_team": "MIA",
+    "predictions": {
+      "total_pts": 210.4,
+      "score_diff": 12.76,
+      "home_pts": 110.58,
+      "away_pts": 101.06,
+      "p_home_win": 0.877
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.3378,
+      "P(over_220)": 0.1913,
+      "P(over_225)": 0.0921,
+      "P(over_230)": 0.0374,
+      "P(over_235)": 0.0127,
+      "P(over_240)": 0.0036,
+      "P(over_245)": 0.0008
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8575,
+      "P(home_covers_-3)": 0.8125,
+      "P(home_covers_-5)": 0.7597,
+      "P(home_covers_-7)": 0.6997,
+      "P(home_covers_-10)": 0.599
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401103": {
+    "game_id": "0022401103",
+    "game_date": "2025-04-02",
+    "home_team": "CLE",
+    "away_team": "NYK",
+    "predictions": {
+      "total_pts": 233.69,
+      "score_diff": 6.16,
+      "home_pts": 119.55,
+      "away_pts": 110.76,
+      "p_home_win": 0.7124
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9553,
+      "P(over_220)": 0.8933,
+      "P(over_225)": 0.7851,
+      "P(over_230)": 0.6312,
+      "P(over_235)": 0.4525,
+      "P(over_240)": 0.283,
+      "P(over_245)": 0.1519
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6806,
+      "P(home_covers_-3)": 0.6132,
+      "P(home_covers_-5)": 0.5422,
+      "P(home_covers_-7)": 0.4697,
+      "P(home_covers_-10)": 0.3637
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401110": {
+    "game_id": "0022401110",
+    "game_date": "2025-04-02",
+    "home_team": "DEN",
+    "away_team": "SAS",
+    "predictions": {
+      "total_pts": 248.38,
+      "score_diff": 10.24,
+      "home_pts": 126.25,
+      "away_pts": 118.4,
+      "p_home_win": 0.8241
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9988,
+      "P(over_220)": 0.9951,
+      "P(over_225)": 0.9832,
+      "P(over_230)": 0.9526,
+      "P(over_235)": 0.888,
+      "P(over_240)": 0.7768,
+      "P(over_245)": 0.6206
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7996,
+      "P(home_covers_-3)": 0.7448,
+      "P(home_covers_-5)": 0.6831,
+      "P(home_covers_-7)": 0.6158,
+      "P(home_covers_-10)": 0.5087
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401107": {
+    "game_id": "0022401107",
+    "game_date": "2025-04-02",
+    "home_team": "HOU",
+    "away_team": "UTA",
+    "predictions": {
+      "total_pts": 227.56,
+      "score_diff": 16.37,
+      "home_pts": 122.26,
+      "away_pts": 103.8,
+      "p_home_win": 0.9316
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8731,
+      "P(over_220)": 0.7539,
+      "P(over_225)": 0.5918,
+      "P(over_230)": 0.4121,
+      "P(over_235)": 0.2493,
+      "P(over_240)": 0.129,
+      "P(over_245)": 0.0564
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9188,
+      "P(home_covers_-3)": 0.8879,
+      "P(home_covers_-5)": 0.8493,
+      "P(home_covers_-7)": 0.8028,
+      "P(home_covers_-10)": 0.7187
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401111": {
+    "game_id": "0022401111",
+    "game_date": "2025-04-02",
+    "home_team": "LAC",
+    "away_team": "NOP",
+    "predictions": {
+      "total_pts": 222.02,
+      "score_diff": 21.19,
+      "home_pts": 122.64,
+      "away_pts": 101.46,
+      "p_home_win": 0.973
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7383,
+      "P(over_220)": 0.5728,
+      "P(over_225)": 0.3932,
+      "P(over_230)": 0.2341,
+      "P(over_235)": 0.119,
+      "P(over_240)": 0.0511,
+      "P(over_245)": 0.0183
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9668,
+      "P(home_covers_-3)": 0.9509,
+      "P(home_covers_-5)": 0.9295,
+      "P(home_covers_-7)": 0.9015,
+      "P(home_covers_-10)": 0.8455
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401104": {
+    "game_id": "0022401104",
+    "game_date": "2025-04-02",
+    "home_team": "IND",
+    "away_team": "CHA",
+    "predictions": {
+      "total_pts": 219.47,
+      "score_diff": 7.52,
+      "home_pts": 118.61,
+      "away_pts": 103.28,
+      "p_home_win": 0.7529
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6579,
+      "P(over_220)": 0.481,
+      "P(over_225)": 0.3077,
+      "P(over_230)": 0.1693,
+      "P(over_235)": 0.0791,
+      "P(over_240)": 0.031,
+      "P(over_245)": 0.0102
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7233,
+      "P(home_covers_-3)": 0.6594,
+      "P(home_covers_-5)": 0.5906,
+      "P(home_covers_-7)": 0.5188,
+      "P(home_covers_-10)": 0.4108
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401105": {
+    "game_id": "0022401105",
+    "game_date": "2025-04-02",
+    "home_team": "WAS",
+    "away_team": "SAC",
+    "predictions": {
+      "total_pts": 231.96,
+      "score_diff": -12.93,
+      "home_pts": 105.23,
+      "away_pts": 125.74,
+      "p_home_win": 0.1199
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9385,
+      "P(over_220)": 0.8616,
+      "P(over_225)": 0.7367,
+      "P(over_230)": 0.5709,
+      "P(over_235)": 0.3913,
+      "P(over_240)": 0.2326,
+      "P(over_245)": 0.118
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1027,
+      "P(home_covers_-3)": 0.0738,
+      "P(home_covers_-5)": 0.0515,
+      "P(home_covers_-7)": 0.035,
+      "P(home_covers_-10)": 0.0185
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401108": {
+    "game_id": "0022401108",
+    "game_date": "2025-04-02",
+    "home_team": "OKC",
+    "away_team": "DET",
+    "predictions": {
+      "total_pts": 228.05,
+      "score_diff": 4.78,
+      "home_pts": 116.68,
+      "away_pts": 113.12,
+      "p_home_win": 0.6682
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8822,
+      "P(over_220)": 0.7678,
+      "P(over_225)": 0.6092,
+      "P(over_230)": 0.4296,
+      "P(over_235)": 0.2637,
+      "P(over_240)": 0.1386,
+      "P(over_245)": 0.0617
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6346,
+      "P(home_covers_-3)": 0.5644,
+      "P(home_covers_-5)": 0.4922,
+      "P(home_covers_-7)": 0.4202,
+      "P(home_covers_-10)": 0.3177
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401113": {
+    "game_id": "0022401113",
+    "game_date": "2025-04-03",
+    "home_team": "BKN",
+    "away_team": "MIN",
+    "predictions": {
+      "total_pts": 210.52,
+      "score_diff": -7.76,
+      "home_pts": 101.74,
+      "away_pts": 111.2,
+      "p_home_win": 0.2404
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.3421,
+      "P(over_220)": 0.1945,
+      "P(over_225)": 0.0941,
+      "P(over_230)": 0.0383,
+      "P(over_235)": 0.013,
+      "P(over_240)": 0.0037,
+      "P(over_245)": 0.0009
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.213,
+      "P(home_covers_-3)": 0.1641,
+      "P(home_covers_-5)": 0.1231,
+      "P(home_covers_-7)": 0.0899,
+      "P(home_covers_-10)": 0.0532
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401112": {
+    "game_id": "0022401112",
+    "game_date": "2025-04-03",
+    "home_team": "WAS",
+    "away_team": "ORL",
+    "predictions": {
+      "total_pts": 217.57,
+      "score_diff": -5.84,
+      "home_pts": 104.97,
+      "away_pts": 114.16,
+      "p_home_win": 0.2976
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5923,
+      "P(over_220)": 0.4125,
+      "P(over_225)": 0.2496,
+      "P(over_230)": 0.1292,
+      "P(over_235)": 0.0565,
+      "P(over_240)": 0.0207,
+      "P(over_245)": 0.0063
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2669,
+      "P(home_covers_-3)": 0.2107,
+      "P(home_covers_-5)": 0.1621,
+      "P(home_covers_-7)": 0.1215,
+      "P(home_covers_-10)": 0.0749
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401116": {
+    "game_id": "0022401116",
+    "game_date": "2025-04-03",
+    "home_team": "TOR",
+    "away_team": "POR",
+    "predictions": {
+      "total_pts": 223.88,
+      "score_diff": 2.9,
+      "home_pts": 113.18,
+      "away_pts": 110.57,
+      "p_home_win": 0.604
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7903,
+      "P(over_220)": 0.6379,
+      "P(over_225)": 0.4595,
+      "P(over_230)": 0.289,
+      "P(over_235)": 0.1561,
+      "P(over_240)": 0.0714,
+      "P(over_245)": 0.0274
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5686,
+      "P(home_covers_-3)": 0.4965,
+      "P(home_covers_-5)": 0.4244,
+      "P(home_covers_-7)": 0.3547,
+      "P(home_covers_-10)": 0.2594
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401114": {
+    "game_id": "0022401114",
+    "game_date": "2025-04-03",
+    "home_team": "MIA",
+    "away_team": "MEM",
+    "predictions": {
+      "total_pts": 231.43,
+      "score_diff": 1.59,
+      "home_pts": 116.59,
+      "away_pts": 116.63,
+      "p_home_win": 0.5574
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9323,
+      "P(over_220)": 0.8506,
+      "P(over_225)": 0.7205,
+      "P(over_230)": 0.5516,
+      "P(over_235)": 0.3727,
+      "P(over_240)": 0.2179,
+      "P(over_245)": 0.1086
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5213,
+      "P(home_covers_-3)": 0.4489,
+      "P(home_covers_-5)": 0.3782,
+      "P(home_covers_-7)": 0.3114,
+      "P(home_covers_-10)": 0.2222
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401117": {
+    "game_id": "0022401117",
+    "game_date": "2025-04-03",
+    "home_team": "LAL",
+    "away_team": "GSW",
+    "predictions": {
+      "total_pts": 233.36,
+      "score_diff": -3.44,
+      "home_pts": 114.48,
+      "away_pts": 118.39,
+      "p_home_win": 0.3773
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9525,
+      "P(over_220)": 0.8878,
+      "P(over_225)": 0.7764,
+      "P(over_230)": 0.62,
+      "P(over_235)": 0.4408,
+      "P(over_240)": 0.2731,
+      "P(over_245)": 0.145
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3433,
+      "P(home_covers_-3)": 0.2792,
+      "P(home_covers_-5)": 0.2215,
+      "P(home_covers_-7)": 0.1713,
+      "P(home_covers_-10)": 0.1109
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401115": {
+    "game_id": "0022401115",
+    "game_date": "2025-04-03",
+    "home_team": "PHI",
+    "away_team": "MIL",
+    "predictions": {
+      "total_pts": 235.57,
+      "score_diff": -11.08,
+      "home_pts": 111.35,
+      "away_pts": 121.91,
+      "p_home_win": 0.157
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9692,
+      "P(over_220)": 0.9215,
+      "P(over_225)": 0.8317,
+      "P(over_230)": 0.6937,
+      "P(over_235)": 0.5206,
+      "P(over_240)": 0.3435,
+      "P(over_245)": 0.1956
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1361,
+      "P(home_covers_-3)": 0.1003,
+      "P(home_covers_-5)": 0.0719,
+      "P(home_covers_-7)": 0.0502,
+      "P(home_covers_-10)": 0.0277
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401120": {
+    "game_id": "0022401120",
+    "game_date": "2025-04-04",
+    "home_team": "BOS",
+    "away_team": "PHX",
+    "predictions": {
+      "total_pts": 223.79,
+      "score_diff": 6.7,
+      "home_pts": 111.23,
+      "away_pts": 112.42,
+      "p_home_win": 0.7287
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7879,
+      "P(over_220)": 0.6348,
+      "P(over_225)": 0.4562,
+      "P(over_230)": 0.2862,
+      "P(over_235)": 0.1541,
+      "P(over_240)": 0.0703,
+      "P(over_245)": 0.0269
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6978,
+      "P(home_covers_-3)": 0.6317,
+      "P(home_covers_-5)": 0.5614,
+      "P(home_covers_-7)": 0.4891,
+      "P(home_covers_-10)": 0.3821
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401122": {
+    "game_id": "0022401122",
+    "game_date": "2025-04-04",
+    "home_team": "CHI",
+    "away_team": "POR",
+    "predictions": {
+      "total_pts": 238.63,
+      "score_diff": 9.08,
+      "home_pts": 122.84,
+      "away_pts": 115.44,
+      "p_home_win": 0.7954
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9841,
+      "P(over_220)": 0.9548,
+      "P(over_225)": 0.8923,
+      "P(over_230)": 0.7835,
+      "P(over_235)": 0.6292,
+      "P(over_240)": 0.4503,
+      "P(over_245)": 0.2811
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7687,
+      "P(home_covers_-3)": 0.7098,
+      "P(home_covers_-5)": 0.6446,
+      "P(home_covers_-7)": 0.575,
+      "P(home_covers_-10)": 0.4667
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401125": {
+    "game_id": "0022401125",
+    "game_date": "2025-04-04",
+    "home_team": "GSW",
+    "away_team": "DEN",
+    "predictions": {
+      "total_pts": 225.64,
+      "score_diff": 2.45,
+      "home_pts": 116.9,
+      "away_pts": 111.03,
+      "p_home_win": 0.5881
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8333,
+      "P(over_220)": 0.696,
+      "P(over_225)": 0.5233,
+      "P(over_230)": 0.346,
+      "P(over_235)": 0.1975,
+      "P(over_240)": 0.0959,
+      "P(over_245)": 0.0392
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5524,
+      "P(home_covers_-3)": 0.48,
+      "P(home_covers_-5)": 0.4083,
+      "P(home_covers_-7)": 0.3395,
+      "P(home_covers_-10)": 0.2462
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401126": {
+    "game_id": "0022401126",
+    "game_date": "2025-04-04",
+    "home_team": "LAL",
+    "away_team": "NOP",
+    "predictions": {
+      "total_pts": 229.61,
+      "score_diff": 16.12,
+      "home_pts": 121.66,
+      "away_pts": 111.52,
+      "p_home_win": 0.9287
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9079,
+      "P(over_220)": 0.8088,
+      "P(over_225)": 0.6624,
+      "P(over_230)": 0.4858,
+      "P(over_235)": 0.312,
+      "P(over_240)": 0.1724,
+      "P(over_245)": 0.0809
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9154,
+      "P(home_covers_-3)": 0.8836,
+      "P(home_covers_-5)": 0.8441,
+      "P(home_covers_-7)": 0.7966,
+      "P(home_covers_-10)": 0.7111
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401119": {
+    "game_id": "0022401119",
+    "game_date": "2025-04-04",
+    "home_team": "IND",
+    "away_team": "UTA",
+    "predictions": {
+      "total_pts": 227.16,
+      "score_diff": 7.44,
+      "home_pts": 120.82,
+      "away_pts": 109.71,
+      "p_home_win": 0.7507
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8655,
+      "P(over_220)": 0.7425,
+      "P(over_225)": 0.5779,
+      "P(over_230)": 0.3982,
+      "P(over_235)": 0.238,
+      "P(over_240)": 0.1216,
+      "P(over_245)": 0.0524
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.721,
+      "P(home_covers_-3)": 0.6569,
+      "P(home_covers_-5)": 0.5879,
+      "P(home_covers_-7)": 0.5161,
+      "P(home_covers_-10)": 0.4081
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401118": {
+    "game_id": "0022401118",
+    "game_date": "2025-04-04",
+    "home_team": "CHA",
+    "away_team": "SAC",
+    "predictions": {
+      "total_pts": 219.12,
+      "score_diff": -10.54,
+      "home_pts": 102.23,
+      "away_pts": 114.96,
+      "p_home_win": 0.1689
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6461,
+      "P(over_220)": 0.4683,
+      "P(over_225)": 0.2966,
+      "P(over_230)": 0.1614,
+      "P(over_235)": 0.0745,
+      "P(over_240)": 0.0289,
+      "P(over_245)": 0.0093
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.147,
+      "P(home_covers_-3)": 0.1091,
+      "P(home_covers_-5)": 0.0788,
+      "P(home_covers_-7)": 0.0554,
+      "P(home_covers_-10)": 0.0309
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401121": {
+    "game_id": "0022401121",
+    "game_date": "2025-04-04",
+    "home_team": "TOR",
+    "away_team": "DET",
+    "predictions": {
+      "total_pts": 222.69,
+      "score_diff": -5.98,
+      "home_pts": 108.54,
+      "away_pts": 113.07,
+      "p_home_win": 0.2934
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7579,
+      "P(over_220)": 0.5967,
+      "P(over_225)": 0.417,
+      "P(over_230)": 0.2533,
+      "P(over_235)": 0.1316,
+      "P(over_240)": 0.0578,
+      "P(over_245)": 0.0213
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2629,
+      "P(home_covers_-3)": 0.2072,
+      "P(home_covers_-5)": 0.1591,
+      "P(home_covers_-7)": 0.119,
+      "P(home_covers_-10)": 0.0732
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401124": {
+    "game_id": "0022401124",
+    "game_date": "2025-04-04",
+    "home_team": "SAS",
+    "away_team": "CLE",
+    "predictions": {
+      "total_pts": 237.63,
+      "score_diff": -8.13,
+      "home_pts": 112.9,
+      "away_pts": 122.6,
+      "p_home_win": 0.2299
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9802,
+      "P(over_220)": 0.9455,
+      "P(over_225)": 0.8746,
+      "P(over_230)": 0.7561,
+      "P(over_235)": 0.5945,
+      "P(over_240)": 0.4147,
+      "P(over_245)": 0.2515
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2033,
+      "P(home_covers_-3)": 0.1558,
+      "P(home_covers_-5)": 0.1163,
+      "P(home_covers_-7)": 0.0845,
+      "P(home_covers_-10)": 0.0497
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401127": {
+    "game_id": "0022401127",
+    "game_date": "2025-04-04",
+    "home_team": "LAC",
+    "away_team": "DAL",
+    "predictions": {
+      "total_pts": 228.2,
+      "score_diff": 4.64,
+      "home_pts": 116.74,
+      "away_pts": 113.45,
+      "p_home_win": 0.6634
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8849,
+      "P(over_220)": 0.772,
+      "P(over_225)": 0.6144,
+      "P(over_230)": 0.435,
+      "P(over_235)": 0.2682,
+      "P(over_240)": 0.1417,
+      "P(over_245)": 0.0633
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6296,
+      "P(home_covers_-3)": 0.5592,
+      "P(home_covers_-5)": 0.4869,
+      "P(home_covers_-7)": 0.415,
+      "P(home_covers_-10)": 0.313
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401123": {
+    "game_id": "0022401123",
+    "game_date": "2025-04-04",
+    "home_team": "HOU",
+    "away_team": "OKC",
+    "predictions": {
+      "total_pts": 234.25,
+      "score_diff": 11.22,
+      "home_pts": 122.36,
+      "away_pts": 111.14,
+      "p_home_win": 0.8462
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.96,
+      "P(over_220)": 0.9025,
+      "P(over_225)": 0.7999,
+      "P(over_230)": 0.6505,
+      "P(over_235)": 0.473,
+      "P(over_240)": 0.3007,
+      "P(over_245)": 0.1643
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8236,
+      "P(home_covers_-3)": 0.7726,
+      "P(home_covers_-5)": 0.7142,
+      "P(home_covers_-7)": 0.6495,
+      "P(home_covers_-10)": 0.5443
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401128": {
+    "game_id": "0022401128",
+    "game_date": "2025-04-05",
+    "home_team": "ATL",
+    "away_team": "NYK",
+    "predictions": {
+      "total_pts": 239.59,
+      "score_diff": -4.24,
+      "home_pts": 117.63,
+      "away_pts": 123.41,
+      "p_home_win": 0.35
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9873,
+      "P(over_220)": 0.9625,
+      "P(over_225)": 0.9077,
+      "P(over_230)": 0.8084,
+      "P(over_235)": 0.6618,
+      "P(over_240)": 0.4852,
+      "P(over_245)": 0.3114
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3169,
+      "P(home_covers_-3)": 0.2552,
+      "P(home_covers_-5)": 0.2005,
+      "P(home_covers_-7)": 0.1534,
+      "P(home_covers_-10)": 0.0977
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401132": {
+    "game_id": "0022401132",
+    "game_date": "2025-04-05",
+    "home_team": "LAC",
+    "away_team": "DAL",
+    "predictions": {
+      "total_pts": 227.61,
+      "score_diff": 5.96,
+      "home_pts": 115.71,
+      "away_pts": 110.86,
+      "p_home_win": 0.7059
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8742,
+      "P(over_220)": 0.7555,
+      "P(over_225)": 0.5938,
+      "P(over_230)": 0.414,
+      "P(over_235)": 0.2508,
+      "P(over_240)": 0.13,
+      "P(over_245)": 0.0569
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6738,
+      "P(home_covers_-3)": 0.6059,
+      "P(home_covers_-5)": 0.5346,
+      "P(home_covers_-7)": 0.4622,
+      "P(home_covers_-10)": 0.3565
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401131": {
+    "game_id": "0022401131",
+    "game_date": "2025-04-05",
+    "home_team": "MIA",
+    "away_team": "MIL",
+    "predictions": {
+      "total_pts": 227.04,
+      "score_diff": 0.42,
+      "home_pts": 115.21,
+      "away_pts": 113.56,
+      "p_home_win": 0.5153
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8632,
+      "P(over_220)": 0.739,
+      "P(over_225)": 0.5736,
+      "P(over_230)": 0.394,
+      "P(over_235)": 0.2347,
+      "P(over_240)": 0.1194,
+      "P(over_245)": 0.0513
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.479,
+      "P(home_covers_-3)": 0.4073,
+      "P(home_covers_-5)": 0.3386,
+      "P(home_covers_-7)": 0.2749,
+      "P(home_covers_-10)": 0.1919
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401130": {
+    "game_id": "0022401130",
+    "game_date": "2025-04-05",
+    "home_team": "PHI",
+    "away_team": "MIN",
+    "predictions": {
+      "total_pts": 214.44,
+      "score_diff": -12.44,
+      "home_pts": 101.28,
+      "away_pts": 114.64,
+      "p_home_win": 0.1291
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.4796,
+      "P(over_220)": 0.3065,
+      "P(over_225)": 0.1685,
+      "P(over_230)": 0.0786,
+      "P(over_235)": 0.0308,
+      "P(over_240)": 0.0101,
+      "P(over_245)": 0.0027
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1109,
+      "P(home_covers_-3)": 0.0802,
+      "P(home_covers_-5)": 0.0564,
+      "P(home_covers_-7)": 0.0386,
+      "P(home_covers_-10)": 0.0207
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401129": {
+    "game_id": "0022401129",
+    "game_date": "2025-04-05",
+    "home_team": "DET",
+    "away_team": "MEM",
+    "predictions": {
+      "total_pts": 244.39,
+      "score_diff": -0.54,
+      "home_pts": 118.55,
+      "away_pts": 119.8,
+      "p_home_win": 0.4805
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9962,
+      "P(over_220)": 0.9867,
+      "P(over_225)": 0.9611,
+      "P(over_230)": 0.9046,
+      "P(over_235)": 0.8034,
+      "P(over_240)": 0.6552,
+      "P(over_245)": 0.478
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4444,
+      "P(home_covers_-3)": 0.3739,
+      "P(home_covers_-5)": 0.3073,
+      "P(home_covers_-7)": 0.2466,
+      "P(home_covers_-10)": 0.169
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401138": {
+    "game_id": "0022401138",
+    "game_date": "2025-04-06",
+    "home_team": "CLE",
+    "away_team": "SAC",
+    "predictions": {
+      "total_pts": 229.5,
+      "score_diff": 6.29,
+      "home_pts": 122.42,
+      "away_pts": 111.75,
+      "p_home_win": 0.7162
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9062,
+      "P(over_220)": 0.806,
+      "P(over_225)": 0.6586,
+      "P(over_230)": 0.4817,
+      "P(over_235)": 0.3084,
+      "P(over_240)": 0.1698,
+      "P(over_245)": 0.0793
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6846,
+      "P(home_covers_-3)": 0.6174,
+      "P(home_covers_-5)": 0.5465,
+      "P(home_covers_-7)": 0.4741,
+      "P(home_covers_-10)": 0.3678
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022400617": {
+    "game_id": "0022400617",
+    "game_date": "2025-04-06",
+    "home_team": "NOP",
+    "away_team": "MIL",
+    "predictions": {
+      "total_pts": 233.58,
+      "score_diff": -6.46,
+      "home_pts": 112.95,
+      "away_pts": 120.84,
+      "p_home_win": 0.2785
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9544,
+      "P(over_220)": 0.8915,
+      "P(over_225)": 0.7823,
+      "P(over_230)": 0.6276,
+      "P(over_235)": 0.4486,
+      "P(over_240)": 0.2797,
+      "P(over_245)": 0.1496
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2488,
+      "P(home_covers_-3)": 0.1949,
+      "P(home_covers_-5)": 0.1487,
+      "P(home_covers_-7)": 0.1105,
+      "P(home_covers_-10)": 0.0673
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401133": {
+    "game_id": "0022401133",
+    "game_date": "2025-04-06",
+    "home_team": "CHA",
+    "away_team": "CHI",
+    "predictions": {
+      "total_pts": 226.31,
+      "score_diff": -2.67,
+      "home_pts": 112.73,
+      "away_pts": 115.55,
+      "p_home_win": 0.4043
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8481,
+      "P(over_220)": 0.7169,
+      "P(over_225)": 0.5474,
+      "P(over_230)": 0.3686,
+      "P(over_235)": 0.2148,
+      "P(over_240)": 0.1067,
+      "P(over_245)": 0.0447
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3695,
+      "P(home_covers_-3)": 0.3033,
+      "P(home_covers_-5)": 0.2429,
+      "P(home_covers_-7)": 0.1898,
+      "P(home_covers_-10)": 0.1248
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401135": {
+    "game_id": "0022401135",
+    "game_date": "2025-04-06",
+    "home_team": "OKC",
+    "away_team": "LAL",
+    "predictions": {
+      "total_pts": 218.15,
+      "score_diff": 8.46,
+      "home_pts": 112.61,
+      "away_pts": 107.03,
+      "p_home_win": 0.7792
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6127,
+      "P(over_220)": 0.4332,
+      "P(over_225)": 0.2668,
+      "P(over_230)": 0.1407,
+      "P(over_235)": 0.0628,
+      "P(over_240)": 0.0235,
+      "P(over_245)": 0.0073
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7513,
+      "P(home_covers_-3)": 0.6903,
+      "P(home_covers_-5)": 0.6236,
+      "P(home_covers_-7)": 0.5529,
+      "P(home_covers_-10)": 0.4444
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401134": {
+    "game_id": "0022401134",
+    "game_date": "2025-04-06",
+    "home_team": "BKN",
+    "away_team": "TOR",
+    "predictions": {
+      "total_pts": 216.15,
+      "score_diff": 3.88,
+      "home_pts": 109.74,
+      "away_pts": 105.9,
+      "p_home_win": 0.638
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5416,
+      "P(over_220)": 0.3631,
+      "P(over_225)": 0.2105,
+      "P(over_230)": 0.104,
+      "P(over_235)": 0.0433,
+      "P(over_240)": 0.0151,
+      "P(over_245)": 0.0044
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6034,
+      "P(home_covers_-3)": 0.5321,
+      "P(home_covers_-5)": 0.4596,
+      "P(home_covers_-7)": 0.3885,
+      "P(home_covers_-10)": 0.2891
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401140": {
+    "game_id": "0022401140",
+    "game_date": "2025-04-06",
+    "home_team": "NYK",
+    "away_team": "PHX",
+    "predictions": {
+      "total_pts": 227.25,
+      "score_diff": 5.38,
+      "home_pts": 117.3,
+      "away_pts": 112.69,
+      "p_home_win": 0.6876
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8674,
+      "P(over_220)": 0.7452,
+      "P(over_225)": 0.5812,
+      "P(over_230)": 0.4014,
+      "P(over_235)": 0.2407,
+      "P(over_240)": 0.1233,
+      "P(over_245)": 0.0533
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6548,
+      "P(home_covers_-3)": 0.5856,
+      "P(home_covers_-5)": 0.5138,
+      "P(home_covers_-7)": 0.4415,
+      "P(home_covers_-10)": 0.3372
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401139": {
+    "game_id": "0022401139",
+    "game_date": "2025-04-06",
+    "home_team": "POR",
+    "away_team": "SAS",
+    "predictions": {
+      "total_pts": 235.95,
+      "score_diff": -0.03,
+      "home_pts": 118.69,
+      "away_pts": 117.05,
+      "p_home_win": 0.4989
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9716,
+      "P(over_220)": 0.9265,
+      "P(over_225)": 0.8404,
+      "P(over_230)": 0.7059,
+      "P(over_235)": 0.5346,
+      "P(over_240)": 0.3565,
+      "P(over_245)": 0.2055
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4627,
+      "P(home_covers_-3)": 0.3915,
+      "P(home_covers_-5)": 0.3237,
+      "P(home_covers_-7)": 0.2614,
+      "P(home_covers_-10)": 0.1809
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401136": {
+    "game_id": "0022401136",
+    "game_date": "2025-04-06",
+    "home_team": "ATL",
+    "away_team": "UTA",
+    "predictions": {
+      "total_pts": 234.8,
+      "score_diff": 3.03,
+      "home_pts": 120.43,
+      "away_pts": 117.05,
+      "p_home_win": 0.6085
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9641,
+      "P(over_220)": 0.9108,
+      "P(over_225)": 0.8136,
+      "P(over_230)": 0.6689,
+      "P(over_235)": 0.4929,
+      "P(over_240)": 0.3183,
+      "P(over_245)": 0.177
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5732,
+      "P(home_covers_-3)": 0.501,
+      "P(home_covers_-5)": 0.4289,
+      "P(home_covers_-7)": 0.359,
+      "P(home_covers_-10)": 0.2631
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401137": {
+    "game_id": "0022401137",
+    "game_date": "2025-04-06",
+    "home_team": "BOS",
+    "away_team": "WAS",
+    "predictions": {
+      "total_pts": 231.93,
+      "score_diff": 14.24,
+      "home_pts": 121.3,
+      "away_pts": 108.04,
+      "p_home_win": 0.9022
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9381,
+      "P(over_220)": 0.861,
+      "P(over_225)": 0.7358,
+      "P(over_230)": 0.5698,
+      "P(over_235)": 0.3902,
+      "P(over_240)": 0.2317,
+      "P(over_245)": 0.1174
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8856,
+      "P(home_covers_-3)": 0.8465,
+      "P(home_covers_-5)": 0.7995,
+      "P(home_covers_-7)": 0.7448,
+      "P(home_covers_-10)": 0.65
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401142": {
+    "game_id": "0022401142",
+    "game_date": "2025-04-06",
+    "home_team": "DEN",
+    "away_team": "IND",
+    "predictions": {
+      "total_pts": 238.35,
+      "score_diff": 6.74,
+      "home_pts": 121.1,
+      "away_pts": 116.61,
+      "p_home_win": 0.7299
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9831,
+      "P(over_220)": 0.9523,
+      "P(over_225)": 0.8875,
+      "P(over_230)": 0.7761,
+      "P(over_235)": 0.6196,
+      "P(over_240)": 0.4403,
+      "P(over_245)": 0.2727
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6991,
+      "P(home_covers_-3)": 0.633,
+      "P(home_covers_-5)": 0.5628,
+      "P(home_covers_-7)": 0.4905,
+      "P(home_covers_-10)": 0.3834
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401143": {
+    "game_id": "0022401143",
+    "game_date": "2025-04-06",
+    "home_team": "GSW",
+    "away_team": "HOU",
+    "predictions": {
+      "total_pts": 216.88,
+      "score_diff": 11.44,
+      "home_pts": 114.39,
+      "away_pts": 104.85,
+      "p_home_win": 0.8508
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.568,
+      "P(over_220)": 0.3885,
+      "P(over_225)": 0.2303,
+      "P(over_230)": 0.1165,
+      "P(over_235)": 0.0498,
+      "P(over_240)": 0.0178,
+      "P(over_245)": 0.0053
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8287,
+      "P(home_covers_-3)": 0.7785,
+      "P(home_covers_-5)": 0.7208,
+      "P(home_covers_-7)": 0.6567,
+      "P(home_covers_-10)": 0.552
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401145": {
+    "game_id": "0022401145",
+    "game_date": "2025-04-07",
+    "home_team": "MIA",
+    "away_team": "PHI",
+    "predictions": {
+      "total_pts": 214.54,
+      "score_diff": 8.47,
+      "home_pts": 112.63,
+      "away_pts": 104.16,
+      "p_home_win": 0.7794
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.4832,
+      "P(over_220)": 0.3097,
+      "P(over_225)": 0.1707,
+      "P(over_230)": 0.0799,
+      "P(over_235)": 0.0314,
+      "P(over_240)": 0.0103,
+      "P(over_245)": 0.0028
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7515,
+      "P(home_covers_-3)": 0.6906,
+      "P(home_covers_-5)": 0.6239,
+      "P(home_covers_-7)": 0.5533,
+      "P(home_covers_-10)": 0.4448
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401144": {
+    "game_id": "0022401144",
+    "game_date": "2025-04-07",
+    "home_team": "DET",
+    "away_team": "SAC",
+    "predictions": {
+      "total_pts": 230.73,
+      "score_diff": 5.51,
+      "home_pts": 117.82,
+      "away_pts": 111.34,
+      "p_home_win": 0.6919
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9236,
+      "P(over_220)": 0.8352,
+      "P(over_225)": 0.6987,
+      "P(over_230)": 0.5263,
+      "P(over_235)": 0.3488,
+      "P(over_240)": 0.1996,
+      "P(over_245)": 0.0972
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6593,
+      "P(home_covers_-3)": 0.5904,
+      "P(home_covers_-5)": 0.5187,
+      "P(home_covers_-7)": 0.4463,
+      "P(home_covers_-10)": 0.3417
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401150": {
+    "game_id": "0022401150",
+    "game_date": "2025-04-08",
+    "home_team": "BKN",
+    "away_team": "NOP",
+    "predictions": {
+      "total_pts": 218.14,
+      "score_diff": 7.11,
+      "home_pts": 111.85,
+      "away_pts": 105.6,
+      "p_home_win": 0.7409
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6124,
+      "P(over_220)": 0.4329,
+      "P(over_225)": 0.2664,
+      "P(over_230)": 0.1405,
+      "P(over_235)": 0.0627,
+      "P(over_240)": 0.0234,
+      "P(over_245)": 0.0073
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7106,
+      "P(home_covers_-3)": 0.6456,
+      "P(home_covers_-5)": 0.5759,
+      "P(home_covers_-7)": 0.5039,
+      "P(home_covers_-10)": 0.3963
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401154": {
+    "game_id": "0022401154",
+    "game_date": "2025-04-08",
+    "home_team": "PHX",
+    "away_team": "GSW",
+    "predictions": {
+      "total_pts": 219.49,
+      "score_diff": -4.13,
+      "home_pts": 110.0,
+      "away_pts": 111.72,
+      "p_home_win": 0.3536
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6586,
+      "P(over_220)": 0.4817,
+      "P(over_225)": 0.3084,
+      "P(over_230)": 0.1698,
+      "P(over_235)": 0.0793,
+      "P(over_240)": 0.0312,
+      "P(over_245)": 0.0102
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3204,
+      "P(home_covers_-3)": 0.2584,
+      "P(home_covers_-5)": 0.2032,
+      "P(home_covers_-7)": 0.1558,
+      "P(home_covers_-10)": 0.0995
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401149": {
+    "game_id": "0022401149",
+    "game_date": "2025-04-08",
+    "home_team": "ORL",
+    "away_team": "ATL",
+    "predictions": {
+      "total_pts": 234.3,
+      "score_diff": 15.07,
+      "home_pts": 123.31,
+      "away_pts": 108.88,
+      "p_home_win": 0.9146
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9603,
+      "P(over_220)": 0.9032,
+      "P(over_225)": 0.8011,
+      "P(over_230)": 0.6521,
+      "P(over_235)": 0.4747,
+      "P(over_240)": 0.3022,
+      "P(over_245)": 0.1654
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8995,
+      "P(home_covers_-3)": 0.8637,
+      "P(home_covers_-5)": 0.82,
+      "P(home_covers_-7)": 0.7683,
+      "P(home_covers_-10)": 0.6775
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401148": {
+    "game_id": "0022401148",
+    "game_date": "2025-04-08",
+    "home_team": "IND",
+    "away_team": "WAS",
+    "predictions": {
+      "total_pts": 232.23,
+      "score_diff": 9.59,
+      "home_pts": 121.52,
+      "away_pts": 108.65,
+      "p_home_win": 0.8085
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9414,
+      "P(over_220)": 0.867,
+      "P(over_225)": 0.7446,
+      "P(over_230)": 0.5804,
+      "P(over_235)": 0.4007,
+      "P(over_240)": 0.2401,
+      "P(over_245)": 0.1229
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7827,
+      "P(home_covers_-3)": 0.7256,
+      "P(home_covers_-5)": 0.6619,
+      "P(home_covers_-7)": 0.5932,
+      "P(home_covers_-10)": 0.4853
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401151": {
+    "game_id": "0022401151",
+    "game_date": "2025-04-08",
+    "home_team": "NYK",
+    "away_team": "BOS",
+    "predictions": {
+      "total_pts": 209.89,
+      "score_diff": 0.24,
+      "home_pts": 107.41,
+      "away_pts": 103.92,
+      "p_home_win": 0.5089
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.3211,
+      "P(over_220)": 0.179,
+      "P(over_225)": 0.0848,
+      "P(over_230)": 0.0338,
+      "P(over_235)": 0.0112,
+      "P(over_240)": 0.0031,
+      "P(over_245)": 0.0007
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4726,
+      "P(home_covers_-3)": 0.4011,
+      "P(home_covers_-5)": 0.3328,
+      "P(home_covers_-7)": 0.2696,
+      "P(home_covers_-10)": 0.1876
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401147": {
+    "game_id": "0022401147",
+    "game_date": "2025-04-08",
+    "home_team": "CLE",
+    "away_team": "CHI",
+    "predictions": {
+      "total_pts": 240.88,
+      "score_diff": 8.75,
+      "home_pts": 125.01,
+      "away_pts": 114.48,
+      "p_home_win": 0.7868
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9907,
+      "P(over_220)": 0.9712,
+      "P(over_225)": 0.9256,
+      "P(over_230)": 0.8387,
+      "P(over_235)": 0.7035,
+      "P(over_240)": 0.5319,
+      "P(over_245)": 0.354
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.7594,
+      "P(home_covers_-3)": 0.6994,
+      "P(home_covers_-5)": 0.6334,
+      "P(home_covers_-7)": 0.5631,
+      "P(home_covers_-10)": 0.4547
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401155": {
+    "game_id": "0022401155",
+    "game_date": "2025-04-08",
+    "home_team": "LAC",
+    "away_team": "SAS",
+    "predictions": {
+      "total_pts": 223.68,
+      "score_diff": 11.03,
+      "home_pts": 117.65,
+      "away_pts": 106.46,
+      "p_home_win": 0.842
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7849,
+      "P(over_220)": 0.6309,
+      "P(over_225)": 0.4521,
+      "P(over_230)": 0.2827,
+      "P(over_235)": 0.1516,
+      "P(over_240)": 0.0689,
+      "P(over_245)": 0.0263
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8191,
+      "P(home_covers_-3)": 0.7673,
+      "P(home_covers_-5)": 0.7083,
+      "P(home_covers_-7)": 0.643,
+      "P(home_covers_-10)": 0.5373
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401153": {
+    "game_id": "0022401153",
+    "game_date": "2025-04-08",
+    "home_team": "OKC",
+    "away_team": "LAL",
+    "predictions": {
+      "total_pts": 213.43,
+      "score_diff": 3.16,
+      "home_pts": 111.37,
+      "away_pts": 106.21,
+      "p_home_win": 0.613
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.4432,
+      "P(over_220)": 0.2751,
+      "P(over_225)": 0.1464,
+      "P(over_230)": 0.066,
+      "P(over_235)": 0.0249,
+      "P(over_240)": 0.0079,
+      "P(over_245)": 0.0021
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5778,
+      "P(home_covers_-3)": 0.5057,
+      "P(home_covers_-5)": 0.4335,
+      "P(home_covers_-7)": 0.3634,
+      "P(home_covers_-10)": 0.267
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401152": {
+    "game_id": "0022401152",
+    "game_date": "2025-04-08",
+    "home_team": "MIL",
+    "away_team": "MIN",
+    "predictions": {
+      "total_pts": 227.04,
+      "score_diff": -0.67,
+      "home_pts": 116.02,
+      "away_pts": 113.28,
+      "p_home_win": 0.4758
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8631,
+      "P(over_220)": 0.7389,
+      "P(over_225)": 0.5736,
+      "P(over_230)": 0.3939,
+      "P(over_235)": 0.2346,
+      "P(over_240)": 0.1194,
+      "P(over_245)": 0.0513
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4397,
+      "P(home_covers_-3)": 0.3694,
+      "P(home_covers_-5)": 0.3031,
+      "P(home_covers_-7)": 0.2428,
+      "P(home_covers_-10)": 0.166
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401146": {
+    "game_id": "0022401146",
+    "game_date": "2025-04-08",
+    "home_team": "CHA",
+    "away_team": "MEM",
+    "predictions": {
+      "total_pts": 222.06,
+      "score_diff": -9.46,
+      "home_pts": 107.38,
+      "away_pts": 116.59,
+      "p_home_win": 0.1949
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7394,
+      "P(over_220)": 0.5742,
+      "P(over_225)": 0.3945,
+      "P(over_230)": 0.2351,
+      "P(over_235)": 0.1197,
+      "P(over_240)": 0.0514,
+      "P(over_245)": 0.0185
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1708,
+      "P(home_covers_-3)": 0.1286,
+      "P(home_covers_-5)": 0.0943,
+      "P(home_covers_-7)": 0.0673,
+      "P(home_covers_-10)": 0.0384
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401160": {
+    "game_id": "0022401160",
+    "game_date": "2025-04-09",
+    "home_team": "CHI",
+    "away_team": "MIA",
+    "predictions": {
+      "total_pts": 231.74,
+      "score_diff": -6.47,
+      "home_pts": 115.24,
+      "away_pts": 119.01,
+      "p_home_win": 0.2781
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.936,
+      "P(over_220)": 0.8572,
+      "P(over_225)": 0.7301,
+      "P(over_230)": 0.563,
+      "P(over_235)": 0.3836,
+      "P(over_240)": 0.2265,
+      "P(over_245)": 0.1141
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2484,
+      "P(home_covers_-3)": 0.1945,
+      "P(home_covers_-5)": 0.1484,
+      "P(home_covers_-7)": 0.1103,
+      "P(home_covers_-10)": 0.0671
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401159": {
+    "game_id": "0022401159",
+    "game_date": "2025-04-09",
+    "home_team": "DAL",
+    "away_team": "LAL",
+    "predictions": {
+      "total_pts": 229.94,
+      "score_diff": -2.19,
+      "home_pts": 114.82,
+      "away_pts": 114.09,
+      "p_home_win": 0.4209
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9128,
+      "P(over_220)": 0.8169,
+      "P(over_225)": 0.6733,
+      "P(over_230)": 0.4978,
+      "P(over_235)": 0.3227,
+      "P(over_240)": 0.1802,
+      "P(over_245)": 0.0855
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3857,
+      "P(home_covers_-3)": 0.3184,
+      "P(home_covers_-5)": 0.2565,
+      "P(home_covers_-7)": 0.2016,
+      "P(home_covers_-10)": 0.1338
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401165": {
+    "game_id": "0022401165",
+    "game_date": "2025-04-09",
+    "home_team": "SAC",
+    "away_team": "DEN",
+    "predictions": {
+      "total_pts": 233.75,
+      "score_diff": -1.33,
+      "home_pts": 116.58,
+      "away_pts": 115.98,
+      "p_home_win": 0.4517
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9559,
+      "P(over_220)": 0.8944,
+      "P(over_225)": 0.7869,
+      "P(over_230)": 0.6336,
+      "P(over_235)": 0.4549,
+      "P(over_240)": 0.2851,
+      "P(over_245)": 0.1533
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.416,
+      "P(home_covers_-3)": 0.3468,
+      "P(home_covers_-5)": 0.2824,
+      "P(home_covers_-7)": 0.2243,
+      "P(home_covers_-10)": 0.1514
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401163": {
+    "game_id": "0022401163",
+    "game_date": "2025-04-09",
+    "home_team": "GSW",
+    "away_team": "SAS",
+    "predictions": {
+      "total_pts": 231.55,
+      "score_diff": 11.82,
+      "home_pts": 120.38,
+      "away_pts": 113.17,
+      "p_home_win": 0.8588
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9338,
+      "P(over_220)": 0.8531,
+      "P(over_225)": 0.7242,
+      "P(over_230)": 0.556,
+      "P(over_235)": 0.3769,
+      "P(over_240)": 0.2212,
+      "P(over_245)": 0.1107
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8374,
+      "P(home_covers_-3)": 0.7888,
+      "P(home_covers_-5)": 0.7325,
+      "P(home_covers_-7)": 0.6695,
+      "P(home_covers_-10)": 0.5658
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401166": {
+    "game_id": "0022401166",
+    "game_date": "2025-04-09",
+    "home_team": "LAC",
+    "away_team": "HOU",
+    "predictions": {
+      "total_pts": 219.78,
+      "score_diff": 5.87,
+      "home_pts": 117.18,
+      "away_pts": 108.81,
+      "p_home_win": 0.7031
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6679,
+      "P(over_220)": 0.4919,
+      "P(over_225)": 0.3174,
+      "P(over_230)": 0.1763,
+      "P(over_235)": 0.0832,
+      "P(over_240)": 0.033,
+      "P(over_245)": 0.0109
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6709,
+      "P(home_covers_-3)": 0.6028,
+      "P(home_covers_-5)": 0.5314,
+      "P(home_covers_-7)": 0.459,
+      "P(home_covers_-10)": 0.3536
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401157": {
+    "game_id": "0022401157",
+    "game_date": "2025-04-09",
+    "home_team": "WAS",
+    "away_team": "PHI",
+    "predictions": {
+      "total_pts": 220.28,
+      "score_diff": -6.0,
+      "home_pts": 103.53,
+      "away_pts": 113.64,
+      "p_home_win": 0.2928
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6844,
+      "P(over_220)": 0.5102,
+      "P(over_225)": 0.3339,
+      "P(over_230)": 0.1885,
+      "P(over_235)": 0.0904,
+      "P(over_240)": 0.0365,
+      "P(over_245)": 0.0123
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2623,
+      "P(home_covers_-3)": 0.2067,
+      "P(home_covers_-5)": 0.1587,
+      "P(home_covers_-7)": 0.1187,
+      "P(home_covers_-10)": 0.0729
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401164": {
+    "game_id": "0022401164",
+    "game_date": "2025-04-09",
+    "home_team": "PHX",
+    "away_team": "OKC",
+    "predictions": {
+      "total_pts": 223.35,
+      "score_diff": -4.73,
+      "home_pts": 107.77,
+      "away_pts": 114.17,
+      "p_home_win": 0.3336
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.776,
+      "P(over_220)": 0.6196,
+      "P(over_225)": 0.4403,
+      "P(over_230)": 0.2727,
+      "P(over_235)": 0.1447,
+      "P(over_240)": 0.065,
+      "P(over_245)": 0.0245
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3012,
+      "P(home_covers_-3)": 0.2411,
+      "P(home_covers_-5)": 0.1882,
+      "P(home_covers_-7)": 0.1431,
+      "P(home_covers_-10)": 0.0903
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401162": {
+    "game_id": "0022401162",
+    "game_date": "2025-04-09",
+    "home_team": "UTA",
+    "away_team": "POR",
+    "predictions": {
+      "total_pts": 228.6,
+      "score_diff": -3.58,
+      "home_pts": 107.47,
+      "away_pts": 116.44,
+      "p_home_win": 0.3725
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8918,
+      "P(over_220)": 0.7827,
+      "P(over_225)": 0.6281,
+      "P(over_230)": 0.4492,
+      "P(over_235)": 0.2802,
+      "P(over_240)": 0.1499,
+      "P(over_245)": 0.0679
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3386,
+      "P(home_covers_-3)": 0.2749,
+      "P(home_covers_-5)": 0.2177,
+      "P(home_covers_-7)": 0.1681,
+      "P(home_covers_-10)": 0.1085
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401156": {
+    "game_id": "0022401156",
+    "game_date": "2025-04-09",
+    "home_team": "ORL",
+    "away_team": "BOS",
+    "predictions": {
+      "total_pts": 180.87,
+      "score_diff": 16.63,
+      "home_pts": 99.24,
+      "away_pts": 80.87,
+      "p_home_win": 0.9347
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.001,
+      "P(over_220)": 0.0002,
+      "P(over_225)": 0.0,
+      "P(over_230)": 0.0,
+      "P(over_235)": 0.0,
+      "P(over_240)": 0.0,
+      "P(over_245)": 0.0
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9223,
+      "P(home_covers_-3)": 0.8923,
+      "P(home_covers_-5)": 0.8548,
+      "P(home_covers_-7)": 0.8093,
+      "P(home_covers_-10)": 0.7266
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401158": {
+    "game_id": "0022401158",
+    "game_date": "2025-04-09",
+    "home_team": "TOR",
+    "away_team": "CHA",
+    "predictions": {
+      "total_pts": 217.18,
+      "score_diff": 3.88,
+      "home_pts": 111.05,
+      "away_pts": 106.6,
+      "p_home_win": 0.6377
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5786,
+      "P(over_220)": 0.3989,
+      "P(over_225)": 0.2386,
+      "P(over_230)": 0.122,
+      "P(over_235)": 0.0526,
+      "P(over_240)": 0.019,
+      "P(over_245)": 0.0057
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6031,
+      "P(home_covers_-3)": 0.5317,
+      "P(home_covers_-5)": 0.4593,
+      "P(home_covers_-7)": 0.3882,
+      "P(home_covers_-10)": 0.2889
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401169": {
+    "game_id": "0022401169",
+    "game_date": "2025-04-10",
+    "home_team": "BKN",
+    "away_team": "ATL",
+    "predictions": {
+      "total_pts": 223.2,
+      "score_diff": -2.21,
+      "home_pts": 112.22,
+      "away_pts": 111.48,
+      "p_home_win": 0.4202
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7719,
+      "P(over_220)": 0.6143,
+      "P(over_225)": 0.4348,
+      "P(over_230)": 0.2681,
+      "P(over_235)": 0.1416,
+      "P(over_240)": 0.0633,
+      "P(over_245)": 0.0237
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3851,
+      "P(home_covers_-3)": 0.3178,
+      "P(home_covers_-5)": 0.256,
+      "P(home_covers_-7)": 0.2011,
+      "P(home_covers_-10)": 0.1334
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401168": {
+    "game_id": "0022401168",
+    "game_date": "2025-04-10",
+    "home_team": "IND",
+    "away_team": "CLE",
+    "predictions": {
+      "total_pts": 234.62,
+      "score_diff": -7.75,
+      "home_pts": 115.07,
+      "away_pts": 119.88,
+      "p_home_win": 0.2405
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9628,
+      "P(over_220)": 0.9081,
+      "P(over_225)": 0.8091,
+      "P(over_230)": 0.6628,
+      "P(over_235)": 0.4863,
+      "P(over_240)": 0.3125,
+      "P(over_245)": 0.1727
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.2131,
+      "P(home_covers_-3)": 0.1642,
+      "P(home_covers_-5)": 0.1232,
+      "P(home_covers_-7)": 0.0899,
+      "P(home_covers_-10)": 0.0533
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401161": {
+    "game_id": "0022401161",
+    "game_date": "2025-04-10",
+    "home_team": "MIL",
+    "away_team": "NOP",
+    "predictions": {
+      "total_pts": 227.56,
+      "score_diff": 19.38,
+      "home_pts": 125.74,
+      "away_pts": 100.71,
+      "p_home_win": 0.9609
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.8732,
+      "P(over_220)": 0.7541,
+      "P(over_225)": 0.592,
+      "P(over_230)": 0.4123,
+      "P(over_235)": 0.2494,
+      "P(over_240)": 0.1291,
+      "P(over_245)": 0.0564
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9526,
+      "P(home_covers_-3)": 0.9317,
+      "P(home_covers_-5)": 0.9044,
+      "P(home_covers_-7)": 0.8698,
+      "P(home_covers_-10)": 0.803
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401170": {
+    "game_id": "0022401170",
+    "game_date": "2025-04-10",
+    "home_team": "MEM",
+    "away_team": "MIN",
+    "predictions": {
+      "total_pts": 223.38,
+      "score_diff": 2.67,
+      "home_pts": 113.14,
+      "away_pts": 109.28,
+      "p_home_win": 0.5958
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7768,
+      "P(over_220)": 0.6205,
+      "P(over_225)": 0.4413,
+      "P(over_230)": 0.2735,
+      "P(over_235)": 0.1453,
+      "P(over_240)": 0.0654,
+      "P(over_245)": 0.0247
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5603,
+      "P(home_covers_-3)": 0.488,
+      "P(home_covers_-5)": 0.4161,
+      "P(home_covers_-7)": 0.3469,
+      "P(home_covers_-10)": 0.2525
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401167": {
+    "game_id": "0022401167",
+    "game_date": "2025-04-10",
+    "home_team": "DET",
+    "away_team": "NYK",
+    "predictions": {
+      "total_pts": 233.69,
+      "score_diff": -4.53,
+      "home_pts": 111.58,
+      "away_pts": 113.61,
+      "p_home_win": 0.3401
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9553,
+      "P(over_220)": 0.8933,
+      "P(over_225)": 0.7852,
+      "P(over_230)": 0.6313,
+      "P(over_235)": 0.4526,
+      "P(over_240)": 0.2831,
+      "P(over_245)": 0.1519
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3075,
+      "P(home_covers_-3)": 0.2467,
+      "P(home_covers_-5)": 0.1931,
+      "P(home_covers_-7)": 0.1472,
+      "P(home_covers_-10)": 0.0932
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401173": {
+    "game_id": "0022401173",
+    "game_date": "2025-04-11",
+    "home_team": "PHI",
+    "away_team": "ATL",
+    "predictions": {
+      "total_pts": 233.65,
+      "score_diff": -3.08,
+      "home_pts": 116.31,
+      "away_pts": 119.04,
+      "p_home_win": 0.3899
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.955,
+      "P(over_220)": 0.8928,
+      "P(over_225)": 0.7843,
+      "P(over_230)": 0.6301,
+      "P(over_235)": 0.4513,
+      "P(over_240)": 0.282,
+      "P(over_245)": 0.1512
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3555,
+      "P(home_covers_-3)": 0.2904,
+      "P(home_covers_-5)": 0.2314,
+      "P(home_covers_-7)": 0.1798,
+      "P(home_covers_-10)": 0.1173
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401177": {
+    "game_id": "0022401177",
+    "game_date": "2025-04-11",
+    "home_team": "NOP",
+    "away_team": "MIA",
+    "predictions": {
+      "total_pts": 218.41,
+      "score_diff": -9.52,
+      "home_pts": 103.23,
+      "away_pts": 114.06,
+      "p_home_win": 0.1934
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6218,
+      "P(over_220)": 0.4426,
+      "P(over_225)": 0.2746,
+      "P(over_230)": 0.1461,
+      "P(over_235)": 0.0658,
+      "P(over_240)": 0.0249,
+      "P(over_245)": 0.0078
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1694,
+      "P(home_covers_-3)": 0.1275,
+      "P(home_covers_-5)": 0.0934,
+      "P(home_covers_-7)": 0.0666,
+      "P(home_covers_-10)": 0.038
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401176": {
+    "game_id": "0022401176",
+    "game_date": "2025-04-11",
+    "home_team": "CHI",
+    "away_team": "WAS",
+    "predictions": {
+      "total_pts": 238.8,
+      "score_diff": 5.66,
+      "home_pts": 119.57,
+      "away_pts": 116.34,
+      "p_home_win": 0.6965
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9847,
+      "P(over_220)": 0.9563,
+      "P(over_225)": 0.8951,
+      "P(over_230)": 0.788,
+      "P(over_235)": 0.635,
+      "P(over_240)": 0.4564,
+      "P(over_245)": 0.2864
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.664,
+      "P(home_covers_-3)": 0.5954,
+      "P(home_covers_-5)": 0.5238,
+      "P(home_covers_-7)": 0.4514,
+      "P(home_covers_-10)": 0.3465
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401178": {
+    "game_id": "0022401178",
+    "game_date": "2025-04-11",
+    "home_team": "DAL",
+    "away_team": "TOR",
+    "predictions": {
+      "total_pts": 236.82,
+      "score_diff": 6.14,
+      "home_pts": 118.6,
+      "away_pts": 114.05,
+      "p_home_win": 0.7116
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9763,
+      "P(over_220)": 0.9368,
+      "P(over_225)": 0.8586,
+      "P(over_230)": 0.7323,
+      "P(over_235)": 0.5656,
+      "P(over_240)": 0.3861,
+      "P(over_245)": 0.2285
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6798,
+      "P(home_covers_-3)": 0.6123,
+      "P(home_covers_-5)": 0.5412,
+      "P(home_covers_-7)": 0.4688,
+      "P(home_covers_-10)": 0.3628
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401180": {
+    "game_id": "0022401180",
+    "game_date": "2025-04-11",
+    "home_team": "DEN",
+    "away_team": "MEM",
+    "predictions": {
+      "total_pts": 249.7,
+      "score_diff": 6.52,
+      "home_pts": 124.22,
+      "away_pts": 122.59,
+      "p_home_win": 0.7234
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9992,
+      "P(over_220)": 0.9965,
+      "P(over_225)": 0.9876,
+      "P(over_230)": 0.9633,
+      "P(over_235)": 0.9092,
+      "P(over_240)": 0.8109,
+      "P(over_245)": 0.6653
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6921,
+      "P(home_covers_-3)": 0.6256,
+      "P(home_covers_-5)": 0.555,
+      "P(home_covers_-7)": 0.4826,
+      "P(home_covers_-10)": 0.3759
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401183": {
+    "game_id": "0022401183",
+    "game_date": "2025-04-11",
+    "home_team": "POR",
+    "away_team": "GSW",
+    "predictions": {
+      "total_pts": 198.83,
+      "score_diff": -15.19,
+      "home_pts": 92.91,
+      "away_pts": 106.52,
+      "p_home_win": 0.0837
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.0707,
+      "P(over_220)": 0.0271,
+      "P(over_225)": 0.0087,
+      "P(over_230)": 0.0023,
+      "P(over_235)": 0.0005,
+      "P(over_240)": 0.0001,
+      "P(over_245)": 0.0
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.0705,
+      "P(home_covers_-3)": 0.0491,
+      "P(home_covers_-5)": 0.0332,
+      "P(home_covers_-7)": 0.0218,
+      "P(home_covers_-10)": 0.011
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401171": {
+    "game_id": "0022401171",
+    "game_date": "2025-04-11",
+    "home_team": "DET",
+    "away_team": "MIL",
+    "predictions": {
+      "total_pts": 231.85,
+      "score_diff": -2.14,
+      "home_pts": 116.89,
+      "away_pts": 113.76,
+      "p_home_win": 0.4229
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9372,
+      "P(over_220)": 0.8593,
+      "P(over_225)": 0.7332,
+      "P(over_230)": 0.5667,
+      "P(over_235)": 0.3872,
+      "P(over_240)": 0.2293,
+      "P(over_245)": 0.1159
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3877,
+      "P(home_covers_-3)": 0.3202,
+      "P(home_covers_-5)": 0.2581,
+      "P(home_covers_-7)": 0.203,
+      "P(home_covers_-10)": 0.1349
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401172": {
+    "game_id": "0022401172",
+    "game_date": "2025-04-11",
+    "home_team": "IND",
+    "away_team": "ORL",
+    "predictions": {
+      "total_pts": 223.02,
+      "score_diff": -3.0,
+      "home_pts": 110.42,
+      "away_pts": 112.25,
+      "p_home_win": 0.3925
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7669,
+      "P(over_220)": 0.608,
+      "P(over_225)": 0.4284,
+      "P(over_230)": 0.2628,
+      "P(over_235)": 0.138,
+      "P(over_240)": 0.0613,
+      "P(over_245)": 0.0228
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.358,
+      "P(home_covers_-3)": 0.2927,
+      "P(home_covers_-5)": 0.2335,
+      "P(home_covers_-7)": 0.1816,
+      "P(home_covers_-10)": 0.1186
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401184": {
+    "game_id": "0022401184",
+    "game_date": "2025-04-11",
+    "home_team": "SAC",
+    "away_team": "LAC",
+    "predictions": {
+      "total_pts": 219.84,
+      "score_diff": -0.84,
+      "home_pts": 109.16,
+      "away_pts": 113.32,
+      "p_home_win": 0.4695
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.67,
+      "P(over_220)": 0.4942,
+      "P(over_225)": 0.3195,
+      "P(over_230)": 0.1778,
+      "P(over_235)": 0.0841,
+      "P(over_240)": 0.0334,
+      "P(over_245)": 0.0111
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4335,
+      "P(home_covers_-3)": 0.3634,
+      "P(home_covers_-5)": 0.2977,
+      "P(home_covers_-7)": 0.2379,
+      "P(home_covers_-10)": 0.1621
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401181": {
+    "game_id": "0022401181",
+    "game_date": "2025-04-11",
+    "home_team": "UTA",
+    "away_team": "OKC",
+    "predictions": {
+      "total_pts": 234.23,
+      "score_diff": -9.92,
+      "home_pts": 106.34,
+      "away_pts": 120.82,
+      "p_home_win": 0.1836
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9598,
+      "P(over_220)": 0.9021,
+      "P(over_225)": 0.7993,
+      "P(over_230)": 0.6497,
+      "P(over_235)": 0.4721,
+      "P(over_240)": 0.3,
+      "P(over_245)": 0.1638
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1604,
+      "P(home_covers_-3)": 0.1201,
+      "P(home_covers_-5)": 0.0875,
+      "P(home_covers_-7)": 0.062,
+      "P(home_covers_-10)": 0.0351
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401174": {
+    "game_id": "0022401174",
+    "game_date": "2025-04-11",
+    "home_team": "BOS",
+    "away_team": "CHA",
+    "predictions": {
+      "total_pts": 216.47,
+      "score_diff": 19.0,
+      "home_pts": 112.25,
+      "away_pts": 98.71,
+      "p_home_win": 0.9579
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5531,
+      "P(over_220)": 0.374,
+      "P(over_225)": 0.219,
+      "P(over_230)": 0.1093,
+      "P(over_235)": 0.046,
+      "P(over_240)": 0.0162,
+      "P(over_245)": 0.0047
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9491,
+      "P(home_covers_-3)": 0.9271,
+      "P(home_covers_-5)": 0.8984,
+      "P(home_covers_-7)": 0.8623,
+      "P(home_covers_-10)": 0.7934
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401175": {
+    "game_id": "0022401175",
+    "game_date": "2025-04-11",
+    "home_team": "NYK",
+    "away_team": "CLE",
+    "predictions": {
+      "total_pts": 214.44,
+      "score_diff": -4.29,
+      "home_pts": 104.43,
+      "away_pts": 110.24,
+      "p_home_win": 0.3481
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.4796,
+      "P(over_220)": 0.3065,
+      "P(over_225)": 0.1685,
+      "P(over_230)": 0.0786,
+      "P(over_235)": 0.0308,
+      "P(over_240)": 0.0101,
+      "P(over_245)": 0.0027
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3151,
+      "P(home_covers_-3)": 0.2536,
+      "P(home_covers_-5)": 0.1991,
+      "P(home_covers_-7)": 0.1523,
+      "P(home_covers_-10)": 0.0969
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401185": {
+    "game_id": "0022401185",
+    "game_date": "2025-04-11",
+    "home_team": "LAL",
+    "away_team": "HOU",
+    "predictions": {
+      "total_pts": 243.38,
+      "score_diff": 22.46,
+      "home_pts": 132.14,
+      "away_pts": 109.66,
+      "p_home_win": 0.9794
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9951,
+      "P(over_220)": 0.9832,
+      "P(over_225)": 0.9526,
+      "P(over_230)": 0.888,
+      "P(over_235)": 0.7769,
+      "P(over_240)": 0.6206,
+      "P(over_245)": 0.4414
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9745,
+      "P(home_covers_-3)": 0.9616,
+      "P(home_covers_-5)": 0.9438,
+      "P(home_covers_-7)": 0.9201,
+      "P(home_covers_-10)": 0.8713
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401179": {
+    "game_id": "0022401179",
+    "game_date": "2025-04-11",
+    "home_team": "MIN",
+    "away_team": "BKN",
+    "predictions": {
+      "total_pts": 219.44,
+      "score_diff": 4.68,
+      "home_pts": 114.64,
+      "away_pts": 101.09,
+      "p_home_win": 0.6647
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6566,
+      "P(over_220)": 0.4796,
+      "P(over_225)": 0.3065,
+      "P(over_230)": 0.1685,
+      "P(over_235)": 0.0786,
+      "P(over_240)": 0.0308,
+      "P(over_245)": 0.0101
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.631,
+      "P(home_covers_-3)": 0.5607,
+      "P(home_covers_-5)": 0.4884,
+      "P(home_covers_-7)": 0.4165,
+      "P(home_covers_-10)": 0.3143
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401182": {
+    "game_id": "0022401182",
+    "game_date": "2025-04-11",
+    "home_team": "PHX",
+    "away_team": "SAS",
+    "predictions": {
+      "total_pts": 229.34,
+      "score_diff": 3.42,
+      "home_pts": 118.28,
+      "away_pts": 114.02,
+      "p_home_win": 0.622
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9038,
+      "P(over_220)": 0.802,
+      "P(over_225)": 0.6533,
+      "P(over_230)": 0.476,
+      "P(over_235)": 0.3033,
+      "P(over_240)": 0.1662,
+      "P(over_245)": 0.0772
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.587,
+      "P(home_covers_-3)": 0.5152,
+      "P(home_covers_-5)": 0.4428,
+      "P(home_covers_-7)": 0.3723,
+      "P(home_covers_-10)": 0.2748
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401186": {
+    "game_id": "0022401186",
+    "game_date": "2025-04-13",
+    "home_team": "ATL",
+    "away_team": "ORL",
+    "predictions": {
+      "total_pts": 219.53,
+      "score_diff": 1.83,
+      "home_pts": 111.3,
+      "away_pts": 108.46,
+      "p_home_win": 0.5661
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6599,
+      "P(over_220)": 0.4831,
+      "P(over_225)": 0.3096,
+      "P(over_230)": 0.1707,
+      "P(over_235)": 0.0799,
+      "P(over_240)": 0.0314,
+      "P(over_245)": 0.0103
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5301,
+      "P(home_covers_-3)": 0.4577,
+      "P(home_covers_-5)": 0.3867,
+      "P(home_covers_-7)": 0.3192,
+      "P(home_covers_-10)": 0.2289
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401189": {
+    "game_id": "0022401189",
+    "game_date": "2025-04-13",
+    "home_team": "CLE",
+    "away_team": "IND",
+    "predictions": {
+      "total_pts": 235.57,
+      "score_diff": 12.66,
+      "home_pts": 122.44,
+      "away_pts": 113.81,
+      "p_home_win": 0.8752
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9693,
+      "P(over_220)": 0.9215,
+      "P(over_225)": 0.8317,
+      "P(over_230)": 0.6937,
+      "P(over_235)": 0.5207,
+      "P(over_240)": 0.3436,
+      "P(over_245)": 0.1957
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8555,
+      "P(home_covers_-3)": 0.8101,
+      "P(home_covers_-5)": 0.757,
+      "P(home_covers_-7)": 0.6966,
+      "P(home_covers_-10)": 0.5956
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401194": {
+    "game_id": "0022401194",
+    "game_date": "2025-04-13",
+    "home_team": "MEM",
+    "away_team": "DAL",
+    "predictions": {
+      "total_pts": 229.95,
+      "score_diff": 25.31,
+      "home_pts": 125.58,
+      "away_pts": 101.76,
+      "p_home_win": 0.9893
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9129,
+      "P(over_220)": 0.817,
+      "P(over_225)": 0.6735,
+      "P(over_230)": 0.498,
+      "P(over_235)": 0.323,
+      "P(over_240)": 0.1804,
+      "P(over_245)": 0.0856
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9865,
+      "P(home_covers_-3)": 0.9787,
+      "P(home_covers_-5)": 0.9676,
+      "P(home_covers_-7)": 0.952,
+      "P(home_covers_-10)": 0.918
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401193": {
+    "game_id": "0022401193",
+    "game_date": "2025-04-13",
+    "home_team": "HOU",
+    "away_team": "DEN",
+    "predictions": {
+      "total_pts": 231.68,
+      "score_diff": 3.16,
+      "home_pts": 117.13,
+      "away_pts": 111.45,
+      "p_home_win": 0.6129
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9352,
+      "P(over_220)": 0.8557,
+      "P(over_225)": 0.728,
+      "P(over_230)": 0.5605,
+      "P(over_235)": 0.3812,
+      "P(over_240)": 0.2246,
+      "P(over_245)": 0.1129
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5777,
+      "P(home_covers_-3)": 0.5056,
+      "P(home_covers_-5)": 0.4334,
+      "P(home_covers_-7)": 0.3634,
+      "P(home_covers_-10)": 0.2669
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401198": {
+    "game_id": "0022401198",
+    "game_date": "2025-04-13",
+    "home_team": "GSW",
+    "away_team": "LAC",
+    "predictions": {
+      "total_pts": 222.84,
+      "score_diff": 1.09,
+      "home_pts": 110.8,
+      "away_pts": 110.16,
+      "p_home_win": 0.5396
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.762,
+      "P(over_220)": 0.6018,
+      "P(over_225)": 0.4221,
+      "P(over_230)": 0.2575,
+      "P(over_235)": 0.1345,
+      "P(over_240)": 0.0594,
+      "P(over_245)": 0.022
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5034,
+      "P(home_covers_-3)": 0.4312,
+      "P(home_covers_-5)": 0.3612,
+      "P(home_covers_-7)": 0.2957,
+      "P(home_covers_-10)": 0.2091
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401190": {
+    "game_id": "0022401190",
+    "game_date": "2025-04-13",
+    "home_team": "MIA",
+    "away_team": "WAS",
+    "predictions": {
+      "total_pts": 232.83,
+      "score_diff": 1.23,
+      "home_pts": 116.99,
+      "away_pts": 115.47,
+      "p_home_win": 0.5446
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9474,
+      "P(over_220)": 0.8782,
+      "P(over_225)": 0.7616,
+      "P(over_230)": 0.6014,
+      "P(over_235)": 0.4216,
+      "P(over_240)": 0.2571,
+      "P(over_245)": 0.1342
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.5084,
+      "P(home_covers_-3)": 0.4362,
+      "P(home_covers_-5)": 0.366,
+      "P(home_covers_-7)": 0.3,
+      "P(home_covers_-10)": 0.2127
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401192": {
+    "game_id": "0022401192",
+    "game_date": "2025-04-13",
+    "home_team": "MIL",
+    "away_team": "DET",
+    "predictions": {
+      "total_pts": 236.48,
+      "score_diff": 0.51,
+      "home_pts": 115.65,
+      "away_pts": 115.24,
+      "p_home_win": 0.5184
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9746,
+      "P(over_220)": 0.9329,
+      "P(over_225)": 0.8516,
+      "P(over_230)": 0.722,
+      "P(over_235)": 0.5534,
+      "P(over_240)": 0.3744,
+      "P(over_245)": 0.2192
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.4821,
+      "P(home_covers_-3)": 0.4103,
+      "P(home_covers_-5)": 0.3414,
+      "P(home_covers_-7)": 0.2775,
+      "P(home_covers_-10)": 0.194
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401195": {
+    "game_id": "0022401195",
+    "game_date": "2025-04-13",
+    "home_team": "MIN",
+    "away_team": "UTA",
+    "predictions": {
+      "total_pts": 230.45,
+      "score_diff": 10.35,
+      "home_pts": 119.67,
+      "away_pts": 107.72,
+      "p_home_win": 0.8267
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9199,
+      "P(over_220)": 0.8289,
+      "P(over_225)": 0.6897,
+      "P(over_230)": 0.5162,
+      "P(over_235)": 0.3394,
+      "P(over_240)": 0.1925,
+      "P(over_245)": 0.0929
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.8024,
+      "P(home_covers_-3)": 0.7481,
+      "P(home_covers_-5)": 0.6867,
+      "P(home_covers_-7)": 0.6198,
+      "P(home_covers_-10)": 0.5128
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401188": {
+    "game_id": "0022401188",
+    "game_date": "2025-04-13",
+    "home_team": "BKN",
+    "away_team": "NYK",
+    "predictions": {
+      "total_pts": 217.69,
+      "score_diff": -11.1,
+      "home_pts": 103.46,
+      "away_pts": 113.56,
+      "p_home_win": 0.1565
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.5967,
+      "P(over_220)": 0.4169,
+      "P(over_225)": 0.2532,
+      "P(over_230)": 0.1316,
+      "P(over_235)": 0.0578,
+      "P(over_240)": 0.0213,
+      "P(over_245)": 0.0065
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.1357,
+      "P(home_covers_-3)": 0.1,
+      "P(home_covers_-5)": 0.0717,
+      "P(home_covers_-7)": 0.05,
+      "P(home_covers_-10)": 0.0276
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401191": {
+    "game_id": "0022401191",
+    "game_date": "2025-04-13",
+    "home_team": "PHI",
+    "away_team": "CHI",
+    "predictions": {
+      "total_pts": 230.29,
+      "score_diff": -2.11,
+      "home_pts": 113.7,
+      "away_pts": 113.61,
+      "p_home_win": 0.4239
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9178,
+      "P(over_220)": 0.8253,
+      "P(over_225)": 0.6848,
+      "P(over_230)": 0.5106,
+      "P(over_235)": 0.3344,
+      "P(over_240)": 0.1888,
+      "P(over_245)": 0.0906
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3887,
+      "P(home_covers_-3)": 0.3211,
+      "P(home_covers_-5)": 0.259,
+      "P(home_covers_-7)": 0.2038,
+      "P(home_covers_-10)": 0.1355
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401199": {
+    "game_id": "0022401199",
+    "game_date": "2025-04-13",
+    "home_team": "POR",
+    "away_team": "LAL",
+    "predictions": {
+      "total_pts": 218.66,
+      "score_diff": -3.37,
+      "home_pts": 110.27,
+      "away_pts": 111.75,
+      "p_home_win": 0.3798
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.6304,
+      "P(over_220)": 0.4516,
+      "P(over_225)": 0.2823,
+      "P(over_230)": 0.1513,
+      "P(over_235)": 0.0687,
+      "P(over_240)": 0.0262,
+      "P(over_245)": 0.0083
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.3457,
+      "P(home_covers_-3)": 0.2814,
+      "P(home_covers_-5)": 0.2235,
+      "P(home_covers_-7)": 0.173,
+      "P(home_covers_-10)": 0.1122
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401200": {
+    "game_id": "0022401200",
+    "game_date": "2025-04-13",
+    "home_team": "SAC",
+    "away_team": "PHX",
+    "predictions": {
+      "total_pts": 233.44,
+      "score_diff": 5.76,
+      "home_pts": 120.38,
+      "away_pts": 116.08,
+      "p_home_win": 0.6996
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9531,
+      "P(over_220)": 0.8891,
+      "P(over_225)": 0.7785,
+      "P(over_230)": 0.6227,
+      "P(over_235)": 0.4435,
+      "P(over_240)": 0.2754,
+      "P(over_245)": 0.1466
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.6673,
+      "P(home_covers_-3)": 0.5989,
+      "P(home_covers_-5)": 0.5274,
+      "P(home_covers_-7)": 0.455,
+      "P(home_covers_-10)": 0.3498
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401196": {
+    "game_id": "0022401196",
+    "game_date": "2025-04-13",
+    "home_team": "NOP",
+    "away_team": "OKC",
+    "predictions": {
+      "total_pts": 220.91,
+      "score_diff": -13.51,
+      "home_pts": 103.14,
+      "away_pts": 119.06,
+      "p_home_win": 0.1097
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.7045,
+      "P(over_220)": 0.533,
+      "P(over_225)": 0.355,
+      "P(over_230)": 0.2043,
+      "P(over_235)": 0.1001,
+      "P(over_240)": 0.0413,
+      "P(over_245)": 0.0143
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.0935,
+      "P(home_covers_-3)": 0.0667,
+      "P(home_covers_-5)": 0.0462,
+      "P(home_covers_-7)": 0.0311,
+      "P(home_covers_-10)": 0.0163
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401197": {
+    "game_id": "0022401197",
+    "game_date": "2025-04-13",
+    "home_team": "SAS",
+    "away_team": "TOR",
+    "predictions": {
+      "total_pts": 234.71,
+      "score_diff": 5.66,
+      "home_pts": 116.91,
+      "away_pts": 113.36,
+      "p_home_win": 0.6964
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.9634,
+      "P(over_220)": 0.9094,
+      "P(over_225)": 0.8113,
+      "P(over_230)": 0.6657,
+      "P(over_235)": 0.4894,
+      "P(over_240)": 0.3152,
+      "P(over_245)": 0.1747
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.664,
+      "P(home_covers_-3)": 0.5954,
+      "P(home_covers_-5)": 0.5238,
+      "P(home_covers_-7)": 0.4514,
+      "P(home_covers_-10)": 0.3465
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  },
+  "0022401187": {
+    "game_id": "0022401187",
+    "game_date": "2025-04-13",
+    "home_team": "BOS",
+    "away_team": "CHA",
+    "predictions": {
+      "total_pts": 213.92,
+      "score_diff": 15.66,
+      "home_pts": 111.71,
+      "away_pts": 99.0,
+      "p_home_win": 0.9228
+    },
+    "ou_probabilities": {
+      "P(over_215)": 0.4609,
+      "P(over_220)": 0.2902,
+      "P(over_225)": 0.1569,
+      "P(over_230)": 0.0719,
+      "P(over_235)": 0.0277,
+      "P(over_240)": 0.0089,
+      "P(over_245)": 0.0024
+    },
+    "ats_probabilities": {
+      "P(home_covers_-1)": 0.9087,
+      "P(home_covers_-3)": 0.8752,
+      "P(home_covers_-5)": 0.8338,
+      "P(home_covers_-7)": 0.7845,
+      "P(home_covers_-10)": 0.6967
+    },
+    "ensemble": "M2_family_v1 = 3 LGB seeds + 2 XGB seeds (equal-weight, 5 models per target \u00d7 4 targets)"
+  }
+}
