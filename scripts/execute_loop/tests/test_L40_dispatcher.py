@@ -11,7 +11,7 @@ import pickle
 import sys
 from pathlib import Path
 from typing import Any, Dict
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 
@@ -378,3 +378,127 @@ class TestUnrecognisedVariant:
             result = predict_dispatched("reb", _STUB_ROW, _routing_path=routing_path)
         mock_blend.assert_called_once()
         assert result == sentinel
+
+
+# ---------------------------------------------------------------------------
+# Test 10 (v2): EventBus integration — model.routed published on every dispatch
+# ---------------------------------------------------------------------------
+class TestDispatchPublishesModelRoutedEvent:
+    def test_dispatch_publishes_model_routed_event(self, tmp_path):
+        """predict_dispatched must call _L46.publish with 'model.routed' payload."""
+        routing_path = _make_routing_json(tmp_path, {"pts": {"model_variant": "blend"}})
+
+        mock_l46 = MagicMock()
+        with patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._predict_blend",
+            return_value=22.0,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._L46", mock_l46
+        ):
+            result = predict_dispatched("pts", _STUB_ROW, _routing_path=routing_path)
+
+        assert result == 22.0
+        mock_l46.publish.assert_called()
+        # First call must be "model.routed"
+        first_call = mock_l46.publish.call_args_list[0]
+        assert first_call.args[0] == "model.routed"
+        assert first_call.kwargs["source"] == "L40"
+        payload = first_call.kwargs["payload"]
+        assert "request_id" in payload
+        assert "model_variant" in payload
+        assert "is_champion" in payload
+        assert "is_challenger" in payload
+        assert "latency_ms" in payload
+        assert "routed_at" in payload
+        assert payload["model_variant"] == "blend"
+        assert isinstance(payload["latency_ms"], float)
+
+
+# ---------------------------------------------------------------------------
+# Test 11 (v2): model.slow emitted when latency exceeds threshold
+# ---------------------------------------------------------------------------
+class TestSlowDispatchPublishesModelSlowEvent:
+    def test_slow_dispatch_publishes_model_slow_event(self, tmp_path):
+        """Simulate >100ms latency; verify model.slow is published after model.routed."""
+        routing_path = _make_routing_json(tmp_path, {"blk": {"model_variant": "q50_xgb"}})
+
+        mock_l46 = MagicMock()
+        # Simulate 200ms latency: first call returns t=0, second call returns t=0.200
+        fake_times = [0.0, 0.200]
+        with patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._predict_q50_xgb",
+            return_value=0.45,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._L46", mock_l46
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher.time.perf_counter",
+            side_effect=fake_times,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._SLOW_THRESHOLD_MS",
+            100.0,
+        ):
+            predict_dispatched("blk", _STUB_ROW, _routing_path=routing_path)
+
+        call_names = [c.args[0] for c in mock_l46.publish.call_args_list]
+        assert "model.routed" in call_names
+        assert "model.slow" in call_names
+
+        slow_call = next(c for c in mock_l46.publish.call_args_list if c.args[0] == "model.slow")
+        slow_payload = slow_call.kwargs["payload"]
+        assert slow_payload["latency_ms"] == pytest.approx(200.0)
+        assert slow_payload["threshold_ms"] == pytest.approx(100.0)
+        assert "model_variant" in slow_payload
+        assert "request_id" in slow_payload
+
+
+# ---------------------------------------------------------------------------
+# Test 12 (v2): Fast dispatch does NOT emit model.slow
+# ---------------------------------------------------------------------------
+class TestNormalDispatchNoSlowEvent:
+    def test_normal_dispatch_no_slow_event(self, tmp_path):
+        """When latency is below threshold, only model.routed should be published."""
+        routing_path = _make_routing_json(tmp_path, {"stl": {"model_variant": "q50_xgb"}})
+
+        mock_l46 = MagicMock()
+        # Simulate 5ms latency (well below default 100ms threshold)
+        fast_times = [0.0, 0.005]
+        with patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._predict_q50_xgb",
+            return_value=0.72,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._L46", mock_l46
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher.time.perf_counter",
+            side_effect=fast_times,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._SLOW_THRESHOLD_MS",
+            100.0,
+        ):
+            predict_dispatched("stl", _STUB_ROW, _routing_path=routing_path)
+
+        call_names = [c.args[0] for c in mock_l46.publish.call_args_list]
+        assert "model.routed" in call_names
+        assert "model.slow" not in call_names
+
+
+# ---------------------------------------------------------------------------
+# Test 13 (v2): EventBus publish failure does not break dispatch
+# ---------------------------------------------------------------------------
+class TestPublishFailureDoesNotBreakDispatch:
+    def test_publish_failure_does_not_break_dispatch(self, tmp_path):
+        """If _L46.publish raises, predict_dispatched must still return the prediction."""
+        routing_path = _make_routing_json(tmp_path, {"ast": {"model_variant": "blend"}})
+
+        mock_l46 = MagicMock()
+        mock_l46.publish.side_effect = RuntimeError("EventBus exploded")
+
+        with patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._predict_blend",
+            return_value=7.3,
+        ), patch(
+            "scripts.execute_loop.L40_multi_model_dispatcher._L46", mock_l46
+        ):
+            result = predict_dispatched("ast", _STUB_ROW, _routing_path=routing_path)
+
+        # Result must be the prediction, not an exception
+        assert result == pytest.approx(7.3)

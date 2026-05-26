@@ -20,6 +20,53 @@ CLI
     python L20_injury_feed.py fetch
     python L20_injury_feed.py once
     python L20_injury_feed.py poll [--interval 600]
+
+Environment Variables
+---------------------
+    None required for normal operation.  The scraper uses public endpoints
+    and a local JSON cache; no API keys are needed.
+
+    NBA_INJURY_JSON_PATH
+        Override the default path to the local nba_official_injury.json cache
+        (``data/external/nba_official_injury.json``).  Useful in tests or
+        staging environments that supply a pre-seeded fixture.
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L20 is a **read-only data fetcher** and therefore carries no mode gate.
+It does not submit bets, place orders, or write financial state.  All
+output is written to local JSON cache files and published as informational
+events on the L46 EventBus.  No SUBMISSION_MODE / LIVE_MODE / PAPER_MODE
+variable is consulted.
+
+Event Publication (L46 EventBus)
+---------------------------------
+After each fetch cycle, L20 compares the newly fetched injury records to
+the prior cached state (_seen.json).  For each NEW or CHANGED record (a
+player whose status is either entirely absent from the cache or whose
+status string differs from the most-recently cached value), L20 publishes:
+
+    event name: "injury.announced"
+    source:     "L20"
+    payload: {
+        "player":           str,   # accent-stripped canonical player name
+        "team":             str,   # e.g. "LAL", "GSW"
+        "status":           str,   # "OUT" | "DOUBTFUL" | "QUESTIONABLE" | ...
+        "reason":           str,   # injury body text
+        "previously_known": str | None,  # prior status, or None if first seen
+        "fetched_at":       str,   # ISO 8601 UTC timestamp of this fetch
+    }
+
+Events are published via the module-level L46 singleton
+(``L46_event_bus.get_default_bus()``).  Publish failures are caught and
+logged; they never interrupt the fetch/diff pipeline.
+
+Atomic Writes
+-------------
+All JSON snapshot files (_seen.json, nba_official_injury.json) are written
+via ``_atomic_write_json``: a sibling temp file is created in the same
+directory, written fully, then replaced via ``os.replace()``.  On crash or
+power-loss the previous snapshot is preserved intact.
 """
 from __future__ import annotations
 
@@ -27,7 +74,9 @@ import argparse
 import hashlib
 import json
 import logging
+import os
 import sys
+import tempfile
 import time
 import unicodedata
 from dataclasses import dataclass, field
@@ -46,6 +95,15 @@ _SEEN_PATH   = _PROJECT_DIR / "data" / "ledger" / "injury_seen.json"
 _EXTERNAL    = _PROJECT_DIR / "data" / "external" / "nba_official_injury.json"
 
 log = logging.getLogger(__name__)
+
+# ── soft-import L46 EventBus (absent in minimal test environments) ────────────
+try:
+    from scripts.execute_loop import L46_event_bus as _L46
+except Exception:  # noqa: BLE001
+    try:
+        import L46_event_bus as _L46  # type: ignore[no-redef]
+    except Exception:
+        _L46 = None  # type: ignore[assignment]
 
 # ── constants ─────────────────────────────────────────────────────────────────
 _ROTOWIRE_URL = "https://www.rotowire.com/basketball/injury-report.php"
@@ -147,10 +205,29 @@ def _load_seen() -> Dict[str, dict]:
         return {}
 
 
-def _save_seen(seen: Dict[str, dict]) -> None:
-    _SEEN_PATH.parent.mkdir(parents=True, exist_ok=True)
+def _atomic_write_json(path: Path, data: dict) -> None:
+    """Write *data* as JSON to *path* atomically via a sibling temp file.
+
+    On crash mid-write the previous file content is preserved.  Matches the
+    pattern used across R7-polished layers (L18, L22, L46).
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
     try:
-        _SEEN_PATH.write_text(json.dumps(seen, indent=2), encoding="utf-8")
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            json.dump(data, fh, indent=2)
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _save_seen(seen: Dict[str, dict]) -> None:
+    try:
+        _atomic_write_json(_SEEN_PATH, seen)
     except OSError as exc:
         log.error("[L20] Failed to persist _seen.json: %s", exc)
 
@@ -450,7 +527,45 @@ def diff_against_seen(updates: List[InjuryUpdate]) -> List[InjuryUpdate]:
             novel.append(upd)
 
     _save_seen(seen)
+    _publish_injury_events(novel, prior_status, now)
     return novel
+
+
+def _publish_injury_events(
+    novel: List[InjuryUpdate],
+    prior_status: Dict[str, str],
+    fetched_at: str,
+) -> None:
+    """Publish 'injury.announced' on the L46 EventBus for each novel update.
+
+    Failures are caught and logged; they never interrupt the caller.
+    """
+    if _L46 is None or not novel:
+        return
+    try:
+        bus = _L46.get_default_bus()
+    except Exception as exc:
+        log.warning("[L20] Could not get L46 bus: %s", exc)
+        return
+
+    for upd in novel:
+        pn = _normalize_name(upd.player)
+        prev = prior_status.get(pn) or None  # None if first ever seen
+        try:
+            bus.publish(
+                "injury.announced",
+                source="L20",
+                payload={
+                    "player":           upd.player,
+                    "team":             upd.team,
+                    "status":           upd.status,
+                    "reason":           upd.body,
+                    "previously_known": prev,
+                    "fetched_at":       fetched_at,
+                },
+            )
+        except Exception as exc:  # noqa: BLE001
+            log.warning("[L20] EventBus publish failed for %s: %s", upd.player, exc)
 
 
 def alert_on_critical(updates: List[InjuryUpdate]) -> int:

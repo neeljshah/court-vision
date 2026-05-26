@@ -1,6 +1,6 @@
 """test_L20_injury.py — Tests for L20_injury_feed.py
 
-Five tests using mocked requests and tmp_path; no live network calls.
+Nine tests using mocked requests and tmp_path; no live network calls.
 """
 from __future__ import annotations
 
@@ -246,3 +246,167 @@ def test_alert_on_critical_calls_send_alert_for_each_critical():
         args, kwargs = call_args
         channel = args[0] if args else kwargs.get("channel")
         assert channel == "news", f"Expected channel='news', got {channel!r}"
+
+
+# ── helpers for L46 tests ─────────────────────────────────────────────────────
+
+def _get_bus():
+    """Return the L46 default bus, or None if L46 is unavailable."""
+    if L20._L46 is None:
+        return None
+    return L20._L46.get_default_bus()
+
+
+def _make_injury(player, team, status, ts="2026-05-25T10:00:00+00:00", source="nba_official"):
+    upd = L20.InjuryUpdate(
+        player=player, team=team, status=status,
+        source=source, body="Test reason",
+        timestamp=ts,
+        severity=L20._STATUS_TO_SEVERITY.get(status, "info"),
+    )
+    upd._hash = upd.compute_hash()
+    return upd
+
+
+# ── test 6: new injury publishes event; pre-existing one does not ──────────────
+def test_new_injury_publishes_event(tmp_path):
+    """diff_against_seen publishes 'injury.announced' for new injuries only.
+
+    A pre-existing record (already in _seen.json with matching hash) must NOT
+    produce a second event.  A brand-new record must produce exactly one event
+    with the correct schema.
+    """
+    bus = _get_bus()
+    if bus is None:
+        pytest.skip("L46_event_bus not available in this environment")
+
+    bus.clear_subscribers()
+
+    seen_file = tmp_path / "injury_seen.json"
+
+    # Seed: Anthony Davis is already cached (no event expected)
+    ad = _make_injury("Anthony Davis", "LAL", "OUT", ts="2026-05-25T08:00:00+00:00")
+    existing_seen = {
+        ad._hash: {
+            "status": "OUT",
+            "last_seen_iso": "2026-05-25T08:00:00",
+            "player_norm": "anthony davis",
+        }
+    }
+    seen_file.write_text(json.dumps(existing_seen), encoding="utf-8")
+
+    # New injury: Damian Lillard not in cache yet
+    dame = _make_injury("Damian Lillard", "MIL", "QUESTIONABLE", ts="2026-05-25T10:00:00+00:00")
+
+    received: list = []
+    bus.subscribe("injury.announced", lambda evt: received.append(evt), layer="test")
+
+    with patch.object(L20, "_SEEN_PATH", seen_file):
+        novel = L20.diff_against_seen([ad, dame])
+
+    # Only Lillard is novel
+    assert len(novel) == 1
+    assert "lillard" in novel[0].player.lower()
+
+    # Exactly one event published (not two)
+    assert len(received) == 1, f"Expected 1 event, got {len(received)}"
+
+    evt = received[0]
+    assert evt.name == "injury.announced"
+    assert evt.source == "L20"
+    payload = evt.payload
+    assert "lillard" in payload["player"].lower()
+    assert payload["team"] == "MIL"
+    assert payload["status"] == "QUESTIONABLE"
+    assert payload["previously_known"] is None   # first-ever appearance
+    assert "fetched_at" in payload
+    assert "reason" in payload
+
+    bus.clear_subscribers()
+
+
+# ── test 7: no new injuries → no events published ────────────────────────────
+def test_no_new_injuries_publishes_nothing(tmp_path):
+    """When all injuries are already in the cache, zero events are published."""
+    bus = _get_bus()
+    if bus is None:
+        pytest.skip("L46_event_bus not available in this environment")
+
+    bus.clear_subscribers()
+
+    seen_file = tmp_path / "injury_seen.json"
+
+    upd = _make_injury("Jaylen Brown", "BOS", "GTD", ts="2026-05-25T10:00:00+00:00")
+    pre_seen = {
+        upd._hash: {
+            "status": "GTD",
+            "last_seen_iso": "2026-05-25T09:00:00",
+            "player_norm": "jaylen brown",
+        }
+    }
+    seen_file.write_text(json.dumps(pre_seen), encoding="utf-8")
+
+    received: list = []
+    bus.subscribe("injury.announced", lambda evt: received.append(evt), layer="test")
+
+    with patch.object(L20, "_SEEN_PATH", seen_file):
+        novel = L20.diff_against_seen([upd])
+
+    assert len(novel) == 0, "Same data → no novel updates"
+    assert len(received) == 0, "Same data → no events published"
+
+    bus.clear_subscribers()
+
+
+# ── test 8: atomic write leaves valid JSON even on concurrent reads ────────────
+def test_atomic_write_json_produces_valid_file(tmp_path):
+    """_atomic_write_json creates a valid JSON file that can be re-read."""
+    target = tmp_path / "sub" / "test_atomic.json"
+    data = {"key": "value", "count": 42, "nested": {"a": 1}}
+
+    L20._atomic_write_json(target, data)
+
+    assert target.exists(), "Target file should exist after atomic write"
+    loaded = json.loads(target.read_text(encoding="utf-8"))
+    assert loaded == data, f"Round-trip mismatch: {loaded}"
+
+    # Overwrite with new data — must replace cleanly
+    data2 = {"key": "updated", "count": 99}
+    L20._atomic_write_json(target, data2)
+    loaded2 = json.loads(target.read_text(encoding="utf-8"))
+    assert loaded2 == data2
+
+    # No leftover .tmp files
+    tmp_files = list(tmp_path.rglob("*.tmp"))
+    assert tmp_files == [], f"Leftover temp files: {tmp_files}"
+
+
+# ── test 9: publish failure does not break fetch pipeline ────────────────────
+def test_publish_failure_does_not_break_fetch(tmp_path):
+    """If the EventBus publish call raises, diff_against_seen still returns
+    the novel updates and saves _seen.json correctly."""
+    seen_file = tmp_path / "injury_seen.json"
+
+    upd = _make_injury("Trae Young", "ATL", "OUT", ts="2026-05-25T10:00:00+00:00")
+
+    # Patch _L46 with a mock whose publish() raises
+    broken_bus = MagicMock()
+    broken_bus.publish.side_effect = RuntimeError("bus exploded")
+
+    broken_L46 = MagicMock()
+    broken_L46.get_default_bus.return_value = broken_bus
+
+    with (
+        patch.object(L20, "_SEEN_PATH", seen_file),
+        patch.object(L20, "_L46", broken_L46),
+    ):
+        novel = L20.diff_against_seen([upd])  # must not raise
+
+    # Novel updates are still returned despite publish failure
+    assert len(novel) == 1, "Novel update must be returned even when publish fails"
+    assert "trae" in novel[0].player.lower()
+
+    # _seen.json must have been written correctly
+    assert seen_file.exists(), "_seen.json must be persisted even when publish fails"
+    persisted = json.loads(seen_file.read_text(encoding="utf-8"))
+    assert len(persisted) == 1, "Exactly one hash should be in _seen.json"

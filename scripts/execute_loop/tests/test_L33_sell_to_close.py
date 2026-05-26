@@ -1,13 +1,15 @@
 """test_L33_sell_to_close.py — Tests for L33_sell_to_close.py
 
-Seven required tests + bonus edge-case coverage.
+Seven required tests + bonus edge-case coverage + v2 EventBus tests.
 No external dependencies — stdlib + pytest only.
 """
 from __future__ import annotations
 
 import logging
 import sys
+import types
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -346,3 +348,87 @@ def test_unknown_side_defaults_to_long():
         time_to_settle_min=30,
     )
     assert decision.action in ("HOLD", "SELL", "SELL_PARTIAL")
+
+
+# ---------------------------------------------------------------------------
+# v2 — EventBus publication tests
+# ---------------------------------------------------------------------------
+
+def _make_mock_bus():
+    """Return a fresh MagicMock that quacks like L46_event_bus."""
+    mock_bus = MagicMock()
+    mock_bus.publish = MagicMock(return_value=None)
+    return mock_bus
+
+
+def test_close_recommendation_publishes_event():
+    """SELL action publishes exactly one 'close.recommended' event via L46."""
+    mock_bus = _make_mock_bus()
+    with patch.object(L33, "_L46", mock_bus):
+        decision = L33.evaluate_close_decision(
+            position=_pos(qty=100.0, entry_price=0.50, side="YES",
+                          position_id="p_pub"),
+            current_quote=_quote(bid_price=0.85),
+            model_p=0.50,
+            time_to_settle_min=30,
+            model_p_var=0.02,
+        )
+    assert decision.action == "SELL"
+    mock_bus.publish.assert_called_once()
+    call_kwargs = mock_bus.publish.call_args
+    # First positional arg is the event name
+    event_name = call_kwargs[0][0]
+    assert event_name == "close.recommended"
+    payload = call_kwargs[1]["payload"]
+    assert payload["position_id"] == "p_pub"
+    assert payload["reason"] == "lock_gain"
+    assert payload["model_p_var"] == pytest.approx(0.02)
+    assert "recommended_at" in payload
+
+
+def test_hold_recommendation_publishes_nothing():
+    """HOLD action must NOT publish any event."""
+    mock_bus = _make_mock_bus()
+    with patch.object(L33, "_L46", mock_bus):
+        decision = L33.evaluate_close_decision(
+            position=_pos(qty=100.0, entry_price=0.50, side="YES"),
+            current_quote=_quote(bid_price=0.55),
+            model_p=0.80,
+            time_to_settle_min=30,
+        )
+    assert decision.action == "HOLD"
+    mock_bus.publish.assert_not_called()
+
+
+def test_publish_failure_does_not_break_evaluate():
+    """If L46.publish raises, evaluate_close_decision still returns a valid CloseDecision."""
+    mock_bus = _make_mock_bus()
+    mock_bus.publish.side_effect = RuntimeError("bus exploded")
+    with patch.object(L33, "_L46", mock_bus):
+        decision = L33.evaluate_close_decision(
+            position=_pos(qty=100.0, entry_price=0.50, side="YES"),
+            current_quote=_quote(bid_price=0.85),
+            model_p=0.50,
+            time_to_settle_min=30,
+        )
+    # The decision is still returned despite publish failure
+    assert decision.action == "SELL"
+    assert decision.decision_reason == "lock_gain"
+    assert decision.sell_qty == pytest.approx(100.0)
+
+
+def test_sell_partial_publishes_event():
+    """SELL_PARTIAL action also publishes 'close.recommended' with correct reason."""
+    mock_bus = _make_mock_bus()
+    with patch.object(L33, "_L46", mock_bus):
+        decision = L33.evaluate_close_decision(
+            position=_pos(qty=100.0, entry_price=0.50, side="YES"),
+            current_quote=_quote(bid_price=0.55),
+            model_p=0.56,
+            time_to_settle_min=30,
+        )
+    assert decision.action == "SELL_PARTIAL"
+    mock_bus.publish.assert_called_once()
+    payload = mock_bus.publish.call_args[1]["payload"]
+    assert payload["reason"] == "de_risk_marginal"
+    assert payload["current_price"] == pytest.approx(0.55)
