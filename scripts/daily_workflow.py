@@ -83,6 +83,9 @@ DEFAULT_BACKUP_KEEP = 30
 DEFAULT_DRIFT_CACHE = PROJECT_DIR / "data" / "cache" / "feature_drift_latest.json"
 DEFAULT_DRIFT_WARN_THRESHOLD = 5
 DEFAULT_DRIFT_CRITICAL_THRESHOLD = 15
+# R28_U3 — nightly cleanup defaults.
+DEFAULT_CLEANUP_ROOT = PROJECT_DIR
+DEFAULT_CLEANUP_WORKTREE_AGE_DAYS = 3
 
 # Stages this orchestrator knows how to run.
 STAGES = ("evening", "morning", "all")
@@ -600,6 +603,39 @@ def _step_feature_drift(
     return True, details, None
 
 
+def _step_nightly_cleanup(
+    *,
+    cleanup_root: Path,
+    enable_cleanup: bool,
+    worktree_age_days: int,
+    dry_run: bool,
+    run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+) -> Tuple[bool, Dict[str, Any], Optional[str]]:
+    """R28_U3 — nightly disk cleanup. --commit only if `enable_cleanup` and not dry-run."""
+    if dry_run:
+        return True, {
+            "would_call": "nightly_cleanup.run_cleanup",
+            "commit":     bool(enable_cleanup),
+            "root":       str(cleanup_root),
+        }, None
+    commit = bool(enable_cleanup)
+    try:
+        if run_fn is None:
+            from scripts.nightly_cleanup import run_cleanup as run_fn  # noqa: PLC0415
+        res = run_fn(
+            root=Path(cleanup_root), commit=commit,
+            worktree_age_days=int(worktree_age_days),
+        )
+    except Exception as exc:  # noqa: BLE001
+        return False, {}, f"nightly_cleanup raised: {exc!r}"
+    return True, {
+        "commit":            bool(res.get("commit")),
+        "total_n_eligible":  int(res.get("total_n_eligible", 0) or 0),
+        "total_mb_eligible": float(res.get("total_mb_eligible", 0.0) or 0.0),
+        "n_warnings":        len(res.get("warnings", []) or []),
+    }, None
+
+
 def _step_alert(
     *,
     message: str,
@@ -748,6 +784,10 @@ def run_morning(
     drift_warn_threshold: int = DEFAULT_DRIFT_WARN_THRESHOLD,
     drift_critical_threshold: int = DEFAULT_DRIFT_CRITICAL_THRESHOLD,
     drift_run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+    cleanup_root: Path = DEFAULT_CLEANUP_ROOT,
+    cleanup_worktree_age_days: int = DEFAULT_CLEANUP_WORKTREE_AGE_DAYS,
+    enable_cleanup: bool = False,
+    cleanup_run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """Run the morning workflow. Returns a result dict (never raises)."""
     started_at = _iso_now()
@@ -803,9 +843,21 @@ def run_morning(
         cache_path=dashboard_cache, dry_run=dry_run, collect_fn=collect_fn,
     ))
 
+    # 4b. R28_U3 — nightly cleanup (runs LAST so it can prune everything
+    #     earlier steps produced). --commit only when `enable_cleanup` is on.
+    steps.append(_run_step(
+        "nightly_cleanup", _step_nightly_cleanup,
+        cleanup_root=cleanup_root,
+        enable_cleanup=bool(enable_cleanup),
+        worktree_age_days=int(cleanup_worktree_age_days),
+        dry_run=dry_run,
+        run_fn=cleanup_run_fn,
+    ))
+
     # 5. Morning info alert with summary fields.
     # Step order: [0]=ledger_backup (R27_T7), [1]=settle, [2]=reconcile,
-    # [3]=report, [4]=feature_drift (R27_T3), [5]=refresh_dashboard.
+    # [3]=report, [4]=feature_drift (R27_T3), [5]=refresh_dashboard,
+    # [6]=nightly_cleanup (R28_U3).
     settle_d = steps[1].get("details") or {}
     recon_d  = steps[2].get("details") or {}
     rep_d    = steps[3].get("details") or {}
@@ -929,6 +981,12 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     ap.add_argument("--ledger-path",  type=str, default=str(DEFAULT_LEDGER_PATH))
     ap.add_argument("--backup-dir",   type=str, default=str(DEFAULT_BACKUP_DIR))
     ap.add_argument("--backup-keep",  type=int, default=DEFAULT_BACKUP_KEEP)
+    # R28_U3 — nightly cleanup knobs.
+    ap.add_argument("--enable-cleanup", action="store_true",
+                    help="Actually delete eligible files (else dry-run inventory only).")
+    ap.add_argument("--cleanup-root", type=str, default=str(DEFAULT_CLEANUP_ROOT))
+    ap.add_argument("--cleanup-worktree-age-days", type=int,
+                    default=DEFAULT_CLEANUP_WORKTREE_AGE_DAYS)
     ap.add_argument("--json", action="store_true",
                     help="Emit JSON result instead of human text.")
     return ap.parse_args(argv)
@@ -988,6 +1046,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             ledger_path=Path(args.ledger_path),
             backup_dir=Path(args.backup_dir),
             backup_keep=int(args.backup_keep),
+            cleanup_root=Path(args.cleanup_root),
+            cleanup_worktree_age_days=int(args.cleanup_worktree_age_days),
+            enable_cleanup=bool(args.enable_cleanup),
             **common_kwargs,
         )
     elif args.stage == "all":
@@ -1001,6 +1062,9 @@ def main(argv: Optional[List[str]] = None) -> int:
             ledger_path=Path(args.ledger_path),
             backup_dir=Path(args.backup_dir),
             backup_keep=int(args.backup_keep),
+            cleanup_root=Path(args.cleanup_root),
+            cleanup_worktree_age_days=int(args.cleanup_worktree_age_days),
+            enable_cleanup=bool(args.enable_cleanup),
             **common_kwargs,
         )
     else:
