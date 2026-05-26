@@ -1,0 +1,26 @@
+{
+  "probe": "R12_B19_drop_bottom_10pct_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 146,
+  "n_features_dropped": 17,
+  "n_games": 2839,
+  "pos_rate": 0.42021838675589995,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2375 (-18.55%); AUC 0.6790",
+  "pooled_lgb_brier": 0.23748,
+  "pooled_naive_brier": 0.29158,
+  "pooled_lgb_auc": 0.67904,
+  "brier_delta_pct": -18.554,
+  "n_valid_folds": 3,
+  "beat_canonical": true,
+  "canonical_src": "B15 top4_avg",
+  "variant": {
+    "variant": "drop_bottom_10pct",
+    "fc_canonical": "opp_full",
+    "n_features_kept": 145,
+    "n_features_dropped": 17
+  },
+  "elapsed_s": 18.7
+}
