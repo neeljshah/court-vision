@@ -1,0 +1,48 @@
+{
+  "probe": "R26_S5",
+  "ts": "2026-05-26T18:16:39Z",
+  "fires_attempted": 50,
+  "fires_in_simulation": 3,
+  "suppressed_in_simulation": 47,
+  "meta_alerts_in_simulation": 4,
+  "expected_warn_cap": 3,
+  "expected_meta_count": 4,
+  "dedup_state_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\probe_R26_S5_9c1cyp34\\alert_dedup_state.json",
+  "sidecar_present": true,
+  "sidecar_one_key": true,
+  "dedup_stats": {
+    "state_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\probe_R26_S5_9c1cyp34\\alert_dedup_state.json",
+    "keys_tracked": 1,
+    "total_fired": 3,
+    "total_suppressed": 47,
+    "window_sec": 3600.0,
+    "level_caps": {
+      "info": 1,
+      "warn": 3,
+      "warning": 3,
+      "critical": 5
+    },
+    "default_cap": 3,
+    "meta_every": 10,
+    "entries": [
+      {
+        "key": "1e29b1e2d08877db29b3d15d659c738940d9552a",
+        "level": "warn",
+        "tag": "middle_finder_watch",
+        "message_prefix": "watchdog restarted middle_finder daemon (simulated R26_S5 crash ",
+        "window_start_ts": 1779819399.7527792,
+        "first_fire_ts": 1779819399.7527792,
+        "last_fire_ts": 1779819399.8754065,
+        "fire_count": 3,
+        "suppressed_count": 47
+      }
+    ]
+  },
+  "vault_path": "C:\\Users\\neelj\\AppData\\Local\\Temp\\probe_R26_S5_9c1cyp34\\alerts.md",
+  "vault_main_message_count": 3,
+  "vault_meta_line_count": 4,
+  "raised": false,
+  "error_repr": "",
+  "tmpdir": "C:\\Users\\neelj\\AppData\\Local\\Temp\\probe_R26_S5_9c1cyp34",
+  "ship_ok": true
+}
