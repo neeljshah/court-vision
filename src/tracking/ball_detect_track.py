@@ -417,22 +417,18 @@ class BallDetectTrack:
             pad = max(1, radius)
             return (cx - pad, cy - pad, pad * 2, pad * 2)
 
-        # When YOLO ball model is available (fine-tuned or COCO fallback), try
-        # kornia GPU blob detection before expensive Hough CPU fallback.
-        if _ball_yolo_available:
-            blob_result = self._detect_ball_kornia(frame)
-            if blob_result is not None:
-                return blob_result
-            return None
-
-        # Fallback: kornia GPU blob → Hough CPU
+        # R11: when YOLO is available, try kornia GPU blob first (fast), then
+        # fall THROUGH to the Hough+orange fallback chain when both miss.
+        # Previous early-return after kornia made Hough fallbacks dead code on
+        # healthy installs, dropping p10 detection to 62% on the corpus due to
+        # sustained YOLO-miss runs (e.g. game 0022500059: 1057-frame gap).
         blob_result = self._detect_ball_kornia(frame)
         if blob_result is not None:
             return blob_result
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # Fallback 1: Hough + template match (existing path)
+        # Fallback 1: Hough + template match
         tmpl_result = self._template_match(gray, threshold, max_radius)
         if tmpl_result is not None:
             return tmpl_result
