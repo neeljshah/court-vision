@@ -502,6 +502,12 @@
       "reason": "L10 stat std as new feature (NEW DATA TYPE \u2014 variance signal). 3/7 stats improving (PTS -0.01040, REB -0.00004 flat, AST -0.00059 flat). 4/7 stats regress (FG3M +0.00096, STL +0.00163, BLK +0.00100, TOV +0.00271). 0/7 stats at WF 4/4. PTS shows largest improvement but unstable across folds. Lesson: volatility (std) is INFORMATIVE about PTS but the signal is unstable; count-stats actively regress when std added (probably because std for low-mean stats like blk is dominated by noise). Stay with mean-only rolling features.",
       "saturated_angle": "L10 stat std as feature for high-variance count stats (BLK/STL/TOV/FG3M)",
       "round": 10
+    },
+    {
+      "name": "R11_M2v5_pregame_winprob",
+      "reason": "Pregame binary winprob with same 35 features as M2 family + LGBMClassifier. Beats sim_win_prob baseline by -8.66% on Brier (0.245 vs 0.269) and gets AUC 0.689 / acc 0.641. But absolute gates (Brier <=0.183, acc >=0.72) are endQ3-style \u2014 pregame winprob is inherently bounded by game randomness without any in-game info. R12 F1 endQ2 hit 0.174 because endQ2 conditions on 2 quarters of evidence; pregame can't reach that. Not a strategic ship \u2014 the existing pregame sim_win_prob baseline (Brier 0.269) plus M2v2 score_diff predictions effectively cover this surface for betting.",
+      "saturated_angle": "pregame winprob with strict endQ3 gates (game randomness floor for pregame inference at ~0.24 Brier)",
+      "round": 10
     }
   ],
   "saturated_angles": [
