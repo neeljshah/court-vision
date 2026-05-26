@@ -1,6 +1,6 @@
 # Execute Loop Runbook
 
-_Generated 2026-05-26 01:25 UTC — do not edit by hand._
+_Generated 2026-05-26 03:26 UTC — do not edit by hand._
 
 ## Table of Contents
 
@@ -47,11 +47,17 @@ _Generated 2026-05-26 01:25 UTC — do not edit by hand._
 - [L41 — Integration harness (end-to-end)](#l41--integration-harness-(end-to-end))
 - [L42 — Production readiness checker](#l42--production-readiness-checker)
 - [L43 — Runbook generator](#l43--runbook-generator)
+- [L44 — Paper-mode helper library](#l44--paper-mode-helper-library)
+- [L45 — Daily operator checklist](#l45--daily-operator-checklist)
+- [L46 — EventBus (cross-layer routing)](#l46--eventbus-(cross-layer-routing))
+- [L47 — Regression / drift detector](#l47--regression--drift-detector)
+- [L48 — Swish demo runner](#l48--swish-demo-runner)
+- [L49 — State-of-loop summary generator](#l49--state-of-loop-summary-generator)
 - [Cross-Reference Table](#cross-reference-table)
 
 ## L01 — DK/FD slate ingester
 
-**Status:** `shipped` | **Tests:** 24/24 | **LOC:** 437
+**Status:** `shipped` | **Tests:** 24/24 | **LOC:** —
 
 > L01_slate_ingester.py — DraftKings / FanDuel DFS slate ingester.
 > 
@@ -266,9 +272,14 @@ conda run -n basketball_ai python scripts\execute_loop\L04_gpp_optimizer.py
 
 ## L05 — DK/FD submission engine
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 325
+**Status:** `shipped` | **Tests:** 10/10 | **LOC:** —
 
 > L05_submission_engine.py — DFS Lineup Submission Engine (PAPER MODE).
+> 
+> Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+> env-var list).  Per-layer flags checked: dk_submission, fd_submission.
+> Env vars below are kept as fallbacks for backward compatibility when L44 is
+> absent (soft-import pattern).
 > 
 > Storage:
 >     data/ledger/submission_cache.json   — idempotency cache (TTL 24 h)
@@ -298,6 +309,7 @@ conda run -n basketball_ai python scripts\execute_loop\L04_gpp_optimizer.py
 >     DK_LIVE_ENABLED — Safety flag that must equal "1" to permit live DraftKings
 >         submissions. When absent or set to any other value, DK live submissions
 >         are blocked regardless of DK_API_KEY. Defaults to disabled (not "1").
+>         Also controlled via L44: DK_LIVE_SUBMISSION_ENABLED=1.
 > 
 >     FD_API_KEY — FanDuel API key sent as the X-Api-Key header for FD live
 >         submissions. Must be non-empty when SUBMISSION_MODE=live and book=fd.
@@ -306,14 +318,15 @@ conda run -n basketball_ai python scripts\execute_loop\L04_gpp_optimizer.py
 >     FD_LIVE_ENABLED — Safety flag that must equal "1" to permit live FanDuel
 >         submissions. When absent or set to any other value, FD live submissions
 >         are blocked regardless of FD_API_KEY. Defaults to disabled (not "1").
+>         Also controlled via L44: FD_LIVE_SUBMISSION_ENABLED=1.
 > 
-> Paper vs Live Mode:
+> Paper vs Live Mode (MODE GATING):
 >     Default behavior is paper mode — no environment variables need to be set.
 >     Live submission is gated by ALL of the following conditions being true:
 >       1. SUBMISSION_MODE=live
 >       2. USER_TOKEN is non-empty
->       3. For DK: DK_LIVE_ENABLED=1 AND DK_API_KEY is non-empty
->          For FD: FD_LIVE_ENABLED=1 AND FD_API_KEY is non-empty
+>       3. For DK: DK_LIVE_ENABLED=1 (or L44 dk_submission live) AND DK_API_KEY is non-empty
+>          For FD: FD_LIVE_ENABLED=1 (or L44 fd_submission live) AND FD_API_KEY is non-empty
 >     If any gate is unsatisfied, _check_live_gates raises PermissionError and
 >     submit_lineup falls back to no submission (error propagates to caller).
 >     The --live CLI flag sets SUBMISSION_MODE=live in the current process only.
@@ -350,9 +363,9 @@ def main(argv=None) -> int
 |------|----------------|
 | `USER_TOKEN` | `None` |
 | `SUBMISSION_MODE` | `'paper'` |
-| `DK_LIVE_ENABLED` | `None` |
+| `DK_LIVE_ENABLED` | `'0'` |
+| `FD_LIVE_ENABLED` | `'0'` |
 | `DK_API_KEY` | `None` |
-| `FD_LIVE_ENABLED` | `None` |
 | `FD_API_KEY` | `None` |
 
 ### Paper vs Live Mode
@@ -360,9 +373,10 @@ def main(argv=None) -> int
 ```
 L05_submission_engine.py — DFS Lineup Submission Engine (PAPER MODE).
 
-Storage:
-    data/ledger/submission_cache.json   — idempotency cache (TTL 24 h)
-    data/ledger/paper_submissions.json  — paper-mode log
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  Per-layer flags checked: dk_submission, fd_submission.
+Env vars below are kept as fallbacks for backward compatibility when L44 is
+absent (soft-import pattern).
 ```
 
 ### How to Run
@@ -425,7 +439,7 @@ conda run -n basketball_ai python scripts\execute_loop\L06_late_swap.py
 
 ## L07 — Settlement + P&L ledger
 
-**Status:** `shipped` | **Tests:** 26/26 | **LOC:** —
+**Status:** `shipped` | **Tests:** 29/29 | **LOC:** —
 
 > L07_pnl_ledger.py — Settlement + P&L Ledger (execute_loop layer 7).
 > 
@@ -437,6 +451,28 @@ conda run -n basketball_ai python scripts\execute_loop\L06_late_swap.py
 >     python L07_pnl_ledger.py summary [--start YYYY-MM-DD] [--end YYYY-MM-DD]
 >                                      [--by stat|book|day]
 >     python L07_pnl_ledger.py open
+> 
+> Event Publication
+> -----------------
+> L07 publishes the following events via L46 EventBus (additive — does not replace
+> existing direct calls to L22 alerting):
+> 
+> ``bet.settled``
+>     Emitted for each bet that transitions from OPEN → WON / LOST / PUSH.
+>     Source: ``"L7"``
+>     Payload schema::
+> 
+>         {
+>             "bet_id":     str,   # unique bet identifier
+>             "status":     str,   # "WON" | "LOST" | "PUSH"
+>             "stake":      float, # stake in units
+>             "pnl":        float, # realised P&L in units
+>             "player":     str,   # player name
+>             "stat":       str,   # stat key, e.g. "pts"
+>             "settled_at": str,   # ISO 8601 UTC timestamp of settlement
+>         }
+> 
+>     NOTE: VOID (DNP) outcomes do NOT emit ``bet.settled``.
 
 ### Public API
 
@@ -481,7 +517,7 @@ conda run -n basketball_ai python scripts\execute_loop\L07_pnl_ledger.py
 
 ## L08 — Drift detector
 
-**Status:** `shipped` | **Tests:** 13/13 | **LOC:** —
+**Status:** `shipped` | **Tests:** 16/16 | **LOC:** —
 
 > L08_drift_detector.py — Model drift detection for player-prop predictions.
 > 
@@ -501,6 +537,28 @@ conda run -n basketball_ai python scripts\execute_loop\L07_pnl_ledger.py
 >     python L08_drift_detector.py report [--window 7]
 > 
 > Environment Variables: none
+> 
+> Event Publication
+> -----------------
+> When a stat's drift status is "DRIFT" or "WARN", L08 publishes a
+> ``"drift.detected"`` event via the L46 EventBus singleton (soft-imported;
+> failure is non-fatal and logged at DEBUG level).
+> 
+> Event schema::
+> 
+>     {
+>         "stat":         str,   # lowercase stat name, e.g. "pts"
+>         "drift_metric": float, # observed z-score
+>         "threshold":    float, # z-score threshold that was crossed
+>         "severity":     str,   # "warning" (WARN) | "error" (DRIFT)
+>         "window_days":  int,   # lookback window used for the check
+>         "detected_at":  str,   # ISO 8601 UTC timestamp
+>     }
+> 
+> Subscribers can register via::
+> 
+>     import scripts.execute_loop.L46_event_bus as L46
+>     L46.subscribe("drift.detected", handler, layer="MyLayer")
 
 ### Public API
 
@@ -540,7 +598,7 @@ conda run -n basketball_ai python scripts\execute_loop\L08_drift_detector.py
 
 ## L09 — Kalshi exchange client
 
-**Status:** `shipped` | **Tests:** 20/20 | **LOC:** 466
+**Status:** `shipped` | **Tests:** 20/20 | **LOC:** —
 
 > L09_kalshi_client.py — Kalshi Exchange Client (PAPER MODE by default).
 > 
@@ -548,6 +606,9 @@ conda run -n basketball_ai python scripts\execute_loop\L08_drift_detector.py
 > -----------
 >   KALSHI_LIVE_ENABLED=1  AND  KALSHI_API_KEY  AND  KALSHI_API_KEY_ID  → LIVE
 >   Else → PAPER (default)
+> 
+>   Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('kalshi');
+>   see L44 for the canonical list of env vars.
 > 
 > PAPER BEHAVIOUR
 > ---------------
@@ -570,6 +631,12 @@ conda run -n basketball_ai python scripts\execute_loop\L08_drift_detector.py
 >     python L09_kalshi_client.py orderbook --ticker NBA-TEST
 >     python L09_kalshi_client.py positions
 >     python L09_kalshi_client.py post --ticker X --side yes --qty 10 --price 60 [--live]
+> 
+> Environment Variables
+> ---------------------
+>     KALSHI_LIVE_ENABLED   Set to "1" to activate live (HTTP) mode; default paper.
+>     KALSHI_API_KEY        API key for live REST calls; required when KALSHI_LIVE_ENABLED=1.
+>     KALSHI_API_KEY_ID     API key ID for live REST calls; required when KALSHI_LIVE_ENABLED=1.
 
 ### Public API
 
@@ -609,7 +676,7 @@ def main(argv: list[str] | None=None) -> None
 
 | Name | Default / Value |
 |------|----------------|
-| `KALSHI_LIVE_ENABLED` | `''` |
+| `KALSHI_LIVE_ENABLED` | `'0'` |
 | `KALSHI_API_KEY` | `''` |
 | `KALSHI_API_KEY_ID` | `''` |
 
@@ -632,13 +699,16 @@ conda run -n basketball_ai python scripts\execute_loop\L09_kalshi_client.py
 
 ## L10 — Polymarket client
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 387
+**Status:** `shipped` | **Tests:** 10/10 | **LOC:** —
 
 > L10_polymarket_client.py — Polymarket CLOB client (PAPER MODE default).
 > 
 > Reads NBA prediction markets from Polymarket's Gamma + CLOB APIs.
 > Default mode is PAPER — never touches private keys or real funds.
 > LIVE mode requires explicit env vars AND --live flag from caller.
+> 
+> Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('polymarket');
+> see L44 for the canonical list of env vars.
 > 
 > Public API
 > ----------
@@ -659,6 +729,8 @@ conda run -n basketball_ai python scripts\execute_loop\L09_kalshi_client.py
 >     python L10_polymarket_client.py cancel --order_id X
 > 
 > Environment Variables:
+>     POLYMARKET_LIVE_ENABLED  Set to "1" to activate live (HTTP) mode; default paper.
+>                              Canonical flag read via L44_paper_mode.is_live_for_layer('polymarket').
 >     POLYMARKET_PRIVATE_KEY   EIP-712 signing key for the funded Polymarket wallet.
 >                              Required to enable live order submission and cancellation.
 >                              Default: absent (paper mode only; live calls raise PermissionError).
@@ -726,6 +798,7 @@ def main(argv: Optional[list[str]]=None) -> None
 |------|----------------|
 | `POLYMARKET_PRIVATE_KEY` | `''` |
 | `POLYMARKET_USDC_FUNDED` | `''` |
+| `POLYMARKET_LIVE_ENABLED` | `'0'` |
 
 ### Paper vs Live Mode
 
@@ -757,6 +830,9 @@ conda run -n basketball_ai python scripts\execute_loop\L10_polymarket_client.py
 > - Default (env vars absent / empty)                     → PAPER (seed JSON files)
 > - SPORTTRADE_LIVE_ENABLED=1 without API key             → PermissionError on any call
 > 
+> Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('sporttrade');
+> see L44 for the canonical list of env vars.
+> 
 > Public API
 > ----------
 >     SporttradeQuote     dataclass
@@ -778,6 +854,7 @@ conda run -n basketball_ai python scripts\execute_loop\L10_polymarket_client.py
 > Environment Variables
 > ---------------------
 >     SPORTTRADE_LIVE_ENABLED  — set to "1" to activate live (HTTP) mode; default paper.
+>                                Canonical flag read via L44_paper_mode.is_live_for_layer('sporttrade').
 >     SPORTTRADE_API_KEY       — bearer token for live REST/WS calls; required when
 >                                SPORTTRADE_LIVE_ENABLED=1.
 
@@ -829,7 +906,7 @@ def main(argv: Optional[list[str]]=None) -> None
 
 | Name | Default / Value |
 |------|----------------|
-| `SPORTTRADE_LIVE_ENABLED` | `''` |
+| `SPORTTRADE_LIVE_ENABLED` | `'0'` |
 | `SPORTTRADE_API_KEY` | `''` |
 
 ### Paper vs Live Mode
@@ -850,7 +927,7 @@ conda run -n basketball_ai python scripts\execute_loop\L11_sporttrade_client.py
 
 ## L12 — Prophet Exchange client
 
-**Status:** `shipped` | **Tests:** 13/13 | **LOC:** 314
+**Status:** `shipped` | **Tests:** 13/13 | **LOC:** —
 
 > L12_prophet_client.py — Prophet Exchange Client (PAPER / LIVE).
 > 
@@ -862,6 +939,9 @@ conda run -n basketball_ai python scripts\execute_loop\L11_sporttrade_client.py
 > - PROPHET_LIVE_ENABLED=1  AND  PROPHET_API_KEY set  → LIVE (HTTP calls)
 > - Default (env vars absent / empty)                  → PAPER (seed JSON files)
 > - PROPHET_LIVE_ENABLED=1 without API key             → PermissionError on any call
+> 
+> Paper-vs-live mode delegated to L44_paper_mode.is_live_for_layer('prophet');
+> see L44 for the canonical list of env vars.
 > 
 > Public API
 > ----------
@@ -881,6 +961,13 @@ conda run -n basketball_ai python scripts\execute_loop\L11_sporttrade_client.py
 >     python L12_prophet_client.py positions
 >     python L12_prophet_client.py post --market_id X --side over --qty 10
 >                                       --price_decimal 1.90 [--live]
+> 
+> Environment Variables
+> ---------------------
+>     PROPHET_LIVE_ENABLED  — set to "1" to activate live (HTTP) mode; default paper.
+>                             Canonical flag read via L44_paper_mode.is_live_for_layer('prophet').
+>     PROPHET_API_KEY       — bearer token for live REST calls; required when
+>                             PROPHET_LIVE_ENABLED=1.
 
 ### Public API
 
@@ -925,7 +1012,7 @@ def main(argv: Optional[list[str]]=None) -> None
 
 | Name | Default / Value |
 |------|----------------|
-| `PROPHET_LIVE_ENABLED` | `''` |
+| `PROPHET_LIVE_ENABLED` | `'0'` |
 | `PROPHET_API_KEY` | `''` |
 
 ### Paper vs Live Mode
@@ -1050,7 +1137,7 @@ conda run -n basketball_ai python scripts\execute_loop\L13_cross_exchange_ev.py
 
 ## L14 — Order manager
 
-**Status:** `shipped` | **Tests:** 14/14 | **LOC:** —
+**Status:** `shipped` | **Tests:** 17/17 | **LOC:** —
 
 > L14_order_manager.py — Order Manager (execute_loop layer 14).
 > 
@@ -1092,6 +1179,23 @@ conda run -n basketball_ai python scripts\execute_loop\L13_cross_exchange_ev.py
 > ---------------------
 > None. This module reads no environment variables directly. All paper/live
 > gating is delegated to the L9-L12 exchange clients it composes.
+> 
+> Event Publication (L46 EventBus)
+> ---------------------------------
+> L14 publishes two event types through the L46 EventBus singleton so that
+> downstream layers (L7 ledger, L22 alerts) can subscribe without L14 needing
+> direct knowledge of them.  L46 is soft-imported; if unavailable, all
+> existing direct-call paths continue to function unchanged.
+> 
+>     "fill.received"  — emitted on every successful _apply_fill call
+>         payload keys: order_id, exchange, market_id, side,
+>                       matched_qty, qty_filled_now, status
+> 
+>     "order.filled"   — emitted when an order transitions to FILLED status
+>                        (qty_filled >= qty); fired once per fill event,
+>                        immediately after "fill.received"
+>         payload keys: order_id, exchange, market_id, side,
+>                       qty_filled, qty, price, model_p
 
 ### Public API
 
@@ -1239,10 +1343,40 @@ conda run -n basketball_ai python scripts\execute_loop\L15_market_making.py
 
 > L16_live_trader.py — Live Trader (PAPER MODE STRICT).
 > 
+> Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+> env-var list).  L16 uses ``not _L44.is_paper_mode()`` as the live gate, with
+> LIVE_TRADING_ENABLED env var as the fallback when L44 is absent (soft-import
+> pattern ensures behavior is identical if L44 is absent).
+> 
 > Polls a live prediction engine, evaluates edge vs market quotes, and manages
 > paper positions in data/ledger/paper_live_positions.json.  Real order
 > submission is permanently gated behind the LIVE_TRADING_ENABLED env var
 > (which should never be set in normal operation).
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L16 is paper-mode by default.  The module-level ``LIVE_TRADING_ENABLED``
+> constant (see Config section below) is ``False`` unless the env var is
+> explicitly set.  When ``LIVE_TRADING_ENABLED`` is ``False``:
+> 
+> * ``run_live_session`` logs a reminder and continues in paper mode.
+> * All order routing goes through L14 OrderManager → L9-L12 paper clients;
+>   no real exchange API calls are made at any point in the chain.
+> 
+> To enable live trading (intended only for production deployments):
+> 
+>     export LIVE_TRADING_ENABLED=1   # or "true"
+> 
+> Even with ``LIVE_TRADING_ENABLED=1`` set, L16 itself does not make direct
+> exchange calls — it delegates to L14, which checks per-exchange flags at the
+> L9-L12 client layer.  The flag is documented here so L42 audits can confirm
+> the paper default is explicit at L16's own level.
+> 
+> Environment Variables
+> ---------------------
+>     LIVE_TRADING_ENABLED   Set to "1" or "true" to enable live order routing
+>                            (default: "0" → paper mode).  Must be set at the
+>                            process level; L16 never writes this var.
 > 
 > Public API
 > ----------
@@ -1288,17 +1422,17 @@ _Poll live engine, evaluate positions, persist paper ledger._
 
 | Name | Default / Value |
 |------|----------------|
-| `LIVE_TRADING_ENABLED` | `''` |
+| `LIVE_TRADING_ENABLED` | `'0'` |
 
 ### Paper vs Live Mode
 
 ```
 L16_live_trader.py — Live Trader (PAPER MODE STRICT).
 
-Polls a live prediction engine, evaluates edge vs market quotes, and manages
-paper positions in data/ledger/paper_live_positions.json.  Real order
-submission is permanently gated behind the LIVE_TRADING_ENABLED env var
-(which should never be set in normal operation).
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  L16 uses ``not _L44.is_paper_mode()`` as the live gate, with
+LIVE_TRADING_ENABLED env var as the fallback when L44 is absent (soft-import
+pattern ensures behavior is identical if L44 is absent).
 ```
 
 ### How to Run
@@ -1309,7 +1443,7 @@ conda run -n basketball_ai python scripts\execute_loop\L16_live_trader.py
 
 ## L17 — Hedge calculator
 
-**Status:** `shipped` | **Tests:** 9/9 | **LOC:** 363
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** —
 
 > L17_hedge_calculator.py — Hedge Calculator for live open bets.
 > 
@@ -1391,12 +1525,12 @@ conda run -n basketball_ai python scripts\execute_loop\L17_hedge_calculator.py
 
 ## L18 — Bankroll manager (Kelly)
 
-**Status:** `shipped` | **Tests:** 11/11 | **LOC:** 431
+**Status:** `shipped` | **Tests:** 17/17 | **LOC:** —
 
 > L18 Bankroll Manager — Kelly sizing, correlation-aware staking, kill switches.
 > 
 > Public API:
->     kelly_fraction(prob, odds_american) -> float
+>     kelly_fraction(model_p, american_odds, bankroll) -> float
 >     kelly_with_correlation(bets, corr_matrix) -> np.ndarray
 >     get_bankroll_state() -> BankrollState
 >     update_bankroll(pnl, notes) -> BankrollState
@@ -1405,6 +1539,21 @@ conda run -n basketball_ai python scripts\execute_loop\L17_hedge_calculator.py
 >     reset_weekly() -> None
 >     trip_kill_switch(reason) -> None
 >     clear_kill_switch(user_token) -> None
+> 
+> Event Publication (via L46 EventBus — optional, non-fatal if unavailable):
+>     "kelly.sized"
+>         Published after every call to kelly_fraction() that returns a positive
+>         fraction.  Payload keys: model_p, american_odds, bankroll,
+>         kelly_fraction, kelly_cap_applied (bool).
+> 
+>     "risk_limit.breached"
+>         Published by check_risk_limits() whenever a limit is violated.
+>         Payload keys: limit_type (str), proposed_stake (float),
+>         threshold (float), reason (str).
+> 
+> Environment Variables:
+>     None required by L18 itself.  L44 env-vars govern paper/live mode
+>     for layers that call L18; L18 does not gate its own behaviour on mode.
 
 ### Public API
 
@@ -1417,7 +1566,7 @@ class BankrollState
 ```
 
 ```python
-def kelly_fraction(prob: float, odds_american: int) -> float
+def kelly_fraction(model_p: float, american_odds: int, bankroll: float=_BANKROLL_NOT_SET, prob: float=None, odds_american: int=None) -> float
 ```
 _Return fractional Kelly stake as a fraction of bankroll._
 
@@ -1465,6 +1614,13 @@ _Disengage kill switch; raises ValueError on wrong token._
 def main() -> None
 ```
 
+### Paper vs Live Mode
+
+```
+None required by L18 itself.  L44 env-vars govern paper/live mode
+    for layers that call L18; L18 does not gate its own behaviour on mode.
+```
+
 ### How to Run
 
 ```bash
@@ -1473,7 +1629,7 @@ conda run -n basketball_ai python scripts\execute_loop\L18_bankroll_manager.py
 
 ## L19 — CLV calculator + report
 
-**Status:** `shipped` | **Tests:** 11/11 | **LOC:** 295
+**Status:** `shipped` | **Tests:** 11/11 | **LOC:** —
 
 > L19_clv_calculator.py — CLV (Closing Line Value) Calculator + Nightly Report.
 > 
@@ -1496,6 +1652,17 @@ conda run -n basketball_ai python scripts\execute_loop\L18_bankroll_manager.py
 >     python L19_clv_calculator.py report [--date YYYY-MM-DD]
 >     python L19_clv_calculator.py trend  [--days 30]
 >     python L19_clv_calculator.py alert  [--window 14 --threshold -2.0]
+> 
+> Paper vs Live Mode — MODE GATING: N/A
+> --------------------------------------
+> L19 is a **read-only analytics layer** — it makes no API calls and has no
+> execution-mode toggle.  The constant ``_MARKET_TYPE_LIVE`` (= ``"live"``)
+> is a **data classification**: bets whose ``market`` column contains this
+> value were placed after tip-off (in-game prop markets) and are excluded
+> from CLV calculations because no pre-game closing line exists.  It is NOT
+> an environment-mode gate such as ``if mode == "live"``.  L19 runs
+> identically in paper and production environments.  No paper/live mode
+> switch is required or applicable.
 
 ### Public API
 
@@ -1535,6 +1702,21 @@ _Return list of Alert dicts if mean CLV prob_pts over `window_days` < threshold_
 
 ```python
 def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode — MODE GATING: N/A
+--------------------------------------
+L19 is a **read-only analytics layer** — it makes no API calls and has no
+execution-mode toggle.  The constant ``_MARKET_TYPE_LIVE`` (= ``"live"``)
+is a **data classification**: bets whose ``market`` column contains this
+value were placed after tip-off (in-game prop markets) and are excluded
+from CLV calculations because no pre-game closing line exists.  It is NOT
+an environment-mode gate such as ``if mode == "live"``.  L19 runs
+identically in paper and production environments.  No paper/live mode
+switch is required or applicable.
 ```
 
 ### How to Run
@@ -1662,7 +1844,7 @@ conda run -n basketball_ai python scripts\execute_loop\L21_lineup_watcher.py
 
 ## L22 — Slack/Discord alerting
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** —
+**Status:** `shipped` | **Tests:** 15/15 | **LOC:** —
 
 > L22_alerting.py — Slack / Discord alerting wrapper (BUILD L22).
 > 
@@ -1677,6 +1859,7 @@ conda run -n basketball_ai python scripts\execute_loop\L21_lineup_watcher.py
 >     send_drawdown_alert(current_bankroll, starting, pct_drop) -> bool
 >     send_drift_alert(stat, observed_mae, expected_mae, days_window) -> bool
 >     flush_pending() -> int
+>     register_alert_subscribers(bus=None) -> None
 > 
 > Environment Variables
 > ---------------------
@@ -1700,10 +1883,39 @@ conda run -n basketball_ai python scripts\execute_loop\L21_lineup_watcher.py
 >         Any other value (including absent) disables live delivery and
 >         writes alerts to the local log file in test mode (default: "false").
 > 
+>     ALERTS_LIVE_ENABLED
+>         Set to "1" to enable live HTTP webhook delivery.  Stored as the
+>         module-level ``LIVE_ENABLED`` constant at import time.  Any other
+>         value (including absent) keeps L22 in paper/test mode.  This is the
+>         L42 paper_default gate constant; prefer ``ALERTS_ENABLED`` (below)
+>         for per-send delivery toggling.
+> 
 >     ALERTS_RATE_LIMIT_PER_MIN
 >         Maximum number of alerts dispatched per 60-second rolling window via
 >         the token-bucket limiter. Excess alerts are enqueued and replayed via
 >         flush_pending(). Integer; default 30.
+> 
+>     ALERTS_VERBOSE_FILLS
+>         Set to "1" to subscribe L22 to "order.filled" EventBus events and emit
+>         an INFO alert for each fill.  Default off (any other value or absent).
+> 
+> Event Subscriptions (L46 EventBus)
+> -----------------------------------
+>     Call ``register_alert_subscribers(bus)`` once at harness startup to wire
+>     L22 as an L46 EventBus subscriber.  The function is IDEMPOTENT — calling
+>     it multiple times registers handlers exactly once.
+> 
+>     Event name           Condition                     Alert level
+>     ─────────────────────────────────────────────────────────────
+>     incident.opened      payload["severity"] in P0/P1  ERROR
+>     incident.classified  payload["severity"] == "P0"   CRITICAL (→ error)
+>     drift.detected       payload["severity"] == "error" WARNING
+>     risk_limit.breached  (always)                       ERROR
+>     order.filled         ALERTS_VERBOSE_FILLS=1 only    INFO
+> 
+>     L22 does NOT auto-register at import time; the operator / L41 harness
+>     must call register_alert_subscribers() explicitly to avoid noisy behaviour
+>     in tests that import L22 without intending to subscribe to the bus.
 > 
 > Atomic writes
 > -------------
@@ -1747,10 +1959,18 @@ def send_drift_alert(stat: str, observed_mae: float, expected_mae: float, days_w
 def flush_pending() -> int
 ```
 
+```python
+def register_alert_subscribers(bus=None) -> None
+```
+_Subscribe L22 alert handlers to the L46 EventBus._
+
 ### Environment Variables
 
 | Name | Default / Value |
 |------|----------------|
+| `LIVE_ENABLED` | `os.environ.get('ALERTS_LIVE_ENABLED') == '1'` |
+| `ALERTS_LIVE_ENABLED` | `None` |
+| `ALERTS_VERBOSE_FILLS` | `None` |
 | `ALERTS_RATE_LIMIT_PER_MIN` | `'30'` |
 | `SLACK_WEBHOOK_URL` | `''` |
 | `DISCORD_WEBHOOK_URL` | `''` |
@@ -1860,6 +2080,19 @@ conda run -n basketball_ai python scripts\execute_loop\L23_status_dashboard.py
 >     python L24_nightly_retrain.py dry-run
 >     python L24_nightly_retrain.py status
 >     python L24_nightly_retrain.py rollback --to <run_id>
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+>     Default deploy path is always ``via_shadow=True`` (paper/shadow observation
+>     via L25 for 50 games) unless the caller explicitly passes ``via_shadow=False``.
+>     Live copy to the production WF JSON requires RETRAIN_DEPLOY_TOKEN to be set;
+>     without the token the live branch is a no-op. Never default to live.
+> 
+> Environment Variables
+> ---------------------
+>     RETRAIN_DEPLOY_TOKEN  Token required to authorise a direct live deploy
+>                           (via_shadow=False path). If unset, live deploy is
+>                           aborted and deploy_mode remains "none".
 
 ### Public API
 
@@ -1902,6 +2135,17 @@ def main(argv=None) -> int
 |------|----------------|
 | `RETRAIN_DEPLOY_TOKEN` | `''` |
 
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+    Default deploy path is always ``via_shadow=True`` (paper/shadow observation
+    via L25 for 50 games) unless the caller explicitly passes ``via_shadow=False``.
+    Live copy to the production WF JSON requires RETRAIN_DEPLOY_TOKEN to be set;
+    without the token the live branch is a no-op. Never default to live.
+```
+
 ### How to Run
 
 ```bash
@@ -1910,7 +2154,7 @@ conda run -n basketball_ai python scripts\execute_loop\L24_nightly_retrain.py
 
 ## L25 — A/B shadow harness
 
-**Status:** `shipped` | **Tests:** 10/10 | **LOC:** 309
+**Status:** `shipped` | **Tests:** 13/13 | **LOC:** —
 
 > L25_ab_shadow.py — A/B Shadow Harness (execute_loop layer 25).
 > 
@@ -1919,6 +2163,17 @@ conda run -n basketball_ai python scripts\execute_loop\L24_nightly_retrain.py
 >     data/shadow/<variant_name>/
 >         predictions.parquet             — (game_id, player, stat, predicted_q50, ts)
 >         summary.json                    — written only when settled
+> 
+> All disk writes use atomic tmp → replace so a crash never leaves a partial file.
+> 
+> Environment Variables:
+>     L25_SHADOW_ROOT   Override shadow storage directory (default: data/shadow/).
+>     L25_LEDGER_DIR    Override ledger directory (default: data/ledger/).
+> 
+> Paper vs Live Mode:
+>     This module is data-only — it writes shadow predictions and reads the L07
+>     ledger for settlement.  It does NOT place bets.  No paper/live distinction
+>     is needed; all shadow runs are inherently paper (observation only).
 > 
 > CLI:
 >     python L25_ab_shadow.py status                   # list_active_shadows table
@@ -1965,7 +2220,21 @@ def list_active_shadows() -> list[ShadowRun]
 _Return all shadow variants from the registry._
 
 ```python
+def shadow_compare_from_l41(harness_report: dict) -> dict
+```
+_Run a shadow comparison driven by an L41 IntegrationHarness report._
+
+```python
 def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode:
+    This module is data-only — it writes shadow predictions and reads the L07
+    ledger for settlement.  It does NOT place bets.  No paper/live distinction
+    is needed; all shadow runs are inherently paper (observation only).
 ```
 
 ### How to Run
@@ -2101,9 +2370,14 @@ conda run -n basketball_ai python scripts\execute_loop\L27_tax_tracking.py
 
 ## L28 — Withdrawal automation
 
-**Status:** `shipped` | **Tests:** 15/15 | **LOC:** 249
+**Status:** `shipped` | **Tests:** 15/15 | **LOC:** —
 
 > L28_withdrawal_automation.py — Withdrawal Automation (execute_loop layer 28).
+> 
+> Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+> env-var list).  Per-layer flag checked: withdrawal (WITHDRAWAL_LIVE_ENABLED).
+> Env var is kept as fallback for backward compatibility when L44 is absent
+> (soft-import pattern ensures behavior is identical if L44 is absent).
 > 
 > Monitors per-book balances and recommends / queues / executes withdrawals when
 > a balance exceeds the per-book target by more than the configured buffer.
@@ -2120,7 +2394,7 @@ conda run -n basketball_ai python scripts\execute_loop\L27_tax_tracking.py
 >     python L28_withdrawal_automation.py execute --queue-id X --token WITHDRAW_AUTHORIZED
 >     python L28_withdrawal_automation.py list-pending
 > 
-> Paper vs Live Mode:
+> Paper vs Live Mode (MODE GATING):
 >     This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
 >     expresses this intent. All withdrawal executions record entries with
 >     status='queued_paper' unless live mode is explicitly enabled via the env var
@@ -2172,11 +2446,10 @@ def main() -> None
 ### Paper vs Live Mode
 
 ```
-Paper vs Live Mode:
-    This module is paper-by-default. The module-level constant ``PAPER_MODE = True``
-    expresses this intent. All withdrawal executions record entries with
-    status='queued_paper' unless live mode is explicitly enabled via the env var
-    below. Live mode must never be enabled in automated/CI contexts.
+Paper-vs-live mode delegated to L44_paper_mode (see L44 for the canonical
+env-var list).  Per-layer flag checked: withdrawal (WITHDRAWAL_LIVE_ENABLED).
+Env var is kept as fallback for backward compatibility when L44 is absent
+(soft-import pattern ensures behavior is identical if L44 is absent).
 ```
 
 ### How to Run
@@ -2386,7 +2659,7 @@ conda run -n basketball_ai python scripts\execute_loop\L33_sell_to_close.py
 
 ## L34 — Variance budgeter
 
-**Status:** `shipped` | **Tests:** 27/27 | **LOC:** 388
+**Status:** `shipped` | **Tests:** 35/35 | **LOC:** —
 
 > L34 Variance Budgeter — Mean-variance portfolio allocation across betting buckets.
 > 
@@ -2395,6 +2668,21 @@ conda run -n basketball_ai python scripts\execute_loop\L33_sell_to_close.py
 >         -> list[Allocation]
 >     mean_variance_optimize(expected_returns, stds, correlations, max_weight)
 >         -> dict[str, float]
+>     coordinate_with_sell_to_close(current_positions, variance_budget)
+>         -> list[dict]  — positions suggested for closure, ranked by variance contribution
+> 
+> Environment Variables:
+>     None.  L34 is a pure in-memory computation layer; it writes no files.
+> 
+> Paper vs Live Mode:
+>     L34 produces allocation recommendations only — it does not submit orders.
+>     The caller (L33 sell-to-close or the execution router) is responsible for
+>     acting on the returned suggestions in either paper or live mode.
+> 
+> L33 Integration:
+>     coordinate_with_sell_to_close() is the bridge to L33 (sell-to-close engine).
+>     Pass the current open positions with their variance footprints; L34 returns
+>     a prioritised close list whenever the portfolio variance exceeds the budget.
 
 ### Public API
 
@@ -2413,7 +2701,21 @@ def compute_daily_allocation(total_bankroll: float, edges: Optional[dict[str, fl
 _Compute optimal daily dollar allocation across betting buckets._
 
 ```python
+def coordinate_with_sell_to_close(current_positions: list, variance_budget: float) -> list[dict]
+```
+_Return positions suggested for closure, ranked by variance contribution._
+
+```python
 def main() -> None
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode:
+    L34 produces allocation recommendations only — it does not submit orders.
+    The caller (L33 sell-to-close or the execution router) is responsible for
+    acting on the returned suggestions in either paper or live mode.
 ```
 
 ### How to Run
@@ -2473,7 +2775,7 @@ conda run -n basketball_ai python scripts\execute_loop\L35_risk_of_ruin.py
 
 ## L36 — Edge-erosion watcher
 
-**Status:** `shipped` | **Tests:** 15/15 | **LOC:** 486
+**Status:** `shipped` | **Tests:** 20/20 | **LOC:** —
 
 > L36_edge_erosion.py — Edge-Erosion Watcher (execute_loop layer 36).
 > 
@@ -2490,8 +2792,39 @@ conda run -n basketball_ai python scripts\execute_loop\L35_risk_of_ruin.py
 >     python L36_edge_erosion.py quarantine --angle-key X --reason "manual"
 >     python L36_edge_erosion.py unquarantine --angle-key X --token UNQUARANTINE_OK
 >     python L36_edge_erosion.py list-quarantined
+> 
+> Event Publication
+> -----------------
+> When a per-stat erosion crosses the detection threshold, L36 publishes to
+> the shared L46 EventBus (if one has been injected via ``set_event_bus``):
+> 
+>     Event name : "edge_erosion.detected"
+>     Payload fields:
+>         stat          – stat name derived from angle_key (str)
+>         current_edge  – observed_ev_pct for this angle (float)
+>         baseline_edge – expected_ev_pct for this angle (float)
+>         erosion_pct   – absolute gap (baseline - current, float)
+>         threshold     – the erosion gap threshold used (float, default 5.0)
+>         severity      – "QUARANTINED" | "WARN" (str)
+>         window_days   – window_n used when computing metrics (int)
+>         detected_at   – ISO 8601 UTC timestamp (str)
+> 
+> Publisher failures are silently swallowed so reports are never interrupted.
+> 
+> Environment Variables
+> ---------------------
+> None required.  All configuration is provided programmatically:
+>     • L36 reads ledger paths from module-level constants (_BETS_PARQUET,
+>       _BETS_CSV, _QUARANTINE_FILE) which tests monkeypatch via module attrs.
+>     • The L46 EventBus instance is injected via set_event_bus(); L36 does
+>       NOT read any env vars at import time.
 
 ### Public API
+
+```python
+def set_event_bus(bus) -> None
+```
+_Inject an L46 EventBus instance for edge_erosion.detected events._
 
 ```python
 class AngleMetric
@@ -2534,7 +2867,7 @@ conda run -n basketball_ai python scripts\execute_loop\L36_edge_erosion.py
 
 ## L37 — Postmortem agent
 
-**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 598
+**Status:** `shipped` | **Tests:** 16/16 | **LOC:** —
 
 > L37_postmortem.py — Automated Postmortem Agent (execute_loop layer 37).
 > 
@@ -2554,8 +2887,62 @@ conda run -n basketball_ai python scripts\execute_loop\L36_edge_erosion.py
 >     python L37_postmortem.py detect [--window 1]
 >     python L37_postmortem.py run --losing-bets path.json
 >     python L37_postmortem.py list
+> 
+> Event Publication (L46 EventBus)
+> ---------------------------------
+> L37 publishes two event types via the L46 default bus (soft-import; bus absence
+> is non-fatal — detection and postmortem behaviour are unchanged).
+> 
+> ``incident.opened``
+>     Emitted once per new incident returned by detect_incidents().
+>     Payload fields:
+>         incident_id  : str   — UUID4 fragment (8 chars) generated for the incident
+>         loss_pattern : str   — trigger_type value ("large_loss", "losing_streak", …)
+>         bet_count    : int   — number of bets in the incident
+>         total_loss   : float — sum of pnl for the incident's bets (negative)
+>         avg_clv      : float | None — average CLV if present in the incident dict
+>         detected_at  : str  — ISO 8601 UTC timestamp of detection
+>         incident_class : str | None — IncidentClass.name from classify_incident()
+>         severity       : str | None — "P0" | "P1" | "P2" | None
+> 
+> ``incident.classified``
+>     Emitted by run_postmortem() after structured classification is complete.
+>     Payload fields:
+>         incident_id    : str
+>         incident_class : str | None
+>         severity       : str | None
+>         remediation    : str | None — Remediation.suggestion
+>         trigger_type   : str
 
 ### Public API
+
+```python
+class IncidentClass
+```
+
+```python
+class Remediation
+```
+
+```python
+def classify_incident(incident: dict) -> Optional[IncidentClass]
+```
+_Heuristic classification of an incident dict._
+
+```python
+def suggest_remediation(incident_class: IncidentClass) -> Optional[Remediation]
+```
+_Return the remediation suggestion for a given IncidentClass._
+
+```python
+def register_classifier(class_def: IncidentClass, classifier_fn: Callable[[dict], bool]) -> None
+```
+_Register a custom incident class and its classifier function._
+
+```python
+def register_remediation(remediation: Remediation) -> None
+```
+_Register or override a remediation for a given class_name._
 
 ```python
 class PostmortemReport
@@ -2572,7 +2959,7 @@ def categorize_losses(bets: list[dict]) -> dict[str, int]
 _Assign the first matching cause to each bet; return cause tallies._
 
 ```python
-def run_postmortem(losing_bets: list[dict], trigger_type: str='large_loss', pnl: Optional[float]=None, bankroll: Optional[float]=None) -> PostmortemReport
+def run_postmortem(losing_bets: list[dict], trigger_type: str='large_loss', pnl: Optional[float]=None, bankroll: Optional[float]=None, incident: Optional[dict]=None) -> PostmortemReport
 ```
 _Categorise *losing_bets*, build the report, write Markdown, return dataclass._
 
@@ -2784,25 +3171,12 @@ conda run -n basketball_ai python scripts\execute_loop\L40_multi_model_dispatche
 
 ## L41 — Integration harness (end-to-end)
 
-**Status:** `shipped` | **Tests:** 11/11 | **LOC:** —
+**Status:** `shipped` | **Tests:** 23/23 | **LOC:** 996
 
-> L41_integration_harness.py — End-to-end integration harness for the autonomous NBA execution loop.
+> L41_integration_harness.py — End-to-end integration harness for the NBA execution loop.
 > 
-> Purpose
-> -------
-> Wire every shipped layer (L01–L37) end-to-end against a deterministic stub slate
-> and verify the full pipeline executes without live API calls.
-> 
-> Environment variables
-> ---------------------
-> SUBMISSION_MODE : forced to "paper" for every run (never "live" inside the harness).
-> 
-> Invariants
-> ----------
-> - No live API calls are made; all HTTP is blocked by design in stub mode.
-> - All RNG is seeded via np.random.default_rng(seed) for full reproducibility.
-> - Missing layers are soft-imported and result in SKIP stages, not failures.
-> - Critical-stage failures propagate as SKIP_DEPENDS to downstream stages.
+> Wires L01–L41 layers against a deterministic stub slate; no live API calls.
+> SUBMISSION_MODE forced to "paper". Missing layers → SKIP. Critical failures → SKIP_DEPENDS.
 
 ### Public API
 
@@ -2825,7 +3199,7 @@ conda run -n basketball_ai python scripts\execute_loop\L41_integration_harness.p
 
 ## L42 — Production readiness checker
 
-**Status:** `shipped` | **Tests:** 8/8 | **LOC:** 275
+**Status:** `shipped` | **Tests:** 18/18 | **LOC:** 574
 
 > L42_production_readiness.py — Production Readiness Checker for L1-L40.
 > 
@@ -2839,6 +3213,10 @@ conda run -n basketball_ai python scripts\execute_loop\L41_integration_harness.p
 
 ```python
 class CheckResult
+```
+
+```python
+class LayerKPI
 ```
 
 ```python
@@ -2880,7 +3258,7 @@ conda run -n basketball_ai python scripts\execute_loop\L42_production_readiness.
 
 ## L43 — Runbook generator
 
-**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 295
+**Status:** `shipped` | **Tests:** 7/7 | **LOC:** —
 
 > L43_runbook_generator.py — Runbook documentation generator for the execute_loop.
 > 
@@ -2919,6 +3297,539 @@ def main(argv: Optional[list[str]]=None) -> int
 
 ```bash
 conda run -n basketball_ai python scripts\execute_loop\L43_runbook_generator.py
+```
+
+## L44 — Paper-mode helper library
+
+**Status:** `shipped` | **Tests:** 19/19 | **LOC:** —
+
+> L44_paper_mode.py — Single Source of Truth for Paper vs Live Mode.
+> 
+> Purpose:
+>     Centralises all paper/live mode policy for the execute_loop.  Prior to L44
+>     each layer (L05, L09, L10, L11, L12, L16, L28, …) maintained its own
+>     inline env-var checks, module-level constants, or ad-hoc helper functions.
+>     This made the policy diffuse and hard to audit.  L44 is the canonical
+>     library that all layers will adopt.  Existing layers are unchanged in this
+>     PR; they will migrate in future rounds.
+> 
+> Environment Variables:
+>     SUBMISSION_MODE
+>         Set to "live" (case-insensitive) to enable live mode globally.
+>         Any other value (or absent) leaves the process in paper mode.
+> 
+>     KALSHI_LIVE_ENABLED
+>         Set to "1" to enable live mode for the Kalshi exchange layer (L09).
+> 
+>     POLYMARKET_LIVE_ENABLED
+>         Set to "1" to enable live mode for the Polymarket layer (L10).
+> 
+>     SPORTTRADE_LIVE_ENABLED
+>         Set to "1" to enable live mode for the SportTrade layer (L11).
+> 
+>     PROPHET_LIVE_ENABLED
+>         Set to "1" to enable live mode for the Prophet layer (L12).
+> 
+>     WITHDRAWAL_LIVE_ENABLED
+>         Set to "1" to enable live mode for the Withdrawal Automation layer (L28).
+> 
+>     DK_LIVE_SUBMISSION_ENABLED
+>         Set to "1" to enable live mode for the DraftKings submission path (L05).
+> 
+>     FD_LIVE_SUBMISSION_ENABLED
+>         Set to "1" to enable live mode for the FanDuel submission path (L05).
+> 
+> Paper vs Live Mode Policy (MODE GATING):
+>     L44 IS the canonical mode-gating library; it does not itself need a
+>     PAPER_MODE constant since its public functions are the source of truth.
+>     - Paper is the DEFAULT.  No environment variables need to be set.
+>     - Live mode is opt-in and requires an EXPLICIT signal.
+>     - is_paper_mode() returns False (i.e. live is active) if ANY of the
+>       following conditions hold:
+>         1. SUBMISSION_MODE == "live"  (case-insensitive)
+>         2. KALSHI_LIVE_ENABLED == "1"
+>         3. POLYMARKET_LIVE_ENABLED == "1"
+>         4. SPORTTRADE_LIVE_ENABLED == "1"
+>         5. PROPHET_LIVE_ENABLED == "1"
+>         6. WITHDRAWAL_LIVE_ENABLED == "1"
+>         7. DK_LIVE_SUBMISSION_ENABLED == "1"
+>         8. FD_LIVE_SUBMISSION_ENABLED == "1"
+>     - is_live_for_layer() checks ONLY the per-layer flag for the named layer.
+>       It does NOT inherit from SUBMISSION_MODE.  Each layer must be opted in
+>       independently.
+>     - assert_paper_mode() provides a hard guard for code paths that must never
+>       execute in live mode (e.g. test harnesses, dry-run simulations).
+> 
+> Usage example:
+>     from scripts.execute_loop.L44_paper_mode import (
+>         is_paper_mode,
+>         is_live_for_layer,
+>         assert_paper_mode,
+>         PaperModeRequired,
+>     )
+> 
+>     if is_paper_mode():
+>         log_paper_order(order)
+>     else:
+>         exchange_client.submit(order)
+> 
+>     # Per-layer check inside L09
+>     if is_live_for_layer("kalshi"):
+>         ...
+> 
+>     # Guard in test harness
+>     assert_paper_mode("nightly_retrain_dry_run")
+
+### Public API
+
+```python
+class PaperModeRequired(RuntimeError)
+```
+_Raised by assert_paper_mode() when the process is in live mode._
+
+```python
+def is_paper_mode() -> bool
+```
+_Return True if the current process is in paper mode._
+
+```python
+def is_live_for_layer(layer_name: str) -> bool
+```
+_Return True if a specific layer is in live mode._
+
+```python
+def assert_paper_mode(operation: str='operation') -> None
+```
+_Raise PaperModeRequired if the current process is NOT in paper mode._
+
+### Paper vs Live Mode
+
+```
+L44_paper_mode.py — Single Source of Truth for Paper vs Live Mode.
+
+Purpose:
+    Centralises all paper/live mode policy for the execute_loop.  Prior to L44
+    each layer (L05, L09, L10, L11, L12, L16, L28, …) maintained its own
+    inline env-var checks, module-level constants, or ad-hoc helper functions.
+    This made the policy diffuse and hard to audit.  L44 is the canonical
+    library that all layers will adopt.  Existing layers are unchanged in this
+    PR; they will migrate in future rounds.
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L44_paper_mode.py
+```
+
+## L45 — Daily operator checklist
+
+**Status:** `shipped` | **Tests:** 10/10 | **LOC:** —
+
+> L45_daily_checklist.py — Operator Daily Checklist Runner (execute_loop layer 45).
+> 
+> Purpose
+> -------
+> A single CLI tool the operator runs before/during/after each game day to walk
+> through the standard operational routine and report readiness for each phase.
+> Wraps L38 (health dashboard), L42 (production readiness checker), and L41
+> (integration harness) into a coherent operator-facing workflow.
+> 
+> Environment Variables
+> ---------------------
+> None required directly.  Underlying layers read their own env vars as
+> documented in their respective module docstrings.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L45 reads paper/live state via L44.is_paper_mode() and surfaces it in every
+> checklist run, but is itself mode-agnostic — it is an operator observation
+> tool that does not gate or alter live-mode behaviour.  The paper/live toggle
+> lives entirely in L44; L45 only reports the observed state.  Default report
+> path is scripts/execute_loop/checklist_YYYY-MM-DD_<phase>.md unless
+> overridden by --out.
+> 
+> CLI
+> ---
+>     python L45_daily_checklist.py morning
+>     python L45_daily_checklist.py midday --out /tmp/midday.md
+>     python L45_daily_checklist.py postgame
+> 
+> Exit codes: 0 = all PASS/WARN/SKIP; 1 = any FAIL.
+
+### Public API
+
+```python
+class ChecklistItem
+```
+
+```python
+class DailyChecklist
+```
+_Run the per-phase operator checklist and produce a markdown report._
+
+```python
+def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L45 reads paper/live state via L44.is_paper_mode() and surfaces it in every
+checklist run, but is itself mode-agnostic — it is an operator observation
+tool that does not gate or alter live-mode behaviour.  The paper/live toggle
+lives entirely in L44; L45 only reports the observed state.  Default report
+path is scripts/execute_loop/checklist_YYYY-MM-DD_<phase>.md unless
+overridden by --out.
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L45_daily_checklist.py
+```
+
+## L46 — EventBus (cross-layer routing)
+
+**Status:** `shipped` | **Tests:** 18/18 | **LOC:** —
+
+> L46_event_bus.py — Cross-layer EventBus for the autonomous NBA execution loop.
+> 
+> Purpose
+> -------
+> Formalises the inter-layer notification pattern used across the execute_loop
+> stack.  Instead of each layer soft-importing its target layer directly (creating
+> an implicit, hard-to-audit dependency graph), publishers emit named Events and
+> subscribers register handlers against name patterns.  This makes the dependency
+> graph explicit, observable, and testable without changing existing direct-call
+> code paths (backward compatible — both approaches work simultaneously).
+> 
+> Environment Variables
+> ---------------------
+> None required.  The EventBus is configuration-free by design: callers pass a
+> ``persistence_path`` at construction time when durable replay is needed.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L46 is mode-agnostic — it routes events but has no live-mode behaviour itself.
+> The ``live`` tokens that appear in payload examples (e.g. event names such as
+> ``"bet.live"``) are arbitrary publisher-defined strings, not mode gates.
+> L46 neither reads nor writes any SUBMISSION_MODE / LIVE_MODE environment
+> variable and carries no conditional logic that differs between paper and live
+> deployments.  Mode enforcement is the responsibility of the publishing layer
+> (e.g. L44 asserts paper mode before any submission layer publishes).
+> 
+> Persistence Policy
+> ------------------
+> When a ``persistence_path`` (Path) is supplied to EventBus.__init__, every
+> published Event is appended as a single JSONL line to that file.  We use plain
+> ``open(path, "a")`` (append mode) rather than the atomic rename-replace pattern
+> used for snapshot files.  This is safe because:
+> 
+>   1. Each line is a self-contained JSON object terminated by ``\n``.
+>   2. On POSIX, writes ≤ PIPE_BUF (≥4 096 bytes) to ``O_APPEND`` files are
+>      atomic at the kernel level.  A single serialised Event is always well under
+>      this limit in practice.
+>   3. On Windows (where PIPE_BUF guarantees do not apply), the EventBus is
+>      single-threaded in the common deploy scenario (one process per layer), so
+>      interleaving is not a concern.  For multi-process scenarios on Windows,
+>      callers should use a dedicated persistence_path per process.
+> 
+> The atomic rename-replace pattern (_atomic_write_text) is reserved for cases
+> where the *entire* file must be consistent (snapshots, config dumps).  For an
+> append-only log it would require reading the full file on every publish, which
+> is prohibitively expensive.
+
+### Public API
+
+```python
+class Event
+```
+_An immutable event record emitted by a layer._
+
+```python
+class Subscription
+```
+_A registered handler bound to a name_pattern on a specific layer._
+
+```python
+class EventBus
+```
+_Pub/sub event bus with optional JSONL persistence and replay._
+
+```python
+def get_default_bus() -> EventBus
+```
+_Return the module-level EventBus singleton (created on first call)._
+
+```python
+def publish(name: str, source: str, payload: dict) -> Event
+```
+_Convenience wrapper: publish via the default bus singleton._
+
+```python
+def subscribe(name_pattern: str, handler: Callable[[Event], None], layer: str) -> Subscription
+```
+_Convenience wrapper: subscribe via the default bus singleton._
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L46 is mode-agnostic — it routes events but has no live-mode behaviour itself.
+The ``live`` tokens that appear in payload examples (e.g. event names such as
+``"bet.live"``) are arbitrary publisher-defined strings, not mode gates.
+L46 neither reads nor writes any SUBMISSION_MODE / LIVE_MODE environment
+variable and carries no conditional logic that differs between paper and live
+deployments.  Mode enforcement is the responsibility of the publishing layer
+(e.g. L44 asserts paper mode before any submission layer publishes).
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L46_event_bus.py
+```
+
+## L47 — Regression / drift detector
+
+**Status:** `shipped` | **Tests:** 7/7 | **LOC:** 508
+
+> L47_regression_detector.py — State Regression / Drift Detector for the execute-loop.
+> 
+> Purpose
+> -------
+> Reads ``scripts/execute_loop/state.json`` and the layers directory, then flags
+> regressions that indicate the loop has broken or silently degraded between
+> rounds.  Pure observability — never modifies any file.
+> 
+> Environment Variables
+> ---------------------
+>     None.
+> 
+> Paper vs Live Mode
+> ------------------
+> N/A — observability only; no money movement, no mode gating required.
+> 
+> What It Detects
+> ---------------
+> 1. **test_count_drop**
+>    For each layer with multiple ship entries, compare consecutive ships'
+>    ``tests`` strings (e.g. "12/12").  If the numerator *or* denominator falls,
+>    flag P0.  Increases are healthy and ignored.
+> 
+> 2. **kpi_drop**
+>    If a layer's latest ship has a ``stability_score`` key and it is lower than
+>    an earlier ship's score, flag P1.  Also flags if any ship carries a
+>    ``kpi_score`` that decreases across consecutive ships.
+> 
+> 3. **missing_module**
+>    For every layer whose status is "shipped", check that a corresponding
+>    ``L{N}_*.py`` file exists in the layers directory.  Gated layers (status
+>    "gated") are skipped.  Missing file → P0.
+> 
+> 4. **missing_tests** (orphan tests inverse)
+>    For every shipped layer whose latest ship records tests > 0, check that at
+>    least one ``test_L{N}_*.py`` exists in ``tests/``.  Missing test file → P1.
+> 
+> 5. **ship_without_round**
+>    Any ship entry that lacks a ``round`` field is a metadata gap → P2.
+> 
+> Public API
+> ----------
+>     Regression          frozen dataclass
+>     RegressionReport    dataclass with to_markdown() / to_dict()
+>     RegressionDetector  main engine
+>     main(argv)          CLI entry point
+
+### Public API
+
+```python
+class Regression
+```
+_A single detected regression or metadata issue._
+
+```python
+class RegressionReport
+```
+_Aggregated output of a full regression scan._
+
+```python
+def detect_test_count_drops(state_data: dict) -> list[Regression]
+```
+_Flag layers where a later ship has fewer passing or total tests than a prior ship._
+
+```python
+def detect_kpi_drops(state_data: dict, current_kpis: Optional[dict]=None) -> list[Regression]
+```
+_Flag layers where stability_score or kpi_score declined across ships._
+
+```python
+def detect_missing_modules(state_data: dict, layers_dir: Path) -> list[Regression]
+```
+_Flag shipped layers that have no corresponding L{N}_*.py file._
+
+```python
+def detect_orphan_tests(state_data: dict, layers_dir: Path) -> list[Regression]
+```
+_Flag shipped layers with tests > 0 that have no test_L{N}_*.py file._
+
+```python
+def detect_ship_without_round(state_data: dict) -> list[Regression]
+```
+_Flag ship entries that are missing a 'round' field._
+
+```python
+class RegressionDetector
+```
+_Orchestrates all regression checks against state.json + layers dir._
+
+```python
+def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode
+------------------
+N/A — observability only; no money movement, no mode gating required.
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L47_regression_detector.py
+```
+
+## L48 — Swish demo runner
+
+**Status:** `shipped` | **Tests:** 7/7 | **LOC:** —
+
+> L48_demo_runner.py — Stakeholder-facing end-to-end execute_loop demo.
+> 
+> Purpose:
+>     Demonstrates the full execute_loop pipeline to external stakeholders (e.g.
+>     Swish Analytics).  Ingests a stub NBA prop slate, runs through 10 annotated
+>     stages (ingest → FPTS → lineup opt → EV scan → Kelly sizing → risk budget →
+>     paper submit → settlement → CLV → summary), and writes a single rich
+>     markdown artifact suitable for screen-recording or sharing.
+> 
+>     This is NOT a duplicate of L41 (CI testing) or L45 (operator checklist).
+>     L48 is narrative-first: every stage carries a human-readable description,
+>     intermediate data snapshots, timing, and an ASCII visualisation.
+> 
+> Env vars:
+>     None required.  SUBMISSION_MODE must NOT be "live"; the module calls
+>     L44.assert_paper_mode("demo") at startup and aborts gracefully if live
+>     mode is detected.
+> 
+> Paper vs Live Mode (MODE GATING):
+>     L48 is paper-mode strict by design.  L44.assert_paper_mode("demo") is
+>     called at the top of DemoRunner.run() and refuses to execute if
+>     SUBMISSION_MODE=live.  The ``live`` tokens flagged by static analysis are
+>     inside the assert_paper_mode safety check itself (the stub fallback raises
+>     RuntimeError when SUBMISSION_MODE=="live"), not a live-mode toggle that
+>     permits live execution.  No real orders, bets, or exchange calls are ever
+>     made — all submission stages are paper-mode simulations only.
+
+### Public API
+
+```python
+class DemoStage
+```
+
+```python
+class DemoReport
+```
+
+```python
+class DemoRunner
+```
+_Stakeholder-facing execute_loop demo runner._
+
+```python
+def main(argv: Optional[List[str]]=None) -> int
+```
+
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `SUBMISSION_MODE` | `''` |
+
+### Paper vs Live Mode
+
+```
+L44.assert_paper_mode("demo") at startup and aborts gracefully if live
+    mode is detected.
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L48_demo_runner.py
+```
+
+## L49 — State-of-loop summary generator
+
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** 644
+
+> L49_state_summary.py — Execute-Loop State-of-the-Loop Summary Generator.
+> 
+> Purpose
+> -------
+> Aggregates observability data from multiple execute-loop layers into a single,
+> board-room-friendly STATE_OF_LOOP.md document.  Pulls from:
+> 
+>   - state.json          round-by-round narrative + layer metadata
+>   - L42 ReadinessChecker  per-layer KPI health scores
+>   - L47 RegressionDetector  test-count drops, missing modules
+>   - L41 integration harness  end-to-end coverage count
+> 
+> No external services are called; all inputs are local files or in-process
+> Python APIs.  Safe to run at any time without side-effects on trading.
+> 
+> Environment Variables
+> ---------------------
+>     None.
+> 
+> Paper vs Live Mode
+> ------------------
+> N/A — observability only; no money movement or mode gating required.
+
+### Public API
+
+```python
+class LoopSnapshot
+```
+_Immutable snapshot of loop health at a point in time._
+
+```python
+class LoopSummarizer
+```
+_Aggregates loop observability data into a LoopSnapshot + markdown doc._
+
+```python
+def main(argv=None) -> int
+```
+_Entry point: generate STATE_OF_LOOP.md (or JSON snapshot)._
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode
+------------------
+N/A — observability only; no money movement or mode gating required.
+```
+
+### How to Run
+
+```bash
+conda run -n basketball_ai python scripts\execute_loop\L49_state_summary.py
 ```
 
 ## Cross-Reference Table
