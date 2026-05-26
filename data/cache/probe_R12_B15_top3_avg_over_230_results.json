@@ -1,0 +1,43 @@
+{
+  "probe": "R12_B15_top3_avg_over_230",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 162,
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2366 (-18.92%); AUC 0.6756",
+  "pooled_lgb_brier": 0.23659,
+  "pooled_naive_brier": 0.29178,
+  "pooled_lgb_auc": 0.67565,
+  "brier_delta_pct": -18.916,
+  "n_valid_folds": 3,
+  "beat_canonical": true,
+  "canonical_src": "B13 avg_blend(opp_full+opp_pts_pace)",
+  "variant": {
+    "variant": "top3_avg",
+    "models_used": [
+      "opp_full",
+      "opp_pts_pace",
+      "interactions_only"
+    ],
+    "weights_per_fold": [
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ]
+    ]
+  }
+}
