@@ -99,10 +99,14 @@ def _run_main(argv: List[str]) -> int:
 
 
 def _keldon_args(slate_path: str, **overrides) -> List[str]:
+    # --force-stale bypasses the R17_J2 line-freshness validator. These tests
+    # exercise placement / slate / ledger semantics, not live-line freshness;
+    # the validator has its own dedicated suite in test_line_validator.py.
     args = {
         "--player": "Keldon Johnson", "--stat": "reb", "--side": "OVER",
         "--line": "3.5", "--book": "pinnacle", "--odds": "+157",
         "--stake": "50", "--bankroll": "1000", "--slate": slate_path,
+        "--force-stale": None,
     }
     args.update(overrides)
     out: List[str] = []
@@ -229,7 +233,7 @@ def test_slate_validation_rejects_missing_combo(tmp_ledger, slate_file, capsys):
         "--player", "Nikola Jokic", "--stat", "pts", "--side", "OVER",
         "--line", "27.5", "--book", "pinnacle", "--odds", "-110",
         "--stake", "25", "--bankroll", "1000",
-        "--no-slate-validate",
+        "--no-slate-validate", "--force-stale",
     ])
     assert rc2 == 0
 
