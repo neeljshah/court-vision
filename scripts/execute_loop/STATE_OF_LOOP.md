@@ -1,10 +1,10 @@
 # Execute Loop — State of the Loop
-_Generated 2026-05-26T03:25:51.839432+00:00_
+_Generated 2026-05-26T03:40:58.845086+00:00_
 
 ## Headline
-- 48 layers shipped (1 gated), 757/757 full suite (confirmed; 3 skips, 0 failures) tests passing
+- 48 layers shipped (1 gated), 773/773 full suite (confirmed; 3 skips, 0 failures) tests passing
 - L42 audit: clean (0 FAILs)
-- L47 regression scan: 0 regressions across 12 rounds
+- L47 regression scan: 0 regressions across 13 rounds
 - L41 e2e coverage: 24 of 48 layers (50%)
 
 ## Round-by-Round Narrative
@@ -22,6 +22,7 @@ _Generated 2026-05-26T03:25:51.839432+00:00_
 | R10 | L5-l44b, L16-l44b, L22-fix, L25v2, L28-l44b, L34v2, L37v2, L41v4, L45-fix, L46, L47, L48 | +53 new tests (3 L25 + 8 L34 + 6 L37 + 4 L41 v4 + 18 L46 + 7 L47 + 7 L48) | L42 audit FULLY clean (0 FAILs); L44 adoption complete across 7 layers; L41 v... |
 | R11 | L7-l46, L8-l46, L14-l46, L18v2, L37-l46, L49, L46-test-fix | +21 new tests; 1 fix to L46 test_replay_filtered_by_since (Windows datetime resolution flake — added time.sleep(0.02) around middle_ts capture) | L46 EventBus adoption sweep across 4 producer layers (L7 bet.settled, L8 drif... |
 | R12 | L22v3, L36v2, L41v5, L46v1.1, L48v1.1, L49v2 | +15 new tests (5 L22 v3 + 5 L36 v2 + 4 L41 v5 + 3 L49 v2; L46 already 18/18, L48 already 7/7) | Event-driven architecture COMPLETE: L22 v3 is the first real L46 subscriber (... |
+| R13 | L20v2, L21v2, L33v2, L40v2 | +16 new tests (4 each across L20/L21/L33/L40) | L46 EventBus adoption sweep across 4 more producer layers (L20 injury.announc... |
 
 ## Top Layers (highest stability)
 
@@ -115,10 +116,10 @@ _Generated 2026-05-26T03:25:51.839432+00:00_
 
 ## L42 Production Readiness
 
-- PASS: 86
+- PASS: 91
 - FAIL: 0
 - SKIP: 1
-- N/A:  58
+- N/A:  53
 
 **Status: clean (0 FAILs)**
 
@@ -150,8 +151,12 @@ Run `python -m scripts.execute_loop.L47_regression_detector detect` to re-verify
 | --- | --- |
 | L14 | fill.received, order.filled |
 | L18 | risk_limit.breached, kelly.sized |
+| L20 | injury.announced |
+| L21 | lineup.confirmed |
+| L33 | close.recommended |
 | L36 | edge_erosion.detected |
 | L37 | incident.classified, incident.opened |
+| L40 | model.routed, model.slow |
 | L7 | bet.settled |
 | L8 | drift.detected |
 
@@ -162,4 +167,4 @@ Run `python -m scripts.execute_loop.L47_regression_detector detect` to re-verify
 | L22 | incident.opened, incident.classified, drift.detected, risk_limit.breached, order.filled |
 | L41 | * |
 
-Total event types in system: **9**
+Total event types in system: **14**

@@ -1,6 +1,6 @@
 # Execute Loop Runbook
 
-_Generated 2026-05-26 03:26 UTC — do not edit by hand._
+_Generated 2026-05-26 03:41 UTC — do not edit by hand._
 
 ## Table of Contents
 
@@ -1727,7 +1727,7 @@ conda run -n basketball_ai python scripts\execute_loop\L19_clv_calculator.py
 
 ## L20 — Injury feed scraper
 
-**Status:** `shipped` | **Tests:** 5/5 | **LOC:** 453
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** —
 
 > L20_injury_feed.py — Multi-source NBA Injury Feed Scraper (BUILD L20).
 > 
@@ -1751,6 +1751,53 @@ conda run -n basketball_ai python scripts\execute_loop\L19_clv_calculator.py
 >     python L20_injury_feed.py fetch
 >     python L20_injury_feed.py once
 >     python L20_injury_feed.py poll [--interval 600]
+> 
+> Environment Variables
+> ---------------------
+>     None required for normal operation.  The scraper uses public endpoints
+>     and a local JSON cache; no API keys are needed.
+> 
+>     NBA_INJURY_JSON_PATH
+>         Override the default path to the local nba_official_injury.json cache
+>         (``data/external/nba_official_injury.json``).  Useful in tests or
+>         staging environments that supply a pre-seeded fixture.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L20 is a **read-only data fetcher** and therefore carries no mode gate.
+> It does not submit bets, place orders, or write financial state.  All
+> output is written to local JSON cache files and published as informational
+> events on the L46 EventBus.  No SUBMISSION_MODE / LIVE_MODE / PAPER_MODE
+> variable is consulted.
+> 
+> Event Publication (L46 EventBus)
+> ---------------------------------
+> After each fetch cycle, L20 compares the newly fetched injury records to
+> the prior cached state (_seen.json).  For each NEW or CHANGED record (a
+> player whose status is either entirely absent from the cache or whose
+> status string differs from the most-recently cached value), L20 publishes:
+> 
+>     event name: "injury.announced"
+>     source:     "L20"
+>     payload: {
+>         "player":           str,   # accent-stripped canonical player name
+>         "team":             str,   # e.g. "LAL", "GSW"
+>         "status":           str,   # "OUT" | "DOUBTFUL" | "QUESTIONABLE" | ...
+>         "reason":           str,   # injury body text
+>         "previously_known": str | None,  # prior status, or None if first seen
+>         "fetched_at":       str,   # ISO 8601 UTC timestamp of this fetch
+>     }
+> 
+> Events are published via the module-level L46 singleton
+> (``L46_event_bus.get_default_bus()``).  Publish failures are caught and
+> logged; they never interrupt the fetch/diff pipeline.
+> 
+> Atomic Writes
+> -------------
+> All JSON snapshot files (_seen.json, nba_official_injury.json) are written
+> via ``_atomic_write_json``: a sibling temp file is created in the same
+> directory, written fully, then replaced via ``os.replace()``.  On crash or
+> power-loss the previous snapshot is preserved intact.
 
 ### Public API
 
@@ -1793,6 +1840,18 @@ def main(poll_seconds: int=600) -> None
 ```
 _Continuous poll loop. Ctrl-C to exit._
 
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L20 is a **read-only data fetcher** and therefore carries no mode gate.
+It does not submit bets, place orders, or write financial state.  All
+output is written to local JSON cache files and published as informational
+events on the L46 EventBus.  No SUBMISSION_MODE / LIVE_MODE / PAPER_MODE
+variable is consulted.
+```
+
 ### How to Run
 
 ```bash
@@ -1801,9 +1860,9 @@ conda run -n basketball_ai python scripts\execute_loop\L20_injury_feed.py
 
 ## L21 — Lineup announcement watcher
 
-**Status:** `shipped` | **Tests:** 5/5 | **LOC:** 308
+**Status:** `shipped` | **Tests:** 9/9 | **LOC:** —
 
-> L21_lineup_watcher.py — Lineup Announcement Watcher (BUILD L21).
+> L21_lineup_watcher.py — Lineup Announcement Watcher (BUILD L21, v2).
 > 
 > Polls Lineups.com and RotoWire for confirmed NBA starting lineups, diffs them
 > against expected top-5 fantasy-point starters, and dispatches alerts via L22.
@@ -1814,6 +1873,47 @@ conda run -n basketball_ai python scripts\execute_loop\L20_injury_feed.py
 > CLI:
 >     python L21_lineup_watcher.py fetch [--date YYYY-MM-DD]
 >     python L21_lineup_watcher.py once
+> 
+> Environment Variables
+> ---------------------
+> None required for core operation.  The following vars affect behaviour when
+> used in the broader execute-loop stack:
+> 
+>   NBA_LINEUP_DIR    Override the default persistence directory
+>                     (``<project_root>/data/lineup_announcements``).  Useful
+>                     for integration tests or RunPod deployments with a separate
+>                     data volume.  Not read by L21 itself (set _LINEUP_DIR in
+>                     calling code), but documented here for operator reference.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L21 is a read-only watcher: it fetches public lineup information and writes a
+> local JSON snapshot.  It performs no financial transactions and therefore has
+> no paper/live distinction of its own.
+> 
+> In *paper* deployments the emitted "lineup.confirmed" events are consumed
+> downstream (e.g. by L44) which enforces the paper/live gate before any bet
+> submission.  L21 publishes unconditionally regardless of the value of
+> SUBMISSION_MODE or any equivalent environment variable.
+> 
+> Event Publication
+> -----------------
+> For each newly confirmed lineup (game_id × team first seen, or whose starter
+> roster has changed since the last fetch), L21 publishes a ``"lineup.confirmed"``
+> event to the L46 EventBus singleton:
+> 
+>     Event name : "lineup.confirmed"
+>     source     : "L21"
+>     payload    : {
+>         "game_id"          : str   — date-string used as game identifier,
+>         "team"             : str   — 3-letter NBA team abbreviation,
+>         "starters"         : list[str] — normalised player names,
+>         "confirmed_at"     : str   — ISO 8601 UTC timestamp,
+>         "previously_unknown": bool — True if first time this team appears,
+>     }
+> 
+> Publication is best-effort: any exception from L46 is caught and logged at
+> WARNING level so that a broken bus never blocks lineup data delivery.
 
 ### Public API
 
@@ -1835,6 +1935,16 @@ _Populate confirmation.surprise_starters / benched_expected vs fpts top-5._
 def alert_on_surprises(confirmations: List[LineupConfirmation]) -> int
 ```
 _Send one alert per surprise starter via L22.  Returns alert count sent._
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L21 is a read-only watcher: it fetches public lineup information and writes a
+local JSON snapshot.  It performs no financial transactions and therefore has
+no paper/live distinction of its own.
+```
 
 ### How to Run
 
@@ -2601,7 +2711,7 @@ conda run -n basketball_ai python scripts\execute_loop\L32_stack_correlation.py
 
 ## L33 — Sell-to-close optimizer
 
-**Status:** `shipped` | **Tests:** 19/19 | **LOC:** 263
+**Status:** `shipped` | **Tests:** 23/23 | **LOC:** —
 
 > L33_sell_to_close.py — Sell-to-Close Optimizer for live prediction-market positions.
 > 
@@ -2625,6 +2735,56 @@ conda run -n basketball_ai python scripts\execute_loop\L32_stack_correlation.py
 >         --model-p 0.75 \
 >         [--time 30] \
 >         [--model-p-var 0.03]
+> 
+> Environment Variables
+> ---------------------
+> L33_PAPER_MODE
+>     When set to "1", "true", or "yes" (case-insensitive), the module operates in
+>     paper mode.  Decisions are computed normally but the mode is logged on every
+>     SELL/SELL_PARTIAL action so callers can gate live order submission.  Defaults
+>     to paper mode when the variable is absent (safe default).
+> 
+> L33_EVENT_BUS_DISABLED
+>     When set to "1", "true", or "yes" (case-insensitive), event publication is
+>     skipped entirely even if L46 is available.  Useful for offline / unit-test
+>     environments where importing L46 is undesirable.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+> L33 reads L33_PAPER_MODE at module import time.  The resolved mode is available
+> as the module-level boolean ``PAPER_MODE`` (True = paper, False = live).
+> 
+> In paper mode:
+>   - All decision logic runs identically to live mode.
+>   - SELL and SELL_PARTIAL actions log a [PAPER] prefix so operators can
+>     distinguish simulated closes from real executions.
+>   - The "close.recommended" EventBus event is still published; downstream
+>     layers (e.g. L34, L44) are responsible for gating real order submission.
+> 
+> In live mode:
+>   - Behaviour is identical; L33 itself does not submit orders.  Live gating
+>     belongs to the submission layer (L44).
+> 
+> Event Publication
+> -----------------
+> When ``evaluate_close_decision`` returns action "SELL" or "SELL_PARTIAL", L33
+> publishes a "close.recommended" event to the L46 EventBus default bus:
+> 
+>     {
+>         "position_id":   str   — position identifier
+>         "player":        str   — player name (from position["player"], or "")
+>         "stat":          str   — stat label (from position["stat"], or "")
+>         "current_price": float — bid_price at decision time
+>         "entry_price":   float — original entry price
+>         "unrealized_pnl": float — expected_pnl_now at decision time
+>         "reason":        str   — decision_reason ("lock_gain" | "de_risk_marginal")
+>         "model_p_var":   float | None — variance signal passed to evaluate_close_decision
+>         "recommended_at": str  — ISO 8601 UTC timestamp
+>     }
+> 
+> HOLD decisions do not publish any event.  Publication failures are caught and
+> logged as warnings so that a broken bus never prevents the CloseDecision from
+> being returned to the caller.
 
 ### Public API
 
@@ -2649,6 +2809,16 @@ _Evaluate whether to close (sell) a position, hold it, or sell it partially._
 
 ```python
 def main(argv=None) -> int
+```
+
+### Paper vs Live Mode
+
+```
+L33_PAPER_MODE
+    When set to "1", "true", or "yes" (case-insensitive), the module operates in
+    paper mode.  Decisions are computed normally but the mode is logged on every
+    SELL/SELL_PARTIAL action so callers can gate live order submission.  Defaults
+    to paper mode when the variable is absent (safe default).
 ```
 
 ### How to Run
@@ -3106,7 +3276,7 @@ conda run -n basketball_ai python scripts\execute_loop\L39_exec_backtest.py
 
 ## L40 — Multi-model dispatcher
 
-**Status:** `shipped` | **Tests:** 25/25 | **LOC:** 489
+**Status:** `shipped` | **Tests:** 29/29 | **LOC:** —
 
 > L40_multi_model_dispatcher.py — Unified routing layer for per-game prop models.
 > 
@@ -3127,6 +3297,47 @@ conda run -n basketball_ai python scripts\execute_loop\L39_exec_backtest.py
 >     python L40_multi_model_dispatcher.py status
 >     python L40_multi_model_dispatcher.py refresh
 >     python L40_multi_model_dispatcher.py set --stat ast --variant blend [--notes ...]
+> 
+> Environment Variables
+> ---------------------
+>     L40_SLOW_THRESHOLD_MS : int, default 100
+>         Per-dispatch latency threshold in milliseconds.  When a predict_dispatched
+>         call exceeds this value, a ``"model.slow"`` event is published to L46 in
+>         addition to the normal ``"model.routed"`` event.  Set to 0 to always emit
+>         slow events; set to a very large value to effectively disable slow alerts.
+> 
+> Paper vs Live Mode (MODE GATING)
+> ---------------------------------
+>     L40 is paper/live-agnostic — the same champion/challenger/A-B routing table
+>     applies in both modes.  The routing decision (which model variant to call) does
+>     not depend on SUBMISSION_MODE or any live-data flag.  Mode enforcement is the
+>     responsibility of downstream layers (e.g. L44).  L40 never reads nor writes any
+>     SUBMISSION_MODE environment variable.
+> 
+> Event Publication
+> -----------------
+>     L40 publishes to L46 (EventBus) after every successful predict_dispatched call:
+> 
+>     ``"model.routed"`` — always emitted on dispatch:
+>         {
+>             "request_id": str,        # UUID4 per-call identifier
+>             "model_variant": str,     # variant actually used (post-fallback)
+>             "is_champion": bool,      # True when variant == HARDCODED_DEFAULTS[stat][0]
+>             "is_challenger": bool,    # True when variant != HARDCODED_DEFAULTS[stat][0]
+>             "latency_ms": float,      # wall-clock ms for the predict call
+>             "routed_at": str,         # ISO 8601 UTC timestamp
+>         }
+> 
+>     ``"model.slow"`` — additionally emitted when latency_ms > L40_SLOW_THRESHOLD_MS:
+>         {
+>             "model_variant": str,
+>             "latency_ms": float,
+>             "threshold_ms": float,
+>             "request_id": str,
+>         }
+> 
+>     L46 import failures are swallowed so that a missing EventBus never breaks
+>     production predictions.
 
 ### Public API
 
@@ -3161,6 +3372,24 @@ _Read walk-forward JSON and pick the best variant per stat._
 
 ```python
 def main(argv=None) -> None
+```
+
+### Environment Variables
+
+| Name | Default / Value |
+|------|----------------|
+| `L40_SLOW_THRESHOLD_MS` | `'100'` |
+
+### Paper vs Live Mode
+
+```
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+    L40 is paper/live-agnostic — the same champion/challenger/A-B routing table
+    applies in both modes.  The routing decision (which model variant to call) does
+    not depend on SUBMISSION_MODE or any live-data flag.  Mode enforcement is the
+    responsibility of downstream layers (e.g. L44).  L40 never reads nor writes any
+    SUBMISSION_MODE environment variable.
 ```
 
 ### How to Run
