@@ -1,0 +1,37 @@
+{
+  "probe": "R11_M2v86_hp_n800",
+  "kind": "regression",
+  "model": "lgb_n800",
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -9.89%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.3986,
+  "pooled_delta_pct": -9.89,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.8632,
+      "delta": -1.4039,
+      "delta_pct": -8.13
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.7842,
+      "delta": -2.6271,
+      "delta_pct": -15.09
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.5483,
+      "delta": -1.0418,
+      "delta_pct": -6.28
+    }
+  ],
+  "elapsed_s": 2.6
+}

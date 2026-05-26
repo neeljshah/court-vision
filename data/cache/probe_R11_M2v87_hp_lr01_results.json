@@ -1,0 +1,37 @@
+{
+  "probe": "R11_M2v87_hp_lr01",
+  "kind": "regression",
+  "model": "lgb_lr01",
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -10.75%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.2528,
+  "pooled_delta_pct": -10.75,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.8572,
+      "delta": -1.4099,
+      "delta_pct": -8.17
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.6616,
+      "delta": -2.7497,
+      "delta_pct": -15.79
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.2397,
+      "delta": -1.3505,
+      "delta_pct": -8.14
+    }
+  ],
+  "elapsed_s": 5.1
+}
