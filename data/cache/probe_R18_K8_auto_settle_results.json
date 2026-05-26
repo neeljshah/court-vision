@@ -1,0 +1,13 @@
+{
+  "as_of": "2026-05-26T15:19:49",
+  "new_q4_files": [],
+  "games": [],
+  "first_run": false,
+  "totals": {
+    "games": 0,
+    "settled": 0,
+    "voided": 0,
+    "skipped": 0,
+    "errored": 0
+  }
+}
