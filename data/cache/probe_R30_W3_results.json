@@ -1,0 +1,118 @@
+{
+  "probe": "R30_W3",
+  "today": "2026-05-26",
+  "new_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a7f86f2dd83c908c4\\data\\cache\\predictions_cache_2026-05-26.parquet",
+  "old_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a7f86f2dd83c908c4\\data\\cache\\predictions_cache_2026-05-26.parquet.bak_R30_W3",
+  "cache_new_mtime": 1779822780.6734812,
+  "cache_old_mtime": 1779822559.499843,
+  "cache_new_age_min": 2.75,
+  "cache_old_age_min": 6.44,
+  "n_predictions_new": 4053,
+  "n_predictions_old": 4053,
+  "n_players_new": 579,
+  "n_players_old": 579,
+  "schema_preserved": true,
+  "new_mtime_gt_old": true,
+  "computed_at": "2026-05-26T19:15:45.695944+00:00",
+  "sample_predictions_old_vs_new": [
+    {
+      "player_id": 2544,
+      "old": {
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team": "LAL",
+        "stat": "pts",
+        "q10": 13.982396678832231,
+        "q50": 21.7287329443227,
+        "q90": 33.13517602166485
+      },
+      "new": {
+        "player_id": 2544,
+        "player_name": "LeBron James",
+        "team": "LAL",
+        "stat": "pts",
+        "q10": 13.982396678832231,
+        "q50": 21.7287329443227,
+        "q90": 33.13517602166485
+      },
+      "delta_q50": 0.0
+    },
+    {
+      "player_id": 1630692,
+      "old": {
+        "player_id": 1630692,
+        "player_name": "Jordan Goodwin",
+        "team": "PHX",
+        "stat": "pts",
+        "q10": 0.027627387439569162,
+        "q50": 4.946927811220178,
+        "q90": 12.454554809387957
+      },
+      "new": {
+        "player_id": 1630692,
+        "player_name": "Jordan Goodwin",
+        "team": "PHX",
+        "stat": "pts",
+        "q10": 0.027627387439569162,
+        "q50": 4.946927811220178,
+        "q90": 12.454554809387957
+      },
+      "delta_q50": 0.0
+    },
+    {
+      "player_id": 1643257,
+      "old": {
+        "player_id": 1643257,
+        "player_name": "",
+        "team": "POR",
+        "stat": "pts",
+        "q10": 0.0,
+        "q50": 0.8947082481655002,
+        "q90": 5.661500182017335
+      },
+      "new": {
+        "player_id": 1643257,
+        "player_name": "",
+        "team": "POR",
+        "stat": "pts",
+        "q10": 0.0,
+        "q50": 0.8947082481655002,
+        "q90": 5.661500182017335
+      },
+      "delta_q50": 0.0
+    }
+  ],
+  "mean_abs_delta_q50": 0.0,
+  "max_abs_delta_q50": 0.0,
+  "n_pairs_joined": 4053,
+  "per_stat_delta": {
+    "ast": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "blk": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "fg3m": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "pts": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "reb": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "stl": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    },
+    "tov": {
+      "mean_abs_delta": 0.0,
+      "n": 579
+    }
+  }
+}
