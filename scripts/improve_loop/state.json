@@ -189,6 +189,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "M2v2 with EXPANDED feature set (~60 features vs 35): adds travel_miles, top_lineup_net_rtg, iso_matchup_edge, pnr_ppp, hustle_deflections, stars_available, bench_net_rtg, additional L10 stats (tov/oreb/ft_rate), off_rtg_vs_top_def, SRS, ELO, ref_avg_fouls. Result: pooled -14.66% vs naive (vs M2v2's -14.26%) \u2014 marginal +0.4pp improvement. Per-fold: f1 -13.3%, f2 -15.0%, f3 -15.6%. 3/3 valid folds PASS. FIFTH R11 ship. Validates that more features add small consistent value on spread surface. PRODUCTION should use this expanded set as the canonical M2 score_diff model."
+    },
+    {
+      "name": "R11_M2v8_total_expanded",
+      "round": 10,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "M2 (total_pts) with EXPANDED ~60-feature set. Pooled -10.31% vs M2's -8.9% (+1.4pp improvement, bigger expansion gain than M2v7's +0.4pp on spread). 2,836 games (full linescores vs M2's 889). Per-fold: f1 -8.4%, f2 -15.0%, f3 -7.3%. 3/3 valid folds PASS. SIXTH R11 ship. PRODUCTION should use this expanded set as canonical M2 total model \u2014 covers more games (linescores) AND has more features (60+) AND better MAE."
     }
   ],
   "rejects": [
