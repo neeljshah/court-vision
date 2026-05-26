@@ -1,0 +1,34 @@
+{
+  "probe": "R12_T8_AH3_with_h2h_unc",
+  "kind": "binary",
+  "label": "home_cover_AH3",
+  "label_desc": "P(home covers -3)",
+  "n_features": 77,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2344 (-17.41%); AUC 0.6935",
+  "n_games": 2836,
+  "pos_rate": 0.6297602256699577,
+  "pooled_lgb_brier": 0.23441,
+  "pooled_naive_brier": 0.28382,
+  "pooled_lgb_auc": 0.69345,
+  "brier_delta_pct": -17.409,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29141,
+      "lgb_brier": 0.26724
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.28461,
+      "lgb_brier": 0.22127
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27544,
+      "lgb_brier": 0.21472
+    }
+  ],
+  "elapsed_s": 2.2
+}

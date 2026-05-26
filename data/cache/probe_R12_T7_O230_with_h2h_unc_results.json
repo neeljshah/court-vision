@@ -1,0 +1,34 @@
+{
+  "probe": "R12_T7_O230_with_h2h_unc",
+  "kind": "binary",
+  "label": "over_230",
+  "label_desc": "P(total > 230)",
+  "n_features": 77,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2582 (-11.52%); AUC 0.6359",
+  "n_games": 2836,
+  "pos_rate": 0.4203102961918195,
+  "pooled_lgb_brier": 0.25816,
+  "pooled_naive_brier": 0.29178,
+  "pooled_lgb_auc": 0.63585,
+  "brier_delta_pct": -11.522,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.30085,
+      "lgb_brier": 0.28933
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.30285,
+      "lgb_brier": 0.23498
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.27163,
+      "lgb_brier": 0.25017
+    }
+  ],
+  "elapsed_s": 2.4
+}

@@ -1,0 +1,37 @@
+{
+  "probe": "R12_T6_spread_with_h2h_unc",
+  "kind": "regression",
+  "label": "score_diff",
+  "n_features": 77,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -15.29%",
+  "pooled_naive_mae": 12.9981,
+  "pooled_lgb_mae": 11.0111,
+  "pooled_delta_pct": -15.29,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 12.4045,
+      "lgb_mae": 10.8019,
+      "delta": -1.6026,
+      "delta_pct": -12.92
+    },
+    {
+      "fold": 2,
+      "naive_mae": 13.7413,
+      "lgb_mae": 11.3971,
+      "delta": -2.3442,
+      "delta_pct": -17.06
+    },
+    {
+      "fold": 3,
+      "naive_mae": 12.8485,
+      "lgb_mae": 10.8344,
+      "delta": -2.0142,
+      "delta_pct": -15.68
+    }
+  ],
+  "elapsed_s": 2.9
+}
