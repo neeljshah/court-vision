@@ -19,6 +19,22 @@ CLI
 ---
     python L13_cross_exchange_ev.py find --snapshot path.csv --model preds.json [--min-ev 2.0]
     python L13_cross_exchange_ev.py rank --snapshot path.csv --model preds.json --top 20
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+which control paper-vs-live behaviour individually. This module contains no
+live API calls of its own — it only normalises orderbook data returned by
+those clients.
+
+Live mode for downstream calls is enabled only when the per-exchange env var
+(e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+defers to those defaults.
+
+Environment Variables
+---------------------
+None. This module reads no environment variables directly. All paper/live
+gating is delegated to the L9-L12 exchange clients it composes.
 """
 from __future__ import annotations
 

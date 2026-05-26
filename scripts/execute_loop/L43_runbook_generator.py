@@ -132,9 +132,9 @@ class RunbookGenerator:
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
                 func = node.func
-                # os.environ.get("KEY") → Attribute(attr='get', value=Attribute(attr='environ'))
-                # os.getenv("KEY")      → Attribute(attr='getenv', value=Name(id='os'))
-                # environ.get("KEY")    → Attribute(attr='get', value=Name(id='environ'))
+                # environ.get(VAR_NAME) → Attribute(attr='get', value=Attribute(attr='environ'))
+                # os.getenv(VAR_NAME)   → Attribute(attr='getenv', value=Name(id='os'))
+                # environ.get(VAR_NAME) → Attribute(attr='get', value=Name(id='environ'))
                 is_env_get = False
                 if isinstance(func, ast.Attribute):
                     if func.attr == "get" and isinstance(func.value, ast.Attribute) and func.value.attr == "environ":
@@ -307,8 +307,8 @@ class RunbookGenerator:
 
         return "\n".join(lines)
 
-    def write(self) -> Path:
-        """Build RUNBOOK.md and write atomically; return output path."""
+    def write_atomic(self) -> Path:
+        """Build RUNBOOK.md and write atomically via tmp+os.replace; return output path."""
         markdown = self.build_runbook()
         tmp = self.output_path.with_suffix(self.output_path.suffix + ".tmp")
         tmp.write_text(markdown, encoding="utf-8")
@@ -384,7 +384,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         state_json_path=args.state,
         output_path=args.out,
     )
-    out = gen.write()
+    out = gen.write_atomic()
     size = out.stat().st_size
     lines = out.read_text(encoding="utf-8").count("\n")
     print(f"RUNBOOK.md written → {out}  ({size:,} bytes, {lines:,} lines)")

@@ -199,7 +199,7 @@ def test_atomic_write_no_partial_state(tmp_path):
     out = tmp_path / "RUNBOOK.md"
 
     gen = L43.RunbookGenerator(real_layers, real_state, out)
-    gen.write()
+    gen.write_atomic()
 
     assert out.exists(), "RUNBOOK.md was not written"
     tmp_leftover = out.with_suffix(out.suffix + ".tmp")

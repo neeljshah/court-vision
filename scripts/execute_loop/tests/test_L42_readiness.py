@@ -209,3 +209,117 @@ def test_run_all_checks_covers_all_shipped_layers(tmp_path):
     # summary keys present
     for key in ("pass", "fail", "skip", "n_a", "layers"):
         assert key in report.summary
+
+
+# ---------------------------------------------------------------------------
+# Tests: atomic_writes v2 — helper-delegation and exempt writes
+# ---------------------------------------------------------------------------
+
+def test_atomic_writes_pass_with_helper_call(tmp_path):
+    """Call site delegates to _atomic_write_json which contains os.replace — must PASS."""
+    src = '''\
+"""Module that defines an atomic helper and calls it."""
+import json
+import os
+import tempfile
+from pathlib import Path
+
+def _atomic_write_json(path, payload):
+    """Write payload atomically via temp file + os.replace."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as fh:
+            json.dump(payload, fh)
+        os.replace(tmp, str(path))
+    except Exception:
+        os.unlink(tmp)
+        raise
+
+def save_queue(items, dest: Path):
+    _atomic_write_json(dest, items)
+'''
+    mod = _write_module(tmp_path, "L22_test.py", src)
+    result = check_atomic_writes("L22", mod)
+    assert result.status == "PASS", f"Expected PASS, got FAIL: {result.evidence}"
+
+
+def test_atomic_writes_exempts_wfile_write(tmp_path):
+    """self.wfile.write(...) inside an HTTP handler should be exempt — must PASS."""
+    src = '''\
+"""HTTP handler module."""
+from http.server import BaseHTTPRequestHandler
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = b"hello"
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(body)
+'''
+    mod = _write_module(tmp_path, "L23_test.py", src)
+    result = check_atomic_writes("L23", mod)
+    assert result.status == "PASS", f"Expected PASS, got FAIL: {result.evidence}"
+
+
+def test_atomic_writes_exempts_stdout_write(tmp_path):
+    """sys.stdout.write(...) is not a file write — must PASS."""
+    src = '''\
+"""Module writing only to stdout."""
+import sys
+
+def emit(msg: str) -> None:
+    sys.stdout.write(msg + "\\n")
+'''
+    mod = _write_module(tmp_path, "L24_test.py", src)
+    result = check_atomic_writes("L24", mod)
+    assert result.status == "PASS", f"Expected PASS, got FAIL: {result.evidence}"
+
+
+# ---------------------------------------------------------------------------
+# Tests: paper_default v2 — prose-only 'live' and runtime branch
+# ---------------------------------------------------------------------------
+
+def test_paper_default_pass_when_live_only_in_docstring(tmp_path):
+    """'live' appears only in docstrings/comments — should be N/A or PASS, never FAIL."""
+    src = '''\
+"""Module that compares model predictions against live exchange quotes.
+
+No live HTTP calls are ever made; this is a pure computation module.
+"""
+
+def find_opportunities(predictions, quotes):
+    """Evaluate edge vs live quotes from snapshot CSV (no live HTTP)."""
+    results = []
+    for q in quotes:
+        results.append(q)
+    return results
+'''
+    mod = _write_module(tmp_path, "L13_test.py", src)
+    result = check_paper_default("L13", mod)
+    assert result.status in ("PASS", "N/A"), (
+        f"Expected PASS or N/A for prose-only 'live', got {result.status}: {result.detail}"
+    )
+
+
+def test_paper_default_fail_when_live_in_runtime_branch(tmp_path):
+    """'live' used in a runtime if-branch with no paper default — must FAIL."""
+    src = '''\
+"""Module that branches on a live/paper mode at runtime."""
+import os
+
+MODE = os.environ.get("SUBMISSION_MODE", "live")
+
+def submit(order):
+    if MODE == "live":
+        return _send_live(order)
+    return None
+
+def _send_live(order):
+    pass
+'''
+    mod = _write_module(tmp_path, "L16_test.py", src)
+    result = check_paper_default("L16", mod)
+    assert result.status == "FAIL", (
+        f"Expected FAIL for runtime live branch, got {result.status}"
+    )

@@ -21,6 +21,22 @@ CLI
     python L10_polymarket_client.py orderbook --condition_id X
     python L10_polymarket_client.py post --condition_id X --outcome yes --qty 100 --price 0.55 [--live]
     python L10_polymarket_client.py cancel --order_id X
+
+Environment Variables:
+    POLYMARKET_PRIVATE_KEY   EIP-712 signing key for the funded Polymarket wallet.
+                             Required to enable live order submission and cancellation.
+                             Default: absent (paper mode only; live calls raise PermissionError).
+    POLYMARKET_USDC_FUNDED   Confirmation flag that the wallet holds sufficient USDC.
+                             Must be set to exactly "true" (lowercase) to permit live trading.
+                             Default: absent / any other value (live calls raise PermissionError).
+
+Paper vs Live Mode:
+    Default is PAPER.  All write operations (post_order, cancel_order) record to a local
+    JSON ledger at data/ledger/paper_polymarket_orders.json and never contact the CLOB.
+    Live mode is gated by _is_live_permitted(): BOTH POLYMARKET_PRIVATE_KEY (non-empty)
+    AND POLYMARKET_USDC_FUNDED == "true" must be set, AND the caller must explicitly pass
+    live=True to post_order() / cancel_order().  Missing either env var raises PermissionError
+    before any network call is attempted.
 """
 from __future__ import annotations
 

@@ -21,6 +21,23 @@ CLI
     python L14_order_manager.py update
     python L14_order_manager.py reprice --order-id X --new-price 60
     python L14_order_manager.py cancel-stale [--max-age-sec 1800]
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+This module is paper/live-mode-agnostic. It composes lower layers (L9-L12)
+which control paper-vs-live behaviour individually. This module makes no
+live API calls of its own — order tracking, fill detection, repricing, and
+cancellation all delegate to the exchange clients in L9-L12, which each
+carry their own paper/live gate.
+
+Live mode for downstream calls is enabled only when the per-exchange env var
+(e.g. KALSHI_LIVE_ENABLED=1) is set on the underlying client; this module
+defers to those defaults.
+
+Environment Variables
+---------------------
+None. This module reads no environment variables directly. All paper/live
+gating is delegated to the L9-L12 exchange clients it composes.
 """
 from __future__ import annotations
 
