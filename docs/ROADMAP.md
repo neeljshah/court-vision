@@ -1,8 +1,8 @@
 # Development Roadmap — CourtVision
 
-*Build / phase log. Last detailed update: 2026-04-15.*
+*Historical phase log. Last detailed update: 2026-04-15. For the forward roadmap see [the root ROADMAP.md](../ROADMAP.md).*
 
-> **Current state (2026-05-24):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md).
+> **Current state (2026-05-25):** Phases 1–13.5 complete. Phase G (CV game collection) active — 17 quality / 29 usable / 75 attempted, target 80 CLEAN. **Gate 1 (CLV validation vs Pinnacle close) NOT YET RUN — top priority.** This file is the detailed phase log; for the forward roadmap (Gate 1 → 80-game run → substrate → agentic research system → commercial surfaces) see [the root ROADMAP.md](../ROADMAP.md). For the live cycle-by-cycle ship log see [CHANGELOG.md](../CHANGELOG.md) and [docs/CLAUDE-state.md](CLAUDE-state.md).
 
 ---
 
@@ -25,7 +25,7 @@ Priority stack:
 
 ## Phase Overview
 
-*Session 36 | 2026-05-24 | Tests: 1040 pass, 2 skip | Models: 85 trained | CV: 17 quality / 29 usable / 75 attempted (target 80 CLEAN)*
+*Session 36 | 2026-05-25 | Tests: 2,661 pass on RunPod (~26 fail — tracking + pyarrow transients) / 1040 pass locally on core suite | Models: 85 trained artifacts across ~120 prediction modules | CV: 17 quality / 29 usable / 75 attempted (target 80 CLEAN)*
 
 | Phase | Name | Status | Key Deliverable |
 |---|---|---|---|
@@ -155,7 +155,7 @@ bash scripts/watch_and_sync.sh
 
 ### Phases 6–13.5 ✅ (2026-04-07 through 2026-04-15)
 - Full game processing pipeline wired end-to-end
-- All prediction modules scaffolded (73 modules in src/prediction/)
+- All prediction modules scaffolded (~120 modules in src/prediction/ as of 2026-05-25)
 - Possession simulator: 7-model chain, 10K Monte Carlo <30s
 - FastAPI: 24 endpoints, in-process TTL cache
 - 100-game readiness hardening: crash isolation, calibration, correlation matrix, backtest gate
@@ -177,3 +177,6 @@ bash scripts/watch_and_sync.sh
 | 41 (current) | All current models |
 | 100 (Phase 14) | Calibration fitted, xFG v2 improved, props retrain |
 | 200+ (Phase 16B) | LSTM live win probability |
+
+---
+*Last verified: 2026-05-25*

@@ -2,6 +2,12 @@
 
 New to this project? Read this first.
 
+> **Canonical references:**
+> - [README.md](../README.md) — github landing + headline results
+> - [CLAUDE.md](../CLAUDE.md) — AI-agent runbook
+> - [CLAUDE-state.md](CLAUDE-state.md) — live state snapshot
+> - [PROJECT_INDEX.md](PROJECT_INDEX.md) — navigation map
+
 ---
 
 ## What This Is
@@ -73,7 +79,7 @@ nba-ai-system/
 │   ├── tracking/          # CV pipeline: player detection, tracking, re-ID, OCR
 │   ├── pipeline/          # Orchestrator: runs full game end-to-end
 │   ├── features/          # 60+ feature engineering functions
-│   ├── prediction/        # 75 ML models (win prob, props, xFG, DNP, etc.)
+│   ├── prediction/        # 85 trained ML artifacts across ~120 modules (win prob, props, xFG, DNP, residual heads, period heads, live quantile bands)
 │   ├── analytics/         # Betting edge, spacing, momentum, shot quality
 │   ├── data/              # NBA API scrapers, enrichment, database helpers
 │   └── simulation/        # Possession simulator (Monte Carlo)
@@ -107,7 +113,8 @@ cp .env.example .env
 
 # 4. Run tests
 python -m pytest tests/ -q
-# Expected: 1040 pass, 2 skip
+# Expected on RunPod: ~2,661 pass, ~26 fail (tracking + pyarrow-missing transients)
+# Expected locally: 1040 pass, 2 skip on the core prediction suite
 
 # 5. Start the API
 uvicorn api.main:app --reload --port 8000
@@ -178,3 +185,6 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 ## Contributing
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for code style, PR workflow, and no-touch zones.
+
+---
+*Last verified: 2026-05-25*

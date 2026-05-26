@@ -6,12 +6,57 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-05-25 — in-play prediction + execute_loop infra
+
+### Added
+- **Residual heads (pregame)** — `src/prediction/residual_heads.py`. Per-stat additive residual learners on top of base predictions; 6/7 stats SHIP at pregame (improve_loop R7, commit `61c454eb`).
+- **Residual heads (endQ1 + endQ2)** — period-specific residual layers wired into `live_engine.project_from_snapshot` (cycle 106a `6178d8e3`; improve_loop R3+R4 `476d02a7`). EndQ3 residual REJECTED (cycle 109).
+- **Learned Q4 minutes** — `src/prediction/minute_trajectory.py` end-of-Q3 minutes head: PTS -0.2312 MAE, 7/7 stats positive (cycle 110 `fe27de4a`).
+- **Live quantile bands** — `src/prediction/live_quantile_bands.py` calibrated to 80% empirical coverage on in-play projections (cycle 105c `cd3e4fda`; recalibrated cycle 109).
+- **Period-specific projection heads** — endQ1/endQ2 trained artifacts (cycle 105b `96840002`); endQ3 head rejected (2/7).
+- **In-play foul_change residual head** — wired into `live_engine`; SHIP PTS -0.24 on foul stratum, 0.00 on non-foul, WF 4/4 (`cb39cbd6`).
+- **Blowout flip residual + heat_check shrinkage** — stratified dispatch (`dfd4ce0b`, `f1ae0919`).
+- **Multitask MLP with live head** (back-compat opt-in, cycle 103c `b15d5ac1`).
+- **In-game system end-to-end** — `probe_inplay_vs_pregame`, `live_inplay_daemon`, `recommend_endQ2_bets`, `live_engine` consolidated API, retro_inplay_mae_v2 (550-game retro; 7/7 wins, -43% to -53% MAE vs pregame at endQ3).
+- **execute_loop V1 39/40 layers shipped** — 532/532 tests pass across 5 rounds (`cae147b9`). Order-management, multi-exchange (Kalshi/Polymarket/Sporttrade), cross-exchange EV, late-swap, live trader, hedger, edge-erosion + postmortem layers, cash + GPP optimizers, ownership/contests models, ledger/bankroll/CLV/alerts dashboard, market-making (R5 `a27fc7d8`).
+- **Daily ops chain** — `daily_run.py` orchestrator (`--auto-lineups --auto-lines --kelly --bankroll N --report` morning; `--settle --report` post-game), `update_inactives.py`, `place_bet.py`, `live_dashboard.py`, A/B strategy framework (`b489a241`).
+- **Live data feeds** — `fetch_live_prop_lines` (DK/FD/Odds-API/Action Network), `fetch_dk_props` 3-tier scraper, `webhook_alerts` (Slack/Discord), `live_hedge` calculator, `pnl_ledger` + CLIs, CLV calculator, RLM scraper.
+- **Gate 1 infrastructure** — `nba_data.db` schema + backfill + closing-line ingestion (`e1323461`).
+- **Swish Analytics demo materials** — `scripts/swish_demo.py` (end-to-end demo runnable on RunPod), `docs/SWISH_DEMO.md` interview cheat-sheet, `docs/system_metrics.html` visual KPI dashboard, `scripts/register_bankroll.py` (`ffd55c48`, `3c4d0aa2`).
+- **Health check** — `scripts/health_check.py` offseason-aware live system status (cycle 105e). Latest: 14 OK / 7 WARN / 1 ERROR.
+- **operator_morning / operator_eod runbook scripts** + `docs/LIVE_OPERATOR_RUNBOOK.md` (`e78a01f3`).
+
+### Changed
+- **Pre-game production MAE (post cycle 96a)**: PTS 4.6104 | REB 1.9075 | AST 1.3570 | FG3M 0.8941 | STL 0.7153 | BLK 0.4398 | TOV 0.8932. Down from prior cycle 40 anchor on every stat.
+- `_VRAM_FLUSH_INTERVAL` invariant re-asserted in CLAUDE.md (must be 3000, not 100).
+- Pregame enrichment lift validated at endQ1/endQ2 (cycle 108a); period heads default off after endQ3 reject.
+- T1-A garbage-time haircut shipped (PTS -0.0117 MAE).
+- Player-quarter parquet expanded to 956 games with PF in boxscores; pregame_spreads to 1,316 rows; rest_travel to 2026-04; 800-pid positions; q1_*_l5 unlocked to 85% coverage.
+- `team_advanced_stats` parquet + 16 opp_l5 features at 100% coverage.
+
+### Fixed
+- `swish_demo.py` Kelly% display (missing *100, commit `81b940a8`), Windows cp1252 encoding (`4693f214`, `be2af2cd`).
+- `model_roi.py` dashboard R² sort crash (cycle 107c `d5710b1f`).
+- `home_spread` join coverage 13% → 99.9% (95a).
+- 89a/89b schema + foul-table unification (live_factors canonical); 97a validator + silent-join audit (2 high-severity bugs found).
+
+### Measured (in-play system, 550-game retro)
+- **endQ3 MAE vs pre-game**: PTS 2.46 (-47%) | REB 1.00 (-47%) | AST 0.68 (-50%) | FG3M 0.42 (-53%) | STL 0.32 (-55%) | BLK 0.20 (-55%) | TOV 0.45 (-50%) — 7/7 stats win.
+- **In-play betting ROI vs L5 proxy**: 7/7 stats win at threshold 1.0, ROI 0.70-0.89.
+- RunPod RERUN (2026-05-25) confirms retro_inplay_mae_v2 5/5 win on 46 dated-model games (`2bad1fca`).
+- RunPod pytest: 2,661 passed, ~26 failed (failures are tracking-suite + transient pyarrow-missing — not prediction-critical).
+
+### Lessons captured (`vault/Improvements/`)
+- At architecture/feature ceiling for pre-game. Remaining gains are DATA: live injury feeds, real sportsbook lines, CV defender_distance at scale, lineup projection.
+- Residual heads + period-specific heads are the right architecture for in-play (additive layers on top of base pregame model).
+- WF gate now requires 4/4 folds positive AND production single-split positive AND >=4/7 stats wins; cycle 105a (play_probability) failed >=4 ship gate despite WF 4/4 on 2/7 stats.
+
 ## [0.14.0] - 2026-05-24 — loop 5 prediction stack
 
 ### Added
 - **Quantile heads (q10/q50/q90)** for every prop stat. q50 is the *primary* predictor for REB/FG3M/STL/BLK/TOV — beat squared-error/Huber blends on MAE because sportsbook O/U lines score against the median, not the mean. Source: `src/prediction/prop_quantiles.py`.
 - **Quantile interval calibration** (`src/prediction/quantile_calibration.py`) — per-stat scale factor brings q10/q90 to 80% empirical coverage. Asymmetric branch for FG3M/STL/BLK/TOV where q10 floors at 0. Calibration weights at `data/models/quantile_calibration.json`.
-- **Multitask MLP** for AST + STL (`src/prediction/multitask_mlp.py`) — 7-output MLPRegressor on shared representation. Both stats 4/4 walk-forward folds + production single-split positive.
+- **Multitask MLP** for AST + STL (`src/prediction/multitask_props.py`) — 7-output MLPRegressor on shared representation. Both stats 4/4 walk-forward folds + production single-split positive.
 - **Production CLIs**:
   - `scripts/predict_player.py` — single player vs single opponent, 7 stats with q10..q90 intervals + L5/L10 baselines + bet recommendation when |edge| > 0.5.
   - `scripts/predict_slate.py` — every rostered player in every game on a given date, sorted by predicted PTS. Works around `scoreboardv2` nba_api bug (raw HTTP + manual GameHeader parsing).
@@ -79,5 +124,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Realized ROI +3.8% on 1u-Kelly-fractional — dependent on fill prices and book limits
 - No live bets placed; paper-trading harness in flight (Phase 3)
 
+[0.15.0]: https://github.com/neeljshah/court-vision/releases/tag/v0.15.0
 [0.14.0]: https://github.com/neeljshah/court-vision/releases/tag/v0.14.0
 [0.13.5]: https://github.com/neeljshah/court-vision/releases/tag/v0.13.5
+
+---
+*Last verified: 2026-05-25*

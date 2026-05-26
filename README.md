@@ -110,6 +110,9 @@ Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 - **Orchestrator** — `daily_run.py` runs the morning chain (`--auto-lineups --auto-lines --kelly --bankroll N --report`) or the post-game settle (`--settle --report`) in one command
 - **Validation** — `verify_production_mae.py` + `verify_winprob.py` exit non-zero on drift vs claims (CI-ready)
 - **Backtest** — `synthetic_backtest_validation.py` confirms the cycle-30 claim: **+27.42% mean ROI** at +0.5 edge threshold on the L5-line proxy across 20k holdout games
+- **In-play prediction** — `src/prediction/live_engine.py` consumes per-quarter snapshots; pregame residual heads (6/7 stats SHIP, improve_loop R7) + period-specific heads at endQ1/endQ2 + learned Q4 minute trajectory (cycle 110, PTS -0.2312 MAE) drive endQ3 MAE -43% to -55% vs pregame across all 7 stats on a 550-game retro
+- **Live quantile bands** — `src/prediction/live_quantile_bands.py` calibrated to 80% empirical coverage for in-play projections
+- **Health** — `scripts/health_check.py` is offseason-aware; current state 14 OK / 7 WARN / 1 ERROR (minute_trajectory.lgb still retraining on RunPod)
 
 Three cross-cutting safety rails turn data into prediction quality without touching the model:
 - `--injuries` skips OUT/DOUBTFUL players across all three CLIs (cycle 51 + 53)
@@ -510,3 +513,6 @@ Solo-built by [Neel Shah](https://neelshahportfolio.netlify.app), with Claude ag
 - Portfolio: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - GitHub: [github.com/neeljshah](https://github.com/neeljshah)
 - Email: neeljshah22@gmail.com
+
+---
+*Last verified: 2026-05-25 · For session state see [docs/CLAUDE-state.md](docs/CLAUDE-state.md) · For ship log see [CHANGELOG.md](CHANGELOG.md)*

@@ -65,10 +65,17 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 
 | Document | Purpose |
 |----------|---------|
-| [MASTER_PLAN.md](../MASTER_PLAN.md) | Full strategic vision — load at session start |
-| [README.md](../README.md) | System overview, results, methodology, limitations |
-| [CLAUDE.md](../CLAUDE.md) | Operational runbook and session state |
-| [.planning/ROADMAP.md](../.planning/ROADMAP.md) | Full phase roadmap (125K; load only if needed) |
+| [README.md](../README.md) | **Canonical** github entry point — overview, results, methodology |
+| [CLAUDE.md](../CLAUDE.md) | **Canonical** AI-agent runbook (this file pins the routing tables) |
+| [CLAUDE-state.md](CLAUDE-state.md) | **Canonical** live state snapshot — updated per-session |
+| [VISION.md](../VISION.md) | Full strategic vision (Renaissance thesis) |
+| [ARCHITECTURE.md](../ARCHITECTURE.md) | System architecture (six core systems) |
+| [ROADMAP.md](../ROADMAP.md) | Forward build sequence (Gate 1 → 80-game run → agentic system) |
+| [docs/ROADMAP.md](ROADMAP.md) | Historical phase log (phases 1–13.5) |
+| [MASTER_PLAN.md](../MASTER_PLAN.md) | Long-form strategic context (canonical-facts table) |
+| [CHANGELOG.md](../CHANGELOG.md) | Versioned ship log |
+| [START_HERE.md](START_HERE.md) | Human onboarding shortcut |
+| [.planning/ROADMAP.md](../.planning/ROADMAP.md) | Full internal phase roadmap (125K; gitignored locally — grep/section-read) |
 
 ---
 
@@ -83,9 +90,9 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 | `src/ingest/` | SQLite queue, yt-dlp wrapper, B2 sync |
 | `src/data/` | NBA API connectors, line monitor, injury scraper |
 | `src/execution/` | Book adapters, exchange connectors |
-| `api/` | FastAPI — 9 endpoints, 5 routers |
-| `scripts/` | Operational scripts — ingest, batch, setup, validation |
-| `tests/` | 960+ tests; 93 skip (PG/GPU excluded) |
+| `api/` | FastAPI — ~49 endpoints across 7 routers (main, predictions, models, analytics, dashboard, execution, stitch) |
+| `scripts/` | Operational scripts — ingest, batch, setup, validation, daily ops chain (`daily_run.py`), live daemons |
+| `tests/` | 2,661 pass on RunPod (~26 known failures: tracking suite + pyarrow-missing transients) |
 
 ---
 
@@ -97,5 +104,9 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 | [docs/ML_MODELS.md](ML_MODELS.md) | Pre-restructure model documentation |
 | [docs/BETTING.md](BETTING.md) | Betting methodology (predates MASTER_PLAN) |
 | [docs/API.md](API.md) | API reference (kept current) |
-| [docs/PRODUCTION_RUNBOOK.md](PRODUCTION_RUNBOOK.md) | Operational runbook (superseded by operations/ below) |
+| [docs/PRODUCTION_RUNBOOK.md](PRODUCTION_RUNBOOK.md) | Operational runbook (superseded by [LIVE_OPERATOR_RUNBOOK.md](LIVE_OPERATOR_RUNBOOK.md) for live game-day ops) |
 | [docs/operations/runpod_video_sync_notes.md](operations/runpod_video_sync_notes.md) | Raw session notes from RunPod runs |
+| [docs/SYSTEM_OVERVIEW.md](SYSTEM_OVERVIEW.md) | Stub — superseded by [ARCHITECTURE.md](../ARCHITECTURE.md) |
+
+---
+*Last verified: 2026-05-25*
