@@ -1,0 +1,35 @@
+{
+  "probe": "R12_B18_avg_blend_top3_PTS",
+  "kind": "regression",
+  "label": "target_pts",
+  "n_features": 85,
+  "status": "REJECT",
+  "ship_reason": "MAE 4.9603 (baseline 4.6602, prod ref 4.62)",
+  "pooled_lgb_mae": 4.9603,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "fold_mae": 4.9462
+    },
+    {
+      "fold": 2,
+      "fold_mae": 4.9298
+    },
+    {
+      "fold": 3,
+      "fold_mae": 5.005
+    }
+  ],
+  "beat_baseline": false,
+  "beat_prod": false,
+  "vs_baseline_pct": 6.44,
+  "variant": {
+    "variant": "avg_blend_top3",
+    "models_used": [
+      "baseline_full",
+      "form_only",
+      "opp_only"
+    ]
+  }
+}
