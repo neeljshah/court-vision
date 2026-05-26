@@ -82,6 +82,11 @@ data/chain_*.txt
 
 # -- R21_N5 m2_family prediction cache (per-machine runtime artifact) ---------
 data/cache/m2_family_predictions_cache.json
+
+# -- R27_T7 ledger insurance backups (machine-local; gzip+sidecar) ------------
+data/backups/
+data/backups_probe/
+data/pnl_ledger.csv.pre_restore_*
 data/output/
 data/game_results/
 data/props/
