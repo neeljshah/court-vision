@@ -975,22 +975,35 @@ def _section_live_recs(d: Dict[str, Any]) -> str:
 DEFAULT_REC_SETTLED_PATH = (
     PROJECT_DIR / "data" / "cache" / "rec_tracker" / "rec_settled.parquet"
 )
+# R25_R5 — historical backtest of the live recommendation engine.
+DEFAULT_REC_BACKTEST_PATH = (
+    PROJECT_DIR / "data" / "cache" / "probe_R25_R5_results.json"
+)
 
 
 def fetch_rec_performance(
     *,
     settled_path: Path = DEFAULT_REC_SETTLED_PATH,
     days: int = 7,
+    backtest_path: Path = DEFAULT_REC_BACKTEST_PATH,
 ) -> Dict[str, Any]:
     """Aggregate the R24_Q4 rec_settled.parquet over the last `days` days.
 
     Always returns a dict — degrades gracefully when the parquet does not
     exist yet (first ~7 days after the tracker is wired live).
+
+    R25_R5: when `backtest_path` exists, also surfaces the historical
+    backtest ROI alongside the live ROI so the operator can compare.
     """
     out: Dict[str, Any] = {"ok": False, "days": int(days),
                             "reason": "", "by_stat": {}}
     if not settled_path.exists():
         out["reason"] = "no settled data yet (warm-up window)"
+        # Even with no live data, surface the backtest if available so
+        # the operator gets *something*.
+        bt = _load_backtest_summary(backtest_path)
+        if bt is not None:
+            out["backtest"] = bt
         return out
     try:
         from scripts.live_rec_tracker import report  # noqa: PLC0415
@@ -1007,19 +1020,74 @@ def fetch_rec_performance(
         return out
     out.update(rpt)
     out["ok"] = True
+    # R25_R5: attach backtest alongside live ROI for the operator.
+    bt = _load_backtest_summary(backtest_path)
+    if bt is not None:
+        out["backtest"] = bt
     return out
 
 
+def _load_backtest_summary(path: Path) -> Optional[Dict[str, Any]]:
+    """Load the R25_R5 backtest summary if it exists. Never raises.
+
+    Returns a small dict with the headline numbers + caveat string.
+    """
+    try:
+        if not path.exists():
+            return None
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except Exception:
+        return None
+    return {
+        "n_dates":          int(data.get("n_dates", 0)),
+        "n_recs":           int(data.get("n_recs", 0)),
+        "win_rate":         float(data.get("win_rate", 0.0)),
+        "roi_pct":          float(data.get("roi_pct", 0.0)),
+        "best_config":      data.get("best_config"),
+        "n_viable_configs": int(data.get("n_viable_configs", 0)),
+        "diagnostic":       str(data.get("diagnostic", "")),
+        "generated_at":     str(data.get("generated_at", "")),
+    }
+
+
+def _backtest_row(bt: Optional[Dict[str, Any]]) -> str:
+    """R25_R5 — render a one-line backtest summary inline with the live ROI."""
+    if not bt:
+        return ""
+    best = bt.get("best_config") or {}
+    best_str = (
+        f"min_edge={best.get('min_edge')} top={best.get('top')}"
+        if best else "—"
+    )
+    return (
+        '<p class="muted">'
+        f'Backtest (R25_R5): {bt.get("n_dates",0)} dates, '
+        f'{bt.get("n_recs",0)} recs · '
+        f'win-rate <b>{bt.get("win_rate",0)*100:.2f}%</b> · '
+        f'<b>backtest_roi {bt.get("roi_pct",0):+.2f}%</b> · '
+        f'best config <b>{_html_escape(best_str)}</b> · '
+        f'{bt.get("n_viable_configs",0)} viable configs'
+        '</p>'
+        '<p class="muted" style="font-size:0.85em;">'
+        f'<i>{_html_escape(bt.get("diagnostic",""))}</i>'
+        '</p>'
+    )
+
+
 def _section_rec_perf(d: Dict[str, Any]) -> str:
+    bt = d.get("backtest") if isinstance(d, dict) else None
     if not d.get("ok"):
         return (
             f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
             f'<p class="muted">({_html_escape(d.get("reason","(no data)"))})</p>'
+            + _backtest_row(bt)
         )
     if d.get("n", 0) == 0:
         return (
             f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
             f'<p class="muted">(no recs settled in window)</p>'
+            + _backtest_row(bt)
         )
     head = (
         f'<p>Last {int(d.get("days",7))}d: '
@@ -1037,7 +1105,10 @@ def _section_rec_perf(d: Dict[str, Any]) -> str:
         )
     by_stat = d.get("by_stat") or {}
     if not by_stat:
-        return f'<h2>{REC_PERF_SECTION_TITLE}</h2>' + head + edge_line
+        return (
+            f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
+            + head + edge_line + _backtest_row(bt)
+        )
     rows = []
     for stat, s in sorted(by_stat.items()):
         rows.append(
@@ -1058,6 +1129,7 @@ def _section_rec_perf(d: Dict[str, Any]) -> str:
         '</tr></thead><tbody>'
         + "".join(rows) +
         '</tbody></table>'
+        + _backtest_row(bt)
     )
 
 
