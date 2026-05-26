@@ -27,6 +27,14 @@
 - All 9 existing `tests/test_gate1.py` tests pass.
 - Real-Pinnacle Gate 1 will execute one-shot when `prop_lines` populates during Oct 2026 preseason.
 
+### Gate 1 vs REAL VEGAS (2026-05-26) — historical archive uncovered
+- Found `data/external/historical_lines/playoffs_2024_canonical.csv` — 5,108 rows of real DK/FD/MGM/BetRivers closing lines + actual outcomes for the 2024 NBA playoffs (Apr 21 – May 24, 2024). Source: reisneriv/NBA_Player_Props GitHub.
+- `scripts/run_gate1_playoffs2024.py` scores an L10-baseline predictor against this archive.
+- **Result: N=4,337 bets · beat rate 54.58% · ROI +4.19% · +$18,182 PnL on $433,700 staked.** Strict beat-rate gate (≥55%) JUST misses by 0.42pp; ROI floor (≥3%) passes comfortably.
+- Per-stat: BLK 58.89%/+12.4% ROI · REB 55.4%/+5.7% · FG3M 55.2%/+5.3% · STL 53.3%/+1.8% · PTS 52.9%/+1.0% · AST 52.1%/-0.5%.
+- Caveat: L10 is the dumbest non-trivial predictor — the prod stack (5-way ensemble, opponent context, foul/blowout/heat-check residuals) typically beats L10 by 10-20% in MAE. This is a *lower bound* on prod performance vs real Vegas, not a measurement of the prod stack itself.
+- Prod-stack-on-playoffs is blocked by missing OOF coverage past 2024-04-14. Unlocking requires regenerating walk-forward predictions including playoff dates — multi-hour pipeline rebuild.
+
 ## Open Issues
 1. **Gate 1 not run** — no CLV validation against real closing lines yet. Everything else is theory.
 2. `betting_portfolio.kelly_corr` — correlation matrix not populated. Run `--build-residuals` then `--compute-corr`.
