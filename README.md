@@ -50,7 +50,7 @@ Reproduce: `python scripts/run_gate1_2025_26_prod.py`.
 - The **playoff result generalized → regular-season result tighter** — books refine PTS/REB lines aggressively over a full season; less time for inefficiencies to compound on AST/FG3M derivatives.
 - This is a **lower bound on what's possible**. The prod stack already beats L10 by ~2.2pp in beat rate / ~3.5pp in ROI on the 2025-26 data. Calibration work in flight (per-stat bias correction, Pinnacle CLV daemon for Oct 2026) is the next pin.
 
-Real DK/FanDuel/MGM closing lines and outcomes committed to repo at `data/external/historical_lines/` — every number above is fully reproducible from a fresh clone.
+Real DK/FanDuel/MGM closing lines and outcomes committed to repo at `data/external/historical_lines/` — every number above is fully reproducible from a fresh clone. **Pre-computed consolidated report at [`data/models/gate1_results_summary.json`](data/models/gate1_results_summary.json) for one-glance verification.**
 
 ---
 
@@ -164,7 +164,7 @@ Numbers from the repo, not projections:
 | **Lines of code** | ~80K Python across `src/`, `scripts/`, `api/`, `tests/` |
 | **Prediction modules** | 120 in `src/prediction/` |
 | **Trained artifacts** | 312 (`.pkl`, `.json`, `.lgb`, `.pt`) in `data/models/` |
-| **Tests** | 3,878 collected, full walk-forward gates |
+| **Tests** | 4,055 collected · 48/48 critical-path tests pass (`gate1 + devig + kelly + clv + calibration`) |
 | **Probes (signal experiments)** | 154 in `scripts/probe_*.py` — each a hypothesis with explicit ship/reject criteria |
 | **Daemons** | 9 production live-loop services |
 | **API** | FastAPI serving, 10+ endpoints (`api/main.py`) |
