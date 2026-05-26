@@ -1,0 +1,28 @@
+{
+  "probe": "R25_R8_injury_status_calibration",
+  "run_date": "2026-05-26",
+  "run_ts": "2026-05-26T17:56:59.973056+00:00",
+  "n_snapshots": 1,
+  "distinct_dates": [
+    "2026-05-26"
+  ],
+  "n_rows_total": 252,
+  "status_distribution_raw": {
+    "OUT": 252
+  },
+  "per_status_old_factor": {
+    "OUT": 0.0,
+    "NOT WITH TEAM": 0.0,
+    "DOUBTFUL": 0.3,
+    "QUESTIONABLE": 0.6,
+    "PROBABLE": 0.9,
+    "AVAILABLE": 1.0
+  },
+  "per_status_new_factor": null,
+  "per_status_observed": {},
+  "n_samples_per_status": {},
+  "calibration_method": "median(observed_minute_ratio) with floor[OUT]=0.0 (R23_P2 invariant)",
+  "ship_status": "BLOCKED",
+  "ship_reason": "only 1 distinct injury-report dates in local cache; SHIP needs \u2265 30. Off-season / daemon hasn't persisted history yet.",
+  "source_patched": false
+}
