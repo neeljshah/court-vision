@@ -1,13 +1,14 @@
 {
-  "ran_at": "2026-05-26T12:25:43",
-  "rows": 172,
+  "ran_at": "2026-05-26T15:02:03",
+  "rows": 170,
   "by_stat": {
     "fg3m": 54,
     "pts": 53,
-    "ast": 20,
-    "reb": 45
+    "ast": 19,
+    "reb": 44
   },
   "events": 1,
   "ok": true,
-  "csv": "/workspace/nba-ai-system/data/lines/2026-05-26_fd.csv"
+  "csv": "/workspace/nba-ai-system/data/lines/2026-05-26_fd.csv",
+  "status_code": 200
 }
