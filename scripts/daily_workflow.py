@@ -83,6 +83,8 @@ DEFAULT_BACKUP_KEEP = 30
 DEFAULT_DRIFT_CACHE = PROJECT_DIR / "data" / "cache" / "feature_drift_latest.json"
 DEFAULT_DRIFT_WARN_THRESHOLD = 5
 DEFAULT_DRIFT_CRITICAL_THRESHOLD = 15
+# R28_U5 — morning brief default output.
+DEFAULT_MORNING_BRIEF_PATH = PROJECT_DIR / "vault" / "MORNING.md"
 
 # Stages this orchestrator knows how to run.
 STAGES = ("evening", "morning", "all")
@@ -600,6 +602,45 @@ def _step_feature_drift(
     return True, details, None
 
 
+def _step_morning_brief(
+    *,
+    out_path: Path,
+    today: Optional[str],
+    dry_run: bool,
+    generate_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+) -> Tuple[bool, Dict[str, Any], Optional[str]]:
+    """R28_U5 — auto-generate vault/MORNING.md (the operator's one-page brief).
+
+    Runs at the very end of the morning workflow so it captures the
+    side-effects of every step that ran before it (settled recs,
+    backup, drift report, dashboard cache).
+    """
+    if dry_run:
+        return True, {
+            "would_call": "generate_morning_brief.generate",
+            "out_path":   str(out_path),
+            "today":      today,
+        }, None
+    fn = generate_fn
+    if fn is None:
+        try:
+            from scripts.generate_morning_brief import generate as fn  # noqa: PLC0415
+        except Exception as exc:  # noqa: BLE001
+            return False, {}, f"morning_brief import failed: {exc!r}"
+    try:
+        res = fn(out_path=Path(out_path), today=today)
+    except Exception as exc:  # noqa: BLE001
+        return False, {}, f"morning_brief raised: {exc!r}"
+    if not res.get("ok"):
+        return False, res, "morning_brief returned not-ok"
+    return True, {
+        "out_path":             res.get("out_path"),
+        "size_bytes":           int(res.get("size_bytes", 0) or 0),
+        "n_sections":           int(res.get("n_sections", 0) or 0),
+        "n_sections_with_data": int(res.get("n_sections_with_data", 0) or 0),
+    }, None
+
+
 def _step_alert(
     *,
     message: str,
@@ -748,6 +789,8 @@ def run_morning(
     drift_warn_threshold: int = DEFAULT_DRIFT_WARN_THRESHOLD,
     drift_critical_threshold: int = DEFAULT_DRIFT_CRITICAL_THRESHOLD,
     drift_run_fn: Optional[Callable[..., Dict[str, Any]]] = None,
+    morning_brief_path: Path = DEFAULT_MORNING_BRIEF_PATH,
+    morning_brief_fn: Optional[Callable[..., Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """Run the morning workflow. Returns a result dict (never raises)."""
     started_at = _iso_now()
@@ -834,6 +877,15 @@ def run_morning(
         "alert_morning", _step_alert,
         message=msg, level="info", fields=fields,
         dry_run=dry_run, alert_fn=alert_fn,
+    ))
+
+    # 6. R28_U5 — auto-generate vault/MORNING.md one-page operator brief.
+    #    Runs LAST so it sees the freshly-settled recs, fresh backup,
+    #    fresh drift report, and fresh dashboard cache.
+    steps.append(_run_step(
+        "morning_brief", _step_morning_brief,
+        out_path=morning_brief_path, today=None, dry_run=dry_run,
+        generate_fn=morning_brief_fn,
     ))
 
     n_critical_failures = sum(1 for s in steps if not s["ok"])
@@ -929,6 +981,10 @@ def _parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
     ap.add_argument("--ledger-path",  type=str, default=str(DEFAULT_LEDGER_PATH))
     ap.add_argument("--backup-dir",   type=str, default=str(DEFAULT_BACKUP_DIR))
     ap.add_argument("--backup-keep",  type=int, default=DEFAULT_BACKUP_KEEP)
+    # R28_U5 — morning brief output path.
+    ap.add_argument("--morning-brief-path", type=str,
+                    default=str(DEFAULT_MORNING_BRIEF_PATH),
+                    help="Where to write the R28_U5 operator brief.")
     ap.add_argument("--json", action="store_true",
                     help="Emit JSON result instead of human text.")
     return ap.parse_args(argv)
@@ -988,6 +1044,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             ledger_path=Path(args.ledger_path),
             backup_dir=Path(args.backup_dir),
             backup_keep=int(args.backup_keep),
+            morning_brief_path=Path(args.morning_brief_path),
             **common_kwargs,
         )
     elif args.stage == "all":
@@ -1001,6 +1058,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             ledger_path=Path(args.ledger_path),
             backup_dir=Path(args.backup_dir),
             backup_keep=int(args.backup_keep),
+            morning_brief_path=Path(args.morning_brief_path),
             **common_kwargs,
         )
     else:
