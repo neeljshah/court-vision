@@ -114,6 +114,8 @@ def run_endq3_probe(
     ship_wins: int = 4,
     output_md: Optional[str] = None,
     qstats_df=None,
+    change_type: str = "model",
+    clv_metrics: Optional[dict] = None,
 ) -> ProbeResult:
     """Run a probe on the endQ3 corpus and write a result markdown.
 
@@ -185,6 +187,11 @@ def run_endq3_probe(
 
     ship = (wf_all_nonpos and wf_mean <= ship_pts and pts_d < 0
             and n_wins >= ship_wins)
+    # --- R9 C8 CLV ship-gate composition (legacy probes pass through) ---
+    from scripts.improve_loop.clv_gate import check_clv_gate, compose_with_mae
+    _clv_ok, _clv_reason = check_clv_gate({"clv_metrics": clv_metrics or {}}, change_type)
+    ship, _composed_reason = compose_with_mae(ship, "MAE gate", _clv_ok, _clv_reason, change_type)
+    # --- end R9 C8 ---
 
     if ship:
         reason = (f"WF 4/4 OK, mean PTS {wf_mean:+.4f} <= {ship_pts}, "
@@ -199,7 +206,9 @@ def run_endq3_probe(
             causes.append(f"single-split PTS {pts_d:+.4f}")
         if n_wins < ship_wins:
             causes.append(f"only {n_wins}/7 stats win")
-        reason = "; ".join(causes)
+        if not _clv_ok:
+            causes.append(f"CLV: {_clv_reason}")
+        reason = "; ".join(causes) if causes else _composed_reason
 
     result = ProbeResult(
         name=name, n_games=len(games),

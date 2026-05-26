@@ -83,8 +83,12 @@ _FIELDS = ["captured_at", "book", "game_id", "player_id", "player_name",
            "market_status"]
 
 _VALID_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
-_BOOK_MAP = {"dk": "draftkings", "fd": "fanduel"}
+_BOOK_MAP = {"dk": "draftkings", "fd": "fanduel", "pp": "prizepicks"}
 _LINES_DIR = os.path.join(PROJECT_DIR, "data", "lines")
+
+# PrizePicks is fixed-payout. Encode both sides as -119 (fair 50/50 with juice)
+# per the canonical-schema spec in `improve_R9_C2_multibook_scraper_spec.md`.
+_PP_FAIR_PRICE = -119
 
 # Underlying scraper retry/backoff knobs.
 _RATE_429_BACKOFF_SEC = 30.0
@@ -154,9 +158,23 @@ def _fetch_book(book_short: str, fetch_fn=None) -> List[Dict]:
     headers and Odds API quota handling.
 
     Maps short codes (dk/fd) -> full book names (draftkings/fanduel).
+    PrizePicks (pp) uses a separate native projections endpoint - see
+    `_fetch_prizepicks_raw`.
+
     Returns [] silently on block/empty (caller handles), but raises
     `RateLimitExceeded` if the underlying scraper signals a 429-after-backoff.
     """
+    # PrizePicks has its own public projections API (no key needed) - handled separately
+    # so we don't drag the DK/FD odds-api / direct-scrape machinery into the PP path.
+    if book_short == "pp":
+        try:
+            return _fetch_prizepicks_raw()
+        except RateLimitExceeded:
+            raise
+        except Exception as e:  # noqa: BLE001
+            log.warning("prizepicks fetch error: %s", e)
+            return []
+
     book_full = _BOOK_MAP.get(book_short, book_short)
     if fetch_fn is None:
         try:
@@ -176,6 +194,85 @@ def _fetch_book(book_short: str, fetch_fn=None) -> List[Dict]:
         log.warning("%s fetch error: %s", book_full, e)
         return []
     return raw
+
+
+# ── PrizePicks native fetcher ─────────────────────────────────────────────────
+
+_PP_URL = "https://api.prizepicks.com/projections?league_id=7&per_page=500&single_stat=true"
+
+_PP_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json",
+    "Referer": "https://app.prizepicks.com/",
+    "Origin":  "https://app.prizepicks.com",
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+# PrizePicks stat_type name -> our canonical short codes. Mirrors
+# scripts/validation/real_lines_check/fetch_prizepicks.py so the two ETLs
+# stay consistent; composites (pra, pa, etc.) are deliberately dropped here
+# because the CLV ledger schema only handles the 7 primitive stats.
+_PP_STAT_MAP = {
+    "Points":        "pts",
+    "Rebounds":      "reb",
+    "Assists":       "ast",
+    "3-PT Made":     "fg3m",
+    "Steals":        "stl",
+    "Blocked Shots": "blk",
+    "Turnovers":     "tov",
+}
+
+
+def _fetch_prizepicks_raw() -> List[Dict]:
+    """Pull live PrizePicks NBA projections + return raw dicts shaped for
+    parse_props_for_book (i.e. with `prop_type`, `player_name`, `line`,
+    `over_odds`, `under_odds`). Both sides set to `_PP_FAIR_PRICE` since PP
+    is fixed-payout.
+
+    No auth required; PP gates by UA + Origin which `_PP_HEADERS` satisfies.
+    Composite stats (PRA, PA, PR, RA, BS+STL) are silently dropped.
+    """
+    import urllib.request  # noqa: PLC0415 - keep stdlib-only at module level
+    import json as _json   # noqa: PLC0415
+    req = urllib.request.Request(_PP_URL, headers=_PP_HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        payload = _json.load(r)
+    data = payload.get("data", []) or []
+    incl = {(d["type"], d["id"]): d for d in payload.get("included", [])}
+    out: List[Dict] = []
+    for d in data:
+        a = d.get("attributes", {}) or {}
+        stat_name = a.get("stat_type") or a.get("stat_display_name") or ""
+        stat = _PP_STAT_MAP.get(stat_name)
+        if not stat:
+            continue
+        line = a.get("line_score")
+        if line is None:
+            continue
+        rel = d.get("relationships", {}) or {}
+        ply_ref = ((rel.get("new_player") or rel.get("player") or {}).get("data") or {})
+        ply_obj = (incl.get(("new_player", ply_ref.get("id"))) or
+                   incl.get(("player", ply_ref.get("id"))) or {})
+        pa = ply_obj.get("attributes", {}) or {}
+        player = pa.get("display_name") or pa.get("name") or ""
+        if not player:
+            continue
+        out.append({
+            "player_name": player,
+            "prop_type":   stat,      # already canonical short code
+            "line":        float(line),
+            # PP is fixed-payout - encode both sides as -119 (fair, juicy).
+            "over_odds":   _PP_FAIR_PRICE,
+            "under_odds":  _PP_FAIR_PRICE,
+            "team":        pa.get("team", ""),
+            "game_id":     "",
+            "player_id":   "",
+            "market_status": "open",
+        })
+    return out
 
 
 def _prop_type_to_stat(prop_type: str) -> Optional[str]:
@@ -280,8 +377,12 @@ def append_rows(rows: List[Dict], path: str) -> int:
 def _expand_books(book_arg: str) -> List[str]:
     if book_arg == "both":
         return ["dk", "fd"]
+    if book_arg == "all":
+        return ["dk", "fd", "pp"]
     if book_arg not in _BOOK_MAP:
-        raise SystemExit(f"--book must be dk, fd, or both (got {book_arg!r})")
+        raise SystemExit(
+            f"--book must be dk, fd, pp, both, or all (got {book_arg!r})"
+        )
     return [book_arg]
 
 
@@ -372,8 +473,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(
         description="LIVE DraftKings + FanDuel player-prop snapshotter."
     )
-    ap.add_argument("--book", choices=["dk", "fd", "both"], default="both",
-                    help="Which book(s) to scrape (default: both).")
+    ap.add_argument("--book",
+                    choices=["dk", "fd", "pp", "both", "all"],
+                    default="all",
+                    help="Which book(s) to scrape (default: all = dk+fd+pp).")
     ap.add_argument("--date", default=None,
                     help="Schedule date YYYY-MM-DD (default: today).")
     ap.add_argument("--stats", default=",".join(_VALID_STATS),

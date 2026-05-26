@@ -90,6 +90,24 @@
       "commit": "pending-wire",
       "date": "2026-05-25",
       "summary": "PREGAME residual heads (LGB on OOF residuals). 6/7 stats SHIP per-stat (PTS gates out at 1/4 folds): REB -0.002, AST -0.008, FG3M -0.021, STL -0.039, BLK -0.072 (-14% MAE!), TOV -0.017. PTS stays on production pergame. Heads saved to data/models/pregame_residual_heads/."
+    },
+    {
+      "name": "R9_C2_multibook_scraper",
+      "round": 8,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending",
+      "date": "2026-05-25",
+      "summary": "PrizePicks scraper extended via fetch_live_prop_lines.py + new probe_R9_C2_multibook_scraper.py. 41 PP snapshots over 1 day = 27,111 rows / 6,616 deduped. Synthetic-50 CLV join test 100%. DK + FD blocked on missing ODDS_API_KEY ($30/mo). Persistent daemon running locally PID 22608, 15min cadence. SHIP downgraded — PP path works, DK/FD pending API key."
+    },
+    {
+      "name": "R9_C8_clv_ship_gate",
+      "round": 8,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending",
+      "date": "2026-05-25",
+      "summary": "CLV ship gate retrofit: scripts/improve_loop/clv_gate.py (check_clv_gate + compose_with_mae) wired into scaffold.py post-MAE gate. Legacy R0-R8 probes pass-through via 'CLV unavailable -- legacy probe'. 12/12 unit tests pass. Integration regression replay on R8_M22 preserves historical REJECT. Plus weekly report: scripts/clv_weekly_report.py."
     }
   ],
   "rejects": [
@@ -345,6 +363,24 @@
       "name": "R8_M31_ot",
       "reason": "Stage1 AUC 0.637 / mean_p_ot 0.103 (overcalibrated vs actual 5.5%); Stage3 all 7 stats regress under inflation correction (mean_delta +0.0023, max +0.0065 PTS). Gates: calib FAIL (mean_p outside [0.05,0.10]), gate_a FAIL (n_improve=0/7), gate_b FAIL. Two latent probe bugs fixed in this run: ot_labels cache wasn't reused (Stage 0 would have hit NBA API for ~28min) and home_team_id None crashed feature build. Underlying issue: 6 raw linescore features + only 151 OT positives across 2738 games — classifier can't outperform base rate, so inflation correction drags projections in wrong direction.",
       "saturated_angle": "endQ3 OT-probability classifier + empirical inflation correction (low-AUC classifier overpredicts P(OT), drags projections in wrong direction)",
+      "round": 7
+    },
+    {
+      "name": "R9_C1_historical_line_backfill",
+      "reason": "BLOCKED: ODDS_API_KEY env var absent (the-odds-api Starter ~$30/mo needed for player-prop coverage). SBR fallback returned no NBA player props for any season (public archive only has game lines through 2021). Probe code complete + correct; flips SHIP once API key provisioned. Rows written this run: 0; rows on disk: 26071 (stale PrizePicks, single date).",
+      "saturated_angle": "free-source historical NBA player prop archive (data structurally unavailable from public/free APIs; user must provision paid feed)",
+      "round": 7
+    },
+    {
+      "name": "R9_C3_synthetic_closing_line",
+      "reason": "Probe operationally correct (100% coverage on 50,986 synthetic ledger bets, audit fold 10.1% reserved, circularity guard passes). REJECT because all bets fall to Tier 4 (cohort_l10) since the synthetic ledger uses fake player_ids/game_ids that can't join to pregame_oof.parquet. mean_clv_pct per stat 0.41-0.57 (well above 0.02 ceiling) due to systematic Tier-4 bias. Fix needed: rebuild ledger using OOF parquet's real IDs so Tier 3 can fire, OR pivot to absolute Tier-4 acceptance with relaxed gate.",
+      "saturated_angle": "synthetic CLV via 4-tier fallback chain on fake-ID synthetic ledger (next: rebuild ledger from OOF parquet rows w/ real IDs)",
+      "round": 7
+    },
+    {
+      "name": "R9_C4_clv_join_repair",
+      "reason": "BLOCKED: wiring works end-to-end (synthetic PP bet resolves through new alias patch + ETL). ETL writes 26,071 rows to data/lines/2026-05-25_pp.csv with canonical schema. clv.py patched with pp/prizepicks aliases. But ledger book is DK-only and all snapshots are PP-only — structural mismatch. Gate flips SHIP automatically once C1 (DK historical) or C2 (DK live) provides DK lines OR ledger contains PP bets.",
+      "saturated_angle": "DK-ledger-vs-PP-snapshot book mismatch (data, not code)",
       "round": 7
     }
   ],
