@@ -6,6 +6,21 @@ Public API:
         -> list[Allocation]
     mean_variance_optimize(expected_returns, stds, correlations, max_weight)
         -> dict[str, float]
+    coordinate_with_sell_to_close(current_positions, variance_budget)
+        -> list[dict]  — positions suggested for closure, ranked by variance contribution
+
+Environment Variables:
+    None.  L34 is a pure in-memory computation layer; it writes no files.
+
+Paper vs Live Mode:
+    L34 produces allocation recommendations only — it does not submit orders.
+    The caller (L33 sell-to-close or the execution router) is responsible for
+    acting on the returned suggestions in either paper or live mode.
+
+L33 Integration:
+    coordinate_with_sell_to_close() is the bridge to L33 (sell-to-close engine).
+    Pass the current open positions with their variance footprints; L34 returns
+    a prioritised close list whenever the portfolio variance exceeds the budget.
 """
 from __future__ import annotations
 
@@ -312,6 +327,121 @@ def compute_daily_allocation(
         allocations[0].target_pct = allocations[0].target_dollars / total_bankroll
 
     return allocations
+
+
+# ---------------------------------------------------------------------------
+# L33 integration — sell-to-close coordinator
+# ---------------------------------------------------------------------------
+
+
+def coordinate_with_sell_to_close(
+    current_positions: list,
+    variance_budget: float,
+) -> list[dict]:
+    """Return positions suggested for closure, ranked by variance contribution.
+
+    Compares the portfolio's current variance utilisation against
+    *variance_budget*.  If the portfolio is within budget, returns an empty
+    list (no action required).  If the budget is exceeded, returns positions
+    sorted highest variance-contribution first — the caller (L33) should close
+    them in order until the remaining portfolio falls within budget.
+
+    Parameters
+    ----------
+    current_positions:
+        List of position dicts.  Each dict must contain at minimum:
+
+            ``bucket``   (str)   — one of the BUCKETS values
+            ``dollars``  (float) — dollars at risk in this position
+            ``variance`` (float) — position-level variance estimate (σ² for
+                                   the position's return distribution).
+                                   Pass ``std**2`` if you have σ only.
+
+        Optional key:
+            ``position_id`` (str | int) — for caller tracking; echoed back.
+
+    variance_budget:
+        Maximum acceptable portfolio variance (sum of position variances,
+        assuming independence).  Must be > 0.
+
+    Returns
+    -------
+    list[dict]
+        Subset of *current_positions* whose closure is recommended, each
+        enriched with::
+
+            ``variance_contribution_pct``  — this position's share of total variance
+            ``close_priority``             — 1 = close first
+
+        Sorted by variance contribution DESC (highest first).
+        Empty list if portfolio variance is within budget or positions is empty.
+
+    Raises
+    ------
+    ValueError
+        If variance_budget <= 0 or a position dict is missing required keys.
+    """
+    if variance_budget <= 0:
+        raise ValueError(f"variance_budget must be > 0, got {variance_budget}")
+
+    if not current_positions:
+        return []
+
+    # Validate required keys
+    required_keys = {"bucket", "dollars", "variance"}
+    for i, pos in enumerate(current_positions):
+        missing = required_keys - set(pos.keys())
+        if missing:
+            raise ValueError(
+                f"Position[{i}] is missing required keys: {missing}. "
+                f"Got keys: {set(pos.keys())}"
+            )
+
+    total_variance = sum(float(p["variance"]) for p in current_positions)
+
+    if total_variance <= variance_budget:
+        logger.debug(
+            "coordinate_with_sell_to_close: portfolio variance %.6f <= budget %.6f — no action",
+            total_variance,
+            variance_budget,
+        )
+        return []
+
+    logger.info(
+        "coordinate_with_sell_to_close: portfolio variance %.6f > budget %.6f — "
+        "selecting positions for closure",
+        total_variance,
+        variance_budget,
+    )
+
+    # Rank by variance contribution DESC
+    enriched = []
+    for pos in current_positions:
+        pvar = float(pos["variance"])
+        contrib_pct = pvar / total_variance if total_variance > 0 else 0.0
+        enriched.append({**pos, "variance_contribution_pct": round(contrib_pct, 6)})
+
+    enriched.sort(key=lambda p: p["variance_contribution_pct"], reverse=True)
+
+    # Assign close priority and select only what's needed to get back within budget
+    to_close: list[dict] = []
+    remaining_variance = total_variance
+    for rank, pos in enumerate(enriched, start=1):
+        if remaining_variance <= variance_budget:
+            break
+        pos_out = {**pos, "close_priority": rank}
+        to_close.append(pos_out)
+        remaining_variance -= float(pos["variance"])
+
+    logger.info(
+        "coordinate_with_sell_to_close: recommending %d position(s) for closure "
+        "(variance reduction: %.6f → %.6f, budget: %.6f)",
+        len(to_close),
+        total_variance,
+        remaining_variance,
+        variance_budget,
+    )
+    return to_close
 
 
 # ---------------------------------------------------------------------------

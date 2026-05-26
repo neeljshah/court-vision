@@ -336,3 +336,95 @@ def test_nan_prediction_skipped_in_mae(isolated_shadow):
     # MAE should be ~0.5 (from the non-NaN rows), not inf/nan
     assert not math.isnan(summary.mae_per_stat["pts"])
     assert summary.mae_per_stat["pts"] < 5.0
+
+
+# ---------------------------------------------------------------------------
+# Test v2: atomic write — summary.json written via tmp + replace (no partial)
+# ---------------------------------------------------------------------------
+def test_settle_summary_json_atomic(isolated_shadow):
+    """summary.json must exist after settle and be valid JSON (atomic write)."""
+    shadow_root, ledger_dir = isolated_shadow
+
+    ACTUALS = {"pts": 25.0, "reb": 10.0, "ast": 5.0}
+    bets = _make_bets_df(n_per_stat_player=35, prod_noise=1.0, actuals=ACTUALS)
+    _write_bets(ledger_dir, bets)
+
+    L25.start_shadow("v_atomic", _dummy_predictor, n_games=30)
+    for stat in STATS:
+        true_val = ACTUALS[stat]
+        for i in range(35):
+            gid = GAMES[i % len(GAMES)]
+            L25.record_prediction("v_atomic", gid, "nikola jokic", stat, true_val + 0.3)
+
+    summary = L25.settle_shadow("v_atomic")
+    assert summary.promotion_recommendation in {"PROMOTE", "REJECT", "INCONCLUSIVE"}
+
+    summary_path = Path(shadow_root) / "v_atomic" / "summary.json"
+    assert summary_path.exists(), "summary.json must be written after settle with n >= target"
+
+    # Must be valid JSON and contain expected keys
+    data = json.loads(summary_path.read_text(encoding="utf-8"))
+    assert "variant_name" in data
+    assert "promotion_recommendation" in data
+    assert "mae_per_stat" in data
+
+    # No leftover .tmp file
+    tmp_path = summary_path.with_suffix(".tmp.json")
+    assert not tmp_path.exists(), ".tmp.json should not remain after atomic write"
+
+
+# ---------------------------------------------------------------------------
+# Test v2: shadow_compare_from_l41 — happy path with PROMOTE verdict
+# ---------------------------------------------------------------------------
+def test_shadow_compare_from_l41_promote(isolated_shadow):
+    """shadow_compare_from_l41 surfaces PROMOTE when challenger beats prod on all stats."""
+    shadow_root, ledger_dir = isolated_shadow
+
+    ACTUALS = {"pts": 25.0, "reb": 10.0, "ast": 5.0}
+    # prod is off by 2.0 — challenger off by 0.5 → challenger wins every stat
+    bets = _make_bets_df(n_per_stat_player=40, prod_noise=2.0, actuals=ACTUALS)
+    _write_bets(ledger_dir, bets)
+
+    # Register both champion and challenger variants
+    L25.start_shadow("champ_v1", _dummy_predictor, n_games=30)
+    L25.start_shadow("chall_v2", _dummy_predictor, n_games=30)
+
+    for stat in STATS:
+        true_val = ACTUALS[stat]
+        for i in range(40):
+            gid = GAMES[i % len(GAMES)]
+            # champion: same as prod (off by 2.0)
+            L25.record_prediction("champ_v1", gid, "nikola jokic", stat, true_val + 2.0)
+            # challenger: closer (off by 0.5)
+            L25.record_prediction("chall_v2", gid, "nikola jokic", stat, true_val + 0.5)
+
+    harness_report = {
+        "champion_variant": "champ_v1",
+        "challenger_variant": "chall_v2",
+        "game_ids": list(GAMES[:40]),
+    }
+    result = L25.shadow_compare_from_l41(harness_report)
+
+    assert result["challenger_variant"] == "chall_v2"
+    assert result["champion_variant"] == "champ_v1"
+    assert result["verdict"] == "PROMOTE", (
+        f"Expected PROMOTE but got {result['verdict']}. "
+        f"challenger_compare={result.get('challenger_compare')}"
+    )
+    assert result["challenger_compare"] is not None
+    assert "per_stat" in result["challenger_compare"]
+
+
+# ---------------------------------------------------------------------------
+# Test v2: shadow_compare_from_l41 — no challenger → NO_CHALLENGER
+# ---------------------------------------------------------------------------
+def test_shadow_compare_from_l41_no_challenger(isolated_shadow):
+    """shadow_compare_from_l41 returns NO_CHALLENGER when report has no challenger."""
+    shadow_root, ledger_dir = isolated_shadow
+
+    harness_report = {"champion_variant": "champ_only"}
+    result = L25.shadow_compare_from_l41(harness_report)
+
+    assert result["verdict"] == "NO_CHALLENGER"
+    assert result["challenger_variant"] is None
+    assert result["challenger_compare"] is None

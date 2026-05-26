@@ -12,12 +12,14 @@ Environment Variables
 None required directly.  Underlying layers read their own env vars as
 documented in their respective module docstrings.
 
-Paper vs Live Mode
-------------------
-L45 always reports the current paper/live state via L44.is_paper_mode() but
-never enforces or changes that state itself.  Default report path is
-scripts/execute_loop/checklist_YYYY-MM-DD_<phase>.md unless overridden by
---out.
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L45 reads paper/live state via L44.is_paper_mode() and surfaces it in every
+checklist run, but is itself mode-agnostic — it is an operator observation
+tool that does not gate or alter live-mode behaviour.  The paper/live toggle
+lives entirely in L44; L45 only reports the observed state.  Default report
+path is scripts/execute_loop/checklist_YYYY-MM-DD_<phase>.md unless
+overridden by --out.
 
 CLI
 ---

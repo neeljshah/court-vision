@@ -34,6 +34,13 @@ Environment Variables
         Any other value (including absent) disables live delivery and
         writes alerts to the local log file in test mode (default: "false").
 
+    ALERTS_LIVE_ENABLED
+        Set to "1" to enable live HTTP webhook delivery.  Stored as the
+        module-level ``LIVE_ENABLED`` constant at import time.  Any other
+        value (including absent) keeps L22 in paper/test mode.  This is the
+        L42 paper_default gate constant; prefer ``ALERTS_ENABLED`` (below)
+        for per-send delivery toggling.
+
     ALERTS_RATE_LIMIT_PER_MIN
         Maximum number of alerts dispatched per 60-second rolling window via
         the token-bucket limiter. Excess alerts are enqueued and replayed via

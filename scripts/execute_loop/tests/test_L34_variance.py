@@ -16,6 +16,7 @@ from scripts.execute_loop.L34_variance_budgeter import (
     DEFAULTS_STDS,
     Allocation,
     compute_daily_allocation,
+    coordinate_with_sell_to_close,
     mean_variance_optimize,
 )
 
@@ -288,3 +289,87 @@ class TestEdgeCases:
             assert isinstance(a.expected_roi, float)
             assert isinstance(a.expected_std, float)
             assert isinstance(a.sharpe_contribution, float)
+
+
+# ---------------------------------------------------------------------------
+# Test v2: coordinate_with_sell_to_close — L33 integration
+# ---------------------------------------------------------------------------
+
+
+class TestCoordinateWithSellToClose:
+    """Tests for the L33 sell-to-close coordinator."""
+
+    def _make_positions(self, variances: list[float]) -> list[dict]:
+        buckets = ["cash_dfs", "gpp_dfs", "exchange_props", "exchange_game_lines"]
+        return [
+            {
+                "bucket": buckets[i % len(buckets)],
+                "dollars": 1000.0 * (i + 1),
+                "variance": v,
+                "position_id": f"pos_{i}",
+            }
+            for i, v in enumerate(variances)
+        ]
+
+    def test_within_budget_returns_empty(self):
+        """No positions closed when total variance <= budget."""
+        positions = self._make_positions([0.01, 0.02, 0.01])
+        total_var = sum(p["variance"] for p in positions)
+        result = coordinate_with_sell_to_close(positions, variance_budget=total_var + 0.1)
+        assert result == [], f"Expected empty list, got {result}"
+
+    def test_budget_exceeded_closes_highest_variance_first(self):
+        """When budget exceeded, highest-variance position has close_priority=1."""
+        # variances: 0.50, 0.10, 0.05 → total=0.65; budget=0.10 → must close
+        positions = self._make_positions([0.50, 0.10, 0.05])
+        result = coordinate_with_sell_to_close(positions, variance_budget=0.10)
+        assert len(result) >= 1, "Expected at least one position to close"
+        # Priority-1 position must be the one with highest variance (0.50)
+        prio1 = next(p for p in result if p["close_priority"] == 1)
+        assert math.isclose(prio1["variance"], 0.50, rel_tol=1e-9), (
+            f"Priority-1 position should have variance=0.50, got {prio1['variance']}"
+        )
+
+    def test_close_priority_ascending(self):
+        """close_priority values must be 1, 2, 3, ... in the returned list."""
+        positions = self._make_positions([0.3, 0.2, 0.1, 0.05])
+        result = coordinate_with_sell_to_close(positions, variance_budget=0.01)
+        priorities = [p["close_priority"] for p in result]
+        assert priorities == list(range(1, len(result) + 1)), (
+            f"Priorities should be sequential from 1, got {priorities}"
+        )
+
+    def test_variance_contribution_pct_sums_to_approx_one(self):
+        """Sum of variance_contribution_pct across ALL input positions is ~1.0."""
+        positions = self._make_positions([0.4, 0.3, 0.2, 0.1])
+        # Force budget exceeded so we exercise the enrichment path
+        result = coordinate_with_sell_to_close(positions, variance_budget=0.01)
+        total_contrib = sum(p["variance_contribution_pct"] for p in result)
+        # Only closed positions are returned; their contributions must be <= 1.0
+        assert 0.0 < total_contrib <= 1.0 + 1e-6, (
+            f"Contribution pct out of range: {total_contrib}"
+        )
+
+    def test_empty_positions_returns_empty(self):
+        result = coordinate_with_sell_to_close([], variance_budget=0.5)
+        assert result == []
+
+    def test_invalid_budget_raises(self):
+        with pytest.raises(ValueError, match="variance_budget"):
+            coordinate_with_sell_to_close(self._make_positions([0.1]), variance_budget=0.0)
+
+    def test_missing_required_key_raises(self):
+        bad_positions = [{"bucket": "cash_dfs", "dollars": 1000.0}]  # no "variance"
+        with pytest.raises(ValueError, match="missing required keys"):
+            coordinate_with_sell_to_close(bad_positions, variance_budget=0.5)
+
+    def test_original_positions_not_mutated(self):
+        """coordinate_with_sell_to_close must not mutate the input list."""
+        positions = self._make_positions([0.5, 0.3])
+        original_keys = [set(p.keys()) for p in positions]
+        coordinate_with_sell_to_close(positions, variance_budget=0.01)
+        for i, pos in enumerate(positions):
+            assert set(pos.keys()) == original_keys[i], (
+                f"Position[{i}] was mutated: original={original_keys[i]}, "
+                f"now={set(pos.keys())}"
+            )
