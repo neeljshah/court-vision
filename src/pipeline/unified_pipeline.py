@@ -1765,8 +1765,20 @@ class UnifiedPipeline:
             # expensive processing: homography SIFT, player tracking, YOLO
             # ball detection, event detection, CSV row writing.  Only
             # scoreboard OCR (above) runs to detect when live play resumes.
+            # R12: expose dead-ball state via live=0 ball_tracking rows so
+            # downstream consumers can filter (previously the column was 100%
+            # always-1 because suspended frames were dropped entirely).
             if self._ball_track_suspended:
                 suspended_frame_count += 1
+                ball_rows.append({
+                    "frame":         frame_idx,
+                    "timestamp":     round(frame_idx / fps, 3),
+                    "ball_x2d":      "",
+                    "ball_y2d":      "",
+                    "detected":      0,
+                    "live":          0,
+                    "ball_inferred": 0,
+                })
                 # Log skip milestone every 300 suspended frames (~10s)
                 if suspended_frame_count % 300 == 1:
                     print(f"[SKIP] Non-live frame {frame_idx} "
@@ -1912,7 +1924,9 @@ class UnifiedPipeline:
                 "ball_x2d":  ball_pos[0] if ball_pos else "",
                 "ball_y2d":    ball_pos[1] if ball_pos else "",
                 "detected":    int(ball_pos is not None),
-                "live":        1,  # only live frames reach here (suspended frames hard-skipped above)
+                # R12: live=1 here because suspended frames hit the early-exit branch above
+                # which writes its own live=0 row. This branch only runs on live-play frames.
+                "live":        1,
                 "ball_inferred": int(getattr(self.ball_det, "ball_inferred", False)),
             })
             if ball_pos is None:
