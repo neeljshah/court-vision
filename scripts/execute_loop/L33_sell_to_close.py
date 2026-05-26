@@ -20,14 +20,66 @@ CLI
         --model-p 0.75 \\
         [--time 30] \\
         [--model-p-var 0.03]
+
+Environment Variables
+---------------------
+L33_PAPER_MODE
+    When set to "1", "true", or "yes" (case-insensitive), the module operates in
+    paper mode.  Decisions are computed normally but the mode is logged on every
+    SELL/SELL_PARTIAL action so callers can gate live order submission.  Defaults
+    to paper mode when the variable is absent (safe default).
+
+L33_EVENT_BUS_DISABLED
+    When set to "1", "true", or "yes" (case-insensitive), event publication is
+    skipped entirely even if L46 is available.  Useful for offline / unit-test
+    environments where importing L46 is undesirable.
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L33 reads L33_PAPER_MODE at module import time.  The resolved mode is available
+as the module-level boolean ``PAPER_MODE`` (True = paper, False = live).
+
+In paper mode:
+  - All decision logic runs identically to live mode.
+  - SELL and SELL_PARTIAL actions log a [PAPER] prefix so operators can
+    distinguish simulated closes from real executions.
+  - The "close.recommended" EventBus event is still published; downstream
+    layers (e.g. L34, L44) are responsible for gating real order submission.
+
+In live mode:
+  - Behaviour is identical; L33 itself does not submit orders.  Live gating
+    belongs to the submission layer (L44).
+
+Event Publication
+-----------------
+When ``evaluate_close_decision`` returns action "SELL" or "SELL_PARTIAL", L33
+publishes a "close.recommended" event to the L46 EventBus default bus:
+
+    {
+        "position_id":   str   — position identifier
+        "player":        str   — player name (from position["player"], or "")
+        "stat":          str   — stat label (from position["stat"], or "")
+        "current_price": float — bid_price at decision time
+        "entry_price":   float — original entry price
+        "unrealized_pnl": float — expected_pnl_now at decision time
+        "reason":        str   — decision_reason ("lock_gain" | "de_risk_marginal")
+        "model_p_var":   float | None — variance signal passed to evaluate_close_decision
+        "recommended_at": str  — ISO 8601 UTC timestamp
+    }
+
+HOLD decisions do not publish any event.  Publication failures are caught and
+logged as warnings so that a broken bus never prevents the CloseDecision from
+being returned to the caller.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
 import sys
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -37,6 +89,29 @@ _PROJECT_DIR = _LOOP_DIR.parents[1]
 sys.path.insert(0, str(_PROJECT_DIR))
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Paper vs live mode — resolved once at import time
+# ---------------------------------------------------------------------------
+def _resolve_bool_env(var: str, default: bool = True) -> bool:
+    """Return True if the env var is absent (default) or set to a truthy value."""
+    val = os.environ.get(var, "").strip().lower()
+    if val == "":
+        return default
+    return val in ("1", "true", "yes")
+
+PAPER_MODE: bool = _resolve_bool_env("L33_PAPER_MODE", default=True)
+_EVENT_BUS_DISABLED: bool = _resolve_bool_env("L33_EVENT_BUS_DISABLED", default=False)
+
+# ---------------------------------------------------------------------------
+# Soft-import L46 EventBus
+# ---------------------------------------------------------------------------
+_L46 = None
+if not _EVENT_BUS_DISABLED:
+    try:
+        import L46_event_bus as _L46  # type: ignore[import]
+    except ImportError:  # pragma: no cover
+        log.debug("[L33] L46_event_bus not available; event publication disabled.")
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -133,6 +208,37 @@ def score_hold_to_settle(position: dict, model_p: float) -> float:
 
 
 # ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+def _publish_close_event(
+    decision: CloseDecision,
+    position: dict,
+    model_p_var: Optional[float],
+) -> None:
+    """Publish 'close.recommended' to L46 EventBus.  Silently swallows errors."""
+    if _L46 is None:
+        return
+    try:
+        _L46.publish(
+            "close.recommended",
+            source="L33",
+            payload={
+                "position_id": decision.position_id,
+                "player": position.get("player", ""),
+                "stat": position.get("stat", ""),
+                "current_price": decision.sell_price,
+                "entry_price": float(position.get("entry_price", 0.0)),
+                "unrealized_pnl": decision.expected_pnl_now,
+                "reason": decision.decision_reason,
+                "model_p_var": model_p_var,
+                "recommended_at": datetime.now(timezone.utc).isoformat(),
+            },
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.warning("[L33] EventBus publish failed (non-fatal): %s", exc)
+
+
+# ---------------------------------------------------------------------------
 # Main decision function
 # ---------------------------------------------------------------------------
 def evaluate_close_decision(
@@ -148,7 +254,8 @@ def evaluate_close_decision(
     Parameters
     ----------
     position           : dict — {"position_id": str, "qty": float,
-                                  "entry_price": float, "side": "YES"|"NO"|"OVER"|"UNDER"}
+                                  "entry_price": float, "side": "YES"|"NO"|"OVER"|"UNDER",
+                                  "player": str (optional), "stat": str (optional)}
     current_quote      : dict — {"bid_price": float | None, "ask_price": float | None,
                                   "bid_size": float, "venue": str}
     model_p            : float — model probability of YES/OVER resolving True (0-1)
@@ -170,6 +277,13 @@ def evaluate_close_decision(
     6. value_hold > value_now * premium  → HOLD   (reason="hold_premium")
     7. value_now > value_hold * premium  → SELL    (reason="lock_gain")
     8. else                             → SELL_PARTIAL (reason="de_risk_marginal")
+
+    Event Publication
+    -----------------
+    When action is SELL or SELL_PARTIAL, a "close.recommended" event is published
+    to the L46 EventBus default bus (if L46 is importable and L33_EVENT_BUS_DISABLED
+    is not set).  Publication errors are caught and logged as warnings; they never
+    prevent the CloseDecision from being returned.
     """
     position_id: str = str(position.get("position_id", ""))
     qty: float = float(position.get("qty", 0.0))
@@ -269,22 +383,26 @@ def evaluate_close_decision(
     # Step 7: SELL full if market bid is meaningfully better than model
     # ------------------------------------------------------------------
     if value_now > value_hold * premium:
+        _mode_tag = "[PAPER] " if PAPER_MODE else ""
         log.info(
-            "[L33] position=%s SELL — now=%.4f > hold*%.2f=%.4f (lock_gain)",
-            position_id, value_now, premium, value_hold * premium,
+            "[L33] %sposition=%s SELL — now=%.4f > hold*%.2f=%.4f (lock_gain)",
+            _mode_tag, position_id, value_now, premium, value_hold * premium,
         )
-        return _make("SELL", qty, bid_price, "lock_gain", value_now, value_hold)
+        decision = _make("SELL", qty, bid_price, "lock_gain", value_now, value_hold)
+        _publish_close_event(decision, position, model_p_var)
+        return decision
 
     # ------------------------------------------------------------------
     # Step 8: values are roughly equal — de-risk half the position
     # ------------------------------------------------------------------
     half_qty = qty / 2.0
     half_value_now = value_now / 2.0
+    _mode_tag = "[PAPER] " if PAPER_MODE else ""
     log.info(
-        "[L33] position=%s SELL_PARTIAL qty=%.2f — marginal difference (de_risk_marginal)",
-        position_id, half_qty,
+        "[L33] %sposition=%s SELL_PARTIAL qty=%.2f — marginal difference (de_risk_marginal)",
+        _mode_tag, position_id, half_qty,
     )
-    return CloseDecision(
+    decision = CloseDecision(
         position_id=position_id,
         action="SELL_PARTIAL",
         sell_qty=half_qty,
@@ -295,6 +413,8 @@ def evaluate_close_decision(
         _value_now=value_now,
         _value_hold=value_hold,
     )
+    _publish_close_event(decision, position, model_p_var)
+    return decision
 
 
 # ---------------------------------------------------------------------------

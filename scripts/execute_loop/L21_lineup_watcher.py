@@ -1,4 +1,4 @@
-"""L21_lineup_watcher.py — Lineup Announcement Watcher (BUILD L21).
+"""L21_lineup_watcher.py — Lineup Announcement Watcher (BUILD L21, v2).
 
 Polls Lineups.com and RotoWire for confirmed NBA starting lineups, diffs them
 against expected top-5 fantasy-point starters, and dispatches alerts via L22.
@@ -9,6 +9,47 @@ Public API: LineupConfirmation, fetch_confirmed_lineups, diff_against_expected,
 CLI:
     python L21_lineup_watcher.py fetch [--date YYYY-MM-DD]
     python L21_lineup_watcher.py once
+
+Environment Variables
+---------------------
+None required for core operation.  The following vars affect behaviour when
+used in the broader execute-loop stack:
+
+  NBA_LINEUP_DIR    Override the default persistence directory
+                    (``<project_root>/data/lineup_announcements``).  Useful
+                    for integration tests or RunPod deployments with a separate
+                    data volume.  Not read by L21 itself (set _LINEUP_DIR in
+                    calling code), but documented here for operator reference.
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+L21 is a read-only watcher: it fetches public lineup information and writes a
+local JSON snapshot.  It performs no financial transactions and therefore has
+no paper/live distinction of its own.
+
+In *paper* deployments the emitted "lineup.confirmed" events are consumed
+downstream (e.g. by L44) which enforces the paper/live gate before any bet
+submission.  L21 publishes unconditionally regardless of the value of
+SUBMISSION_MODE or any equivalent environment variable.
+
+Event Publication
+-----------------
+For each newly confirmed lineup (game_id × team first seen, or whose starter
+roster has changed since the last fetch), L21 publishes a ``"lineup.confirmed"``
+event to the L46 EventBus singleton:
+
+    Event name : "lineup.confirmed"
+    source     : "L21"
+    payload    : {
+        "game_id"          : str   — date-string used as game identifier,
+        "team"             : str   — 3-letter NBA team abbreviation,
+        "starters"         : list[str] — normalised player names,
+        "confirmed_at"     : str   — ISO 8601 UTC timestamp,
+        "previously_unknown": bool — True if first time this team appears,
+    }
+
+Publication is best-effort: any exception from L46 is caught and logged at
+WARNING level so that a broken bus never blocks lineup data delivery.
 """
 from __future__ import annotations
 
@@ -55,6 +96,15 @@ except ImportError:
         from L22_alerting import send_alert  # type: ignore[no-redef]
     except ImportError:
         send_alert = None  # type: ignore[assignment]
+
+# ── L46 EventBus (soft import — bus unavailable → publish silently skipped) ───
+try:
+    import scripts.execute_loop.L46_event_bus as _L46
+except ImportError:
+    try:
+        import L46_event_bus as _L46  # type: ignore[no-redef]
+    except ImportError:
+        _L46 = None  # type: ignore[assignment]
 
 
 @dataclass
@@ -181,16 +231,64 @@ def _add_confirmation(
     )
 
 
+def _publish_lineup_event(
+    game_id: str,
+    team: str,
+    starters: list,
+    confirmed_at: str,
+    previously_unknown: bool,
+) -> None:
+    """Publish a 'lineup.confirmed' event to the L46 EventBus (best-effort)."""
+    if _L46 is None:
+        return
+    try:
+        _L46.publish(
+            "lineup.confirmed",
+            source="L21",
+            payload={
+                "game_id": game_id,
+                "team": team,
+                "starters": starters,
+                "confirmed_at": confirmed_at,
+                "previously_unknown": previously_unknown,
+            },
+        )
+        log.debug("[L21] Published lineup.confirmed for %s/%s", game_id, team)
+    except Exception as exc:
+        log.warning("[L21] EventBus publish failed for %s/%s: %s", game_id, team, exc)
+
+
+def _load_persisted(date: str) -> Dict[str, list]:
+    """Return {team: [starters]} from the persisted JSON for *date*, or {}."""
+    path = _LINEUP_DIR / f"{date}.json"
+    if not path.exists():
+        return {}
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        return {
+            k.upper(): v.get("confirmed_starters", [])
+            for k, v in raw.items()
+            if isinstance(v, dict)
+        }
+    except Exception as exc:
+        log.warning("[L21] persisted load failed (%s): %s", path, exc)
+    return {}
+
+
 def fetch_confirmed_lineups(date: Optional[str] = None) -> List[LineupConfirmation]:
     """Fetch confirmed NBA starting lineups for *date* (default: today UTC).
 
     Sources tried in order per team: lineups.com → rotowire → manual seed.
     Returns [] (with INFO log) if no data available.
     Persists results atomically to data/lineup_announcements/<date>.json.
+    Publishes a "lineup.confirmed" event via L46 for each new or changed team.
     """
     if date is None:
         date = _today_str()
     store: Dict[str, LineupConfirmation] = {}
+
+    # Load previously persisted lineups for change detection
+    previous: Dict[str, list] = _load_persisted(date)
 
     # source 1: lineups.com (also_span=True covers their markup variant)
     html = _http_get(_LINEUPS_COM_URL)
@@ -220,6 +318,24 @@ def fetch_confirmed_lineups(date: Optional[str] = None) -> List[LineupConfirmati
         log.info("[L21] No lineup data for %s — too early or all sources blocked", date)
     else:
         _persist(date, result)
+        # Publish events for new or changed lineups
+        for conf in result:
+            prev_starters = previous.get(conf.team)
+            previously_unknown = prev_starters is None
+            roster_changed = (not previously_unknown) and (
+                set(conf.confirmed_starters) != set(prev_starters)
+            )
+            if previously_unknown or roster_changed:
+                try:
+                    _publish_lineup_event(
+                        game_id=date,
+                        team=conf.team,
+                        starters=conf.confirmed_starters,
+                        confirmed_at=conf.timestamp,
+                        previously_unknown=previously_unknown,
+                    )
+                except Exception as pub_exc:
+                    log.warning("[L21] publish skipped for %s: %s", conf.team, pub_exc)
     return result
 
 

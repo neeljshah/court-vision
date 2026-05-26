@@ -18,14 +18,58 @@ CLI
     python L40_multi_model_dispatcher.py status
     python L40_multi_model_dispatcher.py refresh
     python L40_multi_model_dispatcher.py set --stat ast --variant blend [--notes ...]
+
+Environment Variables
+---------------------
+    L40_SLOW_THRESHOLD_MS : int, default 100
+        Per-dispatch latency threshold in milliseconds.  When a predict_dispatched
+        call exceeds this value, a ``"model.slow"`` event is published to L46 in
+        addition to the normal ``"model.routed"`` event.  Set to 0 to always emit
+        slow events; set to a very large value to effectively disable slow alerts.
+
+Paper vs Live Mode (MODE GATING)
+---------------------------------
+    L40 is paper/live-agnostic — the same champion/challenger/A-B routing table
+    applies in both modes.  The routing decision (which model variant to call) does
+    not depend on SUBMISSION_MODE or any live-data flag.  Mode enforcement is the
+    responsibility of downstream layers (e.g. L44).  L40 never reads nor writes any
+    SUBMISSION_MODE environment variable.
+
+Event Publication
+-----------------
+    L40 publishes to L46 (EventBus) after every successful predict_dispatched call:
+
+    ``"model.routed"`` — always emitted on dispatch:
+        {
+            "request_id": str,        # UUID4 per-call identifier
+            "model_variant": str,     # variant actually used (post-fallback)
+            "is_champion": bool,      # True when variant == HARDCODED_DEFAULTS[stat][0]
+            "is_challenger": bool,    # True when variant != HARDCODED_DEFAULTS[stat][0]
+            "latency_ms": float,      # wall-clock ms for the predict call
+            "routed_at": str,         # ISO 8601 UTC timestamp
+        }
+
+    ``"model.slow"`` — additionally emitted when latency_ms > L40_SLOW_THRESHOLD_MS:
+        {
+            "model_variant": str,
+            "latency_ms": float,
+            "threshold_ms": float,
+            "request_id": str,
+        }
+
+    L46 import failures are swallowed so that a missing EventBus never breaks
+    production predictions.
 """
 from __future__ import annotations
 
 import argparse
 import json
 import logging
+import os
 import pickle
 import sys
+import time
+import uuid
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -38,12 +82,21 @@ sys.path.insert(0, str(PROJECT_DIR))
 
 logger = logging.getLogger(__name__)
 
+# ── L46 soft-import ────────────────────────────────────────────────────────────
+try:
+    import scripts.execute_loop.L46_event_bus as _L46  # type: ignore
+except Exception:  # noqa: BLE001
+    _L46 = None  # type: ignore
+
 # ── Constants ──────────────────────────────────────────────────────────────────
 STATS: Tuple[str, ...] = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 VARIANTS: Tuple[str, ...] = ("blend", "q50_lgb", "q50_xgb", "multitask_mlp")
 
 ROUTING_PATH = PROJECT_DIR / "data" / "models" / "dispatch_routing.json"
 WF_RESULTS_PATH = PROJECT_DIR / "data" / "models" / "prop_pergame_walk_forward.json"
+
+# Latency alert threshold — override via L40_SLOW_THRESHOLD_MS env var
+_SLOW_THRESHOLD_MS: float = float(os.environ.get("L40_SLOW_THRESHOLD_MS", "100"))
 
 HARDCODED_DEFAULTS: Dict[str, Tuple[str, str]] = {
     "pts":  ("blend",         "cycle-18 sqrt+Huber"),
@@ -222,6 +275,51 @@ def _predict_multitask_mlp(stat: str, prediction_row: Any, model_dir: Optional[P
         return None  # caller handles fallback
 
 
+# ── Internal: event publication ───────────────────────────────────────────────
+def _publish_routed(
+    request_id: str,
+    stat: str,
+    variant: str,
+    latency_ms: float,
+    routed_at: str,
+) -> None:
+    """Publish 'model.routed' (and optionally 'model.slow') to L46.
+
+    Swallows all exceptions so a broken EventBus never interrupts predictions.
+    """
+    if _L46 is None:
+        return
+    default_variant = HARDCODED_DEFAULTS.get(stat, (None,))[0]
+    is_champion = variant == default_variant
+    try:
+        _L46.publish(
+            "model.routed",
+            source="L40",
+            payload={
+                "request_id": request_id,
+                "model_variant": variant,
+                "is_champion": is_champion,
+                "is_challenger": not is_champion,
+                "latency_ms": latency_ms,
+                "routed_at": routed_at,
+            },
+        )
+        threshold = _SLOW_THRESHOLD_MS
+        if latency_ms > threshold:
+            _L46.publish(
+                "model.slow",
+                source="L40",
+                payload={
+                    "model_variant": variant,
+                    "latency_ms": latency_ms,
+                    "threshold_ms": threshold,
+                    "request_id": request_id,
+                },
+            )
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("L40: EventBus publish failed (non-fatal): %s", exc)
+
+
 # ── Public: predict_dispatched ─────────────────────────────────────────────────
 def predict_dispatched(
     stat: str,
@@ -251,30 +349,33 @@ def predict_dispatched(
         )
         variant = "blend"
 
-    if variant == "blend":
-        return _predict_blend(stat, prediction_row, _model_dir)
+    request_id = str(uuid.uuid4())
+    _t0 = time.perf_counter()
 
-    if variant == "q50_lgb":
+    if variant == "blend":
+        result = _predict_blend(stat, prediction_row, _model_dir)
+    elif variant == "q50_lgb":
         result = _predict_q50_lgb(stat, prediction_row, _model_dir)
         if result is None:
-            return _predict_blend(stat, prediction_row, _model_dir)
-        return result
-
-    if variant == "q50_xgb":
+            result = _predict_blend(stat, prediction_row, _model_dir)
+    elif variant == "q50_xgb":
         result = _predict_q50_xgb(stat, prediction_row, _model_dir)
         if result is None:
-            return _predict_blend(stat, prediction_row, _model_dir)
-        return result
-
-    if variant == "multitask_mlp":
+            result = _predict_blend(stat, prediction_row, _model_dir)
+    elif variant == "multitask_mlp":
         result = _predict_multitask_mlp(stat, prediction_row, _model_dir)
         if result is None:
-            return _predict_blend(stat, prediction_row, _model_dir)
-        return result
+            result = _predict_blend(stat, prediction_row, _model_dir)
+    else:
+        # Should never reach here, but be safe
+        logger.warning("Unhandled variant %r; falling back to blend.", variant)
+        result = _predict_blend(stat, prediction_row, _model_dir)
 
-    # Should never reach here, but be safe
-    logger.warning("Unhandled variant %r; falling back to blend.", variant)
-    return _predict_blend(stat, prediction_row, _model_dir)
+    latency_ms = (time.perf_counter() - _t0) * 1000.0
+    routed_at = datetime.now(tz=timezone.utc).isoformat()
+    _publish_routed(request_id, stat, variant, latency_ms, routed_at)
+
+    return result
 
 
 # ── Public: predict_quantiles_dispatched ───────────────────────────────────────

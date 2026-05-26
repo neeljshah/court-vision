@@ -1,6 +1,6 @@
 """test_L21_lineup.py — Tests for L21_lineup_watcher.py
 
-Five tests using mocked HTTP via monkeypatch on _http_get; no live network calls.
+Nine tests using mocked HTTP via monkeypatch on _http_get; no live network calls.
 """
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import json
 import logging
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, call
 
 import pytest
 
@@ -209,3 +209,159 @@ def test_all_sources_blocked_returns_empty(tmp_path, monkeypatch, caplog):
     # At least one WARN about blocked sources
     warn_records = [r for r in caplog.records if r.levelno >= logging.WARNING]
     assert warn_records, "Expected at least one WARNING log when all sources blocked"
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Test 6 — New confirmed lineup publishes a "lineup.confirmed" event
+# ══════════════════════════════════════════════════════════════════════════════
+def test_new_lineup_publishes_event(tmp_path, monkeypatch):
+    """When a team appears for the first time, _publish_lineup_event is called
+    with previously_unknown=True and the correct game_id / team / starters."""
+    monkeypatch.setattr(L21, "_LINEUP_DIR", tmp_path)
+
+    call_count = [0]
+
+    def _fake_http(url: str) -> str:
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return _LINEUPS_COM_5_HTML
+        return ""
+
+    monkeypatch.setattr(L21, "_http_get", _fake_http)
+
+    published: list = []
+
+    def _fake_publish(game_id, team, starters, confirmed_at, previously_unknown):
+        published.append({
+            "game_id": game_id,
+            "team": team,
+            "starters": starters,
+            "previously_unknown": previously_unknown,
+        })
+
+    monkeypatch.setattr(L21, "_publish_lineup_event", _fake_publish)
+
+    results = L21.fetch_confirmed_lineups(date="2026-05-25")
+
+    assert len(results) >= 1
+    assert len(published) >= 1, "Expected at least one event published for new lineup"
+    lal_events = [e for e in published if e["team"] == "LAL"]
+    assert lal_events, "Expected a lineup.confirmed event for LAL"
+    assert lal_events[0]["game_id"] == "2026-05-25"
+    assert lal_events[0]["previously_unknown"] is True
+    assert "lebron james" in lal_events[0]["starters"]
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Test 7 — No new lineup → no event published
+# ══════════════════════════════════════════════════════════════════════════════
+def test_no_new_lineup_publishes_nothing(tmp_path, monkeypatch):
+    """When the persisted snapshot already contains the same starters as the
+    freshly fetched data, _publish_lineup_event is NOT called."""
+    monkeypatch.setattr(L21, "_LINEUP_DIR", tmp_path)
+
+    # Pre-seed the persisted file with LAL's 5 starters (already known)
+    existing = {
+        "LAL": {
+            "team": "LAL",
+            "confirmed_starters": [
+                "lebron james", "anthony davis", "austin reaves",
+                "d'angelo russell", "jarred vanderbilt",
+            ],
+            "surprise_starters": [],
+            "benched_expected": [],
+            "source": "lineups.com",
+            "timestamp": "2026-05-25T00:00:00+00:00",
+            "note": "",
+        }
+    }
+    (tmp_path / "2026-05-25.json").write_text(json.dumps(existing), encoding="utf-8")
+
+    call_count = [0]
+
+    def _fake_http(url: str) -> str:
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return _LINEUPS_COM_5_HTML
+        return ""
+
+    monkeypatch.setattr(L21, "_http_get", _fake_http)
+
+    published: list = []
+
+    def _fake_publish(**kwargs):
+        published.append(kwargs)
+
+    monkeypatch.setattr(L21, "_publish_lineup_event", _fake_publish)
+
+    L21.fetch_confirmed_lineups(date="2026-05-25")
+
+    assert published == [], (
+        f"Expected no events for unchanged lineup; got {published}"
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Test 8 — EventBus publish failure does not break fetch
+# ══════════════════════════════════════════════════════════════════════════════
+def test_publish_failure_does_not_break_fetch(tmp_path, monkeypatch):
+    """If _publish_lineup_event raises an exception, fetch_confirmed_lineups
+    still returns its results (publish errors must not propagate)."""
+    monkeypatch.setattr(L21, "_LINEUP_DIR", tmp_path)
+
+    call_count = [0]
+
+    def _fake_http(url: str) -> str:
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return _LINEUPS_COM_5_HTML
+        return ""
+
+    monkeypatch.setattr(L21, "_http_get", _fake_http)
+
+    def _exploding_publish(**kwargs):
+        raise RuntimeError("bus is down")
+
+    monkeypatch.setattr(L21, "_publish_lineup_event", _exploding_publish)
+
+    # Should not raise despite publish exploding
+    results = L21.fetch_confirmed_lineups(date="2026-05-25")
+
+    lal = next((c for c in results if c.team == "LAL"), None)
+    assert lal is not None, "LAL should still be returned even when publish fails"
+    assert len(lal.confirmed_starters) == 5
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Test 9 — Atomic write: tmp file replaced, no partial file left on disk
+# ══════════════════════════════════════════════════════════════════════════════
+def test_atomic_write(tmp_path, monkeypatch):
+    """_persist writes a .tmp then atomically replaces the target JSON;
+    no temporary file should remain after a successful persist."""
+    monkeypatch.setattr(L21, "_LINEUP_DIR", tmp_path)
+
+    call_count = [0]
+
+    def _fake_http(url: str) -> str:
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return _LINEUPS_COM_5_HTML
+        return ""
+
+    monkeypatch.setattr(L21, "_http_get", _fake_http)
+
+    # Suppress event publication — not relevant to this test
+    monkeypatch.setattr(L21, "_publish_lineup_event", lambda **kw: None)
+
+    L21.fetch_confirmed_lineups(date="2026-05-25")
+
+    final_file = tmp_path / "2026-05-25.json"
+    assert final_file.exists(), "Persisted JSON file should exist after fetch"
+
+    # No stray .tmp files should remain
+    tmp_files = list(tmp_path.glob("*.tmp"))
+    assert tmp_files == [], f"Stray .tmp files found: {tmp_files}"
+
+    # The JSON should be valid and contain LAL
+    data = json.loads(final_file.read_text(encoding="utf-8"))
+    assert "LAL" in data, f"Expected LAL key in persisted JSON; got keys: {list(data)}"
