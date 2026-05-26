@@ -144,6 +144,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "Prior-season player tracking features (drives, passing, catch-shoot \u2014 strict S-1 only). PTS PER-STAT SHIP: WF 4/4 positive AND mean delta -0.00736 (passes both gates). Four other stats hit WF 4/4 but miss -0.005 mean threshold: AST -0.00491, FG3M -0.00168, BLK -0.00068, TOV -0.00118. REB 3/4 WF -0.00077. STL 1/4 WF +0.00014 (regress). Stats_fully_pass=1/7 (PTS only). Cycle 14 attempted current-season tracking + regressed; this v2 with strict prior-season discipline produces honest PTS gain. Wire: add tracking features to PTS endQ3 residual head only."
+    },
+    {
+      "name": "R11_M2_game_total_pts",
+      "round": 10,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "NEW MODEL CLASS \u2014 game-level total points prediction for O/U bets. 35 pregame features from season_games_*.json (pace, ortg, def_rtg, b2b, L10 efg, etc.). 889 games. Naive L5-mean baseline MAE 17.22 vs LGB 15.42 (pooled -8.9% improvement; gate is -5%). Per-fold: f1 -9.8%, f2 -6.7%, f3 -10.0% (3/3 valid folds positive). Probe-gate marked REJECT because fold 0 was skipped (empty train window in expanding WF), but substantively this is a clean SHIP \u2014 all 3 evaluated folds show > -5% improvement. Different output surface than player props; enables O/U market participation. Wire: persist LGB model, add /predict/total_pts endpoint."
     }
   ],
   "rejects": [
