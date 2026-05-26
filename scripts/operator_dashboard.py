@@ -766,6 +766,10 @@ SECTION_TITLES = (
 # R23_P8 — optional section, only rendered when collect_and_render is called
 # with `include_live_recs=True` (the default).
 LIVE_RECS_SECTION_TITLE = "What to bet right now"
+# R24_Q4 — optional section, only rendered when collect_and_render is called
+# with `include_rec_perf=True` (default). Degrades gracefully when the
+# rec_settled.parquet file does not exist yet (first-7-days warm-up).
+REC_PERF_SECTION_TITLE = "Recent Rec Performance"
 
 
 # --------------------------------------------------------------------------- #
@@ -860,6 +864,98 @@ def _section_live_recs(d: Dict[str, Any]) -> str:
     )
 
 
+# --------------------------------------------------------------------------- #
+# Section 8: "Recent Rec Performance" (R24_Q4)                                 #
+# --------------------------------------------------------------------------- #
+DEFAULT_REC_SETTLED_PATH = (
+    PROJECT_DIR / "data" / "cache" / "rec_tracker" / "rec_settled.parquet"
+)
+
+
+def fetch_rec_performance(
+    *,
+    settled_path: Path = DEFAULT_REC_SETTLED_PATH,
+    days: int = 7,
+) -> Dict[str, Any]:
+    """Aggregate the R24_Q4 rec_settled.parquet over the last `days` days.
+
+    Always returns a dict — degrades gracefully when the parquet does not
+    exist yet (first ~7 days after the tracker is wired live).
+    """
+    out: Dict[str, Any] = {"ok": False, "days": int(days),
+                            "reason": "", "by_stat": {}}
+    if not settled_path.exists():
+        out["reason"] = "no settled data yet (warm-up window)"
+        return out
+    try:
+        from scripts.live_rec_tracker import report  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"tracker import failed: {exc}"
+        return out
+    try:
+        rpt = report(settled_path=str(settled_path), days=int(days))
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"report raised: {exc}"
+        return out
+    if not rpt.get("ok"):
+        out["reason"] = rpt.get("reason", "report not ok")
+        return out
+    out.update(rpt)
+    out["ok"] = True
+    return out
+
+
+def _section_rec_perf(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return (
+            f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
+            f'<p class="muted">({_html_escape(d.get("reason","(no data)"))})</p>'
+        )
+    if d.get("n", 0) == 0:
+        return (
+            f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
+            f'<p class="muted">(no recs settled in window)</p>'
+        )
+    head = (
+        f'<p>Last {int(d.get("days",7))}d: '
+        f'<b>{d.get("wins",0)}W-{d.get("losses",0)}L-{d.get("pushes",0)}P</b> '
+        f'· Win-rate <b>{float(d.get("win_rate",0))*100:.1f}%</b> '
+        f'· ROI <b>{float(d.get("roi",0))*100:+.2f}%</b> '
+        f'· Profit <b>{float(d.get("total_profit",0)):+.2f}u</b> '
+        f'· Stake {float(d.get("total_stake",0)):.2f}u</p>'
+    )
+    edge_line = ""
+    if d.get("mean_edge_win") is not None or d.get("mean_edge_loss") is not None:
+        edge_line = (
+            f'<p class="muted">Mean edge — winners: '
+            f'{d.get("mean_edge_win")}  ·  losers: {d.get("mean_edge_loss")}</p>'
+        )
+    by_stat = d.get("by_stat") or {}
+    if not by_stat:
+        return f'<h2>{REC_PERF_SECTION_TITLE}</h2>' + head + edge_line
+    rows = []
+    for stat, s in sorted(by_stat.items()):
+        rows.append(
+            f'<tr><td>{_html_escape(str(stat).upper())}</td>'
+            f'<td>{s.get("n",0)}</td>'
+            f'<td>{s.get("wins",0)}</td>'
+            f'<td>{s.get("losses",0)}</td>'
+            f'<td>{s.get("pushes",0)}</td>'
+            f'<td>{float(s.get("win_rate",0))*100:.1f}%</td>'
+            f'<td>{float(s.get("roi",0))*100:+.2f}%</td>'
+            f'<td>{float(s.get("profit",0)):+.2f}u</td></tr>'
+        )
+    return (
+        f'<h2>{REC_PERF_SECTION_TITLE}</h2>'
+        + head + edge_line +
+        '<table><thead><tr><th>Stat</th><th>N</th><th>W</th><th>L</th>'
+        '<th>P</th><th>Win%</th><th>ROI%</th><th>Profit</th>'
+        '</tr></thead><tbody>'
+        + "".join(rows) +
+        '</tbody></table>'
+    )
+
+
 _OPERATOR_CSS = """
 * { box-sizing: border-box; }
 html, body {
@@ -917,6 +1013,7 @@ def render_operator_html(
     slate: Dict[str, Any],
     tracker: Dict[str, Any],
     live_recs: Optional[Dict[str, Any]] = None,  # R23_P8
+    rec_perf: Optional[Dict[str, Any]] = None,   # R24_Q4
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -932,6 +1029,8 @@ def render_operator_html(
     )
     if live_recs is not None:
         body += _section_live_recs(live_recs)
+    if rec_perf is not None:
+        body += _section_rec_perf(rec_perf)
     return (
         "<!DOCTYPE html>\n"
         '<html lang="en"><head>'
@@ -966,6 +1065,9 @@ def collect_and_render(
     live_recs_bankroll: float = 1000.0,
     live_recs_top: int = 5,
     live_recs_min_edge: float = 0.05,
+    include_rec_perf: bool = True,     # R24_Q4
+    rec_perf_settled_path: Optional[Path] = None,
+    rec_perf_days: int = 7,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -1000,11 +1102,20 @@ def collect_and_render(
         )
         live_recs.setdefault("ok", False)
 
+    rec_perf = None
+    if include_rec_perf:
+        rec_perf = _safe(
+            fetch_rec_performance,
+            settled_path=rec_perf_settled_path or DEFAULT_REC_SETTLED_PATH,
+            days=int(rec_perf_days),
+        )
+        rec_perf.setdefault("ok", False)
+
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
 
     return render_operator_html(
-        health, bankroll, alerts, bets, slate, tracker, live_recs,
+        health, bankroll, alerts, bets, slate, tracker, live_recs, rec_perf,
         auto_refresh_sec=auto_refresh_sec,
     )
