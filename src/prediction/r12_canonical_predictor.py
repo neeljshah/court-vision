@@ -535,6 +535,71 @@ def apply_calibrator(raw: np.ndarray, calibrator: Dict) -> np.ndarray:
     raise ValueError(f"Unknown calibrator type: {calibrator['type']}")
 
 
+_BUNDLE_CACHE: Dict[str, Dict] = {}
+_INPLAY_BUNDLE_CACHE: Dict = {}
+
+
+def predict_all_pregame_markets(df: pd.DataFrame, use_cache: bool = True) -> Dict[str, np.ndarray]:
+    """Predict all 6 pregame markets for every row of `df`.
+
+    `df` must already be augmented with build_r12_features (and any extra
+    feature builders needed). Loads each canonical bundle on first call and
+    caches it in-process by default. Returns a dict keyed by target name with
+    np.ndarray of predictions.
+
+    Raises FileNotFoundError if any of the 6 bundles is missing — call
+    list_available_bundles() first to check.
+    """
+    out: Dict[str, np.ndarray] = {}
+    for target in _BUNDLE_FILENAMES:
+        if use_cache and target in _BUNDLE_CACHE:
+            bundle = _BUNDLE_CACHE[target]
+        else:
+            bundle = load_canonical_bundle(target)
+            if use_cache:
+                _BUNDLE_CACHE[target] = bundle
+        out[target] = predict_canonical_bundle(bundle, df)
+    return out
+
+
+def predict_all_inplay_markets(df: pd.DataFrame, snap_q: int,
+                                 use_cache: bool = True) -> Dict[str, np.ndarray]:
+    """Predict in-play winprob at `snap_q` (1/2/3) and, when snap_q==2,
+    also predict remaining_total.
+
+    `df` must already have pregame R12 features AND snapshot features
+    (cum_score, cum_total, q_remaining, etc.) applied for the same snap_q.
+    Returns dict keyed by 'home_wins_endQ{q}' and (snap_q==2 only)
+    'remaining_total_endQ2'. Calibrators are applied automatically.
+    """
+    out: Dict[str, np.ndarray] = {}
+    wp_key = snap_q
+    if use_cache and wp_key in _INPLAY_BUNDLE_CACHE:
+        wp_bundle = _INPLAY_BUNDLE_CACHE[wp_key]
+    else:
+        wp_bundle = load_inplay_bundle(wp_key)
+        if use_cache:
+            _INPLAY_BUNDLE_CACHE[wp_key] = wp_bundle
+    out[f"home_wins_endQ{snap_q}"] = predict_inplay(wp_bundle, df)
+
+    if snap_q == 2:
+        rt_key = "remaining_total_endQ2"
+        if use_cache and rt_key in _INPLAY_BUNDLE_CACHE:
+            rt_bundle = _INPLAY_BUNDLE_CACHE[rt_key]
+        else:
+            rt_bundle = load_inplay_bundle(rt_key)
+            if use_cache:
+                _INPLAY_BUNDLE_CACHE[rt_key] = rt_bundle
+        out[rt_key] = predict_inplay(rt_bundle, df)
+    return out
+
+
+def clear_bundle_cache() -> None:
+    """Clear in-process bundle caches (useful after re-serializing on disk)."""
+    _BUNDLE_CACHE.clear()
+    _INPLAY_BUNDLE_CACHE.clear()
+
+
 def predict_inplay(bundle: Dict, df: pd.DataFrame) -> np.ndarray:
     """Predict via an in-play bundle on `df` (must already have snapshot features
     + pregame features applied via build_r12_features + add_interactions +
