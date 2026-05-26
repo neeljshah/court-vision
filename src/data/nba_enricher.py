@@ -39,6 +39,9 @@ _NBA_CACHE  = os.path.join(_DATA, "nba")
 
 # How many seconds of slop to allow when matching tracker shot timing to API events
 _SHOT_MATCH_WINDOW_SEC = 4.0
+# R8: Second-pass widening — clock-drift cases (auto-calibrated clip_start_sec mis-fires,
+# or scoreboard mapper had < 5 anchors) drift up to ~8s before becoming unmatchable.
+_SHOT_MATCH_WINDOW_SEC_2 = 8.0
 # How many seconds of slop for matching possession end to API possession events
 # Raised 5.0→10.0 (ISSUE B): 0022401156 had 52% match rate at 5s; wider window
 # catches clock drift without losing precision since PBP events are sparse (~2/min).
@@ -591,6 +594,9 @@ def enrich_shot_log(
             pass
 
     # --- Shot-side matching: label each tracker shot with made/missed ---
+    # R8: two-pass — primary ±4s, fallback ±8s for clock-drift cases (mirrors
+    # the second-pass approach already used in enrich_possessions for possessions).
+    _unmatched_pass1 = []
     for shot in shots:
         try:
             ts = _ts_convert(float(shot.get("timestamp", 0)))
@@ -605,7 +611,23 @@ def enrich_shot_log(
         if best_ev is not None and best_dt <= _SHOT_MATCH_WINDOW_SEC:
             shot["made"] = int(best_ev["event_type"] == 1)
         else:
-            shot["made"] = ""   # no match found
+            shot["made"] = ""
+            _unmatched_pass1.append((shot, ts))
+
+    # Second pass: ±8s for the still-unmatched shots
+    if _unmatched_pass1:
+        _pass2_hits = 0
+        for shot, ts in _unmatched_pass1:
+            best_ev, best_dt = None, _SHOT_MATCH_WINDOW_SEC_2 + 1
+            for ev in fg_events:
+                dt = abs(ev["game_clock_sec"] - ts)
+                if dt < best_dt:
+                    best_dt = dt
+                    best_ev = ev
+            if best_ev is not None and best_dt <= _SHOT_MATCH_WINDOW_SEC_2:
+                shot["made"] = int(best_ev["event_type"] == 1)
+                _pass2_hits += 1
+        print(f"  Shot match pass2 (±{_SHOT_MATCH_WINDOW_SEC_2}s): {_pass2_hits}/{len(_unmatched_pass1)} recovered")
 
     # --- PBP recall: what fraction of real FG events did the tracker capture? ---
     # Only consider PBP events that fall within the video's range (with a small buffer)
