@@ -180,6 +180,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "NEW MODEL CLASS \u2014 game-level AWAY team total points. Mirror of M2v3. 35 pregame features, 2,836 games. Naive L5-mean MAE 10.71 vs LGB 9.60 = pooled -10.30% (gate -5% PASS). Per-fold: f1 -8.9%, f2 -10.4%, f3 -11.5% (3/3 valid folds positive). FOURTH M2-family SHIP. Combined with M2v3, the system now has independent home_pts and away_pts predictors \u2014 can compose into total (M2 surface) and spread (M2v2 surface) as a sanity check on consistency. Wire morning: persist LGB model, add /predict/away_pts endpoint."
+    },
+    {
+      "name": "R11_M2v7_score_diff_expanded",
+      "round": 10,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "M2v2 with EXPANDED feature set (~60 features vs 35): adds travel_miles, top_lineup_net_rtg, iso_matchup_edge, pnr_ppp, hustle_deflections, stars_available, bench_net_rtg, additional L10 stats (tov/oreb/ft_rate), off_rtg_vs_top_def, SRS, ELO, ref_avg_fouls. Result: pooled -14.66% vs naive (vs M2v2's -14.26%) \u2014 marginal +0.4pp improvement. Per-fold: f1 -13.3%, f2 -15.0%, f3 -15.6%. 3/3 valid folds PASS. FIFTH R11 ship. Validates that more features add small consistent value on spread surface. PRODUCTION should use this expanded set as the canonical M2 score_diff model."
     }
   ],
   "rejects": [
