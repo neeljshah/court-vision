@@ -6,6 +6,26 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-05-26 — Gate 1 real-Vegas validation (multi-season)
+
+### Added
+- **Real-Vegas Gate 1 — 2024 playoffs** (4,337 bets, +4.19% ROI on L10 baseline vs DK/FD/MGM/BetRivers closing lines from reisneriv/NBA_Player_Props). Script: `scripts/run_gate1_playoffs2024.py`.
+- **Real-Vegas Gate 1 — 2025-26 regular season** (4,210 bets vs DK/FD/MGM closes from benashkar/nba_gambling, walk-forward prod-stack OOF predictor). Beat rate 54.37%, AST +7.22% ROI (60.25% beat) and FG3M +0.34% ROI (58.37% beat) emerge as real edges; PTS/REB lose to vig at sharp closes. Scripts: `scripts/run_gate1_2025_26_prod.py` (prod-stack) + `scripts/run_gate1_2025_26.py` (L10 baseline for comparison).
+- **NBA Stats game_id → date lookup** in `scripts/run_gate1.py` via `season_games_*.json` (NBA Stats format games can now join to date-keyed residuals).
+- **Synthetic CLV mode** in `scripts/run_gate1.py` (`--mode ledger --audit-only`) reads `pnl_ledger_clv_synthetic.csv` directly.
+- **`data/models/gate1_results_summary.json`** — consolidated machine-readable verification report.
+- **`data/external/historical_lines/fetch_external_history.py` extended** with `fetch_benashkar()` + `fetch_lilswad()` for the two new public archives. `playoffs_2024_canonical.csv` + lilswad CSVs committed for one-step reproducibility.
+- **`data/models/prop_residuals.json` rebuilt** via `build_historical_residuals.py` — 330,078 rows with proper `(player_id, game_date)` join keys (previous version had nulls). Old edge-history kept at `prop_residuals_edge_history.json`.
+
+### Verified
+- `verify_winprob.py`: accuracy 0.7094 / Brier 0.193 within tolerance.
+- `verify_production_mae.py`: 6/7 stats within +/-0.01 of claim; PTS at 4.66 (+0.04 above 4.62 claim, still in honest range).
+- 48/48 critical-path tests pass (`gate1 + devig + kelly + clv + calibration`).
+- 4,055 tests collected total.
+
+### Improved
+- **README rewritten** for hiring-manager scan: leads with the two-season real-Vegas table; per-stat ROI breakdown; honest negatives surfaced; reproducibility section with three-command flow (fetch archives → run gate1 scripts → done).
+
 ## [0.15.0] - 2026-05-25 — in-play prediction + execute_loop infra
 
 ### Added
