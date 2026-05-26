@@ -16,6 +16,28 @@ CLI:
     python L08_drift_detector.py report [--window 7]
 
 Environment Variables: none
+
+Event Publication
+-----------------
+When a stat's drift status is "DRIFT" or "WARN", L08 publishes a
+``"drift.detected"`` event via the L46 EventBus singleton (soft-imported;
+failure is non-fatal and logged at DEBUG level).
+
+Event schema::
+
+    {
+        "stat":         str,   # lowercase stat name, e.g. "pts"
+        "drift_metric": float, # observed z-score
+        "threshold":    float, # z-score threshold that was crossed
+        "severity":     str,   # "warning" (WARN) | "error" (DRIFT)
+        "window_days":  int,   # lookback window used for the check
+        "detected_at":  str,   # ISO 8601 UTC timestamp
+    }
+
+Subscribers can register via::
+
+    import scripts.execute_loop.L46_event_bus as L46
+    L46.subscribe("drift.detected", handler, layer="MyLayer")
 """
 from __future__ import annotations
 
@@ -38,6 +60,14 @@ sys.path.insert(0, str(_PROJECT_DIR))
 import pandas as pd
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Soft-import L46 EventBus — optional; failure is non-fatal
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L46_event_bus as _L46  # type: ignore[import]
+except Exception:  # noqa: BLE001
+    _L46 = None
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -323,6 +353,30 @@ def daily_drift_report(window_days: int = 7) -> dict:
     n_drift = sum(1 for m in metrics if m.status == "DRIFT")
     n_warn = sum(1 for m in metrics if m.status == "WARN")
     n_ok = sum(1 for m in metrics if m.status == "OK")
+
+    # Publish drift.detected events for WARN / DRIFT metrics via L46
+    if _L46 is not None:
+        iso_ts = datetime.now(timezone.utc).isoformat()
+        for m in metrics:
+            if m.status not in ("DRIFT", "WARN"):
+                continue
+            severity = "error" if m.status == "DRIFT" else "warning"
+            threshold = _Z_DRIFT if m.status == "DRIFT" else _Z_WARN
+            try:
+                _L46.publish(
+                    "drift.detected",
+                    source="L8",
+                    payload={
+                        "stat": m.stat,
+                        "drift_metric": m.z_score,
+                        "threshold": threshold,
+                        "severity": severity,
+                        "window_days": m.window_days,
+                        "detected_at": iso_ts,
+                    },
+                )
+            except Exception:  # noqa: BLE001
+                log.debug("L46 publish failed (non-fatal)", exc_info=True)
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),

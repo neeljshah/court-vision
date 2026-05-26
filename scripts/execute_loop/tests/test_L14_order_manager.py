@@ -1,9 +1,9 @@
 """test_L14_order_manager.py — Tests for L14_order_manager.py
 
-Seven tests covering the complete public API. All exchange clients are
-injected via sys.modules mocking; no real HTTP calls are made. Each test
-uses tmp_path to isolate file I/O via monkeypatching the module-level path
-constants.
+Tests covering the complete public API plus L46 EventBus integration.
+All exchange clients are injected via sys.modules mocking; no real HTTP
+calls are made. Each test uses tmp_path to isolate file I/O via
+monkeypatching the module-level path constants.
 """
 from __future__ import annotations
 
@@ -27,6 +27,7 @@ if str(_LOOP_DIR) not in sys.path:
     sys.path.insert(0, str(_LOOP_DIR))
 
 import L14_order_manager as L14
+import L46_event_bus as L46
 
 
 # ---------------------------------------------------------------------------
@@ -46,6 +47,9 @@ def isolate(tmp_path, monkeypatch):
     # Reset module-level in-memory state
     L14._reset_state()
 
+    # Isolate L46 default bus between tests
+    L46.get_default_bus().clear_subscribers()
+
     yield
 
     # Cleanup sys.modules injection between tests
@@ -53,6 +57,9 @@ def isolate(tmp_path, monkeypatch):
                 "L11_sporttrade_client", "L12_prophet_client",
                 "L07_pnl_ledger", "L22_alerting"]:
         sys.modules.pop(mod, None)
+
+    # Clear L46 bus again after test
+    L46.get_default_bus().clear_subscribers()
 
 
 def _make_kalshi_mock(positions: list = None):
@@ -506,3 +513,95 @@ def test_sync_polymarket_outcome_to_side_adapter():
     assert len(changed) == 1
     assert changed[0].status == "FILLED"
     assert l07.place_bet.call_count == 1
+
+
+# ===========================================================================
+# Test L46-1 — _apply_fill publishes fill.received via L46
+# ===========================================================================
+
+def test_apply_fill_publishes_fill_received():
+    """A successful fill causes L46 to emit a 'fill.received' event."""
+    received: list = []
+
+    bus = L46.get_default_bus()
+    bus.subscribe("fill.received", lambda evt: received.append(evt), layer="test")
+
+    _l07_l22_mocks()
+
+    L14.track_order("lx1", "kalshi", "MKT-LX1", "yes", 10, 55, 0.6)
+    pre_built = {"kalshi": [_FakeKalshiPos("MKT-LX1", "yes", 5)]}
+
+    L14.sync_all_exchanges(positions=pre_built)
+
+    assert len(received) == 1, "Expected exactly one fill.received event"
+    evt = received[0]
+    assert evt.name == "fill.received"
+    assert evt.source == "L14"
+    assert evt.payload["order_id"] == "lx1"
+    assert evt.payload["exchange"] == "kalshi"
+    assert evt.payload["market_id"] == "MKT-LX1"
+    assert evt.payload["side"] == "yes"
+    assert evt.payload["matched_qty"] == 5
+    assert evt.payload["qty_filled_now"] == 5
+    assert evt.payload["status"] == "PARTIAL"
+
+
+# ===========================================================================
+# Test L46-2 — FILLED status transition publishes order.filled
+# ===========================================================================
+
+def test_filled_status_publishes_order_filled():
+    """When an order transitions to FILLED, both fill.received and order.filled are emitted."""
+    fill_events: list = []
+    filled_events: list = []
+
+    bus = L46.get_default_bus()
+    bus.subscribe("fill.received", lambda evt: fill_events.append(evt), layer="test")
+    bus.subscribe("order.filled", lambda evt: filled_events.append(evt), layer="test")
+
+    _l07_l22_mocks()
+
+    L14.track_order("lx2", "kalshi", "MKT-LX2", "yes", 10, 60, 0.65)
+    pre_built = {"kalshi": [_FakeKalshiPos("MKT-LX2", "yes", 10)]}
+
+    L14.sync_all_exchanges(positions=pre_built)
+
+    assert len(fill_events) == 1, "Expected one fill.received"
+    assert fill_events[0].payload["status"] == "FILLED"
+
+    assert len(filled_events) == 1, "Expected one order.filled"
+    oe = filled_events[0]
+    assert oe.name == "order.filled"
+    assert oe.source == "L14"
+    assert oe.payload["order_id"] == "lx2"
+    assert oe.payload["exchange"] == "kalshi"
+    assert oe.payload["qty_filled"] == 10
+    assert oe.payload["qty"] == 10
+    assert oe.payload["price"] == 60
+    assert oe.payload["model_p"] == 0.65
+
+
+# ===========================================================================
+# Test L46-3 — L46 publish failure does not break _apply_fill
+# ===========================================================================
+
+def test_publish_failure_does_not_break_fill_apply(monkeypatch):
+    """If L46.publish raises, _apply_fill still applies the fill correctly."""
+    # Patch _L46 on the L14 module to a mock whose publish always raises
+    broken_bus = MagicMock()
+    broken_bus.publish = MagicMock(side_effect=RuntimeError("bus exploded"))
+    monkeypatch.setattr(L14, "_L46", broken_bus)
+
+    _l07_l22_mocks()
+
+    L14.track_order("lx3", "kalshi", "MKT-LX3", "yes", 10, 55, 0.5)
+    pre_built = {"kalshi": [_FakeKalshiPos("MKT-LX3", "yes", 10)]}
+
+    # Should not raise despite broken bus
+    changed = L14.sync_all_exchanges(positions=pre_built)
+
+    assert len(changed) == 1
+    assert changed[0].status == "FILLED"
+    assert changed[0].qty_filled == 10
+    # publish was attempted (twice: fill.received + order.filled)
+    assert broken_bus.publish.call_count == 2

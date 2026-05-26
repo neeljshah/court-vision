@@ -2,7 +2,7 @@
 L18 Bankroll Manager — Kelly sizing, correlation-aware staking, kill switches.
 
 Public API:
-    kelly_fraction(prob, odds_american) -> float
+    kelly_fraction(model_p, american_odds, bankroll) -> float
     kelly_with_correlation(bets, corr_matrix) -> np.ndarray
     get_bankroll_state() -> BankrollState
     update_bankroll(pnl, notes) -> BankrollState
@@ -11,6 +11,21 @@ Public API:
     reset_weekly() -> None
     trip_kill_switch(reason) -> None
     clear_kill_switch(user_token) -> None
+
+Event Publication (via L46 EventBus — optional, non-fatal if unavailable):
+    "kelly.sized"
+        Published after every call to kelly_fraction() that returns a positive
+        fraction.  Payload keys: model_p, american_odds, bankroll,
+        kelly_fraction, kelly_cap_applied (bool).
+
+    "risk_limit.breached"
+        Published by check_risk_limits() whenever a limit is violated.
+        Payload keys: limit_type (str), proposed_stake (float),
+        threshold (float), reason (str).
+
+Environment Variables:
+    None required by L18 itself.  L44 env-vars govern paper/live mode
+    for layers that call L18; L18 does not gate its own behaviour on mode.
 """
 from __future__ import annotations
 
@@ -18,6 +33,7 @@ import argparse
 import dataclasses
 import json
 import logging
+import math
 import os
 import sys
 import tempfile
@@ -27,6 +43,14 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+
+# ---------------------------------------------------------------------------
+# Soft-import L46 EventBus — optional; failure is non-fatal
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L46_event_bus as _L46  # type: ignore[import]
+except Exception:  # noqa: BLE001
+    _L46 = None
 
 logger = logging.getLogger(__name__)
 
@@ -84,28 +108,99 @@ class BankrollState:
 # KELLY MATH
 # ---------------------------------------------------------------------------
 
-def kelly_fraction(prob: float, odds_american: int) -> float:
+_BANKROLL_NOT_SET = object()  # sentinel: caller did not pass bankroll
+
+
+def kelly_fraction(
+    model_p: float,
+    american_odds: int,
+    bankroll: float = _BANKROLL_NOT_SET,  # type: ignore[assignment]
+    # Legacy keyword aliases kept for backward compat
+    prob: float = None,  # type: ignore[assignment]
+    odds_american: int = None,  # type: ignore[assignment]
+) -> float:
     """Return fractional Kelly stake as a fraction of bankroll.
 
-    Returns 0 when edge is at or below breakeven_margin or negative.
+    Parameters
+    ----------
+    model_p:
+        Win probability in [0, 1].  Must be finite.
+    american_odds:
+        American-format odds integer.  0 is not a valid American odds value
+        and is treated as no-edge (returns 0.0).
+    bankroll:
+        Optional current bankroll in dollars.  When supplied and <= 0 the
+        Kelly stake is trivially zero (nothing to size against) and 0.0 is
+        returned immediately.  When omitted, no bankroll guard is applied
+        (preserves backward-compatible behaviour).
+
+    Returns 0.0 when edge is at or below breakeven_margin, when a non-positive
+    bankroll is explicitly supplied, or when american_odds is 0.
+
+    Raises
+    ------
+    ValueError
+        When model_p is outside [0, 1] or is non-finite (NaN / Inf).
     """
-    if odds_american < 0:
-        b = 100.0 / abs(odds_american)
+    # ---- legacy kwarg shims (pre-v2 callers used prob= / odds_american=) ----
+    if prob is not None:
+        model_p = prob
+    if odds_american is not None:
+        american_odds = odds_american
+
+    # ---- defensive guards -----------------------------------------------
+    if math.isnan(model_p) or math.isinf(model_p):
+        raise ValueError(f"model_p must be finite; got {model_p}")
+    if not (0.0 <= model_p <= 1.0):
+        raise ValueError(f"model_p must be in [0, 1]; got {model_p}")
+    if american_odds == 0:
+        # 0 is not a legal American odds value
+        return 0.0
+    # Only apply bankroll guard when caller explicitly passes a bankroll value
+    bankroll_provided = bankroll is not _BANKROLL_NOT_SET
+    if bankroll_provided and bankroll <= 0:
+        # Negative or zero bankroll — nothing to size against
+        return 0.0
+    # Normalise sentinel to a float for downstream use (event payload etc.)
+    _bankroll_val: float = float(bankroll) if bankroll_provided else 0.0
+
+    # ---- Kelly math -------------------------------------------------------
+    if american_odds < 0:
+        b = 100.0 / abs(american_odds)
     else:
-        b = odds_american / 100.0
+        b = american_odds / 100.0
 
     implied_prob = 1.0 / (1.0 + b)
 
-    if prob <= implied_prob + CONFIG["breakeven_margin"]:
+    if model_p <= implied_prob + CONFIG["breakeven_margin"]:
         return 0.0
 
-    q = 1.0 - prob
-    f_star = (b * prob - q) / b
+    q = 1.0 - model_p
+    f_star = (b * model_p - q) / b
 
     if f_star <= 0:
         return 0.0
 
-    return f_star * CONFIG["kelly_fraction_multiplier"]
+    result = f_star * CONFIG["kelly_fraction_multiplier"]
+
+    # ---- L46 event publication -------------------------------------------
+    if _L46 is not None and result > 0.0:
+        try:
+            _L46.publish(
+                "kelly.sized",
+                source="L18",
+                payload={
+                    "model_p": model_p,
+                    "american_odds": american_odds,
+                    "bankroll": _bankroll_val,
+                    "kelly_fraction": result,
+                    "kelly_cap_applied": False,
+                },
+            )
+        except Exception:  # noqa: BLE001
+            pass
+
+    return result
 
 
 def kelly_with_correlation(
@@ -307,7 +402,8 @@ def check_risk_limits(
 
     Returns (True, "ok") or (False, "<reason>").
     On threshold breach that would auto-trip the kill switch, also calls
-    trip_kill_switch().
+    trip_kill_switch().  Publishes "risk_limit.breached" via L46 on any
+    breach (non-fatal if L46 unavailable).
     """
     state = get_bankroll_state()
 
@@ -320,10 +416,12 @@ def check_risk_limits(
 
     # 2. Single-bet size
     if proposed_stake > CONFIG["max_single_bet_pct"] * br:
-        return False, (
+        reason = (
             f"stake {proposed_stake:.2f} exceeds max_single_bet "
             f"({CONFIG['max_single_bet_pct']*100:.0f}% of {br:.2f})"
         )
+        _publish_breach("max_single_bet", proposed_stake, CONFIG["max_single_bet_pct"] * br, reason)
+        return False, reason
 
     # 3. Daily loss limit
     if state.daily_pnl - proposed_stake < -CONFIG["max_daily_loss_pct"] * sbr:
@@ -332,6 +430,7 @@ def check_risk_limits(
             f"{CONFIG['max_daily_loss_pct']*100:.0f}% daily limit"
         )
         trip_kill_switch(reason)
+        _publish_breach("daily_loss_limit", proposed_stake, CONFIG["max_daily_loss_pct"] * sbr, reason)
         return False, reason
 
     # 4. Weekly loss limit
@@ -341,19 +440,46 @@ def check_risk_limits(
             f"{CONFIG['max_weekly_loss_pct']*100:.0f}% weekly limit"
         )
         trip_kill_switch(reason)
+        _publish_breach("weekly_loss_limit", proposed_stake, CONFIG["max_weekly_loss_pct"] * sbr, reason)
         return False, reason
 
     # 5. Per-game correlation cap (optional — requires L07 integration)
     if correlation_key:
         open_bets_exposure = _get_open_bets_exposure(correlation_key)
         if open_bets_exposure + proposed_stake > CONFIG["max_position_per_game_pct"] * br:
-            return False, (
+            reason = (
                 f"correlation_key '{correlation_key}': combined exposure "
                 f"{open_bets_exposure + proposed_stake:.2f} exceeds "
                 f"max_position_per_game ({CONFIG['max_position_per_game_pct']*100:.0f}% of {br:.2f})"
             )
+            _publish_breach(
+                "max_position_per_game",
+                proposed_stake,
+                CONFIG["max_position_per_game_pct"] * br,
+                reason,
+            )
+            return False, reason
 
     return True, "ok"
+
+
+def _publish_breach(limit_type: str, proposed_stake: float, threshold: float, reason: str) -> None:
+    """Publish 'risk_limit.breached' event via L46 (best-effort, non-fatal)."""
+    if _L46 is None:
+        return
+    try:
+        _L46.publish(
+            "risk_limit.breached",
+            source="L18",
+            payload={
+                "limit_type": limit_type,
+                "proposed_stake": proposed_stake,
+                "threshold": threshold,
+                "reason": reason,
+            },
+        )
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def _get_open_bets_exposure(correlation_key: str) -> float:

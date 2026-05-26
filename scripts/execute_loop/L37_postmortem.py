@@ -16,6 +16,32 @@ CLI
     python L37_postmortem.py detect [--window 1]
     python L37_postmortem.py run --losing-bets path.json
     python L37_postmortem.py list
+
+Event Publication (L46 EventBus)
+---------------------------------
+L37 publishes two event types via the L46 default bus (soft-import; bus absence
+is non-fatal — detection and postmortem behaviour are unchanged).
+
+``incident.opened``
+    Emitted once per new incident returned by detect_incidents().
+    Payload fields:
+        incident_id  : str   — UUID4 fragment (8 chars) generated for the incident
+        loss_pattern : str   — trigger_type value ("large_loss", "losing_streak", …)
+        bet_count    : int   — number of bets in the incident
+        total_loss   : float — sum of pnl for the incident's bets (negative)
+        avg_clv      : float | None — average CLV if present in the incident dict
+        detected_at  : str  — ISO 8601 UTC timestamp of detection
+        incident_class : str | None — IncidentClass.name from classify_incident()
+        severity       : str | None — "P0" | "P1" | "P2" | None
+
+``incident.classified``
+    Emitted by run_postmortem() after structured classification is complete.
+    Payload fields:
+        incident_id    : str
+        incident_class : str | None
+        severity       : str | None
+        remediation    : str | None — Remediation.suggestion
+        trigger_type   : str
 """
 from __future__ import annotations
 
@@ -36,6 +62,14 @@ sys.path.insert(0, str(_PROJECT_DIR))
 import pandas as pd
 
 log = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Soft-import L46 EventBus — absence is non-fatal
+# ---------------------------------------------------------------------------
+try:
+    from scripts.execute_loop import L46_event_bus as _L46  # type: ignore[import]
+except Exception:  # noqa: BLE001
+    _L46 = None  # type: ignore[assignment]
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -424,6 +458,34 @@ def detect_incidents(window_days: int = 1) -> list[dict]:
             })
             log.info("[L37] model_drift: stats=%s", [m.get("stat") for m in drifting])
 
+    # --- Publish incident.opened events via L46 ---
+    detected_at = datetime.now(timezone.utc).isoformat()
+    for incident in incidents:
+        # Assign a stable incident_id for event correlation
+        if "incident_id" not in incident:
+            incident["incident_id"] = str(uuid.uuid4())[:8]
+        if _L46 is not None:
+            try:
+                inc_class = classify_incident(incident)
+                _L46.publish(
+                    "incident.opened",
+                    source="L37",
+                    payload={
+                        "incident_id": incident["incident_id"],
+                        "loss_pattern": incident.get("trigger_type"),
+                        "bet_count": len(incident.get("bets", [])),
+                        "total_loss": float(
+                            sum(float(b.get("pnl", 0.0) or 0.0) for b in incident.get("bets", []))
+                        ),
+                        "avg_clv": incident.get("avg_clv"),
+                        "detected_at": incident.get("detected_at", detected_at),
+                        "incident_class": inc_class.name if inc_class else None,
+                        "severity": inc_class.severity if inc_class else None,
+                    },
+                )
+            except Exception:
+                log.debug("L46 publish failed (non-fatal)", exc_info=True)
+
     return incidents
 
 
@@ -651,6 +713,23 @@ def run_postmortem(
     }
     inc_class = classify_incident(_incident_ctx)
     remediation_obj = suggest_remediation(inc_class) if inc_class else None
+
+    # Publish incident.classified via L46
+    if _L46 is not None:
+        try:
+            _L46.publish(
+                "incident.classified",
+                source="L37",
+                payload={
+                    "incident_id": incident_id,
+                    "incident_class": inc_class.name if inc_class else None,
+                    "severity": inc_class.severity if inc_class else None,
+                    "remediation": remediation_obj.suggestion if remediation_obj else None,
+                    "trigger_type": trigger_type,
+                },
+            )
+        except Exception:
+            log.debug("L46 publish failed (non-fatal)", exc_info=True)
 
     # Build magnitude line
     if pnl is not None and bankroll:
