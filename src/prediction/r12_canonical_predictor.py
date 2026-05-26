@@ -162,11 +162,88 @@ def _compute_perm_importance(df: pd.DataFrame, fc: List[str], target: str,
     return {fc[i]: float(r.importances_mean[i]) for i in range(len(fc))}
 
 
+def _compute_perm_importance_inner_cv(df: pd.DataFrame, fc: List[str], target: str,
+                                        kind: str, inner_k: int = 3, n_repeats: int = 5
+                                        ) -> Dict[str, float]:
+    """Honest permutation importance via inner CV on outer-train only.
+
+    Averages permutation importance scores across `inner_k` CV folds; no held-out
+    fold's data is ever seen during ranking. Preferred over the single-pass
+    variant (which mixes outer-train with the last 25% — see B21 leakage finding).
+    """
+    from sklearn.inspection import permutation_importance
+    import lightgbm as lgb
+    n = len(df); fs = n // inner_k
+    acc = {c: 0.0 for c in fc}
+    n_acc = 0
+    for ki in range(inner_k):
+        a = ki * fs; b = (ki + 1) * fs if ki < inner_k - 1 else n
+        tr = list(range(0, a)) + list(range(b, n))
+        te = list(range(a, b))
+        if len(tr) < 50 or len(te) < 20:
+            continue
+        X_tr = df[fc].iloc[tr].values; X_te = df[fc].iloc[te].values
+        y = df[target].astype(int if kind == "bin" else float).values
+        if kind == "reg":
+            m = lgb.LGBMRegressor(n_estimators=300, learning_rate=0.05, num_leaves=31,
+                subsample=0.8, colsample_bytree=0.8, reg_alpha=0.1, reg_lambda=0.1,
+                min_child_samples=20, random_state=42, n_jobs=2, verbose=-1)
+            scoring = "neg_mean_absolute_error"
+        else:
+            m = lgb.LGBMClassifier(n_estimators=300, learning_rate=0.05, num_leaves=31,
+                subsample=0.8, colsample_bytree=0.8, reg_alpha=0.1, reg_lambda=0.1,
+                min_child_samples=20, random_state=42, n_jobs=2, verbose=-1)
+            scoring = "neg_brier_score"
+        m.fit(X_tr, y[tr])
+        r = permutation_importance(m, X_te, y[te], n_repeats=n_repeats,
+                                    random_state=42, n_jobs=1, scoring=scoring)
+        for i, c in enumerate(fc):
+            acc[c] += float(r.importances_mean[i])
+        n_acc += 1
+    if n_acc > 0:
+        for c in acc:
+            acc[c] /= n_acc
+    return acc
+
+
+def get_canonical_feature_set_stable(target: str, df: pd.DataFrame,
+                                       feature_sets: Dict[str, List[str]] = None,
+                                       top_k: int = 50) -> List[str]:
+    """Honest per-fold-safe variant of get_canonical_feature_set.
+
+    Uses inner-CV averaged permutation importance (no held-out leakage). PREFER
+    THIS for production use. B22 confirmed: this trim is more stable and ships
+    on score_diff (-1.59pp vs leaky-trim B21 LIVE). On other targets (B23), the
+    trim is at parity or below — recipes that score below their canonical full
+    feature set should be skipped for top50 trim (caller's responsibility).
+    """
+    if target not in CANONICAL_RECIPES:
+        raise KeyError(f"Unknown target {target}; recipes: {list(CANONICAL_RECIPES)}")
+    recipe = CANONICAL_RECIPES[target]
+    if feature_sets is None:
+        feature_sets = _all_feature_sets(df)
+    if recipe["type"] == "ensemble":
+        return feature_sets[recipe["fcs"][0]]
+    fc = feature_sets[recipe["fc"]]
+    if recipe["type"] == "single":
+        return fc
+    if recipe["type"] == "top50":
+        kind = recipe.get("kind", "reg")
+        df_filled = df.copy(); df_filled[fc] = df_filled[fc].fillna(0.0)
+        importances = _compute_perm_importance_inner_cv(df_filled, fc, target, kind)
+        ranked = sorted(fc, key=lambda c: importances.get(c, 0.0), reverse=True)
+        return ranked[:top_k]
+    raise ValueError(f"Unknown recipe type: {recipe['type']}")
+
+
 def get_canonical_feature_set(target: str, df: pd.DataFrame,
                                 feature_sets: Dict[str, List[str]] = None,
                                 top_k: int = 50) -> List[str]:
     """Return the per-target winning feature subset, applying top-50 trim
-    when the recipe says so."""
+    when the recipe says so. Uses the LEGACY single-pass perm-importance
+    (mild test-side leakage — kept for backward compatibility with B19 numbers).
+    For honest production use, prefer get_canonical_feature_set_stable.
+    """
     if target not in CANONICAL_RECIPES:
         raise KeyError(f"Unknown target {target}; recipes: {list(CANONICAL_RECIPES)}")
     recipe = CANONICAL_RECIPES[target]
