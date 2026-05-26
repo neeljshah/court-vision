@@ -1,0 +1,44 @@
+{
+  "probe": "R11_M2v100_weighted_70_30_total",
+  "kind": "regression",
+  "ensemble": [
+    "lgb",
+    "xgb"
+  ],
+  "weights": [
+    0.7,
+    0.3
+  ],
+  "label": "total_pts_box",
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -10.97%",
+  "pooled_naive_mae": 17.0895,
+  "pooled_lgb_mae": 15.2156,
+  "pooled_delta_pct": -10.97,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.2671,
+      "lgb_mae": 15.7005,
+      "delta": -1.5666,
+      "delta_pct": -9.07
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.4113,
+      "lgb_mae": 14.7152,
+      "delta": -2.6961,
+      "delta_pct": -15.48
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.5901,
+      "lgb_mae": 15.2312,
+      "delta": -1.3589,
+      "delta_pct": -8.19
+    }
+  ],
+  "elapsed_s": 2.9
+}
