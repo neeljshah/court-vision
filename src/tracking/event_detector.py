@@ -112,6 +112,8 @@ class EventDetector:
         self._screen_last: Dict[Tuple[int, int], int] = {}
         # Help defense rotation debounce: (defender_id, handler_id) → last frame fired
         self._help_rotation_last: Dict[Tuple[int, int], int] = {}
+        # R17: cut event debounce per player (1s window suppresses 10-20x multi-fire on the same cut)
+        self._cut_last: Dict[int, int] = {}
 
         # Shot debounce: minimum frames between consecutive shot detections.
         # Initialized to -(DEBOUNCE+1) so frame 0 can always trigger a shot.
@@ -585,17 +587,32 @@ class EventDetector:
         bx, by = self._nearest_basket(x, y)
         return (dx * (bx - x) + dy * (by - y)) > 0.0
 
+    def _was_stationary(self, player_id: int, hold_frames: int, stationary_thresh: float) -> bool:
+        """R17: True if player_id's speed has stayed below `stationary_thresh`
+        for the last `hold_frames` processed frames. Used by _detect_screens
+        to require a sustained set (≥0.6s) instead of a single-frame anchor.
+        """
+        hist = self._phist.get(player_id)
+        if not hist or len(hist) < hold_frames:
+            return False
+        recent = list(hist)[-hold_frames:]
+        return all(p[3] < stationary_thresh for p in recent)
+
     def _detect_screens(
         self, frame_idx: int, frame_tracks: List[dict]
     ) -> None:
         """Log screen_set when a cross-team pair converges and one stays stationary.
 
-        Fires when two players from different teams are within SCREEN_DIST and one
-        has near-zero speed while the other is still moving.
+        R17: thresholds are now stride-aware (1.5/3.0 px/frame at stride=1 are
+        ~5 ft/s = walking pace, firing on routine motion). Debounce raised
+        30→3s, and the stationary player must hold position for ≥0.6s — this
+        eliminates the 30x over-detection rate observed in baseline (3,629
+        screen_set events on game 0022500119 vs NBA-typical 80-120).
         """
-        STATIONARY = 1.5   # px/frame
-        MOVING     = 3.0   # px/frame
-        DEBOUNCE   = 30    # min frames between screen events for same pair
+        STATIONARY = 0.5 * self._stride   # stride-aware: ~0.5 px/source-frame
+        MOVING     = 4.0 * self._stride
+        DEBOUNCE   = max(90, int(3.0 * self._fps / max(1, self._stride)))   # 3s
+        _HOLD      = max(6,  int(0.6 * self._fps / max(1, self._stride)))   # 0.6s hold
 
         for i, ti in enumerate(frame_tracks):
             if ti.get("team") == "referee":
@@ -621,7 +638,10 @@ class EventDetector:
                 if frame_idx - self._screen_last.get(key, -999) < DEBOUNCE:
                     continue
 
-                if si < STATIONARY and sj > MOVING:
+                # R17: require the stationary player to have held position for ≥0.6s.
+                # Single-frame "stationary" was a major false-positive source.
+                if (si < STATIONARY and sj > MOVING
+                        and self._was_stationary(ti["player_id"], _HOLD, STATIONARY)):
                     _i_has = ti.get("has_ball", False)
                     _j_has = tj.get("has_ball", False)
                     if _i_has or _j_has:
@@ -638,7 +658,8 @@ class EventDetector:
                         "screen_action": _pnr_action,
                     })
                     self._screen_last[key] = frame_idx
-                elif sj < STATIONARY and si > MOVING:
+                elif (sj < STATIONARY and si > MOVING
+                        and self._was_stationary(tj["player_id"], _HOLD, STATIONARY)):
                     _i_has = ti.get("has_ball", False)
                     _j_has = tj.get("has_ball", False)
                     if _i_has or _j_has:
@@ -661,14 +682,20 @@ class EventDetector:
     ) -> None:
         """Log cut when a player without the ball changes direction >90° toward basket.
 
-        Compares direction over frames [-10..-5] versus [-5..0].  Minimum speed
-        filter avoids false positives from stationary jitter.
+        R17: raised MIN_DISP 4.0→10.0 px (~5 ft, was firing on idle steps),
+        tightened cos gate -0.0 → -0.3 (require sharper direction reversal),
+        added per-player 1s debounce (genuine cuts span 10-20 frames; each was
+        counted 10-20 times). Eliminated 200x over-detection (19,347 cuts on
+        game 0022500119 vs NBA-typical 80-100).
         """
         possessors = {t["player_id"] for t in frame_tracks if t.get("has_ball")}
-        MIN_DISP = 4.0  # min displacement magnitude per 5-frame window (px)
+        MIN_DISP = 10.0  # ~5 ft displacement per 5-frame window (px)
+        DEBOUNCE = max(15, int(1.0 * self._fps / max(1, self._stride)))   # 1s per-player
 
         for t in frame_tracks:
             if t.get("team") == "referee" or t["player_id"] in possessors:
+                continue
+            if frame_idx - self._cut_last.get(t["player_id"], -999) < DEBOUNCE:
                 continue
             hist = self._phist.get(t["player_id"])
             if not hist or len(hist) < 10:
@@ -685,10 +712,11 @@ class EventDetector:
                 / (np.hypot(v1x, v1y) * np.hypot(v2x, v2y) + 1e-9),
                 -1.0, 1.0,
             ))
-            if cos_a < 0.0 and self._toward_basket(v2x, v2y, pts[-1][1], pts[-1][2]):
+            if cos_a < -0.3 and self._toward_basket(v2x, v2y, pts[-1][1], pts[-1][2]):
                 self.events.append(
                     {"type": "cut", "player_id": t["player_id"], "frame": frame_idx}
                 )
+                self._cut_last[t["player_id"]] = frame_idx
 
     def _detect_drives(
         self, frame_idx: int, frame_tracks: List[dict]
