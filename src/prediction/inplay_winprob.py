@@ -1,15 +1,18 @@
-"""src/prediction/inplay_winprob.py — in-play win probability (R10_M5 + R12_F1).
+"""src/prediction/inplay_winprob.py — in-play win probability (R10_M5 + R12_F1 + R13_G2).
 
 Wraps the LightGBM boosters trained by ``scripts/train_inplay_winprob_endq3.py``
-(v1, R10_M5) and ``scripts/probe_R12_F1_inplay_winprob_v2.py`` (v2 ensemble).
+(v1, R10_M5), ``scripts/probe_R12_F1_inplay_winprob_v2.py`` (v2 ensemble), and
+``scripts/probe_R13_G2_endq1_winprob_v3.py`` (v3 pregame-anchored endQ1).
 
 Artifacts:
 
-    data/models/inplay_winprob_endq1.lgb               # v1 (R10_M5)
-    data/models/inplay_winprob_endq2.lgb               # v1 (R10_M5)
-    data/models/inplay_winprob_endq3.lgb               # v1 (R10_M5) SHIP
-    data/models/inplay_winprob_endq2_v2.lgb            # v2 (R12_F1) SHIP
-    data/models/inplay_winprob_endq2_v2_meta.json      # ensemble blend metadata
+    data/models/inplay_winprob_endq1.lgb                # v1 (R10_M5)
+    data/models/inplay_winprob_endq2.lgb                # v1 (R10_M5)
+    data/models/inplay_winprob_endq3.lgb                # v1 (R10_M5) SHIP
+    data/models/inplay_winprob_endq2_v2.lgb             # v2 (R12_F1) SHIP
+    data/models/inplay_winprob_endq2_v2_meta.json       # ensemble blend metadata
+    data/models/inplay_winprob_endq1_v3.lgb             # v3 (R13_G2) SHIP (if Brier<=0.183)
+    data/models/inplay_winprob_endq1_v3_anchor.json     # pregame-anchor bundle metadata
 
 v1 ship history: endQ3 cleared the 0.183 Brier gate (Brier 0.1350); endQ1 +
 endQ2 did not.
@@ -66,11 +69,16 @@ _CAT_COLS = ("home_team_id", "season")
 # ``load_v2_bundle``; missing artifacts fall back to v1.
 _V2_SNAPSHOTS = ("endQ2",)
 
+# Snapshots that have a v3 (pregame-anchored) production artifact. v3 is
+# preferred over v2/v1 for any listed snapshot. R13_G2 added endQ1.
+_V3_SNAPSHOTS = ("endQ1",)
+
 # Module-scope booster cache. Keyed by snapshot name. False sentinel means
 # we tried to load and the artifact was missing (so callers stop retrying).
 _BOOSTER_CACHE: Dict[str, Any] = {}
 _META_CACHE: Dict[str, Any] = {}
 _V2_BUNDLE_CACHE: Dict[str, Any] = {}
+_V3_BUNDLE_CACHE: Dict[str, Any] = {}
 
 
 def _artifact_path(snapshot: str) -> str:
@@ -272,16 +280,119 @@ def _predict_v2(features: Dict[str, Any], snapshot: str) -> Optional[float]:
     return float(np.clip(blended, 0.0, 1.0))
 
 
+def _v3_bundle_path(snapshot: str) -> str:
+    return os.path.join(
+        _MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v3_anchor.json"
+    )
+
+
+def load_v3_bundle(snapshot: str) -> Optional[Dict[str, Any]]:
+    """Lazily load the v3 (pregame-anchored) bundle for a snapshot.
+
+    The v3 bundle is a single JSON written by
+    ``scripts/probe_R13_G2_endq1_winprob_v3.py``. It carries:
+
+      - alpha_inplay (in-play stack weight; 1 - alpha_inplay = pregame weight)
+      - the v2-style ensemble: LGB booster path + LR coefficients + NNLS
+        weights on the LGB / LR base learners
+      - feature column order (same as v2)
+
+    Returns None if the bundle JSON or backing LGB file is missing.
+    """
+    if snapshot not in _V3_SNAPSHOTS:
+        return None
+    if snapshot in _V3_BUNDLE_CACHE:
+        b = _V3_BUNDLE_CACHE[snapshot]
+        return b if b is not False else None
+
+    bundle_path = _v3_bundle_path(snapshot)
+    if not os.path.exists(bundle_path):
+        _V3_BUNDLE_CACHE[snapshot] = False
+        return None
+    try:
+        with open(bundle_path) as f:
+            meta = json.load(f)
+    except (OSError, json.JSONDecodeError):
+        _V3_BUNDLE_CACHE[snapshot] = False
+        return None
+
+    lgb_path = meta.get("lgb_path") or os.path.join(
+        _MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v3.lgb"
+    )
+    if not os.path.exists(lgb_path):
+        _V3_BUNDLE_CACHE[snapshot] = False
+        return None
+    try:
+        import lightgbm as lgb
+        booster = lgb.Booster(model_file=lgb_path)
+    except Exception:
+        _V3_BUNDLE_CACHE[snapshot] = False
+        return None
+
+    # Renormalize ensemble weights over {lgb, lr} -- xgb omitted at runtime
+    # for the same reason as v2 (avoid the second native model dependency).
+    raw_w = meta.get("ensemble_weights", {})
+    w_lgb = float(raw_w.get("lgb", 0.0))
+    w_lr = float(raw_w.get("lr", 0.0))
+    s = w_lgb + w_lr
+    if s <= 1e-9:
+        w_lgb, w_lr = 0.5, 0.5
+    else:
+        w_lgb /= s
+        w_lr /= s
+
+    bundle = {
+        "booster": booster,
+        "meta": meta,
+        "w_lgb": w_lgb,
+        "w_lr": w_lr,
+        "alpha_inplay": float(meta.get("alpha_inplay", 0.15)),
+        "feature_cols": list(meta.get("feature_cols", [])),
+        "lr_feat_order": list(meta.get("lr_feat_order", [])),
+        "lr_coef": [float(x) for x in meta.get("lr_coef", [])],
+        "lr_intercept": float(meta.get("lr_intercept", 0.0)),
+        "lr_mean": {k: float(v) for k, v in meta.get("lr_mean", {}).items()},
+        "lr_std": {k: float(v) for k, v in meta.get("lr_std", {}).items()},
+    }
+    _V3_BUNDLE_CACHE[snapshot] = bundle
+    return bundle
+
+
+def _predict_v3(features: Dict[str, Any], snapshot: str) -> Optional[float]:
+    bundle = load_v3_bundle(snapshot)
+    if bundle is None:
+        return None
+    try:
+        X = _v2_feature_frame(features, bundle)
+        p_lgb = float(bundle["booster"].predict(X)[0])
+    except Exception:
+        return None
+    p_lr = _v2_lr_predict(features, bundle)
+    p_stack = bundle["w_lgb"] * p_lgb + bundle["w_lr"] * p_lr
+
+    alpha = float(bundle["alpha_inplay"])
+    try:
+        pregame = float(features.get("pregame_win_prob", 0.5))
+    except (TypeError, ValueError):
+        pregame = 0.5
+    blended = alpha * p_stack + (1.0 - alpha) * pregame
+    return float(np.clip(blended, 0.0, 1.0))
+
+
 def predict_home_win_prob(features: Dict[str, Any],
                           snapshot: str = "endQ3") -> Optional[float]:
     """Predict P(home team wins) from a snapshot feature dict.
 
-    Routes to the v2 ensemble (NNLS-blended LGB+LR with pregame anchor)
-    when a v2 bundle exists for ``snapshot`` (currently endQ2 only). Falls
-    back to the v1 booster otherwise. Returns None when no artifact is
-    available so callers can fall back to pregame WP.
+    Routing priority: v3 (pregame-anchored, endQ1) > v2 ensemble (endQ2) > v1
+    booster (endQ1/Q2/Q3). Returns None when no artifact is available so
+    callers can fall back to raw pregame WP.
     """
-    # Try v2 first.
+    # Try v3 first (pregame-anchored — R13_G2).
+    v3 = _predict_v3(features, snapshot)
+    if v3 is not None:
+        return v3
+
+    # Then v2 (ensemble + learned anchor — R12_F1).
     v2 = _predict_v2(features, snapshot)
     if v2 is not None:
         return v2
@@ -434,12 +545,14 @@ def reset_cache() -> None:
     _BOOSTER_CACHE.clear()
     _META_CACHE.clear()
     _V2_BUNDLE_CACHE.clear()
+    _V3_BUNDLE_CACHE.clear()
 
 
 __all__ = [
     "SNAPSHOTS",
     "load_booster",
     "load_v2_bundle",
+    "load_v3_bundle",
     "predict_home_win_prob",
     "features_from_snapshot",
     "reset_cache",
