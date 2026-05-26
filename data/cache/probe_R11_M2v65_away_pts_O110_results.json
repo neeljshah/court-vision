@@ -1,0 +1,33 @@
+{
+  "probe": "R11_M2v65_away_pts_O110",
+  "kind": "binary",
+  "label": "away_pts_O110",
+  "label_desc": "P(away scores > 110)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2609 (-9.68%); AUC 0.6371",
+  "n_games": 2836,
+  "pos_rate": 0.5624118476727785,
+  "pooled_lgb_brier": 0.26095,
+  "pooled_naive_brier": 0.28892,
+  "pooled_lgb_auc": 0.63712,
+  "brier_delta_pct": -9.682,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29104,
+      "lgb_brier": 0.27767
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.27561,
+      "lgb_brier": 0.25538
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.30012,
+      "lgb_brier": 0.2498
+    }
+  ],
+  "elapsed_s": 1.0
+}
