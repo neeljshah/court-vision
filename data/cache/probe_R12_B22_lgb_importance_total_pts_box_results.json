@@ -1,0 +1,49 @@
+{
+  "probe": "R12_B22_lgb_importance_total_pts_box",
+  "kind": "regression",
+  "label": "total_pts_box",
+  "n_features": 50,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -12.58%",
+  "pooled_naive_mae": 16.9513,
+  "pooled_lgb_mae": 14.8182,
+  "pooled_delta_pct": -12.58,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 17.0637,
+      "lgb_mae": 15.1299,
+      "delta": -1.9338,
+      "delta_pct": -11.33
+    },
+    {
+      "fold": 2,
+      "naive_mae": 17.1561,
+      "lgb_mae": 14.8161,
+      "delta": -2.34,
+      "delta_pct": -13.64
+    },
+    {
+      "fold": 3,
+      "naive_mae": 16.6346,
+      "lgb_mae": 14.5089,
+      "delta": -2.1257,
+      "delta_pct": -12.78
+    }
+  ],
+  "beat_canonical": false,
+  "canonical_src": "B21 LIVE (interactions_only, 141 feats)",
+  "vs_canonical_pp": 1.44,
+  "variant": {
+    "variant": "lgb_importance",
+    "fc_canonical": "interactions_only",
+    "fc_len_per_fold": [
+      50,
+      50,
+      50
+    ]
+  },
+  "elapsed_s": 13.4
+}

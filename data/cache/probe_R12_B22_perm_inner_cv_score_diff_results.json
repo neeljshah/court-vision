@@ -1,0 +1,49 @@
+{
+  "probe": "R12_B22_perm_inner_cv_score_diff",
+  "kind": "regression",
+  "label": "score_diff",
+  "n_features": 50,
+  "status": "SHIP",
+  "ship_reason": "WF 3/3, delta -15.38%",
+  "pooled_naive_mae": 12.8497,
+  "pooled_lgb_mae": 10.8738,
+  "pooled_delta_pct": -15.38,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_mae": 12.2425,
+      "lgb_mae": 10.5246,
+      "delta": -1.7179,
+      "delta_pct": -14.03
+    },
+    {
+      "fold": 2,
+      "naive_mae": 13.2466,
+      "lgb_mae": 11.2573,
+      "delta": -1.9894,
+      "delta_pct": -15.02
+    },
+    {
+      "fold": 3,
+      "naive_mae": 13.0597,
+      "lgb_mae": 10.8396,
+      "delta": -2.2201,
+      "delta_pct": -17.0
+    }
+  ],
+  "beat_canonical": true,
+  "canonical_src": "B21 LIVE (top50/opp_full, per-fold)",
+  "vs_canonical_pp": -1.59,
+  "variant": {
+    "variant": "perm_inner_cv",
+    "fc_canonical": "opp_full",
+    "fc_len_per_fold": [
+      50,
+      50,
+      50
+    ]
+  },
+  "elapsed_s": 49.8
+}
