@@ -763,6 +763,101 @@ SECTION_TITLES = (
     "Today's Slate",
     "Tracker Status",
 )
+# R23_P8 — optional section, only rendered when collect_and_render is called
+# with `include_live_recs=True` (the default).
+LIVE_RECS_SECTION_TITLE = "What to bet right now"
+
+
+# --------------------------------------------------------------------------- #
+# Section 7: "What to bet right now" (R23_P8)                                 #
+# --------------------------------------------------------------------------- #
+def fetch_live_recommendations(
+    *,
+    bankroll: float = 1000.0,
+    top: int = 5,
+    today: Optional[str] = None,
+    min_edge: float = 0.05,
+) -> Dict[str, Any]:
+    """Call the R23_P8 live recommendation engine for today.
+
+    Always returns a dict — defensive even if the engine import fails so
+    a broken downstream never takes the operator page down.
+    """
+    out: Dict[str, Any] = {
+        "ok": False, "date": today or _today_iso(),
+        "recommendations": [], "reason": "",
+        "bankroll": bankroll, "n_recs": 0,
+        "n_filtered_out": 0, "n_filtered_kelly_cap": 0,
+    }
+    try:
+        # Local import — keep dashboard cold-start light.
+        from scripts.live_recommendation_engine import run_engine  # noqa: PLC0415
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"engine import failed: {exc}"
+        return out
+    try:
+        payload = run_engine(
+            bankroll=float(bankroll),
+            top=int(top),
+            date=out["date"],
+            min_edge=float(min_edge),
+        )
+    except Exception as exc:  # noqa: BLE001
+        out["reason"] = f"engine raised: {exc}"
+        return out
+    out["ok"] = True
+    out["recommendations"] = payload.get("recommendations", []) or []
+    out["reason"] = payload.get("reason", "")
+    out["n_recs"] = payload.get("n_recs", 0) or 0
+    out["n_filtered_out"] = payload.get("n_filtered_out", 0) or 0
+    out["n_filtered_kelly_cap"] = payload.get("n_filtered_kelly_cap", 0) or 0
+    out["total_stake_post_cap"] = payload.get("total_stake_post_cap", 0.0) or 0.0
+    out["slate_cap_dollars"] = payload.get("slate_cap_dollars", 0.0) or 0.0
+    return out
+
+
+def _section_live_recs(d: Dict[str, Any]) -> str:
+    if not d.get("ok"):
+        return ('<h2>What to bet right now</h2>'
+                f'<p class="muted">(engine unavailable: '
+                f'{_html_escape(d.get("reason",""))})</p>')
+    if not d.get("recommendations"):
+        return (
+            '<h2>What to bet right now</h2>'
+            f'<p>{_html_escape(d.get("reason","")) or "no recommendations"}</p>'
+            f'<p class="muted">filtered OUT={d.get("n_filtered_out",0)} '
+            f'kelly-cap-scaled={d.get("n_filtered_kelly_cap",0)}</p>'
+        )
+    rows = []
+    for i, b in enumerate(d["recommendations"], 1):
+        rows.append(
+            f'<tr><td>{i}</td>'
+            f'<td>{_html_escape(b.get("player",""))}</td>'
+            f'<td>{_html_escape(str(b.get("stat","")).upper())}</td>'
+            f'<td>{_html_escape(b.get("side",""))}</td>'
+            f'<td>{_html_escape(b.get("book",""))}</td>'
+            f'<td>{float(b.get("line",0)):.1f}</td>'
+            f'<td>{int(b.get("odds",0)):+d}</td>'
+            f'<td>{float(b.get("edge_pct",0)):+.2f}%</td>'
+            f'<td>{float(b.get("kelly_pct",0))*100:.2f}%</td>'
+            f'<td>${float(b.get("stake_dollars",0)):.2f}</td></tr>'
+        )
+    summary = (
+        f'<p>{len(d["recommendations"])} recs · '
+        f'exposure ${d.get("total_stake_post_cap",0):.2f} '
+        f'of ${d.get("slate_cap_dollars",0):.2f} cap · '
+        f'filtered OUT={d.get("n_filtered_out",0)} · '
+        f'kelly-cap-scaled={d.get("n_filtered_kelly_cap",0)}</p>'
+    )
+    return (
+        '<h2>What to bet right now</h2>'
+        + summary +
+        '<table><thead><tr><th>#</th><th>Player</th><th>Stat</th>'
+        '<th>Side</th><th>Book</th><th>Line</th><th>Odds</th>'
+        '<th>Edge</th><th>Kelly%</th><th>Stake$</th></tr></thead><tbody>'
+        + "".join(rows) +
+        '</tbody></table>'
+    )
 
 
 _OPERATOR_CSS = """
@@ -821,6 +916,7 @@ def render_operator_html(
     bets: Dict[str, Any],
     slate: Dict[str, Any],
     tracker: Dict[str, Any],
+    live_recs: Optional[Dict[str, Any]] = None,  # R23_P8
     *,
     auto_refresh_sec: int = 60,
     title: str = "Operator — Morning Coffee",
@@ -834,6 +930,8 @@ def render_operator_html(
         + _section_today_slate(slate)
         + _section_tracker_status(tracker)
     )
+    if live_recs is not None:
+        body += _section_live_recs(live_recs)
     return (
         "<!DOCTYPE html>\n"
         '<html lang="en"><head>'
@@ -864,6 +962,10 @@ def collect_and_render(
     predictions_dir: Path = DEFAULT_PREDICTIONS_DIR,
     today: Optional[str] = None,
     auto_refresh_sec: int = 60,
+    include_live_recs: bool = True,    # R23_P8
+    live_recs_bankroll: float = 1000.0,
+    live_recs_top: int = 5,
+    live_recs_min_edge: float = 0.05,
 ) -> str:
     """Top-level entry: collect every section's data + render HTML.
 
@@ -889,12 +991,20 @@ def collect_and_render(
                      predictions_dir=predictions_dir, today=today)
     tracker  = _safe(fetch_tracker_status,
                      predictions_dir=predictions_dir, today=today)
+    live_recs = None
+    if include_live_recs:
+        live_recs = _safe(
+            fetch_live_recommendations,
+            bankroll=live_recs_bankroll, top=live_recs_top,
+            today=today, min_edge=live_recs_min_edge,
+        )
+        live_recs.setdefault("ok", False)
 
     # Defensive defaults so render never KeyErrors on a partial-result.
     for d in (health, bankroll, alerts, bets, slate, tracker):
         d.setdefault("ok", False)
 
     return render_operator_html(
-        health, bankroll, alerts, bets, slate, tracker,
+        health, bankroll, alerts, bets, slate, tracker, live_recs,
         auto_refresh_sec=auto_refresh_sec,
     )
