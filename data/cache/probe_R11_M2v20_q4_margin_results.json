@@ -1,0 +1,44 @@
+{
+  "probe": "R11_M2v20_q4_margin",
+  "kind": "regression",
+  "label": "q4_margin",
+  "status": "REJECT",
+  "ship_reason": "WF 3/3 pass, delta -1.55% fail (gate -5%)",
+  "n_games": 2836,
+  "n_features": 70,
+  "pooled_naive_mae": 6.8694,
+  "pooled_lgb_mae": 6.763,
+  "pooled_delta_pct": -1.55,
+  "n_folds_positive": 3,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "n_train": 709,
+      "n_test": 709,
+      "naive_mae": 7.022,
+      "lgb_mae": 6.9608,
+      "delta": -0.0612,
+      "delta_pct": -0.87
+    },
+    {
+      "fold": 2,
+      "n_train": 1418,
+      "n_test": 709,
+      "naive_mae": 7.2237,
+      "lgb_mae": 7.1342,
+      "delta": -0.0894,
+      "delta_pct": -1.24
+    },
+    {
+      "fold": 3,
+      "n_train": 2127,
+      "n_test": 709,
+      "naive_mae": 6.3625,
+      "lgb_mae": 6.194,
+      "delta": -0.1685,
+      "delta_pct": -2.65
+    }
+  ],
+  "elapsed_s": 0.9
+}

@@ -49,3 +49,17 @@ Append-only; one event per line.
 [2026-05-26 S2] REJECT — R11_M2v6_total_O245 (10th R11 probe): binary O/U at 245. Brier 0.158 vs naive 0.172 = -8.39% (passes relative gate). Acc 0.808 vs naive 0.803 (fails naive+0.02 gate; class is 80/20 imbalanced so acc hard to move). AUC 0.630. Strong Brier signal could ship under softer gate. R11 tally: 10 ticks, 4 ships, 6 rejects.
 [2026-05-26 S2] SHIP — R11_M2v7_score_diff_expanded (11th R11 probe): M2v2 with ~60 features (was 35). Adds travel/lineup/matchup/hustle/L10 fields from season_games already loaded but unused. Pooled -14.66% (vs M2v2's -14.26%, +0.4pp). 3/3 folds pass. FIFTH R11 ship — production should use this as canonical M2 score_diff config. R11 tally: 11 ticks, 5 ships, 6 rejects.
 [2026-05-26 S2] SHIP — R11_M2v8_total_expanded (12th R11 probe): M2 total with same ~60-feature set. Pooled -10.31% vs M2's -8.9% (+1.4pp). 2,836 games vs M2's 889 (linescores has more). 3/3 folds (-8.4%, -15.0%, -7.3%). SIXTH R11 ship. PRODUCTION should adopt this as canonical M2 total model. R11 tally: 12 ticks, 6 ships, 6 rejects.
+[2026-05-26 S2] BATCH SHIP x10 — R11 M2v9-M2v20 (12 variants in one Python process, 11.4s):
+  M2v9  home_pts_expanded   SHIP -12.41% (replaces M2v3)
+  M2v10 away_pts_expanded   SHIP -10.93% (replaces M2v4)
+  M2v11 total_O220 binary   SHIP Brier -5.32% AUC 0.61
+  M2v12 total_O230 binary   SHIP Brier -8.44% AUC 0.63
+  M2v13 spread_AH3 binary   SHIP Brier -15.63% AUC 0.69 [BEST]
+  M2v14 spread_AH7 binary   SHIP Brier -10.72% AUC 0.67
+  M2v15 home_q1 reg         SHIP -6.02% [NEW SURFACE Q1]
+  M2v16 home_q4 reg         REJECT -4.36% (Q4 randomness floor)
+  M2v17 h1_total reg        SHIP -7.58% [NEW SURFACE 1H total]
+  M2v18 spread_AH5 binary   SHIP Brier -13.68% AUC 0.69
+  M2v19 spread_AH10 binary  SHIP Brier -5.48% AUC 0.66
+  M2v20 q4_margin reg       REJECT -1.55% (Q4 randomness floor)
+R11 tally: 22 ticks, 16 ships, 8 rejects. Game-level family ships across continuous (total/spread/team-pts/Q1/H1) AND binary (O/U at 220/230, ATS at -3/-5/-7/-10) markets. Two Q4-only surfaces saturate (randomness floor).
