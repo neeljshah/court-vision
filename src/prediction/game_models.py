@@ -353,6 +353,25 @@ _M2_FAMILY_CACHE: Optional[Dict[str, list]] = None
 _M2_FAMILY_FEATS: Optional[List[str]] = None
 _M2_FAMILY_MANIFEST: Optional[dict] = None
 
+# R31_X3: parallel multitask MLP path. Activated by env var
+#   M2_FAMILY_USE_MLP=1
+# Loads from data/models/m2_family_mlp/ (does NOT overwrite m2_family/).
+# Architecture: shared trunk (74->128->64) + 4 heads, seed-ensemble of 3.
+# On the 2025-26 holdout it improves all 4 targets vs the multi5 ensemble
+# (total -1.80%, spread -2.85%, home_pts -1.90%, away_pts -6.15%) and wins
+# all 8 head-to-head walk-forward folds.
+_M2_FAMILY_MLP_DIR = os.path.join(_MODEL_DIR, "m2_family_mlp")
+_M2_FAMILY_MLP_CACHE: Optional[List] = None     # list of (seed, model, mu_y, sd_y)
+_M2_FAMILY_MLP_SCALER = None                     # sklearn StandardScaler
+_M2_FAMILY_MLP_FEATS: Optional[List[str]] = None
+_M2_FAMILY_MLP_MANIFEST: Optional[dict] = None
+_M2_FAMILY_MLP_TARGET_ORDER: Optional[List[str]] = None
+
+
+def _m2_family_use_mlp() -> bool:
+    """Read env var fresh each call so tests can flip it without re-import."""
+    return os.environ.get("M2_FAMILY_USE_MLP", "").strip().lower() in ("1", "true", "yes")
+
 # R21_N5: per-(game_id, models_mtime) prediction cache. Skips feature build +
 # 20 model `.predict` calls when the artifact dir hasn't changed since the
 # cached value was written. Cache lives in data/cache/ (gitignored) and is
@@ -423,6 +442,122 @@ def clear_m2_pred_cache() -> bool:
         except OSError:
             return False
     return False
+
+
+def _build_mlp_module(n_features: int, n_targets: int, dropout: float = 0.2):
+    """Mirror of probe_R31_X3 _build_torch_model. Kept local so callers don't
+    need the probe script on PYTHONPATH."""
+    import torch.nn as nn  # noqa: PLC0415
+
+    class MultitaskMLP(nn.Module):
+        def __init__(self, n_in: int, n_tgt: int, p_drop: float):
+            super().__init__()
+            self.trunk = nn.Sequential(
+                nn.Linear(n_in, 128), nn.ReLU(), nn.Dropout(p_drop),
+                nn.Linear(128, 64),  nn.ReLU(), nn.Dropout(p_drop),
+            )
+            self.heads = nn.ModuleList([nn.Linear(64, 1) for _ in range(n_tgt)])
+
+        def forward(self, x):
+            import torch  # noqa: PLC0415
+            h = self.trunk(x)
+            outs = [head(h).squeeze(-1) for head in self.heads]
+            return torch.stack(outs, dim=1)
+
+    return MultitaskMLP(n_features, n_targets, dropout)
+
+
+def _try_load_m2_family_mlp() -> bool:
+    """Lazy-load the R31_X3 multitask MLP ensemble. Returns True iff usable."""
+    global _M2_FAMILY_MLP_CACHE, _M2_FAMILY_MLP_SCALER, _M2_FAMILY_MLP_FEATS
+    global _M2_FAMILY_MLP_MANIFEST, _M2_FAMILY_MLP_TARGET_ORDER
+    if _M2_FAMILY_MLP_CACHE is not None:
+        return bool(_M2_FAMILY_MLP_CACHE)
+    manifest_p = os.path.join(_M2_FAMILY_MLP_DIR, "manifest.json")
+    cols_p     = os.path.join(_M2_FAMILY_MLP_DIR, "feature_cols.json")
+    scaler_p   = os.path.join(_M2_FAMILY_MLP_DIR, "feature_scaler.joblib")
+    if not (os.path.exists(manifest_p) and os.path.exists(cols_p) and os.path.exists(scaler_p)):
+        _M2_FAMILY_MLP_CACHE = []
+        return False
+    try:
+        import joblib  # noqa: PLC0415
+        import torch   # noqa: PLC0415
+        with open(manifest_p, encoding="utf-8") as f:
+            man = json.load(f)
+        with open(cols_p, encoding="utf-8") as f:
+            cols = json.load(f)
+        scaler = joblib.load(scaler_p)
+        loaded = []
+        for lab in man.get("seed_models", []):
+            ckpt_p = os.path.join(_M2_FAMILY_MLP_DIR, f"{lab}.pt")
+            if not os.path.exists(ckpt_p):
+                raise FileNotFoundError(ckpt_p)
+            ckpt = torch.load(ckpt_p, map_location="cpu", weights_only=False)
+            model = _build_mlp_module(
+                n_features=int(ckpt["n_features"]),
+                n_targets=int(ckpt["n_targets"]),
+                dropout=0.2,
+            )
+            model.load_state_dict(ckpt["state_dict"])
+            model.eval()
+            loaded.append((
+                lab,
+                model,
+                np.asarray(ckpt["mu_y"], dtype=np.float64),
+                np.asarray(ckpt["sd_y"], dtype=np.float64),
+            ))
+        if not loaded:
+            _M2_FAMILY_MLP_CACHE = []
+            return False
+        _M2_FAMILY_MLP_CACHE = loaded
+        _M2_FAMILY_MLP_SCALER = scaler
+        _M2_FAMILY_MLP_FEATS = cols
+        _M2_FAMILY_MLP_MANIFEST = man
+        _M2_FAMILY_MLP_TARGET_ORDER = man.get("target_order",
+                                              ["total", "spread", "home_pts", "away_pts"])
+        return True
+    except Exception:
+        _M2_FAMILY_MLP_CACHE = []
+        return False
+
+
+def _predict_m2_family_mlp(row: dict) -> Optional[Dict[str, float]]:
+    """Run the R31_X3 multitask MLP ensemble on a season_games row.
+    Returns {total_est, spread_est, home_pts_est, away_pts_est} or None."""
+    if not _try_load_m2_family_mlp():
+        return None
+    if (_M2_FAMILY_MLP_FEATS is None or _M2_FAMILY_MLP_SCALER is None
+            or not _M2_FAMILY_MLP_CACHE or _M2_FAMILY_MLP_TARGET_ORDER is None):
+        return None
+    try:
+        import torch  # noqa: PLC0415
+        vals = []
+        for c in _M2_FAMILY_MLP_FEATS:
+            v = row.get(c, 0.0)
+            try:
+                vals.append(float(v) if v is not None else 0.0)
+            except (TypeError, ValueError):
+                vals.append(0.0)
+        X_raw = np.array([vals], dtype=np.float64)
+        X = _M2_FAMILY_MLP_SCALER.transform(X_raw).astype(np.float32)
+        xt = torch.from_numpy(X)
+        preds = None
+        with torch.no_grad():
+            for _lab, model, mu_y, sd_y in _M2_FAMILY_MLP_CACHE:
+                pz = model(xt).cpu().numpy()
+                p = pz * sd_y + mu_y
+                preds = p if preds is None else preds + p
+        preds = preds / len(_M2_FAMILY_MLP_CACHE)
+        # Map target order -> est keys
+        idx = {t: i for i, t in enumerate(_M2_FAMILY_MLP_TARGET_ORDER)}
+        return {
+            "total_est":    round(float(preds[0, idx["total"]]), 1),
+            "spread_est":   round(float(preds[0, idx["spread"]]), 1),
+            "home_pts_est": round(float(preds[0, idx["home_pts"]]), 1),
+            "away_pts_est": round(float(preds[0, idx["away_pts"]]), 1),
+        }
+    except Exception:
+        return None
 
 
 def _try_load_m2_family() -> bool:
@@ -516,7 +651,15 @@ def _predict_m2_family(
     hit (same models_mtime) we skip the 20 model `.predict` calls + the
     feature vector build entirely. Cache invalidates automatically when any
     file in data/models/m2_family/ is rewritten (re-trained).
+
+    R31_X3: when env var M2_FAMILY_USE_MLP=1, route to the multitask MLP
+    ensemble in data/models/m2_family_mlp/ instead. The cache is bypassed
+    on the MLP path (the .pt files have separate mtimes from the multi5
+    .joblibs so cache keys would collide otherwise).
     """
+    if _m2_family_use_mlp():
+        return _predict_m2_family_mlp(row)
+
     if not _try_load_m2_family() or _M2_FAMILY_FEATS is None:
         return None
 
@@ -678,10 +821,15 @@ def predict(
                 # we fell back to formula (keep model blowout_prob otherwise).
                 if confidence == "formula":
                     blowout_prob = round(max(abs(spread_est) - 10, 0) / 25, 3)
+                _ens_label = (
+                    "M2_family_mlp_v1_R31_X3 (multitask MLP, 3-seed ensemble)"
+                    if _m2_family_use_mlp()
+                    else "M2_family_v1 (5 models × 4 targets, equal-weight)"
+                )
                 m2_extras = {
                     "home_pts_est":  m2_pred["home_pts_est"],
                     "away_pts_est":  m2_pred["away_pts_est"],
-                    "ensemble":      "M2_family_v1 (5 models × 4 targets, equal-weight)",
+                    "ensemble":      _ens_label,
                     "m2_family_used": True,
                 }
                 confidence = (confidence + "+m2_family") if confidence == "model" else "m2_family"
