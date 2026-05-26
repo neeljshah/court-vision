@@ -1,0 +1,87 @@
+{
+  "probe_id": "R12_F4_pp_systematic_offset",
+  "status": "REJECT",
+  "headline": "no stat met ship gate (|offset| >= 2*sterr AND n >= 100)",
+  "per_stat": [
+    {
+      "stat": "ast",
+      "n": 35,
+      "mean_offset": 0.2121,
+      "sterr": 0.2504,
+      "z": 0.847,
+      "p": 0.39686,
+      "skew_base": 0.1478,
+      "systematic": "False"
+    },
+    {
+      "stat": "blk",
+      "n": 35,
+      "mean_offset": 0.5334,
+      "sterr": 0.0932,
+      "z": 5.723,
+      "p": 0.0,
+      "skew_base": 0.0235,
+      "systematic": false
+    },
+    {
+      "stat": "fg3m",
+      "n": 32,
+      "mean_offset": 0.1171,
+      "sterr": 0.1635,
+      "z": 0.716,
+      "p": 0.47389,
+      "skew_base": 0.059,
+      "systematic": "False"
+    },
+    {
+      "stat": "pts",
+      "n": 37,
+      "mean_offset": -2.4782,
+      "sterr": 0.5901,
+      "z": -4.2,
+      "p": 3e-05,
+      "skew_base": 0.5023,
+      "systematic": false
+    },
+    {
+      "stat": "reb",
+      "n": 35,
+      "mean_offset": 0.4051,
+      "sterr": 0.4037,
+      "z": 1.004,
+      "p": 0.31556,
+      "skew_base": 0.1307,
+      "systematic": "False"
+    },
+    {
+      "stat": "stl",
+      "n": 36,
+      "mean_offset": 0.3747,
+      "sterr": 0.0841,
+      "z": 4.456,
+      "p": 1e-05,
+      "skew_base": 0.012,
+      "systematic": false
+    },
+    {
+      "stat": "tov",
+      "n": 35,
+      "mean_offset": -0.0899,
+      "sterr": 0.0705,
+      "z": -1.276,
+      "p": 0.20198,
+      "skew_base": 0.0379,
+      "systematic": "False"
+    }
+  ],
+  "top_systematic": null,
+  "n_merged_total": 245,
+  "n_pp_dedup_total": 245,
+  "caveats": [
+    "PP CSV has empty player_id; matched on NFKD-normalized name only",
+    "OOF date range ends 2026-04-12; PP snapshot is 2026-05-25 (no game-level overlap)",
+    "Proxy is each player's MOST RECENT OOF q50 -- not what the model would predict for the 2026-05-25 game specifically",
+    "PP lines are theoretical medians; OOF q50 is also q50 -- closest comparable, but skill/usage may have drifted",
+    "Stale player proxies (e.g. inactive players) included; results dominated by active high-volume players"
+  ]
+}
