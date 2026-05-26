@@ -1,0 +1,32 @@
+{
+  "probe": "R12_B18_form_only_PTS",
+  "kind": "regression",
+  "label": "target_pts",
+  "n_features": 40,
+  "status": "REJECT",
+  "ship_reason": "MAE 4.6921 (baseline 4.6602, prod ref 4.62)",
+  "pooled_lgb_mae": 4.6921,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "fold_mae": 4.6671
+    },
+    {
+      "fold": 2,
+      "fold_mae": 4.6474
+    },
+    {
+      "fold": 3,
+      "fold_mae": 4.7617
+    }
+  ],
+  "beat_baseline": false,
+  "beat_prod": false,
+  "vs_baseline_pct": 0.68,
+  "variant": {
+    "variant": "form_only",
+    "n_features": 40
+  },
+  "elapsed_s": 6.3
+}

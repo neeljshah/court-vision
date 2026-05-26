@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 30,
+  "rounds_completed": 31,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -558,6 +558,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-17 (12 variants in 364s \u2014 12/12 SHIP gates but 0/12 BEAT_CANONICAL). Second consecutive zero-architectural-gain round. Stop counter: 2/5.\nhgb_oof_only variants (HGB replaces LGB as level-1 OOF):\n  total -15.18% vs B9 -16.27% (+1.09pp), spread -16.62% vs B15 -17.61% (+0.99pp),\n  home_score -16.16% vs B15 -16.52% (+0.36pp), away_score -13.86% vs B15 -14.51% (+0.65pp),\n  O230 Brier 0.2422 vs B15 0.2363 (regress), AH3 Brier 0.2296 vs B15 0.2271 (regress).\nlgb_plus_hgb_oof (BOTH OOF features stacked at level-2):\n  Consistently 0.1-0.5pp BETTER than hgb_oof_only across all targets \u2014 combining\n  LGB-OOF and HGB-OOF as parallel level-2 features marginally helps.\n  But gap to canonical never closes: score_diff -17.12% still +0.49pp short of -17.61%.\nARCHITECTURAL FINDING: HGB as inner OOF learner is consistently WEAKER than LGB. Combining both adds 0.1-0.5pp gain but burns 2x compute without bridging the gap to B15's model-level blending across DIFFERENT FEATURE SETS. The feature-diversity axis (B15) dominates the learner-diversity axis (B17) at this scale.\nPRODUCTION CANONICAL UNCHANGED.\nStop counter: 2/5. Two consecutive zero-gain rounds on the same backbone \u2014 time to pivot to a different axis. PLAYER-PROP models is the candidate."
+    },
+    {
+      "name": "R12_BATCH18_player_prop_avg_blend",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 0,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-18 (5 variants in 102s \u2014 0/5 SHIP, all REJECT). Cross-domain transfer of B15 avg_blend pattern FAILS for player-prop PTS. Stop counter: 3/5.\nWithin-probe baseline_full MAE 4.6602 confirms production reference (memory said ~4.62; +0.87% above is well within run-to-run variance \u2014 production baseline is real).\nPer-variant MAE:\n  baseline_full (85 feats, LGB+XGB): 4.6602\n  form_only (40 L5/L10/EWMA/std/prev feats): 4.6921 (+0.68%)\n  opp_only (16 opp_def + context feats): 6.7395 (+44.62%)\n  avg_blend_top2 (baseline_full+form_only): 4.6640 (+0.08% essentially tied)\n  avg_blend_top3 (+opp_only): 4.9603 (+6.44% dragged down by weak opp)\nARCHITECTURAL FINDING: avg_blend pattern requires feature subsets with COMPARABLE single-model strength to add value via diversity. At game level (B15), each subset (interactions / halflife2 / opp_full) was within 0.3pp of the others \u2014 averaging smoothed noise across diverse-but-similar models. At player-prop level, form features DOMINATE so completely that opp/context subsets are 44% worse single-models, and adding them to the blend just dilutes signal.\nPROD PTS MAE remains 4.62 (canonical). No promotion.\nStop counter: 3/5 zero-architectural-gain rounds (B16 single-arch blend, B17 HGB-OOF, B18 player-prop cross-domain). Two more zero-gain rounds \u2192 loop terminates.\nSTRATEGIC NEXT MOVE: pivot from probing to PRODUCTION WIRING \u2014 handoff R12 game-level wins (B14 in-play calibration, B15 ensemble blends, B6 OOF-stack) into src/prediction/win_probability.py and src/prediction/betting_portfolio.py before the loop terminates. Probing further on same backbone has diminishing returns."
     }
   ],
   "rejects": [
@@ -988,6 +997,12 @@
       "reason": "HGB as level-1 OOF learner regresses vs canonical LGB-as-level-1. Adding HGB as a second OOF feature alongside LGB closes 0.5pp but never crosses the canonical threshold. Feature-set diversity (B15 model-level blends) dominates learner diversity at the current scale.",
       "saturated_angle": "HGB as inner-OOF learner inside B6 stack",
       "round": 12
+    },
+    {
+      "name": "R12_BATCH18_player_prop_avg_blend_pivot",
+      "reason": "avg_blend pattern does NOT transfer from game-level to player-prop PTS. Form features dominate so heavily that opp_only is 44% worse single-model; blending weaker subsets into stronger baseline just dilutes signal. The pattern requires COMPARABLY-STRONG feature subsets which game-level had but player-prop does not.",
+      "saturated_angle": "avg_blend cross-domain (game \u2192 player-prop) without comparable subset strength",
+      "round": 12
     }
   ],
   "saturated_angles": [
@@ -1057,7 +1072,8 @@
     "30-team SVD identity embeddings (8-16 dim) on B5+B6 base",
     "H2H L5 ordered/unordered streak features (too noisy at game-level)",
     "3-arch (LGB+XGB+HGB) single-model blends on canonical feature sets",
-    "HGB-as-inner-OOF (alone or alongside LGB) vs feature-set diversity ensembles"
+    "HGB-as-inner-OOF (alone or alongside LGB) vs feature-set diversity ensembles",
+    "avg_blend at player-prop level (form-feature dominance breaks the pattern)"
   ],
   "current_baseline_mae": {
     "pts": 2.214,
