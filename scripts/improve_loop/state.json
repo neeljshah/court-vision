@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 40,
+  "rounds_completed": 41,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -648,6 +648,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-27 (production loading utility - 6/6 PASS). Dataset grew to 4315 games (R29_V2 100% linescore coverage backfill landed).\nADDED TO src/prediction/r12_canonical_predictor.py:\n  load_canonical_bundle(target) - reads r12_{target}_canonical.joblib from disk\n  predict_canonical_bundle(bundle, df) - dispatches on bundle shape + recipe.type:\n    * single-model bundle: predict_canonical on the one model\n    * ensemble equal_weight_avg: mean across component predictions\n    * ensemble nnls: weighted sum using recipe['weights']\n    * ensemble single: predict on first component only\nPerformance (all 6 bundles):\n  Single-model: load 20-30ms, predict 14-30ms\n  Ensemble (3-4 components): load 71-98ms, predict 82-104ms\nSanity verified - all 6 targets' predictions on last 50 games in expected ranges:\n  total_pts_box  mean 226.7 range [209.1, 244.8]\n  score_diff     mean 1.99  range [-12.2, 20.7]\n  home_score     mean 114.8 range [104.7, 127.9]\n  away_score     mean 113.1 range [102.1, 126.4]\n  over_230       mean 0.407 range [0.031, 0.899]\n  home_cover_AH3 mean 0.618 range [0.134, 0.952]\nPRODUCTION HANDOFF UNBLOCKED - any caller can now do:\n  df = build_r12_features(season_games_df)\n  bundle = load_canonical_bundle('total_pts_box')\n  preds = predict_canonical_bundle(bundle, df)\nNo retraining at inference time; 6 markets per game via 6 .joblib files.\nStop counter UNCHANGED at 1/5 (wiring batch doesn't count)."
+    },
+    {
+      "name": "R12_BATCH28_auto_train_fallback",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 6,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-28 (auto-train fallback + list_available_bundles - all_pass=True). Dataset has grown to 4515 games (was 4315 at B27, parallel session backfills continuing). Production module now complete with full toolkit.\nADDED TO src/prediction/r12_canonical_predictor.py:\n  list_available_bundles() -> Dict[target, bool] - disk-presence check for all 6\n  load_canonical_bundle(target, auto_train=False, training_df=None) - now accepts\n    auto_train flag. If True and joblib missing, trains+saves on-the-fly via\n    canonical recipe. Requires feature-augmented training_df.\n  _auto_train_and_save() helper handles all 3 recipe types (single/top50/ensemble).\nSMOKE VERIFICATION (all 4 steps PASS):\n  1. list_available_bundles correctly shows all 6 True before, home_score=False during outage\n  2. load_canonical_bundle without auto_train correctly raises FileNotFoundError\n  3. auto_train=True succeeded in 43s on 4515 games, returned valid bundle\n  4. Predict via auto-trained bundle: mean 117.57 range [100.4, 138.6] (sane home_score)\n  5. Reload via plain load_canonical_bundle confirms persistence works\n  6. Original bundle restored from .bak\nPRODUCTION MODULE COMPLETE - r12_canonical_predictor.py now exports:\n  build_r12_features            - feature engineering pipeline\n  get_canonical_feature_set     - legacy single-pass perm-importance (kept for compat)\n  get_canonical_feature_set_stable - leak-free per-fold trim (B22 finding)\n  train_canonical_model         - B6 OOF-stack training\n  predict_canonical             - blended level-2 prediction\n  load_canonical_bundle         - load joblib (auto_train fallback)\n  predict_canonical_bundle      - recipe-dispatching predict\n  list_available_bundles        - disk-presence map\n  calibrate_inplay_platt        - Platt sigmoid calibrator\n  CANONICAL_RECIPES dict        - per-target recipe metadata\nStop counter UNCHANGED at 1/5 (utility extension doesn't count)."
     }
   ],
   "rejects": [
