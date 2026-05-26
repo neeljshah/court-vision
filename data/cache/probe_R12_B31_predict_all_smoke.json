@@ -1,0 +1,8 @@
+{
+  "n_total": 10,
+  "n_pass": 10,
+  "all_pass": true,
+  "cold_cache_s": 1.38,
+  "warm_cache_s": 0.17,
+  "elapsed_s": 5.0
+}

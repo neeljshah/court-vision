@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 43,
+  "rounds_completed": 44,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -675,6 +675,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-30 (in-play serialization - 4/4 smoke PASS). Dataset 4910 games.\nSerialized 4 in-play bundles to data/models/m2_family/ with baked-in calibrators:\n  r12_inplay_winprob_endQ1.joblib    3.0 MB, raw 0.65 -> Platt 0.62 mean\n  r12_inplay_winprob_endQ2.joblib    2.97 MB, raw 0.653 -> Platt 0.635\n  r12_inplay_winprob_endQ3.joblib    2.91 MB, raw 0.670 -> Platt 0.651\n  r12_inplay_remaining_total_endQ2.joblib  2.91 MB, isotonic 63-knot interp\nCalibrators serialized as plain Python dicts (no sklearn dependency at load):\n  Platt: {type, lr_coef, lr_intercept}  (apply: sigmoid(coef*logodds(raw)+intercept))\n  Isotonic: {type, x[], y[]}            (apply: np.interp(raw, x, y))\nADDED TO src/prediction/r12_canonical_predictor.py:\n  load_inplay_bundle(key) - key=1/2/3 or 'remaining_total_endQ2'\n  apply_calibrator(raw, calibrator_dict)\n  predict_inplay(bundle, df) - one-liner: predict_canonical + apply_calibrator\nPlatt coef 0.6163 < 1 confirms raw model is OVER-CONFIDENT - calibrator correctly\ndampens probs toward 0.5. Isotonic uses 63 knot points for monotonic adjustment of\nremaining-total predictions.\nPRODUCTION COMPLETE: 6 pregame canonical bundles + 4 in-play bundles + load utilities\nfor both. Total 10 serialized models covering all R12 markets.\nStop counter UNCHANGED at 2/5 (serialization batch doesn't count)."
+    },
+    {
+      "name": "R12_BATCH31_predict_all_markets",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 10,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-31 (high-level predict_all_markets helper - 10/10 smoke PASS). Dataset 4910 games.\nADDED TO src/prediction/r12_canonical_predictor.py:\n  predict_all_pregame_markets(df) -> Dict[market, np.ndarray] - loads all 6 bundles\n    once, returns predictions per market. In-process caching via _BUNDLE_CACHE.\n  predict_all_inplay_markets(df, snap_q) -> Dict[market, np.ndarray] - loads winprob\n    bundle for snap_q + remaining_total when snap_q==2. Calibrators applied auto.\n  clear_bundle_cache() - reset in-process bundle caches after re-serialization.\nPERFORMANCE (cold vs warm cache on last 50 games):\n  Pregame 6 markets cold: 1.38s\n  Pregame 6 markets warm: 0.17s (8.2x speedup)\n  In-play endQ1 (1 market):  0.03s\n  In-play endQ2 (2 markets): 0.06s\n  In-play endQ3 (1 market):  0.03s\n  10/10 predictions in sanity ranges.\nPRODUCTION INTERFACE COMPLETE - 2-line predict path:\n  df = build_r12_features(load_season_games())\n  all_preds = predict_all_pregame_markets(df.tail(N_upcoming))  # dict of 6 markets\n  inplay = predict_all_inplay_markets(df.with_snapshot_features, snap_q=2)\nAll 10 R12 production bundles + 8 module helpers + 1 predictor class shipped.\nStop counter UNCHANGED at 2/5 (utility extension doesn't count)."
     }
   ],
   "rejects": [
