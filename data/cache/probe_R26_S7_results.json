@@ -1,0 +1,80 @@
+{
+  "probe": "R26_S7",
+  "ts": "2026-05-26T18:15:36Z",
+  "stats": {
+    "ticks": 2,
+    "total_middles": 4,
+    "max_middles_in_tick": 2,
+    "free_arbs_total": 2,
+    "model_confirmed_total": 0,
+    "free_arb_alerts_fired": 1
+  },
+  "n_alerts_captured": 1,
+  "captured_first": {
+    "message": "FREE ARB: Probe Player pts \u2014 fd OVER 24.5@105 / bov UNDER 25.5@110",
+    "level": "critical",
+    "tag": "free_arb",
+    "source": "middle_finder_daemon",
+    "body": "Width: 1.0, EV: +2.34%\n\nmetadata: {\"player\": \"Probe Player\", \"stat\": \"pts\", \"over_book\": \"fd\", \"over_line\": 24.5, \"over_price\": 105, \"under_book\": \"bov\", \"under_line\": 25.5, \"under_price\": 110, \"middle_width\": 1.0, \"arb_profit_pct\": 2.34, \"dedup_key\": \"free_arb:Probe Player:pts\"}",
+    "fields": [
+      {
+        "name": "player",
+        "value": "Probe Player"
+      },
+      {
+        "name": "stat",
+        "value": "pts"
+      },
+      {
+        "name": "over_book",
+        "value": "fd"
+      },
+      {
+        "name": "over_line",
+        "value": "24.5"
+      },
+      {
+        "name": "over_price",
+        "value": "105"
+      },
+      {
+        "name": "under_book",
+        "value": "bov"
+      },
+      {
+        "name": "under_line",
+        "value": "25.5"
+      },
+      {
+        "name": "under_price",
+        "value": "110"
+      },
+      {
+        "name": "middle_width",
+        "value": "1.0"
+      },
+      {
+        "name": "arb_profit_pct",
+        "value": "2.34"
+      },
+      {
+        "name": "dedup_key",
+        "value": "free_arb:Probe Player:pts"
+      }
+    ]
+  },
+  "dedup_worked": true,
+  "one_critical_with_free_arb_tag": true,
+  "headline_matches_spec": true,
+  "non_free_skipped": true,
+  "vault_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a50a2064b396fdf1a\\data\\cache\\probe_R26_S7\\alerts.md",
+  "vault_present": true,
+  "vault_has_free_arb_line": true,
+  "critical_stack_path": "C:\\Users\\neelj\\nba-ai-system\\.claude\\worktrees\\agent-a50a2064b396fdf1a\\data\\cache\\probe_R26_S7\\critical\\critical_2026-05-26.json",
+  "critical_stack_present": true,
+  "critical_has_free_arb": true,
+  "n_critical_records": 1,
+  "raised": false,
+  "exc_repr": null,
+  "ship_ok": true
+}
