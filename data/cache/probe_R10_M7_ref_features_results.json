@@ -1,0 +1,277 @@
+{
+  "probe": "R10_M7_ref_features",
+  "status": "REJECT",
+  "ship_reason": "gate_4of4_per_stat=FAIL gate_mean_delta<=-0.005=FAIL(mean=0.00229) gate_4of7_improving=FAIL(n=1/7)",
+  "per_stat": {
+    "pts": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 2.3128,
+          "treat_mae": 2.32361,
+          "delta": 0.0108
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 2.31995,
+          "treat_mae": 2.33519,
+          "delta": 0.01525
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 2.3216,
+          "treat_mae": 2.32094,
+          "delta": -0.00066
+        }
+      ],
+      "n_folds_positive": 1,
+      "overall_base_mae": 2.31813,
+      "overall_treat_mae": 2.32656,
+      "overall_delta": 0.00844
+    },
+    "reb": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.91742,
+          "treat_mae": 0.9213,
+          "delta": 0.00388
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.92605,
+          "treat_mae": 0.92949,
+          "delta": 0.00344
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.93384,
+          "treat_mae": 0.93771,
+          "delta": 0.00388
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.9258,
+      "overall_treat_mae": 0.92953,
+      "overall_delta": 0.00373
+    },
+    "ast": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.64094,
+          "treat_mae": 0.64457,
+          "delta": 0.00363
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.64707,
+          "treat_mae": 0.64992,
+          "delta": 0.00286
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.65317,
+          "treat_mae": 0.65111,
+          "delta": -0.00206
+        }
+      ],
+      "n_folds_positive": 1,
+      "overall_base_mae": 0.64708,
+      "overall_treat_mae": 0.64854,
+      "overall_delta": 0.00147
+    },
+    "fg3m": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.41851,
+          "treat_mae": 0.42215,
+          "delta": 0.00363
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.41693,
+          "treat_mae": 0.41911,
+          "delta": 0.00218
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.42218,
+          "treat_mae": 0.42231,
+          "delta": 0.00014
+        }
+      ],
+      "n_folds_positive": 0,
+      "overall_base_mae": 0.41922,
+      "overall_treat_mae": 0.42119,
+      "overall_delta": 0.00198
+    },
+    "stl": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.30894,
+          "treat_mae": 0.30886,
+          "delta": -7e-05
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.30332,
+          "treat_mae": 0.30107,
+          "delta": -0.00225
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.30833,
+          "treat_mae": 0.30848,
+          "delta": 0.00015
+        }
+      ],
+      "n_folds_positive": 2,
+      "overall_base_mae": 0.30687,
+      "overall_treat_mae": 0.30614,
+      "overall_delta": -0.00072
+    },
+    "blk": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.21043,
+          "treat_mae": 0.21136,
+          "delta": 0.00093
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.20683,
+          "treat_mae": 0.20682,
+          "delta": -0.0
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.20155,
+          "treat_mae": 0.20244,
+          "delta": 0.00089
+        }
+      ],
+      "n_folds_positive": 1,
+      "overall_base_mae": 0.20625,
+      "overall_treat_mae": 0.20686,
+      "overall_delta": 0.00061
+    },
+    "tov": {
+      "n_rows": 20475,
+      "n_games": 1054,
+      "folds": [
+        {
+          "fold": 2,
+          "n_train": 5160,
+          "n_val": 5086,
+          "baseline_mae": 0.43407,
+          "treat_mae": 0.43537,
+          "delta": 0.0013
+        },
+        {
+          "fold": 3,
+          "n_train": 10246,
+          "n_val": 5093,
+          "baseline_mae": 0.42011,
+          "treat_mae": 0.41902,
+          "delta": -0.00109
+        },
+        {
+          "fold": 4,
+          "n_train": 15339,
+          "n_val": 5136,
+          "baseline_mae": 0.42011,
+          "treat_mae": 0.42153,
+          "delta": 0.00142
+        }
+      ],
+      "n_folds_positive": 1,
+      "overall_base_mae": 0.42475,
+      "overall_treat_mae": 0.42529,
+      "overall_delta": 0.00055
+    }
+  },
+  "n_improving": 1,
+  "mean_delta": 0.002294,
+  "elapsed_seconds": 313.9,
+  "feature_set_base": [
+    "cur_pts",
+    "cur_reb",
+    "cur_ast",
+    "cur_fg3m",
+    "cur_stl",
+    "cur_blk",
+    "cur_tov",
+    "cur_pf",
+    "min_through_q3",
+    "score_margin_abs",
+    "is_leading"
+  ],
+  "feature_set_aug": [
+    "cur_pts",
+    "cur_reb",
+    "cur_ast",
+    "cur_fg3m",
+    "cur_stl",
+    "cur_blk",
+    "cur_tov",
+    "cur_pf",
+    "min_through_q3",
+    "score_margin_abs",
+    "is_leading",
+    "ref_crew_fouls",
+    "ref_crew_fta",
+    "ref_crew_home_win_pct"
+  ]
+}
