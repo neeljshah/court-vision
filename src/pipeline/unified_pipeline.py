@@ -1517,7 +1517,16 @@ class UnifiedPipeline:
         # regardless of video fps or stride setting.  At 30fps/stride-3 = 15 iterations,
         # at 30fps/stride-1 = 45 iterations, at 60fps/stride-3 = 30 iterations.
         _ball_loss_streak: int = 0
-        _BALL_LOSS_THRESH  = max(15, int(1.5 * fps / _stride))  # 1.5s real-time min possession
+        # BUG3 fix: Lower from 20 (audit found this merged real possessions) to ~10 frames.
+        # At 30fps/stride-3 → 10 frames ≈ 1s; genuine possession switches persist longer.
+        # Previously set to 1.5s then overridden per-frame to 2.0s — both too high (71% of
+        # possessions exceeded 30s duration; max observed 1973s = entire half).
+        # Configurable via NBA_BALL_LOSS_FRAMES env var for tuning without code change.
+        _BALL_LOSS_THRESH  = int(os.environ.get("NBA_BALL_LOSS_FRAMES",
+                                                 str(int(1.0 * fps / _stride))))
+        # BUG2 fix: track scoreboard period to detect quarter/halftime boundaries
+        # and reset possession_start so shot_clock_est doesn't carry Q2 frame values into Q3.
+        _last_scoreboard_period: Optional[int] = None
         # FIX 1: lineup tracking
         _lineup_id_cache: Dict[frozenset, int] = {}
         _lineup_counter: int = 0
@@ -1619,6 +1628,21 @@ class UnifiedPipeline:
                         _frozen_clock_scans = 0
                     if _gclock  > 0: _prev_game_clock_sec = _gclock
                     if _gperiod > 0: _prev_period         = _gperiod
+
+                    # BUG2 fix: period boundary → reset possession_start so shot_clock_est
+                    # doesn't use stale Q2 frame numbers when computing Q3 clock.
+                    # Common scenario: same team has ball at end of Q2 AND start of Q3 →
+                    # poss_team_prev never changes → possession_start never resets →
+                    # shot_clock_est = 24 - (Q3_frame - Q2_start_frame)/fps → negative.
+                    if _gperiod > 0 and _gperiod != _last_scoreboard_period:
+                        if _last_scoreboard_period is not None:
+                            # Genuine new period — anchor clock and create possession boundary
+                            possession_start = frame_idx
+                            possession_id   += 1
+                            _last_real_poss_team = ""  # force re-detection of ball handler
+                            print(f"[shot_clock] Period {_last_scoreboard_period}→{_gperiod}: "
+                                  f"possession_start reset to frame {frame_idx}")
+                        _last_scoreboard_period = _gperiod
 
                     # ── Scoreboard log + period-start auto-detection ──────
                     _sc_fields = [
@@ -2103,14 +2127,9 @@ class UnifiedPipeline:
             # Fix 3 Part A: team-switch debounce — accumulate explicit new-team
             # detections until threshold reached (ISSUE-061 fix: gaps don't reset
             # the streak; only an explicit original-team re-detection resets it).
-            # 2026-05-23: raised 0.5s → 2.0s. 0.5s admitted false-positive switches
-            # from deflections / steals / defender swipes — audit showed games
-            # with 459-735 possessions vs the NBA-typical 180-240. A real
-            # possession change persists >2s (new team takes ball up court);
-            # transient flicks die under this gate. Quick fast-break possessions
-            # (steal-and-score in <2s) will be slightly under-counted — acceptable
-            # trade: massive false-positive reduction vs rare under-count.
-            _BALL_LOSS_THRESH = max(5, int(2.0 * fps / _stride))
+            # BUG3 fix: removed per-frame re-assignment to 2.0s which was overriding
+            # the env-configurable _BALL_LOSS_THRESH set at loop init.
+            # _BALL_LOSS_THRESH is now fixed for the entire clip (set above, env-aware).
             if _handler_explicit and curr_poss and curr_poss != poss_team_prev and poss_team_prev:
                 _ball_loss_streak += 1
                 if _ball_loss_streak < _BALL_LOSS_THRESH:
@@ -2208,16 +2227,17 @@ class UnifiedPipeline:
                     "poss_type":        poss_ctx.get("possession_type", "half_court"),
                     "play_type":        play_type,
                     "paint_touches":    poss_ctx.get("paint_touches", 0),
-                    "off_ball_distance": poss_ctx.get("off_ball_distance", 0.0),
+                    "off_ball_distance": _px_to_ft(poss_ctx.get("off_ball_distance", 0.0), map_w),  # BUG4 fix: px→ft
                     # Compute shot_clock_est from the pipeline's debounced
                     # possession_start rather than PossessionClassifier's
                     # internal timer — PC resets on every flicker causing
                     # a +17s systematic bias (ISSUE-023 fix).
-                    "shot_clock_est":   max(0.0, (
+                    # BUG2 fix: clamp to [0, 24] — negative/overflow after period boundary.
+                    "shot_clock_est":   min(24.0, max(0.0, (
                         14.0 - (frame_idx - possession_start) / fps
                         if _poss_is_off_rebound
                         else 24.0 - (frame_idx - possession_start) / fps
-                    )),
+                    ))),
                     "handler_zone":     (UnifiedPipeline._court_zone(
                                             handler_now["x2d"], handler_now["y2d"],
                                             map_w, map_h)
@@ -2508,13 +2528,14 @@ class UnifiedPipeline:
                     "play_type":               play_type,
                     "possession_duration_sec": poss_ctx.get("possession_duration_sec", 0.0),
                     "paint_touches":           poss_ctx.get("paint_touches", 0),
-                    "off_ball_distance":       poss_ctx.get("off_ball_distance", 0.0),
+                    "off_ball_distance":       _px_to_ft(poss_ctx.get("off_ball_distance", 0.0), map_w),  # BUG4 fix: px→ft
                     # ISSUE-023: use debounced possession_start (same fix as poss buf)
-                    "shot_clock_est":          max(0.0, (
+                    # BUG2 fix: clamp to [0, 24] — negative/overflow after period boundary.
+                    "shot_clock_est":          min(24.0, max(0.0, (
                         14.0 - (frame_idx - possession_start) / fps
                         if _poss_is_off_rebound
                         else 24.0 - (frame_idx - possession_start) / fps
-                    )),
+                    ))),
                     # ── Pose estimation fields ─────────────────────────────
                     "ankle_x":            track.get("ankle_x", ""),
                     "ankle_y":            track.get("ankle_y", ""),
@@ -2955,23 +2976,65 @@ class UnifiedPipeline:
         return result
 
     @staticmethod
-    def _court_zone(x: int, y: int, map_w: int, map_h: int) -> str:
-        """Classify 2D court position. Full-court top-down view, both halves."""
-        xn = x / max(map_w, 1)
-        yn = y / max(map_h, 1)
-        # Paint: within ~15% of each baseline, centred vertically
-        if (xn < 0.15 or xn > 0.85) and (0.28 < yn < 0.72):
+    def _court_zone(x: int, y: int, map_w: int, map_h: int,
+                    ft_x: Optional[float] = None, ft_y: Optional[float] = None) -> str:
+        """Classify 2D court position using NBA-accurate thresholds (feet).
+
+        NBA court constants used:
+          Court:        94 ft × 50 ft
+          Basket:       x=5.25 ft from baseline (left), x=88.75 ft (right); y=25 ft
+          Paint:        12 ft wide, 16 ft long (x: 0–19 ft from baseline; y: 19–31 ft)
+          Restricted:   4 ft radius arc under basket
+          3pt straight: 23.75 ft from basket centre
+          3pt corners:  22 ft from basket (y ≤ 3 ft or y ≥ 47 ft, x ≤ 14 ft from baseline)
+          Backcourt:    x > 47 ft from left baseline (past half-court)
+
+        Uses ft_x/ft_y when provided; falls back to normalised → feet conversion.
+        Possible return values: restricted_area, paint, mid_range, 3pt_arc, corner_3, backcourt.
+        """
+        # ── Prefer ft coordinates; derive from pixels when absent ────────────
+        if ft_x is None or ft_y is None:
+            ft_x = (x / max(map_w, 1)) * 94.0
+            ft_y = (y / max(map_h, 1)) * 50.0
+
+        # ── Compute distances from BOTH baskets ──────────────────────────────
+        # Left basket: x=5.25, y=25.  Right basket: x=88.75, y=25.
+        dist_left  = float(np.hypot(ft_x - 5.25,  ft_y - 25.0))
+        dist_right = float(np.hypot(ft_x - 88.75, ft_y - 25.0))
+        dist_from_basket = min(dist_left, dist_right)
+
+        # "Nearest-basket half" x-coordinate (distance from the nearer baseline)
+        ft_x_h = ft_x if dist_left <= dist_right else (94.0 - ft_x)
+
+        # ── Zone classification (nearest-basket frame) ────────────────────────
+        # Restricted area: ≤4 ft from basket
+        if dist_from_basket <= 4.0:
+            return "restricted_area"
+
+        # Paint: x within 19 ft of nearest baseline AND y within paint width (12 ft)
+        # (free-throw line is at 19 ft from baseline; paint extends 19ft from baseline,
+        #  centred at y=25: 25±6 = 19 to 31 ft)
+        if ft_x_h <= 19.0 and 19.0 <= ft_y <= 31.0:
             return "paint"
-        # Corner 3: near sideline and outside paint x
-        if (yn < 0.14 or yn > 0.86) and (xn < 0.28 or xn > 0.72):
+
+        # Corner 3: within 3 ft of sideline (y ≤ 3 or y ≥ 47) AND
+        # within 22 ft of nearest basket (corner arc starts at baseline, 22 ft rule)
+        if (ft_y <= 3.0 or ft_y >= 47.0) and ft_x_h <= 22.0:
             return "corner_3"
-        # 3pt arc: within 28% of each baseline (outside paint y)
-        if xn < 0.28 or xn > 0.72:
+
+        # Beyond 3pt arc: either a 3pt-arc shot or true backcourt.
+        # Backcourt = beyond 23.75 ft from the NEAREST basket (mid-court, no realistic
+        # shot attempt from here).  Positions like the centre circle (ft_x≈47) qualify;
+        # a corner-3 or straight-away 3pt position does NOT (those are in front-court).
+        if dist_from_basket > 23.75:
+            # True backcourt: also far from the OTHER basket (centre-court region).
+            # Threshold: nearest basket > 30 ft puts us solidly past any 3pt zone.
+            if dist_from_basket > 30.0:
+                return "backcourt"
             return "3pt_arc"
-        # Mid-range: between paint and 3pt
-        if xn < 0.42 or xn > 0.58:
-            return "mid_range"
-        return "backcourt"
+
+        # Inside 3pt arc but not paint / restricted → mid-range
+        return "mid_range"
 
     @staticmethod
     def _dist_to_basket(x2d: int, y2d: int, map_w: int, map_h: int) -> float:
@@ -3158,6 +3221,10 @@ class UnifiedPipeline:
             "end_frame":               end_f,
             "duration_frames":         dur,
             "duration_sec":            round(dur / fps, 2),
+            # BUG4 (c): avg_spacing = mean convex hull area in ft² per frame (same
+            # computation as spacing_hull_area in tracking_rows — duplicated here for
+            # historical compatibility with downstream consumers that join on possession_id).
+            # Unit: ft²  (NOT mean pairwise distance — see spacing_hull_area for definition).
             "avg_spacing":             round(float(np.mean(spacings)),   1) if spacings   else "",
             "avg_defensive_pressure":  round(float(np.mean(isolations)), 1) if isolations else "",
             "avg_vel_toward_basket":   round(float(np.mean(vtbs)),       2) if vtbs       else "",
