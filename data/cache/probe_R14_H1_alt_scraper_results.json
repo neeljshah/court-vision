@@ -1,0 +1,47 @@
+{
+  "tried_sources": [
+    "draftkings",
+    "fanduel",
+    "betmgm",
+    "caesars",
+    "bovada"
+  ],
+  "http_statuses": {
+    "draftkings": {
+      "dk_eventgroup": 403,
+      "dk_categories_1215": 403,
+      "dk_categories_583": 403
+    },
+    "fanduel": {
+      "fd_nj_landing": 500,
+      "fd_pa_landing": 500,
+      "fd_tx_landing": 0,
+      "fd_competition": 500
+    },
+    "betmgm": {
+      "mgm_competition_nba": 403
+    },
+    "caesars": {
+      "czr_nba_eventgroup": 403
+    },
+    "bovada": {
+      "bov_nba_index": 200,
+      "bov_n_events": 1
+    }
+  },
+  "rows_per_source": {
+    "draftkings": 0,
+    "fanduel": 0,
+    "betmgm": 0,
+    "caesars": 0,
+    "bovada": 217
+  },
+  "schema_match_for_clv": true,
+  "ship_status": "PARTIAL_below_500_rows=217",
+  "ship_path": "/workspace/nba-ai-system/data/lines/2026-05-26_bov.csv",
+  "errors": [
+    "fd_tx_landing -> URLError: <urlopen error [Errno -2] Name or service not known>"
+  ],
+  "wall_seconds": 2.27,
+  "captured_at": "2026-05-26T08:04:37"
+}
