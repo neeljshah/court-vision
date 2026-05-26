@@ -508,6 +508,12 @@
       "reason": "Pregame binary winprob with same 35 features as M2 family + LGBMClassifier. Beats sim_win_prob baseline by -8.66% on Brier (0.245 vs 0.269) and gets AUC 0.689 / acc 0.641. But absolute gates (Brier <=0.183, acc >=0.72) are endQ3-style \u2014 pregame winprob is inherently bounded by game randomness without any in-game info. R12 F1 endQ2 hit 0.174 because endQ2 conditions on 2 quarters of evidence; pregame can't reach that. Not a strategic ship \u2014 the existing pregame sim_win_prob baseline (Brier 0.269) plus M2v2 score_diff predictions effectively cover this surface for betting.",
       "saturated_angle": "pregame winprob with strict endQ3 gates (game randomness floor for pregame inference at ~0.24 Brier)",
       "round": 10
+    },
+    {
+      "name": "R11_M2v6_total_O245",
+      "reason": "Binary O/U at 245 threshold using same 35-feature template. Brier 0.158 vs naive L5-rolling-prop 0.172 = -8.39% (PASSES relative -5% gate). Accuracy 0.808 vs baseline 0.803 = +0.5pp (FAILS strict naive+2pp gate; the imbalanced 80/20 class makes accuracy hard to move with same Brier improvement). AUC 0.630. Strong Brier signal but acc gate too strict for imbalanced binary. Could be re-classified as SHIP if acc gate relaxed to naive+0.01 or replaced with AUC>=0.60.",
+      "saturated_angle": "binary classifier accuracy gate naive+0.02 on imbalanced O/U markets (acc baseline already high, hard to move)",
+      "round": 10
     }
   ],
   "saturated_angles": [
