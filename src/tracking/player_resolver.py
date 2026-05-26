@@ -39,7 +39,11 @@ _CONF_VOTE_WINDOW   = 60  # last 60 OCR samples ≈ 30s of gameplay at 2 samples
 # must hold before we accept it.  If the OCR is reading random noise the weight
 # is spread across 5-14 different values → dominant fraction ~10-20%.  A real
 # jersey number should dominate ≥50% of the accumulated confidence weight.
-_MIN_DOMINANT_FRACTION = 0.50
+_MIN_DOMINANT_FRACTION = 0.35   # R9: 0.50 was above empirical noise floor. 8/10 slots
+                                # on game 0022301148 had dominant 25-47% — gate was
+                                # too tight, turning noisy-but-useful into completely null.
+                                # 0.35 + the in-roster filter below keeps false-positive risk low.
+_MIN_VOTE_SAMPLES      = 8      # R9: require >=8 OCR samples in window before accepting
 
 
 class PlayerResolver:
@@ -159,9 +163,13 @@ class PlayerResolver:
             if total <= 0:
                 return None
             best = max(weighted, key=lambda n: weighted[n])
-            # Fix B: reject if dominant candidate does not own ≥ MIN_DOMINANT_FRACTION
-            # of total confidence weight.  Noisy OCR spreads weight; a real jersey
-            # number should be a clear winner.
+            # Fix B (R9-relaxed): reject if dominant candidate does not own ≥ MIN_DOMINANT_FRACTION
+            # of total confidence weight AND we have at least _MIN_VOTE_SAMPLES OCR reads.
+            # Real jerseys dominate, but with motion blur on broadcast video the dominant
+            # fraction rarely clears 0.50 — 0.35 + min-samples + downstream in-roster filter
+            # in resolve_player is the right combination.
+            if len(buf) < _MIN_VOTE_SAMPLES:
+                return None
             if weighted[best] / total < _MIN_DOMINANT_FRACTION:
                 return None
             return best
@@ -266,13 +274,25 @@ class PlayerResolver:
             elif slot in self.slot_to_player_name and self.slot_to_player_name[slot]:
                 pass  # already resolved from a previous finalize() call
             else:
-                # Fallback: write team placeholder so column is never blank
+                # R9: placeholder must use the LEARNED colour→abbrev mapping so green
+                # and white slots get different abbrevs. Previous code (next() over a
+                # set without team_lbl filtering) returned whichever set element CPython
+                # happened to yield first → literal "MIL#?" for every slot.
                 team_lbl = self._slot_team.get(slot, "")
-                # Try to find abbrev from roster keys
-                abbrevs = {v.get("team", "") for v in self._roster.values() if v}
-                team_str = team_lbl if not abbrevs else (
-                    next((a for a in abbrevs if team_lbl and a), team_lbl) or team_lbl
-                )
+                team_str = ""
+                # Preferred: invert _abbrev_to_colour for this slot's colour
+                for _abbr, _col in self._abbrev_to_colour.items():
+                    if _col == team_lbl and _abbr:
+                        team_str = _abbr
+                        break
+                # Fallback when guard hasn't learned both sides yet: pick any roster abbrev
+                # but ONLY when team_lbl is empty (otherwise we'd mislabel cross-team).
+                if not team_str and not team_lbl:
+                    _abbrevs = sorted({v.get("team", "") for v in self._roster.values() if v.get("team")})
+                    team_str = _abbrevs[0] if _abbrevs else ""
+                # Last resort: use colour label so column is at least informative
+                if not team_str:
+                    team_str = team_lbl
                 self.slot_to_player_name[slot] = f"{team_str}#?" if team_str else "?#?"
         self._warmup_done = True
         log.info("PlayerResolver: %d/%d slots resolved (of %d tracked)", resolved, len(all_slots), len(all_slots))
@@ -321,28 +341,45 @@ class PlayerResolver:
             self._load_jersey_name_map()
 
     def _save_jersey_name_map(self) -> None:
-        """Persist jersey→name mapping for offline fallback."""
+        """Persist jersey→name mapping for offline fallback.
+
+        R9: nested-by-team format `{abbrev: {jersey_str: name}}` so two teams
+        sharing jersey numbers (e.g. both have #0) no longer clobber each other.
+        Falls back to writing the flat legacy key too, for backwards-compat with
+        readers that haven't been updated.
+        """
         if not self._data_dir:
             return
         import json, os
-        jmap: Dict[str, str] = {}
-        seen = set()
+        # R9: nested-by-team (preferred)
+        nested: Dict[str, Dict[str, str]] = {}
         for (jersey_num, _label), info in self._roster.items():
-            key = str(jersey_num)
-            if key not in seen:
-                jmap[key] = info["player_name"]
-                seen.add(key)
+            abbr = info.get("team", "") or ""
+            if not abbr:
+                continue
+            nested.setdefault(abbr, {})[str(jersey_num)] = info["player_name"]
+        # Legacy flat fallback (last-write-wins; downstream readers should prefer "by_team")
+        flat: Dict[str, str] = {}
+        for (jersey_num, _label), info in self._roster.items():
+            flat[str(jersey_num)] = info["player_name"]
+        payload = {"by_team": nested, "flat": flat}
         path = os.path.join(self._data_dir, "jersey_name_map.json")
         try:
             os.makedirs(self._data_dir, exist_ok=True)
             with open(path, "w", encoding="utf-8") as f:
-                json.dump(jmap, f, indent=2, ensure_ascii=False)
-            log.info("PlayerResolver: saved jersey_name_map.json (%d entries)", len(jmap))
+                json.dump(payload, f, indent=2, ensure_ascii=False)
+            log.info("PlayerResolver: saved jersey_name_map.json (%d teams, %d flat entries)",
+                     len(nested), len(flat))
         except Exception as exc:
             log.warning("PlayerResolver: jersey_name_map.json save failed: %s", exc)
 
     def _load_jersey_name_map(self) -> None:
-        """Load jersey_name_map.json as fallback when API fails."""
+        """Load jersey_name_map.json as fallback when API fails.
+
+        R9: accepts both the new nested `{"by_team": {abbrev: {jersey: name}}}`
+        format and the legacy flat `{jersey: name}` format. Nested format preserves
+        team_abbrev so the Fix-D colour guard (resolve_player) fires correctly.
+        """
         if not self._data_dir:
             return
         import json, os
@@ -353,21 +390,47 @@ class PlayerResolver:
         try:
             with open(path, encoding="utf-8") as f:
                 jmap = json.load(f)
-            for jersey_str, name in jmap.items():
-                try:
-                    jersey_num = int(jersey_str)
-                except (ValueError, TypeError):
-                    continue
-                for label in ("green", "white"):
-                    key = (jersey_num, label)
-                    if key not in self._roster:
-                        self._roster[key] = {
-                            "player_id": 0,
-                            "player_name": name,
-                            "team": "",
-                            "jersey": jersey_num,
-                        }
-            log.info("PlayerResolver: loaded jersey_name_map.json fallback (%d entries)", len(jmap))
+            loaded_n = 0
+            # R9: nested format preferred
+            if isinstance(jmap, dict) and "by_team" in jmap and isinstance(jmap["by_team"], dict):
+                for abbr, jdict in jmap["by_team"].items():
+                    if not isinstance(jdict, dict):
+                        continue
+                    for jersey_str, name in jdict.items():
+                        try:
+                            jersey_num = int(jersey_str)
+                        except (ValueError, TypeError):
+                            continue
+                        # Register under both colour labels so resolve_player matches by team_abbrev
+                        for label in ("green", "white"):
+                            key = (jersey_num, label)
+                            if key not in self._roster:
+                                self._roster[key] = {
+                                    "player_id": 0,
+                                    "player_name": name,
+                                    "team": abbr,        # R9: preserve abbrev so Fix-D guard fires
+                                    "jersey": jersey_num,
+                                }
+                                loaded_n += 1
+            else:
+                # Legacy flat format
+                flat = jmap.get("flat", jmap) if isinstance(jmap, dict) else {}
+                for jersey_str, name in flat.items():
+                    try:
+                        jersey_num = int(jersey_str)
+                    except (ValueError, TypeError):
+                        continue
+                    for label in ("green", "white"):
+                        key = (jersey_num, label)
+                        if key not in self._roster:
+                            self._roster[key] = {
+                                "player_id": 0,
+                                "player_name": name,
+                                "team": "",
+                                "jersey": jersey_num,
+                            }
+                            loaded_n += 1
+            log.info("PlayerResolver: loaded jersey_name_map.json fallback (%d entries)", loaded_n)
         except Exception as exc:
             log.warning("PlayerResolver: jersey_name_map.json load failed: %s", exc)
 
