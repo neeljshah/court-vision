@@ -632,15 +632,22 @@ def loop(interval_sec, min_width, max_juice, max_iters=None,
             atomic_write_json(out_json, payload)
         except Exception as exc:
             log(f"[err] atomic write failed: {exc}")
-        # R18_K3 — Discord push on free_arbs only (graceful no-op if env unset)
+        # R21_N3 — layered alert (vault + critical-stack always; Discord if URL set).
         try:
-            from src.alerts.discord_webhook import post_alert
+            from src.alerts.discord_webhook import alert
             for m in (mm for mm in middles if mm.get("free_arb")):
-                post_alert("URGENT", "middle_finder_daemon",
-                           f"FREE ARB: {m.get('player', '?')} {m.get('stat', '?')}",
-                           f"width={m.get('middle_width', '?')}  legs: {m.get('over_book', '?')}/{m.get('under_book', '?')}",
-                           fields=[{"name": "over", "value": f"{m.get('over_book', '?')} {m.get('over_line', '?')} @ {m.get('over_price', '?')}"},
-                                   {"name": "under", "value": f"{m.get('under_book', '?')} {m.get('under_line', '?')} @ {m.get('under_price', '?')}"}])
+                alert(
+                    f"FREE ARB: {m.get('player', '?')} {m.get('stat', '?')}",
+                    level="critical",
+                    tag="middle_finder_daemon",
+                    source="middle_finder_daemon",
+                    body=(f"width={m.get('middle_width', '?')}  "
+                          f"legs: {m.get('over_book', '?')}/{m.get('under_book', '?')}"),
+                    fields=[{"name": "over",
+                             "value": f"{m.get('over_book', '?')} {m.get('over_line', '?')} @ {m.get('over_price', '?')}"},
+                            {"name": "under",
+                             "value": f"{m.get('under_book', '?')} {m.get('under_line', '?')} @ {m.get('under_price', '?')}"}],
+                )
         except Exception:
             pass
         log(f"[tick {stats['ticks']}] middles={len(middles)} "

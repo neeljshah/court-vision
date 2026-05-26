@@ -527,18 +527,24 @@ def append_urgent(bet: Mapping[str, Any], now: _dt.datetime, *, dry_run: bool,
             fh.write(header)
         fh.write(format_urgent(bet, now, dry_run))
         fh.write("\n---\n\n")
-    # R18_K3 — push notification (graceful no-op if DISCORD_WEBHOOK_URL unset)
+    # R21_N3 — layered alert (vault + critical-stack always; Discord if URL set).
     try:
-        from src.alerts.discord_webhook import post_alert
-        post_alert("URGENT", "auto_place_daemon",
-                   f"{'DRY' if dry_run else 'LIVE'} FIRE — {bet.get('player', '?')} "
-                   f"{str(bet.get('stat', '?')).upper()} {str(bet.get('side', '?')).upper()} "
-                   f"{bet.get('line', '?')}",
-                   f"@{bet.get('book', '?')} {int(bet.get('odds', 0)):+d}  "
-                   f"edge={float(bet.get('edge_pct', 0)):.2f}%  "
-                   f"stake=${float(bet.get('kelly_stake_$', 0)):.2f}",
-                   fields=[{"name": "kelly_pct", "value": f"{bet.get('kelly_pct_used', '?')}%"},
-                           {"name": "model_prob", "value": str(bet.get('model_prob', '?'))}])
+        from src.alerts.discord_webhook import alert
+        headline = (f"{'DRY' if dry_run else 'LIVE'} FIRE — {bet.get('player', '?')} "
+                    f"{str(bet.get('stat', '?')).upper()} {str(bet.get('side', '?')).upper()} "
+                    f"{bet.get('line', '?')}")
+        detail = (f"@{bet.get('book', '?')} {int(bet.get('odds', 0)):+d}  "
+                  f"edge={float(bet.get('edge_pct', 0)):.2f}%  "
+                  f"stake=${float(bet.get('kelly_stake_$', 0)):.2f}")
+        alert(
+            headline,
+            level="critical",
+            tag="auto_place_daemon",
+            source="auto_place_daemon",
+            body=detail,
+            fields=[{"name": "kelly_pct", "value": f"{bet.get('kelly_pct_used', '?')}%"},
+                    {"name": "model_prob", "value": str(bet.get('model_prob', '?'))}],
+        )
     except Exception:
         pass  # never block live placement on push-notify failure
 
