@@ -1,0 +1,60 @@
+{
+  "probe": "R12_B16_all4_avg_home_cover_AH3",
+  "kind": "binary",
+  "label": "home_cover_AH3",
+  "label_desc": "P(home covers -3)",
+  "n_games": 2836,
+  "pos_rate": 0.6297602256699577,
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2327 (-18.02%); AUC 0.6993",
+  "pooled_lgb_brier": 0.23267,
+  "pooled_naive_brier": 0.28382,
+  "pooled_lgb_auc": 0.69932,
+  "brier_delta_pct": -18.023,
+  "n_valid_folds": 3,
+  "beat_canonical": false,
+  "canonical_src": "B15 top4_avg",
+  "variant": {
+    "variant": "all4_avg",
+    "archs": [
+      "lgb",
+      "xgb",
+      "hgb"
+    ],
+    "fc_used": "intersection",
+    "weights_per_fold": [
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ]
+    ],
+    "archs_used_per_fold": [
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ],
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ],
+      [
+        "lgb",
+        "xgb",
+        "hgb"
+      ]
+    ]
+  }
+}
