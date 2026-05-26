@@ -1,0 +1,8 @@
+game_id,shot_id,frame,timestamp,player_id,player_name,team,x_position,y_position,court_zone,defender_distance,team_spacing,possession_id,possession_duration,made,shot_clock,contest_arm_angle,closeout_speed,fatigue_proxy
+0022400852,1,100,3.3,7,Player A,GSW,200,150,paint,3.5,12000.0,1,120,,14.0,32.5,4.2,870.0
+0022400852,2,210,7.0,8,Player B,BOS,450,250,mid_range,12.0,11500.0,2,180,,8.5,28.0,3.1,1050.0
+0022400852,3,350,11.7,7,Player A,GSW,870,130,corner_three,22.5,10800.0,3,200,,5.0,41.0,5.6,2100.0
+0022400852,4,490,16.3,9,Player C,BOS,300,380,paint,2.1,9500.0,4,90,,21.0,18.5,2.8,680.0
+0022400852,5,620,20.7,10,Player D,GSW,750,480,wing_three,18.0,13200.0,5,150,,12.0,35.0,4.9,1420.0
+0022400852,6,780,26.0,11,Player E,BOS,180,240,paint,5.5,10000.0,6,110,,17.5,22.0,3.7,920.0
+0022400852,7,900,30.0,12,Player F,GSW,520,310,mid_range,9.0,11000.0,7,160,,9.5,29.5,4.0,1180.0

@@ -119,8 +119,12 @@ def audit_game(game_id):
             reader = csv.DictReader(f)
             bt_rows = list(reader)
         if bt_rows:
-            detected = sum(1 for r in bt_rows if r.get("ball_detected") == "1" or r.get("ball_detected") == "True")
-            pct = detected / len(bt_rows)
+            # CSV schema uses "detected" column (not "ball_detected") — matches
+            # unified_pipeline._export_ball_csv() fieldnames.
+            live_rows = [r for r in bt_rows if str(r.get("live", "1")) == "1"]
+            denom = live_rows if live_rows else bt_rows
+            detected = sum(1 for r in denom if str(r.get("detected", "0")).strip() == "1")
+            pct = detected / len(denom)
             details["ball_detect_pct"] = round(pct, 3)
         else:
             details["ball_detect_pct"] = 0.0

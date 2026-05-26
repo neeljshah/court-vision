@@ -129,11 +129,14 @@ def compute_spatial_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Sentinel filter — must run before referee mask so sentinels are cleaned
     # regardless of team.  These values corrupt rolling window stats in ML training.
-    # Covers all distance columns that use 200.0 as a "no data" sentinel.
+    # Distance columns are now in FEET (converted by _px_to_ft in unified_pipeline).
+    # Sentinel: _ISOLATION_DEFAULT was 200.0 px; changed to 99.0 ft (2026-05-26).
+    # Threshold 98.5 ft catches the new 99 ft sentinel (wider than half-court = impossible).
+    # Historic CSVs with old 200 px sentinel will also be caught since 200 > 98.5.
     for col in ("defender_distance", "handler_isolation", "nearest_opponent", "nearest_teammate"):
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
-            df.loc[df[col] >= 199.5, col] = np.nan  # catches 200 as int, float, or near-200
+            df.loc[df[col] >= 98.5, col] = np.nan   # catches 99 ft sentinel (and old 200 px)
             df.loc[df[col] <= 0, col] = np.nan       # 0.0 means "no data", not "touching"
 
     if "team_spacing" in df.columns:

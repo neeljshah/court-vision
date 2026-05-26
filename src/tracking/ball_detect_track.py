@@ -375,6 +375,15 @@ class BallDetectTrack:
             best_i = int(confs.argmax())
             xyxy = xyxy_all[best_i]
             x1, y1, x2, y2 = int(xyxy[0]), int(xyxy[1]), int(xyxy[2]), int(xyxy[3])
+            # Clip bbox to frame bounds before computing centre — YOLO at imgsz=384
+            # upscales coords to 640×300; balls near the edge produce cy±radius values
+            # that overflow the crop, triggering the degenerate-bbox guard at
+            # ball_tracker():596 and causing ~4% unnecessary detection discards.
+            fh, fw = frame.shape[:2]
+            x1 = max(0, x1); y1 = max(0, y1)
+            x2 = min(fw, x2); y2 = min(fh, y2)
+            if x2 <= x1 or y2 <= y1:
+                return None
             cx = (x1 + x2) // 2
             cy = (y1 + y2) // 2
             radius = max(1, ((x2 - x1) + (y2 - y1)) // 4)
