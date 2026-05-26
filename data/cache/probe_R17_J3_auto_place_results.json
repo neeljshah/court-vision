@@ -1,0 +1,527 @@
+{
+  "daemon_pid": 1706206,
+  "slate": "sas_okc_2026-05-26",
+  "live": false,
+  "started_at": "2026-05-26T14:06:55.180094+00:00",
+  "ticks_observed": 3,
+  "bets_fired": 6,
+  "bets_skipped": 9,
+  "fired_records": [
+    {
+      "ts": "2026-05-26T14:06:57.186742+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "fd",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 196,
+        "implied_prob": 0.3378,
+        "model_prob": 0.7395,
+        "edge_pct": 40.17,
+        "ev_per_dollar": 1.1889,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 9s old (captured_at=2026-05-26T14:06:53)",
+        "[DRY-RUN] FANDUEL - Keldon Johnson REB OVER 3.5 @ +196",
+        "Stake: $50.00",
+        "Potential payout: $148.00 (profit $+98.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    },
+    {
+      "ts": "2026-05-26T14:06:57.186742+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "pin",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 160,
+        "implied_prob": 0.3846,
+        "model_prob": 0.7395,
+        "edge_pct": 35.49,
+        "ev_per_dollar": 0.9227,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 70s old (captured_at=2026-05-26T14:06)",
+        "[DRY-RUN] PINNACLE - Keldon Johnson REB OVER 3.5 @ +160",
+        "Stake: $50.00",
+        "Potential payout: $130.00 (profit $+80.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    },
+    {
+      "ts": "2026-05-26T14:07:57.439462+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "fd",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 196,
+        "implied_prob": 0.3378,
+        "model_prob": 0.7395,
+        "edge_pct": 40.17,
+        "ev_per_dollar": 1.1889,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 10s old (captured_at=2026-05-26T14:07:53)",
+        "[DRY-RUN] FANDUEL - Keldon Johnson REB OVER 3.5 @ +196",
+        "Stake: $50.00",
+        "Potential payout: $148.00 (profit $+98.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    },
+    {
+      "ts": "2026-05-26T14:07:57.439462+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "pin",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 160,
+        "implied_prob": 0.3846,
+        "model_prob": 0.7395,
+        "edge_pct": 35.49,
+        "ev_per_dollar": 0.9227,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 72s old (captured_at=2026-05-26T14:07)",
+        "[DRY-RUN] PINNACLE - Keldon Johnson REB OVER 3.5 @ +160",
+        "Stake: $50.00",
+        "Potential payout: $130.00 (profit $+80.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    },
+    {
+      "ts": "2026-05-26T14:08:57.248451+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "fd",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 196,
+        "implied_prob": 0.3378,
+        "model_prob": 0.7395,
+        "edge_pct": 40.17,
+        "ev_per_dollar": 1.1889,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 7s old (captured_at=2026-05-26T14:08:54)",
+        "[DRY-RUN] FANDUEL - Keldon Johnson REB OVER 3.5 @ +196",
+        "Stake: $50.00",
+        "Potential payout: $148.00 (profit $+98.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    },
+    {
+      "ts": "2026-05-26T14:08:57.248451+00:00",
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "pin",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 160,
+        "implied_prob": 0.3846,
+        "model_prob": 0.7395,
+        "edge_pct": 35.49,
+        "ev_per_dollar": 0.9227,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "dry_run": true,
+      "rc": 0,
+      "place_bet_output": [
+        "[ok] line-validator: valid: snapshot 10s old (captured_at=2026-05-26T14:09)",
+        "[DRY-RUN] PINNACLE - Keldon Johnson REB OVER 3.5 @ +160",
+        "Stake: $50.00",
+        "Potential payout: $130.00 (profit $+80.00)",
+        "Model pred: 5.17  |  P(win)=0.740  |  Kelly=5.00%",
+        "Bet ID: DRY-RUN-PREVIEW",
+        "[ok] dry-run: ledger NOT modified, stake within 5.0% cap"
+      ],
+      "fired": true,
+      "blocked_by": null
+    }
+  ],
+  "last_tick_results": [
+    {
+      "bet": {
+        "player": "Victor Wembanyama",
+        "stat": "blk",
+        "side": "UNDER",
+        "book": "bov",
+        "line": 2.5,
+        "model_q50": 2.04,
+        "model_q10": 0.0,
+        "model_q90": 1.14,
+        "odds": 200,
+        "implied_prob": 0.3333,
+        "model_prob": 0.844,
+        "edge_pct": 51.07,
+        "ev_per_dollar": 1.5321,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "\u2193LINE",
+        "stale": false
+      },
+      "all_passed": false,
+      "gates": [
+        {
+          "gate": "edge",
+          "ok": true,
+          "reason": "edge_pct=51.07% >= floor=8.00%"
+        },
+        {
+          "gate": "model_confirmed",
+          "ok": true,
+          "reason": "q50 dev 1.03sigma >= 0.5sigma (q50=2.04, line=2.50, sigma=0.44)"
+        },
+        {
+          "gate": "line_validator",
+          "ok": false,
+          "reason": "line_validator: quantile crossing: q10=0.0, q50=2.04, q90=1.14"
+        },
+        {
+          "gate": "bankroll",
+          "ok": true,
+          "reason": "stake $50.00 within per-bet $50.00 and daily $250.00 (post=$50.00)"
+        },
+        {
+          "gate": "dedupe",
+          "ok": true,
+          "reason": "no open duplicate"
+        },
+        {
+          "gate": "tip_time",
+          "ok": true,
+          "reason": "621.0min until tip (>= 30min buffer)"
+        },
+        {
+          "gate": "injury",
+          "ok": true,
+          "reason": "injury status=NOT_LISTED (assume AVAILABLE)"
+        }
+      ],
+      "blocked_by": [
+        "line_validator"
+      ]
+    },
+    {
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "fd",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 196,
+        "implied_prob": 0.3378,
+        "model_prob": 0.7395,
+        "edge_pct": 40.17,
+        "ev_per_dollar": 1.1889,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "all_passed": true,
+      "gates": [
+        {
+          "gate": "edge",
+          "ok": true,
+          "reason": "edge_pct=40.17% >= floor=8.00%"
+        },
+        {
+          "gate": "model_confirmed",
+          "ok": true,
+          "reason": "q50 dev 0.65sigma >= 0.5sigma (q50=5.17, line=3.50, sigma=2.56)"
+        },
+        {
+          "gate": "line_validator",
+          "ok": true,
+          "reason": "line_validator: ok"
+        },
+        {
+          "gate": "bankroll",
+          "ok": true,
+          "reason": "stake $50.00 within per-bet $50.00 and daily $250.00 (post=$50.00)"
+        },
+        {
+          "gate": "dedupe",
+          "ok": true,
+          "reason": "no open duplicate"
+        },
+        {
+          "gate": "tip_time",
+          "ok": true,
+          "reason": "621.0min until tip (>= 30min buffer)"
+        },
+        {
+          "gate": "injury",
+          "ok": true,
+          "reason": "injury status=NOT_LISTED (assume AVAILABLE)"
+        }
+      ],
+      "blocked_by": []
+    },
+    {
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "bov",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 165,
+        "implied_prob": 0.3774,
+        "model_prob": 0.7395,
+        "edge_pct": 36.21,
+        "ev_per_dollar": 0.9597,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "\u2191LINE",
+        "stale": false
+      },
+      "all_passed": true,
+      "gates": [
+        {
+          "gate": "edge",
+          "ok": true,
+          "reason": "edge_pct=36.21% >= floor=8.00%"
+        },
+        {
+          "gate": "model_confirmed",
+          "ok": true,
+          "reason": "q50 dev 0.65sigma >= 0.5sigma (q50=5.17, line=3.50, sigma=2.56)"
+        },
+        {
+          "gate": "line_validator",
+          "ok": true,
+          "reason": "line_validator: ok"
+        },
+        {
+          "gate": "bankroll",
+          "ok": true,
+          "reason": "stake $50.00 within per-bet $50.00 and daily $250.00 (post=$100.00)"
+        },
+        {
+          "gate": "dedupe",
+          "ok": true,
+          "reason": "no open duplicate"
+        },
+        {
+          "gate": "tip_time",
+          "ok": true,
+          "reason": "621.0min until tip (>= 30min buffer)"
+        },
+        {
+          "gate": "injury",
+          "ok": true,
+          "reason": "injury status=NOT_LISTED (assume AVAILABLE)"
+        }
+      ],
+      "blocked_by": []
+    },
+    {
+      "bet": {
+        "player": "Keldon Johnson",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "pin",
+        "line": 3.5,
+        "model_q50": 5.17,
+        "model_q10": 2.13,
+        "model_q90": 8.68,
+        "odds": 160,
+        "implied_prob": 0.3846,
+        "model_prob": 0.7395,
+        "edge_pct": 35.49,
+        "ev_per_dollar": 0.9227,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "",
+        "stale": false
+      },
+      "all_passed": true,
+      "gates": [
+        {
+          "gate": "edge",
+          "ok": true,
+          "reason": "edge_pct=35.49% >= floor=8.00%"
+        },
+        {
+          "gate": "model_confirmed",
+          "ok": true,
+          "reason": "q50 dev 0.65sigma >= 0.5sigma (q50=5.17, line=3.50, sigma=2.56)"
+        },
+        {
+          "gate": "line_validator",
+          "ok": true,
+          "reason": "line_validator: ok"
+        },
+        {
+          "gate": "bankroll",
+          "ok": true,
+          "reason": "stake $50.00 within per-bet $50.00 and daily $250.00 (post=$150.00)"
+        },
+        {
+          "gate": "dedupe",
+          "ok": true,
+          "reason": "no open duplicate"
+        },
+        {
+          "gate": "tip_time",
+          "ok": true,
+          "reason": "621.0min until tip (>= 30min buffer)"
+        },
+        {
+          "gate": "injury",
+          "ok": true,
+          "reason": "injury status=NOT_LISTED (assume AVAILABLE)"
+        }
+      ],
+      "blocked_by": []
+    },
+    {
+      "bet": {
+        "player": "Shai Gilgeous-Alexander",
+        "stat": "reb",
+        "side": "OVER",
+        "book": "fd",
+        "line": 5.5,
+        "model_q50": 5.35,
+        "model_q10": 2.12,
+        "model_q90": 7.87,
+        "odds": 290,
+        "implied_prob": 0.2564,
+        "model_prob": 0.4738,
+        "edge_pct": 21.74,
+        "ev_per_dollar": 0.8477,
+        "kelly_pct_used": 5.0,
+        "kelly_stake_$": 50.0,
+        "line_move": "\u2191LINE",
+        "stale": false
+      },
+      "all_passed": false,
+      "gates": [
+        {
+          "gate": "edge",
+          "ok": true,
+          "reason": "edge_pct=21.74% >= floor=8.00%"
+        },
+        {
+          "gate": "model_confirmed",
+          "ok": false,
+          "reason": "|q50-line|/sigma = 0.07 < 0.5sigma (q50=5.35, line=5.50, sigma=2.24)"
+        },
+        {
+          "gate": "line_validator",
+          "ok": true,
+          "reason": "line_validator: ok"
+        },
+        {
+          "gate": "bankroll",
+          "ok": true,
+          "reason": "stake $50.00 within per-bet $50.00 and daily $250.00 (post=$200.00)"
+        },
+        {
+          "gate": "dedupe",
+          "ok": true,
+          "reason": "no open duplicate"
+        },
+        {
+          "gate": "tip_time",
+          "ok": true,
+          "reason": "621.0min until tip (>= 30min buffer)"
+        },
+        {
+          "gate": "injury",
+          "ok": true,
+          "reason": "injury status=NOT_LISTED (assume AVAILABLE)"
+        }
+      ],
+      "blocked_by": [
+        "model_confirmed"
+      ]
+    }
+  ]
+}
