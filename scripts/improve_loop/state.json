@@ -1,5 +1,5 @@
 {
-  "rounds_completed": 45,
+  "rounds_completed": 46,
   "ships": [
     {
       "name": "110_learned_q4_minutes",
@@ -693,6 +693,15 @@
       "commit": "pending-wire",
       "date": "2026-05-26",
       "summary": "BATCH-32 (in-play honest re-baseline on current 4910-game dataset - ALL 4 IMPROVED). Dataset grew 2839 -> 4910 (+2071 games since B14).\nPer-target HONEST LIVE (Platt/isotonic calibrated, 4-fold WF, leak-free):\n  endQ1 winprob:  Brier 0.1994 (frozen 0.2042, drift -0.00478 BETTER); AUC 0.7610 (frozen 0.7500, +0.0110 BETTER)\n  endQ2 winprob:  Brier 0.1681 (frozen 0.1736, drift -0.00552 BETTER); AUC 0.8331 (frozen 0.8212, +0.0119 BETTER)\n  endQ3 winprob:  Brier 0.1249 (frozen 0.1277, drift -0.00280 BETTER); AUC 0.9053 (frozen 0.9012, +0.00415 BETTER)\n  remaining_total: -25.57% (frozen -25.65%, drift +0.08pp tied)\nARCHITECTURAL FINDING: simpler B14 in-play architecture (no perm-importance trim, just snapshot features + Platt calibration) SCALES BETTER with more data than the perm-importance-trimmed pregame canonicals. Three reasons:\n1. cum_score features directly observed dominate prediction power - no leakage risk\n2. B14 had no trim selection (which was the source of pregame inflation in B19/B21)\n3. More games = better-fit Platt calibrator AND better-fit underlying model\nBoth effects compound. Contrast with pregame B21 finding where the same +2000 games\nREVEALED leakage inflation rather than improving honest performance.\nSTRATEGIC IMPLICATION: production canonical for in-play markets is even BETTER than\nreported in CLAUDE memory + state.json - update production reference numbers:\n  endQ1: Brier 0.1994 AUC 0.7610 NEW HONEST BEST\n  endQ2: Brier 0.1681 AUC 0.8331 NEW HONEST BEST\n  endQ3: Brier 0.1249 AUC 0.9053 NEW HONEST BEST\n  remaining_total endQ2: -25.57% (essentially unchanged)\nThe B30 serialized bundles used full-data fits and benefit from this. The bundles\nare usable as-is; only the reported metrics need updating.\nStop counter UNCHANGED at 2/5 (re-baseline doesn't count toward stop)."
+    },
+    {
+      "name": "R12_BATCH33_predict_game_cli",
+      "round": 12,
+      "delta_pts": 0.0,
+      "stats_won": 3,
+      "commit": "pending-wire",
+      "date": "2026-05-26",
+      "summary": "BATCH-33 (drop-in CLI utility - 3/3 PASS). Dataset 4910 games.\nNEW MODULE: src/prediction/r12_predict_game_cli.py\nUsage:\n  python -m src.prediction.r12_predict_game_cli --tail 5\n  python -m src.prediction.r12_predict_game_cli --tail 5 --snap-q 2\n  python -m src.prediction.r12_predict_game_cli --game-id 0022501188\nOutputs per-game tabular predictions across all 6 pregame markets + optional in-play\n(winprob + remaining_total at end of selected quarter). Binary markets show P(yes)\nand breakeven decimal odds (1/p). Uses ASCII-only output (cp1252 safe).\nSMOKE RESULTS (3/3 PASS):\n  --tail 5 pregame only:        5.3s, exit 0, 6/6 markets, 5 games\n  --tail 5 --snap-q 2:          5.4s, exit 0, in-play markets confirmed\n  --game-id 0022501188:         5.7s, exit 0, single game scoped correctly\nPRODUCTION HANDOFF COMPLETE - any user can now run a single command to get all\nR12 predictions for any game. No legacy scripts/predict_game.py touched per the\nownership boundary (which is shared with Session-other).\nStop counter UNCHANGED at 2/5 (CLI batch doesn't count)."
     }
   ],
   "rejects": [

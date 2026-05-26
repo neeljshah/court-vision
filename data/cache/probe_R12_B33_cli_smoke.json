@@ -1,0 +1,31 @@
+{
+  "n_total": 3,
+  "n_pass": 3,
+  "all_pass": true,
+  "results": [
+    {
+      "variant": "pregame_only",
+      "exit_code": 0,
+      "elapsed_s": 5.3,
+      "markets_seen": 6,
+      "games_seen": 5,
+      "pass": true
+    },
+    {
+      "variant": "pregame_plus_inplay_q2",
+      "exit_code": 0,
+      "elapsed_s": 5.4,
+      "has_inplay_markets": true,
+      "games_seen": 5,
+      "pass": true
+    },
+    {
+      "variant": "single_game_id",
+      "game_id": "0022501188",
+      "exit_code": 0,
+      "elapsed_s": 5.7,
+      "pass": true
+    }
+  ],
+  "elapsed_s": 16.4
+}
