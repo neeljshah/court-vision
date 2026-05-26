@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -40,6 +41,14 @@ from pathlib import Path
 from typing import Dict, Optional
 
 import pandas as pd
+
+# R19_L3 heartbeat import
+try:
+    from src.monitor.daemon_heartbeat import write_heartbeat as _r19_hb
+except Exception:
+    def _r19_hb(_name):
+        return False
+
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 LEDGER_PATH = PROJECT_DIR / "data" / "pnl_ledger.csv"
@@ -49,6 +58,15 @@ ALERTS_PATH = PROJECT_DIR / "vault" / "Improvements" / "risk_alerts.md"
 
 SETTLED_STATUSES = {"won", "lost", "push", "settled"}
 PENDING_STATUSES = {"pending", "open"}
+
+# R19_L8 — synthetic-row filter for bankroll/ROI dashboards.
+# Synthetic rows are produced by build_pnl_ledger_synth.py: player matches
+# ^Player_\d+$ AND book == "PP" AND american_odds == -119. Real bets have
+# real player names + real book codes.
+SYNTH_PLAYER_RE = re.compile(r"^Player_\d+$")
+SYNTH_BOOK = "PP"
+DEFAULT_LIVE_LAUNCH_DATE = "2026-05-25"  # live-pipeline launch
+ENV_EXCLUDE_SYNTH = "BANKROLL_EXCLUDE_SYNTHETIC"
 
 # Alarm thresholds
 KELLY_OVERHANG_URGENT = 0.30
@@ -63,6 +81,90 @@ MAX_DD_STOP = 0.30
 def _parse_placed_at(series: pd.Series) -> pd.Series:
     """Robustly parse mixed-format placed_at strings to UTC tz-aware."""
     return pd.to_datetime(series, errors="coerce", utc=True)
+
+
+def is_synthetic_row(row: pd.Series) -> bool:
+    """Return True if a single ledger row was produced by build_pnl_ledger_synth."""
+    player = str(row.get("player", "") or "")
+    book = str(row.get("book", "") or "")
+    return bool(SYNTH_PLAYER_RE.match(player)) and book == SYNTH_BOOK
+
+
+def filter_ledger(
+    ledger: pd.DataFrame,
+    *,
+    exclude_synthetic: bool = False,
+    start_date: Optional[str] = None,
+) -> Dict:
+    """Apply synthetic + date filters to a ledger DataFrame.
+
+    Returns ``{"filtered": df, "n_total": int, "n_synth_excluded": int,
+    "n_date_excluded": int, "n_kept": int}``.
+
+    Pure / deterministic — used by tests + daemon. Does NOT mutate input.
+    """
+    if ledger.empty:
+        return {
+            "filtered": ledger,
+            "n_total": 0,
+            "n_synth_excluded": 0,
+            "n_date_excluded": 0,
+            "n_kept": 0,
+        }
+    df = ledger.copy()
+    n_total = len(df)
+
+    # Synthetic filter
+    if exclude_synthetic:
+        player = df.get("player", pd.Series([""] * len(df))).astype(str)
+        book = df.get("book", pd.Series([""] * len(df))).astype(str)
+        synth_mask = player.str.match(SYNTH_PLAYER_RE) & (book == SYNTH_BOOK)
+        n_synth_excluded = int(synth_mask.sum())
+        df = df.loc[~synth_mask].copy()
+    else:
+        n_synth_excluded = 0
+
+    # Date filter
+    n_date_excluded = 0
+    if start_date:
+        placed = _parse_placed_at(df["placed_at"])
+        try:
+            cutoff = pd.Timestamp(start_date, tz="UTC")
+        except Exception:  # noqa: BLE001
+            cutoff = pd.Timestamp(start_date).tz_localize("UTC")
+        keep_mask = placed.isna() | (placed >= cutoff)
+        n_date_excluded = int((~keep_mask).sum())
+        df = df.loc[keep_mask].copy()
+
+    return {
+        "filtered": df,
+        "n_total": n_total,
+        "n_synth_excluded": n_synth_excluded,
+        "n_date_excluded": n_date_excluded,
+        "n_kept": int(len(df)),
+    }
+
+
+def compute_roi(ledger: pd.DataFrame) -> Dict:
+    """Compute ROI (= sum(profit_loss) / sum(stake)) over settled bets only."""
+    if ledger.empty:
+        return {"n_bets": 0, "total_stake": 0.0, "total_pnl": 0.0, "roi_pct": 0.0}
+    df = ledger.copy()
+    df["status"] = df["status"].astype(str).str.lower().str.strip()
+    settled = df[df["status"].isin(SETTLED_STATUSES)]
+    if settled.empty:
+        return {"n_bets": 0, "total_stake": 0.0, "total_pnl": 0.0, "roi_pct": 0.0}
+    stake = pd.to_numeric(settled["stake"], errors="coerce").fillna(0.0)
+    pnl = pd.to_numeric(settled["profit_loss"], errors="coerce").fillna(0.0)
+    total_stake = float(stake.sum())
+    total_pnl = float(pnl.sum())
+    roi_pct = (total_pnl / total_stake * 100.0) if total_stake > 0 else 0.0
+    return {
+        "n_bets": int(len(settled)),
+        "total_stake": total_stake,
+        "total_pnl": total_pnl,
+        "roi_pct": roi_pct,
+    }
 
 
 def compute_metrics(ledger: pd.DataFrame, start_bankroll: float,
@@ -312,9 +414,25 @@ def load_ledger(path: Path) -> pd.DataFrame:
 
 def tick(start_bankroll: float, ledger_path: Path = LEDGER_PATH,
          state_path: Path = STATE_PATH, dashboard_path: Path = DASHBOARD_PATH,
-         alerts_path: Path = ALERTS_PATH) -> Dict:
+         alerts_path: Path = ALERTS_PATH,
+         exclude_synthetic: bool = False,
+         start_date: Optional[str] = None) -> Dict:
     ledger = load_ledger(ledger_path)
-    metrics = compute_metrics(ledger, start_bankroll)
+    filt = filter_ledger(ledger, exclude_synthetic=exclude_synthetic,
+                         start_date=start_date)
+    metrics = compute_metrics(filt["filtered"], start_bankroll)
+    roi = compute_roi(filt["filtered"])
+    # R19_L8 — attach filter + ROI metadata so downstream consumers (mobile
+    # HTML / vault) can display "filtered out N synthetic rows".
+    metrics["filter_info"] = {
+        "exclude_synthetic": bool(exclude_synthetic),
+        "start_date": start_date,
+        "n_total": filt["n_total"],
+        "n_synth_excluded": filt["n_synth_excluded"],
+        "n_date_excluded": filt["n_date_excluded"],
+        "n_kept": filt["n_kept"],
+    }
+    metrics["roi"] = roi
     atomic_write_json(state_path, metrics)
     write_dashboard(dashboard_path, metrics)
     append_alerts(alerts_path, metrics)
@@ -327,20 +445,43 @@ def main() -> int:
     p.add_argument("--start-bankroll", type=float, default=1000.0, help="Starting bankroll in $")
     p.add_argument("--once", action="store_true", help="Run one tick then exit")
     p.add_argument("--ledger", type=str, default=str(LEDGER_PATH))
+    # R19_L8 — synthetic/date filters
+    env_default = os.environ.get(ENV_EXCLUDE_SYNTH, "").lower() in ("1", "true", "yes")
+    p.add_argument("--exclude-synthetic", action="store_true", default=env_default,
+                   help=f"Drop synthetic rows produced by build_pnl_ledger_synth.py "
+                        f"(default from env ${ENV_EXCLUDE_SYNTH}={env_default})")
+    p.add_argument("--no-exclude-synthetic", dest="exclude_synthetic",
+                   action="store_false", help="Force-include synthetic rows.")
+    p.add_argument("--start-date", type=str, default=None,
+                   help=f"Drop rows placed before this ISO date (e.g. {DEFAULT_LIVE_LAUNCH_DATE}). "
+                        f"Pass empty string to disable.")
     args = p.parse_args()
+    # Normalize start_date: empty string -> None
+    if args.start_date == "":
+        args.start_date = None
 
     ledger_path = Path(args.ledger)
     print(f"[bankroll-monitor] start_bankroll=${args.start_bankroll:.2f} "
           f"interval={args.interval_sec}s ledger={ledger_path}", flush=True)
+    print(f"[bankroll-monitor] filter exclude_synthetic={args.exclude_synthetic} "
+          f"start_date={args.start_date}", flush=True)
 
     while True:
+        # R19_L3 heartbeat
+        _r19_hb('bankroll_monitor_daemon')
         try:
-            m = tick(args.start_bankroll, ledger_path)
+            m = tick(args.start_bankroll, ledger_path,
+                     exclude_synthetic=args.exclude_synthetic,
+                     start_date=args.start_date)
+            fi = m.get("filter_info", {})
+            roi = m.get("roi", {})
             print(f"[bankroll-monitor] {m['as_of']} "
                   f"current=${m['current_bankroll']:.2f} "
                   f"pending=${m['pending_exposure']:.2f} "
                   f"avail=${m['available_bankroll']:.2f} "
                   f"daily=${m['daily_pnl']:+.2f} "
+                  f"ROI={roi.get('roi_pct', 0):+.2f}% "
+                  f"kept={fi.get('n_kept', 0)}/{fi.get('n_total', 0)} "
                   f"alarms={len(m['alarms'])}", flush=True)
         except Exception as e:
             print(f"[bankroll-monitor] tick failed: {e}", flush=True)

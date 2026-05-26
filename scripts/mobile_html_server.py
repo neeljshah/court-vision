@@ -252,6 +252,37 @@ async def auth_middleware(request: web.Request, handler):
 # --------------------------------------------------------------------------- #
 # Handlers                                                                    #
 # --------------------------------------------------------------------------- #
+def render_filter_banner(bankroll_state: Optional[dict]) -> str:
+    """R19_L8 — render \"filtered out N synthetic rows\" banner."""
+    if not bankroll_state:
+        return ""
+    fi = bankroll_state.get("filter_info") or {}
+    if not fi:
+        return ""
+    n_synth = int(fi.get("n_synth_excluded") or 0)
+    n_date = int(fi.get("n_date_excluded") or 0)
+    n_kept = int(fi.get("n_kept") or 0)
+    n_total = int(fi.get("n_total") or 0)
+    excl = bool(fi.get("exclude_synthetic"))
+    start_date = fi.get("start_date") or ""
+    if not excl and n_date == 0:
+        return ""
+    bits = []
+    if excl:
+        bits.append(f"filtered out {n_synth:,} synthetic rows")
+    if start_date:
+        bits.append(f"dropped {n_date:,} rows before {start_date}")
+    bits.append(f"showing {n_kept:,} of {n_total:,} bets")
+    msg = " • ".join(bits)
+    return (
+        '<div style="background:#161b22;border-left:4px solid #2ea043;'
+        'padding:8px 12px;margin:8px 0;border-radius:6px;'
+        'color:#c9d1d9;font-size:0.9em;">'
+        f'<strong>Bankroll filter (R19_L8):</strong> {msg}'
+        '</div>'
+    )
+
+
 async def handle_index(request: web.Request) -> web.Response:
     md_path: Path = request.app["md_path"]
     if not md_path.exists():
@@ -264,6 +295,13 @@ async def handle_index(request: web.Request) -> web.Response:
 
     refresh = request.app.get("refresh_sec", 30)
     html = render_html(md_text, auto_refresh_sec=refresh, title="NBA Tonight")
+    # R19_L8 — inject filter banner into the rendered HTML if present.
+    bankroll_state = _safe_load_json(request.app["bankroll_path"])
+    banner = render_filter_banner(bankroll_state)
+    if banner:
+        html = html.replace(
+            '<div class="wrap">', f'<div class="wrap">{banner}', 1
+        )
     return web.Response(text=html, content_type="text/html", charset="utf-8")
 
 

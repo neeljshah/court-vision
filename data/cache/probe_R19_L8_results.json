@@ -1,0 +1,19 @@
+{
+  "status": "ship",
+  "n_synth_excluded": 335139,
+  "n_real_kept": 2,
+  "n_date_excluded": 0,
+  "n_total": 335141,
+  "syn_handcount": 335139,
+  "pnl_unfiltered": 3669097.4800000004,
+  "pnl_filtered": 0.0,
+  "roi_unfiltered": 21.895974386746992,
+  "roi_filtered": 0.0,
+  "n_settled_unfiltered": 335139,
+  "n_settled_filtered": 0,
+  "current_bankroll_unfiltered": 3670097.4800000004,
+  "current_bankroll_filtered": 1000.0,
+  "tick_state_has_filter_info": true,
+  "dashboard_excerpt": "# Bankroll Dashboard",
+  "summary": "unfiltered: 335141 rows, PnL=$3,669,097.48, ROI=+21.90% | filtered:   2 rows, PnL=$0.00, ROI=+0.00% | synth excluded: 335139 (hand-count match: 335139) | date excluded:  0 | tick wrote state w/ filter_info + roi: OK"
+}
