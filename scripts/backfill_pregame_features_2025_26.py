@@ -376,6 +376,39 @@ def _apply_pace_calibration(path: str) -> int:
     return 0
 
 
+def _apply_season_shrinkage(path: str) -> int:
+    """R32_Y2 post-pass: shrink the 22 window-artifact features toward the
+    prior-season league mean by ``(1 - elapsed_frac) ** alpha``.
+
+    Window-artifact features (top_lineup_net_rtg, L10 ratings, ELO, etc.)
+    drift_major because the reference distribution is end-of-season-
+    stabilized but the current distribution is mid-season noisy. Shrinkage
+    is a POST-process on existing leak-free values: each row's value is
+    mixed with the historical league mean by a weight that decays with
+    elapsed_frac (n_games_played / 82). Idempotent via
+    ``season_shrinkage_R32_Y2`` marker.
+    """
+    try:
+        from scripts.patch_R32_Y2_season_shrinkage import patch_file as _patch  # type: ignore
+    except Exception:
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from patch_R32_Y2_season_shrinkage import patch_file as _patch  # type: ignore
+    from pathlib import Path as _P
+    sg = _P(path)
+    bk = sg.with_suffix(sg.suffix + ".bak_R32_Y2")
+    res = _patch(sg, backup_path=bk)
+    if res.get("status") == "OK":
+        n = int(res.get("n_rows_patched", 0))
+        nf = int(res.get("n_features", 0))
+        print(f"  [season-shrinkage] shrunk {nf} features across {n} rows")
+        return nf
+    if res.get("status") == "ALREADY_APPLIED":
+        print(f"  [season-shrinkage] already applied — skipping (idempotent)")
+        return 0
+    print(f"  [season-shrinkage] BLOCKED: {res.get('reason','')}")
+    return 0
+
+
 def _apply_residual_drift_fixes(path: str) -> int:
     """R29_V3 post-pass: re-wire synergy fields, sample sim_* from historical
     CDF, and reset pace_variance to historical default.
@@ -489,6 +522,11 @@ def main() -> int:
     # match historical distributions so R27_T3 drift detector compares
     # apples-to-apples.
     _apply_residual_drift_fixes(OUT_PATH)
+    # Fifth pass (R32_Y2): season-progress shrinkage on the 22 window-
+    # artifact features so mid-season noisy values are pulled toward the
+    # historical league mean. Eliminates drift_major caused by comparing
+    # an end-of-season-stabilized reference to a mid-season current window.
+    _apply_season_shrinkage(OUT_PATH)
 
     enriched = sum(1 for r in rows if r.get("home_off_rtg") is not None
                    and "home_off_rtg" in r)

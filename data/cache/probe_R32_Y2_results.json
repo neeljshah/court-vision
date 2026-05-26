@@ -1,0 +1,178 @@
+{
+  "probe": "R32_Y2",
+  "ts": "2026-05-26T19:43:36Z",
+  "data_root": "C:\\Users\\neelj\\nba-ai-system\\data",
+  "current_days": 14,
+  "drift_count_before": 28,
+  "drift_count_after": 22,
+  "drift_count_delta": 6,
+  "n_features_shrunk": 24,
+  "moved_out_of_major_count": 6,
+  "pre_drift": {
+    "n_major": 28,
+    "n_minor": 7,
+    "n_stable": 40,
+    "n_analyzed": 75
+  },
+  "post_drift": {
+    "n_major": 22,
+    "n_minor": 10,
+    "n_stable": 43,
+    "n_analyzed": 75
+  },
+  "per_feature_delta": [
+    {
+      "feature": "away_def_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_def_rtg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_efg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_elo",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_net_rtg_L10",
+      "before": "drift_major",
+      "after": "stable"
+    },
+    {
+      "feature": "away_off_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_off_rtg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_off_rtg_away_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_pace",
+      "before": "drift_major",
+      "after": "drift_minor"
+    },
+    {
+      "feature": "away_top_lineup_net_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_tov_pct",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "away_ts_pct",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "elo_differential",
+      "before": "drift_major",
+      "after": "stable"
+    },
+    {
+      "feature": "home_def_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_def_rtg_L10",
+      "before": "drift_major",
+      "after": "drift_minor"
+    },
+    {
+      "feature": "home_efg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_elo",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_net_rtg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_off_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_off_rtg_L10",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_off_rtg_home_L10",
+      "before": "drift_major",
+      "after": "drift_minor"
+    },
+    {
+      "feature": "home_pace",
+      "before": "drift_major",
+      "after": "stable"
+    },
+    {
+      "feature": "home_top_lineup_net_rtg",
+      "before": "drift_major",
+      "after": "drift_major"
+    },
+    {
+      "feature": "home_ts_pct",
+      "before": "drift_major",
+      "after": "drift_major"
+    }
+  ],
+  "shrunk_features": [
+    "away_def_rtg",
+    "away_def_rtg_L10",
+    "away_efg_L10",
+    "away_elo",
+    "away_net_rtg_L10",
+    "away_off_rtg",
+    "away_off_rtg_L10",
+    "away_off_rtg_away_L10",
+    "away_pace",
+    "away_top_lineup_net_rtg",
+    "away_tov_pct",
+    "away_ts_pct",
+    "elo_differential",
+    "home_def_rtg",
+    "home_def_rtg_L10",
+    "home_efg_L10",
+    "home_elo",
+    "home_net_rtg_L10",
+    "home_off_rtg",
+    "home_off_rtg_L10",
+    "home_off_rtg_home_L10",
+    "home_pace",
+    "home_top_lineup_net_rtg",
+    "home_ts_pct"
+  ],
+  "patch_summary": {
+    "status": "OK",
+    "n_rows_patched": 1230,
+    "n_features": 24
+  },
+  "verdict": "SHIP",
+  "ship_ok": true
+}
