@@ -1,0 +1,33 @@
+{
+  "probe": "R11_M2v57_h1_home_lead1",
+  "kind": "binary",
+  "label": "h1_home_lead1",
+  "label_desc": "P(home leads at half)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2651 (-9.64%); AUC 0.6228",
+  "n_games": 2836,
+  "pos_rate": 0.5363187588152327,
+  "pooled_lgb_brier": 0.26511,
+  "pooled_naive_brier": 0.29339,
+  "pooled_lgb_auc": 0.62278,
+  "brier_delta_pct": -9.639,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.29025,
+      "lgb_brier": 0.28893
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.29758,
+      "lgb_brier": 0.2579
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.29233,
+      "lgb_brier": 0.24849
+    }
+  ],
+  "elapsed_s": 1.1
+}

@@ -1,0 +1,33 @@
+{
+  "probe": "R11_M2v62_home_pts_O110",
+  "kind": "binary",
+  "label": "home_pts_O110",
+  "label_desc": "P(home scores > 110)",
+  "status": "SHIP",
+  "ship_reason": "Brier 0.2523 (-10.99%); AUC 0.6502",
+  "n_games": 2836,
+  "pos_rate": 0.6272919605077574,
+  "pooled_lgb_brier": 0.25226,
+  "pooled_naive_brier": 0.28339,
+  "pooled_lgb_auc": 0.65017,
+  "brier_delta_pct": -10.987,
+  "n_valid_folds": 3,
+  "fold_results": [
+    {
+      "fold": 1,
+      "naive_brier": 0.28057,
+      "lgb_brier": 0.26902
+    },
+    {
+      "fold": 2,
+      "naive_brier": 0.27186,
+      "lgb_brier": 0.21077
+    },
+    {
+      "fold": 3,
+      "naive_brier": 0.29775,
+      "lgb_brier": 0.27698
+    }
+  ],
+  "elapsed_s": 1.1
+}
