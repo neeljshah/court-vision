@@ -442,6 +442,12 @@
       "reason": "Schedule-fatigue features (games_last_10_days, total_miles_last_5_days, altitude_delta, tz_change_proxy, is_b2b, is_b3b, altitude_ft, miles_traveled) added as residual-head inputs at endQ3. All 7 stats regress by +0.06 to +0.15 (huge) in every fold; mean_delta +0.1047. 0/7 stats improving. The residual head with 8 added features overfits per-stat targets and the (proj_base + residual) composition explodes. Likely cause: residual head trained on (actual - proj_base) where proj_base is already a strong learned-Q4 estimate, so the head fits noise; fatigue features add capacity to overfit.",
       "saturated_angle": "schedule-fatigue features as endQ3 residual-head additions (overfits — proj_base+residual composition is unstable when residual head capacity grows)",
       "round": 9
+    },
+    {
+      "name": "R11_M30v3_per_stat_dampener",
+      "reason": "Per-stat dampener computed PER FOLD from training-data ratios (clipped [0.70, 1.10]). Calibration ratios all > 0.91, most > 1.0 (PTS 1.13, REB 1.43, AST 1.21, FG3M 0.92, STL 1.12, BLK 1.35, TOV 1.61) so multipliers clip to 1.10 ceiling and become PROTECTIVE rather than dampening. Result: mean vol delta +0.00727 (WORSE than M30v2's -0.0026), 0/7 stats improving, 0/4 WF folds positive. Definitively confirms selection bias: foul-out players in training set are stars who outscore — using their ratios as multipliers actively hurts predictions because at TEST time we're flagging players LIKELY to foul out (different population from those who actually did).",
+      "saturated_angle": "per-stat ratio-based dampener calibration (selection bias means training-data foul-out ratios are anti-correlated with test-time foul-out impact)",
+      "round": 10
     }
   ],
   "saturated_angles": [
