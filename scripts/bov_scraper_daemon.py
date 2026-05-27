@@ -668,6 +668,19 @@ def fetch_cycle(sports: List[str],
     return summary
 
 
+def scrape_once() -> List[Dict[str, Any]]:
+    """Entry point for parallel_scraper.py.
+
+    Delegates to fetch_cycle() which writes data/lines/<date>_bov.csv directly.
+    Returns [] to prevent parallel_scraper from double-writing the same rows.
+    """
+    try:
+        fetch_cycle(["nba", "wnba", "mlb"])
+    except Exception as exc:  # noqa: BLE001
+        log.warning("bovada scrape_once failed: %s", exc)
+    return []
+
+
 def run_daemon(sports: List[str],
                interval_min: int,
                lines_dir: str = LINES_DIR,
