@@ -41,6 +41,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     feature_columns,
     feature_columns_for,
     apply_garbage_time_haircut,
+    _safe_mlp_scaler_transform,
 )
 from src.prediction.prop_quantiles import _inverse  # noqa: E402
 
@@ -190,7 +191,7 @@ def _predict_blend(stat: str, arts: Dict, feat_row: Dict[str, float]) -> Optiona
     if arts.get("lgb") is not None and w_lgb > 0:
         parts.append(w_lgb * inv(float(arts["lgb"].predict(X)[0])))
     if arts.get("mlp") is not None and arts.get("mlp_scaler") is not None and w_mlp > 0:
-        Xs = arts["mlp_scaler"].transform(X)
+        Xs = _safe_mlp_scaler_transform(arts["mlp_scaler"], X)
         parts.append(w_mlp * inv(float(arts["mlp"].predict(Xs)[0])))
     if not parts:
         return None

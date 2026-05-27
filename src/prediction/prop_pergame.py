@@ -3867,7 +3867,7 @@ def _inject_iter23_features(
 # of the feature columns can legitimately be 0.0 (e.g. is_home=0).
 
 def _safe_mlp_scaler_transform(scaler, X):
-    """NaN-safe StandardScaler.transform with OOD clamping + Iter-2/3 zero-imputation.
+    """NaN-safe StandardScaler.transform with OOD clamping + zero-imputation.
 
     Parameters
     ----------
@@ -3878,10 +3878,16 @@ def _safe_mlp_scaler_transform(scaler, X):
     -------
     X_scaled : np.ndarray of shape (1, n_features) — scaled row
 
-    Three protections applied in order:
+    Four protections applied in order:
       1. Replace NaN with scaler.mean_ (standard imputation).
-      2. Iter-2/3 zero-imputation: when >=80% of the 39 new Iter-2/3 cols are
-         0.0, impute all 39 to scaler.mean_ (parquets not populated for this row).
+      2. Iter-2/3 zero-imputation: when >=80% of the 39 Iter-2/3 cols are
+         0.0, impute all 39 to scaler.mean_ (parquets not populated for row).
+      2b. Generalised zero-imputation (Iter-16a): for ANY feature not already
+         handled by Step 2 where raw=0.0 AND the training mean is far from 0
+         (|mean| >= 4*std, i.e. z_at_0 >= 4.0), impute to scaler.mean_.
+         Fires only for features whose 0 is genuinely OOD — e.g. opp_def_*
+         (mean≈1.0, std≈0.04) — and is safe because legitimate zeros like
+         is_home=0 have mean≈0.5 (ratio < 2) and are untouched.
       3. OOD value clamp: any feature that would produce |z| > 6 after scaling
          is replaced by scaler.mean_ before transform. Guards against bbref_extra
          scale mismatches (Wave-2b drb_pct/trb_pct trained at fraction scale but
@@ -3897,6 +3903,7 @@ def _safe_mlp_scaler_transform(scaler, X):
         X_work[nan_mask] = np.take(scaler.mean_, np.where(nan_mask)[1])
 
     # Step 2: Iter-2/3 zero-imputation heuristic.
+    iter23_imputed_indices: set = set()
     try:
         all_cols = feature_columns()
         iter23_indices = [
@@ -3909,6 +3916,24 @@ def _safe_mlp_scaler_transform(scaler, X):
             if zero_frac >= 0.80:
                 for idx in iter23_indices:
                     X_work[0, idx] = scaler.mean_[idx]
+                    iter23_imputed_indices.add(idx)
+    except Exception:
+        pass
+
+    # Step 2b: generalised zero-imputation for non-Iter-2/3 features.
+    # Impute raw=0.0 to scaler.mean_ when |mean| >= 4*std (z_at_0 >= 4.0).
+    # Only fires when 0.0 is genuinely out-of-distribution for that feature.
+    try:
+        n = min(X_work.shape[1], len(scaler.mean_))
+        for i in range(n):
+            if i in iter23_imputed_indices:
+                continue
+            if X_work[0, i] != 0.0:
+                continue
+            mean_i = scaler.mean_[i]
+            std_i = scaler.scale_[i]
+            if std_i > 1e-9 and abs(mean_i) >= 4.0 * std_i:
+                X_work[0, i] = mean_i
     except Exception:
         pass
 
