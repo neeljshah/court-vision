@@ -72,13 +72,13 @@ def build_name_lookup() -> dict[tuple[str, str, str], int]:
     """
     Returns {(last_name_pbp, team_abbrev, game_id): player_id}.
     Falls back to (last_name, game_id) if team_abbrev fails.
+
+    Sources (merged so older seasons are covered):
+      1. player_pf.parquet — has team_abbreviation; covers 2024-25
+      2. player_adv_stats.parquet — no team_abbrev; covers 2022-23..2024-25
+         → populates the 2-key fallback for older games
     """
-    pf = pd.read_parquet(PF_PATH)
     pos = pd.read_parquet(POS_PATH)
-    df = pf[["player_id", "game_id", "game_date", "team_abbreviation"]].merge(
-        pos[["player_id", "display_name"]], on="player_id", how="left"
-    )
-    df["display_name"] = df["display_name"].fillna("")
 
     def pbp_last(name: str) -> str:
         """Extract the last-name token as it appears in PBP (last name + suffix)."""
@@ -91,16 +91,36 @@ def build_name_lookup() -> dict[tuple[str, str, str], int]:
             return " ".join(parts[-2:])   # e.g. "Carter Jr."
         return parts[-1]                  # e.g. "Tatum", "Caldwell-Pope"
 
-    df["last_name"] = df["display_name"].apply(pbp_last)
-
     lookup: dict[tuple[str, str, str], int] = {}
-    for _, row in df.iterrows():
-        key3 = (row["last_name"], row["team_abbreviation"], row["game_id"])
-        key2 = (row["last_name"], row["game_id"])
-        pid = int(row["player_id"])
-        # Prefer (last, team, game) — uniquely identifies most players
-        lookup.setdefault(key3, pid)
-        lookup.setdefault(key2, pid)   # fallback (may collide for same-surname teammates)
+
+    # --- Source 1: player_pf (has team_abbreviation) ---
+    if PF_PATH.exists():
+        pf = pd.read_parquet(PF_PATH)
+        df = pf[["player_id", "game_id", "team_abbreviation"]].merge(
+            pos[["player_id", "display_name"]], on="player_id", how="left"
+        )
+        df["display_name"] = df["display_name"].fillna("")
+        df["last_name"] = df["display_name"].apply(pbp_last)
+        for _, row in df.iterrows():
+            key3 = (row["last_name"], row["team_abbreviation"], row["game_id"])
+            key2 = (row["last_name"], row["game_id"])
+            pid = int(row["player_id"])
+            lookup.setdefault(key3, pid)
+            lookup.setdefault(key2, pid)
+
+    # --- Source 2: player_adv_stats (covers 2022-23..2024-25; no team_abbrev) ---
+    # Only populate the 2-key fallback for games not already covered.
+    ADV_PATH = ROOT / "data" / "player_adv_stats.parquet"
+    if ADV_PATH.exists():
+        adv = pd.read_parquet(ADV_PATH, columns=["player_id", "game_id"])
+        adv = adv.merge(pos[["player_id", "display_name"]], on="player_id", how="left")
+        adv["display_name"] = adv["display_name"].fillna("")
+        adv["last_name"] = adv["display_name"].apply(pbp_last)
+        for _, row in adv.iterrows():
+            key2 = (row["last_name"], row["game_id"])
+            pid = int(row["player_id"])
+            lookup.setdefault(key2, pid)   # don't overwrite pf-sourced entries
+
     return lookup
 
 
@@ -300,14 +320,27 @@ def main() -> None:
     lookup = build_name_lookup()
     print(f"  Name lookup entries: {len(lookup):,}")
 
-    # Load game_date from player_pf (game_id -> game_date)
-    pf = pd.read_parquet(PF_PATH)
-    game_date_map: dict[str, str] = (
-        pf.drop_duplicates("game_id")
-        .set_index("game_id")["game_date"]
-        .astype(str)
-        .to_dict()
-    )
+    # Load game_date from player_pf + player_adv_stats (covers 2022-23..present)
+    game_date_map: dict[str, str] = {}
+
+    # Source 1: player_adv_stats — covers 2022-23, 2023-24, 2024-25
+    ADV_PATH = ROOT / "data" / "player_adv_stats.parquet"
+    if ADV_PATH.exists():
+        adv_gd = pd.read_parquet(ADV_PATH, columns=["game_id", "game_date"])
+        adv_gd = adv_gd.drop_duplicates("game_id").set_index("game_id")["game_date"].astype(str)
+        game_date_map.update(adv_gd.to_dict())
+        print(f"  game_date_map from player_adv_stats: {len(game_date_map):,} games")
+
+    # Source 2: player_pf — overrides with most authoritative dates for 2024-25
+    if PF_PATH.exists():
+        pf = pd.read_parquet(PF_PATH)
+        pf_gd = (
+            pf.drop_duplicates("game_id")
+            .set_index("game_id")["game_date"]
+            .astype(str)
+        )
+        game_date_map.update(pf_gd.to_dict())
+        print(f"  game_date_map after player_pf merge: {len(game_date_map):,} games")
 
     # Group PBP files by game_id
     all_files = sorted(glob.glob(PBP_GLOB))
