@@ -12,6 +12,66 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-21: Edge shrinkage + threshold sweep both INCONCLUSIVE (2026-05-27)
+
+**What was tested (Candidate A — edge shrinkage):**
+Fitted OLS slope (actual_margin ~ predicted_edge) on playoffs_2024 training slice, applied to all 4 eval slices.
+Fitted slopes: PTS=0.24, AST=0.30, REB=0.38, FG3M=0.55, STL=0.67, BLK=0.68.
+All slopes < 1 = model IS overconfident. But applying fitted slopes halves bet volume.
+Aggregate result: +1.35pp ROI (6836→3303 bets). Decision: INCONCLUSIVE.
+
+**What was tested (Candidate C — threshold sweep):**
+Swept [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0] across all 4 slices for every stat.
+Best ROI% improvements: STL@0.5→71.60%/+36.68% (vs 0.1→+16.95%), AST@1.0→+14.39%, REB@1.0→+13.64%.
+BUT: higher thresholds cut volume 30-65%. Aggregate delta: +0.03pp. Decision: INCONCLUSIVE.
+
+**Root cause:** Both approaches trade volume for quality at 1:1+ rate. Reducing bets by 50% to gain 1-2pp ROI is not additive to total PnL. The model is at the ceiling where quality filtering can't improve aggregate units without a fundamentally better signal.
+
+**Key diagnostics captured:**
+- STL at threshold=0.5 is genuinely elite (71.6% hit / +36.7% ROI) but only 257 bets vs 1141 at 0.10. The threshold was lowered in Iter-14a to capture volume — that was correct.
+- FG3M already high-quality (+23.95% ROI) — threshold raise just concentrates on fewer obvious edges.
+- Fixed slope=0.75 is more practical than fitted slopes but still only +0.50pp aggregate; not enough.
+
+**Where the next 1-2% ROI must come from:** Live injury/lineup data (adjusting predictions post-lineup), real sportsbook lines (not L5-proxy), or CV defender_distance features at scale. NOT threshold tuning or calibration — that ceiling is confirmed here.
+
+**Cache artifacts:** `data/cache/iter21_edge_shrinkage.json`, `data/cache/iter21_threshold_sweep.json`
+
+---
+
+## Iter-17: gamelog_full 14-col rolling probe REVERTED (2026-05-27)
+**What was tried:** Wire 14 new per-game rolling features from `gamelog_full_*.json` (2,173 files) — `gl_oreb_l5/l10`, `gl_dreb_l5/l10`, `gl_fga_l5/l10`, `gl_fg_pct_l10/ewma`, `gl_fta_l5/l10`, `gl_ft_pct_l10`, `gl_plus_minus_l5/ewma`, `gl_pf_l5`. Shift(1).rolling discipline, keyed by `(player_id, game_date_ISO)`, 99,157 lookup entries across all seasons.
+
+**Results:** Validation-split MAE improved 6/7 stats (pts -0.15, stl -0.09, fg3m -0.07, tov -0.07, reb -0.03, ast -0.02) but OOS 4-slice backtest_holdout showed ROI regression in ALL stats (pts -2.3pp, ast -7.9pp, reb -4.3pp, fg3m -1.0pp, stl -2.3pp, blk -1.3pp). Decision: REVERT.
+
+**Root cause hypothesis:** 14 new features add dimensionality that the XGB/LGB models use to fit within-distribution noise rather than generalize. The train MAE gains come from memorizing patterns in the training distribution that don't hold on the playoff OOS slice. This is the "feature expansion overfitting" pattern identical to Iter-5 (hustle/on_off) and Iter-9/10a (season-level features).
+
+**Infrastructure kept intact** in `src/prediction/prop_pergame.py`:
+- `_GAMELOG_FULL_FEATURE_KEYS` (14 keys), `_GAMELOG_FULL_DEFAULTS` — defined but not in `feature_columns()`
+- `build_gamelog_full_rolling()` / `_get_gamelog_full_rolling()` — build & cache available for future probe
+- All wire-in calls commented out with `# DISABLED (REVERT 2026-05-27)` markers
+
+**Recommended next probe direction:** Feature selection — probe only the 2-3 highest-signal keys (`gl_fga_l5`, `gl_plus_minus_l5`) with explicit regularization increase (lower `colsample_bytree`) to prevent overfitting. Or combine with per-position stratification so the oreb/dreb features only activate for bigs.
+
+---
+
+## Iter-16a: WF backtest was bypassing _safe_mlp_scaler_transform (2026-05-27)
+**Root cause:** `backtest_rs_wf_all_stats_iter13.py → _predict_blend()` called `arts["mlp_scaler"].transform(X)` directly, bypassing all 3 OOD protections in `_safe_mlp_scaler_transform`. `backtest_pts_oos.py` (used by the holdout gate) already called `_safe_mlp_scaler_transform` correctly — so holdout ROI was fine (+1.65%) but RS WF had mean_roi=-0.16%, std=19.6%.
+
+**Fix:** `_predict_blend()` now calls `_safe_mlp_scaler_transform(arts["mlp_scaler"], X)`.
+
+**Generalised heuristic added (Step 2b):** `_safe_mlp_scaler_transform` now imputes raw=0.0 → `scaler.mean_[i]` for ANY feature not in `_ITER23_FEATURE_KEYS` where `|mean| >= 4*std`. This is additive/safe — it fires only for features where 0 is genuinely OOD. The 7 non-Iter23 OOD features identified (all `opp_def_*`, z_at_0 = 6–23) were already covered by Step 3 (|z|>6 clamp); Step 2b provides earlier protection.
+
+**PTS RS WF result post-fix:**
+- Mean ROI: -0.16% → **+2.00%** (+2.16pp)
+- Std: 19.6% → **14.5%** (-5.1pp)
+- Pos folds: 8/11 — Decision: SHIP
+
+**Key lesson:** EVERY backtest script that builds `_predict_blend()` must import and call `_safe_mlp_scaler_transform` rather than raw `scaler.transform()`. The fix to one script doesn't propagate to other scripts. Audit ALL backtest scripts after adding a new OOD protection.
+
+**Files:** `scripts/backtest_rs_wf_all_stats_iter13.py` (line 193), `src/prediction/prop_pergame.py` (Step 2b added). Commit: `ac9d3daa`.
+
+---
+
 ## Iter-7: train/inference feature divergence + MLP OOD scaler bug (2026-05-27)
 **Root cause:** 39 columns added in Iter-2/3 (`dmatch_*` x7, `prof_*` x12, `ref_l5_*` x5, `foul_*` x5, `dnp_*` x4, `adv_splits_*` x6) were populated in TRAINING via `build_pergame_dataset()` but were constant-zero at inference. `_build_asof_row()` in `scripts/backtest_closing_lines_2024_playoffs.py` and `build_prediction_row()` in `src/prediction/prop_pergame.py` both skipped the 6 loader calls. Result: 39 always-zero features at inference, causing wrong tree branches (XGB) and garbage MLP predictions.
 
