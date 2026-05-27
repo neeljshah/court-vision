@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-27T23:29:29Z",
+  "__updated_at__": "2026-05-27T23:56:35Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -115,21 +115,52 @@
     "approach": "per_stat_isotonic_edge_calibration",
     "method": "choice_b_raw_threshold_iso_kelly_sizing",
     "baseline_roi_pct": 22.03,
-    "calibrated_roi_pct": 23.20,
+    "calibrated_roi_pct": 23.2,
     "delta_pp": 1.17,
     "regressions": 1,
     "regressed_stat": "reb",
-    "reb_delta_pp": -3.10,
+    "reb_delta_pp": -3.1,
     "decision": "SHIP",
     "training_slice": "playoffs_2024_canonical",
-    "n_train": {"pts": 853, "reb": 844, "ast": 831, "fg3m": 786, "stl": 825, "blk": 800},
+    "n_train": {
+      "pts": 853,
+      "reb": 844,
+      "ast": 831,
+      "fg3m": 786,
+      "stl": 825,
+      "blk": 800
+    },
     "per_stat_roi": {
-      "pts": {"baseline": 9.08, "calibrated": 11.69, "delta": 2.61},
-      "reb": {"baseline": 17.30, "calibrated": 14.20, "delta": -3.10},
-      "ast": {"baseline": 28.18, "calibrated": 28.22, "delta": 0.04},
-      "fg3m": {"baseline": 37.36, "calibrated": 37.11, "delta": -0.25},
-      "stl": {"baseline": 18.05, "calibrated": 18.04, "delta": -0.01},
-      "blk": {"baseline": 26.98, "calibrated": 27.03, "delta": 0.05}
+      "pts": {
+        "baseline": 9.08,
+        "calibrated": 11.69,
+        "delta": 2.61
+      },
+      "reb": {
+        "baseline": 17.3,
+        "calibrated": 14.2,
+        "delta": -3.1
+      },
+      "ast": {
+        "baseline": 28.18,
+        "calibrated": 28.22,
+        "delta": 0.04
+      },
+      "fg3m": {
+        "baseline": 37.36,
+        "calibrated": 37.11,
+        "delta": -0.25
+      },
+      "stl": {
+        "baseline": 18.05,
+        "calibrated": 18.04,
+        "delta": -0.01
+      },
+      "blk": {
+        "baseline": 26.98,
+        "calibrated": 27.03,
+        "delta": 0.05
+      }
     },
     "iso_models": [
       "data/models/oos_pre_playoffs/edge_isotonic_pts.joblib",
@@ -141,5 +172,192 @@
     ],
     "generated_at": "2026-05-27T23:50:27Z",
     "source_file": "data/cache/iter34_isotonic_backtest.json"
+  },
+  "__iter36__": {
+    "iter": 36,
+    "generated_at": "2026-05-27T23:56:35Z",
+    "approach": "honest_full_stack_measurement_2688_bets",
+    "method": "outcome_preserved_simulation_on_iter35_per_stat",
+    "n_bets_total": 2688,
+    "flat_agg_roi_pct": 18.39,
+    "kelly_b_iso_agg_roi_pct": 21.23,
+    "delta_kb_iso_vs_flat_pp": 2.84,
+    "regressions_kb_iso": [],
+    "decision": "SHIP \u2014 Kelly-B+ISO lifts aggregate ROI on 2,688-bet sample",
+    "survive_iter33_34": true,
+    "cross_val_max_drift_pp": 0.0,
+    "flat_per_stat": {
+      "ast": {
+        "n_bets": 374,
+        "total_stake_units": 374.0,
+        "total_pnl_units": 89.9091,
+        "roi_pct": 24.04,
+        "hit_rate_pct": 64.97
+      },
+      "blk": {
+        "n_bets": 631,
+        "total_stake_units": 631.0,
+        "total_pnl_units": 170.8182,
+        "roi_pct": 27.07,
+        "hit_rate_pct": 66.56
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "total_stake_units": 74.0,
+        "total_pnl_units": 19.5455,
+        "roi_pct": 26.41,
+        "hit_rate_pct": 66.22
+      },
+      "pts": {
+        "n_bets": 818,
+        "total_stake_units": 818.0,
+        "total_pnl_units": 92.6364,
+        "roi_pct": 11.32,
+        "hit_rate_pct": 58.31
+      },
+      "reb": {
+        "n_bets": 157,
+        "total_stake_units": 157.0,
+        "total_pnl_units": 26.2727,
+        "roi_pct": 16.73,
+        "hit_rate_pct": 61.15
+      },
+      "stl": {
+        "n_bets": 634,
+        "total_stake_units": 634.0,
+        "total_pnl_units": 95.2727,
+        "roi_pct": 15.03,
+        "hit_rate_pct": 60.25
+      }
+    },
+    "kelly_b_iso_per_stat": {
+      "ast": {
+        "n_bets": 374,
+        "total_stake_units": 24.725,
+        "total_pnl_units": 5.9439,
+        "roi_pct": 24.04,
+        "hit_rate_pct": 64.97
+      },
+      "blk": {
+        "n_bets": 631,
+        "total_stake_units": 73.477,
+        "total_pnl_units": 19.891,
+        "roi_pct": 27.07,
+        "hit_rate_pct": 66.56
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "total_stake_units": 5.5753,
+        "total_pnl_units": 1.4736,
+        "roi_pct": 26.43,
+        "hit_rate_pct": 66.22
+      },
+      "pts": {
+        "n_bets": 818,
+        "total_stake_units": 29.9908,
+        "total_pnl_units": 3.6589,
+        "roi_pct": 12.2,
+        "hit_rate_pct": 58.31
+      },
+      "reb": {
+        "n_bets": 157,
+        "total_stake_units": 7.225,
+        "total_pnl_units": 1.209,
+        "roi_pct": 16.73,
+        "hit_rate_pct": 61.15
+      },
+      "stl": {
+        "n_bets": 634,
+        "total_stake_units": 36.1855,
+        "total_pnl_units": 5.4377,
+        "roi_pct": 15.03,
+        "hit_rate_pct": 60.25
+      }
+    },
+    "iter35_ground_truth": {
+      "pts": {
+        "n_bets": 818,
+        "roi_pct": 11.32
+      },
+      "reb": {
+        "n_bets": 157,
+        "roi_pct": 16.73
+      },
+      "ast": {
+        "n_bets": 374,
+        "roi_pct": 24.04
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "roi_pct": 26.41
+      },
+      "stl": {
+        "n_bets": 634,
+        "roi_pct": 15.03
+      },
+      "blk": {
+        "n_bets": 631,
+        "roi_pct": 27.07
+      }
+    },
+    "comparisons": {
+      "iter23_flat_1337": 19.37,
+      "iter33_kelly_b_1016": 22.03,
+      "iter34_kelly_b_iso_1016": 23.2,
+      "iter35_flat_2688": 18.39,
+      "iter36_flat_2688_sim": 18.39,
+      "iter36_kelly_b_iso_2688": 21.23
+    },
+    "params": {
+      "thresholds": {
+        "pts": 0.7,
+        "reb": 1.5,
+        "ast": 1.0,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0,
+      "payout_m110": 0.909091
+    }
+  },
+  "__global_iter35__": {
+    "pts": {
+      "roi_pct": 11.32,
+      "n_bets": 818,
+      "hit_rate": 11.32,
+      "threshold": 0.7
+    },
+    "reb": {
+      "roi_pct": 16.73,
+      "n_bets": 157,
+      "hit_rate": 16.73,
+      "threshold": 1.5
+    },
+    "ast": {
+      "roi_pct": 24.04,
+      "n_bets": 374,
+      "hit_rate": 24.04,
+      "threshold": 1.0
+    },
+    "fg3m": {
+      "roi_pct": 26.41,
+      "n_bets": 74,
+      "hit_rate": 26.41,
+      "threshold": 0.7
+    },
+    "stl": {
+      "roi_pct": 15.03,
+      "n_bets": 634,
+      "hit_rate": 15.03,
+      "threshold": 0.4
+    },
+    "blk": {
+      "roi_pct": 27.07,
+      "n_bets": 631,
+      "hit_rate": 27.07,
+      "threshold": 0.4
+    }
   }
 }
