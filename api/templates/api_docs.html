@@ -18,7 +18,9 @@ GET /api/odds?stat=blk              <span style="color:var(--cv-muted)"># filter
 GET /api/odds?player=wemby          <span style="color:var(--cv-muted)"># substring match player</span>
 GET /api/odds/{date}.json           <span style="color:var(--cv-muted)"># any date</span>
 GET /api/odds/best/{date}.json      <span style="color:var(--cv-muted)"># best book per side</span>
-GET /api/odds/history/{player}/{stat} <span style="color:var(--cv-muted)"># line movement</span></pre>
+GET /api/odds/history/{player}/{stat} <span style="color:var(--cv-muted)"># line movement</span>
+GET /api/odds/spread/{date}.json    <span style="color:var(--cv-muted)"># cross-book disagreement / arb finder</span>
+GET /arbs                           <span style="color:var(--cv-muted)"># HTML view of /api/odds/spread</span></pre>
 
   <h2 class="mt-6 text-lg font-semibold" style="color:var(--cv-accent)">Model + picks endpoints</h2>
   <pre class="cv-card p-3 mt-2 text-xs md:text-sm overflow-x-auto font-mono">GET /api/slate?date={date}          <span style="color:var(--cv-muted)"># top 15 graded bets</span>
@@ -53,6 +55,9 @@ GET /api/today_summary?n=3          <span style="color:var(--cv-muted)"># compac
     <li>• <b>Pinnacle</b> — guest API, no auth, ~30s tick</li>
     <li>• <b>FanDuel</b> — NJ SB API w/ curl_cffi chrome impersonation, ~60s tick</li>
     <li>• <b>Bovada</b> — public coupon API, ~60s tick</li>
+    <li>• <b>The Odds API</b> (DraftKings, BetMGM, Caesars, PointsBet, BetRivers, Bet365, ESPN BET) —
+        unlocks when <code>THE_ODDS_API_KEY</code> env var is set.
+        <a href="https://the-odds-api.com/" target="_blank" style="color:var(--cv-accent)">free tier 500 req/month</a></li>
   </ul>
 
   <p class="mt-6 text-xs" style="color:var(--cv-subtle)">
