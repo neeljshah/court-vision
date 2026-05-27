@@ -16,6 +16,8 @@
       <span class="text-xs px-2 py-0.5 rounded" style="background:#451a03;color:#fbbf24">stale slate</span>
     {% endif %}
   </div>
+  {% set _s = slate.bets|selectattr('ev_pct', 'ge', 15)|list|length %}
+  {% set _a = slate.bets|selectattr('ev_pct', 'ge', 8)|rejectattr('ev_pct', 'ge', 15)|list|length %}
   <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
     <span><b style="color:var(--cv-text)">{{ slate.summary.n_bets }}</b> bets</span>
     <span>avg EV
@@ -23,6 +25,8 @@
         {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}%
       </b>
     </span>
+    {% if _s %}<span><b style="color:#fbbf24">{{ _s }}</b> S-tier</span>{% endif %}
+    {% if _a %}<span><b style="color:#22c55e">{{ _a }}</b> A-tier</span>{% endif %}
     <span>{{ slate.summary.n_over }} OVER · {{ slate.summary.n_under }} UNDER</span>
     <span>bankroll ${{ '%.0f'|format(slate.bankroll_default_dollars) }}</span>
   </div>
