@@ -293,6 +293,15 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     cols += list(_DNP_TEAM_KEYS)            # C: 4 cols
     cols += list(_ADV_SPLITS_KEYS)          # D: 6 cols
 
+    # Iter-5: hustle (6) + on_off (3) static per-season features.
+    # REVERTED after backtest_holdout REVERT decision (delta_units gate failed
+    # due to baseline scope mismatch — baseline was 1-stat, current is 7-stat).
+    # Wiring infrastructure (build_hustle_features, build_on_off_features,
+    # loaders) stays intact for future re-probe once baseline is rebuilt.
+    # Uncomment to re-enable:
+    # cols += list(_HUSTLE_KEYS)              # E: 6 cols (130-135)
+    # cols += list(_ONOFF_KEYS)              # F: 3 cols (136-138)
+
     # Cycle 90d (loop 5) — T1-E: REB-only OREB-context features.
     # ONLY appended when stat == "reb"; other stats keep the global list to
     # preserve compatibility with existing model artifacts.
@@ -2229,6 +2238,189 @@ def _get_adv_stats_splits() -> _AdvStatsSplits:
     return _ADV_SPLITS_CACHE
 
 
+# ── Iter-5: hustle static season features (E, 6 keys) ────────────────────────
+# Source: data/cache/hustle_features.parquet (commit 79df9f04).
+# Keys: (player_id, season). Per-season hustle aggregates — low overfit risk
+# because they're static season totals, not rolling slices of the playoff test
+# set. Coverage: 6 seasons (2018-19 → 2024-25, gap 2019-20). Training rows for
+# 2022-23 onward have ~75-80% coverage; on_off only has 2024-25 (~0% for older).
+_HUSTLE_KEYS: Tuple[str, ...] = (
+    "hustle_deflections", "hustle_contested_shots", "hustle_screen_assists",
+    "hustle_box_outs", "hustle_loose_balls", "hustle_charges_drawn",
+)
+_HUSTLE_DEFAULTS: Dict[str, float] = {k: float("nan") for k in _HUSTLE_KEYS}
+_HUSTLE_PARQUET_PATH = os.path.join(PROJECT_DIR, "data", "cache", "hustle_features.parquet")
+_HUSTLE_DF_CACHE: Optional[object] = None  # pandas DataFrame or False
+
+
+def _load_hustle_df():
+    """Lazy-load hustle_features.parquet once; returns DataFrame or None."""
+    global _HUSTLE_DF_CACHE
+    if _HUSTLE_DF_CACHE is None:
+        try:
+            import pandas as pd  # noqa: PLC0415
+            if os.path.isfile(_HUSTLE_PARQUET_PATH):
+                _HUSTLE_DF_CACHE = pd.read_parquet(
+                    _HUSTLE_PARQUET_PATH,
+                    columns=["player_id", "season"] + list(_HUSTLE_KEYS),
+                )
+                # Build fast index: (player_id, season) -> row index
+                _HUSTLE_DF_CACHE = _HUSTLE_DF_CACHE.set_index(
+                    ["player_id", "season"]
+                )
+            else:
+                _HUSTLE_DF_CACHE = False
+        except Exception as exc:
+            _warn_join_load_once("_load_hustle_df", _HUSTLE_PARQUET_PATH, exc)
+            _HUSTLE_DF_CACHE = False
+    return _HUSTLE_DF_CACHE if _HUSTLE_DF_CACHE is not False else None
+
+
+class _HustleFeatures:
+    """Per-(player_id, season) lookup of static hustle season aggregates."""
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_HUSTLE_DEFAULTS)
+        return dict(self._lookup.get((pid, str(season)), _HUSTLE_DEFAULTS))
+
+
+def build_hustle_features(parquet_path: Optional[str] = None) -> _HustleFeatures:
+    """Load hustle_features.parquet into a _HustleFeatures wrapper. Never raises."""
+    path = parquet_path or _HUSTLE_PARQUET_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _HustleFeatures(lookup)
+        df = pd.read_parquet(path, columns=["player_id", "season"] + list(_HUSTLE_KEYS))
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError):
+                continue
+            season = str(r["season"])
+            row: Dict[str, float] = {}
+            for k in _HUSTLE_KEYS:
+                v = r.get(k)
+                try:
+                    fv = float(v)
+                    row[k] = fv  # NaN passthrough is intentional
+                except (TypeError, ValueError):
+                    row[k] = float("nan")
+            lookup[(pid, season)] = row
+    except Exception as exc:
+        _warn_join_load_once("build_hustle_features", path, exc)
+    return _HustleFeatures(lookup)
+
+
+_HUSTLE_CACHE: Optional[_HustleFeatures] = None
+
+
+def _get_hustle_features() -> _HustleFeatures:
+    global _HUSTLE_CACHE
+    if _HUSTLE_CACHE is None:
+        _HUSTLE_CACHE = build_hustle_features()
+    return _HUSTLE_CACHE
+
+
+# ── Iter-5: on_off static season features (F, 3 keys) ────────────────────────
+# Source: data/cache/on_off_features.parquet (commit 9903a47e).
+# Keys: (player_id, season). Only 2024-25 data — coverage ~0% for older rows.
+# Stub-NaN cols (on_off_orating_diff, on_off_drating_diff, on_off_pace_diff)
+# are intentionally NOT wired — they're all-NaN and add no signal.
+_ONOFF_KEYS: Tuple[str, ...] = (
+    "onoff_net_rating_diff", "onoff_impact_z", "onoff_min_weight",
+)
+_ONOFF_DEFAULTS: Dict[str, float] = {k: float("nan") for k in _ONOFF_KEYS}
+_ONOFF_PARQUET_PATH = os.path.join(PROJECT_DIR, "data", "cache", "on_off_features.parquet")
+_ONOFF_DF_CACHE: Optional[object] = None  # pandas DataFrame or False
+
+# Column mapping: parquet col -> feature key
+_ONOFF_COL_MAP: Dict[str, str] = {
+    "on_off_net_rating_diff": "onoff_net_rating_diff",
+    "on_off_impact_z":        "onoff_impact_z",
+    "on_off_min_weight":      "onoff_min_weight",
+}
+
+
+def _load_on_off_df():
+    """Lazy-load on_off_features.parquet once; returns DataFrame or None."""
+    global _ONOFF_DF_CACHE
+    if _ONOFF_DF_CACHE is None:
+        try:
+            import pandas as pd  # noqa: PLC0415
+            if os.path.isfile(_ONOFF_PARQUET_PATH):
+                _ONOFF_DF_CACHE = pd.read_parquet(
+                    _ONOFF_PARQUET_PATH,
+                    columns=["player_id", "season"] + list(_ONOFF_COL_MAP.keys()),
+                )
+            else:
+                _ONOFF_DF_CACHE = False
+        except Exception as exc:
+            _warn_join_load_once("_load_on_off_df", _ONOFF_PARQUET_PATH, exc)
+            _ONOFF_DF_CACHE = False
+    return _ONOFF_DF_CACHE if _ONOFF_DF_CACHE is not False else None
+
+
+class _OnOffFeatures:
+    """Per-(player_id, season) lookup of static on/off impact season aggregates."""
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_ONOFF_DEFAULTS)
+        return dict(self._lookup.get((pid, str(season)), _ONOFF_DEFAULTS))
+
+
+def build_on_off_features(parquet_path: Optional[str] = None) -> _OnOffFeatures:
+    """Load on_off_features.parquet into a _OnOffFeatures wrapper. Never raises."""
+    path = parquet_path or _ONOFF_PARQUET_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _OnOffFeatures(lookup)
+        df = pd.read_parquet(path, columns=["player_id", "season"] + list(_ONOFF_COL_MAP.keys()))
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError):
+                continue
+            season = str(r["season"])
+            row: Dict[str, float] = {}
+            for parquet_col, feat_key in _ONOFF_COL_MAP.items():
+                v = r.get(parquet_col)
+                try:
+                    fv = float(v)
+                    row[feat_key] = fv  # NaN passthrough is intentional
+                except (TypeError, ValueError):
+                    row[feat_key] = float("nan")
+            lookup[(pid, season)] = row
+    except Exception as exc:
+        _warn_join_load_once("build_on_off_features", path, exc)
+    return _OnOffFeatures(lookup)
+
+
+_ONOFF_CACHE: Optional[_OnOffFeatures] = None
+
+
+def _get_on_off_features() -> _OnOffFeatures:
+    global _ONOFF_CACHE
+    if _ONOFF_CACHE is None:
+        _ONOFF_CACHE = build_on_off_features()
+    return _ONOFF_CACHE
+
+
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
 
 class _OpponentDefense:
@@ -2609,6 +2801,10 @@ def build_pergame_dataset(
     foul_feats_src = build_foul_features()
     dnp_team_src = build_dnp_team_features()
     adv_splits_src = build_adv_stats_splits()
+    # Iter-5 — static per-season hustle + on_off wrappers. NaN-safe:
+    # missing (player_id, season) keys return NaN defaults.
+    hustle_src = build_hustle_features()
+    onoff_src = build_on_off_features()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -2683,6 +2879,9 @@ def build_pergame_dataset(
                 feats.update(foul_feats_src.features(file_player_id, gdate))
                 feats.update(dnp_team_src.features(gdate, team_abbrev))
                 feats.update(adv_splits_src.features(file_player_id, gdate))
+                # Iter-5: static per-season hustle + on_off (NaN for missing).
+                feats.update(hustle_src.features(file_player_id, file_season))
+                feats.update(onoff_src.features(file_player_id, file_season))
                 row = {c: feats.get(c, 0.0) for c in feature_cols}
                 # Carry REB-context cols on every row even though they aren't in
                 # the default feature_cols — the REB-only retraining path reads
@@ -2856,6 +3055,19 @@ def train_pergame_models(
     train_end = int(n * (1.0 - holdout_frac - val_frac))
     val_end   = int(n * (1.0 - holdout_frac))
     X_all = np.array([[r[c] for c in feature_cols] for r in rows], dtype=float)
+    # Iter-5: NaN-fill using per-column TRAINING-SPLIT medians so MLP / scaler
+    # receive no NaN. XGB/LGB handle NaN natively; this impute only affects
+    # the MLP path. We compute medians on train only (cols 0..train_end) to
+    # avoid data leak into val/holdout splits.
+    _nan_mask = ~np.isfinite(X_all)
+    if _nan_mask.any():
+        _col_medians = np.nanmedian(X_all[:train_end], axis=0)
+        # Any column with all-NaN in train → median=NaN → fill 0.0
+        _col_medians = np.where(np.isfinite(_col_medians), _col_medians, 0.0)
+        for _ci in range(X_all.shape[1]):
+            _col_nan = _nan_mask[:, _ci]
+            if _col_nan.any():
+                X_all[_col_nan, _ci] = _col_medians[_ci]
     X_tr, X_val, X_ho = X_all[:train_end], X_all[train_end:val_end], X_all[val_end:]
 
     # Recency-decay sample weights — older training rows count less.

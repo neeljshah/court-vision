@@ -77,6 +77,16 @@ def retrain_q50(stat: str) -> dict:
     val_frac = 0.15
     train_end = int(n_pre * (1.0 - val_frac))
     X_all = np.array([[r[c] for c in fcols] for r in pre_rows], dtype=float)
+    # Iter-5: NaN-fill using per-column train-split medians (XGB/LGB handle
+    # NaN natively, but fill here for uniform treatment + future MLP probes).
+    _nan_mask = ~np.isfinite(X_all)
+    if _nan_mask.any():
+        _col_med = np.nanmedian(X_all[:train_end], axis=0)
+        _col_med = np.where(np.isfinite(_col_med), _col_med, 0.0)
+        for _ci in range(X_all.shape[1]):
+            _cm = _nan_mask[:, _ci]
+            if _cm.any():
+                X_all[_cm, _ci] = _col_med[_ci]
     X_tr, X_val = X_all[:train_end], X_all[train_end:]
     dates = [datetime.fromisoformat(pre_rows[i]["date"]) for i in range(n_pre)]
     sw = _recency_weights(dates, train_end)
