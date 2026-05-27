@@ -148,6 +148,24 @@ def consolidate_for_slate(date: str) -> list[dict]:
     return [p for p in out if p["books"]]
 
 
+def summary(date: str) -> dict:
+    """One-shot snapshot: counts + freshness for the day. Use for status checks."""
+    f = freshness(date)
+    props = consolidate(date)
+    by_stat: dict[str, int] = defaultdict(int)
+    for p in props:
+        by_stat[p["stat"]] += 1
+    return {
+        "date": date,
+        "n_props": len(props),
+        "n_books": f["n_books"],
+        "books": list(f["books"].keys()),
+        "n_props_per_stat": dict(by_stat),
+        "freshness_by_book": {b: info.get("latest_capture", "")
+                              for b, info in f["books"].items()},
+    }
+
+
 def games_index(date: str) -> list[dict]:
     """Distinct game_ids in today's scrape with prop counts + start_time."""
     props = consolidate(date)
