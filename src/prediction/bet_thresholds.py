@@ -1,27 +1,29 @@
 """src/prediction/bet_thresholds.py — central per-stat edge-threshold config.
 
-Iter-15 threshold ship:
-  STL: 0.5 → 0.10  (Iter 14a sweep: 192 bets, +20.9% ROI, 9/11 folds pos)
-  BLK: 0.5 → 0.40  (Iter 14a sweep: 220 bets, +26.0% ROI, 8/11 folds pos)
-  All others: 0.5 (unchanged)
+Iter-25 recalibration on Iter-22 model (commit 5fb964f1).
+  Approach: thresholds  |  lift vs baseline: +3.83pp
+  Baseline 2025-26 ROI: +15.67%
+
+  Iter-15 thresholds (prior values):
+    STL: 0.5 → 0.10  (Iter 14a sweep)
+    BLK: 0.5 → 0.40  (Iter 14a sweep)
 
 Usage:
     from src.prediction.bet_thresholds import edge_threshold_for
 
-    thr = edge_threshold_for("stl")   # 0.10
-    thr = edge_threshold_for("blk")   # 0.40
-    thr = edge_threshold_for("pts")   # 0.5 (default)
+    thr = edge_threshold_for("stl")
+    thr = edge_threshold_for("pts")
     thr = edge_threshold_for("unknown")  # 0.5 (safe fallback)
 """
 from __future__ import annotations
 
 _STAT_THRESHOLDS: dict[str, float] = {
-    "pts":  0.5,
-    "ast":  0.5,
-    "reb":  0.5,
-    "fg3m": 0.5,
-    "stl":  0.10,
-    "blk":  0.40,
+    "pts":  0.7,
+    "reb":  1.5,
+    "ast":  1.0,
+    "fg3m":  0.7,
+    "stl":  0.4,
+    "blk":  0.4,
     "tov":  0.5,
 }
 

@@ -1,49 +1,49 @@
 {
   "__global__": {
     "pts": {
-      "roi_pct": 11.2,
-      "hit_rate": 58.25,
-      "mae_actual": 5.047,
-      "roi_units": 43.45,
-      "n_bets": 388
-    },
-    "ast": {
-      "roi_pct": 14.33,
-      "hit_rate": 59.89,
-      "mae_actual": 1.5118,
-      "roi_units": 25.36,
-      "n_bets": 177
+      "roi_pct": 11.6162,
+      "hit_rate": 58.4656,
+      "n_bets": 378,
+      "roi_units": 43.9091,
+      "threshold": 0.7
     },
     "reb": {
-      "roi_pct": 22.97,
-      "hit_rate": 64.41,
-      "mae_actual": 1.8702,
-      "roi_units": null,
-      "n_bets": 222
+      "roi_pct": 14.2045,
+      "hit_rate": 59.8214,
+      "n_bets": 112,
+      "roi_units": 15.9091,
+      "threshold": 1.5
+    },
+    "ast": {
+      "roi_pct": 28.2225,
+      "hit_rate": 67.1642,
+      "n_bets": 67,
+      "roi_units": 18.9091,
+      "threshold": 1.0
     },
     "fg3m": {
-      "roi_pct": 35.16,
-      "hit_rate": 70.8,
-      "mae_actual": 1.0439,
-      "roi_units": null,
-      "n_bets": 113
+      "roi_pct": 37.1319,
+      "hit_rate": 71.831,
+      "n_bets": 71,
+      "roi_units": 26.3636,
+      "threshold": 0.7
     },
     "stl": {
-      "roi_pct": 18.34,
-      "hit_rate": 61.99,
-      "mae_actual": 0.9592,
-      "roi_units": null,
-      "n_bets": 171
+      "roi_pct": 18.043,
+      "hit_rate": 61.8321,
+      "n_bets": 131,
+      "roi_units": 23.6364,
+      "threshold": 0.4
     },
     "blk": {
-      "roi_pct": 25.6,
-      "hit_rate": 65.79,
-      "mae_actual": 0.5578,
-      "roi_units": null,
-      "n_bets": 266
+      "roi_pct": 27.0251,
+      "hit_rate": 66.537,
+      "n_bets": 257,
+      "roi_units": 69.4545,
+      "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-27T22:01:51+00:00",
+  "__updated_at__": "2026-05-27T22:10:03.723356+00:00",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -58,5 +58,21 @@
     "note": "iter23 clean 2025-26-only baseline. Post Iter-22 shifted-cutoff retrain (commit 5fb964f1) trains on all data through 2025-04-21 \u2014 2024 playoffs and 2024-25 RS slices are now TRAINING data and no longer valid OOS eval. This baseline uses ONLY 2025-26 RS (all rows) + 2025-26 playoffs.",
     "cutoff_shift_commit": "5fb964f1",
     "old_baseline_note": "+13.87% on 6,448 bets across 4 slices \u2014 contaminated by training data"
+  },
+  "__iter25__": {
+    "approach": "thresholds",
+    "best_roi": 19.5061,
+    "best_bets": 282,
+    "optimal_thresholds": {
+      "pts": 0.7,
+      "reb": 1.5,
+      "ast": 1.0,
+      "fg3m": 0.7,
+      "stl": 0.4,
+      "blk": 0.4,
+      "tov": 0.5
+    },
+    "shrinkage_slopes": {},
+    "generated_at": "2026-05-27T22:10:03.723356+00:00"
   }
 }
