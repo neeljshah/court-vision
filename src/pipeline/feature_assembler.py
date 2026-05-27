@@ -359,6 +359,17 @@ def _injury_status(player_name: str) -> dict:
         return {}
 
 
+# ── Player profile ────────────────────────────────────────────────────────────
+
+def _player_profile_for_player(player_id: int, date: Optional[str]) -> dict:
+    try:
+        from src.data.player_profile_loader import get_player_profile
+        return get_player_profile(player_id, as_of_date=date) or {}
+    except Exception as exc:
+        log.debug("player_profile_loader unavailable: %s", exc)
+        return {}
+
+
 # ── Current props ──────────────────────────────────────────────────────────────
 
 def _current_props(player_name: str) -> dict:
@@ -609,6 +620,31 @@ def assemble_features(
     # ── 14. Defender matchup features (dmatch_*) ─────────────────────────────
     dmatch = _defender_matchup_for_player(game_id, player_id)
     feats.update(dmatch)
+
+    # ── 15. Player profile (prof_*) ───────────────────────────────────────────
+    prof = _player_profile_for_player(player_id, date)
+    if prof:
+        _nan = float("nan")
+        def _fi(key: str) -> float:
+            v = prof.get(key)
+            return float(v) if v is not None else _nan
+        def _ii(key: str) -> int:
+            v = prof.get(key)
+            return int(v) if v is not None else 0
+        feats["prof_height_in"]       = _fi("height_in")
+        feats["prof_weight_lb"]       = _fi("weight_lb")
+        feats["prof_draft_year"]      = _fi("draft_year")
+        feats["prof_draft_number"]    = _fi("draft_number")
+        feats["prof_undrafted_flag"]  = _ii("undrafted_flag")
+        feats["prof_intl_flag"]       = _ii("intl_flag")
+        feats["prof_college_d1_flag"] = _fi("college_d1_flag")
+        feats["prof_greatest_75_flag"] = _ii("greatest_75_flag")
+        feats["prof_age_days"]         = _fi("age_precise_days_as_of")
+        feats["prof_years_in_league"]  = _fi("years_in_league_as_of")
+        feats["prof_rookie_flag"]      = _ii("rookie_flag_as_of")
+        feats["prof_season_exp"]       = _fi("season_exp")
+    else:
+        missing.append("player_profile")
 
     # ── Log missing sources (debug) ───────────────────────────────────────────
     if missing:
