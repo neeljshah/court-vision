@@ -16,6 +16,7 @@ Public API:
 from __future__ import annotations
 
 import csv
+import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -93,8 +94,19 @@ def read_book_csv(path: Path) -> list[dict]:
     return list(latest.values())
 
 
+_CACHE: dict[str, tuple[float, list[dict]]] = {}
+_CACHE_TTL_SEC = 30.0  # short — scrapers tick every ~30-60s
+
+
 def consolidate(date: str) -> list[dict]:
-    """Return all (player, stat, line) props with the per-book ladder attached."""
+    """Return all (player, stat, line) props with the per-book ladder attached.
+
+    Cached for 30s per date — covers the burst of requests from /tonight,
+    /odds, /arbs, /api/odds/best, etc. all hitting the same date.
+    """
+    cached = _CACHE.get(date)
+    if cached and time.time() - cached[0] < _CACHE_TTL_SEC:
+        return cached[1]
     grouped: dict[tuple, dict] = {}
     for path in _book_csv_paths(date):
         for row in read_book_csv(path):
@@ -115,6 +127,7 @@ def consolidate(date: str) -> list[dict]:
         prop["n_books"] = len(prop["books"])
         prop["books"].sort(key=lambda b: b["book"])
     out.sort(key=lambda p: (p["player"], p["stat"], p["line"]))
+    _CACHE[date] = (time.time(), out)
     return out
 
 
