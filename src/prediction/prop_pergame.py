@@ -1464,6 +1464,7 @@ def _get_playtypes() -> _PlayTypes:
 # ── BBRef advanced features (per-player-season efficiency + rate metrics) ────
 
 _BBREF_DIR = os.path.join(PROJECT_DIR, "data", "external")
+_BBREF_EXTENDED_PARQUET = os.path.join(PROJECT_DIR, "data", "cache", "bbref_advanced_extended.parquet")
 # Order matters — drives feature_columns() output. Efficiency (ts), volume
 # (usg), shot profile (three_par, ftr), per-100 rate stats (ast/stl/blk/tov),
 # holistic impact (ws_per_48, per), and SPLIT offensive/defensive BPM (obpm,
@@ -1472,13 +1473,17 @@ _BBREF_DIR = os.path.join(PROJECT_DIR, "data", "external")
 # enough non-redundancy to matter for trees). Defensive depth — dws, ows,
 # vorp — are ~85% collinear with ws_per_48 / obpm / dbpm but the residual
 # signal still helps gradient-boosted trees in practice; appended at the end
-# so existing column positions stay stable. Dropped: trb/orb/drb_pct
-# (handled implicitly by opp_def_reb + form), bpm (sum of obpm+dbpm).
+# so existing column positions stay stable.
+# Wave-2a extension: orb_pct/drb_pct/trb_pct/bpm/ws from bbref_advanced_extended.parquet.
 _BBREF_KEYS = ("usg_pct", "ts_pct", "three_par", "ftr",
                "ast_pct", "stl_pct", "blk_pct", "tov_pct",
                "ws_per_48", "per", "obpm", "dbpm",
                "dws", "ows", "vorp")
-_BBREF_DEFAULTS: Dict[str, float] = {f"bbref_{k}": 0.0 for k in _BBREF_KEYS}
+_BBREF_EXTRA_KEYS = ("orb_pct", "drb_pct", "trb_pct", "bpm", "ws")
+_BBREF_DEFAULTS: Dict[str, float] = {
+    **{f"bbref_{k}": 0.0 for k in _BBREF_KEYS},
+    **{f"bbref_{k}": 0.0 for k in _BBREF_EXTRA_KEYS},
+}
 
 
 class _BBRefAdvanced:
@@ -1528,15 +1533,44 @@ def _unmangle_utf8(s: str) -> str:
         return s
 
 
+def _load_bbref_extra_from_parquet() -> Dict[Tuple[str, str], Dict[str, float]]:
+    """Load _BBREF_EXTRA_KEYS from bbref_advanced_extended.parquet.
+    Returns {(player_name, season): {bbref_<key>: float}}. Never raises."""
+    result: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.isfile(_BBREF_EXTENDED_PARQUET):
+            return result
+        df = pd.read_parquet(_BBREF_EXTENDED_PARQUET, columns=["player_name", "season"] + list(_BBREF_EXTRA_KEYS))
+        for _, row in df.iterrows():
+            name = str(row["player_name"]).strip()
+            season = str(row["season"]).strip()
+            if not name or not season:
+                continue
+            result[(name, season)] = {
+                f"bbref_{k}": float(row[k]) if pd.notna(row[k]) else 0.0
+                for k in _BBREF_EXTRA_KEYS
+            }
+    except Exception as exc:
+        _warn_join_load_once("load_bbref_extra_from_parquet", _BBREF_EXTENDED_PARQUET, exc)
+    return result
+
+
 def build_bbref_advanced(bbref_dir: Optional[str] = None) -> _BBRefAdvanced:
     """Load every bbref_advanced_<season>.json under bbref_dir into a lookup
     keyed by (player_name, season). Never raises. Reverses the mojibake on
     non-ASCII names so accented players (Jokić, Vučević, Šengün, ...) match
-    the nba_api full_name canonical form."""
+    the nba_api full_name canonical form.
+    Wave-2a: merges bbref_advanced_extended.parquet for 5 extra keys."""
     bbref_dir = bbref_dir or _BBREF_DIR
     lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    # Load extra keys from parquet first; JSON rows will override base keys.
+    extra_lookup = _load_bbref_extra_from_parquet()
     try:
         if not os.path.isdir(bbref_dir):
+            # Still surface extra keys even if JSON dir is absent.
+            for key, val in extra_lookup.items():
+                lookup[key] = {**{f"bbref_{k}": 0.0 for k in _BBREF_KEYS}, **val}
             return _BBRefAdvanced(lookup, _bbref_id_to_name())
         for fname in os.listdir(bbref_dir):
             if not fname.startswith("bbref_advanced_") or not fname.endswith(".json"):
@@ -1552,10 +1586,13 @@ def build_bbref_advanced(bbref_dir: Optional[str] = None) -> _BBRefAdvanced:
                 name = _unmangle_utf8(str(row.get("player_name", "")).strip())
                 if not name:
                     continue
-                lookup[(name, season)] = {
-                    f"bbref_{k}": float(row.get(k, 0.0) or 0.0)
-                    for k in _BBREF_KEYS
-                }
+                base = {f"bbref_{k}": float(row.get(k, 0.0) or 0.0) for k in _BBREF_KEYS}
+                extra = extra_lookup.get((name, season), {f"bbref_{k}": 0.0 for k in _BBREF_EXTRA_KEYS})
+                lookup[(name, season)] = {**base, **extra}
+        # Add any parquet rows not in JSON (e.g. newer seasons).
+        for key, val in extra_lookup.items():
+            if key not in lookup:
+                lookup[key] = {**{f"bbref_{k}": 0.0 for k in _BBREF_KEYS}, **val}
     except Exception as exc:
         _warn_join_load_once("build_bbref_advanced", bbref_dir, exc)
     return _BBRefAdvanced(lookup, _bbref_id_to_name())
