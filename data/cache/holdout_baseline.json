@@ -110,5 +110,36 @@
     "n_bets": 1016,
     "generated_at": "2026-05-27T23:29:29Z",
     "source_file": "data/cache/iter33_kelly_backtest.json"
+  },
+  "__iter34__": {
+    "approach": "per_stat_isotonic_edge_calibration",
+    "method": "choice_b_raw_threshold_iso_kelly_sizing",
+    "baseline_roi_pct": 22.03,
+    "calibrated_roi_pct": 23.20,
+    "delta_pp": 1.17,
+    "regressions": 1,
+    "regressed_stat": "reb",
+    "reb_delta_pp": -3.10,
+    "decision": "SHIP",
+    "training_slice": "playoffs_2024_canonical",
+    "n_train": {"pts": 853, "reb": 844, "ast": 831, "fg3m": 786, "stl": 825, "blk": 800},
+    "per_stat_roi": {
+      "pts": {"baseline": 9.08, "calibrated": 11.69, "delta": 2.61},
+      "reb": {"baseline": 17.30, "calibrated": 14.20, "delta": -3.10},
+      "ast": {"baseline": 28.18, "calibrated": 28.22, "delta": 0.04},
+      "fg3m": {"baseline": 37.36, "calibrated": 37.11, "delta": -0.25},
+      "stl": {"baseline": 18.05, "calibrated": 18.04, "delta": -0.01},
+      "blk": {"baseline": 26.98, "calibrated": 27.03, "delta": 0.05}
+    },
+    "iso_models": [
+      "data/models/oos_pre_playoffs/edge_isotonic_pts.joblib",
+      "data/models/oos_pre_playoffs/edge_isotonic_reb.joblib",
+      "data/models/oos_pre_playoffs/edge_isotonic_ast.joblib",
+      "data/models/oos_pre_playoffs/edge_isotonic_fg3m.joblib",
+      "data/models/oos_pre_playoffs/edge_isotonic_stl.joblib",
+      "data/models/oos_pre_playoffs/edge_isotonic_blk.joblib"
+    ],
+    "generated_at": "2026-05-27T23:50:27Z",
+    "source_file": "data/cache/iter34_isotonic_backtest.json"
   }
 }
