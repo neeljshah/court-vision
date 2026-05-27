@@ -82,6 +82,19 @@ _RANGE_PATTERNS = (
 # $X[kKmM]? — suffix must be adjacent (no whitespace) and followed by a word
 # boundary, otherwise '$72,000 May' parses '$72,000 M' as 72 billion.
 _PRICE_RE = re.compile(r"\$\s*([\d,]+(?:\.\d+)?)(?:([kKmM])(?![a-zA-Z]))?")
+
+# Comparator-anchored fallback: 'above 75,400', 'reach 100k', 'dip to 70000'.
+# The number must either have a thousands-comma OR a k/m suffix, to avoid
+# matching dates like 'May 27' or 'in 2026'.
+_PRICE_NEAR_COMP_RE = re.compile(
+    r"(?:above|below|under|over|reach|reaches|reached|hit|hits|hits?\s+at|to|exceed|exceeds|dip\s+to|drop\s+to|fall\s+to)"
+    r"\s+\$?\s*("
+    r"\d{1,3}(?:,\d{3})+(?:\.\d+)?"      # 75,400 or 1,000,000.50
+    r"|\d+(?:\.\d+)?[kKmM](?![a-zA-Z])"  # 85k, 1.5m
+    r"|\d{5,}"                            # plain 75400+
+    r")\b",
+    re.IGNORECASE,
+)
 _DATE_RE = re.compile(
     r"\b(?:on|by|in)?\s*"
     r"(?:(?P<month>jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*"
@@ -106,14 +119,32 @@ class _Parsed:
 
 def _parse_price(text: str) -> Optional[float]:
     m = _PRICE_RE.search(text)
-    if not m:
+    if m is not None:
+        raw = m.group(1).replace(",", "")
+        try:
+            v = float(raw)
+        except ValueError:
+            v = None
+        if v is not None:
+            suffix = (m.group(2) or "").lower()
+            if suffix == "k":
+                v *= 1_000.0
+            elif suffix == "m":
+                v *= 1_000_000.0
+            return v
+    # Fallback: comparator-anchored, allows missing $ (e.g. 'Bitcoin above 75,400').
+    m2 = _PRICE_NEAR_COMP_RE.search(text)
+    if m2 is None:
         return None
-    raw = m.group(1).replace(",", "")
+    raw = m2.group(1).replace(",", "")
+    suffix = ""
+    if raw and raw[-1].lower() in ("k", "m"):
+        suffix = raw[-1].lower()
+        raw = raw[:-1]
     try:
         v = float(raw)
     except ValueError:
         return None
-    suffix = (m.group(2) or "").lower()
     if suffix == "k":
         v *= 1_000.0
     elif suffix == "m":
