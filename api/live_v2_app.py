@@ -425,7 +425,7 @@ def create_app() -> FastAPI:
     async def _startup() -> None:
         global _orchestrator, _orchestrator_task
 
-        log.info("live_v2_app build_marker=proj-floor-merge-2026-05-26")
+        log.info("live_v2_app build_marker=shadow-endpoint-2026-05-27")
         # Subscribe to every event bus topic.
         bus = get_bus()
         bus.subscribe("*", _on_any_event)
