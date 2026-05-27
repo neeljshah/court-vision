@@ -26,6 +26,7 @@ Constraints respected:
 """
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import os
@@ -55,7 +56,8 @@ from src.prediction.prop_quantiles import _inverse  # noqa: E402
 CSV_PATH = os.path.join(PROJECT_DIR, "data", "external", "historical_lines",
                         "playoffs_2024_canonical.csv")
 GAMELOG_DIR = os.path.join(PROJECT_DIR, "data", "nba")
-OOS_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
+DEFAULT_OOS_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
+OOS_DIR = DEFAULT_OOS_DIR  # mutable; overridden by --model-dir
 FORWARD_CSV = os.path.join(PROJECT_DIR, "data", "bets",
                            "strategy_d_2026-05-27.csv")
 REPORT_PATH = os.path.join(PROJECT_DIR, "vault", "Reports",
@@ -644,6 +646,21 @@ def save_report(out: dict) -> None:
 
 
 def main() -> None:
+    global OOS_DIR, REPORT_PATH, CACHE_PATH
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model-dir", default=DEFAULT_OOS_DIR,
+                    help="Directory containing OOS quantile_pergame_*_q50.json")
+    ap.add_argument("--report-path", default=None,
+                    help="Override markdown report output path")
+    ap.add_argument("--cache-path", default=None,
+                    help="Override JSON cache output path")
+    args, _ = ap.parse_known_args()
+    OOS_DIR = args.model_dir
+    if args.report_path:
+        REPORT_PATH = args.report_path
+    if args.cache_path:
+        CACHE_PATH = args.cache_path
+
     out = run()
     save_report(out)
     # Console summary
