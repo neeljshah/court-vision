@@ -47,7 +47,7 @@ def team_possessions(fga: float, fta: float, oreb: float, to: float) -> float:
 
 def load_quarter(path: Path) -> Optional[Dict]:
     try:
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
         log.warning("parse error %s: %s", path.name, e)
