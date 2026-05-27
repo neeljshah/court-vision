@@ -72,7 +72,7 @@ def get_form_lookup() -> dict:
 
 
 def attach_form(bets: list[dict]) -> None:
-    """Populate last_5_median / last_10_median / season_median on each bet."""
+    """Populate L5/L10/season medians + spark_last5; refresh narrative."""
     if not bets:
         return
     lookup = get_form_lookup()
@@ -92,3 +92,32 @@ def attach_form(bets: list[dict]) -> None:
             b["season_median"] = rec["season"]
         if not b.get("spark_last5"):
             b["spark_last5"] = rec.get("spark", [])
+        narrative = _smart_narrative(b)
+        if narrative:
+            b["narrative_text"] = narrative
+
+
+def _smart_narrative(b: dict) -> str | None:
+    """Compose a richer narrative using the populated form data."""
+    name = b.get("player_name"); stat_u = (b.get("prop_stat") or "").upper()
+    opp = b.get("opp"); side = b.get("side"); line = b.get("line"); q50 = b.get("q50")
+    if not all((name, stat_u, opp, side, q50 is not None, line is not None)):
+        return None
+    l5 = b.get("last_5_median"); l10 = b.get("last_10_median"); s = b.get("season_median")
+    parts = [f"{name} projects to {q50:.1f} {stat_u} vs {opp} "
+             f"({'OVER' if side == 'OVER' else 'UNDER'} {line:g})."]
+    if l5 is not None and s is not None:
+        if side == "OVER" and l5 > s + 0.5:
+            parts.append(f"L5 median {l5:g} sits above season {s:g} — hot streak supports the OVER.")
+        elif side == "UNDER" and l5 < s - 0.5:
+            parts.append(f"L5 median {l5:g} sits below season {s:g} — cold spell supports the UNDER.")
+        elif l5 is not None and l10 is not None and abs(l5 - l10) > 1.0:
+            trend = "trending up" if l5 > l10 else "trending down"
+            parts.append(f"L5 {l5:g} vs L10 {l10:g} — {trend} into this matchup.")
+        else:
+            l10_s = f"{l10:g}" if l10 is not None else "-"
+            parts.append(f"L5 {l5:g} / L10 {l10_s} / season {s:g}.")
+    inj = (b.get("injury_status") or "").strip()
+    if inj and inj.upper() not in ("ACTIVE", ""):
+        parts.append(f"Injury watch: {inj}.")
+    return " ".join(parts)
