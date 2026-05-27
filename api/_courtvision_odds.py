@@ -152,12 +152,23 @@ def odds_envelope(date: str) -> dict:
     """Shape for /api/odds/{date}.json."""
     props = consolidate(date)
     books_seen = sorted({b["book"] for p in props for b in p["books"]})
+    # Per-book freshness: latest captured_at seen in this date's data.
+    book_last_seen: dict[str, str] = {}
+    for p in props:
+        for b in p["books"]:
+            ts = b.get("captured_at") or ""
+            if not ts:
+                continue
+            if ts > book_last_seen.get(b["book"], ""):
+                book_last_seen[b["book"]] = ts
     return {
         "date": date,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "n_props": len(props),
         "n_books": len(books_seen),
-        "books": [{"id": b, "display": _BOOK_DISPLAY.get(b, b)} for b in books_seen],
+        "books": [{"id": b, "display": _BOOK_DISPLAY.get(b, b),
+                   "last_scrape": book_last_seen.get(b, "")}
+                  for b in books_seen],
         "props": props,
     }
 
