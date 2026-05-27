@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Arb / spread finder · CourtVision{% endblock %}
+{% block subtitle %}Arbs · {{ env.date }}{% endblock %}
+{% block og_title %}CourtVision arb finder · {{ env.date }}{% endblock %}
+{% block og_desc %}Cross-book NBA prop disagreement — props where book lines spread wide enough to line-shop or arb.{% endblock %}
+
+{% block content %}
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Arb / spread finder</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ env.date }}</span>
+    <a href="/odds?date={{ env.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">all odds →</a>
+    <a href="/api/odds/spread/{{ env.date }}.json" class="text-xs md:text-sm underline font-mono" style="color:var(--cv-accent)">JSON</a>
+  </div>
+  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span><b style="color:var(--cv-text)">{{ env.n }}</b> spread opportunities</span>
+    {% if env.n_arbs %}<span><b class="num-pos">{{ env.n_arbs }}</b> ARBS</span>{% endif %}
+    <span>min spread {{ env.min_spread_pp }}pp</span>
+  </div>
+  <form action="/arbs" method="get" class="mt-3 flex flex-wrap gap-2 items-center text-xs">
+    <input type="hidden" name="date" value="{{ env.date }}">
+    <label style="color:var(--cv-muted)">min spread (pp)
+      <input name="min_spread_pp" value="{{ env.min_spread_pp }}" type="number" step="0.5" min="0" max="50"
+             class="bg-transparent border rounded px-1 ml-1 w-16" style="border-color:var(--cv-border);color:var(--cv-text)">
+    </label>
+    <button class="px-2 py-0.5 underline" style="color:var(--cv-accent)">apply</button>
+  </form>
+</section>
+
+{% if not env.rows %}
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
+    No props with cross-book spread ≥ {{ env.min_spread_pp }}pp.
+    <div class="text-xs mt-2" style="color:var(--cv-subtle)">Try a smaller threshold or add more books via THE_ODDS_API_KEY.</div>
+  </div>
+{% else %}
+  <div class="cv-card overflow-x-auto">
+    <table class="min-w-full text-xs md:text-sm">
+      <thead style="color:var(--cv-subtle)">
+        <tr class="border-b" style="border-color:var(--cv-border)">
+          <th class="text-left px-3 py-2">Player</th>
+          <th class="text-left px-3 py-2">Prop</th>
+          <th class="text-right px-3 py-2">Books</th>
+          <th class="text-right px-3 py-2">Over Δ</th>
+          <th class="text-right px-3 py-2">Under Δ</th>
+          <th class="text-right px-3 py-2">2-way sum</th>
+          <th class="text-left px-3 py-2">All books</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in env.rows[:200] %}
+          <tr class="border-b" style="border-color:var(--cv-border);{% if r.is_arb %}background:rgba(34,197,94,0.06){% endif %}">
+            <td class="px-3 py-2" style="color:var(--cv-text)">{{ r.player }}</td>
+            <td class="px-3 py-2 font-mono">{{ r.stat|upper }} {{ '%g'|format(r.line) }}</td>
+            <td class="px-3 py-2 text-right font-mono" style="color:var(--cv-muted)">{{ r.n_books }}</td>
+            <td class="px-3 py-2 text-right font-mono {% if r.over_spread_pp >= 5 %}num-pos{% else %}num-zero{% endif %}">{{ '%.1f'|format(r.over_spread_pp) }}pp</td>
+            <td class="px-3 py-2 text-right font-mono {% if r.under_spread_pp >= 5 %}num-pos{% else %}num-zero{% endif %}">{{ '%.1f'|format(r.under_spread_pp) }}pp</td>
+            <td class="px-3 py-2 text-right font-mono {% if r.is_arb %}num-pos{% elif r.arb_sum_pct is not none and r.arb_sum_pct < 102 %}num-zero{% else %}num-neg{% endif %}">
+              {% if r.arb_sum_pct is not none %}{{ '%.1f'|format(r.arb_sum_pct) }}%{% else %}—{% endif %}
+            </td>
+            <td class="px-3 py-2 font-mono text-[10px]" style="color:var(--cv-muted)">
+              {% for b in r.books %}{{ b.display }} {{ '%+d'|format(b.over_price) if b.over_price is not none else '—' }}/{{ '%+d'|format(b.under_price) if b.under_price is not none else '—' }}{% if not loop.last %} · {% endif %}{% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-2 text-xs" style="color:var(--cv-subtle)">2-way sum &lt; 100% = real arb. Highlighted rows show arbitrage opportunities.</p>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+  Arb / spread finder · model-graded · CourtVision
+{% endblock %}
