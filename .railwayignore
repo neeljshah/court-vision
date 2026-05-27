@@ -1,0 +1,110 @@
+# Aggressive ignore — Railway upload should be a few hundred MB max.
+# Force-include items that .gitignore would otherwise drop:
+!data/models/
+!data/models/**
+!data/lines/
+!data/lines/**
+!data/cache/m2_family_predictions_*.json
+# CourtVision UI requires these to render /tonight, /parlays, /share:
+!data/predictions/
+!data/predictions/**
+!data/player_quarter_stats.parquet
+
+# Big buckets — never ship these
+apps/
+court-visions/
+teflon-quant-dashboard/
+resources/
+legacy/
+_archive/
+.claude/
+.planning/
+.bot_state/
+.tmp_patches/
+.pytest_cache/
+.git/
+catboost_info/
+results/
+vault/
+tests/
+docs/
+webapp/
+node_modules/
+.next/
+
+# Models we keep, but ignore the giant CV side-data
+src/detection/data/
+src/detection/results/
+
+# Data dir — ignore almost everything; whitelist below
+data/tracking/
+data/raw_video/
+data/cache/quarter_box/
+data/cache/spreads/
+data/cache/playerinfo/
+data/cache/synergy*/
+data/cache/news/
+data/cache/intel_*/
+data/cache/odds_history/
+data/cache/player_tracking/
+data/cache/m2_predictions_intermediate/
+data/cache/pregame_oof.parquet
+data/cache/probe_*.log
+data/cache/probe_*/
+data/cache/loop*/
+data/cache/cohorts/
+data/cache/games_*.json
+data/cache/calibration/
+data/cache/lineups/
+data/cache/projections/
+data/cache/profiles/
+data/cache/predictions/
+data/cache/parquet/
+data/cache/optimizations/
+data/cache/old_*/
+data/cache/notebooks/
+data/cache/markers/
+data/cache/manifest/
+data/cache/intel_2025*/
+data/cache/intel_2026*/
+
+# Scripts we don't ship
+scripts/__pycache__/
+scripts/_results/
+scripts/execute_loop/
+scripts/improve_loop/
+scripts/outreach/
+scripts/.results/
+scripts/legacy/
+scripts/notes/
+
+# Video / large binaries
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.bin
+yolov8n*.pt
+*.onnx
+*.pth
+*.engine
+*.tar.gz
+*.zip
+
+# Python noise
+*.pyc
+__pycache__/
+*.pyo
+.coverage
+*.egg-info/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Logs + checkpoints
+logs/
+*.log
+*.tmp
+*.swp
+
+# (no root-level models dir to exclude; data/models is REQUIRED)
