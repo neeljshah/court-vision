@@ -1,0 +1,185 @@
+{
+  "game": {
+    "gameId": "0042500315",
+    "gameStatus": 3,
+    "gameStatusText": "Final",
+    "homeTeam": {
+      "teamTricode": "BOS",
+      "players": [
+        {
+          "personId": 1628369,
+          "name": "Jayson Tatum",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 32,
+            "reboundsTotal": 8,
+            "assists": 5,
+            "threePointersMade": 4,
+            "steals": 2,
+            "blocks": 1,
+            "turnovers": 3
+          }
+        },
+        {
+          "personId": 1627759,
+          "name": "Jaylen Brown",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 24,
+            "reboundsTotal": 5,
+            "assists": 3,
+            "threePointersMade": 2,
+            "steals": 1,
+            "blocks": 0,
+            "turnovers": 2
+          }
+        },
+        {
+          "personId": 1629684,
+          "name": "Payton Pritchard",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 14,
+            "reboundsTotal": 3,
+            "assists": 4,
+            "threePointersMade": 3,
+            "steals": 0,
+            "blocks": 0,
+            "turnovers": 1
+          }
+        },
+        {
+          "personId": 1628384,
+          "name": "Kristaps Porzingis",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 18,
+            "reboundsTotal": 7,
+            "assists": 2,
+            "threePointersMade": 1,
+            "steals": 0,
+            "blocks": 3,
+            "turnovers": 1
+          }
+        },
+        {
+          "personId": 1628398,
+          "name": "Jrue Holiday",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 10,
+            "reboundsTotal": 4,
+            "assists": 6,
+            "threePointersMade": 1,
+            "steals": 3,
+            "blocks": 0,
+            "turnovers": 2
+          }
+        },
+        {
+          "personId": 1630162,
+          "name": "Sam Hauser",
+          "teamTricode": "BOS",
+          "statistics": {
+            "points": 8,
+            "reboundsTotal": 2,
+            "assists": 1,
+            "threePointersMade": 2,
+            "steals": 0,
+            "blocks": 0,
+            "turnovers": 0
+          }
+        }
+      ]
+    },
+    "awayTeam": {
+      "teamTricode": "MIA",
+      "players": [
+        {
+          "personId": 1628389,
+          "name": "Bam Adebayo",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 22,
+            "reboundsTotal": 12,
+            "assists": 4,
+            "threePointersMade": 0,
+            "steals": 1,
+            "blocks": 2,
+            "turnovers": 3
+          }
+        },
+        {
+          "personId": 1626162,
+          "name": "Jimmy Butler",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 28,
+            "reboundsTotal": 6,
+            "assists": 7,
+            "threePointersMade": 1,
+            "steals": 2,
+            "blocks": 0,
+            "turnovers": 4
+          }
+        },
+        {
+          "personId": 1629011,
+          "name": "Tyler Herro",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 19,
+            "reboundsTotal": 4,
+            "assists": 5,
+            "threePointersMade": 3,
+            "steals": 1,
+            "blocks": 0,
+            "turnovers": 2
+          }
+        },
+        {
+          "personId": 1629632,
+          "name": "Duncan Robinson",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 12,
+            "reboundsTotal": 2,
+            "assists": 1,
+            "threePointersMade": 4,
+            "steals": 0,
+            "blocks": 0,
+            "turnovers": 0
+          }
+        },
+        {
+          "personId": 1627741,
+          "name": "Kyle Lowry",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 6,
+            "reboundsTotal": 3,
+            "assists": 8,
+            "threePointersMade": 1,
+            "steals": 1,
+            "blocks": 0,
+            "turnovers": 2
+          }
+        },
+        {
+          "personId": 1628960,
+          "name": "Caleb Martin",
+          "teamTricode": "MIA",
+          "statistics": {
+            "points": 9,
+            "reboundsTotal": 5,
+            "assists": 2,
+            "threePointersMade": 2,
+            "steals": 1,
+            "blocks": 1,
+            "turnovers": 1
+          }
+        }
+      ]
+    }
+  }
+}
