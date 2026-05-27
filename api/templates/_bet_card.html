@@ -34,9 +34,10 @@
   </header>
 
   <div class="mt-3 grid grid-cols-4 gap-2 text-center">
+    {% set _mae = ({'PTS':4.6,'REB':1.9,'AST':1.4,'FG3M':0.9,'STL':0.7,'BLK':0.4,'TOV':0.9}).get(bet.prop_stat, 1.5) %}
     <div>
       <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
-           data-tip="Model's median prediction (q50). Half the time the player goes higher, half lower.">q50</div>
+           data-tip="Model's median (q50) prediction. Walk-forward MAE for {{ bet.prop_stat }}: ±{{ _mae }} over 2 NBA seasons.">q50</div>
       <div class="text-sm md:text-base font-semibold font-mono">{{ '%.2f'|format(bet.q50) }}</div>
     </div>
     <div>
