@@ -64,8 +64,8 @@ SOURCE_STATS: dict[str, list[str]] = {
     "contracts": ["pts", "reb", "ast"],
 }
 
-_ROI_RX = re.compile(r"ROI@-?\d+=([+-]?\d+\.\d+)%")
-_HIT_RX = re.compile(r"hit_rate=([+-]?\d+\.\d+)%")
+_ROI_RX = re.compile(r"ROI(?:@-?\d+)?=([+-]?\d+\.\d+)%")
+_HIT_RX = re.compile(r"hit(?:_rate)?=([+-]?\d+\.\d+)%")
 _NBETS_RX = re.compile(r"n_bets=(\d+)")
 _NPRED_RX = re.compile(r"n_pred=(\d+)")
 _MAE_RX = re.compile(r"MAE_actual=([+-]?\d+\.\d+)")
@@ -96,8 +96,11 @@ def _run_stat(stat: str, season: str, timeout_s: int = 900) -> dict[str, Any]:
 
     t0 = time.time()
     try:
+        cmd = [sys.executable, str(script_path)]
+        if script_path.name == "backtest_qstat_oos.py":
+            cmd.extend(["--stat", stat])
         proc = subprocess.run(
-            [sys.executable, str(script_path)],
+            cmd,
             cwd=str(ROOT),
             env=env,
             capture_output=True,
