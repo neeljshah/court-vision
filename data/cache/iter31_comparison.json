@@ -1,0 +1,302 @@
+{
+  "decision": "REVERT",
+  "n_improvements": 1,
+  "improvements": [
+    "pts"
+  ],
+  "regressions": [
+    "reb",
+    "ast",
+    "fg3m",
+    "stl",
+    "blk",
+    "tov"
+  ],
+  "rows": [
+    {
+      "stat": "pts",
+      "prod_roi": -8.756684491978612,
+      "cand_roi": 9.565217391304348,
+      "delta_pp": 18.321901883282962,
+      "prod_n_bets": 272,
+      "cand_n_bets": 230,
+      "improved": true
+    },
+    {
+      "stat": "reb",
+      "prod_roi": 19.11421911421911,
+      "cand_roi": 12.932138284250957,
+      "delta_pp": -6.182080829968154,
+      "prod_n_bets": 117,
+      "cand_n_bets": 142,
+      "improved": false
+    },
+    {
+      "stat": "ast",
+      "prod_roi": 10.64049586776859,
+      "cand_roi": 10.21555763823805,
+      "delta_pp": -0.4249382295305413,
+      "prod_n_bets": 88,
+      "cand_n_bets": 97,
+      "improved": false
+    },
+    {
+      "stat": "fg3m",
+      "prod_roi": 42.42424242424242,
+      "cand_roi": 30.165289256198342,
+      "delta_pp": -12.25895316804408,
+      "prod_n_bets": 63,
+      "cand_n_bets": 66,
+      "improved": false
+    },
+    {
+      "stat": "stl",
+      "prod_roi": 13.875598086124397,
+      "cand_roi": 14.545454545454545,
+      "delta_pp": 0.6698564593301484,
+      "prod_n_bets": 57,
+      "cand_n_bets": 60,
+      "improved": false
+    },
+    {
+      "stat": "blk",
+      "prod_roi": 27.272727272727266,
+      "cand_roi": 7.386363636363635,
+      "delta_pp": -19.886363636363633,
+      "prod_n_bets": 15,
+      "cand_n_bets": 16,
+      "improved": false
+    },
+    {
+      "stat": "tov",
+      "prod_roi": 0.0,
+      "cand_roi": 0.0,
+      "delta_pp": 0.0,
+      "prod_n_bets": 0,
+      "cand_n_bets": 0,
+      "improved": false
+    }
+  ],
+  "prod_total_roi": 7.620320855614972,
+  "cand_total_roi": 13.10816842731736,
+  "prod_total_bets": 612,
+  "cand_total_bets": 611,
+  "generated_at": "2026-05-27T23:11:47.950499Z",
+  "prod_cutoff": "2025-04-21",
+  "cand_cutoff": "2026-02-01",
+  "eval_window_start": "2026-02-01",
+  "prod_results": {
+    "label": "PRODUCTION (cutoff 2025-04-21)",
+    "per_stat": {
+      "fg3m": {
+        "n_pred": 216,
+        "n_bets": 63,
+        "wins": 47,
+        "losses": 16,
+        "pushes": 1,
+        "hit_rate": 0.746031746031746,
+        "roi_pct": 42.42424242424242,
+        "roi_units": 26.727272727272727,
+        "mae_actual": 1.0797585925194295,
+        "skip": {
+          "bad_row": 4
+        }
+      },
+      "tov": {
+        "n_pred": 0,
+        "n_bets": 0,
+        "wins": 0,
+        "losses": 0,
+        "pushes": 0,
+        "hit_rate": 0.0,
+        "roi_pct": 0.0,
+        "roi_units": 0.0,
+        "mae_actual": 0.0,
+        "skip": {}
+      },
+      "reb": {
+        "n_pred": 247,
+        "n_bets": 117,
+        "wins": 73,
+        "losses": 44,
+        "pushes": 1,
+        "hit_rate": 0.6239316239316239,
+        "roi_pct": 19.11421911421911,
+        "roi_units": 22.36363636363636,
+        "mae_actual": 1.8986184957526016,
+        "skip": {
+          "bad_row": 7
+        }
+      },
+      "stl": {
+        "n_pred": 95,
+        "n_bets": 57,
+        "wins": 34,
+        "losses": 23,
+        "pushes": 0,
+        "hit_rate": 0.5964912280701754,
+        "roi_pct": 13.875598086124397,
+        "roi_units": 7.9090909090909065,
+        "mae_actual": 0.9692342829580811,
+        "skip": {
+          "bad_row": 3
+        }
+      },
+      "blk": {
+        "n_pred": 176,
+        "n_bets": 15,
+        "wins": 10,
+        "losses": 5,
+        "pushes": 0,
+        "hit_rate": 0.6666666666666666,
+        "roi_pct": 27.272727272727266,
+        "roi_units": 4.09090909090909,
+        "mae_actual": 0.6390780985830155,
+        "skip": {
+          "bad_row": 2
+        }
+      },
+      "ast": {
+        "n_pred": 210,
+        "n_bets": 88,
+        "wins": 51,
+        "losses": 37,
+        "pushes": 0,
+        "hit_rate": 0.5795454545454546,
+        "roi_pct": 10.64049586776859,
+        "roi_units": 9.36363636363636,
+        "mae_actual": 1.6214776173329242,
+        "skip": {
+          "bad_row": 3
+        }
+      },
+      "pts": {
+        "n_pred": 273,
+        "n_bets": 272,
+        "wins": 130,
+        "losses": 142,
+        "pushes": 1,
+        "hit_rate": 0.47794117647058826,
+        "roi_pct": -8.756684491978612,
+        "roi_units": -23.818181818181827,
+        "mae_actual": 63.705331157011244,
+        "skip": {
+          "bad_row": 7
+        }
+      }
+    },
+    "total_bets": 612,
+    "total_wins": 345,
+    "total_roi_pct": 7.620320855614972,
+    "total_hit": 0.5637254901960784,
+    "elapsed_sec": 21.287184715270996,
+    "eval_window_start": "2026-02-01"
+  },
+  "cand_results": {
+    "label": "CANDIDATE (cutoff 2026-02-01)",
+    "per_stat": {
+      "fg3m": {
+        "n_pred": 216,
+        "n_bets": 66,
+        "wins": 45,
+        "losses": 21,
+        "pushes": 1,
+        "hit_rate": 0.6818181818181818,
+        "roi_pct": 30.165289256198342,
+        "roi_units": 19.909090909090907,
+        "mae_actual": 1.0869483993815094,
+        "skip": {
+          "bad_row": 4
+        }
+      },
+      "tov": {
+        "n_pred": 0,
+        "n_bets": 0,
+        "wins": 0,
+        "losses": 0,
+        "pushes": 0,
+        "hit_rate": 0.0,
+        "roi_pct": 0.0,
+        "roi_units": 0.0,
+        "mae_actual": 0.0,
+        "skip": {}
+      },
+      "reb": {
+        "n_pred": 247,
+        "n_bets": 142,
+        "wins": 84,
+        "losses": 58,
+        "pushes": 1,
+        "hit_rate": 0.5915492957746479,
+        "roi_pct": 12.932138284250957,
+        "roi_units": 18.36363636363636,
+        "mae_actual": 1.9413477916999622,
+        "skip": {
+          "bad_row": 7
+        }
+      },
+      "stl": {
+        "n_pred": 95,
+        "n_bets": 60,
+        "wins": 36,
+        "losses": 24,
+        "pushes": 0,
+        "hit_rate": 0.6,
+        "roi_pct": 14.545454545454545,
+        "roi_units": 8.727272727272727,
+        "mae_actual": 0.9856713992318089,
+        "skip": {
+          "bad_row": 3
+        }
+      },
+      "blk": {
+        "n_pred": 176,
+        "n_bets": 16,
+        "wins": 9,
+        "losses": 7,
+        "pushes": 0,
+        "hit_rate": 0.5625,
+        "roi_pct": 7.386363636363635,
+        "roi_units": 1.1818181818181817,
+        "mae_actual": 0.6297916746218278,
+        "skip": {
+          "bad_row": 2
+        }
+      },
+      "ast": {
+        "n_pred": 210,
+        "n_bets": 97,
+        "wins": 56,
+        "losses": 41,
+        "pushes": 0,
+        "hit_rate": 0.5773195876288659,
+        "roi_pct": 10.21555763823805,
+        "roi_units": 9.909090909090907,
+        "mae_actual": 1.5854656889454244,
+        "skip": {
+          "bad_row": 3
+        }
+      },
+      "pts": {
+        "n_pred": 273,
+        "n_bets": 230,
+        "wins": 132,
+        "losses": 98,
+        "pushes": 1,
+        "hit_rate": 0.5739130434782609,
+        "roi_pct": 9.565217391304348,
+        "roi_units": 22.0,
+        "mae_actual": 5.112278896560623,
+        "skip": {
+          "bad_row": 7
+        }
+      }
+    },
+    "total_bets": 611,
+    "total_wins": 362,
+    "total_roi_pct": 13.10816842731736,
+    "total_hit": 0.5924713584288053,
+    "elapsed_sec": 2.5369248390197754,
+    "eval_window_start": "2026-02-01"
+  }
+}
