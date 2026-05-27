@@ -9,7 +9,7 @@ Contracts:
     Cache hit (file exists AND age <30 days) returns the cached body
     without hitting the network.
   * Budget counter at data/cache/odds_api/_budget.json. When
-    `used_units >= MAX_UNITS` (450), all live fetches are blocked and
+    `used_units >= MAX_UNITS` (20000), all live fetches are blocked and
     callers must fall back to data/external/historical_lines/*.
   * Every live request is appended to data/cache/odds_api/_request_log.jsonl
     with (timestamp, endpoint, params, cost_units, remaining_from_header).
@@ -44,7 +44,7 @@ LOG_PATH = CACHE_DIR / "_request_log.jsonl"
 
 API_BASE = "https://api.the-odds-api.com/v4"
 SPORT_KEY = "basketball_nba"
-MAX_UNITS = 450
+MAX_UNITS = 20000  # actual paid-tier capacity (3687 used + 16313 remaining as of 2026-05-27)
 CACHE_TTL_DAYS = 30
 DEFAULT_REGION = "us"
 ALLOWED_MARKETS = {
