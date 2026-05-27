@@ -58,7 +58,7 @@ def _test_summary() -> str:
                 return "all passing (no failures cached)"
         except Exception:
             pass
-    return "1040 pass, 2 skip (last known)"
+    return "4,055 collected · 48/48 critical-path pass (last verified 2026-05-26)"
 
 
 def _open_issues() -> list[tuple[str, str, str]]:
@@ -159,31 +159,35 @@ updated: {today}
 
 ## Current State at a Glance ({today})
 
-**Branch:** `{branch}` | **Loop:** 5 cycle 112 · improve_loop R7 · execute_loop R13 | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
+**Branch:** `{branch}` | **Loop:** improve_loop R12 BATCH-33 · R30-R32 probe wave · execute_loop V1 39/40 layers shipped | **Tests:** {_test_summary()} | **Velocity:** {velocity['week_commits']} commits/week
 
 | Item | Status |
 |------|--------|
-| Phase | G (CV game collection — 17 quality / 29 usable / 75 attempted) |
-| Win probability (walk-forward) | **0.7094 acc / 0.193 Brier** — see [[#The 71% Result]] |
-| Win probability (single-split) | **0.717 acc / 0.188 Brier** |
-| Prop backtest ROI @ +0.5 edge (20K-game holdout) | **+19.9% to +28.1%** across 7 stats |
-| **In-game projection (improve_loop R7)** | Residual heads SHIPPED 6/7 · endQ3 MAE **-43% to -55%** · cycle 110 learned Q4-minutes |
-| **Gate 1: CLV vs Pinnacle close** | **NOT YET RUN — TOP PRIORITY** |
-| Signal universe | 85 models trained (target: 500-5000 via agentic system) |
+| Phase | G (CV game collection — 85 tracked / 7 full-feature / target 80 CLEAN) |
+| Win probability (walk-forward 3-fold) | **0.7094 acc / 0.193 Brier** — see [[#The 71% Result]] |
+| Win probability (single-split) | **0.7169 acc / 0.188 Brier** (XGB zeroed by NNLS) |
+| Prop backtest ROI @ +0.5 edge (20K-game holdout, L5 proxy) | **+19.9% to +28.1%** across 7 stats |
+| **Gate 1 — real DK/FD/MGM/BetRivers (2024 playoffs, L10)** | ✅ **4,337 bets · 54.58% beat · +4.19% ROI · +$18,181 PnL** |
+| **Gate 1 — real DK/FD/MGM (2025-26 mainline, prod stack OOF)** | ⚠️ **4,210 bets · 54.37% beat · −2.06% ROI** — AST +7.22% / FG3M +0.34% are real edges |
+| **Combined UNDER-only directional edge** | ✅ **3,512 bets · 58.46% beat · +7.70% ROI · +$27K** — BLK +41% / STL +26% / AST +10% / FG3M +5.5% |
+| **Gate 1 — Pinnacle close (sharp book)** | 🔴 **NOT YET RUN** — no historical archive; daemon collects from Oct 2026 |
+| **In-game projection (endQ3 vs pregame, 550-game retro)** | Residual heads SHIPPED 6/7 · endQ3 MAE **−47% to −56%** across 7 stats · cycle 110 learned Q4-minutes |
+| Signal universe | 312 trained artifacts (target: 500-5000 via agentic system) |
 | Top revenue surface live | None yet (signal subs targeted Q3 2026) |
 | Agentic research system | Not yet built — see [[Plans/Agentic Research System]] |
 | **Swish Analytics demo (2026-05-26)** | Pack ready — see [[docs/SWISH_DEMO]] · `scripts/swish_demo.py` · `docs/system_metrics.html` |
 
 ---
 
-## In-Game Improvement System (improve_loop R1-R7)
+## In-Game Improvement System (improve_loop R1-R12 BATCH-33)
 
-> Biggest single-batch wins of the project. Pregame projections are at ceiling; in-game residual heads layered on top of pregame are unlocking 13-55% MAE reductions through Q4.
+> Biggest single-batch wins of the project. Pregame projections are at ceiling; in-game residual heads layered on top of pregame are unlocking 47-56% MAE reductions at endQ3.
 
 - **Pregame → in-game residual heads** layer per-quarter residual learners on top of pregame medians, conditioned on elapsed-minute / score-margin / pace-so-far / Q4-minutes-learned (cycle 110).
-- **endQ3 MAE delta vs pregame baseline:** -43% to -55% across the 6 stats that shipped (PTS, REB, AST, FG3M, STL, TOV).
-- **Cycle 110** (improve_loop R7): learned Q4-minutes prior (replaces naive 12-minute assumption) — biggest in-game lever so far.
-- **execute_loop R13** wired residual heads into the live projection surface and observability artifacts.
+- **endQ3 MAE delta vs pregame baseline (550-game retro):** PTS −47%, REB −48%, AST −50%, FG3M −53%, TOV −49%, STL −56%, BLK −55% — 7/7 stats win.
+- **Cycle 110**: learned Q4-minutes prior (replaces naive 12-minute assumption) — biggest in-game lever so far.
+- **execute_loop V1**: 39/40 layers shipped (R1-R5). Order management, multi-exchange (Kalshi/Polymarket/Sporttrade), cross-exchange EV, late-swap, live trader, hedger, edge-erosion + postmortem layers.
+- **improve_loop R12 BATCH-33**: drop-in `predict_game` CLI, auto-train fallback, canonical-recipe bundles; 4,515-game dataset.
 - Source: `scripts/improve_loop/` · loop memos in `vault/Sessions/` · synthesis in [[Lessons]].
 
 ---
@@ -232,19 +236,20 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 ---
 
-## Model Performance (loop 5 cycle 112, walk-forward, per-game N=99,818)
+## Model Performance (walk-forward q50, per-game N=99,818)
 
 | Model | Metric | Value | Target | Gap |
 |-------|--------|-------|--------|-----|
-| [[Models/Win Probability\|Win prob]] | Accuracy (WF) | 0.7094 | 0.72 | -1.1pp |
-| [[Models/Win Probability\|Win prob]] | Brier (WF)    | 0.193  | <0.19 | -0.003 |
-| [[Models/Player Props\|Props PTS]]  | MAE | **4.62** (sqrt+Huber blend) | 4.50 | -0.12 |
-| [[Models/Player Props\|Props REB]]  | MAE | **1.90** (LGB-q50)          | 1.80 | -0.10 |
-| [[Models/Player Props\|Props AST]]  | MAE | **1.36** (multitask MLP)    | 1.30 | -0.06 |
-| [[Models/Player Props\|Props FG3M]] | MAE | **0.89** (XGB-q50)          | 0.85 | -0.04 |
-| [[Models/Player Props\|Props TOV]]  | MAE | **0.89** (XGB-q50)          | 0.85 | -0.04 |
-| [[Models/Player Props\|Props STL]]  | MAE | **0.72** (XGB-q50)          | 0.70 | -0.02 |
-| [[Models/Player Props\|Props BLK]]  | MAE | **0.44** (XGB-q50, -16% session) | 0.42 | -0.02 |
+| [[Models/Win Probability\|Win prob]] | Accuracy (WF 3-fold) | 0.7094 | 0.72 | -1.1pp |
+| [[Models/Win Probability\|Win prob]] | Brier (WF 3-fold)    | 0.193  | <0.19 | -0.003 |
+| [[Models/Win Probability\|Win prob]] | Accuracy (single-split) | 0.7169 | 0.72 | -0.3pp |
+| [[Models/Player Props\|Props PTS]]  | MAE | **4.65** (sqrt+Huber+MLP NNLS) | 4.50 | -0.15 |
+| [[Models/Player Props\|Props REB]]  | MAE | **1.90** (LGB-q50)             | 1.80 | -0.10 |
+| [[Models/Player Props\|Props AST]]  | MAE | **1.37** (XGB+LGB+multitask MLP NNLS) | 1.30 | -0.07 |
+| [[Models/Player Props\|Props FG3M]] | MAE | **0.89** (XGB-q50)             | 0.85 | -0.04 |
+| [[Models/Player Props\|Props TOV]]  | MAE | **0.89** (XGB-q50)             | 0.85 | -0.04 |
+| [[Models/Player Props\|Props STL]]  | MAE | **0.72** (XGB-q50)             | 0.70 | -0.02 |
+| [[Models/Player Props\|Props BLK]]  | MAE | **0.44** (XGB-q50)             | 0.42 | -0.02 |
 | [[Models/xFG Model\|xFG]] | Brier | 0.226 | <0.20 | pending CV defender data |
 | [[Models/DNP Predictor\|DNP]] | AUC | 0.979 | >0.97 | ✅ |
 
@@ -257,9 +262,8 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 | Metric | Value |
 |--------|-------|
-| Quality games | 17 |
-| Usable games | 29 (9 CLEAN + 20 PARTIAL) |
-| Attempted | 75 |
+| Tracked games (data/tracking/) | 85 |
+| Full feature extraction | 7 |
 | Goal | 80 CLEAN |
 
 → Game details: [[Sessions/Game Log]]
@@ -270,9 +274,9 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 
 | # | Issue | Status |
 |---|-------|--------|
-| 1 | Gate 1 not run — no CLV validation vs real closing lines | 🔴 Top priority |
-| 2 | ball_valid_pct=0% on some games (ball_track_suspended stays True) | 🟡 After 80-game run |
-| 3 | Underprediction bias on all 7 prop models | 🟡 Calibration pass needed |
+| 1 | Gate 1 vs Pinnacle close — no historical archive; daemon collects from Oct 2026 | 🔴 Sharp-book validation pending |
+| 2 | PTS/REB lose to vig at sharp DK/FD/MGM closes (−8.62% / −3.12%) — calibration the next pin | 🟡 Underprediction bias confirmed |
+| 3 | ball_valid_pct=0% on some games (ball_track_suspended stays True) | 🟡 After 80-game run |
 | 4 | kelly_corr matrix not populated (run --build-residuals then --compute-corr) | 🟡 After Gate 1 |
 | 5 | News ingestion pipe unbuilt (missing injury/lineup reaction edge) | 🔲 Month 4-6 |
 
