@@ -42,8 +42,9 @@ from scripts.backtest_closing_lines_2024_playoffs import (  # noqa: E402
     _recommend,
     _odds_to_decimal_profit,
 )
-from src.prediction.prop_pergame import feature_columns  # noqa: E402
+from src.prediction.prop_pergame import feature_columns, feature_columns_for  # noqa: E402
 from src.prediction.prop_quantiles import _inverse  # noqa: E402
+from src.prediction.bet_thresholds import edge_threshold_for  # noqa: E402
 
 
 STAT = "blk"
@@ -55,7 +56,8 @@ OOS_MODEL_PATH = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs",
 META_PATH = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs",
                          "_meta.json")
 REPORT_PATH = os.path.join(PROJECT_DIR, "vault", "Reports", "blk_oos_backtest.md")
-THRESHOLD = 0.5
+# Iter-15: threshold loaded from central config (bet_thresholds.py)
+THRESHOLD = edge_threshold_for(STAT)  # 0.40 as of iter-15
 
 
 def _load_oos_blk_model():
@@ -69,11 +71,8 @@ def _load_oos_blk_model():
 
 
 def _predict_blk_oos(model, feature_row: Dict[str, float]) -> float:
-    cols = feature_columns()
-    n_feats = getattr(model, "n_features_in_", None)
-    if n_feats is not None and n_feats != len(cols):
-        raise SystemExit(f"  [abort] OOS model expects {n_feats} features but "
-                         f"feature_columns() has {len(cols)}. Feature schema drift.")
+    OOS_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
+    cols = feature_columns_for(STAT, OOS_DIR)
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
     pred_t = float(model.predict(X)[0])
     # log1p inverse — BLK is in _LOG_TRANSFORM_STATS.

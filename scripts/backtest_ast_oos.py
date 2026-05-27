@@ -46,6 +46,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     feature_columns,
     feature_columns_for,
     apply_garbage_time_haircut,
+    _safe_mlp_scaler_transform,
 )
 
 try:
@@ -56,8 +57,11 @@ except Exception:  # pragma: no cover
 
 
 STAT = "ast"
-CSV_PATH = os.path.join(PROJECT_DIR, "data", "external", "historical_lines",
-                       "playoffs_2024_canonical.csv")
+# NBA_BACKTEST_CSV_OVERRIDE allows build_unified_baseline.py to inject a
+# merged multi-slice CSV without modifying this script.
+CSV_PATH = os.environ.get("NBA_BACKTEST_CSV_OVERRIDE") or os.path.join(
+    PROJECT_DIR, "data", "external", "historical_lines", "playoffs_2024_canonical.csv"
+)
 GAMELOG_DIR = os.path.join(PROJECT_DIR, "data", "nba")
 OOS_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
 REPORT_PATH = os.path.join(PROJECT_DIR, "vault", "Reports", "ast_oos_backtest.md")
@@ -132,7 +136,7 @@ def _predict_blend(artifacts, feat_row: Dict[str, float]) -> Optional[float]:
     if artifacts.get("lgb") is not None and w_lgb > 0:
         parts.append(w_lgb * _inv_log1p(float(artifacts["lgb"].predict(X)[0])))
     if artifacts.get("mlp") is not None and artifacts.get("mlp_scaler") is not None and w_mlp > 0:
-        Xs = artifacts["mlp_scaler"].transform(X)
+        Xs = _safe_mlp_scaler_transform(artifacts["mlp_scaler"], X)
         parts.append(w_mlp * _inv_log1p(float(artifacts["mlp"].predict(Xs)[0])))
 
     if not parts:

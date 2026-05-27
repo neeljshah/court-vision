@@ -13,14 +13,17 @@ from scripts.backtest_closing_lines_2024_playoffs import (
     _build_asof_row, _resolve_player_id, _season_for_date,
     _classify_result, _recommend, _odds_to_decimal_profit,
 )
-from src.prediction.prop_pergame import feature_columns
+from src.prediction.prop_pergame import feature_columns, feature_columns_for
 from src.prediction.prop_quantiles import _inverse
+from src.prediction.bet_thresholds import edge_threshold_for
 
 
 CSV_PATH = os.path.join(PROJECT_DIR, "data", "external", "historical_lines", "playoffs_2024_canonical.csv")
 GAMELOG_DIR = os.path.join(PROJECT_DIR, "data", "nba")
 OOS_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
 REPORT_DIR = os.path.join(PROJECT_DIR, "vault", "Reports")
+# THRESHOLD is now per-stat via edge_threshold_for() — kept as 0.5 fallback
+# for any stat not listed in bet_thresholds._STAT_THRESHOLDS.
 THRESHOLD = 0.5
 LGB_STATS = {"reb"}
 
@@ -51,7 +54,9 @@ def _load_model(stat):
 
 
 def _predict(stat, model, feat_row):
-    cols = feature_columns()
+    # Use frozen column list from artifact _meta.json so the OOS model always
+    # receives the exact feature set it was trained on (handles schema drift).
+    cols = feature_columns_for(stat, OOS_DIR)
     X = np.array([[float(feat_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
     pred_t = float(model.predict(X)[0])
     pred = float(_inverse(stat, np.array([pred_t]))[0])
@@ -98,7 +103,7 @@ def run(stat):
             skip[f"err:{type(e).__name__}"] += 1; continue
         edge = pred - line
         actual_result = _classify_result(actual, line)
-        rec = _recommend(edge, THRESHOLD)
+        rec = _recommend(edge, edge_threshold_for(stat))
         n_pred += 1
         mae_a.append(abs(pred - actual)); mae_l.append(abs(pred - line))
         if rec != "NO_BET":

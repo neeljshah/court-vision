@@ -1,54 +1,68 @@
 {
   "__global__": {
     "pts": {
-      "roi_pct": 0.83,
-      "hit_rate": 52.82,
-      "mae_actual": 5.8551,
-      "roi_units": 6.36,
-      "n_bets": 763
+      "roi_pct": 2.55,
+      "hit_rate": 53.72,
+      "mae_actual": 5.703,
+      "roi_units": 39.82,
+      "n_bets": 1560
     },
     "ast": {
-      "roi_pct": 0.84,
-      "hit_rate": 52.82,
-      "mae_actual": 1.7592,
-      "roi_units": 4.45,
-      "n_bets": 532
+      "roi_pct": 14.31,
+      "hit_rate": 59.88,
+      "mae_actual": 1.534,
+      "roi_units": 117.36,
+      "n_bets": 820
     },
     "reb": {
-      "roi_pct": 2.61,
-      "hit_rate": 53.75,
-      "mae_actual": null,
-      "roi_units": null,
-      "n_bets": 627
+      "roi_pct": 8.7853,
+      "hit_rate": 56.9828,
+      "mae_actual": 2.1391,
+      "roi_units": 101.9091,
+      "n_bets": 1160
     },
     "fg3m": {
-      "roi_pct": 22.91,
-      "hit_rate": 64.38,
-      "mae_actual": null,
-      "roi_units": null,
-      "n_bets": 306
+      "roi_pct": 23.9536,
+      "hit_rate": 64.9281,
+      "mae_actual": 1.1161,
+      "roi_units": 133.1818,
+      "n_bets": 556
     },
     "stl": {
-      "roi_pct": 33.86,
-      "hit_rate": 70.11,
-      "mae_actual": null,
-      "roi_units": null,
-      "n_bets": 174
+      "roi_pct": 16.9548,
+      "hit_rate": 61.2621,
+      "mae_actual": 0.7499,
+      "roi_units": 193.4545,
+      "n_bets": 1141
     },
     "blk": {
-      "roi_pct": 39.77,
-      "hit_rate": 73.21,
-      "mae_actual": 0.5379,
-      "roi_units": 22.27,
-      "n_bets": 56
-    },
-    "tov": {
-      "roi_pct": 0.0,
-      "hit_rate": 0.0,
-      "mae_actual": null,
-      "roi_units": null,
-      "n_bets": 0
+      "roi_pct": 25.4861,
+      "hit_rate": 65.7308,
+      "mae_actual": 0.5519,
+      "roi_units": 308.6364,
+      "n_bets": 1211
     }
   },
-  "__updated_at__": "2026-05-27T18:51:38+00:00"
+  "__updated_at__": "2026-05-27T20:40:07+00:00",
+  "__source__": {
+    "slices": [
+      "playoffs_2024",
+      "regular_season_2024_25",
+      "regular_season_2025_26",
+      "playoffs_2025_26"
+    ],
+    "files": [
+      "C:\\Users\\neelj\\nba-ai-system\\data\\external\\historical_lines\\playoffs_2024_canonical.csv",
+      "C:\\Users\\neelj\\nba-ai-system\\data\\external\\historical_lines\\regular_season_2024_25_oddsapi.csv",
+      "C:\\Users\\neelj\\nba-ai-system\\data\\external\\historical_lines\\regular_season_2025_26_oddsapi.csv",
+      "C:\\Users\\neelj\\nba-ai-system\\data\\external\\historical_lines\\playoffs_2025_26_oddsapi.csv"
+    ],
+    "generated_at": "2026-05-27T20:40:07+00:00",
+    "iter": "iter15",
+    "thresholds": {
+      "stl": 0.1,
+      "blk": 0.4,
+      "others": 0.5
+    }
+  }
 }
