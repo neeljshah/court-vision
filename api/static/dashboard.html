@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CourtVision Live</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        tier: { s: "#fbbf24", a: "#22c55e", b: "#94a3b8", c: "#475569" },
+        bg:   { base: "#0a0a0f", panel: "#13131a", subtle: "#1c1c25" }
+      }, fontFamily: { mono: ["ui-monospace","SFMono-Regular","Menlo","monospace"] }
+      } }
+    };
+  </script>
+  <style>
+    html, body { background:#0a0a0f; color:#e5e7eb; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; min-height:100vh; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .spark   { display:inline-flex; align-items:flex-end; gap:1px; height:18px; width:80px; }
+    .spark > span { width:5px; background:#22c55e; border-radius:1px; }
+    .spark.neg > span { background:#ef4444; }
+    .pulse-dot { animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+    .drawer { transform: translateX(100%); transition: transform .25s ease-out; }
+    .drawer.open { transform: translateX(0); }
+    @media (max-width: 768px) { .drawer { width:100% !important; max-width:none !important; } }
+  </style>
+</head>
+<body>
+  <main id="root" class="mx-auto flex max-w-7xl flex-col gap-4 p-4 md:p-6">
+
+    <!-- header strip -->
+    <div class="flex items-center justify-between">
+      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+        CourtVision <span class="text-slate-500 font-mono">live</span>
+      </h1>
+      <div id="status-bar" class="flex items-center gap-3 rounded-md border border-slate-800 bg-bg-subtle px-3 py-1.5 text-xs">
+        <span class="flex items-center gap-2">
+          <span id="ws-dot" class="h-2 w-2 rounded-full bg-red-500"></span>
+          <span id="ws-label">connecting…</span>
+        </span>
+        <span class="text-slate-500 tabular" id="last-event">no events yet</span>
+      </div>
+    </div>
+
+    <!-- game header card -->
+    <section id="game-header" class="rounded-xl border border-slate-800 bg-bg-panel p-4 md:p-5">
+      <div class="text-sm text-slate-400">Waiting for the first snapshot…</div>
+    </section>
+
+    <!-- main grid -->
+    <div class="grid grid-cols-12 gap-4">
+      <section class="col-span-12 lg:col-span-3 rounded-xl border border-slate-800 bg-bg-panel">
+        <header class="border-b border-slate-800 px-4 py-3"><h2 class="text-xs font-semibold uppercase tracking-wide text-slate-400">On court</h2></header>
+        <ul id="lineups" class="max-h-96 overflow-y-auto divide-y divide-slate-800">
+          <li class="px-4 py-3 text-sm text-slate-500">No lineup yet…</li>
+        </ul>
+      </section>
+
+      <section class="col-span-12 lg:col-span-5 rounded-xl border border-slate-800 bg-bg-panel">
+        <header class="border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+          <h2 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Top bets · live</h2>
+          <span class="text-xs text-slate-500">click a row for "why"</span>
+        </header>
+        <ul id="bets" class="divide-y divide-slate-800">
+          <li class="px-4 py-3 text-sm text-slate-500">No qualifying bets yet…</li>
+        </ul>
+      </section>
+
+      <section class="col-span-12 lg:col-span-4 rounded-xl border border-slate-800 bg-bg-panel">
+        <header class="border-b border-slate-800 px-4 py-3"><h2 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Play-by-play</h2></header>
+        <ul id="pbp" class="max-h-96 overflow-y-auto divide-y divide-slate-800">
+          <li class="px-4 py-3 text-sm text-slate-500">Waiting for first PBP event…</li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- alerts -->
+    <section class="rounded-xl border border-slate-800 bg-bg-panel">
+      <header class="border-b border-slate-800 px-4 py-3"><h2 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Alerts</h2></header>
+      <ul id="alerts" class="max-h-48 overflow-y-auto divide-y divide-slate-800">
+        <li class="px-4 py-3 text-sm text-slate-500">No alerts yet…</li>
+      </ul>
+    </section>
+
+    <!-- shadow log -->
+    <details id="shadow-details" class="rounded-xl border border-slate-800 bg-bg-panel">
+      <summary class="flex cursor-pointer select-none items-center justify-between px-4 py-3 hover:bg-bg-subtle list-none">
+        <div class="flex items-center gap-3">
+          <h2 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Shadow Log · blocked bets</h2>
+          <span id="shadow-count" class="rounded-sm border border-slate-700 bg-bg-subtle px-1.5 py-0.5 text-[10px] font-mono text-slate-400">—</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="shadow-refresh-btn" onclick="event.preventDefault();event.stopPropagation();loadShadow()" class="rounded border border-slate-700 bg-bg-subtle px-2 py-1 text-xs text-slate-300 hover:bg-slate-800">↻ refresh</button>
+          <span class="text-xs text-slate-600" id="shadow-last-fetch">not loaded</span>
+          <span class="ml-1 text-slate-600 text-xs">▾</span>
+        </div>
+      </summary>
+      <div class="border-t border-slate-800 overflow-x-auto">
+        <table class="w-full text-xs" id="shadow-table">
+          <thead>
+            <tr class="border-b border-slate-800 text-left text-[10px] uppercase text-slate-500">
+              <th class="px-3 py-2">Player</th>
+              <th class="px-3 py-2">Stat</th>
+              <th class="px-3 py-2">Side</th>
+              <th class="px-3 py-2">Line</th>
+              <th class="px-3 py-2">Book</th>
+              <th class="px-3 py-2">Odds</th>
+              <th class="px-3 py-2 cursor-pointer hover:text-slate-200" onclick="shadowSortBy('raw_ev')">Raw EV ▾</th>
+              <th class="px-3 py-2">Proj</th>
+              <th class="px-3 py-2">Tier</th>
+              <th class="px-3 py-2 min-w-[140px]">Blocked By</th>
+            </tr>
+          </thead>
+          <tbody id="shadow-tbody">
+            <tr><td colspan="10" class="px-3 py-4 text-slate-500">Open this panel to load…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <footer class="mt-6 text-center text-xs text-slate-600">
+      CourtVision Live · sub-30s in-play intelligence · auto-updates from event bus over WebSocket
+    </footer>
+  </main>
+
+  <!-- Why drawer -->
+  <aside id="drawer-bg" class="fixed inset-0 z-40 hidden bg-black/50" onclick="closeDrawer()"></aside>
+  <aside id="drawer" class="drawer fixed top-0 right-0 z-50 h-full w-full max-w-md overflow-y-auto border-l border-slate-800 bg-bg-panel p-5">
+    <div class="flex items-start justify-between">
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500">why this bet</div>
+        <h3 id="drawer-title" class="mt-1 text-lg font-semibold">—</h3>
+        <p id="drawer-sub" class="mt-1 text-sm text-slate-400">—</p>
+        <span id="drawer-tier" class="mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-mono">—</span>
+      </div>
+      <button onclick="closeDrawer()" class="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-slate-200" aria-label="close">✕</button>
+    </div>
+    <div id="drawer-sections" class="mt-5 space-y-3">
+      <p class="text-sm text-slate-500">loading…</p>
+    </div>
+  </aside>
+
+<script>
+// ───────────────────────────────────────────────────────────────────────
+// State
+// ───────────────────────────────────────────────────────────────────────
+const state = {
+  snapshots: {},
+  pregame: {},                  // game_id → pregame info dict
+  bets: {},                     // key: pid|stat|side
+  evHistory: {},                // key → array of {ts, ev}
+  pbp: [],                      // last 30
+  alerts: [],                   // last 12
+  lastEventTs: null,
+  wsReady: false,
+  activeBetKey: null,
+};
+
+const MAX_PBP = 30;
+const MAX_ALERTS = 12;
+const MAX_EV = 32;
+
+// Identity key must match the backend's dedup tuple in api/live_v2_app.py so the
+// same prop offer (one specific line+book) collapses to one row. Without line+book,
+// different offers for the same player/stat/side overwrite each other and the
+// dashboard ends up showing whichever offer arrived last instead of the best EV.
+function keyForBet(b) { return `${b.player_id}|${b.stat}|${b.side}|${b.line}|${b.book}`; }
+
+function tierClass(t) {
+  if (t === 'S') return 'bg-tier-s/20 text-tier-s border-tier-s/40';
+  if (t === 'A') return 'bg-tier-a/20 text-tier-a border-tier-a/40';
+  if (t === 'B') return 'bg-tier-b/20 text-tier-b border-tier-b/40';
+  return 'bg-tier-c/20 text-tier-c border-tier-c/40';
+}
+function evClass(ev) {
+  if (ev >= 0.08) return 'text-tier-s';
+  if (ev >= 0.04) return 'text-tier-a';
+  if (ev >= 0.01) return 'text-slate-200';
+  return 'text-slate-400';
+}
+function fmtPct(v, signed=true) {
+  const s = (v*100).toFixed(1); return signed && v>0 ? `+${s}%` : `${s}%`;
+}
+function fmtOdds(o) { return o > 0 ? `+${o}` : `${o}`; }
+function timeAgo(ts) {
+  const s = Math.max(0, Math.round(Date.now()/1000 - ts));
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.floor(s/60)}m`;
+  return `${Math.floor(s/3600)}h`;
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Rendering
+// ───────────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderStatus();
+  renderHeader();
+  renderLineups();
+  renderBets();
+  renderPBP();
+  renderAlerts();
+}
+
+function renderStatus() {
+  const dot = document.getElementById('ws-dot');
+  const lbl = document.getElementById('ws-label');
+  if (state.wsReady) {
+    dot.className = 'h-2 w-2 rounded-full bg-tier-a pulse-dot';
+    lbl.textContent = 'WS connected';
+  } else {
+    dot.className = 'h-2 w-2 rounded-full bg-red-500';
+    lbl.textContent = 'reconnecting…';
+  }
+  document.getElementById('last-event').textContent =
+    state.lastEventTs ? `last event ${timeAgo(state.lastEventTs)} ago` : 'no events yet';
+}
+
+function fmtTipoff(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    const day = d.toLocaleDateString([], { weekday:'short', month:'short', day:'numeric' });
+    const time = d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+    return `${day}, ${time}`;
+  } catch { return iso; }
+}
+
+function fmtCountdown(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  const secs = Math.round((d.getTime() - Date.now()) / 1000);
+  if (secs <= 0) return 'tipping off…';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h > 0) return `tips in ${h}h ${m}m`;
+  if (m > 0) return `tips in ${m}m`;
+  return `tips in ${secs}s`;
+}
+
+function renderHeader() {
+  const card = document.getElementById('game-header');
+  const snapIds = Object.keys(state.snapshots);
+  const pgIds = Object.keys(state.pregame);
+
+  // PREGAME path — show matchup, tipoff, countdown when there's no LIVE snapshot.
+  const liveSnap = snapIds.map(g => state.snapshots[g])
+    .find(s => (s.game_status || '').toUpperCase() === 'LIVE');
+  if (!liveSnap && pgIds.length) {
+    const pg = state.pregame[pgIds[0]];
+    const tipoff = fmtTipoff(pg.tipoff_iso);
+    const countdown = fmtCountdown(pg.tipoff_iso);
+    card.innerHTML = `
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div class="flex items-baseline gap-3 text-xl md:text-2xl tabular font-semibold">
+            <span>${pg.away_team ?? 'AWAY'}</span>
+            <span class="text-slate-500 px-1">@</span>
+            <span>${pg.home_team ?? 'HOME'}</span>
+            <span class="ml-3 rounded-md border border-sky-700/60 bg-sky-900/40 px-2 py-0.5 text-xs uppercase tracking-wider text-sky-300">PREGAME</span>
+          </div>
+          <div class="mt-1 text-sm text-slate-400">
+            ${tipoff || pg.game_status_text || ''}
+            <span class="ml-3 text-sky-300 font-medium">${countdown}</span>
+          </div>
+          <div class="mt-1 text-xs text-slate-500 font-mono">
+            polling cdn.nba.com · game ${pg.game_id} · source: ${pg.found_in || 'unknown'}
+          </div>
+        </div>
+        <div class="text-right text-xs text-slate-500">
+          Dashboard auto-switches to live the moment tipoff data lands.
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (!snapIds.length) {
+    card.innerHTML = '<div class="text-sm text-slate-400">Probing cdn.nba.com for tonight\'s game… (one sec)</div>';
+    return;
+  }
+  const gid = snapIds[0];
+  const s = state.snapshots[gid];
+  const margin = (s.home_score ?? 0) - (s.away_score ?? 0);
+  const arrow = margin > 0 ? '▲' : margin < 0 ? '▼' : '▬';
+  const aCol  = margin > 0 ? 'text-tier-a' : margin < 0 ? 'text-red-400' : 'text-slate-400';
+  card.innerHTML = `
+    <div class="flex items-end justify-between flex-wrap gap-2">
+      <div>
+        <div class="flex items-baseline gap-3 text-xl md:text-2xl tabular font-semibold">
+          <span>${s.away_team ?? 'AWAY'}</span>
+          <span class="text-slate-500">${s.away_score ?? 0}</span>
+          <span class="text-slate-500 px-1">@</span>
+          <span>${s.home_team ?? 'HOME'}</span>
+          <span class="text-slate-300">${s.home_score ?? 0}</span>
+          <span class="ml-2 ${aCol}">${arrow} ${Math.abs(margin)}</span>
+        </div>
+        <div class="mt-1 text-sm text-slate-400 tabular">
+          Q${s.period ?? '-'} · ${s.clock ?? '--:--'} ·
+          <span class="uppercase tracking-wide text-xs text-slate-500">${s.game_status ?? '?'}</span>
+        </div>
+      </div>
+      <div class="text-right text-xs text-slate-500 font-mono">game ${gid}</div>
+    </div>`;
+}
+
+function renderLineups() {
+  const ids = Object.keys(state.snapshots);
+  const ul = document.getElementById('lineups');
+  if (!ids.length) return;
+  const snap = state.snapshots[ids[0]];
+  const players = (snap.players ?? []).filter(p => (p.min ?? 0) > 0)
+                                       .sort((a,b) => (b.pts ?? 0) - (a.pts ?? 0));
+  if (!players.length) {
+    ul.innerHTML = '<li class="px-4 py-3 text-sm text-slate-500">No lineup yet…</li>';
+    return;
+  }
+  ul.innerHTML = players.slice(0, 10).map(p => {
+    const pf = p.pf ?? 0;
+    const pfCol = pf >= 4 ? 'text-red-400' : pf >= 3 ? 'text-amber-300' : 'text-slate-400';
+    return `<li class="flex items-center gap-3 px-4 py-2 text-sm">
+      <div class="min-w-0 flex-1 truncate">
+        <span class="text-slate-100">${p.name ?? '?'}</span>
+        <span class="text-xs text-slate-500"> (${p.team ?? ''})</span>
+      </div>
+      <span class="w-10 text-right tabular text-slate-400">${Math.round(p.min ?? 0)}m</span>
+      <span class="w-10 text-right tabular text-slate-200">${p.pts ?? 0}</span>
+      <span class="w-8 text-right tabular ${pfCol}">${pf}f</span>
+    </li>`;
+  }).join('');
+}
+
+function renderBets() {
+  const ul = document.getElementById('bets');
+  const all = Object.values(state.bets).sort((a,b) => (b.ev ?? 0) - (a.ev ?? 0)).slice(0, 8);
+  if (!all.length) {
+    ul.innerHTML = '<li class="px-4 py-3 text-sm text-slate-500">No qualifying bets yet…</li>';
+    return;
+  }
+  ul.innerHTML = all.map(b => {
+    const k = keyForBet(b);
+    const hist = state.evHistory[k] || [];
+    const evs  = hist.map(x => x.ev);
+    const sparkCls = (evs.length && evs[evs.length-1] >= 0) ? 'spark' : 'spark neg';
+    let sparkHtml = '';
+    if (evs.length >= 2) {
+      const lo = Math.min(...evs), hi = Math.max(...evs), rng = (hi - lo) || 1;
+      sparkHtml = evs.slice(-12).map(v => {
+        const h = Math.max(2, Math.round(((v - lo)/rng) * 16));
+        return `<span style="height:${h}px"></span>`;
+      }).join('');
+    }
+    const deltaHtml = (typeof b.delta === 'number' && b.delta !== 0)
+      ? ` <span class="${b.delta > 0 ? 'text-tier-a' : 'text-red-400'}">(${b.delta > 0 ? '+' : ''}${b.delta.toFixed(1)})</span>`
+      : '';
+    const srcBadge = b.source === 'in_play_decision'
+      ? '<span class="ml-1 rounded-sm border border-amber-700/50 bg-amber-900/30 px-1 text-[10px] font-mono uppercase text-amber-300">LIVE</span>'
+      : b.source === 'pregame_ev'
+        ? '<span class="ml-1 rounded-sm border border-sky-700/50 bg-sky-900/30 px-1 text-[10px] font-mono uppercase text-sky-300">PRE</span>'
+        : '';
+    return `<li role="button" tabindex="0" onclick="openDrawer('${k}')"
+       onkeydown="if(event.key==='Enter'||event.key===' ')openDrawer('${k}')"
+       class="flex cursor-pointer items-center gap-3 px-4 py-3 transition hover:bg-bg-subtle">
+      <span class="rounded-md border px-2 py-0.5 text-xs font-mono ${tierClass(b.tier)}">${b.tier ?? 'C'}</span>
+      <div class="min-w-0 flex-1">
+        <div class="truncate text-sm text-slate-100">
+          <span class="font-medium">${b.name ?? '?'}</span>${srcBadge}
+          <span class="text-slate-400"> · ${(b.stat ?? '').toUpperCase()} ${(b.side ?? '').toUpperCase()} ${b.line ?? '-'}</span>
+          <span class="text-slate-500"> · ${b.book ?? '?'} ${fmtOdds(b.odds ?? 0)}</span>
+        </div>
+        <div class="mt-0.5 text-xs text-slate-500 tabular">
+          proj ${(b.projected_final ?? 0).toFixed(1)} · cur ${Math.round(b.current ?? 0)}${deltaHtml}
+        </div>
+      </div>
+      <div class="w-16 text-right text-sm tabular ${evClass(b.ev ?? 0)}">${fmtPct(b.ev ?? 0)}</div>
+      <div class="w-12 text-right text-xs text-slate-400 tabular">K ${((b.kelly ?? 0)*100).toFixed(1)}%</div>
+      <div class="${sparkCls} ml-1">${sparkHtml}</div>
+    </li>`;
+  }).join('');
+}
+
+const TOPIC_COL = {
+  'pbp.made_shot': 'text-tier-a',
+  'pbp.foul': 'text-red-400',
+  'pbp.turnover': 'text-amber-400',
+  'pbp.period_end': 'text-sky-400',
+  'pbp.sub': 'text-slate-300',
+  'pbp.timeout': 'text-blue-300',
+};
+
+function renderPBP() {
+  const ul = document.getElementById('pbp');
+  if (!state.pbp.length) return;
+  ul.innerHTML = state.pbp.map(ev => {
+    const t = ev.ts ? new Date(ev.ts*1000).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
+    const tag = (ev.topic || '').replace('pbp.', '');
+    const col = TOPIC_COL[ev.topic] || 'text-slate-300';
+    return `<li class="flex gap-3 px-4 py-2 text-sm">
+      <span class="w-20 shrink-0 text-xs font-mono text-slate-500 tabular">${t}</span>
+      <span class="w-20 shrink-0 text-xs font-mono uppercase ${col}">${tag}</span>
+      <span class="min-w-0 flex-1 truncate text-slate-200">${ev.player_name ? `<strong>${ev.player_name}</strong> · ` : ''}${ev.description ?? ''}</span>
+    </li>`;
+  }).join('');
+}
+
+function renderAlerts() {
+  const ul = document.getElementById('alerts');
+  if (!state.alerts.length) return;
+  ul.innerHTML = state.alerts.map(a => {
+    const col = a.severity === 'high' ? 'bg-red-500'
+              : a.severity === 'medium' ? 'bg-amber-400' : 'bg-slate-500';
+    return `<li class="flex gap-3 px-4 py-2 text-sm">
+      <span class="mt-2 h-2 w-2 shrink-0 rounded-full ${col}"></span>
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-slate-200">${a.msg ?? ''}</p>
+        <p class="text-xs text-slate-500 tabular">${timeAgo(a.ts ?? 0)} ago</p>
+      </div>
+    </li>`;
+  }).join('');
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Drawer ("why")
+// ───────────────────────────────────────────────────────────────────────
+function openDrawer(key) {
+  state.activeBetKey = key;
+  const bet = state.bets[key];
+  if (!bet) return;
+  document.getElementById('drawer-bg').classList.remove('hidden');
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawer-title').textContent =
+    `${bet.name} · ${(bet.stat||'').toUpperCase()} ${(bet.side||'').toUpperCase()} ${bet.line}`;
+  document.getElementById('drawer-sub').innerHTML =
+    `${bet.book} ${fmtOdds(bet.odds)} · <span class="${evClass(bet.ev)}">${fmtPct(bet.ev)} EV</span> · K ${((bet.kelly||0)*100).toFixed(1)}%`;
+  const tierEl = document.getElementById('drawer-tier');
+  tierEl.className = `mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-mono ${tierClass(bet.tier)}`;
+  tierEl.textContent = `Tier ${bet.tier ?? '-'}`;
+
+  const sec = document.getElementById('drawer-sections');
+  sec.innerHTML = '<p class="text-sm text-slate-500">loading…</p>';
+
+  const baseQs = window.location.search;
+  const explainUrl = window.location.origin + '/api/explain' + baseQs;
+  const gridQs = new URLSearchParams({ player: bet.name || '', stat: bet.stat || '', line: String(bet.line) }).toString();
+  const sep = baseQs ? '&' : '?';
+  const gridUrl = window.location.origin + '/api/book-grid' + (baseQs ? baseQs + '&' + gridQs : '?' + gridQs);
+
+  Promise.all([
+    fetch(explainUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bet }) })
+      .then(r => r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`)),
+    fetch(gridUrl).then(r => r.ok ? r.json() : null).catch(() => null),
+  ]).then(([data, grid]) => {
+    const parts = [];
+    // 1) Multi-book line shop (OddsJam-style)
+    if (grid && grid.books && grid.books.length) {
+      const rows = grid.books.map(r => `
+        <tr class="border-b border-slate-800 last:border-0">
+          <td class="py-1.5 px-2 font-mono text-xs uppercase">${r.book}</td>
+          <td class="py-1.5 px-2 text-right tabular text-slate-300">${r.line ?? '-'}</td>
+          <td class="py-1.5 px-2 text-right tabular ${r.is_best_over ? 'text-tier-a font-semibold' : 'text-slate-300'}">${r.over_price != null ? (r.over_price > 0 ? '+' : '') + r.over_price : '-'}</td>
+          <td class="py-1.5 px-2 text-right tabular ${r.is_best_under ? 'text-tier-a font-semibold' : 'text-slate-300'}">${r.under_price != null ? (r.under_price > 0 ? '+' : '') + r.under_price : '-'}</td>
+        </tr>`).join('');
+      parts.push(`<article class="rounded-lg border border-slate-800 bg-bg-subtle p-3">
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">All books · ${grid.player} · ${grid.stat.toUpperCase()} ${grid.line}</h4>
+        <table class="w-full text-sm">
+          <thead><tr class="text-xs uppercase text-slate-500 text-left border-b border-slate-800"><th class="py-1 px-2">Book</th><th class="py-1 px-2 text-right">Line</th><th class="py-1 px-2 text-right">Over</th><th class="py-1 px-2 text-right">Under</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p class="mt-2 text-xs text-slate-500">Green = best available price on that side. Pinnacle's no-vig line is the sharp consensus.</p>
+      </article>`);
+    }
+    // 2) Pregame fair-odds summary (always shown when bet has p_fair from EV engine)
+    if (typeof bet.p_fair === 'number') {
+      parts.push(`<article class="rounded-lg border border-slate-800 bg-bg-subtle p-3">
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-400">Pinnacle fair</h4>
+        <p class="mt-1 text-sm">
+          fair probability: <span class="text-slate-100 tabular">${(bet.p_fair * 100).toFixed(1)}%</span>
+          · fair odds: <span class="text-slate-100 tabular">${bet.fair_odds > 0 ? '+' : ''}${bet.fair_odds}</span>
+        </p>
+        <p class="mt-1 text-xs text-slate-500">Your offer at <strong>${bet.book} ${bet.odds > 0 ? '+' : ''}${bet.odds}</strong> implies ${(100/((bet.odds>0?(bet.odds+100):(-bet.odds+100))*1.0)*(bet.odds>0?100:(-bet.odds))).toFixed(1)}% — gap = your edge.</p>
+      </article>`);
+    }
+    // 3) Engine sections (projection path, PBP, foul pressure)
+    if (data && data.sections && data.sections.length) {
+      parts.push(...data.sections.map(s => `
+        <article class="rounded-lg border border-slate-800 bg-bg-subtle p-3">
+          <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-400">${s.title}</h4>
+          <pre class="mt-1 whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-slate-200">${s.body}</pre>
+        </article>`));
+    }
+    if (!parts.length) {
+      sec.innerHTML = '<p class="text-sm text-slate-500">No data for this prop yet — try again after lines refresh.</p>';
+      return;
+    }
+    sec.innerHTML = parts.join('');
+  }).catch(err => {
+    sec.innerHTML = `<div class="rounded-md border border-red-800 bg-red-950/40 p-3 text-sm text-red-300">Couldn't load: ${err}</div>`;
+  });
+}
+
+function closeDrawer() {
+  state.activeBetKey = null;
+  document.getElementById('drawer-bg').classList.add('hidden');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// WebSocket client
+// ───────────────────────────────────────────────────────────────────────
+function getToken() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('token') || '';
+}
+
+function applyHello(h) {
+  state.snapshots = h.snapshots || {};
+  state.pregame = h.pregame || {};
+  state.bets = {};
+  state.evHistory = {};
+  (h.recent_bets || []).forEach(b => {
+    const k = keyForBet(b);
+    state.bets[k] = b;
+    state.evHistory[k] = [{ ts: Date.now()/1000, ev: b.ev || 0 }];
+  });
+  state.alerts = h.recent_alerts || [];
+  state.lastEventTs = Date.now()/1000;
+  renderAll();
+}
+
+function applyMessage(m) {
+  const now = Date.now()/1000;
+  state.lastEventTs = now;
+  if (m.topic === 'hello') return applyHello(m.event);
+  if (m.topic === 'snapshot.updated') {
+    state.snapshots[m.event.game_id] = m.event.snapshot;
+    renderHeader(); renderLineups();
+    return;
+  }
+  if (m.topic === 'pregame.info') {
+    const ev = m.event;
+    if (ev && ev.game_id) {
+      state.pregame[ev.game_id] = ev;
+      renderHeader();
+    }
+    return;
+  }
+  if (m.topic === 'projection.updated') return;   // bet events are what matter for UI
+  if (m.topic === 'bet.recommended') {
+    const b = m.event;
+    const k = keyForBet(b);
+    state.bets[k] = b;
+    const hist = state.evHistory[k] || [];
+    hist.push({ ts: now, ev: b.ev || 0 });
+    state.evHistory[k] = hist.slice(-MAX_EV);
+    renderBets();
+    return;
+  }
+  if (m.topic.startsWith('pbp.')) {
+    const ev = { ...m.event, topic: m.topic, ts: m.event.ts || now };
+    state.pbp.unshift(ev);
+    state.pbp = state.pbp.slice(0, MAX_PBP);
+    renderPBP();
+    return;
+  }
+}
+
+let backoffMs = 500;
+let ws = null;
+let pingTimer = null;
+
+function connect() {
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const tok = getToken();
+  const url = `${proto}//${location.host}/ws/live${tok ? '?token=' + encodeURIComponent(tok) : ''}`;
+  try { ws = new WebSocket(url); }
+  catch (e) { scheduleReconnect(); return; }
+  ws.onopen = () => {
+    backoffMs = 500;
+    state.wsReady = true;
+    renderStatus();
+    if (pingTimer) clearInterval(pingTimer);
+    pingTimer = setInterval(() => { try { ws.send('ping'); } catch {} }, 25000);
+  };
+  ws.onmessage = (e) => {
+    try { applyMessage(JSON.parse(e.data)); } catch {}
+  };
+  ws.onerror = () => {};
+  ws.onclose = () => {
+    if (pingTimer) { clearInterval(pingTimer); pingTimer = null; }
+    state.wsReady = false;
+    renderStatus();
+    scheduleReconnect();
+  };
+}
+function scheduleReconnect() {
+  const j = Math.random() * 250;
+  setTimeout(connect, Math.min(backoffMs + j, 15000));
+  backoffMs = Math.min(backoffMs * 2, 15000);
+}
+
+// Rebuild state.bets from /api/bets — used for initial hydration and the
+// periodic refresh below. WS events keep state.bets fresh between refreshes,
+// but only the REST endpoint reflects the server's eviction of stale bets
+// (line moves that dropped the offer below the EV floor).
+function refreshBetsFromServer() {
+  fetch(window.location.origin + '/api/bets' + window.location.search)
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      if (!d) return;
+      const fresh = {};
+      const evHist = state.evHistory;
+      (d.bets || []).forEach(b => {
+        const k = keyForBet(b);
+        fresh[k] = b;
+        // Preserve EV history if we already have it for this key.
+        if (!evHist[k]) evHist[k] = [{ ts: Date.now()/1000, ev: b.ev || 0 }];
+      });
+      state.bets = fresh;
+      // Drop EV history for bets that fell off the server.
+      Object.keys(evHist).forEach(k => { if (!fresh[k]) delete evHist[k]; });
+      renderBets();
+    });
+}
+
+// initial hydration via REST — needs full /api/state for snapshots + pregame.
+fetch(window.location.origin + '/api/state' + window.location.search)
+  .then(r => r.ok ? r.json() : null)
+  .then(d => { if (d) {
+    state.snapshots = d.snapshots || {};
+    state.pregame = d.pregame || {};
+    state.alerts = d.recent_alerts || [];
+    (d.recent_bets || []).forEach(b => {
+      const k = keyForBet(b); state.bets[k] = b;
+      state.evHistory[k] = [{ ts: Date.now()/1000, ev: b.ev || 0 }];
+    });
+    renderAll();
+  } });
+
+// Every 75s pull /api/bets and rebuild state.bets so evicted picks disappear.
+setInterval(refreshBetsFromServer, 75_000);
+
+// Re-render the countdown every second so it ticks down even without events.
+setInterval(() => {
+  // cheap re-render of just the header to keep the countdown fresh
+  if (Object.keys(state.pregame).length) renderHeader();
+}, 1000);
+
+connect();
+setInterval(renderStatus, 1000);
+
+// ───────────────────────────────────────────────────────────────────────
+// Shadow Log
+// ───────────────────────────────────────────────────────────────────────
+let shadowData = [];
+let shadowSortDir = -1; // -1 = desc
+
+const GATE_COLORS = {
+  three_book_consensus: 'text-red-400 border-red-800/50 bg-red-950/30',
+  projection_sane:      'text-amber-400 border-amber-700/50 bg-amber-950/30',
+  ev_ceiling_50pct:     'text-yellow-400 border-yellow-700/50 bg-yellow-950/30',
+  ev_floor:             'text-orange-400 border-orange-800/50 bg-orange-950/30',
+  min_books:            'text-rose-400 border-rose-800/50 bg-rose-950/30',
+};
+const GATE_DEFAULT = 'text-slate-300 border-slate-700 bg-bg-subtle';
+
+function shadowGateClass(gate) {
+  return GATE_COLORS[gate] || GATE_DEFAULT;
+}
+
+function renderShadow() {
+  const tbody = document.getElementById('shadow-tbody');
+  const count = document.getElementById('shadow-count');
+  if (!shadowData.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="px-3 py-4 text-slate-500">No blocked bets for today\'s slate.</td></tr>';
+    count.textContent = '0';
+    return;
+  }
+  count.textContent = shadowData.length;
+  tbody.innerHTML = shadowData.map(b => {
+    const gateClass = shadowGateClass(b.gate_blocked_by);
+    const evCol = b.raw_ev >= 0.08 ? 'text-tier-s' : b.raw_ev >= 0.04 ? 'text-tier-a' : 'text-slate-300';
+    return `<tr class="border-b border-slate-800 last:border-0 hover:bg-bg-subtle">
+      <td class="px-3 py-2 text-slate-100 font-medium">${b.name || '?'}</td>
+      <td class="px-3 py-2 font-mono text-slate-300">${(b.stat || '').toUpperCase()}</td>
+      <td class="px-3 py-2 font-mono text-slate-300">${(b.side || '').toUpperCase()}</td>
+      <td class="px-3 py-2 tabular text-slate-300">${b.line}</td>
+      <td class="px-3 py-2 font-mono text-slate-400">${b.book || '?'}</td>
+      <td class="px-3 py-2 tabular text-slate-400">${b.odds > 0 ? '+' + b.odds : b.odds}</td>
+      <td class="px-3 py-2 tabular font-semibold ${evCol}">${(b.raw_ev * 100).toFixed(1)}%</td>
+      <td class="px-3 py-2 tabular text-slate-300">${(b.model_proj || 0).toFixed(1)}</td>
+      <td class="px-3 py-2 font-mono text-slate-400">${b.tier || '—'}</td>
+      <td class="px-3 py-2">
+        <span class="rounded border px-1.5 py-0.5 font-mono text-[10px] ${gateClass}">${b.gate_blocked_by || '?'}</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function shadowSortBy(col) {
+  shadowData.sort((a, b) => shadowSortDir * (parseFloat(b[col] || 0) - parseFloat(a[col] || 0)));
+  shadowSortDir *= -1;
+  renderShadow();
+}
+
+let shadowAutoRefreshTimer = null;
+
+function loadShadow() {
+  const url = window.location.origin + '/api/shadow' + window.location.search;
+  fetch(url)
+    .then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status))
+    .then(d => {
+      shadowData = d.shadow_bets || [];
+      const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('shadow-last-fetch').textContent = 'fetched ' + ts;
+      renderShadow();
+    })
+    .catch(err => {
+      document.getElementById('shadow-last-fetch').textContent = 'error: ' + err;
+    });
+}
+
+// Auto-refresh every 60s while panel is open.
+document.getElementById('shadow-details').addEventListener('toggle', function() {
+  if (this.open) {
+    loadShadow();
+    shadowAutoRefreshTimer = setInterval(loadShadow, 60_000);
+  } else {
+    if (shadowAutoRefreshTimer) { clearInterval(shadowAutoRefreshTimer); shadowAutoRefreshTimer = null; }
+  }
+});
+</script>
+</body>
+</html>
