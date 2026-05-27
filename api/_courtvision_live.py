@@ -96,9 +96,15 @@ async def _bus_handler(topic: str, event: dict) -> None:
 
 
 def _ensure_bus_subscription() -> None:
-    """Subscribe once per process to the relevant bus topics."""
+    """Subscribe once per process to the relevant bus topics.
+
+    Gated by env var COURTVISION_SSE_BUS=1 so we can disable the subscription
+    if it ever destabilizes the host app (the event bus is async + in-process,
+    so a misbehaving subscriber can slow the event loop).
+    """
+    import os as _os
     global _bus_subscribed
-    if _bus_subscribed:
+    if _bus_subscribed or _os.environ.get("COURTVISION_SSE_BUS", "0") != "1":
         return
     try:
         from src.live.event_bus import get_bus
@@ -108,8 +114,7 @@ def _ensure_bus_subscription() -> None:
         _bus_subscribed = True
         log.info("courtvision SSE: subscribed to %s", ", ".join(_TOPICS))
     except Exception as exc:
-        log.warning("courtvision SSE: event bus unavailable (%s); "
-                    "stream will still emit heartbeats.", exc)
+        log.warning("courtvision SSE: event bus unavailable (%s)", exc)
 
 
 async def _generator(request: Request, max_seconds: float = 600.0):
