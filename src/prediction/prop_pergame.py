@@ -289,6 +289,32 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     return cols
 
 
+def feature_columns_for(stat: str, artifact_dir: Optional[str] = None) -> List[str]:
+    """Return the frozen column list for an artifact directory, or the live default.
+
+    Wave-3 schema versioning: if artifact_dir/_meta.json contains
+    stats.<stat>.feature_columns, that frozen list is returned so the
+    prediction path can slice the input DataFrame to exactly the columns
+    the artifact was trained on — enabling clean A/B tests between
+    85-col (pre-Wave-2b) and 109-col (post-Wave-2b) artifacts without
+    ValueError on dim-mismatch.
+
+    Falls back to feature_columns(stat) when the key is absent (fresh
+    training run, or pre-patch artifact) so existing callers are unaffected.
+    """
+    if artifact_dir is not None:
+        meta_path = os.path.join(artifact_dir, "_meta.json")
+        if os.path.isfile(meta_path):
+            try:
+                meta = json.load(open(meta_path, encoding="utf-8"))
+                frozen = (meta.get("stats") or {}).get(stat, {}).get("feature_columns")
+                if isinstance(frozen, list) and frozen:
+                    return frozen
+            except Exception:
+                pass
+    return feature_columns(stat)
+
+
 # ── per-player advanced-stat L5/L10/EWMA features (cycle 6, loop 5) ────────────
 #
 # Sourced from data/player_adv_stats.parquet — built by
@@ -2890,6 +2916,12 @@ def train_pergame_models(
     # Meta-stacker weights sidecar — written even on partial trains so the
     # weights for the trained stats stay in sync with their on-disk models.
     _persist_meta_weights(model_dir, metrics)
+    # Wave-3 schema versioning: persist the exact column list used for each
+    # trained stat into _meta.json so feature_columns_for() can recover it
+    # and the prediction path can slice to the frozen schema at inference time.
+    for s in stats_to_train:
+        stat_cols = feature_columns(s)  # per-stat list (includes reb-context for reb)
+        _persist_meta_feature_columns(model_dir, s, stat_cols)
     return metrics
 
 
@@ -2920,6 +2952,33 @@ def _persist_meta_weights(model_dir: str, metrics: dict) -> None:
             existing[stat] = entry
     with open(path, "w", encoding="utf-8") as f:
         json.dump(existing, f, indent=2)
+
+
+def _persist_meta_feature_columns(model_dir: str, stat: str,
+                                   cols: List[str]) -> None:
+    """Write the trained column list to _meta.json under stats.<stat>.
+
+    Idempotent — reads the existing file and only updates the two keys
+    (feature_columns, n_features) for the given stat. Never raises so
+    callers can call this unconditionally without disrupting a training run.
+    """
+    meta_path = os.path.join(model_dir, "_meta.json")
+    try:
+        if os.path.exists(meta_path):
+            with open(meta_path, encoding="utf-8") as fh:
+                all_meta: dict = json.load(fh)
+        else:
+            all_meta = {}
+        all_meta.setdefault("stats", {}).setdefault(stat, {})
+        all_meta["stats"][stat]["feature_columns"] = list(cols)
+        all_meta["stats"][stat]["n_features"] = len(cols)
+        with open(meta_path, "w", encoding="utf-8") as fh:
+            json.dump(all_meta, fh, indent=2)
+    except Exception as exc:
+        logger.warning(
+            "prop_pergame._persist_meta_feature_columns: could not write "
+            "%s for stat=%s (%s: %s)", meta_path, stat, type(exc).__name__, exc,
+        )
 
 
 # ── inference ─────────────────────────────────────────────────────────────────
@@ -3063,12 +3122,10 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     if stat in _USE_Q50_STATS:
         q50 = _load_q50_model(stat, model_dir)
         if q50 is not None:
-            # Cycle 90d (REJECTED): REB OREB-context probe rejected (single
-            # +0.0013, WF 1/4 positive). REB stays on the 85-col cycle-29
-            # LGB-q50 artifact, so we dispatch with the global feature_columns()
-            # for all q50 stats. If a future cycle ships a wider REB head,
-            # switch this line to `feature_columns(stat=stat)`.
-            cols = feature_columns()
+            # Wave-3 schema versioning: slice to the artifact's frozen column
+            # list (feature_columns_for reads _meta.json when present) so
+            # 85-col and 109-col artifacts can coexist cleanly in A/B tests.
+            cols = feature_columns_for(stat, model_dir)
             if getattr(q50, "n_features_in_", None) not in (None, len(cols)):
                 return None
             X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
@@ -3093,9 +3150,12 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     models = load_pergame_model(stat, model_dir)
     if not models:
         return None
-    cols = feature_columns()
+    # Wave-3 schema versioning: slice to the artifact's frozen column list.
+    # feature_columns_for reads _meta.json when present; falls back to the
+    # live feature_columns() so existing callers are unaffected.
+    cols = feature_columns_for(stat, model_dir)
     expected_n = len(cols)
-    # Guard: stale model trained on a different feature set — refuse to predict.
+    # Guard: model n_features_in_ must match the frozen column count.
     for m in models:
         target = m[1] if isinstance(m, tuple) else m  # MLP entries are (scaler, model)
         n_feats = getattr(target, "n_features_in_", None)
