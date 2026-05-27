@@ -26,7 +26,8 @@ log = logging.getLogger(__name__)
 
 _TOPICS = ("bet.recommended", "snapshot.updated", "pregame.info")
 _RING_SIZE = 25
-_HEARTBEAT_SEC = 25.0
+_HEARTBEAT_SEC = 10.0
+_DEFAULT_MAX_SECONDS = 60.0  # browser EventSource auto-reconnects
 _ring: collections.deque = collections.deque(maxlen=_RING_SIZE)
 _ring_seq = 0
 _bus_subscribed = False
@@ -117,7 +118,7 @@ def _ensure_bus_subscription() -> None:
         log.warning("courtvision SSE: event bus unavailable (%s)", exc)
 
 
-async def _generator(request: Request, max_seconds: float = 600.0):
+async def _generator(request: Request, max_seconds: float = _DEFAULT_MAX_SECONDS):
     """Stream SSE events for at most `max_seconds`. Browser EventSource auto-reconnects."""
     last_seen = _ring[-1]["seq"] if _ring else 0
     for entry in list(_ring):
