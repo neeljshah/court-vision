@@ -78,6 +78,9 @@ def test_gbm_prob_touch_below_already_below_is_one() -> None:
     # Regression: '$72,000 May 25-31?' must NOT eat the 'M' from May as a suffix.
     ("Will Bitcoin dip to $72,000 May 25-31?", 72_000.0),
     ("Will Bitcoin dip to $72,000 Mar 25?", 72_000.0),
+    # Comparator-anchored fallback (no $ prefix).
+    ("Bitcoin above 75,400 on May 27, 8AM ET?", 75_400.0),
+    ("Will Bitcoin reach 100k by EOY?", 100_000.0),
 ])
 def test_parse_price(text: str, expected: float) -> None:
     assert _parse_price(text) == pytest.approx(expected)
