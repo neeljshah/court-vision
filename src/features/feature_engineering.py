@@ -745,6 +745,150 @@ def load_rotowire_starters() -> dict:
     return out
 
 
+# ─────────────────────────────────────────────────────────────────────────
+# Injury features (iter 4 — NBA official injury feed)
+# ─────────────────────────────────────────────────────────────────────────
+_INJ_DF_CACHE: Optional[pd.DataFrame] = None  # type: ignore[assignment]
+
+
+def load_injury_features() -> pd.DataFrame:
+    """Load merged NBA injury parquet (built by scripts/build_injury_features.py).
+
+    Returns one-row-per-(player_name_lower, listed_date) DataFrame with
+    columns: player_name_lower, player_name, team_abbrev, status, reason,
+    listed_date (pd.Timestamp, UTC-naive), source, player_id.
+
+    Returns empty DataFrame if the parquet is missing — callers must handle.
+
+    WALK-FORWARD SAFETY:
+        The DataFrame returns ALL listed injury records (no asof filter
+        applied here). It is the caller's (compute_injury_features) job to
+        filter ``listed_date < asof_dt`` to prevent look-ahead leakage. A
+        2026-04-15 game prediction must never see a 2026-05-02 injury
+        listing — even though both rows live in the same parquet.
+    """
+    global _INJ_DF_CACHE
+    if _INJ_DF_CACHE is not None:
+        return _INJ_DF_CACHE
+    path = os.path.join(_DATA_DIR, "cache", "injury_features.parquet")
+    if not os.path.exists(path):
+        _INJ_DF_CACHE = pd.DataFrame(columns=[
+            "player_name_lower", "player_name", "team_abbrev", "status",
+            "reason", "listed_date", "source", "player_id",
+        ])
+        return _INJ_DF_CACHE
+    try:
+        df = pd.read_parquet(path)
+        # Force naive timestamps for safe comparison vs caller's asof_dt.
+        if "listed_date" in df.columns:
+            df["listed_date"] = pd.to_datetime(df["listed_date"], errors="coerce", utc=True)
+            try:
+                df["listed_date"] = df["listed_date"].dt.tz_convert(None)
+            except (TypeError, AttributeError):
+                pass
+        _INJ_DF_CACHE = df
+    except Exception:
+        _INJ_DF_CACHE = pd.DataFrame(columns=[
+            "player_name_lower", "player_name", "team_abbrev", "status",
+            "reason", "listed_date", "source", "player_id",
+        ])
+    return _INJ_DF_CACHE
+
+
+def compute_injury_features(
+    player_name: str,
+    team_abbrev: str,
+    asof_dt,
+) -> dict:
+    """Compute 4 walk-forward-safe injury features for one (player, asof_dt).
+
+    Only injury records with ``listed_date < asof_dt`` are visible. For
+    the player's status we pick the MOST RECENT listing strictly before
+    asof_dt (so a player listed Out 2026-05-02 and not updated since is
+    still Out on 2026-05-10).
+
+    Args:
+        player_name: Player display name ("Jayson Tatum").
+        team_abbrev: 3-letter team code ("BOS"). Used for team-count features.
+        asof_dt: timezone-naive pd.Timestamp / datetime — the prediction time.
+                 Anything in the parquet with listed_date >= asof_dt is hidden.
+
+    Returns:
+        dict with 4 keys:
+          injury_status_active        : str | None
+          injury_hours_since_listed   : float  (999.0 if no record)
+          team_inj_count_out          : int    (Out teammates listed < asof_dt)
+          team_inj_count_questionable : int    (Questionable teammates listed < asof_dt)
+
+    FALLBACK:
+        Parquet missing OR asof_dt older than earliest listed_date →
+        returns (None, 999.0, 0, 0) — never raises.
+    """
+    default = {
+        "injury_status_active":        None,
+        "injury_hours_since_listed":   999.0,
+        "team_inj_count_out":          0,
+        "team_inj_count_questionable": 0,
+    }
+    df = load_injury_features()
+    if df.empty:
+        return default
+
+    try:
+        asof_ts = pd.to_datetime(asof_dt, utc=True, errors="coerce")
+        if pd.isna(asof_ts):
+            return default
+        try:
+            asof_ts = asof_ts.tz_convert(None)
+        except (TypeError, AttributeError):
+            asof_ts = asof_ts.replace(tzinfo=None) if getattr(asof_ts, "tzinfo", None) else asof_ts
+    except Exception:
+        return default
+
+    # Walk-forward filter: only listings PRIOR to asof_ts are visible.
+    visible = df[df["listed_date"] < asof_ts]
+    if visible.empty:
+        return default
+
+    # Per-player most-recent listing
+    name_lc = (player_name or "").strip().lower()
+    status_active = None
+    hours_since = 999.0
+    if name_lc:
+        player_rows = visible[visible["player_name_lower"] == name_lc]
+        if not player_rows.empty:
+            latest = player_rows.iloc[player_rows["listed_date"].argmax()]
+            status_active = latest.get("status") or None
+            try:
+                delta = asof_ts - latest["listed_date"]
+                hours_since = float(delta.total_seconds() / 3600.0)
+                if hours_since < 0 or hours_since > 1e6:
+                    hours_since = 999.0
+            except Exception:
+                hours_since = 999.0
+
+    # Team-level counts: latest-status-per-teammate, then count Out / Questionable.
+    team = (team_abbrev or "").strip().upper()
+    team_out = 0
+    team_q   = 0
+    if team:
+        team_rows = visible[visible["team_abbrev"] == team]
+        if not team_rows.empty:
+            # Keep most-recent row per teammate
+            team_rows = team_rows.sort_values("listed_date").drop_duplicates(
+                subset=["player_name_lower"], keep="last"
+            )
+            team_out = int((team_rows["status"] == "Out").sum())
+            team_q   = int((team_rows["status"] == "Questionable").sum())
+
+    return {
+        "injury_status_active":        status_active,
+        "injury_hours_since_listed":   hours_since,
+        "team_inj_count_out":          team_out,
+        "team_inj_count_questionable": team_q,
+    }
+
+
 def add_external_player_features(
     df: pd.DataFrame,
     season: str = "2024-25",
@@ -1105,6 +1249,55 @@ def add_external_player_features(
             )
     else:
         df["confirmed_starter"] = float("nan")
+
+    # ── Injury features (iter 4 — NBA official injury feed) ─────────────────
+    # Walk-forward safe: only injury records with listed_date < asof_dt are
+    # visible (see compute_injury_features). Fallback (None, 999.0, 0, 0) when
+    # parquet missing or asof_dt precedes all listings.
+    #
+    # asof_dt source priority (per-row):
+    #   1. df["game_date"] column (preferred — historical / training rows)
+    #   2. df["asof_dt"] column   (live prediction rows already carry it)
+    #   3. NOW (last-resort live fallback)
+    inj_df = load_injury_features()
+    if not inj_df.empty and "player_name" in df.columns:
+        # Resolve per-row asof_dt
+        if "game_date" in df.columns:
+            asof_series = pd.to_datetime(df["game_date"], errors="coerce", utc=True)
+        elif "asof_dt" in df.columns:
+            asof_series = pd.to_datetime(df["asof_dt"], errors="coerce", utc=True)
+        else:
+            asof_series = pd.Series(pd.Timestamp.utcnow(), index=df.index)
+        try:
+            asof_series = asof_series.dt.tz_convert(None)
+        except (TypeError, AttributeError):
+            pass
+
+        team_col = "team_abbrev" if "team_abbrev" in df.columns else (
+            "team" if "team" in df.columns else None
+        )
+
+        status_col: list = []
+        hours_col:  list = []
+        team_out_col: list = []
+        team_q_col:   list = []
+        for i, name in enumerate(df["player_name"]):
+            team = df[team_col].iloc[i] if team_col else ""
+            asof = asof_series.iloc[i] if i < len(asof_series) else pd.NaT
+            feats = compute_injury_features(name, team, asof)
+            status_col.append(feats["injury_status_active"])
+            hours_col.append(feats["injury_hours_since_listed"])
+            team_out_col.append(feats["team_inj_count_out"])
+            team_q_col.append(feats["team_inj_count_questionable"])
+        df["injury_status_active"]        = status_col
+        df["injury_hours_since_listed"]   = hours_col
+        df["team_inj_count_out"]          = team_out_col
+        df["team_inj_count_questionable"] = team_q_col
+    else:
+        df["injury_status_active"]        = None
+        df["injury_hours_since_listed"]   = 999.0
+        df["team_inj_count_out"]          = 0
+        df["team_inj_count_questionable"] = 0
 
     return df
 
