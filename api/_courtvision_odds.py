@@ -210,6 +210,60 @@ def _american_to_implied(odds: int) -> float:
     return -odds / (-odds + 100.0)
 
 
+def freshness(date: str) -> dict:
+    """Per-book CSV mtime + latest captured_at + row count."""
+    import os
+    out: dict[str, dict] = {}
+    for path in _book_csv_paths(date):
+        book = path.stem.split("_")[-1].lower()
+        try:
+            mtime = datetime.fromtimestamp(path.stat().st_mtime,
+                                            tz=timezone.utc).isoformat()
+        except OSError:
+            mtime = None
+        latest_capture = ""
+        n_rows = 0
+        try:
+            with path.open(newline="", encoding="utf-8") as f:
+                for r in csv.DictReader(f):
+                    n_rows += 1
+                    ts = r.get("captured_at") or ""
+                    if ts > latest_capture:
+                        latest_capture = ts
+        except OSError:
+            pass
+        out[book] = {
+            "display": _BOOK_DISPLAY.get(book, book),
+            "csv_path": str(path.relative_to(path.parent.parent)),
+            "csv_mtime_utc": mtime,
+            "n_rows": n_rows,
+            "latest_capture": latest_capture,
+        }
+    return {"date": date, "n_books": len(out), "books": out}
+
+
+def consolidate_csv(date: str, stat: str | None = None,
+                    player: str | None = None) -> str:
+    """Render consolidated odds as a CSV string (one row per (player, stat, line, book))."""
+    import io
+    props = consolidate(date)
+    if stat:
+        props = [p for p in props if p["stat"] == stat.lower()]
+    if player:
+        player_l = player.lower()
+        props = [p for p in props if player_l in p["player"].lower()]
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["date", "player", "stat", "line", "book", "over_price",
+                "under_price", "captured_at"])
+    for p in props:
+        for b in p["books"]:
+            w.writerow([date, p["player"], p["stat"], p["line"], b["book"],
+                        b.get("over_price") or "", b.get("under_price") or "",
+                        b.get("captured_at") or ""])
+    return buf.getvalue()
+
+
 def cross_book_spread(date: str, min_spread_pp: float = 2.0) -> list[dict]:
     """Props where books differ on implied prob — line shop / arb opportunities.
 

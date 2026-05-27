@@ -286,6 +286,20 @@ def _spread_env(date: str, min_spread_pp: float) -> dict:
 def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
     return JSONResponse(_spread_env(date, min_spread_pp))
 
+@router.get("/api/odds/freshness/{date}", tags=["courtvision"])
+def api_odds_freshness(date: str):
+    """Per-book CSV freshness: file mtime, latest captured_at, row count."""
+    from api._courtvision_odds import freshness
+    return JSONResponse(freshness(date))
+
+@router.get("/api/odds/{date}.csv", tags=["courtvision"])
+def api_odds_csv(date: str, stat: str = Query(""), player: str = Query("")):
+    """CSV export of consolidated odds — one row per (player, stat, line, book)."""
+    from api._courtvision_odds import consolidate_csv
+    body = consolidate_csv(date, stat or None, player or None)
+    return Response(content=body, media_type="text/csv",
+                    headers={"Content-Disposition": f'attachment; filename="odds_{date}.csv"'})
+
 @router.get("/arbs", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
 def arbs_page(request: Request, date: str = Query(default_factory=_today_et),
