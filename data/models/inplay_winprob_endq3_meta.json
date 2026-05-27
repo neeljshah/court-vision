@@ -10,21 +10,24 @@
     "last_q_margin",
     "pregame_win_prob",
     "home_team_id",
-    "season"
+    "season",
+    "q1_usg_avg",
+    "halftime_pace_shift",
+    "trailing_team_q4_usg_hhi"
   ],
   "categorical_cols": [
     "home_team_id",
     "season"
   ],
-  "n_train_rows": 449,
-  "home_win_rate": 0.5233853006681515,
+  "n_train_rows": 3685,
+  "home_win_rate": 0.5256445047489824,
   "in_sample": {
-    "auc": 1.0,
-    "brier": 0.006852771566767228,
-    "log_loss": 0.058407238753921335,
-    "accuracy": 1.0
+    "auc": 0.9989503454940465,
+    "brier": 0.030131100030012674,
+    "log_loss": 0.13335538185336052,
+    "accuracy": 0.9834464043419268
   },
-  "trained_at": "2026-05-26T05:23:25Z",
+  "trained_at": "2026-05-27T22:40:55Z",
   "probe": "R10_M5_inplay_winprob",
   "hyperparams": {
     "n_estimators": 300,

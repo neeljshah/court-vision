@@ -1,0 +1,124 @@
+{
+  "probe": "quarter_features_expansion_endq3",
+  "decision": "SHIP",
+  "folds_improved": 3,
+  "n_folds": 4,
+  "pre_briers": [
+    0.1392196880918223,
+    0.1484242826742246,
+    0.15825941254495335,
+    0.11744131490458588
+  ],
+  "post_briers": [
+    0.1392196880918223,
+    0.14606072146628649,
+    0.14549469092518677,
+    0.11636598369504206
+  ],
+  "deltas": [
+    0.0,
+    -0.002363561207938125,
+    -0.012764721619766578,
+    -0.0010753312095438256
+  ],
+  "pre_mean_brier": 0.14083617455389655,
+  "post_mean_brier": 0.1367852710445844,
+  "mean_delta": -0.004050903509312132,
+  "qf_coverage_pct": 32.021709633649934,
+  "base_features": [
+    "score_margin",
+    "total_pts",
+    "pace_so_far",
+    "q1_delta",
+    "q2_delta",
+    "q3_delta",
+    "last_q_margin",
+    "pregame_win_prob",
+    "home_team_id",
+    "season"
+  ],
+  "expanded_features": [
+    "score_margin",
+    "total_pts",
+    "pace_so_far",
+    "q1_delta",
+    "q2_delta",
+    "q3_delta",
+    "last_q_margin",
+    "pregame_win_prob",
+    "home_team_id",
+    "season",
+    "q1_usg_avg",
+    "halftime_pace_shift",
+    "trailing_team_q4_usg_hhi"
+  ],
+  "elapsed_s": 3.36812162399292,
+  "pre_folds_detail": [
+    {
+      "fold": 0,
+      "train_n": 2211,
+      "test_n": 368,
+      "brier": 0.1392196880918223,
+      "accuracy": 0.7934782608695652,
+      "auc": 0.8985674198788953
+    },
+    {
+      "fold": 1,
+      "train_n": 2579,
+      "test_n": 368,
+      "brier": 0.1484242826742246,
+      "accuracy": 0.7907608695652174,
+      "auc": 0.8857083531086852
+    },
+    {
+      "fold": 2,
+      "train_n": 2947,
+      "test_n": 368,
+      "brier": 0.15825941254495335,
+      "accuracy": 0.7744565217391305,
+      "auc": 0.875942852072056
+    },
+    {
+      "fold": 3,
+      "train_n": 3315,
+      "test_n": 370,
+      "brier": 0.11744131490458588,
+      "accuracy": 0.8432432432432433,
+      "auc": 0.9124386252045825
+    }
+  ],
+  "post_folds_detail": [
+    {
+      "fold": 0,
+      "train_n": 2211,
+      "test_n": 368,
+      "brier": 0.1392196880918223,
+      "accuracy": 0.7934782608695652,
+      "auc": 0.8985674198788953
+    },
+    {
+      "fold": 1,
+      "train_n": 2579,
+      "test_n": 368,
+      "brier": 0.14606072146628649,
+      "accuracy": 0.779891304347826,
+      "auc": 0.8879627432368297
+    },
+    {
+      "fold": 2,
+      "train_n": 2947,
+      "test_n": 368,
+      "brier": 0.14549469092518677,
+      "accuracy": 0.8016304347826086,
+      "auc": 0.8906735291507676
+    },
+    {
+      "fold": 3,
+      "train_n": 3315,
+      "test_n": 370,
+      "brier": 0.11636598369504206,
+      "accuracy": 0.8351351351351352,
+      "auc": 0.9207680617255085
+    }
+  ]
+}
