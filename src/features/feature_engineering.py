@@ -1049,7 +1049,16 @@ def add_external_player_features(
         pass
 
     # ── News Reaction Window ─────────────────────────────────────────────────
-    news_lookup: dict = {}
+    # Issue #17 fix: anchor on game_datetime per row, not datetime.utcnow().
+    # The rotowire_news.json cache is overwritten every poll, so during
+    # historical training every row would otherwise pick up the same "today's"
+    # news → constant feature (dead-weight). For now we expose the lookup as
+    # a per-player dict of {player → most_recent_pub_dt}; the column write at
+    # the bottom of this function compares against game_dt if present in the
+    # row, otherwise emits NaN (training-safe — the model treats it as
+    # missing rather than learning from a constant).
+    news_by_player: dict = {}
+    news_cache_freshness_hours = 1e9  # huge = treat as stale → NaN downstream
     try:
         import json as _json, os as _os
         _rw_cache = _os.path.join(_DATA_DIR, "external", "rotowire_news.json")
@@ -1060,8 +1069,6 @@ def add_external_player_features(
             def _nn(s: str) -> str:
                 return _ud.normalize("NFKD", s).encode("ascii", "ignore").decode().lower().strip()
             import datetime as _dtmod
-            _now_utc = _dtmod.datetime.utcnow()
-            _by_player: dict = {}
             for _it in _rw_items:
                 if (_it.get("status_guess", "Unknown") == "Unknown"):
                     continue
@@ -1078,13 +1085,33 @@ def add_external_player_features(
                         continue
                 if _pub_dt is None:
                     continue
-                if _pkey not in _by_player or _pub_dt > _by_player[_pkey]:
-                    _by_player[_pkey] = _pub_dt
-            for _pkey, _dt in _by_player.items():
+                if _pkey not in news_by_player or _pub_dt > news_by_player[_pkey]:
+                    news_by_player[_pkey] = _pub_dt
+            # Compute cache freshness: hours between max pub_dt and utcnow.
+            if news_by_player:
+                _max_pub = max(news_by_player.values())
+                _delta = _dtmod.datetime.utcnow() - _max_pub
+                news_cache_freshness_hours = float(_delta.total_seconds() / 3600.0)
+    # Build the per-player news_lookup used by the column writer below.
+    # Live mode (cache freshness ≤ 72h): emit (now - pub_dt) as in the
+    #   original behavior — this is the right value for predicting today's slate.
+    # Training mode (cache freshness > 72h): emit NaN (via float('nan')) so
+    #   the model sees missing rather than a contaminated constant.
+        import math as _math
+        news_lookup: dict = {}
+        _is_live = news_cache_freshness_hours <= 72.0
+        if _is_live:
+            import datetime as _dtmod
+            _now_utc = _dtmod.datetime.utcnow()
+            for _pkey, _dt in news_by_player.items():
                 _hrs = (_now_utc - _dt).total_seconds() / 3600.0
                 news_lookup[_pkey] = max(0.0, min(999.0, _hrs))
+        # If not live, news_lookup stays empty → column writer hits the
+        # NaN fallback at the per-row write site.
     except Exception:
-        pass
+        news_lookup = {}
+        _is_live = False
+    _news_is_live = locals().get("_is_live", False)
 
     # ── Contract Features ────────────────────────────────────────────────────
     contract_lookup: dict = {}
@@ -1185,7 +1212,7 @@ def add_external_player_features(
             "synergy_spotup_ppp":    float(syn.get("spotup", 0.0) or 0.0),
             # Injury / news
             "injury_status_multiplier":  float(injury_lookup.get(key, 1.0)),
-            "news_reaction_window_hrs":  float(news_lookup.get(key, 999.0)),
+            "news_reaction_window_hrs":  (float(news_lookup[key]) if (_news_is_live and key in news_lookup) else float("nan")),
             # Contract
             "contract_year_flag":    int(bool(con.get("contract_year", False))),
             "cap_hit_pct":           float(con.get("cap_hit_pct", 0.0) or 0.0),
