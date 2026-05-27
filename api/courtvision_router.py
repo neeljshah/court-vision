@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from api._courtvision_data import (
@@ -94,35 +94,29 @@ def _build_slate(date: str) -> dict:
     slate_rows = load_slate_csv(slate_path, _STATS)
     lines_path = _lines_csv_path(date)
     has_lines = lines_path is not None
-    bets: list[dict] = []
-
     if has_lines:
-        by_player_stat = {(r["player_name"].lower(), r["stat"]): r
-                          for r in slate_rows.values()}
-        for ln in load_lines_csv(lines_path):
-            row = by_player_stat.get((ln["player"].lower(), ln["stat"]))
-            if row and ln["stat"] in _STATS:
-                bets.append(grade_bet(row, ln, _STAT_SIGMA, _BANKROLL_DEFAULT))
+        ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
+        bets = [grade_bet(ps_idx[(ln["player"].lower(), ln["stat"])], ln,
+                          _STAT_SIGMA, _BANKROLL_DEFAULT)
+                for ln in load_lines_csv(lines_path)
+                if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
         bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
         bets = bets[:_TOP_N]
     else:
         bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
 
     _log = __import__("logging").getLogger(__name__)
-    try:
-        from api._courtvision_form import attach_form; attach_form(bets)
-    except Exception as exc: _log.warning("attach_form failed: %s", exc)
-    try:
-        from src.llm.bet_narrator import narrate_slate; narrate_slate(bets, date)
-    except Exception as exc: _log.warning("narrate_slate failed: %s", exc)
+    try: from api._courtvision_form import attach_form; attach_form(bets)
+    except Exception as exc: _log.warning("attach_form: %s", exc)
+    try: from src.llm.bet_narrator import narrate_slate; narrate_slate(bets, date)
+    except Exception as exc: _log.warning("narrate_slate: %s", exc)
 
-    ev_vals = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+    evs = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
     envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
         "bankroll_default_dollars": _BANKROLL_DEFAULT,
         "stale_data": date != _today_et(),
         "has_lines": has_lines, "latest_available": _latest_slate_date(),
-        "summary": {"n_bets": len(bets),
-                    "avg_ev_pct": round(sum(ev_vals) / len(ev_vals), 2) if ev_vals else 0.0,
+        "summary": {"n_bets": len(bets), "avg_ev_pct": round(sum(evs)/len(evs), 2) if evs else 0.0,
                     "n_over": sum(1 for b in bets if b["side"] == "OVER"),
                     "n_under": sum(1 for b in bets if b["side"] == "UNDER")},
         "bets": bets}
@@ -131,24 +125,17 @@ def _build_slate(date: str) -> dict:
 
 
 def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -> dict:
-    """Cached parlay builder. Reuses _build_slate output."""
     cache_key = ("parlays", date, max_legs, min_ev_pct, seed)
     entry = _CACHE.get(cache_key)
-    if entry and time.time() - entry[0] < _TTL_SEC:
-        return entry[1]
-    envelope = _build_slate(date)
-    bets = envelope.get("bets", [])
-    has_lines = envelope.get("has_lines", False)
+    if entry and time.time() - entry[0] < _TTL_SEC: return entry[1]
+    env = _build_slate(date); bets = env.get("bets", []); has_lines = env.get("has_lines", False)
     gen_at = datetime.utcnow().isoformat() + "Z"
     if not bets or not has_lines:
-        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
-               "has_lines": has_lines, "parlays": []}
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0, "has_lines": has_lines, "parlays": []}
     else:
         from src.prediction.parlay_engine import ParlayEngine
-        engine = ParlayEngine(bets, rng_seed=seed)
-        parlays = engine.enumerate_parlays(max_legs=max_legs, min_ev_pct=min_ev_pct)
-        out = {"date": date, "generated_at": gen_at, "n_parlays": len(parlays),
-               "has_lines": True, "parlays": parlays}
+        parlays = ParlayEngine(bets, rng_seed=seed).enumerate_parlays(max_legs=max_legs, min_ev_pct=min_ev_pct)
+        out = {"date": date, "generated_at": gen_at, "n_parlays": len(parlays), "has_lines": True, "parlays": parlays}
     _CACHE[cache_key] = (time.time(), out)
     return out
 
@@ -250,6 +237,22 @@ def share_qr(slug: str, request: Request):
 def healthz():
     from api._courtvision_data import healthz_payload
     return JSONResponse(healthz_payload(_ROOT, _latest_slate_date()))
+
+
+@router.get("/cv", tags=["courtvision"])
+def cv_shortlink(): return RedirectResponse(url="/tonight", status_code=307)
+
+
+@router.get("/api/today_summary", tags=["courtvision"])
+def api_today_summary(date: str = Query(default_factory=_today_et), n: int = Query(3, ge=1, le=10)):
+    s = _build_slate(date); bets = s.get("bets", [])[:n]
+    return JSONResponse({"date": s["date"], "generated_at": s["generated_at"],
+        "n_total": s["summary"]["n_bets"], "avg_ev_pct": s["summary"]["avg_ev_pct"],
+        "top": [{"player": b["player_name"], "team": b["team"], "opp": b["opp"],
+                 "prop": f"{b['prop_stat']} {'o' if b['side']=='OVER' else 'u'}{b['line']:g}",
+                 "ev_pct": b.get("ev_pct"), "book": b.get("best_book"),
+                 "price": b.get("best_price")} for b in bets],
+        "share_url": f"{_PUBLIC_BASE_URL or ''}/share/{s['date']}"})
 
 
 @router.get("/sse/live_edges", tags=["courtvision"])
