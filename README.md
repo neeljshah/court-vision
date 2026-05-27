@@ -8,7 +8,19 @@ An end-to-end NBA prediction and betting system built by one engineer over 12 mo
 
 ## The Headline
 
-**90,846-bet in-play backtest. 50 finalized games. Calibrated emit set: 78.1% hit rate, +54.6% ROI on flat $1 stakes.**
+**90,846-bet in-play backtest. 50 finalized games. Post-calibration emit set (n=55,073): 78.11% hit rate, +54.57% ROI on flat $1 stakes.**
+
+### Statistical confidence
+
+| Metric | Value | 95% CI / signal |
+|--------|-------|-----------------|
+| Hit rate (calibrated emit set) | **78.11%** | Wilson [77.76%, 78.45%], n=55,073 |
+| ROI per $1 flat | **+54.57%** | per-bet σ=$0.716, SEM=$0.003, t-stat=**179.0** (p≪0.001) |
+| Per-bet Sharpe | **0.76** | institutional bar is ~1.0; this is a single-bet stat, not annualized |
+| Calibration RMSE | **0.065** | across 10 EV deciles (lower = model is honest) |
+| Worst 100-bet drawdown | **−$1,682** | on $100/bet flat (rolling window over chronological settle order) |
+
+The t-stat of 179 is partially a function of the huge sample (n=55k); the conservative read is the Wilson CI bound — the TRUE hit rate sits between 77.8% and 78.5% with 95% confidence. Even the lower bound, at break-even +110 odds (47.6% implied), is +30pp of edge.
 
 Hard evidence from `vault/Reports/backtest_2026-05-27.md`:
 
@@ -349,4 +361,4 @@ Solo-built. Looking for senior sports quant or AI founding engineer roles. Open 
 
 ---
 
-*Last verified: 2026-05-27. State, current open issues, and ship log: [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md), [`CHANGELOG.md`](CHANGELOG.md). Latest validation: [`vault/Reports/MORNING_HANDOFF_2026-05-27.md`](vault/Reports/MORNING_HANDOFF_2026-05-27.md).*
+*Last verified: 2026-05-27 via `/quant-refresh` (63/63 in-play tests green; 55,073-bet calibrated emit set re-derived from settled CSV; Wilson CI + t-stat + Sharpe + calibration RMSE + drawdown all computed fresh). State, current open issues, and ship log: [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md), [`CHANGELOG.md`](CHANGELOG.md). Latest validation: [`vault/Reports/MORNING_HANDOFF_2026-05-27.md`](vault/Reports/MORNING_HANDOFF_2026-05-27.md).*
