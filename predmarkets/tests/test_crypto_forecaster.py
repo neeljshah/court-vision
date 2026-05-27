@@ -136,6 +136,51 @@ def test_parse_question_skips_range_markets(question: str) -> None:
     assert _parse_question(question) is None
 
 
+@pytest.mark.parametrize("question,lower,upper", [
+    ("Will the price of Bitcoin be between $70,000 and $72,000 on May 27?", 70_000.0, 72_000.0),
+    ("Will ETH stay $1,800-$2,000 by Friday?", 1_800.0, 2_000.0),
+    ("Will BTC land in the range of 95k and 105k by EOY?", 95_000.0, 105_000.0),
+])
+def test_parse_range_question(question: str, lower: float, upper: float) -> None:
+    from predmarkets.forecasters.crypto_threshold import _parse_range_question
+    p = _parse_range_question(question)
+    assert p is not None
+    assert p.lower == pytest.approx(lower)
+    assert p.upper == pytest.approx(upper)
+
+
+def test_range_forecast_at_strike_midpoint() -> None:
+    """Range with midpoint at spot: ~symmetric, prob = 1 - 2*P(out one side)."""
+    from predmarkets.forecasters.crypto_threshold import _gbm_prob_above
+    spot = 70_000.0
+    lower, upper = 68_000.0, 72_000.0
+    sigma, years = 0.30, 30 / 365.0
+    p_above_lower = _gbm_prob_above(spot, lower, sigma, years)
+    p_above_upper = _gbm_prob_above(spot, upper, sigma, years)
+    p_range = p_above_lower - p_above_upper
+    # The narrower the range, the smaller the prob; 4k window on 70k spot
+    # with 30% vol over 30d should be roughly 18-35%.
+    assert 0.15 < p_range < 0.40
+
+
+def test_range_forecaster_end_to_end() -> None:
+    """End-to-end: range market gets a Forecast with prob in (0, 1)."""
+    from predmarkets.forecasters.crypto_threshold import CryptoThresholdForecaster
+    fc = CryptoThresholdForecaster()
+    fc._spot_cache["bitcoin"] = 75_000.0
+    fc._vol_cache["bitcoin"] = 0.30
+    forecast = fc.forecast({
+        "market_id": "RANGE_TEST",
+        "category": "Crypto",
+        "question_or_title": "Will BTC be between $70,000 and $80,000 by June 30, 2026?",
+        "end_date": "2026-06-30T05:00:00Z",
+    })
+    assert forecast is not None
+    assert forecast.model_name == "crypto_threshold_gbm_range"
+    assert 0.10 < forecast.prob_yes < 0.90, f"expected mid-range prob, got {forecast.prob_yes}"
+    assert "GBM-range BTC" in forecast.reasoning
+
+
 def test_parse_question_uses_market_end_date_when_supplied() -> None:
     p = _parse_question(
         "Will Bitcoin hit $200,000?",
