@@ -17,7 +17,7 @@ End-to-end NBA prediction + betting platform built by one engineer over 12 month
 
 A real ML system, not a backtest in a notebook. The honest one-paragraph version a senior interviewer should read first:
 
-> Two validation surfaces exist. **(A) Real-money-relevant:** 8,360 walk-forward bets against committed DK / FanDuel / MGM / BetRivers historical closes. The L10 baseline returns **+4.19% ROI on 2024 playoffs (n=4,337)** and the prod stack returns **−2.06% ROI on 2025-26 mainline regular season (n=4,210)** — sharp regular-season markets are tight; soft playoff markets aren't. Slicing by direction, the structural **UNDER edge** (well-known industry effect, here measured cleanly) is **58.5% beat / +7.7% ROI on 3,512 bets**. **(B) Paper / ceiling:** an in-play backtest against an **L5 line proxy** (not real closing lines) shows 78.1% hit / +54.6% ROI on the calibrated emit set of 55,073 bets across 50 games. The L5 proxy ROI almost certainly compresses to **+15–25%** at real Pinnacle closes — that's the load-bearing number to expect, not the +54%. The first true closing-line CLV reading begins October 2026.
+> Two validation surfaces exist. **(A) Real-money-relevant:** 8,360 walk-forward bets against committed DK / FanDuel / MGM / BetRivers historical closes. The L10 baseline returns **+4.19% ROI on 2024 playoffs (n=4,337)**. The prod stack on 2025-26 mainline aggregates to **54.37% beat / −2.06% ROI (n=4,210)** flat-bet across every stat — which is the wrong unit at prop-market pricing (typical prop hold is ~9% per side at −120, so break-even is ~55%, not the −110 sides figure of 52.4%). **Per-stat structure is what matters:** AST clears prop vig cleanly at **60.25% beat / +7.22% ROI (n=863)**, FG3M marginally at **58.37% / +0.34% (n=860)**, while PTS is materially mis-priced by the model at **49.11% / −8.62% (n=1,354)** — calibration the next pin. Aggregate flat-bet is the unrun strategy; production strata-selects on AST + FG3M (plus the structural-UNDER scarcity stats below) and skips PTS until the calibration pass closes the gap. Slicing by direction, the structural **UNDER edge** (well-known industry effect, here measured cleanly at real closes) is **58.5% beat / +7.7% ROI on 3,512 bets**. **(B) Paper / ceiling:** an in-play backtest against an **L5 line proxy** (not real closing lines) shows 78.1% hit / +54.6% ROI on the calibrated emit set of 55,073 bets across 50 games. The L5 proxy ROI almost certainly compresses to **+15–25%** at real Pinnacle closes — that's the load-bearing number to expect, not the +54%. The first true closing-line CLV reading begins October 2026.
 
 The rest of this README sits behind that paragraph.
 
@@ -33,7 +33,22 @@ The rest of this README sits behind that paragraph.
 | 2025-26 mainline regular season (Jan 29 – May 10 2026, DK/FD/MGM) | Prod stack (walk-forward OOF) | 4,210 | 54.37% | −2.06% | −$8,685 |
 | 2025-26 mainline (same closes, L10 only) | L10 baseline | 4,023 | 52.20% | −5.60% | −$22,533 |
 
-Prod stack lifts L10 by **+2.17 pp** in beat rate and **+3.54 pp** in aggregate ROI on the same DK/FD/MGM 2025-26 sample. Per-stat at 2025-26 sharp closes: **AST 60.25% / +7.22%** (n=863) and **FG3M 58.37% / +0.34%** (n=860) are real edges; **PTS 49.11% / −8.62%** loses to vig — calibration is the next pin.
+Prod stack lifts L10 by **+2.17 pp** in beat rate and **+3.54 pp** in aggregate ROI on the same DK/FD/MGM 2025-26 sample.
+
+### Why "−2.06% aggregate" is the wrong unit at prop pricing
+
+Standard sides bets price at −110 / −110 → break-even = **52.4%** (vig 4.5%). Player props price at **−115 to −125 per side** → break-even is **53.5% to 55.6%** (vig 6.5% to 11.1%). The prod stack's 54.37% beat rate reverse-engineers to a sample priced ~**−120 average**, where break-even is ~54.5% — the model is **under prop-vig break-even by ~0.5 pp on the flat-bet aggregate**, while still being **+2.0 pp above sides-vig break-even** and **+4.4 pp above coin-flip**.
+
+The aggregate is a flat-bet number that nobody would actually run. Per-stat decomposition shows where the model **does** clear prop vig:
+
+| Stat (2025-26 prod stack) | N | Beat | ROI | Post-vig at −120 break-even |
+|---|--:|--:|--:|---|
+| **AST** | 863 | **60.25%** | **+7.22%** | **+5.7 pp clear of break-even** — real edge survives |
+| **FG3M** | 860 | **58.37%** | **+0.34%** | **+3.8 pp clear of break-even** — marginal but positive |
+| REB | 1,133 | 53.13% | −3.12% | −1.4 pp under break-even — loses to vig |
+| **PTS** | 1,354 | **49.11%** | **−8.62%** | **−5.4 pp under** — model materially mis-priced; calibration pass next |
+
+**Aggregate −2.06% is the unrun strategy. Production sizing skips PTS, weights AST + FG3M heavily, and adds the UNDER-only scarcity stats below.** That's the deployable read, not the flat-bet number.
 
 ### Structural UNDER-only edge (combined 8,360 sample)
 
@@ -263,7 +278,7 @@ Numbers from the repo, not projections:
 **Validated and shipped**
 
 - **Real-Vegas L10 baseline at 4,337 closes (2024 playoffs, DK/FD/MGM/BetRivers):** +4.19% ROI / 54.58% beat / +$18,181 PnL
-- **Real-Vegas prod stack at 4,210 closes (2025-26 mainline, DK/FD/MGM):** −2.06% ROI overall; AST +7.22% and FG3M +0.34% are real edges at sharp closes
+- **Real-Vegas prod stack at 4,210 closes (2025-26 mainline, DK/FD/MGM):** −2.06% ROI **flat-bet aggregate** (the unrun strategy); **strata-selected production is AST +7.22% (n=863, +5.7 pp clear of prop vig) and FG3M +0.34% (n=860, marginally positive)**. PTS −8.62% (n=1,354) excluded pending calibration pass.
 - **Combined UNDER-only at 3,512 closes:** +7.70% ROI / 58.46% beat / +$27,041 PnL — BLK +41% / STL +26% / AST +10% / FG3M +5.5%
 - **Walk-forward prop MAE** on 99,818 player-games (q50 quantile regression)
 - **71.7% win-prob accuracy** on 2,455 holdout games
@@ -353,11 +368,13 @@ ARCHITECTURE.md      6-system technical map + component status table
 Pre-empting the obvious questions:
 
 - **Is the +54% ROI real?** No — it's an L5-proxy ceiling. The honest deployment forecast is +15–25%. The number that matters is the October 2026 CLV vs Pinnacle close.
-- **What's the moat?** The CV bridge (defender_distance / spacing / fatigue from broadcast pixels) — most competitors buy Sportradar/Second Spectrum tracking. Unproven at scale (7 games full-feature); the 80-game gate decides it.
+- **Why is the 2025-26 prod stack −2.06% if you're picking winners 54.4% of the time?** Prop markets price at −115 to −125 per side, not the −110 of sides bets. Break-even at typical prop vig is ~55%, not 52.4%. The 54.37% beat rate is +2 pp above sides break-even but ~0.5 pp **below** prop break-even on the flat-bet aggregate. The deployable read is per-stat: **AST clears prop vig by +5.7 pp (60.25% beat / +7.22% ROI)**, FG3M marginally positive, PTS materially mis-priced (−8.62%, calibration the next pin). Aggregate is the unrun strategy.
+- **What's the moat?** The CV bridge (defender_distance / spacing / fatigue from broadcast pixels) — most competitors buy Sportradar/Second Spectrum tracking at six- to seven-figure annual fees. I'm running on the same TV signal any fan can record, at ~$0.10–0.13 per game on a RunPod 3090. Cost collapse is the story. Unproven at scale (7 games full-feature); the 80-game gate decides it.
+- **What does the tracker actually do?** YOLOv8 detection → SIFT homography to court coords (94×50 ft) → Kalman+Hungarian tracking → OSNet re-ID (512-dim) → HSV team classification + EasyOCR jersey/clock → EventDetector for shot/pass/contest/rebound/foul. Output: per-frame court positions + structured events. Derived: defender_distance at release, spacing entropy, fatigue from speed degradation, possession-level pace. Honest gap: per-player attribution ~4% accurate across long occlusions; aggregate team/position features ship-ready.
 - **Why no real money yet?** By design. The architecture is ready; the proof isn't. Deploying before the Pinnacle CLV reading would be unbacktested risk.
 - **What was the hardest call you made?** Killing endQ3 residual head and learned-Q4-minutes shipping anyway. Cycle 110 had 2/7 stats failing the WF gate; minute_trajectory shipped 7/7. Discipline says ship what passes, document what doesn't.
-- **What would the first 30 days look like at your company?** Wire the CV signal layer into whatever in-house prop pricing model exists; deploy the shadow logger pattern (every evaluation logged, including blocked) so post-hoc calibration becomes possible; add walk-forward season-purged CV to the validation suite if it's not already there.
-- **What about the AI agents thesis?** The throughput is real — 120 modules + 154 probes + 4,055 tests solo in 12 months wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes) are mine. Agents are the engineering force multiplier; quant taste is what made the choices sharp.
+- **What would the first 30 days look like at your company?** Wire the CV signal layer into whatever in-house prop pricing model exists; deploy the shadow logger pattern (every evaluation logged, including blocked) so post-hoc calibration becomes possible; add walk-forward season-purged CV to the validation suite if it's not already there; introduce per-stat strata gating to the bet-emit logic if the current sizing is flat across markets.
+- **What about the AI agents thesis?** The throughput is real — 120 modules + 154 probes + 4,055 tests solo in 12 months wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes, strata-aware sizing) are mine. Agents are the engineering force multiplier; quant taste is what made the choices sharp.
 
 ---
 
