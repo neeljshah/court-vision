@@ -30,8 +30,7 @@ except Exception:
 
 
 def register_with_app(app) -> None:
-    from api._courtvision_middleware import install
-    install(app, _limiter)
+    from api._courtvision_middleware import install; install(app, _limiter)
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
@@ -39,8 +38,7 @@ _PRED_DIR = _ROOT / "data" / "predictions"
 _LINES_DIR = _ROOT / "data" / "lines"
 _BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 15, 300, 8
 _PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
-# Per-stat residual sigma (~ MAE x 1.253). Imported by parlay_engine.
-_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12,
+_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12,  # ~ MAE x 1.253
                "stl": 0.90, "blk": 0.55, "tov": 1.12}
 _STATS = tuple(_STAT_SIGMA.keys())
 
@@ -49,7 +47,9 @@ _CACHE: dict = {}
 
 
 def _today_et() -> str:
-    return datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+    """Default date: today (US/Eastern), else fall back to most recent slate."""
+    today = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+    return today if _slate_csv_path(today) else (_latest_slate_date() or today)
 
 
 def _slate_csv_path(date: str) -> Optional[Path]:
@@ -110,7 +110,11 @@ def _build_slate(date: str) -> dict:
     else:
         bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
 
-    # Claude narratives: no-op if no API key; per-bet disk-cached.
+    try:
+        from api._courtvision_form import attach_form
+        attach_form(bets)
+    except Exception as exc:
+        __import__("logging").getLogger(__name__).warning("attach_form failed: %s", exc)
     try:
         from src.llm.bet_narrator import narrate_slate
         narrate_slate(bets, date)
