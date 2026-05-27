@@ -12,6 +12,47 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-26: gamelog_full + linescore BOTH REVERTED on Iter-22 cutoff (2026-05-27)
+
+**What was tested:** Re-probed two previously-rejected feature sets against the new Iter-22 model (cutoff 2025-04-21). Hypothesis: features that regressed on the old 2024-04-21 model might work on the newer model trained through 2024-25.
+
+**Iter-26a — gamelog_full (14 cols):**
+Training improved validation MAE on 6/7 stats (PTS -0.0464, REB -0.0111, AST -0.0122, BLK -0.0007) but OOS 2025-26 ROI collapsed across all stats.
+
+| Stat | Baseline ROI | Iter-26a ROI | Delta |
+|------|-------------|-------------|-------|
+| PTS  | +11.62%     | +2.80%      | -8.82pp |
+| REB  | +14.20%     | +18.15%     | +3.94pp (only improve) |
+| AST  | +28.22%     | +25.08%     | -3.14pp |
+| FG3M | +37.13%     | +29.88%     | -7.25pp |
+| STL  | +18.04%     | +12.73%     | -5.32pp |
+| BLK  | +27.03%     | +14.55%     | -12.48pp |
+
+Decision: REVERT (1/6 improved, need 4+).
+
+**Iter-26b — linescore (7 cols):**
+Validation MAE improved 5/7 stats. OOS 2025-26 ROI: STL huge (+28pp) but BLK, AST, FG3M, PTS all regressed.
+
+| Stat | Baseline ROI | Iter-26b ROI | Delta |
+|------|-------------|-------------|-------|
+| PTS  | +11.62%     | +8.77%      | -2.85pp |
+| REB  | +14.20%     | +18.96%     | +4.76pp |
+| AST  | +28.22%     | +18.53%     | -9.70pp |
+| FG3M | +37.13%     | +31.57%     | -5.56pp |
+| STL  | +18.04%     | +46.23%     | +28.19pp (n=47) |
+| BLK  | +27.03%     | +11.36%     | -15.66pp |
+
+Decision: REVERT (2/6 improved, need 4+).
+
+**Pattern confirmed:** Both gamelog_full and linescore features show the same failure signature — validation MAE improves (suggesting real signal), but OOS ROI regresses on the majority of stats. The training-MAE / OOS-ROI divergence persists regardless of training cutoff. These features likely capture noise that correlates with recent training data but doesn't extrapolate to the 2025-26 eval slice.
+
+**What to try next:** Instead of adding features, focus on DATA (live injury feed, real sportsbook closing lines, more 2025-26 rows as the season progresses). The MEMORY.md note "architecture/feature ceiling" applies here — see vault/Models/Model Performance.md for current baseline.
+
+**Scripts:** `scripts/retrain_iter26_gamelog_full_on_iter22.py`, `scripts/retrain_iter26_linescore_on_iter22.py`
+**Results:** `data/cache/iter26_gamelog_full_comparison.json`, `data/cache/iter26_linescore_comparison.json`
+
+---
+
 ## Iter-23: Holdout baseline rebased to 2025-26-only (2026-05-27)
 
 After the Iter-22 shifted-cutoff retrain (commit `5fb964f1`), the 2024 playoffs and 2024-25 RS slices moved into the training window — they are no longer valid OOS eval. The old +13.87% baseline on 6,448 bets (4 slices) was contaminated. Iter-23 re-ran all 6 available stats against 2025-26 RS + 2025-26 Playoffs only (2,339 rows total; tov absent from these CSVs). New clean baseline: **+19.37% weighted ROI on 1,337 bets**. The higher ROI vs the old number is expected — the 2025-26 slice was already the strongest-performing slice under the new model. Baseline written to `data/cache/holdout_baseline.json` with `__source__.iter = "iter23"`. Helper scripts: `scripts/reseed_holdout_baseline_2025_26.py` + `scripts/backtest_qstat_oos_override.py` (adds `NBA_BACKTEST_CSV_OVERRIDE` support to the qstat path).
