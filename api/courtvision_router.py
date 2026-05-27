@@ -256,6 +256,26 @@ def odds_page(request: Request, date: str = Query(default_factory=_today_et),
         {"request": request, "env": odds_env(date, stat, player),
          "stat": stat, "player": player})
 
+@router.get("/api/docs", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def api_docs(request: Request):
+    return _TEMPLATES.TemplateResponse("api_docs.html", {"request": request})
+
+@router.get("/api/odds/best/{date}.json", tags=["courtvision"])
+def api_odds_best(date: str):
+    """Best (most favorable) book per (player, stat, line) per side."""
+    from api._courtvision_odds import best_book_envelope
+    return JSONResponse(best_book_envelope(date))
+
+@router.get("/api/odds/history/{player}/{stat}", tags=["courtvision"])
+def api_odds_history(player: str, stat: str,
+                     date: str = Query(default_factory=_today_et)):
+    """Every captured quote for one (player, stat) — useful for line-movement charts."""
+    from api._courtvision_odds import line_history
+    rows = line_history(date, player, stat)
+    return JSONResponse({"date": date, "player": player, "stat": stat,
+                         "n": len(rows), "history": rows})
+
 
 @router.get("/api/today_summary", tags=["courtvision"])
 def api_today_summary(date: str = Query(default_factory=_today_et), n: int = Query(3, ge=1, le=10)):
