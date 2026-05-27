@@ -240,6 +240,109 @@ _BBREF_EXTRA_KEYS_FA = ("orb_pct", "drb_pct", "trb_pct", "bpm", "ws")
 _BBREF_EXTENDED_PARQUET_FA = os.path.join(PROJECT_DIR, "data", "cache", "bbref_advanced_extended.parquet")
 _BBREF_EXT_CACHE_FA: Optional[object] = None  # pandas DataFrame, lazy-loaded
 
+# ── Iter-5: hustle + on_off parquet loaders (module-level cached) ─────────────
+
+_HUSTLE_PARQUET_FA = os.path.join(PROJECT_DIR, "data", "cache", "hustle_features.parquet")
+_HUSTLE_DF_FA: Optional[object] = None  # pandas DataFrame indexed by (player_id, season) or False
+
+_ONOFF_PARQUET_FA = os.path.join(PROJECT_DIR, "data", "cache", "on_off_features.parquet")
+_ONOFF_DF_FA: Optional[object] = None  # pandas DataFrame or False
+
+_HUSTLE_FEAT_COLS = (
+    "hustle_deflections", "hustle_contested_shots", "hustle_screen_assists",
+    "hustle_box_outs", "hustle_loose_balls", "hustle_charges_drawn",
+)
+_ONOFF_COL_MAP_FA = {
+    "on_off_net_rating_diff": "onoff_net_rating_diff",
+    "on_off_impact_z":        "onoff_impact_z",
+    "on_off_min_weight":      "onoff_min_weight",
+}
+
+
+def _load_hustle_df() -> Optional[object]:
+    """Lazy-load hustle_features.parquet indexed by (player_id, season). Returns None on failure."""
+    global _HUSTLE_DF_FA
+    if _HUSTLE_DF_FA is None:
+        try:
+            import pandas as pd
+            if os.path.isfile(_HUSTLE_PARQUET_FA):
+                df = pd.read_parquet(
+                    _HUSTLE_PARQUET_FA,
+                    columns=["player_id", "season"] + list(_HUSTLE_FEAT_COLS),
+                )
+                _HUSTLE_DF_FA = df.set_index(["player_id", "season"])
+            else:
+                _HUSTLE_DF_FA = False
+        except Exception as exc:
+            log.debug("hustle_features.parquet load failed: %s", exc)
+            _HUSTLE_DF_FA = False
+    return _HUSTLE_DF_FA if _HUSTLE_DF_FA is not False else None
+
+
+def _load_on_off_df() -> Optional[object]:
+    """Lazy-load on_off_features.parquet. Returns None on failure."""
+    global _ONOFF_DF_FA
+    if _ONOFF_DF_FA is None:
+        try:
+            import pandas as pd
+            if os.path.isfile(_ONOFF_PARQUET_FA):
+                _ONOFF_DF_FA = pd.read_parquet(
+                    _ONOFF_PARQUET_FA,
+                    columns=["player_id", "season"] + list(_ONOFF_COL_MAP_FA.keys()),
+                )
+            else:
+                _ONOFF_DF_FA = False
+        except Exception as exc:
+            log.debug("on_off_features.parquet load failed: %s", exc)
+            _ONOFF_DF_FA = False
+    return _ONOFF_DF_FA if _ONOFF_DF_FA is not False else None
+
+
+def _hustle_for_player_parquet(player_id: int, season: str) -> dict:
+    """Return dict with 6 hustle_ keys for (player_id, season) from parquet. NaN on miss."""
+    nan = float("nan")
+    defaults = {k: nan for k in _HUSTLE_FEAT_COLS}
+    df = _load_hustle_df()
+    if df is None:
+        return defaults
+    try:
+        import pandas as pd
+        row = df.loc[(int(player_id), str(season))]
+        result = {}
+        for k in _HUSTLE_FEAT_COLS:
+            v = row[k] if hasattr(row, "__getitem__") else getattr(row, k, nan)
+            result[k] = float(v) if pd.notna(v) else nan
+        return result
+    except (KeyError, IndexError):
+        return defaults
+    except Exception as exc:
+        log.debug("_hustle_for_player_parquet pid=%d season=%s: %s", player_id, season, exc)
+        return defaults
+
+
+def _on_off_for_player_parquet(player_id: int, season: str) -> dict:
+    """Return dict with 3 onoff_ keys for (player_id, season) from parquet. NaN on miss."""
+    nan = float("nan")
+    defaults = {v: nan for v in _ONOFF_COL_MAP_FA.values()}
+    df = _load_on_off_df()
+    if df is None:
+        return defaults
+    try:
+        import pandas as pd
+        mask = (df["player_id"] == int(player_id)) & (df["season"] == str(season))
+        rows = df[mask]
+        if rows.empty:
+            return defaults
+        r = rows.iloc[0]
+        result = {}
+        for parquet_col, feat_key in _ONOFF_COL_MAP_FA.items():
+            v = r.get(parquet_col)
+            result[feat_key] = float(v) if pd.notna(v) else nan
+        return result
+    except Exception as exc:
+        log.debug("_on_off_for_player_parquet pid=%d season=%s: %s", player_id, season, exc)
+        return defaults
+
 
 def _load_bbref_ext_df():
     """Lazy-load bbref_advanced_extended.parquet once; returns DataFrame or None."""
@@ -777,19 +880,21 @@ def assemble_features(
     else:
         missing.append("shot_dashboard")
 
-    # ── 3. Hustle stats ───────────────────────────────────────────────────────
+    # ── 3. Hustle stats (parquet, iter-5) ────────────────────────────────────
+    hustle_pq = _hustle_for_player_parquet(player_id, season)
+    feats.update(hustle_pq)
+    # Legacy JSON-based keys for backward-compat inference paths.
     hustle = _hustle_for_player(player_id, season)
     if hustle:
         feats["hustle_contested_shots"]     = float(hustle.get("contested_shots", 0) or 0)
-        feats["hustle_deflections"]         = float(hustle.get("deflections", 0) or 0)
-        feats["hustle_loose_balls"]         = float(hustle.get("loose_balls_recovered", 0) or 0)
         feats["hustle_charges"]             = float(hustle.get("charges_drawn", 0) or 0)
-        feats["hustle_screen_assists"]      = float(hustle.get("screen_assists", 0) or 0)
-        feats["hustle_box_outs"]            = float(hustle.get("box_outs", 0) or 0)
     else:
         missing.append("hustle_stats")
 
-    # ── 4. On/Off splits ──────────────────────────────────────────────────────
+    # ── 4. On/Off splits (parquet, iter-5) ───────────────────────────────────
+    onoff_pq = _on_off_for_player_parquet(player_id, season)
+    feats.update(onoff_pq)
+    # Legacy JSON-based keys for backward-compat inference paths.
     on_off = _on_off_for_player(player_id, season)
     if on_off:
         feats["on_court_plus_minus"]  = float(on_off.get("on_court_plus_minus", 0) or 0)
