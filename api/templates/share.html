@@ -18,17 +18,27 @@
   </p>
 </section>
 
-<section class="mb-4 flex flex-wrap items-center gap-3">
-  <button id="cv-copy-btn" type="button"
-          class="cv-card cv-card-hover px-3 py-2 text-sm"
-          style="color:var(--cv-accent);border-color:var(--cv-accent)">
-    📋 Copy picks
-  </button>
-  <a href="/share/{{ slate.date }}/qr.svg" target="_blank"
-     class="text-xs underline" style="color:var(--cv-muted)">QR ↗</a>
-  <span id="cv-copy-status" class="text-xs" style="color:var(--cv-muted)"></span>
-  <textarea id="cv-share-text" readonly aria-hidden="true"
-            style="position:absolute;left:-9999px;width:1px;height:1px">{{ share_text }}</textarea>
+<section class="mb-4 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-3 md:gap-4 items-start">
+  <img src="/share/{{ slate.date }}/qr.svg" alt="QR code for this share URL"
+       width="120" height="120"
+       style="image-rendering:pixelated;background:white;padding:5px;border-radius:8px"
+       class="block flex-shrink-0">
+  <div class="flex flex-col gap-2">
+    <button id="cv-copy-btn" type="button"
+            class="cv-card cv-card-hover px-3 py-2 text-sm self-start"
+            style="color:var(--cv-accent);border-color:var(--cv-accent)">
+      📋 Copy picks as text
+    </button>
+    <div class="flex gap-3 items-center text-xs" style="color:var(--cv-muted)">
+      <a href="/share/{{ slate.date }}/qr.svg" target="_blank"
+         class="underline" style="color:var(--cv-muted)">QR ↗</a>
+      <a href="/tonight?date={{ slate.date }}" class="underline" style="color:var(--cv-accent)">all 15 →</a>
+      <a href="/parlays?date={{ slate.date }}" class="underline" style="color:var(--cv-accent)">parlays →</a>
+      <span id="cv-copy-status"></span>
+    </div>
+    <textarea id="cv-share-text" readonly aria-hidden="true"
+              style="position:absolute;left:-9999px;width:1px;height:1px">{{ share_text }}</textarea>
+  </div>
 </section>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
@@ -90,13 +100,6 @@
   {% endfor %}
 </div>
 
-<section class="mt-6 cv-card p-3 md:p-4">
-  <h2 class="text-sm font-semibold mb-2" style="color:var(--cv-muted)">scan to share</h2>
-  <img src="/share/{{ slate.date }}/qr.svg" alt="QR code for this share URL"
-       width="160" height="160"
-       style="image-rendering:pixelated;background:white;padding:6px;border-radius:8px"
-       class="block">
-</section>
 
 <script>
 (function(){
