@@ -281,6 +281,18 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     # aggregation, per-opponent split, or use raw values without rolling.
     # cols += list(_ADV_FEATURE_COLS)  # disabled — see _AdvancedStats docstring
 
+    # Iter-3 (Wave-3): 20 new features (officials rolling 5, foul rolling 5,
+    # DNP team 4, adv stats splits 6). APPENDED after the 109-col baseline so
+    # existing artifacts that don't have feature_columns in _meta.json continue
+    # to load via feature_columns_for() without dim-mismatch. New artifacts
+    # trained on 129-col get feature_columns written to _meta.json by the OOS
+    # retrain scripts; feature_columns_for() then returns the frozen 129-col
+    # list for those artifacts and the legacy 109-col list for older ones.
+    cols += list(_OFFICIALS_ROLLING_KEYS)   # A: 5 cols
+    cols += list(_FOUL_FEATURE_KEYS)        # B: 5 cols
+    cols += list(_DNP_TEAM_KEYS)            # C: 4 cols
+    cols += list(_ADV_SPLITS_KEYS)          # D: 6 cols
+
     # Cycle 90d (loop 5) — T1-E: REB-only OREB-context features.
     # ONLY appended when stat == "reb"; other stats keep the global list to
     # preserve compatibility with existing model artifacts.
@@ -1915,6 +1927,308 @@ def _get_player_profiles() -> _PlayerProfile:
     return _PROF_CACHE
 
 
+# ── Iter-3: officials rolling features (A, 5 keys) ───────────────────────────
+# Source: data/cache/officials_rolling.parquet
+# Per (game_id, team_abbreviation): rolling-5 ref-crew foul/fta rates + z-scores.
+# WHY rolling: cycle 15 (loop 5) tested prior-season season-grain officials and
+# it REGRESSED all 7 stats on walk-forward. Rolling is a new angle (within-season
+# game-to-game variation rather than referee identity across seasons).
+_OFFICIALS_ROLLING_KEYS: Tuple[str, ...] = (
+    "ref_l5_fouls", "ref_l5_fta", "ref_fouls_z", "ref_fta_z", "ref_home_advantage",
+)
+_OFFICIALS_ROLLING_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _OFFICIALS_ROLLING_KEYS}
+_OFFICIALS_ROLLING_PATH_PP = os.path.join(
+    PROJECT_DIR, "data", "cache", "officials_rolling.parquet"
+)
+
+
+class _OfficialsRolling:
+    """Per-(game_date_iso, team_abbreviation) lookup of rolling crew foul/fta features.
+
+    Gamelogs don't expose game_id so we key by (date, team) to join during
+    training. The parquet has a game_date column, so this is still leakage-
+    free: the rolling stats are pre-computed from PRIOR games only.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, game_date, team_abbrev: str) -> Dict[str, float]:
+        gd = game_date.date().isoformat() if hasattr(game_date, "date") else str(game_date)[:10]
+        key = (gd, str(team_abbrev))
+        return dict(self._lookup.get(key, _OFFICIALS_ROLLING_DEFAULTS))
+
+
+def build_officials_rolling(parquet_path: Optional[str] = None) -> _OfficialsRolling:
+    """Load officials_rolling.parquet into an _OfficialsRolling wrapper. Never raises."""
+    path = parquet_path or _OFFICIALS_ROLLING_PATH_PP
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd
+        if not os.path.exists(path):
+            return _OfficialsRolling(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            gd_raw = r.get("game_date")
+            gd = gd_raw.date().isoformat() if hasattr(gd_raw, "date") else str(gd_raw)[:10]
+            ta = str(r.get("team_abbreviation", ""))
+            if not gd or not ta:
+                continue
+            def _f(col: str, default: float = 0.0) -> float:
+                v = r.get(col)
+                try:
+                    fv = float(v)
+                    return fv if fv == fv else default
+                except (TypeError, ValueError):
+                    return default
+            lookup[(gd, ta)] = {
+                "ref_l5_fouls":       _f("l5_ref_crew_fouls_per_g"),
+                "ref_l5_fta":         _f("l5_ref_crew_fta_per_g"),
+                "ref_fouls_z":        _f("ref_crew_fouls_z"),
+                "ref_fta_z":          _f("ref_crew_fta_z"),
+                "ref_home_advantage": _f("home_win_pct_advantage"),
+            }
+    except Exception as exc:
+        _warn_join_load_once("build_officials_rolling", path, exc)
+    return _OfficialsRolling(lookup)
+
+
+_OFFICIALS_ROLLING_CACHE: Optional[_OfficialsRolling] = None
+
+
+def _get_officials_rolling() -> _OfficialsRolling:
+    global _OFFICIALS_ROLLING_CACHE
+    if _OFFICIALS_ROLLING_CACHE is None:
+        _OFFICIALS_ROLLING_CACHE = build_officials_rolling()
+    return _OFFICIALS_ROLLING_CACHE
+
+
+# ── Iter-3: foul features (B, 5 keys) ────────────────────────────────────────
+# Source: data/cache/foul_features.parquet
+# Per (player_id, game_id, game_date): rolling PF/36 rates + foul trouble + last PF.
+_FOUL_FEATURE_KEYS: Tuple[str, ...] = (
+    "foul_pf36_l5", "foul_pf36_l10", "foul_trouble_l10", "foul_last_pf", "foul_min_l5",
+)
+_FOUL_FEATURE_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _FOUL_FEATURE_KEYS}
+_FOUL_FEATURES_PATH_PP = os.path.join(
+    PROJECT_DIR, "data", "cache", "foul_features.parquet"
+)
+
+
+class _FoulFeatures:
+    """Per-(player_id, game_date) lookup of rolling foul features."""
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, game_date) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_FOUL_FEATURE_DEFAULTS)
+        gd = game_date.date().isoformat() if hasattr(game_date, "date") else str(game_date)[:10]
+        return dict(self._lookup.get((pid, gd), _FOUL_FEATURE_DEFAULTS))
+
+
+def build_foul_features(parquet_path: Optional[str] = None) -> _FoulFeatures:
+    """Load foul_features.parquet into a _FoulFeatures wrapper. Never raises."""
+    path = parquet_path or _FOUL_FEATURES_PATH_PP
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd
+        if not os.path.exists(path):
+            return _FoulFeatures(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            gd_raw = r.get("game_date")
+            if gd_raw is None:
+                continue
+            gd = gd_raw.date().isoformat() if hasattr(gd_raw, "date") else str(gd_raw)[:10]
+            def _f(col: str) -> float:
+                v = r.get(col)
+                try:
+                    fv = float(v)
+                    return fv if fv == fv else 0.0
+                except (TypeError, ValueError):
+                    return 0.0
+            lookup[(pid, gd)] = {
+                "foul_pf36_l5":     _f("pf_per_36_l5"),
+                "foul_pf36_l10":    _f("pf_per_36_l10"),
+                "foul_trouble_l10": _f("foul_trouble_rate_l10"),
+                "foul_last_pf":     _f("last_game_pf"),
+                "foul_min_l5":      _f("min_l5"),
+            }
+    except Exception as exc:
+        _warn_join_load_once("build_foul_features", path, exc)
+    return _FoulFeatures(lookup)
+
+
+_FOUL_FEATURES_CACHE: Optional[_FoulFeatures] = None
+
+
+def _get_foul_features() -> _FoulFeatures:
+    global _FOUL_FEATURES_CACHE
+    if _FOUL_FEATURES_CACHE is None:
+        _FOUL_FEATURES_CACHE = build_foul_features()
+    return _FOUL_FEATURES_CACHE
+
+
+# ── Iter-3: DNP team features (C, 4 keys) ────────────────────────────────────
+# Source: data/cache/dnp_features_team.parquet
+# Per (game_id, team_abbreviation): DNP counts (current game + L5/L10/prior game).
+_DNP_TEAM_KEYS: Tuple[str, ...] = (
+    "dnp_in_game", "dnp_l5_avg", "dnp_l10_avg", "dnp_prior_game",
+)
+_DNP_TEAM_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _DNP_TEAM_KEYS}
+_DNP_TEAM_PATH_PP = os.path.join(
+    PROJECT_DIR, "data", "cache", "dnp_features_team.parquet"
+)
+
+
+class _DnpTeamFeatures:
+    """Per-(game_date_iso, team_abbreviation) lookup of DNP count features.
+
+    Keyed by (date, team) to support gamelog-sourced training rows (no game_id
+    in gamelog JSON). The parquet has game_date so this is still leakage-free:
+    L5/L10 rolling cols are pre-computed from prior games only.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, game_date, team_abbrev: str) -> Dict[str, float]:
+        gd = game_date.date().isoformat() if hasattr(game_date, "date") else str(game_date)[:10]
+        key = (gd, str(team_abbrev))
+        return dict(self._lookup.get(key, _DNP_TEAM_DEFAULTS))
+
+
+def build_dnp_team_features(parquet_path: Optional[str] = None) -> _DnpTeamFeatures:
+    """Load dnp_features_team.parquet into a _DnpTeamFeatures wrapper. Never raises."""
+    path = parquet_path or _DNP_TEAM_PATH_PP
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd
+        if not os.path.exists(path):
+            return _DnpTeamFeatures(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            gd_raw = r.get("game_date")
+            gd = gd_raw.date().isoformat() if hasattr(gd_raw, "date") else str(gd_raw)[:10]
+            ta = str(r.get("team_abbreviation", ""))
+            if not gd or not ta:
+                continue
+            def _f(col: str) -> float:
+                v = r.get(col)
+                try:
+                    fv = float(v)
+                    return fv if fv == fv else 0.0
+                except (TypeError, ValueError):
+                    return 0.0
+            lookup[(gd, ta)] = {
+                "dnp_in_game":    _f("dnp_count_in_game"),
+                "dnp_l5_avg":     _f("dnp_count_l5_avg"),
+                "dnp_l10_avg":    _f("dnp_count_l10_avg"),
+                "dnp_prior_game": _f("prior_game_dnp_count"),
+            }
+    except Exception as exc:
+        _warn_join_load_once("build_dnp_team_features", path, exc)
+    return _DnpTeamFeatures(lookup)
+
+
+_DNP_TEAM_CACHE: Optional[_DnpTeamFeatures] = None
+
+
+def _get_dnp_team_features() -> _DnpTeamFeatures:
+    global _DNP_TEAM_CACHE
+    if _DNP_TEAM_CACHE is None:
+        _DNP_TEAM_CACHE = build_dnp_team_features()
+    return _DNP_TEAM_CACHE
+
+
+# ── Iter-3: advanced stats splits (D, 6 keys) ────────────────────────────────
+# Source: data/cache/adv_stats_splits.parquet
+# Per (player_id, game_id, game_date): season-to-date expanding TS%/USG%/eFG%
+# + per-opponent L3 splits + usage z-score. WHY new angles: cycle 6+8 showed
+# L5/L10/EWMA adv stats regress under WF — those are rolling averages tracking
+# the same signal as form features. Season-to-date expanding captures stable
+# efficiency floor; per-opp L3 captures matchup-specific tendency.
+_ADV_SPLITS_KEYS: Tuple[str, ...] = (
+    "adv_usage_std", "adv_ts_std", "adv_efg_std",
+    "adv_usage_vs_opp_l3", "adv_ts_vs_opp_l3", "adv_usage_z",
+)
+_ADV_SPLITS_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _ADV_SPLITS_KEYS}
+_ADV_SPLITS_PATH_PP = os.path.join(
+    PROJECT_DIR, "data", "cache", "adv_stats_splits.parquet"
+)
+
+
+class _AdvStatsSplits:
+    """Per-(player_id, game_date) lookup of season-to-date adv stats + opp splits."""
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, game_date) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_ADV_SPLITS_DEFAULTS)
+        gd = game_date.date().isoformat() if hasattr(game_date, "date") else str(game_date)[:10]
+        return dict(self._lookup.get((pid, gd), _ADV_SPLITS_DEFAULTS))
+
+
+def build_adv_stats_splits(parquet_path: Optional[str] = None) -> _AdvStatsSplits:
+    """Load adv_stats_splits.parquet into an _AdvStatsSplits wrapper. Never raises."""
+    path = parquet_path or _ADV_SPLITS_PATH_PP
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd
+        if not os.path.exists(path):
+            return _AdvStatsSplits(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            try:
+                pid = int(r["player_id"])
+            except (TypeError, ValueError, KeyError):
+                continue
+            gd_raw = r.get("game_date")
+            if gd_raw is None:
+                continue
+            gd = gd_raw.date().isoformat() if hasattr(gd_raw, "date") else str(gd_raw)[:10]
+            def _f(col: str) -> float:
+                v = r.get(col)
+                try:
+                    fv = float(v)
+                    return fv if fv == fv else 0.0
+                except (TypeError, ValueError):
+                    return 0.0
+            lookup[(pid, gd)] = {
+                "adv_usage_std":       _f("adv_usage_season_to_date"),
+                "adv_ts_std":          _f("adv_ts_season_to_date"),
+                "adv_efg_std":         _f("adv_efg_season_to_date"),
+                "adv_usage_vs_opp_l3": _f("adv_usage_vs_opp_l3"),
+                "adv_ts_vs_opp_l3":    _f("adv_ts_vs_opp_l3"),
+                "adv_usage_z":         _f("adv_usage_z_in_season"),
+            }
+    except Exception as exc:
+        _warn_join_load_once("build_adv_stats_splits", path, exc)
+    return _AdvStatsSplits(lookup)
+
+
+_ADV_SPLITS_CACHE: Optional[_AdvStatsSplits] = None
+
+
+def _get_adv_stats_splits() -> _AdvStatsSplits:
+    global _ADV_SPLITS_CACHE
+    if _ADV_SPLITS_CACHE is None:
+        _ADV_SPLITS_CACHE = build_adv_stats_splits()
+    return _ADV_SPLITS_CACHE
+
+
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
 
 class _OpponentDefense:
@@ -2288,6 +2602,13 @@ def build_pergame_dataset(
     # wires them in. Sibling to oppdef.l5_allowed which gives the rolling-5
     # raw allowed counting stats (opp_def_pts_l5, opp_def_reb_l5, ...).
     team_adv_l5 = build_team_advanced_l5()
+    # Iter-3 — Wire 4 new parquet sources into per-row feature dicts.
+    # GATED on file existence; empty wrappers return all-zero defaults
+    # so build_pergame_dataset never crashes on a fresh checkout.
+    off_rolling = build_officials_rolling()
+    foul_feats_src = build_foul_features()
+    dnp_team_src = build_dnp_team_features()
+    adv_splits_src = build_adv_stats_splits()
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -2355,9 +2676,14 @@ def build_pergame_dataset(
                 # Wave-2b — defender matchup (game_date join) + player profile (pid join).
                 feats.update(dmatch.features(file_player_id, gdate))
                 feats.update(player_prof.features(file_player_id))
-                # officials.features + tracking.features + adv_stats.features
-                # available but not appended to feature_cols — see comments above.
-                row = {c: feats[c] for c in feature_cols}
+                # Iter-3 — 4 new parquet joins. All keyed by (date, team) or
+                # (player_id, date) so they work from gamelog-sourced rows
+                # (which have no game_id). All default to 0.0 when absent.
+                feats.update(off_rolling.features(gdate, team_abbrev))
+                feats.update(foul_feats_src.features(file_player_id, gdate))
+                feats.update(dnp_team_src.features(gdate, team_abbrev))
+                feats.update(adv_splits_src.features(file_player_id, gdate))
+                row = {c: feats.get(c, 0.0) for c in feature_cols}
                 # Carry REB-context cols on every row even though they aren't in
                 # the default feature_cols — the REB-only retraining path reads
                 # them via feature_columns(stat="reb").
