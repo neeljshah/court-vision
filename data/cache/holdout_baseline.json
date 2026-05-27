@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-27T22:10:03.723356+00:00",
+  "__updated_at__": "2026-05-27T23:29:29Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -94,5 +94,21 @@
     },
     "shrinkage_slopes": {},
     "generated_at": "2026-05-27T22:10:03.723356+00:00"
+  },
+  "__iter33__": {
+    "approach": "fractional_kelly_sizing",
+    "flat_roi_pct": 19.51,
+    "kelly_a_roi_pct": 19.01,
+    "kelly_b_roi_pct": 22.03,
+    "delta_a_pp": -0.5,
+    "delta_b_pp": 2.52,
+    "kelly_a_decision": "INCONCLUSIVE",
+    "kelly_b_decision": "SHIP",
+    "kelly_a_regressions": 1,
+    "kelly_b_regressions": 1,
+    "ship": true,
+    "n_bets": 1016,
+    "generated_at": "2026-05-27T23:29:29Z",
+    "source_file": "data/cache/iter33_kelly_backtest.json"
   }
 }
