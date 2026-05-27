@@ -693,6 +693,19 @@ def run_once(*, fetch_props: bool = True) -> Dict[str, Any]:
     return summary
 
 
+def scrape_once() -> List[Dict[str, Any]]:
+    """Entry point for parallel_scraper.py.
+
+    Delegates to run_once() which writes data/lines/<date>_pin.csv directly.
+    Returns [] to prevent parallel_scraper from double-writing the same rows.
+    """
+    try:
+        run_once(fetch_props=True)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("pinnacle scrape_once failed: %s", exc)
+    return []
+
+
 # ── CLI ──────────────────────────────────────────────────────────────────────
 
 def main(argv: Optional[List[str]] = None) -> int:

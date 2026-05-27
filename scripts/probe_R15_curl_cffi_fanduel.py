@@ -203,6 +203,19 @@ def one_snapshot() -> Dict[str, Any]:
     return status
 
 
+def scrape_once() -> List[Dict[str, Any]]:
+    """Entry point for parallel_scraper.py.
+
+    Delegates to one_snapshot() which writes data/lines/<date>_fd.csv directly.
+    Returns [] to prevent parallel_scraper from double-writing the same rows.
+    """
+    try:
+        one_snapshot()
+    except Exception as exc:  # noqa: BLE001
+        print(f"[fd] scrape_once failed: {type(exc).__name__}: {exc}", flush=True)
+    return []
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--daemon", action="store_true")
