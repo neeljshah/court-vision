@@ -21,6 +21,12 @@ from api.analytics_router import router as analytics_router
 from api.predictions_router import router as predictions_ext_router
 from api.stitch_router import router as stitch_router
 from api.dashboard_router import router as dashboard_router
+try:
+    from api.courtvision_router import router as courtvision_router
+    _COURTVISION_AVAILABLE = True
+except Exception as _cv_exc:  # graceful: missing optional deps shouldn't crash boot
+    _COURTVISION_AVAILABLE = False
+    log.warning("courtvision_router unavailable: %s", _cv_exc)
 from pathlib import Path as _Path
 
 from src.prediction.possession_simulator import PossessionSimulator
@@ -33,6 +39,18 @@ try:
     _LIVE_INFERENCE_AVAILABLE = True
 except ImportError:
     _LIVE_INFERENCE_AVAILABLE = False
+
+if os.environ.get("SENTRY_DSN"):
+    try:
+        import sentry_sdk
+        sentry_sdk.init(
+            dsn=os.environ["SENTRY_DSN"],
+            traces_sample_rate=float(os.environ.get("SENTRY_TRACES_RATE", "0.0")),
+            environment=os.environ.get("SENTRY_ENV", "prod"),
+        )
+        log.info("sentry initialized for %s", os.environ.get("SENTRY_ENV", "prod"))
+    except Exception as _sentry_exc:
+        log.warning("sentry init failed: %s", _sentry_exc)
 
 app = FastAPI(title="NBA AI System — Project Court Vision", version="2.0.0")
 
@@ -94,6 +112,13 @@ app.include_router(predictions_ext_router, prefix="/predictions", tags=["predict
 app.include_router(analytics_router,       prefix="/analytics",   tags=["analytics"])
 app.include_router(stitch_router,          prefix="/stitch",       tags=["stitch"])
 app.include_router(dashboard_router,       tags=["dashboard"])
+if _COURTVISION_AVAILABLE:
+    app.include_router(courtvision_router, tags=["courtvision"])
+    try:
+        from api.courtvision_router import register_with_app as _cv_register
+        _cv_register(app)
+    except Exception as _cv_reg_exc:  # never let middleware-wiring break boot
+        log.warning("courtvision middleware wiring failed: %s", _cv_reg_exc)
 
 
 @app.get("/health", tags=["health"])

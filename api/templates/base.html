@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>{% block title %}CourtVision{% endblock %}</title>
+  <meta property="og:title" content="{% block og_title %}CourtVision — Tonight's edges{% endblock %}">
+  <meta property="og:description" content="{% block og_desc %}Model-graded NBA prop bets ranked by EV with full reasoning.{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
+  <style>
+    :root {
+      --cv-bg:#0a0f1e; --cv-card:#111827; --cv-border:#1e293b;
+      --cv-text:#e2e8f0; --cv-muted:#94a3b8; --cv-subtle:#64748b;
+      --cv-accent:#60a5fa; --cv-win:#34d399; --cv-amber:#fbbf24; --cv-faint:#334155;
+    }
+    body{background:var(--cv-bg);color:var(--cv-text);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+    .cv-card{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:14px;}
+    .cv-card-hover{transition:border-color 120ms ease;}
+    .cv-card-hover:hover{border-color:var(--cv-accent);}
+    .badge-over{background:#064e3b;color:#34d399;}
+    .badge-under{background:#451a03;color:#fbbf24;}
+    .num-pos{color:#34d399;}
+    .num-neg{color:#f87171;}
+    .num-zero{color:#94a3b8;}
+    .pending{color:#475569;font-style:italic;font-size:0.75rem;}
+    .sticky-hdr{background:rgba(10,15,30,0.92);backdrop-filter:blur(8px);}
+    [hx-indicator]{opacity:0;transition:opacity 200ms;}
+    .htmx-request [hx-indicator]{opacity:1;}
+    .tip{position:relative;cursor:help;border-bottom:1px dotted #475569;}
+    .tip:hover::after, .tip:focus::after{
+      content:attr(data-tip);
+      position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);
+      background:#0a0f1e;color:#e2e8f0;font-size:11px;font-weight:400;
+      line-height:1.35;padding:6px 8px;border:1px solid #1e293b;border-radius:6px;
+      white-space:normal;width:max-content;max-width:240px;text-align:left;
+      z-index:50;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-10 sticky-hdr border-b" style="border-color:var(--cv-border)">
+    <div class="max-w-6xl mx-auto px-3 md:px-6 h-12 flex items-center justify-between">
+      <a href="/tonight" class="font-semibold tracking-tight" style="color:var(--cv-accent)">CourtVision</a>
+      <span class="text-xs" style="color:var(--cv-muted)">{% block subtitle %}{% endblock %}</span>
+    </div>
+  </header>
+  <main class="max-w-6xl mx-auto px-3 md:px-6 py-4 md:py-6">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="max-w-6xl mx-auto px-3 md:px-6 py-6 text-xs" style="color:var(--cv-faint)">
+    {% block footer %}CourtVision · model graded · not financial advice{% endblock %}
+  </footer>
+</body>
+</html>

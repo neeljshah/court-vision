@@ -1,0 +1,300 @@
+"""courtvision_router.py — CourtVision UI routes.
+
+Routes: /tonight, /parlays, /share/{slug} (+ qr.svg), /plus_ev, /healthz,
+        /api/{slate, bet/{id}, parlays, plus_ev}.
+Helpers in api._courtvision_data. Parlay engine in src.prediction.parlay_engine.
+"""
+from __future__ import annotations
+
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.templating import Jinja2Templates
+
+from api._courtvision_data import (
+    grade_bet, load_lines_csv, load_slate_csv, slate_no_lines,
+)
+
+try:
+    from slowapi import Limiter
+    from slowapi.util import get_remote_address
+    _limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
+    _public_limit = _limiter.limit("60/minute")
+except Exception:
+    _limiter = None
+    _public_limit = lambda f: f  # noqa: E731
+
+
+def register_with_app(app) -> None:
+    from api._courtvision_middleware import install
+    install(app, _limiter)
+_HERE = Path(__file__).resolve().parent
+_ROOT = _HERE.parent
+_TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
+_PRED_DIR = _ROOT / "data" / "predictions"
+_LINES_DIR = _ROOT / "data" / "lines"
+_BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 15, 300, 8
+_PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
+# Per-stat residual sigma (~ MAE x 1.253). Imported by parlay_engine.
+_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12,
+               "stl": 0.90, "blk": 0.55, "tov": 1.12}
+_STATS = tuple(_STAT_SIGMA.keys())
+
+router = APIRouter()
+_CACHE: dict = {}
+
+
+def _today_et() -> str:
+    return datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+
+
+def _slate_csv_path(date: str) -> Optional[Path]:
+    for name in (f"slate_{date}_post_inj_refresh.csv", f"slate_{date}.csv"):
+        p = _PRED_DIR / name
+        if p.exists():
+            return p
+    return None
+
+
+def _lines_csv_path(date: str) -> Optional[Path]:
+    p = _LINES_DIR / f"lines_{date}.csv"
+    return p if p.exists() else None
+
+
+def _latest_slate_date() -> Optional[str]:
+    if not _PRED_DIR.exists():
+        return None
+    dates = set()
+    for p in _PRED_DIR.glob("slate_*.csv"):
+        parts = p.stem.split("_")
+        if len(parts) >= 2 and len(parts[1]) == 10:
+            dates.add(parts[1])
+    return max(dates) if dates else None
+
+
+def _build_slate(date: str) -> dict:
+    """Cached slate builder. Returns the JSON envelope dict."""
+    cache_key = ("slate", date)
+    entry = _CACHE.get(cache_key)
+    if entry and time.time() - entry[0] < _TTL_SEC:
+        return entry[1]
+
+    slate_path = _slate_csv_path(date)
+    if slate_path is None:
+        envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
+            "bankroll_default_dollars": _BANKROLL_DEFAULT, "stale_data": True,
+            "has_lines": False, "latest_available": _latest_slate_date(),
+            "summary": {"n_bets": 0, "avg_ev_pct": 0.0, "n_over": 0, "n_under": 0},
+            "bets": []}
+        _CACHE[cache_key] = (time.time(), envelope)
+        return envelope
+
+    slate_rows = load_slate_csv(slate_path, _STATS)
+    lines_path = _lines_csv_path(date)
+    has_lines = lines_path is not None
+    bets: list[dict] = []
+
+    if has_lines:
+        by_player_stat = {(r["player_name"].lower(), r["stat"]): r
+                          for r in slate_rows.values()}
+        for ln in load_lines_csv(lines_path):
+            row = by_player_stat.get((ln["player"].lower(), ln["stat"]))
+            if row and ln["stat"] in _STATS:
+                bets.append(grade_bet(row, ln, _STAT_SIGMA, _BANKROLL_DEFAULT))
+        bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
+        bets = bets[:_TOP_N]
+    else:
+        bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
+
+    # Claude narratives: no-op if no API key; per-bet disk-cached.
+    try:
+        from src.llm.bet_narrator import narrate_slate
+        narrate_slate(bets, date)
+    except Exception as exc:
+        __import__("logging").getLogger(__name__).warning("narrate_slate failed: %s", exc)
+
+    ev_vals = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+    envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
+        "bankroll_default_dollars": _BANKROLL_DEFAULT,
+        "stale_data": date != _today_et(),
+        "has_lines": has_lines, "latest_available": _latest_slate_date(),
+        "summary": {"n_bets": len(bets),
+                    "avg_ev_pct": round(sum(ev_vals) / len(ev_vals), 2) if ev_vals else 0.0,
+                    "n_over": sum(1 for b in bets if b["side"] == "OVER"),
+                    "n_under": sum(1 for b in bets if b["side"] == "UNDER")},
+        "bets": bets}
+    _CACHE[cache_key] = (time.time(), envelope)
+    return envelope
+
+
+def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -> dict:
+    """Cached parlay builder. Reuses _build_slate output."""
+    cache_key = ("parlays", date, max_legs, min_ev_pct, seed)
+    entry = _CACHE.get(cache_key)
+    if entry and time.time() - entry[0] < _TTL_SEC:
+        return entry[1]
+    envelope = _build_slate(date)
+    bets = envelope.get("bets", [])
+    has_lines = envelope.get("has_lines", False)
+    gen_at = datetime.utcnow().isoformat() + "Z"
+    if not bets or not has_lines:
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
+               "has_lines": has_lines, "parlays": []}
+    else:
+        from src.prediction.parlay_engine import ParlayEngine
+        engine = ParlayEngine(bets, rng_seed=seed)
+        parlays = engine.enumerate_parlays(max_legs=max_legs, min_ev_pct=min_ev_pct)
+        out = {"date": date, "generated_at": gen_at, "n_parlays": len(parlays),
+               "has_lines": True, "parlays": parlays}
+    _CACHE[cache_key] = (time.time(), out)
+    return out
+
+
+# ── routes ───────────────────────────────────────────────────────────────────
+@router.get("/tonight", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def tonight(request: Request, date: str = Query(default_factory=_today_et)):
+    slate = _build_slate(date)
+    return _TEMPLATES.TemplateResponse("tonight.html", {"request": request, "slate": slate})
+
+
+@router.get("/api/slate", tags=["courtvision"])
+def api_slate(date: str = Query(default_factory=_today_et)):
+    return JSONResponse(_build_slate(date))
+
+
+@router.get("/api/bet/{bet_id}", tags=["courtvision"])
+def api_bet(bet_id: str, request: Request,
+            date: str = Query(default_factory=_today_et),
+            partial: int = 0):
+    m = next((b for b in _build_slate(date)["bets"] if b["bet_id"] == bet_id), None)
+    if m is None:
+        if partial:
+            return HTMLResponse('<div class="pending">bet not found</div>', status_code=404)
+        raise HTTPException(status_code=404, detail="bet not found")
+    return (_TEMPLATES.TemplateResponse("_bet_card_reasoning.html",
+            {"request": request, "bet": m}) if partial else JSONResponse(m))
+
+
+@router.get("/api/parlays", tags=["courtvision"])
+def api_parlays(date: str = Query(default_factory=_today_et),
+                max_legs: int = Query(5, ge=2, le=5),
+                min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
+                seed: int = Query(0, ge=0, le=10**9)):
+    return JSONResponse(_build_parlays(date, max_legs, min_ev_pct, seed))
+
+
+@router.get("/api/auto_parlay", tags=["courtvision"])
+def api_auto_parlay(date: str = Query(default_factory=_today_et),
+                    stake: float = Query(20.0, ge=1.0, le=10000.0),
+                    max_legs: int = Query(5, ge=2, le=5)):
+    """Pick the highest-EV parlay whose Kelly stake fits the requested $stake."""
+    cand = [p for p in _build_parlays(date, max_legs, 5.0, 0).get("parlays", [])
+            if p["kelly_stake_dollars"] <= stake]
+    return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
+                         "pick": cand[0] if cand else None,
+                         "n_candidates_under_stake": len(cand)})
+
+
+def _share_text(slate: dict, shown: list[dict]) -> str:
+    out = [f"🏀 CourtVision picks · {slate['date']}",
+           f"{len(shown)} model-graded NBA prop bets, ranked by EV", ""]
+    for i, b in enumerate(shown, start=1):
+        side = "o" if b["side"] == "OVER" else "u"
+        ev = b.get("ev_pct")
+        ev_s = f"EV {ev:+.1f}%" if ev is not None else "EV pending"
+        venue = "@" if b["venue"] == "away" else "vs"
+        out.append(f"{i}. {b['player_name']} {b['prop_stat']} {side}{b['line']:g} "
+                   f"({b['team']} {venue} {b['opp']}) — {ev_s}")
+    out += ["", "not financial advice · courtvision"]
+    return "\n".join(out)
+
+
+_SHARE_HIDE = ("kelly_stake_dollars", "kelly_pct", "market_prob", "model_prob")
+
+
+@router.get("/share/{slug}", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def share(slug: str, request: Request):
+    slate = _build_slate(slug)
+    if not slate.get("bets"):
+        raise HTTPException(status_code=404, detail="no slate for this slug")
+    shown = [{k: v for k, v in b.items() if k not in _SHARE_HIDE}
+             for b in slate["bets"][:_SHARE_TOP_N]]
+    ev_vals = [b.get("ev_pct") for b in shown if b.get("ev_pct") is not None]
+    avg_ev = round(sum(ev_vals) / len(ev_vals), 2) if ev_vals else 0.0
+    return _TEMPLATES.TemplateResponse("share.html",
+        {"request": request, "slate": slate, "shown": shown,
+         "avg_ev": avg_ev, "share_text": _share_text(slate, shown)})
+
+
+@router.get("/share/{slug}/qr.svg", tags=["courtvision"])
+def share_qr(slug: str, request: Request):
+    import io
+    import qrcode
+    from qrcode.image.svg import SvgPathImage
+    base = _PUBLIC_BASE_URL or str(request.base_url).rstrip("/")
+    url = f"{base}/share/{slug}"
+    q = qrcode.QRCode(box_size=8, border=2,
+                      error_correction=qrcode.constants.ERROR_CORRECT_M)
+    q.add_data(url)
+    q.make(fit=True)
+    buf = io.BytesIO()
+    q.make_image(image_factory=SvgPathImage).save(buf)
+    return Response(content=buf.getvalue(), media_type="image/svg+xml",
+                    headers={"Cache-Control": "public, max-age=86400"})
+
+
+@router.get("/healthz", tags=["courtvision"])
+def healthz():
+    from api._courtvision_data import healthz_payload
+    return JSONResponse(healthz_payload(_ROOT, _latest_slate_date()))
+
+
+@router.get("/sse/live_edges", tags=["courtvision"])
+async def sse_live_edges(request: Request):
+    from api._courtvision_live import live_edge_stream
+    return await live_edge_stream(request)
+
+@router.get("/live", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def live(request: Request, date: str = Query(default_factory=_today_et)):
+    return _TEMPLATES.TemplateResponse("live.html", {"request": request, "date": date})
+
+
+@router.get("/api/plus_ev", tags=["courtvision"])
+def api_plus_ev(date: str = Query(default_factory=_today_et),
+                min_ev_pct: float = Query(2.0, ge=-100.0, le=500.0)):
+    from api._courtvision_data import plus_ev_rows
+    r = plus_ev_rows(_build_slate(date), min_ev_pct)
+    return JSONResponse({"date": date, "n": len(r), "rows": r})
+
+
+@router.get("/plus_ev", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def plus_ev(request: Request,
+            date: str = Query(default_factory=_today_et),
+            min_ev_pct: float = Query(2.0, ge=-100.0, le=500.0)):
+    from api._courtvision_data import plus_ev_rows
+    rows = plus_ev_rows(_build_slate(date), min_ev_pct)
+    return _TEMPLATES.TemplateResponse("plus_ev.html",
+        {"request": request, "date": date, "rows": rows, "min_ev_pct": min_ev_pct})
+
+
+@router.get("/parlays", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def parlays(request: Request,
+            date: str = Query(default_factory=_today_et),
+            max_legs: int = Query(5, ge=2, le=5),
+            min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
+            limit: int = Query(25, ge=1, le=100)):
+    envelope = _build_parlays(date, max_legs, min_ev_pct, seed=0)
+    leg_meta = {b["bet_id"]: b for b in _build_slate(date).get("bets", [])}
+    return _TEMPLATES.TemplateResponse("parlays.html",
+        {"request": request, "envelope": envelope,
+         "shown": envelope.get("parlays", [])[:limit],
+         "leg_meta": leg_meta, "min_ev_pct": min_ev_pct, "max_legs": max_legs})

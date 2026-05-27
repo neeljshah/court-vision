@@ -1,0 +1,39 @@
+<div class="border-t pt-3" style="border-color:var(--cv-border)">
+  <div class="text-[10px] uppercase tracking-wider mb-1" style="color:var(--cv-subtle)">Why this bet</div>
+  <p class="text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+
+  {% if bet.top_features %}
+    <ul class="mt-2 text-xs space-y-1 font-mono">
+      {% for f in bet.top_features %}
+        <li class="flex justify-between">
+          <span style="color:var(--cv-muted)">{{ f.name }}</span>
+          <span>
+            <span style="color:var(--cv-text)">{{ '%g'|format(f.value) if f.value is not none else '—' }}</span>
+            {% if f.contribution is not none %}
+              <span class="ml-2 {% if f.contribution > 0 %}num-pos{% elif f.contribution < 0 %}num-neg{% else %}num-zero{% endif %}">
+                {{ '%+.2f'|format(f.contribution) }}
+              </span>
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="mt-2 text-xs pending">top features · data not yet wired</div>
+  {% endif %}
+
+  {% if bet.all_books and bet.all_books|length > 1 %}
+    <div class="mt-2 text-xs" style="color:var(--cv-muted)">
+      Books:
+      {% for b in bet.all_books %}
+        <span class="font-mono">{{ b.book }} {{ '%+d'|format(b.price) }}</span>{% if not loop.last %} · {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="mt-2 text-xs" style="color:var(--cv-subtle)">
+    stars available: {% if bet.stars_available_flag %}<span class="num-pos">yes</span>{% else %}<span class="num-neg">no</span>{% endif %}
+    {% if bet.minutes_proj is not none %}· min proj {{ '%g'|format(bet.minutes_proj) }}{% endif %}
+    {% if bet.pace_proj is not none %}· pace proj {{ '%g'|format(bet.pace_proj) }}{% endif %}
+  </div>
+</div>

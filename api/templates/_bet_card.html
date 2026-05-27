@@ -1,0 +1,86 @@
+<article class="cv-card cv-card-hover p-3 md:p-4">
+  <header class="flex items-start justify-between gap-2">
+    <div class="min-w-0">
+      <div class="flex items-baseline gap-2">
+        <span class="text-[10px] md:text-xs font-mono" style="color:var(--cv-subtle)">#{{ rank|default('') }}</span>
+        <h3 class="text-base md:text-lg font-semibold truncate" style="color:var(--cv-text)">{{ bet.player_name }}</h3>
+      </div>
+      <div class="text-xs md:text-sm mt-0.5" style="color:var(--cv-muted)">
+        <span>{{ bet.team }} {% if bet.venue == 'away' %}@{% else %}vs{% endif %} {{ bet.opp }}</span>
+        <span class="mx-1">·</span>
+        <span class="font-mono">{{ bet.prop_stat }} {{ '%g'|format(bet.line) }}</span>
+        {% if bet.best_book %}
+          <span class="mx-1">·</span>
+          <span>{{ bet.best_book }}
+            {% if bet.best_price is not none %}
+              <span class="font-mono">{{ '%+d'|format(bet.best_price) }}</span>
+            {% endif %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+    <span class="text-[10px] md:text-xs px-2 py-1 rounded {% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}">
+      {{ bet.side }}
+    </span>
+  </header>
+
+  <div class="mt-3 grid grid-cols-4 gap-2 text-center">
+    <div>
+      <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
+           data-tip="Model's median prediction (q50). Half the time the player goes higher, half lower.">q50</div>
+      <div class="text-sm md:text-base font-semibold font-mono">{{ '%.2f'|format(bet.q50) }}</div>
+    </div>
+    <div>
+      <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
+           data-tip="How many stat units the model expects above (or below) the book's line.">edge</div>
+      <div class="text-sm md:text-base font-semibold font-mono {% if bet.edge_units > 0 %}num-pos{% elif bet.edge_units < 0 %}num-neg{% else %}num-zero{% endif %}">
+        {{ '%+.2f'|format(bet.edge_units) }}
+      </div>
+    </div>
+    <div>
+      <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
+           data-tip="Expected return per $100 staked at the best posted price, given the model's win probability.">EV</div>
+      <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">
+        {% if bet.ev_pct is not none %}{{ '%+.1f'|format(bet.ev_pct) }}%{% else %}<span class="pending">—</span>{% endif %}
+      </div>
+    </div>
+    <div>
+      <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
+           data-tip="Suggested stake in dollars at $100 bankroll. Quarter-Kelly with correlation discount.">Kelly</div>
+      <div class="text-sm md:text-base font-semibold font-mono" style="color:var(--cv-accent)">
+        {% if bet.kelly_stake_dollars is not none %}${{ '%.2f'|format(bet.kelly_stake_dollars) }}{% else %}<span class="pending">—</span>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3 text-xs flex flex-wrap gap-x-3 gap-y-1" style="color:var(--cv-muted)">
+    {% if bet.last_5_median is not none %}<span>L5 med <b style="color:var(--cv-text)">{{ '%g'|format(bet.last_5_median) }}</b></span>{% else %}<span class="pending">L5 —</span>{% endif %}
+    {% if bet.season_median is not none %}<span>season <b style="color:var(--cv-text)">{{ '%g'|format(bet.season_median) }}</b></span>{% else %}<span class="pending">season —</span>{% endif %}
+    <span class="tip" tabindex="0" data-tip="Model's probability the bet hits, derived from q50 and per-stat residual variance.">model
+      <b style="color:var(--cv-text)">
+        {% if bet.model_prob is not none %}{{ '%.1f'|format(bet.model_prob * 100) }}%{% else %}—{% endif %}
+      </b>
+    </span>
+    <span class="tip" tabindex="0" data-tip="Market's de-vig implied probability for this bet at posted odds.">market
+      <b style="color:var(--cv-text)">
+        {% if bet.market_prob is not none %}{{ '%.1f'|format(bet.market_prob * 100) }}%{% else %}—{% endif %}
+      </b>
+    </span>
+  </div>
+
+  <div class="mt-3 md:hidden">
+    <button class="text-xs underline" style="color:var(--cv-accent)"
+            hx-get="/api/bet/{{ bet.bet_id }}?partial=1&date={{ slate.date }}"
+            hx-target="next .reasoning"
+            hx-swap="innerHTML"
+            hx-trigger="click once">
+      ▾ Why this bet?
+    </button>
+    <span hx-indicator class="ml-2 text-xs" style="color:var(--cv-muted)">…</span>
+    <div class="reasoning mt-2"></div>
+  </div>
+
+  <div class="mt-3 hidden md:block">
+    {% include "_bet_card_reasoning.html" %}
+  </div>
+</article>

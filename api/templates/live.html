@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Live edges · CourtVision{% endblock %}
+{% block subtitle %}Live · {{ date }}{% endblock %}
+{% block og_title %}CourtVision · Live edges{% endblock %}
+{% block og_desc %}Tonight's in-game prop edges, streaming as games unfold.{% endblock %}
+
+{% block content %}
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Live edges</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ date }}</span>
+    <a href="/tonight?date={{ date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">pregame slate →</a>
+    <a href="/parlays?date={{ date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">parlays →</a>
+  </div>
+  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span id="live-status">connecting…</span>
+    <span id="live-count">0 events</span>
+    <span id="live-last">—</span>
+  </div>
+</section>
+
+<div id="live-feed" class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)" id="live-empty">
+    Waiting for live edge events…
+    <div class="text-[10px] mt-2" style="color:var(--cv-subtle)">
+      Requires `live_orchestrator` daemon to be running. Pregame slate works without it.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var status = document.getElementById('live-status');
+  var count  = document.getElementById('live-count');
+  var last   = document.getElementById('live-last');
+  var feed   = document.getElementById('live-feed');
+  var empty  = document.getElementById('live-empty');
+  var n = 0;
+  var src = new EventSource('/sse/live_edges');
+  src.onopen  = function(){ status.textContent = 'connected'; status.style.color = '#34d399'; };
+  src.onerror = function(){ status.textContent = 'reconnecting…'; status.style.color = '#fbbf24'; };
+  src.addEventListener('edge', function(ev){
+    try {
+      var d = JSON.parse(ev.data);
+      var e = d.event || {};
+      n += 1;
+      count.textContent = n + ' events';
+      last.textContent = new Date(d.ts * 1000).toLocaleTimeString();
+      if (empty) { empty.remove(); empty = null; }
+      var card = document.createElement('article');
+      card.className = 'cv-card cv-card-hover p-3 md:p-4';
+      var side = (e.side || '').toUpperCase();
+      var badge = side === 'OVER' ? 'badge-over' : 'badge-under';
+      var ev_pct = (typeof e.ev === 'number') ? (e.ev * 100).toFixed(1) + '%' : '—';
+      var p_hit  = (typeof e.p_hit === 'number') ? (e.p_hit * 100).toFixed(1) + '%' : '—';
+      card.innerHTML =
+        '<header class="flex items-start justify-between gap-2">' +
+          '<div class="min-w-0">' +
+            '<h3 class="text-base md:text-lg font-semibold truncate" style="color:var(--cv-text)">' +
+              (e.name || e.player_id || '?') + '</h3>' +
+            '<div class="text-xs md:text-sm mt-0.5 font-mono" style="color:var(--cv-muted)">' +
+              (e.team || '') + ' · ' + ((e.stat||'').toUpperCase()) + ' ' +
+              (side === 'OVER' ? 'o' : 'u') + (e.line || '') + ' · ' +
+              (e.book || '') + ' ' + (e.odds || '') +
+            '</div>' +
+          '</div>' +
+          '<span class="text-[10px] md:text-xs px-2 py-1 rounded ' + badge + '">' + side + '</span>' +
+        '</header>' +
+        '<div class="mt-3 grid grid-cols-3 gap-2 text-center">' +
+          '<div><div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">P(hit)</div>' +
+              '<div class="text-sm md:text-base font-semibold font-mono">' + p_hit + '</div></div>' +
+          '<div><div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">EV</div>' +
+              '<div class="text-sm md:text-base font-semibold font-mono num-pos">' + ev_pct + '</div></div>' +
+          '<div><div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">tier</div>' +
+              '<div class="text-sm md:text-base font-semibold font-mono">' + (e.tier || '—') + '</div></div>' +
+        '</div>' +
+        (e.why ? ('<p class="mt-3 text-sm" style="color:var(--cv-text)">' + e.why + '</p>') : '');
+      feed.insertBefore(card, feed.firstChild);
+      // Keep at most 25 cards on screen
+      while (feed.children.length > 25) feed.removeChild(feed.lastChild);
+    } catch (err) { /* malformed event; ignore */ }
+  });
+})();
+</script>
+{% endblock %}
+
+{% block footer %}
+  live edges · CourtVision · auto-refresh via SSE
+{% endblock %}
