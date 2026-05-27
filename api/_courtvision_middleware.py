@@ -17,23 +17,45 @@ _CSP = (
     "base-uri 'self'"
 )
 
-_PUBLIC_PREFIXES = ("/tonight", "/parlays", "/share", "/plus_ev")
+_PUBLIC_PREFIXES = (b"/tonight", b"/parlays", b"/share", b"/plus_ev")
+
+_HEADERS_TO_ADD = (
+    (b"content-security-policy", _CSP.encode()),
+    (b"referrer-policy", b"strict-origin-when-cross-origin"),
+    (b"x-content-type-options", b"nosniff"),
+    (b"permissions-policy",
+     b"interest-cohort=(), geolocation=(), microphone=()"),
+)
 
 
 def _csp_middleware_class():
-    from starlette.middleware.base import BaseHTTPMiddleware
+    """Pure-ASGI middleware that appends CSP/security headers on public HTML routes.
 
-    class _CSPMiddleware(BaseHTTPMiddleware):
-        async def dispatch(self, request, call_next):
-            response = await call_next(request)
-            if request.url.path.startswith(_PUBLIC_PREFIXES):
-                h = response.headers
-                h.setdefault("Content-Security-Policy", _CSP)
-                h.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-                h.setdefault("X-Content-Type-Options", "nosniff")
-                h.setdefault("Permissions-Policy",
-                             "interest-cohort=(), geolocation=(), microphone=()")
-            return response
+    Avoids BaseHTTPMiddleware (which buffers the full response body — fatal for
+    streaming endpoints like SSE).
+    """
+    class _CSPMiddleware:
+        def __init__(self, app):
+            self.app = app
+
+        async def __call__(self, scope, receive, send):
+            if scope.get("type") != "http":
+                return await self.app(scope, receive, send)
+            path = scope.get("path", "").encode()
+            if not any(path.startswith(p) for p in _PUBLIC_PREFIXES):
+                return await self.app(scope, receive, send)
+
+            async def send_wrapper(message):
+                if message["type"] == "http.response.start":
+                    headers = list(message.get("headers", []))
+                    existing = {h[0].lower() for h in headers}
+                    for k, v in _HEADERS_TO_ADD:
+                        if k not in existing:
+                            headers.append((k, v))
+                    message["headers"] = headers
+                await send(message)
+
+            return await self.app(scope, receive, send_wrapper)
 
     return _CSPMiddleware
 
