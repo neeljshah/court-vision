@@ -275,12 +275,68 @@ def fetch_event_odds(
     return _gate_or_fetch("event_odds", cache_key, url, params, cost_units=1)
 
 
+def list_historical_events(date: str) -> Any:
+    """Pull /historical/sports/basketball_nba/events at the given snapshot.
+
+    `date` accepts YYYY-MM-DD (12:00 UTC default) or full ISO8601. Cost = 1 unit.
+    Returns the events active near `date` (within the API's time window).
+    Required before player-props historical fetches — those use event_id.
+    """
+    if "T" not in date:
+        date_iso = f"{date}T12:00:00Z"
+    else:
+        date_iso = date
+    params = {"apiKey": _api_key(), "date": date_iso}
+    url = (
+        f"{API_BASE}/historical/sports/{SPORT_KEY}/events?"
+        + urllib.parse.urlencode(params)
+    )
+    cache_key = f"{date[:10]}_events"
+    return _gate_or_fetch("historical_events", cache_key, url, params, cost_units=1)
+
+
+def fetch_historical_event_odds(
+    event_id: str,
+    date: str,
+    market: str,
+    region: str = DEFAULT_REGION,
+) -> Any:
+    """Pull /historical/sports/basketball_nba/events/{id}/odds for a player-prop market.
+
+    Player-level markets (player_points, player_rebounds, etc.) are NOT served by
+    the bulk /historical/sports/.../odds endpoint — they require the per-event
+    historical variant. Cost = 10 units per call. One region + one market.
+    """
+    _validate_market(market)
+    if "T" not in date:
+        date_iso = f"{date}T12:00:00Z"
+    else:
+        date_iso = date
+    params = {
+        "apiKey": _api_key(),
+        "regions": region,
+        "markets": market,
+        "oddsFormat": "american",
+        "date": date_iso,
+    }
+    url = (
+        f"{API_BASE}/historical/sports/{SPORT_KEY}/events/{event_id}/odds?"
+        + urllib.parse.urlencode(params)
+    )
+    cache_key = f"{date[:10]}_{event_id}_{market}_{region}"
+    return _gate_or_fetch(
+        "historical_event_odds", cache_key, url, params, cost_units=10
+    )
+
+
 __all__ = [
     "BudgetExceeded",
     "MAX_UNITS",
     "fetch_historical_odds",
+    "fetch_historical_event_odds",
     "fetch_event_odds",
     "list_events",
+    "list_historical_events",
     "get_budget",
     "reset_budget",
 ]
