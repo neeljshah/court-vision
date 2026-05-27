@@ -179,6 +179,49 @@ def odds_env(date: str, stat: str = "", player: str = "") -> dict:
     return env
 
 
+def _american_to_implied(odds: int) -> float:
+    """No-vig single-line implied probability from American odds."""
+    if odds >= 100:
+        return 100.0 / (odds + 100.0)
+    return -odds / (-odds + 100.0)
+
+
+def cross_book_spread(date: str, min_spread_pp: float = 2.0) -> list[dict]:
+    """Props where books differ on implied prob — line shop / arb opportunities.
+
+    Returns rows sorted by spread descending. `min_spread_pp` is the min
+    spread in percentage points between best and worst book on either side.
+    """
+    props = consolidate(date)
+    out: list[dict] = []
+    for p in props:
+        if p["n_books"] < 2:
+            continue
+        over_books = [b for b in p["books"] if b["over_price"] is not None]
+        under_books = [b for b in p["books"] if b["under_price"] is not None]
+        over_implieds = [_american_to_implied(b["over_price"]) for b in over_books]
+        under_implieds = [_american_to_implied(b["under_price"]) for b in under_books]
+        over_spread = (max(over_implieds) - min(over_implieds)) * 100 if len(over_implieds) >= 2 else 0
+        under_spread = (max(under_implieds) - min(under_implieds)) * 100 if len(under_implieds) >= 2 else 0
+        max_spread = max(over_spread, under_spread)
+        if max_spread < min_spread_pp:
+            continue
+        # Two-way arb check: best over implied + best under implied < 100?
+        best_over_implied = min(over_implieds) if over_implieds else None
+        best_under_implied = min(under_implieds) if under_implieds else None
+        arb_sum = (best_over_implied + best_under_implied) * 100 if best_over_implied and best_under_implied else None
+        is_arb = arb_sum is not None and arb_sum < 100.0
+        out.append({
+            "player": p["player"], "stat": p["stat"], "line": p["line"],
+            "n_books": p["n_books"], "over_spread_pp": round(over_spread, 2),
+            "under_spread_pp": round(under_spread, 2),
+            "arb_sum_pct": round(arb_sum, 2) if arb_sum is not None else None,
+            "is_arb": is_arb, "books": p["books"],
+        })
+    out.sort(key=lambda r: -max(r["over_spread_pp"], r["under_spread_pp"]))
+    return out
+
+
 def best_book_envelope(date: str) -> dict:
     """One row per (player, stat, line) with the best book per side highlighted."""
     props = consolidate(date)
