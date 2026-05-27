@@ -110,6 +110,18 @@ def run(base: str, date: str) -> int:
                   f"status={code}"):
         fails += 1
 
+    code, body, _ = _get(f"{base}/api/odds/{date}.json")
+    payload = json.loads(body or b"{}") if code == 200 else {}
+    if not _check("GET /api/odds/{date}.json",
+                  code == 200 and isinstance(payload.get("props"), list),
+                  f"status={code} n_props={payload.get('n_props')}"):
+        fails += 1
+
+    code, _, ct = _get(f"{base}/odds?date={date}")
+    if not _check("GET /odds", code == 200 and "text/html" in ct,
+                  f"status={code}"):
+        fails += 1
+
     # SSE check: only verify content-type. Read a tiny chunk with short
     # timeout. urllib doesn't support partial reads cleanly; instead just
     # confirm the endpoint registers as text/event-stream via HEAD-ish GET.
