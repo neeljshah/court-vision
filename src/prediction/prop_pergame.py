@@ -250,8 +250,12 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
+    cols += [f"bbref_{k}" for k in _BBREF_EXTRA_KEYS]  # Wave-2b: orb_pct, drb_pct, trb_pct, bpm, ws
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
+    # Wave-2b: defender matchup (7 keys) + player profile (12 keys)
+    cols += list(_DMATCH_KEYS)
+    cols += list(_PROF_KEYS)
     # Per-game officials crew tendency features (avg fouls/fta/home_win_pct
     # averaged across 3-ref crew using PRIOR-season ref stats) infrastructure
     # lives in _OfficialsCrew + data/officials_features.parquet. Cycle 15
@@ -1697,6 +1701,194 @@ def _get_contracts() -> _Contracts:
     return _CONTRACTS_CACHE
 
 
+# ── Wave-2b: defender matchup features (dmatch_*) ────────────────────────────
+# Source: data/cache/defender_matchup_features.parquet
+# Keyed by (off_player_id, game_date). Training join uses (player_id, game_date)
+# since gamelogs lack game_id. ~81% coverage; missing rows get neutral defaults.
+_DMATCH_KEYS: Tuple[str, ...] = (
+    "dmatch_fg_pct_l10",
+    "dmatch_partial_poss_share",
+    "dmatch_switches_per_poss",
+    "dmatch_primary_def_height_in",
+    "dmatch_height_advantage_in",
+    "dmatch_help_blocks_per_game",
+    "dmatch_3p_pct_l10",
+)
+_DMATCH_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _DMATCH_KEYS}
+_DMATCH_PARQUET = os.path.join(PROJECT_DIR, "data", "cache", "defender_matchup_features.parquet")
+# Column mapping: parquet col -> dmatch_ key
+_DMATCH_COL_MAP: Dict[str, str] = {
+    "matchup_fg_pct_l10":          "dmatch_fg_pct_l10",
+    "matchup_partial_poss_share":  "dmatch_partial_poss_share",
+    "switches_per_poss":           "dmatch_switches_per_poss",
+    "primary_def_height_in":       "dmatch_primary_def_height_in",
+    "height_advantage_in":         "dmatch_height_advantage_in",
+    "help_blocks_per_game":        "dmatch_help_blocks_per_game",
+    "matchup_3p_pct_l10":          "dmatch_3p_pct_l10",
+}
+
+
+class _DefenderMatchup:
+    """Per-(player_id, game_date) lookup of defender matchup features.
+
+    Keyed by (int player_id, date object). Falls back to neutral defaults
+    when the parquet is absent or the (player, game) pair is uncached.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[int, object], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, game_date) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_DMATCH_DEFAULTS)
+        gd = game_date.date() if hasattr(game_date, "date") else game_date
+        row = self._lookup.get((pid, gd))
+        if not row:
+            return dict(_DMATCH_DEFAULTS)
+        return row
+
+
+def build_defender_matchup(parquet_path: Optional[str] = None) -> _DefenderMatchup:
+    """Load defender_matchup_features.parquet into a (player_id, game_date) lookup.
+
+    Never raises — returns an empty wrapper when the parquet is absent.
+    """
+    path = parquet_path or _DMATCH_PARQUET
+    lookup: Dict[Tuple[int, object], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _DefenderMatchup(lookup)
+        df = pd.read_parquet(path)
+        df["game_date"] = pd.to_datetime(df["game_date"]).dt.date
+        for _, row in df.iterrows():
+            try:
+                pid = int(row["off_player_id"])
+            except (TypeError, ValueError):
+                continue
+            gd = row["game_date"]
+            feats: Dict[str, float] = dict(_DMATCH_DEFAULTS)
+            for parquet_col, dmatch_key in _DMATCH_COL_MAP.items():
+                val = row.get(parquet_col)
+                if val is not None:
+                    try:
+                        fval = float(val)
+                        feats[dmatch_key] = fval if fval == fval else 0.0  # NaN guard
+                    except (TypeError, ValueError):
+                        pass
+            lookup[(pid, gd)] = feats
+    except Exception as exc:
+        _warn_join_load_once("build_defender_matchup", path, exc)
+    return _DefenderMatchup(lookup)
+
+
+_DMATCH_CACHE: Optional[_DefenderMatchup] = None
+
+
+def _get_defender_matchup() -> _DefenderMatchup:
+    global _DMATCH_CACHE
+    if _DMATCH_CACHE is None:
+        _DMATCH_CACHE = build_defender_matchup()
+    return _DMATCH_CACHE
+
+
+# ── Wave-2b: player profile features (prof_*) ────────────────────────────────
+# Source: data/cache/player_profile_features.parquet
+# Static snapshot keyed by player_id (850 players, 98% gamelog coverage).
+# prof_age_days and derived flags are point-in-time as of profile_as_of date.
+_PROF_KEYS: Tuple[str, ...] = (
+    "prof_height_in",
+    "prof_weight_lb",
+    "prof_draft_year",
+    "prof_draft_number",
+    "prof_undrafted_flag",
+    "prof_intl_flag",
+    "prof_college_d1_flag",
+    "prof_greatest_75_flag",
+    "prof_age_days",
+    "prof_years_in_league",
+    "prof_rookie_flag",
+    "prof_season_exp",
+)
+_PROF_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _PROF_KEYS}
+_PROF_PARQUET = os.path.join(PROJECT_DIR, "data", "cache", "player_profile_features.parquet")
+
+
+class _PlayerProfile:
+    """Per-player_id lookup of static profile features (prof_*).
+
+    All values are floats. Flags (undrafted, intl, college_d1, greatest_75,
+    rookie) are 0/1. Missing players get neutral defaults.
+    """
+
+    def __init__(self, lookup: Dict[int, Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_PROF_DEFAULTS)
+        return self._lookup.get(pid, _PROF_DEFAULTS)
+
+
+def build_player_profiles(parquet_path: Optional[str] = None) -> _PlayerProfile:
+    """Load player_profile_features.parquet into a player_id -> feature-dict lookup.
+
+    Never raises — returns an empty wrapper when the parquet is absent.
+    """
+    path = parquet_path or _PROF_PARQUET
+    lookup: Dict[int, Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _PlayerProfile(lookup)
+        df = pd.read_parquet(path)
+        for _, row in df.iterrows():
+            try:
+                pid = int(row["player_id"])
+            except (TypeError, ValueError):
+                continue
+            def _f(col: str) -> float:
+                v = row.get(col)
+                if v is None:
+                    return 0.0
+                try:
+                    fv = float(v)
+                    return fv if fv == fv else 0.0
+                except (TypeError, ValueError):
+                    return 0.0
+            lookup[pid] = {
+                "prof_height_in":       _f("height_in"),
+                "prof_weight_lb":       _f("weight_lb"),
+                "prof_draft_year":      _f("draft_year"),
+                "prof_draft_number":    _f("draft_number"),
+                "prof_undrafted_flag":  _f("undrafted_flag"),
+                "prof_intl_flag":       _f("intl_flag"),
+                "prof_college_d1_flag": _f("college_d1_flag"),
+                "prof_greatest_75_flag":_f("greatest_75_flag"),
+                "prof_age_days":        _f("age_precise_days_as_of"),
+                "prof_years_in_league": _f("years_in_league_as_of"),
+                "prof_rookie_flag":     _f("rookie_flag_as_of"),
+                "prof_season_exp":      _f("season_exp"),
+            }
+    except Exception as exc:
+        _warn_join_load_once("build_player_profiles", path, exc)
+    return _PlayerProfile(lookup)
+
+
+_PROF_CACHE: Optional[_PlayerProfile] = None
+
+
+def _get_player_profiles() -> _PlayerProfile:
+    global _PROF_CACHE
+    if _PROF_CACHE is None:
+        _PROF_CACHE = build_player_profiles()
+    return _PROF_CACHE
+
+
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
 
 class _OpponentDefense:
@@ -2032,6 +2224,9 @@ def build_pergame_dataset(
     officials = build_officials_crew()
     # Cycle 90d (loop 5) — REB OREB-context per-team prior rolling-5.
     reb_ctx = build_team_reb_context()
+    # Wave-2b — defender matchup (7 keys) + player profile (12 keys).
+    dmatch = build_defender_matchup()
+    player_prof = build_player_profiles()
     # Cycle 90e (loop 5) — per-player position lookup. GATED on file
     # existence: empty wrapper when data/player_positions.parquet is
     # absent, so the join is a no-op on fresh checkouts. position is
@@ -2131,6 +2326,9 @@ def build_pergame_dataset(
                 # set via feature_columns(stat="reb"); other heads ignore them.
                 feats.update(reb_ctx.features(
                     team_abbrev, _opponent_from_matchup(matchup), gdate))
+                # Wave-2b — defender matchup (game_date join) + player profile (pid join).
+                feats.update(dmatch.features(file_player_id, gdate))
+                feats.update(player_prof.features(file_player_id))
                 # officials.features + tracking.features + adv_stats.features
                 # available but not appended to feature_cols — see comments above.
                 row = {c: feats[c] for c in feature_cols}
