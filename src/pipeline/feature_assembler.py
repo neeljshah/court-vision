@@ -236,15 +236,52 @@ def _synergy_for_player(player_id: int, season: str) -> dict:
 
 # ── BBRef advanced ─────────────────────────────────────────────────────────────
 
+_BBREF_EXTRA_KEYS_FA = ("orb_pct", "drb_pct", "trb_pct", "bpm", "ws")
+_BBREF_EXTENDED_PARQUET_FA = os.path.join(PROJECT_DIR, "data", "cache", "bbref_advanced_extended.parquet")
+_BBREF_EXT_CACHE_FA: Optional[object] = None  # pandas DataFrame, lazy-loaded
+
+
+def _load_bbref_ext_df():
+    """Lazy-load bbref_advanced_extended.parquet once; returns DataFrame or None."""
+    global _BBREF_EXT_CACHE_FA
+    if _BBREF_EXT_CACHE_FA is None:
+        try:
+            import pandas as pd  # noqa: PLC0415
+            if os.path.isfile(_BBREF_EXTENDED_PARQUET_FA):
+                _BBREF_EXT_CACHE_FA = pd.read_parquet(
+                    _BBREF_EXTENDED_PARQUET_FA,
+                    columns=["player_name", "season"] + list(_BBREF_EXTRA_KEYS_FA),
+                )
+            else:
+                _BBREF_EXT_CACHE_FA = False  # sentinel: file absent
+        except Exception as exc:
+            log.debug("bbref_extended parquet load failed: %s", exc)
+            _BBREF_EXT_CACHE_FA = False
+    return _BBREF_EXT_CACHE_FA if _BBREF_EXT_CACHE_FA is not False else None
+
+
 def _bbref_for_player(player_id: int, player_name: str, season: str) -> dict:
     # BBRef uses names not IDs — match by name
-    year = season.split("-")[0]
     path = os.path.join(_EXT_CACHE, f"bbref_advanced_{season}.json")
     data = _load(path)
+    base: dict = {}
     if isinstance(data, list) and player_name:
-        row = _find_by_name(data, player_name)
-        return row or {}
-    return {}
+        base = _find_by_name(data, player_name) or {}
+    # Merge extra keys from parquet (wave-2a extension).
+    ext_df = _load_bbref_ext_df()
+    if ext_df is not None and player_name:
+        try:
+            import pandas as pd  # noqa: PLC0415
+            mask = (ext_df["player_name"] == player_name) & (ext_df["season"] == season)
+            rows = ext_df[mask]
+            if not rows.empty:
+                r = rows.iloc[0]
+                for k in _BBREF_EXTRA_KEYS_FA:
+                    v = r[k]
+                    base[k] = float(v) if pd.notna(v) else 0.0
+        except Exception as exc:
+            log.debug("bbref_ext merge failed player=%s season=%s: %s", player_name, season, exc)
+    return base
 
 
 # ── Contracts ──────────────────────────────────────────────────────────────────
@@ -555,8 +592,15 @@ def assemble_features(
         feats["bbref_ts_pct"]   = float(bb.get("ts_pct", 0) or 0)
         feats["bbref_age"]      = float(bb.get("age", 0) or 0)
         feats["bbref_per"]      = float(bb.get("per", 0) or 0)
+        # Wave-2a: 5 new columns from bbref_advanced_extended.parquet
+        feats["bbref_orb_pct"]  = float(bb.get("orb_pct", 0) or 0)
+        feats["bbref_drb_pct"]  = float(bb.get("drb_pct", 0) or 0)
+        feats["bbref_trb_pct"]  = float(bb.get("trb_pct", 0) or 0)
+        feats["bbref_ws"]       = float(bb.get("ws", 0) or 0)
     else:
         missing.append("bbref")
+        for _k in ("bbref_orb_pct", "bbref_drb_pct", "bbref_trb_pct", "bbref_ws"):
+            feats[_k] = 0.0
 
     # ── 8. Contract info ──────────────────────────────────────────────────────
     contract = _contract_for_player(player_id, player_name)
