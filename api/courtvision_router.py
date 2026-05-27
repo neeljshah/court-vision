@@ -28,7 +28,6 @@ except Exception:
     _limiter = None
     _public_limit = lambda f: f  # noqa: E731
 
-
 def register_with_app(app) -> None:
     from api._courtvision_middleware import install; install(app, _limiter)
 _HERE = Path(__file__).resolve().parent
@@ -38,8 +37,7 @@ _PRED_DIR = _ROOT / "data" / "predictions"
 _LINES_DIR = _ROOT / "data" / "lines"
 _BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 15, 300, 8
 _PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
-_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12,  # ~ MAE x 1.253
-               "stl": 0.90, "blk": 0.55, "tov": 1.12}
+_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12, "stl": 0.90, "blk": 0.55, "tov": 1.12}  # ~ MAE x 1.253
 _STATS = tuple(_STAT_SIGMA.keys())
 
 router = APIRouter()
@@ -110,16 +108,13 @@ def _build_slate(date: str) -> dict:
     else:
         bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
 
+    _log = __import__("logging").getLogger(__name__)
     try:
-        from api._courtvision_form import attach_form
-        attach_form(bets)
-    except Exception as exc:
-        __import__("logging").getLogger(__name__).warning("attach_form failed: %s", exc)
+        from api._courtvision_form import attach_form; attach_form(bets)
+    except Exception as exc: _log.warning("attach_form failed: %s", exc)
     try:
-        from src.llm.bet_narrator import narrate_slate
-        narrate_slate(bets, date)
-    except Exception as exc:
-        __import__("logging").getLogger(__name__).warning("narrate_slate failed: %s", exc)
+        from src.llm.bet_narrator import narrate_slate; narrate_slate(bets, date)
+    except Exception as exc: _log.warning("narrate_slate failed: %s", exc)
 
     ev_vals = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
     envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
@@ -161,9 +156,17 @@ def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -
 # ── routes ───────────────────────────────────────────────────────────────────
 @router.get("/tonight", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
-def tonight(request: Request, date: str = Query(default_factory=_today_et)):
+def tonight(request: Request, date: str = Query(default_factory=_today_et),
+            side: str = Query("ALL"), min_ev: float = Query(-999.0)):
     slate = _build_slate(date)
-    return _TEMPLATES.TemplateResponse("tonight.html", {"request": request, "slate": slate})
+    side_u = (side or "ALL").upper()
+    if side_u in ("OVER", "UNDER") or min_ev > -999.0:
+        bets = [b for b in slate["bets"]
+                if (side_u == "ALL" or b["side"] == side_u)
+                and (b.get("ev_pct") is None or b["ev_pct"] >= min_ev)]
+        slate = {**slate, "bets": bets}
+    return _TEMPLATES.TemplateResponse("tonight.html",
+        {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev})
 
 
 @router.get("/api/slate", tags=["courtvision"])
@@ -172,14 +175,12 @@ def api_slate(date: str = Query(default_factory=_today_et)):
 
 
 @router.get("/api/bet/{bet_id}", tags=["courtvision"])
-def api_bet(bet_id: str, request: Request,
-            date: str = Query(default_factory=_today_et),
+def api_bet(bet_id: str, request: Request, date: str = Query(default_factory=_today_et),
             partial: int = 0):
     m = next((b for b in _build_slate(date)["bets"] if b["bet_id"] == bet_id), None)
     if m is None:
-        if partial:
-            return HTMLResponse('<div class="pending">bet not found</div>', status_code=404)
-        raise HTTPException(status_code=404, detail="bet not found")
+        if partial: return HTMLResponse('<div class="pending">not found</div>', 404)
+        raise HTTPException(404, detail="bet not found")
     return (_TEMPLATES.TemplateResponse("_bet_card_reasoning.html",
             {"request": request, "bet": m}) if partial else JSONResponse(m))
 
@@ -196,30 +197,27 @@ def api_parlays(date: str = Query(default_factory=_today_et),
 def api_auto_parlay(date: str = Query(default_factory=_today_et),
                     stake: float = Query(20.0, ge=1.0, le=10000.0),
                     max_legs: int = Query(5, ge=2, le=5)):
-    """Pick the highest-EV parlay whose Kelly stake fits the requested $stake."""
-    cand = [p for p in _build_parlays(date, max_legs, 5.0, 0).get("parlays", [])
-            if p["kelly_stake_dollars"] <= stake]
+    """Highest-EV parlay whose Kelly stake fits the requested $stake."""
+    c = [p for p in _build_parlays(date, max_legs, 5.0, 0).get("parlays", [])
+         if p["kelly_stake_dollars"] <= stake]
     return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
-                         "pick": cand[0] if cand else None,
-                         "n_candidates_under_stake": len(cand)})
+                         "pick": c[0] if c else None, "n_candidates_under_stake": len(c)})
 
 
 def _share_text(slate: dict, shown: list[dict]) -> str:
     out = [f"🏀 CourtVision picks · {slate['date']}",
            f"{len(shown)} model-graded NBA prop bets, ranked by EV", ""]
     for i, b in enumerate(shown, start=1):
-        side = "o" if b["side"] == "OVER" else "u"
-        ev = b.get("ev_pct")
-        ev_s = f"EV {ev:+.1f}%" if ev is not None else "EV pending"
-        venue = "@" if b["venue"] == "away" else "vs"
-        out.append(f"{i}. {b['player_name']} {b['prop_stat']} {side}{b['line']:g} "
-                   f"({b['team']} {venue} {b['opp']}) — {ev_s}")
+        s = "o" if b["side"] == "OVER" else "u"
+        ev = b.get("ev_pct"); ev_s = f"EV {ev:+.1f}%" if ev is not None else "EV pending"
+        v = "@" if b["venue"] == "away" else "vs"
+        out.append(f"{i}. {b['player_name']} {b['prop_stat']} {s}{b['line']:g} "
+                   f"({b['team']} {v} {b['opp']}) — {ev_s}")
     out += ["", "not financial advice · courtvision"]
     return "\n".join(out)
 
 
 _SHARE_HIDE = ("kelly_stake_dollars", "kelly_pct", "market_prob", "model_prob")
-
 
 @router.get("/share/{slug}", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
@@ -229,8 +227,8 @@ def share(slug: str, request: Request):
         raise HTTPException(status_code=404, detail="no slate for this slug")
     shown = [{k: v for k, v in b.items() if k not in _SHARE_HIDE}
              for b in slate["bets"][:_SHARE_TOP_N]]
-    ev_vals = [b.get("ev_pct") for b in shown if b.get("ev_pct") is not None]
-    avg_ev = round(sum(ev_vals) / len(ev_vals), 2) if ev_vals else 0.0
+    evs = [b.get("ev_pct") for b in shown if b.get("ev_pct") is not None]
+    avg_ev = round(sum(evs) / len(evs), 2) if evs else 0.0
     return _TEMPLATES.TemplateResponse("share.html",
         {"request": request, "slate": slate, "shown": shown,
          "avg_ev": avg_ev, "share_text": _share_text(slate, shown)})
@@ -238,17 +236,12 @@ def share(slug: str, request: Request):
 
 @router.get("/share/{slug}/qr.svg", tags=["courtvision"])
 def share_qr(slug: str, request: Request):
-    import io
-    import qrcode
+    import io, qrcode
     from qrcode.image.svg import SvgPathImage
     base = _PUBLIC_BASE_URL or str(request.base_url).rstrip("/")
-    url = f"{base}/share/{slug}"
-    q = qrcode.QRCode(box_size=8, border=2,
-                      error_correction=qrcode.constants.ERROR_CORRECT_M)
-    q.add_data(url)
-    q.make(fit=True)
-    buf = io.BytesIO()
-    q.make_image(image_factory=SvgPathImage).save(buf)
+    q = qrcode.QRCode(box_size=8, border=2, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    q.add_data(f"{base}/share/{slug}"); q.make(fit=True)
+    buf = io.BytesIO(); q.make_image(image_factory=SvgPathImage).save(buf)
     return Response(content=buf.getvalue(), media_type="image/svg+xml",
                     headers={"Cache-Control": "public, max-age=86400"})
 
