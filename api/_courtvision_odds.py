@@ -177,3 +177,44 @@ def odds_env(date: str, stat: str = "", player: str = "") -> dict:
         env["props"] = filter_props(env["props"], stat=stat or None, player=player or None)
         env["n_props"] = len(env["props"])
     return env
+
+
+def best_book_envelope(date: str) -> dict:
+    """One row per (player, stat, line) with the best book per side highlighted."""
+    props = consolidate(date)
+    out = []
+    for p in props:
+        bo = best_price(p, "OVER")
+        bu = best_price(p, "UNDER")
+        out.append({
+            "player": p["player"], "stat": p["stat"], "line": p["line"],
+            "n_books": p["n_books"],
+            "best_over": {"book": bo["display"], "price": bo["over_price"]} if bo else None,
+            "best_under": {"book": bu["display"], "price": bu["under_price"]} if bu else None,
+        })
+    return {"date": date, "n_props": len(out), "props": out}
+
+
+def line_history(date: str, player: str, stat: str) -> list[dict]:
+    """All quotes for one (player, stat) across the day — every captured_at row.
+
+    Returns rows sorted by captured_at, useful for plotting line movement.
+    """
+    player_l, stat_l = player.lower(), stat.lower()
+    rows: list[dict] = []
+    for path in _book_csv_paths(date):
+        with path.open(newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if (r.get("player_name") or "").lower() != player_l:
+                    continue
+                if (r.get("stat") or "").lower() != stat_l:
+                    continue
+                rows.append({
+                    "captured_at": r.get("captured_at"),
+                    "book": (r.get("book") or path.stem.split("_")[-1]).lower(),
+                    "line": _to_float(r.get("line")),
+                    "over_price": _to_int(r.get("over_price")),
+                    "under_price": _to_int(r.get("under_price")),
+                })
+    rows.sort(key=lambda r: (r["captured_at"] or "", r["book"]))
+    return rows

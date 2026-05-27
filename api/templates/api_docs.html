@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}CourtVision API · Docs{% endblock %}
+{% block subtitle %}API docs{% endblock %}
+{% block og_title %}CourtVision public API · multi-book NBA prop odds{% endblock %}
+{% block og_desc %}REST API for tonight's NBA prop odds across Pinnacle, FanDuel, Bovada. Best-book picker, line history, model-graded EV.{% endblock %}
+
+{% block content %}
+<section class="prose prose-invert max-w-3xl">
+  <h1 class="text-2xl md:text-3xl font-semibold" style="color:var(--cv-text)">CourtVision API</h1>
+  <p class="mt-2 text-sm" style="color:var(--cv-muted)">
+    Public REST API for multi-book NBA prop odds + model-graded EV picks.
+    Free read-only. Rate limited 60 req/min/IP on HTML routes.
+  </p>
+
+  <h2 class="mt-6 text-lg font-semibold" style="color:var(--cv-accent)">Odds endpoints</h2>
+  <pre class="cv-card p-3 mt-2 text-xs md:text-sm overflow-x-auto font-mono">GET /api/odds                       <span style="color:var(--cv-muted)"># today's props, all books</span>
+GET /api/odds?stat=blk              <span style="color:var(--cv-muted)"># filter by stat</span>
+GET /api/odds?player=wemby          <span style="color:var(--cv-muted)"># substring match player</span>
+GET /api/odds/{date}.json           <span style="color:var(--cv-muted)"># any date</span>
+GET /api/odds/best/{date}.json      <span style="color:var(--cv-muted)"># best book per side</span>
+GET /api/odds/history/{player}/{stat} <span style="color:var(--cv-muted)"># line movement</span></pre>
+
+  <h2 class="mt-6 text-lg font-semibold" style="color:var(--cv-accent)">Model + picks endpoints</h2>
+  <pre class="cv-card p-3 mt-2 text-xs md:text-sm overflow-x-auto font-mono">GET /api/slate?date={date}          <span style="color:var(--cv-muted)"># top 15 graded bets</span>
+GET /api/bet/{bet_id}               <span style="color:var(--cv-muted)"># single bet detail</span>
+GET /api/parlays?date={date}        <span style="color:var(--cv-muted)"># MC-priced parlays</span>
+GET /api/auto_parlay?stake=20       <span style="color:var(--cv-muted)"># best parlay for $stake</span>
+GET /api/plus_ev?min_ev_pct=5       <span style="color:var(--cv-muted)"># every (bet, book) over EV gate</span>
+GET /api/today_summary?n=3          <span style="color:var(--cv-muted)"># compact top-N for embeds</span></pre>
+
+  <h2 class="mt-6 text-lg font-semibold" style="color:var(--cv-accent)">Example response shape</h2>
+  <p class="text-sm" style="color:var(--cv-muted)">GET /api/odds/2026-05-26.json?stat=blk</p>
+  <pre class="cv-card p-3 mt-2 text-xs overflow-x-auto font-mono" style="color:var(--cv-text)">{
+  "date": "2026-05-26", "n_props": 12, "n_books": 3,
+  "books": [{"id":"bov","display":"Bovada"}, ...],
+  "props": [
+    {
+      "player": "Victor Wembanyama", "player_id": 1641705,
+      "stat": "blk", "line": 2.5,
+      "game_id": "...", "start_time": "2026-05-27T00:40:00Z",
+      "n_books": 1,
+      "books": [
+        {"book":"bov", "display":"Bovada",
+         "over_price": -115, "under_price": -105,
+         "captured_at": "2026-05-26T15:24"}
+      ]
+    }
+  ]
+}</pre>
+
+  <h2 class="mt-6 text-lg font-semibold" style="color:var(--cv-accent)">Scrapers in use</h2>
+  <ul class="mt-2 text-sm" style="color:var(--cv-text)">
+    <li>• <b>Pinnacle</b> — guest API, no auth, ~30s tick</li>
+    <li>• <b>FanDuel</b> — NJ SB API w/ curl_cffi chrome impersonation, ~60s tick</li>
+    <li>• <b>Bovada</b> — public coupon API, ~60s tick</li>
+  </ul>
+
+  <p class="mt-6 text-xs" style="color:var(--cv-subtle)">
+    Healthcheck: <a href="/healthz" style="color:var(--cv-accent)">/healthz</a> ·
+    Today's slate: <a href="/tonight" style="color:var(--cv-accent)">/tonight</a> ·
+    Parlays: <a href="/parlays" style="color:var(--cv-accent)">/parlays</a> ·
+    Live: <a href="/live" style="color:var(--cv-accent)">/live</a> ·
+    Multi-book table: <a href="/odds" style="color:var(--cv-accent)">/odds</a>
+  </p>
+</section>
+{% endblock %}
