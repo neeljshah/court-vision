@@ -44,6 +44,7 @@ from scripts.backtest_closing_lines_2024_playoffs import (  # noqa: E402
 )
 from src.prediction.prop_pergame import (  # noqa: E402
     feature_columns,
+    feature_columns_for,
     apply_garbage_time_haircut,
 )
 
@@ -113,7 +114,8 @@ def _inv_log1p(v: float) -> float:
 
 
 def _predict_blend(artifacts, feat_row: Dict[str, float]) -> Optional[float]:
-    cols = feature_columns()
+    # Use feature_columns_for() to get the frozen 129-col list matching OOS artifacts.
+    cols = feature_columns_for(STAT, OOS_DIR)
     X = np.array([[float(feat_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
 
     weights = artifacts["weights"]

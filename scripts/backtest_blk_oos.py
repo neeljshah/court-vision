@@ -91,8 +91,10 @@ def run() -> dict:
     meta: Dict = {}
     if os.path.exists(META_PATH):
         meta = json.load(open(META_PATH, encoding="utf-8"))
+        _val_mae = meta.get('val_mae')
+        _val_mae_str = f"{_val_mae:.4f}" if _val_mae is not None else "N/A"
         print(f"  meta:       cutoff={meta.get('cutoff_date')}  n_train={meta.get('n_train')}  "
-              f"val_MAE={meta.get('val_mae'):.4f}")
+              f"val_MAE={_val_mae_str}")
 
     model = _load_oos_blk_model()
 
@@ -212,13 +214,10 @@ def run() -> dict:
     print(f"\n  Backtest finished in {elapsed:.1f}s")
     print(f"  Skip reasons: {dict(skip_reasons)}")
     print(f"\n  BLK OOS results:")
-    print(f"    n_pred:       {n_pred}")
-    print(f"    n_bets:       {n_bets}  (threshold |edge| > {THRESHOLD})")
+    print(f"    n_pred={n_pred} n_bets={n_bets} hit_rate={hit_rate*100:.2f}%"
+          f" ROI@-110={roi_pct:+.2f}% units={roi_units:+.2f}")
     print(f"    wins / losses / pushes: {wins} / {losses} / {pushes}")
-    print(f"    hit_rate:     {hit_rate*100:.2f}%")
-    print(f"    ROI @ -110:   {roi_pct:+.2f}%  ({roi_units:+.2f} units)")
-    print(f"    MAE_actual:   {mae_a:.4f}")
-    print(f"    MAE_line:     {mae_l:.4f}")
+    print(f"    MAE_actual={mae_a:.4f} MAE_line={mae_l:.4f}")
     print(f"\n  Edge-magnitude buckets:")
     for bt in bucket_thresholds:
         b = buckets[bt]
