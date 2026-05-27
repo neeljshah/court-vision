@@ -49,6 +49,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     _BBREF_DEFAULTS,
     _CONTRACT_DEFAULTS,
     _REB_CONTEXT_DEFAULTS,
+    _ITER23_DEFAULTS,
     _row_features,
     _num,
     _parse_date,
@@ -59,6 +60,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     _get_contracts,
     _get_team_reb_context,
     _get_pregame_spreads,
+    _inject_iter23_features,
     _PLAYTYPE_PRIOR_SEASON_JOIN,
     predict_pergame,
 )
@@ -206,6 +208,15 @@ def _build_asof_row(player_id: int, opp_team: str, asof_date: datetime,
     except Exception:
         feats["home_spread"] = None
         feats["total"] = None
+    # Iter-7: inject the 39 Iter-2/3 features that were constant-zero at
+    # inference (present in training via build_pergame_dataset, missing here).
+    # team_abbrev derived from most-recent prior game's MATCHUP string.
+    try:
+        last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
+        _team_abbrev_inj = last_matchup.split()[0] if last_matchup.split() else ""
+        _inject_iter23_features(feats, int(player_id), asof_date, _team_abbrev_inj)
+    except Exception:
+        feats.update(_ITER23_DEFAULTS)
     return feats
 
 
