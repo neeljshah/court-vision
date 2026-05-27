@@ -292,6 +292,14 @@ def api_odds_freshness(date: str):
     from api._courtvision_odds import freshness
     return JSONResponse(freshness(date))
 
+@router.get("/api/odds/moves/{date}.json", tags=["courtvision"])
+def api_odds_moves(date: str, window_minutes: int = Query(60, ge=5, le=720)):
+    """Props whose line moved within `window_minutes` — live-day alerts."""
+    from api._courtvision_odds import line_moves
+    rows = line_moves(date, window_minutes=window_minutes)
+    return JSONResponse({"date": date, "window_minutes": window_minutes,
+                         "n": len(rows), "moves": rows})
+
 @router.get("/api/odds/{date}.csv", tags=["courtvision"])
 def api_odds_csv(date: str, stat: str = Query(""), player: str = Query("")):
     """CSV export of consolidated odds — one row per (player, stat, line, book)."""

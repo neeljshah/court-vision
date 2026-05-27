@@ -210,6 +210,66 @@ def _american_to_implied(odds: int) -> float:
     return -odds / (-odds + 100.0)
 
 
+def line_moves(date: str, window_minutes: int = 60) -> list[dict]:
+    """Detect props whose median line moved within `window_minutes` ago.
+
+    Returns rows showing earliest and latest line per (player, stat, book) and
+    the delta. Sorted by absolute delta descending. Useful for live-day alerts.
+    """
+    cutoff_dt = datetime.now(timezone.utc).timestamp() - window_minutes * 60
+    # Series of (captured_at, book, player, stat, line) — read all CSV rows
+    quotes: dict[tuple, list[tuple]] = defaultdict(list)
+    for path in _book_csv_paths(date):
+        with path.open(newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                stat = (r.get("stat") or "").lower()
+                player = (r.get("player_name") or "").strip()
+                if not player or stat not in _VALID_STATS:
+                    continue
+                line = _to_float(r.get("line"))
+                ts = r.get("captured_at") or ""
+                if line is None or not ts:
+                    continue
+                book = (r.get("book") or path.stem.split("_")[-1]).lower()
+                quotes[(player, stat, book)].append((ts, line))
+    out: list[dict] = []
+    for (player, stat, book), series in quotes.items():
+        series.sort()
+        if len(series) < 2:
+            continue
+        # earliest in-window vs latest
+        in_window = [(t, l) for t, l in series
+                     if _parse_ts(t) and _parse_ts(t) >= cutoff_dt]
+        if len(in_window) < 2:
+            continue
+        first_ts, first_line = in_window[0]
+        last_ts, last_line = in_window[-1]
+        if first_line == last_line:
+            continue
+        out.append({
+            "player": player, "stat": stat, "book": book,
+            "display": _BOOK_DISPLAY.get(book, book),
+            "line_open": first_line, "line_close": last_line,
+            "delta": round(last_line - first_line, 2),
+            "ts_open": first_ts, "ts_close": last_ts,
+        })
+    out.sort(key=lambda r: -abs(r["delta"]))
+    return out
+
+
+def _parse_ts(ts: str) -> float | None:
+    if not ts:
+        return None
+    try:
+        return datetime.fromisoformat(ts.replace("Z", "+00:00")).timestamp()
+    except (TypeError, ValueError):
+        try:
+            return datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S").replace(
+                tzinfo=timezone.utc).timestamp()
+        except (TypeError, ValueError):
+            return None
+
+
 def freshness(date: str) -> dict:
     """Per-book CSV mtime + latest captured_at + row count."""
     import os
