@@ -1,12 +1,13 @@
 {
   "__global__": {
-    "agg_ok": true,
-    "n_stats": 1,
-    "n_bets_total": 853,
-    "roi_pct_weighted": -5.33,
-    "hit_rate_weighted": 49.59,
-    "mae_actual_avg": 12.3868,
-    "roi_units_total": -45.45
+    "pts": {
+      "roi_pct": -5.33,
+      "hit_rate": 49.59,
+      "mae_actual": 12.3868,
+      "roi_units": -45.45,
+      "n_bets": 853,
+      "migrated_from_aggregate": true
+    }
   },
   "__updated_at__": "2026-05-27T17:16:37+00:00"
 }
