@@ -103,6 +103,9 @@ def _bet_to_prompt(bet: dict) -> str:
         "model_prob_pct": (bet.get("model_prob") or 0) * 100,
         "market_prob_pct": (bet.get("market_prob") or 0) * 100,
         "ev_pct": bet.get("ev_pct"),
+        "last_5_median": bet.get("last_5_median"),
+        "last_10_median": bet.get("last_10_median"),
+        "season_median": bet.get("season_median"),
         "best_book": bet.get("best_book"),
         "best_price": bet.get("best_price"),
         "stars_available": bet.get("stars_available_flag"),
@@ -110,7 +113,10 @@ def _bet_to_prompt(bet: dict) -> str:
     }
     fields = {k: v for k, v in fields.items() if v is not None}
     return (
-        "Bet to analyze (write the 2-3 sentence narrative for this one bet):\n"
+        "Bet to analyze (write a 2-3 sentence narrative). Reference at least "
+        "one of: recent form (L5/L10 vs season), matchup, or role context. "
+        "If L5 median is far above season median note the streak; if the line "
+        "sits between L5 and L10 medians point it out.\n"
         + json.dumps(fields, separators=(",", ":"))
     )
 
