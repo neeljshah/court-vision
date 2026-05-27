@@ -12,6 +12,45 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-23: Holdout baseline rebased to 2025-26-only (2026-05-27)
+
+After the Iter-22 shifted-cutoff retrain (commit `5fb964f1`), the 2024 playoffs and 2024-25 RS slices moved into the training window — they are no longer valid OOS eval. The old +13.87% baseline on 6,448 bets (4 slices) was contaminated. Iter-23 re-ran all 6 available stats against 2025-26 RS + 2025-26 Playoffs only (2,339 rows total; tov absent from these CSVs). New clean baseline: **+19.37% weighted ROI on 1,337 bets**. The higher ROI vs the old number is expected — the 2025-26 slice was already the strongest-performing slice under the new model. Baseline written to `data/cache/holdout_baseline.json` with `__source__.iter = "iter23"`. Helper scripts: `scripts/reseed_holdout_baseline_2025_26.py` + `scripts/backtest_qstat_oos_override.py` (adds `NBA_BACKTEST_CSV_OVERRIDE` support to the qstat path).
+
+---
+
+## Iter-22: Shifted training cutoff SHIPPED — massive 2025-26 ROI improvement (2026-05-27)
+
+**What was done:** Shifted training cutoff from 2024-04-21 to 2025-04-21, adding the full 2024-25 regular season + playoffs (~26K rows, 52K → 78K train rows) to the training set. Validated strictly on 2025-26 RS + Playoffs.
+
+**Results on 2025-26 OOS slice (1021 bets):**
+
+| Stat | Prod ROI | Cand ROI | Delta |
+|------|----------|----------|-------|
+| PTS  | +0.93%   | +11.12%  | +10.19pp |
+| REB  | +2.80%   | +22.97%  | +20.18pp |
+| AST  | -11.92%  | +14.55%  | +26.47pp |
+| FG3M | +10.22%  | +35.16%  | +24.93pp |
+| STL  | -3.99%   | +9.92%   | +13.90pp |
+| BLK  | -2.33%   | +38.84%  | +41.17pp (n=22, below 30-bet gate) |
+| TOV  | 0.00%    | 0.00%    | — (no bets either model) |
+
+Decision: SHIP (5/7 stats improve >=+1pp, gate is 4+/7). Total 2025-26 pool: -1.01% → +17.42%.
+
+**Why such a large improvement?** The 2024-25 season is the most recent complete training signal — form features, opp_def, play-type freqs, contract features all better calibrated to current-era basketball. The old cutoff left an entire season's worth of recent distributional info on the floor.
+
+**Key operational facts:**
+- Production models now in `data/models/oos_pre_playoffs/` with cutoff 2025-04-21
+- n_pre_cutoff rows: 52,101 → 78,307 (+26,206 rows)
+- Val MAEs: PTS 4.59, REB 1.96, AST 1.34, FG3M 0.87, STL 0.67, BLK 0.41, TOV 0.84
+- Backup pre-ship: `data/models/_backup_iter22_20260527_164726/`
+- Commit: `5fb964f1`
+- Retrain script: `scripts/retrain_iter22_shifted_cutoff.py` (supports `--skip-train` flag)
+- `holdout_baseline.json` updated with new 2025-26 candidate numbers; full 4-slice re-run still pending
+
+**Pattern to remember:** When MAE improves and OOS ROI ALSO improves, the signal is real. When MAE improves but OOS ROI regresses (Iter-17), it's overfitting. Iter-22 had both pointing in the same direction — strong ship signal.
+
+---
+
 ## Iter-21: Edge shrinkage + threshold sweep both INCONCLUSIVE (2026-05-27)
 
 **What was tested (Candidate A — edge shrinkage):**
