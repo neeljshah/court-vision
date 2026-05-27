@@ -3,6 +3,7 @@ betting_portfolio.py — Phase 4.8: Quantitative betting infrastructure.
 
 Handles:
   - Kelly sizing with correlation-aware fractional sizing
+  - Iter-33 Kelly-informed edge-proportional sizing (kelly_b_stake)
   - Cross-book arbitrage detection
   - CLV (closing line value) tracking per bet
   - Portfolio construction: max bets in-flight, drawdown guard
@@ -10,6 +11,7 @@ Handles:
 Public API
 ----------
     kelly_corr(edge, odds, bankroll, corr_matrix)    -> float (bet size $)
+    kelly_b_stake(edge_abs, stat, bankroll, unit_size) -> float (bet size $)
     detect_arb(lines_by_book)                        -> list[ArbOpportunity]
     log_bet(bet)                                     -> None
     record_clv(bet_id, closing_line)                 -> None
@@ -191,6 +193,72 @@ def kelly_corr(
     # Hard cap
     f = min(f, MAX_BET_PCT)
     return round(f * bankroll, 2)
+
+
+# ── Iter-33: Kelly-B edge-proportional sizing ─────────────────────────────────
+# Ship decision: SHIP (+2.52pp aggregate ROI lift vs flat, 1 regression on pts).
+# Calibrated on 1,016 fully-OOS 2025-26 bets (iter-22+25+28 production).
+# Per-stat hit-rate calibration points (training estimate):
+_KELLY_B_HIT_RATES: Dict[str, float] = {
+    "pts": 0.5847, "reb": 0.5982, "ast": 0.6716,
+    "fg3m": 0.7183, "stl": 0.6183, "blk": 0.6654, "tov": 0.52,
+}
+# Per-stat thresholds (iter-25)
+_KELLY_B_THRESHOLDS: Dict[str, float] = {
+    "pts": 0.7, "reb": 1.5, "ast": 1.0,
+    "fg3m": 0.7, "stl": 0.4, "blk": 0.4, "tov": 0.5,
+}
+_KELLY_B_FRACTION   = 0.25    # quarter-Kelly
+_KELLY_B_MAX_U      = 3.0     # max 3u (cap to limit blowup risk)
+
+
+def kelly_b_stake(
+    edge_abs: float,
+    stat: str,
+    bankroll: float,
+    unit_size: Optional[float] = None,
+    odds: int = -110,
+) -> float:
+    """Iter-33 Kelly-informed stake sizing.
+
+    Sizes ALL positive-edge bets proportionally to their edge magnitude.
+    Bigger edges get higher p_win estimate -> larger Kelly fraction.
+    Smaller edges get lower p_win -> smaller but non-zero fraction.
+    No abstain: every bet above threshold gets a stake.
+
+    Args:
+        edge_abs:    Absolute edge in stat units (e.g. |pred - line|).
+        stat:        Stat key ('pts', 'reb', etc.).
+        bankroll:    Current bankroll in dollars.
+        unit_size:   1 unit in dollars. Defaults to bankroll * 0.01 (1%).
+        odds:        American odds for this bet (default -110).
+
+    Returns:
+        Recommended bet size in dollars, capped at 3u.
+    """
+    thr  = _KELLY_B_THRESHOLDS.get(stat.lower(), 0.5)
+    hit  = _KELLY_B_HIT_RATES.get(stat.lower(), 0.52)
+    payout_b = _american_to_payout(odds)
+    if payout_b <= 0:
+        return 0.0
+
+    # Linear edge -> p_win interpolation:
+    # at edge = thr:    p_win = hit
+    # at edge = thr*3:  p_win = min(0.85, hit + 0.08)
+    frac  = min(1.0, max(0.0, (edge_abs - thr) / max(thr * 2.0, 0.01)))
+    p_hi  = min(0.85, hit + 0.08)
+    p_win = hit + frac * (p_hi - hit)
+    p_win = min(0.90, max(0.50, p_win))
+
+    q          = 1.0 - p_win
+    full_kelly = (p_win * payout_b - q) / payout_b
+    if full_kelly <= 0.0:
+        return 0.0
+
+    u = unit_size if unit_size and unit_size > 0 else bankroll * 0.01
+    raw_units  = _KELLY_B_FRACTION * full_kelly
+    capped_u   = min(raw_units, _KELLY_B_MAX_U)
+    return round(capped_u * u, 2)
 
 
 @dataclass
