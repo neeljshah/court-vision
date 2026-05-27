@@ -117,6 +117,15 @@ class _Parsed:
     resolution_ts: Optional[float]
 
 
+@dataclass
+class _ParsedRange:
+    asset_id: str
+    asset_symbol: str
+    lower: float
+    upper: float
+    resolution_ts: Optional[float]
+
+
 def _parse_price(text: str) -> Optional[float]:
     m = _PRICE_RE.search(text)
     if m is not None:
@@ -178,6 +187,82 @@ def _parse_date(text: str, now: Optional[datetime] = None) -> Optional[float]:
         except ValueError:
             continue
     return None
+
+
+# Range market: 'between $A and $B', '$A-$B', 'in the range $A-$B'.
+# Captures both strikes.
+_RANGE_PARSE_RE = re.compile(
+    r"(?:between|range\s+of?|from)\s+"
+    r"\$?\s*([\d,]+(?:\.\d+)?(?:[kKmM])?)"
+    r"\s+(?:and|to|-|–)\s+"
+    r"\$?\s*([\d,]+(?:\.\d+)?(?:[kKmM])?)",
+    re.IGNORECASE,
+)
+_RANGE_DASH_RE = re.compile(
+    r"\$\s*([\d,]+(?:\.\d+)?(?:[kKmM])?)\s*[-–]\s*\$\s*([\d,]+(?:\.\d+)?(?:[kKmM])?)"
+)
+
+
+def _parse_num_with_suffix(raw: str) -> Optional[float]:
+    raw = raw.strip().replace(",", "")
+    suffix = ""
+    if raw and raw[-1].lower() in ("k", "m"):
+        suffix = raw[-1].lower()
+        raw = raw[:-1]
+    try:
+        v = float(raw)
+    except ValueError:
+        return None
+    if suffix == "k":
+        v *= 1_000.0
+    elif suffix == "m":
+        v *= 1_000_000.0
+    return v
+
+
+def _parse_range_question(question: str, end_date_iso: Optional[str] = None) -> Optional[_ParsedRange]:
+    """Parse 'BTC between $A and $B by date Z' style markets."""
+    if not question:
+        return None
+    q = question.lower()
+    asset_id: Optional[str] = None
+    asset_symbol: Optional[str] = None
+    for token, (cg_id, sym) in _ASSET_MAP.items():
+        if re.search(rf"(?<![a-z]){re.escape(token)}(?![a-z])", q):
+            asset_id = cg_id
+            asset_symbol = sym
+            break
+    if asset_id is None:
+        return None
+    m = _RANGE_PARSE_RE.search(question)
+    if m is None:
+        m = _RANGE_DASH_RE.search(question)
+    if m is None:
+        return None
+    lower = _parse_num_with_suffix(m.group(1))
+    upper = _parse_num_with_suffix(m.group(2))
+    if lower is None or upper is None or lower <= 0 or upper <= 0:
+        return None
+    if lower > upper:
+        lower, upper = upper, lower
+    resolution_ts: Optional[float] = None
+    if end_date_iso:
+        try:
+            dt = datetime.fromisoformat(end_date_iso.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            resolution_ts = dt.timestamp()
+        except ValueError:
+            pass
+    if resolution_ts is None:
+        resolution_ts = _parse_date(question)
+    return _ParsedRange(
+        asset_id=asset_id,
+        asset_symbol=asset_symbol or "?",
+        lower=lower,
+        upper=upper,
+        resolution_ts=resolution_ts,
+    )
 
 
 def _parse_question(question: str, end_date_iso: Optional[str] = None) -> Optional[_Parsed]:
@@ -370,7 +455,12 @@ class CryptoThresholdForecaster(Forecaster):
         if (market.get("category") or "").lower() != "crypto":
             return False
         question = market.get("question_or_title") or market.get("question") or ""
-        return _parse_question(question, market.get("end_date")) is not None
+        end_date = market.get("end_date")
+        if _parse_question(question, end_date) is not None:
+            return True
+        if _parse_range_question(question, end_date) is not None:
+            return True
+        return False
 
     def _get_spot(self, asset_id: str) -> Optional[float]:
         if asset_id not in self._spot_cache:
@@ -392,8 +482,53 @@ class CryptoThresholdForecaster(Forecaster):
                 self._vol_cache[asset_id] = v
         return self._vol_cache.get(asset_id)
 
+    def _range_forecast(self, market: Dict[str, Any], question: str) -> Optional[Forecast]:
+        """Price a 'between $A and $B' market as P(K1 <= S_T <= K2)."""
+        parsed = _parse_range_question(question, market.get("end_date"))
+        if parsed is None or parsed.resolution_ts is None:
+            return None
+        spot = self._get_spot(parsed.asset_id)
+        sigma = self._get_vol(parsed.asset_id)
+        if spot is None or sigma is None:
+            return None
+        now = time.time()
+        years = max(0.0, (parsed.resolution_ts - now) / (365.0 * 86400.0))
+        if years <= 0:
+            prob = 1.0 if parsed.lower <= spot <= parsed.upper else 0.0
+        else:
+            # P(K1 <= S_T <= K2) = P(S_T > K1) - P(S_T > K2)
+            p_above_lower = _gbm_prob_above(spot, parsed.lower, sigma, years, drift=self.default_drift)
+            p_above_upper = _gbm_prob_above(spot, parsed.upper, sigma, years, drift=self.default_drift)
+            prob = max(0.0, p_above_lower - p_above_upper)
+        prob = max(0.0, min(1.0, prob))
+        days = years * 365.0
+        # Confidence: range markets are tighter than single-strike thresholds;
+        # smaller relative width = better calibrated under GBM assumption.
+        width_pct = (parsed.upper - parsed.lower) / max(1.0, spot)
+        horizon_score = 1.0 if 1.0 <= days <= 180.0 else 0.5
+        width_score = min(1.0, width_pct / 0.10)  # 10%-wide range = full credit
+        confidence = self.confidence_floor + (self.confidence_cap - self.confidence_floor) * \
+            0.5 * (horizon_score + width_score)
+        confidence = min(self.confidence_cap, max(self.confidence_floor, confidence))
+        reasoning = (
+            f"GBM-range {parsed.asset_symbol} spot=${spot:,.0f} "
+            f"[${parsed.lower:,.0f}, ${parsed.upper:,.0f}] "
+            f"sigma_ann={sigma:.3f} T={days:.1f}d"
+        )
+        return Forecast(
+            market_id=str(market.get("market_id") or market.get("id") or ""),
+            prob_yes=prob,
+            confidence=confidence,
+            model_name=f"{self.name}_range",
+            reasoning=reasoning,
+        )
+
     def forecast(self, market: Dict[str, Any]) -> Optional[Forecast]:
         question = market.get("question_or_title") or market.get("question") or ""
+        # Try range pricer first — only matches multi-strike questions.
+        range_forecast = self._range_forecast(market, question)
+        if range_forecast is not None:
+            return range_forecast
         parsed = _parse_question(question, market.get("end_date"))
         if parsed is None or parsed.resolution_ts is None:
             return None
