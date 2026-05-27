@@ -6,6 +6,38 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-05-27 — In-play backtest + filter calibration + shadow logger
+
+### Added
+- **In-play backtest harness** (`scripts/run_backtest.py`) — drives a full replay → settle → report pipeline over historical games. Produces `vault/Reports/backtest_<date>.md`. First run on 50 finalized games yielded **90,846 evaluated bets** across endQ1/endQ2/endQ3 windows.
+- **Shadow logger** (`src/prediction/shadow_logger.py`) — records every bet evaluation incl. blocked, with `gate_blocked_by` reason. CSVs at `data/shadow/<game_id>_<date>.csv`. This is the audit trail that makes post-hoc filter calibration *possible* rather than guesswork.
+- **Settlement engine** (`src/prediction/settlement_engine.py`) — joins shadow log against cdn.nba.com finals to compute realized W/L/P + ROI nightly. Run via `python scripts/settle_day.py --date YYYY-MM-DD`.
+- **Snapshot replay** (`src/prediction/snapshot_replay.py`) — streams historical games through the live projector so the backtest harness uses the exact same code path as the live engine.
+- **Filter calibrator** (`scripts/calibrate_filters.py`) — sweeps per-quarter EV emit floor against shadow log. Produces `vault/Reports/filter_calibration_<date>.md` and patches `src/prediction/decision_engine.py` with new thresholds.
+- **Decision engine** (`src/prediction/decision_engine.py`) — gate chain (projection_sane, min_edge, three_book_consensus) + per-quarter EV floor + S/A/B/C tier classification. EV floor calibrated from **0.01 → 0.12** on 2026-05-27.
+- **Daily ROI reporter** (`src/reporting/daily_roi.py`) — `python -m src.reporting.daily_roi --date YYYY-MM-DD` produces a per-day operator brief from shadow logs.
+- **`/api/shadow` endpoint** (`api/live_v2_app.py`) — surfaces the shadow audit trail to the live dashboard.
+- **Per-game ingest orchestrator** (`scripts/per_game_orchestrator.py`) — end-to-end orchestrator with pose imgsz knob for game ingestion.
+- **Synergy PPP features** — per-player synergy points-per-possession wired into prop features.
+
+### Measured (backtest, paper / L5 proxy — NOT real closes)
+- **Calibrated emit set (n=55,073)**: 78.11% hit rate (Wilson [77.76%, 78.45%]), +54.57% ROI, t-stat 179, calibration RMSE 0.065, worst 100-bet drawdown −$1,682 on $100/bet flat.
+- **Tier S (EV ≥ 8%) at endQ3**: +78.7% ROI on 5,088 bets, 93% hit rate.
+- **Pre-calibration aggregate ROI was −4.25%** (Tier C bets at EV < 0.04 dragged everything). The calibration story: three suspected over-blockers (`projection_sane`, `min_edge`, `three_book_consensus`) were tested on dropped bets; they were **correctly** blocking losers (−3.85% and −3.55% hypothetical ROI). The real fix was raising the EV floor 0.01 → 0.12.
+- **Calibration honesty check**: predicted-EV deciles map ±5% to realized return (decile 1: −0.890 pred / −0.884 real; decile 9: +0.799 pred / +0.794 real).
+
+### Caveats
+- The +54.57% ROI uses an **L5 line proxy**, not real Pinnacle closing lines. Real-money ROI estimate: **+15–25%**, materially lower. The +54% is a model-quality ceiling, not a deployment forecast. First real closing-line CLV reading begins October 2026.
+
+### Verified
+- 63/63 in-play tests pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates).
+- 4,100+ tests collected total.
+
+### Improved
+- **README rewritten** to front-load the L5-proxy caveat directly next to the headline number, restructure with real-money-relevant validation leading and paper-ceiling second, add a "Load-bearing modules" table (kills the 120-module bloat impression), and add a "What I'd Tell You In The Interview" pre-empt section.
+- **ARCHITECTURE.md refreshed**: decision engine + shadow logger + settlement engine + snapshot replay + in-play backtest harness + filter calibrator + daily ROI reporter added to component status table; CV game count corrected to 85 tracked / 7 full-feature.
+- **`docs/KNOWN_LIMITATIONS.md` rewritten** with concrete operational state (replaces old vague disclaimer).
+
 ## [0.16.0] - 2026-05-26 — Gate 1 real-Vegas validation (multi-season)
 
 ### Added

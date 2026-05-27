@@ -10,7 +10,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         BROADCAST VIDEO                             │
-│              (29 usable / 75 attempted → 80 CLEAN target)           │
+│             (85 tracked / 7 full-feature → 80 CLEAN target)         │
 └───────────────────────────┬─────────────────────────────────────────┘
                             │
                             ▼
@@ -74,15 +74,23 @@
 | EventDetector | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
 | Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 [LIVE] bug: ball_valid_pct=0% some games |
 | Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ [LIVE] |
-| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_props.py` | ✅ [LIVE] walk-forward validated (MAE: pts 4.62, reb 1.90, ast 1.36, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44) |
+| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_props.py` | ✅ [LIVE] walk-forward validated (MAE @ q50: pts 4.65, reb 1.90, ast 1.37, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44; N=99,818) |
 | Residual heads (pregame + period-specific) | `src/prediction/residual_heads.py`, `multitask_residual_head.py` | ✅ [LIVE] 6/7 stats SHIP pregame; endQ1+endQ2 wired into `live_engine` |
 | Live engine + in-play projection | `src/prediction/live_engine.py` | ✅ [LIVE] endQ1/endQ2/endQ3 snapshots; 7/7 stats win vs pregame at endQ3 |
 | Live quantile bands | `src/prediction/live_quantile_bands.py` | ✅ [LIVE] 80% empirical coverage on in-play projections |
 | Learned Q4 minute trajectory | `src/prediction/minute_trajectory.py` | ✅ [LIVE] endQ3 head: PTS -0.2312 MAE |
 | Overtime probability | `src/prediction/overtime_probability.py` | ✅ [LIVE] |
-| Win probability (5-way NNLS stack) | `src/prediction/win_probability.py` | ✅ [LIVE] 0.7094 acc / 0.193 Brier (walk-forward), 0.717 / 0.188 (single-split) |
+| Win probability (5-way NNLS stack) | `src/prediction/win_probability.py` | ✅ [LIVE] 0.7094 acc / 0.193 Brier (walk-forward 3-fold), 0.7169 / 0.188 (single-split); NNLS zeroed XGB autonomously |
 | Quantile interval calibration | `src/prediction/quantile_calibration.py` | ✅ [LIVE] 80% target coverage |
-| Betting backtest harness | `scripts/betting_backtest*.py` | ✅ [LIVE] 19,964-game holdout, +20-28% ROI @ +0.5 edge |
+| Decision engine (gate chain + EV floor + S/A/B tier) | `src/prediction/decision_engine.py` | ✅ [LIVE] EV floor calibrated 0.01 → 0.12 on 2026-05-27 (post-hoc on shadow log) |
+| Shadow logger (every eval incl. blocked) | `src/prediction/shadow_logger.py` | ✅ [LIVE] CSVs at `data/shadow/<game_id>_<date>.csv`; enabled retroactive filter calibration |
+| Settlement engine (cdn.nba.com finals → realized ROI) | `src/prediction/settlement_engine.py` | ✅ [LIVE] Joins shadow log to box finals; nightly settle |
+| Snapshot replay (historical games → live projector) | `src/prediction/snapshot_replay.py` | ✅ [LIVE] Drives backtest harness |
+| In-play backtest harness | `scripts/run_backtest.py` | ✅ [LIVE] 90,846-bet 50-game backtest; 55,073-bet calibrated emit set 78.11% hit / +54.57% ROI on L5 proxy |
+| Filter calibrator | `scripts/calibrate_filters.py` | ✅ [LIVE] EV-floor + ceiling sweep against shadow log; patches decision_engine thresholds |
+| Daily ROI reporter | `src/reporting/daily_roi.py` | ✅ [LIVE] CLI: `python -m src.reporting.daily_roi --date YYYY-MM-DD` → `vault/Reports/daily_roi_<date>.md` |
+| Real-Vegas Gate 1 (historical archives) | `scripts/run_gate1_*.py` | ✅ [LIVE] 8,360 bets at DK/FD/MGM/BetRivers closes — see `data/models/gate1_results_summary.json` |
+| Betting backtest harness (legacy, L5 proxy) | `scripts/betting_backtest*.py` | ✅ [LIVE] 19,964-game holdout, +20-28% ROI @ +0.5 edge |
 | xFG model | `src/prediction/` | ✅ [LIVE] Brier 0.226 on 221K shots |
 | DNP predictor | `src/prediction/` | ✅ [LIVE] AUC 0.979 |
 | Matchup model | `src/prediction/` | ✅ [LIVE] |
@@ -93,8 +101,8 @@
 | FastAPI serving | `api/main.py` | ✅ [LIVE] ~49 endpoints across 7 routers |
 | Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
 | Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
-| Regression test suite | `tests/` | ✅ [LIVE] 2,661 pass on RunPod (1040+ on the core suite locally) |
-| CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Gate 1 not run |
+| Regression test suite | `tests/` | ✅ [LIVE] 4,100+ collected; 48/48 critical-path pass (gate1, devig, kelly, clv, calibration); 63/63 in-play subset pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates) |
+| CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Historical Gate 1 RUN (DK/FD/MGM/BetRivers); Pinnacle CLV pending Oct 2026 (no historical archive exists) |
 | Line evaluator | `src/prediction/devig.py` + analytics | 🟡 [SCAFFOLDED] live pipeline pending |
 | Correlation engine | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] kelly_corr not populated |
 | PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending |
@@ -133,12 +141,17 @@ feature_engineering.py
     └─ Market features: Pinnacle no-vig, line velocity, steam flag
     │
     ▼
-Model Stack (85 models)
-    ├─ Tier 1: Win prob, 7 prop models, game total, spread, pace, blowout
+Model Stack (312 trained artifacts; 8 load-bearing modules)
+    ├─ Tier 1: Win prob (5-way NNLS), 7 prop models (q10/q50/q90),
+    │          game total, spread, pace, blowout
     ├─ Tier 2: xFG (Brier 0.226), shot zones, xPTS
     ├─ Tier 2B: DNP predictor (AUC 0.979), load management, injury return
-    ├─ Tier 3-4: gated on 80+ CV games (retrain pending)
-    └─ Meta-model: Ridge on stacked outputs
+    ├─ Tier 3-4: gated on 80+ CV games (retrain pending; 7 full-feature currently)
+    └─ In-play layer:
+        ├─ live_engine: snapshot → projection
+        ├─ residual heads (pregame + endQ1 + endQ2 - foul/blowout/heat-check)
+        ├─ minute_trajectory: learned Q4 minutes prior (cycle 110)
+        └─ live_quantile_bands: 80% empirical coverage
     │
     ▼
 betting_portfolio.py
@@ -148,8 +161,21 @@ betting_portfolio.py
     └─ CLV tracker → vs Pinnacle close
     │
     ▼
-FastAPI (api/main.py)
-    └─ ~49 endpoints across 7 routers (main, predictions, models, analytics, dashboard, execution, stitch)
+Decision Engine (decision_engine.py)
+    ├─ Gate chain (projection_sane, min_edge, three_book_consensus)
+    ├─ Per-quarter EV emit floor (calibrated 0.01 → 0.12 on 2026-05-27)
+    ├─ S/A/B/C tier classification by EV magnitude
+    └─ → shadow_logger.py (every eval recorded incl. blocked, with gate_blocked_by)
+    │
+    ▼
+Settlement (settlement_engine.py)
+    └─ Joins shadow log to cdn.nba.com final boxscore nightly
+       → realized W/L/P + ROI per bet
+    │
+    ▼
+FastAPI (api/main.py + api/live_v2_app.py)
+    └─ ~50 endpoints across 8 routers (main, predictions, models, analytics,
+       dashboard, execution, stitch, shadow audit)
 ```
 
 ---
