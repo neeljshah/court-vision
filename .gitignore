@@ -6,6 +6,8 @@
 data/videos/
 data/pm/
 data/kalshi/
+data/predmarkets_ledger/
+data/cache/crypto_forecaster/
 *.mp4
 *.avi
 *.mov
