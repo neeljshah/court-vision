@@ -1,0 +1,496 @@
+{
+  "version": "iter5_wf_baseline",
+  "generated_at": "2026-05-27T12:59:00.273685",
+  "wf_method": "4-window single-model eval (shortcut; no per-fold retrain)",
+  "wf_limitation": "No 2024-25 regular-season closing lines available. Eval uses 4 date-slices of 2024 playoffs (same model, different game rounds). True rolling WF requires ~6h compute and should be scheduled separately.",
+  "fold_definitions": [
+    {
+      "fold_id": "fold1_early_r1",
+      "window_start": "2024-04-21",
+      "window_end": "2024-04-28"
+    },
+    {
+      "fold_id": "fold2_late_r1",
+      "window_start": "2024-04-29",
+      "window_end": "2024-05-06"
+    },
+    {
+      "fold_id": "fold3_round2",
+      "window_start": "2024-05-07",
+      "window_end": "2024-05-14"
+    },
+    {
+      "fold_id": "fold4_semifinals",
+      "window_start": "2024-05-15",
+      "window_end": "2024-05-23"
+    }
+  ],
+  "ship_rule": "3+/4 folds positive ROI AND mean_roi > +0.5%",
+  "revert_rule": "2+ folds negative ROI",
+  "stats": {
+    "pts": {
+      "decision": "REVERT",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 1,
+        "mean_roi": -3.422,
+        "std_roi": 3.216,
+        "mean_hit": 0.5059,
+        "mean_mae": 8.8935,
+        "fold_rois": [
+          -5.72,
+          0.89,
+          -7.21,
+          -1.65
+        ],
+        "fold_bets": [
+          326,
+          193,
+          179,
+          132
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 334,
+          "n_bets": 326,
+          "hit_rate": 0.4939,
+          "roi_pct": -5.72,
+          "mae_actual": 9.0997,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 199,
+          "n_bets": 193,
+          "hit_rate": 0.5285,
+          "roi_pct": 0.89,
+          "mae_actual": 8.9027,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 184,
+          "n_bets": 179,
+          "hit_rate": 0.486,
+          "roi_pct": -7.21,
+          "mae_actual": 8.7203,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 136,
+          "n_bets": 132,
+          "hit_rate": 0.5152,
+          "roi_pct": -1.65,
+          "mae_actual": 8.8514,
+          "status": "OK"
+        }
+      ]
+    },
+    "ast": {
+      "decision": "REVERT",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 0,
+        "mean_roi": -11.082,
+        "std_roi": 6.293,
+        "mean_hit": 0.4657,
+        "mean_mae": 15.0332,
+        "fold_rois": [
+          -14.56,
+          -19.31,
+          -2.98,
+          -7.48
+        ],
+        "fold_bets": [
+          324,
+          194,
+          183,
+          130
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 324,
+          "n_bets": 324,
+          "hit_rate": 0.4475,
+          "roi_pct": -14.56,
+          "mae_actual": 14.8046,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 194,
+          "n_bets": 194,
+          "hit_rate": 0.4227,
+          "roi_pct": -19.31,
+          "mae_actual": 15.1204,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 183,
+          "n_bets": 183,
+          "hit_rate": 0.5082,
+          "roi_pct": -2.98,
+          "mae_actual": 15.2034,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 130,
+          "n_bets": 130,
+          "hit_rate": 0.4846,
+          "roi_pct": -7.48,
+          "mae_actual": 15.0046,
+          "status": "OK"
+        }
+      ]
+    },
+    "reb": {
+      "decision": "REVERT",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 2,
+        "mean_roi": 0.14,
+        "std_roi": 4.778,
+        "mean_hit": 0.5245,
+        "mean_mae": 3.0116,
+        "fold_rois": [
+          2.03,
+          -4.02,
+          -4.55,
+          7.1
+        ],
+        "fold_bets": [
+          305,
+          181,
+          176,
+          123
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 331,
+          "n_bets": 305,
+          "hit_rate": 0.5344,
+          "roi_pct": 2.03,
+          "mae_actual": 2.956,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 196,
+          "n_bets": 181,
+          "hit_rate": 0.5028,
+          "roi_pct": -4.02,
+          "mae_actual": 3.1153,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 184,
+          "n_bets": 176,
+          "hit_rate": 0.5,
+          "roi_pct": -4.55,
+          "mae_actual": 3.1411,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 133,
+          "n_bets": 123,
+          "hit_rate": 0.561,
+          "roi_pct": 7.1,
+          "mae_actual": 2.8342,
+          "status": "OK"
+        }
+      ]
+    },
+    "fg3m": {
+      "decision": "SHIP",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 4,
+        "mean_roi": 19.128,
+        "std_roi": 4.033,
+        "mean_hit": 0.624,
+        "mean_mae": 1.1298,
+        "fold_rois": [
+          22.73,
+          23.53,
+          15.7,
+          14.55
+        ],
+        "fold_bets": [
+          140,
+          85,
+          66,
+          50
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 312,
+          "n_bets": 140,
+          "hit_rate": 0.6429,
+          "roi_pct": 22.73,
+          "mae_actual": 1.1732,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 182,
+          "n_bets": 85,
+          "hit_rate": 0.6471,
+          "roi_pct": 23.53,
+          "mae_actual": 0.9662,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 168,
+          "n_bets": 66,
+          "hit_rate": 0.6061,
+          "roi_pct": 15.7,
+          "mae_actual": 1.2244,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 124,
+          "n_bets": 50,
+          "hit_rate": 0.6,
+          "roi_pct": 14.55,
+          "mae_actual": 1.1554,
+          "status": "OK"
+        }
+      ]
+    },
+    "blk": {
+      "decision": "SHIP",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 4,
+        "mean_roi": 17.898,
+        "std_roi": 9.813,
+        "mean_hit": 0.6176,
+        "mean_mae": 0.567,
+        "fold_rois": [
+          21.06,
+          32.17,
+          6.06,
+          12.3
+        ],
+        "fold_bets": [
+          41,
+          26,
+          27,
+          17
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 314,
+          "n_bets": 41,
+          "hit_rate": 0.6341,
+          "roi_pct": 21.06,
+          "mae_actual": 0.5376,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 186,
+          "n_bets": 26,
+          "hit_rate": 0.6923,
+          "roi_pct": 32.17,
+          "mae_actual": 0.5631,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 174,
+          "n_bets": 27,
+          "hit_rate": 0.5556,
+          "roi_pct": 6.06,
+          "mae_actual": 0.6352,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 126,
+          "n_bets": 17,
+          "hit_rate": 0.5882,
+          "roi_pct": 12.3,
+          "mae_actual": 0.5319,
+          "status": "OK"
+        }
+      ]
+    },
+    "stl": {
+      "decision": "SHIP",
+      "agg": {
+        "n_valid_folds": 4,
+        "n_pos_roi": 4,
+        "mean_roi": 21.2,
+        "std_roi": 10.307,
+        "mean_hit": 0.6349,
+        "mean_mae": 0.8137,
+        "fold_rois": [
+          35.23,
+          24.09,
+          18.93,
+          6.55
+        ],
+        "fold_bets": [
+          120,
+          60,
+          61,
+          43
+        ]
+      },
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 323,
+          "n_bets": 120,
+          "hit_rate": 0.7083,
+          "roi_pct": 35.23,
+          "mae_actual": 0.7595,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 193,
+          "n_bets": 60,
+          "hit_rate": 0.65,
+          "roi_pct": 24.09,
+          "mae_actual": 0.8567,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 179,
+          "n_bets": 61,
+          "hit_rate": 0.623,
+          "roi_pct": 18.93,
+          "mae_actual": 0.8271,
+          "status": "OK"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 130,
+          "n_bets": 43,
+          "hit_rate": 0.5581,
+          "roi_pct": 6.55,
+          "mae_actual": 0.8116,
+          "status": "OK"
+        }
+      ]
+    },
+    "tov": {
+      "decision": "INCONCLUSIVE",
+      "agg": {},
+      "folds": [
+        {
+          "fold_id": "fold1_early_r1",
+          "window_start": "2024-04-21",
+          "window_end": "2024-04-28",
+          "n_pred": 0,
+          "n_bets": 0,
+          "hit_rate": null,
+          "roi_pct": null,
+          "mae_actual": null,
+          "status": "SKIP_NO_ROWS"
+        },
+        {
+          "fold_id": "fold2_late_r1",
+          "window_start": "2024-04-29",
+          "window_end": "2024-05-06",
+          "n_pred": 0,
+          "n_bets": 0,
+          "hit_rate": null,
+          "roi_pct": null,
+          "mae_actual": null,
+          "status": "SKIP_NO_ROWS"
+        },
+        {
+          "fold_id": "fold3_round2",
+          "window_start": "2024-05-07",
+          "window_end": "2024-05-14",
+          "n_pred": 0,
+          "n_bets": 0,
+          "hit_rate": null,
+          "roi_pct": null,
+          "mae_actual": null,
+          "status": "SKIP_NO_ROWS"
+        },
+        {
+          "fold_id": "fold4_semifinals",
+          "window_start": "2024-05-15",
+          "window_end": "2024-05-23",
+          "n_pred": 0,
+          "n_bets": 0,
+          "hit_rate": null,
+          "roi_pct": null,
+          "mae_actual": null,
+          "status": "SKIP_NO_ROWS"
+        }
+      ]
+    }
+  }
+}
