@@ -350,6 +350,236 @@ def _contract_for_player(player_id: int, player_name: str) -> dict:
     return {**base, **ext}
 
 
+# ── Iter-3: officials rolling (A) ────────────────────────────────────────────
+
+_OFFICIALS_ROLLING_DF: Optional[object] = None
+_OFFICIALS_ROLLING_PATH = os.path.join(PROJECT_DIR, "data", "cache", "officials_rolling.parquet")
+
+def _load_officials_rolling_df():
+    global _OFFICIALS_ROLLING_DF
+    if _OFFICIALS_ROLLING_DF is not None:
+        return _OFFICIALS_ROLLING_DF
+    if not os.path.exists(_OFFICIALS_ROLLING_PATH):
+        _OFFICIALS_ROLLING_DF = False
+        return None
+    try:
+        import pandas as pd
+        _OFFICIALS_ROLLING_DF = pd.read_parquet(_OFFICIALS_ROLLING_PATH)
+        _OFFICIALS_ROLLING_DF["game_id"] = _OFFICIALS_ROLLING_DF["game_id"].astype(str)
+    except Exception as exc:
+        log.debug("officials_rolling.parquet unreadable: %s", exc)
+        _OFFICIALS_ROLLING_DF = False
+    return _OFFICIALS_ROLLING_DF if _OFFICIALS_ROLLING_DF is not False else None
+
+
+def _officials_for_team(game_id: Optional[str], team_abbrev: Optional[str]) -> dict:
+    nan = float("nan")
+    defaults = {
+        "ref_l5_fouls": nan, "ref_l5_fta": nan,
+        "ref_fouls_z": nan, "ref_fta_z": nan, "ref_home_advantage": nan,
+    }
+    if not game_id or not team_abbrev:
+        return defaults
+    try:
+        df = _load_officials_rolling_df()
+        if df is None:
+            return defaults
+        mask = (df["game_id"] == str(game_id)) & (df["team_abbreviation"] == str(team_abbrev))
+        rows = df[mask]
+        if rows.empty:
+            return defaults
+        r = rows.iloc[0]
+        import pandas as pd
+        def _sf(col: str) -> float:
+            v = r.get(col)
+            return float(v) if v is not None and pd.notna(v) else nan
+        return {
+            "ref_l5_fouls":       _sf("l5_ref_crew_fouls_per_g"),
+            "ref_l5_fta":         _sf("l5_ref_crew_fta_per_g"),
+            "ref_fouls_z":        _sf("ref_crew_fouls_z"),
+            "ref_fta_z":          _sf("ref_crew_fta_z"),
+            "ref_home_advantage": _sf("home_win_pct_advantage"),
+        }
+    except Exception as exc:
+        log.debug("_officials_for_team error: %s", exc)
+        return defaults
+
+
+# ── Iter-3: foul features (B) ─────────────────────────────────────────────────
+
+_FOUL_FEATURES_DF: Optional[object] = None
+_FOUL_FEATURES_PATH = os.path.join(PROJECT_DIR, "data", "cache", "foul_features.parquet")
+
+def _load_foul_features_df():
+    global _FOUL_FEATURES_DF
+    if _FOUL_FEATURES_DF is not None:
+        return _FOUL_FEATURES_DF
+    if not os.path.exists(_FOUL_FEATURES_PATH):
+        _FOUL_FEATURES_DF = False
+        return None
+    try:
+        import pandas as pd
+        _FOUL_FEATURES_DF = pd.read_parquet(_FOUL_FEATURES_PATH)
+        _FOUL_FEATURES_DF["game_id"] = _FOUL_FEATURES_DF["game_id"].astype(str)
+        _FOUL_FEATURES_DF["game_date"] = _FOUL_FEATURES_DF["game_date"].astype(str).str[:10]
+    except Exception as exc:
+        log.debug("foul_features.parquet unreadable: %s", exc)
+        _FOUL_FEATURES_DF = False
+    return _FOUL_FEATURES_DF if _FOUL_FEATURES_DF is not False else None
+
+
+def _fouls_for_player(player_id: int, game_id: Optional[str], game_date: Optional[str]) -> dict:
+    nan = float("nan")
+    defaults = {
+        "foul_pf36_l5": nan, "foul_pf36_l10": nan,
+        "foul_trouble_l10": nan, "foul_last_pf": nan, "foul_min_l5": nan,
+    }
+    try:
+        df = _load_foul_features_df()
+        if df is None:
+            return defaults
+        import pandas as pd
+        rows = None
+        if game_id:
+            mask = (df["player_id"] == int(player_id)) & (df["game_id"] == str(game_id))
+            rows = df[mask]
+        if (rows is None or rows.empty) and game_date:
+            gd = str(game_date)[:10]
+            mask2 = (df["player_id"] == int(player_id)) & (df["game_date"] == gd)
+            rows = df[mask2]
+        if rows is None or rows.empty:
+            return defaults
+        r = rows.iloc[0]
+        def _sf(col: str) -> float:
+            v = r.get(col)
+            return float(v) if v is not None and pd.notna(v) else nan
+        return {
+            "foul_pf36_l5":     _sf("pf_per_36_l5"),
+            "foul_pf36_l10":    _sf("pf_per_36_l10"),
+            "foul_trouble_l10": _sf("foul_trouble_rate_l10"),
+            "foul_last_pf":     _sf("last_game_pf"),
+            "foul_min_l5":      _sf("min_l5"),
+        }
+    except Exception as exc:
+        log.debug("_fouls_for_player error: %s", exc)
+        return defaults
+
+
+# ── Iter-3: DNP team features (C) ────────────────────────────────────────────
+
+_DNP_TEAM_DF: Optional[object] = None
+_DNP_TEAM_PATH = os.path.join(PROJECT_DIR, "data", "cache", "dnp_features_team.parquet")
+
+def _load_dnp_team_df():
+    global _DNP_TEAM_DF
+    if _DNP_TEAM_DF is not None:
+        return _DNP_TEAM_DF
+    if not os.path.exists(_DNP_TEAM_PATH):
+        _DNP_TEAM_DF = False
+        return None
+    try:
+        import pandas as pd
+        _DNP_TEAM_DF = pd.read_parquet(_DNP_TEAM_PATH)
+        _DNP_TEAM_DF["game_id"] = _DNP_TEAM_DF["game_id"].astype(str)
+    except Exception as exc:
+        log.debug("dnp_features_team.parquet unreadable: %s", exc)
+        _DNP_TEAM_DF = False
+    return _DNP_TEAM_DF if _DNP_TEAM_DF is not False else None
+
+
+def _dnp_team_for_game(game_id: Optional[str], team_abbrev: Optional[str]) -> dict:
+    nan = float("nan")
+    defaults = {
+        "dnp_in_game": nan, "dnp_l5_avg": nan,
+        "dnp_l10_avg": nan, "dnp_prior_game": nan,
+    }
+    if not game_id or not team_abbrev:
+        return defaults
+    try:
+        df = _load_dnp_team_df()
+        if df is None:
+            return defaults
+        import pandas as pd
+        mask = (df["game_id"] == str(game_id)) & (df["team_abbreviation"] == str(team_abbrev))
+        rows = df[mask]
+        if rows.empty:
+            return defaults
+        r = rows.iloc[0]
+        def _sf(col: str) -> float:
+            v = r.get(col)
+            return float(v) if v is not None and pd.notna(v) else nan
+        return {
+            "dnp_in_game":    _sf("dnp_count_in_game"),
+            "dnp_l5_avg":     _sf("dnp_count_l5_avg"),
+            "dnp_l10_avg":    _sf("dnp_count_l10_avg"),
+            "dnp_prior_game": _sf("prior_game_dnp_count"),
+        }
+    except Exception as exc:
+        log.debug("_dnp_team_for_game error: %s", exc)
+        return defaults
+
+
+# ── Iter-3: advanced stats splits (D) ────────────────────────────────────────
+
+_ADV_SPLITS_DF: Optional[object] = None
+_ADV_SPLITS_PATH = os.path.join(PROJECT_DIR, "data", "cache", "adv_stats_splits.parquet")
+
+def _load_adv_splits_df():
+    global _ADV_SPLITS_DF
+    if _ADV_SPLITS_DF is not None:
+        return _ADV_SPLITS_DF
+    if not os.path.exists(_ADV_SPLITS_PATH):
+        _ADV_SPLITS_DF = False
+        return None
+    try:
+        import pandas as pd
+        _ADV_SPLITS_DF = pd.read_parquet(_ADV_SPLITS_PATH)
+        _ADV_SPLITS_DF["game_id"] = _ADV_SPLITS_DF["game_id"].astype(str)
+        _ADV_SPLITS_DF["game_date"] = _ADV_SPLITS_DF["game_date"].astype(str).str[:10]
+    except Exception as exc:
+        log.debug("adv_stats_splits.parquet unreadable: %s", exc)
+        _ADV_SPLITS_DF = False
+    return _ADV_SPLITS_DF if _ADV_SPLITS_DF is not False else None
+
+
+def _adv_splits_for_player(player_id: int, game_id: Optional[str], game_date: Optional[str] = None) -> dict:
+    nan = float("nan")
+    defaults = {
+        "adv_usage_std": nan, "adv_ts_std": nan, "adv_efg_std": nan,
+        "adv_usage_vs_opp_l3": nan, "adv_ts_vs_opp_l3": nan, "adv_usage_z": nan,
+    }
+    try:
+        df = _load_adv_splits_df()
+        if df is None:
+            return defaults
+        import pandas as pd
+        rows = None
+        if game_id:
+            mask = (df["player_id"] == int(player_id)) & (df["game_id"] == str(game_id))
+            rows = df[mask]
+        if (rows is None or rows.empty) and game_date:
+            gd = str(game_date)[:10]
+            mask2 = (df["player_id"] == int(player_id)) & (df["game_date"] == gd)
+            rows = df[mask2]
+        if rows is None or rows.empty:
+            return defaults
+        r = rows.iloc[0]
+        def _sf(col: str) -> float:
+            v = r.get(col)
+            return float(v) if v is not None and pd.notna(v) else nan
+        return {
+            "adv_usage_std":        _sf("adv_usage_season_to_date"),
+            "adv_ts_std":           _sf("adv_ts_season_to_date"),
+            "adv_efg_std":          _sf("adv_efg_season_to_date"),
+            "adv_usage_vs_opp_l3":  _sf("adv_usage_vs_opp_l3"),
+            "adv_ts_vs_opp_l3":     _sf("adv_ts_vs_opp_l3"),
+            "adv_usage_z":          _sf("adv_usage_z_in_season"),
+        }
+    except Exception as exc:
+        log.debug("_adv_splits_for_player error: %s", exc)
+        return defaults
+
+
 # ── Historical lines ───────────────────────────────────────────────────────────
 
 def _historical_lines(season: str) -> list[dict]:
@@ -689,6 +919,45 @@ def assemble_features(
         feats["prof_season_exp"]       = _fi("season_exp")
     else:
         missing.append("player_profile")
+
+    # ── 16. Iter-3 officials rolling (A) ─────────────────────────────────────
+    try:
+        off_feats = _officials_for_team(game_id, team_abbrev)
+        feats.update(off_feats)
+    except Exception as exc:
+        log.debug("officials_for_team failed: %s", exc)
+        feats.update({"ref_l5_fouls": float("nan"), "ref_l5_fta": float("nan"),
+                      "ref_fouls_z": float("nan"), "ref_fta_z": float("nan"),
+                      "ref_home_advantage": float("nan")})
+
+    # ── 17. Iter-3 foul features (B) ─────────────────────────────────────────
+    try:
+        foul_feats = _fouls_for_player(player_id, game_id, date)
+        feats.update(foul_feats)
+    except Exception as exc:
+        log.debug("fouls_for_player failed: %s", exc)
+        feats.update({"foul_pf36_l5": float("nan"), "foul_pf36_l10": float("nan"),
+                      "foul_trouble_l10": float("nan"), "foul_last_pf": float("nan"),
+                      "foul_min_l5": float("nan")})
+
+    # ── 18. Iter-3 DNP team features (C) ─────────────────────────────────────
+    try:
+        dnp_feats = _dnp_team_for_game(game_id, team_abbrev)
+        feats.update(dnp_feats)
+    except Exception as exc:
+        log.debug("dnp_team_for_game failed: %s", exc)
+        feats.update({"dnp_in_game": float("nan"), "dnp_l5_avg": float("nan"),
+                      "dnp_l10_avg": float("nan"), "dnp_prior_game": float("nan")})
+
+    # ── 19. Iter-3 advanced stats splits (D) ─────────────────────────────────
+    try:
+        adv_feats = _adv_splits_for_player(player_id, game_id, date)
+        feats.update(adv_feats)
+    except Exception as exc:
+        log.debug("adv_splits_for_player failed: %s", exc)
+        feats.update({"adv_usage_std": float("nan"), "adv_ts_std": float("nan"),
+                      "adv_efg_std": float("nan"), "adv_usage_vs_opp_l3": float("nan"),
+                      "adv_ts_vs_opp_l3": float("nan"), "adv_usage_z": float("nan")})
 
     # ── Log missing sources (debug) ───────────────────────────────────────────
     if missing:
