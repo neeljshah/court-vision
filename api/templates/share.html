@@ -33,7 +33,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
   {% for bet in shown %}
-    <article class="cv-card cv-card-hover p-3 md:p-4">
+    <article class="cv-card cv-card-hover p-3 md:p-4" style="border-left:3px solid {{ bet.team_color or '#1e293b' }}">
       <header class="flex items-start justify-between gap-2">
         <div class="min-w-0">
           <div class="flex items-baseline gap-2">
@@ -64,6 +64,27 @@
         </div>
       </div>
 
+      {% if bet.spark_last5 %}
+        {% set _smin = bet.spark_last5|min %}{% set _smax = bet.spark_last5|max %}{% set _span = (_smax - _smin) or 1 %}
+        <div class="mt-2 flex items-center gap-2 text-xs" style="color:var(--cv-muted)">
+          <svg width="68" height="18" viewBox="0 0 68 18" aria-hidden="true" style="overflow:visible">
+            {% for v in bet.spark_last5 %}
+              {% set x = loop.index0 * (60 / (bet.spark_last5|length - 1 if (bet.spark_last5|length) > 1 else 1)) + 4 %}
+              {% set y = 16 - ((v - _smin) / _span) * 14 %}
+              {% if not loop.first %}<line x1="{{ _prev_x }}" y1="{{ _prev_y }}" x2="{{ x }}" y2="{{ y }}" stroke="{{ bet.team_color or '#60a5fa' }}" stroke-width="1.5"/>{% endif %}
+              <circle cx="{{ x }}" cy="{{ y }}" r="1.6" fill="{{ bet.team_color or '#60a5fa' }}"/>
+              {% set _prev_x = x %}{% set _prev_y = y %}
+            {% endfor %}
+            {% if bet.line is not none %}
+              {% set line_y = 16 - ((bet.line - _smin) / _span) * 14 %}
+              {% if line_y >= 0 and line_y <= 16 %}<line x1="4" y1="{{ line_y }}" x2="64" y2="{{ line_y }}" stroke="#94a3b8" stroke-width="0.5" stroke-dasharray="2,2"/>{% endif %}
+            {% endif %}
+          </svg>
+          <span>L5</span>
+          {% if bet.last_5_median is not none %}<span>med <b style="color:var(--cv-text)">{{ '%g'|format(bet.last_5_median) }}</b></span>{% endif %}
+          {% if bet.season_median is not none %}<span>· season <b style="color:var(--cv-text)">{{ '%g'|format(bet.season_median) }}</b></span>{% endif %}
+        </div>
+      {% endif %}
       <p class="mt-3 text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
     </article>
   {% endfor %}
