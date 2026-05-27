@@ -276,6 +276,15 @@ def api_odds_history(player: str, stat: str,
     return JSONResponse({"date": date, "player": player, "stat": stat,
                          "n": len(rows), "history": rows})
 
+@router.get("/api/odds/spread/{date}.json", tags=["courtvision"])
+def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
+    """Cross-book spread / arb-finder — props where books disagree by min_spread_pp+."""
+    from api._courtvision_odds import cross_book_spread
+    rows = cross_book_spread(date, min_spread_pp=min_spread_pp)
+    return JSONResponse({"date": date, "min_spread_pp": min_spread_pp,
+                         "n": len(rows), "n_arbs": sum(1 for r in rows if r["is_arb"]),
+                         "rows": rows})
+
 
 @router.get("/api/today_summary", tags=["courtvision"])
 def api_today_summary(date: str = Query(default_factory=_today_et), n: int = Query(3, ge=1, le=10)):
