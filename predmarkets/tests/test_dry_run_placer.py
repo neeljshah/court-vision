@@ -129,6 +129,37 @@ def test_settle_grades_resolved_only(tmp_path) -> None:
     assert by_id["M_open"]["status"] == "dry-run-pending"
 
 
+def test_summary_breaks_down_by_model(tmp_path) -> None:
+    ledger = str(tmp_path / "ledger.csv")
+    e1 = _make_edge("M1", side="YES", stake=10.0, price=0.40)
+    e1["model_name"] = "crypto_threshold_gbm"
+    e2 = _make_edge("M2", side="YES", stake=10.0, price=0.40)
+    e2["model_name"] = "crypto_threshold_gbm"
+    e3 = _make_edge("M3", side="YES", stake=10.0, price=0.40, category="Politics")
+    e3["model_name"] = "llm_claude/claude-haiku-4-5-20251001"
+    place_dry_run_batch([e1, e2, e3], ledger)
+
+    class _FakePM:
+        def get_market(self, mid):
+            d = {
+                "M1": {"closed": True, "outcomePrices": ["1", "0"]},  # WIN
+                "M2": {"closed": True, "outcomePrices": ["0", "1"]},  # LOSS
+                "M3": {"closed": True, "outcomePrices": ["1", "0"]},  # WIN
+            }
+            return d[mid]
+
+    settle_ledger(ledger, {"polymarket": _FakePM()})
+    summary = summarize_ledger(ledger)
+    by_model = summary["by_model"]
+    assert "crypto_threshold_gbm" in by_model
+    assert by_model["crypto_threshold_gbm"]["wins"] == 1
+    assert by_model["crypto_threshold_gbm"]["losses"] == 1
+    assert by_model["llm_claude/claude-haiku-4-5-20251001"]["wins"] == 1
+    by_cat = summary["by_category"]
+    assert "Crypto" in by_cat
+    assert "Politics" in by_cat
+
+
 def test_summary_rolls_up_pnl(tmp_path) -> None:
     ledger = str(tmp_path / "ledger.csv")
     place_dry_run_batch([
