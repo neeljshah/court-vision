@@ -208,8 +208,11 @@ def healthz_payload(root: Path, latest_slate_date: Optional[str]) -> dict:
     else:
         checks["orchestrator_stale"] = None
 
+    # Cap the glob to 50 files so /healthz stays cheap even with huge model dirs.
     latest = 0.0
-    for p in (root / "data" / "models").glob("*.json"):
+    for i, p in enumerate((root / "data" / "models").glob("*.json")):
+        if i >= 50:
+            break
         try:
             latest = max(latest, p.stat().st_mtime)
         except OSError:
