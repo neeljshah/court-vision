@@ -87,8 +87,12 @@ async def _bus_handler(topic: str, event: dict) -> None:
     _ring.append({"seq": _ring_seq, "topic": topic,
                   "event": event, "ts": time.time()})
     if topic == "bet.recommended":
-        # Fire-and-forget on the default loop's thread pool so the bus stays fast.
-        asyncio.get_event_loop().run_in_executor(None, _maybe_fire_webhook, event)
+        # Fire webhook on a fresh async task to avoid contending for the request
+        # thread pool. The webhook helper is sync but uses urllib's own timeout.
+        try:
+            asyncio.create_task(asyncio.to_thread(_maybe_fire_webhook, event))
+        except Exception as exc:
+            log.debug("webhook task spawn failed: %s", exc)
 
 
 def _ensure_bus_subscription() -> None:
@@ -108,16 +112,19 @@ def _ensure_bus_subscription() -> None:
                     "stream will still emit heartbeats.", exc)
 
 
-async def _generator(request: Request):
+async def _generator(request: Request, max_seconds: float = 600.0):
+    """Stream SSE events for at most `max_seconds`. Browser EventSource auto-reconnects."""
     last_seen = _ring[-1]["seq"] if _ring else 0
-    # Replay the ring buffer so a late-joiner sees recent edges immediately.
     for entry in list(_ring):
         yield _format_sse(entry, ev_id=entry["seq"])
-    last_hb = time.time()
-    while True:
-        if await request.is_disconnected():
+    start = time.time()
+    last_hb = start
+    while time.time() - start < max_seconds:
+        try:
+            if await request.is_disconnected():
+                return
+        except Exception:
             return
-        # Drain any new ring entries since last seen.
         delivered = 0
         for entry in list(_ring):
             if entry["seq"] > last_seen:
