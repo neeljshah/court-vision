@@ -1,49 +1,49 @@
 {
   "__global__": {
     "pts": {
-      "roi_pct": 2.55,
-      "hit_rate": 53.72,
-      "mae_actual": 5.703,
-      "roi_units": 39.82,
-      "n_bets": 1560
+      "roi_pct": 11.118881118881115,
+      "hit_rate": 58.20512820512821,
+      "mae_actual": 5.0808518658631305,
+      "roi_units": 43.363636363636346,
+      "n_bets": 390
     },
     "ast": {
-      "roi_pct": 14.31,
-      "hit_rate": 59.88,
-      "mae_actual": 1.534,
-      "roi_units": 117.36,
-      "n_bets": 820
+      "roi_pct": 14.545454545454545,
+      "hit_rate": 60.0,
+      "mae_actual": 1.5044351391090076,
+      "roi_units": 25.454545454545453,
+      "n_bets": 175
     },
     "reb": {
-      "roi_pct": 8.7853,
-      "hit_rate": 56.9828,
-      "mae_actual": 2.1391,
-      "roi_units": 101.9091,
-      "n_bets": 1160
+      "roi_pct": 22.972972972972975,
+      "hit_rate": 64.41441441441441,
+      "mae_actual": 1.8701504169548737,
+      "roi_units": 51.0,
+      "n_bets": 222
     },
     "fg3m": {
-      "roi_pct": 23.9536,
-      "hit_rate": 64.9281,
-      "mae_actual": 1.1161,
-      "roi_units": 133.1818,
-      "n_bets": 556
+      "roi_pct": 35.156878519710375,
+      "hit_rate": 70.79646017699115,
+      "mae_actual": 1.0439479180588616,
+      "roi_units": 39.72727272727272,
+      "n_bets": 113
     },
     "stl": {
-      "roi_pct": 16.9548,
-      "hit_rate": 61.2621,
-      "mae_actual": 0.7499,
-      "roi_units": 193.4545,
-      "n_bets": 1141
+      "roi_pct": 9.917355371900822,
+      "hit_rate": 57.57575757575758,
+      "mae_actual": 0.959238496946259,
+      "roi_units": 9.818181818181813,
+      "n_bets": 99
     },
     "blk": {
-      "roi_pct": 25.4861,
-      "hit_rate": 65.7308,
-      "mae_actual": 0.5519,
-      "roi_units": 308.6364,
-      "n_bets": 1211
+      "roi_pct": 38.84297520661157,
+      "hit_rate": 72.72727272727273,
+      "mae_actual": 0.5578325145994981,
+      "roi_units": 8.545454545454545,
+      "n_bets": 22
     }
   },
-  "__updated_at__": "2026-05-27T20:40:07+00:00",
+  "__updated_at__": "2026-05-27T21:54:57.575690+00:00",
   "__source__": {
     "slices": [
       "playoffs_2024",
@@ -58,11 +58,17 @@
       "C:\\Users\\neelj\\nba-ai-system\\data\\external\\historical_lines\\playoffs_2025_26_oddsapi.csv"
     ],
     "generated_at": "2026-05-27T20:40:07+00:00",
-    "iter": "iter15",
+    "iter": "iter22",
     "thresholds": {
       "stl": 0.1,
       "blk": 0.4,
       "others": 0.5
-    }
+    },
+    "note": "iter22 cutoff 2025-04-21 \u2014 __global__ = 2025-26 slice only (new model). Full 4-slice re-run pending.",
+    "slices_covered": [
+      "regular_season_2025_26",
+      "playoffs_2025_26"
+    ],
+    "full_4slice_rerun_needed": true
   }
 }
