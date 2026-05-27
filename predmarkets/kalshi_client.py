@@ -238,9 +238,21 @@ class KalshiClient:
             events = self._paginate("/events", ev_params, "events", max(limit, 50))
             rows: List[Dict[str, Any]] = []
             for ev in events:
+                ev_category = ev.get("category")
+                ev_title = ev.get("title")
+                ev_sub = ev.get("sub_title")
+                ev_series = ev.get("series_ticker")
                 for m in ev.get("markets") or []:
                     if event_ticker and m.get("event_ticker") != event_ticker:
                         continue
+                    # Carry event-level metadata onto the market row so downstream
+                    # consumers (snapshotter, edge scanner) don't need to re-join.
+                    if not m.get("category") and ev_category:
+                        m["category"] = ev_category
+                    if not m.get("title") and (ev_title or ev_sub):
+                        m["title"] = ev_title or ev_sub
+                    if not m.get("series_ticker") and ev_series:
+                        m["series_ticker"] = ev_series
                     rows.append(_normalize_market(m))
                     if len(rows) >= limit:
                         break
@@ -315,8 +327,7 @@ class KalshiClient:
         cutoff = time.time() - max(0, lookback_days) * 86400.0
         out: List[Dict[str, Any]] = []
         for m in rows:
-            ct = m.get("close_time")
-            ct_iso = _iso_utc(ct)
+            ct_iso = _iso_utc(m.get("close_time"))
             ct_unix: Optional[float] = None
             if ct_iso:
                 try:
@@ -325,15 +336,11 @@ class KalshiClient:
                     ct_unix = None
             if ct_unix is not None and ct_unix < cutoff:
                 continue
-            out.append({
-                "ticker": m.get("ticker"),
-                "event_ticker": m.get("event_ticker"),
-                "series_ticker": m.get("series_ticker"),
-                "title": m.get("title") or m.get("subtitle"),
-                "result": m.get("result"),
-                "settlement_value": m.get("settlement_value"),
-                "close_time": ct_iso,
-            })
+            # Return the full normalized market plus a canonicalized close_time
+            # so downstream consumers keep category/title/series and don't need
+            # to re-fetch the market dict.
+            m["close_time"] = ct_iso
+            out.append(m)
         return out
 
     def get_trades(
