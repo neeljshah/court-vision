@@ -11,6 +11,9 @@ aiohttp>=3.10
 requests>=2.31
 numpy>=1.24
 pandas>=2.0
+# pyarrow needed by pandas for .parquet support — without it, the form-feature
+# loader (last_5_median, sparkline series) silently falls back to None/empty.
+pyarrow>=10.0
 scipy>=1.11
 lightgbm>=4.0
 xgboost>=2.0
