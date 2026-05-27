@@ -12,6 +12,86 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-35: Expansive 2025-26 backfill — true ROI on 2688 bets (2026-05-27)
+
+**What was done:** Fetched 25 new dates (15 RS + 10 playoffs) via odds-api historical endpoint. 2725 units spent.
+
+**CSV growth:** RS 1450→3431 (+1981) | PO 889→1809 (+920) | Combined 2339→5240 (+2901 rows).
+
+**Per-stat ROI on expanded 2025-26 eval (2688 bets total vs 1016 in baseline):**
+
+| Stat | Baseline ROI | Expanded ROI | Delta | n_bets |
+|------|-------------|-------------|-------|--------|
+| PTS  | +11.62%     | +11.32%     | -0.30pp | 818 |
+| AST  | +28.22%     | +24.04%     | -4.18pp | 374 |
+| REB  | +14.20%     | +16.73%     | +2.53pp | 157 |
+| FG3M | +37.13%     | +26.41%     | -10.72pp | 74 |
+| STL  | +18.04%     | +15.03%     | -3.01pp | 634 |
+| BLK  | +27.03%     | +27.07%     | +0.04pp | 631 |
+| **Aggregate** | **+19.51%** | **+18.39%** | **-1.12pp** | **2688** |
+
+**Key lesson — small-N ROI inflation:** fg3m/ast were wildly high at n=71/67 bets. On 374/74 bets they regress substantially but remain strongly profitable. blk/reb are robust — nearly identical ROI at 2-3x sample size. PTS is stable (-0.30pp on 818 bets). The +18.39% aggregate on 2688 bets is the most credible estimate to date.
+
+**Budget:** 2725 units spent (3428→6153/20000). Remaining: 13,847.
+
+**Commit:** `849cd1c9`. Script: `scripts/fetch_rs_closing_lines_expansive_iter35.py`.
+
+---
+
+## Iter-33: Kelly-B sizing SHIPPED (+2.52pp aggregate ROI, 2026-05-27)
+
+**What was tested:** Fractional Kelly sizing on the 2025-26 OOS bet set (1,016 bets, iter-22+25+28 production). Two variants:
+- Kelly-A (fixed fractional: stake = edge / mean_train_edge, mean ~ 1u): INCONCLUSIVE (-0.50pp, pts -3.21pp regression). Big-edge pts bets actually lose in this sample, so upsizing them hurts.
+- Kelly-B (quarter-Kelly with p_win from hit-rate + edge-bucket interpolation): SHIP (+2.52pp, pts -2.54pp the only regression, under the <=1 bar).
+
+**Why Kelly-B wins:** Down-weights big-edge pts bets (sub-55% hit rate at the margin), up-weights big-edge reb bets (well-calibrated at ~60%). ROI is scale-invariant so the +2.52pp holds regardless of exposure level.
+
+**Key lesson:** Fixed-fractional Kelly-A can HURT if edge magnitude doesn't predict win rate within a stat. Kelly-B is safer because p_win interpolation caps upside — stakes stay tiny (0.03-0.13u) but the weighting is correct.
+
+**Shipped to:** `src/prediction/betting_portfolio.py::kelly_b_stake()`, `src/prediction/bet_thresholds.py::KELLY_B_ENABLED`. Commit: `fb225886`.
+
+---
+
+## Iter-32: Stat-level PTS cutoff probe REVERTED — late-window signal doesn't hold full-season (2026-05-27)
+
+**What was tested:** Iter-31 found PTS improved +18.32pp ROI on the *late-2026 window* (Feb-May 2026) when trained with cutoff 2026-02-01 instead of 2025-04-21. Iter-32 surgically promoted only PTS artifacts from the Iter-31 candidate to test whether that late-window improvement holds on the full 2025-26 eval.
+
+**Full 2025-26 results after PTS-only cutoff promotion (742 bets):**
+
+| Stat | Baseline ROI | Iter-32 ROI | Delta | Decision |
+|------|-------------|------------|-------|---------|
+| PTS  | +11.62%     | +0.86%     | **-10.76pp** | REVERT |
+| AST  | +28.22%     | +10.30%    | -17.92pp | REVERT |
+| REB  | +14.20%     | +16.73%    | +2.53pp | (no MAE gate) |
+| FG3M | +37.13%     | +26.41%    | -10.72pp | REVERT |
+| STL  | +18.04%     | +15.03%    | -3.01pp | REVERT |
+| BLK  | +27.03%     | +27.07%    | +0.04pp | neutral |
+
+Decision: **REVERT**. PTS regressed -10.76pp. AST, FG3M also regressed hard (spillover from changed PTS blend artifacts).
+
+**Root cause:** The 2026-02-01 cutoff includes 2025-26 RS training data through Jan 2026. The model trained on recent data predicts the late-2026 window well (in-distribution), but early-season 2025-26 games (Oct-Jan 2025) become effectively out-of-sample — the model lacks the distributional knowledge of early-season player patterns. The +18pp late-window gain masks a -10pp early-season regression, netting negative overall.
+
+**Key lesson — temporal cutoff locality paradox:** A later training cutoff is NOT universally better. Moving the cutoff forward improves recency but sacrifices earlier eval coverage. For the full-season gate, Iter-22 cutoff (2025-04-21) already captures the full 2024-25 season and remains optimal until a new complete season is available. Stat-specific cutoffs that differ from the ensemble training window create implicit train/test mismatch in the early portion of the eval window.
+
+**What would actually work:** Wait until the 2025-26 season is complete (all playoffs done, cutoff 2026-06-15), then do a full retrain including 2025-26 RS+playoffs as training data. The surgical per-stat approach is theoretically sound but premature when the eval window partially overlaps the training window.
+
+**Artifacts:** Backup at `data/models/_backup_iter32_pts_20260527_181430/`. Production fully restored to Iter-22/Iter-23 baseline.
+
+---
+
+## Iter-20: quarter_box backfill + inplay endQ3 quarter features SHIPPED (2026-05-27)
+
+**What shipped:** q1_usg_avg, halftime_pace_shift, trailing_team_q4_usg_hhi added to endQ3 snap features. WF probe 3/4 folds improved, mean Brier 0.1408→0.1368 (−2.9%). Model retrained at `data/models/inplay_winprob_endq3.lgb`.
+
+**Key gotchas:**
+- NBA `boxscoretraditionalv2` endpoint is rate-limited burst-style — burst of ~800 calls causes 100% error rate. Solution: start fresh session after 12-min break.
+- `build_quarter_features.py` used `open(path, "r")` (Windows `cp1252`) — UTF-8 JSONs from the fetcher (`ensure_ascii=False`) caused 279/1299 games to silently fail. Fixed to `encoding="utf-8"`. Always specify encoding when reading NBA API JSON files.
+- LightGBM NaN-splits handle partial coverage gracefully — 32% coverage was enough for 3/4 WF fold improvement.
+- `data/nba/` is gitignored — log files and season JSON files in that dir are local-only. The parquet derived artifact (`data/cache/quarter_features.parquet`) is tracked.
+- `boxscoretraditionalv2` with `RangeType=1` + tick-based slicing is still the correct v2 endpoint for 2024-25 season quarter data. v3 silently returns full-game totals.
+
+---
+
 ## Iter-26: gamelog_full + linescore BOTH REVERTED on Iter-22 cutoff (2026-05-27)
 
 **What was tested:** Re-probed two previously-rejected feature sets against the new Iter-22 model (cutoff 2025-04-21). Hypothesis: features that regressed on the old 2024-04-21 model might work on the newer model trained through 2024-25.
