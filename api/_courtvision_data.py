@@ -252,10 +252,27 @@ def healthz_payload(root: Path, latest_slate_date: Optional[str]) -> dict:
 
     checks["courtvision_routes"] = [
         "/tonight", "/parlays", "/share/{slug}", "/plus_ev", "/live",
+        "/odds", "/arbs", "/api/docs",
         "/api/slate", "/api/parlays", "/api/bet/{bet_id}",
         "/api/plus_ev", "/api/auto_parlay", "/sse/live_edges",
+        "/api/odds", "/api/odds/{date}.json", "/api/odds/{date}.csv",
+        "/api/odds/best/{date}.json", "/api/odds/spread/{date}.json",
+        "/api/odds/moves/{date}.json", "/api/odds/freshness/{date}",
+        "/api/odds/history/{player}/{stat}",
         "/share/{slug}/qr.svg", "/healthz",
     ]
+    # Scraper heartbeats: which books wrote a CSV today and how recent?
+    today = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+    scrapers: dict[str, dict] = {}
+    for book in ("pin", "bov", "fd", "dk", "mgm", "caesars", "pointsbet"):
+        p = root / "data" / "lines" / f"{today}_{book}.csv"
+        if p.exists():
+            try:
+                age_sec = time.time() - p.stat().st_mtime
+                scrapers[book] = {"present": True, "age_seconds": round(age_sec, 1)}
+            except OSError:
+                scrapers[book] = {"present": True, "age_seconds": None}
+    checks["scrapers_today"] = scrapers
     # Diagnostic: are the data files + templates dir actually on disk?
     templates_dir = root / "api" / "templates"
     checks["templates_dir_exists"] = templates_dir.exists()
