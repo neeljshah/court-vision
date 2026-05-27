@@ -386,11 +386,34 @@ def kelly_fraction(prob: float, odds: int) -> float:
     return max(0.0, f)
 
 
-def model_prob_over(point: float, q10: float, q90: float, line: float) -> float:
-    """Gaussian CDF using q10/q90 to estimate sigma. Returns P(stat > line)."""
+# iter-28 risk-reducing fix: counting stats that need a sigma floor.
+_COUNTING_STAT_SIGMA_FLOOR = {"blk", "stl", "fg3m"}
+
+
+def model_prob_over(point: float, q10: float, q90: float, line: float,
+                    stat: Optional[str] = None,
+                    q50: Optional[float] = None) -> float:
+    """Gaussian CDF using q10/q90 to estimate sigma. Returns P(stat > line).
+
+    iter-28: also enforces a quantile sanity guard (widen q90 if inverted)
+    and a sigma floor for low-base-rate counting stats (BLK/STL/FG3M).
+    The point prediction is NOT changed - only the sigma derivation.
+    """
     if q10 is None or q90 is None:
         return 0.5
+    q50_eff = q50 if q50 is not None else point
+    # iter-28 risk-reducing fix: quantile sanity guard - widen if inverted.
+    if not (q10 <= q50_eff <= q90):
+        if q10 <= q50_eff:
+            q90 = q50_eff + max(q90 - q50_eff, q50_eff - q10, 1.0)
+        else:
+            # Lower-tail inversion too - bail to neutral.
+            return 0.5
     sigma = max((q90 - q10) / (2 * 1.2816), 1e-6)
+    # iter-28 risk-reducing fix: sigma floor for counting stats.
+    if stat is not None and str(stat).lower() in _COUNTING_STAT_SIGMA_FLOOR:
+        floor_sigma = max(0.4 * float(q50_eff or 0), 0.5)
+        sigma = max(sigma, floor_sigma)
     z = (line - point) / sigma
     cdf_at_line = 0.5 * (1 + erf(z / sqrt(2)))
     return 1 - cdf_at_line
@@ -551,13 +574,32 @@ def run_tick(game_id: str,
         # Bands optionally on the engine row (q10/q90); else  ±25% heuristic.
         q10 = pred.get("q10")
         q90 = pred.get("q90")
+        q50_in = pred.get("q50")
+        try:
+            q50_in = float(q50_in) if q50_in is not None else None
+        except (TypeError, ValueError):
+            q50_in = None
+        # iter-28 risk-reducing fix: promote the heuristic fallback so it
+        # also fires when the model returned q10/q90 but they're inverted
+        # (q90 < q50 or q10 > q50). Same widening pattern as the missing-
+        # quantile fallback above so the downstream sigma stays honest.
+        needs_heuristic = False
         if q10 is None or q90 is None:
-            # Fallback band — wide enough to be honest about uncertainty.
+            needs_heuristic = True
+        else:
+            try:
+                q10_f = float(q10); q90_f = float(q90)
+                q50_ref = q50_in if q50_in is not None else point
+                if not (q10_f <= q50_ref <= q90_f):
+                    needs_heuristic = True
+                else:
+                    q10 = q10_f; q90 = q90_f
+            except (TypeError, ValueError):
+                needs_heuristic = True
+        if needs_heuristic:
             spread = max(0.4 * point, 1.5)
             q10 = max(0.0, point - spread)
             q90 = point + spread
-        else:
-            q10 = float(q10); q90 = float(q90)
 
         for side, price_col in (("OVER", "over_price"),
                                 ("UNDER", "under_price")):
@@ -573,7 +615,11 @@ def run_tick(game_id: str,
             impl = implied_prob(odds)
             if impl < MIN_PRICE_PROB:
                 continue
-            p_over = model_prob_over(point, q10, q90, line)
+            # iter-28 risk-reducing fix: pass stat + q50 so the sigma
+            # floor for low-base-rate counting stats kicks in.
+            p_over = model_prob_over(
+                point, q10, q90, line, stat=stat, q50=q50_in,
+            )
             prob = p_over if side == "OVER" else 1.0 - p_over
             n_evaluated += 1
             net = american_to_payout(odds, 1.0)

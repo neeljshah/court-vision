@@ -359,6 +359,31 @@ class ModelCache:
         return out
 
 
+# iter-28 risk-reducing fix: counting stats that need a sigma floor.
+# BLK / STL / FG3M have low base rates and skew-toward-zero quantile heads
+# that can produce collapsed sigma -> fake high edges (see Wemby BLK U 2.5
+# case, q10=0 q50=2.04 q90=1.14 -> sigma=0.445, edge=+51%).
+_COUNTING_STAT_SIGMA_FLOOR = {"blk", "stl", "fg3m"}
+
+# iter-28 risk-reducing fix: edge cap. Anything above this absolute pp
+# diverts to a review tray rather than firing as a live bet.
+EDGE_CAP_PP = 25.0
+EDGE_REVIEW_TRAY_PATH = os.path.join(
+    PROJECT_DIR, "data", "cache", "pretip_review_tray.jsonl"
+)
+
+
+def _log_to_review_tray(record: dict) -> None:
+    """Append one JSON line to the pretip review tray. Best-effort: any IO
+    error here must NEVER bubble up to the ranker hot loop."""
+    try:
+        os.makedirs(os.path.dirname(EDGE_REVIEW_TRAY_PATH), exist_ok=True)
+        with open(EDGE_REVIEW_TRAY_PATH, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, default=str) + "\n")
+    except Exception:
+        pass
+
+
 def model_hit_prob(point_pred, q10, q50, q90, line, side,
                      stat=None, calibrator=None):
     if q10 is None or q90 is None or point_pred is None:
@@ -367,11 +392,53 @@ def model_hit_prob(point_pred, q10, q50, q90, line, side,
         cal_q10, cal_q90 = calibrator(stat, q10, q50 or point_pred, q90)
     else:
         cal_q10, cal_q90 = q10, q90
+    # iter-28 risk-reducing fix: quantile sanity guard. If the trained
+    # quantile heads return an inverted interval (commonly q90 < q50 on
+    # floor-bound counting stats), widen q90 to a conservative honest
+    # range. This preserves the q50 point prediction but blows up sigma
+    # so we don't price a fake-tight interval. If widening can't restore
+    # ordering, return None so the caller skips this bet entirely.
+    q50_eff = q50 if q50 is not None else point_pred
+    inverted = False
+    if not (cal_q10 <= q50_eff <= cal_q90):
+        inverted = True
+        if cal_q10 <= q50_eff:
+            # only the upper tail is broken; widen using the larger of
+            # the existing upper span, the lower span (mirrored), or 1.0.
+            widened_upper = q50_eff + max(
+                cal_q90 - q50_eff, q50_eff - cal_q10, 1.0
+            )
+            cal_q90 = widened_upper
+        else:
+            # lower tail also inverted - bail out, the model is unusable here
+            return None
     sigma = max((cal_q90 - cal_q10) / (2 * 1.2816), 1e-6)
+    # iter-28 risk-reducing fix: sigma floor for low-base-rate counting
+    # stats (BLK / STL / FG3M). Even non-inverted quantile bands from
+    # these heads can be unrealistically tight against an integer prop
+    # line, so enforce a per-stat minimum spread.
+    if stat is not None and str(stat).lower() in _COUNTING_STAT_SIGMA_FLOOR:
+        floor_sigma = max(0.4 * float(q50_eff or 0), 0.5)
+        sigma = max(sigma, floor_sigma)
     z = (line - point_pred) / sigma
     cdf_at_line = 0.5 * (1 + erf(z / sqrt(2)))
     p_over = 1 - cdf_at_line
-    return p_over if side == "OVER" else 1 - p_over
+    prob = p_over if side == "OVER" else 1 - p_over
+    # Stash the inversion flag + post-fix sigma on a function attribute so
+    # the caller can log to the review tray if edge ends up capped. We
+    # avoid changing the return signature to keep ranking math untouched.
+    model_hit_prob._last_meta = {
+        "inverted_quantiles": inverted,
+        "sigma_used": sigma,
+        "q50_used": q50_eff,
+        "q10_in": q10,
+        "q90_in": q90,
+    }
+    return prob
+
+
+# Initialize the metadata cache so callers can read it safely.
+model_hit_prob._last_meta = {}
 
 
 # --------- pre-tip / cooldown / state ----------
@@ -593,6 +660,35 @@ def run_tick(slate_id: str, bankroll: float, cache: ModelCache,
                             except Exception:
                                 pass
                         edge_pct = (prob - impl) * 100
+                        # iter-28 risk-reducing fix: edge cap. Anything
+                        # whose absolute edge exceeds EDGE_CAP_PP routes
+                        # to the pretip review tray and is skipped from
+                        # the ranked output. The kelly / EV math itself
+                        # is untouched - we just decline to fire the bet.
+                        if abs(edge_pct) > EDGE_CAP_PP:
+                            meta = getattr(model_hit_prob, "_last_meta", {}) or {}
+                            _log_to_review_tray({
+                                "ts": datetime.now(timezone.utc).isoformat(),
+                                "player": pname,
+                                "stat": stat,
+                                "side": side,
+                                "book": book,
+                                "line": line,
+                                "odds": odds,
+                                "implied_prob": impl,
+                                "model_prob": prob,
+                                "edge_pct_raw": edge_pct,
+                                "edge_cap_pp": EDGE_CAP_PP,
+                                "q10": q10,
+                                "q50": q50,
+                                "q90": q90,
+                                "inverted_quantiles": meta.get(
+                                    "inverted_quantiles"
+                                ),
+                                "sigma_used": meta.get("sigma_used"),
+                                "reason": "edge_cap_exceeded",
+                            })
+                            continue
                         prev_edge = prior_edges.get(bet_key({
                             "player": pname, "stat": stat,
                             "side": side, "book": book, "line": line,
