@@ -286,6 +286,12 @@ def _spread_env(date: str, min_spread_pp: float) -> dict:
 def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
     return JSONResponse(_spread_env(date, min_spread_pp))
 
+@router.get("/api/odds/games/{date}", tags=["courtvision"])
+def api_odds_games(date: str):
+    """List distinct games in the day's odds data."""
+    from api._courtvision_odds import games_index
+    return JSONResponse({"date": date, "games": games_index(date)})
+
 @router.get("/api/odds/freshness/{date}", tags=["courtvision"])
 def api_odds_freshness(date: str):
     """Per-book CSV freshness: file mtime, latest captured_at, row count."""
