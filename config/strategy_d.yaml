@@ -1,0 +1,39 @@
+# Strategy D daily runner — operational config
+#
+# iter-19: parametrized so the user can flip iter-18 recommendations on/off
+# without touching code. Defaults below MATCH the iter-12 baseline behavior:
+# threshold |edge| >= 0.50 (strict), flat $100/bet, 6% per-game cap. With
+# these defaults the runner emits the SAME 6 bets / $600 exposure ledger as
+# iter-16 on tonight's WCF G7 slate.
+#
+# To activate iter-18 proposals, copy strategy_d.yaml.iter18_proposed over
+# this file (or run with --config <path>).
+
+threshold:
+  # iter-18 finding: edge_min=0.35 triples PnL but 0.50 has higher per-bet ROI.
+  # operator ">=" captures the 0.50 cliff cohort (iter-12 behavior); ">" drops it.
+  edge_min: 0.50
+  edge_operator: ">="          # iter-12 baseline: includes |edge| == 0.50 bets
+  per_stat_overrides:
+    blk: null                  # null = use edge_min; iter-18 optimum 0.35
+    fg3m: null                 # iter-18 optimum 0.60
+    stl: null                  # iter-18 optimum 0.50
+
+sizing:
+  mode: "flat"                 # flat | inverse_bucket | inverse_linear
+  base_stake: 100              # used by flat
+  bucket_weights:              # used by inverse_bucket; key = |edge| bucket
+    "0.50-0.75": 200
+    "0.75-1.00": 100
+    "1.00-1.50": 50
+    "1.50+": 25
+  max_per_bet_pct: 5.0         # cap single bet at 5% of bankroll
+  max_per_game_pct: 6.0        # iter-12 baseline; iter-18 recommends 2.0
+
+bankroll:
+  amount: 10000.0
+
+stats_filter:
+  - blk
+  - fg3m
+  - stl

@@ -1,0 +1,37 @@
+# Strategy D — iter-18 PROPOSED config (NOT ACTIVE)
+#
+# Hold-for-review snapshot. Activate by replacing config/strategy_d.yaml with
+# this file, or pass --config config/strategy_d.yaml.iter18_proposed.
+#
+# Changes vs iter-12 baseline:
+#   * edge_min 0.50 -> 0.35           # +200% bet volume, 3x PnL per iter-18 backtest
+#   * edge_operator ">=" -> ">"       # drop the 0.50 cliff (iter-18 noted higher per-bet ROI at strict)
+#   * max_per_game_pct 6.0 -> 2.0     # per-game exposure cap = $200 on $10k bankroll
+#   * per_stat_overrides set per iter-18 sweep optima
+
+threshold:
+  edge_min: 0.35
+  edge_operator: ">"           # strict; iter-18 finding
+  per_stat_overrides:
+    blk: 0.35                  # iter-18 optimum
+    fg3m: 0.60                 # iter-18 optimum (tighter than baseline)
+    stl: 0.50                  # iter-18 optimum (matches baseline)
+
+sizing:
+  mode: "flat"
+  base_stake: 100
+  bucket_weights:
+    "0.50-0.75": 200
+    "0.75-1.00": 100
+    "1.00-1.50": 50
+    "1.50+": 25
+  max_per_bet_pct: 5.0
+  max_per_game_pct: 2.0        # iter-18 recommendation: $200 per-game cap on $10k
+
+bankroll:
+  amount: 10000.0
+
+stats_filter:
+  - blk
+  - fg3m
+  - stl
