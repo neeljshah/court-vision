@@ -786,23 +786,61 @@ def add_external_player_features(
         pass
 
     # ── Synergy Play Types ──────────────────────────────────────────────────
+    # Prefer per-player synergy cache (one row per player × play_type with ppp).
+    # Falls back to team-level cache (broadcast team ppp to all players on team)
+    # when player file is missing — preserves prior behavior for unseen players.
     synergy_lookup: dict = {}
     try:
         import os as _os
         import json as _json
-        for pt in ("offensive_Isolation", "offensive_PRBallHandler", "offensive_Spotup"):
-            key = f"synergy_offensive_{pt.split('_', 1)[1]}_*" if "_" in pt else pt
-            cache_dir = _os.path.join(_DATA_DIR, "..", "data", "nba")
-            # Try loading cached synergy files directly. Cache filenames use the
-            # raw season string (e.g. "2024-25.json"), NOT underscore-substituted.
-            for s_key in [f"synergy_offensive_{pt.split('_')[1]}_{season}"]:
-                s_path = _os.path.join(cache_dir, f"{s_key}.json")
-                if _os.path.exists(s_path):
-                    with open(s_path) as _f:
+        cache_dir = _os.path.join(_DATA_DIR, "nba")
+        # Map team_abbrev -> {play_type_lower: ppp} for fallback per season.
+        _team_ppp: dict = {}
+        # Iterate play-types we actually consume downstream (matches _ext_features).
+        for play_type in ("Isolation", "PRBallHandler", "Spotup"):
+            player_path = _os.path.join(
+                cache_dir, f"synergy_player_{play_type}_{season}.json"
+            )
+            team_path = _os.path.join(
+                cache_dir, f"synergy_offensive_{play_type}_{season}.json"
+            )
+            loaded_player = False
+            if _os.path.exists(player_path):
+                try:
+                    with open(player_path, encoding="utf-8") as _f:
                         for r in _json.load(_f):
-                            pname = r.get("player_name", "").lower()
-                            play  = r.get("play_type", "").lower()
-                            synergy_lookup.setdefault(pname, {})[play] = r.get("ppp", 0.0)
+                            pname = (r.get("player_name") or "").lower()
+                            if not pname:
+                                continue
+                            play = (r.get("play_type") or play_type).lower()
+                            ppp = r.get("ppp")
+                            if ppp is None:
+                                continue
+                            synergy_lookup.setdefault(pname, {})[play] = float(ppp)
+                    loaded_player = True
+                except Exception:
+                    loaded_player = False
+            # Build team-level fallback regardless (some rosters may miss in player file).
+            if _os.path.exists(team_path):
+                try:
+                    with open(team_path, encoding="utf-8") as _f:
+                        for r in _json.load(_f):
+                            team = (r.get("team_abbreviation") or "").upper()
+                            if not team:
+                                continue
+                            play = (r.get("play_type") or play_type).lower()
+                            ppp = r.get("ppp")
+                            if ppp is None:
+                                continue
+                            _team_ppp.setdefault(team, {})[play] = float(ppp)
+                except Exception:
+                    pass
+            # Marker keeps lints happy
+            _ = loaded_player
+        # Stash team fallback on the lookup dict under a sentinel key so the
+        # per-row builder below can resolve unseen players via their team.
+        if _team_ppp:
+            synergy_lookup["__team_fallback__"] = _team_ppp
     except Exception:
         pass
 
@@ -957,7 +995,7 @@ def add_external_player_features(
             "on_court_net_rtg":      float(oo.get("on_court_net_rtg", 0.0) or 0.0),
             # Synergy
             "synergy_iso_ppp":       float(syn.get("isolation", 0.0) or 0.0),
-            "synergy_pnr_ppp":       float(syn.get("prbballhandler", 0.0) or 0.0),
+            "synergy_pnr_ppp":       float(syn.get("prballhandler", 0.0) or 0.0),
             "synergy_spotup_ppp":    float(syn.get("spotup", 0.0) or 0.0),
             # Injury / news
             "injury_status_multiplier":  float(injury_lookup.get(key, 1.0)),
