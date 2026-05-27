@@ -703,6 +703,48 @@ def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def load_rotowire_starters() -> dict:
+    """Load today's confirmed/projected starting lineups from RotoWire cache.
+
+    Reads ``data/cache/rotowire_lineups_parsed.json`` (produced by
+    ``scripts/parse_rotowire_lineups.py``) and returns a mapping of
+    ``team_abbrev -> set(lower-cased starter names)``.
+
+    Returns:
+        ``{team_abbrev: {"shai gilgeous-alexander", ...}, ...}`` — empty dict
+        when the cache is missing or unreadable. Caller treats missing teams
+        as "unknown starters" and emits NaN, NOT 0 (see caller).
+
+    WALK-FORWARD CAVEAT:
+        The underlying RotoWire HTML is a DAILY SNAPSHOT — overwritten each
+        day. It is therefore usable ONLY for LIVE prediction on today's
+        slate. Do NOT use confirmed_starter as a training feature: at train
+        time the cache reflects today's slate, not the historical game date,
+        which would leak / mislabel. Training pipelines should treat
+        confirmed_starter as NaN so it gets imputed or dropped downstream.
+    """
+    import json as _json
+    path = os.path.join(_DATA_DIR, "cache", "rotowire_lineups_parsed.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            parsed = _json.load(f)
+    except Exception:
+        return {}
+
+    out: dict[str, set[str]] = {}
+    for team_abbrev, plist in (parsed.get("teams") or {}).items():
+        starters = {
+            (p.get("player_name") or "").strip().lower()
+            for p in plist
+            if p.get("is_starter") and (p.get("player_name") or "").strip()
+        }
+        if starters:
+            out[team_abbrev] = starters
+    return out
+
+
 def add_external_player_features(
     df: pd.DataFrame,
     season: str = "2024-25",
@@ -1032,6 +1074,37 @@ def add_external_player_features(
     # Attach columns
     for col in feat_df.columns:
         df[col] = feat_df[col]
+
+    # ── confirmed_starter (RotoWire daily snapshot — LIVE-ONLY) ─────────────
+    # NaN-by-default: when the cache is absent, OR the player's team isn't
+    # in today's slate, this stays NaN so training pipelines drop/impute it
+    # rather than learning from stale day-of labels. Only when we have a
+    # known team's starter list do we emit a hard 0/1.
+    rw_starters = load_rotowire_starters()
+    if rw_starters and "player_name" in df.columns:
+        team_col = "team_abbrev" if "team_abbrev" in df.columns else None
+        names_lc = df["player_name"].fillna("").astype(str).str.lower()
+
+        def _is_starter(name_lc: str, team: str) -> float:
+            team = (team or "").upper()
+            if not team or team not in rw_starters:
+                return float("nan")
+            return 1.0 if name_lc in rw_starters[team] else 0.0
+
+        if team_col:
+            teams = df[team_col].fillna("").astype(str)
+            df["confirmed_starter"] = [
+                _is_starter(n, t) for n, t in zip(names_lc, teams)
+            ]
+        else:
+            # No team column → can't disambiguate same-name players across
+            # teams. Fall back: starter if name appears in ANY team's list.
+            all_starters: set[str] = set().union(*rw_starters.values())
+            df["confirmed_starter"] = names_lc.map(
+                lambda n: 1.0 if n in all_starters else float("nan")
+            )
+    else:
+        df["confirmed_starter"] = float("nan")
 
     return df
 
