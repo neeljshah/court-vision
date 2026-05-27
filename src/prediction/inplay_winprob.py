@@ -61,7 +61,8 @@ _SNAP_FEATURES: Dict[str, list] = {
     "endQ2": ["score_margin", "total_pts", "pace_so_far", "q1_delta", "q2_delta",
               "last_q_margin", "pregame_win_prob", "home_team_id", "season"],
     "endQ3": ["score_margin", "total_pts", "pace_so_far", "q1_delta", "q2_delta",
-              "q3_delta", "last_q_margin", "pregame_win_prob", "home_team_id", "season"],
+              "q3_delta", "last_q_margin", "pregame_win_prob", "home_team_id", "season",
+              "q1_usg_avg", "halftime_pace_shift", "trailing_team_q4_usg_hhi"],
 }
 _CAT_COLS = ("home_team_id", "season")
 

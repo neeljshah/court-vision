@@ -162,12 +162,46 @@ def _pregame_wp_from_features(row: Dict) -> float:
         return 0.55
 
 
+# ── quarter features loader ───────────────────────────────────────────────────
+
+QUARTER_FEATURES_PATH = os.path.join(DATA_CACHE, "quarter_features.parquet")
+
+
+def _load_quarter_features_team_summary() -> Dict:
+    """Load quarter_features parquet and aggregate to team-level summaries per game.
+
+    Returns dict keyed by "{game_id}_{team_id}" -> {q1_usg_avg, halftime_pace_shift,
+    trailing_team_q4_usg_hhi}.
+    """
+    import math
+    if not os.path.exists(QUARTER_FEATURES_PATH):
+        print(f"  [WARN] {QUARTER_FEATURES_PATH} missing — endQ3 quarter features will be NaN",
+              flush=True)
+        return {}
+    df = pd.read_parquet(QUARTER_FEATURES_PATH)
+    df["game_id"] = df["game_id"].astype(str)
+    df["team_id"] = pd.to_numeric(df["team_id"], errors="coerce")
+
+    summaries: Dict = {}
+    for (gid, tid), grp in df.groupby(["game_id", "team_id"]):
+        ttq4 = grp["trailing_team_q4_usg_concentration"]
+        summaries[f"{gid}_{int(tid)}"] = {
+            "q1_usg_avg": float(grp["q1_usg"].mean()),
+            "halftime_pace_shift": float(grp["halftime_pace_shift"].mean()),
+            "trailing_team_q4_usg_hhi": float(ttq4.mean())
+            if ttq4.notna().any() else float("nan"),
+        }
+    print(f"  quarter_features team summaries: {len(summaries)} entries", flush=True)
+    return summaries
+
+
 # ── feature builder (matches probe spec exactly) ──────────────────────────────
 
 MINUTES_PER_QUARTER = 12.0
 
 
-def build_rows(linescores: Dict, season_games: Dict) -> pd.DataFrame:
+def build_rows(linescores: Dict, season_games: Dict,
+               quarter_summaries: Optional[Dict] = None) -> pd.DataFrame:
     records: List[Dict] = []
 
     for gid, ls in linescores.items():
@@ -194,6 +228,17 @@ def build_rows(linescores: Dict, season_games: Dict) -> pd.DataFrame:
         pregame_wp = sg.get("sim_win_prob")
         if pregame_wp is None:
             pregame_wp = _pregame_wp_from_features(sg)
+
+        # Quarter features lookup (NaN if not in parquet)
+        qs = quarter_summaries or {}
+        try:
+            htid_int = int(home_team_id)
+        except (TypeError, ValueError):
+            htid_int = 0
+        qf_row = qs.get(f"{gid}_{htid_int}", {})
+        q1_usg_avg = qf_row.get("q1_usg_avg", np.nan)
+        halftime_pace_shift = qf_row.get("halftime_pace_shift", np.nan)
+        trailing_team_q4_usg_hhi = qf_row.get("trailing_team_q4_usg_hhi", np.nan)
 
         for snap_idx, snapshot in enumerate(["endQ1", "endQ2", "endQ3"]):
             n_qtrs = snap_idx + 1
@@ -229,6 +274,10 @@ def build_rows(linescores: Dict, season_games: Dict) -> pd.DataFrame:
                 "last_q_margin": last_q_margin,
                 "pregame_win_prob": pregame_wp,
                 "home_team_won": home_team_won,
+                # quarter features (NaN for games not in quarter_features parquet)
+                "q1_usg_avg": q1_usg_avg,
+                "halftime_pace_shift": halftime_pace_shift,
+                "trailing_team_q4_usg_hhi": trailing_team_q4_usg_hhi,
             })
 
     df = pd.DataFrame(records)
@@ -245,7 +294,8 @@ SNAP_FEATURES: Dict[str, List[str]] = {
     "endQ2": ["score_margin", "total_pts", "pace_so_far", "q1_delta", "q2_delta",
               "last_q_margin", "pregame_win_prob", "home_team_id", "season"],
     "endQ3": ["score_margin", "total_pts", "pace_so_far", "q1_delta", "q2_delta",
-              "q3_delta", "last_q_margin", "pregame_win_prob", "home_team_id", "season"],
+              "q3_delta", "last_q_margin", "pregame_win_prob", "home_team_id", "season",
+              "q1_usg_avg", "halftime_pace_shift", "trailing_team_q4_usg_hhi"],
 }
 
 CAT_COLS = ["home_team_id", "season"]
@@ -338,8 +388,11 @@ def main() -> None:
             "ship data/nba/linescores_all.json before training."
         )
 
-    print("[2] Building snapshot rows ...", flush=True)
-    df = build_rows(linescores, season_games)
+    print("[2] Loading quarter features ...", flush=True)
+    quarter_summaries = _load_quarter_features_team_summary()
+
+    print("[3] Building snapshot rows ...", flush=True)
+    df = build_rows(linescores, season_games, quarter_summaries)
     valid_games = set(df[df["snapshot"] == "endQ3"]["game_id"].tolist())
     df = df[df["game_id"].isin(valid_games)].copy()
     print(f"  rows={len(df)}, games={len(valid_games)}", flush=True)
