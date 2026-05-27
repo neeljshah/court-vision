@@ -421,6 +421,33 @@ def section_alerts(date_str: str, yesterday_counts: Dict[str, int],
             f"{lineup_age:.1f}h old (>= {STALE_LINEUP_HOURS}h)."
         )
 
+    # 5.5 IN-PLAY DARK — yesterday had a game but no in-play snapshots landed.
+    # (iter-27: this is the alert that would have caught the WCF G7 blackout.)
+    try:
+        y_dt = datetime.fromisoformat(date_str).date() - timedelta(days=1)
+        y_str = y_dt.isoformat()
+        # Did we register any bets for yesterday's game?
+        intel_path = os.path.join(
+            CACHE_DIR, f"intel_{y_str}", "tonight_bets_registered.json")
+        inplay_path = os.path.join(
+            PROJECT_DIR, "data", "predictions", f"{y_str}_inplay.csv")
+        if os.path.exists(intel_path):
+            n_inplay = 0
+            if os.path.exists(inplay_path):
+                with open(inplay_path, encoding="utf-8") as fh:
+                    n_inplay = max(sum(1 for _ in fh) - 1, 0)
+            if n_inplay == 0:
+                triggered.append(
+                    f"IN-PLAY DARK: a game was registered yesterday ({y_str}) "
+                    f"but no in-play snapshots landed in "
+                    f"data/predictions/{y_str}_inplay.csv. "
+                    "Likely cause: live daemons silently died — see "
+                    "data/cache/daemon_heartbeats/watchdog.log and rerun "
+                    "live_orchestrator_watchdog.py for tonight."
+                )
+    except Exception:  # noqa: BLE001
+        pass
+
     lines = ["## Section 5 — Alerts", ""]
     if not triggered:
         lines += ["_All clear._", ""]
