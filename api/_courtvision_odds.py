@@ -148,6 +148,28 @@ def consolidate_for_slate(date: str) -> list[dict]:
     return [p for p in out if p["books"]]
 
 
+def games_index(date: str) -> list[dict]:
+    """Distinct game_ids in today's scrape with prop counts + start_time."""
+    props = consolidate(date)
+    by_game: dict[str, dict] = {}
+    for p in props:
+        gid = p.get("game_id") or "?"
+        g = by_game.setdefault(gid, {
+            "game_id": gid, "start_time": p.get("start_time") or "",
+            "n_props": 0, "players": set(),
+        })
+        g["n_props"] += 1
+        g["players"].add(p["player"])
+    out = []
+    for g in by_game.values():
+        out.append({
+            "game_id": g["game_id"], "start_time": g["start_time"],
+            "n_props": g["n_props"], "n_players": len(g["players"]),
+        })
+    out.sort(key=lambda r: r["start_time"] or "")
+    return out
+
+
 def odds_envelope(date: str) -> dict:
     """Shape for /api/odds/{date}.json."""
     props = consolidate(date)
