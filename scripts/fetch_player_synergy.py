@@ -67,17 +67,21 @@ def fetch(season: str, play_type: str) -> list:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seasons", nargs="+", default=_DEFAULT_SEASONS)
+    ap.add_argument("--play-types", nargs="+", default=_PLAY_TYPES,
+                    help="Restrict scrape to specific play types (default: all 9).")
     args = ap.parse_args()
 
     all_rows: list = []
     for season in args.seasons:
-        for play_type in _PLAY_TYPES:
+        for play_type in args.play_types:
             time.sleep(0.5)
             all_rows.extend(fetch(season, play_type))
         print(f"[synergy_player {season}] cumulative rows={len(all_rows)}")
 
     # Persist as parquet keyed for prop_pergame.build_playtypes consumption.
     # The reader expects columns: player_id, season, play_type, freq_pct.
+    # Also retain ppp (points per possession) so feature builders can read
+    # per-player PPP directly from parquet without re-loading the JSON.
     import pandas as pd
     out_rows = []
     for r in all_rows:
@@ -87,11 +91,13 @@ def main() -> None:
         freq = r.get("poss_pct") or r.get("freq_pct") or r.get("freq")
         if pid is None or freq is None:
             continue
+        ppp_val = r.get("ppp")
         out_rows.append({
             "player_id": int(pid),
             "season": str(r["season"]),
             "play_type": str(r["play_type"]),
             "freq_pct": float(freq),
+            "ppp": float(ppp_val) if ppp_val is not None else 0.0,
         })
     df = pd.DataFrame(out_rows)
     df.to_parquet(_OUT_PATH, index=False)
