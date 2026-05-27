@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Tonight · CourtVision{% endblock %}
+{% block subtitle %}Tonight · {{ slate.date }}{% endblock %}
+{% block og_title %}CourtVision · {{ slate.date }} · {{ slate.summary.n_bets }} edges{% endblock %}
+{% block og_desc %}{{ slate.summary.n_bets }} ranked NBA prop bets · avg EV {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}% · model-graded reasoning per pick.{% endblock %}
+
+{% block content %}
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Tonight's edges</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ slate.date }}</span>
+    <a href="/parlays?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">parlays →</a>
+    <a href="/live?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">live →</a>
+    {% if slate.stale_data %}
+      <span class="text-xs px-2 py-0.5 rounded" style="background:#451a03;color:#fbbf24">stale slate</span>
+    {% endif %}
+  </div>
+  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span><b style="color:var(--cv-text)">{{ slate.summary.n_bets }}</b> bets</span>
+    <span>avg EV
+      <b class="{% if slate.summary.avg_ev_pct > 0 %}num-pos{% elif slate.summary.avg_ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">
+        {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}%
+      </b>
+    </span>
+    <span>{{ slate.summary.n_over }} OVER · {{ slate.summary.n_under }} UNDER</span>
+    <span>bankroll ${{ '%.0f'|format(slate.bankroll_default_dollars) }}</span>
+  </div>
+  {% if not slate.has_lines %}
+    <div class="mt-2 cv-card px-3 py-2 text-xs" style="color:var(--cv-amber);border-color:#451a03">
+      No lines CSV found for {{ slate.date }}. Drop a file at
+      <code style="color:var(--cv-text)">data/lines/lines_{{ slate.date }}.csv</code>
+      (columns: player, opp, venue, stat, line, over_odds, under_odds) to compute EV.
+    </div>
+  {% endif %}
+</section>
+
+{% if not slate.bets %}
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
+    <p>No graded edges for {{ slate.date }}.</p>
+    <p class="text-xs mt-2">
+      Latest available slate:
+      {% if slate.latest_available %}
+        <a class="underline" style="color:var(--cv-accent)" href="/tonight?date={{ slate.latest_available }}">{{ slate.latest_available }}</a>
+      {% else %}
+        <span class="pending">none</span>
+      {% endif %}
+    </p>
+  </div>
+{% else %}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+    {% for bet in slate.bets %}
+      {% set rank = loop.index %}
+      {% include "_bet_card.html" %}
+    {% endfor %}
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+  Refreshed {{ slate.generated_at }} · CourtVision · model graded · not financial advice
+{% endblock %}

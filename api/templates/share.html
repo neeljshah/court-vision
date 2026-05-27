@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}CourtVision · {{ slate.date }} Picks{% endblock %}
+{% block subtitle %}Public picks{% endblock %}
+{% block og_title %}🏀 CourtVision · {{ slate.date }} · {{ shown|length }} model picks{% endblock %}
+{% block og_desc %}Tonight's top {{ shown|length }} NBA prop bets — model-graded, EV-ranked, fully reasoned. Average edge {{ '%+.1f'|format(avg_ev) }}%.{% endblock %}
+
+{% block content %}
+<section class="mb-3">
+  <h1 class="text-2xl font-semibold tracking-tight" style="color:var(--cv-accent)">
+    🏀 CourtVision picks · {{ slate.date }}
+  </h1>
+  <p class="text-sm mt-1" style="color:var(--cv-muted)">
+    {{ shown|length }} model-graded NBA prop bets · avg edge
+    <b class="num-pos">{{ '%+.1f'|format(avg_ev) }}%</b> · ranked by EV
+  </p>
+  <p class="text-xs mt-1" style="color:var(--cv-subtle)">
+    Model: 10K Monte-Carlo with q50 quantile heads · not financial advice
+  </p>
+</section>
+
+<section class="mb-4 flex flex-wrap items-center gap-3">
+  <button id="cv-copy-btn" type="button"
+          class="cv-card cv-card-hover px-3 py-2 text-sm"
+          style="color:var(--cv-accent);border-color:var(--cv-accent)">
+    📋 Copy picks
+  </button>
+  <a href="/share/{{ slate.date }}/qr.svg" target="_blank"
+     class="text-xs underline" style="color:var(--cv-muted)">QR ↗</a>
+  <span id="cv-copy-status" class="text-xs" style="color:var(--cv-muted)"></span>
+  <textarea id="cv-share-text" readonly aria-hidden="true"
+            style="position:absolute;left:-9999px;width:1px;height:1px">{{ share_text }}</textarea>
+</section>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+  {% for bet in shown %}
+    <article class="cv-card cv-card-hover p-3 md:p-4">
+      <header class="flex items-start justify-between gap-2">
+        <div class="min-w-0">
+          <div class="flex items-baseline gap-2">
+            <span class="text-[10px] md:text-xs font-mono" style="color:var(--cv-subtle)">#{{ loop.index }}</span>
+            <h3 class="text-base md:text-lg font-semibold truncate" style="color:var(--cv-text)">{{ bet.player_name }}</h3>
+          </div>
+          <div class="text-xs md:text-sm mt-0.5 font-mono" style="color:var(--cv-muted)">
+            {{ bet.team }} {% if bet.venue == 'away' %}@{% else %}vs{% endif %} {{ bet.opp }}
+            · {{ bet.prop_stat }} {{ 'o' if bet.side == 'OVER' else 'u' }}{{ '%g'|format(bet.line) }}
+            {% if bet.best_book %} · {{ bet.best_book }} {{ '%+d'|format(bet.best_price) }}{% endif %}
+          </div>
+        </div>
+        <span class="text-[10px] md:text-xs px-2 py-1 rounded {% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}">{{ bet.side }}</span>
+      </header>
+
+      <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div>
+          <div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">model</div>
+          <div class="text-sm md:text-base font-semibold font-mono">{{ '%.2f'|format(bet.q50) }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">edge</div>
+          <div class="text-sm md:text-base font-semibold font-mono {% if bet.edge_units > 0 %}num-pos{% elif bet.edge_units < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.2f'|format(bet.edge_units) }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">EV</div>
+          <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(bet.ev_pct) }}%</div>
+        </div>
+      </div>
+
+      <p class="mt-3 text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+    </article>
+  {% endfor %}
+</div>
+
+<section class="mt-6 cv-card p-3 md:p-4">
+  <h2 class="text-sm font-semibold mb-2" style="color:var(--cv-muted)">scan to share</h2>
+  <img src="/share/{{ slate.date }}/qr.svg" alt="QR code for this share URL"
+       width="160" height="160"
+       style="image-rendering:pixelated;background:white;padding:6px;border-radius:8px"
+       class="block">
+</section>
+
+<script>
+(function(){
+  var btn = document.getElementById('cv-copy-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    var ta = document.getElementById('cv-share-text');
+    var status = document.getElementById('cv-copy-status');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(function(){
+        status.textContent = 'copied';
+      }, function(){
+        status.textContent = 'copy failed — long-press the text';
+      });
+    } else {
+      ta.style.position = 'fixed';
+      ta.style.left = '0'; ta.style.top = '0';
+      ta.style.width = '100px'; ta.style.height = '20px';
+      ta.style.opacity = '0';
+      ta.select();
+      try { document.execCommand('copy'); status.textContent = 'copied'; }
+      catch(e) { status.textContent = 'copy failed'; }
+      ta.style.position = 'absolute'; ta.style.left = '-9999px';
+      ta.style.opacity = '1';
+    }
+  });
+})();
+</script>
+{% endblock %}
+
+{% block footer %}
+  shared via courtvision · {{ slate.generated_at }}
+{% endblock %}

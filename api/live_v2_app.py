@@ -603,6 +603,15 @@ def create_app() -> FastAPI:
         finally:
             await manager.disconnect(ws)
 
+    try:
+        from api.courtvision_router import router as _cv_router
+        from api.courtvision_router import register_with_app as _cv_register
+        app.include_router(_cv_router, tags=["courtvision"])
+        _cv_register(app)
+        log.info("courtvision_router included on live_v2_app")
+    except Exception as _cv_exc:
+        log.warning("courtvision_router unavailable on live_v2_app: %s", _cv_exc)
+
     return app
 
 
