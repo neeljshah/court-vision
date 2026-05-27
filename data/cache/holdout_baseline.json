@@ -1,13 +1,54 @@
 {
   "__global__": {
     "pts": {
-      "roi_pct": -5.33,
-      "hit_rate": 49.59,
-      "mae_actual": 12.3868,
-      "roi_units": -45.45,
-      "n_bets": 853,
-      "migrated_from_aggregate": true
+      "roi_pct": 0.83,
+      "hit_rate": 52.82,
+      "mae_actual": 5.8551,
+      "roi_units": 6.36,
+      "n_bets": 763
+    },
+    "ast": {
+      "roi_pct": 0.84,
+      "hit_rate": 52.82,
+      "mae_actual": 1.7592,
+      "roi_units": 4.45,
+      "n_bets": 532
+    },
+    "reb": {
+      "roi_pct": 2.61,
+      "hit_rate": 53.75,
+      "mae_actual": null,
+      "roi_units": null,
+      "n_bets": 627
+    },
+    "fg3m": {
+      "roi_pct": 22.91,
+      "hit_rate": 64.38,
+      "mae_actual": null,
+      "roi_units": null,
+      "n_bets": 306
+    },
+    "stl": {
+      "roi_pct": 33.86,
+      "hit_rate": 70.11,
+      "mae_actual": null,
+      "roi_units": null,
+      "n_bets": 174
+    },
+    "blk": {
+      "roi_pct": 39.77,
+      "hit_rate": 73.21,
+      "mae_actual": 0.5379,
+      "roi_units": 22.27,
+      "n_bets": 56
+    },
+    "tov": {
+      "roi_pct": 0.0,
+      "hit_rate": 0.0,
+      "mae_actual": null,
+      "roi_units": null,
+      "n_bets": 0
     }
   },
-  "__updated_at__": "2026-05-27T17:16:37+00:00"
+  "__updated_at__": "2026-05-27T18:51:38+00:00"
 }
