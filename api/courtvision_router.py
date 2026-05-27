@@ -30,6 +30,18 @@ except Exception:
 
 def register_with_app(app) -> None:
     from api._courtvision_middleware import install; install(app, _limiter)
+    # Pre-warm the slate + form cache on startup so the first user request
+    # doesn't pay the 5-10s cost of reading player_quarter_stats.parquet.
+    @app.on_event("startup")
+    async def _warm_caches() -> None:
+        import asyncio
+        async def _warm() -> None:
+            try:
+                await asyncio.to_thread(_build_slate, _today_et())
+                __import__("logging").getLogger(__name__).info("courtvision cache pre-warmed")
+            except Exception as exc:
+                __import__("logging").getLogger(__name__).warning("pre-warm failed: %s", exc)
+        asyncio.create_task(_warm())
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
