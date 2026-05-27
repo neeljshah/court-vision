@@ -1,0 +1,33 @@
+# Minimal deps for the web dashboard backend (api/live_v2_app.py).
+# Excludes torch/CUDA/cv2 — those are only needed for the CV pipeline,
+# not for in-play projections or pregame line-shop.
+fastapi>=0.110
+uvicorn[standard]>=0.27
+websockets>=12.0
+aiohttp>=3.10
+requests>=2.31
+numpy>=1.24
+pandas>=2.0
+scipy>=1.11
+lightgbm>=4.0
+xgboost>=2.0
+scikit-learn>=1.3
+nba_api>=1.4
+rich>=13.7
+tzdata>=2024.1
+# curl_cffi provides byte-perfect Chrome TLS impersonation — required for
+# FanDuel and (some) Pinnacle endpoints that 403 vanilla `requests` due to
+# JA3 fingerprinting. Without this, scrapers crash on import and the line
+# CSVs go stale on Railway (no curl_cffi → no in-game line refresh).
+curl_cffi>=0.7.0
+# qrcode used by api.courtvision_router for /share QR codes. Pure-Python; no
+# PIL dependency when using the SvgPathImage factory.
+qrcode>=7.4
+# jinja2 is already pulled in transitively by FastAPI but pin it for clarity —
+# api/templates relies on it for /tonight, /parlays, /share pages.
+jinja2>=3.1
+# slowapi: per-IP rate limiting on /tonight, /parlays, /share, /plus_ev
+# (60 req/min default). Disabled when COURTVISION_DISABLE_RATELIMIT=1.
+slowapi>=0.1.9
+# sentry-sdk: env-gated error tracking. Only initialized when SENTRY_DSN is set.
+sentry-sdk>=2.0
