@@ -411,7 +411,9 @@ def predict_home_win_prob(features: Dict[str, Any],
     return p
 
 
-def features_from_snapshot(snap: Dict[str, Any]) -> Dict[str, Any]:
+def features_from_snapshot(snap: Dict[str, Any],
+                            *,
+                            inject_quarter: bool = True) -> Dict[str, Any]:
     """Build the inplay_winprob feature dict from a canonical live-engine snap.
 
     Expected keys on ``snap`` (canonical live.py schema PLUS the optional
@@ -419,6 +421,13 @@ def features_from_snapshot(snap: Dict[str, Any]) -> Dict[str, Any]:
 
         period, clock, home_score, away_score, home_team_id, season,
         home_q1..home_q3, away_q1..away_q3, pregame_win_prob (optional).
+
+    Optional quarter_features injection (inject_quarter=True, default):
+        When game_id and home_team_id are present on the snap, injects
+        q1_usg_avg, halftime_pace_shift, and trailing_team_q4_usg_hhi
+        from the quarter_features parquet.  The trained boosters ignore
+        these extra keys; downstream retraining can pick them up by
+        expanding the feature schema.
 
     For mid-quarter snapshots without per-quarter splits, callers should
     skip this routine and fall back to pregame WP -- this function does
@@ -486,7 +495,36 @@ def features_from_snapshot(snap: Dict[str, Any]) -> Dict[str, Any]:
         feats["q2_delta"] = h_q[1] - a_q[1]
     if n_qtrs >= 3:
         feats["q3_delta"] = h_q[2] - a_q[2]
+
+    # Quarter-features enrichment (opt-out via inject_quarter=False).
+    # Extra keys are ignored by existing v1/v2/v3 boosters and become
+    # available for future retrained schemas without a breaking change.
+    if inject_quarter:
+        _try_inject_quarter_features(feats, snap)
+
     return feats
+
+
+def _try_inject_quarter_features(feats: Dict[str, Any], snap: Dict[str, Any]) -> None:
+    """Best-effort injection of quarter_features signals into feats (in-place).
+
+    Silently skips when game_id is absent or the parquet row is missing.
+    """
+    game_id = snap.get("game_id")
+    team_id = snap.get("home_team_id")
+    away_team_id = snap.get("away_team_id")
+    if not game_id or not team_id:
+        return
+    try:
+        from src.prediction.quarter_feature_helper import inject_quarter_features
+        inject_quarter_features(
+            int(team_id),
+            str(game_id),
+            feats,
+            opponent_team_id=int(away_team_id) if away_team_id else None,
+        )
+    except Exception:
+        pass  # never break the inplay path over a missing parquet row
 
 
 def _coerce_float(v: Any, default: float = 0.0) -> float:
