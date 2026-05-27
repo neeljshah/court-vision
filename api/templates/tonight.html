@@ -11,6 +11,8 @@
     <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ slate.date }}</span>
     <a href="/parlays?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">parlays →</a>
     <a href="/plus_ev?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">+EV →</a>
+    <a href="/odds?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">odds →</a>
+    <a href="/arbs?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">arbs →</a>
     <a href="/live?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">live →</a>
     {% if slate.stale_data %}
       <span class="text-xs px-2 py-0.5 rounded" style="background:#451a03;color:#fbbf24">stale slate</span>

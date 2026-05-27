@@ -276,14 +276,22 @@ def api_odds_history(player: str, stat: str,
     return JSONResponse({"date": date, "player": player, "stat": stat,
                          "n": len(rows), "history": rows})
 
-@router.get("/api/odds/spread/{date}.json", tags=["courtvision"])
-def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
-    """Cross-book spread / arb-finder — props where books disagree by min_spread_pp+."""
+def _spread_env(date: str, min_spread_pp: float) -> dict:
     from api._courtvision_odds import cross_book_spread
     rows = cross_book_spread(date, min_spread_pp=min_spread_pp)
-    return JSONResponse({"date": date, "min_spread_pp": min_spread_pp,
-                         "n": len(rows), "n_arbs": sum(1 for r in rows if r["is_arb"]),
-                         "rows": rows})
+    return {"date": date, "min_spread_pp": min_spread_pp, "n": len(rows),
+            "n_arbs": sum(1 for r in rows if r["is_arb"]), "rows": rows}
+
+@router.get("/api/odds/spread/{date}.json", tags=["courtvision"])
+def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
+    return JSONResponse(_spread_env(date, min_spread_pp))
+
+@router.get("/arbs", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def arbs_page(request: Request, date: str = Query(default_factory=_today_et),
+              min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
+    return _TEMPLATES.TemplateResponse("arbs.html",
+        {"request": request, "env": _spread_env(date, min_spread_pp)})
 
 
 @router.get("/api/today_summary", tags=["courtvision"])
