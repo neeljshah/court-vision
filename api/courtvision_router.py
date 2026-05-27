@@ -92,13 +92,18 @@ def _build_slate(date: str) -> dict:
         return envelope
 
     slate_rows = load_slate_csv(slate_path, _STATS)
+    # Lines source order: live consolidated (multi-book scrapers) > manual CSV.
+    from api._courtvision_odds import consolidate_for_slate
+    line_rows = consolidate_for_slate(date)
     lines_path = _lines_csv_path(date)
-    has_lines = lines_path is not None
+    if not line_rows and lines_path is not None:
+        line_rows = load_lines_csv(lines_path)
+    has_lines = bool(line_rows)
     if has_lines:
         ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
         bets = [grade_bet(ps_idx[(ln["player"].lower(), ln["stat"])], ln,
                           _STAT_SIGMA, _BANKROLL_DEFAULT)
-                for ln in load_lines_csv(lines_path)
+                for ln in line_rows
                 if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
         bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
         bets = bets[:_TOP_N]
@@ -191,19 +196,6 @@ def api_auto_parlay(date: str = Query(default_factory=_today_et),
                          "pick": c[0] if c else None, "n_candidates_under_stake": len(c)})
 
 
-def _share_text(slate: dict, shown: list[dict]) -> str:
-    out = [f"🏀 CourtVision picks · {slate['date']}",
-           f"{len(shown)} model-graded NBA prop bets, ranked by EV", ""]
-    for i, b in enumerate(shown, start=1):
-        s = "o" if b["side"] == "OVER" else "u"
-        ev = b.get("ev_pct"); ev_s = f"EV {ev:+.1f}%" if ev is not None else "EV pending"
-        v = "@" if b["venue"] == "away" else "vs"
-        out.append(f"{i}. {b['player_name']} {b['prop_stat']} {s}{b['line']:g} "
-                   f"({b['team']} {v} {b['opp']}) — {ev_s}")
-    out += ["", "not financial advice · courtvision"]
-    return "\n".join(out)
-
-
 _SHARE_HIDE = ("kelly_stake_dollars", "kelly_pct", "market_prob", "model_prob")
 
 @router.get("/share/{slug}", response_class=HTMLResponse, tags=["courtvision"])
@@ -216,9 +208,10 @@ def share(slug: str, request: Request):
              for b in slate["bets"][:_SHARE_TOP_N]]
     evs = [b.get("ev_pct") for b in shown if b.get("ev_pct") is not None]
     avg_ev = round(sum(evs) / len(evs), 2) if evs else 0.0
+    from api._courtvision_data import share_text
     return _TEMPLATES.TemplateResponse("share.html",
         {"request": request, "slate": slate, "shown": shown,
-         "avg_ev": avg_ev, "share_text": _share_text(slate, shown)})
+         "avg_ev": avg_ev, "share_text": share_text(slate, shown)})
 
 
 @router.get("/share/{slug}/qr.svg", tags=["courtvision"])
@@ -241,6 +234,27 @@ def healthz():
 
 @router.get("/cv", tags=["courtvision"])
 def cv_shortlink(): return RedirectResponse(url="/tonight", status_code=307)
+
+
+@router.get("/api/odds/{date}.json", tags=["courtvision"])
+def api_odds_for_date(date: str, stat: str = Query(""), player: str = Query("")):
+    """Multi-book scraped prop odds for `date`. Filterable by stat + player."""
+    from api._courtvision_odds import odds_env
+    return JSONResponse(odds_env(date, stat, player))
+
+@router.get("/api/odds", tags=["courtvision"])
+def api_odds_today(stat: str = Query(""), player: str = Query("")):
+    from api._courtvision_odds import odds_env
+    return JSONResponse(odds_env(_today_et(), stat, player))
+
+@router.get("/odds", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def odds_page(request: Request, date: str = Query(default_factory=_today_et),
+              stat: str = Query(""), player: str = Query("")):
+    from api._courtvision_odds import odds_env
+    return _TEMPLATES.TemplateResponse("odds.html",
+        {"request": request, "env": odds_env(date, stat, player),
+         "stat": stat, "player": player})
 
 
 @router.get("/api/today_summary", tags=["courtvision"])

@@ -161,6 +161,20 @@ def grade_bet(slate_row: dict, line_row: dict,
     }
 
 
+def share_text(slate: dict, shown: list[dict]) -> str:
+    """Plain-text summary for /share copy-to-clipboard."""
+    out = [f"🏀 CourtVision picks · {slate['date']}",
+           f"{len(shown)} model-graded NBA prop bets, ranked by EV", ""]
+    for i, b in enumerate(shown, start=1):
+        s = "o" if b["side"] == "OVER" else "u"
+        ev = b.get("ev_pct"); ev_s = f"EV {ev:+.1f}%" if ev is not None else "EV pending"
+        v = "@" if b["venue"] == "away" else "vs"
+        out.append(f"{i}. {b['player_name']} {b['prop_stat']} {s}{b['line']:g} "
+                   f"({b['team']} {v} {b['opp']}) — {ev_s}")
+    out += ["", "not financial advice · courtvision"]
+    return "\n".join(out)
+
+
 def plus_ev_rows(slate: dict, min_ev_pct: float) -> list[dict]:
     """Expand graded bets into one row per (bet, book) above min_ev_pct."""
     out: list[dict] = []

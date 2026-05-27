@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Odds API · CourtVision{% endblock %}
+{% block subtitle %}Odds · {{ env.date }}{% endblock %}
+{% block og_title %}CourtVision odds · {{ env.date }} · {{ env.n_props }} props across {{ env.n_books }} books{% endblock %}
+{% block og_desc %}Multi-book NBA prop odds — Pinnacle, FanDuel, Bovada side-by-side. Public REST API at /api/odds/{date}.json.{% endblock %}
+
+{% block content %}
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Odds API</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ env.date }}</span>
+    <a href="/tonight?date={{ env.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">picks →</a>
+    <a href="/api/odds/{{ env.date }}.json" class="text-xs md:text-sm underline font-mono" style="color:var(--cv-accent)">/api/odds/{{ env.date }}.json</a>
+  </div>
+  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span><b style="color:var(--cv-text)">{{ env.n_props }}</b> props</span>
+    <span>{{ env.n_books }} books: {% for b in env.books %}{{ b.display }}{% if not loop.last %} · {% endif %}{% endfor %}</span>
+  </div>
+  <form action="/odds" method="get" class="mt-3 flex flex-wrap gap-2 items-center text-xs">
+    <input type="hidden" name="date" value="{{ env.date }}">
+    <label style="color:var(--cv-muted)">stat
+      <select name="stat" onchange="this.form.submit()"
+              class="bg-transparent border rounded px-1 ml-1" style="border-color:var(--cv-border);color:var(--cv-text)">
+        <option value="">all</option>
+        {% for s in ['pts','reb','ast','fg3m','stl','blk','tov'] %}
+          <option value="{{ s }}" {% if s == stat %}selected{% endif %}>{{ s|upper }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label style="color:var(--cv-muted)">player
+      <input name="player" value="{{ player|default('') }}" placeholder="e.g. Wemby"
+             class="bg-transparent border rounded px-1 ml-1 w-28" style="border-color:var(--cv-border);color:var(--cv-text)">
+    </label>
+    <button class="px-2 py-0.5 underline" style="color:var(--cv-accent)">apply</button>
+  </form>
+</section>
+
+{% if not env.props %}
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
+    No scraped props for {{ env.date }}.
+    <div class="text-xs mt-2" style="color:var(--cv-subtle)">
+      Scrapers write to <code>data/lines/&lt;date&gt;_&lt;book&gt;.csv</code> — check that pin/bov/fd ticks are running.
+    </div>
+  </div>
+{% else %}
+  <div class="cv-card overflow-x-auto">
+    <table class="min-w-full text-xs md:text-sm">
+      <thead style="color:var(--cv-subtle)">
+        <tr class="border-b" style="border-color:var(--cv-border)">
+          <th class="text-left px-3 py-2">Player</th>
+          <th class="text-left px-3 py-2">Prop</th>
+          <th class="text-center px-3 py-2">Books</th>
+          <th class="text-right px-3 py-2">Best OVER</th>
+          <th class="text-right px-3 py-2">Best UNDER</th>
+          <th class="text-left px-3 py-2">All books</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in env.props[:300] %}
+          {% set best_over = (p.books|selectattr('over_price', 'ne', None)|sort(attribute='over_price', reverse=True)|list)[0] if (p.books|selectattr('over_price', 'ne', None)|list) else None %}
+          {% set best_under = (p.books|selectattr('under_price', 'ne', None)|sort(attribute='under_price', reverse=True)|list)[0] if (p.books|selectattr('under_price', 'ne', None)|list) else None %}
+          <tr class="border-b" style="border-color:var(--cv-border)">
+            <td class="px-3 py-2" style="color:var(--cv-text)">{{ p.player }}</td>
+            <td class="px-3 py-2 font-mono">{{ p.stat|upper }} {{ '%g'|format(p.line) }}</td>
+            <td class="px-3 py-2 text-center font-mono" style="color:var(--cv-muted)">{{ p.n_books }}</td>
+            <td class="px-3 py-2 text-right font-mono num-pos">
+              {% if best_over %}{{ best_over.display }} {{ '%+d'|format(best_over.over_price) }}{% else %}<span class="pending">—</span>{% endif %}
+            </td>
+            <td class="px-3 py-2 text-right font-mono num-pos">
+              {% if best_under %}{{ best_under.display }} {{ '%+d'|format(best_under.under_price) }}{% else %}<span class="pending">—</span>{% endif %}
+            </td>
+            <td class="px-3 py-2 font-mono text-[10px]" style="color:var(--cv-muted)">
+              {% for b in p.books %}
+                {{ b.display }} {{ '%+d'|format(b.over_price) if b.over_price is not none else '—' }}/{{ '%+d'|format(b.under_price) if b.under_price is not none else '—' }}{% if not loop.last %} · {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if env.props|length > 300 %}
+    <p class="mt-2 text-xs" style="color:var(--cv-muted)">showing first 300 of {{ env.props|length }} — use stat / player filter to narrow</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+  CourtVision odds · scraped Pinnacle / FanDuel / Bovada · /api/odds/{date}.json
+{% endblock %}
