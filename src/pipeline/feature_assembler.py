@@ -164,6 +164,50 @@ def _defender_zone_for_player(player_id: int, season: str) -> dict:
 
 # ── Matchups ───────────────────────────────────────────────────────────────────
 
+def _defender_matchup_for_player(game_id: Optional[str], player_id: int) -> dict:
+    """Return 7 dmatch_* features from the defender matchup parquet, or all-NaN dict."""
+    nan = float("nan")
+    defaults: dict = {
+        "dmatch_fg_pct_l10": nan,
+        "dmatch_partial_poss_share": nan,
+        "dmatch_switches_per_poss": nan,
+        "dmatch_primary_def_height_in": nan,
+        "dmatch_height_advantage_in": nan,
+        "dmatch_help_blocks_per_game": nan,
+        "dmatch_3p_pct_l10": nan,
+    }
+    if not game_id:
+        return defaults
+    try:
+        from src.data.defender_matchup_loader import get_defender_matchup_row
+        row = get_defender_matchup_row(game_id, player_id)
+        if row is None:
+            return defaults
+        return {
+            "dmatch_fg_pct_l10":          _safe_float(row.get("matchup_fg_pct_l10")),
+            "dmatch_partial_poss_share":   _safe_float(row.get("matchup_partial_poss_share")),
+            "dmatch_switches_per_poss":    _safe_float(row.get("switches_per_poss")),
+            "dmatch_primary_def_height_in": _safe_float(row.get("primary_def_height_in")),
+            "dmatch_height_advantage_in":  _safe_float(row.get("height_advantage_in")),
+            "dmatch_help_blocks_per_game": _safe_float(row.get("help_blocks_per_game")),
+            "dmatch_3p_pct_l10":           _safe_float(row.get("matchup_3p_pct_l10")),
+        }
+    except Exception as exc:
+        log.debug("defender_matchup unavailable for game=%s player=%d: %s", game_id, player_id, exc)
+        return defaults
+
+
+def _safe_float(val) -> float:
+    """Convert val to float, returning NaN on failure."""
+    if val is None:
+        return float("nan")
+    try:
+        f = float(val)
+        return f
+    except (TypeError, ValueError):
+        return float("nan")
+
+
 def _matchup_for_player(player_id: int, season: str) -> list[dict]:
     path = os.path.join(_NBA_CACHE, f"matchups_{season}.json")
     data = _load(path)
@@ -205,13 +249,68 @@ def _bbref_for_player(player_id: int, player_name: str, season: str) -> dict:
 
 # ── Contracts ──────────────────────────────────────────────────────────────────
 
+_CONTRACT_EXT_DF: Optional[object] = None  # pandas DataFrame, loaded once
+
+def _load_contract_ext_df():
+    global _CONTRACT_EXT_DF
+    if _CONTRACT_EXT_DF is not None:
+        return _CONTRACT_EXT_DF
+    parquet_path = os.path.join(PROJECT_DIR, "data", "cache", "contract_features_extended.parquet")
+    if not os.path.exists(parquet_path):
+        return None
+    try:
+        import pandas as pd
+        _CONTRACT_EXT_DF = pd.read_parquet(parquet_path)
+    except Exception as exc:
+        log.debug("contract_features_extended.parquet unreadable: %s", exc)
+        _CONTRACT_EXT_DF = None
+    return _CONTRACT_EXT_DF
+
+
 def _contract_for_player(player_id: int, player_name: str) -> dict:
     path = os.path.join(_EXT_CACHE, "contracts_2024-25.json")
     data = _load(path)
+    base: dict = {}
     if isinstance(data, list) and player_name:
         row = _find_by_name(data, player_name)
-        return row or {}
-    return {}
+        base = row or {}
+
+    # Extended parquet columns
+    ext: dict = {
+        "contract_years_remaining":    float("nan"),
+        "contract_expiring_flag":      float("nan"),
+        "contract_player_option_final": float("nan"),
+        "contract_team_option_final":   float("nan"),
+    }
+    df = _load_contract_ext_df()
+    if df is not None:
+        mask = None
+        if player_id:
+            try:
+                mask = df["player_id"] == int(player_id)
+            except Exception:
+                pass
+        if mask is None or not mask.any():
+            # fallback: name match
+            try:
+                nm = _norm(player_name)
+                mask = df["player_name"].apply(lambda x: _norm(str(x))) == nm
+            except Exception:
+                mask = None
+        if mask is not None and mask.any():
+            r = df[mask].iloc[0]
+            def _get(col: str) -> float:
+                try:
+                    v = r[col]
+                    return float(v) if v is not None else float("nan")
+                except Exception:
+                    return float("nan")
+            ext["contract_years_remaining"]    = _get("years_remaining")
+            ext["contract_expiring_flag"]      = _get("expiring_flag")
+            ext["contract_player_option_final"] = _get("player_option_final_year")
+            ext["contract_team_option_final"]   = _get("team_option_final_year")
+
+    return {**base, **ext}
 
 
 # ── Historical lines ───────────────────────────────────────────────────────────
@@ -506,6 +605,10 @@ def assemble_features(
         feats["matchup_avg_poss"] = avg_matchup_poss
     else:
         feats["matchup_avg_poss"] = float("nan")
+
+    # ── 14. Defender matchup features (dmatch_*) ─────────────────────────────
+    dmatch = _defender_matchup_for_player(game_id, player_id)
+    feats.update(dmatch)
 
     # ── Log missing sources (debug) ───────────────────────────────────────────
     if missing:
