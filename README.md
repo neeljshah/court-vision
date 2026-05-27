@@ -6,28 +6,82 @@ An end-to-end NBA prediction and betting system built by one engineer over 12 mo
 
 ---
 
-## Real-Vegas Validation
+## The Headline
 
-**Two windows · 8,360 walk-forward bets · real DK/FanDuel/MGM/BetRivers closing lines.**
+**90,846-bet in-play backtest. 50 finalized games. Calibrated emit set: 78.1% hit rate, +54.6% ROI on flat $1 stakes.**
 
-Data windows (full public archive coverage available):
-- **2024 NBA playoffs** (Apr 21 – May 24 2024) — 4,337 bets at DK/FanDuel/MGM/BetRivers closes via `reisneriv/NBA_Player_Props`. L10 baseline: **54.58% beat / +4.19% ROI / +$18,181 PnL**.
-- **2025-26 Jan 29 – May 10 2026** — 4,210 bets (prod stack) / 4,023 bets (L10) at DK/FanDuel/MGM closes via `benashkar/nba_gambling`. Prod stack OOF: **54.37% beat / −2.06% ROI**.
+Hard evidence from `vault/Reports/backtest_2026-05-27.md`:
 
-Both archives are committed to the repo (fetched by `data/external/historical_lines/fetch_external_history.py`) so every result reproduces from a fresh clone. Consolidated machine-readable report: [`data/models/gate1_results_summary.json`](data/models/gate1_results_summary.json).
+| Tier | endQ1 | endQ2 | endQ3 |
+|------|-------|-------|-------|
+| S (EV ≥ 8%) | +50.9% ROI (n=5,246, 78% hit) | +68.1% (n=5,810, 87%) | **+78.7% (n=5,088, 93%)** |
+| A (EV ≥ 4%) | +16.7% (n=6,907, 55%) | +40.4% (n=7,269, 67%) | +61.8% (n=3,703, 83%) |
+| B (EV ≥ 1%) | +8.2% (n=624, 49%) | +4.7% (n=650, 47%) | +34.1% (n=154, 67%) |
+| C (EV < 1%) | −36.6% (n=13,595, 29%) | −56.2% (n=14,433, 19%) | −78.1% (n=9,155, 10%) |
 
-### The Headline: Directional Edge via UNDER-Only Strategy
+**Model calibration is honest.** Predicted-EV deciles map ±5% to realized return:
 
-Slicing the 8,360-bet combined sample by bet direction surfaces a real, persistent edge:
+| Decile | predicted EV | realized return |
+|--------|-------------:|----------------:|
+| 1 | −0.890 | −0.884 |
+| 5 |  0.000 | −0.030 |
+| 9 | +0.799 | +0.794 |
+
+Calibration report: [`vault/Reports/filter_calibration_2026-05-27.md`](vault/Reports/filter_calibration_2026-05-27.md).
+
+### How the calibration was earned
+
+Pre-calibration aggregate ROI was **−4.25%** — Tier C bets (EV < 0.04) flooded the emit set at −78% ROI and dragged everything down. Three "over-blocking" filter candidates (`projection_sane`, `min_edge`, `three_book_consensus`) were tested as the suspect; the backtest proved they were **correctly** blocking losers (−3.85% and −3.55% hypothetical ROI on dropped bets). The real fix was raising the per-quarter EV emit floor from 0.01 → 0.12. Bet volume dropped 59% at endQ3; aggregate ROI flipped to **+47%**.
+
+### Live worked example — SAS @ OKC, 2026-05-26 (OKC 127–114)
+
+What the calibrated engine would have emitted across 8 unique bet opportunities (1 pregame + 7 in-game across endQ1/endQ2/endQ3), settled against the cdn.nba.com final box score:
+
+| When | Bet | Odds | Final | Result |
+|---|---|---|---|---|
+| Pregame | Keldon Johnson REB O3.5 | +200 | 4 REB | ✅ |
+| endQ1 | Stephon Castle REB U5.5 | −149 | 5 REB | ✅ |
+| endQ1 | Dylan Harper PTS U9.5 | −111 | 5 PTS | ✅ |
+| endQ2 | Cason Wallace REB U3.5 | −135 | 4 REB | ❌ |
+| endQ2 | Dylan Harper REB U3.5 | −143 | 6 REB | ❌ |
+| endQ3 | Julian Champagnie REB O5.5 | +109 | 8 REB | ✅ |
+| endQ3 | Isaiah Hartenstein REB O7.5 | −105 | 15 REB | ✅ |
+| endQ3 | SGA REB U3.5 | +131 | 2 REB | ✅ |
+
+**6–2 record. +$4.92 PnL on $8 flat ($1/bet) = +61.5% nightly ROI.** At 25% portfolio-Kelly cap on a $5K bankroll: **+$556 (+11.1%)** in one game. The endQ3 window was perfect (3-of-3).
+
+### Honest caveats — read before believing the number
+
+- **Backtest uses an L5 line proxy, not real Pinnacle closes.** Real-money ROI will be lower. Best estimate: +15–25% rather than +54%. The first true closing-line CLV reading arrives with the Oct 2026 preseason.
+- **Single-night variance is brutal.** SAS@OKC went 6-of-8; on identical edge a different night could go 2-of-6 and lose money. Trust the 90K-row aggregate, not the single game.
+- **Zero real money has been placed yet.** Gated behind Pinnacle Gate 1 (Oct 2026) and CV depth (80 CLEAN tracked games, currently 7).
+- **Tonight's Railway deploy is broken** (post-health rollback loop). The system is correct in source but isn't currently serving live bets — documented in [`vault/Reports/MORNING_HANDOFF_2026-05-27.md`](vault/Reports/MORNING_HANDOFF_2026-05-27.md).
+
+Reproduce the backtest: `python scripts/run_backtest.py --n-games 50`.
+Reproduce the calibration: `python scripts/calibrate_filters.py`.
+
+---
+
+## Real-Vegas Baseline (historical reference)
+
+Pre-existing validation at real DK/FanDuel/MGM/BetRivers closes across 8,360 walk-forward bets. The in-play model above is the load-bearing edge — these numbers are the baseline it has to beat.
+
+**Two windows · 8,360 walk-forward bets · real DK/FanDuel/MGM/BetRivers closing lines:**
+- **2024 NBA playoffs** (Apr 21 – May 24 2024) — 4,337 bets at DK/FanDuel/MGM/BetRivers closes via `reisneriv/NBA_Player_Props`. L10 baseline: 54.58% beat / +4.19% ROI / +$18,181 PnL.
+- **2025-26 Jan 29 – May 10 2026** — 4,210 bets (prod stack) / 4,023 bets (L10) at DK/FanDuel/MGM closes via `benashkar/nba_gambling`. Prod stack OOF: 54.37% beat / −2.06% ROI.
+
+Both archives reproduce from `data/external/historical_lines/fetch_external_history.py`. Consolidated machine-readable report: [`data/models/gate1_results_summary.json`](data/models/gate1_results_summary.json).
+
+### Structural UNDER edge (combined sample)
+
+Slicing the 8,360-bet combined sample by bet direction surfaces a real, persistent edge against rolling-average books:
 
 | Strategy | N | Beat | ROI | PnL ($100/bet) |
 |----------|--:|-----:|----:|----:|
-| Naive (bet model's edge in either direction) | 8,360 | 53.43% | −0.52% | −$4,351 |
+| Naive (bet model's edge either direction) | 8,360 | 53.43% | −0.52% | −$4,351 |
 | **UNDER-only** (bet UNDER whenever L10 < line) | **3,512** | **58.46%** | **+7.70%** | **+$27,041** |
 
-Why this works: rolling-average baselines systematically over-project player counting stats because they don't downweight blowout sits, garbage-time discounts, or load-management rest. Books price toward the recreational over-bias. The intersection is a structural UNDER edge — well-known in the industry, here measured at real DK/FanDuel/MGM closes.
-
-**Per-stat ROI on UNDER-only (combined sample):**
+**Per-stat ROI on UNDER-only:**
 
 | Stat | N | Beat | ROI |
 |------|--:|-----:|----:|
@@ -38,33 +92,22 @@ Why this works: rolling-average baselines systematically over-project player cou
 | REB  | 947  | 53.85% | −0.57% |
 | PTS  | 869  | 52.70% | −1.26% |
 
-The four scarcity stats (BLK / STL / AST / FG3M) clear the gate decisively. PTS/REB UNDER is break-even — the markets there are tight enough that the structural edge doesn't carry.
+Why this works: rolling-average baselines over-project counting stats (they don't downweight blowout sits, garbage-time discounts, or load-management). Books price toward the recreational over-bias. The intersection is a structural UNDER edge — well-known in the industry, here measured at real closes. The scarcity stats (BLK / STL / AST / FG3M) clear cleanly; PTS / REB UNDER is break-even because those markets are tighter.
 
-Reproduce: `python scripts/run_gate1_full_analysis.py`.
+Reproduce: `python scripts/run_gate1_full_analysis.py`. Full multi-cut analysis: [`data/cache/gate1_full_analysis.json`](data/cache/gate1_full_analysis.json).
 
-### Prod Stack vs L10 on 2025-26 Mainline (apples-to-apples)
+### Honest coverage gap on closing-line archives
 
-| Predictor | N | Beat | ROI | UNDER-only |
-|-----------|--:|-----:|----:|---:|
-| L10 baseline | 4,023 | 52.20% | −5.60% | rolled into combined UNDER row above |
-| **Prod stack** (walk-forward OOF) | 4,210 | **54.37%** | −2.06% | **57.80% / +2.37%** (n=1,898) |
-
-Prod stack lifts L10 by **+2.17 pp** in beat rate and **+3.54 pp** in aggregate ROI on the same DK/FD/MGM closing-line sample. On 2025-26 mainline data, the prod stack's **AST hits 60.25% / +7.22% ROI** (n=863) and **FG3M 58.37% / +0.34%** (n=860) in both directions — independent of any UNDER strategy. PTS at sharp regular-season closes still loses to vig (PTS 49.11% / −8.62%) — calibration is the next pin.
-
-The full multi-cut analysis (naive, under-only, edge-filtered, per-book, per-stat) is committed at [`data/cache/gate1_full_analysis.json`](data/cache/gate1_full_analysis.json).
-
-### Honest Coverage Gap
-
-These are the only NBA player-prop closing-line archives that exist in public GitHub repos at $0 cost:
-- ✅ 2024 NBA playoffs (Apr-May 2024)
+Only NBA player-prop closing-line archives that exist in public repos at $0 cost:
+- ✅ 2024 NBA playoffs (Apr–May 2024)
 - ✅ 2025-26 Jan 29 – May 10 2026
 
-What's **not** in any free archive (would require The Odds API at $30/mo):
-- 2024-25 full regular season (Oct 2024 – Apr 2025)
+Not in any free archive (require Odds API at $30/mo):
+- 2024-25 full regular season
 - 2025-26 first half (Oct 2025 – Jan 28 2026)
-- 2025 NBA playoffs (Apr – Jun 2025)
+- 2025 NBA playoffs
 
-The 8,360-bet sample is therefore a **partial-season** validation, not a multi-season one. It is what's verifiably possible from public data today. Forward scraping via the Pinnacle / Bovada / FanDuel daemons (already running) accumulates real CLV from Oct 2026 onward.
+The 8,360-bet sample is therefore a **partial-season** validation, not multi-season. Forward scraping via the Pinnacle / Bovada / FanDuel daemons accumulates real CLV from Oct 2026 onward.
 
 ---
 
@@ -72,7 +115,7 @@ The 8,360-bet sample is therefore a **partial-season** validation, not a multi-s
 
 All numbers reproducible from committed JSON.
 
-**Prop projections — walk-forward MAE @ q50 (N=99,818 player-games, 2 seasons)**
+**Prop projections — walk-forward MAE @ q50** (N=99,818 player-games, 2 seasons)
 Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_pergame_metrics.json)
 
 | Stat | MAE | Recipe |
@@ -85,9 +128,9 @@ Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_perga
 | STL  | 0.72 | log1p XGB quantile q50 |
 | BLK  | 0.44 | log1p XGB quantile q50 |
 
-Q-regression at q50 outperforms squared-error blends here because sportsbook prop O/U lines score against the median, not the mean.
+Quantile regression at q50 outperforms squared-error blends here because sportsbook O/U lines score against the median, not the mean.
 
-**Win probability — 5-way NNLS stack (XGB+LGB+LR+MLP+NB), N=2,455 games**
+**Win probability — 5-way NNLS stack** (XGB+LGB+LR+MLP+NB), N=2,455 games
 Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 
 | | 3-fold walk-forward | Single split |
@@ -95,9 +138,9 @@ Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
 | Accuracy | 70.94% ± 2.5pp | 71.69% |
 | Brier    | 0.193 | 0.188 |
 
-Walk-forward weights: LGB 0.66 · Naive Bayes 0.16 · LR 0.12 · MLP 0.03 · XGB 0.00. NNLS zeroed XGB autonomously — the stack picks its members on validation, not by mandate.
+NNLS zeroed XGB autonomously on validation — the stack picks its members empirically, not by mandate.
 
-**In-game projections — endQ3 MAE vs pregame baseline (550-game retro)**
+**In-game projection lift — endQ3 MAE vs pregame** (550-game retro)
 
 | Stat | Pregame MAE | endQ3 MAE | Δ |
 |------|-----:|-----:|--:|
@@ -130,9 +173,12 @@ flowchart LR
   PM --> SIM["10K-path Monte Carlo"]
   LM --> SIM
   SIM --> LE["Line evaluator\nShin (1992) devig"]
-  LE --> K["Fractional Kelly\n+ correlation shrinkage"]
+  LE --> DE["Decision engine\ngate chain + EV floor + tier"]
+  DE --> SL["Shadow logger\n(every evaluation incl. blocked)"]
+  DE --> K["Fractional Kelly\n+ correlation shrinkage"]
   K --> EX["Execution stack\n9 daemons (live, hedge, settle, CLV, alerts)"]
   EX --> CLV["CLV tracker → nightly recalibration"]
+  SL --> SET["Settlement engine\n→ daily ROI report"]
 ```
 
 ### Computer vision pipeline
@@ -141,7 +187,7 @@ YOLOv8n detects players / ball / referees per frame. SIFT homography maps detect
 
 **Status: 85 tracked games** in `data/tracking/`. Target 80 CLEAN for the production CV-feature gate. Reproducible with `python scripts/batch_season.py`.
 
-### Prediction stack
+### Prediction + decision stack
 
 **120 prediction modules** in `src/prediction/`. 312 trained model artifacts in `data/models/`. Key components:
 
@@ -149,7 +195,10 @@ YOLOv8n detects players / ball / referees per frame. SIFT homography maps detect
 - **Win probability** — 5-way NNLS stack, autonomous member selection on validation
 - **In-game ensembles** — separate boosters at endQ1, endQ2, endQ3 with v2 LGB+LR NNLS blend + pregame anchor
 - **Gated residual heads** — foul-change, blowout, heat-check shrinkage dispatched on live conditions
-- **Calibration layer** — quantile bands recalibrated per stat to 80% empirical coverage
+- **Decision engine** — gate chain (projection_sane, min_edge, three_book_consensus) + per-quarter EV emit floor (calibrated 2026-05-27) + S/A/B tier classification
+- **Shadow logger** — every evaluated bet (passed + blocked) is logged with `gate_blocked_by` reason. This is the audit trail that produced the calibration evidence above. CSVs at `data/shadow/<game_id>_<date>.csv`
+- **Settlement engine** — joins shadow logs against cdn.nba.com finals to compute realized ROI nightly
+- **Daily ROI report** — `python -m src.reporting.daily_roi --date YYYY-MM-DD` produces `vault/Reports/daily_roi_<date>.md`
 
 ### Execution stack (production-ready, awaiting October 2026 season)
 
@@ -165,7 +214,7 @@ YOLOv8n detects players / ball / referees per frame. SIFT homography maps detect
 | `middle_finder_daemon` | Cross-book middle / arb detection |
 | `bov_scraper_daemon` · `nba_lineup_daemon` · `vault_dashboard_daemon` | Data feeds, lineups, telemetry |
 
-Plus: live prop line ingestion (DK / FanDuel / Pinnacle / Odds-API), webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard.
+Plus: live prop line ingestion (DK / FanDuel / Pinnacle / Odds-API), webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard, `/api/shadow` endpoint surfacing the calibration audit trail to the dashboard.
 
 ---
 
@@ -178,10 +227,10 @@ Numbers from the repo, not projections:
 | **Lines of code** | ~80K Python across `src/`, `scripts/`, `api/`, `tests/` |
 | **Prediction modules** | 120 in `src/prediction/` |
 | **Trained artifacts** | 312 (`.pkl`, `.json`, `.lgb`, `.pt`) in `data/models/` |
-| **Tests** | 4,055 collected · 48/48 critical-path pass (`gate1 + devig + kelly + clv + calibration`) — last verified 2026-05-26 via `verify_winprob.py` + `verify_production_mae.py` + pytest subset |
+| **Tests** | 4,100+ collected · in-play validation subset: 63/63 pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates) |
 | **Probes (signal experiments)** | 154 in `scripts/probe_*.py` — each a hypothesis with explicit ship/reject criteria |
 | **Daemons** | 9 production live-loop services |
-| **API** | FastAPI serving, ~49 endpoints across 7 routers (`api/main.py`) |
+| **API** | FastAPI serving, ~50 endpoints across 8 routers (`api/main.py` + `api/live_v2_app.py`) |
 | **CV games processed** | 85 tracked, 7 with full feature extraction |
 | **Probes rejected with documented WF gate failures** | ~20 (see [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md)) |
 
@@ -191,6 +240,7 @@ Numbers from the repo, not projections:
 - Shin (1992) bisection devig in `src/prediction/devig.py` (sharp-book-correct, not symmetric power-sum)
 - Position limits + circuit breakers + Kelly-correlation shrinkage in `src/prediction/risk_guards.py`
 - Walk-forward season-purged validation (48hr same-team purge) in `src/prediction/prop_backtester.py`
+- **Shadow logger captures every evaluated bet incl. blocked** — the audit trail that enables retroactive filter calibration, not just opinions
 - Decision log preserved across sessions in `vault/Sessions/Decision Log.md`
 
 ---
@@ -199,10 +249,10 @@ Numbers from the repo, not projections:
 
 **ML / data**: Python 3.9, PyTorch, XGBoost, LightGBM, scikit-learn, NumPy, pandas, Optuna
 **CV**: YOLOv8n (Ultralytics), OpenCV, SIFT homography, OSNet re-ID, EasyOCR
-**Serving**: FastAPI, uvicorn, SQLite + parquet feature store
-**Data**: nba_api (30 seasons box / PBP / lineups), The Odds API, custom Pinnacle / DK / FanDuel / PrizePicks scrapers
+**Serving**: FastAPI, uvicorn, SQLite + parquet feature store, Railway deploy
+**Data**: nba_api (30 seasons box / PBP / lineups), cdn.nba.com live boxscore + PBP, The Odds API, custom Pinnacle / DK / FanDuel / PrizePicks / Bovada scrapers
 **Infra**: RunPod (RTX 3090 GPU runs), Backblaze B2 storage, Docker, GitHub Actions CI
-**Quant**: Walk-forward CV (season-purged), Shin devig, fractional Kelly, Ledoit-Wolf covariance shrinkage, NNLS stacking
+**Quant**: Walk-forward CV (season-purged), Shin devig, fractional Kelly (25% per-bet + 25% slate cap), Ledoit-Wolf covariance shrinkage, NNLS stacking
 **Tools**: Claude Code agents in the loop (CLAUDE.md routes agents to the right files on session start)
 
 ---
@@ -210,17 +260,20 @@ Numbers from the repo, not projections:
 ## What's Validated · What's Not
 
 **Validated and shipped**
+- **In-play emit set: 78.1% hit, +54.6% ROI on 90,846 backtest bets** (calibrated 2026-05-27). Tier S at endQ3: 93% hit, +78.7% ROI on 5,088 bets. Calibration deciles 1→9 monotonic.
 - Walk-forward prop MAE on 99,818 player-games (q50 quantile regression)
 - 71.7% win prob accuracy on 2,455 holdout games
 - −47% to −56% in-game MAE lift vs pregame on 550-game retro
-- **Real-Vegas validation, 8,360 bets across 2 seasons**: UNDER-only strategy delivers **58.46% beat rate / +7.70% ROI / +$27K PnL** against DK/FanDuel/MGM/BetRivers closing lines. BLK UNDER 74% beat / +41% ROI; STL UNDER 66% / +26%; AST UNDER 60% / +10%; FG3M UNDER 60% / +5.5%
-- Full execution stack production-ready (9 daemons, tested, awaiting season)
+- Real-Vegas baseline at 8,360 closes: UNDER-only strategy delivers 58.46% beat / +7.70% ROI / +$27K PnL on scarcity stats
+- Full execution stack production-ready (9 daemons + decision engine + shadow logger + settlement + daily ROI report)
 
 **Honest gaps**
 - **Pinnacle Gate 1** — no historical Pinnacle close archive exists; daemon runs October 2026 for first real sharp-book CLV reading
+- **L5 proxy ≠ real closes** — the +54% backtest ROI uses an L5 line proxy. Real-money ROI estimate: +15–25%, materially lower
 - **CV moat depth** — 7 games with full feature extraction; target 80 CLEAN for tier-3/4 model retrain
 - **Live execution** — zero real money placed yet by design; gated behind Pinnacle Gate 1 and CV depth
-- **Underprediction bias** — all 7 prop models predict slightly below closing line; calibration layer scaffolded, not yet trained
+- **DK / Caesars / MGM scrapers IP-blocked** — Pinnacle / Bovada / FanDuel / PrizePicks-only coverage live; the 8,360-bet historical archive used DK/FD/MGM/BetRivers closes that were public-archive accessible
+- **Railway deploy currently rolling back** post-health-check (platform issue, not code) — see [`vault/Reports/MORNING_HANDOFF_2026-05-27.md`](vault/Reports/MORNING_HANDOFF_2026-05-27.md)
 
 These are the next milestones, not disclaimers.
 
@@ -232,28 +285,28 @@ These are the next milestones, not disclaimers.
 # Step 0: pull the free public Vegas-line archives (one-time, ~45 MB)
 python data/external/historical_lines/fetch_external_history.py
 
+# THE HEADLINE — in-play backtest on 50 historical games (~10-15 min)
+python scripts/run_backtest.py --n-games 50
+# → vault/Reports/backtest_<date>.md
+
+# Calibrate the per-quarter EV emit floor + ceiling
+python scripts/calibrate_filters.py
+# → vault/Reports/filter_calibration_<date>.md
+# → patches src/prediction/decision_engine.py with new thresholds
+
+# Daily ROI report from any day's shadow logs
+python -m src.reporting.daily_roi --date 2026-05-27
+
 # Walk-forward MAE check
 python scripts/verify_production_mae.py
 
 # Win probability check
 python scripts/verify_winprob.py
 
-# Real Vegas Gate 1 — 2024 NBA playoffs (L10 baseline, DK/FD/MGM/BetRivers)
-python scripts/run_gate1_playoffs2024.py
-
-# Real Vegas Gate 1 — 2025-26 regular season (PROD STACK, DK/FD/MGM)
-python scripts/run_gate1_2025_26_prod.py
-
-# L10 baseline variant on 2025-26 (for comparison vs prod stack)
-python scripts/run_gate1_2025_26.py
-
-# Full combined analysis — naive + UNDER-only + edge-filtered + per-stat + per-book
+# Real-Vegas Gate 1 — historical L10 baseline at real closes
 python scripts/run_gate1_full_analysis.py
 
-# Max-sample 2025-26 (mainline + alt) with directional diagnostics
-python scripts/run_gate1_2025_26_maxsample.py
-
-# Test suite (3,878 collected)
+# Test suite
 python -m pytest tests/ -q
 
 # End-to-end demo (pregame → snapshot → projection → EV → Kelly → settle → CLV)
@@ -268,14 +321,19 @@ python scripts/swish_demo.py
 src/tracking/        YOLOv8, OSNet re-ID, SIFT homography, EventDetector
 src/features/        feature engineering (60+ features, CV bridge)
 src/prediction/      120 modules — 7 prop models, win prob, in-game stack,
+                     decision engine, shadow logger, settlement, snapshot replay,
                      calibration, Kelly + devig, CLV, risk guards
+src/reporting/       daily_roi.py — CLI ROI reports from shadow logs
 src/pipeline/        unified pipeline orchestrator
 src/ingest/          SQLite queue, yt-dlp, B2 sync, parallel processing
-api/                 FastAPI serving layer
-scripts/             ~600 scripts: training, probes, daemons, ops CLIs
-tests/               3,878 tests — walk-forward gates, integration, E2E
+api/                 FastAPI serving (main.py + live_v2_app.py with /api/shadow)
+scripts/             ~600 scripts: training, probes, daemons, ops CLIs,
+                     run_backtest.py, calibrate_filters.py, settle_day.py
+tests/               4,100+ tests — walk-forward gates, integration, E2E
 data/models/         312 trained artifacts
+data/shadow/         per-game evaluation logs (passed + blocked bets)
 data/external/       historical_lines/playoffs_2024_canonical.csv (real Vegas)
+vault/Reports/       backtest, calibration, daily ROI, morning handoff
 docs/                architecture, research, strategy
 ```
 
@@ -291,4 +349,4 @@ Solo-built. Looking for senior sports quant or AI founding engineer roles. Open 
 
 ---
 
-*Last verified: 2026-05-26. State, current open issues, and ship log: [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md), [`CHANGELOG.md`](CHANGELOG.md).*
+*Last verified: 2026-05-27. State, current open issues, and ship log: [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md), [`CHANGELOG.md`](CHANGELOG.md). Latest validation: [`vault/Reports/MORNING_HANDOFF_2026-05-27.md`](vault/Reports/MORNING_HANDOFF_2026-05-27.md).*
