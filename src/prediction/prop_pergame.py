@@ -3660,12 +3660,16 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     if stat in _USE_Q50_STATS:
         q50 = _load_q50_model(stat, model_dir)
         if q50 is not None:
-            # Wave-3 schema versioning: slice to the artifact's frozen column
-            # list (feature_columns_for reads _meta.json when present) so
-            # 85-col and 109-col artifacts can coexist cleanly in A/B tests.
+            # Wave-3 / Iter-7 schema versioning: slice to the artifact's frozen
+            # column list. When the model's n_features_in_ is smaller than
+            # feature_columns_for (artifacts trained before Iter-2/3 have 85
+            # cols; current canonical is 129), use only the first n_features_in_
+            # columns so legacy artifacts coexist with the extended schema.
             cols = feature_columns_for(stat, model_dir)
-            if getattr(q50, "n_features_in_", None) not in (None, len(cols)):
-                return None
+            q50_n = getattr(q50, "n_features_in_", None)
+            if q50_n is not None and q50_n != len(cols):
+                # Truncate cols to the model's expected count (first N cols).
+                cols = cols[:q50_n]
             X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
             pred_t = float(q50.predict(X)[0])
             # Inverse-transform back to raw-count scale (same as training inv).
@@ -3688,17 +3692,21 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     models = load_pergame_model(stat, model_dir)
     if not models:
         return None
-    # Wave-3 schema versioning: slice to the artifact's frozen column list.
-    # feature_columns_for reads _meta.json when present; falls back to the
-    # live feature_columns() so existing callers are unaffected.
+    # Wave-3 / Iter-7 schema versioning: slice to the artifact's frozen column
+    # list. When any model's n_features_in_ is smaller than feature_columns_for
+    # (artifacts trained before Iter-2/3 have 85 cols; current canonical is
+    # 129), use only the first N columns of the canonical list. The MLP scaler
+    # is keyed by (scaler, model) tuple — check the model inside.
     cols = feature_columns_for(stat, model_dir)
-    expected_n = len(cols)
-    # Guard: model n_features_in_ must match the frozen column count.
+    _min_n: Optional[int] = None
     for m in models:
-        target = m[1] if isinstance(m, tuple) else m  # MLP entries are (scaler, model)
+        target = m[1] if isinstance(m, tuple) else m
         n_feats = getattr(target, "n_features_in_", None)
-        if n_feats is not None and n_feats != expected_n:
-            return None
+        if n_feats is not None:
+            if _min_n is None or n_feats < _min_n:
+                _min_n = n_feats
+    if _min_n is not None and _min_n != len(cols):
+        cols = cols[:_min_n]
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
 
     # When the stat was trained with log1p or sqrt target, each base learner
@@ -3724,7 +3732,7 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
             if isinstance(m, tuple):
                 scaler, mlp_model = m
                 if mlp_pred is None:
-                    mlp_pred = _inv_pred(float(mlp_model.predict(scaler.transform(X))[0]))
+                    mlp_pred = _inv_pred(float(mlp_model.predict(_safe_mlp_scaler_transform(scaler, X))[0]))
                 continue
             cls = type(m).__name__.lower()
             if "xgb" in cls and xgb_pred is None:
@@ -3749,7 +3757,7 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
         for m in models:
             if isinstance(m, tuple):
                 scaler, mlp_model = m
-                preds.append(_inv_pred(float(mlp_model.predict(scaler.transform(X))[0])))
+                preds.append(_inv_pred(float(mlp_model.predict(_safe_mlp_scaler_transform(scaler, X))[0])))
             else:
                 preds.append(_inv_pred(float(m.predict(X)[0])))
         blend = sum(preds) / len(preds) if preds else 0.0
@@ -3769,6 +3777,156 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     # R3-F pregame residual correction — applied last, on raw-count blend.
     blend = apply_residual_correction(blend, feature_row, stat, model_dir=model_dir)
     return round(blend, 2)
+
+
+# ── Iter-7: unified train/inference feature injection ────────────────────────
+# Fixes the root-cause divergence diagnosed in Iter-7: the 39 columns added
+# in Iterations 2-3 (defender matchup 7, player profile 12, officials rolling 5,
+# foul features 5, DNP team 4, adv stats splits 6) were populated in TRAINING
+# via build_pergame_dataset but were constant-zero at inference because
+# build_prediction_row and _build_asof_row in backtest scripts didn't call the
+# same loaders. This helper is the single authoritative injection point that
+# both paths now use.
+
+_ITER23_FEATURE_KEYS: Tuple[str, ...] = (
+    *_DMATCH_KEYS,            # 7 keys — (player_id, game_date)
+    *_PROF_KEYS,              # 12 keys — (player_id)
+    *_OFFICIALS_ROLLING_KEYS, # 5 keys — (game_date, team_abbrev)
+    *_FOUL_FEATURE_KEYS,      # 5 keys — (player_id, game_date)
+    *_DNP_TEAM_KEYS,          # 4 keys — (game_date, team_abbrev)
+    *_ADV_SPLITS_KEYS,        # 6 keys — (player_id, game_date)
+)
+_ITER23_DEFAULTS: Dict[str, float] = {
+    **_DMATCH_DEFAULTS,
+    **_PROF_DEFAULTS,
+    **_OFFICIALS_ROLLING_DEFAULTS,
+    **_FOUL_FEATURE_DEFAULTS,
+    **_DNP_TEAM_DEFAULTS,
+    **_ADV_SPLITS_DEFAULTS,
+}
+
+
+def _inject_iter23_features(
+    row: Dict[str, float],
+    player_id: int,
+    game_date,
+    team_abbrev: str,
+) -> Dict[str, float]:
+    """Inject the 39 Iter-2/3 features into a prediction feature row.
+
+    Idempotent: calling twice produces the same result (lookups are pure).
+    NaN-safe: every key is guaranteed present; missing parquet rows fall
+    back to 0.0 defaults so XGB/LGB handle them natively. The MLP scaler
+    must still be protected via _safe_mlp_scaler_transform (separate fix).
+
+    Args:
+        row: existing feature dict (mutated in-place AND returned).
+        player_id: NBA player id (int).
+        game_date: datetime or date object for the game being predicted.
+        team_abbrev: the player's team abbreviation (e.g. 'LAL').
+
+    Returns:
+        The mutated row dict (same object as input).
+    """
+    try:
+        row.update(_get_defender_matchup().features(int(player_id), game_date))
+    except Exception:
+        row.update(_DMATCH_DEFAULTS)
+    try:
+        row.update(_get_player_profiles().features(int(player_id)))
+    except Exception:
+        row.update(_PROF_DEFAULTS)
+    try:
+        row.update(_get_officials_rolling().features(game_date, str(team_abbrev)))
+    except Exception:
+        row.update(_OFFICIALS_ROLLING_DEFAULTS)
+    try:
+        row.update(_get_foul_features().features(int(player_id), game_date))
+    except Exception:
+        row.update(_FOUL_FEATURE_DEFAULTS)
+    try:
+        row.update(_get_dnp_team_features().features(game_date, str(team_abbrev)))
+    except Exception:
+        row.update(_DNP_TEAM_DEFAULTS)
+    try:
+        row.update(_get_adv_stats_splits().features(int(player_id), game_date))
+    except Exception:
+        row.update(_ADV_SPLITS_DEFAULTS)
+    return row
+
+
+# ── Iter-7: safe MLP scaler transform ────────────────────────────────────────
+# Fixes the MLP OOD bug: when inference receives 0.0 for a feature whose
+# training mean=78.5, std=3.17, StandardScaler maps it to -24.8 SD — garbage.
+# This happens for the 39 Iter-2/3 cols when the parquets don't cover a row.
+# Strategy:
+#   1. Replace NaN with scaler.mean_ (proper sklearn imputation).
+#   2. When >=80% of the 39 Iter-2/3 cols are exactly 0.0, treat them all as
+#      "unavailable" and impute to mean (overrides the 0→-25 SD problem).
+# Only the 39 keys from _ITER23_FEATURE_KEYS are imputed this way — the rest
+# of the feature columns can legitimately be 0.0 (e.g. is_home=0).
+
+def _safe_mlp_scaler_transform(scaler, X):
+    """NaN-safe StandardScaler.transform with OOD clamping + Iter-2/3 zero-imputation.
+
+    Parameters
+    ----------
+    scaler : fitted sklearn StandardScaler
+    X      : np.ndarray of shape (1, n_features) — single prediction row
+
+    Returns
+    -------
+    X_scaled : np.ndarray of shape (1, n_features) — scaled row
+
+    Three protections applied in order:
+      1. Replace NaN with scaler.mean_ (standard imputation).
+      2. Iter-2/3 zero-imputation: when >=80% of the 39 new Iter-2/3 cols are
+         0.0, impute all 39 to scaler.mean_ (parquets not populated for this row).
+      3. OOD value clamp: any feature that would produce |z| > 6 after scaling
+         is replaced by scaler.mean_ before transform. Guards against bbref_extra
+         scale mismatches (Wave-2b drb_pct/trb_pct trained at fraction scale but
+         fed at percentage scale — z≈191 without the clamp).
+    """
+    import numpy as np  # noqa: PLC0415
+
+    X_work = X.copy().astype(float)
+
+    # Step 1: replace NaN with scaler.mean_.
+    nan_mask = np.isnan(X_work)
+    if nan_mask.any():
+        X_work[nan_mask] = np.take(scaler.mean_, np.where(nan_mask)[1])
+
+    # Step 2: Iter-2/3 zero-imputation heuristic.
+    try:
+        all_cols = feature_columns()
+        iter23_indices = [
+            i for i, c in enumerate(all_cols)
+            if c in set(_ITER23_FEATURE_KEYS)
+        ]
+        if iter23_indices and X_work.shape[1] >= max(iter23_indices) + 1:
+            vals = X_work[0, iter23_indices]
+            zero_frac = float(np.sum(vals == 0.0)) / len(iter23_indices)
+            if zero_frac >= 0.80:
+                for idx in iter23_indices:
+                    X_work[0, idx] = scaler.mean_[idx]
+    except Exception:
+        pass
+
+    # Step 3: OOD value clamp — prevent extreme z-scores from scale mismatches.
+    # Any column that would produce |z| > 6 is treated as "out of distribution"
+    # and replaced with scaler.mean_ (z=0 after transform). This protects
+    # against Wave-2b bbref_extra columns that were trained at fraction scale
+    # but may be fed at percentage scale (e.g. drb_pct 0.017 vs 11.0).
+    try:
+        n = min(X_work.shape[1], len(scaler.mean_))
+        for i in range(n):
+            z = abs(X_work[0, i] - scaler.mean_[i]) / (scaler.scale_[i] + 1e-9)
+            if z > 6.0:
+                X_work[0, i] = scaler.mean_[i]
+    except Exception:
+        pass
+
+    return scaler.transform(X_work)
 
 
 # ── live prediction ───────────────────────────────────────────────────────────
@@ -3874,6 +4032,14 @@ def build_prediction_row(
     except Exception:
         feats["home_spread"] = None
         feats["total"] = None
+    # Iter-7: inject the 39 Iter-2/3 features that were missing from this
+    # path (present in training via build_pergame_dataset but zero at inference).
+    try:
+        last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
+        _team_abbrev_inj = last_matchup.split()[0] if last_matchup.split() else ""
+        _inject_iter23_features(feats, int(player_id), factor_date, _team_abbrev_inj)
+    except Exception:
+        feats.update(_ITER23_DEFAULTS)
     return feats
 
 
