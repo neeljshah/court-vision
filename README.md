@@ -8,13 +8,13 @@ An end-to-end NBA prediction and betting system built by one engineer over 12 mo
 
 ## Real-Vegas Validation
 
-**Two seasons · 8,360 walk-forward bets · real DK/FanDuel/MGM/BetRivers closing lines.**
+**Two windows · 8,360 walk-forward bets · real DK/FanDuel/MGM/BetRivers closing lines.**
 
 Data windows (full public archive coverage available):
-- 2024 NBA playoffs (Apr 21 – May 24 2024) — DK/FanDuel/MGM/BetRivers via reisneriv/NBA_Player_Props
-- 2025-26 Jan 29 – May 10 2026 — DK/FanDuel/MGM via benashkar/nba_gambling
+- **2024 NBA playoffs** (Apr 21 – May 24 2024) — 4,337 bets at DK/FanDuel/MGM/BetRivers closes via `reisneriv/NBA_Player_Props`. L10 baseline: **54.58% beat / +4.19% ROI / +$18,181 PnL**.
+- **2025-26 Jan 29 – May 10 2026** — 4,210 bets (prod stack) / 4,023 bets (L10) at DK/FanDuel/MGM closes via `benashkar/nba_gambling`. Prod stack OOF: **54.37% beat / −2.06% ROI**.
 
-Both archives are committed to the repo (fetched by `data/external/historical_lines/fetch_external_history.py`) so every result reproduces from a fresh clone.
+Both archives are committed to the repo (fetched by `data/external/historical_lines/fetch_external_history.py`) so every result reproduces from a fresh clone. Consolidated machine-readable report: [`data/models/gate1_results_summary.json`](data/models/gate1_results_summary.json).
 
 ### The Headline: Directional Edge via UNDER-Only Strategy
 
@@ -42,14 +42,14 @@ The four scarcity stats (BLK / STL / AST / FG3M) clear the gate decisively. PTS/
 
 Reproduce: `python scripts/run_gate1_full_analysis.py`.
 
-### Prod Stack vs L10 on 2025-26 Mainline (apples-to-apples, 4,210 bets)
+### Prod Stack vs L10 on 2025-26 Mainline (apples-to-apples)
 
-| Predictor | Beat | ROI | UNDER-only ROI |
-|-----------|-----:|----:|---:|
-| L10 baseline | 52.20% | −5.60% | +5.x% (subset of above) |
-| **Prod stack** (walk-forward OOF) | **54.37%** | −2.06% | **+2.37%** |
+| Predictor | N | Beat | ROI | UNDER-only |
+|-----------|--:|-----:|----:|---:|
+| L10 baseline | 4,023 | 52.20% | −5.60% | rolled into combined UNDER row above |
+| **Prod stack** (walk-forward OOF) | 4,210 | **54.37%** | −2.06% | **57.80% / +2.37%** (n=1,898) |
 
-Prod stack lifts L10 by +2.17pp in beat rate and +3.54pp in aggregate ROI. On the apples-to-apples 2025-26 mainline data, the prod stack's **AST hits 60.25% / +7.22% ROI** and **FG3M 58.37% / +0.34%** in both directions — independent of the UNDER strategy.
+Prod stack lifts L10 by **+2.17 pp** in beat rate and **+3.54 pp** in aggregate ROI on the same DK/FD/MGM closing-line sample. On 2025-26 mainline data, the prod stack's **AST hits 60.25% / +7.22% ROI** (n=863) and **FG3M 58.37% / +0.34%** (n=860) in both directions — independent of any UNDER strategy. PTS at sharp regular-season closes still loses to vig (PTS 49.11% / −8.62%) — calibration is the next pin.
 
 The full multi-cut analysis (naive, under-only, edge-filtered, per-book, per-stat) is committed at [`data/cache/gate1_full_analysis.json`](data/cache/gate1_full_analysis.json).
 
@@ -178,12 +178,12 @@ Numbers from the repo, not projections:
 | **Lines of code** | ~80K Python across `src/`, `scripts/`, `api/`, `tests/` |
 | **Prediction modules** | 120 in `src/prediction/` |
 | **Trained artifacts** | 312 (`.pkl`, `.json`, `.lgb`, `.pt`) in `data/models/` |
-| **Tests** | 4,055 collected · 48/48 critical-path tests pass (`gate1 + devig + kelly + clv + calibration`) |
+| **Tests** | 4,055 collected · 48/48 critical-path pass (`gate1 + devig + kelly + clv + calibration`) — last verified 2026-05-26 via `verify_winprob.py` + `verify_production_mae.py` + pytest subset |
 | **Probes (signal experiments)** | 154 in `scripts/probe_*.py` — each a hypothesis with explicit ship/reject criteria |
 | **Daemons** | 9 production live-loop services |
-| **API** | FastAPI serving, 10+ endpoints (`api/main.py`) |
+| **API** | FastAPI serving, ~49 endpoints across 7 routers (`api/main.py`) |
 | **CV games processed** | 85 tracked, 7 with full feature extraction |
-| **Probes rejected with documented WF gate failures** | ~20 (see [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md) lines 101-102) |
+| **Probes rejected with documented WF gate failures** | ~20 (see [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md)) |
 
 **Discipline indicators:**
 - Every probe ships behind a walk-forward gate. If a model wins on single-split but fails 2/4 WF folds → rejected. Documented.
