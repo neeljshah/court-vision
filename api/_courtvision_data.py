@@ -231,10 +231,23 @@ def healthz_payload(root: Path, latest_slate_date: Optional[str]) -> dict:
         checks["redis_configured"] = False
 
     checks["courtvision_routes"] = [
-        "/tonight", "/parlays", "/share/{slug}",
+        "/tonight", "/parlays", "/share/{slug}", "/plus_ev", "/live",
         "/api/slate", "/api/parlays", "/api/bet/{bet_id}",
+        "/api/plus_ev", "/api/auto_parlay", "/sse/live_edges",
         "/share/{slug}/qr.svg", "/healthz",
     ]
+    # Diagnostic: are the data files + templates dir actually on disk?
+    templates_dir = root / "api" / "templates"
+    checks["templates_dir_exists"] = templates_dir.exists()
+    checks["templates_count"] = (
+        sum(1 for _ in templates_dir.glob("*.html")) if templates_dir.exists() else 0
+    )
+    qstats = root / "data" / "player_quarter_stats.parquet"
+    checks["player_quarter_stats_exists"] = qstats.exists()
+    pred_dir = root / "data" / "predictions"
+    checks["predictions_count"] = (
+        sum(1 for _ in pred_dir.glob("slate_*.csv")) if pred_dir.exists() else 0
+    )
     return out
 
 
