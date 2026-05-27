@@ -49,6 +49,112 @@ CACHE_DIR = os.path.join(PROJECT_DIR, "data", "cache")
 BETS_DIR = os.path.join(PROJECT_DIR, "data", "bets")
 HIST_LINES_DIR = os.path.join(CACHE_DIR, "historical_lines")
 DEFAULT_PROBE = os.path.join(CACHE_DIR, "probe_R15_tonight_slate_bets.json")
+DEFAULT_CONFIG_PATH = os.path.join(PROJECT_DIR, "config", "strategy_d.yaml")
+
+# iter-19: hardcoded iter-12 defaults — used when no config file is present.
+# These MUST reproduce the iter-16 ledger (6 bets / $600 exposure) byte-for-byte.
+_ITER12_DEFAULT_CONFIG: Dict = {
+    "threshold": {
+        "edge_min": 0.50,
+        "edge_operator": ">=",
+        "per_stat_overrides": {"blk": None, "fg3m": None, "stl": None},
+    },
+    "sizing": {
+        "mode": "flat",
+        "base_stake": 100,
+        "bucket_weights": {
+            "0.50-0.75": 200, "0.75-1.00": 100, "1.00-1.50": 50, "1.50+": 25,
+        },
+        "max_per_bet_pct": 5.0,
+        "max_per_game_pct": 6.0,
+    },
+    "bankroll": {"amount": 10000.0},
+    "stats_filter": ["blk", "fg3m", "stl"],
+}
+
+
+# --------------------------------------------------------------------------- #
+# Config loader (iter-19) — YAML preferred, JSON fallback, hardcoded default. #
+# --------------------------------------------------------------------------- #
+def load_config(path: Optional[str] = None) -> Dict:
+    """Load strategy_d.yaml (or .json fallback). Missing -> iter-12 defaults.
+
+    Tolerates PyYAML being absent: if `path` ends in .json (or the .yaml file
+    can't be parsed because yaml isn't installed), falls back to json.load.
+    """
+    target = path or DEFAULT_CONFIG_PATH
+    if not os.path.exists(target):
+        # Try .json sibling for the default
+        if path is None:
+            alt = DEFAULT_CONFIG_PATH.replace(".yaml", ".json")
+            if os.path.exists(alt):
+                target = alt
+            else:
+                return _ITER12_DEFAULT_CONFIG
+        else:
+            print(f"  [warn] --config {target} not found; using iter-12 defaults")
+            return _ITER12_DEFAULT_CONFIG
+
+    try:
+        if target.endswith(".json"):
+            with open(target, encoding="utf-8") as fh:
+                cfg = json.load(fh)
+        else:
+            try:
+                import yaml  # type: ignore
+            except ImportError:
+                print(f"  [warn] PyYAML not installed; using iter-12 defaults "
+                      f"(config {target} ignored)")
+                return _ITER12_DEFAULT_CONFIG
+            with open(target, encoding="utf-8") as fh:
+                cfg = yaml.safe_load(fh)
+    except (OSError, ValueError) as e:
+        print(f"  [warn] could not parse {target}: {e}; using iter-12 defaults")
+        return _ITER12_DEFAULT_CONFIG
+
+    # Shallow-merge into defaults so a partial config still works.
+    merged = {k: dict(v) if isinstance(v, dict) else list(v) if isinstance(v, list) else v
+              for k, v in _ITER12_DEFAULT_CONFIG.items()}
+    for k, v in (cfg or {}).items():
+        if isinstance(v, dict) and isinstance(merged.get(k), dict):
+            merged[k].update(v)
+        else:
+            merged[k] = v
+    return merged
+
+
+def _edge_passes(abs_edge: float, threshold: float, op: str) -> bool:
+    """Return True if abs_edge passes the threshold under operator op."""
+    if op == ">":
+        return abs_edge > threshold
+    return abs_edge >= threshold  # default / ">="
+
+
+def _stake_for_edge(abs_edge: float, sizing: Dict, bankroll: float) -> float:
+    """Compute stake for a single bet under the configured sizing mode."""
+    mode = (sizing.get("mode") or "flat").lower()
+    base = float(sizing.get("base_stake", 100))
+    if mode == "flat":
+        stake = base
+    elif mode == "inverse_bucket":
+        weights = sizing.get("bucket_weights", {}) or {}
+        # Map abs_edge -> bucket key
+        if abs_edge < 0.75:
+            key = "0.50-0.75"
+        elif abs_edge < 1.00:
+            key = "0.75-1.00"
+        elif abs_edge < 1.50:
+            key = "1.00-1.50"
+        else:
+            key = "1.50+"
+        stake = float(weights.get(key, base))
+    elif mode == "inverse_linear":
+        # Larger edge -> smaller stake; floor at base/4.
+        stake = max(base / 4.0, base / max(abs_edge, 0.5))
+    else:
+        stake = base
+    cap = bankroll * (float(sizing.get("max_per_bet_pct", 5.0)) / 100.0)
+    return round(min(stake, cap), 2)
 
 LEDGER_COLS = [
     "date", "game_id", "player", "stat", "line", "model_pred", "edge",
@@ -154,17 +260,34 @@ def build_recommendations(
     preds: Dict[Tuple[str, str], Dict],
     lines: List[Dict],
     stake: float,
+    config: Optional[Dict] = None,
 ) -> List[Dict]:
     """Filter to Strategy D stats; compute edge; dedupe to best odds per row.
 
+    iter-19: when `config` is provided, applies configurable threshold
+    (edge_min, edge_operator, per_stat_overrides), per-stat stats_filter,
+    sizing mode, and max_per_game_pct cap. When `config` is None the
+    legacy iter-12 behavior is used (flat stake, |edge|>=0.50).
+
     Returns a list sorted by |edge| descending.
     """
+    if config is None:
+        config = _ITER12_DEFAULT_CONFIG
+
+    thr = config.get("threshold", {}) or {}
+    edge_min = float(thr.get("edge_min", EDGE_THRESHOLD))
+    edge_op = str(thr.get("edge_operator", ">="))
+    per_stat = thr.get("per_stat_overrides", {}) or {}
+    stats_filter = set(config.get("stats_filter") or STRATEGY_D_STATS)
+    sizing = config.get("sizing", {}) or {}
+    bankroll = float((config.get("bankroll") or {}).get("amount", 10000.0))
+
     # Aggregate to one row per (player, stat, line) — keep the best odds
     # for the model-implied side (so the OOS strategy maps to the best
     # available book price, not the first one encountered).
     agg: Dict[Tuple[str, str, float], Dict] = {}
     for r in lines:
-        if r["stat"] not in STRATEGY_D_STATS:
+        if r["stat"] not in stats_filter:
             continue
         key = (r["player"].strip().lower(), r["stat"])
         p = preds.get(key)
@@ -172,12 +295,23 @@ def build_recommendations(
             continue
         model_pred = p["q50"]
         edge = model_pred - r["line"]
-        if abs(edge) < EDGE_THRESHOLD:
+        # Apply per-stat override if set (and non-null), else edge_min.
+        stat_thr_raw = per_stat.get(r["stat"])
+        stat_thr = float(stat_thr_raw) if stat_thr_raw is not None else edge_min
+        if not _edge_passes(abs(edge), stat_thr, edge_op):
             continue
         side = "OVER" if edge > 0 else "UNDER"
         # Only keep the book's row that matches our model-implied side
         if r["side"] != side:
             continue
+        # Compute stake: legacy `stake` arg wins for flat mode (iter-12 parity);
+        # config-driven sizing takes over only when mode != "flat" OR config
+        # bankroll/base differs from the legacy CLI-derived stake.
+        sizing_mode = (sizing.get("mode") or "flat").lower()
+        if sizing_mode == "flat":
+            stake_i = float(stake)
+        else:
+            stake_i = _stake_for_edge(abs(edge), sizing, bankroll)
         rec = {
             "player": r["player"],
             "team": r["team"] or p.get("team", ""),
@@ -188,7 +322,7 @@ def build_recommendations(
             "side": side,
             "odds": int(r["odds"]),
             "book": r["book"],
-            "stake": float(stake),
+            "stake": stake_i,
             "game": r.get("game", ""),
         }
         k2 = (rec["player"].lower(), rec["stat"], rec["line"])
@@ -200,6 +334,21 @@ def build_recommendations(
 
     recs = list(agg.values())
     recs.sort(key=lambda r: abs(r["edge"]), reverse=True)
+
+    # Apply per-game cap: sum stakes per game_id, scale down proportionally if exceeded.
+    max_pg_pct = float(sizing.get("max_per_game_pct", 6.0))
+    if max_pg_pct > 0 and recs:
+        cap_per_game = bankroll * (max_pg_pct / 100.0)
+        # Group by game identifier (fall back to "" -> single bucket).
+        by_game: Dict[str, List[Dict]] = {}
+        for r in recs:
+            by_game.setdefault(r.get("game", "") or "_default", []).append(r)
+        for gid, group in by_game.items():
+            total = sum(g["stake"] for g in group)
+            if total > cap_per_game and total > 0:
+                scale = cap_per_game / total
+                for g in group:
+                    g["stake"] = round(g["stake"] * scale, 2)
     return recs
 
 
@@ -365,7 +514,24 @@ def main(argv: Optional[List[str]] = None) -> int:
                          "True by default; the only mode tested.")
     ap.add_argument("--summary", action="store_true",
                     help="Print aggregate Strategy D stats across all prior ledgers and exit.")
+    ap.add_argument("--config", default=None,
+                    help="Path to strategy_d.yaml (or .json). Defaults to "
+                         "config/strategy_d.yaml; falls back to iter-12 "
+                         "hardcoded defaults if absent. Also honors env var "
+                         "STRATEGY_D_CONFIG.")
     args = ap.parse_args(argv)
+
+    # iter-19: load config — CLI > env > default path > hardcoded iter-12.
+    cfg_path = args.config or os.environ.get("STRATEGY_D_CONFIG")
+    config = load_config(cfg_path)
+    cfg_label = cfg_path or (DEFAULT_CONFIG_PATH
+                             if os.path.exists(DEFAULT_CONFIG_PATH)
+                             else "hardcoded iter-12 defaults")
+    print(f"  [config] source={cfg_label}  "
+          f"edge_min={config['threshold']['edge_min']}  "
+          f"op={config['threshold']['edge_operator']}  "
+          f"sizing={config['sizing']['mode']}  "
+          f"per_game_cap={config['sizing']['max_per_game_pct']}%")
 
     if args.summary:
         print_aggregate_summary()
@@ -397,7 +563,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         and (r["player"].strip().lower(), r["stat"]) not in preds
     )
 
-    recs = build_recommendations(preds, lines, stake=stake)
+    recs = build_recommendations(preds, lines, stake=stake, config=config)
     total_exposure = sum(r["stake"] for r in recs)
 
     # Determine game label for the header line.
