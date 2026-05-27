@@ -23,16 +23,16 @@ from src.prediction.prop_pergame import build_pergame_dataset
 
 
 CUTOFF_DATE = "2024-04-21"
-OOS_MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
+DEFAULT_OOS_MODEL_DIR = os.path.join(PROJECT_DIR, "data", "models", "oos_pre_playoffs")
 LGB_STATS = {"reb"}
 XGB_STATS = {"blk", "fg3m", "stl", "tov"}
 
 
-def _train_xgb(X_tr, X_val, yt_tr, yt_val, sw, params):
+def _train_xgb(X_tr, X_val, yt_tr, yt_val, sw, params, seed=42):
     import xgboost as xgb
     m = xgb.XGBRegressor(
         **{k: v for k, v in params.items() if k != "random_state"},
-        random_state=42, objective="reg:quantileerror", quantile_alpha=0.5,
+        random_state=seed, objective="reg:quantileerror", quantile_alpha=0.5,
         early_stopping_rounds=40, eval_metric="mae",
     )
     t0 = time.time()
@@ -40,7 +40,7 @@ def _train_xgb(X_tr, X_val, yt_tr, yt_val, sw, params):
     return m, time.time() - t0, int(getattr(m, "best_iteration", -1) or -1)
 
 
-def _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params):
+def _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params, seed=42):
     import lightgbm as lgb
     m = lgb.LGBMRegressor(
         n_estimators=params["n_estimators"], max_depth=params["max_depth"],
@@ -49,7 +49,7 @@ def _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params):
         colsample_bytree=params["colsample_bytree"],
         min_child_samples=max(20, params["min_child_weight"] * 2),
         reg_lambda=params["reg_lambda"], reg_alpha=params["reg_alpha"],
-        random_state=42, objective="quantile", alpha=0.5,
+        random_state=seed, objective="quantile", alpha=0.5,
         n_jobs=-1, verbosity=-1,
     )
     t0 = time.time()
@@ -58,15 +58,15 @@ def _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params):
     return m, time.time() - t0, int(getattr(m, "best_iteration_", -1) or -1)
 
 
-def _save_model(stat, model):
+def _save_model(stat, model, out_dir):
     if stat in LGB_STATS:
         import joblib
         fname = f"quantile_pergame_lgb_{stat}_q50.pkl"
-        path = os.path.join(OOS_MODEL_DIR, fname)
+        path = os.path.join(out_dir, fname)
         joblib.dump(model, path)
     else:
         fname = f"quantile_pergame_{stat}_q50.json"
-        path = os.path.join(OOS_MODEL_DIR, fname)
+        path = os.path.join(out_dir, fname)
         model.save_model(path)
     return fname, path
 
@@ -74,12 +74,27 @@ def _save_model(stat, model):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stat", required=True, choices=sorted(LGB_STATS | XGB_STATS))
+    ap.add_argument("--seed", type=int, default=42,
+                    help="Random seed for model training (default: 42)")
+    ap.add_argument("--out-dir", default=None,
+                    help="Override output directory. Default uses seed in name "
+                         "for non-42 seeds.")
     args = ap.parse_args()
     stat = args.stat
+    seed = args.seed
     method = "lgb" if stat in LGB_STATS else "xgb"
 
+    if args.out_dir:
+        out_dir = args.out_dir
+    elif seed == 42:
+        out_dir = DEFAULT_OOS_MODEL_DIR
+    else:
+        out_dir = os.path.join(PROJECT_DIR, "data", "models",
+                               f"oos_pre_playoffs_seed{seed}")
+
     from sklearn.metrics import mean_absolute_error
-    os.makedirs(OOS_MODEL_DIR, exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
+    print(f"  [seed={seed}] [out_dir={out_dir}]")
     t0 = time.time()
 
     print(f"  [stat={stat}] method={method}")
@@ -116,9 +131,9 @@ def main():
     print(f"  HPs: {params}")
 
     if method == "lgb":
-        m, fit_secs, best_iter = _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params)
+        m, fit_secs, best_iter = _train_lgb(X_tr, X_val, yt_tr, yt_val, sw, params, seed=seed)
     else:
-        m, fit_secs, best_iter = _train_xgb(X_tr, X_val, yt_tr, yt_val, sw, params)
+        m, fit_secs, best_iter = _train_xgb(X_tr, X_val, yt_tr, yt_val, sw, params, seed=seed)
     print(f"  Fit: {fit_secs:.1f}s (best_iter={best_iter})")
 
     pred_val_t = m.predict(X_val)
@@ -129,10 +144,10 @@ def main():
     print(f"  val_pinball@0.5: {val_pinball:.4f}")
     print(f"  val_MAE (raw):   {val_mae:.4f}")
 
-    fname, path = _save_model(stat, m)
+    fname, path = _save_model(stat, m, out_dir)
     print(f"  Saved -> {path}")
 
-    meta_path = os.path.join(OOS_MODEL_DIR, "_meta.json")
+    meta_path = os.path.join(out_dir, "_meta.json")
     all_meta = {}
     if os.path.exists(meta_path):
         try:
@@ -149,6 +164,7 @@ def main():
 
     all_meta["stats"][stat] = {
         "cutoff_date": CUTOFF_DATE, "stat": stat, "method": method,
+        "seed": seed,
         "n_train": n_train, "n_val": n_val,
         "val_pinball_q50": val_pinball, "val_mae": val_mae,
         "model_filename": fname,
