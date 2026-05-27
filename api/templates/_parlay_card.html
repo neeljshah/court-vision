@@ -47,11 +47,13 @@
     <div class="text-[10px] uppercase tracking-wider mb-1" style="color:var(--cv-subtle)">legs</div>
     <ul class="text-xs md:text-sm space-y-0.5 font-mono">
       {% for leg in p.legs %}
-        <li style="color:var(--cv-text)">
-          · {{ leg_meta.get(leg, {}).get('player_name', '?') }}
-          <span style="color:var(--cv-muted)">{{ leg_meta.get(leg, {}).get('prop_stat', '') }}</span>
-          {{ 'o' if leg_meta.get(leg, {}).get('side','OVER') == 'OVER' else 'u' }}{{ '%g'|format(leg_meta.get(leg, {}).get('line', 0)) }}
-          <span style="color:var(--cv-subtle)">{{ leg_meta.get(leg, {}).get('best_book', '') }}{% if leg_meta.get(leg, {}).get('best_price') is not none %} {{ '%+d'|format(leg_meta.get(leg, {}).get('best_price', 0)) }}{% endif %}</span>
+        {% set m = leg_meta.get(leg, {}) %}
+        <li style="color:var(--cv-text)" class="flex items-baseline gap-1.5">
+          <span style="width:8px;height:8px;border-radius:50%;background:{{ m.get('team_color', '#475569') }};display:inline-block"></span>
+          <span>{{ m.get('player_name', '?') }}</span>
+          <span style="color:var(--cv-muted)">{{ m.get('prop_stat', '') }}</span>
+          <span>{{ 'o' if m.get('side','OVER') == 'OVER' else 'u' }}{{ '%g'|format(m.get('line', 0)) }}</span>
+          <span style="color:var(--cv-subtle)">{{ m.get('best_book', '') }}{% if m.get('best_price') is not none %} {{ '%+d'|format(m.get('best_price', 0)) }}{% endif %}</span>
         </li>
       {% endfor %}
     </ul>
