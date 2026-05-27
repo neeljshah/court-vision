@@ -59,6 +59,26 @@
     "cutoff_shift_commit": "5fb964f1",
     "old_baseline_note": "+13.87% on 6,448 bets across 4 slices \u2014 contaminated by training data"
   },
+  "__iter28__": {
+    "approach": "ensemble_old_new_cutoff",
+    "baseline_roi_pct": 7.9125,
+    "optimal_roi_pct": 9.3525,
+    "delta_pp": 1.44,
+    "n_bets_baseline": 1134,
+    "n_bets_optimal": 1147,
+    "ship": true,
+    "optimal_weights": {
+      "pts": 1.0,
+      "reb": 0.9,
+      "ast": 0.6,
+      "fg3m": 1.0,
+      "stl": 0.5,
+      "blk": 1.0,
+      "tov": 1.0
+    },
+    "generated_at": "2026-05-27T22:43:22Z",
+    "source_file": "data/cache/iter28_ensemble_sweep_results.json"
+  },
   "__iter25__": {
     "approach": "thresholds",
     "best_roi": 19.5061,
