@@ -260,18 +260,13 @@ def settle_ledger(ledger_path: str, venue_clients: Dict[str, Any]) -> Dict[str, 
     return {"checked": checked, "graded": graded, "still_pending": still, "ledger": ledger_path}
 
 
-def summarize_ledger(ledger_path: str) -> Dict[str, Any]:
-    """Compute roll-up stats: hit rate, PnL, ROI, exposure."""
-    rows = _read_rows(ledger_path)
-    n_total = len(rows)
-    n_pending = sum(1 for r in rows if (r.get("status") or "") == "dry-run-pending")
-    graded = [r for r in rows if (r.get("status") or "") in {"WIN", "LOSS", "PUSH", "VOID"}]
-    n_graded = len(graded)
-    wins = sum(1 for r in graded if (r.get("status") or "") == "WIN")
-    losses = sum(1 for r in graded if (r.get("status") or "") == "LOSS")
+def _rollup(rows: Sequence[Dict[str, str]]) -> Dict[str, Any]:
+    """Compute hit_rate / pnl / ROI / wins / losses over a set of graded rows."""
+    wins = sum(1 for r in rows if (r.get("status") or "") == "WIN")
+    losses = sum(1 for r in rows if (r.get("status") or "") == "LOSS")
     pnl = 0.0
     staked = 0.0
-    for r in graded:
+    for r in rows:
         try:
             pnl += float(r.get("profit") or 0.0)
             staked += float(r.get("stake_dollars") or 0.0)
@@ -280,9 +275,7 @@ def summarize_ledger(ledger_path: str) -> Dict[str, Any]:
     hit_rate = (wins / (wins + losses)) if (wins + losses) else None
     roi = (pnl / staked) if staked > 0 else None
     return {
-        "total_rows": n_total,
-        "pending": n_pending,
-        "graded": n_graded,
+        "graded": len(rows),
         "wins": wins,
         "losses": losses,
         "hit_rate": hit_rate,
@@ -290,6 +283,36 @@ def summarize_ledger(ledger_path: str) -> Dict[str, Any]:
         "staked_dollars": round(staked, 2),
         "roi": roi,
     }
+
+
+def summarize_ledger(ledger_path: str) -> Dict[str, Any]:
+    """Compute roll-up stats: hit rate, PnL, ROI, exposure. Includes per-model
+    and per-category breakdowns so we can see which forecasters are pulling
+    their weight and which are dragging."""
+    rows = _read_rows(ledger_path)
+    n_total = len(rows)
+    n_pending = sum(1 for r in rows if (r.get("status") or "") == "dry-run-pending")
+    graded = [r for r in rows if (r.get("status") or "") in {"WIN", "LOSS", "PUSH", "VOID"}]
+    overall = _rollup(graded)
+    overall.update({
+        "total_rows": n_total,
+        "pending": n_pending,
+    })
+    # By model
+    by_model: Dict[str, Any] = {}
+    models = sorted({(r.get("model_name") or "unknown") for r in graded})
+    for m in models:
+        subset = [r for r in graded if (r.get("model_name") or "unknown") == m]
+        by_model[m] = _rollup(subset)
+    overall["by_model"] = by_model
+    # By category
+    by_cat: Dict[str, Any] = {}
+    cats = sorted({(r.get("category") or "uncategorized") for r in graded})
+    for c in cats:
+        subset = [r for r in graded if (r.get("category") or "uncategorized") == c]
+        by_cat[c] = _rollup(subset)
+    overall["by_category"] = by_cat
+    return overall
 
 
 def _cli(argv: Optional[List[str]] = None) -> int:
