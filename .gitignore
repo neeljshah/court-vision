@@ -4,6 +4,8 @@
 
 # -- Large Binaries / Video ---------------------------------------------------
 data/videos/
+data/pm/
+data/kalshi/
 *.mp4
 *.avi
 *.mov

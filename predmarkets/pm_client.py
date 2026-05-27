@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import random
+import re
 import threading
 import time
 from datetime import datetime, timezone
@@ -202,7 +203,7 @@ class PMClient:
                 "archived": "false",
                 "limit": page,
                 "offset": offset,
-                "order": "endDate",
+                "order": "closedTime",
                 "ascending": "false",
             }
             rows = self._get(GAMMA, "/markets", params)
@@ -211,8 +212,14 @@ class PMClient:
             stop = False
             for raw in rows:
                 cleaned = self._clean_market(raw)
-                end_ts = _parse_iso(cleaned.get("endDate"))
-                if end_ts is not None and end_ts < cutoff:
+                # closedTime is the actual UMA resolution timestamp; endDate is the
+                # contract's notional expiration and can be FAR in the future on
+                # early-resolved markets — useless as a recency filter. Fall back
+                # to endDate only when closedTime is missing.
+                resolved_ts = _parse_iso(cleaned.get("closedTime")) or _parse_iso(
+                    cleaned.get("umaEndDate")
+                ) or _parse_iso(cleaned.get("endDate"))
+                if resolved_ts is not None and resolved_ts < cutoff:
                     stop = True
                     break
                 out.append(cleaned)
@@ -279,11 +286,17 @@ class PMClient:
         return out
 
 
+_TZ_PAD_RE = re.compile(r"([+-]\d{2})$")
+
+
 def _parse_iso(value: Optional[str]) -> Optional[float]:
+    """Parse a UTC timestamp string. Tolerates ISO-T or space-separated formats
+    and Gamma's '+00' (no-colon) tz suffix (e.g. '2026-03-19 23:20:15+00')."""
     if not value or not isinstance(value, str):
         return None
+    cleaned = value.strip().replace("Z", "+00:00")
+    cleaned = _TZ_PAD_RE.sub(r"\1:00", cleaned)
     try:
-        cleaned = value.replace("Z", "+00:00")
         return datetime.fromisoformat(cleaned).timestamp()
     except ValueError:
         return None
