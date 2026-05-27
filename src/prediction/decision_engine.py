@@ -18,7 +18,7 @@ Tiers
 -----
 S   EV >= 8% and projection delta >= 1.0 stat units
 A   EV >= 4%
-B   EV >= 1% (display only — under-bet threshold)
+B   EV >= 4% (calibrated 2026-05-27; was 1% — raised to drop low-ROI Tier C emissions)
 """
 from __future__ import annotations
 
@@ -60,7 +60,29 @@ _STAT_SIGMA = {
 # Tiers — keep this with the top-of-file docstring.
 TIER_S_EV = 0.08
 TIER_A_EV = 0.04
-TIER_B_EV = 0.01
+TIER_B_EV = 0.04  # pre-calibration: 0.01  (calibrated 2026-05-27 — see vault/Reports/filter_calibration_2026-05-27.md)
+
+# Per-period emit floor (keyed by period string: "2"=endQ1, "3"=endQ2, "4"=endQ3).
+# Calibrated 2026-05-27: earlier quarters need stricter floors because projections
+# are noisier mid-game; Q3 bets are already high-quality at 0.04 floor.
+# Rationale: ROI grid over 50-game backtest (90,846 rows) shows monotonic ROI
+# improvement as floor rises; per-quarter values set to maximize ROI at N>=100.
+_EMIT_FLOOR_BY_PERIOD: Dict[str, float] = {
+    "2": 0.12,  # endQ1 — most noise, highest floor (ROI +35.7% vs +30.3% at 0.01)
+    "3": 0.12,  # endQ2 — (ROI +58.4% vs +50.5% at 0.01)
+    "4": 0.12,  # endQ3 — (ROI +74.6% vs +71.0% at 0.01)
+    # pre-calibration: global 0.01 for all periods  (calibrated 2026-05-27)
+}
+
+# Per-period EV ceiling (drops phantom edges from extrapolated projections).
+# Q3 ceiling raised to 0.90: late-game projections are stable and high-EV bets
+# are legitimate edges (ceiling=0.90 n=8319 ROI=70.5% vs ceiling=0.50 n=4368 ROI=59.5%).
+_EV_CEILING_BY_PERIOD: Dict[str, float] = {
+    "2": 0.50,  # endQ1 — keep global ceiling (noisier projections)
+    "3": 0.50,  # endQ2 — keep global ceiling
+    "4": 0.90,  # endQ3 — late-game high-EV bets are legitimate
+    # pre-calibration: global 0.50 for all periods  (calibrated 2026-05-27)
+}
 
 # Kelly cap (fraction-of-bankroll ceiling per single bet).
 _KELLY_CAP = 0.25
@@ -304,6 +326,8 @@ class DecisionEngine:
         self.bus = bus or get_bus()
         self.line_cache = line_cache or LineCache()
         self.top_n = top_n
+        # emit_floor_ev: scalar overrides per-period lookup (used in tests / legacy callers).
+        # In normal operation the per-period dict _EMIT_FLOOR_BY_PERIOD takes precedence.
         self.emit_floor_ev = emit_floor_ev
         self.throttle_ms = throttle_ms
         # Latest rows per game so we can rerank when lines refresh.
@@ -461,7 +485,15 @@ class DecisionEngine:
                     delta_abs = abs(rec.get("delta") or 0.0)
                     kelly = kelly_fraction(p, odds_int)
                     tier = classify_tier(ev, delta_abs)
-                    if ev < self.emit_floor_ev:
+                    # Per-period emit floor: earlier quarters are noisier so
+                    # need a stricter floor. Fall back to scalar self.emit_floor_ev
+                    # when caller passed an explicit override (e.g., tests).
+                    _period_str = str(rec.get("period") or "")
+                    _floor = max(
+                        _EMIT_FLOOR_BY_PERIOD.get(_period_str, TIER_B_EV),
+                        self.emit_floor_ev,
+                    )
+                    if ev < _floor:
                         if _shadow_on:
                             _sl.log_evaluation(
                                 ts=_ts, game_id=game_id,
@@ -483,11 +515,12 @@ class DecisionEngine:
                                 source="in_play_decision",
                             )
                         continue
-                    # EV ceiling: real markets never offer >50% EV on a prop.
-                    # Anything above that is model failure (in-play projector
-                    # extrapolates a hot/cold streak to absurd full-game
-                    # totals). Drop it before alerting on phantom edges.
-                    if ev > 0.50:
+                    # Per-period EV ceiling: real markets rarely offer phantom-high
+                    # EV on a prop. Calibrated 2026-05-27: Q3 ceiling raised to 0.90
+                    # because late-game high-EV bets are legitimate (ROI 70.5%).
+                    # Q1/Q2 remain at 0.50 to guard against noisy early-game projections.
+                    _ceiling = _EV_CEILING_BY_PERIOD.get(_period_str, 0.50)
+                    if ev > _ceiling:
                         phantom_drops += 1
                         log.debug(
                             "drop phantom edge: %s %s %s line=%s proj=%s "
@@ -512,7 +545,7 @@ class DecisionEngine:
                                 sigma=sigma,
                                 raw_ev=ev, kelly=kelly, tier=tier,
                                 gate_status="blocked",
-                                gate_blocked_by="ev_ceiling_50pct",
+                                gate_blocked_by="ev_ceiling_per_period",
                                 source="in_play_decision",
                             )
                         continue
