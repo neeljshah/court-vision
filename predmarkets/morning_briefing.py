@@ -33,7 +33,7 @@ from predmarkets.dry_run_placer import (
     summarize_ledger,
 )
 from predmarkets.edge_scanner import EdgeScanner, EdgeScannerConfig, load_snapshot
-from predmarkets.forecasters import CryptoThresholdForecaster
+from predmarkets.forecasters import CryptoThresholdForecaster, LLMForecaster
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VAULT_REPORTS = os.path.join(PROJECT_DIR, "vault", "Strategy", "PredictionMarkets", "Briefings")
@@ -70,7 +70,7 @@ def _section_snapshot(snap_date: _date, skip: bool) -> Dict[str, Any]:
 
 def _section_scan_and_place(snap_date: _date, ledger_path: str, bankroll: float,
                             threshold: float) -> Dict[str, Any]:
-    forecasters = [CryptoThresholdForecaster()]
+    forecasters = [CryptoThresholdForecaster(), LLMForecaster()]
     cfg = EdgeScannerConfig(bankroll=bankroll, edge_threshold=threshold)
     scanner = EdgeScanner(forecasters, cfg)
     result: Dict[str, Any] = {"venues": {}}
