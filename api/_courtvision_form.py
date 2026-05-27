@@ -59,10 +59,12 @@ def get_form_lookup() -> dict:
             if stat not in sub.columns:
                 continue
             series = sub[stat]
+            last5 = series.tail(5).dropna().tolist()
             out[(str(pid), stat)] = {
                 "l5": _median(series.tail(5)),
                 "l10": _median(series.tail(10)),
                 "season": _median(series),
+                "spark": [float(x) for x in last5],
             }
     log.info("form lookup built: %d (player x stat) entries from %d games",
              len(out), len(game))
@@ -88,3 +90,5 @@ def attach_form(bets: list[dict]) -> None:
             b["last_10_median"] = rec["l10"]
         if b.get("season_median") is None:
             b["season_median"] = rec["season"]
+        if not b.get("spark_last5"):
+            b["spark_last5"] = rec.get("spark", [])

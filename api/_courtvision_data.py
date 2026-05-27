@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Optional
 
 from src.prediction.betting_edge import BettingEdge
+from api._team_colors import primary as _team_primary_color
 
 _BETTING = BettingEdge()
 
@@ -155,6 +156,8 @@ def grade_bet(slate_row: dict, line_row: dict,
         "top_features": [], "narrative_text": narrative,
         "best_book": best["book"], "best_price": odds,
         "all_books": all_books, "spark_last5": [],
+        "team_color": _team_primary_color(slate_row["team"]),
+        "opp_color": _team_primary_color(slate_row["opp"]),
     }
 
 
@@ -272,5 +275,7 @@ def slate_no_lines(slate_rows: dict[tuple[str, str], dict],
             "top_features": [],
             "narrative_text": f"{r['player_name']} projects to {float(r['q50']):.1f} {stat.upper()} vs {r['opp']}. Drop a lines CSV to grade EV.",
             "best_book": None, "best_price": None, "all_books": [], "spark_last5": [],
+            "team_color": _team_primary_color(r["team"]),
+            "opp_color": _team_primary_color(r["opp"]),
         })
     return out

@@ -1,7 +1,10 @@
 # Minimal deps for the web dashboard backend (api/live_v2_app.py).
 # Excludes torch/CUDA/cv2 — those are only needed for the CV pipeline,
 # not for in-play projections or pregame line-shop.
-fastapi>=0.110
+fastapi>=0.110,<0.150
+# Pin starlette below 1.0 — starlette 1.1.0 has a Jinja2Templates regression
+# (unhashable dict in template cache key) that breaks all TemplateResponse calls.
+starlette<1.0
 uvicorn[standard]>=0.27
 websockets>=12.0
 aiohttp>=3.10
