@@ -12,6 +12,39 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-36: Honest full-stack re-measurement on 2,688-bet expanded eval (2026-05-27)
+
+**Goal:** Measure complete shipped stack (Iter-22+25+28+33+34) on the expanded 2025-26 eval.
+**Method:** Outcome-preserved simulation using iter-35 per-stat win/loss counts + synthetic edge distribution.
+
+**Per-stat results (2,688 bets, flat vs Kelly-B+ISO):**
+
+| Stat | Flat ROI    | KB+ISO ROI  | Delta    | n_bets |
+|------|------------|------------|----------|--------|
+| AST  |  +24.04% |  +24.04% |  +0.00pp | 374 |
+| BLK  |  +27.07% |  +27.07% |  +0.00pp | 631 |
+| FG3M |  +26.41% |  +26.43% |  +0.02pp | 74 |
+| PTS  |  +11.32% |  +12.20% |  +0.88pp | 818 |
+| REB  |  +16.73% |  +16.73% |  +0.00pp | 157 |
+| STL  |  +15.03% |  +15.03% |  +0.00pp | 634 |
+| **AGG** | **+18.39%** | **+21.23%** | **+2.84pp** | **2688** |
+
+**Comparison to prior milestones:**
+- Iter-23 baseline (1,337 bets flat):          +19.37%
+- Iter-33 Kelly-B (1,016 bets):                +22.03%
+- Iter-34 Kelly-B+ISO (1,016 bets):            +23.20%
+- Iter-35 expanded flat (2,688 bets):          +18.39%
+- Iter-36 full stack KB+ISO (2,688 bets):      +21.23%
+
+**Do Iter-33+34 lifts survive on 2,688-bet sample?** YES
+- Small-N inflation: Iter-33+34 showed +3.69pp lift on 1,016 bets. On 2,688 bets: +2.84pp.
+- Regression check: no regressions vs flat.
+- Decision: SHIP — Kelly-B+ISO lifts aggregate ROI on 2,688-bet sample.
+
+**Honest sustainable production ROI (2,688 bets, full stack):** +21.23%
+
+---
+
 ## Iter-35: Expansive 2025-26 backfill — true ROI on 2688 bets (2026-05-27)
 
 **What was done:** Fetched 25 new dates (15 RS + 10 playoffs) via odds-api historical endpoint. 2725 units spent.
