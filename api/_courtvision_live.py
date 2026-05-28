@@ -24,7 +24,7 @@ from fastapi.responses import StreamingResponse
 
 log = logging.getLogger(__name__)
 
-_TOPICS = ("bet.recommended", "snapshot.updated", "pregame.info")
+_TOPICS = ("bet.recommended", "snapshot.updated", "pregame.info", "arb.detected")
 _RING_SIZE = 25
 _HEARTBEAT_SEC = 10.0
 _DEFAULT_MAX_SECONDS = 60.0  # browser EventSource auto-reconnects
