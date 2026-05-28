@@ -537,19 +537,27 @@ def _build_home_data(date: str) -> dict:
         edge_props.sort(key=lambda p: -(p.get("edge_pct") or 0))
 
         top_edges = []
-        for ep in edge_props[:3]:
+        for ep in edge_props[:5]:  # Pull 5 so client-side book filter still has 3 after filtering
             side = ep.get("rec_side", "OVER")
             best_o, best_u = None, None
+            best_book_o, best_book_u = None, None
             for b in ep.get("books", []):
-                if b.get("over_price") is not None and (best_o is None or b["over_price"] > best_o):
-                    best_o = b["over_price"]
-                if b.get("under_price") is not None and (best_u is None or b["under_price"] > best_u):
-                    best_u = b["under_price"]
+                bo = b.get("over_price"); bu = b.get("under_price"); bk = b.get("book") or ""
+                if bo is not None and (best_o is None or bo > best_o):
+                    best_o, best_book_o = bo, bk
+                if bu is not None and (best_u is None or bu > best_u):
+                    best_u, best_book_u = bu, bk
             odds = best_o if side == "OVER" else best_u
+            best_book = best_book_o if side == "OVER" else best_book_u
             top_edges.append({
                 "label": f"{ep['player']} {side[0]}{ep['line']:g} {ep['stat'].upper()}",
                 "odds": odds,
                 "edge_pct": ep.get("edge_pct"),
+                "book": best_book or "",     # for client-side book filter
+                "stat": ep.get("stat", ""),
+                "side": side,
+                "line": ep.get("line"),
+                "player": ep.get("player", ""),
             })
 
         away_abbr, home_abbr = _guess_teams_from_game_id(gid)
