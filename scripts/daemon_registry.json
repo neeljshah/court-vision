@@ -35,6 +35,14 @@
       "process_match": "line_move_detector.py"
     },
     {
+      "name": "arb_emitter_daemon",
+      "command": "python -u scripts/arb_emitter_daemon.py --interval 30",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/arb_emitter_daemon.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u scripts/arb_emitter_daemon.py --interval 30 > logs/arb_emitter_daemon.log 2>&1 &",
+      "process_match": "arb_emitter_daemon.py"
+    },
+    {
       "name": "nba_lineup_daemon",
       "command": "python scripts/nba_lineup_daemon.py --interval-sec 60",
       "expected_interval_sec": 60,
