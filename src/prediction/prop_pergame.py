@@ -462,6 +462,24 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     # if stat in _PER_OPP_ROLLING_STATS:
     #     cols += [f"per_opp_{stat}_l3"]
 
+    # Iter-48 (loop 5) — momentum-delta features (l3 - l5) for PTS, AST, REB only.
+    # REVERTED (backtest_holdout REVERT decision 2026-05-28): OOS ROI regressed
+    # across all 3 probe stats:
+    #   PTS: delta_roi=-12.64pp (catastrophic)
+    #   AST: delta_roi=-17.80pp (catastrophic)
+    #   REB: delta_roi=-5.68pp
+    # Pattern: even the explicit l3-l5 DIFFERENCE feature (numerically independent
+    # of l5/l10/ewma levels) overfits training distributions without generalizing to
+    # 2025-26 OOS. _row_features computes mom_delta_* for all _FORM_STATS (zero
+    # inference cost) and build_pergame_dataset carries them on every row dict;
+    # gate here keeps them out of all models.
+    # Root cause hypothesis: the momentum signal (hot-streak detection) is already
+    # captured by the model through its ewma/l5/prev interactions. The explicit delta
+    # adds noise from short-window volatility (3-game samples are high-variance) that
+    # helps on training data but hurts OOS. This exhausts the l3-window probe space.
+    # if stat in ("pts", "ast", "reb"):
+    #     cols += [f"mom_delta_{stat}"]
+
     return cols
 
 
@@ -3245,6 +3263,10 @@ def _row_features(prior_played: List[dict], rest_days: float,
         feats[f"std_{stat}"]  = _mean(vals)              # season-to-date
         feats[f"ewma_{stat}"] = _ewma(vals)
         feats[f"prev_{stat}"] = vals[-1] if vals else 0.0
+        # Iter-48: momentum-delta = l3 - l5 (positive = hot streak, negative = cooling).
+        # Computed after l3/l5 so the subtraction is always defined. Numerically
+        # independent of the raw level features (zero when form is flat).
+        feats[f"mom_delta_{stat}"] = feats[f"l3_{stat}"] - feats[f"l5_{stat}"]
     feats["rest_days"]     = rest_days
     feats["is_home"]       = float(is_home)
     feats["games_played"]  = float(games_played)
@@ -3467,6 +3489,12 @@ def build_pergame_dataset(
                 # them via feature_columns(stat="reb").
                 for k in _REB_CONTEXT_KEYS:
                     row[k] = feats.get(k, 0.0)
+                # Iter-48: carry mom_delta cols for pts/ast/reb on every row.
+                # These are already computed in _row_features; we store them
+                # so per-stat retrain scripts can read them via feature_columns(stat=X).
+                for _ms in ("pts", "ast", "reb"):
+                    _mk = f"mom_delta_{_ms}"
+                    row[_mk] = feats.get(_mk, 0.0)
                 # Carry all 5 syn PPP keys on every row — per-stat retrain paths
                 # for ast/pts/fg3m read them via feature_columns(stat=<stat>).
                 for k in _SYN_PPP_KEYS:
