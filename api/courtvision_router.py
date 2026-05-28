@@ -105,7 +105,7 @@ _PRED_DIR = _ROOT / "data" / "predictions"
 _LINES_DIR = _ROOT / "data" / "lines"
 _BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 15, 300, 8
 _PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
-_STAT_SIGMA = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12, "stl": 0.90, "blk": 0.55, "tov": 1.12}  # ~ MAE x 1.253
+_STAT_SIGMA = {"pts": 8.5, "reb": 3.6, "ast": 2.6, "fg3m": 1.7, "stl": 1.4, "blk": 1.0, "tov": 1.7}  # MAE x 1.253 systematically understates real prop volatility (residuals are heavier-tailed than Normal + model has prediction uncertainty beyond residual MAE); 1.5x bump empirically caps confidence around 80-90% even on strong-edge bets, vs the prior 99%+ that produced fake +100% EVs
 _STATS = tuple(_STAT_SIGMA.keys())
 
 router = APIRouter()
@@ -266,6 +266,18 @@ def _build_slate(date: str) -> dict:
                           _STAT_SIGMA, _BANKROLL_DEFAULT)
                 for ln in line_rows
                 if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
+        # Honest-EV gate: cap model_prob at 0.85 (no real single-prop model is
+        # more than 85% sure; anything higher reflects sigma understatement or
+        # alt-line residual that slipped past _filter_to_mainline). Recompute
+        # EV with the capped probability so downstream sizing is realistic.
+        for b in bets:
+            mp = b.get("model_prob")
+            if mp is not None and mp > 0.85:
+                price = int(b.get("best_price") or -110)
+                payout = float(price) if price > 0 else (10000.0 / abs(price))
+                b["model_prob"] = 0.85
+                b["ev_pct"] = round(0.85 * payout - 0.15 * 100.0, 2)
+                b["ev_capped"] = True
         bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
         bets = bets[:_TOP_N]
     else:
