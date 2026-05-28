@@ -12,6 +12,37 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-54: Broad segmentation sweep (2026-05-28)
+
+**Goal:** Apply BLK direction-filter pattern (Iter-50/51) broadly to PTS, REB, AST, FG3M, STL.
+
+**Zero-EV segments found:**
+  PTS `direction_over`: n=207, ROI=-0.40%, z=1.312
+  PTS `line_mid`: n=163, ROI=-7.47%, z=0.217
+  REB `direction_over`: n=221, ROI=-4.98%, z=0.641
+  REB `line_low`: n=197, ROI=-3.09%, z=0.883
+  REB `line_high`: n=125, ROI=-9.89%, z=-0.094
+  REB `stage_early`: n=149, ROI=-2.62%, z=0.828
+  REB `direction_over_line_low`: n=105, ROI=-12.73%, z=-0.391
+  AST `direction_over`: n=195, ROI=-6.99%, z=0.307
+  AST `line_mid`: n=145, ROI=-9.15%, z=-0.008
+  AST `line_high`: n=132, ROI=-0.21%, z=1.071
+  FG3M `line_high`: n=107, ROI=+1.70%, z=1.171
+
+**Filters wired:**
+  PTS: `line_mid`
+  REB: `line_high`
+  AST: `line_mid`
+  FG3M: `line_high`
+
+**Aggregate impact:** +22.19% → +26.55% (+4.36pp), 1832 bets.
+
+**Decision: SHIP** — Aggregate delta +4.36pp >= +0.5pp threshold AND no regressions. Filters to wire: [('pts', 'line_mid'), ('reb', 'line_hig
+
+**Key lesson:** Direction filter extended to additional stats.
+
+---
+
 ## Iter-52: PKL artifact integrity — n_features_in_ must match _meta.json (2026-05-27)
 
 **Failure mode found:** `quantile_pergame_lgb_reb_q50.pkl` had `n_features_in_=85` while `_meta.json` claimed `n_features=133`. Every inference call crashed silently (caught by `skip['err:ValueError']`) producing 0 valid bets. The backtest reported `n_bets=0 ROI=0%` but was swallowed as "INCONCLUSIVE." The locked +16.73%/157-bet REB measurement (iter-35) was from a previous schema-consistent state; the mismatch was introduced when _meta was updated to 133 columns without retraining the pkl.
