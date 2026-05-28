@@ -17,6 +17,7 @@
     <span>min EV
       <form class="inline" action="/parlays" method="get">
         <input type="hidden" name="date" value="{{ envelope.date }}">
+        <input type="hidden" name="engine" value="{{ engine }}">
         <input name="min_ev_pct" value="{{ min_ev_pct }}" type="number" step="1" min="-100" max="500"
                class="bg-transparent border rounded px-1 w-16 text-xs ml-1" style="border-color:var(--cv-border);color:var(--cv-text)">
         <button class="ml-1 text-xs underline" style="color:var(--cv-accent)">apply</button>
@@ -26,6 +27,7 @@
       <form class="inline" action="/parlays" method="get">
         <input type="hidden" name="date" value="{{ envelope.date }}">
         <input type="hidden" name="min_ev_pct" value="{{ min_ev_pct }}">
+        <input type="hidden" name="engine" value="{{ engine }}">
         <select name="max_legs" onchange="this.form.submit()"
                 class="bg-transparent border rounded px-1 text-xs ml-1" style="border-color:var(--cv-border);color:var(--cv-text)">
           {% for k in [2,3,4,5] %}
@@ -33,6 +35,14 @@
           {% endfor %}
         </select>
       </form>
+    </span>
+    <span>engine
+      <a href="/parlays?date={{ envelope.date }}&amp;max_legs={{ max_legs }}&amp;min_ev_pct={{ min_ev_pct }}&amp;engine=engine"
+         class="ml-1 px-2 py-0.5 rounded text-xs"
+         style="border:1px solid var(--cv-border);{% if engine != 'constructor' %}background:rgba(96,165,250,0.15);color:var(--cv-accent);font-weight:600;{% else %}color:var(--cv-muted);{% endif %}">ParlayEngine</a>
+      <a href="/parlays?date={{ envelope.date }}&amp;max_legs={{ max_legs }}&amp;min_ev_pct={{ min_ev_pct }}&amp;engine=constructor"
+         class="ml-1 px-2 py-0.5 rounded text-xs"
+         style="border:1px solid var(--cv-border);{% if engine == 'constructor' %}background:rgba(96,165,250,0.15);color:var(--cv-accent);font-weight:600;{% else %}color:var(--cv-muted);{% endif %}">Constructor (SGP)</a>
     </span>
   </div>
 </section>
@@ -44,17 +54,56 @@
 </div>
 
 <script>
+window.__ENGINE = "{{ engine }}";
 (function(){
   var date="{{ envelope.date }}";
   var maxLegs={{ max_legs }};
   var minEv={{ min_ev_pct }};
-  var url='/api/parlays?date='+date+'&max_legs='+maxLegs+'&min_ev_pct='+minEv+'&seed=0';
+  var engine=window.__ENGINE||'engine';
+  var url=(engine==='constructor')
+    ? '/api/parlays/constructor?date='+date+'&max_legs='+maxLegs+'&min_ev_pct='+minEv+'&seed=0'
+    : '/api/parlays?date='+date+'&max_legs='+maxLegs+'&min_ev_pct='+minEv+'&seed=0';
+
+  function legsFromRow(p){
+    // ParlayEngine rows expose `legs`; constructor rows expose leg_0/leg_1/leg_2.
+    if(p.legs && p.legs.length) return p.legs;
+    var out=[];
+    ['leg_0','leg_1','leg_2','leg_3','leg_4'].forEach(function(k){
+      if(p[k]){
+        var l=p[k];
+        out.push({
+          player_name: l.player_name || l.player || '',
+          prop_stat: (l.prop_stat || l.stat || '').toString().toUpperCase(),
+          line: l.line,
+          side: (l.side || 'OVER').toString().toUpperCase(),
+          best_price: l.best_price != null ? l.best_price : l.odds,
+        });
+      }
+    });
+    return out;
+  }
+  function evPctOf(p){
+    // ParlayEngine uses p.ev_pct (percent). Constructor uses expected_roi_sgp_pct (percent).
+    if(p.expected_roi_sgp_pct != null) return p.expected_roi_sgp_pct;
+    if(p.ev_pct != null) return p.ev_pct;
+    return null;
+  }
+  function combinedAmericanOf(p){
+    if(p.combined_american != null) return p.combined_american;
+    if(p.american_odds != null) return p.american_odds;
+    return null;
+  }
+  function kellyOf(p){
+    if(p.kelly_stake_dollars != null) return p.kelly_stake_dollars;
+    return null;
+  }
+
   fetch(url)
     .then(function(r){return r.json();})
     .then(function(env){
       var parlays=env.parlays||[];
       var cnt=document.getElementById('parlayCount');
-      if(cnt) cnt.textContent=parlays.length+' parlays';
+      if(cnt) cnt.textContent=parlays.length+' parlays · '+(env.engine||engine);
       var grid=document.getElementById('parlaysGrid');
       if(!parlays.length){
         var noLinesHtml = !env.has_lines
@@ -63,7 +112,7 @@
         grid.innerHTML='<div class="cv-card p-6 text-center" style="color:var(--cv-muted);padding:32px 24px;">'
           +'<div style="font-size:32px;margin-bottom:12px;opacity:.35">🎰</div>'
           +'<div style="font-size:14px;font-weight:600;color:var(--cv-text);margin-bottom:6px">No parlays available</div>'
-          +'<div style="font-size:12px;margin-bottom:14px">No prop combinations cleared the EV gate at min EV '+minEv+'%.</div>'
+          +'<div style="font-size:12px;margin-bottom:14px">No prop combinations cleared the EV gate at min EV '+minEv+'% (engine: '+(env.engine||engine)+').</div>'
           +'<a href="/odds" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;'
           +'background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:8px;'
           +'color:var(--cv-accent);font-size:12px;font-weight:600;text-decoration:none;">'
@@ -73,25 +122,30 @@
       }
       var html='<div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">';
       parlays.slice(0,25).forEach(function(p,i){
-        var evCls=p.ev_pct>0?'num-pos':p.ev_pct<0?'num-neg':'num-zero';
-        var legsHtml=(p.legs||[]).map(function(l){
+        var ev=evPctOf(p);
+        var evCls=ev>0?'num-pos':ev<0?'num-neg':'num-zero';
+        var legs=legsFromRow(p);
+        var legsHtml=legs.map(function(l){
           var sideCls=l.side&&l.side.toLowerCase()==='over'?'badge-over':'badge-under';
           return '<li style="display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 0;border-bottom:1px solid var(--cv-border);">'
             +'<span class="'+sideCls+'" style="padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;">'+l.side+'</span>'
-            +'<span style="color:var(--cv-text);">'+l.player_name+'</span>'
-            +'<span style="color:var(--cv-muted);font-family:monospace;">'+l.prop_stat+' '+l.line+'</span>'
-            +(l.best_price?'<span style="color:var(--cv-muted);font-family:monospace;margin-left:auto;">'+l.best_price+'</span>':'')
+            +'<span style="color:var(--cv-text);">'+(l.player_name||'')+'</span>'
+            +'<span style="color:var(--cv-muted);font-family:monospace;">'+(l.prop_stat||'')+' '+(l.line!=null?l.line:'')+'</span>'
+            +(l.best_price!=null?'<span style="color:var(--cv-muted);font-family:monospace;margin-left:auto;">'+l.best_price+'</span>':'')
             +'</li>';
         }).join('');
+        var combined=combinedAmericanOf(p);
+        var kelly=kellyOf(p);
+        var nLegs=p.n_legs || legs.length || (i+1);
         html+='<div class="cv-card cv-card-hover p-4">'
           +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">'
-          +'<span style="font-size:13px;font-weight:600;color:var(--cv-text);">'+(i+1)+'-leg parlay</span>'
-          +'<span class="'+evCls+'" style="font-family:monospace;font-size:12px;font-weight:600;">EV '+(p.ev_pct!=null?(p.ev_pct>0?'+':'')+p.ev_pct.toFixed(1):'—')+'%</span>'
+          +'<span style="font-size:13px;font-weight:600;color:var(--cv-text);">'+nLegs+'-leg parlay</span>'
+          +'<span class="'+evCls+'" style="font-family:monospace;font-size:12px;font-weight:600;">EV '+(ev!=null?(ev>0?'+':'')+(+ev).toFixed(1):'—')+'%</span>'
           +'</div>'
           +'<ul style="list-style:none;padding:0;margin:0 0 10px;">'+legsHtml+'</ul>'
           +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--cv-muted);">'
-          +'<span>Combined: <b style="color:var(--cv-text);">'+(p.combined_american!=null?(p.combined_american>0?'+':'')+p.combined_american:'—')+'</b></span>'
-          +'<span>Kelly: <b style="color:var(--cv-text);">'+(p.kelly_stake_dollars!=null?'$'+p.kelly_stake_dollars.toFixed(0):'—')+'</b></span>'
+          +'<span>Combined: <b style="color:var(--cv-text);">'+(combined!=null?(combined>0?'+':'')+combined:'—')+'</b></span>'
+          +'<span>'+(kelly!=null?'Kelly: <b style="color:var(--cv-text);">$'+(+kelly).toFixed(0)+'</b>':(p.hit_rate_adj!=null?'p_hit: <b style="color:var(--cv-text);">'+(p.hit_rate_adj*100).toFixed(1)+'%</b>':'—'))+'</span>'
           +'</div>'
           +'</div>';
       });
