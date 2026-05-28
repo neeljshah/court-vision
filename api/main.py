@@ -128,6 +128,12 @@ try:
 except Exception as _risk_exc:
     log.warning("risk_router unavailable: %s", _risk_exc)
 
+try:
+    from api.lines_router import router as _lines_router
+    app.include_router(_lines_router, tags=["lines"])
+except Exception as _lines_exc:
+    log.warning("lines_router unavailable: %s", _lines_exc)
+
 
 @app.get("/health", tags=["health"])
 def health():

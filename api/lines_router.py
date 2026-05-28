@@ -1,0 +1,203 @@
+"""lines_router.py — multi-book line scanner.
+
+Exposes:
+    GET /api/lines/scan?date=YYYY-MM-DD&stat=pts&min_books=2&sort=edge
+        JSON envelope of consolidated props with best/worst book per side
+        and a "best_combined_edge" metric for shopping value.
+    GET /scan
+        HTML UI page rendered from templates/scan.html.
+
+Reads from api._courtvision_odds.consolidate(date) — already groups per-book
+CSVs into (player, stat, line) rows with a `books` array attached.
+
+Edge metric (per row):
+    over_spread_cents  = best_over_price  − worst_over_price  (American odds)
+    under_spread_cents = best_under_price − worst_under_price
+    best_combined_edge = max(implied_diff_over, implied_diff_under)  (percentage points)
+The implied-diff is computed via `_american_to_implied`; bigger spread =
+more shopping value across books.
+"""
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+from typing import Optional
+
+from fastapi import APIRouter, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+
+from api._courtvision_odds import (
+    _american_to_implied,
+    best_price,
+    consolidate,
+)
+
+_HERE = Path(__file__).resolve().parent
+_TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
+
+router = APIRouter()
+
+_VALID_SORTS = {"edge", "player", "stat", "line"}
+
+
+def _today() -> str:
+    return datetime.now().astimezone().strftime("%Y-%m-%d")
+
+
+def _book_entry(book_row: dict, side: str) -> Optional[dict]:
+    """Convert a books[] entry from consolidate into a {book,price,deeplink} dict."""
+    if not book_row:
+        return None
+    if side == "over":
+        price = book_row.get("over_price")
+        deeplink = book_row.get("deeplink_over_web") or ""
+    else:
+        price = book_row.get("under_price")
+        deeplink = book_row.get("deeplink_under_web") or ""
+    return {
+        "book": book_row.get("book"),
+        "display": book_row.get("display") or book_row.get("book"),
+        "price": price,
+        "deeplink": deeplink,
+    }
+
+
+def _worst_price(prop: dict, side: str) -> Optional[dict]:
+    """Find the least favorable book on a given side. Lower American odds = worse."""
+    key = "over_price" if side == "over" else "under_price"
+    books = [b for b in prop.get("books", []) if b.get(key) is not None]
+    if not books:
+        return None
+    return min(books, key=lambda b: b[key])
+
+
+def _spread_cents(best: Optional[dict], worst: Optional[dict], price_key: str) -> int:
+    if not best or not worst:
+        return 0
+    b = best.get(price_key)
+    w = worst.get(price_key)
+    if b is None or w is None:
+        return 0
+    return int(b - w)
+
+
+def _implied_diff(best: Optional[dict], worst: Optional[dict], price_key: str) -> float:
+    """Implied-prob diff in percentage points: worst_implied - best_implied.
+
+    Worst book has lower American odds → higher implied prob; best book has the
+    higher American odds → lower implied prob. So worst_implied - best_implied
+    is always >= 0 and represents pp of shopping edge.
+    """
+    if not best or not worst:
+        return 0.0
+    b = best.get(price_key)
+    w = worst.get(price_key)
+    if b is None or w is None:
+        return 0.0
+    return round((_american_to_implied(w) - _american_to_implied(b)) * 100.0, 3)
+
+
+def _scan_rows(date: str, stat: Optional[str], min_books: int) -> list[dict]:
+    out: list[dict] = []
+    for prop in consolidate(date):
+        if stat and prop.get("stat") != stat.lower():
+            continue
+        if prop.get("n_books", 0) < min_books:
+            continue
+        best_over = best_price(prop, "OVER")
+        best_under = best_price(prop, "UNDER")
+        worst_over = _worst_price(prop, "over")
+        worst_under = _worst_price(prop, "under")
+
+        over_spread_cents = _spread_cents(best_over, worst_over, "over_price")
+        under_spread_cents = _spread_cents(best_under, worst_under, "under_price")
+        over_edge = _implied_diff(best_over, worst_over, "over_price")
+        under_edge = _implied_diff(best_under, worst_under, "under_price")
+        best_combined_edge = max(over_edge, under_edge)
+
+        # Slim books list for client (drop heavy deeplink_*_app fields)
+        slim_books = [{
+            "book": b.get("book"),
+            "display": b.get("display") or b.get("book"),
+            "over": b.get("over_price"),
+            "under": b.get("under_price"),
+            "deeplink_over": b.get("deeplink_over_web") or "",
+            "deeplink_under": b.get("deeplink_under_web") or "",
+        } for b in prop.get("books", [])]
+
+        out.append({
+            "player": prop.get("player"),
+            "stat": prop.get("stat"),
+            "line": prop.get("line"),
+            "game_id": prop.get("game_id") or "",
+            "start_time": prop.get("start_time") or "",
+            "n_books": prop.get("n_books", 0),
+            "best_over": _book_entry(best_over, "over"),
+            "worst_over": _book_entry(worst_over, "over"),
+            "best_under": _book_entry(best_under, "under"),
+            "worst_under": _book_entry(worst_under, "under"),
+            "over_spread_cents": over_spread_cents,
+            "under_spread_cents": under_spread_cents,
+            "best_combined_edge": best_combined_edge,
+            "books": slim_books,
+        })
+    return out
+
+
+def _sort_rows(rows: list[dict], sort: str) -> list[dict]:
+    if sort == "player":
+        rows.sort(key=lambda r: (r.get("player") or "", r.get("stat") or "",
+                                  r.get("line") or 0))
+    elif sort == "stat":
+        rows.sort(key=lambda r: (r.get("stat") or "", r.get("player") or "",
+                                  r.get("line") or 0))
+    elif sort == "line":
+        rows.sort(key=lambda r: (r.get("line") or 0, r.get("player") or ""))
+    else:  # "edge" default — descending
+        rows.sort(key=lambda r: -float(r.get("best_combined_edge") or 0))
+    return rows
+
+
+@router.get("/api/lines/scan", tags=["lines"])
+def api_lines_scan(
+    date: str = Query(default_factory=_today),
+    stat: Optional[str] = Query(default=None),
+    min_books: int = Query(default=2, ge=1),
+    sort: str = Query(default="edge"),
+):
+    """Multi-book line scanner — best/worst price per side for every (player, stat, line)."""
+    sort_key = sort if sort in _VALID_SORTS else "edge"
+    rows = _scan_rows(date, stat, min_books)
+    rows = _sort_rows(rows, sort_key)
+    return JSONResponse({
+        "date": date,
+        "stat": stat or "",
+        "min_books": min_books,
+        "sort": sort_key,
+        "n_props": len(rows),
+        "props": rows,
+    })
+
+
+@router.get("/scan", response_class=HTMLResponse, tags=["lines"])
+def scan_page(
+    request: Request,
+    date: str = Query(default_factory=_today),
+    stat: Optional[str] = Query(default=None),
+    min_books: int = Query(default=2, ge=1),
+    sort: str = Query(default="edge"),
+):
+    """HTML UI for the multi-book line scanner."""
+    sort_key = sort if sort in _VALID_SORTS else "edge"
+    rows = _scan_rows(date, stat, min_books)
+    rows = _sort_rows(rows, sort_key)
+    return _TEMPLATES.TemplateResponse("scan.html", {
+        "request": request,
+        "date": date,
+        "stat": stat or "",
+        "min_books": min_books,
+        "sort": sort_key,
+        "n_props": len(rows),
+        "props": rows,
+    })
