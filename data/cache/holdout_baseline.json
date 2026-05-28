@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T02:04:31Z",
+  "__updated_at__": "2026-05-28T02:18:31Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -1726,6 +1726,324 @@
       "min_remain_n": 200,
       "zero_ev_z": 1.5,
       "zero_ev_roi": 5.0,
+      "min_agg_lift_pp": 0.5,
+      "max_stat_regress": -1.0,
+      "n_bootstrap": 1000,
+      "seed": 42
+    }
+  },
+  "__iter55__": {
+    "iter": 55,
+    "generated_at": "2026-05-28T02:18:31Z",
+    "approach": "subsegment_refinement_2d_direction_x_line",
+    "n_bets_pre": 1697,
+    "n_bets_post": 1640,
+    "pre55_agg_roi": 11.9355,
+    "post55_agg_roi": 13.265,
+    "delta_agg_pp": 1.3295,
+    "decision": "SHIP",
+    "decision_detail": "Aggregate delta +1.3295pp >= +0.5pp AND no per-stat regression > -1.0pp. Filters wired: {'ast': [('over', 'high')]}.",
+    "regressions": [],
+    "improvements": [
+      "ast: +8.1279pp (filter=[('over', 'high')])"
+    ],
+    "filters_wired": [
+      [
+        "ast",
+        [
+          [
+            "over",
+            "high"
+          ]
+        ]
+      ]
+    ],
+    "per_stat": {
+      "pts": {
+        "pre_n": 335,
+        "post_n": 335,
+        "pre_roi": 7.7069,
+        "post_roi": 7.7069,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "reb": {
+        "pre_n": 343,
+        "post_n": 343,
+        "pre_roi": 4.6382,
+        "post_roi": 4.6382,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "ast": {
+        "pre_n": 283,
+        "post_n": 226,
+        "pre_roi": 5.9107,
+        "post_roi": 14.0386,
+        "delta_roi": 8.1279,
+        "filter": [
+          [
+            "over",
+            "high"
+          ]
+        ]
+      },
+      "fg3m": {
+        "pre_n": 311,
+        "post_n": 311,
+        "pre_roi": 16.0187,
+        "post_roi": 16.0187,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "stl": {
+        "pre_n": 178,
+        "post_n": 178,
+        "pre_roi": 16.905,
+        "post_roi": 16.905,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "blk": {
+        "pre_n": 247,
+        "post_n": 247,
+        "pre_roi": 25.9845,
+        "post_roi": 25.9845,
+        "delta_roi": 0.0,
+        "filter": null
+      }
+    },
+    "candidate_diagnostics": {
+      "pts": {
+        "over_low": {
+          "n": 88,
+          "roi_pct": 6.3017,
+          "z_score": 1.514,
+          "ci_lo": -13.22,
+          "ci_hi": 25.83,
+          "hit_rate_pct": 55.68,
+          "filterable": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "over_high": {
+          "n": 53,
+          "roi_pct": -2.7444,
+          "z_score": 0.485,
+          "ci_lo": -27.96,
+          "ci_hi": 22.47,
+          "hit_rate_pct": 50.94,
+          "filterable": false
+        },
+        "under_low": {
+          "n": 99,
+          "roi_pct": 7.989,
+          "z_score": 1.782,
+          "ci_lo": -9.41,
+          "ci_hi": 25.34,
+          "hit_rate_pct": 56.57,
+          "filterable": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "under_high": {
+          "n": 95,
+          "roi_pct": 14.5455,
+          "z_score": 2.416,
+          "ci_lo": -3.54,
+          "ci_hi": 32.63,
+          "hit_rate_pct": 60.0,
+          "filterable": false
+        }
+      },
+      "reb": {
+        "over_low": {
+          "n": 105,
+          "roi_pct": -12.7273,
+          "z_score": -0.391,
+          "ci_lo": -30.91,
+          "ci_hi": 3.68,
+          "hit_rate_pct": 45.71,
+          "filterable": true
+        },
+        "over_mid": {
+          "n": 67,
+          "roi_pct": 16.825,
+          "z_score": 2.225,
+          "ci_lo": -5.97,
+          "ci_hi": 39.62,
+          "hit_rate_pct": 61.19,
+          "filterable": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "under_low": {
+          "n": 92,
+          "roi_pct": 7.9051,
+          "z_score": 1.71,
+          "ci_lo": -10.77,
+          "ci_hi": 28.66,
+          "hit_rate_pct": 56.52,
+          "filterable": false
+        },
+        "under_mid": {
+          "n": 79,
+          "roi_pct": 13.5788,
+          "z_score": 2.113,
+          "ci_lo": -5.75,
+          "ci_hi": 35.33,
+          "hit_rate_pct": 59.49,
+          "filterable": false
+        },
+        "under_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        }
+      },
+      "ast": {
+        "over_low": {
+          "n": 82,
+          "roi_pct": 21.0643,
+          "z_score": 2.864,
+          "ci_lo": 2.44,
+          "ci_hi": 39.69,
+          "hit_rate_pct": 63.41,
+          "filterable": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "over_high": {
+          "n": 57,
+          "roi_pct": -26.3158,
+          "z_score": -1.364,
+          "ci_lo": -49.76,
+          "ci_hi": -6.22,
+          "hit_rate_pct": 38.6,
+          "filterable": true
+        },
+        "under_low": {
+          "n": 69,
+          "roi_pct": -0.3953,
+          "z_score": 0.758,
+          "ci_lo": -22.53,
+          "ci_hi": 24.51,
+          "hit_rate_pct": 52.17,
+          "filterable": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "under_high": {
+          "n": 75,
+          "roi_pct": 19.6364,
+          "z_score": 2.609,
+          "ci_lo": -0.73,
+          "ci_hi": 40.0,
+          "hit_rate_pct": 62.67,
+          "filterable": false
+        }
+      },
+      "fg3m": {
+        "over_low": {
+          "n": 147,
+          "roi_pct": 16.8831,
+          "z_score": 3.303,
+          "ci_lo": 2.6,
+          "ci_hi": 31.17,
+          "hit_rate_pct": 61.22,
+          "filterable": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "under_low": {
+          "n": 164,
+          "roi_pct": 15.2439,
+          "z_score": 3.268,
+          "ci_lo": 1.25,
+          "ci_hi": 29.21,
+          "hit_rate_pct": 60.37,
+          "filterable": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        },
+        "under_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "filterable": false
+        }
+      }
+    },
+    "params": {
+      "min_seg_n": 50,
+      "min_complement_n": 100,
+      "max_ci_hi_pct": 5.0,
+      "negative_roi_gate": -10.0,
       "min_agg_lift_pp": 0.5,
       "max_stat_regress": -1.0,
       "n_bootstrap": 1000,

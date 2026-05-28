@@ -217,3 +217,65 @@ def is_line_excluded(stat: str, closing_line: float) -> bool:
     lo, hi = excl
     # Exclusion range is (lo, hi]: lo < line <= hi is excluded
     return lo < closing_line <= hi
+
+
+# ── Iter-55: Per-stat 2D direction x line-bucket exclusions ───────────────────
+# Iter-55 (subsegment_refinement) probed the iter-54 segment_tables at MIN_SEG_N=50
+# (relaxed from 100) for 2D direction x line slices with strongly negative ROI that
+# REMAIN after iter-54's 1D line-bucket exclusions are applied.
+# Date: 2026-05-28.
+# Method: outcome-preserved simulation on data/cache/eval_2025_26_combined.csv.
+# Pre-iter-55 baseline (= post iter-54): n_bets=1697, ROI=+11.9355%.
+# Post-iter-55:                          n_bets=1640, ROI=+13.2650%.
+# Aggregate delta: +1.3295pp.
+# Filters wired (stat -> list of (bet_direction, line_bucket) tuples to DROP):
+#       "ast":  [("over", "high")],   # Iter-55: drop sub-segments
+STAT_DIRECTION_LINE_EXCLUSIONS: dict[str, list[tuple[str, str]]] = {
+    "pts":  [],
+    "reb":  [],
+    "ast":  [("over", "high")],   # Iter-55: drop sub-segments
+    "fg3m":  [],
+    "stl":  [],
+    "blk":  [],
+    "tov":  [],
+}
+
+# Line bucket boundaries for stats — closing_line cutoffs (must match iter-54 buckets).
+_LINE_BUCKET_CUTOFFS: dict[str, tuple[float, float]] = {
+    "pts":  (9.5, 15.5),
+    "reb":  (3.5, 5.5),
+    "ast":  (1.5, 3.5),
+    "fg3m":  (1.5, 1.5),
+    "stl":  (0.5, 1.5),
+}
+
+
+def _line_bucket_for_internal(stat: str, closing_line: float) -> str:
+    """Return 'low' | 'mid' | 'high' bucket for *closing_line* given *stat*."""
+    cuts = _LINE_BUCKET_CUTOFFS.get(stat.lower())
+    if cuts is None:
+        return "unknown"
+    low_max, mid_max = cuts
+    if closing_line <= low_max:
+        return "low"
+    if closing_line <= mid_max:
+        return "mid"
+    return "high"
+
+
+def is_direction_line_excluded(stat: str, direction: str, closing_line: float) -> bool:
+    """Return True if (direction, line_bucket(closing_line)) is in the iter-55 exclusion
+    list for *stat*.
+
+    Usage in bet-decision code::
+
+        if is_direction_line_excluded(stat, direction, closing_line):
+            continue  # skip — sub-segment zero/negative-EV (Iter-55)
+
+    Returns False for unknown stats or stats with no sub-segment exclusion.
+    """
+    slices = STAT_DIRECTION_LINE_EXCLUSIONS.get(stat.lower(), [])
+    if not slices:
+        return False
+    bucket = _line_bucket_for_internal(stat, closing_line)
+    return (direction.lower(), bucket) in slices
