@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T02:18:31Z",
+  "__updated_at__": "2026-05-28T02:19:16Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -2049,5 +2049,56 @@
       "n_bootstrap": 1000,
       "seed": 42
     }
+  },
+  "__iter56__": {
+    "iter": 56,
+    "generated_at": "2026-05-28T02:19:16Z",
+    "approach": "tov_re_entry_exploration",
+    "decision": "REVERT",
+    "decision_detail": "TOV cannot be evaluated on this slice. TOV has 0 rows in eval CSV (no closing-lines coverage in 2025-26 odds API). Source RS+PO TOV counts: 0+0. No bets can be measured, so the ship-gate (ROI>=+5% & z>=1.5 on n>=50) is structurally unreachable.",
+    "integrity_check": {
+      "meta_n": 129,
+      "meta_method": "xgb",
+      "meta_file": "quantile_pergame_tov_q50.json",
+      "lgb_pkl_n_features_in": 85,
+      "lgb_pkl_stale": true,
+      "xgb_json_exists": true,
+      "xgb_json_size": 859998,
+      "ok": true
+    },
+    "eval_tov_rows": 0,
+    "eval_csv_distribution": {
+      "pts": 505,
+      "reb": 475,
+      "ast": 431,
+      "fg3m": 422,
+      "stl": 181,
+      "blk": 325
+    },
+    "source_tov_counts": {
+      "rs_2025_26": 0,
+      "rs_2025_26_total": 3431,
+      "po_2025_26": 0,
+      "po_2025_26_total": 1809
+    },
+    "tov_roi_pct": null,
+    "tov_z_score": null,
+    "tov_n_bets": 0,
+    "tov_bootstrap_ci": null,
+    "blockers": [
+      "TOV has 0 rows in eval CSV (no closing-lines coverage in 2025-26 odds API). Source RS+PO TOV counts: 0+0."
+    ],
+    "ship_gates": {
+      "primary": {
+        "roi_pct": 5.0,
+        "z": 1.5,
+        "min_bets": 50
+      },
+      "filtered": {
+        "roi_pct": 10.0,
+        "z": 2.0
+      }
+    },
+    "data_pipeline_note": "STATS list in scripts/reseed_holdout_baseline_2025_26.py:33 explicitly excludes TOV: '# tov absent from 2025-26 CSVs'. Sportsbooks (DK, FD, Pinnacle via OddsAPI) do not list player TOV markets for 2025-26. Until a TOV-bearing odds source is wired, TOV cannot be backtested or bet."
   }
 }
