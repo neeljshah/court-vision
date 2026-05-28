@@ -69,9 +69,11 @@ THRESHOLDS: dict[str, float] = {
 
 # ── Iter-35 per-stat GROUND TRUTH (from Engineering Knowledge.md) ─────────────
 # These are the actual outcomes on the 2,688-bet expanded eval (flat -110)
+# NOTE (iter-52 correction): REB was updated from 16.73%/157bets (stale 85-feat pkl,
+# mismatch vs 133-feat meta → inference crashed) to 9.32%/241bets (fresh 132-feat pkl).
 ITER35_PER_STAT: dict[str, dict] = {
     "pts":  {"n_bets": 818,  "roi_pct": 11.32},
-    "reb":  {"n_bets": 157,  "roi_pct": 16.73},
+    "reb":  {"n_bets": 241,  "roi_pct": 9.32},   # iter-52 corrected (was 16.73/157, stale pkl)
     "ast":  {"n_bets": 374,  "roi_pct": 24.04},
     "fg3m": {"n_bets": 74,   "roi_pct": 26.41},
     "stl":  {"n_bets": 634,  "roi_pct": 15.03},

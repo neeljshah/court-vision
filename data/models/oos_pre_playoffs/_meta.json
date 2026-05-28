@@ -1,32 +1,12 @@
 {
   "stats": {
     "reb": {
+      "iter": "iter52_fresh_gbdt",
       "cutoff_date": "2025-04-21",
-      "stat": "reb",
-      "method": "lgb",
       "n_train": 66560,
-      "n_val": 11747,
-      "val_pinball_q50": 0.978142080077124,
-      "val_mae": 1.956284160154248,
-      "model_filename": "quantile_pergame_lgb_reb_q50.pkl",
-      "training_timestamp": "2026-05-27T16:50:52.344271",
-      "fit_seconds": 6.330104827880859,
-      "best_iteration": 614,
-      "n_features": 129,
-      "hps": {
-        "n_estimators": 800,
-        "max_depth": 3,
-        "learning_rate": 0.025,
-        "subsample": 0.7,
-        "colsample_bytree": 0.9,
-        "min_child_weight": 30,
-        "reg_lambda": 4.0,
-        "reg_alpha": 0.5,
-        "gamma": 0.3,
-        "random_state": 42
-      },
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
+      "n_features": 132,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -156,36 +136,26 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
-      ]
+        "adv_usage_z",
+        "team_oreb_pct_l5",
+        "opp_dreb_pct_l5",
+        "reb_chance_l5"
+      ],
+      "training_timestamp": "2026-05-27T20:56:03.347056",
+      "fit_seconds": 6.33253288269043,
+      "val_mae": 1.9437917654195656,
+      "val_pinball": 0.9718958827097828,
+      "n_estimators_actual": 775,
+      "method": "lgb_gbdt_q50",
+      "fix_note": "Repaired stale pkl (was 85 features, meta claimed 133). Retrained at current 132-col schema."
     },
     "fg3m": {
+      "iter": "iter46",
       "cutoff_date": "2025-04-21",
-      "stat": "fg3m",
-      "method": "xgb",
       "n_train": 66560,
-      "n_val": 11747,
-      "val_pinball_q50": 0.43452368110415474,
-      "val_mae": 0.8690473622083095,
-      "model_filename": "quantile_pergame_fg3m_q50.json",
-      "training_timestamp": "2026-05-27T16:51:02.400367",
-      "fit_seconds": 10.044095993041992,
-      "best_iteration": 597,
-      "n_features": 129,
-      "hps": {
-        "n_estimators": 600,
-        "max_depth": 4,
-        "learning_rate": 0.025,
-        "subsample": 0.7,
-        "colsample_bytree": 0.8,
-        "min_child_weight": 15,
-        "reg_lambda": 8.0,
-        "reg_alpha": 0.5,
-        "gamma": 0.0,
-        "random_state": 42
-      },
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
+      "n_features": 130,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -315,36 +285,65 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
+        "adv_usage_z",
+        "per_opp_fg3m_l3"
+      ],
+      "training_timestamp": "2026-05-27T20:34:03.079792",
+      "fit_seconds": 9.23093318939209,
+      "new_feature": "per_opp_fg3m_l3",
+      "method": "xgb_q50",
+      "val_pinball": 0.4339949319595982,
+      "val_mae": 0.8679898639191964,
+      "top10_xgb": [
+        [
+          "std_fg3m",
+          0.15777304768562317
+        ],
+        [
+          "ewma_fg3m",
+          0.1100122332572937
+        ],
+        [
+          "l10_fg3m",
+          0.07635319232940674
+        ],
+        [
+          "prof_height_in",
+          0.04950157180428505
+        ],
+        [
+          "games_played",
+          0.04813408851623535
+        ],
+        [
+          "std_blk",
+          0.04578001797199249
+        ],
+        [
+          "l10_blk",
+          0.03692351654171944
+        ],
+        [
+          "ewma_blk",
+          0.03141559287905693
+        ],
+        [
+          "per_opp_fg3m_l3",
+          0.027766238898038864
+        ],
+        [
+          "l5_fg3m",
+          0.025453956797719002
+        ]
       ]
     },
     "stl": {
+      "iter": "iter46",
       "cutoff_date": "2025-04-21",
-      "stat": "stl",
-      "method": "xgb",
       "n_train": 66560,
-      "n_val": 11747,
-      "val_pinball_q50": 0.3338231916421128,
-      "val_mae": 0.6676463832842257,
-      "model_filename": "quantile_pergame_stl_q50.json",
-      "training_timestamp": "2026-05-27T16:51:05.708190",
-      "fit_seconds": 3.3038241863250732,
-      "best_iteration": 125,
-      "n_features": 129,
-      "hps": {
-        "n_estimators": 400,
-        "max_depth": 2,
-        "learning_rate": 0.06,
-        "subsample": 0.9,
-        "colsample_bytree": 0.8,
-        "min_child_weight": 40,
-        "reg_lambda": 6.0,
-        "reg_alpha": 0.25,
-        "gamma": 0.6,
-        "random_state": 42
-      },
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
+      "n_features": 130,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -474,36 +473,65 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
+        "adv_usage_z",
+        "per_opp_stl_l3"
+      ],
+      "training_timestamp": "2026-05-27T20:34:03.079792",
+      "fit_seconds": 3.1861209869384766,
+      "new_feature": "per_opp_stl_l3",
+      "method": "xgb_q50",
+      "val_pinball": 0.3350718651122402,
+      "val_mae": 0.6701437302244804,
+      "top10_xgb": [
+        [
+          "ewma_min",
+          0.2467757910490036
+        ],
+        [
+          "l10_min",
+          0.22142256796360016
+        ],
+        [
+          "l5_min",
+          0.16367284953594208
+        ],
+        [
+          "std_stl",
+          0.09350675344467163
+        ],
+        [
+          "prev_min",
+          0.06554261595010757
+        ],
+        [
+          "dmatch_partial_poss_share",
+          0.052594155073165894
+        ],
+        [
+          "l10_stl",
+          0.04817570745944977
+        ],
+        [
+          "l10_ast",
+          0.04310972988605499
+        ],
+        [
+          "std_ast",
+          0.03932259604334831
+        ],
+        [
+          "ewma_stl",
+          0.025877241045236588
+        ]
       ]
     },
     "blk": {
+      "iter": "iter46",
       "cutoff_date": "2025-04-21",
-      "stat": "blk",
-      "method": "xgb",
       "n_train": 66560,
-      "n_val": 11747,
-      "val_pinball_q50": 0.20269362490899673,
-      "val_mae": 0.40538724981799346,
-      "model_filename": "quantile_pergame_blk_q50.json",
-      "training_timestamp": "2026-05-27T16:51:15.214662",
-      "fit_seconds": 9.505472183227539,
-      "best_iteration": 793,
-      "n_features": 129,
-      "hps": {
-        "n_estimators": 800,
-        "max_depth": 3,
-        "learning_rate": 0.06,
-        "subsample": 0.8,
-        "colsample_bytree": 1.0,
-        "min_child_weight": 25,
-        "reg_lambda": 4.0,
-        "reg_alpha": 0.5,
-        "gamma": 0.4,
-        "random_state": 42
-      },
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
+      "n_features": 130,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -633,7 +661,56 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
+        "adv_usage_z",
+        "per_opp_blk_l3"
+      ],
+      "training_timestamp": "2026-05-27T20:34:03.079792",
+      "fit_seconds": 9.790476083755493,
+      "new_feature": "per_opp_blk_l3",
+      "method": "xgb_q50",
+      "val_pinball": 0.20240433758938978,
+      "val_mae": 0.40480867517877955,
+      "top10_xgb": [
+        [
+          "std_blk",
+          0.41406530141830444
+        ],
+        [
+          "l5_reb",
+          0.05601204186677933
+        ],
+        [
+          "dmatch_partial_poss_share",
+          0.05025449022650719
+        ],
+        [
+          "std_reb",
+          0.029003536328673363
+        ],
+        [
+          "ewma_reb",
+          0.027406349778175354
+        ],
+        [
+          "bbref_blk_pct",
+          0.02598385326564312
+        ],
+        [
+          "l10_blk",
+          0.023657532408833504
+        ],
+        [
+          "l10_reb",
+          0.019347945228219032
+        ],
+        [
+          "ewma_pts",
+          0.0170961394906044
+        ],
+        [
+          "prev_reb",
+          0.01622483879327774
+        ]
       ]
     },
     "tov": {
@@ -796,20 +873,12 @@
       ]
     },
     "pts": {
+      "iter": "iter46",
       "cutoff_date": "2025-04-21",
-      "stat": "pts",
-      "method": "sqrt_huber_blend",
       "n_train": 50899,
-      "n_val": 11746,
-      "n_holdout": 15662,
-      "val_mae": 4.5911,
-      "training_timestamp": "2026-05-27T16:52:17.798722",
-      "fit_seconds": 50.867607831954956,
-      "n_features": 129,
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
-      "holdout_r2": 0.5169,
-      "holdout_mae": 4.5911,
+      "n_features": 130,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -939,27 +1008,68 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
+        "adv_usage_z",
+        "per_opp_pts_l3"
       ],
-      "meta_w_xgb": 0.8594,
-      "meta_w_lgb": 0.0773,
-      "meta_w_mlp": 0.0987
+      "training_timestamp": "2026-05-27T20:34:03.079792",
+      "fit_seconds": 25.608937740325928,
+      "new_feature": "per_opp_pts_l3",
+      "method": "nnls_blend",
+      "holdout_r2": 0.5228507897808214,
+      "holdout_mae": 4.5222832424634145,
+      "w_xgb": 0.9306697176384384,
+      "w_lgb": 0.06933028236156162,
+      "w_mlp": 0.0,
+      "top10_xgb": [
+        [
+          "l10_pts",
+          0.4432380497455597
+        ],
+        [
+          "ewma_pts",
+          0.16137632727622986
+        ],
+        [
+          "std_pts",
+          0.13566018640995026
+        ],
+        [
+          "dmatch_primary_def_height_in",
+          0.04381668567657471
+        ],
+        [
+          "dnp_l10_avg",
+          0.028543904423713684
+        ],
+        [
+          "dmatch_partial_poss_share",
+          0.022115463390946388
+        ],
+        [
+          "ewma_min",
+          0.01279305201023817
+        ],
+        [
+          "rest_days",
+          0.008268958888947964
+        ],
+        [
+          "adv_usage_std",
+          0.008241902105510235
+        ],
+        [
+          "prev_min",
+          0.007725255563855171
+        ]
+      ]
     },
     "ast": {
+      "iter": "iter46",
       "cutoff_date": "2025-04-21",
-      "stat": "ast",
-      "method": "log1p_multitask_mlp_blend",
       "n_train": 50899,
-      "n_val": 11746,
-      "n_holdout": 15662,
-      "val_mae": 1.3399,
-      "training_timestamp": "2026-05-27T16:53:15.610875",
-      "fit_seconds": 57.812153339385986,
-      "n_features": 129,
       "n_total_rows": 101765,
       "n_pre_cutoff_rows": 78307,
-      "holdout_r2": 0.5057,
-      "holdout_mae": 1.3399,
+      "n_features": 130,
       "feature_columns": [
         "l5_pts",
         "l10_pts",
@@ -1089,10 +1199,63 @@
         "adv_efg_std",
         "adv_usage_vs_opp_l3",
         "adv_ts_vs_opp_l3",
-        "adv_usage_z"
+        "adv_usage_z",
+        "per_opp_ast_l3"
+      ],
+      "training_timestamp": "2026-05-27T20:34:03.079792",
+      "fit_seconds": 31.154326677322388,
+      "new_feature": "per_opp_ast_l3",
+      "method": "nnls_blend",
+      "holdout_r2": 0.4883685080349822,
+      "holdout_mae": 1.329395382812169,
+      "w_xgb": 0.0,
+      "w_lgb": 1.0,
+      "w_mlp": 0.0,
+      "top10_xgb": [
+        [
+          "l10_ast",
+          0.3785823881626129
+        ],
+        [
+          "std_ast",
+          0.17986463010311127
+        ],
+        [
+          "ewma_ast",
+          0.08385177701711655
+        ],
+        [
+          "l5_ast",
+          0.024940351024270058
+        ],
+        [
+          "prev_min",
+          0.012206374667584896
+        ],
+        [
+          "ewma_min",
+          0.012094801291823387
+        ],
+        [
+          "dmatch_partial_poss_share",
+          0.011799714528024197
+        ],
+        [
+          "dmatch_primary_def_height_in",
+          0.007397750858217478
+        ],
+        [
+          "days_since_last_game",
+          0.007225748151540756
+        ],
+        [
+          "prof_height_in",
+          0.006798668298870325
+        ]
       ]
     }
   },
   "cutoff": "2025-04-21",
-  "iter": "iter22"
+  "iter": "iter46",
+  "updated_at": "2026-05-27T20:34:03.079792"
 }
