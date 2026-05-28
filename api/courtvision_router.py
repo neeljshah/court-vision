@@ -199,6 +199,37 @@ def _latest_slate_date() -> Optional[str]:
     return max(dates) if dates else None
 
 
+def _filter_to_mainline(line_rows: list[dict]) -> list[dict]:
+    """Collapse alt-line ladders to one mainline row per (player, stat).
+
+    Sportsbooks publish many alt lines per prop (e.g. SGA pts at 19.5 / 24.5 /
+    28.5 / 29.5 / 30.5 / 40.5 / 43.5). Only the consensus line — usually the
+    one offered by the most books — is the real mainline; the rest are
+    juiced-vig alt markets. Grading every line as an independent bet inflates
+    EV (model trivially says "99% under 43.5" → fake +112% EV).
+
+    Mainline = the line with the most book entries. Ties broken by closeness
+    to the median of all lines for that (player, stat).
+    """
+    from collections import defaultdict
+    groups: dict[tuple, list[dict]] = defaultdict(list)
+    for r in line_rows:
+        key = (str(r.get("player", "")).lower(), r.get("stat", ""))
+        groups[key].append(r)
+    out: list[dict] = []
+    for rows in groups.values():
+        if len(rows) == 1:
+            out.append(rows[0]); continue
+        max_books = max(len(r.get("books") or []) for r in rows)
+        candidates = [r for r in rows if len(r.get("books") or []) == max_books]
+        if len(candidates) == 1:
+            out.append(candidates[0]); continue
+        lines = sorted(float(r["line"]) for r in rows)
+        median_line = lines[len(lines) // 2]
+        out.append(min(candidates, key=lambda r: abs(float(r["line"]) - median_line)))
+    return out
+
+
 def _build_slate(date: str) -> dict:
     """Cached slate builder. Returns the JSON envelope dict."""
     cache_key = ("slate", date)
@@ -223,6 +254,11 @@ def _build_slate(date: str) -> dict:
     lines_path = _lines_csv_path(date)
     if not line_rows and lines_path is not None:
         line_rows = load_lines_csv(lines_path)
+    # Filter to mainline per (player, stat) — alt-line ladders (e.g. SGA pts at
+    # 19.5/24.5/40.5/43.5 alongside the real 29.5 line) otherwise inflate EV
+    # because the model trivially says "99% under 43.5". Mainline = the line
+    # offered by the most books; ties broken by closeness to median line.
+    line_rows = _filter_to_mainline(line_rows)
     has_lines = bool(line_rows)
     if has_lines:
         ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
