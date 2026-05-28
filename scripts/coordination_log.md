@@ -63,3 +63,21 @@ Append-only; one event per line.
   M2v19 spread_AH10 binary  SHIP Brier -5.48% AUC 0.66
   M2v20 q4_margin reg       REJECT -1.55% (Q4 randomness floor)
 R11 tally: 22 ticks, 16 ships, 8 rejects. Game-level family ships across continuous (total/spread/team-pts/Q1/H1) AND binary (O/U at 220/230, ATS at -3/-5/-7/-10) markets. Two Q4-only surfaces saturate (randomness floor).
+[2026-05-26 S2] BATCH-2 SHIP x12 — R11 M2v21-M2v36 (16 variants, 19.1s):
+  M2v21 O225        SHIP Brier -8.76%  AUC 0.629
+  M2v22 O235        SHIP Brier -7.74%  AUC 0.621
+  M2v23 O240        SHIP Brier -6.07%  AUC 0.614
+  M2v24 O250        SHIP Brier -8.43%  AUC 0.611
+  M2v25 AH1         SHIP Brier -13.54% AUC 0.680
+  M2v26 AH2         SHIP Brier -13.48% AUC 0.685
+  M2v27 AH8         SHIP Brier -10.21% AUC 0.669
+  M2v28 AH12        SHIP Brier -4.48%  AUC 0.687 (AUC gate saves)
+  M2v29 PH3         SHIP Brier -18.53% AUC 0.696 [BEST]
+  M2v30 PH5         SHIP Brier -18.15% AUC 0.687
+  M2v32 away_q1     SHIP -6.42% (3/3)
+  M2v34 q1_total    SHIP -5.02% (3/3)
+  M2v31 home_q2     REJECT -4.52% (close)
+  M2v33 away_q4     REJECT -3.87% (Q4 floor)
+  M2v35 h2_total    REJECT -4.66% (close)
+  M2v36 blowout     REJECT no signal (game-flow chaos)
+R11 tally: 28 ticks, 28 ships, 12 rejects. FULL O/U COVERAGE 220-250, FULL ATS COVERAGE -1 to -12, plus Q1 + H1 + team-pts surfaces. Saturated angles: Q2/Q4/H2 quarter targets, blowout binary.

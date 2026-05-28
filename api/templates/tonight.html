@@ -3,6 +3,7 @@
 {% block subtitle %}Tonight · {{ slate.date }}{% endblock %}
 {% block og_title %}CourtVision · {{ slate.date }} · {{ slate.summary.n_bets }} edges{% endblock %}
 {% block og_desc %}{{ slate.summary.n_bets }} ranked NBA prop bets · avg EV {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}% · model-graded reasoning per pick.{% endblock %}
+{% block nav_tonight %}active{% endblock %}
 
 {% block content %}
 <section class="mb-3 md:mb-4">
@@ -60,8 +61,9 @@
 </section>
 
 {% if not slate.bets %}
-  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
-    <p>No graded edges for {{ slate.date }}.</p>
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted);padding:32px 24px;">
+    <div style="font-size:32px;margin-bottom:12px;opacity:.35">🏀</div>
+    <p style="font-size:14px;font-weight:600;color:var(--cv-text);margin-bottom:6px">No graded edges for {{ slate.date }}</p>
     <p class="text-xs mt-2">
       Latest available slate:
       {% if slate.latest_available %}
@@ -70,10 +72,21 @@
         <span class="pending">none</span>
       {% endif %}
     </p>
+    <div style="margin-top:14px">
+      <a href="/odds" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;
+        background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:8px;
+        color:var(--cv-accent);font-size:12px;font-weight:600;text-decoration:none;">
+        View live odds →</a>
+    </div>
   </div>
 {% else %}
+  <!-- Top-15 model recommendations, same format as /odds -->
+  <div style="margin-bottom:12px;font-size:11px;color:var(--cv-subtle)">
+    Showing top {{ [slate.bets|length, 15]|min }} of {{ slate.bets|length }} recommendations ·
+    <a href="/odds?date={{ slate.date }}" style="color:var(--cv-accent)">See full line shop →</a>
+  </div>
   <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-    {% for bet in slate.bets %}
+    {% for bet in slate.bets[:15] %}
       {% set rank = loop.index %}
       {% include "_bet_card.html" %}
     {% endfor %}

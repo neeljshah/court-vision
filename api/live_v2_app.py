@@ -33,11 +33,11 @@ if PROJECT_DIR not in sys.path:
     sys.path.insert(0, PROJECT_DIR)
 
 from fastapi import (  # noqa: E402
-    Depends, FastAPI, HTTPException, Query, WebSocket, WebSocketDisconnect,
-    status,
+    Depends, FastAPI, HTTPException, Query, Request, WebSocket,
+    WebSocketDisconnect, status,
 )
 from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
-from fastapi.responses import FileResponse  # noqa: E402
+from fastapi.responses import FileResponse, JSONResponse  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
@@ -45,6 +45,10 @@ STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 from src.live.event_bus import (  # noqa: E402
     TOPIC_BET_RECOMMENDED, TOPIC_LINES_REFRESHED, TOPIC_PREGAME_INFO,
     TOPIC_PROJECTION_UPDATED, TOPIC_SNAPSHOT_UPDATED, get_bus,
+)
+from scripts.task_supervisor import create_supervised_task  # noqa: E402
+from scripts.freshness_watchdog import (  # noqa: E402
+    run_freshness_watchdog, check_book_freshness,
 )
 from src.live.explanation_engine import ExplanationEngine  # noqa: E402
 from src.live.pregame_ev_engine import (  # noqa: E402
@@ -63,23 +67,52 @@ def _required_token() -> Optional[str]:
     return os.environ.get("LIVE_V2_AUTH_TOKEN") or None
 
 
-def auth_dep(token: Optional[str] = Query(None)) -> None:
-    """Bearer-style auth via ?token=... query arg (also used for WS handshake).
+def _cookie_valid(request: Request) -> bool:
+    """Return True if the cv_session HttpOnly cookie carries the right value."""
+    required = _required_token()
+    if required is None:
+        return True
+    cookie_val = request.cookies.get("cv_session")
+    return bool(cookie_val) and cookie_val == required
 
+
+def auth_dep(request: Request, token: Optional[str] = Query(None)) -> None:
+    """Auth via HttpOnly cookie (preferred) or ?token= query param (curl compat).
+
+    Cookie is set by GET /auth/init so the browser never exposes the token in
+    page source.  Existing curl-with-token flows still work via ?token=.
     If LIVE_V2_AUTH_TOKEN is unset, the API is open (local-dev mode).
     """
     required = _required_token()
     if required is None:
         return
-    if not token or token != required:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="invalid or missing token")
+    # Cookie-first: browser sends it automatically — token never in HTML/JS
+    if _cookie_valid(request):
+        return
+    # Fallback: explicit ?token= for curl / server-to-server callers
+    if token and token == required:
+        return
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="invalid or missing token")
 
 
-def _ws_auth_ok(token: Optional[str]) -> bool:
+def _ws_auth_ok(token: Optional[str], conn=None) -> bool:
+    """Authenticate a WebSocket or HTTP connection.
+
+    `conn` may be a Request or WebSocket — both expose .cookies (HTTPConnection).
+    """
     required = _required_token()
     if required is None:
         return True
+    # Cookie path: browser sends cv_session cookie on the WS upgrade handshake
+    if conn is not None:
+        try:
+            cookie_val = conn.cookies.get("cv_session")
+            if cookie_val and cookie_val == required:
+                return True
+        except Exception:
+            pass
+    # Fallback: explicit ?token= query param (curl / server-to-server)
     return bool(token) and token == required
 
 
@@ -421,11 +454,23 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # ── per-route timing middleware ───────────────────────────────────
+    @app.middleware("http")
+    async def _timing_middleware(request, call_next):
+        t0 = time.time()
+        response = await call_next(request)
+        elapsed = time.time() - t0
+        path = request.url.path
+        log.info("[req] %s took %.2fs (status=%s)", path, elapsed, response.status_code)
+        if elapsed > 1.0:
+            log.warning("[SLOW] %s took %.2fs — investigate cache misses", path, elapsed)
+        return response
+
     @app.on_event("startup")
     async def _startup() -> None:
         global _orchestrator, _orchestrator_task
 
-        log.info("live_v2_app build_marker=shadow-endpoint-2026-05-27")
+        log.info("live_v2_app build_marker=scraper-probe-dk-direct-2026-05-27")
         # Subscribe to every event bus topic.
         bus = get_bus()
         bus.subscribe("*", _on_any_event)
@@ -433,6 +478,70 @@ def create_app() -> FastAPI:
         # startup tick so the dashboard hydrates with bets immediately.
         bus.subscribe(TOPIC_LINES_REFRESHED, _refresh_pregame_bets)
         asyncio.create_task(_run_pregame_ev_loop())
+
+        # DK WebSocket prop subscriber (sub-second line-move latency).
+        # Gate on DK_WS_ENABLED=1 so prod can disable without code changes.
+        if os.environ.get("DK_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
+            try:
+                from scripts.draftkings_ws import start_dk_ws
+                create_supervised_task("dk_ws", start_dk_ws)
+                log.info("live_v2_app DK WS subscriber task started (supervised)")
+            except Exception as _dk_exc:  # noqa: BLE001
+                log.warning("live_v2_app DK WS import failed (non-fatal): %s", _dk_exc)
+
+        # BetRivers KAMBI WebSocket prop subscriber (CometD/Bayeux push).
+        # Gate on BR_WS_ENABLED=1 so prod can disable without code changes.
+        if os.environ.get("BR_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
+            try:
+                from scripts.betrivers_ws import start_br_ws
+                create_supervised_task("br_ws", start_br_ws)
+                log.info("live_v2_app BR WS subscriber task started (supervised)")
+            except Exception as _br_exc:  # noqa: BLE001
+                log.warning("live_v2_app BR WS import failed (non-fatal): %s", _br_exc)
+
+        # FD WebSocket prop subscriber (CometD/Bayeux; falls back to 30s HTTP poll).
+        # Gate on FD_WS_ENABLED=1. From geo-restricted IPs uses poll fallback.
+        if os.environ.get("FD_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
+            try:
+                from scripts.fanduel_ws import start_fd_ws
+                create_supervised_task("fd_ws", start_fd_ws)
+                log.info("live_v2_app FD WS subscriber task started (supervised)")
+            except Exception as _fd_exc:  # noqa: BLE001
+                log.warning("live_v2_app FD WS import failed (non-fatal): %s", _fd_exc)
+
+        # Freshness watchdog — monitors all books for stale data and low volume.
+        create_supervised_task("freshness_watchdog", run_freshness_watchdog)
+
+        # Steam / sharp-move detector — emits sharp.steam / sharp.rlm events.
+        # Gate on STEAM_DETECTOR_ENABLED (default on).
+        if os.environ.get("STEAM_DETECTOR_ENABLED", "1").strip() in ("1", "true", "yes", "on"):
+            try:
+                from scripts.steam_detector import run_steam_detector  # noqa: PLC0415
+                create_supervised_task("steam_detector", run_steam_detector)
+                log.info("live_v2_app steam_detector task started (supervised)")
+            except Exception as _sd_exc:  # noqa: BLE001
+                log.warning("live_v2_app steam_detector import failed (non-fatal): %s", _sd_exc)
+
+        # Nightly CLV grader — fires at 06:00 UTC, loops every 24h.
+        # Supervised so it auto-restarts on crash.  Gate on
+        # NIGHTLY_GRADER_DISABLED=1 to disable without code changes.
+        if os.environ.get("NIGHTLY_GRADER_DISABLED", "").strip() not in ("1", "true", "yes"):
+            try:
+                from scripts import nightly_grader as _ng  # noqa: PLC0415
+                create_supervised_task("nightly_grader", _ng.schedule_nightly)
+                log.info("live_v2_app nightly_grader task scheduled (06:00 UTC daily)")
+            except Exception as _ng_exc:  # noqa: BLE001
+                log.warning("live_v2_app nightly_grader import failed (non-fatal): %s", _ng_exc)
+
+        # Nightly NBA roster refresh — fires at 05:00 UTC, loops every 24h.
+        # Keeps players_nba_active.json current so the WNBA filter in
+        # _courtvision_odds picks up roster moves without a server restart.
+        try:
+            from scripts import refresh_nba_roster as _rnr  # noqa: PLC0415
+            create_supervised_task("roster_refresh", _rnr.schedule_nightly)
+            log.info("live_v2_app roster_refresh task scheduled (05:00 UTC daily)")
+        except Exception as _rnr_exc:  # noqa: BLE001
+            log.warning("live_v2_app roster_refresh import failed (non-fatal): %s", _rnr_exc)
 
         # Maybe spawn the orchestrator.
         game_ids_raw = os.environ.get("LIVE_V2_GAME_IDS", "").strip()
@@ -469,12 +578,15 @@ def create_app() -> FastAPI:
             except Exception:  # noqa: BLE001
                 pass
 
-    # ── static dashboard (served at /) ───────────────────────────
-    # Public — anyone with the URL gets the HTML; the API + WS
-    # underneath still require ?token=... when LIVE_V2_AUTH_TOKEN set.
-    @app.get("/")
+    # ── static dashboard (served at /dashboard) ──────────────────
+    # Moved from / to /dashboard so the CourtVision games hub (courtvision_router)
+    # owns the root path as the casual-bettor landing page.
+    @app.get("/dashboard")
     async def root_dashboard():
         path = os.path.join(STATIC_DIR, "dashboard.html")
+        if not os.path.exists(path):
+            from fastapi.responses import HTMLResponse as _HR
+            return _HR("<h2>Live dashboard not built yet</h2>", status_code=200)
         return FileResponse(path, media_type="text/html")
 
     if os.path.isdir(STATIC_DIR):
@@ -490,6 +602,17 @@ def create_app() -> FastAPI:
             "recent_bets_count": len(_recent_bets),
             "orchestrator_started": _orchestrator is not None,
         }
+
+    @app.get("/api/health/books")
+    async def health_books(_: None = Depends(auth_dep)) -> Dict[str, Any]:
+        """Per-book staleness + volume health.
+
+        Returns the last watchdog observation for every registered book.
+        ``overall`` is "healthy" iff every book reports status "ok".
+        Polled by the dashboard's live-status indicator.
+        """
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, check_book_freshness)
 
     @app.get("/api/state")
     async def state(_: None = Depends(auth_dep)) -> Dict[str, Any]:
@@ -534,6 +657,23 @@ def create_app() -> FastAPI:
             grid = []
         return {"player": player, "stat": stat, "line": line, "books": grid}
 
+    @app.get("/api/scraper-probe/{book}")
+    async def scraper_probe(book: str,
+                            _: None = Depends(auth_dep)) -> Dict[str, Any]:
+        """Probe a sportsbook's candidate endpoints FROM the Railway prod IP.
+
+        Dev machines get WAF-blocked by most US books, so probing locally
+        wastes cycles. This endpoint runs the same curl_cffi chrome120 probe
+        from Railway and reports which URLs respond — tells us which book to
+        invest scraper LOC in next.
+        """
+        from api.scraper_probe import probe_book  # local import (lazy)
+        try:
+            return await probe_book(book)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("scraper_probe failed for %s: %s", book, exc)
+            return {"book": book, "error": str(exc)}
+
     @app.post("/api/explain")
     async def explain(payload: Dict[str, Any],
                       _: None = Depends(auth_dep)) -> Dict[str, Any]:
@@ -561,10 +701,33 @@ def create_app() -> FastAPI:
                 continue
         return explainer.explain_bet(bet, snapshot=snap, projection_row=row)
 
+    # ── /auth/init — sets HttpOnly cookie so /odds never leaks token ──
+    @app.get("/auth/init")
+    async def auth_init(request: Request):
+        """Issue an HttpOnly cv_session cookie.
+
+        The browser calls this once on /odds page load (credentials:'include').
+        After that the cookie rides every request automatically — the token is
+        never visible to JS or in page source.
+        """
+        required = _required_token()
+        resp = JSONResponse({"ok": True})
+        if required:
+            resp.set_cookie(
+                key="cv_session",
+                value=required,
+                httponly=True,
+                samesite="lax",
+                secure=False,   # flip to True behind TLS (Railway/Vercel)
+                max_age=86400,  # 24 h; re-issued on each /odds load
+                path="/",
+            )
+        return resp
+
     # ── WebSocket endpoint ────────────────────────────────────────
     @app.websocket("/ws/live")
     async def ws_live(ws: WebSocket, token: Optional[str] = Query(None)):
-        if not _ws_auth_ok(token):
+        if not _ws_auth_ok(token, ws):
             await ws.close(code=4401)
             return
         await manager.connect(ws)
@@ -611,6 +774,13 @@ def create_app() -> FastAPI:
         log.info("courtvision_router included on live_v2_app")
     except Exception as _cv_exc:
         log.warning("courtvision_router unavailable on live_v2_app: %s", _cv_exc)
+
+    try:
+        from api._risk_router import router as _risk_router
+        app.include_router(_risk_router, tags=["risk"])
+        log.info("risk_router included on live_v2_app")
+    except Exception as _risk_exc:
+        log.warning("risk_router unavailable on live_v2_app: %s", _risk_exc)
 
     return app
 

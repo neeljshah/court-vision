@@ -196,8 +196,11 @@ def _build_base_cmd() -> list:
         "--no-warnings",
         "--sleep-requests", "0",
         "--no-abort-on-error",
-        # Android player client bypasses datacenter IP bot detection without curl_cffi
-        "--extractor-args", "youtube:player_client=android",
+        # NOTE: was "player_client=android" — but in yt-dlp 2026+ the android
+        # client SKIPS cookies ("Skipping client 'android' since it does not
+        # support cookies"), leaving requests unauthenticated → bot-detected on
+        # NBA content. With logged-in cookies + Deno + yt-dlp-ejs the default
+        # client chain (tv/web with signature solving) works.
     ]
     # Point yt-dlp at conda env's ffmpeg (not on system PATH)
     _ffmpeg_dir = PROJECT_DIR.parent / "anaconda3" / "envs" / "basketball_ai" / "Library" / "bin"
@@ -282,11 +285,15 @@ def _download_video_yt(vid_id: str, out_path: Path, base_cmd: list,
 
     try:
         dl_proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=600)
-        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 30_000_000:
             print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
             return True
         if dl_proc.stderr:
             print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+        # Delete tiny/failed downloads so the orchestrator doesn't pick them up.
+        if out_path.exists() and out_path.stat().st_size <= 30_000_000:
+            try: out_path.unlink()
+            except Exception: pass
     except subprocess.TimeoutExpired:
         print("  Download timed out")
     except Exception as e:
@@ -346,11 +353,14 @@ def _download_archive_item(url: str, out_path: Path, base_cmd: list,
     dl_cmd.append(url)
     try:
         proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=600)
-        if proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+        if proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 30_000_000:
             print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
             return True
         if proc.stderr:
             print(f"  yt-dlp error: {proc.stderr[-200:]}")
+        if out_path.exists() and out_path.stat().st_size <= 30_000_000:
+            try: out_path.unlink()
+            except Exception: pass
     except subprocess.TimeoutExpired:
         print("  Download timed out")
     except Exception as e:
@@ -404,11 +414,14 @@ def _download_direct_url(url: str, out_path: Path, base_cmd: list,
 
     try:
         dl_proc = subprocess.run(dl_cmd, capture_output=True, text=True, timeout=900)
-        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 1_000_000:
+        if dl_proc.returncode == 0 and out_path.exists() and out_path.stat().st_size > 30_000_000:
             print(f"  Saved: {out_path} ({out_path.stat().st_size // 1024 // 1024} MB)")
             return True
         if dl_proc.stderr:
             print(f"  yt-dlp error: {dl_proc.stderr[-200:]}")
+        if out_path.exists() and out_path.stat().st_size <= 30_000_000:
+            try: out_path.unlink()
+            except Exception: pass
     except subprocess.TimeoutExpired:
         print("  Download timed out")
     except Exception as e:
@@ -457,7 +470,75 @@ def _search_and_download(game: dict, out_path: Path,
         if c[1] not in _seen_ids:
             _seen_ids.add(c[1])
             deduped.append(c)
-    full_games = [c for c in deduped if c[0] >= 3600]
+    # Require BOTH team names (full, city, or abbrev) appear in title to prevent
+    # channel-boost from accepting unrelated games (e.g., "Time for Basketball"
+    # uploads from prior seasons labeled as current-season game_ids).
+    def _matches_teams(title):
+        tl = title.lower()
+        away_match = (away_full.lower() in tl) or (away_city.lower() in tl) or \
+                     (game["away"].lower() in tl)
+        home_match = (home_full.lower() in tl) or (home_city.lower() in tl) or \
+                     (game["home"].lower() in tl)
+        if not (away_match and home_match):
+            return False
+        import re as _re
+        years = set(_re.findall(r"\b(19[5-9]\d|20[0-2]\d)\b", tl))
+        current_era = {y for y in years if y in ("2024", "2025", "2026")}
+        stale = years - current_era
+        if stale and not current_era:
+            return False
+        # Reject explicit prior-season indicators like "2024-25", "2024 2025",
+        # "23-24". A title like "2024 2025 NBA Game 4" is the 2024-25 season,
+        # not the queried 2025-26 — even though both years are "current era".
+        season_pairs = set()
+        for y1, y2 in _re.findall(r"\b(20\d{2})[-/\s\.](20\d{2}|\d{2})\b", tl):
+            y2_int = int(y2) if len(y2) == 4 else 2000 + int(y2)
+            if y2_int == int(y1) + 1:
+                season_pairs.add((int(y1), y2_int))
+        if season_pairs:
+            current_seasons = {(2025, 2026), (2026, 2027)}
+            if not (season_pairs & current_seasons):
+                return False
+        # Date relevance: if the title names a specific month+day that does not
+        # match the queried game's date (±1 day for late-night broadcasts), it's
+        # a different game between the same teams — reject. Titles with no
+        # specific date are accepted (assumed channel-style uploads).
+        _MONTHS = {
+            "january": 1, "jan": 1, "february": 2, "feb": 2, "march": 3, "mar": 3,
+            "april": 4, "apr": 4, "may": 5, "june": 6, "jun": 6, "july": 7, "jul": 7,
+            "august": 8, "aug": 8, "september": 9, "sep": 9, "sept": 9, "october": 10,
+            "oct": 10, "november": 11, "nov": 11, "december": 12, "dec": 12,
+        }
+        found_dates = []
+        for mname, mnum in _MONTHS.items():
+            for m in _re.finditer(rf"\b{mname}\.?\s+(\d{{1,2}})(?:[a-z]{{0,2}})?(?:[,\s]+(\d{{4}}))?", tl):
+                day = int(m.group(1))
+                year = int(m.group(2)) if m.group(2) else None
+                if 1 <= day <= 31:
+                    found_dates.append((mnum, day, year))
+        for m in _re.finditer(r"\b(\d{1,2})[/\-\.](\d{1,2})(?:[/\-\.](\d{2,4}))?\b", tl):
+            month, day = int(m.group(1)), int(m.group(2))
+            yraw = m.group(3)
+            year = int("20" + yraw) if yraw and len(yraw) == 2 else (int(yraw) if yraw else None)
+            if 1 <= month <= 12 and 1 <= day <= 31:
+                found_dates.append((month, day, year))
+        if found_dates:
+            from datetime import timedelta as _td
+            ok = False
+            for delta in (-1, 0, 1):
+                target = date_obj + _td(days=delta)
+                for fmonth, fday, fyear in found_dates:
+                    if fmonth == target.month and fday == target.day:
+                        if fyear is None or fyear == target.year:
+                            ok = True
+                            break
+                if ok:
+                    break
+            if not ok:
+                return False
+        return True
+
+    full_games = [c for c in deduped if c[0] >= 3600 and _matches_teams(c[2])]
 
     if full_games:
         def _score(c):
@@ -496,6 +577,7 @@ def _search_and_download(game: dict, out_path: Path,
         query = tmpl.format(**fmt_args)
         print(f"  [DM] Searching: {query}")
         candidates = _search_dailymotion(query, base_cmd, min_dur=1200, max_dur=14400)
+        candidates = [c for c in candidates if _matches_teams(c[2])]
         if candidates:
             # Prefer longest (most complete game)
             best = candidates[0]
@@ -504,9 +586,12 @@ def _search_and_download(game: dict, out_path: Path,
                 return True
         time.sleep(1)
 
-    # ── Pass 2.5: Internet Archive ────────────────────────────────────────────
+    # ── Pass 2.5: Internet Archive ─ re-enabled with team+year+date validation ──
+    # Use the same _matches_teams() guard (covers team names, current-era years,
+    # and date-in-title checks) so IA can't return 1990s NBA All-Star Game.
     print(f"  Trying Internet Archive...")
     ia_hits = _search_archive_org(away_full, home_full, away_city, home_city)
+    ia_hits = [(d, u, t) for (d, u, t) in ia_hits if _matches_teams(t)]
     for ia_dur, ia_url, ia_title in ia_hits[:3]:
         print(f"  [IA] {ia_title[:60]} ({ia_dur}s)")
         if _download_archive_item(ia_url, out_path, base_cmd, segment_seconds):
@@ -519,6 +604,7 @@ def _search_and_download(game: dict, out_path: Path,
         query = tmpl.format(**fmt_args)
         print(f"  Searching: {query}")
         candidates = _search_yt(query, base_cmd, min_dur=1800, max_dur=5400)
+        candidates = [c for c in candidates if _matches_teams(c[2])]
         if not candidates:
             continue
         def _hl_score(c):

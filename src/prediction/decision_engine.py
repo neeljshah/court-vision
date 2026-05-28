@@ -313,6 +313,115 @@ def build_why(rec: Dict[str, Any], line: Dict[str, Any], side: str,
     )
 
 
+# ── risk gate (final filter before emit) ────────────────────────────────
+def _risk_filter(bets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Apply RiskConfig / RiskState gate to a ranked list of bet candidates.
+
+    Returns only the bets that pass.  All rejects are logged at INFO level.
+    Failures in the risk module are non-fatal — if risk_controls can't be
+    imported the full bet list is returned unchanged so the engine keeps
+    running.
+    """
+    try:
+        from database.bet_db import BetDB  # noqa: PLC0415
+        from src.prediction.risk_controls import (  # noqa: PLC0415
+            RiskConfig, RiskState, can_place_bet, evaluate_risk, read_kill_switch,
+        )
+    except Exception as exc:
+        log.debug("risk_controls import failed (non-fatal): %s", exc)
+        return bets
+
+    try:
+        db       = BetDB()
+        cfg      = RiskConfig()
+        today    = time.strftime("%Y-%m-%d")
+        today_s  = db.daily_summary(today)
+        bankroll = db.current_bankroll()
+        open_bets = db.list_bets(status="pending", limit=500)
+        open_count = len(open_bets)
+        dd       = db.drawdown_pct(30)
+        ks_on, ks_reason = read_kill_switch()
+
+        state = RiskState(
+            bankroll=bankroll,
+            daily_pnl=today_s.get("total_pnl", 0.0),
+            daily_stake=today_s.get("total_stake", 0.0),
+            open_bet_count=open_count,
+            drawdown_30d_pct=dd,
+            kill_switch_engaged=ks_on,
+            kill_reason=ks_reason,
+        )
+
+        # Portfolio-level kill: if kill switch or hard cap hit → emit nothing.
+        portfolio = evaluate_risk(state, cfg)
+        if not portfolio["ok"]:
+            log.info("[risk] portfolio blocked, emitting 0 bets: %s",
+                     portfolio["blocked_reasons"][0] if portfolio["blocked_reasons"] else "unknown")
+            return []
+
+        # Per-bet filter.
+        passed: List[Dict[str, Any]] = []
+        for bet in bets:
+            proposed = {
+                "player":   bet.get("name") or bet.get("player_id"),
+                "game_id":  bet.get("game_id", ""),
+                "stake":    bankroll * bet.get("kelly", 0.0),
+                "p_hit":    bet.get("p_hit", 0.0),
+                "ev_pct":   (bet.get("ev") or 0.0) * 100.0,
+                "side":     bet.get("side", ""),
+            }
+            allowed, reasons = can_place_bet(proposed, state, cfg, open_bets)
+            if allowed:
+                passed.append(bet)
+            else:
+                log.info(
+                    "[risk] blocked %s %s line=%s: %s",
+                    bet.get("name"), bet.get("stat"),
+                    bet.get("line"), reasons[0] if reasons else "unknown",
+                )
+        return passed
+
+    except Exception as exc:
+        log.warning("[risk] gate error (non-fatal, returning full list): %s", exc)
+        return bets
+
+
+# ── shadow DB logging ───────────────────────────────────────────────────
+def _db_log_shadow_bet(payload: Dict[str, Any]) -> None:
+    """Insert a recommended bet into the SQLite ledger as source='shadow'/status='intended'.
+
+    Fire-and-forget: errors are logged but never propagate to the live path.
+    Only runs when BET_DB_SHADOW_LOG env var is not set to '0'.
+    """
+    if os.environ.get("BET_DB_SHADOW_LOG", "1") == "0":
+        return
+    try:
+        from database.bet_db import BetDB  # noqa: PLC0415
+        game_id   = payload.get("game_id") or ""
+        date_part = time.strftime("%Y-%m-%d")
+        bet = {
+            "date":        date_part,
+            "game_id":     game_id,
+            "player_id":   payload.get("player_id"),
+            "player_name": payload.get("name") or str(payload.get("player_id") or ""),
+            "stat":        payload.get("stat", ""),
+            "line":        payload.get("line", 0.0),
+            "side":        payload.get("side", ""),
+            "book":        payload.get("book") or "unknown",
+            "odds":        payload.get("odds", 0),
+            "stake":       payload.get("kelly", 0.0),  # fractional Kelly (not $)
+            "kelly_size":  payload.get("kelly"),
+            "model_ev_pct": payload.get("ev"),
+            "model_p_hit":  payload.get("p_hit"),
+            "status":      "intended",
+            "source":      "shadow",
+            "notes":       payload.get("why"),
+        }
+        BetDB().insert_bet(bet)
+    except Exception as exc:
+        log.debug("shadow DB log failed (non-fatal): %s", exc)
+
+
 # ── engine ──────────────────────────────────────────────────────────────
 class DecisionEngine:
     """Subscribe to projection + line events; emit top-N bet recommendations."""
@@ -385,13 +494,17 @@ class DecisionEngine:
         bets = self.rank_for_game(game_id)
         if not bets:
             return
+
+        # ── risk gate (final filter before emit) ─────────────────
+        bets = _risk_filter(bets)
+        if not bets:
+            return
+
         # Emit each top bet so consumers (alerts, dashboard) can filter.
         for bet in bets[: self.top_n]:
-            await self.bus.publish(TOPIC_BET_RECOMMENDED, {
-                **bet,
-                "game_id": game_id,
-                "reason": reason,
-            })
+            payload = {**bet, "game_id": game_id, "reason": reason}
+            await self.bus.publish(TOPIC_BET_RECOMMENDED, payload)
+            _db_log_shadow_bet(payload)
 
     def rank_for_game(self, game_id: str) -> List[Dict[str, Any]]:
         _shadow_on = os.environ.get("SHADOW_LOG_ENABLED", "1") == "1"

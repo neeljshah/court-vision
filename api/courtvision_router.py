@@ -1,17 +1,18 @@
 """courtvision_router.py — CourtVision UI routes.
 
-Routes: /tonight, /parlays, /share/{slug} (+ qr.svg), /plus_ev, /healthz,
-        /api/{slate, bet/{id}, parlays, plus_ev}.
+Routes: / (home), /game/{game_id}, /tonight, /parlays, /share/{slug} (+ qr.svg),
+        /plus_ev, /healthz, /api/{slate, bet/{id}, parlays, plus_ev}.
 Helpers in api._courtvision_data. Parlay engine in src.prediction.parlay_engine.
 """
 from __future__ import annotations
 
+import threading
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Body, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
@@ -30,18 +31,73 @@ except Exception:
 
 def register_with_app(app) -> None:
     from api._courtvision_middleware import install; install(app, _limiter)
-    # Pre-warm the slate + form cache on startup so the first user request
-    # doesn't pay the 5-10s cost of reading player_quarter_stats.parquet.
+    # Pre-warm ALL cold-path caches on startup so the first user request
+    # never pays the 77s cold-load penalty.
+    #
+    # Ranked culprits (measured on prod hardware):
+    #   1. get_form_lookup()        — player_quarter_stats.parquet  ~1.4-5s
+    #   2. _get_win_prob_model()    — win_prob_v3.pkl (2GB RAM scan) ~2-8s
+    #   3. _load_predictions()      — predictions_cache_<date>.parquet ~0.5-2s
+    #   4. _next_game_day()         — walks O(days x books) CSVs    ~0.5-2s
+    #   5. _build_slate()           — CSV I/O + grade_bet grading    ~1-3s
+    #
+    # All five run concurrently in a background thread at startup. Railway boot
+    # stays well under 60s; every subsequent request gets a cache hit (0.24s).
     @app.on_event("startup")
     async def _warm_caches() -> None:
         import asyncio
-        async def _warm() -> None:
+        import logging as _log
+        _logger = _log.getLogger(__name__)
+
+        def _warm_all() -> None:
+            _t0 = time.perf_counter()
+            steps: list[tuple[str, float]] = []
+
+            def _step(label: str, fn):
+                t = time.perf_counter()
+                try:
+                    fn()
+                except Exception as exc:
+                    _logger.warning("warmup/%s failed: %s", label, exc)
+                steps.append((label, time.perf_counter() - t))
+
+            # 1. form lookup (player_quarter_stats.parquet) — biggest single hit
+            from api._courtvision_form import get_form_lookup
+            _step("form_lookup", get_form_lookup)
+
+            # 2. win_prob model (win_prob_v3.pkl) — ~2s pickle load on Railway
+            _step("win_prob_model", _get_win_prob_model)
+
+            # 3. next-game-day CSV scan — called on every route, cached 60s
+            _step("next_game_day", _next_game_day)
+
+            # 4. team stats JSON (instant but ensures the module-level dict is populated)
+            _step("team_stats", lambda: _load_nba_team_stats(_NBA_CURRENT_SEASON))
+
+            # 5. NBA player roster (used by consolidate to filter non-NBA props)
             try:
-                await asyncio.to_thread(_build_slate, _today_et())
-                __import__("logging").getLogger(__name__).info("courtvision cache pre-warmed")
-            except Exception as exc:
-                __import__("logging").getLogger(__name__).warning("pre-warm failed: %s", exc)
-        asyncio.create_task(_warm())
+                from api._courtvision_odds import _load_nba_players
+                _step("nba_roster", _load_nba_players)
+            except Exception:
+                pass
+
+            # 6. predictions_cache parquet for today/latest date
+            try:
+                from api._predictions_overlay import _load_predictions
+                warm_date = _today_et()
+                _step(f"predictions_cache({warm_date})", lambda: _load_predictions(warm_date))
+            except Exception:
+                pass
+
+            # 7. slate + grading (triggers consolidate + attach_form, already warm after step 1)
+            _step("build_slate", lambda: _build_slate(_today_et()))
+
+            total = time.perf_counter() - _t0
+            detail = " | ".join(f"{label}={dur:.2f}s" for label, dur in steps)
+            _logger.info("courtvision warmup done in %.2fs: %s", total, detail)
+
+        asyncio.create_task(asyncio.to_thread(_warm_all))
+
 _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
@@ -57,9 +113,66 @@ _CACHE: dict = {}
 
 
 def _today_et() -> str:
-    """Default date: today (US/Eastern), else fall back to most recent slate."""
+    """Default date: today if it has lines or a slate, else the next date with
+    live odds, else the most-recent slate.
+
+    Pages like /odds, /tonight, /parlays render off this date. We DON'T want
+    them showing yesterday's stale slate when today's lines CSVs already have
+    fresh odds targeted at tomorrow's game (common during off-days between
+    playoff games — odds are posted 2-3 days in advance).
+    """
     today = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
-    return today if _slate_csv_path(today) else (_latest_slate_date() or today)
+    # Today wins if it has either a model slate OR fresh lines.
+    if _slate_csv_path(today):
+        return today
+    if _lines_exist_for(today):
+        return today
+    # No data for today — look for the NEXT date with fresh lines (typical
+    # case: today is an off-day, but DK/FD/etc. have already posted lines for
+    # tomorrow / day-after).
+    nxt = _next_lines_date(today)
+    if nxt:
+        return nxt
+    # Final fallback: most-recent slate (yesterday's results page).
+    return _latest_slate_date() or today
+
+
+def _lines_exist_for(date: str) -> bool:
+    """True if at least one `data/lines/<date>_<book>.csv` exists with rows."""
+    if not _LINES_DIR.exists():
+        return False
+    for p in _LINES_DIR.iterdir():
+        if not p.is_file() or p.suffix != ".csv":
+            continue
+        if not p.stem.startswith(f"{date}_"):
+            continue
+        try:
+            if p.stat().st_size > 100:  # > header line
+                return True
+        except OSError:
+            continue
+    return False
+
+
+def _next_lines_date(after: str) -> Optional[str]:
+    """Earliest date strictly after `after` that has populated lines CSVs."""
+    if not _LINES_DIR.exists():
+        return None
+    dates: set[str] = set()
+    for p in _LINES_DIR.iterdir():
+        if not p.is_file() or p.suffix != ".csv":
+            continue
+        stem = p.stem
+        if len(stem) < 10 or stem[10] != "_":
+            continue
+        d = stem[:10]
+        if d > after:
+            try:
+                if p.stat().st_size > 100:
+                    dates.add(d)
+            except OSError:
+                continue
+    return min(dates) if dates else None
 
 
 def _slate_csv_path(date: str) -> Optional[Path]:
@@ -157,11 +270,764 @@ def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -
     return out
 
 
+# ── home page helpers ────────────────────────────────────────────────────────
+
+_TEAM_ABBREVS: dict[str, str] = {
+    # Full name fragments → display short name used on cards
+    "76ers": "PHI", "bucks": "MIL", "bulls": "CHI", "cavaliers": "CLE",
+    "celtics": "BOS", "clippers": "LAC", "grizzlies": "MEM", "hawks": "ATL",
+    "heat": "MIA", "hornets": "CHA", "jazz": "UTA", "kings": "SAC",
+    "knicks": "NYK", "lakers": "LAL", "magic": "ORL", "mavericks": "DAL",
+    "nets": "BKN", "nuggets": "DEN", "pacers": "IND", "pelicans": "NOP",
+    "pistons": "DET", "raptors": "TOR", "rockets": "HOU", "spurs": "SAS",
+    "suns": "PHX", "thunder": "OKC", "timberwolves": "MIN", "trail blazers": "POR",
+    "warriors": "GSW", "wizards": "WAS",
+}
+
+
+_GAMES_LOOKUP_CACHE: dict | None = None
+_GAMES_LOOKUP_MTIME: float = 0.0
+
+
+def _load_games_lookup() -> dict:
+    """Cached load of `data/cache/games_lookup.json` — refreshes when file mtime
+    changes. Empty dict if file missing."""
+    global _GAMES_LOOKUP_CACHE, _GAMES_LOOKUP_MTIME
+    import json as _json
+    path = _ROOT / "data" / "cache" / "games_lookup.json"
+    if not path.exists():
+        return _GAMES_LOOKUP_CACHE or {}
+    try:
+        mt = path.stat().st_mtime
+        if _GAMES_LOOKUP_CACHE is None or mt > _GAMES_LOOKUP_MTIME:
+            with path.open() as f:
+                _GAMES_LOOKUP_CACHE = _json.load(f)
+            _GAMES_LOOKUP_MTIME = mt
+    except (OSError, ValueError):
+        pass
+    return _GAMES_LOOKUP_CACHE or {}
+
+
+def _guess_teams_from_game_id(game_id: str) -> tuple[str, str]:
+    """Resolve team abbrs from the NBA games_lookup.json cache. Falls back to
+    generic labels when the game isn't in the lookup yet."""
+    lookup = _load_games_lookup()
+    info = lookup.get(str(game_id))
+    if info:
+        return (info.get("away_abbr", "AWAY"), info.get("home_abbr", "HOME"))
+    # Some scrapers use non-NBA game_ids (e.g. KAMBI event IDs). Match by start_time.
+    return ("AWAY", "HOME")
+
+
+def _fmt_tipoff(start_time_iso: str) -> str:
+    """Convert ISO timestamp to human-readable tipoff string, e.g. '8:40 PM ET'."""
+    if not start_time_iso:
+        return "TBD"
+    try:
+        from datetime import datetime, timezone, timedelta
+        dt = datetime.fromisoformat(start_time_iso.replace("Z", "+00:00"))
+        # Convert to ET (UTC-4 in summer / UTC-5 in winter — approximate)
+        et_offset = timedelta(hours=-4)
+        et = dt + et_offset
+        hour = et.hour
+        ampm = "AM" if hour < 12 else "PM"
+        if hour == 0:
+            hour = 12
+        elif hour > 12:
+            hour -= 12
+        return f"{hour}:{et.minute:02d} {ampm} ET"
+    except Exception:
+        return start_time_iso[:16] if len(start_time_iso) >= 16 else start_time_iso
+
+
+def _game_status(start_time_iso: str) -> str:
+    """'live', 'pregame', or 'final' based on start time."""
+    if not start_time_iso:
+        return "pregame"
+    try:
+        from datetime import datetime, timezone, timedelta
+        dt = datetime.fromisoformat(start_time_iso.replace("Z", "+00:00"))
+        now = datetime.now(timezone.utc)
+        delta = (now - dt).total_seconds()
+        if delta < 0:
+            return "pregame"
+        if delta < 4 * 3600:   # within 4-hour active game window
+            return "live"
+        return "final"
+    except Exception:
+        return "pregame"
+
+
+def _build_home_data(date: str) -> dict:
+    """Build the home page data payload. Cached for 60s."""
+    cache_key = ("home", date)
+    entry = _CACHE.get(cache_key)
+    if entry and time.time() - entry[0] < 60:
+        return entry[1]
+
+    from api._courtvision_odds import games_index, consolidate
+    from api._predictions_overlay import overlay_predictions
+
+    # --- games ---
+    games_raw = games_index(date)
+
+    # --- props with EV overlay (once per date) ---
+    props_all: list[dict] = []
+    try:
+        raw_props = consolidate(date)
+        props_all = overlay_predictions(date, raw_props)
+    except Exception:
+        props_all = []
+
+    # Index props by game_id for fast per-game lookup
+    props_by_game: dict[str, list[dict]] = {}
+    for p in props_all:
+        gid = p.get("game_id") or "?"
+        props_by_game.setdefault(gid, []).append(p)
+
+    # --- build game card data ---
+    upcoming: list[dict] = []
+    live: list[dict] = []
+
+    for g in games_raw:
+        gid = g["game_id"]
+        st = g.get("start_time") or ""
+        # Drop entries with no start_time — those are non-NBA / WNBA / scraper-
+        # internal IDs that don't represent a real upcoming NBA game.
+        if not st:
+            continue
+        status = _game_status(st)
+        game_props = props_by_game.get(gid, [])
+
+        # Top edges: props with rec_side and edge_pct, sorted by edge desc
+        edge_props = [p for p in game_props if p.get("rec_side") and p.get("edge_pct") is not None]
+        edge_props.sort(key=lambda p: -(p.get("edge_pct") or 0))
+
+        top_edges = []
+        for ep in edge_props[:3]:
+            side = ep.get("rec_side", "OVER")
+            best_o, best_u = None, None
+            for b in ep.get("books", []):
+                if b.get("over_price") is not None and (best_o is None or b["over_price"] > best_o):
+                    best_o = b["over_price"]
+                if b.get("under_price") is not None and (best_u is None or b["under_price"] > best_u):
+                    best_u = b["under_price"]
+            odds = best_o if side == "OVER" else best_u
+            top_edges.append({
+                "label": f"{ep['player']} {side[0]}{ep['line']:g} {ep['stat'].upper()}",
+                "odds": odds,
+                "edge_pct": ep.get("edge_pct"),
+            })
+
+        away_abbr, home_abbr = _guess_teams_from_game_id(gid)
+        # Drop KAMBI / non-NBA event IDs that the scraper ingested but we can't
+        # resolve to real NBA teams.  These show "AWAY @ HOME" on the card and
+        # are pure noise on the home page.
+        if away_abbr == "AWAY" and home_abbr == "HOME":
+            continue
+
+        n_props = g.get("n_props", 0)
+        # Skip games with fewer than 3 props — too sparse to be useful on the
+        # home page (typical case: single-prop KAMBI side-events).
+        if n_props < 3:
+            continue
+
+        card = {
+            "game_id": gid,
+            "start_time": st,
+            "start_time_iso": st,
+            "tipoff_display": _fmt_tipoff(st),
+            "status": status,
+            "away_team": away_abbr,
+            "home_team": home_abbr,
+            "matchup": f"{away_abbr} @ {home_abbr}",
+            "n_props": n_props,
+            "n_players": g.get("n_players", 0),
+            "top_edges": top_edges,
+            "score_away": None,
+            "score_home": None,
+        }
+
+        if status == "live":
+            live.append(card)
+        elif status == "pregame":
+            upcoming.append(card)
+        # 'final' games are omitted from both sections
+
+    # Sort upcoming by start_time
+    upcoming.sort(key=lambda g: g.get("start_time") or "")
+    live.sort(key=lambda g: g.get("start_time") or "")
+
+    # --- recently settled bets ---
+    settled: list[dict] = []
+    try:
+        from database.bet_db import BetDB
+        db = BetDB()
+        rows_won = db.list_bets(status="won", limit=5)
+        rows_lost = db.list_bets(status="lost", limit=5)
+        combined = sorted(rows_won + rows_lost,
+                          key=lambda b: b.get("settled_at") or b.get("created_at") or "",
+                          reverse=True)[:8]
+        settled = combined
+    except Exception:
+        settled = []
+
+    result = {
+        "upcoming_games": upcoming,
+        "live_games": live,
+        "settled_bets": settled,
+        "slate_date": date,
+        "section_label": "Tonight" if date == _today_et() else "Upcoming",
+    }
+    _CACHE[cache_key] = (time.time(), result)
+    return result
+
+
+_NBA_AVG_PACE = 99.5  # NBA 2024-25 season average possessions/game
+_NBA_CURRENT_SEASON = "2025-26"
+
+_TEAM_PACE_CACHE: dict | None = None
+_TEAM_PACE_MTIME: float = 0.0
+
+# Module-level cache for the win-prob model (avoids re-loading pickle on every request)
+_WIN_PROB_MODEL_CACHE: Optional[object] = None
+_WIN_PROB_MODEL_LOADED: bool = False
+_WIN_PROB_MODEL_LOCK: threading.Lock = threading.Lock()  # prevents thundering-herd on cold start
+
+# Module-level cache for nba team_stats JSON (keyed by season string)
+_TEAM_STATS_CACHE: dict = {}
+_TEAM_STATS_MTIME: dict = {}
+
+# Module-level abbrev→id mapping (populated once)
+_ABBREV_TO_TEAM_ID: dict = {}
+
+
+def _get_abbrev_to_id() -> dict:
+    """Return NBA team abbreviation → integer team_id mapping."""
+    global _ABBREV_TO_TEAM_ID
+    if _ABBREV_TO_TEAM_ID:
+        return _ABBREV_TO_TEAM_ID
+    try:
+        from nba_api.stats.static import teams as _nba_teams
+        _ABBREV_TO_TEAM_ID = {t["abbreviation"]: int(t["id"]) for t in _nba_teams.get_teams()}
+    except Exception:
+        pass
+    return _ABBREV_TO_TEAM_ID
+
+
+def _load_nba_team_stats(season: str = _NBA_CURRENT_SEASON) -> dict:
+    """Load data/nba/team_stats_{season}.json cached by season (keyed by int team_id)."""
+    global _TEAM_STATS_CACHE, _TEAM_STATS_MTIME
+    import json as _json
+    path = _ROOT / "data" / "nba" / f"team_stats_{season}.json"
+    if not path.exists():
+        return {}
+    try:
+        mt = path.stat().st_mtime
+        if season not in _TEAM_STATS_CACHE or mt > _TEAM_STATS_MTIME.get(season, 0.0):
+            with path.open() as f:
+                raw = _json.load(f)
+            # Keys may be strings or ints — normalise to int
+            _TEAM_STATS_CACHE[season] = {int(k): v for k, v in raw.items()}
+            _TEAM_STATS_MTIME[season] = mt
+    except (OSError, ValueError):
+        pass
+    return _TEAM_STATS_CACHE.get(season, {})
+
+
+def _team_stats_for(abbr: str, season: str = _NBA_CURRENT_SEASON) -> dict:
+    """Return the team_stats dict for a given abbreviation and season, or defaults."""
+    _D = {"off_rtg": 112.0, "def_rtg": 112.0, "net_rtg": 0.0,
+          "pace": _NBA_AVG_PACE, "efg_pct": 0.53, "ts_pct": 0.57,
+          "tov_pct": 13.0, "reb_pct": 0.5, "win_pct": 0.5}
+    ts = _load_nba_team_stats(season)
+    if not ts:
+        return _D
+    a2id = _get_abbrev_to_id()
+    tid = a2id.get(abbr.upper())
+    if tid:
+        return ts.get(tid, _D)
+    return _D
+
+
+def _load_team_pace() -> dict:
+    """Load data/cache/team_pace.json if it exists, else empty dict."""
+    global _TEAM_PACE_CACHE, _TEAM_PACE_MTIME
+    import json as _json
+    path = _ROOT / "data" / "cache" / "team_pace.json"
+    if not path.exists():
+        return {}
+    try:
+        mt = path.stat().st_mtime
+        if _TEAM_PACE_CACHE is None or mt > _TEAM_PACE_MTIME:
+            with path.open() as f:
+                _TEAM_PACE_CACHE = _json.load(f)
+            _TEAM_PACE_MTIME = mt
+    except (OSError, ValueError):
+        pass
+    return _TEAM_PACE_CACHE or {}
+
+
+def _compute_pace(away_abbr: str, home_abbr: str) -> tuple[Optional[float], Optional[float]]:
+    """Return (pace_away, pace_home) using real team stats.
+
+    Priority:
+    1. data/cache/team_pace.json  (manual override cache)
+    2. data/nba/team_stats_{season}.json  (NBA API advanced stats — has real PACE)
+    3. data/games/*.parquet  (tracking-derived pace)
+    4. NBA season average (99.5) — only if all above fail
+    """
+    pace_map = _load_team_pace()
+    if pace_map:
+        away = pace_map.get(away_abbr) or pace_map.get(away_abbr.lower())
+        home = pace_map.get(home_abbr) or pace_map.get(home_abbr.lower())
+        if away or home:
+            return (float(away) if away else _NBA_AVG_PACE,
+                    float(home) if home else _NBA_AVG_PACE)
+
+    # Tier 2: real per-team PACE from NBA advanced team stats cache
+    generic = {"AWAY", "HOME", "away", "home"}
+    if away_abbr not in generic and home_abbr not in generic:
+        try:
+            ht = _team_stats_for(home_abbr)
+            at = _team_stats_for(away_abbr)
+            h_pace = ht.get("pace")
+            a_pace = at.get("pace")
+            if h_pace and h_pace != _NBA_AVG_PACE:
+                return (round(float(a_pace or _NBA_AVG_PACE), 1),
+                        round(float(h_pace), 1))
+        except Exception:
+            pass
+
+    # Tier 3: scan recent games parquet for pace columns
+    try:
+        import glob as _glob
+        games_dir = _ROOT / "data" / "games"
+        if games_dir.exists():
+            parquets = sorted(_glob.glob(str(games_dir / "*.parquet")))[-5:]
+            if parquets:
+                import importlib
+                pd = importlib.import_module("pandas")
+                dfs = []
+                for p in parquets:
+                    try:
+                        dfs.append(pd.read_parquet(p, columns=["team_abbr", "pace"]))
+                    except Exception:
+                        pass
+                if dfs:
+                    df = pd.concat(dfs, ignore_index=True)
+                    pace_by_team = df.groupby("team_abbr")["pace"].mean().to_dict()
+                    away_p = pace_by_team.get(away_abbr, _NBA_AVG_PACE)
+                    home_p = pace_by_team.get(home_abbr, _NBA_AVG_PACE)
+                    return (round(away_p, 1), round(home_p, 1))
+    except Exception:
+        pass
+    # Return NBA average as sensible default
+    return (_NBA_AVG_PACE, _NBA_AVG_PACE)
+
+
+def _get_win_prob_model():
+    """Load and cache the win-prob model (CalibratedClassifierCV from win_prob_v3.pkl).
+
+    Returns (clf, feature_cols) tuple or (None, None) on failure.
+    Module-level cache avoids re-loading the ~5MB pickle on every request.
+    Thread lock (double-checked) prevents thundering-herd on cold-start: without
+    it, N concurrent first-requests would each start a ~2s pickle.load in parallel,
+    holding the GIL during deserialization and causing 77s page loads on Railway.
+    """
+    global _WIN_PROB_MODEL_CACHE, _WIN_PROB_MODEL_LOADED
+    if _WIN_PROB_MODEL_LOADED:  # fast path: no lock needed once loaded
+        return _WIN_PROB_MODEL_CACHE
+    with _WIN_PROB_MODEL_LOCK:  # only one thread loads; others wait then hit fast path
+        if _WIN_PROB_MODEL_LOADED:  # re-check under lock (double-checked locking)
+            return _WIN_PROB_MODEL_CACHE
+        # Perform the load under the lock so concurrent cold requests don't all
+        # start a ~2s pickle.load simultaneously.
+        try:
+            import pickle as _pickle
+            import warnings as _warn
+            model_path = _ROOT / "data" / "models" / "win_prob_v3.pkl"
+            if model_path.exists():
+                with _warn.catch_warnings():
+                    _warn.simplefilter("ignore")
+                    with model_path.open("rb") as f:
+                        data = _pickle.load(f)
+                clf = data.get("model")
+                cols = data.get("feature_cols", [])
+                if clf is not None and cols:
+                    _WIN_PROB_MODEL_CACHE = (clf, cols)
+        except Exception:
+            pass
+        _WIN_PROB_MODEL_LOADED = True  # mark done (even on failure — don't retry)
+    return _WIN_PROB_MODEL_CACHE
+
+
+def _compute_win_prob(game_id: str, props: list,
+                      away_abbr: str = "", home_abbr: str = "") -> Optional[float]:
+    """Return away-team win probability [0,1].
+
+    Priority:
+    1. win_prob_v3.pkl (CalibratedClassifierCV, 156 features) built from cached
+       team_stats — fills real values for all key features, zeros for rare extras.
+       Returns None if teams are unknown (generic AWAY/HOME placeholders).
+    2. Moneyline no-vig proxy from props books (unlikely in player-prop data).
+    3. None — template hides the section.
+    """
+    import numpy as _np
+
+    # Attempt 1: model prediction from cached team stats
+    generic = {"AWAY", "HOME", "away", "home", ""}
+    if away_abbr not in generic and home_abbr not in generic:
+        model_info = _get_win_prob_model()
+        if model_info is not None:
+            try:
+                clf, feature_cols = model_info
+                ht = _team_stats_for(home_abbr)
+                at = _team_stats_for(away_abbr)
+
+                # Build feature dict: real values for the ~25 high-importance
+                # stats we have, sensible defaults for the rest.
+                feats: dict = {c: 0.0 for c in feature_cols}
+                feats.update({
+                    "home_off_rtg":        ht.get("off_rtg", 112.0),
+                    "home_def_rtg":        ht.get("def_rtg", 112.0),
+                    "home_net_rtg":        ht.get("net_rtg", 0.0),
+                    "home_pace":           ht.get("pace", _NBA_AVG_PACE),
+                    "home_efg_pct":        ht.get("efg_pct", 0.53),
+                    "home_ts_pct":         ht.get("ts_pct", 0.57),
+                    "home_tov_pct":        ht.get("tov_pct", 13.0),
+                    "home_rest_days":      2.0,
+                    "home_back_to_back":   0.0,
+                    "home_last5_wins":     round(ht.get("win_pct", 0.5) * 5, 1),
+                    "home_season_win_pct": ht.get("win_pct", 0.5),
+                    "away_off_rtg":        at.get("off_rtg", 112.0),
+                    "away_def_rtg":        at.get("def_rtg", 112.0),
+                    "away_net_rtg":        at.get("net_rtg", 0.0),
+                    "away_pace":           at.get("pace", _NBA_AVG_PACE),
+                    "away_efg_pct":        at.get("efg_pct", 0.53),
+                    "away_ts_pct":         at.get("ts_pct", 0.57),
+                    "away_tov_pct":        at.get("tov_pct", 13.0),
+                    "away_rest_days":      2.0,
+                    "away_back_to_back":   0.0,
+                    "away_travel_miles":   1000.0,
+                    "away_last5_wins":     round(at.get("win_pct", 0.5) * 5, 1),
+                    "away_season_win_pct": at.get("win_pct", 0.5),
+                    "net_rtg_diff":        round(ht.get("net_rtg", 0.0) - at.get("net_rtg", 0.0), 2),
+                    "pace_diff":           round(ht.get("pace", _NBA_AVG_PACE) - at.get("pace", _NBA_AVG_PACE), 2),
+                    "home_advantage":      1.0,
+                    # L10 rolling — use season stats as proxy when not cached
+                    "home_off_rtg_L10":    ht.get("off_rtg", 112.0),
+                    "home_def_rtg_L10":    ht.get("def_rtg", 112.0),
+                    "home_net_rtg_L10":    ht.get("net_rtg", 0.0),
+                    "away_off_rtg_L10":    at.get("off_rtg", 112.0),
+                    "away_def_rtg_L10":    at.get("def_rtg", 112.0),
+                    "away_net_rtg_L10":    at.get("net_rtg", 0.0),
+                    "home_efg_L10":        ht.get("efg_pct", 0.50),
+                    "away_efg_L10":        at.get("efg_pct", 0.50),
+                    "home_tov_pct_L10":    ht.get("tov_pct", 13.0) / 100,
+                    "away_tov_pct_L10":    at.get("tov_pct", 13.0) / 100,
+                    "home_oreb_pct_L10":   ht.get("reb_pct", 0.5) * 0.5,
+                    "away_oreb_pct_L10":   at.get("reb_pct", 0.5) * 0.5,
+                    # Ref defaults (league average)
+                    "ref_avg_fouls":       42.0,
+                    "ref_home_win_pct":    0.5,
+                    "ref_fta_tendency":    0.0,
+                    "ref_crew_known":      0.0,
+                    # ELO defaults
+                    "home_elo":            1500.0,
+                    "away_elo":            1500.0,
+                    "elo_differential":    0.0,
+                    "home_elo_v2":         1500.0,
+                    "away_elo_v2":         1500.0,
+                    "elo_diff_v2":         0.0,
+                    "v3_home_elo_v2":      1500.0,
+                    "v3_away_elo_v2":      1500.0,
+                    "v3_elo_diff_v2":      0.0,
+                })
+
+                X = _np.array([[feats.get(c, 0.0) for c in feature_cols]], dtype=_np.float32)
+                prob_home = float(clf.predict_proba(X)[0][1])
+                prob_away = round(1.0 - prob_home, 3)
+                if 0.05 <= prob_away <= 0.95:
+                    return prob_away
+            except Exception:
+                pass
+
+    # Attempt 2: no-vig moneyline from any book in props
+    try:
+        for p in props:
+            for b in p.get("books", []):
+                ml_o = b.get("ml_over") or b.get("moneyline_home")
+                ml_u = b.get("ml_under") or b.get("moneyline_away")
+                if ml_o and ml_u:
+                    def _imp(american: int) -> float:
+                        if american > 0:
+                            return 100 / (american + 100)
+                        return -american / (-american + 100)
+                    p_home = _imp(int(ml_o))
+                    p_away = _imp(int(ml_u))
+                    total = p_home + p_away
+                    if total > 0:
+                        return round(p_away / total, 3)
+    except Exception:
+        pass
+
+    return None
+
+
+def _build_model_total(rec_bets_raw: list, home_abbr: str, away_abbr: str) -> tuple:
+    """Return (model_total, model_spread) from pts projections in rec_bets_raw.
+
+    Splits by team when the 'team' field is present on book entries; falls back
+    to splitting pts list in half. Returns (None, None) when no pts data.
+    model_spread is home_pts - away_pts (positive = home favored).
+    """
+    try:
+        home_pts = sum(
+            p.get("model_projection", 0) or 0
+            for p in rec_bets_raw
+            if p.get("stat") == "pts"
+            and any(b.get("team", "").upper() == home_abbr.upper() for b in p.get("books", []))
+        )
+        away_pts = sum(
+            p.get("model_projection", 0) or 0
+            for p in rec_bets_raw
+            if p.get("stat") == "pts"
+            and any(b.get("team", "").upper() == away_abbr.upper() for b in p.get("books", []))
+        )
+        if not home_pts and not away_pts:
+            all_pts = [p.get("model_projection", 0) or 0
+                       for p in rec_bets_raw if p.get("stat") == "pts"]
+            if all_pts:
+                half = max(len(all_pts) // 2, 1)
+                away_pts = sum(all_pts[:half])
+                home_pts = sum(all_pts[half:])
+        if home_pts or away_pts:
+            return (round(home_pts + away_pts, 1), round(home_pts - away_pts, 1))
+    except Exception:
+        pass
+    return (None, None)
+
+
+def _build_key_players(game_props: list) -> list:
+    """Top-3 player names by prop count — proxy for projected usage."""
+    counts: dict[str, int] = {}
+    for p in game_props:
+        counts[p["player"]] = counts.get(p["player"], 0) + 1
+    return [name for name, _ in sorted(counts.items(), key=lambda kv: -kv[1])[:3]]
+
+
+def _build_game_detail(game_id: str, date: str) -> dict:
+    """Build game-detail page data for one game_id. Cached 60s per (game_id, date).
+
+    Bug 1 fix — game_id alias resolution:
+    DK, PointsBet, KAMBI, and oddsapi each assign different IDs to the same
+    NBA matchup. We resolve the incoming game_id to its canonical set of aliases
+    via games_lookup.json, then filter props by matching ANY of those IDs.
+    This means /game/34201426 and /game/2734554 (both OKC@SAS) return the same
+    data — which is the correct behavior: same matchup, same page.
+    The URL /game/<any_alias_id> is treated as equivalent to the canonical ID.
+    """
+    cache_key = ("game_detail", game_id, date)
+    entry = _CACHE.get(cache_key)
+    if entry and time.time() - entry[0] < 60:
+        return entry[1]
+
+    from api._courtvision_odds import consolidate, resolve_game_id
+    from api._predictions_overlay import overlay_predictions
+
+    # Resolve the incoming ID to its full alias set (may be a singleton when
+    # the ID is not in games_lookup.json).
+    alias_info = resolve_game_id(game_id)
+    canonical_ids: frozenset[str] = alias_info.get("canonical_ids", frozenset([game_id]))
+
+    props_all: list[dict] = []
+    raw_props: list[dict] = []
+    try:
+        raw_props = consolidate(date)
+        # Filter by ANY canonical alias — this collapses DK/PB/KAMBI IDs for
+        # the same matchup into one unified props list.
+        game_raw = [p for p in raw_props if p.get("game_id") in canonical_ids]
+        if not game_raw:
+            # Last-resort fallback: show all props (old behaviour).
+            game_raw = raw_props
+        props_all = overlay_predictions(date, game_raw)
+    except Exception:
+        raw_props = []
+        props_all = []
+
+    # Re-filter after overlay (overlay may add props not in game_raw).
+    game_props = [p for p in props_all if p.get("game_id") in canonical_ids]
+    if not game_props:
+        game_props = props_all  # show all props if nothing matched
+
+    # Start time from first matching prop
+    start_time = ""
+    for p in (game_props or props_all or raw_props):
+        if p.get("game_id") in canonical_ids and p.get("start_time"):
+            start_time = p["start_time"]
+            break
+    if not start_time and (game_props or props_all):
+        cands = [p.get("start_time") or "" for p in (game_props or props_all)]
+        start_time = next((s for s in cands if s), "")
+
+    status = _game_status(start_time)
+
+    # Recommended bets: has rec_side + edge_pct, sorted desc
+    rec_bets_raw = [p for p in game_props if p.get("rec_side") and p.get("edge_pct") is not None]
+    rec_bets_raw.sort(key=lambda p: -(p.get("edge_pct") or 0))
+
+    rec_bets = []
+    for p in rec_bets_raw[:15]:
+        side = p.get("rec_side", "OVER")
+        best_book = ""
+        best_odds = None
+        deeplink_web = ""
+        for b in p.get("books", []):
+            price = b.get("over_price") if side == "OVER" else b.get("under_price")
+            if price is not None and (best_odds is None or price > best_odds):
+                best_odds = price
+                best_book = b.get("display") or b.get("book") or ""
+                deeplink_web = (b.get("deeplink_over_web") if side == "OVER"
+                                else b.get("deeplink_under_web")) or ""
+        rec_bets.append({
+            "player": p["player"],
+            "stat": p["stat"],
+            "line": p["line"],
+            "rec_side": side,
+            "edge_pct": p.get("edge_pct"),
+            "kelly_pct": p.get("kelly_pct"),
+            "best_odds": best_odds,
+            "best_book": best_book,
+            "deeplink_web": deeplink_web,
+        })
+
+    away_abbr, home_abbr = _guess_teams_from_game_id(game_id)
+
+    # ── Intelligence: win probability + pace ──────────────────────────
+    win_prob_away = _compute_win_prob(game_id, game_props,
+                                      away_abbr=away_abbr, home_abbr=home_abbr)
+    pace_away, pace_home = _compute_pace(away_abbr, home_abbr)
+
+    # ── Key matchup hints: top-2 props by edge ────────────────────────
+    key_bets = []
+    for p in rec_bets_raw[:2]:
+        side = p.get("rec_side", "OVER")
+        key_bets.append({
+            "player": p["player"],
+            "stat": p["stat"].upper(),
+            "line": p["line"],
+            "rec_side": side,
+            "edge_pct": p.get("edge_pct"),
+        })
+
+    # Pull off/def ratings for Intelligence card display
+    _generic = {"AWAY", "HOME", "away", "home"}
+    _ht_stats = _team_stats_for(home_abbr) if home_abbr not in _generic else {}
+    _at_stats = _team_stats_for(away_abbr) if away_abbr not in _generic else {}
+    off_rtg_home = round(_ht_stats["off_rtg"], 1) if _ht_stats.get("off_rtg") else None
+    def_rtg_home = round(_ht_stats["def_rtg"], 1) if _ht_stats.get("def_rtg") else None
+    off_rtg_away = round(_at_stats["off_rtg"], 1) if _at_stats.get("off_rtg") else None
+    def_rtg_away = round(_at_stats["def_rtg"], 1) if _at_stats.get("def_rtg") else None
+    # Determine pace_source label for transparency
+    _pace_from_nba_stats = (
+        pace_away != _NBA_AVG_PACE or pace_home != _NBA_AVG_PACE
+    ) and away_abbr not in _generic and home_abbr not in _generic
+    pace_source = "season_avg" if _pace_from_nba_stats else "default"
+
+    _mt, _ms = _build_model_total(rec_bets_raw, home_abbr, away_abbr)
+    game_info = {
+        "game_id": game_id,
+        "start_time_iso": start_time,
+        "tipoff_display": _fmt_tipoff(start_time),
+        "status": status,
+        "away_team": away_abbr,
+        "home_team": home_abbr,
+        "matchup": f"{away_abbr} @ {home_abbr}",
+        "n_props": len(game_props),
+        "n_players": len({p["player"] for p in game_props}),
+        "score_away": None,
+        "score_home": None,
+        "clock": None,
+        "win_prob_away": win_prob_away,
+        "win_prob_home": round(1.0 - win_prob_away, 3) if win_prob_away is not None else None,
+        "model_total": _mt,
+        "model_spread": _ms,
+        "key_players": _build_key_players(game_props),
+        "injury_status": [],  # no live feed; source: api/_courtvision_injuries.py TBD
+        "pace_away": pace_away,
+        "pace_home": pace_home,
+        "pace_source": pace_source,
+        "off_rtg_away": off_rtg_away,
+        "def_rtg_away": def_rtg_away,
+        "off_rtg_home": off_rtg_home,
+        "def_rtg_home": def_rtg_home,
+        "injury_notes": "",
+        "key_bets": key_bets,
+    }
+
+    result = {
+        "game": game_info,
+        "rec_bets": rec_bets,
+        "has_predictions": bool(rec_bets_raw),
+        "slate_date": date,
+    }
+    _CACHE[cache_key] = (time.time(), result)
+    return result
+
+
 # ── routes ───────────────────────────────────────────────────────────────────
+
+@router.get("/", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def home(request: Request, date: str = Query(default=None)):
+    """Games hub landing page — upcoming + live game cards with top EV edges."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    data = _build_home_data(date)
+    return _TEMPLATES.TemplateResponse("home.html", {"request": request, **data})
+
+
+@router.get("/api/home.json", tags=["courtvision"])
+def api_home(date: Optional[str] = Query(default=None)):
+    """Same payload as the home HTML page but as JSON — used by the WS live-tick
+    to refresh edge cards without a full page reload."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    return JSONResponse(_build_home_data(date))
+
+
+@router.get("/game/{game_id}", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def game_detail(game_id: str, request: Request, date: str = Query(default=None)):
+    """Per-game intelligence report + ranked bets + all props."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    data = _build_game_detail(game_id, date)
+    return _TEMPLATES.TemplateResponse("game_detail.html", {"request": request, **data})
+
+
+@router.get("/api/game/{game_id}.json", tags=["courtvision"])
+def api_game_detail(game_id: str, date: Optional[str] = Query(default=None)):
+    """Same data as /game/{game_id} HTML page but as JSON."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    return JSONResponse(_build_game_detail(game_id, date))
+
+
+@router.get("/risk", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def risk_page(request: Request):
+    """Risk control panel — bankroll, P&L, drawdown, kill-switch toggle."""
+    return _TEMPLATES.TemplateResponse("risk.html", {"request": request})
+
+
 @router.get("/tonight", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
-def tonight(request: Request, date: str = Query(default_factory=_today_et),
+def tonight(request: Request, date: str = Query(default=None),
             side: str = Query("ALL"), min_ev: float = Query(-999.0)):
+    if not date:
+        date = _next_game_day() or _today_et()
     slate = _build_slate(date)
     side_u = (side or "ALL").upper()
     if side_u in ("OVER", "UNDER") or min_ev > -999.0:
@@ -190,11 +1056,54 @@ def api_bet(bet_id: str, request: Request, date: str = Query(default_factory=_to
 
 
 @router.get("/api/parlays", tags=["courtvision"])
-def api_parlays(date: str = Query(default_factory=_today_et),
+def api_parlays(date: Optional[str] = Query(default=None),
                 max_legs: int = Query(5, ge=2, le=5),
                 min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
                 seed: int = Query(0, ge=0, le=10**9)):
+    # Use the same resolver as /parlays UI so the API + page always agree on date.
+    if not date:
+        date = _next_game_day() or _today_et()
     return JSONResponse(_build_parlays(date, max_legs, min_ev_pct, seed))
+
+
+def _american_to_decimal(odds: int) -> float:
+    return (odds / 100 + 1) if odds >= 0 else (-100 / odds + 1)
+
+
+def _decimal_to_american(dec: float) -> int:
+    return round((dec - 1) * 100) if dec >= 2 else round(-100 / (dec - 1))
+
+
+@router.post("/api/parlays/build", tags=["courtvision"])
+def api_parlays_build(body: dict = Body(...)):
+    """Compute combined American / decimal odds for an arbitrary set of legs.
+
+    Body: {"legs": [{"player": str, "stat": str, "line": float,
+                     "side": "over"|"under", "price": int}]}
+    Returns: {"n_legs": int, "decimal": float, "american": int, "payout_100": float}
+    """
+    legs = body.get("legs") or []
+    if not legs:
+        raise HTTPException(status_code=422, detail="legs required: provide at least one leg")
+    if len(legs) > 12:
+        raise HTTPException(status_code=400, detail="max 12 legs")
+    decimal = 1.0
+    for leg in legs:
+        price = leg.get("price")
+        if price is None:
+            raise HTTPException(status_code=422, detail=f"leg missing price: {leg}")
+        try:
+            decimal *= _american_to_decimal(int(price))
+        except (TypeError, ValueError, ZeroDivisionError) as exc:
+            raise HTTPException(status_code=422, detail=f"invalid price {price}: {exc}") from exc
+    american = _decimal_to_american(decimal)
+    return JSONResponse({
+        "n_legs": len(legs),
+        "decimal": round(decimal, 6),
+        "american": american,
+        "payout_100": round((decimal - 1) * 100, 2),
+        "legs": legs,
+    })
 
 
 @router.get("/api/auto_parlay", tags=["courtvision"])
@@ -244,6 +1153,28 @@ def healthz():
     return JSONResponse(healthz_payload(_ROOT, _latest_slate_date()))
 
 
+@router.get("/help", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def help_page(request: Request):
+    """About / Help page — explains CourtVision, model, and key terms."""
+    return _TEMPLATES.TemplateResponse("help.html", {"request": request})
+
+
+@router.get("/about", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def about_page(request: Request):
+    """Alias for /help."""
+    return RedirectResponse(url="/help", status_code=307)
+
+
+@router.get("/games", tags=["courtvision"])
+def games_alias(): return RedirectResponse(url="/tonight", status_code=302)
+
+
+@router.get("/bets", tags=["courtvision"])
+def bets_alias(): return RedirectResponse(url="/risk", status_code=302)
+
+
 @router.get("/cv", tags=["courtvision"])
 def cv_shortlink(): return RedirectResponse(url="/tonight", status_code=307)
 
@@ -254,19 +1185,174 @@ def api_odds_for_date(date: str, stat: str = Query(""), player: str = Query(""))
     from api._courtvision_odds import odds_env
     return JSONResponse(odds_env(date, stat, player))
 
+
+_WITH_EV_CACHE: dict[str, tuple[float, dict]] = {}
+_WITH_EV_TTL = 30.0
+
+
+@router.get("/api/odds/with-ev/{date}.json", tags=["courtvision"])
+def api_odds_with_ev(date: str, stat: str = Query(""), player: str = Query(""),
+                     limit: int = Query(1000, ge=1, le=5000),
+                     offset: int = Query(0, ge=0)):
+    """Consolidated odds + model projection overlay (projection, edge, rec) for `date`.
+
+    Falls back gracefully when predictions parquet missing — returns normal odds
+    with None model fields. Never 500s due to missing predictions.
+    Supports ?limit=N&offset=M for pagination (default limit=1000 = return all).
+    Overlay result is cached for 30s per date (the parquet read is the hot path).
+    """
+    from api._courtvision_odds import odds_env
+    from api._predictions_overlay import overlay_predictions
+
+    # Cache the full overlay per date (stat/player filters applied after cache hit)
+    cache_key = date
+    cached = _WITH_EV_CACHE.get(cache_key)
+    if cached is None or time.time() - cached[0] >= _WITH_EV_TTL:
+        env_full = odds_env(date)
+        try:
+            env_full["props"] = overlay_predictions(date, env_full["props"])
+        except Exception as exc:
+            import logging as _log
+            _log.getLogger(__name__).warning("overlay_predictions failed: %s", exc)
+
+        # Stale-date fallback: if the requested date returned 0 props OR every
+        # book's last_scrape timestamp belongs to a different calendar day,
+        # redirect internally to the next slate with live data and attach a
+        # `next_slate` hint so callers can surface the right date.
+        _n_props = len(env_full.get("props") or [])
+        _books = env_full.get("books") or []
+        _all_stale = _n_props == 0 or all(
+            (b.get("last_scrape") or "")[:10] != date for b in _books
+        )
+        if _all_stale:
+            _next = _next_game_day() or _today_et()
+            if _next != date:
+                _fb_env = odds_env(_next)
+                try:
+                    _fb_env["props"] = overlay_predictions(_next, _fb_env["props"])
+                except Exception:
+                    pass
+                _fb_env["next_slate"] = _next
+                _fb_env["requested_date"] = date
+                env_full = _fb_env
+            else:
+                env_full["next_slate"] = None
+                env_full["requested_date"] = date
+        else:
+            env_full["next_slate"] = None
+
+        _WITH_EV_CACHE[cache_key] = (time.time(), env_full)
+    else:
+        env_full = cached[1]
+
+    # Apply stat/player filters and pagination on the cached result
+    env = dict(env_full)
+    props = list(env.get("props") or [])
+    if stat:
+        props = [p for p in props if p.get("stat") == stat.lower()]
+    if player:
+        pl = player.lower()
+        props = [p for p in props if pl in p.get("player", "").lower()]
+    total = len(props)
+    if offset or limit < 5000:
+        props = props[offset: offset + limit]
+    env = dict(env)
+    env["props"] = props
+    env["n_props"] = total
+    env["n_props_page"] = len(props)
+    return JSONResponse(env)
+
 @router.get("/api/odds", tags=["courtvision"])
 def api_odds_today(stat: str = Query(""), player: str = Query("")):
     from api._courtvision_odds import odds_env
-    return JSONResponse(odds_env(_today_et(), stat, player))
+    date = _next_game_day() or _today_et()
+    return JSONResponse(odds_env(date, stat, player))
 
 @router.get("/odds", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
-def odds_page(request: Request, date: str = Query(default_factory=_today_et),
+def odds_page(request: Request, date: str = Query(default=None),
               stat: str = Query(""), player: str = Query("")):
-    from api._courtvision_odds import odds_env
+    """Render /odds with a TINY SSR payload (just metadata).
+
+    Real prop data is fetched by the client from `/api/odds/{date}.json` after
+    page paint — keeps TTFB sub-second regardless of slate size.
+
+    Date resolution: if `?date=` not given, picks the next date that has an
+    actual upcoming game (looks at start_time of scraped props, not the CSV
+    file date — line CSVs are stored by scrape date but contain odds for
+    future games)."""
+    import os
+    from api._courtvision_odds import odds_env, consolidate
+    from datetime import datetime, timezone
+    ws_base = os.environ.get("COURTVISION_WS_BASE", "")
+    # NOTE: ws_token intentionally NOT passed to the template — auth is via
+    # HttpOnly cookie set by /auth/init, so the token never appears in HTML.
+    cfg = {"ws_base": ws_base}
+    # Auto-pick the next game-day if no explicit ?date= passed.
+    if not date:
+        date = _next_game_day() or _today_et()
+    full = odds_env(date, stat, player)
+    # Ship only metadata to the page. Frontend fetches /api/odds/{date}.json.
+    summary = {
+        "date": full.get("date", date),
+        "generated_at": full.get("generated_at"),
+        "n_props": full.get("n_props", 0),
+        "n_books": full.get("n_books", 0),
+        "books": full.get("books", []),
+        "props": [],            # client fetches asynchronously
+        "ssr_lite": True,
+    }
     return _TEMPLATES.TemplateResponse("odds.html",
-        {"request": request, "env": odds_env(date, stat, player),
-         "stat": stat, "player": player})
+        {"request": request, "env": summary, "env_summary": summary,
+         "stat": stat, "player": player, "config": cfg})
+
+
+_NEXT_GAME_DAY_CACHE: tuple[float, Optional[str]] | None = None
+_NEXT_GAME_DAY_TTL = 60.0  # recompute at most once per minute
+
+
+def _next_game_day() -> Optional[str]:
+    """Earliest distinct start_time date across all lines whose `start_time`
+    is in the future. Cached for 60s — this function opens O(days × files)
+    CSVs and is the root cause of slow TTFB when many line files are present.
+    """
+    global _NEXT_GAME_DAY_CACHE
+    now_ts = time.time()
+    if _NEXT_GAME_DAY_CACHE is not None and now_ts - _NEXT_GAME_DAY_CACHE[0] < _NEXT_GAME_DAY_TTL:
+        return _NEXT_GAME_DAY_CACHE[1]
+
+    from datetime import datetime, timezone, timedelta
+    import csv as _csv
+    now = datetime.now(timezone.utc)
+    today = now.strftime("%Y-%m-%d")
+    candidates: list[str] = []
+    # Walk today + the next 14 days of line CSVs (scrapers store under the
+    # scrape date, but props reference future start_times).
+    for offset in range(0, 15):
+        d = (now + timedelta(days=offset)).strftime("%Y-%m-%d")
+        if not _LINES_DIR.exists():
+            break
+        for p in _LINES_DIR.iterdir():
+            if not p.is_file() or p.suffix != ".csv":
+                continue
+            if not p.stem.startswith(f"{d}_"):
+                continue
+            try:
+                with p.open(newline="", encoding="utf-8") as fh:
+                    for r in _csv.DictReader(fh):
+                        st = (r.get("start_time") or "").strip()
+                        if len(st) < 10:
+                            continue
+                        # Parse the ISO date; only count games at or after today.
+                        st_date = st[:10]
+                        if st_date >= today:
+                            candidates.append(st_date)
+                        break  # one start_time per file is enough
+            except OSError:
+                continue
+    result = min(candidates) if candidates else None
+    _NEXT_GAME_DAY_CACHE = (now_ts, result)
+    return result
 
 @router.get("/api/docs", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
@@ -298,6 +1384,36 @@ def _spread_env(date: str, min_spread_pp: float) -> dict:
 def api_odds_spread(date: str, min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
     return JSONResponse(_spread_env(date, min_spread_pp))
 
+
+@router.get("/api/odds/arbs/{date}.json", tags=["courtvision"])
+def api_odds_arbs(
+    date: str,
+    max_age_sec: float = Query(60.0, ge=10.0, le=600.0,
+                               description="Max seconds since capture to include a book in arb"),
+    min_spread_pp: float = Query(2.0, ge=0.0, le=50.0),
+    quality: str = Query("tight,loose",
+                         description="Comma-separated arb_quality values to return (tight,loose,stale)"),
+):
+    """High-confidence arb opportunities only.
+
+    Filters cross_book_spread results to rows with is_arb=True whose
+    arb_quality is in the requested set. Default: tight + loose (omits stale).
+    """
+    from api._courtvision_odds import cross_book_spread
+    allowed_quality = {q.strip().lower() for q in quality.split(",") if q.strip()}
+    rows = cross_book_spread(date, min_spread_pp=min_spread_pp, max_age_sec=max_age_sec)
+    arbs = [
+        r for r in rows
+        if r.get("is_arb")
+        and r.get("arb_quality", "stale") in allowed_quality
+    ]
+    return JSONResponse({
+        "date": date, "max_age_sec": max_age_sec,
+        "min_spread_pp": min_spread_pp, "quality_filter": sorted(allowed_quality),
+        "n_arbs": len(arbs), "arbs": arbs,
+    })
+
+
 @router.get("/api/odds/summary/{date}", tags=["courtvision"])
 def api_odds_summary(date: str):
     """Compact day-level snapshot: counts, books, per-stat tally, freshness."""
@@ -306,9 +1422,29 @@ def api_odds_summary(date: str):
 
 @router.get("/api/odds/games/{date}", tags=["courtvision"])
 def api_odds_games(date: str):
-    """List distinct games in the day's odds data."""
+    """List distinct games in the day's odds data.
+
+    Entries where the book-specific game_id cannot be resolved to real NBA team
+    abbreviations are dropped (fail-closed). A WARNING is logged for each drop.
+    """
+    import logging as _log
+    _logger = _log.getLogger(__name__)
     from api._courtvision_odds import games_index
-    return JSONResponse({"date": date, "games": games_index(date)})
+    raw = games_index(date)
+    resolved = []
+    for g in raw:
+        away = g.get("away_abbr", "")
+        home = g.get("home_abbr", "")
+        # Orphan: away_abbr is the raw game_id or either abbr is empty/generic
+        _is_raw_id = away == g.get("game_id") or away in ("", "AWAY", "HOME") or home in ("", "AWAY", "HOME")
+        if _is_raw_id:
+            _logger.warning(
+                "api_odds_games: dropping unresolvable game_id=%s (away_abbr=%r, home_abbr=%r)",
+                g.get("game_id"), away, home,
+            )
+            continue
+        resolved.append(g)
+    return JSONResponse({"date": date, "games": resolved})
 
 @router.get("/api/odds/freshness/{date}", tags=["courtvision"])
 def api_odds_freshness(date: str):
@@ -324,6 +1460,68 @@ def api_odds_moves(date: str, window_minutes: int = Query(60, ge=5, le=720)):
     return JSONResponse({"date": date, "window_minutes": window_minutes,
                          "n": len(rows), "moves": rows})
 
+
+# ── Steam / sharp-move endpoints ──────────────────────────────────────────────
+
+def _read_steam_events_tail(hours: float = 12.0, max_bytes: int = 2 * 1024 * 1024) -> list:
+    """Tail-read steam_events.jsonl without scanning the full file.
+
+    Uses os.path.getsize to compute read offset so only trailing `max_bytes`
+    are examined — safe on large audit files.
+    """
+    import os as _os
+    import json as _json
+    from datetime import datetime, timedelta, timezone
+    path = _ROOT / "data" / "cache" / "steam_events.jsonl"
+    if not path.exists():
+        return []
+    try:
+        size = _os.path.getsize(str(path))
+        offset = max(0, size - max_bytes)
+        with open(path, "rb") as f:
+            if offset:
+                f.seek(offset)
+                f.readline()  # skip possible partial first line after seek
+            raw = f.read().decode("utf-8", errors="replace")
+    except OSError:
+        return []
+
+    cutoff_ts = (datetime.now(timezone.utc) - timedelta(hours=hours)).timestamp()
+    events = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            ev = _json.loads(line)
+            ts_str = ev.get("ts", "")
+            try:
+                ev_ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00")).timestamp()
+            except (ValueError, TypeError):
+                ev_ts = 0.0
+            if ev_ts >= cutoff_ts:
+                events.append(ev)
+        except (ValueError, KeyError):
+            continue
+    events.sort(key=lambda e: e.get("ts", ""), reverse=True)
+    return events
+
+
+@router.get("/api/steam/recent", tags=["courtvision"])
+def api_steam_recent(hours: float = Query(12.0, ge=0.1, le=168.0)):
+    """Recent sharp/steam move events emitted by steam_detector in the last N hours.
+
+    Reads from data/cache/steam_events.jsonl using tail-read (no full scan).
+    Returns events sorted newest-first.
+    """
+    events = _read_steam_events_tail(hours=hours)
+    return JSONResponse({
+        "window_hours": hours,
+        "n_events": len(events),
+        "events": events,
+    })
+
+
 @router.get("/api/odds/{date}.csv", tags=["courtvision"])
 def api_odds_csv(date: str, stat: str = Query(""), player: str = Query("")):
     """CSV export of consolidated odds — one row per (player, stat, line, book)."""
@@ -334,10 +1532,27 @@ def api_odds_csv(date: str, stat: str = Query(""), player: str = Query("")):
 
 @router.get("/arbs", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
-def arbs_page(request: Request, date: str = Query(default_factory=_today_et),
+def arbs_page(request: Request, date: str = Query(default=None),
               min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
+    """SSR-lite: send only metadata; JS fetches full spread data via /api/odds/spread/{date}.json."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    # Send a lightweight summary for instant TTFB — real rows fetched by JS
+    try:
+        from api._courtvision_odds import summary as _odds_summary
+        s = _odds_summary(date)
+    except Exception:
+        s = {}
+    meta = {
+        "date": date,
+        "min_spread_pp": min_spread_pp,
+        "n": None,       # unknown until JS loads
+        "n_arbs": None,
+        "rows": [],      # client fetches
+        "ssr_lite": True,
+    }
     return _TEMPLATES.TemplateResponse("arbs.html",
-        {"request": request, "env": _spread_env(date, min_spread_pp)})
+        {"request": request, "env": meta})
 
 
 @router.get("/api/today_summary", tags=["courtvision"])
@@ -350,6 +1565,129 @@ def api_today_summary(date: str = Query(default_factory=_today_et), n: int = Que
                  "ev_pct": b.get("ev_pct"), "book": b.get("best_book"),
                  "price": b.get("best_price")} for b in bets],
         "share_url": f"{_PUBLIC_BASE_URL or ''}/share/{s['date']}"})
+
+
+@router.get("/api/clv/summary", tags=["courtvision"])
+def api_clv_summary(days: int = Query(30, ge=1, le=365)):
+    """Rolling CLV + P&L summary over the last N days.
+
+    Reads data/clv/daily_clv.csv (written by nightly_grader) plus the raw
+    per-game CLV JSON blobs in data/clv/ for by_book / by_stat breakdowns.
+
+    Query params:
+        days  — look-back window in days (default 30, max 365)
+
+    Returns:
+        {
+            window_days, n_bets, n_days, total_stake, total_pnl, roi_pct,
+            avg_clv_bps, win_pct, sharpe_30d,
+            by_book: {book: {n_bets, roi_pct, avg_clv_bps}},
+            by_stat: {stat: {n_bets, roi_pct, avg_clv_bps, win_pct}},
+        }
+    """
+    import csv as _csv_mod  # noqa: PLC0415
+    import json as _json     # noqa: PLC0415
+    from datetime import datetime, timedelta, timezone  # noqa: PLC0415
+    from math import sqrt  # noqa: PLC0415
+
+    clv_dir      = _ROOT / "data" / "clv"
+    daily_csv    = clv_dir / "daily_clv.csv"
+    cutoff       = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
+
+    # ── Aggregate daily_clv.csv rows ──────────────────────────────────────────
+    daily_rows: list = []
+    if daily_csv.exists():
+        try:
+            with open(daily_csv, encoding="utf-8") as f:
+                daily_rows = [r for r in _csv_mod.DictReader(f)
+                              if r.get("date", "") >= cutoff]
+        except Exception:
+            daily_rows = []
+
+    def _fsum(field: str) -> float:
+        return sum(float(r.get(field) or 0) for r in daily_rows)
+
+    n_days      = len(daily_rows)
+    n_bets      = sum(int(r.get("n_bets") or 0) for r in daily_rows)
+    total_stake = _fsum("total_stake")
+    total_pnl   = _fsum("total_pnl")
+    roi_pct     = round(100.0 * total_pnl / total_stake, 2) if total_stake else 0.0
+
+    clv_vals    = [float(r.get("avg_clv_bps") or 0) for r in daily_rows]
+    avg_clv_bps = round(sum(clv_vals) / len(clv_vals), 1) if clv_vals else 0.0
+
+    win_vals    = [float(r.get("win_pct") or 0) for r in daily_rows]
+    win_pct     = round(sum(win_vals) / len(win_vals), 2) if win_vals else 0.0
+
+    sharpe_30d  = 0.0
+    roi_list    = [float(r.get("roi_pct") or 0) for r in daily_rows]
+    if len(roi_list) >= 2:
+        mean_r = sum(roi_list) / len(roi_list)
+        var_r  = sum((v - mean_r) ** 2 for v in roi_list) / (len(roi_list) - 1)
+        sigma  = sqrt(var_r)
+        sharpe_30d = round(mean_r / sigma, 4) if sigma > 0 else 0.0
+
+    if not daily_rows:
+        return JSONResponse({
+            "window_days": days, "n_bets": 0, "n_days": 0,
+            "total_stake": 0.0, "total_pnl": 0.0, "roi_pct": 0.0,
+            "avg_clv_bps": 0.0, "win_pct": 0.0, "sharpe_30d": 0.0,
+            "note": "no data yet — nightly_grader has not run for this window",
+            "by_book": {}, "by_stat": {},
+        })
+
+    # ── by_book / by_stat from raw per-game CLV JSON blobs ───────────────────
+    by_book: dict = {}
+    by_stat: dict = {}
+
+    if clv_dir.exists():
+        for p in sorted(clv_dir.glob("*_clv.json")):
+            # filename: <date>_<game_id>_clv.json  or  <date>_<game_id>_clv.json
+            stem_parts = p.stem.split("_")
+            date_part = stem_parts[0] if stem_parts else ""
+            if date_part < cutoff:
+                continue
+            try:
+                blob = _json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            for bet in blob.get("bets", []):
+                book = str(bet.get("book") or "unknown")
+                stat = str(bet.get("stat") or "unknown")
+                clv  = float(bet.get("clv_pct") or 0)
+
+                # by_book aggregation
+                bb = by_book.setdefault(book, {"n_bets": 0, "_sum_clv": 0.0})
+                bb["n_bets"]   += 1
+                bb["_sum_clv"] += clv
+
+                # by_stat aggregation
+                bs = by_stat.setdefault(stat, {"n_bets": 0, "_sum_clv": 0.0})
+                bs["n_bets"]   += 1
+                bs["_sum_clv"] += clv
+
+    # Finalise derived fields and strip private accumulators
+    for d in by_book.values():
+        n = d["n_bets"]
+        d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+
+    for d in by_stat.values():
+        n = d["n_bets"]
+        d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+
+    return JSONResponse({
+        "window_days":  days,
+        "n_bets":       n_bets,
+        "n_days":       n_days,
+        "total_stake":  round(total_stake, 2),
+        "total_pnl":    round(total_pnl, 2),
+        "roi_pct":      roi_pct,
+        "avg_clv_bps":  avg_clv_bps,
+        "win_pct":      win_pct,
+        "sharpe_30d":   sharpe_30d,
+        "by_book":      by_book,
+        "by_stat":      by_stat,
+    })
 
 
 @router.get("/sse/live_edges", tags=["courtvision"])
@@ -385,13 +1723,103 @@ def plus_ev(request: Request,
 @router.get("/parlays", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
 def parlays(request: Request,
-            date: str = Query(default_factory=_today_et),
+            date: str = Query(default=None),
             max_legs: int = Query(5, ge=2, le=5),
             min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
             limit: int = Query(25, ge=1, le=100)):
-    envelope = _build_parlays(date, max_legs, min_ev_pct, seed=0)
-    leg_meta = {b["bet_id"]: b for b in _build_slate(date).get("bets", [])}
+    """SSR-lite: sends only metadata shell; JS fetches /api/parlays after paint."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    # Lightweight metadata only — avoids the heavy ParlayEngine on SSR.
+    meta_envelope = {
+        "date": date,
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "n_parlays": None,    # filled by JS
+        "has_lines": True,    # optimistic; JS corrects if false
+        "parlays": [],        # client fetches
+        "ssr_lite": True,
+    }
     return _TEMPLATES.TemplateResponse("parlays.html",
-        {"request": request, "envelope": envelope,
-         "shown": envelope.get("parlays", [])[:limit],
-         "leg_meta": leg_meta, "min_ev_pct": min_ev_pct, "max_legs": max_legs})
+        {"request": request, "envelope": meta_envelope,
+         "shown": [], "leg_meta": {},
+         "min_ev_pct": min_ev_pct, "max_legs": max_legs})
+
+
+# ── SQLite-backed bet ledger endpoints ───────────────────────────────────────
+
+def _get_db():
+    """Lazy import so the DB is only loaded if these endpoints are called."""
+    from database.bet_db import BetDB  # noqa: PLC0415
+    return BetDB()
+
+
+@router.get("/api/bets", tags=["courtvision"])
+def api_bets(
+    date:   Optional[str] = Query(default=None),
+    status: Optional[str] = Query(default=None),
+    player: Optional[str] = Query(default=None),
+    limit:  int           = Query(default=100, ge=1, le=1000),
+):
+    """List bets from the SQLite ledger. Filters: date, status, player (substring).
+
+    Response shape is backwards-compatible with the previous CSV-reading version.
+    Falls back to an empty list if the DB does not yet exist.
+    """
+    try:
+        rows = _get_db().list_bets(date=date, status=status, player=player, limit=limit)
+    except Exception as exc:
+        import logging  # noqa: PLC0415
+        logging.getLogger(__name__).warning("api_bets DB error: %s", exc)
+        rows = []
+    return JSONResponse({"bets": rows, "n": len(rows)})
+
+
+@router.get("/api/bets/recent", tags=["courtvision"])
+def api_bets_recent(n: int = Query(default=20, ge=1, le=200)):
+    """Last N bets across all dates — for the bet-history widget on /odds."""
+    try:
+        rows = _get_db().recent_bets(n)
+    except Exception as exc:
+        import logging  # noqa: PLC0415
+        logging.getLogger(__name__).warning("api_bets_recent DB error: %s", exc)
+        rows = []
+    return JSONResponse({"bets": rows, "n": len(rows)})
+
+
+@router.get("/api/bankroll", tags=["courtvision"])
+def api_bankroll():
+    """Current bankroll snapshot + risk metrics.
+
+    Returns:
+        current       — latest recorded bankroll
+        open_stake    — sum of pending bets
+        available     — current − open_stake
+        today_pnl     — settled P&L for today (UTC)
+        today_stake   — total stake placed today
+        drawdown_30d_pct — (HWM − current) / HWM × 100 over 30 days
+        high_water_mark  — peak bankroll in last 90 days
+    """
+    try:
+        db          = _get_db()
+        current     = db.current_bankroll()
+        open_stake  = db.open_bet_value()
+        today       = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        today_sum   = db.daily_summary(today)
+        hwm         = db.high_water_mark(90)
+        drawdown    = db.drawdown_pct(30)
+        return JSONResponse({
+            "current":          round(current, 2),
+            "open_stake":       round(open_stake, 2),
+            "available":        round(current - open_stake, 2),
+            "today_pnl":        today_sum.get("total_pnl", 0.0),
+            "today_stake":      today_sum.get("total_stake", 0.0),
+            "drawdown_30d_pct": drawdown,
+            "high_water_mark":  round(hwm, 2),
+        })
+    except Exception as exc:
+        import logging  # noqa: PLC0415
+        logging.getLogger(__name__).warning("api_bankroll DB error: %s", exc)
+        return JSONResponse({"error": str(exc), "current": 0.0,
+                             "open_stake": 0.0, "available": 0.0,
+                             "today_pnl": 0.0, "today_stake": 0.0,
+                             "drawdown_30d_pct": 0.0, "high_water_mark": 0.0})

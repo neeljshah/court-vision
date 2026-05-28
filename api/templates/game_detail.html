@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% block title %}{{ game.away_team }} @ {{ game.home_team }} · CourtVision{% endblock %}
+{% block subtitle %}{{ game.away_team }} @ {{ game.home_team }}{% endblock %}
+{% block og_title %}{{ game.away_team }} @ {{ game.home_team }} · {{ game.tipoff_display }} · CourtVision{% endblock %}
+{% block og_desc %}Model projections, top EV bets, and game intelligence for {{ game.away_team }} vs {{ game.home_team }}.{% endblock %}
+{% block nav_games %}active{% endblock %}
+
+{% block content %}
+<style>
+/* ── page layout ─────────────────────────────────────────────────── */
+.gd-header{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;margin-bottom:20px;}
+.gd-title{flex:1;min-width:0;}
+.gd-matchup{font-size:22px;font-weight:700;color:var(--cv-text);line-height:1.2;}
+.gd-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px;font-size:12px;color:var(--cv-muted);}
+.gd-actions{display:flex;gap:8px;flex-shrink:0;}
+.gd-book-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:8px;
+  font-size:12px;font-weight:600;text-decoration:none;transition:opacity 100ms;white-space:nowrap;}
+.gd-book-btn:hover{opacity:.85;}
+.gd-dk{background:#1a3a6e;color:#5fa3e0;border:1px solid #1e4a8a;}
+.gd-fd{background:#0a2d1a;color:#3dd68c;border:1px solid #0f3d23;}
+
+/* ── status badges ───────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  letter-spacing:0.04em;padding:2px 8px;border-radius:999px;}
+.badge-live{background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.4);}
+.badge-pregame{background:rgba(96,165,250,0.10);color:var(--cv-accent);border:1px solid rgba(96,165,250,0.25);}
+.badge-final{background:rgba(100,116,139,0.12);color:var(--cv-subtle);border:1px solid var(--cv-border);}
+@keyframes liveGlow{0%,100%{opacity:1}50%{opacity:.4}}
+.badge-live .live-dot{width:6px;height:6px;border-radius:50%;background:#34d399;animation:liveGlow 1.4s ease-in-out infinite;}
+
+/* ── section cards ───────────────────────────────────────────────── */
+.gd-card{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:14px;
+  padding:16px 18px;margin-bottom:14px;}
+.gd-card-title{font-size:13px;font-weight:600;color:var(--cv-text);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;}
+.gd-card-title .icon{font-size:14px;}
+
+/* ── intel grid ──────────────────────────────────────────────────── */
+.intel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.intel-item{padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:8px;
+  border:1px solid var(--cv-border);}
+.intel-label{font-size:10px;color:var(--cv-subtle);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
+.intel-value{font-size:13px;font-weight:500;color:var(--cv-text);}
+.intel-value.accent{color:var(--cv-accent);}
+
+/* ── bet recommendations table ───────────────────────────────────── */
+.bet-table{width:100%;border-collapse:collapse;font-size:12px;}
+.bet-table thead th{color:var(--cv-subtle);font-weight:500;font-size:11px;
+  padding:5px 8px;border-bottom:1px solid var(--cv-border);text-align:left;white-space:nowrap;}
+.bet-table tbody tr{border-bottom:1px solid var(--cv-border);transition:background 80ms;cursor:pointer;}
+.bet-table tbody tr:last-child{border-bottom:none;}
+.bet-table tbody tr:hover{background:rgba(96,165,250,0.04);}
+.bet-table td{padding:7px 8px;vertical-align:middle;}
+.bt-rank{width:24px;height:24px;border-radius:50%;background:rgba(96,165,250,0.12);
+  color:var(--cv-accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.bt-player{font-weight:500;color:var(--cv-text);}
+.bt-prop{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-muted);}
+.bt-odds{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);}
+.bt-edge{font-family:'SF Mono',ui-monospace,monospace;font-weight:600;}
+.bt-edge.pos{color:#34d399;} .bt-edge.neg{color:#f87171;} .bt-edge.zero{color:var(--cv-muted);}
+.bt-kelly{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-muted);}
+.bt-side{padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;}
+.bt-side.over{background:#064e3b;color:#34d399;}
+.bt-side.under{background:#451a03;color:#fbbf24;}
+.bt-book-btn{font-size:10px;padding:2px 8px;border-radius:4px;text-decoration:none;
+  font-weight:600;white-space:nowrap;transition:opacity 100ms;}
+.bt-book-btn:hover{opacity:.8;}
+.bt-dk{background:rgba(26,58,110,0.7);color:#5fa3e0;}
+.bt-fd{background:rgba(10,45,26,0.7);color:#3dd68c;}
+.bt-generic{background:rgba(96,165,250,0.08);color:var(--cv-accent);}
+
+/* ── all props section ───────────────────────────────────────────── */
+#allPropsWrap{min-height:60px;}
+.props-loading{text-align:center;padding:20px;color:var(--cv-muted);font-size:12px;}
+.props-load-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;
+  border-radius:8px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);
+  color:var(--cv-accent);font-size:12px;font-weight:500;cursor:pointer;transition:background 120ms;}
+.props-load-btn:hover{background:rgba(96,165,250,0.14);}
+
+/* ── mini props table ────────────────────────────────────────────── */
+.mini-props-table{width:100%;border-collapse:collapse;font-size:12px;}
+.mini-props-table thead th{color:var(--cv-subtle);font-size:11px;font-weight:500;
+  padding:4px 8px;border-bottom:1px solid var(--cv-border);text-align:left;white-space:nowrap;}
+.mini-props-table tbody tr{border-bottom:1px solid var(--cv-border);}
+.mini-props-table tbody tr:last-child{border-bottom:none;}
+.mini-props-table td{padding:5px 8px;vertical-align:middle;}
+.mp-rec{padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;}
+.mp-rec.over{background:#064e3b;color:#34d399;}
+.mp-rec.under{background:#451a03;color:#fbbf24;}
+
+/* ── win prob bar ────────────────────────────────────────────────── */
+.winprob-bar{height:8px;border-radius:4px;background:var(--cv-border);overflow:hidden;margin:6px 0;}
+.winprob-fill{height:100%;border-radius:4px;background:var(--cv-accent);transition:width 400ms;}
+.winprob-row{display:flex;justify-content:space-between;font-size:11px;color:var(--cv-muted);}
+
+/* ── back link ───────────────────────────────────────────────────── */
+.back-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;
+  color:var(--cv-muted);text-decoration:none;margin-bottom:12px;}
+.back-link:hover{color:var(--cv-text);}
+
+/* ── key bets section ────────────────────────────────────────────── */
+.key-bets{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.key-bet{padding:5px 10px;background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);
+  border-radius:6px;font-size:11px;color:var(--cv-text);}
+.key-bet .kb-edge{font-family:'SF Mono',ui-monospace,monospace;font-weight:600;
+  margin-left:6px;}
+.key-bet .kb-edge.pos{color:#34d399;}
+
+/* ── mobile ─────────────────────────────────────────────────────── */
+@media(max-width:720px){
+  .gd-header{flex-direction:column;}
+  .gd-actions{width:100%;}
+  .gd-book-btn{flex:1;justify-content:center;min-height:44px;}
+  .intel-grid{grid-template-columns:repeat(2,1fr);}
+  /* hide less-important bet table columns */
+  .bet-table thead th:nth-child(7),
+  .bet-table td:nth-child(7){display:none;}  /* Kelly */
+  .bet-table thead th:nth-child(8),
+  .bet-table td:nth-child(8){display:none;}  /* Book */
+  .bt-rank{width:20px;height:20px;font-size:9px;}
+  .bt-player,.bt-prop,.bt-odds,.bt-edge{font-size:11px;}
+  .gd-matchup{font-size:18px;}
+}
+</style>
+
+<a href="/" class="back-link">← All Games</a>
+
+<!-- Header -->
+<div class="gd-header">
+  <div class="gd-title">
+    <div class="gd-matchup">{{ game.away_team }} @ {{ game.home_team }}</div>
+    <div class="gd-meta">
+      {% if game.status == 'live' %}
+        <span class="badge badge-live"><span class="live-dot"></span>LIVE</span>
+        {% if game.clock %}<span>{{ game.clock }}</span>{% endif %}
+      {% elif game.status == 'final' %}
+        <span class="badge badge-final">FINAL</span>
+      {% else %}
+        <span class="badge badge-pregame">PREGAME</span>
+      {% endif %}
+      <span id="countdown" data-tipoff="{{ game.start_time_iso }}">{{ game.tipoff_display }}</span>
+      {% if game.n_props %}<span>· {{ game.n_props }} props available</span>{% endif %}
+    </div>
+  </div>
+  <div class="gd-actions">
+    <a href="https://sportsbook.draftkings.com" target="_blank" rel="noopener" class="gd-book-btn gd-dk">DraftKings ↗</a>
+    <a href="https://sportsbook.fanduel.com" target="_blank" rel="noopener" class="gd-book-btn gd-fd">FanDuel ↗</a>
+  </div>
+</div>
+
+<!-- Live score (only if live or final) -->
+{% if game.status in ('live', 'final') and game.score_away is not none %}
+<div class="gd-card" style="margin-bottom:14px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:center;">
+    <div style="flex:1;">
+      <div style="font-size:12px;color:var(--cv-muted);margin-bottom:4px;">{{ game.away_team }}</div>
+      <div style="font-size:36px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);">{{ game.score_away }}</div>
+    </div>
+    <div style="color:var(--cv-subtle);font-size:18px;font-weight:300;">—</div>
+    <div style="flex:1;">
+      <div style="font-size:12px;color:var(--cv-muted);margin-bottom:4px;">{{ game.home_team }}</div>
+      <div style="font-size:36px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);">{{ game.score_home }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Intelligence -->
+<div class="gd-card">
+  <div class="gd-card-title"><span class="icon">🔍</span> Intelligence</div>
+  <div class="intel-grid">
+    {% if game.win_prob_away is not none %}
+    <div class="intel-item">
+      <div class="intel-label">Win Probability</div>
+      {% set away_pct = (game.win_prob_away * 100)|round|int %}
+      {% set home_pct = 100 - away_pct %}
+      {% if away_pct > home_pct %}
+      <div class="intel-value"><strong>{{ game.away_team }} {{ away_pct }}%</strong> · {{ game.home_team }} {{ home_pct }}%</div>
+      {% elif home_pct > away_pct %}
+      <div class="intel-value">{{ game.away_team }} {{ away_pct }}% · <strong>{{ game.home_team }} {{ home_pct }}%</strong></div>
+      {% else %}
+      <div class="intel-value">{{ game.away_team }} {{ away_pct }}% · {{ game.home_team }} {{ home_pct }}%</div>
+      {% endif %}
+      <div class="winprob-bar" style="margin-top:4px;">
+        <div class="winprob-fill" style="width:{{ away_pct }}%;"></div>
+      </div>
+      <div class="winprob-row" style="margin-top:2px;"><span>{{ game.away_team }}</span><span>{{ game.home_team }}</span></div>
+    </div>
+    {% endif %}
+    {% if game.pace_source and game.pace_source != 'default' %}
+    {% if game.pace_away is not none %}
+    <div class="intel-item">
+      <div class="intel-label">Pace</div>
+      <div class="intel-value">{{ game.away_team }} {{ '%.1f'|format(game.pace_away) }} · {{ game.home_team }} {{ '%.1f'|format(game.pace_home) }}</div>
+    </div>
+    {% endif %}
+    {% if game.off_rtg_away is not none %}
+    <div class="intel-item">
+      <div class="intel-label">Off Rating</div>
+      <div class="intel-value">{{ game.away_team }} {{ game.off_rtg_away }} · {{ game.home_team }} {{ game.off_rtg_home }}</div>
+    </div>
+    {% endif %}
+    {% if game.def_rtg_away is not none %}
+    <div class="intel-item">
+      <div class="intel-label">Def Rating</div>
+      <div class="intel-value">{{ game.away_team }} {{ game.def_rtg_away }} · {{ game.home_team }} {{ game.def_rtg_home }}</div>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="intel-item">
+      <div class="intel-label" style="color:var(--cv-subtle);">Team Stats</div>
+      <div class="intel-value" style="color:var(--cv-subtle);font-size:11px;">Per-game pace + ratings unavailable for this matchup.</div>
+    </div>
+    {% endif %}
+    <div class="intel-item">
+      <div class="intel-label">Date</div>
+      <div class="intel-value">{{ game.start_time_iso[:10] if game.start_time_iso else slate_date }}</div>
+    </div>
+    <div class="intel-item">
+      <div class="intel-label">Game ID</div>
+      <div class="intel-value" style="font-family:'SF Mono',ui-monospace,monospace;font-size:11px;">{{ game.game_id }}</div>
+    </div>
+    {% if game.n_props %}
+    <div class="intel-item">
+      <div class="intel-label">Props available</div>
+      <div class="intel-value accent">{{ game.n_props }}</div>
+    </div>
+    {% endif %}
+    {% if game.n_players %}
+    <div class="intel-item">
+      <div class="intel-label">Players with lines</div>
+      <div class="intel-value">{{ game.n_players }}</div>
+    </div>
+    {% endif %}
+  </div>
+  {% if game.key_bets %}
+  <div class="intel-item" style="grid-column:1/-1;">
+    <div class="intel-label">Key bets</div>
+    <div class="key-bets">
+      {% for kb in game.key_bets %}
+      <span class="key-bet">
+        {{ kb.player }} {{ kb.rec_side }} {{ '%g'|format(kb.line) }} {{ kb.stat }}
+        {% if kb.edge_pct is not none %}<span class="kb-edge pos">+{{ '%.1f'|format(kb.edge_pct) }}%</span>{% endif %}
+      </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if game.injury_notes %}
+  <div style="margin-top:10px;padding:8px 10px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);border-radius:8px;font-size:11px;color:var(--cv-amber);">
+    <b>Injury alerts:</b> {{ game.injury_notes }}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Recommended bets -->
+<div class="gd-card">
+  <div class="gd-card-title"><span class="icon">🎯</span>
+    Recommended bets
+    {% if rec_bets %}<span style="font-size:11px;font-weight:400;color:var(--cv-muted);">(ranked by EV)</span>{% endif %}
+  </div>
+  {% if not rec_bets %}
+  <div style="color:var(--cv-muted);font-size:12px;padding:8px 0;">
+    No model edges found for this game yet.
+    {% if not has_predictions %}
+    <span style="color:var(--cv-subtle);">Run <code style="color:var(--cv-text);">scripts/predict_slate.py</code> to generate projections.</span>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="overflow-x-auto">
+    <table class="bet-table">
+      <thead>
+        <tr>
+          <th style="width:32px;">#</th>
+          <th>Player</th>
+          <th>Prop</th>
+          <th>Side</th>
+          <th>Odds</th>
+          <th>Edge</th>
+          <th>Kelly</th>
+          <th>Book</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in rec_bets %}
+        <tr>
+          <td><div class="bt-rank">{{ loop.index }}</div></td>
+          <td class="bt-player">{{ b.player }}</td>
+          <td class="bt-prop">{{ b.stat|upper }} {{ '%g'|format(b.line) }}</td>
+          <td><span class="bt-side {{ b.rec_side|lower if b.rec_side else '' }}">{{ b.rec_side or '—' }}</span></td>
+          <td class="bt-odds">{% if b.best_odds %}{{ '%+d'|format(b.best_odds) }}{% else %}—{% endif %}</td>
+          <td class="bt-edge {% if b.edge_pct is not none %}{% if b.edge_pct > 0 %}pos{% elif b.edge_pct < 0 %}neg{% else %}zero{% endif %}{% endif %}">
+            {% if b.edge_pct is not none %}{{ '%+.1f'|format(b.edge_pct) }}%{% else %}—{% endif %}
+          </td>
+          <td class="bt-kelly">{% if b.kelly_pct is not none %}{{ '%.1f'|format(b.kelly_pct) }}%{% else %}—{% endif %}</td>
+          <td style="font-size:11px;color:var(--cv-muted);">{{ b.best_book or '—' }}</td>
+          <td>
+            {% if b.deeplink_web %}
+            <a href="{{ b.deeplink_web }}" target="_blank" rel="noopener"
+               class="bt-book-btn {% if 'draftkings' in b.best_book|lower %}bt-dk{% elif 'fanduel' in b.best_book|lower %}bt-fd{% else %}bt-generic{% endif %}">
+              Bet ↗
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<!-- All props for this game -->
+<div class="gd-card">
+  <div class="gd-card-title"><span class="icon">📋</span> All props for this game</div>
+  <div id="allPropsWrap">
+    <div style="text-align:center;padding:12px 0;">
+      <button class="props-load-btn" onclick="loadAllProps()">Load all props</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Countdown timer
+(function(){
+  var el=document.getElementById('countdown');
+  if(!el) return;
+  var iso=el.getAttribute('data-tipoff');
+  if(!iso) return;
+  function fmt(ms){
+    if(ms<=0) return 'Tipoff now';
+    var s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+    m=m%60;
+    if(h>0) return h+'h '+m+'m to tipoff';
+    if(m>0) return m+'m to tipoff';
+    return Math.floor(s)+'s to tipoff';
+  }
+  function tick(){
+    var d=new Date(iso), now=new Date();
+    var delta=d-now;
+    if(delta>0) el.textContent=fmt(delta);
+  }
+  tick();
+  setInterval(tick, 10000);
+})();
+
+// Lazy load all props table
+var _propsLoaded = false;
+function loadAllProps(){
+  if(_propsLoaded) return;
+  _propsLoaded = true;
+  var wrap = document.getElementById('allPropsWrap');
+  wrap.innerHTML = '<div class="props-loading">Loading props...</div>';
+  var date = "{{ slate_date }}";
+  var gameId = "{{ game.game_id }}";
+  fetch('/api/odds/with-ev/' + date + '.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var props = (data.props || []).filter(function(p){
+        return !gameId || p.game_id === gameId;
+      });
+      if(!props.length){
+        wrap.innerHTML = '<div style="color:var(--cv-muted);font-size:12px;padding:8px 0;">No props found for this game in the current date\'s data.</div>';
+        return;
+      }
+      // Sort by edge desc then player
+      props.sort(function(a,b){
+        var ea = a.edge_pct != null ? a.edge_pct : -999;
+        var eb = b.edge_pct != null ? b.edge_pct : -999;
+        return eb - ea;
+      });
+      var rows = props.slice(0, 150).map(function(p, i){
+        var rec = p.rec_side;
+        var recBadge = rec ? '<span class="mp-rec '+rec.toLowerCase()+'">'+rec+'</span>' : '';
+        var edge = p.edge_pct != null ? '<span class="bt-edge '+(p.edge_pct>0?'pos':p.edge_pct<0?'neg':'zero')+'">'+( p.edge_pct > 0 ? '+' : '') + p.edge_pct.toFixed(1)+'%</span>' : '—';
+        var proj = p.model_projection != null ? p.model_projection.toFixed(1) : '—';
+        // Best book price
+        var bestO = null, bestU = null;
+        (p.books||[]).forEach(function(b){
+          if(b.over_price!=null && (bestO===null||b.over_price>bestO)) bestO=b.over_price;
+          if(b.under_price!=null && (bestU===null||b.under_price>bestU)) bestU=b.under_price;
+        });
+        var priceStr = (bestO!=null?(bestO>0?'+':'')+bestO:'—')+' / '+(bestU!=null?(bestU>0?'+':'')+bestU:'—');
+        return '<tr><td class="bt-player">'+p.player+'</td>'
+          +'<td class="bt-prop">'+p.stat.toUpperCase()+' '+p.line+'</td>'
+          +'<td>'+recBadge+'</td>'
+          +'<td style="font-family:\'SF Mono\',ui-monospace,monospace;font-size:11px;color:var(--cv-muted);">'+priceStr+'</td>'
+          +'<td>'+proj+'</td>'
+          +'<td>'+edge+'</td>'
+          +'</tr>';
+      }).join('');
+      wrap.innerHTML = '<div class="overflow-x-auto"><table class="mini-props-table">'
+        +'<thead><tr><th>Player</th><th>Prop</th><th>Rec</th><th>Best O/U</th><th>Proj</th><th>Edge</th></tr></thead>'
+        +'<tbody>'+rows+'</tbody></table></div>'
+        +(props.length>150 ? '<div style="font-size:11px;color:var(--cv-subtle);margin-top:6px;">Showing top 150 of '+props.length+'</div>' : '');
+    })
+    .catch(function(e){
+      wrap.innerHTML = '<div style="color:var(--cv-muted);font-size:12px;">Failed to load props: '+e.message+'</div>';
+    });
+}
+</script>
+{% endblock %}
+
+{% block footer %}
+  CourtVision · {{ game.away_team }} @ {{ game.home_team }} · model graded · not financial advice
+{% endblock %}

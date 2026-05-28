@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}Risk Control · CourtVision{% endblock %}
+{% block subtitle %}Risk Dashboard{% endblock %}
+{% block nav_risk %}active{% endblock %}
+
+{% block content %}
+<div id="killBanner" style="display:none;position:sticky;top:0;z-index:100;
+  background:#7f1d1d;border-bottom:2px solid #b91c1c;padding:8px 16px;
+  font-size:13px;font-weight:600;color:#fca5a5;text-align:center;letter-spacing:0.02em;">
+  KILL SWITCH ENGAGED — all bet recommendations suppressed
+</div>
+
+<style>
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px;}
+.risk-kpi{padding:16px 18px;background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;}
+.risk-kpi-lbl{font-size:11px;color:var(--cv-subtle);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.risk-kpi-val{font-size:22px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);}
+.risk-kpi-val.pos{color:#34d399;}
+.risk-kpi-val.neg{color:#f87171;}
+.risk-kpi-val.warn{color:#fbbf24;}
+
+.risk-section{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;
+  overflow:hidden;margin-bottom:14px;}
+.risk-section-hdr{padding:10px 16px;border-bottom:1px solid var(--cv-border);
+  display:flex;justify-content:space-between;align-items:center;}
+.risk-section-hdr h2{font-size:14px;font-weight:600;color:var(--cv-text);margin:0;}
+.risk-section-body{padding:14px 16px;}
+
+.risk-row{display:flex;justify-content:space-between;align-items:center;
+  padding:5px 0;font-size:13px;border-bottom:1px solid rgba(30,41,59,0.6);}
+.risk-row:last-child{border-bottom:none;}
+.risk-lbl{color:var(--cv-muted);}
+.risk-val{font-family:'SF Mono',ui-monospace,monospace;font-weight:500;color:var(--cv-text);}
+
+.progress-wrap{height:6px;background:rgba(255,255,255,0.07);border-radius:3px;
+  overflow:hidden;margin:8px 0 2px;}
+.progress-bar{height:100%;border-radius:3px;transition:width 400ms,background 400ms;}
+
+.msg-warn{font-size:12px;color:#fbbf24;display:flex;align-items:flex-start;gap:4px;margin:4px 0;}
+.msg-block{font-size:12px;color:#f87171;display:flex;align-items:flex-start;gap:4px;margin:4px 0;}
+
+.btn-kill{display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:10px;border-radius:8px;border:none;font-size:13px;font-weight:700;
+  letter-spacing:0.04em;cursor:pointer;transition:opacity 120ms,background 120ms;margin-top:12px;}
+.btn-kill.engage{background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;}
+.btn-kill.engage:hover{background:#991b1b;color:#fff;}
+.btn-kill.disengage{background:#14532d;color:#86efac;border:1px solid #166534;}
+.btn-kill.disengage:hover{background:#166534;color:#fff;}
+.btn-kill:disabled{opacity:.35;cursor:not-allowed;}
+
+.bankroll-edit{display:none;gap:6px;margin-top:8px;}
+.bankroll-edit input{flex:1;background:var(--cv-bg);border:1px solid var(--cv-accent);
+  border-radius:6px;padding:5px 8px;font-size:13px;color:var(--cv-text);outline:none;min-width:0;}
+.bankroll-edit button{padding:5px 12px;border-radius:6px;background:var(--cv-accent);
+  color:#fff;border:none;font-size:12px;font-weight:600;cursor:pointer;}
+
+.status-ok{color:#34d399;font-size:12px;font-weight:600;}
+.status-blocked{color:#f87171;font-size:12px;font-weight:600;}
+.status-warn{color:#fbbf24;font-size:12px;font-weight:600;}
+
+.spin{display:inline-block;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<!-- KPI Cards -->
+<div class="risk-grid" id="kpiGrid">
+  <div class="risk-kpi"><div class="risk-kpi-lbl">Bankroll</div><div class="risk-kpi-val" id="kpiBankroll">—</div></div>
+  <div class="risk-kpi"><div class="risk-kpi-lbl">Today P&amp;L</div><div class="risk-kpi-val" id="kpiPnl">—</div></div>
+  <div class="risk-kpi"><div class="risk-kpi-lbl">Drawdown 30d</div><div class="risk-kpi-val" id="kpiDrawdown">—</div></div>
+  <div class="risk-kpi"><div class="risk-kpi-lbl">Open Bets</div><div class="risk-kpi-val" id="kpiOpenBets">—</div></div>
+</div>
+
+<!-- Kill Switch + Status -->
+<div class="risk-section">
+  <div class="risk-section-hdr">
+    <h2>Kill Switch</h2>
+    <span id="riskStatusBadge" class="status-warn"><span class="spin">⟳</span> loading…</span>
+  </div>
+  <div class="risk-section-body">
+    <div class="risk-row">
+      <span class="risk-lbl">Status</span>
+      <span class="risk-val" id="ksStatus">—</span>
+    </div>
+    <div class="risk-row">
+      <span class="risk-lbl">Reason</span>
+      <span class="risk-val" id="ksReason" style="color:var(--cv-muted);font-size:12px">—</span>
+    </div>
+
+    <!-- Messages (warnings / blocks) -->
+    <div id="riskMessages" style="margin-top:8px"></div>
+
+    <!-- Drawdown progress bar -->
+    <div class="progress-wrap" title="30-day drawdown vs 15% auto-engage threshold">
+      <div class="progress-bar" id="drawdownBar" style="width:0%;background:#34d399"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--cv-subtle)">
+      <span>0%</span><span>15% threshold</span>
+    </div>
+
+    <button class="btn-kill engage" id="btnKillSwitch" onclick="toggleKillSwitch()" disabled>
+      <span id="killBtnIcon">■</span>
+      <span id="killBtnLabel">ENGAGE KILL SWITCH</span>
+    </button>
+  </div>
+</div>
+
+<!-- Bankroll Adjustment -->
+<div class="risk-section">
+  <div class="risk-section-hdr">
+    <h2>Bankroll</h2>
+    <button onclick="showBankrollEdit()" style="font-size:11px;color:var(--cv-accent);
+      background:transparent;border:none;cursor:pointer;padding:2px 6px;">Edit</button>
+  </div>
+  <div class="risk-section-body">
+    <div class="risk-row">
+      <span class="risk-lbl">Current</span>
+      <span class="risk-val" id="brCurrent">—</span>
+    </div>
+    <div class="risk-row">
+      <span class="risk-lbl">Open stake</span>
+      <span class="risk-val" id="brOpenStake">—</span>
+    </div>
+    <div class="risk-row">
+      <span class="risk-lbl">Available</span>
+      <span class="risk-val" id="brAvailable">—</span>
+    </div>
+    <div class="risk-row">
+      <span class="risk-lbl">High-water mark (90d)</span>
+      <span class="risk-val" id="brHwm">—</span>
+    </div>
+
+    <div class="bankroll-edit" id="bankrollEditRow">
+      <input type="number" id="bankrollInput" min="0" step="1" placeholder="New bankroll…">
+      <button onclick="saveBankroll()">Save</button>
+    </div>
+    <div id="bankrollMsg" style="font-size:12px;color:var(--cv-muted);margin-top:4px"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+let _ksEngaged = false;
+
+function fmtMoney(v) {
+  if (v == null) return '—';
+  const sign = v < 0 ? '-' : (v > 0 ? '+' : '');
+  return sign + '$' + Math.abs(v).toFixed(2);
+}
+function fmtPct(v) {
+  if (v == null) return '—';
+  return (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+}
+
+async function loadStatus() {
+  try {
+    const res = await fetch('/api/risk/status', {credentials:'include'});
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json();
+
+    // KPI cards
+    const st = d.state || {};
+    const br = st.bankroll ?? null;
+    const pnl = st.daily_pnl ?? null;
+    const dd = st.drawdown_30d_pct ?? null;
+    const ob = st.open_bet_count ?? null;
+
+    $('kpiBankroll').textContent = br != null ? '$' + br.toFixed(2) : '—';
+    $('kpiPnl').textContent = fmtMoney(pnl);
+    $('kpiPnl').className = 'risk-kpi-val' + (pnl > 0 ? ' pos' : pnl < 0 ? ' neg' : '');
+    $('kpiDrawdown').textContent = dd != null ? dd.toFixed(1) + '%' : '—';
+    $('kpiDrawdown').className = 'risk-kpi-val' + (dd > 10 ? ' neg' : dd > 5 ? ' warn' : '');
+    $('kpiOpenBets').textContent = ob != null ? ob : '—';
+
+    // Kill switch
+    _ksEngaged = !!d.kill_switch_engaged;
+    $('ksStatus').textContent = _ksEngaged ? 'ENGAGED' : 'DISENGAGED';
+    $('ksStatus').style.color = _ksEngaged ? '#f87171' : '#34d399';
+    $('ksReason').textContent = d.kill_reason || '—';
+    $('killBanner').style.display = _ksEngaged ? 'block' : 'none';
+
+    const btn = $('btnKillSwitch');
+    btn.disabled = false;
+    if (_ksEngaged) {
+      btn.className = 'btn-kill disengage';
+      $('killBtnIcon').textContent = '▶';
+      $('killBtnLabel').textContent = 'DISENGAGE KILL SWITCH';
+    } else {
+      btn.className = 'btn-kill engage';
+      $('killBtnIcon').textContent = '■';
+      $('killBtnLabel').textContent = 'ENGAGE KILL SWITCH';
+    }
+
+    // Progress bar (30d drawdown vs 15% threshold)
+    const barPct = Math.min(100, ((dd || 0) / 15) * 100);
+    const bar = $('drawdownBar');
+    bar.style.width = barPct + '%';
+    bar.style.background = dd > 10 ? '#f87171' : dd > 5 ? '#fbbf24' : '#34d399';
+
+    // Messages
+    const msgs = $('riskMessages');
+    const warnings = d.warnings || [];
+    const blocks = d.blocked_reasons || [];
+    let html = '';
+    for (const w of warnings) html += `<div class="msg-warn">⚠ ${w}</div>`;
+    for (const b of blocks) html += `<div class="msg-block">✗ ${b}</div>`;
+    msgs.innerHTML = html;
+
+    // Status badge
+    const badge = $('riskStatusBadge');
+    if (d.ok && !_ksEngaged) {
+      badge.textContent = '✓ OK';
+      badge.className = 'status-ok';
+    } else if (_ksEngaged) {
+      badge.textContent = '■ ENGAGED';
+      badge.className = 'status-blocked';
+    } else if (warnings.length) {
+      badge.textContent = '⚠ WARNINGS';
+      badge.className = 'status-warn';
+    } else {
+      badge.textContent = '✗ BLOCKED';
+      badge.className = 'status-blocked';
+    }
+  } catch(e) {
+    $('riskStatusBadge').textContent = 'error';
+    $('riskStatusBadge').className = 'status-blocked';
+  }
+}
+
+async function loadBankroll() {
+  try {
+    const res = await fetch('/api/bankroll', {credentials:'include'});
+    if (!res.ok) return;
+    const d = await res.json();
+    $('brCurrent').textContent = d.current != null ? '$' + d.current.toFixed(2) : '—';
+    $('brOpenStake').textContent = d.open_stake != null ? '$' + d.open_stake.toFixed(2) : '—';
+    $('brAvailable').textContent = d.available != null ? '$' + d.available.toFixed(2) : '—';
+    $('brHwm').textContent = d.high_water_mark != null ? '$' + d.high_water_mark.toFixed(2) : '—';
+  } catch(e) {}
+}
+
+window.toggleKillSwitch = async function() {
+  const btn = $('btnKillSwitch');
+  btn.disabled = true;
+  const engage = !_ksEngaged;
+  const reason = engage ? (prompt('Reason (optional):') || '') : '';
+  try {
+    const res = await fetch('/api/risk/kill-switch', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({engage, reason})
+    });
+    if (!res.ok) throw new Error(await res.text());
+    await loadStatus();
+  } catch(e) {
+    alert('Error: ' + e.message);
+    btn.disabled = false;
+  }
+};
+
+window.showBankrollEdit = function() {
+  const row = $('bankrollEditRow');
+  row.style.display = row.style.display === 'flex' ? 'none' : 'flex';
+};
+
+window.saveBankroll = async function() {
+  const val = parseFloat($('bankrollInput').value);
+  if (isNaN(val) || val < 0) { $('bankrollMsg').textContent = 'Enter a valid amount.'; return; }
+  try {
+    const res = await fetch('/api/bankroll/set', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({bankroll: val})
+    });
+    if (!res.ok) throw new Error(await res.text());
+    $('bankrollMsg').textContent = 'Saved.';
+    $('bankrollMsg').style.color = '#34d399';
+    $('bankrollEditRow').style.display = 'none';
+    $('bankrollInput').value = '';
+    await loadBankroll();
+    await loadStatus();
+  } catch(e) {
+    $('bankrollMsg').textContent = 'Error: ' + e.message;
+    $('bankrollMsg').style.color = '#f87171';
+  }
+};
+
+// Initial load + auto-refresh every 30s
+loadStatus();
+loadBankroll();
+setInterval(() => { loadStatus(); loadBankroll(); }, 30000);
+})();
+</script>
+{% endblock %}

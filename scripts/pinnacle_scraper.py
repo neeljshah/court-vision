@@ -89,10 +89,14 @@ if not log.handlers:
 NBA_LEAGUE_ID = 487
 _BASE = "https://guest.api.arcadia.pinnacle.com/0.1"
 
-# Canonical 10-col player-prop schema (matches data/lines/<date>_pp.csv etc.)
+# Canonical player-prop schema (matches data/lines/<date>_pp.csv etc.)
+# book_selection_id_* added for deeplink parity with DK/FD scrapers.
+# Pinnacle's public API does not expose per-outcome IDs, so these are
+# always empty strings — the event-page deeplink uses game_id instead.
 PROP_FIELDS = [
     "captured_at", "book", "game_id", "player_id", "player_name",
     "stat", "line", "over_price", "under_price", "start_time",
+    "book_selection_id_over", "book_selection_id_under",
 ]
 
 # Mainline schema (separate because mainline is not player-keyed).
@@ -327,17 +331,21 @@ def _build_prop_row(
     under_price: Any,
     start_time: str,
 ) -> Dict[str, Any]:
+    # Pinnacle's public API does not expose per-outcome/selection IDs.
+    # The event-page deeplink uses game_id (parent matchup ID) instead.
     return {
-        "captured_at": captured_at,
-        "book":        "pin",
-        "game_id":     game_id,
-        "player_id":   "",
-        "player_name": player_name,
-        "stat":        stat,
-        "line":        line,
-        "over_price":  over_price,
-        "under_price": under_price,
-        "start_time":  start_time,
+        "captured_at":             captured_at,
+        "book":                    "pin",
+        "game_id":                 game_id,
+        "player_id":               "",
+        "player_name":             player_name,
+        "stat":                    stat,
+        "line":                    line,
+        "over_price":              over_price,
+        "under_price":             under_price,
+        "start_time":              start_time,
+        "book_selection_id_over":  "",
+        "book_selection_id_under": "",
     }
 
 

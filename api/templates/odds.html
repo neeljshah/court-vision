@@ -1,94 +1,1723 @@
 {% extends "base.html" %}
-{% block title %}Odds API · CourtVision{% endblock %}
-{% block subtitle %}Odds · {{ env.date }}{% endblock %}
-{% block og_title %}CourtVision odds · {{ env.date }} · {{ env.n_props }} props across {{ env.n_books }} books{% endblock %}
-{% block og_desc %}Multi-book NBA prop odds — Pinnacle, FanDuel, Bovada side-by-side. Public REST API at /api/odds/{date}.json.{% endblock %}
+{% block title %}Line Shop · CourtVision{% endblock %}
+{% block subtitle %}Live Odds · {{ env.date }}{% endblock %}
+{% block og_title %}CourtVision Line Shop · {{ env.date }} · {{ env.n_props }} props · {{ env.n_books }} books{% endblock %}
+{% block og_desc %}Real-time multi-book NBA prop odds — DraftKings, FanDuel, Pinnacle, Bovada side-by-side. Live WebSocket updates.{% endblock %}
 
 {% block content %}
-<section class="mb-3 md:mb-4">
-  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Odds API</h1>
-    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ env.date }}</span>
-    <a href="/tonight?date={{ env.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">picks →</a>
-    <a href="/api/odds/{{ env.date }}.json" class="text-xs md:text-sm underline font-mono" style="color:var(--cv-accent)">/api/odds/{{ env.date }}.json</a>
-  </div>
-  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
-    <span><b style="color:var(--cv-text)">{{ env.n_props }}</b> props</span>
-    <span>{{ env.n_books }} books:
-      {% for b in env.books %}
-        <span title="last scrape: {{ b.last_scrape|default('unknown') }}">{{ b.display }}{% if b.last_scrape %} <span class="text-[10px]" style="color:var(--cv-subtle)">({{ b.last_scrape[11:16] }})</span>{% endif %}</span>{% if not loop.last %} · {% endif %}
-      {% endfor %}
-    </span>
-  </div>
-  <form action="/odds" method="get" class="mt-3 flex flex-wrap gap-2 items-center text-xs">
-    <input type="hidden" name="date" value="{{ env.date }}">
-    <label style="color:var(--cv-muted)">stat
-      <select name="stat" onchange="this.form.submit()"
-              class="bg-transparent border rounded px-1 ml-1" style="border-color:var(--cv-border);color:var(--cv-text)">
-        <option value="">all</option>
-        {% for s in ['pts','reb','ast','fg3m','stl','blk','tov'] %}
-          <option value="{{ s }}" {% if s == stat %}selected{% endif %}>{{ s|upper }}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <label style="color:var(--cv-muted)">player
-      <input name="player" value="{{ player|default('') }}" placeholder="e.g. Wemby"
-             class="bg-transparent border rounded px-1 ml-1 w-28" style="border-color:var(--cv-border);color:var(--cv-text)">
-    </label>
-    <button class="px-2 py-0.5 underline" style="color:var(--cv-accent)">apply</button>
-  </form>
-</section>
+<!-- Kill-switch banner (hidden until JS confirms engaged) -->
+<div id="killBanner">
+  KILL SWITCH ENGAGED — recommendations hidden until disengaged
+</div>
 
-{% if not env.props %}
-  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
-    No scraped props for {{ env.date }}.
-    <div class="text-xs mt-2" style="color:var(--cv-subtle)">
-      Scrapers write to <code>data/lines/&lt;date&gt;_&lt;book&gt;.csv</code> — check that pin/bov/fd ticks are running.
+<!-- Server-side config injected for WS + date nav -->
+<!-- NOTE: token is NOT injected here — auth uses HttpOnly cookie (set by /auth/init) -->
+<script>
+window.CV_CONFIG = {
+  wsBase: "{{ config.ws_base | default('') | e }}",
+  date: "{{ env.date }}",
+  stat: "{{ stat | default('') }}",
+  player: "{{ player | default('') }}"
+};
+window.CV_INITIAL = {{ env_summary | tojson }};
+</script>
+
+<style>
+/* ── layout ──────────────────────────────────────────────────────── */
+.odds-wrap{display:flex;gap:12px;align-items:flex-start;min-height:0;}
+.odds-main{flex:1;min-width:0;}
+.odds-sidebar{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;}
+@media(max-width:900px){.odds-wrap{flex-direction:column;}.odds-sidebar{width:100%;}}
+
+/* ── sticky header rows ──────────────────────────────────────────── */
+.odds-ctrl{position:sticky;top:48px;z-index:9;background:rgba(10,15,30,0.97);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--cv-border);
+  padding:6px 0 4px;}
+
+/* ── pill filters ────────────────────────────────────────────────── */
+.pill{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;
+  font-size:11px;font-weight:500;border:1px solid var(--cv-border);cursor:pointer;
+  color:var(--cv-muted);background:transparent;transition:all 100ms;white-space:nowrap;}
+.pill:hover,.pill.active{background:var(--cv-accent);border-color:var(--cv-accent);color:#fff;}
+.pill-game{font-size:11px;padding:3px 8px;}
+
+/* ── live status badge ───────────────────────────────────────────── */
+#liveStatus{display:inline-flex;align-items:center;gap:5px;font-size:11px;
+  color:var(--cv-muted);white-space:nowrap;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#34d399;flex-shrink:0;}
+.live-dot.red{background:#f87171;}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
+.live-dot.pulsing{animation:livePulse 1s ease-in-out 3;}
+
+/* ── search ──────────────────────────────────────────────────────── */
+#playerSearch{background:var(--cv-card);border:1px solid var(--cv-border);
+  border-radius:6px;padding:3px 8px;font-size:12px;color:var(--cv-text);width:140px;
+  outline:none;}
+#playerSearch:focus{border-color:var(--cv-accent);}
+
+/* ── main table ──────────────────────────────────────────────────── */
+.ls-table{width:100%;border-collapse:collapse;font-size:12px;}
+.ls-table thead th{
+  position:sticky;top:0;background:var(--cv-card);
+  color:var(--cv-subtle);font-weight:500;font-size:11px;
+  padding:6px 8px;border-bottom:1px solid var(--cv-border);
+  white-space:nowrap;user-select:none;}
+.ls-table tbody tr{border-bottom:1px solid var(--cv-border);cursor:pointer;
+  transition:background 80ms;}
+.ls-table tbody tr:hover{background:rgba(96,165,250,0.06);}
+.ls-table tbody tr.row-selected{background:rgba(96,165,250,0.12);}
+.ls-table td{padding:5px 8px;vertical-align:middle;}
+
+/* ── price cells ─────────────────────────────────────────────────── */
+.book-col{text-align:center;padding:2px 4px !important;}
+.price-cell{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:46px;}
+.price-o,.price-u{
+  font-family:'SF Mono',ui-monospace,monospace;font-size:11px;font-variant-numeric:tabular-nums;
+  padding:1px 5px;border-radius:3px;line-height:1.4;min-width:44px;text-align:center;}
+.price-o{color:var(--cv-muted);}
+.price-u{color:var(--cv-muted);}
+.price-o.best{background:#064e3b;color:#34d399;font-weight:600;}
+.price-u.best{background:#064e3b;color:#34d399;font-weight:600;}
+.price-o.pos{color:#34d399;}
+.price-u.pos{color:#34d399;}
+.price-o.neg,.price-u.neg{color:#94a3b8;}
+.price-empty{color:#334155;font-size:10px;}
+
+@keyframes priceBlink{
+  0%{background:rgba(96,165,250,0.4)}
+  100%{background:transparent}
+}
+.price-blink{animation:priceBlink 400ms ease-out;}
+
+/* ── move arrow ──────────────────────────────────────────────────── */
+.move-arrow{color:#fbbf24;font-size:10px;animation:priceBlink 600ms ease-out;}
+
+/* ── book chip ───────────────────────────────────────────────────── */
+.book-chip{font-size:10px;font-weight:700;color:var(--cv-subtle);letter-spacing:0.02em;}
+
+/* ── player col ──────────────────────────────────────────────────── */
+.player-name{font-weight:500;color:var(--cv-text);white-space:nowrap;}
+.prop-label{font-family:'SF Mono',ui-monospace,monospace;font-size:11px;
+  color:var(--cv-muted);white-space:nowrap;}
+.game-tag{font-size:10px;color:var(--cv-subtle);}
+
+/* ── steam badge ─────────────────────────────────────────────────── */
+.steam-badge{
+  display:inline-flex;align-items:center;gap:2px;
+  font-size:9px;font-weight:700;letter-spacing:0.03em;
+  padding:1px 4px;border-radius:3px;
+  background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.4);
+  color:#fbbf24;vertical-align:middle;margin-left:4px;
+  animation:steamPulse 2s ease-in-out infinite;
+}
+@keyframes steamPulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ── parlay sidebar ──────────────────────────────────────────────── */
+.sidebar-card{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;
+  overflow:hidden;}
+.sidebar-hdr{padding:10px 12px 8px;border-bottom:1px solid var(--cv-border);
+  display:flex;justify-content:space-between;align-items:center;}
+.sidebar-hdr h3{font-size:13px;font-weight:600;color:var(--cv-text);margin:0;}
+.parlay-legs{max-height:240px;overflow-y:auto;}
+.parlay-leg{display:flex;align-items:flex-start;gap:6px;padding:7px 10px;
+  border-bottom:1px solid var(--cv-border);font-size:11px;}
+.parlay-leg:last-child{border-bottom:none;}
+.leg-side{padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;flex-shrink:0;}
+.leg-side.over{background:#064e3b;color:#34d399;}
+.leg-side.under{background:#451a03;color:#fbbf24;}
+.leg-rm{cursor:pointer;color:var(--cv-subtle);margin-left:auto;font-size:13px;
+  line-height:1;flex-shrink:0;}
+.leg-rm:hover{color:#f87171;}
+.parlay-stats{padding:10px 12px;font-size:12px;display:flex;flex-direction:column;gap:4px;}
+.parlay-row{display:flex;justify-content:space-between;}
+.parlay-lbl{color:var(--cv-muted);}
+.parlay-val{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);font-weight:600;}
+.parlay-empty{padding:20px;text-align:center;font-size:12px;color:var(--cv-subtle);}
+.btn-save{
+  display:block;width:100%;padding:8px;font-size:12px;font-weight:600;
+  background:var(--cv-accent);color:#fff;border:none;border-radius:0 0 12px 12px;
+  cursor:pointer;transition:opacity 100ms;}
+.btn-save:hover{opacity:.85}
+.btn-save:disabled{opacity:.35;cursor:not-allowed;}
+.best-toggle{display:inline-flex;align-items:center;gap:4px;font-size:11px;
+  color:var(--cv-muted);cursor:pointer;user-select:none;}
+.best-toggle input{cursor:pointer;}
+
+/* ── risk control card ───────────────────────────────────────────── */
+.risk-row{display:flex;justify-content:space-between;align-items:center;
+  padding:3px 0;font-size:12px;}
+.risk-lbl{color:var(--cv-muted);}
+.risk-val{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);
+  font-weight:500;}
+.risk-val.pos{color:#34d399;}
+.risk-val.neg{color:#f87171;}
+.risk-progress-wrap{margin:6px 0 2px;height:6px;background:rgba(255,255,255,0.07);
+  border-radius:3px;overflow:hidden;}
+.risk-progress-bar{height:100%;border-radius:3px;transition:width 400ms,background 400ms;}
+.risk-warn{font-size:11px;color:#fbbf24;margin:4px 0;display:flex;align-items:flex-start;gap:4px;}
+.risk-warn-icon{flex-shrink:0;margin-top:1px;}
+.btn-kill{display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;margin-top:8px;padding:8px;border-radius:6px;border:none;
+  font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;
+  transition:opacity 120ms,background 120ms;}
+.btn-kill.engage{background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;}
+.btn-kill.engage:hover{background:#991b1b;color:#fff;}
+.btn-kill.disengage{background:#14532d;color:#86efac;border:1px solid #166534;}
+.btn-kill.disengage:hover{background:#166534;color:#fff;}
+.btn-kill:disabled{opacity:.35;cursor:not-allowed;}
+
+/* inline bankroll edit */
+.risk-bankroll-edit{display:none;gap:4px;margin-top:4px;}
+.risk-bankroll-edit input{flex:1;background:var(--cv-card);border:1px solid var(--cv-accent);
+  border-radius:4px;padding:3px 6px;font-size:12px;color:var(--cv-text);outline:none;min-width:0;}
+.risk-bankroll-edit button{padding:3px 8px;border-radius:4px;background:var(--cv-accent);
+  color:#fff;border:none;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;}
+
+/* kill-switch banner (full page top) */
+#killBanner{display:none;position:sticky;top:0;z-index:100;
+  background:#7f1d1d;border-bottom:2px solid #b91c1c;
+  padding:8px 16px;font-size:13px;font-weight:600;color:#fca5a5;
+  text-align:center;letter-spacing:0.02em;}
+#killBanner.active{display:block;}
+
+/* ── arbs card ───────────────────────────────────────────────────── */
+.arb-row{display:flex;align-items:center;gap:6px;padding:6px 10px;
+  border-bottom:1px solid var(--cv-border);font-size:11px;cursor:pointer;}
+.arb-row:hover{background:rgba(96,165,250,0.05);}
+.arb-row:last-child{border-bottom:none;}
+.arb-spread{font-family:'SF Mono',ui-monospace,monospace;color:#34d399;
+  font-weight:700;font-size:12px;min-width:36px;}
+.arb-label{flex:1;color:var(--cv-text);}
+.arb-books{color:var(--cv-subtle);font-size:10px;white-space:nowrap;}
+
+/* ── detail panel ────────────────────────────────────────────────── */
+#detailPanel{position:fixed;right:0;top:0;bottom:0;width:340px;
+  background:var(--cv-card);border-left:1px solid var(--cv-border);
+  z-index:50;transform:translateX(100%);transition:transform 250ms ease;
+  overflow-y:auto;padding:16px;}
+#detailPanel.open{transform:translateX(0);}
+.detail-close{cursor:pointer;font-size:20px;color:var(--cv-subtle);
+  float:right;line-height:1;}
+.detail-close:hover{color:var(--cv-text);}
+.detail-book-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;
+  align-items:center;padding:6px 8px;border-radius:6px;font-size:12px;}
+.detail-book-row:hover{background:rgba(255,255,255,0.04);}
+
+/* ── skeleton ────────────────────────────────────────────────────── */
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skel{background:linear-gradient(90deg,var(--cv-card) 25%,var(--cv-border) 50%,var(--cv-card) 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;height:28px;}
+.skel-row{height:34px;}
+
+/* ── responsive: mobile collapses books → best only ─────────────── */
+@media(max-width:700px){
+  .book-col.hide-mobile{display:none;}
+  .ls-table td.player-td{max-width:90px;overflow:hidden;text-overflow:ellipsis;}
+}
+
+/* ── deeplink bet buttons ─────────────────────────────────────────── */
+.dl-btn{
+  display:inline-block;opacity:0;pointer-events:none;
+  font-size:9px;font-weight:700;letter-spacing:0.02em;
+  padding:1px 4px;border-radius:3px;border:none;cursor:pointer;
+  text-decoration:none;line-height:1.5;transition:opacity 80ms,background 80ms;
+  vertical-align:middle;margin-left:2px;color:#fff;}
+.dl-btn.dl-over{background:#1a56db;}
+.dl-btn.dl-under{background:#7c3aed;}
+.dl-btn:hover{filter:brightness(1.25);}
+/* Show buttons on row hover or touch */
+tr:hover .dl-btn, tr:focus-within .dl-btn{opacity:1;pointer-events:auto;}
+
+/* ── multi-book "best" deeplink row under Best O / Best U ─────────── */
+.best-dl-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.best-dl-btns{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 80ms;}
+tr:hover .best-dl-btns, tr:focus-within .best-dl-btns{opacity:1;pointer-events:auto;}
+.best-dl-btn{
+  font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;
+  border:none;cursor:pointer;background:rgba(96,165,250,0.15);
+  color:#93c5fd;text-decoration:none;white-space:nowrap;line-height:1.5;}
+.best-dl-btn:hover{background:rgba(96,165,250,0.3);color:#fff;}
+
+/* ── model overlay columns ────────────────────────────────────────── */
+.model-proj{font-family:'SF Mono',ui-monospace,monospace;font-size:11px;
+  color:var(--cv-muted);white-space:nowrap;cursor:default;}
+.model-proj[title]{text-decoration:underline dotted;text-underline-offset:2px;}
+.edge-val{font-family:'SF Mono',ui-monospace,monospace;font-size:12px;
+  font-weight:700;white-space:nowrap;}
+.edge-pos{color:#10b981;}
+.edge-neg{color:#ef4444;}
+.edge-weak{color:#f59e0b;}
+.edge-nil{color:#475569;}
+.rec-badge{display:inline-block;padding:1px 6px;border-radius:3px;
+  font-size:10px;font-weight:700;letter-spacing:0.04em;white-space:nowrap;}
+.rec-over{background:rgba(16,185,129,0.2);color:#10b981;border:1px solid rgba(16,185,129,0.4);}
+.rec-under{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.35);}
+/* Left-border accent on rows with a recommendation */
+tr.has-rec-over{border-left:3px solid #10b981;}
+tr.has-rec-under{border-left:3px solid #ef4444;}
+/* Filter pills for model columns */
+.pill-model{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.3);}
+.pill-model.active{background:#10b981;border-color:#10b981;}
+</style>
+
+<!-- ── Control bar (sticky) ──────────────────────────────────────────────── -->
+<div class="odds-ctrl mb-1">
+  <div class="flex flex-wrap items-center gap-2">
+    <!-- Date nav -->
+    <div class="flex items-center gap-1">
+      <button id="btnDatePrev" onclick="shiftDate(-1)"
+              class="px-1.5 py-0.5 rounded text-xs" style="color:var(--cv-muted);background:var(--cv-card);border:1px solid var(--cv-border)">◀</button>
+      <span id="dateLabel" class="text-xs font-mono" style="color:var(--cv-text)">{{ env.date }}</span>
+      <button id="btnDateNext" onclick="shiftDate(1)"
+              class="px-1.5 py-0.5 rounded text-xs" style="color:var(--cv-muted);background:var(--cv-card);border:1px solid var(--cv-border)">▶</button>
+    </div>
+
+    <!-- Stat pills -->
+    <div class="flex flex-wrap gap-1" id="statPills">
+      {% set stat_map = {'':'All','pts':'Points','reb':'Rebounds','ast':'Assists','fg3m':'3PM','stl':'Steals','blk':'Blocks','tov':'TOV'} %}
+      {% for sv, slabel in stat_map.items() %}
+        <button class="pill {% if stat == sv %}active{% endif %}"
+                onclick="setStat('{{ sv }}')">{{ slabel }}</button>
+      {% endfor %}
+    </div>
+
+    <!-- Model filter pills -->
+    <div class="flex gap-1">
+      <button id="pillByEdge" class="pill pill-model" onclick="toggleSortEdge()" title="Sort by model edge descending">By Edge</button>
+      <button id="pillRecsOnly" class="pill pill-model" onclick="toggleRecsOnly()" title="Show only rows with a recommendation">Recs Only</button>
+    </div>
+
+    <!-- Player search -->
+    <input id="playerSearch" type="text" placeholder="Search player…"
+           value="{{ player | default('') }}"
+           oninput="debounceSearch(this.value)">
+
+    <!-- Live status -->
+    <div id="liveStatus" class="ml-auto">
+      <span class="live-dot" id="liveDot"></span>
+      <span id="liveText">connecting…</span>
     </div>
   </div>
-{% else %}
-  <div class="cv-card overflow-x-auto">
-    <table class="min-w-full text-xs md:text-sm">
-      <thead style="color:var(--cv-subtle)">
-        <tr class="border-b" style="border-color:var(--cv-border)">
-          <th class="text-left px-3 py-2">Player</th>
-          <th class="text-left px-3 py-2">Prop</th>
-          <th class="text-center px-3 py-2">Books</th>
-          <th class="text-right px-3 py-2">Best OVER</th>
-          <th class="text-right px-3 py-2">Best UNDER</th>
-          <th class="text-left px-3 py-2">All books</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in env.props[:300] %}
-          {% set best_over = (p.books|selectattr('over_price', 'ne', None)|sort(attribute='over_price', reverse=True)|list)[0] if (p.books|selectattr('over_price', 'ne', None)|list) else None %}
-          {% set best_under = (p.books|selectattr('under_price', 'ne', None)|sort(attribute='under_price', reverse=True)|list)[0] if (p.books|selectattr('under_price', 'ne', None)|list) else None %}
-          <tr class="border-b" style="border-color:var(--cv-border)">
-            <td class="px-3 py-2" style="color:var(--cv-text)">{{ p.player }}</td>
-            <td class="px-3 py-2 font-mono">{{ p.stat|upper }} {{ '%g'|format(p.line) }}</td>
-            <td class="px-3 py-2 text-center font-mono" style="color:var(--cv-muted)">{{ p.n_books }}</td>
-            <td class="px-3 py-2 text-right font-mono num-pos">
-              {% if best_over %}{{ best_over.display }} {{ '%+d'|format(best_over.over_price) }}{% else %}<span class="pending">—</span>{% endif %}
-            </td>
-            <td class="px-3 py-2 text-right font-mono num-pos">
-              {% if best_under %}{{ best_under.display }} {{ '%+d'|format(best_under.under_price) }}{% else %}<span class="pending">—</span>{% endif %}
-            </td>
-            <td class="px-3 py-2 font-mono text-[10px]" style="color:var(--cv-muted)">
-              {% for b in p.books %}
-                {{ b.display }} {{ '%+d'|format(b.over_price) if b.over_price is not none else '—' }}/{{ '%+d'|format(b.under_price) if b.under_price is not none else '—' }}{% if not loop.last %} · {% endif %}
-              {% endfor %}
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+
+  <!-- Game pills (second row) -->
+  <div class="flex flex-wrap gap-1 mt-2" id="gamePills">
+    <button class="pill pill-game active" id="gameAll" onclick="setGame(null)">All Games</button>
+    <!-- populated by JS from CV_INITIAL.props -->
   </div>
-  {% if env.props|length > 300 %}
-    <p class="mt-2 text-xs" style="color:var(--cv-muted)">showing first 300 of {{ env.props|length }} — use stat / player filter to narrow</p>
-  {% endif %}
-{% endif %}
+</div>
+
+<!-- ── Main content ───────────────────────────────────────────────────────── -->
+<div class="odds-wrap mt-2">
+
+  <!-- Main table -->
+  <div class="odds-main">
+    <div id="tableWrap" class="cv-card overflow-x-auto">
+
+      {% if not env.props %}
+        <div id="emptyMsg" class="p-8 text-center" style="color:var(--cv-muted)">
+          No scraped props for {{ env.date }}.
+          <div class="text-xs mt-2" style="color:var(--cv-subtle)">
+            Scrapers write to <code>data/lines/&lt;date&gt;_&lt;book&gt;.csv</code>
+          </div>
+        </div>
+      {% else %}
+        <table class="ls-table" id="propsTable">
+          <thead id="tableHead">
+            <tr>
+              <th class="text-left" style="min-width:130px">Player</th>
+              <th class="text-left" style="min-width:80px">Prop</th>
+              <th class="text-left hide-mobile" style="min-width:70px">Game</th>
+              <!-- Book columns injected by JS -->
+              <th class="text-center" style="min-width:52px">Best O</th>
+              <th class="text-center" style="min-width:52px">Best U</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- skeleton rows on first load — 12 rows × column layout matches real table -->
+            {% for i in range(12) %}
+              <tr class="skel-row">
+                <td style="width:130px"><div class="skel" style="width:80%;height:14px;margin:7px 0"></div></td>
+                <td style="width:80px"><div class="skel" style="width:60%;height:12px;margin:7px 0"></div></td>
+                <td class="hide-mobile" style="width:60px"><div class="skel" style="width:50%;height:12px;margin:7px 0"></div></td>
+                <td class="hide-mobile text-center" style="width:52px"><div class="skel" style="width:70%;height:12px;margin:7px auto"></div></td>
+                <td class="hide-mobile text-center" style="width:56px"><div class="skel" style="width:70%;height:12px;margin:7px auto"></div></td>
+                <td class="hide-mobile" style="width:48px"></td>
+                <td class="text-center" style="width:52px"><div class="skel" style="width:70%;height:14px;margin:7px auto"></div></td>
+                <td class="text-center" style="width:52px"><div class="skel" style="width:70%;height:14px;margin:7px auto"></div></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div id="tableFooter" class="px-3 py-2 text-xs" style="color:var(--cv-subtle)"></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="odds-sidebar">
+
+    <!-- Top arbs card -->
+    <div class="sidebar-card">
+      <div class="sidebar-hdr">
+        <h3>Top Arbs / Spreads</h3>
+        <span class="text-xs" style="color:var(--cv-subtle)" id="arbCount">—</span>
+      </div>
+      <div id="arbList">
+        <div class="parlay-empty">Loading…</div>
+      </div>
+    </div>
+
+    <!-- Parlay builder -->
+    <div class="sidebar-card">
+      <div class="sidebar-hdr">
+        <h3>Parlay Builder</h3>
+        <label class="best-toggle" title="Re-price each leg using best available book">
+          <input type="checkbox" id="bestLineToggle" checked> Best line
+        </label>
+      </div>
+      <div id="parlayLegs">
+        <div class="parlay-empty" id="parlayEmpty">Click rows to add legs</div>
+      </div>
+      <div id="parlayStats" class="parlay-stats" style="display:none">
+        <div class="parlay-row"><span class="parlay-lbl">Legs</span><span class="parlay-val" id="pLegs">0</span></div>
+        <div class="parlay-row"><span class="parlay-lbl">Combined</span><span class="parlay-val" id="pCombined">—</span></div>
+        <div class="parlay-row"><span class="parlay-lbl">Decimal</span><span class="parlay-val" id="pDecimal">—</span></div>
+        <div class="parlay-row"><span class="parlay-lbl">$100 payout</span><span class="parlay-val" id="pPayout">—</span></div>
+      </div>
+      <button class="btn-save" id="btnSaveParlay" disabled onclick="saveParlay()">Save Parlay</button>
+    </div>
+
+    <!-- Risk Control card -->
+    <div class="sidebar-card" id="riskCard">
+      <div class="sidebar-hdr">
+        <h3>Risk Control</h3>
+        <span class="text-xs" id="riskStatusBadge" style="color:var(--cv-subtle)">loading…</span>
+      </div>
+      <div style="padding:10px 12px 8px">
+        <!-- Bankroll (inline edit) -->
+        <div class="risk-row">
+          <span class="risk-lbl">Bankroll</span>
+          <span class="risk-val" id="riskBankroll" style="cursor:pointer;text-decoration:underline dotted"
+                title="Click to edit" onclick="toggleBankrollEdit()">—</span>
+        </div>
+        <div class="risk-bankroll-edit" id="bankrollEditRow">
+          <input type="number" id="bankrollInput" min="0" step="1" placeholder="new value">
+          <button onclick="saveBankroll()">Save</button>
+        </div>
+
+        <div class="risk-row">
+          <span class="risk-lbl">Today</span>
+          <span class="risk-val" id="riskTodayPnl">—</span>
+        </div>
+        <div class="risk-row">
+          <span class="risk-lbl">Drawdown 30d</span>
+          <span class="risk-val" id="riskDrawdown">—</span>
+        </div>
+        <div class="risk-row">
+          <span class="risk-lbl">Open bets</span>
+          <span class="risk-val" id="riskOpenBets">—</span>
+        </div>
+
+        <!-- Daily loss progress bar (today PnL vs -5% cap) -->
+        <div class="risk-progress-wrap" title="Daily loss: 0 = no loss, 100% = full cap">
+          <div class="risk-progress-bar" id="riskProgressBar" style="width:0%;background:#34d399"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--cv-subtle)">
+          <span>0</span><span id="riskProgressLabel">Daily cap</span>
+        </div>
+
+        <!-- Warnings / blocks -->
+        <div id="riskMessages" style="margin-top:6px"></div>
+
+        <!-- Kill switch toggle -->
+        <button class="btn-kill engage" id="btnKillSwitch" onclick="toggleKillSwitch()" disabled>
+          <span id="killBtnIcon">STOP</span>
+          <span id="killBtnLabel">KILL SWITCH</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Detail side-panel ─────────────────────────────────────────────────── -->
+<div id="detailPanel">
+  <span class="detail-close" onclick="closeDetail()">✕</span>
+  <div id="detailContent"></div>
+</div>
+<div id="detailOverlay" onclick="closeDetail()"
+     style="display:none;position:fixed;inset:0;z-index:49;background:rgba(0,0,0,0.35)"></div>
+
+<!-- ── MAIN JS ──────────────────────────────────────────────────────────── -->
+<script>
+(function(){
+'use strict';
+
+// ── state ────────────────────────────────────────────────────────────────
+const cfg = window.CV_CONFIG || {};
+let allProps = (window.CV_INITIAL && window.CV_INITIAL.props) || [];
+let allBooks = (window.CV_INITIAL && window.CV_INITIAL.books) || [];
+let activeStat = cfg.stat || '';
+let activePlayer = cfg.player || '';
+let activeGame = null;
+let parlayLegs = [];  // [{prop, side, price}]
+let ws = null;
+let wsReconnectDelay = 2000;
+let lastUpdateTs = Date.now();
+let prevPrices = {};   // key → {over_price, under_price}
+let recentMoved = {};  // key → expiry timestamp (30s)
+let bestLineMode = true;
+let sortByEdge = false;
+let recsOnly = false;
+// Sortable columns
+let _sortCol = '';   // 'player','edge','model','besto','bestu'
+let _sortDir = -1;   // -1=desc, +1=asc
+// Book freshness: bid → {last_captured_at}
+let _bookFreshness = {};
+// Line-history sparkline cache: "player|stat" → {ts, points}
+let _sparkCache = {};
+let _sparkPending = {};   // debounce timers
+
+// ── steam badge state ─────────────────────────────────────────────────────
+// steamProps: Set of "player|stat" keys that had a steam event in last 10 min
+let steamProps = new Set();
+
+async function loadSteamEvents() {
+  try {
+    const res = await fetch('/api/steam/recent?hours=1');
+    if (!res.ok) return;
+    const data = await res.json();
+    const now = Date.now();
+    const newSteam = new Set();
+    for (const ev of (data.events || [])) {
+      // Only show badge if event is within last 10 minutes.
+      try {
+        const evMs = new Date(ev.ts).getTime();
+        if (now - evMs <= 10 * 60 * 1000) {
+          newSteam.add(`${(ev.player||'').toLowerCase()}|${(ev.stat||'').toLowerCase()}`);
+        }
+      } catch(e) {}
+    }
+    if (JSON.stringify([...steamProps].sort()) !== JSON.stringify([...newSteam].sort())) {
+      steamProps = newSteam;
+      refresh();  // re-render table with updated badges
+    }
+  } catch(e) {
+    // steam endpoint optional — fail silently
+  }
+}
+
+// ── helpers ──────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const fmtAmerican = v => v == null ? '—' : (v >= 0 ? '+' + v : String(v));
+const fmtDecimal = v => v == null ? '—' : v.toFixed(2);
+const propKey = p => `${p.player}|${p.stat}|${p.line}`;
+const bookChip = b => {
+  const chips = {dk:'DK',fd:'FD',pin:'Pin',bov:'Bov',betrivers:'BR',
+    pointsbet:'PB',mgm:'MGM',caesars:'Ces',espnbet:'ESPN',fanatics:'Fan',
+    bet365:'365',underdog:'UD',hardrock:'HR',betonline:'BOL'};
+  return chips[b] || b.slice(0,3).toUpperCase();
+};
+const colorClass = v => v == null ? '' : (v >= 0 ? 'pos' : 'neg');
+
+// ── deeplink helpers ──────────────────────────────────────────────────────
+/**
+ * Render a small deeplink button for a side.
+ * url: the web_url from the book's deeplink object.
+ * side: 'over' | 'under'
+ * label: button text (e.g. 'DK')
+ */
+function dlBtn(url, side, label) {
+  if (!url) return '';
+  const esc = url.replace(/"/g, '&quot;');
+  return `<a class="dl-btn dl-${side}" href="${esc}" target="_blank" rel="noopener noreferrer"
+    title="Open ${label} bet slip (${side.toUpperCase()})" onclick="event.stopPropagation()">${label}</a>`;
+}
+
+/**
+ * Open up to maxTabs URLs simultaneously for "best" multi-book deeplinks.
+ * Confirms if count > 1.
+ */
+window.openMultiDeeplinks = function(urlsJson, label) {
+  const urls = JSON.parse(urlsJson);
+  if (!urls.length) return;
+  if (urls.length > 1) {
+    const ok = confirm(`Open ${urls.length} tabs for ${label}?\n(${urls.map(u => u.book).join(', ')})`);
+    if (!ok) return;
+  }
+  for (const u of urls) {
+    window.open(u.url, '_blank', 'noopener,noreferrer');
+  }
+};
+
+function americanToDecimal(odds) {
+  if (odds == null) return null;
+  return odds >= 0 ? (odds / 100 + 1) : (-100 / odds + 1);
+}
+function decimalToAmerican(dec) {
+  if (dec == null) return null;
+  if (dec >= 2) return Math.round((dec - 1) * 100);
+  return Math.round(-100 / (dec - 1));
+}
+function combinedParlay(legs) {
+  // legs: array of american odds ints
+  if (!legs.length) return null;
+  let dec = 1;
+  for (const o of legs) {
+    const d = americanToDecimal(o);
+    if (!d) return null;
+    dec *= d;
+  }
+  return {decimal: dec, american: decimalToAmerican(dec), payout100: (dec - 1) * 100};
+}
+
+// ── games index ──────────────────────────────────────────────────────────
+function buildGameIndex(props) {
+  const games = {};
+  for (const p of props) {
+    const gid = p.game_id || '__unknown';
+    if (!games[gid]) {
+      games[gid] = {game_id: gid, start_time: p.start_time || '', n_props: 0};
+    }
+    games[gid].n_props++;
+  }
+  return Object.values(games).sort((a,b) => (a.start_time||'') < (b.start_time||'') ? -1 : 1);
+}
+
+function formatGameLabel(g) {
+  if (!g.start_time) return g.game_id || 'Game';
+  try {
+    const d = new Date(g.start_time);
+    const timeStr = d.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit',timeZone:'America/New_York'}) + ' ET';
+    // game_id like 0042500315 → we don't have matchup text here, so show time
+    return g.game_id ? `${g.game_id.slice(-4)} ${timeStr}` : timeStr;
+  } catch(e) { return g.game_id || 'Game'; }
+}
+
+function renderGamePills(props) {
+  const container = $('gamePills');
+  // remove old game pills
+  container.querySelectorAll('.game-dyn').forEach(el => el.remove());
+  const games = buildGameIndex(props);
+  for (const g of games) {
+    const btn = document.createElement('button');
+    btn.className = 'pill pill-game game-dyn' + (activeGame === g.game_id ? ' active' : '');
+    btn.textContent = formatGameLabel(g);
+    btn.title = `${g.n_props} props`;
+    btn.onclick = () => setGame(g.game_id);
+    container.appendChild(btn);
+  }
+}
+
+// ── filtering ────────────────────────────────────────────────────────────
+function filteredProps() {
+  let props = allProps.filter(p => {
+    if (activeStat && p.stat !== activeStat) return false;
+    if (activePlayer && !p.player.toLowerCase().includes(activePlayer.toLowerCase())) return false;
+    if (activeGame && p.game_id !== activeGame) return false;
+    if (recsOnly && !p.rec_side) return false;
+    return true;
+  });
+  if (sortByEdge || _sortCol === 'edge') {
+    const dir = _sortCol === 'edge' ? _sortDir : -1;
+    props = props.slice().sort((a, b) => {
+      const ea = a.edge_pct != null ? a.edge_pct : -Infinity * dir;
+      const eb = b.edge_pct != null ? b.edge_pct : -Infinity * dir;
+      return dir * (eb - ea);
+    });
+  } else if (_sortCol === 'player') {
+    props = props.slice().sort((a, b) => _sortDir * a.player.localeCompare(b.player));
+  } else if (_sortCol === 'model') {
+    props = props.slice().sort((a, b) => {
+      const ma = a.model_projection != null ? a.model_projection : -Infinity;
+      const mb = b.model_projection != null ? b.model_projection : -Infinity;
+      return _sortDir * (mb - ma);
+    });
+  } else if (_sortCol === 'besto') {
+    props = props.slice().sort((a, b) => {
+      const ba = (a.books||[]).reduce((m,bk) => bk.over_price != null && bk.over_price > m ? bk.over_price : m, -9999);
+      const bb = (b.books||[]).reduce((m,bk) => bk.over_price != null && bk.over_price > m ? bk.over_price : m, -9999);
+      return _sortDir * (bb - ba);
+    });
+  } else if (_sortCol === 'bestu') {
+    props = props.slice().sort((a, b) => {
+      const ba = (a.books||[]).reduce((m,bk) => bk.under_price != null && bk.under_price > m ? bk.under_price : m, -9999);
+      const bb = (b.books||[]).reduce((m,bk) => bk.under_price != null && bk.under_price > m ? bk.under_price : m, -9999);
+      return _sortDir * (bb - ba);
+    });
+  }
+  return props;
+}
+
+window.toggleSortEdge = function() {
+  sortByEdge = !sortByEdge;
+  $('pillByEdge').classList.toggle('active', sortByEdge);
+  refresh();
+};
+
+window.toggleRecsOnly = function() {
+  recsOnly = !recsOnly;
+  $('pillRecsOnly').classList.toggle('active', recsOnly);
+  refresh();
+};
+
+// ── book columns list ────────────────────────────────────────────────────
+function buildBookList(props) {
+  const seen = {};
+  for (const p of props) {
+    for (const b of p.books || []) {
+      if (!seen[b.book]) seen[b.book] = b.display || b.book;
+    }
+  }
+  return Object.entries(seen).sort((a,b) => a[0] < b[0] ? -1 : 1);
+}
+
+// ── render table ─────────────────────────────────────────────────────────
+function renderTable(props) {
+  const tbody = $('tableBody');
+  const thead = $('tableHead');
+  if (!tbody) return;
+
+  const books = buildBookList(props);
+
+  // Rebuild header with book cols + model overlay cols
+  const sortIcon = col => col === _sortCol ? (_sortDir > 0 ? ' ▲' : ' ▼') : '';
+  let thHTML = `<tr>
+    <th class="text-left cv-sortable" data-sortcol="player" style="min-width:130px;cursor:pointer" title="Sort alphabetically by player name">Player${sortIcon('player')}</th>
+    <th class="text-left" style="min-width:80px">Prop</th>
+    <th class="text-left hide-mobile" style="min-width:60px">Game</th>
+    <th class="text-center hide-mobile cv-sortable" data-sortcol="model" style="min-width:52px;color:var(--cv-subtle);cursor:pointer"
+        title="Model q50 projection — median expected value. Hover row for q10–q90 interval.">Model${sortIcon('model')}</th>
+    <th class="text-center hide-mobile cv-sortable" data-sortcol="edge" style="min-width:56px;color:var(--cv-subtle);cursor:pointer"
+        title="Edge = model_p_over − market_implied_p_over (pp). Positive = model sees more value than the market.">Edge${sortIcon('edge')}</th>
+    <th class="text-center hide-mobile" style="min-width:48px;color:var(--cv-subtle)"
+        title="Recommendation shown when |edge| ≥4pp and P(hit) ≥55%">Rec</th>`;
+  for (const [bid, bdisp] of books) {
+    const freshness = _bookFreshness[bid] || {};
+    const lastCap = freshness.last_captured_at ? new Date(freshness.last_captured_at).toLocaleTimeString() : '—';
+    const bookTitle = `${bdisp || bid} · last capture: ${lastCap}`;
+    thHTML += `<th class="book-col hide-mobile" data-book="${bid}" style="min-width:50px" title="${escHtml(bookTitle)}">
+      <span class="book-chip">${bookChip(bid)}</span></th>`;
+  }
+  thHTML += `<th class="text-center cv-sortable" data-sortcol="besto" style="min-width:52px;cursor:pointer"
+      title="Best available OVER price across all books. Click to sort.">Best O${sortIcon('besto')}</th>
+    <th class="text-center cv-sortable" data-sortcol="bestu" style="min-width:52px;cursor:pointer"
+      title="Best available UNDER price across all books. Click to sort.">Best U${sortIcon('bestu')}</th></tr>`;
+  thead.innerHTML = thHTML;
+
+  if (!props.length) {
+    tbody.innerHTML = `<tr><td colspan="${8 + books.length}" class="p-6 text-center" style="color:var(--cv-muted)">No props match filters.</td></tr>`;
+    $('tableFooter').textContent = '';
+    return;
+  }
+
+  const rows = [];
+  for (const p of props) {
+    const key = propKey(p);
+    const bookMap = {};
+    for (const b of p.books || []) bookMap[b.book] = b;
+
+    // Find best over & under
+    let bestO = null, bestU = null;
+    for (const b of p.books || []) {
+      if (b.over_price != null && (bestO == null || b.over_price > bestO.over_price)) bestO = b;
+      if (b.under_price != null && (bestU == null || b.under_price > bestU.under_price)) bestU = b;
+    }
+
+    // Game label
+    let gameTag = '';
+    if (p.start_time) {
+      try {
+        const d = new Date(p.start_time);
+        gameTag = d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'});
+      } catch(e) {}
+    }
+
+    // Build book price cells
+    let bookCells = '';
+    for (const [bid] of books) {
+      const b = bookMap[bid];
+      if (!b) {
+        bookCells += `<td class="book-col hide-mobile"><div class="price-cell"><span class="price-empty">—</span></div></td>`;
+        continue;
+      }
+      const oClass = (bestO && b.book === bestO.book && b.over_price != null) ? 'best' : colorClass(b.over_price);
+      const uClass = (bestU && b.book === bestU.book && b.under_price != null) ? 'best' : colorClass(b.under_price);
+      const moved = recentMoved[key + '|' + bid] ? 'move-arrow' : '';
+      const chip = bookChip(bid);
+      // Deeplink buttons — shown on row hover only
+      const oBtnHtml = dlBtn(b.deeplink_over_web || '', 'over', chip);
+      const uBtnHtml = dlBtn(b.deeplink_under_web || '', 'under', chip);
+      bookCells += `<td class="book-col hide-mobile">
+        <div class="price-cell">
+          <span class="price-o ${oClass}" data-pk="${key}|${bid}|o">${fmtAmerican(b.over_price)}${moved ? ' <span class="'+moved+'">↑</span>' : ''}${oBtnHtml}</span>
+          <span class="price-u ${uClass}" data-pk="${key}|${bid}|u">${fmtAmerican(b.under_price)}${uBtnHtml}</span>
+        </div></td>`;
+    }
+
+    // Check if row is in parlay
+    const inParlay = parlayLegs.some(l => propKey(l.prop) === key);
+    const rowClass = inParlay ? 'row-selected' : '';
+
+    // Build multi-book deeplink data for Best O / Best U cells (cap 3 tabs: DK, FD, +1)
+    const _PRIO = ['dk','fd','pin','pointsbet','bov'];
+    function bestDeeplinks(side) {
+      const priceKey = side === 'over' ? 'over_price' : 'under_price';
+      const dlKey = side === 'over' ? 'deeplink_over_web' : 'deeplink_under_web';
+      const booksWithLink = (p.books||[])
+        .filter(b => b[priceKey] != null && b[dlKey])
+        .sort((a,b) => {
+          const ai = _PRIO.indexOf(a.book), bi = _PRIO.indexOf(b.book);
+          return (ai<0?99:ai) - (bi<0?99:bi);
+        })
+        .slice(0, 3)
+        .map(b => ({book: bookChip(b.book), url: b[dlKey]}));
+      return booksWithLink;
+    }
+    const bestOLinks = bestDeeplinks('over');
+    const bestULinks = bestDeeplinks('under');
+
+    function bestDlBtnsHtml(links, side) {
+      if (!links.length) return '';
+      const esc = escHtml(JSON.stringify(links));
+      const label = side === 'over' ? 'Best Over' : 'Best Under';
+      const cls = side === 'over' ? 'dl-over' : 'dl-under';
+      return `<div class="best-dl-btns">${
+        links.map(l => `<a class="best-dl-btn" href="${escHtml(l.url)}" target="_blank" rel="noopener noreferrer"
+          title="Place on ${l.book} (${side.toUpperCase()})" onclick="event.stopPropagation()">${l.book}</a>`).join('')
+      }</div>`;
+    }
+
+    // ── model overlay cells ────────────────────────────────────────────
+    // Model projection cell
+    let modelCell = '<td class="text-center hide-mobile"><span class="model-proj edge-nil">—</span></td>';
+    if (p.model_projection != null) {
+      const intv = p.model_interval ? `q10–q90: ${p.model_interval[0]}–${p.model_interval[1]}` : '';
+      const titleAttr = intv ? ` title="${intv}"` : '';
+      modelCell = `<td class="text-center hide-mobile"><span class="model-proj"${titleAttr}>${p.model_projection}</span></td>`;
+    }
+
+    // Edge cell
+    let edgeCell = '<td class="text-center hide-mobile"><span class="edge-val edge-nil">—</span></td>';
+    if (p.edge_pct != null) {
+      const sign = p.edge_pct >= 0 ? '+' : '';
+      const absEdge = Math.abs(p.edge_pct);
+      const edgeCls = absEdge >= 3 ? (p.edge_pct > 0 ? 'edge-pos' : 'edge-neg')
+                    : absEdge >= 1 ? 'edge-weak' : 'edge-nil';
+      edgeCell = `<td class="text-center hide-mobile"><span class="edge-val ${edgeCls}">${sign}${p.edge_pct.toFixed(1)}pp</span></td>`;
+    }
+
+    // Rec cell
+    let recCell = '<td class="text-center hide-mobile"></td>';
+    if (p.rec_side === 'OVER') {
+      recCell = `<td class="text-center hide-mobile"><span class="rec-badge rec-over">OVER</span></td>`;
+    } else if (p.rec_side === 'UNDER') {
+      recCell = `<td class="text-center hide-mobile"><span class="rec-badge rec-under">UNDER</span></td>`;
+    }
+
+    // Row accent class for recommendations
+    const recClass = p.rec_side === 'OVER' ? ' has-rec-over' : p.rec_side === 'UNDER' ? ' has-rec-under' : '';
+
+    const steamKey = `${p.player.toLowerCase()}|${p.stat.toLowerCase()}`;
+    const steamBadge = steamProps.has(steamKey)
+      ? `<span class="steam-badge" title="Sharp steam detected in last 10 min">\u{1F30A}STEAM</span>`
+      : '';
+    rows.push(`<tr class="${rowClass}${recClass}" data-key="${key}" onclick="rowClick('${key}')">
+      <td class="player-td"><span class="player-name">${escHtml(p.player)}${steamBadge}</span></td>
+      <td><span class="prop-label">${p.stat.toUpperCase()} ${p.line}</span></td>
+      <td class="hide-mobile"><span class="game-tag">${escHtml(gameTag)}</span></td>
+      ${modelCell}${edgeCell}${recCell}
+      ${bookCells}
+      <td class="text-center">
+        <div class="best-dl-wrap">
+          <span class="price-o ${bestO ? 'best' : ''}">
+            ${bestO ? fmtAmerican(bestO.over_price) : '<span class="price-empty">—</span>'}
+          </span>
+          ${bestDlBtnsHtml(bestOLinks, 'over')}
+        </div>
+      </td>
+      <td class="text-center">
+        <div class="best-dl-wrap">
+          <span class="price-u ${bestU ? 'best' : ''}">
+            ${bestU ? fmtAmerican(bestU.under_price) : '<span class="price-empty">—</span>'}
+          </span>
+          ${bestDlBtnsHtml(bestULinks, 'under')}
+        </div>
+      </td>
+    </tr>`);
+  }
+
+  tbody.innerHTML = rows.join('');
+  const nWithModel = props.filter(p => p.model_projection != null).length;
+  const nRecs = props.filter(p => p.rec_side).length;
+  const modelNote = nWithModel > 0
+    ? ` · ${nWithModel} with model · ${nRecs} rec${nRecs !== 1 ? 's' : ''}`
+    : '';
+  $('tableFooter').textContent = `${props.length} props · ${books.length} books${modelNote}`;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── filter actions ───────────────────────────────────────────────────────
+window.setStat = function(s) {
+  activeStat = s;
+  // update URL without reload
+  const url = new URL(window.location.href);
+  if (s) url.searchParams.set('stat', s);
+  else url.searchParams.delete('stat');
+  history.replaceState(null,'',url);
+  document.querySelectorAll('#statPills .pill').forEach(el => {
+    el.classList.toggle('active', el.textContent.trim() === (s === '' ? 'All' : statPillLabel(s)));
+  });
+  refresh();
+};
+
+function statPillLabel(s) {
+  return {pts:'Points',reb:'Rebounds',ast:'Assists',fg3m:'3PM',stl:'Steals',blk:'Blocks',tov:'TOV'}[s] || s;
+}
+
+window.setGame = function(gid) {
+  activeGame = gid;
+  document.querySelectorAll('#gamePills .pill').forEach(el => el.classList.remove('active'));
+  if (gid == null) $('gameAll').classList.add('active');
+  else document.querySelectorAll('#gamePills .game-dyn').forEach(el => {
+    if (el.dataset.gid === gid) el.classList.add('active');
+  });
+  refresh();
+};
+
+let _searchTimer = null;
+window.debounceSearch = function(val) {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(() => {
+    activePlayer = val;
+    const url = new URL(window.location.href);
+    if (val) url.searchParams.set('player', val); else url.searchParams.delete('player');
+    history.replaceState(null,'',url);
+    refresh();
+  }, 220);
+};
+
+window.shiftDate = function(delta) {
+  const d = new Date(cfg.date + 'T12:00:00Z');
+  d.setUTCDate(d.getUTCDate() + delta);
+  const nd = d.toISOString().slice(0,10);
+  window.location.href = `/odds?date=${nd}${activeStat ? '&stat='+activeStat : ''}${activePlayer ? '&player='+encodeURIComponent(activePlayer) : ''}`;
+};
+
+// ── full data refresh from API ───────────────────────────────────────────
+let _refreshDebounce = null;
+async function fetchFreshData() {
+  try {
+    const url = `/api/odds/with-ev/${cfg.date}.json${activeStat ? '?stat='+activeStat : ''}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    // Detect price movements before updating
+    const newPrices = {};
+    for (const p of (data.props || [])) {
+      const key = propKey(p);
+      for (const b of (p.books || [])) {
+        const pk = key + '|' + b.book;
+        newPrices[pk] = {o: b.over_price, u: b.under_price};
+        const prev = prevPrices[pk];
+        if (prev && (prev.o !== b.over_price || prev.u !== b.under_price)) {
+          recentMoved[pk] = Date.now() + 30000;
+          blinkCell(pk);
+        }
+      }
+    }
+    prevPrices = newPrices;
+    // Expire old moves
+    const now = Date.now();
+    for (const k of Object.keys(recentMoved)) {
+      if (recentMoved[k] < now) delete recentMoved[k];
+    }
+    allProps = data.props || [];
+    allBooks = data.books || [];
+    renderGamePills(allProps);
+    refresh();
+    lastUpdateTs = Date.now();
+    updateLiveStatus(true);
+  } catch(e) {
+    console.warn('odds refresh error', e);
+  }
+}
+
+function blinkCell(pk) {
+  // flash any visible cells matching this price key
+  document.querySelectorAll(`[data-pk="${pk}|o"], [data-pk="${pk}|u"]`).forEach(el => {
+    el.classList.remove('price-blink');
+    void el.offsetWidth;
+    el.classList.add('price-blink');
+    setTimeout(() => el.classList.remove('price-blink'), 500);
+  });
+}
+
+function refresh() {
+  const props = filteredProps();
+  renderTable(props);
+}
+
+// ── arbs ─────────────────────────────────────────────────────────────────
+async function loadArbs() {
+  try {
+    const res = await fetch(`/api/odds/spread/${cfg.date}.json?min_spread_pp=2.0`);
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    const list = $('arbList');
+    const rows = (data.rows || []).slice(0, 8);
+    $('arbCount').textContent = `${data.n_arbs || 0} arbs`;
+    if (!rows.length) {
+      list.innerHTML = `<div class="parlay-empty">No arbs ≥ 2pp today</div>`;
+      return;
+    }
+    list.innerHTML = rows.map(r => `
+      <div class="arb-row" onclick="scrollToArb('${escHtml(r.player)}','${r.stat}')">
+        <span class="arb-spread">+${(r.spread_pp || 0).toFixed(1)}pp</span>
+        <span class="arb-label">${escHtml(r.player)} ${(r.stat||'').toUpperCase()} ${r.line||''}</span>
+        <span class="arb-books">${escHtml(r.best_over_book||'')} vs ${escHtml(r.best_under_book||'')}</span>
+      </div>`).join('');
+  } catch(e) {
+    $('arbList').innerHTML = `<div class="parlay-empty" style="color:var(--cv-subtle)">Arbs unavailable</div>`;
+  }
+}
+
+window.scrollToArb = function(player, stat) {
+  activePlayer = player;
+  activeStat = stat;
+  $('playerSearch').value = player;
+  refresh();
+  setTimeout(() => {
+    const row = $('tableBody').querySelector('tr');
+    if (row) row.scrollIntoView({behavior:'smooth', block:'center'});
+  }, 100);
+};
+
+// ── row click → detail panel or parlay add ────────────────────────────────
+window.rowClick = function(key) {
+  const p = allProps.find(pr => propKey(pr) === key);
+  if (!p) return;
+  openDetail(p);
+};
+
+function openDetail(p) {
+  const panel = $('detailPanel');
+  const overlay = $('detailOverlay');
+  const content = $('detailContent');
+
+  let bestO = null, bestU = null;
+  for (const b of p.books||[]) {
+    if (b.over_price != null && (bestO==null||b.over_price>bestO.over_price)) bestO=b;
+    if (b.under_price != null && (bestU==null||b.under_price>bestU.under_price)) bestU=b;
+  }
+
+  const bookRows = (p.books||[]).map(b => {
+    const oClass = (bestO&&b.book===bestO.book) ? 'color:#34d399;font-weight:700' : '';
+    const uClass = (bestU&&b.book===bestU.book) ? 'color:#34d399;font-weight:700' : '';
+    const oDlHtml = b.deeplink_over_web
+      ? `<a class="dl-btn dl-over" href="${escHtml(b.deeplink_over_web)}" target="_blank" rel="noopener noreferrer"
+           title="Open ${escHtml(b.display||b.book)} bet slip" onclick="event.stopPropagation()"
+           style="opacity:1;pointer-events:auto;font-size:9px">↗</a>` : '';
+    const uDlHtml = b.deeplink_under_web
+      ? `<a class="dl-btn dl-under" href="${escHtml(b.deeplink_under_web)}" target="_blank" rel="noopener noreferrer"
+           title="Open ${escHtml(b.display||b.book)} bet slip" onclick="event.stopPropagation()"
+           style="opacity:1;pointer-events:auto;font-size:9px">↗</a>` : '';
+    return `<div class="detail-book-row">
+      <span style="color:var(--cv-text);font-weight:500">${escHtml(b.display||b.book)}</span>
+      <span class="price-o" style="${oClass}">${fmtAmerican(b.over_price)} ${oDlHtml}</span>
+      <span class="price-u" style="${uClass}">${fmtAmerican(b.under_price)} ${uDlHtml}</span>
+    </div>`;
+  }).join('');
+
+  // Model summary for detail panel
+  let modelSummaryHtml = '';
+  if (p.model_projection != null) {
+    const edgeSign = p.edge_pct != null ? (p.edge_pct >= 0 ? '+' : '') : '';
+    const edgeStr = p.edge_pct != null ? `${edgeSign}${p.edge_pct.toFixed(1)}pp` : '—';
+    const edgeCls = p.edge_pct != null && Math.abs(p.edge_pct) >= 3
+      ? (p.edge_pct > 0 ? 'color:#10b981' : 'color:#ef4444')
+      : 'color:#f59e0b';
+    const intvStr = p.model_interval ? ` (${p.model_interval[0]}–${p.model_interval[1]})` : '';
+    const recHtml = p.rec_side === 'OVER'
+      ? `<span class="rec-badge rec-over" style="margin-left:6px">OVER</span>`
+      : p.rec_side === 'UNDER'
+        ? `<span class="rec-badge rec-under" style="margin-left:6px">UNDER</span>`
+        : '';
+    modelSummaryHtml = `
+    <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:8px 10px;margin-bottom:12px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span style="color:var(--cv-subtle)">Model projection</span>
+        <span style="color:var(--cv-text);font-family:'SF Mono',monospace;font-weight:600">${p.model_projection}${intvStr}${recHtml}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="color:var(--cv-subtle)">Edge vs market</span>
+        <span style="font-family:'SF Mono',monospace;font-weight:700;${edgeCls}">${edgeStr}</span>
+      </div>
+    </div>`;
+  }
+
+  content.innerHTML = `
+    <h2 style="font-size:16px;font-weight:700;color:var(--cv-text);margin:0 0 4px">${escHtml(p.player)}</h2>
+    <div style="font-size:12px;color:var(--cv-muted);margin-bottom:16px">${p.stat.toUpperCase()} ${p.line}</div>
+    ${modelSummaryHtml}
+    <div style="display:grid;grid-template-columns:1fr auto auto;gap:4px;margin-bottom:4px;font-size:11px;color:var(--cv-subtle);padding:0 8px">
+      <span>Book</span><span>Over</span><span>Under</span>
+    </div>
+    ${bookRows}
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button onclick="addToParlay('${escHtml(propKey(p))}','over')"
+        style="flex:1;padding:7px;background:#064e3b;color:#34d399;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">
+        + OVER ${fmtAmerican(bestO&&bestO.over_price)}</button>
+      <button onclick="addToParlay('${escHtml(propKey(p))}','under')"
+        style="flex:1;padding:7px;background:#451a03;color:#fbbf24;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">
+        + UNDER ${fmtAmerican(bestU&&bestU.under_price)}</button>
+    </div>`;
+
+  panel.classList.add('open');
+  overlay.style.display = 'block';
+}
+
+window.closeDetail = function() {
+  $('detailPanel').classList.remove('open');
+  $('detailOverlay').style.display = 'none';
+};
+
+// ── parlay builder ────────────────────────────────────────────────────────
+window.addToParlay = function(key, side) {
+  const p = allProps.find(pr => propKey(pr) === key);
+  if (!p) return;
+  const already = parlayLegs.findIndex(l => propKey(l.prop) === key && l.side === side);
+  if (already >= 0) { parlayLegs.splice(already, 1); }
+  else {
+    let bestB = null;
+    for (const b of p.books||[]) {
+      const price = side==='over' ? b.over_price : b.under_price;
+      if (price != null && (bestB==null || price > bestB.price)) bestB = {price, book: b.book, display: b.display};
+    }
+    parlayLegs.push({prop: p, side, price: bestB ? bestB.price : null, bestBook: bestB ? bestB.display : '?'});
+  }
+  renderParlay();
+  renderTable(filteredProps());
+  closeDetail();
+};
+
+function renderParlay() {
+  const legsDiv = $('parlayLegs');
+  const statsDiv = $('parlayStats');
+  const emptyDiv = $('parlayEmpty');
+  const saveBtn = $('btnSaveParlay');
+
+  if (!parlayLegs.length) {
+    legsDiv.innerHTML = `<div class="parlay-empty" id="parlayEmpty">Click rows to add legs</div>`;
+    statsDiv.style.display = 'none';
+    saveBtn.disabled = true;
+    return;
+  }
+
+  const legHTML = parlayLegs.map((l, i) => `
+    <div class="parlay-leg">
+      <span class="leg-side ${l.side}">${l.side.toUpperCase()}</span>
+      <div style="flex:1;min-width:0">
+        <div style="color:var(--cv-text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.prop.player)}</div>
+        <div style="color:var(--cv-subtle)">${l.prop.stat.toUpperCase()} ${l.prop.line} · ${l.bestBook||'?'} ${fmtAmerican(l.price)}</div>
+      </div>
+      <span class="leg-rm" onclick="removeParlay(${i})">✕</span>
+    </div>`).join('');
+  legsDiv.innerHTML = legHTML;
+
+  // Combined odds
+  const prices = parlayLegs.map(l => {
+    if (bestLineMode) return l.price;
+    return l.price; // same for now without per-book re-price
+  }).filter(v => v != null);
+  const combined = combinedParlay(prices);
+  $('pLegs').textContent = parlayLegs.length;
+  $('pCombined').textContent = combined ? fmtAmerican(combined.american) : '—';
+  $('pDecimal').textContent = combined ? combined.decimal.toFixed(3) : '—';
+  $('pPayout').textContent = combined ? '$' + combined.payout100.toFixed(2) : '—';
+
+  statsDiv.style.display = '';
+  saveBtn.disabled = parlayLegs.length < 2;
+}
+
+window.removeParlay = function(i) {
+  parlayLegs.splice(i, 1);
+  renderParlay();
+  renderTable(filteredProps());
+};
+
+$('bestLineToggle').addEventListener('change', e => {
+  bestLineMode = e.target.checked;
+  renderParlay();
+});
+
+window.saveParlay = async function() {
+  const legs = parlayLegs.map(l => ({
+    player: l.prop.player, stat: l.prop.stat, line: l.prop.line,
+    side: l.side, price: l.price
+  }));
+  try {
+    const res = await fetch('/api/parlays/build', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({legs})
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert(`Parlay saved!\nAmerican: ${fmtAmerican(data.american)}\nDecimal: ${fmtDecimal(data.decimal)}\n$100 → $${(data.payout_100||0).toFixed(2)}`);
+    } else {
+      console.log('Parlay legs:', JSON.stringify(legs));
+      alert('Parlay computed locally (save endpoint not configured).');
+    }
+  } catch(e) {
+    console.log('Parlay legs:', JSON.stringify(legs));
+    alert('Parlay computed locally (backend unavailable).');
+  }
+};
+
+// ── live status ───────────────────────────────────────────────────────────
+function updateLiveStatus(connected) {
+  const dot = $('liveDot');
+  const txt = $('liveText');
+  if (!connected) {
+    dot.className = 'live-dot red';
+    txt.textContent = 'RECONNECTING…';
+    return;
+  }
+  dot.className = 'live-dot pulsing';
+  const ago = Math.round((Date.now() - lastUpdateTs) / 1000);
+  txt.textContent = `LIVE ${allBooks.length} books · ${ago}s ago`;
+  setTimeout(() => { if(dot.classList.contains('pulsing')) dot.className='live-dot'; }, 3100);
+}
+
+setInterval(() => {
+  const txt = $('liveText');
+  if (!txt) return;
+  const ago = Math.round((Date.now() - lastUpdateTs) / 1000);
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    txt.textContent = `LIVE ${allBooks.length} books · ${ago}s ago`;
+  } else if (ago < 90) {
+    // WS not open but data is fresh (polled recently)
+    txt.textContent = `${allBooks.length} books · ${ago}s ago`;
+  }
+}, 1000);
+
+// ── WebSocket ─────────────────────────────────────────────────────────────
+function connectWS() {
+  if (!cfg.wsBase && !window.location.host) return;
+  const base = cfg.wsBase || (window.location.protocol==='https:'?'wss':'ws')+'://'+window.location.host;
+  // No ?token= — auth rides the HttpOnly cv_session cookie sent automatically
+  // on the WS upgrade handshake.  Curl-with-token flows use the REST API directly.
+  const url = `${base}/ws/live`;
+  try {
+    ws = new WebSocket(url);
+  } catch(e) {
+    scheduleReconnect();
+    return;
+  }
+  ws.onopen = () => {
+    wsReconnectDelay = 2000;
+    updateLiveStatus(true);
+  };
+  ws.onmessage = evt => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.topic === 'lines.refreshed' || msg.topic === 'lines_refreshed') {
+        // Pulse the green dot to signal a live tick
+        const dot = $('liveDot');
+        if (dot) {
+          dot.classList.remove('pulsing');
+          void dot.offsetWidth; // force reflow
+          dot.classList.add('pulsing');
+          setTimeout(() => dot.classList.remove('pulsing'), 3100);
+        }
+        // Debounce: don't hammer the API more than once per 2s
+        clearTimeout(_refreshDebounce);
+        _refreshDebounce = setTimeout(fetchFreshData, 1500);
+      }
+    } catch(e) {}
+  };
+  ws.onclose = () => {
+    updateLiveStatus(false);
+    scheduleReconnect();
+  };
+  ws.onerror = () => {
+    ws.close();
+  };
+}
+
+function scheduleReconnect() {
+  setTimeout(() => {
+    wsReconnectDelay = Math.min(wsReconnectDelay * 1.6, 30000);
+    connectWS();
+  }, wsReconnectDelay);
+}
+
+// ── risk control panel ────────────────────────────────────────────────────
+let _riskState = null;       // last fetched /api/risk/status response
+let _killSwitchBusy = false; // debounce double-clicks
+
+// Auth is via HttpOnly cookie — no token in JS.  credentials:'include' ensures
+// the cookie is sent on cross-origin requests if wsBase is external.
+const _FETCH_OPTS = {credentials: 'include'};
+
+async function fetchRiskStatus() {
+  try {
+    const res = await fetch('/api/risk/status', _FETCH_OPTS);
+    if (!res.ok) return;
+    const data = await res.json();
+    _riskState = data;
+    renderRiskPanel(data);
+  } catch(e) {
+    // endpoint optional in static/offline mode — fail silently
+  }
+}
+
+function renderRiskPanel(d) {
+  if (!d) return;
+  const s = d.state || {};
+  const bankroll   = s.bankroll    || 0;
+  const todayPnl   = s.daily_pnl   || 0;
+  const drawdown   = s.drawdown_30d_pct || 0;
+  const openBets   = s.open_bet_count  || 0;
+  const cfg2       = d.config || {};
+  const maxOpen    = cfg2.max_open_bets_total || 20;
+  const capPct     = cfg2.daily_loss_cap_pct  || 0.05;
+  const engaged    = d.kill_switch_engaged || false;
+
+  const fmt$ = v => v >= 0 ? `+$${v.toFixed(2)}` : `-$${Math.abs(v).toFixed(2)}`;
+  const fmtPct = v => `${v.toFixed(1)}%`;
+
+  const br = $('riskBankroll');
+  if (br) br.textContent = `$${bankroll.toFixed(2)}`;
+
+  const tp = $('riskTodayPnl');
+  if (tp) {
+    const todayPct = bankroll > 0 ? (todayPnl / bankroll * 100) : 0;
+    tp.textContent = `${fmt$(todayPnl)}  (${fmtPct(Math.abs(todayPct))})`;
+    tp.className = 'risk-val ' + (todayPnl >= 0 ? 'pos' : 'neg');
+  }
+
+  const dd = $('riskDrawdown');
+  if (dd) {
+    dd.textContent = fmtPct(drawdown);
+    dd.className = 'risk-val ' + (drawdown > 10 ? 'neg' : (drawdown > 5 ? '' : 'pos'));
+  }
+
+  const ob = $('riskOpenBets');
+  if (ob) {
+    ob.textContent = `${openBets} / ${maxOpen}`;
+    ob.className = 'risk-val ' + (openBets >= maxOpen ? 'neg' : '');
+  }
+
+  // Progress bar: loss / cap (0% = no loss, 100% = full cap hit)
+  const lossAbs  = Math.max(0, -todayPnl);
+  const capAbs   = bankroll > 0 ? capPct * bankroll : 1;
+  const barPct   = Math.min(100, (lossAbs / capAbs) * 100);
+  const bar = $('riskProgressBar');
+  if (bar) {
+    bar.style.width = barPct + '%';
+    bar.style.background = barPct > 80 ? '#f87171' : barPct > 50 ? '#fbbf24' : '#34d399';
+  }
+  const lbl = $('riskProgressLabel');
+  if (lbl) {
+    const capDollars = bankroll > 0 ? `$${capAbs.toFixed(0)}` : '—';
+    lbl.textContent = `Cap ${capDollars} (${(capPct*100).toFixed(0)}%)`;
+  }
+
+  // Warnings + blocks
+  const msgs = $('riskMessages');
+  if (msgs) {
+    const lines = [];
+    for (const w of (d.warnings || [])) {
+      lines.push(`<div class="risk-warn"><span class="risk-warn-icon">⚠</span>${escHtml(w)}</div>`);
+    }
+    for (const b of (d.blocked_reasons || [])) {
+      lines.push(`<div class="risk-warn" style="color:#f87171"><span class="risk-warn-icon">✗</span>${escHtml(b)}</div>`);
+    }
+    msgs.innerHTML = lines.join('');
+  }
+
+  // Kill switch button
+  const btn = $('btnKillSwitch');
+  if (btn) {
+    btn.disabled = false;
+    if (engaged) {
+      btn.className = 'btn-kill disengage';
+      $('killBtnIcon').textContent = '▶';
+      $('killBtnLabel').textContent = 'DISENGAGE KILL SWITCH';
+    } else {
+      btn.className = 'btn-kill engage';
+      $('killBtnIcon').textContent = 'STOP';
+      $('killBtnLabel').textContent = 'KILL SWITCH';
+    }
+  }
+
+  // Status badge
+  const badge = $('riskStatusBadge');
+  if (badge) {
+    if (!d.ok) {
+      badge.textContent = 'BLOCKED';
+      badge.style.color = '#f87171';
+    } else if (d.warnings && d.warnings.length) {
+      badge.textContent = 'WARN';
+      badge.style.color = '#fbbf24';
+    } else {
+      badge.textContent = 'OK';
+      badge.style.color = '#34d399';
+    }
+  }
+
+  // Kill banner + grey-out place-bet buttons
+  const banner = $('killBanner');
+  if (banner) {
+    const reason = s.kill_reason ? ` (${s.kill_reason})` : '';
+    banner.textContent = `KILL SWITCH ENGAGED${reason} — recommendations hidden until disengaged`;
+    banner.classList.toggle('active', engaged);
+  }
+  // Grey out all place-bet / parlay buttons when kill switch on
+  document.querySelectorAll('.btn-save, .dl-btn, .best-dl-btn').forEach(el => {
+    if (engaged) {
+      el.disabled = true;
+      el.style.opacity = '0.35';
+      el.title = el.title || 'Kill switch engaged';
+    } else {
+      el.disabled = false;
+      el.style.opacity = '';
+    }
+  });
+}
+
+window.toggleKillSwitch = async function() {
+  if (_killSwitchBusy) return;
+  const engaged = _riskState && _riskState.kill_switch_engaged;
+  const action  = engaged ? 'disengage' : 'engage';
+  if (!engaged) {
+    const ok = confirm('Engage kill switch? All bet recommendations will be hidden until you disengage.');
+    if (!ok) return;
+  }
+  _killSwitchBusy = true;
+  const btn = $('btnKillSwitch');
+  if (btn) btn.disabled = true;
+  try {
+    const res = await fetch('/api/risk/kill-switch', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({engage: !engaged, reason: engaged ? 'manual disengage' : 'manual emergency'})
+    });
+    if (!res.ok) {
+      alert(`Kill switch request failed: HTTP ${res.status}`);
+      return;
+    }
+    await fetchRiskStatus();
+  } catch(e) {
+    alert('Kill switch request error: ' + e);
+  } finally {
+    _killSwitchBusy = false;
+    if (btn) btn.disabled = false;
+  }
+};
+
+window.toggleBankrollEdit = function() {
+  const row = $('bankrollEditRow');
+  if (!row) return;
+  const visible = row.style.display === 'flex';
+  row.style.display = visible ? 'none' : 'flex';
+  if (!visible && _riskState) {
+    const inp = $('bankrollInput');
+    if (inp) inp.value = (_riskState.state && _riskState.state.bankroll) || '';
+    inp && inp.focus();
+  }
+};
+
+window.saveBankroll = async function() {
+  const inp = $('bankrollInput');
+  if (!inp) return;
+  const val = parseFloat(inp.value);
+  if (isNaN(val) || val < 0) { alert('Enter a valid bankroll value.'); return; }
+  try {
+    const res = await fetch('/api/bankroll/set', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({value: val, notes: 'manual edit via UI'})
+    });
+    if (!res.ok) { alert(`Save failed: HTTP ${res.status}`); return; }
+    $('bankrollEditRow').style.display = 'none';
+    await fetchRiskStatus();
+  } catch(e) {
+    alert('Save error: ' + e);
+  }
+};
+
+// Parlay add-leg hook: block if kill switch engaged
+const _origAddToParlay = window.addToParlay;
+window.addToParlay = function(key, side) {
+  if (_riskState && _riskState.kill_switch_engaged) {
+    alert('Kill switch is engaged — parlay disabled. Disengage to continue.');
+    return;
+  }
+  _origAddToParlay(key, side);
+};
+
+// ── sortable column click handler ──────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const th = e.target.closest('th.cv-sortable');
+  if (!th) return;
+  const col = th.dataset.sortcol;
+  if (!col) return;
+  if (_sortCol === col) { _sortDir *= -1; }
+  else { _sortCol = col; _sortDir = col === 'player' ? 1 : -1; }
+  sortByEdge = (_sortCol === 'edge');
+  refresh();
+});
+
+// ── book freshness loader ──────────────────────────────────────────────────
+async function loadBookFreshness() {
+  try {
+    const res = await fetch(`/api/odds/freshness/${cfg.date}`);
+    if (!res.ok) return;
+    const data = await res.json();
+    // data.books is a dict: {bid: {display, latest_capture, ...}}
+    const booksObj = data.books || {};
+    for (const [bid, info] of Object.entries(booksObj)) {
+      _bookFreshness[bid] = {
+        ...info,
+        last_captured_at: info.latest_capture || info.csv_mtime_utc || null,
+      };
+    }
+  } catch(e) {}
+}
+
+// ── line-history sparkline ─────────────────────────────────────────────────
+function buildSparkline(points) {
+  if (!points || points.length < 2) return '';
+  const vals = points.map(p => p.v);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const W = 60, H = 16;
+  const range = mx - mn || 1;
+  const pts = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * W;
+    const y = H - ((p.v - mn) / range) * (H - 2) - 1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const last = vals[vals.length - 1];
+  const first = vals[0];
+  const color = last > first ? '#34d399' : last < first ? '#f87171' : '#94a3b8';
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:inline-block;vertical-align:middle;margin-left:6px">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${pts.split(' ').pop().split(',')[0]}" cy="${pts.split(' ').pop().split(',')[1]}" r="2" fill="${color}"/>
+  </svg>`;
+}
+
+function attachSparklineHovers() {
+  const tbody = $('tableBody');
+  if (!tbody) return;
+  tbody.addEventListener('mouseenter', function(e) {
+    const row = e.target.closest('tr[data-key]');
+    if (!row) return;
+    const key = row.dataset.key;
+    const parts = key.split('|');
+    const player = parts[0], stat = parts[1];
+    const cacheKey = `${player}|${stat}`;
+    const now = Date.now();
+    const cached = _sparkCache[cacheKey];
+    if (cached && now - cached.ts < 60000) {
+      _injectSparkline(row, cached.svg);
+      return;
+    }
+    if (_sparkPending[cacheKey]) return; // already fetching
+    _sparkPending[cacheKey] = setTimeout(async () => {
+      delete _sparkPending[cacheKey];
+      try {
+        const url = `/api/odds/history/${encodeURIComponent(player)}/${encodeURIComponent(stat)}?date=${cfg.date}`;
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const data = await res.json();
+        const hist = data.history || [];
+        if (hist.length < 2) return;
+        // Normalise: use best_over_price as the value
+        const points = hist.map(h => ({ v: h.over_price || h.line || 0 }));
+        const svg = buildSparkline(points);
+        _sparkCache[cacheKey] = { ts: Date.now(), svg };
+        const liveRow = tbody.querySelector(`tr[data-key="${CSS.escape(key)}"]`);
+        if (liveRow) _injectSparkline(liveRow, svg);
+      } catch(e) {}
+    }, 500);
+  }, true);
+  tbody.addEventListener('mouseleave', function(e) {
+    const row = e.target.closest('tr[data-key]');
+    if (!row) return;
+    const key = row.dataset.key;
+    const parts = key.split('|');
+    const cacheKey = `${parts[0]}|${parts[1]}`;
+    clearTimeout(_sparkPending[cacheKey]);
+    delete _sparkPending[cacheKey];
+  }, true);
+}
+
+function _injectSparkline(row, svgHtml) {
+  // Inject sparkline into the Model cell (4th td, index 3) if not already present
+  const cells = row.querySelectorAll('td');
+  if (cells.length < 4) return;
+  const modelTd = cells[3];
+  if (!modelTd.querySelector('svg') && svgHtml) {
+    modelTd.insertAdjacentHTML('beforeend', svgHtml);
+  }
+}
+
+// ── keyboard shortcuts ────────────────────────────────────────────────────
+var _kbHelpVisible = false;
+document.addEventListener('keydown', function(e) {
+  // Don't capture when user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    if (e.key === 'Escape') { e.target.blur(); activePlayer=''; $('playerSearch').value=''; refresh(); }
+    return;
+  }
+  if (e.key === '/') {
+    e.preventDefault();
+    const s = $('playerSearch');
+    if (s) { s.focus(); s.select(); }
+  } else if (e.key === 'r' || e.key === 'R') {
+    fetchFreshData();
+    const dot = $('liveDot'); if(dot){ dot.classList.remove('pulsing'); void dot.offsetWidth; dot.classList.add('pulsing'); setTimeout(()=>dot.classList.remove('pulsing'),3100); }
+  } else if (e.key === '?') {
+    _kbHelpVisible = !_kbHelpVisible;
+    let modal = $('kbHelpModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'kbHelpModal';
+      modal.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center';
+      modal.innerHTML = `<div style="background:var(--cv-card);border:1px solid var(--cv-border);border-radius:14px;padding:24px;max-width:340px;width:90%">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h3 style="font-size:14px;font-weight:700;color:var(--cv-text);margin:0">Keyboard Shortcuts</h3>
+          <span style="cursor:pointer;font-size:18px;color:var(--cv-subtle)" onclick="document.getElementById('kbHelpModal').remove();_kbHelpVisible=false">✕</span>
+        </div>
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          ${[['/',    'Focus player search'],
+             ['Esc',  'Clear search filter'],
+             ['r',    'Refresh data'],
+             ['?',    'Show this help']
+            ].map(([k,d])=>`<tr><td style="padding:5px 0;color:var(--cv-accent);font-family:monospace;width:60px">${k}</td><td style="color:var(--cv-muted);padding:5px 0">${d}</td></tr>`).join('')}
+        </table>
+      </div>`;
+      modal.addEventListener('click', function(ev){ if(ev.target===modal){ modal.remove(); _kbHelpVisible=false; } });
+      document.body.appendChild(modal);
+    } else {
+      modal.remove();
+    }
+  }
+});
+
+// ── skeleton refinement: match real layout ────────────────────────────────
+// (The Jinja loop in the template already renders 12 skeleton rows.
+//  On init we replace them, so the skeleton is structural. No extra JS needed.)
+
+// ── first-run bankroll modal ───────────────────────────────────────────────
+function maybeShowBankrollModal(riskData) {
+  const bankroll = (riskData && riskData.state && riskData.state.bankroll) || 0;
+  if (bankroll > 0) return; // already set
+  // Already dismissed this session?
+  if (sessionStorage.getItem('cv_br_modal_dismissed')) return;
+  const modal = document.createElement('div');
+  modal.id = 'brSetupModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center';
+  modal.innerHTML = `<div style="background:var(--cv-card);border:1px solid var(--cv-accent);border-radius:14px;padding:24px;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.6)">
+    <h3 style="font-size:14px;font-weight:700;color:var(--cv-text);margin:0 0 8px">First-time setup</h3>
+    <p style="font-size:12px;color:var(--cv-muted);margin:0 0 14px">Set your starting paper-trade bankroll. You can change it any time in the Risk Control panel.</p>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="brSetupInput" type="number" min="0" step="10" value="100"
+        style="flex:1;background:rgba(255,255,255,0.07);border:1px solid var(--cv-accent);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--cv-text);outline:none">
+      <button id="brSetupSave" onclick="saveBankrollSetup()"
+        style="padding:6px 16px;background:var(--cv-accent);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">Set</button>
+    </div>
+    <div style="margin-top:10px;text-align:right">
+      <span style="font-size:11px;color:var(--cv-subtle);cursor:pointer" onclick="dismissBankrollModal()">Skip for now</span>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => { const inp = document.getElementById('brSetupInput'); if(inp) inp.focus(); }, 50);
+}
+
+window.saveBankrollSetup = async function() {
+  const inp = document.getElementById('brSetupInput');
+  if (!inp) return;
+  const val = parseFloat(inp.value);
+  if (isNaN(val) || val < 0) { alert('Enter a valid amount.'); return; }
+  try {
+    const res = await fetch('/api/bankroll/set', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({value: val, notes: 'first-run setup via UI'})
+    });
+    if (!res.ok) { alert(`Could not save: HTTP ${res.status}`); return; }
+  } catch(e) { /* non-fatal */ }
+  dismissBankrollModal();
+  await fetchRiskStatus();
+};
+
+window.dismissBankrollModal = function() {
+  sessionStorage.setItem('cv_br_modal_dismissed', '1');
+  const m = document.getElementById('brSetupModal');
+  if (m) m.remove();
+};
+
+// ── init ──────────────────────────────────────────────────────────────────
+async function init() {
+  // Step 1: set HttpOnly auth cookie before any credentialed request
+  try { await fetch('/auth/init', {credentials: 'include'}); } catch(e) {}
+
+  // Snapshot current prices for move detection
+  for (const p of allProps) {
+    const key = propKey(p);
+    for (const b of (p.books||[])) {
+      prevPrices[key + '|' + b.book] = {o: b.over_price, u: b.under_price};
+    }
+  }
+
+  renderGamePills(allProps);
+  refresh();
+  loadArbs();
+  loadSteamEvents();
+  loadBookFreshness();
+  setInterval(loadSteamEvents, 30000);  // refresh steam badges every 30s
+
+  // initial risk panel load — check bankroll after fetch
+  const riskRes = await fetch('/api/risk/status', _FETCH_OPTS).catch(() => null);
+  if (riskRes && riskRes.ok) {
+    const riskData = await riskRes.json().catch(() => null);
+    if (riskData) { _riskState = riskData; renderRiskPanel(riskData); }
+    maybeShowBankrollModal(riskData);
+  }
+  setInterval(fetchRiskStatus, 10000); // poll every 10s
+  connectWS();
+  attachSparklineHovers();
+
+  // Fallback polling if WS not connected after 5s
+  setTimeout(() => {
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      fetchFreshData();
+      setInterval(fetchFreshData, 15000);
+    }
+  }, 5000);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+})();
+</script>
 {% endblock %}
 
 {% block footer %}
-  CourtVision odds · scraped Pinnacle / FanDuel / Bovada · /api/odds/{date}.json
+  CourtVision Line Shop · real-time · {{ env.n_props }} props · {{ env.n_books }} books · /api/odds/{{ env.date }}.json
 {% endblock %}

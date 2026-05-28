@@ -1,0 +1,30 @@
+# Dockerfile.live_v2 — Live Engine v2 backend container
+# Build:  docker build -f Dockerfile.live_v2 -t courtvision-live-v2 .
+# Run:    docker run -p 8000:8000 -e LIVE_V2_GAME_IDS=0042500315 \
+#                    -e LIVE_V2_AUTH_TOKEN=changeme courtvision-live-v2
+FROM python:3.10-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# System deps: build-essential for any wheels that need compiling.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt ./
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install aiohttp websockets fastapi 'uvicorn[standard]'
+
+# Copy backend source. Frontend lives separately (Vercel).
+COPY src ./src
+COPY api ./api
+COPY scripts ./scripts
+COPY data/models ./data/models
+
+EXPOSE 8000
+CMD ["uvicorn", "api.live_v2_app:app", "--host", "0.0.0.0", "--port", "8000", "--ws", "websockets"]

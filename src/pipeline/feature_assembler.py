@@ -29,8 +29,65 @@ sys.path.insert(0, PROJECT_DIR)
 _NBA_CACHE = os.path.join(PROJECT_DIR, "data", "nba")
 _EXT_CACHE = os.path.join(PROJECT_DIR, "data", "external")
 _MODEL_DIR  = os.path.join(PROJECT_DIR, "data", "models")
+_LS_CONTEXT_PATH = os.path.join(PROJECT_DIR, "data", "cache", "linescore_context.parquet")
 
 log = logging.getLogger(__name__)
+
+
+# ── Iter-19: linescore blowout/pace context ───────────────────────────────────
+
+_LS_CONTEXT_DF = None  # loaded once on first call
+
+
+def _load_linescore_df():
+    """Load data/cache/linescore_context.parquet into module-level cache."""
+    global _LS_CONTEXT_DF
+    if _LS_CONTEXT_DF is None:
+        try:
+            import pandas as pd
+            if os.path.exists(_LS_CONTEXT_PATH):
+                _LS_CONTEXT_DF = pd.read_parquet(_LS_CONTEXT_PATH)
+            else:
+                _LS_CONTEXT_DF = None
+        except Exception:
+            _LS_CONTEXT_DF = None
+    return _LS_CONTEXT_DF
+
+
+_LS_FEATURE_KEYS = (
+    "ls_blowout_pct_l5",
+    "ls_avg_total_l5",
+    "ls_avg_q1_pts_l5",
+    "ls_avg_q4_pts_l5",
+    "ls_garbage_time_pct_l5",
+    "ls_opp_avg_total_allowed_l5",
+    "ls_opp_q1_pts_allowed_l5",
+)
+_LS_DEFAULTS = {k: float("nan") for k in _LS_FEATURE_KEYS}
+
+
+def _linescore_for_team(team: str, date: str) -> dict:
+    """Return ls_* features for (team_abbreviation, game_date ISO).
+
+    Returns NaN defaults when the parquet is absent or the key is missing.
+    Args:
+        team: 3-letter NBA tricode (e.g. 'LAL').
+        date: ISO date string 'YYYY-MM-DD'.
+    Returns:
+        dict with 7 ls_* keys (float or NaN).
+    """
+    df = _load_linescore_df()
+    if df is None:
+        return dict(_LS_DEFAULTS)
+    try:
+        mask = (df["team_abbreviation"] == team) & (df["game_date"] == date)
+        rows = df[mask]
+        if rows.empty:
+            return dict(_LS_DEFAULTS)
+        r = rows.iloc[0]
+        return {k: float(r[k]) if k in r.index else float("nan") for k in _LS_FEATURE_KEYS}
+    except Exception:
+        return dict(_LS_DEFAULTS)
 
 
 # ── Name normalisation ────────────────────────────────────────────────────────

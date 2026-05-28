@@ -11,6 +11,8 @@
 !data/predictions/
 !data/predictions/**
 !data/player_quarter_stats.parquet
+# Whitelist root-level small data files
+!data/players_nba_active.json
 
 # Exclude training iteration backups + experimental model variants — they bloat
 # the upload to >500MB and trigger Cloudflare 413 on `railway up`. The runtime
@@ -83,6 +85,11 @@ data/cache/markers/
 data/cache/manifest/
 data/cache/intel_2025*/
 data/cache/intel_2026*/
+
+# data/nba — exclude bulk (547MB of boxscore/player JSON), whitelist only the small files we need
+data/nba/
+!data/nba/team_stats_*.json
+!data/nba/player_avgs_*.json
 
 # Scripts we don't ship
 scripts/__pycache__/
