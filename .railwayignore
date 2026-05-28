@@ -5,10 +5,25 @@
 !data/lines/
 !data/lines/**
 !data/cache/m2_family_predictions_*.json
+!data/cache/games_lookup.json
+!data/cache/predictions_cache_*.parquet
 # CourtVision UI requires these to render /tonight, /parlays, /share:
 !data/predictions/
 !data/predictions/**
 !data/player_quarter_stats.parquet
+
+# Exclude training iteration backups + experimental model variants — they bloat
+# the upload to >500MB and trigger Cloudflare 413 on `railway up`. The runtime
+# only needs production models (pts_q50.lgb, reb_lgb.lgb, etc.), not these.
+data/models/_backup_*
+data/models/_backup_*/
+data/models/oos_pre_playoffs/
+data/models/m2_family/
+data/models/quantile_heads/
+data/models/residual_heads_seeds/
+data/models/period_heads/
+data/models/prop_residuals_edge_history.json
+data/models/prop_residuals.json
 
 # Big buckets — never ship these
 apps/
@@ -54,6 +69,7 @@ data/cache/probe_*/
 data/cache/loop*/
 data/cache/cohorts/
 data/cache/games_*.json
+!data/cache/games_lookup.json
 data/cache/calibration/
 data/cache/lineups/
 data/cache/projections/
