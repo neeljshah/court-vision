@@ -1,0 +1,32 @@
+{
+  "snapshot": "endQ1",
+  "alpha": 0.9,
+  "baseline_brier": 0.20942246240385973,
+  "shrink_brier": 0.20911748534892083,
+  "delta": -0.0003049770549388986,
+  "per_fold_baseline": [
+    0.2069584928020854,
+    0.20701636506945892,
+    0.20998830462081652,
+    0.21372668712307807
+  ],
+  "per_fold_shrink": [
+    0.20582582711346567,
+    0.20738884497379434,
+    0.21016313647382515,
+    0.21309213283459816
+  ],
+  "per_fold_delta": [
+    -0.0011326656886197217,
+    0.000372479904335421,
+    0.00017483185300862236,
+    -0.000634554288479916
+  ],
+  "worst_fold_regress": 0.000372479904335421,
+  "regression_tol": 0.005,
+  "ship": false,
+  "iter": "69",
+  "trained_at_utc": "2026-05-28T03:16:45Z",
+  "formula": "blended = (1 - alpha) * (1 - sim_win_prob) + alpha * iso_model_pred",
+  "model_source": "data/models/inplay_winprob_{snap}.lgb (READ-ONLY) + data/models/inplay_isotonic_{snap}.joblib (READ-ONLY)"
+}
