@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T02:19:16Z",
+  "__updated_at__": "2026-05-28T02:24:24Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -2100,5 +2100,442 @@
       }
     },
     "data_pipeline_note": "STATS list in scripts/reseed_holdout_baseline_2025_26.py:33 explicitly excludes TOV: '# tov absent from 2025-26 CSVs'. Sportsbooks (DK, FD, Pinnacle via OddsAPI) do not list player TOV markets for 2025-26. Until a TOV-bearing odds source is wired, TOV cannot be backtested or bet."
+  },
+  "__iter57__": {
+    "iter": 57,
+    "generated_at": "2026-05-28T02:24:24Z",
+    "approach": "post_iter55_resweep_2d_direction_x_line",
+    "n_bets_pre": 1640,
+    "n_bets_post": 1535,
+    "pre57_agg_roi": 13.265,
+    "post57_agg_roi": 15.0429,
+    "delta_agg_pp": 1.7779,
+    "ship_threshold_pp": 0.3,
+    "is_reb_only": true,
+    "decision": "SHIP",
+    "decision_detail": "Aggregate delta +1.7779pp >= +0.3pp AND no per-stat regression > -1.0pp. Filters added: {'reb': [('over', 'low')]}.",
+    "regressions": [],
+    "improvements": [
+      "reb: +7.6613pp"
+    ],
+    "filters_wired": [
+      [
+        "reb",
+        [
+          [
+            "over",
+            "low"
+          ]
+        ]
+      ]
+    ],
+    "greedy_log": [
+      "  ACCEPT reb/overxlow: seg(n=105, ROI=-12.73%, z=-0.391) => agg_delta=+1.7779pp"
+    ],
+    "per_stat": {
+      "pts": {
+        "pre_n": 335,
+        "post_n": 335,
+        "pre_roi": 7.7069,
+        "post_roi": 7.7069,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "reb": {
+        "pre_n": 343,
+        "post_n": 238,
+        "pre_roi": 4.6382,
+        "post_roi": 12.2995,
+        "delta_roi": 7.6613,
+        "filter": [
+          [
+            "over",
+            "low"
+          ]
+        ]
+      },
+      "ast": {
+        "pre_n": 226,
+        "post_n": 226,
+        "pre_roi": 14.0386,
+        "post_roi": 14.0386,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "fg3m": {
+        "pre_n": 311,
+        "post_n": 311,
+        "pre_roi": 16.0187,
+        "post_roi": 16.0187,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "stl": {
+        "pre_n": 178,
+        "post_n": 178,
+        "pre_roi": 16.905,
+        "post_roi": 16.905,
+        "delta_roi": 0.0,
+        "filter": null
+      },
+      "blk": {
+        "pre_n": 247,
+        "post_n": 247,
+        "pre_roi": 25.9845,
+        "post_roi": 25.9845,
+        "delta_roi": 0.0,
+        "filter": null
+      }
+    },
+    "candidate_diagnostics": {
+      "pts": {
+        "over_low": {
+          "n": 88,
+          "roi_pct": 6.3017,
+          "z_score": 1.514,
+          "ci_lo": -13.22,
+          "ci_hi": 25.83,
+          "hit_rate_pct": 55.68,
+          "is_candidate": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 53,
+          "roi_pct": -2.7444,
+          "z_score": 0.485,
+          "ci_lo": -27.96,
+          "ci_hi": 22.47,
+          "hit_rate_pct": 50.94,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 99,
+          "roi_pct": 7.989,
+          "z_score": 1.782,
+          "ci_lo": -9.41,
+          "ci_hi": 25.34,
+          "hit_rate_pct": 56.57,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 95,
+          "roi_pct": 14.5455,
+          "z_score": 2.416,
+          "ci_lo": -3.54,
+          "ci_hi": 32.63,
+          "hit_rate_pct": 60.0,
+          "is_candidate": false
+        }
+      },
+      "reb": {
+        "over_low": {
+          "n": 105,
+          "roi_pct": -12.7273,
+          "z_score": -0.391,
+          "ci_lo": -30.91,
+          "ci_hi": 3.68,
+          "hit_rate_pct": 45.71,
+          "is_candidate": true
+        },
+        "over_mid": {
+          "n": 67,
+          "roi_pct": 16.825,
+          "z_score": 2.225,
+          "ci_lo": -5.97,
+          "ci_hi": 39.62,
+          "hit_rate_pct": 61.19,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 92,
+          "roi_pct": 7.9051,
+          "z_score": 1.71,
+          "ci_lo": -10.77,
+          "ci_hi": 28.66,
+          "hit_rate_pct": 56.52,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 79,
+          "roi_pct": 13.5788,
+          "z_score": 2.113,
+          "ci_lo": -5.75,
+          "ci_hi": 35.33,
+          "hit_rate_pct": 59.49,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        }
+      },
+      "ast": {
+        "over_low": {
+          "n": 82,
+          "roi_pct": 21.0643,
+          "z_score": 2.864,
+          "ci_lo": 2.44,
+          "ci_hi": 39.69,
+          "hit_rate_pct": 63.41,
+          "is_candidate": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 69,
+          "roi_pct": -0.3953,
+          "z_score": 0.758,
+          "ci_lo": -22.53,
+          "ci_hi": 24.51,
+          "hit_rate_pct": 52.17,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 75,
+          "roi_pct": 19.6364,
+          "z_score": 2.609,
+          "ci_lo": -0.73,
+          "ci_hi": 40.0,
+          "hit_rate_pct": 62.67,
+          "is_candidate": false
+        }
+      },
+      "fg3m": {
+        "over_low": {
+          "n": 147,
+          "roi_pct": 16.8831,
+          "z_score": 3.303,
+          "ci_lo": 2.6,
+          "ci_hi": 31.17,
+          "hit_rate_pct": 61.22,
+          "is_candidate": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 164,
+          "roi_pct": 15.2439,
+          "z_score": 3.268,
+          "ci_lo": 1.25,
+          "ci_hi": 29.21,
+          "hit_rate_pct": 60.37,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        }
+      },
+      "stl": {
+        "over_low": {
+          "n": 65,
+          "roi_pct": 20.4196,
+          "z_score": 2.495,
+          "ci_lo": -3.08,
+          "ci_hi": 40.98,
+          "hit_rate_pct": 63.08,
+          "is_candidate": false
+        },
+        "over_mid": {
+          "n": 15,
+          "roi_pct": 14.5455,
+          "z_score": 0.96,
+          "ci_lo": -36.36,
+          "ci_hi": 65.45,
+          "hit_rate_pct": 60.0,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 6,
+          "roi_pct": -36.3636,
+          "z_score": -0.701,
+          "ci_lo": -100.0,
+          "ci_hi": 27.27,
+          "hit_rate_pct": 33.33,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 92,
+          "roi_pct": 18.2806,
+          "z_score": 2.754,
+          "ci_lo": -0.45,
+          "ci_hi": 39.03,
+          "hit_rate_pct": 61.96,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        }
+      },
+      "blk": {
+        "over_low": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "over_mid": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "over_high": {
+          "n": 0,
+          "roi_pct": 0.0,
+          "z_score": 0.0,
+          "ci_lo": 0.0,
+          "ci_hi": 0.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_low": {
+          "n": 243,
+          "roi_pct": 27.2727,
+          "z_score": 5.945,
+          "ci_lo": 15.49,
+          "ci_hi": 38.27,
+          "hit_rate_pct": 66.67,
+          "is_candidate": false
+        },
+        "under_mid": {
+          "n": 2,
+          "roi_pct": -100.0,
+          "z_score": -1.348,
+          "ci_lo": -100.0,
+          "ci_hi": -100.0,
+          "hit_rate_pct": 0.0,
+          "is_candidate": false
+        },
+        "under_high": {
+          "n": 2,
+          "roi_pct": -4.5455,
+          "z_score": 0.067,
+          "ci_lo": -100.0,
+          "ci_hi": 90.91,
+          "hit_rate_pct": 50.0,
+          "is_candidate": false
+        }
+      }
+    },
+    "params": {
+      "min_seg_n": 50,
+      "min_complement_n": 100,
+      "max_ci_hi_pct": 10.0,
+      "max_roi_pct": 5.0,
+      "max_z_score": 1.5,
+      "min_agg_lift_pp_default": 0.5,
+      "min_agg_lift_pp_reb_solo": 0.3,
+      "max_stat_regress": -1.0,
+      "n_bootstrap": 1000,
+      "seed": 42
+    }
   }
 }
