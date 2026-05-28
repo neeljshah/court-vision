@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Line Scanner · CourtVision{% endblock %}
+{% block subtitle %}Scan · {{ date }}{% endblock %}
+{% block og_title %}CourtVision Line Scanner · {{ date }} · {{ n_props }} props{% endblock %}
+{% block og_desc %}Best and worst price across every book for every NBA prop tonight. Find the edge book per side.{% endblock %}
+
+{% block content %}
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Line Scanner</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ date }}</span>
+    <a href="/odds?date={{ date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">odds grid &rarr;</a>
+    <a href="/plus_ev?date={{ date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">+EV &rarr;</a>
+  </div>
+  <div class="mt-2 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span><b style="color:var(--cv-text)">{{ n_props }}</b> props across multiple books</span>
+  </div>
+</section>
+
+<section class="mb-3">
+  <form action="/scan" method="get" class="flex flex-wrap gap-2 items-end text-xs md:text-sm">
+    <div>
+      <label class="block" style="color:var(--cv-subtle)">Date</label>
+      <input type="date" name="date" value="{{ date }}"
+             class="bg-transparent border rounded px-2 py-1 font-mono"
+             style="border-color:var(--cv-border);color:var(--cv-text)">
+    </div>
+    <div>
+      <label class="block" style="color:var(--cv-subtle)">Stat</label>
+      <select name="stat" class="bg-transparent border rounded px-2 py-1"
+              style="border-color:var(--cv-border);color:var(--cv-text);background:var(--cv-card)">
+        <option value="" {% if not stat %}selected{% endif %}>All</option>
+        {% for s in ['pts','reb','ast','fg3m','stl','blk','tov'] %}
+          <option value="{{ s }}" {% if stat == s %}selected{% endif %}>{{ s.upper() }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block" style="color:var(--cv-subtle)">Min books</label>
+      <input type="number" name="min_books" min="1" max="20" value="{{ min_books }}"
+             class="bg-transparent border rounded px-2 py-1 w-16 font-mono"
+             style="border-color:var(--cv-border);color:var(--cv-text)">
+    </div>
+    <div>
+      <label class="block" style="color:var(--cv-subtle)">Sort</label>
+      <select name="sort" class="bg-transparent border rounded px-2 py-1"
+              style="border-color:var(--cv-border);color:var(--cv-text);background:var(--cv-card)">
+        {% for s in ['edge','player','stat','line'] %}
+          <option value="{{ s }}" {% if sort == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="px-3 py-1 rounded border" style="border-color:var(--cv-accent);color:var(--cv-accent)">
+      apply
+    </button>
+  </form>
+</section>
+
+{% if not props %}
+  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
+    No props found for {{ date }} with min_books={{ min_books }}{% if stat %} and stat={{ stat }}{% endif %}.
+    <div class="text-xs mt-2" style="color:var(--cv-subtle)">
+      Scrapers write to <code>data/lines/&lt;date&gt;_&lt;book&gt;.csv</code>
+    </div>
+  </div>
+{% else %}
+<div class="cv-card overflow-x-auto">
+  <table class="min-w-full text-xs md:text-sm">
+    <thead style="color:var(--cv-subtle)">
+      <tr class="border-b" style="border-color:var(--cv-border)">
+        <th class="text-left px-3 py-2">Player</th>
+        <th class="text-left px-3 py-2">Stat</th>
+        <th class="text-right px-3 py-2">Line</th>
+        <th class="text-right px-3 py-2"># Books</th>
+        <th class="text-left px-3 py-2">Best Over</th>
+        <th class="text-left px-3 py-2">Best Under</th>
+        <th class="text-right px-3 py-2">Over Spread</th>
+        <th class="text-right px-3 py-2">Under Spread</th>
+        <th class="text-right px-3 py-2">Edge</th>
+        <th class="text-left px-3 py-2">Books</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in props %}
+      <tr class="border-b" style="border-color:var(--cv-border)">
+        <td class="px-3 py-2" style="color:var(--cv-text)">
+          <span class="font-semibold">{{ p.player }}</span>
+        </td>
+        <td class="px-3 py-2 font-mono" style="color:var(--cv-muted)">{{ p.stat | upper }}</td>
+        <td class="px-3 py-2 text-right font-mono" style="color:var(--cv-text)">{{ '%g'|format(p.line) }}</td>
+        <td class="px-3 py-2 text-right font-mono">{{ p.n_books }}</td>
+        <td class="px-3 py-2">
+          {% if p.best_over and p.best_over.price is not none %}
+            {% if p.best_over.deeplink %}
+              <a href="{{ p.best_over.deeplink }}" target="_blank" rel="noopener noreferrer"
+                 class="inline-block px-2 py-0.5 rounded badge-over text-[11px] font-mono hover:opacity-80"
+                 title="Open {{ p.best_over.display }} bet slip (OVER)">
+                {{ p.best_over.display }} @ {% if p.best_over.price >= 0 %}+{% endif %}{{ p.best_over.price }}
+              </a>
+            {% else %}
+              <span class="inline-block px-2 py-0.5 rounded badge-over text-[11px] font-mono">
+                {{ p.best_over.display }} @ {% if p.best_over.price >= 0 %}+{% endif %}{{ p.best_over.price }}
+              </span>
+            {% endif %}
+          {% else %}
+            <span style="color:var(--cv-faint)">—</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2">
+          {% if p.best_under and p.best_under.price is not none %}
+            {% if p.best_under.deeplink %}
+              <a href="{{ p.best_under.deeplink }}" target="_blank" rel="noopener noreferrer"
+                 class="inline-block px-2 py-0.5 rounded badge-under text-[11px] font-mono hover:opacity-80"
+                 title="Open {{ p.best_under.display }} bet slip (UNDER)">
+                {{ p.best_under.display }} @ {% if p.best_under.price >= 0 %}+{% endif %}{{ p.best_under.price }}
+              </a>
+            {% else %}
+              <span class="inline-block px-2 py-0.5 rounded badge-under text-[11px] font-mono">
+                {{ p.best_under.display }} @ {% if p.best_under.price >= 0 %}+{% endif %}{{ p.best_under.price }}
+              </span>
+            {% endif %}
+          {% else %}
+            <span style="color:var(--cv-faint)">—</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-right font-mono">
+          {% if p.over_spread_cents %}
+            <span class="num-pos">{{ p.over_spread_cents }}¢</span>
+          {% else %}
+            <span style="color:var(--cv-faint)">0</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-right font-mono">
+          {% if p.under_spread_cents %}
+            <span class="num-pos">{{ p.under_spread_cents }}¢</span>
+          {% else %}
+            <span style="color:var(--cv-faint)">0</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-right font-mono">
+          {% if p.best_combined_edge and p.best_combined_edge > 0 %}
+            <span class="num-pos">{{ '%.2f'|format(p.best_combined_edge) }}pp</span>
+          {% else %}
+            <span style="color:var(--cv-faint)">—</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2 text-[11px]" style="color:var(--cv-muted)">
+          {% for b in p.books %}
+            <span title="{{ b.display }}: O={{ b.over }} / U={{ b.under }}"
+                  class="inline-block mr-1 font-mono">{{ b.book }}</span>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+  Line Scanner · multi-book shopping edge · CourtVision
+{% endblock %}
