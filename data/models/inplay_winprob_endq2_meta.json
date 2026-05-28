@@ -15,15 +15,15 @@
     "home_team_id",
     "season"
   ],
-  "n_train_rows": 449,
-  "home_win_rate": 0.5233853006681515,
+  "n_train_rows": 3685,
+  "home_win_rate": 0.5256445047489824,
   "in_sample": {
-    "auc": 1.0,
-    "brier": 0.01603525815446227,
-    "log_loss": 0.0987740518058914,
-    "accuracy": 0.9977728285077951
+    "auc": 0.9862156794873765,
+    "brier": 0.06950632469204873,
+    "log_loss": 0.257406697606339,
+    "accuracy": 0.9397557666214382
   },
-  "trained_at": "2026-05-26T05:23:24Z",
+  "trained_at": "2026-05-27T22:40:55Z",
   "probe": "R10_M5_inplay_winprob",
   "hyperparams": {
     "n_estimators": 300,

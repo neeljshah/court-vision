@@ -31,6 +31,7 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 ROOT = Path(__file__).resolve().parent.parent
 LINES_DIR = ROOT / "data" / "lines"
+QUOTA_PATH = ROOT / "data" / "cache" / "oddsapi_quota.json"
 
 _API_BASE = "https://api.the-odds-api.com/v4/sports/basketball_nba"
 _STAT_MAP = {
@@ -38,6 +39,10 @@ _STAT_MAP = {
     "fg3m": "player_threes", "stl": "player_steals", "blk": "player_blocks",
     "tov": "player_turnovers",
 }
+# Default markets — 3 stats only (pts/reb/ast). pts/reb/ast are the high-volume
+# liquid markets every book carries. Skipping fg3m/stl/blk/tov saves ~57% of
+# the quota cost (cost = regions × markets). Override via ODDSAPI_MARKETS env.
+_DEFAULT_MARKETS = ["pts", "reb", "ast"]
 _BOOK_KEY = {  # normalize bookmaker.key → our short code
     "draftkings": "dk", "fanduel": "fd", "betmgm": "mgm",
     "williamhill_us": "caesars", "pointsbetus": "pointsbet",

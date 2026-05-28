@@ -108,6 +108,115 @@ async def _fetch_fanduel(session) -> List[Dict[str, Any]]:
         return []
 
 
+async def _fetch_draftkings(session) -> List[Dict[str, Any]]:
+    """Direct DK scrape via sportsbook-nash.draftkings.com + curl_cffi chrome120.
+    The module writes its own CSV; we return [] so the orchestrator does not
+    double-write."""
+    try:
+        import scripts.draftkings_scraper as _dk
+    except Exception as exc:  # noqa: BLE001
+        log.warning("draftkings import failed: %s", exc)
+        return []
+    fn = getattr(_dk, "scrape_once", None)
+    if not callable(fn):
+        log.warning("draftkings: no scrape_once entry point")
+        return []
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, fn) or []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("draftkings scrape failed: %s", exc)
+        return []
+
+
+async def _fetch_pointsbet(session) -> List[Dict[str, Any]]:
+    """Direct PointsBet AU scrape via api.au.pointsbet.com + curl_cffi chrome120.
+    The module writes its own CSV; we return [] so the orchestrator does not
+    double-write."""
+    try:
+        import scripts.pointsbet_scraper as _pb
+    except Exception as exc:  # noqa: BLE001
+        log.warning("pointsbet import failed: %s", exc)
+        return []
+    fn = getattr(_pb, "scrape_once", None)
+    if not callable(fn):
+        log.warning("pointsbet: no scrape_once entry point")
+        return []
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, fn) or []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("pointsbet scrape failed: %s", exc)
+        return []
+
+
+async def _fetch_betrivers(session) -> List[Dict[str, Any]]:
+    """Direct BetRivers scrape via KAMBI offering API + curl_cffi chrome120.
+    The module writes its own CSV; we return [] so the orchestrator does not
+    double-write."""
+    try:
+        import scripts.betrivers_scraper as _br
+    except Exception as exc:  # noqa: BLE001
+        log.warning("betrivers import failed: %s", exc)
+        return []
+    fn = getattr(_br, "scrape_once", None)
+    if not callable(fn):
+        log.warning("betrivers: no scrape_once entry point")
+        return []
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, fn) or []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("betrivers scrape failed: %s", exc)
+        return []
+
+
+async def _fetch_draftkings_inplay(session) -> List[Dict[str, Any]]:
+    """DK in-play milestone markets (subcategoryIds 16477/16478/16479/16480).
+
+    Gates itself on live-game detection — returns [] with no HTTP calls when
+    no NBA game is IN_PROGRESS. Writes data/lines/<date>_dk_inplay.csv.
+    """
+    try:
+        import scripts.draftkings_inplay_scraper as _dki
+    except Exception as exc:  # noqa: BLE001
+        log.warning("draftkings_inplay import failed: %s", exc)
+        return []
+    fn = getattr(_dki, "scrape_once", None)
+    if not callable(fn):
+        log.warning("draftkings_inplay: no scrape_once entry point")
+        return []
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, fn) or []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("draftkings_inplay scrape failed: %s", exc)
+        return []
+
+
+async def _fetch_fanduel_inplay(session) -> List[Dict[str, Any]]:
+    """FD in-play props via same NJ endpoint + inPlayOnly=true.
+
+    Returns [] (no write) when no markets have inPlay=True.
+    Writes data/lines/<date>_fd_inplay.csv when games are live.
+    """
+    try:
+        import scripts.fanduel_inplay_scraper as _fdi
+    except Exception as exc:  # noqa: BLE001
+        log.warning("fanduel_inplay import failed: %s", exc)
+        return []
+    fn = getattr(_fdi, "scrape_once", None)
+    if not callable(fn):
+        log.warning("fanduel_inplay: no scrape_once entry point")
+        return []
+    loop = asyncio.get_event_loop()
+    try:
+        return await loop.run_in_executor(None, fn) or []
+    except Exception as exc:  # noqa: BLE001
+        log.warning("fanduel_inplay scrape failed: %s", exc)
+        return []
+
+
 async def _fetch_prizepicks(session) -> List[Dict[str, Any]]:
     # PrizePicks has a public JSON API — fetch directly via aiohttp.
     url = "https://api.prizepicks.com/projections?league_id=7&per_page=250"
@@ -186,10 +295,15 @@ async def _fetch_oddsapi(session) -> List[Dict[str, Any]]:
 
 
 _DEFAULT_BOOKS: Dict[str, Callable[[Any], Awaitable[List[Dict[str, Any]]]]] = {
-    "pin": _fetch_pinnacle,
-    "bov": _fetch_bovada,
-    "fd":  _fetch_fanduel,
-    "oddsapi": _fetch_oddsapi,  # no-op when THE_ODDS_API_KEY unset; ~10-15 books when set
+    "pin":        _fetch_pinnacle,
+    "bov":        _fetch_bovada,
+    "fd":         _fetch_fanduel,
+    "dk":         _fetch_draftkings,
+    "betrivers":  _fetch_betrivers,
+    "pointsbet":  _fetch_pointsbet,
+    "oddsapi":    _fetch_oddsapi,   # no-op when THE_ODDS_API_KEY unset; ~10-15 books when set
+    "dk_inplay":  _fetch_draftkings_inplay,
+    "fd_inplay":  _fetch_fanduel_inplay,
 }
 
 
@@ -310,7 +424,7 @@ def _write_heartbeat() -> None:
 
 def _parse_args(argv=None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--books", default="pin,bov,fd,pp")
+    ap.add_argument("--books", default="pin,bov,fd,dk,pp")
     ap.add_argument("--interval-sec", type=float, default=30.0)
     return ap.parse_args(argv)
 

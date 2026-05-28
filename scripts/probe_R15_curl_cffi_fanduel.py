@@ -96,6 +96,7 @@ THRESHOLD_PATTERNS: List[tuple] = [
 CANONICAL_FIELDS = [
     "captured_at", "book", "game_id", "player_id", "player_name",
     "stat", "line", "over_price", "under_price", "start_time",
+    "book_selection_id_over", "book_selection_id_under",
 ]
 
 
@@ -129,7 +130,7 @@ def normalize_fd(j: Dict[str, Any], captured_at: Optional[str] = None) -> List[D
     markets = att.get("markets") or {}
 
     rows: List[Dict[str, Any]] = []
-    for m in markets.values():
+    for market_key, m in markets.items():
         match = _match_threshold(m.get("marketType") or "")
         if not match:
             continue
@@ -141,6 +142,8 @@ def normalize_fd(j: Dict[str, Any], captured_at: Optional[str] = None) -> List[D
         if "@" not in ev_name:
             continue
         start_time = ev.get("openDate")
+        # market_key is the FD marketId — needed for addToBetslip deeplink
+        fd_market_id = str(market_key)
         for runner in m.get("runners") or []:
             if not runner.get("isPlayerSelection"):
                 continue
@@ -148,17 +151,22 @@ def normalize_fd(j: Dict[str, Any], captured_at: Optional[str] = None) -> List[D
             odds = odds_block.get("americanOdds")
             if odds is None:
                 continue
+            # runner.selectionId is the runnerId for addToBetslip deeplinks
+            runner_selection_id = str(runner.get("selectionId") or "")
             rows.append({
                 "captured_at": captured_at,
                 "book": "fd",
                 "game_id": ev_id,
-                "player_id": runner.get("selectionId"),
+                "player_id": runner_selection_id,
                 "player_name": runner.get("runnerName"),
                 "stat": stat,
                 "line": threshold - 0.5,
                 "over_price": int(odds),
                 "under_price": "",   # FD does not publish NO on threshold markets
                 "start_time": start_time,
+                # Deeplink fields: Over is the only side FD publishes on threshold markets
+                "book_selection_id_over": f"{fd_market_id}:{runner_selection_id}",
+                "book_selection_id_under": "",
             })
     return rows
 

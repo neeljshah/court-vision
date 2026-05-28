@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Help · CourtVision{% endblock %}
+{% block subtitle %}Help{% endblock %}
+{% block og_title %}CourtVision — Help & About{% endblock %}
+{% block og_desc %}What CourtVision is, how the model works, and how to use the platform.{% endblock %}
+{% block nav_help %}active{% endblock %}
+
+{% block content %}
+<style>
+.help-section{margin-bottom:28px;}
+.help-h2{font-size:15px;font-weight:700;color:var(--cv-text);margin-bottom:10px;
+  padding-bottom:6px;border-bottom:1px solid var(--cv-border);}
+.help-card{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;
+  padding:16px 18px;margin-bottom:10px;}
+.help-term{font-size:12px;font-weight:700;color:var(--cv-accent);margin-bottom:2px;}
+.help-def{font-size:12px;color:var(--cv-muted);line-height:1.6;}
+.help-p{font-size:13px;color:var(--cv-muted);line-height:1.7;}
+.help-steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+.help-steps li{display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--cv-muted);}
+.help-step-num{width:22px;height:22px;border-radius:50%;background:rgba(96,165,250,0.12);
+  color:var(--cv-accent);font-size:10px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:1px;}
+.help-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.kb-table{width:100%;border-collapse:collapse;font-size:12px;}
+.kb-table td{padding:5px 8px;border-bottom:1px solid var(--cv-border);}
+.kb-table td:first-child{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-accent);
+  width:60px;font-weight:600;}
+.kb-table td:last-child{color:var(--cv-muted);}
+@media(max-width:720px){
+  .help-grid{grid-template-columns:1fr;}
+}
+</style>
+
+<div style="max-width:760px">
+
+<!-- What is CourtVision -->
+<div class="help-section">
+  <div class="help-h2">What is CourtVision?</div>
+  <div class="help-card">
+    <p class="help-p">
+      CourtVision is an AI-native NBA prop-betting intelligence platform. It scrapes live odds
+      from DraftKings, FanDuel, Pinnacle, BetRivers, and 10+ other books, then overlays
+      player-performance predictions from a trained machine-learning model stack to surface
+      positive-EV wagers. The platform updates in real time via WebSocket line feeds and
+      flags sharp money (steam) moves as they happen.
+    </p>
+  </div>
+</div>
+
+<!-- How the model works -->
+<div class="help-section">
+  <div class="help-h2">How the model works</div>
+  <div class="help-card">
+    <p class="help-p">
+      Seven player-prop statistics (PTS, REB, AST, FG3M, STL, BLK, TOV) are each predicted
+      by an ensemble of XGBoost, LightGBM, and neural-network models trained on 85 engineered
+      features — rolling form (L5/L10/EWMA), opponent defense, pace, rest, and CV-derived
+      behavioral signals. Primary predictions use <strong style="color:var(--cv-text)">quantile
+      (q50) regression</strong> so the model targets the <em>median</em> outcome — the same
+      scoring target the sportsbook's O/U line is set against. Walk-forward cross-validation
+      over two NBA seasons gates every model change before it ships.
+    </p>
+  </div>
+</div>
+
+<!-- Key terms -->
+<div class="help-section">
+  <div class="help-h2">Key terms</div>
+  <div class="help-grid">
+    <div class="help-card">
+      <div class="help-term">Edge (pp)</div>
+      <div class="help-def">model_p_over − market_implied_p_over. Positive = model sees more
+        probability of hitting the OVER than the market price implies. 1 pp = 1 percentage point.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">EV %</div>
+      <div class="help-def">Expected value per $100 staked = (model_p × decimal_payout − 1) × 100.
+        Positive EV means the model expects a profit at the posted price.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">Kelly %</div>
+      <div class="help-def">Quarter-Kelly stake as % of bankroll = (edge / decimal_odds) × 0.25.
+        Capped at 5% per leg to limit variance.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">Steam (🌊)</div>
+      <div class="help-def">A sudden, coordinated line movement across multiple books in a short
+        window — a signal that sharp money (professional bettors) is hitting this market. Steam
+        does not by itself constitute a recommendation.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">Best O / Best U</div>
+      <div class="help-def">The highest available OVER or UNDER price across all scraped books
+        for that prop at the moment of last capture. Line-shop here before placing a bet.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">CLV</div>
+      <div class="help-def">Closing Line Value — how the price moved between when CourtVision
+        recommended it and when the market closed. Positive CLV means the model was ahead
+        of the closing line, a strong long-run predictor of profitability.</div>
+    </div>
+  </div>
+</div>
+
+<!-- How to use the parlay builder -->
+<div class="help-section">
+  <div class="help-h2">Using the parlay builder</div>
+  <div class="help-card">
+    <ol class="help-steps">
+      <li><span class="help-step-num">1</span>
+        Go to <a href="/odds" style="color:var(--cv-accent)">/odds</a> and click any prop row to open its detail panel.</li>
+      <li><span class="help-step-num">2</span>
+        Click <b style="color:var(--cv-text)">+ OVER</b> or <b style="color:var(--cv-text)">+ UNDER</b>
+        to add the leg to the parlay builder (sidebar, right side).</li>
+      <li><span class="help-step-num">3</span>
+        Add 2–5 legs. Combined American odds and $100 payout update live.</li>
+      <li><span class="help-step-num">4</span>
+        Click <b style="color:var(--cv-text)">Save Parlay</b> to record it,
+        or visit <a href="/parlays" style="color:var(--cv-accent)">/parlays</a> for auto-generated
+        EV-ranked combinations.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- Risk panel + kill switch -->
+<div class="help-section">
+  <div class="help-h2">Risk panel &amp; kill switch</div>
+  <div class="help-card">
+    <p class="help-p">
+      The <strong style="color:var(--cv-text)">Risk Control</strong> card on the right side of
+      <a href="/odds" style="color:var(--cv-accent)">/odds</a> displays your bankroll, today's P&amp;L,
+      30-day drawdown, and open bet count. A daily loss cap (default 5% of bankroll) is enforced.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      The <strong style="color:#f87171">Kill Switch</strong> immediately disables all bet
+      recommendations and deeplinks. Use it during system outages, unexpected line moves,
+      or any time you want a clean stop. Disengage when ready to resume.
+    </p>
+  </div>
+</div>
+
+<!-- Keyboard shortcuts -->
+<div class="help-section">
+  <div class="help-h2">Keyboard shortcuts (on /odds)</div>
+  <div class="help-card">
+    <table class="kb-table">
+      <tr><td>/</td><td>Focus the player search box</td></tr>
+      <tr><td>Esc</td><td>Clear the search filter</td></tr>
+      <tr><td>r</td><td>Refresh prop data from the API</td></tr>
+      <tr><td>?</td><td>Show this keyboard shortcut modal</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- Bug reports -->
+<div class="help-section">
+  <div class="help-h2">Feedback &amp; bug reports</div>
+  <div class="help-card">
+    <p class="help-p">
+      This is a private research tool. To file bugs or suggest improvements, open a GitHub issue
+      or drop a note in the project vault at
+      <code style="color:var(--cv-text);font-size:11px">vault/Sessions/Decision Log.md</code>.
+      For data issues (missing player, wrong line), check
+      <code style="color:var(--cv-text);font-size:11px">data/lines/</code> and verify the scraper
+      ran for today's date.
+    </p>
+  </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block footer %}
+  CourtVision · not financial advice · model predictions are probabilistic estimates, not guarantees
+{% endblock %}

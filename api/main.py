@@ -120,6 +120,12 @@ if _COURTVISION_AVAILABLE:
     except Exception as _cv_reg_exc:  # never let middleware-wiring break boot
         log.warning("courtvision middleware wiring failed: %s", _cv_reg_exc)
 
+try:
+    from api._risk_router import router as _risk_router
+    app.include_router(_risk_router, tags=["risk"])
+except Exception as _risk_exc:
+    log.warning("risk_router unavailable: %s", _risk_exc)
+
 
 @app.get("/health", tags=["health"])
 def health():

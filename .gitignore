@@ -87,6 +87,42 @@ data/chain_*.txt
 # -- R21_N5 m2_family prediction cache (per-machine runtime artifact) ---------
 data/cache/m2_family_predictions_cache.json
 
+# -- data/cache runtime artifacts (probe results, scraper outputs, heartbeats) --
+data/cache/daemon_heartbeats/*.txt
+data/cache/predictions_cache_*.parquet
+data/cache/predictions_cache_*.parquet.bak*
+data/cache/audit_*.json
+data/cache/baseline_confidence.json
+data/cache/baseline_replication.json
+data/cache/closing_capture_heartbeat.txt
+data/cache/_replication_run_stdout*.txt
+data/cache/alerts/
+data/cache/holdout_metrics/
+data/cache/intel_*/
+data/cache/leakage_scratch_*/
+data/cache/leakage_audit_*.json
+data/cache/injury_status_*.json
+data/cache/draftkings*.json
+data/cache/fanduel*.json
+data/cache/betrivers_results.json
+data/cache/pointsbet_results.json
+data/cache/feature_drift_*.json
+data/cache/games_lookup.json
+data/cache/kill_switch.json
+data/cache/eval_*.csv
+data/cache/gate1_2025_26*.json
+data/cache/iter[0-9]*.json
+data/cache/iter[0-9]*.txt
+data/cache/quarter_box/
+data/cache/odds_api/
+data/cache/line_timing*.json
+data/cache/linescore_context.parquet
+data/cache/pretip_review_tray.jsonl
+data/cache/*.pkl
+data/cache/probe_R*.json
+data/bets/*_dryrun_*.csv
+backtest_run_log.txt
+
 # -- R27_T7 ledger insurance backups (machine-local; gzip+sidecar) ------------
 data/backups/
 data/backups_probe/

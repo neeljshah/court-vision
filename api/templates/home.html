@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+{% block title %}Games · CourtVision{% endblock %}
+{% block subtitle %}{{ slate_date }}{% endblock %}
+{% block og_title %}CourtVision — NBA Games · {{ slate_date }}{% endblock %}
+{% block og_desc %}Tonight's NBA games with top EV prop picks, model projections, and pregame intel.{% endblock %}
+{% block nav_games %}active{% endblock %}
+
+{% block content %}
+<!-- Tonight banner: show if any upcoming game starts within 4 hours -->
+{% set soonest = upcoming_games | selectattr('start_time_iso') | sort(attribute='start_time_iso') | first | default(none) %}
+{% if soonest %}
+  {# JS will show/hide based on 4h window — always render but hide initially #}
+  <div id="tonightBanner" data-tipoff="{{ soonest.start_time_iso }}"
+       style="display:none;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.3);
+              border-radius:10px;padding:10px 16px;margin-bottom:16px;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:18px">🏀</span>
+    <div style="flex:1;min-width:0">
+      <span style="font-size:13px;font-weight:600;color:var(--cv-accent)">Tonight</span>
+      <span id="bannerText" style="font-size:13px;color:var(--cv-text);margin-left:6px">{{ soonest.away_team }} @ {{ soonest.home_team }} · {{ soonest.tipoff_display }}</span>
+    </div>
+    <a href="/game/{{ soonest.game_id }}"
+       style="padding:5px 14px;background:var(--cv-accent);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">
+      See edges →
+    </a>
+  </div>
+{% endif %}
+<style>
+/* ── home layout ───────────────────────────────────────────────── */
+.home-section-hdr{font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--cv-subtle);margin:24px 0 10px;padding-bottom:6px;
+  border-bottom:1px solid var(--cv-border);}
+.home-section-hdr:first-child{margin-top:0;}
+
+/* ── game card grid ─────────────────────────────────────────────── */
+.game-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+@media(max-width:640px){.game-grid{grid-template-columns:1fr;}}
+
+/* ── game card ──────────────────────────────────────────────────── */
+.game-card{
+  background:var(--cv-card);border:1px solid var(--cv-border);border-radius:14px;
+  padding:14px 16px;cursor:pointer;transition:border-color 140ms,box-shadow 140ms;
+  text-decoration:none;display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;}
+.game-card:hover{border-color:var(--cv-accent);box-shadow:0 0 0 1px rgba(96,165,250,0.2);}
+.game-card.live-card{border-color:rgba(52,211,153,0.4);}
+.game-card.live-card:hover{border-color:#34d399;}
+
+/* ── card header ─────────────────────────────────────────────────── */
+.gc-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.gc-matchup{font-size:14px;font-weight:600;color:var(--cv-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gc-badges{display:flex;gap:5px;flex-shrink:0;}
+
+/* ── status badges ───────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;
+  letter-spacing:0.04em;padding:2px 7px;border-radius:999px;white-space:nowrap;}
+.badge-live{background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.4);}
+.badge-pregame{background:rgba(96,165,250,0.10);color:var(--cv-accent);border:1px solid rgba(96,165,250,0.25);}
+.badge-final{background:rgba(100,116,139,0.12);color:var(--cv-subtle);border:1px solid var(--cv-border);}
+@keyframes liveGlow{0%,100%{opacity:1}50%{opacity:.4}}
+.badge-live .live-dot{width:6px;height:6px;border-radius:50%;background:#34d399;animation:liveGlow 1.4s ease-in-out infinite;}
+
+/* ── tipoff row ──────────────────────────────────────────────────── */
+.gc-meta{font-size:11px;color:var(--cv-muted);display:flex;align-items:center;gap:8px;}
+.gc-countdown{font-weight:500;color:var(--cv-text);}
+
+/* ── edges section ───────────────────────────────────────────────── */
+.gc-edges-hdr{font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--cv-subtle);}
+.gc-edges{display:flex;flex-direction:column;gap:4px;}
+.edge-row{display:flex;align-items:center;gap:6px;font-size:11px;}
+.edge-rank{width:14px;height:14px;border-radius:50%;background:rgba(96,165,250,0.12);
+  color:var(--cv-accent);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.edge-label{flex:1;color:var(--cv-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.edge-odds{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-muted);white-space:nowrap;}
+.edge-ev{font-family:'SF Mono',ui-monospace,monospace;font-weight:600;white-space:nowrap;}
+.edge-ev.pos{color:#34d399;}
+.edge-ev.neg{color:#f87171;}
+.edge-ev.zero{color:var(--cv-muted);}
+.gc-no-edges{font-size:11px;color:var(--cv-subtle);font-style:italic;}
+
+/* ── open intel link ─────────────────────────────────────────────── */
+.gc-footer{display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;border-top:1px solid var(--cv-border);padding-top:8px;margin-top:2px;}
+.gc-props-count{color:var(--cv-subtle);}
+.gc-intel-link{color:var(--cv-accent);font-weight:500;display:flex;align-items:center;gap:3px;}
+
+/* ── settled section ─────────────────────────────────────────────── */
+.settled-list{display:flex;flex-direction:column;gap:6px;}
+.settled-row{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:8px;
+  padding:8px 12px;display:flex;align-items:center;gap:10px;font-size:12px;}
+.settled-result{padding:1px 8px;border-radius:4px;font-size:10px;font-weight:700;}
+.settled-win{background:#064e3b;color:#34d399;}
+.settled-loss{background:#450a0a;color:#f87171;}
+.settled-pnl{font-family:'SF Mono',ui-monospace,monospace;font-weight:600;margin-left:auto;}
+.settled-pnl.pos{color:#34d399;}
+.settled-pnl.neg{color:#f87171;}
+
+/* ── empty state ─────────────────────────────────────────────────── */
+.no-games{text-align:center;padding:48px 24px;color:var(--cv-muted);font-size:14px;}
+.no-games .no-games-icon{font-size:40px;margin-bottom:12px;opacity:.4;}
+
+/* ── score display ───────────────────────────────────────────────── */
+.gc-score{font-family:'SF Mono',ui-monospace,monospace;font-size:16px;font-weight:700;
+  color:var(--cv-text);text-align:center;}
+.gc-score-teams{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.gc-score-sep{color:var(--cv-subtle);}
+
+/* ── mobile ── */
+@media(max-width:720px){
+  .game-grid{grid-template-columns:1fr;}
+  .game-card{padding:12px 14px;}
+  .gc-matchup{font-size:13px;}
+  .edge-label{font-size:11px;}
+  .settled-row{flex-wrap:wrap;gap:6px;}
+  a[href^="/game"]{touch-action:manipulation;}
+  .gc-intel-link,.gc-props-count,.gd-book-btn{min-height:44px;display:inline-flex;align-items:center;}
+}
+</style>
+
+<!-- Live games section (only shown if live_games is non-empty) -->
+{% if live_games %}
+<div class="home-section-hdr">Live Now</div>
+<div class="game-grid" id="liveGrid">
+  {% for g in live_games %}
+  <a href="/game/{{ g.game_id }}" class="game-card live-card" data-gid="{{ g.game_id }}">
+    <div class="gc-header">
+      <div class="gc-matchup">{{ g.away_team }} @ {{ g.home_team }}</div>
+      <div class="gc-badges">
+        <span class="badge badge-live"><span class="live-dot"></span>LIVE</span>
+      </div>
+    </div>
+    {% if g.score_away is not none %}
+    <div class="gc-score-teams">
+      <span style="color:var(--cv-muted);font-size:12px;">{{ g.away_team }}</span>
+      <span class="gc-score">{{ g.score_away }} — {{ g.score_home }}</span>
+      <span style="color:var(--cv-muted);font-size:12px;">{{ g.home_team }}</span>
+    </div>
+    {% endif %}
+    {% if g.top_edges %}
+    <div>
+      <div class="gc-edges-hdr">Top edges</div>
+      <div class="gc-edges mt-1">
+        {% for e in g.top_edges[:3] %}
+        <div class="edge-row">
+          <div class="edge-rank">{{ loop.index }}</div>
+          <div class="edge-label">{{ e.label }}</div>
+          {% if e.odds %}<div class="edge-odds">{{ '%+d'|format(e.odds) }}</div>{% endif %}
+          {% if e.edge_pct is not none %}<div class="edge-ev {% if e.edge_pct > 0 %}pos{% elif e.edge_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(e.edge_pct) }}%</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="gc-footer">
+      <span class="gc-props-count">{{ g.n_props }} props</span>
+      <span class="gc-intel-link">Open Game Intel ↗</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Upcoming games section -->
+<div class="home-section-hdr">{{ section_label }} · {{ slate_date }}</div>
+
+{% if not upcoming_games %}
+<div class="no-games">
+  <div class="no-games-icon">🏀</div>
+  {% if live_games %}
+  <div>All games are live right now.</div>
+  {% else %}
+  <div style="font-size:15px;font-weight:600;color:var(--cv-text)">No games scheduled for {{ slate_date }}</div>
+  <div style="font-size:12px;margin-top:8px;color:var(--cv-subtle)">Lines are scraped automatically.<br>Check back soon or browse the <a href="/odds" style="color:var(--cv-accent)">Odds page</a> to see the next slate.</div>
+  {% endif %}
+</div>
+{% else %}
+<div class="game-grid" id="upcomingGrid">
+  {% for g in upcoming_games %}
+  <a href="/game/{{ g.game_id }}" class="game-card" data-gid="{{ g.game_id }}">
+    <div class="gc-header">
+      <div class="gc-matchup">{{ g.away_team }} @ {{ g.home_team }}</div>
+      <div class="gc-badges">
+        <span class="badge badge-pregame">PREGAME</span>
+      </div>
+    </div>
+    <div class="gc-meta">
+      <span class="gc-countdown" id="cd-{{ loop.index }}" data-tipoff="{{ g.start_time_iso }}">{{ g.tipoff_display }}</span>
+      {% if g.n_players %}<span>· {{ g.n_players }} players</span>{% endif %}
+    </div>
+    {% if g.top_edges %}
+    <div>
+      <div class="gc-edges-hdr">Top edges</div>
+      <div class="gc-edges mt-1">
+        {% for e in g.top_edges[:3] %}
+        <div class="edge-row">
+          <div class="edge-rank">{{ loop.index }}</div>
+          <div class="edge-label">{{ e.label }}</div>
+          {% if e.odds %}<div class="edge-odds">{{ '%+d'|format(e.odds) }}</div>{% endif %}
+          {% if e.edge_pct is not none %}<div class="edge-ev {% if e.edge_pct > 0 %}pos{% elif e.edge_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(e.edge_pct) }}%</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="gc-no-edges">No model edges yet — lines may not be scraped</div>
+    {% endif %}
+    <div class="gc-footer">
+      <span class="gc-props-count">{{ g.n_props }} props</span>
+      <span class="gc-intel-link">Open Game Intel ↗</span>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Recently settled bets -->
+{% if settled_bets %}
+<div class="home-section-hdr">Recently settled</div>
+<div class="settled-list">
+  {% for b in settled_bets %}
+  <div class="settled-row">
+    <span class="settled-result {% if b.status == 'won' %}settled-win{% else %}settled-loss{% endif %}">
+      {{ 'WON' if b.status == 'won' else 'LOST' }}
+    </span>
+    <span style="color:var(--cv-text);">{{ b.player_name or b.player or '—' }}</span>
+    <span style="color:var(--cv-muted);font-size:11px;">
+      {{ b.prop_stat or b.stat or '' }}
+      {% if b.side and b.line %}{{ 'O' if b.side|upper == 'OVER' else 'U' }}{{ '%g'|format(b.line|float) }}{% endif %}
+    </span>
+    {% if b.actual_value is not none %}
+    <span style="color:var(--cv-subtle);font-size:11px;">→ {{ '%g'|format(b.actual_value|float) }}</span>
+    {% endif %}
+    <span class="settled-pnl {% if b.pnl is not none and b.pnl|float > 0 %}pos{% elif b.pnl is not none and b.pnl|float < 0 %}neg{% endif %}">
+      {% if b.pnl is not none %}{{ '%+.0f'|format(b.pnl|float) }}{% endif %}
+    </span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script>
+// ── WS connection status indicator ─────────────────────────────────────────
+// Injected into base.html header area via #wsStatusDot (added below in page).
+// States: green = WS open, gray = polling fallback, red = disconnected.
+var _ws = null;
+var _wsReconnectDelay = 2000;
+var _pollTimer = null;
+var _refreshDebounce = null;
+var _lastFetch = 0;
+
+// Status dot injected at top of page
+(function(){
+  var dot = document.getElementById('wsStatusDot');
+  if (!dot) {
+    dot = document.createElement('span');
+    dot.id = 'wsStatusDot';
+    dot.title = 'Lines feed status';
+    dot.style.cssText = 'display:inline-block;width:8px;height:8px;border-radius:50%;' +
+      'background:#6b7280;margin-left:8px;vertical-align:middle;flex-shrink:0;transition:background 0.4s;';
+    // Append to the first nav item container or just body
+    var nav = document.querySelector('nav') || document.body;
+    nav.appendChild(dot);
+  }
+})();
+
+function _setWsStatus(state) {
+  var dot = document.getElementById('wsStatusDot');
+  if (!dot) return;
+  if (state === 'open')   { dot.style.background = '#34d399'; dot.title = 'Live — lines feed connected'; }
+  else if (state === 'poll') { dot.style.background = '#9ca3af'; dot.title = 'Polling — WS unavailable'; }
+  else                    { dot.style.background = '#f87171'; dot.title = 'Disconnected'; }
+}
+
+// ── edge-card refresh ───────────────────────────────────────────────────────
+function _refreshHomeEdges() {
+  var now = Date.now();
+  if (now - _lastFetch < 1500) return;  // hard debounce
+  _lastFetch = now;
+  fetch('/api/home.json', {credentials: 'include'})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if (!data) return;
+      _patchGameGrids(data.upcoming_games || [], data.live_games || []);
+    })
+    .catch(function(){});
+}
+
+function _patchGameGrids(upcoming, live) {
+  // Build a map of game_id → fresh top_edges
+  var edgeMap = {};
+  (upcoming || []).concat(live || []).forEach(function(g) {
+    edgeMap[String(g.game_id)] = g.top_edges || [];
+  });
+  // Update each card's edge list in place
+  document.querySelectorAll('.game-card[data-gid]').forEach(function(card) {
+    var gid = card.getAttribute('data-gid');
+    var edges = edgeMap[gid];
+    if (!edges) return;
+    var container = card.querySelector('.gc-edges');
+    if (!container) return;
+    if (edges.length === 0) {
+      container.innerHTML = '<div class="gc-no-edges">No model edges yet</div>';
+      return;
+    }
+    var html = '';
+    edges.slice(0,3).forEach(function(e, i) {
+      var evCls = e.edge_pct > 0 ? 'pos' : (e.edge_pct < 0 ? 'neg' : 'zero');
+      html += '<div class="edge-row">' +
+        '<div class="edge-rank">' + (i+1) + '</div>' +
+        '<div class="edge-label">' + _esc(e.label) + '</div>' +
+        (e.odds ? '<div class="edge-odds">' + (e.odds >= 0 ? '+' : '') + e.odds + '</div>' : '') +
+        (e.edge_pct != null ? '<div class="edge-ev ' + evCls + '">' + (e.edge_pct >= 0 ? '+' : '') + e.edge_pct.toFixed(1) + '%</div>' : '') +
+        '</div>';
+    });
+    container.innerHTML = html;
+  });
+}
+
+function _esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── WebSocket ───────────────────────────────────────────────────────────────
+function _connectWS() {
+  if (!window.location.host) return;
+  var proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  var url = proto + '://' + window.location.host + '/ws/live';
+  try { _ws = new WebSocket(url); } catch(e) { _scheduleReconnect(); return; }
+
+  _ws.onopen = function() {
+    _wsReconnectDelay = 2000;
+    _setWsStatus('open');
+    // Cancel fallback polling once WS is healthy
+    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+  };
+  _ws.onmessage = function(evt) {
+    try {
+      var msg = JSON.parse(evt.data);
+      if (msg.topic === 'lines.refreshed' || msg.topic === 'lines_refreshed') {
+        clearTimeout(_refreshDebounce);
+        _refreshDebounce = setTimeout(_refreshHomeEdges, 1500);
+      }
+    } catch(e) {}
+  };
+  _ws.onclose = function() {
+    _setWsStatus('poll');
+    _scheduleReconnect();
+    _startFallbackPolling();
+  };
+  _ws.onerror = function() { _ws.close(); };
+}
+
+function _scheduleReconnect() {
+  setTimeout(function() {
+    _wsReconnectDelay = Math.min(_wsReconnectDelay * 1.6, 30000);
+    _connectWS();
+  }, _wsReconnectDelay);
+}
+
+function _startFallbackPolling() {
+  if (_pollTimer) return;  // already running
+  _pollTimer = setInterval(function() {
+    if (_ws && _ws.readyState === WebSocket.OPEN) {
+      clearInterval(_pollTimer); _pollTimer = null; return;
+    }
+    _refreshHomeEdges();
+  }, 30000);
+}
+
+// ── Tipoff countdowns ───────────────────────────────────────────────────────
+(function(){
+  function fmt(ms){
+    if(ms<=0) return 'Now';
+    var s=Math.floor(ms/1000), m=Math.floor(s/60), h=Math.floor(m/60);
+    m=m%60; s=s%60;
+    if(h>0) return h+'h '+m+'m to tipoff';
+    if(m>0) return m+'m to tipoff';
+    return s+'s to tipoff';
+  }
+  function tick(){
+    document.querySelectorAll('[data-tipoff]').forEach(function(el){
+      var iso=el.getAttribute('data-tipoff');
+      if(!iso) return;
+      var d=new Date(iso), now=new Date();
+      var delta=d-now;
+      if(delta>0) el.textContent=fmt(delta);
+    });
+  }
+  tick();
+  setInterval(tick, 5000);
+})();
+
+// ── Tonight banner ──────────────────────────────────────────────────────────
+(function(){
+  var banner = document.getElementById('tonightBanner');
+  if (!banner) return;
+  var iso = banner.getAttribute('data-tipoff');
+  if (!iso) return;
+  function checkBanner() {
+    var d = new Date(iso), now = new Date(), delta = d - now;
+    banner.style.display = (delta <= 4 * 3600 * 1000 && delta > -3600 * 1000) ? 'flex' : 'none';
+  }
+  checkBanner();
+  setInterval(checkBanner, 60000);
+})();
+
+// ── Boot ────────────────────────────────────────────────────────────────────
+_connectWS();
+// Fallback polling kicks in after 5s if WS never opens
+setTimeout(function() {
+  if (!_ws || _ws.readyState !== WebSocket.OPEN) {
+    _setWsStatus('poll');
+    _startFallbackPolling();
+  }
+}, 5000);
+</script>
+{% endblock %}
+
+{% block footer %}
+  CourtVision · {{ slate_date }} · model graded · not financial advice
+{% endblock %}

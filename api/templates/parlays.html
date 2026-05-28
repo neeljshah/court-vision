@@ -2,18 +2,18 @@
 {% block title %}Parlays · CourtVision{% endblock %}
 {% block subtitle %}Parlays · {{ envelope.date }}{% endblock %}
 {% block og_title %}CourtVision parlays · {{ envelope.date }}{% endblock %}
-{% block og_desc %}{{ envelope.n_parlays }} EV-ranked NBA prop parlays · Monte-Carlo joint pricing · SGP-aware correlation.{% endblock %}
+{% block og_desc %}EV-ranked NBA prop parlays · Monte-Carlo joint pricing · SGP-aware correlation.{% endblock %}
+{% block nav_parlays %}active{% endblock %}
 
 {% block content %}
 <section class="mb-3 md:mb-4">
   <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
     <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Parlays</h1>
-    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ envelope.date }}</span>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)" id="parlayDate">{{ envelope.date }}</span>
+    <span class="text-xs md:text-sm" id="parlayCount" style="color:var(--cv-muted)">loading…</span>
     <a href="/tonight?date={{ envelope.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">single bets →</a>
   </div>
   <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
-    <span><b style="color:var(--cv-text)">{{ envelope.n_parlays }}</b> parlays</span>
-    <span>showing top {{ shown|length }}</span>
     <span>min EV
       <form class="inline" action="/parlays" method="get">
         <input type="hidden" name="date" value="{{ envelope.date }}">
@@ -35,27 +35,76 @@
       </form>
     </span>
   </div>
-  {% if not envelope.has_lines %}
-    <div class="mt-2 cv-card px-3 py-2 text-xs" style="color:var(--cv-amber);border-color:#451a03">
-      No lines CSV for {{ envelope.date }} — parlay pricing needs `data/lines/lines_{{ envelope.date }}.csv`.
-    </div>
-  {% endif %}
 </section>
 
-{% if not shown %}
-  <div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
-    No parlays cleared the EV gate at min EV {{ min_ev_pct }}%.
+<div id="parlaysGrid" style="min-height:80px;">
+  <div style="text-align:center;padding:32px;color:var(--cv-muted);font-size:13px;" id="parlaysLoading">
+    Loading parlays…
   </div>
-{% else %}
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-    {% for p in shown %}
-      {% set rank = loop.index %}
-      {% include "_parlay_card.html" %}
-    {% endfor %}
-  </div>
-{% endif %}
+</div>
+
+<script>
+(function(){
+  var date="{{ envelope.date }}";
+  var maxLegs={{ max_legs }};
+  var minEv={{ min_ev_pct }};
+  var url='/api/parlays?date='+date+'&max_legs='+maxLegs+'&min_ev_pct='+minEv+'&seed=0';
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(env){
+      var parlays=env.parlays||[];
+      var cnt=document.getElementById('parlayCount');
+      if(cnt) cnt.textContent=parlays.length+' parlays';
+      var grid=document.getElementById('parlaysGrid');
+      if(!parlays.length){
+        var noLinesHtml = !env.has_lines
+          ? '<div class="mt-2 cv-card px-3 py-2 text-xs" style="color:var(--cv-amber);border-color:#451a03">No lines CSV for '+date+' — parlay pricing needs data/lines/lines_'+date+'.csv.</div>'
+          : '';
+        grid.innerHTML='<div class="cv-card p-6 text-center" style="color:var(--cv-muted);padding:32px 24px;">'
+          +'<div style="font-size:32px;margin-bottom:12px;opacity:.35">🎰</div>'
+          +'<div style="font-size:14px;font-weight:600;color:var(--cv-text);margin-bottom:6px">No parlays available</div>'
+          +'<div style="font-size:12px;margin-bottom:14px">No prop combinations cleared the EV gate at min EV '+minEv+'%.</div>'
+          +'<a href="/odds" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;'
+          +'background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:8px;'
+          +'color:var(--cv-accent);font-size:12px;font-weight:600;text-decoration:none;">'
+          +'Click any prop in Odds to start a parlay →</a>'
+          +'</div>'+noLinesHtml;
+        return;
+      }
+      var html='<div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">';
+      parlays.slice(0,25).forEach(function(p,i){
+        var evCls=p.ev_pct>0?'num-pos':p.ev_pct<0?'num-neg':'num-zero';
+        var legsHtml=(p.legs||[]).map(function(l){
+          var sideCls=l.side&&l.side.toLowerCase()==='over'?'badge-over':'badge-under';
+          return '<li style="display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 0;border-bottom:1px solid var(--cv-border);">'
+            +'<span class="'+sideCls+'" style="padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;">'+l.side+'</span>'
+            +'<span style="color:var(--cv-text);">'+l.player_name+'</span>'
+            +'<span style="color:var(--cv-muted);font-family:monospace;">'+l.prop_stat+' '+l.line+'</span>'
+            +(l.best_price?'<span style="color:var(--cv-muted);font-family:monospace;margin-left:auto;">'+l.best_price+'</span>':'')
+            +'</li>';
+        }).join('');
+        html+='<div class="cv-card cv-card-hover p-4">'
+          +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">'
+          +'<span style="font-size:13px;font-weight:600;color:var(--cv-text);">'+(i+1)+'-leg parlay</span>'
+          +'<span class="'+evCls+'" style="font-family:monospace;font-size:12px;font-weight:600;">EV '+(p.ev_pct!=null?(p.ev_pct>0?'+':'')+p.ev_pct.toFixed(1):'—')+'%</span>'
+          +'</div>'
+          +'<ul style="list-style:none;padding:0;margin:0 0 10px;">'+legsHtml+'</ul>'
+          +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--cv-muted);">'
+          +'<span>Combined: <b style="color:var(--cv-text);">'+(p.combined_american!=null?(p.combined_american>0?'+':'')+p.combined_american:'—')+'</b></span>'
+          +'<span>Kelly: <b style="color:var(--cv-text);">'+(p.kelly_stake_dollars!=null?'$'+p.kelly_stake_dollars.toFixed(0):'—')+'</b></span>'
+          +'</div>'
+          +'</div>';
+      });
+      html+='</div>';
+      grid.innerHTML=html;
+    })
+    .catch(function(e){
+      document.getElementById('parlaysGrid').innerHTML='<div class="cv-card p-6 text-center" style="color:var(--cv-muted);">Failed to load parlays: '+e.message+'</div>';
+    });
+})();
+</script>
 {% endblock %}
 
 {% block footer %}
-  Refreshed {{ envelope.generated_at }} · CourtVision · 10K MC joint draws · SGP-aware · not financial advice
+  CourtVision · 10K MC joint draws · SGP-aware · not financial advice
 {% endblock %}

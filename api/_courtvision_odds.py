@@ -5,7 +5,10 @@ and merges them into one consolidated view grouped by (player, stat, line).
 
 Per-book CSV schema:
     captured_at, book, game_id, player_id, player_name, stat, line,
-    over_price, under_price, start_time
+    over_price, under_price, start_time[, book_selection_id_over, book_selection_id_under]
+
+The optional book_selection_id_over/under columns are written only by DK, FD, and PB
+scrapers (v2+). Old CSVs without those columns parse fine — the fields default to "".
 
 Public API:
     consolidate(date)        -> list[ConsolidatedProp]
@@ -16,27 +19,188 @@ Public API:
 from __future__ import annotations
 
 import csv
+import json
 import time
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
 
+try:
+    from api._deeplinks import book_deeplink as _book_deeplink
+except ImportError:
+    try:
+        from _deeplinks import book_deeplink as _book_deeplink
+    except ImportError:
+        def _book_deeplink(book, prop, side="OVER", stake=10.0):  # type: ignore[misc]
+            return {"web_url": "", "app_url": None}
+
 _LINES_DIR = Path(__file__).resolve().parent.parent / "data" / "lines"
-_BOOKS = ("pin", "bov", "fd", "pp")  # add scrapers as they come online
-_BOOK_DISPLAY = {"pin": "Pinnacle", "bov": "Bovada", "fd": "FanDuel",
-                 "pp": "PrizePicks", "dk": "DraftKings", "mgm": "BetMGM"}
+_ROSTER_PATH = Path(__file__).resolve().parent.parent / "data" / "players_nba_active.json"
+_GAMES_LOOKUP_PATH = Path(__file__).resolve().parent.parent / "data" / "cache" / "games_lookup.json"
+
+# ── Sliding-window CSV discovery (Bug 2 fix) ──────────────────────────────────
+# Scrapers write CSVs under TODAY's date (e.g. 2026-05-27_dk.csv) but rows
+# inside may reference future start_times (e.g. 2026-05-29T00:40:00Z).
+# We read all CSVs from the last 7 days and filter per-row by start_time[:10].
+_CSV_LOOKBACK_DAYS = 7
+
+# ── Game-ID alias table (Bug 1 fix) ───────────────────────────────────────────
+# DK / PB / KAMBI / oddsapi all use different numeric/hash IDs for the same
+# NBA matchup. We resolve any incoming game_id to its canonical
+# (away_abbr, home_abbr, start_date) tuple so filtering is matchup-scoped,
+# not ID-scoped.
+_GAME_ALIAS_CACHE: dict | None = None
+_GAME_ALIAS_MTIME: float = 0.0
+
+# ── NBA-roster filter ─────────────────────────────────────────────────────────
+# Loaded once per process; empty set = no filtering (safe fallback when file
+# is missing or unreadable).
+_NBA_PLAYER_SET: set[str] | None = None
+
+
+def _load_nba_players() -> set[str]:
+    """Return lowercase NBA active-player names. Cached for the process lifetime."""
+    global _NBA_PLAYER_SET
+    if _NBA_PLAYER_SET is None:
+        try:
+            with _ROSTER_PATH.open(encoding="utf-8") as f:
+                _NBA_PLAYER_SET = {n.lower().strip() for n in json.load(f) if n}
+        except (OSError, ValueError, TypeError):
+            _NBA_PLAYER_SET = set()  # fallback: no filtering
+    return _NBA_PLAYER_SET
+
+
+def reload_nba_roster() -> int:
+    """Force-reload the roster from disk. Returns size of the new set.
+
+    Called by the nightly refresh task after scripts/refresh_nba_roster.py
+    rewrites players_nba_active.json.
+    """
+    global _NBA_PLAYER_SET
+    _NBA_PLAYER_SET = None
+    s = _load_nba_players()
+    return len(s)
+
+
+_BOOK_DISPLAY = {
+    "pin": "Pinnacle", "bov": "Bovada", "fd": "FanDuel", "pp": "PrizePicks",
+    "dk": "DraftKings", "mgm": "BetMGM", "caesars": "Caesars",
+    "betrivers": "BetRivers", "espnbet": "ESPN BET", "pointsbet": "PointsBet",
+    "fanatics": "Fanatics", "bet365": "Bet365", "underdog": "Underdog",
+    "hardrock": "Hard Rock Bet", "betonline": "BetOnline",
+    "dk_inplay": "DraftKings (Live)", "fd_inplay": "FanDuel (Live)",
+}
 _VALID_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov"}
+# Bookkey suffixes / fragments to exclude from auto-discovery (synthetic and
+# companion files written alongside the real per-book CSVs).
+_EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic")
 
 
 def _book_csv_paths(date: str) -> list[Path]:
-    """All per-book CSVs for the given date that exist on disk."""
+    """All per-book CSVs written on `date` that exist on disk.
+
+    Returns only files with the exact `<date>_<book>.csv` prefix.
+    Used by line_history and line_moves which need the raw file stream;
+    most callers should use _book_csv_paths_window() instead.
+    """
     out: list[Path] = []
-    for book in _BOOKS:
-        p = _LINES_DIR / f"{date}_{book}.csv"
-        if p.exists():
-            out.append(p)
+    prefix = f"{date}_"
+    if not _LINES_DIR.exists():
+        return out
+    for p in _LINES_DIR.iterdir():
+        if not p.is_file() or p.suffix != ".csv":
+            continue
+        name = p.stem
+        if not name.startswith(prefix):
+            continue
+        book = name[len(prefix):]
+        if not book:
+            continue
+        if any(book.endswith(s) for s in _EXCLUDED_BOOK_SUFFIXES):
+            continue
+        out.append(p)
     return out
+
+
+def _book_csv_paths_window(date: str) -> list[Path]:
+    """CSVs from the last _CSV_LOOKBACK_DAYS that MAY contain rows for `date`.
+
+    Scrapers write under today's filename (e.g. 2026-05-27_dk.csv) for games
+    scheduled on future dates (e.g. start_time=2026-05-29). This function
+    returns all per-book CSVs from the last 7 days so callers can filter
+    per-row by start_time[:10] == date.
+
+    Callers must still filter rows; this returns the broader file set.
+    """
+    if not _LINES_DIR.exists():
+        return []
+    try:
+        target = datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        return _book_csv_paths(date)  # fallback for unexpected formats
+
+    seen: dict[str, Path] = {}  # stem -> path; last writer wins per book
+    for offset in range(_CSV_LOOKBACK_DAYS):
+        d = (target - timedelta(days=offset)).strftime("%Y-%m-%d")
+        for p in _book_csv_paths(d):
+            # Key by book suffix so we keep only the most-recent file per book.
+            book_key = p.stem[len(d) + 1:]  # strip "<date>_"
+            if book_key not in seen:
+                seen[book_key] = p
+    return list(seen.values())
+
+
+def _load_game_aliases() -> dict:
+    """Load games_lookup.json and build a map of game_id -> canonical group.
+
+    Returns {game_id: {"away_abbr", "home_abbr", "start_date", "canonical_ids"}}
+    where canonical_ids is the frozenset of all IDs that share the same matchup.
+    Cached until the file's mtime changes.
+    """
+    global _GAME_ALIAS_CACHE, _GAME_ALIAS_MTIME
+    if not _GAMES_LOOKUP_PATH.exists():
+        return {}
+    try:
+        mt = _GAMES_LOOKUP_PATH.stat().st_mtime
+        if _GAME_ALIAS_CACHE is not None and mt <= _GAME_ALIAS_MTIME:
+            return _GAME_ALIAS_CACHE
+        with _GAMES_LOOKUP_PATH.open(encoding="utf-8") as f:
+            raw: dict = json.load(f)
+    except (OSError, ValueError):
+        return _GAME_ALIAS_CACHE or {}
+
+    # Group all IDs that share (away_abbr, home_abbr, start_date).
+    groups: dict[tuple, list[str]] = defaultdict(list)
+    for gid, info in raw.items():
+        away = info.get("away_abbr") or ""
+        home = info.get("home_abbr") or ""
+        st = (info.get("start_time") or "")[:10]
+        groups[(away, home, st)].append(gid)
+
+    alias: dict[str, dict] = {}
+    for (away, home, st), ids in groups.items():
+        id_set = frozenset(ids)
+        for gid in ids:
+            alias[gid] = {
+                "away_abbr": away,
+                "home_abbr": home,
+                "start_date": st,
+                "canonical_ids": id_set,
+            }
+
+    _GAME_ALIAS_CACHE = alias
+    _GAME_ALIAS_MTIME = mt
+    return alias
+
+
+def resolve_game_id(game_id: str) -> dict:
+    """Resolve any sportsbook game_id to its canonical matchup group.
+
+    Returns {"away_abbr", "home_abbr", "start_date", "canonical_ids"} or {}
+    when the ID is not in games_lookup.json.
+    """
+    return _load_game_aliases().get(str(game_id), {})
 
 
 def _to_int(s) -> int | None:
@@ -58,12 +222,22 @@ def _to_float(s) -> float | None:
     return v if v == v else None  # filter NaN
 
 
-def read_book_csv(path: Path) -> list[dict]:
+def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
     """Parse a single <date>_<book>.csv. Yields the *latest* quote per
-    (player, stat, line, book) so the line-shop view is freshness-correct."""
+    (player, stat, line, book) so the line-shop view is freshness-correct.
+
+    When `start_date` is provided (YYYY-MM-DD), only rows whose start_time
+    begins with that prefix are included. This supports the sliding-window
+    consolidation where one CSV may contain rows for multiple game dates.
+    """
     latest: dict[tuple, dict] = {}
     with path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
+            # ── start_time date filter (Bug 2 fix) ──────────────────────
+            if start_date is not None:
+                row_st = (r.get("start_time") or "").strip()
+                if not row_st.startswith(start_date):
+                    continue
             stat = (r.get("stat") or "").lower()
             if stat not in _VALID_STATS:
                 continue
@@ -73,6 +247,10 @@ def read_book_csv(path: Path) -> list[dict]:
             book = (r.get("book") or path.stem.split("_")[-1]).lower()
             player = (r.get("player_name") or "").strip()
             if not player:
+                continue
+            # Drop non-NBA players (WNBA bleed, etc.) when roster file is present.
+            _roster = _load_nba_players()
+            if _roster and player.lower() not in _roster:
                 continue
             key = (player.lower(), stat, round(line, 2), book)
             existing = latest.get(key)
@@ -90,12 +268,19 @@ def read_book_csv(path: Path) -> list[dict]:
                 "under_price": _to_int(r.get("under_price")),
                 "game_id": r.get("game_id") or "",
                 "start_time": r.get("start_time") or "",
+                # Deeplink selection IDs — DK/FD write bet-slip outcomeIds;
+                # BR/PIN/PB write event or outcome IDs used for event-page links.
+                # Empty string when column absent (old CSVs / Bovada).
+                "selection_id_over": r.get("book_selection_id_over") or "",
+                "selection_id_under": r.get("book_selection_id_under") or "",
             }
     return list(latest.values())
 
 
 _CACHE: dict[str, tuple[float, list[dict]]] = {}
-_CACHE_TTL_SEC = 30.0  # short — scrapers tick every ~30-60s
+_CACHE_TTL_SEC = 30.0  # 30s — scrapers tick every 10s but CSV reads at that rate
+                        # caused 74s page loads in prod (O(files) I/O per request).
+                        # 30s is still fresh enough for line-shop display.
 
 
 def consolidate(date: str) -> list[dict]:
@@ -103,13 +288,20 @@ def consolidate(date: str) -> list[dict]:
 
     Cached for 30s per date — covers the burst of requests from /tonight,
     /odds, /arbs, /api/odds/best, etc. all hitting the same date.
+
+    Bug 2 fix — sliding-window file discovery:
+    Reads CSVs from the last 7 days and filters rows by start_time[:10]==date.
+    This handles scrapers that write today's file (2026-05-27_dk.csv) for
+    games scheduled on a future date (start_time=2026-05-29T00:40:00Z).
+    Existing callers are unaffected: consolidate('2026-05-27') returns props
+    whose start_time date is 2026-05-27, exactly as before.
     """
     cached = _CACHE.get(date)
     if cached and time.time() - cached[0] < _CACHE_TTL_SEC:
         return cached[1]
     grouped: dict[tuple, dict] = {}
-    for path in _book_csv_paths(date):
-        for row in read_book_csv(path):
+    for path in _book_csv_paths_window(date):
+        for row in read_book_csv(path, start_date=date):
             key = (row["player"].lower(), row["stat"], round(row["line"], 2))
             base = grouped.setdefault(key, {
                 "player": row["player"], "player_id": row["player_id"],
@@ -117,10 +309,26 @@ def consolidate(date: str) -> list[dict]:
                 "game_id": row["game_id"], "start_time": row["start_time"],
                 "books": [],
             })
+            # Build a minimal prop dict for the deeplink generator.
+            _dl_prop = {
+                "game_id": row.get("game_id") or "",
+                "selection_id_over": row.get("selection_id_over") or "",
+                "selection_id_under": row.get("selection_id_under") or "",
+            }
+            _dl_over  = _book_deeplink(row["book"], _dl_prop, side="OVER")
+            _dl_under = _book_deeplink(row["book"], _dl_prop, side="UNDER")
             base["books"].append({
                 "book": row["book"], "display": _BOOK_DISPLAY.get(row["book"], row["book"]),
                 "over_price": row["over_price"], "under_price": row["under_price"],
                 "captured_at": row["captured_at"],
+                # Deeplink IDs — DK/FD: bet-slip outcomeIds; BR/PIN/PB: event IDs
+                "selection_id_over": row.get("selection_id_over") or "",
+                "selection_id_under": row.get("selection_id_under") or "",
+                # Pre-built deeplink URLs for the /odds UI
+                "deeplink_over_web":  _dl_over["web_url"],
+                "deeplink_over_app":  _dl_over["app_url"] or "",
+                "deeplink_under_web": _dl_under["web_url"],
+                "deeplink_under_app": _dl_under["app_url"] or "",
             })
     out = list(grouped.values())
     for prop in out:
@@ -167,22 +375,44 @@ def summary(date: str) -> dict:
 
 
 def games_index(date: str) -> list[dict]:
-    """Distinct game_ids in today's scrape with prop counts + start_time."""
+    """Distinct games in today's scrape with prop counts + start_time.
+
+    Groups all sportsbook game_ids that map to the same NBA matchup
+    (via games_lookup.json) so the index has one entry per real game,
+    not one per sportsbook ID. The canonical_game_id is the first ID
+    alphabetically among the group; all alias IDs are listed too.
+    """
     props = consolidate(date)
-    by_game: dict[str, dict] = {}
+    aliases = _load_game_aliases()
+    # Group by canonical matchup key; fall back to raw game_id when not in lookup.
+    by_matchup: dict[tuple, dict] = {}
     for p in props:
         gid = p.get("game_id") or "?"
-        g = by_game.setdefault(gid, {
-            "game_id": gid, "start_time": p.get("start_time") or "",
-            "n_props": 0, "players": set(),
+        info = aliases.get(gid, {})
+        if info:
+            key = (info["away_abbr"], info["home_abbr"], info["start_date"])
+        else:
+            key = (gid, "", "")
+        g = by_matchup.setdefault(key, {
+            "start_time": p.get("start_time") or "",
+            "n_props": 0,
+            "players": set(),
+            "game_ids": set(),
         })
         g["n_props"] += 1
         g["players"].add(p["player"])
+        g["game_ids"].add(gid)
     out = []
-    for g in by_game.values():
+    for (away, home, _), g in by_matchup.items():
+        ids = sorted(g["game_ids"])
         out.append({
-            "game_id": g["game_id"], "start_time": g["start_time"],
-            "n_props": g["n_props"], "n_players": len(g["players"]),
+            "game_id": ids[0],  # stable canonical pick
+            "game_id_aliases": ids,
+            "away_abbr": away or ids[0],
+            "home_abbr": home,
+            "start_time": g["start_time"],
+            "n_props": g["n_props"],
+            "n_players": len(g["players"]),
         })
     out.sort(key=lambda r: r["start_time"] or "")
     return out
@@ -311,11 +541,14 @@ def _parse_ts(ts: str) -> float | None:
 
 
 def freshness(date: str) -> dict:
-    """Per-book CSV mtime + latest captured_at + row count."""
-    import os
+    """Per-book CSV mtime + latest captured_at + row count.
+
+    Uses _book_csv_paths_window so future-date games (stored under today's
+    scrape-date filename) are counted correctly.
+    """
     out: dict[str, dict] = {}
-    for path in _book_csv_paths(date):
-        book = path.stem.split("_")[-1].lower()
+    for path in _book_csv_paths_window(date):
+        book = path.stem.split("_", 1)[-1].lower()  # strip date prefix
         try:
             mtime = datetime.fromtimestamp(path.stat().st_mtime,
                                             tz=timezone.utc).isoformat()
@@ -326,12 +559,17 @@ def freshness(date: str) -> dict:
         try:
             with path.open(newline="", encoding="utf-8") as f:
                 for r in csv.DictReader(f):
+                    row_st = (r.get("start_time") or "").strip()
+                    if not row_st.startswith(date):
+                        continue
                     n_rows += 1
                     ts = r.get("captured_at") or ""
                     if ts > latest_capture:
                         latest_capture = ts
         except OSError:
             pass
+        if n_rows == 0:
+            continue  # no rows for this date in this file — skip from report
         out[book] = {
             "display": _BOOK_DISPLAY.get(book, book),
             "csv_path": str(path.relative_to(path.parent.parent)),
@@ -364,38 +602,96 @@ def consolidate_csv(date: str, stat: str | None = None,
     return buf.getvalue()
 
 
-def cross_book_spread(date: str, min_spread_pp: float = 2.0) -> list[dict]:
+_ARB_MAX_AGE_SEC = 300          # drop entire prop if all books stale (5 min)
+_ARB_TIGHT_SEC   = 30           # both books within 30s → "tight"
+_ARB_LOOSE_SEC   = 90           # both books within 90s → "loose"; >90s → "stale"
+
+
+def _arb_quality(ts_a: str, ts_b: str) -> str:
+    """Return "tight" / "loose" / "stale" based on capture-time gap between two books."""
+    t_a, t_b = _parse_ts(ts_a), _parse_ts(ts_b)
+    if t_a is None or t_b is None:
+        return "stale"
+    gap = abs(t_a - t_b)
+    if gap <= _ARB_TIGHT_SEC:
+        return "tight"
+    if gap <= _ARB_LOOSE_SEC:
+        return "loose"
+    return "stale"
+
+
+def cross_book_spread(date: str, min_spread_pp: float = 2.0,
+                      max_age_sec: float = _ARB_MAX_AGE_SEC) -> list[dict]:
     """Props where books differ on implied prob — line shop / arb opportunities.
 
     Returns rows sorted by spread descending. `min_spread_pp` is the min
     spread in percentage points between best and worst book on either side.
+
+    Arb quality tiers (added to each row):
+        "tight"  — best-over and best-under books captured within 30 s of each other
+        "loose"  — within 90 s
+        "stale"  — >90 s gap; displayed but not recommended for betting
+    Only rows with is_arb=True carry an arb_quality field.
     """
     props = consolidate(date)
+    now_ts = time.time()
     out: list[dict] = []
     for p in props:
         if p["n_books"] < 2:
             continue
-        over_books = [b for b in p["books"] if b["over_price"] is not None]
-        under_books = [b for b in p["books"] if b["under_price"] is not None]
-        over_implieds = [_american_to_implied(b["over_price"]) for b in over_books]
+        all_books = p["books"]
+
+        # Drop entire prop if all captures are older than max_age_sec.
+        book_ts = [_parse_ts(b.get("captured_at") or "") for b in all_books]
+        fresh_ts = [t for t in book_ts if t is not None]
+        if not fresh_ts or (now_ts - max(fresh_ts)) > max_age_sec:
+            continue
+
+        # Only include books whose capture is within max_age_sec of the most-recent.
+        max_book_ts = max(fresh_ts)
+        fresh_books = [
+            b for b, t in zip(all_books, book_ts)
+            if t is not None and (max_book_ts - t) <= max_age_sec
+        ]
+        if len(fresh_books) < 2:
+            continue
+
+        over_books  = [b for b in fresh_books if b["over_price"]  is not None]
+        under_books = [b for b in fresh_books if b["under_price"] is not None]
+        over_implieds  = [_american_to_implied(b["over_price"])  for b in over_books]
         under_implieds = [_american_to_implied(b["under_price"]) for b in under_books]
-        over_spread = (max(over_implieds) - min(over_implieds)) * 100 if len(over_implieds) >= 2 else 0
+        over_spread  = (max(over_implieds)  - min(over_implieds))  * 100 if len(over_implieds)  >= 2 else 0
         under_spread = (max(under_implieds) - min(under_implieds)) * 100 if len(under_implieds) >= 2 else 0
         max_spread = max(over_spread, under_spread)
         if max_spread < min_spread_pp:
             continue
-        # Two-way arb check: best over implied + best under implied < 100?
-        best_over_implied = min(over_implieds) if over_implieds else None
-        best_under_implied = min(under_implieds) if under_implieds else None
-        arb_sum = (best_over_implied + best_under_implied) * 100 if best_over_implied and best_under_implied else None
+
+        # Two-way arb: require BOTH sides have a price on at least one book each.
+        # best implied = min implied prob (highest odds) per side.
+        best_over_b  = min(over_books,  key=lambda b: _american_to_implied(b["over_price"]))  if over_books  else None
+        best_under_b = min(under_books, key=lambda b: _american_to_implied(b["under_price"])) if under_books else None
+        best_over_implied  = _american_to_implied(best_over_b["over_price"])   if best_over_b  else None
+        best_under_implied = _american_to_implied(best_under_b["under_price"]) if best_under_b else None
+
+        arb_sum = (best_over_implied + best_under_implied) * 100 \
+                  if (best_over_implied is not None and best_under_implied is not None) else None
         is_arb = arb_sum is not None and arb_sum < 100.0
-        out.append({
+
+        row: dict = {
             "player": p["player"], "stat": p["stat"], "line": p["line"],
             "n_books": p["n_books"], "over_spread_pp": round(over_spread, 2),
             "under_spread_pp": round(under_spread, 2),
             "arb_sum_pct": round(arb_sum, 2) if arb_sum is not None else None,
-            "is_arb": is_arb, "books": p["books"],
-        })
+            "is_arb": is_arb, "books": all_books,
+        }
+        if is_arb and best_over_b is not None and best_under_b is not None:
+            row["arb_quality"] = _arb_quality(
+                best_over_b.get("captured_at") or "",
+                best_under_b.get("captured_at") or "",
+            )
+            row["arb_best_over_book"]  = best_over_b["book"]
+            row["arb_best_under_book"] = best_under_b["book"]
+        out.append(row)
     out.sort(key=lambda r: -max(r["over_spread_pp"], r["under_spread_pp"]))
     return out
 

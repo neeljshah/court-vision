@@ -49,6 +49,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     _BBREF_DEFAULTS,
     _CONTRACT_DEFAULTS,
     _REB_CONTEXT_DEFAULTS,
+    _SYN_PPP_DEFAULTS,
     _ITER23_DEFAULTS,
     _row_features,
     _num,
@@ -60,6 +61,7 @@ from src.prediction.prop_pergame import (  # noqa: E402
     _get_contracts,
     _get_team_reb_context,
     _get_pregame_spreads,
+    _get_syn_ppp,
     _inject_iter23_features,
     _PLAYTYPE_PRIOR_SEASON_JOIN,
     predict_pergame,
@@ -193,6 +195,11 @@ def _build_asof_row(player_id: int, opp_team: str, asof_date: datetime,
             team_abbrev, opp_team, asof_date))
     except Exception:
         feats.update(_REB_CONTEXT_DEFAULTS)
+    # Iter-44: synergy PPP per-play-type (current-season join, 5 keys).
+    try:
+        feats.update(_get_syn_ppp().features(int(player_id), season))
+    except Exception:
+        feats.update(_SYN_PPP_DEFAULTS)
     # Pre-game spread (defaults to None when absent => garbage-time haircut no-op).
     try:
         last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
