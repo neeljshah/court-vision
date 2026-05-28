@@ -12,6 +12,23 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-52: PKL artifact integrity — n_features_in_ must match _meta.json (2026-05-27)
+
+**Failure mode found:** `quantile_pergame_lgb_reb_q50.pkl` had `n_features_in_=85` while `_meta.json` claimed `n_features=133`. Every inference call crashed silently (caught by `skip['err:ValueError']`) producing 0 valid bets. The backtest reported `n_bets=0 ROI=0%` but was swallowed as "INCONCLUSIVE." The locked +16.73%/157-bet REB measurement (iter-35) was from a previous schema-consistent state; the mismatch was introduced when _meta was updated to 133 columns without retraining the pkl.
+
+**Fix:** Retrained REB LGB-q50 at current 132-col schema (cutoff 2025-04-21). Honest OOS: **+9.32% ROI / 241 bets** (was +16.73%/157 from stale pkl era). Aggregate flat ROI on 2,772-bet eval: **+17.70%** (was +18.39%).
+
+**CI assertion required:** After every retrain, run:
+```python
+assert m.n_features_in_ == len(meta['stats'][stat]['feature_columns']), \
+    f"PKL/meta mismatch: pkl={m.n_features_in_} meta={len(meta['stats'][stat]['feature_columns'])}"
+```
+Add this to `scripts/backtest_holdout.py` or a dedicated `scripts/verify_model_artifacts.py`.
+
+**Files:** `data/models/oos_pre_playoffs/quantile_pergame_lgb_reb_q50.pkl` (132 feat), `data/models/oos_pre_playoffs/_meta.json` (reb.n_features=132), `data/cache/holdout_baseline.json` (reb roi_pct=9.32, n_bets=241).
+
+---
+
 ## Iter-51: BLK UNDER-only direction filter (2026-05-27)
 
 **Source:** Iter-50 bootstrap segmentation — direction_UNDER: n=218, ROI=+28.73%, z=4.45;

@@ -8,10 +8,10 @@
       "threshold": 0.7
     },
     "reb": {
-      "roi_pct": 14.2045,
-      "hit_rate": 59.8214,
-      "n_bets": 112,
-      "roi_units": 15.9091,
+      "roi_pct": 9.32,
+      "hit_rate": 57.26,
+      "n_bets": 241,
+      "roi_units": 22.45,
       "threshold": 1.5
     },
     "ast": {
@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T01:53:05Z",
+  "__updated_at__": "2026-05-28T01:58:35Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -175,13 +175,13 @@
   },
   "__iter36__": {
     "iter": 36,
-    "generated_at": "2026-05-28T00:18:36Z",
+    "generated_at": "2026-05-28T01:58:35Z",
     "approach": "honest_full_stack_measurement_2688_bets",
     "method": "outcome_preserved_simulation_on_iter35_per_stat",
-    "n_bets_total": 2688,
-    "flat_agg_roi_pct": 18.39,
-    "kelly_b_iso_agg_roi_pct": 21.23,
-    "delta_kb_iso_vs_flat_pp": 2.84,
+    "n_bets_total": 2772,
+    "flat_agg_roi_pct": 17.7,
+    "kelly_b_iso_agg_roi_pct": 21.0,
+    "delta_kb_iso_vs_flat_pp": 3.3,
     "regressions_kb_iso": [],
     "decision": "SHIP \u2014 Kelly-B+ISO lifts aggregate ROI on 2,688-bet sample",
     "survive_iter33_34": true,
@@ -216,11 +216,11 @@
         "hit_rate_pct": 58.31
       },
       "reb": {
-        "n_bets": 157,
-        "total_stake_units": 157.0,
-        "total_pnl_units": 26.2727,
-        "roi_pct": 16.73,
-        "hit_rate_pct": 61.15
+        "n_bets": 241,
+        "total_stake_units": 241.0,
+        "total_pnl_units": 22.4545,
+        "roi_pct": 9.32,
+        "hit_rate_pct": 57.26
       },
       "stl": {
         "n_bets": 634,
@@ -260,11 +260,11 @@
         "hit_rate_pct": 58.31
       },
       "reb": {
-        "n_bets": 157,
-        "total_stake_units": 7.225,
-        "total_pnl_units": 1.209,
-        "roi_pct": 16.73,
-        "hit_rate_pct": 61.15
+        "n_bets": 241,
+        "total_stake_units": 6.175,
+        "total_pnl_units": 0.5753,
+        "roi_pct": 9.32,
+        "hit_rate_pct": 57.26
       },
       "stl": {
         "n_bets": 634,
@@ -280,8 +280,8 @@
         "roi_pct": 11.32
       },
       "reb": {
-        "n_bets": 157,
-        "roi_pct": 16.73
+        "n_bets": 241,
+        "roi_pct": 9.32
       },
       "ast": {
         "n_bets": 374,
@@ -305,8 +305,8 @@
       "iter33_kelly_b_1016": 22.03,
       "iter34_kelly_b_iso_1016": 23.2,
       "iter35_flat_2688": 18.39,
-      "iter36_flat_2688_sim": 18.39,
-      "iter36_kelly_b_iso_2688": 21.23
+      "iter36_flat_2688_sim": 17.7,
+      "iter36_kelly_b_iso_2688": 21.0
     },
     "params": {
       "thresholds": {
@@ -330,9 +330,9 @@
       "threshold": 0.7
     },
     "reb": {
-      "roi_pct": 16.73,
-      "n_bets": 157,
-      "hit_rate": 16.73,
+      "roi_pct": 9.32,
+      "n_bets": 241,
+      "hit_rate": 9.32,
       "threshold": 1.5
     },
     "ast": {
@@ -773,5 +773,20 @@
       "max_stake_u": 3.0,
       "blk_direction_filter": "under_only"
     }
+  },
+  "__iter52_reb_fix__": {
+    "generated_at": "2026-05-28T01:58:18+00:00",
+    "fix": "PKL was 85 features, _meta.json claimed 133. All inference crashed with ValueError. Retrained at current 132-col schema.",
+    "stale_pkl_n_features": 85,
+    "meta_claimed_n_features": 133,
+    "fresh_pkl_n_features": 132,
+    "stale_roi_pct": 16.73,
+    "stale_n_bets": 157,
+    "honest_roi_pct": 9.32,
+    "honest_n_bets": 241,
+    "honest_hit_rate": 57.26,
+    "val_mae": 1.9438,
+    "cutoff_date": "2025-04-21",
+    "method": "lgb_gbdt_q50_132feat"
   }
 }
