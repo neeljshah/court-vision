@@ -135,9 +135,28 @@ def grade_bet(slate_row: dict, line_row: dict,
     ev_pct = model_prob * payout - (1.0 - model_prob) * 100.0
     kelly_dollars = float(ev.get("kelly_size") or 0.0)
     kelly_pct = (kelly_dollars / bankroll) * 100.0 if bankroll else 0.0
+    # Plain-English narrative for the bet card. Built in three parts so any
+    # reader can scan it: (1) the pick, (2) why, (3) the practical action.
+    _STAT_FULL = {"pts": "points", "reb": "rebounds", "ast": "assists",
+                  "fg3m": "three-pointers made", "stl": "steals",
+                  "blk": "blocks", "tov": "turnovers"}
+    stat_word = _STAT_FULL.get(stat, stat.upper())
+    side_word = "under" if side == "UNDER" else "over"
+    arrow = "below" if side == "UNDER" else "above"
+    venue_phrase = "away at" if slate_row.get("venue") == "away" else "vs"
+    confidence = "very high" if model_prob >= 0.80 else (
+                 "high" if model_prob >= 0.70 else (
+                 "moderate" if model_prob >= 0.60 else "slight"))
+    price_phrase = f"+{odds}" if odds > 0 else str(odds)
+    edge_abs = abs(edge_units)
     narrative = (
-        f"{slate_row['player_name']} projects to {q50:.1f} {stat.upper()} "
-        f"vs {slate_row['opp']}; model edges line {line:g} by {edge_units:+.2f}."
+        f"Pick: bet {side_word} {line:g} {stat_word} for {slate_row['player_name']} "
+        f"({slate_row['team']} {venue_phrase} {slate_row['opp']}). "
+        f"Our model projects {q50:.1f} {stat_word}, which is {edge_abs:.2f} {arrow} the "
+        f"sportsbook's {line:g} line. The model gives this a {model_prob*100:.0f}% chance to hit "
+        f"({confidence} confidence). "
+        f"Best price: {best['book']} at {price_phrase} — the market's implied probability there "
+        f"is {market_prob*100:.0f}%, so the model sees a {(model_prob - market_prob)*100:+.1f}-point edge."
     )
     return {
         "bet_id": bet_id(slate_row["date"], slate_row["player_id"], stat, side, line),

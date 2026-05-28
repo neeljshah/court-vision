@@ -1279,18 +1279,32 @@ def api_game_detail(game_id: str, date: Optional[str] = Query(default=None)):
 @router.get("/tonight", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
 def tonight(request: Request, date: str = Query(default=None),
-            side: str = Query("ALL"), min_ev: float = Query(-999.0)):
+            side: str = Query("ALL"), min_ev: float = Query(-999.0),
+            game_id: str = Query(default="")):
+    """Tonight's slate. Optional ?game_id= filter shows only one matchup's bets
+    (this is what the homepage game cards link to — gives a per-game view using
+    the same rich bet-card layout)."""
     if not date:
         date = _next_game_day() or _today_et()
     slate = _build_slate(date)
     side_u = (side or "ALL").upper()
-    if side_u in ("OVER", "UNDER") or min_ev > -999.0:
+    gid_filter = (game_id or "").strip()
+    needs_filter = (side_u in ("OVER", "UNDER")) or (min_ev > -999.0) or bool(gid_filter)
+    matchup_label = ""
+    if needs_filter:
         bets = [b for b in slate["bets"]
                 if (side_u == "ALL" or b["side"] == side_u)
-                and (b.get("ev_pct") is None or b["ev_pct"] >= min_ev)]
+                and (b.get("ev_pct") is None or b["ev_pct"] >= min_ev)
+                and (not gid_filter or str(b.get("game_id", "")) == gid_filter)]
+        # If filtered to a specific game, derive matchup label from any bet
+        if gid_filter and bets:
+            sample = bets[0]
+            home_or_away_indicator = "@" if sample.get("venue") == "away" else "vs"
+            matchup_label = f"{sample.get('team','')} {home_or_away_indicator} {sample.get('opp','')}"
         slate = {**slate, "bets": bets}
     return _TEMPLATES.TemplateResponse("tonight.html",
-        {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev})
+        {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev,
+         "game_id_filter": gid_filter, "matchup_label": matchup_label})
 
 
 @router.get("/api/slate", tags=["courtvision"])
