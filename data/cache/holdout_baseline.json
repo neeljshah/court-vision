@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T00:16:24Z",
+  "__updated_at__": "2026-05-28T00:51:19Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -175,7 +175,7 @@
   },
   "__iter36__": {
     "iter": 36,
-    "generated_at": "2026-05-27T23:56:35Z",
+    "generated_at": "2026-05-28T00:18:36Z",
     "approach": "honest_full_stack_measurement_2688_bets",
     "method": "outcome_preserved_simulation_on_iter35_per_stat",
     "n_bets_total": 2688,
@@ -560,5 +560,144 @@
       "kelly_frac": 0.25,
       "max_stake_u": 3.0
     }
+  },
+  "__iter40__": {
+    "iter": 40,
+    "generated_at": "2026-05-28T00:21:22Z",
+    "approach": "ast_threshold_small_step_1p0_to_0p85",
+    "n_bets_total": 2584,
+    "pre_iter40_agg_roi_pct": 22.04,
+    "iter40_agg_roi_pct": 21.84,
+    "delta_agg_pp": -0.1996,
+    "decision": "REVERT \u2014 aggregate delta -0.20pp below +0.3pp ship threshold",
+    "regressions": [
+      "ast"
+    ],
+    "ship": false,
+    "changes": {
+      "ast_threshold": {
+        "from": 1.0,
+        "to": 0.85
+      },
+      "pts_threshold": {
+        "from": 1.0,
+        "to": 1.0,
+        "note": "UNCHANGED (iter-39 shipped)"
+      },
+      "blk_kelly_mult": {
+        "from": 1.0,
+        "to": 1.0,
+        "note": "UNCHANGED"
+      }
+    },
+    "per_stat": {
+      "ast": {
+        "n_bets": 561,
+        "kb_roi_pct": 22.85,
+        "pre40_roi_pct": 24.04,
+        "delta_pp": -1.19,
+        "kb_stake": 43.528,
+        "kb_pnl": 9.9456
+      },
+      "blk": {
+        "n_bets": 631,
+        "kb_roi_pct": 26.65,
+        "pre40_roi_pct": 26.86,
+        "delta_pp": -0.21,
+        "kb_stake": 71.9464,
+        "kb_pnl": 19.1755
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "kb_roi_pct": 26.41,
+        "pre40_roi_pct": 26.39,
+        "delta_pp": 0.02,
+        "kb_stake": 7.7505,
+        "kb_pnl": 2.0472
+      },
+      "pts": {
+        "n_bets": 527,
+        "kb_roi_pct": 16.09,
+        "pre40_roi_pct": 16.05,
+        "delta_pp": 0.04,
+        "kb_stake": 19.0816,
+        "kb_pnl": 3.0707
+      },
+      "reb": {
+        "n_bets": 157,
+        "kb_roi_pct": 16.73,
+        "pre40_roi_pct": 16.73,
+        "delta_pp": 0.0,
+        "kb_stake": 6.1316,
+        "kb_pnl": 1.0261
+      },
+      "stl": {
+        "n_bets": 634,
+        "kb_roi_pct": 14.94,
+        "pre40_roi_pct": 15.02,
+        "delta_pp": -0.08,
+        "kb_stake": 41.2118,
+        "kb_pnl": 6.1552
+      }
+    },
+    "ast_details": {
+      "expansion_frac": 1.5,
+      "n_bets_added": 187,
+      "flat_roi_pct": 22.85,
+      "thr_old": 1.0,
+      "thr_new": 0.85
+    },
+    "params": {
+      "thresholds_40": {
+        "pts": 1.0,
+        "reb": 1.5,
+        "ast": 0.85,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_stat_mult": {
+        "pts": 1.0,
+        "reb": 1.0,
+        "ast": 1.0,
+        "fg3m": 1.0,
+        "stl": 1.0,
+        "blk": 1.0
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0
+    }
+  },
+  "__iter42__": {
+    "iter": 42,
+    "generated_at": "2026-05-28T00:51:19Z",
+    "approach": "parlay_backtest_bayesian_selection_500_trials",
+    "n_trials": 500,
+    "selection_rates": {
+      "pts": 0.47349505840071876,
+      "reb": 0.14672897196261683,
+      "ast": 0.3887733887733888,
+      "fg3m": 0.07830687830687831,
+      "stl": 1.0,
+      "blk": 0.8667582417582418
+    },
+    "2leg": {
+      "n_per_trial": 1473.5,
+      "hit_rate": 0.3787,
+      "roi_norm_pct": 38.03,
+      "roi_norm_sgp_pct": 23.0,
+      "roi_raw_pct": 175.66,
+      "roi_raw_sgp_pct": 139.99
+    },
+    "3leg": {
+      "n_per_trial": 564.5,
+      "hit_rate": 0.2482,
+      "roi_norm_pct": 72.71,
+      "roi_norm_sgp_pct": 50.53,
+      "roi_raw_pct": 293.78,
+      "roi_raw_sgp_pct": 238.44
+    },
+    "single_leg_baseline_roi_pct": 22.04,
+    "note": "Bayesian selection: P(bet|over/under) conditioned on iter-39 hit rates. Norm ROI uses -110 both legs for direct baseline comparison. Raw ROI uses actual CSV odds (BLK median +145 inflates substantially)."
   }
 }
