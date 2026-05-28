@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Closing Line Value · CourtVision{% endblock %}
+{% block subtitle %}CLV · last {{ days }}d{% endblock %}
+{% block og_title %}CourtVision CLV — last {{ days }} days{% endblock %}
+{% block og_desc %}Rolling closing-line-value, ROI, and Sharpe across books and prop stats.{% endblock %}
+
+{% block content %}
+<style>
+.clv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px;}
+.clv-kpi{padding:14px 16px;background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;}
+.clv-kpi-lbl{font-size:11px;color:var(--cv-subtle);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.clv-kpi-val{font-size:22px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);}
+.clv-kpi-val.pos{color:#34d399;}
+.clv-kpi-val.neg{color:#f87171;}
+.clv-kpi-val.zero{color:#94a3b8;}
+
+.clv-section{background:var(--cv-card);border:1px solid var(--cv-border);border-radius:12px;
+  overflow:hidden;margin-bottom:14px;}
+.clv-section-hdr{padding:10px 16px;border-bottom:1px solid var(--cv-border);}
+.clv-section-hdr h2{font-size:14px;font-weight:600;color:var(--cv-text);margin:0;}
+.clv-section-body{padding:0;}
+
+.clv-table{width:100%;border-collapse:collapse;font-size:13px;}
+.clv-table th{font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:var(--cv-subtle);
+  text-align:right;padding:8px 14px;border-bottom:1px solid var(--cv-border);font-weight:600;}
+.clv-table th:first-child{text-align:left;}
+.clv-table td{padding:8px 14px;font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-text);
+  text-align:right;border-bottom:1px solid rgba(30,41,59,0.5);}
+.clv-table td:first-child{text-align:left;font-family:'Segoe UI',system-ui,sans-serif;font-weight:500;}
+.clv-table tr:last-child td{border-bottom:none;}
+.clv-table td.pos{color:#34d399;}
+.clv-table td.neg{color:#f87171;}
+.clv-table td.zero{color:#94a3b8;}
+
+.clv-window-bar{display:flex;gap:6px;margin-bottom:14px;}
+.clv-window-btn{padding:5px 12px;border-radius:6px;background:var(--cv-card);
+  border:1px solid var(--cv-border);color:var(--cv-muted);font-size:12px;font-weight:500;
+  text-decoration:none;transition:color 100ms,border-color 100ms,background 100ms;}
+.clv-window-btn:hover{color:var(--cv-text);border-color:var(--cv-accent);}
+.clv-window-btn.active{color:var(--cv-accent);background:rgba(96,165,250,0.10);
+  border-color:var(--cv-accent);}
+
+.clv-banner{padding:10px 14px;background:#7f1d1d;border:1px solid #991b1b;border-radius:8px;
+  color:#fca5a5;font-size:13px;margin-bottom:14px;}
+
+.clv-empty{padding:24px;text-align:center;color:var(--cv-muted);font-size:13px;}
+
+.spark-wrap{padding:12px 16px;}
+.spark-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--cv-subtle);
+  margin-top:6px;font-family:'SF Mono',ui-monospace,monospace;}
+</style>
+
+<section class="mb-3">
+  <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Closing Line Value — last {{ days }} days</h1>
+  <p class="text-xs md:text-sm mt-1" style="color:var(--cv-muted)">
+    Rolling CLV, ROI, and Sharpe over the last {{ days }} days
+    {% if summary.n_bets %}· {{ summary.n_bets }} graded bet{{ 's' if summary.n_bets != 1 else '' }} across {{ summary.n_days }} day{{ 's' if summary.n_days != 1 else '' }}{% endif %}
+  </p>
+</section>
+
+<div class="clv-window-bar">
+  {% for w in [7, 14, 30, 90] %}
+    <a href="/clv?days={{ w }}" class="clv-window-btn{% if days == w %} active{% endif %}">{{ w }}d</a>
+  {% endfor %}
+</div>
+
+{% if summary.error %}
+  <div class="clv-banner">CLV summary failed to load: {{ summary.error }}</div>
+{% endif %}
+
+<!-- KPI tiles -->
+<div class="clv-grid">
+  <div class="clv-kpi">
+    <div class="clv-kpi-lbl">Total P&amp;L</div>
+    <div class="clv-kpi-val {% if summary.total_pnl > 0 %}pos{% elif summary.total_pnl < 0 %}neg{% else %}zero{% endif %}">
+      {%- if summary.total_pnl > 0 -%}+{%- elif summary.total_pnl < 0 -%}-{%- endif -%}
+      ${{ '%.2f'|format(summary.total_pnl|abs) }}
+    </div>
+  </div>
+  <div class="clv-kpi">
+    <div class="clv-kpi-lbl">ROI</div>
+    <div class="clv-kpi-val {% if summary.roi_pct > 0 %}pos{% elif summary.roi_pct < 0 %}neg{% else %}zero{% endif %}">
+      {{ '%+.2f'|format(summary.roi_pct) }}%
+    </div>
+  </div>
+  <div class="clv-kpi">
+    <div class="clv-kpi-lbl">Avg CLV (bps)</div>
+    <div class="clv-kpi-val {% if summary.avg_clv_bps > 0 %}pos{% elif summary.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">
+      {{ '%+.1f'|format(summary.avg_clv_bps) }}
+    </div>
+  </div>
+  <div class="clv-kpi">
+    <div class="clv-kpi-lbl">Win %</div>
+    <div class="clv-kpi-val zero">{{ '%.1f'|format(summary.win_pct) }}%</div>
+  </div>
+  <div class="clv-kpi">
+    <div class="clv-kpi-lbl">Sharpe ({{ days }}d)</div>
+    <div class="clv-kpi-val {% if summary.sharpe_30d > 0 %}pos{% elif summary.sharpe_30d < 0 %}neg{% else %}zero{% endif %}">
+      {{ '%+.2f'|format(summary.sharpe_30d) }}
+    </div>
+  </div>
+</div>
+
+{% if summary.n_bets == 0 and not summary.error %}
+  <div class="clv-section">
+    <div class="clv-empty">No graded bets in this window yet — check back after auto_settle_daemon runs.</div>
+  </div>
+{% else %}
+
+  <!-- Daily ROI sparkline -->
+  {% if spark.n > 1 %}
+  <div class="clv-section">
+    <div class="clv-section-hdr"><h2>Daily ROI ({{ spark.n }} days)</h2></div>
+    <div class="clv-section-body">
+      <div class="spark-wrap">
+        <svg viewBox="0 0 {{ spark.width }} {{ spark.height }}" width="100%"
+             height="{{ spark.height }}" preserveAspectRatio="none"
+             style="display:block;overflow:visible;">
+          <line x1="0" y1="{{ spark.zero_y }}" x2="{{ spark.width }}" y2="{{ spark.zero_y }}"
+                stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+          <polyline points="{{ spark.points }}" fill="none" stroke="#60a5fa"
+                    stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        </svg>
+        <div class="spark-meta">
+          <span>min {{ '%+.1f'|format(spark.min) }}%</span>
+          <span>max {{ '%+.1f'|format(spark.max) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- by_book table -->
+  <div class="clv-section">
+    <div class="clv-section-hdr"><h2>By Book</h2></div>
+    <div class="clv-section-body">
+      {% if by_book_sorted %}
+        <table class="clv-table">
+          <thead>
+            <tr>
+              <th>Book</th><th>Bets</th><th>ROI</th><th>CLV (bps)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for book, m in by_book_sorted %}
+              <tr>
+                <td>{{ book }}</td>
+                <td>{{ m.n_bets }}</td>
+                <td class="{% if m.roi_pct > 0 %}pos{% elif m.roi_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.2f'|format(m.roi_pct or 0) }}%</td>
+                <td class="{% if m.avg_clv_bps > 0 %}pos{% elif m.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(m.avg_clv_bps or 0) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="clv-empty">No per-book breakdown available.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- by_stat table -->
+  <div class="clv-section">
+    <div class="clv-section-hdr"><h2>By Stat</h2></div>
+    <div class="clv-section-body">
+      {% if by_stat_sorted %}
+        <table class="clv-table">
+          <thead>
+            <tr>
+              <th>Stat</th><th>Bets</th><th>ROI</th><th>Win %</th><th>CLV (bps)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for stat, m in by_stat_sorted %}
+              <tr>
+                <td>{{ stat|upper }}</td>
+                <td>{{ m.n_bets }}</td>
+                <td class="{% if m.roi_pct > 0 %}pos{% elif m.roi_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.2f'|format(m.roi_pct or 0) }}%</td>
+                <td class="zero">{{ '%.1f'|format(m.win_pct or 0) }}%</td>
+                <td class="{% if m.avg_clv_bps > 0 %}pos{% elif m.avg_clv_bps < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(m.avg_clv_bps or 0) }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div class="clv-empty">No per-stat breakdown available.</div>
+      {% endif %}
+    </div>
+  </div>
+
+{% endif %}
+{% endblock %}
+
+{% block footer %}
+  CLV dashboard · graded P&amp;L · CourtVision
+{% endblock %}
