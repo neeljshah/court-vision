@@ -442,12 +442,25 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     #     cols += list(_SYN_PPP_FG3M_KEYS)
 
     # Iter-46 (loop 5) — per-opponent rolling-3 stat features.
-    # Wire ONLY the matching per-stat feature into each stat model to avoid
-    # feature dilution (per-task build so artifacts don't dim-mismatch).
-    # High null rate (~20% first-ever matchup) — NaN passthrough to tree.
-    # Gate: stat in _PER_OPP_ROLLING_STATS (pts/reb/ast/fg3m/stl/blk; not tov).
-    if stat in _PER_OPP_ROLLING_STATS:
-        cols += [f"per_opp_{stat}_l3"]
+    # REVERTED (backtest_holdout REVERT decision 2026-05-28): OOS ROI regressed
+    # across all 6 probe stats despite feature importance pickup for FG3M/REB:
+    #   PTS:  delta_roi=-11.0pp, delta_mae=+6.01 (OOS MAE far worse)
+    #   AST:  delta_roi=-17.7pp, delta_mae=+1.60
+    #   FG3M: delta_roi=-12.9pp
+    #   REB:  delta_roi=-8.3pp
+    #   STL:  delta_roi=-3.9pp
+    #   BLK:  delta_roi=+1.1pp (only stat with positive ROI but mae regressed +0.54)
+    # Pattern: per-opponent historical rolling (last 3 prior meetings) captures
+    # team-matchup style bias but doesn't generalize OOS — in the 2025-26 playoffs
+    # sample, matchup history is too sparse (82% non-null = first-ever meeting
+    # rows) and the non-null rows reflect regular-season matchups that don't
+    # predict playoff performance. Identical failure mode to iter-44 (per-season
+    # synergy PPP).
+    # Infrastructure (_PerOppRolling, build_per_opp_rolling, parquet) stays
+    # for future probe angles (e.g., interact per_opp_pts_l3 × home_spread,
+    # or use longer window L10 to reduce sparsity, or restrict to playoff games).
+    # if stat in _PER_OPP_ROLLING_STATS:
+    #     cols += [f"per_opp_{stat}_l3"]
 
     return cols
 
