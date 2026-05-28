@@ -12,6 +12,37 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-39: PTS threshold isolated 0.7→1.0 (2026-05-28)
+
+**Change:** PTS threshold 0.7→1.0 ONLY. AST (1.0) and BLK Kelly (1.0x) UNCHANGED.
+**Rationale:** Iter-38 tested PTS+AST+BLK together; AST expansion dominated negatively.
+  PTS threshold alone was +3.85pp on PTS in iter-38 isolation. This iter applies it cleanly.
+**Method:** Outcome-preserved simulation on iter-35 ground truth; iter-36 stack for unchanged stats.
+
+**PTS volume effect:**
+- retain_frac = 0.645 — fraction of PTS bets above new threshold
+- n_bets: 818 → 527  (291 bets pruned)
+- PTS flat ROI: +11.32% → +15.20%
+- PTS KB+ISO ROI: +12.20% → +16.05% (delta: +3.85pp)
+
+**Per-stat results (iter-36 baseline vs iter-39, KB+ISO):**
+
+| Stat | Pre-39 ROI  | Iter-39 ROI | Delta    | n_bets | Note |
+|------|------------|------------|----------|--------|------|
+| AST  |  +24.04% |  +24.04% |  +0.00pp | 374 |
+| BLK  |  +27.07% |  +26.86% |  -0.21pp | 631 |
+| FG3M |  +26.43% |  +26.39% |  -0.04pp | 74 |
+| PTS  |  +12.20% |  +16.05% |  +3.85pp | 527 | [thr↑ 0.7→1.0]
+| REB  |  +16.73% |  +16.73% |  +0.00pp | 157 |
+| STL  |  +15.03% |  +15.02% |  -0.01pp | 634 |
+| **AGG** | **+21.23%** | **+22.04%** | **+0.81pp** | **2397** | |
+
+**Ship?** YES  |  **Decision:** SHIP — aggregate lifts >=+0.5pp AND no per-stat regressions > -1pp
+**Regressions (>-1pp):** none
+**Sustainable production ROI (iter-39):** +22.04%  (was +21.23%)
+
+---
+
 ## Iter-38: CLV-driven per-stat reallocation (2026-05-28)
 
 **Changes:** PTS thr 0.7→1.0 | AST thr 1.0→0.7 | BLK Kelly 1.0x→0.5x
