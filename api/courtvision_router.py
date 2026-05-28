@@ -1268,13 +1268,6 @@ def api_game_detail(game_id: str, date: Optional[str] = Query(default=None)):
     return JSONResponse(_build_game_detail(game_id, date))
 
 
-@router.get("/risk", response_class=HTMLResponse, tags=["courtvision"])
-@_public_limit
-def risk_page(request: Request):
-    """Risk control panel — bankroll, P&L, drawdown, kill-switch toggle."""
-    return _TEMPLATES.TemplateResponse("risk.html", {"request": request})
-
-
 @router.get("/tonight", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
 def tonight(request: Request, date: str = Query(default=None),
@@ -1542,44 +1535,9 @@ def api_odds_today(stat: str = Query(""), player: str = Query("")):
     date = _next_game_day() or _today_et()
     return JSONResponse(odds_env(date, stat, player))
 
-@router.get("/odds", response_class=HTMLResponse, tags=["courtvision"])
-@_public_limit
-def odds_page(request: Request, date: str = Query(default=None),
-              stat: str = Query(""), player: str = Query("")):
-    """Render /odds with a TINY SSR payload (just metadata).
-
-    Real prop data is fetched by the client from `/api/odds/{date}.json` after
-    page paint — keeps TTFB sub-second regardless of slate size.
-
-    Date resolution: if `?date=` not given, picks the next date that has an
-    actual upcoming game (looks at start_time of scraped props, not the CSV
-    file date — line CSVs are stored by scrape date but contain odds for
-    future games)."""
-    import os
-    from api._courtvision_odds import odds_env, consolidate
-    from datetime import datetime, timezone
-    ws_base = os.environ.get("COURTVISION_WS_BASE", "")
-    # NOTE: ws_token intentionally NOT passed to the template — auth is via
-    # HttpOnly cookie set by /auth/init, so the token never appears in HTML.
-    cfg = {"ws_base": ws_base}
-    # Auto-pick the next game-day if no explicit ?date= passed.
-    if not date:
-        date = _next_game_day() or _today_et()
-    full = odds_env(date, stat, player)
-    # Ship only metadata to the page. Frontend fetches /api/odds/{date}.json.
-    summary = {
-        "date": full.get("date", date),
-        "generated_at": full.get("generated_at"),
-        "n_props": full.get("n_props", 0),
-        "n_books": full.get("n_books", 0),
-        "books": full.get("books", []),
-        "props": [],            # client fetches asynchronously
-        "ssr_lite": True,
-    }
-    return _TEMPLATES.TemplateResponse("odds.html",
-        {"request": request, "env": summary, "env_summary": summary,
-         "stat": stat, "player": player, "config": cfg})
-
+# /odds page removed 2026-05-28 (user request: was broken and not useful).
+# The /api/odds/* JSON endpoints remain — they back the homepage book filter
+# and game-detail page. Only the standalone HTML page was deleted.
 
 _NEXT_GAME_DAY_CACHE: tuple[float, Optional[str]] | None = None
 _NEXT_GAME_DAY_TTL = 60.0  # recompute at most once per minute
@@ -1804,29 +1762,9 @@ def api_odds_csv(date: str, stat: str = Query(""), player: str = Query("")):
     return Response(content=body, media_type="text/csv",
                     headers={"Content-Disposition": f'attachment; filename="odds_{date}.csv"'})
 
-@router.get("/arbs", response_class=HTMLResponse, tags=["courtvision"])
-@_public_limit
-def arbs_page(request: Request, date: str = Query(default=None),
-              min_spread_pp: float = Query(2.0, ge=0.0, le=50.0)):
-    """SSR-lite: send only metadata; JS fetches full spread data via /api/odds/spread/{date}.json."""
-    if not date:
-        date = _next_game_day() or _today_et()
-    # Send a lightweight summary for instant TTFB — real rows fetched by JS
-    try:
-        from api._courtvision_odds import summary as _odds_summary
-        s = _odds_summary(date)
-    except Exception:
-        s = {}
-    meta = {
-        "date": date,
-        "min_spread_pp": min_spread_pp,
-        "n": None,       # unknown until JS loads
-        "n_arbs": None,
-        "rows": [],      # client fetches
-        "ssr_lite": True,
-    }
-    return _TEMPLATES.TemplateResponse("arbs.html",
-        {"request": request, "env": meta})
+# /arbs page removed 2026-05-28 (user request: cross-book arbitrage isn't
+# the product anymore; users want direct "what bet to place" guidance per
+# their selected books, not arb scanning).
 
 
 @router.get("/api/today_summary", tags=["courtvision"])
