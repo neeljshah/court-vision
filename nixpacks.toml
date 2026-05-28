@@ -1,0 +1,20 @@
+# Railway/Nixpacks build config for the Live Engine v2 web dashboard.
+# Keeps the image lean — only web-runtime deps, no torch/CUDA/cv2.
+# Detected automatically by Railway when you push the repo.
+
+[phases.setup]
+nixPkgs = ["python310"]
+
+[phases.install]
+cmds = [
+  "python -m venv /opt/venv",
+  ". /opt/venv/bin/activate && pip install --upgrade pip",
+  ". /opt/venv/bin/activate && pip install -r requirements-web.txt",
+]
+
+[phases.build]
+# Nothing to build — Python is interpreted.
+cmds = ["echo build step skipped"]
+
+[start]
+cmd = ". /opt/venv/bin/activate && uvicorn api.live_v2_app:app --host 0.0.0.0 --port $PORT --ws websockets"
