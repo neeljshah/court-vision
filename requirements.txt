@@ -21,9 +21,9 @@ av==17.0.1                     # PyAV (fallback video decoder)
 # CUDA 12.x wheels — install from PyTorch CDN:
 #   pip install torch==2.8.0+cu128 torchvision==0.23.0+cu128 torchaudio==2.8.0+cu128 \
 #               --index-url https://download.pytorch.org/whl/cu128
-torch==2.8.0+cu128             # PyTorch (CUDA 12.8)
-torchvision==0.23.0+cu128      # Image transforms
-torchaudio==2.8.0+cu128        # Pinned for consistency
+torch==2.8.0                   # PyTorch (CPU; Railway has no GPU. RunPod uses +cu128)
+torchvision==0.23.0            # Image transforms
+torchaudio==2.8.0              # Pinned for consistency
 torchreid==0.2.5               # OSNet re-ID (512-d)
 onnxruntime-gpu==1.26.0        # ONNX inference for OSNet TRT fallback
 numpy==2.1.2                   # Numerical ops (R16 pinned — numpy 2.x breaking)
