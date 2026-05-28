@@ -21,6 +21,7 @@ from api.analytics_router import router as analytics_router
 from api.predictions_router import router as predictions_ext_router
 from api.stitch_router import router as stitch_router
 from api.dashboard_router import router as dashboard_router
+from api.devig_router import router as devig_router
 try:
     from api.courtvision_router import router as courtvision_router
     _COURTVISION_AVAILABLE = True
@@ -112,6 +113,7 @@ app.include_router(predictions_ext_router, prefix="/predictions", tags=["predict
 app.include_router(analytics_router,       prefix="/analytics",   tags=["analytics"])
 app.include_router(stitch_router,          prefix="/stitch",       tags=["stitch"])
 app.include_router(dashboard_router,       tags=["dashboard"])
+app.include_router(devig_router,           tags=["devig"])
 if _COURTVISION_AVAILABLE:
     app.include_router(courtvision_router, tags=["courtvision"])
     try:
