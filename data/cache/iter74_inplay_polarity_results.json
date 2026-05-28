@@ -1,0 +1,212 @@
+{
+  "iter": "iter74",
+  "validation": "inplay_winprob_polarity_corrected_retrain",
+  "run_at_utc": "2026-05-28T04:02:01Z",
+  "random_seed": 42,
+  "n_folds": 4,
+  "v6hp_baselines_published": {
+    "endQ1": 0.212,
+    "endQ2": 0.1771,
+    "endQ3": 0.125
+  },
+  "iter68_hps": {
+    "endQ1": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 40
+    },
+    "endQ2": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 40
+    },
+    "endQ3": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 10
+    }
+  },
+  "ship_gate": {
+    "min_folds_improved": 3,
+    "max_mean_delta": -0.001
+  },
+  "snapshots": {
+    "endQ1": {
+      "snapshot": "endQ1",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "hyperparams": {
+        "n_estimators": 300,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 40,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 42
+      },
+      "raw_pregame_corr": -0.11277996677200974,
+      "flipped_pregame_corr": 0.11277996677200977,
+      "v6hp_baseline_published": 0.212,
+      "v6hp_repro_fold_briers": [
+        0.21478412870804706,
+        0.20631223017759256,
+        0.21014764136697603,
+        0.21677665888009454
+      ],
+      "v6hp_repro_mean_brier": 0.21200516478317755,
+      "v6hp_repro_std_brier": 0.004072766077184025,
+      "v9_polarity_fold_briers": [
+        0.21379323749789345,
+        0.2081071620843066,
+        0.21204766042368423,
+        0.2171370555670137
+      ],
+      "v9_polarity_mean_brier": 0.21277127889322447,
+      "v9_polarity_std_brier": 0.00325507352650248,
+      "delta_vs_v6hp_baseline": 0.0007712788932244807,
+      "delta_vs_v6hp_repro": 0.0007661141100469282,
+      "n_folds_improved_vs_repro": 1,
+      "n_folds": 4,
+      "ship_min_folds_improved": 3,
+      "ship_mean_delta_max": -0.001,
+      "ships": false
+    },
+    "endQ2": {
+      "snapshot": "endQ2",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "q2_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "hyperparams": {
+        "n_estimators": 300,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 40,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 42
+      },
+      "raw_pregame_corr": -0.11277996677200974,
+      "flipped_pregame_corr": 0.11277996677200977,
+      "v6hp_baseline_published": 0.1771,
+      "v6hp_repro_fold_briers": [
+        0.16938519389011056,
+        0.17267368034014052,
+        0.18670019566441798,
+        0.17952973605765124
+      ],
+      "v6hp_repro_mean_brier": 0.17707220148808006,
+      "v6hp_repro_std_brier": 0.006655351645862645,
+      "v9_polarity_fold_briers": [
+        0.16696754072705544,
+        0.17231793452222433,
+        0.1878249067962061,
+        0.17778827312877352
+      ],
+      "v9_polarity_mean_brier": 0.17622466379356486,
+      "v9_polarity_std_brier": 0.007713095567629252,
+      "delta_vs_v6hp_baseline": -0.0008753362064351511,
+      "delta_vs_v6hp_repro": -0.0008475376945152047,
+      "n_folds_improved_vs_repro": 3,
+      "n_folds": 4,
+      "ship_min_folds_improved": 3,
+      "ship_mean_delta_max": -0.001,
+      "ships": false
+    },
+    "endQ3": {
+      "snapshot": "endQ3",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "q2_delta",
+        "q3_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season",
+        "q1_usg_avg",
+        "halftime_pace_shift",
+        "trailing_team_q4_usg_hhi"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "hyperparams": {
+        "n_estimators": 300,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 42
+      },
+      "raw_pregame_corr": -0.11277996677200974,
+      "flipped_pregame_corr": 0.11277996677200977,
+      "v6hp_baseline_published": 0.125,
+      "v6hp_repro_fold_briers": [
+        0.12573316890790504,
+        0.13147802615365486,
+        0.13331908407577964,
+        0.10946527391262763
+      ],
+      "v6hp_repro_mean_brier": 0.12499888826249178,
+      "v6hp_repro_std_brier": 0.009394642476176142,
+      "v9_polarity_fold_briers": [
+        0.12487796179459072,
+        0.13192408755327417,
+        0.13310935224181417,
+        0.11053747152225683
+      ],
+      "v9_polarity_mean_brier": 0.12511221827798397,
+      "v9_polarity_std_brier": 0.00898378864612085,
+      "delta_vs_v6hp_baseline": 0.00011221827798396644,
+      "delta_vs_v6hp_repro": 0.00011333001549218569,
+      "n_folds_improved_vs_repro": 2,
+      "n_folds": 4,
+      "ship_min_folds_improved": 3,
+      "ship_mean_delta_max": -0.001,
+      "ships": false
+    }
+  },
+  "saved_artifacts": {},
+  "n_games_total": 3685,
+  "elapsed_s": 2.3440122604370117
+}
