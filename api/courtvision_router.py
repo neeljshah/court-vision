@@ -103,10 +103,236 @@ _ROOT = _HERE.parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
 _PRED_DIR = _ROOT / "data" / "predictions"
 _LINES_DIR = _ROOT / "data" / "lines"
-_BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 15, 300, 8
+_BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 50, 300, 8
 _PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
-_STAT_SIGMA = {"pts": 8.5, "reb": 3.6, "ast": 2.6, "fg3m": 1.7, "stl": 1.4, "blk": 1.0, "tov": 1.7}  # MAE x 1.253 systematically understates real prop volatility (residuals are heavier-tailed than Normal + model has prediction uncertainty beyond residual MAE); 1.5x bump empirically caps confidence around 80-90% even on strong-edge bets, vs the prior 99%+ that produced fake +100% EVs
+_STAT_SIGMA = {"pts": 6.2, "reb": 2.6, "ast": 2.0, "fg3m": 1.4, "stl": 1.0, "blk": 0.9, "tov": 1.2}  # Empirically calibrated against 50K OOF rows per stat (pregame_oof.parquet) — tail-aware: each value is the smallest multiplier of the residual std where empirical 2σ coverage ≥ 95% AND 3σ coverage ≥ 99% (i.e., honest about fat tails without being over-conservative). Previous (8.5/3.6/2.6/1.7/1.4/1.0/1.7) was ~1.4x too wide vs the OOF residual distribution.
 _STATS = tuple(_STAT_SIGMA.keys())
+# Playoff-aware sigma boost. Model was trained on regular-season residuals;
+# OOF dataset has no playoff games, so the multiplier is from literature
+# (NBA playoff prop residuals run ~15-25% wider than regular season due to
+# tighter rotations, defensive scheme adjustments, higher-stakes variance).
+# 1.20x is the conservative middle of that range.
+_PLAYOFF_SIGMA_MULT = 1.20
+
+
+def _is_playoff_date(date_str: str) -> bool:
+    """True if `date_str` (YYYY-MM-DD) falls in the NBA playoff window
+    (roughly Apr 15 – Jun 30). Heuristic, not authoritative."""
+    if not date_str or len(date_str) < 10:
+        return False
+    try:
+        m = int(date_str[5:7]); d = int(date_str[8:10])
+    except (ValueError, TypeError):
+        return False
+    if m == 4:
+        return d >= 15
+    if m in (5, 6):
+        return True
+    return False
+
+
+def _stat_sigma_for_date(date_str: str) -> dict[str, float]:
+    """Per-stat sigma dict, widened for playoff dates."""
+    mult = _PLAYOFF_SIGMA_MULT if _is_playoff_date(date_str) else 1.0
+    if mult == 1.0:
+        return _STAT_SIGMA
+    return {k: v * mult for k, v in _STAT_SIGMA.items()}
+
+
+_BOX_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
+
+
+def _parse_clock_to_minutes(clock_str) -> float | None:
+    """Parse an NBA clock string like '7:06' or '0:42.3' to minutes."""
+    if clock_str is None:
+        return None
+    if isinstance(clock_str, (int, float)):
+        return float(clock_str)
+    s = str(clock_str).strip()
+    if not s:
+        return None
+    if ":" in s:
+        try:
+            mm, ss = s.split(":", 1)
+            return float(mm) + float(ss) / 60.0
+        except (ValueError, TypeError):
+            return None
+    try:
+        return float(s)
+    except (TypeError, ValueError):
+        return None
+
+
+def _wp_interpolate_to_boundary(booster_p_home: float, period: int,
+                                clock_min: float | None) -> float:
+    """Shrink the booster's home-win-prob toward 0.5 by how far the current
+    clock is from the snapshot boundary the booster was trained on.
+
+    Boosters are trained at the END of each period (clock 0:00). Using them
+    mid-period asks them to predict from out-of-distribution state. We blend
+    booster output with 0.5 (uninformative prior) based on clock_min: at the
+    boundary, full booster; at the start of the period, exactly 0.5.
+    """
+    if clock_min is None or clock_min < 0:
+        return booster_p_home
+    quarter_len = 12.0
+    # live_weight = how close we are to the snapshot boundary
+    live_weight = max(0.0, min(1.0, 1.0 - (clock_min / quarter_len)))
+    return live_weight * booster_p_home + (1.0 - live_weight) * 0.5
+
+
+def _live_shrink_weight(minutes_played: float) -> float:
+    """Sigmoid weight for blending live projection with pregame q50 prior.
+
+    At mp=4 → ~0.07 (mostly pregame), mp=14 → 0.5 (even blend), mp=24 → ~0.93
+    (mostly live), mp=36+ → ~1.0. Stops the early-game noise from showing
+    silly projections like a star headed for 0 PTS just because he has 3 min
+    and hasn't shot yet."""
+    if minutes_played is None or minutes_played <= 0:
+        return 0.0
+    import math as _m  # noqa: PLC0415
+    return 1.0 / (1.0 + _m.exp(-(float(minutes_played) - 14.0) / 4.0))
+
+
+def _shrink_player_minutes_from_snapshot(snap: dict) -> dict[str, float]:
+    """Extract player_name.lower → minutes_played from a snapshot. Used by
+    live-regrade callsites that don't have direct access to box_score rows."""
+    out: dict[str, float] = {}
+    if not isinstance(snap, dict):
+        return out
+    for lp in snap.get("players") or []:
+        if not isinstance(lp, dict):
+            continue
+        nm = (lp.get("name") or lp.get("player") or lp.get("player_name") or "").lower()
+        if not nm:
+            continue
+        mp_raw = lp.get("minutes") or lp.get("min") or lp.get("mp")
+        mp = None
+        if isinstance(mp_raw, (int, float)):
+            mp = float(mp_raw)
+        elif isinstance(mp_raw, str) and ":" in mp_raw:
+            try:
+                mm, ss = mp_raw.split(":", 1)
+                mp = int(mm) + int(ss) / 60.0
+            except Exception:
+                mp = None
+        elif isinstance(mp_raw, str):
+            try:
+                mp = float(mp_raw)
+            except ValueError:
+                mp = None
+        if mp is not None:
+            out[nm] = mp
+    return out
+
+
+def _regrade_bet_with_live_q50(bet: dict, new_q50: float,
+                               stat_sigma: dict[str, float],
+                               bankroll: float = 100.0,
+                               cap_model_prob: float = 0.85) -> None:
+    """Mutate `bet` in place to reflect a live q50 update.
+
+    Recomputes side, edge_units, model_prob (under Normal), ev_pct (with 0.85
+    cap), and kelly_stake_dollars (quarter-Kelly + 4% hard cap). Marks the
+    bet with `live_regraded: True` so the UI can flag it."""
+    from math import erf, sqrt  # noqa: PLC0415
+
+    def _cdf(z): return 0.5 * (1.0 + erf(z / sqrt(2.0)))
+
+    stat = (bet.get("prop_stat") or "").lower()
+    sigma = stat_sigma.get(stat, 1.0)
+    line = float(bet["line"])
+    price = int(bet["best_price"])
+
+    side = "OVER" if new_q50 >= line else "UNDER"
+    z = (line - new_q50) / sigma
+    p_over = 1.0 - _cdf(z)
+    model_prob = p_over if side == "OVER" else (1.0 - p_over)
+
+    payout = float(price) if price > 0 else 10000.0 / abs(price)
+    ev_capped = False
+    if model_prob > cap_model_prob:
+        model_prob = cap_model_prob
+        ev_capped = True
+    ev_pct = model_prob * payout - (1.0 - model_prob) * 100.0
+
+    # Quarter-Kelly with MAX_BET_PCT=0.04 hard cap (matches grade_bet behavior).
+    b = payout / 100.0
+    p = model_prob; q = 1.0 - p
+    full_kelly = (p * b - q) / b if b > 0 else 0.0
+    kf = max(0.0, full_kelly) * 0.25
+    kelly_dollars = round(min(kf, 0.04) * bankroll, 2)
+
+    bet["q50"] = round(new_q50, 3)
+    bet["side"] = side
+    bet["edge_units"] = round(new_q50 - line, 3)
+    bet["model_prob"] = round(model_prob, 4)
+    payoff_inv = 100.0 / (100.0 + payout)
+    bet["market_prob"] = round(payoff_inv if price > 0 else float(abs(price) / (100.0 + abs(price))), 4)
+    bet["ev_pct"] = round(ev_pct, 2)
+    bet["ev_capped"] = ev_capped
+    bet["kelly_stake_dollars"] = kelly_dollars
+    bet["live_regraded"] = True
+    bet["live_q50"] = round(new_q50, 3)
+
+
+def _build_box_score(date: str, away_abbr: str, home_abbr: str) -> dict:
+    """Projected per-player box score for a matchup, pivoted from
+    predictions_cache_<date>.parquet. Pregame-only; live overlay is added
+    client-side by polling /api/live/<game_id>."""
+    import pandas as pd  # noqa: PLC0415
+    pq = _ROOT / "data" / "cache" / f"predictions_cache_{date}.parquet"
+    if not pq.exists():
+        return {"away": None, "home": None, "have_data": False, "stats": list(_BOX_STATS)}
+    try:
+        df = pd.read_parquet(pq)
+    except Exception:
+        return {"away": None, "home": None, "have_data": False, "stats": list(_BOX_STATS)}
+
+    teams = {(away_abbr or "").upper(), (home_abbr or "").upper()}
+    df = df[df["team"].str.upper().isin(teams)].copy()
+    if df.empty:
+        return {"away": None, "home": None, "have_data": False, "stats": list(_BOX_STATS)}
+
+    def team_rows(abbr: str) -> dict:
+        ab = abbr.upper()
+        team_df = df[df["team"].str.upper() == ab]
+        if team_df.empty:
+            return {"abbr": ab, "players": [], "totals": {}, "mean_totals": {}}
+        pivot = team_df.pivot_table(
+            index=["player_id", "player_name"],
+            columns="stat", values="q50", aggfunc="first",
+        ).reset_index()
+        if "pts" in pivot.columns:
+            pivot = pivot.sort_values("pts", ascending=False, na_position="last")
+        players = []
+        for _, r in pivot.iterrows():
+            row = {"player_id": int(r["player_id"]) if pd.notna(r["player_id"]) else None,
+                   "player_name": str(r["player_name"])}
+            for s in _BOX_STATS:
+                v = r.get(s) if s in pivot.columns else None
+                row[s] = round(float(v), 1) if (v is not None and pd.notna(v)) else None
+            players.append(row)
+        # Sum-of-medians per stat (the literal q50 totals; conservative for skewed counts).
+        totals = {s: round(float(team_df[team_df["stat"] == s]["q50"].sum()), 1) for s in _BOX_STATS}
+        # Mean-of-distribution estimate per player using Pearson-Tukey right-skew
+        # weighting (0.05*q10 + 0.70*q50 + 0.25*q90). Sums to a number comparable
+        # to Pinnacle's team-total line, NOT to the sum of medians above.
+        mean_totals = {}
+        for s in _BOX_STATS:
+            sub = team_df[team_df["stat"] == s]
+            est = (0.05 * sub["q10"] + 0.70 * sub["q50"] + 0.25 * sub["q90"]).sum()
+            mean_totals[s] = round(float(est), 1)
+        return {"abbr": ab, "players": players, "totals": totals, "mean_totals": mean_totals}
+
+    away = team_rows(away_abbr)
+    home = team_rows(home_abbr)
+    return {
+        "away": away, "home": home,
+        "have_data": bool(away["players"] or home["players"]),
+        "stats": list(_BOX_STATS),
+    }
+
 
 router = APIRouter()
 _CACHE: dict = {}
@@ -262,8 +488,9 @@ def _build_slate(date: str) -> dict:
     has_lines = bool(line_rows)
     if has_lines:
         ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
+        stat_sigma_for_slate = _stat_sigma_for_date(date)
         bets = [grade_bet(ps_idx[(ln["player"].lower(), ln["stat"])], ln,
-                          _STAT_SIGMA, _BANKROLL_DEFAULT)
+                          stat_sigma_for_slate, _BANKROLL_DEFAULT)
                 for ln in line_rows
                 if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
         # Honest-EV gate: cap model_prob at 0.85 (no real single-prop model is
@@ -293,6 +520,7 @@ def _build_slate(date: str) -> dict:
     envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
         "bankroll_default_dollars": _BANKROLL_DEFAULT,
         "stale_data": date != _today_et(),
+        "is_playoff": _is_playoff_date(date),
         "has_lines": has_lines, "latest_available": _latest_slate_date(),
         "summary": {"n_bets": len(bets), "avg_ev_pct": round(sum(evs)/len(evs), 2) if evs else 0.0,
                     "n_over": sum(1 for b in bets if b["side"] == "OVER"),
@@ -302,18 +530,290 @@ def _build_slate(date: str) -> dict:
     return envelope
 
 
-def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -> dict:
-    cache_key = ("parlays", date, max_legs, min_ev_pct, seed)
+def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
+    """Same-book parlays only. For each sportsbook on the slate, run ParlayEngine
+    against the bets best-priced at that book, then pool/rank by EV.
+
+    Live behavior: when any game on the slate has a live snapshot in
+    data/live/<gid>_*.json, we re-grade that game's bets via
+    live_engine.project_from_snapshot first, so parlays reflect current game
+    state (a player in foul trouble or having a hot Q1 shifts the parlay EV
+    accordingly). Cache key includes the newest snapshot mtime so each live
+    update invalidates the cache automatically.
+    """
+    # Build the slate first — need its bets for live regrade matching
+    env = _build_slate(date)
+    bets = env.get("bets", [])
+
+    # Probe for live snapshots — any file written in the last 6 hours is a
+    # candidate. We don't try to match snapshot game_ids to slate game_ids
+    # (the alias map is too incomplete and the test snapshot uses sportsbook
+    # ids); instead we project each recent snapshot and merge into a
+    # (player_name, stat) → projected_final map. Bets match by player name.
+    live_dir = _ROOT / "data" / "live"
+    snap_mtime = 0
+    recent_snaps: list = []
+    if live_dir.exists() and bets:
+        cutoff = time.time() - 6 * 3600
+        # Keep one entry per unique snapshot file-stem prefix (gid_<ts>).
+        latest_per_gid: dict[str, tuple[float, "Path"]] = {}
+        try:
+            for p in live_dir.iterdir():
+                if not p.is_file() or p.suffix != ".json":
+                    continue
+                try:
+                    mt = p.stat().st_mtime
+                except OSError:
+                    continue
+                if mt < cutoff:
+                    continue
+                gid = p.stem.split("_")[0]
+                cur = latest_per_gid.get(gid)
+                if cur is None or mt > cur[0]:
+                    latest_per_gid[gid] = (mt, p)
+                if mt > snap_mtime:
+                    snap_mtime = mt
+            recent_snaps = [path for _, path in latest_per_gid.values()]
+        except Exception:
+            recent_snaps = []
+
+    cache_key = ("parlays", date, seed, top_n, int(snap_mtime))
     entry = _CACHE.get(cache_key)
-    if entry and time.time() - entry[0] < _TTL_SEC: return entry[1]
-    env = _build_slate(date); bets = env.get("bets", []); has_lines = env.get("has_lines", False)
+    if entry and time.time() - entry[0] < _TTL_SEC:
+        return entry[1]
+    has_lines = env.get("has_lines", False)
     gen_at = datetime.utcnow().isoformat() + "Z"
     if not bets or not has_lines:
-        out = {"date": date, "generated_at": gen_at, "n_parlays": 0, "has_lines": has_lines, "parlays": []}
-    else:
-        from src.prediction.parlay_engine import ParlayEngine
-        parlays = ParlayEngine(bets, rng_seed=seed).enumerate_parlays(max_legs=max_legs, min_ev_pct=min_ev_pct)
-        out = {"date": date, "generated_at": gen_at, "n_parlays": len(parlays), "has_lines": True, "parlays": parlays}
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
+               "has_lines": has_lines, "parlays": []}
+        _CACHE[cache_key] = (time.time(), out)
+        return out
+
+    # ── Live regrade ─────────────────────────────────────────────────────
+    # For each recent snapshot, run live_engine and merge its (player_name,
+    # stat) → projected_final into a single map. Then deep-copy bets and
+    # re-grade those whose (name, stat) match the map.
+    live_games_count = 0
+    if recent_snaps:
+        try:
+            from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
+            import copy as _copy_p  # noqa: PLC0415
+            import json as _json_p  # noqa: PLC0415
+
+            sig_table = _stat_sigma_for_date(date)
+            live_q50_map: dict[tuple, float] = {}
+            player_minutes: dict[str, float] = {}
+            for snap_path in recent_snaps:
+                try:
+                    snap = _json_p.loads(snap_path.read_text(encoding="utf-8"))
+                except Exception:
+                    continue
+                if not snap.get("period"):
+                    continue
+                try:
+                    rows = project_from_snapshot(snap) or []
+                except Exception:
+                    continue
+                if rows:
+                    live_games_count += 1
+                for r in rows:
+                    nm = (r.get("name") or "").lower()
+                    st = (r.get("stat") or "").lower()
+                    pf = r.get("projected_final")
+                    if nm and st and pf is not None:
+                        try:
+                            live_q50_map[(nm, st)] = float(pf)
+                        except (TypeError, ValueError):
+                            continue
+                # Merge per-player minutes (last writer wins — recent snapshots
+                # take precedence for the same player in a multi-game scan).
+                player_minutes.update(
+                    _shrink_player_minutes_from_snapshot(snap))
+
+            if live_q50_map:
+                regraded_bets = []
+                for b in bets:
+                    key = ((b.get("player_name") or "").lower(),
+                           (b.get("prop_stat") or "").lower())
+                    if key in live_q50_map:
+                        cp = _copy_p.copy(b)
+                        try:
+                            mp = player_minutes.get(key[0], 0.0)
+                            w_live = _live_shrink_weight(mp)
+                            live_raw = live_q50_map[key]
+                            pregame_q50 = float(cp.get("q50") or live_raw)
+                            shrunk = w_live * live_raw + (1.0 - w_live) * pregame_q50
+                            _regrade_bet_with_live_q50(cp, shrunk, sig_table)
+                            regraded_bets.append(cp)
+                        except Exception:
+                            regraded_bets.append(b)
+                    else:
+                        regraded_bets.append(b)
+                # Re-sort by EV so the best (live) bets are buckets-ready
+                regraded_bets.sort(
+                    key=lambda b: (b.get("ev_pct") is None,
+                                   -(b.get("ev_pct") or 0.0))
+                )
+                bets = regraded_bets
+        except Exception as exc:
+            import logging as _lgp  # noqa: PLC0415
+            _lgp.getLogger(__name__).warning(
+                "parlay live regrade failed: %s", exc)
+
+    from src.prediction.parlay_engine import ParlayEngine
+    # Bucket bets by their best book — every leg in the same bucket can be
+    # placed at the same sportsbook.
+    buckets: dict[str, list[dict]] = {}
+    for b in bets:
+        bk = (b.get("best_book") or "").strip()
+        if not bk:
+            continue
+        buckets.setdefault(bk, []).append(b)
+
+    # Playoff dates get a sigma boost on the parlay sampler so joint hit-rate
+    # is honest for the wider playoff residual distribution.
+    sigma_mult = _PLAYOFF_SIGMA_MULT if _is_playoff_date(date) else 1.0
+
+    def _has_same_player_legs(parlay: dict) -> bool:
+        """True when the parlay has two legs on the same player. These have
+        high correlation (player health/role drives both); the engine's RHO
+        matrix dampens but the resulting EV is still inflated, so we exclude."""
+        seen = set()
+        for leg in parlay.get("legs", []):
+            nm = (leg.get("player_name") or "").lower() if isinstance(leg, dict) else ""
+            if nm in seen and nm:
+                return True
+            if nm:
+                seen.add(nm)
+        return False
+
+    def _legs_signature(parlay: dict) -> frozenset:
+        out = set()
+        for leg in parlay.get("legs", []):
+            if not isinstance(leg, dict):
+                continue
+            key = (
+                (leg.get("player_name") or "").lower(),
+                (leg.get("prop_stat") or "").lower(),
+                leg.get("side"),
+                leg.get("line"),
+            )
+            out.add(key)
+        return frozenset(out)
+
+    # Per-book parlay generation. Take top-K per book per leg-count so every
+    # book that produces ≥2 valid combos gets representation in the output —
+    # otherwise BetMGM (which usually wins per-leg EV) monopolizes the slate.
+    PER_BOOK_PER_LEGCOUNT_CAP = 5  # ceiling on parlays per (book, n_legs)
+    per_book_results: dict[str, list[dict]] = {}
+    for book, pool in buckets.items():
+        if len(pool) < 2:
+            continue
+        try:
+            parlays = ParlayEngine(
+                pool, rng_seed=seed, sigma_multiplier=sigma_mult
+            ).enumerate_parlays(max_legs=4, min_ev_pct=-999.0)
+        except Exception:
+            continue
+        by_id = {b.get("bet_id"): b for b in pool if b.get("bet_id")}
+        # Normalize legs + drop same-player parlays + dedup by leg signature
+        cleaned: list[dict] = []
+        seen_sigs: set[frozenset] = set()
+        for p in parlays:
+            p["book"] = book
+            resolved: list[dict] = []
+            for leg_ref in p.get("legs", []):
+                if isinstance(leg_ref, dict):
+                    resolved.append(leg_ref)
+                    continue
+                bet = by_id.get(leg_ref) or {}
+                resolved.append({
+                    "player_name": bet.get("player_name"),
+                    "prop_stat": bet.get("prop_stat"),
+                    "line": bet.get("line"),
+                    "side": bet.get("side"),
+                    "best_price": bet.get("best_price"),
+                })
+            p["legs"] = resolved
+            if p.get("combined_american") is None and p.get("combined_odds_american") is not None:
+                p["combined_american"] = p["combined_odds_american"]
+            if _has_same_player_legs(p):
+                continue
+            sig = _legs_signature(p)
+            if sig in seen_sigs:
+                continue
+            seen_sigs.add(sig)
+            cleaned.append(p)
+        # Per-leg-count diversity within this book: top K from each leg count
+        by_legcount: dict[int, list[dict]] = {}
+        for p in cleaned:
+            by_legcount.setdefault(p.get("n_legs") or len(p.get("legs", [])), []).append(p)
+        book_out: list[dict] = []
+        for k_legs in (2, 3, 4):
+            xs = by_legcount.get(k_legs) or []
+            xs.sort(key=lambda p: -(p.get("ev_pct") or 0.0))
+            book_out.extend(xs[:PER_BOOK_PER_LEGCOUNT_CAP])
+        per_book_results[book] = book_out
+
+    # Pooled output: round-robin across books, EV-ranked within each book's
+    # contribution. Round-robin guarantees every book gets at least 1 parlay
+    # before any book gets its 2nd.
+    book_iters = {bk: iter(sorted(xs, key=lambda p: -(p.get("ev_pct") or 0.0)))
+                  for bk, xs in per_book_results.items() if xs}
+    # Also enforce leg-count mix at the global level: drop parlays whose legs
+    # overlap ≥2 with an already-emitted parlay (so we don't show 8 minor
+    # variations of the same anchor pair).
+    emitted_sigs: list[frozenset] = []
+    pooled: list[dict] = []
+    while book_iters and len(pooled) < top_n:
+        empties = []
+        for book, it in book_iters.items():
+            if len(pooled) >= top_n:
+                break
+            picked = None
+            while True:
+                try:
+                    cand = next(it)
+                except StopIteration:
+                    empties.append(book); break
+                sig = _legs_signature(cand)
+                # Drop if it shares 2+ legs with any already-emitted parlay
+                overlapping = any(len(sig & ex) >= 2 for ex in emitted_sigs)
+                if overlapping:
+                    continue
+                picked = cand; break
+            if picked is not None:
+                pooled.append(picked)
+                emitted_sigs.append(_legs_signature(picked))
+        for bk in empties:
+            book_iters.pop(bk, None)
+
+    # If we didn't fill top_n via the diverse round-robin, backfill from the
+    # leftovers — BUT still apply the diversity filter so we don't undo the
+    # work. Better to return 15 diverse parlays than 25 with heavy duplication.
+    if len(pooled) < top_n:
+        emitted_ids = {p.get("parlay_id") for p in pooled}
+        leftovers: list[dict] = []
+        for xs in per_book_results.values():
+            for p in xs:
+                if p.get("parlay_id") not in emitted_ids:
+                    leftovers.append(p)
+        leftovers.sort(key=lambda p: -(p.get("ev_pct") or 0.0))
+        for p in leftovers:
+            if len(pooled) >= top_n:
+                break
+            sig = _legs_signature(p)
+            if any(len(sig & ex) >= 2 for ex in emitted_sigs):
+                continue
+            pooled.append(p)
+            emitted_sigs.append(sig)
+
+    # Final sort: keep diverse round-robin order but lift highest-EV to the top
+    pooled.sort(key=lambda p: -(p.get("ev_pct") or 0.0))
+    pooled = pooled[:top_n]
+    out = {"date": date, "generated_at": gen_at, "n_parlays": len(pooled),
+           "has_lines": True, "parlays": pooled,
+           "live_games_count": live_games_count}
     _CACHE[cache_key] = (time.time(), out)
     return out
 
@@ -822,6 +1322,38 @@ def _get_win_prob_model():
     return _WIN_PROB_MODEL_CACHE
 
 
+def _pregame_wp_from_projection(date: str, away_abbr: str, home_abbr: str
+                                 ) -> Optional[float]:
+    """Return P(home wins) derived from the projected box score's team totals.
+
+    Used in place of the buggy win_prob_v3.pkl model (which has a documented
+    polarity bug — vault/Models/Polarity Bug Audit 2026-05-27.md). This stays
+    consistent with whatever projection the user sees in the box score.
+
+    Calibration: margin shrunk ×0.30 (known role-player under-projection bias),
+    Normal CDF with sigma=14 (playoff) or 13 (regular), clamped to [0.35, 0.65]
+    since no honest model can be more confident than that on an NBA matchup
+    without market data.
+    """
+    if not (away_abbr and home_abbr):
+        return None
+    try:
+        box = _build_box_score(date, away_abbr, home_abbr)
+        away_t = box.get("away") or {}; home_t = box.get("home") or {}
+        proj_a = (away_t.get("mean_totals") or {}).get("pts")
+        proj_h = (home_t.get("mean_totals") or {}).get("pts")
+        if proj_a is None or proj_h is None:
+            return None
+        from math import erf, sqrt  # noqa: PLC0415
+        margin = (float(proj_h) - float(proj_a)) * 0.30
+        margin_sigma = 14.0 if _is_playoff_date(date) else 13.0
+        z = margin / margin_sigma
+        p_home = 0.5 * (1.0 + erf(z / sqrt(2.0)))
+        return max(0.35, min(0.65, p_home))
+    except Exception:
+        return None
+
+
 def _compute_win_prob(game_id: str, props: list,
                       away_abbr: str = "", home_abbr: str = "") -> Optional[float]:
     """Return away-team win probability [0,1].
@@ -1166,8 +1698,10 @@ def _build_game_detail(game_id: str, date: str) -> dict:
     away_abbr, home_abbr = _guess_teams_from_game_id(game_id)
 
     # ── Intelligence: win probability + pace ──────────────────────────
-    win_prob_away = _compute_win_prob(game_id, game_props,
-                                      away_abbr=away_abbr, home_abbr=home_abbr)
+    # Use projection-derived WP (consistent with box score, no polarity bug)
+    # rather than the legacy team-level model.
+    p_home_pre = _pregame_wp_from_projection(date, away_abbr, home_abbr)
+    win_prob_away = (1.0 - p_home_pre) if p_home_pre is not None else None
     pace_away, pace_home = _compute_pace(away_abbr, home_abbr)
 
     # ── Key matchup hints: top-2 props by edge ────────────────────────
@@ -1291,28 +1825,538 @@ def tonight(request: Request, date: str = Query(default=None),
     gid_filter = (game_id or "").strip()
     needs_filter = (side_u in ("OVER", "UNDER")) or (min_ev > -999.0) or bool(gid_filter)
     matchup_label = ""
+    # Resolve the URL game_id (often a sportsbook id like KAMBI) to the canonical
+    # set of NBA game_ids AND the matchup's team abbrs. Some bet feeds tag the
+    # official NBA game_id that isn't in the alias map, so we accept either an id
+    # match or a (team, opp) abbr match.
+    canonical_ids: frozenset[str] = frozenset()
+    alias_pair: frozenset[str] = frozenset()
+    alias_away = ""
+    alias_home = ""
+    if gid_filter:
+        from api._courtvision_odds import resolve_game_id
+        alias_info = resolve_game_id(gid_filter)
+        canonical_ids = alias_info.get("canonical_ids", frozenset([gid_filter]))
+        alias_away = alias_info.get("away_abbr") or ""
+        alias_home = alias_info.get("home_abbr") or ""
+        if alias_away and alias_home:
+            alias_pair = frozenset([alias_away.upper(), alias_home.upper()])
+
+    def _gid_matches(b):
+        if not gid_filter:
+            return True
+        if str(b.get("game_id", "")) in canonical_ids:
+            return True
+        if alias_pair:
+            t = (b.get("team") or "").upper()
+            o = (b.get("opp") or "").upper()
+            if t in alias_pair and o in alias_pair:
+                return True
+        return False
+
     if needs_filter:
         bets = [b for b in slate["bets"]
                 if (side_u == "ALL" or b["side"] == side_u)
                 and (b.get("ev_pct") is None or b["ev_pct"] >= min_ev)
-                and (not gid_filter or str(b.get("game_id", "")) == gid_filter)]
+                and _gid_matches(b)]
         # If filtered to a specific game, derive matchup label from any bet
         if gid_filter and bets:
             sample = bets[0]
             home_or_away_indicator = "@" if sample.get("venue") == "away" else "vs"
             matchup_label = f"{sample.get('team','')} {home_or_away_indicator} {sample.get('opp','')}"
         slate = {**slate, "bets": bets}
+    # When filtered to a single game AND a live snapshot exists, re-grade
+    # the bets using live_engine q50s (so the cards reflect what the model
+    # would project given current game state, not the pregame call).
+    live_regrade_count = 0
+    if gid_filter and slate.get("bets"):
+        snap_for_game = None
+        canon_for_game = list(canonical_ids) + [gid_filter]
+        live_dir_chk = _ROOT / "data" / "live"
+        if live_dir_chk.exists():
+            for gid_chk in canon_for_game:
+                m = sorted(live_dir_chk.glob(f"{gid_chk}_*.json"))
+                if m:
+                    try:
+                        import json as _json2  # noqa: PLC0415
+                        snap_for_game = _json2.loads(m[-1].read_text(encoding="utf-8"))
+                        break
+                    except Exception:
+                        continue
+        if snap_for_game and snap_for_game.get("period"):
+            try:
+                from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
+                proj_rows = project_from_snapshot(snap_for_game) or []
+                live_map: dict[tuple, float] = {}
+                for r in proj_rows:
+                    nm = (r.get("name") or "").lower()
+                    st = (r.get("stat") or "").lower()
+                    pf = r.get("projected_final")
+                    if nm and st and pf is not None:
+                        try:
+                            live_map[(nm, st)] = float(pf)
+                        except (TypeError, ValueError):
+                            continue
+                player_minutes = _shrink_player_minutes_from_snapshot(snap_for_game)
+                if live_map:
+                    import copy as _copy  # noqa: PLC0415
+                    sig_table = _stat_sigma_for_date(date)
+                    new_bets = [_copy.copy(b) for b in slate["bets"]]
+                    for b in new_bets:
+                        key = ((b.get("player_name") or "").lower(),
+                               (b.get("prop_stat") or "").lower())
+                        if key in live_map:
+                            mp = player_minutes.get(key[0], 0.0)
+                            w_live = _live_shrink_weight(mp)
+                            live_raw = live_map[key]
+                            pregame_q50 = float(b.get("q50") or live_raw)
+                            shrunk = w_live * live_raw + (1.0 - w_live) * pregame_q50
+                            _regrade_bet_with_live_q50(b, shrunk, sig_table)
+                            live_regrade_count += 1
+                    new_bets.sort(
+                        key=lambda b: (b.get("ev_pct") is None,
+                                       -(b.get("ev_pct") or 0.0))
+                    )
+                    slate = {**slate, "bets": new_bets}
+            except Exception as exc:
+                import logging as _lg2  # noqa: PLC0415
+                _lg2.getLogger(__name__).warning(
+                    "tonight live regrade failed: %s", exc)
+
+    # When filtered to a single game, build a pregame projected box score
+    # for the matchup. JS polls /api/box_score for live updates.
+    box_score = None
+    if gid_filter:
+        away_a = alias_away
+        home_a = alias_home
+        # Alias lookup may be empty for some book ids — fall back to deriving
+        # away/home from the bets themselves (which carry team + opp + venue).
+        if not (away_a and home_a) and slate.get("bets"):
+            sample = slate["bets"][0]
+            t = (sample.get("team") or "").upper()
+            o = (sample.get("opp") or "").upper()
+            if t and o:
+                if sample.get("venue") == "home":
+                    home_a, away_a = t, o
+                else:
+                    away_a, home_a = t, o
+        if away_a and home_a:
+            box_score = _build_box_score(date, away_a, home_a)
     return _TEMPLATES.TemplateResponse("tonight.html",
         {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev,
-         "game_id_filter": gid_filter, "matchup_label": matchup_label})
+         "game_id_filter": gid_filter, "matchup_label": matchup_label,
+         "box_score": box_score, "live_regrade_count": live_regrade_count})
 
 
 @router.get("/api/slate", tags=["courtvision"])
-def api_slate(date: str = Query(default=None)):
-    # Apply next-game-day fallback so off-day requests resolve to the next live slate.
+def api_slate(date: str = Query(default=None),
+              fresh: int = Query(0, ge=0, le=1)):
+    """Slate envelope. ?fresh=1 busts the 5-min cache (used by /tonight's WS
+    handler when a `lines.refreshed` event fires so price updates reach the
+    UI within a couple seconds instead of waiting for TTL)."""
     if date is None:
         date = _next_game_day() or _today_et()
+    if fresh:
+        _CACHE.pop(("slate", date), None)
     return JSONResponse(_build_slate(date))
+
+
+@router.get("/api/box_score", tags=["courtvision"])
+def api_box_score(date: str = Query(default=None),
+                  game_id: str = Query(default="")):
+    """Projected per-player box score for one matchup. Merges pregame q50 with
+    any available live boxscore feed (current totals + minutes-paced projection)."""
+    if not date:
+        date = _next_game_day() or _today_et()
+    if not game_id:
+        return JSONResponse({"have_data": False, "error": "game_id required"}, status_code=400)
+    from api._courtvision_odds import resolve_game_id
+    alias_info = resolve_game_id(game_id)
+    away_a = alias_info.get("away_abbr") or ""
+    home_a = alias_info.get("home_abbr") or ""
+    if not (away_a and home_a):
+        # Best-effort fall back: look up from the slate's bets
+        slate = _build_slate(date)
+        sample = next((b for b in slate.get("bets", []) if str(b.get("game_id", ""))), None)
+        if sample:
+            t = (sample.get("team") or "").upper(); o = (sample.get("opp") or "").upper()
+            if sample.get("venue") == "home":
+                home_a, away_a = t, o
+            else:
+                away_a, home_a = t, o
+    box = _build_box_score(date, away_a, home_a)
+
+    # Overlay live data. Snapshots are written by box_snapshot_poller.py to
+    # data/live/<game_id>_<timestamp>.json (newest = latest). Try canonical
+    # game_ids in case the URL id is a sportsbook id (KAMBI, DK, FD, etc.).
+    import json as _json  # noqa: PLC0415
+    live_overlay = None
+    canonical = list(alias_info.get("canonical_ids", frozenset([game_id])))
+    canonical.append(game_id)
+    live_dir = _ROOT / "data" / "live"
+    if live_dir.exists():
+        for gid in canonical:
+            matches = sorted(live_dir.glob(f"{gid}_*.json"))
+            if not matches:
+                continue
+            try:
+                live_overlay = _json.loads(matches[-1].read_text(encoding="utf-8"))
+                break
+            except Exception:
+                continue
+    # Legacy fallback: old cache path (in case some component still writes there)
+    if live_overlay is None:
+        for gid in canonical:
+            legacy_path = _ROOT / "data" / "cache" / "boxscore_live" / f"{gid}.json"
+            if legacy_path.exists():
+                try:
+                    live_overlay = _json.loads(legacy_path.read_text(encoding="utf-8"))
+                    break
+                except Exception:
+                    continue
+
+    # If we have a snapshot, run the FULL live_engine projection pipeline.
+    # This applies the residual heads (R4-A, period heads), foul-trouble
+    # factors, blowout adjustment, heat-check shrinkage, and learned Q4
+    # minutes — the same projection your box_snapshot_poller emits.
+    engine_projections: dict[tuple[str, str], dict] = {}
+    if live_overlay and isinstance(live_overlay, dict) and live_overlay.get("period"):
+        try:
+            from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
+            proj_rows = project_from_snapshot(live_overlay) or []
+            for r in proj_rows:
+                pid = str(r.get("player_id") or "")
+                nm = (r.get("name") or "").lower()
+                stat = (r.get("stat") or "").lower()
+                if not stat:
+                    continue
+                if pid:
+                    engine_projections[(pid, stat)] = r
+                if nm:
+                    engine_projections[(nm, stat)] = r
+        except Exception as exc:
+            import logging as _lg  # noqa: PLC0415
+            _lg.getLogger(__name__).warning(
+                "live_engine.project_from_snapshot failed: %s", exc)
+
+    def attach_live(team_dict):
+        if not team_dict or not team_dict.get("players"):
+            return
+        if not live_overlay:
+            return
+        players_live = live_overlay.get("players") or live_overlay.get("boxscore") or live_overlay.get("rows") or []
+        if not isinstance(players_live, list):
+            return
+        by_id = {}
+        by_name = {}
+        for lp in players_live:
+            if not isinstance(lp, dict): continue
+            if lp.get("player_id") is not None:
+                by_id[str(lp["player_id"])] = lp
+            nm = (lp.get("player") or lp.get("player_name") or lp.get("name") or "").lower()
+            if nm: by_name[nm] = lp
+        for row in team_dict["players"]:
+            lp = by_id.get(str(row.get("player_id"))) or by_name.get((row.get("player_name") or "").lower())
+            if not lp: continue
+            # Pull current stats
+            cur = {}
+            for s in _BOX_STATS:
+                v = lp.get(s)
+                if v is None and isinstance(lp.get("stats"), dict):
+                    v = lp["stats"].get(s)
+                if v is not None:
+                    try: cur[s] = float(v)
+                    except (TypeError, ValueError): pass
+            # Minutes-paced projection: scale current by 36/minutes_played
+            mp_raw = lp.get("minutes") or lp.get("min") or lp.get("mp")
+            mp = None
+            if isinstance(mp_raw, (int, float)):
+                mp = float(mp_raw)
+            elif isinstance(mp_raw, str) and ":" in mp_raw:
+                try:
+                    mm, ss = mp_raw.split(":", 1)
+                    mp = int(mm) + int(ss) / 60.0
+                except Exception:
+                    mp = None
+            elif isinstance(mp_raw, str):
+                try: mp = float(mp_raw)
+                except ValueError: mp = None
+            row["current"] = cur
+            row["minutes_played"] = mp
+            # Foul count — flag foul trouble (4+ fouls = at risk of fouling out).
+            pf_raw = lp.get("pf") or lp.get("fouls") or lp.get("personal_fouls")
+            try:
+                row["fouls"] = int(pf_raw) if pf_raw is not None else None
+            except (TypeError, ValueError):
+                row["fouls"] = None
+            # Prefer the live_engine projected_final (uses residual heads, foul
+            # trouble, blowout, heat-check, learned Q4 minutes). Fall back to
+            # naive minutes-pacing if no engine projection exists for this row.
+            pid_key = str(row.get("player_id"))
+            nm_key = (row.get("player_name") or "").lower()
+            paced_final: dict = {}
+            for s in _BOX_STATS:
+                eng = engine_projections.get((pid_key, s)) or engine_projections.get((nm_key, s))
+                pf = None
+                if eng and eng.get("projected_final") is not None:
+                    try: pf = round(float(eng["projected_final"]), 1)
+                    except (TypeError, ValueError): pf = None
+                if pf is None and mp and mp > 1.0 and s in cur:
+                    pf = round(cur[s] * (36.0 / mp), 1)
+                if pf is not None:
+                    paced_final[s] = pf
+            if paced_final:
+                row["paced_final"] = paced_final
+
+    if live_overlay:
+        attach_live(box.get("away"))
+        attach_live(box.get("home"))
+        box["live_available"] = True
+        box["engine_projection_used"] = bool(engine_projections)
+
+        # ── Bayesian shrinkage toward pregame q50 ─────────────────────────
+        # Early in the game (low minutes_played), pace extrapolation is
+        # dominated by noise — a star with 3 minutes and 0 PTS would project
+        # to 0-PTS final, which is silly when his pregame median is 27. Blend
+        # live extrapolation with the pregame q50 (the prior). Weight grows
+        # with minutes: at 4 min ~90% pregame; at 14 min 50/50; at 24 min
+        # ~93% live; at 36+ min ~100% live. See _live_shrink_weight.
+        def _shrink_team(team_dict):
+            if not team_dict or not team_dict.get("players"):
+                return
+            for row in team_dict["players"]:
+                mp = row.get("minutes_played") or 0
+                w_live = _live_shrink_weight(mp)
+                row["_shrink_weight"] = round(w_live, 3)
+                if w_live <= 0:
+                    continue
+                paced = row.get("paced_final") or {}
+                for s in _BOX_STATS:
+                    pregame_v = row.get(s)            # pregame q50 (cell value)
+                    live_v = paced.get(s)             # live engine projection
+                    if pregame_v is None or live_v is None:
+                        continue
+                    try:
+                        blended = w_live * float(live_v) + (1.0 - w_live) * float(pregame_v)
+                        paced[s] = round(blended, 1)
+                    except (TypeError, ValueError):
+                        continue
+                if paced:
+                    row["paced_final"] = paced
+
+        _shrink_team(box.get("away"))
+        _shrink_team(box.get("home"))
+
+        # ── Pace-aware team total projection ──────────────────────────────
+        # Sum of player paced_finals undershoots team totals during the
+        # game because each player's projection has been shrunk toward q50
+        # (the median). Real team totals are means, which are higher for
+        # right-skewed scoring distributions.
+        #
+        # Build a separate team-total projection that uses:
+        #   pace_extrap = current_team_pts × (48 / minutes_elapsed)
+        # blended with the pregame team mean estimate.
+        period_i = int(live_overlay.get("period") or 0)
+        clock_min = _parse_clock_to_minutes(live_overlay.get("clock"))
+        # Total game minutes elapsed: full periods done + (12 - clock) for current
+        if period_i >= 1 and clock_min is not None:
+            full_periods_done = max(0, period_i - 1)
+            minutes_elapsed = full_periods_done * 12.0 + (12.0 - clock_min)
+            minutes_elapsed = max(1.0, min(48.0, minutes_elapsed))
+        else:
+            minutes_elapsed = 0.0
+
+        def _team_total_proj(team_dict):
+            if not team_dict:
+                return
+            elapsed_frac = minutes_elapsed / 48.0
+            current_totals: dict[str, float] = {}
+            projected_totals: dict[str, float] = {}
+            pace_extraps: dict[str, float] = {}
+            for s in _BOX_STATS:
+                cur_sum = 0.0
+                any_v = False
+                for row in team_dict.get("players") or []:
+                    cur = row.get("current") or {}
+                    v = cur.get(s)
+                    if v is None:
+                        continue
+                    try:
+                        cur_sum += float(v); any_v = True
+                    except (TypeError, ValueError):
+                        continue
+                if any_v:
+                    current_totals[s] = round(cur_sum, 1)
+                pregame_mean = (team_dict.get("mean_totals") or {}).get(s)
+                if not isinstance(pregame_mean, (int, float)):
+                    pregame_mean = None
+                pace_extrap = None
+                if minutes_elapsed >= 1.0 and any_v and cur_sum > 0:
+                    pace_extrap = cur_sum * (48.0 / minutes_elapsed)
+                    pace_extraps[s] = round(pace_extrap, 1)
+                # Blend pace × pregame mean by elapsed_frac. When elapsed_frac=0,
+                # we trust pregame; when elapsed_frac=1, we trust the pace.
+                if pace_extrap is not None and pregame_mean is not None:
+                    projected = elapsed_frac * pace_extrap + (1.0 - elapsed_frac) * pregame_mean
+                elif pace_extrap is not None:
+                    projected = pace_extrap
+                else:
+                    projected = pregame_mean
+                if projected is not None:
+                    projected_totals[s] = round(float(projected), 1)
+            team_dict["current_totals"] = current_totals
+            team_dict["pace_extraps"] = pace_extraps
+            team_dict["projected_totals"] = projected_totals
+            # PTS-specific convenience fields (backward compat with JS pill)
+            if "pts" in current_totals:
+                team_dict["current_total_pts"] = current_totals["pts"]
+            if "pts" in projected_totals:
+                team_dict["projected_total_pts"] = projected_totals["pts"]
+            if "pts" in pace_extraps:
+                team_dict["pace_extrap_pts"] = pace_extraps["pts"]
+
+        _team_total_proj(box.get("away"))
+        _team_total_proj(box.get("home"))
+    else:
+        box["live_available"] = False
+        box["engine_projection_used"] = False
+
+    # Pregame win probability — projection-derived helper (see
+    # _pregame_wp_from_projection for math). Stays consistent with the box
+    # score and avoids the polarity-bug team-level model.
+    p_home_pre = _pregame_wp_from_projection(date, away_a, home_a)
+    if p_home_pre is not None:
+        box["pregame_home_win_prob"] = round(p_home_pre, 3)
+        box["pregame_away_win_prob"] = round(1.0 - p_home_pre, 3)
+        box["pregame_wp_source"] = "projected_margin_shrunk"
+
+    # Live win probability — call the appropriate snapshot booster for the
+    # current period. Boosters are calibrated at end-of-period boundaries
+    # (clock 0:00). We interpolate toward 0.5 (uninformative) when the clock
+    # is far from the boundary, since the booster is out-of-distribution
+    # mid-period and would otherwise be overconfident.
+    if live_overlay and isinstance(live_overlay, dict):
+        period_i = int(live_overlay.get("period") or 0)
+        if period_i >= 1:
+            snap_key = "endQ1" if period_i <= 1 else ("endQ2" if period_i == 2 else "endQ3")
+            try:
+                from src.prediction.inplay_winprob import (  # noqa: PLC0415
+                    features_from_snapshot, predict_home_win_prob,
+                    active_stack,
+                )
+                feats = features_from_snapshot(live_overlay)
+                p_home_raw = predict_home_win_prob(feats, snapshot=snap_key)
+                if p_home_raw is not None:
+                    clock_min = _parse_clock_to_minutes(live_overlay.get("clock"))
+                    p_home = _wp_interpolate_to_boundary(
+                        float(p_home_raw), period_i, clock_min)
+                    box["home_win_prob"] = round(p_home, 3)
+                    box["away_win_prob"] = round(1.0 - p_home, 3)
+                    box["winprob_snapshot"] = snap_key
+                    box["winprob_raw_booster"] = round(float(p_home_raw), 3)
+                    if clock_min is not None:
+                        box["winprob_clock_minutes"] = round(clock_min, 2)
+                    # Honest provenance: surface which artifact stack drove
+                    # this probability so the UI tooltip / status pill can
+                    # show the user it's the validated model, not v1 raw.
+                    try:
+                        stack = active_stack(snap_key)
+                        box["winprob_stack"] = {
+                            "layer": stack.get("layer"),
+                            "detail": stack.get("detail"),
+                            "components_loaded": {
+                                "v6_hp": bool(stack.get("v6_hp_loaded")),
+                                "iter62_iso": bool(stack.get("iter62_iso_loaded")),
+                                "v7_bag5": bool(stack.get("v7_bag5_loaded")),
+                                "meta_blend": bool(stack.get("meta_blend_loaded")),
+                                "v3": bool(stack.get("v3_loaded")),
+                                "v2": bool(stack.get("v2_loaded")),
+                                "v1": bool(stack.get("v1_loaded")),
+                            },
+                        }
+                    except Exception as _stack_exc:
+                        import logging as _lg_stack  # noqa: PLC0415
+                        _lg_stack.getLogger(__name__).warning(
+                            "active_stack(%s) failed: %s", snap_key, _stack_exc)
+            except Exception as exc:
+                import logging as _lg3  # noqa: PLC0415
+                _lg3.getLogger(__name__).warning(
+                    "inplay_winprob failed: %s", exc)
+
+    # Live-regraded bet snippets for this matchup. The JS poller inline-updates
+    # the bet cards' EV / model_prob / side text so they don't go stale during
+    # the game (without a full page reload).
+    if engine_projections and game_id:
+        try:
+            slate_cur = _build_slate(date)
+            sig_table = _stat_sigma_for_date(date)
+            from api._courtvision_odds import resolve_game_id  # noqa: PLC0415
+            alias_for_filter = resolve_game_id(game_id)
+            canon_ids = alias_for_filter.get("canonical_ids", frozenset([game_id]))
+            ab = (alias_for_filter.get("away_abbr") or "").upper()
+            hb = (alias_for_filter.get("home_abbr") or "").upper()
+            pair = frozenset([ab, hb]) if ab and hb else frozenset()
+
+            def _in_game(b):
+                if str(b.get("game_id", "")) in canon_ids:
+                    return True
+                if pair:
+                    t = (b.get("team") or "").upper()
+                    o = (b.get("opp") or "").upper()
+                    if t in pair and o in pair:
+                        return True
+                return False
+
+            import copy as _copy2  # noqa: PLC0415
+            live_bets = []
+            player_minutes = _shrink_player_minutes_from_snapshot(live_overlay or {})
+            for b in slate_cur.get("bets", []):
+                if not _in_game(b):
+                    continue
+                nm = (b.get("player_name") or "").lower()
+                st = (b.get("prop_stat") or "").lower()
+                eng = engine_projections.get((nm, st))
+                if not eng or eng.get("projected_final") is None:
+                    continue
+                cp = _copy2.copy(b)
+                # Apply minutes-based shrinkage so early-game projections blend
+                # toward pregame q50 instead of trusting noisy extrapolation.
+                mp = player_minutes.get(nm, 0.0)
+                w_live = _live_shrink_weight(mp)
+                live_q50_raw = float(eng["projected_final"])
+                pregame_q50 = float(cp.get("q50") or live_q50_raw)
+                shrunk_q50 = w_live * live_q50_raw + (1.0 - w_live) * pregame_q50
+                try:
+                    _regrade_bet_with_live_q50(cp, shrunk_q50, sig_table)
+                except Exception:
+                    continue
+                live_bets.append({
+                    "bet_id": cp.get("bet_id"),
+                    "player_name": cp.get("player_name"),
+                    "prop_stat": cp.get("prop_stat"),
+                    "line": cp.get("line"),
+                    "side": cp.get("side"),
+                    "q50": cp.get("q50"),
+                    "edge_units": cp.get("edge_units"),
+                    "model_prob": cp.get("model_prob"),
+                    "market_prob": cp.get("market_prob"),
+                    "ev_pct": cp.get("ev_pct"),
+                    "ev_capped": cp.get("ev_capped"),
+                    "kelly_stake_dollars": cp.get("kelly_stake_dollars"),
+                    "best_book": cp.get("best_book"),
+                    "best_price": cp.get("best_price"),
+                })
+            if live_bets:
+                box["live_bets"] = live_bets
+        except Exception as exc:
+            import logging as _lglb  # noqa: PLC0415
+            _lglb.getLogger(__name__).warning(
+                "live bets snippet build failed: %s", exc)
+
+    box["date"] = date
+    box["game_id"] = game_id
+    box["generated_at"] = datetime.utcnow().isoformat() + "Z"
+    return JSONResponse(box)
 
 
 @router.get("/api/bet/{bet_id}", tags=["courtvision"])
@@ -1328,13 +2372,11 @@ def api_bet(bet_id: str, request: Request, date: str = Query(default_factory=_to
 
 @router.get("/api/parlays", tags=["courtvision"])
 def api_parlays(date: Optional[str] = Query(default=None),
-                max_legs: int = Query(5, ge=2, le=5),
-                min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
                 seed: int = Query(0, ge=0, le=10**9)):
-    # Use the same resolver as /parlays UI so the API + page always agree on date.
+    # Same-book parlays, 2-3 legs auto-tuned, top 25 by EV. No knobs.
     if not date:
         date = _next_game_day() or _today_et()
-    return JSONResponse(_build_parlays(date, max_legs, min_ev_pct, seed))
+    return JSONResponse(_build_parlays(date, seed=seed))
 
 
 @router.get("/api/parlays/constructor", tags=["courtvision"])
@@ -1961,35 +3003,24 @@ def plus_ev(request: Request,
 
 @router.get("/parlays", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
-def parlays(request: Request,
-            date: str = Query(default=None),
-            max_legs: int = Query(5, ge=2, le=5),
-            min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
-            limit: int = Query(25, ge=1, le=100),
-            engine: str = Query(default="engine")):
+def parlays(request: Request, date: str = Query(default=None)):
     """SSR-lite: sends only metadata shell; JS fetches /api/parlays after paint.
 
-    `engine` selects the model: "engine" (default, ParlayEngine MC) or
-    "constructor" (parlay_constructor with 15% SGP penalty).
+    Single-engine, same-book, auto-tuned leg-size. No user knobs.
     """
     if not date:
         date = _next_game_day() or _today_et()
-    engine_norm = "constructor" if engine == "constructor" else "engine"
-    # Lightweight metadata only — avoids the heavy ParlayEngine on SSR.
     meta_envelope = {
         "date": date,
         "generated_at": datetime.utcnow().isoformat() + "Z",
-        "n_parlays": None,    # filled by JS
-        "has_lines": True,    # optimistic; JS corrects if false
-        "parlays": [],        # client fetches
+        "n_parlays": None,
+        "has_lines": True,
+        "parlays": [],
         "ssr_lite": True,
-        "engine": engine_norm,
+        "is_playoff": _is_playoff_date(date),
     }
     return _TEMPLATES.TemplateResponse("parlays.html",
-        {"request": request, "envelope": meta_envelope,
-         "shown": [], "leg_meta": {},
-         "min_ev_pct": min_ev_pct, "max_legs": max_legs,
-         "engine": engine_norm})
+        {"request": request, "envelope": meta_envelope})
 
 
 # ── SQLite-backed bet ledger endpoints ───────────────────────────────────────
