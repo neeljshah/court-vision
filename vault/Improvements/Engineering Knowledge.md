@@ -12,6 +12,33 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-38: CLV-driven per-stat reallocation (2026-05-28)
+
+**Changes:** PTS thr 0.7→1.0 | AST thr 1.0→0.7 | BLK Kelly 1.0x→0.5x
+**Method:** Outcome-preserved simulation on iter-35 ground truth with adjusted bet-count/stake models.
+
+**Per-stat results (iter-36 baseline vs iter-38, KB+ISO):**
+
+| Stat | Pre-38 ROI  | Iter-38 ROI | Delta    | n_bets | Note |
+|------|------------|------------|----------|--------|------|
+| AST  |  +24.04% |  +20.21% |  -3.83pp | 748 | [thr↓ 1.0→0.7]
+| BLK  |  +27.07% |  +26.88% |  -0.19pp | 631 | [Kelly 0.5x]
+| FG3M |  +26.43% |  +26.34% |  -0.09pp | 74 |
+| PTS  |  +12.20% |  +16.05% |  +3.85pp | 527 | [thr↑ 0.7→1.0]
+| REB  |  +16.73% |  +16.73% |  +0.00pp | 157 |
+| STL  |  +15.03% |  +14.88% |  -0.15pp | 634 |
+| **AGG** | **+21.23%** | **+20.02%** | **-1.21pp** | **2771** | |
+
+**Rationale:**
+- PTS: lowest per-bet CLV (+8.65pp); threshold raised to prune bottom ~50% of bets, improving edge density.
+- AST: highest confirmed edge (CLV z=4.47, CI lower=+8.98pp); lower threshold captures more profitable volume.
+- BLK: CLV statistically unconfirmed (z=1.77, CI lower=-0.52pp); 0.5x Kelly reduces variance without eliminating position.
+
+**Ship?** NO  |  **Decision:** REVERT — aggregate regresses OR multiple stat regressions
+**Sustainable production ROI (iter-38):** +20.02%  (was +21.23%)
+
+---
+
 ## Iter-36: Honest full-stack re-measurement on 2,688-bet expanded eval (2026-05-27)
 
 **Goal:** Measure complete shipped stack (Iter-22+25+28+33+34) on the expanded 2025-26 eval.
