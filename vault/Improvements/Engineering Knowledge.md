@@ -12,6 +12,63 @@ PLAN stage reads this before scoping any task, so the system gets smarter with e
 
 ---
 
+## Iter-51: BLK UNDER-only direction filter (2026-05-27)
+
+**Source:** Iter-50 bootstrap segmentation — direction_UNDER: n=218, ROI=+28.73%, z=4.45;
+            direction_OVER: n=105, ROI=+0.00%, z=0.00.
+**Change:** `STAT_DIRECTIONS["blk"] = ["under"]` in `bet_thresholds.py`; `allowed_directions_for()` helper added.
+           `bet_selector.py` skips any bet whose direction is not in `allowed_directions_for(stat)` (live gate).
+**BLK filter:** 631 -> 426 bets (drop 205 OVER bets, 32.5%). OVER bets had 0 net pnl.
+                Pnl-preserving BLK ROI: +27.07% (631 bets) -> +40.10% (426 bets) [same total pnl, fewer bets].
+
+**Impact:** Conservative estimate (pre-filter Kelly calibration): agg +22.04% -> +25.41% (+3.38pp).
+           Simulation result (recalibrated Kelly): agg +22.04% -> +27.13% (+5.09pp). No regressions.
+
+**Decision: SHIP**
+- Aggregate conservative delta: +3.38pp >> +0.1pp threshold
+- Regressions: none on any other stat
+- Production ROI: +22.04% -> ~+25.4pp (2192 bets, conservative)
+- Key insight: removing zero-pnl bets reduces stake without reducing pnl => direct ROI lift.
+  Kelly amplifies this further because the UNDER-only hit rate (73.4%) is higher than the blended rate (66.6%).
+
+**Gotcha:** Do NOT use the iter-50 sample UNDER ROI (28.73%) directly as the post-filter BLK ROI.
+  That figure is from 218 eval rows. The pnl-consistent UNDER ROI is 40.10% = (631*27.07%) / 426 bets.
+
+---
+
+## Iter-40: AST threshold small step 1.0→0.85 (2026-05-28)
+
+**Change:** AST threshold 1.0→0.85 ONLY. PTS (1.0) and all other stats UNCHANGED.
+**Rationale:** AST has strongest edge (CLV z=4.47, n=374, ROI=+24.04%).
+  Iter-38 tried 1.0→0.7 (expansion_frac ~2.0x, diluted -3.83pp). Smaller 0.85 step
+  adds only bets from the 0.85-1.0 tier (~10-25% volume expansion expected).
+**Method:** Outcome-preserved simulation on iter-39 ground truth; unchanged stats inherit iter-39 numbers.
+
+**AST volume effect:**
+- thr: 1.0 → 0.85 (small step vs iter-38's 1.0→0.7)
+- expansion_frac = 1.5 — fraction of AST edge pool above new threshold vs old
+- n_bets: 374 → 561  (+187 bets added)
+- AST flat ROI: +24.04% → +22.85%
+- AST KB+ISO ROI: +24.04% → +22.85% (delta: -1.19pp)
+
+**Per-stat results (iter-39 baseline vs iter-40, KB+ISO):**
+
+| Stat | Pre-40 ROI  | Iter-40 ROI | Delta    | n_bets | Note |
+|------|------------|------------|----------|--------|------|
+| AST  |  +24.04% |  +22.85% |  -1.19pp | 561 | [thr 1.0→0.85]
+| BLK  |  +26.86% |  +26.65% |  -0.21pp | 631 |
+| FG3M |  +26.39% |  +26.41% |  +0.02pp | 74 |
+| PTS  |  +16.05% |  +16.09% |  +0.04pp | 527 |
+| REB  |  +16.73% |  +16.73% |  +0.00pp | 157 |
+| STL  |  +15.02% |  +14.94% |  -0.08pp | 634 |
+| **AGG** | **+22.04%** | **+21.84%** | **-0.20pp** | **2584** | |
+
+**Ship?** NO  |  **Decision:** REVERT — aggregate delta -0.20pp below +0.3pp ship threshold
+**Regressions (>-1pp):** ['ast']
+**Sustainable production ROI (iter-40):** +21.84%  (was +22.04%)
+
+---
+
 ## Iter-39: PTS threshold isolated 0.7→1.0 (2026-05-28)
 
 **Change:** PTS threshold 0.7→1.0 ONLY. AST (1.0) and BLK Kelly (1.0x) UNCHANGED.

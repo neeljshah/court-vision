@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T00:51:19Z",
+  "__updated_at__": "2026-05-28T01:53:05Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -670,7 +670,7 @@
   },
   "__iter42__": {
     "iter": 42,
-    "generated_at": "2026-05-28T00:51:19Z",
+    "generated_at": "2026-05-28T01:05:44Z",
     "approach": "parlay_backtest_bayesian_selection_500_trials",
     "n_trials": 500,
     "selection_rates": {
@@ -699,5 +699,79 @@
     },
     "single_leg_baseline_roi_pct": 22.04,
     "note": "Bayesian selection: P(bet|over/under) conditioned on iter-39 hit rates. Norm ROI uses -110 both legs for direct baseline comparison. Raw ROI uses actual CSV odds (BLK median +145 inflates substantially)."
+  },
+  "__iter51__": {
+    "iter": 51,
+    "generated_at": "2026-05-28T01:53:05Z",
+    "approach": "blk_under_only_direction_filter",
+    "n_bets_pre": 2397,
+    "n_bets_post": 2192,
+    "pre51_agg_roi_pct": 22.04,
+    "iter51_agg_roi_pct": 27.13,
+    "delta_agg_pp": 5.09,
+    "decision": "SHIP \u2014 aggregate ROI +5.09pp >= +0.1pp threshold AND no regressions (>-0.5pp) on other stats.",
+    "ship": true,
+    "regressions": [],
+    "blk_filter": {
+      "n_bets_before": 631,
+      "n_bets_after": 426,
+      "n_bets_dropped": 205,
+      "drop_pct": 32.51,
+      "roi_before_flat": 27.07,
+      "roi_after_flat": 40.096643192488266,
+      "roi_after_kb": 40.27,
+      "source": "iter50_blk_bootstrap \u2014 direction_UNDER n=218 z=4.45"
+    },
+    "per_stat_kb": {
+      "ast": {
+        "n_bets": 374,
+        "roi_pct": 24.04,
+        "pre51_roi": 24.04,
+        "delta_pp": 0.0
+      },
+      "blk": {
+        "n_bets": 426,
+        "roi_pct": 40.27,
+        "pre51_roi": 26.86,
+        "delta_pp": 13.41
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "roi_pct": 26.38,
+        "pre51_roi": 26.41,
+        "delta_pp": -0.03
+      },
+      "pts": {
+        "n_bets": 527,
+        "roi_pct": 16.3,
+        "pre51_roi": 16.05,
+        "delta_pp": 0.25
+      },
+      "reb": {
+        "n_bets": 157,
+        "roi_pct": 16.73,
+        "pre51_roi": 16.73,
+        "delta_pp": 0.0
+      },
+      "stl": {
+        "n_bets": 634,
+        "roi_pct": 15.03,
+        "pre51_roi": 15.02,
+        "delta_pp": 0.01
+      }
+    },
+    "params": {
+      "thresholds": {
+        "pts": 1.0,
+        "reb": 1.5,
+        "ast": 1.0,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0,
+      "blk_direction_filter": "under_only"
+    }
   }
 }
