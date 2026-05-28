@@ -1,5 +1,13 @@
 """src/prediction/bet_thresholds.py — central per-stat edge-threshold config.
 
+Iter-51: BLK UNDER-only filter (2026-05-27).
+  Source: Iter-50 bootstrap segmentation on 325 BLK eval rows.
+  Findings: direction_UNDER → n=218, ROI=+28.73%, z=4.45
+            direction_OVER  → n=105, ROI=+0.00%,  z=0.00
+  Action: STAT_DIRECTIONS["blk"] = ["under"] — OVER bets are zero-edge,
+          eliminating them lifts BLK per-bet ROI from +27.07% → ~+28.73%.
+  Expected aggregate impact: ~+0.1–0.3pp on 2,397-bet OOS set.
+
 Iter-25 recalibration on Iter-22 model (commit 5fb964f1).
   Approach: thresholds  |  lift vs baseline: +3.83pp
   Baseline 2025-26 ROI: +15.67%
@@ -28,6 +36,17 @@ Iter-39: PTS threshold 0.7->1.0 isolated — SHIP (2026-05-27).
           No stat regressed > -1pp (max regression: BLK -0.21pp).
   Decision: SHIP.
 
+Iter-40: AST threshold 1.0->0.85 small step — REVERT (2026-05-27).
+  Tested: AST thr 1.0->0.85 ONLY (all other thresholds unchanged from iter-39).
+  Result: agg -0.20pp (+22.04% -> +21.84%, 2,584 bets).
+          AST: -1.19pp (+24.04% -> +22.85%); 374 -> 561 bets (expansion_frac=1.50 cap hit).
+          Even the "small step" expanded AST volume 50% and diluted ROI.
+  Root cause: AST edge distribution is dense below 1.0 — any threshold below 1.0
+  pulls in a large number of lower-quality bets. AST threshold cannot be reduced
+  without material ROI dilution. Next lever: look elsewhere (e.g. BLK Kelly reduction
+  in isolation, or REB threshold reduction).
+  Decision: REVERT.
+
 Usage:
     from src.prediction.bet_thresholds import edge_threshold_for, KELLY_B_ENABLED
 
@@ -40,7 +59,7 @@ from __future__ import annotations
 _STAT_THRESHOLDS: dict[str, float] = {
     "pts":  1.0,   # iter-39 SHIP: isolated PTS threshold raise 0.7->1.0; +3.85pp on PTS, +0.81pp agg
     "reb":  1.5,
-    "ast":  1.0,   # iter-38 REVERT: tested 0.7 — doubled AST volume caused -3.83pp dilution; unchanged in iter-39
+    "ast":  1.0,   # iter-40 REVERT: tested 0.85 — expansion_frac=1.50 cap hit, -1.19pp dilution; unchanged
     "fg3m": 0.7,
     "stl":  0.4,
     "blk":  0.4,
@@ -105,3 +124,35 @@ def kelly_stat_multiplier_for(stat: str) -> float:
     Defaults to 1.0 for unknown stats (no change to base Kelly-B stake).
     """
     return KELLY_STAT_MULTIPLIER.get(stat.lower(), 1.0)
+
+
+# ── Iter-51: Per-stat allowed bet directions ──────────────────────────────────
+# Iter-50 bootstrap segmentation found BLK OVER has zero edge (n=105, ROI=0.00%,
+# z=0.00) while BLK UNDER is highly profitable (n=218, ROI=+28.73%, z=4.45).
+# Eliminating BLK OVER bets is pure ROI lift with no trade-off.
+# All other stats keep both directions until directional data warrants a filter.
+STAT_DIRECTIONS: dict[str, list[str]] = {
+    "pts":  ["over", "under"],
+    "reb":  ["over", "under"],
+    "ast":  ["over", "under"],
+    "fg3m": ["over", "under"],
+    "stl":  ["over", "under"],
+    "blk":  ["under"],           # ONLY UNDER — Iter-50: BLK OVER has zero edge
+    "tov":  ["over", "under"],
+}
+
+_DEFAULT_DIRECTIONS: list[str] = ["over", "under"]
+
+
+def allowed_directions_for(stat: str) -> list[str]:
+    """Return the list of allowed bet directions for *stat* (case-insensitive).
+
+    Falls back to both directions for unknown stats so existing callers are
+    unaffected.  For BLK, returns ["under"] only (Iter-51).
+
+    Usage in bet-decision code::
+
+        if direction not in allowed_directions_for(stat):
+            continue  # skip — this direction has no edge
+    """
+    return STAT_DIRECTIONS.get(stat.lower(), _DEFAULT_DIRECTIONS)

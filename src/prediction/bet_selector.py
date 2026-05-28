@@ -209,6 +209,19 @@ def select(
         if abs(edge) < edge_min:
             continue
 
+        # 1a. Stat-direction filter (iter-51): skip bet directions with no edge.
+        #     BLK OVER has zero edge (Iter-50 finding); blocked here so live
+        #     selection never places a zero-edge BLK OVER bet.
+        try:
+            from src.prediction.bet_thresholds import allowed_directions_for as _allowed_dirs
+            _direction_here = "over" if edge > 0 else "under"
+            if _direction_here not in _allowed_dirs(stat):
+                log.debug("skip %s/%s: direction %s not allowed for %s (stat-direction filter)",
+                          player, stat, _direction_here, stat)
+                continue
+        except Exception:
+            pass  # degraded gracefully — never block on import error
+
         # 1b. CLV gate — dual filter: drop bets the model expects to lose
         #     closing-line value, even when the edge clears the bar.
         clv_pred: Optional[dict] = None
