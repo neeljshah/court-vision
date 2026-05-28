@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Live · {{ env.game_id }} · CourtVision{% endblock %}
+{% block subtitle %}Live · {{ env.game_id }} · {{ env.date }}{% endblock %}
+{% block og_title %}CourtVision · Live game projection{% endblock %}
+{% block og_desc %}Per-player pregame vs current vs pace-projected vs sportsbook line.{% endblock %}
+
+{% block content %}
+<meta http-equiv="refresh" content="30">
+
+<section class="mb-3 md:mb-4">
+  <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Live · {{ env.game_id }}</h1>
+    <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ env.date }}</span>
+    <a href="/live?date={{ env.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">← date view</a>
+    <a href="/tonight?date={{ env.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">pregame slate</a>
+  </div>
+  <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    <span>{{ env.n_rows }} player·stat rows</span>
+    <span>pregame: {% if env.pregame_loaded %}<span style="color:var(--cv-win)">loaded</span>{% else %}<span style="color:var(--cv-amber)">missing</span>{% endif %}</span>
+    <span>live boxscore: {% if env.live_available %}<span style="color:var(--cv-win)">on</span>{% else %}<span style="color:var(--cv-amber)">off</span>{% endif %}</span>
+    <span>auto-refresh: 30s</span>
+  </div>
+</section>
+
+{% if not env.live_available %}
+<div class="cv-card p-3 md:p-4 mb-4" style="border-color:var(--cv-amber);background:#3f2d05;color:#fde68a;">
+  <strong>No live boxscore cached for this game yet</strong> — showing pregame-only view.
+  Current / pace-projected / edge columns will populate when an in-play snapshot lands at
+  <code>data/cache/boxscore_live/{{ env.game_id }}.json</code>.
+</div>
+{% endif %}
+
+{% if env.n_rows == 0 %}
+<div class="cv-card p-6 text-center" style="color:var(--cv-muted)">
+  No pregame projections for this game on {{ env.date }}.
+  <div class="text-[10px] mt-2" style="color:var(--cv-subtle)">
+    Predictions parquet may be missing, or no sportsbook books have this game on file yet.
+  </div>
+</div>
+{% else %}
+<div class="cv-card overflow-x-auto">
+  <table class="w-full text-xs md:text-sm">
+    <thead class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle);background:var(--cv-card);">
+      <tr>
+        <th class="text-left px-3 py-2">Player</th>
+        <th class="text-left px-2 py-2">Tm</th>
+        <th class="text-left px-2 py-2">Stat</th>
+        <th class="text-right px-2 py-2">Pregame q50</th>
+        <th class="text-right px-2 py-2">q10–q90</th>
+        <th class="text-right px-2 py-2">Current</th>
+        <th class="text-right px-2 py-2">Min</th>
+        <th class="text-right px-2 py-2">Pace-Proj</th>
+        <th class="text-right px-2 py-2">Line</th>
+        <th class="text-right px-3 py-2">Edge</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in env.rows %}
+      <tr class="border-t" style="border-color:var(--cv-border)">
+        <td class="px-3 py-2 font-medium" style="color:var(--cv-text)">{{ row.player }}</td>
+        <td class="px-2 py-2 font-mono" style="color:var(--cv-muted)">{{ row.team or '—' }}</td>
+        <td class="px-2 py-2 font-mono uppercase" style="color:var(--cv-muted)">{{ row.stat }}</td>
+        <td class="px-2 py-2 text-right font-mono">{% if row.pregame_q50 is not none %}{{ '%.2f'|format(row.pregame_q50) }}{% else %}—{% endif %}</td>
+        <td class="px-2 py-2 text-right font-mono" style="color:var(--cv-subtle)">
+          {% if row.pregame_q10 is not none and row.pregame_q90 is not none %}
+            {{ '%.1f'|format(row.pregame_q10) }}–{{ '%.1f'|format(row.pregame_q90) }}
+          {% else %}—{% endif %}
+        </td>
+        <td class="px-2 py-2 text-right font-mono">
+          {% if row.current is not none %}{{ row.current }}{% else %}<span class="pending">—</span>{% endif %}
+        </td>
+        <td class="px-2 py-2 text-right font-mono" style="color:var(--cv-muted)">
+          {% if row.minutes_played is not none %}{{ '%.1f'|format(row.minutes_played) }}{% else %}—{% endif %}
+        </td>
+        <td class="px-2 py-2 text-right font-mono">
+          {% if row.pace_projected is not none %}{{ '%.2f'|format(row.pace_projected) }}{% else %}<span class="pending">—</span>{% endif %}
+        </td>
+        <td class="px-2 py-2 text-right font-mono">
+          {% if row.best_line is not none %}
+            {{ row.best_line }}{% if row.best_book %} <span style="color:var(--cv-subtle);font-size:10px">{{ row.best_book }}</span>{% endif %}
+          {% else %}—{% endif %}
+        </td>
+        <td class="px-3 py-2 text-right font-mono font-semibold">
+          {% if row.edge_vs_line is not none %}
+            {% if row.edge_vs_line > 0 %}<span class="num-pos">+{{ '%.2f'|format(row.edge_vs_line) }}</span>
+            {% elif row.edge_vs_line < 0 %}<span class="num-neg">{{ '%.2f'|format(row.edge_vs_line) }}</span>
+            {% else %}<span class="num-zero">0.00</span>{% endif %}
+          {% else %}<span class="pending">—</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="mt-3 text-[10px]" style="color:var(--cv-subtle)">
+  Generated {{ env.generated_at }}.
+  Pace-projection assumes a 32-minute final allotment; edge = pace_projected − line.
+</div>
+{% endblock %}
+
+{% block footer %}
+  live game projection · CourtVision · auto-refresh 30s
+{% endblock %}
