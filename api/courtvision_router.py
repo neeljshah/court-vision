@@ -270,6 +270,91 @@ def _build_parlays(date: str, max_legs: int, min_ev_pct: float, seed: int = 0) -
     return out
 
 
+def _build_parlays_constructor(date: str, max_legs: int, min_ev_pct: float,
+                               top_n: int = 25, seed: int = 0) -> dict:
+    """Build parlays via src.prediction.parlay_constructor (SGP-penalty model).
+
+    Reuses the cached single-leg slate, then enumerates valid combos via the
+    Iter-43-validated constructor that applies the 15% SGP penalty + correlation
+    shrinkage on same-player combos. Output is JSON-safe.
+    """
+    cache_key = ("parlays_constructor", date, max_legs, min_ev_pct, top_n, seed)
+    entry = _CACHE.get(cache_key)
+    if entry and time.time() - entry[0] < _TTL_SEC:
+        return entry[1]
+    env = _build_slate(date)
+    bets = env.get("bets", [])
+    has_lines = env.get("has_lines", False)
+    gen_at = datetime.utcnow().isoformat() + "Z"
+    if not bets or not has_lines:
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
+               "has_lines": has_lines, "parlays": [], "engine": "constructor"}
+        _CACHE[cache_key] = (time.time(), out)
+        return out
+
+    import pandas as _pd  # noqa: PLC0415
+    rows: list[dict] = []
+    for b in bets:
+        ev_pct = b.get("ev_pct")
+        if ev_pct is None or ev_pct < min_ev_pct:
+            continue
+        # The constructor only consumes OVER legs (model places positive-edge OVERs).
+        if (b.get("side") or "").upper() != "OVER":
+            continue
+        stat = (b.get("prop_stat") or b.get("stat") or "").lower()
+        if not stat:
+            continue
+        rows.append({
+            "player":     b.get("player_name"),
+            "player_id":  b.get("player_id"),
+            "stat":       stat,
+            "side":       "OVER",
+            "line":       b.get("line"),
+            "odds":       b.get("best_price") if b.get("best_price") is not None else -110,
+            "prob":       b.get("model_prob"),
+            "ev":         ev_pct,
+            "game_id":    b.get("game_id"),
+            "team":       b.get("team"),
+            "book":       b.get("best_book"),
+        })
+
+    if not rows:
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
+               "has_lines": True, "parlays": [], "engine": "constructor"}
+        _CACHE[cache_key] = (time.time(), out)
+        return out
+
+    df = _pd.DataFrame(rows)
+    from src.prediction.parlay_constructor import (  # noqa: PLC0415
+        build_parlay_candidates, rank_parlays,
+    )
+    try:
+        candidates = build_parlay_candidates(df)
+    except Exception as exc:
+        import logging as _log  # noqa: PLC0415
+        _log.getLogger(__name__).warning("parlay_constructor build failed: %s", exc)
+        out = {"date": date, "generated_at": gen_at, "n_parlays": 0,
+               "has_lines": True, "parlays": [], "engine": "constructor",
+               "error": str(exc)}
+        _CACHE[cache_key] = (time.time(), out)
+        return out
+
+    if candidates.empty:
+        parlays_list: list[dict] = []
+    else:
+        ranked = rank_parlays(candidates, top_n=top_n)
+        parlays_list = ranked.to_dict(orient="records")
+        # JSON-safety pass: serialize any numpy / nested types defensively.
+        import json as _json  # noqa: PLC0415
+        parlays_list = _json.loads(_json.dumps(parlays_list, default=str))
+
+    out = {"date": date, "generated_at": gen_at,
+           "n_parlays": len(parlays_list), "has_lines": True,
+           "parlays": parlays_list, "engine": "constructor"}
+    _CACHE[cache_key] = (time.time(), out)
+    return out
+
+
 # ── home page helpers ────────────────────────────────────────────────────────
 
 _TEAM_ABBREVS: dict[str, str] = {
@@ -1189,6 +1274,24 @@ def api_parlays(date: Optional[str] = Query(default=None),
     return JSONResponse(_build_parlays(date, max_legs, min_ev_pct, seed))
 
 
+@router.get("/api/parlays/constructor", tags=["courtvision"])
+def api_parlays_constructor(
+    date: Optional[str] = Query(default=None),
+    max_legs: int = Query(3, ge=2, le=5),
+    min_ev_pct: float = Query(2.0, ge=-100.0, le=500.0),
+    top_n: int = Query(25, ge=1, le=100),
+    seed: int = Query(0, ge=0, le=10**9),
+):
+    """SGP-penalty parlay candidates from src.prediction.parlay_constructor.
+
+    Returns ranked 3-leg combos with `expected_roi_sgp_pct`, `hit_rate_adj`,
+    `decimal_odds`, `american_odds`, and per-leg dicts under leg_0/leg_1/leg_2.
+    """
+    if not date:
+        date = _next_game_day() or _today_et()
+    return JSONResponse(_build_parlays_constructor(date, max_legs, min_ev_pct, top_n, seed))
+
+
 def _american_to_decimal(odds: int) -> float:
     return (odds / 100 + 1) if odds >= 0 else (-100 / odds + 1)
 
@@ -1854,10 +1957,16 @@ def parlays(request: Request,
             date: str = Query(default=None),
             max_legs: int = Query(5, ge=2, le=5),
             min_ev_pct: float = Query(5.0, ge=-100.0, le=500.0),
-            limit: int = Query(25, ge=1, le=100)):
-    """SSR-lite: sends only metadata shell; JS fetches /api/parlays after paint."""
+            limit: int = Query(25, ge=1, le=100),
+            engine: str = Query(default="engine")):
+    """SSR-lite: sends only metadata shell; JS fetches /api/parlays after paint.
+
+    `engine` selects the model: "engine" (default, ParlayEngine MC) or
+    "constructor" (parlay_constructor with 15% SGP penalty).
+    """
     if not date:
         date = _next_game_day() or _today_et()
+    engine_norm = "constructor" if engine == "constructor" else "engine"
     # Lightweight metadata only — avoids the heavy ParlayEngine on SSR.
     meta_envelope = {
         "date": date,
@@ -1866,11 +1975,13 @@ def parlays(request: Request,
         "has_lines": True,    # optimistic; JS corrects if false
         "parlays": [],        # client fetches
         "ssr_lite": True,
+        "engine": engine_norm,
     }
     return _TEMPLATES.TemplateResponse("parlays.html",
         {"request": request, "envelope": meta_envelope,
          "shown": [], "leg_meta": {},
-         "min_ev_pct": min_ev_pct, "max_legs": max_legs})
+         "min_ev_pct": min_ev_pct, "max_legs": max_legs,
+         "engine": engine_norm})
 
 
 # ── SQLite-backed bet ledger endpoints ───────────────────────────────────────
