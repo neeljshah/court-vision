@@ -14,6 +14,11 @@
   </div>
   <div class="mt-2 text-xs md:text-sm" style="color:var(--cv-muted)">
     <span><b style="color:var(--cv-text)">{{ n_props }}</b> props across multiple books</span>
+    {% if n_steam and n_steam > 0 %}
+      <span class="ml-2" style="color:#ff6b35;font-weight:600;" title="Sharp-money line moves detected in the last hour">
+        🔥 <b>{{ n_steam }}</b> steam {% if n_steam == 1 %}move{% else %}moves{% endif %}
+      </span>
+    {% endif %}
   </div>
 </section>
 
@@ -85,6 +90,10 @@
       <tr class="border-b" style="border-color:var(--cv-border)">
         <td class="px-3 py-2" style="color:var(--cv-text)">
           <span class="font-semibold">{{ p.player }}</span>
+          {% if p.steam and p.steam.age_sec is not none and p.steam.age_sec < 600 %}
+            <span style="color:#ff6b35;font-weight:bold;margin-left:4px;"
+                  title="Steam {{ p.steam.direction or '?' }} · {{ p.steam.magnitude or '?' }} {% if p.steam.book %}@ {{ p.steam.book }}{% endif %} · {{ p.steam.age_sec }}s ago{% if p.steam.from_price is not none and p.steam.to_price is not none %} · {{ p.steam.from_price }} → {{ p.steam.to_price }}{% endif %}{% if p.steam.confidence %} · {{ p.steam.confidence }} conf{% endif %}">🔥</span>
+          {% endif %}
         </td>
         <td class="px-3 py-2 font-mono" style="color:var(--cv-muted)">{{ p.stat | upper }}</td>
         <td class="px-3 py-2 text-right font-mono" style="color:var(--cv-text)">{{ '%g'|format(p.line) }}</td>

@@ -31,6 +31,7 @@ from api._courtvision_odds import (
     _american_to_implied,
     best_price,
     consolidate,
+    steam_lookup,
 )
 
 _HERE = Path(__file__).resolve().parent
@@ -100,6 +101,7 @@ def _implied_diff(best: Optional[dict], worst: Optional[dict], price_key: str) -
 
 def _scan_rows(date: str, stat: Optional[str], min_books: int) -> list[dict]:
     out: list[dict] = []
+    steam_map = steam_lookup(date)
     for prop in consolidate(date):
         if stat and prop.get("stat") != stat.lower():
             continue
@@ -126,6 +128,19 @@ def _scan_rows(date: str, stat: Optional[str], min_books: int) -> list[dict]:
             "deeplink_under": b.get("deeplink_under_web") or "",
         } for b in prop.get("books", [])]
 
+        # Steam (sharp-money) annotation — only render badge when <10 min old.
+        # steam_lookup indexes events under (player_lower, stat_lower, round(line,2)).
+        _player = (prop.get("player") or "").lower()
+        _stat = (prop.get("stat") or "").lower()
+        try:
+            _line_r = round(float(prop.get("line")), 2)
+        except (TypeError, ValueError):
+            _line_r = None
+        steam_event = steam_map.get((_player, _stat, _line_r)) if _line_r is not None else None
+        # Strip the internal _ts_unix marker before returning to client.
+        if steam_event is not None:
+            steam_event = {k: v for k, v in steam_event.items() if not k.startswith("_")}
+
         out.append({
             "player": prop.get("player"),
             "stat": prop.get("stat"),
@@ -140,6 +155,7 @@ def _scan_rows(date: str, stat: Optional[str], min_books: int) -> list[dict]:
             "over_spread_cents": over_spread_cents,
             "under_spread_cents": under_spread_cents,
             "best_combined_edge": best_combined_edge,
+            "steam": steam_event,
             "books": slim_books,
         })
     return out
@@ -170,12 +186,14 @@ def api_lines_scan(
     sort_key = sort if sort in _VALID_SORTS else "edge"
     rows = _scan_rows(date, stat, min_books)
     rows = _sort_rows(rows, sort_key)
+    n_steam = sum(1 for r in rows if r.get("steam"))
     return JSONResponse({
         "date": date,
         "stat": stat or "",
         "min_books": min_books,
         "sort": sort_key,
         "n_props": len(rows),
+        "n_steam": n_steam,
         "props": rows,
     })
 
@@ -192,6 +210,7 @@ def scan_page(
     sort_key = sort if sort in _VALID_SORTS else "edge"
     rows = _scan_rows(date, stat, min_books)
     rows = _sort_rows(rows, sort_key)
+    n_steam = sum(1 for r in rows if r.get("steam"))
     return _TEMPLATES.TemplateResponse("scan.html", {
         "request": request,
         "date": date,
@@ -199,5 +218,6 @@ def scan_page(
         "min_books": min_books,
         "sort": sort_key,
         "n_props": len(rows),
+        "n_steam": n_steam,
         "props": rows,
     })

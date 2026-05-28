@@ -282,6 +282,143 @@ _CACHE_TTL_SEC = 30.0  # 30s — scrapers tick every 10s but CSV reads at that r
                         # caused 74s page loads in prod (O(files) I/O per request).
                         # 30s is still fresh enough for line-shop display.
 
+# ── Steam (sharp-money) lookup cache ──────────────────────────────────────────
+# steam_events.jsonl is appended by scripts/steam_detector.py whenever 3+ books
+# move a (player, stat) line in the same direction within a tight window.
+# steam_lookup(date) returns a {(player_lower, stat_lower, line_rounded): event}
+# map so other endpoints (e.g. /api/lines/scan) can join steam onto each prop
+# without re-reading the file per-row. Cache TTL is short so the badge ages out
+# naturally within ~30s of the configured 10-min staleness threshold.
+_STEAM_CACHE: dict[tuple, tuple[float, dict]] = {}
+_STEAM_CACHE_TTL = 30.0  # seconds
+_STEAM_PATH = Path(__file__).resolve().parent.parent / "data" / "cache" / "steam_events.jsonl"
+
+
+def steam_lookup(date: str) -> dict[tuple, dict]:
+    """Return {(player_lower, stat_lower, line_rounded): steam_event_dict}.
+
+    Reads ``data/cache/steam_events.jsonl`` (one JSON object per line, appended
+    by the steam-detector job). Keeps events whose ``ts`` is within the last
+    hour. Each event is indexed under BOTH its ``old_line`` and ``new_line``
+    so that joining onto sportsbook rows works regardless of whether the row
+    still shows the pre- or post-move line.
+
+    Each returned value contains::
+        {
+          "age_sec":   int — seconds since the steam ts
+          "direction": "up" | "down" | side string
+          "magnitude": numeric — n_books_moving (or |new-old| as fallback)
+          "book":      "pin" | "dk" | ... (representative book, prefer pin)
+          "from_price": old_line value
+          "to_price":   new_line value
+          "confidence": "high" | "medium" | "low" | None
+          "pin_moved":  bool | None
+        }
+
+    Cached for ``_STEAM_CACHE_TTL`` seconds per ``date`` key. Returns ``{}``
+    when the jsonl file is missing or unreadable — the caller can treat
+    "no steam" as the default state.
+    """
+    import json as _json
+    import time as _time
+    from datetime import datetime as _dt
+
+    ck = ("steam_lookup", date)
+    ent = _STEAM_CACHE.get(ck)
+    if ent and _time.time() - ent[0] < _STEAM_CACHE_TTL:
+        return ent[1]
+
+    out: dict[tuple, dict] = {}
+    if not _STEAM_PATH.exists():
+        _STEAM_CACHE[ck] = (_time.time(), out)
+        return out
+
+    now_unix = _time.time()
+    cutoff = now_unix - 3600  # keep last hour
+    try:
+        with _STEAM_PATH.open(encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    e = _json.loads(line)
+                except Exception:
+                    continue
+                ts = e.get("ts") or e.get("timestamp") or e.get("captured_at")
+                ts_unix: float | None = None
+                if isinstance(ts, (int, float)):
+                    ts_unix = float(ts)
+                elif isinstance(ts, str):
+                    try:
+                        ts_unix = _dt.fromisoformat(ts.replace("Z", "+00:00")).timestamp()
+                    except Exception:
+                        ts_unix = None
+                if ts_unix is None or ts_unix < cutoff:
+                    continue
+
+                player = (e.get("player") or e.get("player_name") or "").lower().strip()
+                stat = (e.get("stat") or "").lower().strip()
+                if not player or not stat:
+                    continue
+
+                old_line = e.get("old_line")
+                new_line = e.get("new_line")
+                single_line = e.get("line")
+
+                # Magnitude — prefer explicit, else n_books_moving, else |delta|
+                magnitude = e.get("magnitude") or e.get("delta") or e.get("n_books_moving")
+                if magnitude is None and old_line is not None and new_line is not None:
+                    try:
+                        magnitude = abs(float(new_line) - float(old_line))
+                    except Exception:
+                        magnitude = None
+
+                # Representative book — prefer pin if it moved, else first detail book
+                book = e.get("book")
+                if not book:
+                    details = e.get("books_detail") or []
+                    if e.get("pin_moved") and any(d.get("book") == "pin" for d in details):
+                        book = "pin"
+                    elif details:
+                        book = details[0].get("book")
+
+                rec = {
+                    "age_sec":    int(max(0, now_unix - ts_unix)),
+                    "direction":  e.get("direction") or e.get("side"),
+                    "magnitude":  magnitude,
+                    "book":       book,
+                    "from_price": e.get("from_price", old_line),
+                    "to_price":   e.get("to_price", new_line),
+                    "confidence": e.get("confidence"),
+                    "pin_moved":  e.get("pin_moved"),
+                    "_ts_unix":   ts_unix,
+                }
+
+                # Index under every plausible line value for this event.
+                line_vals: list[float] = []
+                for lv in (single_line, old_line, new_line):
+                    if lv is None:
+                        continue
+                    try:
+                        line_vals.append(round(float(lv), 2))
+                    except Exception:
+                        continue
+                if not line_vals:
+                    continue
+
+                for lr in set(line_vals):
+                    key = (player, stat, lr)
+                    prior = out.get(key)
+                    if prior and prior.get("_ts_unix", 0) >= ts_unix:
+                        continue
+                    out[key] = rec
+    except OSError:
+        pass
+
+    _STEAM_CACHE[ck] = (_time.time(), out)
+    return out
+
 
 def consolidate(date: str) -> list[dict]:
     """Return all (player, stat, line) props with the per-book ladder attached.
