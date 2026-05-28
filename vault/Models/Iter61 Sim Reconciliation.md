@@ -1,0 +1,95 @@
+# Iter-61 Sim Reconciliation (2026-05-28)
+
+**Goal:** Reconcile two sim methodologies that disagreed by ~11pp on overlapping filter stacks.
+
+- **Sim A (Iter-53):** +26.93% KB+ISO on 2,276 bets, hardcoded per-stat ground truth, simulated edges + KB+ISO sizing.
+- **Sim B (Iter-55/57):** +15.04% flat on 1,535 bets, real outcomes from `eval_2025_26_combined.csv` with actual production filters.
+
+---
+
+## Side-by-Side Numbers (post-Iter-57 filter stack)
+
+| Sim | n_bets | flat ROI | KB+ISO ROI |
+|-----|--------|----------|------------|
+| Sim A (iter-53 ground truth) | 2276 | +21.2893% | +26.9290% |
+| Sim B (post-Iter-57 stack)   | 1535 | +15.0429% | +18.3794% (bridge) |
+
+---
+
+## Sim B Progressive Filter Stacks (flat 1u, real outcomes)
+
+| Filter Stack | n_bets | flat ROI |
+|--------------|--------|----------|
+| no_filters | 2313 | +7.3812% |
+| post_iter51 | 2237 | +7.4450% |
+| post_iter54 | 1697 | +11.9355% |
+| post_iter57 | 1535 | +15.0429% |
+
+---
+
+## Per-Stat Comparison (Sim A iter-53 GT vs Sim B post-Iter-57)
+
+| Stat | Sim A n | Sim A ROI | Sim B n | Sim B ROI | n diff | ROI gap |
+|------|---------|-----------|---------|-----------|--------|---------|
+| PTS | 527 | +16.30% | 335 | +7.7069% | -192 | -8.5931pp |
+| REB | 241 | +9.32% | 238 | +12.2995% | -3 | +2.9795pp |
+| AST | 374 | +24.04% | 226 | +14.0386% | -148 | -10.0014pp |
+| FG3M | 74 | +26.38% | 311 | +16.0187% | +237 | -10.3613pp |
+| STL | 634 | +15.03% | 178 | +16.9050% | -456 | +1.8750pp |
+| BLK | 426 | +40.10% | 247 | +25.9845% | -179 | -14.1155pp |
+
+---
+
+## Divergence Diagnosis
+
+**Primary root cause:** Sim A's hardcoded per-stat ground truth (n_bets + roi_pct) was measured on an OLDER eval corpus via predict_player.py inference and does NOT reflect the current Iter-54/55/57 filter stack. Sim B is measured on the current eval_2025_26_combined.csv (2,339 rows) with the actual production filter stack applied. Both sims are 'correct' for what they measure, but they measure different things on different bet populations.
+
+**Specific divergence points:**
+
+1. BET POPULATION: Sim A uses HARDCODED post-Iter-51 counts (2276 bets), which does NOT apply Iter-54 line exclusions or Iter-55/57 direction-line exclusions. Sim B post-Iter-57 stack drops to 1535 bets (741 dropped by Iter-54/55/57).
+
+2. PER-STAT GROUND TRUTH: Sim A's hardcoded numbers (e.g. PTS 16.30%, BLK 40.10%) are HISTORICAL artifacts from iter-51 reporting — they were produced by a DIFFERENT pipeline (older Iter-22 model + predict_player.py inference path on legacy 2024-25 playoffs eval set). Sim B re-measures on the current eval CSV (eval_2025_26_combined.csv = 2,339 rows, 2025-26 season) using devig direction heuristic. THE TWO POPULATIONS ARE DIFFERENT GAMES.
+
+3. STAKE ACCOUNTING: Sim A reports KB+ISO (+26.93%) as the headline; Sim B reports flat (+15.04%). Applying KB+ISO sizing to Sim B's real outcomes (bridge_post57 = +18.3794%) shows KB+ISO ADDS +3.34pp on the real corpus. Even bridged, the gap to Sim A's 26.93% is +8.55pp.
+
+4. EVAL SLICE: Sim A's ground truth descends from iter-51 reporting which used an OLDER eval corpus (older fetch, includes some games not in eval_2025_26_combined.csv). Sim B is anchored to the CURRENT 2,339-row eval CSV. No way to reconcile populations without a re-fetch — the older bets are not in the current eval CSV at all.
+
+**Sim A inflation vs honest canonical:** +8.55pp
+
+---
+
+## Canonical Choice
+
+**Decision:** `sim_b_post_iter57_flat_1u_with_kb_iso_sizing_bridge`
+
+Sim B is the honest canonical: (1) real outcomes from current eval CSV; (2) applies the ACTUAL Iter-51+54+55+57 filter stack; (3) bet population matches what production produces today. Bridge KB+ISO sizing onto Sim B's real outcomes to get the shipping headline number. Future iters should use Sim B exclusively and stop using hardcoded ground truth from Sim A.
+
+**Canonical numbers (post-Iter-57 stack):**
+- Flat 1u ROI:  **+15.0429%** on **1535** bets
+- KB+ISO ROI:   **+18.3794%** (sizing applied to real outcomes)
+
+**Canonical per-stat:**
+
+| Stat | n | flat ROI | KB+ISO ROI | hit% |
+|------|---|----------|------------|------|
+| PTS | 335 | +7.7069% | +8.4411% | 56.42% |
+| REB | 238 | +12.2995% | +12.2995% | 58.82% |
+| AST | 226 | +14.0386% | +14.0386% | 59.73% |
+| FG3M | 311 | +16.0187% | +16.0044% | 60.77% |
+| STL | 178 | +16.9050% | +16.9050% | 61.24% |
+| BLK | 247 | +25.9845% | +25.9845% | 65.99% |
+
+---
+
+## Implications
+
+- Sim A iter-53 (+26.93%) is INFLATED by ~+11pp vs honest canonical.
+- Sim B iter-57 flat (+15.04%) is the public number we should report.
+- Sim B + KB+ISO sizing (bridge) gives the headline shipping number (+18.38%).
+- Per-stat ROIs differ substantially: e.g. PTS Sim A 16.30% vs Sim B 7.71% — PTS production ROI dropped significantly on the new eval corpus.
+- STOP using hardcoded SIM_A ground truth in future iters. All measurements should go through Sim B's real-outcome pathway against eval_2025_26_combined.csv.
+
+---
+
+*Generated by `scripts/iter61_sim_reconciliation.py` on 2026-05-28.*
+*Refs: [[Iter55 Subsegment Refinement]] | [[Iter57 Post-Iter55 Resweep]] | [[Engineering Knowledge]] | [[Model Performance]]*

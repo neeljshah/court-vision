@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T02:43:56Z",
+  "__updated_at__": "2026-05-28T03:04:42Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -4468,5 +4468,179 @@
       "max_stat_regress_pp": -0.5,
       "max_stake_count_change": 0.2
     }
+  },
+  "__iter61__": {
+    "iter": 61,
+    "generated_at": "2026-05-28T03:04:42Z",
+    "approach": "sim_reconciliation_a_vs_b",
+    "method": "side_by_side_remeasure_on_post_iter57_filter_stack",
+    "sim_a_iter53": {
+      "method": "sim_a_hardcoded_groundtruth_simulated_kb_iso",
+      "n_bets": 2276,
+      "flat_roi_pct": 21.2893,
+      "kb_iso_roi_pct": 26.929,
+      "applies_filters": [
+        "iter51_blk_under_only",
+        "iter52_reb_pkl_fix"
+      ],
+      "does_not_apply": [
+        "iter54_line_exclusions",
+        "iter55_ast_over_high",
+        "iter57_reb_over_low"
+      ],
+      "ground_truth_source": "hardcoded_from_iter51_per_stat_kb_legacy_corpus"
+    },
+    "sim_b_iter57": {
+      "method": "real_outcomes_eval_csv_with_current_filter_stack",
+      "n_bets": 1535,
+      "flat_roi_pct": 15.0429,
+      "applies_filters": [
+        "iter51_blk_under_only",
+        "iter54_line_exclusions",
+        "iter55_ast_over_high",
+        "iter57_reb_over_low"
+      ],
+      "eval_corpus": "data/cache/eval_2025_26_combined.csv (2339 rows)"
+    },
+    "sim_b_progressive_filter_stacks": {
+      "no_filters": {
+        "n": 2313,
+        "flat_roi": 7.3812
+      },
+      "post_iter51": {
+        "n": 2237,
+        "flat_roi": 7.445
+      },
+      "post_iter54": {
+        "n": 1697,
+        "flat_roi": 11.9355
+      },
+      "post_iter57": {
+        "n": 1535,
+        "flat_roi": 15.0429
+      }
+    },
+    "bridge_sim_b_with_kb_iso_sizing": {
+      "post_iter51": {
+        "n": 2237,
+        "kb_iso_roi": 18.352
+      },
+      "post_iter57": {
+        "n": 1535,
+        "kb_iso_roi": 18.3794
+      }
+    },
+    "per_stat_compare_iter53_vs_post57": {
+      "pts": {
+        "sim_a_iter53_n": 527,
+        "sim_a_iter53_roi": 16.3,
+        "sim_b_post57_n": 335,
+        "sim_b_post57_roi": 7.7069,
+        "n_diff": -192,
+        "roi_gap_pp": -8.5931
+      },
+      "reb": {
+        "sim_a_iter53_n": 241,
+        "sim_a_iter53_roi": 9.32,
+        "sim_b_post57_n": 238,
+        "sim_b_post57_roi": 12.2995,
+        "n_diff": -3,
+        "roi_gap_pp": 2.9795
+      },
+      "ast": {
+        "sim_a_iter53_n": 374,
+        "sim_a_iter53_roi": 24.04,
+        "sim_b_post57_n": 226,
+        "sim_b_post57_roi": 14.0386,
+        "n_diff": -148,
+        "roi_gap_pp": -10.0014
+      },
+      "fg3m": {
+        "sim_a_iter53_n": 74,
+        "sim_a_iter53_roi": 26.38,
+        "sim_b_post57_n": 311,
+        "sim_b_post57_roi": 16.0187,
+        "n_diff": 237,
+        "roi_gap_pp": -10.3613
+      },
+      "stl": {
+        "sim_a_iter53_n": 634,
+        "sim_a_iter53_roi": 15.03,
+        "sim_b_post57_n": 178,
+        "sim_b_post57_roi": 16.905,
+        "n_diff": -456,
+        "roi_gap_pp": 1.875
+      },
+      "blk": {
+        "sim_a_iter53_n": 426,
+        "sim_a_iter53_roi": 40.1,
+        "sim_b_post57_n": 247,
+        "sim_b_post57_roi": 25.9845,
+        "n_diff": -179,
+        "roi_gap_pp": -14.1155
+      }
+    },
+    "divergence_diagnosis": {
+      "primary_root_cause": "Sim A's hardcoded per-stat ground truth (n_bets + roi_pct) was measured on an OLDER eval corpus via predict_player.py inference and does NOT reflect the current Iter-54/55/57 filter stack. Sim B is measured on the current eval_2025_26_combined.csv (2,339 rows) with the actual production filter stack applied. Both sims are 'correct' for what they measure, but they measure different things on different bet populations.",
+      "diagnoses": [
+        "BET POPULATION: Sim A uses HARDCODED post-Iter-51 counts (2276 bets), which does NOT apply Iter-54 line exclusions or Iter-55/57 direction-line exclusions. Sim B post-Iter-57 stack drops to 1535 bets (741 dropped by Iter-54/55/57).",
+        "PER-STAT GROUND TRUTH: Sim A's hardcoded numbers (e.g. PTS 16.30%, BLK 40.10%) are HISTORICAL artifacts from iter-51 reporting \u2014 they were produced by a DIFFERENT pipeline (older Iter-22 model + predict_player.py inference path on legacy 2024-25 playoffs eval set). Sim B re-measures on the current eval CSV (eval_2025_26_combined.csv = 2,339 rows, 2025-26 season) using devig direction heuristic. THE TWO POPULATIONS ARE DIFFERENT GAMES.",
+        "STAKE ACCOUNTING: Sim A reports KB+ISO (+26.93%) as the headline; Sim B reports flat (+15.04%). Applying KB+ISO sizing to Sim B's real outcomes (bridge_post57 = +18.3794%) shows KB+ISO ADDS +3.34pp on the real corpus. Even bridged, the gap to Sim A's 26.93% is +8.55pp.",
+        "EVAL SLICE: Sim A's ground truth descends from iter-51 reporting which used an OLDER eval corpus (older fetch, includes some games not in eval_2025_26_combined.csv). Sim B is anchored to the CURRENT 2,339-row eval CSV. No way to reconcile populations without a re-fetch \u2014 the older bets are not in the current eval CSV at all."
+      ],
+      "inflation_vs_canonical_pp": 8.5496
+    },
+    "canonical_choice": "sim_b_post_iter57_flat_1u_with_kb_iso_sizing_bridge",
+    "canonical_choice_rationale": "Sim B is the honest canonical: (1) real outcomes from current eval CSV; (2) applies the ACTUAL Iter-51+54+55+57 filter stack; (3) bet population matches what production produces today. Bridge KB+ISO sizing onto Sim B's real outcomes to get the shipping headline number. Future iters should use Sim B exclusively and stop using hardcoded ground truth from Sim A.",
+    "canonical_roi_post_iter57": {
+      "flat_1u_pct": 15.0429,
+      "kb_iso_pct": 18.3794,
+      "n_bets": 1535
+    },
+    "canonical_per_stat": {
+      "pts": {
+        "n": 335,
+        "flat_roi_pct": 7.7069,
+        "kb_iso_roi_pct": 8.4411,
+        "hit_rate_pct": 56.42
+      },
+      "reb": {
+        "n": 238,
+        "flat_roi_pct": 12.2995,
+        "kb_iso_roi_pct": 12.2995,
+        "hit_rate_pct": 58.82
+      },
+      "ast": {
+        "n": 226,
+        "flat_roi_pct": 14.0386,
+        "kb_iso_roi_pct": 14.0386,
+        "hit_rate_pct": 59.73
+      },
+      "fg3m": {
+        "n": 311,
+        "flat_roi_pct": 16.0187,
+        "kb_iso_roi_pct": 16.0044,
+        "hit_rate_pct": 60.77
+      },
+      "stl": {
+        "n": 178,
+        "flat_roi_pct": 16.905,
+        "kb_iso_roi_pct": 16.905,
+        "hit_rate_pct": 61.24
+      },
+      "blk": {
+        "n": 247,
+        "flat_roi_pct": 25.9845,
+        "kb_iso_roi_pct": 25.9845,
+        "hit_rate_pct": 65.99
+      }
+    },
+    "implications": [
+      "Sim A iter-53 (+26.93%) is INFLATED by ~+11pp vs honest canonical.",
+      "Sim B iter-57 flat (+15.04%) is the public number we should report.",
+      "Sim B + KB+ISO sizing (bridge) gives the headline shipping number (+18.38%).",
+      "Per-stat ROIs differ substantially: e.g. PTS Sim A 16.30% vs Sim B 7.71% \u2014 PTS production ROI dropped significantly on the new eval corpus.",
+      "STOP using hardcoded SIM_A ground truth in future iters. All measurements should go through Sim B's real-outcome pathway against eval_2025_26_combined.csv."
+    ]
   }
 }
