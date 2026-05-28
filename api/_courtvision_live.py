@@ -99,13 +99,18 @@ async def _bus_handler(topic: str, event: dict) -> None:
 def _ensure_bus_subscription() -> None:
     """Subscribe once per process to the relevant bus topics.
 
-    Gated by env var COURTVISION_SSE_BUS=1 so we can disable the subscription
-    if it ever destabilizes the host app (the event bus is async + in-process,
-    so a misbehaving subscriber can slow the event loop).
+    The bus is an in-process async pubsub — no external connections or DB load.
+    Gate removed: subscription is always attempted so /sse/live_edges emits real
+    events without requiring COURTVISION_SSE_BUS=1 on the Railway service.
+    The original env-var gate can be restored by setting COURTVISION_SSE_BUS=0
+    explicitly if the subscription ever needs to be disabled.
     """
     import os as _os
     global _bus_subscribed
-    if _bus_subscribed or _os.environ.get("COURTVISION_SSE_BUS", "0") != "1":
+    if _bus_subscribed:
+        return
+    # Allow explicit opt-out via COURTVISION_SSE_BUS=0 (default is now enabled).
+    if _os.environ.get("COURTVISION_SSE_BUS", "1") == "0":
         return
     try:
         from src.live.event_bus import get_bus

@@ -41,7 +41,9 @@ Bovada deeplink mechanics (confirmed 2026):
   • No public bet-slip deeplink — Bovada uses in-page modals only.
 
 PointsBet AU:
-  • Event page only:    https://au.pointsbet.com/sports/basketball/competitions/7176/events/<eventKey>
+  • Event page:         https://au.pointsbet.com/sports/basketball/competitions/7176/events/<eventKey>
+  • Market page:        …/events/<eventKey>/markets/<marketKey>  (marketKey from fixedOddsMarkets[].key)
+    book_selection_id_over stores the market key (pointsbet_scraper v2+); empty for the-odds-api rows.
   • No public bet-slip deeplink.
 
 BetMGM (MGM):
@@ -69,7 +71,7 @@ _LANDING: dict[str, str] = {
     "fd":        "https://sportsbook.fanduel.com/navigation/nba",
     "pin":       "https://www.pinnacle.com/en/basketball/nba/matchups",
     "bov":       "https://www.bovada.lv/sports/basketball/nba",
-    "betrivers": "https://www.betrivers.com/sports/?type=inprogress#home/sports/basketball/nba",
+    "betrivers": "https://www.betrivers.com/?page=sportsbook&group=1000093656&type=league",
     "mgm":       "https://sports.betmgm.com/en/sports/basketball-7/betting/usa-9/nba-6004",
     "caesars":   "https://www.caesars.com/sportsbook-and-casino/sports/basketball/nba",
     "espnbet":   "https://espnbet.com/sport/basketball/organization/us/competition/nba",
@@ -174,13 +176,26 @@ def _fd_links(prop: dict, side: str) -> dict:
 # ── PointsBet ─────────────────────────────────────────────────────────────────
 
 def _pb_links(prop: dict) -> dict:
-    """PointsBet AU: event page only (no public bet-slip deeplink)."""
+    """PointsBet AU: event page (+ market fragment when market_key is available).
+
+    book_selection_id_over stores the market key captured by pointsbet_scraper
+    (set when data comes from the dedicated PB scraper, not the-odds-api).
+    When present, appends the /markets/<key> path for a per-market URL.
+    When game_id is a 32-char hex hash (the-odds-api internal ID) it is NOT
+    a valid PB event key — fall back gracefully to landing page.
+    """
     event_key: str = str(prop.get("game_id") or "")
-    if event_key:
-        web_url = (f"https://au.pointsbet.com/sports/basketball/competitions"
-                   f"/7176/events/{event_key}")
+    market_key: str = str(prop.get("selection_id_over") or "")
+    # Detect the-odds-api hash IDs (32-char lowercase hex): not valid PB event keys
+    _is_hash = len(event_key) == 32 and all(c in "0123456789abcdef" for c in event_key)
+    if not event_key or _is_hash:
+        return {"web_url": _landing("pointsbet"), "app_url": None}
+    base_event = (f"https://au.pointsbet.com/sports/basketball/competitions"
+                  f"/7176/events/{event_key}")
+    if market_key:
+        web_url = f"{base_event}/markets/{market_key}"
     else:
-        web_url = _landing("pointsbet")
+        web_url = base_event
     return {"web_url": web_url, "app_url": None}
 
 
@@ -189,13 +204,26 @@ def _pb_links(prop: dict) -> dict:
 def _betrivers_links(prop: dict) -> dict:
     """Return BetRivers event-page deeplink.
 
-    KAMBI game_id (the betOffer event ID) maps directly to the BetRivers
-    event page URL pattern.  No public per-outcome bet-slip deeplink exists.
-    Falls back to NBA lobby when game_id is absent.
+    KAMBI game_id (the betOffer event ID, a numeric integer) maps directly to
+    the BetRivers event page URL pattern.  No public per-outcome bet-slip
+    deeplink exists.
+
+    When game_id is a 32-char hex hash (the-odds-api.com internal ID) it is
+    NOT a valid BetRivers event ID — fall back to player-name search instead.
     """
     game_id: str = str(prop.get("game_id") or "")
-    if game_id:
+    # Detect the-odds-api hash IDs (32-char lowercase hex): not usable on betrivers.com
+    _is_hash = len(game_id) == 32 and all(c in "0123456789abcdef" for c in game_id)
+    if game_id and not _is_hash:
         web_url = f"https://www.betrivers.com/?page=sportsbook&type=event&id={game_id}"
+    elif game_id and _is_hash:
+        # TheOddsAPI hash — use player-search so user lands close to the right market
+        from urllib.parse import quote_plus as _qp  # noqa: PLC0415
+        player: str = prop.get("player") or ""
+        if player:
+            web_url = f"https://www.betrivers.com/?page=sportsbook&search={_qp(player)}"
+        else:
+            web_url = _landing("betrivers")
     else:
         web_url = _landing("betrivers")
     return {"web_url": web_url, "app_url": None}
@@ -237,11 +265,11 @@ def _player_search_links(book: str, prop: dict) -> dict:
     if book == "mgm":
         web_url = f"https://sports.betmgm.com/en/sports?q={q}"
     elif book == "caesars":
-        web_url = f"https://www.caesars.com/sportsbook-and-casino/sports/basketball/nba"
+        web_url = f"https://sportsbook.caesars.com/us/bet/search?query={q}"
     elif book == "espnbet":
         web_url = f"https://espnbet.com/sport/basketball/organization/us/competition/nba"
     elif book == "fanatics":
-        web_url = f"https://sportsbook.fanaticsbetting.com/sport/basketball/nba"
+        web_url = f"https://sportsbook.fanaticsbetting.com/search?q={q}"
     else:
         web_url = base
     return {"web_url": web_url, "app_url": None}
