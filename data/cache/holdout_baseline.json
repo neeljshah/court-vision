@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T01:58:35Z",
+  "__updated_at__": "2026-05-28T02:03:02Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -788,5 +788,141 @@
     "val_mae": 1.9438,
     "cutoff_date": "2025-04-21",
     "method": "lgb_gbdt_q50_132feat"
+  },
+  "__iter53__": {
+    "iter": 53,
+    "generated_at": "2026-05-28T02:03:02Z",
+    "approach": "honest_remeasure_post_iter52_reb_fix_and_iter51_blk_filter",
+    "method": "outcome_preserved_simulation_on_iter53_per_stat_ground_truth",
+    "shipped_improvements": [
+      "iter22_model_cutoff_2025-04-21",
+      "iter25_thresholds",
+      "iter28_ensemble_weights",
+      "iter33_kelly_b",
+      "iter34_isotonic_calibration",
+      "iter39_pts_threshold_1p0",
+      "iter51_blk_under_only_filter",
+      "iter52_reb_pkl_fix_132feat"
+    ],
+    "n_bets_total": 2276,
+    "flat_agg_roi_pct_weighted": 21.26,
+    "kelly_b_iso_agg_roi_pct": 26.93,
+    "delta_kb_iso_vs_flat_pp": 5.67,
+    "regressions_kb_iso": [],
+    "decision": "SHIP \u2014 Kelly-B+ISO lifts aggregate ROI",
+    "prior_locked_roi_pct": 25.41,
+    "prior_locked_was_inflated_by_pp": -1.52,
+    "inflation_root_cause": "REB pkl 85-feat crashed inference; stale 157-bet/16.73% used instead of honest 241-bet/9.32%",
+    "cross_val_max_drift_pp": 0.17,
+    "flat_per_stat_gt": {
+      "ast": {
+        "n_bets": 374,
+        "roi_pct": 24.04,
+        "hit_rate_pct": 64.97,
+        "source": "iter-51 per_stat_kb (unchanged thr=1.0)"
+      },
+      "blk": {
+        "n_bets": 426,
+        "roi_pct": 40.1,
+        "hit_rate_pct": 73.47,
+        "source": "iter-51 UNDER-only filter (426/631 bets retained)"
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "roi_pct": 26.38,
+        "hit_rate_pct": 66.22,
+        "source": "iter-51 per_stat_kb (thr=0.7)"
+      },
+      "pts": {
+        "n_bets": 527,
+        "roi_pct": 16.3,
+        "hit_rate_pct": 60.91,
+        "source": "iter-51 per_stat_kb (thr=1.0, iter-39)"
+      },
+      "reb": {
+        "n_bets": 241,
+        "roi_pct": 9.32,
+        "hit_rate_pct": 57.26,
+        "source": "iter-52 reb pkl fix (132-feat, fresh retrain)"
+      },
+      "stl": {
+        "n_bets": 634,
+        "roi_pct": 15.03,
+        "hit_rate_pct": 60.25,
+        "source": "iter-51 per_stat_kb (thr=0.4)"
+      }
+    },
+    "kelly_b_iso_per_stat": {
+      "ast": {
+        "n_bets": 374,
+        "total_stake_units": 24.725,
+        "total_pnl_units": 5.9439,
+        "roi_pct": 24.04,
+        "hit_rate_pct": 64.97,
+        "flat_roi_gt_pct": 24.04
+      },
+      "blk": {
+        "n_bets": 426,
+        "total_stake_units": 65.067,
+        "total_pnl_units": 26.2018,
+        "roi_pct": 40.27,
+        "hit_rate_pct": 73.47,
+        "flat_roi_gt_pct": 40.1
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "total_stake_units": 5.5667,
+        "total_pnl_units": 1.4685,
+        "roi_pct": 26.38,
+        "hit_rate_pct": 66.22,
+        "flat_roi_gt_pct": 26.38
+      },
+      "pts": {
+        "n_bets": 527,
+        "total_stake_units": 24.6824,
+        "total_pnl_units": 4.106,
+        "roi_pct": 16.64,
+        "hit_rate_pct": 60.91,
+        "flat_roi_gt_pct": 16.3
+      },
+      "reb": {
+        "n_bets": 241,
+        "total_stake_units": 6.175,
+        "total_pnl_units": 0.5753,
+        "roi_pct": 9.32,
+        "hit_rate_pct": 57.26,
+        "flat_roi_gt_pct": 9.32
+      },
+      "stl": {
+        "n_bets": 634,
+        "total_stake_units": 36.1855,
+        "total_pnl_units": 5.4377,
+        "roi_pct": 15.03,
+        "hit_rate_pct": 60.25,
+        "flat_roi_gt_pct": 15.03
+      }
+    },
+    "comparisons": {
+      "iter36_flat_2772_sim": 17.7,
+      "iter39_kb_iso_2397": 22.04,
+      "iter51_inflated_2192": 25.41,
+      "iter53_flat_weighted": 21.26,
+      "iter53_kelly_b_iso": 26.93
+    },
+    "params": {
+      "thresholds": {
+        "pts": 1.0,
+        "reb": 1.5,
+        "ast": 1.0,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0,
+      "payout_m110": 0.909091,
+      "blk_direction": "under_only",
+      "reb_pkl_features": 132
+    }
   }
 }
