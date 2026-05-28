@@ -166,6 +166,73 @@ _REB_CONTEXT_KEYS = ("team_oreb_pct_l5", "opp_dreb_pct_l5", "reb_chance_l5")
 _REB_CONTEXT_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _REB_CONTEXT_KEYS}
 _REB_CONTEXT_PATH = os.path.join(PROJECT_DIR, "data", "team_reb_context.parquet")
 
+# Iter-44 (loop 5) — narrow synergy PPP per-play-type extras.
+# Five PPP columns keyed (player_id, season) from data/nba/synergy_player_*.json.
+# Wired ONLY into the three stats where signal hypothesis is strongest:
+#   AST  gets syn_pnr_bh_ppp (PnR BH sets up teammates)
+#   PTS  gets syn_iso_ppp + syn_pnr_bh_ppp (scorer efficiency + creation)
+#   FG3M gets syn_spotup_ppp (3PT spot-up frequency × success)
+# Other stats keep the global feature list to preserve artifact compatibility.
+# Source: data/cache/synergy_ppp_features.parquet, built by
+#   scripts/build_synergy_ppp_features.py. Join key = (player_id, season)
+#   CURRENT-SEASON (not prior-season like pt_*_freq) — OOS gate catches leak.
+_SYN_PPP_KEYS = (
+    "syn_pnr_bh_ppp", "syn_spotup_ppp", "syn_iso_ppp",
+    "syn_postup_ppp", "syn_transition_ppp",
+)
+_SYN_PPP_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _SYN_PPP_KEYS}
+_SYN_PPP_PATH = os.path.join(PROJECT_DIR, "data", "cache", "synergy_ppp_features.parquet")
+# Per-stat subset: only the columns relevant to each stat
+_SYN_PPP_AST_KEYS:  Tuple[str, ...] = ("syn_pnr_bh_ppp",)
+_SYN_PPP_PTS_KEYS:  Tuple[str, ...] = ("syn_iso_ppp", "syn_pnr_bh_ppp")
+_SYN_PPP_FG3M_KEYS: Tuple[str, ...] = ("syn_spotup_ppp",)
+
+# Iter-46 (loop 5) — per-opponent rolling-3 stat features.
+# Source: data/cache/per_opp_stat_rolling.parquet, built by
+# scripts/build_per_opp_rolling.py from all gamelog_*.json files.
+# For each (player_id, game_date): shift(1).rolling(3, min_periods=1).mean()
+# within each (player_id, opp_team) group for PTS, REB, AST, FG3M, STL, BLK.
+# Key: (player_id, game_date_iso)  → feature dict (NaN when <1 prior meeting).
+# High null rate (~20%) expected (first-ever matchup rows); NaN-safe join.
+# Wired ONLY into the corresponding per-stat model (per_opp_pts_l3 → PTS only,
+# per_opp_reb_l3 → REB only, etc.) to avoid feature dilution.
+_PER_OPP_ROLLING_STATS: Tuple[str, ...] = ("pts", "reb", "ast", "fg3m", "stl", "blk")
+_PER_OPP_ROLLING_KEYS: Tuple[str, ...] = tuple(
+    f"per_opp_{s}_l3" for s in _PER_OPP_ROLLING_STATS
+)
+# NaN default (not 0.0) — preserves missing-data signal for tree learners.
+_PER_OPP_ROLLING_DEFAULTS: Dict[str, Optional[float]] = {
+    k: None for k in _PER_OPP_ROLLING_KEYS
+}
+_PER_OPP_ROLLING_PATH = os.path.join(
+    PROJECT_DIR, "data", "cache", "per_opp_stat_rolling.parquet"
+)
+
+# Iter-19 (loop 5) — linescore blowout/pace context features.
+# Source: data/cache/linescore_context.parquet, built by
+# scripts/build_linescore_context.py from data/nba/linescores_all.json
+# (4,915 games, 4 seasons 2022-23 through 2025-26). All 7 features use
+# shift(1).rolling(5, min_periods=2) — strictly leak-free.
+# Keyed by (team_abbreviation, game_date):
+#   ls_blowout_pct_l5        — frac last 5 with |H1 margin| > 15
+#   ls_avg_total_l5          — avg game total (final) last 5
+#   ls_avg_q1_pts_l5         — team avg Q1 pts last 5
+#   ls_avg_q4_pts_l5         — team avg Q4 pts last 5
+#   ls_garbage_time_pct_l5   — frac last 5 with final margin > 20
+#   ls_opp_avg_total_allowed_l5  — opp's avg game total last 5 (from opp team's rows)
+#   ls_opp_q1_pts_allowed_l5    — opp's avg Q1 pts allowed last 5
+_LS_FEATURE_KEYS: Tuple[str, ...] = (
+    "ls_blowout_pct_l5",
+    "ls_avg_total_l5",
+    "ls_avg_q1_pts_l5",
+    "ls_avg_q4_pts_l5",
+    "ls_garbage_time_pct_l5",
+    "ls_opp_avg_total_allowed_l5",
+    "ls_opp_q1_pts_allowed_l5",
+)
+_LS_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _LS_FEATURE_KEYS}
+_LS_CONTEXT_PATH = os.path.join(PROJECT_DIR, "data", "cache", "linescore_context.parquet")
+
 # Cycle 19 (loop 5): per-stat Huber-on-log1p infrastructure. Tested with the
 # six log1p stats — only FG3M showed a clean WF 4/4-folds MAE win
 # (-0.0024 +- 0.0013), but on the production single-split MAE was a wash
@@ -302,11 +369,86 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     # cols += list(_HUSTLE_KEYS)              # E: 6 cols (130-135)
     # cols += list(_ONOFF_KEYS)              # F: 3 cols (136-138)
 
+    # Iter-17: gamelog_full box-stat rolling (oreb/dreb/fga/fta/pm) — 14 new keys.
+    # REVERTED (backtest_holdout REVERT decision 2026-05-27): validation MAE
+    # improved 6/7 stats but OOS 4-slice ROI regressed across all stats
+    # (pts -2.26pp, ast -7.9pp, reb -4.3pp, fg3m -1.0pp, stl -2.3pp, blk -1.3pp).
+    # Pattern: large training-set MAE gains with OOS ROI regression = overfitting.
+    # Infrastructure stays intact for future probe with feature selection /
+    # regularization angle (e.g., only fga_l5 + plus_minus_l5 instead of all 14).
+    # cols += list(_GAMELOG_FULL_FEATURE_KEYS)  # 14 cols — DISABLED pending re-probe
+
+    # Iter-18 narrow probe: only 2 isolated gamelog_full features for PTS.
+    # REVERTED (backtest_holdout REVERT decision 2026-05-27): OOS holdout ROI
+    # dropped from +2.55% to -0.06% (delta -2.61pp), MAE rose 5.70→6.94 (+1.24).
+    # RS WF: 4/11 positive folds, mean_roi=-4.3%. Both gates FAILED decisively.
+    # Pattern: gl_fga_l5 proxies usage, duplicating existing l5_pts/ewma_pts form
+    # signals; gl_plus_minus_l5 introduces lineup noise. Even with tighter reg
+    # (alpha 2→3, lambda 4→6) the 2-feature add creates OOS drag on PTS.
+    # Infrastructure stays intact. Future angle: per-role probe (high-usage
+    # scorers only where fga_l5 might carry marginal independent signal).
+    # if stat == "pts":
+    #     cols += ["gl_fga_l5", "gl_plus_minus_l5"]
+
+    # Iter-19 (loop 5) — linescore blowout/pace context (7 ls_* keys).
+    # REVERTED (backtest_holdout REVERT decision 2026-05-27): validation MAE
+    # improved 6/7 stats but OOS ROI regressed across 5/6 stats tested
+    # (ast -14.3pp, reb -8.8pp, fg3m -2.8pp, stl -4.1pp, pts -0.95pp).
+    # Pattern: large training-set MAE gains with OOS ROI regression = overfitting.
+    # Infrastructure (build_linescore_context, _LinescoreContext, _LS_FEATURE_KEYS,
+    # the injection in build_pergame_dataset and _inject_iter23_features) stays
+    # active for a future probe with tighter feature selection or regularization
+    # (e.g., only ls_avg_total_l5 for high-pace contexts, or interaction with
+    # garbage_time_pct for volume props like PTS).
+    # cols += list(_LS_FEATURE_KEYS)  # 7 cols — DISABLED pending re-probe
+
     # Cycle 90d (loop 5) — T1-E: REB-only OREB-context features.
     # ONLY appended when stat == "reb"; other stats keep the global list to
     # preserve compatibility with existing model artifacts.
     if stat == "reb":
         cols += list(_REB_CONTEXT_KEYS)
+
+    # Iter-47 (loop 5) — l3 + l7 rolling windows for PTS, AST, REB only.
+    # REVERTED (backtest_holdout REVERT decision 2026-05-28): OOS ROI regressed
+    # across all 3 probe stats:
+    #   PTS: delta_roi=-14.6pp, delta_mae=+6.15 (massive OOS MAE increase)
+    #   AST: delta_roi=-16.4pp, delta_mae=+1.60
+    #   REB: delta_roi=-3.1pp
+    # Pattern: denser window coverage overlaps heavily with existing l5/l10/ewma,
+    # adding collinear features that overfit training distributions without
+    # generalizing to 2025-26 OOS. _row_features still computes l3/l7 for ALL
+    # _FORM_STATS (zero inference cost); gate here keeps them out of all models.
+    # Future probe angle: interaction feature (l3 - l5 as momentum delta), or
+    # selective use in high-variance players only (role change detection).
+    # if stat in ("pts", "ast", "reb"):
+    #     cols += [f"l3_{stat}", f"l7_{stat}"]
+
+    # Iter-44 (loop 5) — narrow synergy PPP per-play-type extras.
+    # REVERTED (backtest_holdout REVERT decision 2026-05-28): OOS ROI regressed
+    # across all 3 probe stats despite validation MAE improvement:
+    #   PTS: delta_roi=-7.0pp, delta_mae=+5.43 (massive OOS MAE increase)
+    #   AST: delta_roi=-16.7pp, delta_mae=+1.58
+    #   FG3M: delta_roi=-12.7pp
+    # Pattern: per-season aggregate PPP features overfit to training seasons and
+    # don't generalize to 2025-26 OOS distribution. The features shift the model's
+    # prediction distribution but don't improve accuracy on unseen data.
+    # Infrastructure (build_syn_ppp, _SynPPP, parquet) stays for future probe
+    # angles (e.g., rolling PPP within-season, per-opponent PPP split).
+    # if stat == "ast":
+    #     cols += list(_SYN_PPP_AST_KEYS)
+    # elif stat == "pts":
+    #     cols += list(_SYN_PPP_PTS_KEYS)
+    # elif stat == "fg3m":
+    #     cols += list(_SYN_PPP_FG3M_KEYS)
+
+    # Iter-46 (loop 5) — per-opponent rolling-3 stat features.
+    # Wire ONLY the matching per-stat feature into each stat model to avoid
+    # feature dilution (per-task build so artifacts don't dim-mismatch).
+    # High null rate (~20% first-ever matchup) — NaN passthrough to tree.
+    # Gate: stat in _PER_OPP_ROLLING_STATS (pts/reb/ast/fg3m/stl/blk; not tov).
+    if stat in _PER_OPP_ROLLING_STATS:
+        cols += [f"per_opp_{stat}_l3"]
+
     return cols
 
 
@@ -689,6 +831,93 @@ def build_team_reb_context(parquet_path: Optional[str] = None) -> _TeamRebContex
         _warn_join_load_once("build_team_reb_context", path, exc)
         return _TeamRebContext(by_team)
     return _TeamRebContext(by_team)
+
+
+# ── Iter-19: linescore blowout/pace context (ls_* features) ──────────────────
+# Source: data/cache/linescore_context.parquet — pre-computed rolling-5
+# features per (team_abbreviation, game_date). The parquet already applies
+# shift(1).rolling(5, min_periods=2) so every row is strictly leak-free.
+# We load the full parquet into a (team, date_iso) → {ls_*} dict for O(1)
+# lookup at inference time. Missing rows fall back to _LS_DEFAULTS (0.0).
+
+
+class _LinescoreContext:
+    """Pre-computed (team_abbreviation, date_iso) → {ls_*} lookup.
+
+    Loaded from data/cache/linescore_context.parquet. The parquet is already
+    aggregated (shift(1).rolling(5)) so no in-memory rolling is needed — we
+    just do a keyed lookup. Both team-side (5 features) and opponent-side
+    (2 features) are stored in the same parquet per team; at join time the
+    caller passes team_abbrev to get team features and opp_abbrev separately
+    for the opp variants.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[str, str], Dict[str, float]]):
+        self._lookup = lookup  # keyed by (team_abbreviation, date_iso)
+
+    def features(self, team_abbrev: str, opp_abbrev: str, game_date) -> Dict[str, float]:
+        """Return 7 ls_* features for this (team, opponent, date) triple.
+
+        Team-side features (ls_blowout_pct_l5, ls_avg_total_l5,
+        ls_avg_q1_pts_l5, ls_avg_q4_pts_l5, ls_garbage_time_pct_l5) come
+        from the team's own row. Opp-side features
+        (ls_opp_avg_total_allowed_l5, ls_opp_q1_pts_allowed_l5) come from
+        the opp team's row (where opp_q1_pts_allowed means our-team Q1 pts
+        scored against that opponent in prior games — i.e., opp's Q1
+        defence tendency from opp's perspective).
+        """
+        out = dict(_LS_DEFAULTS)
+        try:
+            if hasattr(game_date, "date"):
+                date_iso = game_date.date().isoformat()
+            else:
+                date_iso = str(game_date)[:10]
+            team_row = self._lookup.get((str(team_abbrev), date_iso))
+            opp_row  = self._lookup.get((str(opp_abbrev),  date_iso))
+            if team_row:
+                out["ls_blowout_pct_l5"]       = team_row.get("ls_blowout_pct_l5", 0.0)
+                out["ls_avg_total_l5"]         = team_row.get("ls_avg_total_l5", 0.0)
+                out["ls_avg_q1_pts_l5"]        = team_row.get("ls_avg_q1_pts_l5", 0.0)
+                out["ls_avg_q4_pts_l5"]        = team_row.get("ls_avg_q4_pts_l5", 0.0)
+                out["ls_garbage_time_pct_l5"]  = team_row.get("ls_garbage_time_pct_l5", 0.0)
+            if opp_row:
+                out["ls_opp_avg_total_allowed_l5"] = opp_row.get("ls_opp_avg_total_allowed_l5", 0.0)
+                out["ls_opp_q1_pts_allowed_l5"]    = opp_row.get("ls_opp_q1_pts_allowed_l5", 0.0)
+        except Exception:
+            pass
+        return out
+
+
+_LS_CONTEXT_CACHE: Optional["_LinescoreContext"] = None
+
+
+def _get_linescore_context() -> "_LinescoreContext":
+    """Process-cached _LinescoreContext for live prediction paths."""
+    global _LS_CONTEXT_CACHE
+    if _LS_CONTEXT_CACHE is None:
+        _LS_CONTEXT_CACHE = build_linescore_context()
+    return _LS_CONTEXT_CACHE
+
+
+def build_linescore_context(parquet_path: Optional[str] = None) -> _LinescoreContext:
+    """Load linescore_context.parquet into a _LinescoreContext wrapper. Never raises."""
+    path = parquet_path or _LS_CONTEXT_PATH
+    lookup: Dict[Tuple[str, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _LinescoreContext(lookup)
+        df = pd.read_parquet(path)
+        for _, r in df.iterrows():
+            team = str(r.get("team_abbreviation", "")).strip()
+            date = str(r.get("game_date", ""))[:10]
+            if not team or not date:
+                continue
+            lookup[(team, date)] = {k: float(r.get(k, 0.0) or 0.0) for k in _LS_FEATURE_KEYS}
+    except Exception as exc:
+        _warn_join_load_once("build_linescore_context", path, exc)
+        return _LinescoreContext(lookup)
+    return _LinescoreContext(lookup)
 
 
 # ── team advanced stats — opp-context rolling-5 (cycle 99e loop 5) ────────────
@@ -1510,6 +1739,133 @@ def _get_playtypes() -> _PlayTypes:
     if _PLAYTYPES_CACHE is None:
         _PLAYTYPES_CACHE = build_playtypes()
     return _PLAYTYPES_CACHE
+
+
+# ── Iter-44: synergy PPP per-play-type lookup ─────────────────────────────────
+
+class _SynPPP:
+    """Lookup table for per-(player_id, season) synergy PPP values.
+
+    Keyed (player_id, season) → {syn_*_ppp: float, ...}.
+    Returns full 5-key defaults on miss so callers see no KeyError.
+    Join key is CURRENT-SEASON (not prior-season) — OOS gate catches any leak.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def features(self, player_id, season: str) -> Dict[str, float]:
+        try:
+            key = (int(player_id), str(season))
+        except (TypeError, ValueError):
+            return dict(_SYN_PPP_DEFAULTS)
+        return dict(self._lookup.get(key, _SYN_PPP_DEFAULTS))
+
+
+def build_syn_ppp(parquet_path: Optional[str] = None) -> _SynPPP:
+    """Load synergy_ppp_features.parquet into a _SynPPP lookup. Never raises."""
+    path = parquet_path or _SYN_PPP_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import pandas as pd  # noqa: PLC0415
+        if not os.path.exists(path):
+            return _SynPPP(lookup)
+        df = pd.read_parquet(path)
+        for _, row in df.iterrows():
+            key = (int(row["player_id"]), str(row["season"]))
+            lookup[key] = {k: float(row.get(k, 0.0) or 0.0) for k in _SYN_PPP_KEYS}
+    except Exception as exc:
+        _warn_join_load_once("build_syn_ppp", path, exc)
+    return _SynPPP(lookup)
+
+
+_SYN_PPP_CACHE: Optional[_SynPPP] = None
+
+
+def _get_syn_ppp() -> _SynPPP:
+    global _SYN_PPP_CACHE
+    if _SYN_PPP_CACHE is None:
+        _SYN_PPP_CACHE = build_syn_ppp()
+    return _SYN_PPP_CACHE
+
+
+# ── Iter-46: per-opponent rolling-3 stat features ────────────────────────────
+
+class _PerOppRolling:
+    """Per-(player_id, game_date_iso) per-opponent rolling-3 stat lookup.
+
+    Keyed (player_id, game_date_str 'YYYY-MM-DD') → {per_opp_<stat>_l3: float|None}.
+    Returns all-None defaults on miss (no prior opponent meetings).
+    NaN passthrough intentional — tree learners handle missing values natively;
+    imputing with 0 would conflate "first meeting" with "scored 0".
+    """
+
+    def __init__(
+        self,
+        lookup: Dict[Tuple[int, str], Dict[str, Optional[float]]],
+    ) -> None:
+        self._lookup = lookup
+
+    def features(
+        self,
+        player_id: int,
+        game_date_iso: str,
+    ) -> Dict[str, Optional[float]]:
+        try:
+            key = (int(player_id), str(game_date_iso)[:10])
+        except (TypeError, ValueError):
+            return dict(_PER_OPP_ROLLING_DEFAULTS)
+        return dict(self._lookup.get(key, _PER_OPP_ROLLING_DEFAULTS))
+
+    def __len__(self) -> int:
+        return len(self._lookup)
+
+
+def build_per_opp_rolling(
+    parquet_path: Optional[str] = None,
+) -> "_PerOppRolling":
+    """Load per_opp_stat_rolling.parquet into a _PerOppRolling lookup.
+
+    Falls back to an empty wrapper (all-None on every lookup) when the
+    parquet is absent or pandas/pyarrow fails. Never raises.
+    """
+    path = parquet_path or _PER_OPP_ROLLING_PATH
+    lookup: Dict[Tuple[int, str], Dict[str, Optional[float]]] = {}
+    if not os.path.exists(path):
+        return _PerOppRolling(lookup)
+    try:
+        import math as _math  # noqa: PLC0415
+        import pandas as pd  # noqa: PLC0415
+        df = pd.read_parquet(path)
+        for _, row in df.iterrows():
+            try:
+                pid = int(row["player_id"])
+                gd = str(row["game_date"])[:10]
+            except (TypeError, ValueError, KeyError):
+                continue
+            vals: Dict[str, Optional[float]] = {}
+            for k in _PER_OPP_ROLLING_KEYS:
+                v = row.get(k)
+                try:
+                    fv = float(v)
+                    vals[k] = None if _math.isnan(fv) else fv
+                except (TypeError, ValueError):
+                    vals[k] = None
+            lookup[(pid, gd)] = vals
+    except Exception as exc:
+        _warn_join_load_once("build_per_opp_rolling", path, exc)
+        return _PerOppRolling(lookup)
+    return _PerOppRolling(lookup)
+
+
+_PER_OPP_ROLLING_CACHE: Optional["_PerOppRolling"] = None
+
+
+def _get_per_opp_rolling() -> "_PerOppRolling":
+    global _PER_OPP_ROLLING_CACHE
+    if _PER_OPP_ROLLING_CACHE is None:
+        _PER_OPP_ROLLING_CACHE = build_per_opp_rolling()
+    return _PER_OPP_ROLLING_CACHE
 
 
 # ── BBRef advanced features (per-player-season efficiency + rate metrics) ────
@@ -2421,6 +2777,187 @@ def _get_on_off_features() -> _OnOffFeatures:
     return _ONOFF_CACHE
 
 
+# ── Iter-17: gamelog_full box-stat rolling features ──────────────────────────
+# Source: data/nba/gamelog_full_<pid>_<season>.json (same filenames as regular
+# gamelog_* but prefixed "gamelog_full_"). Each file carries a richer set of
+# box-stat columns including oreb, dreb, fga, fg_pct, fta, ft_pct, plus_minus,
+# pf — absent from the stripped gamelog_*.json files read by the main loop.
+#
+# Per-game grain, same date format and player_id as the existing gamelogs.
+# Strategy: load ALL gamelog_full_*.json files once, group by player_id, sort
+# chronologically, compute shift(1).rolling(N, min_periods=N-1) features.
+# Keyed by (player_id, game_date_str) for O(1) join in build_pergame_dataset.
+#
+# 14 new keys — none overlap existing feature_columns():
+#   gl_oreb_l5, gl_oreb_l10                — offensive rebounds
+#   gl_dreb_l5, gl_dreb_l10                — defensive rebounds
+#   gl_fga_l5, gl_fga_l10                  — FG attempts (volume proxy)
+#   gl_fg_pct_l10, gl_fg_pct_ewma          — FG% (efficiency rate)
+#   gl_fta_l5, gl_fta_l10                  — FT attempts (paint volume + foul drawn)
+#   gl_ft_pct_l10                          — FT% (efficiency)
+#   gl_plus_minus_l5, gl_plus_minus_ewma   — net impact / lineup context
+#   gl_pf_l5                               — personal fouls (distinct from pf_per36 in foul features)
+_GAMELOG_FULL_RAW_STATS = ("oreb", "dreb", "fga", "fg_pct", "fta", "ft_pct", "plus_minus", "pf")
+_GAMELOG_FULL_FEATURE_KEYS: Tuple[str, ...] = (
+    "gl_oreb_l5", "gl_oreb_l10",
+    "gl_dreb_l5", "gl_dreb_l10",
+    "gl_fga_l5", "gl_fga_l10",
+    "gl_fg_pct_l10", "gl_fg_pct_ewma",
+    "gl_fta_l5", "gl_fta_l10",
+    "gl_ft_pct_l10",
+    "gl_plus_minus_l5", "gl_plus_minus_ewma",
+    "gl_pf_l5",
+)
+_GAMELOG_FULL_DEFAULTS: Dict[str, float] = {k: 0.0 for k in _GAMELOG_FULL_FEATURE_KEYS}
+_GAMELOG_FULL_MIN_PLAYED = 1.0  # mirror _MIN_PLAYED — only count games where player played
+
+
+class _GamelogFullRolling:
+    """Per-(player_id, game_date_str) rolling box-stat features from gamelog_full_*.json.
+
+    Built once at dataset construction time from all gamelog_full files. For
+    each player, games are sorted chronologically and each game's features are
+    the rolling L5/L10/EWMA of PRIOR games (shift(1) discipline — the current
+    game is excluded from its own features). Keyed by (int player_id, str ISO
+    game_date 'YYYY-MM-DD') for O(1) join during the main gamelog loop.
+
+    Empty wrapper (no gamelog_full files found) returns all-zero defaults so
+    build_pergame_dataset stays back-compat on a fresh checkout. Never raises.
+    """
+
+    def __init__(self, lookup: Dict[Tuple[int, str], Dict[str, float]]):
+        self._lookup = lookup
+
+    def __len__(self) -> int:
+        return len(self._lookup)
+
+    def features(self, player_id, game_date) -> Dict[str, float]:
+        try:
+            pid = int(player_id)
+        except (TypeError, ValueError):
+            return dict(_GAMELOG_FULL_DEFAULTS)
+        gd = game_date.date().isoformat() if hasattr(game_date, "date") else str(game_date)[:10]
+        return dict(self._lookup.get((pid, gd), _GAMELOG_FULL_DEFAULTS))
+
+
+def build_gamelog_full_rolling(gamelog_dir: Optional[str] = None) -> _GamelogFullRolling:
+    """Load all gamelog_full_*.json and compute shift(1) rolling features per player.
+
+    Returns an empty wrapper when no files are found or on any import failure.
+    Never raises. Idempotent — calling multiple times produces the same result.
+    """
+    gdir = gamelog_dir or _NBA_CACHE
+    lookup: Dict[Tuple[int, str], Dict[str, float]] = {}
+    try:
+        import math as _math  # noqa: PLC0415
+        # Group games by player_id across all files and seasons.
+        by_pid: Dict[int, List[Tuple[str, Dict]]] = {}
+        for fname in os.listdir(gdir):
+            if not fname.startswith("gamelog_full_") or not fname.endswith(".json"):
+                continue
+            try:
+                games = json.load(open(os.path.join(gdir, fname), encoding="utf-8"))
+            except Exception:
+                continue
+            if not isinstance(games, list):
+                continue
+            for g in games:
+                try:
+                    pid = int(g.get("player_id", 0) or 0)
+                    gdate_str = str(g.get("game_date", "") or "").strip()
+                except Exception:
+                    continue
+                if not pid or not gdate_str:
+                    continue
+                # Only include games where the player actually played.
+                try:
+                    minutes = float(g.get("min", 0.0) or 0.0)
+                except (TypeError, ValueError):
+                    minutes = 0.0
+                if minutes < _GAMELOG_FULL_MIN_PLAYED:
+                    continue
+                by_pid.setdefault(pid, []).append((gdate_str, g))
+
+        def _safe_float(v) -> Optional[float]:
+            if v is None:
+                return None
+            try:
+                f = float(v)
+                return None if (f != f) else f  # NaN guard
+            except (TypeError, ValueError):
+                return None
+
+        def _rolling_mean(vals: List[float], n: int) -> float:
+            window = [v for v in vals[-n:] if v is not None]
+            return sum(window) / len(window) if window else 0.0
+
+        def _ewma_from_list(vals: List[float], alpha: float = _EWMA_ALPHA) -> float:
+            clean = [v for v in vals if v is not None]
+            return _ewma(clean, alpha) if clean else 0.0
+
+        for pid, date_game_pairs in by_pid.items():
+            # Sort by parsed date; skip unparseable dates.
+            dated: List[Tuple, dict] = []
+            for gdate_str, g in date_game_pairs:
+                d = _parse_date(gdate_str)
+                if d is not None:
+                    dated.append((d, gdate_str, g))
+            dated.sort(key=lambda x: x[0])
+
+            # Prior-games buffer per stat (already-played games only).
+            hist: Dict[str, List[Optional[float]]] = {s: [] for s in _GAMELOG_FULL_RAW_STATS}
+
+            for gdate_dt, gdate_str, g in dated:
+                gdate_iso = gdate_dt.date().isoformat()
+                # Compute rolling features from PRIOR games (shift(1)).
+                row_feats: Dict[str, float] = {}
+
+                oreb_hist = hist["oreb"]
+                dreb_hist = hist["dreb"]
+                fga_hist = hist["fga"]
+                fgpct_hist = hist["fg_pct"]
+                fta_hist = hist["fta"]
+                ftpct_hist = hist["ft_pct"]
+                pm_hist = hist["plus_minus"]
+                pf_hist = hist["pf"]
+
+                row_feats["gl_oreb_l5"]        = _rolling_mean(oreb_hist, 5)
+                row_feats["gl_oreb_l10"]       = _rolling_mean(oreb_hist, 10)
+                row_feats["gl_dreb_l5"]        = _rolling_mean(dreb_hist, 5)
+                row_feats["gl_dreb_l10"]       = _rolling_mean(dreb_hist, 10)
+                row_feats["gl_fga_l5"]         = _rolling_mean(fga_hist, 5)
+                row_feats["gl_fga_l10"]        = _rolling_mean(fga_hist, 10)
+                row_feats["gl_fg_pct_l10"]     = _rolling_mean(fgpct_hist, 10)
+                row_feats["gl_fg_pct_ewma"]    = _ewma_from_list(fgpct_hist)
+                row_feats["gl_fta_l5"]         = _rolling_mean(fta_hist, 5)
+                row_feats["gl_fta_l10"]        = _rolling_mean(fta_hist, 10)
+                row_feats["gl_ft_pct_l10"]     = _rolling_mean(ftpct_hist, 10)
+                row_feats["gl_plus_minus_l5"]  = _rolling_mean(pm_hist, 5)
+                row_feats["gl_plus_minus_ewma"]= _ewma_from_list(pm_hist)
+                row_feats["gl_pf_l5"]          = _rolling_mean(pf_hist, 5)
+
+                lookup[(pid, gdate_iso)] = row_feats
+
+                # Append current game to history (shift(1) discipline).
+                for stat in _GAMELOG_FULL_RAW_STATS:
+                    hist[stat].append(_safe_float(g.get(stat)))
+
+    except Exception as exc:
+        _warn_join_load_once("build_gamelog_full_rolling", gdir, exc)
+    return _GamelogFullRolling(lookup)
+
+
+_GAMELOG_FULL_ROLLING_CACHE: Optional[_GamelogFullRolling] = None
+
+
+def _get_gamelog_full_rolling() -> _GamelogFullRolling:
+    """Process-cached _GamelogFullRolling for live prediction paths."""
+    global _GAMELOG_FULL_ROLLING_CACHE
+    if _GAMELOG_FULL_ROLLING_CACHE is None:
+        _GAMELOG_FULL_ROLLING_CACHE = build_gamelog_full_rolling()
+    return _GAMELOG_FULL_ROLLING_CACHE
+
+
 # ── opponent defence (leakage-free to-date factors) ──────────────────────────
 
 class _OpponentDefense:
@@ -2688,7 +3225,9 @@ def _row_features(prior_played: List[dict], rest_days: float,
     for stat in _FORM_STATS:
         col = _BOX_COL[stat]
         vals = [_num(g.get(col)) for g in prior_played]
+        feats[f"l3_{stat}"]   = _mean(vals[-3:])         # iter-47: hot-streak window
         feats[f"l5_{stat}"]   = _mean(vals[-5:])
+        feats[f"l7_{stat}"]   = _mean(vals[-7:])         # iter-47: mid-range window
         feats[f"l10_{stat}"]  = _mean(vals[-10:])
         feats[f"std_{stat}"]  = _mean(vals)              # season-to-date
         feats[f"ewma_{stat}"] = _ewma(vals)
@@ -2805,6 +3344,21 @@ def build_pergame_dataset(
     # missing (player_id, season) keys return NaN defaults.
     hustle_src = build_hustle_features()
     onoff_src = build_on_off_features()
+    # Iter-19 — linescore blowout/pace context (7 ls_* keys). GATED on
+    # data/cache/linescore_context.parquet; empty wrapper → all 0.0 defaults.
+    ls_ctx = build_linescore_context()
+    # Iter-44 — synergy PPP per-play-type (5 keys). GATED on
+    # data/cache/synergy_ppp_features.parquet; empty wrapper → all 0.0 defaults.
+    syn_ppp_src = build_syn_ppp()
+    # Iter-46 — per-opponent rolling-3 stat features (6 keys). GATED on
+    # data/cache/per_opp_stat_rolling.parquet; empty wrapper → all None defaults.
+    # NaN passthrough intentional — first-ever matchup rows remain NaN (not 0).
+    per_opp_rolling_src = build_per_opp_rolling()
+    # Iter-17 gamelog_full rolling DISABLED (REVERT 2026-05-27).
+    # Iter-18 narrow probe also REVERTED (2026-05-27) — OOS gate failed.
+    # Infrastructure (build_gamelog_full_rolling, _get_gamelog_full_rolling)
+    # kept for future re-probe. Wiring (gl_full_rolling.features call) disabled.
+    # gl_full_rolling = build_gamelog_full_rolling(gamelog_dir)
 
     for path in glob.glob(os.path.join(gamelog_dir, "gamelog_*.json")):
         try:
@@ -2882,12 +3436,33 @@ def build_pergame_dataset(
                 # Iter-5: static per-season hustle + on_off (NaN for missing).
                 feats.update(hustle_src.features(file_player_id, file_season))
                 feats.update(onoff_src.features(file_player_id, file_season))
+                # Iter-19: linescore blowout/pace context (7 ls_* keys).
+                feats.update(ls_ctx.features(
+                    team_abbrev, _opponent_from_matchup(matchup), gdate))
+                # Iter-44: synergy PPP per-play-type (5 keys, current-season join).
+                feats.update(syn_ppp_src.features(file_player_id, file_season))
+                # Iter-46: per-opponent rolling-3 stat features (6 keys).
+                # Keyed by (player_id, game_date ISO). NaN defaults on miss.
+                gd_iso_str = gdate.date().isoformat()
+                feats.update(per_opp_rolling_src.features(file_player_id, gd_iso_str))
+                # Iter-17 gamelog_full rolling DISABLED (REVERT 2026-05-27).
+                # Iter-18 narrow probe also REVERTED — OOS gate failed.
+                # feats.update(gl_full_rolling.features(file_player_id, gdate))
                 row = {c: feats.get(c, 0.0) for c in feature_cols}
                 # Carry REB-context cols on every row even though they aren't in
                 # the default feature_cols — the REB-only retraining path reads
                 # them via feature_columns(stat="reb").
                 for k in _REB_CONTEXT_KEYS:
                     row[k] = feats.get(k, 0.0)
+                # Carry all 5 syn PPP keys on every row — per-stat retrain paths
+                # for ast/pts/fg3m read them via feature_columns(stat=<stat>).
+                for k in _SYN_PPP_KEYS:
+                    row[k] = feats.get(k, 0.0)
+                # Carry all 6 per-opp rolling keys on every row — per-stat retrain
+                # paths read them via feature_columns(stat=<stat>). NaN preserved
+                # (tree learners handle missing values; 0-impute would be wrong).
+                for k in _PER_OPP_ROLLING_KEYS:
+                    row[k] = feats.get(k)  # None on first meeting
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
                 row["date"] = gdate.isoformat()
@@ -3127,6 +3702,8 @@ def train_pergame_models(
         # level + slightly tighter mcw/lambda. Cycle 25: lr 0.04 → 0.025.
         # Cycle 27: colsample_bytree 0.8 → 0.9. Cycle 28: reg_alpha 0.5 → 2.0
         # (deeper PTS trees overfit; stronger L1 prunes noisy splits).
+        # Iter-18: reg_alpha 2.0 → 3.0 + reg_lambda 4.0 → 6.0 tested with
+        # gl_fga_l5 + gl_plus_minus_l5 — REVERTED (OOS gate failed 2026-05-27).
         "pts": {"max_depth": 6, "min_child_weight": 20, "reg_lambda": 4.0,
                 "gamma": 0.2, "n_estimators": 800, "learning_rate": 0.025,
                 "colsample_bytree": 0.9, "reg_alpha": 2.0},
@@ -3192,6 +3769,17 @@ def train_pergame_models(
         use_log   = stat in _LOG_TRANSFORM_STATS
         use_sqrt_huber = stat in _SQRT_HUBER_STATS
 
+        # Per-stat feature extension: some stats have extra columns beyond the
+        # base feature_cols (e.g. REB gets reb-context cols via retrain_reb_q50_v*.py
+        # which builds its own X from feature_columns("reb")). For the main
+        # train_pergame_models loop, any per-stat extras are handled in the X_all
+        # construction above if they appear in the base feature_cols list, or in
+        # dedicated retrain scripts. Iter-18 (gl_fga_l5 + gl_plus_minus_l5 for PTS)
+        # was tested and REVERTED (2026-05-27) — OOS gate failed.
+        _X_tr  = X_tr
+        _X_val = X_val
+        _X_ho  = X_ho
+
         # When log1p is on, all three learners train on log1p(y) and the
         # base-learner predictions are expm1'd before the NNLS stacker fits.
         # When sqrt+Huber is on (PTS only), the learners train on sqrt(y),
@@ -3232,7 +3820,7 @@ def train_pergame_models(
             objective=xgb_obj,
             early_stopping_rounds=40, eval_metric="mae",
         )
-        xgb_model.fit(X_tr, y_tr_t, eval_set=[(X_val, y_val_t)],
+        xgb_model.fit(_X_tr, y_tr_t, eval_set=[(_X_val, y_val_t)],
                       sample_weight=sample_w_tr, verbose=False)
 
         # Base learner 2 — LightGBM, a different bias-variance tradeoff.
@@ -3256,7 +3844,7 @@ def train_pergame_models(
             objective=lgb_obj,
             n_jobs=-1, verbosity=-1,
         )
-        lgb_model.fit(X_tr, y_tr_t, eval_set=[(X_val, y_val_t)],
+        lgb_model.fit(_X_tr, y_tr_t, eval_set=[(_X_val, y_val_t)],
                       sample_weight=sample_w_tr,
                       callbacks=[lgb.early_stopping(40, verbose=False)])
 
@@ -3274,15 +3862,15 @@ def train_pergame_models(
         # other stat.
         if stat in _USE_MULTITASK_MLP_STATS and stat in multitask_proxy_for_stat:
             mlp_scaler = multitask_scaler
-            X_tr_s  = mlp_scaler.transform(X_tr)
-            X_val_s = mlp_scaler.transform(X_val)
-            X_ho_s  = mlp_scaler.transform(X_ho)
+            X_tr_s  = mlp_scaler.transform(_X_tr)
+            X_val_s = mlp_scaler.transform(_X_val)
+            X_ho_s  = mlp_scaler.transform(_X_ho)
             mlp_model = multitask_proxy_for_stat[stat]
         else:
             mlp_scaler = StandardScaler()
-            X_tr_s  = mlp_scaler.fit_transform(X_tr)
-            X_val_s = mlp_scaler.transform(X_val)
-            X_ho_s  = mlp_scaler.transform(X_ho)
+            X_tr_s  = mlp_scaler.fit_transform(_X_tr)
+            X_val_s = mlp_scaler.transform(_X_val)
+            X_ho_s  = mlp_scaler.transform(_X_ho)
             mlp_model = _MLPSeedEnsemble().fit(X_tr_s, y_tr_t)
 
         # Blend = LGB only for stats in _LGB_ONLY_STATS, otherwise a
@@ -3305,16 +3893,16 @@ def train_pergame_models(
                 return np.clip(v, 0.0, None) ** 2
             return v
 
-        xgb_ho = _inv(xgb_model.predict(X_ho))
-        lgb_ho = _inv(lgb_model.predict(X_ho))
+        xgb_ho = _inv(xgb_model.predict(_X_ho))
+        lgb_ho = _inv(lgb_model.predict(_X_ho))
         mlp_ho = _inv(mlp_model.predict(X_ho_s))
 
         if lgb_only:
             w_xgb, w_lgb, w_mlp = 0.0, 1.0, 0.0
             meta_fit_source = "lgb_only"
         else:
-            xgb_val = _inv(xgb_model.predict(X_val))
-            lgb_val = _inv(lgb_model.predict(X_val))
+            xgb_val = _inv(xgb_model.predict(_X_val))
+            lgb_val = _inv(lgb_model.predict(_X_val))
             mlp_val = _inv(mlp_model.predict(X_val_s))
             from sklearn.linear_model import LinearRegression
             stacker = LinearRegression(positive=True, fit_intercept=False)
@@ -3338,7 +3926,7 @@ def train_pergame_models(
 
         blend_ho = (lgb_ho if lgb_only
                     else w_xgb * xgb_ho + w_lgb * lgb_ho + w_mlp * mlp_ho)
-        blend_tr = _blend(X_tr, X_tr_s)
+        blend_tr = _blend(_X_tr, X_tr_s)
 
         # Isotonic calibration — k-fold cross-fitted on the holdout.
         #
@@ -3795,6 +4383,17 @@ _ITER23_FEATURE_KEYS: Tuple[str, ...] = (
     *_FOUL_FEATURE_KEYS,      # 5 keys — (player_id, game_date)
     *_DNP_TEAM_KEYS,          # 4 keys — (game_date, team_abbrev)
     *_ADV_SPLITS_KEYS,        # 6 keys — (player_id, game_date)
+    # Iter-17 gamelog_full keys NOT included here (REVERT 2026-05-27):
+    # the 14 gl_* features were DISABLED in feature_columns() after
+    # backtest_holdout showed OOS ROI regression across all 6 stats.
+    # Infrastructure (_GAMELOG_FULL_FEATURE_KEYS, _get_gamelog_full_rolling)
+    # stays active for a future narrower probe.
+    # Iter-18 narrow probe (REVERT 2026-05-27): gl_fga_l5 + gl_plus_minus_l5
+    # for PTS only also FAILED OOS gate (ROI -2.61pp, MAE +1.24). Keys removed.
+    # Iter-19: 7 linescore context keys (global — all 7 stats).
+    *_LS_FEATURE_KEYS,  # ls_blowout_pct_l5, ls_avg_total_l5, ls_avg_q1/q4_pts_l5,
+                        # ls_garbage_time_pct_l5, ls_opp_avg_total_allowed_l5,
+                        # ls_opp_q1_pts_allowed_l5
 )
 _ITER23_DEFAULTS: Dict[str, float] = {
     **_DMATCH_DEFAULTS,
@@ -3803,6 +4402,9 @@ _ITER23_DEFAULTS: Dict[str, float] = {
     **_FOUL_FEATURE_DEFAULTS,
     **_DNP_TEAM_DEFAULTS,
     **_ADV_SPLITS_DEFAULTS,
+    # Iter-18 keys REMOVED (REVERT 2026-05-27 — same OOS gate failure pattern).
+    # Iter-19: linescore context defaults.
+    **_LS_DEFAULTS,
 }
 
 
@@ -3811,8 +4413,9 @@ def _inject_iter23_features(
     player_id: int,
     game_date,
     team_abbrev: str,
+    opp_abbrev: str = "",
 ) -> Dict[str, float]:
-    """Inject the 39 Iter-2/3 features into a prediction feature row.
+    """Inject the Iter-2/3/19 features into a prediction feature row.
 
     Idempotent: calling twice produces the same result (lookups are pure).
     NaN-safe: every key is guaranteed present; missing parquet rows fall
@@ -3824,6 +4427,8 @@ def _inject_iter23_features(
         player_id: NBA player id (int).
         game_date: datetime or date object for the game being predicted.
         team_abbrev: the player's team abbreviation (e.g. 'LAL').
+        opp_abbrev: opponent team abbreviation — used by Iter-19 ls_* join.
+                    Defaults to '' (produces 0.0 defaults for ls_opp_* keys).
 
     Returns:
         The mutated row dict (same object as input).
@@ -3852,6 +4457,15 @@ def _inject_iter23_features(
         row.update(_get_adv_stats_splits().features(int(player_id), game_date))
     except Exception:
         row.update(_ADV_SPLITS_DEFAULTS)
+    # Iter-17 gamelog_full rolling injection DISABLED (REVERT 2026-05-27).
+    # Iter-18 narrow probe (gl_fga_l5 + gl_plus_minus_l5 for PTS) also REVERTED
+    # (2026-05-27) — OOS gate failed: ROI -2.61pp, MAE +1.24. No injection needed.
+    # Iter-19: linescore blowout/pace context (7 ls_* keys).
+    try:
+        row.update(_get_linescore_context().features(
+            str(team_abbrev), str(opp_abbrev), game_date))
+    except Exception:
+        row.update(_LS_DEFAULTS)
     return row
 
 
@@ -4036,6 +4650,18 @@ def build_prediction_row(
             team_abbrev, opp_team, factor_date))
     except Exception:
         feats.update(_REB_CONTEXT_DEFAULTS)
+    # Iter-44 — synergy PPP per-play-type (current-season join, 5 keys).
+    try:
+        feats.update(_get_syn_ppp().features(int(player_id), season))
+    except Exception:
+        feats.update(_SYN_PPP_DEFAULTS)
+    # Iter-46 — per-opponent rolling-3 stat features (6 keys).
+    # Live-inference path: look up today's date for the upcoming game.
+    try:
+        today_iso = factor_date.date().isoformat()
+        feats.update(_get_per_opp_rolling().features(int(player_id), today_iso))
+    except Exception:
+        feats.update(_PER_OPP_ROLLING_DEFAULTS)
     # Cycle 96a (loop 5) — pre-game home_spread lookup so the live
     # prediction path (predict_player / predict_slate / compare_to_lines)
     # receives the same T1-A garbage-time haircut wired into predict_pergame.
