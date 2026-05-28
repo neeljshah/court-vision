@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T02:32:08Z",
+  "__updated_at__": "2026-05-28T02:37:43Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -3650,6 +3650,88 @@
         11,
         12
       ]
+    }
+  },
+  "__iter59__": {
+    "iter": 59,
+    "generated_at": "2026-05-28T02:37:43Z",
+    "approach": "per_stat_player_zero_ev_filter",
+    "n_bets_pre": 1535,
+    "n_bets_post": 1535,
+    "pre59_agg_roi": 15.0429,
+    "post59_agg_roi": 15.0429,
+    "delta_agg_pp": 0.0,
+    "ship_threshold_pp": 0.4,
+    "decision": "REVERT",
+    "decision_detail": "No (stat, player) candidates passed greedy compose under strict gates (n>=30, ROI<-5.0%, ci_hi<+5.0%, z<0.5) AND ship caps. No filters to wire.",
+    "regressions": [],
+    "improvements": [],
+    "n_candidates": 0,
+    "n_per_player_combos_evaluated": 0,
+    "filters_wired": [],
+    "greedy_log": [],
+    "per_stat": {
+      "pts": {
+        "pre_n": 335,
+        "post_n": 335,
+        "pre_roi": 7.7069,
+        "post_roi": 7.7069,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      },
+      "reb": {
+        "pre_n": 238,
+        "post_n": 238,
+        "pre_roi": 12.2995,
+        "post_roi": 12.2995,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      },
+      "ast": {
+        "pre_n": 226,
+        "post_n": 226,
+        "pre_roi": 14.0386,
+        "post_roi": 14.0386,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      },
+      "fg3m": {
+        "pre_n": 311,
+        "post_n": 311,
+        "pre_roi": 16.0187,
+        "post_roi": 16.0187,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      },
+      "stl": {
+        "pre_n": 178,
+        "post_n": 178,
+        "pre_roi": 16.905,
+        "post_roi": 16.905,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      },
+      "blk": {
+        "pre_n": 247,
+        "post_n": 247,
+        "pre_roi": 25.9845,
+        "post_roi": 25.9845,
+        "delta_roi": 0.0,
+        "excluded_players": null
+      }
+    },
+    "candidate_diagnostics": [],
+    "params": {
+      "min_player_n": 30,
+      "max_roi_pct": -5.0,
+      "max_ci_hi": 5.0,
+      "max_z_score": 0.5,
+      "min_agg_lift_pp": 0.4,
+      "max_stat_regress": -0.5,
+      "max_bets_removed_frac": 0.12,
+      "max_per_stat_removed_frac": 0.25,
+      "n_bootstrap": 1000,
+      "seed": 42
     }
   }
 }
