@@ -1,0 +1,47 @@
+{
+  "snapshot": "endQ2",
+  "iter": "iter71",
+  "components": [
+    "v6_hp",
+    "iso",
+    "v7_bag5",
+    "sigmoid_margin",
+    "polarity_pregame"
+  ],
+  "weights": {
+    "v6_hp": 0.0,
+    "iso": 0.19230461220295014,
+    "v7_bag5": 0.15439971769874014,
+    "sigmoid_margin": 0.5481429871936633,
+    "polarity_pregame": 0.10515268290464637
+  },
+  "fold_briers_blend": [
+    0.16864330474774505,
+    0.16402080826904336,
+    0.1772967534921712,
+    0.17467774893245414
+  ],
+  "fold_briers_best_single": [
+    0.16864330474774505,
+    0.17210551236476365,
+    0.1857528962596278,
+    0.17763508095004882
+  ],
+  "best_single_component": "v7_bag5",
+  "baseline_brier": 0.1760341985805463,
+  "blend_brier": 0.17115965386035345,
+  "delta": -0.004874544720192858,
+  "n_folds_improved_or_tied": 4,
+  "n_folds": 4,
+  "final_holdout_eval": {
+    "fold": 3,
+    "test_n": 370,
+    "blend_brier": 0.17467774893245414,
+    "best_single_brier": 0.17763508095004882,
+    "brier_delta_vs_best": -0.0029573320175946827,
+    "improved_or_tied": true
+  },
+  "trained_at_utc": "2026-05-28T03:46:53Z",
+  "note": "NNLS-fit non-negative weights (renormalised sum=1) over per-snapshot Wave 1-3 components. Cross-fold blend evaluation; final weights fit on folds [0,N-2], single-pass evaluation on fold N-1 in 'final_holdout_eval'.",
+  "ships": true
+}
