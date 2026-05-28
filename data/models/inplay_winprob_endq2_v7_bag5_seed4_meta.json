@@ -1,0 +1,58 @@
+{
+  "snapshot": "endQ2",
+  "variant": "v7_bag5",
+  "iter": "iter70",
+  "seed_idx": 4,
+  "seed": 99,
+  "bag_seeds": [
+    42,
+    7,
+    13,
+    23,
+    99
+  ],
+  "n_bag_members": 5,
+  "feature_cols": [
+    "score_margin",
+    "total_pts",
+    "pace_so_far",
+    "q1_delta",
+    "q2_delta",
+    "last_q_margin",
+    "pregame_win_prob",
+    "home_team_id",
+    "season"
+  ],
+  "categorical_cols": [
+    "home_team_id",
+    "season"
+  ],
+  "n_train_rows": 3685,
+  "n_features_in_": 9,
+  "home_win_rate": 0.5256445047489824,
+  "in_sample": {
+    "auc": 0.9027486535242282,
+    "brier": 0.13030772388186337,
+    "log_loss": 0.4076911675484438,
+    "accuracy": 0.8168249660786974
+  },
+  "trained_at": "2026-05-28T03:20:31Z",
+  "probe": "iter70_inplay_bagseeds",
+  "parent_meta": "inplay_winprob_endq2_v6_hp_meta.json",
+  "hyperparams": {
+    "n_estimators": 300,
+    "learning_rate": 0.03,
+    "num_leaves": 15,
+    "min_child_samples": 40,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "random_state": 99
+  },
+  "winning_combo": {
+    "learning_rate": 0.03,
+    "num_leaves": 15,
+    "min_child_samples": 40
+  }
+}

@@ -1,0 +1,432 @@
+{
+  "iter": "iter70",
+  "validation": "inplay_winprob_bag_of_5_seeds",
+  "run_at_utc": "2026-05-28T03:20:31Z",
+  "bag_seeds": [
+    42,
+    7,
+    13,
+    23,
+    99
+  ],
+  "winning_hps_per_snapshot": {
+    "endQ1": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 40
+    },
+    "endQ2": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 40
+    },
+    "endQ3": {
+      "learning_rate": 0.03,
+      "num_leaves": 15,
+      "min_child_samples": 10
+    }
+  },
+  "comparison_baseline": "iter68 v6_hp single-seed (fold briers from iter68_inplay_hpsweep_results.json)",
+  "n_folds": 4,
+  "ship_gate": {
+    "min_folds_improved": 3,
+    "max_mean_delta": -0.001
+  },
+  "snapshots": {
+    "endQ1": {
+      "snapshot": "endQ1",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "winning_hps": {
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 40
+      },
+      "fold_records": [
+        {
+          "fold": 0,
+          "train_n": 2211,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.21478412870804706,
+            0.2156306134094477,
+            0.2139994854936802,
+            0.2139968758104563,
+            0.21378895508944218
+          ],
+          "bag_brier": 0.2140722585828331,
+          "v6_hp_single_seed_brier": 0.21478412870804706,
+          "brier_delta_vs_v6hp": -0.0007118701252139537,
+          "improved": true
+        },
+        {
+          "fold": 1,
+          "train_n": 2579,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.20631223017759256,
+            0.20557674384690267,
+            0.20750058142615202,
+            0.2075601098368256,
+            0.20779231045178093
+          ],
+          "bag_brier": 0.20661242499786128,
+          "v6_hp_single_seed_brier": 0.20631223017759256,
+          "brier_delta_vs_v6hp": 0.0003001948202687177,
+          "improved": false
+        },
+        {
+          "fold": 2,
+          "train_n": 2947,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.21014764136697603,
+            0.21282744044545804,
+            0.21335173297994528,
+            0.21070206584558432,
+            0.21367981567752695
+          ],
+          "bag_brier": 0.2118462547892091,
+          "v6_hp_single_seed_brier": 0.21014764136697603,
+          "brier_delta_vs_v6hp": 0.0016986134222330695,
+          "improved": false
+        },
+        {
+          "fold": 3,
+          "train_n": 3315,
+          "test_n": 370,
+          "per_seed_briers": [
+            0.21677665888009454,
+            0.21620185955037913,
+            0.21554416787321445,
+            0.2171061398937149,
+            0.2173423564377273
+          ],
+          "bag_brier": 0.2163185861149792,
+          "v6_hp_single_seed_brier": 0.21677665888009454,
+          "brier_delta_vs_v6hp": -0.000458072765115336,
+          "improved": true
+        }
+      ],
+      "n_folds": 4,
+      "n_folds_improved": 2,
+      "mean_bag_brier": 0.21221238112122068,
+      "mean_v6hp_brier": 0.21200516478317755,
+      "mean_brier_delta_vs_v6hp": 0.00020721633804313133,
+      "folds_gate_passed": false,
+      "delta_gate_passed": false,
+      "ships": false
+    },
+    "endQ2": {
+      "snapshot": "endQ2",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "q2_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "winning_hps": {
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 40
+      },
+      "fold_records": [
+        {
+          "fold": 0,
+          "train_n": 2211,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.16938519389011056,
+            0.16833631388578418,
+            0.1682596118488782,
+            0.1697451573909477,
+            0.1690354744146535
+          ],
+          "bag_brier": 0.16864330474774505,
+          "v6_hp_single_seed_brier": 0.16938519389011056,
+          "brier_delta_vs_v6hp": -0.0007418891423655039,
+          "improved": true
+        },
+        {
+          "fold": 1,
+          "train_n": 2579,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.17267368034014052,
+            0.17417351734260933,
+            0.17225433618506514,
+            0.17042560853209157,
+            0.17286541687218587
+          ],
+          "bag_brier": 0.17210551236476365,
+          "v6_hp_single_seed_brier": 0.17267368034014052,
+          "brier_delta_vs_v6hp": -0.0005681679753768709,
+          "improved": true
+        },
+        {
+          "fold": 2,
+          "train_n": 2947,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.18670019566441798,
+            0.1865196744313457,
+            0.1856943082669499,
+            0.18579527224283104,
+            0.1857963248696857
+          ],
+          "bag_brier": 0.1857528962596278,
+          "v6_hp_single_seed_brier": 0.18670019566441798,
+          "brier_delta_vs_v6hp": -0.0009472994047901862,
+          "improved": true
+        },
+        {
+          "fold": 3,
+          "train_n": 3315,
+          "test_n": 370,
+          "per_seed_briers": [
+            0.17952973605765124,
+            0.1779290656731821,
+            0.1779778755779116,
+            0.177456148448192,
+            0.1766686062453642
+          ],
+          "bag_brier": 0.17763508095004882,
+          "v6_hp_single_seed_brier": 0.17952973605765124,
+          "brier_delta_vs_v6hp": -0.001894655107602422,
+          "improved": true
+        }
+      ],
+      "n_folds": 4,
+      "n_folds_improved": 4,
+      "mean_bag_brier": 0.1760341985805463,
+      "mean_v6hp_brier": 0.17707220148808006,
+      "mean_brier_delta_vs_v6hp": -0.0010380029075337527,
+      "folds_gate_passed": true,
+      "delta_gate_passed": true,
+      "ships": true
+    },
+    "endQ3": {
+      "snapshot": "endQ3",
+      "n_rows": 3685,
+      "home_win_rate": 0.5256445047489824,
+      "feature_cols": [
+        "score_margin",
+        "total_pts",
+        "pace_so_far",
+        "q1_delta",
+        "q2_delta",
+        "q3_delta",
+        "last_q_margin",
+        "pregame_win_prob",
+        "home_team_id",
+        "season",
+        "q1_usg_avg",
+        "halftime_pace_shift",
+        "trailing_team_q4_usg_hhi"
+      ],
+      "categorical_cols": [
+        "home_team_id",
+        "season"
+      ],
+      "winning_hps": {
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "min_child_samples": 10
+      },
+      "fold_records": [
+        {
+          "fold": 0,
+          "train_n": 2211,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.12573316890790504,
+            0.1252921962782905,
+            0.1243978242269529,
+            0.1252840347596978,
+            0.12449875025080388
+          ],
+          "bag_brier": 0.12469464034610712,
+          "v6_hp_single_seed_brier": 0.12573316890790504,
+          "brier_delta_vs_v6hp": -0.0010385285617979106,
+          "improved": true
+        },
+        {
+          "fold": 1,
+          "train_n": 2579,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.13147802615365486,
+            0.13118759404243893,
+            0.1331137732484162,
+            0.13554410904154193,
+            0.13538129738692448
+          ],
+          "bag_brier": 0.13281750864866818,
+          "v6_hp_single_seed_brier": 0.13147802615365486,
+          "brier_delta_vs_v6hp": 0.001339482495013311,
+          "improved": false
+        },
+        {
+          "fold": 2,
+          "train_n": 2947,
+          "test_n": 368,
+          "per_seed_briers": [
+            0.13331908407577964,
+            0.13527559032624342,
+            0.13407462451316512,
+            0.13317986891743436,
+            0.13509234350779772
+          ],
+          "bag_brier": 0.13374373570814335,
+          "v6_hp_single_seed_brier": 0.13331908407577964,
+          "brier_delta_vs_v6hp": 0.00042465163236371506,
+          "improved": false
+        },
+        {
+          "fold": 3,
+          "train_n": 3315,
+          "test_n": 370,
+          "per_seed_briers": [
+            0.10946527391262763,
+            0.1102792595336566,
+            0.10984130916863463,
+            0.11143726330881129,
+            0.11082202839895745
+          ],
+          "bag_brier": 0.1100420721851539,
+          "v6_hp_single_seed_brier": 0.10946527391262763,
+          "brier_delta_vs_v6hp": 0.0005767982725262688,
+          "improved": false
+        }
+      ],
+      "n_folds": 4,
+      "n_folds_improved": 1,
+      "mean_bag_brier": 0.12532448922201814,
+      "mean_v6hp_brier": 0.12499888826249178,
+      "mean_brier_delta_vs_v6hp": 0.0003256009595263565,
+      "folds_gate_passed": false,
+      "delta_gate_passed": false,
+      "ships": false
+    }
+  },
+  "saved_artifacts": {
+    "endQ2": {
+      "saved_files": [
+        {
+          "seed_idx": 0,
+          "seed": 42,
+          "lgb_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed0.lgb",
+          "meta_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed0_meta.json",
+          "in_sample": {
+            "auc": 0.9018903822821627,
+            "brier": 0.1309309152242854,
+            "log_loss": 0.40882540813968093,
+            "accuracy": 0.8151967435549525
+          },
+          "integrity_ok": true,
+          "booster_n_features": 9,
+          "meta_n_features": 9,
+          "size_bytes": 525763
+        },
+        {
+          "seed_idx": 1,
+          "seed": 7,
+          "lgb_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed1.lgb",
+          "meta_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed1_meta.json",
+          "in_sample": {
+            "auc": 0.9009884000477277,
+            "brier": 0.13142654633146147,
+            "log_loss": 0.4101922819463587,
+            "accuracy": 0.8138398914518318
+          },
+          "integrity_ok": true,
+          "booster_n_features": 9,
+          "meta_n_features": 9,
+          "size_bytes": 525579
+        },
+        {
+          "seed_idx": 2,
+          "seed": 13,
+          "lgb_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed2.lgb",
+          "meta_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed2_meta.json",
+          "in_sample": {
+            "auc": 0.9028024062310611,
+            "brier": 0.13042308658720467,
+            "log_loss": 0.4079725636908666,
+            "accuracy": 0.8206241519674355
+          },
+          "integrity_ok": true,
+          "booster_n_features": 9,
+          "meta_n_features": 9,
+          "size_bytes": 525228
+        },
+        {
+          "seed_idx": 3,
+          "seed": 23,
+          "lgb_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed3.lgb",
+          "meta_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed3_meta.json",
+          "in_sample": {
+            "auc": 0.9026727499766677,
+            "brier": 0.1306113060400747,
+            "log_loss": 0.4083259926787203,
+            "accuracy": 0.8165535956580733
+          },
+          "integrity_ok": true,
+          "booster_n_features": 9,
+          "meta_n_features": 9,
+          "size_bytes": 525874
+        },
+        {
+          "seed_idx": 4,
+          "seed": 99,
+          "lgb_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed4.lgb",
+          "meta_path": "C:\\Users\\neelj\\nba-ai-system\\data\\models\\inplay_winprob_endq2_v7_bag5_seed4_meta.json",
+          "in_sample": {
+            "auc": 0.9027486535242282,
+            "brier": 0.13030772388186337,
+            "log_loss": 0.4076911675484438,
+            "accuracy": 0.8168249660786974
+          },
+          "integrity_ok": true,
+          "booster_n_features": 9,
+          "meta_n_features": 9,
+          "size_bytes": 524629
+        }
+      ],
+      "bag_in_sample": {
+        "auc": 0.9027569231714334,
+        "brier": 0.13051325699578395,
+        "log_loss": 0.4081347004242032,
+        "accuracy": 0.8149253731343283
+      },
+      "n_seeds_saved": 5
+    }
+  },
+  "n_games_total": 3685,
+  "elapsed_s": 5.142127752304077
+}
