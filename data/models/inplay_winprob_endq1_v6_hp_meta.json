@@ -1,0 +1,60 @@
+{
+  "snapshot": "endQ1",
+  "variant": "v6_hp",
+  "iter": "iter68",
+  "feature_cols": [
+    "score_margin",
+    "total_pts",
+    "pace_so_far",
+    "q1_delta",
+    "last_q_margin",
+    "pregame_win_prob",
+    "home_team_id",
+    "season"
+  ],
+  "categorical_cols": [
+    "home_team_id",
+    "season"
+  ],
+  "n_train_rows": 3685,
+  "n_features_in_": 8,
+  "home_win_rate": 0.5256445047489824,
+  "in_sample": {
+    "auc": 0.8498680991270797,
+    "brier": 0.16252605987961558,
+    "log_loss": 0.4949579974484003,
+    "accuracy": 0.7598371777476255
+  },
+  "trained_at": "2026-05-28T03:12:43Z",
+  "probe": "iter68_inplay_hp_sweep",
+  "parent_meta": "inplay_winprob_endq1_meta.json",
+  "hyperparams": {
+    "n_estimators": 300,
+    "learning_rate": 0.03,
+    "num_leaves": 15,
+    "min_child_samples": 40,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "random_state": 42
+  },
+  "winning_combo": {
+    "learning_rate": 0.03,
+    "num_leaves": 15,
+    "min_child_samples": 40
+  },
+  "wf_eval": {
+    "fold_briers": [
+      0.21478412870804706,
+      0.20631223017759256,
+      0.21014764136697603,
+      0.21677665888009454
+    ],
+    "mean_brier": 0.21200516478317755,
+    "std_brier": 0.004072766077184025,
+    "mean_brier_delta_vs_prod_baseline": -0.010094835216822445,
+    "n_folds_improved": 4,
+    "prod_baseline_brier": 0.2221
+  }
+}
