@@ -6,6 +6,51 @@
 {% block nav_tonight %}active{% endblock %}
 
 {% block content %}
+<style>
+  /* ── Live-mode compaction ────────────────────────────────────────────────
+     Body gets .cv-live-mode when the snapshot poller has live data. We
+     strip verbose explainers and tighten card density so a bettor can scan
+     and place a bet in seconds. */
+  body.cv-live-mode #liveExplainer,
+  body.cv-live-mode .bet-card .mt-3.hidden.md\:block,
+  body.cv-live-mode .bet-card .mt-3.md\:hidden,
+  body.cv-live-mode .bet-card .bet-shop-row {
+    display: none !important;
+  }
+  /* Compact bet cards during live mode — bettor wants speed to bet, not text. */
+  body.cv-live-mode .bet-card {
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+  }
+  body.cv-live-mode .bet-card h3 {
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+  }
+  body.cv-live-mode .bet-card header > div:first-child > div:last-child {
+    font-size: 11px !important;
+    margin-top: 2px !important;
+  }
+  body.cv-live-mode .bet-card .grid.grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+    margin-top: 8px !important;
+  }
+  body.cv-live-mode .bet-card .grid.grid-cols-3 > div > div:first-child {
+    font-size: 9px !important;
+  }
+  body.cv-live-mode .bet-card .grid.grid-cols-3 .font-mono {
+    font-size: 13px !important;
+  }
+  body.cv-live-mode .bet-card > div:nth-of-type(3) {
+    /* model / market / gap row */
+    margin-top: 6px !important;
+    font-size: 10px !important;
+  }
+  /* tighter live grid container too */
+  body.cv-live-mode #liveBetsGrid {
+    gap: 6px !important;
+  }
+</style>
 <section class="mb-3 md:mb-4">
   <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
     <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">
@@ -19,9 +64,14 @@
     {% if slate.stale_data %}
       <span class="text-xs px-2 py-0.5 rounded" style="background:#451a03;color:#fbbf24">stale slate</span>
     {% endif %}
+    {% if slate.is_playoff %}
+      <span class="text-xs px-2 py-0.5 rounded"
+            title="Calibrated playoff sigma. Per-stat sigmas tail-aware against 50K OOF rows × 1.20 playoff bump (literature, no playoff OOF available). Hit-rates shrink slightly toward the line vs regular season."
+            style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.35);color:#c084fc;font-weight:600;letter-spacing:0.04em">PLAYOFFS · σ × 1.2</span>
+    {% endif %}
+    {# Duplicate LIVE chip dropped — the box score header tag already
+       surfaces live state and updates dynamically with the JS poller. #}
   </div>
-  {% set _s = slate.bets|selectattr('ev_pct', 'ge', 15)|list|length %}
-  {% set _a = slate.bets|selectattr('ev_pct', 'ge', 8)|rejectattr('ev_pct', 'ge', 15)|list|length %}
   <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
     <span><b style="color:var(--cv-text)">{{ slate.summary.n_bets }}</b> bets</span>
     <span>avg EV
@@ -29,28 +79,8 @@
         {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}%
       </b>
     </span>
-    {% if _s %}<span><b style="color:#fbbf24">{{ _s }}</b> S-tier</span>{% endif %}
-    {% if _a %}<span><b style="color:#22c55e">{{ _a }}</b> A-tier</span>{% endif %}
     <span>{{ slate.summary.n_over }} OVER · {{ slate.summary.n_under }} UNDER</span>
-    <span>bankroll ${{ '%.0f'|format(slate.bankroll_default_dollars) }}</span>
   </div>
-  <form action="/tonight" method="get" class="mt-3 flex flex-wrap items-center gap-2 text-xs">
-    <input type="hidden" name="date" value="{{ slate.date }}">
-    <span style="color:var(--cv-muted)">filter:</span>
-    {% for s in ['ALL','OVER','UNDER'] %}
-      <button name="side" value="{{ s }}" type="submit"
-              class="px-2 py-0.5 rounded border"
-              style="border-color:{% if (side or 'ALL') == s %}var(--cv-accent){% else %}var(--cv-border){% endif %};
-                     color:{% if (side or 'ALL') == s %}var(--cv-accent){% else %}var(--cv-muted){% endif %}">{{ s }}</button>
-    {% endfor %}
-    <span class="ml-2" style="color:var(--cv-muted)">min EV
-      <input name="min_ev" type="number" step="1" min="-100" max="500"
-             value="{% if min_ev is defined and min_ev > -999 %}{{ min_ev }}{% endif %}"
-             placeholder="any" class="bg-transparent border rounded px-1 w-14"
-             style="border-color:var(--cv-border);color:var(--cv-text)">
-    </span>
-    <button class="px-2 py-0.5 underline" style="color:var(--cv-accent)">apply</button>
-  </form>
 
   {% if not slate.has_lines %}
     <div class="mt-2 cv-card px-3 py-2 text-xs" style="color:var(--cv-amber);border-color:#451a03">
@@ -66,6 +96,120 @@
   </div>
 </section>
 
+{# ─── Projected box score (only when filtered to a single matchup) ─────────── #}
+{% if box_score and box_score.have_data %}
+<section class="mb-8 md:mb-10 cv-card" id="boxScoreSection"
+         data-game-id="{{ game_id_filter }}" data-date="{{ slate.date }}"
+         style="padding:16px 18px;border:1px solid var(--cv-border);border-radius:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:10px;flex-wrap:wrap">
+    <h2 style="font-size:18px;font-weight:700;color:var(--cv-text);letter-spacing:-0.01em;margin:0">
+      Projected box score
+    </h2>
+    <div style="display:flex;align-items:center;gap:10px;font-size:11px;color:var(--cv-muted)">
+      <span id="boxScoreLiveTag" style="letter-spacing:0.04em;text-transform:uppercase;font-weight:600">pregame · typical line</span>
+      <span id="boxScoreFreshness" title="When the data on the page was last refreshed">—</span>
+      <button id="boxScoreRefreshBtn" type="button"
+              style="padding:3px 10px;border:1px solid var(--cv-border);border-radius:5px;background:transparent;color:var(--cv-accent);font-size:11px;cursor:pointer;font-weight:600;letter-spacing:0.04em"
+              title="Force-poll for the latest data right now">↻ REFRESH</button>
+      <span id="boxScoreConnDot" title="Connection status"
+            style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;transition:background 250ms"></span>
+    </div>
+  </div>
+
+  <!-- Pregame explainer: what's shown + how it relates to the team total -->
+  <div style="font-size:12px;color:var(--cv-muted);margin-bottom:14px;line-height:1.55;padding:8px 10px;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.18);border-radius:8px">
+    <b style="color:var(--cv-text)">Each cell = the player's typical night</b> — what he hits more often than not. This is the number to bet against prop lines (which are also set at "typical").
+    <b style="color:var(--cv-text)">Team total = expected team score</b>, which is higher than summing the player typicals (a few outburst games per month pull team scoring up but don't move any single player's median). Different math, both correct for what they show.
+  </div>
+
+  <!-- "What updates live" explainer: makes mid-game behavior obvious -->
+  <div id="liveExplainer" style="display:flex;align-items:flex-start;gap:10px;padding:9px 12px;margin-bottom:14px;background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.22);border-radius:8px">
+    <span id="liveExplainerDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;margin-top:5px;transition:background 250ms"></span>
+    <div style="flex:1;font-size:11px;color:var(--cv-muted);line-height:1.55">
+      <b id="liveExplainerTitle" style="color:var(--cv-text)">Pregame snapshot — game hasn't started.</b>
+      <span id="liveExplainerBody">
+        Once tip-off hits, this panel goes live automatically. Cells update to current stats + a fresh end-of-game projection every <b>5 seconds</b>. Lines from sportsbooks update <b>within ~1 second</b> of any book moving — the bet cards below re-grade themselves (q50, edge, EV recompute) without you reloading. Foul-trouble pills appear next to players with 4+ fouls. The win-prob bar above swaps from the pregame estimate to the live model. Nothing on the page is static during a game.
+      </span>
+    </div>
+  </div>
+  <!-- Win probability bar — populated by the JS poller on first tick.
+       Pregame: cached pregame model. Live: inplay_winprob endQ1/Q2/Q3 booster. -->
+  <div id="wpBar" style="display:none;margin-bottom:10px;padding:8px 12px;border:1px solid var(--cv-border);border-radius:8px;background:var(--cv-card)">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--cv-muted);margin-bottom:4px">
+      <span><span id="wpHeaderLabel">Pregame win probability</span> <span id="wpSnapTag" style="margin-left:4px;color:var(--cv-subtle)"></span>
+        <span id="wpAccuracy" style="margin-left:6px;font-size:10px;color:var(--cv-subtle)"></span>
+        <span id="wpStackPill" style="display:none;margin-left:6px;padding:1px 6px;font-size:9px;font-weight:600;letter-spacing:0.02em;border-radius:9px;background:#1f2a4a;color:#a5b4fc;border:1px solid #334066;cursor:help"></span>
+      </span>
+      <span><span id="wpAwayPct" style="color:var(--cv-text);font-weight:600">—</span> · <span id="wpHomePct" style="color:var(--cv-text);font-weight:600">—</span></span>
+    </div>
+    <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;background:#1a2238">
+      <div id="wpAwayFill" style="background:#60a5fa;width:50%;transition:width 600ms ease"></div>
+      <div id="wpHomeFill" style="background:#f97316;width:50%;transition:width 600ms ease"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--cv-subtle);margin-top:3px">
+      <span id="wpAwayLabel">away</span>
+      <span id="wpHomeLabel">home</span>
+    </div>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    {% for side_key in ['away','home'] %}
+      {% set t = box_score[side_key] %}
+      {% if t and t.players %}
+      <div class="cv-card" style="padding:14px 16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--cv-border);gap:10px;flex-wrap:wrap">
+          <span style="font-size:16px;font-weight:700;color:var(--cv-text);letter-spacing:-0.005em">{{ t.abbr }} <span style="font-size:11px;color:var(--cv-muted);font-weight:500;letter-spacing:0">{% if side_key == 'home' %}home{% else %}away{% endif %}</span></span>
+          <span style="font-size:12px;color:var(--cv-muted);font-family:monospace"
+                title="Projected total points the team will score in this game. Comparable to a sportsbook's team total line. Live: switches to current score and updated end-of-game projection."
+                data-team="{{ t.abbr }}" data-pill="totalPts">
+            <span class="bx-pill-l1" data-role="label1">projected PTS</span>
+            <b class="bx-pill-v1" id="totalPts-{{ t.abbr }}" style="color:var(--cv-accent);font-size:14px">{{ '%.0f'|format(t.mean_totals.pts) }}</b>
+            <span class="bx-pill-l2" data-role="label2" style="display:none"></span>
+            <b class="bx-pill-v2" style="color:var(--cv-text);display:none"></b>
+          </span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;font-size:12px;border-collapse:collapse;font-family:'SF Mono',ui-monospace,monospace">
+            <thead>
+              <tr style="color:var(--cv-subtle);text-align:right">
+                <th style="text-align:left;padding:5px 6px 5px 0;font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.05em">Player</th>
+                {% for s in box_score.stats %}<th style="padding:5px 7px;font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.05em">{{ s|upper }}</th>{% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in t.players %}
+              <tr data-player-id="{{ p.player_id }}" data-player-name="{{ p.player_name }}" style="border-top:1px solid var(--cv-border)">
+                <td style="text-align:left;padding:5px 6px 5px 0;color:var(--cv-text);white-space:nowrap;font-family:inherit;font-size:12px">{{ p.player_name }}</td>
+                {% for s in box_score.stats %}
+                  <td class="bx" data-stat="{{ s }}" style="padding:5px 6px;text-align:right;color:var(--cv-text);font-size:11px">
+                    <span class="bx-pre">{% if p[s] is not none %}{{ '%g'|format(p[s]) }}{% else %}—{% endif %}</span>
+                    <span class="bx-live" style="display:none;color:var(--cv-accent);font-weight:600"></span>
+                  </td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr style="border-top:1px solid var(--cv-border);color:var(--cv-muted)">
+                <td style="text-align:left;padding:8px 6px 8px 0;font-weight:600;color:var(--cv-text);font-size:12px">Total</td>
+                {% for s in box_score.stats %}
+                  <td class="bx-total" data-stat="{{ s }}" data-team="{{ t.abbr }}" style="padding:8px 7px;text-align:right;font-weight:600;color:var(--cv-text);font-size:12px">
+                    {{ '%g'|format(t.totals[s]) if t.totals[s] is not none else '—' }}
+                  </td>
+                {% endfor %}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div style="margin-top:8px;font-size:10px;color:var(--cv-subtle);line-height:1.5">
+    Foul-trouble pills (<span style="color:#fbbf24">4F</span>/<span style="color:#f87171">5F</span>) appear next to player names live. Lines from sportsbooks below refresh within ~1s of any book moving.
+  </div>
+</section>
+{% endif %}
+
 {% if not slate.bets %}
   <div class="cv-card p-6 text-center" style="color:var(--cv-muted);padding:32px 24px;">
     <div style="font-size:32px;margin-bottom:12px;opacity:.35">🏀</div>
@@ -79,24 +223,60 @@
       {% endif %}
     </p>
     <div style="margin-top:14px">
-      <a href="/odds" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;
+      <a href="/" style="display:inline-flex;align-items:center;gap:4px;padding:8px 18px;
         background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:8px;
         color:var(--cv-accent);font-size:12px;font-weight:600;text-decoration:none;">
-        View live odds →</a>
+        ← Back to games</a>
     </div>
   </div>
 {% else %}
-  <!-- Top-15 model recommendations, same format as /odds -->
+  {# ── Tier grouping: bets ranked by EV across the whole slate, then bucketed by tier ── #}
+  {% set tiers = [
+    {'key':'S','label':'S-Tier','desc':'Strongest edges — EV ≥ 15%','color':'#fbbf24','bg':'rgba(251,191,36,0.10)','border':'rgba(251,191,36,0.35)'},
+    {'key':'A','label':'A-Tier','desc':'Solid edges — EV 8–15%','color':'#22c55e','bg':'rgba(34,197,94,0.08)','border':'rgba(34,197,94,0.30)'},
+    {'key':'B','label':'B-Tier','desc':'Marginal edges — EV 3–8%','color':'#94a3b8','bg':'rgba(148,163,184,0.06)','border':'rgba(148,163,184,0.25)'},
+    {'key':'C','label':'C-Tier','desc':'Thin edges — EV < 3%','color':'#475569','bg':'rgba(71,85,105,0.06)','border':'rgba(71,85,105,0.25)'}
+  ] %}
+  {% set bucketed = {'S':[], 'A':[], 'B':[], 'C':[]} %}
+  {% for bet in slate.bets %}
+    {% if bet.ev_pct is not none %}
+      {% if bet.ev_pct >= 15 %}{% set _ = bucketed['S'].append(bet) %}
+      {% elif bet.ev_pct >= 8 %}{% set _ = bucketed['A'].append(bet) %}
+      {% elif bet.ev_pct >= 3 %}{% set _ = bucketed['B'].append(bet) %}
+      {% else %}{% set _ = bucketed['C'].append(bet) %}{% endif %}
+    {% else %}
+      {% set _ = bucketed['C'].append(bet) %}
+    {% endif %}
+  {% endfor %}
   <div style="margin-bottom:12px;font-size:11px;color:var(--cv-subtle)">
-    Showing top {{ [slate.bets|length, 15]|min }} of {{ slate.bets|length }} recommendations ·
-    <a href="/odds?date={{ slate.date }}" style="color:var(--cv-accent)">See full line shop →</a>
+    {{ slate.bets|length }} bets grouped by tier
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-    {% for bet in slate.bets[:15] %}
-      {% set rank = loop.index %}
-      {% include "_bet_card.html" %}
-    {% endfor %}
-  </div>
+  {% set ns = namespace(rank=0) %}
+  {% for tier in tiers %}
+    {% set tier_bets = bucketed[tier.key] %}
+    {% if tier_bets %}
+      <section class="mb-5 md:mb-6">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:10px;
+                    border-radius:8px;background:{{ tier.bg }};border:1px solid {{ tier.border }};
+                    border-left:4px solid {{ tier.color }};">
+          <span style="font-size:13px;font-weight:700;color:{{ tier.color }};letter-spacing:0.04em;">
+            {{ tier.label }}
+          </span>
+          <span style="font-size:11px;color:var(--cv-muted)">{{ tier.desc }}</span>
+          <span style="margin-left:auto;font-size:11px;font-family:monospace;color:var(--cv-muted)">
+            <b style="color:{{ tier.color }}">{{ tier_bets|length }}</b> {{ 'bet' if tier_bets|length == 1 else 'bets' }}
+          </span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+          {% for bet in tier_bets %}
+            {% set ns.rank = ns.rank + 1 %}
+            {% set rank = ns.rank %}
+            {% include "_bet_card.html" %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
 {% endif %}
 {% endblock %}
 
@@ -172,6 +352,579 @@
     applyFilter();
   }
   buildChips();
+})();
+
+// ── Box score live updater ─────────────────────────────────────────────────
+(function(){
+  var section = document.getElementById('boxScoreSection');
+  if (!section) return;
+  var gameId = section.getAttribute('data-game-id');
+  var date = section.getAttribute('data-date');
+  if (!gameId || !date) return;
+
+  function paintRow(row, p, useFinal) {
+    var cells = row.querySelectorAll('td.bx');
+    cells.forEach(function(td){
+      var s = td.getAttribute('data-stat');
+      var pre = td.querySelector('.bx-pre');
+      var live = td.querySelector('.bx-live');
+      var liveVal = null;
+      if (useFinal && p.paced_final && p.paced_final[s] != null) liveVal = p.paced_final[s];
+      else if (p.current && p.current[s] != null) liveVal = p.current[s];
+      if (liveVal != null) {
+        if (pre) pre.style.display = 'none';
+        if (live) { live.style.display = ''; live.textContent = (Number.isFinite(liveVal) ? (Math.round(liveVal * 10)/10) : liveVal); }
+      } else {
+        if (pre) pre.style.display = '';
+        if (live) { live.style.display = 'none'; live.textContent = ''; }
+      }
+    });
+    // Foul trouble marker — append a small ⚠ pill next to the player name cell.
+    var nameCell = row.querySelector('td:first-child');
+    if (nameCell) {
+      var existing = nameCell.querySelector('.foul-pill');
+      if (existing) existing.remove();
+      if (p.fouls != null && p.fouls >= 4) {
+        var pill = document.createElement('span');
+        pill.className = 'foul-pill';
+        var color = p.fouls >= 5 ? '#f87171' : '#fbbf24';
+        pill.style.cssText = 'margin-left:6px;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700;'
+          + 'background:rgba(' + (p.fouls >= 5 ? '248,113,113' : '251,191,36') + ',0.15);border:1px solid ' + color + ';color:' + color + ';';
+        pill.title = p.fouls >= 5 ? 'Foul trouble — one away from fouling out. Minutes will likely shrink.'
+          : 'Foul trouble — coach may shorten minutes to protect from foul-out.';
+        pill.textContent = p.fouls + 'F';
+        nameCell.appendChild(pill);
+      }
+    }
+  }
+  function paintTeam(team, useFinal){
+    if (!team || !team.players) return;
+    team.players.forEach(function(p){
+      var sel = '[data-player-id="' + p.player_id + '"]';
+      var row = section.querySelector(sel);
+      if (!row && p.player_name) {
+        var rows = section.querySelectorAll('tr[data-player-name]');
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].getAttribute('data-player-name') === p.player_name) { row = rows[i]; break; }
+        }
+      }
+      if (row) paintRow(row, p, useFinal);
+    });
+    // Update the team total pill. Pregame layout shows "projected PTS X";
+    // when live data is available we relabel to "PTS now X · end Y" using
+    // the server-side pace-aware projected_total_pts (blends current pace
+    // with pregame mean — pace-extrapolation, not just sum of medians).
+    if (team.abbr) {
+      var pill = section.querySelector('[data-pill="totalPts"][data-team="' + team.abbr + '"]');
+      if (pill && team.current_total_pts != null) {
+        var sumNow = team.current_total_pts;
+        var sumFinal = (team.projected_total_pts != null) ? team.projected_total_pts : sumNow;
+        var l1 = pill.querySelector('.bx-pill-l1');
+        var v1 = pill.querySelector('.bx-pill-v1');
+        var l2 = pill.querySelector('.bx-pill-l2');
+        var v2 = pill.querySelector('.bx-pill-v2');
+        if (l1) l1.textContent = 'PTS now';
+        if (v1) { v1.textContent = Math.round(sumNow); v1.style.color = '#34d399'; }
+        if (l2) { l2.textContent = ' · end '; l2.style.display = ''; l2.style.color = ''; }
+        if (v2) { v2.textContent = Math.round(sumFinal); v2.style.display = ''; v2.style.color = ''; }
+      }
+      // Bottom Total row — update each stat cell with the live projected total.
+      // Pregame shows sum-of-q50s (medians, low); during the game we replace
+      // with server-side pace-aware projected_totals so it stops being misleading.
+      if (team.projected_totals) {
+        Object.keys(team.projected_totals).forEach(function(s){
+          var cell = section.querySelector('.bx-total[data-team="' + team.abbr + '"][data-stat="' + s + '"]');
+          if (cell) {
+            var v = team.projected_totals[s];
+            if (v != null) {
+              cell.textContent = (Math.round(v * 10) / 10);
+              cell.style.color = '#34d399';
+            }
+          }
+        });
+      }
+    }
+  }
+  // ── Connection / freshness state ─────────────────────────────────────────
+  // Pregame: poll every 30s (game data stable). Live: poll every 5s (lines and
+  // stats move fast — user is watching the game and placing bets in real time).
+  var POLL_PREGAME_MS = 30000;
+  var POLL_LIVE_MS    = 5000;
+  var lastSuccessAt = null;
+  var consecutiveErrors = 0;
+  var nextPollDelay = POLL_PREGAME_MS;
+  var pollTimer = null;
+  var inflight = false;
+  var liveMode = false;  // flips to true once a snapshot lands
+
+  function setConnState(state) {
+    var dot = document.getElementById('boxScoreConnDot');
+    if (!dot) return;
+    var c = {ok:'#34d399', polling:'#60a5fa', stale:'#fbbf24', error:'#f87171'}[state] || '#6b7280';
+    var t = {ok:'Live data fresh', polling:'Refreshing…', stale:'Data is getting old', error:'Polling failed — retrying with backoff'}[state] || 'Idle';
+    dot.style.background = c;
+    dot.title = t;
+  }
+  function tickFreshness() {
+    var el = document.getElementById('boxScoreFreshness');
+    if (!el) return;
+    if (!lastSuccessAt) { el.textContent = ''; return; }
+    var ageSec = Math.max(0, Math.floor((Date.now() - lastSuccessAt) / 1000));
+    var label;
+    if (ageSec < 10) label = 'just now';
+    else if (ageSec < 60) label = ageSec + 's ago';
+    else if (ageSec < 3600) label = Math.floor(ageSec / 60) + 'm ago';
+    else label = Math.floor(ageSec / 3600) + 'h ago';
+    el.textContent = 'updated ' + label;
+    // Mark stale once it's been > 90s since last successful tick (and no error).
+    if (ageSec > 90 && consecutiveErrors === 0) setConnState('stale');
+  }
+
+  // ── Bet card inline updater ──────────────────────────────────────────────
+  // Locate the bet card by bet_id (rendered in the htmx URL) and patch the
+  // q50, edge, EV, Kelly, side badge, model %, gap %.
+  function updateBetCards(liveBets) {
+    if (!Array.isArray(liveBets) || !liveBets.length) return;
+    var allCards = document.querySelectorAll('article.bet-card');
+    var byBetId = {};
+    allCards.forEach(function(c){
+      var a = c.querySelector('button[hx-get*="/api/bet/"]');
+      if (!a) return;
+      var url = a.getAttribute('hx-get') || '';
+      var m = url.match(/\/api\/bet\/([^\?]+)/);
+      if (m) byBetId[m[1]] = c;
+    });
+    // Live mode: collapse the (possibly multi-section) tier layout into a
+    // single flat grid sorted by live EV desc. Best bet is always on top.
+    var liveContainer = document.getElementById('liveBetsGrid');
+    if (!liveContainer) {
+      liveContainer = document.createElement('div');
+      liveContainer.id = 'liveBetsGrid';
+      liveContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4';
+      // Insert above the first tier section
+      var firstTierSection = document.querySelector('section.mb-5.md\\:mb-6');
+      if (firstTierSection && firstTierSection.parentElement) {
+        firstTierSection.parentElement.insertBefore(liveContainer, firstTierSection);
+      }
+    }
+    // Hide tier section headers/wrappers — they're confusing once cards reshuffle
+    document.querySelectorAll('section.mb-5.md\\:mb-6').forEach(function(s){
+      if (s.id === 'boxScoreSection') return;
+      s.style.display = 'none';
+    });
+    // Sort live bets by EV desc and move the corresponding cards into the
+    // live container in that order. appendChild moves the node (no clone).
+    var sorted = liveBets.slice().sort(function(a, b){
+      return (b.ev_pct || 0) - (a.ev_pct || 0);
+    });
+    sorted.forEach(function(lb){
+      var card = byBetId[lb.bet_id];
+      if (card) liveContainer.appendChild(card);
+    });
+    liveBets.forEach(function(lb){
+      var card = byBetId[lb.bet_id];
+      if (!card) return;
+      // No per-card LIVE pill — box score header already surfaces live state.
+      // Side badge text + class
+      var sideBadge = card.querySelector('.badge-over, .badge-under');
+      if (sideBadge) {
+        sideBadge.textContent = lb.side;
+        sideBadge.classList.remove('badge-over', 'badge-under');
+        sideBadge.classList.add(lb.side === 'OVER' ? 'badge-over' : 'badge-under');
+      }
+      // The 4-cell numbers row: q50, edge, EV, Kelly
+      var statCells = card.querySelectorAll('.grid.grid-cols-3 > div');
+      if (statCells.length >= 3) {
+        var q50El = statCells[0].querySelector('.font-mono');
+        if (q50El) q50El.textContent = (lb.q50 != null ? Number(lb.q50).toFixed(2) : '—');
+        var edgeEl = statCells[1].querySelector('.font-mono');
+        if (edgeEl) {
+          var e = lb.edge_units;
+          edgeEl.textContent = (e != null ? (e >= 0 ? '+' : '') + Number(e).toFixed(2) : '—');
+          edgeEl.classList.remove('num-pos','num-neg','num-zero');
+          edgeEl.classList.add(e > 0 ? 'num-pos' : (e < 0 ? 'num-neg' : 'num-zero'));
+        }
+        var evEl = statCells[2].querySelector('.font-mono');
+        if (evEl) {
+          var ev = lb.ev_pct;
+          evEl.textContent = (ev != null ? (ev >= 0 ? '+' : '') + Number(ev).toFixed(1) + '%' : '—');
+          evEl.classList.remove('num-pos','num-neg','num-zero');
+          evEl.classList.add(ev > 0 ? 'num-pos' : (ev < 0 ? 'num-neg' : 'num-zero'));
+        }
+      }
+      // model / market / gap row
+      var modBs = card.querySelectorAll('.tip b');
+      if (modBs.length >= 2) {
+        if (lb.model_prob != null) modBs[0].textContent = (lb.model_prob * 100).toFixed(1) + '%';
+        if (lb.market_prob != null) modBs[1].textContent = (lb.market_prob * 100).toFixed(1) + '%';
+        if (modBs.length >= 3 && lb.model_prob != null && lb.market_prob != null) {
+          var gap = (lb.model_prob - lb.market_prob) * 100;
+          modBs[2].textContent = (gap >= 0 ? '+' : '') + gap.toFixed(1) + 'pp';
+          modBs[2].classList.remove('num-pos','num-neg','num-zero');
+          modBs[2].classList.add(gap > 0 ? 'num-pos' : (gap < 0 ? 'num-neg' : 'num-zero'));
+        }
+      }
+    });
+  }
+
+  function tick(){
+    if (inflight) return;
+    inflight = true;
+    setConnState('polling');
+    fetch('/api/box_score?date=' + encodeURIComponent(date) + '&game_id=' + encodeURIComponent(gameId), {credentials: 'include'})
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data){
+        if (!data) return;
+        lastSuccessAt = Date.now();
+        consecutiveErrors = 0;
+        liveMode = !!data.live_available;
+        nextPollDelay = liveMode ? POLL_LIVE_MS : POLL_PREGAME_MS;
+        document.body.classList.toggle('cv-live-mode', liveMode);
+        setConnState('ok');
+        var tag = document.getElementById('boxScoreLiveTag');
+        var explainerDot = document.getElementById('liveExplainerDot');
+        var explainerTitle = document.getElementById('liveExplainerTitle');
+        var explainerBody = document.getElementById('liveExplainerBody');
+        if (data.live_available) {
+          if (tag) {
+            tag.textContent = data.engine_projection_used
+              ? '● LIVE · engine projection'
+              : '● LIVE · paced final';
+            tag.style.color = '#34d399';
+            tag.title = data.engine_projection_used
+              ? 'live_engine.project_from_snapshot() — residual heads + foul + blowout + heat-check + learned Q4 minutes'
+              : 'naive minutes-paced projection (live_engine unavailable)';
+          }
+          if (explainerDot) { explainerDot.style.background = '#34d399'; }
+          // Period-aware confidence framing. Backtest (cycle 94d) shows the
+          // end-game projection's MAE drops dramatically as more minutes
+          // accumulate — Q1 widest (lots to settle), endQ3 tightest.
+          var snap = (data.winprob_snapshot || '').toLowerCase();
+          var confTitle, confDetail;
+          if (snap === 'endq3') {
+            confTitle = 'LIVE · endQ3 — projection has hardened.';
+            confDetail = 'Backtest beat the pregame call by <b>-42% PTS MAE</b> at this stage. Trust the numbers — the model has full pace, foul state, blowout, and Q4-minutes signal locked in.';
+          } else if (snap === 'endq2') {
+            confTitle = 'LIVE · endQ2 — half the game in.';
+            confDetail = 'Projection tightening: pace + foul state baked in, second-half rotations not yet. Reliable, but expect ±10% drift on per-player finals until end of Q3.';
+          } else if (snap === 'endq1') {
+            confTitle = 'LIVE · endQ1 — early read.';
+            confDetail = 'Projection is settling. Numbers may swing as Q2 rotations show up. Treat as a directional signal more than a precise call until at least halftime.';
+          } else {
+            confTitle = 'LIVE · in-game.';
+            confDetail = 'Cells show current stats and the model\'s end-of-game projection. Updates every 5s during the game.';
+          }
+          if (explainerTitle) explainerTitle.textContent = confTitle;
+          if (explainerBody) explainerBody.innerHTML = confDetail;
+          paintTeam(data.away, true);
+          paintTeam(data.home, true);
+          if (data.live_bets) updateBetCards(data.live_bets);
+        } else {
+          if (tag) { tag.textContent = 'pregame · typical line'; tag.style.color = ''; tag.title = ''; }
+          if (explainerDot) { explainerDot.style.background = '#94a3b8'; }
+          if (explainerTitle) explainerTitle.textContent = 'Pregame snapshot — game hasn\'t started.';
+          // body stays as the SSR'd default
+        }
+        // Win prob bar
+        var bar = document.getElementById('wpBar');
+        if (bar) {
+          var awayP = (data.away_win_prob != null) ? data.away_win_prob :
+                      ((data.pregame_away_win_prob != null) ? data.pregame_away_win_prob : null);
+          var homeP = (data.home_win_prob != null) ? data.home_win_prob :
+                      ((data.pregame_home_win_prob != null) ? data.pregame_home_win_prob : null);
+          var isLive = (data.home_win_prob != null);
+          if (awayP != null && homeP != null) {
+            bar.style.display = '';
+            var aP = awayP * 100, hP = homeP * 100;
+            var awayFill = document.getElementById('wpAwayFill');
+            var homeFill = document.getElementById('wpHomeFill');
+            var awayPct = document.getElementById('wpAwayPct');
+            var homePct = document.getElementById('wpHomePct');
+            var awayLab = document.getElementById('wpAwayLabel');
+            var homeLab = document.getElementById('wpHomeLabel');
+            var snapTag = document.getElementById('wpSnapTag');
+            var headerLab = document.getElementById('wpHeaderLabel');
+            if (headerLab) headerLab.textContent = isLive ? 'Live win probability' : 'Pregame win probability';
+            if (awayFill) awayFill.style.width = aP.toFixed(1) + '%';
+            if (homeFill) homeFill.style.width = hP.toFixed(1) + '%';
+            if (data.away && data.away.abbr) {
+              if (awayLab) awayLab.textContent = data.away.abbr + ' (away)';
+              if (awayPct) awayPct.textContent = data.away.abbr + ' ' + aP.toFixed(0) + '%';
+            } else if (awayPct) awayPct.textContent = aP.toFixed(0) + '%';
+            if (data.home && data.home.abbr) {
+              if (homeLab) homeLab.textContent = data.home.abbr + ' (home)';
+              if (homePct) homePct.textContent = data.home.abbr + ' ' + hP.toFixed(0) + '%';
+            } else if (homePct) homePct.textContent = hP.toFixed(0) + '%';
+            if (snapTag) snapTag.textContent = isLive ? ('· ' + (data.winprob_snapshot || 'live')) : '· pregame model';
+            // Accuracy hint from OOS walk-forward backtest (3,685 games).
+            // Brier numbers reflect the active stack — meta_blend_iter71 for
+            // endQ1/Q2, v6_hp_iter68 for endQ3 — validated 2026-05-28 via
+            // scripts/validation_harness_winprob.py.
+            var acc = document.getElementById('wpAccuracy');
+            var stackPill = document.getElementById('wpStackPill');
+            if (acc) {
+              if (isLive) {
+                var snap = (data.winprob_snapshot || '').toLowerCase();
+                var stackInfo = data.winprob_stack || null;
+                // Honest WF Brier per active stack. Numbers from
+                // data/cache/validation_harness_winprob.json ship_decisions.
+                var brierByStack = {
+                  endq1: {
+                    meta_blend_iter71: 'WF Brier 0.209 (Δ -0.013 vs v1)',
+                    v6_hp_iter68: 'WF Brier 0.212 (Δ -0.011 vs v1)',
+                    v1_dualcal: 'WF Brier 0.216 (Δ -0.005 vs v1)',
+                    v1_raw: 'WF Brier 0.222 (v1 baseline)'
+                  },
+                  endq2: {
+                    meta_blend_iter71: 'WF Brier 0.171 (Δ -0.014 vs v1)',
+                    v6_hp_iter68: 'WF Brier 0.177 (Δ -0.008 vs v1)',
+                    v1_raw: 'WF Brier 0.185 (v1 baseline)'
+                  },
+                  endq3: {
+                    v6_hp_iter68: 'WF Brier 0.125 (Δ -0.016 vs v1)',
+                    v1_raw: 'WF Brier 0.141 (v1 baseline)'
+                  }
+                };
+                var layer = (stackInfo && stackInfo.layer) || 'v1_raw';
+                var brierHint = (brierByStack[snap] && brierByStack[snap][layer])
+                                || ('WF Brier — ' + layer);
+                var clockMin = data.winprob_clock_minutes;
+                var rawBooster = data.winprob_raw_booster;
+                var hint = brierHint;
+                if (clockMin != null && rawBooster != null) {
+                  hint += ' · raw (' + (rawBooster * 100).toFixed(0) + '%) shrunk by ' + clockMin.toFixed(1) + 'min to boundary';
+                }
+                acc.textContent = '— ' + hint;
+                acc.title = 'Brier scores from 3,685 out-of-sample games via '
+                  + 'walk-forward CV (iter68 v6_hp / iter71 meta_blend wf_eval). '
+                  + 'Gate: mean Δ ≤ -0.002 AND no fold regress > +0.003. '
+                  + 'Booster output shrunk toward 50/50 by clock distance from '
+                  + 'the period boundary it was trained on.';
+                // Status pill: surface which artifact stack is live.
+                if (stackPill) {
+                  if (stackInfo && stackInfo.layer) {
+                    var labelMap = {
+                      meta_blend_iter71: 'meta_blend v71',
+                      v6_hp_iter68: 'v6_hp v68',
+                      v3_pregame_anchored: 'v3 anchored',
+                      v2_ensemble: 'v2 ensemble',
+                      v1_dualcal: 'v1 + dual-cal',
+                      v1_raw: 'v1 raw',
+                      none: 'no model'
+                    };
+                    var pillLabel = labelMap[stackInfo.layer] || stackInfo.layer;
+                    var comps = stackInfo.components_loaded || {};
+                    var loaded = [];
+                    if (comps.meta_blend) loaded.push('iter71 weights');
+                    if (comps.v6_hp) loaded.push('v6_hp');
+                    if (comps.v7_bag5) loaded.push('v7_bag5');
+                    if (comps.iter62_iso) loaded.push('iter62 iso');
+                    if (comps.v3) loaded.push('v3');
+                    if (comps.v2) loaded.push('v2');
+                    if (comps.v1) loaded.push('v1');
+                    stackPill.textContent = pillLabel;
+                    stackPill.title = (stackInfo.detail || pillLabel)
+                      + ' — loaded boosters: ' + (loaded.join(', ') || 'none');
+                    stackPill.style.display = '';
+                  } else {
+                    stackPill.style.display = 'none';
+                  }
+                }
+              } else {
+                acc.textContent = '— projection-derived, calibrated to your projected scores';
+                acc.title = '';
+                if (stackPill) stackPill.style.display = 'none';
+              }
+            }
+          } else {
+            bar.style.display = 'none';
+          }
+        }
+        tickFreshness();
+      })
+      .catch(function(err){
+        consecutiveErrors++;
+        // Backoff base = current cadence (5s live, 30s pregame); cap at 5min
+        var base = liveMode ? POLL_LIVE_MS : POLL_PREGAME_MS;
+        nextPollDelay = Math.min(base * Math.pow(2, consecutiveErrors - 1), 300000);
+        setConnState('error');
+      })
+      .finally(function(){
+        inflight = false;
+        // Reschedule with the (possibly extended) delay
+        if (pollTimer) clearTimeout(pollTimer);
+        pollTimer = setTimeout(tick, nextPollDelay);
+      });
+  }
+
+  // Manual refresh button — force-poll immediately
+  var refreshBtn = document.getElementById('boxScoreRefreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function(){
+      consecutiveErrors = 0;
+      nextPollDelay = liveMode ? POLL_LIVE_MS : POLL_PREGAME_MS;
+      if (pollTimer) clearTimeout(pollTimer);
+      tick();
+    });
+  }
+
+  // Pause polling when the tab is hidden, resume on visible (saves CPU/network)
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) {
+      if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+    } else {
+      // Tab came back — fire immediately and resume
+      if (!pollTimer) tick();
+    }
+  });
+
+  // Update the freshness ticker once a second so "12s ago" reads accurately
+  setInterval(tickFreshness, 1000);
+
+  // First tick fires immediately
+  tick();
+})();
+
+// ── Live line / price patcher ─────────────────────────────────────────────
+// Sportsbook lines move continuously. We listen on /ws/live for the
+// `lines.refreshed` topic the scraper bus emits, then bust the slate cache
+// and patch best_price / all_books in each bet card's DOM. Also a 60s
+// fallback poll if WS is unavailable.
+(function(){
+  var section = document.getElementById('boxScoreSection');
+  if (!section) return;
+  var gameId = section.getAttribute('data-game-id');
+  var date = section.getAttribute('data-date');
+  if (!gameId || !date) return;
+
+  var ws = null;
+  var wsReconnectDelay = 2000;
+  var pollTimer = null;
+  var lastPriceFetchAt = 0;
+
+  function bgFlash(el, color){
+    if (!el) return;
+    var prev = el.style.transition;
+    el.style.transition = 'background 200ms';
+    el.style.background = color;
+    setTimeout(function(){
+      el.style.background = '';
+      setTimeout(function(){ el.style.transition = prev || ''; }, 250);
+    }, 700);
+  }
+
+  function patchOneCard(card, bet) {
+    if (!card || !bet) return;
+    // Update best_book + best_price in the header line (sub line under name)
+    var subHdr = card.querySelector('header div.text-xs, header div.text-sm');
+    // We can't easily target individual fields without refactoring SSR; the
+    // most reliable patch is the all_books ladder + the data-book attribute.
+    if (bet.best_book) card.setAttribute('data-book', bet.best_book);
+    // Re-render the shop ladder if present
+    var shopRow = card.querySelector('.bet-shop-row');
+    if (!shopRow) {
+      // Try to find by content (legacy templates without our marker class)
+      var rows = card.querySelectorAll('div');
+      for (var i = 0; i < rows.length; i++) {
+        var txt = rows[i].textContent || '';
+        if (txt.trim().toLowerCase().startsWith('shop:')) { shopRow = rows[i]; break; }
+      }
+    }
+    if (shopRow && bet.all_books && bet.all_books.length) {
+      var html = '<span>shop:</span>';
+      bet.all_books.forEach(function(b, idx){
+        var bord = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-border)';
+        var col  = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-muted)';
+        html += '<span class="px-1.5 py-0.5 rounded" style="border:1px solid ' + bord + ';color:' + col + '">'
+              + (b.book || '') + (b.price != null ? ' <b>' + (b.price >= 0 ? '+' : '') + b.price + '</b>' : '')
+              + '</span>';
+      });
+      if (bet.all_books.length === 1) {
+        html += '<span style="color:var(--cv-subtle)">· only book posting this line right now</span>';
+      }
+      shopRow.innerHTML = html;
+      bgFlash(shopRow, 'rgba(96,165,250,0.18)');
+    }
+  }
+
+  function refreshPrices() {
+    var now = Date.now();
+    if (now - lastPriceFetchAt < 2000) return;  // dedupe rapid-fire
+    lastPriceFetchAt = now;
+    fetch('/api/slate?date=' + encodeURIComponent(date) + '&fresh=1', {credentials: 'include'})
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(env){
+        if (!env || !env.bets) return;
+        // Build bet_id -> {best_book, best_price, all_books}
+        var byId = {};
+        env.bets.forEach(function(b){ if (b.bet_id) byId[b.bet_id] = b; });
+        // Match each card to its bet_id (extracted from the hx-get URL)
+        var cards = document.querySelectorAll('article.bet-card');
+        cards.forEach(function(c){
+          var btn = c.querySelector('button[hx-get*="/api/bet/"]');
+          if (!btn) return;
+          var url = btn.getAttribute('hx-get') || '';
+          var m = url.match(/\/api\/bet\/([^\?]+)/);
+          if (!m) return;
+          var bet = byId[m[1]];
+          if (bet) patchOneCard(c, bet);
+        });
+      })
+      .catch(function(){});
+  }
+
+  // WS connection — listens for `lines.refreshed` events from the scraper bus
+  function connectWS(){
+    if (!window.location.host) return;
+    var proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    var url = proto + '://' + window.location.host + '/ws/live';
+    try { ws = new WebSocket(url); } catch(e) { scheduleReconnect(); return; }
+
+    ws.onopen = function(){ wsReconnectDelay = 2000; };
+    ws.onmessage = function(evt){
+      try {
+        var msg = JSON.parse(evt.data);
+        if (msg.topic === 'lines.refreshed' || msg.topic === 'lines_refreshed') {
+          // Debounce a touch so multi-book emit storms don't refetch 10×/s
+          setTimeout(refreshPrices, 600);
+        }
+        // Also force a snapshot tick when projections update — gives the JS
+        // poller a head start instead of waiting up to 30s.
+        if (msg.topic === 'projection.updated' || msg.topic === 'projection_updated') {
+          var btn = document.getElementById('boxScoreRefreshBtn');
+          if (btn) btn.click();
+        }
+      } catch(e) {}
+    };
+    ws.onclose = function(){ scheduleReconnect(); };
+    ws.onerror = function(){ try { ws.close(); } catch(e){} };
+  }
+  function scheduleReconnect(){
+    setTimeout(function(){
+      wsReconnectDelay = Math.min(wsReconnectDelay * 1.6, 30000);
+      connectWS();
+    }, wsReconnectDelay);
+  }
+
+  // Fallback polling: refresh prices every 60s in case WS isn't connected
+  // (covers the scenario where the ws server is down but our scraper still runs)
+  pollTimer = setInterval(refreshPrices, 60000);
+
+  // Pause polling when the tab is hidden
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    } else {
+      // Immediate refresh on return, then resume periodic
+      refreshPrices();
+      if (!pollTimer) pollTimer = setInterval(refreshPrices, 60000);
+    }
+  });
+
+  connectWS();
 })();
 </script>
 {% endblock %}

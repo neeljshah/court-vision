@@ -380,24 +380,407 @@ def _predict_v3(features: Dict[str, Any], snapshot: str) -> Optional[float]:
     return float(np.clip(blended, 0.0, 1.0))
 
 
+# Dual-stage calibration (iter67) — Platt + Isotonic chained on top of v1
+# booster output. Trained on the same 3,685-game OOS pool that the validation
+# uses. Applies post-prediction to fix v1's known over-confidence at extreme
+# probabilities. Loaded lazily and cached.
+_DUALCAL_CACHE: Dict[str, Any] = {}
+
+
+def _load_dualcal(snapshot: str):
+    if snapshot in _DUALCAL_CACHE:
+        return _DUALCAL_CACHE[snapshot]
+    path = os.path.join(_MODELS_DIR, f"inplay_dualcal_{snapshot.lower()}.joblib")
+    if not os.path.exists(path):
+        _DUALCAL_CACHE[snapshot] = None
+        return None
+    try:
+        import joblib  # noqa: PLC0415
+        dc = joblib.load(path)
+        if not isinstance(dc, dict) or "platt" not in dc or "isotonic" not in dc:
+            _DUALCAL_CACHE[snapshot] = None
+            return None
+        _DUALCAL_CACHE[snapshot] = dc
+        return dc
+    except Exception:
+        _DUALCAL_CACHE[snapshot] = None
+        return None
+
+
+def _apply_dualcal(raw_p: float, snapshot: str) -> float:
+    """Apply Platt + Isotonic calibration on top of a raw booster probability.
+
+    Platt was trained on logit(raw_p), not raw_p — that's the standard form."""
+    dc = _load_dualcal(snapshot)
+    if dc is None:
+        return raw_p
+    try:
+        platt = dc.get("platt")
+        iso = dc.get("isotonic")
+        if platt is None or iso is None:
+            return raw_p
+        # logit transform with clip to avoid inf
+        p_clip = max(1e-6, min(1.0 - 1e-6, raw_p))
+        logit = math.log(p_clip / (1.0 - p_clip))
+        x = np.array([[logit]])
+        p_platt = float(platt.predict_proba(x)[0, 1])
+        p_iso = float(iso.predict([p_platt])[0])
+        return float(np.clip(p_iso, 0.0, 1.0))
+    except Exception:
+        return raw_p
+
+
+# v6_hp boosters (iter68 HP-tuned) and meta_blend (iter71 NNLS over
+# v6_hp + iter62 isotonic + analytic sigmoid_margin + analytic polarity_pregame +
+# optional v7_bag5 for endQ2). Validated via scripts/validation_harness_winprob.py:
+#   endQ1 meta_blend: mean WF Brier Δ = -0.0133 vs v1 raw (4/4 folds improved)
+#   endQ2 meta_blend: mean WF Brier Δ = -0.0141 vs v1 raw (4/4 folds improved)
+#   endQ3 v6_hp:      mean WF Brier Δ = -0.0158 vs v1 raw (4/4 folds improved)
+# Source: data/cache/validation_harness_winprob.json.
+_V6HP_CACHE: Dict[str, Any] = {}
+_V6HP_META_CACHE: Dict[str, Any] = {}
+_V7BAG_CACHE: Dict[str, Any] = {}
+_ITER62_ISO_CACHE: Dict[str, Any] = {}
+_BLEND_META_CACHE: Dict[str, Any] = {}
+
+# Snapshots routed through meta_blend (iter71). endQ3 is excluded because its
+# meta_blend weights assign 0.388 to v4_fouls, and the foul features are not
+# yet wired into the live snapshot path — falling back would reduce endQ3 to
+# 100% sigmoid_margin and regress vs v6_hp standalone.
+_META_BLEND_SNAPSHOTS = ("endQ1", "endQ2")
+
+# Snapshots that should still apply iter67 dual-cal on the v1 raw fallback
+# path. iter67 validation (data/cache/iter67_inplay_dualcal_results.json)
+# combined with scripts/validation_harness_winprob.py shows:
+#   endQ1: Δ -0.0051  -> keep as defensive fallback when meta_blend missing
+#   endQ2: Δ -0.0012  -> fails ship gate, no value
+#   endQ3: Δ -0.0008 with worst fold regress +0.0072 -> actively HURTS
+_DUALCAL_FALLBACK_SNAPSHOTS = ("endQ1",)
+
+
+def _load_v6_hp(snapshot: str):
+    if snapshot in _V6HP_CACHE:
+        b = _V6HP_CACHE[snapshot]
+        return b if b is not False else None
+    path = os.path.join(_MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v6_hp.lgb")
+    meta_path = os.path.join(
+        _MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v6_hp_meta.json")
+    if not (os.path.exists(path) and os.path.exists(meta_path)):
+        _V6HP_CACHE[snapshot] = False
+        return None
+    try:
+        import lightgbm as lgb
+        booster = lgb.Booster(model_file=path)
+        with open(meta_path) as f:
+            _V6HP_META_CACHE[snapshot] = json.load(f)
+    except Exception:
+        _V6HP_CACHE[snapshot] = False
+        return None
+    _V6HP_CACHE[snapshot] = booster
+    return booster
+
+
+def _v6_hp_feature_cols(snapshot: str) -> Optional[List[str]]:
+    if snapshot not in _V6HP_META_CACHE:
+        _load_v6_hp(snapshot)
+    meta = _V6HP_META_CACHE.get(snapshot)
+    if not meta:
+        return None
+    return list(meta.get("feature_cols", []))
+
+
+def _predict_v6_hp(features: Dict[str, Any], snapshot: str) -> Optional[float]:
+    """Run the iter68 v6_hp booster on a single feature dict."""
+    booster = _load_v6_hp(snapshot)
+    if booster is None:
+        return None
+    cols = _v6_hp_feature_cols(snapshot)
+    if not cols:
+        return None
+    row = {}
+    for c in cols:
+        v = features.get(c)
+        if c in _CAT_COLS:
+            row[c] = v
+        else:
+            try:
+                row[c] = float(v) if v is not None else np.nan
+            except (TypeError, ValueError):
+                row[c] = np.nan
+    df = pd.DataFrame([row], columns=cols)
+    for c in _CAT_COLS:
+        if c in df.columns:
+            df[c] = df[c].astype("category")
+    try:
+        p = booster.predict(df)
+    except Exception:
+        return None
+    if p is None or len(p) == 0:
+        return None
+    return float(np.clip(p[0], 0.0, 1.0))
+
+
+def _load_v7_bag5_endq2() -> List[Any]:
+    """5-seed v7 bag (iter70). Only exists for endQ2."""
+    if "endQ2" in _V7BAG_CACHE:
+        b = _V7BAG_CACHE["endQ2"]
+        return [] if b is False else b
+    bag = []
+    try:
+        import lightgbm as lgb
+        for s in range(5):
+            p = os.path.join(
+                _MODELS_DIR, f"inplay_winprob_endq2_v7_bag5_seed{s}.lgb")
+            if os.path.exists(p):
+                bag.append(lgb.Booster(model_file=p))
+    except Exception:
+        bag = []
+    if not bag:
+        _V7BAG_CACHE["endQ2"] = False
+        return []
+    _V7BAG_CACHE["endQ2"] = bag
+    return bag
+
+
+def _predict_v7_bag5(features: Dict[str, Any]) -> Optional[float]:
+    bag = _load_v7_bag5_endq2()
+    if not bag:
+        return None
+    cols = _v6_hp_feature_cols("endQ2")  # v7 shares v6_hp schema
+    if not cols:
+        return None
+    row = {}
+    for c in cols:
+        v = features.get(c)
+        if c in _CAT_COLS:
+            row[c] = v
+        else:
+            try:
+                row[c] = float(v) if v is not None else np.nan
+            except (TypeError, ValueError):
+                row[c] = np.nan
+    df = pd.DataFrame([row], columns=cols)
+    for c in _CAT_COLS:
+        if c in df.columns:
+            df[c] = df[c].astype("category")
+    preds = []
+    for b in bag:
+        try:
+            p = b.predict(df)
+            if p is not None and len(p) > 0:
+                preds.append(float(p[0]))
+        except Exception:
+            continue
+    if not preds:
+        return None
+    return float(np.clip(np.mean(preds), 0.0, 1.0))
+
+
+def _load_iter62_iso(snapshot: str):
+    """iter62 isotonic calibrator (joblib dict bundle)."""
+    if snapshot in _ITER62_ISO_CACHE:
+        v = _ITER62_ISO_CACHE[snapshot]
+        return v if v is not False else None
+    path = os.path.join(_MODELS_DIR, f"inplay_isotonic_{snapshot.lower()}.joblib")
+    if not os.path.exists(path):
+        _ITER62_ISO_CACHE[snapshot] = False
+        return None
+    try:
+        import joblib
+        obj = joblib.load(path)
+        iso = obj.get("isotonic") if isinstance(obj, dict) else obj
+        if iso is None:
+            _ITER62_ISO_CACHE[snapshot] = False
+            return None
+        _ITER62_ISO_CACHE[snapshot] = iso
+        return iso
+    except Exception:
+        _ITER62_ISO_CACHE[snapshot] = False
+        return None
+
+
+def _load_blend_meta(snapshot: str) -> Optional[Dict[str, Any]]:
+    if snapshot in _BLEND_META_CACHE:
+        v = _BLEND_META_CACHE[snapshot]
+        return None if v is False else v
+    path = os.path.join(_MODELS_DIR, f"inplay_meta_blend_{snapshot.lower()}.json")
+    if not os.path.exists(path):
+        _BLEND_META_CACHE[snapshot] = False
+        return None
+    try:
+        with open(path) as f:
+            _BLEND_META_CACHE[snapshot] = json.load(f)
+            return _BLEND_META_CACHE[snapshot]
+    except Exception:
+        _BLEND_META_CACHE[snapshot] = False
+        return None
+
+
+def _predict_meta_blend(features: Dict[str, Any],
+                        snapshot: str) -> Optional[float]:
+    """Compose iter71 meta_blend over loaded artifacts + analytic components.
+
+    Components:
+      v6_hp:           loaded iter68 booster
+      iso:             iter62 isotonic applied to v6_hp output
+      v7_bag5:         endQ2 only — average of 5 v7 seed boosters
+      sigmoid_margin:  1 / (1 + exp(-score_margin/6))
+      polarity_pregame: 1 - pregame_win_prob
+
+    Renormalizes weights over available components. Returns None when no
+    component is available (caller falls back to v3/v2/v1).
+    """
+    if snapshot not in _META_BLEND_SNAPSHOTS:
+        return None
+    meta = _load_blend_meta(snapshot)
+    if meta is None:
+        return None
+    weights = meta.get("weights", {})
+    if not weights:
+        return None
+
+    components: Dict[str, float] = {}
+    p_v6 = _predict_v6_hp(features, snapshot)
+    if p_v6 is not None:
+        components["v6_hp"] = p_v6
+        iso = _load_iter62_iso(snapshot)
+        if iso is not None:
+            try:
+                p_iso = float(iso.predict([p_v6])[0])
+                components["iso"] = float(np.clip(p_iso, 1e-7, 1.0 - 1e-7))
+            except Exception:
+                pass
+
+    try:
+        sm = float(features.get("score_margin", 0.0) or 0.0)
+        components["sigmoid_margin"] = float(1.0 / (1.0 + math.exp(-sm / 6.0)))
+    except (TypeError, ValueError, OverflowError):
+        pass
+
+    try:
+        pg = float(features.get("pregame_win_prob", 0.5) or 0.5)
+        components["polarity_pregame"] = float(np.clip(1.0 - pg, 1e-6, 1 - 1e-6))
+    except (TypeError, ValueError):
+        pass
+
+    if snapshot == "endQ2":
+        p_bag = _predict_v7_bag5(features)
+        if p_bag is not None:
+            components["v7_bag5"] = p_bag
+
+    used = {k: float(weights.get(k, 0.0))
+            for k in components if float(weights.get(k, 0.0)) > 0.0}
+    if not used:
+        return components.get(meta.get("best_single_component", "v6_hp"))
+
+    total = sum(used.values())
+    if total <= 1e-9:
+        return components.get(meta.get("best_single_component", "v6_hp"))
+    out = 0.0
+    for k, w in used.items():
+        out += (w / total) * components[k]
+    return float(np.clip(out, 0.0, 1.0))
+
+
+def active_stack(snapshot: str) -> Dict[str, Any]:
+    """Report which artifact stack `predict_home_win_prob` will route through.
+
+    Used by the UI tooltip + status pill to surface honest provenance for the
+    displayed win probability.
+    """
+    # Touch loaders to populate caches without forcing a prediction.
+    v6_ok = _load_v6_hp(snapshot) is not None
+    iso_ok = _load_iter62_iso(snapshot) is not None
+    bag5_ok = (snapshot == "endQ2") and bool(_load_v7_bag5_endq2())
+    blend_ok = (snapshot in _META_BLEND_SNAPSHOTS
+                and _load_blend_meta(snapshot) is not None
+                and v6_ok)
+    v3_ok = load_v3_bundle(snapshot) is not None
+    v2_ok = load_v2_bundle(snapshot) is not None
+    v1_ok = load_booster(snapshot) is not None
+    dualcal_ok = (snapshot in _DUALCAL_FALLBACK_SNAPSHOTS
+                  and _load_dualcal(snapshot) is not None)
+
+    if blend_ok:
+        layer = "meta_blend_iter71"
+        components = ["v6_hp"]
+        if iso_ok:
+            components.append("iter62_iso")
+        components.append("sigmoid_margin")
+        components.append("polarity_pregame")
+        if bag5_ok:
+            components.append("v7_bag5")
+        detail = f"{layer} ({'+'.join(components)})"
+    elif snapshot == "endQ3" and v6_ok:
+        layer = "v6_hp_iter68"
+        detail = "v6_hp_iter68 (HP-tuned LGB, iter68)"
+    elif v3_ok:
+        layer = "v3_pregame_anchored"
+        detail = "v3 (R13_G2 pregame-anchored ensemble)"
+    elif v2_ok:
+        layer = "v2_ensemble"
+        detail = "v2 (R12_F1 LGB+LR NNLS ensemble)"
+    elif v1_ok:
+        layer = "v1_dualcal" if dualcal_ok else "v1_raw"
+        detail = ("v1 (R10_M5) + iter67 dual-cal"
+                  if dualcal_ok else "v1 (R10_M5) raw")
+    else:
+        layer = "none"
+        detail = "no artifact available — using pregame WP"
+
+    return {
+        "snapshot": snapshot,
+        "layer": layer,
+        "detail": detail,
+        "v6_hp_loaded": v6_ok,
+        "iter62_iso_loaded": iso_ok,
+        "v7_bag5_loaded": bag5_ok,
+        "meta_blend_loaded": blend_ok,
+        "v3_loaded": v3_ok,
+        "v2_loaded": v2_ok,
+        "v1_loaded": v1_ok,
+        "dualcal_applied_on_fallback": dualcal_ok,
+    }
+
+
 def predict_home_win_prob(features: Dict[str, Any],
                           snapshot: str = "endQ3") -> Optional[float]:
     """Predict P(home team wins) from a snapshot feature dict.
 
-    Routing priority: v3 (pregame-anchored, endQ1) > v2 ensemble (endQ2) > v1
-    booster (endQ1/Q2/Q3). Returns None when no artifact is available so
-    callers can fall back to raw pregame WP.
+    Routing priority (validated 2026-05-28 via
+    scripts/validation_harness_winprob.py):
+      1. meta_blend_iter71 — endQ1, endQ2 (mean WF Brier Δ -0.013 / -0.014)
+      2. v6_hp_iter68     — endQ3 (mean WF Brier Δ -0.016; meta_blend would
+                             need v4_fouls features which aren't wired live)
+      3. v3 pregame-anchored ensemble — endQ1 fallback
+      4. v2 ensemble — endQ2 fallback
+      5. v1 raw booster (+ iter67 dual-cal for endQ1 only as a defensive
+         fallback — dual-cal is a no-op or regression on endQ2/Q3)
+
+    Returns None when no artifact is available.
     """
-    # Try v3 first (pregame-anchored — R13_G2).
+    # 1. meta_blend (best stack for endQ1 + endQ2).
+    mb = _predict_meta_blend(features, snapshot)
+    if mb is not None:
+        return mb
+
+    # 2. v6_hp standalone for endQ3 (or endQ1/Q2 if meta_blend missing
+    #    but v6_hp loads — still beats v3/v2/v1 by big margin).
+    v6 = _predict_v6_hp(features, snapshot)
+    if v6 is not None:
+        return v6
+
+    # 3. v3 (pregame-anchored — R13_G2).
     v3 = _predict_v3(features, snapshot)
     if v3 is not None:
         return v3
 
-    # Then v2 (ensemble + learned anchor — R12_F1).
+    # 4. v2 (ensemble + learned anchor — R12_F1).
     v2 = _predict_v2(features, snapshot)
     if v2 is not None:
         return v2
 
+    # 5. v1 raw booster fallback.
     booster = load_booster(snapshot)
     if booster is None:
         return None
@@ -409,6 +792,10 @@ def predict_home_win_prob(features: Dict[str, Any],
     if raw is None or len(raw) == 0:
         return None
     p = float(np.clip(raw[0], 0.0, 1.0))
+    # iter67 dual-cal: kept only for endQ1 (helps modestly; regresses Q3,
+    # no-op for Q2). Validated via scripts/validation_harness_winprob.py.
+    if snapshot in _DUALCAL_FALLBACK_SNAPSHOTS:
+        p = _apply_dualcal(p, snapshot)
     return p
 
 
@@ -585,6 +972,12 @@ def reset_cache() -> None:
     _META_CACHE.clear()
     _V2_BUNDLE_CACHE.clear()
     _V3_BUNDLE_CACHE.clear()
+    _V6HP_CACHE.clear()
+    _V6HP_META_CACHE.clear()
+    _V7BAG_CACHE.clear()
+    _ITER62_ISO_CACHE.clear()
+    _BLEND_META_CACHE.clear()
+    _DUALCAL_CACHE.clear()
 
 
 __all__ = [
@@ -594,5 +987,6 @@ __all__ = [
     "load_v3_bundle",
     "predict_home_win_prob",
     "features_from_snapshot",
+    "active_stack",
     "reset_cache",
 ]
