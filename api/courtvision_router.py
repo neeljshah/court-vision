@@ -498,20 +498,39 @@ _WIN_PROB_MODEL_LOCK: threading.Lock = threading.Lock()  # prevents thundering-h
 _TEAM_STATS_CACHE: dict = {}
 _TEAM_STATS_MTIME: dict = {}
 
-# Module-level abbrev→id mapping (populated once)
-_ABBREV_TO_TEAM_ID: dict = {}
+# Static NBA abbreviation → team_id mapping (all 30 teams as of 2025-26).
+# Baked in so lookup never depends on a runtime nba_api import and can never
+# silently return {} on Railway if nba_api is missing or its import fails.
+_STATIC_ABBREV_TO_ID: dict[str, int] = {
+    "ATL": 1610612737, "BKN": 1610612751, "BOS": 1610612738, "CHA": 1610612766,
+    "CHI": 1610612741, "CLE": 1610612739, "DAL": 1610612742, "DEN": 1610612743,
+    "DET": 1610612765, "GSW": 1610612744, "HOU": 1610612745, "IND": 1610612754,
+    "LAC": 1610612746, "LAL": 1610612747, "MEM": 1610612763, "MIA": 1610612748,
+    "MIL": 1610612749, "MIN": 1610612750, "NOP": 1610612740, "NYK": 1610612752,
+    "OKC": 1610612760, "ORL": 1610612753, "PHI": 1610612755, "PHX": 1610612756,
+    "POR": 1610612757, "SAC": 1610612758, "SAS": 1610612759, "TOR": 1610612761,
+    "UTA": 1610612762, "WAS": 1610612764,
+}
+
+# Module-level abbrev→id mapping (starts pre-populated from static map)
+_ABBREV_TO_TEAM_ID: dict = dict(_STATIC_ABBREV_TO_ID)
 
 
 def _get_abbrev_to_id() -> dict:
-    """Return NBA team abbreviation → integer team_id mapping."""
+    """Return NBA team abbreviation → integer team_id mapping.
+
+    Always returns the fully-populated static map. nba_api is used to extend
+    it (e.g. expansion teams) but is never required — if it fails the static
+    map is returned as-is, covering all 30 current teams.
+    """
     global _ABBREV_TO_TEAM_ID
-    if _ABBREV_TO_TEAM_ID:
+    if len(_ABBREV_TO_TEAM_ID) >= 30:
         return _ABBREV_TO_TEAM_ID
     try:
         from nba_api.stats.static import teams as _nba_teams
         _ABBREV_TO_TEAM_ID = {t["abbreviation"]: int(t["id"]) for t in _nba_teams.get_teams()}
     except Exception:
-        pass
+        pass  # static map already set — nba_api is an optional enhancement only
     return _ABBREV_TO_TEAM_ID
 
 
@@ -775,46 +794,147 @@ def _compute_win_prob(game_id: str, props: list,
     return None
 
 
-def _build_model_total(rec_bets_raw: list, home_abbr: str, away_abbr: str) -> tuple:
-    """Return (model_total, model_spread) from pts projections in rec_bets_raw.
+def _build_model_total(game_props: list, home_abbr: str, away_abbr: str) -> tuple:
+    """Return (model_total, model_spread) from PTS projections in game_props.
 
-    Splits by team when the 'team' field is present on book entries; falls back
-    to splitting pts list in half. Returns (None, None) when no pts data.
-    model_spread is home_pts - away_pts (positive = home favored).
+    Uses ALL props (not just recommended bets) so the total reflects the full
+    roster, not only edge bets.  Deduplicates to one projection per player
+    (highest model_projection wins when the same player has multiple PTS lines).
+    Team split uses the model_team field attached by overlay_predictions from
+    the predictions parquet (parquet carries a 'team' column).  Falls back to
+    splitting the sorted PTS list in half when no team labels are present.
+    Returns (None, None) when no PTS projections exist.
+    model_spread = home_pts - away_pts (positive = home favored).
     """
+    import logging as _log
+    _logger = _log.getLogger(__name__)
     try:
-        home_pts = sum(
-            p.get("model_projection", 0) or 0
-            for p in rec_bets_raw
-            if p.get("stat") == "pts"
-            and any(b.get("team", "").upper() == home_abbr.upper() for b in p.get("books", []))
-        )
-        away_pts = sum(
-            p.get("model_projection", 0) or 0
-            for p in rec_bets_raw
-            if p.get("stat") == "pts"
-            and any(b.get("team", "").upper() == away_abbr.upper() for b in p.get("books", []))
-        )
-        if not home_pts and not away_pts:
-            all_pts = [p.get("model_projection", 0) or 0
-                       for p in rec_bets_raw if p.get("stat") == "pts"]
-            if all_pts:
-                half = max(len(all_pts) // 2, 1)
-                away_pts = sum(all_pts[:half])
-                home_pts = sum(all_pts[half:])
+        # Step 1: collect best PTS projection per player (deduplicate multiple lines)
+        best_by_player: dict[str, dict] = {}
+        for p in game_props:
+            if (p.get("stat") or "").lower() != "pts":
+                continue
+            proj = p.get("model_projection")
+            if proj is None:
+                continue
+            player = p.get("player") or ""
+            existing = best_by_player.get(player)
+            if existing is None or proj > (existing.get("model_projection") or 0):
+                best_by_player[player] = p
+
+        if not best_by_player:
+            return (None, None)
+
+        # Step 2: split by team using model_team (set by overlay from parquet)
+        home_pts = 0.0
+        away_pts = 0.0
+        untagged: list[float] = []
+        home_u = home_abbr.upper()
+        away_u = away_abbr.upper()
+        generic = {"AWAY", "HOME", "", "UNKNOWN"}
+
+        for p in best_by_player.values():
+            proj = float(p.get("model_projection") or 0)
+            mt = (p.get("model_team") or "").upper()
+            if mt and mt not in generic:
+                if mt == home_u:
+                    home_pts += proj
+                elif mt == away_u:
+                    away_pts += proj
+                else:
+                    untagged.append(proj)
+            else:
+                untagged.append(proj)
+
+        # If team labels resolved both sides, distribute any untagged evenly
         if home_pts or away_pts:
-            return (round(home_pts + away_pts, 1), round(home_pts - away_pts, 1))
+            if untagged:
+                half = sum(untagged) / 2.0
+                home_pts += half
+                away_pts += half
+        else:
+            # Fallback: no team labels at all — split sorted list in half
+            sorted_pts = sorted(best_by_player.values(),
+                                key=lambda x: x.get("player") or "")
+            all_proj = [float(p.get("model_projection") or 0) for p in sorted_pts]
+            half = max(len(all_proj) // 2, 1)
+            away_pts = sum(all_proj[:half])
+            home_pts = sum(all_proj[half:])
+
+        total = round(home_pts + away_pts, 1)
+        spread = round(home_pts - away_pts, 1)
+
+        if total < 150 or total > 280:
+            _logger.warning(
+                "_build_model_total: suspicious total=%.1f for %s@%s "
+                "(home=%.1f away=%.1f n_players=%d)",
+                total, away_abbr, home_abbr, home_pts, away_pts, len(best_by_player),
+            )
+
+        if home_pts or away_pts:
+            return (total, spread)
     except Exception:
         pass
     return (None, None)
 
 
 def _build_key_players(game_props: list) -> list:
-    """Top-3 player names by prop count — proxy for projected usage."""
+    """Top-3 players per team (6 total) by PTS model projection descending.
+
+    Falls back to prop count when no PTS projections are available (rare case
+    where predictions parquet was not generated).  Returns at most 6 names
+    (top-3 away + top-3 home) ordered by projection desc.
+    """
+    # Best PTS projection per player
+    pts_proj: dict[str, float] = {}
+    pts_team: dict[str, str] = {}
+    for p in game_props:
+        if (p.get("stat") or "").lower() != "pts":
+            continue
+        proj = p.get("model_projection")
+        if proj is None:
+            continue
+        player = p.get("player") or ""
+        if not player:
+            continue
+        if player not in pts_proj or proj > pts_proj[player]:
+            pts_proj[player] = float(proj)
+            mt = (p.get("model_team") or "").upper()
+            if mt:
+                pts_team[player] = mt
+
+    if pts_proj:
+        # Group into two teams, pick top-3 each, return sorted by projection desc
+        teams: dict[str, list] = {}
+        untagged: list[tuple[float, str]] = []
+        for player, proj in pts_proj.items():
+            team = pts_team.get(player, "")
+            if team:
+                teams.setdefault(team, []).append((proj, player))
+            else:
+                untagged.append((proj, player))
+
+        result = []
+        # Sort each team's players by projection desc, take top 3
+        for team_players in teams.values():
+            team_players.sort(reverse=True)
+            result.extend(name for _, name in team_players[:3])
+        # Append untagged (sorted desc) filling up to 6 total
+        untagged.sort(reverse=True)
+        for _, name in untagged:
+            if len(result) >= 6:
+                break
+            if name not in result:
+                result.append(name)
+        return result[:6]
+
+    # Fallback: no PTS projections — use prop count as proxy
     counts: dict[str, int] = {}
     for p in game_props:
-        counts[p["player"]] = counts.get(p["player"], 0) + 1
-    return [name for name, _ in sorted(counts.items(), key=lambda kv: -kv[1])[:3]]
+        player = p.get("player") or ""
+        if player:
+            counts[player] = counts.get(player, 0) + 1
+    return [name for name, _ in sorted(counts.items(), key=lambda kv: -kv[1])[:6]]
 
 
 def _build_game_detail(game_id: str, date: str) -> dict:
@@ -935,7 +1055,7 @@ def _build_game_detail(game_id: str, date: str) -> dict:
     ) and away_abbr not in _generic and home_abbr not in _generic
     pace_source = "season_avg" if _pace_from_nba_stats else "default"
 
-    _mt, _ms = _build_model_total(rec_bets_raw, home_abbr, away_abbr)
+    _mt, _ms = _build_model_total(game_props, home_abbr, away_abbr)
     game_info = {
         "game_id": game_id,
         "start_time_iso": start_time,
@@ -1040,7 +1160,10 @@ def tonight(request: Request, date: str = Query(default=None),
 
 
 @router.get("/api/slate", tags=["courtvision"])
-def api_slate(date: str = Query(default_factory=_today_et)):
+def api_slate(date: str = Query(default=None)):
+    # Apply next-game-day fallback so off-day requests resolve to the next live slate.
+    if date is None:
+        date = _next_game_day() or _today_et()
     return JSONResponse(_build_slate(date))
 
 
@@ -1556,7 +1679,12 @@ def arbs_page(request: Request, date: str = Query(default=None),
 
 
 @router.get("/api/today_summary", tags=["courtvision"])
-def api_today_summary(date: str = Query(default_factory=_today_et), n: int = Query(3, ge=1, le=10)):
+def api_today_summary(date: str = Query(default=None), n: int = Query(3, ge=1, le=10)):
+    # Use the same next-game-day fallback as /api/home.json and /tonight so that
+    # off-day requests (e.g. 2026-05-28 with no slate) resolve to the next slate
+    # that has live lines (e.g. 2026-05-29) rather than returning n_total:0.
+    if date is None:
+        date = _next_game_day() or _today_et()
     s = _build_slate(date); bets = s.get("bets", [])[:n]
     return JSONResponse({"date": s["date"], "generated_at": s["generated_at"],
         "n_total": s["summary"]["n_bets"], "avg_ev_pct": s["summary"]["avg_ev_pct"],

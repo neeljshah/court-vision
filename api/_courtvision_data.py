@@ -285,6 +285,20 @@ def healthz_payload(root: Path, latest_slate_date: Optional[str]) -> dict:
     checks["predictions_count"] = (
         sum(1 for _ in pred_dir.glob("slate_*.csv")) if pred_dir.exists() else 0
     )
+
+    # Team-stats observability: did the JSON file ship and is the lookup working?
+    checks["team_stats_loaded"] = (
+        (root / "data" / "nba" / "team_stats_2025-26.json").exists()
+        or (root / "data" / "nba" / "team_stats_2024-25.json").exists()
+    )
+    try:
+        from api.courtvision_router import _team_stats_for as _tsf
+        _okc = _tsf("OKC")
+        checks["pace_lookup_works"] = float(_okc.get("pace", 0.0)) > 95.0
+    except Exception as _exc:
+        checks["pace_lookup_works"] = False
+        checks["pace_lookup_error"] = str(_exc)[:120]
+
     return out
 
 

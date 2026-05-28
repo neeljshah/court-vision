@@ -310,8 +310,10 @@ def consolidate(date: str) -> list[dict]:
                 "books": [],
             })
             # Build a minimal prop dict for the deeplink generator.
+            # Include player so books without event-page IDs can fall back to player search.
             _dl_prop = {
                 "game_id": row.get("game_id") or "",
+                "player": row.get("player") or "",
                 "selection_id_over": row.get("selection_id_over") or "",
                 "selection_id_under": row.get("selection_id_under") or "",
             }

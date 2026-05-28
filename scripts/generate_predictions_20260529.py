@@ -46,6 +46,7 @@ ROSTER = [
     (1629652, "Luguentz Dort",           "OKC", False),
     (1627936, "Alex Caruso",             "OKC", False),
     (1629026, "Kenrich Williams",        "OKC", False),
+    (1631114, "Jalen Williams",           "OKC", False),
     (1631119, "Jaylin Williams",         "OKC", False),
     (1642362, "Payton Sandfort",         "OKC", False),
     (1642272, "Jared McCain",            "OKC", False),

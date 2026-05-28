@@ -132,7 +132,8 @@ def _load_predictions(date: str) -> dict[tuple[str, str], dict]:
             q10 = float(row["q10"]) if "q10" in row and row["q10"] == row["q10"] else None
             q90 = float(row["q90"]) if "q90" in row and row["q90"] == row["q90"] else None
             sigma = float(row["sigma"]) if "sigma" in row and row["sigma"] == row["sigma"] else None
-            lookup[key] = {"q50": q50, "q10": q10, "q90": q90, "sigma": sigma}
+            team = str(row["team"]).strip().upper() if "team" in row and row["team"] == row["team"] else None
+            lookup[key] = {"q50": q50, "q10": q10, "q90": q90, "sigma": sigma, "team": team}
         except Exception:
             continue
     log.debug("Loaded %d prediction rows for %s", len(lookup), date)
@@ -187,6 +188,11 @@ def overlay_predictions(date: str, props: list[dict]) -> list[dict]:
                 out["model_projection"] = round(q50, 2)
             if q10 is not None and q90 is not None:
                 out["model_interval"] = [round(q10, 2), round(q90, 2)]
+            # Carry team abbreviation from parquet so _build_model_total can split
+            # home/away pts without a separate player→team lookup.
+            team = pred.get("team")
+            if team:
+                out["model_team"] = str(team).upper()
 
             # Model P(OVER) — requires projection + sigma + line
             if q50 is not None and sigma is not None and sigma > 0 and line is not None:
