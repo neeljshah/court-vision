@@ -21,6 +21,13 @@ Iter-38: CLV-driven per-stat reallocations — REVERT (2026-05-27).
   Infrastructure added: KELLY_STAT_MULTIPLIER dict + kelly_stat_multiplier_for()
   (all 1.0x = no-op; ready for future partial BLK reduction if re-tested).
 
+Iter-39: PTS threshold 0.7->1.0 isolated — SHIP (2026-05-27).
+  Tested: PTS thr 0.7->1.0 ONLY (AST and BLK unchanged from iter-36).
+  Result: agg +0.81pp (+21.23% -> +22.04%, 2,397 bets).
+          PTS: +3.85pp (+12.20% -> +16.05%); 818 -> 527 bets (retain_frac=0.645).
+          No stat regressed > -1pp (max regression: BLK -0.21pp).
+  Decision: SHIP.
+
 Usage:
     from src.prediction.bet_thresholds import edge_threshold_for, KELLY_B_ENABLED
 
@@ -31,9 +38,9 @@ Usage:
 from __future__ import annotations
 
 _STAT_THRESHOLDS: dict[str, float] = {
-    "pts":  0.7,   # iter-38 REVERT: tested 1.0, PTS alone +3.85pp but AST regression forced revert
+    "pts":  1.0,   # iter-39 SHIP: isolated PTS threshold raise 0.7->1.0; +3.85pp on PTS, +0.81pp agg
     "reb":  1.5,
-    "ast":  1.0,   # iter-38 REVERT: tested 0.7, doubled AST volume caused -3.83pp dilution
+    "ast":  1.0,   # iter-38 REVERT: tested 0.7 — doubled AST volume caused -3.83pp dilution; unchanged in iter-39
     "fg3m": 0.7,
     "stl":  0.4,
     "blk":  0.4,

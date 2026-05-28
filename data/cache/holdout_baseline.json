@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-28T00:11:29Z",
+  "__updated_at__": "2026-05-28T00:16:24Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -453,6 +453,109 @@
         "fg3m": 1.0,
         "stl": 1.0,
         "blk": 0.5
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0
+    }
+  },
+  "__iter39__": {
+    "iter": 39,
+    "generated_at": "2026-05-28T00:16:24Z",
+    "approach": "pts_threshold_isolated_0p7_to_1p0",
+    "n_bets_total": 2397,
+    "pre_iter39_agg_roi_pct": 21.23,
+    "iter39_agg_roi_pct": 22.04,
+    "delta_agg_pp": 0.8076,
+    "decision": "SHIP \u2014 aggregate lifts >=+0.5pp AND no per-stat regressions > -1pp",
+    "regressions": [],
+    "ship": true,
+    "changes": {
+      "pts_threshold": {
+        "from": 0.7,
+        "to": 1.0
+      },
+      "ast_threshold": {
+        "from": 1.0,
+        "to": 1.0,
+        "note": "UNCHANGED (iter-38 expansion reverted)"
+      },
+      "blk_kelly_mult": {
+        "from": 1.0,
+        "to": 1.0,
+        "note": "UNCHANGED (iter-38 reduction reverted)"
+      }
+    },
+    "per_stat": {
+      "ast": {
+        "n_bets": 374,
+        "kb_roi_pct": 24.04,
+        "pre39_roi_pct": 24.04,
+        "delta_pp": 0.0,
+        "kb_stake": 29.0187,
+        "kb_pnl": 6.976
+      },
+      "blk": {
+        "n_bets": 631,
+        "kb_roi_pct": 26.86,
+        "pre39_roi_pct": 27.07,
+        "delta_pp": -0.21,
+        "kb_stake": 71.5238,
+        "kb_pnl": 19.2133
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "kb_roi_pct": 26.39,
+        "pre39_roi_pct": 26.43,
+        "delta_pp": -0.04,
+        "kb_stake": 7.7605,
+        "kb_pnl": 2.0481
+      },
+      "pts": {
+        "n_bets": 527,
+        "kb_roi_pct": 16.05,
+        "pre39_roi_pct": 12.2,
+        "delta_pp": 3.85,
+        "kb_stake": 19.1542,
+        "kb_pnl": 3.0735
+      },
+      "reb": {
+        "n_bets": 157,
+        "kb_roi_pct": 16.73,
+        "pre39_roi_pct": 16.73,
+        "delta_pp": 0.0,
+        "kb_stake": 6.1316,
+        "kb_pnl": 1.0261
+      },
+      "stl": {
+        "n_bets": 634,
+        "kb_roi_pct": 15.02,
+        "pre39_roi_pct": 15.03,
+        "delta_pp": -0.01,
+        "kb_stake": 41.2731,
+        "kb_pnl": 6.1984
+      }
+    },
+    "pts_details": {
+      "retain_frac": 0.645,
+      "n_bets_pruned": 291,
+      "flat_roi_pct": 15.2
+    },
+    "params": {
+      "thresholds_39": {
+        "pts": 1.0,
+        "reb": 1.5,
+        "ast": 1.0,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_stat_mult": {
+        "pts": 1.0,
+        "reb": 1.0,
+        "ast": 1.0,
+        "fg3m": 1.0,
+        "stl": 1.0,
+        "blk": 1.0
       },
       "kelly_frac": 0.25,
       "max_stake_u": 3.0
