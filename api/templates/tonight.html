@@ -8,13 +8,14 @@
 {% block content %}
 <section class="mb-3 md:mb-4">
   <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">Tonight's edges</h1>
+    <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">
+      {% if matchup_label %}{{ matchup_label }}{% else %}Tonight's edges{% endif %}
+    </h1>
     <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ slate.date }}</span>
+    {% if matchup_label %}
+      <a href="/tonight?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">← all games</a>
+    {% endif %}
     <a href="/parlays?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">parlays →</a>
-    <a href="/plus_ev?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">+EV →</a>
-    <a href="/odds?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">odds →</a>
-    <a href="/arbs?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">arbs →</a>
-    <a href="/live?date={{ slate.date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">live →</a>
     {% if slate.stale_data %}
       <span class="text-xs px-2 py-0.5 rounded" style="background:#451a03;color:#fbbf24">stale slate</span>
     {% endif %}
@@ -53,11 +54,16 @@
 
   {% if not slate.has_lines %}
     <div class="mt-2 cv-card px-3 py-2 text-xs" style="color:var(--cv-amber);border-color:#451a03">
-      No lines CSV found for {{ slate.date }}. Drop a file at
-      <code style="color:var(--cv-text)">data/lines/lines_{{ slate.date }}.csv</code>
-      (columns: player, opp, venue, stat, line, over_odds, under_odds) to compute EV.
+      Lines aren't published yet for {{ slate.date }} — scrapers usually pull morning-of-game. Check back closer to tip-off.
     </div>
   {% endif %}
+  <!-- Book filter: client-side, localStorage-persisted. Same UX as homepage. -->
+  <div id="bookFilter" class="mt-3" style="padding:10px 12px;border:1px solid var(--cv-border);border-radius:8px;background:var(--cv-card);font-size:12px;">
+    <div style="color:var(--cv-muted);font-weight:600;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;font-size:10px;">
+      Only show bets from books you have
+    </div>
+    <div id="bookFilterChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  </div>
 </section>
 
 {% if not slate.bets %}
@@ -96,4 +102,76 @@
 
 {% block footer %}
   Refreshed {{ slate.generated_at }} · CourtVision · model graded · not financial advice
+{% endblock %}
+
+{% block scripts %}
+<style>
+  .bet-card[data-book-hidden="1"]{display:none;}
+  .book-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;
+    border:1px solid var(--cv-border);border-radius:14px;cursor:pointer;
+    background:transparent;color:var(--cv-muted);font-size:11px;
+    transition:all .15s;user-select:none;}
+  .book-chip:hover{border-color:var(--cv-accent);color:var(--cv-text);}
+  .book-chip.on{background:var(--cv-accent);border-color:var(--cv-accent);
+    color:#0a0f1e;font-weight:600;}
+</style>
+<script>
+(function(){
+  var LS_KEY = 'cv_book_filter';
+  function readSel(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'null')||[];}catch(e){return [];} }
+  function saveSel(a){ try{localStorage.setItem(LS_KEY, JSON.stringify(a));}catch(e){} }
+  function applyFilter(){
+    var sel = readSel(), all = sel.length === 0;
+    document.querySelectorAll('.bet-card').forEach(function(c){
+      var bk = (c.getAttribute('data-book')||'').toLowerCase();
+      var keep = all || sel.some(function(s){ return bk.indexOf(s.toLowerCase()) !== -1; });
+      c.setAttribute('data-book-hidden', keep ? '0' : '1');
+    });
+    document.querySelectorAll('.book-chip').forEach(function(c){
+      c.classList.toggle('on', sel.indexOf(c.getAttribute('data-book')) !== -1);
+    });
+    // Update visible count
+    var visible = document.querySelectorAll('.bet-card:not([data-book-hidden="1"])').length;
+    var cnt = document.getElementById('visibleBetCount');
+    if (cnt) cnt.textContent = visible;
+  }
+  function collectBooks(){
+    var set = {};
+    document.querySelectorAll('.bet-card').forEach(function(c){
+      var bk = (c.getAttribute('data-book')||'').trim();
+      if (bk) set[bk] = true;
+    });
+    return Object.keys(set).sort();
+  }
+  function buildChips(){
+    var container = document.getElementById('bookFilterChips');
+    if (!container) return;
+    var books = collectBooks();
+    container.innerHTML = '';
+    if (books.length === 0) {
+      container.innerHTML = '<span style="color:var(--cv-muted);font-size:11px">No books to filter yet.</span>';
+      return;
+    }
+    books.forEach(function(bk){
+      var c = document.createElement('button');
+      c.type = 'button'; c.className = 'book-chip';
+      c.setAttribute('data-book', bk); c.textContent = bk;
+      c.onclick = function(e){
+        e.preventDefault(); e.stopPropagation();
+        var sel = readSel(), i = sel.indexOf(bk);
+        if (i === -1) sel.push(bk); else sel.splice(i, 1);
+        saveSel(sel); applyFilter();
+      };
+      container.appendChild(c);
+    });
+    var clr = document.createElement('button');
+    clr.type = 'button'; clr.className = 'book-chip';
+    clr.style.opacity = '.7'; clr.textContent = 'Show all books';
+    clr.onclick = function(e){ e.preventDefault(); e.stopPropagation(); saveSel([]); applyFilter(); };
+    container.appendChild(clr);
+    applyFilter();
+  }
+  buildChips();
+})();
+</script>
 {% endblock %}
