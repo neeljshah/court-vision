@@ -320,7 +320,7 @@ def consolidate(date: str) -> list[dict]:
             base["books"].append({
                 "book": row["book"], "display": _BOOK_DISPLAY.get(row["book"], row["book"]),
                 "over_price": row["over_price"], "under_price": row["under_price"],
-                "captured_at": row["captured_at"],
+                "captured_at": _normalize_ts(row["captured_at"]),
                 # Deeplink IDs — DK/FD: bet-slip outcomeIds; BR/PIN/PB: event IDs
                 "selection_id_over": row.get("selection_id_over") or "",
                 "selection_id_under": row.get("selection_id_under") or "",
@@ -418,6 +418,31 @@ def games_index(date: str) -> list[dict]:
     return out
 
 
+def _normalize_ts(s: str) -> str:
+    """Normalize any ISO-8601 variant to YYYY-MM-DDTHH:MM:SSZ (UTC, with seconds).
+
+    Handles the three formats found in the wild:
+      2026-05-28T02:20+00:00       (offset, no seconds)
+      2026-05-28T02:21:14          (no offset, has seconds — treated as UTC)
+      2026-05-28T02:20             (no offset, no seconds — treated as UTC)
+    Returns the input unchanged if it cannot be parsed.
+    """
+    if not s:
+        return s
+    try:
+        # Normalize the Z suffix so fromisoformat can handle it on Py3.9
+        normalized = s.replace("Z", "+00:00")
+        # If no offset marker present, assume UTC
+        if "+" not in normalized[10:] and normalized.count("-") < 3:
+            normalized = normalized + "+00:00"
+        dt = datetime.fromisoformat(normalized)
+        # Convert to UTC and format without microseconds
+        utc = dt.astimezone(timezone.utc)
+        return utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    except (ValueError, AttributeError):
+        return s
+
+
 def odds_envelope(date: str) -> dict:
     """Shape for /api/odds/{date}.json."""
     props = consolidate(date)
@@ -433,11 +458,11 @@ def odds_envelope(date: str) -> dict:
                 book_last_seen[b["book"]] = ts
     return {
         "date": date,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": _normalize_ts(datetime.now(timezone.utc).isoformat()),
         "n_props": len(props),
         "n_books": len(books_seen),
         "books": [{"id": b, "display": _BOOK_DISPLAY.get(b, b),
-                   "last_scrape": book_last_seen.get(b, "")}
+                   "last_scrape": _normalize_ts(book_last_seen.get(b, ""))}
                   for b in books_seen],
         "props": props,
     }
