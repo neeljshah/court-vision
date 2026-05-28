@@ -230,10 +230,18 @@ def is_line_excluded(stat: str, closing_line: float) -> bool:
 # Aggregate delta: +1.3295pp.
 # Filters wired (stat -> list of (bet_direction, line_bucket) tuples to DROP):
 #       "ast":  [("over", "high")],   # Iter-55: drop sub-segments
+# ── Iter-57: Post-Iter55 resweep additions ─────────────────────────────────
+# Re-ran the 2D direction x line_bucket sweep on the post-iter-55 bet set.
+# Date: 2026-05-28.
+# Pre-iter-57 baseline: n_bets=1640, ROI=+13.2650%.
+# Post-iter-57:         n_bets=1535, ROI=+15.0429%.
+# Aggregate delta: +1.7779pp.
+# Filters ADDED by iter-57 (appended — iter-55 entries preserved):
+#   reb: (over, low)
 STAT_DIRECTION_LINE_EXCLUSIONS: dict[str, list[tuple[str, str]]] = {
     "pts":  [],
-    "reb":  [],
-    "ast":  [("over", "high")],   # Iter-55: drop sub-segments
+    "reb":  [("over", "low")],   # iter-57
+    "ast":  [("over", "high")],   # iter-55
     "fg3m":  [],
     "stl":  [],
     "blk":  [],
