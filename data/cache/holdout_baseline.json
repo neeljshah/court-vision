@@ -43,7 +43,7 @@
       "threshold": 0.4
     }
   },
-  "__updated_at__": "2026-05-27T23:56:35Z",
+  "__updated_at__": "2026-05-28T00:11:29Z",
   "__source__": {
     "iter": "iter23",
     "slices": [
@@ -358,6 +358,104 @@
       "n_bets": 631,
       "hit_rate": 27.07,
       "threshold": 0.4
+    }
+  },
+  "__iter38__": {
+    "iter": 38,
+    "generated_at": "2026-05-28T00:11:29Z",
+    "approach": "clv_driven_per_stat_reallocation",
+    "n_bets_total": 2771,
+    "pre_iter38_agg_roi_pct": 21.23,
+    "iter38_agg_roi_pct": 20.02,
+    "delta_agg_pp": -1.2131,
+    "decision": "REVERT \u2014 aggregate regresses OR multiple stat regressions",
+    "regressions": [
+      "ast"
+    ],
+    "ship": false,
+    "changes": {
+      "pts_threshold": {
+        "from": 0.7,
+        "to": 1.0
+      },
+      "ast_threshold": {
+        "from": 1.0,
+        "to": 0.7
+      },
+      "blk_kelly_mult": {
+        "from": 1.0,
+        "to": 0.5
+      }
+    },
+    "per_stat": {
+      "ast": {
+        "n_bets": 748,
+        "kb_roi_pct": 20.21,
+        "pre38_roi_pct": 24.04,
+        "delta_pp": -3.83,
+        "kb_stake": 58.0373,
+        "kb_pnl": 11.7302
+      },
+      "blk": {
+        "n_bets": 631,
+        "kb_roi_pct": 26.88,
+        "pre38_roi_pct": 27.07,
+        "delta_pp": -0.19,
+        "kb_stake": 36.0405,
+        "kb_pnl": 9.6873
+      },
+      "fg3m": {
+        "n_bets": 74,
+        "kb_roi_pct": 26.34,
+        "pre38_roi_pct": 26.43,
+        "delta_pp": -0.09,
+        "kb_stake": 7.7634,
+        "kb_pnl": 2.0452
+      },
+      "pts": {
+        "n_bets": 527,
+        "kb_roi_pct": 16.05,
+        "pre38_roi_pct": 12.2,
+        "delta_pp": 3.85,
+        "kb_stake": 19.1542,
+        "kb_pnl": 3.0735
+      },
+      "reb": {
+        "n_bets": 157,
+        "kb_roi_pct": 16.73,
+        "pre38_roi_pct": 16.73,
+        "delta_pp": 0.0,
+        "kb_stake": 6.1316,
+        "kb_pnl": 1.0261
+      },
+      "stl": {
+        "n_bets": 634,
+        "kb_roi_pct": 14.88,
+        "pre38_roi_pct": 15.03,
+        "delta_pp": -0.15,
+        "kb_stake": 41.1934,
+        "kb_pnl": 6.1303
+      }
+    },
+    "params": {
+      "thresholds_38": {
+        "pts": 1.0,
+        "reb": 1.5,
+        "ast": 0.7,
+        "fg3m": 0.7,
+        "stl": 0.4,
+        "blk": 0.4
+      },
+      "kelly_stat_mult": {
+        "pts": 1.0,
+        "reb": 1.0,
+        "ast": 1.0,
+        "fg3m": 1.0,
+        "stl": 1.0,
+        "blk": 0.5
+      },
+      "kelly_frac": 0.25,
+      "max_stake_u": 3.0
     }
   }
 }

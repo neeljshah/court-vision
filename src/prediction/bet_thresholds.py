@@ -14,6 +14,13 @@ Iter-33: Kelly-B stake sizing enabled.
   pts regression: -2.54pp (1 stat; ship criterion allows <=1 regression).
   Decision: SHIP.
 
+Iter-38: CLV-driven per-stat reallocations — REVERT (2026-05-27).
+  Tested: PTS thr 0.7->1.0 | AST thr 1.0->0.7 | BLK Kelly 0.5x
+  Result: agg -1.21pp (+21.23% -> +20.02%).  AST regressed -3.83pp (doubled volume
+          doubled dilution; expansion_frac=2.0 hit cap).  REVERT thresholds.
+  Infrastructure added: KELLY_STAT_MULTIPLIER dict + kelly_stat_multiplier_for()
+  (all 1.0x = no-op; ready for future partial BLK reduction if re-tested).
+
 Usage:
     from src.prediction.bet_thresholds import edge_threshold_for, KELLY_B_ENABLED
 
@@ -24,10 +31,10 @@ Usage:
 from __future__ import annotations
 
 _STAT_THRESHOLDS: dict[str, float] = {
-    "pts":  0.7,
+    "pts":  0.7,   # iter-38 REVERT: tested 1.0, PTS alone +3.85pp but AST regression forced revert
     "reb":  1.5,
-    "ast":  1.0,
-    "fg3m":  0.7,
+    "ast":  1.0,   # iter-38 REVERT: tested 0.7, doubled AST volume caused -3.83pp dilution
+    "fg3m": 0.7,
     "stl":  0.4,
     "blk":  0.4,
     "tov":  0.5,
@@ -55,6 +62,21 @@ KELLY_B_HIT_RATES: dict[str, float] = {
 # Max stake multiplier per bet (in units) — iter-33 blowup guard.
 KELLY_B_MAX_UNITS: float = 3.0
 
+# ── Iter-38: Per-stat Kelly fraction multipliers ──────────────────────────────
+# Infrastructure added by iter-38 for future per-stat Kelly tuning.
+# All currently 1.0x (no-op = full Kelly-B as before).
+# BLK 0.5x was tested in iter-38 but reverted (agg -1.21pp, AST regression dominated).
+# Re-test BLK reduction in isolation (without AST threshold change) in a future iter.
+KELLY_STAT_MULTIPLIER: dict[str, float] = {
+    "pts":  1.0,
+    "reb":  1.0,
+    "ast":  1.0,
+    "fg3m": 1.0,
+    "stl":  1.0,
+    "blk":  1.0,   # iter-38 REVERT: 0.5x alone promising but reverted with bundle
+    "tov":  1.0,
+}
+
 
 def edge_threshold_for(stat: str) -> float:
     """Return the edge threshold for *stat* (case-insensitive).
@@ -68,3 +90,11 @@ def edge_threshold_for(stat: str) -> float:
 def kelly_b_hit_rate_for(stat: str) -> float:
     """Return the Kelly-B calibrated hit-rate anchor for *stat*."""
     return KELLY_B_HIT_RATES.get(stat.lower(), 0.52)
+
+
+def kelly_stat_multiplier_for(stat: str) -> float:
+    """Return the per-stat Kelly fraction multiplier (iter-38).
+
+    Defaults to 1.0 for unknown stats (no change to base Kelly-B stake).
+    """
+    return KELLY_STAT_MULTIPLIER.get(stat.lower(), 1.0)
