@@ -45,9 +45,15 @@ The exit thesis: 5-7 year path to $300M-$2B acquisition by Stats Perform, Genius
 | Win prob Brier | 0.193 (WF) / 0.188 (single-split) | same |
 | xFG Brier | 0.226 (221K shots) | model registry |
 | In-play endQ3 MAE vs pregame | -43% to -55% across 7/7 stats (550-game retro) | `retro_inplay_mae_v2.json` |
-| CV games | 17 quality / 29 usable / 75 attempted | `data/ingest/queue.db` |
+| **In-play endQ3 Brier (walk-forward, post-iter71)** | **0.1191** (within Pinnacle public range ~0.10-0.12) | `data/cache/inplay_oos_validation_2026_05_27.json` |
+| **Pre-game props ROI (KB+ISO, post-Iter-57 filter stack, real DK/FD/MGM/Pinnacle closes)** | **+18.38% on 1,535 walk-forward bets** | `data/cache/iter61_sim_reconciliation.json` |
+| **Pre-game props aggregate CLV** | **+8.94pp** across 6 stats | iter61 |
+| In-play backtest L5 proxy (calibrated emit set) | 78.11% hit / +54.57% ROI on n=55,073 — **⚠️ proxy, real-money est. +15-25%** | `vault/Reports/filter_calibration_2026-05-27.md` |
+| Intelligence layer | 80 derived artifacts in 10 categories | `docs/INTELLIGENCE.md` |
+| CV games | **85 tracked / 7 full-feature / target 80 CLEAN** | `data/tracking/` |
 | Models trained | 85+ trained ML artifacts (119 .pkl files incl. residual heads, period heads, calibration) | `data/models/` |
-| Gate 1 status | NOT YET RUN | — |
+| Gate 1 status (non-sharp DK/FD/MGM/BetRivers) | ✅ **RUN 2026-05-26** — 8,360 bets pre-filter; canonical +18.38% KB+ISO on 1,535 post-filter | `data/models/gate1_results_summary.json` |
+| Gate 1 status (Pinnacle sharp close) | 🔴 NOT YET RUN — daemon collects Oct 2026 preseason | — |
 
 ---
 
