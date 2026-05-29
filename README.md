@@ -289,6 +289,12 @@ YOLOv8n detects players/ball/referees. SIFT homography maps to 94×50 ft court c
 
 **Status: 85 tracked games · 7 with full feature extraction · target 80 CLEAN.** The CV moat — broadcast-pixel defender/spacing features instead of Sportradar/Second Spectrum — is the unique differentiator. Cost: ~$0.10-0.13 per game on a RunPod 3090 vs. six- to seven-figure annual fees for licensed tracking. Unproven at scale; the 80-game gate decides it.
 
+### Intelligence layer — 80 derived signals between CV and the models
+
+Between raw tracking and the prediction models sits a derived **intelligence layer**: 80 parquet/json artifacts that answer the questions the models would otherwise have to guess at — *who is this player right now, what scheme is the opponent imposing, how does this matchup behave, how much should we trust this prediction*. Spans player archetypes + similarity (26K-pair matrix), defensive scheme tags (30 teams), position×scheme + archetype×scheme interaction tables with significance tests, lineup chemistry (4.7K rows / 1.2K lineups), pair chemistry (998 pairs), clutch / quarter / shot-clock / possession-type splits, form & trend deltas, matchup deviations vs. each opponent, coaching adjustment scores, officials-impact tables, game-similarity retrieval index (1.2K games, top-5 neighbors), and per-game CV-quality + per-player confidence curves that feed bet-sizing.
+
+Artifacts are gitignored (regenerable from raw tracking + NBA Stats; encode proprietary derivation). **Public manifest with per-artifact row counts, schemas, and limitations:** [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
+
 ### Execution stack (production-ready, awaiting October 2026 season)
 
 9 daemons covering the full live loop: `live_inplay_daemon` · `auto_place_daemon` · `auto_settle_daemon` · `clv_tracker_daemon` · `bankroll_monitor_daemon` · `middle_finder_daemon` · `bov_scraper_daemon` · `nba_lineup_daemon` · `vault_dashboard_daemon`. Plus the trading-desk UI above, webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard, `/api/shadow` exposing the calibration audit trail.
