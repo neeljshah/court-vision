@@ -65,9 +65,12 @@ This is the canonical navigation map for the CourtVision repository. For the ful
 
 | Document | Purpose |
 |----------|---------|
+| **[PUBLIC_EVIDENCE.md](PUBLIC_EVIDENCE.md)** | **Canonical 60-second evidence packet — headline numbers, verification commands, validation matrix** |
+| **[INTELLIGENCE.md](INTELLIGENCE.md)** | **Canonical 80-artifact intelligence-layer manifest (between CV tracking + models)** |
 | [README.md](../README.md) | **Canonical** github entry point — overview, results, methodology |
-| [CLAUDE.md](../CLAUDE.md) | **Canonical** AI-agent runbook (this file pins the routing tables) |
+| [CLAUDE.md](../CLAUDE.md) | **Canonical** AI-agent runbook (visitor framing + maintainer routing tables) |
 | [CLAUDE-state.md](CLAUDE-state.md) | **Canonical** live state snapshot — updated per-session |
+| [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) | Explicit validation gaps + caveats |
 | [VISION.md](../VISION.md) | Full strategic vision (Renaissance thesis) |
 | [ARCHITECTURE.md](../ARCHITECTURE.md) | System architecture (six core systems) |
 | [ROADMAP.md](../ROADMAP.md) | Forward build sequence (Gate 1 → 80-game run → agentic system) |
