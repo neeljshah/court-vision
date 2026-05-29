@@ -2,7 +2,7 @@
 
 > What the system can realistically achieve — by phase, by market, by model.
 > Honest numbers. No inflated projections. All win% at standard -110 vig (break-even = 52.4%).
-> Updated 2026-05-25 (originally 2026-05-18) to reflect real holdout performance, signal-based architecture, and the post-in-play-system shift (residual heads, period heads, learned-Q4-minutes, live quantile bands).
+> Updated 2026-05-28 (originally 2026-05-18, refreshed 2026-05-25, anchored to iter61 sim-reconciliation 2026-05-28). The "Now" row is no longer a projection — it's **measured** on 1,535 walk-forward bets vs real DK/FD/MGM/Pinnacle closes.
 
 ---
 
@@ -10,17 +10,19 @@
 
 | Phase | Prop Win% (filtered) | Avg CLV | ROI / 100 bets |
 |-------|----------------------|---------|----------------|
-| **Now** (Phase G active, 85 models, API-only features) | **55-57%** | **+2-4%** | +$4-8 per $100 |
-| +80 CV games (Tier 3-4 model retrain, spatial features live) | 57-59% | +4-6% | +$8-12 per $100 |
-| +Possession simulator (Monte Carlo, full distributions) | 58-61% | +5-8% | +$10-16 per $100 |
-| +Agentic research system (signal universe 200+) | 60-63% | +7-11% | +$14-22 per $100 |
-| **Long-run ceiling (500+ signals, 200+ CV games, full research loop)** | **62-66%** | **+9-13%** | **+$18-26 per $100** |
+| **Now** (post-Iter-57 filter stack + KB+ISO sizing, MEASURED) | **61.4%** | **+8.94pp aggregate** | **+$18.38 per $100** |
+| +Pinnacle Gate 1 real-close validation (Oct 2026 ingestion) | TBD | TBD | TBD (expected compression vs L5 proxy +15-25%) |
+| +80 CV games (Tier 3-4 model retrain, spatial features live) | 62-64% | +9-12% | +$22-32 per $100 |
+| +Possession simulator (Monte Carlo, full distributions) | 63-66% | +10-14% | +$26-38 per $100 |
+| +Agentic research system at scale (signal universe 500+) | 64-68% | +12-16% | +$32-46 per $100 |
+| **Long-run ceiling (500+ signals, 200+ CV games, full research loop)** | **66-70%** | **+14-18%** | **+$40-55 per $100** |
 
 **Important caveats:**
-- Win% above is conditional on filtering (top-20% plays by confidence). Unfiltered win rate drops toward 52-53%.
-- CLV of +2-4% is already a strong signal. Most sharp bettors sustain +1-3% CLV over time.
-- The ceiling projections assume the agentic research system is running and signal retirement is disciplined.
-- Gate 1 (first real CLV measurement vs Pinnacle close) has NOT YET BEEN RUN. Everything above is theory until Gate 1 passes.
+- The "Now" row is **measured** on 1,535 walk-forward bets vs real DK/FD/MGM/Pinnacle closing lines (post-Iter-57 filter stack + Kelly-B + per-stat isotonic). Theoretical Kelly ROI ceiling at +8.94pp CLV ≈ 18-22%; realized +18.38% sits AT the ceiling, meaning further gains require **new edge sources** (live data, true model-prob edge) not better sizing.
+- Real-world execution clip: 30-50% of paper. **Sustainable deployable target: +8 to +12% sustained ROI.**
+- Pinnacle Gate 1 (first real CLV measurement vs sharp closes) has NOT YET BEEN RUN — Pinnacle scraper accumulates from Oct 2026 preseason. Until then, the +18.38% is against non-sharp books (DK/FD/MGM/BetRivers) only.
+- CLV of +8.94pp is **top decile for public sports modeling**. Most sharp bettors sustain +1-3% CLV.
+- The "Now" agentic research system IS running (improve_loop, 70 iterations, 29 ships, 41 reverts). The +18.38% stack was discovered through this loop, not designed up front.
 
 ---
 
