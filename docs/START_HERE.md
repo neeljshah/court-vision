@@ -25,7 +25,13 @@ The key moat: Second Spectrum sells spatial tracking to NBA teams at $1M+/yr. Th
 
 ## Current Stage (Important)
 
-CourtVision is in late build / validation stage.
+CourtVision is in **post-Gate-1 validation** — pre-game stack shipped with real-closing-line proof; in-play stack live and walk-forward-validated; first real CLV reading begins October 2026 preseason.
+
+Where to skip the funnel:
+
+- **Just want the numbers + how to verify?** → [PUBLIC_EVIDENCE.md](PUBLIC_EVIDENCE.md) (60-second scan, all reproducible)
+- **Want to read the dense version?** → [README.md](../README.md)
+- **Want the intelligence layer manifest (80 derived signals)?** → [INTELLIGENCE.md](INTELLIGENCE.md)
 
 Current focus is intentionally narrow:
 
@@ -138,29 +144,36 @@ python scripts/batch_season.py --season 2025-26
 
 ---
 
-## Key Numbers
+## Key Numbers (canonical, 2026-05-28)
 
-| Metric | Value |
-|--------|-------|
-| Win probability accuracy | 0.7094 (WF) / 0.717 (single-split) |
-| Player props MAE (pts) | 4.62 (walk-forward, N=99,818) |
-| DNP predictor AUC | 0.979 |
-| xFG Brier score | 0.226 |
-| Shots in training data | 221,866 |
-| Play-by-play coverage | 98.4% (3,627 / 3,685 games) |
-| Tracking throughput | 15 fps on RTX 4060 8GB |
+| Metric | Value | Source |
+|--------|-------|--------|
+| **Pre-game props ROI (1,535 bets, real DK/FD/MGM/Pinnacle closes, KB+ISO)** | **+18.38%** | `data/cache/iter61_sim_reconciliation.json` |
+| Pre-game props CLV (aggregate, 6 stats) | **+8.94pp** | iter61 canonical |
+| In-play **endQ3 Brier** (walk-forward, 3,685 snapshots) | **0.1191** | within Pinnacle public range ~0.10–0.12 |
+| In-play endQ3 MAE vs pregame (avg across 7 stats) | **−51%** | 550-game retro, 7/7 win |
+| Win probability accuracy (single-split sanity check) | 0.7094 | `python scripts/verify_winprob.py` |
+| Player props MAE (PTS, pregame walk-forward) | 4.62 (N=99,818) | `python scripts/verify_production_mae.py` |
+| DNP predictor AUC | 0.979 | committed metrics |
+| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | +54.57% (Wilson hit [77.76%, 78.45%]) | ⚠️ proxy, real-money est. **+15–25%** |
+| Tracking throughput | 15 fps RTX 4060 8GB · ~$0.10–0.13/game on RunPod 3090 | |
+| Shots in training data | 221,866 | |
+| PBP coverage | 98.4% (3,627 / 3,685 games) | |
 
 ---
 
-## Project Status
+## Project Status (2026-05-28)
 
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1–13.5 | Data infra, CV tracker, NBA data, 85 ML models, possession simulator, betting infra, FastAPI | ✅ Done |
-| G | Full-game CV data collection (target 80 CLEAN games) | 🟡 Active — 29 usable / 75 attempted |
-| Gate 1 | CLV validation vs Pinnacle close (≥50 bets, beat rate ≥55%, ROI ≥3%) | 🔴 Not yet run — top priority |
-| 14 | 80-game RunPod run + retrain with CV spatial features | ⏳ Next |
-| 15–18 | Analytics dashboard, AI chat, live win-prob LSTM, infrastructure | 🔲 Future |
+| G | Full-game CV data collection (target 80 CLEAN) | 🟡 85 tracked / 7 full-feature — blocked behind ISSUE-022 `defender_distance=200.0` sentinel-vs-NULL |
+| **Gate 1** | Real-Vegas CLV validation vs DK/FD/MGM/BetRivers closes (8,360 bets) | ✅ **RUN** — pre-filter aggregate −2.06% flat; **post-Iter-57 filter stack +18.38% KB+ISO on 1,535 bets** |
+| In-play stack | endQ1/endQ2/endQ3 LGB + iter-68 v6_hp + iter-71 meta_blend | ✅ Shipped 2026-05-27 (CHANGELOG 0.17.0) |
+| Intelligence layer | 80 derived artifacts (player/scheme/lineup/quality/calibration) | ✅ Shipped — manifest at [INTELLIGENCE.md](INTELLIGENCE.md) |
+| Shadow-logged execution | Settlement engine + filter calibrator + decision-engine gates | ✅ Shipped 2026-05-27 |
+| Pinnacle real-close CLV | First reading on real Pinnacle closes | ⏳ Oct 2026 preseason (daemon collecting) |
+| Live trading desk UI | `/scan` + `/clv` + `/parlays` + `/live/{game_id}` + SSE arbs | ✅ Shipped 2026-05-27 |
 
 For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic roadmap see [../ROADMAP.md](../ROADMAP.md).
 
@@ -170,6 +183,9 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 
 | Doc | What's In It |
 |-----|--------------|
+| **[PUBLIC_EVIDENCE.md](PUBLIC_EVIDENCE.md)** | **60-second scan: headline numbers + 30-sec verification commands** |
+| **[INTELLIGENCE.md](INTELLIGENCE.md)** | **80-artifact intelligence-layer manifest (signals between CV + models)** |
+| [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) | Explicit validation gaps + caveats |
 | [architecture.md](architecture.md) | System design, module dependencies, data flow |
 | [CV_TRACKING.md](CV_TRACKING.md) | Tracking pipeline deep-dive: homography, re-ID, OCR |
 | [ML_MODELS.md](ML_MODELS.md) | 85 trained signals: features, training, accuracy |
@@ -187,4 +203,4 @@ For the full phase log see [ROADMAP.md](ROADMAP.md); for the forward strategic r
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for code style, PR workflow, and no-touch zones.
 
 ---
-*Last verified: 2026-05-25*
+*Last verified: 2026-05-28 against CHANGELOG.md [0.17.0] + iter61 sim-reconciliation.*
