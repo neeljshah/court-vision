@@ -34,29 +34,37 @@
         ▼                                        ▼
 ┌────────────────────────┐          ┌───────────────────────────────┐
 │ SYSTEM 2: LINE         │          │ SYSTEM 3: CORRELATION ENGINE  │
-│ EVALUATOR [SCAFFOLDED] │          │ [SCAFFOLDED]                  │
-│ devig.py exists;       │          │ kelly_corr not yet populated; │
-│ live pipeline pending  │          │ Ledoit-Wolf code exists       │
+│ EVALUATOR [LIVE]       │          │ [LIVE — partial]              │
+│ Shin devig + multi-    │          │ kelly_corr populated for 7    │
+│ book scanner + arbs    │          │ props; parlay_constructor.py  │
+│ (lines_router.py,      │          │ uses correlation-aware EV     │
+│ devig_router.py)       │          │ (35 tests pass)               │
 └───────────┬────────────┘          └──────────────┬────────────────┘
             └──────────────┬───────────────────────┘
                            ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                  SYSTEM 4: KELLY SIZER [LIVE]                    │
-│   Fractional Kelly (0.25-0.5) + Ledoit-Wolf shrinkage on corr   │
+│   Fractional Kelly-B (0.25-0.5) + per-stat isotonic edge        │
+│   calibration + Ledoit-Wolf shrinkage on corr                   │
 │   Drawdown circuit breakers • betting_portfolio.py               │
 └──────────────────────────┬───────────────────────────────────────┘
                            │ (sized bets)
                            ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│                 SYSTEM 5: EXECUTION ROUTER [PLANNED]             │
-│   DK, FD, BetMGM, Caesars, bet365, Fanatics, Novig, Kalshi      │
-│   api/execution_router.py + src/execution/                       │
+│            SYSTEM 5: EXECUTION ROUTER [LIVE — partial]           │
+│   9 production daemons: auto_place, auto_settle, clv_tracker,   │
+│   bankroll_monitor, middle_finder, line_move, nba_lineup,       │
+│   live/inplay_bet_ranker. Pinnacle/Bovada/FD/PrizePicks scraped │
+│   directly; DK/Caesars/MGM IP-blocked (R18_K1).                 │
 └──────────────────────────────────────────────────────────────────┘
 
-  SYSTEM 6: AGENTIC RESEARCH SYSTEM [PLANNED]
-  Multi-agent Claude loop: Orchestrator → Researcher → Engineer
-  → Validator → Risk Manager → Retirement Monitor
-  Autonomously discovers, validates, ships, and retires signals.
+  SYSTEM 6: AGENTIC RESEARCH SYSTEM [LIVE — improve_loop]
+  Opus-orchestrator / Sonnet-executor / Haiku-search multi-agent loop.
+  70 documented iterations, 29 ships, 41 reverts, every revert with
+  stated cause. Hard ship gate: ≥3/4 WF folds positive AND no per-stat
+  regress >1pp. The +18.38% pre-game stack was discovered through
+  this loop, not designed up front.
+  Spec: `.claude/commands/workday-loop.md`.
 ```
 
 ---
@@ -102,16 +110,20 @@
 | Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
 | Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
 | Regression test suite | `tests/` | ✅ [LIVE] 4,100+ collected; 48/48 critical-path pass (gate1, devig, kelly, clv, calibration); 63/63 in-play subset pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates) |
-| CLV tracker | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] Historical Gate 1 RUN (DK/FD/MGM/BetRivers); Pinnacle CLV pending Oct 2026 (no historical archive exists) |
-| Line evaluator | `src/prediction/devig.py` + analytics | 🟡 [SCAFFOLDED] live pipeline pending |
-| Correlation engine | `src/prediction/betting_portfolio.py` | 🟡 [SCAFFOLDED] kelly_corr not populated |
-| PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending |
+| Live trading desk UI | `/scan` + `/clv` + `/parlays` + `/live/{game_id}` + SSE arbs | ✅ [LIVE] Shipped 2026-05-27 |
+| Intelligence layer (80 derived artifacts) | `data/intelligence/` (gitignored); manifest at `docs/INTELLIGENCE.md` | ✅ [LIVE] Player archetypes + similarity (26K pairs), scheme tags, lineup chemistry (4.7K), matchup deviations, quality + confidence curves |
+| Multi-book line scanner | `api/lines_router.py` | ✅ [LIVE] DK/FD/MGM/Pinnacle parallel; best line per stat per player |
+| Cross-book arbitrage detector | `api/arbs_router.py` + SSE `arb.detected` | ✅ [LIVE] Live detection pushed via Server-Sent Events |
+| Parlay constructor (correlation-aware) | `src/prediction/parlay_constructor.py` | ✅ [LIVE] 2-leg + 3-leg builder; 35 tests pass |
+| Per-stat isotonic edge calibration | `src/prediction/edge_calibration.py` + `data/models/oos_pre_playoffs/edge_isotonic_*.joblib` | ✅ [LIVE] Iter-34 |
+| CLV tracker | `src/prediction/betting_portfolio.py` + `clv_router.py` | 🟡 [LIVE — partial] Historical Gate 1 RUN (DK/FD/MGM/BetRivers); Pinnacle CLV pending Oct 2026 (no historical archive exists) |
+| Production daemons (9) | `scripts/*_daemon.py` registered in `scripts/daemon_registry.json` | ✅ [LIVE] auto_place, auto_settle, clv_tracker, bankroll_monitor, middle_finder, line_move_detector, nba_lineup, live_bet_ranker, inplay_bet_ranker — watchdog'd via `daemon_watchdog.py` |
+| Book scrapers | `scripts/scrape_*.py` | 🟡 [LIVE — partial] Pinnacle/Bovada/FanDuel/PrizePicks operational; DK/Caesars/MGM IP-blocked (R18_K1, Playwright stealth probe failed) |
+| Agentic research loop | `.claude/commands/workday-loop.md` + Opus/Sonnet/Haiku routing | ✅ [LIVE] 70 documented iterations, 29 ships / 41 reverts; ship gate ≥3/4 WF folds positive + no per-stat regress >1pp |
+| PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending (ISSUE-021) |
 | Possession simulator (Monte Carlo) | — | 🔲 [PLANNED] |
-| Execution router | `api/execution_router.py` (stub) | 🔲 [PLANNED] |
-| Book adapters (DK/FD/BetMGM/Novig) | `src/execution/` (stub) | 🔲 [PLANNED] |
-| P2P exchange integration | — | 🔲 [PLANNED] |
-| Nightly calibration loop | — | 🔲 [PLANNED] |
-| Agentic research system | — | 🔲 [PLANNED] |
+| Book adapters with order management (DK/FD/BetMGM/Novig) | `src/execution/` (stub) | 🔲 [PLANNED] |
+| P2P exchange integration (Kalshi/Polymarket/Sporttrade) | `execute_loop V1` 39/40 layers scaffolded | 🟡 [SCAFFOLDED] 532/532 tests pass; production deployment pending |
 
 ---
 
