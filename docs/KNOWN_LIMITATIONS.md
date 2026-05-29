@@ -73,6 +73,18 @@ All 7 prop models predict slightly below closing line on average. Calibration la
 
 q10/q90 quantile bands calibrated to **80% empirical coverage** on the training set. Real-data coverage drifts on small-N stats (BLK/STL) where the q10 floors at zero. Asymmetric calibration branch handles this case; not all consumers route through it.
 
+### `sim_win_prob` polarity inversion (unpatched)
+
+`sim_win_prob` (used as `pregame_win_prob` feature) is **polarity-inverted at the source**. `PossessionSimulator.simulate_game()` is essentially noise (~50/50 for any matchup); `_SIM_CACHE` freezes the first noisy result; corr(sim_win_prob, home_won) = **−0.194**.
+
+- **v1 LGB models learned to flip internally during training** → fine in production.
+- **v2/v3 in-play heads blend 85% raw inverted signal × 15% model output** → silent ROI bug.
+- **Estimated CLV impact when patched: +1.5pp to +3.5pp.**
+- **Why unpatched:** patch requires coordinated v1-LGB retrain cascade, gated behind that work.
+- Full audit: `vault/Models/Polarity Bug Audit 2026-05-27.md` (gitignored vault — the audit notes are local-only).
+
+Surfacing this publicly because it's a real, measurable, unfixed bug that affects in-play CLV. Hiding it would compromise the "all caveats disclosed in headline sections" policy below.
+
 ### CV signal at scale — unproven
 
 The defender_distance / spacing / fatigue features are computed correctly on the 7 full-feature games, but **whether they improve prop MAE materially at the 80-game gate is unverified**. The current Tier 3/4 model retrain is gated on hitting 80 CLEAN tracked games.
@@ -132,4 +144,4 @@ When discussing CourtVision publicly:
 
 ---
 
-*Last verified: 2026-05-27. Audit trail: [`../CHANGELOG.md`](../CHANGELOG.md).*
+*Last verified: 2026-05-28. Audit trail: [`../CHANGELOG.md`](../CHANGELOG.md).*
