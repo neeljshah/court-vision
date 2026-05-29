@@ -490,7 +490,6 @@ ARCHITECTURE.md      6-system technical map + component status table
 
 Solo-built. Available for senior sports-quant / AI-founding-engineer roles. Open to consulting on sports-AI infrastructure.
 
-- **Portfolio**: [neelshahportfolio.netlify.app](https://neelshahportfolio.netlify.app)
 - **GitHub**: [github.com/neeljshah](https://github.com/neeljshah)
 - **Email**: [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
