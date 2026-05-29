@@ -2,8 +2,12 @@
 
 Honest production state at master `c17554e7` (improve_loop R7 / execute_loop R10, post-cycle-110). All MAEs measured on held-out games (last 20% chronologically). Walk-forward verified per stat. Verify production matches with `python scripts/verify_production_mae.py`.
 
+> **Want the canonical evidence packet (numbers + verification commands)?** → [docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md). This quickstart covers HOW to run the CLIs. PUBLIC_EVIDENCE covers WHAT the system produces.
+>
+> **Canonical post-iter-61 production read (2026-05-28):** pre-game stack **+18.38% ROI on 1,535 walk-forward bets** vs real DK/FD/MGM/Pinnacle closes (KB+ISO, post-Iter-57 filter stack). Aggregate CLV **+8.94pp**. Source-of-truth JSON: `data/cache/iter61_sim_reconciliation.json`.
+>
 > **Polished end-to-end demo flow:** see [docs/SWISH_DEMO.md](docs/SWISH_DEMO.md) (interview cheat-sheet) and `python scripts/swish_demo.py` (runnable pregame → snapshot → projection → EV → Kelly → settle → CLV).
-> **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture (endQ3 -43% to -55% MAE vs pregame, 7/7 stats), see `src/prediction/live_engine.py` and CHANGELOG.md 0.15.0.
+> **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture (endQ3 -43% to -55% MAE vs pregame, 7/7 stats), see `src/prediction/live_engine.py` and CHANGELOG.md 0.15.0. **endQ3 Brier 0.1191 walk-forward** as of CHANGELOG 0.17.0.
 
 > ## Empirical testing protocol (cycle 78-82)
 >

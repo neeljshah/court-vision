@@ -56,7 +56,9 @@ This is why the window exists now. AI collapsed the research labor cost by 100-1
 
 The substrate that makes the research machine possible is largely done:
 
-**CV Tracking Pipeline** — YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector. Converts broadcast video to court-coordinate spatial features. 29 usable games processed (target: 80 clean).
+**CV Tracking Pipeline** — YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector. Converts broadcast video to court-coordinate spatial features. **85 games tracked / 7 with full feature extraction (target: 80 clean).** Cost: ~$0.10-0.13/game on RunPod 3090.
+
+**Intelligence Layer** — 80 derived artifacts at `data/intelligence/` between CV tracking and the prediction models: player archetypes + similarity (26K-pair matrix), defensive scheme tags, position×scheme + archetype×scheme interaction tables, lineup chemistry (4.7K rows / 1.2K lineups), clutch/quarter/shot-clock splits, matchup deviations, coaching adjustments, officials impact, game-similarity retrieval, CV-quality + per-player confidence curves. Public manifest: [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
 
 **ML Signal Stack** — 85 trained models across 7 tiers. Honest walk-forward holdout, N=99,818 player-games (loop-5 cycle 96e production):
 
@@ -74,15 +76,21 @@ MAE — not R² — is the betting-relevant loss because sportsbook prop O/U lin
 
 **Win probability:** 70.94% accuracy / 0.193 Brier on 3-fold walk-forward; 71.7% / 0.188 on single-split. 5-way NNLS stack (XGB+LGB+LR+5-seed MLP+GaussianNB). Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json).
 
-**Backtested edge.** A 19,964-game holdout (cycle 30, re-validated cycle 38) bets every player-game where the model deviates from L5-line proxy by ≥ edge threshold. At -110 odds (break-even 52.4%): PTS +19.9% / REB +23.6% / AST +26.8% / FG3M +23.9% / TOV +28.1% / STL +21.5% / BLK +26.5% ROI at +0.5 edge; rises to +24% to +52% at +1.0 edge. Re-test against a smarter line proxy (L5 × opp_def × home_adj) still wins 26-32% ROI. Source: [`data/models/betting_backtest.json`](data/models/betting_backtest.json), [`data/models/betting_backtest_smart_line.json`](data/models/betting_backtest_smart_line.json).
+**Real-money-relevant backtest (Gate 1 RUN 2026-05-26, canonical post-iter-61):** **+18.38% ROI on 1,535 walk-forward bets** vs real DK / FanDuel / MGM / Pinnacle closing lines (Kelly-B + per-stat isotonic sizing, post-Iter-57 filter stack). Aggregate CLV **+8.94pp** across 6 stats — top decile for public sports modeling. Per-stat: BLK +25.98% / AST +14.04% / STL +16.91% / FG3M +16.02% / REB +12.30% / PTS +8.44%. Source: [`data/cache/iter61_sim_reconciliation.json`](data/cache/iter61_sim_reconciliation.json). Reproduce: `python scripts/iter61_sim_reconciliation.py`.
+
+**In-play stack (shipped 2026-05-27):** endQ1/Q2/Q3 LGB + iter-68 v6_hp + iter-71 meta_blend. **endQ3 Brier 0.1191** walk-forward (within Pinnacle public range ~0.10-0.12). In-game MAE 43-55% better than pregame across 7/7 stats on a 550-game retro.
+
+**In-play paper backtest (L5 proxy, NOT real closes):** 78.11% hit / +54.57% ROI on n=55,073 calibrated bets. Real-money compression estimate: **+15-25%**. First real Pinnacle close CLV reading: Oct 2026.
 
 **xFG** (shot quality): Brier 0.226 on 221K shots. **DNP predictor:** AUC 0.979.
 
-**Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (2,661 pass on RunPod / 1040+ on core suite locally; ~26 transient failures, none prediction-critical), CLV tracker scaffolding, CV benchmark.
+**Validation Infrastructure** — Shipped 2026-05-17. Temporal CV harness, model registry with holdout gates, regression test suite (4,100+ collected, 48/48 critical-path pass, 63/63 in-play subset pass), CLV tracker, CV benchmark.
 
-**Execution Layer** — Fractional Kelly + Ledoit-Wolf shrinkage, Shin devig, CLV vs Pinnacle close, multi-book routing, paper-trading harness.
+**Execution Layer** — Shin devig + Kelly-B + per-stat isotonic edge calibration + Ledoit-Wolf shrinkage + shadow logger (every eval incl. blocked) + settlement engine + decision engine with per-quarter EV floor (calibrated 0.01 → 0.12 post-hoc). 9 production daemons watchdog'd. Live trading desk UI: `/scan`, `/clv`, `/parlays`, `/live/{game_id}`, SSE arbs.
 
-**What's not yet built:** The agentic research layer (the multi-agent Claude system that autonomously discovers signals). Gate 1 (first CLV validation against real closing lines, not yet run). The news ingestion pipe.
+**Agentic Research System** — LIVE as the improve_loop. Opus orchestrates, Sonnet executes, Haiku searches. 70 documented iterations, 29 ships, 41 reverts, every revert with a stated cause. Ship gate: ≥3/4 walk-forward folds positive AND no per-stat regress >1pp. **The +18.38% pre-game stack was discovered through this loop, not designed up front.** Spec: `.claude/commands/workday-loop.md`.
+
+**What's not yet built:** Pinnacle real-close Gate 1 (gated on Oct 2026 preseason ingestion). Possession simulator (Monte Carlo). Book adapters with order management for DK/FD/BetMGM/Novig. News ingestion pipe.
 
 ---
 
