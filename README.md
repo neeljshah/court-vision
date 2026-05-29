@@ -2,7 +2,7 @@
 
 End-to-end NBA prediction + betting platform built by one engineer over 13 months. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
 
-**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — solo NBA quant. Available for senior sports-quant / AI-founding-engineer roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by [Neel Shah]** — solo NBA quant. Available for senior sports-quant / AI-founding-engineer roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 > **30-second verification** (after `git clone` + `pip install -r requirements.txt`):
 > ```bash
