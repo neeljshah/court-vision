@@ -312,6 +312,8 @@ Between raw tracking and the prediction models sits a derived **intelligence lay
 
 Artifacts are gitignored (regenerable from raw tracking + NBA Stats; encode proprietary derivation). **Public manifest with per-artifact row counts, schemas, and limitations:** [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
 
+The intelligence system also synthesizes **1,249 per-player dossiers** (up to 28 statistical categories, archetype-labeled) and **30 per-team scheme cards** (defensive intensity z-scores, tempo/spacing profile, matchup notes). Example dossiers for Jokić (Playmaking Big), SGA (Primary Initiator), and Sam Hauser (3&D Wing), plus a DEN scheme card walkthrough: **[docs/PLAYER_INTELLIGENCE.md](docs/PLAYER_INTELLIGENCE.md)**.
+
 ### Execution stack (production-ready, awaiting October 2026 season)
 
 9 daemons covering the full live loop: `live_inplay_daemon` · `auto_place_daemon` · `auto_settle_daemon` · `clv_tracker_daemon` · `bankroll_monitor_daemon` · `middle_finder_daemon` · `bov_scraper_daemon` · `nba_lineup_daemon` · `vault_dashboard_daemon`. Plus the trading-desk UI above, webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard, `/api/shadow` exposing the calibration audit trail.

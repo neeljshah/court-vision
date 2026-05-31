@@ -6,6 +6,8 @@ Artifacts themselves are gitignored (`data/intelligence/`) — they're regenerab
 
 > **Status (2026-05-28):** 80 artifacts populated. Coverage is uneven — some layers (lineup chemistry, similarity index) span thousands of rows; others (officials player-sensitivity, absence-effects) are early and small. Per-artifact row counts are listed below so the maturity of each signal is legible at a glance.
 
+> **Player & team dossiers:** The intelligence layer also synthesizes **1,249 per-player dossiers** (up to 28 statistical categories each, archetype-labeled, scheme-tagged) and **30 per-team scheme cards**. See **[docs/PLAYER_INTELLIGENCE.md](PLAYER_INTELLIGENCE.md)** for the full showcase with real dossier examples (Jokić, SGA, Sam Hauser) and honest scope statement.
+
 ---
 
 ## How it plugs into the prediction stack
