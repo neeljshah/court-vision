@@ -84,24 +84,49 @@ def _decimal_to_american(d: float) -> int:
     return int(round(-100.0 / (d - 1.0)))
 
 
-def _correlation_adjustment(stats: Tuple[str, ...], same_player: bool) -> float:
+def _correlation_adjustment(legs: List[dict]) -> float:
     """Return a correlation-based shrinkage factor for joint hit probability.
 
-    For same-player combos, reduces the independent product by a factor derived
-    from average pairwise correlation. Cross-player combos use no adjustment
-    (correlations are ~0.05-0.20 and add positive edge).
+    For legs sharing the same player, applies the per-pair rho from
+    ``_SAME_PLAYER_CORR`` to each same-player stat pair.  Legs belonging to
+    different players contribute no adjustment (cross-player correlations are
+    small and modelled as independent).
+
+    This correctly handles mixed parlays such as
+    [LeBron pts OVER, LeBron ast OVER, Davis reb OVER] where only the
+    LeBron pts/ast pair carries a same-player rho — the Davis leg contributes
+    factor 1.0.  The all-same-player and all-different-player cases are exact
+    special cases of this general formulation.
     """
-    if not same_player or len(stats) < 2:
+    if len(legs) < 2:
         return 1.0
+
+    # Group leg indices by player identity (player_id preferred, else name).
+    from collections import defaultdict
+    player_to_legs: dict = defaultdict(list)
+    for idx, leg in enumerate(legs):
+        pid = leg.get("player_id") or leg.get("player", f"__unknown_{idx}")
+        player_to_legs[pid].append(leg)
+
+    # Collect rhos only for same-player pairs.
     rhos: List[float] = []
-    for a, b in combinations(stats, 2):
-        rho = _SAME_PLAYER_CORR.get(frozenset((a, b)), 0.0)
-        rhos.append(rho)
-    avg_rho = sum(rhos) / len(rhos) if rhos else 0.0
-    # Shrink the independent product: positive correlation between OVER legs
-    # means they tend to hit together, slightly boosting joint probability.
-    # We apply a conservative 50% weight on this boost to avoid overfitting.
-    return 1.0 + avg_rho * 0.5 * (len(stats) - 1) * 0.1
+    for pid, player_legs in player_to_legs.items():
+        if len(player_legs) < 2:
+            continue
+        for leg_a, leg_b in combinations(player_legs, 2):
+            stat_a = leg_a.get("stat", "")
+            stat_b = leg_b.get("stat", "")
+            rho = _SAME_PLAYER_CORR.get(frozenset((stat_a, stat_b)), 0.0)
+            rhos.append(rho)
+
+    if not rhos:
+        return 1.0
+
+    avg_rho = sum(rhos) / len(rhos)
+    # Positive correlation between OVER legs means they tend to hit together,
+    # slightly boosting joint probability.  Conservative 50% weight to avoid
+    # overfitting; scale by (len(legs)-1) to match the original all-same formula.
+    return 1.0 + avg_rho * 0.5 * (len(legs) - 1) * 0.1
 
 
 def _parlay_id(legs: List[dict]) -> str:
@@ -178,7 +203,8 @@ def build_parlay_candidates(single_leg_bets_df: pd.DataFrame) -> pd.DataFrame:
             combo=legs,
             hit_rates=hit_rates,
             prices=[int(leg.get("odds", -110)) for leg in legs],
-            same_player=same_player,
+            # same_player kwarg not needed — compute_parlay_metrics now
+            # auto-detects same-player pairs from leg dicts.
         )
 
         game_ids = [str(leg.get("game_id", "")) for leg in legs]
@@ -226,7 +252,9 @@ def compute_parlay_metrics(
     combo:      List of 3 leg dicts (player, stat, line, side, etc.)
     hit_rates:  Per-leg model probability of hitting (OVER wins)
     prices:     Per-leg American odds (e.g. -110, +145)
-    same_player: True if all 3 legs are the same player
+    same_player: Deprecated — kept for backwards-compatibility; the function
+                 now detects same-player pairs automatically from the ``combo``
+                 leg dicts (via ``player_id`` or ``player`` fields).
 
     Returns
     -------
@@ -240,12 +268,11 @@ def compute_parlay_metrics(
         ev_sgp          — expected value per unit (SGP-penalised)
         expected_roi_sgp_pct — ev_sgp as percentage of stake
     """
-    stats = tuple(leg["stat"] for leg in combo)
     hit_rate_indep = 1.0
     for hr in hit_rates:
         hit_rate_indep *= max(0.0, min(1.0, float(hr)))
 
-    corr_factor = _correlation_adjustment(stats, same_player)
+    corr_factor = _correlation_adjustment(combo)
     hit_rate_adj = min(1.0, hit_rate_indep * corr_factor)
 
     decimal_odds = 1.0

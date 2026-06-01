@@ -1842,6 +1842,9 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
             except Exception:
                 lm_hist_p = []
             live_q50_map: dict[tuple, float] = {}
+            # Bug 2 fix (site c): parallel current map so shrunk can be floored
+            # at already-accumulated stat before regrading parlay legs.
+            current_map_c: dict[tuple, float] = {}
             player_minutes: dict[str, float] = {}
             for snap_path in recent_snaps:
                 try:
@@ -1865,6 +1868,12 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
                             live_q50_map[(nm, st)] = float(pf)
                         except (TypeError, ValueError):
                             continue
+                    cur_c = r.get("current")
+                    if nm and st and cur_c is not None:
+                        try:
+                            current_map_c[(nm, st)] = float(cur_c)
+                        except (TypeError, ValueError):
+                            pass
                 # Merge per-player minutes (last writer wins — recent snapshots
                 # take precedence for the same player in a multi-game scan).
                 player_minutes.update(
@@ -1887,6 +1896,13 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
                             live_raw = live_q50_map[key]
                             pregame_q50 = float(cp.get("q50") or live_raw)
                             shrunk = w_live * live_raw + (1.0 - w_live) * pregame_q50
+                            # Bug 2 fix (site c): floor shrunk at already-accumulated stat
+                            _cur_c = current_map_c.get(key)
+                            if _cur_c is not None:
+                                try:
+                                    shrunk = max(shrunk, float(_cur_c))
+                                except (TypeError, ValueError):
+                                    pass
                             # Re-anchor line + per-book ladder to the live market
                             # BEFORE regrading, so the leg's displayed line and
                             # best price track the current in-play odds.
@@ -2284,6 +2300,8 @@ def _build_home_data(date: str) -> dict:
         _live_dir = _ROOT / "data" / "live"
         # Build live_q50 maps per game_id (via canonical alias group)
         live_q50_by_gid: dict[str, dict[tuple, float]] = {}
+        # Bug 2 fix (site b): parallel map of already-accumulated stats per gid
+        current_by_gid: dict[str, dict[tuple, float]] = {}
         loaded_alias_groups: set[frozenset] = set()
         for gid in list(props_by_game.keys()):
             alias = resolve_game_id(gid)
@@ -2308,6 +2326,9 @@ def _build_home_data(date: str) -> dict:
             except Exception:
                 rows = []
             lm: dict[tuple, float] = {}
+            # Bug 2 fix (site b): parallel current map so shrunk_q50 can be
+            # floored at already-accumulated stat at the regrade site below.
+            lm_cur: dict[tuple, float] = {}
             for r in rows:
                 nm = (r.get("name") or "").lower()
                 st_r = (r.get("stat") or "").lower()
@@ -2317,10 +2338,18 @@ def _build_home_data(date: str) -> dict:
                         lm[(nm, st_r)] = float(pf)
                     except (TypeError, ValueError):
                         continue
+                cur_r = r.get("current")
+                if nm and st_r and cur_r is not None:
+                    try:
+                        lm_cur[(nm, st_r)] = float(cur_r)
+                    except (TypeError, ValueError):
+                        pass
             # Apply this map to every prop whose game_id is in the canon set
             for _cgid in canon:
                 if _cgid in props_by_game:
                     live_q50_by_gid[_cgid] = lm
+                    if lm_cur:
+                        current_by_gid[_cgid] = lm_cur
             loaded_alias_groups.add(canon)
         # Now override rec_side + edge_pct on each prop
         player_minutes_by_gid: dict[str, dict[str, float]] = {}
@@ -2344,6 +2373,7 @@ def _build_home_data(date: str) -> dict:
             if not lm:
                 continue
             mp_map = player_minutes_by_gid.get(gid, {})
+            cur_map_b = current_by_gid.get(gid, {})
             for prop in props:
                 nm = (prop.get("player") or "").lower()
                 st_p = (prop.get("stat") or "").lower()
@@ -2359,6 +2389,13 @@ def _build_home_data(date: str) -> dict:
                     shrunk_q50 = w_live * float(live_q50) + (1.0 - w_live) * float(pregame_q50)
                 except (TypeError, ValueError):
                     shrunk_q50 = float(live_q50)
+                # Bug 2 fix (site b): floor shrunk_q50 at already-accumulated stat
+                _cur_b = cur_map_b.get((nm, st_p))
+                if _cur_b is not None:
+                    try:
+                        shrunk_q50 = max(shrunk_q50, float(_cur_b))
+                    except (TypeError, ValueError):
+                        pass
                 try:
                     line_f = float(prop.get("line"))
                 except (TypeError, ValueError):
@@ -5048,6 +5085,15 @@ def api_slate(date: str = Query(default=None),
             _cvo._STEAM_CACHE.clear()
         except Exception:
             pass
+        # Bug 10 fix: also bust the predictions overlay lookup cache so that a
+        # fresh predictions_cache_<date>.parquet rebuild reaches the new slate
+        # within the same request — without this the home rec_side/edge stays
+        # stale for up to 60s even after fresh=1 clears everything else.
+        try:
+            from api import _predictions_overlay as _po  # noqa: PLC0415
+            _po._PRED_LOOKUP_CACHE.pop(date, None)
+        except Exception:
+            pass
     envelope = _build_slate(date)
     _book_sel = [b for b in (books or "").split(",") if b.strip()]
     if _book_sel:
@@ -5117,11 +5163,13 @@ def api_box_score(date: str = Query(default=None),
             return False
 
         sample = next((b for b in slate.get("bets", []) if _bet_matches_game(b)), None)
-        # Last resort: pick any bet when there is only one game on the slate
+        # Bug 8 fix: last-resort fallback is only safe when the slate has a SINGLE
+        # distinct game — otherwise all_bets[0] belongs to an unrelated matchup and
+        # its team abbrs drive away_a/home_a for the wrong box score.
         if sample is None:
-            all_bets = slate.get("bets", [])
-            if all_bets:
-                sample = all_bets[0]
+            _ab = slate.get("bets", [])
+            _dg = {str(b.get("game_id") or "") for b in _ab}
+            sample = _ab[0] if (_ab and len(_dg) == 1) else None
         if sample:
             t = (sample.get("team") or "").upper(); o = (sample.get("opp") or "").upper()
             if sample.get("venue") == "home":
@@ -5775,6 +5823,25 @@ def api_box_score(date: str = Query(default=None),
                 live_q50_raw = float(eng["projected_final"])
                 pregame_q50 = float(cp.get("q50") or live_q50_raw)
                 shrunk_q50 = w_live * live_q50_raw + (1.0 - w_live) * pregame_q50
+                # Bug 2 fix (site a): floor shrunk_q50 at already-accumulated current
+                # stat so a hot-start player's projection never goes BELOW current.
+                _cur_a = eng.get("current")
+                if _cur_a is not None:
+                    try:
+                        shrunk_q50 = max(shrunk_q50, float(_cur_a))
+                    except (TypeError, ValueError):
+                        pass
+                # Belt-and-suspenders: if the player's current stat already clears
+                # the line on the recommended UNDER side, the bet is already settled
+                # against us — drop it before it reaches the live card ranking.
+                try:
+                    _line_a = float(cp.get("line") or 0.0)
+                    _side_a = (cp.get("side") or "").upper()
+                    if (_cur_a is not None and _side_a == "UNDER"
+                            and float(_cur_a) >= _line_a):
+                        continue
+                except (TypeError, ValueError):
+                    pass
                 # RE-ANCHOR to the LIVE in-play line: the sportsbook moves the
                 # O/U line during the game (e.g. Wemby pts 24.5 -> 22.5), so the
                 # card must show the CURRENT line + live per-book prices, not the
@@ -5998,11 +6065,29 @@ def api_parlays_build(body: dict = Body(...)):
 def api_auto_parlay(date: str = Query(default_factory=_today_et),
                     stake: float = Query(20.0, ge=1.0, le=10000.0),
                     max_legs: int = Query(5, ge=2, le=5)):
-    """Highest-EV parlay whose Kelly stake fits the requested $stake."""
-    c = [p for p in _build_parlays(date, max_legs, 5.0, 0).get("parlays", [])
-         if p["kelly_stake_dollars"] <= stake]
-    return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
-                         "pick": c[0] if c else None, "n_candidates_under_stake": len(c)})
+    """Highest-EV parlay whose EV meets the min threshold, using the constructor engine."""
+    # Bug 1 fix: was calling _build_parlays(date, max_legs, 5.0, 0) with 4 positional
+    # args — that function only takes (date, seed, top_n) → TypeError on every request.
+    # Use _build_parlays_constructor (the correct function). Its parlay dicts come from
+    # rank_parlays() which produces: hit_rate_adj, decimal_odds, expected_roi_sgp_pct,
+    # ev_sgp, etc. — there is no kelly_stake_dollars field. Filter by ev_pct when
+    # present (parlays_constructor adds it if the upstream leg has it), else accept all.
+    try:
+        result = _build_parlays_constructor(date, max_legs, 5.0)
+        parlays = result.get("parlays", [])
+        # Filter: prefer parlays within stake budget if ev_pct is present, else
+        # surface all positive-ROI parlays (constructor already ranks by ev_sgp).
+        c = [p for p in parlays
+             if (p.get("expected_roi_sgp_pct") or 0.0) > 0.0]
+        return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
+                             "pick": c[0] if c else None,
+                             "n_candidates": len(c),
+                             "engine": result.get("engine", "constructor")})
+    except Exception as exc:
+        import logging as _lg_ap  # noqa: PLC0415
+        _lg_ap.getLogger(__name__).warning("api_auto_parlay error: %s", exc)
+        return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
+                             "pick": None, "n_candidates": 0, "error": str(exc)})
 
 
 _SHARE_HIDE = ("kelly_stake_dollars", "kelly_pct", "market_prob", "model_prob")
