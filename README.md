@@ -434,9 +434,6 @@ uvicorn api.main:app --reload
 
 # Full test suite
 python -m pytest tests/ -q
-
-# End-to-end demo (pregame → snapshot → projection → EV → Kelly → settle → CLV)
-python scripts/swish_demo.py
 ```
 
 ---

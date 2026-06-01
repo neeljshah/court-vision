@@ -120,7 +120,7 @@ The Railway production deploy is currently in a post-health-check rollback loop.
 
 - **4,100+ tests collected.** Critical-path: 48/48 pass (gate1, devig, kelly, clv, calibration). In-play subset: 63/63 pass.
 - **Some test suites fail transiently** on Windows (cp1252 encoding) and RunPod (missing pyarrow on fresh pods). Failures are tracking-suite + transient infra, not prediction-critical.
-- **No formal CI gate yet** for end-to-end pipeline (CV → features → predict → place). Each stage has unit tests; the integration gate runs locally on `swish_demo.py` but is not part of the PR check.
+- **No formal CI gate yet** for end-to-end pipeline (CV → features → predict → place). Each stage has unit tests, but there is no end-to-end integration gate in the PR check.
 
 ---
 
