@@ -13,10 +13,10 @@
      and place a bet in seconds. */
   body.cv-live-mode #liveExplainer,
   body.cv-live-mode .bet-card .mt-3.hidden.md\:block,
-  body.cv-live-mode .bet-card .mt-3.md\:hidden,
-  body.cv-live-mode .bet-card .bet-shop-row {
+  body.cv-live-mode .bet-card .mt-3.md\:hidden {
     display: none !important;
   }
+  /* bet-shop-row stays VISIBLE in live mode so the bettor can see best_book/price */
   /* Compact bet cards during live mode — bettor wants speed to bet, not text. */
   body.cv-live-mode .bet-card {
     padding: 8px 10px !important;
@@ -87,10 +87,21 @@
       Lines aren't published yet for {{ slate.date }} — scrapers usually pull morning-of-game. Check back closer to tip-off.
     </div>
   {% endif %}
+  {% if slate.calibration and slate.calibration.warning %}
+    <div class="mt-2 cv-card px-3 py-2 text-xs"
+         style="border:1px solid rgba(251,191,36,0.45);background:rgba(69,26,3,0.55);color:#fcd34d;border-radius:8px">
+      <span style="font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:#fbbf24">⚠ Calibration in progress</span>
+      <span style="color:#fde68a">— {{ slate.calibration.note }}</span>
+      <span style="color:#fcd34d">Showing <b>{{ slate.calibration.n_shown }}</b> of <b>{{ slate.calibration.n_bets_pre_gate }}</b> raw edges.</span>
+    </div>
+  {% endif %}
   <!-- Book filter: client-side, localStorage-persisted. Same UX as homepage. -->
-  <div id="bookFilter" class="mt-3" style="padding:10px 12px;border:1px solid var(--cv-border);border-radius:8px;background:var(--cv-card);font-size:12px;">
+  <div id="bookFilter" class="mt-3"
+       data-book-universe="{{ (slate.all_books_universe or [])|join(',') }}"
+       data-books-selected="{{ (slate.repriced_books or [])|join(',') }}"
+       style="padding:10px 12px;border:1px solid var(--cv-border);border-radius:8px;background:var(--cv-card);font-size:12px;">
     <div style="color:var(--cv-muted);font-weight:600;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;font-size:10px;">
-      Only show bets from books you have
+      Pick the sportsbook(s) you use — prices &amp; ranking update to your book
     </div>
     <div id="bookFilterChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
   </div>
@@ -182,7 +193,8 @@
                 {% for s in box_score.stats %}
                   <td class="bx" data-stat="{{ s }}" style="padding:5px 6px;text-align:right;color:var(--cv-text);font-size:11px">
                     <span class="bx-pre">{% if p[s] is not none %}{{ '%g'|format(p[s]) }}{% else %}—{% endif %}</span>
-                    <span class="bx-live" style="display:none;color:var(--cv-accent);font-weight:600"></span>
+                    <span class="bx-cur" style="display:none;color:#34d399;font-weight:700"></span>
+                    <span class="bx-proj" style="display:none;color:var(--cv-accent);font-size:9px"></span>
                   </td>
                 {% endfor %}
               </tr>
@@ -256,7 +268,7 @@
     {% set tier_bets = bucketed[tier.key] %}
     {% if tier_bets %}
       <section class="mb-5 md:mb-6">
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:10px;
+        <div class="tier-hdr" style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:10px;
                     border-radius:8px;background:{{ tier.bg }};border:1px solid {{ tier.border }};
                     border-left:4px solid {{ tier.color }};">
           <span style="font-size:13px;font-weight:700;color:{{ tier.color }};letter-spacing:0.04em;">
@@ -297,61 +309,54 @@
 </style>
 <script>
 (function(){
-  var LS_KEY = 'cv_book_filter';
-  function readSel(){ try{return JSON.parse(localStorage.getItem(LS_KEY)||'null')||[];}catch(e){return [];} }
-  function saveSel(a){ try{localStorage.setItem(LS_KEY, JSON.stringify(a));}catch(e){} }
-  function applyFilter(){
-    var sel = readSel(), all = sel.length === 0;
-    document.querySelectorAll('.bet-card').forEach(function(c){
-      var bk = (c.getAttribute('data-book')||'').toLowerCase();
-      var keep = all || sel.some(function(s){ return bk.indexOf(s.toLowerCase()) !== -1; });
-      c.setAttribute('data-book-hidden', keep ? '0' : '1');
-    });
-    document.querySelectorAll('.book-chip').forEach(function(c){
-      c.classList.toggle('on', sel.indexOf(c.getAttribute('data-book')) !== -1);
-    });
-    // Update visible count
-    var visible = document.querySelectorAll('.bet-card:not([data-book-hidden="1"])').length;
-    var cnt = document.getElementById('visibleBetCount');
-    if (cnt) cnt.textContent = visible;
+  // Book picker. Selecting book(s) RE-PRICES + RE-RANKS the slate server-side
+  // (?books=…) so a casual bettor sees their book's best plays — not just a
+  // client-side hide. Selection lives in the URL so it survives reload and is
+  // shareable; chips are built from the FULL book universe so they never
+  // collapse to the currently-selected book.
+  var root = document.getElementById('bookFilter');
+  var container = document.getElementById('bookFilterChips');
+  if (!root || !container) return;
+
+  var universe = (root.getAttribute('data-book-universe')||'')
+                   .split(',').map(function(s){return s.trim();}).filter(Boolean);
+  var selected = (root.getAttribute('data-books-selected')||'')
+                   .split(',').map(function(s){return s.trim().toLowerCase();}).filter(Boolean);
+
+  function isOn(bk){ var l=bk.toLowerCase(); return selected.some(function(s){ return s===l || l.indexOf(s)!==-1 || s.indexOf(l)!==-1; }); }
+
+  function go(sel){
+    // Rebuild the URL with the new books selection, preserving every other param.
+    var u = new URL(window.location.href);
+    if (sel.length) u.searchParams.set('books', sel.join(',')); else u.searchParams.delete('books');
+    window.location.href = u.toString();
   }
-  function collectBooks(){
-    var set = {};
-    document.querySelectorAll('.bet-card').forEach(function(c){
-      var bk = (c.getAttribute('data-book')||'').trim();
-      if (bk) set[bk] = true;
-    });
-    return Object.keys(set).sort();
+
+  function chip(label, on, onClick){
+    var c = document.createElement('button');
+    c.type='button'; c.className='book-chip'+(on?' on':'');
+    c.textContent=label; c.onclick=function(e){ e.preventDefault(); e.stopPropagation(); onClick(); };
+    return c;
   }
-  function buildChips(){
-    var container = document.getElementById('bookFilterChips');
-    if (!container) return;
-    var books = collectBooks();
-    container.innerHTML = '';
-    if (books.length === 0) {
-      container.innerHTML = '<span style="color:var(--cv-muted);font-size:11px">No books to filter yet.</span>';
-      return;
-    }
-    books.forEach(function(bk){
-      var c = document.createElement('button');
-      c.type = 'button'; c.className = 'book-chip';
-      c.setAttribute('data-book', bk); c.textContent = bk;
-      c.onclick = function(e){
-        e.preventDefault(); e.stopPropagation();
-        var sel = readSel(), i = sel.indexOf(bk);
-        if (i === -1) sel.push(bk); else sel.splice(i, 1);
-        saveSel(sel); applyFilter();
-      };
-      container.appendChild(c);
-    });
-    var clr = document.createElement('button');
-    clr.type = 'button'; clr.className = 'book-chip';
-    clr.style.opacity = '.7'; clr.textContent = 'Show all books';
-    clr.onclick = function(e){ e.preventDefault(); e.stopPropagation(); saveSel([]); applyFilter(); };
-    container.appendChild(clr);
-    applyFilter();
+
+  if (universe.length === 0){
+    container.innerHTML = '<span style="color:var(--cv-muted);font-size:11px">No books posted yet for this slate.</span>';
+    return;
   }
-  buildChips();
+
+  universe.forEach(function(bk){
+    container.appendChild(chip(bk, isOn(bk), function(){
+      // Toggle this book in the selection, then reload re-priced.
+      var key = bk.toLowerCase(), i = selected.indexOf(key);
+      var next = selected.slice();
+      if (i === -1) next.push(key); else next.splice(i,1);
+      go(next);
+    }));
+  });
+
+  if (selected.length){
+    container.appendChild(chip('✕ Show all books / best price', false, function(){ go([]); }));
+  }
 })();
 
 // ── Box score live updater ─────────────────────────────────────────────────
@@ -366,17 +371,38 @@
     var cells = row.querySelectorAll('td.bx');
     cells.forEach(function(td){
       var s = td.getAttribute('data-stat');
-      var pre = td.querySelector('.bx-pre');
-      var live = td.querySelector('.bx-live');
-      var liveVal = null;
-      if (useFinal && p.paced_final && p.paced_final[s] != null) liveVal = p.paced_final[s];
-      else if (p.current && p.current[s] != null) liveVal = p.current[s];
-      if (liveVal != null) {
-        if (pre) pre.style.display = 'none';
-        if (live) { live.style.display = ''; live.textContent = (Number.isFinite(liveVal) ? (Math.round(liveVal * 10)/10) : liveVal); }
+      var pre  = td.querySelector('.bx-pre');
+      var cur  = td.querySelector('.bx-cur');
+      var proj = td.querySelector('.bx-proj');
+      var curVal  = (p.current  && p.current[s]  != null) ? p.current[s]  : null;
+      var projVal = (p.paced_final && p.paced_final[s] != null) ? p.paced_final[s] : null;
+      var isLive  = (curVal != null || projVal != null);
+      if (isLive) {
+        // Pregame q50 stays visible but dimmed so current/projected stand out
+        if (pre) { pre.style.display = ''; pre.style.opacity = '0.35'; }
+        // Bold green current actual
+        if (cur) {
+          if (curVal != null) {
+            cur.style.display = '';
+            cur.textContent = ' ' + (Number.isFinite(curVal) ? (Math.round(curVal * 10) / 10) : curVal);
+          } else {
+            cur.style.display = 'none';
+          }
+        }
+        // Small accent projected-final prefixed with →
+        if (proj) {
+          if (useFinal && projVal != null) {
+            proj.style.display = '';
+            proj.textContent = ' →' + (Number.isFinite(projVal) ? (Math.round(projVal * 10) / 10) : projVal);
+          } else {
+            proj.style.display = 'none';
+          }
+        }
       } else {
-        if (pre) pre.style.display = '';
-        if (live) { live.style.display = 'none'; live.textContent = ''; }
+        // Pregame only: show q50 at full opacity, hide live spans
+        if (pre) { pre.style.display = ''; pre.style.opacity = '1'; }
+        if (cur)  { cur.style.display  = 'none'; cur.textContent  = ''; }
+        if (proj) { proj.style.display = 'none'; proj.textContent = ''; }
       }
     });
     // Foul trouble marker — append a small ⚠ pill next to the player name cell.
@@ -563,6 +589,80 @@
           modBs[2].classList.remove('num-pos','num-neg','num-zero');
           modBs[2].classList.add(gap > 0 ? 'num-pos' : (gap < 0 ? 'num-neg' : 'num-zero'));
         }
+      }
+      // Live per-book ladder — update shop row from all_books_live if present.
+      // This is the primary path during a live game (5s tick from /api/box_score).
+      var abl = lb.all_books_live;
+      if (abl && abl.length) {
+        var shopRow = card.querySelector('.bet-shop-row');
+        if (!shopRow) {
+          shopRow = document.createElement('div');
+          shopRow.className = 'mt-2 flex flex-wrap gap-1 text-[10px] font-mono bet-shop-row bet-shop-live';
+          shopRow.style.color = 'var(--cv-muted)';
+          var insertBefore = card.querySelector('.bet-kelly-line, .bet-freshness-pill');
+          if (insertBefore) insertBefore.parentNode.insertBefore(shopRow, insertBefore);
+          else card.appendChild(shopRow);
+        }
+        shopRow.classList.add('bet-shop-live');
+        var liveHtml = '<span>live lines:</span>';
+        var lbSide = (lb.side || '').toUpperCase();
+        abl.forEach(function(b, idx){
+          var isBest = (b.book === lb.best_book && b.line === lb.line);
+          var bord = isBest ? 'var(--cv-accent)' : 'var(--cv-border)';
+          var col  = isBest ? 'var(--cv-accent)' : 'var(--cv-muted)';
+          var lineStr = '<b>' + (b.line != null ? b.line : '?') + '</b>';
+          var oddsStr = '';
+          if (lbSide === 'OVER') {
+            oddsStr = ' O' + (b.over != null ? '<b>' + (b.over >= 0 ? '+' : '') + b.over + '</b>' : '');
+          } else if (lbSide === 'UNDER') {
+            oddsStr = ' U' + (b.under != null ? '<b>' + (b.under >= 0 ? '+' : '') + b.under + '</b>' : '');
+          } else {
+            oddsStr = (b.over != null ? ' O' + (b.over >= 0 ? '+' : '') + b.over : '')
+                    + (b.under != null ? ' U' + (b.under >= 0 ? '+' : '') + b.under : '');
+          }
+          liveHtml += '<span class="px-1.5 py-0.5 rounded" data-book="' + (b.book || '') + '"'
+                    + ' style="border:1px solid ' + bord + ';color:' + col + '">'
+                    + (b.book || '') + ' ' + lineStr + oddsStr + '</span>';
+        });
+        if (abl.length === 1) liveHtml += '<span style="color:var(--cv-subtle)">· only live book right now</span>';
+        shopRow.innerHTML = liveHtml;
+        // Update header line span to the SELECTED bet line (not abl[0]).
+        var liveLine = card.querySelector('.bet-live-line');
+        if (liveLine && lb.line != null) {
+          var statText = liveLine.textContent.trim().split(' ')[0];
+          liveLine.textContent = statText + ' ' + lb.line;
+        }
+      }
+      // Header best book + price — the SSR rendered the PREGAME price (e.g.
+      // "FanDuel -146") and never updated it; overwrite with the live regrade's
+      // chosen book + price so the headline price matches the live ladder.
+      var bestBookEl = card.querySelector('.bet-live-best-book');
+      if (bestBookEl && lb.best_book) {
+        var priceStr = (lb.best_price != null)
+          ? ' <span class="font-mono">' + (lb.best_price >= 0 ? '+' : '') + lb.best_price + '</span>'
+          : '';
+        bestBookEl.innerHTML = lb.best_book + priceStr;
+      }
+      // Freshness pill — driven by the LIVE box_score age (source of truth in a
+      // live game), not the pregame slate. < 5m fresh, < 30m updated, else stale.
+      if (lb.freshest_book_age_min != null) {
+        var fpill = card.querySelector('.bet-freshness-pill');
+        if (fpill) {
+          var fage = lb.freshest_book_age_min;
+          fpill.innerHTML = (fage < 5)
+            ? '<span style="color:#22c55e">● fresh</span>'
+            : (fage < 30)
+              ? '<span style="color:var(--cv-subtle)">● updated ' + Math.floor(fage) + 'm ago</span>'
+              : '<span style="color:#f59e0b">⚠ lines stale (' + Math.floor(fage) + 'm)</span>';
+        }
+      }
+      // Stale-price badge — show only when the live regrade actually used a
+      // stale price; clear it otherwise so fresh DK/FD lines never read "stale".
+      var stalePill = card.querySelector('.bet-stale-price-pill');
+      if (lb.live_regraded_stale_price) {
+        if (stalePill) stalePill.style.display = '';
+      } else if (stalePill) {
+        stalePill.style.display = 'none';
       }
     });
   }
@@ -793,12 +893,19 @@
 // `lines.refreshed` topic the scraper bus emits, then bust the slate cache
 // and patch best_price / all_books in each bet card's DOM. Also a 60s
 // fallback poll if WS is unavailable.
+// NOTE: intentionally does NOT guard on boxScoreSection — live line updates
+// must run on the full /tonight slate view (no single game filtered) as well.
 (function(){
+  // Date and gameId are optional — we get them from the box score section
+  // when present (single-game filtered view) but refreshPrices works without them.
   var section = document.getElementById('boxScoreSection');
-  if (!section) return;
-  var gameId = section.getAttribute('data-game-id');
-  var date = section.getAttribute('data-date');
-  if (!gameId || !date) return;
+  var gameId = section ? section.getAttribute('data-game-id') : null;
+  var date = section ? section.getAttribute('data-date') : null;
+  // Fall back to the slate date embedded in the page URL (?date=…) or today
+  if (!date) {
+    var _u = new URL(window.location.href);
+    date = _u.searchParams.get('date') || '';
+  }
 
   var ws = null;
   var wsReconnectDelay = 2000;
@@ -833,24 +940,191 @@
         if (txt.trim().toLowerCase().startsWith('shop:')) { shopRow = rows[i]; break; }
       }
     }
-    if (shopRow && bet.all_books && bet.all_books.length) {
-      var html = '<span>shop:</span>';
-      bet.all_books.forEach(function(b, idx){
-        var bord = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-border)';
-        var col  = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-muted)';
-        html += '<span class="px-1.5 py-0.5 rounded" style="border:1px solid ' + bord + ';color:' + col + '">'
-              + (b.book || '') + (b.price != null ? ' <b>' + (b.price >= 0 ? '+' : '') + b.price + '</b>' : '')
-              + '</span>';
-      });
-      if (bet.all_books.length === 1) {
-        html += '<span style="color:var(--cv-subtle)">· only book posting this line right now</span>';
+    // Live per-book ladder takes priority over the pregame all_books ladder.
+    // each entry: {book, line, over, under} — each book may have a different line.
+    var liveLadder = (bet.all_books_live && bet.all_books_live.length) ? bet.all_books_live : null;
+    // Create shop row if live data arrives but SSR didn't render one (no pregame all_books)
+    if (!shopRow && liveLadder) {
+      shopRow = document.createElement('div');
+      shopRow.className = 'mt-2 flex flex-wrap gap-1 text-[10px] font-mono bet-shop-row bet-shop-live';
+      shopRow.style.color = 'var(--cv-muted)';
+      // Insert before Kelly line or freshness pill, else append to card
+      var insertBefore = card.querySelector('.bet-kelly-line, .bet-freshness-pill');
+      if (insertBefore) insertBefore.parentNode.insertBefore(shopRow, insertBefore);
+      else card.appendChild(shopRow);
+    }
+    if (shopRow && (liveLadder || (bet.all_books && bet.all_books.length))) {
+      var html = '';
+      if (liveLadder) {
+        // Switch label to "live lines:" and add bet-shop-live class
+        shopRow.classList.add('bet-shop-live');
+        html = '<span>live lines:</span>';
+        liveLadder.forEach(function(b, idx){
+          var bord = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-border)';
+          var col  = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-muted)';
+          var lineStr = '<b>' + (b.line != null ? b.line : '?') + '</b>';
+          var side = (bet.side || '').toUpperCase();
+          var oddsStr = '';
+          if (side === 'OVER') {
+            oddsStr = ' O' + (b.over != null ? '<b>' + (b.over >= 0 ? '+' : '') + b.over + '</b>' : '');
+          } else if (side === 'UNDER') {
+            oddsStr = ' U' + (b.under != null ? '<b>' + (b.under >= 0 ? '+' : '') + b.under + '</b>' : '');
+          } else {
+            // no side known — show both
+            oddsStr = (b.over != null ? ' O' + (b.over >= 0 ? '+' : '') + b.over : '')
+                    + (b.under != null ? ' U' + (b.under >= 0 ? '+' : '') + b.under : '');
+          }
+          html += '<span class="px-1.5 py-0.5 rounded" data-book="' + (b.book || '') + '"'
+                + ' style="border:1px solid ' + bord + ';color:' + col + '">'
+                + (b.book || '') + ' ' + lineStr + oddsStr
+                + '</span>';
+        });
+        if (liveLadder.length === 1) {
+          html += '<span style="color:var(--cv-subtle)">· only live book right now</span>';
+        }
+        // Update the header line span to the SELECTED bet line (bet.line),
+        // matching the regrade + ladder highlight — not liveLadder[0].
+        var liveLine = card.querySelector('.bet-live-line');
+        if (liveLine && bet.line != null) {
+          var statText = liveLine.textContent.trim().split(' ')[0];
+          liveLine.textContent = statText + ' ' + bet.line;
+        }
+      } else {
+        // Pregame fallback — no live data
+        shopRow.classList.remove('bet-shop-live');
+        html = '<span>shop:</span>';
+        bet.all_books.forEach(function(b, idx){
+          var bord = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-border)';
+          var col  = idx === 0 ? 'var(--cv-accent)' : 'var(--cv-muted)';
+          html += '<span class="px-1.5 py-0.5 rounded" style="border:1px solid ' + bord + ';color:' + col + '">'
+                + (b.book || '') + (b.price != null ? ' <b>' + (b.price >= 0 ? '+' : '') + b.price + '</b>' : '')
+                + '</span>';
+        });
+        if (bet.all_books.length === 1) {
+          html += '<span style="color:var(--cv-subtle)">· only book posting this line right now</span>';
+        }
       }
       shopRow.innerHTML = html;
       bgFlash(shopRow, 'rgba(96,165,250,0.18)');
     }
+    // Update freshness pill from live bet data
+    if (bet.freshest_book_age_min != null) {
+      var pill = card.querySelector('.bet-freshness-pill');
+      if (pill) {
+        var age = bet.freshest_book_age_min;
+        var pillHtml;
+        if (age < 5) {
+          pillHtml = '<span style="color:#22c55e">● fresh</span>';
+        } else if (age < 30) {
+          pillHtml = '<span style="color:var(--cv-subtle)">● updated ' + Math.floor(age) + 'm ago</span>';
+        } else {
+          pillHtml = '<span style="color:#f59e0b">⚠ lines stale (' + Math.floor(age) + 'm)</span>';
+        }
+        pill.innerHTML = pillHtml;
+      }
+    }
+
+    // Kelly stake — patch live value
+    var kellyVal = (bet.kelly_stake_dollars != null) ? bet.kelly_stake_dollars
+                 : (bet.kelly_dollars != null)       ? bet.kelly_dollars : null;
+    if (kellyVal != null) {
+      var kellyLine = card.querySelector('.bet-kelly-line');
+      if (!kellyLine) {
+        // Create if not present (SSR didn't render it because field was absent at render time)
+        kellyLine = document.createElement('div');
+        kellyLine.className = 'mt-1 text-[10px] font-mono bet-kelly-line';
+        kellyLine.title = 'Kelly-sized stake at the best posted price given model edge and bankroll.';
+        var freshPill = card.querySelector('.bet-freshness-pill');
+        if (freshPill) freshPill.parentNode.insertBefore(kellyLine, freshPill);
+        else card.appendChild(kellyLine);
+      }
+      var kellyEl = kellyLine.querySelector('.bet-kelly-value');
+      if (!kellyEl) {
+        kellyLine.innerHTML = 'Kelly stake: <b class="bet-kelly-value" style="color:var(--cv-accent)">$' + Math.round(kellyVal) + '</b>';
+      } else {
+        kellyEl.textContent = '$' + Math.round(kellyVal);
+      }
+    }
+
+    // When-to-bet: conf_tier / conf_pct / entry_label
+    if (bet.conf_tier || bet.entry_label) {
+      var whenBadge = card.querySelector('.bet-when-badge');
+      if (whenBadge) {
+        var ct = bet.conf_tier || '';
+        var cp = bet.conf_pct;
+        var el = bet.entry_label || '';
+        var ctColor = ct === 'High' ? '#22c55e' : (ct === 'Solid' ? '#60a5fa' : '#94a3b8');
+        var ctBg = ct === 'High' ? '34,197,94' : (ct === 'Solid' ? '96,165,250' : '148,163,184');
+        var html = '';
+        if (el) {
+          html += '<span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-semibold"'
+                + ' style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.35);color:#60a5fa;letter-spacing:0.04em"'
+                + ' title="When-to-bet entry signal">' + el + '</span>';
+        }
+        if (ct) {
+          var label = (cp != null ? (cp * 100).toFixed(0) + '% ' : '') + ct;
+          html += '<span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-semibold bet-conf-badge"'
+                + ' style="background:rgba(' + ctBg + ',0.12);border:1px solid ' + ctColor + ';color:' + ctColor + ';letter-spacing:0.04em"'
+                + ' title="Model confidence tier: High ≥70%, Solid 55–70%, Lean <55%">' + label + '</span>';
+        }
+        whenBadge.innerHTML = html;
+      }
+    }
+
+    // Line-movement display
+    if (bet.line_delta != null) {
+      var lmEl = card.querySelector('.bet-line-move');
+      if (lmEl) {
+        var ldir = bet.line_dir_vs_proj || 'flat';
+        var arrowColor = ldir === 'toward' ? '#22c55e' : (ldir === 'away' ? '#f87171' : '#94a3b8');
+        var arrow = bet.line_delta > 0 ? '↑' : (bet.line_delta < 0 ? '↓' : '→');
+        var lo = (bet.line_open != null) ? bet.line_open : '?';
+        var lc = (bet.line_current != null) ? bet.line_current : '?';
+        var ld = (bet.line_delta >= 0 ? '+' : '') + Number(bet.line_delta).toFixed(1);
+        var velStr = '';
+        if (bet.line_velocity_per_min != null && bet.line_velocity_per_min !== 0) {
+          velStr = ' <span style="color:var(--cv-subtle)" class="bet-line-vel">'
+                 + (bet.line_velocity_per_min >= 0 ? '+' : '') + Number(bet.line_velocity_per_min).toFixed(3) + '/min</span>';
+        }
+        lmEl.innerHTML = 'line <span class="bet-line-open">' + lo + '</span>'
+          + ' <span style="color:' + arrowColor + ';font-weight:700" class="bet-line-arrow">' + arrow + '</span>'
+          + ' <span style="color:' + arrowColor + '" class="bet-line-current">' + lc + '</span>'
+          + ' <span style="color:' + arrowColor + '" class="bet-line-delta">(' + ld + ')</span>'
+          + velStr;
+      }
+    }
+
+    // Stale-price badge
+    var stalePill = card.querySelector('.bet-stale-price-pill');
+    if (bet.live_regraded_stale_price) {
+      if (!stalePill) {
+        stalePill = document.createElement('div');
+        stalePill.className = 'mt-1 text-[9px] md:text-[10px] bet-stale-price-pill';
+        stalePill.innerHTML = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:9px;'
+          + 'background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.45);color:#f59e0b;font-weight:600;letter-spacing:0.04em"'
+          + ' title="Live regrading used a stale price — EV/Kelly may be off.">⚠ stale price</span>';
+        var freshPill2 = card.querySelector('.bet-freshness-pill');
+        if (freshPill2) freshPill2.parentNode.insertBefore(stalePill, freshPill2);
+        else card.appendChild(stalePill);
+      } else {
+        stalePill.style.display = '';
+      }
+    } else if (stalePill) {
+      stalePill.style.display = 'none';
+    }
+
+    // Shop ladder: ensure it's visible in live mode (not hidden by CSS)
+    var shopRow = card.querySelector('.bet-shop-row');
+    if (shopRow) shopRow.style.removeProperty('display');
   }
 
   function refreshPrices() {
+    // In LIVE mode the box_score tick (updateBetCards) owns every card field
+    // from the live in-play ladder — re-anchored line, best book+price,
+    // freshness, stale flag. The /api/slate feed below is PREGAME data and
+    // would clobber those with stale prices / false "lines stale" badges, so
+    // skip it entirely once the game is live.
+    if (liveMode) return;
     var now = Date.now();
     if (now - lastPriceFetchAt < 2000) return;  // dedupe rapid-fire
     lastPriceFetchAt = now;

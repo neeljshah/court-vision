@@ -26,8 +26,10 @@ from src.prediction.parlay_constructor import (
     FORBIDDEN_PAIRS,
     BREAKEVEN_3LEG,
     SGP_PENALTY,
+    _SAME_PLAYER_CORR,
     _is_forbidden_combo,
     _american_to_decimal,
+    _correlation_adjustment,
 )
 
 
@@ -128,17 +130,25 @@ class TestComputeParlayMetrics:
         assert result_pos["decimal_odds"] > result_neg["decimal_odds"]
 
     def test_same_player_corr_adjustment_non_trivial(self):
-        """Same-player corr adjustment must differ from 1.0 for correlated pairs."""
-        legs = [_make_bet("Jokic", "pts"), _make_bet("Jokic", "reb"),
-                _make_bet("Jokic", "ast")]
-        result_sp = compute_parlay_metrics(legs, hit_rates=[0.6, 0.6, 0.6],
-                                           prices=[-110, -110, -110],
-                                           same_player=True)
-        result_xp = compute_parlay_metrics(legs, hit_rates=[0.6, 0.6, 0.6],
-                                           prices=[-110, -110, -110],
-                                           same_player=False)
+        """All-same-player corr adjustment must produce hit_rate_adj > indep product.
+        Cross-player legs produce no adjustment (factor=1.0).
+        The same_player kwarg is deprecated and auto-detection is used instead.
+        """
+        same_legs = [_make_bet("Jokic", "pts"), _make_bet("Jokic", "reb"),
+                     _make_bet("Jokic", "ast")]
+        diff_legs = [_make_bet("Jokic", "pts"), _make_bet("Davis", "reb"),
+                     _make_bet("Curry", "ast")]
+        result_sp = compute_parlay_metrics(same_legs, hit_rates=[0.6, 0.6, 0.6],
+                                           prices=[-110, -110, -110])
+        result_xp = compute_parlay_metrics(diff_legs, hit_rates=[0.6, 0.6, 0.6],
+                                           prices=[-110, -110, -110])
         # Same-player positive correlations boost the joint probability
-        assert result_sp["hit_rate_adj"] >= result_xp["hit_rate_adj"]
+        assert result_sp["hit_rate_adj"] > result_sp["hit_rate_indep"], (
+            "All-same-player corr adjustment must be > 1.0 for positively correlated stats."
+        )
+        assert result_xp["hit_rate_adj"] == result_xp["hit_rate_indep"], (
+            "All-different-player parlay must have no adjustment (factor=1.0)."
+        )
 
     def test_zero_hit_rate_zero_ev(self):
         legs = self._make_legs()
@@ -333,3 +343,104 @@ class TestKellyParlayStake:
             )
             stake = kelly_parlay_stake(parlay, bankroll=1000.0)
             assert stake >= 0.0
+
+
+# ── BUG-5 regression: per-pair same-player correlation ───────────────────────
+
+class TestPairwiseCorrelationFix:
+    """Guards against BUG-5: 2-of-3 same-player parlays previously bypassed
+    the correlation adjustment because ``same_player`` was a single all-legs
+    boolean.  After the fix, _correlation_adjustment groups by player and
+    applies rho for each same-player stat pair individually.
+    """
+
+    # pts+ast rho from _SAME_PLAYER_CORR
+    _PTS_AST_RHO = _SAME_PLAYER_CORR[frozenset(("pts", "ast"))]
+
+    def _mixed_legs(self, hr=0.60):
+        """2 LeBron legs (pts, ast) + 1 Davis leg (reb) — classic 2-of-3 case."""
+        return (
+            [_make_bet("LeBron", "pts"), _make_bet("LeBron", "ast"),
+             _make_bet("Davis",  "reb")],
+            [hr, hr, hr],
+            [-110, -110, -110],
+        )
+
+    # ── Test 1: mixed parlay now applies the pts/ast rho ─────────────────────
+
+    def test_mixed_parlay_applies_pts_ast_rho(self):
+        """[LeBron pts, LeBron ast, Davis reb] must NOT be treated as fully
+        independent — the LeBron pts/ast pair has rho=0.30 and must produce
+        hit_rate_adj > hit_rate_indep (pure product)."""
+        legs, hrs, prices = self._mixed_legs()
+        result = compute_parlay_metrics(legs, hit_rates=hrs, prices=prices)
+
+        indep = result["hit_rate_indep"]
+        adj   = result["hit_rate_adj"]
+
+        # Adjustment must be non-trivial (factor > 1.0 for positive rho)
+        assert adj > indep, (
+            f"Mixed parlay hit_rate_adj ({adj:.6f}) should exceed "
+            f"independent product ({indep:.6f}) — pts/ast rho not applied."
+        )
+
+        # Verify the exact factor matches the expected formula:
+        # rhos = [pts_ast_rho] (only one same-player pair), avg_rho = rho,
+        # factor = 1 + avg_rho * 0.5 * (3-1) * 0.1
+        expected_factor = 1.0 + self._PTS_AST_RHO * 0.5 * 2 * 0.1
+        assert abs(adj - indep * expected_factor) < 1e-9, (
+            f"factor mismatch: got {adj/indep:.8f}, expected {expected_factor:.8f}"
+        )
+
+    # ── Test 2: all-different-player parlay is unchanged (factor = 1.0) ──────
+
+    def test_all_different_players_unchanged(self):
+        """Three different players → no same-player pairs → factor must be 1.0,
+        i.e. hit_rate_adj == hit_rate_indep."""
+        legs = [
+            _make_bet("LeBron", "pts"),
+            _make_bet("Davis",  "reb"),
+            _make_bet("Curry",  "ast"),
+        ]
+        hrs    = [0.60, 0.62, 0.65]
+        prices = [-110, -110, -110]
+
+        result = compute_parlay_metrics(legs, hit_rates=hrs, prices=prices)
+        assert abs(result["hit_rate_adj"] - result["hit_rate_indep"]) < 1e-9, (
+            "All-different-player parlay must have factor=1.0 (no adjustment)."
+        )
+
+        # Also verify _correlation_adjustment directly
+        factor = _correlation_adjustment(legs)
+        assert factor == 1.0
+
+    # ── Test 3: all-same-player 3-leg regression guard ───────────────────────
+
+    def test_all_same_player_unchanged(self):
+        """All-3-legs same player must produce the identical hit_rate_adj
+        as the pre-refactor path (same_player=True via the old call) — verified
+        by recomputing the factor from scratch using the same formula."""
+        legs   = [_make_bet("Jokic", "pts"), _make_bet("Jokic", "ast"),
+                  _make_bet("Jokic", "reb")]
+        hrs    = [0.60, 0.60, 0.60]
+        prices = [-110, -110, -110]
+
+        result = compute_parlay_metrics(legs, hit_rates=hrs, prices=prices)
+
+        # Recompute expected factor for 3 all-same-player legs:
+        # pairs: (pts,ast)->0.30, (pts,reb)->0.40, (ast,reb)->0.15
+        rho_pairs = [
+            _SAME_PLAYER_CORR.get(frozenset(("pts", "ast")), 0.0),
+            _SAME_PLAYER_CORR.get(frozenset(("pts", "reb")), 0.0),
+            _SAME_PLAYER_CORR.get(frozenset(("ast", "reb")), 0.0),
+        ]
+        avg_rho = sum(rho_pairs) / len(rho_pairs)
+        expected_factor = 1.0 + avg_rho * 0.5 * (3 - 1) * 0.1
+
+        indep = result["hit_rate_indep"]
+        expected_adj = min(1.0, indep * expected_factor)
+
+        assert abs(result["hit_rate_adj"] - expected_adj) < 1e-9, (
+            f"All-same-player regression: got {result['hit_rate_adj']:.8f}, "
+            f"expected {expected_adj:.8f}."
+        )

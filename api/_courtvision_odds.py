@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import time
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -77,10 +78,72 @@ def reload_nba_roster() -> int:
     Called by the nightly refresh task after scripts/refresh_nba_roster.py
     rewrites players_nba_active.json.
     """
-    global _NBA_PLAYER_SET
+    global _NBA_PLAYER_SET, _ABBREV_INDEX
     _NBA_PLAYER_SET = None
+    _ABBREV_INDEX = None
     s = _load_nba_players()
     return len(s)
+
+
+# ── Abbreviated-name index (Bug 7) ────────────────────────────────────────────
+# Keyed by (first_initial_lower, surname_lower) -> list[canonical_full_name_lower]
+# Used to resolve "S. Gilgeous-Alexander" -> "shai gilgeous-alexander" when
+# exactly ONE roster player matches initial+surname (safe; ties → no mapping).
+_ABBREV_INDEX: dict[tuple[str, str], list[str]] | None = None
+
+
+def _load_abbrev_index() -> dict[tuple[str, str], list[str]]:
+    """Build (or return cached) abbreviated-name index from the NBA roster."""
+    global _ABBREV_INDEX
+    if _ABBREV_INDEX is not None:
+        return _ABBREV_INDEX
+    roster = _load_nba_players()
+    idx: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for name in roster:
+        parts = name.split()
+        if len(parts) >= 2:
+            initial = parts[0][0]  # first character of first name, already lowercase
+            # Surname = everything after the first token, joined (handles hyphenated).
+            surname = " ".join(parts[1:])
+            idx[(initial, surname)].append(name)
+    _ABBREV_INDEX = dict(idx)
+    return _ABBREV_INDEX
+
+
+def _canonicalize_book_player(player: str) -> str:
+    """Return the canonical roster player name for a book's player string.
+
+    Two normalizations (Bug 6 + 7):
+      1. Strip a trailing team-disambiguation suffix: "Jaylin Williams (OKC)" ->
+         "Jaylin Williams".  DraftKings and some other books append the team
+         abbreviation in parentheses to disambiguate common names.
+      2. Resolve an abbreviated first name "X. Surname" to the unique canonical
+         full name from the roster, e.g. "S. Gilgeous-Alexander" ->
+         "shai gilgeous-alexander".  Only maps when EXACTLY ONE roster player
+         matches (initial, surname) — if two players share initial+surname we
+         keep the string as-is so no wrong-player mapping can occur.
+
+    Returns the transformed name (possibly equal to the input if neither rule
+    fires).  The caller must still apply `.lower()` and check roster membership.
+    """
+    # Rule 1: strip trailing (TEAM) suffix, e.g. "(OKC)" / "(LAL)"
+    player = re.sub(r"\s*\([A-Z]{2,4}\)\s*$", "", player).strip()
+
+    # Rule 2: abbreviated first name "X. Rest Of Name"
+    abbrev_match = re.match(r"^([A-Za-z])\.\s+(\S.*)$", player)
+    if abbrev_match:
+        initial = abbrev_match.group(1).lower()
+        surname_raw = abbrev_match.group(2).strip().lower()
+        idx = _load_abbrev_index()
+        candidates = idx.get((initial, surname_raw), [])
+        if len(candidates) == 1:
+            # Unique match — safe to resolve.  Return the canonical roster form
+            # (lowercase, as stored in the index) so the caller's .lower() is
+            # a no-op and the roster membership check succeeds.
+            return candidates[0]
+        # Zero or multiple matches → keep current (possibly stripped) name.
+
+    return player
 
 
 _BOOK_DISPLAY = {
@@ -283,6 +346,14 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
             player = (r.get("player_name") or "").strip()
             if not player:
                 continue
+            # Bug 6 + 7: canonicalize the book's player name before roster
+            # filter and prop_key construction so that:
+            #   - "Jaylin Williams (OKC)" → "Jaylin Williams" (team-suffix strip)
+            #   - "S. Gilgeous-Alexander" → "shai gilgeous-alexander" (abbrev resolve)
+            # _canonicalize_book_player may return a lowercase canonical name
+            # (when the abbreviated-name resolver fires) or the stripped/original
+            # mixed-case name.  We normalise to lowercase for the roster check.
+            player = _canonicalize_book_player(player)
             # Drop non-NBA players (WNBA bleed, etc.) when roster file is present.
             _roster = _load_nba_players()
             if _roster and player.lower() not in _roster:
@@ -1021,7 +1092,22 @@ def cross_book_spread(date: str, min_spread_pp: float = 2.0,
 
         arb_sum = (best_over_implied + best_under_implied) * 100 \
                   if (best_over_implied is not None and best_under_implied is not None) else None
-        is_arb = arb_sum is not None and arb_sum < 100.0
+
+        # Bug 9 fix: compute arb_quality BEFORE setting is_arb so that we can
+        # require the two legs to be within the tight/loose window.  The /spread
+        # endpoint was displaying is_arb=True for over/under legs captured up to
+        # _ARB_MAX_AGE_SEC (300s) apart — a stale mismatch that produces false
+        # arb signals.  Now is_arb=True only when arb_sum<100 AND the leg
+        # captures are "tight" or "loose" (both within 90s of each other).
+        # The displayed spread numbers and arb_sum_pct are unchanged.
+        _pre_arb_quality: str | None = None
+        if (arb_sum is not None and arb_sum < 100.0
+                and best_over_b is not None and best_under_b is not None):
+            _pre_arb_quality = _arb_quality(
+                best_over_b.get("captured_at") or "",
+                best_under_b.get("captured_at") or "",
+            )
+        is_arb = (_pre_arb_quality in {"tight", "loose"})
 
         row: dict = {
             "player": p["player"], "stat": p["stat"], "line": p["line"],
@@ -1031,10 +1117,7 @@ def cross_book_spread(date: str, min_spread_pp: float = 2.0,
             "is_arb": is_arb, "books": all_books,
         }
         if is_arb and best_over_b is not None and best_under_b is not None:
-            row["arb_quality"] = _arb_quality(
-                best_over_b.get("captured_at") or "",
-                best_under_b.get("captured_at") or "",
-            )
+            row["arb_quality"] = _pre_arb_quality
             row["arb_best_over_book"]  = best_over_b["book"]
             row["arb_best_under_book"] = best_under_b["book"]
         out.append(row)
