@@ -976,12 +976,17 @@ async function loadArbs() {
       list.innerHTML = `<div class="parlay-empty">No arbs ≥ 2pp today</div>`;
       return;
     }
-    list.innerHTML = rows.map(r => `
-      <div class="arb-row" onclick="scrollToArb('${escHtml(r.player)}','${r.stat}')">
-        <span class="arb-spread">+${(r.spread_pp || 0).toFixed(1)}pp</span>
+    list.innerHTML = rows.map(r => {
+      const pp = Math.max(r.over_spread_pp || 0, r.under_spread_pp || 0);
+      const booksStr = r.is_arb && r.arb_best_over_book && r.arb_best_under_book
+        ? `${escHtml(r.arb_best_over_book)} vs ${escHtml(r.arb_best_under_book)}`
+        : (r.books || []).slice(0, 2).map(b => escHtml(b.display || b.book || '')).join(' · ');
+      return `<div class="arb-row" onclick="scrollToArb('${escHtml(r.player)}','${r.stat}')">
+        <span class="arb-spread">+${pp.toFixed(1)}pp</span>
         <span class="arb-label">${escHtml(r.player)} ${(r.stat||'').toUpperCase()} ${r.line||''}</span>
-        <span class="arb-books">${escHtml(r.best_over_book||'')} vs ${escHtml(r.best_under_book||'')}</span>
-      </div>`).join('');
+        <span class="arb-books">${booksStr}</span>
+      </div>`;
+    }).join('');
   } catch(e) {
     $('arbList').innerHTML = `<div class="parlay-empty" style="color:var(--cv-subtle)">Arbs unavailable</div>`;
   }
