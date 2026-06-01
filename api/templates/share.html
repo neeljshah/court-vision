@@ -53,7 +53,7 @@
           <div class="text-xs md:text-sm mt-0.5 font-mono" style="color:var(--cv-muted)">
             {{ bet.team }} {% if bet.venue == 'away' %}@{% else %}vs{% endif %} {{ bet.opp }}
             · {{ bet.prop_stat }} {{ 'o' if bet.side == 'OVER' else 'u' }}{{ '%g'|format(bet.line) }}
-            {% if bet.best_book %} · {{ bet.best_book }} {{ '%+d'|format(bet.best_price) }}{% endif %}
+            {% if bet.best_book and bet.best_price is not none %} · {{ bet.best_book }} {{ '%+d'|format(bet.best_price) }}{% endif %}
           </div>
         </div>
         <span class="text-[10px] md:text-xs px-2 py-1 rounded {% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}">{{ bet.side }}</span>
@@ -70,7 +70,7 @@
         </div>
         <div>
           <div class="text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">EV</div>
-          <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(bet.ev_pct) }}%</div>
+          <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct is not none and bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct is not none and bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">{% if bet.ev_pct is not none %}{{ '%+.1f'|format(bet.ev_pct) }}%{% else %}&mdash;{% endif %}</div>
         </div>
       </div>
 

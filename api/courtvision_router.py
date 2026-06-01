@@ -2532,10 +2532,22 @@ def _build_home_data(date: str) -> dict:
                     _side = (_b.get("side") or "OVER").upper()
                     _line = float(_b.get("line") or 0)
                     _stat_u = (_b.get("prop_stat") or _b.get("stat") or "").upper()
+                    # Compute edge_pct as model-minus-market probability gap in
+                    # percentage points — matching the live/overlay convention
+                    # (live path: (model_prob - market_prob)*100, ~line 2420).
+                    # ev_pct is a dollar-return metric and MUST NOT be used here.
+                    _mp = _b.get("model_prob")
+                    _mkp = _b.get("market_prob")
+                    if (isinstance(_mp, (int, float)) and isinstance(_mkp, (int, float))
+                            and 0.0 < _mp < 1.0 and 0.0 < _mkp < 1.0):
+                        _edge_pct = round((float(_mp) - float(_mkp)) * 100.0, 1)
+                    else:
+                        _edge_pct = None
                     top_edges.append({
                         "label": f"{_b.get('player_name','')} {_side[0]}{_line:g} {_stat_u}",
                         "odds": _b.get("best_price") or _b.get("odds"),
-                        "edge_pct": _b.get("ev_pct"),
+                        "edge_pct": _edge_pct,
+                        "ev_pct": _b.get("ev_pct"),
                         "book": _b.get("best_book") or _b.get("book") or "",
                         "stat": (_stat_u or "").lower(),
                         "side": _side,
