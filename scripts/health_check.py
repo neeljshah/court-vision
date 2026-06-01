@@ -275,7 +275,7 @@ def check_config(results: List[Dict[str, Any]]) -> None:
     else:
         _record(results, WARN, "bankroll",
                 "no bankroll file found",
-                "python scripts/register_bankroll.py --amount 1000")
+                'create data/bankroll.json (e.g. {"bankroll": 1000})')
 
 
 # ---------------------------------------------------------------------------
