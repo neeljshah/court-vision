@@ -35,7 +35,8 @@ Protocol (reverse-engineered from dkDataLayer.js SDK v3.1.0):
     msgpack-capable client — we do not set that flag so we stay on JSON.
   * Reconnect: use exponential backoff 2→4→8→16→32→60s (capped).
 
-Dedup logic matches draftkings_scraper.py: (captured_at[:16], player_name, stat, line).
+Dedup logic (WS writer): (captured_at, player_name, stat, line, over_price, under_price) —
+full-second timestamp + both prices so intra-minute price moves are preserved.
 
 Run:
     python scripts/draftkings_ws.py            # long-running daemon
@@ -242,21 +243,27 @@ def _normalize_push(payload: Any, stat: str, captured_at: str) -> List[Dict[str,
 
 
 def _write_csv(rows: List[Dict[str, Any]], path: str) -> int:
-    """Append rows to CSV, deduplicating on (captured_at[:16], player, stat, line).
+    """Append rows to CSV, deduplicating on (captured_at, player, stat, line, over_price, under_price).
+
+    The key uses the full-second captured_at (no truncation) and includes both
+    prices so that intra-minute price moves on the same line are preserved.
+    Only byte-identical rows (same second, same line, same prices) are deduped.
 
     Returns the number of net-new rows written.
     """
     new_file = not os.path.exists(path) or os.path.getsize(path) == 0
-    existing_keys: Set[Tuple[str, str, str, str]] = set()
+    existing_keys: Set[Tuple[str, str, str, str, str, str]] = set()
     if not new_file:
         try:
             with open(path, "r", encoding="utf-8", newline="") as fh:
                 for r in csv.DictReader(fh):
                     existing_keys.add((
-                        (r.get("captured_at") or "")[:16],
+                        r.get("captured_at") or "",
                         r.get("player_name") or "",
                         r.get("stat") or "",
                         str(r.get("line") or ""),
+                        str(r.get("over_price") or ""),
+                        str(r.get("under_price") or ""),
                     ))
         except OSError:
             new_file = True
@@ -267,11 +274,13 @@ def _write_csv(rows: List[Dict[str, Any]], path: str) -> int:
         if new_file:
             w.writeheader()
         for r in rows:
-            key: Tuple[str, str, str, str] = (
-                r["captured_at"][:16],
+            key: Tuple[str, str, str, str, str, str] = (
+                r["captured_at"],
                 r["player_name"],
                 r["stat"],
                 str(r["line"]),
+                str(r.get("over_price") or ""),
+                str(r.get("under_price") or ""),
             )
             if key in existing_keys:
                 continue

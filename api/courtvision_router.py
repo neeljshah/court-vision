@@ -656,7 +656,19 @@ def _today_et() -> str:
     if _cached_val and time.time() - _cached_ts < _TODAY_ET_TTL:
         return _cached_val
 
-    today = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+    # BUG 9 FIX: use Eastern time, not server-local, so a UTC host at
+    # 00:00-05:00 UTC doesn't land on tomorrow's date. Mirrors the
+    # ZoneInfo + EDT-fallback pattern used by _et_date_from_iso.
+    try:
+        from zoneinfo import ZoneInfo as _ZI  # noqa: PLC0415
+        _et_tz = _ZI("America/New_York")
+    except Exception:
+        _et_tz = None
+    if _et_tz is not None:
+        today = datetime.now(timezone.utc).astimezone(_et_tz).strftime("%Y-%m-%d")
+    else:
+        from datetime import timedelta as _tdd  # noqa: PLC0415
+        today = (datetime.now(timezone.utc) + _tdd(hours=-4)).strftime("%Y-%m-%d")
     # Highest priority: if any game has a fresh snapshot (< 4 hr old) we use
     # THAT snapshot's date so the home page lands on a live/recent game even
     # when slate/lines CSVs haven't caught up. This is the "any game any time"
@@ -1276,7 +1288,9 @@ def _apply_calibration_gate(envelope: dict) -> dict:
 
         # Honest probability: replace the naive Normal-CDF model_prob with the
         # isotonic-calibrated win prob (edge_calibration, capped [0.50,0.90]),
-        # then recompute EV at the best price. No bankroll/Kelly added.
+        # then recompute EV at the best price. Also recompute Kelly so
+        # kelly_stake_dollars/kelly_pct are sized off cal_p, not the stale
+        # naive prob (bug 6 fix).
         if _have_calib and _have_filters:
             try:
                 cal_p = calibrate_p_win(
@@ -1287,6 +1301,11 @@ def _apply_calibration_gate(envelope: dict) -> dict:
                 b["model_prob"] = round(cal_p, 4)
                 b["ev_pct"] = round(cal_p * payout - (1.0 - cal_p) * 100.0, 2)
                 b["calibrated"] = True
+                # Recompute Kelly from calibrated prob (mirrors _reprice_slate_to_books)
+                from api._courtvision_data import _BETTING  # noqa: PLC0415
+                _ev_k = _BETTING.evaluate(cal_p, price, bankroll=_BANKROLL_DEFAULT)
+                b["kelly_stake_dollars"] = round(float(_ev_k.get("kelly_size") or 0.0), 2)
+                b["kelly_pct"] = round((b["kelly_stake_dollars"] / _BANKROLL_DEFAULT) * 100.0, 3)
             except Exception:
                 pass
 
@@ -1622,10 +1641,29 @@ def _build_slate(date: str) -> dict:
             _log_sr = __import__("logging").getLogger(__name__)
             _log_sr.warning("slate live regrade failed: %s", _exc_sr)
 
-        bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
+        # BUG 7 FIX: run _apply_calibration_gate on the FULL pre-truncation list
+        # so valid bets are not dropped by alphabetical tie-break when many tie
+        # at the EV cap. Gate returns calibrated+filtered survivors; we then sort
+        # by calibrated EV with an edge-magnitude secondary tie-break (deterministic,
+        # not alphabetical) and THEN truncate to _TOP_N.
+        # WHY reorder (not just add tie-break): the [:50] cut before the gate
+        # can drop legitimate edges that would have survived the filter but were
+        # ranked below the cap by the pre-calibration naive EV. Gating first ensures
+        # the served pool is drawn from all valid candidates, not just the
+        # alphabetically-lucky 50.
+        _stub_env = {"bets": bets}
+        _stub_env = _apply_calibration_gate(_stub_env)
+        bets = _stub_env.get("bets") or []
+        bets.sort(key=lambda b: (
+            b["ev_pct"] is None,
+            -(min(b.get("ev_pct") or 0.0, _SANE_EV_CEILING)),
+            -abs(b.get("edge_units") or b.get("edge") or 0.0),
+        ))
         bets = bets[:_TOP_N]
+        _gate_already_applied = True
     else:
         bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
+        _gate_already_applied = False
 
     _log = __import__("logging").getLogger(__name__)
     try: from api._courtvision_form import attach_form; attach_form(bets)
@@ -1647,7 +1685,21 @@ def _build_slate(date: str) -> dict:
                     "n_over": sum(1 for b in bets if b["side"] == "OVER"),
                     "n_under": sum(1 for b in bets if b["side"] == "UNDER")},
         "bets": bets}
-    envelope = _apply_calibration_gate(envelope)
+    if not _gate_already_applied:
+        envelope = _apply_calibration_gate(envelope)
+    else:
+        # Gate already ran; copy over the calibration metadata from the stub envelope.
+        envelope["all_books_universe"] = _stub_env.get("all_books_universe", [])
+        envelope["calibration"] = _stub_env.get("calibration", {})
+        # Re-compute summary from the now-truncated bets list (may be smaller than
+        # what _apply_calibration_gate counted before truncation).
+        evs2 = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+        envelope["summary"] = {
+            "n_bets": len(bets),
+            "avg_ev_pct": round(sum(evs2) / len(evs2), 2) if evs2 else 0.0,
+            "n_over": sum(1 for b in bets if b["side"] == "OVER"),
+            "n_under": sum(1 for b in bets if b["side"] == "UNDER"),
+        }
     _CACHE[cache_key] = (time.time(), envelope)
     return envelope
 
@@ -4329,16 +4381,33 @@ def _line_movement_for(line_hist: list, name_lower: str, stat: str,
         return dict(null)
     if not seq:
         return dict(null)
-    seq = sorted(seq, key=lambda r: r["cap"])
+    # BUG 4 FIX: parse cap to tz-aware datetime before sorting so mixed
+    # formats (DK: minute+offset "2026-05-31T00:52+00:00" vs FD: second,
+    # no offset "2026-05-31T00:16:58") sort correctly instead of lexically.
+    from datetime import datetime as _dtm  # noqa: PLC0415
+
+    def _capdt(s: str) -> "_dtm":
+        try:
+            dt = _dtm.fromisoformat(str(s).replace("Z", "+00:00"))
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            # Fallback: make a sentinel far in the past so bad entries
+            # sort first and don't become the spurious "current" line.
+            return _dtm(1970, 1, 1, tzinfo=timezone.utc)
+
+    try:
+        seq = sorted(seq, key=lambda r: _capdt(r["cap"]))
+    except Exception:
+        seq = sorted(seq, key=lambda r: r["cap"])
+
     line_open = float(seq[0]["line"])
     line_current = float(seq[-1]["line"])
     delta = round(line_current - line_open, 3)
 
     velocity = None
-    from datetime import datetime as _dtm  # noqa: PLC0415
     try:
-        t0 = _dtm.fromisoformat(str(seq[0]["cap"]).replace("Z", "+00:00"))
-        t1 = _dtm.fromisoformat(str(seq[-1]["cap"]).replace("Z", "+00:00"))
+        t0 = _capdt(seq[0]["cap"])
+        t1 = _capdt(seq[-1]["cap"])
         mins = (t1 - t0).total_seconds() / 60.0
         if mins > 0:
             velocity = round(delta / mins, 4)
@@ -4379,13 +4448,27 @@ def _eoq_live_picks(snap_q: dict, line_hist: list, actuals: dict,
         return []
     t_q = snap_q.get("captured_at") or ""
     proj_map = _project_at_snapshot_map(snap_q)  # {(name_lower, stat): projected_final}
+    # BUG 11 FIX: parse cap strings to tz-aware datetimes before comparison so
+    # mixed-format DK ("2026-05-31T00:52+00:00") vs FD ("2026-05-31T00:16:58")
+    # timestamps sort/compare correctly. Reuse the same _normalize_ts / _capdt
+    # pattern already live in _line_movement_for.
+    from datetime import datetime as _dtm_eoq  # noqa: PLC0415
+
+    def _capdt_eoq(s: str) -> "_dtm_eoq":
+        try:
+            dt = _dtm_eoq.fromisoformat(str(s).replace("Z", "+00:00"))
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            return _dtm_eoq(1970, 1, 1, tzinfo=timezone.utc)
+
+    _t_q_dt = _capdt_eoq(t_q) if t_q else None
     # latest line per (name, stat) AS OF the quarter break
     asof: dict[tuple, dict] = {}
     for r in line_hist:
-        if t_q and r["cap"] > t_q:
+        if _t_q_dt is not None and _capdt_eoq(r["cap"]) > _t_q_dt:
             continue
         k = (r["name"], r["stat"])
-        if k not in asof or r["cap"] > asof[k]["cap"]:
+        if k not in asof or _capdt_eoq(r["cap"]) > _capdt_eoq(asof[k]["cap"]):
             asof[k] = r
     cands = []
     for (nm, st), r in asof.items():
@@ -4431,10 +4514,14 @@ def _eoq_live_picks(snap_q: dict, line_hist: list, actuals: dict,
         hit = None
         if av is not None:
             hit = (av > c["line"]) if c["side"] == "OVER" else (av < c["line"])
+        # BUG 11 FIX: use the actual book from the chosen row rather than
+        # hard-coding "fd_inplay" (which was wrong when DK inplay won the
+        # tz-aware ordering comparison).
+        _chosen_book = c["r"].get("book") or "inplay"
         b = {"player_name": c["r"]["disp"], "prop_stat": c["st"].upper(), "side": c["side"],
              "line": c["line"], "ev_pct": round(c["ev"], 2), "model_prob": round(c["prob"], 4),
-             "q50": round(c["proj"], 2), "best_book": "fd_inplay", "best_price": c["price"],
-             "_books_full": [{"book": "fd_inplay", "captured_at": c["r"]["cap"]}]}
+             "q50": round(c["proj"], 2), "best_book": _chosen_book, "best_price": c["price"],
+             "_books_full": [{"book": _chosen_book, "captured_at": c["r"]["cap"]}]}
         picks.append(_bet_to_pick(b, len(picks) + 1, actual=av, hit=hit))
         if len(picks) >= cap:
             break
@@ -5373,9 +5460,15 @@ def api_box_score(date: str = Query(default=None),
                 pregame_mean = (team_dict.get("mean_totals") or {}).get(s)
                 if not isinstance(pregame_mean, (int, float)):
                     pregame_mean = None
+                # BUG 14 FIX: use the authoritative current total (which may
+                # have been overridden by the scoreboard for 'pts') as the
+                # pace base instead of the raw player-summed cur_sum. This
+                # ensures projected_total_pts (and win-prob) reflects the
+                # correct live score when the pregame roster lags.
                 pace_extrap = None
-                if minutes_elapsed >= 1.0 and any_v and cur_sum > 0:
-                    pace_extrap = cur_sum * (48.0 / minutes_elapsed)
+                _pace_base = current_totals.get(s, cur_sum)
+                if minutes_elapsed >= 1.0 and _pace_base > 0:
+                    pace_extrap = _pace_base * (48.0 / minutes_elapsed)
                     pace_extraps[s] = round(pace_extrap, 1)
                 # Blend pace × pregame mean by elapsed_frac. When elapsed_frac=0,
                 # we trust pregame; when elapsed_frac=1, we trust the pace.
@@ -5417,11 +5510,19 @@ def api_box_score(date: str = Query(default=None),
                 _src_sim = _any_eng.get("proj_point_source") or "possession_sim"
                 _fin = lambda x: isinstance(x, (int, float)) and _math_sim.isfinite(x)
                 if _fin(_ph_sim) and _fin(_pa_sim):
+                    # BUG 5b FIX: floor sim projected final at the live current
+                    # score so the page never shows a projected final below the
+                    # scoreboard (belt-and-suspenders; the per-player floor is
+                    # already applied inside the ridge head at ~5168).
+                    _live_home = float(live_overlay.get("home_score") or 0)
+                    _live_away = float(live_overlay.get("away_score") or 0)
+                    _ph_sim = max(float(_ph_sim), _live_home)
+                    _pa_sim = max(float(_pa_sim), _live_away)
                     if isinstance(box.get("home"), dict):
-                        box["home"]["projected_total_pts"] = round(float(_ph_sim), 1)
+                        box["home"]["projected_total_pts"] = round(_ph_sim, 1)
                         box["home"]["projected_total_pts_source"] = _src_sim
                     if isinstance(box.get("away"), dict):
-                        box["away"]["projected_total_pts"] = round(float(_pa_sim), 1)
+                        box["away"]["projected_total_pts"] = round(_pa_sim, 1)
                         box["away"]["projected_total_pts_source"] = _src_sim
         except Exception:
             pass
@@ -5574,13 +5675,42 @@ def api_box_score(date: str = Query(default=None),
                 _lg3.getLogger(__name__).warning(
                     "inplay_winprob failed: %s", exc)
 
+    # BUG 12/13 FIX: in Q4 the possession-sim WP (attached as home_win_prob_inplay
+    # with winprob_source='possession_sim' on engine rows) is validated better than
+    # _live_wp_continuous (Brier 0.126 vs 0.136). Promote it before the
+    # _live_wp_continuous overwrite block and SKIP the overwrite for that case.
+    # Only fires in Q4 when an engine row has a finite sim WP; outside Q4 the
+    # _live_wp_continuous overwrite runs unchanged.
+    _skip_continuous_wp = False
+    try:
+        if (live_overlay and isinstance(live_overlay, dict)
+                and int(live_overlay.get("period") or 0) >= 4
+                and engine_projections):
+            import math as _math_wp  # noqa: PLC0415
+            _swp = None
+            for _er in engine_projections.values():
+                if (_er.get("winprob_source") == "possession_sim"
+                        and _er.get("home_win_prob_inplay") is not None):
+                    _candidate = float(_er["home_win_prob_inplay"])
+                    if _math_wp.isfinite(_candidate):
+                        _swp = _candidate
+                        break
+            if _swp is not None:
+                box["home_win_prob"] = round(_swp, 3)
+                box["away_win_prob"] = round(1.0 - _swp, 3)
+                box["winprob_source"] = "possession_sim"
+                _skip_continuous_wp = True
+    except Exception:
+        pass
+
     # ALWAYS-UPDATING live win prob: the boundary booster above only changes 3x
     # a game ("holds" between quarters). This recomputes EVERY snapshot from the
     # live score margin + time remaining, anchored to the pregame MARKET wp, so
     # the number moves continuously and doesn't over-react to a lead. Supersedes
     # the held value for display (the booster value is kept in winprob_raw_booster).
     try:
-        if live_overlay and isinstance(live_overlay, dict) and live_overlay.get("period"):
+        if (not _skip_continuous_wp
+                and live_overlay and isinstance(live_overlay, dict) and live_overlay.get("period")):
             _hp = (box.get("home") or {}).get("projected_total_pts")
             _ap = (box.get("away") or {}).get("projected_total_pts")
             _lwp = _live_wp_continuous(live_overlay, p_home_pre, _hp, _ap)

@@ -174,6 +174,22 @@ async def _start_ws_subscribers() -> None:
         except Exception as _br_exc:  # noqa: BLE001
             log.warning("api.main: BR WS subscriber failed to start (non-fatal): %s", _br_exc)
 
+    # DK in-play WS subscriber — sub-second live prop-line latency during games.
+    # Writes data/lines/<date>_dk_inplay_ws.csv (book="dk_inplay").
+    # Gated: set DK_INPLAY_WS_ENABLED=1 AND fill _INPLAY_SUBCATEGORY_IDS in
+    # scripts/dk_inplay_ws.py (discovered on residential network during live game).
+    if os.environ.get("DK_INPLAY_WS_ENABLED", "").strip() in _WS_TRUTHY:
+        try:
+            from scripts.task_supervisor import create_supervised_task
+            from scripts.dk_inplay_ws import start_dk_inplay_ws
+            create_supervised_task("dk_inplay_ws", start_dk_inplay_ws)
+            log.info("api.main: DK in-play WS subscriber task started (supervised)")
+        except Exception as _dk_inplay_exc:  # noqa: BLE001
+            log.warning(
+                "api.main: DK in-play WS subscriber failed to start (non-fatal): %s",
+                _dk_inplay_exc,
+            )
+
 try:
     from api.lines_router import router as _lines_router
     app.include_router(_lines_router, tags=["lines"])

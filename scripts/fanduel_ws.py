@@ -19,8 +19,8 @@ Geo-restriction note (2026-05-27):
   * Fallback: HTTP polling of sbapi.nj at 30s interval (runs automatically when
     WS is unreachable — gives ~30s latency vs 5-min HTTP daemon).
 
-Dedup logic matches probe_R15_curl_cffi_fanduel.py:
-  (captured_at[:16], player_name, stat, line).
+Dedup logic (WS writer): (captured_at, player_name, stat, line, over_price, under_price) —
+  full-second timestamp + both prices so intra-minute price moves are preserved.
 
 Run:
     python scripts/fanduel_ws.py           # long-running daemon
@@ -194,21 +194,27 @@ def _normalize_rest(j: Dict[str, Any], captured_at: str) -> List[Dict[str, Any]]
 
 
 def _write_csv(rows: List[Dict[str, Any]], path: str) -> int:
-    """Append rows to CSV, deduplicating on (captured_at[:16], player, stat, line).
+    """Append rows to CSV, deduplicating on (captured_at, player, stat, line, over_price, under_price).
+
+    The key uses the full-second captured_at (no truncation) and includes both
+    prices so that intra-minute price moves on the same line are preserved.
+    Only byte-identical rows (same second, same line, same prices) are deduped.
 
     Returns the number of net-new rows written.
     """
     new_file = not os.path.exists(path) or os.path.getsize(path) == 0
-    existing_keys: Set[Tuple[str, str, str, str]] = set()
+    existing_keys: Set[Tuple[str, str, str, str, str, str]] = set()
     if not new_file:
         try:
             with open(path, "r", encoding="utf-8", newline="") as fh:
                 for r in csv.DictReader(fh):
                     existing_keys.add((
-                        (r.get("captured_at") or "")[:16],
+                        r.get("captured_at") or "",
                         r.get("player_name") or "",
                         r.get("stat") or "",
                         str(r.get("line") or ""),
+                        str(r.get("over_price") or ""),
+                        str(r.get("under_price") or ""),
                     ))
         except OSError:
             new_file = True
@@ -219,11 +225,13 @@ def _write_csv(rows: List[Dict[str, Any]], path: str) -> int:
         if new_file:
             w.writeheader()
         for r in rows:
-            key: Tuple[str, str, str, str] = (
-                r["captured_at"][:16],
+            key: Tuple[str, str, str, str, str, str] = (
+                r["captured_at"],
                 r["player_name"],
                 r["stat"],
                 str(r["line"]),
+                str(r.get("over_price") or ""),
+                str(r.get("under_price") or ""),
             )
             if key in existing_keys:
                 continue
