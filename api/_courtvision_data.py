@@ -120,18 +120,55 @@ def grade_bet(slate_row: dict, line_row: dict,
         "over_odds": line_row.get("over_odds", -110),
         "under_odds": line_row.get("under_odds", -110),
     }]
+    # Drop books we don't trust on price (Bovada posts late and stays wide).
+    _EXCL = {"bov", "bovada"}
+    books = [b for b in books if (b.get("book") or "").strip().lower() not in _EXCL] or books
     # "Best" book = the one paying most for the chosen side. Higher American
     # odds (more positive / less negative) = better for the bettor.
     side_key = "over_odds" if side == "OVER" else "under_odds"
-    best = max(books, key=lambda b: int(b[side_key]))
+    # Exclude glitch/invalid American odds (|odds| < 100, e.g. a scraped 0) from
+    # best-price selection: a 0 would beat every minus-money book in max() and then
+    # crash the payout division below (10000/abs(0)). Fall back to all books only if
+    # none are valid (the payout guard then treats invalid odds as even-money).
+    _valid_books = [b for b in books if abs(int(b.get(side_key) or 0)) >= 100]
+    best = max(_valid_books or books, key=lambda b: int(b[side_key]))
     odds = int(best[side_key])
     all_books = [{"book": b["book"], "price": int(b[side_key])} for b in books]
     all_books.sort(key=lambda r: -r["price"])
+    # Persist the FULL per-book over+under ladder so the live regrade can
+    # reselect best_book/best_price when the model's side flips mid-game.
+    # Without this, side-flip falls back to a fake "DraftKings -110" because
+    # we lose the other side's prices.
+    _books_full = [{
+        "book": b["book"],
+        "over_odds": int(b["over_odds"]),
+        "under_odds": int(b["under_odds"]),
+        "captured_at": b.get("captured_at") or "",
+    } for b in books]
+
+    # Freshness: age of the most recently captured quote across all books.
+    # Gracefully defaults to None when no captured_at timestamps are present.
+    _now_ts = time.time()
+    _ages: list[float] = []
+    for _b in _books_full:
+        _ts = (_b.get("captured_at") or "").strip()
+        if not _ts:
+            continue
+        try:
+            _dt = datetime.fromisoformat(_ts.replace("Z", "+00:00"))
+            _ages.append((_now_ts - _dt.timestamp()) / 60.0)
+        except (ValueError, TypeError):
+            pass
+    freshest_book_age_min: float | None = round(min(_ages), 1) if _ages else None
 
     ev = _BETTING.evaluate(model_prob, odds, bankroll=bankroll)
     edge_units = q50 - line
     market_prob = float(ev["implied_prob"])
-    payout = float(odds) if odds > 0 else (10000.0 / abs(odds))
+    # Guard against invalid American odds (|odds| < 100, e.g. a scraped 0): never
+    # divide by abs(<100). Treat invalid odds as even-money (+100) rather than 500.
+    payout = (float(odds) if odds >= 100
+              else (10000.0 / abs(odds)) if odds <= -100
+              else 100.0)
     ev_pct = model_prob * payout - (1.0 - model_prob) * 100.0
     kelly_dollars = float(ev.get("kelly_size") or 0.0)
     kelly_pct = (kelly_dollars / bankroll) * 100.0 if bankroll else 0.0
@@ -174,7 +211,8 @@ def grade_bet(slate_row: dict, line_row: dict,
         "stars_available_flag": stars_available(slate_row.get("injury_status", "")),
         "top_features": [], "narrative_text": narrative,
         "best_book": best["book"], "best_price": odds,
-        "all_books": all_books, "spark_last5": [],
+        "all_books": all_books, "_books_full": _books_full, "spark_last5": [],
+        "freshest_book_age_min": freshest_book_age_min,
         "team_color": _team_primary_color(slate_row["team"]),
         "opp_color": _team_primary_color(slate_row["opp"]),
     }
@@ -203,7 +241,11 @@ def plus_ev_rows(slate: dict, min_ev_pct: float) -> list[dict]:
         model_prob = float(bet["model_prob"])
         for entry in bet.get("all_books") or []:
             odds = int(entry["price"])
-            payout = float(odds) if odds > 0 else (10000.0 / abs(odds))
+            # Guard against invalid American odds (|odds| < 100, e.g. a scraped 0):
+            # never divide by abs(<100); treat invalid odds as even-money (+100).
+            payout = (float(odds) if odds >= 100
+                      else (10000.0 / abs(odds)) if odds <= -100
+                      else 100.0)
             ev = model_prob * payout - (1.0 - model_prob) * 100.0
             if ev < min_ev_pct:
                 continue

@@ -311,6 +311,16 @@ def _to_int(s) -> int | None:
         return None
 
 
+def _to_odds(s) -> int | None:
+    """Parse an American-odds cell, rejecting invalid magnitudes (|odds| < 100,
+    e.g. a scraped/glitch 0). Returning None here keeps a bad cell out of the
+    consolidate/grade pipeline (a 0 would beat every minus-money book in the
+    best-price max() and crash the payout division 10000/abs(0)); the `or -110`
+    fallback in consolidate_for_slate then substitutes the even-money default."""
+    v = _to_int(s)
+    return v if (v is None or abs(v) >= 100) else None
+
+
 def _to_float(s) -> float | None:
     if s is None or s == "":
         return None
@@ -398,8 +408,8 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
                 "player_id": _to_int(r.get("player_id")),
                 "stat": stat,
                 "line": line,
-                "over_price": _to_int(r.get("over_price")),
-                "under_price": _to_int(r.get("under_price")),
+                "over_price": _to_odds(r.get("over_price")),
+                "under_price": _to_odds(r.get("under_price")),
                 "game_id": r.get("game_id") or "",
                 "start_time": r.get("start_time") or "",
                 # Deeplink selection IDs — DK/FD write bet-slip outcomeIds;

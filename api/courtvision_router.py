@@ -336,7 +336,7 @@ def _regrade_bet_with_live_q50(bet: dict, new_q50: float,
     p_over = 1.0 - _cdf(z)
     model_prob = p_over if side == "OVER" else (1.0 - p_over)
 
-    payout = float(price) if price > 0 else 10000.0 / abs(price)
+    payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
     ev_capped = False
     if model_prob > cap_model_prob:
         model_prob = cap_model_prob
@@ -1296,7 +1296,7 @@ def _apply_calibration_gate(envelope: dict) -> dict:
                 cal_p = calibrate_p_win(
                     stat, edge_mag, edge_threshold_for(stat), kelly_b_hit_rate_for(stat))
                 price = int(b.get("best_price") or -110)
-                payout = float(price) if price > 0 else (10000.0 / abs(price))
+                payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
                 b["model_prob_raw"] = b.get("model_prob")
                 b["model_prob"] = round(cal_p, 4)
                 b["ev_pct"] = round(cal_p * payout - (1.0 - cal_p) * 100.0, 2)
@@ -1379,7 +1379,7 @@ def _reprice_slate_to_books(envelope: dict, book_keys) -> dict:
         best = max(sel, key=lambda x: int(x[side_key]))
         odds = int(best[side_key])
         mp = float(b.get("model_prob") or 0.0)
-        payout = float(odds) if odds > 0 else (10000.0 / abs(odds))
+        payout = (float(odds) if odds >= 100 else (10000.0 / abs(odds)) if odds <= -100 else 100.0)
         ev_pct = mp * payout - (1.0 - mp) * 100.0
         market_prob = (100.0 / (odds + 100.0)) if odds > 0 else (abs(odds) / (abs(odds) + 100.0))
         try:
@@ -1613,7 +1613,7 @@ def _build_slate(date: str) -> dict:
             mp = b.get("model_prob")
             if mp is not None and mp > 0.85:
                 price = int(b.get("best_price") or -110)
-                payout = float(price) if price > 0 else (10000.0 / abs(price))
+                payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
                 b["model_prob"] = 0.85
                 b["ev_pct"] = round(0.85 * payout - 0.15 * 100.0, 2)
                 b["ev_capped"] = True
@@ -4555,7 +4555,7 @@ def _eoq_live_picks(snap_q: dict, line_hist: list, actuals: dict,
             p = calibrate_p_win(st, edge, edge_threshold_for(st), kelly_b_hit_rate_for(st))
         except Exception:
             continue
-        payout = float(price) if price > 0 else (10000.0 / abs(price))
+        payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
         ev = p * payout - (1.0 - p) * 100.0
         if ev <= 0:
             continue  # only +EV bets are "bets you'd actually make"
@@ -6704,14 +6704,22 @@ def api_clv_summary(days: int = Query(30, ge=1, le=365)):
                 bs["n_bets"]   += 1
                 bs["_sum_clv"] += clv
 
-    # Finalise derived fields and strip private accumulators
+    # Finalise derived fields and strip private accumulators.
+    # roi_pct / win_pct are set (0.0 default) because clv.html compares them
+    # numerically ({% if m.roi_pct > 0 %}); a missing key is Jinja Undefined and
+    # `Undefined > 0` raises -> HTTP 500 on /clv. (is-not-none would NOT help —
+    # the key must EXIST.) These are CLV-only rows so ROI/win are not tracked here.
     for d in by_book.values():
         n = d["n_bets"]
         d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+        d.setdefault("roi_pct", 0.0)
+        d.setdefault("win_pct", 0.0)
 
     for d in by_stat.values():
         n = d["n_bets"]
         d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+        d.setdefault("roi_pct", 0.0)
+        d.setdefault("win_pct", 0.0)
 
     return JSONResponse({
         "window_days":  days,
