@@ -1508,12 +1508,20 @@ def _build_slate(date: str) -> dict:
     line_rows = _filter_to_mainline(line_rows)
     has_lines = bool(line_rows)
     if has_lines:
-        ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
+        # Use de-accented-lower as the join key so accented cache names
+        # ("Nikola Jokić" from predictions_cache) match ASCII book names
+        # ("Nikola Jokic" from sportsbook CSVs). Display names are untouched.
+        from api._courtvision_odds import _strip_accents as _sa  # noqa: PLC0415
+        ps_idx = {
+            (_sa(r["player_name"]).lower(), r["stat"]): r
+            for r in slate_rows.values()
+        }
         stat_sigma_for_slate = _stat_sigma_for_date(date)
-        bets = [grade_bet(ps_idx[(ln["player"].lower(), ln["stat"])], ln,
+        bets = [grade_bet(ps_idx[(_sa(ln["player"]).lower(), ln["stat"])], ln,
                           stat_sigma_for_slate, _BANKROLL_DEFAULT)
                 for ln in line_rows
-                if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
+                if ln["stat"] in _STATS
+                and (_sa(ln["player"]).lower(), ln["stat"]) in ps_idx]
 
         # ── Build live projection maps once per game ─────────────────
         # project_from_snapshot() is the expensive ML call (~0.4s/game).

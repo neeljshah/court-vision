@@ -22,10 +22,27 @@ import csv
 import json
 import re
 import time
+import unicodedata
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
+
+
+def _strip_accents(s: str) -> str:
+    """Remove combining diacritics from *s* (NFKD → drop combining marks).
+
+    Mirrors src.data.live._strip_accents so accent-insensitive name matching
+    works without importing a module that pulls in heavy ML deps.
+
+    Examples:
+        "Nikola Jokić"      → "Nikola Jokic"
+        "Luka Dončić"       → "Luka Doncic"
+        "Kristaps Porziņģis" → "Kristaps Porzingis"
+    """
+    nfkd = unicodedata.normalize("NFKD", str(s or ""))
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
+
 
 try:
     from api._deeplinks import book_deeplink as _book_deeplink
@@ -61,12 +78,20 @@ _NBA_PLAYER_SET: set[str] | None = None
 
 
 def _load_nba_players() -> set[str]:
-    """Return lowercase NBA active-player names. Cached for the process lifetime."""
+    """Return de-accented lowercase NBA active-player names.
+
+    Stored as ``_strip_accents(name).lower()`` so ASCII sportsbook names
+    ("Nikola Jokic") match accented roster entries ("Nikola Jokić") via the
+    same de-accent transform on the book side.  Cached for the process lifetime.
+    """
     global _NBA_PLAYER_SET
     if _NBA_PLAYER_SET is None:
         try:
             with _ROSTER_PATH.open(encoding="utf-8") as f:
-                _NBA_PLAYER_SET = {n.lower().strip() for n in json.load(f) if n}
+                _NBA_PLAYER_SET = {
+                    _strip_accents(n).lower().strip()
+                    for n in json.load(f) if n
+                }
         except (OSError, ValueError, TypeError):
             _NBA_PLAYER_SET = set()  # fallback: no filtering
     return _NBA_PLAYER_SET
@@ -355,10 +380,13 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
             # mixed-case name.  We normalise to lowercase for the roster check.
             player = _canonicalize_book_player(player)
             # Drop non-NBA players (WNBA bleed, etc.) when roster file is present.
+            # Roster is stored de-accented; compare using the same transform so
+            # ASCII book names ("Nikola Jokic") match accented roster entries
+            # ("Nikola Jokić" → "nikola jokic" in the set).
             _roster = _load_nba_players()
-            if _roster and player.lower() not in _roster:
+            if _roster and _strip_accents(player).lower() not in _roster:
                 continue
-            key = (player.lower(), stat, round(line, 2), book)
+            key = (_strip_accents(player).lower(), stat, round(line, 2), book)
             existing = latest.get(key)
             captured_at = r.get("captured_at") or ""
             if existing and existing["captured_at"] >= captured_at:
@@ -573,7 +601,10 @@ def consolidate(date: str) -> list[dict]:
 
     for path in _book_csv_paths_window(date):
         for row in read_book_csv(path, start_date=date):
-            prop_key = (row["player"].lower(), row["stat"], round(row["line"], 2))
+            # Use de-accented-lower as the canonical join key so accented cache
+            # names ("Nikola Jokić") and ASCII book names ("Nikola Jokic") both
+            # map to the same prop_key ("nikola jokic", stat, line).
+            prop_key = (_strip_accents(row["player"]).lower(), row["stat"], round(row["line"], 2))
             base = grouped.setdefault(prop_key, {
                 "player": row["player"], "player_id": row["player_id"],
                 "stat": row["stat"], "line": row["line"],
