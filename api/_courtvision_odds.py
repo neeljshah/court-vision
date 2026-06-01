@@ -95,6 +95,11 @@ _VALID_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov"}
 # Bookkey suffixes / fragments to exclude from auto-discovery (synthetic and
 # companion files written alongside the real per-book CSVs).
 _EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic")
+# Books explicitly excluded from consolidated odds (lines too off-market to
+# trust). Bovada posts late and stays wide vs sharp books.
+# mgm/caesars/fanatics dropped 2026-05-30: no live scraper (were odds-api only),
+# so their CSVs go stale — excluded "for now" until a direct scraper feeds them.
+_EXCLUDED_BOOKS = {"bov", "mgm", "caesars", "fanatics"}
 
 
 def _book_csv_paths(date: str) -> list[Path]:
@@ -118,6 +123,8 @@ def _book_csv_paths(date: str) -> list[Path]:
         if not book:
             continue
         if any(book.endswith(s) for s in _EXCLUDED_BOOK_SUFFIXES):
+            continue
+        if book in _EXCLUDED_BOOKS:
             continue
         out.append(p)
     return out
@@ -222,21 +229,45 @@ def _to_float(s) -> float | None:
     return v if v == v else None  # filter NaN
 
 
+def _et_date_of_start_time(iso_ts: str) -> str:
+    """Convert a UTC start_time to its America/New_York YYYY-MM-DD date.
+    Identical helper to api.courtvision_router._et_date_from_iso, kept
+    local to avoid a circular import."""
+    if not iso_ts or len(iso_ts) < 10:
+        return ""
+    try:
+        try:
+            from zoneinfo import ZoneInfo
+            _ET = ZoneInfo("America/New_York")
+        except Exception:
+            _ET = None
+        norm = iso_ts.replace("Z", "+00:00")
+        if "+" not in norm[10:] and norm.count("-") < 3:
+            norm += "+00:00"
+        dt = datetime.fromisoformat(norm).astimezone(timezone.utc)
+        if _ET is not None:
+            return dt.astimezone(_ET).strftime("%Y-%m-%d")
+        return (dt + timedelta(hours=-4)).strftime("%Y-%m-%d")
+    except Exception:
+        return iso_ts[:10]
+
+
 def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
     """Parse a single <date>_<book>.csv. Yields the *latest* quote per
     (player, stat, line, book) so the line-shop view is freshness-correct.
 
     When `start_date` is provided (YYYY-MM-DD), only rows whose start_time
-    begins with that prefix are included. This supports the sliding-window
-    consolidation where one CSV may contain rows for multiple game dates.
+    falls on that ET CALENDAR DATE are included. NBA games are scheduled
+    in ET; a 7:00 PM ET tip lives as `YYYY-MM-DDT23:00Z`, so filtering
+    by UTC date silently misclassifies tonight's game as tomorrow's.
     """
     latest: dict[tuple, dict] = {}
     with path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            # ── start_time date filter (Bug 2 fix) ──────────────────────
+            # ── start_time ET-date filter (replaces UTC string prefix) ──
             if start_date is not None:
                 row_st = (r.get("start_time") or "").strip()
-                if not row_st.startswith(start_date):
+                if _et_date_of_start_time(row_st) != start_date:
                     continue
             stat = (r.get("stat") or "").lower()
             if stat not in _VALID_STATS:
@@ -432,15 +463,32 @@ def consolidate(date: str) -> list[dict]:
     games scheduled on a future date (start_time=2026-05-29T00:40:00Z).
     Existing callers are unaffected: consolidate('2026-05-27') returns props
     whose start_time date is 2026-05-27, exactly as before.
+
+    Cross-file freshest-wins merge (WS + HTTP additive):
+    When both an HTTP scraper file (<date>_dk.csv) and a WebSocket file
+    (<date>_dk_ws.csv) exist for the same book, rows for the same
+    (player, stat, line, book) are deduplicated across files, keeping
+    only the row with the freshest captured_at.  This means a sub-second
+    WS quote beats a 20s-old HTTP quote automatically, and if the WS feed
+    is down the HTTP quote remains — no "_ws" book key ever leaks into the
+    books list because the row's canonical `book` column ("dk"/"fd"/
+    "betrivers") is used as the dedup key, not the filename suffix.
     """
     cached = _CACHE.get(date)
     if cached and time.time() - cached[0] < _CACHE_TTL_SEC:
         return cached[1]
+
+    # Two-level structure: prop_key -> book -> freshest book entry dict.
+    # Using an intermediate book_latest dict ensures cross-file freshest-wins
+    # before we flatten to the final books list.
     grouped: dict[tuple, dict] = {}
+    # book_latest[(prop_key, canonical_book)] = (captured_at, book_entry_dict)
+    book_latest: dict[tuple, tuple] = {}
+
     for path in _book_csv_paths_window(date):
         for row in read_book_csv(path, start_date=date):
-            key = (row["player"].lower(), row["stat"], round(row["line"], 2))
-            base = grouped.setdefault(key, {
+            prop_key = (row["player"].lower(), row["stat"], round(row["line"], 2))
+            base = grouped.setdefault(prop_key, {
                 "player": row["player"], "player_id": row["player_id"],
                 "stat": row["stat"], "line": row["line"],
                 "game_id": row["game_id"], "start_time": row["start_time"],
@@ -456,7 +504,7 @@ def consolidate(date: str) -> list[dict]:
             }
             _dl_over  = _book_deeplink(row["book"], _dl_prop, side="OVER")
             _dl_under = _book_deeplink(row["book"], _dl_prop, side="UNDER")
-            base["books"].append({
+            entry = {
                 "book": row["book"], "display": _BOOK_DISPLAY.get(row["book"], row["book"]),
                 "over_price": row["over_price"], "under_price": row["under_price"],
                 "captured_at": _normalize_ts(row["captured_at"]),
@@ -468,7 +516,20 @@ def consolidate(date: str) -> list[dict]:
                 "deeplink_over_app":  _dl_over["app_url"] or "",
                 "deeplink_under_web": _dl_under["web_url"],
                 "deeplink_under_app": _dl_under["app_url"] or "",
-            })
+            }
+            # Cross-file freshest-wins: only keep the freshest captured_at per
+            # (prop_key, canonical_book).  This deduplicates HTTP vs WS files
+            # for the same book so no duplicate "dk" / "fd" entries appear in
+            # the books list — the WS (sub-second) quote wins when fresher.
+            bl_key = (prop_key, row["book"])
+            prior = book_latest.get(bl_key)
+            if prior is None or entry["captured_at"] >= prior[0]:
+                book_latest[bl_key] = (entry["captured_at"], entry, prop_key)
+
+    # Flatten the freshest-per-book entries back onto each prop's books list.
+    for (_prop_key, _book), (_cap, _entry, _pk) in book_latest.items():
+        grouped[_pk]["books"].append(_entry)
+
     out = list(grouped.values())
     for prop in out:
         prop["n_books"] = len(prop["books"])
@@ -480,16 +541,23 @@ def consolidate(date: str) -> list[dict]:
 
 def consolidate_for_slate(date: str) -> list[dict]:
     """Drop-in replacement for load_lines_csv. Same shape it produces:
-    one row per (player, stat, line) with `books: [{book, over_odds, under_odds}]`."""
+    one row per (player, stat, line) with `books: [{book, over_odds, under_odds, captured_at}]`.
+    `captured_at` is preserved so downstream mainline pickers can prefer
+    fresh lines over stale ones. `game_id` is preserved so the pregame
+    synthesis can group bets by the line's actual game (otherwise every
+    synth bet inherits the recent-slate game_id and the home-page card
+    can't find its top edges)."""
     out: list[dict] = []
     for prop in consolidate(date):
         out.append({
             "player": prop["player"], "stat": prop["stat"], "line": prop["line"],
             "opp": "", "venue": "",  # not in scrape CSVs; courtvision_data falls back
+            "game_id": prop.get("game_id") or "",
             "books": [{
                 "book": _BOOK_DISPLAY.get(b["book"], b["book"]),
                 "over_odds": b["over_price"] if b["over_price"] is not None else -110,
                 "under_odds": b["under_price"] if b["under_price"] is not None else -110,
+                "captured_at": b.get("captured_at") or "",
             } for b in prop["books"] if b["over_price"] or b["under_price"]],
         })
     return [p for p in out if p["books"]]
@@ -520,6 +588,13 @@ def games_index(date: str) -> list[dict]:
     (via games_lookup.json) so the index has one entry per real game,
     not one per sportsbook ID. The canonical_game_id is the first ID
     alphabetically among the group; all alias IDs are listed too.
+
+    Post-grouping merge: scrapers that don't expose NBA-canonical game IDs
+    (KAMBI hex hashes, etc.) produce groups keyed by their raw ID with
+    empty team abbrs. When such a group's start_time matches a resolved
+    group on the same date (±5 min), the unresolved group is folded into
+    the resolved one so the home page sees one card per real game, not
+    one per sportsbook ID flavor.
     """
     props = consolidate(date)
     aliases = _load_game_aliases()
@@ -541,6 +616,35 @@ def games_index(date: str) -> list[dict]:
         g["n_props"] += 1
         g["players"].add(p["player"])
         g["game_ids"].add(gid)
+
+    # ── merge unresolved groups into resolved ones by start_time ─────
+    resolved_by_st: dict[str, tuple] = {}  # start_time_minute -> matchup key
+    for (away, home, _), g in by_matchup.items():
+        if away and home:  # resolved
+            st = (g.get("start_time") or "")[:16]  # minute precision
+            if st:
+                resolved_by_st.setdefault(st, (away, home, _))
+    merged_keys: list[tuple] = []
+    for key, g in list(by_matchup.items()):
+        away, home, _sd = key
+        if home:  # already resolved
+            continue
+        st_min = (g.get("start_time") or "")[:16]
+        if not st_min:
+            continue
+        target_key = resolved_by_st.get(st_min)
+        if target_key is None:
+            continue
+        target = by_matchup.get(target_key)
+        if target is None or target_key == key:
+            continue
+        target["n_props"] += g["n_props"]
+        target["players"] |= g["players"]
+        target["game_ids"] |= g["game_ids"]
+        merged_keys.append(key)
+    for k in merged_keys:
+        by_matchup.pop(k, None)
+
     out = []
     for (away, home, _), g in by_matchup.items():
         ids = sorted(g["game_ids"])
@@ -709,10 +813,16 @@ def freshness(date: str) -> dict:
 
     Uses _book_csv_paths_window so future-date games (stored under today's
     scrape-date filename) are counted correctly.
+
+    WS files (<date>_dk_ws.csv) are folded into their canonical book ("dk")
+    so the freshness report shows one entry per real book, preferring the
+    freshest captured_at across HTTP and WS files.
     """
     out: dict[str, dict] = {}
     for path in _book_csv_paths_window(date):
-        book = path.stem.split("_", 1)[-1].lower()  # strip date prefix
+        raw_book = path.stem.split("_", 1)[-1].lower()  # strip date prefix
+        # Strip _ws suffix so WS files fold into the canonical book name.
+        book = raw_book[:-3] if raw_book.endswith("_ws") else raw_book
         try:
             mtime = datetime.fromtimestamp(path.stat().st_mtime,
                                             tz=timezone.utc).isoformat()
@@ -724,7 +834,12 @@ def freshness(date: str) -> dict:
             with path.open(newline="", encoding="utf-8") as f:
                 for r in csv.DictReader(f):
                     row_st = (r.get("start_time") or "").strip()
-                    if not row_st.startswith(date):
+                    # Match on the ET CALENDAR DATE, not the raw UTC prefix.
+                    # A 7:10 PM ET tip is stored as YYYY-MM-DDT00:10Z (next UTC
+                    # day), so a naive startswith(date) silently reports 0 rows
+                    # for tonight's slate — diverging from consolidate(), which
+                    # uses _et_date_of_start_time. Keep the two in lockstep.
+                    if _et_date_of_start_time(row_st) != date:
                         continue
                     n_rows += 1
                     ts = r.get("captured_at") or ""
@@ -734,13 +849,25 @@ def freshness(date: str) -> dict:
             pass
         if n_rows == 0:
             continue  # no rows for this date in this file — skip from report
-        out[book] = {
-            "display": _BOOK_DISPLAY.get(book, book),
-            "csv_path": str(path.relative_to(path.parent.parent)),
-            "csv_mtime_utc": mtime,
-            "n_rows": n_rows,
-            "latest_capture": latest_capture,
-        }
+        # Merge WS file into the same canonical book entry rather than
+        # overwriting — keep the freshest latest_capture and sum n_rows so
+        # the status report reflects both HTTP and WS data combined.
+        existing = out.get(book)
+        if existing is None:
+            out[book] = {
+                "display": _BOOK_DISPLAY.get(book, book),
+                "csv_path": str(path.relative_to(path.parent.parent)),
+                "csv_mtime_utc": mtime,
+                "n_rows": n_rows,
+                "latest_capture": latest_capture,
+            }
+        else:
+            existing["n_rows"] += n_rows
+            if latest_capture > existing["latest_capture"]:
+                existing["latest_capture"] = latest_capture
+            if mtime and (not existing["csv_mtime_utc"]
+                          or mtime > existing["csv_mtime_utc"]):
+                existing["csv_mtime_utc"] = mtime
     return {"date": date, "n_books": len(out), "books": out}
 
 
