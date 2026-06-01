@@ -75,6 +75,16 @@ $env:NBA_OFFLINE = "1"
 # the uvicorn server inherits it from this session env. To REVERT, set "0" or
 # delete this line and re-run go-live (the server is stop/restarted each run).
 $env:CV_INGAME_SBS = "1"
+# WS odds feeds (2026-05-31): DK and FD WebSocket subscribers give sub-second
+# line-move latency (vs 15-30s from HTTP scrapers).  They write to separate
+# _ws-suffixed CSV files so the HTTP scrapers remain the fallback for pin/bov
+# and for any period when a WS feed is geo-blocked or rate-limited.
+# Set to "0" or remove to disable a feed without touching code.
+$env:DK_WS_ENABLED = "1"
+$env:FD_WS_ENABLED = "1"
+# BR_WS_ENABLED left OFF — KAMBI endpoint sees CloudFront 429 off-hours; the
+# HTTP scraper (br_daemon below) is the reliable path for BetRivers today.
+# $env:BR_WS_ENABLED = "1"
 Start-Det "cv_server"   @("-m","uvicorn","api.main:app","--host","127.0.0.1","--port","8077")
 Start-Det "box_poller"  @("scripts/box_snapshot_poller.py","--game-ids",$(if($GameId){$GameId}else{"0042500317"}),"--interval-sec","10")
 Start-Det "dk_daemon"   @("scripts/draftkings_scraper.py","--daemon","--interval","15")
