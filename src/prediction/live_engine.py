@@ -639,6 +639,85 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
                 r["home_win_prob_inplay"] = float(_swp)
                 r["winprob_source"] = "possession_sim"
 
+    # SANE CEILING on pace-extrapolated projections (Bug B fix, 2026-05-31).
+    # The cycle-88 linear pace extrapolation has no per-stat upper bound, so
+    # mid-quarter snapshots can produce impossible lines (e.g. mid-Q1 6 min /
+    # 10 pts → projected_final ≈ 80, fg3m=24). These appear for snapshot-only
+    # players without a pregame prior AND survive shrink because shrink only
+    # multiplies the remaining delta.  Apply a generous-but-physical single-game
+    # maximum BEFORE the floor-at-current loop so the floor always wins when
+    # current > cap (never possible with the caps below, but belt-and-suspenders).
+    #
+    # Cap values cite NBA single-game records (generous, not tight):
+    #   pts  ≤ 70  (Chamberlain 100 in 1962, modern era record 81 Kobe 2006)
+    #   reb  ≤ 30  (Chamberlain 55 in 1960; modern era ≈ 28 Rodman)
+    #   ast  ≤ 25  (Scott Skiles 30 in 1990; modern era ≈ 24)
+    #   fg3m ≤ 14  (Klay Thompson 14 in 2016)
+    #   stl  ≤ 10  (Larry Kenon 11 in 1976; modern era ≈ 9)
+    #   blk  ≤ 12  (Elmore Smith 17 in 1973; modern era ≈ 11)
+    #   tov  ≤ 12  (plausible game-high; NBA leaders rarely exceed 11)
+    #
+    # For fg3m specifically: three-point pace is bursty and not rate-stable;
+    # early-minute extrapolations are most unreliable.  When minutes_elapsed
+    # is < 12 (approximately Q1), dampen the remaining portion with a square-
+    # root schedule so the projection converges toward the player's already-
+    # scored fg3m + a conservative remainder rather than the raw linear rate.
+    # This is a SAFETY CLAMP on the cycle-88 linear projection only — the
+    # validated routed-head path (_apply_unified_routed) is not altered.
+    _STAT_CAPS = {
+        "pts": 70.0,
+        "reb": 30.0,
+        "ast": 25.0,
+        "fg3m": 14.0,
+        "stl": 10.0,
+        "blk": 12.0,
+        "tov": 12.0,
+    }
+    # Estimate minutes elapsed from the snapshot (best-effort; mid-quarter path).
+    try:
+        _snap_period_num = int(snap_period or 1)
+        _snap_clock_str = str(snap_clock or "12:00")
+        _clock_parts = _snap_clock_str.split(":")
+        _clock_min = float(_clock_parts[0]) + float(_clock_parts[1]) / 60.0
+        # minutes_elapsed = completed quarters * 12 + minutes played this quarter
+        _minutes_elapsed = max(0.0, (_snap_period_num - 1) * 12.0 + (12.0 - _clock_min))
+    except (TypeError, ValueError, IndexError, ZeroDivisionError):
+        _minutes_elapsed = 0.0
+
+    import math as _math
+
+    for r in rows:
+        stat = r.get("stat")
+        cap = _STAT_CAPS.get(stat)
+        if cap is None:
+            continue
+        pf = r.get("projected_final")
+        cur = r.get("current")
+        if pf is None:
+            continue
+        try:
+            pf_f = float(pf)
+            cur_f = float(cur) if cur is not None else 0.0
+        except (TypeError, ValueError):
+            continue
+
+        # fg3m early-minute sqrt-damping: when < 12 min elapsed, compress the
+        # remaining delta toward sqrt-scaled remaining to reduce burst sensitivity.
+        if stat == "fg3m" and _minutes_elapsed < 12.0 and pf_f > cur_f:
+            _elapsed_frac = max(0.01, _minutes_elapsed / 48.0)
+            _remaining_linear = pf_f - cur_f
+            # sqrt-damped remaining: scales from 0 (at tip-off) to 1 (at 12 min)
+            _sqrt_scale = _math.sqrt(_minutes_elapsed / 12.0)
+            _damped_remaining = _remaining_linear * _sqrt_scale
+            pf_f = cur_f + _damped_remaining
+
+        # Apply cap: proj = max(min(proj, cap), current).
+        # The max(... current) ensures the floor-at-current loop below always wins
+        # (caps are generous enough that current never exceeds them in practice).
+        pf_f = min(pf_f, cap)
+        pf_f = max(pf_f, cur_f)   # never go below what's already recorded
+        r["projected_final"] = pf_f
+
     # FLOOR projected_final at current: a player's FINAL counting stat can never
     # be below what they have ALREADY recorded. Guards the box/cards from showing
     # a projection under the live total (e.g. a player already past his projection).
