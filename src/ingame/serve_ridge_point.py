@@ -278,6 +278,14 @@ def predict_serve_ridge(
     home_pred = float(np.clip(home_pred, 60.0, 180.0))
     away_pred = float(np.clip(away_pred, 60.0, 180.0))
 
+    # Floor each side at the current score: a counting final can never be
+    # below the score already on the board.  Read the same snap fields the
+    # featurizer used so the floor is always consistent with the feature vector.
+    home_score = float(snap.get("home_score", 0) or 0)
+    away_score = float(snap.get("away_score", 0) or 0)
+    home_pred = max(home_pred, home_score)
+    away_pred = max(away_pred, away_score)
+
     return {"home_final": home_pred, "away_final": away_pred}
 
 

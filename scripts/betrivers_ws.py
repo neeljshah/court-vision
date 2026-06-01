@@ -227,9 +227,13 @@ def _process_push_frame(frame: Dict[str, Any], captured_at: str) -> int:
 # ── Main loop ────────────────────────────────────────────────────────────────
 
 async def _fetch_event_ids_async() -> List[int]:
-    """Run the blocking HTTP event-list fetch in a thread pool."""
+    """Run the blocking HTTP event-list fetch in a thread pool.
+
+    fetch_event_ids() returns a 2-tuple (List[Dict], operator_str).
+    We unpack it so the list comprehension iterates the dicts, not the tuple.
+    """
     loop = asyncio.get_event_loop()
-    stubs = await loop.run_in_executor(None, fetch_event_ids)
+    stubs, _op = await loop.run_in_executor(None, fetch_event_ids)
     return [int(s["id"]) for s in stubs if s.get("id")]
 
 

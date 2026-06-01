@@ -85,6 +85,18 @@ $env:FD_WS_ENABLED = "1"
 # BR_WS_ENABLED left OFF — KAMBI endpoint sees CloudFront 429 off-hours; the
 # HTTP scraper (br_daemon below) is the reliable path for BetRivers today.
 # $env:BR_WS_ENABLED = "1"
+#
+# DK IN-PLAY WS (sub-second live prop-line updates during NBA games):
+# ─────────────────────────────────────────────────────────────────────
+# STEP 1 — Discover live subCategoryIds on YOUR residential network:
+#   Open sportsbook.draftkings.com in Chrome during a live NBA game.
+#   DevTools → Network → WS → look at "subscribe" message payloads for
+#   "clientMetadata.subCategoryId" values (one per stat: pts/reb/ast/fg3m…).
+# STEP 2 — Fill _INPLAY_SUBCATEGORY_IDS in scripts/dk_inplay_ws.py
+#   (uncomment the dict entries and paste the IDs you recorded).
+# STEP 3 — Uncomment the line below and re-run go-live to activate.
+# NOTE: until STEP 2 is done, the subscriber idles harmlessly with a warning.
+# $env:DK_INPLAY_WS_ENABLED = "1"   # ← uncomment after filling in-play market IDs + validating on residential network
 Start-Det "cv_server"   @("-m","uvicorn","api.main:app","--host","127.0.0.1","--port","8077")
 Start-Det "box_poller"  @("scripts/box_snapshot_poller.py","--game-ids",$(if($GameId){$GameId}else{"0042500317"}),"--interval-sec","10")
 Start-Det "dk_daemon"   @("scripts/draftkings_scraper.py","--daemon","--interval","15")

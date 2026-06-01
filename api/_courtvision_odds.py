@@ -94,7 +94,11 @@ _BOOK_DISPLAY = {
 _VALID_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov"}
 # Bookkey suffixes / fragments to exclude from auto-discovery (synthetic and
 # companion files written alongside the real per-book CSVs).
-_EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic")
+# "_inplay" excluded so fd_inplay/dk_inplay CSVs (written by the WS in-play
+# scraper) never leak into the pregame consolidate/consolidate_for_slate views.
+# The dedicated _load_inplay_line_history in courtvision_router globs
+# "{date}_*inplay*.csv" directly and is unaffected by this list.
+_EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic", "_inplay")
 # Books explicitly excluded from consolidated odds (lines too off-market to
 # trust). Bovada posts late and stays wide vs sharp books.
 # mgm/caesars/fanatics dropped 2026-05-30: no live scraper (were odds-api only),
@@ -313,6 +317,17 @@ _CACHE_TTL_SEC = 30.0  # 30s — scrapers tick every 10s but CSV reads at that r
                         # caused 74s page loads in prod (O(files) I/O per request).
                         # 30s is still fresh enough for line-shop display.
 
+# Bug 10 fix — stale pregame quote guard.
+# The 7-day lookback window (_book_csv_paths_window) can surface quotes captured
+# 24-30 h ago as "current" because the sliding window has no per-row age cap.
+# Drop any pregame book quote older than this threshold so stale prices cannot
+# reach best_price / EV calculations.  Set to 24 h: catches the documented
+# multi-day-stale (24-30 h, scraper-down) case while NEVER dropping a legitimate
+# same-day pregame capture (slates are built same-day and books post lines hours-
+# to-a-day ahead, so an early-morning quote for a night game must survive). 6 h
+# was too tight. Quotes with an unparseable captured_at are kept (safe fallback).
+_MAX_PREGAME_QUOTE_AGE_SEC: float = 24 * 3600  # 24 hours
+
 # ── Steam (sharp-money) lookup cache ──────────────────────────────────────────
 # steam_events.jsonl is appended by scripts/steam_detector.py whenever 3+ books
 # move a (player, stat) line in the same direction within a tight window.
@@ -517,13 +532,53 @@ def consolidate(date: str) -> list[dict]:
                 "deeplink_under_web": _dl_under["web_url"],
                 "deeplink_under_app": _dl_under["app_url"] or "",
             }
+            # Bug 10 fix — drop stale pregame quotes exceeding _MAX_PREGAME_QUOTE_AGE_SEC.
+            # The 7-day lookback window can surface prices captured 24-30 h ago;
+            # dropping them here prevents stale quotes reaching best_price/EV.
+            # Unparseable captured_at timestamps are kept (safe fallback).
+            _cap_ts = _parse_ts(entry["captured_at"])
+            if _cap_ts is not None and (time.time() - _cap_ts) > _MAX_PREGAME_QUOTE_AGE_SEC:
+                continue
             # Cross-file freshest-wins: only keep the freshest captured_at per
             # (prop_key, canonical_book).  This deduplicates HTTP vs WS files
             # for the same book so no duplicate "dk" / "fd" entries appear in
             # the books list — the WS (sub-second) quote wins when fresher.
+            #
+            # Bug 3 fix — preserve HTTP selection IDs when WS row wins on price:
+            # WS files lack book_selection_id_over/under columns (default ""),
+            # so when the fresher WS row displaces an older HTTP row that carried
+            # non-empty selection IDs, we inherit those IDs into the winner and
+            # recompute the deeplink URLs so addToBetslip deep links are kept.
             bl_key = (prop_key, row["book"])
             prior = book_latest.get(bl_key)
             if prior is None or entry["captured_at"] >= prior[0]:
+                if prior is not None:
+                    prior_entry = prior[1]
+                    # Inherit selection IDs from the prior (older) entry when
+                    # the incoming winner has empty IDs but prior has non-empty.
+                    inherited = False
+                    if (not entry["selection_id_over"]
+                            and prior_entry.get("selection_id_over")):
+                        entry["selection_id_over"] = prior_entry["selection_id_over"]
+                        inherited = True
+                    if (not entry["selection_id_under"]
+                            and prior_entry.get("selection_id_under")):
+                        entry["selection_id_under"] = prior_entry["selection_id_under"]
+                        inherited = True
+                    # Recompute deeplinks so they reflect the inherited IDs.
+                    if inherited:
+                        _dl_prop2 = {
+                            "game_id": row.get("game_id") or "",
+                            "player": row.get("player") or "",
+                            "selection_id_over": entry["selection_id_over"],
+                            "selection_id_under": entry["selection_id_under"],
+                        }
+                        _dl_over2  = _book_deeplink(row["book"], _dl_prop2, side="OVER")
+                        _dl_under2 = _book_deeplink(row["book"], _dl_prop2, side="UNDER")
+                        entry["deeplink_over_web"]  = _dl_over2["web_url"]
+                        entry["deeplink_over_app"]  = _dl_over2["app_url"] or ""
+                        entry["deeplink_under_web"] = _dl_under2["web_url"]
+                        entry["deeplink_under_app"] = _dl_under2["app_url"] or ""
                 book_latest[bl_key] = (entry["captured_at"], entry, prop_key)
 
     # Flatten the freshest-per-book entries back onto each prop's books list.
