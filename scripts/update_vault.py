@@ -176,7 +176,6 @@ updated: {today}
 | Signal universe | 312 trained artifacts (target: 500-5000 via agentic system) |
 | Top revenue surface live | None yet (signal subs targeted Q3 2026) |
 | Agentic research system | Not yet built — see [[Plans/Agentic Research System]] |
-| **Swish Analytics demo (2026-05-26)** | Pack ready — see [[docs/SWISH_DEMO]] · `scripts/swish_demo.py` · `docs/system_metrics.html` |
 
 ---
 
@@ -223,7 +222,6 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 | **Vault Inventory** | [[_indexes/full_inventory]] | Hand-curated ~270-note map across ~25 folders |
 | **Now / Focus** | [[Strategy/Now]] | Current sprint, blockers, next actions |
 | **Phase status** | [[Memory/Phase Status]] | Loop status, what blocks what |
-| **Swish demo** | [[docs/SWISH_DEMO]] | Interview cheat-sheet + runnable end-to-end demo |
 | **Model perf** | [[Models/Model Performance]] | Full honest walk-forward MAE / R² table |
 | Strategy | [[Plans/Project Vision]] | Full product picture + 6 surfaces |
 | Renaissance thesis | [[Plans/Renaissance Comparison]] | Similarities + differences with RenTech |
@@ -324,7 +322,7 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 | Note | What's There |
 |------|-------------|
 | [[Lessons]] | **Durable synthesis** — read before scoping any model change |
-| [[Sessions/2026-05-24_loop5_memo]] | Most recent strategic memo (loop 5 state + Swish framing) |
+| [[Sessions/2026-05-24_loop5_memo]] | Most recent strategic memo (loop 5 state) |
 | [[Sessions/Timeline]] | Condensed project history, milestones, metric progression |
 | [[Sessions/Decision Log]] | Key decisions and fixes with impact |
 | [[Sessions/Game Log]] | All CV-processed games with grades and metrics |
@@ -334,7 +332,7 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 ---
 
 *Session log: [[Sessions/Decision Log]] · Full archive: `Sessions/_archive/` · Synthesis: [[Lessons]] · Inventory: [[_indexes/full_inventory]]*
-*Git repo: README.md · VISION.md · ARCHITECTURE.md · ROADMAP.md · MASTER_PLAN.md · Demo: docs/SWISH_DEMO.md*
+*Git repo: README.md · VISION.md · ARCHITECTURE.md · ROADMAP.md · MASTER_PLAN.md*
 """
 
 
