@@ -28,14 +28,27 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 
 
+_INSERTED_STUBS: list = []  # names this file newly stubbed into sys.modules
+
+
 def _stub_module(name, **attrs):
-    """Insert a stub module into sys.modules if missing."""
+    """Insert a stub module into sys.modules if missing (recorded for teardown)."""
     if name not in sys.modules:
         m = types.ModuleType(name)
         for k, v in attrs.items():
             setattr(m, k, v)
         sys.modules[name] = m
+        _INSERTED_STUBS.append(name)
     return sys.modules[name]
+
+
+def teardown_module(module):  # pytest runs this after this file's tests finish
+    # Remove the stub modules THIS file inserted so sibling test files import the
+    # real modules (fixes cross-file pollution: a leaked api._courtvision_odds stub
+    # has no _LINES_DIR, erroring test_ws_lines_consolidation's monkeypatch).
+    for _n in _INSERTED_STUBS:
+        sys.modules.pop(_n, None)
+    _INSERTED_STUBS.clear()
 
 
 def _ensure_router_importable():

@@ -26,13 +26,23 @@ ROOT = Path(__file__).resolve().parent.parent
 # Minimal stubs so courtvision_router imports offline (NBA_OFFLINE=1 style)
 # ──────────────────────────────────────────────────────────────────────────────
 
+_INSERTED_STUBS: list = []  # names this file newly stubbed into sys.modules
+
+
 def _stub_module(name, **attrs):
     if name not in sys.modules:
         m = types.ModuleType(name)
         for k, v in attrs.items():
             setattr(m, k, v)
         sys.modules[name] = m
+        _INSERTED_STUBS.append(name)
     return sys.modules[name]
+
+
+def teardown_module(module):  # remove this file's stubs so siblings import real modules
+    for _n in _INSERTED_STUBS:
+        sys.modules.pop(_n, None)
+    _INSERTED_STUBS.clear()
 
 
 def _ensure_stubs():
