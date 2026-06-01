@@ -62,6 +62,20 @@ from src.data.live import (  # noqa: E402
     load_live_state,
 )
 
+# Pre-import heavy packages at module load time so the first
+# project_from_snapshot() call on a warm server doesn't pay
+# the 1.2s lightgbm + sklearn import tax.  The warmup thread
+# (register_with_app → _warm_all → _build_slate) triggers this
+# import once; every subsequent cache-miss path is free of it.
+try:
+    import lightgbm as _lgb_preload  # noqa: F401
+except ImportError:
+    pass
+try:
+    import sklearn as _sk_preload  # noqa: F401
+except ImportError:
+    pass
+
 PRED_DIR = os.path.join(PROJECT_DIR, "data", "predictions")
 
 # tier1-2 (loop 5): foul_change residual head + stratified blend.
@@ -300,6 +314,88 @@ def _apply_learned_q4_minutes(snap: dict, rows: list):
     return rows, True
 
 
+def _apply_unified_routed(snap: dict, rows: List[Dict]) -> List[Dict]:
+    """Overlay the VALIDATED routed in-game player-line ensemble onto base rows.
+
+    Pure no-op unless the canonical ``CV_INGAME_SBS`` env flag is set (so tests
+    and the default serving config are byte-identical to the cycle-88 core). When
+    enabled, replaces each row's ``projected_final`` with the routed ensemble's
+    projection (held-out pooled player MAE 1.01 vs 1.87 production). The team
+    possession sim is skipped (``n_sims=1``) — only the player lines are served
+    here. ANY exception returns ``rows`` unchanged: the overlay can never break
+    live serving.
+    """
+    try:
+        from src.ingame.sbs_shadow import is_enabled
+    except Exception:
+        return rows
+    if not is_enabled():
+        return rows
+    try:
+        from src.ingame.unified_projector import project_unified
+        as_of = snap.get("game_date") or snap.get("date")
+        # Optional leak-free serve-time ridge POINT for the team score (the
+        # measured-best point estimate: total MAE 9.88 vs sim 10.91). Graceful
+        # no-op until the artifact exists -> score ensemble falls back to sim-mean.
+        ridge_point = None
+        try:
+            from src.ingame.serve_ridge_point import predict_serve_ridge
+            ridge_point = predict_serve_ridge(snap, as_of=as_of)
+        except Exception:
+            ridge_point = None
+        try:
+            n_sims = int(os.environ.get("CV_INGAME_NSIMS", "400") or "400")
+        except (TypeError, ValueError):
+            n_sims = 400
+        unified = project_unified(
+            snap, as_of=as_of, n_sims=n_sims, ridge_point=ridge_point,
+        )
+        if not isinstance(unified, dict):  # disabled pass-through safety
+            return rows
+
+        # ── (1) player-line overlay — the validated headline win (MAE 1.01 vs 1.87)
+        routed: Dict = {}
+        for pl in (unified.get("player_lines") or []):
+            try:
+                routed[(int(pl["player_id"]), pl["stat"])] = pl
+            except (KeyError, TypeError, ValueError):
+                continue
+        for r in rows:
+            try:
+                pl = routed.get((int(r.get("player_id")), r.get("stat")))
+            except (TypeError, ValueError):
+                pl = None
+            if pl is None:
+                continue
+            r["projected_final"] = float(pl["projected_final"])
+            r["projection_source"] = "unified_routed"
+            r["route_head"] = pl.get("route_head")
+
+        # ── (2) team final-score + win-prob — validated possession-sim / score
+        #        ensemble (final score: total MAE ~10 vs production ~21, 7/7 buckets).
+        #        Final-score projection is ADDITIVE at every game-time. The win-prob
+        #        OVERRIDE is gated to Q4 (period>=4), the measured crossover where the
+        #        sim beats the production sigmoid on Brier AND LogLoss (endQ3+ Brier
+        #        0.126 vs 0.136; midQ4 0.079 vs 0.088). Before Q4 the sigmoid wins, so
+        #        it is left UNTOUCHED.
+        team = unified.get("team") or {}
+        if team:
+            for r in rows:
+                r["proj_home_final"] = team.get("home_final_mean")
+                r["proj_away_final"] = team.get("away_final_mean")
+                r["proj_total"] = team.get("total_mean")
+                r["proj_margin"] = team.get("margin_mean")
+                r["proj_point_source"] = team.get("point_source")
+                # sim win-prob is attached here but PROMOTED to home_win_prob_inplay
+                # only at the Q4 finalizer below — the production inplay_winprob model
+                # runs AFTER this overlay, so overriding here would be clobbered.
+                r["sim_home_win_prob"] = team.get("home_win_prob")
+        return rows
+    except Exception:
+        # Never let the unified overlay break the validated cycle-88 serving path.
+        return rows
+
+
 # ── 1. project_from_snapshot ──────────────────────────────────────────────────
 
 def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[Dict]:
@@ -356,6 +452,18 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         # per-row below when a period_specific_heads artifact is wired in.
         r.setdefault("projection_source", "cycle_88_linear")
 
+    # FULL-SEND (2026-05-31): serve the VALIDATED routed in-game player-line
+    # ensemble. Gated on the canonical CV_INGAME_SBS env flag (default OFF =>
+    # this block is a pure no-op and serving is byte-identical to today; tests
+    # never set the env so they stay green). When the live server sets the flag,
+    # overlay the routed projection (held-out pooled player MAE 1.01 vs 1.87
+    # production, .planning/ingame/eval_routed.json) onto the base rows. Placed
+    # BEFORE the endQ boundary heads so those validated late-game overrides still
+    # take precedence where they fire (the router itself defers to snapshot late,
+    # so they compose). Wrapped so ANY failure falls back to the production rows
+    # -- the routed overlay can never break live serving.
+    rows = _apply_unified_routed(snap, rows)
+
     # cycle 106a (loop 5): replace projected_final with period_specific_heads
     # prediction at endQ1 / endQ2 boundaries when artifacts exist. endQ3 is
     # intentionally NOT wired (cycle-88 linear is already near-optimal at
@@ -385,13 +493,40 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # on 1508-game corpus, 7/7 stats, WF 4/4. Returns a flag so we can
     # skip the now-stale legacy residual overrides which were trained
     # against the heuristic foul_factor we're replacing.
+    #
+    # BUGFIX (live Q4 correctness): every endQ3 override below was previously
+    # gated only on ``int(snap_period) == 4``, so it fired on EVERY period-4
+    # snapshot -- all of mid-Q4 AND the clock=0:00 game-over snapshot -- not
+    # just the endQ3 BOUNDARY it was trained/validated against. The learned-Q4
+    # minutes model, the stratified foul/blowout/heat-check residuals, and the
+    # endQ3 residual heads are all defined relative to "36 min observed, 12 min
+    # remaining"; applying them mid-Q4 (or at 0:00) corrupts the live
+    # projection. Gate them all on the same boundary the period_heads use:
+    # snapshot_point_for(period, clock) == "endQ3" (period==4 AND clock near
+    # 12:00), mirroring the _USE_RESIDUAL_HEADS_ENDQ2 pattern above.
+    if int(snap_period or 0) == 4:
+        try:
+            from src.prediction.period_specific_heads import snapshot_point_for as _spf
+            _at_endq3 = _spf(snap_period, snap_clock) == "endQ3"
+        except Exception:
+            _at_endq3 = False
+    else:
+        _at_endq3 = False
+
+    # cycle 110 (loop 5): learned Q4 minutes override at endQ3. When the
+    # flag is on AND the snapshot is at the endQ3 boundary AND
+    # MinuteTrajectoryModel loaded, replace projected_final using
+    # `learned_remaining_min/12.0` in place of foul_trouble_factor for ALL
+    # players. Validated PTS -0.23 on 1508-game corpus, 7/7 stats, WF 4/4.
+    # Returns a flag so we can skip the now-stale legacy residual overrides
+    # which were trained against the heuristic foul_factor we're replacing.
     learned_q4_applied = False
-    if _USE_LEARNED_Q4_MINUTES and int(snap_period or 0) == 4:
+    if _USE_LEARNED_Q4_MINUTES and _at_endq3:
         rows, learned_q4_applied = _apply_learned_q4_minutes(snap, rows)
     # tier1-2 (loop 5): stratified foul_change residual override. Only
-    # applies at endQ3 (period=4) snapshots where the residual model is
-    # validated; earlier periods keep the cycle-88b heuristic path.
-    if (_USE_FOUL_RESIDUAL and int(snap_period or 0) == 4
+    # applies at the endQ3 boundary where the residual model is validated;
+    # earlier periods and mid-Q4 keep the cycle-88b heuristic path.
+    if (_USE_FOUL_RESIDUAL and _at_endq3
             and not learned_q4_applied):
         rows = _apply_stratified_foul_residual(snap, rows)
     # cycle 102a (loop 5): SECOND stratified override -- blowout_flip
@@ -399,7 +534,7 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # (|Q3 margin| <= 18 AND |velocity| >= 4). Independent of the foul
     # override; the two override different multiplicative factors so they
     # compose safely.
-    if (_USE_BLOWOUT_RESIDUAL and int(snap_period or 0) == 4
+    if (_USE_BLOWOUT_RESIDUAL and _at_endq3
             and not learned_q4_applied):
         rows = _apply_stratified_blowout_residual(snap, rows)
     # cycle 103b (loop 5): THIRD stratified override -- heat_check shrinkage
@@ -407,14 +542,14 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # when q3_ppm > 1.5 * q12_ppm (with q12_ppm > 0.3). Composes safely with
     # the foul + blowout overrides above (those rewrite projected_final
     # absolutely; this scales the REMAINING delta from current_stat).
-    if (_USE_HEAT_CHECK_SHRINKAGE and int(snap_period or 0) == 4
+    if (_USE_HEAT_CHECK_SHRINKAGE and _at_endq3
             and not learned_q4_applied):
         rows = _apply_heat_check_shrinkage(snap, rows)
     # cycle R2_F (loop 5): per-stat residual heads at endQ3. Applied AFTER all
     # projection source overrides (learned_q4_minutes / period_heads / legacy
     # foul+blowout+heat_check) so the residual correction stacks on the best
     # available point projection. Graceful no-op when artifacts are missing.
-    if _USE_RESIDUAL_HEADS and int(snap_period or 0) == 4:
+    if _USE_RESIDUAL_HEADS and _at_endq3:
         rows = _apply_residual_heads(snap, rows)
 
     # cycle 105c + R1_D_v2 (loop 5): opt-in quantile bands. q50 == projected_final
@@ -484,6 +619,37 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
             for r in rows:
                 r.setdefault("home_win_prob_inplay", None)
                 r.setdefault("inplay_winprob_snapshot", None)
+
+    # FULL-SEND Q4 win-prob promotion: in Q4 (period>=4), promote the possession-sim
+    # win-prob (attached as sim_home_win_prob by _apply_unified_routed when
+    # CV_INGAME_SBS is on) to the SERVED home_win_prob_inplay. Runs AFTER the
+    # production inplay_winprob block so it is not clobbered. The sim is the
+    # measured-best win-prob from endQ3 on (Brier 0.126 vs 0.136, LogLoss 0.40 vs
+    # 0.43) AND fills non-boundary Q4 snapshots where the boundary model returns
+    # None. Only fires when the unified head ran (sim_home_win_prob present); before
+    # Q4 the production win-prob is left untouched (sigmoid/model wins there).
+    try:
+        _q4 = int(snap_period or 0) >= 4
+    except (TypeError, ValueError):
+        _q4 = False
+    if _q4:
+        for r in rows:
+            _swp = r.get("sim_home_win_prob")
+            if _swp is not None:
+                r["home_win_prob_inplay"] = float(_swp)
+                r["winprob_source"] = "possession_sim"
+
+    # FLOOR projected_final at current: a player's FINAL counting stat can never
+    # be below what they have ALREADY recorded. Guards the box/cards from showing
+    # a projection under the live total (e.g. a player already past his projection).
+    for r in rows:
+        cur, pf = r.get("current"), r.get("projected_final")
+        if cur is not None and pf is not None:
+            try:
+                if float(pf) < float(cur):
+                    r["projected_final"] = float(cur)
+            except (TypeError, ValueError):
+                pass
     return rows
 
 

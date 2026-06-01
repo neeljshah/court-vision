@@ -2118,6 +2118,61 @@ def _build_player_features(
     feats["xPTS_per_shot"]   = xpts_per_shot
     feats["xpts_confidence"] = xpts_confidence
 
+    # ── CV_PROP_EXTRA_FEATURES flag: prop_line_movement + atlas features ──────
+    # Gate: set CV_PROP_EXTRA_FEATURES=0 to disable; default is ON (full-send).
+    # When OFF this block is completely skipped — feature assembly is byte-identical
+    # to the pre-change path (proven no-op gate).
+    _extra_on = os.environ.get("CV_PROP_EXTRA_FEATURES", "1").strip().lower() not in (
+        "0", "false", "no", "off"
+    )
+    if _extra_on:
+        # (a) prop_line_movement: 7 leak-safe line-drift features keyed on (player,
+        #     stat, game_date, asof). On current data every call returns the neutral
+        #     zero-vector (no data/lines/ CSVs overlap training dates) — a true no-op
+        #     until intraday lines are captured alongside historical game dates.
+        #     We wire only "pts" here because stat-split movement is not available in
+        #     the current lines schema; extend later with per-stat asof loops.
+        #     asof is left as None so the result is always the neutral vector
+        #     (safe to wire regardless of data availability).
+        try:
+            from src.ingest.prop_line_movement import get_prop_line_movement as _get_plm
+            _game_date = str(feats.get("game_date", ""))
+            if not _game_date:
+                import datetime as _datetime_mod
+                _game_date = _datetime_mod.date.today().isoformat()
+            # asof=None -> neutral zero vector (no leak possible; returns _NEUTRAL)
+            _plm = _get_plm(player_name, "pts", _game_date, asof=None)
+            for _k, _v in _plm.items():
+                if _k not in feats:  # never overwrite existing columns
+                    feats[_k] = float(_v)
+        except Exception:
+            pass
+
+        # (b) atlas features: join leak-safe atlas_* columns using exactly the same
+        #     call path as scripts/loop/eval_atlas_lift.py:_atlas_columns().
+        #     We pass as_of=today (no historical row date available here) so the
+        #     parquet fallback applies the row.as_of <= today guard — leak-safe.
+        try:
+            from src.loop.atlas_features import atlas_feature_row as _atlas_row
+            import datetime as _dt_mod
+            _as_of = str(feats.get("game_date", _dt_mod.date.today().isoformat()))
+            _pid_int = int(feats.get("player_id", 0))
+            if _pid_int:
+                _atlas = _atlas_row(
+                    _pid_int, _as_of,
+                    entity_type="player",
+                    sections=None,  # all registered player sections
+                    store=None,     # process-wide store
+                    prefix=True,
+                )
+                for _k, _v in _atlas.items():
+                    # Only numeric leaves; never overwrite existing columns.
+                    if _k not in feats and isinstance(_v, (int, float)):
+                        feats[_k] = float(_v)
+        except Exception:
+            pass
+    # ── end CV_PROP_EXTRA_FEATURES ─────────────────────────────────────────────
+
     return feats
 
 
@@ -2289,15 +2344,15 @@ def predict_props(
 
     blowout_prob = _compute_blowout_prob(player_name, opp_team, season, feats)
 
-    # ── Injury adjustment ─────────────────────────────────────────────────────
+    # ── Injury status (reporting only) ────────────────────────────────────────
+    # The injury-availability dampener is applied ONCE upstream, inside
+    # predict_player_pergame via apply_availability (single source of truth).
+    # We surface status + multiplier as metadata here but DO NOT re-multiply the
+    # predictions — doing so was a double/triple-application bug (combined
+    # 0.60*0.70*0.65 ≈ 73% underestimate).
     player_id       = feats.get("player_id")
     injury_status   = _injury_monitor.get_status(player_id) if player_id else "Unknown"
     injury_mult     = _injury_monitor.get_impact_multiplier(player_id) if player_id else 1.0
-
-    if injury_mult != 1.0:
-        for stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
-            if stat in predictions:
-                predictions[stat] = round(predictions[stat] * injury_mult, 1)
 
     # ── DNP risk adjustment ───────────────────────────────────────────────────
     dnp_risk = 0.0
