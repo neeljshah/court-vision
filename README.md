@@ -1,31 +1,86 @@
-# CourtVision — NBA AI System
+# CourtVision — NBA Broadcast Tracking System
 
-End-to-end NBA prediction + betting platform — an intensive solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
+**CourtVision is a computer-vision tracking system for NBA broadcast video.** Point it at any NBA game feed and it produces structured, court-coordinate data on every player, the ball, every shot, every possession, every event — at ~$0.10–0.13 per full game on a single consumer GPU.
 
-**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** —  solo architect/director of the full stack (built via an agentic pipeline I designed; the engineering judgment, ship/reject calls, and validation methodology are mine). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — solo, intensive build (Mar–May 2026, 1,470 commits). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
-> 📄 **Start here: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, verifiable evidence: what's real, what I retracted, and why.
+---
+
+## What The Tracker Does
+
+You give it a broadcast video. It gives you back **7 structured data products** covering every frame, every player, every shot, and every possession:
+
+| Output | Granularity | What's in it |
+|--------|-------------|--------------|
+| **`tracking_data.csv`** | Per frame × per player (~60 columns) | Court coordinates (raw + normalized + feet), velocity / acceleration / heading, bbox, ankle position, ball position + ball velocity, ball-possession flag, distance to ball, nearest opponent / teammate, team spacing + convex-hull area + centroid, paint count own/opp, possession side, handler isolation, distance to basket, vel-toward-basket, drive flag, fast-break flag, dribble hand + dribble count, contest-arm angle, jump detection, ball arc angle, ball peak height, pass speed, shot-clock estimate, scoreboard clock + period + score diff, possession ID + duration, lineup ID, play type, court zone, homography-valid flag, confidence |
+| **`shot_log.csv`** | One row per shot (~25 columns) | Shooter ID + name + team, court x/y (raw + normalized + zone), defender distance + identity (slot ID + NBA ID), team spacing at release, possession ID + duration, made/missed, shot clock, contest-arm angle, closeout speed, fatigue proxy, dribble count, ball arc angle, catch-and-shoot flag, shot distance, second-chance flag, shot-creation type |
+| **`possessions.csv`** | One row per possession (~25 columns) | Team, start/end frame, duration, avg spacing, avg defensive pressure, avg vel-toward-basket, drive attempts, shot attempted + shot frame, fast-break flag, play type, result + outcome score, pass count, screen count, drive count, cut count, lineup ID, max paint touches, avg off-ball distance, min shot-clock estimate, dominant zone, transition time, offensive-rebound flag |
+| **`events_log.csv`** | One row per event (~17 columns) | Screens, cuts, drives, closeouts, rebounds — each with frame, possession ID, type, player + defender IDs, court x/y, closeout speed, crash angle + speed, box-out flag, ball-handler + screener IDs, screen action, rotation distance |
+| **`scoreboard_log.csv`** | Per OCR reading (7 columns) | Frame, game clock, shot clock, home/away score, period, OCR confidence |
+| **`ball_tracking.csv`** | Per frame (7 columns) | Frame, timestamp, ball x/y on court, detected flag, live flag, inferred flag |
+| **`stats.json`** | Per-player aggregates | Frames tracked, total distance, max velocity, avg velocity, possession frames, shots attempted, drive attempts, paint frames, avg distance to basket, avg distance to nearest opponent |
+
+That's **~150 distinct columns** of structured per-frame and per-event data extracted from raw broadcast video. Tracking output is also written to SQLite (or PostgreSQL via `DATABASE_URL`), and post-tracking enrichment from the NBA Stats API joins official PBP to label real player IDs, makes/misses, assists, and shot types.
+
+## How The Tracker Works
+
+```
+Broadcast video
+  → YOLOv8n detection (players, ball, rim, referee, shoot/made events)
+  → SIFT homography  (image pixels → 94 × 50 ft court coordinates)
+  → Kalman + Hungarian tracking  (per-frame ID assignment, motion model)
+  → OSNet re-ID (512-dim)  (recover identities through occlusion / scene cuts)
+  → EasyOCR  (jerseys, scoreboard clock + period + score)
+  → EventDetector  (shots, passes, dribbles, screens, drives, closeouts, rebounds)
+  → Per-frame writer  (CSV / SQLite / Postgres)
+  → NBA API enrichment  (real player IDs, official PBP labels)
+```
+
+Stack details:
+
+| Layer | Stack | Module |
+|-------|-------|--------|
+| Detection | YOLOv8n (Ultralytics), CUDA 11.8, RTX 3090 / 4060 | [`src/tracking/player_detection.py`](src/tracking/player_detection.py) |
+| Court mapping | OpenCV SIFT homography + panorama stitcher | [`src/pipeline/unified_pipeline.py`](src/pipeline/unified_pipeline.py) (`_build_panorama`, `_compute_homography`) |
+| Tracking | Kalman filter + Hungarian-matched ID assignment | [`src/tracking/advanced_tracker.py`](src/tracking/advanced_tracker.py) |
+| Re-identification | OSNet 512-dim embeddings (torchreid) + color tracker | [`src/tracking/osnet_reid.py`](src/tracking/osnet_reid.py), [`color_reid.py`](src/tracking/color_reid.py) |
+| Player resolver | Per-quarter mode-jersey + PBP-name priority + roster validation | [`src/tracking/player_resolver.py`](src/tracking/player_resolver.py) |
+| Ball detection | Dedicated detector + Kalman track + pixel-velocity fallback | [`src/tracking/ball_detect_track.py`](src/tracking/ball_detect_track.py) |
+| OCR | EasyOCR for jerseys + [`scoreboard_ocr.py`](src/tracking/scoreboard_ocr.py) | |
+| Events | Shot / pass / screen / drive / closeout / rebound classifier | [`src/tracking/event_detector.py`](src/tracking/event_detector.py) |
+| Orchestrator | One unified pipeline, checkpointed CSV writes, VRAM-flush every 3000 frames | [`src/pipeline/unified_pipeline.py`](src/pipeline/unified_pipeline.py) |
+
+## What The Tracker Can Do
+
+- **Track every player and the ball** in broadcast-court coordinates (94 × 50 ft) at ~25–30 fps on a 3090 — 10 active position slots, per-quarter resolved into 18–22 distinct player identities.
+- **Identify players** by jersey OCR + PBP-name priority + per-quarter mode resolution + per-game roster validation against `data/nba/boxscore_<game_id>.json`. Catches phantom cross-team-jersey collisions that silently mis-label 23.5% of frames without the guard.
+- **Detect shots** end-to-end — YOLO-NAS shot weights + pixel-velocity fallback + paint variant + global debounce. ~17 shots / 12-minute clip on the verification game.
+- **Detect possession transitions** with a state machine (1.5 s ball-loss threshold, same-team merge for sub-300-frame gaps) → ~120–150 possessions per game post-merge.
+- **Classify events** — passes, screens (with screener / handler + screen action), drives (with handler + paint-direction gate), cuts, closeouts (with speed + crash angle + box-out), rebounds — emitted with possession ID and court coordinates.
+- **Read the scoreboard** — game clock, shot clock, home/away score, period — via EasyOCR with per-reading confidence and per-period anchoring.
+- **Compute behavioral features at the frame level** — defender distance, team spacing (convex-hull area + centroid), paint counts both teams, handler isolation, possession side, distance-to-basket, velocity toward basket, fatigue proxies, contest arm angle, jump detection, dribble hand + count, ball arc angle, ball peak height, pass speed.
+- **Run end-to-end at production cost** — **~$0.10–0.13 per full game on a RunPod 3090** vs. six- to seven-figure annual licensing for Sportradar / Second Spectrum (the same broadcast feed, different cost structure).
+- **Self-heal under an autonomous loop** — Opus diagnoses, Sonnet patches, mirrors to RunPod, audits, repeats. One representative night: **30 distinct CV-pipeline bugs landed in a single session** (see "CV self-heal" section below).
+
+## Status
+
+**260 games tracked end-to-end. 25,680 cv_features rows clean. 331 unique resolved players. All 30 logged pipeline bugs patched.** Detail in [vault/Intelligence/Tracking_Session_Validation_Log.md](vault/Intelligence/Tracking_Session_Validation_Log.md).
+
+Ingest moat: YouTube's bot detection blocks RunPod's datacenter IP on copyrighted NBA content even with valid logged-in cookies. The pipeline routes around this with a local-machine residential-IP downloader → scp to RunPod → tracker auto-detects + processes. One overnight cycle queued **79 unique 2025-26 playoff games**, each producing a ~70K-row `tracking_data.csv` + ~130-row `possessions.csv` + an enriched `shot_log.csv` joined to NBA Stats PBP.
+
+---
+
+## Beyond Tracking — What's Built On Top
+
+CourtVision is the tracking system. The repo also contains a downstream prediction + betting stack built on the tracking output (7 prop models, in-play win-probability, Shin-devigged EV, fractional Kelly, multi-book line scanner, shadow-logged execution). That work is documented below for completeness, but the **tracker is the primary artifact** — the prediction layer is one consumer of the tracking output, not the headline.
+
+> 📄 **Honest read on the prediction-side numbers: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).** Two earlier headline metrics — "+18.38% pre-game ROI" and "endQ3 Brier 0.119" — are **retracted** (a market-follow grading artifact and a fourth-quarter data leak, both caught by my own validation harness and documented openly).
 >
 > **30-second reproducibility** (after `git clone` + `pip install -r requirements.txt`):
 > ```bash
 > python scripts/verify_production_mae.py   # prop-model MAE vs committed JSON
 > python -m pytest tests/ -q                # the test suite
 > ```
->
-> **Headline-number correction (2026-06).** Two earlier headline metrics — a "+18.38% pre-game ROI" and an "endQ3 Brier 0.119" — are **retracted.** My own validation harness traced the first to a *market-follow grading artifact* (real ROI vs. real closing lines ≈ **−2% to −5%**) and the second to a *fourth-quarter data leak*. I documented both openly rather than ship them. **The real story here is the engineering and the validation methodology that caught my own overclaims** — the thing I'd actually bring to a team.
-
----
-
-## What This Repo Actually Is
-
-A real, end-to-end ML system — an intensive ~3-month solo build (Mar–May 2026), not a notebook backtest. Two surfaces, both with committed data and reproducible from a fresh clone:
-
-- **(A) Pre-game prop models** — 7 per-stat models (PTS/REB/AST/FG3M/STL/BLK/TOV) with walk-forward evaluation, per-stat isotonic calibration, Shin devigging, and fractional-Kelly sizing, graded against **real DK/FD/MGM/Pinnacle closing lines**.
-- **(B) In-play win-probability + projections** — per-snapshot models (endQ1/Q2/Q3) on thousands of game-snapshots with expanding walk-forward validation.
-
-> **Honest read on performance — see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).** The models are competitive and reproducible (point-accuracy/MAE checks pass against committed JSON), but the **closing market is efficient**: vs. real closes the prop edge is roughly break-even-to-slightly-negative on most stats, with a small genuine edge on assists. That's the honest, correct finding. **Two earlier headline numbers are retracted** — a "+18.38% pre-game ROI" (a market-follow grading artifact; real ≈ −2% to −5%) and an "endQ3 Brier 0.119" (inflated by a fourth-quarter data leak). My own walk-forward + shadow-logging harness caught both, and I documented them rather than ship them. That self-auditing discipline is the real headline.
-
-The most defensible claim is the **computer-vision pipeline**: broadcast video → court coordinates → behavioral features (YOLOv8 → SIFT homography → Kalman+Hungarian tracking → OSNet re-ID) on a consumer GPU at **~$0.10/game**. The discovery process below ran an autonomous Opus-planner / Sonnet-executor loop with hard ship gates (≥3/4 walk-forward folds positive, no per-stat regression > 1pp) — the gates, and the reverts, are the point.
 
 ---
 
@@ -289,15 +344,9 @@ OddsJam-class execution surface, powered by our own models:
 
 Pregame parquets at `data/predictions/<date>.parquet` auto-load on next request — retrain → write parquet → next request shows the better numbers. No rebuild, no redeploy.
 
-### CV pipeline
+### CV self-heal — autonomous overnight bug-patching
 
-YOLOv8n detects players/ball/referees. SIFT homography maps to 94×50 ft court coordinates. Kalman+Hungarian tracks identities; OSNet re-ID (512-dim) recovers through occlusion. EasyOCR reads jerseys + game clock + scoreboard period. EventDetector emits structured shot/pass/dribble events. Output: per-frame court positions + 27 behavioral features per player per game (defender_distance at release, spacing entropy, fatigue from cumulative movement, paint dwell %, touches, contested-shot rate, catch-and-shoot %, possession duration, play-type distribution, pre-shot velocity peak, defender approach speed, contest arm angle, closeout speed).
-
-**Status (2026-05-29): 260 games tracked end-to-end · 25,680 cv_features rows clean · 331 unique resolved players · all 30 pipeline bugs patched.** The pipeline is now self-healing under an overnight autonomous loop — Opus diagnoses, Sonnet executes, mirrors to RunPod, audits, repeats. One representative night: cv_features went from 10,520 → 25,680 rows (+144% data unlock), ghost-affected players (the legacy "Curry shows all-zeros" failure mode) dropped 20 → 1 (−95%), per-game distinct-player resolution rose 8 → 14+ via per-quarter mode-jersey resolution that breaks the 10-slot Hungarian-matching ceiling. Star coverage flipped from sparse-or-missing to substantial: Wemby 100 nonzero features across 8 games, Banchero 64 across 6, LeBron 35 across 3, Tatum 44 across 4 (now including 2026 playoff Round 1). Cost: **~$0.10–0.13 per game on a RunPod 3090** vs. six- to seven-figure annual licensing for Sportradar / Second Spectrum.
-
-**Resilience moat (overnight 2026-05-28→29):** 30 distinct CV-pipeline bugs landed in a single autonomous session — including the structural unlock for Bug 39 (tracker emits only 10 position slots; Hungarian matching collapses substitutions; per-quarter resolution recovers them), Bug 6 roster-validation guard (deleted 5,004 cross-team-jersey-collision rows = 23.5% of pre-fix data), Bug 30 EventDetector tuning (+89% shot recall on the verification game), Bug 1 `defender_distance` teammate-fallback fix (unblocks the shot_quality model — the trained coefficient should flip from inverted-negative to physically-correct-positive on next retrain), and Bug 47 fetcher playoff-season-type support that surfaced 158 previously-invisible playoff games. Full audit trail: [vault/Intelligence/Tracking_Session_Validation_Log.md](vault/Intelligence/Tracking_Session_Validation_Log.md) + per-bug investigation docs in [vault/Intelligence/](vault/Intelligence/). The architectural insight that the tracker ceiling was at 10 slots, not at the resolver, is the kind of finding that takes a season to discover with manual debugging and one Opus deep-dive to nail when the pipeline is instrumented with audit atlases.
-
-**Ingest moat:** YouTube's bot detection blocks RunPod's datacenter IP on copyrighted NBA content even with valid logged-in cookies (HTTP 403 on every download). The pipeline routes around this with a local-machine residential-IP downloader → scp to RunPod → tracker_loop auto-detects + processes. The Windows side runs `python scripts/download_locally_and_upload.py --count 15` in 4 minutes / batch; the 3090 processes 8 games in parallel per ~30 min batch. One overnight cycle: **79 unique 2025-26 playoff games queued** (essentially the full bracket), each producing ~70K-row tracking_data.csv + 130-row possessions.csv + enriched shot_log.csv joined to NBA Stats PBP.
+The tracker is detailed at the top of this README. The architectural insight that took an overnight Opus deep-dive: the tracker emits only **10 position slots** (a Hungarian-matching ceiling); per-quarter mode-jersey resolution recovers 18–22 distinct identities from those slots, breaking the ceiling. That one fix moved cv_features from 10,520 → 25,680 rows (+144%) and ghost-affected players from 20 → 1 (−95%). Same session also landed Bug 6 (roster-validation guard, 5,004 cross-team-collision rows deleted = 23.5% of pre-fix data), Bug 30 (EventDetector retune, +89% shot recall), Bug 1 (`defender_distance` teammate-fallback removed — unblocks the shot_quality model), and Bug 47 (fetcher playoff-season-type support → 158 previously-invisible playoff games surfaced). Full per-bug audit trail: [vault/Intelligence/](vault/Intelligence/).
 
 ### Intelligence layer — 80 derived signals between CV and the models
 
