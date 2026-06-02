@@ -17,7 +17,7 @@ pipeline is a direct demonstration of their problem.
 **Channel:** Careers page (`skillcorner.com` → Careers/Jobs) for a formal apply; LinkedIn for a CV-eng/ML-eng there
 (search "SkillCorner computer vision engineer") to DM or request a referral. (Verify current openings first.)
 **Tailored message (LinkedIn note / cover note):**
-> Hi — SkillCorner is the closest thing I've seen to what I spent the last 13 months building solo: a pipeline that
+> Hi — SkillCorner is the closest thing I've seen to what I spent the last ~3 months building solo: a pipeline that
 > turns broadcast video into court coordinates and behavioral features (YOLOv8 detection → SIFT homography → Kalman
 > +Hungarian tracking → OSNet re-ID), running on a consumer GPU at ~$0.10/game. What I think you'd care about most
 > isn't the demo — it's the validation discipline I built around it (walk-forward CV, shadow-logging, leak

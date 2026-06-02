@@ -46,7 +46,7 @@
 
 ### Project taglines (pick by audience)
 
-1. **(Plain / resume header)** Solo-built a 13-month computer-vision → ML → betting platform: broadcast video to court coordinates to behavioral features, ~$0.10/game on a consumer GPU.
+1. **(Plain / resume header)** Solo-built a ~3-month computer-vision → ML → betting platform: broadcast video to court coordinates to behavioral features, ~$0.10/game on a consumer GPU.
 2. **(Engineering-forward)** ~6,000-file system — YOLOv8 + SIFT homography + Kalman/Hungarian tracking + OSNet re-ID, behind a 49-endpoint FastAPI and 9 daemons — designed, written, and operated by one person.
 3. **(Methodology-forward)** An NBA prediction stack built around the validation, not the prediction: walk-forward CV, shadow-logging, and leak detection with hard ship gates that block features that don't earn their place.
 4. **(Honesty / senior-signal)** The rigor I'm proudest of is what it taught me to throw away — I caught and documented my own data leaks and a market-follow ROI artifact rather than ship the inflated numbers.
@@ -75,7 +75,7 @@
 >
 > Hi [Name],
 >
-> Over 13 months I built an end-to-end NBA system solo: broadcast video → court coordinates → behavioral features → ML predictions, served behind a FastAPI app. The CV path is the part I'm proudest of — YOLOv8 detection, SIFT homography for court rectification, Kalman + Hungarian tracking, and OSNet re-ID — running on a consumer GPU at ~$0.10/game.
+> Over ~3 months I built an end-to-end NBA system solo: broadcast video → court coordinates → behavioral features → ML predictions, served behind a FastAPI app. The CV path is the part I'm proudest of — YOLOv8 detection, SIFT homography for court rectification, Kalman + Hungarian tracking, and OSNet re-ID — running on a consumer GPU at ~$0.10/game.
 >
 > But the reason I'm writing is the validation methodology. I run walk-forward CV with shadow-logging and hard ship-gates, and the loop's job is to refute its own findings. It's caught real failures of mine: a data leak that inflated an in-game metric, and a "profitable" ROI result that turned out to be a market-follow artifact (truly ~−4%). I'd rather kill a finding than ship a fake one.
 >
@@ -92,7 +92,7 @@
 >
 > Hi [Name],
 >
-> I spent the last 13 months solo-building a pipeline that turns raw broadcast NBA footage into tracking data without licensed optical feeds. The stack: YOLOv8 detection → SIFT homography (RANSAC + EMA smoothing) to map each frame onto a court panorama → Kalman + Hungarian tracking → OSNet re-ID to hold player identity through occlusion and similar uniforms. Out the other end: defender distance, spacing, contested-shot rate, and play type — per player, per possession.
+> I spent the last ~3 months solo-building a pipeline that turns raw broadcast NBA footage into tracking data without licensed optical feeds. The stack: YOLOv8 detection → SIFT homography (RANSAC + EMA smoothing) to map each frame onto a court panorama → Kalman + Hungarian tracking → OSNet re-ID to hold player identity through occlusion and similar uniforms. Out the other end: defender distance, spacing, contested-shot rate, and play type — per player, per possession.
 >
 > It runs at roughly $0.10/game on a consumer RTX 4060, versus six-figure Sportradar/Second Spectrum licensing. Code and a frame-by-frame writeup: github.com/neeljshah/court-vision.
 >
@@ -109,7 +109,7 @@
 >
 > Hi [Name],
 >
-> I build whole systems alone and ship fast. Over the last 13 months I solo-built an NBA prediction platform end-to-end: a computer-vision pipeline that turns broadcast video into court coordinates and behavioral features (YOLOv8, SIFT homography, Kalman+Hungarian tracking, OSNet re-ID) on a consumer GPU at ~$0.10/game, feeding ML models served behind a FastAPI backend (~49 endpoints, 9 daemons, PostgreSQL, CI/CD) — one git history, ~6,000 files.
+> I build whole systems alone and ship fast. Over the last ~3 months I solo-built an NBA prediction platform end-to-end: a computer-vision pipeline that turns broadcast video into court coordinates and behavioral features (YOLOv8, SIFT homography, Kalman+Hungarian tracking, OSNet re-ID) on a consumer GPU at ~$0.10/game, feeding ML models served behind a FastAPI backend (~49 endpoints, 9 daemons, PostgreSQL, CI/CD) — one git history, ~6,000 files.
 >
 > The part I'd actually bring to your team is validation discipline: walk-forward CV, shadow-logging, leak detection, and an agentic discovery loop with hard ship gates. It's caught my own overclaims — I documented a data leak and a market-follow ROI artifact in my own results rather than ship them.
 >
@@ -125,7 +125,7 @@
 >
 > Hi [Name],
 >
-> I spent 13 months solo-building the data platform behind an NBA prediction system, and the spine is exactly what your team runs: scrapers feeding PostgreSQL, a feature store, 9 long-running daemons, and ~49 FastAPI endpoints for serving — one git history, reproducible pipelines end to end.
+> I spent ~3 months solo-building the data platform behind an NBA prediction system, and the spine is exactly what your team runs: scrapers feeding PostgreSQL, a feature store, 9 long-running daemons, and ~49 FastAPI endpoints for serving — one git history, reproducible pipelines end to end.
 >
 > The part I'm proudest of is the discipline, not the demo. Every model change ships through walk-forward CV and shadow-logging before it touches serving, with hard gates. That rigor caught two of my own bad results — a data leak and a market-follow ROI artifact — which I documented rather than shipped. I'd rather kill my own number than trust a broken one.
 >
@@ -142,7 +142,7 @@
 >
 > Hi [Name],
 >
-> For 13 months I solo-built an NBA prediction platform (CV → ML → decisioning) and the part I'm proudest of isn't a model — it's the validation harness that kept me honest.
+> For ~3 months I solo-built an NBA prediction platform (CV → ML → decisioning) and the part I'm proudest of isn't a model — it's the validation harness that kept me honest.
 >
 > It does walk-forward CV, shadow-logging, and automated leak detection inside an agentic discovery loop with hard ship-gates. Concretely, it caught my own overclaims: a "profitable" ROI that turned out to be a market-follow artifact (real ≈ −4%), and a calibration score inflated by a fourth-quarter data leak. I documented both as failures rather than ship them.
 >
@@ -161,7 +161,7 @@
 >
 > I built a pipeline that turns raw broadcast NBA video into court-coordinate behavioral features — no tracking-data license, no special camera feeds. It's YOLOv8 detection, SIFT homography to map pixels to the court, Kalman + Hungarian tracking, and OSNet re-ID for player identity through occlusions. Runs on a single consumer GPU at roughly $0.10 per game.
 >
-> I solo-built the whole stack over 13 months — the CV layer plus the ML and serving systems around it (FastAPI, daemons, Postgres) — with walk-forward validation and shadow-logging throughout. I'm equally proud of what I threw out: I caught and documented my own data leaks and a ROI artifact rather than ship them.
+> I solo-built the whole stack over ~3 months — the CV layer plus the ML and serving systems around it (FastAPI, daemons, Postgres) — with walk-forward validation and shadow-logging throughout. I'm equally proud of what I threw out: I caught and documented my own data leaks and a ROI artifact rather than ship them.
 >
 > Could I send a 2-minute clip of tracked output from a broadcast frame? Happy to run it on a game of your choosing.
 >
@@ -176,7 +176,7 @@
 >
 > [Personal opener — e.g. "Hope the move to [Team] is going well" / "Loved your recent post on X."]
 >
-> I've spent the last 13 months solo-building a computer-vision + ML platform that turns broadcast NBA video into court-coordinate tracking data — YOLOv8 detection, SIFT homography, Kalman + Hungarian tracking, OSNet re-ID — running on a single consumer GPU at about $0.10 a game, then layering walk-forward-validated models on top of it.
+> I've spent the last ~3 months solo-building a computer-vision + ML platform that turns broadcast NBA video into court-coordinate tracking data — YOLOv8 detection, SIFT homography, Kalman + Hungarian tracking, OSNet re-ID — running on a single consumer GPU at about $0.10 a game, then layering walk-forward-validated models on top of it.
 >
 > The part I'm proudest of isn't a metric, it's the discipline: shadow-logging, leak detection, and a discovery loop with hard ship gates that has caught and killed several of my own overclaims (a market-follow ROI artifact, a data-leaked metric). I'd rather find my own bugs than ship them.
 >
@@ -195,7 +195,7 @@
 >
 > Following up on my note from last week, in case it slipped past a busy inbox.
 >
-> Short version: over 13 months I solo-built an end-to-end NBA platform — broadcast video to court coordinates to behavioral features (YOLOv8, SIFT homography, Kalman + Hungarian tracking, OSNet re-ID) running on a consumer GPU at ~$0.10/game — feeding an ML and betting stack (FastAPI, ~49 endpoints, 9 daemons, Postgres) in one git history.
+> Short version: over ~3 months I solo-built an end-to-end NBA platform — broadcast video to court coordinates to behavioral features (YOLOv8, SIFT homography, Kalman + Hungarian tracking, OSNet re-ID) running on a consumer GPU at ~$0.10/game — feeding an ML and betting stack (FastAPI, ~49 endpoints, 9 daemons, Postgres) in one git history.
 >
 > The part I'd most want to talk through isn't a return number — it's the validation discipline. I run walk-forward CV with shadow-logging and hard ship gates, and the work that taught me most was catching my own overclaims: a data leak and a market-follow ROI artifact I'd initially believed.
 >
@@ -208,7 +208,7 @@
 
 ### 2.9 — LinkedIn connection note (<300 chars)
 
-> Hi [Name] — solo-built a 13-month NBA platform: broadcast video → court coords (YOLOv8, SIFT homography, Kalman+Hungarian tracking) → ML props, ~$0.10/game on one GPU. The part I'm proudest of is the validation rigor — walk-forward CV and leak detection that caught my own overclaims. Would love to connect.
+> Hi [Name] — solo-built a ~3-month NBA platform: broadcast video → court coords (YOLOv8, SIFT homography, Kalman+Hungarian tracking) → ML props, ~$0.10/game on one GPU. The part I'm proudest of is the validation rigor — walk-forward CV and leak detection that caught my own overclaims. Would love to connect.
 
 *~296 chars; re-count after swapping [Name]. If over 300, drop "broadcast " or "Kalman+Hungarian". For a recruiter, trim tracker internals to "broadcast video → court coordinates → ML props" to leave room for a role-specific phrase.*
 
@@ -216,7 +216,7 @@
 
 > hey [name] — been following your work and the [specific thing they built, e.g. "tracking writeup"] stuck with me, so figured I'd say hi.
 >
-> I've spent the last 13 months solo-building an NBA pipeline: broadcast video → court coordinates → behavioral features (YOLOv8, SIFT homography, Kalman+Hungarian tracking, OSNet re-ID), running on a consumer GPU at ~$0.10/game. The part I'm proudest of isn't the model accuracy — it's the validation harness that keeps catching my own overclaims. It's flagged a couple of my "wins" as data leaks and a ROI number as a market-follow artifact. Killing my own results has been the most useful thing I built.
+> I've spent the last ~3 months solo-building an NBA pipeline: broadcast video → court coordinates → behavioral features (YOLOv8, SIFT homography, Kalman+Hungarian tracking, OSNet re-ID), running on a consumer GPU at ~$0.10/game. The part I'm proudest of isn't the model accuracy — it's the validation harness that keeps catching my own overclaims. It's flagged a couple of my "wins" as data leaks and a ROI number as a market-follow artifact. Killing my own results has been the most useful thing I built.
 >
 > No ask — just wanted to nerd out with someone who clearly thinks hard about this stuff. How do you handle leak detection in your own pipelines? Always curious how other people keep themselves honest.
 
@@ -238,7 +238,7 @@ Strongest signal is intellectual honesty: the validation harness is built to cat
 
 ### 3.2 — CourtVision project block (lead with this for CV/ML/systems roles)
 
-**CourtVision — Computer Vision & ML Sports-Analytics Platform** | Solo project, 13 months | *Python, PyTorch, FastAPI, PostgreSQL* | github.com/neeljshah/court-vision
+**CourtVision — Computer Vision & ML Sports-Analytics Platform** | Solo project, ~3 months | *Python, PyTorch, FastAPI, PostgreSQL* | github.com/neeljshah/court-vision
 
 - Built an end-to-end pipeline turning broadcast NBA video into court-space behavioral features: YOLOv8 player/ball detection, SIFT-homography court registration, Kalman + Hungarian multi-object tracking, and OSNet re-identification — running on a single consumer GPU at ~$0.10/game.
 - Engineered the full system solo: ~6,000-file monorepo with a FastAPI service (~49 endpoints), 9 background daemons, web scrapers, a PostgreSQL store, live dashboards, and CI/CD — all in one continuous git history.
@@ -273,7 +273,7 @@ Strongest signal is intellectual honesty: the validation harness is built to cat
 
 ### 3.5 — Backend / Systems (4 bullets)
 
-**Backend & Distributed Systems — NBA Analytics Platform (solo, ~13 months)**
+**Backend & Distributed Systems — NBA Analytics Platform (solo, ~~3 months)**
 
 - Built and operated a FastAPI service exposing 100+ endpoints (live game state, model predictions, line-shopping, CLV, risk/execution) backing a real-time betting dashboard — sub-second prediction serving with a feature-flag-gated calibration layer so model changes ship byte-identical-by-default and roll out behind env switches.
 - Designed a fleet of 17 long-running Python daemons (multi-sportsbook odds scrapers, injury/lineup feeds, line-move and arbitrage detectors, settlement/bankroll monitors) coordinated by a registry-driven watchdog that tracks per-daemon heartbeats and auto-restarts any process whose heartbeat exceeds 3x its expected interval.
@@ -311,7 +311,7 @@ Full-stack ML engineer: broadcast video → tracking → behavioral features →
 
 ### 4.2 — About section
 
-I spent the last 13 months solo-building an NBA analytics platform end-to-end: broadcast video in, structured predictions out. No CS degree — just a problem I couldn't put down and a habit of checking my own work.
+I spent the last ~3 months solo-building an NBA analytics platform end-to-end: broadcast video in, structured predictions out. No CS degree — just a problem I couldn't put down and a habit of checking my own work.
 
 The computer vision runs in production on a consumer GPU at roughly $0.10 a game: YOLOv8 detection, SIFT homography to map plays to court coordinates, Kalman + Hungarian tracking, and OSNet re-ID. On top of that sits a real system — FastAPI with ~49 endpoints, 9 daemons, scrapers, PostgreSQL, dashboards, CI/CD — all in one git history of ~6,000 files.
 
@@ -324,7 +324,7 @@ The domain is betting. The skills — CV, rigorous ML, systems — travel anywhe
 ```markdown
 # Hi, I'm Neel 👋
 
-I build end-to-end ML systems. For the last 13 months I've been solo-building **CourtVision** — a pipeline that turns broadcast NBA video into court coordinates, behavioral features, and predictions, then validates whether any of it is actually edge.
+I build end-to-end ML systems. For the last ~3 months I've been solo-building **CourtVision** — a pipeline that turns broadcast NBA video into court coordinates, behavioral features, and predictions, then validates whether any of it is actually edge.
 
 No CS degree. The work is the credential.
 
@@ -376,7 +376,7 @@ Betting was the **problem space**, not the product — the transferable wins are
 > **# Neel Shah — ML Systems & Computer Vision**
 > neeljshah22@gmail.com · github.com/neeljshah/court-vision
 >
-> Self-taught engineer (no CS degree). For 13 months I solo-built **CourtVision**: an end-to-end platform that turns broadcast NBA video into court coordinates, behavioral features, and validated predictions. One person, one git history. The betting domain is just the forcing function — the transferable work is production CV, rigorous ML validation, and systems breadth.
+> Self-taught engineer (no CS degree). For ~3 months I solo-built **CourtVision**: an end-to-end platform that turns broadcast NBA video into court coordinates, behavioral features, and validated predictions. One person, one git history. The betting domain is just the forcing function — the transferable work is production CV, rigorous ML validation, and systems breadth.
 >
 > **What it does:** Broadcast video → player/ball tracking → court-space features → ML models → a live FastAPI dashboard. Built to run on a single consumer GPU at roughly **$0.10/game**.
 >
@@ -469,7 +469,7 @@ Structure each as decision → what went wrong → lesson → how I work now.
 
 *Lead with point 6 or point 1 if you only have time for one.*
 
-### 5.7 — "Why solo for 13 months / how do you collaborate?"
+### 5.7 — "Why solo for ~3 months / how do you collaborate?"
 
 **30-sec:** I went solo to own the whole stack and learn it for real — nobody hands you a CV-to-production problem at this scope, so I built it: ~6,000 files, one git history, CV on a consumer GPU at ~$0.10/game. The thing I'm proud of isn't a return — it's that the system is built to catch its own mistakes, and I've killed several of my own results. That's the discipline I'd bring to a team, and a team is exactly what I'm looking for now.
 
@@ -486,7 +486,7 @@ Each rebuttal: concede, then pivot to demonstrated evidence.
 2. **"Solo project — maintainable code, or code that works for one person?"** Fair — no large-team-process claim. But: module boundaries that let features ship behind default-OFF byte-identical flags, regression suites gating changes, shadow-logging before cutover. That's hand-off discipline; it just hasn't been stress-tested by reviewers yet, and he'd treat code review as a benefit.
 3. **"A betting bot — serious engineer or gambler?"** Betting is the problem space — adversarial, low-signal, forces rigor. The transferable product is the methodology (walk-forward CV, leak detection, ship gates, OOS across independent corpora), which moves directly to fraud, forecasting, recommendations.
 4. **"Will I get inflated numbers?"** No — and it's the strongest signal. He caught and *documented* his own overclaims (market-follow ROI artifact, data-leak-inflated skill claim, proxy-line in-play result) before anyone audited him. An engineer who refutes his own best result is who you want validating revenue-touching models.
-5. **"13 months solo with AI — is the depth real, or did agents think for him?"** The hard parts are human judgment: homography surviving camera cuts, re-ID through occlusion, separating edge from leakage, designing gates that *reject* most candidates. He uses agentic loops as a breadth multiplier while owning architecture, validation design, and the kill calls. Orchestrating agents *and* not trusting their output blindly is a forward-looking strength.
+5. **"~3 months solo with AI — is the depth real, or did agents think for him?"** The hard parts are human judgment: homography surviving camera cuts, re-ID through occlusion, separating edge from leakage, designing gates that *reject* most candidates. He uses agentic loops as a breadth multiplier while owning architecture, validation design, and the kill calls. Orchestrating agents *and* not trusting their output blindly is a forward-looking strength.
 
 **One-line close:** The product isn't the betting returns — it's a built-from-scratch CV/ML/systems platform and the rare honesty to say which of its own results don't hold up.
 
@@ -494,7 +494,7 @@ Each rebuttal: concede, then pivot to demonstrated evidence.
 
 *Scope/dates are placeholders to rewrite with the manager on day one. The goal is to de-risk the hire.*
 
-- **Days 0–30 (land, ship small, build judgment):** ship a real PR in week one to learn review culture / CI / deploy; map the system before changing it and turn confusion into onboarding docs; reproduce a core result the team already trusts; set up a weekly what-I-shipped / what-I-got-wrong loop with the manager. *Why fast:* 13 months solo-operating a system in this shape (FastAPI, daemons, scrapers, Postgres, a CV inference path, CI) means the architecture won't be foreign.
+- **Days 0–30 (land, ship small, build judgment):** ship a real PR in week one to learn review culture / CI / deploy; map the system before changing it and turn confusion into onboarding docs; reproduce a core result the team already trusts; set up a weekly what-I-shipped / what-I-got-wrong loop with the manager. *Why fast:* ~3 months solo-operating a system in this shape (FastAPI, daemons, scrapers, Postgres, a CV inference path, CI) means the architecture won't be foreign.
 - **Days 30–60 (own a vertical slice; bring the rigor):** own one component end-to-end off the critical path; add validation rigor where it's missing (walk-forward eval, leak detection, shadow-logging a change against prod before it affects anything — the discipline that caught my own leak and market-follow artifact); instrument what I own with a dashboard/alert; write the postmortem on my own first miss openly.
 - **Days 60–90 (propose where I add leverage):** ship the 30–60 component behind a flag/gradual rollout with monitoring in place; bring one well-validated proposal (efficiency / accuracy / reliability / cost — I cut per-unit CV inference to ~$0.10/game, so I care about unit economics) with evidence, risk, and an honest statement of what would make me wrong; reduce bus factor by documenting/automating; calibrate against the team on where my judgment is trusted.
 - **Explicitly not promising:** a headline metric by day 90 (anyone who promises that hasn't met your data); to be net-positive in week one (onboarding is a real cost). No CS degree — what I offer is demonstrated senior-level work in one git history and a track record of catching my own overclaims.
@@ -556,11 +556,11 @@ The no-degree filter lives in ATS resume screens — so route around them. Prior
 
 ## 7. The no-degree framing
 
-> **Frame:** I don't have the credential, but I have 13 months of dated, public, reviewable evidence of senior-level work. **The git history is my transcript — and unlike a transcript, you can read every commit.** Lead with the work, point to the proof, be honest about the gaps. **Never substitute an inflated betting metric for the methodology + honesty pitch.**
+> **Frame:** I don't have the credential, but I have ~3 months of dated, public, reviewable evidence of senior-level work. **The git history is my transcript — and unlike a transcript, you can read every commit.** Lead with the work, point to the proof, be honest about the gaps. **Never substitute an inflated betting metric for the methodology + honesty pitch.**
 
 ### 7.1 — The one-line answer (say it first, then stop)
 
-> "I don't have a CS degree. What I have instead is a public 13-month git history of a production computer-vision and ML system I built solo — broadcast NBA video to court coordinates to a live serving stack. I'd rather you judge me on the code than on a credential, and it's all on GitHub: github.com/neeljshah/court-vision."
+> "I don't have a CS degree. What I have instead is a public ~3-month git history of a production computer-vision and ML system I built solo — broadcast NBA video to court coordinates to a live serving stack. I'd rather you judge me on the code than on a credential, and it's all on GitHub: github.com/neeljshah/court-vision."
 
 Then let them ask. Don't over-explain — the repo does the arguing.
 
@@ -599,7 +599,7 @@ A degree certifies you *can* be rigorous; this *demonstrates* you choose to be, 
 
 ### 7.7 — The reusable one-liner (everywhere a degree would go)
 
-> **Solo-built a 13-month, ~6,000-file CV→ML→production platform: real-time broadcast-video tracking on a consumer GPU, FastAPI backend (~49 endpoints, 9 daemons), and a walk-forward validation harness that catches its own overclaims.**
+> **Solo-built a ~3-month, ~6,000-file CV→ML→production platform: real-time broadcast-video tracking on a consumer GPU, FastAPI backend (~49 endpoints, 9 daemons), and a walk-forward validation harness that catches its own overclaims.**
 
 ---
 

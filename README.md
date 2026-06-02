@@ -1,8 +1,8 @@
 # CourtVision — NBA AI System
 
-End-to-end NBA prediction + betting platform built by one engineer over 13 months. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
+End-to-end NBA prediction + betting platform — an intensive ~3-month solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
 
-**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — solo, 13 months, self-taught (no CS degree). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — self-taught (no CS degree), solo architect/director of the full stack (built via an agentic pipeline I designed; the engineering judgment, ship/reject calls, and validation methodology are mine). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 > 📄 **Start here: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, verifiable evidence: what's real, what I retracted, and why.
 >
@@ -18,7 +18,7 @@ End-to-end NBA prediction + betting platform built by one engineer over 13 month
 
 ## What This Repo Actually Is
 
-A real, end-to-end ML system built solo over 13 months — not a notebook backtest. Two surfaces, both with committed data and reproducible from a fresh clone:
+A real, end-to-end ML system — an intensive ~3-month solo build (Mar–May 2026), not a notebook backtest. Two surfaces, both with committed data and reproducible from a fresh clone:
 
 - **(A) Pre-game prop models** — 7 per-stat models (PTS/REB/AST/FG3M/STL/BLK/TOV) with walk-forward evaluation, per-stat isotonic calibration, Shin devigging, and fractional-Kelly sizing, graded against **real DK/FD/MGM/Pinnacle closing lines**.
 - **(B) In-play win-probability + projections** — per-snapshot models (endQ1/Q2/Q3) on thousands of game-snapshots with expanding walk-forward validation.
@@ -474,7 +474,7 @@ ARCHITECTURE.md      6-system technical map + component status table
 - **What was the hardest call this week?** Killing 8 consecutive feature-addition iterations (REVERT after REVERT after REVERT) despite each one having ≥3/7 stats improved on single-split. The walk-forward gate caught them; cumulative ROI would have died if we'd shipped them. *Discipline says ship what passes the gate, document what doesn't.* The eventual win (Iter 68 HP sweep) came from a totally different angle — recognizing that the production HPs were never tuned per-snapshot.
 - **What about the polarity bug — why didn't you fix it?** Surfaced at 2am, audit completed by 3am, source identified at `src/prediction/win_probability.py:178`. The fix requires a coordinated cascade (regenerate `season_games_*.json` → retrain v1 LGB → recalibrate isotonic → re-eval). That's a multi-iter sequence with model-side blast radius; deploying it under autonomous overnight conditions without human review would have been irresponsible. Documented for morning review with estimated impact +1.5-3.5pp CLV.
 - **First 30 days at your company?** Wire the CV signal layer into whatever in-house prop pricing model exists. Deploy the shadow logger pattern so post-hoc calibration becomes possible. Add walk-forward season-purged CV to the validation suite. Introduce the segment-and-filter pattern (Iter 51/54/55/57) to bet-emit logic — find zero-EV slices, filter them out, lift aggregate. Set up the coordination_log handshake if multiple agents/engineers are running.
-- **AI agents thesis?** Throughput is real — 120 modules + 154 probes + 70 numbered iters + 4,100 tests solo in 13 months wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes, strata-aware sizing, segment-and-filter pattern, polarity audit) are mine. Agents are the engineering force multiplier; quant taste makes the choices sharp.
+- **AI agents thesis?** Throughput is real — this surface area in an intensive ~3-month solo build (Mar–May 2026) wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes, strata-aware sizing, segment-and-filter pattern, polarity audit) are mine. Agents are the engineering force multiplier; quant taste makes the choices sharp.
 
 ---
 
