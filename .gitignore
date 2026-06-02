@@ -267,3 +267,6 @@ apps/portfolio-site/out/
 *.pid
 .pod_start_epoch
 .pending_uploads.txt
+
+# internal job-outreach target lists — keep private, never publish
+docs/TARGET_BATCH_*.md
