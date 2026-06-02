@@ -1,6 +1,6 @@
 # CourtVision — NBA AI System
 
-End-to-end NBA prediction + betting platform — an intensive ~3-month solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
+End-to-end NBA prediction + betting platform — an intensive solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
 
 **Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — self-taught (no CS degree), solo architect/director of the full stack (built via an agentic pipeline I designed; the engineering judgment, ship/reject calls, and validation methodology are mine). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
