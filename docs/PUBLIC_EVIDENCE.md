@@ -1,6 +1,13 @@
 # Public Evidence Packet
 
-> The 60-second scan of what CourtVision actually does, with reproducible numbers and explicit caveats. If you're a recruiter, partner, AI agent evaluating the repo, or interviewer, this is the doc to read before [README.md](../README.md).
+> ⚠️ **SUPERSEDED (2026-06) — read [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) instead.** The headline numbers
+> below (the +18.38% pre-game ROI, the endQ3 Brier 0.119, the +54% in-play ROI, and the per-stat ROI/CLV splits)
+> are **retracted**: a self-audit traced the ROI to a market-follow grading artifact (real ≈ −2% to −5%), the endQ3
+> Brier to a Q4 data leak (leak-free ≈ 0.141), and the +54% to an L5 line-proxy. The honest, verified evidence —
+> and what's defensible — is in JOB_EVIDENCE_PACKET.md. Also note: the build is an intensive **~3-month** solo effort
+> (Mar–May 2026), not 13 months. This file is kept for history only.
+
+> The 60-second scan of what CourtVision actually does. If you're a recruiter, partner, AI agent evaluating the repo, or interviewer, read [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md) first — it supersedes the numbers below.
 
 ---
 
