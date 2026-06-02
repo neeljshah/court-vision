@@ -19,7 +19,7 @@ more shopping value across books.
 """
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -43,7 +43,12 @@ _VALID_SORTS = {"edge", "player", "stat", "line"}
 
 
 def _today() -> str:
-    return datetime.now().astimezone().strftime("%Y-%m-%d")
+    """Return today's date anchored to ET (UTC-4 EDT fallback).
+
+    Uses UTC-4 to match api/live_game_router._today_et — prevents returning
+    TOMORROW's date on a UTC host during the ET evening window (00:00-04:00 UTC).
+    """
+    return (datetime.now(timezone.utc) + timedelta(hours=-4)).strftime("%Y-%m-%d")
 
 
 def _book_entry(book_row: dict, side: str) -> Optional[dict]:

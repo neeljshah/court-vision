@@ -315,7 +315,9 @@ def props_by_id(player_id: int, season: str = "2025-26", opp_team: str = ""):
         return {
             "player_id":    player_id,
             "player_name":  player_name,
-            "props":        {k: round(float(v), 3) for k, v in stack.predictions.items()},
+            "props":        {k: (None if v is None or (isinstance(v, float) and v != v)
+                                 else round(float(v), 3))
+                             for k, v in stack.predictions.items()},
             "dnp_prob":     round(dnp_prob, 4),
             "injury_risk":  round(injury_risk, 4),
             "suppressed":   stack.suppressed,

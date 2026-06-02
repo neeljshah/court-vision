@@ -2,7 +2,8 @@
 update_vault.py — Auto-update Obsidian vault with current system state.
 
 Generates/refreshes:
-  vault/Home.md              — project status dashboard
+  vault/Home.md                        — project status dashboard
+  vault/Intelligence/Schemes/*.md      — 30 team scheme notes + _Scheme_Matrix.md
 
 Session logging is handled by vault_session_close.py (Stop hook),
 which appends to vault/Sessions/Decision Log.md instead of creating
@@ -339,6 +340,32 @@ Source: [`data/models/betting_backtest.json`](../data/models/betting_backtest.js
 # Main
 # ---------------------------------------------------------------------------
 
+def _refresh_schemes() -> None:
+    """Render team scheme notes + matrix into vault/Intelligence/Schemes/.
+
+    Cheap + idempotent: only overwrites files in vault/Intelligence/Schemes/
+    that match *_schemes.md / _Scheme_Matrix.md.  Silently skips if the scheme
+    parquets are absent (offline / cold clone).
+    """
+    try:
+        # Load the module directly by path so we don't rely on scripts/ being
+        # a Python package (it is not — no __init__.py in scripts/).
+        import importlib.util
+        _mod_path = ROOT / "scripts" / "intel" / "render_schemes_to_vault.py"
+        spec = importlib.util.spec_from_file_location(
+            "render_schemes_to_vault", str(_mod_path)
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        schemes_dir = VAULT / "Intelligence" / "Schemes"
+        mod.render_all(out_dir=schemes_dir)
+        print("Updated: vault/Intelligence/Schemes/ (30 team notes + matrix)")
+    except ImportError as exc:
+        print(f"[update_vault] render_schemes skipped — import error: {exc}")
+    except Exception as exc:
+        print(f"[update_vault] render_schemes skipped — {exc}")
+
+
 def update(notes: str = "") -> None:
     VAULT.mkdir(exist_ok=True)
     SESSIONS.mkdir(exist_ok=True)
@@ -346,6 +373,9 @@ def update(notes: str = "") -> None:
     home_path = VAULT / "Home.md"
     home_path.write_text(generate_home(), encoding="utf-8")
     print(f"Updated: {home_path.relative_to(ROOT)}")
+
+    # Refresh scheme notes (idempotent, only touches vault/Intelligence/Schemes/)
+    _refresh_schemes()
 
 
 if __name__ == "__main__":

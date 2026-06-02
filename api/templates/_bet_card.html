@@ -1,4 +1,4 @@
-<article class="cv-card cv-card-hover bet-card p-3 md:p-4" data-book="{{ bet.best_book|default('') }}" style="border-left:3px solid {{ bet.team_color or '#1e293b' }}">
+<article class="cv-card cv-card-hover bet-card p-3 md:p-4" data-book="{{ bet.best_book|default('') }}" data-all-books="{{ (bet.all_books or [])|map(attribute='book')|join(',')|lower }}" style="border-left:3px solid {{ bet.team_color or '#1e293b' }}">
   <header class="flex items-start justify-between gap-2">
     <div class="min-w-0">
       <div class="flex items-baseline gap-2">
@@ -8,18 +8,45 @@
       <div class="text-xs md:text-sm mt-0.5" style="color:var(--cv-muted)">
         <span>{{ bet.team }} {% if bet.venue == 'away' %}@{% else %}vs{% endif %} {{ bet.opp }}</span>
         <span class="mx-1">·</span>
-        <span class="font-mono">{{ bet.prop_stat }} {{ '%g'|format(bet.line) }}</span>
-        {% if bet.best_book %}
+        {# Live: header MUST show the SELECTED bet (bet.line + bet.best_book +
+           bet.best_price), the same line+book the regrade chose and the ladder
+           highlights — NOT all_books_live[0] (just the lowest-line rung). #}
+        {% if bet.all_books_live is defined and bet.all_books_live %}
+          <span class="font-mono bet-live-line">{{ bet.prop_stat }} {{ '%g'|format(bet.line) }}</span>
+          {% if bet.best_book %}
           <span class="mx-1">·</span>
-          <span>{{ bet.best_book }}
+          <span class="bet-live-best-book">{{ bet.best_book }}
             {% if bet.best_price is not none %}
               <span class="font-mono">{{ '%+d'|format(bet.best_price) }}</span>
             {% endif %}
           </span>
+          {% endif %}
+        {% else %}
+          <span class="font-mono bet-live-line">{{ bet.prop_stat }} {{ '%g'|format(bet.line) }}</span>
+          {% if bet.best_book %}
+            <span class="mx-1">·</span>
+            <span>{{ bet.best_book }}
+              {% if bet.best_price is not none %}
+                <span class="font-mono">{{ '%+d'|format(bet.best_price) }}</span>
+              {% endif %}
+            </span>
+          {% endif %}
         {% endif %}
       </div>
     </div>
     <div class="flex flex-col items-end gap-1">
+      {# LIVE indicator removed from individual cards — the box score header
+         already surfaces live state. Reduces visual noise during live mode. #}
+      {% if bet.ev_capped %}
+        <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded"
+              title="Model claimed >85% confidence on this bet. The honest-cap caps model_prob at 0.85 because no single-prop model can truthfully be more sure than that. EV recomputed at the cap. Treat as a strong-conviction bet, not a literal +90% EV."
+              style="background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.40);color:#fbbf24;font-weight:700;letter-spacing:0.04em">HIGH CONF</span>
+      {% endif %}
+      {% if bet.form_divergence %}
+        <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded"
+              title="{{ bet.form_divergence_text }}"
+              style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.40);color:#f87171;font-weight:700;letter-spacing:0.04em">FORM CHECK</span>
+      {% endif %}
       <span class="text-[10px] md:text-xs px-2 py-1 rounded {% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}">
         {{ bet.side }}
       </span>
@@ -33,7 +60,7 @@
     </div>
   </header>
 
-  <div class="mt-3 grid grid-cols-4 gap-2 text-center">
+  <div class="mt-3 grid grid-cols-3 gap-2 text-center">
     {% set _mae = ({'PTS':4.6,'REB':1.9,'AST':1.4,'FG3M':0.9,'STL':0.7,'BLK':0.4,'TOV':0.9}).get(bet.prop_stat, 1.5) %}
     <div>
       <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
@@ -43,45 +70,20 @@
     <div>
       <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
            data-tip="How many stat units the model expects above (or below) the book's line.">edge</div>
-      <div class="text-sm md:text-base font-semibold font-mono {% if bet.edge_units > 0 %}num-pos{% elif bet.edge_units < 0 %}num-neg{% else %}num-zero{% endif %}">
-        {{ '%+.2f'|format(bet.edge_units) }}
+      <div class="text-sm md:text-base font-semibold font-mono {% if bet.edge_units is not none and bet.edge_units > 0 %}num-pos{% elif bet.edge_units is not none and bet.edge_units < 0 %}num-neg{% else %}num-zero{% endif %}">
+        {% if bet.edge_units is not none %}{{ '%+.2f'|format(bet.edge_units) }}{% else %}<span class="pending">—</span>{% endif %}
       </div>
     </div>
     <div>
       <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
            data-tip="Expected return per $100 staked at the best posted price, given the model's win probability.">EV</div>
-      <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">
-        {% if bet.ev_pct is not none %}{{ '%+.1f'|format(bet.ev_pct) }}%{% else %}<span class="pending">—</span>{% endif %}
-      </div>
-    </div>
-    <div>
-      <div tabindex="0" class="tip text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)"
-           data-tip="Suggested stake in dollars at $100 bankroll. Quarter-Kelly with correlation discount.">Kelly</div>
-      <div class="text-sm md:text-base font-semibold font-mono" style="color:var(--cv-accent)">
-        {% if bet.kelly_stake_dollars is not none %}${{ '%.2f'|format(bet.kelly_stake_dollars) }}{% else %}<span class="pending">—</span>{% endif %}
+      <div class="text-sm md:text-base font-semibold font-mono {% if bet.ev_pct is not none and bet.ev_pct > 0 %}num-pos{% elif bet.ev_pct is not none and bet.ev_pct < 0 %}num-neg{% else %}num-zero{% endif %}">
+        {% if bet.ev_pct is not none %}{% if bet.ev_pct > 100 %}+100%+{% else %}{{ '%+.1f'|format(bet.ev_pct) }}%{% endif %}{% else %}<span class="pending">—</span>{% endif %}
       </div>
     </div>
   </div>
 
   <div class="mt-3 text-xs flex flex-wrap items-center gap-x-3 gap-y-1" style="color:var(--cv-muted)">
-    {% if bet.spark_last5 %}
-      {% set _smin = bet.spark_last5|min %}{% set _smax = bet.spark_last5|max %}{% set _span = (_smax - _smin) or 1 %}
-      <svg width="68" height="18" viewBox="0 0 68 18" aria-hidden="true" style="overflow:visible">
-        {% for v in bet.spark_last5 %}
-          {% set x = loop.index0 * (60 / (bet.spark_last5|length - 1 if (bet.spark_last5|length) > 1 else 1)) + 4 %}
-          {% set y = 16 - ((v - _smin) / _span) * 14 %}
-          {% if not loop.first %}<line x1="{{ _prev_x }}" y1="{{ _prev_y }}" x2="{{ x }}" y2="{{ y }}" stroke="{{ bet.team_color or '#60a5fa' }}" stroke-width="1.5"/>{% endif %}
-          <circle cx="{{ x }}" cy="{{ y }}" r="1.6" fill="{{ bet.team_color or '#60a5fa' }}"/>
-          {% set _prev_x = x %}{% set _prev_y = y %}
-        {% endfor %}
-        {% if bet.line is not none %}
-          {% set line_y = 16 - ((bet.line - _smin) / _span) * 14 %}
-          {% if line_y >= 0 and line_y <= 16 %}<line x1="4" y1="{{ line_y }}" x2="64" y2="{{ line_y }}" stroke="#94a3b8" stroke-width="0.5" stroke-dasharray="2,2"/>{% endif %}
-        {% endif %}
-      </svg>
-    {% endif %}
-    {% if bet.last_5_median is not none %}<span>L5 med <b style="color:var(--cv-text)">{{ '%g'|format(bet.last_5_median) }}</b></span>{% else %}<span class="pending">L5 —</span>{% endif %}
-    {% if bet.season_median is not none %}<span>season <b style="color:var(--cv-text)">{{ '%g'|format(bet.season_median) }}</b></span>{% else %}<span class="pending">season —</span>{% endif %}
     <span class="tip" tabindex="0" data-tip="Model's probability the bet hits, derived from q50 and per-stat residual variance.">model
       <b style="color:var(--cv-text)">
         {% if bet.model_prob is not none %}{{ '%.1f'|format(bet.model_prob * 100) }}%{% else %}—{% endif %}
@@ -92,16 +94,121 @@
         {% if bet.market_prob is not none %}{{ '%.1f'|format(bet.market_prob * 100) }}%{% else %}—{% endif %}
       </b>
     </span>
+    {% if bet.model_prob is not none and bet.market_prob is not none %}
+      {% set _gap = (bet.model_prob - bet.market_prob) * 100.0 %}
+      <span class="tip" tabindex="0" data-tip="Gap between the model's hit-rate and the de-vig market line. Positive = model thinks the bet hits more often than the market is pricing.">gap
+        <b class="{% if _gap > 0 %}num-pos{% elif _gap < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(_gap) }}pp</b>
+      </span>
+    {% endif %}
   </div>
 
-  {% if bet.all_books and bet.all_books|length > 1 %}
-    <div class="mt-2 flex flex-wrap gap-1 text-[10px] md:text-xs font-mono" style="color:var(--cv-muted)">
+  {# ── Live per-book ladder (live only — each book shows its own line + O/U) ── #}
+  {% if bet.all_books_live is defined and bet.all_books_live %}
+    <div class="mt-2 flex flex-wrap gap-1 text-[10px] md:text-xs font-mono bet-shop-row bet-shop-live" style="color:var(--cv-muted)">
+      <span>live lines:</span>
+      {% for b in bet.all_books_live %}
+        {% set _is_best = (b.book == bet.best_book and b.line == bet.line) %}
+        <span data-book="{{ b.book }}"
+              class="px-1.5 py-0.5 rounded"
+              style="border:1px solid {% if _is_best %}var(--cv-accent){% else %}var(--cv-border){% endif %};color:{% if _is_best %}var(--cv-accent){% else %}var(--cv-muted){% endif %}">
+          {{ b.book }} <b>{{ '%g'|format(b.line) }}</b>
+          {% if bet.side == 'OVER' %}
+            O{% if b.over is not none %}<b>{{ '%+d'|format(b.over) }}</b>{% endif %}
+          {% elif bet.side == 'UNDER' %}
+            U{% if b.under is not none %}<b>{{ '%+d'|format(b.under) }}</b>{% endif %}
+          {% else %}
+            O{% if b.over is not none %}{{ '%+d'|format(b.over) }}{% endif %} U{% if b.under is not none %}{{ '%+d'|format(b.under) }}{% endif %}
+          {% endif %}
+        </span>
+      {% endfor %}
+      {% if bet.all_books_live|length == 1 %}
+        <span style="color:var(--cv-subtle)">· only live book right now</span>
+      {% endif %}
+    </div>
+  {% elif bet.all_books %}
+    <div class="mt-2 flex flex-wrap gap-1 text-[10px] md:text-xs font-mono bet-shop-row" style="color:var(--cv-muted)">
       <span>shop:</span>
       {% for b in bet.all_books %}
-        <span class="px-1.5 py-0.5 rounded" style="border:1px solid {% if loop.first %}var(--cv-accent){% else %}var(--cv-border){% endif %};color:{% if loop.first %}var(--cv-accent){% else %}var(--cv-muted){% endif %}">
+        <span data-book="{{ b.book }}" class="px-1.5 py-0.5 rounded" style="border:1px solid {% if loop.first %}var(--cv-accent){% else %}var(--cv-border){% endif %};color:{% if loop.first %}var(--cv-accent){% else %}var(--cv-muted){% endif %}">
           {{ b.book }}{% if b.price is not none %} <b>{{ '%+d'|format(b.price) }}</b>{% endif %}
         </span>
       {% endfor %}
+      {% if bet.all_books|length == 1 %}
+        <span style="color:var(--cv-subtle)">· only book posting this line right now</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ── Kelly stake ───────────────────────────────────────────────────────── #}
+  {% set _kelly = bet.kelly_stake_dollars if (bet.kelly_stake_dollars is defined and bet.kelly_stake_dollars is not none) else (bet.kelly_dollars if bet.kelly_dollars is defined else none) %}
+  {% if _kelly is not none %}
+    <div class="mt-1 text-[10px] font-mono bet-kelly-line"
+         title="Kelly-sized stake at the best posted price given model edge and bankroll. Size down in live mode if the line has moved.">
+      Kelly stake: <b class="bet-kelly-value" style="color:var(--cv-accent)">${{ '%.0f'|format(_kelly) }}</b>
+    </div>
+  {% endif %}
+
+  {# ── When-to-bet badge ──────────────────────────────────────────────────── #}
+  {% if bet.conf_tier or bet.entry_label %}
+    {% set _ct = bet.conf_tier|default('') %}
+    {% set _cp = bet.conf_pct %}
+    {% set _el = bet.entry_label|default('') %}
+    {% set _ct_color = '#22c55e' if _ct == 'High' else ('#60a5fa' if _ct == 'Solid' else '#94a3b8') %}
+    <div class="mt-1 flex flex-wrap gap-1 items-center bet-when-badge">
+      {% if _el %}
+        <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-semibold"
+              style="background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.35);color:#60a5fa;letter-spacing:0.04em"
+              title="When-to-bet entry signal">{{ _el }}</span>
+      {% endif %}
+      {% if _ct %}
+        <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-semibold bet-conf-badge"
+              style="background:rgba({{ '34,197,94' if _ct == 'High' else ('96,165,250' if _ct == 'Solid' else '148,163,184') }},0.12);border:1px solid {{ _ct_color }};color:{{ _ct_color }};letter-spacing:0.04em"
+              title="Model confidence tier: High ≥70%, Solid 55–70%, Lean <55%">
+          {% if _cp is defined and _cp is not none %}{{ '%.0f'|format(_cp * 100) }}% {% endif %}{{ _ct }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ── Line-movement display ──────────────────────────────────────────────── #}
+  {% if bet.line_delta is defined and bet.line_delta is not none %}
+    {% set _ldir = bet.line_dir_vs_proj|default('flat') %}
+    {% set _arrow_color = '#22c55e' if _ldir == 'toward' else ('#f87171' if _ldir == 'away' else '#94a3b8') %}
+    {% set _arrow = '↑' if bet.line_delta > 0 else ('↓' if bet.line_delta < 0 else '→') %}
+    <div class="mt-1 text-[10px] font-mono bet-line-move"
+         title="Line movement since open. toward=line moving in direction our projection favors (green), away=unfavorable (red).">
+      line <span class="bet-line-open">{{ '%g'|format(bet.line_open) if bet.line_open is not none else '?' }}</span>
+      <span style="color:{{ _arrow_color }};font-weight:700" class="bet-line-arrow">{{ _arrow }}</span>
+      <span style="color:{{ _arrow_color }}" class="bet-line-current">{{ '%g'|format(bet.line_current) if bet.line_current is not none else '?' }}</span>
+      <span style="color:{{ _arrow_color }}" class="bet-line-delta">({{ '%+g'|format(bet.line_delta) }})</span>
+      {% if bet.line_velocity_per_min is not none and bet.line_velocity_per_min != 0 %}
+        <span style="color:var(--cv-subtle)" class="bet-line-vel">{{ '%+.3f'|format(bet.line_velocity_per_min) }}/min</span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ── Stale-price badge ──────────────────────────────────────────────────── #}
+  {% if bet.live_regraded_stale_price %}
+    <div class="mt-1 text-[9px] md:text-[10px] bet-stale-price-pill">
+      <span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:9px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.45);color:#f59e0b;font-weight:600;letter-spacing:0.04em"
+            title="Live regrading used a stale price — EV/Kelly may be off. Refresh or wait for fresh quote.">
+        ⚠ stale price
+      </span>
+    </div>
+  {% endif %}
+
+  {# ── Freshness indicator ────────────────────────────────────────────────── #}
+  {% if bet.freshest_book_age_min is not none %}
+    {% set _age = bet.freshest_book_age_min %}
+    <div class="mt-1 text-[10px] font-mono bet-freshness-pill"
+         title="Age of most recently captured book quote for this prop">
+      {% if _age < 5 %}
+        <span style="color:#22c55e">● fresh</span>
+      {% elif _age < 30 %}
+        <span style="color:var(--cv-subtle)">● updated {{ _age|int }}m ago</span>
+      {% else %}
+        <span style="color:#f59e0b">⚠ lines stale ({{ _age|int }}m)</span>
+      {% endif %}
     </div>
   {% endif %}
 

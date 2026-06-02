@@ -2,6 +2,18 @@
 # CourtVision -- .gitignore
 # =============================================================================
 
+# -- SECRETS: scripts with a hardcoded the-odds-api key (2026-06 audit) --------
+# These are gitignored so a `git add -A` cannot publish the key. To track them,
+# move the key to .env (os.environ / $env:THE_ODDS_API_KEY) and remove these lines.
+scripts/courtvision_tonight.ps1
+scripts/cv_fix_fetch_closing.py
+scripts/cv_fix_validate_market.py
+scripts/restart_uvicorn.ps1
+scripts/uvicorn_watchdog.ps1
+# -- PII: resume builders with personal phone/home-city hardcoded --------------
+scripts/build_cv_resume.py
+scripts/build_resume.py
+
 # -- Large Binaries / Video ---------------------------------------------------
 data/videos/
 data/pm/
@@ -38,7 +50,10 @@ data/models/
 !data/models/load_management.json
 
 # -- NBA API data (fetched by ingest pipeline, not committed) -----------------
-data/nba/
+# Use /* not / so the whitelist re-inclusions actually work (gitignore semantics)
+data/nba/*
+!data/nba/team_stats_*.json
+!data/nba/player_avgs_*.json
 
 # -- CatBoost training logs (auto-created in CWD on every fit) ----------------
 catboost_info/

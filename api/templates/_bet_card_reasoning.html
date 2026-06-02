@@ -1,9 +1,44 @@
 <div class="border-t pt-3" style="border-color:var(--cv-border)">
-  <div class="text-[10px] uppercase tracking-wider mb-1" style="color:var(--cv-subtle)">Why this bet</div>
-  <p class="text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+  <div class="text-[10px] uppercase tracking-wider mb-2" style="color:var(--cv-subtle)">Why this bet</div>
 
+  {# ── Headline projection: model thinks this number, line sits here ── #}
+  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm" style="color:var(--cv-text)">
+    <span>
+      Model projects
+      <b style="color:var(--cv-accent)">{{ '%.1f'|format(bet.q50) if bet.q50 is not none else '—' }}</b>
+      {{ bet.prop_stat }}
+    </span>
+    <span style="color:var(--cv-muted)">·</span>
+    <span style="color:var(--cv-muted)">
+      line <b style="color:var(--cv-text)">{{ '%g'|format(bet.line) if bet.line is not none else '—' }}</b>
+    </span>
+    <span style="color:var(--cv-muted)">·</span>
+    <span>
+      taking the
+      <b class="{% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}" style="padding:1px 6px;border-radius:3px;font-size:11px;">{{ bet.side }}</b>
+      by
+      {% if bet.edge_units is not none %}<b class="{% if bet.edge_units > 0 %}num-pos{% elif bet.edge_units < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.2f'|format(bet.edge_units) }}</b>{% else %}<span class="pending">—</span>{% endif %}
+    </span>
+  </div>
+
+  {# ── Hit-rate vs market translation ── #}
+  {% if (bet.model_prob|default(none)) is not none and (bet.market_prob|default(none)) is not none %}
+    {% set _gap_pp = (bet.model_prob - bet.market_prob) * 100.0 %}
+    <p class="mt-2 text-sm" style="color:var(--cv-text)">
+      Model hits this <b>{{ '%.0f'|format(bet.model_prob * 100) }}%</b> of the time vs market-implied <b>{{ '%.0f'|format(bet.market_prob * 100) }}%</b> —
+      <b class="{% if _gap_pp > 0 %}num-pos{% elif _gap_pp < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(_gap_pp) }}pp</b> edge over the de-vig price.
+    </p>
+  {% endif %}
+
+  {# ── LLM narrative (Haiku) — gives the qualitative read ── #}
+  {% if bet.narrative_text %}
+    <p class="mt-2 text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+  {% endif %}
+
+  {# ── Top model features driving the projection ── #}
   {% if bet.top_features %}
-    <ul class="mt-2 text-xs space-y-1 font-mono">
+    <div class="mt-3 text-[10px] uppercase tracking-wider" style="color:var(--cv-subtle)">Top drivers</div>
+    <ul class="mt-1 text-xs space-y-1 font-mono">
       {% for f in bet.top_features %}
         <li class="flex justify-between">
           <span style="color:var(--cv-muted)">{{ f.name }}</span>
@@ -18,20 +53,10 @@
         </li>
       {% endfor %}
     </ul>
-  {% else %}
-    <div class="mt-2 text-xs pending">top features · data not yet wired</div>
   {% endif %}
 
-  {% if bet.all_books and bet.all_books|length > 1 %}
-    <div class="mt-2 text-xs" style="color:var(--cv-muted)">
-      Books:
-      {% for b in bet.all_books %}
-        <span class="font-mono">{{ b.book }} {{ '%+d'|format(b.price) }}</span>{% if not loop.last %} · {% endif %}
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <div class="mt-2 text-xs" style="color:var(--cv-subtle)">
+  {# ── Game-context one-liner ── #}
+  <div class="mt-3 text-xs" style="color:var(--cv-subtle)">
     stars available: {% if bet.stars_available_flag %}<span class="num-pos">yes</span>{% else %}<span class="num-neg">no</span>{% endif %}
     {% if bet.minutes_proj is not none %}· min proj {{ '%g'|format(bet.minutes_proj) }}{% endif %}
     {% if bet.pace_proj is not none %}· pace proj {{ '%g'|format(bet.pace_proj) }}{% endif %}

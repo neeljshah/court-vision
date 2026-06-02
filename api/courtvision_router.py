@@ -20,6 +20,18 @@ from api._courtvision_data import (
     grade_bet, load_lines_csv, load_slate_csv, slate_no_lines,
 )
 
+# Pre-import heavy ML deps at module load time (happens once during server
+# startup) so the first cache-miss _build_slate call is not penalised by
+# the 1.2s lightgbm + sklearn cold-import tax.
+try:
+    import lightgbm as _lgb_pre  # noqa: F401
+except ImportError:
+    pass
+try:
+    import sklearn as _sk_pre  # noqa: F401
+except ImportError:
+    pass
+
 try:
     from slowapi import Limiter
     from slowapi.util import get_remote_address
@@ -103,7 +115,7 @@ _ROOT = _HERE.parent
 _TEMPLATES = Jinja2Templates(directory=str(_HERE / "templates"))
 _PRED_DIR = _ROOT / "data" / "predictions"
 _LINES_DIR = _ROOT / "data" / "lines"
-_BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 50, 300, 8
+_BANKROLL_DEFAULT, _TOP_N, _TTL_SEC, _SHARE_TOP_N = 100.0, 50, 8, 8  # _TTL_SEC 30->8: faster live refresh
 _PUBLIC_BASE_URL = __import__("os").environ.get("COURTVISION_PUBLIC_URL", "").rstrip("/")
 _STAT_SIGMA = {"pts": 6.2, "reb": 2.6, "ast": 2.0, "fg3m": 1.4, "stl": 1.0, "blk": 0.9, "tov": 1.2}  # Empirically calibrated against 50K OOF rows per stat (pregame_oof.parquet) — tail-aware: each value is the smallest multiplier of the residual std where empirical 2σ coverage ≥ 95% AND 3σ coverage ≥ 99% (i.e., honest about fat tails without being over-conservative). Previous (8.5/3.6/2.6/1.7/1.4/1.0/1.7) was ~1.4x too wide vs the OOF residual distribution.
 _STATS = tuple(_STAT_SIGMA.keys())
@@ -242,14 +254,89 @@ def _regrade_bet_with_live_q50(bet: dict, new_q50: float,
     stat = (bet.get("prop_stat") or "").lower()
     sigma = stat_sigma.get(stat, 1.0)
     line = float(bet["line"])
-    price = int(bet["best_price"])
+
+    # Original (pregame / prior) side+price — used as the safe fallback when a
+    # live flip lands on a side that has NO book price (so we never show a
+    # flipped side carrying the wrong-side odds).
+    orig_side = (bet.get("side") or ("OVER" if new_q50 >= line else "UNDER")).upper()
+    orig_price = bet.get("best_price")
 
     side = "OVER" if new_q50 >= line else "UNDER"
+    flipped = side != orig_side
+    # ALWAYS reselect best_book/best_price for the (possibly new) side using
+    # the full per-book over+under ladder stored at slate-build time.
+    # Filter ladder to ONLY books that (a) have a real price on the new side
+    # AND (b) are FRESH (< 15 min old). Otherwise stale 32-hour-old BetMGM
+    # quotes win as "best price" against live DK/FanDuel.
+    side_key = "over_odds" if side == "OVER" else "under_odds"
+    ladder = bet.get("_books_full") or []
+    from datetime import datetime as _dt2, timezone as _tz2  # noqa: PLC0415
+    _now_dt = _dt2.now(_tz2.utc)
+    FRESH_LADDER_SEC = 900  # 15 minutes
+    def _ladder_fresh(b):
+        ts = (b.get("captured_at") or "").strip()
+        if not ts:
+            return False
+        try:
+            dt = _dt2.fromisoformat(ts.replace("Z", "+00:00"))
+            return (_now_dt - dt).total_seconds() <= FRESH_LADDER_SEC
+        except (ValueError, TypeError):
+            return False
+    real_quotes = [b for b in ladder
+                   if b.get(side_key) is not None and _ladder_fresh(b)]
+    stale_fallback = False
+    if not real_quotes:
+        # No fresh quotes — fall back to any real quote regardless of age,
+        # so the bet still has a defensible price (just slightly stale).
+        any_age = [b for b in ladder if b.get(side_key) is not None]
+        if any_age:
+            stale_fallback = True
+        real_quotes = any_age
+    if stale_fallback:
+        # Bug 2: surface that the price backing this regrade is an any-age
+        # (>15 min) quote so the UI can warn the user it may be stale.
+        bet["live_regraded_stale_price"] = True
+    if real_quotes:
+        best = max(real_quotes, key=lambda b: int(b[side_key]))
+        bet["best_book"] = best.get("book")
+        bet["best_price"] = int(best[side_key])
+        # Update per-side all_books for the NEW side using only real quotes
+        bet["all_books"] = sorted(
+            [{"book": b["book"], "price": int(b[side_key])}
+             for b in real_quotes],
+            key=lambda r: -r["price"])
+    else:
+        # No book (any age) has a price for the NEW side.
+        bet["live_regraded_no_price"] = True
+        if flipped and orig_price is not None:
+            # Bug 1: the live q50 flipped the side but the new side is unpriced.
+            # Do NOT keep the flipped label on top of the OLD side's odds — that
+            # shows a wrong-side price. Revert to the original side+price and
+            # regrade the ORIGINAL side against the live q50 instead.
+            side = orig_side
+            side_key = "over_odds" if side == "OVER" else "under_odds"
+        # else: not flipped (same side, just lost its price), or no original
+        # price to fall back to — keep whatever best_price already on the bet.
+
+    if bet.get("best_price") is None:
+        # Nothing priced at all (no fresh, no any-age, no original) — cannot do
+        # price-based EV/Kelly math. Mark, keep prior values, and bail out so we
+        # don't divide by a fake price or rank a no-price card.
+        bet["live_regraded_no_price"] = True
+        bet["live_regraded"] = True
+        bet["live_q50"] = round(new_q50, 3)
+        bet["q50"] = round(new_q50, 3)
+        bet["side"] = side
+        bet["edge_units"] = round(new_q50 - line, 3)
+        return
+
+    price = int(bet["best_price"])
+
     z = (line - new_q50) / sigma
     p_over = 1.0 - _cdf(z)
     model_prob = p_over if side == "OVER" else (1.0 - p_over)
 
-    payout = float(price) if price > 0 else 10000.0 / abs(price)
+    payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
     ev_capped = False
     if model_prob > cap_model_prob:
         model_prob = cap_model_prob
@@ -275,14 +362,134 @@ def _regrade_bet_with_live_q50(bet: dict, new_q50: float,
     bet["live_regraded"] = True
     bet["live_q50"] = round(new_q50, 3)
 
+    # Regenerate narrative text using the live-regraded values
+    try:
+        bet["narrative_text"] = _build_live_narrative(bet, new_q50)
+    except Exception:
+        pass  # Keep pregame text if generation fails
 
-def _build_box_score(date: str, away_abbr: str, home_abbr: str) -> dict:
+
+def _build_live_narrative(bet: dict, new_q50: float) -> str:
+    """Return a live-update narrative sentence for a regraded bet card.
+
+    Uses only fields already present in *bet* after mutation by
+    _regrade_bet_with_live_q50; handles any missing field gracefully.
+    """
+    _STAT_FULL = {
+        "pts": "points", "reb": "rebounds", "ast": "assists",
+        "fg3m": "three-pointers made", "stl": "steals",
+        "blk": "blocks", "tov": "turnovers",
+    }
+    player = bet.get("player_name") or "Player"
+    opp = bet.get("opp") or "opponent"
+    stat_key = (bet.get("prop_stat") or "").lower()
+    stat_word = _STAT_FULL.get(stat_key, (bet.get("prop_stat") or stat_key).upper())
+    side = (bet.get("side") or "OVER").upper()
+    try:
+        line = float(bet["line"])
+    except (KeyError, TypeError, ValueError):
+        line = 0.0
+    abs_edge = abs(new_q50 - line)
+    arrow = "below" if side == "UNDER" else "above"
+    model_prob = float(bet.get("model_prob") or 0.0)
+    market_prob_raw = bet.get("market_prob")
+    best_book = bet.get("best_book") or ""
+    best_price_raw = bet.get("best_price")
+
+    # Build price phrase (American odds)
+    if best_price_raw is not None:
+        try:
+            bp = int(best_price_raw)
+            price_phrase = f"+{bp}" if bp > 0 else str(bp)
+        except (ValueError, TypeError):
+            price_phrase = str(best_price_raw)
+    else:
+        price_phrase = "N/A"
+
+    # Edge in percentage points vs market
+    if market_prob_raw is not None:
+        try:
+            market_prob = float(market_prob_raw)
+            edge_pp = (model_prob - market_prob) * 100.0
+            market_part = (
+                f"Model hits this {model_prob * 100:.0f}% of the time vs "
+                f"market-implied {market_prob * 100:.0f}% — {edge_pp:+.1f}pp edge."
+            )
+        except (ValueError, TypeError):
+            market_part = f"Model hits this {model_prob * 100:.0f}% of the time."
+    else:
+        market_part = f"Model hits this {model_prob * 100:.0f}% of the time."
+
+    book_part = (
+        f" Best price: {best_book} at {price_phrase}."
+        if best_book
+        else ""
+    )
+
+    return (
+        f"Live update: model now projects {player} for {new_q50:.1f} {stat_word} vs {opp} — "
+        f"{abs_edge:.2f} {arrow} the {line:g} line, so we take the {side}. "
+        f"{market_part}{book_part}"
+    )
+
+
+def _box_pred_parquet_for(date: str, game_id: str = "") -> "Optional[Path]":
+    """Resolve the first existing predictions_cache parquet for a matchup,
+    trying ET-date semantics so a pregame box renders even when the caller
+    passes the UTC calendar date.
+
+    predictions_cache is keyed by ET game date (e.g. 2026-05-30). Callers
+    sometimes pass the UTC calendar date (e.g. 2026-05-31 for a game tipping
+    at 2026-05-31T00:10Z = 2026-05-30 8:10 PM ET). Probe, in order:
+      1. `date` as given
+      2. the ET date derived from the game's start_time (games_lookup)
+      3. `date - 1 day`
+    and return the first parquet that exists, else None.
+    """
+    from datetime import datetime as _dt, timedelta as _td  # noqa: PLC0415
+    cache_dir = _ROOT / "data" / "cache"
+    candidates: list[str] = []
+
+    def _add(d: str) -> None:
+        if d and d not in candidates:
+            candidates.append(d)
+
+    _add(date)
+    # ET date of the game's start_time, resolved via games_lookup.
+    if game_id:
+        try:
+            info = _load_games_lookup().get(str(game_id)) or {}
+            st = info.get("start_time") or info.get("start_time_iso") or ""
+            if st:
+                _add(_et_date_from_iso(st))
+        except Exception:
+            pass
+    # date - 1 day (ET is at most 5h behind UTC; an evening tip is 1 day back).
+    try:
+        _add((_dt.strptime(date, "%Y-%m-%d") - _td(days=1)).strftime("%Y-%m-%d"))
+    except (ValueError, OverflowError):
+        pass
+
+    for d in candidates:
+        pq = cache_dir / f"predictions_cache_{d}.parquet"
+        if pq.exists():
+            return pq
+    return None
+
+
+def _build_box_score(date: str, away_abbr: str, home_abbr: str,
+                     game_id: str = "") -> dict:
     """Projected per-player box score for a matchup, pivoted from
     predictions_cache_<date>.parquet. Pregame-only; live overlay is added
-    client-side by polling /api/live/<game_id>."""
+    client-side by polling /api/live/<game_id>.
+
+    ET-date fallback: predictions_cache is keyed by ET game date. When the
+    parquet for `date` is missing, fall back to the ET date of the game's
+    start_time and then `(date - 1 day)` (see _box_pred_parquet_for).
+    """
     import pandas as pd  # noqa: PLC0415
-    pq = _ROOT / "data" / "cache" / f"predictions_cache_{date}.parquet"
-    if not pq.exists():
+    pq = _box_pred_parquet_for(date, game_id)
+    if pq is None:
         return {"away": None, "home": None, "have_data": False, "stats": list(_BOX_STATS)}
     try:
         df = pd.read_parquet(pq)
@@ -337,6 +544,103 @@ def _build_box_score(date: str, away_abbr: str, home_abbr: str) -> dict:
 router = APIRouter()
 _CACHE: dict = {}
 
+# Short-TTL cache for _today_et() — the function walks the live/ and lines/
+# directories with 3496+ stat() calls per invocation.  Caching for 10s
+# eliminates ~0.1s on every cache-miss _build_slate call while keeping
+# the "live game date" logic fresh enough for real-time use.
+_TODAY_ET_CACHE: tuple[float, str] = (0.0, "")
+_TODAY_ET_TTL = 10.0  # seconds
+
+def _is_epoch_snap(p: "Path") -> bool:
+    """True only for real epoch-timestamped snapshots ({gid}_<digits>.json).
+
+    The poller also writes NAMED SENTINEL files — {gid}_pregame.json,
+    {gid}_final.json, {gid}_endq3.json — whose stems end in a word, not an
+    epoch. Those sentinels sort AFTER epoch files in ASCII order ('p'/'f'/'e'
+    all exceed any digit), so a naive `sorted(...)[-1]` snapshot picker would
+    return e.g. _pregame.json (no players / no period / no game_status),
+    silently disabling the live box score, live regrade, and the whole live
+    bet pipeline. Filter through this before sorting/picking by timestamp.
+    """
+    return p.stem.rpartition("_")[2].isdigit()
+
+
+def _epoch_snaps(live_dir: "Path", gid: str) -> "list[Path]":
+    """Sorted (ascending) list of epoch-timestamped snapshots for `gid`,
+    excluding named sentinel files. `[-1]` is the latest real snapshot."""
+    return sorted(
+        p for p in live_dir.glob(f"{gid}_*.json") if _is_epoch_snap(p)
+    )
+
+
+# Short-TTL cache for the live/ directory index.  Scanning 2965+ JSON files
+# with pathlib.iterdir() + is_file() costs ~70ms per call.  We cache the
+# {gid_prefix: Path} map for 5s (snapshot files are written every ~10s by
+# the poller, so 5s staleness never misses a real update cycle).
+_LIVE_DIR_INDEX_CACHE: tuple[float, dict] = (0.0, {})
+_LIVE_DIR_INDEX_TTL = 5.0  # seconds
+_LIVE_DIR_PATH = _ROOT / "data" / "live"
+
+
+def _get_live_dir_index() -> dict:
+    """Return a cached {gid_prefix: latest_path} index of data/live/*.json."""
+    global _LIVE_DIR_INDEX_CACHE
+    ts, idx = _LIVE_DIR_INDEX_CACHE
+    if idx and time.time() - ts < _LIVE_DIR_INDEX_TTL:
+        return idx
+    new_idx: dict = {}
+    if _LIVE_DIR_PATH.exists():
+        try:
+            for _p in _LIVE_DIR_PATH.iterdir():
+                if not _p.is_file() or _p.suffix != ".json":
+                    continue
+                # Skip named sentinel files ({gid}_pregame/_final/_endq3.json):
+                # they have no players/period and their stems sort AFTER epoch
+                # files, so they'd win the `_p.name > existing.name` race and
+                # poison the index with an empty snapshot.
+                if not _is_epoch_snap(_p):
+                    continue
+                _pfx = _p.stem.split("_")[0]
+                existing = new_idx.get(_pfx)
+                if existing is None or _p.name > existing.name:
+                    new_idx[_pfx] = _p
+        except Exception:
+            pass
+    _LIVE_DIR_INDEX_CACHE = (time.time(), new_idx)
+    return new_idx
+
+
+def _et_date_from_iso(iso_ts: str) -> str:
+    """Convert an ISO-8601 UTC timestamp to America/New_York YYYY-MM-DD.
+
+    NBA games are scheduled in ET. A 7:00 PM ET tipoff lives as
+    `YYYY-MM-DDT23:00:00Z` in the line CSVs — using UTC-date semantics
+    silently bumps tonight's game to tomorrow on the calendar. All
+    user-facing date strings on courtvision pages MUST go through this
+    helper. Returns "" on parse failure.
+    """
+    if not iso_ts or len(iso_ts) < 10:
+        return ""
+    try:
+        try:
+            from zoneinfo import ZoneInfo  # py3.9+
+            _ET = ZoneInfo("America/New_York")
+        except Exception:
+            _ET = None
+        norm = iso_ts.replace("Z", "+00:00")
+        if "+" not in norm[10:] and norm.count("-") < 3:
+            norm += "+00:00"
+        dt = datetime.fromisoformat(norm).astimezone(timezone.utc)
+        if _ET is not None:
+            return dt.astimezone(_ET).strftime("%Y-%m-%d")
+        # Fallback: ET is UTC-4 in DST (May-Nov), UTC-5 otherwise. We're
+        # firmly in EDT for the May 2026 playoffs, so a static -4 offset
+        # is correct here.
+        from datetime import timedelta as _td
+        return (dt + _td(hours=-4)).strftime("%Y-%m-%d")
+    except Exception:
+        return iso_ts[:10]
+
 
 def _today_et() -> str:
     """Default date: today if it has lines or a slate, else the next date with
@@ -347,20 +651,65 @@ def _today_et() -> str:
     fresh odds targeted at tomorrow's game (common during off-days between
     playoff games — odds are posted 2-3 days in advance).
     """
-    today = datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d")
+    global _TODAY_ET_CACHE
+    _cached_ts, _cached_val = _TODAY_ET_CACHE
+    if _cached_val and time.time() - _cached_ts < _TODAY_ET_TTL:
+        return _cached_val
+
+    # BUG 9 FIX: use Eastern time, not server-local, so a UTC host at
+    # 00:00-05:00 UTC doesn't land on tomorrow's date. Mirrors the
+    # ZoneInfo + EDT-fallback pattern used by _et_date_from_iso.
+    try:
+        from zoneinfo import ZoneInfo as _ZI  # noqa: PLC0415
+        _et_tz = _ZI("America/New_York")
+    except Exception:
+        _et_tz = None
+    if _et_tz is not None:
+        today = datetime.now(timezone.utc).astimezone(_et_tz).strftime("%Y-%m-%d")
+    else:
+        from datetime import timedelta as _tdd  # noqa: PLC0415
+        today = (datetime.now(timezone.utc) + _tdd(hours=-4)).strftime("%Y-%m-%d")
+    # Highest priority: if any game has a fresh snapshot (< 4 hr old) we use
+    # THAT snapshot's date so the home page lands on a live/recent game even
+    # when slate/lines CSVs haven't caught up. This is the "any game any time"
+    # contract — UI follows reality, not file existence.
+    def _cache_and_return(val: str) -> str:
+        global _TODAY_ET_CACHE
+        _TODAY_ET_CACHE = (time.time(), val)
+        return val
+
+    try:
+        import glob as _glob, json as _jrd  # noqa: PLC0415
+        snap_files = _glob.glob(str(_ROOT / "data" / "live" / "*.json"))
+        snap_files = [f for f in snap_files
+                      if time.time() - __import__("os").path.getmtime(f) < 4 * 3600]
+        if snap_files:
+            snap_files.sort(key=lambda f: __import__("os").path.getmtime(f), reverse=True)
+            try:
+                _d = _jrd.loads(open(snap_files[0], encoding="utf-8").read())
+                # Snapshot's game_id is NBA format (10-digit). The slate/lines
+                # date for that game is whatever the snapshot's captured_at
+                # date is in UTC.
+                _ca = _d.get("captured_at") or ""
+                if _ca and len(_ca) >= 10:
+                    return _cache_and_return(_et_date_from_iso(_ca) or _ca[:10])
+            except Exception:
+                pass
+    except Exception:
+        pass
     # Today wins if it has either a model slate OR fresh lines.
     if _slate_csv_path(today):
-        return today
+        return _cache_and_return(today)
     if _lines_exist_for(today):
-        return today
+        return _cache_and_return(today)
     # No data for today — look for the NEXT date with fresh lines (typical
     # case: today is an off-day, but DK/FD/etc. have already posted lines for
     # tomorrow / day-after).
     nxt = _next_lines_date(today)
     if nxt:
-        return nxt
+        return _cache_and_return(nxt)
     # Final fallback: most-recent slate (yesterday's results page).
-    return _latest_slate_date() or today
+    return _cache_and_return(_latest_slate_date() or today)
 
 
 def _lines_exist_for(date: str) -> bool:
@@ -428,32 +777,644 @@ def _latest_slate_date() -> Optional[str]:
 def _filter_to_mainline(line_rows: list[dict]) -> list[dict]:
     """Collapse alt-line ladders to one mainline row per (player, stat).
 
-    Sportsbooks publish many alt lines per prop (e.g. SGA pts at 19.5 / 24.5 /
-    28.5 / 29.5 / 30.5 / 40.5 / 43.5). Only the consensus line — usually the
-    one offered by the most books — is the real mainline; the rest are
-    juiced-vig alt markets. Grading every line as an independent bet inflates
-    EV (model trivially says "99% under 43.5" → fake +112% EV).
+    Sportsbooks publish many alt lines per prop. For LIVE-game props the line
+    keeps moving — DK might be at 15.5 while stale Caesars/MGM/etc. are still
+    showing yesterday's pregame 13.5. We want to surface the CURRENT mainline,
+    not the stale-book-count winner.
 
-    Mainline = the line with the most book entries. Ties broken by closeness
-    to the median of all lines for that (player, stat).
+    Picker order:
+      1. Count books quoted within the last 10 minutes per line. Highest fresh
+         count wins.
+      2. Tie → total book count (legacy behavior).
+      3. Tie → line closest to median of all lines for that (player, stat).
     """
     from collections import defaultdict
+    from datetime import datetime, timezone
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for r in line_rows:
         key = (str(r.get("player", "")).lower(), r.get("stat", ""))
         groups[key].append(r)
+    now = datetime.now(timezone.utc)
+    FRESH_CUTOFF_SEC = 600  # 10 minutes
+
+    def _fresh_count(row: dict) -> int:
+        n = 0
+        for b in (row.get("books") or []):
+            ts = (b.get("captured_at") or "").strip()
+            if not ts:
+                continue
+            try:
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                if (now - dt).total_seconds() <= FRESH_CUTOFF_SEC:
+                    n += 1
+            except (ValueError, TypeError):
+                continue
+        return n
+
     out: list[dict] = []
     for rows in groups.values():
         if len(rows) == 1:
             out.append(rows[0]); continue
-        max_books = max(len(r.get("books") or []) for r in rows)
-        candidates = [r for r in rows if len(r.get("books") or []) == max_books]
+        fresh_counts = [(r, _fresh_count(r)) for r in rows]
+        max_fresh = max(fc for _, fc in fresh_counts)
+        if max_fresh > 0:
+            candidates = [r for r, fc in fresh_counts if fc == max_fresh]
+        else:
+            # No fresh books for any line — fall back to total book count
+            max_books = max(len(r.get("books") or []) for r in rows)
+            candidates = [r for r in rows if len(r.get("books") or []) == max_books]
         if len(candidates) == 1:
             out.append(candidates[0]); continue
         lines = sorted(float(r["line"]) for r in rows)
         median_line = lines[len(lines) // 2]
         out.append(min(candidates, key=lambda r: abs(float(r["line"]) - median_line)))
     return out
+
+
+def _synthesize_bets_from_snapshots(
+    line_rows: list[dict],
+    stat_sigma: dict[str, float],
+    live_dir: "Path",
+    date: str,
+    *,
+    skip_keys: "set[tuple] | None" = None,
+    synthesized_flag: bool = False,
+    prefilled_live_maps: "dict[str, dict[tuple, float]] | None" = None,
+    prefilled_mp_maps: "dict[str, dict[str, float]] | None" = None,
+    prefilled_dir_index: "dict[str, 'Path'] | None" = None,
+) -> list[dict]:
+    """Build bet cards from live snapshots for line_rows that have no pregame slate row.
+
+    Args:
+        line_rows:           Raw rows from consolidate_for_slate / load_lines_csv.
+        stat_sigma:          Per-stat sigma dict (possibly playoff-widened).
+        live_dir:            Path to data/live/ directory.
+        date:                YYYY-MM-DD slate date (used to filter snapshots by captured_at).
+        skip_keys:           Set of (player_lower, stat) tuples already graded; skip these.
+        synthesized_flag:    If True, tag every bet with ``_slate_synthesized: True``
+                             (used when there is no pregame CSV at all).
+        prefilled_live_maps: Optional pre-built {game_id: {(name, stat): q50}} from the
+                             main live-regrade block in _build_slate. When supplied the
+                             function skips calling project_from_snapshot for those games,
+                             avoiding a duplicate expensive ML inference call.
+        prefilled_mp_maps:   Optional pre-built {game_id: {name_lower: minutes_played}}
+                             matching prefilled_live_maps.
+        prefilled_dir_index: Optional pre-built {gid_prefix: Path} from the caller's
+                             single iterdir() pass over live_dir. When supplied the
+                             function skips its own iterdir(), eliminating ~150ms of
+                             repeated stat() syscalls on the live/ directory.
+
+    Returns list of bet dicts (may be empty).
+    """
+    import json as _lrj  # noqa: PLC0415
+    try:
+        from src.prediction.live_engine import project_from_snapshot as _lr_pfs  # noqa: PLC0415
+        from api._courtvision_odds import resolve_game_id as _lr_rgid  # noqa: PLC0415
+    except Exception:
+        return []
+
+    _skip = skip_keys or set()
+    _snap_cache: dict[str, dict] = {}
+    # Seed the projection cache with any pre-computed maps from the main regrade.
+    _proj_cache: dict[str, dict[tuple, float]] = dict(prefilled_live_maps or {})
+    _mp_cache: dict[str, dict[str, float]] = dict(prefilled_mp_maps or {})
+
+    # For the synthesized (no-CSV) path we want snapshots from this calendar date.
+    # For the late-roster path (skip_keys non-empty) we take any snapshot.
+    def _snap_matches_date(snap: dict) -> bool:
+        if not synthesized_flag:
+            return True  # late-roster: accept any snapshot
+        ca = (snap.get("captured_at") or "")[:10]
+        return ca == date
+
+    # Build a map of all game_ids seen in line_rows to seed the snap search
+    _line_gids = list({str(ln.get("game_id") or "") for ln in line_rows if ln.get("game_id")})
+
+    # Use prefilled directory index if provided (avoids a second iterdir pass).
+    # Fall back to the module-level cached index (5s TTL) when called standalone.
+    if prefilled_dir_index is not None:
+        _live_dir_index: dict[str, Path] = prefilled_dir_index
+    else:
+        # Use the cached index to avoid the 70ms iterdir() on 2965 files.
+        _live_dir_index = _get_live_dir_index()
+
+    # Also collect all snapshot game_ids found in live_dir for no-CSV path
+    _all_snaps: dict[str, dict] = {}
+    for _gid_pfx, _fp in _live_dir_index.items():
+        try:
+            _s = _lrj.loads(_fp.read_text(encoding="utf-8"))
+            if _snap_matches_date(_s):
+                _all_snaps[_gid_pfx] = _s
+        except Exception:
+            pass
+
+    def _get_snap(gid: str) -> dict | None:
+        if gid in _snap_cache:
+            return _snap_cache[gid]
+        alias = _lr_rgid(gid)
+        canon = list(alias.get("canonical_ids", frozenset([gid]))) + [gid]
+        for cgid in canon:
+            snap_path = _live_dir_index.get(cgid)
+            if snap_path is not None:
+                try:
+                    snap = _lrj.loads(snap_path.read_text(encoding="utf-8"))
+                    if _snap_matches_date(snap):
+                        _snap_cache[gid] = snap
+                        return snap
+                except Exception:
+                    continue
+        _snap_cache[gid] = {}
+        return None
+
+    def _find_snap_for_player(player_lower: str) -> "tuple[str, dict] | tuple[None, None]":
+        for sgid, snap in _all_snaps.items():
+            for lp in (snap.get("players") or []):
+                if (lp.get("name") or "").lower() == player_lower:
+                    return sgid, snap
+        return None, None
+
+    bets: list[dict] = []
+    for ln in line_rows:
+        if ln["stat"] not in _STATS:
+            continue
+        key = (ln["player"].lower(), ln["stat"])
+        if key in _skip:
+            continue
+
+        gid = str(ln.get("game_id") or "")
+        snap = _get_snap(gid) if gid else None
+        if snap is None and not gid:
+            found_gid, snap = _find_snap_for_player(ln["player"].lower())
+            if found_gid:
+                gid = found_gid
+
+        q50: float | None = None
+        team = ""
+        opp = (ln.get("opp") or "").strip().upper()
+        venue = (ln.get("venue") or "").strip().lower()
+        player_id = ""
+
+        if snap and snap.get("period"):
+            if gid not in _proj_cache:
+                lm: dict[tuple, float] = {}
+                try:
+                    for r in (_lr_pfs(snap) or []):
+                        nm = (r.get("name") or "").lower()
+                        st_p = (r.get("stat") or "").lower()
+                        pf = r.get("projected_final")
+                        if nm and st_p and pf is not None:
+                            try:
+                                lm[(nm, st_p)] = float(pf)
+                            except (TypeError, ValueError):
+                                pass
+                except Exception:
+                    pass
+                _proj_cache[gid] = lm
+                _mp_cache[gid] = _shrink_player_minutes_from_snapshot(snap)
+
+            q50 = _proj_cache[gid].get(key)
+
+            if q50 is None:
+                for lp in (snap.get("players") or []):
+                    nm2 = (lp.get("name") or "").lower()
+                    if nm2 != ln["player"].lower():
+                        continue
+                    stat_val = lp.get(ln["stat"].lower(), 0) or 0
+                    mp_raw2 = lp.get("min") or lp.get("minutes") or 0
+                    if isinstance(mp_raw2, str) and ":" in mp_raw2:
+                        try:
+                            mm2, ss2 = mp_raw2.split(":", 1)
+                            mp2 = int(mm2) + int(ss2) / 60.0
+                        except Exception:
+                            mp2 = 0.0
+                    else:
+                        try:
+                            mp2 = float(mp_raw2 or 0)
+                        except (TypeError, ValueError):
+                            mp2 = 0.0
+                    q50 = float(stat_val) * (36.0 / max(mp2, 1.0))
+                    team = (lp.get("team") or "").strip().upper()
+                    break
+            else:
+                for lp in (snap.get("players") or []):
+                    if (lp.get("name") or "").lower() == ln["player"].lower():
+                        team = (lp.get("team") or "").strip().upper()
+                        break
+
+            if not opp and snap:
+                home = (snap.get("home_team") or "").upper()
+                away = (snap.get("away_team") or "").upper()
+                if team:
+                    opp = away if team == home else home
+                    venue = "home" if team == home else "away"
+
+        if q50 is None:
+            continue
+
+        synth_slate: dict = {
+            "date": date,
+            "game_id": gid,
+            "player_id": player_id or ln.get("player_id") or "",
+            "player_name": ln["player"],
+            "team": team or ln.get("team") or "",
+            "opp": opp,
+            "venue": venue,
+            "stat": ln["stat"],
+            "q50": q50,
+            "lineup_status": "LATE_ADD",
+            "lineup_class": None,
+            "play_pct": None,
+            "injury_status": "",
+        }
+        try:
+            bet = grade_bet(synth_slate, ln, stat_sigma, _BANKROLL_DEFAULT)
+            if synthesized_flag:
+                bet["_slate_synthesized"] = True
+            else:
+                bet["_late_roster"] = True
+            bets.append(bet)
+        except Exception:
+            pass
+
+    return bets
+
+
+_PREGAME_FALLBACK_CACHE: tuple[float, str, dict] | None = None
+_PREGAME_FALLBACK_TTL = 600.0  # 10 min: recent slate doesn't change often
+
+
+def _infer_teams_from_player_overlap(player_names: "list[str]") -> "tuple[str, str] | None":
+    """Given a list of player names from a future-game scrape with no
+    resolved game_id, look at the most recent slate CSV and vote on
+    away/home team abbrs. Returns (away, home) if at least 5 players
+    map to exactly 2 teams, else None.
+
+    This is the lifeline for tomorrow's game when the scrapers only
+    emit a KAMBI hex game_id that isn't in `games_lookup.json`. If the
+    players are the same OKC + SAS rosters as last night, we infer the
+    same OKC@SAS matchup. Speculative NBA Finals cards (NYK players +
+    a not-yet-determined West opponent) yield no recent-slate overlap
+    on the West side and get dropped — exactly what the user wants."""
+    if not player_names:
+        return None
+    q50_map = _pregame_q50_map_from_recent_slate()
+    if not q50_map:
+        return None
+    from collections import Counter
+    votes: Counter = Counter()
+    last_venue_by_team: dict[str, str] = {}
+    for nm in player_names:
+        key = (nm.lower(), "pts")
+        ref = q50_map.get(key)
+        if ref is None:
+            # Try any stat — the pts row may be filtered out for some
+            # players in some slates.
+            for st in ("reb", "ast", "fg3m", "stl", "blk", "tov"):
+                ref = q50_map.get((nm.lower(), st))
+                if ref:
+                    break
+        if ref is None:
+            continue
+        team = (ref.get("team") or "").strip().upper()
+        if team:
+            votes[team] += 1
+            v = (ref.get("venue") or "").strip().lower()
+            if v:
+                last_venue_by_team[team] = v
+    if not votes:
+        return None
+    top = votes.most_common(2)
+    if len(top) < 2 or top[0][1] < 5 or top[1][1] < 5:
+        return None
+    a, b = top[0][0], top[1][0]
+    # Assign away/home from the most-recent slate's venue if available.
+    if last_venue_by_team.get(a) == "home":
+        return (b, a)
+    if last_venue_by_team.get(a) == "away":
+        return (a, b)
+    # Default: alphabetical (stable display)
+    return (min(a, b), max(a, b))
+
+
+def _pregame_q50_map_from_recent_slate() -> dict[tuple[str, str], dict]:
+    """Build a {(player_name_lower, stat): slate_row} map from the most
+    recent `slate_YYYY-MM-DD.csv` file in data/predictions/.
+
+    Used as the FALLBACK source of pregame q50 when no slate CSV exists
+    for the requested date (typical for tomorrow + further-out games
+    where `predict_slate.py` hasn't run yet). The opponent/venue/team
+    columns from the most recent slate are kept as a best-effort proxy
+    — for ongoing playoff series this is usually the same matchup, so
+    q50 is close to opponent-adjusted; for fresh matchups it's a
+    coarse estimate.
+
+    Cached for 10 min on the latest-slate-date key so file I/O stays
+    cheap under request load.
+    """
+    global _PREGAME_FALLBACK_CACHE
+    latest = _latest_slate_date()
+    if not latest:
+        return {}
+    now_ts = time.time()
+    if (_PREGAME_FALLBACK_CACHE is not None
+            and _PREGAME_FALLBACK_CACHE[1] == latest
+            and now_ts - _PREGAME_FALLBACK_CACHE[0] < _PREGAME_FALLBACK_TTL):
+        return _PREGAME_FALLBACK_CACHE[2]
+    slate_path = _slate_csv_path(latest)
+    if slate_path is None:
+        return {}
+    out: dict[tuple[str, str], dict] = {}
+    try:
+        from api._courtvision_data import load_slate_csv as _lsc  # noqa: PLC0415
+        rows = _lsc(slate_path, _STATS)
+    except Exception:
+        return {}
+    for (_pid, stat), row in rows.items():
+        nm = (row.get("player_name") or "").strip().lower()
+        if not nm:
+            continue
+        out[(nm, stat)] = row
+    _PREGAME_FALLBACK_CACHE = (now_ts, latest, out)
+    return out
+
+
+def _synthesize_pregame_bets_from_recent_slate(
+    line_rows: list[dict],
+    stat_sigma: dict[str, float],
+    date: str,
+) -> list[dict]:
+    """Synthesize bet cards for a future / past date by reusing the most
+    recent slate CSV's per-player q50 predictions. Each line is graded
+    against the matched recent q50; the bet keeps the line's own
+    `game_id` (so per-game grouping on /results works) but inherits
+    team/opp/venue from the most recent slate."""
+    q50_map = _pregame_q50_map_from_recent_slate()
+    if not q50_map:
+        return []
+    from api._courtvision_data import grade_bet as _gb  # noqa: PLC0415
+    from api._courtvision_odds import resolve_game_id as _rgid  # noqa: PLC0415
+    bets: list[dict] = []
+    for ln in line_rows:
+        stat = ln.get("stat") or ""
+        if stat not in _STATS:
+            continue
+        key = ((ln.get("player") or "").lower(), stat)
+        ref = q50_map.get(key)
+        if ref is None:
+            continue
+        # team/opp/venue inherited from the recent slate can be STALE for a new
+        # matchup (e.g. home/away flipped between series games). Re-derive them
+        # from tonight's games_lookup using the line's game_id so the narrative
+        # ("vs" vs "away at") and venue label match reality. The player's team
+        # comes from the reference row; opponent + venue follow from the lookup.
+        _team = ref.get("team") or ""
+        _opp = ref.get("opp") or ""
+        _venue = ref.get("venue") or "home"
+        _alias = _rgid(ln.get("game_id") or ref.get("game_id") or "")
+        _home = (_alias.get("home_abbr") or "").upper()
+        _away = (_alias.get("away_abbr") or "").upper()
+        if _home and _away:
+            if _team.upper() == _home:
+                _venue, _opp = "home", _away
+            elif _team.upper() == _away:
+                _venue, _opp = "away", _home
+        synth_slate = {
+            "date":  date,
+            "player_id": ref.get("player_id") or "",
+            "player_name": ref.get("player_name") or ln.get("player") or "",
+            "team":  _team,
+            "opp":   _opp,
+            "venue": _venue,
+            "game_id": ln.get("game_id") or ref.get("game_id") or "",
+            "stat":  stat,
+            "q50":   ref.get("q50"),
+            "lineup_status": "PREGAME_FALLBACK",
+            "lineup_class": None,
+            "play_pct": None,
+            "injury_status": ref.get("injury_status") or "",
+        }
+        try:
+            bet = _gb(synth_slate, ln, stat_sigma, _BANKROLL_DEFAULT)
+            bet["_slate_synthesized"] = True
+            bet["_pregame_fallback_source_date"] = ref.get("date") or ""
+            bets.append(bet)
+        except Exception:
+            continue
+    return bets
+
+
+# ── Calibration display gate ───────────────────────────────────────────────
+# The prop model is currently miscalibrated: out-of-sample validation vs
+# closing lines shows REBOUNDS is the only PROVEN edge (~70% hit / +30% ROI),
+# while points/assists are coin-flips (~46-47%). A raw slate therefore surfaces
+# dozens of inflated +EV bets — the over-fit signature, not real edges. Model
+# recalibration is owned by a separate workstream; until it lands we gate the
+# DISPLAY to the few most-credible edges so the page never presents fabricated
+# value. We never silently truncate — the banner + n_bets_pre_gate field
+# surface exactly how much was held back.
+_PROVEN_STATS = {"reb"}        # the one OOS-validated market
+_CREDIBLE_CAP = 6              # max edges shown until the model is recalibrated
+_SANE_EV_CEILING = 25.0        # honest pregame prop EV rarely exceeds ~25%
+
+
+def _apply_calibration_gate(envelope: dict) -> dict:
+    """Down-select the EV-ranked slate to the VALIDATED best bets.
+
+    Applies the iter61 selection stack from src/prediction/bet_thresholds.py
+    (the same logic behind the +18.38% walk-forward result):
+      * per-stat allowed directions  (e.g. BLK is UNDER-only, Iter-51)
+      * per-stat raw-edge threshold   (e.g. PTS >= 1.0, Iter-39)
+      * Iter-54 zero-EV line-bucket exclusions (is_line_excluded)
+      * Iter-55/57 direction x line-bucket exclusions (is_direction_line_excluded)
+    Only bets that survive all four are shown — these are the "best bets".
+    Card format is unchanged (best book + price); no bankroll/Kelly changes.
+    Ranks survivors by EV (capped at the sane ceiling). Mutates and returns
+    ``envelope``.
+    """
+    bets = envelope.get("bets") or []
+    n_pre = len(bets)
+    if n_pre == 0:
+        envelope["calibration"] = {
+            "warning": False, "n_bets_pre_gate": 0, "n_shown": 0,
+        }
+        return envelope
+
+    try:
+        from src.prediction.bet_thresholds import (  # noqa: PLC0415
+            allowed_directions_for, edge_threshold_for,
+            is_line_excluded, is_direction_line_excluded, kelly_b_hit_rate_for,
+        )
+        _have_filters = True
+    except Exception as _bt_exc:  # pragma: no cover
+        __import__("logging").getLogger(__name__).warning(
+            "bet_thresholds import failed (%s) — slate shown unfiltered", _bt_exc)
+        _have_filters = False
+    try:
+        from src.prediction.edge_calibration import calibrate_p_win  # noqa: PLC0415
+        _have_calib = True
+    except Exception as _ec_exc:  # pragma: no cover
+        __import__("logging").getLogger(__name__).warning(
+            "edge_calibration import failed (%s) — EV shown uncalibrated", _ec_exc)
+        _have_calib = False
+
+    kept = []
+    for b in bets:
+        stat = str(b.get("prop_stat", "")).lower()
+        side = str(b.get("side", "OVER")).lower()          # 'over' / 'under'
+        try:
+            line = float(b.get("line"))
+        except (TypeError, ValueError):
+            line = None
+        edge_units = b.get("edge_units")
+        if edge_units is None and b.get("q50") is not None and line is not None:
+            try:
+                edge_units = float(b["q50"]) - line
+            except (TypeError, ValueError):
+                edge_units = None
+        try:
+            edge_mag = abs(float(edge_units)) if edge_units is not None else 0.0
+        except (TypeError, ValueError):
+            edge_mag = 0.0
+
+        if _have_filters:
+            if side not in allowed_directions_for(stat):
+                continue
+            if edge_mag < edge_threshold_for(stat):
+                continue
+            if line is not None and is_line_excluded(stat, line):
+                continue
+            if line is not None and is_direction_line_excluded(stat, side, line):
+                continue
+
+        # Honest probability: replace the naive Normal-CDF model_prob with the
+        # isotonic-calibrated win prob (edge_calibration, capped [0.50,0.90]),
+        # then recompute EV at the best price. Also recompute Kelly so
+        # kelly_stake_dollars/kelly_pct are sized off cal_p, not the stale
+        # naive prob (bug 6 fix).
+        if _have_calib and _have_filters:
+            try:
+                cal_p = calibrate_p_win(
+                    stat, edge_mag, edge_threshold_for(stat), kelly_b_hit_rate_for(stat))
+                price = int(b.get("best_price") or -110)
+                payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
+                b["model_prob_raw"] = b.get("model_prob")
+                b["model_prob"] = round(cal_p, 4)
+                b["ev_pct"] = round(cal_p * payout - (1.0 - cal_p) * 100.0, 2)
+                b["calibrated"] = True
+                # Recompute Kelly from calibrated prob (mirrors _reprice_slate_to_books)
+                from api._courtvision_data import _BETTING  # noqa: PLC0415
+                _ev_k = _BETTING.evaluate(cal_p, price, bankroll=_BANKROLL_DEFAULT)
+                b["kelly_stake_dollars"] = round(float(_ev_k.get("kelly_size") or 0.0), 2)
+                b["kelly_pct"] = round((b["kelly_stake_dollars"] / _BANKROLL_DEFAULT) * 100.0, 3)
+            except Exception:
+                pass
+
+        ev = b.get("ev_pct")
+        b["proven_market"] = True       # passed the validated selection stack
+        b["speculative"] = False
+        b["ev_suspect"] = ev is not None and ev > _SANE_EV_CEILING
+        kept.append(b)
+
+    def _rank_key(b):
+        return -min(b.get("ev_pct") or 0.0, _SANE_EV_CEILING)
+
+    kept.sort(key=_rank_key)
+    evs = [b["ev_pct"] for b in kept if b.get("ev_pct") is not None]
+    envelope["bets"] = kept
+    # Fixed book universe (every book quoting any kept bet) — chips are built
+    # from this so they don't collapse to one when re-priced to a single book.
+    envelope["all_books_universe"] = sorted(
+        {x.get("book") for b in kept for x in (b.get("all_books") or []) if x.get("book")}
+    )
+    envelope["summary"] = {
+        "n_bets": len(kept),
+        "avg_ev_pct": round(sum(evs) / len(evs), 2) if evs else 0.0,
+        "n_over": sum(1 for b in kept if b["side"] == "OVER"),
+        "n_under": sum(1 for b in kept if b["side"] == "UNDER"),
+    }
+    envelope["calibration"] = {
+        "warning": False,
+        "n_bets_pre_gate": n_pre,
+        "n_shown": len(kept),
+        "filtered": _have_filters,
+        "note": (
+            f"Best bets: {len(kept)} of {n_pre} raw edges survived the validated "
+            "iter-57 selection stack (per-stat direction + edge threshold + "
+            "zero-EV line-bucket pruning)." if _have_filters else
+            "WARNING: validated filter unavailable — showing unfiltered edges."
+        ),
+    }
+    return envelope
+
+
+def _reprice_slate_to_books(envelope: dict, book_keys) -> dict:
+    """Return a COPY of the slate re-priced to ONLY the bettor's book(s).
+
+    For each bet: restrict the per-book ladder to ``book_keys``, take the best
+    price for the model's side among them, recompute EV / market-implied prob /
+    Kelly, and DROP bets none of those books post. Re-sorts rebounds-first then
+    by EV. This is the casual-bettor flow: pick the book(s) you have and the
+    board instantly reshuffles to that book's best plays (multiple books → best
+    price across them, i.e. line-shopping). Empty ``book_keys`` → unchanged
+    (cross-book best, the default).
+    """
+    keys = [str(k).strip().lower() for k in (book_keys or []) if str(k).strip()]
+    if not keys:
+        return envelope
+    from api._courtvision_data import _BETTING  # the same evaluator grade_bet uses
+
+    def _match(bookname: str) -> bool:
+        bn = (bookname or "").strip().lower()
+        return bool(bn) and any(k in bn or bn in k for k in keys)
+
+    out_bets: list[dict] = []
+    for b0 in envelope.get("bets") or []:
+        full = b0.get("_books_full") or []
+        side = b0.get("side", "OVER")
+        side_key = "over_odds" if side == "OVER" else "under_odds"
+        sel = [x for x in full if _match(x.get("book")) and x.get(side_key) is not None]
+        if not sel:
+            continue  # none of the bettor's books post this prop → hide it
+        b = dict(b0)
+        best = max(sel, key=lambda x: int(x[side_key]))
+        odds = int(best[side_key])
+        mp = float(b.get("model_prob") or 0.0)
+        payout = (float(odds) if odds >= 100 else (10000.0 / abs(odds)) if odds <= -100 else 100.0)
+        ev_pct = mp * payout - (1.0 - mp) * 100.0
+        market_prob = (100.0 / (odds + 100.0)) if odds > 0 else (abs(odds) / (abs(odds) + 100.0))
+        try:
+            ev = _BETTING.evaluate(mp, odds, bankroll=_BANKROLL_DEFAULT)
+            kelly_dollars = float(ev.get("kelly_size") or 0.0)
+            kelly_pct = (kelly_dollars / _BANKROLL_DEFAULT) * 100.0 if _BANKROLL_DEFAULT else 0.0
+        except Exception:
+            kelly_dollars, kelly_pct = 0.0, 0.0
+        b["best_book"] = best["book"]
+        b["best_price"] = odds
+        b["ev_pct"] = round(ev_pct, 2)
+        b["market_prob"] = round(market_prob, 4)
+        b["kelly_pct"] = round(kelly_pct, 3)
+        b["kelly_stake_dollars"] = round(kelly_dollars, 2)
+        b["all_books"] = sorted(
+            [{"book": x["book"], "price": int(x[side_key])} for x in sel],
+            key=lambda r: -r["price"])
+        out_bets.append(b)
+
+    def _rank_key(b):
+        ev = min(b.get("ev_pct") or 0.0, _SANE_EV_CEILING)
+        return (not b.get("proven_market"), -ev)
+    out_bets.sort(key=_rank_key)
+
+    env = dict(envelope)
+    env["bets"] = out_bets
+    evs = [b["ev_pct"] for b in out_bets if b.get("ev_pct") is not None]
+    env["summary"] = {
+        "n_bets": len(out_bets),
+        "avg_ev_pct": round(sum(evs) / len(evs), 2) if evs else 0.0,
+        "n_over": sum(1 for b in out_bets if b["side"] == "OVER"),
+        "n_under": sum(1 for b in out_bets if b["side"] == "UNDER"),
+    }
+    env["repriced_books"] = keys
+    return env
 
 
 def _build_slate(date: str) -> dict:
@@ -465,11 +1426,71 @@ def _build_slate(date: str) -> dict:
 
     slate_path = _slate_csv_path(date)
     if slate_path is None:
-        envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
-            "bankroll_default_dollars": _BANKROLL_DEFAULT, "stale_data": True,
-            "has_lines": False, "latest_available": _latest_slate_date(),
-            "summary": {"n_bets": 0, "avg_ev_pct": 0.0, "n_over": 0, "n_under": 0},
-            "bets": []}
+        # ── No pregame CSV: attempt live-only synthesis ────────────
+        # If sportsbook lines exist for this date, synthesize bet cards
+        # entirely from live snapshots so the home page isn't empty.
+        try:
+            from api._courtvision_odds import consolidate_for_slate as _cfs  # noqa: PLC0415
+            _synth_line_rows = _filter_to_mainline(_cfs(date))
+        except Exception:
+            _synth_line_rows = []
+
+        if not _synth_line_rows:
+            envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
+                "bankroll_default_dollars": _BANKROLL_DEFAULT, "stale_data": True,
+                "has_lines": False, "latest_available": _latest_slate_date(),
+                "summary": {"n_bets": 0, "avg_ev_pct": 0.0, "n_over": 0, "n_under": 0},
+                "bets": []}
+            _CACHE[cache_key] = (time.time(), envelope)
+            return envelope
+
+        # Lines found — try recent-slate fallback FIRST (works pregame for
+        # future dates where no live snapshots exist yet); fall back to
+        # live-snapshot synthesis for live-in-progress games.
+        _sigma_synth = _stat_sigma_for_date(date)
+        _log_synth = __import__("logging").getLogger(__name__)
+        bets: list[dict] = []
+        try:
+            bets = _synthesize_pregame_bets_from_recent_slate(
+                _synth_line_rows, _sigma_synth, date,
+            )
+        except Exception as _exc_pg:
+            _log_synth.warning("pregame-fallback synthesis failed: %s", _exc_pg)
+            bets = []
+        if not bets:
+            _live_dir_synth = _ROOT / "data" / "live"
+            try:
+                bets = _synthesize_bets_from_snapshots(
+                    _synth_line_rows, _sigma_synth, _live_dir_synth, date,
+                    synthesized_flag=True,
+                )
+            except Exception as _synth_exc:
+                _log_synth.warning("live-only slate synthesis failed: %s", _synth_exc)
+                bets = []
+
+        bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
+        bets = bets[:_TOP_N]
+        try: from api._courtvision_form import attach_form; attach_form(bets)
+        except Exception as exc: _log_synth.warning("attach_form (synth): %s", exc)
+
+        evs = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+        envelope = {
+            "date": date,
+            "generated_at": datetime.utcnow().isoformat() + "Z",
+            "bankroll_default_dollars": _BANKROLL_DEFAULT,
+            "stale_data": True,
+            "slate_synthesized": True,
+            "has_lines": True,
+            "latest_available": _latest_slate_date(),
+            "summary": {
+                "n_bets": len(bets),
+                "avg_ev_pct": round(sum(evs) / len(evs), 2) if evs else 0.0,
+                "n_over": sum(1 for b in bets if b["side"] == "OVER"),
+                "n_under": sum(1 for b in bets if b["side"] == "UNDER"),
+            },
+            "bets": bets,
+        }
+        envelope = _apply_calibration_gate(envelope)
         _CACHE[cache_key] = (time.time(), envelope)
         return envelope
 
@@ -487,12 +1508,103 @@ def _build_slate(date: str) -> dict:
     line_rows = _filter_to_mainline(line_rows)
     has_lines = bool(line_rows)
     if has_lines:
-        ps_idx = {(r["player_name"].lower(), r["stat"]): r for r in slate_rows.values()}
+        # Use de-accented-lower as the join key so accented cache names
+        # ("Nikola Jokić" from predictions_cache) match ASCII book names
+        # ("Nikola Jokic" from sportsbook CSVs). Display names are untouched.
+        from api._courtvision_odds import _strip_accents as _sa  # noqa: PLC0415
+        ps_idx = {
+            (_sa(r["player_name"]).lower(), r["stat"]): r
+            for r in slate_rows.values()
+        }
         stat_sigma_for_slate = _stat_sigma_for_date(date)
-        bets = [grade_bet(ps_idx[(ln["player"].lower(), ln["stat"])], ln,
+        bets = [grade_bet(ps_idx[(_sa(ln["player"]).lower(), ln["stat"])], ln,
                           stat_sigma_for_slate, _BANKROLL_DEFAULT)
                 for ln in line_rows
-                if ln["stat"] in _STATS and (ln["player"].lower(), ln["stat"]) in ps_idx]
+                if ln["stat"] in _STATS
+                and (_sa(ln["player"]).lower(), ln["stat"]) in ps_idx]
+
+        # ── Build live projection maps once per game ─────────────────
+        # project_from_snapshot() is the expensive ML call (~0.4s/game).
+        # We build the (name, stat) → q50 map HERE, once per unique game_id,
+        # then reuse it for BOTH late-roster synthesis AND the live regrade
+        # below. This avoids calling project_from_snapshot twice for each game
+        # (previous bug: _synthesize_bets_from_snapshots built its own map,
+        # then the live-regrade loop built it again independently).
+        live_maps: dict[str, dict[tuple, float]] = {}
+        mp_maps: dict[str, dict[str, float]] = {}
+        try:
+            from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
+            from api._courtvision_odds import resolve_game_id  # noqa: PLC0415
+            import json as _sj  # noqa: PLC0415
+            # Use the 5s-TTL cached directory index — avoids re-scanning 2965+ files
+            # on every cache miss.  The index is rebuilt at most every 5s which is
+            # well within the 10s snapshot-write cadence.
+            _ld_index = _get_live_dir_index()
+            # Collect unique game_ids from all current bets + line_rows so late-
+            # roster players (not yet in bets) also get their game snaps loaded.
+            _all_gids: set[str] = set()
+            for b in bets:
+                g = str(b.get("game_id") or "")
+                if g:
+                    _all_gids.add(g)
+            for ln in line_rows:
+                g = str(ln.get("game_id") or "")
+                if g:
+                    _all_gids.add(g)
+            for gid in _all_gids:
+                alias = resolve_game_id(gid)
+                canon = list(alias.get("canonical_ids", frozenset([gid]))) + [gid]
+                snap = None
+                for cgid in canon:
+                    snap_path = _ld_index.get(cgid)
+                    if snap_path is not None:
+                        try:
+                            snap = _sj.loads(snap_path.read_text(encoding="utf-8"))
+                            break
+                        except Exception:
+                            continue
+                if not snap or not snap.get("period"):
+                    live_maps[gid] = {}
+                    continue
+                lm: dict[tuple, float] = {}
+                try:
+                    for r in (project_from_snapshot(snap) or []):
+                        nm = (r.get("name") or "").lower()
+                        st_p = (r.get("stat") or "").lower()
+                        pf = r.get("projected_final")
+                        if nm and st_p and pf is not None:
+                            try:
+                                lm[(nm, st_p)] = float(pf)
+                            except (TypeError, ValueError):
+                                continue
+                except Exception:
+                    pass
+                live_maps[gid] = lm
+                mp_maps[gid] = _shrink_player_minutes_from_snapshot(snap)
+        except Exception as _exc_lm:
+            __import__("logging").getLogger(__name__).warning(
+                "live map pre-build failed: %s", _exc_lm)
+
+        # ── Late-roster synthesis ──────────────────────────────────
+        # Players absent from the pregame CSV (two-way call-ups, late
+        # activations) have line_rows but no ps_idx entry. Synthesize
+        # a minimal slate_row from the live snapshot so they get bet
+        # cards on /tonight.  Pass the already-built live_maps so
+        # project_from_snapshot is NOT called again inside.
+        try:
+            _late_bets = _synthesize_bets_from_snapshots(
+                line_rows, stat_sigma_for_slate, _ROOT / "data" / "live", date,
+                skip_keys=set(ps_idx.keys()),
+                synthesized_flag=False,
+                prefilled_live_maps=live_maps,
+                prefilled_mp_maps=mp_maps,
+                prefilled_dir_index=_ld_index,
+            )
+            bets.extend(_late_bets)
+        except Exception as _lr_exc:
+            __import__("logging").getLogger(__name__).warning(
+                "late-roster synthesis failed: %s", _lr_exc)
+
         # Honest-EV gate: cap model_prob at 0.85 (no real single-prop model is
         # more than 85% sure; anything higher reflects sigma understatement or
         # alt-line residual that slipped past _filter_to_mainline). Recompute
@@ -501,14 +1613,65 @@ def _build_slate(date: str) -> dict:
             mp = b.get("model_prob")
             if mp is not None and mp > 0.85:
                 price = int(b.get("best_price") or -110)
-                payout = float(price) if price > 0 else (10000.0 / abs(price))
+                payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
                 b["model_prob"] = 0.85
                 b["ev_pct"] = round(0.85 * payout - 0.15 * 100.0, 2)
                 b["ev_capped"] = True
-        bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
+
+        # ── live regrade ───────────────────────────────────────────
+        # Reuse the live_maps / mp_maps already built above (project_from_snapshot
+        # was already called once per game; do NOT call it again here).
+        try:
+            for b in bets:
+                gid = str(b.get("game_id") or "")
+                lm = live_maps.get(gid) or {}
+                if not lm:
+                    continue
+                key = ((b.get("player_name") or "").lower(),
+                       (b.get("prop_stat") or "").lower())
+                live_q50 = lm.get(key)
+                if live_q50 is None:
+                    continue
+                mp = (mp_maps.get(gid) or {}).get(key[0], 0.0)
+                w_live = _live_shrink_weight(mp)
+                try:
+                    pregame_q50 = float(b.get("q50") or live_q50)
+                except (TypeError, ValueError):
+                    pregame_q50 = float(live_q50)
+                shrunk_q50 = w_live * float(live_q50) + (1.0 - w_live) * pregame_q50
+                try:
+                    _regrade_bet_with_live_q50(
+                        b, shrunk_q50, stat_sigma_for_slate, _BANKROLL_DEFAULT)
+                except Exception:
+                    continue
+
+        except Exception as _exc_sr:
+            _log_sr = __import__("logging").getLogger(__name__)
+            _log_sr.warning("slate live regrade failed: %s", _exc_sr)
+
+        # BUG 7 FIX: run _apply_calibration_gate on the FULL pre-truncation list
+        # so valid bets are not dropped by alphabetical tie-break when many tie
+        # at the EV cap. Gate returns calibrated+filtered survivors; we then sort
+        # by calibrated EV with an edge-magnitude secondary tie-break (deterministic,
+        # not alphabetical) and THEN truncate to _TOP_N.
+        # WHY reorder (not just add tie-break): the [:50] cut before the gate
+        # can drop legitimate edges that would have survived the filter but were
+        # ranked below the cap by the pre-calibration naive EV. Gating first ensures
+        # the served pool is drawn from all valid candidates, not just the
+        # alphabetically-lucky 50.
+        _stub_env = {"bets": bets}
+        _stub_env = _apply_calibration_gate(_stub_env)
+        bets = _stub_env.get("bets") or []
+        bets.sort(key=lambda b: (
+            b["ev_pct"] is None,
+            -(min(b.get("ev_pct") or 0.0, _SANE_EV_CEILING)),
+            -abs(b.get("edge_units") or b.get("edge") or 0.0),
+        ))
         bets = bets[:_TOP_N]
+        _gate_already_applied = True
     else:
         bets = slate_no_lines(slate_rows, _STATS, _TOP_N)
+        _gate_already_applied = False
 
     _log = __import__("logging").getLogger(__name__)
     try: from api._courtvision_form import attach_form; attach_form(bets)
@@ -517,17 +1680,95 @@ def _build_slate(date: str) -> dict:
     except Exception as exc: _log.warning("narrate_slate: %s", exc)
 
     evs = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+    _fresh_ages = [b["freshest_book_age_min"] for b in bets
+                   if b.get("freshest_book_age_min") is not None]
+    lines_freshness_avg_min = round(sum(_fresh_ages) / len(_fresh_ages), 1) if _fresh_ages else None
     envelope = {"date": date, "generated_at": datetime.utcnow().isoformat() + "Z",
         "bankroll_default_dollars": _BANKROLL_DEFAULT,
         "stale_data": date != _today_et(),
         "is_playoff": _is_playoff_date(date),
         "has_lines": has_lines, "latest_available": _latest_slate_date(),
+        "lines_freshness_avg_min": lines_freshness_avg_min,
         "summary": {"n_bets": len(bets), "avg_ev_pct": round(sum(evs)/len(evs), 2) if evs else 0.0,
                     "n_over": sum(1 for b in bets if b["side"] == "OVER"),
                     "n_under": sum(1 for b in bets if b["side"] == "UNDER")},
         "bets": bets}
+    if not _gate_already_applied:
+        envelope = _apply_calibration_gate(envelope)
+    else:
+        # Gate already ran; copy over the calibration metadata from the stub envelope.
+        envelope["all_books_universe"] = _stub_env.get("all_books_universe", [])
+        envelope["calibration"] = _stub_env.get("calibration", {})
+        # Re-compute summary from the now-truncated bets list (may be smaller than
+        # what _apply_calibration_gate counted before truncation).
+        evs2 = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
+        envelope["summary"] = {
+            "n_bets": len(bets),
+            "avg_ev_pct": round(sum(evs2) / len(evs2), 2) if evs2 else 0.0,
+            "n_over": sum(1 for b in bets if b["side"] == "OVER"),
+            "n_under": sum(1 for b in bets if b["side"] == "UNDER"),
+        }
     _CACHE[cache_key] = (time.time(), envelope)
     return envelope
+
+
+def _reanchor_to_live_inplay(cp: dict, lm_hist: list, shrunk_q50: float) -> bool:
+    """Re-anchor a bet dict to the LATEST live in-play line + per-book prices for
+    its (player, stat), so a downstream _regrade_bet_with_live_q50 prices against
+    the CURRENT market rather than the frozen pregame line. Sets cp['line'],
+    cp['_books_full'] (the regrade's price ladder), cp['all_books_live'] and
+    cp['freshest_book_age_min']. Returns True when a live in-play line was found
+    and applied, False otherwise (cp left unchanged).
+
+    Mirrors the /tonight live_bets re-anchor (kept inline there) so parlay legs
+    move with the lines instead of showing stale pregame numbers."""
+    nm = (cp.get("player_name") or "").lower()
+    st = (cp.get("prop_stat") or "").lower()
+    _ip_by_book: dict = {}
+    for _r in lm_hist:
+        if _r.get("name") == nm and _r.get("stat") == st:
+            _bk = _r.get("book") or "live"
+            if _bk not in _ip_by_book or _r["cap"] > _ip_by_book[_bk]["cap"]:
+                _ip_by_book[_bk] = _r
+    if not _ip_by_book:
+        return False
+    _lines = sorted(r["line"] for r in _ip_by_book.values())
+    _med = _lines[len(_lines) // 2]
+    _side = "OVER" if shrunk_q50 >= _med else "UNDER"
+    _skey = "over" if _side == "OVER" else "under"
+    _pool = [r for r in _ip_by_book.values()
+             if r.get(_skey) is not None] or list(_ip_by_book.values())
+    _main_line = min((r["line"] for r in _pool),
+                     key=lambda ln: abs(ln - shrunk_q50))
+    cp["line"] = _main_line
+    cp["_books_full"] = [
+        {"book": _inplay_book_label(r.get("book")),
+         "over_odds": r.get("over"), "under_odds": r.get("under"),
+         "captured_at": r.get("cap")}
+        for r in _pool if r["line"] == _main_line
+    ]
+    cp["all_books_live"] = [
+        {"book": _inplay_book_label(r.get("book")),
+         "line": r["line"], "over": r.get("over"), "under": r.get("under")}
+        for r in sorted(_ip_by_book.values(), key=lambda r: r["line"])
+    ]
+    try:
+        from datetime import datetime as _dtf, timezone as _tzf  # noqa: PLC0415
+        _cs = []
+        for _r in _ip_by_book.values():
+            _c = (_r.get("cap") or "").replace("Z", "+00:00")
+            if not _c:
+                continue
+            _dt = _dtf.fromisoformat(_c)
+            if _dt.tzinfo is None:
+                _dt = _dt.replace(tzinfo=_tzf.utc)
+            _cs.append(_dt)
+        if _cs:
+            cp["freshest_book_age_min"] = round(
+                max(0.0, (_dtf.now(_tzf.utc) - max(_cs)).total_seconds() / 60.0), 1)
+    except Exception:
+        pass
+    return True
 
 
 def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
@@ -601,7 +1842,17 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
             import json as _json_p  # noqa: PLC0415
 
             sig_table = _stat_sigma_for_date(date)
+            # Live in-play line history for ALL live games on the slate (empty
+            # canon_ids -> all rows) so each leg can re-anchor to the current
+            # market line+price, not the frozen pregame line.
+            try:
+                lm_hist_p = _load_inplay_line_history(date, frozenset())
+            except Exception:
+                lm_hist_p = []
             live_q50_map: dict[tuple, float] = {}
+            # Bug 2 fix (site c): parallel current map so shrunk can be floored
+            # at already-accumulated stat before regrading parlay legs.
+            current_map_c: dict[tuple, float] = {}
             player_minutes: dict[str, float] = {}
             for snap_path in recent_snaps:
                 try:
@@ -625,6 +1876,12 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
                             live_q50_map[(nm, st)] = float(pf)
                         except (TypeError, ValueError):
                             continue
+                    cur_c = r.get("current")
+                    if nm and st and cur_c is not None:
+                        try:
+                            current_map_c[(nm, st)] = float(cur_c)
+                        except (TypeError, ValueError):
+                            pass
                 # Merge per-player minutes (last writer wins — recent snapshots
                 # take precedence for the same player in a multi-game scan).
                 player_minutes.update(
@@ -636,13 +1893,31 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
                     key = ((b.get("player_name") or "").lower(),
                            (b.get("prop_stat") or "").lower())
                     if key in live_q50_map:
-                        cp = _copy_p.copy(b)
+                        # deepcopy (not shallow) so regrade never mutates the
+                        # bet dict held by the cached slate envelope — repeated
+                        # cache hits would otherwise re-mutate already-regraded
+                        # objects and corrupt ev_pct / model_prob.
+                        cp = _copy_p.deepcopy(b)
                         try:
                             mp = player_minutes.get(key[0], 0.0)
                             w_live = _live_shrink_weight(mp)
                             live_raw = live_q50_map[key]
                             pregame_q50 = float(cp.get("q50") or live_raw)
                             shrunk = w_live * live_raw + (1.0 - w_live) * pregame_q50
+                            # Bug 2 fix (site c): floor shrunk at already-accumulated stat
+                            _cur_c = current_map_c.get(key)
+                            if _cur_c is not None:
+                                try:
+                                    shrunk = max(shrunk, float(_cur_c))
+                                except (TypeError, ValueError):
+                                    pass
+                            # Re-anchor line + per-book ladder to the live market
+                            # BEFORE regrading, so the leg's displayed line and
+                            # best price track the current in-play odds.
+                            try:
+                                _reanchor_to_live_inplay(cp, lm_hist_p, shrunk)
+                            except Exception:
+                                pass
                             _regrade_bet_with_live_q50(cp, shrunk, sig_table)
                             regraded_bets.append(cp)
                         except Exception:
@@ -1018,9 +2293,178 @@ def _build_home_data(date: str) -> dict:
         gid = p.get("game_id") or "?"
         props_by_game.setdefault(gid, []).append(p)
 
+    # --- live regrade: override rec_side + edge_pct using live q50 ─────
+    # For each game with a live snapshot, run live_engine.project_from_snapshot
+    # and recompute rec_side / edge_pct per prop. Without this, the home page
+    # game cards show pregame recommendations (e.g. "Cason UNDER 14.5") even
+    # after he's blown past the line — the user can't see the live OVER edge
+    # without clicking into /tonight first.
+    try:
+        from math import erf, sqrt  # noqa: PLC0415
+        from api._courtvision_odds import resolve_game_id  # noqa: PLC0415
+        from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
+        import json as _hjs  # noqa: PLC0415
+        sig_table = _stat_sigma_for_date(date)
+        _live_dir = _ROOT / "data" / "live"
+        # Build live_q50 maps per game_id (via canonical alias group)
+        live_q50_by_gid: dict[str, dict[tuple, float]] = {}
+        # Bug 2 fix (site b): parallel map of already-accumulated stats per gid
+        current_by_gid: dict[str, dict[tuple, float]] = {}
+        loaded_alias_groups: set[frozenset] = set()
+        for gid in list(props_by_game.keys()):
+            alias = resolve_game_id(gid)
+            canon = alias.get("canonical_ids", frozenset([gid]))
+            if canon in loaded_alias_groups:
+                # Reuse if any sibling alias was already loaded
+                continue
+            snap = None
+            if _live_dir.exists():
+                for _cgid in list(canon) + [gid]:
+                    matches = _epoch_snaps(_live_dir, _cgid)
+                    if matches:
+                        try:
+                            snap = _hjs.loads(matches[-1].read_text(encoding="utf-8"))
+                            break
+                        except Exception:
+                            continue
+            if not snap or not snap.get("period"):
+                continue
+            try:
+                rows = project_from_snapshot(snap) or []
+            except Exception:
+                rows = []
+            lm: dict[tuple, float] = {}
+            # Bug 2 fix (site b): parallel current map so shrunk_q50 can be
+            # floored at already-accumulated stat at the regrade site below.
+            lm_cur: dict[tuple, float] = {}
+            for r in rows:
+                nm = (r.get("name") or "").lower()
+                st_r = (r.get("stat") or "").lower()
+                pf = r.get("projected_final")
+                if nm and st_r and pf is not None:
+                    try:
+                        lm[(nm, st_r)] = float(pf)
+                    except (TypeError, ValueError):
+                        continue
+                cur_r = r.get("current")
+                if nm and st_r and cur_r is not None:
+                    try:
+                        lm_cur[(nm, st_r)] = float(cur_r)
+                    except (TypeError, ValueError):
+                        pass
+            # Apply this map to every prop whose game_id is in the canon set
+            for _cgid in canon:
+                if _cgid in props_by_game:
+                    live_q50_by_gid[_cgid] = lm
+                    if lm_cur:
+                        current_by_gid[_cgid] = lm_cur
+            loaded_alias_groups.add(canon)
+        # Now override rec_side + edge_pct on each prop
+        player_minutes_by_gid: dict[str, dict[str, float]] = {}
+        for gid, lm in live_q50_by_gid.items():
+            # Use the same snapshot's minutes for shrinkage; reload once
+            alias = resolve_game_id(gid)
+            canon = alias.get("canonical_ids", frozenset([gid]))
+            snap = None
+            for _cgid in list(canon) + [gid]:
+                matches = _epoch_snaps(_live_dir, _cgid)
+                if matches:
+                    try:
+                        snap = _hjs.loads(matches[-1].read_text(encoding="utf-8"))
+                        break
+                    except Exception:
+                        continue
+            if snap:
+                player_minutes_by_gid[gid] = _shrink_player_minutes_from_snapshot(snap)
+        for gid, props in props_by_game.items():
+            lm = live_q50_by_gid.get(gid)
+            if not lm:
+                continue
+            mp_map = player_minutes_by_gid.get(gid, {})
+            cur_map_b = current_by_gid.get(gid, {})
+            for prop in props:
+                nm = (prop.get("player") or "").lower()
+                st_p = (prop.get("stat") or "").lower()
+                live_q50 = lm.get((nm, st_p))
+                if live_q50 is None:
+                    continue
+                mp = mp_map.get(nm, 0.0)
+                w_live = _live_shrink_weight(mp)
+                pregame_q50 = prop.get("pregame_q50")
+                if pregame_q50 is None:
+                    pregame_q50 = live_q50
+                try:
+                    shrunk_q50 = w_live * float(live_q50) + (1.0 - w_live) * float(pregame_q50)
+                except (TypeError, ValueError):
+                    shrunk_q50 = float(live_q50)
+                # Bug 2 fix (site b): floor shrunk_q50 at already-accumulated stat
+                _cur_b = cur_map_b.get((nm, st_p))
+                if _cur_b is not None:
+                    try:
+                        shrunk_q50 = max(shrunk_q50, float(_cur_b))
+                    except (TypeError, ValueError):
+                        pass
+                try:
+                    line_f = float(prop.get("line"))
+                except (TypeError, ValueError):
+                    continue
+                sigma = sig_table.get(st_p, 1.0)
+                if sigma <= 0:
+                    sigma = 1.0
+                new_side = "OVER" if shrunk_q50 >= line_f else "UNDER"
+                z = (line_f - shrunk_q50) / sigma
+                p_over = 1.0 - 0.5 * (1.0 + erf(z / sqrt(2.0)))
+                model_prob = p_over if new_side == "OVER" else (1.0 - p_over)
+                market_prob = prop.get("market_prob")
+                if isinstance(market_prob, (int, float)) and 0.0 < market_prob < 1.0:
+                    edge_pct = round((model_prob - market_prob) * 100.0, 1)
+                else:
+                    edge_pct = round((model_prob - 0.5) * 100.0, 1)
+                prop["rec_side"] = new_side
+                prop["edge_pct"] = edge_pct
+                prop["live_regraded"] = True
+    except Exception as _exc_hr:
+        import logging as _lg_hr  # noqa: PLC0415
+        _lg_hr.getLogger(__name__).warning(
+            "home_data live regrade failed: %s", _exc_hr)
+
     # --- build game card data ---
     upcoming: list[dict] = []
     live: list[dict] = []
+
+    # Pre-load each game's latest snapshot once so we can detect FINAL state
+    # (the start_time-based heuristic only knows "pregame / live / final by
+    # time elapsed" — it does NOT know that the buzzer sounded). Without
+    # this the home card shows "PREGAME" or "LIVE" for a finished game.
+    import json as _hjs2  # noqa: PLC0415
+    from api._courtvision_odds import resolve_game_id as _rg_hm  # noqa: PLC0415
+    _live_dir_hm = _ROOT / "data" / "live"
+    snap_status_by_gid: dict[str, dict] = {}
+    snap_score_by_gid: dict[str, tuple[str, int, str, int]] = {}
+    for g in games_raw:
+        gid = g.get("game_id") or ""
+        if not gid:
+            continue
+        alias = _rg_hm(gid)
+        canon = list(alias.get("canonical_ids", frozenset([gid]))) + [gid]
+        if not _live_dir_hm.exists():
+            continue
+        for _cgid in canon:
+            matches = _epoch_snaps(_live_dir_hm, _cgid)
+            if matches:
+                try:
+                    snap = _hjs2.loads(matches[-1].read_text(encoding="utf-8"))
+                    snap_status_by_gid[gid] = snap
+                    if snap.get("home_team") and snap.get("away_team"):
+                        snap_score_by_gid[gid] = (
+                            snap.get("away_team") or "",
+                            int(snap.get("away_score") or 0),
+                            snap.get("home_team") or "",
+                            int(snap.get("home_score") or 0),
+                        )
+                    break
+                except Exception:
+                    continue
 
     for g in games_raw:
         gid = g["game_id"]
@@ -1030,6 +2474,16 @@ def _build_home_data(date: str) -> dict:
         if not st:
             continue
         status = _game_status(st)
+        # Override status from snapshot when authoritative: NBA's live feed
+        # reports gameStatusText/game_status as "FINAL" once the buzzer sounds.
+        snap = snap_status_by_gid.get(gid)
+        if snap:
+            snap_status_raw = str(snap.get("game_status") or "").strip().upper()
+            if snap_status_raw == "FINAL" or "FINAL" in snap_status_raw:
+                status = "final"
+            elif snap.get("period") and int(snap.get("period") or 0) >= 1 and status == "pregame":
+                # Snapshot has game data but we'd otherwise show pregame → it's live
+                status = "live"
         game_props = props_by_game.get(gid, [])
 
         # Top edges: props with rec_side and edge_pct, sorted by edge desc
@@ -1060,12 +2514,70 @@ def _build_home_data(date: str) -> dict:
                 "player": ep.get("player", ""),
             })
 
+        # ── PREGAME FALLBACK for top_edges ───────────────────────────────
+        # When no live snapshot exists (pregame future game), the props
+        # never get rec_side/edge_pct attached above, so top_edges is
+        # empty and the card looks dead. Hydrate it from the pregame
+        # slate synthesis for this date so the user sees actual picks.
+        if not top_edges and status == "pregame":
+            try:
+                _slate_for_card = _build_slate(date)
+                _bets_for_gid = [
+                    _b for _b in (_slate_for_card.get("bets") or [])
+                    if str(_b.get("game_id") or "") == str(gid)
+                ]
+                _bets_for_gid.sort(
+                    key=lambda b: (b.get("ev_pct") is None, -(b.get("ev_pct") or 0.0)))
+                for _b in _bets_for_gid[:5]:
+                    _side = (_b.get("side") or "OVER").upper()
+                    _line = float(_b.get("line") or 0)
+                    _stat_u = (_b.get("prop_stat") or _b.get("stat") or "").upper()
+                    # Compute edge_pct as model-minus-market probability gap in
+                    # percentage points — matching the live/overlay convention
+                    # (live path: (model_prob - market_prob)*100, ~line 2420).
+                    # ev_pct is a dollar-return metric and MUST NOT be used here.
+                    _mp = _b.get("model_prob")
+                    _mkp = _b.get("market_prob")
+                    if (isinstance(_mp, (int, float)) and isinstance(_mkp, (int, float))
+                            and 0.0 < _mp < 1.0 and 0.0 < _mkp < 1.0):
+                        _edge_pct = round((float(_mp) - float(_mkp)) * 100.0, 1)
+                    else:
+                        _edge_pct = None
+                    top_edges.append({
+                        "label": f"{_b.get('player_name','')} {_side[0]}{_line:g} {_stat_u}",
+                        "odds": _b.get("best_price") or _b.get("odds"),
+                        "edge_pct": _edge_pct,
+                        "ev_pct": _b.get("ev_pct"),
+                        "book": _b.get("best_book") or _b.get("book") or "",
+                        "stat": (_stat_u or "").lower(),
+                        "side": _side,
+                        "line": _line,
+                        "player": _b.get("player_name", ""),
+                    })
+            except Exception as _exc_pe:
+                import logging as _lg_pe  # noqa: PLC0415
+                _lg_pe.getLogger(__name__).debug(
+                    "pregame top_edges hydration failed gid=%s: %s", gid, _exc_pe)
+
         away_abbr, home_abbr = _guess_teams_from_game_id(gid)
         # Drop KAMBI / non-NBA event IDs that the scraper ingested but we can't
         # resolve to real NBA teams.  These show "AWAY @ HOME" on the card and
         # are pure noise on the home page.
+        # Resolution order: live snapshot > roster overlap with recent slate.
+        # Speculative finals games (no overlap with the active series rosters)
+        # get dropped instead of shown as TBD@TBD.
         if away_abbr == "AWAY" and home_abbr == "HOME":
-            continue
+            _snap_fb = snap_status_by_gid.get(gid)
+            if _snap_fb and _snap_fb.get("away_team") and _snap_fb.get("home_team"):
+                away_abbr = str(_snap_fb["away_team"]).upper()
+                home_abbr = str(_snap_fb["home_team"]).upper()
+            else:
+                _players_in_game = sorted({(p.get("player") or "") for p in game_props})
+                _inferred = _infer_teams_from_player_overlap(_players_in_game)
+                if _inferred is not None:
+                    away_abbr, home_abbr = _inferred
+                else:
+                    continue
 
         n_props = g.get("n_props", 0)
         # Skip games with fewer than 3 props — too sparse to be useful on the
@@ -1089,11 +2601,27 @@ def _build_home_data(date: str) -> dict:
             "score_home": None,
         }
 
+        # Attach live score from snapshot (also for finals)
+        scoredata = snap_score_by_gid.get(gid)
+        if scoredata:
+            sa_team, sa_score, sh_team, sh_score = scoredata
+            if sa_team.upper() == away_abbr.upper():
+                card["score_away"] = sa_score
+                card["score_home"] = sh_score
+            elif sa_team.upper() == home_abbr.upper():
+                card["score_away"] = sh_score
+                card["score_home"] = sa_score
+
         if status == "live":
             live.append(card)
         elif status == "pregame":
             upcoming.append(card)
-        # 'final' games are omitted from both sections
+        elif status == "final":
+            # Surface as live with a [FINAL] flag so users see the game
+            # didn't just vanish when it ended — instead of being silently
+            # dropped which made the home page look "broken".
+            card["status"] = "final"
+            live.append(card)
 
     # Sort upcoming by start_time
     upcoming.sort(key=lambda g: g.get("start_time") or "")
@@ -1113,10 +2641,71 @@ def _build_home_data(date: str) -> dict:
     except Exception:
         settled = []
 
+    # Fallback: if BetDB returned nothing, read from settle_bets.py JSON cache
+    if not settled:
+        try:
+            import json as _json
+            _snap_path = _ROOT / "data" / "cache" / "settled_bets.json"
+            if _snap_path.exists():
+                with _snap_path.open(encoding="utf-8") as _fh:
+                    _raw: list[dict] = _json.load(_fh)
+                # Only show decided bets (won/lost)
+                _decided_raw = [
+                    {
+                        "player_name": r.get("player_name", ""),
+                        "stat": r.get("stat", ""),
+                        "prop_stat": (r.get("stat") or "").upper(),
+                        "side": r.get("side", ""),
+                        "status": r.get("status", ""),
+                        "settled_at": r.get("settled_at", ""),
+                        "created_at": r.get("created_at") or r.get("settled_at", ""),
+                        "ev_pct": r.get("ev_pct"),
+                        "line": r.get("line"),
+                        "actual": r.get("actual"),
+                        "actual_value": r.get("actual"),
+                        "pnl": None,
+                        "game_id": r.get("game_id", ""),
+                        "player_id": r.get("player_id", ""),
+                    }
+                    for r in _raw
+                    if r.get("status") in ("won", "lost")
+                ]
+                # Dedupe: each (player_id, stat, line, game_id) appears as both
+                # OVER lost + UNDER won (or vice versa). Keep only the 'won' row;
+                # if only one side is present, keep it as-is.
+                _dedup: dict[tuple, dict] = {}
+                for row in _decided_raw:
+                    key = (
+                        row.get("player_id") or row.get("player_name", ""),
+                        row.get("stat", ""),
+                        row.get("line"),
+                        row.get("game_id", ""),
+                    )
+                    existing = _dedup.get(key)
+                    if existing is None:
+                        _dedup[key] = row
+                    elif row.get("status") == "won" and existing.get("status") != "won":
+                        # Prefer the won side as the canonical record
+                        _dedup[key] = row
+                _decided = list(_dedup.values())
+                _decided.sort(
+                    key=lambda b: b.get("settled_at") or b.get("created_at") or "",
+                    reverse=True,
+                )
+                settled = _decided[:8]
+        except Exception:
+            pass
+
+    # `future_games` removed 2026-05-29: per-user feedback, only the next
+    # known game (the one in `upcoming_games`) should appear on home.
+    # Speculative NBA Finals cards with unresolved rosters were misleading.
+    future_games: list[dict] = []
+
     result = {
         "upcoming_games": upcoming,
         "live_games": live,
         "settled_bets": settled,
+        "future_games": future_games,
         "slate_date": date,
         "section_label": "Tonight" if date == _today_et() else "Upcoming",
     }
@@ -1352,6 +2941,133 @@ def _pregame_wp_from_projection(date: str, away_abbr: str, home_abbr: str
         return max(0.35, min(0.65, p_home))
     except Exception:
         return None
+
+
+def _abbr_from_team_name(name: str) -> "str | None":
+    n = (name or "").lower()
+    for frag, ab in _TEAM_ABBREVS.items():
+        if frag in n:
+            return ab
+    return None
+
+
+def _market_home_wp(date: str, away_abbr: str, home_abbr: str) -> "float | None":
+    """De-vig P(home wins) from the sharpest mainline moneyline available for the
+    date (data/lines/<date>_*mainline*.csv). The market already prices injuries,
+    rest and home court — for GAME outcome we defer to it rather than the raw
+    box-total projection (which lacks home-court advantage)."""
+    import csv as _csv  # noqa: PLC0415
+    if not (away_abbr and home_abbr):
+        return None
+    best = None  # (captured_at, p_home)
+    for fp in (_ROOT / "data" / "lines").glob(f"{date}_*mainline*.csv"):
+        try:
+            rows = list(_csv.DictReader(fp.open(encoding="utf-8")))
+        except Exception:
+            continue
+        ml: dict = {}  # game_id -> {'home':(cap,price), 'away':(cap,price), 'hn','an'}
+        for r in rows:
+            if (r.get("market_type") or "").lower() != "moneyline":
+                continue
+            gid = r.get("game_id") or ""
+            cap = r.get("captured_at") or ""
+            side = (r.get("side") or "").lower()
+            try:
+                price = int(float(r.get("price")))
+            except (TypeError, ValueError):
+                continue
+            e = ml.setdefault(gid, {"home": ("", None), "away": ("", None),
+                                    "hn": r.get("home_team"), "an": r.get("away_team")})
+            if side in ("home", "away") and cap >= e[side][0]:
+                e[side] = (cap, price)
+        for e in ml.values():
+            hp, ap = e["home"][1], e["away"][1]
+            if hp is None or ap is None:
+                continue
+            if (_abbr_from_team_name(e["hn"]) != home_abbr
+                    or _abbr_from_team_name(e["an"]) != away_abbr):
+                continue
+
+            def _imp(o):
+                return (100.0 / (o + 100.0)) if o > 0 else (abs(o) / (abs(o) + 100.0))
+            ih, ia = _imp(hp), _imp(ap)
+            ph = ih / (ih + ia) if (ih + ia) else None
+            cap = max(e["home"][0], e["away"][0])
+            if ph is not None and (best is None or cap > best[0]):
+                best = (cap, ph)
+    return best[1] if best else None
+
+
+def _live_wp_continuous(live_overlay: dict, pregame_home_wp,
+                        proj_home=None, proj_away=None) -> "float | None":
+    """Always-updating live P(home wins), REFLECTIVE OF THE PROJECTED FINAL SCORE.
+
+    When the box's projected final team totals are available (proj_home/away —
+    which already fold in pace + the pregame prior + who's playing well), the win
+    prob is driven by the PROJECTED FINAL MARGIN, so it tracks "what the final
+    score will be," not just the current margin. Falls back to current margin +
+    market-prorated edge when projections are absent. Sigma shrinks as the clock
+    runs out (a projected lead late is far more certain than the same lead early)."""
+    from math import erf, sqrt  # noqa: PLC0415
+    try:
+        period = int(live_overlay.get("period") or 1)
+    except (TypeError, ValueError):
+        period = 1
+    clock = str(live_overlay.get("clock") or "")
+    try:
+        mm, ss = clock.split(":")
+        crem = int(mm) + float(ss) / 60.0
+    except Exception:
+        crem = 0.0
+    rem = max(0.0, (4 - period) * 12.0 + crem) if period <= 4 else max(0.0, crem)
+    if "FINAL" in str(live_overlay.get("game_status") or "").upper():
+        rem = 0.0
+
+    if proj_home is not None and proj_away is not None:
+        # Projected FINAL margin — already includes pace + pregame + form.
+        try:
+            proj_margin = float(proj_home) - float(proj_away)
+        except (TypeError, ValueError):
+            proj_margin = None
+    else:
+        proj_margin = None
+    if proj_margin is None:
+        try:
+            margin = int(live_overlay.get("home_score") or 0) - int(live_overlay.get("away_score") or 0)
+        except (TypeError, ValueError):
+            return None
+        pg = min(0.97, max(0.03, float(pregame_home_wp if pregame_home_wp is not None else 0.5)))
+        proj_margin = margin + (pg - 0.5) * 30.0 * (rem / 48.0)
+    # Sigma = uncertainty of the PROJECTED FINAL margin. With most of the game
+    # left this is wide (the projection is a guess); it tightens as minutes
+    # accumulate. NBA final-margin std is ~13-14 at tip; a mid-game projection
+    # still carries real error, so keep sigma generous to avoid over-confident
+    # numbers from a thin projected lead.
+    sigma = max(2.5, 14.5 * sqrt(max(rem, 0.4) / 48.0))
+    p_proj = 0.5 * (1.0 + erf((proj_margin / sigma) / sqrt(2.0)))
+    # MARKET ANCHOR (decays with time left). Early/mid-game the projected margin
+    # alone is far too confident for a close score — a tied game at the half must
+    # sit near the pregame market price, not 35/65. So blend the projection's
+    # win prob toward the pregame market wp, weighting the market by the fraction
+    # of game remaining (lots left -> trust the market; little left -> the
+    # near-final projected score dominates). This is the standard live-WP shape
+    # and keeps the number realistic without ignoring the projection.
+    if pregame_home_wp is not None:
+        pg = min(0.97, max(0.03, float(pregame_home_wp)))
+        w_market = max(0.0, min(0.80, rem / 48.0))
+        p = w_market * pg + (1.0 - w_market) * p_proj
+    else:
+        p = p_proj
+    return min(0.995, max(0.005, p))
+
+
+def _pregame_home_wp(date: str, away_abbr: str, home_abbr: str):
+    """Best pregame P(home wins) + its source: MARKET de-vig moneyline when
+    available (sharpest, includes home court), else the box-projection proxy."""
+    mk = _market_home_wp(date, away_abbr, home_abbr)
+    if mk is not None:
+        return float(mk), "market_devig"
+    return _pregame_wp_from_projection(date, away_abbr, home_abbr), "projected_margin_shrunk"
 
 
 def _compute_win_prob(game_id: str, props: list,
@@ -1700,7 +3416,7 @@ def _build_game_detail(game_id: str, date: str) -> dict:
     # ── Intelligence: win probability + pace ──────────────────────────
     # Use projection-derived WP (consistent with box score, no polarity bug)
     # rather than the legacy team-level model.
-    p_home_pre = _pregame_wp_from_projection(date, away_abbr, home_abbr)
+    p_home_pre, _ = _pregame_home_wp(date, away_abbr, home_abbr)
     win_prob_away = (1.0 - p_home_pre) if p_home_pre is not None else None
     pace_away, pace_home = _compute_pace(away_abbr, home_abbr)
 
@@ -1777,9 +3493,25 @@ def _build_game_detail(game_id: str, date: str) -> dict:
 @_public_limit
 def home(request: Request, date: str = Query(default=None)):
     """Games hub landing page — upcoming + live game cards with top EV edges."""
+    explicit_date = bool(date)
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     data = _build_home_data(date)
+    # If the auto-picked date has zero games but the next UTC day does have
+    # live games, prefer the next day. NBA evening tipoffs (ET) cross midnight
+    # UTC, so scrapers file them under tomorrow's UTC date — the home page
+    # would otherwise show "No games scheduled" for the date the user actually
+    # wants to see. Skip this fallback if the user explicitly asked for a date.
+    if not explicit_date and not data.get("live_games") and not data.get("upcoming_games"):
+        try:
+            from datetime import datetime as _dt, timedelta as _td  # noqa: PLC0415
+            next_d = (_dt.strptime(date, "%Y-%m-%d") + _td(days=1)).strftime("%Y-%m-%d")
+            next_data = _build_home_data(next_d)
+            if next_data.get("live_games") or next_data.get("upcoming_games"):
+                date = next_d
+                data = next_data
+        except Exception:
+            pass
     return _TEMPLATES.TemplateResponse("home.html", {"request": request, **data})
 
 
@@ -1788,7 +3520,7 @@ def api_home(date: Optional[str] = Query(default=None)):
     """Same payload as the home HTML page but as JSON — used by the WS live-tick
     to refresh edge cards without a full page reload."""
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     return JSONResponse(_build_home_data(date))
 
 
@@ -1797,7 +3529,7 @@ def api_home(date: Optional[str] = Query(default=None)):
 def game_detail(game_id: str, request: Request, date: str = Query(default=None)):
     """Per-game intelligence report + ranked bets + all props."""
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     data = _build_game_detail(game_id, date)
     return _TEMPLATES.TemplateResponse("game_detail.html", {"request": request, **data})
 
@@ -1806,7 +3538,7 @@ def game_detail(game_id: str, request: Request, date: str = Query(default=None))
 def api_game_detail(game_id: str, date: Optional[str] = Query(default=None)):
     """Same data as /game/{game_id} HTML page but as JSON."""
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     return JSONResponse(_build_game_detail(game_id, date))
 
 
@@ -1814,13 +3546,18 @@ def api_game_detail(game_id: str, date: Optional[str] = Query(default=None)):
 @_public_limit
 def tonight(request: Request, date: str = Query(default=None),
             side: str = Query("ALL"), min_ev: float = Query(-999.0),
-            game_id: str = Query(default="")):
+            game_id: str = Query(default=""), books: str = Query(default="")):
     """Tonight's slate. Optional ?game_id= filter shows only one matchup's bets
     (this is what the homepage game cards link to — gives a per-game view using
-    the same rich bet-card layout)."""
+    the same rich bet-card layout). Optional ?books=dk,fanduel re-prices the
+    slate to those sportsbooks (best price among them) and re-ranks — the
+    casual 'pick my book, show its best bets' flow."""
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     slate = _build_slate(date)
+    _book_sel = [b for b in (books or "").split(",") if b.strip()]
+    if _book_sel:
+        slate = _reprice_slate_to_books(slate, _book_sel)
     side_u = (side or "ALL").upper()
     gid_filter = (game_id or "").strip()
     needs_filter = (side_u in ("OVER", "UNDER")) or (min_ev > -999.0) or bool(gid_filter)
@@ -1875,7 +3612,7 @@ def tonight(request: Request, date: str = Query(default=None),
         live_dir_chk = _ROOT / "data" / "live"
         if live_dir_chk.exists():
             for gid_chk in canon_for_game:
-                m = sorted(live_dir_chk.glob(f"{gid_chk}_*.json"))
+                m = _epoch_snaps(live_dir_chk, gid_chk)
                 if m:
                     try:
                         import json as _json2  # noqa: PLC0415
@@ -1901,7 +3638,9 @@ def tonight(request: Request, date: str = Query(default=None),
                 if live_map:
                     import copy as _copy  # noqa: PLC0415
                     sig_table = _stat_sigma_for_date(date)
-                    new_bets = [_copy.copy(b) for b in slate["bets"]]
+                    # deepcopy so the live regrade never mutates the bet dicts
+                    # held by the cached slate envelope (shared by reference).
+                    new_bets = [_copy.deepcopy(b) for b in slate["bets"]]
                     for b in new_bets:
                         key = ((b.get("player_name") or "").lower(),
                                (b.get("prop_stat") or "").lower())
@@ -1941,24 +3680,1472 @@ def tonight(request: Request, date: str = Query(default=None),
                 else:
                     away_a, home_a = t, o
         if away_a and home_a:
-            box_score = _build_box_score(date, away_a, home_a)
+            box_score = _build_box_score(date, away_a, home_a, game_id=gid_filter)
+            # Merge in any players from the live snapshot who weren't on the
+            # pregame roster (mid-game call-ups). Otherwise they only appear
+            # via /api/box_score (JSON) but not in the server-rendered
+            # tonight.html — the JS poller only updates existing rows.
+            try:
+                import json as _tjs  # noqa: PLC0415
+                live_dir_t = _ROOT / "data" / "live"
+                live_overlay_t = None
+                for _gid in (list(canonical_ids) + [gid_filter]):
+                    matches_t = _epoch_snaps(live_dir_t, _gid)
+                    if matches_t:
+                        live_overlay_t = _tjs.loads(matches_t[-1].read_text(encoding="utf-8"))
+                        break
+                if live_overlay_t and box_score:
+                    snap_players = live_overlay_t.get("players") or []
+                    if isinstance(snap_players, list):
+                        for team_key in ("away", "home"):
+                            td = box_score.get(team_key) or {}
+                            team_abbr_t = (td.get("abbr") or "").upper()
+                            roster = td.get("players") or []
+                            existing_ids_t = {str(r.get("player_id"))
+                                              for r in roster
+                                              if r.get("player_id") is not None}
+                            existing_nm_t = {(r.get("player_name") or "").lower()
+                                             for r in roster
+                                             if r.get("player_name")}
+                            for lp in snap_players:
+                                if not isinstance(lp, dict):
+                                    continue
+                                if (lp.get("team") or "").upper() != team_abbr_t:
+                                    continue
+                                lp_id = str(lp.get("player_id") or "")
+                                lp_nm = (lp.get("name") or lp.get("player") or lp.get("player_name") or "")
+                                if (lp_id and lp_id in existing_ids_t) or (lp_nm and lp_nm.lower() in existing_nm_t):
+                                    continue
+                                # Off-slate roster — append minimal row
+                                roster.append({
+                                    "player_id": lp.get("player_id"),
+                                    "player_name": lp_nm,
+                                    "team": team_abbr_t,
+                                    "pts": None, "reb": None, "ast": None,
+                                    "fg3m": None, "stl": None, "blk": None,
+                                    "tov": None,
+                                    "_off_slate_roster": True,
+                                })
+                            td["players"] = roster
+            except Exception as _exc_lm:
+                import logging as _lg_lm  # noqa: PLC0415
+                _lg_lm.getLogger(__name__).warning(
+                    "tonight box live-merge failed: %s", _exc_lm)
     return _TEMPLATES.TemplateResponse("tonight.html",
         {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev,
          "game_id_filter": gid_filter, "matchup_label": matchup_label,
          "box_score": box_score, "live_regrade_count": live_regrade_count})
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# /results — multi-day Results & Upcoming page
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _load_bets_csv(date: str) -> list[dict]:
+    """Load a dated bet log CSV from data/bets/<date>.csv.
+
+    Handles two CSV schemas:
+      - strategy_d / dryrun schema:  date, game_id, player, stat, line,
+                                     model_pred, edge, side, odds, stake,
+                                     status, actual_value, profit, ...
+      - wcf dry-run schema:          timestamp, date, player, stat, line,
+                                     side, model, edge, prob, odds,
+                                     ev_per_dollar, kelly_pct, ...
+    Returns normalised list of dicts with keys:
+      game_id, player_name, stat, line, side, pregame_q50,
+      ev_pct, kelly_pct, odds, book, status, actual, hit
+    """
+    import csv as _csv
+    import logging as _lg
+    log = _lg.getLogger(__name__)
+    bets_dir = _ROOT / "data" / "bets"
+    # Try exact date match first, then glob for any file containing the date
+    candidates = list(bets_dir.glob(f"*{date}*.csv")) if bets_dir.exists() else []
+    if not candidates:
+        return []
+    rows: list[dict] = []
+    for fp in candidates:
+        try:
+            with fp.open(newline="", encoding="utf-8") as fh:
+                reader = _csv.DictReader(fh)
+                for r in reader:
+                    # Normalise across schemas
+                    player = (r.get("player") or r.get("player_name") or "").strip()
+                    stat = (r.get("stat") or "").strip().lower()
+                    side = (r.get("side") or "").strip().upper()
+                    try:
+                        line = float(r.get("line") or 0)
+                    except (ValueError, TypeError):
+                        line = 0.0
+                    # Model prediction / q50
+                    q50_raw = r.get("model_pred") or r.get("model") or r.get("pregame_q50") or ""
+                    try:
+                        q50 = float(q50_raw) if q50_raw else None
+                    except (ValueError, TypeError):
+                        q50 = None
+                    # Edge / EV
+                    ev_raw = r.get("ev_per_dollar") or r.get("ev_pct") or r.get("edge") or ""
+                    try:
+                        ev_pct = float(ev_raw) if ev_raw else None
+                    except (ValueError, TypeError):
+                        ev_pct = None
+                    # Kelly
+                    k_raw = r.get("kelly_pct") or r.get("kelly") or ""
+                    try:
+                        kelly_pct = float(k_raw) if k_raw else None
+                    except (ValueError, TypeError):
+                        kelly_pct = None
+                    # Odds
+                    odds_raw = r.get("odds") or ""
+                    try:
+                        odds = int(float(odds_raw)) if odds_raw else None
+                    except (ValueError, TypeError):
+                        odds = None
+                    # Actual result
+                    actual_raw = r.get("actual_value") or r.get("actual") or ""
+                    try:
+                        actual = float(actual_raw) if actual_raw else None
+                    except (ValueError, TypeError):
+                        actual = None
+                    # Hit / status
+                    status = (r.get("status") or "").strip().upper()
+                    if status == "WIN":
+                        hit = True
+                    elif status == "LOSS":
+                        hit = False
+                    else:
+                        hit = None
+                    game_id = (r.get("game_id") or "").strip()
+                    rows.append({
+                        "game_id": game_id,
+                        "player_name": player,
+                        "stat": stat,
+                        "line": line,
+                        "side": side,
+                        "pregame_q50": q50,
+                        "ev_pct": ev_pct,
+                        "kelly_pct": kelly_pct,
+                        "odds": odds,
+                        "book": (r.get("book") or "").strip() or None,
+                        "status": status,
+                        "actual": actual,
+                        "hit": hit,
+                    })
+        except Exception as _exc:
+            log.warning("_load_bets_csv %s failed: %s", fp, _exc)
+    return rows
+
+
+def _build_trajectory(game_id: str, player_name: str, stat: str,
+                      pregame_q50: float | None,
+                      actual: float | None,
+                      hit: bool | None) -> list[dict] | None:
+    """Reconstruct intra-game q50 trajectory from live snapshot JSONs.
+
+    Returns a list like:
+      [{"label": "pregame", "q50": 24.1},
+       {"label": "Q1",      "q50": 24.6},
+       ...
+       {"label": "final",   "q50": 26.0, "actual": 27, "hit": True}]
+    or None if no live snapshots found.
+    """
+    import json as _json2
+    import logging as _lg
+    log = _lg.getLogger(__name__)
+
+    live_dir = _ROOT / "data" / "live"
+    if not live_dir.exists():
+        return None
+
+    # All snapshots for this game, sorted by timestamp (epoch files only —
+    # named sentinels would sort last and corrupt the Q1/Q2/Q3 sampling).
+    snaps_paths = _epoch_snaps(live_dir, game_id)
+    if not snaps_paths:
+        return None
+
+    snapshots: list[dict] = []
+    for p in snaps_paths:
+        try:
+            snapshots.append(_json2.loads(p.read_text(encoding="utf-8")))
+        except Exception:
+            continue
+
+    if not snapshots:
+        return None
+
+    player_lower = player_name.lower()
+    stat_lower = stat.lower()
+
+    def _q50_from_snap(snap: dict) -> float | None:
+        """Extract projected_final for (player, stat) from a live snapshot."""
+        try:
+            from src.prediction.live_engine import project_from_snapshot as _pfs  # noqa: PLC0415
+            proj = _pfs(snap) or []
+            for r in proj:
+                nm = (r.get("name") or "").lower()
+                st = (r.get("stat") or "").lower()
+                if nm == player_lower and st == stat_lower:
+                    pf = r.get("projected_final")
+                    if pf is not None:
+                        return float(pf)
+        except Exception as _exc:
+            log.debug("_q50_from_snap failed: %s", _exc)
+        # Fallback: read raw player stat from snapshot if period==4 (final)
+        if snap.get("game_status") == "FINAL":
+            for pl in (snap.get("players") or []):
+                if (pl.get("name") or "").lower() == player_lower:
+                    val = pl.get(stat_lower)
+                    if val is not None:
+                        return float(val)
+        return None
+
+    # Sample up to 4 snapshots roughly at Q1/Q2/Q3/final boundaries
+    # Snapshots are sorted by filename timestamp (ascending).
+    n = len(snapshots)
+    period_map: dict[int, dict] = {}  # period → last snap at that period
+    for snap in snapshots:
+        period = snap.get("period") or 0
+        try:
+            period = int(period)
+        except (TypeError, ValueError):
+            period = 0
+        period_map[period] = snap
+
+    trajectory: list[dict] = []
+    # Pregame point
+    if pregame_q50 is not None:
+        trajectory.append({"label": "pregame", "q50": pregame_q50})
+
+    # Quarter snapshots Q1 → Q3
+    for q in (1, 2, 3):
+        snap = period_map.get(q)
+        if snap:
+            q50 = _q50_from_snap(snap)
+            if q50 is not None:
+                trajectory.append({"label": f"Q{q}", "q50": q50})
+
+    # Final
+    final_snap = period_map.get(4) or period_map.get(max(period_map.keys(), default=0))
+    if final_snap:
+        q50 = _q50_from_snap(final_snap)
+        if q50 is not None:
+            pt: dict = {"label": "final", "q50": q50}
+            if actual is not None:
+                pt["actual"] = actual
+                pt["hit"] = bool(hit) if hit is not None else None
+            trajectory.append(pt)
+    elif actual is not None and trajectory:
+        # No final snapshot — append actual as the last point
+        trajectory.append({"label": "final", "q50": actual, "actual": actual,
+                           "hit": bool(hit) if hit is not None else None})
+
+    return trajectory if len(trajectory) >= 2 else None
+
+
+def _games_for_date(target_date: str) -> list[dict]:
+    """Return list of {game_id, game_date, away, home} from season_games JSONs
+    and live snapshots. Covers regular season + any snapshots (playoff)."""
+    import json as _json3
+    import glob as _glob
+    games: dict[str, dict] = {}
+
+    # 1. Season games JSONs (regular season only)
+    sg_dir = _ROOT / "data" / "nba"
+    for sg_file in sg_dir.glob("season_games_*.json"):
+        try:
+            with sg_file.open(encoding="utf-8") as fh:
+                d = _json3.load(fh)
+            for row in (d.get("rows") or []):
+                if row.get("game_date") == target_date:
+                    gid = row.get("game_id", "")
+                    if gid and gid not in games:
+                        games[gid] = {
+                            "game_id": gid,
+                            "game_date": target_date,
+                            "away": row.get("away_team", ""),
+                            "home": row.get("home_team", ""),
+                            "tipoff_display": "",
+                            "status": "final",
+                            "score_away": None,
+                            "score_home": None,
+                        }
+        except Exception:
+            continue
+
+    # 2. Live snapshots — covers playoff games not in season_games
+    live_dir = _ROOT / "data" / "live"
+    if live_dir.exists():
+        for snap_path in live_dir.glob("*.json"):
+            try:
+                snap = _json3.loads(snap_path.read_text(encoding="utf-8"))
+                captured = snap.get("captured_at") or ""
+                snap_date = captured[:10] if captured else ""
+                if snap_date != target_date:
+                    continue
+                gid = snap.get("game_id", "")
+                if not gid or gid in games:
+                    continue
+                status_raw = (snap.get("game_status") or "").upper()
+                if status_raw == "FINAL":
+                    status = "final"
+                elif snap.get("period") and snap.get("clock") != "0:00":
+                    status = "live"
+                else:
+                    status = "upcoming"
+                games[gid] = {
+                    "game_id": gid,
+                    "game_date": target_date,
+                    "away": snap.get("away_team", ""),
+                    "home": snap.get("home_team", ""),
+                    "tipoff_display": "",
+                    "status": status,
+                    "score_away": snap.get("away_score"),
+                    "score_home": snap.get("home_score"),
+                }
+            except Exception:
+                continue
+
+    return list(games.values())
+
+
+_EOQ_CACHE: dict[str, tuple[float, dict]] = {}
+_EOQ_TTL = 30.0    # 30s — quarters are 12 min; keep end-of-quarter snapshots
+                   # fresh enough to track live quarter changes without thrashing.
+
+
+def _end_of_quarter_snapshots(game_id: str) -> dict[int, dict]:
+    """Return {period: latest snapshot at the end of that period} for periods 1-4.
+
+    "End of quarter" = the latest snapshot whose `period == N` and
+    whose game clock has wound down to 0:00. Cached for 5 min so
+    rendering /results doesn't re-scan 500+ snapshot files per game.
+    """
+    import json as _ej, time as _tm
+    cached = _EOQ_CACHE.get(game_id)
+    if cached and _tm.time() - cached[0] < _EOQ_TTL:
+        return cached[1]
+    out: dict[int, dict] = {}
+    live_dir = _ROOT / "data" / "live"
+    if not live_dir.exists():
+        _EOQ_CACHE[game_id] = (_tm.time(), out)
+        return out
+    # Resolve aliases so KAMBI hex and NBA canonical IDs both work.
+    try:
+        from api._courtvision_odds import resolve_game_id as _rgid  # noqa: PLC0415
+        alias = _rgid(game_id)
+        canon = list(alias.get("canonical_ids", frozenset([game_id]))) + [game_id]
+    except Exception:
+        canon = [game_id]
+    paths: list[Path] = []
+    for _g in canon:
+        paths.extend(_epoch_snaps(live_dir, _g))
+    if not paths:
+        _EOQ_CACHE[game_id] = (_tm.time(), out)
+        return out
+    # Walk all snapshots, keep the LATEST snapshot for each period that
+    # has clock==0:00 OR (period<4 AND a later period exists). The second
+    # condition handles snapshots near 0:01 where the buzzer hadn't quite
+    # snapped — they're still the de-facto end-of-quarter state.
+    by_period_latest: dict[int, tuple[str, dict]] = {}
+    max_seen_period = 0
+    for p in paths:
+        try:
+            s = _ej.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        period = s.get("period") or 0
+        try:
+            period = int(period)
+        except (TypeError, ValueError):
+            continue
+        if period not in (1, 2, 3, 4):
+            continue
+        max_seen_period = max(max_seen_period, period)
+        captured = s.get("captured_at") or ""
+        cur = by_period_latest.get(period)
+        if cur is None or captured > cur[0]:
+            by_period_latest[period] = (captured, s)
+    # Take the latest snap per period (good enough for EOQ projection)
+    for period, (_cap, snap) in by_period_latest.items():
+        out[period] = snap
+    _EOQ_CACHE[game_id] = (_tm.time(), out)
+    return out
+
+
+def _project_at_snapshot_map(snap: dict) -> dict[tuple[str, str], float]:
+    """Run live_engine.project_from_snapshot and pivot to
+    {(player_lower, stat_lower): projected_final}. Returns {} on failure
+    (live_engine missing, snapshot too sparse, etc.)."""
+    if not snap:
+        return {}
+    try:
+        from src.prediction.live_engine import project_from_snapshot as _pfs  # noqa: PLC0415
+    except Exception:
+        return {}
+    try:
+        rows = _pfs(snap) or []
+    except Exception:
+        return {}
+    out: dict[tuple[str, str], float] = {}
+    for r in rows:
+        nm = (r.get("name") or "").lower()
+        st = (r.get("stat") or "").lower()
+        pf = r.get("projected_final")
+        if not nm or not st or pf is None:
+            continue
+        try:
+            pf = float(pf)
+        except (TypeError, ValueError):
+            continue
+        # FLOOR at current: a projected FINAL can never be below what the player
+        # has ALREADY recorded (counting stats only go up). Without this the box
+        # shows a projection below the live total (e.g. Jaylin Williams already
+        # has more pts than projected).
+        cur = r.get("current")
+        try:
+            if cur is not None:
+                pf = max(pf, float(cur))
+        except (TypeError, ValueError):
+            pass
+        out[(nm, st)] = pf
+    return out
+
+
+def _home_win_prob_from_game(game_id: str) -> "float | None":
+    """Best-effort home_win_prob: find a BOUNDARY snapshot the in-play
+    model trained on (period N+1 with clock ≥ 11:57 = end-of-quarter N)
+    and return its `home_win_prob_inplay`. The earliest such snapshot
+    (endQ1) is the closest proxy we have to a pregame win prob without
+    pulling in the heavyweight pregame WinProbModel feature pipeline.
+    Returns None if no boundary snapshot exists yet.
+    """
+    live_dir = _ROOT / "data" / "live"
+    if not live_dir.exists():
+        return None
+    try:
+        from api._courtvision_odds import resolve_game_id as _rgid  # noqa: PLC0415
+        alias = _rgid(game_id)
+        canon = list(alias.get("canonical_ids", frozenset([game_id]))) + [game_id]
+    except Exception:
+        canon = [game_id]
+    paths: list[Path] = []
+    for _g in canon:
+        paths.extend(_epoch_snaps(live_dir, _g))
+    if not paths:
+        return None
+    import json as _jjj  # noqa: PLC0415
+    # Call the in-play win prob model DIRECTLY (live_engine integration
+    # short-circuits to None when features_from_snapshot returns an
+    # empty dict, but predict_home_win_prob handles that gracefully
+    # via baseline fallback).
+    try:
+        from src.prediction.inplay_winprob import (
+            predict_home_win_prob as _iwp_predict,
+            features_from_snapshot as _iwp_features,
+            _period_to_snapshot as _iwp_snap_for,
+        )
+    except Exception:
+        return None
+
+    # Earliest boundary snapshot ≈ endQ1 ≈ closest to pregame
+    for p in paths:
+        try:
+            snap = _jjj.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        snap_name = _iwp_snap_for(snap.get("period"), snap.get("clock"))
+        if snap_name is None:
+            continue
+        try:
+            feats = _iwp_features(snap) or {}
+            wp = _iwp_predict(feats, snap_name)
+        except Exception:
+            continue
+        if wp is not None:
+            try:
+                return float(wp)
+            except (TypeError, ValueError):
+                continue
+    return None
+
+
+def _box_score_from_snapshot(snap: dict) -> list[dict]:
+    """Build a sortable box-score row list from any snapshot. Empty list
+    if the snapshot lacks `players`. Used by the pregame section to show
+    'box score' that updates live as quarters progress."""
+    if not snap:
+        return []
+    out: list[dict] = []
+    for pl in (snap.get("players") or []):
+        nm = pl.get("name") or ""
+        if not nm:
+            continue
+        # NBA snapshots store min as either int seconds, float, or "MM:SS"
+        mp_raw = pl.get("min") or pl.get("minutes") or 0
+        if isinstance(mp_raw, str) and ":" in mp_raw:
+            try:
+                mm, ss = mp_raw.split(":", 1)
+                mp = int(mm) + int(ss) / 60.0
+            except Exception:
+                mp = 0.0
+        else:
+            try:
+                mp = float(mp_raw or 0)
+            except (TypeError, ValueError):
+                mp = 0.0
+        out.append({
+            "player_name": nm,
+            "team": (pl.get("team") or "").upper(),
+            "min": round(mp, 1),
+            "pts": pl.get("pts"),
+            "reb": pl.get("reb"),
+            "ast": pl.get("ast"),
+            "fg3m": pl.get("fg3m"),
+            "stl": pl.get("stl"),
+            "blk": pl.get("blk"),
+            "tov": pl.get("tov"),
+            "starter": bool(pl.get("is_starter") or pl.get("starter")),
+        })
+    # Sort by minutes desc (starters + rotation players first)
+    out.sort(key=lambda r: -(r.get("min") or 0))
+    return out
+
+
+def _bet_to_pick(b: dict, rank_i: int, *,
+                 actual: float | None = None,
+                 hit: bool | None = None) -> dict:
+    """Convert a graded `bet` dict from _build_slate into the pick dict
+    rendered by /results. Captures the line/odds/book/captured_at the
+    bet was graded against so the UI can show 'DK posted Wemby U3.5 BLK
+    at -110, captured 2026-05-28 19:42 ET'."""
+    try:
+        q50 = float(b.get("q50") or b.get("pregame_q50") or 0) or None
+    except (TypeError, ValueError):
+        q50 = None
+    try:
+        ev = float(b.get("ev_pct")) if b.get("ev_pct") is not None else None
+    except (TypeError, ValueError):
+        ev = None
+    try:
+        kelly = float(b.get("kelly_pct") or b.get("kelly_fraction") or 0) or None
+    except (TypeError, ValueError):
+        kelly = None
+    # Best-book quote at grade time
+    best_book = b.get("best_book") or b.get("book")
+    best_odds = b.get("best_price") or b.get("odds")
+    # Quote freshness: prefer the `_books_full` ladder (captured_at per
+    # book); fall back to the bet-level freshness flag if present.
+    captured_at = ""
+    for _bk in (b.get("_books_full") or []):
+        if (_bk.get("book") or "") == best_book and _bk.get("captured_at"):
+            captured_at = _bk.get("captured_at") or ""
+            break
+    if not captured_at:
+        for _bk in (b.get("_books_full") or []):
+            if _bk.get("captured_at"):
+                captured_at = _bk.get("captured_at")
+                break
+    return {
+        "rank": rank_i,
+        "player_name": b.get("player_name") or "",
+        "stat": (b.get("prop_stat") or b.get("stat") or "").lower(),
+        "side": b.get("side") or "",
+        "line": float(b.get("line") or 0),
+        "pregame_q50": q50,
+        "book": best_book,
+        "odds": best_odds,
+        "captured_at": captured_at,
+        "ev_pct": ev,
+        "kelly_pct": kelly,
+        "edge_pp": ev,
+        "model_prob": b.get("model_prob"),
+        "narrative": b.get("narrative_text") or b.get("narrative"),
+        "actual": actual,
+        "hit": hit,
+        "trajectory": None,
+    }
+
+
+def _last_completed_game_date() -> "str | None":
+    """ET date of the most recently COMPLETED game (latest FINAL snapshot in
+    data/live/). Reads one file per game_id (the newest by filename epoch), so
+    it's cheap. Returns None if no FINAL snapshot exists."""
+    live_dir = _ROOT / "data" / "live"
+    if not live_dir.exists():
+        return None
+    import json as _jlc
+    latest_by_gid: dict[str, tuple[int, "Path"]] = {}
+    for p in live_dir.glob("*.json"):
+        gid, _, ep = p.stem.rpartition("_")
+        try:
+            ep_i = int(ep)
+        except ValueError:
+            continue
+        if gid and (gid not in latest_by_gid or ep_i > latest_by_gid[gid][0]):
+            latest_by_gid[gid] = (ep_i, p)
+    best_date, best_ep = None, -1
+    for gid, (ep_i, p) in latest_by_gid.items():
+        try:
+            s = _jlc.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if "FINAL" not in str(s.get("game_status") or "").upper():
+            continue
+        d = _et_date_from_iso(s.get("captured_at") or "")
+        if d and ep_i > best_ep:
+            best_ep, best_date = ep_i, d
+    return best_date
+
+
+_INPLAY_LINE_CACHE: dict = {}
+
+
+def _inplay_book_label(book: str) -> str:
+    """Pretty label for an in-play book key (fd_inplay -> 'FanDuel (Live)')."""
+    b = (book or "").lower()
+    if "fd" in b or "fanduel" in b:
+        return "FanDuel (Live)"
+    if "dk" in b or "draftking" in b:
+        return "DraftKings (Live)"
+    return (book or "Live")
+
+
+def _load_inplay_line_history(date: str, canon_ids: frozenset) -> list:
+    """Load LIVE in-play prop lines captured during the game (data/lines/<date>_*inplay*.csv)
+    so we can reconstruct the lines that actually existed at each quarter break.
+    Returns rows [{cap, name, disp, stat, line, over, under}]. Cached 5 min."""
+    key = (date, tuple(sorted(canon_ids)) if canon_ids else ())
+    ent = _INPLAY_LINE_CACHE.get(key)
+    if ent and time.time() - ent[0] < 30:  # 30s: live lines move every ~30s
+        return ent[1]
+    import csv as _csv
+
+    def _pf(x):
+        try:
+            return int(float(x))
+        except (TypeError, ValueError):
+            return None
+    # Bug 3: some books (FanDuel in-play) emit an ALT-LINE LADDER — many rungs
+    # for the same (player, stat) at a single capture, most of them alt props
+    # with an empty under_price. We collapse each ladder to ONE primary line so
+    # "the line" is unambiguous. Group rows per (book, player, stat, capture);
+    # books that quote a single line per capture are a 1-element group and pass
+    # through unchanged (identical behavior for non-laddered books).
+    import collections as _collections  # noqa: PLC0415
+    matched_g: dict = _collections.OrderedDict()
+    all_g: dict = _collections.OrderedDict()
+
+    # Alt rungs are one-sided and/or carry extreme odds; the MAIN current line
+    # has sane odds (roughly -400..+400). FanDuel in-play never sends an
+    # under_price even on its main line, so we can't hard-require both sides —
+    # we instead PREFER both-sided sane rungs, then fall back to sane one-sided,
+    # then to any priced rung. Among the surviving set the existing
+    # closest-to-.5 / closest-to-median logic picks the central (genuine) rung.
+    _ALT_ODDS_LO, _ALT_ODDS_HI = -400, 400
+
+    def _sane(v) -> bool:
+        return v is not None and _ALT_ODDS_LO <= v <= _ALT_ODDS_HI
+
+    def _collapse(group_rows: list) -> dict:
+        """Pick the single primary rung from an alt-line ladder.
+
+        Preference cascade (first non-empty bucket wins):
+          1. rungs with BOTH over+under priced AND both odds non-extreme,
+          2. rungs whose over_price is non-extreme (sane main line, e.g. FD
+             which omits under_price entirely),
+          3. rungs carrying any over_price,
+          4. all rungs.
+        Within the chosen bucket, pick the rung closest to a .5 standard line
+        and then closest to the bucket's MEDIAN line (central rung = genuine
+        current line; extreme rungs are alt props)."""
+        if len(group_rows) == 1:
+            return group_rows[0]
+        both_sane = [r for r in group_rows
+                     if _sane(r["over"]) and _sane(r["under"])]
+        over_sane = [r for r in group_rows if _sane(r["over"])]
+        priced = [r for r in group_rows if r["over"] is not None]
+        cand = both_sane or over_sane or priced or group_rows
+        lines = sorted(r["line"] for r in cand)
+        med = lines[len(lines) // 2]
+
+        def _half_dist(v):
+            # distance from the nearest .5 standard line (0.0 for x.5 lines)
+            return abs((v - 0.5) - round(v - 0.5))
+
+        def _even_dist(r):
+            # how far the over_price is from pick'em (|American odds|). The MAIN
+            # line is priced near even money; alt rungs sit further out, so the
+            # near-even rung is the genuine current line. Unpriced rungs sort last.
+            return abs(r["over"]) if r["over"] is not None else 10_000
+
+        # standard .5 line first, then near-even odds (main line), then closest
+        # to median, then lower line (stable)
+        return min(cand, key=lambda r: (round(_half_dist(r["line"]), 6),
+                                        _even_dist(r),
+                                        abs(r["line"] - med), r["line"]))
+
+    for p in (_ROOT / "data" / "lines").glob(f"{date}_*inplay*.csv"):
+        try:
+            with p.open(encoding="utf-8", newline="") as fh:
+                for r in _csv.DictReader(fh):
+                    nm = (r.get("player_name") or "").strip()
+                    st = (r.get("stat") or "").strip().lower()
+                    cap = (r.get("captured_at") or "").strip()
+                    if not (nm and st and cap):
+                        continue
+                    try:
+                        line = float(r.get("line"))
+                    except (TypeError, ValueError):
+                        continue
+                    book = (r.get("book") or "").strip()
+                    row = {"cap": cap, "name": nm.lower(), "disp": nm, "stat": st,
+                           "line": line, "over": _pf(r.get("over_price")),
+                           "under": _pf(r.get("under_price")), "book": book}
+                    gk = (book, nm.lower(), st, cap)
+                    all_g.setdefault(gk, []).append(row)
+                    if canon_ids and str(r.get("game_id") or "") in canon_ids:
+                        matched_g.setdefault(gk, []).append(row)
+        except Exception:
+            continue
+    src_g = matched_g if matched_g else all_g  # fall back to all if id-grouping missed
+    rows = [_collapse(v) for v in src_g.values()]
+    _INPLAY_LINE_CACHE[key] = (time.time(), rows)
+    return rows
+
+
+def _line_movement_for(line_hist: list, name_lower: str, stat: str,
+                       projected_final: float | None = None) -> dict:
+    """Compute line-movement fields for one (player, stat) from the collapsed
+    in-play line history. Returns the CONTRACT dict with graceful nulls when
+    there is no usable history:
+
+        line_open              first captured line of the game
+        line_current           most recent captured line
+        line_delta             line_current - line_open
+        line_velocity_per_min  delta / minutes between first & last capture
+        line_dir_vs_proj       "toward" | "away" | "flat" — "toward" means the
+                               line is moving in the direction our projection
+                               favors (line rising while we project OVER, or
+                               line falling while we project UNDER).
+    """
+    null = {"line_open": None, "line_current": None, "line_delta": None,
+            "line_velocity_per_min": None, "line_dir_vs_proj": None}
+    try:
+        seq = [r for r in line_hist
+               if r.get("name") == name_lower and (r.get("stat") or "").lower() == stat
+               and r.get("cap") and r.get("line") is not None]
+    except Exception:
+        return dict(null)
+    if not seq:
+        return dict(null)
+    # BUG 4 FIX: parse cap to tz-aware datetime before sorting so mixed
+    # formats (DK: minute+offset "2026-05-31T00:52+00:00" vs FD: second,
+    # no offset "2026-05-31T00:16:58") sort correctly instead of lexically.
+    from datetime import datetime as _dtm  # noqa: PLC0415
+
+    def _capdt(s: str) -> "_dtm":
+        try:
+            dt = _dtm.fromisoformat(str(s).replace("Z", "+00:00"))
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            # Fallback: make a sentinel far in the past so bad entries
+            # sort first and don't become the spurious "current" line.
+            return _dtm(1970, 1, 1, tzinfo=timezone.utc)
+
+    try:
+        seq = sorted(seq, key=lambda r: _capdt(r["cap"]))
+    except Exception:
+        seq = sorted(seq, key=lambda r: r["cap"])
+
+    line_open = float(seq[0]["line"])
+    line_current = float(seq[-1]["line"])
+    delta = round(line_current - line_open, 3)
+
+    velocity = None
+    try:
+        t0 = _capdt(seq[0]["cap"])
+        t1 = _capdt(seq[-1]["cap"])
+        mins = (t1 - t0).total_seconds() / 60.0
+        if mins > 0:
+            velocity = round(delta / mins, 4)
+    except (ValueError, TypeError):
+        velocity = None
+
+    direction = "flat"
+    if abs(delta) >= 1e-9 and projected_final is not None:
+        try:
+            side_over = float(projected_final) >= line_current
+        except (TypeError, ValueError):
+            side_over = None
+        if side_over is not None:
+            rising = delta > 0
+            # OVER bet wants the line to RISE toward our number; UNDER wants it
+            # to FALL. "toward" = movement helps the side we project.
+            direction = "toward" if (rising == side_over) else "away"
+
+    return {"line_open": round(line_open, 3), "line_current": round(line_current, 3),
+            "line_delta": delta, "line_velocity_per_min": velocity,
+            "line_dir_vs_proj": direction}
+
+
+def _eoq_live_picks(snap_q: dict, line_hist: list, actuals: dict,
+                    exclude: frozenset = frozenset(), cap: int = 10,
+                    edge_mult: float = 1.0) -> list:
+    """NEW +EV bets available at this quarter break (a computer betting the game
+    places each (player,stat) ONCE, when the edge first appears): live lines as-of
+    the snapshot's capture time + the in-play projection at that state, filtered by
+    the validated iter61 stack, ranked by EV, graded vs the final actuals.
+    `exclude` = (name_lower, stat) keys already bet earlier; `cap` = max new bets."""
+    try:
+        from src.prediction.bet_thresholds import (  # noqa: PLC0415
+            allowed_directions_for, edge_threshold_for,
+            is_line_excluded, is_direction_line_excluded, kelly_b_hit_rate_for)
+        from src.prediction.edge_calibration import calibrate_p_win  # noqa: PLC0415
+    except Exception:
+        return []
+    t_q = snap_q.get("captured_at") or ""
+    proj_map = _project_at_snapshot_map(snap_q)  # {(name_lower, stat): projected_final}
+    # BUG 11 FIX: parse cap strings to tz-aware datetimes before comparison so
+    # mixed-format DK ("2026-05-31T00:52+00:00") vs FD ("2026-05-31T00:16:58")
+    # timestamps sort/compare correctly. Reuse the same _normalize_ts / _capdt
+    # pattern already live in _line_movement_for.
+    from datetime import datetime as _dtm_eoq  # noqa: PLC0415
+
+    def _capdt_eoq(s: str) -> "_dtm_eoq":
+        try:
+            dt = _dtm_eoq.fromisoformat(str(s).replace("Z", "+00:00"))
+            return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            return _dtm_eoq(1970, 1, 1, tzinfo=timezone.utc)
+
+    _t_q_dt = _capdt_eoq(t_q) if t_q else None
+    # latest line per (name, stat) AS OF the quarter break
+    asof: dict[tuple, dict] = {}
+    for r in line_hist:
+        if _t_q_dt is not None and _capdt_eoq(r["cap"]) > _t_q_dt:
+            continue
+        k = (r["name"], r["stat"])
+        if k not in asof or _capdt_eoq(r["cap"]) > _capdt_eoq(asof[k]["cap"]):
+            asof[k] = r
+    cands = []
+    for (nm, st), r in asof.items():
+        proj = proj_map.get((nm, st))
+        if proj is None:
+            continue
+        line = r["line"]
+        side = "OVER" if proj >= line else "UNDER"
+        if side.lower() not in allowed_directions_for(st):
+            continue
+        edge = abs(proj - line)
+        # Stage-confidence-scaled bar: when the model is sharper (later in the
+        # game) edge_mult is lower, so smaller edges qualify -> more bets land
+        # in Q3 where the model is most accurate (validated in-game Brier profile).
+        if edge < edge_threshold_for(st) * edge_mult:
+            continue
+        if is_line_excluded(st, line) or is_direction_line_excluded(st, side.lower(), line):
+            continue
+        price = r["over"] if side == "OVER" else r["under"]
+        if price is None:
+            continue
+        # Skip stale/longshot in-play prices nobody would actually bet (they
+        # produce absurd EVs and pollute the top-10). Realistic prop range.
+        if price > 450 or price < -1000:
+            continue
+        try:
+            p = calibrate_p_win(st, edge, edge_threshold_for(st), kelly_b_hit_rate_for(st))
+        except Exception:
+            continue
+        payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
+        ev = p * payout - (1.0 - p) * 100.0
+        if ev <= 0:
+            continue  # only +EV bets are "bets you'd actually make"
+        cands.append({"r": r, "st": st, "side": side, "line": line, "price": price,
+                      "ev": ev, "prob": p, "proj": proj})
+    cands.sort(key=lambda c: -c["ev"])
+    picks = []
+    for c in cands:
+        key = (c["r"]["name"], c["st"])
+        if key in exclude:
+            continue  # already bet this (player, stat) earlier in the game
+        av = actuals.get(key) if actuals else None
+        hit = None
+        if av is not None:
+            hit = (av > c["line"]) if c["side"] == "OVER" else (av < c["line"])
+        # BUG 11 FIX: use the actual book from the chosen row rather than
+        # hard-coding "fd_inplay" (which was wrong when DK inplay won the
+        # tz-aware ordering comparison).
+        _chosen_book = c["r"].get("book") or "inplay"
+        b = {"player_name": c["r"]["disp"], "prop_stat": c["st"].upper(), "side": c["side"],
+             "line": c["line"], "ev_pct": round(c["ev"], 2), "model_prob": round(c["prob"], 4),
+             "q50": round(c["proj"], 2), "best_book": _chosen_book, "best_price": c["price"],
+             "_books_full": [{"book": _chosen_book, "captured_at": c["r"]["cap"]}]}
+        picks.append(_bet_to_pick(b, len(picks) + 1, actual=av, hit=hit))
+        if len(picks) >= cap:
+            break
+    return picks
+
+
+def _build_results_data(focused_date: str | None, days: int) -> dict:
+    """Build the /results payload — LAST COMPLETED GAME ONLY.
+
+    The page shows exactly one block: the most recently settled game, rendered
+    as a single chronological BET LOG produced by the WHEN-TO-BET engine
+    (scripts/cv_fix_bet_timing.py). Each (player, stat) bet appears once, at the
+    entry time the learned timing policy chose, graded HIT/MISS vs the true
+    final. No "Upcoming" section, no per-quarter blocks.
+    """
+    import logging as _lg
+    log = _lg.getLogger(__name__)
+    try:
+        from scripts.cv_fix_bet_timing import results_block_for_last_game  # noqa: PLC0415
+        blk = results_block_for_last_game()
+    except Exception as exc:  # never break the page if the engine hiccups
+        log.warning("bet-timing engine failed: %s", exc)
+        blk = None
+    if blk is not None:
+        return {
+            "upcoming": [],
+            "settled": [blk],
+            "days": days,
+            "focused_date": focused_date,
+            "as_of": _today_et(),
+            "warn_no_graded": False,
+        }
+    # Engine produced nothing (no completed game yet) — fall through to the
+    # legacy multi-section builder so the page still renders something useful.
+    return _build_results_data_legacy(focused_date, days)
+
+
+def _build_results_data_legacy(focused_date: str | None, days: int) -> dict:
+    """Legacy multi-section results builder (pregame + per-quarter). Retained as
+    a fallback for when the timing engine has no completed game to grade."""
+    import logging as _lg
+    log = _lg.getLogger(__name__)
+    from api._courtvision_odds import games_index, consolidate  # noqa: PLC0415
+
+    today_et = _today_et()
+    from datetime import datetime as _dt, timedelta as _td
+    try:
+        today = _dt.strptime(today_et, "%Y-%m-%d")
+    except ValueError:
+        today = _dt.utcnow()
+        today_et = today.strftime("%Y-%m-%d")
+
+    # ── UPCOMING: walk forward from today+1 ET, stop at the FIRST date
+    # that yields a real game (resolved-teams card with non-zero bets).
+    upcoming_blocks: list[dict] = []
+    upcoming_date = focused_date if focused_date and focused_date > today_et else None
+    if upcoming_date is None:
+        for offset in range(1, 8):  # search up to a week out
+            cand = (today + _td(days=offset)).strftime("%Y-%m-%d")
+            cand_games = games_index(cand) if False else None  # placeholder
+            try:
+                cand_games = games_index(cand)
+            except Exception:
+                cand_games = []
+            # Keep only games whose teams resolve via lookup OR roster overlap.
+            has_real = False
+            for gg in (cand_games or []):
+                aw = (gg.get("away_abbr") or "").strip().upper()
+                hm = (gg.get("home_abbr") or "").strip().upper()
+                if aw and hm and aw != hm and len(aw) <= 4 and len(hm) <= 4:
+                    has_real = True; break
+                inferred = _infer_teams_from_player_overlap(
+                    sorted({(p.get("player") or "")
+                            for p in consolidate(cand)
+                            if str(p.get("game_id")) == gg.get("game_id")}))
+                if inferred is not None:
+                    has_real = True; break
+            if has_real:
+                upcoming_date = cand
+                break
+
+    if upcoming_date:
+        try:
+            slate = _build_slate(upcoming_date)
+        except Exception as exc:
+            log.warning("_build_slate(%s) failed: %s", upcoming_date, exc)
+            slate = {"bets": []}
+        bets = slate.get("bets") or []
+        by_game: dict[str, list[dict]] = {}
+        for b in bets:
+            by_game.setdefault(str(b.get("game_id") or ""), []).append(b)
+        for gid, game_bets in by_game.items():
+            game_bets.sort(key=lambda b: (
+                b.get("ev_pct") is None, -(b.get("ev_pct") or 0.0)))
+            top = game_bets[:15]
+            picks = [_bet_to_pick(b, i + 1) for i, b in enumerate(top)]
+            sample = top[0] if top else {}
+            away = (sample.get("team") or "").upper()
+            home = (sample.get("opp") or "").upper()
+            if sample.get("venue") == "home":
+                away, home = home, away
+            # Drop blocks with unresolved teams (Finals speculation guard).
+            if not (away and home and away != home):
+                continue
+            upcoming_blocks.append({
+                "game_id": gid,
+                "game_date": upcoming_date,
+                "away": away,
+                "home": home,
+                "tipoff_display": upcoming_date,
+                "status": "upcoming",
+                "score_away": None,
+                "score_home": None,
+                "picks": picks,
+                "game_summary": {
+                    "n_picks_total": len(picks),
+                    "n_hit": None,
+                    "hit_rate": None,
+                    "net_units_kelly": None,
+                },
+            })
+
+    # ── SETTLED: last night ET only (one date back) ───────────────────
+    # User feedback: showing 5/24, 5/26, 5/27 was just noise — only last
+    # night's game matters. The 5/29 ET date (today) has no games; 5/28
+    # ET is "last night" = the OKC@SAS Game 5 we're grading.
+    settled_blocks: list[dict] = []
+    warn_no_graded = False
+    # Settle the LAST COMPLETED game (latest FINAL snapshot), not a hardcoded
+    # today-1 (which is often a no-game day -> only "Upcoming" showed). A focused
+    # past date still overrides.
+    settled_date = focused_date if (focused_date and focused_date < today_et) else (
+        _last_completed_game_date() or (today - _td(days=1)).strftime("%Y-%m-%d"))
+
+    # Pull bets via the same synthesis the upcoming side uses (most-recent
+    # slate q50 + last-night's sportsbook lines). This is "the bets we
+    # would have made last night" — exactly what the user asked for.
+    try:
+        _settled_slate = _build_slate(settled_date)
+    except Exception as exc_sd:
+        log.warning("_build_slate(%s) failed: %s", settled_date, exc_sd)
+        _settled_slate = {"bets": []}
+    _settled_bets = _settled_slate.get("bets") or []
+
+    # Pull FINAL snapshots from data/live/ to grade picks against actuals.
+    live_dir = _ROOT / "data" / "live"
+    snap_meta_by_gid: dict[str, dict] = {}
+    final_actuals_by_gid: dict[str, dict[tuple[str, str], float]] = {}
+    _best_final_total: dict[str, int] = {}
+    if live_dir.exists():
+        import json as _js5  # noqa: PLC0415
+        # Newest-first (filename epoch desc) so the FIRST snapshot seen per game
+        # is the true latest — that's the real final score + full-game actuals.
+        for sp in sorted(live_dir.glob("*.json"),
+                         key=lambda p: p.stem.rpartition("_")[2], reverse=True):
+            try:
+                snap = _js5.loads(sp.read_text(encoding="utf-8"))
+                # Match the snapshot's ET game date to settled_date.
+                cap_et = _et_date_from_iso(snap.get("captured_at") or "")
+                if cap_et and cap_et != settled_date:
+                    continue
+                gid = snap.get("game_id", "")
+                if not gid:
+                    continue
+                is_final = "FINAL" in str(snap.get("game_status") or "").upper()
+                away_t = (snap.get("away_team") or "").upper()
+                home_t = (snap.get("home_team") or "").upper()
+                if not (away_t and home_t):
+                    continue  # malformed snap (no teams) — skip
+                try:
+                    total = int(snap.get("away_score") or 0) + int(snap.get("home_score") or 0)
+                except (TypeError, ValueError):
+                    total = 0
+                # Snapshot scores can be NON-MONOTONIC across capture sessions
+                # (a later partial replay has a higher epoch but lower score), so
+                # the TRUE final = the FINAL snapshot with the MAX total points.
+                # Live (no final yet) games fall back to latest-by-epoch.
+                if is_final:
+                    if total > _best_final_total.get(gid, -1):
+                        _best_final_total[gid] = total
+                        snap_meta_by_gid[gid] = {
+                            "away": away_t, "home": home_t,
+                            "score_away": snap.get("away_score"),
+                            "score_home": snap.get("home_score"),
+                            "status": "final",
+                        }
+                        amap: dict[tuple[str, str], float] = {}
+                        for pl in (snap.get("players") or []):
+                            nm = (pl.get("name") or "").lower()
+                            if not nm:
+                                continue
+                            for _st in ("pts","reb","ast","fg3m","stl","blk","tov"):
+                                v = pl.get(_st)
+                                try:
+                                    if v is not None:
+                                        amap[(nm, _st)] = float(v)
+                                except (TypeError, ValueError):
+                                    continue
+                        if amap:
+                            final_actuals_by_gid[gid] = amap
+                elif gid not in snap_meta_by_gid and gid not in _best_final_total:
+                    snap_meta_by_gid[gid] = {
+                        "away": away_t, "home": home_t,
+                        "score_away": snap.get("away_score"),
+                        "score_home": snap.get("home_score"),
+                        "status": "live",
+                    }
+            except Exception:
+                continue
+
+    # Group bets by game_id + grade against actuals.
+    by_game_bets: dict[str, list[dict]] = {}
+    for _b in _settled_bets:
+        by_game_bets.setdefault(str(_b.get("game_id") or ""), []).append(_b)
+
+    # Also include any game_ids found in snapshots without scrape-side bets.
+    for gid in list(snap_meta_by_gid.keys()):
+        by_game_bets.setdefault(gid, [])
+
+    # ── canonicalize game_ids: KAMBI hex hash + NBA numeric id often
+    # point to the same physical matchup. Merge bets by start_time/teams.
+    from api._courtvision_odds import resolve_game_id as _rgid_s  # noqa: PLC0415
+    merged_bets: dict[str, list[dict]] = {}
+    canonical_gid_by_alias: dict[str, str] = {}
+    for gid in list(by_game_bets.keys()):
+        alias = _rgid_s(gid)
+        canon_set = sorted(alias.get("canonical_ids", frozenset([gid])))
+        canonical = canon_set[0] if canon_set else gid
+        canonical_gid_by_alias[gid] = canonical
+        merged_bets.setdefault(canonical, []).extend(by_game_bets[gid])
+    # Also remap snap_meta + actuals to canonical.
+    canonical_snap_meta: dict[str, dict] = {}
+    canonical_actuals: dict[str, dict[tuple[str, str], float]] = {}
+    for alias_gid, canon in canonical_gid_by_alias.items():
+        if alias_gid in snap_meta_by_gid and canon not in canonical_snap_meta:
+            canonical_snap_meta[canon] = snap_meta_by_gid[alias_gid]
+        if alias_gid in final_actuals_by_gid:
+            canonical_actuals.setdefault(canon, {}).update(final_actuals_by_gid[alias_gid])
+
+    for canon_gid, game_bets in merged_bets.items():
+        snap_meta = canonical_snap_meta.get(canon_gid, {})
+        actuals = canonical_actuals.get(canon_gid, {})
+        # Sort by ev_pct desc, top 15
+        game_bets.sort(key=lambda b: (
+            b.get("ev_pct") is None, -(b.get("ev_pct") or 0.0)))
+        top = game_bets[:15]
+
+        # ── Pregame section (model q50 = pregame slate) ────────────────
+        pregame_picks: list[dict] = []
+        for rank_i, b in enumerate(top, start=1):
+            actual = None; hit = None
+            if actuals:
+                pl = (b.get("player_name") or "").lower()
+                stl = (b.get("prop_stat") or b.get("stat") or "").lower()
+                av = actuals.get((pl, stl))
+                if av is not None:
+                    actual = av
+                    try:
+                        ln = float(b.get("line") or 0)
+                        side = (b.get("side") or "").upper()
+                        hit = (actual > ln) if side == "OVER" else (actual < ln)
+                    except (TypeError, ValueError):
+                        pass
+            if hit is None:
+                continue
+            pregame_picks.append(_bet_to_pick(b, rank_i, actual=actual, hit=hit))
+
+        if not pregame_picks:
+            continue
+
+        # ── Team resolution: snapshot > roster inference ───────────────
+        away = snap_meta.get("away", "")
+        home = snap_meta.get("home", "")
+        if not (away and home):
+            inferred = _infer_teams_from_player_overlap(
+                [b.get("player_name") or "" for b in top])
+            if inferred:
+                away, home = inferred
+        if not (away and home and away != home):
+            continue
+
+        # ── Computer-betting agent — place each (player,stat) ONCE, when the edge
+        # is REAL (chronologically: pregame -> Q1 -> Q2 -> Q3, first qualifying
+        # stage). Same validated iter61 bar at every stage. We do NOT force bets
+        # into Q3: the model's Q3 sharpness (in-game Brier 0.137) is for WIN
+        # PROBABILITY (game outcome); prop MARKETS get MORE efficient late, so
+        # real prop edges cluster EARLY. The by-stage results below let the data
+        # say where the bets actually win, instead of assuming.
+        BET_CAP = 20
+        eoq_snaps = _end_of_quarter_snapshots(canon_gid)
+        canon_ids_for_lines = frozenset(_rgid_s(canon_gid).get("canonical_ids", frozenset([canon_gid])))
+        line_hist = _load_inplay_line_history(settled_date, canon_ids_for_lines)
+
+        placed_keys: set = set()
+        period_picks: dict[int, list] = {1: [], 2: [], 3: []}
+        # Q3-first (sharpest, validated below) so a persistent edge is bet at peak
+        # accuracy; earlier stages only catch edges that disappear by Q3. Same
+        # validated edge bar at every stage (no loosening — that bought noise).
+        for period in (3, 2, 1):
+            snap_q = eoq_snaps.get(period)
+            if not snap_q:
+                continue
+            remaining = max(0, BET_CAP - len(placed_keys))
+            if remaining <= 0:
+                break
+            picks = (_eoq_live_picks(snap_q, line_hist, actuals,
+                                     exclude=frozenset(placed_keys), cap=remaining)
+                     if line_hist else [])
+            for p in picks:
+                placed_keys.add(((p.get("player_name") or "").lower(), p.get("stat")))
+            period_picks[period] = picks
+
+        # Pregame fills the rest (lowest priority: model is noisiest pregame).
+        pregame_kept: list = []
+        for p in pregame_picks[:12]:
+            if len(placed_keys) >= BET_CAP:
+                break
+            key = ((p.get("player_name") or "").lower(), p.get("stat"))
+            if key in placed_keys:
+                continue
+            placed_keys.add(key)
+            pregame_kept.append(p)
+        pregame_picks = pregame_kept
+
+        # Stage accuracy (projection MAE vs final) — the empirical "model is
+        # sharpest in Q3" signal, shown on the card.
+        stage_accuracy = []
+        for period in (1, 2, 3):
+            snap_q = eoq_snaps.get(period)
+            if not snap_q or not actuals:
+                continue
+            pm = _project_at_snapshot_map(snap_q)
+            errs = [abs(v - actuals[(nm, st)]) for (nm, st), v in pm.items()
+                    if (nm, st) in actuals and st == "pts"]
+            if errs:
+                stage_accuracy.append({"period": period, "pts_mae": round(sum(errs) / len(errs), 2)})
+
+        # Sections rendered chronologically (Pregame -> Q1 -> Q2 -> Q3).
+        eoq_sections: list[dict] = []
+        for period in (1, 2, 3):
+            snap_q = eoq_snaps.get(period)
+            q_picks = period_picks.get(period, [])
+            if not snap_q:
+                eoq_sections.append({
+                    "label": f"Bets placed — End of Q{period}", "period": period,
+                    "score_away": None, "score_home": None, "captured_at": "",
+                    "picks": [], "n_picks_total": 0, "n_hit": 0, "hit_rate": None,
+                })
+                continue
+            n_hit_q = sum(1 for p in q_picks if p["hit"] is True)
+            n_graded_q = sum(1 for p in q_picks if p["hit"] is not None)
+            eoq_sections.append({
+                "label": f"Bets placed — End of Q{period}", "period": period,
+                "score_away": snap_q.get("away_score"), "score_home": snap_q.get("home_score"),
+                "captured_at": snap_q.get("captured_at", ""),
+                "picks": q_picks, "n_picks_total": len(q_picks), "n_hit": n_hit_q,
+                "hit_rate": (n_hit_q / n_graded_q) if n_graded_q else None,
+                "live_lines": True,
+            })
+
+        # ── Box score: use FINAL snap if available, else latest EOQ snap.
+        final_snap_for_box = eoq_snaps.get(4) or eoq_snaps.get(3) \
+            or eoq_snaps.get(2) or eoq_snaps.get(1)
+        box_score = _box_score_from_snapshot(final_snap_for_box) if final_snap_for_box else []
+
+        # ── Pregame-proxy win prob ─────────────────────────────────────
+        home_win_prob = _home_win_prob_from_game(canon_gid)
+
+        # Pregame-only summary (for the pregame_section header)
+        pg_hit = sum(1 for p in pregame_picks if p["hit"] is True)
+        hit_rate = pg_hit / len(pregame_picks) if pregame_picks else None
+
+        # ── "If a computer bet this game" — ALL placed bets (pregame + in-play),
+        # 1 unit flat each, graded vs final. Shows total bets, hit-rate, net units,
+        # ROI, and a by-stage breakdown (the model is sharpest by Q3).
+        def _payout(odds):
+            try:
+                o = float(odds)
+            except (TypeError, ValueError):
+                return 100.0 / 110.0
+            return (o / 100.0) if o > 0 else (100.0 / abs(o))
+
+        all_placed = list(pregame_picks)
+        for _s in eoq_sections:
+            all_placed += _s.get("picks") or []
+        graded_all = [p for p in all_placed if p.get("hit") is not None]
+        n_bets = len(graded_all)
+        n_hit = sum(1 for p in graded_all if p["hit"] is True)
+        net_units = round(sum((_payout(p.get("odds")) if p["hit"] else -1.0)
+                              for p in graded_all), 2)
+        roi_pct = round(net_units / n_bets * 100.0, 1) if n_bets else None
+        by_stage = []
+        for _lbl, _picks in ([("Pregame", pregame_picks)]
+                             + [(s["label"], s["picks"]) for s in eoq_sections]):
+            _g = [p for p in _picks if p.get("hit") is not None]
+            if not _g:
+                continue
+            _h = sum(1 for p in _g if p["hit"])
+            _u = round(sum((_payout(p.get("odds")) if p["hit"] else -1.0) for p in _g), 2)
+            by_stage.append({"stage": _lbl, "n": len(_g), "hit": _h,
+                             "hit_rate": round(_h / len(_g), 3), "net_units": _u})
+
+        settled_blocks.append({
+            "game_id": canon_gid,
+            "game_date": settled_date,
+            "away": away,
+            "home": home,
+            "tipoff_display": settled_date,
+            "status": snap_meta.get("status", "final"),
+            "score_away": snap_meta.get("score_away"),
+            "score_home": snap_meta.get("score_home"),
+            # Backwards-compat: `picks` still holds the pregame picks so any
+            # older template path keeps rendering.
+            "picks": pregame_picks,
+            "pregame_section": {
+                "label": "Pregame",
+                "picks": pregame_picks,
+                "n_picks_total": len(pregame_picks),
+                "n_hit": pg_hit,
+                "hit_rate": hit_rate,
+                "net_units": (by_stage[0]["net_units"] if by_stage and by_stage[0]["stage"] == "Pregame" else None),
+                "home_win_prob": home_win_prob,
+            },
+            "eoq_sections": eoq_sections,
+            "box_score": box_score,
+            "home_win_prob": home_win_prob,
+            # "If a computer bet this game" — the full agent log totals.
+            "game_summary": {
+                "n_picks_total": n_bets,
+                "n_hit": n_hit,
+                "hit_rate": round(n_hit / n_bets, 3) if n_bets else None,
+                "net_units": net_units,
+                "roi_pct": roi_pct,
+                "by_stage": by_stage,
+                "stage_accuracy": stage_accuracy,
+            },
+        })
+
+    if not settled_blocks:
+        warn_no_graded = True
+
+    return {
+        "upcoming": upcoming_blocks,
+        "settled": settled_blocks,
+        "days": days,
+        "focused_date": focused_date,
+        "as_of": today_et,
+        "warn_no_graded": warn_no_graded,
+    }
+
+
+_RESULTS_TTL = 60.0  # results change slowly (settled=last night, upcoming=next game)
+
+
+def _build_results_cached(focused_date: str | None, days: int) -> dict:
+    """Cache wrapper around _build_results_data — the raw build does a 7-day
+    forward search (games_index + consolidate per candidate) that costs ~0.5s
+    uncached and recomputed on every request. 60s TTL makes repeat loads instant."""
+    cache_key = ("results", focused_date or "", days)
+    ent = _CACHE.get(cache_key)
+    if ent and time.time() - ent[0] < _RESULTS_TTL:
+        return ent[1]
+    data = _build_results_data(focused_date=focused_date, days=days)
+    _CACHE[cache_key] = (time.time(), data)
+    return data
+
+
+@router.get("/results", response_class=HTMLResponse, tags=["courtvision"])
+@_public_limit
+def results_page(
+    request: Request,
+    date: str = Query(default=None),
+    days: int = Query(default=7, ge=1, le=90),
+):
+    """Multi-day Results & Upcoming page.
+
+    ?date=YYYY-MM-DD  focus the settled window on a specific date
+    ?days=N           how many past days to include (default 7, max 90)
+    """
+    data = _build_results_cached(focused_date=date, days=days)
+    return _TEMPLATES.TemplateResponse("results.html", {"request": request, **data})
+
+
+@router.get("/api/results.json", tags=["courtvision"])
+def api_results(
+    date: Optional[str] = Query(default=None),
+    days: int = Query(default=7, ge=1, le=90),
+):
+    """Same payload as /results but as JSON."""
+    return JSONResponse(_build_results_cached(focused_date=date, days=days))
+
+
 @router.get("/api/slate", tags=["courtvision"])
 def api_slate(date: str = Query(default=None),
-              fresh: int = Query(0, ge=0, le=1)):
+              fresh: int = Query(0, ge=0, le=1),
+              game_id: Optional[str] = Query(default=None),
+              books: str = Query(default="")):
     """Slate envelope. ?fresh=1 busts the 5-min cache (used by /tonight's WS
     handler when a `lines.refreshed` event fires so price updates reach the
-    UI within a couple seconds instead of waiting for TTL)."""
+    UI within a couple seconds instead of waiting for TTL).
+    Optional ?game_id= filters bets to a single matchup (accepts NBA ids and
+    sportsbook alias ids via resolve_game_id). Optional ?books=dk,fanduel
+    re-prices/re-ranks to those sportsbooks."""
     if date is None:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     if fresh:
         _CACHE.pop(("slate", date), None)
-    return JSONResponse(_build_slate(date))
+        # The slate is the source for the home page + parlays; busting only the
+        # slate leaves those caches serving the OLD slate's bets. Pop the home
+        # cache and every parlay cache entry for this date too (parlay keys carry
+        # variable trailing fields: seed / top_n / snap_mtime / max_legs / ...).
+        _CACHE.pop(("home", date), None)
+        for _ck in [k for k in list(_CACHE.keys())
+                    if isinstance(k, tuple) and len(k) >= 2
+                    and k[0] in ("parlays", "parlays_constructor")
+                    and k[1] == date]:
+            _CACHE.pop(_ck, None)
+        # Also bust the UNDERLYING odds cache — otherwise a fresh=1 rebuild
+        # re-reads the same up-to-30s-stale consolidated CSV and the new prices
+        # never reach the rebuilt slate. This is what makes "odds updating" real.
+        try:
+            from api import _courtvision_odds as _cvo  # noqa: PLC0415
+            _cvo._CACHE.pop(date, None)
+            _cvo._STEAM_CACHE.clear()
+        except Exception:
+            pass
+        # Bug 10 fix: also bust the predictions overlay lookup cache so that a
+        # fresh predictions_cache_<date>.parquet rebuild reaches the new slate
+        # within the same request — without this the home rec_side/edge stays
+        # stale for up to 60s even after fresh=1 clears everything else.
+        try:
+            from api import _predictions_overlay as _po  # noqa: PLC0415
+            _po._PRED_LOOKUP_CACHE.pop(date, None)
+        except Exception:
+            pass
+    envelope = _build_slate(date)
+    _book_sel = [b for b in (books or "").split(",") if b.strip()]
+    if _book_sel:
+        envelope = _reprice_slate_to_books(envelope, _book_sel)
+    if game_id is not None:
+        game_id_str = game_id.strip()
+        canonical_ids: frozenset = frozenset()
+        alias_pair: frozenset = frozenset()
+        if game_id_str:
+            from api._courtvision_odds import resolve_game_id  # noqa: PLC0415
+            alias_info = resolve_game_id(game_id_str)
+            canonical_ids = alias_info.get("canonical_ids", frozenset([game_id_str]))
+            away_a = alias_info.get("away_abbr") or ""
+            home_a = alias_info.get("home_abbr") or ""
+            if away_a and home_a:
+                alias_pair = frozenset([away_a.upper(), home_a.upper()])
+
+        def _bet_matches(b: dict) -> bool:
+            if str(b.get("game_id", "")) in canonical_ids:
+                return True
+            if str(b.get("game_id", "")) == game_id_str:
+                return True
+            if alias_pair:
+                t = (b.get("team") or "").upper()
+                o = (b.get("opp") or "").upper()
+                if t in alias_pair and o in alias_pair:
+                    return True
+            return False
+
+        envelope = dict(envelope)
+        envelope["bets"] = [b for b in envelope.get("bets", []) if _bet_matches(b)]
+    return JSONResponse(envelope)
 
 
 @router.get("/api/box_score", tags=["courtvision"])
@@ -1967,24 +5154,49 @@ def api_box_score(date: str = Query(default=None),
     """Projected per-player box score for one matchup. Merges pregame q50 with
     any available live boxscore feed (current totals + minutes-paced projection)."""
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     if not game_id:
         return JSONResponse({"have_data": False, "error": "game_id required"}, status_code=400)
     from api._courtvision_odds import resolve_game_id
     alias_info = resolve_game_id(game_id)
     away_a = alias_info.get("away_abbr") or ""
     home_a = alias_info.get("home_abbr") or ""
+
     if not (away_a and home_a):
-        # Best-effort fall back: look up from the slate's bets
+        # Best-effort fall back: look up from the slate's bets.
+        # Filter to bets matching the requested game_id (or canonical_ids /
+        # team-pair) so a multi-game night doesn't return the wrong matchup.
         slate = _build_slate(date)
-        sample = next((b for b in slate.get("bets", []) if str(b.get("game_id", ""))), None)
+        canonical_ids_fb = alias_info.get("canonical_ids", frozenset([game_id]))
+        gid_norm = str(game_id)
+
+        def _bet_matches_game(b: dict) -> bool:
+            bid = str(b.get("game_id") or "")
+            if bid in canonical_ids_fb or bid == gid_norm:
+                return True
+            # Also match if team+opp align (works even when game_id formats differ)
+            t = (b.get("team") or "").upper()
+            o = (b.get("opp") or "").upper()
+            if away_a and home_a and t and o:
+                if {t, o} == {away_a.upper(), home_a.upper()}:
+                    return True
+            return False
+
+        sample = next((b for b in slate.get("bets", []) if _bet_matches_game(b)), None)
+        # Bug 8 fix: last-resort fallback is only safe when the slate has a SINGLE
+        # distinct game — otherwise all_bets[0] belongs to an unrelated matchup and
+        # its team abbrs drive away_a/home_a for the wrong box score.
+        if sample is None:
+            _ab = slate.get("bets", [])
+            _dg = {str(b.get("game_id") or "") for b in _ab}
+            sample = _ab[0] if (_ab and len(_dg) == 1) else None
         if sample:
             t = (sample.get("team") or "").upper(); o = (sample.get("opp") or "").upper()
             if sample.get("venue") == "home":
                 home_a, away_a = t, o
             else:
                 away_a, home_a = t, o
-    box = _build_box_score(date, away_a, home_a)
+    box = _build_box_score(date, away_a, home_a, game_id=game_id)
 
     # Overlay live data. Snapshots are written by box_snapshot_poller.py to
     # data/live/<game_id>_<timestamp>.json (newest = latest). Try canonical
@@ -1996,7 +5208,7 @@ def api_box_score(date: str = Query(default=None),
     live_dir = _ROOT / "data" / "live"
     if live_dir.exists():
         for gid in canonical:
-            matches = sorted(live_dir.glob(f"{gid}_*.json"))
+            matches = _epoch_snaps(live_dir, gid)
             if not matches:
                 continue
             try:
@@ -2104,11 +5316,112 @@ def api_box_score(date: str = Query(default=None),
                 if pf is None and mp and mp > 1.0 and s in cur:
                     pf = round(cur[s] * (36.0 / mp), 1)
                 if pf is not None:
+                    # FLOOR at the box's OWN displayed current — a projected
+                    # final can never be below what's already on the board (the
+                    # naive 36/mp pace undershoots once a player passes 36 min,
+                    # and the engine's current may be a tick staler than the box).
+                    if s in cur and cur[s] is not None:
+                        try:
+                            pf = max(pf, round(float(cur[s]), 1))
+                        except (TypeError, ValueError):
+                            pass
                     paced_final[s] = pf
             if paced_final:
                 row["paced_final"] = paced_final
 
-    if live_overlay:
+        # Append any snapshot players for this team who weren't on the
+        # pre-game roster (mid-game call-ups, two-way contracts, late
+        # trades). Without this, their stats are silently dropped from the
+        # box score — e.g. Jalen Williams scoring 1 pt would never appear.
+        team_abbr = (team_dict.get("abbr") or "").upper()
+        if team_abbr:
+            existing_ids = {str(r.get("player_id"))
+                            for r in team_dict["players"]
+                            if r.get("player_id") is not None}
+            existing_names = {(r.get("player_name") or "").lower()
+                              for r in team_dict["players"]
+                              if r.get("player_name")}
+            for lp in players_live:
+                if not isinstance(lp, dict):
+                    continue
+                if (lp.get("team") or "").upper() != team_abbr:
+                    continue
+                lp_id = str(lp.get("player_id") or "")
+                lp_nm = (lp.get("player") or lp.get("player_name") or lp.get("name") or "")
+                if (lp_id and lp_id in existing_ids) or (lp_nm and lp_nm.lower() in existing_names):
+                    continue
+                # Build current stats from the snapshot
+                _cur: dict = {}
+                for s in _BOX_STATS:
+                    v = lp.get(s)
+                    if v is None and isinstance(lp.get("stats"), dict):
+                        v = lp["stats"].get(s)
+                    if v is not None:
+                        try:
+                            _cur[s] = float(v)
+                        except (TypeError, ValueError):
+                            pass
+                # Parse minutes
+                _mp_raw = lp.get("minutes") or lp.get("min") or lp.get("mp")
+                _mp = None
+                if isinstance(_mp_raw, (int, float)):
+                    _mp = float(_mp_raw)
+                elif isinstance(_mp_raw, str) and ":" in _mp_raw:
+                    try:
+                        _mm, _ss = _mp_raw.split(":", 1)
+                        _mp = int(_mm) + int(_ss) / 60.0
+                    except Exception:
+                        _mp = None
+                elif isinstance(_mp_raw, str):
+                    try:
+                        _mp = float(_mp_raw)
+                    except ValueError:
+                        _mp = None
+                # Projection for off-roster snapshot players (bench/call-ups).
+                # PREFER the live_engine projection (clock-share aware, floored)
+                # — the naive current*36/mp explodes for low-minute players (a
+                # 3-min rookie with 2 pts -> 23.8). Engine is the same one used
+                # for roster players; naive is only a last resort, and always
+                # floored at current.
+                _paced: dict = {}
+                _lpk = lp_nm.lower() if lp_nm else ""
+                for s in _BOX_STATS:
+                    if s not in _cur:
+                        continue
+                    _eng = engine_projections.get((lp_id, s)) or engine_projections.get((_lpk, s))
+                    _pf = None
+                    if _eng and _eng.get("projected_final") is not None:
+                        try:
+                            _pf = round(float(_eng["projected_final"]), 1)
+                        except (TypeError, ValueError):
+                            _pf = None
+                    if _pf is None and _mp and _mp > 1.0:
+                        _pf = round(_cur[s] * (36.0 / _mp), 1)
+                    if _pf is not None:
+                        _paced[s] = max(_pf, round(float(_cur[s]), 1))
+                _pf_raw = lp.get("pf") or lp.get("fouls") or lp.get("personal_fouls")
+                try:
+                    _fouls = int(_pf_raw) if _pf_raw is not None else None
+                except (TypeError, ValueError):
+                    _fouls = None
+                new_row = {
+                    "player_id": lp.get("player_id"),
+                    "player_name": lp_nm,
+                    "team": team_abbr,
+                    # No pregame q50 projections for these players
+                    "pts": None, "reb": None, "ast": None, "fg3m": None,
+                    "stl": None, "blk": None, "tov": None,
+                    "current": _cur,
+                    "minutes_played": _mp,
+                    "fouls": _fouls,
+                    "paced_final": _paced or None,
+                    "_off_slate_roster": True,  # debug/UI hint
+                }
+                team_dict["players"].append(new_row)
+
+    if (live_overlay and isinstance(live_overlay, dict)
+            and live_overlay.get("players")
+            and int(live_overlay.get("period") or 0) >= 1):
         attach_live(box.get("away"))
         attach_live(box.get("home"))
         box["live_available"] = True
@@ -2137,7 +5450,19 @@ def api_box_score(date: str = Query(default=None),
                     if pregame_v is None or live_v is None:
                         continue
                     try:
-                        blended = w_live * float(live_v) + (1.0 - w_live) * float(pregame_v)
+                        _cur = (row.get("current") or {}).get(s)
+                        _pv = float(pregame_v)
+                        # A player who has ALREADY exceeded his pregame median is
+                        # having an outlier game — don't regress him toward the
+                        # season prior below what he's already recorded. Clamp the
+                        # prior at current so the blend still credits remaining
+                        # production (live_v adds it) instead of projecting a
+                        # final at/below the current total (e.g. 9 reb -> proj 9).
+                        if _cur is not None:
+                            _pv = max(_pv, float(_cur))
+                        blended = w_live * float(live_v) + (1.0 - w_live) * _pv
+                        if _cur is not None:
+                            blended = max(blended, float(_cur))
                         paced[s] = round(blended, 1)
                     except (TypeError, ValueError):
                         continue
@@ -2187,12 +5512,31 @@ def api_box_score(date: str = Query(default=None),
                         continue
                 if any_v:
                     current_totals[s] = round(cur_sum, 1)
+                # For PTS, prefer the snapshot's authoritative team-level
+                # score over the player-summed total. Reason: the pre-game
+                # roster used by _build_box_score can lag the live roster
+                # (e.g. late call-ups like Jalen Williams), so summing
+                # per-player current.pts misses any player who isn't on the
+                # pregame list — visible as "OKC shows 1 less than actual".
+                # The snapshot's home_score/away_score comes straight from
+                # the NBA scoreboard and is always correct.
+                if s == "pts":
+                    _is_home = team_dict.get("abbr") == (live_overlay.get("home_team") or "")
+                    _team_score = live_overlay.get("home_score") if _is_home else live_overlay.get("away_score")
+                    if isinstance(_team_score, (int, float)):
+                        current_totals[s] = float(_team_score)
                 pregame_mean = (team_dict.get("mean_totals") or {}).get(s)
                 if not isinstance(pregame_mean, (int, float)):
                     pregame_mean = None
+                # BUG 14 FIX: use the authoritative current total (which may
+                # have been overridden by the scoreboard for 'pts') as the
+                # pace base instead of the raw player-summed cur_sum. This
+                # ensures projected_total_pts (and win-prob) reflects the
+                # correct live score when the pregame roster lags.
                 pace_extrap = None
-                if minutes_elapsed >= 1.0 and any_v and cur_sum > 0:
-                    pace_extrap = cur_sum * (48.0 / minutes_elapsed)
+                _pace_base = current_totals.get(s, cur_sum)
+                if minutes_elapsed >= 1.0 and _pace_base > 0:
+                    pace_extrap = _pace_base * (48.0 / minutes_elapsed)
                     pace_extraps[s] = round(pace_extrap, 1)
                 # Blend pace × pregame mean by elapsed_frac. When elapsed_frac=0,
                 # we trust pregame; when elapsed_frac=1, we trust the pace.
@@ -2217,6 +5561,39 @@ def api_box_score(date: str = Query(default=None),
 
         _team_total_proj(box.get("away"))
         _team_total_proj(box.get("home"))
+
+        # FULL-SEND: when the validated possession sim ran (CV_INGAME_SBS on), serve
+        # the SIMULATED final score as the team projection instead of the naive pace
+        # extrapolation above. The possession-sim / ridge team total beats pace
+        # extrapolation decisively on held-out data (total MAE ~10 vs ~21), so the
+        # live win-prob below (computed from projected_total_pts) reflects a Monte
+        # Carlo game simulation rather than linear extrapolation. Falls back to the
+        # pace projection if no finite sim score is present (flag off / sim absent).
+        try:
+            import math as _math_sim  # noqa: PLC0415
+            _any_eng = next(iter(engine_projections.values()), None)
+            if _any_eng is not None:
+                _ph_sim = _any_eng.get("proj_home_final")
+                _pa_sim = _any_eng.get("proj_away_final")
+                _src_sim = _any_eng.get("proj_point_source") or "possession_sim"
+                _fin = lambda x: isinstance(x, (int, float)) and _math_sim.isfinite(x)
+                if _fin(_ph_sim) and _fin(_pa_sim):
+                    # BUG 5b FIX: floor sim projected final at the live current
+                    # score so the page never shows a projected final below the
+                    # scoreboard (belt-and-suspenders; the per-player floor is
+                    # already applied inside the ridge head at ~5168).
+                    _live_home = float(live_overlay.get("home_score") or 0)
+                    _live_away = float(live_overlay.get("away_score") or 0)
+                    _ph_sim = max(float(_ph_sim), _live_home)
+                    _pa_sim = max(float(_pa_sim), _live_away)
+                    if isinstance(box.get("home"), dict):
+                        box["home"]["projected_total_pts"] = round(_ph_sim, 1)
+                        box["home"]["projected_total_pts_source"] = _src_sim
+                    if isinstance(box.get("away"), dict):
+                        box["away"]["projected_total_pts"] = round(_pa_sim, 1)
+                        box["away"]["projected_total_pts_source"] = _src_sim
+        except Exception:
+            pass
     else:
         box["live_available"] = False
         box["engine_projection_used"] = False
@@ -2224,11 +5601,11 @@ def api_box_score(date: str = Query(default=None),
     # Pregame win probability — projection-derived helper (see
     # _pregame_wp_from_projection for math). Stays consistent with the box
     # score and avoids the polarity-bug team-level model.
-    p_home_pre = _pregame_wp_from_projection(date, away_a, home_a)
+    p_home_pre, _wp_src = _pregame_home_wp(date, away_a, home_a)
     if p_home_pre is not None:
         box["pregame_home_win_prob"] = round(p_home_pre, 3)
         box["pregame_away_win_prob"] = round(1.0 - p_home_pre, 3)
-        box["pregame_wp_source"] = "projected_margin_shrunk"
+        box["pregame_wp_source"] = _wp_src
 
     # Live win probability — call the appropriate snapshot booster for the
     # current period. Boosters are calibrated at end-of-period boundaries
@@ -2244,15 +5621,98 @@ def api_box_score(date: str = Query(default=None),
                     features_from_snapshot, predict_home_win_prob,
                     active_stack,
                 )
-                feats = features_from_snapshot(live_overlay)
+                # The trained boosters require per-quarter score arrays and
+                # are only valid at end-of-quarter boundaries (period=N+1,
+                # clock=12:00). The orchestrator writes snapshots every 10s
+                # with only total scores. Walk historical snapshots to find
+                # the most-recent end-of-quarter boundary, reconstruct
+                # home_q1/q2/q3 from the period transitions, and feed the
+                # model. WP "holds" between boundaries (matches training).
+                import json as _wp_json  # noqa: PLC0415
+                snap_files = (
+                    _epoch_snaps(live_dir, game_id) if live_dir.exists() else [])
+                # Also include canonical_ids
+                for _gid in canonical:
+                    if _gid == game_id:
+                        continue
+                    snap_files.extend(
+                        _epoch_snaps(live_dir, _gid)
+                        if live_dir.exists() else [])
+                snap_files = sorted(set(snap_files))
+                # Final score per period: take the LAST snapshot whose period
+                # equals that period (i.e. the score at end of that period).
+                last_total_by_period: dict[int, tuple[int, int]] = {}
+                for sf in snap_files:
+                    try:
+                        sd = _wp_json.loads(sf.read_text(encoding="utf-8"))
+                    except Exception:
+                        continue
+                    sp = sd.get("period")
+                    if isinstance(sp, int) and sp >= 1:
+                        hs = sd.get("home_score"); as_ = sd.get("away_score")
+                        if hs is not None and as_ is not None:
+                            last_total_by_period[sp] = (int(hs), int(as_))
+                # Reconstruct per-quarter splits from cumulative-at-end-of-each-Q
+                cum_h = {p: ht for p, (ht, _) in last_total_by_period.items()}
+                cum_a = {p: at for p, (_, at) in last_total_by_period.items()}
+                completed_qs = sorted(p for p in cum_h.keys() if p < period_i)
+                # If current period itself is at clock 0:00, that's the end of
+                # this period — treat it as completed too.
+                _cur_clock = str(live_overlay.get("clock") or "").strip()
+                if _cur_clock in ("0:00", "00:00", "0", "0.0", "") and period_i in (1, 2, 3):
+                    completed_qs = sorted(set(completed_qs + [period_i]))
+                # Build wp_snap with the model's expected schema.
+                wp_snap = dict(live_overlay)
+                # Inject the pregame WP anchor so the v3/v6 pregame-anchored
+                # boosters keep their pregame prior (features_from_snapshot
+                # reads snap["pregame_win_prob"]; without this it defaults to
+                # ~0.55 and the in-play WP loses its pregame anchor).
+                if p_home_pre is not None:
+                    wp_snap["pregame_win_prob"] = float(p_home_pre)
+                # Per-quarter scores from completed quarters
+                prev_h, prev_a = 0, 0
+                for q in (1, 2, 3):
+                    if q in completed_qs:
+                        cur_h_val = cum_h.get(q, prev_h)
+                        cur_a_val = cum_a.get(q, prev_a)
+                        wp_snap[f"home_q{q}"] = cur_h_val - prev_h
+                        wp_snap[f"away_q{q}"] = cur_a_val - prev_a
+                        prev_h, prev_a = cur_h_val, cur_a_val
+                # Pick snap_key based on completed quarters (NOT the live period
+                # field). The WP "holds" at the last completed-quarter value.
+                if 3 in completed_qs:
+                    snap_key = "endQ3"
+                    wp_snap["period"] = 4
+                elif 2 in completed_qs:
+                    snap_key = "endQ2"
+                    wp_snap["period"] = 3
+                elif 1 in completed_qs:
+                    snap_key = "endQ1"
+                    wp_snap["period"] = 2
+                else:
+                    # Q1 not complete yet — no in-play WP available
+                    raise RuntimeError("pre-endQ1: no in-play WP")
+                wp_snap["clock"] = "12:00"
+                feats = features_from_snapshot(wp_snap)
                 p_home_raw = predict_home_win_prob(feats, snapshot=snap_key)
                 if p_home_raw is not None:
+                    # We're already serving the held boundary value (via
+                    # historical-snapshot reconstruction above), so no
+                    # interpolation toward 0.5 is needed — the booster output
+                    # IS the valid boundary WP.
+                    p_home = float(p_home_raw)
+                    # Blend with the PREGAME MARKET win prob so the live number
+                    # doesn't over-react to an early lead (e.g. SAS up 3 at half
+                    # but OKC the pregame favorite -> model said SAS ~60%, market
+                    # ~53%). Trust the live read more as the game progresses.
+                    if p_home_pre is not None:
+                        _wpw = {"endQ1": 0.40, "endQ2": 0.60, "endQ3": 0.80}.get(snap_key, 0.6)
+                        p_home = _wpw * p_home + (1.0 - _wpw) * float(p_home_pre)
                     clock_min = _parse_clock_to_minutes(live_overlay.get("clock"))
-                    p_home = _wp_interpolate_to_boundary(
-                        float(p_home_raw), period_i, clock_min)
                     box["home_win_prob"] = round(p_home, 3)
                     box["away_win_prob"] = round(1.0 - p_home, 3)
                     box["winprob_snapshot"] = snap_key
+                    box["winprob_blended_market"] = p_home_pre is not None
                     box["winprob_raw_booster"] = round(float(p_home_raw), 3)
                     if clock_min is not None:
                         box["winprob_clock_minutes"] = round(clock_min, 2)
@@ -2283,6 +5743,56 @@ def api_box_score(date: str = Query(default=None),
                 _lg3.getLogger(__name__).warning(
                     "inplay_winprob failed: %s", exc)
 
+    # BUG 12/13 FIX: in Q4 the possession-sim WP (attached as home_win_prob_inplay
+    # with winprob_source='possession_sim' on engine rows) is validated better than
+    # _live_wp_continuous (Brier 0.126 vs 0.136). Promote it before the
+    # _live_wp_continuous overwrite block and SKIP the overwrite for that case.
+    # Only fires in Q4 when an engine row has a finite sim WP; outside Q4 the
+    # _live_wp_continuous overwrite runs unchanged.
+    _skip_continuous_wp = False
+    try:
+        if (live_overlay and isinstance(live_overlay, dict)
+                and int(live_overlay.get("period") or 0) >= 4
+                and engine_projections):
+            import math as _math_wp  # noqa: PLC0415
+            _swp = None
+            for _er in engine_projections.values():
+                if (_er.get("winprob_source") == "possession_sim"
+                        and _er.get("home_win_prob_inplay") is not None):
+                    _candidate = float(_er["home_win_prob_inplay"])
+                    if _math_wp.isfinite(_candidate):
+                        _swp = _candidate
+                        break
+            if _swp is not None:
+                box["home_win_prob"] = round(_swp, 3)
+                box["away_win_prob"] = round(1.0 - _swp, 3)
+                box["winprob_source"] = "possession_sim"
+                _skip_continuous_wp = True
+    except Exception:
+        pass
+
+    # ALWAYS-UPDATING live win prob: the boundary booster above only changes 3x
+    # a game ("holds" between quarters). This recomputes EVERY snapshot from the
+    # live score margin + time remaining, anchored to the pregame MARKET wp, so
+    # the number moves continuously and doesn't over-react to a lead. Supersedes
+    # the held value for display (the booster value is kept in winprob_raw_booster).
+    try:
+        if (not _skip_continuous_wp
+                and live_overlay and isinstance(live_overlay, dict) and live_overlay.get("period")):
+            _hp = (box.get("home") or {}).get("projected_total_pts")
+            _ap = (box.get("away") or {}).get("projected_total_pts")
+            _lwp = _live_wp_continuous(live_overlay, p_home_pre, _hp, _ap)
+            if _lwp is not None:
+                box["home_win_prob"] = round(_lwp, 3)
+                box["away_win_prob"] = round(1.0 - _lwp, 3)
+                box["winprob_source"] = ("live_projected_final_score"
+                                         if (_hp is not None and _ap is not None)
+                                         else "live_continuous_market_anchored")
+                box["winprob_proj_score"] = (f"{round(_ap)}-{round(_hp)}"
+                                             if (_hp is not None and _ap is not None) else None)
+    except Exception:
+        pass
+
     # Live-regraded bet snippets for this matchup. The JS poller inline-updates
     # the bet cards' EV / model_prob / side text so they don't go stale during
     # the game (without a full page reload).
@@ -2310,6 +5820,12 @@ def api_box_score(date: str = Query(default=None),
             import copy as _copy2  # noqa: PLC0415
             live_bets = []
             player_minutes = _shrink_player_minutes_from_snapshot(live_overlay or {})
+            # Collapsed in-play line history for this matchup — drives the
+            # line-movement fields on each live bet (graceful nulls if absent).
+            try:
+                lm_hist = _load_inplay_line_history(date, canon_ids)
+            except Exception:
+                lm_hist = []
             for b in slate_cur.get("bets", []):
                 if not _in_game(b):
                     continue
@@ -2318,7 +5834,8 @@ def api_box_score(date: str = Query(default=None),
                 eng = engine_projections.get((nm, st))
                 if not eng or eng.get("projected_final") is None:
                     continue
-                cp = _copy2.copy(b)
+                # deepcopy so regrade never mutates the cached slate's bet dict.
+                cp = _copy2.deepcopy(b)
                 # Apply minutes-based shrinkage so early-game projections blend
                 # toward pregame q50 instead of trusting noisy extrapolation.
                 mp = player_minutes.get(nm, 0.0)
@@ -2326,10 +5843,116 @@ def api_box_score(date: str = Query(default=None),
                 live_q50_raw = float(eng["projected_final"])
                 pregame_q50 = float(cp.get("q50") or live_q50_raw)
                 shrunk_q50 = w_live * live_q50_raw + (1.0 - w_live) * pregame_q50
+                # Bug 2 fix (site a): floor shrunk_q50 at already-accumulated current
+                # stat so a hot-start player's projection never goes BELOW current.
+                _cur_a = eng.get("current")
+                if _cur_a is not None:
+                    try:
+                        shrunk_q50 = max(shrunk_q50, float(_cur_a))
+                    except (TypeError, ValueError):
+                        pass
+                # Belt-and-suspenders: if the player's current stat already clears
+                # the line on the recommended UNDER side, the bet is already settled
+                # against us — drop it before it reaches the live card ranking.
+                try:
+                    _line_a = float(cp.get("line") or 0.0)
+                    _side_a = (cp.get("side") or "").upper()
+                    if (_cur_a is not None and _side_a == "UNDER"
+                            and float(_cur_a) >= _line_a):
+                        continue
+                except (TypeError, ValueError):
+                    pass
+                # RE-ANCHOR to the LIVE in-play line: the sportsbook moves the
+                # O/U line during the game (e.g. Wemby pts 24.5 -> 22.5), so the
+                # card must show the CURRENT line + live per-book prices, not the
+                # frozen pregame line. Replace the stale pregame ladder with the
+                # latest in-play quote per book and set the line to the freshest.
+                _ip_by_book: dict = {}
+                for _r in lm_hist:
+                    if _r.get("name") == nm and _r.get("stat") == st:
+                        _bk = _r.get("book") or "live"
+                        if _bk not in _ip_by_book or _r["cap"] > _ip_by_book[_bk]["cap"]:
+                            _ip_by_book[_bk] = _r
+                # No live in-play line for this prop (the book doesn't offer it
+                # live, e.g. SGA blocks / bench-player points). It's not live-
+                # bettable — drop it from the LIVE view rather than show a frozen
+                # pregame line with a misleading "stale price" badge. (Still shown
+                # on the pregame slate when the game isn't live.)
+                if not _ip_by_book:
+                    continue
+                if _ip_by_book:
+                    # Books can post DIFFERENT lines for the same prop. The line
+                    # and the price MUST come from the SAME book — never show a
+                    # 5.5 line with another book's 2.5 price. Decide the side from
+                    # the projection vs the median live line, then pick the best
+                    # price for that side and use THAT book's line.
+                    # Decide the side from the projection vs the median live line,
+                    # then anchor to the closest-to-projection line AMONG books
+                    # that actually QUOTE that side. FanDuel in-play has no UNDER
+                    # price, so an UNDER bet must use a book (DK) that quotes it —
+                    # never show an FD line with a fallback under price. Closest-
+                    # to-projection also avoids longshot ALT rungs.
+                    _lines = sorted(r["line"] for r in _ip_by_book.values())
+                    _med = _lines[len(_lines) // 2]
+                    _side = "OVER" if shrunk_q50 >= _med else "UNDER"
+                    _skey = "over" if _side == "OVER" else "under"
+                    _pool = [r for r in _ip_by_book.values()
+                             if r.get(_skey) is not None] or list(_ip_by_book.values())
+                    _main_line = min((r["line"] for r in _pool),
+                                     key=lambda ln: abs(ln - shrunk_q50))
+                    cp["line"] = _main_line
+                    # Regrade ladder = ONLY books quoting THIS line (so line and
+                    # price always come from the SAME book — no 5.5-line/2.5-price
+                    # mix). The regrade then picks the correct side + best price.
+                    cp["_books_full"] = [
+                        {"book": _inplay_book_label(r.get("book")),
+                         "over_odds": r.get("over"), "under_odds": r.get("under"),
+                         "captured_at": r.get("cap")}
+                        for r in _pool if r["line"] == _main_line
+                    ]
+                    # Per-book display ladder — each book with ITS OWN line.
+                    cp["all_books_live"] = [
+                        {"book": _inplay_book_label(r.get("book")),
+                         "line": r["line"], "over": r.get("over"),
+                         "under": r.get("under")}
+                        for r in sorted(_ip_by_book.values(), key=lambda r: r["line"])
+                    ]
+                # Freshness from the live in-play cap (NOT the stale pregame
+                # slate age) so the card's freshness pill reads fresh, and clear
+                # any stale-price flag when we DO have a fresh live quote.
+                _fresh_age = None
+                try:
+                    from datetime import datetime as _dtf, timezone as _tzf  # noqa: PLC0415
+                    _cs = []
+                    for _r in _ip_by_book.values():
+                        _c = (_r.get("cap") or "").replace("Z", "+00:00")
+                        if not _c:
+                            continue
+                        _dt = _dtf.fromisoformat(_c)
+                        if _dt.tzinfo is None:
+                            _dt = _dt.replace(tzinfo=_tzf.utc)
+                        _cs.append(_dt)
+                    if _cs:
+                        _fresh_age = max(0.0, (_dtf.now(_tzf.utc) - max(_cs)).total_seconds() / 60.0)
+                except Exception:
+                    _fresh_age = None
+                cp["freshest_book_age_min"] = round(_fresh_age, 1) if _fresh_age is not None else None
+                if _fresh_age is not None and _fresh_age < 15:
+                    cp["live_regraded_stale_price"] = False
                 try:
                     _regrade_bet_with_live_q50(cp, shrunk_q50, sig_table)
                 except Exception:
                     continue
+                # The live in-play quote IS fresh — the regrade's any-age fallback
+                # flag is misleading here; re-clear it after the regrade too.
+                if _fresh_age is not None and _fresh_age < 15:
+                    cp["live_regraded_stale_price"] = False
+                # Bug 1: a flipped-but-unpriced card has no real price on the
+                # side it claims — exclude it from the live list rather than
+                # render a wrong-side / no-price card in the ranking.
+                if cp.get("live_regraded_no_price") and cp.get("best_price") is None:
+                    continue
+                lm = _line_movement_for(lm_hist, nm, st, shrunk_q50)
                 live_bets.append({
                     "bet_id": cp.get("bet_id"),
                     "player_name": cp.get("player_name"),
@@ -2345,6 +5968,27 @@ def api_box_score(date: str = Query(default=None),
                     "kelly_stake_dollars": cp.get("kelly_stake_dollars"),
                     "best_book": cp.get("best_book"),
                     "best_price": cp.get("best_price"),
+                    "all_books": cp.get("all_books"),
+                    "all_books_live": cp.get("all_books_live"),
+                    "freshest_book_age_min": cp.get("freshest_book_age_min"),
+                    "live_regraded_no_price": bool(cp.get("live_regraded_no_price")),
+                    "live_regraded_stale_price": bool(cp.get("live_regraded_stale_price")),
+                    # Surface the live projection + a LIVE flag so the card shows
+                    # the updated q50 and a live badge (the regrade already ran above).
+                    "live_q50": round(shrunk_q50, 2),
+                    "live_regraded": True,
+                    # Confidence tier from the LIVE-regraded model prob so the live
+                    # card can show a "74% High" what/when-to-bet badge.
+                    "conf_pct": (round(float(cp["model_prob"]), 4)
+                                 if cp.get("model_prob") is not None else None),
+                    "conf_tier": (("High" if cp["model_prob"] >= 0.70
+                                   else ("Solid" if cp["model_prob"] >= 0.62 else "Lean"))
+                                  if cp.get("model_prob") is not None else None),
+                    "line_open": lm["line_open"],
+                    "line_current": lm["line_current"],
+                    "line_delta": lm["line_delta"],
+                    "line_velocity_per_min": lm["line_velocity_per_min"],
+                    "line_dir_vs_proj": lm["line_dir_vs_proj"],
                 })
             if live_bets:
                 box["live_bets"] = live_bets
@@ -2375,7 +6019,7 @@ def api_parlays(date: Optional[str] = Query(default=None),
                 seed: int = Query(0, ge=0, le=10**9)):
     # Same-book parlays, 2-3 legs auto-tuned, top 25 by EV. No knobs.
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     return JSONResponse(_build_parlays(date, seed=seed))
 
 
@@ -2393,7 +6037,7 @@ def api_parlays_constructor(
     `decimal_odds`, `american_odds`, and per-leg dicts under leg_0/leg_1/leg_2.
     """
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     return JSONResponse(_build_parlays_constructor(date, max_legs, min_ev_pct, top_n, seed))
 
 
@@ -2441,11 +6085,29 @@ def api_parlays_build(body: dict = Body(...)):
 def api_auto_parlay(date: str = Query(default_factory=_today_et),
                     stake: float = Query(20.0, ge=1.0, le=10000.0),
                     max_legs: int = Query(5, ge=2, le=5)):
-    """Highest-EV parlay whose Kelly stake fits the requested $stake."""
-    c = [p for p in _build_parlays(date, max_legs, 5.0, 0).get("parlays", [])
-         if p["kelly_stake_dollars"] <= stake]
-    return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
-                         "pick": c[0] if c else None, "n_candidates_under_stake": len(c)})
+    """Highest-EV parlay whose EV meets the min threshold, using the constructor engine."""
+    # Bug 1 fix: was calling _build_parlays(date, max_legs, 5.0, 0) with 4 positional
+    # args — that function only takes (date, seed, top_n) → TypeError on every request.
+    # Use _build_parlays_constructor (the correct function). Its parlay dicts come from
+    # rank_parlays() which produces: hit_rate_adj, decimal_odds, expected_roi_sgp_pct,
+    # ev_sgp, etc. — there is no kelly_stake_dollars field. Filter by ev_pct when
+    # present (parlays_constructor adds it if the upstream leg has it), else accept all.
+    try:
+        result = _build_parlays_constructor(date, max_legs, 5.0)
+        parlays = result.get("parlays", [])
+        # Filter: prefer parlays within stake budget if ev_pct is present, else
+        # surface all positive-ROI parlays (constructor already ranks by ev_sgp).
+        c = [p for p in parlays
+             if (p.get("expected_roi_sgp_pct") or 0.0) > 0.0]
+        return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
+                             "pick": c[0] if c else None,
+                             "n_candidates": len(c),
+                             "engine": result.get("engine", "constructor")})
+    except Exception as exc:
+        import logging as _lg_ap  # noqa: PLC0415
+        _lg_ap.getLogger(__name__).warning("api_auto_parlay error: %s", exc)
+        return JSONResponse({"date": date, "stake": stake, "max_legs": max_legs,
+                             "pick": None, "n_candidates": 0, "error": str(exc)})
 
 
 _SHARE_HIDE = ("kelly_stake_dollars", "kelly_pct", "market_prob", "model_prob")
@@ -2607,10 +6269,65 @@ _NEXT_GAME_DAY_CACHE: tuple[float, Optional[str]] | None = None
 _NEXT_GAME_DAY_TTL = 60.0  # recompute at most once per minute
 
 
+def _live_game_date() -> Optional[str]:
+    """ET date of a game that is LIVE RIGHT NOW (a recent, non-FINAL snapshot).
+
+    Tonight's game has already tipped, so _next_game_day() excludes it and would
+    skip ahead to the next scheduled game. When a game is in progress we want the
+    page to show THAT game, so this takes priority. None if nothing is live."""
+    import json as _jl  # noqa: PLC0415
+    live_dir = _ROOT / "data" / "live"
+    if not live_dir.exists():
+        return None
+    now_ms = time.time() * 1000.0
+    latest: dict = {}
+    for p in live_dir.glob("*.json"):
+        if not _is_epoch_snap(p):
+            continue
+        gid, _, ep = p.stem.rpartition("_")
+        try:
+            ep_i = int(ep)
+        except ValueError:
+            continue
+        if gid and (gid not in latest or ep_i > latest[gid][0]):
+            latest[gid] = (ep_i, p)
+    best = None  # (epoch_ms, et_date)
+    for gid, (ep_i, p) in latest.items():
+        if now_ms - ep_i > 5 * 3600 * 1000:  # only the last ~5 hours = "now"
+            continue
+        try:
+            s = _jl.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        status = str(s.get("game_status") or "").upper()
+        if "FINAL" in status:
+            continue
+        if "LIVE" not in status and "IN_PROGRESS" not in status and not s.get("period"):
+            continue
+        d = _et_date_from_iso(s.get("captured_at") or "")
+        if d and (best is None or ep_i > best[0]):
+            best = (ep_i, d)
+    return best[1] if best else None
+
+
+def _current_or_next_game_day() -> Optional[str]:
+    """The date the page should default to: a LIVE game now > next scheduled
+    game > today. Fixes /tonight landing on a future Finals date while Game 7
+    is in progress."""
+    return _live_game_date() or _next_game_day() or _today_et()
+
+
 def _next_game_day() -> Optional[str]:
     """Earliest distinct start_time date across all lines whose `start_time`
-    is in the future. Cached for 60s — this function opens O(days × files)
-    CSVs and is the root cause of slow TTFB when many line files are present.
+    is strictly in the future (UTC). Cached for 60s.
+
+    Scrapers write CSVs under the SCRAPE date (e.g. 2026-05-29_dk.csv) but
+    each row carries its own start_time field (e.g. 2026-05-31T00:10:00Z).
+    We walk the last 3 scrape-date directories backward so we pick up future
+    games stored in today's (or yesterday's) file — not just files named after
+    tomorrow's date. Per-row start_time is the authoritative filter; we only
+    include start_times strictly after now (UTC) so already-started games are
+    excluded. Falls back to filename-date when start_time is missing/unparseable.
     """
     global _NEXT_GAME_DAY_CACHE
     now_ts = time.time()
@@ -2620,32 +6337,72 @@ def _next_game_day() -> Optional[str]:
     from datetime import datetime, timezone, timedelta
     import csv as _csv
     now = datetime.now(timezone.utc)
-    today = now.strftime("%Y-%m-%d")
     candidates: list[str] = []
-    # Walk today + the next 14 days of line CSVs (scrapers store under the
-    # scrape date, but props reference future start_times).
-    for offset in range(0, 15):
-        d = (now + timedelta(days=offset)).strftime("%Y-%m-%d")
-        if not _LINES_DIR.exists():
-            break
+
+    if not _LINES_DIR.exists():
+        _NEXT_GAME_DAY_CACHE = (now_ts, None)
+        return None
+
+    # Walk backward up to 3 scrape dates (today, yesterday, day-before) so we
+    # catch future games whose rows live in today's or yesterday's CSV files.
+    # Also walk forward up to 7 days in case scrapers ever pre-date files.
+    file_dates: list[str] = []
+    for offset in range(-3, 8):
+        file_dates.append((now + timedelta(days=offset)).strftime("%Y-%m-%d"))
+
+    seen_files: set[str] = set()
+    for d in file_dates:
         for p in _LINES_DIR.iterdir():
             if not p.is_file() or p.suffix != ".csv":
                 continue
             if not p.stem.startswith(f"{d}_"):
                 continue
+            if p.name in seen_files:
+                continue
+            seen_files.add(p.name)
             try:
                 with p.open(newline="", encoding="utf-8") as fh:
-                    for r in _csv.DictReader(fh):
+                    reader = _csv.DictReader(fh)
+                    # A single CSV (e.g. 2026-05-29_dk.csv) often contains rows
+                    # for multiple game dates — finished games from earlier today
+                    # AND props for games tipping off in 2-7 days. Scan up to
+                    # _MAX_ROWS_PER_FILE rows and collect every distinct future
+                    # start_time date. (The old `break` after one row meant a
+                    # file whose first row was a past game contributed nothing,
+                    # which is why /returned 2026-05-29 even though 5/31 + 6/4
+                    # props were sitting in the same files.)
+                    _MAX_ROWS_PER_FILE = 5000
+                    file_future_dates: set[str] = set()
+                    rows_scanned = 0
+                    for r in reader:
+                        rows_scanned += 1
+                        if rows_scanned > _MAX_ROWS_PER_FILE:
+                            break
                         st = (r.get("start_time") or "").strip()
                         if len(st) < 10:
                             continue
-                        # Parse the ISO date; only count games at or after today.
-                        st_date = st[:10]
-                        if st_date >= today:
-                            candidates.append(st_date)
-                        break  # one start_time per file is enough
+                        # Try to parse as UTC datetime for strict future check.
+                        # Bucket by ET game date — a 7:00 PM ET tip is
+                        # YYYY-MM-DDT23:00Z and would otherwise show up
+                        # under the wrong calendar day.
+                        try:
+                            st_norm = st.replace("Z", "+00:00")
+                            if "+" not in st_norm[10:] and st_norm.count("-") < 3:
+                                st_norm += "+00:00"
+                            st_dt = datetime.fromisoformat(st_norm).astimezone(timezone.utc)
+                            if st_dt > now:
+                                et_d = _et_date_from_iso(st)
+                                if et_d:
+                                    file_future_dates.add(et_d)
+                        except (ValueError, AttributeError):
+                            # Fallback: use date portion if it's in the future
+                            st_date = st[:10]
+                            if st_date > now.strftime("%Y-%m-%d"):
+                                file_future_dates.add(st_date)
+                    candidates.extend(file_future_dates)
             except OSError:
                 continue
+
     result = min(candidates) if candidates else None
     _NEXT_GAME_DAY_CACHE = (now_ts, result)
     return result
@@ -2837,7 +6594,7 @@ def api_today_summary(date: str = Query(default=None), n: int = Query(3, ge=1, l
     # off-day requests (e.g. 2026-05-28 with no slate) resolve to the next slate
     # that has live lines (e.g. 2026-05-29) rather than returning n_total:0.
     if date is None:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     s = _build_slate(date); bets = s.get("bets", [])[:n]
     return JSONResponse({"date": s["date"], "generated_at": s["generated_at"],
         "n_total": s["summary"]["n_bets"], "avg_ev_pct": s["summary"]["avg_ev_pct"],
@@ -2947,14 +6704,22 @@ def api_clv_summary(days: int = Query(30, ge=1, le=365)):
                 bs["n_bets"]   += 1
                 bs["_sum_clv"] += clv
 
-    # Finalise derived fields and strip private accumulators
+    # Finalise derived fields and strip private accumulators.
+    # roi_pct / win_pct are set (0.0 default) because clv.html compares them
+    # numerically ({% if m.roi_pct > 0 %}); a missing key is Jinja Undefined and
+    # `Undefined > 0` raises -> HTTP 500 on /clv. (is-not-none would NOT help —
+    # the key must EXIST.) These are CLV-only rows so ROI/win are not tracked here.
     for d in by_book.values():
         n = d["n_bets"]
         d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+        d.setdefault("roi_pct", 0.0)
+        d.setdefault("win_pct", 0.0)
 
     for d in by_stat.values():
         n = d["n_bets"]
         d["avg_clv_bps"] = round(d.pop("_sum_clv") / n * 100.0, 1) if n else 0.0
+        d.setdefault("roi_pct", 0.0)
+        d.setdefault("win_pct", 0.0)
 
     return JSONResponse({
         "window_days":  days,
@@ -3009,7 +6774,7 @@ def parlays(request: Request, date: str = Query(default=None)):
     Single-engine, same-book, auto-tuned leg-size. No user knobs.
     """
     if not date:
-        date = _next_game_day() or _today_et()
+        date = _current_or_next_game_day()
     meta_envelope = {
         "date": date,
         "generated_at": datetime.utcnow().isoformat() + "Z",
@@ -3101,3 +6866,303 @@ def api_bankroll():
                              "open_stake": 0.0, "available": 0.0,
                              "today_pnl": 0.0, "today_stake": 0.0,
                              "drawdown_30d_pct": 0.0, "high_water_mark": 0.0})
+
+
+# ── Admin health endpoint ──────────────────────────────────────────────────────
+
+@router.get("/api/admin/health.json", tags=["courtvision"])
+def api_admin_health():
+    """One-shot system health snapshot. No auth required for local viewing."""
+    import glob as _glob
+    import json as _json
+    import os as _os
+
+    now_ts = time.time()
+    date = _today_et()
+
+    # ── 1. Snapshot freshness per game_id ─────────────────────────────
+    snapshot_freshness: dict = {}
+    try:
+        live_dir = _ROOT / "data" / "live"
+        if live_dir.exists():
+            # Group by game_id (stem prefix before first "_")
+            latest_mtime: dict[str, float] = {}
+            for p in live_dir.iterdir():
+                if not p.is_file() or p.suffix != ".json":
+                    continue
+                try:
+                    mt = p.stat().st_mtime
+                except OSError:
+                    continue
+                gid = p.stem.split("_")[0]
+                if mt > latest_mtime.get(gid, 0.0):
+                    latest_mtime[gid] = mt
+            for gid, mt in sorted(latest_mtime.items(),
+                                   key=lambda kv: -kv[1])[:20]:
+                age_sec = round(now_ts - mt)
+                snapshot_freshness[gid] = {
+                    "age_sec": age_sec,
+                    "age_min": round(age_sec / 60, 1),
+                    "fresh": age_sec < 300,
+                }
+    except Exception:
+        snapshot_freshness = None  # type: ignore[assignment]
+
+    # ── 2. Book freshness summary from consolidate_for_slate ──────────
+    book_freshness: dict = {}
+    try:
+        from api._courtvision_odds import consolidate_for_slate as _cfs  # noqa: PLC0415
+        line_rows = _cfs(date)
+        book_quotes: dict[str, list[str]] = {}
+        for row in line_rows:
+            for b in (row.get("books") or []):
+                bk = b.get("book") or "unknown"
+                ts = b.get("captured_at") or ""
+                book_quotes.setdefault(bk, [])
+                if ts:
+                    book_quotes[bk].append(ts)
+        for bk, timestamps in sorted(book_quotes.items()):
+            if timestamps:
+                freshest_ts = max(timestamps)
+                try:
+                    from datetime import datetime as _dt, timezone as _tz  # noqa: PLC0415
+                    dt = _dt.fromisoformat(freshest_ts.replace("Z", "+00:00"))
+                    age_sec = round(now_ts - dt.timestamp())
+                except Exception:
+                    age_sec = None  # type: ignore[assignment]
+            else:
+                freshest_ts = None
+                age_sec = None  # type: ignore[assignment]
+            book_freshness[bk] = {
+                "n_quotes": len(line_rows),  # props, not raw quotes
+                "n_book_quotes": len(timestamps),
+                "freshest_ts": freshest_ts,
+                "age_sec": age_sec,
+                "age_min": round(age_sec / 60, 1) if age_sec is not None else None,
+                "fresh": age_sec is not None and age_sec < 900,
+            }
+    except Exception as _exc_book:
+        book_freshness = {"error": str(_exc_book)}  # type: ignore[assignment]
+
+    # ── 3. Orchestrator status ─────────────────────────────────────────
+    orchestrator_status: str
+    try:
+        import api.live_v2_app as _lv2  # noqa: PLC0415
+        orch = getattr(_lv2, "_orchestrator", None)
+        if orch is not None:
+            orchestrator_status = "alive"
+        else:
+            orchestrator_status = "waiting for games"
+    except Exception:
+        orchestrator_status = "unavailable"
+
+    # ── 4. Watchdog log tails ──────────────────────────────────────────
+    _watchdog_files = {
+        "uvicorn_watchdog": _ROOT / "data" / "cache" / "uvicorn_watchdog.log",
+        "ngrok_watchdog": _ROOT / "data" / "cache" / "ngrok_watchdog.log",
+        "ngrok_url_history": _ROOT / "data" / "cache" / "ngrok_url_history.log",
+    }
+    watchdog_tails: dict[str, object] = {}
+    for key, path in _watchdog_files.items():
+        try:
+            if path.exists():
+                lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+                watchdog_tails[key] = lines[-3:] if lines else []
+            else:
+                watchdog_tails[key] = []
+        except Exception:
+            watchdog_tails[key] = None
+
+    # ── 5. WP stack info ───────────────────────────────────────────────
+    wp_stack_info: dict = {}
+    try:
+        from src.prediction.inplay_winprob import active_stack as _active_stack  # noqa: PLC0415
+        for snap_key in ("endQ1", "endQ2", "endQ3"):
+            try:
+                info = _active_stack(snap_key)
+                wp_stack_info[snap_key] = {
+                    "layer": info.get("layer"),
+                    "detail": info.get("detail"),
+                    "components": info.get("components_loaded") or {},
+                }
+            except Exception as _exc_snap:
+                wp_stack_info[snap_key] = {"error": str(_exc_snap)}
+    except Exception as _exc_wp:
+        wp_stack_info = {"error": str(_exc_wp)}
+
+    # ── 6. Settled bets count ──────────────────────────────────────────
+    settled_counts: dict = {}
+    try:
+        _snap_path = _ROOT / "data" / "cache" / "settled_bets.json"
+        if _snap_path.exists():
+            _raw: list[dict] = _json.loads(_snap_path.read_text(encoding="utf-8"))
+            from collections import Counter as _Counter  # noqa: PLC0415
+            _cnt = _Counter(r.get("status", "unknown") for r in _raw)
+            settled_counts = dict(_cnt)
+            settled_counts["_total"] = len(_raw)
+        else:
+            settled_counts = {"error": "settled_bets.json not found"}
+    except Exception as _exc_settled:
+        settled_counts = {"error": str(_exc_settled)}
+
+    return JSONResponse({
+        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "slate_date": date,
+        "snapshot_freshness": snapshot_freshness,
+        "book_freshness": book_freshness,
+        "orchestrator_status": orchestrator_status,
+        "watchdog_tails": watchdog_tails,
+        "wp_stack": wp_stack_info,
+        "settled_bets": settled_counts,
+    })
+
+
+@router.get("/api/admin/dashboard", response_class=HTMLResponse, tags=["courtvision"])
+def api_admin_dashboard():
+    """Dark-themed admin dashboard that auto-refreshes health.json every 5s."""
+    html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CourtVision Admin</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0d1117;color:#c9d1d9;font-family:ui-monospace,"Cascadia Code",monospace;font-size:13px;padding:16px}
+  h1{color:#58a6ff;font-size:18px;margin-bottom:4px}
+  .meta{color:#8b949e;font-size:11px;margin-bottom:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px}
+  .card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px}
+  .card h2{color:#79c0ff;font-size:13px;margin-bottom:10px;border-bottom:1px solid #21262d;padding-bottom:6px}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;color:#8b949e;font-weight:normal;padding:3px 6px 3px 0;font-size:11px}
+  td{padding:3px 6px 3px 0;vertical-align:top;word-break:break-all}
+  .pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600}
+  .green{background:#0d4429;color:#3fb950}
+  .red{background:#4d1f1f;color:#f85149}
+  .yellow{background:#2e2000;color:#e3b341}
+  .gray{background:#21262d;color:#8b949e}
+  .log-lines{font-size:11px;color:#8b949e;margin-top:4px;line-height:1.6}
+  .log-line{border-left:2px solid #30363d;padding-left:8px;margin-bottom:2px;white-space:pre-wrap}
+  #status-bar{position:fixed;top:0;right:0;padding:4px 12px;font-size:11px;background:#161b22;
+              border-bottom-left-radius:6px;border:1px solid #30363d;color:#8b949e}
+  .err{color:#f85149}
+</style>
+</head>
+<body>
+<div id="status-bar">loading...</div>
+<h1>CourtVision Admin</h1>
+<p class="meta" id="meta">Fetching...</p>
+<div class="grid" id="grid"></div>
+
+<script>
+const REFRESH_MS = 5000;
+const URL = "/api/admin/health.json";
+
+function pill(ok, trueLabel, falseLabel) {
+  const cls = ok ? "green" : "red";
+  return `<span class="pill ${cls}">${ok ? trueLabel : falseLabel}</span>`;
+}
+
+function agePill(age_sec) {
+  if (age_sec === null || age_sec === undefined) return '<span class="pill gray">n/a</span>';
+  if (age_sec < 120) return `<span class="pill green">${age_sec}s</span>`;
+  if (age_sec < 600) return `<span class="pill yellow">${Math.round(age_sec/60)}m</span>`;
+  return `<span class="pill red">${Math.round(age_sec/60)}m</span>`;
+}
+
+function renderSnapshots(data) {
+  if (!data || typeof data !== "object") return "<em class='err'>unavailable</em>";
+  const entries = Object.entries(data);
+  if (!entries.length) return "<em class='gray'>no snapshots</em>";
+  let rows = "<table><tr><th>game_id</th><th>age</th><th>status</th></tr>";
+  for (const [gid, v] of entries.slice(0, 15)) {
+    rows += `<tr><td>${gid}</td><td>${agePill(v.age_sec)}</td><td>${pill(v.fresh,"live","stale")}</td></tr>`;
+  }
+  if (entries.length > 15) rows += `<tr><td colspan="3" style="color:#8b949e">…and ${entries.length-15} more</td></tr>`;
+  return rows + "</table>";
+}
+
+function renderBooks(data) {
+  if (!data || typeof data !== "object") return "<em class='err'>unavailable</em>";
+  if (data.error) return `<em class="err">${data.error}</em>`;
+  const entries = Object.entries(data);
+  if (!entries.length) return "<em class='gray'>no books</em>";
+  let rows = "<table><tr><th>book</th><th>quotes</th><th>age</th><th>ok</th></tr>";
+  for (const [bk, v] of entries) {
+    rows += `<tr><td>${bk}</td><td>${v.n_book_quotes}</td><td>${agePill(v.age_sec)}</td><td>${pill(v.fresh,"✓","✗")}</td></tr>`;
+  }
+  return rows + "</table>";
+}
+
+function renderOrch(status) {
+  if (status === "alive") return '<span class="pill green">alive</span>';
+  if (status === "waiting for games") return '<span class="pill yellow">waiting for games</span>';
+  return `<span class="pill red">${status || "unknown"}</span>`;
+}
+
+function renderWatchdog(tails) {
+  if (!tails) return "<em class='err'>unavailable</em>";
+  let html = "";
+  for (const [key, lines] of Object.entries(tails)) {
+    html += `<div style="margin-bottom:8px"><span style="color:#79c0ff">${key}</span>`;
+    if (!lines || !lines.length) { html += ' <em class="gray">empty</em></div>'; continue; }
+    html += '<div class="log-lines">';
+    for (const l of lines) html += `<div class="log-line">${l.replace(/</g,"&lt;")}</div>`;
+    html += "</div></div>";
+  }
+  return html || "<em class='gray'>no logs</em>";
+}
+
+function renderWP(stack) {
+  if (!stack) return "<em class='err'>unavailable</em>";
+  if (stack.error) return `<em class="err">${stack.error}</em>`;
+  let rows = "<table><tr><th>snapshot</th><th>layer</th></tr>";
+  for (const [snap, v] of Object.entries(stack)) {
+    const lbl = v.error ? `<em class="err">${v.error}</em>` : (v.layer || "unknown");
+    rows += `<tr><td>${snap}</td><td>${lbl}</td></tr>`;
+  }
+  return rows + "</table>";
+}
+
+function renderSettled(counts) {
+  if (!counts) return "<em class='err'>unavailable</em>";
+  if (counts.error) return `<em class="err">${counts.error}</em>`;
+  let rows = "<table><tr><th>status</th><th>count</th></tr>";
+  for (const [k, v] of Object.entries(counts)) {
+    const cls = k==="won"?"green":k==="lost"?"red":k==="push"?"yellow":"gray";
+    rows += `<tr><td><span class="pill ${cls}">${k}</span></td><td>${v}</td></tr>`;
+  }
+  return rows + "</table>";
+}
+
+async function refresh() {
+  const bar = document.getElementById("status-bar");
+  const meta = document.getElementById("meta");
+  bar.textContent = "refreshing…";
+  try {
+    const res = await fetch(URL, {headers:{"ngrok-skip-browser-warning":"true"}});
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d = await res.json();
+    bar.textContent = `last update: ${new Date().toLocaleTimeString()}`;
+    meta.textContent = `slate: ${d.slate_date} | generated: ${d.generated_at}`;
+    document.getElementById("grid").innerHTML = `
+      <div class="card"><h2>Snapshot Freshness</h2>${renderSnapshots(d.snapshot_freshness)}</div>
+      <div class="card"><h2>Book Freshness</h2>${renderBooks(d.book_freshness)}</div>
+      <div class="card"><h2>Orchestrator</h2>${renderOrch(d.orchestrator_status)}</div>
+      <div class="card"><h2>Watchdog Logs</h2>${renderWatchdog(d.watchdog_tails)}</div>
+      <div class="card"><h2>WP Stack</h2>${renderWP(d.wp_stack)}</div>
+      <div class="card"><h2>Settled Bets</h2>${renderSettled(d.settled_bets)}</div>
+    `;
+  } catch(e) {
+    bar.textContent = `error: ${e.message}`;
+    meta.textContent = "fetch failed";
+  }
+}
+
+refresh();
+setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>"""
+    return HTMLResponse(content=html)

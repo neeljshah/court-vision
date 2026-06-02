@@ -57,6 +57,13 @@ if os.environ.get("SENTRY_DSN"):
 
 app = FastAPI(title="NBA AI System — Project Court Vision", version="2.0.0")
 
+# Strong references to background asyncio Tasks.
+# asyncio.create_task / create_supervised_task returns a Task that the event loop
+# holds only via a WEAK reference.  Without an explicit strong-ref container the
+# GC can collect the Task object mid-run, silently killing the WS feed or loop.
+# CPython asyncio docs explicitly warn about this pattern.
+_BG_TASKS: set = set()
+
 
 def _find_latest_tracking_csv() -> "Optional[str]":
     """Return most recently modified tracking_data.csv for CV fatigue minutes."""
@@ -131,6 +138,68 @@ try:
     app.include_router(_risk_router, tags=["risk"])
 except Exception as _risk_exc:
     log.warning("risk_router unavailable: %s", _risk_exc)
+
+
+@app.on_event("startup")
+async def _start_ws_subscribers() -> None:
+    """Start DK/FD/BR WebSocket prop-odds subscribers as supervised tasks.
+
+    Gated by DK_WS_ENABLED / FD_WS_ENABLED / BR_WS_ENABLED env vars
+    (default OFF => byte-identical behaviour to the pre-WS build).
+    Each feed writes to a _ws-suffixed CSV file (<date>_dk_ws.csv etc.)
+    so there is no dual-writer race with the HTTP scrapers, which remain
+    the fallback and the source for pin/bov which have no WS feed.
+    Exceptions per-feed are caught and logged; a failure to start one
+    feed never blocks the others or crashes the server.
+    """
+    _WS_TRUTHY = ("1", "true", "yes", "on")
+
+    if os.environ.get("DK_WS_ENABLED", "").strip() in _WS_TRUTHY:
+        try:
+            from scripts.task_supervisor import create_supervised_task
+            from scripts.draftkings_ws import start_dk_ws
+            _t = create_supervised_task("dk_ws", start_dk_ws)
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
+            log.info("api.main: DK WS subscriber task started (supervised)")
+        except Exception as _dk_exc:  # noqa: BLE001
+            log.warning("api.main: DK WS subscriber failed to start (non-fatal): %s", _dk_exc)
+
+    if os.environ.get("FD_WS_ENABLED", "").strip() in _WS_TRUTHY:
+        try:
+            from scripts.task_supervisor import create_supervised_task
+            from scripts.fanduel_ws import start_fd_ws
+            _t = create_supervised_task("fd_ws", start_fd_ws)
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
+            log.info("api.main: FD WS subscriber task started (supervised)")
+        except Exception as _fd_exc:  # noqa: BLE001
+            log.warning("api.main: FD WS subscriber failed to start (non-fatal): %s", _fd_exc)
+
+    if os.environ.get("BR_WS_ENABLED", "").strip() in _WS_TRUTHY:
+        try:
+            from scripts.task_supervisor import create_supervised_task
+            from scripts.betrivers_ws import start_br_ws
+            _t = create_supervised_task("br_ws", start_br_ws)
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
+            log.info("api.main: BR WS subscriber task started (supervised)")
+        except Exception as _br_exc:  # noqa: BLE001
+            log.warning("api.main: BR WS subscriber failed to start (non-fatal): %s", _br_exc)
+
+    # DK in-play WS subscriber — sub-second live prop-line latency during games.
+    # Writes data/lines/<date>_dk_inplay_ws.csv (book="dk_inplay").
+    # Gated: set DK_INPLAY_WS_ENABLED=1 AND fill _INPLAY_SUBCATEGORY_IDS in
+    # scripts/dk_inplay_ws.py (discovered on residential network during live game).
+    if os.environ.get("DK_INPLAY_WS_ENABLED", "").strip() in _WS_TRUTHY:
+        try:
+            from scripts.task_supervisor import create_supervised_task
+            from scripts.dk_inplay_ws import start_dk_inplay_ws
+            _t = create_supervised_task("dk_inplay_ws", start_dk_inplay_ws)
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
+            log.info("api.main: DK in-play WS subscriber task started (supervised)")
+        except Exception as _dk_inplay_exc:  # noqa: BLE001
+            log.warning(
+                "api.main: DK in-play WS subscriber failed to start (non-fatal): %s",
+                _dk_inplay_exc,
+            )
 
 try:
     from api.lines_router import router as _lines_router
