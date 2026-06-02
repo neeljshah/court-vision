@@ -20,11 +20,29 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import time
+import unicodedata
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
+
+
+def _strip_accents(s: str) -> str:
+    """Remove combining diacritics from *s* (NFKD → drop combining marks).
+
+    Mirrors src.data.live._strip_accents so accent-insensitive name matching
+    works without importing a module that pulls in heavy ML deps.
+
+    Examples:
+        "Nikola Jokić"      → "Nikola Jokic"
+        "Luka Dončić"       → "Luka Doncic"
+        "Kristaps Porziņģis" → "Kristaps Porzingis"
+    """
+    nfkd = unicodedata.normalize("NFKD", str(s or ""))
+    return "".join(c for c in nfkd if not unicodedata.combining(c))
+
 
 try:
     from api._deeplinks import book_deeplink as _book_deeplink
@@ -60,12 +78,20 @@ _NBA_PLAYER_SET: set[str] | None = None
 
 
 def _load_nba_players() -> set[str]:
-    """Return lowercase NBA active-player names. Cached for the process lifetime."""
+    """Return de-accented lowercase NBA active-player names.
+
+    Stored as ``_strip_accents(name).lower()`` so ASCII sportsbook names
+    ("Nikola Jokic") match accented roster entries ("Nikola Jokić") via the
+    same de-accent transform on the book side.  Cached for the process lifetime.
+    """
     global _NBA_PLAYER_SET
     if _NBA_PLAYER_SET is None:
         try:
             with _ROSTER_PATH.open(encoding="utf-8") as f:
-                _NBA_PLAYER_SET = {n.lower().strip() for n in json.load(f) if n}
+                _NBA_PLAYER_SET = {
+                    _strip_accents(n).lower().strip()
+                    for n in json.load(f) if n
+                }
         except (OSError, ValueError, TypeError):
             _NBA_PLAYER_SET = set()  # fallback: no filtering
     return _NBA_PLAYER_SET
@@ -77,10 +103,72 @@ def reload_nba_roster() -> int:
     Called by the nightly refresh task after scripts/refresh_nba_roster.py
     rewrites players_nba_active.json.
     """
-    global _NBA_PLAYER_SET
+    global _NBA_PLAYER_SET, _ABBREV_INDEX
     _NBA_PLAYER_SET = None
+    _ABBREV_INDEX = None
     s = _load_nba_players()
     return len(s)
+
+
+# ── Abbreviated-name index (Bug 7) ────────────────────────────────────────────
+# Keyed by (first_initial_lower, surname_lower) -> list[canonical_full_name_lower]
+# Used to resolve "S. Gilgeous-Alexander" -> "shai gilgeous-alexander" when
+# exactly ONE roster player matches initial+surname (safe; ties → no mapping).
+_ABBREV_INDEX: dict[tuple[str, str], list[str]] | None = None
+
+
+def _load_abbrev_index() -> dict[tuple[str, str], list[str]]:
+    """Build (or return cached) abbreviated-name index from the NBA roster."""
+    global _ABBREV_INDEX
+    if _ABBREV_INDEX is not None:
+        return _ABBREV_INDEX
+    roster = _load_nba_players()
+    idx: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for name in roster:
+        parts = name.split()
+        if len(parts) >= 2:
+            initial = parts[0][0]  # first character of first name, already lowercase
+            # Surname = everything after the first token, joined (handles hyphenated).
+            surname = " ".join(parts[1:])
+            idx[(initial, surname)].append(name)
+    _ABBREV_INDEX = dict(idx)
+    return _ABBREV_INDEX
+
+
+def _canonicalize_book_player(player: str) -> str:
+    """Return the canonical roster player name for a book's player string.
+
+    Two normalizations (Bug 6 + 7):
+      1. Strip a trailing team-disambiguation suffix: "Jaylin Williams (OKC)" ->
+         "Jaylin Williams".  DraftKings and some other books append the team
+         abbreviation in parentheses to disambiguate common names.
+      2. Resolve an abbreviated first name "X. Surname" to the unique canonical
+         full name from the roster, e.g. "S. Gilgeous-Alexander" ->
+         "shai gilgeous-alexander".  Only maps when EXACTLY ONE roster player
+         matches (initial, surname) — if two players share initial+surname we
+         keep the string as-is so no wrong-player mapping can occur.
+
+    Returns the transformed name (possibly equal to the input if neither rule
+    fires).  The caller must still apply `.lower()` and check roster membership.
+    """
+    # Rule 1: strip trailing (TEAM) suffix, e.g. "(OKC)" / "(LAL)"
+    player = re.sub(r"\s*\([A-Z]{2,4}\)\s*$", "", player).strip()
+
+    # Rule 2: abbreviated first name "X. Rest Of Name"
+    abbrev_match = re.match(r"^([A-Za-z])\.\s+(\S.*)$", player)
+    if abbrev_match:
+        initial = abbrev_match.group(1).lower()
+        surname_raw = abbrev_match.group(2).strip().lower()
+        idx = _load_abbrev_index()
+        candidates = idx.get((initial, surname_raw), [])
+        if len(candidates) == 1:
+            # Unique match — safe to resolve.  Return the canonical roster form
+            # (lowercase, as stored in the index) so the caller's .lower() is
+            # a no-op and the roster membership check succeeds.
+            return candidates[0]
+        # Zero or multiple matches → keep current (possibly stripped) name.
+
+    return player
 
 
 _BOOK_DISPLAY = {
@@ -94,7 +182,16 @@ _BOOK_DISPLAY = {
 _VALID_STATS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov"}
 # Bookkey suffixes / fragments to exclude from auto-discovery (synthetic and
 # companion files written alongside the real per-book CSVs).
-_EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic")
+# "_inplay" excluded so fd_inplay/dk_inplay CSVs (written by the WS in-play
+# scraper) never leak into the pregame consolidate/consolidate_for_slate views.
+# The dedicated _load_inplay_line_history in courtvision_router globs
+# "{date}_*inplay*.csv" directly and is unaffected by this list.
+_EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic", "_inplay")
+# Books explicitly excluded from consolidated odds (lines too off-market to
+# trust). Bovada posts late and stays wide vs sharp books.
+# mgm/caesars/fanatics dropped 2026-05-30: no live scraper (were odds-api only),
+# so their CSVs go stale — excluded "for now" until a direct scraper feeds them.
+_EXCLUDED_BOOKS = {"bov", "mgm", "caesars", "fanatics"}
 
 
 def _book_csv_paths(date: str) -> list[Path]:
@@ -118,6 +215,8 @@ def _book_csv_paths(date: str) -> list[Path]:
         if not book:
             continue
         if any(book.endswith(s) for s in _EXCLUDED_BOOK_SUFFIXES):
+            continue
+        if book in _EXCLUDED_BOOKS:
             continue
         out.append(p)
     return out
@@ -212,6 +311,16 @@ def _to_int(s) -> int | None:
         return None
 
 
+def _to_odds(s) -> int | None:
+    """Parse an American-odds cell, rejecting invalid magnitudes (|odds| < 100,
+    e.g. a scraped/glitch 0). Returning None here keeps a bad cell out of the
+    consolidate/grade pipeline (a 0 would beat every minus-money book in the
+    best-price max() and crash the payout division 10000/abs(0)); the `or -110`
+    fallback in consolidate_for_slate then substitutes the even-money default."""
+    v = _to_int(s)
+    return v if (v is None or abs(v) >= 100) else None
+
+
 def _to_float(s) -> float | None:
     if s is None or s == "":
         return None
@@ -222,21 +331,45 @@ def _to_float(s) -> float | None:
     return v if v == v else None  # filter NaN
 
 
+def _et_date_of_start_time(iso_ts: str) -> str:
+    """Convert a UTC start_time to its America/New_York YYYY-MM-DD date.
+    Identical helper to api.courtvision_router._et_date_from_iso, kept
+    local to avoid a circular import."""
+    if not iso_ts or len(iso_ts) < 10:
+        return ""
+    try:
+        try:
+            from zoneinfo import ZoneInfo
+            _ET = ZoneInfo("America/New_York")
+        except Exception:
+            _ET = None
+        norm = iso_ts.replace("Z", "+00:00")
+        if "+" not in norm[10:] and norm.count("-") < 3:
+            norm += "+00:00"
+        dt = datetime.fromisoformat(norm).astimezone(timezone.utc)
+        if _ET is not None:
+            return dt.astimezone(_ET).strftime("%Y-%m-%d")
+        return (dt + timedelta(hours=-4)).strftime("%Y-%m-%d")
+    except Exception:
+        return iso_ts[:10]
+
+
 def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
     """Parse a single <date>_<book>.csv. Yields the *latest* quote per
     (player, stat, line, book) so the line-shop view is freshness-correct.
 
     When `start_date` is provided (YYYY-MM-DD), only rows whose start_time
-    begins with that prefix are included. This supports the sliding-window
-    consolidation where one CSV may contain rows for multiple game dates.
+    falls on that ET CALENDAR DATE are included. NBA games are scheduled
+    in ET; a 7:00 PM ET tip lives as `YYYY-MM-DDT23:00Z`, so filtering
+    by UTC date silently misclassifies tonight's game as tomorrow's.
     """
     latest: dict[tuple, dict] = {}
     with path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            # ── start_time date filter (Bug 2 fix) ──────────────────────
+            # ── start_time ET-date filter (replaces UTC string prefix) ──
             if start_date is not None:
                 row_st = (r.get("start_time") or "").strip()
-                if not row_st.startswith(start_date):
+                if _et_date_of_start_time(row_st) != start_date:
                     continue
             stat = (r.get("stat") or "").lower()
             if stat not in _VALID_STATS:
@@ -248,11 +381,22 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
             player = (r.get("player_name") or "").strip()
             if not player:
                 continue
+            # Bug 6 + 7: canonicalize the book's player name before roster
+            # filter and prop_key construction so that:
+            #   - "Jaylin Williams (OKC)" → "Jaylin Williams" (team-suffix strip)
+            #   - "S. Gilgeous-Alexander" → "shai gilgeous-alexander" (abbrev resolve)
+            # _canonicalize_book_player may return a lowercase canonical name
+            # (when the abbreviated-name resolver fires) or the stripped/original
+            # mixed-case name.  We normalise to lowercase for the roster check.
+            player = _canonicalize_book_player(player)
             # Drop non-NBA players (WNBA bleed, etc.) when roster file is present.
+            # Roster is stored de-accented; compare using the same transform so
+            # ASCII book names ("Nikola Jokic") match accented roster entries
+            # ("Nikola Jokić" → "nikola jokic" in the set).
             _roster = _load_nba_players()
-            if _roster and player.lower() not in _roster:
+            if _roster and _strip_accents(player).lower() not in _roster:
                 continue
-            key = (player.lower(), stat, round(line, 2), book)
+            key = (_strip_accents(player).lower(), stat, round(line, 2), book)
             existing = latest.get(key)
             captured_at = r.get("captured_at") or ""
             if existing and existing["captured_at"] >= captured_at:
@@ -264,8 +408,8 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
                 "player_id": _to_int(r.get("player_id")),
                 "stat": stat,
                 "line": line,
-                "over_price": _to_int(r.get("over_price")),
-                "under_price": _to_int(r.get("under_price")),
+                "over_price": _to_odds(r.get("over_price")),
+                "under_price": _to_odds(r.get("under_price")),
                 "game_id": r.get("game_id") or "",
                 "start_time": r.get("start_time") or "",
                 # Deeplink selection IDs — DK/FD write bet-slip outcomeIds;
@@ -281,6 +425,17 @@ _CACHE: dict[str, tuple[float, list[dict]]] = {}
 _CACHE_TTL_SEC = 30.0  # 30s — scrapers tick every 10s but CSV reads at that rate
                         # caused 74s page loads in prod (O(files) I/O per request).
                         # 30s is still fresh enough for line-shop display.
+
+# Bug 10 fix — stale pregame quote guard.
+# The 7-day lookback window (_book_csv_paths_window) can surface quotes captured
+# 24-30 h ago as "current" because the sliding window has no per-row age cap.
+# Drop any pregame book quote older than this threshold so stale prices cannot
+# reach best_price / EV calculations.  Set to 24 h: catches the documented
+# multi-day-stale (24-30 h, scraper-down) case while NEVER dropping a legitimate
+# same-day pregame capture (slates are built same-day and books post lines hours-
+# to-a-day ahead, so an early-morning quote for a night game must survive). 6 h
+# was too tight. Quotes with an unparseable captured_at are kept (safe fallback).
+_MAX_PREGAME_QUOTE_AGE_SEC: float = 24 * 3600  # 24 hours
 
 # ── Steam (sharp-money) lookup cache ──────────────────────────────────────────
 # steam_events.jsonl is appended by scripts/steam_detector.py whenever 3+ books
@@ -432,15 +587,35 @@ def consolidate(date: str) -> list[dict]:
     games scheduled on a future date (start_time=2026-05-29T00:40:00Z).
     Existing callers are unaffected: consolidate('2026-05-27') returns props
     whose start_time date is 2026-05-27, exactly as before.
+
+    Cross-file freshest-wins merge (WS + HTTP additive):
+    When both an HTTP scraper file (<date>_dk.csv) and a WebSocket file
+    (<date>_dk_ws.csv) exist for the same book, rows for the same
+    (player, stat, line, book) are deduplicated across files, keeping
+    only the row with the freshest captured_at.  This means a sub-second
+    WS quote beats a 20s-old HTTP quote automatically, and if the WS feed
+    is down the HTTP quote remains — no "_ws" book key ever leaks into the
+    books list because the row's canonical `book` column ("dk"/"fd"/
+    "betrivers") is used as the dedup key, not the filename suffix.
     """
     cached = _CACHE.get(date)
     if cached and time.time() - cached[0] < _CACHE_TTL_SEC:
         return cached[1]
+
+    # Two-level structure: prop_key -> book -> freshest book entry dict.
+    # Using an intermediate book_latest dict ensures cross-file freshest-wins
+    # before we flatten to the final books list.
     grouped: dict[tuple, dict] = {}
+    # book_latest[(prop_key, canonical_book)] = (captured_at, book_entry_dict)
+    book_latest: dict[tuple, tuple] = {}
+
     for path in _book_csv_paths_window(date):
         for row in read_book_csv(path, start_date=date):
-            key = (row["player"].lower(), row["stat"], round(row["line"], 2))
-            base = grouped.setdefault(key, {
+            # Use de-accented-lower as the canonical join key so accented cache
+            # names ("Nikola Jokić") and ASCII book names ("Nikola Jokic") both
+            # map to the same prop_key ("nikola jokic", stat, line).
+            prop_key = (_strip_accents(row["player"]).lower(), row["stat"], round(row["line"], 2))
+            base = grouped.setdefault(prop_key, {
                 "player": row["player"], "player_id": row["player_id"],
                 "stat": row["stat"], "line": row["line"],
                 "game_id": row["game_id"], "start_time": row["start_time"],
@@ -456,7 +631,7 @@ def consolidate(date: str) -> list[dict]:
             }
             _dl_over  = _book_deeplink(row["book"], _dl_prop, side="OVER")
             _dl_under = _book_deeplink(row["book"], _dl_prop, side="UNDER")
-            base["books"].append({
+            entry = {
                 "book": row["book"], "display": _BOOK_DISPLAY.get(row["book"], row["book"]),
                 "over_price": row["over_price"], "under_price": row["under_price"],
                 "captured_at": _normalize_ts(row["captured_at"]),
@@ -468,7 +643,60 @@ def consolidate(date: str) -> list[dict]:
                 "deeplink_over_app":  _dl_over["app_url"] or "",
                 "deeplink_under_web": _dl_under["web_url"],
                 "deeplink_under_app": _dl_under["app_url"] or "",
-            })
+            }
+            # Bug 10 fix — drop stale pregame quotes exceeding _MAX_PREGAME_QUOTE_AGE_SEC.
+            # The 7-day lookback window can surface prices captured 24-30 h ago;
+            # dropping them here prevents stale quotes reaching best_price/EV.
+            # Unparseable captured_at timestamps are kept (safe fallback).
+            _cap_ts = _parse_ts(entry["captured_at"])
+            if _cap_ts is not None and (time.time() - _cap_ts) > _MAX_PREGAME_QUOTE_AGE_SEC:
+                continue
+            # Cross-file freshest-wins: only keep the freshest captured_at per
+            # (prop_key, canonical_book).  This deduplicates HTTP vs WS files
+            # for the same book so no duplicate "dk" / "fd" entries appear in
+            # the books list — the WS (sub-second) quote wins when fresher.
+            #
+            # Bug 3 fix — preserve HTTP selection IDs when WS row wins on price:
+            # WS files lack book_selection_id_over/under columns (default ""),
+            # so when the fresher WS row displaces an older HTTP row that carried
+            # non-empty selection IDs, we inherit those IDs into the winner and
+            # recompute the deeplink URLs so addToBetslip deep links are kept.
+            bl_key = (prop_key, row["book"])
+            prior = book_latest.get(bl_key)
+            if prior is None or entry["captured_at"] >= prior[0]:
+                if prior is not None:
+                    prior_entry = prior[1]
+                    # Inherit selection IDs from the prior (older) entry when
+                    # the incoming winner has empty IDs but prior has non-empty.
+                    inherited = False
+                    if (not entry["selection_id_over"]
+                            and prior_entry.get("selection_id_over")):
+                        entry["selection_id_over"] = prior_entry["selection_id_over"]
+                        inherited = True
+                    if (not entry["selection_id_under"]
+                            and prior_entry.get("selection_id_under")):
+                        entry["selection_id_under"] = prior_entry["selection_id_under"]
+                        inherited = True
+                    # Recompute deeplinks so they reflect the inherited IDs.
+                    if inherited:
+                        _dl_prop2 = {
+                            "game_id": row.get("game_id") or "",
+                            "player": row.get("player") or "",
+                            "selection_id_over": entry["selection_id_over"],
+                            "selection_id_under": entry["selection_id_under"],
+                        }
+                        _dl_over2  = _book_deeplink(row["book"], _dl_prop2, side="OVER")
+                        _dl_under2 = _book_deeplink(row["book"], _dl_prop2, side="UNDER")
+                        entry["deeplink_over_web"]  = _dl_over2["web_url"]
+                        entry["deeplink_over_app"]  = _dl_over2["app_url"] or ""
+                        entry["deeplink_under_web"] = _dl_under2["web_url"]
+                        entry["deeplink_under_app"] = _dl_under2["app_url"] or ""
+                book_latest[bl_key] = (entry["captured_at"], entry, prop_key)
+
+    # Flatten the freshest-per-book entries back onto each prop's books list.
+    for (_prop_key, _book), (_cap, _entry, _pk) in book_latest.items():
+        grouped[_pk]["books"].append(_entry)
+
     out = list(grouped.values())
     for prop in out:
         prop["n_books"] = len(prop["books"])
@@ -480,16 +708,23 @@ def consolidate(date: str) -> list[dict]:
 
 def consolidate_for_slate(date: str) -> list[dict]:
     """Drop-in replacement for load_lines_csv. Same shape it produces:
-    one row per (player, stat, line) with `books: [{book, over_odds, under_odds}]`."""
+    one row per (player, stat, line) with `books: [{book, over_odds, under_odds, captured_at}]`.
+    `captured_at` is preserved so downstream mainline pickers can prefer
+    fresh lines over stale ones. `game_id` is preserved so the pregame
+    synthesis can group bets by the line's actual game (otherwise every
+    synth bet inherits the recent-slate game_id and the home-page card
+    can't find its top edges)."""
     out: list[dict] = []
     for prop in consolidate(date):
         out.append({
             "player": prop["player"], "stat": prop["stat"], "line": prop["line"],
             "opp": "", "venue": "",  # not in scrape CSVs; courtvision_data falls back
+            "game_id": prop.get("game_id") or "",
             "books": [{
                 "book": _BOOK_DISPLAY.get(b["book"], b["book"]),
                 "over_odds": b["over_price"] if b["over_price"] is not None else -110,
                 "under_odds": b["under_price"] if b["under_price"] is not None else -110,
+                "captured_at": b.get("captured_at") or "",
             } for b in prop["books"] if b["over_price"] or b["under_price"]],
         })
     return [p for p in out if p["books"]]
@@ -520,6 +755,13 @@ def games_index(date: str) -> list[dict]:
     (via games_lookup.json) so the index has one entry per real game,
     not one per sportsbook ID. The canonical_game_id is the first ID
     alphabetically among the group; all alias IDs are listed too.
+
+    Post-grouping merge: scrapers that don't expose NBA-canonical game IDs
+    (KAMBI hex hashes, etc.) produce groups keyed by their raw ID with
+    empty team abbrs. When such a group's start_time matches a resolved
+    group on the same date (±5 min), the unresolved group is folded into
+    the resolved one so the home page sees one card per real game, not
+    one per sportsbook ID flavor.
     """
     props = consolidate(date)
     aliases = _load_game_aliases()
@@ -541,6 +783,35 @@ def games_index(date: str) -> list[dict]:
         g["n_props"] += 1
         g["players"].add(p["player"])
         g["game_ids"].add(gid)
+
+    # ── merge unresolved groups into resolved ones by start_time ─────
+    resolved_by_st: dict[str, tuple] = {}  # start_time_minute -> matchup key
+    for (away, home, _), g in by_matchup.items():
+        if away and home:  # resolved
+            st = (g.get("start_time") or "")[:16]  # minute precision
+            if st:
+                resolved_by_st.setdefault(st, (away, home, _))
+    merged_keys: list[tuple] = []
+    for key, g in list(by_matchup.items()):
+        away, home, _sd = key
+        if home:  # already resolved
+            continue
+        st_min = (g.get("start_time") or "")[:16]
+        if not st_min:
+            continue
+        target_key = resolved_by_st.get(st_min)
+        if target_key is None:
+            continue
+        target = by_matchup.get(target_key)
+        if target is None or target_key == key:
+            continue
+        target["n_props"] += g["n_props"]
+        target["players"] |= g["players"]
+        target["game_ids"] |= g["game_ids"]
+        merged_keys.append(key)
+    for k in merged_keys:
+        by_matchup.pop(k, None)
+
     out = []
     for (away, home, _), g in by_matchup.items():
         ids = sorted(g["game_ids"])
@@ -709,10 +980,16 @@ def freshness(date: str) -> dict:
 
     Uses _book_csv_paths_window so future-date games (stored under today's
     scrape-date filename) are counted correctly.
+
+    WS files (<date>_dk_ws.csv) are folded into their canonical book ("dk")
+    so the freshness report shows one entry per real book, preferring the
+    freshest captured_at across HTTP and WS files.
     """
     out: dict[str, dict] = {}
     for path in _book_csv_paths_window(date):
-        book = path.stem.split("_", 1)[-1].lower()  # strip date prefix
+        raw_book = path.stem.split("_", 1)[-1].lower()  # strip date prefix
+        # Strip _ws suffix so WS files fold into the canonical book name.
+        book = raw_book[:-3] if raw_book.endswith("_ws") else raw_book
         try:
             mtime = datetime.fromtimestamp(path.stat().st_mtime,
                                             tz=timezone.utc).isoformat()
@@ -724,7 +1001,12 @@ def freshness(date: str) -> dict:
             with path.open(newline="", encoding="utf-8") as f:
                 for r in csv.DictReader(f):
                     row_st = (r.get("start_time") or "").strip()
-                    if not row_st.startswith(date):
+                    # Match on the ET CALENDAR DATE, not the raw UTC prefix.
+                    # A 7:10 PM ET tip is stored as YYYY-MM-DDT00:10Z (next UTC
+                    # day), so a naive startswith(date) silently reports 0 rows
+                    # for tonight's slate — diverging from consolidate(), which
+                    # uses _et_date_of_start_time. Keep the two in lockstep.
+                    if _et_date_of_start_time(row_st) != date:
                         continue
                     n_rows += 1
                     ts = r.get("captured_at") or ""
@@ -734,13 +1016,25 @@ def freshness(date: str) -> dict:
             pass
         if n_rows == 0:
             continue  # no rows for this date in this file — skip from report
-        out[book] = {
-            "display": _BOOK_DISPLAY.get(book, book),
-            "csv_path": str(path.relative_to(path.parent.parent)),
-            "csv_mtime_utc": mtime,
-            "n_rows": n_rows,
-            "latest_capture": latest_capture,
-        }
+        # Merge WS file into the same canonical book entry rather than
+        # overwriting — keep the freshest latest_capture and sum n_rows so
+        # the status report reflects both HTTP and WS data combined.
+        existing = out.get(book)
+        if existing is None:
+            out[book] = {
+                "display": _BOOK_DISPLAY.get(book, book),
+                "csv_path": str(path.relative_to(path.parent.parent)),
+                "csv_mtime_utc": mtime,
+                "n_rows": n_rows,
+                "latest_capture": latest_capture,
+            }
+        else:
+            existing["n_rows"] += n_rows
+            if latest_capture > existing["latest_capture"]:
+                existing["latest_capture"] = latest_capture
+            if mtime and (not existing["csv_mtime_utc"]
+                          or mtime > existing["csv_mtime_utc"]):
+                existing["csv_mtime_utc"] = mtime
     return {"date": date, "n_books": len(out), "books": out}
 
 
@@ -839,7 +1133,22 @@ def cross_book_spread(date: str, min_spread_pp: float = 2.0,
 
         arb_sum = (best_over_implied + best_under_implied) * 100 \
                   if (best_over_implied is not None and best_under_implied is not None) else None
-        is_arb = arb_sum is not None and arb_sum < 100.0
+
+        # Bug 9 fix: compute arb_quality BEFORE setting is_arb so that we can
+        # require the two legs to be within the tight/loose window.  The /spread
+        # endpoint was displaying is_arb=True for over/under legs captured up to
+        # _ARB_MAX_AGE_SEC (300s) apart — a stale mismatch that produces false
+        # arb signals.  Now is_arb=True only when arb_sum<100 AND the leg
+        # captures are "tight" or "loose" (both within 90s of each other).
+        # The displayed spread numbers and arb_sum_pct are unchanged.
+        _pre_arb_quality: str | None = None
+        if (arb_sum is not None and arb_sum < 100.0
+                and best_over_b is not None and best_under_b is not None):
+            _pre_arb_quality = _arb_quality(
+                best_over_b.get("captured_at") or "",
+                best_under_b.get("captured_at") or "",
+            )
+        is_arb = (_pre_arb_quality in {"tight", "loose"})
 
         row: dict = {
             "player": p["player"], "stat": p["stat"], "line": p["line"],
@@ -849,10 +1158,7 @@ def cross_book_spread(date: str, min_spread_pp: float = 2.0,
             "is_arb": is_arb, "books": all_books,
         }
         if is_arb and best_over_b is not None and best_under_b is not None:
-            row["arb_quality"] = _arb_quality(
-                best_over_b.get("captured_at") or "",
-                best_under_b.get("captured_at") or "",
-            )
+            row["arb_quality"] = _pre_arb_quality
             row["arb_best_over_book"]  = best_over_b["book"]
             row["arb_best_under_book"] = best_under_b["book"]
         out.append(row)

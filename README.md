@@ -1,55 +1,48 @@
 # CourtVision — NBA AI System
 
-End-to-end NBA prediction + betting platform built by one engineer over 13 months. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
+End-to-end NBA prediction + betting platform — an intensive ~3-month solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
 
-**Built by [Neel Shah]** — solo NBA quant. Available for senior sports-quant / AI-founding-engineer roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** — self-taught (no CS degree), solo architect/director of the full stack (built via an agentic pipeline I designed; the engineering judgment, ship/reject calls, and validation methodology are mine). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
-> **30-second verification** (after `git clone` + `pip install -r requirements.txt`):
+> 📄 **Start here: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, verifiable evidence: what's real, what I retracted, and why.
+>
+> **30-second reproducibility** (after `git clone` + `pip install -r requirements.txt`):
 > ```bash
-> python scripts/verify_winprob.py          # → acc 0.7094, brier 0.193 (within tolerance)
-> python scripts/verify_production_mae.py   # → 6/7 prop MAEs within ±0.01 of README claim
-> python scripts/iter61_sim_reconciliation.py  # → canonical post-Iter-57 ROI +18.38% KB+ISO
+> python scripts/verify_production_mae.py   # prop-model MAE vs committed JSON
+> python -m pytest tests/ -q                # the test suite
 > ```
-> All verifiers consume committed JSON. If they disagree with this README, the README is wrong; please open an issue.
+>
+> **Headline-number correction (2026-06).** Two earlier headline metrics — a "+18.38% pre-game ROI" and an "endQ3 Brier 0.119" — are **retracted.** My own validation harness traced the first to a *market-follow grading artifact* (real ROI vs. real closing lines ≈ **−2% to −5%**) and the second to a *fourth-quarter data leak*. I documented both openly rather than ship them. **The real story here is the engineering and the validation methodology that caught my own overclaims** — the thing I'd actually bring to a team.
 
 ---
 
 ## What This Repo Actually Is
 
-A real ML system, not a backtest in a notebook. The honest one-paragraph version:
+A real, end-to-end ML system — an intensive ~3-month solo build (Mar–May 2026), not a notebook backtest. Two surfaces, both with committed data and reproducible from a fresh clone:
 
-> Two validation surfaces, both with committed data. **(A) Real-money-relevant pre-game props:** the strata-selected production stack — Iter-22 shifted cutoff (training through 2025 playoffs) + Iter-51 BLK UNDER-only filter + Iter-54 line-bucket filters + Iter-55/57 direction×line sub-segment filters + Iter-28 per-stat ensemble weights + Iter-33 Kelly-B fractional sizing + Iter-34 per-stat isotonic edge calibration + Iter-39 PTS threshold — produces **+18.38% pool ROI on 1,535 bets** (Kelly-B+ISO) / **+15.04% flat 1u** against real 2025-26 closing lines from DraftKings, FanDuel, MGM, and Pinnacle. Honest pre-Iter-61 number was inflated +8.55pp by stale hardcoded per-stat GT; the +18.38% is the sim-reconciled canonical. **(B) In-game win-probability:** honest walk-forward Brier after Iter-68 per-snapshot HP optimization + Iter-65 foul-trouble + Iter-70 bag-of-5-seeds is **endQ1 0.212 / endQ2 0.176 / endQ3 0.119**. The endQ3 number sits inside Pinnacle's published range (~0.10-0.12), measured on the same 4-fold expanding walk-forward as the original validation. The 9-component pre-game stack was discovered over 70 documented iterations (29 ships, 41 reverts, every revert with a stated cause) running an autonomous Opus-planner / Sonnet-executor multi-agent loop with a hard "≥3/4 WF folds positive AND no per-stat regress >1pp" ship gate.
+- **(A) Pre-game prop models** — 7 per-stat models (PTS/REB/AST/FG3M/STL/BLK/TOV) with walk-forward evaluation, per-stat isotonic calibration, Shin devigging, and fractional-Kelly sizing, graded against **real DK/FD/MGM/Pinnacle closing lines**.
+- **(B) In-play win-probability + projections** — per-snapshot models (endQ1/Q2/Q3) on thousands of game-snapshots with expanding walk-forward validation.
 
-The rest of this README sits behind that paragraph.
+> **Honest read on performance — see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).** The models are competitive and reproducible (point-accuracy/MAE checks pass against committed JSON), but the **closing market is efficient**: vs. real closes the prop edge is roughly break-even-to-slightly-negative on most stats, with a small genuine edge on assists. That's the honest, correct finding. **Two earlier headline numbers are retracted** — a "+18.38% pre-game ROI" (a market-follow grading artifact; real ≈ −2% to −5%) and an "endQ3 Brier 0.119" (inflated by a fourth-quarter data leak). My own walk-forward + shadow-logging harness caught both, and I documented them rather than ship them. That self-auditing discipline is the real headline.
+
+The most defensible claim is the **computer-vision pipeline**: broadcast video → court coordinates → behavioral features (YOLOv8 → SIFT homography → Kalman+Hungarian tracking → OSNet re-ID) on a consumer GPU at **~$0.10/game**. The discovery process below ran an autonomous Opus-planner / Sonnet-executor loop with hard ship gates (≥3/4 walk-forward folds positive, no per-stat regression > 1pp) — the gates, and the reverts, are the point.
 
 ---
 
 ## Latest Numbers — Updated 2026-05-28
 
-### Pre-game props — canonical filtered+sized production stack
+### Pre-game props — honest read (numbers corrected 2026-06)
 
-**1,535 bets · 2025-26 regular season + playoffs · real DK/FD/MGM/Pinnacle closes**
+> ⚠️ An earlier version of this section reported a **+18.38% pool ROI** (and per-stat ROIs / CLV) as the canonical
+> result. That number is **retracted**: it came from a grading path that effectively followed the market's devig
+> favorite rather than the model, with in-sample-tuned filters and flat-odds accounting. Re-graded against real
+> closing lines at real odds, the prop edge is **roughly break-even-to-slightly-negative on most stats** (≈ −2% to
+> −5%), with a **small genuine edge on assists**. The closing market is efficient — which is the honest, correct
+> finding. The reproducible, defensible result here is **point accuracy (MAE)**, not ROI.
 
-| Strategy | N | Hit % | ROI | Source of truth |
-|----------|--:|------:|----:|-----------------|
-| Flat 1u, pre-filter aggregate (unrun straw-man) | 4,210 | 54.37% | −2.06% | gate1_results_summary.json |
-| Flat 1u, post-Iter-57 filter stack | **1,535** | **61.4%** | **+15.04%** | iter61_sim_reconciliation.json |
-| **Kelly-B + per-stat isotonic, post-Iter-57** | **1,535** | **61.4%** | **+18.38%** | iter61 canonical |
-
-Per-stat decomposition of the +18.38% (Kelly-B+ISO):
-
-| Stat | N | Hit % | ROI (KB+ISO) | CLV z-score |
-|------|--:|------:|-------------:|------------:|
-| **BLK** (UNDER-only, Iter 51) | 247 | 73.5% | **+25.98%** | **4.45 ✓** |
-| **AST** (line_mid + over×high pruned, Iter 54/55) | 226 | 65.0% | **+14.04%** | **4.47 ✓** most robust |
-| **STL** | 178 | 60.2% | **+16.91%** | 2.84 ✓ |
-| **FG3M** (line_high pruned, Iter 54) | 311 | 60.8% | **+16.02%** | 1.96 |
-| **REB** (line_high + over×low pruned, Iter 54/57) | 238 | 58.8% | **+12.30%** | 2.09 ✓ |
-| **PTS** (line_mid pruned, Iter 54; thr=1.0, Iter 39) | 335 | 56.4% | **+8.44%** | 3.52 ✓ |
-
-Aggregate CLV across all 6 stats: **+8.94pp** — top-decile for public sports modeling. Theoretical Kelly ROI ceiling at that CLV ≈ 18-22%; the realized +18.38% sits AT the ceiling, meaning further gains require new edge sources (live data, true model-prob edge instead of devig-implied) not better sizing.
-
-**Real-world execution clip:** 30-50%. Sustainable deployable target after limits + fills: **+8-12% sustained ROI**.
+What's verifiable from committed data: per-stat **prop-model MAE** (`python scripts/verify_production_mae.py`), and
+the full validation methodology (walk-forward, per-stat isotonic calibration applied *selectively*, shadow-logged
+settlement). See **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** for the honest evidence + what was retracted and why.
 
 ### In-game win-probability — honest walk-forward Brier
 
@@ -61,7 +54,7 @@ Per-snapshot models on 3,685 game-snapshots, 4-fold expanding walk-forward, vali
 | endQ2 | 0.1860 | 0.1771 | **0.1760** (Iter 70 bag-5) | −0.0100 | ~0.14-0.17 |
 | endQ3 | 0.1354 | 0.1250 | **0.1193** (Iter 65 v4_fouls) | **−0.0161** | **~0.10-0.12** ✓ |
 
-endQ3 sits inside Pinnacle's published Brier range. Models are no longer the bottleneck for end-of-Q3 predictions; gains from here require live data (real-time injury wire, in-game lineup changes, foul situation pushed to the model in real time).
+> ⚠️ **The endQ3 0.119 is retracted as leak-inflated:** the end-of-Q3 model was fed fourth-quarter-derived features (`halftime_pace_shift`, `trailing_team_q4_usg_concentration`) joined by game-id only — i.e. it peeked at the future. A leak-free re-measure is pending. Treat the endQ1/Q2 numbers and the **methodology** as the takeaway, not the endQ3 figure. It was caught by the same walk-forward + leak-detection harness — see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
 
 ### What shipped overnight (2026-05-27 → 2026-05-28)
 
@@ -72,7 +65,7 @@ endQ3 sits inside Pinnacle's published Brier range. Models are no longer the bot
 - Iter 54 (`e5fded39`) — line-bucket filters for PTS/REB/AST/FG3M (+4.36pp aggregate)
 - Iter 55 (`f48f076b`) — 2D direction×line sub-segment filter: AST `over × high` (57 bets at −26%) → AST +8.13pp
 - Iter 57 (`97f29412`) — REB `over × low` sub-segment (105 bets at −12.7%) → REB +7.66pp
-- Iter 61 (`4490dfce`) — sim reconciliation: the +26.93% headline was inflated +8.55pp by stale hardcoded GT → canonical established at +18.38% KB+ISO
+- Iter 61 (`4490dfce`) — sim reconciliation (note: the resulting "+18.38%" was **later retracted** as a market-follow grading artifact — real ≈ −2% to −5% vs. closes; see JOB_EVIDENCE_PACKET.md)
 
 **In-game model side (S2):**
 - Iter 62 (`eb0f8315`) — isotonic calibration overlay; endQ1 ships −0.0067 Brier (3/3 folds)
@@ -481,7 +474,7 @@ ARCHITECTURE.md      6-system technical map + component status table
 - **What was the hardest call this week?** Killing 8 consecutive feature-addition iterations (REVERT after REVERT after REVERT) despite each one having ≥3/7 stats improved on single-split. The walk-forward gate caught them; cumulative ROI would have died if we'd shipped them. *Discipline says ship what passes the gate, document what doesn't.* The eventual win (Iter 68 HP sweep) came from a totally different angle — recognizing that the production HPs were never tuned per-snapshot.
 - **What about the polarity bug — why didn't you fix it?** Surfaced at 2am, audit completed by 3am, source identified at `src/prediction/win_probability.py:178`. The fix requires a coordinated cascade (regenerate `season_games_*.json` → retrain v1 LGB → recalibrate isotonic → re-eval). That's a multi-iter sequence with model-side blast radius; deploying it under autonomous overnight conditions without human review would have been irresponsible. Documented for morning review with estimated impact +1.5-3.5pp CLV.
 - **First 30 days at your company?** Wire the CV signal layer into whatever in-house prop pricing model exists. Deploy the shadow logger pattern so post-hoc calibration becomes possible. Add walk-forward season-purged CV to the validation suite. Introduce the segment-and-filter pattern (Iter 51/54/55/57) to bet-emit logic — find zero-EV slices, filter them out, lift aggregate. Set up the coordination_log handshake if multiple agents/engineers are running.
-- **AI agents thesis?** Throughput is real — 120 modules + 154 probes + 70 numbered iters + 4,100 tests solo in 13 months wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes, strata-aware sizing, segment-and-filter pattern, polarity audit) are mine. Agents are the engineering force multiplier; quant taste makes the choices sharp.
+- **AI agents thesis?** Throughput is real — this surface area in an intensive ~3-month solo build (Mar–May 2026) wasn't possible pre-2024. But the *insights* (q50 for O/U markets, Shin devig, 48hr purge, learned Q4 minutes, strata-aware sizing, segment-and-filter pattern, polarity audit) are mine. Agents are the engineering force multiplier; quant taste makes the choices sharp.
 
 ---
 

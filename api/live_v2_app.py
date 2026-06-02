@@ -61,6 +61,14 @@ log = logging.getLogger("live_v2_app")
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s [%(levelname)s] %(message)s")
 
+# Strong references to background asyncio Tasks.
+# asyncio.create_task / create_supervised_task returns a Task that the event loop
+# holds only via a WEAK reference.  Without an explicit strong-ref container the
+# GC can collect the Task object mid-run, silently killing background workers.
+# NOTE: live_v2_app is NOT the currently served production app (api.main is);
+# this is a hygiene fix for when it is activated.
+_BG_TASKS: set = set()
+
 
 # ── auth ───────────────────────────────────────────────────────────────
 def _required_token() -> Optional[str]:
@@ -477,14 +485,16 @@ def create_app() -> FastAPI:
         # Pregame EV scanner — fires on lines.refreshed AND on the first
         # startup tick so the dashboard hydrates with bets immediately.
         bus.subscribe(TOPIC_LINES_REFRESHED, _refresh_pregame_bets)
-        asyncio.create_task(_run_pregame_ev_loop())
+        _t = asyncio.create_task(_run_pregame_ev_loop())
+        _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
 
         # DK WebSocket prop subscriber (sub-second line-move latency).
         # Gate on DK_WS_ENABLED=1 so prod can disable without code changes.
         if os.environ.get("DK_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
             try:
                 from scripts.draftkings_ws import start_dk_ws
-                create_supervised_task("dk_ws", start_dk_ws)
+                _t = create_supervised_task("dk_ws", start_dk_ws)
+                _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
                 log.info("live_v2_app DK WS subscriber task started (supervised)")
             except Exception as _dk_exc:  # noqa: BLE001
                 log.warning("live_v2_app DK WS import failed (non-fatal): %s", _dk_exc)
@@ -494,7 +504,8 @@ def create_app() -> FastAPI:
         if os.environ.get("BR_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
             try:
                 from scripts.betrivers_ws import start_br_ws
-                create_supervised_task("br_ws", start_br_ws)
+                _t = create_supervised_task("br_ws", start_br_ws)
+                _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
                 log.info("live_v2_app BR WS subscriber task started (supervised)")
             except Exception as _br_exc:  # noqa: BLE001
                 log.warning("live_v2_app BR WS import failed (non-fatal): %s", _br_exc)
@@ -504,20 +515,23 @@ def create_app() -> FastAPI:
         if os.environ.get("FD_WS_ENABLED", "").strip() in ("1", "true", "yes", "on"):
             try:
                 from scripts.fanduel_ws import start_fd_ws
-                create_supervised_task("fd_ws", start_fd_ws)
+                _t = create_supervised_task("fd_ws", start_fd_ws)
+                _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
                 log.info("live_v2_app FD WS subscriber task started (supervised)")
             except Exception as _fd_exc:  # noqa: BLE001
                 log.warning("live_v2_app FD WS import failed (non-fatal): %s", _fd_exc)
 
         # Freshness watchdog — monitors all books for stale data and low volume.
-        create_supervised_task("freshness_watchdog", run_freshness_watchdog)
+        _t = create_supervised_task("freshness_watchdog", run_freshness_watchdog)
+        _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
 
         # Steam / sharp-move detector — emits sharp.steam / sharp.rlm events.
         # Gate on STEAM_DETECTOR_ENABLED (default on).
         if os.environ.get("STEAM_DETECTOR_ENABLED", "1").strip() in ("1", "true", "yes", "on"):
             try:
                 from scripts.steam_detector import run_steam_detector  # noqa: PLC0415
-                create_supervised_task("steam_detector", run_steam_detector)
+                _t = create_supervised_task("steam_detector", run_steam_detector)
+                _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
                 log.info("live_v2_app steam_detector task started (supervised)")
             except Exception as _sd_exc:  # noqa: BLE001
                 log.warning("live_v2_app steam_detector import failed (non-fatal): %s", _sd_exc)
@@ -528,7 +542,8 @@ def create_app() -> FastAPI:
         if os.environ.get("NIGHTLY_GRADER_DISABLED", "").strip() not in ("1", "true", "yes"):
             try:
                 from scripts import nightly_grader as _ng  # noqa: PLC0415
-                create_supervised_task("nightly_grader", _ng.schedule_nightly)
+                _t = create_supervised_task("nightly_grader", _ng.schedule_nightly)
+                _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
                 log.info("live_v2_app nightly_grader task scheduled (06:00 UTC daily)")
             except Exception as _ng_exc:  # noqa: BLE001
                 log.warning("live_v2_app nightly_grader import failed (non-fatal): %s", _ng_exc)
@@ -538,25 +553,84 @@ def create_app() -> FastAPI:
         # _courtvision_odds picks up roster moves without a server restart.
         try:
             from scripts import refresh_nba_roster as _rnr  # noqa: PLC0415
-            create_supervised_task("roster_refresh", _rnr.schedule_nightly)
+            _t = create_supervised_task("roster_refresh", _rnr.schedule_nightly)
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
             log.info("live_v2_app roster_refresh task scheduled (05:00 UTC daily)")
         except Exception as _rnr_exc:  # noqa: BLE001
             log.warning("live_v2_app roster_refresh import failed (non-fatal): %s", _rnr_exc)
 
-        # Maybe spawn the orchestrator.
+        # Spawn the orchestrator. LIVE_V2_GAME_IDS is honored when set, but
+        # the default behavior is to AUTO-DISCOVER any NBA games happening
+        # right now (in-progress OR scheduled within the next 12 hours) by
+        # calling NBA's public scoreboard API. This makes the system "just
+        # work" for any game any time — no env var, no restart required.
         game_ids_raw = os.environ.get("LIVE_V2_GAME_IDS", "").strip()
         demo_mode = os.environ.get("LIVE_V2_DEMO_MODE", "0").lower() in (
             "1", "true", "yes", "on")
-        if not game_ids_raw and not demo_mode:
-            log.warning("LIVE_V2_GAME_IDS unset and LIVE_V2_DEMO_MODE off — "
-                        "running in passive mode (WS only relays events "
-                        "published by another process).")
+
+        def _autodiscover_game_ids() -> list:
+            try:
+                import requests as _req  # noqa: PLC0415
+                _r = _req.get(
+                    "https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json",
+                    headers={"User-Agent": "Mozilla/5.0",
+                             "Referer": "https://www.nba.com/"},
+                    timeout=10)
+                _sb = _r.json().get("scoreboard", {})
+                _games = _sb.get("games", []) or []
+                # Statuses we care about: 1=upcoming, 2=in-progress, 3=final
+                # Watch in-progress + upcoming so we capture games before tipoff
+                # and follow them through to the buzzer.
+                return [g.get("gameId") for g in _games
+                        if g.get("gameStatus") in (1, 2)
+                        and g.get("gameId")]
+            except Exception as _exc:
+                log.warning("auto-discover NBA games failed: %s", _exc)
+                return []
+
+        if game_ids_raw:
+            game_ids = [g.strip() for g in game_ids_raw.split(",") if g.strip()]
+        else:
+            game_ids = _autodiscover_game_ids()
+            if not game_ids and not demo_mode:
+                log.warning("No live or upcoming NBA games on today's scoreboard. "
+                            "Orchestrator will run in passive mode until games "
+                            "appear. Refresh every 5 min.")
+                game_ids = []  # passive but watchful
+
+        if not game_ids and not demo_mode:
+            # Spawn a watcher task that re-checks every 5 min and starts the
+            # orchestrator the moment a game appears.
+            async def _watch_for_games():
+                global _orchestrator
+                while _orchestrator is None:
+                    await asyncio.sleep(300)
+                    ids = _autodiscover_game_ids()
+                    if ids:
+                        log.info("auto-discovered %d game(s): %s", len(ids), ids)
+                        from scripts.live_orchestrator import LiveOrchestrator as _LO  # noqa: PLC0415
+                        _orchestrator = _LO(
+                            game_ids=ids,
+                            pbp_interval_sec=float(os.environ.get("LIVE_V2_PBP_INTERVAL", 10)),
+                            snapshot_interval_sec=float(os.environ.get("LIVE_V2_SNAPSHOT_INTERVAL", 30)),
+                            lineup_interval_sec=float(os.environ.get("LIVE_V2_LINEUP_INTERVAL", 30)),
+                            line_scrape_interval_sec=float(os.environ.get("LIVE_V2_LINE_INTERVAL", 30)),
+                            enable_dashboard=False,
+                            enable_alerts=True,
+                            demo_mode=False,
+                        )
+                        await _orchestrator.start()
+                        return
+            _t = asyncio.create_task(_watch_for_games())
+            _BG_TASKS.add(_t); _t.add_done_callback(_BG_TASKS.discard)
+            log.info("No games yet; watcher task armed (re-checks every 5 min).")
             return
 
         # In demo mode we don't need a real game id, but the orchestrator
         # signature still requires the list. Use a sentinel.
-        game_ids = ([g.strip() for g in game_ids_raw.split(",") if g.strip()]
-                    or ["DEMO"])
+        if not game_ids:
+            game_ids = ["DEMO"]
+        log.info("starting orchestrator on games: %s", game_ids)
         from scripts.live_orchestrator import LiveOrchestrator
         _orchestrator = LiveOrchestrator(
             game_ids=game_ids,
@@ -595,12 +669,21 @@ def create_app() -> FastAPI:
     # ── REST endpoints ────────────────────────────────────────────
     @app.get("/api/health")
     async def health() -> Dict[str, Any]:
+        _ngrok_url_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)), "data", "cache", "ngrok_url.txt"
+        )
+        try:
+            with open(_ngrok_url_path, encoding="utf-8") as _f:
+                _public_url: Any = _f.read().strip() or None
+        except Exception:
+            _public_url = None
         return {
             "ok": True,
             "ws_clients": manager.client_count(),
             "active_games": list(_latest_snapshot.keys()),
             "recent_bets_count": len(_recent_bets),
             "orchestrator_started": _orchestrator is not None,
+            "public_url": _public_url,
         }
 
     @app.get("/api/health/books")

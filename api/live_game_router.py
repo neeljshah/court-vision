@@ -53,21 +53,41 @@ def _load_pregame_for_game(game_id: str, date: str) -> list[dict]:
 
     # Discover the player roster that maps to this game_id via the lines CSVs.
     players_in_game: set[str] = set()
+    team_abbrevs: set[str] = set()
     try:
-        from api._courtvision_odds import consolidate  # noqa: PLC0415
+        from api._courtvision_odds import consolidate, resolve_game_id  # noqa: PLC0415
         for p in consolidate(date):
             if str(p.get("game_id") or "") == str(game_id):
                 nm = (p.get("player") or "").strip().lower()
                 if nm:
                     players_in_game.add(nm)
+        # Resolve home/away team abbreviations from games_lookup so we can
+        # filter by team when player-name lookup returns nothing.
+        resolved = resolve_game_id(game_id)
+        if resolved:
+            for key in ("home_abbr", "away_abbr"):
+                abbr = (resolved.get(key) or "").strip().upper()
+                if abbr:
+                    team_abbrevs.add(abbr)
     except Exception:
         players_in_game = set()
+        team_abbrevs = set()
 
     if "player_name" not in df.columns:
         return []
+
     if players_in_game:
+        # Primary filter: player names extracted from sportsbook lines.
         mask = df["player_name"].astype(str).str.strip().str.lower().isin(players_in_game)
         df = df[mask]
+    elif team_abbrevs and "team" in df.columns:
+        # Fallback: filter by the game's two team abbreviations.
+        mask = df["team"].astype(str).str.strip().str.upper().isin(team_abbrevs)
+        df = df[mask]
+    else:
+        # Neither player names nor team abbrevs are available — return empty
+        # rather than the entire predictions_cache (508 players / 30 teams).
+        return []
 
     cols = [c for c in ["player_id", "player_name", "team", "stat",
                         "q50", "q10", "q90", "sigma"] if c in df.columns]
