@@ -12,6 +12,7 @@ Read-only -- does NOT poll NBA API or write to disk.
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
@@ -25,6 +26,47 @@ _TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 _ROOT = Path(__file__).resolve().parent.parent
 
 _PROJECTED_MINUTES_FALLBACK = 32.0  # rough average starter mp
+
+# ── CV_QSHAPE_DECAY — mirror of W-015 for the pace_proj column ───────────────
+# When ON, scales pace_proj by the same league-uniform quarter-shape decay
+# factor as scripts/predict_in_game.py, so the live-page "pace_projected"
+# column reflects the same Q4 rate reduction for PTS/AST/FG3M/REB.
+# Byte-identical when OFF (factor = 1.0 for all stats).
+_CV_QSHAPE_DECAY_ROUTER: bool = os.environ.get(
+    "CV_QSHAPE_DECAY", "0"
+).strip().lower() not in ("", "0", "false", "off")
+
+# League per-minute rates by quarter (same as predict_in_game.py W-015)
+_ROUTER_QSHAPE_RATES = {
+    "pts":  {1: 0.4758, 2: 0.4727, 3: 0.4798, 4: 0.4586},
+    "reb":  {1: 0.1880, 2: 0.1845, 3: 0.1803, 4: 0.1782},
+    "ast":  {1: 0.1176, 2: 0.1113, 3: 0.1109, 4: 0.1001},
+    "fg3m": {1: 0.0598, 2: 0.0559, 3: 0.0562, 4: 0.0512},
+}
+_ROUTER_QSHAPE_STATS = frozenset({"pts", "reb", "ast", "fg3m"})
+
+
+def _router_qshape_factor(stat: str, period: int) -> float:
+    """Quarter-shape decay factor for the router pace_proj column (W-015 mirror).
+
+    Same formula as qshape_pace_factor() in predict_in_game.py but simplified:
+    takes integer period only (no sub-quarter clock needed for the router path).
+    Returns 1.0 for stats outside the target set or when no remaining quarters.
+    """
+    if not _CV_QSHAPE_DECAY_ROUTER or stat not in _ROUTER_QSHAPE_RATES:
+        return 1.0
+    rates = _ROUTER_QSHAPE_RATES[stat]
+    p = max(1, int(period))
+    elapsed_qs = list(range(1, p + 1))
+    remaining_qs = list(range(p + 1, 5))
+    if not remaining_qs:
+        return 1.0
+    mean_elapsed = sum(rates.get(q, 0.0) for q in elapsed_qs) / len(elapsed_qs)
+    mean_remaining = sum(rates.get(q, 0.0) for q in remaining_qs) / len(remaining_qs)
+    if mean_elapsed <= 0.0:
+        return 1.0
+    factor = mean_remaining / mean_elapsed
+    return max(0.80, min(1.20, factor))
 
 
 def _today_et() -> str:
@@ -194,6 +236,15 @@ def _build_payload(game_id: str, date: str) -> dict:
     except Exception:
         consolidated = []
 
+    # W-015 (CV_QSHAPE_DECAY): extract live period for the shape factor.
+    # When flag OFF, _router_qshape_factor always returns 1.0 (byte-identical).
+    _live_period = 1
+    if live and isinstance(live, dict):
+        try:
+            _live_period = max(1, int(live.get("period") or 1))
+        except (TypeError, ValueError):
+            _live_period = 1
+
     rows: list[dict] = []
     for r in pregame:
         player = r.get("player") or ""
@@ -209,7 +260,12 @@ def _build_payload(game_id: str, date: str) -> dict:
         pace_proj = None
         if current is not None and mp_float and mp_float > 1.0:
             try:
-                pace_proj = round(float(current) * (_PROJECTED_MINUTES_FALLBACK / mp_float), 2)
+                # W-015: apply quarter-shape decay factor (1.0 when flag OFF)
+                _qsf = _router_qshape_factor(stat, _live_period)
+                pace_proj = round(
+                    float(current) * (_PROJECTED_MINUTES_FALLBACK / mp_float) * _qsf,
+                    2,
+                )
             except Exception:
                 pace_proj = None
 

@@ -6,6 +6,7 @@ Helpers in api._courtvision_data. Parlay engine in src.prediction.parlay_engine.
 """
 from __future__ import annotations
 
+import os
 import threading
 import time
 from datetime import datetime, timezone
@@ -124,7 +125,38 @@ _STATS = tuple(_STAT_SIGMA.keys())
 # (NBA playoff prop residuals run ~15-25% wider than regular season due to
 # tighter rotations, defensive scheme adjustments, higher-stakes variance).
 # 1.20x is the conservative middle of that range.
-_PLAYOFF_SIGMA_MULT = 1.20
+#
+# REAL-MONEY LEVER (triage 2026-06-01, docs/_audits/ROUTER_SIGMA_TRIAGE_2026-06-01.md):
+# This multiplier is LIVE on every playoff/Finals date. It widens the per-stat
+# residual sigma 20%, which lowers model hit-prob toward 0.5 and therefore feeds
+# ev_pct / edge / kelly_stake_dollars on BOTH single props (via grade_bet) and
+# parlays (via ParlayEngine sigma_multiplier) — it is NOT display-only. The 1.20
+# is a literature-cited assumption, NOT derived from this repo's own validation
+# (interval_sigma_recommendation.json is a SEPARATE per-stat base-coverage fix,
+# already folded into _STAT_SIGMA above). Made overridable here WITHOUT changing
+# the live default: env CV_PLAYOFF_SIGMA_MULT lets a future validated value be
+# set without a code change; absent/invalid env preserves the exact 1.20 behavior.
+def _resolve_playoff_sigma_mult() -> float:
+    """Playoff sigma multiplier. Default 1.20 (UNCHANGED live behavior).
+
+    Override via env `CV_PLAYOFF_SIGMA_MULT` (e.g. "1.0" to disable the boost,
+    or a data-validated value). Invalid/absent env -> 1.20, so the live default
+    is byte-identical to the prior hard-coded constant.
+    """
+    _raw = __import__("os").environ.get("CV_PLAYOFF_SIGMA_MULT")
+    if _raw is None or not _raw.strip():
+        return 1.20
+    try:
+        _v = float(_raw)
+    except (ValueError, TypeError):
+        return 1.20
+    # Reject non-positive / absurd values; fall back to the safe default.
+    if _v <= 0.0 or _v > 5.0:
+        return 1.20
+    return _v
+
+
+_PLAYOFF_SIGMA_MULT = _resolve_playoff_sigma_mult()
 
 
 def _is_playoff_date(date_str: str) -> bool:
@@ -199,11 +231,73 @@ def _live_shrink_weight(minutes_played: float) -> float:
     At mp=4 → ~0.07 (mostly pregame), mp=14 → 0.5 (even blend), mp=24 → ~0.93
     (mostly live), mp=36+ → ~1.0. Stops the early-game noise from showing
     silly projections like a star headed for 0 PTS just because he has 3 min
-    and hasn't shot yet."""
+    and hasn't shot yet.
+
+    W-008 (CV_INGAME_L5_ANCHOR): when the flag is ON, the weight is zero-clamped
+    until mp >= _L5_ROUTER_MIN_MP (6 minutes), then linearly ramped from 0 to the
+    sigmoid value over the 6–12 min window.  Beyond 12 min the curve is the
+    standard sigmoid (byte-identical to flag-OFF).  This forces the router to
+    serve pure pregame q50 in the first 6 player-minutes (midQ1 territory) where
+    the linear extrapolation catastrophically over-projects.
+
+    W-016 (CV_SHRINK_CALIBRATED): when ON, replaces the hand-tuned sigmoid:14:4
+    with the MAE-optimal ``l5floor:12:0.30`` curve = linear:12 with a hard floor
+    w <= 0.30 when mp < 5.  Validated on 79,884 player-stat records (max-games=200,
+    endQ1/Q2/Q3):
+      prod sigmoid:14:4 → overall=1.1914  pts=3.5173 reb=1.4604 ast=0.9962
+      linear:12         → overall=1.0558  pts=3.2009 reb=1.2876 ast=0.8819
+      l5floor:12:0.30   → combined-regime winner (early+endQ1+); endQ1+ overall
+                          1.0640 (statistically tied with linear:12 at +0.09%);
+                          early (mp<5) PTS MAE 4.99 vs prod 5.24.
+    The flag is default-OFF; with it OFF the function is byte-identical to baseline.
+    """
     if minutes_played is None or minutes_played <= 0:
         return 0.0
     import math as _m  # noqa: PLC0415
-    return 1.0 / (1.0 + _m.exp(-(float(minutes_played) - 14.0) / 4.0))
+    import os as _os_lsa  # noqa: PLC0415
+    mp = float(minutes_played)
+
+    # W-016: CV_SHRINK_CALIBRATED — MAE-optimal l5floor:12:0.30 curve.
+    # When flag is ON, return early (before sigmoid) with the calibrated curve.
+    # With flag OFF this block is never entered => byte-identical to baseline.
+    if _os_lsa.environ.get("CV_SHRINK_CALIBRATED", "0").strip().lower() not in (
+        "", "0", "false", "off"
+    ):
+        # linear:12 with a hard cap w <= 0.30 when mp < 5 (l5floor:12:0.30)
+        _SC_T = 12.0        # linear ramp reaches 1.0 at T minutes
+        _SC_FLOOR_MP = 5.0  # below this, cap live weight at floor
+        _SC_FLOOR_W = 0.30  # early-safety floor value
+        w_linear = min(1.0, mp / _SC_T)
+        if mp < _SC_FLOOR_MP:
+            w_linear = min(w_linear, _SC_FLOOR_W)
+        # W-008 L5-anchor: if also ON, prefer the stricter zero-clamp below 6 min
+        # (L5-anchor fully zeros <6 min, which is more conservative than the 0.30
+        # floor; compose them by taking the minimum weight).
+        if _os_lsa.environ.get("CV_INGAME_L5_ANCHOR", "0").strip().lower() not in (
+            "", "0", "false", "off"
+        ):
+            _L5_MIN = 6.0
+            _L5_RAMP = 12.0
+            if mp < _L5_MIN:
+                w_linear = 0.0
+            elif mp < _L5_RAMP:
+                ramp = (mp - _L5_MIN) / (_L5_RAMP - _L5_MIN)
+                w_linear = min(w_linear, ramp * w_linear)
+        return w_linear
+
+    sigmoid = 1.0 / (1.0 + _m.exp(-(mp - 14.0) / 4.0))
+    # W-008: clamp early-game weight toward 0 when L5-anchor flag is ON.
+    if _os_lsa.environ.get("CV_INGAME_L5_ANCHOR", "0").strip().lower() not in (
+        "", "0", "false", "off"
+    ):
+        _L5_ROUTER_MIN_MP = 6.0   # fully pregame below this
+        _L5_ROUTER_RAMP_MP = 12.0  # full sigmoid weight above this
+        if mp < _L5_ROUTER_MIN_MP:
+            return 0.0
+        if mp < _L5_ROUTER_RAMP_MP:
+            ramp = (mp - _L5_ROUTER_MIN_MP) / (_L5_ROUTER_RAMP_MP - _L5_ROUTER_MIN_MP)
+            return ramp * sigmoid
+    return sigmoid
 
 
 def _shrink_player_minutes_from_snapshot(snap: dict) -> dict[str, float]:
@@ -282,13 +376,29 @@ def _regrade_bet_with_live_q50(bet: dict, new_q50: float,
             return (_now_dt - dt).total_seconds() <= FRESH_LADDER_SEC
         except (ValueError, TypeError):
             return False
+    # B-1 (CV_LIVE_ODDS_VALID_GUARD): drop invalid odds (|odds| < 100) from the
+    # live best-price selection. An invalid in-play quote (0 / +50 / -99) passes
+    # the loader's [-400,400] sane filter, but the payout formula below treats
+    # |price| < 100 as even-money (+100) — inflating EV ~2x and maxing Kelly on a
+    # glitch quote. Mirrors the hard pregame grade_bet rule (always drop
+    # |odds| < 100). Gated default-OFF: byte-identical unless an invalid odd is
+    # actually present in the ladder (real books never post |odds| < 100).
+    _live_odds_guard = (os.environ.get("CV_LIVE_ODDS_VALID_GUARD", "").strip().lower()
+                        not in ("", "0", "false", "no", "off"))
+    def _odds_ok(b):
+        if not _live_odds_guard:
+            return True
+        try:
+            return abs(int(b.get(side_key))) >= 100
+        except (TypeError, ValueError):
+            return False
     real_quotes = [b for b in ladder
-                   if b.get(side_key) is not None and _ladder_fresh(b)]
+                   if b.get(side_key) is not None and _ladder_fresh(b) and _odds_ok(b)]
     stale_fallback = False
     if not real_quotes:
         # No fresh quotes — fall back to any real quote regardless of age,
         # so the bet still has a defensible price (just slightly stale).
-        any_age = [b for b in ladder if b.get(side_key) is not None]
+        any_age = [b for b in ladder if b.get(side_key) is not None and _odds_ok(b)]
         if any_age:
             stale_fallback = True
         real_quotes = any_age
@@ -525,10 +635,23 @@ def _build_box_score(date: str, away_abbr: str, home_abbr: str,
         # Mean-of-distribution estimate per player using Pearson-Tukey right-skew
         # weighting (0.05*q10 + 0.70*q50 + 0.25*q90). Sums to a number comparable
         # to Pinnacle's team-total line, NOT to the sum of medians above.
+        #
+        # CV_MEAN_TOTALS_DEBIAS (default OFF = byte-identical):
+        # The asymmetric 0.25*q90 weight inflates the pre-tip anchor by ~15-20%
+        # vs actual NBA team PTS (e.g. 118->99 pts for OKC), biasing
+        # _pregame_wp_from_projection OVER. When ON, re-center to the
+        # symmetric 3-point approximation (q10+q50+q90)/3 which removes the
+        # right-skew OVER bias while still using the full distribution shape.
+        import os as _os_mttd  # noqa: PLC0415
+        _mt_debias = (_os_mttd.environ.get("CV_MEAN_TOTALS_DEBIAS", "0").strip() == "1")
         mean_totals = {}
         for s in _BOX_STATS:
             sub = team_df[team_df["stat"] == s]
-            est = (0.05 * sub["q10"] + 0.70 * sub["q50"] + 0.25 * sub["q90"]).sum()
+            if _mt_debias:
+                # Symmetric 3-point approximation — removes the q90-OVER bias.
+                est = ((sub["q10"] + sub["q50"] + sub["q90"]) / 3.0).sum()
+            else:
+                est = (0.05 * sub["q10"] + 0.70 * sub["q50"] + 0.25 * sub["q90"]).sum()
             mean_totals[s] = round(float(est), 1)
         return {"abbr": ab, "players": players, "totals": totals, "mean_totals": mean_totals}
 
@@ -628,6 +751,18 @@ def _et_date_from_iso(iso_ts: str) -> str:
         except Exception:
             _ET = None
         norm = iso_ts.replace("Z", "+00:00")
+        # ── CV_DK_FRACSEC_FIX (default OFF = byte-identical) ──
+        # DraftKings start_times carry 7 fractional-second digits
+        # ('...:00.0000000Z') which datetime.fromisoformat() rejects in
+        # py3.10, so the parse fails and we fall back to the raw UTC prefix
+        # (iso_ts[:10]) — mis-bucketing DK night games to the next ET day.
+        # When ON, truncate fractional seconds to <=6 digits (microseconds);
+        # harmless for 0/3/6-digit inputs. Mirrors the identical helper
+        # api._courtvision_odds._et_date_of_start_time.
+        import os as _os_fs
+        if _os_fs.environ.get("CV_DK_FRACSEC_FIX") == "1":
+            import re as _re_fs
+            norm = _re_fs.sub(r"(\.\d{6})\d+", r"\1", norm)
         if "+" not in norm[10:] and norm.count("-") < 3:
             norm += "+00:00"
         dt = datetime.fromisoformat(norm).astimezone(timezone.utc)
@@ -884,6 +1019,15 @@ def _synthesize_bets_from_snapshots(
     def _snap_matches_date(snap: dict) -> bool:
         if not synthesized_flag:
             return True  # late-roster: accept any snapshot
+        # ── CV_FIX_SNAP_ET_DATE (default OFF = byte-identical) ──
+        # The raw captured_at[:10] UTC-prefix compare drops any snapshot
+        # captured after 8:00 PM ET (>=00:00 UTC), which rolls to the next
+        # calendar day and is silently excluded from the synthesized (no-CSV)
+        # live path. When ON, convert captured_at to its ET date before
+        # comparing, matching every other date path in this file.
+        import os as _os_snap
+        if _os_snap.environ.get("CV_FIX_SNAP_ET_DATE") == "1":
+            return _et_date_from_iso(snap.get("captured_at") or "") == date
         ca = (snap.get("captured_at") or "")[:10]
         return ca == date
 
@@ -1239,6 +1383,12 @@ def _apply_calibration_gate(envelope: dict) -> dict:
         }
         return envelope
 
+    # Playoff window detected from the slate DATE (robust to a stale games_lookup
+    # / int-stripped or raw-book game_ids on the bet). Only consumed by the
+    # CV_PLAYOFF_GUARD_FAILCLOSED branch in policy_allows_context (default OFF =
+    # byte-identical); see SYNTH_PATH_PLAYOFF_GUARD.md.
+    _playoff_window = _is_playoff_date(str(envelope.get("date") or ""))
+
     try:
         from src.prediction.bet_thresholds import (  # noqa: PLC0415
             allowed_directions_for, edge_threshold_for,
@@ -1256,6 +1406,29 @@ def _apply_calibration_gate(envelope: dict) -> dict:
         __import__("logging").getLogger(__name__).warning(
             "edge_calibration import failed (%s) — EV shown uncalibrated", _ec_exc)
         _have_calib = False
+
+    # ── CV_BET_POLICY (default OFF = iter57 = byte-identical) ──────────────────
+    # Plumb the VALIDATED bet-policy selector (src/prediction/bet_policy.py) onto the
+    # webpage bet surface. The Iter-57 selection stack above (bet_thresholds.py) is the
+    # in-sample-tuned +18.38% market-follow artifact; on a clean temporal held-out split
+    # it LOSES (-13.54%, 81% PTS) — see docs/VS_VEGAS_ASSESSMENT.md §1/§7 and bet_policy.py.
+    # The robust positive book is REB+AST (drop PTS), AST left raw. This layer can only
+    # TIGHTEN (drop a disallowed stat / over-cap line / raise the per-stat min-edge);
+    # under the default iter57 policy every call is a strict pass-through, so OFF is
+    # byte-identical to the shipped page. AST is NOT recalibrated here (raw is preserved).
+    try:
+        from src.prediction.bet_policy import (  # noqa: PLC0415
+            is_iter57_default as _bp_default,
+            policy_allows_stat as _bp_allows,
+            policy_drops_line as _bp_drops_line,
+            policy_min_edge as _bp_min_edge,
+            policy_allows_context as _bp_allows_ctx,
+        )
+        _bet_policy_active = not _bp_default()
+        _bp_ctx_available = True
+    except Exception:
+        _bet_policy_active = False
+        _bp_ctx_available = False
 
     kept = []
     for b in bets:
@@ -1285,6 +1458,29 @@ def _apply_calibration_gate(envelope: dict) -> dict:
                 continue
             if line is not None and is_direction_line_excluded(stat, side, line):
                 continue
+
+        # Validated bet-policy gate — strict no-op under the default iter57 policy.
+        if _bet_policy_active:
+            if not _bp_allows(stat):
+                continue
+            if line is not None and _bp_drops_line(stat, line):
+                continue
+            if edge_mag < _bp_min_edge(stat):
+                continue
+
+        # Regime guard (playoff-pregame + always-on playoff-AST) — applies on EVERY
+        # policy, NOT just the active-bet-policy branch. Mirrors bet_selector.py
+        # (the real selection path) where policy_allows_context is unconditional.
+        # Previously this was nested inside `if _bet_policy_active:`, so under the
+        # default iter57 policy (_bet_policy_active=False) it never fired on
+        # /api/slate — the flipped CV_PLAYOFF_PREGAME_GUARD and the always-on
+        # playoff-AST guard were both INERT here (BUG-6). policy_allows_context
+        # self-gates: returns True for every regular-season game and (for non-AST)
+        # whenever CV_PLAYOFF_PREGAME_GUARD is OFF, so reg-season output is
+        # byte-identical; escapes via CV_ALLOW_PLAYOFF_PREGAME / CV_ALLOW_PLAYOFF_AST.
+        if _bp_ctx_available and not _bp_allows_ctx(
+                stat, b.get("game_id"), playoff_window=_playoff_window):
+            continue
 
         # Honest probability: replace the naive Normal-CDF model_prob with the
         # isotonic-calibrated win prob (edge_calibration, capped [0.50,0.90]),
@@ -1468,8 +1664,35 @@ def _build_slate(date: str) -> dict:
                 _log_synth.warning("live-only slate synthesis failed: %s", _synth_exc)
                 bets = []
 
-        bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
-        bets = bets[:_TOP_N]
+        # BUG-DRT-1 (CV_SYNTH_GATE_BEFORE_TRUNCATE): the synth slate path truncated
+        # bets[:_TOP_N] by RAW (un-calibrated) EV BEFORE the calibration gate — the
+        # inverse of the main-path BUG 7 FIX (~L1881). The gate recalibrates EV and
+        # prunes whole line-buckets, so a #51-57 raw-EV candidate can outrank a
+        # gate-pruned top-50 but is already gone (06-05 synth slate: 2 gate-surviving
+        # +EV bets silently dropped, incl. Brunson PTS OVER 24.5 +3.45%). When ON,
+        # gate the FULL pre-truncation list first, then sort by calibrated EV with an
+        # edge-magnitude tie-break, then truncate. Default OFF = byte-identical legacy.
+        _synth_gate_done = False
+        if (os.environ.get("CV_SYNTH_GATE_BEFORE_TRUNCATE", "").strip().lower()
+                not in ("", "0", "false", "no", "off")):
+            # Pass the slate DATE so _playoff_window is set: the synth path keeps RAW
+            # BOOK game_ids (un-classifiable as playoff by id alone), and this gate is
+            # the FINAL gate (no re-gate runs below when _synth_gate_done=True), so the
+            # CV_PLAYOFF_GUARD_FAILCLOSED branch must see the playoff window HERE or a
+            # Finals book-id pregame bet leaks. Byte-identical in the regular season
+            # (_is_playoff_date(date)=False). See SYNTH_PATH_PLAYOFF_GUARD.md.
+            _stub_env_synth = _apply_calibration_gate({"date": date, "bets": bets})
+            bets = _stub_env_synth.get("bets") or []
+            bets.sort(key=lambda b: (
+                b["ev_pct"] is None,
+                -(min(b.get("ev_pct") or 0.0, _SANE_EV_CEILING)),
+                -abs(b.get("edge_units") or b.get("edge") or 0.0),
+            ))
+            bets = bets[:_TOP_N]
+            _synth_gate_done = True
+        else:
+            bets.sort(key=lambda b: (b["ev_pct"] is None, -(b["ev_pct"] or 0.0)))
+            bets = bets[:_TOP_N]
         try: from api._courtvision_form import attach_form; attach_form(bets)
         except Exception as exc: _log_synth.warning("attach_form (synth): %s", exc)
 
@@ -1490,7 +1713,13 @@ def _build_slate(date: str) -> dict:
             },
             "bets": bets,
         }
-        envelope = _apply_calibration_gate(envelope)
+        if _synth_gate_done:
+            # Gate already ran on the FULL list above — copy its calibration
+            # metadata instead of re-gating the truncated list (no double-gate).
+            envelope["all_books_universe"] = _stub_env_synth.get("all_books_universe", [])
+            envelope["calibration"] = _stub_env_synth.get("calibration", {})
+        else:
+            envelope = _apply_calibration_gate(envelope)
         _CACHE[cache_key] = (time.time(), envelope)
         return envelope
 
@@ -1532,6 +1761,18 @@ def _build_slate(date: str) -> dict:
         # then the live-regrade loop built it again independently).
         live_maps: dict[str, dict[tuple, float]] = {}
         mp_maps: dict[str, dict[str, float]] = {}
+        # BUG-3 (CV_INGAME_OUT_BET_CAP): the operator manual OUT list. When the
+        # flag is OFF or the file is empty/absent this is an empty set and every
+        # branch below short-circuits — strict byte-identical no-op. When ON with
+        # a name present we capture the player's live `current` so the regrade
+        # can cap his blended projection at current (he LEFT the game), mirroring
+        # the box-card cap and removing the phantom OVER edge.
+        from api._courtvision_out_cap import (  # noqa: PLC0415
+            cap_blended_value as _out_cap_blended,
+            load_out_set as _out_load_set,
+        )
+        _out_set = _out_load_set(date)
+        cur_maps: dict[str, dict[tuple, float]] = {}
         try:
             from src.prediction.live_engine import project_from_snapshot  # noqa: PLC0415
             from api._courtvision_odds import resolve_game_id  # noqa: PLC0415
@@ -1567,6 +1808,7 @@ def _build_slate(date: str) -> dict:
                     live_maps[gid] = {}
                     continue
                 lm: dict[tuple, float] = {}
+                cm: dict[tuple, float] = {}
                 try:
                     for r in (project_from_snapshot(snap) or []):
                         nm = (r.get("name") or "").lower()
@@ -1577,9 +1819,21 @@ def _build_slate(date: str) -> dict:
                                 lm[(nm, st_p)] = float(pf)
                             except (TypeError, ValueError):
                                 continue
+                        # BUG-3: capture current box value for OUT-cap, only when
+                        # the out-set is active (empty set -> this never runs ->
+                        # cur_maps stays empty -> byte-identical when flag OFF).
+                        if _out_set and nm and st_p:
+                            cv_r = r.get("current")
+                            if cv_r is not None:
+                                try:
+                                    cm[(nm, st_p)] = float(cv_r)
+                                except (TypeError, ValueError):
+                                    pass
                 except Exception:
                     pass
                 live_maps[gid] = lm
+                if _out_set:
+                    cur_maps[gid] = cm
                 mp_maps[gid] = _shrink_player_minutes_from_snapshot(snap)
         except Exception as _exc_lm:
             __import__("logging").getLogger(__name__).warning(
@@ -1639,6 +1893,14 @@ def _build_slate(date: str) -> dict:
                 except (TypeError, ValueError):
                     pregame_q50 = float(live_q50)
                 shrunk_q50 = w_live * float(live_q50) + (1.0 - w_live) * pregame_q50
+                # BUG-3 (CV_INGAME_OUT_BET_CAP): cap an OUT-listed player's
+                # blended projection at his current box value BEFORE the edge/EV
+                # is recomputed. No-op when the out-set is empty (flag OFF /
+                # empty file) or the player is not OUT. Mirrors the box-card cap.
+                if _out_set:
+                    _cur_v = (cur_maps.get(gid) or {}).get(key)
+                    shrunk_q50 = _out_cap_blended(
+                        _out_set, key[0], shrunk_q50, _cur_v)
                 try:
                     _regrade_bet_with_live_q50(
                         b, shrunk_q50, stat_sigma_for_slate, _BANKROLL_DEFAULT)
@@ -1659,7 +1921,10 @@ def _build_slate(date: str) -> dict:
         # ranked below the cap by the pre-calibration naive EV. Gating first ensures
         # the served pool is drawn from all valid candidates, not just the
         # alphabetically-lucky 50.
-        _stub_env = {"bets": bets}
+        # Pass the slate DATE so the pre-truncation gate also sees the playoff window
+        # (defense-in-depth; the envelope re-gate below also carries date, and CSV-path
+        # bets already carry 004-prefixed ids). Byte-identical in the regular season.
+        _stub_env = {"date": date, "bets": bets}
         _stub_env = _apply_calibration_gate(_stub_env)
         bets = _stub_env.get("bets") or []
         bets.sort(key=lambda b: (
@@ -1854,6 +2119,15 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
             # at already-accumulated stat before regrading parlay legs.
             current_map_c: dict[tuple, float] = {}
             player_minutes: dict[str, float] = {}
+            # BUG-3 (CV_INGAME_OUT_BET_CAP): operator OUT list. Empty set when the
+            # flag is OFF / file absent / file empty -> the cap below is a literal
+            # no-op (byte-identical). current_map_c already carries `current` for
+            # every leg, so the cap needs no extra projection work.
+            from api._courtvision_out_cap import (  # noqa: PLC0415
+                cap_blended_value as _out_cap_blended,
+                load_out_set as _out_load_set,
+            )
+            _out_set = _out_load_set(date)
             for snap_path in recent_snaps:
                 try:
                     snap = _json_p.loads(snap_path.read_text(encoding="utf-8"))
@@ -1911,6 +2185,13 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
                                     shrunk = max(shrunk, float(_cur_c))
                                 except (TypeError, ValueError):
                                     pass
+                            # BUG-3 (CV_INGAME_OUT_BET_CAP): cap an OUT-listed
+                            # player's blended leg projection at current BEFORE
+                            # re-anchor/regrade, removing the phantom edge. No-op
+                            # when the out-set is empty or the player isn't OUT.
+                            if _out_set:
+                                shrunk = _out_cap_blended(
+                                    _out_set, key[0], shrunk, _cur_c)
                             # Re-anchor line + per-book ladder to the live market
                             # BEFORE regrading, so the leg's displayed line and
                             # best price track the current in-play odds.
@@ -3007,8 +3288,28 @@ def _live_wp_continuous(live_overlay: dict, pregame_home_wp,
     prob is driven by the PROJECTED FINAL MARGIN, so it tracks "what the final
     score will be," not just the current margin. Falls back to current margin +
     market-prorated edge when projections are absent. Sigma shrinks as the clock
-    runs out (a projected lead late is far more certain than the same lead early)."""
+    runs out (a projected lead late is far more certain than the same lead early).
+
+    W-032 (CV_WP_RECONCILED_CALIB): when ON, recalibrates two parameters whose
+    values were fitted on the W-034 reliability/ECE harness (220-game walk-forward
+    pool, 3 folds):
+      - sigma: 14.5 → 12.5  (tighter; matches the k=0.40 logistic baseline that
+        achieves Brier=0.1683 vs 0.177 for the wider sigma; derived by equating
+        the Normal-CDF form to baseline_winprob's sigmoid parametrisation).
+      - w_market cap: 0.80 → 1.00  (full linear trust in the pregame market at
+        tip, decaying to 0 at the buzzer; the W-034 Q1 reliability table shows the
+        0.80 cap leaves predictions ~7pp over-confident in the 0.3-0.4 bin because
+        the projection dominates too early; trusting the market 100% at tip shrinks
+        the early-game ECE from 0.069 → ~0.055).
+    With CV_WP_RECONCILED_CALIB=OFF the output is byte-identical to baseline."""
+    import os as _os_lwp  # noqa: PLC0415
     from math import erf, sqrt  # noqa: PLC0415
+
+    # W-032: read calibration flag ONCE at entry (default-OFF → baseline params).
+    _calib_on = _os_lwp.environ.get(
+        "CV_WP_RECONCILED_CALIB", "0"
+    ).strip().lower() not in ("", "0", "false", "off")
+
     try:
         period = int(live_overlay.get("period") or 1)
     except (TypeError, ValueError):
@@ -3043,7 +3344,11 @@ def _live_wp_continuous(live_overlay: dict, pregame_home_wp,
     # accumulate. NBA final-margin std is ~13-14 at tip; a mid-game projection
     # still carries real error, so keep sigma generous to avoid over-confident
     # numbers from a thin projected lead.
-    sigma = max(2.5, 14.5 * sqrt(max(rem, 0.4) / 48.0))
+    # W-032: calibrated sigma=12.5 (tighter, Brier-optimal from W-034 harness).
+    if _calib_on:
+        sigma = max(2.5, 12.5 * sqrt(max(rem, 0.4) / 48.0))
+    else:
+        sigma = max(2.5, 14.5 * sqrt(max(rem, 0.4) / 48.0))
     p_proj = 0.5 * (1.0 + erf((proj_margin / sigma) / sqrt(2.0)))
     # MARKET ANCHOR (decays with time left). Early/mid-game the projected margin
     # alone is far too confident for a close score — a tied game at the half must
@@ -3052,9 +3357,14 @@ def _live_wp_continuous(live_overlay: dict, pregame_home_wp,
     # of game remaining (lots left -> trust the market; little left -> the
     # near-final projected score dominates). This is the standard live-WP shape
     # and keeps the number realistic without ignoring the projection.
+    # W-032: calibrated w_market cap=1.00 (full market trust at tip reduces
+    # early-game over-confidence seen in W-034 Q1 reliability table).
     if pregame_home_wp is not None:
         pg = min(0.97, max(0.03, float(pregame_home_wp)))
-        w_market = max(0.0, min(0.80, rem / 48.0))
+        if _calib_on:
+            w_market = max(0.0, min(1.00, rem / 48.0))
+        else:
+            w_market = max(0.0, min(0.80, rem / 48.0))
         p = w_market * pg + (1.0 - w_market) * p_proj
     else:
         p = p_proj
@@ -3731,10 +4041,32 @@ def tonight(request: Request, date: str = Query(default=None),
                 import logging as _lg_lm  # noqa: PLC0415
                 _lg_lm.getLogger(__name__).warning(
                     "tonight box live-merge failed: %s", _exc_lm)
+
+    # ── Signal panel (CV_SIGNAL_PANEL=1): scouting signals per player,
+    # display-only, does NOT tilt projections. Returns None when flag is off.
+    signal_panel = None
+    if gid_filter and os.environ.get("CV_SIGNAL_PANEL", "0") == "1":
+        try:
+            from src.prediction.signal_panel import (  # noqa: PLC0415
+                build_signal_panel_from_live_dir,
+            )
+            for _sp_gid in (list(canonical_ids) + [gid_filter]):
+                _sp = build_signal_panel_from_live_dir(
+                    _sp_gid, str(_ROOT)
+                )
+                if _sp is not None:
+                    signal_panel = _sp
+                    break
+        except Exception as _sp_exc:
+            import logging as _sp_lg  # noqa: PLC0415
+            _sp_lg.getLogger(__name__).warning(
+                "signal_panel build failed: %s", _sp_exc)
+
     return _TEMPLATES.TemplateResponse("tonight.html",
         {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev,
          "game_id_filter": gid_filter, "matchup_label": matchup_label,
-         "box_score": box_score, "live_regrade_count": live_regrade_count})
+         "box_score": box_score, "live_regrade_count": live_regrade_count,
+         "signal_panel": signal_panel})
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -5441,9 +5773,28 @@ def api_box_score(date: str = Query(default=None),
                 mp = row.get("minutes_played") or 0
                 w_live = _live_shrink_weight(mp)
                 row["_shrink_weight"] = round(w_live, 3)
-                if w_live <= 0:
-                    continue
                 paced = row.get("paced_final") or {}
+                if w_live <= 0:
+                    # Player has not entered the game (0 min). Show the pregame
+                    # ROLE projection (per-player q50) rather than the engine's
+                    # flat replacement-level default (~5.7 pts for EVERYONE),
+                    # which made benched/inactive players show identical chunky
+                    # lines and inflated the team sum. Floored at current.
+                    for s in _BOX_STATS:
+                        pregame_v = row.get(s)
+                        if pregame_v is None:
+                            continue
+                        try:
+                            _cur0 = (row.get("current") or {}).get(s)
+                            _pv0 = float(pregame_v)
+                            if _cur0 is not None:
+                                _pv0 = max(_pv0, float(_cur0))
+                            paced[s] = round(_pv0, 1)
+                        except (TypeError, ValueError):
+                            continue
+                    if paced:
+                        row["paced_final"] = paced
+                    continue
                 for s in _BOX_STATS:
                     pregame_v = row.get(s)            # pregame q50 (cell value)
                     live_v = paced.get(s)             # live engine projection
@@ -5471,6 +5822,245 @@ def api_box_score(date: str = Query(default=None),
 
         _shrink_team(box.get("away"))
         _shrink_team(box.get("home"))
+
+        # ── LIVE AVAILABILITY: detect players who have LEFT the game (injury /
+        # did-not-return) and CAP their projection at current. The official box
+        # feed CANNOT flag a mid-game injury — a hurt star reads status=ACTIVE,
+        # oncourt=0, notPlayingReason="" — identical to a normal bench rest. So
+        # we use (1) an operator manual-out list (reliable, immediate) and
+        # (2) minutes-stagnation (a rotation player whose minutes are frozen
+        # across ~6+ wall-min of live play is not on the floor). Without this a
+        # hurt star (e.g. Brunson → locker room) keeps projecting his full line.
+        try:
+            import json as _ij_out  # noqa: PLC0415
+            _out_names: set = set()
+            _man_path = _ROOT / "data" / "cache" / "cv_fix" / f"live_out_{date}.json"
+            if _man_path.exists():
+                try:
+                    _ml = _ij_out.loads(_man_path.read_text(encoding="utf-8-sig"))
+                    _out_names = {str(n).strip().lower() for n in _ml if str(n).strip()}
+                except Exception:
+                    _out_names = set()
+            # CV_OUT_DETECT_HARDEN: hardened stagnation detector.
+            # When OFF: auto detection is disabled (_stale always False) —
+            # byte-identical to the original safe manual-only path.
+            # When ON: require minutes flat across TWO consecutive ~6-min
+            # windows (>=12 wall-min total), ALL three windows in active
+            # play (no quarter-break), AND stagnation must SPAN a period
+            # boundary (now in period P but 12-min-back was period P-1) —
+            # this eliminates bench stints (within-period rests) while
+            # catching true mid-game exits (injury that keeps a player
+            # off-court from one period into the next).
+            _out_harden = (os.environ.get("CV_OUT_DETECT_HARDEN", "0").strip() == "1")
+            # CV_INGAME_RETURN: player RETURN / clear-OUT branch.
+            # When OFF: no return path — if a player is in _out_names (manual)
+            # or flagged stale, the cap is permanent for this request.
+            # When ON: (1) load live_return_{date}.json — names here are
+            # explicitly returned and OVERRIDE the out list; (2) detect
+            # auto-return via minutes-resume: if a player was stale at T-6
+            # (their T-6 and T-12 minutes were equal across a period boundary)
+            # AND their current minutes exceed T-6 by >=0.3, they are BACK —
+            # clear the out flag, fall through to normal blending with a
+            # conservative 75% remaining-rate scale (reduced-minutes anchor).
+            _ingame_return = (os.environ.get("CV_INGAME_RETURN", "0").strip() == "1")
+
+            # Helper: parse clock string "MM:SS" to float minutes remaining
+            def _clock_to_min(clk: str) -> float:
+                try:
+                    _mm, _ss = clk.strip().split(":", 1)
+                    return int(_mm) + int(_ss) / 60.0
+                except Exception:
+                    return 6.0  # default: non-zero = not a break
+
+            # Helper: is a snapshot in a quarter-break window?
+            # Guards BOTH ends: clock <= 0:30 (just ended) OR >= 11:30
+            # (just started = players still subbing in from the bench).
+            # This prevents flagging starters who haven't entered yet at
+            # the very start of a quarter.
+            def _is_quarter_break(ov: dict) -> bool:
+                _period = int(ov.get("period") or 0)
+                if _period < 1:
+                    return True  # pre-game
+                _clk_s = str(ov.get("clock") or "6:00")
+                _clk_min = _clock_to_min(_clk_s)
+                return _clk_min <= 0.5 or _clk_min >= 11.5
+
+            # Load historical snapshots for stagnation detection
+            _prev_min: dict = {}    # minutes ~6-min back
+            _prev2_min: dict = {}   # minutes ~12-min back
+            _period_6: int = 0      # game period at ~6-min-back snapshot
+            _period_12: int = 0     # game period at ~12-min-back snapshot
+            _qbreak_6: bool = False
+            _qbreak_12: bool = False
+            try:
+                _snaps_av = _epoch_snaps(_LIVE_DIR_PATH, game_id)
+                if len(_snaps_av) >= 2:
+                    def _epoch_of(p):
+                        try:
+                            return int(p.stem.split("_")[-1])
+                        except Exception:
+                            return 0
+                    _latest_e = _epoch_of(_snaps_av[-1])
+                    # Window 1: ~6 wall-min back (360,000 ms)
+                    _cmp = min(_snaps_av, key=lambda p: abs(_epoch_of(p) - (_latest_e - 360_000)))
+                    if _epoch_of(_cmp) <= _latest_e - 180_000:  # >=3 min back
+                        _cd = _ij_out.loads(_cmp.read_text(encoding="utf-8"))
+                        _period_6 = int(_cd.get("period") or 0)
+                        _qbreak_6 = _is_quarter_break(_cd)
+                        for _lp in (_cd.get("players") or []):
+                            _nm0 = (_lp.get("name") or _lp.get("player_name") or "").lower()
+                            _mn0 = _lp.get("min")
+                            if _nm0 and isinstance(_mn0, (int, float)):
+                                _prev_min[_nm0] = float(_mn0)
+                    # Window 2: ~12 wall-min back (720,000 ms) — only loaded
+                    # when the hardened flag is ON so flag-OFF is byte-identical.
+                    if _out_harden and len(_snaps_av) >= 3:
+                        _cmp2 = min(_snaps_av, key=lambda p: abs(_epoch_of(p) - (_latest_e - 720_000)))
+                        if _epoch_of(_cmp2) <= _latest_e - 480_000:  # >=8 min back
+                            _cd2 = _ij_out.loads(_cmp2.read_text(encoding="utf-8"))
+                            _period_12 = int(_cd2.get("period") or 0)
+                            _qbreak_12 = _is_quarter_break(_cd2)
+                            for _lp2 in (_cd2.get("players") or []):
+                                _nm2 = (_lp2.get("name") or _lp2.get("player_name") or "").lower()
+                                _mn2 = _lp2.get("min")
+                                if _nm2 and isinstance(_mn2, (int, float)):
+                                    _prev2_min[_nm2] = float(_mn2)
+            except Exception:
+                _prev_min = {}
+                _prev2_min = {}
+
+            # CV_INGAME_RETURN: load manual return list and build prev-out set.
+            # Only loaded when flag is ON (no extra I/O when flag OFF).
+            _return_names: set = set()
+            _prev_out_set: set = set()
+            if _ingame_return:
+                # Manual return file: operators drop a name here to un-cap a
+                # player who was in live_out_{date}.json and then returned.
+                _ret_path = _ROOT / "data" / "cache" / "cv_fix" / f"live_return_{date}.json"
+                if _ret_path.exists():
+                    try:
+                        _rl = _ij_out.loads(_ret_path.read_text(encoding="utf-8-sig"))
+                        _return_names = {str(n).strip().lower() for n in _rl if str(n).strip()}
+                    except Exception:
+                        _return_names = set()
+                # Build the set of players who were stale AT T-6.
+                # A player was stale at T-6 if:
+                #   * their T-6 and T-12 minutes are equal (flat across the window)
+                #   * period changed between T-12 and T-6 (cross-boundary)
+                # This mirrors the hardened stagnation rule applied at T-6.
+                # Used by the return-detection branch below.
+                if _prev_min and _prev2_min and _period_6 != _period_12 and _period_12 > 0:
+                    for _pn, _pm6 in _prev_min.items():
+                        _pm12 = _prev2_min.get(_pn)
+                        if _pm12 is not None and abs(_pm6 - _pm12) < 0.05 and _pm6 > 0.5:
+                            _prev_out_set.add(_pn)
+
+            # Pre-compute quarter-break guard for current snapshot
+            _period_now = int((live_overlay or {}).get("period") or 0) if live_overlay else 0
+            _qbreak_now = (
+                _is_quarter_break(live_overlay)
+                if (live_overlay and isinstance(live_overlay, dict))
+                else False
+            )
+
+            for _td in (box.get("home"), box.get("away")):
+                if not _td or not _td.get("players"):
+                    continue
+                for _row in _td["players"]:
+                    _nm = (_row.get("player_name") or "").lower()
+                    _mp = _row.get("minutes_played") or 0
+                    _manual = _nm in _out_names
+                    if _out_harden:
+                        # Hardened cross-period stagnation detector:
+                        # (a) player has played (>0.5 min, not DNP)
+                        # (b) minutes flat in BOTH ~6-min AND ~12-min windows
+                        # (c) NONE of the 3 windows is in a quarter-break zone
+                        #     (clock <=0:30 or >=11:30)
+                        # (d) period CHANGED from the 12-min-back window to
+                        #     now — stagnation must SPAN a quarter boundary.
+                        #     This is the decisive filter: bench stints within
+                        #     a single quarter (KAT/OG/Wemb sitting in Q2)
+                        #     have period_12 == period_now and never fire.
+                        #     True exits (Brunson, ankle, Q1->Q2) span periods.
+                        _stale = False
+                        if (
+                            float(_mp) > 0.5               # has played
+                            and _nm in _prev_min           # seen 6-min back
+                            and _nm in _prev2_min          # seen 12-min back
+                            and not _qbreak_now            # current not break
+                            and not _qbreak_6              # 6-min back not break
+                            and not _qbreak_12             # 12-min back not break
+                            and _period_now != _period_12  # period changed
+                        ):
+                            _mp6 = _prev_min[_nm]
+                            _mp12 = _prev2_min[_nm]
+                            # Both windows must show zero growth (flat minutes)
+                            if (abs(float(_mp) - _mp6) < 0.05
+                                    and abs(_mp6 - _mp12) < 0.05):
+                                _stale = True
+                    else:
+                        # Flag OFF -- byte-identical to original disabled path.
+                        # auto minutes-stagnation DISABLED: a star's normal ~6-min
+                        # rest is indistinguishable from an injury in the box feed,
+                        # so it false-flagged healthy resters (e.g. Wembanyama
+                        # capped at 9 while just resting). Manual-only until the
+                        # PBP-based did-not-return detector is wired.
+                        _stale = False
+                        _ = _prev_min  # retained for the future PBP detector
+                    # CV_INGAME_RETURN: detect player return BEFORE applying the
+                    # OUT cap.  A player is "returned" when:
+                    #   (a) explicit manual return: name in live_return_{date}.json, OR
+                    #   (b) auto-return: they were in _prev_out_set (stale at T-6)
+                    #       AND their current minutes exceed T-6 minutes by >=0.3.
+                    # Return wins over manual-out: a name in both live_out and
+                    # live_return is treated as returned (live_return is more recent).
+                    # When returned, apply a 75% remaining-rate scale on the live
+                    # portion of paced_final — conservative reduced-minutes anchor
+                    # (player may not play full expected load after coming back).
+                    if _ingame_return:
+                        _auto_return = (
+                            _nm in _prev_out_set
+                            and _nm in _prev_min
+                            and (float(_mp) - _prev_min[_nm]) >= 0.3
+                        )
+                        _returned = (_nm in _return_names) or _auto_return
+                        if _returned:
+                            # Clear the manual flag so the OUT cap below is skipped.
+                            _manual = False
+                            _stale = False
+                            # Apply reduced-minutes anchor: scale the live paced_final
+                            # toward current stats (75% of the live engine's extra).
+                            # This re-inflates the line but conservatively caps upside.
+                            _RETURN_SCALE = 0.75
+                            _cur_r = _row.get("current") or {}
+                            _pf_r = dict(_row.get("paced_final") or {})
+                            for _s in _BOX_STATS:
+                                _cv_r = _cur_r.get(_s)
+                                _pv_r = _pf_r.get(_s)
+                                if _cv_r is not None and _pv_r is not None:
+                                    try:
+                                        _extra = float(_pv_r) - float(_cv_r)
+                                        _scaled = float(_cv_r) + _RETURN_SCALE * max(0.0, _extra)
+                                        _pf_r[_s] = round(_scaled, 1)
+                                    except (TypeError, ValueError):
+                                        pass
+                            if _pf_r:
+                                _row["paced_final"] = _pf_r
+                            _row["availability"] = "RETURNED -- reduced-minutes anchor"
+                            _row["_returned_flag"] = True
+                    if _manual or _stale:
+                        _cur = _row.get("current") or {}
+                        _pf = dict(_row.get("paced_final") or {})
+                        for _s in _BOX_STATS:
+                            _cv = _cur.get(_s)
+                            if _cv is not None:
+                                _pf[_s] = round(float(_cv), 1)
+                        _row["paced_final"] = _pf
+                        _row["availability"] = ("OUT -- ruled out" if _manual
+                                                else "OUT? -- no minutes ~12m (did not return)")
+                        _row["_out_flag"] = True
+        except Exception:
+            pass
 
         # ── Pace-aware team total projection ──────────────────────────────
         # Sum of player paced_finals undershoots team totals during the
@@ -5793,6 +6383,52 @@ def api_box_score(date: str = Query(default=None),
     except Exception:
         pass
 
+    # ── COHERENCE FIX: reconcile the displayed projected final score with the
+    # (market-anchored) win probability. The possession-sim per-team split can
+    # briefly invert the favorite early in the game (over-reacting to a small
+    # lead), leaving the end score contradicting the win % (e.g. a 58% home
+    # favorite projected to LOSE). Keep the sim's TOTAL (validated, ~Vegas) and
+    # re-split it by the win-prob-implied margin so end-score, team total, and
+    # win % all agree. margin(home) = k*ln(p/(1-p)); k=9.5 → 63%≈+5, 58%≈+3.
+    try:
+        import math as _math_coh  # noqa: PLC0415
+        _hb = box.get("home"); _ab = box.get("away")
+        _p = box.get("home_win_prob")
+        if (isinstance(_hb, dict) and isinstance(_ab, dict)
+                and isinstance(_p, (int, float))):
+            _ht = _hb.get("projected_total_pts"); _at = _ab.get("projected_total_pts")
+            if isinstance(_ht, (int, float)) and isinstance(_at, (int, float)):
+                _T = float(_ht) + float(_at)
+                _pp = min(0.99, max(0.01, float(_p)))
+                _margin = 9.5 * _math_coh.log(_pp / (1.0 - _pp))
+                _home_final = (_T + _margin) / 2.0
+                _away_final = (_T - _margin) / 2.0
+                _lh = float((live_overlay or {}).get("home_score") or 0)
+                _la = float((live_overlay or {}).get("away_score") or 0)
+                # CV_FINAL_SCORE_FREEZE (default OFF = byte-identical): on a FINAL
+                # game the projected final IS the actual final — the win-prob→margin
+                # reconcile otherwise maps a ~0.95 end win-prob to a ~+27 implied
+                # margin and shows a distorted projected score (e.g. 104-120 for a
+                # real 104-108). Freeze to the live scores. Display-only, post-game.
+                if (os.environ.get("CV_FINAL_SCORE_FREEZE", "").strip().lower()
+                        not in ("", "0", "false", "no", "off")
+                        and "FINAL" in str((live_overlay or {}).get("game_status") or "").upper()):
+                    _home_final = _lh
+                    _away_final = _la
+                _home_final = max(_home_final, _lh)
+                _away_final = max(_away_final, _la)
+                _hb["projected_total_pts"] = round(_home_final, 1)
+                _ab["projected_total_pts"] = round(_away_final, 1)
+                # keep the bottom "Total" PTS cell coherent with the pill/score
+                if isinstance(_hb.get("projected_totals"), dict):
+                    _hb["projected_totals"]["pts"] = round(_home_final, 1)
+                if isinstance(_ab.get("projected_totals"), dict):
+                    _ab["projected_totals"]["pts"] = round(_away_final, 1)
+                box["winprob_proj_score"] = f"{round(_away_final)}-{round(_home_final)}"
+                box["winprob_source"] = "winprob_reconciled"
+    except Exception:
+        pass
+
     # Live-regraded bet snippets for this matchup. The JS poller inline-updates
     # the bet cards' EV / model_prob / side text so they don't go stale during
     # the game (without a full page reload).
@@ -6000,6 +6636,19 @@ def api_box_score(date: str = Query(default=None),
     box["date"] = date
     box["game_id"] = game_id
     box["generated_at"] = datetime.utcnow().isoformat() + "Z"
+
+    # CV_LIVE_SIM gated scenario / win-prob panel (default OFF).
+    # Adds a ``sim`` block ONLY when the flag is ON and a live snapshot exists.
+    # When OFF, this is a pure no-op: the import is lazy inside the helper and
+    # the helper returns ``box`` untouched — byte-identical response.
+    try:
+        from api._cv_live_sim_panel import maybe_attach_sim_panel as _sim_panel  # noqa: PLC0415
+        box = _sim_panel(box, live_overlay)
+    except Exception as _sim_exc:
+        import logging as _lgsim  # noqa: PLC0415
+        _lgsim.getLogger(__name__).warning(
+            "CV_LIVE_SIM import/attach failed (suppressed): %s", _sim_exc)
+
     return JSONResponse(box)
 
 

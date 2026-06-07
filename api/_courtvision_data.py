@@ -61,6 +61,14 @@ def load_slate_csv(path: Path, stats: tuple[str, ...]) -> dict[tuple[str, str], 
             })
             base["q50"] = pred
             base["stat"] = stat
+            # Read raw q10/q90 when present — used by grade_bet when CV_ROW_SIGMA=1.
+            for _qcol in ("q10", "q90"):
+                _raw = (r.get(_qcol) or "").strip()
+                if _raw:
+                    try:
+                        base[_qcol] = float(_raw)
+                    except ValueError:
+                        pass
     return rows
 
 
@@ -108,8 +116,36 @@ def grade_bet(slate_row: dict, line_row: dict,
     full per-book ladder under `all_books`.
     """
     stat = slate_row["stat"]
-    sigma = stat_sigma[stat]
+    sigma = stat_sigma[stat]  # flat default; always used when flag is OFF
     q50 = float(slate_row["q50"])
+    # EX-1: per-row heteroscedastic sigma for REB, flag-gated (default OFF).
+    # When CV_ROW_SIGMA=1 and the slate row carries monotone q10/q90, compute
+    # sigma via the same production calibration path as _model_hit_prob in
+    # compare_to_lines.py: apply_qcal -> (cq90 - cq10) / 2.5631.
+    # EXCLUDED: PTS (no benefit), FG3M (unreliable reconstruction), AST (needs
+    # separate re-validation under asymmetric sigma — do NOT enable here).
+    if os.environ.get("CV_ROW_SIGMA", "0") == "1" and stat == "reb":
+        _q10 = slate_row.get("q10")
+        _q90 = slate_row.get("q90")
+        if (_q10 is not None and _q90 is not None
+                and float(_q10) <= q50 <= float(_q90)):
+            from src.prediction.quantile_calibration import apply as _apply_qcal  # noqa: PLC0415
+            _cq10, _cq90 = _apply_qcal(stat, float(_q10), q50, float(_q90))
+            _rs = (_cq90 - _cq10) / 2.5631
+            if _rs > 1e-6:
+                sigma = _rs
+    # CV_QUANTILE_CAL=1: apply split-conformal (CQR) calibration for all stats
+    # except REB when CV_ROW_SIGMA is also ON (REB already calibrated above via
+    # apply_qcal; don't double-calibrate). Flag OFF: no change to sigma.
+    elif os.environ.get("CV_QUANTILE_CAL", "0") == "1":
+        _q10 = slate_row.get("q10")
+        _q90 = slate_row.get("q90")
+        if (_q10 is not None and _q90 is not None):
+            from src.prediction.quantile_calibration import apply_conformal as _apply_cfm  # noqa: PLC0415
+            _cq10, _cq90 = _apply_cfm(stat, float(_q10), q50, float(_q90))
+            _rs = (_cq90 - _cq10) / 2.5631
+            if _rs > 1e-6:
+                sigma = _rs
     line = float(line_row["line"])
     side = "OVER" if q50 >= line else "UNDER"
     p_over = 1.0 - normal_cdf((line - q50) / sigma)
