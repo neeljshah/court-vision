@@ -146,6 +146,78 @@ _PLAYER_PRIOR: Tuple[str, ...] = (
 )
 FEATURES_PLAYER: Tuple[str, ...] = _STATE_CORE + _PLAYER_BOX + _PLAYER_PRIOR
 
+# --------------------------------------------------------------------------- #
+# CV_INGAME_LIVE_USAGE — live-usage-vs-expected feature (default OFF)
+# --------------------------------------------------------------------------- #
+# When ON, the live usage feature ``p_live_usg_vs_prior`` is populated in the
+# v2 player-state row and included in the v2 feature list used for retraining.
+# The feature = live_usg_proxy - p_prior_usage, where
+#   live_usg_proxy = (fga_so_far + 0.44*fta_so_far + tov_so_far) /
+#                     team_(fga + 0.44*fta + tov)_so_far
+# (NBA true-usage denominator).  Fallback when team denominator < 0.5:
+#   volume_ratio = (pts_so_far / max(min_so_far, 0.01)) /
+#                  (p_prior_pts / max(p_prior_min, 0.01))
+# clamped to [0.0, 3.0].
+#
+# When OFF (default): the column is NEVER added to snapshots and defaults to
+# 0.0 via _vectorize's row.get(f, 0.0) fallback in already-trained models.
+# This makes the serve path BYTE-IDENTICAL when the flag is OFF.
+_LIVE_USAGE_TRUTHY = {"1", "true", "yes", "on", "y", "t"}
+LIVE_USAGE_FLAG: str = "CV_INGAME_LIVE_USAGE"
+LIVE_USAGE_FEATURE: str = "p_live_usg_vs_prior"
+
+
+def is_live_usage_enabled() -> bool:
+    """True iff CV_INGAME_LIVE_USAGE is set to a truthy value.
+
+    Default OFF (unset / "0" / non-truthy): serve path is byte-identical to
+    the baseline SBS-v2 path. Enable only for explicit experimentation or
+    after acceptance validation.
+    """
+    return os.environ.get(LIVE_USAGE_FLAG, "0").strip().lower() in _LIVE_USAGE_TRUTHY
+
+
+def compute_live_usg_vs_prior(
+    fga_so_far: float,
+    fta_so_far: float,
+    tov_so_far: float,
+    team_fga: float,
+    team_fta: float,
+    team_tov: float,
+    p_prior_usage: float,
+    p_prior_pts: float,
+    p_prior_min: float,
+    pts_so_far: float,
+    min_so_far: float,
+) -> float:
+    """Compute live_usg_vs_prior = live_usg_proxy - p_prior_usage.
+
+    Primary path (when team four-factor denominator >= 0.5):
+        live_usg_proxy = (fga + 0.44*fta + tov) / team_(fga + 0.44*fta + tov)
+    Fallback (team denominator too small — early in game):
+        live_usg_proxy = (pts_per_min / prior_pts_per_min), clamped [0, 3]
+
+    Returns the delta vs prior usage, clamped to [-1.0, 2.0] to prevent
+    extreme extrapolation from small-sample early moments.
+    """
+    team_denom = team_fga + 0.44 * team_fta + team_tov
+    if team_denom >= 0.5:
+        player_numerator = fga_so_far + 0.44 * fta_so_far + tov_so_far
+        live_usg_proxy = player_numerator / team_denom
+    else:
+        # Fallback: volume ratio (pts/min vs prior pts/min)
+        live_pts_per_min = pts_so_far / max(min_so_far, 0.01)
+        prior_pts_per_min = p_prior_pts / max(p_prior_min, 0.01)
+        if prior_pts_per_min < 0.01:
+            live_usg_proxy = p_prior_usage
+        else:
+            ratio = live_pts_per_min / prior_pts_per_min
+            # Proxy usage = prior_usage * volume_ratio, clamped [0, 3*prior]
+            live_usg_proxy = min(3.0 * max(p_prior_usage, 0.10),
+                                 p_prior_usage * min(3.0, max(0.0, ratio)))
+    delta = live_usg_proxy - p_prior_usage
+    return float(max(-1.0, min(2.0, delta)))
+
 # Target column names expected on training frames.
 TEAM_TARGETS: Tuple[str, ...] = ("home_final_score", "away_final_score")
 WINPROB_TARGET: str = "home_win"
@@ -940,4 +1012,9 @@ __all__ = [
     "MATCHUP_FLAG",
     "is_matchup_enabled",
     "project_player_lines_v2_routed",
+    # CV_INGAME_LIVE_USAGE flag gate
+    "LIVE_USAGE_FLAG",
+    "LIVE_USAGE_FEATURE",
+    "is_live_usage_enabled",
+    "compute_live_usg_vs_prior",
 ]

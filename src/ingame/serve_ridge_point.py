@@ -247,6 +247,23 @@ def predict_serve_ridge(
     if artifact is None:
         return None
 
+    # CV_RIDGE_FF_FALLBACK (sweep INGAME_SIM HIGH, default OFF = byte-identical).
+    # The ridge was trained on REAL accumulated in-game four-factors (pace/efg/
+    # tov_pct/ft_rate, state_featurizer.py:618-667) but the canonical LIVE snapshot
+    # (src/data/live.py) never emits them, so _featurize_snap zero-fills all 7 →
+    # the projected team TOTAL is biased ~-23.5 pts LOW mid/late game (pace coef
+    # +3.39 alone loses ~14.6 pts/side). The snapshot's per-player box carries only
+    # pts/reb/ast/fg3m/stl/blk/tov/pf/min — NO fgm/fga/fta/oreb/dreb — so the four
+    # factors CANNOT be reconstructed live. When ON, abstain (return None) if the
+    # snapshot lacks the four-factor keys, so score_ensemble uses the un-biased sim
+    # mean (point_source="sim_fallback", MAE ~10.9) instead of the ~22-MAE zeroed
+    # ridge. Default OFF preserves today's (biased) zero-fill behavior byte-identically.
+    if os.environ.get("CV_RIDGE_FF_FALLBACK", "0") == "1":
+        _ff_keys = ("pace_poss_per_min", "home_efg", "away_efg", "home_tov_pct",
+                    "away_tov_pct", "home_ft_rate", "away_ft_rate")
+        if not any(k in snap for k in _ff_keys):
+            return None
+
     result = _featurize_snap(snap)
     if result is None:
         return None
