@@ -270,3 +270,30 @@ apps/portfolio-site/out/
 
 # internal job-outreach target lists — keep private, never publish
 docs/TARGET_BATCH_*.md
+
+# =============================================================================
+# 2026-06-07 publish-hardening: keep one-off scratch out of public repo
+# =============================================================================
+# -- Root-level scratch: probes, box/slate dumps, path-mangled outputs ----------
+/_*
+/box_*.json
+/home*.json
+/game.json
+/gamepg.html
+/page_chk.html
+/slate_c.json
+/games.txt
+/mgrid_err.txt
+/tonight.html
+/Usersneelj*
+/PROGRESS.md
+/.box_total_check.json
+/.halftime_*/
+# -- api scratch + .bak variants -----------------------------------------------
+api/_*.py
+*.bak_*
+# -- one-off Windows scheduled-task XMLs (embed machine SID; not reusable) ------
+ops/*.xml
+# -- wave/actuals data dumps ---------------------------------------------------
+data/_wave*/
+data/actuals/
