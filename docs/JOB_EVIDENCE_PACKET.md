@@ -103,6 +103,7 @@ recruiter or interviewer can check them directly.
 | Idempotent single-writer knowledge graph (690 nodes) | 660 player + 30 team notes with marker-delimited folds; `scripts/intel/outcome/fold_outcome_impact.py` | "Designed an idempotent single-writer fold to merge ~80 derived artifacts into a 690-node knowledge graph without duplication on re-run." |
 | Leak-safe as-of feature builders with confound flagging | `scripts/intel/outcome/build_player_availability.py` (expanding shift(1), schedule-confound downgrade); metadata bakes in "descriptive not causal, not a betting edge" | "Wrote point-in-time-correct builders using strict expanding-window shift(1) joins, and documented the statistical limitations in each artifact's metadata." |
 | Adversarial self-audit caught a real attribution bug and scoped its blast radius | `docs/_audits/HARDENING_SWEEP_INTEL_ARTIFACT_BUILDERS_2026-06-02.md` — defender-team tricode inversion confirmed LATENT (no live consumer) | "Ran an adversarial audit of my own pipeline that surfaced an attribution bug, then traced its full blast radius to prove it was confined to an unused offline field." |
+| Player-level possession Monte Carlo whose teammate correlation *emerges* correct (no hand-tuned ρ-matrix) | `src/sim/basketball_sim.py` (shared scoring pie sampled from real stint minutes; measured teammate-ρ ≈ −0.10 vs. realized, fixing a prior simulator's +0.65); `src/sim/sgp_from_sim.py` prices same-game parlays off the joint samples with a `validate_joint_calibration` harness | "Built a possession-by-possession simulator where teammates compete for a shared scoring pie, so the correct negative teammate correlation emerges from the mechanics instead of a hand-tuned matrix — validated the joint structure and explicitly do **not** claim a betting edge." |
 
 ---
 
@@ -207,16 +208,17 @@ the repo will catch each one — which is disqualifying for a no-degree candidat
 | **"Run my verify scripts to reproduce the headlines"** | `verify_production_mae.py` (the README's headline command) **crashes** with an 85-vs-129 feature mismatch; `verify_winprob.py` reads an uncommitted cache and **fails from a fresh clone**; training data is gitignored. | "I built a self-auditing verification harness (tolerance gates, drift reports, CI-oriented); closing the fresh-clone reproducibility gap is known work." Do not invite a live repro until fixed. |
 | **Any "quant alpha / P&L track record" framing** | There is **no verified leak-free profitable edge.** Applying to quant roles on a P&L story would be caught immediately. | Apply as an ML-infra/modeling/CV hire. "I built the full quant toolchain — devig, Kelly, CLV, calibration, walk-forward backtesting — and ran the validation that proved the apparent edge was an artifact." |
 
-**Pre-outreach action items flagged by the audit (not claims, but housekeeping):**
+**Pre-outreach housekeeping (flagged by the audit; status as of 2026-06-07):**
 
-1. **Rotate the the-odds-api key** (it sits in 6 untracked, non-gitignored scripts; a blanket
-   `git add -A` would publish it) and add those scripts to `.gitignore` or move the key to `.env`.
-2. **Remove/parameterize the personal phone number + home city** hardcoded in
-   `scripts/build_cv_resume.py:58` and `scripts/build_resume.py:58`.
-3. **Reconcile the public docs** — `README.md`, `docs/PUBLIC_EVIDENCE.md`, and `CLAUDE.md`
-   still headline +18.38% and endQ3 0.1191 with no caveat, while `docs/VS_VEGAS_ASSESSMENT.md`
-   debunks them. The honesty docs must come *before* the inflated ones, or fix the inflated
-   ones, before any recruiter sees the repo.
+1. **the-odds-api key** — the scripts that hard-code it are now in `.gitignore`, so a blanket
+   `git add -A` can no longer publish them. **Still the user's manual step:** rotate the key and
+   move it to `.env` (`os.environ`), since prior revisions remain in git history.
+2. ✅ **Personal phone number** hardcoded in `scripts/build_cv_resume.py` / `scripts/build_resume.py` —
+   both files untracked from the public repo (kept local, gitignored) on 2026-06-07. (Prior revisions
+   remain in git history; a full history scrub is a separate, destructive step not taken here.)
+3. **Public docs reconciliation** — ✅ `README.md` and `docs/PUBLIC_EVIDENCE.md` now front the
+   retraction (the +18.38% / endQ3 0.1191 are explicitly withdrawn with the honest version beside
+   them). **Remaining:** `CLAUDE.md` still carries the old headline and should be reconciled next.
 
 ---
 
