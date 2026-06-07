@@ -2,7 +2,7 @@
 {% block title %}Help · CourtVision{% endblock %}
 {% block subtitle %}Help{% endblock %}
 {% block og_title %}CourtVision — Help & About{% endblock %}
-{% block og_desc %}What CourtVision is, how the model works, and how to use the platform.{% endblock %}
+{% block og_desc %}What CourtVision is, how the model works, and how to read every number on a bet card.{% endblock %}
 {% block nav_help %}active{% endblock %}
 
 {% block content %}
@@ -20,12 +20,9 @@
 .help-step-num{width:22px;height:22px;border-radius:50%;background:rgba(96,165,250,0.12);
   color:var(--cv-accent);font-size:10px;font-weight:700;display:flex;align-items:center;
   justify-content:center;flex-shrink:0;margin-top:1px;}
-.help-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
-.kb-table{width:100%;border-collapse:collapse;font-size:12px;}
-.kb-table td{padding:5px 8px;border-bottom:1px solid var(--cv-border);}
-.kb-table td:first-child{font-family:'SF Mono',ui-monospace,monospace;color:var(--cv-accent);
-  width:60px;font-weight:600;}
-.kb-table td:last-child{color:var(--cv-muted);}
+.help-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.tier-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--cv-muted);padding:4px 0;}
+.tier-pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:'SF Mono',ui-monospace,monospace;}
 @media(max-width:720px){
   .help-grid{grid-template-columns:1fr;}
 }
@@ -35,15 +32,21 @@
 
 <!-- What is CourtVision -->
 <div class="help-section">
-  <div class="help-h2">What is CourtVision?</div>
+  <div class="help-h2">What is CourtVision</div>
   <div class="help-card">
     <p class="help-p">
-      CourtVision is an AI-native NBA prop-betting intelligence platform. It scrapes live odds
-      from DraftKings, FanDuel, Pinnacle, BetRivers, and 10+ other books, then overlays
-      player-performance predictions from a trained machine-learning model stack to surface
-      positive-EV wagers. The platform updates in real time via WebSocket line feeds and
-      flags sharp money (steam) moves as they happen.
+      CourtVision is an NBA prop-betting analytics platform. It scrapes lines from
+      ~10 sportsbooks, grades each prop against an in-house quantile-regression
+      model, and ranks the best bets by expected value. The site has three pages:
     </p>
+    <ul class="help-steps" style="margin-top:10px">
+      <li><span class="help-step-num">1</span>
+        <span><a href="/" style="color:var(--cv-accent)"><b>/</b></a> — tonight's games. One card per matchup.</span></li>
+      <li><span class="help-step-num">2</span>
+        <span><a href="/tonight" style="color:var(--cv-accent)"><b>/tonight</b></a> — clicking a game opens its bet board: projected box score on top, single bets grouped into S/A/B/C tiers below.</span></li>
+      <li><span class="help-step-num">3</span>
+        <span><a href="/parlays" style="color:var(--cv-accent)"><b>/parlays</b></a> — auto-generated same-book parlays (every leg placeable at one sportsbook). 2–4 legs, ranked by EV.</span></li>
+    </ul>
   </div>
 </div>
 
@@ -52,117 +55,158 @@
   <div class="help-h2">How the model works</div>
   <div class="help-card">
     <p class="help-p">
-      Seven player-prop statistics (PTS, REB, AST, FG3M, STL, BLK, TOV) are each predicted
-      by an ensemble of XGBoost, LightGBM, and neural-network models trained on 85 engineered
-      features — rolling form (L5/L10/EWMA), opponent defense, pace, rest, and CV-derived
-      behavioral signals. Primary predictions use <strong style="color:var(--cv-text)">quantile
-      (q50) regression</strong> so the model targets the <em>median</em> outcome — the same
-      scoring target the sportsbook's O/U line is set against. Walk-forward cross-validation
-      over two NBA seasons gates every model change before it ships.
+      Seven player-prop stats (PTS, REB, AST, FG3M, STL, BLK, TOV) each have their
+      own ensemble of XGBoost/LightGBM/MLP models trained on rolling form, opponent
+      defense, pace, rest, and CV-derived behavioral signals. Predictions use
+      <b style="color:var(--cv-text)">quantile-50 (q50) regression</b> — the model
+      targets the <em>median</em> outcome, which is what the sportsbook's O/U line
+      is set against. Walk-forward CV over two NBA seasons gates every change.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      Per-stat sigma is calibrated against 50K out-of-fold rows so the
+      <b style="color:var(--cv-text)">model_prob</b> on a bet card matches the
+      empirical residual distribution. During the playoffs sigma is widened
+      <b style="color:#c084fc">×1.20</b> (literature, no playoff OOF data) — you'll
+      see a purple <span style="color:#c084fc;font-weight:600">PLAYOFFS · σ × 1.2</span>
+      badge in the header when this applies.
     </p>
   </div>
 </div>
 
-<!-- Key terms -->
+<!-- Reading a bet card -->
 <div class="help-section">
-  <div class="help-h2">Key terms</div>
+  <div class="help-h2">Reading a bet card</div>
   <div class="help-grid">
     <div class="help-card">
-      <div class="help-term">Edge (pp)</div>
-      <div class="help-def">model_p_over − market_implied_p_over. Positive = model sees more
-        probability of hitting the OVER than the market price implies. 1 pp = 1 percentage point.</div>
+      <div class="help-term">q50</div>
+      <div class="help-def">Median model projection for the stat. If q50 ≥ line, model takes the OVER; else UNDER.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">edge</div>
+      <div class="help-def">q50 − line, in stat units (e.g. "−1.3 blocks").</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">model</div>
+      <div class="help-def">Probability the bet hits, derived from q50 and per-stat sigma. Capped at 85% — no honest single-prop model is more certain than that.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">market</div>
+      <div class="help-def">De-vig implied probability at the posted price. The benchmark for what the market thinks.</div>
+    </div>
+    <div class="help-card">
+      <div class="help-term">gap</div>
+      <div class="help-def">model − market, in percentage points. The honest edge — gap of +10pp means model expects this to hit 10pp more often than the market is pricing.</div>
     </div>
     <div class="help-card">
       <div class="help-term">EV %</div>
-      <div class="help-def">Expected value per $100 staked = (model_p × decimal_payout − 1) × 100.
-        Positive EV means the model expects a profit at the posted price.</div>
+      <div class="help-def">Expected return per $100 staked at the best posted price. EV = model × payout − (1 − model) × 100.</div>
     </div>
     <div class="help-card">
-      <div class="help-term">Kelly %</div>
-      <div class="help-def">Quarter-Kelly stake as % of bankroll = (edge / decimal_odds) × 0.25.
-        Capped at 5% per leg to limit variance.</div>
+      <div class="help-term">Kelly</div>
+      <div class="help-def">Suggested stake at $100 bankroll. Quarter-Kelly capped at 4% ($4 max per single bet) for variance control.</div>
     </div>
     <div class="help-card">
-      <div class="help-term">Steam (🌊)</div>
-      <div class="help-def">A sudden, coordinated line movement across multiple books in a short
-        window — a signal that sharp money (professional bettors) is hitting this market. Steam
-        does not by itself constitute a recommendation.</div>
-    </div>
-    <div class="help-card">
-      <div class="help-term">Best O / Best U</div>
-      <div class="help-def">The highest available OVER or UNDER price across all scraped books
-        for that prop at the moment of last capture. Line-shop here before placing a bet.</div>
-    </div>
-    <div class="help-card">
-      <div class="help-term">CLV</div>
-      <div class="help-def">Closing Line Value — how the price moved between when CourtVision
-        recommended it and when the market closed. Positive CLV means the model was ahead
-        of the closing line, a strong long-run predictor of profitability.</div>
+      <div class="help-term">tier (S/A/B/C)</div>
+      <div class="help-def">EV bucket: S ≥ 15%, A 8–15%, B 3–8%, C &lt; 3%. Bets are grouped by tier on the per-game view.</div>
     </div>
   </div>
 </div>
 
-<!-- How to use the parlay builder -->
+<!-- Projected box score -->
 <div class="help-section">
-  <div class="help-h2">Using the parlay builder</div>
-  <div class="help-card">
-    <ol class="help-steps">
-      <li><span class="help-step-num">1</span>
-        Go to <a href="/odds" style="color:var(--cv-accent)">/odds</a> and click any prop row to open its detail panel.</li>
-      <li><span class="help-step-num">2</span>
-        Click <b style="color:var(--cv-text)">+ OVER</b> or <b style="color:var(--cv-text)">+ UNDER</b>
-        to add the leg to the parlay builder (sidebar, right side).</li>
-      <li><span class="help-step-num">3</span>
-        Add 2–5 legs. Combined American odds and $100 payout update live.</li>
-      <li><span class="help-step-num">4</span>
-        Click <b style="color:var(--cv-text)">Save Parlay</b> to record it,
-        or visit <a href="/parlays" style="color:var(--cv-accent)">/parlays</a> for auto-generated
-        EV-ranked combinations.</li>
-    </ol>
-  </div>
-</div>
-
-<!-- Risk panel + kill switch -->
-<div class="help-section">
-  <div class="help-h2">Risk panel &amp; kill switch</div>
+  <div class="help-h2">Projected box score</div>
   <div class="help-card">
     <p class="help-p">
-      The <strong style="color:var(--cv-text)">Risk Control</strong> card on the right side of
-      <a href="/odds" style="color:var(--cv-accent)">/odds</a> displays your bankroll, today's P&amp;L,
-      30-day drawdown, and open bet count. A daily loss cap (default 5% of bankroll) is enforced.
+      Opening a game card lands you on /tonight filtered to that matchup, with a
+      projected per-player box score at the top. Pregame, each cell shows the
+      model's projection of that player's typical performance (the same number
+      we use to grade O/U prop bets — the prop line is set at "typical"). The
+      <b style="color:var(--cv-accent)">team total</b> shown next to each team
+      is the model's projected team score, directly comparable to a sportsbook
+      team total line.
     </p>
     <p class="help-p" style="margin-top:8px">
-      The <strong style="color:#f87171">Kill Switch</strong> immediately disables all bet
-      recommendations and deeplinks. Use it during system outages, unexpected line moves,
-      or any time you want a clean stop. Disengage when ready to resume.
+      Once the game tips off and a live boxscore feed is available, the cells
+      flip to <b style="color:#34d399">live values</b> — current stats and an
+      end-of-game projection from the full live engine (residual heads, foul
+      trouble, blowout, heat-check, learned Q4 minutes). The panel polls every
+      30 seconds.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      A live <b style="color:#34d399">win probability</b> bar appears once the
+      game reaches end of Q3 (the earlier-quarter boosters didn't pass our
+      Brier-score validation gate, so we suppress them to avoid misleading
+      numbers).
     </p>
   </div>
 </div>
 
-<!-- Keyboard shortcuts -->
+<!-- Parlays -->
 <div class="help-section">
-  <div class="help-h2">Keyboard shortcuts (on /odds)</div>
+  <div class="help-h2">Parlays</div>
   <div class="help-card">
-    <table class="kb-table">
-      <tr><td>/</td><td>Focus the player search box</td></tr>
-      <tr><td>Esc</td><td>Clear the search filter</td></tr>
-      <tr><td>r</td><td>Refresh prop data from the API</td></tr>
-      <tr><td>?</td><td>Show this keyboard shortcut modal</td></tr>
-    </table>
+    <p class="help-p">
+      The <a href="/parlays" style="color:var(--cv-accent)">/parlays</a> page auto-generates
+      ranked combinations. Three rules are hard-coded:
+    </p>
+    <ul class="help-steps" style="margin-top:8px">
+      <li><span class="help-step-num">1</span>
+        <span><b style="color:var(--cv-text)">Same book per slip.</b> Every leg in a given parlay can be placed at one sportsbook. No cross-book legs.</span></li>
+      <li><span class="help-step-num">2</span>
+        <span><b style="color:var(--cv-text)">2–4 legs.</b> Engine ranks by Monte-Carlo EV; 3-leggers tend to dominate the top of the list.</span></li>
+      <li><span class="help-step-num">3</span>
+        <span><b style="color:var(--cv-text)">Per-book filter.</b> Toggle which books you have via the chip strip — only those parlays render. Setting is shared with /tonight via local storage.</span></li>
+    </ul>
   </div>
 </div>
 
-<!-- Bug reports -->
+<!-- Book coverage -->
 <div class="help-section">
-  <div class="help-h2">Feedback &amp; bug reports</div>
+  <div class="help-h2">Sportsbook coverage</div>
   <div class="help-card">
     <p class="help-p">
-      This is a private research tool. To file bugs or suggest improvements, open a GitHub issue
-      or drop a note in the project vault at
-      <code style="color:var(--cv-text);font-size:11px">vault/Sessions/Decision Log.md</code>.
-      For data issues (missing player, wrong line), check
-      <code style="color:var(--cv-text);font-size:11px">data/lines/</code> and verify the scraper
-      ran for today's date.
+      Scraped books: DraftKings, FanDuel, BetMGM, Caesars, BetRivers, ESPN BET,
+      PointsBet, Pinnacle, Hard Rock Bet, Fanatics, Bet365, PrizePicks, Underdog,
+      BetOnline.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      <b style="color:#f87171">Bovada is excluded</b> from consolidation — their lines
+      post late and stay wide relative to sharp books, distorting consensus.
+    </p>
+  </div>
+</div>
+
+<!-- Honest gaps -->
+<div class="help-section">
+  <div class="help-h2">Honest gaps</div>
+  <div class="help-card">
+    <p class="help-p">
+      <b style="color:var(--cv-text)">EV magnitudes can look high.</b> Per-stat sigma
+      is calibrated against the OOF residual distribution, but the model has a known
+      structural UNDER lean — q50 sits below the line on most picks. The EV
+      magnitudes you see are arithmetically correct given the q50 and sigma, but
+      they assume the q50 itself is unbiased.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      <b style="color:var(--cv-text)">Playoff calibration is heuristic.</b> The OOF
+      dataset is regular-season only, so the ×1.20 playoff sigma boost is from
+      literature, not from your data.
+    </p>
+    <p class="help-p" style="margin-top:8px">
+      <b style="color:var(--cv-text)">Parlay EVs compound any per-leg miscalibration.</b>
+      Treat parlay EV as a ranking signal, not a literal expected return.
+    </p>
+  </div>
+</div>
+
+<!-- Risk -->
+<div class="help-section">
+  <div class="help-h2">Disclaimer</div>
+  <div class="help-card">
+    <p class="help-p">
+      CourtVision is a research tool. Predictions are probabilistic estimates, not
+      guarantees. No part of the site constitutes financial advice. The Kelly stake
+      shown is a model output — bet sizes are your decision.
     </p>
   </div>
 </div>

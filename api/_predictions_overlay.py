@@ -8,12 +8,28 @@ from __future__ import annotations
 
 import logging
 import math
+import os
+import unicodedata
 from pathlib import Path
 from typing import Optional
 
 import time as _time
 
 log = logging.getLogger(__name__)
+
+
+def _norm_name(s) -> str:
+    """Join-key normalizer. Default (CV_OVERLAY_DEACCENT unset/0) = byte-identical
+    legacy `.strip().lower()`. When CV_OVERLAY_DEACCENT=1, also strip diacritics so
+    the ASCII book spelling ('luka doncic') matches the accented parquet key
+    ('luka dončić'). Sweep API_ROUTERS: the overlay join is the lone name path that
+    forgot the _strip_accents bridge the rest of the pipeline applies, nulling the
+    model overlay (projection/edge/rec/kelly) for accented stars on the live slate.
+    """
+    base = str(s or "").strip().lower()
+    if os.environ.get("CV_OVERLAY_DEACCENT", "0") == "1":
+        return unicodedata.normalize("NFKD", base).encode("ascii", "ignore").decode()
+    return base
 
 _ROOT = Path(__file__).resolve().parent.parent
 _CACHE_DIR = _ROOT / "data" / "cache"
@@ -127,7 +143,7 @@ def _load_predictions(date: str) -> dict[tuple[str, str], dict]:
     lookup: dict[tuple[str, str], dict] = {}
     for _, row in df.iterrows():
         try:
-            key = (str(row["player_name"]).strip().lower(), str(row["stat"]).strip().lower())
+            key = (_norm_name(row["player_name"]), str(row["stat"]).strip().lower())
             q50 = float(row["q50"]) if row["q50"] == row["q50"] else None   # NaN guard
             q10 = float(row["q10"]) if "q10" in row and row["q10"] == row["q10"] else None
             q90 = float(row["q90"]) if "q90" in row and row["q90"] == row["q90"] else None
@@ -171,7 +187,7 @@ def overlay_predictions(date: str, props: list[dict]) -> list[dict]:
             continue
 
         try:
-            player_key = prop.get("player", "").strip().lower()
+            player_key = _norm_name(prop.get("player", ""))
             stat_key = prop.get("stat", "").strip().lower()
             pred = preds.get((player_key, stat_key))
             if pred is None:

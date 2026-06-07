@@ -344,6 +344,16 @@ def _et_date_of_start_time(iso_ts: str) -> str:
         except Exception:
             _ET = None
         norm = iso_ts.replace("Z", "+00:00")
+        # ── CV_DK_FRACSEC_FIX (default OFF = byte-identical) ──
+        # DraftKings start_times carry 7 fractional-second digits
+        # ('...:00.0000000Z') which datetime.fromisoformat() rejects in
+        # py3.10, so the parse fails and we fall back to the raw UTC prefix
+        # (iso_ts[:10]) — mis-bucketing DK night games to the next ET day.
+        # When ON, truncate fractional seconds to <=6 digits (microseconds);
+        # harmless for 0/3/6-digit inputs.
+        import os as _os
+        if _os.environ.get("CV_DK_FRACSEC_FIX") == "1":
+            norm = re.sub(r"(\.\d{6})\d+", r"\1", norm)
         if "+" not in norm[10:] and norm.count("-") < 3:
             norm += "+00:00"
         dt = datetime.fromisoformat(norm).astimezone(timezone.utc)

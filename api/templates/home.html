@@ -133,24 +133,23 @@
 .edge-row[data-book-hidden="1"]{display:none;}
 </style>
 
-<!-- Book filter — JS-only, persists in localStorage -->
-<div class="book-filter">
-  <div class="book-filter-hdr">Show bets from books you have</div>
-  <div class="book-filter-chips" id="bookFilterChips">
-    <!-- Populated by JS from window.AVAILABLE_BOOKS -->
-  </div>
-</div>
-
 <!-- Live games section (only shown if live_games is non-empty) -->
 {% if live_games %}
-<div class="home-section-hdr">Live Now</div>
+<div class="home-section-hdr">
+  {% set _has_active = live_games | selectattr('status', 'ne', 'final') | list %}
+  {% if _has_active %}Live Now{% else %}Recent Results{% endif %}
+</div>
 <div class="game-grid" id="liveGrid">
   {% for g in live_games %}
-  <a href="/tonight?date={{ slate_date }}&game_id={{ g.game_id }}" class="game-card live-card" data-gid="{{ g.game_id }}">
+  <a href="/tonight?date={{ slate_date }}&game_id={{ g.game_id }}" class="game-card{% if g.status != 'final' %} live-card{% endif %}" data-gid="{{ g.game_id }}">
     <div class="gc-header">
       <div class="gc-matchup">{{ g.away_team }} @ {{ g.home_team }}</div>
       <div class="gc-badges">
+        {% if g.status == 'final' %}
+        <span class="badge badge-final">FINAL</span>
+        {% else %}
         <span class="badge badge-live"><span class="live-dot"></span>LIVE</span>
+        {% endif %}
       </div>
     </div>
     {% if g.score_away is not none %}
@@ -158,21 +157,6 @@
       <span style="color:var(--cv-muted);font-size:12px;">{{ g.away_team }}</span>
       <span class="gc-score">{{ g.score_away }} — {{ g.score_home }}</span>
       <span style="color:var(--cv-muted);font-size:12px;">{{ g.home_team }}</span>
-    </div>
-    {% endif %}
-    {% if g.top_edges %}
-    <div>
-      <div class="gc-edges-hdr">Top edges</div>
-      <div class="gc-edges mt-1">
-        {% for e in g.top_edges %}
-        <div class="edge-row" data-book="{{ e.book|default('') }}">
-          <div class="edge-rank">{{ loop.index }}</div>
-          <div class="edge-label">{{ e.label }}{% if e.book %}<span class="edge-book">{{ e.book }}</span>{% endif %}</div>
-          {% if e.odds %}<div class="edge-odds">{{ '%+d'|format(e.odds) }}</div>{% endif %}
-          {% if e.edge_pct is not none %}<div class="edge-ev {% if e.edge_pct > 0 %}pos{% elif e.edge_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(e.edge_pct) }}%</div>{% endif %}
-        </div>
-        {% endfor %}
-      </div>
     </div>
     {% endif %}
     <div class="gc-footer">
@@ -211,23 +195,6 @@
       <span class="gc-countdown" id="cd-{{ loop.index }}" data-tipoff="{{ g.start_time_iso }}">{{ g.tipoff_display }}</span>
       {% if g.n_players %}<span>· {{ g.n_players }} players</span>{% endif %}
     </div>
-    {% if g.top_edges %}
-    <div>
-      <div class="gc-edges-hdr">Top edges</div>
-      <div class="gc-edges mt-1">
-        {% for e in g.top_edges %}
-        <div class="edge-row" data-book="{{ e.book|default('') }}">
-          <div class="edge-rank">{{ loop.index }}</div>
-          <div class="edge-label">{{ e.label }}{% if e.book %}<span class="edge-book">{{ e.book }}</span>{% endif %}</div>
-          {% if e.odds %}<div class="edge-odds">{{ '%+d'|format(e.odds) }}</div>{% endif %}
-          {% if e.edge_pct is not none %}<div class="edge-ev {% if e.edge_pct > 0 %}pos{% elif e.edge_pct < 0 %}neg{% else %}zero{% endif %}">{{ '%+.1f'|format(e.edge_pct) }}%</div>{% endif %}
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-    {% else %}
-    <div class="gc-no-edges">No model edges yet — lines may not be scraped</div>
-    {% endif %}
     <div class="gc-footer">
       <span class="gc-props-count">{{ g.n_props }} props</span>
       <span class="gc-intel-link">Open Game Intel ↗</span>
@@ -237,30 +204,11 @@
 </div>
 {% endif %}
 
-<!-- Recently settled bets -->
-{% if settled_bets %}
-<div class="home-section-hdr">Recently settled</div>
-<div class="settled-list">
-  {% for b in settled_bets %}
-  <div class="settled-row">
-    <span class="settled-result {% if b.status == 'won' %}settled-win{% else %}settled-loss{% endif %}">
-      {{ 'WON' if b.status == 'won' else 'LOST' }}
-    </span>
-    <span style="color:var(--cv-text);">{{ b.player_name or b.player or '—' }}</span>
-    <span style="color:var(--cv-muted);font-size:11px;">
-      {{ b.prop_stat or b.stat or '' }}
-      {% if b.side and b.line %}{{ 'O' if b.side|upper == 'OVER' else 'U' }}{{ '%g'|format(b.line|float) }}{% endif %}
-    </span>
-    {% if b.actual_value is not none %}
-    <span style="color:var(--cv-subtle);font-size:11px;">→ {{ '%g'|format(b.actual_value|float) }}</span>
-    {% endif %}
-    <span class="settled-pnl {% if b.pnl is not none and b.pnl|float > 0 %}pos{% elif b.pnl is not none and b.pnl|float < 0 %}neg{% endif %}">
-      {% if b.pnl is not none %}{{ '%+.0f'|format(b.pnl|float) }}{% endif %}
-    </span>
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+<!-- "Coming up" section removed 2026-05-29: only the next known game is shown above. -->
+
+
+<!-- Recently settled bets removed 2026-05-29: moved to /results per-game breakdown -->
+
 
 <script>
 // ── WS connection status indicator ─────────────────────────────────────────
@@ -426,85 +374,6 @@ function _startFallbackPolling() {
   }
   checkBanner();
   setInterval(checkBanner, 60000);
-})();
-
-// ── Book filter ─────────────────────────────────────────────────────────────
-(function(){
-  var LS_KEY = 'cv_book_filter';
-  function readSelected(){
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || []; } catch(e){ return []; }
-  }
-  function saveSelected(arr){ try { localStorage.setItem(LS_KEY, JSON.stringify(arr)); } catch(e){} }
-  function applyFilter(){
-    var sel = readSelected();
-    var noFilter = sel.length === 0;  // empty = show all
-    document.querySelectorAll('.edge-row').forEach(function(row){
-      var bk = (row.getAttribute('data-book') || '').toLowerCase();
-      var keep = noFilter || sel.some(function(s){ return bk.indexOf(s.toLowerCase()) !== -1; });
-      row.setAttribute('data-book-hidden', keep ? '0' : '1');
-    });
-    // Update chip visuals
-    document.querySelectorAll('.book-chip').forEach(function(chip){
-      var name = chip.getAttribute('data-book') || '';
-      chip.classList.toggle('on', sel.indexOf(name) !== -1);
-    });
-  }
-  function collectBooks(){
-    var set = {};
-    document.querySelectorAll('.edge-row').forEach(function(r){
-      var bk = (r.getAttribute('data-book') || '').trim();
-      if (bk) set[bk] = true;
-    });
-    return Object.keys(set).sort();
-  }
-  function buildChips(){
-    var container = document.getElementById('bookFilterChips');
-    if (!container) return;
-    var books = collectBooks();
-    if (books.length === 0) {
-      container.innerHTML = '<span style="color:var(--cv-muted);font-size:11px">No books to filter yet — bets will appear as scrapers populate.</span>';
-      return;
-    }
-    container.innerHTML = '';
-    books.forEach(function(bk){
-      var chip = document.createElement('button');
-      chip.className = 'book-chip';
-      chip.setAttribute('data-book', bk);
-      chip.type = 'button';
-      chip.textContent = bk;
-      chip.onclick = function(e){
-        e.preventDefault(); e.stopPropagation();
-        var sel = readSelected();
-        var idx = sel.indexOf(bk);
-        if (idx === -1) sel.push(bk); else sel.splice(idx, 1);
-        saveSelected(sel);
-        applyFilter();
-      };
-      container.appendChild(chip);
-    });
-    // "Clear" pseudo-chip
-    var clr = document.createElement('button');
-    clr.className = 'book-chip';
-    clr.type = 'button';
-    clr.style.opacity = '.7';
-    clr.textContent = 'Show all';
-    clr.onclick = function(e){
-      e.preventDefault(); e.stopPropagation();
-      saveSelected([]); applyFilter();
-    };
-    container.appendChild(clr);
-    applyFilter();
-  }
-  // Build on first load
-  buildChips();
-  // Rebuild after AJAX edge refresh (in case new books appeared)
-  var orig = window._patchGameGrids;
-  if (typeof orig === 'function') {
-    window._patchGameGrids = function(){
-      orig.apply(this, arguments);
-      setTimeout(buildChips, 50);
-    };
-  }
 })();
 
 // ── Boot ────────────────────────────────────────────────────────────────────

@@ -222,6 +222,71 @@
 </section>
 {% endif %}
 
+{# ─── Signal Panel (CV_SIGNAL_PANEL=1): per-player fired scouting signals ──── #}
+{% if signal_panel and signal_panel.players %}
+<section class="mb-6 md:mb-8" id="signalPanelSection">
+  <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+    <h2 style="font-size:16px;font-weight:700;color:var(--cv-text);margin:0;letter-spacing:-0.01em">
+      Live Signal Engine
+    </h2>
+    <span style="font-size:11px;color:var(--cv-muted)">
+      P{{ signal_panel.period }}
+      {% if signal_panel.clock %}&nbsp;&middot;&nbsp;{{ signal_panel.clock }}{% endif %}
+      &nbsp;&middot;&nbsp;{{ signal_panel.n_players_flagged }} player{{ 's' if signal_panel.n_players_flagged != 1 }} &middot; {{ signal_panel.n_signals_total }} signal{{ 's' if signal_panel.n_signals_total != 1 }}
+    </span>
+    <span style="font-size:10px;padding:2px 8px;border-radius:9px;background:rgba(148,163,184,0.10);border:1px solid rgba(148,163,184,0.25);color:var(--cv-muted);letter-spacing:0.04em;text-transform:uppercase">
+      scouting only &middot; not a tilt
+    </span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+    {% for pl in signal_panel.players %}
+    <div class="cv-card" style="padding:12px 14px;font-size:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-weight:700;color:var(--cv-text)">{{ pl.name }}</span>
+        <span style="font-family:monospace;font-size:11px;color:var(--cv-muted)">
+          {{ pl.team }}&nbsp;&middot;&nbsp;{{ pl.min }}min
+        </span>
+      </div>
+      <div style="font-family:monospace;font-size:10px;color:var(--cv-subtle);margin-bottom:8px">
+        {{ pl.pts }}pts&nbsp;{{ pl.reb }}reb&nbsp;{{ pl.ast }}ast&nbsp;{{ pl.tov }}tov&nbsp;{{ pl.pf }}pf
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        {% for sig in pl.signals %}
+          {%- set badge_color =
+              '#f87171' if sig.code in ('TOV_SPIKE','FOUL_TROUBLE') else
+              '#60a5fa' if sig.code in ('COLD_SCORING','THREE_DROUGHT','REB_DOWN','AST_DOWN') else
+              '#34d399' if sig.code in ('HOT_SCORING','STOCKS_UP','REB_UP','AST_UP') else
+              '#94a3b8' -%}
+          {%- set badge_bg =
+              'rgba(248,113,113,0.12)' if sig.code in ('TOV_SPIKE','FOUL_TROUBLE') else
+              'rgba(96,165,250,0.10)'  if sig.code in ('COLD_SCORING','THREE_DROUGHT','REB_DOWN','AST_DOWN') else
+              'rgba(52,211,153,0.10)'  if sig.code in ('HOT_SCORING','STOCKS_UP','REB_UP','AST_UP') else
+              'rgba(148,163,184,0.08)' -%}
+        <div style="padding:5px 8px;border-radius:6px;background:{{ badge_bg }};border:1px solid {{ badge_color }}22">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+            <span style="padding:1px 6px;border-radius:9px;font-size:9px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;background:{{ badge_bg }};border:1px solid {{ badge_color }};color:{{ badge_color }}">
+              {{ sig.code | replace('_', ' ') }}
+            </span>
+            <span style="font-size:10px;font-family:monospace;color:var(--cv-muted)">
+              {{ sig.stat }}
+              &nbsp;obs/36={{ sig.obs }}
+              &nbsp;base={{ sig.base }}
+              &nbsp;z={{ sig.z }}
+              {% if sig.conf == 'high' %}&nbsp;<span style="color:#22c55e">&#x25CF;</span>
+              {% elif sig.conf == 'med' %}&nbsp;<span style="color:#fbbf24">&#x25CF;</span>
+              {% else %}&nbsp;<span style="color:#64748b">&#x25CF;</span>{% endif %}
+            </span>
+          </div>
+          <div style="font-size:10px;color:var(--cv-muted);line-height:1.4">{{ sig.note }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 {% if not slate.bets %}
   <div class="cv-card p-6 text-center" style="color:var(--cv-muted);padding:32px 24px;">
     <div style="font-size:32px;margin-bottom:12px;opacity:.35">🏀</div>

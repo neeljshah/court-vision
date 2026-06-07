@@ -39,6 +39,27 @@
       white-space:normal;width:max-content;max-width:240px;text-align:left;
       z-index:50;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);
     }
+    /* ── global mobile patch ───────────────────────────────────────── */
+    @media(max-width:480px){
+      /* Bump tiny labels up to readable minimum */
+      .badge{font-size:11px!important;}
+      .edge-rank{font-size:10px!important;}
+      /* Bet card touch targets */
+      .bet-card button,.bet-card a{min-height:36px;display:inline-flex;align-items:center;}
+      /* Tier header wraps instead of overflowing */
+      .tier-hdr{flex-wrap:wrap!important;row-gap:4px!important;}
+      /* Settled rows stack cleanly */
+      .settled-row{flex-direction:column;align-items:flex-start!important;gap:4px!important;}
+      .settled-pnl{margin-left:0!important;}
+      /* Intel grid single-column at very narrow widths */
+      .intel-grid{grid-template-columns:1fr!important;}
+      /* Ensure all tables can scroll horizontally */
+      .bet-table,.mini-props-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+      /* Bet card stat grid: tighten padding */
+      .bet-card .grid.grid-cols-3>div{padding:2px 0;}
+      /* "Why this bet?" button — bump to tap-friendly height */
+      .bet-card .mt-3.md\\:hidden button{min-height:36px;padding:6px 10px;width:100%;justify-content:flex-start;}
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -48,6 +69,7 @@
       <nav class="flex items-center gap-1 text-xs font-medium overflow-x-auto flex-1 min-w-0" style="scrollbar-width:none;">
         <a href="/"        class="cv-nav-link {% block nav_games %}{% endblock %}">Tonight</a>
         <a href="/parlays" class="cv-nav-link {% block nav_parlays %}{% endblock %}">Parlays</a>
+        <a href="/results" class="cv-nav-link {% block nav_results %}{% endblock %}">Results</a>
         <a href="/help"    class="cv-nav-link {% block nav_help %}{% endblock %}">Help</a>
       </nav>
       <span class="text-xs flex-shrink-0" style="color:var(--cv-muted)">{% block subtitle %}{% endblock %}</span>
