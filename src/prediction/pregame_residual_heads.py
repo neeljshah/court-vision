@@ -42,6 +42,30 @@ _HEAD_STATS: frozenset = frozenset({"reb", "ast", "fg3m", "stl", "blk", "tov"})
 # Flag: set to False for emergency rollback without touching call sites.
 _USE_PREGAME_RESIDUAL_HEADS: bool = True
 
+# ── CV_RESIDUAL_HEAD_FIX ─────────────────────────────────────────────────────
+# THE DIM BUG: the saved boosters were trained on the 85/88-col feature set, but
+# apply_residual_correction built X from feature_columns(stat) which has since
+# grown to 129/132 cols. booster.predict() raised a dim error that the try/except
+# swallowed, so the correction NEVER fired in production for ANY of the 6 stats.
+#
+# THE VALIDATION (scripts/_residual_head_fix_validate.py ->
+# docs/_audits/RESIDUAL_HEAD_FIX_VALIDATE.json, leak-free per-fold WF on the
+# SERVED faithful OOF): the heads were trained on (actual - BLEND) but production
+# serves the q50 head for reb/fg3m/stl/blk/tov (ast serves blend). The blend-
+# relative training_report wins (blk -14% etc.) were a WRONG-BASE artifact — the
+# served q50 is already sharper than blend+head. Firing the fixed head on the
+# served base HURTS all 5 q50 stats (reb +0.86 / fg3m +1.59 / stl +1.59 /
+# blk +0.68 / tov +0.30 %) and helps only ast (-0.76% MAE, edge-risk pending ROI).
+#
+# So the dead head was accidentally CORRECT for 5/6 stats. We keep it disabled by
+# default (byte-identical to today) and make that intentional + robust (no longer
+# relying on a swallowed exception, no footgun if feature_columns ever returns 85).
+# When CV_RESIDUAL_HEAD_FIX=1 the head fires with the CORRECT trained dims, but
+# ONLY for stats in _FIX_SHIP_STATS — currently EMPTY (no served stat passes the
+# leak-free gate; ast withheld until its edge ROI is proven preserved).
+_FIX_ENABLED: bool = os.environ.get("CV_RESIDUAL_HEAD_FIX", "0") == "1"
+_FIX_SHIP_STATS: frozenset = frozenset()  # validated-safe allowlist (empty)
+
 # Process-level cache so load_heads() is cheap after the first call.
 _HEADS_CACHE: Optional[Dict[str, object]] = None
 
@@ -128,6 +152,13 @@ def apply_residual_correction(
         # pts and any future ungated stat: passthrough
         return base_pred
 
+    # Default (CV_RESIDUAL_HEAD_FIX unset): explicit no-op. The blend-trained head
+    # HURTS the served q50 base for every q50-dispatch stat (validated leak-free,
+    # see module header). This is byte-identical to the historical swallowed-dim
+    # behavior but intentional and footgun-free.
+    if not _FIX_ENABLED or stat not in _FIX_SHIP_STATS:
+        return base_pred
+
     if heads is None:
         heads = load_heads(head_dir=model_dir)
 
@@ -135,11 +166,11 @@ def apply_residual_correction(
     if booster is None:
         return base_pred
 
-    # Build feature vector in the order feature_columns(stat=stat) expects.
-    # Import lazily to avoid circular import — prop_pergame imports nothing from here.
+    # THE FIX: build X from the booster's OWN trained feature names (the 85/88-col
+    # subset), not feature_columns(stat) (129/132). The trained names are a strict
+    # subset of feature_columns, so feature_row carries them all.
     try:
-        from src.prediction.prop_pergame import feature_columns  # noqa: PLC0415
-        cols = feature_columns(stat=stat)
+        cols = list(booster.feature_name())
     except Exception:
         return base_pred
 

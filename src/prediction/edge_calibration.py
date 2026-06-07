@@ -126,7 +126,19 @@ def calibrate_p_win(
         Win probability in [0.50, 0.90].
     """
     cal_edge = calibrate_edge(stat, abs(raw_edge))
-    frac = min(1.0, max(0.0, (cal_edge - threshold) / max(threshold * 2.0, 0.1)))
+    # SWEEP-2 fix (CV_PWIN_RAW_FRAC, default OFF = byte-identical legacy). The
+    # `threshold` is denominated in RAW-edge units (iter-25), but the legacy frac
+    # subtracts it from the isotonic-SHRUNK `cal_edge` (slopes 0.21-0.68). For
+    # stats whose isotonic saturates below threshold (REB/AST, partly FG3M/STL/BLK)
+    # this forces frac==0, pinning p_win at baseline_hit for ALL edge magnitudes
+    # and killing edge-proportional Kelly sizing on the live slate. When ON, drive
+    # frac off the RAW edge so its units match the raw-edge threshold and p_win
+    # scales with edge size again. Real-money stake change -> recommend; validate
+    # with run_gate1_full_analysis / iter33_fractional_kelly_backtest before default ON.
+    if os.getenv("CV_PWIN_RAW_FRAC", "0") == "1":
+        frac = min(1.0, max(0.0, (abs(raw_edge) - threshold) / max(threshold * 2.0, 0.1)))
+    else:
+        frac = min(1.0, max(0.0, (cal_edge - threshold) / max(threshold * 2.0, 0.1)))
     p_hi = min(0.85, baseline_hit + 0.08)
     p = baseline_hit + frac * (p_hi - baseline_hit)
     return float(min(0.90, max(0.50, p)))

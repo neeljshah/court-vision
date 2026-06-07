@@ -222,6 +222,48 @@ def select(
         except Exception:
             pass  # degraded gracefully — never block on import error
 
+        # 1c. Bet-policy stat allowlist (CV_BET_POLICY). Strict no-op under the
+        #     default policy `iter57`; under `reb_ast` skips PTS / FG3M / STL /
+        #     BLK / TOV candidates. See docs/VS_VEGAS_ASSESSMENT.md §7.
+        try:
+            from src.prediction.bet_policy import policy_allows_stat as _policy_allows
+            if not _policy_allows(stat):
+                log.debug("skip %s/%s: stat not in active CV_BET_POLICY", player, stat)
+                continue
+        except Exception:
+            pass  # degraded gracefully — never block on import error
+
+        # 1c-i. Per-policy edge floor + closing-line cap + regime guard
+        #     (CV_BET_POLICY). Mirrors compare_to_lines.py:411-431 so live
+        #     selection matches the graded harness. `edge` here is RAW stat
+        #     units (proj - line, from run_daily_slate.build_edge_rows), so the
+        #     0.75 ast_high floor is in the same units. Strict no-op under the
+        #     default iter57 policy (policy_min_edge -> 0.0, policy_drops_line ->
+        #     False). The playoff-AST guard (IN-2 / §8e) is the one default-on
+        #     change: AST bets on playoff game_ids (prefix 004) are skipped
+        #     unless CV_ALLOW_PLAYOFF_AST=1, because gated playoff AST is -2.78%.
+        try:
+            from src.prediction.bet_policy import (
+                policy_min_edge as _policy_min_edge,
+                policy_drops_line as _policy_drops_line,
+                policy_allows_context as _policy_allows_context,
+            )
+            _floor = _policy_min_edge(stat)
+            if _floor > 0.0 and abs(edge) < _floor:
+                log.debug("skip %s/%s: |edge| %.2f < policy floor %.2f",
+                          player, stat, abs(edge), _floor)
+                continue
+            _bline = row.get("book_line")
+            if _bline is not None and _policy_drops_line(stat, float(_bline)):
+                log.debug("skip %s/%s: line %.1f over policy cap", player, stat, float(_bline))
+                continue
+            if not _policy_allows_context(stat, game_id):
+                log.debug("skip %s/%s: regime guard (playoff AST) for game %s",
+                          player, stat, game_id)
+                continue
+        except Exception:
+            pass  # degraded gracefully — never block on import error
+
         # 1b. CLV gate — dual filter: drop bets the model expects to lose
         #     closing-line value, even when the edge clears the bar.
         clv_pred: Optional[dict] = None
@@ -253,6 +295,21 @@ def select(
 
         # 3. Kelly sizing with correlation matrix
         odds = int(row.get("odds", default_odds) or default_odds)
+
+        # CV_AST_DURABLE_KELLY (default OFF — byte-identical when OFF):
+        # For AST bets, size on the durable ~+5%/55%-win core rather than the
+        # regime-inflated in-window edge (16–22% edge_frac → win_prob 62–74%).
+        # Passes win_prob_override=0.55 (durable 55% win rate, not the +19% peak)
+        # AND caps AST stake at 2% (per AST_EDGE_MAXIMIZATION.md §4).
+        # Sizing changes the STAKE only — same bets selected, ROI% unchanged.
+        # See docs/_audits/AST_CORRECTNESS_AUDIT.md Check 6.
+        _AST_DURABLE_KELLY_ON = os.environ.get("CV_AST_DURABLE_KELLY", "0").strip() in ("1", "true", "yes", "on")
+        _ast_win_prob_override = None
+        _ast_stake_cap = None
+        if _AST_DURABLE_KELLY_ON and stat.lower() == "ast":
+            _ast_win_prob_override = 0.55   # durable +5% core: full-Kelly 5.5%, quarter-Kelly 1.38%
+            _ast_stake_cap = 0.02           # ~2.06% max (quarter-Kelly × 1.5 pace tilt)
+
         if _has_kelly:
             size = _kelly_corr(
                 edge=abs(edge) / max(abs(row.get("book_line", 1.0) or 1.0), 1.0),
@@ -260,11 +317,28 @@ def select(
                 bankroll=bk,
                 stat=stat,
                 open_stats=open_stats,
+                win_prob_override=_ast_win_prob_override,
             )
+            # Apply AST-specific cap when durable Kelly is active
+            if _ast_stake_cap is not None:
+                size = min(size, round(bk * _ast_stake_cap, 2))
         else:
             # Fallback: quarter-Kelly approximation
-            fraction = min(abs(edge) * 0.25, 0.04)
+            _fallback_cap = _ast_stake_cap if _ast_stake_cap is not None else 0.04
+            fraction = min(abs(edge) * 0.25, _fallback_cap)
             size = round(bk * fraction, 2)
+
+        # 3a. Kelly SIZING tilt (CV_KELLY_TILT). Strict no-op (×1.0) by default.
+        #     H1 (INTEL_CAMPAIGN / VS_VEGAS §8d): high opp_pace concentrates the
+        #     gated AST edge — nudge that slice up ~1.25× (never down, never drops
+        #     a bet). Reads row['opp_pace'] when present; absent => ×1.0.
+        try:
+            from src.prediction.bet_policy import policy_kelly_tilt as _kelly_tilt
+            _tilt = _kelly_tilt(stat, row.get("opp_pace"))
+            if _tilt != 1.0:
+                size = round(size * _tilt, 2)
+        except Exception:
+            pass  # degraded gracefully — never block on import error
 
         if size <= 0:
             continue

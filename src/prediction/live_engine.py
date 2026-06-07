@@ -185,6 +185,91 @@ _USE_RESIDUAL_HEADS_ENDQ2 = True
 # tolerate the extra keys (they only read declared columns).
 _USE_INPLAY_WINPROB = True
 
+# W-037 (CV_STL_BANDS): Poisson-remainder STL interval bands at endQ2/endQ3.
+# When CV_STL_BANDS is set (any non-empty string), the standard empirical
+# sigma from live_quantile_calibration.json is replaced with a per-player
+# Poisson-remainder sigma derived from the projected remaining steals.
+#
+# STL is a low-count Poisson process.  The correct residual distribution
+# for REMAINING steals is Poisson(lambda_rem) where lambda_rem = the
+# projected remaining count = max(0, projected_final - current_stl).
+# Var[Poisson(k)] = k, so sigma = sqrt(k).  This automatically shrinks
+# the band width late (few steals remaining) and widens it early (many
+# steals remaining), matching the true count distribution.
+#
+# Implementation:
+#   remaining_stl = max(0, projected_final - current_stl)
+#   sigma         = max(_STL_SIGMA_FLOOR, sqrt(remaining_stl))
+#   half_wid      = _STL_Z80 * sigma       [80% coverage z-score]
+#   q10           = max(0, q50 - half_wid)  [asymmetric, floor at 0]
+#   q90           = q50 + half_wid
+#
+# Using remaining_stl (not rate*time) ensures that for a player with
+# current_stl=0 and projected_final=0.3, sigma=sqrt(0.3)≈0.55 so
+# q10=max(0, 0.3-0.71)=0 and actual=0 is covered (correct).
+# A floor of 0.10 steals prevents degenerate zero-width bands when
+# remaining_stl ≈ 0 (e.g. player who has already hit their L5 total).
+#
+# Byte-identical when CV_STL_BANDS is unset (the default).
+# Validated: coverage check per (50/80/90 bucket × endQ2, endQ3).
+
+# Remaining game-clock minutes by snapshot boundary name (informational;
+# not used directly in the Poisson formula which keys on projected count).
+_STL_REMAINING_MIN: Dict[str, float] = {
+    "endQ1": 36.0,   # Q2+Q3+Q4 remaining
+    "endQ2": 24.0,   # Q3+Q4 remaining
+    "endQ3": 12.0,   # Q4 remaining
+}
+# z-score for 80% symmetric interval (P10..P90); STL is treated asymmetric
+# so we floor q10 at 0 (matches ASYMMETRIC_STATS in live_quantile_bands.py).
+_STL_Z80: float = 1.2816
+# Minimum sigma (in steals) to avoid degenerate zero-width bands.
+_STL_SIGMA_FLOOR: float = 0.10
+
+
+def _stl_poisson_band(q50: float, current_stl: float) -> Dict[str, float]:
+    """Compute Poisson-remainder q10/q50/q90 for a single STL projection.
+
+    Uses the projected remaining count as the Poisson parameter:
+        remaining_stl = max(0, projected_final - current_stl)
+        sigma         = max(_STL_SIGMA_FLOOR, sqrt(remaining_stl))
+        half_wid      = _STL_Z80 * sigma
+        q10           = max(0, q50 - half_wid)   [floor at 0]
+        q90           = q50 + half_wid
+
+    q50 is always unchanged (= projected_final).
+
+    Args:
+        q50: total projected_final (not just remaining) -- q50 is unchanged.
+        current_stl: steals accumulated so far this game.
+
+    Returns dict with q10, q50, q90 keys (monotone, q10 >= 0).
+    """
+    import math as _math
+    try:
+        q50f = float(q50)
+    except (TypeError, ValueError):
+        q50f = 0.0
+    try:
+        cur_stl = float(current_stl)
+    except (TypeError, ValueError):
+        cur_stl = 0.0
+
+    remaining_stl = max(0.0, q50f - cur_stl)
+    sigma = _math.sqrt(remaining_stl) if remaining_stl > 0.0 else 0.0
+    sigma = max(sigma, _STL_SIGMA_FLOOR)
+
+    half = _STL_Z80 * sigma
+    q10v = max(0.0, q50f - half)
+    q90v = q50f + half
+    # Guarantee monotonicity.
+    if q10v > q50f:
+        q10v = q50f
+    if q90v < q50f:
+        q90v = q50f
+    return {"q10": float(q10v), "q50": float(q50f), "q90": float(q90v)}
+
+
 # Module-scope lazy caches -- loaded once on first project_from_snapshot
 # call, then reused across the whole live polling loop.
 _GLOBAL_MIN_MODEL = None
@@ -255,6 +340,12 @@ __all__ = [
 _LEARNED_Q4_POSITIONS = None
 _LEARNED_Q4_LOAD_FAILED = False
 
+# W-013 (CV_PTS_MIN_CALIB): module-scope cache for the endQ2 minute-trajectory
+# model (minute_trajectory_q2.lgb). Loaded lazily on first use; None when
+# the artifact is absent (graceful no-op path preserved).
+_PTS_MIN_CALIB_MODEL_Q2 = None
+_PTS_MIN_CALIB_LOAD_FAILED = False
+
 
 def _apply_learned_q4_minutes(snap: dict, rows: list):
     """cycle 110: replace projected_final at period=4 with the projection
@@ -312,6 +403,218 @@ def _apply_learned_q4_minutes(snap: dict, rows: list):
         r["projected_final"] = float(new)
         r["projection_source"] = "learned_q4_minutes_v1"
     return rows, True
+
+
+def _apply_pts_min_calib(snap: dict, rows: list) -> list:
+    """W-013 (CV_PTS_MIN_CALIB): per-period minutes-trajectory recalibration.
+
+    At the endQ2 boundary (period=3, clock near 12:00): use the trained
+    ``minute_trajectory_q2.lgb`` model to predict each player's remaining
+    minutes (Q3+Q4) and scale the remaining-PTS delta accordingly.
+
+    The correction compares learned remaining minutes to the minutes IMPLICITLY
+    assumed by the current projection:
+
+        per_min_rate  = current_pts / min_through_q2  (player scoring rate)
+        implied_rem_min = remaining_delta / per_min_rate
+        ratio = learned_remaining_min / implied_rem_min
+        new_pts_final = current_pts + remaining_delta * ratio
+
+    Using the projection-implied denominator (not a fixed 24-min constant)
+    keeps the ratio centred around 1.0 — it adjusts only when the minute model
+    diverges from the projection's assumption. The ratio is clamped to [0.1, 2.0]
+    to prevent extreme rescaling on noisy rows.
+
+    Only fires at the endQ2 boundary; all other snapshots and all non-PTS stats
+    are passed through unchanged. Any failure (missing model, parse error,
+    etc.) returns ``rows`` unmodified -- the hot path never breaks.
+
+    Returns the (possibly mutated) rows list.
+    """
+    global _PTS_MIN_CALIB_MODEL_Q2, _PTS_MIN_CALIB_LOAD_FAILED
+    if _PTS_MIN_CALIB_LOAD_FAILED:
+        return rows
+
+    # Gate to endQ2 boundary only (period=3, clock near 12:00).
+    snap_period = snap.get("period")
+    snap_clock = snap.get("clock")
+    try:
+        from src.prediction.period_specific_heads import snapshot_point_for as _spf
+        if _spf(snap_period, snap_clock) != "endQ2":
+            return rows
+    except Exception:
+        return rows
+
+    # Lazy-load the Q2 minute-trajectory model artifact.
+    if _PTS_MIN_CALIB_MODEL_Q2 is None:
+        try:
+            import json as _json_load
+            _q2_model_path = os.path.join(
+                PROJECT_DIR, "data", "models", "minute_trajectory_q2.lgb")
+            _q2_meta_path = os.path.join(
+                PROJECT_DIR, "data", "models", "minute_trajectory_q2_meta.json")
+            if (not os.path.exists(_q2_model_path)
+                    or not os.path.exists(_q2_meta_path)):
+                _PTS_MIN_CALIB_LOAD_FAILED = True
+                return rows
+            import lightgbm as lgb
+            _booster = lgb.Booster(model_file=_q2_model_path)
+            with open(_q2_meta_path, "r", encoding="utf-8") as _fh:
+                _meta = _json_load.load(_fh)
+            _PTS_MIN_CALIB_MODEL_Q2 = (_booster, _meta.get("feature_names", []))
+        except Exception:
+            _PTS_MIN_CALIB_LOAD_FAILED = True
+            return rows
+
+    try:
+        booster, feature_names = _PTS_MIN_CALIB_MODEL_Q2
+    except (TypeError, ValueError):
+        _PTS_MIN_CALIB_LOAD_FAILED = True
+        return rows
+
+    try:
+        import numpy as _np
+        from scripts.train_minute_trajectory_q2 import (  # noqa: E402
+            build_feature_row_q2,
+        )
+    except Exception:
+        return rows
+
+    # Parse game context.
+    try:
+        home_score = float(snap.get("home_score") or 0)
+    except (TypeError, ValueError):
+        home_score = 0.0
+    try:
+        away_score = float(snap.get("away_score") or 0)
+    except (TypeError, ValueError):
+        away_score = 0.0
+    margin_abs = abs(home_score - away_score)
+    home_team = snap.get("home_team") or ""
+    away_team = snap.get("away_team") or ""
+
+    # Index players by pid.
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    for r in rows:
+        if r.get("stat") != "pts":
+            continue
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            pid_i = int(pid)
+        except (TypeError, ValueError):
+            continue
+        p = by_pid.get(pid_i)
+        if p is None:
+            continue
+
+        try:
+            current_pts = float(r.get("current") or p.get("pts") or 0)
+        except (TypeError, ValueError):
+            current_pts = 0.0
+        try:
+            projected_final = float(r.get("projected_final") or 0)
+        except (TypeError, ValueError):
+            continue
+
+        remaining_delta = projected_final - current_pts
+        if remaining_delta <= 0.0:
+            # Nothing to scale (player has 0 or negative remaining projected).
+            continue
+
+        # Gather per-quarter minutes played through Q2.
+        try:
+            min_q1 = float(p.get("min_q1") or 0)
+        except (TypeError, ValueError):
+            min_q1 = 0.0
+        try:
+            min_q2_raw = p.get("min_q2")
+            min_q2 = float(min_q2_raw) if min_q2_raw is not None else 0.0
+        except (TypeError, ValueError):
+            min_q2 = 0.0
+        min_through = min_q1 + min_q2
+        # If per-quarter splits absent, fall back to cumulative min split evenly.
+        if min_through <= 0.0:
+            try:
+                min_through = float(p.get("min") or 0)
+                min_q1 = min_through / 2.0
+                min_q2 = min_through / 2.0
+            except (TypeError, ValueError):
+                pass
+
+        # Skip players with negligible minutes (no useful rate signal).
+        if min_through < 0.5 or current_pts <= 0.0:
+            continue
+
+        # Implied remaining minutes from the current projection:
+        #   per_min_rate = current_pts / min_through
+        #   implied_rem_min = remaining_delta / per_min_rate
+        per_min_rate = current_pts / min_through
+        implied_rem_min = remaining_delta / per_min_rate
+        if implied_rem_min <= 0.0:
+            continue
+
+        try:
+            pf_through_q2 = float(p.get("pf") or 0)
+        except (TypeError, ValueError):
+            pf_through_q2 = 0.0
+
+        team = p.get("team") or ""
+        is_leading = (
+            (team == home_team and home_score > away_score)
+            or (team == away_team and away_score > home_score)
+        )
+
+        l20_min = p.get("l20_min")
+        try:
+            l20_min = float(l20_min) if l20_min is not None else None
+        except (TypeError, ValueError):
+            l20_min = None
+
+        l5_min = p.get("l5_min")
+        try:
+            l5_min = float(l5_min) if l5_min is not None else None
+        except (TypeError, ValueError):
+            l5_min = None
+
+        try:
+            feat_row = build_feature_row_q2(
+                pf_through_q2=pf_through_q2,
+                min_q1=min_q1,
+                min_q2=min_q2,
+                score_margin_abs=margin_abs,
+                is_leading_team=1 if is_leading else 0,
+                position_proxy=p.get("position"),
+                l20_min=l20_min,
+                l5_min=l5_min,
+            )
+            arr = _np.asarray([feat_row], dtype=_np.float64)
+            learned_min = float(_np.clip(booster.predict(arr)[0], 0.0, 36.0))
+        except Exception:
+            continue
+
+        # Scale factor relative to the projection's own implied remaining minutes.
+        # Clamped to [0.1, 2.0] to prevent extreme adjustments on noisy rows.
+        ratio = learned_min / implied_rem_min
+        ratio = max(0.1, min(2.0, ratio))
+
+        new_final = current_pts + remaining_delta * ratio
+        # Never project below current (can't un-score points).
+        new_final = max(new_final, current_pts)
+
+        r["projected_final"] = float(new_final)
+        src = str(r.get("projection_source") or "")
+        if "+pts_min_calib" not in src:
+            r["projection_source"] = src + "+pts_min_calib"
+
+    return rows
 
 
 def _apply_unified_routed(snap: dict, rows: List[Dict]) -> List[Dict]:
@@ -486,6 +789,25 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
         if _at_endq2:
             rows = _apply_residual_heads_endq2(snap, rows)
 
+    # W-013 (CV_PTS_MIN_CALIB): per-period minutes-trajectory recalibration for
+    # PTS at endQ2. When CV_PTS_MIN_CALIB is set (any non-empty string), apply
+    # the learned Q2 minute-trajectory correction to PTS projected_final rows
+    # at the endQ2 boundary. Pure no-op for any other period or stat.
+    # Applied AFTER period_specific_heads and endQ2 residual heads so the
+    # minutes correction stacks on the best available point projection.
+    # Byte-identical when the flag is OFF (the default).
+    if os.environ.get("CV_PTS_MIN_CALIB"):
+        rows = _apply_pts_min_calib(snap, rows)
+
+    # W-014 (CV_INGAME_HEAT_GEN): generalized heat-check heat^0.20 mean-reversion.
+    # Fires at EVERY snapshot (not just endQ3) whenever the player has >= 3 min
+    # and an L5 per-min prior is available on the player row. Applies to
+    # pts/fg3m/ast remaining-delta only; never STL/BLK/TOV/REB; never alters
+    # current_stat. Byte-identical when CV_INGAME_HEAT_GEN is unset (default).
+    # PROTECT AST: this tilt is applied to AST remaining-delta but uses a
+    # per-player L5 AST rate so the direction tracks actual AST pace, not PTS.
+    rows = _apply_heat_check_generalized(snap, rows)
+
     # cycle 110 (loop 5): learned Q4 minutes override at endQ3. When the
     # flag is on AND the snapshot is at period=4 AND MinuteTrajectoryModel
     # loaded, replace projected_final using `learned_remaining_min/12.0` in
@@ -552,6 +874,67 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     if _USE_RESIDUAL_HEADS and _at_endq3:
         rows = _apply_residual_heads(snap, rows)
 
+    # bonus_ft_bump (CV_INGAME_BONUS_FT): FT-driven PTS bump when opponent is
+    # in the bonus.  Applied LAST among projection transforms (after all period
+    # heads and residual corrections) so it stacks on the best available
+    # projection without being overwritten.  Byte-identical when the flag is OFF.
+    # Only affects pts stat; all other stats unchanged.
+    if os.environ.get("CV_INGAME_BONUS_FT"):
+        try:
+            from predict_in_game import _bonus_ft_pts_bump as _bft_bump, _CV_BONUS_FT
+            if _CV_BONUS_FT:
+                _bft_snap_period = int(snap_period or 1)
+                import predict_in_game as _pig_bft
+                _bft_clock = float(_pig_bft.parse_clock(snap_clock)) if snap_clock else 12.0
+                _bft_home = snap.get("home_team") or ""
+                _bft_away = snap.get("away_team") or ""
+                _bft_snap_players = list(snap.get("players") or [])
+                for _r in rows:
+                    if _r.get("stat") != "pts":
+                        continue
+                    _r_team = _r.get("team") or ""
+                    _r_opp = _bft_away if _r_team == _bft_home else _bft_home
+                    if not _r_team or not _r_opp:
+                        continue
+                    _pid = _r.get("player_id")
+                    _bump = _bft_bump(
+                        player_id=_pid,
+                        team=_r_team,
+                        opp_team=_r_opp,
+                        snap_players=_bft_snap_players,
+                        period=_bft_snap_period,
+                        clock_rem=_bft_clock,
+                    )
+                    if _bump > 0.0:
+                        _r["projected_final"] = float(_r.get("projected_final", 0.0) or 0.0) + _bump
+        except Exception:
+            pass  # never break the hot path
+
+    # CV_INGAME_ONOFF_TILT: lineup net-rtg tilt for on-court players.
+    # Applied AFTER all point-projection overrides (period heads, residuals,
+    # heat_check, bonus_ft) so it scales whatever projection has been produced.
+    # Byte-identical when CV_INGAME_ONOFF_TILT is unset (the default).
+    # Graceful: any import or data error falls through silently.
+    if os.environ.get("CV_INGAME_ONOFF_TILT"):
+        try:
+            from src.ingame.snapshot_onoff_tilt_enricher import apply_onoff_tilt
+            rows = apply_onoff_tilt(snap, rows)
+        except Exception:
+            pass  # never break the hot path
+
+    # CV_INGAME_MATCHUP_TILT: scheme-based matchup tilt (accuracy-only).
+    # Tilts remaining projected delta by each player's historical per-scheme
+    # splits vs the opponent team's dominant defensive scheme.
+    # Applied AFTER onoff_tilt (stacks on top). Byte-identical when unset.
+    # Accuracy-only: vs_scheme atlas has in-season leakage so NOT for betting.
+    # Graceful: any import or data error falls through silently.
+    if os.environ.get("CV_INGAME_MATCHUP_TILT"):
+        try:
+            from src.ingame.snapshot_matchup_tilt_enricher import apply_matchup_tilt
+            rows = apply_matchup_tilt(snap, rows)
+        except Exception:
+            pass  # never break the hot path
+
     # cycle 105c + R1_D_v2 (loop 5): opt-in quantile bands. q50 == projected_final
     # always; q10/q90 are additive. Guarded so the existing point-only
     # consumers (live_dashboard, save_live_predictions, edge_eval) see no
@@ -569,6 +952,20 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
             point = period_to_point(snap_period) if snap_period is not None else None
             cal = load_calibration()
             snap_game_date: Optional[str] = snap.get("game_date") or None
+            # W-037 (CV_STL_BANDS): build a per-player current-stl lookup from
+            # the snapshot so the Poisson-remainder path can compute a
+            # per-player sigma without re-reading snap["players"] on every row.
+            _stl_bands_on = bool(os.environ.get("CV_STL_BANDS"))
+            _stl_cur_lookup: Dict[int, float] = {}  # pid -> current_stl
+            if _stl_bands_on:
+                for _sp in (snap.get("players") or []):
+                    try:
+                        _pid_sp = int(_sp["player_id"])
+                        _stl_val = float(_sp.get("stl") or 0.0)
+                        _stl_cur_lookup[_pid_sp] = _stl_val
+                    except (TypeError, ValueError, KeyError):
+                        pass
+            _stl_remaining = _STL_REMAINING_MIN.get(point, 0.0) if point else 0.0
             for r in rows:
                 stat = r.get("stat")
                 try:
@@ -584,6 +981,20 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
                 r["q10"] = b["q10"]
                 r["q50"] = b["q50"]
                 r["q90"] = b["q90"]
+                # W-037 (CV_STL_BANDS): override STL bands with Poisson
+                # remainder when the flag is on and we're at a supported
+                # snapshot boundary with meaningful remaining time.
+                if (_stl_bands_on and stat == "stl"
+                        and _stl_remaining > 0.0
+                        and row_pid is not None):
+                    try:
+                        cur_stl = _stl_cur_lookup.get(row_pid, 0.0)
+                        pb = _stl_poisson_band(q50, cur_stl)
+                        r["q10"] = pb["q10"]
+                        r["q50"] = pb["q50"]
+                        r["q90"] = pb["q90"]
+                    except Exception:
+                        pass  # fall through to empirical band already set
         except Exception:
             # Bands are advisory -- never break the hot path.
             pass
@@ -729,6 +1140,474 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
                     r["projected_final"] = float(cur)
             except (TypeError, ValueError):
                 pass
+
+    # W-018 (CV_DEFENDER_MATCHUP): Bayesian-shrunk defender-matchup PPP multiplier.
+    # Gated default-OFF — byte-identical to baseline when the flag is unset.
+    #
+    # When ON:
+    #   1. Seed snap["matchups"] from the series-prior CSV (most-poss defender).
+    #   2. Override with live BoxScoreMatchupsV3 data for the current game.
+    #      If the CDN is blocked, writes matchups_source:"unavailable" and
+    #      falls through to the series-prior seed.
+    #   3. Per row, call apply_matchup_adjustment(player_id, stat, proj, snap)
+    #      which Bayesian-shrinks with lambda=poss/(poss+60), MIN_POSS=30 guard,
+    #      clamp [0.55,1.55]. No-ops cleanly when defender is unknown.
+    # PROTECT AST: AST is the one real edge — skip AST adjustments entirely.
+    # Never raises: any failure falls through to unchanged projection.
+    if os.environ.get("CV_DEFENDER_MATCHUP"):
+        try:
+            from src.data.live_matchup_seeder import (
+                seed_matchups_from_series,
+                override_matchups_from_live_game,
+            )
+            from src.prediction.defender_matchup_residual import (
+                apply_matchup_adjustment,
+            )
+
+            # Step 1: seed from series prior (no-op if CSV absent).
+            seed_matchups_from_series(snap)
+
+            # Step 2: override with live game matchup data (current game).
+            # fetch_fn=None triggers the real fetch; write unavailable marker
+            # if the CDN fetch fails / returns nothing.
+            _gid = snap.get("game_id")
+            _live_overrides_applied = False
+            if _gid:
+                _snap_before = len((snap.get("matchups") or {}))
+                override_matchups_from_live_game(snap, game_id=_gid)
+                _meta = snap.get("_matchups_meta") or {}
+                _live_overrides = _meta.get("live_overrides", 0)
+                # If the override returned 0 entries AND the series seed also
+                # gave 0, mark the source unavailable so consumers can log it.
+                if (not snap.get("matchups")
+                        and _live_overrides == 0):
+                    snap["matchups_source"] = "unavailable"
+                else:
+                    _live_overrides_applied = (_live_overrides > 0)
+                    snap["matchups_source"] = (
+                        "live_game" if _live_overrides_applied else "series_prior"
+                    )
+            else:
+                if not snap.get("matchups"):
+                    snap["matchups_source"] = "unavailable"
+                else:
+                    snap["matchups_source"] = "series_prior"
+
+            # Step 3: apply per-row matchup adjustment (SKIP AST — protected edge).
+            _MATCHUP_STATS = ("pts", "fg3m", "stl", "blk", "tov")
+            for r in rows:
+                stat = r.get("stat")
+                if stat not in _MATCHUP_STATS:
+                    # REBounds not in matchup tape; AST is the protected edge.
+                    continue
+                pid = r.get("player_id")
+                pf = r.get("projected_final")
+                if pid is None or pf is None:
+                    continue
+                try:
+                    adj_pf, reason = apply_matchup_adjustment(
+                        pid, stat, pf, snapshot=snap,
+                    )
+                    if adj_pf != pf:
+                        r["projected_final"] = float(adj_pf)
+                        src = str(r.get("projection_source") or "")
+                        if "+matchup" not in src:
+                            r["projection_source"] = src + "+matchup"
+                    r["matchup_reason"] = reason
+                except Exception:
+                    pass  # Never let matchup adjustment break the hot path.
+        except Exception:
+            # Belt-and-suspenders: if anything in the whole W-018 block fails,
+            # fall through with the unchanged rows.
+            pass
+
+    # W-023 (CV_INGAME_VAC_AST): star-stagger / vac_ast attach to live rows.
+    # Gated default-OFF — byte-identical to baseline when the flag is unset.
+    # HARD-OFF in playoffs (game_id prefix "004") — the AST edge inverts
+    # postseason (-2.78% gated). When ON + regular-season + game_date known:
+    #   1. Build the leak-free vac_ast lookup (memoised per-process).
+    #   2. For each AST row: look up (player_id, game_date); scale projected_final
+    #      up by 1.25x (vac_ast>=3) or 1.50x (vac_ast>=6).
+    #   3. Attach vac_ast field (0.0 default) to EVERY row so downstream
+    #      callers (bet_selector, edge UI) can read it without another lookup.
+    # Sizing is conservative (durable ~+5-8% floor, NOT the +15.6% in-window
+    # peak) per the campaign lesson: size on the floor, never the regime peak.
+    # Byte-identical when OFF: the gate is the very first check.
+    rows = _apply_ingame_vac_ast(snap, rows)
+
+    # ── DETERMINISTIC END-STATE GUARDS (applied LAST, so they are the final word
+    #    on the SERVED projected_final regardless of which head — base cycle-88 or
+    #    the routed/v2 overlay (_apply_unified_routed) — produced it). Both are
+    #    gated default-OFF and byte-identical when their flag is unset. ───────────
+    #
+    # LIVE-BOX-SCORE ACCURACY (CV_INGAME_SHRINK): the routed/v2 head systematically
+    # OVER-projects sparse defensive stats and late-game scoring (it extrapolates a
+    # rate forward where little/nothing actually accumulates). Held-out fold-3
+    # decomposition (ingame_eval_cache, 539k rows): freezing blk -22.4% / stl -13.7%
+    # MAE; late-game (>=42 elapsed min) pts -23.5% / reb -27.6%; fg3m/tov 30%-shrink
+    # -3.8/-2.9%. Shrink projected_final toward current per the validated per-stat
+    # weights. Applied BEFORE the freeze/foul-out guards so those still fully override
+    # their edge cases. Default-OFF = byte-identical. doc LIVE_BOXSCORE_ACCURACY.md.
+    rows = _apply_sparse_shrink(snap, rows)
+
+    # BUG-5 FINAL-FREEZE (CV_INGAME_FINAL_FREEZE): a finished game (game_status
+    # FINAL, or regulation clock expired with no OT possible) cannot accumulate
+    # any further stats, so the served projected_final MUST equal the current box
+    # value for every row. The served routed/v2 head adds a learned remaining-delta
+    # even at zero remaining time (sweep: 6 real FINAL snapshots over-projected PTS
+    # +1.58 avg, max +4.61 — Wemby 26->30.6). Freezing every row to current removes
+    # the phantom extrapolation. Applied BEFORE the foul-out cap (a final game is a
+    # superset freeze); fouled-out rows are then a no-op under the same value.
+    rows = _apply_final_freeze(snap, rows)
+
+    # BUG-1 FOUL-OUT (CV_INGAME_FOULOUT_CAP): a player disqualified with >= 6
+    # personal fouls is ejected and cannot play another second, so every counting
+    # stat's projected_final MUST equal the current box value (deterministic from
+    # the box). The served v2 head is nearly flat on foul state (sweep: pf=1->6
+    # moves only 0.03 pts while a fouled-out player is over-projected +5.2 pts at
+    # midQ3), biasing every fouled-out prop toward the OVER. The snapshot carries
+    # per-player ``pf`` (the live poller emits it), so this is a pure box clamp.
+    rows = _apply_foulout_cap(snap, rows)
+
+    return rows
+
+
+# ── DETERMINISTIC END-STATE GUARDS (BUG-1 foul-out, BUG-5 final freeze) ────────
+
+# The 7 counting stats that are frozen/capped to the current box value. These are
+# exactly the per-(player, stat) rows project_from_snapshot emits.
+_FROZEN_COUNTING_STATS = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
+
+# A player is DISQUALIFIED (fouled out) at >= 6 personal fouls — they are ejected
+# and accumulate nothing further, so the final box == the current box.
+_FOULOUT_PF = 6.0
+
+
+def _freeze_row_to_current(r: dict) -> None:
+    """Set a projection row's projected_final (and q50 if present) to current.
+
+    Deterministic clamp used by both end-state guards: a frozen/disqualified row
+    can accumulate nothing further, so the final == the current box value. Only
+    touches projected_final and the q50 band mirror (q50 == projected_final by the
+    band contract); q10/q90 are left as-is (advisory). Never raises.
+    """
+    cur = r.get("current")
+    if cur is None:
+        return
+    try:
+        cur_f = float(cur)
+    except (TypeError, ValueError):
+        return
+    r["projected_final"] = cur_f
+    # q50 mirrors projected_final by the live_quantile_bands contract; keep it
+    # coherent when bands were already attached upstream.
+    if "q50" in r:
+        r["q50"] = cur_f
+
+
+def _game_is_final(snap: dict) -> bool:
+    """True when the game is over for projection purposes (BUG-5).
+
+    A game is final when EITHER:
+      * game_status indicates FINAL (canonical src/data/live.is_final semantics), OR
+      * the regulation/OT clock has expired with no further period possible:
+        period >= 4 AND parsed clock <= 0:00 AND the score is not tied (a tie at
+        the end of regulation -> OT, so the game is NOT over — do not freeze).
+
+    Pure read of the snapshot; never raises. The clock-expired branch is a belt-
+    and-suspenders fallback for snapshots that carry a 0:00 clock before the feed
+    flips game_status to FINAL.
+    """
+    status = str(snap.get("game_status") or "").strip().upper()
+    if status == "FINAL":
+        return True
+    try:
+        period = int(snap.get("period") or 0)
+    except (TypeError, ValueError):
+        period = 0
+    if period < 4:
+        return False
+    # Parse the clock via the canonical live helper (handles 'M:SS' / '' / None).
+    try:
+        from src.data.live import parse_clock as _parse_clock
+        clock_rem = _parse_clock(snap.get("clock"))
+    except Exception:
+        return False
+    if clock_rem > 0.0:
+        return False
+    # Clock 0:00 in Q4+: only final if the game can't go to OT (not tied).
+    try:
+        home = float(snap.get("home_score") or 0.0)
+        away = float(snap.get("away_score") or 0.0)
+    except (TypeError, ValueError):
+        return False
+    return home != away
+
+
+def _apply_final_freeze(snap: dict, rows: List[Dict]) -> List[Dict]:
+    """BUG-5 (CV_INGAME_FINAL_FREEZE): freeze every projection to current when the
+    game is over. Gated default-OFF (byte-identical when the flag is unset).
+
+    A finished game cannot accumulate any further stats, so the served
+    projected_final == the current box value for every (player, stat) row. Acts on
+    whatever projected_final the upstream heads produced (base or routed/v2), so it
+    corrects the served value under the golive SBS stack. Never raises.
+    """
+    if not os.environ.get("CV_INGAME_FINAL_FREEZE"):
+        return rows
+    try:
+        if not _game_is_final(snap):
+            return rows
+        for r in rows:
+            _freeze_row_to_current(r)
+            src = str(r.get("projection_source") or "")
+            if "+final_freeze" not in src:
+                r["projection_source"] = src + "+final_freeze"
+    except Exception:
+        # Never let the freeze guard break the hot path.
+        return rows
+    return rows
+
+
+def _apply_foulout_cap(snap: dict, rows: List[Dict]) -> List[Dict]:
+    """BUG-1 (CV_INGAME_FOULOUT_CAP): cap every counting-stat projection to current
+    for any player who has fouled out (pf >= 6). Gated default-OFF (byte-identical
+    when the flag is unset).
+
+    A disqualified player is ejected and cannot accumulate further, so the final
+    box == the current box. The snapshot carries per-player ``pf`` (the live poller
+    emits it); when a row's player is not found in the snapshot or carries no pf,
+    it is left unchanged (no fabrication). Acts on whatever projected_final the
+    upstream heads produced (base or routed/v2). Never raises.
+    """
+    if not os.environ.get("CV_INGAME_FOULOUT_CAP"):
+        return rows
+    try:
+        # Build a leak-free pid -> pf lookup straight from the snapshot box.
+        pf_by_pid: Dict[int, float] = {}
+        for p in (snap.get("players") or []):
+            pid_raw = p.get("player_id")
+            if pid_raw is None:
+                continue
+            try:
+                pid_k = int(pid_raw)
+            except (TypeError, ValueError):
+                continue
+            pf_val = p.get("pf")
+            if pf_val is None:
+                continue
+            try:
+                pf_by_pid[pid_k] = float(pf_val)
+            except (TypeError, ValueError):
+                continue
+        if not pf_by_pid:
+            return rows
+        for r in rows:
+            if r.get("stat") not in _FROZEN_COUNTING_STATS:
+                continue
+            pid_raw = r.get("player_id")
+            if pid_raw is None:
+                continue
+            try:
+                pid_k = int(pid_raw)
+            except (TypeError, ValueError):
+                continue
+            pf_val = pf_by_pid.get(pid_k)
+            if pf_val is None or pf_val < _FOULOUT_PF:
+                continue
+            _freeze_row_to_current(r)
+            src = str(r.get("projection_source") or "")
+            if "+foulout_cap" not in src:
+                r["projection_source"] = src + "+foulout_cap"
+    except Exception:
+        # Never let the foul-out cap break the hot path.
+        return rows
+    return rows
+
+
+# CV_INGAME_SHRINK weights — shrink projected_final TOWARD current. The routed/v2
+# head over-projects these stats (extrapolates a rate forward where little
+# accumulates). Held-out fold-3 optimum was ~1.0 for blk/stl; we use 0.9 to keep a
+# sliver of forward signal (still captures the bulk of the -22%/-14%). AST is
+# DELIBERATELY EXCLUDED (sacred edge stat — never reshape its served projection).
+_INGAME_SHRINK_W = {"blk": 0.9, "stl": 0.9, "fg3m": 0.3, "tov": 0.3, "reb": 0.1, "pts": 0.05}
+# Additional heavy shrink for pts/reb once the game is late (>=42 elapsed min),
+# where the head over-projects remaining scoring/rebounding the most (-23%/-28%).
+_INGAME_LATE_SHRINK_W = {"pts": 0.7, "reb": 0.7}
+_INGAME_LATE_MIN = 42.0
+
+
+def _snap_elapsed_min(snap: dict) -> float:
+    """Approximate game minutes elapsed from period + clock. Safe 0.0 default."""
+    try:
+        period = int(snap.get("period") or 1)
+        clk = snap.get("clock")
+        if clk is None:
+            csec = 0.0
+        elif isinstance(clk, (int, float)):
+            csec = float(clk)
+        else:
+            s = str(clk).strip()
+            csec = (float(s.split(":")[0]) * 60 + float(s.split(":")[1])) if ":" in s else float(s)
+        per_len = 720.0 if period <= 4 else 300.0
+        elapsed_in_per = max(0.0, per_len - csec)
+        if period <= 4:
+            return ((period - 1) * 720.0 + elapsed_in_per) / 60.0
+        return (2880.0 + (period - 5) * 300.0 + elapsed_in_per) / 60.0
+    except Exception:
+        return 0.0
+
+
+def _apply_sparse_shrink(snap: dict, rows: List[Dict]) -> List[Dict]:
+    """CV_INGAME_SHRINK (default OFF = byte-identical): shrink each row's
+    projected_final toward current per the validated per-stat weights, plus a heavy
+    late-game shrink for pts/reb. The routed/v2 head over-projects sparse defensive
+    stats and late-game production; this is a deterministic, leak-free box-score
+    accuracy fix (held-out fold-3 MAE: blk -22.4%, stl -13.7%, late pts -23.5%,
+    late reb -27.6%, fg3m -3.8%, tov -2.9%). AST excluded (sacred). Never raises.
+    """
+    if not os.environ.get("CV_INGAME_SHRINK"):
+        return rows
+    try:
+        is_late = _snap_elapsed_min(snap) >= _INGAME_LATE_MIN
+        for r in rows:
+            stat = r.get("stat")
+            w = _INGAME_SHRINK_W.get(stat, 0.0)
+            if is_late and stat in _INGAME_LATE_SHRINK_W:
+                w = max(w, _INGAME_LATE_SHRINK_W[stat])
+            if w <= 0.0:
+                continue
+            cur, pf = r.get("current"), r.get("projected_final")
+            if cur is None or pf is None:
+                continue
+            try:
+                new = w * float(cur) + (1.0 - w) * float(pf)
+            except (TypeError, ValueError):
+                continue
+            r["projected_final"] = new
+            if "q50" in r:
+                r["q50"] = new
+            src = str(r.get("projection_source") or "")
+            if "+shrink" not in src:
+                r["projection_source"] = src + "+shrink"
+    except Exception:
+        return rows
+    return rows
+
+
+# W-023: module-scope lazy cache for the vac_ast lookup (built once per process).
+_VAC_AST_INGAME_CACHE: Optional[dict] = None
+_VAC_AST_INGAME_LOAD_FAILED: bool = False
+
+# Sizing constants (mirror intel_selection.py — size on durable ~+5-8%, NOT peak).
+_INGAME_VAC_AST_MIN = 3.0        # minimum vacated L10 assists to trigger
+_INGAME_VAC_AST_BIG = 6.0        # threshold for the larger multiplier
+_INGAME_VAC_AST_MULT_BASE = 1.25  # base up-size when vac_ast >= 3
+_INGAME_VAC_AST_MULT_BIG = 1.50   # larger up-size when vac_ast >= 6 (2+ creators out)
+
+
+def _apply_ingame_vac_ast(snap: dict, rows: list) -> list:
+    """W-023: attach vac_ast to live rows; scale AST projected_final up when
+    a primary creator is confirmed OUT (reg-season only; HARD-OFF in playoffs).
+
+    Gated by CV_INGAME_VAC_AST (default OFF = byte-identical to baseline).
+    HARD-OFF for any game_id with prefix "004" (postseason) because the AST
+    edge inverts in playoffs (-2.78% gated vs +7% regular-season).
+
+    When ON + regular season + game_date resolvable:
+      - Loads the leak-free vac_ast lookup from prop_pergame (memoised).
+      - Attaches ``vac_ast`` field (0.0 default) to EVERY row.
+      - For AST rows with vac_ast >= 3: scales projected_final by 1.25x;
+        1.50x when vac_ast >= 6 (two+ creators out). Sizing is conservative
+        — the durable floor is ~+5-8%, not the +15.6% in-window peak.
+      - Never touches current_stat; only the remaining projection delta.
+      - Any failure falls through with rows unchanged (never breaks hot path).
+
+    Args:
+        snap:  canonical live snapshot dict (must have game_id; game_date
+               optional — falls back to no-op when unresolvable).
+        rows:  list of projection row dicts from project_from_snapshot.
+
+    Returns:
+        rows with vac_ast attached; AST projected_final scaled for confirmed-out
+        creators; unchanged rows when the gate is OFF or conditions unmet.
+    """
+    global _VAC_AST_INGAME_CACHE, _VAC_AST_INGAME_LOAD_FAILED
+
+    # Gate 1: flag must be set truthy (default OFF = strict byte-identical no-op).
+    if not os.environ.get("CV_INGAME_VAC_AST"):
+        return rows
+
+    # Gate 2: HARD-OFF in playoffs (game_id prefix "004").
+    game_id = str(snap.get("game_id") or "")
+    if game_id.startswith("004"):
+        return rows
+
+    # Gate 3: resolve game_date (YYYY-MM-DD).  The live serve path writes
+    # game_date into the snapshot; retro calibration snapshots don't have it.
+    # When absent, we fall through to a no-op so the retro harness stays
+    # byte-identical (the live benefit is structural, not measurable retro).
+    game_date: Optional[str] = snap.get("game_date") or None
+    if game_date is None:
+        # Attach 0.0 vac_ast to all rows for schema consistency, then bail.
+        for r in rows:
+            r.setdefault("vac_ast", 0.0)
+        return rows
+
+    # Normalise to 'YYYY-MM-DD' (accept ISO datetime too).
+    try:
+        game_date = str(game_date)[:10]
+    except Exception:
+        for r in rows:
+            r.setdefault("vac_ast", 0.0)
+        return rows
+
+    # Load the vac_ast lookup (memoised; built once per process).
+    if not _VAC_AST_INGAME_LOAD_FAILED and _VAC_AST_INGAME_CACHE is None:
+        try:
+            from src.prediction.prop_pergame import build_vac_ast_lookup
+            _VAC_AST_INGAME_CACHE = build_vac_ast_lookup()
+        except Exception:
+            _VAC_AST_INGAME_LOAD_FAILED = True
+            _VAC_AST_INGAME_CACHE = {}
+
+    lkp = _VAC_AST_INGAME_CACHE or {}
+
+    # Apply per row.
+    try:
+        for r in rows:
+            stat = r.get("stat")
+            pid = r.get("player_id")
+            pid_key = int(pid) if pid is not None else None
+            rec = lkp.get((pid_key, game_date)) if pid_key is not None else None
+            va = float(rec["vac_ast"]) if (rec and rec.get("vac_ast") is not None) else 0.0
+            r["vac_ast"] = va
+
+            # Scale AST projected_final for confirmed-out creator scenarios.
+            if stat != "ast" or va < _INGAME_VAC_AST_MIN:
+                continue
+            pf = r.get("projected_final")
+            cur = r.get("current")
+            if pf is None:
+                continue
+            try:
+                pf_f = float(pf)
+                cur_f = float(cur) if cur is not None else 0.0
+            except (TypeError, ValueError):
+                continue
+            # Only scale the REMAINING projection (not what's already scored).
+            remaining = pf_f - cur_f
+            if remaining <= 0.0:
+                continue
+            mult = _INGAME_VAC_AST_MULT_BIG if va >= _INGAME_VAC_AST_BIG else _INGAME_VAC_AST_MULT_BASE
+            r["projected_final"] = cur_f + remaining * mult
+            src = str(r.get("projection_source") or "")
+            if "+vac_ast" not in src:
+                r["projection_source"] = src + "+vac_ast"
+    except Exception:
+        # Belt-and-suspenders: never let vac_ast scaling break the hot path.
+        pass
+
     return rows
 
 
@@ -1152,7 +2031,28 @@ def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
     multiplicative inputs feed the same ``pig.project_final``.
 
     Untouched when the blowout_residual artifact is absent (graceful no-op).
+
+    W-020 (CV_BLOWOUT_RESIDUAL_LIVE): when the flag is set, derives
+    ``score_velocity_q3`` from available per-quarter score fields on the snap
+    (home_q3/away_q3) and adds a playoff guard (game_id prefix "004").
+    When the flag is OFF (the default) the function degrades to a no-op
+    because ``score_velocity_q3`` defaults to 0 and the live-proxy gate
+    never fires -- byte-identical to the pre-flag baseline.
     """
+    # W-020 (CV_BLOWOUT_RESIDUAL_LIVE): early-exit when flag is OFF.
+    # The existing code path defaults score_velocity_q3 to 0, so the live-proxy
+    # gate never fires and the function is already a no-op in practice.
+    # Exiting early here makes the byte-identical guarantee explicit and avoids
+    # paying the model-load overhead in the default serving config.
+    if not os.environ.get("CV_BLOWOUT_RESIDUAL_LIVE"):
+        return rows
+
+    # Playoff guard: blowout dynamics differ in the playoffs (smaller sample,
+    # lower predictability). Never fire in playoff games (game_id prefix "004").
+    game_id = str(snap.get("game_id") or "")
+    if game_id.startswith("004"):
+        return rows
+
     _, _, blowout_model, _ = _load_models_once()
     if blowout_model is None:
         return rows
@@ -1177,17 +2077,56 @@ def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
         away_score = 0.0
     margin = home_score - away_score   # signed home POV
 
-    # The Q3 score velocity is not present in the canonical snapshot schema;
-    # snapshot supplies snap.get("score_velocity_q3") when the upstream
-    # builder included it (e.g. probe_blowout_stratified_blend.py for retro),
-    # otherwise defaults to 0 (gate won't fire). Live snapshots from
-    # src.data.live currently do NOT track Q-by-Q score history -- the
-    # override degrades to a no-op until that field is wired upstream.
-    snap_velocity = snap.get("score_velocity_q3", 0.0)
-    try:
-        velocity = float(snap_velocity or 0)
-    except (TypeError, ValueError):
-        velocity = 0.0
+    # W-020: Derive score_velocity_q3 from available snapshot fields.
+    # Priority order:
+    #   1. Explicit snap.get("score_velocity_q3") -- set by probe scripts / W-030
+    #   2. snap.get("home_q3") - snap.get("away_q3") -- per-quarter score injected
+    #      by the win-prob path (courtvision_router.py) or W-030 enrichment.
+    #      At endQ3, home_q3/away_q3 = team points scored IN Q3 specifically,
+    #      so their difference = Q3 margin swing (= velocity from Q2 to Q3 POV).
+    #   3. Sum player pts_q3 per team -- available in the retro calibration corpus
+    #      (retro_inplay_mae.py attaches min_q1..min_q4; pts_q3 is in the parquet).
+    #   4. Fall back to 0.0 (gate won't fire -- graceful no-op).
+    velocity: float = 0.0
+    snap_velocity = snap.get("score_velocity_q3")
+    if snap_velocity is not None:
+        try:
+            velocity = float(snap_velocity)
+        except (TypeError, ValueError):
+            velocity = 0.0
+    else:
+        # Try per-quarter team scores injected by the win-prob router path.
+        hq3 = snap.get("home_q3")
+        aq3 = snap.get("away_q3")
+        if hq3 is not None and aq3 is not None:
+            try:
+                # velocity = Q3 margin - Q2 margin.  Since home_q3/away_q3 are
+                # the points scored *in* Q3 (not cumulative), the delta is simply
+                # home_q3 - away_q3 (positive = home pulled away in Q3).
+                velocity = float(hq3) - float(aq3)
+            except (TypeError, ValueError):
+                velocity = 0.0
+        else:
+            # Fallback: aggregate pts_q3 from player rows (retro calibration corpus
+            # path). Players in the retro corpus carry min_q1..q4 but not pts_q3;
+            # this branch fires only when pts_q3 is explicitly present on rows.
+            home_q3_pts: float = 0.0
+            away_q3_pts: float = 0.0
+            for _p in snap.get("players") or []:
+                _team = _p.get("team") or ""
+                _pts3 = _p.get("pts_q3")
+                if _pts3 is None:
+                    continue
+                try:
+                    _v = float(_pts3)
+                except (TypeError, ValueError):
+                    continue
+                if _team == home_team:
+                    home_q3_pts += _v
+                elif _team == away_team:
+                    away_q3_pts += _v
+            if home_q3_pts > 0 or away_q3_pts > 0:
+                velocity = home_q3_pts - away_q3_pts
 
     by_pid: dict = {}
     for p in snap.get("players") or []:
@@ -1234,10 +2173,28 @@ def _apply_stratified_blowout_residual(snap: dict, rows: list) -> list:
             score_velocity_q3=velocity,
         )
 
-        share_played_game = pig.clock_played_share(period, clock_rem)
-        proj_min = ((cur_min / share_played_game)
-                    if share_played_game > 0 else cur_min)
-        is_star = proj_min >= 30.0
+        # W-020: use is_starter + l10_min as a better star proxy (W-004 DONE).
+        # is_starter is now reliably captured (W-004 fixed the all-true parse bug).
+        # Fallback: proj_min >= 30 (the original heuristic) when is_starter absent.
+        is_starter_flag = p.get("is_starter")
+        if is_starter_flag is not None:
+            try:
+                is_star = bool(is_starter_flag)
+            except (TypeError, ValueError):
+                is_star = False
+            # Additional guard: is_starter can be unreliable for shallow bench
+            # players. Require l10_min >= 20 when is_starter is True.
+            if is_star:
+                try:
+                    l10_check = float(p.get("l10_min") or 0)
+                except (TypeError, ValueError):
+                    l10_check = 0.0
+                is_star = is_star and (l10_check >= 20.0)
+        else:
+            share_played_game = pig.clock_played_share(period, clock_rem)
+            proj_min = ((cur_min / share_played_game)
+                        if share_played_game > 0 else cur_min)
+            is_star = proj_min >= 30.0
         heuristic_bf = pig.blowout_factor(
             abs(margin), period, is_star=(is_star and team_is_leading))
 
@@ -1380,6 +2337,157 @@ def _apply_heat_check_shrinkage(snap: dict, rows: list) -> list:
             new_proj = apply_shrinkage_to_projection(proj, cur, factor)
             r["projected_final"] = float(new_proj)
             r["heat_check_shrinkage"] = float(factor)
+    return rows
+
+
+# ── W-014: generalized heat-check heat^0.20 mean-reversion ───────────────────
+
+_HEAT_GEN_STATS: frozenset = frozenset({"pts", "ast", "fg3m"})
+_HEAT_GEN_GAMMA: float = 0.20   # g in the formula: factor = heat^{g-1} = heat^{-0.80}
+_HEAT_CLAMP_LO: float = 0.25
+_HEAT_CLAMP_HI: float = 4.0
+_HEAT_MIN_MIN: float = 3.0   # require at least 3 game-min to fire
+
+# Mapping stat -> L5 per-minute field name on the player row.
+_HEAT_GEN_L5_FIELD = {
+    "pts":  "l5_pts_per_min",
+    "ast":  "l5_ast_per_min",
+    "fg3m": "l5_fg3m_per_min",
+}
+# Fallback: compute from raw l5_<stat> / l5_min if per-min field absent.
+_HEAT_GEN_L5_RAW = {
+    "pts":  "l5_pts",
+    "ast":  "l5_ast",
+    "fg3m": "l5_fg3m",
+}
+
+
+def _apply_heat_check_generalized(snap: dict, rows: list) -> list:
+    """Generalized heat-check mean-reversion at EVERY snapshot.
+
+    Implements the W-014 spec formula:
+
+        heat = (live per-min rate) / (L5 per-min rate)  clamped [0.25, 4.0]
+        rest  = L5_per_min_rate * expected_remaining_min * heat^0.20
+
+    Algebraically, with the cycle-88 remaining ≈ live_rate * rem_min, this is
+    equivalent to scaling the existing remaining delta by heat^{0.20-1} = heat^{-0.80}.
+
+        factor = heat^{-0.80}
+        new_proj = current + (projected_final - current) * factor
+
+    For a HOT player (heat > 1): factor < 1 → mean-revert toward L5 (shrink).
+    For a COLD player (heat < 1): factor > 1 → mean-revert toward L5 (expand).
+
+    Applied to pts/fg3m/ast remaining-delta only; current_stat never altered.
+    STL/BLK/TOV/REB are excluded (no heat-check dynamic on defensive counts).
+
+    Graceful no-op when:
+      * CV_INGAME_HEAT_GEN env flag is not set (default → byte-identical)
+      * player has < 3 minutes played (too noisy)
+      * L5 per-min prior is absent or zero on the player row
+      * any exception (per-row try/except)
+    """
+    import math
+    import os
+    if not os.environ.get("CV_INGAME_HEAT_GEN"):
+        return rows
+
+    # Index player rows by pid so we can look up L5 priors once.
+    by_pid: dict = {}
+    for p in snap.get("players") or []:
+        try:
+            by_pid[int(p.get("player_id"))] = p
+        except (TypeError, ValueError):
+            continue
+
+    rows_by_pid: dict = {}
+    for r in rows:
+        pid = r.get("player_id")
+        if pid is None:
+            continue
+        try:
+            rows_by_pid.setdefault(int(pid), []).append(r)
+        except (TypeError, ValueError):
+            continue
+
+    for pid, p in by_pid.items():
+        try:
+            cur_min = float(p.get("min") or 0)
+        except (TypeError, ValueError):
+            continue
+        if cur_min < _HEAT_MIN_MIN:
+            continue
+
+        out_rows = rows_by_pid.get(pid, [])
+        for r in out_rows:
+            stat = r.get("stat")
+            if stat not in _HEAT_GEN_STATS:
+                continue
+            try:
+                cur = float(p.get(stat) or 0)
+                proj = float(r.get("projected_final") or 0)
+            except (TypeError, ValueError):
+                continue
+
+            # Live per-min rate for this stat.
+            live_rate = cur / cur_min  # safe: cur_min >= 3.0
+
+            # L5 per-min rate: prefer pre-computed field, fall back to raw.
+            l5_rate: float = 0.0
+            l5_field = _HEAT_GEN_L5_FIELD.get(stat, "")
+            if l5_field:
+                v = p.get(l5_field)
+                if v is not None:
+                    try:
+                        l5_rate = float(v)
+                    except (TypeError, ValueError):
+                        l5_rate = 0.0
+            if l5_rate <= 0.0:
+                # Fallback: raw l5_<stat> / l5_min
+                raw_field = _HEAT_GEN_L5_RAW.get(stat, "")
+                l5_min_v = p.get("l5_min")
+                if raw_field and l5_min_v is not None:
+                    try:
+                        l5_raw = float(p.get(raw_field) or 0)
+                        l5_min_f = float(l5_min_v)
+                        if l5_min_f > 0 and l5_raw >= 0:
+                            l5_rate = l5_raw / l5_min_f
+                    except (TypeError, ValueError):
+                        l5_rate = 0.0
+            if l5_rate <= 0.0:
+                # No L5 prior available → no-op for this (player, stat).
+                continue
+
+            # Compute heat ratio and the mean-reversion shrink factor.
+            # The spec formula: rest = L5_rate * rem * heat^0.20
+            # With old_remaining ≈ live_rate * rem:
+            #   new_remaining = old_remaining * (L5_rate/live_rate) * heat^0.20
+            #                 = old_remaining * heat^{-1} * heat^{0.20}
+            #                 = old_remaining * heat^{-0.80}
+            # So: factor = heat^{-(1-gamma)} = heat^{-0.80}
+            try:
+                if live_rate <= 0.0:
+                    # Zero live rate: heat undefined; skip.
+                    continue
+                heat = live_rate / l5_rate
+                heat_clamped = max(_HEAT_CLAMP_LO, min(_HEAT_CLAMP_HI, heat))
+                # factor = heat^{gamma - 1} = heat^{-0.80}: shrinks hot, expands cold.
+                factor = math.pow(heat_clamped, _HEAT_GEN_GAMMA - 1.0)
+                remaining = proj - cur
+                if abs(remaining) < 1e-9:
+                    continue
+                new_proj = cur + remaining * factor
+                # Never project below current_stat (can't un-score).
+                new_proj = max(new_proj, cur)
+                r["projected_final"] = float(new_proj)
+                src = str(r.get("projection_source") or "")
+                if "+heat_gen" not in src:
+                    r["projection_source"] = src + "+heat_gen"
+                r["heat_gen_factor"] = float(factor)
+            except Exception:
+                continue
+
     return rows
 
 

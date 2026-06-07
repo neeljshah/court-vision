@@ -342,7 +342,17 @@ def bands_for(stat: str, q50: float, snapshot_point: Optional[str],
     # V2: rescale and pop_mean_std are keyed by snapshot_point.
     # V1: flat dicts (backwards compat, used when V2 is absent).
     extra_mult = 1.0
-    if (_USE_PER_PLAYER_VARIANCE
+    # FIX IN-4 (safe variant): endQ3 bands were calibrated at 0.80 coverage
+    # WITHOUT per-player modulation.  The V2 JSON lacks per_stat_rescale /
+    # pop_mean_std for the endQ3 bucket, so pop_std defaults to 1.0, the
+    # ratio saturates to the clip ceiling (1.8), and extra_mult ~= 1.342 --
+    # over-covering by ~34% on the only Brier-validated snapshot.  Force
+    # extra_mult = 1.0 for endQ3 (and any future Brier-validated snapshots
+    # listed here) so coverage reverts to the measured 0.80.
+    _MODULATION_DISABLED_SNAPSHOTS = frozenset({"endQ3"})
+    if snapshot_point in _MODULATION_DISABLED_SNAPSHOTS:
+        pass  # extra_mult stays 1.0; skip per-player block entirely
+    elif (_USE_PER_PLAYER_VARIANCE
             and pid is not None
             and game_date is not None):
         pp_cal = _load_pp_calibration()

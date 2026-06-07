@@ -21,6 +21,7 @@ Public API
 from __future__ import annotations
 
 import math
+import os
 from typing import Tuple
 
 # ── Constants ──────────────────────────────────────────────────────────────────
@@ -53,8 +54,25 @@ def _fit_uncertainty_distribution(
     lo: float,
     hi: float,
 ) -> Tuple[float, float]:
-    """Derive (mu, sigma) from conformal interval using IQR method: sigma=(hi-lo)/1.349."""
-    sigma = max((hi - lo) / 1.349, _SIGMA_FLOOR)
+    """Derive (mu, sigma) from conformal interval.
+
+    CV_ALTLINE_SIGMA_FIX (default OFF — byte-identical when OFF):
+      OFF: original IQR divisor 1.349 (was incorrect for 80% CI — inflates sigma ~1.90x).
+      ON:  correct divisor 2.5631 for an 80% CI (Q10–Q90): hi-lo = 2*1.2816*sigma.
+           Tightens sigma to the correct value; P(X>line) moves away from 0.50,
+           EV increases (was systematically understated by the inflated sigma).
+    Note: the 12%/8%-per-point book-decay constants in _book_prob_at_alt_line are a
+    SEPARATE unvalidated assumption (data-gated on Pinnacle alt prices) — not fixed here.
+    See docs/_audits/BETTING_MATH_CORRECTNESS_AUDIT.md Bug 2.
+    """
+    import os as _os
+    if _os.environ.get("CV_ALTLINE_SIGMA_FIX", "0").strip() in ("1", "true", "yes", "on"):
+        # 80% CI (Q10–Q90) for Normal: hi - lo = 2 * z_{0.90} * sigma = 2.5631 * sigma
+        divisor = 2.5631
+    else:
+        # Original IQR divisor (Q25–Q75): hi - lo = 1.349 * sigma — preserved for byte-identity
+        divisor = 1.349
+    sigma = max((hi - lo) / divisor, _SIGMA_FLOOR)
     return float(point_est), float(sigma)
 
 
@@ -82,7 +100,16 @@ def _book_prob_at_alt_line(vf_over: float, line_distance: float) -> float:
       - line_distance < 0  (over is easier): 8% decay per point
     """
     if line_distance >= 0:
+        # over is HARDER (higher alt line): book over-prob decays DOWN.
         return max(vf_over * (1.0 - 0.12 * abs(line_distance)), 0.01)
+    # line_distance < 0: a LOWER alt line -> the OVER is EASIER -> book over-prob
+    # should RISE toward 1. CV_ALTLINE_DECAY_DIR_FIX corrects the legacy form below,
+    # which multiplied by (1 - 0.08*|d|) < 1 and wrongly LOWERED the over-prob ->
+    # EV inflated on easier-over rungs (fake edge; /api/alt-ladder display only, the
+    # slate/parlay path collapses alt-lines to mainline). Default OFF = byte-identical.
+    if (os.environ.get("CV_ALTLINE_DECAY_DIR_FIX", "").strip().lower()
+            not in ("", "0", "false", "no", "off")):
+        return min(vf_over * (1.0 + 0.08 * abs(line_distance)), 0.99)
     return min(vf_over * (1.0 - 0.08 * abs(line_distance)), 0.99)
 
 
