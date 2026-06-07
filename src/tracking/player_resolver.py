@@ -44,6 +44,10 @@ _MIN_DOMINANT_FRACTION = 0.35   # R9: 0.50 was above empirical noise floor. 8/10
                                 # too tight, turning noisy-but-useful into completely null.
                                 # 0.35 + the in-roster filter below keeps false-positive risk low.
 _MIN_VOTE_SAMPLES      = 8      # R9: require >=8 OCR samples in window before accepting
+# CV-FIX-2 (2026-05-30): minimum in-roster vote COUNT for the team-restricted distinct
+# assignment to accept a slot. Measured on G5: genuine star slots get 2-6 reads; 1-vote
+# assignments are Hungarian-forced noise (slot8→Carlson, slot3→Waters). 2 is the floor.
+_MIN_ASSIGN_VOTES      = 2
 
 
 class PlayerResolver:
@@ -88,6 +92,9 @@ class PlayerResolver:
         # one team abbrev, slot has a stable colour label).  Once two abbrevs are
         # mapped (one per colour), the guard blocks cross-team name assignments.
         self._abbrev_to_colour: Dict[str, str] = {}
+        # CV-FIX-2: set True by _assign_team_restricted() when colour→team is derivable;
+        # tells finalize() to placeholder unassigned slots instead of cross-team guessing.
+        self._assignment_active: bool = False
 
     # ── public ────────────────────────────────────────────────────────────────
 
@@ -279,6 +286,110 @@ class PlayerResolver:
                     return None
         return info
 
+    def _assign_team_restricted(self) -> set:
+        """Team-restricted, distinct slot→player assignment from full-game votes.
+
+        Populates slot_to_player_id / slot_to_player_name for slots it confidently
+        assigns and returns that set of slots. Ambiguous/under-voted slots are left
+        for the per-slot resolve_player fallback.
+
+        Algorithm (validated on G5 0042500315, 2026-05-30):
+          1. Derive colour-label → team-abbrev from in-roster vote mass (greedy,
+             so the two colours map to the two distinct teams).
+          2. For each team, restrict each of its slots' jersey candidates to that
+             team's roster (drops cross-team OCR misreads).
+          3. Solve a distinct assignment (Hungarian if scipy present, else greedy)
+             on the slot×jersey vote-count matrix so no jersey maps to two slots.
+          4. Accept only assignments with >= _MIN_ASSIGN_VOTES votes AND a margin /
+             dominant-fraction above the noise floor.
+        """
+        self._assignment_active = False
+        if not self._roster:
+            return set()
+        # team_abbrev -> {jersey: info}
+        team_jerseys: Dict[str, Dict[int, dict]] = {}
+        for (jn, _lbl), info in self._roster.items():
+            abbr = info.get("team", "")
+            if abbr:
+                team_jerseys.setdefault(abbr, {})[jn] = info
+        if not team_jerseys:
+            return set()
+        valid = {abbr: set(j) for abbr, j in team_jerseys.items()}
+
+        # colour -> team by in-roster vote mass (greedy, distinct teams per colour)
+        ct_votes: Dict[str, Dict[str, float]] = {}
+        for slot, ctr in self._votes.items():
+            color = self._slot_team.get(slot, "")
+            if not color:
+                continue
+            for jn, cnt in ctr.items():
+                for abbr in valid:
+                    if jn in valid[abbr]:
+                        ct_votes.setdefault(color, {}).setdefault(abbr, 0.0)
+                        ct_votes[color][abbr] += cnt
+        pairs = sorted(((w, c, a) for c, d in ct_votes.items() for a, w in d.items()),
+                       reverse=True)
+        color_to_team: Dict[str, str] = {}
+        used: set = set()
+        for _w, c, a in pairs:
+            if c in color_to_team or a in used:
+                continue
+            color_to_team[c] = a
+            used.add(a)
+        if not color_to_team:
+            return set()
+        # Team-restriction is now possible: mark active so finalize() does NOT fall back
+        # to the cross-team resolve_player path for unassigned slots (which produced
+        # green→OKC duplicates in testing). Unassigned slots become honest placeholders.
+        self._assignment_active = True
+
+        try:
+            import numpy as np
+            from scipy.optimize import linear_sum_assignment
+            have_scipy = True
+        except Exception:
+            have_scipy = False
+
+        assigned: set = set()
+        for color, abbr in color_to_team.items():
+            slots = sorted(s for s in self._slot_team if self._slot_team.get(s) == color)
+            jerseys = sorted(team_jerseys[abbr].keys())
+            if not slots or not jerseys:
+                continue
+            W = {s: {jn: self._votes.get(s, Counter()).get(jn, 0) for jn in jerseys}
+                 for s in slots}
+            if have_scipy:
+                M = np.array([[W[s][jn] for jn in jerseys] for s in slots], dtype=float)
+                ri, ci = linear_sum_assignment(-M)
+                chosen = [(slots[i], jerseys[j], M[i, j]) for i, j in zip(ri, ci)]
+            else:
+                chosen = []
+                taken: set = set()
+                for s in sorted(slots, key=lambda s: max(W[s].values()) if W[s] else 0,
+                                reverse=True):
+                    cand = sorted(((W[s][jn], jn) for jn in jerseys if jn not in taken),
+                                  reverse=True)
+                    if cand and cand[0][0] > 0:
+                        chosen.append((s, cand[0][1], cand[0][0]))
+                        taken.add(cand[0][1])
+            for s, jn, score in chosen:
+                total = sum(W[s].values())
+                if total <= 0 or score < _MIN_ASSIGN_VOTES:
+                    continue
+                domfrac = score / total
+                srt = sorted(W[s].values(), reverse=True)
+                margin = (srt[0] / srt[1]) if len(srt) > 1 and srt[1] > 0 else 999.0
+                if margin >= 1.3 or domfrac >= 0.45:
+                    info = team_jerseys[abbr].get(jn)
+                    if info and info.get("player_id"):
+                        self.slot_to_player_id[s]   = info["player_id"]
+                        self.slot_to_player_name[s] = info["player_name"]
+                        assigned.add(s)
+                        log.debug("assign: slot %d → #%d %s (votes=%d domfrac=%.2f margin=%.2f)",
+                                  s, jn, info["player_name"], score, domfrac, margin)
+        log.info("PlayerResolver: team-restricted assignment resolved %d slots", len(assigned))
+        return assigned
+
     def finalize(self) -> None:
         """
         Lock in jersey assignments and populate slot_to_player_id / slot_to_player_name.
@@ -291,8 +402,26 @@ class PlayerResolver:
         resolved = 0
         # ISSUE-057: iterate ALL seen slots (not just those with OCR votes)
         all_slots = sorted(set(self._slot_team.keys()) | set(self._votes.keys()))
+        # CV-FIX-2 (2026-05-30): team-restricted DISTINCT assignment first. Restricting
+        # each slot's jersey candidates to its own team's roster removes cross-team
+        # OCR misreads (measured: green/SAS slot picking #55 Hartenstein/OKC); the
+        # distinct (Hungarian) assignment prevents one noisy jersey resolving to many
+        # slots (#6 → 5 slots in the unrestricted path). Confidently-assigned slots are
+        # skipped by the per-slot resolve_player loop below.
+        try:
+            assigned = self._assign_team_restricted()
+        except Exception as _ar_exc:
+            log.warning("PlayerResolver: team-restricted assignment failed (%s)", _ar_exc)
+            assigned = set()
+        resolved += len(assigned)
+        _restrict_active = getattr(self, "_assignment_active", False)
         for slot in all_slots:
-            info = self.resolve_player(slot)
+            if slot in assigned:
+                continue
+            # When team-restricted assignment is active, do NOT fall through to the
+            # cross-team resolve_player path — it produced green→OKC duplicates. Send
+            # unassigned slots straight to the honest placeholder branch below.
+            info = None if _restrict_active else self.resolve_player(slot)
             if info:
                 self.slot_to_player_id[slot]   = info["player_id"]
                 self.slot_to_player_name[slot] = info["player_name"]
@@ -322,6 +451,23 @@ class PlayerResolver:
                 self.slot_to_player_name[slot] = f"{team_str}#?" if team_str else "?#?"
         self._warmup_done = True
         log.info("PlayerResolver: %d/%d slots resolved (of %d tracked)", resolved, len(all_slots), len(all_slots))
+        # CV-FIX debug dump: persist votes + resolution so we can audit why slots did/
+        # didn't resolve without re-running the 38-min pipeline. Cheap, best-effort.
+        if self._data_dir:
+            try:
+                import json, os
+                dbg = {
+                    "slot_team": dict(self._slot_team),
+                    "votes": {str(s): dict(c) for s, c in self._votes.items()},
+                    "slot_to_player_id": {str(s): v for s, v in self.slot_to_player_id.items()},
+                    "slot_to_player_name": {str(s): v for s, v in self.slot_to_player_name.items()},
+                    "assignment_active": getattr(self, "_assignment_active", False),
+                    "roster_entries": len(self._roster),
+                }
+                with open(os.path.join(self._data_dir, "resolver_debug.json"), "w") as _f:
+                    json.dump(dbg, _f, indent=2, ensure_ascii=False)
+            except Exception as _dbg_exc:
+                log.debug("resolver_debug dump failed: %s", _dbg_exc)
 
     @property
     def warmup_complete(self) -> bool:

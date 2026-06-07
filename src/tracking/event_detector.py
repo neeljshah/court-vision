@@ -22,8 +22,8 @@ _DRIBBLE_MAX_DIST = 70    # max ball-to-handler 2D distance (px) for dribble
 # broadcast zoom on non-strided clips; strided clips (2× velocity) fire at
 # 4+ real px/frame.  Lowered 18.0→12.0→8.0 — passes detection gate
 # (possession-loss + upper-half) keeps false-positive rate low.
-_PIXEL_SHOT_VEL       = 8.0   # global default — perimeter shots
-_PIXEL_SHOT_VEL_PAINT = 4.0   # R13: relaxed for layups/dunks (handler within 6 ft of basket)
+_PIXEL_SHOT_VEL       = 6.5   # Bug 30 fix 2026-05-28: 8.0→6.5 — current threshold rejects Curry/Lillard fast releases. Belt-and-suspenders gates (handler_in_range, cos≥0.75, debounce) still active.
+_PIXEL_SHOT_VEL_PAINT = 3.0   # Bug 30 fix 2026-05-28: 4.0→3.0 — Jokic floaters / hooks fall under 4.0 px/frame at broadcast zoom.
 
 
 class EventDetector:
@@ -99,7 +99,11 @@ class EventDetector:
         self.events: List[dict] = []
 
         # Per-player position history: player_id → deque of (frame, x, y, speed)
-        self._phist: Dict[int, deque] = defaultdict(lambda: deque(maxlen=15))
+        # P13 2026-05-29: maxlen 15 → 30. Prior cap at ~1.5s of history was
+        # bottlenecking closeout (P8 wants 1.5s+), steal (P10 widened to 1.5s),
+        # and screen-set detections (which look at multi-second player approach).
+        # 3s of history at stride=3 fps=30 = 30 entries; memory cost negligible.
+        self._phist: Dict[int, deque] = defaultdict(lambda: deque(maxlen=30))
 
         # Dribble count: resets on every possession change
         self._dribble_count: int = 0
@@ -107,6 +111,12 @@ class EventDetector:
         # Drive streak: player_id → consecutive frames above drive speed
         self._drive_streak: Dict[int, int] = defaultdict(int)
         self._drive_start:  Dict[int, Tuple[float, float]] = {}
+        # P22 (2026-05-30): per-player tolerated sub-threshold-frame count so a
+        # drive survives 1-2 frame velocity dips (gather step / hesitation /
+        # contact) instead of resetting on every dip. Prior reset-on-dip logic
+        # emitted only ~3.8 drives/game vs NBA ~50.
+        self._drive_miss: Dict[int, int] = defaultdict(int)
+        self._DRIVE_MISS_TOL: int = 2
 
         # Screen debounce: (pid_a, pid_b) → last frame a screen was logged
         self._screen_last: Dict[Tuple[int, int], int] = {}
@@ -251,8 +261,11 @@ class EventDetector:
         # basket (max vtb < -1.0).  Stationary handlers (vtb=0) and approaching
         # handlers (vtb>0) both pass.  Filters ball bounces where the only tracked
         # "handler" was actively running away at the moment of the bounce.
+        # Bug 30 fix 2026-05-28: -1.0 → -2.0 — step-back jumpers have vtb ≈ -1.5
+        # for ~5 frames during the gather. Pixel-vel + ball_y_pixel + cos-sim are
+        # hard barriers against outlet passes (cos-sim < 0 to basket).
         _handler_toward_basket = (
-            max(self._handler_vtb_buf, default=0.0) > -1.0
+            max(self._handler_vtb_buf, default=0.0) > -2.0
         )
 
         # ── Direct upward-velocity shot detector ─────────────────────────
@@ -284,7 +297,9 @@ class EventDetector:
             _hy = float(_possessor_now.get("y2d", 0))
             _nb = min(self._baskets, key=lambda b: np.hypot(_hx - b[0], _hy - b[1]))
             _hdist_px = float(np.hypot(_hx - _nb[0], _hy - _nb[1]))
-            _handler_in_range = _hdist_px <= 30.0 * self._ft
+            # Bug 30 fix 2026-05-28: 30 → 32 ft. Curry/Lillard/Trae take logo
+            # threes from 28-32 ft; the prior cap silently rejected them.
+            _handler_in_range = _hdist_px <= 32.0 * self._ft
         elif self._possessor is not None:
             # No live possessor this frame — allow but only if state-machine had one recently
             _handler_in_range = True
@@ -730,7 +745,12 @@ class EventDetector:
         """
         possessors = {t["player_id"] for t in frame_tracks if t.get("has_ball")}
         MIN_DISP = 10.0  # ~5 ft displacement per 5-frame window (px)
-        DEBOUNCE = max(15, int(1.0 * self._fps / max(1, self._stride)))   # 1s per-player
+        # P9 fix 2026-05-29: frame_idx is RAW frames, so debounce must be raw too.
+        # Prior `int(fps / stride)` evaluated to ~10 -> max(15,10)=15 raw frames = 0.5s,
+        # not the documented 1s. Measured 63K cuts across 38 games (1660/game) vs
+        # NBA-typical 100-200/game. Raise debounce to 2s (60 raw @ 30fps) to align with
+        # genuine NBA off-ball cuts (which space at 3-5s minimum).
+        DEBOUNCE = int(2.0 * self._fps)
 
         for t in frame_tracks:
             if t.get("team") == "referee" or t["player_id"] in possessors:
@@ -776,14 +796,22 @@ class EventDetector:
                 if self._drive_streak[pid] == 0:
                     self._drive_start[pid] = (x, y)
                 self._drive_streak[pid] += 1
+                self._drive_miss[pid] = 0
             else:
-                if self._drive_streak.get(pid, 0) >= 5:
-                    sx, _ = self._drive_start.get(pid, (x, x))
-                    self.events.append({
-                        "type": "drive", "player_id": pid,
-                        "start_x": float(sx), "end_x": float(x),
-                    })
-                self._drive_streak[pid] = 0
+                # P22: tolerate brief dips — keep an active streak alive for up to
+                # _DRIVE_MISS_TOL sub-threshold frames; only finalize once exceeded.
+                if self._drive_streak.get(pid, 0) > 0:
+                    self._drive_miss[pid] += 1
+                    if self._drive_miss[pid] <= self._DRIVE_MISS_TOL:
+                        continue
+                    if self._drive_streak.get(pid, 0) >= 5:
+                        sx, _ = self._drive_start.get(pid, (x, x))
+                        self.events.append({
+                            "type": "drive", "player_id": pid,
+                            "start_x": float(sx), "end_x": float(x),
+                        })
+                    self._drive_streak[pid] = 0
+                    self._drive_miss[pid] = 0
 
     def _detect_closeout(
         self, frame_idx: int, frame_tracks: List[dict]
@@ -823,7 +851,18 @@ class EventDetector:
             _idx_then = -min(_lookback, len(pts))
             dist_then = float(np.hypot(pts[_idx_then][1] - sx,
                                        pts[_idx_then][2] - sy))
-            if dist_then > self._CLOSEOUT_FAR and dist_now < self._CLOSEOUT_NEAR:
+            # P8 (2026-05-29): original criterion `dist_then > 8ft AND dist_now < 4ft`
+            # was so tight that 0 closeout events were emitted across 38 games (vs
+            # NBA reality where ~20-30% of perimeter shots have a defender closeout).
+            # Two paths now:
+            #   (a) STRICT: defender was beyond FAR and is now inside NEAR (preserved)
+            #   (b) DELTA:  defender closed at least 3 ft AND is now within 6 ft of
+            #               shooter (catches the more common 7ft→4ft closeout pattern)
+            _strict = dist_then > self._CLOSEOUT_FAR and dist_now < self._CLOSEOUT_NEAR
+            _delta_ft = (dist_then - dist_now) / max(1.0, self._ft)
+            _now_ft   = dist_now / max(1.0, self._ft)
+            _delta_path = _delta_ft >= 3.0 and _now_ft <= 6.0
+            if _strict or _delta_path:
                 avg_speed = float(np.mean([pts[-i][3]
                                            for i in range(1, min(6, len(pts) + 1))]))
                 # Convert px/abs-frame → ft/abs-frame → ft/s → mph
@@ -964,7 +1003,12 @@ class EventDetector:
         STEAL_RANGE = 6.0 * self._ft
         CLOSE_FROM  = 6.0 * self._ft
 
-        lookback = list(thief_hist)[-min(8, len(thief_hist)):]
+        # P10 fix 2026-05-29: lookback was `min(8, ...)` = 0.8s @ stride=3 fps=30.
+        # Steals 97/38 games = 2.5/game vs NBA reality ~8/game. Widen to ~1.5s
+        # (15 processed frames @ stride=3 fps=30) to catch closeouts that develop
+        # over a longer approach. Debounce already prevents double-counting.
+        _LOOKBACK = max(8, int(1.5 * self._fps / max(1, self._stride)))
+        lookback = list(thief_hist)[-min(_LOOKBACK, len(thief_hist)):]
         # Match each thief sample to the closest-in-time victim sample.
         vlist = list(victim_hist)
         was_far = False

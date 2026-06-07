@@ -35,9 +35,15 @@ import numpy as np
 _PAINT_XN        = 0.15    # xn < this (or > 1 - this) = near baseline
 _PAINT_YN_LO     = 0.28    # lane lower bound (normalised y)
 _PAINT_YN_HI     = 0.72    # lane upper bound (normalised y)
-_BLOCK_XN        = 0.08    # xn this close to baseline = post/block area
+_BLOCK_XN        = 0.15    # P11 2026-05-29: 0.08 → 0.15 (~14 ft from baseline).
+                           # Prior threshold (4 ft from baseline) excluded the actual
+                           # post block at 7-8 ft. Post-up emission was 11/3900 (0.3%)
+                           # vs NBA ~3-5% of possessions. Widened to cover block + low
+                           # post region. Speed cap (_POST_VEL_MAX) still requires
+                           # backing-down motion to avoid mid-paint drives.
 _DRIVE_VEL_PX    = 3.0     # px/frame toward basket = drive  (matches EventDetector _DRIVE_VEL_THRESHOLD)
-_POST_VEL_MAX    = 2.0     # px/frame max to classify as post-up (backing down slowly)
+_POST_VEL_MAX    = 3.0     # P11 2026-05-29: 2.0 → 3.0 px/frame. Backing-down motion
+                           # includes drop-step + shuffle, not just stationary.
 _DBL_TEAM_RAD_N  = 0.12  # calibrated 2026-03-25 from 18 games — was 0.044
 _FAST_BRK_ADV    = 1       # attacker surplus in frontcourt to call fast break
 

@@ -542,7 +542,18 @@ def add_game_flow_features(df: pd.DataFrame) -> pd.DataFrame:
             _ts_raw   = pd.to_numeric(df.get("team_spacing", pd.Series(dtype=float)), errors="coerce").replace(0.0, np.nan)
             _ts_med   = _ts_raw.median()
             spacing   = _ts_raw.fillna(_ts_med if not np.isnan(_ts_med) else 0.0)
-            spacing_n = (spacing / (spacing.max() + 1e-6)).clip(0.0, 1.0)
+            # Robust normalisation: divide by 2× the median of non-zero rows.
+            # This makes a "median-spaced" player land at ~0.5 and clips any
+            # outlier/sentinel value to 1.0.  Using max() as the denominator
+            # allowed a single extreme frame to collapse every other row toward
+            # zero; median is fully resistant to any number of outliers.
+            _pos_mask = spacing > 0
+            if _pos_mask.any():
+                _spacing_med = float(np.median(spacing[_pos_mask]))
+                _spacing_scale = max(_spacing_med * 2.0, 1.0)
+            else:
+                _spacing_scale = 1.0
+            spacing_n = (spacing / _spacing_scale).clip(0.0, 1.0)
             sq_proxy  = (zone_w * (1.0 / (1.0 + opp_d / 50.0)) * (0.5 + 0.5 * spacing_n)).round(3)
             df["shot_quality_proxy"] = np.where(shot_mask, sq_proxy, 0.0)
     else:
@@ -675,20 +686,31 @@ def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
 
     _float_cols = [
         "scoreboard_game_clock", "scoreboard_shot_clock",
-        "possession_duration_sec", "off_ball_distance", "shot_clock_est",
+        "possession_duration_sec", "off_ball_distance",
+        # Bug 20 fix: shot_clock_est is computed per-frame in unified_pipeline.py;
+        # ffill would hold stale step-values across possession gaps.  Exclude from
+        # propagation — NaN rows stay NaN and are handled downstream.
+        # "shot_clock_est",  # removed from ffill group
     ]
+    # Bug 20 fix: coerce shot_clock_est to numeric but do NOT ffill — it
+    # is written per-frame and must decrement continuously.
+    _float_coerce_only = ["shot_clock_est"]
     _int_cols = [
         "scoreboard_score_diff", "scoreboard_period", "paint_touches",
     ]
     _str_cols = ["possession_type", "play_type"]
 
-    for col in _float_cols:
+    for col in _float_cols + _float_coerce_only:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
 
     for col in _int_cols:
         if col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+            # BUG 41 FIX: do NOT fillna(0) before ffill — that turns NaN→0 which
+            # blocks forward-propagation of real values.  Cast to float first so
+            # NaN is preserved, then ffill/bfill, then fillna(0) for any remaining
+            # gaps, then convert to int.
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     for col in _str_cols:
         if col in df.columns:
@@ -696,9 +718,15 @@ def add_context_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # Forward-fill scoreboard values within each frame group — they are
     # written once per 30-frame OCR window, so non-OCR frames are empty.
+    # BUG 41 FIX: ffill BEFORE fillna so real values propagate across blank rows.
     for col in _float_cols + _int_cols:
         if col in df.columns:
             df[col] = df[col].ffill().bfill()
+
+    # Final int coercion — only after propagation so 0 means "genuinely unknown"
+    for col in _int_cols:
+        if col in df.columns:
+            df[col] = df[col].fillna(0).astype(int)
 
     return df
 
@@ -1289,12 +1317,21 @@ def add_external_player_features(
     inj_df = load_injury_features()
     if not inj_df.empty and "player_name" in df.columns:
         # Resolve per-row asof_dt
+        #   Priority: game_date col (historical/training) → asof_dt col (live rows)
+        #   If neither exists we have no safe time anchor and MUST skip injury
+        #   enrichment — falling back to utcnow() would leak today's injury
+        #   status into historical training rows (look-ahead contamination).
         if "game_date" in df.columns:
             asof_series = pd.to_datetime(df["game_date"], errors="coerce", utc=True)
         elif "asof_dt" in df.columns:
             asof_series = pd.to_datetime(df["asof_dt"], errors="coerce", utc=True)
         else:
-            asof_series = pd.Series(pd.Timestamp.utcnow(), index=df.index)
+            # No date anchor available — skip rather than leak utcnow().
+            df["injury_status_active"]        = None
+            df["injury_hours_since_listed"]   = 999.0
+            df["team_inj_count_out"]          = 0
+            df["team_inj_count_questionable"] = 0
+            return df
         try:
             asof_series = asof_series.dt.tz_convert(None)
         except (TypeError, AttributeError):

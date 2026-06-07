@@ -38,7 +38,11 @@ import numpy as np
 _BUFFER_FRAMES   = 90     # sliding window depth
 _ISO_SPD_MAX     = 2.0    # px/frame — handler "stationary" below this
 _ISO_MIN_FRAMES  = 15     # consecutive slow frames to confirm isolation
-_ISO_MATE_DIST_N = 0.38   # normalised — teammates farther than this = spread
+_ISO_MATE_DIST_N = 0.22   # P12 2026-05-29: 0.38 → 0.22 (~21 ft). Prior 36 ft was
+                          # larger than the actual NBA court width — basically no iso
+                          # possessions could pass the spread check. Iso emission was
+                          # 19/3900 (0.5%) vs NBA Synergy ~7-8% of possessions.
+                          # Realistic NBA iso teammates spread 18-25 ft from handler.
 
 _SCREEN_RAD_N    = 0.048  # normalised radius — screener "on" handler
 _SCREEN_ROLL_N   = 0.06   # normalised — screener must move this far after screen
@@ -192,7 +196,10 @@ class PlayTypeClassifier:
         _, screener, si = hit
         mw, _ = self._map_size(buf)
         sid = screener.get("player_id")
-        for e in buf[si + 1: si + 16]:
+        # P16 2026-05-29: widened lookahead 16 → 30 frames (~3s window) so the
+        # screener's roll has enough time to develop. Rolls/pops typically
+        # complete 1.5-3s after the screen; prior 1.6s window missed slower develops.
+        for e in buf[si + 1: si + 30]:
             s_later = next((t for t in e.get("tracks", []) if t.get("player_id") == sid), None)
             if s_later:
                 dist_n = np.hypot(s_later.get("x2d", 0) - screener.get("x2d", 0),
@@ -210,7 +217,8 @@ class PlayTypeClassifier:
         _, screener, si = hit
         mw, _ = self._map_size(buf)
         sid = screener.get("player_id")
-        for e in buf[si + 1: si + 16]:
+        # P16 2026-05-29: 16 → 30 frame lookahead (same rationale as roll).
+        for e in buf[si + 1: si + 30]:
             s_later = next((t for t in e.get("tracks", []) if t.get("player_id") == sid), None)
             if s_later:
                 dist_n = np.hypot(s_later.get("x2d", 0) - screener.get("x2d", 0),

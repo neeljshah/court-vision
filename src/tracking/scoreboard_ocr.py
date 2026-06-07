@@ -112,7 +112,10 @@ def _one_shot_ocr(frame: "np.ndarray") -> Dict:
 log = logging.getLogger(__name__)
 
 _OCR_INTERVAL = 15      # FIX-J: 30→15 — halves max stale-clock gap; PBP mapper needs ±2s tolerance
-_TOP_FRAC     = 0.06    # top 6% of frame — ESPN/TNT scoreboard always in top ~5%
+# BUG 41 FIX: raised 0.06→0.10 so the scan window covers the full 60-pixel
+# scoreboard strip on 720p (0.06 * 720 = 43px < 60px; 0.10 * 720 = 72px > 60px).
+# On 1080p this expands to 108px, still well within the broadcast overlay area.
+_TOP_FRAC     = 0.10    # top 10% of frame — covers 60px TOPCUT strip at 720p/1080p
 _OCR_CONF_MIN = 0.30    # R8: PaddleOCR clusters 0.8-0.95 — 0.30 only filters obvious garbage
 
 _DEFAULT_STATE: Dict = {
