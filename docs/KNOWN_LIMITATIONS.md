@@ -27,6 +27,14 @@ What's NOT in any free public archive (would require $30/mo Odds API):
 
 The 8,360-bet historical sample is **partial-season**, not multi-season.
 
+### Possession sim — structure validated, betting edge NOT claimed
+
+The player-level possession Monte Carlo (`src/sim/`) and its same-game-parlay layer (`sgp_from_sim.py`) are validated on **structure**, not profit:
+
+- **Teammate correlation and the SGP joint shape are right** — emergent teammate-ρ ≈ −0.10 matches the realized value, and `validate_joint_calibration` grades the sim-joint against outcomes on historical games — but **no SGP ROI is claimed.** The repo has no real same-game-parlay price capture to grade against; SGP pricing is structurally correct, not a demonstrated edge.
+- **Team totals run high.** The player-level scoring pie tends to over-allocate the team total, so the **spread/margin read is more trustworthy than the raw total** — trust the side, not the over.
+- **Matchup-conditioned signals are data-hungry.** DvP / defender / scheme-tilt signals need many games before their lift separates from noise; the discovery loop's Benjamini-Hochberg FDR gate rejects most candidates by design — that is correct behavior, not a failure.
+
 ---
 
 ## Data coverage limits

@@ -365,6 +365,14 @@ Artifacts are gitignored (regenerable from raw tracking + NBA Stats; encode prop
 
 The intelligence system also synthesizes **1,249 per-player dossiers** (up to 28 statistical categories, archetype-labeled) and **30 per-team scheme cards** (defensive intensity z-scores, tempo/spacing profile, matchup notes). Example dossiers for Jokić (Playmaking Big), SGA (Primary Initiator), and Sam Hauser (3&D Wing), plus a DEN scheme card walkthrough: **[docs/PLAYER_INTELLIGENCE.md](docs/PLAYER_INTELLIGENCE.md)**.
 
+### Possession simulation + signal-discovery loop
+
+On top of the intelligence layer sits a **player-level possession Monte Carlo** (`src/sim/`). Rather than sampling team box-score totals, it simulates a game one possession at a time: each possession is "used" by exactly one of the five on-court players (a shared scoring pie), with lineups drawn from real stint minutes. Teammate scoring therefore *competes for the same possessions*, so the correct slightly-negative teammate correlation **emerges** from the mechanics (measured teammate-ρ ≈ −0.10, matching the realized value) instead of being imposed by a hand-tuned ρ-matrix — the fix for a prior simulator whose ρ was +0.65 against a real −0.01. Possession outcomes come from a 7-class model (`make_2/3`, `miss_2/3`, `ft_trip`, `turnover`, `foul`) learned from play-by-play; context (rest, blowout, clutch, defender, scheme) enters as rate multipliers; a vectorized `fast_sim` path rolls thousands of games for a full distribution, and totals are anchored to the market line. Because the draws are internally consistent, the same samples price **same-game parlays** off the true joint distribution (`sgp_from_sim.py`) and report the correlation lift versus naive independence.
+
+Feeding it is a **self-improving signal/intel loop** (`src/loop/`, `signals/`, `intel/`): one arm mines residuals into hypotheses, instantiates a leaf `signals/<name>.py`, and ships it only behind a hard gate — expanding walk-forward (all folds must improve), a null-shuffle permutation control, ablation-vs-full marginal lift, and a Benjamini-Hochberg FDR budget across the whole hypothesis family; the other arm builds `intel/*.py` player-profile atlas sections with REAL-vs-unknown fields explicitly marked. Most candidates are correctly rejected — that is the design.
+
+**Honest scope (no edge claim).** The sim's *structure* is validated — teammate-ρ and the SGP joint shape match realized data, and a calibration harness grades the sim-joint against outcomes on historical games — but **no betting ROI is claimed.** There is no real SGP price capture in the repo; the player-level team-total runs high, so the **spread/margin read is more trustworthy than the raw total**; and matchup-conditioned signals need many games before their lift separates from noise. This is an engineering + calibration result, not a demonstrated market edge.
+
 ### Execution stack (production-ready, awaiting October 2026 season)
 
 9 daemons covering the full live loop: `live_inplay_daemon` · `auto_place_daemon` · `auto_settle_daemon` · `clv_tracker_daemon` · `bankroll_monitor_daemon` · `middle_finder_daemon` · `bov_scraper_daemon` · `nba_lineup_daemon` · `vault_dashboard_daemon`. Plus the trading-desk UI above, webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard, `/api/shadow` exposing the calibration audit trail.
@@ -446,6 +454,8 @@ These are the next milestones, not disclaimers.
 
 ## Reproduce the Headlines
 
+> ⚠️ The ROI figures these graders historically printed (+18.38% / +15.04%) are **retracted** — see [Pre-game props — honest read](#pre-game-props--honest-read-numbers-corrected-2026-06) and [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md). The defensible, reproducible result is **point accuracy (MAE)**; re-graded against real closing lines the prop edge is roughly break-even-minus-vig, with a small genuine edge on assists. The commands stay so you can run the graders (and the self-audit) yourself.
+
 ```bash
 # Step 0: pull the free public Vegas-line archives (one-time, ~45 MB)
 python data/external/historical_lines/fetch_external_history.py
@@ -453,9 +463,9 @@ python data/external/historical_lines/fetch_external_history.py
 # Real-Vegas Gate 1 — L10 baseline + prod stack at real DK/FD/MGM/BetRivers closes
 python scripts/run_gate1_full_analysis.py
 
-# CANONICAL post-Iter-57 production stack ROI
+# Post-Iter-57 sim reconciliation grader — historically printed +18.38% KB+ISO / +15.04% flat,
+# RETRACTED as a market-follow grading artifact (real re-grade ≈ −2% to −5%; see JOB_EVIDENCE_PACKET.md)
 python scripts/iter61_sim_reconciliation.py
-# → +18.38% KB+ISO / +15.04% flat on 1,535 bets
 
 # In-game winprob OOS validation (honest WF Brier, exposes in-sample leakage)
 python scripts/oos_validate_inplay_2026_05_27.py

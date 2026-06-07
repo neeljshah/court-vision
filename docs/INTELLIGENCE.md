@@ -35,6 +35,9 @@ Concrete examples of how a prediction call consumes intelligence:
 - **Prop model for tonight's LeBron PTS** → loads `current_form_profiles` (trend tag + driver), `matchup_deviations` (LeBron-vs-MIN delta), `per_player_confidence` (volatility-adjusted Kelly multiplier), `officials_player_sensitivity` (ref tightness sensitivity), `pace_adjusted_cv` (pace-normalized baseline).
 - **In-play endQ3 winprob** → consumes `ingame_momentum` (H1 → H2 delta vector), `clutch_cv_split` (clutch elevators vs. shrinkers), `quarter_profiles` (per-quarter velocity baseline), `coaching_adjustments` (whether the trailing team is mid-adjustment).
 - **Bet filter / sizing** → reads `cv_quality_per_game` (gate by tracking quality), `confidence_curves` (per-EV-decile reliability), `anomaly_log` (suppress bets on players currently outside their baseline).
+- **Possession simulation** → the player-level Monte Carlo (`src/sim/`) reads `data/cache/team_system/{player_rates, team_rates}` plus the scheme / clutch / rest context tables as per-possession rate multipliers, so an intelligence finding (a clutch-usage elevator, a scheme tilt) propagates directly into simulated game outcomes and same-game-parlay joint pricing.
+
+**The loop closes here.** The self-improving discovery loop (`src/loop/`) doesn't only *consume* this layer — it *extends* it. ARM A writes new `signals/<name>.py` leaf signals (each gated by expanding walk-forward + null-shuffle permutation + Benjamini-Hochberg FDR); ARM B writes new `intel/*.py` atlas sections back into the player profiles, with REAL-vs-unknown fields explicitly marked. Artifacts are added only after passing the gate, and most candidates are correctly rejected. The sim's structure is validated but **no betting edge is claimed** — see [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md#possession-sim--structure-validated-betting-edge-not-claimed).
 
 ---
 
