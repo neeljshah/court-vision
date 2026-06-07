@@ -35,8 +35,12 @@ from datetime import date as _date
 import pandas as pd
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, PROJECT_DIR)
+sys.path.insert(0, SCRIPTS_DIR)
 os.environ.setdefault("NBA_INJURY_WIRE_DISABLE", "1")
+
+from lib_betting_validation import safe_odds  # Bug 10 guard
 
 from src.prediction.parlay_constructor import (  # noqa: E402
     build_parlay_candidates,
@@ -64,6 +68,8 @@ def _load_bets(path: str) -> pd.DataFrame:
         df.rename(columns={"ev_per_dollar": "ev"}, inplace=True)
     if "over_odds" in df.columns and "odds" not in df.columns:
         df.rename(columns={"over_odds": "odds"}, inplace=True)
+    if "odds" in df.columns:  # Bug 10 guard
+        df["odds"] = df["odds"].apply(safe_odds)
 
     return df
 

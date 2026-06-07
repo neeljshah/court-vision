@@ -272,6 +272,17 @@ def settle(bet, pred):
         return None  # push
     won = (bet_over and actual > line) or (not bet_over and actual < line)
     odds = bet["over_odds"] if bet_over else bet["under_odds"]
+    # B-2 (hard rule): drop invalid odds |odds| < 100. _payout treats |odds| < 100
+    # as a higher-than-even payout (e.g. _payout(-50, win)=200), overstating ROI;
+    # real books never post |odds| < 100, so it is a data glitch. Mirror the push
+    # no-bet None return (the caller already skips None). 0 rows in the current
+    # corpora carry |odds| < 100, so this is byte-identical on today's data and
+    # only guards future/glitch inputs (GRADING_SETTLE_CLV_AUDIT.md B-2).
+    try:
+        if abs(float(odds)) < 100:
+            return None
+    except (TypeError, ValueError):
+        return None
     return bet_over, won, _payout(odds, won)
 
 

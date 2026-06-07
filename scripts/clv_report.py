@@ -140,4 +140,13 @@ def main(argv: Optional[List[str]] = None) -> int:
 
 
 if __name__ == "__main__":
+    # CV_CLV_LINE_SIGN_FIX (owner-flipped 2026-06-05): the line-based CLV sign in
+    # src.betting.clv.compute_clv was inverted (reported beat_close for BOTH favorable
+    # AND unfavorable line moves — GRADING_SETTLE_CLV_AUDIT B-1). The operator-facing
+    # report should use the CORRECT sign by default. Set here (CLI entry only, NOT in
+    # main()) so unit tests that call main()/compute_clv directly keep the gated
+    # default-OFF byte-identical baseline; setdefault preserves the CV_CLV_LINE_SIGN_FIX=0
+    # escape hatch. Training-label-safe: clv_label uses the separate price-based
+    # clv_tracker path, not this one.
+    os.environ.setdefault("CV_CLV_LINE_SIGN_FIX", "1")
     sys.exit(main())

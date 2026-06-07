@@ -22,12 +22,21 @@ Two modes:
       actuals CSV (date,player,stat,actual_value) and an enriched CSV is
       written. Used by the legacy compare_to_lines --bet-log flow.
 
+  (3) Snapshot mode (CourtVision home-page feed):
+      python scripts/settle_bets.py --from-snapshot
+
+      Reads slate_<DATE>.csv for today + 2 days back, matches each
+      (player, stat) row to the latest data/live/<gid>_*.json snapshot.
+      Only settles games with game_status == "FINAL".  Writes results to
+      data/cache/settled_bets.json (idempotent append — no double-writes).
+
 Public API:
     settle(bet, actual)            -> (result, pnl)               # legacy
     settle_log(bets, actuals)      -> (enriched, summary)         # legacy
     load_actuals(path)             -> dict[(date,player,stat) -> val]
     sum_quarter_box(game_id, qb_dir=None) -> dict[player_name -> dict[stat -> val]]
     settle_from_quarter_box(qb_dir=None, dry_run=False) -> list[dict]
+    settle_from_snapshot(out_path=None) -> list[dict]             # snapshot mode
 """
 from __future__ import annotations
 
@@ -38,6 +47,9 @@ import json
 import os
 import sys
 import unicodedata
+import uuid
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -302,6 +314,193 @@ def settle_from_quarter_box(
 
 
 # --------------------------------------------------------------------------- #
+# Snapshot settlement  (CourtVision home-page feed, --from-snapshot)         #
+# --------------------------------------------------------------------------- #
+
+_SNAP_STAT_FIELDS = {"pts", "reb", "ast", "fg3m", "stl", "blk", "tov"}
+_PREDICTIONS_DIR = Path(PROJECT_DIR) / "data" / "predictions"
+_LIVE_DIR = Path(PROJECT_DIR) / "data" / "live"
+_DEFAULT_SNAP_OUT = Path(PROJECT_DIR) / "data" / "cache" / "settled_bets.json"
+
+
+def _snap_now_utc() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _snap_candidate_dates() -> List[str]:
+    """Today ± 1 day + 3 days back in ET (UTC-4).
+
+    Casts a wider net so late-night games (logged as next calendar day UTC)
+    and slates dated one day ahead are both captured.
+    """
+    base = datetime.now(timezone.utc) - timedelta(hours=4)
+    dates = set()
+    for delta in range(-1, 5):          # -1 (tomorrow ET) through +4 (4 days ago)
+        dates.add((base - timedelta(days=delta)).strftime("%Y-%m-%d"))
+    # Sort descending (most recent first)
+    return sorted(dates, reverse=True)
+
+
+def _snap_load_slate(date: str) -> List[Dict]:
+    """Load slate rows for date.  Tries exact name first, then glob for suffixed variants."""
+    # Exact match first
+    exact = _PREDICTIONS_DIR / f"slate_{date}.csv"
+    if exact.exists():
+        with open(exact, newline="", encoding="utf-8") as fh:
+            return list(csv.DictReader(fh))
+    # Glob for slate_<date>*.csv (e.g. slate_2026-05-26_post_inj_refresh.csv)
+    matches = sorted(_PREDICTIONS_DIR.glob(f"slate_{date}*.csv"))
+    # Skip .bak files
+    matches = [m for m in matches if not m.name.endswith(".bak")]
+    if not matches:
+        return []
+    # Use the most-recently-modified variant
+    best = max(matches, key=lambda p: p.stat().st_mtime)
+    with open(best, newline="", encoding="utf-8") as fh:
+        return list(csv.DictReader(fh))
+
+
+def _snap_latest_snapshot(game_id: str) -> Optional[Dict]:
+    snaps = sorted(_LIVE_DIR.glob(f"{game_id}_*.json"),
+                   key=lambda p: p.stat().st_mtime)
+    if not snaps:
+        return None
+    try:
+        with open(snaps[-1], encoding="utf-8") as fh:
+            return json.load(fh)
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def _snap_outcome(actual: float, line: float, side: str) -> str:
+    if side == "OVER":
+        return "won" if actual > line else ("push" if actual == line else "lost")
+    return "won" if actual < line else ("push" if actual == line else "lost")
+
+
+def settle_from_snapshot(out_path: Optional[str] = None) -> List[Dict]:
+    """Settle player-prop predictions from live/<gid>_*.json FINAL snapshots.
+
+    Reads slate_<DATE>.csv (today + 2 days back), matches each (player, stat)
+    row to the latest live snapshot for that game.  Only processes games with
+    game_status == "FINAL".  Uses model ``pred`` column as the implied line and
+    generates one OVER + one UNDER record per row.
+
+    Writes results to data/cache/settled_bets.json (idempotent).
+    Returns the list of *new* records written.
+    """
+    out = Path(out_path) if out_path else _DEFAULT_SNAP_OUT
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    # Load existing records for idempotency (key: game_id|player_id|stat|side)
+    existing: List[Dict] = []
+    existing_keys: set = set()
+    if out.exists():
+        try:
+            with open(out, encoding="utf-8") as fh:
+                existing = json.load(fh)
+            for rec in existing:
+                k = f"{rec.get('game_id')}|{rec.get('player_id')}|{rec.get('stat')}|{rec.get('side')}"
+                existing_keys.add(k)
+        except (json.JSONDecodeError, OSError):
+            existing = []
+
+    new_records: List[Dict] = []
+    snap_cache: Dict[str, Optional[Dict]] = {}
+
+    for date in _snap_candidate_dates():
+        rows = _snap_load_slate(date)
+        for row in rows:
+            game_id = row.get("game_id", "").strip()
+            player_id = str(row.get("player_id", "")).strip()
+            player_name = row.get("player", "").strip()
+            stat = row.get("stat", "").strip().lower()
+            pred_str = row.get("pred", "").strip()
+
+            if not (game_id and player_id and stat and pred_str):
+                continue
+            if stat not in _SNAP_STAT_FIELDS:
+                continue
+            try:
+                line = float(pred_str)
+            except ValueError:
+                continue
+
+            if game_id not in snap_cache:
+                snap_cache[game_id] = _snap_latest_snapshot(game_id)
+            snap = snap_cache[game_id]
+            if snap is None or snap.get("game_status", "").upper() != "FINAL":
+                continue
+
+            # Build player lookup by id, fall back to name
+            player_data: Optional[Dict] = None
+            for p in snap.get("players", []):
+                if str(p.get("player_id", "")) == player_id:
+                    player_data = p
+                    break
+            if player_data is None:
+                name_lower = player_name.lower()
+                for p in snap.get("players", []):
+                    if p.get("name", "").lower() == name_lower:
+                        player_data = p
+                        break
+
+            for side in ("OVER", "UNDER"):
+                key = f"{game_id}|{player_id}|{stat}|{side}"
+                if key in existing_keys:
+                    continue
+
+                if player_data is None:
+                    status = "undetermined"
+                    actual = None
+                else:
+                    raw = player_data.get(stat)
+                    if raw is None:
+                        continue
+                    actual = float(raw)
+                    status = _snap_outcome(actual, line, side)
+
+                new_records.append({
+                    "bet_id": str(uuid.uuid4()),
+                    "player_name": player_name,
+                    "player_id": player_id,
+                    "stat": stat,
+                    "side": side,
+                    "line": round(line, 2),
+                    "actual": actual,
+                    "status": status,
+                    "settled_at": _snap_now_utc(),
+                    "game_id": game_id,
+                    "date": date,
+                    # home-page compat fields
+                    "created_at": _snap_now_utc(),
+                    "ev_pct": None,
+                })
+                existing_keys.add(key)
+
+    if new_records:
+        combined = existing + new_records
+        with open(out, "w", encoding="utf-8") as fh:
+            json.dump(combined, fh, indent=2)
+        n_final = sum(1 for r in new_records if r["status"] in ("won", "lost", "push"))
+        n_undet = sum(1 for r in new_records if r["status"] == "undetermined")
+        print(f"settle_bets(snapshot): wrote {len(new_records)} new records "
+              f"({n_final} decided, {n_undet} undetermined) -> {out}")
+        sample = [r for r in new_records if r["status"] in ("won", "lost")][:10]
+        if sample:
+            print(f"\n  {'player':<28s} {'stat':4s} {'side':5s} {'line':>6s} "
+                  f"{'actual':>7s} {'status':6s}")
+            print(f"  {'-'*28} {'-'*4} {'-'*5} {'-'*6} {'-'*7} {'-'*6}")
+            for r in sample:
+                print(f"  {r['player_name']:<28s} {r['stat']:4s} {r['side']:5s} "
+                      f"{r['line']:>6.2f} {float(r['actual']):>7.1f} {r['status']:6s}")
+    else:
+        print("settle_bets(snapshot): nothing new to write.")
+
+    return new_records
+
+
+# --------------------------------------------------------------------------- #
 # CLI                                                                         #
 # --------------------------------------------------------------------------- #
 def main(argv: Optional[List[str]] = None) -> int:
@@ -318,7 +517,16 @@ def main(argv: Optional[List[str]] = None) -> int:
                     help="quarter_box dir (default: data/cache/quarter_box)")
     ap.add_argument("--dry-run", action="store_true",
                     help="quarter-box mode: report what would happen, don't write ledger")
+    ap.add_argument("--from-snapshot", action="store_true",
+                    help="CourtVision mode: settle slate predictions from live/ snapshots "
+                         "and write data/cache/settled_bets.json")
+    ap.add_argument("--snap-out", default=None,
+                    help="--from-snapshot: override output path (default: data/cache/settled_bets.json)")
     args = ap.parse_args(argv)
+
+    if args.from_snapshot:
+        settle_from_snapshot(out_path=args.snap_out)
+        return 0
 
     if args.from_quarter_box:
         results = settle_from_quarter_box(args.qb_dir, dry_run=args.dry_run)

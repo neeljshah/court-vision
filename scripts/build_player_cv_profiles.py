@@ -350,6 +350,46 @@ def _aggregate_one_game(game_id: str) -> pd.DataFrame:
             print(f"  [{game_id}] homography fix merge failed: {e}",
                   file=sys.stderr)
 
+    # Bug 12 fix (2026-05-28): features.csv stores team-label names (green#?, white#?)
+    # which fail NBA name resolution, dropping cvb_passes_per100 / cvb_dribbles_per100
+    # for resolved players.  When jersey_number + jersey_name_map.json are present,
+    # build a player_id -> real_name map and patch player_name before groupby so the
+    # per-player aggregates (including passes_per100 / dribbles_per100) survive under
+    # the resolved NBA name.
+    if (
+        "player_name" in df.columns
+        and "jersey_number" in df.columns
+        and df["player_name"].astype(str).str.contains(r"^(green|white)#", regex=True).any()
+    ):
+        jmap_path = BACKUP / game_id / "jersey_name_map.json"
+        if jmap_path.exists():
+            try:
+                import json as _json
+                with open(jmap_path, encoding="utf-8") as _jf:
+                    _jdata = _json.load(_jf)
+                # flat dict: {jersey_str: real_name}
+                _flat = _jdata.get("flat", {}) if isinstance(_jdata, dict) else {}
+                if _flat:
+                    # Build player_id -> real_name via mode jersey_number per player_id
+                    _jnum_mode = (
+                        df.groupby("player_id")["jersey_number"]
+                        .agg(lambda s: s.mode().iat[0] if not s.mode().empty else None)
+                    )
+                    _pid_to_name = {}
+                    for _pid, _jnum in _jnum_mode.items():
+                        if _jnum is None:
+                            continue
+                        _real = _flat.get(str(int(_jnum))) if _jnum == _jnum else None
+                        if _real:
+                            _pid_to_name[_pid] = _real
+                    if _pid_to_name:
+                        df["player_name"] = df.apply(
+                            lambda r: _pid_to_name.get(r["player_id"], r["player_name"]),
+                            axis=1,
+                        )
+            except Exception as _e:
+                print(f"  [{game_id}] jersey name patch failed: {_e}", file=sys.stderr)
+
     # Group keys: prefer (player_id, team), fall back to player_name
     keys = []
     for k in ("player_id", "player_name", "team"):
