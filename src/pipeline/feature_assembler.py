@@ -163,17 +163,43 @@ def _gamelog_rolling(logs: list[dict], n: int, field: str) -> float:
     return float(np.mean(vals))
 
 
+def _gamelog_chrono_key(g: dict):
+    """Parse 'Mon DD, YYYY' (or ISO) game_date to a sortable datetime; unparseable last."""
+    from datetime import datetime
+    gd = (g.get("game_date") or "").strip()
+    for fmt in ("%b %d, %Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(gd[:12] if fmt.startswith("%b") else gd[:10], fmt)
+        except Exception:
+            continue
+    return datetime.min
+
+
 def _gamelogs_for_player(player_id: int, season: str) -> list[dict]:
     """Load individual gamelog file for player."""
     path = os.path.join(_NBA_CACHE, f"gamelog_full_{player_id}_{season}.json")
     data = _load(path)
-    if isinstance(data, list):
-        # Sort by game_date ascending
+    if not isinstance(data, list):
+        return []
+    # CV_GAMELOG_CHRONO_SORT (sweep TRACKING_CV, default OFF = byte-identical legacy).
+    # game_date is 'Mon DD, YYYY' (e.g. 'Apr 13, 2025'); the legacy LEXICOGRAPHIC sort
+    # orders months alphabetically (Apr<Aug<Dec<Feb<Jan<...<Oct<Sep), scrambling the
+    # Oct->Apr NBA season so the L5/L10/L20 tail + last-game read the WRONG games (the
+    # lexicographic tail = Oct/Sep = season START, not the recent games). ON sorts truly
+    # chronologically. Gated because downstream prop_model_stack / prediction_orchestrator
+    # features (and any model/calibrator trained through this assembler) may be coupled to
+    # the legacy order -> A/B slate ROI/MAE before flipping default ON. (Note: the b2b block
+    # at ~line 912 also mis-parses this date via strptime(..,'%Y-%m-%d') -> days_rest NaN;
+    # that path is separately swallowed and unaffected by this flag.)
+    if os.environ.get("CV_GAMELOG_CHRONO_SORT", "0") == "1":
         try:
-            return sorted(data, key=lambda g: g.get("game_date", ""))
+            return sorted(data, key=_gamelog_chrono_key)
         except Exception:
             return data
-    return []
+    try:
+        return sorted(data, key=lambda g: g.get("game_date", ""))
+    except Exception:
+        return data
 
 
 # ── Shot dashboard ─────────────────────────────────────────────────────────────

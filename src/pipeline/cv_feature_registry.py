@@ -55,7 +55,7 @@ def register(
             if fval is not None
         ]
         sql = """
-            INSERT OR IGNORE INTO cv_features
+            INSERT OR REPLACE INTO cv_features
                 (game_id, player_id, feature_name, feature_value)
             VALUES (?, ?, ?, ?)
         """

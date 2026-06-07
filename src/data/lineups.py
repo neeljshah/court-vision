@@ -69,8 +69,43 @@ def default_path(d: Optional[_date] = None) -> str:
     return os.path.join(project_dir, "data", f"lineups_{d.isoformat()}.json")
 
 
+def _is_daemon_schema(payload: dict) -> bool:
+    """True for the R17 J1 nba_lineup_daemon.py flat schema (top-level
+    starters[] with player_name), False for the cycle-61 nested games[] schema
+    and for empty / malformed payloads.
+    """
+    if not isinstance(payload, dict):
+        return False
+    if payload.get("games"):
+        return False
+    starters = payload.get("starters")
+    if not isinstance(starters, list) or not starters:
+        return False
+    return all(isinstance(s, dict) and "player_name" in s for s in starters)
+
+
+def _alt_daemon_path_for(path: str) -> Optional[str]:
+    """Translate a legacy lineups path (data/lineups_<date>.json) to the
+    daemon's file (data/lineups/<date>.json). Returns None for non-lineup names.
+    """
+    base = os.path.basename(path)
+    if not base.startswith("lineups_") or not base.endswith(".json"):
+        return None
+    date_str = base[len("lineups_"):-len(".json")]
+    return os.path.join(os.path.dirname(path), "lineups", date_str + ".json")
+
+
 def load_lineups(path: Optional[str] = None) -> dict:
-    """Read a lineups JSON; return full payload or {} on missing/malformed."""
+    """Read a lineups JSON; return full payload or {} on missing/malformed.
+
+    If the given legacy path is missing, auto-fall back to the daemon's
+    data/lineups/<date>.json file so consumers wired to the cycle-61 path
+    transparently pick up the nba_lineup_daemon feed.
+    """
+    if path and not os.path.exists(path):
+        alt = _alt_daemon_path_for(path)
+        if alt and os.path.exists(alt):
+            path = alt
     if not path or not os.path.exists(path):
         return {}
     try:
@@ -86,6 +121,19 @@ def build_starter_index(path: Optional[str] = None) -> Dict[str, dict]:
     """
     payload = load_lineups(path)
     out: Dict[str, dict] = {}
+    if _is_daemon_schema(payload):
+        for s in payload.get("starters", []) or []:
+            key = _name_key(s.get("player_name", ""))
+            if not key:
+                continue
+            out[key] = {
+                "team":           s.get("team", ""),
+                "pos":            s.get("position") or s.get("slot", "") or "",
+                "play_pct":       int(s.get("play_pct", 0) or 0),
+                "injury":         s.get("injury"),
+                "lineup_status":  s.get("status", "Unknown"),
+            }
+        return out
     for g in payload.get("games", []) or []:
         for side in ("away", "home"):
             lu = g.get(f"{side}_lineup", {}) or {}
@@ -119,6 +167,12 @@ def teams_playing(path: Optional[str] = None) -> List[str]:
     """Return the list of team abbrevs playing on the lineups JSON's date."""
     payload = load_lineups(path)
     teams: List[str] = []
+    if _is_daemon_schema(payload):
+        for s in payload.get("starters", []) or []:
+            t = s.get("team", "")
+            if t and t not in teams:
+                teams.append(t)
+        return teams
     for g in payload.get("games", []) or []:
         for side in ("away", "home"):
             t = g.get(f"{side}_team", "")

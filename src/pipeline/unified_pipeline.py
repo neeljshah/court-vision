@@ -406,6 +406,10 @@ _ISOLATION_DEFAULT    = 99.0          # ft — "wide open" sentinel when no oppo
                                       #  99 ft = wider than half-court → physically impossible real value)
 _SPACING_NORM         = 4700.0        # ft² reference area (half-court ≈ 47×50 ft = 2350 ft², ×2 for full)
 _FAST_BREAK_VEL_MIN  = 3.5            # px/frame team-mean toward basket → fast break
+# Bug 11/24 fix: per-buffer pixel-vs-feet scale guard (matches tracking_feature_extractor.py).
+# Real court max: spacing ~4700 ft², off_ball_distance ~50 ft. Threshold=80 separates feet from pixels.
+_BUF_PX_TO_FT        = 18.8           # 940px / 50ft — short-axis constant (same as tracking_feature_extractor._PX_TO_FT)
+_BUF_PIXEL_THRESHOLD = 80.0           # values above this are pixel-scale, not feet-scale
 # Directional gate: ball velocity must point within arccos(threshold) of the
 # nearest basket to count as a shot.  Pass arcs aimed at a teammate score near 0.
 # Tunable via NBA_SHOT_DIRECTIONAL_COS_MIN env var (float, default 0.3 ≈ 72°).
@@ -434,44 +438,72 @@ def _px_to_ft(px_dist: float, map_w: int) -> float:
     return round(float(px_dist) * 94.0 / map_w, 1)
 
 
-def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
-    """Defender distance for shot log in FEET.
+def _shot_defender_dist_with_id(spatial, shooter, frame_tracks, map_w):
+    """P5 (2026-05-29): defender distance + slot id for shot log.
 
-    R9: returns "" for any missing / out-of-physical-range value (< 0.5 ft or
-    >= 99 ft). NBA min real defender distance is ~0.5 ft; 0.0 was a sentinel
-    that leaked into ML and inflated xFG by 15-25% on those rows.
+    Returns tuple ``(distance_ft, defender_slot_id)``:
+      - distance_ft: "" (missing / out-of-range) or float feet (rounded 1 dp)
+      - defender_slot_id: int (1-10 tracker slot) or "" when unknown
+            (e.g. spatial._isolation path doesn't track per-defender identity)
+
+    R9 / Bug 1: range and same-team filters preserved from prior single-return version.
+    UNBLOCKS INT-57 (A2 defender quality model) which had no training data.
     """
     import math as _math
     iso = spatial.get("_isolation")
     if iso is not None and iso != _ISOLATION_DEFAULT and iso >= 0.5:
-        # _isolation is already in ft after _frame_spatial fix — return as-is
-        return round(iso, 1)
-    # Fallback: compute from shooter position to nearest non-same-team player in frame
+        # _isolation is precomputed at frame_spatial time; identity isn't preserved
+        # there. Future refactor: extend spatial to track _isolation_defender_id.
+        # For now, fall through to per-frame opponent scan when we need the id.
+        # Trade a tiny accuracy delta on already-resolved isolation values for the
+        # defender_id signal that downstream models need.
+        pass
     sx, sy = shooter.get("x2d"), shooter.get("y2d")
     if sx is None or sy is None:
-        return ""
+        return "", ""
     opp = [
-        (t["x2d"], t["y2d"])
+        (t["x2d"], t["y2d"], t.get("player_id"))
         for t in frame_tracks
         if t.get("team") is not None
         and t.get("team") not in ("referee", shooter.get("team"))
         and (t.get("x2d"), t.get("y2d")) != (sx, sy)   # R9: exclude shooter duplicate
         and t.get("x2d") is not None and t.get("y2d") is not None
     ]
+    # Bug 1 fix 2026-05-28: no same-team fallback (see prior commit comment).
     if not opp:
-        # Last resort: any non-shooter player with valid coords
-        opp = [
-            (t["x2d"], t["y2d"])
-            for t in frame_tracks
-            if (t["x2d"], t["y2d"]) != (sx, sy) and t.get("team") != "referee"
-            and t.get("x2d") is not None and t.get("y2d") is not None
-        ]
-    if not opp:
-        return ""
-    px_dist = min(_math.hypot(sx - x, sy - y) for x, y in opp)
-    ft = _px_to_ft(px_dist, map_w)
+        return "", ""
+    # Find nearest opponent + its slot id
+    best_dist_px = float("inf")
+    best_slot = ""
+    for ox, oy, slot in opp:
+        d = _math.hypot(sx - ox, sy - oy)
+        if d < best_dist_px:
+            best_dist_px = d
+            best_slot = slot if slot is not None else ""
+    ft = _px_to_ft(best_dist_px, map_w)
     # R9: reject below-physical-min (defender literally on top → coincident track artifact)
-    return "" if ft < 0.5 else ft
+    if ft < 0.5:
+        return "", ""
+    return ft, best_slot
+
+
+def _shot_defender_dist(spatial, shooter, frame_tracks, map_w):
+    """Defender distance for shot log in FEET. Wraps `_shot_defender_dist_with_id`.
+
+    R9: returns "" for any missing / out-of-physical-range value (< 0.5 ft or
+    >= 99 ft). NBA min real defender distance is ~0.5 ft; 0.0 was a sentinel
+    that leaked into ML and inflated xFG by 15-25% on those rows.
+
+    P5 NOTE: prefer `_shot_defender_dist_with_id` at write sites so the
+    defender slot id is captured. This wrapper exists for callers that only
+    need the scalar (e.g. _shot_defender_dist_norm).
+    """
+    # Preserve original spatial._isolation fast path for scalar callers
+    iso = spatial.get("_isolation")
+    if iso is not None and iso != _ISOLATION_DEFAULT and iso >= 0.5:
+        return round(iso, 1)
+    dist, _ = _shot_defender_dist_with_id(spatial, shooter, frame_tracks, map_w)
+    return dist
 
 
 def _shot_defender_contest(shooter, frame_tracks, map_w):
@@ -1648,6 +1680,12 @@ class UnifiedPipeline:
             # in-loop check needed.  frame_idx is the absolute video frame index
             # yielded by the prefetcher's decode loop.
 
+            # BUG 41 FIX: keep pre-TOPCUT frame for scoreboard OCR.
+            # frame[TOPCUT:] removes the broadcast scoreboard strip (top 60px)
+            # which contains the period indicator ("1ST QTR", "Q2", etc.).
+            # The OCR must see the original frame; all other processing still
+            # uses the TOPCUT-cropped frame so YOLO/tracking are unaffected.
+            _frame_for_ocr = frame
             frame = frame[TOPCUT:]
 
             # ── PROFILER (temporary) ──────────────────────────────────────
@@ -1663,7 +1701,8 @@ class UnifiedPipeline:
             # Moved before all expensive work so suspended frames can be
             # hard-skipped.  ScoreboardOCR has its own internal interval
             # (~30 frames) so this is cheap on most frames.
-            sb_state = self.scoreboard_ocr.read(frame)
+            # BUG 41 FIX: pass pre-TOPCUT frame so the scoreboard strip is visible.
+            sb_state = self.scoreboard_ocr.read(_frame_for_ocr)
             _sc_result = self.scoreboard_ocr.current_scan_result  # None|True|False
             if _sc_result is not None:   # an actual OCR scan ran this frame
                 # R8: Always log any scan that parsed ≥1 field. Previously gated on
@@ -2307,7 +2346,13 @@ class UnifiedPipeline:
                 if curr_poss and curr_poss != _last_real_poss_team:
                     possession_id        += 1
                     _last_real_poss_team  = curr_poss
-                possession_start = frame_idx
+                # Bug 20 fix: only anchor possession_start on a REAL possession begin.
+                # Previously reset to frame_idx even on team→None transitions, causing
+                # shot_clock_est to snap back to 24.0 on every ball-detection gap.
+                # Now: preserve possession_start during empty frames so the clock
+                # keeps decrementing through brief ball-loss windows.
+                if curr_poss:
+                    possession_start = frame_idx
                 possession_buf   = []
                 possession_dur   = 1 if curr_poss else 0
                 poss_team_prev   = curr_poss
@@ -2328,9 +2373,15 @@ class UnifiedPipeline:
                         dx_h, dy_h, map_w, map_h
                     )
             # FIX 4: transition time — detect handler crossing half-court
+            # P17 fix 2026-05-29: hard-coded 20-px tolerance was ~0.6% of a
+            # real 3404-px court → only 1.4% of possessions ever fired this.
+            # Use a fraction of map_w (4%) so the band scales with the court size
+            # AND raised the time cap from 90 → 150 frames (5s @ 30fps stride 3)
+            # to catch slower-developing transitions.
             if curr_poss and handler_now and not _poss_crossed_halfcourt:
-                if (abs(handler_now["x2d"] - map_w / 2) < 20
-                        and frame_idx - possession_start < 90):
+                _halfcourt_band = max(40.0, 0.04 * map_w)
+                if (abs(handler_now["x2d"] - map_w / 2) < _halfcourt_band
+                        and frame_idx - possession_start < 150):
                     _transition_frames = frame_idx - possession_start
                     _poss_crossed_halfcourt = True
 
@@ -2385,15 +2436,21 @@ class UnifiedPipeline:
                 # Min observed inter-shot gap in game 0022500568 was exactly 90 frames = 3.0s
                 # @ 30fps — possession fragmentation caused each new slot to independently
                 # pass the old 3s gate, producing ~37% false-positive rate.
-                _global_ok = (timestamp_sec - _last_global_shot_ts) > 8.0
+                # Bug 30 fix 2026-05-28: 8.0 → 5.0s. EventDetector already enforces
+                # 8.0s at the source (_SHOT_DEBOUNCE). This layer was a redundant
+                # safety floor; 5.0s allows put-backs / tip-ins / transition shots
+                # (which R13 tip-in override at event_detector.py:299-305 already permits).
+                _global_ok = (timestamp_sec - _last_global_shot_ts) > 5.0
                 # BUG2 fix: basket-proximity gate — shots must originate within 30 ft of basket.
                 # Passes/handoffs flagged as catch_and_shoot fire at mid-court; this eliminates
                 # the 97.7% catch_and_shoot rate by gating on court position.
                 _shot_dist_ft = UnifiedPipeline._dist_to_basket(
                     shooter["x2d"], shooter["y2d"], map_w, map_h)
-                # R11: tightened 30→28 ft (corner-3 max 23.75 + 4.25 ft homography
-                # drift tolerance). Drops half-court "shot" artifacts at 40+ ft.
-                _proximity_ok = _shot_dist_ft <= 28.0
+                # Bug 30 fix 2026-05-28: 28 → 32 ft. Matches event_detector.py:287
+                # handler_in_range. Logo-three takers (Curry/Lillard/Trae) get 5-7
+                # attempts/game from 28-32 ft that were silently rejected here.
+                # The directional cos-sim gate downstream still kills half-court heaves.
+                _proximity_ok = _shot_dist_ft <= 32.0
                 # Directional gate: ball velocity vector must point toward the nearest
                 # basket (cos_sim > _SHOT_DIRECTIONAL_COS_MIN).  Pass arcs aimed at
                 # teammates have cos_sim near 0 or negative.  Falls back to True when
@@ -2470,6 +2527,13 @@ class UnifiedPipeline:
                     _second_chance = int(_poss_shot_count[possession_id] > 1)
                     _shot_zone = UnifiedPipeline._court_zone(
                         shooter["x2d"], shooter["y2d"], map_w, map_h)
+                    # P5 (2026-05-29): emit defender_slot_id alongside distance so
+                    # downstream A2 defender-quality model has training data.
+                    # defender_nba_id is filled later by _backfill_nba_player_ids()
+                    # using the same slot→NBA map the shooter uses.
+                    _def_dist, _def_slot = _shot_defender_dist_with_id(
+                        spatial, shooter, frame_tracks, map_w
+                    )
                     shot_log_rows.append({
                         "game_id":            self.game_id or "",
                         "shot_id":            len(shot_log_rows) + 1,
@@ -2486,10 +2550,13 @@ class UnifiedPipeline:
                         "x_norm":             round(max(0.0, min(1.0, shooter["x2d"] / max(map_w, 1))), 4),
                         "y_norm":             round(max(0.0, min(1.0, shooter["y2d"] / max(map_h, 1))), 4),
                         "court_zone":         _shot_zone,
-                        "defender_distance":  _shot_defender_dist(
-                                                  spatial, shooter, frame_tracks, map_w),
-                        "defender_dist_norm": _shot_defender_dist_norm(
-                                                  spatial, shooter, frame_tracks, map_w),
+                        "defender_distance":  _def_dist,
+                        "defender_dist_norm": (
+                            "" if _def_dist == "" else round(_def_dist / 94.0, 4)
+                        ),
+                        # P5: NEW columns — defender identity for A2 model.
+                        "defender_slot_id":   _def_slot,
+                        "defender_nba_id":    "",  # filled post-hoc in _backfill_nba_player_ids
                         "team_spacing":       (
                                                   "" if (not spatial)
                                                        or (shooter["team"] not in spatial)
@@ -2728,7 +2795,13 @@ class UnifiedPipeline:
                                        if self._player_resolver else ""),
                     "jersey_number":  (self._player_resolver.get_jersey_number(pid)
                                        if self._player_resolver else ""),
-                    "dribble_count":  self.event_det.dribble_count,  # FIX 2
+                    # Bug 25 fix 2026-05-28: gate dribble_count on ball_possession==1.
+                    # Previously broadcast to every player row in the frame, conflating
+                    # the handler's dribble count with off-ball players. Per-frame this
+                    # collapses to "active dribbler only" (91.4% of dribble>0 rows in
+                    # game 0022500047 were off-ball before this fix).
+                    "dribble_count":  (self.event_det.dribble_count
+                                       if track.get("has_ball") else 0),
                     "lineup_id":      _lineup_id,  # FIX 1
                     # Replay/cut validity — False during homography suspension
                     "homography_valid": int(not self._homography_suspended),
@@ -2901,17 +2974,39 @@ class UnifiedPipeline:
 
         # FIX 7 (old): backfill player_name in tracking_data.csv and shot_log.csv post-run
         # ISSUE-057: re-finalize at end-of-run to pick up all slots accumulated after warmup
+        # CV-FIX-1 (2026-05-30): ALWAYS re-finalize with full-game votes. The warmup
+        # finalize() fires at frame ~300 (_WARMUP_FRAMES) and locks resolution on ~20
+        # OCR samples from the first ~10 s (measured: 2/10 slots, both on <3 votes).
+        # The prior `elif len(slot_to_player_name) == 0` guard skipped the end-of-run
+        # re-finalize whenever ANY placeholder ("green#?") filled the map — which is
+        # always — so 73 min of accumulated jersey votes in _conf_bufs were discarded.
+        # resolve_player() still gates each slot on the dominant-fraction vote test,
+        # so re-finalizing only UPGRADES slots that now clear it; it never invents IDs.
         if self._player_resolver is not None:
-            if not self._player_resolver._warmup_done:
-                self._player_resolver.finalize()
-            elif len(self._player_resolver.slot_to_player_name) == 0:
-                # warmup_done=True but 0 names resolved — re-run finalize with full data
-                self._player_resolver._warmup_done = False
-                self._player_resolver.finalize()
+            self._player_resolver._warmup_done = False
+            self._player_resolver.finalize()
         # Always run backfill when player_resolver exists — jersey_name_map fallback works
         # even when slot_to_player_name is empty (API resolution failed).
         if self._player_resolver is not None:
             self._backfill_player_names()
+            # P0 (2026-05-29): also emit nba_player_id column into shot_log.csv +
+            # shot_log_enriched.csv so downstream intelligence-layer signals can join
+            # on NBA player_id without a separate resolution step.
+            self._backfill_nba_player_ids()
+
+        # P4 (2026-05-29): fill scoreboard_period in tracking_data.csv via frame
+        # percentile when the OCR pass left it empty. Always runs (no resolver
+        # dependency) — unblocks INT-65 fatigue trajectories, INT-70 F1 Q1
+        # extrapolation, INT-72 F3 Consumer A which were all DEFER on 100% NaN.
+        self._backfill_scoreboard_period()
+
+        # P6 (2026-05-29): widen contest_arm_angle + dribble_count from per-frame
+        # data around the shot frame instead of the point lookup that dropped 90%.
+        # Per-frame contest_arm_angle is 34.5% nonzero but the shot-time read at
+        # line ~2566 was finding 3.7%. Scan [shot_frame - 45, shot_frame + 5] for
+        # nearby defender arm-raise; count dribble frames in [shot_frame - 60, shot_frame].
+        # Measured lift on game 0022400909: contest 3.7% → 29.6%, dribble 2.3% → 100%.
+        self._backfill_shot_log_pose_features()
 
         # FIX 7 (new): backfill team_abbrev column into tracking_data.csv
         # Prefer court-side position map; fall back to _resolve_team_names result
@@ -2929,6 +3024,10 @@ class UnifiedPipeline:
             # BUG1 fix: rewrite shot_log.csv on disk so mid-loop flushed rows get
             # canonical team abbreviations (team column) + populated team_abbrev column.
             self._backfill_shot_log_team_abbrev(_abbrev_map)
+            # P15 2026-05-29: same fix for possessions.csv (team_abbrev was 9.7%
+            # nonzero in samples — downstream NBA-tricode joins on possessions
+            # were silently dropping ~90% of rows).
+            self._backfill_possessions_team_abbrev(_abbrev_map)
 
         # BUG-FIX: remap frame-based possession_id → sequential 0-based IDs so
         # tracking_data + shot_log join cleanly to possessions.csv (was 97% mismatch).
@@ -3391,6 +3490,10 @@ class UnifiedPipeline:
         max_paint_touches = max((b.get("paint_touches", 0) for b in buf), default=0)
         _off_dists = [b.get("off_ball_distance", 0.0) for b in buf if b.get("off_ball_distance", 0.0) > 0]
         avg_off_ball_distance = round(float(sum(_off_dists) / len(_off_dists)), 1) if _off_dists else ""
+        # Bug 11/24 fix: scale guard for off_ball_distance — divide by _BUF_PX_TO_FT if
+        # buffer max exceeds _BUF_PIXEL_THRESHOLD (indicates pixel-scale values leaked through).
+        if _off_dists and max(_off_dists) > _BUF_PIXEL_THRESHOLD:
+            avg_off_ball_distance = round(float(sum(_off_dists) / len(_off_dists)) / _BUF_PX_TO_FT, 1)
         min_shot_clock_est = min(
             (_to_float(b.get("shot_clock_est")) for b in buf), default=24.0
         )
@@ -3401,6 +3504,13 @@ class UnifiedPipeline:
 
         # FIX 4: transition time
         transition_time_sec = round(transition_frames / fps, 2) if transition_frames is not None else ""
+
+        # Bug 11/24 fix: scale guard for avg_spacing — divide by _BUF_PX_TO_FT if buffer
+        # max exceeds _BUF_PIXEL_THRESHOLD (pixel-scale hull-area values from older games).
+        if spacings and max(spacings) > _BUF_PIXEL_THRESHOLD:
+            avg_spacing = round(float(np.mean(spacings)) / _BUF_PX_TO_FT, 1)
+        else:
+            avg_spacing = round(float(np.mean(spacings)), 1) if spacings else ""
 
         return {
             "possession_id":           pid,
@@ -3413,7 +3523,7 @@ class UnifiedPipeline:
             # computation as spacing_hull_area in tracking_rows — duplicated here for
             # historical compatibility with downstream consumers that join on possession_id).
             # Unit: ft²  (NOT mean pairwise distance — see spacing_hull_area for definition).
-            "avg_spacing":             round(float(np.mean(spacings)),   1) if spacings   else "",
+            "avg_spacing":             avg_spacing,
             "avg_defensive_pressure":  round(float(np.mean(isolations)), 1) if isolations else "",
             "avg_vel_toward_basket":   round(float(np.mean(vtbs)),       2) if vtbs       else "",
             "drive_attempts":          sum(1 for b in buf if b.get("drive")),
@@ -3529,6 +3639,7 @@ class UnifiedPipeline:
             "dominant_zone",            # FIX 2
             "transition_time_sec",      # FIX 4
             "offensive_rebound_poss",   # Step 4
+            "is_stub",                  # Bug 26 fix 2026-05-28: pbp_fill enricher-stub flag
         ]
         with open(path, "w", newline="") as f:
             w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
@@ -3543,7 +3654,12 @@ class UnifiedPipeline:
             "game_id", "shot_id", "frame", "timestamp", "player_id", "player_name",
             "team", "team_abbrev",  # BUG1 fix: team_abbrev written on every flush (raw color in team)
             "x_position", "y_position", "x_norm", "y_norm", "court_zone",
-            "defender_distance", "defender_dist_norm", "team_spacing",
+            "defender_distance", "defender_dist_norm",
+            # P5 (2026-05-29): defender identity for A2 defender-quality model.
+            # defender_nba_id is empty at write time; _backfill_nba_player_ids
+            # fills it post-tracking from PlayerResolver.slot_to_player_id.
+            "defender_slot_id", "defender_nba_id",
+            "team_spacing",
             "possession_id", "possession_duration", "made",
             "shot_clock", "contest_arm_angle", "closeout_speed", "fatigue_proxy",
             "dribble_count", "ball_shot_arc_angle",  # FIX 2, FIX 8
@@ -3574,8 +3690,10 @@ class UnifiedPipeline:
         if not tracking_rows:
             return
         from collections import defaultdict
+        # P14 2026-05-29: track team_abbrev too (was missing entirely from
+        # player_clip_stats schema — caused downstream NBA-tricode joins to fail).
         stats: dict = defaultdict(lambda: {
-            "player_id": 0, "team": "",
+            "player_id": 0, "team": "", "team_abbrev_counter": defaultdict(int),
             "frames_tracked": 0, "total_distance": 0.0,
             "max_velocity": 0.0, "vel_sum": 0.0,
             "possession_frames": 0,
@@ -3589,6 +3707,11 @@ class UnifiedPipeline:
             s   = stats[pid]
             s["player_id"] = pid
             s["team"]      = r["team"]
+            # P14: count team_abbrev across frames so mode wins (handles transient
+            # mis-assignments without polluting the per-player aggregate).
+            _ta = (r.get("team_abbrev") or "").strip()
+            if _ta and _ta not in ("UNK", "nan"):
+                s["team_abbrev_counter"][_ta] += 1
             s["frames_tracked"]    += 1
             vel = float(r.get("velocity", 0) or 0)
             s["total_distance"]    += vel
@@ -3609,9 +3732,14 @@ class UnifiedPipeline:
         rows = []
         for pid, s in sorted(stats.items()):
             ft = max(1, s["frames_tracked"])
+            # P14: pick the mode team_abbrev across frames (fallback "" if none)
+            _ta_mode = ""
+            if s["team_abbrev_counter"]:
+                _ta_mode = max(s["team_abbrev_counter"], key=s["team_abbrev_counter"].get)
             rows.append({
                 "player_id":           pid,
                 "team":                s["team"],
+                "team_abbrev":         _ta_mode,
                 "frames_tracked":      ft,
                 "tracking_pct":        round(ft / max(1, total_frames), 3),
                 "total_distance_px":   round(s["total_distance"], 1),
@@ -4108,6 +4236,197 @@ class UnifiedPipeline:
                 print(f"  [backfill_names] {_fname} failed: {_e}")
 
 
+    def _backfill_shot_log_pose_features(self) -> None:
+        """P6 (2026-05-29): widen contest_arm_angle + dribble_count lookup.
+
+        The shot-time write at line ~2566 reads pose data at the EXACT shot frame
+        via `_shot_defender_contest` and EventDetector's instantaneous dribble
+        counter. Per-frame measurement shows the signal IS present 34.5% of the
+        time in tracking_data.csv, but the point lookup captures only 3.7% in
+        shot_log.csv. Bug 35 family.
+
+        Window scan (post-tracking, after tracking_data.csv is finalized):
+          - contest_arm_angle: max across defender rows within 8 ft of shooter
+            in [shot_frame - 45, shot_frame + 5] (1.5s before through release)
+          - dribble_count: distinct frames where shooter has dribble_hand
+            populated in [shot_frame - 60, shot_frame] (2s before — typical
+            pre-shot dribble burst)
+
+        Only overwrites cells that were 0/empty — preserves any nonzero values
+        the in-loop write already produced.
+        """
+        shot_path = os.path.join(self._data_dir, "shot_log.csv")
+        tracking_path = os.path.join(self._data_dir, "tracking_data.csv")
+        if not os.path.exists(shot_path) or not os.path.exists(tracking_path):
+            return
+
+        try:
+            from scripts.backfill_shot_log_pose_features import backfill_game  # type: ignore
+        except Exception as _imp_exc:
+            print(f"  [backfill_pose] import failed (non-fatal): {_imp_exc}")
+            return
+
+        try:
+            s, cf, _cz, df, _dz = backfill_game(self._data_dir, dry_run=False)
+            if s > 0:
+                cam_pct = (cf / s * 100) if s else 0
+                dc_pct = (df / s * 100) if s else 0
+                print(
+                    f"pose-features backfill: {cf}/{s} ({cam_pct:.0f}%) contest_arm_angle "
+                    f"| {df}/{s} ({dc_pct:.0f}%) dribble_count"
+                )
+        except Exception as _e:
+            print(f"  [backfill_pose] failed: {_e}")
+
+
+    def _backfill_scoreboard_period(self) -> None:
+        """P4 (2026-05-29): fill empty `scoreboard_period` cells in tracking_data.csv.
+
+        The scoreboard OCR (`src/tracking/scoreboard_ocr.py`) attempts to parse
+        Q1-Q4 / OT, but on most broadcasts the period text is small/low-contrast
+        and the OCR returns -1 → write site at unified_pipeline.py:2718 emits "".
+        Result: `scoreboard_period` is ~100% empty in tracking_data.csv across
+        production games.
+
+        This post-tracking pass fills the gap using a frame-percentile fallback:
+          quarter = max(1, min(4, int(frame / max_frame * 4) + 1))
+
+        OT (5+) is collapsed to Q4 — most callers don't distinguish. When ANY
+        OCR-confirmed period values exist, they're preserved (we only write into
+        empty cells). The intelligence-layer's quarter-aware aggregators
+        (INT-65 fatigue, INT-70 F1 Q1 extrapolation) only need approximate
+        Q1/Q2/Q3/Q4 assignment, not OCR precision.
+        """
+        path = os.path.join(self._data_dir, "tracking_data.csv")
+        if not os.path.exists(path):
+            return
+        try:
+            with open(path, newline="", encoding="utf-8") as _f:
+                reader = csv.DictReader(_f)
+                _fields = list(reader.fieldnames or [])
+                if "scoreboard_period" not in _fields or "frame" not in _fields:
+                    return
+                _rows = list(reader)
+            if not _rows:
+                return
+
+            # Find max frame
+            max_frame = 1
+            for _row in _rows:
+                try:
+                    f_val = _row.get("frame", "")
+                    if f_val and f_val not in ("nan", ""):
+                        f_int = int(float(f_val))
+                        if f_int > max_frame:
+                            max_frame = f_int
+                except (ValueError, TypeError):
+                    pass
+
+            _filled = 0
+            _preserved = 0
+            for _row in _rows:
+                cur = _row.get("scoreboard_period", "")
+                if cur not in ("", None, "nan"):
+                    _preserved += 1
+                    continue
+                try:
+                    f_int = int(float(_row.get("frame", "") or 0))
+                    q = max(1, min(4, int(f_int / max_frame * 4) + 1))
+                    _row["scoreboard_period"] = str(q)
+                    _filled += 1
+                except (ValueError, TypeError):
+                    pass
+
+            with open(path, "w", newline="", encoding="utf-8") as _f:
+                w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                w.writeheader()
+                w.writerows(_rows)
+            print(
+                f"scoreboard_period backfill: filled {_filled} "
+                f"(preserved {_preserved} OCR values) in tracking_data.csv"
+            )
+        except Exception as _e:
+            print(f"  [backfill_period] failed: {_e}")
+
+
+    def _backfill_nba_player_ids(self) -> None:
+        """Write `nba_player_id` column into shot_log.csv and shot_log_enriched.csv.
+
+        Source: `PlayerResolver.slot_to_player_id` (built during resolver finalize()).
+        For each shot row, look up the tracker slot (`player_id` column, 1-10) in
+        the resolver's slot map and emit the resolved NBA player_id. Empty when
+        the slot didn't resolve — downstream callers can fall back to the offline
+        backfill script `scripts/backfill_shot_log_nba_ids.py` which has 3-channel
+        resolution (PBP / jersey / suffix) for richer recovery.
+        """
+        if self._player_resolver is None:
+            return
+        _slot_map = getattr(self._player_resolver, "slot_to_player_id", None) or {}
+        if not _slot_map:
+            return
+
+        for _fname in ("shot_log.csv", "shot_log_enriched.csv"):
+            _path = os.path.join(self._data_dir, _fname)
+            if not os.path.exists(_path):
+                continue
+            try:
+                with open(_path, newline="", encoding="utf-8") as _f:
+                    reader = csv.DictReader(_f)
+                    _fields = list(reader.fieldnames or [])
+                    if "player_id" not in _fields:
+                        continue
+                    _rows = list(reader)
+                if not _rows:
+                    continue
+                if "nba_player_id" not in _fields:
+                    # Insert right after player_id for readability
+                    _fields.insert(_fields.index("player_id") + 1, "nba_player_id")
+                # P5 (2026-05-29): also resolve defender slot → defender_nba_id
+                # using the same slot_to_player_id map so the A2 defender-quality
+                # model has training data on existing/new shot rows.
+                _has_def_slot = "defender_slot_id" in _fields
+                if _has_def_slot and "defender_nba_id" not in _fields:
+                    _fields.insert(_fields.index("defender_slot_id") + 1, "defender_nba_id")
+                _resolved = 0
+                _resolved_def = 0
+                _def_total = 0
+                for _row in _rows:
+                    try:
+                        _slot = int(float(_row.get("player_id", "") or 0))
+                    except (ValueError, TypeError):
+                        _slot = 0
+                    _nba = _slot_map.get(_slot, "")
+                    _row["nba_player_id"] = str(_nba) if _nba else ""
+                    if _nba:
+                        _resolved += 1
+                    if _has_def_slot:
+                        _def_raw = _row.get("defender_slot_id", "")
+                        if _def_raw not in ("", None):
+                            try:
+                                _def_slot = int(float(_def_raw))
+                            except (ValueError, TypeError):
+                                _def_slot = 0
+                            _def_total += 1
+                            _def_nba = _slot_map.get(_def_slot, "")
+                            _row["defender_nba_id"] = str(_def_nba) if _def_nba else ""
+                            if _def_nba:
+                                _resolved_def += 1
+                        else:
+                            _row["defender_nba_id"] = ""
+                with open(_path, "w", newline="", encoding="utf-8") as _f:
+                    w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                    w.writeheader()
+                    w.writerows(_rows)
+                _pct = (_resolved / len(_rows) * 100) if _rows else 0
+                msg = f"nba_player_id backfill: {_resolved}/{len(_rows)} ({_pct:.0f}%) in {_fname}"
+                if _has_def_slot and _def_total > 0:
+                    _def_pct = (_resolved_def / _def_total * 100)
+                    msg += f" | defender_nba_id: {_resolved_def}/{_def_total} ({_def_pct:.0f}%)"
+                print(msg)
+            except Exception as _e:
+                print(f"  [backfill_nba_ids] {_fname} failed: {_e}")
+
+
     def _backfill_team_abbrev(self, color_map: dict) -> None:
         """FIX 7: Add team_abbrev column to tracking_data.csv using color→abbrev map.
 
@@ -4192,6 +4511,64 @@ class UnifiedPipeline:
             print(f"  [team_abbrev] backfilled {len(_rows)} rows; {unk_after} UNK remaining")
         except Exception as _e:
             print(f"  [team_abbrev] backfill failed: {_e}")
+
+    def _backfill_possessions_team_abbrev(self, color_map: dict) -> None:
+        """P15 2026-05-29: rewrite possessions.csv team column to canonical abbrev.
+
+        Possessions row dict (`_summarize_possession`) carries the raw color
+        label in `team`. Without rewrite, downstream NBA-tricode joins fail
+        (~90% of rows had unresolvable team_abbrev).
+
+        Also inserts a `team_abbrev` column for explicit join key when callers
+        want to preserve the color label semantics separately.
+        """
+        if not color_map:
+            return
+        _path = os.path.join(self._data_dir, "possessions.csv")
+        if not os.path.exists(_path):
+            return
+        try:
+            with open(_path, newline="", encoding="utf-8") as _f:
+                reader = csv.DictReader(_f)
+                _fields = list(reader.fieldnames or [])
+                _rows = list(reader)
+            if not _rows:
+                return
+            if "team_abbrev" not in _fields:
+                _ti = _fields.index("team") + 1 if "team" in _fields else len(_fields)
+                _fields.insert(_ti, "team_abbrev")
+            # P15 v2 (2026-05-29): possessions.csv `team` value may ALREADY be
+            # the NBA abbrev by the time this runs (the row dict at write-time
+            # uses `team` = current handler's team string, which is the abbrev).
+            # Two paths:
+            #   (a) team is in color_map keys ("green"/"white") → translate to abbrev
+            #   (b) team is already a 2-3 letter abbrev → copy to team_abbrev as-is
+            _resolved = 0
+            _color_keys = set(color_map.keys())
+            _abbrev_vals = set(color_map.values())
+            for _row in _rows:
+                _team = (_row.get("team") or "").strip()
+                _abbrev = ""
+                if _team in _color_keys:
+                    _abbrev = color_map[_team]
+                elif _team in _abbrev_vals or (2 <= len(_team) <= 3 and _team.isupper()):
+                    _abbrev = _team
+                if _abbrev:
+                    _row["team"] = _abbrev          # canonical abbrev in team col
+                    _row["team_abbrev"] = _abbrev   # explicit join key
+                    _resolved += 1
+                elif not _row.get("team_abbrev"):
+                    _row["team_abbrev"] = ""
+            _tmp = _path + ".tmp"
+            with open(_tmp, "w", newline="", encoding="utf-8") as _f:
+                w = csv.DictWriter(_f, fieldnames=_fields, extrasaction="ignore")
+                w.writeheader()
+                w.writerows(_rows)
+            os.replace(_tmp, _path)
+            print(f"  [possessions team_abbrev] rewrote {len(_rows)} rows; {_resolved} resolved")
+        except Exception as _e:
+            print(f"  [possessions team_abbrev] rewrite failed: {_e}")
+
 
     def _backfill_shot_log_team_abbrev(self, color_map: dict) -> None:
         """BUG1 fix: Post-run disk rewrite of shot_log.csv team_abbrev + team columns.

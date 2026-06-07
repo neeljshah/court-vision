@@ -269,13 +269,29 @@ def compute_clv(
         out["notes"] = f"unknown side {side!r}"
         return out
 
-    # Line movement. For OVER: lower closing line = market more bullish on
-    # the player exceeding the number = you got a better number = positive CLV.
-    # For UNDER: higher closing line = positive CLV.
+    # Line movement / CLV sign.
+    # CORRECT semantics (CV_CLV_LINE_SIGN_FIX=1): CLV is positive when you got a
+    # BETTER NUMBER than the close. For an OVER bet a LOWER number is better, so
+    # you beat the close when the line CLOSED HIGHER than you placed:
+    #   OVER  -> clv_line = closing_line - placed_line   (close 24.5 vs placed 22.5 = +2.0)
+    # For an UNDER bet a HIGHER number is better, so you beat the close when it
+    # CLOSED LOWER than you placed:
+    #   UNDER -> clv_line = placed_line - closing_line   (placed 22.5 vs close 20.5 = +2.0)
+    # This matches the verified reference betting_portfolio.record_clv and the
+    # nightly price-based clv_tracker. The LEGACY default (flag OFF) had BOTH
+    # signs inverted (a confirmed reporting bug, GRADING_SETTLE_CLV_AUDIT.md B-1:
+    # it reported beat_close for BOTH favorable AND unfavorable line moves). Gated
+    # default-OFF = byte-identical to the legacy reports until the owner flips it
+    # (the price-based clv_percent below was always correct, so daily CLV bps are
+    # unaffected; only clv_line/beat_close in the manual/weekly reports change).
+    _clv_sign_fix = (os.environ.get("CV_CLV_LINE_SIGN_FIX", "").strip().lower()
+                     not in ("", "0", "false", "no", "off"))
     if side == "OVER":
-        clv_line = round(placed_line - closing_line, 4)
+        clv_line = round((closing_line - placed_line) if _clv_sign_fix
+                         else (placed_line - closing_line), 4)
     else:
-        clv_line = round(closing_line - placed_line, 4)
+        clv_line = round((placed_line - closing_line) if _clv_sign_fix
+                         else (closing_line - placed_line), 4)
 
     # Odds movement. Positive American-odds CLV means closing odds are SHORTER
     # than what you placed at (you got the longer price).

@@ -17,6 +17,7 @@ Public API
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 from typing import Optional
@@ -24,53 +25,123 @@ from typing import Optional
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 _NBA_CACHE  = os.path.join(PROJECT_DIR, "data", "nba")
 
+log = logging.getLogger(__name__)
+
 # ── Team abbreviation aliases ─────────────────────────────────────────────────
-# Maps shorthand used in clip labels → official NBA abbreviations
+# Maps shorthand / city / nickname tokens (lowercased) → official NBA abbrevs.
+# Keys must be lowercase single tokens (as produced by the split in _parse_teams).
+# All 30 NBA teams are represented; add variants as needed.
 _LABEL_TO_ABBREV: dict[str, str] = {
-    "gsw":    "GSW",
-    "warriors": "GSW",
-    "lakers": "LAL",
-    "lal":    "LAL",
-    "bos":    "BOS",
-    "celtics": "BOS",
-    "mia":    "MIA",
-    "heat":   "MIA",
-    "mil":    "MIL",
-    "bucks":  "MIL",
-    "chi":    "CHI",
-    "bulls":  "CHI",
-    "phi":    "PHI",
-    "76ers":  "PHI",
-    "tor":    "TOR",
-    "raptors": "TOR",
-    "den":    "DEN",
-    "nuggets": "DEN",
-    "phx":    "PHX",
-    "suns":   "PHX",
-    "okc":    "OKC",
-    "thunder": "OKC",
-    "dal":    "DAL",
-    "mavericks": "DAL",
-    "sas":    "SAS",
-    "spurs":  "SAS",
-    "bkn":    "BKN",
-    "nets":   "BKN",
-    "mem":    "MEM",
-    "grizzlies": "MEM",
-    "nop":    "NOP",
-    "pelicans": "NOP",
-    "sac":    "SAC",
-    "kings":  "SAC",
-    "por":    "POR",
+    # Atlanta Hawks
+    "atl":        "ATL",
+    "hawks":      "ATL",
+    # Boston Celtics
+    "bos":        "BOS",
+    "celtics":    "BOS",
+    # Brooklyn Nets
+    "bkn":        "BKN",
+    "nets":       "BKN",
+    "brooklyn":   "BKN",
+    # Charlotte Hornets  ← was missing
+    "cha":        "CHA",
+    "hornets":    "CHA",
+    "charlotte":  "CHA",
+    # Chicago Bulls
+    "chi":        "CHI",
+    "bulls":      "CHI",
+    # Cleveland Cavaliers
+    "cle":        "CLE",
+    "cavaliers":  "CLE",
+    "cavs":       "CLE",
+    # Dallas Mavericks
+    "dal":        "DAL",
+    "mavericks":  "DAL",
+    "mavs":       "DAL",
+    # Denver Nuggets
+    "den":        "DEN",
+    "nuggets":    "DEN",
+    # Detroit Pistons  ← was missing
+    "det":        "DET",
+    "pistons":    "DET",
+    "detroit":    "DET",
+    # Golden State Warriors
+    "gsw":        "GSW",
+    "warriors":   "GSW",
+    # Houston Rockets  ← was missing
+    "hou":        "HOU",
+    "rockets":    "HOU",
+    "houston":    "HOU",
+    # Indiana Pacers
+    "ind":        "IND",
+    "pacers":     "IND",
+    # Los Angeles Clippers  ← was missing
+    "lac":        "LAC",
+    "clippers":   "LAC",
+    # Los Angeles Lakers
+    "lal":        "LAL",
+    "lakers":     "LAL",
+    # Memphis Grizzlies
+    "mem":        "MEM",
+    "grizzlies":  "MEM",
+    # Miami Heat
+    "mia":        "MIA",
+    "heat":       "MIA",
+    # Milwaukee Bucks
+    "mil":        "MIL",
+    "bucks":      "MIL",
+    # Minnesota Timberwolves  ← was missing
+    "min":        "MIN",
+    "timberwolves": "MIN",
+    "wolves":     "MIN",
+    "minnesota":  "MIN",
+    # New Orleans Pelicans
+    "nop":        "NOP",
+    "pelicans":   "NOP",
+    # New York Knicks  ← was missing
+    "nyk":        "NYK",
+    "knicks":     "NYK",
+    # Oklahoma City Thunder
+    "okc":        "OKC",
+    "thunder":    "OKC",
+    # Orlando Magic  ← was missing
+    "orl":        "ORL",
+    "magic":      "ORL",
+    "orlando":    "ORL",
+    # Philadelphia 76ers
+    "phi":        "PHI",
+    "76ers":      "PHI",
+    "sixers":     "PHI",
+    # Phoenix Suns
+    "phx":        "PHX",
+    "suns":       "PHX",
+    "phoenix":    "PHX",
+    # Portland Trail Blazers
+    "por":        "POR",
     "trailblazers": "POR",
-    "atl":    "ATL",
-    "hawks":  "ATL",
-    "ind":    "IND",
-    "pacers": "IND",
-    "cavs":   "CLE",
-    "cavaliers": "CLE",
-    "cle":    "CLE",
+    "blazers":    "POR",
+    "portland":   "POR",
+    # Sacramento Kings
+    "sac":        "SAC",
+    "kings":      "SAC",
+    # San Antonio Spurs
+    "sas":        "SAS",
+    "spurs":      "SAS",
+    # Toronto Raptors
+    "tor":        "TOR",
+    "raptors":    "TOR",
+    # Utah Jazz  ← was missing
+    "uta":        "UTA",
+    "jazz":       "UTA",
+    "utah":       "UTA",
+    # Washington Wizards  ← was missing
+    "was":        "WAS",
+    "wizards":    "WAS",
+    "washington": "WAS",
 }
+
+# Counter incremented each time a game row is dropped because a team token could
+# not be resolved to an NBA abbreviation. Exposed so tests and callers can read it.
+_dropped_game_count: int = 0
 
 # ── Label → season mapping ────────────────────────────────────────────────────
 def _label_to_season(label: str) -> tuple[str, str]:
@@ -92,7 +163,12 @@ def _label_to_season(label: str) -> tuple[str, str]:
 
 
 def _parse_teams(label: str) -> tuple[Optional[str], Optional[str]]:
-    """Extract (team1_abbrev, team2_abbrev) from a clip label string."""
+    """Extract (team1_abbrev, team2_abbrev) from a clip label string.
+
+    Emits a WARNING and increments ``_dropped_game_count`` when fewer than two
+    team tokens can be resolved, so unmapped teams never fail silently.
+    """
+    global _dropped_game_count
     parts = label.lower().replace("-", "_").split("_")
     found = []
     for part in parts:
@@ -103,6 +179,13 @@ def _parse_teams(label: str) -> tuple[Optional[str], Optional[str]]:
             break
     t1 = found[0] if len(found) >= 1 else None
     t2 = found[1] if len(found) >= 2 else None
+    if t1 is None or t2 is None:
+        _dropped_game_count += 1
+        log.warning(
+            "game_matcher: could not resolve both teams from label %r "
+            "(resolved=%r); game dropped. total_dropped=%d",
+            label, found, _dropped_game_count,
+        )
     return t1, t2
 
 

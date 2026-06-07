@@ -128,5 +128,25 @@ def get_cv_features(player_name: str, game_id: Optional[str] = None) -> dict:
         vals = player_data.get(col, [])
         if vals:
             out[out_key] = round(sum(vals) / len(vals), 4)
+
+    # Bug 40 fix: per-game min-max scale cvb_fatigue_score to [0, 1].
+    # dist_traveled_90 is raw pixel distance (~0-5000+); avg_fatigue_proxy
+    # (tracking_feature_extractor.py Bug-4 fix) is already in [0, 1] via
+    # z-score normalisation.  Comparing them raw inflated delta by ~222.7.
+    # We normalise across all players in the same loaded game file so the
+    # scale matches avg_fatigue_proxy's domain.
+    raw_dist_vals = [
+        sum(p["dist_traveled_90"]) / len(p["dist_traveled_90"])
+        for p in data.values()
+        if p.get("dist_traveled_90")
+    ]
+    if raw_dist_vals and len(raw_dist_vals) > 1:
+        game_min = min(raw_dist_vals)
+        game_max = max(raw_dist_vals)
+        denom = game_max - game_min
+        if denom > 0:
+            raw_avg = out["cvb_fatigue_score"]
+            out["cvb_fatigue_score"] = round((raw_avg - game_min) / denom, 4)
+
     _player_cache[cache_key] = out
     return out

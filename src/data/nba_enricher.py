@@ -542,6 +542,49 @@ def _build_pbp_to_video_mapper(anchors):
     return mapper
 
 
+def _best_global_offset(tracker_ts, fg_times, window, search=600.0, step=1.0):
+    """Self-calibrating fallback: find a global time offset Δ maximizing matches.
+
+    When the video→PBP mapper is absent or the auto-calibrated ``clip_start_sec``
+    is wrong, the naive offset can leave a game with ~0 matched shots (63 games
+    were stuck at zero PBP recall, 2026-05-30). This slides tracker timestamps
+    across ±``search`` seconds and returns the offset giving the most shots
+    within ``window`` of a PBP FG event, plus that match count. Caller decides
+    whether the peak clears a spurious-fit guard before applying it.
+
+    Returns (best_delta_sec, best_match_count).
+    """
+    if not tracker_ts or not fg_times:
+        return 0.0, 0
+    fg_sorted = sorted(fg_times)
+
+    def _count(delta):
+        m = 0
+        for t in tracker_ts:
+            x = t + delta
+            i = bisect.bisect_left(fg_sorted, x)
+            best = window + 1.0
+            for j in (i - 1, i):
+                if 0 <= j < len(fg_sorted):
+                    d = abs(fg_sorted[j] - x)
+                    if d < best:
+                        best = d
+            if best <= window:
+                m += 1
+        return m
+
+    best_delta, best_m = 0.0, _count(0.0)
+    n = int(search / step)
+    for k in range(-n, n + 1):
+        if k == 0:
+            continue
+        delta = k * step
+        m = _count(delta)
+        if m > best_m:
+            best_m, best_delta = m, delta
+    return best_delta, best_m
+
+
 def enrich_shot_log(
     pbp: List[dict],
     shot_log_path: str,
@@ -628,6 +671,38 @@ def enrich_shot_log(
                 shot["made"] = int(best_ev["event_type"] == 1)
                 _pass2_hits += 1
         print(f"  Shot match pass2 (±{_SHOT_MATCH_WINDOW_SEC_2}s): {_pass2_hits}/{len(_unmatched_pass1)} recovered")
+
+    # --- Self-calibrating global-offset fallback for broken alignment ---
+    # When the video→PBP mapper is absent/wrong, the naive clip_start_sec offset
+    # can leave a game with near-zero matched shots (63 games at zero recall on
+    # 2026-05-30). If coverage is poor, search for a global Δ that maximizes
+    # tracker↔PBP matches and re-label. Guarded to avoid spurious fits: needs
+    # >= 4 tracker shots and a match count that clears a margin over baseline.
+    _matched = sum(1 for s in shots if str(s.get("made", "")).strip() in ("0", "1"))
+    if shots and (_matched / len(shots)) < 0.30 and len(tracker_ts) >= 4:
+        fg_times = [ev["game_clock_sec"] for ev in fg_events]
+        delta, m_off = _best_global_offset(
+            tracker_ts, fg_times, _SHOT_MATCH_WINDOW_SEC
+        )
+        if delta != 0.0 and m_off >= max(4, _matched + 3):
+            print(f"  [shot-align] low coverage ({_matched}/{len(shots)} matched); "
+                  f"applying global offset Δ={delta:+.0f}s → {m_off} matches "
+                  f"within ±{_SHOT_MATCH_WINDOW_SEC:.0f}s")
+            for shot in shots:
+                try:
+                    ts = _ts_convert(float(shot.get("timestamp", 0))) + delta
+                except (ValueError, TypeError):
+                    continue
+                best_ev, best_dt = None, _SHOT_MATCH_WINDOW_SEC_2 + 1
+                for ev in fg_events:
+                    dt = abs(ev["game_clock_sec"] - ts)
+                    if dt < best_dt:
+                        best_dt, best_ev = dt, ev
+                if best_ev is not None and best_dt <= _SHOT_MATCH_WINDOW_SEC_2:
+                    shot["made"] = int(best_ev["event_type"] == 1)
+            # Shift tracker timestamps so PBP recall reflects corrected alignment
+            tracker_ts = [t + delta for t in tracker_ts]
+            max_tracker_ts = max(tracker_ts) if tracker_ts else max_tracker_ts
 
     # --- PBP recall: what fraction of real FG events did the tracker capture? ---
     # Only consider PBP events that fall within the video's range (with a small buffer)
@@ -955,6 +1030,7 @@ def enrich_possessions(
                         "outcome_score": 2 if _ev["event_type"] == 1 else 0,
                         "score_diff":    "",
                         "source":        "pbp_fill",
+                        "is_stub":       True,   # Bug 26 fix 2026-05-28: explicit stub flag for downstream filters
                     })
 
             if _fill_rows:
