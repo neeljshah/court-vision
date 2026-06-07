@@ -1,0 +1,8 @@
+# Extra runtime deps for Live Engine v2 — install on top of requirements.txt.
+# Usage:
+#   pip install -r requirements.txt -r requirements-live-v2.txt
+aiohttp>=3.10
+rich>=13.7
+fastapi>=0.110
+uvicorn[standard]>=0.27
+websockets>=12.0

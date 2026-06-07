@@ -1,0 +1,41 @@
+# fly.toml — Live Engine v2 backend on Fly.io
+# Deploy:
+#   fly launch --no-deploy --name courtvision-live-api
+#   fly secrets set LIVE_V2_AUTH_TOKEN=<random> LIVE_V2_GAME_IDS=<ids> \
+#       LIVE_V2_ALLOWED_ORIGINS=https://your.vercel.app
+#   fly deploy
+
+app = "courtvision-live-api"
+primary_region = "iad"
+kill_signal = "SIGINT"
+kill_timeout = "30s"
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+
+[env]
+  PORT = "8000"
+  PYTHONUNBUFFERED = "1"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false   # don't sleep — WS clients drop on cold start
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.checks]
+    [http_service.checks.health]
+      interval = "30s"
+      timeout = "10s"
+      grace_period = "30s"
+      method = "GET"
+      path = "/api/health"
+
+[processes]
+  app = "uvicorn api.live_v2_app:app --host 0.0.0.0 --port 8000 --ws websockets"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "1gb"
