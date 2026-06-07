@@ -246,3 +246,229 @@ class TestBankrollMonteCarlo:
                                     kelly_fraction=0.25, bankroll=1000.0,
                                     n_simulations=500, seed=0)
         assert neg["ruin_prob"] >= pos["ruin_prob"]
+
+
+# ── Prop correlation matrix (EX-8 hygiene) ───────────────────────────────────
+
+class TestPropCorrMatrixV2:
+    """Verify prop_corr_matrix.json holds v2 (Ledoit-Wolf + Higham PSD) values.
+
+    v1 bug: index//7 pivot correlated arbitrary adjacent rows → pts-tov=0.80.
+    v2 fix: residual-based (predicted - actual) correlation → pts-tov≈0.13.
+    """
+
+    def _load(self) -> Dict[str, Dict[str, float]]:
+        from src.prediction.betting_portfolio import _load_corr_matrix
+        mat = _load_corr_matrix()
+        assert mat, "prop_corr_matrix.json missing or empty"
+        return mat
+
+    def test_pts_tov_not_inflated(self) -> None:
+        """pts-tov must be < 0.30 (v1 was 0.7976, v2 is ~0.1334)."""
+        mat = self._load()
+        pts_tov = mat["pts"]["tov"]
+        assert pts_tov < 0.30, (
+            f"pts-tov = {pts_tov:.4f} — still inflated (v1 value). "
+            "EX-8 fix may not have been applied."
+        )
+
+    def test_diagonal_ones(self) -> None:
+        """Every stat must correlate 1.0 with itself."""
+        mat = self._load()
+        for stat in mat:
+            assert mat[stat][stat] == 1.0, f"Diagonal {stat} != 1.0"
+
+    def test_symmetric(self) -> None:
+        """Matrix must be symmetric (corr[a][b] == corr[b][a])."""
+        mat = self._load()
+        stats = list(mat.keys())
+        for s in stats:
+            for t in stats:
+                assert abs(mat[s][t] - mat[t][s]) < 1e-6, (
+                    f"Not symmetric: {s}-{t}={mat[s][t]:.4f} vs {t}-{s}={mat[t][s]:.4f}"
+                )
+
+    def test_v2_spot_check_values(self) -> None:
+        """Spot-check known v2 values from the EX-8 audit memo (±0.001 tolerance)."""
+        mat = self._load()
+        expected = {
+            ("pts", "reb"):  0.3071,
+            ("pts", "ast"):  0.1817,
+            ("pts", "fg3m"): 0.6665,
+            ("pts", "stl"):  0.1642,
+            ("pts", "blk"):  0.0994,
+            ("pts", "tov"):  0.1334,
+        }
+        for (s, t), v in expected.items():
+            got = mat[s][t]
+            assert abs(got - v) < 0.001, (
+                f"{s}-{t}: expected ~{v}, got {got:.4f}"
+            )
+
+
+# ── REAL-MONEY TRIAGE 2026-06-01 ─────────────────────────────────────────────
+# Edit 1: bankroll-start drawdown-guard gate (CV_INFER_BANKROLL_START, default OFF)
+# Edit 2: side-aware record_clv
+# Edit 3: residual corr matrix graceful missing-actual fallback
+
+
+class TestBankrollStartGate:
+    """CV_INFER_BANKROLL_START gates the inferred-start drawdown activation.
+
+    Default OFF must be byte-identical to the ORIGINAL behavior: a None
+    bankroll_start SKIPS the drawdown guard (returns a positive stake even when
+    realized PnL implies a deep drawdown).  ON activates the inferred guard.
+    """
+
+    def test_flag_off_skips_guard_none_start(self, monkeypatch) -> None:
+        """OFF + None start: guard is skipped, positive stake returned
+        (old behavior preserved even though the bet log is empty/irrelevant)."""
+        monkeypatch.delenv("CV_INFER_BANKROLL_START", raising=False)
+        # bankroll_now well below any plausible inferred start; with the flag
+        # OFF and start=None the guard must NOT fire.
+        result = kelly_corr(0.06, -110, 500.0)  # bankroll_start omitted (None)
+        assert result > 0.0
+
+    def test_flag_off_explicit_start_still_guards(self, monkeypatch) -> None:
+        """OFF must NOT change behavior when caller passes an explicit start:
+        an explicit over-limit drawdown still halts."""
+        monkeypatch.delenv("CV_INFER_BANKROLL_START", raising=False)
+        start = 1000.0
+        now = start * (1.0 - MAX_DRAWDOWN_PCT - 0.01)
+        assert kelly_corr(0.06, -110, now, bankroll_start=start) == 0.0
+
+    def test_flag_on_activates_inferred_guard(self, monkeypatch, tmp_path) -> None:
+        """ON + None start: a bet log whose realized PnL implies a deep
+        drawdown halts betting (stake 0.0) where OFF would have bet."""
+        import src.prediction.betting_portfolio as bp
+        # Synthetic bet log: net realized PnL = -300 → inferred start = now+300.
+        # now=700 → start=1000 → drawdown 30% > 15% → guard fires.
+        fake_log = [
+            {"result": "loss", "pnl": -300.0},
+            {"result": "win", "pnl": 0.0},
+        ]
+        monkeypatch.setattr(bp, "_load_bet_log", lambda: fake_log)
+        monkeypatch.setenv("CV_INFER_BANKROLL_START", "1")
+        result = bp.kelly_corr(0.06, -110, 700.0)  # None start, flag ON
+        assert result == 0.0, "inferred-start guard should halt on 30% drawdown"
+
+    def test_flag_on_no_history_is_safe_noop(self, monkeypatch) -> None:
+        """ON + empty bet log: inferred start == current bankroll → drawdown 0
+        → guard passes → positive stake (safe no-op default)."""
+        import src.prediction.betting_portfolio as bp
+        monkeypatch.setattr(bp, "_load_bet_log", lambda: [])
+        monkeypatch.setenv("CV_INFER_BANKROLL_START", "1")
+        assert bp.kelly_corr(0.06, -110, 700.0) > 0.0
+
+
+class TestRecordClvSideAware:
+    """record_clv() must be side-aware: positive CLV = we locked a BETTER number
+    than the close (matches clv_tracker.py::_compute_clv convention).
+
+    Convention:
+      OVER  bet: CLV = (closing - opening) / |opening|  → positive when line
+                 moves UP (we hold the lower/easier number to clear).
+      UNDER bet: CLV = (opening - closing) / |opening|  → positive when line
+                 moves DOWN (we hold the higher/easier number to stay under).
+
+    Example: bet OVER 22.5, close at 24.5 → CLV > 0 (we beat the close).
+    """
+
+    def _setup_log(self, monkeypatch, tmp_path, direction: str,
+                   opening: float):
+        import src.prediction.betting_portfolio as bp
+        bet = {"bet_id": "t1", "direction": direction, "line": opening,
+               "stat": "pts", "player_name": "X", "edge_pct": 0.05,
+               "placed_at": 0.0, "closing_line": None, "clv": None}
+        store = {"bets": [dict(bet)]}
+        monkeypatch.setattr(bp, "_load_bet_log", lambda: store["bets"])
+        monkeypatch.setattr(bp, "_save_bet_log",
+                            lambda b: store.update(bets=b))
+        # Redirect the CLV side-log to a temp path so we never touch real data.
+        monkeypatch.setattr(bp, "_CLV_LOG", str(tmp_path / "clv.json"))
+        return bp, store
+
+    def test_over_positive_when_line_rises(self, monkeypatch, tmp_path) -> None:
+        """Over bet: line moved UP → we hold the easier (lower) number → positive CLV."""
+        bp, store = self._setup_log(monkeypatch, tmp_path, "over", 24.5)
+        bp.record_clv("t1", 25.5)  # line moved UP → good for over (we beat close)
+        assert store["bets"][0]["clv"] > 0
+
+    def test_over_negative_when_line_drops(self, monkeypatch, tmp_path) -> None:
+        """Over bet: line moved DOWN → close is easier than our number → negative CLV."""
+        bp, store = self._setup_log(monkeypatch, tmp_path, "over", 24.5)
+        bp.record_clv("t1", 23.5)  # line moved DOWN → bad for over (close beat us)
+        assert store["bets"][0]["clv"] < 0
+
+    def test_under_positive_when_line_drops(self, monkeypatch, tmp_path) -> None:
+        """Under bet: line moved DOWN → we hold the easier (higher) number → positive CLV."""
+        bp, store = self._setup_log(monkeypatch, tmp_path, "under", 8.5)
+        bp.record_clv("t1", 7.5)  # line moved DOWN → good for under (we beat close)
+        assert store["bets"][0]["clv"] > 0
+
+    def test_under_negative_when_line_rises(self, monkeypatch, tmp_path) -> None:
+        """Under bet: line moved UP → close is easier than our number → negative CLV."""
+        bp, store = self._setup_log(monkeypatch, tmp_path, "under", 8.5)
+        bp.record_clv("t1", 9.5)  # line moved UP → bad for under (close beat us)
+        assert store["bets"][0]["clv"] < 0
+
+    def test_over_under_signs_are_mirror(self, monkeypatch, tmp_path) -> None:
+        """Same line movement gives opposite-sign CLV for over vs under."""
+        bp_o, store_o = self._setup_log(monkeypatch, tmp_path, "over", 20.0)
+        bp_o.record_clv("t1", 21.0)
+        over_clv = store_o["bets"][0]["clv"]
+        bp_u, store_u = self._setup_log(monkeypatch, tmp_path, "under", 20.0)
+        bp_u.record_clv("t1", 21.0)
+        under_clv = store_u["bets"][0]["clv"]
+        assert abs(over_clv + under_clv) < 1e-9, "over/under CLV must be mirror"
+
+
+class TestCorrMatrixMissingActual:
+    """compute_prop_corr_matrix must NOT crash when rows lack 'actual'; it
+    drops them and returns {} when <10 complete rows survive (graceful)."""
+
+    def test_missing_actual_returns_empty_dict(self, tmp_path) -> None:
+        from src.prediction.betting_portfolio import compute_prop_corr_matrix
+        # Rows have predicted but NO actual → all dropped → empty result.
+        rows = []
+        for g in range(20):
+            for s in ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]:
+                rows.append({"stat": s, "predicted": 10.0,
+                             "player_id": 1, "game_date": f"g{g}"})
+        p = tmp_path / "resid.json"
+        p.write_text(json.dumps(rows))
+        result = compute_prop_corr_matrix(str(p))
+        assert result == {}, "missing actual must yield graceful empty dict"
+
+    def test_missing_file_returns_empty_dict(self, tmp_path) -> None:
+        from src.prediction.betting_portfolio import compute_prop_corr_matrix
+        result = compute_prop_corr_matrix(str(tmp_path / "does_not_exist.json"))
+        assert result == {}
+
+    def test_residual_corr_computes_when_actual_present(
+        self, tmp_path, monkeypatch
+    ) -> None:
+        """With actual present and a real signal, corr matrix is built and
+        captures the (predicted-actual) relationship (sanity: diag == 1.0).
+
+        Redirect the OUTPUT path so this test never clobbers the real
+        data/models/prop_corr_matrix.json artifact.
+        """
+        import random
+        import src.prediction.betting_portfolio as bp
+        monkeypatch.setattr(bp, "_CORR_MATRIX", str(tmp_path / "out.json"))
+        rng = random.Random(0)
+        stats = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+        rows = []
+        for g in range(40):
+            shared = rng.gauss(0, 1)
+            for s in stats:
+                resid = shared + rng.gauss(0, 1)
+                rows.append({"stat": s, "predicted": 10.0 + resid,
+                             "actual": 10.0, "player_id": 1,
+                             "game_date": f"g{g}"})
+        p = tmp_path / "resid_full.json"
+        p.write_text(json.dumps(rows))
+        result = bp.compute_prop_corr_matrix(str(p))
+        assert result, "should build a matrix with actual present"
+        assert all(result[s][s] == 1.0 for s in stats)

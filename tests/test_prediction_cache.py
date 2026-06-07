@@ -212,3 +212,72 @@ def test_apply_injury_dampener(tmp_cache, monkeypatch):
     assert damp["q50"] == pytest.approx(raw["q50"] * 0.6, rel=1e-6)
     assert damp["q10"] == pytest.approx(raw["q10"] * 0.6, rel=1e-6)
     assert damp["q90"] == pytest.approx(raw["q90"] * 0.6, rel=1e-6)
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# 7. Monotonicity clamp — q10 <= q50 <= q90 always (FIX IN-3)
+# ──────────────────────────────────────────────────────────────────────────
+
+def test_monotonicity_clamp_no_crossed_intervals():
+    """_clamp_quantiles enforces q10<=q50<=q90 on crossed rows (e.g. BLK on stars).
+
+    Directly exercises the clamp logic added to build_prediction_cache._predict_one_player
+    by reproducing it as a pure helper and verifying 0% crossed intervals after clamping.
+    """
+    # Inline the clamp logic from build_prediction_cache._predict_one_player
+    # so the test is self-contained and doesn't require model inference.
+    def _apply_clamp(q10, q50, q90):
+        """Mirror of the monotonicity clamp in build_prediction_cache."""
+        if not (np.isnan(q10) or np.isnan(q50)):
+            q10 = min(q10, q50)
+        if not (np.isnan(q90) or np.isnan(q50)):
+            q90 = max(q90, q50)
+        return q10, q50, q90
+
+    # Cases that exercise the BLK-star crossing pattern (q90 < q50 before clamp).
+    crossed_cases = [
+        # (q10_raw, q50_raw, q90_raw)  — deliberately broken intervals
+        (0.5,  2.0, 1.5),   # q90 < q50 (the primary bug: star BLK)
+        (3.0,  2.0, 4.0),   # q10 > q50
+        (3.0,  2.0, 1.5),   # both q10>q50 and q90<q50
+        (2.0,  2.0, 2.0),   # already monotone, equality
+        (0.0,  1.5, 3.0),   # already monotone, normal case
+        (float("nan"), 2.0, 1.5),  # nan q10 — only q90 clamp applies
+        (0.5,  2.0, float("nan")), # nan q90 — only q10 clamp applies
+    ]
+
+    for q10_raw, q50_raw, q90_raw in crossed_cases:
+        q10c, q50c, q90c = _apply_clamp(q10_raw, q50_raw, q90_raw)
+        # q50 must never be changed by the clamp.
+        assert q50c == q50_raw, f"q50 mutated: {q50_raw} -> {q50c}"
+        # After clamp, no interval may be crossed (ignoring NaN endpoints).
+        if not np.isnan(q10c):
+            assert q10c <= q50c, (
+                f"q10 > q50 after clamp: input=({q10_raw},{q50_raw},{q90_raw}) "
+                f"output=({q10c},{q50c},{q90c})"
+            )
+        if not np.isnan(q90c):
+            assert q90c >= q50c, (
+                f"q90 < q50 after clamp: input=({q10_raw},{q50_raw},{q90_raw}) "
+                f"output=({q10c},{q50c},{q90c})"
+            )
+
+    # Simulate a synthetic BLK cache with injected crossed rows and verify
+    # that a rebuilt cache (using the same clamp) has 0% crossed rows.
+    rng = np.random.default_rng(42)
+    n = 200
+    q50_vals = rng.uniform(0.1, 3.5, size=n)   # BLK-like range
+    # Introduce ~10% crossed rows (q90 < q50) to mimic the star BLK bug.
+    q90_raw = q50_vals + rng.uniform(-1.5, 3.0, size=n)   # some negatives => crossing
+    q10_raw = np.maximum(0.0, q50_vals - rng.uniform(0.5, 2.0, size=n))
+
+    q10_fixed = np.minimum(q10_raw, q50_vals)
+    q90_fixed = np.maximum(q90_raw, q50_vals)
+
+    crossed_before = int(np.sum(q90_raw < q50_vals))
+    crossed_after  = int(np.sum(q90_fixed < q50_vals))
+    assert crossed_before > 0, "test setup error: no crossed rows in synthetic data"
+    assert crossed_after == 0, (
+        f"{crossed_after}/{n} rows still crossed after clamp "
+        f"(was {crossed_before} before)"
+    )

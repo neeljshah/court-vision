@@ -13,8 +13,14 @@ import os
 
 import pytest
 
-from apps.dashboards.pages.alert_log import load_alerts
-from apps.dashboards.pages.prediction_audit import list_prediction_files, load_predictions
+# The dashboard pages import streamlit (a dashboard-only optional dependency). When
+# it is not installed, skip this whole module rather than aborting collection for the
+# ENTIRE test suite (pytest stops on a collection-time ImportError by default). No-op
+# when streamlit is present; clean skip when it is not.
+pytest.importorskip("streamlit")
+
+from apps.dashboards.pages.alert_log import load_alerts  # noqa: E402
+from apps.dashboards.pages.prediction_audit import list_prediction_files, load_predictions  # noqa: E402
 
 
 # ── load_alerts ───────────────────────────────────────────────────────────────
