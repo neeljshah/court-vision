@@ -8,6 +8,11 @@ Six regression tests for the in-play q10/q50/q90 band layer:
   4. Synthetic Gaussian residuals -> calibrator achieves ~80% coverage
   5. Asymmetric branch (fg3m/stl/blk/tov) floors q10 at 0
   6. Back-compat: missing calibration artifact -> wide-open bands
+
+FIX IN-4 tests (7, 8):
+  7. endQ3 extra_mult is forced to 1.0 even when per-player cal artifact
+     is present and game_date/pid are supplied (safe guard).
+  8. endQ1/endQ2 modulation path is NOT disabled (unchanged behaviour).
 """
 from __future__ import annotations
 
@@ -185,3 +190,153 @@ def test_project_with_bands_attaches_fields():
             assert r["q10"] <= r["q50"] <= r["q90"]
             assert r["q50"] == float(r.get("projected_final") or 0.0)
         lqb.reset_cache()
+
+
+# ── 7. FIX IN-4: endQ3 extra_mult is always 1.0 ──────────────────────────────
+
+def test_endQ3_extra_mult_is_one_with_pp_cal(tmp_path):
+    """FIX IN-4 (safe variant): bands_for at endQ3 must return the same bands
+    regardless of whether pid/game_date + a per-player calibration artifact are
+    supplied.  The extra_mult guard must force 1.0 for endQ3, preventing the
+    ~1.342 over-coverage caused by a missing/default pop_mean_std."""
+    lqb.reset_cache()
+
+    cal = {
+        "endQ3": {
+            "pts": {"sigma": 3.5, "scale": 1.0, "asymmetric": False},
+            "reb": {"sigma": 1.6, "scale": 1.0, "asymmetric": False},
+        }
+    }
+
+    # Reference bands: legacy path (no pid / game_date -> extra_mult=1.0).
+    ref_pts = lqb.bands_for("pts", 20.0, "endQ3", calibration=cal)
+    ref_reb = lqb.bands_for("reb",  6.0, "endQ3", calibration=cal)
+
+    # Inject a V2 per-player calibration artifact that deliberately omits
+    # per_stat_rescale/pop_mean_std for endQ3 (simulating the real broken
+    # state where pop_std defaults to 1.0 and ratio saturates to 1.8).
+    pp_v2 = {
+        "endQ1": {
+            "per_stat_rescale": {"pts": 0.99, "reb": 0.98},
+            "pop_mean_std":     {"pts": 5.66, "reb": 2.31},
+        },
+        "endQ2": {
+            "per_stat_rescale": {"pts": 0.96, "reb": 0.97},
+            "pop_mean_std":     {"pts": 5.66, "reb": 2.31},
+        },
+        # endQ3 intentionally absent / missing pop_mean_std (real bug scenario).
+    }
+    pp_path = tmp_path / "per_player_quantile_calibration_v2.json"
+    pp_path.write_text(json.dumps(pp_v2), encoding="utf-8")
+
+    # Monkeypatch the V2 path so the loader finds our stub.
+    orig_path = lqb._PP_CAL_PATH_V2
+    lqb._PP_CAL_PATH_V2 = str(pp_path)
+    lqb.reset_cache()  # clear loader cache after path swap
+
+    try:
+        # Supply a pid + game_date that would normally trigger per-player mod.
+        modulated_pts = lqb.bands_for(
+            "pts", 20.0, "endQ3", calibration=cal,
+            pid=2544, game_date="2026-04-01",
+        )
+        modulated_reb = lqb.bands_for(
+            "reb", 6.0, "endQ3", calibration=cal,
+            pid=2544, game_date="2026-04-01",
+        )
+    finally:
+        lqb._PP_CAL_PATH_V2 = orig_path
+        lqb.reset_cache()
+
+    # endQ3 bands must be IDENTICAL whether or not the per-player path fires.
+    assert modulated_pts["q10"] == ref_pts["q10"], (
+        f"endQ3 pts q10 changed: {modulated_pts['q10']} != {ref_pts['q10']}"
+    )
+    assert modulated_pts["q90"] == ref_pts["q90"], (
+        f"endQ3 pts q90 changed: {modulated_pts['q90']} != {ref_pts['q90']}"
+    )
+    assert modulated_reb["q10"] == ref_reb["q10"], (
+        f"endQ3 reb q10 changed: {modulated_reb['q10']} != {ref_reb['q10']}"
+    )
+    assert modulated_reb["q90"] == ref_reb["q90"], (
+        f"endQ3 reb q90 changed: {modulated_reb['q90']} != {ref_reb['q90']}"
+    )
+
+
+# ── 8. FIX IN-4: endQ1/endQ2 modulation path still fires ────────────────────
+
+def test_endQ1_endQ2_modulation_not_disabled(tmp_path):
+    """FIX IN-4: the endQ3 guard must NOT touch endQ1 or endQ2 modulation.
+    When a V2 per-player artifact with full endQ1/endQ2 buckets is present AND
+    a real gamelog entry provides std_l20, the modulated bands must differ from
+    the unmodulated bands (proving the elif path is still reachable)."""
+    lqb.reset_cache()
+
+    cal = {
+        "endQ1": {
+            "pts": {"sigma": 5.0, "scale": 1.0, "asymmetric": False},
+        },
+        "endQ2": {
+            "pts": {"sigma": 4.5, "scale": 1.0, "asymmetric": False},
+        },
+    }
+
+    # Reference: no pid/game_date -> extra_mult=1.0.
+    ref_q1 = lqb.bands_for("pts", 20.0, "endQ1", calibration=cal)
+    ref_q2 = lqb.bands_for("pts", 20.0, "endQ2", calibration=cal)
+
+    # Inject V2 artifact WITH endQ1/endQ2 buckets.
+    pp_v2 = {
+        "endQ1": {
+            "per_stat_rescale": {"pts": 0.99},
+            "pop_mean_std":     {"pts": 5.0},   # pop_std == sigma -> ratio matters
+        },
+        "endQ2": {
+            "per_stat_rescale": {"pts": 0.98},
+            "pop_mean_std":     {"pts": 5.0},
+        },
+    }
+    pp_path = tmp_path / "per_player_quantile_calibration_v2.json"
+    pp_path.write_text(json.dumps(pp_v2), encoding="utf-8")
+
+    # Inject a gamelog entry so std_l20 returns a non-pop value (std != pop_std).
+    # We use pid=99999 with 10 identical games (std=0) -> ratio clips to 0.6 ->
+    # extra_mult = rescale * sqrt(0.6) < 1.0 -> NARROWER bands than reference.
+    gamelog_entries = [
+        {"GAME_DATE": f"Jan {i:02d}, 2026", "PTS": 20, "REB": 6, "AST": 4,
+         "FG3M": 2, "STL": 1, "BLK": 0, "TOV": 2}
+        for i in range(1, 11)
+    ]
+    gl_path = tmp_path / "gamelog_99999.json"
+    gl_path.write_text(json.dumps(gamelog_entries), encoding="utf-8")
+
+    orig_pp_path = lqb._PP_CAL_PATH_V2
+    orig_gl_glob = lqb._GAMELOG_GLOB
+    lqb._PP_CAL_PATH_V2 = str(pp_path)
+    lqb._GAMELOG_GLOB = str(tmp_path / "gamelog_*.json")
+    lqb.reset_cache()
+
+    try:
+        mod_q1 = lqb.bands_for(
+            "pts", 20.0, "endQ1", calibration=cal,
+            pid=99999, game_date="2026-02-01",
+        )
+        mod_q2 = lqb.bands_for(
+            "pts", 20.0, "endQ2", calibration=cal,
+            pid=99999, game_date="2026-02-01",
+        )
+    finally:
+        lqb._PP_CAL_PATH_V2 = orig_pp_path
+        lqb._GAMELOG_GLOB = orig_gl_glob
+        lqb.reset_cache()
+
+    # With std_l20=0 -> ratio clips to 0.6 -> extra_mult < 1 -> bands narrower.
+    # The point here is simply that the bands CHANGED (modulation fired).
+    assert mod_q1["q90"] != ref_q1["q90"], (
+        "endQ1 per-player modulation should fire but bands were unchanged; "
+        f"mod={mod_q1} ref={ref_q1}"
+    )
+    assert mod_q2["q90"] != ref_q2["q90"], (
+        "endQ2 per-player modulation should fire but bands were unchanged; "
+        f"mod={mod_q2} ref={ref_q2}"
+    )

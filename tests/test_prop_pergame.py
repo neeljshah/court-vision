@@ -66,8 +66,81 @@ def test_feature_columns_are_leakage_free():
     assert "rest_days" in cols and "is_home" in cols
     assert all(not c.startswith("target_") for c in cols)
     assert all(f"opp_def_{s}" in cols for s in STATS)
-    # 5 form x 8 stats + 3 context + 2 rampup + 7 opp_def + 4 rest/travel + 9 playtype + 15 bbref + 4 contracts + 1 ratio (pts_share_3pt).
-    assert len(cols) == 5 * 8 + 3 + 2 + 7 + 4 + 9 + 15 + 4 + 1
+    # Frozen production contract = 129 cols. The original 85-col base
+    # (5 form x 8 stats + 3 context + 2 rampup + 7 opp_def + 4 rest/travel +
+    # 9 playtype + 15 bbref + 4 contracts + 1 pts_share_3pt ratio) PLUS the
+    # Wave-2b+ extension blocks (bbref-extended, defender-matchup, player-profile,
+    # referee, foul, dnp, dnp-team, advanced-split). feature_columns_for() freezes
+    # this; serve-time models truncate to their own n_features_in_. The leakage
+    # invariants above (no target_*, opp_def present) are the substantive check;
+    # this count is the contract tripwire.
+    assert len(cols) == 129
+
+
+def _feature_columns_under(flag_value):
+    """Return feature_columns() with CV_BBREF_REORDER_FIX set to flag_value (or
+    unset when None). Runs in a SUBPROCESS so the module-level gate re-reads the
+    env from a clean import without reloading prop_pergame in-process (a reload
+    would change _MLPSeedEnsemble's class identity and break sibling pickling
+    tests)."""
+    import json as _json
+    import subprocess
+    import sys as _sys
+    env = dict(os.environ)
+    env.pop("PROP_USE_CV", None)
+    if flag_value is None:
+        env.pop("CV_BBREF_REORDER_FIX", None)
+    else:
+        env["CV_BBREF_REORDER_FIX"] = flag_value
+    code = (
+        "import sys, json; sys.path.insert(0, r'%s');"
+        "from src.prediction.prop_pergame import feature_columns;"
+        "print(json.dumps(feature_columns()))" % PROJECT_DIR
+    )
+    out = subprocess.check_output([_sys.executable, "-c", code], env=env, text=True)
+    return _json.loads(out.strip().splitlines()[-1])
+
+
+def test_feature_columns_first85_aligns_when_reorder_fix_on():
+    """EX-5 gate ON: first 85 cols must match the frozen training order from
+    props_pergame_metrics.json so all n_features_in_=85 artifacts receive the
+    correct features. bbref_extra must be APPENDED after slot 85, not
+    interleaved in the contract/ratio block at slots 80-84."""
+    frozen = json.load(
+        open(os.path.join(PROJECT_DIR, "data", "models", "props_pergame_metrics.json"))
+    )["feature_cols"]
+    assert len(frozen) == 85
+    cols = _feature_columns_under("1")          # fix ON
+    assert cols[:85] == frozen                  # 85-feature artifacts read first-85 slots
+    for k in ("orb_pct", "drb_pct", "trb_pct", "bpm", "ws"):
+        assert cols.index(f"bbref_{k}") >= 85   # bbref_extra appended after baseline
+
+
+def test_feature_columns_default_is_now_aligned():
+    """PREDICTION_FIDELITY plumbing fix (2026-06-04): the MODULE DEFAULT is now
+    the ALIGNED order. The 85-feature artifacts were trained aligned
+    (props_pergame_metrics.json feature_cols: contract/ratio at slots 80-84),
+    so the aligned serve order is correct. With the flag at its default (unset),
+    feature_columns()[:85] matches the frozen trained list and bbref_extra is
+    appended AFTER slot 85 — NOT interleaved at slots 80-84 (the old misaligned
+    default). golive already set CV_BBREF_REORDER_FIX=1; this removes the
+    load-bearing env var."""
+    frozen = json.load(
+        open(os.path.join(PROJECT_DIR, "data", "models", "props_pergame_metrics.json"))
+    )["feature_cols"]
+    cols = _feature_columns_under(None)          # default (flag unset) -> aligned
+    assert cols[:85] == frozen                   # 0/85 mismatch on the served slice
+    for k in ("orb_pct", "drb_pct", "trb_pct", "bpm", "ws"):
+        assert cols.index(f"bbref_{k}") >= 85    # bbref_extra appended after baseline
+
+
+def test_feature_columns_escape_hatch_restores_legacy_order():
+    """Revertibility: CV_BBREF_REORDER_FIX=0 (the explicit escape hatch) forces
+    the legacy misaligned order back — bbref_extra at slots 80-84. The fix is
+    gated/revertible, not removed."""
+    cols = _feature_columns_under("0")           # escape hatch -> legacy layout
+    for i, k in enumerate(("orb_pct", "drb_pct", "trb_pct", "bpm", "ws")):
+        assert cols[80 + i] == f"bbref_{k}"      # legacy slot 80-84 placement
 
 
 def test_feature_columns_include_rest_travel():
@@ -306,6 +379,79 @@ def test_predict_pergame_runs_with_3way_blend(tmp_path):
     # If no stat ended up with an MLP (small synthetic data sometimes
     # below the keep threshold), don't fail — the artifact test covers
     # the persistence path.
+
+
+# ── FIX IN-7: opp_abbrev threaded into _inject_iter23_features on serve path ──
+
+def test_build_prediction_row_passes_opp_to_inject_iter23(tmp_path):
+    """FIX IN-7 — build_prediction_row must pass the opponent to
+    _inject_iter23_features so that ls_opp_* features are not silently
+    zeroed on the live serve path.
+
+    Strategy: monkeypatch _inject_iter23_features with a spy that records
+    every call, then assert the recorded opp_abbrev matches the 'BOS' we
+    supply to build_prediction_row.
+    """
+    import src.prediction.prop_pergame as ppg
+
+    recorded_calls: list = []
+
+    original_inject = ppg._inject_iter23_features
+
+    def _spy(row, player_id, game_date, team_abbrev, opp_abbrev=""):
+        recorded_calls.append({
+            "team_abbrev": team_abbrev,
+            "opp_abbrev": opp_abbrev,
+        })
+        return original_inject(row, player_id, game_date, team_abbrev, opp_abbrev)
+
+    # Write a minimal gamelog so build_prediction_row doesn't return None.
+    games = [
+        {
+            "GAME_DATE": f"Jan {d:02d}, 2025",
+            "MATCHUP": "LAL vs. MIA",
+            "PTS": 20,
+            "REB": 5,
+            "AST": 4,
+            "FG3M": 2,
+            "STL": 1,
+            "BLK": 0,
+            "TOV": 2,
+            "MIN": 30.0,
+        }
+        for d in range(1, 12)
+    ]
+    player_id = 999
+    (tmp_path / f"gamelog_{player_id}_2024-25.json").write_text(
+        json.dumps(games), encoding="utf-8"
+    )
+
+    ppg._inject_iter23_features = _spy  # type: ignore[assignment]
+    try:
+        result = ppg.build_prediction_row(
+            player_id=player_id,
+            opp_team="BOS",
+            season="2024-25",
+            is_home=True,
+            rest_days=2.0,
+            gamelog_dir=str(tmp_path),
+            min_prior=0,
+        )
+    finally:
+        ppg._inject_iter23_features = original_inject  # type: ignore[assignment]
+
+    # build_prediction_row must have produced a row (gamelog exists).
+    assert result is not None, "build_prediction_row returned None — gamelog not found?"
+
+    # The spy must have been called at least once.
+    assert recorded_calls, "_inject_iter23_features was never called on the serve path"
+
+    # Every call must carry the real opponent, not an empty string (pre-fix behaviour).
+    for call in recorded_calls:
+        assert call["opp_abbrev"] == "BOS", (
+            f"FIX IN-7 regression: opp_abbrev='{call['opp_abbrev']}' "
+            f"instead of 'BOS' — ls_opp_* features will serve zeros!"
+        )
 
 
 if __name__ == "__main__":

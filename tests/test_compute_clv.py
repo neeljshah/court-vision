@@ -32,20 +32,60 @@ def _close(line, over_odds=-110, under_odds=-110):
 # ── compute_one ──────────────────────────────────────────────────────────────
 
 def test_over_bet_beats_close_when_line_moves_up():
-    """OVER 22.5 → closing line drops to 21.5 means I got 1.0 better number."""
+    """LEGACY default-OFF behavior (clv_pts sign INVERTED, GRADING_SETTLE_CLV_AUDIT
+    B-1). Kept as the byte-identical baseline: with CV_CLV_LINE_SIGN_FIX unset the
+    OVER sign is placed-close, so OVER 22.5 vs close 21.5 -> +1.0. The CORRECT
+    semantics (close 21.5 < placed 22.5 = a WORSE number for an OVER bettor ->
+    negative) are asserted in TestClvSignFixCorrect under the flag."""
     bet = _bet("Jokic", "PTS", 22.5, "OVER", odds=-110)
     out = cc.compute_one(bet, _close(line=21.5))
-    assert out["clv_pts"] == 1.0
+    assert out["clv_pts"] == 1.0       # legacy (inverted) default
     assert out["beat_close"] == "Y"
 
 
 def test_over_bet_loses_clv_when_line_moves_down_actually_means_close_above():
-    """OVER 22.5 → close moves UP to 24.5 means closing is more confident
-    the player exceeds, but my line was BELOW close so I have NEGATIVE CLV."""
+    """LEGACY default-OFF behavior (inverted). OVER 22.5 vs close 24.5 -> -2.0
+    under the legacy sign; the CORRECT sign (close above placed = you got the
+    better lower number = POSITIVE) is in TestClvSignFixCorrect."""
     bet = _bet("Jokic", "PTS", 22.5, "OVER", odds=-110)
     out = cc.compute_one(bet, _close(line=24.5))
-    assert out["clv_pts"] == -2.0
+    assert out["clv_pts"] == -2.0      # legacy (inverted) default
     assert out["beat_close"] == "N"
+
+
+class TestClvSignFixCorrect:
+    """CV_CLV_LINE_SIGN_FIX=1 -> the CORRECT CLV-line sign (B-1 fix). CLV is
+    positive when you got a BETTER NUMBER than the close: OVER better = LOWER, so
+    you beat the close when it closes HIGHER (closing - placed); UNDER better =
+    HIGHER, so you beat when it closes LOWER (placed - closing)."""
+
+    def test_over_close_above_is_positive(self, monkeypatch):
+        monkeypatch.setenv("CV_CLV_LINE_SIGN_FIX", "1")
+        bet = _bet("Jokic", "PTS", 22.5, "OVER", odds=-110)
+        out = cc.compute_one(bet, _close(line=24.5))   # close ABOVE = favorable for OVER
+        assert out["clv_pts"] == 2.0, "OVER beat the close (got the lower number) = positive"
+        assert out["beat_close"] == "Y"
+
+    def test_over_close_below_is_negative(self, monkeypatch):
+        monkeypatch.setenv("CV_CLV_LINE_SIGN_FIX", "1")
+        bet = _bet("Jokic", "PTS", 22.5, "OVER", odds=-110)
+        out = cc.compute_one(bet, _close(line=21.5))   # close BELOW = unfavorable for OVER
+        assert out["clv_pts"] == -1.0, "OVER lost CLV (close got the lower number)"
+        assert out["beat_close"] == "N"
+
+    def test_under_close_below_is_positive(self, monkeypatch):
+        monkeypatch.setenv("CV_CLV_LINE_SIGN_FIX", "1")
+        bet = _bet("Jokic", "PTS", 22.5, "UNDER", odds=-110)
+        out = cc.compute_one(bet, _close(line=20.5))   # close BELOW = favorable for UNDER
+        assert out["clv_pts"] == 2.0, "UNDER beat the close (got the higher number) = positive"
+        assert out["beat_close"] == "Y"
+
+    def test_under_close_above_is_negative(self, monkeypatch):
+        monkeypatch.setenv("CV_CLV_LINE_SIGN_FIX", "1")
+        bet = _bet("Jokic", "PTS", 22.5, "UNDER", odds=-110)
+        out = cc.compute_one(bet, _close(line=24.5))   # close ABOVE = unfavorable for UNDER
+        assert out["clv_pts"] == -2.0, "UNDER lost CLV (close got the higher number)"
+        assert out["beat_close"] == "N"
 
 
 def test_under_bet_beats_close_when_line_moves_up():

@@ -175,7 +175,8 @@ def test_ledger_append_writes_full_row(tmp_ledger, slate_file, capsys):
     # Model context from slate gets stamped:
     assert abs(float(row["model_pred"]) - 5.17)   < 1e-3
     assert abs(float(row["model_prob"]) - 0.7395) < 1e-3
-    assert abs(float(row["kelly_pct"])  - 5.0)    < 1e-3
+    # R19_L2: clamp_kelly_pct stores as fraction [0, 0.25]; 5.0 pct -> 0.25 (cap).
+    assert abs(float(row["kelly_pct"])  - 0.25)   < 1e-3
 
 
 def test_idempotency_blocks_duplicate(tmp_ledger, slate_file, capsys):

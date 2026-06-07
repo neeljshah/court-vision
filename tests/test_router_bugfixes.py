@@ -502,3 +502,149 @@ class TestBug7GateBeforeTruncation:
         evs = [b.get("ev_pct") or 0.0 for b in out_bets]
         assert evs == sorted(evs, reverse=True), \
             f"Gate output not sorted by descending EV: {evs}"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# BUG-6 (WAVE 17b) — the playoff-pregame / always-on playoff-AST regime guard must
+# fire on the /api/slate gate path even under the default iter57 policy. It was
+# previously nested inside `if _bet_policy_active:` (False by default) → inert.
+# policy_allows_context self-gates, so reg-season is byte-identical.
+# ──────────────────────────────────────────────────────────────────────────────
+
+class TestBug6PlayoffGuardOnSlatePath:
+    PLAYOFF_GID = "0042500401"   # prefix 004 = playoff
+    REG_GID = "0022500401"       # prefix 002 = regular season
+
+    def _bet(self, stat="reb", game_id=REG_GID):
+        # edge_units = q50-line = 1.5 >= edge_threshold stub (1.0); side allowed.
+        return {
+            "prop_stat": stat, "side": "OVER", "line": 6.5, "q50": 8.0,
+            "best_price": -110, "model_prob": 0.90, "ev_pct": 10.0,
+            "edge_units": 1.5, "kelly_stake_dollars": 1.0, "kelly_pct": 1.0,
+            "game_id": game_id, "player_name": "Guard Test",
+        }
+
+    def _run(self, bet):
+        if _apply_calibration_gate is None:
+            pytest.skip("_apply_calibration_gate not importable")
+        return _apply_calibration_gate({"bets": [bet]}).get("bets", [])
+
+    def test_regseason_reb_survives_guard_byte_identical(self, monkeypatch):
+        monkeypatch.setenv("CV_PLAYOFF_PREGAME_GUARD", "1")
+        out = self._run(self._bet("reb", self.REG_GID))
+        assert len(out) == 1, "reg-season bet must NOT be touched by the playoff guard"
+
+    def test_playoff_reb_dropped_when_guard_on(self, monkeypatch):
+        monkeypatch.setenv("CV_PLAYOFF_PREGAME_GUARD", "1")
+        monkeypatch.delenv("CV_ALLOW_PLAYOFF_PREGAME", raising=False)
+        # control: same bet reg-season survives → isolates the guard as the cause
+        assert len(self._run(self._bet("reb", self.REG_GID))) == 1
+        out = self._run(self._bet("reb", self.PLAYOFF_GID))
+        assert out == [], "playoff prop must be dropped on /api/slate when guard ON (BUG-6)"
+
+    def test_playoff_ast_dropped_by_alwayson_guard_default_stack(self, monkeypatch):
+        # No CV_PLAYOFF_PREGAME_GUARD → only the always-on playoff-AST guard fires.
+        monkeypatch.delenv("CV_PLAYOFF_PREGAME_GUARD", raising=False)
+        monkeypatch.delenv("CV_ALLOW_PLAYOFF_AST", raising=False)
+        assert len(self._run(self._bet("ast", self.REG_GID))) == 1
+        out = self._run(self._bet("ast", self.PLAYOFF_GID))
+        assert out == [], "playoff AST must be dropped by the always-on guard (was inert)"
+
+    def test_playoff_nonast_survives_when_broad_guard_off(self, monkeypatch):
+        # Non-AST playoff prop with the broad guard OFF → byte-identical (survives).
+        monkeypatch.delenv("CV_PLAYOFF_PREGAME_GUARD", raising=False)
+        out = self._run(self._bet("reb", self.PLAYOFF_GID))
+        assert len(out) == 1, "non-AST playoff prop must survive when broad guard OFF"
+
+    def test_escape_hatch_reenables_playoff(self, monkeypatch):
+        monkeypatch.setenv("CV_PLAYOFF_PREGAME_GUARD", "1")
+        monkeypatch.setenv("CV_ALLOW_PLAYOFF_PREGAME", "1")
+        out = self._run(self._bet("reb", self.PLAYOFF_GID))
+        assert len(out) == 1, "CV_ALLOW_PLAYOFF_PREGAME=1 must re-enable playoff props"
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# B-1 (WAVE 17c) — CV_LIVE_ODDS_VALID_GUARD: the live regrade must not select an
+# invalid odd (|odds|<100). A glitch quote (0/+50/-99) passes the loader's
+# [-400,400] sane filter and is then priced as even-money (+100) → inflated EV /
+# maxed Kelly. Guard drops |odds|<100 from best-price selection. Byte-identical
+# when no glitch odd is present.
+# ──────────────────────────────────────────────────────────────────────────────
+
+_regrade_live = getattr(_router_mod, "_regrade_bet_with_live_q50", None)
+
+
+class TestB1LiveOddsValidGuard:
+    SIG = {"pts": 5.0}
+
+    def _bet(self, ladder):
+        # stale captured_at ("" -> not fresh) routes through the any-age fallback,
+        # which also applies the guard — deterministic without a live clock.
+        return {"prop_stat": "pts", "line": 24.5, "side": "OVER",
+                "best_price": -110, "_books_full": ladder}
+
+    def _ladder(self, *over_odds):
+        return [{"book": f"B{i}", "over_odds": o, "under_odds": -120,
+                 "captured_at": ""} for i, o in enumerate(over_odds)]
+
+    def test_off_selects_glitch_odd_bug(self, monkeypatch):
+        if _regrade_live is None:
+            pytest.skip("_regrade_bet_with_live_q50 not importable")
+        monkeypatch.delenv("CV_LIVE_ODDS_VALID_GUARD", raising=False)
+        bet = self._bet(self._ladder(50, -130))   # glitch +50 vs valid -130
+        _regrade_live(bet, 26.0, self.SIG)
+        assert bet["best_price"] == 50, "OFF reproduces the bug (glitch +50 selected)"
+
+    def test_on_drops_glitch_selects_valid(self, monkeypatch):
+        if _regrade_live is None:
+            pytest.skip("_regrade_bet_with_live_q50 not importable")
+        monkeypatch.setenv("CV_LIVE_ODDS_VALID_GUARD", "1")
+        bet = self._bet(self._ladder(50, -130))
+        _regrade_live(bet, 26.0, self.SIG)
+        assert bet["best_price"] == -130, "ON drops the |odds|<100 glitch, selects valid -130"
+
+    def test_on_byte_identical_when_all_valid(self, monkeypatch):
+        if _regrade_live is None:
+            pytest.skip("_regrade_bet_with_live_q50 not importable")
+        # all-valid ladder → guard ON and OFF must select the SAME best price (max)
+        monkeypatch.delenv("CV_LIVE_ODDS_VALID_GUARD", raising=False)
+        b_off = self._bet(self._ladder(-130, -120))
+        _regrade_live(b_off, 26.0, self.SIG)
+        monkeypatch.setenv("CV_LIVE_ODDS_VALID_GUARD", "1")
+        b_on = self._bet(self._ladder(-130, -120))
+        _regrade_live(b_on, 26.0, self.SIG)
+        assert b_off["best_price"] == b_on["best_price"] == -120, \
+            "byte-identical when no invalid odd present"
+
+    def test_on_all_glitch_falls_back_not_glitch(self, monkeypatch):
+        if _regrade_live is None:
+            pytest.skip("_regrade_bet_with_live_q50 not importable")
+        monkeypatch.setenv("CV_LIVE_ODDS_VALID_GUARD", "1")
+        bet = self._bet(self._ladder(50, 0))   # only invalid odds
+        _regrade_live(bet, 26.0, self.SIG)
+        assert bet["best_price"] != 50 and bet["best_price"] != 0, \
+            "ON never prices off a glitch odd (falls back to original)"
+
+
+# ---------------------------------------------------------------------------
+# REGRESSION (2026-06-05, AUDIT_PREGAME_SERVE / SYNTH_PATH_PLAYOFF_GUARD): the
+# synth + main calibration-gate call sites MUST pass the slate DATE. The synth
+# path keeps RAW BOOK game_ids (not classifiable as playoff by id alone) AND is
+# the FINAL gate when CV_SYNTH_GATE_BEFORE_TRUNCATE is on (no re-gate), so a
+# date-less _apply_calibration_gate call let a Finals book-id pregame bet leak
+# past CV_PLAYOFF_GUARD_FAILCLOSED (verified live: 1 shown vs 0 expected). The
+# guard LOGIC is covered by test_playoff_pregame_guard.py + the direct repro;
+# this locks in that the call sites actually FEED the date so _playoff_window is
+# set. Byte-identical in the regular season (_is_playoff_date(date)=False).
+# ---------------------------------------------------------------------------
+def test_calibration_gate_call_sites_pass_date():
+    src = (ROOT / "api" / "courtvision_router.py").read_text(encoding="utf-8")
+    assert '_apply_calibration_gate({"bets": bets})' not in src, (
+        "synth gate must pass the slate date -> "
+        "_apply_calibration_gate({'date': date, 'bets': bets})")
+    assert '_apply_calibration_gate({"date": date, "bets": bets})' in src, (
+        "synth gate call site must carry the slate date (playoff fail-closed)")
+    assert '_stub_env = {"bets": bets}' not in src, (
+        "main pre-truncation gate must pass the slate date")
+    assert '_stub_env = {"date": date, "bets": bets}' in src, (
+        "main pre-truncation gate call site must carry the slate date")
