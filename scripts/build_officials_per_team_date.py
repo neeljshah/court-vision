@@ -10,6 +10,17 @@ Output: data/officials_features.parquet — columns:
 
 Strictly point-in-time (prior season is complete before the current season
 starts). League-avg defaults when prior data is missing.
+
+Bug 22 fix (2026-05-28): Script already handles any season found in
+  data/nba/season_games_*.json via glob — will include 2025-26 automatically
+  once data/nba/officials/officials_2025-26.json is fetched via:
+    python scripts/fetch_officials.py 2025-26
+  Until then, all 2025-26 rows receive league-average defaults (ref_crew_fouls=42.0),
+  which will be flagged as NaN by the Bug 23 sentinel guard below.
+
+Bug 23 fix (2026-05-28): ref_crew_fouls=42.0 on games in the last 7 days
+  of a season (or any row where crew was unknown) is a fill/cap artifact.
+  Those rows now write NaN instead of 42.0.
 """
 from __future__ import annotations
 
@@ -133,12 +144,43 @@ def main():
 
     import pandas as pd
     df = pd.DataFrame(records)
+    df["game_date"] = pd.to_datetime(df["game_date"])
+
+    # Bug 23 fix: ref_crew_fouls == 42.0 is the league-average default sentinel.
+    # When it appears on games in the last 7 days of any season (where real ref stats
+    # are most likely to be incomplete/capped), replace with NaN to avoid inflating
+    # the 'loose' bucket in tertile-based analyses.
+    sentinel_val = float(_DEFAULTS["ref_crew_fouls"])  # 42.0
+    # Group by season to find last-game-day per season.
+    # game_id format: 0022500001 — digits [3:5] encode the season start year (e.g. 25 = 2025-26).
+    if "game_id" in df.columns:
+        df["_season_yr"] = df["game_id"].str[3:5].astype(int)
+    else:
+        # Fallback: infer from calendar month (Oct-Dec = season start year)
+        df["_season_yr"] = df["game_date"].dt.year.where(
+            df["game_date"].dt.month >= 10, df["game_date"].dt.year - 1
+        )
+    season_max_dates = df.groupby("_season_yr")["game_date"].transform("max")
+    last7_mask = (df["game_date"] >= season_max_dates - pd.Timedelta(days=7))
+    sentinel_mask = (df["ref_crew_fouls"] == sentinel_val) & last7_mask
+
+    n_nullified = sentinel_mask.sum()
+    if n_nullified > 0:
+        df.loc[sentinel_mask, "ref_crew_fouls"] = float("nan")
+        print(f"  [Bug 23] Nullified {n_nullified} sentinel ref_crew_fouls=42.0 rows "
+              f"in last-7-days-of-season window.")
+
+    # Clean up internal columns
+    df.drop(columns=[c for c in ["_season_yr"] if c in df.columns],
+            inplace=True)
+
     df.to_parquet(_OUT_PATH, index=False)
-    nondef = (df["ref_crew_fouls"] != _DEFAULTS["ref_crew_fouls"]).sum()
+    nondef = (df["ref_crew_fouls"].notna() & (df["ref_crew_fouls"] != sentinel_val)).sum()
     print(f"\n[done] {len(df)} (team, date) rows -> {_OUT_PATH}")
     print(f"        non-default ref_crew_fouls: {nondef} / {len(df)} "
           f"({100*nondef/max(1,len(df)):.1f}%)")
-    print(f"        crew_fouls range: {df['ref_crew_fouls'].min():.2f} -> {df['ref_crew_fouls'].max():.2f}")
+    valid = df["ref_crew_fouls"].dropna()
+    print(f"        crew_fouls range: {valid.min():.2f} -> {valid.max():.2f}" if len(valid) else "        crew_fouls range: n/a")
     print(f"        unique crews: {df['ref_crew_fouls'].nunique()}")
 
 

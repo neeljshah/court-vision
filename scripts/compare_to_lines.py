@@ -43,7 +43,11 @@ import numpy as np
 _UNAVAILABLE_STATUSES = {"OUT", "DOUBTFUL", "NOT WITH TEAM"}
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, PROJECT_DIR)
+sys.path.insert(0, SCRIPTS_DIR)
+
+from lib_betting_validation import safe_odds  # Bug 10 guard
 
 from src.prediction.prop_pergame import (  # noqa: E402
     STATS, build_prediction_row, predict_pergame,
@@ -52,6 +56,7 @@ from src.prediction.prop_quantiles import (  # noqa: E402
     predict_pergame_quantiles,
 )
 from src.prediction.quantile_calibration import apply as apply_quantile_calibration  # noqa: E402
+from src.prediction.quantile_calibration import apply_conformal as _apply_conformal  # noqa: E402
 # Cycle 90f (loop 5), T4-A: rolling-window calibration, opt-in via --rolling-cal.
 # Import is wrapped so the script still runs on installs without the parquet.
 try:
@@ -64,6 +69,10 @@ from src.data.injuries import load_unavailable_players  # noqa: E402
 from src.data.lineups import (  # noqa: E402
     build_starter_index, classify_starter, STATUS_SCALE,
 )
+from src.prediction import live_adjustment as _live_adjust  # noqa: E402
+from src.prediction import live_context as _live_ctx  # noqa: E402
+from src.prediction import pregame_calibration as _pregame_cal  # noqa: E402
+from src.prediction import availability as _availability  # noqa: E402
 
 
 def _strip_accents(s: str) -> str:
@@ -110,15 +119,47 @@ def _american_payout(odds: int, stake: float = 1.0) -> float:
     return stake * (100 / -odds)
 
 
+def _asym_hit_prob_enabled() -> bool:
+    """H5 fix gate. Default OFF — the symmetric-sigma path stays byte-identical
+    so the validated book is preserved. Set CV_ASYM_HIT_PROB=1 to switch the
+    served hit-prob to the split-normal that respects the asymmetric calibrated
+    band. See docs/_audits/ASYM_HIT_PROB_AB_2026-06-02.md."""
+    return os.environ.get("CV_ASYM_HIT_PROB", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+
+
+def _split_normal_p_over(line: float, center: float,
+                         sigma_lo: float, sigma_hi: float) -> float:
+    """P(X > line) for a two-piece (split / Fechner) normal whose CDF passes
+    through (center, 0.5). Below the center the dispersion is sigma_lo, above it
+    sigma_hi; the halves are spliced at the median so the CDF is continuous and
+    integrates to 1. With sigma_lo == sigma_hi it reduces exactly to a Normal."""
+    from math import erf, sqrt
+    sigma_lo = max(float(sigma_lo), 1e-6)
+    sigma_hi = max(float(sigma_hi), 1e-6)
+    if line <= center:
+        z = (line - center) / sigma_lo
+    else:
+        z = (line - center) / sigma_hi
+    cdf = 0.5 * (1 + erf(z / sqrt(2)))
+    return 1.0 - cdf
+
+
 def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side: str,
                     use_rolling: bool = False, on_or_before: str = None) -> float:
     """Approximate the model's predicted probability of WINNING the side at the given line.
 
-    Centers a normal distribution at the BLEND's point prediction and uses the
-    CYCLE-40 CALIBRATED q90 - q10 spread to estimate sigma. Calibration brings
-    each stat's interval to actually-80% coverage (raw was 71-91%) — without
-    it the Kelly probability estimates are systematically off (PTS/AST under-
-    cover means too-confident bets; STL/BLK over-cover means too-cautious).
+    Default (CV_ASYM_HIT_PROB OFF): centers a SYMMETRIC normal at the BLEND's
+    point prediction and uses the CYCLE-40 CALIBRATED q90 - q10 spread to estimate
+    sigma. Calibration brings each stat's interval to actually-80% coverage (raw
+    was 71-91%) — without it the Kelly probability estimates are systematically off
+    (PTS/AST under-cover means too-confident bets; STL/BLK over-cover means too-cautious).
+
+    When CV_ASYM_HIT_PROB is ON (H5 fix): a SPLIT-NORMAL respecting the asymmetric
+    calibrated band — sigma_lo from (q50 - cal_q10), sigma_hi from (cal_q90 - q50),
+    both /1.2816, centred at q50 — so the served CDF passes through (cal_q10, .10),
+    (q50, .50), (cal_q90, .90). For symmetric bands this collapses to the OFF result
+    exactly. See docs/_audits/ASYM_HIT_PROB_AB_2026-06-02.md.
 
     Cycle 90f T4-A: when ``use_rolling`` is True and the rolling parquet exists,
     use the prior-60-game window scale for ``on_or_before`` instead of the
@@ -127,13 +168,26 @@ def _model_hit_prob(stat: str, point_pred: float, qint: dict, line: float, side:
     q10 = qint.get("q10"); q50 = qint.get("q50"); q90 = qint.get("q90")
     if q10 is None or q90 is None or point_pred is None:
         return None
-    if use_rolling and apply_quantile_calibration_rolling is not None:
+    # CV_QUANTILE_CAL=1: use split-conformal (CQR) calibration instead of the
+    # existing val-slice scale-factor. The conformal path is the default branch
+    # when the flag is ON; rolling-cal composing is skipped (rolling-cal is an
+    # alternative, not additive). Flag OFF: identical to previous behaviour.
+    import os as _os_ctl
+    if _os_ctl.environ.get("CV_QUANTILE_CAL", "0") == "1":
+        cal_q10, cal_q90 = _apply_conformal(stat, q10, q50 or point_pred, q90)
+    elif use_rolling and apply_quantile_calibration_rolling is not None:
         cal_q10, cal_q90 = apply_quantile_calibration_rolling(
             stat, q10, q50 or point_pred, q90,
             on_or_before=on_or_before or _date.today().isoformat(),
         )
     else:
         cal_q10, cal_q90 = apply_quantile_calibration(stat, q10, q50 or point_pred, q90)
+    if _asym_hit_prob_enabled():
+        center = q50 if q50 is not None else point_pred
+        sigma_lo = max((center - cal_q10) / 1.2816, 1e-6)
+        sigma_hi = max((cal_q90 - center) / 1.2816, 1e-6)
+        p_over = _split_normal_p_over(line, center, sigma_lo, sigma_hi)
+        return p_over if side == "OVER" else 1 - p_over
     sigma = max((cal_q90 - cal_q10) / (2 * 1.2816), 1e-6)
     from math import erf, sqrt
     z = (line - point_pred) / sigma
@@ -221,7 +275,39 @@ def main():
                     help="Cycle 90f T4-A. Use prior-60-game rolling quantile calibration "
                          "(data/models/quantile_cal_rolling.parquet) instead of the global "
                          "cycle-40 scales. Default off; cycle-40 stays canonical.")
+    ap.add_argument("--live-adjust", action="store_true",
+                    help="2026-06-01. Apply the same-day live pace/blowout adjustment "
+                         "(src/prediction/live_adjustment.py) using tonight's mainline "
+                         "total/spread. Also enabled via CV_LIVE_ADJUST=1. Default off "
+                         "(strict no-op) so the proven projection path is unchanged.")
+    ap.add_argument("--calibrate", action="store_true",
+                    help="2026-06-01. Apply per-stat pregame calibration "
+                         "(src/prediction/pregame_calibration.py); PTS-only by default "
+                         "(cuts its -8.89%% Vegas ROI to -5.04%%; AST left RAW). Also via "
+                         "CV_PREGAME_CAL=1. Default off (strict no-op).")
     args = ap.parse_args()
+
+    _live_adjust_on = args.live_adjust or _live_adjust.is_enabled()
+    if _live_adjust_on:
+        print("  [live-adjust] ON — applying same-day pace/blowout context "
+              "(inactive-usage term fed from tonight's confirmed-inactives report)")
+    _pregame_cal_on = args.calibrate or _pregame_cal.is_enabled()
+    if _pregame_cal_on:
+        print(f"  [calibrate] ON — recalibrating stats {sorted(_pregame_cal.enabled_stats())} "
+              "(AST left raw to preserve divergence edge)")
+
+    # Confirmed-inactives -> vacated load (powers both the live-adjust inactive
+    # term and the calibrator's vacated covariates). Computed once per run.
+    _vac_map: dict = {}
+    if _live_adjust_on or _pregame_cal_on:
+        try:
+            _vac_map = _availability.team_vacated_map(
+                _date.today().isoformat(), _resolve_player_id)
+            _n_out_teams = sum(1 for v in _vac_map.values() if v.get("n_out"))
+            print(f"  [inactives] loaded vacated load for {_n_out_teams} team(s) "
+                  "from tonight's injury report")
+        except Exception as exc:  # pragma: no cover - defensive
+            print(f"  [inactives] unavailable ({exc}); vacated terms = 0")
 
     inj_unavail: dict = {}
     if args.injuries is not None and not args.include_injured:
@@ -278,8 +364,8 @@ def main():
         rest_days = float(r.get("rest_days") or 2.0)
         season = r.get("season") or season_default
         is_home = (venue.startswith("h"))
-        over_odds = int(r.get("over_odds") or -110)
-        under_odds = int(r.get("under_odds") or -110)
+        over_odds = safe_odds(r.get("over_odds") or -110)  # Bug 10 guard
+        under_odds = safe_odds(r.get("under_odds") or -110)  # Bug 10 guard
 
         pid = _resolve_player_id(name)
         if pid is None:
@@ -301,9 +387,109 @@ def main():
                 qint = {k: (round(float(v) * factor, 2)
                             if isinstance(v, (int, float)) else v)
                         for k, v in qint.items()}
+        # Resolve the player's own team unconditionally so the live-adjust context
+        # lookup can use context_for_team (keyed on exact frozenset) rather than the
+        # weaker context_for_opponent scan — which fails on multi-game slates when the
+        # opponent appears in more than one game. _team is always assigned here so no
+        # branch below risks a NameError or stale loop value on a quiet night.
+        _team = _availability.player_team(pid, season)
+
+        # Tonight's vacated load for this player (confirmed-inactives feed).
+        _vac = {"vac_min": 0.0, "vac_pts": 0.0, "n_out": 0, "vac_share": 0.0}
+        if _vac_map:
+            _vac = _availability.player_vacated(
+                float(prow.get("l10_pts") or 0.0), _team, _vac_map)
+
+        # Capture the base projection BEFORE either adjustment layer fires so
+        # the pregame_layer_log can later A/B base vs each layer against actuals.
+        _base_pred = float(model_pred)
+        _after_cal_pred: Optional[float] = None
+        _live_total: Optional[float] = None
+        _live_spread: Optional[float] = None
+
+        # Pregame calibration (2026-06-01): recalibrate the point estimate on
+        # stats where the base model loses to Vegas (PTS by default). OFF unless
+        # CV_PREGAME_CAL=1 or --calibrate. Strict no-op otherwise; AST is left RAW
+        # on purpose (calibration kills its edge). docs/VS_VEGAS_ASSESSMENT.md §5.
+        if _pregame_cal_on:
+            opp_pace, opp_def = _live_ctx.team_pace_def(opp, season)
+            cov = _availability.player_form_covariates(
+                pid, season, _date.today().isoformat())
+            cov.update({
+                "rest_days": rest_days, "is_b2b": 1 if rest_days <= 1 else 0,
+                "is_home": 1 if is_home else 0,
+                "opp_pace": opp_pace, "opp_def": opp_def,
+                "vac_min": _vac["vac_min"], "vac_pts": _vac["vac_pts"],
+                "n_out": _vac["n_out"], "month": _date.today().month,
+            })
+            model_pred = round(_pregame_cal.apply(stat, float(model_pred), cov,
+                                                  force=True), 2)
+            _after_cal_pred = float(model_pred)
+        # Same-day adjustment (2026-06-01): inject tonight's live pace/blowout
+        # context the trained model can't see at serve time. OFF unless
+        # CV_LIVE_ADJUST=1 or --live-adjust — a strict no-op otherwise, so the
+        # proven projection path is untouched by default. See
+        # src/prediction/live_adjustment.py + docs/VS_VEGAS_ASSESSMENT.md §3.
+        if _live_adjust_on:
+            _today = _date.today().isoformat()
+            if _team:
+                total, spread_abs = _live_ctx.context_for_team(
+                    _team, opp, _today)
+            else:
+                # _team unresolvable (rare / quiet night): fall back to the
+                # opponent-scan path which is correct on single-game slates.
+                total, spread_abs = _live_ctx.context_for_opponent(
+                    opp, _today)
+            _live_total = total; _live_spread = spread_abs
+            if total is not None or spread_abs is not None or _vac["vac_share"] > 0:
+                adj = _live_adjust.adjust_projection(
+                    {stat: float(model_pred)}, vac_share=_vac["vac_share"],
+                    game_total=total, game_spread=spread_abs)
+                model_pred = round(adj[stat], 2)
+        # Layer shadow logger (2026-06-01): record base vs after-cal vs after-live
+        # so the live-only term can be graded vs actuals nightly. Strict no-op
+        # unless CV_LAYER_LOG=1. See src/prediction/pregame_layer_log.py and
+        # docs/VS_VEGAS_ASSESSMENT.md §4.
+        try:
+            from src.prediction import pregame_layer_log as _layer_log
+            if _layer_log.is_enabled():
+                _layer_log.log(
+                    date=_date.today().isoformat(),
+                    player_id=pid, stat=stat, line=line, side=None,
+                    base=_base_pred,
+                    after_cal=_after_cal_pred,
+                    after_live=(float(model_pred) if _live_adjust_on else None),
+                    over_odds=over_odds, under_odds=under_odds,
+                    vac_share=_vac.get("vac_share"),
+                    game_total=_live_total, game_spread=_live_spread,
+                    opp=opp,
+                )
+        except Exception:
+            pass  # logger MUST NOT crash production
         edge = model_pred - line
-        if abs(edge) < args.min_edge:
+        # Per-policy per-stat min-edge override (CV_BET_POLICY). Can only
+        # TIGHTEN the global --min-edge, never relax it. Under ast_high, AST
+        # requires edge >= 0.75. See src/prediction/bet_policy.py.
+        _eff_min = args.min_edge
+        try:
+            from src.prediction.bet_policy import policy_min_edge as _policy_min
+            _eff_min = max(_eff_min, _policy_min(stat))
+        except Exception:
+            pass
+        if abs(edge) < _eff_min:
             continue
+        # Bet-policy stat allowlist (CV_BET_POLICY). Strict no-op under iter57.
+        # Also enforces the per-stat closing-line cap (e.g. ast_high drops
+        # AST lines > 7.5 — the very_high tier sign-flipped between halves).
+        try:
+            from src.prediction.bet_policy import policy_allows_stat as _policy_allows
+            from src.prediction.bet_policy import policy_drops_line as _policy_drops_line
+            if not _policy_allows(stat):
+                continue
+            if _policy_drops_line(stat, line):
+                continue
+        except Exception:
+            pass
         side = "OVER" if edge > 0 else "UNDER"
         odds = over_odds if side == "OVER" else under_odds
         prob = _model_hit_prob(stat, model_pred, qint, line, side,
@@ -349,7 +535,8 @@ def main():
     print(f"  {'-'*22} {'-'*4} {'-'*5}  {'-'*5} {'-'*6}  {'-'*5}  {'-'*5}  {'-'*5}  {'-'*7}  {'-'*7}")
     for r in results:
         pr = f"{r['prob']:.3f}" if r['prob'] is not None else "  —  "
-        print(f"  {r['player']:<22s} {r['stat']:4s} {r['line']:>5.1f}  {r['model']:>5.2f} {r['edge']:>+6.2f}  {r['side']:5s}  {pr:>5s}  {r['odds']:>+5d}  {r['ev']:>+7.4f}  {r['kelly_pct']:>6.2f}%")
+        od = f"{int(round(r['odds'])):+d}" if r['odds'] is not None else "  —  "
+        print(f"  {r['player']:<22s} {r['stat']:4s} {r['line']:>5.1f}  {r['model']:>5.2f} {r['edge']:>+6.2f}  {r['side']:5s}  {pr:>5s}  {od:>5s}  {r['ev']:>+7.4f}  {r['kelly_pct']:>6.2f}%")
     if args.kelly:
         total_stake = sum(r["kelly_stake"] for r in results)
         print(f"\n  Total Kelly stake on positive-EV bets: ${total_stake:.2f} of ${args.bankroll:.2f} bankroll")

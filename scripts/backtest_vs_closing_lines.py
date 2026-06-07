@@ -98,14 +98,55 @@ def _american_payout(odds: int, stake: float = 1.0) -> float:
     return stake * (100 / -odds)
 
 
+def _asym_hit_prob_enabled() -> bool:
+    """H5 fix gate. Default OFF — the symmetric-sigma path stays byte-identical
+    so the validated book is preserved. Set CV_ASYM_HIT_PROB=1 to switch the
+    served hit-prob to the split-normal that respects the asymmetric calibrated
+    band. See docs/_audits/ASYM_HIT_PROB_AB_2026-06-02.md."""
+    return os.environ.get("CV_ASYM_HIT_PROB", "0").strip().lower() in (
+        "1", "true", "yes", "on")
+
+
+def _split_normal_p_over(line, center, sigma_lo, sigma_hi) -> float:
+    """P(X > line) for a two-piece (split / Fechner) normal whose CDF passes
+    through (center, 0.5). Below the center the dispersion is sigma_lo, above it
+    sigma_hi; the two halves are spliced at the median so the result is a proper
+    distribution (continuous CDF, integrates to 1). When sigma_lo == sigma_hi it
+    reduces exactly to the symmetric Normal."""
+    sigma_lo = max(float(sigma_lo), 1e-6)
+    sigma_hi = max(float(sigma_hi), 1e-6)
+    if line <= center:
+        z = (line - center) / sigma_lo
+        cdf = 0.5 * (1 + erf(z / sqrt(2)))
+    else:
+        z = (line - center) / sigma_hi
+        cdf = 0.5 * (1 + erf(z / sqrt(2)))
+    return 1.0 - cdf
+
+
 def _model_hit_prob(stat, point_pred, qint, line, side):
-    """P(side wins) under calibrated normal centred at q50."""
+    """P(side wins) under the calibrated interval centred at q50.
+
+    Default (CV_ASYM_HIT_PROB OFF): a single symmetric Gaussian sigma derived
+    from the full calibrated 80% width — byte-identical to the historical path.
+
+    When CV_ASYM_HIT_PROB is ON (H5 fix): a SPLIT-NORMAL respecting the
+    asymmetric calibrated band — sigma_lo from (q50 - cal_q10), sigma_hi from
+    (cal_q90 - q50), both /1.2816, centred at q50 — so the served CDF passes
+    through (cal_q10, .10), (q50, .50), (cal_q90, .90). For symmetric bands this
+    collapses to the OFF result exactly."""
     q10 = qint.get("q10"); q50 = qint.get("q50"); q90 = qint.get("q90")
     if q10 is None or q90 is None or point_pred is None:
         return None
     cal_q10, cal_q90 = apply_quantile_calibration(
         stat, q10, q50 or point_pred, q90
     )
+    if _asym_hit_prob_enabled():
+        center = q50 if q50 is not None else point_pred
+        sigma_lo = max((center - cal_q10) / 1.2816, 1e-6)
+        sigma_hi = max((cal_q90 - center) / 1.2816, 1e-6)
+        p_over = _split_normal_p_over(line, center, sigma_lo, sigma_hi)
+        return p_over if side == "OVER" else 1 - p_over
     sigma = max((cal_q90 - cal_q10) / (2 * 1.2816), 1e-6)
     z = (line - point_pred) / sigma
     cdf_at_line = 0.5 * (1 + erf(z / sqrt(2)))

@@ -92,13 +92,20 @@ def compute_one(bet: dict, closing: dict) -> dict:
     close_odds = (closing["over_odds"] if side == "OVER"
                   else closing["under_odds"])
 
-    # Line movement (in stat units). For OVER bets you want the closing
-    # line LOWER than placed (so closing has more confidence the player
-    # exceeds your number); for UNDER bets, closing HIGHER.
+    # Line movement (in stat units). CORRECT (CV_CLV_LINE_SIGN_FIX=1): CLV is
+    # positive when you got a BETTER NUMBER than the close. OVER -> better is a
+    # LOWER number, so you beat the close when it closes HIGHER:
+    #   OVER  -> closing - placed ; UNDER -> placed - closing.
+    # LEGACY default (flag OFF) inverted both signs (GRADING_SETTLE_CLV_AUDIT.md
+    # B-1). Gated default-OFF = byte-identical legacy reports until flipped.
+    _clv_sign_fix = (os.environ.get("CV_CLV_LINE_SIGN_FIX", "").strip().lower()
+                     not in ("", "0", "false", "no", "off"))
     if side == "OVER":
-        clv_pts = round(placed_line - close_line, 2)
+        clv_pts = round((close_line - placed_line) if _clv_sign_fix
+                        else (placed_line - close_line), 2)
     else:
-        clv_pts = round(close_line - placed_line, 2)
+        clv_pts = round((placed_line - close_line) if _clv_sign_fix
+                        else (close_line - placed_line), 2)
 
     # Implied-prob movement. Compare vig-included implied probs at placed
     # vs closing odds for THE SAME SIDE. clv_cents = (placed_implied -
@@ -210,4 +217,10 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # CV_CLV_LINE_SIGN_FIX (owner-flipped 2026-06-05): use the CORRECT CLV-line sign
+    # by default for the operator CLI (the legacy default was inverted, B-1). Set here
+    # (CLI entry only, NOT in main()/compute_one) so the gated default-OFF unit-test
+    # baseline stays byte-identical; setdefault preserves the CV_CLV_LINE_SIGN_FIX=0
+    # escape hatch. Reporting-only; training-label clv_label uses the price-based path.
+    os.environ.setdefault("CV_CLV_LINE_SIGN_FIX", "1")
     sys.exit(main())

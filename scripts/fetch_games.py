@@ -134,9 +134,16 @@ def _get_recent_games(count: int, from_date: Optional[str],
 
     season = _current_nba_season()
     print(f"Fetching game log for {season}...")
+    # Bug 47 fix 2026-05-29: query both Regular Season AND Playoffs.
+    # Regular Season 2025-26 ended 2026-04-12; April-June dates need Playoffs.
     try:
-        log = LeagueGameLog(season=season, season_type_all_star="Regular Season")
-        df = log.get_data_frames()[0]
+        import pandas as _pd
+        rs = LeagueGameLog(season=season, season_type_all_star="Regular Season").get_data_frames()[0]
+        try:
+            po = LeagueGameLog(season=season, season_type_all_star="Playoffs").get_data_frames()[0]
+        except Exception:
+            po = _pd.DataFrame()
+        df = _pd.concat([rs, po], ignore_index=True) if not po.empty else rs
     except Exception as e:
         print(f"[fetch_games] NBA API error: {e}")
         return []

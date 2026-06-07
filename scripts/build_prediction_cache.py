@@ -197,13 +197,19 @@ def _predict_one_player(
         # q10 / q90 via the quantile heads. NOTE: player_id is NOT passed so
         # the injury dampener is NOT applied — we want RAW values in cache.
         qint = predict_pergame_quantiles(stat, row, model_dir) or {}
-        out[stat] = {
-            "q10": float(qint["q10"]) if qint.get("q10") is not None else float("nan"),
-            "q50": (float(q50_point) if q50_point is not None
-                    else (float(qint["q50"]) if qint.get("q50") is not None
-                          else float("nan"))),
-            "q90": float(qint["q90"]) if qint.get("q90") is not None else float("nan"),
-        }
+        q10 = float(qint["q10"]) if qint.get("q10") is not None else float("nan")
+        q50 = (float(q50_point) if q50_point is not None
+               else (float(qint["q50"]) if qint.get("q50") is not None
+                     else float("nan")))
+        q90 = float(qint["q90"]) if qint.get("q90") is not None else float("nan")
+        # Enforce monotonicity: q10 <= q50 <= q90.  Mirrors the clamp in
+        # live_quantile_bands.bands_for() so the cache is never persisted with
+        # crossed intervals (e.g. q90 < q50 on star BLK rows).
+        if not np.isnan(q10) and not np.isnan(q50):
+            q10 = min(q10, q50)
+        if not np.isnan(q90) and not np.isnan(q50):
+            q90 = max(q90, q50)
+        out[stat] = {"q10": q10, "q50": q50, "q90": q90}
     return out
 
 

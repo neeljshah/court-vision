@@ -47,6 +47,19 @@ from datetime import datetime, timezone
 from math import erf, sqrt
 from typing import Any, Dict, List, Optional, Tuple
 
+# CV_INGAME_SIGMA — gated in-game calibrated sigma for bet sizing (default OFF).
+# When ON: ingame_sigma(stat, elapsed_min) replaces the ±25% heuristic sigma so
+# Kelly sizing is calibrated against the 1987-game OOF residual distribution.
+# When OFF: byte-identical — no change to any existing bet logic.
+# See: src/prediction/ingame_sigma.py, docs/_audits/INGAME_SIGMA.md
+_CV_INGAME_SIGMA = os.environ.get("CV_INGAME_SIGMA", "0") == "1"
+_ingame_sigma_fn = None  # lazy-loaded below
+if _CV_INGAME_SIGMA:
+    try:
+        from src.prediction.ingame_sigma import ingame_sigma as _ingame_sigma_fn  # noqa: E402
+    except Exception:
+        _CV_INGAME_SIGMA = False  # graceful degradation; never crash the ranker
+
 # R19_L3 heartbeat import (sys.path bootstrap so daemons launched via
 # 'python -u scripts/<name>.py' can still find src.monitor at the project root).
 try:
@@ -540,6 +553,21 @@ def run_tick(game_id: str,
     pred_idx = build_pred_index(rows)
     lines = load_live_lines_for_date(date_str, books=books)
 
+    # CV_INGAME_SIGMA: compute game_elapsed_min from snapshot period/clock once,
+    # so all bets in this tick share the same bucket assignment.  When flag is OFF
+    # this block is a no-op (both values stay None, the heuristic path below is
+    # unchanged).
+    _snap_elapsed_min: Optional[float] = None
+    if _CV_INGAME_SIGMA:
+        try:
+            _speriod = int(snap.get("period") or 1)
+            _sclock = str(snap.get("clock") or "12:00")
+            _cparts = _sclock.split(":")
+            _cmin = float(_cparts[0]) + float(_cparts[1]) / 60.0
+            _snap_elapsed_min = max(0.0, (_speriod - 1) * 12.0 + (12.0 - _cmin))
+        except (TypeError, ValueError, IndexError):
+            _snap_elapsed_min = None
+
     bets: List[Dict] = []
     n_evaluated = 0
     n_killed_by_injury = 0
@@ -597,9 +625,24 @@ def run_tick(game_id: str,
             except (TypeError, ValueError):
                 needs_heuristic = True
         if needs_heuristic:
-            spread = max(0.4 * point, 1.5)
-            q10 = max(0.0, point - spread)
-            q90 = point + spread
+            # CV_INGAME_SIGMA (default OFF): when ON, replace the ±25% heuristic
+            # with the calibrated per-(stat,bucket) sigma derived from the 1987-game
+            # OOF eval cache.  Coverage at calibrated_sigma = 0.68 by construction.
+            # When OFF: byte-identical — original heuristic unchanged.
+            if (_CV_INGAME_SIGMA and _ingame_sigma_fn is not None
+                    and _snap_elapsed_min is not None):
+                try:
+                    from src.prediction.ingame_sigma import sigma_to_gaussian_q10_q90
+                    _cal_sigma = _ingame_sigma_fn(stat, _snap_elapsed_min)
+                    q10, q90 = sigma_to_gaussian_q10_q90(point, _cal_sigma)
+                except Exception:
+                    spread = max(0.4 * point, 1.5)
+                    q10 = max(0.0, point - spread)
+                    q90 = point + spread
+            else:
+                spread = max(0.4 * point, 1.5)
+                q10 = max(0.0, point - spread)
+                q90 = point + spread
 
         for side, price_col in (("OVER", "over_price"),
                                 ("UNDER", "under_price")):
@@ -652,6 +695,15 @@ def run_tick(game_id: str,
                 "garbage_time_applied": pred.get("garbage_time_applied", False),
                 "availability_factor": factor,
                 "stale": stale,
+                # CV_INGAME_SIGMA: when ON, surface the calibrated sigma used for
+                # this bet's Kelly sizing.  None when flag is OFF (byte-identical
+                # default behaviour — existing consumers see no new required field).
+                "ingame_sigma": (
+                    round(_ingame_sigma_fn(stat, _snap_elapsed_min), 4)
+                    if (_CV_INGAME_SIGMA and _ingame_sigma_fn is not None
+                        and _snap_elapsed_min is not None)
+                    else None
+                ),
             })
 
     bets.sort(key=lambda b: b["ev_per_dollar"], reverse=True)
