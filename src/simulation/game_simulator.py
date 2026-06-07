@@ -36,6 +36,11 @@ _POSSESSIONS_MEAN = 100       # per team per game (pace-adjusted)
 _POSSESSIONS_STD  = 5
 _OREB_RATE        = 0.27      # offensive rebound rate → extra possession
 _FT_PER_FOUL      = 2.0
+# Second-chance / putback scoring off offensive rebounds. Set False to restore
+# the legacy behavior where an OREB credited 0 points (fallback safety switch).
+_PUTBACK_ENABLED  = True
+_PUTBACK_FG_BONUS = 0.05      # putbacks convert slightly above base fg_pct
+_PUTBACK_FG_CAP   = 0.62      # but capped to stay conservative
 
 # Game state buckets for E-3 (score_diff, period) → outcome multipliers
 # Precomputed to avoid calling predict_outcome() per sim per possession
@@ -101,7 +106,13 @@ def _load_player_seed(player_id: str, season: str) -> dict:
         if not data:
             # Try by name key — fall back to defaults
             return defaults
-        merged = {**defaults, **{k: float(v or 0) for k, v in data.items()}}
+        numeric = {}
+        for k, v in data.items():
+            try:
+                numeric[k] = float(v or 0)
+            except (TypeError, ValueError):
+                pass  # skip non-numeric fields like "team": "DEN"
+        merged = {**defaults, **numeric}
         return merged
     except Exception:
         return defaults
@@ -354,6 +365,19 @@ class GameSimulator:
                 # Offensive rebounds → extra possession (small chance)
                 oreb      = (~made & is_shot) & (rng.random(n_p) < _OREB_RATE)
 
+                # Putback / second-chance points: an offensive rebound buys an
+                # extra shot attempt this possession. Convert at the player's
+                # fg_pct (putbacks are slightly higher-percentage but we stay
+                # conservative and cap), worth 2 pts. This is the extra-possession
+                # point credit the engine previously zeroed out.
+                if _PUTBACK_ENABLED:
+                    putback_made = oreb & (
+                        rng.random(n_p) < min(fg_pct + _PUTBACK_FG_BONUS, _PUTBACK_FG_CAP)
+                    )
+                    putback_pts = np.where(putback_made, 2.0, 0.0)
+                else:
+                    putback_pts = np.zeros(n_p)
+
                 # FT outcomes
                 ft_made   = is_foul * rng.binomial(2, ft_pct, n_p)
                 foul_pts  = ft_made.astype(float)
@@ -367,8 +391,9 @@ class GameSimulator:
                     for k, t in enumerate(ast_target):
                         ast_acc[t, sim_indices[ast_made][k]] += 1
 
-                # Accumulate
-                total_pts = shot_pts + foul_pts + np.where(oreb, 1.0, 0.0) * 0   # oreb = extra poss not pts
+                # Accumulate. Putback points credit the second-chance scoring
+                # an offensive rebound creates (previously multiplied by 0).
+                total_pts = shot_pts + foul_pts + putback_pts
                 score[sim_indices]       += total_pts
                 pts_acc[pi, sim_indices] += total_pts
                 reb_acc[pi, sim_indices] += oreb.astype(float)
