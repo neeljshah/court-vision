@@ -6,6 +6,7 @@ import hashlib
 import itertools
 import json
 import logging
+import os
 from collections import Counter
 from pathlib import Path
 from typing import Optional
@@ -14,14 +15,28 @@ import numpy as np
 
 from src.prediction.betting_portfolio import _american_to_prob, kelly_corr
 
+# F2 (CV_SGP_PAYOUT_PENALTY): flat same-game-parlay payout shortening, mirrors
+# src.prediction.parlay_constructor.SGP_PENALTY (Iter-42/43). Real books shorten
+# an SGP's combined payout vs the independent leg product because the legs are
+# correlated; pricing EV at the un-shortened product double-counts the
+# correlation already in p_hit_model. Heuristic magnitude — the validated fix is
+# the book's real SGP price (owner-gated FD SGP capture, SGP_EDGE.md).
+_SGP_PENALTY: float = 0.15
+
+# CV_ARCHETYPE_CORR (default OFF = byte-identical).
+# Import lazily inside _correlation so that the module is never loaded when the
+# flag is OFF — zero overhead and zero import side-effects in the default path.
+# See src/prediction/correlation_recal.py for full documentation.
+
 log = logging.getLogger(__name__)
 
 # Per-stat residual sigma. Imported from courtvision_router (single source).
 try:
     from api.courtvision_router import _STAT_SIGMA as _SIGMA_TABLE
 except Exception:
-    _SIGMA_TABLE = {"pts": 5.79, "reb": 2.38, "ast": 1.70, "fg3m": 1.12,
-                    "stl": 0.90, "blk": 0.55, "tov": 1.12}
+    # Fallback: empirical tail-aware sigma from pregame_oof.parquet calibration.
+    _SIGMA_TABLE = {"pts": 6.2, "reb": 2.6, "ast": 2.0, "fg3m": 1.4,
+                    "stl": 1.0, "blk": 0.9, "tov": 1.2}
 
 DEFAULT_N_DRAWS = 10_000
 DEFAULT_MAX_LEGS = 5
@@ -32,6 +47,46 @@ MAX_LEGS_SAME_PLAYER = 2
 _BANKROLL_DEFAULT = 100.0
 
 _CORR_MATRIX_PATH = Path(__file__).resolve().parents[2] / "data" / "models" / "prop_corr_matrix.json"
+
+# CV_PARLAY_FIX_MIXED_SIDE (default OFF = byte-identical to current behavior).
+# BUG (hardening sweep 2026-06-02, adversarially confirmed): for a mixed
+# OVER/UNDER same-game parlay, _correlation() flips the sign of rho (`rho = -rho`).
+# But rho here is the covariance of the LATENT stat draws (sample_outcomes draws
+# mu+z@L.T then thresholds each leg with the correct direction, > for OVER, < for
+# UNDER). The OVER/UNDER joint-hit reduction is ALREADY produced by those per-leg
+# thresholds; flipping rho in the covariance double-counts it with the wrong sign,
+# overstating joint hit prob / EV ~3x on mixed same-game parlays (e.g. pts OVER +
+# reb UNDER: engine +61% EV vs correct +20%; 2M-draw MC). When the flag is ON the
+# flip is skipped so the covariance stays physically correct. Real-money parlay
+# EV/edge/gating/Kelly change => RECOMMEND, validate on a mixed-side slate A/B
+# before flipping the default. See docs/_audits/HARDENING_PUNCHLIST_2026-06-02.md.
+_PARLAY_FIX_MIXED_SIDE = os.environ.get("CV_PARLAY_FIX_MIXED_SIDE", "").strip().lower() in (
+    "1", "true", "yes", "on",
+)
+
+# Standard assumed two-way overround when only one side's odds are available.
+# Typical sportsbook juice on player props is 4–5%; 4.76% matches the canonical
+# -110/-110 market (implied sum = 2 * 110/210 ≈ 1.0476).
+_ASSUMED_OVERROUND = 1.0476190476190477  # exact: 2 * 110/210 (-110/-110 market)
+
+
+def _devig_prob(odds: int, other_odds: Optional[int] = None) -> float:
+    """Return a vig-free probability for *one side* of a two-way market.
+
+    When the other side's odds are supplied both raw implied probabilities are
+    normalised to sum to 1 (exact two-sided de-vig).  When only one side is
+    available the raw implied is divided by *_ASSUMED_OVERROUND* (~4.76%),
+    which gives exactly 0.5 for a standard -110/-110 leg.
+    """
+    raw = _american_to_prob(odds)
+    if other_odds is not None:
+        raw_other = _american_to_prob(other_odds)
+        overround = raw + raw_other
+        if overround > 0.0:
+            return raw / overround
+    return raw / _ASSUMED_OVERROUND
+
+
 _SAME_PLAYER_RHO = {
     frozenset(("pts", "ast")): 0.30,
     frozenset(("pts", "reb")): 0.40,
@@ -84,6 +139,47 @@ def _correlation(bet_a: dict, bet_b: dict) -> float:
     key = frozenset((sa, sb))
     same_player = bet_a.get("player_id") == bet_b.get("player_id")
     same_team = bet_a.get("team") == bet_b.get("team")
+
+    # CV_ARCHETYPE_CORR — recalibrated/archetype-conditioned correlations.
+    # Guard: only import + run when flag is ON. When OFF, zero overhead.
+    # Opponent branch and the _PARLAY_FIX_MIXED_SIDE sign-flip are PRESERVED.
+    if same_player or same_team:
+        try:
+            from src.prediction import correlation_recal as _recal
+            if _recal.recal_enabled():
+                if same_player:
+                    pid = bet_a.get("player_id")
+                    pid_int = int(pid) if pid is not None else None
+                    recal_rho = _recal.same_player_rho(sa, sb, pid_int)
+                    if recal_rho is not None:
+                        rho = recal_rho
+                    else:
+                        # Fall through to naive same-player lookup below
+                        rho = _SAME_PLAYER_RHO.get(key)
+                        if rho is None:
+                            matrix = _load_matrix_fallback()
+                            try:
+                                rho = float(matrix.get(sa, {}).get(sb, 0.0)) * 0.5
+                            except (TypeError, ValueError):
+                                rho = 0.0
+                else:
+                    # same_team (not same_player)
+                    pid_a = bet_a.get("player_id")
+                    pid_b = bet_b.get("player_id")
+                    pid_a_int = int(pid_a) if pid_a is not None else None
+                    pid_b_int = int(pid_b) if pid_b is not None else None
+                    recal_rho = _recal.teammate_rho(sa, sb, pid_a_int, pid_b_int)
+                    if recal_rho is not None:
+                        rho = recal_rho
+                    else:
+                        rho = _TEAMMATE_RHO.get(key, 0.0)
+                if not _PARLAY_FIX_MIXED_SIDE and bet_a.get("side") != bet_b.get("side"):
+                    rho = -rho
+                return max(-0.95, min(0.95, float(rho)))
+        except Exception:
+            pass  # Any import/lookup failure falls through to the original path below.
+
+    # Original path (flag OFF or fallback on any exception above).
     if same_player:
         rho = _SAME_PLAYER_RHO.get(key)
         if rho is None:
@@ -96,7 +192,10 @@ def _correlation(bet_a: dict, bet_b: dict) -> float:
         rho = _TEAMMATE_RHO.get(key, 0.0)
     else:
         rho = _OPPONENT_RHO.get(key, 0.05)
-    if bet_a.get("side") != bet_b.get("side"):
+    if not _PARLAY_FIX_MIXED_SIDE and bet_a.get("side") != bet_b.get("side"):
+        # Default (flag OFF): preserve the existing (buggy) sign flip byte-identically.
+        # Flag ON: skip it — the per-leg threshold direction in sample_outcomes already
+        # encodes the OVER/UNDER joint-hit relationship; flipping rho double-counts it.
         rho = -rho
     return max(-0.95, min(0.95, float(rho)))
 
@@ -104,7 +203,8 @@ def _correlation(bet_a: dict, bet_b: dict) -> float:
 class ParlayEngine:
     """Joint-distribution sampler for prop parlays."""
 
-    def __init__(self, bets: list[dict], rng_seed: int = 0) -> None:
+    def __init__(self, bets: list[dict], rng_seed: int = 0,
+                 sigma_multiplier: float = 1.0) -> None:
         seen: set[str] = set()
         clean: list[dict] = []
         for b in bets:
@@ -127,8 +227,12 @@ class ParlayEngine:
             self._cov = np.zeros((0, 0))
             self._hits: Optional[np.ndarray] = None
             return
+        # sigma_multiplier widens the per-stat residual sigma — used to widen
+        # joint hit-rate estimates in regimes the base table wasn't fit on
+        # (e.g. playoffs vs the regular-season-trained residual).
         self._sigma = np.array(
-            [_SIGMA_TABLE[b["prop_stat"].lower()] for b in clean], dtype=float
+            [_SIGMA_TABLE[b["prop_stat"].lower()] * sigma_multiplier for b in clean],
+            dtype=float,
         )
         self._mu = np.array([float(b["q50"]) for b in clean], dtype=float)
         self._cov = self._build_covariance()
@@ -232,10 +336,35 @@ class ParlayEngine:
         leg_hits = self._hits[:, legs]
         p_hit_model = float(leg_hits.all(axis=1).mean())
         american, decimal = self._combined_odds(legs)
+        # De-vig each leg before multiplying so that a standard -110/-110
+        # prop contributes 0.5 (not 0.524).  Use the stored other-side odds
+        # when present; otherwise fall back to the assumed 4.76% overround.
         p_hit_market_naive = 1.0
         for i in legs:
-            p_hit_market_naive *= _american_to_prob(int(self.bets[i]["best_price"]))
+            bet = self.bets[i]
+            other_odds: Optional[int] = None
+            raw_other = bet.get("other_side_price") or bet.get("alt_price")
+            if raw_other is not None:
+                try:
+                    other_odds = int(raw_other)
+                except (TypeError, ValueError):
+                    other_odds = None
+            p_hit_market_naive *= _devig_prob(int(bet["best_price"]), other_odds)
+        same_game = Counter(self.bets[i].get("game_id") for i in legs).most_common(1)[0][1]
+        # F2 (CV_SGP_PAYOUT_PENALTY): for a same-game parlay (same_game>=2) apply the
+        # flat SGP payout shortening so EV is not overstated by pricing the
+        # correlation-boosted p_hit_model against the un-shortened independent leg
+        # product (~19pts on a 2-leg example: +76% -> +56.9%). Flow it through edge +
+        # Kelly + the reported combined odds for coherence. Default OFF = byte-
+        # identical; magnitude is heuristic (validated fix = real book SGP price).
+        _sgp_pen = (same_game >= 2 and
+                    os.environ.get("CV_SGP_PAYOUT_PENALTY", "").strip().lower()
+                    not in ("", "0", "false", "no", "off"))
         payout_per_100 = (decimal - 1.0) * 100.0
+        if _sgp_pen:
+            payout_per_100 *= (1.0 - _SGP_PENALTY)
+            decimal = payout_per_100 / 100.0 + 1.0
+            american = _decimal_to_american(decimal)
         ev_pct = p_hit_model * payout_per_100 - (1.0 - p_hit_model) * 100.0
         edge = p_hit_model - (1.0 / decimal)
         avg_rho = self._avg_pair_corr(legs)
@@ -246,7 +375,6 @@ class ParlayEngine:
             kelly_dollars = 0.0
         bet_ids = [self.bets[i]["bet_id"] for i in legs]
         parlay_id = hashlib.sha1("|".join(sorted(bet_ids)).encode()).hexdigest()[:12]
-        same_game = Counter(self.bets[i].get("game_id") for i in legs).most_common(1)[0][1]
         leg_summary = " · ".join(
             f"{self.bets[i].get('player_name','?')} {self.bets[i]['prop_stat']} "
             f"{'o' if self.bets[i]['side']=='OVER' else 'u'}{self.bets[i]['line']:g}"

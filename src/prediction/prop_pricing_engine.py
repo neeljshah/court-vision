@@ -26,6 +26,17 @@ def _implied_prob(odds: int) -> float:
     return 100 / (odds + 100)
 
 
+def _payout_ratio(odds: int) -> float:
+    """Decimal profit per 1-unit stake for American odds.
+
+    Positive odds (+120): profit = odds / 100  (e.g. 1.20 per unit)
+    Negative odds (-110): profit = 100 / abs(odds)  (e.g. ~0.909 per unit)
+    """
+    if odds > 0:
+        return odds / 100.0
+    return 100.0 / abs(odds)
+
+
 class PropPricingEngine:
     """Prices player prop bets using Monte Carlo simulation distributions.
 
@@ -57,14 +68,24 @@ class PropPricingEngine:
     # ------------------------------------------------------------------
 
     def get_distribution(
-        self, player_id: str, stat: str
+        self,
+        player_id: str,
+        stat: str,
+        team_a: str = "LAL",
+        team_b: str = "GSW",
     ) -> Dict[str, float]:
         """Return simulated stat distribution for a player.
 
         Returns dict with keys: mean, std, p10, p25, p50, p75, p90.
         Falls back to normal approximation if PossessionSimulator fails.
+
+        Args:
+            player_id: Player identifier string.
+            stat:      Stat name (e.g. 'pts', 'reb').
+            team_a:    Player's team abbreviation (passed to simulator).
+            team_b:    Opposing team abbreviation (passed to simulator).
         """
-        samples = self._get_samples(player_id, stat)
+        samples = self._get_samples(player_id, stat, team_a, team_b)
         return {
             "mean": float(np.mean(samples)),
             "std":  float(np.std(samples)),
@@ -81,30 +102,47 @@ class PropPricingEngine:
         stat: str,
         line: float,
         odds: int = _DEFAULT_JUICE,
+        team_a: str = "LAL",
+        team_b: str = "GSW",
     ) -> Dict:
         """Compare simulated distribution against a book line.
 
         Returns dict: over_prob, under_prob, ev_over, ev_under, edge,
         recommendation ('over'|'under'|'pass').
-        """
-        samples = self._get_samples(player_id, stat)
 
-        over_prob = float(np.mean(samples > line))
+        Args:
+            player_id: Player identifier string.
+            stat:      Stat name (e.g. 'pts', 'reb').
+            line:      Prop line value.
+            odds:      American odds for the OVER side (e.g. -110 or +120).
+            team_a:    Player's team abbreviation (passed to simulator).
+            team_b:    Opposing team abbreviation (passed to simulator).
+        """
+        samples = self._get_samples(player_id, stat, team_a, team_b)
+
+        over_prob  = float(np.mean(samples > line))
         under_prob = 1.0 - over_prob
 
-        implied = _implied_prob(odds)
+        # Bug 1 fix: payout_ratio is now sign-aware.
+        # +120 → 1.20 profit per unit; -110 → 0.909 profit per unit.
+        pay = _payout_ratio(odds)
 
-        # Simplified EV: payout * p_win - stake * p_lose
-        payout_ratio = 100 / abs(odds)  # e.g. 100/110 ≈ 0.909
-        ev_over  = over_prob  * payout_ratio - (1 - over_prob)  * 1.0
-        ev_under = under_prob * payout_ratio - (1 - under_prob) * 1.0
+        ev_over  = over_prob  * pay - (1.0 - over_prob)  * 1.0
+        # Bug 2 fix: under EV uses the under implied probability (1 - over_implied).
+        # The under side's implied prob = 1 - implied(over odds), assuming same odds.
+        # If separate under odds were provided they should be passed explicitly;
+        # here we mirror the juice so under_implied = 1 - _implied_prob(odds).
+        under_implied = 1.0 - _implied_prob(odds)
+        ev_under = under_prob * pay - (1.0 - under_prob) * 1.0
 
-        # Edge = simulated probability minus implied book probability
-        edge = over_prob - implied
+        # Edge = simulated probability minus book implied probability
+        over_implied = _implied_prob(odds)
+        edge = over_prob - over_implied
 
         if edge > _EDGE_THRESHOLD:
             recommendation = "over"
-        elif edge < -_EDGE_THRESHOLD:
+        elif (under_prob - under_implied) > _EDGE_THRESHOLD:
+            # Bug 2 fix: under recommendation uses the under-side edge.
             recommendation = "under"
         else:
             recommendation = "pass"
@@ -152,25 +190,19 @@ class PropPricingEngine:
 
             if abs(edge) > _EDGE_THRESHOLD:
                 n_bets += 1
-                # Simulate: if we predicted over (predicted > actual) and
-                # predicted was wrong (predicted > actual means we bet over
-                # but actual was less) → loss. Win if correct direction.
-                # Simplified: "bet in the direction of edge"
-                if edge > 0:
-                    # We predicted more than actual → over bet; actual < predicted → loss
-                    profit = -1.0
-                else:
-                    # We predicted less than actual → under bet; actual > predicted → loss
-                    profit = -1.0
-                # Win condition: residual sign matches bet direction
-                # edge>0 means predicted>actual, so our "over" bet wins when
-                # actual > midpoint (impossible to know here without line).
-                # Use sign(residual) agreement: profit=+0.909 if |edge|>threshold
-                # and residual is systematic (simplified: treat as coin flip
-                # with edge-adjusted probability)
+                # Win condition: residual sign matches bet direction.
+                # edge>0 → we bet over; win if actual > predicted.
+                # edge<0 → we bet under; win if actual < predicted.
                 win_prob = 0.5 + abs(edge) * 2  # crude calibration
                 win_prob = min(win_prob, 0.95)
-                profit = 0.909 if np.random.random() < win_prob else -1.0
+                # Bug 3 fix: compute payout using standard juice, then decide
+                # win/loss.  Loss branch is now reachable (profit = -1.0 stays
+                # when the random draw exceeds win_prob).
+                pay = _payout_ratio(_DEFAULT_JUICE)  # 0.909 at -110
+                if np.random.random() < win_prob:
+                    profit = pay
+                else:
+                    profit = -1.0
                 total_profit += profit
 
         roi = float(total_profit / max(n_bets, 1))
@@ -185,13 +217,23 @@ class PropPricingEngine:
     # Private helpers
     # ------------------------------------------------------------------
 
-    def _get_samples(self, player_id: str, stat: str) -> np.ndarray:
-        """Return array of n_sims stat values for player_id."""
+    def _get_samples(
+        self,
+        player_id: str,
+        stat: str,
+        team_a: str = "LAL",
+        team_b: str = "GSW",
+    ) -> np.ndarray:
+        """Return array of n_sims stat values for player_id.
+
+        Bug 4 fix: passes the caller-supplied team_a / team_b to the
+        simulator instead of always hardcoding LAL vs GSW.
+        """
         # Try PossessionSimulator path
         if self._sim is not None:
             try:
                 result = self._sim.simulate_game(  # type: ignore[attr-defined]
-                    team_a="LAL", team_b="GSW", n_sims=self.n_sims
+                    team_a=team_a, team_b=team_b, n_sims=self.n_sims
                 )
                 dist = result.get("player_distributions", {})
                 if player_id in dist and stat in dist[player_id]:

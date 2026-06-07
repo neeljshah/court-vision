@@ -554,16 +554,18 @@ def stack_predict(
         suppressed = True
         suppression_reason = f"Injury multiplier {injury_mult:.2f} ≤ {_INJURY_GATE}"
 
-    # ── Apply injury multiplier to raw predictions ───────────────────────────
+    # ── Carry raw predictions forward (injury already applied upstream) ───────
+    # Injury availability is applied ONCE, in predict_player_pergame via
+    # apply_availability (the single source of truth). injury_mult here is used
+    # only for the suppression gate and confidence scaling above/below — NOT
+    # re-multiplied into the point estimates (that was a triple-application bug).
     _quarantined = _load_quarantine()
     adjusted: Dict[str, float] = {}
     for stat, val in base_preds.items():
         if stat in _quarantined:
             adjusted[stat] = float("nan")
-        elif np.isnan(val):
-            adjusted[stat] = val
         else:
-            adjusted[stat] = val * injury_mult
+            adjusted[stat] = val
 
     # ── Try applying Ridge meta correction if trained ────────────────────────
     meta_applied = False

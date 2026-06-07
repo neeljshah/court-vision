@@ -120,6 +120,43 @@ def check_drawdown_ok(bankroll_start: float, bankroll_now: float) -> bool:
     return drawdown <= MAX_DRAWDOWN_PCT
 
 
+def _infer_bankroll_start_enabled() -> bool:
+    """Whether to infer a bankroll_start (and thus activate the drawdown guard)
+    when the caller passes None.
+
+    Gated behind env flag CV_INFER_BANKROLL_START (default OFF).  OFF preserves
+    the ORIGINAL behavior: a None bankroll_start SKIPS the drawdown guard.
+    This is a real-money behavior gate — see kelly_corr() for the rationale.
+    """
+    return os.environ.get("CV_INFER_BANKROLL_START", "0").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
+
+
+def _infer_bankroll_start(bankroll_now: float) -> float:
+    """Infer the starting bankroll when a caller omits bankroll_start.
+
+    Derives the pre-betting bankroll from realized PnL in the bet log:
+    ``start ≈ current_bankroll - net_realized_pnl``.  This lets the drawdown
+    guard fire even when callers never pass an explicit start.  When the bet
+    log has no realized PnL (fresh state), falls back to the current bankroll
+    (drawdown 0 → guard passes), which is the safe no-op default.
+    """
+    try:
+        net_pnl = sum(
+            b.get("pnl", 0.0) or 0.0
+            for b in _load_bet_log()
+            if b.get("result") in ("win", "loss", "push")
+        )
+    except Exception:
+        net_pnl = 0.0
+    start = bankroll_now - net_pnl
+    # Guard against degenerate/negative inferred starts.
+    if start <= 0:
+        return bankroll_now
+    return start
+
+
 def kelly_corr(
     edge: float,
     odds: int,
@@ -158,7 +195,18 @@ def kelly_corr(
     Returns:
         Recommended bet size in dollars (0 if Kelly is negative).
     """
-    # Drawdown guard: halt betting when loss exceeds MAX_DRAWDOWN_PCT
+    # Drawdown guard: halt betting when loss exceeds MAX_DRAWDOWN_PCT.
+    #
+    # REAL-MONEY GATE (CV_INFER_BANKROLL_START, default OFF):
+    #   When the caller omits bankroll_start, the NEW behavior derives a
+    #   reference from realized PnL in the bet log (start ≈ current bankroll -
+    #   net PnL) so the drawdown guard always evaluates.  This can flip a live
+    #   stake from a positive size to 0.0 (halt) — a silent behavior change.
+    #   It is therefore OFF by default: with the flag OFF, a None start SKIPS
+    #   the guard exactly as the original code did (byte-identical behavior).
+    #   Set CV_INFER_BANKROLL_START=1 to opt in to the inferred-start guard.
+    if bankroll_start is None and _infer_bankroll_start_enabled():
+        bankroll_start = _infer_bankroll_start(bankroll)
     if bankroll_start is not None and not check_drawdown_ok(bankroll_start, bankroll):
         return 0.0
 
@@ -345,20 +393,37 @@ def log_bet(bet: Bet) -> None:
 
 def record_clv(bet_id: str, closing_line: float) -> None:
     """
-    Record the closing line for a placed bet and compute CLV.
+    Record the closing line for a placed bet and compute side-aware CLV.
 
-    CLV = (closing_line - opening_line) / opening_line (for overs)
-    Positive CLV means we beat the market close.
+    Positive CLV = we locked a BETTER number than the close:
+      - OVER  bet: a HIGHER closing line is favorable (the market agrees the
+                   player will score more, validating our bet), so
+                   CLV = (closing - opening) / |opening|.
+      - UNDER bet: a LOWER closing line is favorable (the market agrees the
+                   player will score less, validating our bet), so
+                   CLV = (opening - closing) / |opening|.
+
+    Example: bet OVER 22.5, market closes at 24.5 → we locked in the easier
+    number (22.5 vs 24.5) → CLV = (24.5 - 22.5) / 22.5 > 0.
+
+    Matches the convention in scripts/clv_tracker.py::_compute_clv,
+    clv_tracker_daemon.py, compute_clv.py (label side), player_props.py,
+    and build_clv_training_data labels.
     """
     bets = _load_bet_log()
     for b in bets:
         if b["bet_id"] == bet_id:
             b["closing_line"] = closing_line
             opening = b.get("line", closing_line)
+            denom = max(abs(opening), 0.01)
             if b.get("direction") == "over":
-                b["clv"] = round((closing_line - opening) / max(opening, 0.01), 4)
+                # Over: positive CLV when closing > opening (line moved up,
+                # we locked the lower/easier number).
+                b["clv"] = round((closing_line - opening) / denom, 4)
             else:
-                b["clv"] = round((opening - closing_line) / max(opening, 0.01), 4)
+                # Under: positive CLV when closing < opening (line moved down,
+                # we locked the higher/easier number).
+                b["clv"] = round((opening - closing_line) / denom, 4)
             break
     _save_bet_log(bets)
 
@@ -441,11 +506,15 @@ def get_portfolio_summary() -> dict:
 
 def compute_prop_corr_matrix(residuals_path: Optional[str] = None) -> Dict[str, Dict[str, float]]:
     """
-    Compute pairwise Pearson correlation matrix for prop stats from residuals.
+    Compute pairwise Pearson correlation matrix for prop stats from RESIDUALS.
 
-    Reads data/models/prop_residuals.json (rows: {stat, predicted, player_id, game_id}).
-    Groups by (player_id, game_id), keeps only rows where all 7 stats are present,
-    then computes pairwise Pearson correlations between predicted values.
+    Reads data/models/prop_residuals.json (rows: {stat, predicted, actual,
+    player_id, game_id, ...}).  Groups by (player_id, game_id), keeps only
+    rows where all 7 stats have both predicted AND actual present, then
+    computes pairwise Pearson correlations between (predicted - actual)
+    residuals.  Correlating residuals instead of raw predictions avoids
+    inflating correlations via shared usage/minutes variance (the v1 bug
+    that produced pts-tov=0.80 from raw predicted values).
 
     Saves result to data/models/prop_corr_matrix.json and returns the matrix.
     Returns empty dict if fewer than 10 complete player-game rows exist.
@@ -462,16 +531,24 @@ def compute_prop_corr_matrix(residuals_path: Optional[str] = None) -> Dict[str, 
         print(f"  [corr] failed to load residuals: {e}")
         return {}
 
-    # Pivot: (player_id, game_id) → {stat: predicted_value}
+    # Pivot: (player_id, game_id) → {stat: residual_value (predicted - actual)}
+    # Correlating residuals avoids the inflated correlations from shared
+    # minutes/usage (the v1 bug that produced pts-tov=0.80 from raw predicted).
     from collections import defaultdict
     rows: Dict[tuple, Dict[str, float]] = defaultdict(dict)
     for r in residuals:
-        stat = r.get("stat")
-        pred = r.get("predicted")
-        pid  = str(r.get("player_id", r.get("player_name", "")))
-        gid  = str(r.get("game_id", ""))
-        if stat in _PROP_STATS_ORDER and pred is not None and pid:
-            rows[(pid, gid)][stat] = float(pred)
+        stat   = r.get("stat")
+        pred   = r.get("predicted")
+        actual = r.get("actual")
+        pid    = str(r.get("player_id") or r.get("player_name") or "")
+        # Per-game key: prefer a real game_id, but residual rows carry
+        # game_id=None and identify the game via game_date — fall back to date
+        # so each player-game is a distinct row (the (player_id, date) key the
+        # EX-8 v2 rebuild used).  ``or`` (not dict-default) because the key
+        # exists with a None value.
+        gid    = str(r.get("game_id") or r.get("game_date") or "")
+        if stat in _PROP_STATS_ORDER and pred is not None and actual is not None and pid:
+            rows[(pid, gid)][stat] = float(pred) - float(actual)
 
     # Keep only rows with all 7 stats present
     complete = [d for d in rows.values() if all(s in d for s in _PROP_STATS_ORDER)]

@@ -109,6 +109,88 @@ _PLAYTYPE_SHIPPED_STATS: set = {"pts", "fg3m"}
 
 # Stats predicted, and their box-score column names in the gamelog JSON.
 STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
+
+# CV (computer vision tracking) feature gate. Off by default — flip on via env
+# var PROP_USE_CV=1 to add 15 cv_* columns to feature_columns() and populate
+# them in build_pergame_dataset rows.
+_USE_CV_FEATURES = os.environ.get("PROP_USE_CV", "").strip() in ("1", "true", "True", "yes", "YES")
+
+# EX-5 gate (real-money discipline). ON by module default as of the
+# PREDICTION_FIDELITY plumbing fix (2026-06-04): the 85-col root artifacts in
+# data/models were TRAINED in the aligned order (props_pergame_metrics.json
+# feature_cols: contract/ratio at slots 80-84, bbref_extra after), so the
+# aligned serve order is correct, not the legacy one. With the fix ON,
+# feature_columns()[:85] has 0/85 mismatches vs the trained list; OFF has 5/85
+# (bbref_extra leaks into slots 80-84 where the artifacts expect
+# contract_*/pts_share_3pt). The fidelity audit confirmed ON is strictly >= OFF
+# on prod accuracy (pooled -0.84% MAE, no stat regresses), and golive already
+# sets CV_BBREF_REORDER_FIX=1. Making ON the default removes the load-bearing
+# env var so any cache/backtest build is aligned without it.
+#
+# ESCAPE HATCH (revertible, not removed): set CV_BBREF_REORDER_FIX=0 (or
+# false/no) to force the legacy misaligned order back for emergency rollback /
+# A-B. Any other value (including unset) keeps the aligned default. The frozen
+# _meta.json (see _persist_meta_feature_columns / write_meta_feature_columns)
+# is the un-revertable backstop for feature_columns_for-consuming paths.
+# See feature_columns() and docs/_audits/EX5_BBREF_GATE_2026-06-01.md +
+# docs/_audits/PLUMBING_FIX_FAITHFUL_OOF.md.
+_BBREF_REORDER_FIX = os.environ.get("CV_BBREF_REORDER_FIX", "").strip().lower() not in ("0", "false", "no", "off")
+
+# vac_ast AST-model-feature gate (real-money discipline). OFF by default =
+# byte-identical to the current AST feature set (the production AST model has NO
+# assist-vacancy feature). When CV_AST_VAC_FEATURE=1, feature_columns(stat="ast")
+# appends 2 leak-free vacated-assist columns — vac_ast (sum of as-of L10 assists
+# of confirmed-out regulars) and vac_ast_share (vac_ast / (vac_ast + the
+# appearing roster's as-of L10 assists)) — and build_pergame_dataset populates
+# them per (player_id, game_date) from the box-appearance recipe. The signal is
+# the campaign's one validated point-model lift (PRED_EXP_crosseason_validate
+# 2026-06-01: reg-season held-out AST MAE 1.5565->1.5445, gated ROI +11.11->
+# +14.76%). The SAME signal FAILS as a post-hoc gate, so it must be TRAINED IN.
+# Keep OFF until the full OOF refresh validates ON-vs-OFF ROI/CLV on the slate
+# path — flipping it shifts live AST preds. See docs/_audits/
+# VAC_AST_FEATURE_VALIDATION_2026-06-01.md.
+_AST_VAC_FEATURE = os.environ.get("CV_AST_VAC_FEATURE", "").strip() in ("1", "true", "True", "yes", "YES")
+_VAC_AST_KEYS = ("vac_ast", "vac_ast_share")
+
+# vac_load PTS+REB-model-feature gate (real-money discipline). OFF by default =
+# byte-identical to the current PTS/REB feature sets (the production models have
+# NO team-vacated-load feature). When CV_VAC_LOAD_FEATURE=1,
+# feature_columns(stat in ("pts","reb")) appends 3 leak-free vacated-load
+# columns — vac_min (sum of as-of L10 minutes of confirmed-out regulars),
+# vac_pts (sum of their as-of L10 points) and n_out (count of out regulars) —
+# and build_pergame_dataset populates them per (player_id, game_date) from the
+# SAME box-appearance recipe as vac_ast. Production rolling-origin retrain
+# (docs/_audits/NIGHT_RUN_STATUS.md): PTS Family A MAE 5.122->5.064
+# (P(ON better)=0.997), ungated ROI -2.42%->+1.75% (+4.17pp, significant);
+# cross-season Family C positive; REB MAE improves both corpora
+# (P=0.901/0.965), ROI ~flat. So PTS = a betting edge, REB = accuracy-only.
+# Keep OFF until the full OOF refresh validates ON-vs-OFF ROI/CLV on the slate
+# path — flipping it shifts live PTS/REB preds. Append LAST so a fresh artifact
+# trained with the flag ON carries the cols in trailing slots and older frozen
+# artifacts load without an n_features_in_ mismatch (same mechanism as vac_ast).
+_VAC_LOAD_FEATURE = os.environ.get("CV_VAC_LOAD_FEATURE", "").strip() in ("1", "true", "True", "yes", "YES")
+_VAC_LOAD_KEYS = ("vac_min", "vac_pts", "n_out")
+
+_CV_FEATURE_COLS = [
+    "cv_avg_defender_distance",
+    "cv_contested_shot_rate",
+    "cv_shot_zone_paint_pct",
+    "cv_shot_zone_3pt_pct",
+    "cv_shots_per_possession",
+    "cv_possession_duration_avg",
+    "cv_play_type_transition_pct",
+    # 7 new mechanical CV features (Round 2 — not exposed by NBA API)
+    "cv_avg_contest_arm_angle",
+    "cv_avg_closeout_speed",
+    "cv_avg_fatigue_proxy",
+    "cv_catch_shoot_pct",
+    "cv_avg_dribble_count",
+    "cv_second_chance_rate",
+    "cv_avg_shot_distance",
+    # meta-feature: number of prior games with CV data (keep last)
+    "cv_n_games_cv",
+]
+
 # Stats where the XGB Poisson learner consistently degrades the XGB+LGB
 # blend (ensemble_lift negative on holdout). For these we save only the
 # LGB model and predict_pergame's load_pergame_model returns just LGB,
@@ -317,9 +399,24 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     cols += ["is_b2b", "is_b3b", "miles_traveled", "altitude_ft"]
     cols += [f"pt_{pt}_freq" for pt in _PLAY_TYPES]
     cols += [f"bbref_{k}" for k in _BBREF_KEYS]
-    cols += [f"bbref_{k}" for k in _BBREF_EXTRA_KEYS]  # Wave-2b: orb_pct, drb_pct, trb_pct, bpm, ws
+    # EX-5 gate (CV_BBREF_REORDER_FIX, default OFF = legacy/byte-identical).
+    # LEGACY (OFF): bbref_extra (orb_pct, drb_pct, trb_pct, bpm, ws) is emitted
+    #   here, BETWEEN bbref_base and contract. This is the order all deployed
+    #   85-col root artifacts in data/models were SERVED with — but it is a bug:
+    #   predict_pergame slices cols[:n_features_in_] (=85), so bbref_extra lands
+    #   in slots 80-84 where those artifacts were TRAINED on contract_*/pts_share_3pt
+    #   (5/85 slots fed wrong values on the live slate/predictions_cache path).
+    # FIX (ON): bbref_extra is appended AFTER the contract/ratio block (slots
+    #   85-89), restoring contract_*/pts_share_3pt to slots 80-84 so cols[:85]
+    #   matches props_pergame_metrics.json feature_cols exactly. Verified 0/85
+    #   mismatches ON vs 5/85 mismatches OFF. Keep OFF until OLD-vs-NEW ROI/CLV
+    #   is validated on the slate path (NOT gate1, which trains fresh per fold).
+    if not _BBREF_REORDER_FIX:
+        cols += [f"bbref_{k}" for k in _BBREF_EXTRA_KEYS]  # LEGACY slots 80-84 (misaligned)
     cols += [f"contract_{k}" for k in _CONTRACT_KEYS]
     cols += list(_RATIO_KEYS)
+    if _BBREF_REORDER_FIX:
+        cols += [f"bbref_{k}" for k in _BBREF_EXTRA_KEYS]  # FIX: slots 85-89 (aligned)
     # Wave-2b: defender matchup (7 keys) + player profile (12 keys)
     cols += list(_DMATCH_KEYS)
     cols += list(_PROF_KEYS)
@@ -408,6 +505,29 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     if stat == "reb":
         cols += list(_REB_CONTEXT_KEYS)
 
+    # vac_ast feature gate (CV_AST_VAC_FEATURE, default OFF = byte-identical).
+    # ONLY appended when stat == "ast" AND the flag is ON; other stats and the
+    # OFF path keep the unchanged global list so every existing model artifact
+    # loads without an n_features_in_ mismatch. The 2 cols are appended LAST so
+    # a fresh AST artifact trained with the flag ON carries them in slots
+    # [n..n+1] and feature_columns_for() (frozen-list) keeps older AST artifacts
+    # on the legacy column set. Leak-free vacated-assist signal (box-appearance
+    # recipe, as-of L10); see _AST_VAC_FEATURE banner + the validation audit.
+    if stat == "ast" and _AST_VAC_FEATURE:
+        cols += list(_VAC_AST_KEYS)
+
+    # vac_load feature gate (CV_VAC_LOAD_FEATURE, default OFF = byte-identical).
+    # ONLY appended when stat in ("pts","reb") AND the flag is ON; other stats
+    # and the OFF path keep the unchanged list so every existing PTS/REB model
+    # artifact loads without an n_features_in_ mismatch. The 3 cols are appended
+    # LAST — for REB this is AFTER the _REB_CONTEXT_KEYS append, so the ON-flag
+    # REB order is base + reb_context + vac_load. PTS gains them in trailing
+    # slots [129..131] (129->132), REB in [132..134] (132->135). Leak-free
+    # team-vacated-load signal (box-appearance recipe, as-of L10); see the
+    # _VAC_LOAD_FEATURE banner + docs/_audits/NIGHT_RUN_STATUS.md.
+    if stat in ("pts", "reb") and _VAC_LOAD_FEATURE:
+        cols += list(_VAC_LOAD_KEYS)
+
     # Iter-47 (loop 5) — l3 + l7 rolling windows for PTS, AST, REB only.
     # REVERTED (backtest_holdout REVERT decision 2026-05-28): OOS ROI regressed
     # across all 3 probe stats:
@@ -479,6 +599,11 @@ def feature_columns(stat: Optional[str] = None) -> List[str]:
     # helps on training data but hurts OOS. This exhausts the l3-window probe space.
     # if stat in ("pts", "ast", "reb"):
     #     cols += [f"mom_delta_{stat}"]
+
+    # CV feature gate (PROP_USE_CV=1). Appended last so existing model
+    # artifacts without these columns continue to load without dim-mismatch.
+    if _USE_CV_FEATURES:
+        cols.extend(_CV_FEATURE_COLS)
 
     return cols
 
@@ -1714,6 +1839,105 @@ def build_player_pf(
         _warn_join_load_once("build_player_pf", pf_path, exc)
         return _PlayerPF(pf_lookup, per36_lookup)
     return _PlayerPF(pf_lookup, per36_lookup)
+
+
+def _load_cv_features_before(player_id: int, game_date_cutoff: str, last_n: int = 5) -> dict:
+    """Aggregate CV features from the player's last N games BEFORE game_date_cutoff.
+
+    Leakage-safe: the cv_features table stores NBA game_ids (lex-sortable:
+    season-prefix + sequence). We resolve game_ids whose game_date is strictly
+    less than game_date_cutoff using the season_games_*.json cache, then
+    ORDER BY game_id DESC LIMIT last_n to retrieve only prior-game CV data.
+    Returns 15 cv_* keys (8 original + 7 new mechanical features); zero-defaults
+    when no prior CV data exists or the DB is absent.
+
+    Note: build_pergame_dataset's gamelog cache has no GAME_ID column (only
+    GAME_DATE), so this helper uses game_date_cutoff (ISO date string, e.g.
+    "2024-11-15") as the leakage gate rather than a raw game_id.
+    """
+    _defaults = {c: 0.0 for c in _CV_FEATURE_COLS}
+    _key_map = {
+        # Original 7 mappings
+        "avg_defender_distance":    "cv_avg_defender_distance",
+        "contested_shot_rate":      "cv_contested_shot_rate",
+        "shot_zone_paint_pct":      "cv_shot_zone_paint_pct",
+        "shot_zone_3pt_pct":        "cv_shot_zone_3pt_pct",
+        "shots_per_possession":     "cv_shots_per_possession",
+        "possession_duration_avg":  "cv_possession_duration_avg",
+        "play_type_transition_pct": "cv_play_type_transition_pct",
+        # 7 new mechanical CV features (Round 2)
+        "avg_contest_arm_angle":    "cv_avg_contest_arm_angle",
+        "avg_closeout_speed":       "cv_avg_closeout_speed",
+        "avg_fatigue_proxy":        "cv_avg_fatigue_proxy",
+        "catch_shoot_pct":          "cv_catch_shoot_pct",
+        "avg_dribble_count":        "cv_avg_dribble_count",
+        "second_chance_rate":       "cv_second_chance_rate",
+        "avg_shot_distance":        "cv_avg_shot_distance",
+    }
+    try:
+        # Build date -> game_id lookup from season_games_*.json (same source
+        # used by build_player_quarter_stats). Only game_ids with date <
+        # game_date_cutoff are eligible — this is the leakage gate.
+        cutoff_date = str(game_date_cutoff)[:10]  # normalise to YYYY-MM-DD
+        eligible_game_ids: set = set()
+        for sg_path in glob.glob(os.path.join(_NBA_CACHE, "season_games_*.json")):
+            try:
+                with open(sg_path, encoding="utf-8") as _f:
+                    sg = json.load(_f)
+                sg_rows = sg.get("rows", sg) if isinstance(sg, dict) else sg
+                for g in sg_rows or []:
+                    gid = g.get("game_id")
+                    gdate = str(g.get("game_date", ""))[:10]
+                    if gid and gdate and gdate < cutoff_date:
+                        eligible_game_ids.add(str(gid))
+            except Exception:
+                pass
+
+        if not eligible_game_ids:
+            return _defaults.copy()
+
+        from src.data.db import get_connection  # noqa: PLC0415
+        conn = get_connection()
+        # Retrieve the player's CV game_ids that fall within the eligible set,
+        # ordered by game_id DESC (lex == chronological for NBA IDs) to get
+        # the most-recent-first, capped at last_n.
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT DISTINCT game_id FROM cv_features "
+                "WHERE player_id = ? "
+                "ORDER BY game_id DESC",
+                (int(player_id),),
+            )
+            all_player_gids = [r[0] for r in cur.fetchall()]
+
+        # Filter to eligible (pre-cutoff) game_ids, take most recent last_n.
+        prior_gids = [g for g in all_player_gids if g in eligible_game_ids][:last_n]
+        if not prior_gids:
+            conn.close()
+            return _defaults.copy()
+
+        accum: dict = {}
+        counts: dict = {}
+        for gid in prior_gids:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT feature_name, feature_value FROM cv_features "
+                    "WHERE player_id = ? AND game_id = ?",
+                    (int(player_id), gid),
+                )
+                for fname, fval in cur.fetchall():
+                    out_key = _key_map.get(fname)
+                    if out_key:
+                        accum[out_key] = accum.get(out_key, 0.0) + float(fval)
+                        counts[out_key] = counts.get(out_key, 0) + 1
+        conn.close()
+        result = _defaults.copy()
+        for k, v in accum.items():
+            result[k] = round(v / counts.get(k, 1), 4)
+        result["cv_n_games_cv"] = float(len(prior_gids))
+        return result
+    except Exception:
+        return _defaults.copy()
 
 
 # ── play-type features ────────────────────────────────────────────────────────
@@ -3024,7 +3248,14 @@ class _OpponentDefense:
 
         Falls back to a neutral 1.0 when there is no prior history."""
         out: Dict[str, float] = {}
-        team_idx = self._team.get(opponent)
+        # Reconcile non-canonical opponent codes (NY/WSH/UTAH/GS/NO/SA → gamelog
+        # tricodes) the same way _PregameSpreads does, so a grading/serve caller
+        # that passes a bookmaker/ESPN code doesn't silently collapse opp_def to
+        # neutral 1.0 (the self._team index is keyed by gamelog tricodes). BYTE-
+        # IDENTICAL for the serve path (opp_team='OPP' → 'OPP', stays neutral) and
+        # the OOF/training path (gamelog tricodes → unchanged); only non-tricode
+        # callers (e.g. compare_to_lines lines files) change, and correctly so.
+        team_idx = self._team.get(_normalize_abbr(opponent))
         for stat in STATS:
             league_mean = self._todate_mean(self._league, date, stat)
             team_mean = self._todate_mean(team_idx, date, stat) if team_idx else None
@@ -3048,7 +3279,7 @@ class _OpponentDefense:
         """Return {opp_def_{stat}_l5: mean} — opp's last-5 raw allowed-stat
         averages STRICTLY before date. None per-stat when no prior games."""
         out: Dict[str, Optional[float]] = {f"opp_def_{s}_l5": None for s in STATS}
-        team_idx = self._team.get(opponent)
+        team_idx = self._team.get(_normalize_abbr(opponent))  # tricode-reconcile (see factors())
         if not team_idx:
             return out
         i = bisect.bisect_left(team_idx["dates"], date)
@@ -3284,6 +3515,290 @@ def _row_features(prior_played: List[dict], rest_days: float,
     return feats
 
 
+# ── leak-free vacated-assist signal (CV_AST_VAC_FEATURE) ──────────────────────
+#
+# Box-appearance recipe (identical to scripts/pit/exp_crosseason_validate.py::
+# build_vac_ast_from_lglog, the validated builder — NOT reinvented). For each
+# (team, date): a "regular" who is on the recent roster (appeared in >=1 of the
+# team's PREVIOUS 3 games) but is ABSENT from this game's box log, and whose
+# as-of L10 minutes >= 15, is counted OUT. vac_ast = sum of those out-regulars'
+# as-of L10 assists; vac_ast_share = vac_ast / (vac_ast + sum of the APPEARING
+# roster's as-of L10 assists). Every rolling average uses strictly PRIOR games
+# (dd < d), so the signal is leak-free as-of the game date. Returns
+# {(player_id, "YYYY-MM-DD"): {"vac_ast", "vac_ast_share"}} for every appearing
+# player. Built ONCE per build_pergame_dataset call, only when the flag is ON;
+# file-existence-gated so a fresh checkout that lacks the box logs collapses to
+# an empty map (every row then gets 0.0 defaults — same as flag OFF).
+
+_VAC_AST_CACHE: Optional[dict] = None
+
+
+def _vac_team_of_matchup(matchup) -> Optional[str]:
+    m = (matchup or "").strip()
+    if " @ " in m:
+        return m.split(" @ ")[0].strip().upper()
+    if " vs. " in m:
+        return m.split(" vs. ")[0].strip().upper()
+    return None
+
+
+def build_vac_ast_lookup() -> dict:
+    """Leak-free vac_ast / vac_ast_share per (player_id, 'YYYY-MM-DD').
+
+    Pools 2025-26 (reg+playoff leaguegamelog parquets under data/cache/cv_fix)
+    and 2024-25 (per-player gamelog_*_2024-25.json) box logs. Robust to missing
+    sources (returns whatever it can build, possibly empty). Memoised per-process.
+    """
+    global _VAC_AST_CACHE
+    if _VAC_AST_CACHE is not None:
+        return _VAC_AST_CACHE
+
+    import numpy as _np
+    import pandas as _pd
+    from collections import defaultdict as _dd
+
+    cvfix = os.path.join(PROJECT_DIR, "data", "cache", "cv_fix")
+    rows = []  # (date_ts, team, pid, ast, minutes)
+
+    # 2025-26: league box-log parquets (reg + playoff)
+    for fn in ("leaguegamelog_regular_season.parquet", "leaguegamelog_playoffs.parquet"):
+        p = os.path.join(cvfix, fn)
+        if not os.path.isfile(p):
+            continue
+        try:
+            df = _pd.read_parquet(p)
+        except Exception as exc:  # pragma: no cover - defensive
+            _warn_join_load_once("build_vac_ast_lookup", p, exc)
+            continue
+        for r in df.itertuples(index=False):
+            d = _pd.to_datetime(getattr(r, "GAME_DATE", None), errors="coerce")
+            if _pd.isna(d):
+                continue
+            try:
+                mn = float(r.MIN) if _pd.notna(r.MIN) else None
+            except (TypeError, ValueError):
+                mn = None
+            rows.append((d.normalize(), str(r.TEAM_ABBREVIATION).upper(),
+                         int(r.PLAYER_ID), float(r.AST or 0), mn))
+
+    # 2024-25: per-player gamelog JSONs (the cross-season corpus)
+    for fp in glob.glob(os.path.join(_NBA_CACHE, "gamelog_*_2024-25.json")):
+        base = os.path.basename(fp)
+        if not base.endswith("_2024-25.json"):
+            continue
+        try:
+            pid = int(base.split("_")[1])
+        except (IndexError, ValueError):
+            continue
+        try:
+            log = json.load(open(fp, encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(log, list):
+            continue
+        for g in log:
+            d = _pd.to_datetime(g.get("GAME_DATE"), errors="coerce")
+            team = _vac_team_of_matchup(g.get("MATCHUP"))
+            if _pd.isna(d) or team is None:
+                continue
+            try:
+                mn = float(g.get("MIN")) if g.get("MIN") is not None else None
+            except (TypeError, ValueError):
+                mn = None
+            rows.append((d.normalize(), team, pid, float(g.get("AST") or 0), mn))
+
+    if not rows:
+        _VAC_AST_CACHE = {}
+        return _VAC_AST_CACHE
+
+    by_player = _dd(list)     # pid -> sorted [(date, ast, minutes)]
+    team_games = _dd(set)     # (team, date) -> {pid who appeared (min>=1)}
+    team_dates = _dd(set)     # team -> {dates played}
+    for d, team, pid, ast, mn in rows:
+        by_player[pid].append((d, ast, mn))
+        if mn is not None and mn >= 1:
+            team_games[(team, d)].add(pid)
+            team_dates[team].add(d)
+    for pid in by_player:
+        by_player[pid].sort()
+
+    def _asof_l10(pid, d):
+        hist = [(a, mn) for (dd, a, mn) in by_player.get(pid, [])
+                if dd < d and mn is not None and mn >= 1]
+        if not hist:
+            return 0.0, 0.0
+        h = hist[-10:]
+        return (float(_np.mean([x[0] for x in h])),  # L10 ast
+                float(_np.mean([x[1] for x in h])))   # L10 min
+
+    out: dict = {}
+    for (team, d), appeared in team_games.items():
+        tdates = sorted(team_dates[team])
+        i = tdates.index(d)
+        if i < 3:
+            continue
+        prior3 = tdates[max(0, i - 3):i]
+        roster = set()
+        for pd_ in prior3:
+            roster |= team_games[(team, pd_)]
+        vac_ast = 0.0
+        for pid in roster:
+            if pid in appeared:
+                continue
+            la, lm = _asof_l10(pid, d)
+            if lm >= 15:
+                vac_ast += la
+        # share denominator = appearing roster's as-of L10 assist mass
+        present_ast = 0.0
+        for pid in appeared:
+            la, _ = _asof_l10(pid, d)
+            present_ast += la
+        denom = vac_ast + present_ast
+        share = (vac_ast / denom) if denom > 1e-9 else 0.0
+        ds = d.date().isoformat()
+        rec = {"vac_ast": float(vac_ast), "vac_ast_share": float(share)}
+        for pid in appeared:
+            out[(int(pid), ds)] = rec
+    _VAC_AST_CACHE = out
+    return out
+
+
+# ── leak-free vacated-load signal (CV_VAC_LOAD_FEATURE) ───────────────────────
+#
+# Box-appearance recipe IDENTICAL to build_vac_ast_lookup (NOT reinvented): same
+# out-regular definition (on the prior-3-game roster, ABSENT this game, as-of L10
+# minutes >= 15) and the same strictly-prior (dd < d) rolling windows, so it is
+# leak-free as-of the game date. Instead of vacated assists it tracks the
+# vacated team LOAD: vac_min = sum of out-regulars' as-of L10 minutes, vac_pts =
+# sum of their as-of L10 points, n_out = count of out-regulars. Returns
+# {(player_id, "YYYY-MM-DD"): {"vac_min","vac_pts","n_out"}} for every appearing
+# player. Built ONCE per build_pergame_dataset call, only when the flag is ON;
+# file-existence-gated so a fresh checkout that lacks the box logs collapses to
+# an empty map (every row then gets 0.0 defaults — same as flag OFF).
+
+_VAC_LOAD_CACHE: Optional[dict] = None
+
+
+def build_vac_load_lookup() -> dict:
+    """Leak-free vac_min / vac_pts / n_out per (player_id, 'YYYY-MM-DD').
+
+    Pools 2025-26 (reg+playoff leaguegamelog parquets under data/cache/cv_fix)
+    and 2024-25 (per-player gamelog_*_2024-25.json) box logs. Robust to missing
+    sources (returns whatever it can build, possibly empty). Memoised per-process.
+    Same out-regular recipe as build_vac_ast_lookup, summing vacated minutes and
+    points rather than assists.
+    """
+    global _VAC_LOAD_CACHE
+    if _VAC_LOAD_CACHE is not None:
+        return _VAC_LOAD_CACHE
+
+    import numpy as _np
+    import pandas as _pd
+    from collections import defaultdict as _dd
+
+    cvfix = os.path.join(PROJECT_DIR, "data", "cache", "cv_fix")
+    rows = []  # (date_ts, team, pid, pts, minutes)
+
+    # 2025-26: league box-log parquets (reg + playoff)
+    for fn in ("leaguegamelog_regular_season.parquet", "leaguegamelog_playoffs.parquet"):
+        p = os.path.join(cvfix, fn)
+        if not os.path.isfile(p):
+            continue
+        try:
+            df = _pd.read_parquet(p)
+        except Exception as exc:  # pragma: no cover - defensive
+            _warn_join_load_once("build_vac_load_lookup", p, exc)
+            continue
+        for r in df.itertuples(index=False):
+            d = _pd.to_datetime(getattr(r, "GAME_DATE", None), errors="coerce")
+            if _pd.isna(d):
+                continue
+            try:
+                mn = float(r.MIN) if _pd.notna(r.MIN) else None
+            except (TypeError, ValueError):
+                mn = None
+            rows.append((d.normalize(), str(r.TEAM_ABBREVIATION).upper(),
+                         int(r.PLAYER_ID), float(r.PTS or 0), mn))
+
+    # 2024-25: per-player gamelog JSONs (the cross-season corpus)
+    for fp in glob.glob(os.path.join(_NBA_CACHE, "gamelog_*_2024-25.json")):
+        base = os.path.basename(fp)
+        if not base.endswith("_2024-25.json"):
+            continue
+        try:
+            pid = int(base.split("_")[1])
+        except (IndexError, ValueError):
+            continue
+        try:
+            log = json.load(open(fp, encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(log, list):
+            continue
+        for g in log:
+            d = _pd.to_datetime(g.get("GAME_DATE"), errors="coerce")
+            team = _vac_team_of_matchup(g.get("MATCHUP"))
+            if _pd.isna(d) or team is None:
+                continue
+            try:
+                mn = float(g.get("MIN")) if g.get("MIN") is not None else None
+            except (TypeError, ValueError):
+                mn = None
+            rows.append((d.normalize(), team, pid, float(g.get("PTS") or 0), mn))
+
+    if not rows:
+        _VAC_LOAD_CACHE = {}
+        return _VAC_LOAD_CACHE
+
+    by_player = _dd(list)     # pid -> sorted [(date, pts, minutes)]
+    team_games = _dd(set)     # (team, date) -> {pid who appeared (min>=1)}
+    team_dates = _dd(set)     # team -> {dates played}
+    for d, team, pid, pts, mn in rows:
+        by_player[pid].append((d, pts, mn))
+        if mn is not None and mn >= 1:
+            team_games[(team, d)].add(pid)
+            team_dates[team].add(d)
+    for pid in by_player:
+        by_player[pid].sort()
+
+    def _asof_l10(pid, d):
+        hist = [(p, mn) for (dd, p, mn) in by_player.get(pid, [])
+                if dd < d and mn is not None and mn >= 1]
+        if not hist:
+            return 0.0, 0.0
+        h = hist[-10:]
+        return (float(_np.mean([x[0] for x in h])),  # L10 pts
+                float(_np.mean([x[1] for x in h])))   # L10 min
+
+    out: dict = {}
+    for (team, d), appeared in team_games.items():
+        tdates = sorted(team_dates[team])
+        i = tdates.index(d)
+        if i < 3:
+            continue
+        prior3 = tdates[max(0, i - 3):i]
+        roster = set()
+        for pd_ in prior3:
+            roster |= team_games[(team, pd_)]
+        vac_min = 0.0
+        vac_pts = 0.0
+        n_out = 0
+        for pid in roster:
+            if pid in appeared:
+                continue
+            lp, lm = _asof_l10(pid, d)
+            if lm >= 15:
+                vac_min += lm
+                vac_pts += lp
+                n_out += 1
+        ds = d.date().isoformat()
+        rec = {"vac_min": float(vac_min), "vac_pts": float(vac_pts), "n_out": float(n_out)}
+        for pid in appeared:
+            out[(int(pid), ds)] = rec
+    _VAC_LOAD_CACHE = out
+    return out
+
+
 # ── dataset construction ──────────────────────────────────────────────────────
 
 def build_pergame_dataset(
@@ -3389,6 +3904,16 @@ def build_pergame_dataset(
     # data/cache/per_opp_stat_rolling.parquet; empty wrapper → all None defaults.
     # NaN passthrough intentional — first-ever matchup rows remain NaN (not 0).
     per_opp_rolling_src = build_per_opp_rolling()
+    # vac_ast feature gate (CV_AST_VAC_FEATURE). Build the leak-free vacated-
+    # assist lookup ONCE here only when the flag is ON; OFF -> empty map so the
+    # row loop writes 0.0 defaults and the column never enters feature_columns
+    # (byte-identical to the legacy AST feature set). File-existence-gated.
+    vac_ast_lookup = build_vac_ast_lookup() if _AST_VAC_FEATURE else {}
+    # vac_load feature gate (CV_VAC_LOAD_FEATURE). Build the leak-free vacated-
+    # load lookup ONCE here only when the flag is ON; OFF -> empty map so the row
+    # loop writes 0.0 defaults and the columns never enter feature_columns
+    # (byte-identical to the legacy PTS/REB feature sets). File-existence-gated.
+    vac_load_lookup = build_vac_load_lookup() if _VAC_LOAD_FEATURE else {}
     # Iter-17 gamelog_full rolling DISABLED (REVERT 2026-05-27).
     # Iter-18 narrow probe also REVERTED (2026-05-27) — OOS gate failed.
     # Infrastructure (build_gamelog_full_rolling, _get_gamelog_full_rolling)
@@ -3506,6 +4031,12 @@ def build_pergame_dataset(
                     row[k] = feats.get(k)  # None on first meeting
                 for stat in STATS:
                     row[f"target_{stat}"] = _num(game.get(_BOX_COL[stat]))
+                # Additive metadata (NOT a feature — absent from feature_columns()):
+                # the realised minutes played, used as the training label for the
+                # per-stat minutes-conditioned pregame heads (PTS min-model / REB
+                # opportunity model). Purely additive; cannot affect any existing
+                # model's behaviour (never fed as an input).
+                row["target_min"] = _num(game.get("MIN"))
                 row["date"] = gdate.isoformat()
                 # Cycle 98c (loop 5) — per-row player_id (additive only; not in
                 # feature_cols). Surfaces the gamelog-derived pid so probes can
@@ -3513,6 +4044,27 @@ def build_pergame_dataset(
                 # outlier prediction) without re-reading gamelogs. Mirrors the
                 # cycle 90e position field pattern: additive, never trained on.
                 row["player_id"] = file_player_id
+                # vac_ast feature gate (CV_AST_VAC_FEATURE). Carry the leak-free
+                # vacated-assist signal on every row. When the flag is OFF the
+                # lookup is empty -> 0.0 defaults, and the columns are NOT in
+                # feature_columns("ast") so the AST model is byte-identical. When
+                # ON, feature_columns("ast") appends vac_ast + vac_ast_share and
+                # the trainer reads these per-row values. Default 0.0 = "no
+                # confirmed-out creators" (the modal case), matching the builder.
+                _vrec = vac_ast_lookup.get((file_player_id, gdate.date().isoformat()))
+                row["vac_ast"] = float(_vrec["vac_ast"]) if _vrec else 0.0
+                row["vac_ast_share"] = float(_vrec["vac_ast_share"]) if _vrec else 0.0
+                # vac_load feature gate (CV_VAC_LOAD_FEATURE). Carry the leak-free
+                # vacated-load signal on every row. When the flag is OFF the lookup
+                # is empty -> 0.0 defaults, and the columns are NOT in
+                # feature_columns("pts"/"reb") so those models are byte-identical.
+                # When ON, feature_columns appends vac_min+vac_pts+n_out and the
+                # trainer reads these per-row values. Default 0.0 = "no confirmed-
+                # out regulars" (the modal case), matching the builder.
+                _lrec = vac_load_lookup.get((file_player_id, gdate.date().isoformat()))
+                row["vac_min"] = float(_lrec["vac_min"]) if _lrec else 0.0
+                row["vac_pts"] = float(_lrec["vac_pts"]) if _lrec else 0.0
+                row["n_out"] = float(_lrec["n_out"]) if _lrec else 0.0
                 # Cycle 90e (loop 5) — per-row position (additive only; not in
                 # feature_cols). None when the parquet is absent or the pid
                 # is uncached. Probes consume row["position"] directly.
@@ -3568,6 +4120,18 @@ def build_pergame_dataset(
                     _opponent_from_matchup(matchup), gdate)
                 for k, v in opp_team_l5.items():
                     row[k] = v
+                # CV feature gate (PROP_USE_CV=1). Leakage-safe: only games
+                # with game_date strictly before this row's date are included.
+                # gdate is a datetime; gdate.date().isoformat() == "YYYY-MM-DD".
+                if _USE_CV_FEATURES:
+                    _cv = _load_cv_features_before(
+                        player_id=file_player_id,
+                        game_date_cutoff=gdate.date().isoformat(),
+                    )
+                    row.update(_cv)
+                else:
+                    for _c in _CV_FEATURE_COLS:
+                        row[_c] = 0.0
                 rows.append(row)
 
             if played:
@@ -4148,6 +4712,47 @@ def _persist_meta_feature_columns(model_dir: str, stat: str,
         )
 
 
+def write_meta_feature_columns(model_dir: Optional[str] = None,
+                               metrics_path: Optional[str] = None) -> str:
+    """Freeze the served 85-col aligned feature order into data/models/_meta.json.
+
+    PREDICTION_FIDELITY plumbing fix (2026-06-04). The 85-feature root/q50/
+    quantile artifacts were TRAINED on the column order in
+    props_pergame_metrics.json["feature_cols"] (contract/ratio at slots 80-84,
+    bbref_extra appended after). With no _meta.json on disk,
+    feature_columns_for() falls back to the live, flag-dependent
+    feature_columns(), so the served slot order depends on CV_BBREF_REORDER_FIX.
+
+    This writes that EXACT trained 85-col list under stats.<stat>.feature_columns
+    for every stat, making feature_columns_for(stat, model_dir) flag-independent
+    on the point path, the q50 dispatch, AND the quantile path (which now also
+    consults feature_columns_for). The artifacts are all 85-feature, so the
+    per-stat list is the same trained 85-col order for every stat (the per-stat
+    extras like _REB_CONTEXT_KEYS only append after slot 128 and are sliced off
+    by the n_features_in_=85 truncation).
+
+    Source of truth is props_pergame_metrics.json["feature_cols"] (the literal
+    order the artifacts were trained on) — NOT a live feature_columns() call —
+    so this is correct regardless of the flag state at write time. Asserts the
+    frozen list equals the flag-ON feature_columns()[:85] (a self-consistency
+    check) before writing.
+
+    Returns the path to the written _meta.json.
+    """
+    model_dir = model_dir or _MODEL_DIR
+    metrics_path = metrics_path or os.path.join(model_dir, "props_pergame_metrics.json")
+    with open(metrics_path, encoding="utf-8") as fh:
+        frozen = list(json.load(fh)["feature_cols"])
+    if len(frozen) != 85:
+        raise ValueError(
+            f"props_pergame_metrics.json feature_cols has {len(frozen)} cols, "
+            f"expected 85 (the served n_features_in_)."
+        )
+    for stat in STATS:
+        _persist_meta_feature_columns(model_dir, stat, frozen)
+    return os.path.join(model_dir, "_meta.json")
+
+
 # ── inference ─────────────────────────────────────────────────────────────────
 
 def load_pergame_model(stat: str, model_dir: Optional[str] = None) -> list:
@@ -4258,9 +4863,10 @@ def predict_pergame(stat: str, feature_row: Dict[str, float],
     Cycle 27: for stats in _USE_Q50_STATS the quantile-median model is the
     sole predictor (walk-forward 4/4 folds positive, MAE wins -0.7% on AST
     up to -16.6% on BLK). For all other stats this returns the per-stat
-    meta-stacker weighted blend (cycle 23 multitask MLP for AST/STL keys
-    are no-ops since AST/STL are in _USE_Q50_STATS now — kept around for
-    rollback safety). The isotonic calibrator
+    meta-stacker weighted blend (cycle 23 multitask MLP for STL keys are
+    no-ops since STL is in _USE_Q50_STATS now — kept around for rollback
+    safety). AST stays on the blend path (edge-protective: calibration
+    kills the AST edge per VS_VEGAS §5). The isotonic calibrator
     (calibration_pergame_<stat>.joblib) is applied at the end when present
     AND when the stat uses the blend (not q50).
 
@@ -4729,7 +5335,7 @@ def build_prediction_row(
     try:
         last_matchup = str(prior_played[-1].get("MATCHUP", "")) if prior_played else ""
         _team_abbrev_inj = last_matchup.split()[0] if last_matchup.split() else ""
-        _inject_iter23_features(feats, int(player_id), factor_date, _team_abbrev_inj)
+        _inject_iter23_features(feats, int(player_id), factor_date, _team_abbrev_inj, opp_team)
     except Exception:
         feats.update(_ITER23_DEFAULTS)
     return feats

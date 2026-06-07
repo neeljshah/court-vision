@@ -254,11 +254,25 @@ _PROP_STATS = ["pts", "reb", "ast", "fg3m", "stl", "blk", "tov"]
 
 
 def compute_prop_correlation_matrix(prop_history_df: "object") -> dict:
-    """Compute per-stat residual correlation matrix from prop prediction history.
+    """DEPRECATED — dead code, zero callers repo-wide (2026-06-01 hygiene).
+
+    The LIVE regenerator is
+    ``src.prediction.betting_portfolio.compute_prop_corr_matrix`` (invoked via
+    ``python -m src.prediction.betting_portfolio --compute-corr``).  Do NOT
+    call this function; it is retained only for reference and will be removed
+    in a future cleanup pass.
+
+    Bug note: the original implementation grouped residuals by
+    ``residuals.index // 7`` (arbitrary adjacent-row bucketing), which
+    correlated whatever rows happened to share a bucket rather than the same
+    (player_id, game_id).  The group key below is corrected to
+    ``(player_id, game_id)`` so the logic is at least sound if this function
+    is ever resurrected.
 
     Args:
-        prop_history_df: pandas DataFrame with columns [stat, predicted, actual].
-                         Residual = predicted - actual.  One row per prediction.
+        prop_history_df: pandas DataFrame with columns
+            [stat, predicted, actual, player_id, game_id].
+            Residual = predicted - actual.  One row per prediction.
 
     Returns:
         Nested dict {stat_a: {stat_b: corr}} with NaN filled as 0.0.
@@ -273,8 +287,19 @@ def compute_prop_correlation_matrix(prop_history_df: "object") -> dict:
         if residuals.empty:
             return {}
 
+        # Fixed group key: was ``residuals.index // max(len(_PROP_STATS), 1)``
+        # (index//7 — arbitrary adjacent-row bucketing that inflated v1 corrs).
+        # Correct key is (player_id, game_id) so each bucket = one player-game.
+        group_key = list(
+            zip(
+                residuals.get("player_id", residuals.index).astype(str),
+                residuals.get("game_id", residuals.index).astype(str),
+            )
+        )
+        residuals = residuals.copy()
+        residuals["_group"] = group_key
         pivot = residuals.pivot_table(
-            index=residuals.index // max(len(_PROP_STATS), 1),
+            index="_group",
             columns="stat",
             values="residual",
             aggfunc="mean",

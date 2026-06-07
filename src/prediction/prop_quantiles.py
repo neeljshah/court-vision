@@ -225,12 +225,30 @@ def predict_pergame_quantiles(stat: str, feature_row: Dict[str, float],
     models = load_quantile_models(stat, model_dir)
     if not models:
         return None
-    cols = feature_columns()
-    expected_n = len(cols)
+    # PREDICTION_FIDELITY plumbing fix (2026-06-04): consult the frozen
+    # per-stat column list in data/models/_meta.json via feature_columns_for so
+    # the QUANTILE path gets the bbref-aligned order independent of the
+    # CV_BBREF_REORDER_FIX env var (prior bug: bare feature_columns() made this
+    # path's slot order flag-dependent — the audit's load-bearing-env-var risk).
+    # Falls back to feature_columns(stat) when _meta.json is absent, preserving
+    # legacy behaviour on a fresh checkout. The module default for the flag is
+    # now ON, so the fallback is also aligned.
+    from src.prediction.prop_pergame import feature_columns_for  # noqa: PLC0415
+    cols = feature_columns_for(stat, model_dir or _MODEL_DIR)
+    # Wave-3 / Iter-7 schema versioning: mirror predict_pergame's alignment.
+    # Quantile artifacts trained before the Wave-2b schema bump expect 85
+    # features while feature_columns() now returns 129. Rather than bail with
+    # None (which silently nulled all 7 stats' bands), slice cols to the
+    # smallest n_features_in_ across the loaded q-models (first N cols), exactly
+    # as predict_pergame does for its q50/blend artifacts.
+    _min_n: Optional[int] = None
     for m in models.values():
         n_feats = getattr(m, "n_features_in_", None)
-        if n_feats is not None and n_feats != expected_n:
-            return None
+        if n_feats is not None:
+            if _min_n is None or n_feats < _min_n:
+                _min_n = n_feats
+    if _min_n is not None and _min_n != len(cols):
+        cols = cols[:_min_n]
     X = np.array([[float(feature_row.get(c, 0.0) or 0.0) for c in cols]], dtype=float)
     out = {}
     for q, m in models.items():

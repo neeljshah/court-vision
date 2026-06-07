@@ -442,12 +442,48 @@ _V6HP_META_CACHE: Dict[str, Any] = {}
 _V7BAG_CACHE: Dict[str, Any] = {}
 _ITER62_ISO_CACHE: Dict[str, Any] = {}
 _BLEND_META_CACHE: Dict[str, Any] = {}
+_V4_FOULS_CACHE: Dict[str, Any] = {}
+_V4_FOULS_META_CACHE: Dict[str, Any] = {}
 
-# Snapshots routed through meta_blend (iter71). endQ3 is excluded because its
-# meta_blend weights assign 0.388 to v4_fouls, and the foul features are not
-# yet wired into the live snapshot path — falling back would reduce endQ3 to
-# 100% sigmoid_margin and regress vs v6_hp standalone.
+# Snapshots routed through meta_blend (iter71). endQ3 is excluded by default
+# because its meta_blend weights assign 0.388 to v4_fouls, and the foul
+# features were not yet wired into the live snapshot path — falling back would
+# reduce endQ3 to 100% sigmoid_margin and regress vs v6_hp standalone.
+# When CV_WP_FOULS_ENDQ3=1, foul features ARE wired; endQ3 is then added to
+# the meta_blend routing via _active_meta_blend_snapshots().
 _META_BLEND_SNAPSHOTS = ("endQ1", "endQ2")
+
+# ---------------------------------------------------------------------------
+# CV_LATE_FOUL_STATE: late-game intentional-foul win-prob adjustment.
+#
+# When CV_LATE_FOUL_STATE=1, inject the leading team's FT-rate defensive
+# advantage as a sigmoid-margin correction factor.  In intentional-foul
+# sequences the leading team shoots FTs from a high-FT% position: every made
+# pair maintains their lead AND stops the clock.  This biases the trailing
+# team toward needing more made FTs than random → slight shift toward the
+# leader.  Applied as an additive component weight in _predict_meta_blend.
+# Default OFF → byte-identical.
+# ---------------------------------------------------------------------------
+_LATE_FOUL_STATE_CACHE: Dict[str, Any] = {}
+
+
+def _cv_late_foul_state_enabled() -> bool:
+    """Return True when CV_LATE_FOUL_STATE is set to a truthy value."""
+    return os.environ.get("CV_LATE_FOUL_STATE", "0").strip() not in (
+        "0", "", "false", "False"
+    )
+
+
+def _cv_wp_fouls_endq3_enabled() -> bool:
+    """Return True when CV_WP_FOULS_ENDQ3 is set to a truthy value."""
+    return os.environ.get("CV_WP_FOULS_ENDQ3", "0").strip() not in ("0", "", "false", "False")
+
+
+def _active_meta_blend_snapshots() -> tuple:
+    """Return the snapshots routed through meta_blend for the current flag state."""
+    if _cv_wp_fouls_endq3_enabled():
+        return ("endQ1", "endQ2", "endQ3")
+    return _META_BLEND_SNAPSHOTS
 
 # Snapshots that should still apply iter67 dual-cal on the v1 raw fallback
 # path. iter67 validation (data/cache/iter67_inplay_dualcal_results.json)
@@ -576,6 +612,74 @@ def _predict_v7_bag5(features: Dict[str, Any]) -> Optional[float]:
     return float(np.clip(np.mean(preds), 0.0, 1.0))
 
 
+def _load_v4_fouls(snapshot: str):
+    """iter65 v4_fouls LightGBM booster (endQ3 only). Cached with False sentinel."""
+    if snapshot in _V4_FOULS_CACHE:
+        v = _V4_FOULS_CACHE[snapshot]
+        return v if v is not False else None
+    path = os.path.join(_MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v4_fouls.lgb")
+    meta_path = os.path.join(
+        _MODELS_DIR, f"inplay_winprob_{snapshot.lower()}_v4_fouls_meta.json")
+    if not (os.path.exists(path) and os.path.exists(meta_path)):
+        _V4_FOULS_CACHE[snapshot] = False
+        return None
+    try:
+        import lightgbm as lgb
+        booster = lgb.Booster(model_file=path)
+        with open(meta_path) as f:
+            _V4_FOULS_META_CACHE[snapshot] = json.load(f)
+    except Exception:
+        _V4_FOULS_CACHE[snapshot] = False
+        return None
+    _V4_FOULS_CACHE[snapshot] = booster
+    return booster
+
+
+def _v4_fouls_feature_cols(snapshot: str) -> Optional[List[str]]:
+    if snapshot not in _V4_FOULS_META_CACHE:
+        _load_v4_fouls(snapshot)
+    meta = _V4_FOULS_META_CACHE.get(snapshot)
+    if not meta:
+        return None
+    return list(meta.get("feature_cols", []))
+
+
+def _predict_v4_fouls(features: Dict[str, Any], snapshot: str) -> Optional[float]:
+    """Run the iter65 v4_fouls booster on a single feature dict (endQ3).
+
+    Returns None when the artifact is missing, the snapshot has no v4_fouls
+    model, or any required foul feature is absent (missing → NaN, handled by
+    LightGBM's missing-value path, not a hard abort).
+    """
+    booster = _load_v4_fouls(snapshot)
+    if booster is None:
+        return None
+    cols = _v4_fouls_feature_cols(snapshot)
+    if not cols:
+        return None
+    row: Dict[str, Any] = {}
+    for c in cols:
+        v = features.get(c)
+        if c in _CAT_COLS:
+            row[c] = v
+        else:
+            try:
+                row[c] = float(v) if v is not None else np.nan
+            except (TypeError, ValueError):
+                row[c] = np.nan
+    df = pd.DataFrame([row], columns=cols)
+    for c in _CAT_COLS:
+        if c in df.columns:
+            df[c] = df[c].astype("category")
+    try:
+        p = booster.predict(df)
+    except Exception:
+        return None
+    if p is None or len(p) == 0:
+        return None
+    return float(np.clip(p[0], 0.0, 1.0))
+
+
 def _load_iter62_iso(snapshot: str):
     """iter62 isotonic calibrator (joblib dict bundle)."""
     if snapshot in _ITER62_ISO_CACHE:
@@ -616,6 +720,53 @@ def _load_blend_meta(snapshot: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def _compute_late_foul_sharpening(features: Dict[str, Any]) -> float:
+    """Compute win-prob margin sharpening for late-game intentional-foul state.
+
+    Returns a signed margin addend (points) to shift the sigmoid_margin toward
+    the LEADING team when intentional fouling is detected.  Positive = shifts
+    win-prob up (home leading); negative = shifts down (home trailing / away
+    leading).
+
+    Conditions for non-zero sharpening (all must hold):
+      - |score_margin| in [1, 15]: meaningful but not already decided
+      - Foul state detected: home/away foul features present + imbalance >= 2
+      - Applied at endQ3 only (caller guard)
+
+    Returns 0.0 when any condition is missing (safe no-op).
+    Leak-free: reads only from features dict built from state <= E.
+    """
+    try:
+        sm = float(features.get("score_margin", 0.0) or 0.0)
+        abs_margin = abs(sm)
+        if abs_margin < 1.0 or abs_margin > 15.0:
+            return 0.0
+        # Use foul features to detect imbalance (injected by CV_WP_FOULS_ENDQ3
+        # or by _try_inject_foul_features when available).
+        pf_imbalance = features.get("pf_imbalance")
+        if pf_imbalance is None:
+            return 0.0
+        try:
+            pf_imbalance = float(pf_imbalance)
+        except (TypeError, ValueError):
+            return 0.0
+        import math as _math
+        if _math.isnan(pf_imbalance):
+            return 0.0
+        # Sharpening: when leading team (positive margin for home, or home trailing
+        # and away has pf_imbalance < 0) has a FT-rate advantage.
+        # Conservative: 0.5 margin points of sharpening at max foul-imbalance (>=4).
+        # Direction: pf_imbalance > 0 means home has more fouls → away is in
+        # better FT position → away slightly better → nudge margin negative.
+        _MAX_SHARPEN = 0.5  # max margin addend (points in the sigmoid)
+        _IMBALANCE_FULL = 4.0  # fouls imbalance for full sharpening
+        sign = -1.0 if pf_imbalance > 0 else 1.0
+        factor = min(1.0, abs(pf_imbalance) / _IMBALANCE_FULL)
+        return float(sign * _MAX_SHARPEN * factor)
+    except Exception:
+        return 0.0
+
+
 def _predict_meta_blend(features: Dict[str, Any],
                         snapshot: str) -> Optional[float]:
     """Compose iter71 meta_blend over loaded artifacts + analytic components.
@@ -624,13 +775,15 @@ def _predict_meta_blend(features: Dict[str, Any],
       v6_hp:           loaded iter68 booster
       iso:             iter62 isotonic applied to v6_hp output
       v7_bag5:         endQ2 only — average of 5 v7 seed boosters
+      v4_fouls:        endQ3 only, CV_WP_FOULS_ENDQ3=1 — foul-enriched booster
+                       (iter65; 0.388 weight in the endQ3 meta_blend)
       sigmoid_margin:  1 / (1 + exp(-score_margin/6))
       polarity_pregame: 1 - pregame_win_prob
 
     Renormalizes weights over available components. Returns None when no
     component is available (caller falls back to v3/v2/v1).
     """
-    if snapshot not in _META_BLEND_SNAPSHOTS:
+    if snapshot not in _active_meta_blend_snapshots():
         return None
     meta = _load_blend_meta(snapshot)
     if meta is None:
@@ -668,6 +821,47 @@ def _predict_meta_blend(features: Dict[str, Any],
         if p_bag is not None:
             components["v7_bag5"] = p_bag
 
+    # endQ3 + CV_WP_FOULS_ENDQ3: wire the v4_fouls booster (iter65).
+    # The endQ3 meta_blend assigns weight 0.388 to v4_fouls and 0.612 to
+    # sigmoid_margin (v6_hp/iso/polarity weights = 0 in iter71's NNLS fit).
+    # Guard: only inject when the flag is ON (we only reach here when
+    # _active_meta_blend_snapshots() already includes "endQ3", so the flag
+    # must be enabled; this guard is a defensive belt-and-suspenders check).
+    if snapshot == "endQ3" and _cv_wp_fouls_endq3_enabled():
+        p_v4 = _predict_v4_fouls(features, snapshot)
+        if p_v4 is not None:
+            components["v4_fouls"] = p_v4
+
+    # CV_LATE_FOUL_STATE: inject a late-game intentional-foul bias component.
+    # In intentional-foul sequences the leading team controls the margin via
+    # their FT% advantage; the sigmoid_margin already captures this directionally,
+    # so we nudge it via a small FT-state multiplier rather than a separate booster.
+    # We scale the sigmoid_margin component weight slightly (no new model needed).
+    # Effect: when late-game foul context is active (detected from features),
+    # the existing sigmoid_margin is scaled by 1 + foul_bias → slight sharpening
+    # of the leading team's probability (FT% > random-play advantage).
+    # Only fires for endQ3 when CV_LATE_FOUL_STATE=1; byte-identical otherwise.
+    if snapshot == "endQ3" and _cv_late_foul_state_enabled():
+        _late_foul_sharpening = _compute_late_foul_sharpening(features)
+        if _late_foul_sharpening != 0.0 and "sigmoid_margin" in components:
+            # Sharpen sigmoid_margin slightly toward the leading team: multiply the
+            # raw value by (1 + sharpening). sharpening > 0 → moves toward 1 for
+            # leading home team (margin > 0); < 0 → moves toward 0 for trailing.
+            sm = float(components["sigmoid_margin"])
+            # Scale the margin in the sigmoid, not the output, to stay in [0,1].
+            sm_margin = float(features.get("score_margin", 0.0) or 0.0)
+            try:
+                sm_adjusted = float(
+                    1.0 / (1.0 + math.exp(
+                        -(sm_margin + _late_foul_sharpening) / 6.0
+                    ))
+                )
+            except (OverflowError, ValueError):
+                sm_adjusted = sm
+            components["sigmoid_margin"] = float(
+                np.clip(sm_adjusted, 1e-7, 1.0 - 1e-7)
+            )
+
     used = {k: float(weights.get(k, 0.0))
             for k in components if float(weights.get(k, 0.0)) > 0.0}
     if not used:
@@ -692,9 +886,12 @@ def active_stack(snapshot: str) -> Dict[str, Any]:
     v6_ok = _load_v6_hp(snapshot) is not None
     iso_ok = _load_iter62_iso(snapshot) is not None
     bag5_ok = (snapshot == "endQ2") and bool(_load_v7_bag5_endq2())
-    blend_ok = (snapshot in _META_BLEND_SNAPSHOTS
+    v4_fouls_ok = (snapshot == "endQ3"
+                   and _cv_wp_fouls_endq3_enabled()
+                   and _load_v4_fouls(snapshot) is not None)
+    blend_ok = (snapshot in _active_meta_blend_snapshots()
                 and _load_blend_meta(snapshot) is not None
-                and v6_ok)
+                and (v6_ok or v4_fouls_ok))
     v3_ok = load_v3_bundle(snapshot) is not None
     v2_ok = load_v2_bundle(snapshot) is not None
     v1_ok = load_booster(snapshot) is not None
@@ -703,8 +900,12 @@ def active_stack(snapshot: str) -> Dict[str, Any]:
 
     if blend_ok:
         layer = "meta_blend_iter71"
-        components = ["v6_hp"]
-        if iso_ok:
+        components = []
+        if v4_fouls_ok:
+            components.append("v4_fouls")
+        elif v6_ok:
+            components.append("v6_hp")
+        if iso_ok and not v4_fouls_ok:
             components.append("iter62_iso")
         components.append("sigmoid_margin")
         components.append("polarity_pregame")
@@ -735,11 +936,13 @@ def active_stack(snapshot: str) -> Dict[str, Any]:
         "v6_hp_loaded": v6_ok,
         "iter62_iso_loaded": iso_ok,
         "v7_bag5_loaded": bag5_ok,
+        "v4_fouls_loaded": v4_fouls_ok,
         "meta_blend_loaded": blend_ok,
         "v3_loaded": v3_ok,
         "v2_loaded": v2_ok,
         "v1_loaded": v1_ok,
         "dualcal_applied_on_fallback": dualcal_ok,
+        "cv_wp_fouls_endq3": _cv_wp_fouls_endq3_enabled(),
     }
 
 
@@ -750,8 +953,10 @@ def predict_home_win_prob(features: Dict[str, Any],
     Routing priority (validated 2026-05-28 via
     scripts/validation_harness_winprob.py):
       1. meta_blend_iter71 — endQ1, endQ2 (mean WF Brier Δ -0.013 / -0.014)
-      2. v6_hp_iter68     — endQ3 (mean WF Brier Δ -0.016; meta_blend would
-                             need v4_fouls features which aren't wired live)
+                           — endQ3 when CV_WP_FOULS_ENDQ3=1 (WF Brier Δ -0.010
+                             via v4_fouls 0.388 + sigmoid_margin 0.612 blend)
+      2. v6_hp_iter68     — endQ3 when CV_WP_FOULS_ENDQ3=0 (mean WF Brier Δ
+                             -0.016 vs v1 raw; default path, byte-identical OFF)
       3. v3 pregame-anchored ensemble — endQ1 fallback
       4. v2 ensemble — endQ2 fallback
       5. v1 raw booster (+ iter67 dual-cal for endQ1 only as a defensive
@@ -890,7 +1095,59 @@ def features_from_snapshot(snap: Dict[str, Any],
     if inject_quarter:
         _try_inject_quarter_features(feats, snap)
 
+    # CV_WP_FOULS_ENDQ3: inject per-team foul-state features so the endQ3
+    # meta_blend can route through the v4_fouls booster.  All seven keys map
+    # directly from the live snapshot schema (captured by W-003 / the poller).
+    # When the flag is OFF this block is skipped → output byte-identical.
+    if _cv_wp_fouls_endq3_enabled() and point == "endQ3":
+        _try_inject_foul_features(feats, snap)
+
+    # CV_LATE_FOUL_STATE: also inject foul features for the late-foul
+    # sharpening component (endQ3 only).  Uses the same _try_inject_foul_features
+    # helper; idempotent when CV_WP_FOULS_ENDQ3 already injected them.
+    if _cv_late_foul_state_enabled() and point == "endQ3":
+        _try_inject_foul_features(feats, snap)
+
     return feats
+
+
+def _try_inject_foul_features(feats: Dict[str, Any], snap: Dict[str, Any]) -> None:
+    """Inject per-team foul-state features for the v4_fouls endQ3 booster.
+
+    Keys written (NaN-safe defaults when absent — LightGBM handles missing):
+      home_team_pfs_cum          cumulative home team personal fouls
+      away_team_pfs_cum          cumulative away team personal fouls
+      home_max_player_pfs        highest PF count among home players
+      away_max_player_pfs        highest PF count among away players
+      home_starter_fouled_out_indicator  1.0 if any home starter has PF >= 6
+      away_starter_fouled_out_indicator  1.0 if any away starter has PF >= 6
+      pf_imbalance               home_team_pfs_cum - away_team_pfs_cum
+
+    Sources: keys on the snap dict populated by the live poller (W-003) or by
+    inplay_foul_state.parquet when replaying historical games.  All absent keys
+    fall through as NaN — the model was trained with this missing-value path and
+    handles it gracefully.
+    """
+    try:
+        h_pfs = _coerce_float(snap.get("home_team_pfs_cum"), default=float("nan"))
+        a_pfs = _coerce_float(snap.get("away_team_pfs_cum"), default=float("nan"))
+        feats["home_team_pfs_cum"] = h_pfs
+        feats["away_team_pfs_cum"] = a_pfs
+        feats["home_max_player_pfs"] = _coerce_float(
+            snap.get("home_max_player_pfs"), default=float("nan"))
+        feats["away_max_player_pfs"] = _coerce_float(
+            snap.get("away_max_player_pfs"), default=float("nan"))
+        feats["home_starter_fouled_out_indicator"] = _coerce_float(
+            snap.get("home_starter_fouled_out_indicator"), default=0.0)
+        feats["away_starter_fouled_out_indicator"] = _coerce_float(
+            snap.get("away_starter_fouled_out_indicator"), default=0.0)
+        # pf_imbalance = home_pfs - away_pfs (positive = home in more foul trouble)
+        if not (np.isnan(h_pfs) or np.isnan(a_pfs)):
+            feats["pf_imbalance"] = h_pfs - a_pfs
+        else:
+            feats["pf_imbalance"] = float("nan")
+    except Exception:
+        pass  # never break the inplay path over missing foul data
 
 
 def _try_inject_quarter_features(feats: Dict[str, Any], snap: Dict[str, Any]) -> None:
@@ -978,6 +1235,8 @@ def reset_cache() -> None:
     _ITER62_ISO_CACHE.clear()
     _BLEND_META_CACHE.clear()
     _DUALCAL_CACHE.clear()
+    _V4_FOULS_CACHE.clear()
+    _V4_FOULS_META_CACHE.clear()
 
 
 __all__ = [
