@@ -2,27 +2,26 @@
 
 > What the system can realistically achieve — by phase, by market, by model.
 > Honest numbers. No inflated projections. All win% at standard -110 vig (break-even = 52.4%).
-> Updated 2026-05-28 (originally 2026-05-18, refreshed 2026-05-25, anchored to iter61 sim-reconciliation 2026-05-28). The "Now" row is no longer a projection — it's **measured** on 1,535 walk-forward bets vs real DK/FD/MGM/Pinnacle closes.
+> Reframed 2026-06-09 toward honest intelligence tiers. The betting "Now" read is **break-even-minus-vig** vs efficient closing lines; the ceiling is **funnel depth + basketball understanding**, not a printed ROI (see [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)).
 
 ---
 
 ## The Headline
 
-| Phase | Prop Win% (filtered) | Avg CLV | ROI / 100 bets |
-|-------|----------------------|---------|----------------|
-| **Now** (post-Iter-57 filter stack + KB+ISO sizing, MEASURED) | **61.4%** | **+8.94pp aggregate** | **+$18.38 per $100** |
-| +Pinnacle Gate 1 real-close validation (Oct 2026 ingestion) | TBD | TBD | TBD (expected compression vs L5 proxy +15-25%) |
-| +80 CV games (Tier 3-4 model retrain, spatial features live) | 62-64% | +9-12% | +$22-32 per $100 |
-| +Possession simulator (Monte Carlo, full distributions) | 63-66% | +10-14% | +$26-38 per $100 |
-| +Agentic research system at scale (signal universe 500+) | 64-68% | +12-16% | +$32-46 per $100 |
-| **Long-run ceiling (500+ signals, 200+ CV games, full research loop)** | **66-70%** | **+14-18%** | **+$40-55 per $100** |
+The honest ceiling is about **basketball understanding and funnel depth**, not a printed ROI. Against efficient closing lines today the betting edge is roughly break-even-minus-vig; the headroom lives in how deep the intelligence funnel goes, not in bet sizing on an efficient market.
+
+| Tier | What unlocks it | Betting read | Intelligence read |
+|------|-----------------|--------------|-------------------|
+| **Now** (MEASURED) | leak-free prop MAE · 80-artifact intel · agentic loop | **Break-even-minus-vig** vs real closes; **AST ~+4–5%** durable | funnel live end-to-end; CV features wired (SHAP≈0 today) |
+| +Pinnacle Gate 1 (Oct 2026) | first real sharp-close CLV archive | first *true* edge measurement vs sharp closes | — |
+| +80 CV games live | spatial features actually move the model | CV moat converts plumbing → measured lift (unproven) | per-player behavioral signal at scale |
+| +Possession sim + real SGP capture | joint pricing on live markets | same-game-parlay edge (if any) becomes measurable | full-distribution game understanding |
+| +Agentic loop at scale (500+ signals) | larger validated signal universe | more durable selections survive the refute-gate | deepest tier of automated understanding |
 
 **Important caveats:**
-- The "Now" row is **measured** on 1,535 walk-forward bets vs real DK/FD/MGM/Pinnacle closing lines (post-Iter-57 filter stack + Kelly-B + per-stat isotonic). Theoretical Kelly ROI ceiling at +8.94pp CLV ≈ 18-22%; realized +18.38% sits AT the ceiling, meaning further gains require **new edge sources** (live data, true model-prob edge) not better sizing.
-- Real-world execution clip: 30-50% of paper. **Sustainable deployable target: +8 to +12% sustained ROI.**
-- Pinnacle Gate 1 (first real CLV measurement vs sharp closes) has NOT YET BEEN RUN — Pinnacle scraper accumulates from Oct 2026 preseason. Until then, the +18.38% is against non-sharp books (DK/FD/MGM/BetRivers) only.
-- CLV of +8.94pp is **top decile for public sports modeling**. Most sharp bettors sustain +1-3% CLV.
-- The "Now" agentic research system IS running (improve_loop, 70 iterations, 29 ships, 41 reverts). The +18.38% stack was discovered through this loop, not designed up front.
+- The honest **Now** read: vs real DK/FD/MGM/Pinnacle **closing** lines the market is efficient — break-even-minus-vig overall, with **assists ~+4–5% ROI** the one durable, book-robust edge (breaks in playoffs; size conservative). The earlier "+18.38% / +8.94pp CLV / $18.38 per $100" was a **market-follow grading artifact**, retracted ([JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md)).
+- The forward tiers are **directional headroom, not forecasts.** Real sharp-close CLV cannot be measured until Oct 2026; zero real money placed by design.
+- The leverage is **funnel depth** (DATA→SIGNALS→MODELS→ENGINES→PREDICTIONS→INTELLIGENCE) and the agentic loop that re-validates every stage — not better sizing on an efficient market.
 
 ---
 
