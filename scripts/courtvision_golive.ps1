@@ -130,6 +130,23 @@ $env:CV_SLATE_HAIRCUT = "1"
 $env:CV_SLATE_VAC_BUMP = "1"
 $env:CV_AVAIL_PARQUET_FALLBACK = "1"
 $env:CV_VAC_BUMP_GATED = "1"
+# == ENABLED 2026-06-07 (validated this session; targeted suite 98/98 green; EDGE_GATE_2026-06-07.md) ==
+# Sim count-stat calibration -- mean/total-preserving, shrinks PHANTOM count edges (max |edge| 14.6->8.6pp):
+$env:CV_COUNT_NB = "1"          # over-dispersed counts -> negative-binomial: ftm shapeErr 8.2->5.2%, fg3m 3.5->3.2%
+$env:CV_COUNT_STL = "1"         # stl chain over-clumped zeros -> Poisson at real mean: shapeErr 5.8->2.5%
+$env:CV_QUARTER_IDENTITY = "1"  # per-team quarter shape (SAS Q1 fast-start), total-preserving: shape err 2.2->1.5%
+# Distribution / sizing calibration -- honest intervals + per-row sigma (ROI-safe, AST edge preserved):
+$env:CV_QUANTILE_CAL = "1"      # conformal q10/q90: PTS cov80 .69->.82, REB .77->.82, AST .73->.81
+$env:CV_ROW_SIGMA = "1"         # per-row sigma (vs flat _STAT_SIGMA) for honest pregame edge SIZING
+$env:CV_INGAME_SIGMA = "1"      # per-(stat,bucket) in-game sigma -> right-sized live Kelly (fixes 3.9-9x late over-size)
+# SGP joint pricing -- 10x better joint calibration (accuracy/calibration only; NOT an edge claim, no SGP prices):
+$env:CV_ARCHETYPE_CORR = "1"    # parlay leg correlations recalibrated (teammate stacks priced down ~11%)
+# Bet policy -- concentrate on the PROVEN cross-season AST edge, drop PTS (no edge, loses playoffs):
+$env:CV_BET_POLICY = "reb_ast"  # +4.31% held-out-late vs +0.22% allow-all; AST served RAW (calibration-protected)
+# DELIBERATELY KEPT OFF (re-verified this session to HURT -> enabling would LOWER quality):
+#   CV_PREGAME_CAL (kills AST edge +7.22->+1.12), CV_RESIDUAL_HEAD_FIX (worsens 5 q50 stats),
+#   CV_LOWSHRINK_BLEND (REB ROI +1.81->+0.50), CV_INGAME_INTEL (-19.5% vs routed),
+#   CV_AST_VAC_FEATURE / CV_VAC_LOAD_FEATURE (accuracy-not-edge, refuted on independent cross-book corpus).
 $slateArgs = @("scripts\cv_fix_build_slate.py", "--date", $Date)
 if ($GameId) { $slateArgs += @("--gid", $GameId) }
 & $PY @slateArgs

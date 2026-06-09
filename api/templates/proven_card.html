@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}CourtVision — G3 Prediction{% endblock %}
+{% block og_title %}CourtVision — G3 · {{ away }} @ {{ home }}{% endblock %}
+{% block og_desc %}Possession-Monte-Carlo prediction for {{ away }} @ {{ home }}: win probability, projected box score, live win% throughout.{% endblock %}
+{% block nav_games %}active{% endblock %}
+{% block subtitle %}G3 · {{ away }} @ {{ home }} · {{ date }}{% endblock %}
+
+{% block content %}
+
+{% set e = ensemble if (ensemble and ensemble is mapping) else {} %}
+{% set wp = e.get('consensus_win_prob_home') %}
+{% set ph = e.get('proj_home_score') %}
+{% set pa = e.get('proj_away_score') %}
+{% set ptot = e.get('proj_total') %}
+
+{# ── 1. HEADER CARD ─────────────────────────────────────────────────────────── #}
+<div class="cv-card mb-4 p-4">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <div>
+      <h1 class="text-xl font-bold" style="color:var(--cv-text);">{{ away }} @ {{ home }}</h1>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">
+        2026 NBA Finals · Game 3 · MSG
+        <span class="ml-2 px-2 py-0.5 rounded text-xs font-semibold" style="background:#1a2e1a;color:#6ee7b7;">NYK leads 2-0</span>
+      </p>
+    </div>
+    <div class="text-right">
+      <p class="text-xs mb-0.5" style="color:var(--cv-muted);">{{ home }} win probability</p>
+      <p class="text-4xl font-extrabold" style="color:{% if wp is not none and wp >= 0.5 %}var(--cv-win){% else %}#f87171{% endif %};">
+        {{ "%.0f%%"|format(wp * 100) if wp is not none else "—" }}
+      </p>
+      <p class="text-xs" style="color:var(--cv-subtle);">{{ away }} {{ "%.0f%%"|format((1 - wp) * 100) if wp is not none else "—" }}</p>
+    </div>
+  </div>
+
+  {# 3-tile score row #}
+  <div class="grid grid-cols-3 gap-3 text-center mb-3">
+    <div class="p-3 rounded" style="background:#0d1b0d;">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Proj {{ home }}</p>
+      <p class="text-2xl font-bold" style="color:var(--cv-win);">{{ "%.0f"|format(ph) if ph is not none else "—" }}</p>
+    </div>
+    <div class="p-3 rounded" style="background:#1a0a0a;">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Proj {{ away }}</p>
+      <p class="text-2xl font-bold" style="color:#f87171;">{{ "%.0f"|format(pa) if pa is not none else "—" }}</p>
+    </div>
+    <div class="p-3 rounded" style="background:#0d1225;">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Proj Total</p>
+      <p class="text-2xl font-bold" style="color:var(--cv-text);">{{ "%.0f"|format(ptot) if ptot is not none else "—" }}</p>
+    </div>
+  </div>
+
+  <p class="text-xs italic" style="color:var(--cv-subtle);">40k possession Monte-Carlo + 16 engines; live box updates below.</p>
+</div>
+
+{# ── 2. LIVE BOX SCORE (hero — live win% + play-by-play) ────────────────────── #}
+{% include "_live_winprob.html" %}
+
+{# live intelligence — what's happening + what will happen #}
+{% include "_live_happening.html" ignore missing %}
+{% include "_live_forecast.html" ignore missing %}
+
+{# ── 3. INTELLIGENCE ─────────────────────────────────────────────────────────── #}
+{% include "_g3_intel.html" ignore missing %}
+
+{# ── 4. PREGAME PROJECTIONS (box score + 16-engine table) ───────────────────── #}
+{% include "_g3_brief.html" ignore missing %}
+
+{# ── 5. LINES ────────────────────────────────────────────────────────────────── #}
+{% if card and card.edges %}
+<div class="cv-card mb-4 p-4">
+  <h2 class="text-sm font-bold mb-3" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">Lines</h2>
+  {% for edge in card.edges %}
+  <div class="py-2 {% if not loop.last %}border-b{% endif %}" style="border-color:var(--cv-border);">
+    <div class="flex items-start gap-2">
+      <span class="text-xs font-bold px-2 py-0.5 rounded flex-shrink-0"
+        {% if edge.kind == 'LINE_SHOP' %}style="background:#064e3b;color:#34d399;"
+        {% elif edge.kind == 'FRESHNESS' %}style="background:#451a03;color:#fbbf24;"
+        {% else %}style="background:#1e3a5f;color:#93c5fd;"{% endif %}>{{ edge.kind }}</span>
+      <span class="text-xs" style="color:var(--cv-text);">{{ edge.headline }}</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── 6. FOOTER ───────────────────────────────────────────────────────────────── #}
+<div class="mt-6 py-3 border-t text-xs text-center" style="border-color:var(--cv-border);color:var(--cv-subtle);">
+  CourtVision · ~85K signals → 1,135 models → 16 engines → possession Monte-Carlo · live box from the NBA feed.
+</div>
+
+{% endblock %}

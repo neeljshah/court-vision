@@ -1,0 +1,11 @@
+{
+  "players_written": 582,
+  "stale_dossiers_pruned": 0,
+  "skipped_no_current_season_game": 667,
+  "cv_cards_folded_in": 222,
+  "thin_players_3_or_fewer_sections": 6,
+  "team_rosters_updated": 30,
+  "teams_mapped": 30,
+  "index_path": "C:\\Users\\neelj\\nba-ai-system\\vault\\Intelligence\\Players_Index.md",
+  "players_dir": "C:\\Users\\neelj\\nba-ai-system\\vault\\Intelligence\\Players"
+}

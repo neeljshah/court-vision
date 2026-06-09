@@ -123,6 +123,24 @@
       "heartbeat_file": "data/cache/daemon_heartbeats/pinnacle_scraper.txt",
       "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs/R16 && tmux new-session -d -s pin_daemon 'python3 -u scripts/pinnacle_scraper.py --interval-sec 30 >> logs/R16/pin.log 2>&1'",
       "process_match": "pinnacle_scraper.py"
+    },
+    {
+      "name": "dk_inplay_scraper",
+      "command": "python -u scripts/draftkings_inplay_scraper.py --daemon --interval 30",
+      "expected_interval_sec": 30,
+      "heartbeat_file": "data/cache/daemon_heartbeats/dk_inplay_scraper.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u scripts/draftkings_inplay_scraper.py --daemon --interval 30 > logs/dk_inplay.log 2>&1 &",
+      "process_match": "draftkings_inplay_scraper.py",
+      "_note": "Writes data/lines/<date>_dk_inplay.csv during live games. Without this in the watchdog the grader corpus stops growing (see docs/VS_VEGAS_ASSESSMENT.md §2)."
+    },
+    {
+      "name": "fd_inplay_scraper",
+      "command": "python -u scripts/fanduel_inplay_scraper.py --daemon --interval 60",
+      "expected_interval_sec": 60,
+      "heartbeat_file": "data/cache/daemon_heartbeats/fd_inplay_scraper.txt",
+      "restart_cmd": "cd /workspace/nba-ai-system && mkdir -p logs && nohup python -u scripts/fanduel_inplay_scraper.py --daemon --interval 60 > logs/fd_inplay.log 2>&1 &",
+      "process_match": "fanduel_inplay_scraper.py",
+      "_note": "Writes data/lines/<date>_fd_inplay.csv during live games."
     }
   ]
 }

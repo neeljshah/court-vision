@@ -1,0 +1,307 @@
+{# _live_winprob.html — Gated CV_LIVE_SIM_PANEL display block.
+   Included by proven_card.html (and any page that polls /api/box_score).
+   Data gate is CV_LIVE_SIM (existing); display gate is CV_LIVE_SIM_PANEL (new).
+   When live_sim_panel_enabled=False -> shows a "feed not connected" placeholder.
+   When sim block absent (no live_overlay, sandbox 403) -> same placeholder.
+   NO bet action / stake / auto-placement anywhere on this block.
+#}
+<div class="cv-card mb-5 p-4" id="live-winprob-section">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="inline-block rounded-full" style="width:9px;height:9px;background:#ef4444;box-shadow:0 0 8px #ef4444;"></span>
+    <h2 class="text-sm font-bold" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">Live · Game 3</h2>
+    <span class="text-xs ml-auto" style="color:var(--cv-subtle);">auto-updates every 12s</span>
+  </div>
+
+  {% if live_sim_panel_enabled and game_id %}
+  {# Live box score (score + clock + per-player all-stats) — JS fills from /api/box_score #}
+  <div id="live-box" class="mb-2">
+    <p class="text-sm italic" style="color:var(--cv-subtle);">Connecting to the live NBA feed…</p>
+  </div>
+  {# Win% tiles + foul-trouble / pace scenarios — JS fills #}
+  <div id="live-sim-panel" style="display:none;">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3" id="live-wp-grid"></div>
+    <div id="live-scenarios" class="mt-2"></div>
+  </div>
+  {% else %}
+  <p class="text-xs italic" style="color:var(--cv-subtle);">Live panel is off (set CV_LIVE_SIM_PANEL=1).</p>
+  {% endif %}
+
+</div>
+
+{% if live_sim_panel_enabled and game_id %}
+<script>
+(function() {
+  var GAME_ID = "{{ game_id }}";
+  var DATE = "{{ date }}";
+  var HOME = "{{ home }}";
+  var AWAY = "{{ away }}";
+  var pollInterval = null;
+
+  function fmtWp(p) { return Math.round(p * 100) + "%"; }
+  function fmtScore(s) { return Math.round(s * 10) / 10; }
+
+  // Abramowitz-Stegun approximation to normal CDF — max error < 1.5e-7
+  function normCdf(x) {
+    var neg = x < 0;
+    if (neg) x = -x;
+    var t = 1.0 / (1.0 + 0.2316419 * x);
+    var poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+    var phi = 1.0 - (1.0 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x) * poly;
+    return neg ? 1.0 - phi : phi;
+  }
+
+  // Sane client-side win% from projected final margin + time remaining (Brownian motion model).
+  // sigma = 11 * sqrt(frac_remaining) captures the ~11-pt sd of NBA final margin;
+  // frac_remaining guards against division-by-zero in the last seconds.
+  // Clamp to [2%, 98%] so it never shows 0 or 100 with live data.
+  function calcWinProb(home, away, sim) {
+    if (!home || !away || !sim) return null;
+    var ph = home.projected_total_pts, pa = away.projected_total_pts;
+    if (ph == null || pa == null) return null;
+    var sr = sim.sec_remaining != null ? sim.sec_remaining : 2880;
+    var frac = Math.max(sr / 2880, 0.02);
+    var sigma = 11 * Math.sqrt(frac) + 2;
+    var pm = ph - pa;  // positive = home favored
+    var wp = normCdf(pm / sigma);
+    return Math.min(0.98, Math.max(0.02, wp));
+  }
+
+  function renderSimPanel(sim, home, away) {
+    if (!sim) return;
+    var panel = document.getElementById("live-sim-panel");
+    if (panel) panel.style.display = "block";
+
+    // Use our sane win% formula instead of the broken sim.home_win_prob
+    var saneWp = calcWinProb(home, away, sim);
+    var wpHome = saneWp != null ? saneWp : sim.home_win_prob;
+    var wpAway = 1 - wpHome;
+
+    var grid = document.getElementById("live-wp-grid");
+    if (grid) {
+      grid.innerHTML = [
+        '<div class="p-3 rounded text-center" style="background:#0d1b0d;">' +
+          '<p class="text-xs mb-1" style="color:#94a3b8;">' + HOME + ' Win% <span style="color:#64748b;font-size:10px;">(live)</span></p>' +
+          '<p class="text-2xl font-bold" style="color:#34d399;">' + fmtWp(wpHome) + '</p>' +
+        '</div>',
+        '<div class="p-3 rounded text-center" style="background:#1a0a0a;">' +
+          '<p class="text-xs mb-1" style="color:#94a3b8;">' + AWAY + ' Win% <span style="color:#64748b;font-size:10px;">(live)</span></p>' +
+          '<p class="text-2xl font-bold" style="color:#f87171;">' + fmtWp(wpAway) + '</p>' +
+        '</div>',
+        ((home && home.projected_total_pts!=null) ? '<div class="p-3 rounded text-center" style="background:#0f172a;">' +
+          '<p class="text-xs mb-1" style="color:#94a3b8;">' + HOME + ' Proj Final</p>' +
+          '<p class="text-2xl font-bold" style="color:#e2e8f0;">' + Math.round(home.projected_total_pts) + '</p>' +
+        '</div>' : ''),
+        ((away && away.projected_total_pts!=null) ? '<div class="p-3 rounded text-center" style="background:#0f172a;">' +
+          '<p class="text-xs mb-1" style="color:#94a3b8;">' + AWAY + ' Proj Final</p>' +
+          '<p class="text-2xl font-bold" style="color:#e2e8f0;">' + Math.round(away.projected_total_pts) + '</p>' +
+        '</div>' : ''),
+      ].join("");
+    }
+
+    var scen = document.getElementById("live-scenarios");
+    if (scen && sim.scenarios && sim.scenarios.length) {
+      var html = '<p class="text-xs font-semibold mb-2" style="color:#94a3b8;">Directional Scenarios</p>';
+      sim.scenarios.forEach(function(s) {
+        var delta = s.win_prob_delta >= 0 ? "+" + (s.win_prob_delta * 100).toFixed(1) : (s.win_prob_delta * 100).toFixed(1);
+        html += '<div class="mb-2 p-2 rounded text-xs" style="background:#0f172a;border:1px solid #1e293b;">' +
+          '<p style="color:#e2e8f0;">' + (s.description || s.name) + '</p>' +
+          '<p class="mt-1" style="color:#94a3b8;">' +
+            HOME + ' win%: ' + fmtWp(s.home_win_prob) +
+            ' (<span style="color:' + (s.win_prob_delta >= 0 ? "#34d399" : "#f87171") + '">' + delta + 'pp</span>)' +
+            '  |  <span class="italic" style="color:#64748b;">' + (s.note || "directional / illustrative") + '</span>' +
+          '</p>' +
+        '</div>';
+      });
+      scen.innerHTML = html;
+    }
+
+    // Dynamics chips
+    if (sim.dynamics && Object.keys(sim.dynamics).length) {
+      var chips = '';
+      Object.entries(sim.dynamics).forEach(function(pair) {
+        if (pair[1]) chips += '<span class="mr-1 px-2 py-0.5 rounded text-xs" style="background:#1e293b;color:#94a3b8;">' + pair[0] + '</span>';
+      });
+      if (chips) {
+        var panel2 = document.getElementById("live-sim-panel");
+        if (panel2) {
+          var dynDiv = document.createElement("div");
+          dynDiv.className = "mt-2";
+          dynDiv.innerHTML = '<p class="text-xs mb-1" style="color:#64748b;">Dynamics:</p>' + chips;
+          // Only add once
+          if (!panel2.querySelector(".dynamics-chips")) {
+            dynDiv.classList.add("dynamics-chips");
+            panel2.appendChild(dynDiv);
+          }
+        }
+      }
+    }
+  }
+
+  function fmtClock(sim) {
+    if (!sim || sim.sec_remaining == null) return "";
+    var sr = sim.sec_remaining;
+    if (sr <= 0) return "Final";
+    // 4 quarters of 720s each; Q1 = 2160-2880s remaining, Q4 = 0-720s
+    var q = 4 - Math.floor(sr / 720);
+    if (q < 1) q = 1;
+    if (q > 4) q = 4;
+    // seconds left in this quarter
+    var secsIntoGame = 2880 - sr;
+    var secsIntoQ = secsIntoGame - (q - 1) * 720;
+    var secsLeftInQ = 720 - secsIntoQ;
+    if (secsLeftInQ < 0) secsLeftInQ = 0;
+    var mm = Math.floor(secsLeftInQ / 60);
+    var ss = Math.round(secsLeftInQ % 60);
+    return "Q" + q + " " + mm + ":" + (ss < 10 ? "0" : "") + ss;
+  }
+
+  // Check for Wemby foul trouble — returns foul count or null
+  function getWembyFouls(awayTeam) {
+    if (!awayTeam || !awayTeam.players) return null;
+    for (var i = 0; i < awayTeam.players.length; i++) {
+      var p = awayTeam.players[i];
+      if (p.player_name && p.player_name.indexOf("Wembanyama") >= 0) {
+        return p.fouls != null ? p.fouls : null;
+      }
+    }
+    return null;
+  }
+
+  function teamBox(team) {
+    if (!team || !team.players) return "";
+    var rows = team.players.filter(function(p){ return (p.minutes_played||0) > 0 || (p.current && p.current.pts > 0); });
+    rows.sort(function(a,b){ return ((b.current&&b.current.pts)||0) - ((a.current&&a.current.pts)||0); });
+    // Header: PLAYER | MIN | PTS→PROJ | REB→PROJ | AST→PROJ | 3PM | STL | BLK | TOV | PF
+    var h = '<div class="overflow-x-auto mb-4"><table style="width:100%;font-size:11px;border-collapse:collapse;">' +
+      '<thead><tr style="color:#94a3b8;border-bottom:1px solid #1e293b;">' +
+      '<th style="text-align:left;padding:4px 6px 4px 0;white-space:nowrap;">' +
+        team.abbr + ' <span style="color:#e2e8f0;font-weight:700;">' + (team.current_total_pts||0) + '</span>' +
+        '<span style="color:#64748b;font-size:10px;font-weight:400;"> / proj </span>' +
+        '<span style="color:#94a3b8;font-weight:600;">' + (team.projected_total_pts!=null?Math.round(team.projected_total_pts):'—') + '</span>' +
+      '</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">MIN</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;color:#e2e8f0;">PTS</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;color:#64748b;">proj</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">REB</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;color:#64748b;">proj</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">AST</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;color:#64748b;">proj</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">3PM</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">STL</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">BLK</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">TOV</th>' +
+      '<th style="text-align:right;padding:4px 4px;white-space:nowrap;">PF</th>' +
+      '</tr></thead><tbody>';
+    rows.forEach(function(p){
+      var c = p.current || {}, pf = p.paced_final || {};
+      var isWemby = p.player_name && p.player_name.indexOf("Wembanyama") >= 0;
+      var rowStyle = isWemby ? 'background:rgba(30,15,0,0.4);' : '';
+      var nameStyle = isWemby ? 'color:#fbbf24;font-weight:600;' : 'color:#e2e8f0;';
+      // Color PTS vs proj: green if ahead, red if behind
+      var ptsActual = c.pts != null ? c.pts : 0;
+      var ptsProjFinal = pf.pts != null ? Math.round(pf.pts) : null;
+      var ptsColor = '#e2e8f0';
+      if (ptsProjFinal != null) {
+        // rough pacing: if actual > half of proj at this point, doing well
+        if (ptsActual > 0 && ptsProjFinal > 0) {
+          ptsColor = ptsActual >= ptsProjFinal * 0.45 ? '#34d399' : '#f87171';
+        }
+      }
+      h += '<tr style="border-bottom:1px solid #1e293b;' + rowStyle + '">' +
+        '<td style="padding:4px 6px 4px 0;' + nameStyle + 'white-space:nowrap;">' + p.player_name + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#64748b;">' + (p.minutes_played!=null ? (Math.floor(p.minutes_played) + ':' + (Math.round((p.minutes_played%1)*60)<10?'0':'') + Math.round((p.minutes_played%1)*60)) : '—') + '</td>' +
+        '<td style="text-align:right;padding:4px;color:' + ptsColor + ';font-weight:700;">' + ptsActual + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#64748b;font-size:10px;">' + (ptsProjFinal!=null?ptsProjFinal:'—') + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.reb!=null?c.reb:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#64748b;font-size:10px;">' + (pf.reb!=null?Math.round(pf.reb):'—') + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.ast!=null?c.ast:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#64748b;font-size:10px;">' + (pf.ast!=null?Math.round(pf.ast):'—') + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.fg3m!=null?c.fg3m:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.stl!=null?c.stl:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.blk!=null?c.blk:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:#94a3b8;">' + (c.tov!=null?c.tov:0) + '</td>' +
+        '<td style="text-align:right;padding:4px;color:' + (p.fouls>=4?'#f87171':p.fouls>=3?'#fbbf24':'#94a3b8') + ';font-weight:' + (p.fouls>=3?'700':'400') + ';">' + (p.fouls!=null?p.fouls:'—') + '</td>' +
+        '</tr>';
+    });
+    h += '</tbody></table></div>';
+    return h;
+  }
+
+  function renderLiveBox(data) {
+    var box = document.getElementById("live-box");
+    if (!box || !data.have_data || !data.home || !data.away) return;
+    var hs = data.home.current_total_pts||0, as_score = data.away.current_total_pts||0;
+    var ph = (data.home.projected_total_pts!=null) ? Math.round(data.home.projected_total_pts) : null;
+    var pa = (data.away.projected_total_pts!=null) ? Math.round(data.away.projected_total_pts) : null;
+
+    // Compute sane win% from projected margin
+    var saneWp = calcWinProb(data.home, data.away, data.sim);
+    var wpHomeDisp = saneWp != null ? Math.round(saneWp * 100) : null;
+    var wpAwayDisp = wpHomeDisp != null ? (100 - wpHomeDisp) : null;
+
+    var clockStr = fmtClock(data.sim);
+
+    // Win% pill
+    var wpHtml = '';
+    if (wpHomeDisp != null) {
+      wpHtml = '<div style="display:flex;gap:12px;justify-content:center;align-items:center;margin-top:6px;">' +
+        '<span style="color:#34d399;font-weight:700;font-size:15px;">' + data.home.abbr + ' ' + wpHomeDisp + '%</span>' +
+        '<span style="color:#64748b;font-size:12px;">live win%</span>' +
+        '<span style="color:#f87171;font-weight:700;font-size:15px;">' + wpAwayDisp + '% ' + data.away.abbr + '</span>' +
+      '</div>';
+    }
+
+    // Projected final line
+    var projLine = (ph!=null && pa!=null)
+      ? '<div style="color:#94a3b8;font-size:12px;margin-top:4px;">Proj final: ' + data.home.abbr + ' <strong style="color:#e2e8f0;">' + ph + '</strong> – <strong style="color:#e2e8f0;">' + pa + '</strong> ' + data.away.abbr + '</div>'
+      : '';
+
+    // Wemby foul watch alert
+    var wembyFouls = getWembyFouls(data.away);
+    var wembyAlert = '';
+    if (wembyFouls != null && wembyFouls >= 3) {
+      var alertColor = wembyFouls >= 5 ? '#f87171' : wembyFouls >= 4 ? '#fb923c' : '#fbbf24';
+      var alertBg = wembyFouls >= 5 ? 'rgba(127,29,29,0.35)' : wembyFouls >= 4 ? 'rgba(124,45,18,0.35)' : 'rgba(120,53,15,0.30)';
+      var alertMsg = wembyFouls >= 5 ? 'FOUL OUT DANGER — 1 foul from done' : wembyFouls >= 4 ? 'DEEP foul trouble — coach may sit him' : 'Foul trouble — SAS rotation affected';
+      wembyAlert = '<div style="margin-bottom:12px;padding:10px 14px;border-radius:6px;border:1px solid ' + alertColor + ';background:' + alertBg + ';display:flex;align-items:center;gap:10px;">' +
+        '<span style="font-size:18px;">⚡</span>' +
+        '<div>' +
+          '<span style="color:' + alertColor + ';font-weight:700;font-size:13px;">WEMBY ' + wembyFouls + ' FOULS</span>' +
+          '<span style="color:#94a3b8;font-size:12px;margin-left:8px;">— ' + alertMsg + '; NYK win% jumps if he sits.</span>' +
+        '</div>' +
+      '</div>';
+    }
+
+    box.innerHTML =
+      wembyAlert +
+      '<div style="margin-bottom:12px;padding:14px;border-radius:8px;text-align:center;background:#0a0f1e;">' +
+        '<div style="font-size:26px;font-weight:800;color:#e2e8f0;letter-spacing:.03em;">' +
+          data.home.abbr + ' <span style="color:#34d399;">' + hs + '</span>' +
+          ' <span style="color:#64748b;">—</span> ' +
+          '<span style="color:#f87171;">' + as_score + '</span> ' + data.away.abbr +
+          (clockStr ? '<span style="font-size:14px;font-weight:400;color:#94a3b8;margin-left:12px;">' + clockStr + '</span>' : '') +
+        '</div>' +
+        projLine +
+        wpHtml +
+      '</div>' +
+      '<div style="color:#e2e8f0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Live Box Score — actual vs projection</div>' +
+      '<div style="color:#64748b;font-size:10px;margin-bottom:10px;font-style:italic;">Columns: PTS / proj-final, REB / proj, AST / proj. PF highlighted if foul trouble.</div>' +
+      teamBox(data.home) + teamBox(data.away);
+  }
+
+  function poll() {
+    fetch("/api/box_score?game_id=" + GAME_ID + "&date=" + DATE)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data && data.sim) { renderSimPanel(data.sim, data.home, data.away); }
+        if (data && data.have_data) { renderLiveBox(data); }
+      })
+      .catch(function() {}); // silent fail — degrade gracefully
+  }
+
+  // Poll every 12 seconds (box_poller refreshes every 10s, give it margin)
+  poll();
+  pollInterval = setInterval(poll, 12000);
+})();
+</script>
+{% endif %}

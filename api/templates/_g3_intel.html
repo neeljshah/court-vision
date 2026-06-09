@@ -1,0 +1,609 @@
+{# _g3_intel.html — G3 INTELLIGENCE SECTION
+   SAS @ NYK, NBA Finals G3, MSG, NYK home, LIVE.
+   Included into the G3 page via {% include %}.  NO {% block %}/{% extends %}.
+   Context may provide: ensemble (dict with engines list), home, away.
+   All numbers are REAL outputs from predict_ensemble16.py + prop_engine.py (40k) + scout room.
+   honesty_class=paper | scouting | no proven betting edge | display only.
+#}
+
+{# ── BLOCK 1 — SYSTEM SCALE BANNER ─────────────────────────────────────── #}
+<div class="cv-card mb-4 p-4" style="background:linear-gradient(135deg,#0d1225 0%,#0f172a 100%);border:1px solid #1e293b;">
+  <h2 class="text-sm font-bold mb-3" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">
+    AI Architecture — What's Behind This Prediction
+  </h2>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#818cf8;">~85,106</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Signals</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">54 source files · 1,283 raw columns · 783K cells</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#818cf8;">1,135</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Models</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">174 serialized on disk · 82 registry-tracked descriptive</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#818cf8;">16</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Engines</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">5 analytic core · 9 experimental decorrelators · 2 Monte-Carlo</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#34d399;">40,000</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Possession Sims</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">Player-level joint distribution · shared-pie routing · GPU</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#fbbf24;">N_eff 2.22</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">True Independent Signals</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">Mean off-diag corr 0.409 · honest band ±8.7 pts</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #1e293b;">
+      <p class="text-2xl font-bold" style="color:#34d399;">1</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Prediction</p>
+      <p class="text-xs mt-0" style="color:var(--cv-subtle);">Equal-weight fusion · possession-MC anchor · clutch overlay</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 p-2 rounded text-xs" style="background:#0d1225;border:1px solid #1e3a5f;">
+    <span style="color:#818cf8;font-weight:700;">PIPELINE:</span>
+    <span style="color:var(--cv-muted);">~85,106 signals</span>
+    <span style="color:var(--cv-subtle);">→</span>
+    <span style="color:var(--cv-muted);">1,135 models</span>
+    <span style="color:var(--cv-subtle);">→</span>
+    <span style="color:var(--cv-muted);">16 engines</span>
+    <span style="color:var(--cv-subtle);">→</span>
+    <span style="color:var(--cv-muted);">Possession MC + Clock Trajectory</span>
+    <span style="color:var(--cv-subtle);">→</span>
+    <span style="color:var(--cv-text);font-weight:600;">ONE prediction</span>
+  </div>
+  <p class="text-xs mt-2 italic" style="color:var(--cv-subtle);">
+    Signal registry: 155 curated definitions (leak-tested, signed, routed to 4 consumers).
+    8-specialist LLM scout room reads the numbers; it guides + explains but does NOT compute the point.
+  </p>
+</div>
+
+{# ── BLOCK 2 — 16-ENGINE CONSENSUS TABLE ────────────────────────────────── #}
+<div class="cv-card mb-4 p-4">
+  <h2 class="text-sm font-bold mb-1" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">
+    16-Engine Consensus Panel
+  </h2>
+  <p class="text-xs mb-3" style="color:var(--cv-muted);">
+    Equal-weight fusion: margin
+    <span style="color:var(--cv-text);font-weight:600;">NYK +0.87</span> ·
+    win% <span style="color:var(--cv-text);font-weight:600;">52.3%</span> pre-clutch /
+    <span style="color:#34d399;font-weight:600;">55.6%</span> post-clutch overlay ·
+    total <span style="color:var(--cv-text);font-weight:600;">227.9</span> ·
+    engine disagreement <span style="color:#fbbf24;font-weight:600;">±3.3 pts</span> ·
+    N_eff <span style="color:#fbbf24;font-weight:600;">2.22</span> / 16 (honest band ±8.7)
+  </p>
+
+  {# Live table from API if ensemble.engines is present #}
+  {% if ensemble and ensemble.get('engines') %}
+  <div class="text-xs mb-2 px-2 py-1 rounded inline-block" style="background:#0d2a1a;color:#34d399;border:1px solid #166534;">
+    LIVE — engine outputs wired from predict_ensemble16
+  </div>
+  <div class="overflow-x-auto">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:var(--cv-muted);">
+          <th class="text-left py-1 pr-3">Engine</th>
+          <th class="text-right py-1 pr-3">P({{ home }})</th>
+          <th class="text-right py-1 pr-3">Margin</th>
+          <th class="text-right py-1">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in ensemble.get('engines') %}
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">{{ row.get('engine', '?') }}</td>
+          {% set wp_e = row.get('win_prob_home') %}
+          <td class="text-right py-1 pr-3 font-semibold" style="color:{% if wp_e is not none and wp_e > 0.5 %}#34d399{% elif wp_e is not none and wp_e < 0.4 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%.1f%%"|format(wp_e * 100) if wp_e is not none else "—" }}
+          </td>
+          {% set mg_e = row.get('margin_home') %}
+          <td class="text-right py-1 pr-3 font-semibold" style="color:{% if mg_e is not none and mg_e > 0 %}#34d399{% elif mg_e is not none and mg_e < 0 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%+.1f"|format(mg_e) if mg_e is not none else "—" }}
+          </td>
+          {% set tot_e = row.get('total') %}
+          <td class="text-right py-1" style="color:var(--cv-text);">{{ "%.1f"|format(tot_e) if tot_e is not none else "—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  {# Static fallback — real numbers from predict_ensemble16.py run 2026-06-08 #}
+  <div class="text-xs mb-2 px-2 py-1 rounded inline-block" style="background:#1c1200;color:#fbbf24;border:1px solid #78350f;">
+    STATIC — from predict_ensemble16.py run 2026-06-08 (40,000 sims, seed=2026)
+  </div>
+  <div class="overflow-x-auto">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:var(--cv-muted);border-bottom:1px solid var(--cv-border);">
+          <th class="text-left py-1 pr-3">Engine</th>
+          <th class="text-left py-1 pr-2" style="color:var(--cv-subtle);">Type</th>
+          <th class="text-right py-1 pr-3">P(NYK)</th>
+          <th class="text-right py-1 pr-3">Margin</th>
+          <th class="text-right py-1 pr-3">Total</th>
+          <th class="text-right py-1" style="color:var(--cv-subtle);">Decorr</th>
+        </tr>
+      </thead>
+      <tbody>
+        {# 5 analytic core #}
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">attribute_matchup</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">analytic</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;font-weight:600;">39.4%</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;">−3.6</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">225</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">r=0.72</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">four_factors</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">analytic</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">58.4%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+3.5</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">229</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">r=0.83</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">player_impact</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">analytic</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">52.3%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+0.9</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">229</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">r=0.76</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">power_ratings</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">analytic</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">51.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+0.4</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">226</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">r=0.85</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">team_score</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">analytic</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">54.7%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+2.0</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">228</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">r=0.86</td>
+        </tr>
+        {# experimental decorrelators #}
+        <tr class="border-t" style="border-color:var(--cv-border);background:rgba(251,191,36,.04);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">bayesian_power</td>
+          <td class="py-1 pr-2" style="color:#94a3b8;">redundant</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">53.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+1.1</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">226</td>
+          <td class="text-right py-1" style="color:#f87171;">r=0.88 ✗</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);background:rgba(251,191,36,.04);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">bradley_terry</td>
+          <td class="py-1 pr-2" style="color:#94a3b8;">redundant</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;font-weight:600;">44.0%</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;">−2.1</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">226</td>
+          <td class="text-right py-1" style="color:#f87171;">r=0.88 ✗</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:#34d399;">clutch_close</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:700;">72.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+8.5</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">229</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.20 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">elo</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;font-weight:600;">33.3%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+1.0</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">226</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.85 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">ft_environment</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">53.5%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+1.4</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">230</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.29 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">lineup_markov</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">51.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+0.4</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">229</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.04 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">matchup_physics</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;font-weight:600;">36.3%</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;">−4.7</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">225</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.15 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">shot_quality_xpts</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">51.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+0.4</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">229</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.67 ✓</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3 font-medium" style="color:var(--cv-text);">transition_origin</td>
+          <td class="py-1 pr-2" style="color:#34d399;font-weight:600;">DECORR</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">59.1%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+4.2</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">231</td>
+          <td class="text-right py-1" style="color:#34d399;">r=0.14 ✓</td>
+        </tr>
+        {# 2 MC engines #}
+        <tr class="border-t" style="border-color:var(--cv-border);background:rgba(129,140,248,.05);">
+          <td class="py-1 pr-3 font-medium" style="color:#818cf8;">possession_mc</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">MC</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;font-weight:600;">41.9%</td>
+          <td class="text-right py-1 pr-3" style="color:#f87171;">−3.5</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">233</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">40k sims</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);background:rgba(129,140,248,.05);">
+          <td class="py-1 pr-3 font-medium" style="color:#818cf8;">clock_trajectory</td>
+          <td class="py-1 pr-2" style="color:#818cf8;">MC</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;font-weight:600;">60.2%</td>
+          <td class="text-right py-1 pr-3" style="color:#34d399;">+4.2</td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">224</td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);">score-traj</td>
+        </tr>
+        {# Fusion row #}
+        <tr class="border-t-2" style="border-color:#334155;background:#0d1225;">
+          <td class="py-2 pr-3 font-bold" style="color:var(--cv-text);">FUSED (equal-weight)</td>
+          <td class="py-2 pr-2" style="color:var(--cv-muted);">+clutch +1.41</td>
+          <td class="text-right py-2 pr-3 font-bold" style="color:#34d399;">55.6%</td>
+          <td class="text-right py-2 pr-3 font-bold" style="color:#34d399;">+0.87</td>
+          <td class="text-right py-2 pr-3 font-bold" style="color:var(--cv-text);">227.9</td>
+          <td class="text-right py-2" style="color:#fbbf24;">N_eff 2.22</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <div class="flex flex-wrap gap-3 mt-3 text-xs">
+    <span style="color:var(--cv-muted);">Engine spread: <span style="color:#fbbf24;font-weight:600;">−4.7 to +8.5</span> (13.2-pt range)</span>
+    <span style="color:var(--cv-subtle);">·</span>
+    <span style="color:var(--cv-muted);">Honest uncertainty band: <span style="color:#fbbf24;font-weight:600;">±8.7 pts</span> (√16/N_eff = 2.69×)</span>
+    <span style="color:var(--cv-subtle);">·</span>
+    <span style="color:var(--cv-muted);">Panel n: <span style="color:var(--cv-text);">80 matchups</span></span>
+  </div>
+</div>
+
+{# ── BLOCK 3 — WHERE G3 IS WON (matchup decomposition) ─────────────────── #}
+<div class="cv-card mb-4 p-4">
+  <h2 class="text-sm font-bold mb-1" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">
+    Where G3 Is Won — Matchup Decomposition
+  </h2>
+  <p class="text-xs mb-3" style="color:var(--cv-muted);">
+    87-attribute facet clash · team-clash multipliers · matchup resolution (xDef by player) · 8-specialist scout room reads.
+    <span style="color:var(--cv-subtle);">Scouting layer — directional intel, not marginal-point inputs.</span>
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+
+    {# SAS advantages #}
+    <div class="p-3 rounded" style="background:#1a0a0a;border:1px solid #7f1d1d;">
+      <p class="text-xs font-bold mb-2" style="color:#f87171;text-transform:uppercase;letter-spacing:.05em;">
+        SAS Structural Edge
+      </p>
+      <div class="space-y-2">
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#7f1d1d;color:#fca5a5;">SAS −20</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Wemby paint scoring suppression</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK paint scoring: attribute clash −20 pctile-points vs SAS defense. Wemby intd_block at 97.6 pctile — every NYK drive ends at the rim deterrence wall.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#7f1d1d;color:#fca5a5;">SAS −16</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Rim finishing suppressed</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK rim finishing clash: −16 pctile. KAT xDef 0.953 (Wemby-exposed). SAS rim D rating 71.0 vs NYK 62.8 — 8.2-point advantage at the basket.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#7f1d1d;color:#fca5a5;">SAS −13</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Foul-drawing suppressed</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK drawing-fouls clash: −13 pctile. SAS FT-suppression multiplier 0.935 (allows fewest FTAs). SAS perimeter D 69.0 vs NYK 64.1.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#7f1d1d;color:#fca5a5;">SAS +13</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Off-rebounding advantage</p>
+            <p class="text-xs" style="color:var(--cv-muted);">SAS off-reb vs NYK def: +13.1 pctile. Kornet off-reb +59 vs rest of roster. Second-chance layer SAS wins by 8.2 pctile-points.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#7f1d1d;color:#fca5a5;">MC 58.1%</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Talent-neutral possession MC</p>
+            <p class="text-xs" style="color:var(--cv-muted);">Raw 40k sim: SAS 58.1% / NYK 41.9%, spread SAS −3.5, total 233.3. The talent model on a neutral floor favors SAS.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# NYK advantages #}
+    <div class="p-3 rounded" style="background:#0a1a0a;border:1px solid #166534;">
+      <p class="text-xs font-bold mb-2" style="color:#34d399;text-transform:uppercase;letter-spacing:.05em;">
+        NYK Structural Edge
+      </p>
+      <div class="space-y-2">
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#166534;color:#86efac;">NYK +1.32</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Clutch identity — net +1.32 / 60% W%</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK clutch net rating +1.32 / 60% clutch-segment W% vs SAS −1.02 / 40%. PBP-sourced, walkforward-validated. Clutch overlay: +1.41 pts → 52.3% → 55.6%. 34% of sims land in clutch window (|margin| ≤ 8).</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#166534;color:#86efac;">NYK ×1.063</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Turnover-forcing (the one marginal-validated edge)</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK TOV-force multiplier 1.063 vs SAS 0.941. SAS 16.5% H2H TOV rate vs 12.5% season average. League split-half 0.838 — confirmed durable.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#166534;color:#86efac;">NYK 0.965</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Brunson floater/pull-up diet (68% self-created)</p>
+            <p class="text-xs" style="color:var(--cv-muted);">Brunson: 68% self-created shots, only 14% rim attempts. Goes OVER Wemby's rim deterrence, not into it. xDef 0.965 — smallest defensive haircut on the NYK roster. Sustaining 25.0 PPG through G1/G2.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#166534;color:#86efac;">NYK +9</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Catch-and-shoot 3 — sole clean offensive facet</p>
+            <p class="text-xs" style="color:var(--cv-muted);">NYK catch+shoot attribute advantage: +9.4 pctile vs SAS closeout coverage. The only facet where NYK wins the attribute clash cleanly (SAS wins 5 of 8 other facets).</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="text-xs px-2 py-0.5 rounded font-bold shrink-0" style="background:#166534;color:#86efac;">MSG +1.73</span>
+          <div>
+            <p class="text-xs font-semibold" style="color:var(--cv-text);">Home-court + first MSG game in series</p>
+            <p class="text-xs" style="color:var(--cv-muted);">HCA structural component: +1.73 pts. First NYK home game — MSG crowd + SAS 7-game WCF fatigue + cumulative travel divergence. Series momentum 2-0.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Attribute clash net summary #}
+  <div class="p-3 rounded text-xs mt-1" style="background:#0d1225;border:1px solid #1e293b;">
+    <p class="font-semibold mb-1" style="color:var(--cv-text);">87-Attribute Facet Clash Summary (from build_attribute_clash.py)</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+      <div><span style="color:var(--cv-muted);">Net pctile sum:</span> <span style="color:#f87171;font-weight:600;">SAS −84.57</span></div>
+      <div><span style="color:var(--cv-muted);">SAS wins facets:</span> <span style="color:#f87171;font-weight:600;">5 of 8</span></div>
+      <div><span style="color:var(--cv-muted);">NYK off 117.7</span> <span style="color:var(--cv-subtle);">vs SAS D 108.8</span></div>
+      <div><span style="color:var(--cv-muted);">NYK TOV-force:</span> <span style="color:#34d399;font-weight:600;">×1.063</span></div>
+    </div>
+  </div>
+</div>
+
+{# ── BLOCK 4 — THE SWING: WEMBY FOUL TROUBLE ────────────────────────────── #}
+<div class="cv-card mb-4 p-4" style="border:2px solid #92400e;background:linear-gradient(135deg,#1c0d00 0%,#0f172a 100%);">
+  <div class="flex items-center gap-2 mb-2">
+    <span class="text-xs font-bold px-2 py-1 rounded" style="background:#92400e;color:#fde68a;">⚠ THE SWING</span>
+    <h2 class="text-sm font-bold" style="color:#fbbf24;text-transform:uppercase;letter-spacing:.06em;">
+      Wemby Foul Trouble — Single Biggest Binary in G3
+    </h2>
+  </div>
+  <p class="text-xs mb-3" style="color:#fde68a;">
+    Victor Wembanyama's availability is the largest conditional swing in the model. SAS's entire defensive identity
+    — rim D 71.0, FT-suppress 0.935, 5-man core net +20.1 — routes through him.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #92400e;">
+      <p class="text-xs mb-1" style="color:#fbbf24;">Foul-Out Rate</p>
+      <p class="text-2xl font-bold" style="color:#fbbf24;">14.3%</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">Mean PF per game: 3.21</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #92400e;">
+      <p class="text-xs mb-1" style="color:#fbbf24;">Foul IQ Percentile</p>
+      <p class="text-2xl font-bold" style="color:#f87171;">3.2 pctile</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">iq_foul_trouble: near-league-worst management</p>
+    </div>
+    <div class="p-3 rounded text-center" style="background:#0a0f1e;border:1px solid #92400e;">
+      <p class="text-xs mb-1" style="color:#fbbf24;">Catalyst</p>
+      <p class="text-sm font-bold" style="color:var(--cv-text);">KAT + Hart</p>
+      <p class="text-xs mt-1" style="color:var(--cv-muted);">KAT: early_foul 22.2%, last game PF=4. Hart will bait Wemby at MSG.</p>
+    </div>
+  </div>
+
+  {# Sensitivity table #}
+  <div class="overflow-x-auto mb-3">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:#fbbf24;border-bottom:1px solid #92400e;">
+          <th class="text-left py-1 pr-4">Scenario</th>
+          <th class="text-right py-1 pr-4">P(NYK win)</th>
+          <th class="text-right py-1 pr-4">Swing vs baseline</th>
+          <th class="text-right py-1">Wemby Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-t" style="border-color:#92400e;">
+          <td class="py-1.5 pr-4" style="color:var(--cv-text);">Wemby plays full minutes (baseline)</td>
+          <td class="text-right py-1.5 pr-4 font-bold" style="color:#34d399;">41%</td>
+          <td class="text-right py-1.5 pr-4" style="color:var(--cv-muted);">—</td>
+          <td class="text-right py-1.5" style="color:#f87171;">Full deterrence</td>
+        </tr>
+        <tr class="border-t" style="border-color:#92400e;background:rgba(251,191,36,.06);">
+          <td class="py-1.5 pr-4 font-semibold" style="color:#fbbf24;">Wemby in foul trouble (≥3 PF Q2)</td>
+          <td class="text-right py-1.5 pr-4 font-bold" style="color:#34d399;">63%</td>
+          <td class="text-right py-1.5 pr-4 font-bold" style="color:#34d399;">+21 pp</td>
+          <td class="text-right py-1.5" style="color:#fbbf24;">Reduced mins / scheme shift</td>
+        </tr>
+        <tr class="border-t" style="border-color:#92400e;background:rgba(248,113,113,.06);">
+          <td class="py-1.5 pr-4 font-semibold" style="color:#fbbf24;">Wemby DNP / fouls out</td>
+          <td class="text-right py-1.5 pr-4 font-bold" style="color:#34d399;">71%</td>
+          <td class="text-right py-1.5 pr-4 font-bold" style="color:#34d399;">+30 pp</td>
+          <td class="text-right py-1.5" style="color:#f87171;">SAS rim D collapses</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex flex-wrap gap-3 text-xs">
+    <div class="px-2 py-1 rounded" style="background:#1c0d00;color:#fbbf24;border:1px solid #92400e;">
+      Watch: Wemby PF count Q1-Q2
+    </div>
+    <div class="px-2 py-1 rounded" style="background:#1c0d00;color:#fbbf24;border:1px solid #92400e;">
+      NYK strategy: KAT post-ups + Hart drives to bait early fouls at MSG
+    </div>
+    <div class="px-2 py-1 rounded" style="background:#1c0d00;color:#fde68a;border:1px solid #92400e;">
+      +21pp swing = largest single conditional lever in this model
+    </div>
+  </div>
+</div>
+
+{# ── BLOCK 5 — LIVE ENGINE META + KEY PROPS ─────────────────────────────── #}
+<div class="cv-card mb-4 p-4">
+  <h2 class="text-sm font-bold mb-2" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">
+    Star Projections — 40,000 Sim Output (q10 / q50 / q90)
+  </h2>
+  <p class="text-xs mb-3" style="color:var(--cv-muted);">
+    All from shared-possession Monte-Carlo. Teammate correlation ρ ≈ −0.10 (walkforward-validated) baked in.
+    q50 = median. These are not picks — they are distributions.
+  </p>
+  <div class="overflow-x-auto">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:var(--cv-muted);border-bottom:1px solid var(--cv-border);">
+          <th class="text-left py-1 pr-3">Player</th>
+          <th class="text-left py-1 pr-2" style="color:var(--cv-subtle);">Tm</th>
+          <th class="text-right py-1 pr-3">PTS q10/q50/q90</th>
+          <th class="text-right py-1 pr-2">REB</th>
+          <th class="text-right py-1 pr-2">AST</th>
+          <th class="text-right py-1 pr-2">BLK</th>
+          <th class="text-right py-1 pr-2">DD%</th>
+          <th class="text-right py-1">Notable</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#34d399;">Brunson</td>
+          <td class="py-1.5 pr-2" style="color:#34d399;">NYK</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">15/<span class="font-bold">25</span>/36</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">2.9</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">6.4</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">—</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">11.5%</td>
+          <td class="text-right py-1.5" style="color:var(--cv-muted);">PRA 30+ 71% · AST 6+ 57%</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#f87171;">Wembanyama</td>
+          <td class="py-1.5 pr-2" style="color:#f87171;">SAS</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">14/<span class="font-bold">24</span>/37</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">10.6</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">2.7</td>
+          <td class="text-right py-1.5 pr-2 font-bold" style="color:#fbbf24;">3.0</td>
+          <td class="text-right py-1.5 pr-2 font-bold" style="color:var(--cv-text);">54.6%</td>
+          <td class="text-right py-1.5" style="color:var(--cv-muted);">BLK 3+ 64% · STOCKS 4.3 q50</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#f87171;">Castle</td>
+          <td class="py-1.5 pr-2" style="color:#f87171;">SAS</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">9/<span class="font-bold">17</span>/28</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">5.0</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">6.6</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">—</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">16.5%</td>
+          <td class="text-right py-1.5" style="color:#fbbf24;">TOV 3.1 (highest) · AST 4+ 85%</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#34d399;">Towns</td>
+          <td class="py-1.5 pr-2" style="color:#34d399;">NYK</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">10/<span class="font-bold">17</span>/26</td>
+          <td class="text-right py-1.5 pr-2 font-bold" style="color:var(--cv-text);">11.0</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">4.0</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">1.0</td>
+          <td class="text-right py-1.5 pr-2 font-bold" style="color:var(--cv-text);">54.2%</td>
+          <td class="text-right py-1.5" style="color:var(--cv-muted);">REB 10+ 60% · xDef 0.953 (Wemby)</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#f87171;">Fox</td>
+          <td class="py-1.5 pr-2" style="color:#f87171;">SAS</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">9/<span class="font-bold">16</span>/26</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">3.6</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">5.7</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">—</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">7.0%</td>
+          <td class="text-right py-1.5" style="color:var(--cv-muted);">form −0.36 · road −4.5 PPG split</td>
+        </tr>
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1.5 pr-3 font-semibold" style="color:#34d399;">Anunoby</td>
+          <td class="py-1.5 pr-2" style="color:#34d399;">NYK</td>
+          <td class="text-right py-1.5 pr-3" style="color:var(--cv-text);">8/<span class="font-bold">16</span>/27</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">5.3</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">1.9</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-muted);">1.0</td>
+          <td class="text-right py-1.5 pr-2" style="color:var(--cv-subtle);">5.5%</td>
+          <td class="text-right py-1.5" style="color:var(--cv-muted);">3PM 2+ 71% · STL 1+ 71%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="flex flex-wrap gap-3 mt-3 text-xs">
+    <span style="color:var(--cv-muted);">Projected score: <span style="color:#34d399;font-weight:600;">NYK 114.9</span> — <span style="color:#f87171;font-weight:600;">SAS 118.4</span> (talent-neutral MC)</span>
+    <span style="color:var(--cv-subtle);">·</span>
+    <span style="color:var(--cv-muted);">Calib total: <span style="color:var(--cv-text);font-weight:600;">~227</span> (raw 233.3 − 6.2 playoff over-bias, 34 games)</span>
+    <span style="color:var(--cv-subtle);">·</span>
+    <span style="color:var(--cv-muted);">G1 200 / G2 209 series median 204.5</span>
+  </div>
+</div>
+
+{# ── BLOCK 6 — HONEST FOOTER ─────────────────────────────────────────────── #}
+<div class="cv-card mb-4 p-4" style="border:1px solid #1e293b;background:#0a0f1e;">
+  <h2 class="text-sm font-bold mb-2" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.06em;">
+    What This System Is — And Is Not
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+    <div>
+      <p class="font-semibold mb-1" style="color:#34d399;">What the 85K signals + 16 engines genuinely contribute</p>
+      <ul class="space-y-1" style="color:var(--cv-muted);">
+        <li>• <span style="color:var(--cv-text);">Joint/shape:</span> coherent per-player distributions — every PRA combo, milestone CDF, DD/TD from shared 40k draws with ρ=−0.10</li>
+        <li>• <span style="color:var(--cv-text);">Scouting/narration:</span> 69 descriptive models + 8-specialist LLM scout room explaining WHERE the matchup is won</li>
+        <li>• <span style="color:var(--cv-text);">Robustness:</span> N_eff 2.22 (up from 1.64), ±8.7 honest uncertainty band — wider, better-calibrated</li>
+        <li>• <span style="color:var(--cv-text);">Turnover-forcing (×1.063):</span> the ONE team edge validated marginal, confirmed live split-half 0.838</li>
+      </ul>
+    </div>
+    <div>
+      <p class="font-semibold mb-1" style="color:#f87171;">Data ceiling — what more signals do NOT do</p>
+      <ul class="space-y-1" style="color:var(--cv-muted);">
+        <li>• More features do NOT sharpen the marginal point past the ceiling (6 architectures + 4 levers all rejected OOS)</li>
+        <li>• Closing line beats the model in playoffs — <span style="color:#fbbf24;">no proven betting edge in the 2026 Finals</span></li>
+        <li>• The sharpest live lever = same-day minutes/pace/foul-state freshness (−5.99% RMSE gated, bias-reducing)</li>
+        <li>• N_eff is 2.22, not 16 — the honest band is ±8.7 pts; a comfortable SAS win and NYK win both sit inside it</li>
+      </ul>
+    </div>
+  </div>
+  <div class="mt-3 p-2 rounded text-xs flex flex-wrap gap-2 items-center" style="background:#0d1225;border:1px solid #1e3a5f;">
+    <span style="color:#818cf8;font-weight:700;">INTELLIGENCE LAYER:</span>
+    <span style="color:var(--cv-muted);">155 curated registry signals · 444-col player vault · 13 signal domains · 8 scout room specialists</span>
+    <span style="color:var(--cv-subtle);">·</span>
+    <span style="color:#fbbf24;font-weight:600;">Live lever: Wemby foul count Q1-Q2 (+21pp → +30pp conditional swing)</span>
+  </div>
+  <p class="text-xs mt-2 italic" style="color:var(--cv-subtle);">
+    honesty_class=paper · scouting · no proven playoff betting edge · paper/display only ·
+    pipeline: ~85,106 signals → 1,135 models → 16 engines → possession MC + clock → ONE prediction ·
+    LLM = offline scouting/narration, not the point computation.
+  </p>
+</div>
