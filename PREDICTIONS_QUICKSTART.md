@@ -4,9 +4,9 @@ Honest production state at master `c17554e7` (improve_loop R7 / execute_loop R10
 
 > **Want the canonical evidence packet (numbers + verification commands)?** → [docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md). This quickstart covers HOW to run the CLIs. PUBLIC_EVIDENCE covers WHAT the system produces.
 >
-> **Canonical post-iter-61 production read (2026-05-28):** pre-game stack **+18.38% ROI on 1,535 walk-forward bets** vs real DK/FD/MGM/Pinnacle closes (KB+ISO, post-Iter-57 filter stack). Aggregate CLV **+8.94pp**. Source-of-truth JSON: `data/cache/iter61_sim_reconciliation.json`.
+> **Honest production read (leak-free):** the defensible core is **prop accuracy** — leak-free WF MAE PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88. Vs **real** closing lines the market is efficient (**break-even-minus-vig**; AST ~+4–5% the one durable edge). The earlier "+18.38% ROI / +8.94pp CLV" headline was a market-follow grading artifact, **retracted** — see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md). Source-of-truth JSON: `data/models/quantile_pergame_metrics.json`.
 >
-> **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture (endQ3 -43% to -55% MAE vs pregame, 7/7 stats), see `src/prediction/live_engine.py` and CHANGELOG.md 0.15.0. **endQ3 Brier 0.1191 walk-forward** as of CHANGELOG 0.17.0.
+> **In-play system:** the CLIs below cover the pregame stack. For the residual-head + period-specific + learned-Q4-minutes in-play architecture, see `src/prediction/live_engine.py`. endQ3 MAE lift ~46% pooled vs pregame (~26% over a naive carry-forward baseline, leak-clean); endQ3 win-prob Brier **~0.141 leak-free** (the earlier "0.1191" was a Q4 feature leak, retracted).
 
 > ## Empirical testing protocol (cycle 78-82)
 >

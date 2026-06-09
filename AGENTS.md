@@ -22,18 +22,20 @@ Stack: YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID 512-dim 
 
 ---
 
-## TL;DR numbers (canonical, 2026-05-28)
+## TL;DR numbers (HONEST / leak-free — inflated headlines retracted, see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md))
 
-- **Pre-game props: +18.38% ROI on 1,535 walk-forward bets** vs real DK/FD/MGM/Pinnacle closing lines (Kelly-B + per-stat isotonic sizing, post-Iter-57 filter stack). Aggregate CLV **+8.94pp** across 6 stats. *Reproduce:* `python scripts/run_gate1_full_analysis.py`.
-- **In-play endQ3 Brier 0.1191** — inside the public Pinnacle range (~0.10–0.12), validated on 4-fold expanding walk-forward over 3,685 game-snapshots.
-- **In-play MAE 43–55% better than pregame** across 7/7 stats on a 550-game retro at endQ3.
-- **In-play backtest 78.11% hit / +54.57% ROI** on n=55,073 paper bets — **but against an L5 line proxy, not real closes; real-money estimate +15–25%.** First real Pinnacle close CLV: Oct 2026.
+The funnel: **DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE**, with an agentic loop that re-validates every stage.
 
-Verification commands consume committed JSON and run in seconds:
+- **Defensible core:** leak-free prop MAE **PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88** (~51K held-out/stat); win-prob **0.709 acc / 0.193 Brier**; CV pipeline broadcast→court at **~$0.10–0.13/game**.
+- **Betting vs real closes:** the **market is efficient** — break-even-minus-vig overall; **AST ~+4–5%** is the one durable edge (breaks in playoffs). *Re-grade:* `python scripts/run_gate1_full_analysis.py` → −2.00%.
+- **In-play:** endQ3 MAE lift ~46% pooled (~26% over naive carry-forward, WF, leak-clean); endQ3 Brier **~0.141** leak-free.
+- **In-play backtest 78% / +54%** is an **L5-proxy ceiling**, not realized edge; real est. +15–25%; first real CLV Oct 2026; zero real money placed.
+
+**Never re-print as current wins:** +18.38% ROI (market-follow grading artifact), endQ3 0.119 (Q4 leak), +54%-as-edge, CLV +8.94pp. They appear only as artifacts the harness caught.
+
 ```bash
-python scripts/verify_winprob.py            # acc 0.7094 / Brier 0.193
-python scripts/verify_production_mae.py     # 6/7 prop MAEs within ±0.01
-python scripts/iter61_sim_reconciliation.py # post-Iter-57 ROI +18.38% KB+ISO
+python scripts/run_gate1_full_analysis.py   # honest re-grade: ~ -2.00% (market efficient)
+# committed source-of-truth JSON: data/models/quantile_pergame_metrics.json, win_prob_metrics.json
 ```
 
 ---
