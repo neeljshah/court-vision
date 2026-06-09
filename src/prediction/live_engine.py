@@ -2468,9 +2468,14 @@ def _apply_heat_check_generalized(snap: dict, rows: list) -> list:
             # So: factor = heat^{-(1-gamma)} = heat^{-0.80}
             try:
                 if live_rate <= 0.0:
-                    # Zero live rate: heat undefined; skip.
-                    continue
-                heat = live_rate / l5_rate
+                    # Zero live rate = maximally COLD. A player with real minutes
+                    # who has 0 in this stat will not stay at 0 -- he should
+                    # mean-revert toward his L5 baseline, not stay frozen at the
+                    # cold linear extrapolation (the Bridges-0-pts case). Treat
+                    # heat as the cold clamp floor so the cold-EXPAND factor fires.
+                    heat = _HEAT_CLAMP_LO
+                else:
+                    heat = live_rate / l5_rate
                 heat_clamped = max(_HEAT_CLAMP_LO, min(_HEAT_CLAMP_HI, heat))
                 # factor = heat^{gamma - 1} = heat^{-0.80}: shrinks hot, expands cold.
                 factor = math.pow(heat_clamped, _HEAT_GEN_GAMMA - 1.0)

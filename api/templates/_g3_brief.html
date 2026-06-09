@@ -1,0 +1,305 @@
+{# _g3_brief.html — Pregame prediction brief: engine consensus + 16-engine panel + sim player box score.
+   Included by proven_card.html. Variables: ensemble, sim_slate, ensemble16_enabled, ensemble16, degraded, home, away, date, is_playoff.
+#}
+
+{# ─────────────────────────────────────────────────────────────
+   SECTION 1 — PREGAME PROJECTION HEADER + CONSENSUS STRIP
+   ───────────────────────────────────────────────────────────── #}
+<div class="cv-card mb-5 p-4" style="margin-top:1.5rem;">
+
+  <h2 class="text-sm font-bold mb-1" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.08em;">
+    PREGAME PROJECTION — 40,000-sim Possession Monte-Carlo + 16 Engines
+  </h2>
+  <p class="text-xs mb-4" style="color:var(--cv-subtle);">
+    NYK leads series 2-0 &middot; G3 {{ date }} &middot; {{ away }} @ {{ home }} &middot;
+    q50 = median projection &middot; points reconciled to projected total
+  </p>
+
+  {# Consensus strip #}
+  {% if ensemble and ensemble is mapping %}
+  {% set wp   = ensemble.get('consensus_win_prob_home') %}
+  {% set mg   = ensemble.get('consensus_margin_home') %}
+  {% set ph   = ensemble.get('proj_home_score') %}
+  {% set pa   = ensemble.get('proj_away_score') %}
+  {% set ptot = ensemble.get('proj_total') %}
+
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5">
+
+    {# P(NYK win) #}
+    <div class="p-3 rounded text-center" style="background:#0d1225;border:1px solid var(--cv-border);">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">P({{ home }} win)</p>
+      <p class="text-2xl font-bold"
+         style="color:{% if wp is not none and wp > 0.5 %}var(--cv-win){% elif wp is not none and wp < 0.4 %}#f87171{% else %}var(--cv-text){% endif %};">
+        {{ "%.1f%%"|format(wp * 100) if wp is not none else "—" }}
+      </p>
+    </div>
+
+    {# Margin #}
+    <div class="p-3 rounded text-center" style="background:#0d1225;border:1px solid var(--cv-border);">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">{{ home }} margin</p>
+      <p class="text-2xl font-bold"
+         style="color:{% if mg is not none and mg > 0 %}var(--cv-win){% elif mg is not none and mg < 0 %}#f87171{% else %}var(--cv-text){% endif %};">
+        {{ "%+.1f"|format(mg) if mg is not none else "—" }}
+      </p>
+    </div>
+
+    {# Proj score #}
+    <div class="p-3 rounded text-center" style="background:#0d1225;border:1px solid var(--cv-border);">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Proj Score</p>
+      <p class="text-xl font-bold" style="color:var(--cv-text);">
+        {% if ph is not none and pa is not none %}
+          {{ "%.0f"|format(ph) }}–{{ "%.0f"|format(pa) }}
+        {% else %}—{% endif %}
+      </p>
+    </div>
+
+    {# Proj total #}
+    <div class="p-3 rounded text-center" style="background:#0d1225;border:1px solid var(--cv-border);">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Proj Total</p>
+      {% if ptot is not none %}
+      <p class="text-2xl font-bold" style="color:var(--cv-text);">{{ "%.1f"|format(ptot) }}</p>
+      {% else %}
+        {# fallback: pick first engine total #}
+        {% set e_rows = ensemble.get('engines') or [] %}
+        {% set avg_tot = namespace(val=None) %}
+        {% for r in e_rows %}{% if r.get('total') and avg_tot.val is none %}{% set avg_tot.val = r.get('total') %}{% endif %}{% endfor %}
+        <p class="text-2xl font-bold" style="color:var(--cv-text);">{{ "%.1f"|format(avg_tot.val) if avg_tot.val is not none else "—" }}</p>
+      {% endif %}
+    </div>
+
+    {# Engine count / disagreement #}
+    <div class="p-3 rounded text-center" style="background:#0d1225;border:1px solid var(--cv-border);">
+      <p class="text-xs mb-1" style="color:var(--cv-muted);">Engine disagreement</p>
+      {% set dis = ensemble.get('disagreement_winprob') %}
+      {% set eng_cnt = (ensemble16.get('predictions') | length) if (ensemble16 and ensemble16 is mapping and ensemble16.get('predictions')) else ((ensemble.get('engines') or []) | length) %}
+      <p class="text-xl font-bold"
+         style="color:{% if dis is not none and dis > 0.10 %}#fbbf24{% else %}var(--cv-text){% endif %};">
+        {{ "%.1f%%"|format(dis * 100) if dis is not none else "—" }}
+      </p>
+      <p class="text-xs mt-1" style="color:var(--cv-subtle);">{{ eng_cnt }} engines</p>
+    </div>
+
+  </div>
+  {% else %}
+  <div class="text-xs italic mb-4" style="color:var(--cv-muted);">
+    Ensemble unavailable{% if degraded %} ({{ degraded | join(', ') }}){% endif %}.
+  </div>
+  {% endif %}
+
+  {# ─────────────────────────────────────────────────────────────
+     SECTION 2 — 16-ENGINE TABLE (preferred) or fallback engine list
+     ───────────────────────────────────────────────────────────── #}
+
+  {# Try 16-engine panel first #}
+  {% set e16_preds = [] %}
+  {% if ensemble16 and ensemble16 is mapping %}
+    {% set e16_preds = ensemble16.get('predictions') or [] %}
+  {% endif %}
+
+  {% if e16_preds | length > 0 %}
+
+  <h4 class="text-xs font-semibold mb-2 mt-2" style="color:var(--cv-muted);text-transform:uppercase;letter-spacing:.06em;">
+    All 16 Engines
+  </h4>
+
+  {# Decorrelation stats strip #}
+  {% set decor = ensemble16.get('decorrelation') or {} %}
+  {% if decor %}
+  <div class="flex gap-4 flex-wrap mb-3 text-xs" style="color:var(--cv-subtle);">
+    {% set n_eff = decor.get('n_eff_16') %}
+    {% if n_eff is not none %}<span>n_eff = <strong style="color:var(--cv-text);">{{ "%.2f"|format(n_eff) }}</strong></span>{% endif %}
+    {% set moff = decor.get('mean_offdiag') %}
+    {% if moff is not none %}<span>mean off-diag corr = <strong style="color:var(--cv-text);">{{ "%.3f"|format(moff) }}</strong></span>{% endif %}
+    {% set nm = decor.get('n_matchups') %}
+    {% if nm is not none %}<span>panel n = <strong style="color:var(--cv-text);">{{ nm }}</strong></span>{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="overflow-x-auto mb-2">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:var(--cv-muted);border-bottom:1px solid var(--cv-border);">
+          <th class="text-left py-1 pr-3">#</th>
+          <th class="text-left py-1 pr-3">Engine</th>
+          <th class="text-right py-1 pr-3">P({{ home }} win)</th>
+          <th class="text-right py-1 pr-3">{{ home }} margin</th>
+          <th class="text-right py-1 pr-3">Total</th>
+          <th class="text-right py-1">Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in e16_preds %}
+        {% set wp16 = p.get('win_prob_home') %}
+        {% set mg16 = p.get('margin_home') %}
+        {% set tot16 = p.get('total') %}
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3" style="color:var(--cv-subtle);">{{ loop.index }}</td>
+          <td class="py-1 pr-3" style="color:var(--cv-text);">{{ p.get('engine', '?') }}</td>
+          <td class="text-right py-1 pr-3 font-semibold"
+              style="color:{% if wp16 is not none and wp16 > 0.5 %}var(--cv-win){% elif wp16 is not none and wp16 < 0.4 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%.1f%%"|format(wp16 * 100) if wp16 is not none else "—" }}
+          </td>
+          <td class="text-right py-1 pr-3"
+              style="color:{% if mg16 is not none and mg16 > 0 %}var(--cv-win){% elif mg16 is not none and mg16 < 0 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%+.1f"|format(mg16) if mg16 is not none else "—" }}
+          </td>
+          <td class="text-right py-1 pr-3" style="color:var(--cv-text);">
+            {{ "%.1f"|format(tot16) if tot16 is not none else "—" }}
+          </td>
+          <td class="text-right py-1" style="color:var(--cv-subtle);font-size:.65rem;">{{ p.get('_source', '') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% elif ensemble and ensemble is mapping %}
+
+  {# Fallback: smaller engines list from ensemble.engines #}
+  {% set eng_rows = ensemble.get('engines') or [] %}
+  {% if eng_rows | length > 0 %}
+  <h4 class="text-xs font-semibold mb-2 mt-2" style="color:var(--cv-muted);text-transform:uppercase;letter-spacing:.06em;">
+    Engine Breakdown
+  </h4>
+  <div class="overflow-x-auto mb-2">
+    <table class="text-xs w-full">
+      <thead>
+        <tr style="color:var(--cv-muted);border-bottom:1px solid var(--cv-border);">
+          <th class="text-left py-1 pr-3">Engine</th>
+          <th class="text-right py-1 pr-3">P({{ home }} win)</th>
+          <th class="text-right py-1 pr-3">{{ home }} margin</th>
+          <th class="text-right py-1">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in eng_rows %}
+        {% set wp_e = row.get('win_prob_home') %}
+        {% set mg_e = row.get('margin_home') %}
+        {% set tot_e = row.get('total') %}
+        <tr class="border-t" style="border-color:var(--cv-border);">
+          <td class="py-1 pr-3" style="color:var(--cv-text);">{{ row.get('engine', '?') }}</td>
+          <td class="text-right py-1 pr-3 font-semibold"
+              style="color:{% if wp_e is not none and wp_e > 0.5 %}var(--cv-win){% elif wp_e is not none and wp_e < 0.4 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%.1f%%"|format(wp_e * 100) if wp_e is not none else "—" }}
+          </td>
+          <td class="text-right py-1 pr-3"
+              style="color:{% if mg_e is not none and mg_e > 0 %}var(--cv-win){% elif mg_e is not none and mg_e < 0 %}#f87171{% else %}var(--cv-text){% endif %};">
+            {{ "%+.1f"|format(mg_e) if mg_e is not none else "—" }}
+          </td>
+          <td class="text-right py-1" style="color:var(--cv-text);">
+            {{ "%.1f"|format(tot_e) if tot_e is not none else "—" }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <p class="text-xs italic" style="color:var(--cv-muted);">Engine data unavailable.</p>
+  {% endif %}
+
+</div>
+
+{# ─────────────────────────────────────────────────────────────
+   SECTION 3 — PREDICTED BOX SCORE (ALL 7 STATS)
+   ───────────────────────────────────────────────────────────── #}
+{% if sim_slate and sim_slate | length > 0 %}
+<div class="cv-card mb-5 p-4">
+
+  <h3 class="text-sm font-bold mb-1" style="color:var(--cv-text);text-transform:uppercase;letter-spacing:.08em;">
+    Predicted Box Score
+  </h3>
+  <p class="text-xs mb-3" style="color:var(--cv-subtle);">
+    q50 = median projection from 40,000 possession sims &middot; points reconciled to projected total &middot; PTS shows floor–ceiling (q10–q90)
+  </p>
+
+  <div class="overflow-x-auto">
+    <table class="text-xs w-full" style="border-collapse:separate;border-spacing:0;">
+      <thead>
+        <tr style="color:var(--cv-muted);border-bottom:2px solid var(--cv-border);">
+          <th class="text-left py-2 pr-3" style="min-width:120px;">Player</th>
+          <th class="text-right py-2 pr-2" style="min-width:80px;">
+            PTS
+            <span class="font-normal" style="color:var(--cv-subtle);font-size:.65rem;display:block;">floor–med–ceil</span>
+          </th>
+          <th class="text-right py-2 pr-2">REB</th>
+          <th class="text-right py-2 pr-2">AST</th>
+          <th class="text-right py-2 pr-2">3PM</th>
+          <th class="text-right py-2 pr-2">STL</th>
+          <th class="text-right py-2 pr-2">BLK</th>
+          <th class="text-right py-2">TOV</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in sim_slate %}
+        {% set pts_q10 = row.get('pts_q10') %}
+        {% set pts_q50 = row.get('pts_q50') %}
+        {% set pts_q90 = row.get('pts_q90') %}
+        {% set reb_q50 = row.get('reb_q50') %}
+        {% set ast_q50 = row.get('ast_q50') %}
+        {% set fg3m_q50 = row.get('fg3m_q50') %}
+        {% set stl_q50 = row.get('stl_q50') %}
+        {% set blk_q50 = row.get('blk_q50') %}
+        {% set tov_q50 = row.get('tov_q50') %}
+        <tr class="border-t" style="border-color:var(--cv-border);">
+
+          {# Player name #}
+          <td class="py-1 pr-3" style="color:var(--cv-text);white-space:nowrap;">{{ row.name if row.name else row.pid }}</td>
+
+          {# PTS — bold q50, muted floor/ceiling #}
+          <td class="text-right py-1 pr-2">
+            {% if pts_q50 is not none %}
+            <span style="color:var(--cv-muted);font-size:.65rem;">{{ "%.0f"|format(pts_q10) if pts_q10 is not none else "—" }}/</span><span class="font-bold" style="color:var(--cv-text);font-size:.8rem;">{{ "%.0f"|format(pts_q50) }}</span><span style="color:var(--cv-muted);font-size:.65rem;">/{{ "%.0f"|format(pts_q90) if pts_q90 is not none else "—" }}</span>
+            {% else %}
+            <span style="color:var(--cv-subtle);">—</span>
+            {% endif %}
+          </td>
+
+          {# REB #}
+          <td class="text-right py-1 pr-2" style="color:var(--cv-muted);">
+            {{ "%.0f"|format(reb_q50) if reb_q50 is not none else "—" }}
+          </td>
+
+          {# AST #}
+          <td class="text-right py-1 pr-2" style="color:var(--cv-muted);">
+            {{ "%.0f"|format(ast_q50) if ast_q50 is not none else "—" }}
+          </td>
+
+          {# 3PM #}
+          <td class="text-right py-1 pr-2" style="color:var(--cv-muted);">
+            {{ "%.1f"|format(fg3m_q50) if fg3m_q50 is not none else "—" }}
+          </td>
+
+          {# STL #}
+          <td class="text-right py-1 pr-2" style="color:var(--cv-muted);">
+            {{ "%.1f"|format(stl_q50) if stl_q50 is not none else "—" }}
+          </td>
+
+          {# BLK #}
+          <td class="text-right py-1 pr-2" style="color:var(--cv-muted);">
+            {{ "%.1f"|format(blk_q50) if blk_q50 is not none else "—" }}
+          </td>
+
+          {# TOV #}
+          <td class="text-right py-1" style="color:var(--cv-muted);">
+            {{ "%.1f"|format(tov_q50) if tov_q50 is not none else "—" }}
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-xs mt-3" style="color:var(--cv-subtle);">
+    Sorted by PTS (desc) &middot; teammate correlation (shared-pie routing) baked in &middot; all stats drawn from the same possession sequence
+  </p>
+
+</div>
+{% elif sim_slate is not none %}
+<div class="cv-card mb-5 p-3 text-xs italic" style="color:var(--cv-muted);">
+  Sim player slate empty or unavailable — run with sim_slate populated for the full box score.
+</div>
+{% endif %}

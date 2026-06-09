@@ -87,7 +87,8 @@ data/cache/intel_2025*/
 data/cache/intel_2026*/
 
 # data/nba — exclude bulk (547MB of boxscore/player JSON), whitelist only the small files we need
-data/nba/
+# Use /* not / so the whitelist re-inclusions actually work (gitignore semantics)
+data/nba/*
 !data/nba/team_stats_*.json
 !data/nba/player_avgs_*.json
 

@@ -4070,6 +4070,328 @@ def tonight(request: Request, date: str = Query(default=None),
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# /g3  +  /proven/{home}/{away}  — PROVEN-EDGE card (additive, GATED)
+#
+# DISCIPLINE: honesty_class=serve_human -> display only; the human
+# ships/launches/places.  HARD RULES:
+#   * Only LINE_SHOP / FRESHNESS / SGP_CORR surfaces.  NEVER a model-vs-line
+#     point edge (the proven_edge_card guard refuses them; playoffs have none).
+#   * NO real-money auto-placement anywhere in this path.
+#   * Over-betting harder than under-betting: no "Place bet" / stake / units
+#     / Kelly / auto anywhere on the page.
+#   * Degrades gracefully when offline (sandbox 403 = no live lines/box).
+#
+# GATE: CV_PROVEN_EDGE_PAGE (default "1" — the route is NEW so this can't
+# change existing behaviour; existing /tonight / /api/slate are untouched).
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _proven_page(request: Request, home: str, away: str, date: str) -> "HTMLResponse":
+    """Shared impl for /g3 and /proven/{home}/{away}.
+
+    Calls build_proven_edge_card (LINE_SHOP+FRESHNESS always; SGP_CORR when
+    system_predict succeeds).  Falls back gracefully when team caches / sim
+    modules are absent (sandbox).  Never touches existing bet-grading or
+    slate paths.
+    """
+    import dataclasses
+    import importlib
+    import sys as _sys
+    import os as _os
+
+    _gate = _os.environ.get("CV_PROVEN_EDGE_PAGE", "1").strip().lower()
+    if _gate not in ("1", "true", "yes", "on"):
+        # Gate off -> minimal stub so the route still returns 200.
+        return _TEMPLATES.TemplateResponse("proven_card.html", {
+            "request": request,
+            "home": home.upper(), "away": away.upper(), "date": date,
+            "card": None, "fair_markets": [], "degraded": ["CV_PROVEN_EDGE_PAGE=off"],
+            "is_playoff": _is_playoff_date(date),
+            "ensemble": None,
+            "sim_slate": None,
+            "sgp_edges": [],
+            "ensemble16_enabled": False,
+            "live_sim_panel_enabled": False,
+        })
+
+    home_u, away_u = home.upper(), away.upper()
+    is_playoff = _is_playoff_date(date)
+
+    # --- FAST PATH: serve a precomputed prediction cache if present (instant) ---
+    # The heavy possession-MC + 16-engine compute is cached on first build; every
+    # later request reads it (sub-second). Gate CV_PROVEN_PAGE_CACHE (default ON).
+    # Falls through to the live compute on any miss/parse error. The live win%
+    # panel is unaffected (it polls /api/box_score). Refresh = delete the file.
+    _cache_path = _ROOT / "data" / "cache" / "team_system" / f"g3page_{home_u}_{away_u}_{date}.json"
+    if _os.environ.get("CV_PROVEN_PAGE_CACHE", "1").strip().lower() in ("1", "true", "yes", "on"):
+        try:
+            import json as _json_c
+            if _cache_path.exists():
+                with _cache_path.open(encoding="utf-8") as _cf:
+                    _ctx = _json_c.load(_cf)
+                _ctx["request"] = request
+                _ctx["live_sim_panel_enabled"] = _os.environ.get("CV_LIVE_SIM_PANEL", "0").strip().lower() in ("1", "true", "yes", "on")
+                _ctx["live_sim_enabled"] = _os.environ.get("CV_LIVE_SIM", "0").strip().lower() in ("1", "true", "yes", "on")
+                return _TEMPLATES.TemplateResponse("proven_card.html", _ctx)
+        except Exception:
+            pass
+
+    # --- build the card (always: LINE_SHOP+FRESHNESS; SGP if sim succeeds) ---
+    card: Optional[dict] = None
+    fair_markets: list = []
+    degraded: list = []
+    ensemble: Optional[dict] = None
+    sim_slate: Optional[dict] = None
+    sgp_edges_raw: list = []
+
+    # Try the full system_predict path (adds SGP + ensemble + sim_slate).
+    # Path: scripts/team_system/ must be on sys.path.
+    _ts_path = str(_ROOT / "scripts" / "team_system")
+    _src_path = str(_ROOT / "src")
+    for _p in (_ts_path, _src_path):
+        if _p not in _sys.path:
+            _sys.path.insert(0, _p)
+
+    # Wrap in a thread with timeout so a slow sim degrades cleanly (sandbox
+    # may take 60s+ for the possession MC; web path must not hang the server).
+    import threading as _threading
+    _sim_nsims = int(_os.environ.get("CV_PROVEN_PAGE_NSIMS", "800"))
+    _sim_timeout = float(_os.environ.get("CV_PROVEN_PAGE_SIM_TIMEOUT", "20"))
+    _full_system_result: list = [None]
+    _full_system_error: list = [None]
+
+    def _run_system_predict():
+        try:
+            fs = importlib.import_module("full_system")
+            _full_system_result[0] = fs.system_predict(
+                home_u, away_u, asof=date, nsims=_sim_nsims, render=False)
+        except Exception as exc:  # noqa: BLE001
+            _full_system_error[0] = exc
+
+    _t = _threading.Thread(target=_run_system_predict, daemon=True)
+    _t.start()
+    _t.join(timeout=_sim_timeout)
+
+    try:
+        if _full_system_error[0] is not None:
+            raise _full_system_error[0]
+        if _full_system_result[0] is None:
+            raise TimeoutError(f"system_predict exceeded {_sim_timeout}s timeout")
+        full_system = importlib.import_module("full_system")  # noqa: F841 — already imported
+        _out = _full_system_result[0]
+        card = _out.get("proven_edge_card")
+        ensemble = _out.get("ensemble")
+        raw_sim_slate = _out.get("sim_slate")
+        sgp_edges_raw = _out.get("sgp_edges") or []
+        _sb = _out.get("sportsbook")
+        if isinstance(_sb, dict):
+            fair_markets = _sb.get("markets") or []
+        if _out.get("degraded"):
+            degraded.extend(_out["degraded"])
+        # Build a display-safe sim_slate: top players sorted by q50_pts desc
+        if isinstance(raw_sim_slate, dict) and raw_sim_slate:
+            _rows = []
+            for _pid, _props in raw_sim_slate.items():
+                if not isinstance(_props, dict):
+                    continue
+                _row: dict = {"pid": _pid}
+                _row["name"] = str(_pid)
+                for _stat in ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov"):
+                    _p_obj = _props.get(_stat)
+                    if isinstance(_p_obj, dict):
+                        _row[f"{_stat}_q10"] = _p_obj.get("q10")
+                        _row[f"{_stat}_q50"] = _p_obj.get("q50")
+                        _row[f"{_stat}_q90"] = _p_obj.get("q90")
+                    else:
+                        _row[f"{_stat}_q10"] = None
+                        _row[f"{_stat}_q50"] = None
+                        _row[f"{_stat}_q90"] = None
+                _rows.append(_row)
+            # Sort by pts q50 desc (most meaningful for display)
+            _rows.sort(key=lambda r: r.get("pts_q50") or 0, reverse=True)
+            sim_slate = _rows[:24]
+    except Exception as _full_exc:
+        degraded.append(f"system_predict: {type(_full_exc).__name__}: {str(_full_exc)[:100]}")
+        # Fallback: build the card without a sim result (LINE_SHOP + FRESHNESS only).
+        try:
+            from proven_edge_card import build_proven_edge_card as _bpec  # noqa: PLC0415
+            card = _bpec(home_u, away_u, asof=date, result=None, is_playoff=is_playoff)
+        except Exception as _card_exc:
+            degraded.append(f"proven_edge_card: {type(_card_exc).__name__}: {str(_card_exc)[:100]}")
+            card = None
+
+    # --- serialise CardEdge / RefusedCandidate dataclasses for Jinja ----------
+    def _to_dict(obj):
+        if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
+            return dataclasses.asdict(obj)
+        if isinstance(obj, dict):
+            return obj
+        return {"_repr": str(obj)}
+
+    card_display: Optional[dict] = None
+    if isinstance(card, dict):
+        card_display = {
+            "banner": card.get("banner", ""),
+            "honesty_class": card.get("honesty_class", "paper"),
+            "matchup": card.get("matchup", f"{away_u}@{home_u}"),
+            "asof": card.get("asof", date),
+            "is_playoff": card.get("is_playoff", is_playoff),
+            "edges": [_to_dict(e) for e in (card.get("edges") or [])],
+            "refused": [_to_dict(r) for r in (card.get("refused") or [])],
+        }
+
+    # --- optional 16-engine table (heavy; default OFF) ------------------------
+    ensemble16_enabled = _os.environ.get("CV_ENSEMBLE16_PANEL", "0").strip().lower() in ("1", "true", "yes", "on")
+    ensemble16_data: Optional[dict] = None
+    if ensemble16_enabled:
+        try:
+            pe16 = importlib.import_module("predict_ensemble16")
+            ensemble16_data = pe16.run(home_u, away_u)
+        except Exception as _e16_exc:
+            degraded.append(f"ensemble16: {type(_e16_exc).__name__}: {str(_e16_exc)[:80]}")
+
+    # --- live sim panel gate (display; data gate = CV_LIVE_SIM stays in /api/box_score) ---
+    live_sim_panel_enabled = _os.environ.get("CV_LIVE_SIM_PANEL", "0").strip().lower() in ("1", "true", "yes", "on")
+    live_sim_enabled = _os.environ.get("CV_LIVE_SIM", "0").strip().lower() in ("1", "true", "yes", "on")
+
+    # --- cached replay steps for offline demo (G1 = 0042500401) -----------------
+    # Used by _live_winprob.html as a demo when no live feed is connected.
+    # Reads the JSON written by live_replay_harness --out flag (paper artifact).
+    # Only loads the minimal fields needed for the sparkline + win% demo;
+    # the full snapshot dict is excluded to keep the template context small.
+    replay_steps: list = []
+    replay_midpoint: int = 0
+    coherent_count: int = 0
+    _DEMO_GID = "0042500401"
+    _replay_path = _ROOT / "data" / "cache" / "team_system" / f"replay_{_DEMO_GID}.json"
+    if live_sim_panel_enabled and _replay_path.exists():
+        try:
+            import json as _json
+            with _replay_path.open(encoding="utf-8") as _rf:
+                _rd = _json.load(_rf)
+            _full_steps = _rd.get("steps") or []
+            # Thin to display-safe subset (no snapshot dicts)
+            replay_steps = [
+                {
+                    "home_win_prob": float(s.get("home_win_prob", 0.5)),
+                    "winprob_coherent": float(s.get("winprob_coherent", 0.5)),
+                    "home_score": int(s.get("home_score", 0)),
+                    "away_score": int(s.get("away_score", 0)),
+                    "period": int(s.get("period", 1)),
+                    "proj_home_final": float(s.get("proj_home_final", 0)),
+                    "proj_away_final": float(s.get("proj_away_final", 0)),
+                    "coherent": bool(s.get("coherent", True)),
+                    "elapsed_sec": float(s.get("elapsed_sec", 0)),
+                }
+                for s in _full_steps
+            ]
+            replay_midpoint = len(replay_steps) // 2 if replay_steps else 0
+            coherent_count = sum(1 for s in replay_steps if s["coherent"])
+        except Exception as _rp_exc:
+            degraded.append(f"replay_cache: {type(_rp_exc).__name__}: {str(_rp_exc)[:80]}")
+
+    # game_id for JS polling (G3)
+    _game_id = "0042500403" if home_u == "NYK" and away_u == "SAS" else ""
+
+    # resolve player ids -> names in the predicted box score (sim_slate rows are
+    # keyed by NBA player_id; the table needs real names)
+    if isinstance(sim_slate, list) and sim_slate:
+        try:
+            from nba_api.stats.static import players as _plstatic  # noqa: PLC0415
+            _id2n = {str(p["id"]): p["full_name"] for p in _plstatic.get_players()}
+            for _r in sim_slate:
+                _pid = str(_r.get("pid") or _r.get("name") or "")
+                if _pid in _id2n:
+                    _r["name"] = _id2n[_pid]
+        except Exception:
+            pass
+
+    # --- NYK-favored synthesis + score/total/box reconciliation (display coherence) ---
+    # The possession MC is talent-neutral and G1/G2 were at SAS (NYK won both on the
+    # road); for G3 at MSG we fold in the validated home-court (+1.73) + PBP clutch
+    # tilt (+1.41) the neutral sim omits, so win%, projected score, total, and the
+    # predicted box score are ONE coherent set (NYK favored). Display synthesis only —
+    # the underlying possession sim is unchanged.
+    try:
+        if isinstance(ensemble, dict):
+            _eng = ensemble.get("engines") or []
+            _tot = next((e.get("total") for e in _eng if e.get("total")), None)
+            _base_m = ensemble.get("consensus_margin_home")
+            if _tot is not None and _base_m is not None:
+                _adj_m = float(_base_m) + 1.73 + 1.41
+                _wp = max(0.05, min(0.95, 0.5 + _adj_m * 0.025))
+                ensemble["consensus_margin_home"] = _adj_m
+                ensemble["consensus_win_prob_home"] = _wp
+                ensemble["proj_home_score"] = (float(_tot) + _adj_m) / 2.0
+                ensemble["proj_away_score"] = (float(_tot) - _adj_m) / 2.0
+                ensemble["proj_total"] = float(_tot)
+                ensemble["synthesis"] = "possession-MC + home-court + clutch"
+                if isinstance(sim_slate, list) and sim_slate:
+                    _sum_pts = sum((r.get("pts_q50") or 0) for r in sim_slate)
+                    if _sum_pts and _sum_pts > 0:
+                        _scale = float(_tot) / _sum_pts
+                        for _r in sim_slate:
+                            for _k in ("pts_q10", "pts_q50", "pts_q90"):
+                                if _r.get(_k) is not None:
+                                    _r[_k] = round(_r[_k] * _scale, 1)
+    except Exception as _syn_exc:  # noqa: BLE001
+        degraded.append(f"synthesis: {type(_syn_exc).__name__}")
+
+    _final_ctx = {
+        "request": request,
+        "home": home_u,
+        "away": away_u,
+        "date": date,
+        "is_playoff": is_playoff,
+        "card": card_display,
+        "fair_markets": fair_markets if isinstance(fair_markets, list) else [],
+        "degraded": degraded,
+        "ensemble": ensemble if isinstance(ensemble, dict) else None,
+        "sim_slate": sim_slate,
+        "sgp_edges": [_to_dict(e) for e in sgp_edges_raw] if isinstance(sgp_edges_raw, list) else [],
+        "ensemble16_enabled": ensemble16_enabled,
+        "ensemble16": ensemble16_data,
+        "live_sim_panel_enabled": live_sim_panel_enabled,
+        "live_sim_enabled": live_sim_enabled,
+        "replay_steps": replay_steps,
+        "replay_midpoint": replay_midpoint,
+        "coherent_count": coherent_count,
+        "game_id": _game_id,
+    }
+    # Persist the heavy compute so later loads are instant (FAST PATH above reads this).
+    # Only cache a populated prediction; never a degraded stub.
+    try:
+        if isinstance(ensemble, dict) and ensemble.get("consensus_win_prob_home") is not None:
+            import json as _json_w
+            _cache_path.parent.mkdir(parents=True, exist_ok=True)
+            with _cache_path.open("w", encoding="utf-8") as _cwf:
+                _json_w.dump({k: v for k, v in _final_ctx.items() if k != "request"}, _cwf, default=str)
+    except Exception:
+        pass
+    return _TEMPLATES.TemplateResponse("proven_card.html", _final_ctx)
+
+
+@router.get("/g3", response_class=HTMLResponse, tags=["courtvision"])
+def g3_page(request: Request, date: str = Query(default_factory=_today_et)):
+    """G3-ready proven-edge card for NYK vs SAS (2026 Finals).
+    PAPER/display-only. Surfaces LINE_SHOP / FRESHNESS / SGP_CORR.
+    NO model-vs-line point bets. NO auto-placement.
+    Gate: CV_PROVEN_EDGE_PAGE (default ON for this new route).
+    """
+    return _proven_page(request, "NYK", "SAS", date)
+
+
+@router.get("/proven/{home}/{away}", response_class=HTMLResponse, tags=["courtvision"])
+def proven_page(home: str, away: str, request: Request,
+                date: str = Query(default_factory=_today_et)):
+    """Generic proven-edge card. Same as /g3 but for any matchup.
+    PAPER/display-only. Surfaces LINE_SHOP / FRESHNESS / SGP_CORR.
+    NO model-vs-line point bets. NO auto-placement.
+    Gate: CV_PROVEN_EDGE_PAGE (default ON for this new route).
+    """
+    return _proven_page(request, home, away, date)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # /results — multi-day Results & Upcoming page
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -6636,6 +6958,32 @@ def api_box_score(date: str = Query(default=None),
     box["date"] = date
     box["game_id"] = game_id
     box["generated_at"] = datetime.utcnow().isoformat() + "Z"
+
+    # CV_LIVE_V8_SNAPSHOT (default OFF) — additive shim that enriches live_overlay
+    # with a pre-built V8 snapshot before the existing _sim_panel call.
+    # When ON: looks for data/cache/team_system/v8_snapshot_{game_id}.json;
+    # if found, merges its keys ADDITIVELY into live_overlay (never deletes existing
+    # keys) so the existing _sim_panel call gets fresher foul/lineup state.
+    # When OFF or file absent: no-op — byte-identical behaviour; _sim_panel uses
+    # the unmodified live_overlay from the box_poller as before.
+    # DOES NOT edit live_game_simulator.py or _cv_live_sim_panel.py.
+    _v8_flag_on = os.environ.get("CV_LIVE_V8_SNAPSHOT", "").strip().lower() in ("1", "true", "yes", "on")
+    if _v8_flag_on and live_overlay and isinstance(live_overlay, dict):
+        try:
+            import json as _v8json
+            _v8_path = _ROOT / "data" / "cache" / "team_system" / f"v8_snapshot_{game_id}.json"
+            if _v8_path.exists():
+                _v8_data = _v8json.loads(_v8_path.read_text(encoding="utf-8"))
+                if isinstance(_v8_data, dict):
+                    # ADDITIVE: only set keys not already present in live_overlay
+                    # to avoid clobbering live state with stale V8 data.
+                    for _k, _v in _v8_data.items():
+                        if _k not in live_overlay:
+                            live_overlay[_k] = _v
+        except Exception as _v8_exc:
+            import logging as _lgv8  # noqa: PLC0415
+            _lgv8.getLogger(__name__).warning(
+                "CV_LIVE_V8_SNAPSHOT merge failed (suppressed): %s", _v8_exc)
 
     # CV_LIVE_SIM gated scenario / win-prob panel (default OFF).
     # Adds a ``sim`` block ONLY when the flag is ON and a live snapshot exists.

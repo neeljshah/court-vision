@@ -74,3 +74,31 @@ def test_anchor_hits_targets_vs_average_defense():
     res = simulate_game_fast(h, a, n_sims=4000, seed=5, anchor=True, defense=False)
     bru = next(d for d in res.players.values() if "Brunson" in d["name"])
     assert abs(bru["mean"]["pts"] - 26.1) < 1.0
+
+
+@pytest.mark.skipif(not _HAS, reason="torch not available")
+def test_count_nb_fattens_overdispersed_tails_preserving_mean(monkeypatch):
+    """CV_COUNT_NB upgrades over-dispersed counts (ftm) to a negative-binomial: the per-player MEAN is
+    preserved (NB mean = lam) so marginals/anchor never regress, but the variance widens to match real
+    over-dispersion (ftm real var/mean ~1.8). Default OFF stays Poisson."""
+    h, a = _teams()
+    monkeypatch.delenv("CV_COUNT_NB", raising=False)
+    off = simulate_game_fast(h, a, n_sims=6000, seed=5, anchor=True, defense=True)
+    monkeypatch.setenv("CV_COUNT_NB", "1")
+    on = simulate_game_fast(h, a, n_sims=6000, seed=5, anchor=True, defense=True)
+
+    def _agg(res):
+        mean_off, var_off = [], []
+        for p, d in res.players.items():
+            s = np.asarray(d["samples"]["ftm"], float)
+            if s.mean() > 1.5:                                   # ftm-prop-relevant players
+                mean_off.append(s.mean()); var_off.append(s.var())
+        return np.array(mean_off), np.array(var_off)
+
+    m_off, v_off = _agg(off)
+    m_on, v_on = _agg(on)
+    assert len(v_on) >= 3
+    # mean preserved (NB mean = lam) -> the prop marginal does not move
+    assert abs(m_on.mean() - m_off.mean()) < 0.15
+    # variance widens with NB (over-dispersion captured) -> honest tails
+    assert v_on.mean() > v_off.mean() * 1.10

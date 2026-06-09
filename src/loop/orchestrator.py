@@ -258,6 +258,13 @@ class Orchestrator:
         verdict = gr.verdict
         result.verdicts[signal.name] = verdict
 
+        # Refund the one-time held-out touch when the gate returns DEFER
+        # (coverage insufficient -- no evaluation happened, so the budget
+        # was not actually used). The exception path above already handles
+        # refunds for gate failures that raise.
+        if held_out and verdict == Verdict.DEFER:
+            self._release_held_out_budget()
+
         # Ledger every non-DEFER outcome (DEFER is requeued, not consumed).
         if verdict != Verdict.DEFER:
             self._safe(lambda: _ledger.record_signal(gr, target=signal.target),

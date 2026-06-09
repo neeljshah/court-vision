@@ -72,12 +72,16 @@ class TeamModel:
     assist_net: dict = field(default_factory=dict)  # scorer pid -> {assister pid: count} (real PBP network)
 
     @classmethod
-    def from_cache(cls, tri: str, rates_df: pd.DataFrame = None, team_rates: dict = None):
+    def from_cache(cls, tri: str, rates_df: pd.DataFrame = None, team_rates: dict = None, out_ids=None):
+        """out_ids: same-day-unavailable player ids (the freshness lever). Excluded from the rotation so
+        their minutes/usage re-route to the eligible rotation (lineups containing them are dropped, the
+        rest re-normalized, the anchor re-pins the survivors). out_ids=None -> byte-identical (default)."""
         if rates_df is None:
             rates_df = pd.read_parquet(os.path.join(TS, "player_rates.parquet"))
         if team_rates is None:
             team_rates = json.load(open(os.path.join(TS, "team_rates.json")))
-        sub = rates_df[(rates_df.team == tri) & (rates_df.mpg >= MIN_MPG)]
+        out = set(int(x) for x in (out_ids or []))
+        sub = rates_df[(rates_df.team == tri) & (rates_df.mpg >= MIN_MPG) & (~rates_df.pid.isin(out))]
         rate = {int(r.pid): r._asdict() for r in sub.itertuples(index=False)}
         attr = _attributes()                       # attach physical attributes per player
         rolz = _roles()                            # attach role propensities (usage/assist routing)
@@ -328,6 +332,27 @@ def _team_defense():
     return _TEAM_DEF
 
 
+_SECONDARY = None
+
+
+def _secondary_targets():
+    """Lazy-load real per-game means for the low-frequency count stats (blk/stl/fg3m/ftm/tov), so those
+    props are Poisson-calibrated to the right FREQUENCY (the possession chain produces zero-clumped counts:
+    sim P(Wemby>=1 blk) 60% vs 95% real). {} if not built -> chain samples kept (byte-identical)."""
+    global _SECONDARY
+    if _SECONDARY is None:
+        fp = os.path.join(TS, "secondary_targets.parquet")
+        _SECONDARY = {}
+        if os.path.exists(fp):
+            for r in pd.read_parquet(fp).itertuples(index=False):
+                d = {s: float(getattr(r, s)) for s in ("blk", "stl", "fg3m", "ftm", "tov") if hasattr(r, s)}
+                for s in ("blk", "fg3m", "ftm", "stl"):            # per-game variance for NB dispersion
+                    if hasattr(r, f"{s}_var"):
+                        d[f"{s}_var"] = float(getattr(r, f"{s}_var"))
+                _SECONDARY[int(r.pid)] = d
+    return _SECONDARY
+
+
 def _recency():
     """Lazy-load recency-weighted per-game rates (pts/reb/ast/mpg). {} if not built."""
     global _RECENCY
@@ -524,8 +549,55 @@ def _finalize(samp, ht, at, home, away, pids_h, pids_a, anchor, defense, dispers
                 ast_t = (1 - RECENCY_W) * ast_s + RECENCY_W * arec if arec is not None else ast_s
                 _anchor_reb(samp[p], reb_t)
                 _anchor(samp[p], "ast", ast_t)
+                # SECONDARY counting stats -> season per-game (centered, honest marginals for the full
+                # prop universe: 3PM/STL/BLK/TOV/FTM/PF). Derived from the same per-min rates the chain
+                # uses, so the means are consistent; the joint shape (rank-corr) survives the rescale.
+                mpg = r.get("mpg", 0) or 0.0
+                use_pg = (r.get("use_per_min", 0) or 0.0) * mpg
+                _anchor(samp[p], "stl", (r.get("stl_per_min", 0) or 0.0) * mpg)
+                _anchor(samp[p], "blk", (r.get("blk_per_min", 0) or 0.0) * mpg)
+                _anchor(samp[p], "pf", (r.get("pf_per_min", 0) or 0.0) * mpg)
+                _anchor(samp[p], "tov", use_pg * (r.get("tov_share", 0) or 0.0))
+                _anchor(samp[p], "fg3m", use_pg * (r.get("shot_share", 0) or 0.0)
+                        * (r.get("fg3_rate", 0) or 0.0) * (r.get("fg3_pct", 0) or 0.0))
+                _anchor(samp[p], "ftm", use_pg * (r.get("ft_share", 0) or 0.0) * 2.0 * (r.get("ft_pct", 0) or 0.0))
         if dispersion:                               # calibrate per-player spread (team total held)
             _apply_dispersion(samp, pids_h, pids_a, home, away, seed)
+        # COUNT-STAT CALIBRATION: the possession chain produces zero-clumped low-frequency counts (sim
+        # P(Wemby>=1 blk) 60% vs 95% real). Re-sample blk/fg3m/ftm at the player's REAL per-game mean ->
+        # correct frequency + tail + mean (fixes the phantom 'under blocks/threes' edges). Marginal-correct
+        # (the prop is the marginal); the weak cross-stat correlation is traded for honest single-prop pricing.
+        # Default = Poisson. CV_COUNT_NB=1 upgrades over-dispersed counts (var>mean) to a NEGATIVE BINOMIAL at
+        # the real (mean,var): real ftm is over-dispersed 1.8x + zero-inflated (P>=1 .64 vs Poisson .76); NB
+        # matches both -> ftm shapeErr 8.0->5.3% (blk/fg3m -0.7/-0.8pp), no mean change (NB mean=lam).
+        # CV_COUNT_STL=1 ALSO overrides stl: the chain over-clumps stl zeros (chain shapeErr 5.8% vs Poisson
+        # 2.7%; stl disp 1.06 so it stays Poisson under the 1.5 gate) -- the old 'stl is chain-calibrated'
+        # assumption was false. Self-limiting: var<=1.5*mean -> Poisson.
+        nb = os.environ.get("CV_COUNT_NB", "0") == "1"
+        override = ["blk", "fg3m", "ftm"] + (["stl"] if os.environ.get("CV_COUNT_STL", "0") == "1" else [])
+        sec = _secondary_targets()
+        if sec:
+            prng = np.random.default_rng(seed + 777)
+            ncount = len(samp[pids_h[0]]["pts"]) if pids_h else 0
+            for p in pids_h + pids_a:
+                tg = sec.get(p)
+                if not tg or ncount == 0:
+                    continue
+                for st in override:
+                    lam = tg.get(st)
+                    if lam is None or lam < 0:
+                        continue
+                    m = max(float(lam), 0.0)
+                    var = tg.get(f"{st}_var") if nb else None
+                    # over-dispersion gate: require var/mean > 1.5 (~+1.5 sigma above Poisson noise at n~20,
+                    # std(var/mean)~sqrt(2/(n-1))) so NB fires only on GENUINE over-dispersion, not a noisy
+                    # low-count estimate -> protects blk (disp~1.1, already Poisson-calibrated) from a wobble.
+                    thr = float(os.environ.get("CV_COUNT_NB_THR", "1.50"))
+                    if nb and var is not None and m > 0 and var > m * thr:    # over-dispersed -> NB(mean,var)
+                        rr = m * m / (var - m); pp = rr / (rr + m)
+                        samp[p][st] = prng.negative_binomial(max(rr, 1e-6), min(max(pp, 1e-6), 1.0), ncount).astype(float)
+                    else:
+                        samp[p][st] = prng.poisson(m, ncount).astype(float)
         ht = sum(samp[p]["pts"] for p in pids_h)
         at = sum(samp[p]["pts"] for p in pids_a)
     rates = {**home.rate, **away.rate}
@@ -538,6 +610,7 @@ def _finalize(samp, ht, at, home, away, pids_h, pids_a, anchor, defense, dispers
             "reb_mean": float(reb.mean()),
             "q10": float(np.quantile(pts, 0.1)), "q50": float(np.quantile(pts, 0.5)),
             "q90": float(np.quantile(pts, 0.9)),
-            "samples": {"pts": pts, "reb": reb, "ast": ast},
+            # full per-sim box so the prop engine can derive EVERY prop + combo + threshold from the joint
+            "samples": {**{k: samp[p][k] for k in _STATS}, "reb": reb},
         }
     return GameSimResult(home.tri, away.tri, players, ht, at, float((ht > at).mean()))
