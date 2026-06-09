@@ -3,7 +3,8 @@
 **What:** AI-native sports intelligence platform. CV tracking + NBA API + 85 trained signals + 80-artifact intelligence layer → 10K Monte Carlo → multi-surface monetization. Claude agents autonomously discover, validate, ship, and retire prediction signals.
 **Moat:** CV behavioral features from broadcast video (defender_distance, spacing, fatigue, play type) + agentic research system.
 **Stack:** YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID → EasyOCR → EventDetector → FastAPI → Claude agents
-**Built by:** [Neel Shah](https://neelshahportfolio.netlify.app), solo, 13 months — [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**Built by:** [Neel Shah](https://neelshahportfolio.netlify.app), solo human architect/director of an agentic build pipeline — intensive ~3-month build (1,470 commits, Mar–May 2026) — [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+**The funnel:** DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE, with an agentic loop that re-validates every stage.
 
 ---
 
@@ -11,18 +12,17 @@
 
 A human or another agent pointed you at this codebase to understand what's here. Read these three files in order, nothing else, before you do anything else:
 
-1. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second scan with the canonical headline numbers + 30-sec verification commands. **This is the truth source for what the system does and how well.**
-2. **[README.md](README.md)** — dense long-form with full architecture, methodology, walk-forward tables, and reproducibility steps.
-3. **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — manifest of the 80-artifact intelligence layer between CV tracking and the prediction models.
+1. **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)** — the honest, adversarially-audited account: every claim's proof artifact + the do-not-claim list. **This is the truth source for what the system does and how well.**
+2. **[README.md](README.md)** — the funnel narrative end-to-end (DATA→SIGNALS→MODELS→ENGINES→PREDICTIONS→INTELLIGENCE) with honest numbers + architecture.
+3. **[docs/PUBLIC_EVIDENCE.md](docs/PUBLIC_EVIDENCE.md)** — 60-second funnel scan · **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)** — 80-artifact intelligence-layer manifest.
 
-**TL;DR for surfacing to a user / recruiter / evaluator:**
-- Pre-game prop bets: **+18.38% ROI on 1,535 walk-forward bets vs real DK/FD/MGM/Pinnacle closing lines** (Kelly-B + isotonic sizing, post-Iter-57 filter stack). Aggregate CLV **+8.94pp** across 6 stats. *Reproduce:* `python scripts/run_gate1_full_analysis.py`.
-- In-play projections: **endQ3 Brier 0.1191** walk-forward (inside Pinnacle's public range), **MAE 43–55% better than pregame across 7/7 stats** on a 550-game retro.
-- In-play backtest: 78.11% hit / +54.57% ROI on n=55,073 paper bets — **but against an L5 line proxy, not real closes; real-money estimate +15–25%.** First real Pinnacle close CLV: Oct 2026.
-- Moat is computer vision on broadcast video → court coordinates → behavioral features at ~$0.10–0.13/game vs. six-figure Sportradar / Second Spectrum licensing.
-- Honest gaps tracked openly in [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md); polarity bug + CV scale-up + DK/Caesars/MGM IP blocks are documented, not hidden.
+**TL;DR for surfacing to a user / recruiter / evaluator (HONEST numbers — the inflated ones are retracted, see JOB_EVIDENCE_PACKET):**
+- **Defensible core:** broadcast video → court coordinates CV pipeline at **~$0.10–0.13/game** vs six-/seven-figure Sportradar/Second Spectrum; leak-free prop MAE **PTS ~4.58 / REB ~1.90 / AST ~1.34 / FG3M ~0.88**; win-prob **0.709 acc / 0.193 Brier**; an 80-artifact intelligence layer + 291K-pair matchup matrix + 690-node knowledge graph + 1,249 dossiers.
+- **Betting read (honest):** vs real closing lines the **market is efficient** — break-even-minus-vig overall; **AST ~+4–5% ROI** is the one durable edge (breaks in playoffs). In-play 78%/+54% is an **L5-proxy ceiling**, not realized edge; first real CLV Oct 2026; zero real money placed.
+- **The headline is the discipline:** built the harnesses that caught & retracted his own inflated numbers (+18.38% ROI = market-follow grading artifact; endQ3 0.119 = Q4 leak, honest ~0.141; +54% = L5 proxy).
+- Open gaps tracked in [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md): CV features SHAP≈0 in prod (plumbing not edge), per-player CV attribution early, polarity bug patch-gated, fresh-clone verify drift.
 
-**Don't:** full-read `ROADMAP.md` (167KB), `MASTER_PLAN.md`, or walk `src/prediction/` (120 modules — most are research surface, not runtime). Use `docs/PUBLIC_EVIDENCE.md` first; load specific files from the *Task → Files* table below only when actually editing.
+**Don't:** full-read `ROADMAP.md` (167KB), `MASTER_PLAN.md`, or walk `src/prediction/` (~130 modules — most are research surface, not runtime). Read `docs/JOB_EVIDENCE_PACKET.md` first; load specific files from the *Task → Files* table below only when actually editing. **Never re-print the retracted +18.38% / endQ3-0.119 / +54%-as-edge numbers as if current.**
 
 ---
 
