@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
+> **⚠️ Retraction note (2026-06-09):** earlier entries cite headline numbers
+> (+18.38% pre-game ROI, endQ3 Brier 0.119, +54% in-play ROI, +8.94pp CLV) that a
+> later self-audit **retracted** as measurement artifacts. Honest versions:
+> break-even-minus-vig vs real closes (assists ~+4–5% the one durable edge),
+> leak-free endQ3 Brier ~0.141, and the +54% is an L5-proxy ceiling — not realized
+> edge. These historical entries are kept as an honest record of what was claimed
+> when. Full account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
+
 ## [Unreleased]
+
+### Changed
+- **Public docs reframed around the funnel** (DATA→SIGNALS→MODELS→ENGINES→PREDICTIONS→INTELLIGENCE) and reconciled to the leak-free audited numbers; retracted +18.38%/endQ3-0.119/+54%-as-edge headlines corrected across README, ARCHITECTURE, START_HERE, AGENTS, VISION, PREDICTIONS_QUICKSTART, PLAYER_INTELLIGENCE, CEILING, PUBLIC_EVIDENCE, CLAUDE.
+- **Gitignore hardened** to robustly exclude the data/ moat (intelligence layer, registry, all parquets) — `data/intelligence/` was documented as ignored but never actually was.
 
 ## [0.17.0] - 2026-05-27 — In-play backtest + filter calibration + shadow logger
 

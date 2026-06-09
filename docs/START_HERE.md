@@ -144,21 +144,24 @@ python scripts/batch_season.py --season 2025-26
 
 ---
 
-## Key Numbers (canonical, 2026-05-28)
+## Key Numbers (honest / leak-free — see [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md))
+
+> The funnel: **DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE.** Earlier
+> headline ROI/Brier figures were retracted as measurement artifacts (listed at the bottom).
 
 | Metric | Value | Source |
 |--------|-------|--------|
-| **Pre-game props ROI (1,535 bets, real DK/FD/MGM/Pinnacle closes, KB+ISO)** | **+18.38%** | `data/cache/iter61_sim_reconciliation.json` |
-| Pre-game props CLV (aggregate, 6 stats) | **+8.94pp** | iter61 canonical |
-| In-play **endQ3 Brier** (walk-forward, 3,685 snapshots) | **0.1191** | within Pinnacle public range ~0.10–0.12 |
-| In-play endQ3 MAE vs pregame (avg across 7 stats) | **−51%** | 550-game retro, 7/7 win |
-| Win probability accuracy (single-split sanity check) | 0.7094 | `python scripts/verify_winprob.py` |
-| Player props MAE (PTS, pregame walk-forward) | 4.62 (N=99,818) | `python scripts/verify_production_mae.py` |
+| Prop MAE @ q50 (leak-free WF, ~51K held-out/stat) | PTS ~4.58 · REB ~1.90 · AST ~1.34 · FG3M ~0.88 | `data/models/quantile_pergame_metrics.json` |
+| Win-prob accuracy / Brier (3-fold WF) | 0.709 / 0.193 | `data/models/win_prob_metrics.json` |
+| In-play endQ3 MAE lift vs pregame | ~46% pooled (~26% over naive carry-forward, WF) | leak-clean residual heads |
+| In-play endQ3 Brier (leak-free) | ~0.141 | after removing a Q4 feature leak (caught in self-audit) |
+| Betting vs **real** closing lines | break-even-minus-vig; **AST ~+4–5%** the one durable edge | `scripts/run_gate1_full_analysis.py` → −2.00% unfiltered |
+| CV pipeline | 17,254 cv_features rows / 241 games / 252 players · ~$0.10–0.13/game | `data/nba_ai.db` |
 | DNP predictor AUC | 0.979 | committed metrics |
-| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | +54.57% (Wilson hit [77.76%, 78.45%]) | ⚠️ proxy, real-money est. **+15–25%** |
-| Tracking throughput | 15 fps RTX 4060 8GB · ~$0.10–0.13/game on RunPod 3090 | |
+| In-play paper-ceiling ROI (L5 line proxy, n=55,073) | 78% hit / +54% — **ceiling, not edge**; real est. +15–25% | ⚠️ L5 proxy, first real CLV Oct 2026 |
 | Shots in training data | 221,866 | |
-| PBP coverage | 98.4% (3,627 / 3,685 games) | |
+
+**Retracted (artifacts the harness caught):** +18.38% ROI (market-follow grading bug → real break-even-minus-vig), endQ3 0.119 (Q4 leak → ~0.141), +54% in-play (L5 proxy). Full account: [JOB_EVIDENCE_PACKET.md](JOB_EVIDENCE_PACKET.md).
 
 ---
 
@@ -168,7 +171,7 @@ python scripts/batch_season.py --season 2025-26
 |-------|-------------|--------|
 | 1–13.5 | Data infra, CV tracker, NBA data, 85 ML models, possession simulator, betting infra, FastAPI | ✅ Done |
 | G | Full-game CV data collection (target 80 CLEAN) | 🟡 85 tracked / 7 full-feature — blocked behind ISSUE-022 `defender_distance=200.0` sentinel-vs-NULL |
-| **Gate 1** | Real-Vegas CLV validation vs DK/FD/MGM/BetRivers closes (8,360 bets) | ✅ **RUN** — pre-filter aggregate −2.06% flat; **post-Iter-57 filter stack +18.38% KB+ISO on 1,535 bets** |
+| **Gate 1** | Real-Vegas re-grade vs DK/FD/MGM/BetRivers closes (8,360 bets) | ✅ **RUN** — market efficient: **break-even-minus-vig** (−2.00% unfiltered); the earlier "+18.38% filtered" was a market-follow grading artifact, retracted |
 | In-play stack | endQ1/endQ2/endQ3 LGB + iter-68 v6_hp + iter-71 meta_blend | ✅ Shipped 2026-05-27 (CHANGELOG 0.17.0) |
 | Intelligence layer | 80 derived artifacts (player/scheme/lineup/quality/calibration) | ✅ Shipped — manifest at [INTELLIGENCE.md](INTELLIGENCE.md) |
 | Shadow-logged execution | Settlement engine + filter calibrator + decision-engine gates | ✅ Shipped 2026-05-27 |
