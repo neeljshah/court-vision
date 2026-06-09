@@ -76,11 +76,11 @@ MAE — not R² — is the betting-relevant loss because sportsbook prop O/U lin
 
 **Win probability:** 70.94% accuracy / 0.193 Brier on 3-fold walk-forward; 71.7% / 0.188 on single-split. 5-way NNLS stack (XGB+LGB+LR+5-seed MLP+GaussianNB). Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json).
 
-**Real-money-relevant backtest (Gate 1 RUN 2026-05-26, canonical post-iter-61):** **+18.38% ROI on 1,535 walk-forward bets** vs real DK / FanDuel / MGM / Pinnacle closing lines (Kelly-B + per-stat isotonic sizing, post-Iter-57 filter stack). Aggregate CLV **+8.94pp** across 6 stats — top decile for public sports modeling. Per-stat: BLK +25.98% / AST +14.04% / STL +16.91% / FG3M +16.02% / REB +12.30% / PTS +8.44%. Source: [`data/cache/iter61_sim_reconciliation.json`](data/cache/iter61_sim_reconciliation.json). Reproduce: `python scripts/iter61_sim_reconciliation.py`.
+**Real-money read vs real closes (Gate 1 re-grade, HONEST):** against real DK / FanDuel / MGM / Pinnacle **closing** lines the **market is efficient** — the prop edge is **break-even-minus-vig** (−2.00% unfiltered). The one genuinely durable, book-robust edge is **assists, ~+4–5% ROI** (selection skill, not under-bias; breaks in the playoffs — size conservative). Re-grade: `python scripts/run_gate1_full_analysis.py`. *(The earlier "+18.38% / +8.94pp CLV" was a market-follow grading artifact — the grader bet the market's devig favorite and never read the model — retracted; see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).)*
 
-**In-play stack (shipped 2026-05-27):** endQ1/Q2/Q3 LGB + iter-68 v6_hp + iter-71 meta_blend. **endQ3 Brier 0.1191** walk-forward (within Pinnacle public range ~0.10-0.12). In-game MAE 43-55% better than pregame across 7/7 stats on a 550-game retro.
+**In-play stack (shipped 2026-05-27):** endQ1/Q2/Q3 LGB residual heads. In-game endQ3 MAE lift ~46% pooled vs pregame (mostly mechanical; **~26% over a naive carry-forward baseline**, WF-validated, leak-clean). endQ3 win-prob Brier **~0.141 leak-free** (the earlier "0.1191" was a Q4 feature leak, caught and retracted).
 
-**In-play paper backtest (L5 proxy, NOT real closes):** 78.11% hit / +54.57% ROI on n=55,073 calibrated bets. Real-money compression estimate: **+15-25%**. First real Pinnacle close CLV reading: Oct 2026.
+**In-play paper backtest (L5 proxy, NOT real closes):** 78% hit / +54% ROI on n=55,073 calibrated bets — a **model-quality ceiling, not realized edge**. Real-money estimate **+15–25%**. First real Pinnacle close CLV reading: Oct 2026; zero real money placed by design.
 
 **xFG** (shot quality): Brier 0.226 on 221K shots. **DNP predictor:** AUC 0.979.
 
@@ -88,7 +88,7 @@ MAE — not R² — is the betting-relevant loss because sportsbook prop O/U lin
 
 **Execution Layer** — Shin devig + Kelly-B + per-stat isotonic edge calibration + Ledoit-Wolf shrinkage + shadow logger (every eval incl. blocked) + settlement engine + decision engine with per-quarter EV floor (calibrated 0.01 → 0.12 post-hoc). 9 production daemons watchdog'd. Live trading desk UI: `/scan`, `/clv`, `/parlays`, `/live/{game_id}`, SSE arbs.
 
-**Agentic Research System** — LIVE as the improve_loop. Opus orchestrates, Sonnet executes, Haiku searches. 70 documented iterations, 29 ships, 41 reverts, every revert with a stated cause. Ship gate: ≥3/4 walk-forward folds positive AND no per-stat regress >1pp. **The +18.38% pre-game stack was discovered through this loop, not designed up front.** Spec: `.claude/commands/workday-loop.md`.
+**Agentic Research System** — LIVE as the improve_loop. Opus orchestrates, Sonnet executes, Haiku searches. Two arms: ARM A mines residuals into gated leaf signals, ARM B writes intel atlas sections. Ship gate built to *refute*: expanding walk-forward (all folds improve) + null-shuffle permutation (z≥3) + ablation + Benjamini-Hochberg FDR. Most candidates correctly rejected — and **this same loop caught and retracted the inflated +18.38% / endQ3-0.119 headlines.** Spec: `.claude/commands/workday-loop.md`.
 
 **What's not yet built:** Pinnacle real-close Gate 1 (gated on Oct 2026 preseason ingestion). Possession simulator (Monte Carlo). Book adapters with order management for DK/FD/BetMGM/Novig. News ingestion pipe.
 
