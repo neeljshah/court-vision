@@ -301,10 +301,25 @@ data/actuals/
 # =============================================================================
 # 2026-06-08 publish-hardening: funnel-docs reframe + full new-code backup pass
 # =============================================================================
-# -- MOAT: regenerable intelligence/research artifacts (parquet) — never publish
-data/cache/*.parquet
+# -- MOAT: ALL regenerable derived data artifacts — never publish (encodes the moat).
+#    NOTE: data/intelligence/ was claimed gitignored in docs but actually wasn't — fixed here.
+#    Already-tracked whitelisted files (data/models/*.json, data/nba/team_stats_*) are unaffected.
+data/**/*.parquet
 data/*.parquet
+data/intelligence/
+data/registry/
+data/lines/
+data/shadow/
+data/training/
+data/tmp_2526/
+data/clv/
 data/cache/clv/
+data/cache/cv_fix/
+data/cache/pit/
+data/cache/signals/
+data/cache/team_system/
+data/cache/intel/
+data/cache/lines_archive/
 # -- data/cache scratch harnesses + experiment dirs (underscore-prefixed) -------
 data/cache/_*
 # -- scratch HTML renders + root overnight/scout reports -----------------------
