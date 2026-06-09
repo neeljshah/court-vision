@@ -1,11 +1,25 @@
 # CourtVision — System Architecture
 
-> Technical shape of the platform. For strategy: [VISION.md](VISION.md). For build sequence: [ROADMAP.md](ROADMAP.md).
-> See also: [docs/architecture/system-overview.md](docs/architecture/system-overview.md) for full system descriptions.
+> Technical shape of the platform, organized as **the funnel**: each stage refines the one above it.
+> Narrative version: [README.md](README.md). Strategy: [VISION.md](VISION.md). Build sequence: [ROADMAP.md](ROADMAP.md).
+> Full system descriptions: [docs/architecture/system-overview.md](docs/architecture/system-overview.md).
 
 ---
 
-## The Six Core Systems
+## The funnel, stage by stage
+
+| Stage | What it does | Core components (below) |
+|-------|--------------|-------------------------|
+| **1 · DATA** | Broadcast video → court coordinates + NBA API + lines | CV pipeline |
+| **2 · SIGNALS** | Features + 80-artifact intelligence layer + discovery loop | feature_engineering, intelligence layer, `src/loop/` |
+| **3 · MODELS** | 7 prop heads · win-prob NNLS · in-play snapshot heads | player_props, win_probability, live_engine |
+| **4 · ENGINES** | Sim · devig · decision engine · Kelly · shadow log | Systems 1–5 below |
+| **5 · PREDICTIONS** | Projections + EV + sized bets, served over FastAPI | api/, trading desk, daemons |
+| **6 · INTELLIGENCE** | Dossiers · AI chat · the agentic loop that improves it all | System 6 below |
+
+The six numbered "systems" below are the **engines** that turn model output into decisions, plus the agentic research loop that re-validates every stage.
+
+## The Six Core Systems (the engine + improvement layers)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -60,10 +74,11 @@
 
   SYSTEM 6: AGENTIC RESEARCH SYSTEM [LIVE — improve_loop]
   Opus-orchestrator / Sonnet-executor / Haiku-search multi-agent loop.
-  70 documented iterations, 29 ships, 41 reverts, every revert with
-  stated cause. Hard ship gate: ≥3/4 WF folds positive AND no per-stat
-  regress >1pp. The +18.38% pre-game stack was discovered through
-  this loop, not designed up front.
+  Two arms: ARM A mines residuals → gated leaf signals; ARM B writes
+  intel atlas sections. Hard ship gate: expanding WF (all folds improve)
+  + null-shuffle permutation (z≥3) + ablation + Benjamini-Hochberg FDR.
+  Most candidates are correctly rejected — that is the design. This loop
+  also caught and retracted the inflated +18.38% / endQ3-0.119 headlines.
   Spec: `.claude/commands/workday-loop.md`.
 ```
 
@@ -106,7 +121,7 @@
 | Shin devig | `src/prediction/devig.py` | ✅ [LIVE] |
 | Risk guards | `src/prediction/risk_guards.py` | ✅ [LIVE] |
 | Ingest queue (SQLite) | `src/ingest/` | ✅ [LIVE] |
-| FastAPI serving | `api/main.py` | ✅ [LIVE] ~49 endpoints across 7 routers |
+| FastAPI serving | `api/main.py` | ✅ [LIVE] ~99 endpoints across 12 routers (REST+WS+SSE, runtime-counted) |
 | Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
 | Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
 | Regression test suite | `tests/` | ✅ [LIVE] 4,100+ collected; 48/48 critical-path pass (gate1, devig, kelly, clv, calibration); 63/63 in-play subset pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates) |
@@ -119,7 +134,7 @@
 | CLV tracker | `src/prediction/betting_portfolio.py` + `clv_router.py` | 🟡 [LIVE — partial] Historical Gate 1 RUN (DK/FD/MGM/BetRivers); Pinnacle CLV pending Oct 2026 (no historical archive exists) |
 | Production daemons (9) | `scripts/*_daemon.py` registered in `scripts/daemon_registry.json` | ✅ [LIVE] auto_place, auto_settle, clv_tracker, bankroll_monitor, middle_finder, line_move_detector, nba_lineup, live_bet_ranker, inplay_bet_ranker — watchdog'd via `daemon_watchdog.py` |
 | Book scrapers | `scripts/scrape_*.py` | 🟡 [LIVE — partial] Pinnacle/Bovada/FanDuel/PrizePicks operational; DK/Caesars/MGM IP-blocked (R18_K1, Playwright stealth probe failed) |
-| Agentic research loop | `.claude/commands/workday-loop.md` + Opus/Sonnet/Haiku routing | ✅ [LIVE] 70 documented iterations, 29 ships / 41 reverts; ship gate ≥3/4 WF folds positive + no per-stat regress >1pp |
+| Agentic research loop | `.claude/commands/workday-loop.md` + `src/loop/` + Opus/Sonnet/Haiku routing | ✅ [LIVE] two-arm discovery (signals + intel atlas); ship gate = expanding WF + null-shuffle (z≥3) + ablation + BH-FDR; most candidates correctly rejected |
 | PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending (ISSUE-021) |
 | Possession simulator (Monte Carlo) | — | 🔲 [PLANNED] |
 | Book adapters with order management (DK/FD/BetMGM/Novig) | `src/execution/` (stub) | 🔲 [PLANNED] |
@@ -186,8 +201,8 @@ Settlement (settlement_engine.py)
     │
     ▼
 FastAPI (api/main.py + api/live_v2_app.py)
-    └─ ~50 endpoints across 8 routers (main, predictions, models, analytics,
-       dashboard, execution, stitch, shadow audit)
+    └─ ~99 endpoints across 12 routers (props, live win-prob, devig/EV, CLV,
+       lines/scan, arbs/SSE, parlays, risk/kill-switch, dashboard, shadow audit)
 ```
 
 ---
@@ -248,4 +263,4 @@ FastAPI (api/main.py + api/live_v2_app.py)
 *Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [docs/CLAUDE-state.md](docs/CLAUDE-state.md) · [CHANGELOG.md](CHANGELOG.md)*
 
 ---
-*Last verified: 2026-05-25*
+*Last verified: 2026-06-08 — reframed around the funnel; retracted +18.38% / endQ3-0.119 claims corrected to the audited honest versions (see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)).*

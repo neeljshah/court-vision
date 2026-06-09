@@ -297,3 +297,23 @@ ops/*.xml
 # -- wave/actuals data dumps ---------------------------------------------------
 data/_wave*/
 data/actuals/
+
+# =============================================================================
+# 2026-06-08 publish-hardening: funnel-docs reframe + full new-code backup pass
+# =============================================================================
+# -- MOAT: regenerable intelligence/research artifacts (parquet) — never publish
+data/cache/*.parquet
+data/*.parquet
+data/cache/clv/
+# -- data/cache scratch harnesses + experiment dirs (underscore-prefixed) -------
+data/cache/_*
+# -- scratch HTML renders + root overnight/scout reports -----------------------
+data/*.html
+/OVERNIGHT_*.md
+/SCOUT_*.txt
+# -- nested throwaway scripts (underscore-prefixed) under any scripts/ subdir ---
+scripts/**/_*
+# -- internal audit/research churn — keep LOCAL (matches the curate-only posture:
+#    only 5 of ~243 _audits docs were ever published; the rest are internal brain,
+#    like vault/ and .planning/). Already-tracked audits stay tracked.
+docs/_audits/

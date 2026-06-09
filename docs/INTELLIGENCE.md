@@ -1,5 +1,7 @@
 # CourtVision Intelligence Layer
 
+> **Funnel position:** this is **stage 2 (SIGNALS)** feeding the model stack, and it's also where **stage 6 (INTELLIGENCE)** writes back. See the full funnel in [../README.md](../README.md) and [../ARCHITECTURE.md](../ARCHITECTURE.md).
+
 The intelligence layer sits between raw CV tracking and the prediction models. It is **80 artifacts (~10 MB of parquet + json)** derived from broadcast-video tracking, NBA Stats API, and play-by-play microstructure. Every artifact answers a specific question the prediction stack would otherwise have to guess at: *who is this player right now, what scheme is the opponent imposing, how does this matchup behave, is the model confident here?*
 
 Artifacts themselves are gitignored (`data/intelligence/`) — they're regenerable from raw tracking + NBA Stats and they encode the moat. This doc is the public-facing **manifest**: what exists, what's in each file, how it plugs in.

@@ -1,246 +1,120 @@
-# CourtVision — NBA AI System
+# CourtVision — The NBA Intelligence Funnel
 
-End-to-end NBA prediction + betting platform — an intensive solo build (1,470 commits, Mar–May 2026), architected and directed by one engineer running an agentic build pipeline. Computer vision on broadcast video → court coordinates → 7 prop models + 3-snapshot in-play win-prob stack → Shin-devigged EV → segment-filtered fractional Kelly → multi-book line scanner + arbitrage detection + live projection UI → shadow-logged execution.
+**Broadcast video → court coordinates → signals → models → engines → predictions → intelligence.**
 
-**Built by [Neel Shah](https://neelshahportfolio.netlify.app)** —  solo architect/director of the full stack (built via an agentic pipeline I designed; the engineering judgment, ship/reject calls, and validation methodology are mine). Open to **ML / computer-vision / data / founding-engineer** roles. → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+CourtVision is an AI-native NBA intelligence system. It takes a raw broadcast feed — the same pixels you watch on TV — and refines it, stage by stage, into calibrated predictions and machine-readable basketball understanding. Every layer narrows and sharpens the one above it. The output isn't just a number; it's a prediction you can *interrogate*, attached to a knowledge graph that explains why.
 
-> **30-second reproducibility** (after `git clone` + `pip install -r requirements.txt`):
-> ```bash
-> python scripts/verify_production_mae.py   # prop-model MAE vs committed JSON
-> python -m pytest tests/ -q                # the test suite
-> ```
+Built by **[Neel Shah](https://neelshahportfolio.netlify.app)** — solo human architect/director of an agentic build pipeline (the engineering judgment, ship/reject calls, and validation methodology are mine; most code was written by planner→executor model agents I directed under hard ship gates). An intensive ~3-month build (1,470 commits, Mar–May 2026). Open to **ML / computer-vision / data / founding-engineer** roles → [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 ---
 
-## The Tracker — Computer Vision On Broadcast Video
+## The funnel
 
-CourtVision is, first, a **broadcast-video tracking system**. Point it at any NBA game feed and it produces structured, court-coordinate data on every player, the ball, every shot, every possession, and every event — at **~$0.10–0.13 per full game** on a single consumer GPU. The prediction + betting layers below are built on top of this output, but the tracker is the load-bearing piece.
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│  1. DATA        Broadcast video + NBA Stats API + live betting lines         │  ← widest
+│                 CV tracking → ~150 cols/game @ ~$0.10–0.13/game              │
+├────────────────────────────────────────────────────────────────────────────┤
+│  2. SIGNALS     60+ engineered features + 80-artifact intelligence layer     │
+│                 + self-improving signal-discovery loop (gated)               │
+├────────────────────────────────────────────────────────────────────────────┤
+│  3. MODELS      7 prop heads (q10/q50/q90) · win-prob NNLS stack             │
+│                 · in-play snapshot heads (endQ1/Q2/Q3) — walk-forward gated   │
+├────────────────────────────────────────────────────────────────────────────┤
+│  4. ENGINES     Possession Monte Carlo · Shin devig · decision engine        │
+│                 · correlation-aware Kelly · shadow logger · 9 daemons         │
+├────────────────────────────────────────────────────────────────────────────┤
+│  5. PREDICTIONS Calibrated projections + win prob + EV + sized bets + SGPs    │
+│                 surfaced over a ~99-endpoint FastAPI + live trading desk       │
+├────────────────────────────────────────────────────────────────────────────┤
+│  6. INTELLIGENCE 1,249 player dossiers · 30 scheme cards · grounded AI chat   │  ← narrowest,
+│   (the apex)    · agentic loop that discovers/validates/ships/retires signals │    most refined
+└────────────────────────────────────────────────────────────────────────────┘
+        ▲                                                                  │
+        └──────────  the agentic loop feeds back & improves every stage  ──┘
+```
 
-### What it produces (per game)
+Read the funnel top-to-bottom and it's a data-refinement pipeline. Read the feedback arrow and it's a self-improving research system: the intelligence layer at the bottom is also the engine that re-derives, re-validates, and re-ships everything above it.
 
-| Output | Granularity | What's in it |
-|--------|-------------|--------------|
-| **`tracking_data.csv`** | Per frame × per player (~60 cols) | Court x/y (raw + normalized + feet), velocity / acceleration / heading, bbox, ankle, ball position + velocity, ball-possession flag, distance to ball, nearest opponent / teammate, team spacing + convex-hull area + centroid, paint count own/opp, possession side, handler isolation, distance-to-basket, vel-toward-basket, drive flag, fast-break flag, dribble hand + dribble count, contest-arm angle, jump detection, ball arc angle, ball peak height, pass speed, shot-clock estimate, scoreboard clock + period + score diff, possession ID + duration, lineup ID, play type, court zone, homography-valid flag |
-| **`shot_log.csv`** | One row per shot (~25 cols) | Shooter ID + name + team, court x/y (raw + normalized + zone), defender distance + identity, team spacing at release, possession ID + duration, made/missed, shot clock, contest-arm angle, closeout speed, fatigue proxy, dribble count, ball arc angle, catch-and-shoot flag, shot distance, second-chance flag, shot-creation type |
-| **`possessions.csv`** | One row per possession (~25 cols) | Team, start/end frame, duration, avg spacing, avg defensive pressure, avg vel-toward-basket, drive attempts, shot attempted + frame, fast-break flag, play type, result + outcome score, pass / screen / drive / cut count, lineup ID, max paint touches, avg off-ball distance, min shot-clock estimate, dominant zone, transition time, off-rebound flag |
-| **`events_log.csv`** | One row per event (~17 cols) | Screens, cuts, drives, closeouts, rebounds — frame, possession ID, type, player + defender IDs, court x/y, closeout speed, crash angle + speed, box-out flag, ball-handler + screener IDs, screen action, rotation distance |
-| **`scoreboard_log.csv`** | Per OCR reading (7 cols) | Frame, game clock, shot clock, home/away score, period, OCR confidence |
-| **`ball_tracking.csv`** | Per frame (7 cols) | Frame, timestamp, ball x/y on court, detected, live, inferred flags |
-| **`stats.json`** | Per-player aggregates | Frames tracked, total distance, max velocity, possession frames, shots attempted, drive attempts, paint frames, distance-to-basket / opponent |
+> **One honesty note up front, because it's the most important signal in the repo.** The same person who built this system also built the harnesses that caught — and publicly retracted — his own inflated headline numbers (a "+18.38% ROI", an "endQ3 Brier 0.119"). Both were measurement artifacts; both are documented as such below, not buried. The defensible results are the **CV pipeline, the prediction accuracy (MAE), the validation rigor, and the intelligence layer** — not a betting edge. Full audited account: **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)**.
 
-That's **~150 distinct columns** of structured per-frame and per-event data extracted from raw broadcast video. Output is also written to SQLite (or PostgreSQL via `DATABASE_URL`), and post-tracking enrichment from the NBA Stats API joins official PBP to label real player IDs, makes/misses, assists, and shot types.
+---
 
-### How it works
+## 1 · DATA — turning a TV feed into structured court data
+
+The widest, load-bearing stage. Point CourtVision at any NBA broadcast and it produces structured, court-coordinate data on every player, the ball, every shot, every possession, and every event — at **~$0.10–0.13 per full game** on a single consumer GPU, versus six- to seven-figure annual licensing for Sportradar / Second Spectrum on the *same broadcast feed*. That cost delta is the moat thesis.
+
+### The CV pipeline
 
 ```
 Broadcast video
-  → YOLOv8n detection (players, ball, rim, referee, shoot/made events)
-  → SIFT homography  (image pixels → 94 × 50 ft court coordinates)
-  → Kalman + Hungarian tracking  (per-frame ID assignment + motion model)
-  → OSNet re-ID (512-dim)  (recover identities through occlusion / scene cuts)
-  → EasyOCR  (jerseys, scoreboard clock + period + score)
-  → EventDetector  (shots, passes, dribbles, screens, drives, closeouts, rebounds)
-  → Per-frame writer  (CSV / SQLite / Postgres)
-  → NBA API enrichment  (real player IDs, official PBP labels)
+  → YOLOv8n detection            players, ball, rim, referee, shoot/made events
+  → SIFT homography              image pixels → 94 × 50 ft court coordinates
+  → Kalman + Hungarian tracking  6D constant-velocity motion + globally-optimal ID assignment
+  → OSNet re-ID (512-dim)        recover identities through occlusion / scene cuts
+  → EasyOCR                      jerseys, scoreboard clock + period + score
+  → EventDetector                shots, passes, dribbles, screens, drives, closeouts, rebounds
+  → Per-frame writer             CSV / SQLite / Postgres
+  → NBA API enrichment           real player IDs, official PBP labels (makes/misses/assists)
 ```
 
-| Layer | Stack | Module |
-|-------|-------|--------|
-| Detection | YOLOv8n (Ultralytics), CUDA 11.8, RTX 3090 / 4060 | [`src/tracking/player_detection.py`](src/tracking/player_detection.py) |
-| Court mapping | OpenCV SIFT homography + panorama stitcher | [`src/pipeline/unified_pipeline.py`](src/pipeline/unified_pipeline.py) (`_build_panorama`, `_compute_homography`) |
-| Tracking | Kalman filter + Hungarian-matched ID assignment | [`src/tracking/advanced_tracker.py`](src/tracking/advanced_tracker.py) |
-| Re-identification | OSNet 512-dim embeddings (torchreid) + color tracker | [`src/tracking/osnet_reid.py`](src/tracking/osnet_reid.py), [`color_reid.py`](src/tracking/color_reid.py) |
-| Player resolver | Per-quarter mode-jersey + PBP-name priority + roster validation | [`src/tracking/player_resolver.py`](src/tracking/player_resolver.py) |
-| Ball detection | Dedicated detector + Kalman track + pixel-velocity fallback | [`src/tracking/ball_detect_track.py`](src/tracking/ball_detect_track.py) |
-| OCR | EasyOCR for jerseys + scoreboard OCR | [`src/tracking/scoreboard_ocr.py`](src/tracking/scoreboard_ocr.py) |
-| Events | Shot / pass / screen / drive / closeout / rebound classifier | [`src/tracking/event_detector.py`](src/tracking/event_detector.py) |
-| Orchestrator | One unified pipeline, checkpointed writes, VRAM-flush every 3000 frames | [`src/pipeline/unified_pipeline.py`](src/pipeline/unified_pipeline.py) |
+The tracking math is implemented from primitives, not wrapped: a 6D constant-velocity Kalman filter plus Hungarian assignment over a blended IoU+appearance cost (`src/tracking/advanced_tracker.py`), a custom-trained single-class ball detector exported PyTorch→ONNX→TensorRT, and a broadcast-hardened homography with inlier gating, EMA smoothing, drift re-anchoring, and replay/scene-cut suspension. Every accelerated component has a graceful CPU fallback, so it runs on a laptop or a GPU server with no code change.
 
-### What the tracker can do
+### What it produces (per game)
 
-- **Track every player and the ball** in court coordinates (94 × 50 ft) at ~25–30 fps on a 3090.
-- **Identify players** by jersey OCR + PBP-name priority + per-quarter mode + per-game roster validation. Catches phantom cross-team-jersey collisions that silently mis-label 23.5% of frames without the guard.
-- **Detect shots** with YOLO-NAS weights + pixel-velocity fallback + paint variant + global debounce.
-- **Detect possession transitions** with a state machine (1.5 s ball-loss threshold, same-team merge for sub-300-frame gaps).
-- **Classify events** — passes, screens (screener / handler + action), drives (with paint-direction gate), cuts, closeouts (speed + crash angle + box-out), rebounds — each tied to a possession ID and court coordinates.
-- **Read the scoreboard** — game clock, shot clock, home/away score, period — via EasyOCR with per-reading confidence and per-period anchoring.
-- **Compute behavioral features at the frame level** — defender distance, team spacing (convex-hull area + centroid), paint counts both teams, handler isolation, possession side, distance-to-basket, velocity toward basket, fatigue proxies, contest arm angle, jump detection, dribble hand + count, ball arc angle, ball peak height, pass speed.
-- **Run end-to-end at ~$0.10–0.13 / game** on a RunPod 3090 vs. six- to seven-figure annual licensing for Sportradar / Second Spectrum (same broadcast feed, very different cost structure).
-- **Self-heal under an autonomous loop** — Opus diagnoses, Sonnet patches, mirrors to RunPod, audits, repeats. One representative night: 30 distinct CV-pipeline bugs landed in a single session.
+| Output | Granularity | Contents |
+|--------|-------------|----------|
+| `tracking_data.csv` | per frame × player (~60 cols) | court x/y (raw+normalized+feet), velocity/accel/heading, ball pos+possession flag, defender distance, team spacing + convex-hull area, paint counts, distance-to-basket, drive/fast-break flags, dribble hand+count, contest-arm angle, shot-clock + scoreboard estimate, possession ID, lineup ID, play type, homography-valid flag |
+| `shot_log.csv` | one row per shot (~25 cols) | shooter+team, court x/y+zone, defender distance+identity, spacing at release, made/missed, contest angle, closeout speed, fatigue proxy, catch-and-shoot flag, shot-creation type |
+| `possessions.csv` | one row per possession (~25 cols) | team, duration, avg spacing+pressure, drive attempts, play type, result, pass/screen/drive/cut counts, transition time |
+| `events_log.csv` | one row per event (~17 cols) | screens/cuts/drives/closeouts/rebounds with player+defender IDs, court coords, crash angle |
+| `scoreboard_log.csv` · `ball_tracking.csv` · `stats.json` | OCR / per-frame / aggregates | game+shot clock, score, period, ball court position, per-player totals |
 
-**Status:** 260 games tracked end-to-end · 25,680 cv_features rows clean · 331 unique resolved players · all 30 logged pipeline bugs patched. Full audit trail in [vault/Intelligence/Tracking_Session_Validation_Log.md](vault/Intelligence/Tracking_Session_Validation_Log.md).
+That's **~150 distinct columns** of structured per-frame and per-event data extracted from raw video, mirrored to SQLite/PostgreSQL and enriched against the NBA Stats API.
 
-Everything below — the prop models, the in-play win-prob stack, the betting + execution layer, the 80-artifact intelligence layer — consumes this tracker output.
+### The other two data sources
+
+- **NBA Stats API + cdn.nba.com** — 569 gamelogs, ~221K shots, ~3.6K PBP sequences across 30 seasons; live boxscore + PBP for in-play.
+- **Betting lines** — The Odds API + custom scrapers (Pinnacle / Bovada / FanDuel / PrizePicks live; DK / Caesars / MGM IP-blocked, browser-fingerprint impersonation + live/pregame contamination guard).
+
+**Status (audited 2026-06-07):** ~240 games tracked end-to-end · **17,254 `cv_features` rows / 241 games / 252 distinct resolved NBA player IDs** in `data/nba_ai.db` · ~10 documented sentinel-leak guards in the feature extractor, each tied to a specific observed corruption mode. *(Honest scope: per-player CV attribution is still early — see the discipline section.)*
+
+**Load-bearing:** [`src/pipeline/unified_pipeline.py`](src/pipeline/unified_pipeline.py) · [`src/tracking/advanced_tracker.py`](src/tracking/advanced_tracker.py) · [`src/tracking/osnet_reid.py`](src/tracking/osnet_reid.py) · [`src/tracking/ball_detect_track.py`](src/tracking/ball_detect_track.py). Deep dive: [docs/CV_TRACKING.md](docs/CV_TRACKING.md).
 
 ---
 
-## What This Repo Actually Is
+## 2 · SIGNALS — turning data into questions the models can't guess
 
-A real, end-to-end ML system — an intensive ~3-month solo build (Mar–May 2026), not a notebook backtest. Two surfaces, both with committed data and reproducible from a fresh clone:
+Raw columns aren't yet *meaning*. Stage 2 converts tracking + box + PBP into the features and derived intelligence the models consume.
 
-- **(A) Pre-game prop models** — 7 per-stat models (PTS/REB/AST/FG3M/STL/BLK/TOV) with walk-forward evaluation, per-stat isotonic calibration, Shin devigging, and fractional-Kelly sizing, graded against **real DK/FD/MGM/Pinnacle closing lines**.
-- **(B) In-play win-probability + projections** — per-snapshot models (endQ1/Q2/Q3) on thousands of game-snapshots with expanding walk-forward validation.
+### Engineered features
 
-> **Honest read on performance.** The models are competitive and reproducible (point-accuracy/MAE checks pass against committed JSON), but the **closing market is efficient**: vs. real closes the prop edge is roughly break-even-to-slightly-negative on most stats, with a small genuine edge on assists. That's the honest, correct finding. **Two earlier headline numbers are retracted** — a "+18.38% pre-game ROI" (a market-follow grading artifact; real ≈ −2% to −5%) and an "endQ3 Brier 0.119" (inflated by a fourth-quarter data leak). My own walk-forward + shadow-logging harness caught both, and I documented them rather than ship them. That self-auditing discipline is the real headline.
+[`src/features/feature_engineering.py`](src/features/feature_engineering.py) builds 60+ pregame features — pace, team total, lineup on/off, rest/travel, referee tendencies, altitude — plus the **CV bridge** that joins behavioral tracking features (defender distance at release, spacing entropy, fatigue from cumulative movement, paint dwell %, contested-shot rate) onto each player-game.
 
-The most defensible claim is the **computer-vision pipeline**: broadcast video → court coordinates → behavioral features (YOLOv8 → SIFT homography → Kalman+Hungarian tracking → OSNet re-ID) on a consumer GPU at **~$0.10/game**. The discovery process below ran an autonomous Opus-planner / Sonnet-executor loop with hard ship gates (≥3/4 walk-forward folds positive, no per-stat regression > 1pp) — the gates, and the reverts, are the point.
+### The 80-artifact intelligence layer
 
----
+Between raw tracking and the models sits a derived layer of **80 parquet/json artifacts** (`data/intelligence/`, gitignored — regenerable, encodes the moat). Each answers a question the model would otherwise guess at: *who is this player right now, what scheme is the opponent imposing, how does this matchup behave, how much should we trust this prediction?* Highlights — player archetypes + a **26,335-pair similarity matrix**, defensive scheme tags (30 teams), position×scheme and archetype×scheme interaction tables with significance tests, lineup chemistry (4,760 rows / 1,175 lineups), clutch / quarter / shot-clock / possession-type splits, matchup deviations, coaching adjustments, a game-similarity retrieval index, and per-game CV-quality + per-player confidence curves that feed bet-sizing. Underneath it is a **291,625-pair player-vs-player matchup matrix** built from 2,214 raw tracking files across three seasons, folded into a **690-node idempotent knowledge graph** (660 player + 30 team notes, single-writer, no duplication on re-run).
 
-## Latest Numbers — Updated 2026-05-28
+Full manifest with per-artifact row counts, schemas, and which layers are still sparse: **[docs/INTELLIGENCE.md](docs/INTELLIGENCE.md)**.
 
-### Pre-game props — honest read (numbers corrected 2026-06)
+### The self-improving signal-discovery loop
 
-> ⚠️ An earlier version of this section reported a **+18.38% pool ROI** (and per-stat ROIs / CLV) as the canonical
-> result. That number is **retracted**: it came from a grading path that effectively followed the market's devig
-> favorite rather than the model, with in-sample-tuned filters and flat-odds accounting. Re-graded against real
-> closing lines at real odds, the prop edge is **roughly break-even-to-slightly-negative on most stats** (≈ −2% to
-> −5%), with a **small genuine edge on assists**. The closing market is efficient — which is the honest, correct
-> finding. The reproducible, defensible result here is **point accuracy (MAE)**, not ROI.
+Signals aren't only hand-built — they're *mined*. [`src/loop/`](src/loop/) runs a two-arm daemon: **ARM A** mines residuals into hypotheses, instantiates a leaf `signals/<name>.py`, and ships it only behind a hard statistical gate ([`src/loop/gate.py`](src/loop/gate.py)): expanding walk-forward (all folds must improve) + null-shuffle permutation control (z ≥ 3) + ablation-vs-full marginal lift + Benjamini-Hochberg FDR budget across the whole hypothesis family. **ARM B** writes new `intel/*.py` atlas sections back into the player profiles, REAL-vs-unknown fields explicitly marked. **Most candidates are correctly rejected — that is the design.** Checkpoint/resume, per-hypothesis backoff, a one-time held-out budget; 166/168 loop tests pass.
 
-What's verifiable from committed data: per-stat **prop-model MAE** (`python scripts/verify_production_mae.py`), and
-the full validation methodology (walk-forward, per-stat isotonic calibration applied *selectively*, shadow-logged
-settlement).
-
-### In-game win-probability — honest walk-forward Brier
-
-Per-snapshot models on 3,685 game-snapshots, 4-fold expanding walk-forward, validated against same `data/cache/inplay_oos_validation_2026_05_27.json` framework that exposed the 2-4× in-sample leakage in the prior retrain.
-
-| Snapshot | OOS baseline | After Iter-68 v6_hp | After full stack | Delta | Pinnacle reference |
-|----------|-------------:|--------------------:|-----------------:|------:|-------------------:|
-| endQ1 | 0.2221 | 0.2120 | 0.2120 | −0.0101 | ~0.18-0.22 |
-| endQ2 | 0.1860 | 0.1771 | **0.1760** (Iter 70 bag-5) | −0.0100 | ~0.14-0.17 |
-| endQ3 | 0.1354 | 0.1250 | **0.1193** (Iter 65 v4_fouls) | **−0.0161** | **~0.10-0.12** ✓ |
-
-> ⚠️ **The endQ3 0.119 is retracted as leak-inflated:** the end-of-Q3 model was fed fourth-quarter-derived features (`halftime_pace_shift`, `trailing_team_q4_usg_concentration`) joined by game-id only — i.e. it peeked at the future. A leak-free re-measure is pending. Treat the endQ1/Q2 numbers and the **methodology** as the takeaway, not the endQ3 figure. It was caught by the same walk-forward + leak-detection harness.
-
-### What shipped overnight (2026-05-27 → 2026-05-28)
-
-70+ iterations of an autonomous Opus-planner / Sonnet-executor multi-agent loop. 29 ships, 41 reverts — every revert with a stated cause. Two parallel Claude sessions ran cleanly side-by-side via `scripts/coordination_log.md` (model loop on the LightGBM/calibration side; UI loop on the FastAPI/scrapers side) with zero file conflicts across 23+ shared-branch commits.
-
-**Pre-game model side (S2):**
-- Iter 51 (`1fc2fd34`) — BLK OVER has z=0 / +0.00% ROI; UNDER-only filter shipped → BLK ROI +27% → +40% (+3.38pp aggregate)
-- Iter 54 (`e5fded39`) — line-bucket filters for PTS/REB/AST/FG3M (+4.36pp aggregate)
-- Iter 55 (`f48f076b`) — 2D direction×line sub-segment filter: AST `over × high` (57 bets at −26%) → AST +8.13pp
-- Iter 57 (`97f29412`) — REB `over × low` sub-segment (105 bets at −12.7%) → REB +7.66pp
-- Iter 61 (`4490dfce`) — sim reconciliation (note: the resulting "+18.38%" was **later retracted** as a market-follow grading artifact — real ≈ −2% to −5% vs. closes)
-
-**In-game model side (S2):**
-- Iter 62 (`eb0f8315`) — isotonic calibration overlay; endQ1 ships −0.0067 Brier (3/3 folds)
-- Iter 65 (`94226f15`) — v4_fouls foul-trouble features (team PFs, max player PFs, ≥5 PF indicator); endQ3 ships −0.0021 Brier (3/4 folds)
-- Iter 68 (`d32d5d16`) — per-snapshot HP sweep; all 3 snapshots ship, mean Brier −0.0098. Production HPs (lr=0.05, nl=31) were OVERFIT on tree complexity; new optimum lr=0.03, nl=15.
-- Iter 70 (`9a5ff26b`) — v7_bag5 5-seed ensemble; endQ2 ships −0.0010 (4/4 folds clean)
-
-**Trading-desk UI side (S1), concurrent with S2:**
-- `91325863` — multi-book line scanner (`/api/lines/scan` + `/scan` UI)
-- `7bad1197` — `/api/devig` endpoint (additive / multiplicative / power / Shin methods)
-- `20cbb8e1` — SSE `arb.detected` events for live cross-book arbitrage
-- `6dd28349` — `/clv` standalone CLV dashboard
-- `07b4f819` — `parlay_constructor` wired into `/parlays` UI
-- `8c6e10c4` — per-game live projection panel at `/live/{game_id}`
-- `7e608e07` — steam-move badge (🔥) on `/scan` for sharp-money signals
-
-**Honest reverts (discipline indicators):**
-- Iter 58 — stage/venue/month/3D sweep: segmentation alpha absorbed by prior 2D filters
-- Iter 59 — per-player filter: 832 distinct (stat,player) combos in 1,535-bet pool; max n=5; statistically too thin
-- Iter 60 — confidence-tiered Kelly: best raw +6.03pp but per-stat REB/AST regressions violated gate
-- Iter 63 — quarter-box efficiency: 32% coverage; 2,500 games need backfill
-- Iter 64 — PBP intra-quarter microstructure: end-of-quarter saturated by summary stats; signal lives mid-quarter not at quarter boundary (informs next-build mid-quarter live model)
-- Iter 67 — dual-stage Platt+isotonic: mathematically null (second-stage isotonic absorbs Platt warp)
-- Iter 69 — pregame shrinkage: model already learns the polarity flip internally
-
-**Critical bug surfaced (NOT YET PATCHED):**
-- `sim_win_prob` (used as `pregame_win_prob` feature) is POLARITY-INVERTED at the source. `PossessionSimulator.simulate_game()` is essentially noise (~50/50 for any matchup); `_SIM_CACHE` freezes the first noisy result; corr(sim_win_prob, home_won) = **−0.194**. The v1 LGB models learned to flip internally during training so they're fine; **v2/v3 inplay heads blend 85% raw inverted signal × 15% model output — silent ROI bug**. Full audit at `vault/Models/Polarity Bug Audit 2026-05-27.md`. **Estimated CLV impact when patched: +1.5pp to +3.5pp.** Patch is gated behind a coordinated v1-LGB retrain cascade.
-
-### What shipped overnight (2026-05-28 → 2026-05-29) — CV pipeline self-heal
-
-A separate autonomous loop ran on the CV-tracking side in parallel with the prop / inplay model loops above. Same Opus-plans / Sonnet-executes pattern; pre-assigned file-write ranges per Sonnet to avoid concurrent-write collisions; every fix mirrored from Windows local to RunPod via scp. Result: **30 distinct CV-pipeline bugs landed in one session.** Selected highlights:
-
-- **Bug 2 / 33** — OSNet creates stationary "ghost slots" that absorb jersey OCR noise from nearby star players (Curry's slot 4 wore jersey "30" 415× from ambient OCR while the real Curry slot 2 wore jersey "3" from a nearby teammate 750×). Patch inverted resolver channel priority (PBP-name first, mode-jersey fallback with a contest guard), added a ghost-slot skip on `touches=0 AND n_shots=0`, and switched cv_feature_registry from `INSERT OR IGNORE` to `INSERT OR REPLACE`. **Bug 33 strict ghost-affected players: 21 → 1.**
-- **Bug 6** — jersey cross-team collisions (the "Moses Moody CHI→GSW" phantom-trade pattern). Added per-game roster validation against `data/nba/boxscore_<game_id>.json`. Catches 23.5% of cv_features rows that were silently registered to the wrong player. **5,004 stale rows deleted on cleanup pass.**
-- **Bug 39** — the tracker only emits **10 position slots**, not 18–22 player identities. When players substitute, the new player gets the same Hungarian-matched slot and the game-wide mode-jersey collapses 2–4 real players into one nba_id. Fix: per-quarter mode-jersey resolution in the backfill loop. **cv_features row count 10,520 → 25,680 (+144%); distinct player_ids 224 → 331 (+48%).**
-- **Bug 30** — YOLO-NAS shot-detection weights silently never loaded; the pixel-velocity fallback had over-tightened gates from a prior BUG2 over-detection patch. Relaxed `_PIXEL_SHOT_VEL` (8.0→6.5), paint variant (4.0→3.0), `_handler_toward_basket` (−1.0→−2.0), proximity gates 28→32 ft and 30→32 ft, redundant 8-s global debounce → 5 s. Re-ran 3 verification games end-to-end on RunPod: 0022401194 shot count 9 → 17 (**+89%**), 0022401196 12 → 19 (+58%).
-- **Bug 1** — `defender_distance` is the highest-impact "wrong-sign coefficient" bug in the system: the `_shot_defender_dist` fallback returned distance-to-teammate when no opposing-team player was visible in the frame, so 30–50% of training rows for the shot_quality model were teammate-distance dressed as defender-distance. Fix removed the same-team fallback; downstream `train_shot_quality.py` should retrain with a positive defender_distance coefficient (it's currently −0.036, physically wrong). Unblocks the A1 specialized-model layer of the prediction stack.
-- **Bug 47** — `fetch_games.py` was hardcoded to `season_type="Regular Season"` and silently returned 0 games for any April-onward date because the 2025-26 regular season ended 2026-04-12. Patched to concat Regular Season + Playoffs DataFrames from `LeagueGameLog`. **158 playoff games surfaced**; one local-to-RunPod pipeline cycle queued **79 unique playoff games** in 30 minutes of wall time.
-
-Full per-bug investigation docs in [vault/Intelligence/](vault/Intelligence/) (Bug1_Investigation.md, Bug2_Diagnostic_Deep_Dive.md, Bug30_Investigation.md, Bug39_Investigation.md, etc.). The session log with row-count deltas after every fix is [vault/Intelligence/Tracking_Session_Validation_Log.md](vault/Intelligence/Tracking_Session_Validation_Log.md).
+> **Honest caveat — the CV signal isn't an edge *yet*.** In today's production prop models, CV-derived features carry SHAP importance ≈ 0 (`cv_lift_report.json` → `has_cv_data: false`). The plumbing is complete and the thesis is credible, but CV features do not yet move the model. Stated as a roadmap item, not a current advantage.
 
 ---
 
-## Real-Money-Relevant Validation (gate-1 baseline)
+## 3 · MODELS — turning signals into calibrated predictions
 
-**8,360 walk-forward bets · real DK / FanDuel / MGM / BetRivers closing lines · two windows.**
+Every model is validated walk-forward, point-in-time, behind a leak guard — and the numbers below are the **leak-free** ones, after self-audit.
 
-| Window | Predictor | N | Beat | ROI | PnL ($100/bet) |
-|--------|-----------|--:|-----:|----:|---:|
-| 2024 NBA playoffs (Apr 21 – May 24 2024) | L10 baseline | 4,337 | 54.58% | **+4.19%** | +$18,181 |
-| 2025-26 mainline regular season (Jan 29 – May 10 2026) | Prod stack flat-bet aggregate (UNRUN) | 4,210 | 54.37% | −2.06% | −$8,685 |
-| 2025-26 mainline (same closes, L10 only) | L10 baseline | 4,023 | 52.20% | −5.60% | −$22,533 |
-| **2025-26 mainline, Iter-57 filter stack, KB+ISO** | **Production deployable** | **1,535** | **61.4%** | **+18.38%** | **+$28,213** |
+### Prop projections — walk-forward MAE @ q50
 
-The 4,210-bet flat-bet aggregate is the unrun straw-man (prop pricing breaks at ~55%, not 52.4%). The deployable read is the filtered/sized 1,535 bet result.
+Seven per-stat models (PTS / REB / AST / FG3M / STL / BLK / TOV), each emitting q10/q50/q90 quantile heads. Quantile regression at q50 beats squared-error blends here because sportsbook O/U lines score against the median.
 
-### Structural UNDER-only edge — still real on the unfiltered sample
-
-Rolling-average baselines systematically over-project counting stats (no blowout sits, no garbage-time discount). Books price toward recreational over-bias. Intersection is structural UNDER edge.
-
-| Strategy | N | Beat | ROI |
-|----------|--:|-----:|----:|
-| Naive (model edge either direction) | 8,360 | 53.43% | −0.52% |
-| **UNDER-only** (bet UNDER whenever L10 < line) | **3,512** | **58.46%** | **+7.70%** |
-| **BLK** UNDER | 343 | **74.05%** | **+41.37%** |
-| **STL** UNDER | 221 | **66.06%** | **+26.12%** |
-| **AST** UNDER | 548 | **60.58%** | **+9.98%** |
-| **FG3M** UNDER | 584 | **60.45%** | **+5.55%** |
-
-Reproduce: `python scripts/run_gate1_full_analysis.py`. Machine-readable: [`data/models/gate1_results_summary.json`](data/models/gate1_results_summary.json).
-
----
-
-## In-Play Backtest — Paper Ceiling (L5 line proxy)
-
-**90,846-bet backtest. 50 finalized games. Post-calibration emit set (n=55,073): 78.11% hit, +54.57% ROI on flat $1 stakes — against an L5 line proxy, NOT real closes.**
-
-> **Read this caveat before the headline:** L5 lines are softer than real closes. Paper +54% ROI **almost certainly compresses to +15–25% on real closing lines.** The +54% is a model-quality ceiling, not a deployment forecast. *This is the single most important sentence in this README.*
-
-With that loud:
-
-| Metric | Value |
-|--------|-------|
-| Hit rate (calibrated emit set, n=55,073) | **78.11%** Wilson [77.76%, 78.45%] |
-| ROI per $1 flat | **+54.57%** (per-bet σ=$0.716, t-stat=179) |
-| Per-bet Sharpe | **0.76** |
-| Calibration RMSE | **0.065** across 10 EV deciles |
-| Worst 100-bet drawdown | **−$1,682** on $100 flat |
-
-Tier breakdown:
-
-| Tier | endQ1 | endQ2 | endQ3 |
-|------|-------|-------|-------|
-| S (EV ≥ 8%) | +50.9% (n=5,246, 78%) | +68.1% (n=5,810, 87%) | **+78.7% (n=5,088, 93%)** |
-| A (EV ≥ 4%) | +16.7% (n=6,907, 55%) | +40.4% (n=7,269, 67%) | +61.8% (n=3,703, 83%) |
-| B (EV ≥ 1%) | +8.2% (n=624, 49%) | +4.7% (n=650, 47%) | +34.1% (n=154, 67%) |
-| C (EV < 1%) | −36.6% (n=13,595, 29%) | −56.2% (n=14,433, 19%) | −78.1% (n=9,155, 10%) |
-
-Calibration is honest: predicted EV ≈ realized return at the extremes (decile 1: −0.890 / −0.884; decile 9: +0.799 / +0.794). Full report: [`vault/Reports/filter_calibration_2026-05-27.md`](vault/Reports/filter_calibration_2026-05-27.md).
-
-Pre-calibration aggregate was **−4.25%**. Tier C floods at −78% dragged everything down. The fix was raising the per-quarter EV emit floor from **0.01 → 0.12**. Volume dropped 59%; aggregate flipped to **+47%**.
-
-The novel architecture piece is the **shadow logger** (`src/prediction/shadow_logger.py`): every evaluation logged (passed AND blocked, with `gate_blocked_by` reason). Made post-hoc filter calibration a re-derived counterfactual on logged audit data, not guesswork.
-
-Reproduce: `python scripts/run_backtest.py --n-games 50` (~10–15 min).
-
----
-
-## Walk-Forward Model Performance
-
-All numbers reproducible from committed JSON.
-
-**Prop projections — walk-forward MAE @ q50** (N=99,818 player-games, 2 seasons)
-Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_pergame_metrics.json)
-
-| Stat | MAE | Recipe |
-|------|----:|--------|
+| Stat | MAE @ q50 | Recipe |
+|------|----------:|--------|
 | PTS  | 4.65 | sqrt + Huber XGB/LGB + 5-seed MLP, NNLS-stacked |
 | REB  | 1.90 | log1p LGB quantile q50 |
 | AST  | 1.37 | log1p XGB+LGB + multitask MLP, NNLS-stacked |
@@ -249,249 +123,158 @@ Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_perga
 | STL  | 0.72 | log1p XGB quantile q50 |
 | BLK  | 0.44 | log1p XGB quantile q50 |
 
-Quantile regression at q50 outperforms squared-error blends here because sportsbook prop O/U lines score against the median. R² is worse on q50-dispatched stats; MAE wins decisively — the right trade.
+Source: [`data/models/quantile_pergame_metrics.json`](data/models/quantile_pergame_metrics.json), N=99,818 player-games. An independent leak-free recomputation from `data/cache/pregame_oof.parquet` (~51K held-out player-games/stat, byte-identical to the calibration frame, monotonic non-overlapping folds) lands in the same range (PTS ~4.58, REB ~1.90, AST ~1.34, FG3M ~0.88) with a small consistent under-bias (~−0.45 PTS). **These are competitive with published prop-model benchmarks — this is the honest core accuracy claim.**
 
-**Win probability — 5-way NNLS stack** (XGB+LGB+LR+MLP+NB), N=2,455 games
-Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json)
+### Win probability — 5-way NNLS stack
 
-| | 3-fold walk-forward | Single split |
-|-|-:|-:|
-| Accuracy | 70.94% ± 2.5pp | 71.69% |
-| Brier    | 0.193 | 0.188 |
+XGB + LGB + LR + MLP + NB over N=2,455 games: **70.94% ± 2.5pp accuracy / 0.193 Brier** (3-fold walk-forward). The stack picks members by validation, not mandate — NNLS weighted LGB 0.66 / NB 0.16 / LR 0.12 / MLP 0.03 and **zeroed XGB autonomously**. Source: [`data/models/win_prob_metrics.json`](data/models/win_prob_metrics.json).
 
-NNLS weights: LGB 0.66 · NB 0.16 · LR 0.12 · MLP 0.03 · **XGB 0.00**. The stack picks its members by validation, not mandate — most stacks force-include the "expected winner"; this one doesn't.
+### In-play snapshot models — endQ1 / Q2 / Q3
 
-**In-game win-probability — per-snapshot models** (post-2026-05-27 OOS validation + Iter-68/70/65 wave)
+Per-snapshot LightGBM heads on thousands of game-snapshots, expanding-window walk-forward. Two products: a **win-probability** head and a set of **residual projection heads** that re-forecast each stat given what's been observed.
 
-| Snapshot | OOS WF Brier | AUC | Components |
-|----------|-------------:|----:|------------|
-| endQ1 | **0.2120** | 0.716 | Iter 68 v6_hp HPs (lr=0.03, nl=15, mcs=40) |
-| endQ2 | **0.1760** | 0.804 | Iter 68 v6_hp → Iter 70 v7_bag5 ensemble |
-| endQ3 | **0.1193** | 0.901 | Iter 68 v6_hp → Iter 65 v4_fouls — **Pinnacle-class** |
+- **In-game projection MAE lift** is the real story: at end-of-Q3 the residual heads cut prediction MAE substantially vs the pre-game baseline (240 held-out records → ~46% pooled reduction; team-score ridge head ~52% total / ~64% margin), **confirmed leak-free** (clean 14-feature schema). Honest magnitude: most of the lift is *mechanical* — three of four quarters of box score are observed — so over a naive carry-forward in-game baseline the **learned-head value-add is ~26%**, walk-forward validated. State it that way.
+- **In-game win-prob Brier:** the honest leak-free endQ3 Brier is **~0.141** after removing two Q4-derived features (`halftime_pace_shift`, `trailing_team_q4_usg_hhi`) that let the end-of-Q3 model peek at the quarter it predicts. (The retracted "0.119" was that leak; see discipline section.)
 
-Each model variant lives at `data/models/inplay_winprob_endq{1,2,3}_v{N}_<tag>.lgb` with matching `_meta.json`. The original `inplay_winprob_endq{1,2,3}.lgb` files are preserved untouched; v{N} variants ship as drop-in replacements via the registry.
+### Validation infrastructure — the senior-grade differentiator
 
-**In-game projection lift — endQ3 MAE vs pregame** (residual heads, 550-game retro)
-
-| Stat | Pregame MAE | endQ3 MAE | Δ |
-|------|-----:|-----:|--:|
-| PTS  | 4.61 | 2.46 | **−47%** |
-| REB  | 1.91 | 1.00 | −48% |
-| AST  | 1.36 | 0.68 | −50% |
-| FG3M | 0.89 | 0.42 | −53% |
-| TOV  | 0.89 | 0.45 | −49% |
-| STL  | 0.72 | 0.32 | −56% |
-| BLK  | 0.44 | 0.20 | −55% |
-
-Biggest in-play lever wasn't a better point predictor — it was a **learned Q4-minutes prior** that replaced the naive 12-min assumption.
+The harness is the work. Walk-forward expanding CV with an **assertion-level per-fold leak guard** (`assert max_train_date < min_test_date` every fold) + CI overfit gate; a **truncation-invariance leak test** (re-featurize a truncated event stream, assert past rows are byte-identical); a **multi-corpus calibration acceptance gate** (a calibration ships only if it beats raw on ≥2 independent OOS corpora); and a documented self-catch of a **0.79-CV-vs-0.06-holdout overfit** that was hard-corrected so it can't silently reappear. Methodology: [docs/ML_MODELS.md](docs/ML_MODELS.md) · validation doctrine: [docs/research/validation-methodology.md](docs/research/validation-methodology.md).
 
 ---
 
-## Architecture
+## 4 · ENGINES — turning predictions into decisions
 
-```mermaid
-flowchart LR
-  V[Broadcast Video] --> Y["YOLOv8n detection"]
-  Y --> H["SIFT homography → court coords"]
-  H --> T["Kalman + Hungarian tracking"]
-  T --> R["OSNet re-ID (512-dim)"]
-  R --> CV["CV spatial features\ndefender_dist, spacing, fatigue"]
-  A[NBA API · 3 seasons] --> BF["Box + lineup + ref + travel features"]
-  CV --> FS["Feature store"]
-  BF --> FS
-  FS --> PM["7 prop models · win prob · xFG"]
-  FS --> LM["In-game residual heads + per-snap winprob\nendQ1/Q2/Q3 v6_hp + v4_fouls + v7_bag5"]
-  PM --> SIM["10K-path Monte Carlo"]
-  LM --> SIM
-  SIM --> LE["Line evaluator\nShin (1992) devig"]
-  LE --> DE["Decision engine\nsegment filters + EV floor + tier"]
-  DE --> SL["Shadow logger\n(every eval incl. blocked)"]
-  DE --> K["Kelly-B + isotonic\n+ Ledoit-Wolf shrinkage"]
-  K --> EX["Execution stack\n9 daemons + multi-book scanner"]
-  EX --> CLV["CLV tracker → nightly recalibration"]
-  SL --> SET["Settlement engine\n→ daily ROI report"]
-```
+Models emit point + interval predictions. The engines turn distributions into prices, edges, and (eventually) sized bets — and log everything for counterfactual calibration.
 
-### Load-bearing modules
-
-The 120 modules in `src/prediction/` are a research surface, not a runtime. The actual deployment graph is small:
-
-| File | Role |
-|------|------|
-| `src/pipeline/unified_pipeline.py` | CV orchestrator |
-| `src/features/feature_engineering.py` | 60+ pregame features + CV bridge |
-| `src/prediction/player_props.py` + `prop_quantiles.py` | 7 prop models, q10/q50/q90 heads |
-| `src/prediction/win_probability.py` | 5-way NNLS stack |
-| `src/prediction/inplay_winprob.py` | per-snapshot in-play heads |
-| `src/prediction/bet_thresholds.py` | segment filters (Iter 51/54/55/57) + thresholds |
-| `src/prediction/betting_portfolio.py` | Kelly-B fractional sizing |
-| `src/prediction/edge_calibration.py` + `data/models/oos_pre_playoffs/edge_isotonic_*.joblib` | per-stat edge calibration |
-| `src/prediction/parlay_constructor.py` | 2-leg & 3-leg parlay builder with correlation adjustment |
-| `src/prediction/devig.py` | Shin (1992) bisection devig |
-| `src/prediction/decision_engine.py` | Gate chain + EV floor + tier classification |
-| `src/prediction/shadow_logger.py` + `settlement_engine.py` | Audit trail + nightly settle |
-
-### Trading desk UI (new — shipped 2026-05-27)
-
-OddsJam-class execution surface, powered by our own models:
-
-| Endpoint / Page | What it does |
-|-----------------|--------------|
-| `GET /api/lines/scan` + `/scan` UI | Multi-book line scanner — DK/FD/MGM/Pinnacle parallel, best line per stat per player |
-| `GET /api/devig` | Shin / additive / multiplicative / power devig methods |
-| `GET /api/arbs` + SSE `arb.detected` | Live cross-book arbitrage detector, pushed via Server-Sent Events |
-| `GET /clv` | Rolling 7d/30d/season CLV per stat, per book, aggregate |
-| `GET /parlays` | 2-leg / 3-leg parlay builder with correlation-aware EV (powered by `parlay_constructor.py`, 35 tests pass) |
-| `GET /live/{game_id}` | Per-game live projection panel — pregame proj + current actual + pace-projected final + edge vs current live line |
-| `/scan` steam badge 🔥 | Surfaces sharp-money line moves > X cents in Y minutes |
-
-Pregame parquets at `data/predictions/<date>.parquet` auto-load on next request — retrain → write parquet → next request shows the better numbers. No rebuild, no redeploy.
-
-### CV pipeline
-
-YOLOv8n detects players/ball/referees. SIFT homography maps to 94×50 ft court coordinates. Kalman+Hungarian tracks identities; OSNet re-ID (512-dim) recovers through occlusion. EasyOCR reads jerseys + game clock + scoreboard period. EventDetector emits structured shot/pass/dribble events. Output: per-frame court positions + 27 behavioral features per player per game (defender_distance at release, spacing entropy, fatigue from cumulative movement, paint dwell %, touches, contested-shot rate, catch-and-shoot %, possession duration, play-type distribution, pre-shot velocity peak, defender approach speed, contest arm angle, closeout speed).
-
-**Status (2026-05-29): 260 games tracked end-to-end · 25,680 cv_features rows clean · 331 unique resolved players · all 30 pipeline bugs patched.** The pipeline is now self-healing under an overnight autonomous loop — Opus diagnoses, Sonnet executes, mirrors to RunPod, audits, repeats. One representative night: cv_features went from 10,520 → 25,680 rows (+144% data unlock), ghost-affected players (the legacy "Curry shows all-zeros" failure mode) dropped 20 → 1 (−95%), per-game distinct-player resolution rose 8 → 14+ via per-quarter mode-jersey resolution that breaks the 10-slot Hungarian-matching ceiling. Star coverage flipped from sparse-or-missing to substantial: Wemby 100 nonzero features across 8 games, Banchero 64 across 6, LeBron 35 across 3, Tatum 44 across 4 (now including 2026 playoff Round 1). Cost: **~$0.10–0.13 per game on a RunPod 3090** vs. six- to seven-figure annual licensing for Sportradar / Second Spectrum.
-
-**Resilience moat (overnight 2026-05-28→29):** 30 distinct CV-pipeline bugs landed in a single autonomous session — including the structural unlock for Bug 39 (tracker emits only 10 position slots; Hungarian matching collapses substitutions; per-quarter resolution recovers them), Bug 6 roster-validation guard (deleted 5,004 cross-team-jersey-collision rows = 23.5% of pre-fix data), Bug 30 EventDetector tuning (+89% shot recall on the verification game), Bug 1 `defender_distance` teammate-fallback fix (unblocks the shot_quality model — the trained coefficient should flip from inverted-negative to physically-correct-positive on next retrain), and Bug 47 fetcher playoff-season-type support that surfaced 158 previously-invisible playoff games. Full audit trail: [vault/Intelligence/Tracking_Session_Validation_Log.md](vault/Intelligence/Tracking_Session_Validation_Log.md) + per-bug investigation docs in [vault/Intelligence/](vault/Intelligence/). The architectural insight that the tracker ceiling was at 10 slots, not at the resolver, is the kind of finding that takes a season to discover with manual debugging and one Opus deep-dive to nail when the pipeline is instrumented with audit atlases.
-
-**Ingest moat:** YouTube's bot detection blocks RunPod's datacenter IP on copyrighted NBA content even with valid logged-in cookies (HTTP 403 on every download). The pipeline routes around this with a local-machine residential-IP downloader → scp to RunPod → tracker_loop auto-detects + processes. The Windows side runs `python scripts/download_locally_and_upload.py --count 15` in 4 minutes / batch; the 3090 processes 8 games in parallel per ~30 min batch. One overnight cycle: **79 unique 2025-26 playoff games queued** (essentially the full bracket), each producing ~70K-row tracking_data.csv + 130-row possessions.csv + enriched shot_log.csv joined to NBA Stats PBP.
-
-### Intelligence layer — 80 derived signals between CV and the models
-
-Between raw tracking and the prediction models sits a derived **intelligence layer**: 80 parquet/json artifacts that answer the questions the models would otherwise have to guess at — *who is this player right now, what scheme is the opponent imposing, how does this matchup behave, how much should we trust this prediction*. Spans player archetypes + similarity (26K-pair matrix), defensive scheme tags (30 teams), position×scheme + archetype×scheme interaction tables with significance tests, lineup chemistry (4.7K rows / 1.2K lineups), pair chemistry (998 pairs), clutch / quarter / shot-clock / possession-type splits, form & trend deltas, matchup deviations vs. each opponent, coaching adjustment scores, officials-impact tables, game-similarity retrieval index (1.2K games, top-5 neighbors), and per-game CV-quality + per-player confidence curves that feed bet-sizing.
-
-Artifacts are gitignored (regenerable from raw tracking + NBA Stats; encode proprietary derivation). **Public manifest with per-artifact row counts, schemas, and limitations:** [docs/INTELLIGENCE.md](docs/INTELLIGENCE.md).
-
-The intelligence system also synthesizes **1,249 per-player dossiers** (up to 28 statistical categories, archetype-labeled) and **30 per-team scheme cards** (defensive intensity z-scores, tempo/spacing profile, matchup notes). Example dossiers for Jokić (Playmaking Big), SGA (Primary Initiator), and Sam Hauser (3&D Wing), plus a DEN scheme card walkthrough: **[docs/PLAYER_INTELLIGENCE.md](docs/PLAYER_INTELLIGENCE.md)**.
-
-### Possession simulation + signal-discovery loop
-
-On top of the intelligence layer sits a **player-level possession Monte Carlo** (`src/sim/`). Rather than sampling team box-score totals, it simulates a game one possession at a time: each possession is "used" by exactly one of the five on-court players (a shared scoring pie), with lineups drawn from real stint minutes. Teammate scoring therefore *competes for the same possessions*, so the correct slightly-negative teammate correlation **emerges** from the mechanics (measured teammate-ρ ≈ −0.10, matching the realized value) instead of being imposed by a hand-tuned ρ-matrix — the fix for a prior simulator whose ρ was +0.65 against a real −0.01. Possession outcomes come from a 7-class model (`make_2/3`, `miss_2/3`, `ft_trip`, `turnover`, `foul`) learned from play-by-play; context (rest, blowout, clutch, defender, scheme) enters as rate multipliers; a vectorized `fast_sim` path rolls thousands of games for a full distribution, and totals are anchored to the market line. Because the draws are internally consistent, the same samples price **same-game parlays** off the true joint distribution (`sgp_from_sim.py`) and report the correlation lift versus naive independence.
-
-Feeding it is a **self-improving signal/intel loop** (`src/loop/`, `signals/`, `intel/`): one arm mines residuals into hypotheses, instantiates a leaf `signals/<name>.py`, and ships it only behind a hard gate — expanding walk-forward (all folds must improve), a null-shuffle permutation control, ablation-vs-full marginal lift, and a Benjamini-Hochberg FDR budget across the whole hypothesis family; the other arm builds `intel/*.py` player-profile atlas sections with REAL-vs-unknown fields explicitly marked. Most candidates are correctly rejected — that is the design.
-
-**Honest scope (no edge claim).** The sim's *structure* is validated — teammate-ρ and the SGP joint shape match realized data, and a calibration harness grades the sim-joint against outcomes on historical games — but **no betting ROI is claimed.** There is no real SGP price capture in the repo; the player-level team-total runs high, so the **spread/margin read is more trustworthy than the raw total**; and matchup-conditioned signals need many games before their lift separates from noise. This is an engineering + calibration result, not a demonstrated market edge.
-
-### Execution stack (production-ready, awaiting October 2026 season)
-
-9 daemons covering the full live loop: `live_inplay_daemon` · `auto_place_daemon` · `auto_settle_daemon` · `clv_tracker_daemon` · `bankroll_monitor_daemon` · `middle_finder_daemon` · `bov_scraper_daemon` · `nba_lineup_daemon` · `vault_dashboard_daemon`. Plus the trading-desk UI above, webhook alerts (Slack / Discord), hedge calculator, P&L ledger CLIs, mobile HTML dashboard, `/api/shadow` exposing the calibration audit trail.
+- **Possession Monte Carlo** ([`src/sim/basketball_sim.py`](src/sim/basketball_sim.py)) — simulates a game one possession at a time. Each possession is *used* by exactly one of five on-court players (a shared scoring pie drawn from real stint minutes), so teammates compete for the same possessions and the correct slightly-negative teammate correlation **emerges from the mechanics** (measured ρ ≈ −0.10, matching realized — fixing a prior simulator's +0.65 against a real −0.01). A vectorized `fast_sim` path rolls thousands of games; the same internally-consistent samples price **same-game parlays** off the true joint distribution (`sgp_from_sim.py`) with a `validate_joint_calibration` harness. **Structure validated; no betting edge claimed.**
+- **Line evaluator** — Shin (1992) insider-trading devig via a numerically-stable bisection solver (plus additive / multiplicative / power), a multi-book line scanner (best line per stat per player), and a cross-book arbitrage detector streamed over SSE. `POST /api/devig` defaults to `shin`.
+- **Decision engine** ([`src/prediction/decision_engine.py`](src/prediction/decision_engine.py)) — gate chain (projection-sane, min-edge, multi-book consensus) → per-quarter EV emit floor → S/A/B/C tier classification.
+- **Correlation-aware Kelly** ([`src/prediction/betting_portfolio.py`](src/prediction/betting_portfolio.py)) — fractional Kelly-B sized off isotonic-calibrated probabilities, with a Ledoit-Wolf-shrunk prop-correlation penalty, a drawdown breaker, and a hard cap.
+- **Shadow logger + settlement** — every bet the engine evaluates is logged, **passed AND blocked, with a `gate_blocked_by` reason**; settlement joins the log to cdn.nba.com finals nightly. This append-only counterfactual dataset is what makes filter calibration a *re-derived* result instead of guesswork — it's what flipped a pre-calibration aggregate from −4.25% to +47% on the in-play backtest by raising one EV floor (0.01 → 0.12). Anti-survivorship-bias by construction.
+- **Execution stack** — 9 long-running daemons (in-play projection, auto-place/settle, CLV tracker, bankroll monitor, middle-finder, multi-book scraper, lineup ingest, dashboard) under a watchdog/registry supervisor; a transactional P&L ledger with cross-platform file locking; Slack/Discord alerting with rate limiting + per-channel circuit breakers; a drawdown kill-switch + ops/health dashboard so an automated system fails safe.
 
 ---
 
-## Engineering Breadth
+## 5 · PREDICTIONS — the narrow end of the funnel
+
+What comes out: per-player **q10/q50/q90 projections**, **win probabilities**, **EV** at every book, **correlation-sized bets**, **2-/3-leg parlays and SGPs**, and a **live in-play projection panel** — all surfaced over a FastAPI serving layer of **~99 endpoints across 12 routers** (REST + WebSocket + SSE, counted at runtime), a server-rendered trading-desk dashboard (18 Jinja templates: slate, CLV, parlays, line-scanner, results, per-game live), and a companion Next.js live-v2 frontend.
+
+### The honest betting read
+
+This is where intellectual honesty matters most, so it leads:
+
+> **Against real closing lines, the market is efficient.** Re-graded against real DraftKings / FanDuel / MGM **closing** lines at real odds, the prop edge is roughly **break-even-minus-vig overall** (≈ −2% to −5%). The one genuinely positive, repeatable result is **assists (AST): ~+4–5% ROI**, positive across three independently-sourced line corpora, shown to be *selection skill* (positive in both directions, beats a blind-under baseline by ~12pp) — but **book-robust and regime-dependent: the edge breaks in the playoffs.** Size on the conservative number.
+
+That finding is *stronger* than a fake ROI: it demonstrates the ability to tell a real edge from a measurement artifact. The structural intuition that survives — rolling-average baselines over-project counting stats (no blowout sits, no garbage-time discount) while books price toward recreational over-bias, leaving a modest UNDER lean on low-event stats — is documented as a tendency, not a printed ROI.
+
+The in-play backtest (78% hit / +54% ROI on 55,073 calibrated bets) is real **but settles against a soft L5 line proxy, not real closes** — a model-quality ceiling, not a tradeable result; the real-money estimate is +15–25%, and the first real Pinnacle closing-line CLV reading lands **October 2026**. **Zero real money has been placed**, by design.
+
+---
+
+## 6 · INTELLIGENCE — the apex (and the loop that builds the rest)
+
+The narrowest, most refined stage, and the one that makes CourtVision a *sports intelligence system* rather than a betting model. The funnel doesn't end at a number — it ends at **understanding**, and that understanding loops back to improve every stage above it.
+
+- **1,249 per-player dossiers** (up to 28 statistical categories each, archetype-labeled, scheme-tagged) + **30 per-team scheme cards** (defensive-intensity z-scores, tempo/spacing profile, matchup notes). Real example deep-dives — Jokić (Playmaking Big), SGA (Primary Initiator), Sam Hauser (3&D Wing) — in **[docs/PLAYER_INTELLIGENCE.md](docs/PLAYER_INTELLIGENCE.md)**.
+- **Grounded AI chat surface** — `ai_chat_facts.json` (pre-extracted player + team facts) + `ai_chat_index.json` (topic → artifact routing) let an LLM answer basketball questions grounded in the intelligence layer instead of hallucinating.
+- **The agentic system that builds all of the above.** Opus orchestrates, plans, and reviews; Sonnet executors implement in parallel branch-isolated batches; Haiku searches. A multi-agent coordination protocol runs unattended ~24-hour ship cycles without corrupting the repo. This is the system that autonomously **discovers, validates, ships, and retires** prediction signals — under the same hard gate that rejects most of them. Orchestration playbook: [`.claude/commands/workday-loop.md`](.claude/commands/workday-loop.md).
+
+**This is "the AI."** Stages 1–5 are the substrate; stage 6 is the part that *understands the game* and rewrites the substrate. The feedback arrow in the funnel diagram is not decoration — it's the product.
+
+---
+
+## How it all plays for predictions — one call, end to end
+
+Tonight's **LeBron James points** projection, traced through the funnel:
+
+1. **DATA** — his last-N games are pulled from the gamelog cache; if tonight's opponent feed has been tracked, his CV behavioral features (defender distance, paint dwell, fatigue) are joined in; the live line is scraped from every reachable book.
+2. **SIGNALS** — `current_form_profiles` tags his trend + driver; `matchup_deviations` supplies his historical delta vs this opponent; `archetype_scheme_interactions` says how a Playmaking-Big-adjacent forward fares against their drop coverage; `per_player_confidence` returns his volatility-adjusted sizing multiplier; `cv_quality_per_game` gates on whether the tracking was clean.
+3. **MODELS** — the PTS q10/q50/q90 heads project a median + interval; per-stat isotonic calibration corrects the edge.
+4. **ENGINES** — the line is Shin-devigged to a no-vig probability; the possession sim produces a full PTS distribution and prices any LeBron-involving parlay leg off the joint; the decision engine gates on edge + consensus and assigns a tier; Kelly-B sizes it (or declines).
+5. **PREDICTIONS** — out comes `LeBron PTS: 26.4 [21.0 – 32.1], no-vig P(over 25.5)=0.57, EV +1.8%, tier B` — and it's shadow-logged whether it's bet or not.
+6. **INTELLIGENCE** — his dossier narrates *why* (form, matchup, scheme, role), the AI chat surface can answer follow-ups grounded in those facts, and the settled outcome feeds back into calibration the next night.
+
+Wide raw pixels in; one precise, calibrated, explainable, self-auditing prediction out.
+
+---
+
+## The discipline — I built the instruments that caught my own hype
+
+The single strongest signal in this repo is not a metric. It's that the validation harnesses were built to *refute* the headlines, and when a famous number didn't survive, the honest version was written down and the inflated one retired. Three reproducible harnesses (`run_gate1_full_analysis.py`, `gate1_filtered_vs_vegas.py`, `reconcile_edge_source.py`) debunked the flagship number and root-caused it to specific lines of code.
+
+| Retracted headline | What actually happened | The honest version |
+|---|---|---|
+| **+18.38% ROI** on 1,535 walk-forward bets | Market-follow grading artifact — the grader picked bet direction from the market's own devigged favorite and never read the model (no prediction column in the eval), priced at a flat −110 fiction, with in-sample-tuned filters | **Break-even-minus-vig vs real closes; AST ~+4–5% the one durable edge.** The repo's own reproduce command returns −2.00%. |
+| **endQ3 Brier 0.119**, "Pinnacle-class" | Two Q4-derived features leaked the predicted quarter into the end-of-Q3 model | **Leak-free endQ3 Brier ~0.141** — framed as a leak I caught, not a competitive number |
+| **+54.57% in-play ROI** | Graded against an L5 line proxy, not real closes | **Model-quality ceiling only**; real-money estimate +15–25%; first real CLV Oct 2026 |
+| **"Built over 13 months"** | Git history spans ~3 months | **Intensive ~3-month build, 1,470 commits** (Mar–May 2026) |
+| **"Solo-built, 1,470 commits"** (implied hand-typed) | ~91% agent-authored under direction | **Solo human architect/director of an agentic pipeline** — judgment, ship/reject, and validation are mine |
+
+Full adversarial audit, with every claim's proof artifact and a complete do-not-claim list: **[docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)**. Open limitations tracked openly in **[docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md)**: per-player CV attribution is early; the shipped OSNet runs ImageNet-pretrained (production appearance model is the HSV histogram); a `sim_win_prob` polarity inversion is documented and patch-gated; the fresh-clone repro path has a known feature-count drift in the verify scripts. These are next milestones, stated plainly.
+
+---
+
+## Engineering breadth
 
 | | |
 |--|--|
 | **Lines of code** | ~85K Python across `src/`, `scripts/`, `api/`, `tests/` |
-| **Prediction modules** | 120 in `src/prediction/` (12 load-bearing — see above) |
-| **Trained artifacts** | 320+ (`.pkl`, `.json`, `.lgb`, `.pt`, `.joblib`) in `data/models/` |
-| **Tests** | 4,100+ collected · 48/48 critical-path pass (gate1 + devig + kelly + clv + calibration) · 63/63 in-play subset pass |
-| **Probes (signal experiments)** | 154 in `scripts/probe_*.py` + 70 numbered iters (`scripts/iter*_*.py`) — each with explicit ship/reject criteria |
-| **Iter ship rate** | 29 ships / 41 reverts — every revert with a documented cause |
-| **Daemons** | 9 production live-loop services |
-| **API** | FastAPI, ~50 endpoints across 9 routers |
-| **Multi-agent loop** | Opus planner + 4× Sonnet executor, parallel waves, autonomous overnight runs |
-| **CV games processed** | 85 tracked, 7 with full feature extraction |
+| **CV pipeline** | YOLOv8n + from-scratch Kalman/Hungarian tracker + OSNet re-ID + SIFT homography + EventDetector, ~$0.10–0.13/game |
+| **Prediction modules** | ~130 in `src/prediction/` — explicitly separated into a research surface vs ~12 load-bearing deployment modules |
+| **Models** | 7 prop heads (q10/q50/q90) · win-prob NNLS stack · in-play snapshot heads · 85 registered artifacts |
+| **Intelligence** | 80-artifact layer · 291,625-pair matchup matrix · 690-node knowledge graph · 1,249 dossiers · 30 scheme cards |
+| **Serving** | FastAPI ~99 endpoints / 12 routers (REST+WS+SSE) · 18-template trading desk · Next.js frontend |
+| **Execution** | 9 watchdog'd daemons · transactional P&L ledger · Slack/Discord alerting · kill-switch + ops dashboard |
+| **Persistence** | PostgreSQL-first schema (12 core tables) with transparent SQLite fallback + idempotent migrations |
+| **Tests / CI** | ~7,400 collected, ~97–98% pass (documented tail) · betting-math + in-play subsets green · 3 GitHub Actions workflows · 5 Dockerfiles (Railway/Fly) |
+| **Agentic loop** | Opus planner + parallel Sonnet executors, branch-isolated, crash-safe state, hard ship gates |
 
-### Discipline indicators (what separates this from a portfolio project)
+### Discipline indicators
 
-- **Every probe ships behind a walk-forward gate:** ≥3/4 WF folds positive AND no per-stat regress >1pp. ~40 reverts documented with cause.
-- **Quantile bands not point estimates:** all predictions emit q10/q50/q90 calibrated to 80% empirical coverage.
-- **Shin (1992) bisection devig** — sharp-book-correct, not the symmetric power-sum 99% of public sports-ML code uses.
-- **Walk-forward season-purged validation** with 48hr same-team purge — same-team close-in-time games leak through residuals (player condition, lineup, ref bias); random K-fold leaks, this doesn't.
-- **Position limits + drawdown circuit breakers + Ledoit-Wolf-shrunk Kelly correlation.**
-- **Shadow logger** captures every evaluation including blocked, with `gate_blocked_by` reason — made the +47% post-calibration result *derivable*, not opinion.
-- **Multi-agent coordination log** (`scripts/coordination_log.md`): two parallel Claude sessions running ~24hr ship cycles via append-only handshake protocol, zero file conflicts across 23+ shared-branch commits.
-- **pkl integrity check** mandated after every retrain: `booster.num_feature() == meta['n_features_in_']`. Iter 52 caught a silent ValueError that had been zeroing REB predictions for an unknown period.
-- **Sim reconciliation discipline:** when two sim methodologies disagreed by 10pp, ran Iter 61 to identify the bug (stale hardcoded GT in Sim A). Reported the honest canonical instead of cherry-picking the better number.
-- **Decision log preserved across sessions** in `vault/Sessions/Decision Log.md`.
+- Every candidate signal ships behind a walk-forward gate (all folds improve) + null-shuffle permutation (z ≥ 3) + ablation + Benjamini-Hochberg FDR. Most are correctly rejected.
+- Quantile bands, not point estimates — q10/q50/q90 calibrated toward 80% empirical coverage.
+- Shin (1992) bisection devig — sharp-book-correct, not the symmetric power-sum most public sports-ML code uses.
+- Walk-forward season-purged validation with a 48-hour same-team purge (random K-fold leaks through residuals; this doesn't).
+- pkl integrity check after every retrain (`booster.num_feature() == meta['n_features_in_']`) — caught a silent ValueError that had been zeroing REB predictions.
+- Multi-agent coordination log: two parallel sessions on ~24-hour cycles, zero file conflicts across 23+ shared-branch commits.
 
 ---
 
-## Tech Stack
+## Tech stack
 
-**ML / data**: Python 3.9, PyTorch 2.0.1 + CUDA 11.8, XGBoost, LightGBM, scikit-learn (Isotonic + NNLS), NumPy, pandas, Optuna
-**CV**: YOLOv8n (Ultralytics), OpenCV, SIFT homography, OSNet re-ID (torchreid), EasyOCR
-**Serving**: FastAPI, uvicorn, SSE for live events, SQLite + parquet feature store, Railway deploy
-**Data**: nba_api (30 seasons box / PBP / lineups), cdn.nba.com live boxscore + PBP, The Odds API (paid tier ~$30/mo), custom Pinnacle / Bovada / FanDuel / PrizePicks scrapers
-**Infra**: RunPod (RTX 3090 GPU), Backblaze B2 storage, Docker, GitHub Actions CI
-**Quant**: Walk-forward CV (season-purged + 48hr same-team purge), Shin devig, Kelly-B fractional sizing (25% per-bet + 25% slate cap), per-stat isotonic edge calibration, Ledoit-Wolf covariance shrinkage, NNLS stacking
-**AI agents**: Claude Code (Opus orchestrator + 4× parallel Sonnet executors), coordination_log handshake, multi-wave autonomous loops with hard ship gates
-
----
-
-## What's Validated · What's Not
-
-**Validated and shipped (committed JSON, reproducible)**
-
-- **Pre-game props canonical (Iter 61):** +18.38% KB+ISO on 1,535 bets across 2025-26 RS + playoffs at real DK/FD/MGM/Pinnacle closes. Per-stat: BLK +26.0% / STL +16.9% / FG3M +16.0% / AST +14.0% / REB +12.3% / PTS +8.4%.
-- **In-game winprob WF Brier:** endQ1 0.212 / endQ2 0.176 / endQ3 **0.119** (Pinnacle-class). After Iter-68 HP sweep + Iter-65 fouls + Iter-70 bag-5.
-- **CLV aggregate +8.94pp** (top-decile for public sports modeling). AST z=4.47 most robust.
-- **L10 baseline 2024 playoffs:** +4.19% ROI / 54.58% beat / +$18,181 PnL on 4,337 real closes.
-- **Structural UNDER-only edge:** +7.70% ROI / 58.46% beat on 3,512 bets — BLK +41% / STL +26% / AST +10% / FG3M +5.5%.
-- **Walk-forward prop MAE** on 99,818 player-games (q50 quantile regression).
-- **71.7% win-prob accuracy** on 2,455 holdout games.
-- **−47% to −56% in-game MAE lift** vs pregame on 550-game retro (residual heads).
-- **In-play backtest 78%/+54%** on 55,073-bet calibrated emit set — paper ceiling, see L5 caveat.
-- **Trading-desk UI:** multi-book line scanner, /api/devig, /api/arbs (SSE), /clv, /parlays (35 tests pass), per-game /live/{game_id} projection panel.
-- **Full execution stack:** 9 daemons + decision engine + shadow logger + settlement + daily ROI report.
-
-**Honest gaps**
-
-- **Polarity bug NOT YET PATCHED.** `sim_win_prob` at source (`src/prediction/win_probability.py:178`) is inverted. v2/v3 inplay heads blend 85% inverted signal. v1 LGB models self-correct internally so models are technically fine, but anything downstream consuming the raw signal (UI edge calc, parlay EV, decision engine blends) is using it backwards. Estimated +1.5pp to +3.5pp CLV lift when patched. Audit: `vault/Models/Polarity Bug Audit 2026-05-27.md`. Gated behind coordinated v1-LGB retrain cascade.
-- **Pinnacle Gate 1 not run.** No historical Pinnacle close archive exists publicly. Forward daemon collects from Oct 2026 onward.
-- **L5 proxy ≠ real closes.** In-play backtest +54% will compress to +15-25% on real closes.
-- **CV moat depth:** 260 games end-to-end tracked, 25,680 cv_features rows clean (Bug 33 ghost-affected players 20→1, Bug 6 roster collisions 5,004 → 0), 331 unique resolved players. Overnight self-healing loop landed 30 bugs in one session. Full audit trail in vault/Intelligence/Tracking_Session_Validation_Log.md.
-- **Live execution:** zero real money placed yet by design — gated behind Pinnacle Gate 1 + CV depth + polarity patch.
-- **Quarter_box coverage 32%:** 2,500 games need backfill before Iter 63 (quarter efficiency) can re-test.
-- **Mid-quarter live model not built:** Iter 64 lesson — signal lives mid-quarter, not at quarter boundaries. Next-build target.
-- **Sportsbook scraper coverage:** DK / Caesars / MGM IP-blocked; Pinnacle / Bovada / FanDuel / PrizePicks live. Historical archive used publicly-accessible DK/FD/MGM/BetRivers.
-
-These are the next milestones, not disclaimers.
+**ML / data:** Python 3.9, PyTorch 2.0.1 + CUDA 11.8, XGBoost, LightGBM, scikit-learn (Isotonic + NNLS), NumPy, pandas, Optuna
+**CV:** YOLOv8n (Ultralytics), OpenCV, SIFT homography, OSNet re-ID (torchreid), EasyOCR
+**Serving:** FastAPI, uvicorn, SSE for live events, SQLite + parquet feature store, Next.js, Railway / Fly deploy
+**Data:** nba_api (box / PBP / lineups), cdn.nba.com live feeds, The Odds API, custom Pinnacle / Bovada / FanDuel / PrizePicks scrapers
+**Infra:** RunPod (RTX 3090), Backblaze B2, Docker, GitHub Actions CI
+**Quant:** walk-forward CV (season-purged + 48hr same-team purge), Shin devig, fractional Kelly-B, per-stat isotonic edge calibration, Ledoit-Wolf shrinkage, NNLS stacking, shadow-logged settlement
+**AI agents:** Claude Code — Opus orchestrator + parallel Sonnet executors, coordination handshake, multi-wave autonomous loops with hard ship gates
 
 ---
 
-## Reproduce the Headlines
+## Reproduce
 
-> ⚠️ The ROI figures these graders historically printed (+18.38% / +15.04%) are **retracted** — see [Pre-game props — honest read](#pre-game-props--honest-read-numbers-corrected-2026-06) and [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md). The defensible, reproducible result is **point accuracy (MAE)**; re-graded against real closing lines the prop edge is roughly break-even-minus-vig, with a small genuine edge on assists. The commands stay so you can run the graders (and the self-audit) yourself.
+> The verify scripts have a known fresh-clone feature-count drift (documented in [KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md)); the committed JSON is the source of truth for the numbers above. Closing the repro gap is tracked work.
 
 ```bash
-# Step 0: pull the free public Vegas-line archives (one-time, ~45 MB)
-python data/external/historical_lines/fetch_external_history.py
+git clone … && pip install -r requirements.txt
 
-# Real-Vegas Gate 1 — L10 baseline + prod stack at real DK/FD/MGM/BetRivers closes
-python scripts/run_gate1_full_analysis.py
+# Source-of-truth metrics (committed JSON):
+#   data/models/quantile_pergame_metrics.json   prop MAE @ q50
+#   data/models/win_prob_metrics.json           win-prob acc / Brier
 
-# Post-Iter-57 sim reconciliation grader — historically printed +18.38% KB+ISO / +15.04% flat,
-# RETRACTED as a market-follow grading artifact (real re-grade ≈ −2% to −5%; see JOB_EVIDENCE_PACKET.md)
-python scripts/iter61_sim_reconciliation.py
+# Real-Vegas Gate 1 — honest re-grade vs real DK/FD/MGM/BetRivers closes
+python scripts/run_gate1_full_analysis.py        # → ~ -2.00% unfiltered (market efficient)
 
-# In-game winprob OOS validation (honest WF Brier, exposes in-sample leakage)
+# In-game winprob OOS validation (exposes the in-sample leakage)
 python scripts/oos_validate_inplay_2026_05_27.py
 
-# In-game HP sweep (Iter 68 — biggest single in-game win)
-python scripts/iter68_inplay_hp_sweep.py
-
-# Walk-forward MAE + WinProb checks (fast)
-python scripts/verify_production_mae.py
-python scripts/verify_winprob.py
-
-# IN-PLAY paper-ceiling backtest on 50 historical games (~10-15 min)
+# In-play paper-ceiling backtest, L5 proxy (~10–15 min) — read the L5 caveat
 python scripts/run_backtest.py --n-games 50
-
-# Calibrate per-quarter EV emit floor
-python scripts/calibrate_filters.py
-
-# Daily ROI report from any day's shadow logs
-python -m src.reporting.daily_roi --date 2026-05-27
 
 # Trading desk dev server
 uvicorn api.main:app --reload
-# → http://localhost:8000/scan       (multi-book line scanner)
-# → http://localhost:8000/parlays    (parlay builder)
-# → http://localhost:8000/clv        (CLV dashboard)
-# → http://localhost:8000/live/<gid> (per-game live projections)
+#   /scan  /parlays  /clv  /live/<game_id>
 
 # Full test suite
 python -m pytest tests/ -q
@@ -499,46 +282,40 @@ python -m pytest tests/ -q
 
 ---
 
-## Repo Layout
+## Repo layout
 
 ```
-src/tracking/        YOLOv8, OSNet re-ID, SIFT homography, EventDetector
-src/features/        feature engineering (60+ features, CV bridge)
-src/prediction/      120 modules — 12 load-bearing, rest are probes/experiments/dormant
+src/tracking/        YOLOv8, OSNet re-ID, SIFT homography, EventDetector, from-scratch tracker
+src/features/        feature engineering (60+ features + CV bridge)
+src/prediction/      ~130 modules — ~12 load-bearing, rest research/experiments/dormant
+src/sim/             player-level possession Monte Carlo + SGP joint pricing
+src/loop/            two-arm self-improving signal/intel discovery daemon + ship gate
 src/reporting/       daily_roi.py — CLI ROI reports from shadow logs
-src/pipeline/        unified pipeline orchestrator
+src/pipeline/        unified CV pipeline orchestrator
 src/ingest/          SQLite queue, yt-dlp, B2 sync, parallel game ingest
-api/                 FastAPI serving — main.py + live_v2_app.py + 9 routers
-                     (lines/scan, devig, arbs/SSE, clv, parlays, live/{game_id}, ...)
-scripts/             ~600 scripts: training, probes, daemons, ops CLIs
-                     iter*_*.py — 70 numbered iters (29 ships / 41 reverts)
+api/                 FastAPI serving — ~99 endpoints / 12 routers + Jinja trading desk
+webapp/              Next.js live-v2 frontend
+scripts/             training, probes, daemons, ops CLIs, intelligence builders
                      coordination_log.md — multi-agent handshake protocol
-tests/               4,100+ tests — walk-forward gates, integration, E2E
-data/models/         320+ trained artifacts + segment-filter dicts
-                     gate1_results_summary.json — consolidated verification report
-                     inplay_winprob_endq*_v6_hp.lgb — Iter 68 HP-optimal models
-                     inplay_winprob_endq3_v4_fouls.lgb — Iter 65 foul-trouble
-                     inplay_winprob_endq2_v7_bag5_seed{0..4}.lgb — Iter 70 ensemble
-                     inplay_isotonic_endq*.joblib — Iter 62 calibration
+tests/               ~7,400 tests — walk-forward gates, leak tests, integration, E2E
+data/models/         registered model artifacts + segment-filter dicts (large ones gitignored)
+data/intelligence/   80-artifact intelligence layer (gitignored; manifest in docs/INTELLIGENCE.md)
 data/shadow/         per-game evaluation logs (passed + blocked bets)
-data/external/       historical_lines/*.csv (real Vegas)
-vault/Models/        Iter*.md analysis docs, Polarity Bug Audit, Roadmaps
-vault/Reports/       backtest, calibration, daily ROI
-docs/                architecture, runbooks, known limitations
+docs/                JOB_EVIDENCE_PACKET (start here), INTELLIGENCE, CV_TRACKING, ML_MODELS, KNOWN_LIMITATIONS
+ARCHITECTURE.md      the funnel, component-by-component, with live/planned status
 CHANGELOG.md         versioned ship log
-ARCHITECTURE.md      6-system technical map + component status table
 ```
 
 ---
-
 
 ## Contact
 
-Solo-built. Available for senior sports-quant / AI-founding-engineer roles. Open to consulting on sports-AI infrastructure.
+Solo-built (human-directed agentic pipeline). Available for senior ML / computer-vision / data / founding-engineer roles.
 
-- **GitHub**: [github.com/neeljshah](https://github.com/neeljshah)
-- **Email**: [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
+- **Start here:** [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) — the honest, audited account
+- **GitHub:** [github.com/neeljshah](https://github.com/neeljshah)
+- **Email:** [neeljshah22@gmail.com](mailto:neeljshah22@gmail.com)
 
 ---
 
-*Last verified: 2026-05-28 (Iter 61 sim reconciliation establishes canonical +18.38% KB+ISO; Iter 68 + 65 + 70 ship overnight bringing endQ3 Brier to 0.119 — Pinnacle-class; 70 documented iters with 29 ships / 41 reverts; trading-desk UI shipped 7 new endpoints in parallel; polarity bug surfaced and audited, patch gated behind coordinated retrain cascade). Versioned ship log: [`CHANGELOG.md`](CHANGELOG.md). Current operational state: [`docs/CLAUDE-state.md`](docs/CLAUDE-state.md). Known limitations: [`docs/KNOWN_LIMITATIONS.md`](docs/KNOWN_LIMITATIONS.md). Coordination log: [`scripts/coordination_log.md`](scripts/coordination_log.md).*
+*The funnel is the system: broadcast video → court coordinates → signals → models → engines → predictions → intelligence, with an agentic loop that re-validates every stage. Numbers throughout are the leak-free, audited figures; retracted headlines and their root causes are documented in [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md) and [docs/KNOWN_LIMITATIONS.md](docs/KNOWN_LIMITATIONS.md). Last reframed 2026-06-08.*
