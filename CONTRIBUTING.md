@@ -1,13 +1,8 @@
 # Contributing to CourtVision
 
-Thanks for contributing. This project combines computer vision, data engineering, and sports modeling, so clarity and reproducibility are required for every change.
+This project combines computer vision, data engineering, statistical modeling, and agentic infrastructure. Contributions are welcome — clarity, reproducibility, and honesty about results are the non-negotiables.
 
-## Principles
-
-- Keep changes focused and testable.
-- Prefer incremental improvements over broad rewrites.
-- Preserve pipeline reliability and data quality first.
-- Document any behavior changes that affect outputs or API contracts.
+---
 
 ## Development Setup
 
@@ -21,65 +16,102 @@ cp .env.example .env
 python -m pytest tests/ -q
 ```
 
+Environment: Python 3.9, conda env `basketball_ai`, CUDA 11.8, RTX 4060 8GB (local). Video processing requires a CUDA-capable GPU; most tests and prediction work run CPU-only.
+
+---
+
+## Principles
+
+- Keep changes focused and testable — one logical change per PR.
+- Prefer incremental improvements over broad rewrites.
+- Preserve pipeline reliability and data quality above everything else.
+- Document behavior changes that affect outputs or API contracts.
+- **Validate honestly.** A correct rejection is not a failure; it is the gate working. See [docs/research/validation-methodology.md](docs/research/validation-methodology.md).
+
+---
+
 ## Branch and PR Workflow
 
 1. Create a focused branch from your main working branch.
 2. Implement one logical change per PR.
-3. Add or update tests for behavior changes.
-4. Update relevant docs (`README.md`, `ROADMAP.md`, `CHANGELOG.md`, `docs/`) when interfaces or workflows change.
+3. Add or update tests covering the changed behavior.
+4. Update relevant docs (`README.md`, `CHANGELOG.md`, `docs/`) when interfaces or workflows change.
 5. Open a PR with:
-   - problem statement
-   - implementation summary
-   - validation evidence (tests, benchmarks, sample output)
+   - **Problem statement** — what is broken or missing
+   - **Implementation summary** — what you changed and why
+   - **Validation evidence** — test results, benchmark numbers, or sample output; if a metric changed, show walk-forward numbers, not single-split
+
+---
 
 ## Code Standards
 
 - Python 3.9
-- Type hints on public functions
-- Docstrings for public classes/functions
+- Type hints on all public functions
+- Docstrings for public classes and functions
 - Avoid hidden side effects and implicit globals
 - Prefer explicit error handling over blanket exception swallowing
-- Keep files manageable; split modules when responsibilities diverge
+- Keep files under 300 LOC; split modules when responsibilities diverge
+
+---
 
 ## CV and Pipeline Rules
 
-- Headless operation only for video processing (no `cv2.imshow`).
-- Do not regress pipeline throughput without benchmark evidence.
-- Any tracking logic changes should include:
-  - quality validation against representative clips
-  - notes on expected runtime impact
+- Headless operation only for video processing (`--no-show`; never `cv2.imshow`)
+- Do not regress pipeline throughput without benchmark evidence
+- `_VRAM_FLUSH_INTERVAL` in `src/pipeline/unified_pipeline.py` **must remain 3000** — setting it to 100 causes GPU OOM
+- Tracking changes require quality validation against representative clips, with notes on runtime impact
+
+---
+
+## Validation Rules (ML / Prediction Changes)
+
+Any change that affects model output, features, or prediction logic must clear the ship gate:
+
+1. **Walk-forward CV** — expanding window; all folds must improve; `max_train_date < min_test_date` asserted per fold
+2. **Multi-corpus** — calibration must beat raw on ≥2 independent OOS corpora
+3. **Truncation-invariance** — features at time T are byte-identical with or without future events
+4. Report walk-forward numbers in the PR, not single-split numbers alone
+5. If a result does not clear the gate, document the rejection honestly — do not drop it or bury it
+
+---
 
 ## API Contract Rules
 
-- Treat endpoint request/response shapes as contracts.
-- Avoid breaking response keys without versioning or migration notes.
-- Add integration tests when router-to-model interfaces are modified.
+- Treat endpoint request/response shapes as contracts
+- Avoid breaking response keys without versioning or a migration note
+- Add integration tests when router-to-model interfaces are modified
+
+---
 
 ## Testing Expectations
-
-Run at minimum:
 
 ```bash
 python -m pytest tests/ -q
 ```
 
-For changes in high-risk areas (tracking, orchestration, contracts), include targeted tests and describe validation in PR notes.
+For changes in high-risk areas (tracking, orchestration, model contracts, decision engine), include targeted tests and describe validation in the PR notes. The test suite has 4,100+ collected tests; do not submit a PR that reduces passing count without explicit justification.
+
+---
 
 ## Repo Hygiene
 
-- Avoid adding one-off root files when they belong in `docs/`, `scripts/`, or archived directories.
-- Prefer canonical paths and avoid duplicate module surfaces.
-- Do not commit secrets, credentials, or large generated artifacts.
+- Avoid one-off root files; use `docs/`, `scripts/`, or appropriate `src/` subdirectories
+- Prefer canonical paths; avoid duplicate module surfaces
+- Never commit secrets, credentials, model weights, data parquets, or large generated artifacts
+- `data/`, `vault/`, `.planning/`, and `data/models/*.pkl` are gitignored — keep it that way
+
+---
 
 ## Issue Reports
 
 When filing issues, include:
 
-- observed behavior
-- expected behavior
-- reproduction steps
-- relevant logs or traceback excerpts
-- environment details (OS, Python, GPU if relevant)
+- Observed behavior
+- Expected behavior
+- Reproduction steps (minimal command that triggers the problem)
+- Relevant logs or traceback excerpts
+- Environment details: OS, Python version, GPU if relevant
 
 ---
-*Last verified: 2026-05-25*
+
+*Last verified: 2026-06-11*
