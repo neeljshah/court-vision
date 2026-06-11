@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0f1e">
+  <title>CourtVision — SAS @ NYK · G4</title>
+  <meta name="description" content="Model projection board for SAS @ NYK Finals G4. Projection only — no edge claimed.">
+  <link rel="stylesheet" href="/static/cv_simple.css">
+</head>
+<body>
+
+<!-- Board JSON injected by the /cv route (api._cv_board.build_board). -->
+<script id="cv-board" type="application/json">{{ board_json | safe if board_json is defined else "{}" }}</script>
+
+<nav class="nav">
+  <a class="brand" href="/">
+    <span class="brand-mark">CV</span>
+    <span class="brand-name">CourtVision</span>
+  </a>
+  <a class="nav-link" href="/">&larr; Games</a>
+  <span class="nav-tag">projection &middot; no edge claimed</span>
+</nav>
+
+<main class="page">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="cv-header" id="cv-header">
+    <div class="hdr-series" id="hdr-series">NYK leads series 2&ndash;1 &middot; G4 &middot; 2026-06-10</div>
+
+    <div class="hdr-matchup" id="hdr-matchup">
+      <span class="team team-away">SAS</span>
+      <span class="at">@</span>
+      <span class="team team-home">NYK</span>
+    </div>
+
+    <div class="hdr-winrow">
+      <div class="hdr-win">
+        <div class="win-label">NYK win probability</div>
+        <div class="win-big" id="hdr-winpct">49.2%</div>
+        <div class="win-frame" id="hdr-frame">coin flip &mdash; NYK ~48&ndash;50%</div>
+        <div class="win-engines" id="hdr-engines">16 engines + synthesizer</div>
+      </div>
+      <div class="hdr-score">
+        <div class="score-label">projected final (deflated)</div>
+        <div class="score-line" id="hdr-score">
+          <span class="sc sc-away">SAS&nbsp;108</span>
+          <span class="sc-dash">&middot;</span>
+          <span class="sc sc-home">NYK&nbsp;106</span>
+        </div>
+        <div class="score-total" id="hdr-total">total ~212 <span class="biased-pill">deflated</span></div>
+      </div>
+    </div>
+
+    <!-- Win-prob dual bar (pregame -> live) -->
+    <div class="wp" id="wp-bar">
+      <div class="wp-track">
+        <div class="wp-fill wp-away" id="wp-away" style="width:50.8%"></div>
+        <div class="wp-fill wp-home" id="wp-home" style="width:49.2%"></div>
+        <div class="wp-mid"></div>
+      </div>
+      <div class="wp-labels">
+        <span class="wp-l wp-l-away" id="wp-label-away">SAS 50.8%</span>
+        <span class="wp-state" id="wp-state">pregame projection</span>
+        <span class="wp-l wp-l-home" id="wp-label-home">NYK 49.2%</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== 1. INTELLIGENCE ===================== -->
+  <section class="section" id="intel-section">
+    <div class="sec-head">
+      <h2>Intelligence</h2>
+      <span class="sec-sub" id="intel-updated">live read &middot; updates on a cadence</span>
+    </div>
+
+    <div class="intel-narrative" id="intel-narrative">
+      <p class="loading">Reading the model&hellip;</p>
+    </div>
+
+    <div class="intel-block">
+      <h3 class="block-title">Who may pop off</h3>
+      <div class="pop-off" id="pop-off">
+        <span class="loading">Loading leans&hellip;</span>
+      </div>
+    </div>
+
+    <div class="intel-block">
+      <h3 class="block-title">What can happen</h3>
+      <div class="scenarios" id="scenarios">
+        <span class="loading">Loading scenarios&hellip;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2. BOX SCORE (centerpiece) ===================== -->
+  <section class="section section-box" id="box-section">
+    <div class="sec-head">
+      <h2>Projected Box Score</h2>
+      <span class="sec-sub">q50 &middot; tap a row for q10&ndash;q90</span>
+    </div>
+
+    <div class="box-grid">
+      <div class="box-team" id="box-away">
+        <div class="bt-head">
+          <span class="bt-name">San Antonio Spurs</span>
+          <span class="bt-abbr team-away">SAS</span>
+        </div>
+        <p class="loading box-loading">Loading projection&hellip;</p>
+      </div>
+
+      <div class="box-team" id="box-home">
+        <div class="bt-head">
+          <span class="bt-name">New York Knicks</span>
+          <span class="bt-abbr team-home">NYK</span>
+        </div>
+        <p class="loading box-loading">Loading projection&hellip;</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. BETS (bottom) ===================== -->
+  <section class="section" id="bets-section">
+    <div class="sec-head">
+      <h2>Best Bets</h2>
+      <span class="sec-sub">paper only &middot; playoffs = no proven edge</span>
+    </div>
+
+    <div class="book-picker" id="book-picker" role="tablist" aria-label="Sportsbook">
+      <button class="book-pill is-active" data-book="all" role="tab">Best Price</button>
+      <button class="book-pill" data-book="DraftKings" role="tab">DraftKings</button>
+      <button class="book-pill" data-book="Pinnacle" role="tab">Pinnacle</button>
+    </div>
+
+    <div class="bets-list" id="bets-list">
+      <p class="loading">Loading graded bets&hellip;</p>
+    </div>
+  </section>
+
+  <!-- ===================== HONEST FOOTER ===================== -->
+  <footer class="honesty" id="honesty-footer">
+    <p class="disc-main" id="disc-main">
+      Model PROJECTION &mdash; for entertainment, not betting advice.
+      No edge claimed. Playoffs have no proven edge. Zero real money.
+    </p>
+    <p class="disc-note"><strong>Total:</strong> sim over-predicts Finals totals; trust the deflated ~210&ndash;215, not the raw figure.</p>
+    <p class="disc-note"><strong>AST:</strong> shown raw &mdash; the one validated edge, never bet in playoffs.</p>
+    <p class="disc-meta" id="meta-line">&nbsp;</p>
+  </footer>
+
+</main>
+
+<!-- Embedded fixture so the page renders without the /cv route serving a real board. -->
+<script id="cv-board-fixture" type="application/json">{"game":{"game_id":"0042500404","date":"2026-06-10","home":{"abbr":"NYK","name":"New York Knicks","color":"#f97316"},"away":{"abbr":"SAS","name":"San Antonio Spurs","color":"#60a5fa"},"tip_et":"2026-06-10T20:00","series":"NYK leads 2-1"},"win_prob":{"headline_home":0.492,"framing":"coin flip — NYK ~48-50%","engine_split":[{"label":"Synthesizer (reasoned)","home":0.492,"primary":true},{"label":"Equal-weight ensemble","home":0.507},{"label":"Possession Monte Carlo","home":0.42},{"label":"+Clutch/home overlay","home":0.556,"secondary":true}]},"score":{"home":106,"away":108,"spread_home":2.0,"spread_note":"SAS -2 raw","total_raw":233,"total_trust_low":210,"total_trust_high":215,"total_biased":true},"box_score":{"home":[{"player_id":1628384,"name":"Brunson","starter":true,"lean":"Q4 fader","stats":{"pts":{"q10":16,"q50":25,"q90":35},"reb":{"q10":1,"q50":3,"q90":6},"ast":{"q10":4,"q50":7,"q90":11},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":1,"q50":3,"q90":5}}},{"player_id":1628388,"name":"Anunoby","starter":true,"lean":"2-way","stats":{"pts":{"q10":9,"q50":17,"q90":26},"reb":{"q10":2,"q50":5,"q90":8},"ast":{"q10":0,"q50":2,"q90":4},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":2,"q90":3},"blk":{"q10":0,"q50":1,"q90":2},"tov":{"q10":0,"q50":1,"q90":2}}},{"player_id":1629029,"name":"K. Towns","starter":true,"lean":"ceiling","stats":{"pts":{"q10":11,"q50":22,"q90":34},"reb":{"q10":5,"q50":10,"q90":16},"ast":{"q10":1,"q50":3,"q90":6},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":1,"q90":2},"tov":{"q10":1,"q50":2,"q90":4}}},{"player_id":1628386,"name":"Hart","starter":true,"lean":null,"stats":{"pts":{"q10":4,"q50":11,"q90":20},"reb":{"q10":5,"q50":9,"q90":13},"ast":{"q10":1,"q50":3,"q90":6},"fg3m":{"q10":0,"q50":1,"q90":3},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":0,"q50":1,"q90":2}}},{"player_id":1628407,"name":"DiVincenzo","starter":true,"lean":null,"stats":{"pts":{"q10":3,"q50":10,"q90":19},"reb":{"q10":1,"q50":3,"q90":6},"ast":{"q10":1,"q50":3,"q90":6},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":0,"q50":1,"q90":2}}}],"away":[{"player_id":1641705,"name":"Wembanyama","starter":true,"lean":"ceiling","stats":{"pts":{"q10":15,"q50":28,"q90":44},"reb":{"q10":5,"q50":11,"q90":18},"ast":{"q10":1,"q50":4,"q90":8},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":1,"q90":3},"blk":{"q10":1,"q50":3,"q90":6},"tov":{"q10":1,"q50":3,"q90":5}}},{"player_id":1628369,"name":"De'Aaron Fox","starter":true,"lean":"under lean","stats":{"pts":{"q10":11,"q50":22,"q90":33},"reb":{"q10":1,"q50":3,"q90":6},"ast":{"q10":3,"q50":7,"q90":11},"fg3m":{"q10":0,"q50":1,"q90":3},"stl":{"q10":0,"q50":2,"q90":3},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":1,"q50":3,"q90":5}}},{"player_id":1629022,"name":"Tre Jones","starter":true,"lean":null,"stats":{"pts":{"q10":4,"q50":10,"q90":18},"reb":{"q10":1,"q50":3,"q90":6},"ast":{"q10":2,"q50":5,"q90":9},"fg3m":{"q10":0,"q50":1,"q90":3},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":0,"q50":2,"q90":3}}},{"player_id":101135,"name":"H. Barnes","starter":true,"lean":null,"stats":{"pts":{"q10":5,"q50":14,"q90":23},"reb":{"q10":2,"q50":5,"q90":9},"ast":{"q10":0,"q50":2,"q90":4},"fg3m":{"q10":0,"q50":2,"q90":4},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":0,"q50":1,"q90":2}}},{"player_id":1629060,"name":"K. Johnson","starter":true,"lean":null,"stats":{"pts":{"q10":4,"q50":12,"q90":21},"reb":{"q10":1,"q50":4,"q90":8},"ast":{"q10":0,"q50":2,"q90":4},"fg3m":{"q10":0,"q50":1,"q90":3},"stl":{"q10":0,"q50":1,"q90":2},"blk":{"q10":0,"q50":0,"q90":1},"tov":{"q10":0,"q50":1,"q90":2}}}]},"reads":[{"player":"Wembanyama","stat":"blk","q50":3.33,"tier":"TRUSTWORTHY","note":"Strongest read on the board","direction":"over"},{"player":"Brunson","stat":"pts","q50":25,"tier":"TRUSTWORTHY","note":"Volume scorer; Q4 fader"}],"market_board":{"double_doubles":[{"player":"Wembanyama","dd":0.55,"td":0.004,"tier":"JOINT_CORRECTED"},{"player":"K. Towns","dd":0.55,"td":0.002,"tier":"JOINT_CORRECTED"}],"blocks":[{"player":"Wembanyama","mean":3.33,"p2":0.84,"p3":0.65,"p4":0.43,"p5":0.24,"tier":"TRUSTWORTHY"}],"longshots":[{"label":"Wemby 50+ pts","american":"+11136","tier":"LONGSHOT"},{"label":"7 BLK game","american":"+4200","tier":"LONGSHOT"},{"label":"Fox triple-double","american":"+2800","tier":"LONGSHOT"},{"label":"Overtime","american":"+450","tier":"LONGSHOT"}],"scenarios":[{"label":"SAS win by 10+","p":0.38},{"label":"Shootout 230+ pts","p":0.59},{"label":"Nail-biter (within 3)","p":0.13},{"label":"NYK win by 10+","p":0.22},{"label":"Overtime","p":0.09}],"tier_counts":{"TRUSTWORTHY":150,"JOINT_CORRECTED":34,"TAIL_APPROX":47,"LONGSHOT":133}},"honesty":{"disclaimer":"Model PROJECTION — for entertainment, not betting advice. No edge claimed. Playoffs have no proven edge. Zero real money.","total_biased_note":"Sim over-predicts Finals totals +12-22; trust ~210-215, not the raw 233.","ast_note":"AST shown raw — the one validated edge, never bet in playoffs."},"live":{"is_live":false,"home_score":null,"away_score":null,"minutes_remaining":null,"clock":null,"win_prob_home_live":null,"snapshot_age_sec":null},"meta":{"source":"cv-board-fixture (static fallback)","built_at":"2026-06-10T00:00:00Z","stale":false}}</script>
+
+<script>
+// Bootstrap: if the /cv route didn't inject real JSON into cv-board, use the fixture.
+(function(){
+  var el = document.getElementById("cv-board");
+  if (!el) return;
+  var txt = el.textContent.trim();
+  if (txt === "{}" || txt === "" || txt.indexOf("{" + "%") === 0) {
+    var fix = document.getElementById("cv-board-fixture");
+    if (fix) el.textContent = fix.textContent;
+  }
+})();
+</script>
+<script src="/static/cv_simple.js"></script>
+
+</body>
+</html>

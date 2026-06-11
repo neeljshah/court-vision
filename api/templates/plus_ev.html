@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block title %}+EV finder · CourtVision{% endblock %}
 {% block subtitle %}+EV · {{ date }}{% endblock %}
-{% block og_title %}CourtVision +EV finder · {{ date }} · {{ rows|length }} +EV combos{% endblock %}
-{% block og_desc %}Every (bet, book) combo where the model edge clears {{ '%+.1f'|format(min_ev_pct) }}% EV. Line-shop in one place.{% endblock %}
+{% block og_title %}{% if is_playoff %}CourtVision +EV finder · {{ date }} · {{ rows|length }} projections (paper only · no proven playoff edge){% else %}CourtVision +EV finder · {{ date }} · {{ rows|length }} +EV combos{% endif %}{% endblock %}
+{% block og_desc %}{% if is_playoff %}Model projections for research only — no proven playoff edge. Every (bet, book) combo where the model–market gap clears {{ '%+.1f'|format(min_ev_pct) }}%. Line-shop in one place.{% else %}Every (bet, book) combo where the model edge clears {{ '%+.1f'|format(min_ev_pct) }}% EV. Line-shop in one place.{% endif %}{% endblock %}
 
 {% block content %}
+{% if is_playoff %}
+<div class="mb-4 px-4 py-3 text-xs rounded" style="background:rgba(168,85,247,0.10);border:1px solid rgba(168,85,247,0.35);color:#c084fc;line-height:1.6">
+  <b style="letter-spacing:0.04em;text-transform:uppercase">Model PROJECTION — research only</b> · for entertainment, not betting advice. No edge claimed. Playoffs have no proven edge. Zero real money.
+</div>
+{% endif %}
 <section class="mb-3 md:mb-4">
   <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
     <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">+EV finder</h1>
@@ -13,7 +18,11 @@
     <a href="/parlays?date={{ date }}" class="text-xs md:text-sm underline" style="color:var(--cv-accent)">parlays →</a>
   </div>
   <div class="mt-2 flex flex-wrap gap-3 text-xs md:text-sm" style="color:var(--cv-muted)">
+    {% if is_playoff %}
+    <span><b style="color:var(--cv-text)">{{ rows|length }}</b> projections (paper only · no proven playoff edge)</span>
+    {% else %}
     <span><b style="color:var(--cv-text)">{{ rows|length }}</b> +EV combos</span>
+    {% endif %}
     <span>min EV
       <form class="inline" action="/plus_ev" method="get">
         <input type="hidden" name="date" value="{{ date }}">
@@ -68,5 +77,5 @@
 {% endblock %}
 
 {% block footer %}
-  +EV finder · model-graded · CourtVision
+  {% if is_playoff %}+EV finder · model projections (paper only · no proven playoff edge) · CourtVision{% else %}+EV finder · model-graded · CourtVision{% endif %}
 {% endblock %}

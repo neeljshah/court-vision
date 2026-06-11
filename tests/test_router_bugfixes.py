@@ -165,8 +165,15 @@ class TestBug6KellyFromCalP:
 
         b = bets_out[0]
         assert b.get("calibrated") is True, "Expected calibrated=True"
-        cal_p = b.get("model_prob")
+        # P1-3: the DISPLAYED model_prob is now the per-player posterior (the bet's
+        # own 0.90 here, sanity-capped), NOT the (stat,edge)-bucketed isotonic value.
+        # The calibrated value lives in model_prob_calibrated and still drives EV/
+        # Kelly/grade — which is what bug6 (Kelly sized off cal_p, not the stale
+        # naive prob) actually requires.
+        cal_p = b.get("model_prob_calibrated")
         assert cal_p == pytest.approx(0.62, abs=0.01), f"Expected cal_p≈0.62, got {cal_p}"
+        assert b.get("model_prob") == pytest.approx(0.90, abs=0.01), \
+            f"Expected per-player model_prob≈0.90, got {b.get('model_prob')}"
 
         # The BETTING mock returns kelly_size=5.0
         expected_kelly_dollars = 5.0

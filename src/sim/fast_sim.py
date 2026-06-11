@@ -19,8 +19,8 @@ import os
 
 import numpy as np
 
-from .basketball_sim import (DEF_PERIM_SLOPE, DEF_RIM_SLOPE, USAGE_CONCENTRATION, TeamModel,
-                             _STATS, _finalize)
+from .basketball_sim import (DEF_PERIM_SLOPE, DEF_RIM_SLOPE, DEF_SUPP_SLOPE, DEF_SUPP_LO, DEF_SUPP_HI,
+                             USAGE_CONCENTRATION, TeamModel, _STATS, _def_supp_on, _finalize)
 
 try:
     import torch
@@ -62,6 +62,7 @@ class _FastTeam:
         self.stl = col("stl_per_min"); self.blk = col("blk_per_min"); self.pf = col("pf_per_min")
         self.self_create = col("self_create", 0.4); self.height = col("height", 78.4)
         self.int_d = col("int_d", 50.0); self.perim_d = col("perim_d", 50.0)
+        self.supp = col("supp", 0.0)            # per-defender opp-PPP suppression (CV_AGENT_DEF_SUPP lever; 0 when OFF)
         self.ast_rate = float(tm.ast_rate_on_make); self.oreb_per_miss = float(tm.oreb_per_miss)
         self.tov_force = float(getattr(tm, "tov_force", 1.0))   # defensive turnover-forcing mult
         self.ft_force = float(getattr(tm, "ft_force", 1.0))     # defensive FT/foul-environment mult
@@ -90,9 +91,11 @@ def _pick(weights, gen):
     return torch.multinomial(weights + 1e-9, 1, generator=gen).squeeze(1)
 
 
-def _possession(off, deff, ob, db, lo, ld, N, gen, dev, defense):
+def _possession(off, deff, ob, db, lo, ld, N, gen, dev, defense, def_supp=False):
     """One offensive possession (incl. OREB continuation) for all N sims; updates boxes in place.
-    lo/ld = the offensive/defensive on-court 5 (sampled once per possession)."""
+    lo/ld = the offensive/defensive on-court 5 (sampled once per possession).
+    ``def_supp`` (CV_AGENT_DEF_SUPP, default False) scales the make prob by the on-court defenders' mean
+    supp; OFF => base_x untouched, no extra RNG => byte-identical to the pre-lever GPU path."""
     ar = torch.arange(N, device=dev)
     active = torch.ones(N, dtype=torch.bool, device=dev)
     for _ in range(4):                                       # OREB continuation guard
@@ -127,6 +130,9 @@ def _possession(off, deff, ob, db, lo, ld, N, gen, dev, defense):
             per_oc = deff.perim_d[ld].mean(dim=1)
             base_x = base_x * torch.where(rim, torch.clamp(1 - DEF_RIM_SLOPE * (int_oc - 50), 0.78, 1.12),
                                           torch.clamp(1 - DEF_PERIM_SLOPE * (per_oc - 50), 0.88, 1.08))
+        if def_supp:                                         # DEFENDER-SUPPRESSION L1 lever (gated; no RNG)
+            supp_oc = deff.supp[ld].mean(dim=1)
+            base_x = base_x * torch.clamp(1 + DEF_SUPP_SLOPE * supp_oc, DEF_SUPP_LO, DEF_SUPP_HI)
         make = is_shot & (torch.rand(N, generator=gen, device=dev) < fgz * base_x)
         miss = is_shot & ~make
         pts = torch.where(three, 3.0, 2.0) * make.float()
@@ -175,9 +181,10 @@ def simulate_game_fast(home: TeamModel, away: TeamModel, n_sims: int = 10000, se
     n_poss = int(round((home.pace * hp + away.pace * ap) / 2))
     hb = {k: torch.zeros(n_sims, H.P, device=dev) for k in _STATS}
     ab = {k: torch.zeros(n_sims, A.P, device=dev) for k in _STATS}
+    dsupp = _def_supp_on()                       # CV_AGENT_DEF_SUPP lever (read once; False => byte-identical)
     for _ in range(n_poss):
-        _possession(H, A, hb, ab, _samp_lineup(H, n_sims, gen, dev), _samp_lineup(A, n_sims, gen, dev), n_sims, gen, dev, defense)
-        _possession(A, H, ab, hb, _samp_lineup(A, n_sims, gen, dev), _samp_lineup(H, n_sims, gen, dev), n_sims, gen, dev, defense)
+        _possession(H, A, hb, ab, _samp_lineup(H, n_sims, gen, dev), _samp_lineup(A, n_sims, gen, dev), n_sims, gen, dev, defense, dsupp)
+        _possession(A, H, ab, hb, _samp_lineup(A, n_sims, gen, dev), _samp_lineup(H, n_sims, gen, dev), n_sims, gen, dev, defense, dsupp)
     # to numpy samp dict keyed by global pid
     samp = {}
     for team, box in ((H, hb), (A, ab)):

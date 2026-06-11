@@ -117,6 +117,25 @@ class _OverProbRequest(BaseModel):
 
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+try:
+    from starlette.middleware.gzip import GZipMiddleware
+    app.add_middleware(GZipMiddleware, minimum_size=500)
+    log.info("api.main: GZip middleware registered (minimum_size=500)")
+except Exception as _gzip_exc:  # never break boot if starlette.middleware.gzip missing
+    log.warning("api.main: GZip middleware unavailable (non-fatal): %s", _gzip_exc)
+
+# Mount /static so the CV simple page (cv_simple.css/js) resolves on api.main:app.
+# live_v2_app.py already mounts this for the cloud entrypoint; api.main needs it too.
+try:
+    from fastapi.staticfiles import StaticFiles
+    _static_dir = _Path(__file__).resolve().parent / "static"
+    if _static_dir.is_dir():
+        app.mount("/static", StaticFiles(directory=str(_static_dir)), name="static")
+        log.info("api.main: mounted /static from %s", _static_dir)
+except Exception as _static_exc:  # never let static mounting break boot
+    log.warning("api.main: /static mount failed (non-fatal): %s", _static_exc)
+
 app.include_router(models_router,          prefix="/predictions", tags=["predictions"])
 app.include_router(predictions_ext_router, prefix="/predictions", tags=["predictions"])
 app.include_router(analytics_router,       prefix="/analytics",   tags=["analytics"])
@@ -200,6 +219,44 @@ async def _start_ws_subscribers() -> None:
                 "api.main: DK in-play WS subscriber failed to start (non-fatal): %s",
                 _dk_inplay_exc,
             )
+
+@app.on_event("startup")
+async def _prewarm_cv_board() -> None:
+    """Pre-warm the CV board and slate builder in the background so the first page
+    load is instant.  Runs concurrently with boot — never blocks or crashes startup.
+    """
+    async def _warm() -> None:
+        try:
+            _today = time.strftime("%Y-%m-%d")
+            _g4_date = "2026-06-10"
+            # Warm build_board for today and the hard-coded G4 date.
+            from api._cv_board import build_board as _build_board
+            import concurrent.futures as _cf
+            _loop = asyncio.get_event_loop()
+            _ex = _cf.ThreadPoolExecutor(max_workers=1)
+            for _d in dict.fromkeys([_today, _g4_date]):  # dedup, order-preserving
+                try:
+                    await _loop.run_in_executor(_ex, _build_board, _d)
+                    log.info("api.main: pre-warm build_board(%s) done", _d)
+                except Exception as _bd_exc:
+                    log.warning("api.main: pre-warm build_board(%s) failed (non-fatal): %s", _d, _bd_exc)
+            # Best-effort hit the slate builder for today's date.
+            if _COURTVISION_AVAILABLE:
+                try:
+                    from api.courtvision_router import _build_slate
+                    await _loop.run_in_executor(_ex, _build_slate, _today)
+                    log.info("api.main: pre-warm _build_slate(%s) done", _today)
+                except Exception as _sl_exc:
+                    log.warning("api.main: pre-warm _build_slate(%s) failed (non-fatal): %s", _today, _sl_exc)
+            _ex.shutdown(wait=False)
+        except Exception as _warm_exc:
+            log.warning("api.main: _prewarm_cv_board background task failed (non-fatal): %s", _warm_exc)
+
+    # Non-blocking: create as a background task so boot is never delayed.
+    _t = asyncio.create_task(_warm())
+    _BG_TASKS.add(_t)
+    _t.add_done_callback(_BG_TASKS.discard)
+
 
 try:
     from api.lines_router import router as _lines_router
@@ -486,3 +543,29 @@ def backtest_stat(stat: str, req: _BacktestRequest = None):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api.main:app", host="0.0.0.0", port=8000, reload=True)
+
+
+# ── CourtVision live-board WebSocket ─────────────────────────────────────────
+# Owner WS.  Delegates to api._cv_ws.cv_ws_handler (lazy import so a missing
+# _cv_live.py never breaks the rest of the app on cold boot).
+@app.websocket("/ws/cv/{game_id}")
+async def ws_cv_board(websocket: WebSocket, game_id: str):
+    """Push a live board dict every ~10 s (or when snapshot changes).
+
+    Mirrors the contract in api._cv_live.live_board:
+      board.live.is_live, .home_score, .away_score, .period, .clock,
+      .minutes_remaining, .win_prob_home_live, .snapshot_age_sec, .snapshot_id.
+    Falls back to pregame board (live.is_live=false) when no snapshot exists.
+    """
+    date = "2026-06-10"  # G4 date; extend via query-param when needed
+    try:
+        from api._cv_ws import cv_ws_handler
+        await cv_ws_handler(websocket, game_id=game_id, date=date)
+    except WebSocketDisconnect:
+        pass
+    except Exception as _ws_exc:
+        log.warning("ws_cv_board: unhandled error for game %s: %s", game_id, _ws_exc)
+        try:
+            await websocket.send_json({"error": str(_ws_exc), "live": {"is_live": False}})
+        except Exception:
+            pass

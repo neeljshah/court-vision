@@ -220,6 +220,29 @@ FLAGS: Dict[str, Dict[str, Any]] = {
             "output; zero effect on predictions. Lowest-priority phase. TIER-NOW."
         ),
     },
+    # ------------------------------------------------------------------
+    # P7 — LLM scheme-prior layer (the LLM shapes sim knobs, never predicts)
+    # ------------------------------------------------------------------
+    "CV_LLM_SCHEME": {
+        "default": False,
+        "phase": "P7.1",
+        "gate": (
+            "The LLM-scheme sim must BEAT the no-LLM baseline on win-prob Brier AND "
+            "score/margin RMSE+bias (not MAE), leak-free walk-forward, on >=2 independent "
+            "corpora, seed-stable, truncation-invariant. flag_allowed_on=FALSE on current "
+            "data: leak-free scout inputs (team four-factor/pace identity + expanding "
+            "recency) are already encoded by the sim, so the layer is expected REDUNDANT "
+            "for the betting number (cf. CV_AGENT_DEF_SUPP). All rich vs-scheme / defender "
+            "rel-to-self / clutch reads are in_season-leaky -> scouting-only, never a number. "
+            "No prior-season corpus exists (2024-25 absent) -> no leak-free vs-coverage split."
+        ),
+        "desc": (
+            "LLM scheme-prior layer: the LLM emits bounded, named, justified, confidence-"
+            "weighted multipliers on EXISTING sim knobs (src/sim/scheme_prior.py); the "
+            "possession sim still computes every number. Default OFF = apply_scheme_priors "
+            "never called = byte-identical CPU+GPU. Betting mode rejects leak_safe=false fields."
+        ),
+    },
 }
 
 

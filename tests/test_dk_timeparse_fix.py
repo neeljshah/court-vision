@@ -7,15 +7,18 @@ so the parser swallows the ValueError and falls back to the raw UTC
 prefix iso_ts[:10]. For night games (UTC date == next calendar day) this
 buckets DK props onto the WRONG ET day and they vanish from /tonight.
 
-Fix: gated flag CV_DK_FRACSEC_FIX (default OFF). When ON, fractional
-seconds are truncated to <=6 digits before strptime, so the timestamp
-parses to the correct ET date. When OFF the behavior is byte-identical
-to before (falls back to the UTC prefix for the DK string).
+Fix: flag CV_DK_FRACSEC_FIX. When ON, fractional seconds are truncated
+to <=6 digits before strptime, so the timestamp parses to the correct
+ET date. Round 2 flipped the DEFAULT in the odds module:
 
-The identical helper lives in TWO modules:
     api._courtvision_odds._et_date_of_start_time
+        default ON  — env unset or "1" fixes the date; "0" opts out
+        (restores the legacy UTC-prefix fallback).
     api.courtvision_router._et_date_from_iso
-Both are exercised here.
+        default OFF — only "1" enables; unset keeps the legacy
+        byte-identical fallback (NOT yet flipped by Round 2).
+
+Both helpers are exercised here, each against its own default.
 """
 from __future__ import annotations
 
@@ -48,16 +51,32 @@ def _router_helper():
 
 
 # ---------------------------------------------------------------------------
-# (a) Flag OFF == current (byte-identical) behavior
+# (a) Default behavior — odds helper now defaults ON (Round 2); router
+#     helper still defaults OFF (byte-identical legacy fallback)
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("helper", [_odds_helper, _router_helper])
-def test_off_is_unchanged_for_dk_fracsec(monkeypatch, helper):
-    """OFF: the 7-digit DK timestamp still fails fromisoformat and falls
-    back to the raw UTC prefix — exactly today's (buggy) behavior."""
+def test_default_on_fixes_dk_fracsec_in_odds_helper(monkeypatch):
+    """Round 2: env UNSET, the odds-module helper fixes the 7-digit DK
+    timestamp by default — the night game lands on the correct ET day."""
     monkeypatch.delenv("CV_DK_FRACSEC_FIX", raising=False)
-    fn = helper()
-    assert fn(DK_FRACSEC_TS) == UTC_PREFIX_DATE  # buggy fallback preserved
+    fn = _odds_helper()
+    assert fn(DK_FRACSEC_TS) == EXPECTED_ET_DATE
+
+
+def test_explicit_zero_opts_odds_helper_out(monkeypatch):
+    """CV_DK_FRACSEC_FIX=0 restores the legacy UTC-prefix fallback in the
+    odds-module helper (the documented opt-out escape hatch)."""
+    monkeypatch.setenv("CV_DK_FRACSEC_FIX", "0")
+    fn = _odds_helper()
+    assert fn(DK_FRACSEC_TS) == UTC_PREFIX_DATE
+
+
+def test_router_helper_default_still_off(monkeypatch):
+    """Router helper was NOT flipped by Round 2: env unset still falls back
+    to the raw UTC prefix (legacy byte-identical behavior)."""
+    monkeypatch.delenv("CV_DK_FRACSEC_FIX", raising=False)
+    fn = _router_helper()
+    assert fn(DK_FRACSEC_TS) == UTC_PREFIX_DATE
 
 
 @pytest.mark.parametrize("helper", [_odds_helper, _router_helper])
@@ -65,9 +84,9 @@ def test_off_is_unchanged_for_dk_fracsec(monkeypatch, helper):
     (FD_FRACSEC_TS, EXPECTED_ET_DATE),   # 3-digit already parses fine
     (NOFRAC_TS, EXPECTED_ET_DATE),       # no-frac already parses fine
 ])
-def test_off_unchanged_for_parsable_inputs(monkeypatch, helper, ts, expected):
-    """OFF: inputs that already parse (0/3-digit frac) are unaffected and
-    yield the correct ET date both before and after the gate exists."""
+def test_default_env_unchanged_for_parsable_inputs(monkeypatch, helper, ts, expected):
+    """Env unset: inputs that already parse (0/3-digit frac) are unaffected
+    by either default and yield the correct ET date in both helpers."""
     monkeypatch.delenv("CV_DK_FRACSEC_FIX", raising=False)
     fn = helper()
     assert fn(ts) == expected
@@ -98,11 +117,26 @@ def test_on_fixes_dk_fracsec(monkeypatch, helper):
     assert fn(DK_FRACSEC_TS) == EXPECTED_ET_DATE
 
 
-@pytest.mark.parametrize("helper", [_odds_helper, _router_helper])
-def test_on_off_diverge_only_for_dk_case(monkeypatch, helper):
-    """The gate changes output ONLY for the previously-unparsable DK input:
-    OFF -> wrong UTC-prefix date, ON -> correct ET date."""
-    fn = helper()
+def test_odds_helper_on_off_diverge_only_for_dk_case(monkeypatch):
+    """Odds helper: "0" -> legacy UTC-prefix date; unset and "1" both yield
+    the correct ET date (default ON). The gate moves ONLY the DK input."""
+    fn = _odds_helper()
+    monkeypatch.setenv("CV_DK_FRACSEC_FIX", "0")
+    off = fn(DK_FRACSEC_TS)
+    monkeypatch.delenv("CV_DK_FRACSEC_FIX", raising=False)
+    default = fn(DK_FRACSEC_TS)
+    monkeypatch.setenv("CV_DK_FRACSEC_FIX", "1")
+    on = fn(DK_FRACSEC_TS)
+    assert off == UTC_PREFIX_DATE
+    assert default == EXPECTED_ET_DATE
+    assert on == EXPECTED_ET_DATE
+    assert off != on
+
+
+def test_router_helper_on_off_diverge_only_for_dk_case(monkeypatch):
+    """Router helper: unset -> legacy UTC-prefix date (default OFF);
+    "1" -> correct ET date."""
+    fn = _router_helper()
     monkeypatch.delenv("CV_DK_FRACSEC_FIX", raising=False)
     off = fn(DK_FRACSEC_TS)
     monkeypatch.setenv("CV_DK_FRACSEC_FIX", "1")
