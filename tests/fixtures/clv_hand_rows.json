@@ -1,0 +1,193 @@
+{
+  "_header": {
+    "canonical_function": "src/validation/clv_tracker.py:120 compute_clv",
+    "sign_convention": "clv_pct = (closing_prob - taken_prob) / taken_prob * 100 — POSITIVE means the closing implied probability EXCEEDS the taken implied probability, i.e. the market moved to WORSE odds than where you bet, meaning you locked a BETTER price than the close (beat the close).",
+    "in_plain_english": "For favorites: line moving more negative at close (e.g. -110 → -120) = POSITIVE CLV (close is more expensive). For underdogs: line moving more positive at close (e.g. +150 → +180) = NEGATIVE CLV (close is cheaper). Zero when taken_odds == close_odds.",
+    "odds_format_note": "american: int moneyline (e.g. -110, +150). decimal: European format (e.g. 1.909 ≈ -110, 2.500 ≈ +150). Higher decimal = lower implied probability.",
+    "computation": "taken_prob and closing_prob derived via american_to_prob or decimal_to_prob (vig-inclusive). clv_pct sign from (closing_prob - taken_prob).",
+    "generated_by": "task N-CLV-003",
+    "hand_verification_tool": "tests/fixtures/clv_hand_rows.json — every row recomputed from first principles below"
+  },
+  "rows": [
+    {
+      "id": 1,
+      "bet_odds": -110,
+      "close_odds": -120,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "positive",
+      "note": "Favorite moved MORE negative: taken_prob=110/210≈0.52381, close_prob=120/220≈0.54545. (0.54545-0.52381)/0.52381*100≈+4.13%. Close is more expensive; you beat it."
+    },
+    {
+      "id": 2,
+      "bet_odds": -110,
+      "close_odds": -100,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "negative",
+      "note": "Favorite moved toward even: taken_prob=110/210≈0.52381, close_prob=100/200=0.50000. (0.50000-0.52381)/0.52381*100≈-4.55%. Close is cheaper; you overpaid."
+    },
+    {
+      "id": 3,
+      "bet_odds": -110,
+      "close_odds": -110,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "zero",
+      "note": "No movement: taken_odds == close_odds. taken_prob=close_prob=110/210≈0.52381. (0.52381-0.52381)/0.52381*100=0.0000. Exact push."
+    },
+    {
+      "id": 4,
+      "bet_odds": 150,
+      "close_odds": 120,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "positive",
+      "note": "Underdog moved LESS positive at close (became a lesser dog): taken_prob=100/250=0.40000, close_prob=100/220≈0.45455. (0.45455-0.40000)/0.40000*100≈+13.64%. Market said it's more likely; you got a better price."
+    },
+    {
+      "id": 5,
+      "bet_odds": 150,
+      "close_odds": 180,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "negative",
+      "note": "Underdog moved MORE positive at close (bigger dog): taken_prob=100/250=0.40000, close_prob=100/280≈0.35714. (0.35714-0.40000)/0.40000*100≈-10.71%. Close was cheaper; you overpaid."
+    },
+    {
+      "id": 6,
+      "bet_odds": -200,
+      "close_odds": -220,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "positive",
+      "note": "Heavy favorite moved more negative: taken_prob=200/300≈0.66667, close_prob=220/320=0.68750. (0.68750-0.66667)/0.66667*100≈+3.13%. You got the heavy fav at a lighter price."
+    },
+    {
+      "id": 7,
+      "bet_odds": -200,
+      "close_odds": -180,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "negative",
+      "note": "Heavy favorite became less favored: taken_prob=200/300≈0.66667, close_prob=180/280≈0.64286. (0.64286-0.66667)/0.66667*100≈-3.57%. Close has lower implied prob; you overpaid."
+    },
+    {
+      "id": 8,
+      "bet_odds": 100,
+      "close_odds": 110,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "negative",
+      "note": "Even money (+100) moved to slight underdog (+110): taken_prob=100/200=0.50000, close_prob=100/210≈0.47619. (0.47619-0.50000)/0.50000*100≈-4.76%. Close is cheaper; you overpaid."
+    },
+    {
+      "id": 9,
+      "bet_odds": 100,
+      "close_odds": -110,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "positive",
+      "note": "Even money (+100) became a favorite (-110): taken_prob=100/200=0.50000, close_prob=110/210≈0.52381. (0.52381-0.50000)/0.50000*100≈+4.76%. Market now says this is the likely side; your even-money ticket was a bargain."
+    },
+    {
+      "id": 10,
+      "bet_odds": 110,
+      "close_odds": 100,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "positive",
+      "note": "Slight underdog (+110) moved to even money (+100): taken_prob=100/210≈0.47619, close_prob=100/200=0.50000. (0.50000-0.47619)/0.47619*100≈+5.00%. Market caught up to your price."
+    },
+    {
+      "id": 11,
+      "bet_odds": -130,
+      "close_odds": -105,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "negative",
+      "note": "-130 fav to near-even -105: taken_prob=130/230≈0.56522, close_prob=105/205≈0.51220. (0.51220-0.56522)/0.56522*100≈-9.38%. Market moved away from you; big negative CLV."
+    },
+    {
+      "id": 12,
+      "bet_odds": 250,
+      "close_odds": 200,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "positive",
+      "note": "Big underdog (+250) moved to smaller dog (+200): taken_prob=100/350≈0.28571, close_prob=100/300≈0.33333. (0.33333-0.28571)/0.28571*100≈+16.67%. Market agreed this side is more likely than you paid for."
+    },
+    {
+      "id": 13,
+      "bet_odds": -150,
+      "close_odds": -160,
+      "odds_format": "american",
+      "side": "OVER",
+      "expected_clv_sign": "positive",
+      "note": "-150 to -160 American: taken_prob=150/250=0.60000, close_prob=160/260≈0.61538. (0.61538-0.60000)/0.60000*100≈+2.56%. Small positive; line crept more negative."
+    },
+    {
+      "id": 14,
+      "bet_odds": -120,
+      "close_odds": -120,
+      "odds_format": "american",
+      "side": "UNDER",
+      "expected_clv_sign": "zero",
+      "note": "Favorite, no movement: taken_odds=close_odds=-120. taken_prob=close_prob=120/220≈0.54545. CLV=0. Exact push."
+    },
+    {
+      "id": 15,
+      "bet_odds": 1.909,
+      "close_odds": 1.818,
+      "odds_format": "decimal",
+      "side": "OVER",
+      "expected_clv_sign": "positive",
+      "note": "Decimal 1.909 (≈-110 American) to 1.818 (≈-120): taken_prob=1/1.909≈0.52383, close_prob=1/1.818≈0.55006. Lower decimal at close = higher implied prob = positive CLV ≈+5.00%."
+    },
+    {
+      "id": 16,
+      "bet_odds": 2.5,
+      "close_odds": 2.2,
+      "odds_format": "decimal",
+      "side": "UNDER",
+      "expected_clv_sign": "positive",
+      "note": "Decimal 2.5 (+150 equiv) to 2.2 (+120 equiv): taken_prob=1/2.5=0.40000, close_prob=1/2.2≈0.45455. Lower decimal at close → higher close prob → +13.64% CLV. Dog became less of a dog."
+    },
+    {
+      "id": 17,
+      "bet_odds": 1.5,
+      "close_odds": 1.6,
+      "odds_format": "decimal",
+      "side": "OVER",
+      "expected_clv_sign": "negative",
+      "note": "Decimal 1.5 (heavy fav) to 1.6 (lighter fav): taken_prob=1/1.5≈0.66667, close_prob=1/1.6=0.62500. Higher decimal at close = lower implied prob = negative CLV ≈-6.25%. You overpaid."
+    },
+    {
+      "id": 18,
+      "bet_odds": 2.0,
+      "close_odds": 2.0,
+      "odds_format": "decimal",
+      "side": "UNDER",
+      "expected_clv_sign": "zero",
+      "note": "Decimal 2.0 (evens) to 2.0 (evens): taken_prob=close_prob=1/2.0=0.50000. CLV=0. Exact push in decimal format."
+    },
+    {
+      "id": 19,
+      "bet_odds": 1.8,
+      "close_odds": 1.9,
+      "odds_format": "decimal",
+      "side": "OVER",
+      "expected_clv_sign": "negative",
+      "note": "Decimal 1.8 to 1.9: taken_prob=1/1.8≈0.55556, close_prob=1/1.9≈0.52632. Higher decimal at close = lower implied prob = (0.52632-0.55556)/0.55556*100≈-5.26%. Close is a better price; you overpaid."
+    },
+    {
+      "id": 20,
+      "bet_odds": 3.0,
+      "close_odds": 2.5,
+      "odds_format": "decimal",
+      "side": "UNDER",
+      "expected_clv_sign": "positive",
+      "note": "Decimal 3.0 (+200 equiv) to 2.5 (+150 equiv): taken_prob=1/3.0≈0.33333, close_prob=1/2.5=0.40000. Lower decimal at close = higher implied prob = (0.40000-0.33333)/0.33333*100≈+20.00%. Market moved strongly toward this outcome."
+    }
+  ]
+}
