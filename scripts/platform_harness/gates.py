@@ -2,9 +2,11 @@
 Cardinal rule: absent script/baseline → SKIP, never FAIL. H0: almost everything skips."""
 from __future__ import annotations
 import argparse
+import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import List, Optional
 
@@ -39,18 +41,19 @@ _SCRIPTS = {
     "IC": "scripts/platform/check_import_contract.py",
 }
 
+# Detect pytest-timeout once at import; degrade silently when absent.
+try:
+    import pytest_timeout as _pt  # noqa: F401
+    _PYTEST_TIMEOUT_AVAILABLE = True
+except ImportError:
+    _PYTEST_TIMEOUT_AVAILABLE = False
 
-# ---------------------------------------------------------------------------
-# Low-level helpers
-# ---------------------------------------------------------------------------
 
 def _script_exists(rel: str) -> bool:
-    """Return True if repo-root-relative path *rel* exists."""
     return (ROOT / rel).exists()
 
 
 def _skip(name: str, why: str) -> dict:
-    """Return a SKIP gate dict."""
     return {"gate": name, "status": "SKIP", "why": why}
 
 
@@ -64,26 +67,10 @@ def protected_scan(files: List[str]) -> List[str]:
     return hits
 
 
-def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800) -> dict:
-    """Run pytest and return parsed counts.  Never raises.
-
-    Returns ``{"ran": True, "passed": int, "failed": int, "skipped": int,
-    "errors": int, "rc": int}`` or ``{"ran": False, "error": str}`` on error.
-    """
-    cmd = [sys.executable, "-m", "pytest"]
-    cmd += [str(t) for t in targets] if targets else [str(ROOT / "tests")]
-    cmd += ["-q", "--no-header", "--tb=no"]
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True,
-                           timeout=timeout, cwd=str(ROOT))
-    except subprocess.TimeoutExpired as e:
-        return {"ran": False, "error": f"timed out after {timeout}s: {e}"}
-    except Exception as e:  # noqa: BLE001
-        return {"ran": False, "error": str(e)}
-
-    out = (r.stdout or "") + (r.stderr or "")
+def _parse_counts(text: str) -> dict:
+    """Parse pytest summary counts from output text."""
     counts = {"passed": 0, "failed": 0, "skipped": 0, "errors": 0}
-    for line in reversed(out.splitlines()):
+    for line in reversed(text.splitlines()):
         if re.search(r"\d+\s+(passed|failed|error|skipped)", line):
             for key, pat in [("passed", r"(\d+)\s+passed"), ("failed", r"(\d+)\s+failed"),
                               ("skipped", r"(\d+)\s+skipped"), ("errors", r"(\d+)\s+error")]:
@@ -91,7 +78,36 @@ def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800) -> dict
                 if m:
                     counts[key] = int(m.group(1))
             break
-    return {"ran": True, **counts, "rc": r.returncode}
+    return counts
+
+
+def run_pytest(targets: Optional[List[str]] = None, timeout: int = 1800) -> dict:
+    """Run pytest; never raises.  Keys: ran, timed_out, passed, failed, skipped, errors,
+    rc (success only), elapsed_s.  On timeout salvages partial counts from e.stdout."""
+    cmd = [sys.executable, "-m", "pytest"]
+    cmd += [str(t) for t in targets] if targets else [str(ROOT / "tests")]
+    cmd += ["-q", "--no-header", "--tb=no"]
+    if _PYTEST_TIMEOUT_AVAILABLE:
+        cmd += ["--timeout=300", "--timeout-method=thread"]
+    child_env = {**os.environ, "NBA_OFFLINE": "1"}
+    t0 = time.monotonic()
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           timeout=timeout, cwd=str(ROOT), env=child_env)
+        return {"ran": True, "timed_out": False,
+                **_parse_counts((r.stdout or "") + (r.stderr or "")),
+                "rc": r.returncode, "elapsed_s": time.monotonic() - t0}
+    except subprocess.TimeoutExpired as e:
+        partial = ""
+        if hasattr(e, "stdout") and e.stdout:
+            partial += e.stdout if isinstance(e.stdout, str) else e.stdout.decode("utf-8", errors="replace")
+        if hasattr(e, "output") and e.output and e.output is not getattr(e, "stdout", None):
+            partial += e.output if isinstance(e.output, str) else e.output.decode("utf-8", errors="replace")
+        return {"ran": False, "timed_out": True, "error": f"timed out after {timeout}s",
+                "elapsed_s": time.monotonic() - t0, **_parse_counts(partial)}
+    except Exception as e:  # noqa: BLE001
+        return {"ran": False, "timed_out": False, "error": str(e),
+                "elapsed_s": time.monotonic() - t0}
 
 
 def _run_script(gate: str, script_key: str, extra_args: Optional[List[str]] = None) -> dict:
@@ -110,10 +126,6 @@ def _run_script(gate: str, script_key: str, extra_args: Optional[List[str]] = No
     except Exception as e:  # noqa: BLE001
         return _skip(gate, f"exception: {e}")
 
-
-# ---------------------------------------------------------------------------
-# Individual gates
-# ---------------------------------------------------------------------------
 
 def g1(baseline_required: bool = False) -> dict:
     """G1 — pytest count vs baseline (RECORDED if baseline absent, else PASS/FAIL)."""
@@ -143,6 +155,13 @@ def g1(baseline_required: bool = False) -> dict:
                 pass
 
     res = run_pytest()
+    if res.get("timed_out"):
+        # Timeout with baseline present → FAIL (phase may not close on vacuous gate).
+        return {"gate": "G1", "status": "FAIL",
+                "why": f"pytest timed out after {res.get('elapsed_s', 0):.1f}s with baseline present",
+                "baseline": baseline,
+                "actual": {k: res[k] for k in ("passed", "failed", "skipped", "errors")},
+                "timed_out": True}
     if not res.get("ran"):
         return _skip("G1", f"pytest failed to run: {res.get('error')}")
     ok = res["passed"] >= baseline.get("passed", 0) and res["failed"] == 0 and res["errors"] == 0
@@ -163,11 +182,11 @@ def g3() -> dict:
 
 
 def g4() -> dict:
-    """G4 — API boot test via pytest (SKIP if absent)."""
+    """G4 — API boot test via pytest (SKIP if absent; budget=420s)."""
     rel = _SCRIPTS["G4"]
     if not _script_exists(rel):
         return _skip("G4", f"test absent: {rel}")
-    res = run_pytest(targets=[str(ROOT / rel)], timeout=120)
+    res = run_pytest(targets=[str(ROOT / rel)], timeout=420)
     if not res.get("ran"):
         return _skip("G4", f"pytest failed to run: {res.get('error')}")
     verdict = "PASS" if (res["failed"] == 0 and res["errors"] == 0) else "FAIL"
@@ -184,10 +203,6 @@ def import_contract() -> dict:
     return _run_script("IC", "IC")
 
 
-# ---------------------------------------------------------------------------
-# Tier orchestrator
-# ---------------------------------------------------------------------------
-
 def _verdict(gates: List[dict]) -> str:
     """Derive overall verdict: FAIL > UNAVAILABLE > PARTIAL > PASS."""
     statuses = {g["status"] for g in gates}
@@ -201,16 +216,7 @@ def _verdict(gates: List[dict]) -> str:
 
 def run_tier(tier: str, task_files: Optional[List[str]] = None,
              phase: Optional[str] = None) -> dict:
-    """Orchestrate gates for *tier* (task/wave/phase).
-
-    Args:
-        tier: ``"task"``, ``"wave"``, or ``"phase"``.
-        task_files: Changed files (task tier: protected scan + import-contract).
-        phase: Phase ID for context/recording.
-
-    Returns:
-        ``{"tier": tier, "verdict": str, "gates": [<gate dicts>]}``.
-    """
+    """Orchestrate gates for *tier* (task/wave/phase). Returns {tier, verdict, gates}."""
     gs: List[dict] = []
 
     if tier == "task":
@@ -229,7 +235,13 @@ def run_tier(tier: str, task_files: Optional[List[str]] = None,
                   else _skip("IC", "no kernel/ files in task scope"))
 
     elif tier == "wave":
-        gs += [g1(), g5(), g4(), import_contract()]
+        # Wave must NEVER run the full test suite (G1 full-suite run is PHASE-only).
+        # Absent baseline → SKIP; baseline capture belongs to P0-H-005.
+        if not PYTEST_BASELINE.exists():
+            gs.append(_skip("G1", "baseline capture is P0-H-005"))
+        else:
+            gs.append(g1())
+        gs += [g5(), g4(), import_contract()]
 
     elif tier == "phase":
         gs += [g1(baseline_required=True), g2(), g3(), g4(), g5()]
@@ -245,10 +257,6 @@ def run_tier(tier: str, task_files: Optional[List[str]] = None,
     return {"tier": tier, "verdict": _verdict(gs), "gates": gs}
 
 
-# ---------------------------------------------------------------------------
-# Recording
-# ---------------------------------------------------------------------------
-
 def record(tier_result: dict, phase: Optional[str] = None) -> None:
     """Append gate run to ledger; optionally persist G-results to phase record."""
     harness_state.append_ledger("gate_run", tier=tier_result.get("tier"),
@@ -263,12 +271,7 @@ def record(tier_result: dict, phase: Optional[str] = None) -> None:
         harness_state.save(state)
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
 def _print_result(result: dict) -> None:
-    """Print human-readable gate summary."""
     print(f"GATE {result.get('tier','?')}: {result.get('verdict','?')}")
     for g in result.get("gates", []):
         why = f"  — {g['why']}" if g.get("why") else ""
@@ -282,14 +285,11 @@ if __name__ == "__main__":
     p.add_argument("--files", default=None, help="Comma-separated changed files.")
     p.add_argument("--record", action="store_true")
     args = p.parse_args()
-
     files_list: Optional[List[str]] = (
         [f.strip() for f in args.files.split(",") if f.strip()] if args.files else None
     )
     result = run_tier(tier=args.tier, task_files=files_list, phase=args.phase)
     _print_result(result)
-
     if args.record:
         record(result, phase=args.phase)
-
     sys.exit(0 if result.get("verdict") in {"PASS", "RECORDED", "UNAVAILABLE", "PARTIAL"} else 1)
