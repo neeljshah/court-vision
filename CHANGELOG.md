@@ -12,6 +12,31 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 > edge. These historical entries are kept as an honest record of what was claimed
 > when. Full account: [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md).
 
+## [0.18.0] - 2026-06 — Multi-sport platform direction + in-game projector + self-improving loop
+
+### Announced
+- **Multi-sport platform direction** ([docs/PLATFORM.md](docs/PLATFORM.md)): the NBA engine (~430 modules) is being refactored into a sport-agnostic `kernel/` + `domains/<sport>/` adapter model. ~38% of the current codebase is already sport-agnostic; adding a second sport is intended to require only an adapter. No second-sport code shipped yet — this entry records the architecture decision.
+
+### Shipped
+- **Possession-level Monte Carlo simulator** (`src/sim/basketball_sim.py` + GPU `fast_sim.py`): player-level role-aware usage, real PBP assist network, defense-drives-predictions, shared-pie routing. Defense walk-forward validated (+0.597 pts/team-game CI [+0.25, +0.93]).
+- **In-game projector** (`src/prediction/live_engine.py`): per-player possession projector with walk-forward PBP replay validation over NYK/SAS Finals G1–G3. Ship baseline = foul-out-only adjustment (minute-share/heat/full-heat refuted; garbage-time untested). Pooled win-prob Brier Q1–Q3: 0.34–0.40 (worse than a coin flip in-game, confirming no in-game market edge).
+- **LLM-free signal-discovery loop** (`src/loop/discovery.py`): enumerates feature transforms → cheap screen → honest walk-forward gate decides ship/reject without LLM involvement. Wired into orchestrator behind `CV_LOOP_DISCOVERY` flag (default OFF). On current point-feature surface, correctly REJECTs (ceiling confirmed). Real value is joint/in-game/freshness frontier.
+- **LLM scheme-prior layer** (`src/sim/scheme_prior.py`, flag `CV_LLM_SCHEME`, default OFF): LLM emits bounded multipliers on existing sim knobs; sim computes all numbers. REJECTED for the betting number (leak-free scheme signal redundant with sim: corr-with-residual +0.005, p=0.87). Ships as scouting-only.
+- **Full-market intelligence stack** (`scripts/team_system/market_intelligence.py`): one sim → 372 markets (every stat/combo/DD/TD/longshot). `CV_MIN_VAR` layer validated (rank-remap fixes median shift; cross-season data confirms).
+- **Full-season walk-forward backtest** (`project_season_backtest_2026-06-10`): truncation-invariance proven; well-calibrated (Brier 0.208 vs close 0.198) but does not beat the close. Spread/total pregame CLV ≈ 0. Cleanest market-efficiency proof to date.
+- **PBP replay validation harness** (`scripts/team_system/pbp_replay.py`): replays any game's play-by-play through the in-game projector; RMSE+bias scored per player and pooled. 257 brain tests green.
+
+### Validated (honest discipline)
+- Markets are efficient: pregame spread/total CLV explains 0.13%/0.29% of line movement; correlation with outcome 0.001.
+- AST ~+4–5% ROI remains the one durable edge (regular season only; breaks in playoffs — do not bet AST in playoffs).
+- In-game win-prob Brier 0.34–0.40 (Q1–Q3): coin-flip territory — no in-game edge on current architecture.
+- Zero real money placed; first real CLV reading October 2026.
+
+### Retracted (documented, not buried)
+- +18.38% pre-game ROI: market-follow grading artifact
+- endQ3 Brier 0.119: Q4 data leak; honest ~0.141
+- +54% in-play ROI: L5-proxy ceiling, not realized edge
+
 ## [Unreleased]
 
 ### Changed

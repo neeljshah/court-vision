@@ -432,3 +432,18 @@ data/cache/gate1_clv_pinnacle_results.json
 tests/test_bet_grades.py
 /INGAME_INFRASTRUCTURE_INVENTORY.md
 /INGAME_QUICK_REFERENCE.md
+
+# =============================================================================
+# 2026-06-11 EDGE/STRATEGY/OPS DOC QUARANTINE — keep the public repo an ENGINEERING
+#   showcase. Edge research, betting strategy, monetization, ROI claims, and internal
+#   bot-ops all stay PRIVATE (preserved in court-vision-private). Code stays public.
+# =============================================================================
+docs/research/*
+!docs/research/validation-methodology.md
+docs/strategy/
+docs/models/MODEL_UNIVERSE.md
+docs/OUTREACH_KIT.md
+/ROADMAP.md
+/MASTER_PLAN.md
+# -- internal Claude tooling (agent configs, bot-loop commands, prompts, styles) ---
+.claude/

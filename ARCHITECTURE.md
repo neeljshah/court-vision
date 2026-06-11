@@ -1,266 +1,462 @@
 # CourtVision — System Architecture
 
-> Technical shape of the platform, organized as **the funnel**: each stage refines the one above it.
-> Narrative version: [README.md](README.md). Strategy: [VISION.md](VISION.md). Build sequence: [ROADMAP.md](ROADMAP.md).
-> Full system descriptions: [docs/architecture/system-overview.md](docs/architecture/system-overview.md).
+> End-to-end technical map of the platform. For the recruiter-facing evidence narrative see
+> [`docs/JOB_EVIDENCE_PACKET.md`](docs/JOB_EVIDENCE_PACKET.md). For validated metrics see
+> [`docs/ML_MODELS.md`](docs/ML_MODELS.md). For the CV pipeline deep-dive see
+> [`docs/CV_TRACKING.md`](docs/CV_TRACKING.md). For the API surface see
+> [`docs/API.md`](docs/API.md).
 
 ---
 
-## The funnel, stage by stage
+## The Funnel
 
-| Stage | What it does | Core components (below) |
-|-------|--------------|-------------------------|
-| **1 · DATA** | Broadcast video → court coordinates + NBA API + lines | CV pipeline |
-| **2 · SIGNALS** | Features + 80-artifact intelligence layer + discovery loop | feature_engineering, intelligence layer, `src/loop/` |
-| **3 · MODELS** | 7 prop heads · win-prob NNLS · in-play snapshot heads | player_props, win_probability, live_engine |
-| **4 · ENGINES** | Sim · devig · decision engine · Kelly · shadow log | Systems 1–5 below |
-| **5 · PREDICTIONS** | Projections + EV + sized bets, served over FastAPI | api/, trading desk, daemons |
-| **6 · INTELLIGENCE** | Dossiers · AI chat · the agentic loop that improves it all | System 6 below |
-
-The six numbered "systems" below are the **engines** that turn model output into decisions, plus the agentic research loop that re-validates every stage.
-
-## The Six Core Systems (the engine + improvement layers)
+Everything in the system flows through one directed pipeline:
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         BROADCAST VIDEO                             │
-│             (85 tracked / 7 full-feature → 80 CLEAN target)         │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                      CV PIPELINE [LIVE]                             │
-│  src/tracking/ + src/pipeline/                                      │
-│  YOLOv8n → SIFT homography → Kalman+Hungarian → OSNet re-ID        │
-│  Output: defender_distance, spacing_score, legs_fatigue, events     │
-└───────────────────────────┬─────────────────────────────────────────┘
-                            │ (CV spatial features)
-        ┌───────────────────┤
-        │ (NBA API features)│
-        ▼                   ▼
-┌───────────────────────────────────────────────────────────────────┐
-│            SYSTEM 1: POSSESSION SIMULATOR [PLANNED]               │
-│   Lineup-dependent transition matrices + 10K Monte Carlo paths    │
-│   Output: P(stat > X) for every player, every stat, any X        │
-└───────────────────────────┬───────────────────────────────────────┘
-                            │ (full distributions)
-        ┌───────────────────┴────────────────────┐
-        ▼                                        ▼
-┌────────────────────────┐          ┌───────────────────────────────┐
-│ SYSTEM 2: LINE         │          │ SYSTEM 3: CORRELATION ENGINE  │
-│ EVALUATOR [LIVE]       │          │ [LIVE — partial]              │
-│ Shin devig + multi-    │          │ kelly_corr populated for 7    │
-│ book scanner + arbs    │          │ props; parlay_constructor.py  │
-│ (lines_router.py,      │          │ uses correlation-aware EV     │
-│ devig_router.py)       │          │ (35 tests pass)               │
-└───────────┬────────────┘          └──────────────┬────────────────┘
-            └──────────────┬───────────────────────┘
-                           ▼
-┌──────────────────────────────────────────────────────────────────┐
-│                  SYSTEM 4: KELLY SIZER [LIVE]                    │
-│   Fractional Kelly-B (0.25-0.5) + per-stat isotonic edge        │
-│   calibration + Ledoit-Wolf shrinkage on corr                   │
-│   Drawdown circuit breakers • betting_portfolio.py               │
-└──────────────────────────┬───────────────────────────────────────┘
-                           │ (sized bets)
-                           ▼
-┌──────────────────────────────────────────────────────────────────┐
-│            SYSTEM 5: EXECUTION ROUTER [LIVE — partial]           │
-│   9 production daemons: auto_place, auto_settle, clv_tracker,   │
-│   bankroll_monitor, middle_finder, line_move, nba_lineup,       │
-│   live/inplay_bet_ranker. Pinnacle/Bovada/FD/PrizePicks scraped │
-│   directly; DK/Caesars/MGM IP-blocked (R18_K1).                 │
-└──────────────────────────────────────────────────────────────────┘
-
-  SYSTEM 6: AGENTIC RESEARCH SYSTEM [LIVE — improve_loop]
-  Opus-orchestrator / Sonnet-executor / Haiku-search multi-agent loop.
-  Two arms: ARM A mines residuals → gated leaf signals; ARM B writes
-  intel atlas sections. Hard ship gate: expanding WF (all folds improve)
-  + null-shuffle permutation (z≥3) + ablation + Benjamini-Hochberg FDR.
-  Most candidates are correctly rejected — that is the design. This loop
-  also caught and retracted the inflated +18.38% / endQ3-0.119 headlines.
-  Spec: `.claude/commands/workday-loop.md`.
+DATA → SIGNALS → MODELS → ENGINES → PREDICTIONS → INTELLIGENCE
 ```
+
+Each stage refines the one above it. Nothing downstream can compensate for a
+broken upstream stage — the system is deliberately auditable at each boundary.
+
+| Stage | What it does | Key modules |
+|-------|--------------|-------------|
+| **DATA** | Broadcast video → court coords; NBA Stats API; live lines from 6 books | `src/pipeline/unified_pipeline.py`, `src/data/` |
+| **SIGNALS** | 60+ spatial/temporal CV features + 80-artifact intelligence layer + discovery loop | `src/features/feature_engineering.py`, `src/loop/` |
+| **MODELS** | 7 prop heads, win-prob NNLS stack, in-play residual heads, calibration layers | `src/prediction/` |
+| **ENGINES** | Possession simulator, de-vig, Kelly sizing, shadow log, decision engine | `src/prediction/betting_portfolio.py`, `src/prediction/decision_engine.py` |
+| **PREDICTIONS** | Projections + EV + sized bets, served over FastAPI (~99 endpoints) | `api/` |
+| **INTELLIGENCE** | 690-node knowledge graph, player/team dossiers, agentic improvement loop | `src/loop/`, `data/intelligence/` |
 
 ---
 
-## Component Status
+## Broadcast-CV Pipeline
 
-| Component | File(s) | Status |
-|-----------|---------|--------|
-| YOLOv8n detection | `src/tracking/advanced_tracker.py` | ✅ [LIVE] |
-| SIFT homography | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
-| Kalman+Hungarian tracking | `src/tracking/advanced_tracker.py` | ✅ [LIVE] |
-| OSNet re-ID (512-dim) | `src/tracking/osnet_reid.py` | ✅ [LIVE] |
-| HSV team classification | `src/tracking/color_reid.py` | ✅ [LIVE] |
-| EasyOCR jersey reading | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
-| EventDetector | `src/pipeline/unified_pipeline.py` | ✅ [LIVE] |
-| Ball detection/tracking | `src/tracking/ball_detect_track.py` | 🟡 [LIVE] bug: ball_valid_pct=0% some games |
-| Feature engineering (60+ features) | `src/features/feature_engineering.py` | ✅ [LIVE] |
-| 7 prop models (q50 quantile heads + multitask MLP) | `src/prediction/player_props.py`, `prop_quantiles.py`, `multitask_props.py` | ✅ [LIVE] walk-forward validated (MAE @ q50: pts 4.65, reb 1.90, ast 1.37, fg3m 0.89, tov 0.89, stl 0.72, blk 0.44; N=99,818) |
-| Residual heads (pregame + period-specific) | `src/prediction/residual_heads.py`, `multitask_residual_head.py` | ✅ [LIVE] 6/7 stats SHIP pregame; endQ1+endQ2 wired into `live_engine` |
-| Live engine + in-play projection | `src/prediction/live_engine.py` | ✅ [LIVE] endQ1/endQ2/endQ3 snapshots; 7/7 stats win vs pregame at endQ3 |
-| Live quantile bands | `src/prediction/live_quantile_bands.py` | ✅ [LIVE] 80% empirical coverage on in-play projections |
-| Learned Q4 minute trajectory | `src/prediction/minute_trajectory.py` | ✅ [LIVE] endQ3 head: PTS -0.2312 MAE |
-| Overtime probability | `src/prediction/overtime_probability.py` | ✅ [LIVE] |
-| Win probability (5-way NNLS stack) | `src/prediction/win_probability.py` | ✅ [LIVE] 0.7094 acc / 0.193 Brier (walk-forward 3-fold), 0.7169 / 0.188 (single-split); NNLS zeroed XGB autonomously |
-| Quantile interval calibration | `src/prediction/quantile_calibration.py` | ✅ [LIVE] 80% target coverage |
-| Decision engine (gate chain + EV floor + S/A/B tier) | `src/prediction/decision_engine.py` | ✅ [LIVE] EV floor calibrated 0.01 → 0.12 on 2026-05-27 (post-hoc on shadow log) |
-| Shadow logger (every eval incl. blocked) | `src/prediction/shadow_logger.py` | ✅ [LIVE] CSVs at `data/shadow/<game_id>_<date>.csv`; enabled retroactive filter calibration |
-| Settlement engine (cdn.nba.com finals → realized ROI) | `src/prediction/settlement_engine.py` | ✅ [LIVE] Joins shadow log to box finals; nightly settle |
-| Snapshot replay (historical games → live projector) | `src/prediction/snapshot_replay.py` | ✅ [LIVE] Drives backtest harness |
-| In-play backtest harness | `scripts/run_backtest.py` | ✅ [LIVE] 90,846-bet 50-game backtest; 55,073-bet calibrated emit set 78.11% hit / +54.57% ROI on L5 proxy |
-| Filter calibrator | `scripts/calibrate_filters.py` | ✅ [LIVE] EV-floor + ceiling sweep against shadow log; patches decision_engine thresholds |
-| Daily ROI reporter | `src/reporting/daily_roi.py` | ✅ [LIVE] CLI: `python -m src.reporting.daily_roi --date YYYY-MM-DD` → `vault/Reports/daily_roi_<date>.md` |
-| Real-Vegas Gate 1 (historical archives) | `scripts/run_gate1_*.py` | ✅ [LIVE] 8,360 bets at DK/FD/MGM/BetRivers closes — see `data/models/gate1_results_summary.json` |
-| Betting backtest harness (legacy, L5 proxy) | `scripts/betting_backtest*.py` | ✅ [LIVE] 19,964-game holdout, +20-28% ROI @ +0.5 edge |
-| xFG model | `src/prediction/` | ✅ [LIVE] Brier 0.226 on 221K shots |
-| DNP predictor | `src/prediction/` | ✅ [LIVE] AUC 0.979 |
-| Matchup model | `src/prediction/` | ✅ [LIVE] |
-| Fractional Kelly sizing | `src/prediction/betting_portfolio.py` | ✅ [LIVE] |
-| Shin devig | `src/prediction/devig.py` | ✅ [LIVE] |
-| Risk guards | `src/prediction/risk_guards.py` | ✅ [LIVE] |
-| Ingest queue (SQLite) | `src/ingest/` | ✅ [LIVE] |
-| FastAPI serving | `api/main.py` | ✅ [LIVE] ~99 endpoints across 12 routers (REST+WS+SSE, runtime-counted) |
-| Temporal CV harness | `src/prediction/prop_backtester.py` | ✅ [LIVE] walk-forward, 48-hr purge |
-| Model registry | `data/models/model_registry.json` | ✅ [LIVE] 85 models registered |
-| Regression test suite | `tests/` | ✅ [LIVE] 4,100+ collected; 48/48 critical-path pass (gate1, devig, kelly, clv, calibration); 63/63 in-play subset pass (shadow logger, settlement, snapshot replay, calibration, daily ROI, decision engine gates) |
-| Live trading desk UI | `/scan` + `/clv` + `/parlays` + `/live/{game_id}` + SSE arbs | ✅ [LIVE] Shipped 2026-05-27 |
-| Intelligence layer (80 derived artifacts) | `data/intelligence/` (gitignored); manifest at `docs/INTELLIGENCE.md` | ✅ [LIVE] Player archetypes + similarity (26K pairs), scheme tags, lineup chemistry (4.7K), matchup deviations, quality + confidence curves |
-| Multi-book line scanner | `api/lines_router.py` | ✅ [LIVE] DK/FD/MGM/Pinnacle parallel; best line per stat per player |
-| Cross-book arbitrage detector | `api/arbs_router.py` + SSE `arb.detected` | ✅ [LIVE] Live detection pushed via Server-Sent Events |
-| Parlay constructor (correlation-aware) | `src/prediction/parlay_constructor.py` | ✅ [LIVE] 2-leg + 3-leg builder; 35 tests pass |
-| Per-stat isotonic edge calibration | `src/prediction/edge_calibration.py` + `data/models/oos_pre_playoffs/edge_isotonic_*.joblib` | ✅ [LIVE] Iter-34 |
-| CLV tracker | `src/prediction/betting_portfolio.py` + `clv_router.py` | 🟡 [LIVE — partial] Historical Gate 1 RUN (DK/FD/MGM/BetRivers); Pinnacle CLV pending Oct 2026 (no historical archive exists) |
-| Production daemons (9) | `scripts/*_daemon.py` registered in `scripts/daemon_registry.json` | ✅ [LIVE] auto_place, auto_settle, clv_tracker, bankroll_monitor, middle_finder, line_move_detector, nba_lineup, live_bet_ranker, inplay_bet_ranker — watchdog'd via `daemon_watchdog.py` |
-| Book scrapers | `scripts/scrape_*.py` | 🟡 [LIVE — partial] Pinnacle/Bovada/FanDuel/PrizePicks operational; DK/Caesars/MGM IP-blocked (R18_K1, Playwright stealth probe failed) |
-| Agentic research loop | `.claude/commands/workday-loop.md` + `src/loop/` + Opus/Sonnet/Haiku routing | ✅ [LIVE] two-arm discovery (signals + intel atlas); ship gate = expanding WF + null-shuffle (z≥3) + ablation + BH-FDR; most candidates correctly rejected |
-| PostgreSQL schema | `database/schema.sql` | 🟡 Schema ready, migration pending (ISSUE-021) |
-| Possession simulator (Monte Carlo) | — | 🔲 [PLANNED] |
-| Book adapters with order management (DK/FD/BetMGM/Novig) | `src/execution/` (stub) | 🔲 [PLANNED] |
-| P2P exchange integration (Kalshi/Polymarket/Sporttrade) | `execute_loop V1` 39/40 layers scaffolded | 🟡 [SCAFFOLDED] 532/532 tests pass; production deployment pending |
+The CV pipeline is the most structurally distinct component. It converts raw
+`.mp4` broadcast footage into per-frame player positions, ball location, and
+game events using only a consumer GPU (RTX 4060). Cost: **~$0.10–0.13/game**
+vs six-figure commercial tracking systems.
+
+```
+Broadcast Video (.mp4)
+        │
+        │  PyAV/decord frame decode
+        │  (async _FramePrefetcher thread overlaps decode with GPU compute)
+        ▼
+┌───────────────────────────────────────────┐
+│  STAGE 1 — Court Homography               │
+│  src/pipeline/unified_pipeline.py         │
+│  src/tracking/court_detector.py           │
+│                                           │
+│  • HSV masking → HoughLinesP → line       │
+│    intersection → cv2.getPerspectiveTransform  │
+│  • Three-tier SIFT acceptance:            │
+│    <8 inliers → keep prev M              │
+│    8–39 → EMA blend (α=0.3)             │
+│    ≥40 → hard reset                      │
+│  • EMA smoothing + every-30-frame drift   │
+│    re-anchor (alignment < 0.35 → reset)  │
+│  • Replay/scene-cut suspension            │
+│  Output: 3×3 homography M, pixel → feet  │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 2 — Person Detection               │
+│  src/tracking/advanced_tracker.py         │
+│  (YOLOv8n, custom-trained ball detector) │
+│                                           │
+│  • YOLOv8n nano (class 0 = person)       │
+│    conf ≥ 0.35, input 640×640            │
+│  • Separate YOLOv8n fine-tuned ball      │
+│    detector: scripts/train_ball_yolo.py  │
+│    weights: models/weights/yolov8n_ball  │
+│    .{pt,onnx,engine}                     │
+│  Output: [x1,y1,x2,y2,conf] per person  │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 3 — Multi-Object Tracking          │
+│  src/tracking/advanced_tracker.py         │
+│  class AdvancedFeetDetector               │
+│                                           │
+│  Kalman filter (per slot):                │
+│    state = [cx, cy, vx, vy, w, h]        │
+│    constant-velocity prediction model     │
+│                                           │
+│  Hungarian assignment:                    │
+│    cost[i,j] = 0.75 × (1 − IoU)         │
+│              + 0.25 × appearance_dist     │
+│    scipy.optimize.linear_sum_assignment  │
+│    (lapx/lap used when available for      │
+│    ByteTrack-style two-stage assignment)  │
+│                                           │
+│  Appearance model:                        │
+│    Primary: 96-dim L1-norm HSV histogram  │
+│    (32 hue bins × 3 sat bins)            │
+│    EMA update: α=0.7                      │
+│    Gallery TTL: 300 frames                │
+│                                           │
+│  OSNet re-ID (src/tracking/osnet_reid.py)│
+│    Omni-scale network, reimplemented in  │
+│    PyTorch with depthwise-sep convolutions│
+│    256-dim embeddings                     │
+│    Inference: TensorRT → torchreid →     │
+│    standalone → MobileNetV2 → HSV hist   │
+│    NOTE: ships with ImageNet-pretrained  │
+│    weights; production appearance model  │
+│    is the HSV histogram                  │
+│                                           │
+│  Team classification (color_reid.py):    │
+│    k-means k=2 on player crops           │
+│    similar-color mode: appearance weight │
+│    raised 0.25 → 0.35 when hue           │
+│    centroids within 20°                  │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 4 — Ball Tracking                  │
+│  src/tracking/ball_detect_track.py        │
+│  class BallDetectTrack                    │
+│                                           │
+│  Three-tier fallback:                     │
+│  T1: YOLOv8n ball detector (primary)     │
+│  T2: Hough circles + CSRT tracker        │
+│  T3: Lucas-Kanade optical flow           │
+│  Possession: ball center ∈ player bbox   │
+│  Known issue: ball_valid_pct = 0% on     │
+│  some games (under active investigation) │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 5 — Event Detection                │
+│  src/tracking/event_detector.py           │
+│  class EventDetector                      │
+│                                           │
+│  Shot: ball leaves possessor bbox,        │
+│    upward trajectory, parabola fit        │
+│  Pass: ball displacement > 200px/frame,  │
+│    new possessor assigned                 │
+│  Dribble: ball y-coord local minimum     │
+│    while same possessor holds ball        │
+│  Fallback: last-known possessor coords   │
+│    when ball_pos = None                   │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 6 — Scoreboard + Jersey OCR        │
+│  src/tracking/scoreboard_ocr.py           │
+│  src/tracking/jersey_ocr.py               │
+│                                           │
+│  ScoreboardOCR: EasyOCR (PaddleOCR       │
+│    preferred), reads every _OCR_INTERVAL  │
+│    frames; outputs game_clock_sec,        │
+│    shot_clock, home_score, away_score,   │
+│    period, timeouts, fouls               │
+│                                           │
+│  JerseyOCR: dual-pass (normal + inverted │
+│    binary crop); JerseyVotingBuffer      │
+│    majority-vote over 3 frames;           │
+│    jersey# → NBA API roster → player_id  │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+┌───────────────────────────────────────────┐
+│  STAGE 7 — Feature Engineering            │
+│  src/features/feature_engineering.py     │
+│  src/pipeline/tracking_feature_extractor │
+│  .py                                     │
+│                                           │
+│  60+ features per player per frame:      │
+│  Spatial: defender_distance, spacing_     │
+│    score (convex hull), paint_density,   │
+│    shot_angle                            │
+│  Temporal: speed, acceleration,          │
+│    fatigue_index (vs player baseline)    │
+│  Rolling: shots/passes/dribbles over    │
+│    5/10/20-frame windows                 │
+│  Physical validity caps + phantom-slot   │
+│  filtering + ~10 sentinel-leak guards    │
+│  (each guard tied to a specific observed │
+│  artifact, Bug 30/31/34/...)            │
+└─────────────────┬─────────────────────────┘
+                  │
+                  ▼
+           tracking_data.csv + events.json
+```
+
+**Output schema:** per-row fields include `player_id`, `track_id`, `x_court`,
+`y_court` (feet, 94×50 plane), `vx`, `vy`, plus all 60+ behavioral features.
+Data lands in `data/tracking/tracking_data.csv` and `data/nba_ai.db`
+(`cv_features` table: 17,254 rows / 241 games / 252 distinct NBA player IDs).
+
+**Hardware invariants:**
+- `_VRAM_FLUSH_INTERVAL = 3000` in `unified_pipeline.py` (not 100 — causes OOM)
+- Panorama SIFT ratio: 3–10 (broadcast frames break at the default 2.0)
+- `OMP_NUM_THREADS=4` set before any YOLO call
+- Always headless (`--no-show`), never `cv2.imshow`
+
+---
+
+## ML + Prediction Stack
+
+```
+tracking_data.csv + NBA API
+        │
+        ▼
+src/features/feature_engineering.py
+  ├─ CV spatial features (defender_distance, spacing, fatigue)
+  ├─ NBA API features (pace, lineup, ref, altitude, travel)
+  └─ Market features (Pinnacle no-vig, line velocity, steam flag)
+        │
+        ▼
+Model Stack  (see docs/ML_MODELS.md for full inventory)
+  ├─ Tier 1 — PREGAME
+  │    ├─ 7 prop models (XGB/LGB/MLP NNLS stack, q50 primary)
+  │    │   MAE: PTS ~4.58 | REB ~1.90 | AST ~1.34 | FG3M ~0.88
+  │    ├─ Win-prob: 5-way NNLS (XGBoost + logistics)
+  │    │   0.709 acc / 0.193 Brier (3-fold walk-forward)
+  │    └─ Game-level: total, spread, blowout, pace, first-half
+  │
+  ├─ Tier 2 — IN-PLAY RESIDUAL LAYER
+  │    ├─ Period snapshot heads: endQ1 + endQ2 (SHIPPED)
+  │    ├─ Foul-change + blowout-flip + heat-check residuals
+  │    ├─ Learned Q4 minute trajectory: minute_trajectory.py
+  │    └─ Calibrated live quantile bands (80% empirical coverage)
+  │
+  └─ Supporting models (xFG Brier 0.226, DNP AUC 0.979, ...)
+        │
+        ▼
+src/prediction/decision_engine.py
+  ├─ Gate chain: projection_sane → min_edge → three_book_consensus
+  ├─ EV floor (calibrated 0.01→0.12 on shadow log)
+  ├─ S/A/B/C tier classification by EV magnitude
+  └─ → shadow_logger.py (every eval recorded, incl. blocked bets)
+        │
+        ▼
+src/prediction/betting_portfolio.py
+  ├─ Shin (1992) de-vig (stable bisection solver)
+  ├─ Fractional Kelly (0.25–0.5) × confidence tier
+  ├─ Ledoit-Wolf shrinkage on 7×7 residual covariance
+  └─ Drawdown circuit breakers + isotonic win-prob override
+        │
+        ▼
+api/main.py  (~99 endpoints, 12 routers)
+  ├─ REST: props, predictions, win-prob, devig, CLV, analytics
+  ├─ SSE: /sse/live_edges (cross-book arb stream)
+  └─ WebSocket: live win-prob feed
+```
+
+**Honest market read:** against real closing lines (DK/FD/MGM), the model is
+roughly break-even-minus-vig overall. AST shows a small durable edge (~+4–5%,
+breaks in playoffs). The +18.38% ROI figure is retracted — it was a
+market-follow grading artifact (see `docs/JOB_EVIDENCE_PACKET.md §4`).
+
+---
+
+## Possession-Level Monte Carlo Engine
+
+```
+src/prediction/possession_simulator.py
+src/sim/basketball_sim.py (possession MC)
+src/sim/sgp_from_sim.py   (SGP pricing)
+```
+
+The simulator runs possession-by-possession Monte Carlo (N=10K paths by default).
+Key design choices:
+
+- **Shared scoring pie:** offensive players compete for a lineup-conditioned
+  scoring allocation sampled from real stint minutes. This causes the correct
+  negative teammate correlation (~−0.10) to emerge mechanically — no hand-tuned
+  covariance matrix.
+- **Defense drives predictions:** defensive team rating adjusts per-possession
+  scoring probability.
+- **Anchor pinning:** marginal distributions are pinned to box-score pregame
+  projections, preventing the simulation from drifting.
+- **SGP pricing** (`sgp_from_sim.py`): reads joint samples directly from the
+  MC paths, so same-game parlay correlation is priced correctly. A
+  `validate_joint_calibration` harness verifies the joint structure.
+
+The codebase explicitly does **not** claim a betting edge from the MC engine.
+
+---
+
+## Two-Arm Self-Improving Loop
+
+The loop is the meta-layer that improves every stage above it automatically.
+
+```
+src/loop/
+  ├─ orchestrator.py   — drives both arms; checkpoint/resume
+  ├─ gate.py           — 5-criterion ship gate (the honest gatekeeper)
+  ├─ error_miner.py    — ARM A: mines model residuals → hypotheses
+  ├─ discovery.py      — ARM A: LLM-free feature-transform enumerator
+  ├─ wiring.py         — ships a signal (GPU retrain + write-back)
+  ├─ atlas.py          — ARM B: intelligence atlas section builder
+  ├─ intel_validator.py— ARM B: validates atlas sections
+  ├─ ledger.py         — append-only audit log
+  └─ memory_writer.py  — persists findings to knowledge graph
+```
+
+### ARM A — Signal Discovery
+
+```
+error_miner.mine()
+  └─> Hypothesis queue (FDR-budget-aware, ledger-deduped)
+        └─> for each hypothesis:
+              Signal.build(as_of_context)   ← leak-safe feature construction
+                └─> gate.evaluate(signal)   ← 5-criterion gate (see below)
+                      ├─ SHIP        → wiring.ship_signal (GPU retrain + atlas write)
+                      ├─ VARIANCE_ONLY → wiring.wire_variance_signal
+                      ├─ DEFER (≤3 attempts) → requeue
+                      └─ REJECT       → ledger only
+```
+
+### ARM B — Intelligence Atlas
+
+```
+discover intel/*.py AtlasSection modules
+  └─> section.build(as_of_context)
+        └─> intel_validator.validate(section)
+              └─> profile_factory_bridge.register_section
+                    └─> memory_writer.write_finding
+                          └─> ledger.record_atlas
+```
+
+### The Ship Gate (`src/loop/gate.py`)
+
+The gate evaluates all five criteria jointly. All must pass for `SHIP`;
+a point-fail with interval-pass yields `VARIANCE_ONLY`.
+
+| Criterion | Implementation | Threshold |
+|-----------|---------------|-----------|
+| Walk-forward | Expanding folds; `assert max_train_date < min_test_date` per fold | ALL folds delta_MAE < 0 |
+| Null-shuffle | Real delta vs shuffled-label null distribution | z ≥ 3 |
+| Ablation vs full | Marginal holdout delta of adding signal to full model | relative eps > 1e-3 |
+| Calibration | Reliability/coverage (MAE or Brier per target type) | target-specific |
+| CLV | Closing-line value vs Pinnacle | CLV ≥ 0 |
+| Multiple comparisons | Benjamini-Hochberg FDR across all tested signals | ledger-wide |
+| Held-out budget | One-time test set, spent exactly once per loop lifetime | checkpoint-tracked |
+
+**Most candidates are correctly rejected — that is the design.**
+
+---
+
+## Multi-Sport Platform Direction
+
+Approximately 38% of the codebase is already sport-agnostic: the gate logic,
+the walk-forward harness, the Kelly/devig engine, the conformal calibrator, the
+shadow logger, and the alerting/daemon layer have no NBA-specific imports. The
+remaining 62% couples to NBA API structures.
+
+The planned architecture separates this into:
+
+```
+kernel/            ← sport-blind (38% of current code, today)
+  ├─ loop/         ← discovery, gate, wiring, ledger
+  ├─ prediction/   ← walk_forward, conformal, calibration, Kelly
+  └─ serving/      ← FastAPI skeleton, daemons, shadow log
+
+domains/
+  └─ nba/          ← today's full NBA system = the reference adapter
+  └─ tennis/       ← Phase 0 proof (market-only, no CV)
+  └─ <sport>/      ← adding a sport = only the adapter layer
+```
+
+Detailed plan: `.planning/platform/` (private). High-level vision: `docs/PLATFORM.md`.
 
 ---
 
 ## Data Flow (Detailed)
 
+```mermaid
+graph TD
+    A[Broadcast Video .mp4] --> B[unified_pipeline.py]
+    B --> C[advanced_tracker.py\nKalman + Hungarian]
+    B --> D[court_detector.py\nSIFT homography]
+    B --> E[osnet_reid.py\nAppearance re-ID]
+    B --> F[ball_detect_track.py\nBall position]
+    B --> G[event_detector.py\nShot/pass/dribble]
+    B --> H[scoreboard_ocr.py\nGame clock + score]
+    C & D & E & F & G & H --> I[tracking_data.csv\nevents.json]
+    I --> J[feature_engineering.py\n60+ features]
+    K[NBA Stats API\n3 seasons] --> J
+    L[Live odds\n6 books] --> J
+    J --> M[prop models\n7 stats]
+    J --> N[win_probability.py\nXGBoost NNLS]
+    J --> O[live_engine.py\nresidual heads]
+    M & N & O --> P[decision_engine.py\ngate chain + EV floor]
+    P --> Q[shadow_logger.py\nappend-only]
+    P --> R[betting_portfolio.py\nKelly + CLV]
+    R --> S[api/main.py\n~99 endpoints]
+    Q --> T[settlement_engine.py\nnightly settle]
 ```
-Broadcast Video (.mp4)
-    │
-    ▼
-unified_pipeline.py
-    ├─ advanced_tracker.py → player detections (bbox, class, conf)
-    ├─ SIFT homography → court coordinates (feet, 94×50 plane)
-    ├─ osnet_reid.py → player identity (512-dim embedding)
-    ├─ color_reid.py → team classification (HSV clusters)
-    ├─ ball_detect_track.py → ball position + possession
-    ├─ EasyOCR → jersey numbers + game clock
-    └─ EventDetector → shot/pass/dribble/screen/rebound/foul events
-    │
-    ▼
-tracking_data.csv + events.json
-    │
-    ▼
-feature_engineering.py
-    ├─ CV spatial features: defender_distance, spacing_score, fatigue_index
-    ├─ CV temporal: rolling shots/passes/dribbles over 5/10/20-frame windows
-    ├─ NBA API features: pace, team total, lineup on/off, ref, altitude, travel
-    └─ Market features: Pinnacle no-vig, line velocity, steam flag
-    │
-    ▼
-Model Stack (312 trained artifacts; 8 load-bearing modules)
-    ├─ Tier 1: Win prob (5-way NNLS), 7 prop models (q10/q50/q90),
-    │          game total, spread, pace, blowout
-    ├─ Tier 2: xFG (Brier 0.226), shot zones, xPTS
-    ├─ Tier 2B: DNP predictor (AUC 0.979), load management, injury return
-    ├─ Tier 3-4: gated on 80+ CV games (retrain pending; 7 full-feature currently)
-    └─ In-play layer:
-        ├─ live_engine: snapshot → projection
-        ├─ residual heads (pregame + endQ1 + endQ2 - foul/blowout/heat-check)
-        ├─ minute_trajectory: learned Q4 minutes prior (cycle 110)
-        └─ live_quantile_bands: 80% empirical coverage
-    │
-    ▼
-betting_portfolio.py
-    ├─ Shin devig → implied probabilities
-    ├─ Kelly fraction (0.25-0.5) × model confidence tier
-    ├─ Ledoit-Wolf shrinkage on 7×7 residual covariance
-    └─ CLV tracker → vs Pinnacle close
-    │
-    ▼
-Decision Engine (decision_engine.py)
-    ├─ Gate chain (projection_sane, min_edge, three_book_consensus)
-    ├─ Per-quarter EV emit floor (calibrated 0.01 → 0.12 on 2026-05-27)
-    ├─ S/A/B/C tier classification by EV magnitude
-    └─ → shadow_logger.py (every eval recorded incl. blocked, with gate_blocked_by)
-    │
-    ▼
-Settlement (settlement_engine.py)
-    └─ Joins shadow log to cdn.nba.com final boxscore nightly
-       → realized W/L/P + ROI per bet
-    │
-    ▼
-FastAPI (api/main.py + api/live_v2_app.py)
-    └─ ~99 endpoints across 12 routers (props, live win-prob, devig/EV, CLV,
-       lines/scan, arbs/SSE, parlays, risk/kill-switch, dashboard, shadow audit)
-```
+
+---
+
+## Module Ownership
+
+| Concern | Owner module |
+|---------|-------------|
+| Pipeline orchestration | `src/pipeline/unified_pipeline.py` |
+| Player tracking | `src/tracking/advanced_tracker.py` — `AdvancedFeetDetector` |
+| Ball tracking | `src/tracking/ball_detect_track.py` — `BallDetectTrack` |
+| Team color re-ID | `src/tracking/color_reid.py` — `TeamColorTracker` |
+| Deep re-ID (OSNet) | `src/tracking/osnet_reid.py` — `DeepAppearanceExtractor` |
+| Court homography | `src/tracking/court_detector.py` + `unified_pipeline._build_court()` |
+| Scoreboard OCR | `src/tracking/scoreboard_ocr.py` — `ScoreboardOCR` |
+| Jersey OCR | `src/tracking/jersey_ocr.py` |
+| Feature engineering | `src/features/feature_engineering.py` |
+| Prop models | `src/prediction/player_props.py` + `prop_model_stack.py` |
+| Win probability | `src/prediction/win_probability.py` |
+| In-play engine | `src/prediction/live_engine.py` — `project_from_snapshot()` |
+| Conformal intervals | `src/prediction/conformal_props.py` — `ConformalPredictor` |
+| De-vig | `src/prediction/devig.py` (Shin bisection solver) |
+| Kelly sizing + CLV | `src/prediction/betting_portfolio.py` |
+| Decision engine | `src/prediction/decision_engine.py` |
+| Shadow logging | `src/prediction/shadow_logger.py` |
+| Settlement | `src/prediction/settlement_engine.py` |
+| Loop orchestration | `src/loop/orchestrator.py` — `Orchestrator` |
+| Ship gate | `src/loop/gate.py` — `gate.evaluate()` |
+| API serving | `api/main.py` (12 routers included here) |
+| Possession MC | `src/prediction/possession_simulator.py` |
+| Walk-forward harness | `src/prediction/walk_forward_backtester.py` |
 
 ---
 
 ## Integration Points
 
-| System | Where it connects | Current state |
-|--------|------------------|---------------|
-| NBA API | `src/data/nba_api_collector.py` | ✅ 569 gamelogs, 221K shots, 3.6K PBP |
-| The Odds API | `src/data/odds_collector.py` | ✅ Live lines 6 books |
-| Pinnacle (CLV) | `src/prediction/betting_portfolio.py` | 🟡 Scaffolded, Gate 1 pending |
-| Injury feeds | `src/data/injury_collector.py` | ✅ ESPN + NBA official |
-| RunPod (CV compute) | `scripts/launch_multigpu.sh` | ✅ Operational |
-| B2 storage | `scripts/sync_remote.py` | ✅ Syncing |
-| PostgreSQL | `database/schema.sql` | 🟡 Schema ready, migration pending |
-
----
-
-## Module Ownership Map
-
-| Concern | Owner file |
-|---------|-----------|
-| Pipeline orchestration | `src/pipeline/unified_pipeline.py` |
-| Player tracking | `src/tracking/advanced_tracker.py` |
-| Ball tracking | `src/tracking/ball_detect_track.py` |
-| Team color re-ID | `src/tracking/color_reid.py` |
-| Identity re-ID (deep) | `src/tracking/osnet_reid.py` |
-| Feature engineering | `src/features/feature_engineering.py` |
-| Prop models | `src/prediction/player_props.py` |
-| Win probability | `src/prediction/win_probability.py` |
-| Kelly + CLV | `src/prediction/betting_portfolio.py` |
-| Devig | `src/prediction/devig.py` |
-| Backtesting | `src/prediction/prop_backtester.py` |
-| Risk guards | `src/prediction/risk_guards.py` |
-| API serving | `api/main.py` |
-| Ingest queue | `src/ingest/` |
-| Batch runner | `scripts/batch_season.py` |
-| Live engine + residual heads | `src/prediction/live_engine.py`, `residual_heads.py`, `multitask_residual_head.py` |
-| Live quantile bands | `src/prediction/live_quantile_bands.py` |
-| Minute trajectory (Q4) | `src/prediction/minute_trajectory.py` |
-| Daily ops chain | `scripts/daily_run.py`, `predict_player.py`, `predict_slate.py`, `compare_to_lines.py` |
-| Live data feeds | `scripts/fetch_live_prop_lines.py`, `fetch_dk_props.py`, `update_inactives.py` |
-| Health check | `scripts/health_check.py` |
+| System | Module | State |
+|--------|--------|-------|
+| NBA Stats API | `src/data/nba_api_collector.py` | Live (569 gamelogs, 221K shots) |
+| The Odds API | `src/data/odds_collector.py` | Live (6 books) |
+| Pinnacle CLV | `src/prediction/betting_portfolio.py` | Scaffolded — historical archive starts Oct 2026 |
+| Injury feeds | `src/data/injury_collector.py` | Live (ESPN + NBA official) |
+| RunPod GPU | `scripts/launch_multigpu.sh` | Operational |
+| B2 object storage | `scripts/sync_remote.py` | Active |
+| PostgreSQL | `database/schema.sql` | Schema ready, migration pending |
+| Sentry | `api/main.py` | Wired (SENTRY_DSN env var) |
+| WebSocket feeds | `scripts/draftkings_ws.py`, `fanduel_ws.py`, `betrivers_ws.py` | Gated (DK_WS_ENABLED=1) |
 
 ---
 
 ## Key Invariants
 
-- `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100 — causes OOM crashes)
-- Panorama SIFT ratio: 3-10 (not default 2.0 — broadcast frames break at default)
-- OMP thread cap: set before any YOLO call (`OMP_NUM_THREADS=4`)
-- Never run: `run.py`, `loop_processor.py`
-- Video: always headless (`--no-show`), never `cv2.imshow`
-- PostgreSQL and CV clusters are isolated — never mix in same process
+These constraints are load-bearing. Violating them causes silent failures or OOM crashes.
+
+- `_VRAM_FLUSH_INTERVAL` in `unified_pipeline.py` must be **3000** (not 100)
+- Panorama SIFT ratio: **3–10** (broadcast frames fail at the default 2.0)
+- `OMP_NUM_THREADS=4` must be set before any YOLO call
+- Never run `run.py` or `loop_processor.py`
+- Video processing: always headless (`--no-show`), never `cv2.imshow`
+- PostgreSQL and CV clusters run in isolated processes — never mix
 
 ---
 
-*Related: [VISION.md](VISION.md) · [ROADMAP.md](ROADMAP.md) · [docs/architecture/system-overview.md](docs/architecture/system-overview.md) · [docs/CLAUDE-state.md](docs/CLAUDE-state.md) · [CHANGELOG.md](CHANGELOG.md)*
+*Related: [`README.md`](README.md) · [`docs/CV_TRACKING.md`](docs/CV_TRACKING.md) · [`docs/ML_MODELS.md`](docs/ML_MODELS.md) · [`docs/API.md`](docs/API.md) · [`docs/JOB_EVIDENCE_PACKET.md`](docs/JOB_EVIDENCE_PACKET.md)*
 
----
-*Last verified: 2026-06-08 — reframed around the funnel; retracted +18.38% / endQ3-0.119 claims corrected to the audited honest versions (see [docs/JOB_EVIDENCE_PACKET.md](docs/JOB_EVIDENCE_PACKET.md)).*
+*Last verified: 2026-06-11*
