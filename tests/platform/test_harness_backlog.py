@@ -26,12 +26,15 @@ def state_with_done(done_ids, waves=0):
 
 
 # ---------------------------------------------------------------------------
-# 1. parse() returns exactly 75 tasks and 0 hard errors.
+# 1. parse() returns the full task set with 0 hard errors.
+#    The backlog GROWS as the autonomous loop decomposes phases (75 at H0,
+#    +8 P0-H gate-hardening, more later), so assert a FLOOR + no parse errors
+#    rather than a magic exact count that breaks the gate on every addition.
 # ---------------------------------------------------------------------------
 
 def test_parse_count_and_no_errors():
     tasks, errors = backlog.parse()
-    assert len(tasks) == 75, f"Expected 75 tasks, got {len(tasks)}"
+    assert len(tasks) >= 75, f"Expected >= 75 tasks (H0 baseline), got {len(tasks)}"
     assert errors == [], f"Expected 0 hard errors, got: {errors}"
 
 
