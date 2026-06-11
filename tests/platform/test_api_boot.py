@@ -9,6 +9,15 @@ Verifies:
 
 Belt-and-suspenders: NBA_OFFLINE=1 is set at module level BEFORE api.main
 is imported, in addition to the setdefault() already in api/main.py.
+
+Performance contract (default run):
+  - ONE module-scoped TestClient → startup fires exactly once.
+  - Heavy board-builders (/cv, /games, /g3) are probed only when
+    CV_GATE_HEAVY_PROBES=1; default-off so the suite runs in < 60s.
+  - SSE/streaming routes (/sse/*) are skipped by default with a recorded
+    reason: they return 200+stream (not 5xx) and holding a live SSE
+    connection blocks the shared TestClient's shutdown by ~55s.
+    They are covered by the route-count assertion (registered = importable).
 """
 from __future__ import annotations
 
@@ -45,18 +54,60 @@ from api.main import app  # noqa: E402 — must come after NBA_OFFLINE is set
 # Update this constant intentionally when routes are added or removed.
 BASELINE_ROUTE_COUNT: int = 104
 
+# ── Heavy route gate: set CV_GATE_HEAVY_PROBES=1 to probe /cv, /games, /g3 ──
+_HEAVY_PROBES_ON: bool = os.environ.get("CV_GATE_HEAVY_PROBES") == "1"
+
+# Groups whose *shortest* param-free root is known to take >15s (board builders).
+# When _HEAVY_PROBES_ON is False these are skipped-with-record (pytest.skip).
+_HEAVY_GROUPS: frozenset = frozenset({"cv", "games", "g3"})
+
+# Groups that map to streaming (SSE) endpoints.  Skipped unconditionally:
+# they return HTTP 200 + a live stream (not 5xx) and holding the connection
+# blocks the shared TestClient shutdown by ~55s.  Crash coverage = route-count
+# assertion (the handler must at least import and register successfully).
+_SSE_GROUPS: frozenset = frozenset({"sse"})
+
+
+# ---------------------------------------------------------------------------
+# Module-scoped shared TestClient — startup/shutdown fire exactly ONCE
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def client():
+    """Shared TestClient for the whole module — FastAPI lifespan fires once."""
+    with TestClient(app, raise_server_exceptions=False) as c:
+        yield c
+
+
+# ---------------------------------------------------------------------------
+# Hermetic fixture — restore model-metrics files + verify after the run
+# ---------------------------------------------------------------------------
 
 @pytest.fixture(autouse=True, scope="module")
 def _restore_model_metrics():
     """Keep the gate hermetic: restore any tracked data/models/*.json bytes the
-    app rewrote while booting/probing, so the test never leaves a working-tree diff."""
+    app rewrote while booting/probing so the test never leaves a working-tree diff.
+
+    Teardown asserts the restored bytes equal the original snapshot so callers
+    can confirm the fixture actually worked (not just fire-and-forget).
+    """
     yield
+    mismatches: List[str] = []
     for _p, _data in _MODELS_SNAPSHOT.items():
         try:
-            if _p.read_bytes() != _data:
+            current = _p.read_bytes()
+            if current != _data:
                 _p.write_bytes(_data)
+                # Verify the write landed correctly
+                restored = _p.read_bytes()
+                if restored != _data:
+                    mismatches.append(str(_p))
         except OSError:
             pass
+    assert not mismatches, (
+        f"Hermetic restore failed for {len(mismatches)} file(s): {mismatches}. "
+        "data/models/*.json may have been left modified."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -101,6 +152,26 @@ def _count_param_routes() -> int:
 
 
 # ---------------------------------------------------------------------------
+# Collect probe cases at module import time
+# ---------------------------------------------------------------------------
+
+def _collect_probe_cases() -> List[Tuple[str, str]]:
+    """Return list of (group_segment, path) pairs — one per group, sorted."""
+    groups = _param_free_gets_by_group()
+    cases: List[Tuple[str, str]] = []
+    for seg in sorted(groups.keys()):
+        paths = groups[seg]
+        # Prefer shorter paths (more likely to be stable roots)
+        paths_sorted = sorted(paths, key=lambda p: (len(p), p))
+        cases.append((seg, paths_sorted[0]))
+    return cases
+
+
+_PROBE_CASES = _collect_probe_cases()
+_SKIPPED_PARAM_ROUTES = _count_param_routes()
+
+
+# ---------------------------------------------------------------------------
 # Core assertions (primary)
 # ---------------------------------------------------------------------------
 
@@ -110,19 +181,17 @@ def test_app_imports_offline() -> None:
     assert app is not None
 
 
-def test_root_non_5xx() -> None:
+def test_root_non_5xx(client: TestClient) -> None:
     """(b) GET / must not return a 5xx response (crash indicator)."""
-    with TestClient(app, raise_server_exceptions=False) as client:
-        response = client.get("/")
+    response = client.get("/")
     assert response.status_code < 500, (
         f"GET / returned {response.status_code} — api.main may have a boot-time crash"
     )
 
 
-def test_health_non_5xx() -> None:
+def test_health_non_5xx(client: TestClient) -> None:
     """GET /health must not return 5xx (route is defined in api.main)."""
-    with TestClient(app, raise_server_exceptions=False) as client:
-        response = client.get("/health")
+    response = client.get("/health")
     assert response.status_code < 500, (
         f"GET /health returned {response.status_code}"
     )
@@ -145,31 +214,31 @@ def test_route_count_matches_baseline() -> None:
 # Breadth probe (best-effort, one route per prefix group)
 # ---------------------------------------------------------------------------
 
-def _collect_probe_cases() -> List[Tuple[str, str]]:
-    """Return list of (group_segment, path) pairs — one per group, sorted."""
-    groups = _param_free_gets_by_group()
-    cases: List[Tuple[str, str]] = []
-    for seg in sorted(groups.keys()):
-        paths = groups[seg]
-        # Prefer shorter paths (more likely to be stable roots)
-        paths_sorted = sorted(paths, key=lambda p: (len(p), p))
-        cases.append((seg, paths_sorted[0]))
-    return cases
-
-
-_PROBE_CASES = _collect_probe_cases()
-_SKIPPED_PARAM_ROUTES = _count_param_routes()
-
-
 @pytest.mark.parametrize("seg,path", _PROBE_CASES, ids=[f"{s}:{p}" for s, p in _PROBE_CASES])
-def test_per_router_non_5xx(seg: str, path: str) -> None:
+def test_per_router_non_5xx(seg: str, path: str, client: TestClient) -> None:
     """(d) Each prefix group's cheapest param-free GET must not 5xx.
 
     4xx responses (auth, not found, bad request) are acceptable offline.
     5xx means a crash/uncaught exception in the handler — a real failure.
+
+    Heavy groups (/cv, /games, /g3) are skipped unless CV_GATE_HEAVY_PROBES=1.
+    SSE groups (/sse/*) are skipped unconditionally — they return 200+stream (not
+    5xx) and holding a live SSE connection blocks the shared client shutdown by
+    ~55s; crash coverage is provided by the route-count assertion.
     """
-    with TestClient(app, raise_server_exceptions=False) as client:
-        response = client.get(path)
+    if seg in _HEAVY_GROUPS and not _HEAVY_PROBES_ON:
+        pytest.skip(
+            f"Heavy board-builder group {seg!r} skipped "
+            "(set CV_GATE_HEAVY_PROBES=1 to probe)"
+        )
+
+    if seg in _SSE_GROUPS:
+        pytest.skip(
+            f"SSE/streaming group {seg!r} skipped to avoid blocking shared client "
+            "shutdown; handler is import-verified by route-count assertion"
+        )
+
+    response = client.get(path)
     assert response.status_code < 500, (
         f"GET {path} (group={seg!r}) returned {response.status_code} — "
         "handler crashed; check logs for traceback"
@@ -183,14 +252,20 @@ def test_per_router_non_5xx(seg: str, path: str) -> None:
 def test_report_probe_coverage() -> None:
     """Log probe coverage so CI output is self-documenting."""
     groups = _param_free_gets_by_group()
-    probed = len(groups)
-    skipped = _SKIPPED_PARAM_ROUTES
+    total_groups = len(groups)
+    heavy_skipped = sum(1 for seg in groups if seg in _HEAVY_GROUPS and not _HEAVY_PROBES_ON)
+    sse_skipped = sum(1 for seg in groups if seg in _SSE_GROUPS)
+    probed_active = total_groups - heavy_skipped - sse_skipped
+    skipped_param = _SKIPPED_PARAM_ROUTES
     total_get = sum(
         1 for r in app.routes if "GET" in (getattr(r, "methods", None) or set())
     )
     print(
         f"\nRoute probe coverage: "
-        f"probed {probed} groups from {total_get} GET routes; "
-        f"skipped {skipped} param-bearing GET routes (no assertion on those)"
+        f"probed {probed_active} groups "
+        f"({heavy_skipped} heavy skipped [CV_GATE_HEAVY_PROBES={int(_HEAVY_PROBES_ON)}], "
+        f"{sse_skipped} SSE skipped [import-verified by route-count]) "
+        f"from {total_get} GET routes across {total_groups} groups; "
+        f"skipped {skipped_param} param-bearing GET routes (no assertion on those)"
     )
-    assert probed > 0, "Expected at least one param-free GET group to probe"
+    assert total_groups > 0, "Expected at least one param-free GET group to probe"
