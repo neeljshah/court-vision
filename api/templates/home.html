@@ -18,9 +18,9 @@
       <span style="font-size:13px;font-weight:600;color:var(--cv-accent)">Tonight</span>
       <span id="bannerText" style="font-size:13px;color:var(--cv-text);margin-left:6px">{{ soonest.away_team }} @ {{ soonest.home_team }} · {{ soonest.tipoff_display }}</span>
     </div>
-    <a href="/tonight?date={{ slate_date }}&game_id={{ soonest.game_id }}"
+    <a href="/cv?date={{ slate_date }}"
        style="padding:5px 14px;background:var(--cv-accent);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;flex-shrink:0">
-      See edges →
+      Open game →
     </a>
   </div>
 {% endif %}
@@ -141,7 +141,7 @@
 </div>
 <div class="game-grid" id="liveGrid">
   {% for g in live_games %}
-  <a href="/tonight?date={{ slate_date }}&game_id={{ g.game_id }}" class="game-card{% if g.status != 'final' %} live-card{% endif %}" data-gid="{{ g.game_id }}">
+  <a href="/cv?date={{ slate_date }}" class="game-card{% if g.status != 'final' %} live-card{% endif %}" data-gid="{{ g.game_id }}">
     <div class="gc-header">
       <div class="gc-matchup">{{ g.away_team }} @ {{ g.home_team }}</div>
       <div class="gc-badges">
@@ -184,7 +184,7 @@
 {% else %}
 <div class="game-grid" id="upcomingGrid">
   {% for g in upcoming_games %}
-  <a href="/tonight?date={{ slate_date }}&game_id={{ g.game_id }}" class="game-card" data-gid="{{ g.game_id }}">
+  <a href="/cv?date={{ slate_date }}" class="game-card" data-gid="{{ g.game_id }}">
     <div class="gc-header">
       <div class="gc-matchup">{{ g.away_team }} @ {{ g.home_team }}</div>
       <div class="gc-badges">

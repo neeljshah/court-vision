@@ -60,6 +60,19 @@
       /* "Why this bet?" button — bump to tap-friendly height */
       .bet-card .mt-3.md\\:hidden button{min-height:36px;padding:6px 10px;width:100%;justify-content:flex-start;}
     }
+    /* ── tablet patch (481–768px) ─────────────────────────────────────── */
+    @media(max-width:768px){
+      /* Touch targets on nav links */
+      .cv-nav-link{min-height:36px;display:inline-flex;align-items:center;}
+      /* Slightly larger base font for readability on mid-range screens */
+      body{font-size:14px;}
+      /* Tighten card padding at tablet width */
+      .cv-card{border-radius:10px;}
+      /* Tier header: allow wrapping at tablet width */
+      .tier-hdr{flex-wrap:wrap!important;row-gap:4px!important;}
+      /* Bet card 3-col stat grid: tighten gap */
+      .bet-card .grid.grid-cols-3{gap:4px!important;}
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -68,8 +81,6 @@
       <a href="/" class="font-semibold tracking-tight flex-shrink-0" style="color:var(--cv-accent)">CourtVision</a>
       <nav class="flex items-center gap-1 text-xs font-medium overflow-x-auto flex-1 min-w-0" style="scrollbar-width:none;">
         <a href="/"        class="cv-nav-link {% block nav_games %}{% endblock %}">Tonight</a>
-        <a href="/parlays" class="cv-nav-link {% block nav_parlays %}{% endblock %}">Parlays</a>
-        <a href="/results" class="cv-nav-link {% block nav_results %}{% endblock %}">Results</a>
         <a href="/help"    class="cv-nav-link {% block nav_help %}{% endblock %}">Help</a>
       </nav>
       <span class="text-xs flex-shrink-0" style="color:var(--cv-muted)">{% block subtitle %}{% endblock %}</span>

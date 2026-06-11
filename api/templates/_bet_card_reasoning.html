@@ -26,13 +26,21 @@
     {% set _gap_pp = (bet.model_prob - bet.market_prob) * 100.0 %}
     <p class="mt-2 text-sm" style="color:var(--cv-text)">
       Model hits this <b>{{ '%.0f'|format(bet.model_prob * 100) }}%</b> of the time vs market-implied <b>{{ '%.0f'|format(bet.market_prob * 100) }}%</b> —
-      <b class="{% if _gap_pp > 0 %}num-pos{% elif _gap_pp < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(_gap_pp) }}pp</b> edge over the de-vig price.
+      <b class="{% if _gap_pp > 0 %}num-pos{% elif _gap_pp < 0 %}num-neg{% else %}num-zero{% endif %}">{{ '%+.1f'|format(_gap_pp) }}pp</b>
+      {% if is_playoff %}model–market gap (paper only · no proven playoff edge).{% else %}edge over the de-vig price.{% endif %}
     </p>
   {% endif %}
 
   {# ── LLM narrative (Haiku) — gives the qualitative read ── #}
   {% if bet.narrative_text %}
-    <p class="mt-2 text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+    {% if is_playoff %}
+      <p class="mt-2 text-sm" style="color:var(--cv-muted);font-style:italic">
+        Model PROJECTION — for entertainment, not betting advice. No edge claimed. Playoffs have no proven edge. Zero real money.<br>
+        <span style="color:var(--cv-text)">{{ bet.narrative_text }}</span>
+      </p>
+    {% else %}
+      <p class="mt-2 text-sm" style="color:var(--cv-text)">{{ bet.narrative_text }}</p>
+    {% endif %}
   {% endif %}
 
   {# ── Top model features driving the projection ── #}

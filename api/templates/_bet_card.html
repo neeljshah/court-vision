@@ -50,7 +50,12 @@
       <span class="text-[10px] md:text-xs px-2 py-1 rounded {% if bet.side == 'OVER' %}badge-over{% else %}badge-under{% endif %}">
         {{ bet.side }}
       </span>
-      {% if bet.ev_pct is not none %}
+      {% if bet.grade is defined and bet.grade %}
+        {% set _gc = '#22c55e' if bet.grade == 'A' else ('#60a5fa' if bet.grade == 'B' else '#94a3b8') %}
+        <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-mono"
+              style="background:#0a0f1e;border:1px solid {{ _gc }};color:{{ _gc }}"
+              title="{{ bet.grade_note|default('') }}{% if bet.model_prob is not none %} — calibrated p={{ '%.3f'|format(bet.model_prob) }}{% endif %}">{{ bet.grade }}</span>
+      {% elif bet.ev_pct is not none %}
         {% set tier = 'S' if bet.ev_pct >= 15 else ('A' if bet.ev_pct >= 8 else ('B' if bet.ev_pct >= 3 else 'C')) %}
         {% set tier_color = '#fbbf24' if tier == 'S' else ('#22c55e' if tier == 'A' else ('#94a3b8' if tier == 'B' else '#475569')) %}
         <span class="text-[9px] md:text-[10px] px-1.5 py-0.5 rounded font-mono"
@@ -145,6 +150,17 @@
     <div class="mt-1 text-[10px] font-mono bet-kelly-line"
          title="Kelly-sized stake at the best posted price given model edge and bankroll. Size down in live mode if the line has moved.">
       Kelly stake: <b class="bet-kelly-value" style="color:var(--cv-accent)">${{ '%.0f'|format(_kelly) }}</b>
+    </div>
+  {% endif %}
+
+  {# ── Book deep link (only when present on bet dict) ─────────────────── #}
+  {% set _deeplink = bet.deeplink if (bet.deeplink is defined and bet.deeplink) else (bet.book_url if (bet.book_url is defined and bet.book_url) else none) %}
+  {% if _deeplink %}
+    <div class="mt-1 text-[10px] bet-deeplink">
+      <a href="{{ _deeplink }}" target="_blank" rel="noopener noreferrer"
+         style="color:var(--cv-accent);text-decoration:underline;font-weight:600">
+        Bet at {{ bet.best_book }}
+      </a>
     </div>
   {% endif %}
 

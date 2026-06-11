@@ -46,7 +46,6 @@ data/models/
 !data/models/matchup_model_meta.json
 !data/models/dnp_model_meta.json
 !data/models/probe_defender_feature.json
-!data/models/bet_log.json
 !data/models/load_management.json
 
 # -- NBA API data (fetched by ingest pipeline, not committed) -----------------
@@ -332,3 +331,104 @@ scripts/**/_*
 #    only 5 of ~243 _audits docs were ever published; the rest are internal brain,
 #    like vault/ and .planning/). Already-tracked audits stay tracked.
 docs/_audits/
+
+# =============================================================================
+# 2026-06-11 EDGE QUARANTINE — keep betting/edge artifacts OFF the public repo.
+#   Load-bearing rule: betting-edge content stays PRIVATE (it lives in
+#   court-vision-private). These are NEW, not-yet-public files; ignoring them
+#   here stops both a manual `git add -A` AND the autonomous loop/bot from
+#   ever publishing them. (Already-tracked betting files are a prior decision
+#   and are unaffected — gitignore does not untrack.)
+# =============================================================================
+# -- edge-mining / pregame-edge / vs-vegas analyses (broad catch-alls) ---------
+data/cache/*edge*.json
+data/cache/*_edge_*.json
+data/cache/*pregame_edge*
+data/cache/playoff_pregame_edge.json
+data/cache/playoff_ast_mechanism.json
+data/cache/playoff_sigma_mult_interaction.json
+data/cache/edge_mining_classifier.json
+data/cache/edge_mining_grid.json
+data/cache/ast_edge_maximize.json
+data/cache/intel_generated_edge_hunt.json
+data/cache/reconcile_edge_source.json
+data/cache/gate1_full_analysis.json
+data/cache/gate1_filtered_vs_vegas.json
+data/cache/gate1_*.json
+data/cache/stake_sizing_curves.json
+data/cache/stake_sizing*.json
+data/cache/*vegas*.json
+data/cache/winprob_sbr_archive_backtest.json
+data/cache/opener_close_results.csv
+data/cache/opener_freshness_pts_reb.csv
+data/cache/strategy_d_decompose.json
+data/cache/fullsend_pregame_validation.json
+# -- vs-Vegas / live-betting runbooks (internal) -------------------------------
+docs/VS_VEGAS_ASSESSMENT.md
+docs/VS_VEGAS_*.md
+docs/RUNBOOK_TONIGHT.md
+docs/LIVE_ENGINE_V2_dashboard_snapshot.txt
+docs/CV_SELLABILITY_SCORECARD.md
+# -- new betting/edge code surface (keep private until explicitly curated) ------
+src/prediction/bet_grades.py
+scripts/team_system/llm_signal_proposer.py
+scripts/team_system/gate_def_supp.py
+# -- planning/platform master plan (internal strategy — never public) ----------
+.planning/platform/
+# -- internal maintainer / strategy docs (name the private repo; private-only) --
+START_HERE.md
+RESTORE.md
+
+# =============================================================================
+# 2026-06-11 SHOWCASE-PUSH HYGIENE — scratch + betting-output dumps stay LOCAL.
+#   Keep the public repo clean (code + docs only); never publish run-time output,
+#   betting slates/settlements, or root scratch.
+# =============================================================================
+# -- root scratch dumps (slates, live/board snapshots, page captures, logs) -----
+/slate*.json
+/cvboard_tmp.json
+/cvlive.json
+/cvlive_tmp.json
+/cvpage_tmp.html
+/logs_*.txt
+/screenshot_*.png
+# -- betting-output / run-time cache artifacts (selections, settlements, steam) --
+data/cache/settled_bets.json
+data/cache/sim_replay_*.json
+data/cache/e2e_smoke_*.json
+data/cache/steam_*.json
+data/cache/steam_*.jsonl
+data/cache/staleness_alerts.jsonl
+data/cache/scraper_errors.jsonl
+data/cache/arb_emitted_keys.json
+data/cache/auto_settle_seen.json
+data/cache/ngrok_url.txt
+data/cache/phx_scout_tmp.txt
+data/cache/refresh_*_gamelogs_*.json
+data/cache/int69_eval_results.json
+data/cache/intel_generated_edge_hunt.json
+data/cache/prediction_calibration_audit.json
+data/cache/reconcile_edge_source.json
+data/cache/strategy_d_decompose.json
+data/cache/winprob_sbr_archive_backtest.json
+data/cache/opener_close_results.csv
+data/cache/opener_freshness_pts_reb.csv
+# -- data artifacts / run-time caches (regenerable; public repo stays code+docs) ---
+data/cache/ingame/
+data/cache/loop/
+data/cache/loop_store/
+data/cache/playerlogs/
+data/cache/profiles/
+data/cache/probe_*.json
+data/cache/scraper_baselines.json
+data/cache/validation_harness_winprob.json
+data/cache/*.csv
+data/officials/
+data/parlays/
+# -- already-public betting DATA: stop publishing it (untracked; code+docs only) ---
+data/models/bet_log.json
+data/cache/gate1_clv_pinnacle_results.json
+# -- test for a gitignored edge module + internal root inventories -----------------
+tests/test_bet_grades.py
+/INGAME_INFRASTRUCTURE_INVENTORY.md
+/INGAME_QUICK_REFERENCE.md

@@ -191,7 +191,16 @@ _EXCLUDED_BOOK_SUFFIXES = ("_mainline", "_wnba_synthetic", "_inplay")
 # trust). Bovada posts late and stays wide vs sharp books.
 # mgm/caesars/fanatics dropped 2026-05-30: no live scraper (were odds-api only),
 # so their CSVs go stale — excluded "for now" until a direct scraper feeds them.
-_EXCLUDED_BOOKS = {"bov", "mgm", "caesars", "fanatics"}
+# fd (FanDuel) dropped 2026-06-10: the live-reachable FD endpoint
+# (sbapi.nj…/content-managed-page?customPageId=nba) only publishes ONE-SIDED
+# "X+" threshold/milestone markets (TO_SCORE_25+_POINTS etc.) — there is NO Under
+# side in the response, so under_price is always empty and consolidate_for_slate
+# defaults it to a phantom −110. That is a fake two-sided quote at a threshold
+# line that doesn't match the consensus mainline, so FanDuel is removed from the
+# two-sided consolidator entirely rather than shown as −110-for-everything. DK and
+# Pinnacle supply genuine two-sided prices. Re-enable ONLY if a real FD O/U feed
+# (paired Over/Under runners at a single mainline) is wired up.
+_EXCLUDED_BOOKS = {"bov", "mgm", "caesars", "fanatics", "fd"}
 
 
 def _book_csv_paths(date: str) -> list[Path]:
@@ -344,15 +353,16 @@ def _et_date_of_start_time(iso_ts: str) -> str:
         except Exception:
             _ET = None
         norm = iso_ts.replace("Z", "+00:00")
-        # ── CV_DK_FRACSEC_FIX (default OFF = byte-identical) ──
+        # ── CV_DK_FRACSEC_FIX (default ON; set =0 to disable) ──
         # DraftKings start_times carry 7 fractional-second digits
         # ('...:00.0000000Z') which datetime.fromisoformat() rejects in
-        # py3.10, so the parse fails and we fall back to the raw UTC prefix
-        # (iso_ts[:10]) — mis-bucketing DK night games to the next ET day.
-        # When ON, truncate fractional seconds to <=6 digits (microseconds);
-        # harmless for 0/3/6-digit inputs.
+        # py<3.11, so the parse fails and we fall back to the raw UTC prefix
+        # (iso_ts[:10]) — mis-bucketing DK night games to the next ET day
+        # (8:30 PM ET tip stored as next-day UTC). Truncate fractional
+        # seconds to <=6 digits (microseconds); harmless for 0/3/6-digit
+        # inputs. Overridable: CV_DK_FRACSEC_FIX=0 restores the old behavior.
         import os as _os
-        if _os.environ.get("CV_DK_FRACSEC_FIX") == "1":
+        if _os.environ.get("CV_DK_FRACSEC_FIX", "1") != "0":
             norm = re.sub(r"(\.\d{6})\d+", r"\1", norm)
         if "+" not in norm[10:] and norm.count("-") < 3:
             norm += "+00:00"
@@ -388,6 +398,14 @@ def read_book_csv(path: Path, start_date: str | None = None) -> list[dict]:
             if line is None:
                 continue
             book = (r.get("book") or path.stem.split("_")[-1]).lower()
+            # Canonical-book exclusion (chokepoint). A book's rows carry book="fd"
+            # even inside companion files like <date>_fd_ws.csv whose FILENAME
+            # suffix ("fd_ws") slips past the _book_csv_paths name filter — so we
+            # also drop excluded books HERE, by the row's own canonical book key.
+            # (FanDuel is excluded: threshold-only, one-sided, no real Under.)
+            if (book in _EXCLUDED_BOOKS
+                    or (book.endswith("_ws") and book[:-3] in _EXCLUDED_BOOKS)):
+                continue
             player = (r.get("player_name") or "").strip()
             if not player:
                 continue
@@ -618,6 +636,10 @@ def consolidate(date: str) -> list[dict]:
     grouped: dict[tuple, dict] = {}
     # book_latest[(prop_key, canonical_book)] = (captured_at, book_entry_dict)
     book_latest: dict[tuple, tuple] = {}
+    # Graceful-stale-fallback holding pen: freshest age-capped quote per
+    # (prop_key, book). Only consulted when the age cap empties the ENTIRE
+    # date — never mixed with fresh quotes.
+    stale_latest: dict[tuple, tuple] = {}
 
     for path in _book_csv_paths_window(date):
         for row in read_book_csv(path, start_date=date):
@@ -658,8 +680,15 @@ def consolidate(date: str) -> list[dict]:
             # The 7-day lookback window can surface prices captured 24-30 h ago;
             # dropping them here prevents stale quotes reaching best_price/EV.
             # Unparseable captured_at timestamps are kept (safe fallback).
+            # Stale quotes are parked in stale_latest (freshest-wins) so the
+            # graceful fallback below can resurrect them — tagged lines_stale —
+            # when the cap would otherwise empty a date that HAD raw rows.
             _cap_ts = _parse_ts(entry["captured_at"])
+            bl_key = (prop_key, row["book"])
             if _cap_ts is not None and (time.time() - _cap_ts) > _MAX_PREGAME_QUOTE_AGE_SEC:
+                sp = stale_latest.get(bl_key)
+                if sp is None or entry["captured_at"] >= sp[0]:
+                    stale_latest[bl_key] = (entry["captured_at"], entry, prop_key)
                 continue
             # Cross-file freshest-wins: only keep the freshest captured_at per
             # (prop_key, canonical_book).  This deduplicates HTTP vs WS files
@@ -671,7 +700,6 @@ def consolidate(date: str) -> list[dict]:
             # so when the fresher WS row displaces an older HTTP row that carried
             # non-empty selection IDs, we inherit those IDs into the winner and
             # recompute the deeplink URLs so addToBetslip deep links are kept.
-            bl_key = (prop_key, row["book"])
             prior = book_latest.get(bl_key)
             if prior is None or entry["captured_at"] >= prior[0]:
                 if prior is not None:
@@ -703,6 +731,18 @@ def consolidate(date: str) -> list[dict]:
                         entry["deeplink_under_app"] = _dl_under2["app_url"] or ""
                 book_latest[bl_key] = (entry["captured_at"], entry, prop_key)
 
+    # ── Graceful stale fallback ───────────────────────────────────────────
+    # If the age cap emptied a date that HAD raw rows (e.g. 34-38h-old Finals
+    # lines, scraper not re-run on game day), re-include the freshest stale
+    # quote per (player, stat, line, book) rather than returning an empty
+    # slate. Every prop is tagged lines_stale=True and captured_at is kept
+    # untouched so freshest_book_age_min drives the existing "lines stale"
+    # pill downstream. Never fires when ANY fresh quote survived the cap.
+    lines_stale = False
+    if not book_latest and stale_latest:
+        book_latest = stale_latest
+        lines_stale = True
+
     # Flatten the freshest-per-book entries back onto each prop's books list.
     for (_prop_key, _book), (_cap, _entry, _pk) in book_latest.items():
         grouped[_pk]["books"].append(_entry)
@@ -711,6 +751,8 @@ def consolidate(date: str) -> list[dict]:
     for prop in out:
         prop["n_books"] = len(prop["books"])
         prop["books"].sort(key=lambda b: b["book"])
+        if lines_stale:
+            prop["lines_stale"] = True
     out.sort(key=lambda p: (p["player"], p["stat"], p["line"]))
     _CACHE[date] = (time.time(), out)
     return out
@@ -730,6 +772,9 @@ def consolidate_for_slate(date: str) -> list[dict]:
             "player": prop["player"], "stat": prop["stat"], "line": prop["line"],
             "opp": "", "venue": "",  # not in scrape CSVs; courtvision_data falls back
             "game_id": prop.get("game_id") or "",
+            # True when the stale-fallback served age-capped quotes; consumers
+            # must quarantine (stale pill, EV labeled indicative, paper only).
+            "lines_stale": bool(prop.get("lines_stale")),
             "books": [{
                 "book": _BOOK_DISPLAY.get(b["book"], b["book"]),
                 "over_odds": b["over_price"] if b["over_price"] is not None else -110,
@@ -738,6 +783,65 @@ def consolidate_for_slate(date: str) -> list[dict]:
             } for b in prop["books"] if b["over_price"] or b["under_price"]],
         })
     return [p for p in out if p["books"]]
+
+
+# Books surfaced in the per-book quote picker (the /api/slate book_quotes
+# contract). Keyed by canonical book key -> frontend display name.
+# FanDuel removed 2026-06-10: its live feed is threshold-only (one-sided, no
+# Under) so it cannot produce a real two-sided per-book quote — see the
+# _EXCLUDED_BOOKS note above. Only DK + Pinnacle expose genuine O/U prices.
+_QUOTE_BOOKS: dict[str, str] = {
+    "dk": "DraftKings", "pin": "Pinnacle",
+}
+
+
+def book_quotes_by_player_stat(date: str) -> dict[tuple, dict]:
+    """Return the FRESHEST quote from each DK/FD/Pin book per (player, stat),
+    at THAT book's OWN line (lines may differ between books).
+
+    This powers the slate ``book_quotes`` contract — the DK/FD/Pin book picker
+    must work even when each book posts a DIFFERENT line than the consensus
+    mainline. consolidate() groups by (player, stat, LINE), so a book quoting
+    23.5 when the mainline is 24.5 is invisible to a per-line join; here we
+    collapse ACROSS lines and keep, per book, the freshest captured_at quote
+    (with its own line + over/under American odds).
+
+    Returns::
+        {(player_deaccent_lower, stat_lower): {
+            "DraftKings": {"line": 24.5, "over": -115, "under": -105,
+                           "captured_at": "..."},
+            "FanDuel":    {...},
+            "Pinnacle":   {...},
+        }}
+
+    Books with no quote for a (player, stat) are simply absent. Reuses the
+    30s-cached consolidate() so this adds no extra CSV I/O on a warm cache.
+    """
+    out: dict[tuple, dict] = {}
+    for prop in consolidate(date):
+        key = (_strip_accents(prop["player"]).lower(), prop["stat"])
+        per_book = out.setdefault(key, {})
+        line = prop["line"]
+        for b in prop["books"]:
+            disp = _QUOTE_BOOKS.get(b["book"])
+            if disp is None:
+                continue  # only DK/FD/Pin in the picker contract
+            over = b.get("over_price")
+            under = b.get("under_price")
+            if over is None and under is None:
+                continue
+            cap = b.get("captured_at") or ""
+            prev = per_book.get(disp)
+            # Freshest-wins across lines for this book.
+            if prev is not None and (prev.get("captured_at") or "") >= cap:
+                continue
+            per_book[disp] = {
+                "line": line,
+                "over": over,
+                "under": under,
+                "captured_at": cap,
+            }
+    return out
 
 
 def summary(date: str) -> dict:
@@ -822,6 +926,61 @@ def games_index(date: str) -> list[dict]:
     for k in merged_keys:
         by_matchup.pop(k, None)
 
+    # ── second pass: merge remaining UNRESOLVED groups with each other ───
+    # When games_lookup is stale for the whole slate there are ZERO resolved
+    # groups and the fold above is a no-op -> one card per book event id.
+    # Player-set overlap is the discriminator (NOT start-minute alone:
+    # regular-season slates share tip minutes). Canonical id = a resolved
+    # 004... id when any member alias resolves (re-key to the resolved
+    # matchup), else the sorted-first id via the ids[0] pick below.
+    unresolved_keys = [k for k in by_matchup if not (k[1] or "")]
+    absorbed: set = set()
+    for i, ka in enumerate(unresolved_keys):
+        if ka in absorbed:
+            continue
+        a = by_matchup.get(ka)
+        if not a:
+            continue
+        for kb in unresolved_keys[i + 1:]:
+            if kb in absorbed:
+                continue
+            b = by_matchup.get(kb)
+            if not b:
+                continue
+            pa = a.get("players") or set()
+            pb = b.get("players") or set()
+            if not pa or not pb:
+                continue
+            shared = len(pa & pb)
+            union = len(pa | pb)
+            if shared >= 3 or (union and shared / union >= 0.3):
+                a["n_props"] += b.get("n_props", 0)
+                a["players"] |= pb
+                a["game_ids"] |= b.get("game_ids", set())
+                if not a.get("start_time"):
+                    a["start_time"] = b.get("start_time") or ""
+                absorbed.add(kb)
+        # If any member id resolves in the lookup, adopt the resolved key so
+        # the card gets real abbrs (and folds into the resolved group if one
+        # already exists for that matchup).
+        info = next((aliases[g] for g in sorted(a.get("game_ids") or ())
+                     if g in aliases and aliases[g].get("home_abbr")), None)
+        if info:
+            rk = (info["away_abbr"], info["home_abbr"], info["start_date"])
+            if rk != ka:
+                tgt = by_matchup.get(rk)
+                if tgt is not None:
+                    tgt["n_props"] += a.get("n_props", 0)
+                    tgt["players"] |= a.get("players") or set()
+                    tgt["game_ids"] |= a.get("game_ids") or set()
+                    if not tgt.get("start_time"):
+                        tgt["start_time"] = a.get("start_time") or ""
+                else:
+                    by_matchup[rk] = a
+                absorbed.add(ka)
+    for k in absorbed:
+        by_matchup.pop(k, None)
+
     out = []
     for (away, home, _), g in by_matchup.items():
         ids = sorted(g["game_ids"])
@@ -879,6 +1038,8 @@ def odds_envelope(date: str) -> dict:
     return {
         "date": date,
         "generated_at": _normalize_ts(datetime.now(timezone.utc).isoformat()),
+        # True when the graceful stale fallback served age-capped quotes.
+        "lines_stale": any(p.get("lines_stale") for p in props),
         "n_props": len(props),
         "n_books": len(books_seen),
         "books": [{"id": b, "display": _BOOK_DISPLAY.get(b, b),

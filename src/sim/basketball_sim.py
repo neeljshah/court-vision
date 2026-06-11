@@ -50,6 +50,26 @@ REF_PERIM_D = 65.0
 RIM_ANCHOR_SLOPE = 0.0070    # anchor: a player's rim-share scoring dragged per opp team rim-D pt > REF
 PERIM_ANCHOR_SLOPE = 0.0040  # anchor: perimeter-share scoring dragged per opp team perimeter-D pt > REF
 
+# ── DEFENDER-SUPPRESSION L1 LEVER (P1.3, CV_AGENT_DEF_SUPP — the ONE cross-season-stable r=0.60 fidelity
+# lever). `supp` (data/cache/team_system/defender_suppression.parquet) is the per-defender opponent-PPP delta
+# (negative = suppresses the opponent). When CV_AGENT_DEF_SUPP is set, the on-court defenders' MEAN supp scales
+# the make probability: base_x *= clip(1 + DEF_SUPP_SLOPE*supp_oc, LO, HI). Default-OFF => the supp data is never
+# loaded and base_x is untouched => byte-identical (CPU + GPU). SHIPS only if it clears the sim walk-forward gate
+# (scripts/team_system/gate_def_supp.py): improves on FIT (NYK/SAS) AND the CLE/DAL/BOS holdout, seed-stable, n_min.
+DEF_SUPP_SLOPE = 1.0         # supp is already an opp-PPP delta; 1.0 = apply it directly (the gate sweeps this)
+DEF_SUPP_LO, DEF_SUPP_HI = 0.85, 1.10   # clamp on the make-prob multiplier (symmetric-ish guardrail)
+_TRUTHY_ENV = frozenset({"1", "true", "yes", "on", "y", "t"})
+
+
+def _def_supp_on() -> bool:
+    """True iff the CV_AGENT_DEF_SUPP lever flag is set (matches src.brain.flags.is_on semantics)."""
+    return os.environ.get("CV_AGENT_DEF_SUPP", "").strip().lower() in _TRUTHY_ENV
+
+
+def _scheme_on() -> bool:
+    """True iff the CV_LLM_SCHEME prior layer flag is set (matches src.brain.flags.is_on semantics)."""
+    return os.environ.get("CV_LLM_SCHEME", "").strip().lower() in _TRUTHY_ENV
+
 
 @dataclass
 class TeamModel:
@@ -108,6 +128,13 @@ class TeamModel:
             if pid in pbp["self_create"]:
                 rate[pid]["self_create"] = pbp["self_create"][pid]  # real unassisted-make share
         anet = {p: {ap: n for ap, n in pbp["net"].get(p, {}).items() if ap in rate} for p in rate}
+        # DEFENDER-SUPPRESSION L1 lever (CV_AGENT_DEF_SUPP): attach per-defender supp ONLY when the flag is
+        # set. OFF (default) => no key added, no parquet I/O => from_cache is byte-identical (the agent
+        # byte-identity oracle and every existing sim test are untouched).
+        if _def_supp_on():
+            _supp = _defender_supp()
+            for pid in rate:
+                rate[pid]["supp"] = _supp.get(pid, 0.0)
         tr = team_rates[tri]
         # keep lineups whose 5 are all eligible rotation players
         elig = set(rate)
@@ -129,10 +156,24 @@ class TeamModel:
         rim_d = 0.5 * wmean_int + 0.5 * max(prot)   # rim identity = best protector + rotation depth
         perim_d = sum(rate[q]["perim_d"] * mins[q] for q in rate) / tot
         tdef = _team_defense().get(tri, {})
-        return cls(tri, rate, tr["pace"], tr["ast_rate_on_make"], tr["oreb_per_miss"], lus, p,
-                   def_rtg=tr.get("def_rtg", 113.3), ortg=tr.get("ortg", 113.3),
-                   tov_force=tdef.get("tov_force", 1.0), ft_force=tdef.get("ft_force", 1.0),
-                   rim_d=rim_d, perim_d=perim_d, assist_net=anet)
+        model = cls(tri, rate, tr["pace"], tr["ast_rate_on_make"], tr["oreb_per_miss"], lus, p,
+                    def_rtg=tr.get("def_rtg", 113.3), ortg=tr.get("ortg", 113.3),
+                    tov_force=tdef.get("tov_force", 1.0), ft_force=tdef.get("ft_force", 1.0),
+                    rim_d=rim_d, perim_d=perim_d, assist_net=anet)
+        # LLM SCHEME-PRIOR layer (CV_LLM_SCHEME): apply bounded, named, confidence-weighted knob
+        # nudges from the scout's cached artifact ONLY when the flag is set. OFF (default) => no
+        # import, no I/O, no mutation => from_cache is byte-identical on CPU + GPU. Betting-mode
+        # (leak-safe-only) is the conservative default; the harness/G4 call apply_scheme_priors
+        # directly when measuring the full (scouting-inclusive) read.
+        if _scheme_on():
+            try:
+                from sim.scheme_prior import apply_scheme_priors, load_scheme_adjustments
+                _adj = load_scheme_adjustments(tri)
+                if _adj:
+                    apply_scheme_priors(model, _adj, betting_mode=True)
+            except Exception as _exc:  # never let the optional layer break the base sim
+                pass
+        return model
 
     def sample_lineup(self, rng):
         return self.lineup_ids[rng.choice(len(self.lineup_ids), p=self.lineup_p)]
@@ -159,8 +200,12 @@ def _sample_zone(r, rng):
     return ZONES[rng.choice(4, p=p / p.sum())]
 
 
-def _possession(off: TeamModel, deff: TeamModel, on_off, on_def, box, rng, defense=True) -> int:
-    """Simulate one offensive possession; mutate box; return points scored."""
+def _possession(off: TeamModel, deff: TeamModel, on_off, on_def, box, rng, defense=True, def_supp=False) -> int:
+    """Simulate one offensive possession; mutate box; return points scored.
+
+    ``def_supp`` (CV_AGENT_DEF_SUPP, default False) folds the on-court defenders' mean opponent-PPP
+    suppression into the make probability. OFF => no read, no base_x change, no extra RNG => byte-identical.
+    """
     pts = 0
     for _ in range(4):                       # OREB continuation guard
         # role-aware usage: concentrate possessions toward primary options (a flat per-minute
@@ -200,6 +245,11 @@ def _possession(off: TeamModel, deff: TeamModel, on_off, on_def, box, rng, defen
         elif defense:
             perim_d_oc = sum(deff.rate[p].get("perim_d", 50.0) for p in on_def) / len(on_def)
             base_x *= float(np.clip(1.0 - DEF_PERIM_SLOPE * (perim_d_oc - 50.0), 0.88, 1.08))
+        # DEFENDER-SUPPRESSION L1 lever (gated, default-OFF => byte-identical): the on-court defenders'
+        # mean per-defender opponent-PPP suppression scales the make probability (no RNG consumed).
+        if def_supp:
+            supp_oc = sum(deff.rate[p].get("supp", 0.0) for p in on_def) / len(on_def)
+            base_x *= float(np.clip(1.0 + DEF_SUPP_SLOPE * supp_oc, DEF_SUPP_LO, DEF_SUPP_HI))
         if rng.random() < _make_prob(r, zone) * base_x:
             box[u]["fgm"] += 1
             if three:
@@ -330,6 +380,22 @@ def _team_defense():
                 _TEAM_DEF[r.team] = {"tov_force": float(r.tov_force), "oreb_strength": float(r.oreb_strength),
                                      "ft_force": float(getattr(r, "ft_force", 1.0))}
     return _TEAM_DEF
+
+
+_DEF_SUPP = None
+
+
+def _defender_supp():
+    """Lazy-load the per-defender opponent-PPP suppression (CV_AGENT_DEF_SUPP lever). {def_id: supp}; {} if
+    not built. Negative supp = the defender suppresses opponent scoring (LeBron -0.067)."""
+    global _DEF_SUPP
+    if _DEF_SUPP is None:
+        fp = os.path.join(TS, "defender_suppression.parquet")
+        _DEF_SUPP = {}
+        if os.path.exists(fp):
+            for r in pd.read_parquet(fp).itertuples(index=False):
+                _DEF_SUPP[int(r.def_id)] = float(r.supp)
+    return _DEF_SUPP
 
 
 _SECONDARY = None
@@ -498,14 +564,15 @@ def simulate_game(home: TeamModel, away: TeamModel, n_sims: int = 1000, seed: in
     n_poss = int(round((home.pace * hp + away.pace * ap) / 2))
     pids_h, pids_a = list(home.rate), list(away.rate)
     allp = pids_h + pids_a
+    dsupp = _def_supp_on()                       # CV_AGENT_DEF_SUPP lever (read once; False => byte-identical)
     # per-sim accumulators
     samp = {p: {s: np.zeros(n_sims) for s in _STATS} for p in allp}
     ht = np.zeros(n_sims); at = np.zeros(n_sims)
     for s in range(n_sims):
         box = {p: {k: 0.0 for k in _STATS} for p in allp}
         for _ in range(n_poss):
-            ht[s] += _possession(home, away, home.sample_lineup(rng), away.sample_lineup(rng), box, rng, defense)
-            at[s] += _possession(away, home, away.sample_lineup(rng), home.sample_lineup(rng), box, rng, defense)
+            ht[s] += _possession(home, away, home.sample_lineup(rng), away.sample_lineup(rng), box, rng, defense, dsupp)
+            at[s] += _possession(away, home, away.sample_lineup(rng), home.sample_lineup(rng), box, rng, defense, dsupp)
         for p in allp:
             for k in _STATS:
                 samp[p][k][s] = box[p][k]

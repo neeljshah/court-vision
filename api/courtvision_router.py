@@ -1,7 +1,8 @@
 """courtvision_router.py — CourtVision UI routes.
 
-Routes: / (home), /game/{game_id}, /tonight, /parlays, /share/{slug} (+ qr.svg),
+Routes: / (home), /game/{game_id}, /tonight, /share/{slug} (+ qr.svg),
         /plus_ev, /healthz, /api/{slate, bet/{id}, parlays, plus_ev}.
+Note: parlays moved to /cv page bottom section; GET /api/parlays JSON route retained.
 Helpers in api._courtvision_data. Parlay engine in src.prediction.parlay_engine.
 """
 from __future__ import annotations
@@ -731,6 +732,21 @@ def _get_live_dir_index() -> dict:
             pass
     _LIVE_DIR_INDEX_CACHE = (time.time(), new_idx)
     return new_idx
+
+
+def _latest_snap_path(gid: str) -> "Optional[Path]":
+    """Latest epoch snapshot Path for a single game_id, via the cached
+    directory index (NOT a per-call glob).
+
+    The home page resolves the freshest snapshot for ~5-15 game_ids per
+    cold build. Each `_epoch_snaps()` call globs the entire data/live/
+    directory (~30K files, ~70ms each), so 15 calls cost ~1.0s on cold
+    start. `_get_live_dir_index()` walks the directory ONCE (cached 5s)
+    and yields the same latest-epoch Path that `_epoch_snaps(...)[-1]`
+    would return — game_ids are underscore-free 10-digit IDs, so the
+    index key `stem.split("_")[0]` equals the gid exactly.
+    """
+    return _get_live_dir_index().get(gid)
 
 
 def _et_date_from_iso(iso_ts: str) -> str:
@@ -1487,23 +1503,61 @@ def _apply_calibration_gate(envelope: dict) -> dict:
         # then recompute EV at the best price. Also recompute Kelly so
         # kelly_stake_dollars/kelly_pct are sized off cal_p, not the stale
         # naive prob (bug 6 fix).
+        # P1-3 FIX — per-player displayed probability.
+        # grade_bet() already set b["model_prob"] to THIS player's own posterior
+        # P(stat ≷ line) from the player's q50+sigma (Normal-CDF). The old gate
+        # OVERWROTE that with calibrate_p_win(stat, edge_mag, ...), a value keyed
+        # only on (stat, edge magnitude) — so unrelated players collapsed to one
+        # number (Brunson PTS U27.5, Shamet PTS U7.5, Kornet PTS O1.5 all 0.5897).
+        # We now KEEP the per-player posterior as the DISPLAYED model_prob (sanity-
+        # capped) and store the isotonic value separately as model_prob_calibrated.
+        # EV / Kelly / grade stay on the CALIBRATED prob (conservative + honest:
+        # the per-player Normal-CDF is sigma-tight/overconfident, so we never price
+        # a betting EDGE off it — but the SHOWN probability traces to the player).
+        _cal_p = None
         if _have_calib and _have_filters:
             try:
-                cal_p = calibrate_p_win(
+                _cal_p = calibrate_p_win(
                     stat, edge_mag, edge_threshold_for(stat), kelly_b_hit_rate_for(stat))
                 price = int(b.get("best_price") or -110)
                 payout = (float(price) if price >= 100 else (10000.0 / abs(price)) if price <= -100 else 100.0)
+                # Per-player posterior — displayed (capped to a sane prop range).
+                try:
+                    _pp = max(0.02, min(0.98, float(b.get("model_prob"))))
+                except (TypeError, ValueError):
+                    _pp = _cal_p
                 b["model_prob_raw"] = b.get("model_prob")
-                b["model_prob"] = round(cal_p, 4)
-                b["ev_pct"] = round(cal_p * payout - (1.0 - cal_p) * 100.0, 2)
+                b["model_prob"] = round(_pp, 4)                # traces to the player
+                b["model_prob_calibrated"] = round(_cal_p, 4)  # conservative, for EV/grade
+                b["ev_pct"] = round(_cal_p * payout - (1.0 - _cal_p) * 100.0, 2)
                 b["calibrated"] = True
                 # Recompute Kelly from calibrated prob (mirrors _reprice_slate_to_books)
                 from api._courtvision_data import _BETTING  # noqa: PLC0415
-                _ev_k = _BETTING.evaluate(cal_p, price, bankroll=_BANKROLL_DEFAULT)
+                _ev_k = _BETTING.evaluate(_cal_p, price, bankroll=_BANKROLL_DEFAULT)
                 b["kelly_stake_dollars"] = round(float(_ev_k.get("kelly_size") or 0.0), 2)
                 b["kelly_pct"] = round((b["kelly_stake_dollars"] / _BANKROLL_DEFAULT) * 100.0, 3)
             except Exception:
                 pass
+
+        # Honest letter grade off the CALIBRATED prob + calibrated EV (never the
+        # per-player display prob, which is sigma-tight). On playoff dates / stale
+        # lines this caps at "C" + a paper note; A is only reachable for the
+        # validated reg-season book. Lazy import + try/except so a missing module
+        # never breaks the slate (bets just go ungraded).
+        try:
+            from src.prediction.bet_grades import letter_grade  # noqa: PLC0415
+            _grade_prob = b.get("model_prob_calibrated")
+            if _grade_prob is None:
+                _grade_prob = b.get("model_prob")
+            b["grade"], b["grade_note"] = letter_grade(
+                str(b.get("prop_stat", "")),
+                float(_grade_prob or 0.0),
+                float(b.get("ev_pct") or 0.0),
+                playoff_window=_playoff_window,
+                stale_lines=(b.get("freshest_book_age_min", 0) or 0) > 60,
+            ).values()
+        except Exception:
+            pass
 
         ev = b.get("ev_pct")
         b["proven_market"] = True       # passed the validated selection stack
@@ -1574,7 +1628,9 @@ def _reprice_slate_to_books(envelope: dict, book_keys) -> dict:
         b = dict(b0)
         best = max(sel, key=lambda x: int(x[side_key]))
         odds = int(best[side_key])
-        mp = float(b.get("model_prob") or 0.0)
+        # EV uses the CALIBRATED prob (conservative); the per-player model_prob is
+        # display-only (sigma-tight). Falls back to model_prob when no calibration.
+        mp = float(b.get("model_prob_calibrated") or b.get("model_prob") or 0.0)
         payout = (float(odds) if odds >= 100 else (10000.0 / abs(odds)) if odds <= -100 else 100.0)
         ev_pct = mp * payout - (1.0 - mp) * 100.0
         market_prob = (100.0 / (odds + 100.0)) if odds > 0 else (abs(odds) / (abs(odds) + 100.0))
@@ -1611,6 +1667,144 @@ def _reprice_slate_to_books(envelope: dict, book_keys) -> dict:
     }
     env["repriced_books"] = keys
     return env
+
+
+def _attach_book_quotes(envelope: dict, date: str) -> dict:
+    """Attach ``bet.book_quotes`` to every bet in *envelope* (DATA CONTRACT).
+
+    book_quotes = {"DraftKings": {"line", "over", "under"}, "FanDuel": {...},
+    "Pinnacle": {...}} — the FRESHEST quote from EACH book for that
+    (player, stat), at THAT book's OWN line (lines may differ between books).
+    This is what makes the DK/FD/Pin book picker work even when the consensus
+    mainline differs from a given book's line — fixing "DK odds not working"
+    (DK was only surviving the per-line mainline join on ~2/12 bets).
+
+    Joins on (de-accented-lower player_name, lower stat). Books absent for a
+    prop are omitted. Mutates the bets in place and returns *envelope*.
+    Graceful: any failure leaves the slate untouched (bets just lack the new
+    key, back-compatible with best_book/all_books which are preserved).
+    """
+    try:
+        from api._courtvision_odds import (  # noqa: PLC0415
+            book_quotes_by_player_stat, _strip_accents as _sa,
+        )
+        bq_map = book_quotes_by_player_stat(date)
+    except Exception as exc:  # pragma: no cover
+        __import__("logging").getLogger(__name__).warning(
+            "book_quotes attach failed: %s", exc)
+        return envelope
+    for b in envelope.get("bets") or []:
+        try:
+            key = (_sa(b.get("player_name") or "").lower(),
+                   (b.get("prop_stat") or "").lower())
+        except Exception:
+            continue
+        quotes = bq_map.get(key)
+        if quotes:
+            # Copy so a later in-place mutation never bleeds across the cache.
+            b["book_quotes"] = {bk: dict(v) for bk, v in quotes.items()}
+    return envelope
+
+
+def _apply_live_regrade_inplace(bets: list, date: str, stat_sigma: dict) -> None:
+    """In-game live regrade for the synthesized / pregame-fallback slate path.
+
+    The normal (live-CSV) slate path runs a live q50 regrade + in-play line
+    re-anchor (see _build_slate below, ``live regrade`` block). The synthesized
+    fallback path used during a live game RETURNED before that block, so its
+    cards stayed frozen on the pregame q50/EV. This mirrors that block on the
+    synth bets IN PLACE so the cards move with the live game. Self-contained;
+    no-op when no live snapshot exists for the game; every failure leaves the
+    pregame bet untouched (never raises)."""
+    import os as _os, json as _json  # noqa: PLC0415
+    try:
+        from src.prediction.live_engine import project_from_snapshot as _pfs  # noqa: PLC0415
+        from api._courtvision_odds import resolve_game_id as _rgi  # noqa: PLC0415
+    except Exception:
+        return
+    live_maps: dict = {}
+    mp_maps: dict = {}
+    try:
+        _ld_index = _get_live_dir_index()
+        _all_gids: set = set()
+        for _b in bets:
+            _g = str(_b.get("game_id") or "")
+            if _g:
+                _all_gids.add(_g)
+        for _gid in _all_gids:
+            _alias = _rgi(_gid)
+            _canon = list(_alias.get("canonical_ids", frozenset([_gid]))) + [_gid]
+            _snap = None
+            for _cgid in _canon:
+                _sp = _ld_index.get(_cgid)
+                if _sp is not None:
+                    try:
+                        _snap = _json.loads(_sp.read_text(encoding="utf-8"))
+                        break
+                    except Exception:
+                        continue
+            if not _snap or not _snap.get("period"):
+                live_maps[_gid] = {}
+                continue
+            _lm: dict = {}
+            try:
+                for _r in (_pfs(_snap) or []):
+                    _nm = (_r.get("name") or "").lower()
+                    _st = (_r.get("stat") or "").lower()
+                    _pf = _r.get("projected_final")
+                    if _nm and _st and _pf is not None:
+                        try:
+                            _lm[(_nm, _st)] = float(_pf)
+                        except (TypeError, ValueError):
+                            continue
+            except Exception:
+                pass
+            live_maps[_gid] = _lm
+            try:
+                mp_maps[_gid] = _shrink_player_minutes_from_snapshot(_snap)
+            except Exception:
+                mp_maps[_gid] = {}
+    except Exception:
+        return
+    _reanchor = (_os.environ.get("CV_SLATE_INPLAY_REANCHOR", "").strip().lower()
+                 not in ("", "0", "false", "no", "off"))
+    _lm_hist: list = []
+    if _reanchor:
+        try:
+            _lm_hist = _load_inplay_line_history(date, frozenset())
+        except Exception:
+            _lm_hist = []
+    for _b in bets:
+        try:
+            _gid = str(_b.get("game_id") or "")
+            _lm = live_maps.get(_gid) or {}
+            if not _lm:
+                continue
+            _key = ((_b.get("player_name") or "").lower(),
+                    (_b.get("prop_stat") or "").lower())
+            _live_q50 = _lm.get(_key)
+            if _live_q50 is None:
+                continue
+            _mp = (mp_maps.get(_gid) or {}).get(_key[0], 0.0)
+            _w = _live_shrink_weight(_mp)
+            try:
+                _pre = float(_b.get("q50") or _live_q50)
+            except (TypeError, ValueError):
+                _pre = float(_live_q50)
+            _shrunk = _w * float(_live_q50) + (1.0 - _w) * _pre
+            if _reanchor and _lm_hist:
+                try:
+                    _reanchor_to_live_inplay(_b, _lm_hist, _shrunk)
+                except Exception:
+                    pass
+            try:
+                _regrade_bet_with_live_q50(_b, _shrunk, stat_sigma, _BANKROLL_DEFAULT)
+                _b["q50"] = round(float(_shrunk), 2)
+                _b["live_regraded"] = True
+            except Exception:
+                continue
+        except Exception:
+            continue
 
 
 def _build_slate(date: str) -> dict:
@@ -1664,6 +1858,36 @@ def _build_slate(date: str) -> dict:
                 _log_synth.warning("live-only slate synthesis failed: %s", _synth_exc)
                 bets = []
 
+        # SYNTH_PATH_PLAYOFF_GUARD: synth bets carry RAW BOOK game_ids (e.g.
+        # 34249161), so the always-on playoff-AST guard in policy_allows_context
+        # (keyed on a canonical 004… NBA id) is INERT on the synth path. Resolve
+        # each raw book gid → its canonical 004… id (via games_lookup) and pin it
+        # on the bet so the per-stat playoff guard fires. Defensive: no-op when the
+        # id is unresolved or has no 004… canonical (regular season unaffected).
+        try:
+            from api._courtvision_odds import resolve_game_id as _rgid_synth  # noqa: PLC0415
+            _canon_cache_synth: dict[str, str] = {}
+            for _b in bets:
+                _bgid = str(_b.get("game_id") or "")
+                if not _bgid or _bgid.startswith("004"):
+                    continue
+                if _bgid not in _canon_cache_synth:
+                    _canon004 = ""
+                    try:
+                        _alias_s = _rgid_synth(_bgid) or {}
+                        for _cid in _alias_s.get("canonical_ids", ()):  # frozenset
+                            if str(_cid).startswith("004"):
+                                _canon004 = str(_cid)
+                                break
+                    except Exception:
+                        _canon004 = ""
+                    _canon_cache_synth[_bgid] = _canon004
+                _resolved = _canon_cache_synth[_bgid]
+                if _resolved:
+                    _b["game_id"] = _resolved
+        except Exception as _gid_exc:
+            _log_synth.warning("synth playoff-guard gid resolve failed: %s", _gid_exc)
+
         # BUG-DRT-1 (CV_SYNTH_GATE_BEFORE_TRUNCATE): the synth slate path truncated
         # bets[:_TOP_N] by RAW (un-calibrated) EV BEFORE the calibration gate — the
         # inverse of the main-path BUG 7 FIX (~L1881). The gate recalibrates EV and
@@ -1696,6 +1920,15 @@ def _build_slate(date: str) -> dict:
         try: from api._courtvision_form import attach_form; attach_form(bets)
         except Exception as exc: _log_synth.warning("attach_form (synth): %s", exc)
 
+        # In-game live overlay: regrade the synth / pregame-fallback cards on the
+        # live snapshot so the slate moves WITH the game (mirrors the normal
+        # live-CSV path, which this synth branch returns before reaching).
+        # No-op when no live snapshot exists for the game; never raises.
+        try:
+            _apply_live_regrade_inplace(bets, date, _sigma_synth)
+        except Exception as _exc_lr:
+            _log_synth.warning("synth live-regrade failed: %s", _exc_lr)
+
         evs = [b["ev_pct"] for b in bets if b.get("ev_pct") is not None]
         envelope = {
             "date": date,
@@ -1720,6 +1953,7 @@ def _build_slate(date: str) -> dict:
             envelope["calibration"] = _stub_env_synth.get("calibration", {})
         else:
             envelope = _apply_calibration_gate(envelope)
+        envelope = _attach_book_quotes(envelope, date)
         _CACHE[cache_key] = (time.time(), envelope)
         return envelope
 
@@ -1875,6 +2109,24 @@ def _build_slate(date: str) -> dict:
         # ── live regrade ───────────────────────────────────────────
         # Reuse the live_maps / mp_maps already built above (project_from_snapshot
         # was already called once per game; do NOT call it again here).
+        #
+        # CV_SLATE_INPLAY_REANCHOR (default OFF = byte-identical): when ON, also
+        # re-anchor each live-regraded bet's LINE + per-book price ladder to the
+        # CURRENT in-play market (data/lines/<date>_*inplay*.csv) BEFORE the
+        # regrade, so during a game the slate cards move with BOTH the live
+        # prediction (live_q50, always on) AND the live line (this flag). The
+        # /tonight + /api/box_score live_bets path already does this inline;
+        # this surfaces it on the flat /api/slate too. Graceful: any failure
+        # leaves the pregame line in place (still regraded on the live q50).
+        _slate_inplay_reanchor = (
+            os.environ.get("CV_SLATE_INPLAY_REANCHOR", "").strip().lower()
+            not in ("", "0", "false", "no", "off"))
+        _slate_lm_hist: list = []
+        if _slate_inplay_reanchor:
+            try:
+                _slate_lm_hist = _load_inplay_line_history(date, frozenset())
+            except Exception:
+                _slate_lm_hist = []
         try:
             for b in bets:
                 gid = str(b.get("game_id") or "")
@@ -1901,6 +2153,14 @@ def _build_slate(date: str) -> dict:
                     _cur_v = (cur_maps.get(gid) or {}).get(key)
                     shrunk_q50 = _out_cap_blended(
                         _out_set, key[0], shrunk_q50, _cur_v)
+                # Re-anchor line + per-book ladder to the live in-play market so
+                # the regrade prices against the CURRENT line, not the frozen
+                # pregame one (gated; no-op when no in-play line exists).
+                if _slate_inplay_reanchor and _slate_lm_hist:
+                    try:
+                        _reanchor_to_live_inplay(b, _slate_lm_hist, shrunk_q50)
+                    except Exception:
+                        pass
                 try:
                     _regrade_bet_with_live_q50(
                         b, shrunk_q50, stat_sigma_for_slate, _BANKROLL_DEFAULT)
@@ -1973,6 +2233,7 @@ def _build_slate(date: str) -> dict:
             "n_over": sum(1 for b in bets if b["side"] == "OVER"),
             "n_under": sum(1 for b in bets if b["side"] == "UNDER"),
         }
+    envelope = _attach_book_quotes(envelope, date)
     _CACHE[cache_key] = (time.time(), envelope)
     return envelope
 
@@ -2034,6 +2295,113 @@ def _reanchor_to_live_inplay(cp: dict, lm_hist: list, shrunk_q50: float) -> bool
     except Exception:
         pass
     return True
+
+
+# Parlay realism caps (DATA CONTRACT).
+_PARLAY_LEG_P_CAP = 0.62      # per-leg calibrated win prob ceiling (mirrors single bets)
+_PARLAY_EV_DISPLAY_CAP = 60.0  # max displayed parlay EV% (the raw +277% is not real)
+# best_book bucket keys are already display names (consolidate_for_slate maps
+# via _BOOK_DISPLAY), but normalise any stray lowercase key for safety.
+_PARLAY_BOOK_DISPLAY = {
+    "dk": "DraftKings", "fd": "FanDuel", "pin": "Pinnacle",
+    "draftkings": "DraftKings", "fanduel": "FanDuel", "pinnacle": "Pinnacle",
+}
+
+
+def _calibrated_parlay_ev(legs: list[dict], decimal_odds: float | None,
+                          combined_american: int | None,
+                          playoff: bool) -> dict:
+    """Recompute a REALISTIC parlay EV from CALIBRATED per-leg win probs.
+
+    The ParlayEngine prices ev_pct from a raw Monte-Carlo joint hit-rate
+    (p_hit_model) whose marginals are the uncalibrated Normal-CDF leg probs —
+    this is the absurd "+277%" compound. Here we instead use the SAME calibrated
+    leg probability the single-bet cards use (edge_calibration.calibrate_p_win,
+    isotonic, capped), cap each leg at _PARLAY_LEG_P_CAP, take the product as the
+    combined hit prob (a deliberately conservative independence assumption — real
+    correlation only LOWERS a same-side parlay's true joint prob vs the product,
+    so this never over-states), and recompute EV at the combined American price.
+    The displayed EV is capped at _PARLAY_EV_DISPLAY_CAP and the grade is forced
+    to at most 'C' on playoff dates.
+
+    Returns {combined_prob, ev_pct, grade, note}. Falls back gracefully (leg
+    model_prob, then 0.5) when calibration is unavailable.
+    """
+    try:
+        from src.prediction.edge_calibration import calibrate_p_win  # noqa: PLC0415
+        from src.prediction.bet_thresholds import (  # noqa: PLC0415
+            edge_threshold_for, kelly_b_hit_rate_for,
+        )
+        _have = True
+    except Exception:
+        _have = False
+
+    combined_p = 1.0
+    for leg in legs:
+        stat = (leg.get("prop_stat") or "").lower()
+        p = None
+        if _have and stat:
+            try:
+                edge = leg.get("edge_units")
+                if edge is None and leg.get("q50") is not None and leg.get("line") is not None:
+                    edge = float(leg["q50"]) - float(leg["line"])
+                p = calibrate_p_win(stat, abs(float(edge or 0.0)),
+                                    edge_threshold_for(stat),
+                                    kelly_b_hit_rate_for(stat))
+            except Exception:
+                p = None
+        if p is None:
+            # Fall back to the leg's own calibrated single-bet prob, else 0.5.
+            try:
+                p = float(leg.get("model_prob"))
+            except (TypeError, ValueError):
+                p = 0.5
+        combined_p *= min(_PARLAY_LEG_P_CAP, max(0.0, p))
+
+    # Payout-per-$100 from the combined decimal (prefer decimal; derive from the
+    # American price when decimal is absent).
+    if decimal_odds and decimal_odds > 1.0:
+        payout = (decimal_odds - 1.0) * 100.0
+    elif combined_american is not None:
+        ca = int(combined_american)
+        payout = float(ca) if ca > 0 else (10000.0 / abs(ca)) if ca <= -100 else 100.0
+    else:
+        payout = 100.0
+    ev_pct = combined_p * payout - (1.0 - combined_p) * 100.0
+    ev_pct = round(min(ev_pct, _PARLAY_EV_DISPLAY_CAP), 2)
+
+    # Grade off the calibrated combined prob; cap at C on playoff dates.
+    try:
+        from src.prediction.bet_grades import letter_grade  # noqa: PLC0415
+        grade, _gnote = letter_grade(
+            "parlay", float(combined_p), float(ev_pct),
+            playoff_window=playoff, stale_lines=False,
+        ).values()
+    except Exception:
+        # Local fallback letter grade.
+        if ev_pct >= 8 and combined_p >= 0.35:
+            grade = "B"
+        elif ev_pct >= 0:
+            grade = "C"
+        else:
+            grade = "D"
+    if playoff and grade in ("A", "B"):
+        grade = "C"
+
+    note = ("Calibrated parlay EV (isotonic per-leg probs, capped); "
+            "playoff grade C — paper only." if playoff else
+            "Calibrated parlay EV (isotonic per-leg probs, capped).")
+    return {"combined_prob": round(combined_p, 4), "ev_pct": ev_pct,
+            "grade": grade, "note": note}
+
+
+def _format_american(odds) -> str:
+    """Format an American-odds int as a signed display string ('+450' / '-120')."""
+    try:
+        o = int(odds)
+    except (TypeError, ValueError):
+        return ""
+    return f"+{o}" if o > 0 else str(o)
 
 
 def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
@@ -2228,7 +2596,8 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
 
     # Playoff dates get a sigma boost on the parlay sampler so joint hit-rate
     # is honest for the wider playoff residual distribution.
-    sigma_mult = _PLAYOFF_SIGMA_MULT if _is_playoff_date(date) else 1.0
+    _playoff_parlay = _is_playoff_date(date)
+    sigma_mult = _PLAYOFF_SIGMA_MULT if _playoff_parlay else 1.0
 
     def _has_same_player_legs(parlay: dict) -> bool:
         """True when the parlay has two legs on the same player. These have
@@ -2275,24 +2644,54 @@ def _build_parlays(date: str, seed: int = 0, top_n: int = 25) -> dict:
         # Normalize legs + drop same-player parlays + dedup by leg signature
         cleaned: list[dict] = []
         seen_sigs: set[frozenset] = set()
+        _book_disp = _PARLAY_BOOK_DISPLAY.get(book.lower(), book)
         for p in parlays:
             p["book"] = book
             resolved: list[dict] = []
             for leg_ref in p.get("legs", []):
                 if isinstance(leg_ref, dict):
-                    resolved.append(leg_ref)
-                    continue
-                bet = by_id.get(leg_ref) or {}
-                resolved.append({
-                    "player_name": bet.get("player_name"),
-                    "prop_stat": bet.get("prop_stat"),
-                    "line": bet.get("line"),
-                    "side": bet.get("side"),
-                    "best_price": bet.get("best_price"),
-                })
+                    bet = by_id.get(leg_ref.get("bet_id")) or {}
+                    leg = dict(leg_ref)
+                else:
+                    bet = by_id.get(leg_ref) or {}
+                    leg = {
+                        "player_name": bet.get("player_name"),
+                        "prop_stat": bet.get("prop_stat"),
+                        "line": bet.get("line"),
+                        "side": bet.get("side"),
+                        "best_price": bet.get("best_price"),
+                    }
+                # DATA CONTRACT: every leg must carry best_book (non-blank) +
+                # best_price + line + side. In same-book parlays every leg is
+                # placed at `book`; prefer the bet's own best_book, else the
+                # bucket book. Also stamp q50/edge_units so the calibrated-EV
+                # recompute below can derive each leg's isotonic win prob.
+                leg.setdefault("line", bet.get("line"))
+                leg.setdefault("side", bet.get("side"))
+                if leg.get("best_price") is None:
+                    leg["best_price"] = bet.get("best_price")
+                leg["best_book"] = bet.get("best_book") or _book_disp
+                leg["q50"] = bet.get("q50")
+                leg["edge_units"] = bet.get("edge_units")
+                leg["model_prob"] = bet.get("model_prob")
+                resolved.append(leg)
             p["legs"] = resolved
-            if p.get("combined_american") is None and p.get("combined_odds_american") is not None:
-                p["combined_american"] = p["combined_odds_american"]
+            # combined_odds_american (DATA CONTRACT: signed display string).
+            _ca = p.get("combined_odds_american")
+            if _ca is None:
+                _ca = p.get("combined_american")
+            p["combined_american"] = _ca
+            p["combined_odds_american"] = _format_american(_ca)
+            # Recompute a REALISTIC ev_pct from CALIBRATED per-leg probs (the
+            # raw engine ev_pct is the absurd +277% compound). Cap + grade C
+            # on playoff dates. Keep the raw for transparency.
+            _cal = _calibrated_parlay_ev(
+                resolved, p.get("combined_odds_decimal"), _ca, _playoff_parlay)
+            p["ev_pct_raw"] = p.get("ev_pct")
+            p["ev_pct"] = _cal["ev_pct"]
+            p["combined_prob"] = _cal["combined_prob"]
+            p["grade"] = _cal["grade"]
+            p["grade_note"] = _cal["note"]
             if _has_same_player_legs(p):
                 continue
             sig = _legs_signature(p)
@@ -2601,10 +3000,10 @@ def _build_home_data(date: str) -> dict:
             snap = None
             if _live_dir.exists():
                 for _cgid in list(canon) + [gid]:
-                    matches = _epoch_snaps(_live_dir, _cgid)
-                    if matches:
+                    _latest = _latest_snap_path(_cgid)
+                    if _latest is not None:
                         try:
-                            snap = _hjs.loads(matches[-1].read_text(encoding="utf-8"))
+                            snap = _hjs.loads(_latest.read_text(encoding="utf-8"))
                             break
                         except Exception:
                             continue
@@ -2648,10 +3047,10 @@ def _build_home_data(date: str) -> dict:
             canon = alias.get("canonical_ids", frozenset([gid]))
             snap = None
             for _cgid in list(canon) + [gid]:
-                matches = _epoch_snaps(_live_dir, _cgid)
-                if matches:
+                _latest = _latest_snap_path(_cgid)
+                if _latest is not None:
                     try:
-                        snap = _hjs.loads(matches[-1].read_text(encoding="utf-8"))
+                        snap = _hjs.loads(_latest.read_text(encoding="utf-8"))
                         break
                     except Exception:
                         continue
@@ -2731,10 +3130,10 @@ def _build_home_data(date: str) -> dict:
         if not _live_dir_hm.exists():
             continue
         for _cgid in canon:
-            matches = _epoch_snaps(_live_dir_hm, _cgid)
-            if matches:
+            _latest = _latest_snap_path(_cgid)
+            if _latest is not None:
                 try:
-                    snap = _hjs2.loads(matches[-1].read_text(encoding="utf-8"))
+                    snap = _hjs2.loads(_latest.read_text(encoding="utf-8"))
                     snap_status_by_gid[gid] = snap
                     if snap.get("home_team") and snap.get("away_team"):
                         snap_score_by_gid[gid] = (
@@ -3799,29 +4198,42 @@ def _build_game_detail(game_id: str, date: str) -> dict:
 
 # ── routes ───────────────────────────────────────────────────────────────────
 
+# Short-TTL cache for the home page's default date.
+# `_current_or_next_game_day()` calls `_live_game_date()`, which globs the
+# entire data/live/ directory (~30K files) + reads JSON on every call — ~130ms
+# UNCACHED. Since `_build_home_data` itself is fully cached, that glob was the
+# ENTIRE warm cost of `/` and `/api/home.json`. The default date only changes
+# when a game tips off or goes final, so a 5s memo (matching the live-dir index
+# TTL) is plenty fresh for game night while removing the per-request glob.
+_HOME_DEFAULT_DATE_CACHE: tuple[float, Optional[str]] = (0.0, None)
+_HOME_DEFAULT_DATE_TTL = 5.0  # seconds
+
+
+def _home_default_date() -> Optional[str]:
+    """Cached wrapper around `_current_or_next_game_day()` for the home routes.
+
+    Eliminates the ~130ms data/live/ glob in `_live_game_date()` on warm
+    requests. Returns the exact same value `_current_or_next_game_day()` would,
+    refreshed at most every 5s."""
+    global _HOME_DEFAULT_DATE_CACHE
+    _ts, _val = _HOME_DEFAULT_DATE_CACHE
+    if _val is not None and time.time() - _ts < _HOME_DEFAULT_DATE_TTL:
+        return _val
+    _val = _current_or_next_game_day()
+    _HOME_DEFAULT_DATE_CACHE = (time.time(), _val)
+    return _val
+
+
 @router.get("/", response_class=HTMLResponse, tags=["courtvision"])
 @_public_limit
 def home(request: Request, date: str = Query(default=None)):
-    """Games hub landing page — upcoming + live game cards with top EV edges."""
-    explicit_date = bool(date)
+    """Root = the tonight games hub: a clean list of games ONLY. Click a game ->
+    /cv (the full per-game page: intelligence + box score + bet cards). The old
+    /tonight slate remains reachable but is no longer the landing.
+    """
     if not date:
-        date = _current_or_next_game_day()
+        date = _home_default_date()
     data = _build_home_data(date)
-    # If the auto-picked date has zero games but the next UTC day does have
-    # live games, prefer the next day. NBA evening tipoffs (ET) cross midnight
-    # UTC, so scrapers file them under tomorrow's UTC date — the home page
-    # would otherwise show "No games scheduled" for the date the user actually
-    # wants to see. Skip this fallback if the user explicitly asked for a date.
-    if not explicit_date and not data.get("live_games") and not data.get("upcoming_games"):
-        try:
-            from datetime import datetime as _dt, timedelta as _td  # noqa: PLC0415
-            next_d = (_dt.strptime(date, "%Y-%m-%d") + _td(days=1)).strftime("%Y-%m-%d")
-            next_data = _build_home_data(next_d)
-            if next_data.get("live_games") or next_data.get("upcoming_games"):
-                date = next_d
-                data = next_data
-        except Exception:
-            pass
     return _TEMPLATES.TemplateResponse("home.html", {"request": request, **data})
 
 
@@ -3830,7 +4242,7 @@ def api_home(date: Optional[str] = Query(default=None)):
     """Same payload as the home HTML page but as JSON — used by the WS live-tick
     to refresh edge cards without a full page reload."""
     if not date:
-        date = _current_or_next_game_day()
+        date = _home_default_date()
     return JSONResponse(_build_home_data(date))
 
 
@@ -4066,7 +4478,8 @@ def tonight(request: Request, date: str = Query(default=None),
         {"request": request, "slate": slate, "side": side_u, "min_ev": min_ev,
          "game_id_filter": gid_filter, "matchup_label": matchup_label,
          "box_score": box_score, "live_regrade_count": live_regrade_count,
-         "signal_panel": signal_panel})
+         "signal_panel": signal_panel,
+         "is_playoff": _is_playoff_date(date)})
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -5700,29 +6113,12 @@ def _build_results_cached(focused_date: str | None, days: int) -> dict:
     return data
 
 
-@router.get("/results", response_class=HTMLResponse, tags=["courtvision"])
-@_public_limit
-def results_page(
-    request: Request,
-    date: str = Query(default=None),
-    days: int = Query(default=7, ge=1, le=90),
-):
-    """Multi-day Results & Upcoming page.
-
-    ?date=YYYY-MM-DD  focus the settled window on a specific date
-    ?days=N           how many past days to include (default 7, max 90)
-    """
-    data = _build_results_cached(focused_date=date, days=days)
-    return _TEMPLATES.TemplateResponse("results.html", {"request": request, **data})
-
-
-@router.get("/api/results.json", tags=["courtvision"])
-def api_results(
-    date: Optional[str] = Query(default=None),
-    days: int = Query(default=7, ge=1, le=90),
-):
-    """Same payload as /results but as JSON."""
-    return JSONResponse(_build_results_cached(focused_date=date, days=days))
+# NOTE: the GET /results page route (results_page) and GET /api/results.json
+# (api_results) were removed from the UI — /results is no longer exposed.
+# The builder/helper functions below (_build_results_cached, _build_results_data,
+# and the results-only helpers) are intentionally left in place: a few shared
+# helpers (_inplay_book_label / _load_inplay_line_history / _line_movement_for)
+# live in the same block and are still referenced elsewhere. Dead-but-harmless.
 
 
 @router.get("/api/slate", tags=["courtvision"])
@@ -7165,8 +7561,8 @@ def games_alias(): return RedirectResponse(url="/tonight", status_code=302)
 def bets_alias(): return RedirectResponse(url="/risk", status_code=302)
 
 
-@router.get("/cv", tags=["courtvision"])
-def cv_shortlink(): return RedirectResponse(url="/tonight", status_code=307)
+# NOTE: old "/cv" -> /tonight shortlink removed 2026-06-10 so the new CV simple
+# page (registered later in this file) owns the contracted /cv path.
 
 
 @router.get("/api/odds/{date}.json", tags=["courtvision"])
@@ -7760,29 +8156,9 @@ def plus_ev(request: Request,
     from api._courtvision_data import plus_ev_rows
     rows = plus_ev_rows(_build_slate(date), min_ev_pct)
     return _TEMPLATES.TemplateResponse("plus_ev.html",
-        {"request": request, "date": date, "rows": rows, "min_ev_pct": min_ev_pct})
+        {"request": request, "date": date, "rows": rows, "min_ev_pct": min_ev_pct,
+         "is_playoff": _is_playoff_date(date)})
 
-
-@router.get("/parlays", response_class=HTMLResponse, tags=["courtvision"])
-@_public_limit
-def parlays(request: Request, date: str = Query(default=None)):
-    """SSR-lite: sends only metadata shell; JS fetches /api/parlays after paint.
-
-    Single-engine, same-book, auto-tuned leg-size. No user knobs.
-    """
-    if not date:
-        date = _current_or_next_game_day()
-    meta_envelope = {
-        "date": date,
-        "generated_at": datetime.utcnow().isoformat() + "Z",
-        "n_parlays": None,
-        "has_lines": True,
-        "parlays": [],
-        "ssr_lite": True,
-        "is_playoff": _is_playoff_date(date),
-    }
-    return _TEMPLATES.TemplateResponse("parlays.html",
-        {"request": request, "envelope": meta_envelope})
 
 
 # ── SQLite-backed bet ledger endpoints ───────────────────────────────────────
@@ -8163,3 +8539,137 @@ setInterval(refresh, REFRESH_MS);
 </body>
 </html>"""
     return HTMLResponse(content=html)
+
+
+# ===========================================================================
+# CV SIMPLE PAGE — Owner B routes (appended; do not edit above this line)
+# ===========================================================================
+
+@router.get("/api/cv_board", tags=["cv"])
+async def cv_board_api(
+    request: Request,
+    date: str = Query(default="2026-06-10", description="Game date YYYY-MM-DD"),
+) -> JSONResponse:
+    """Return the CV board JSON for the given game date.
+
+    The board shape is defined in api/_cv_board.py (Board Contract).
+    Cached in-process for 300s; degrades gracefully if market_board missing.
+    """
+    try:
+        from api._cv_board import build_board as _build_board
+        board = _build_board(date)
+        return JSONResponse(content=board)
+    except Exception as _exc:
+        import logging
+        logging.getLogger(__name__).warning("cv_board_api error: %s", _exc)
+        return JSONResponse(
+            status_code=503,
+            content={"error": "board unavailable", "detail": str(_exc)},
+        )
+
+
+@router.get("/api/cv_live", tags=["cv"])
+async def cv_live_api(
+    request: Request,
+    date: str = Query(default="2026-06-10", description="Game date YYYY-MM-DD"),
+    game_id: str = Query(default="0042500404", description="NBA game id"),
+) -> JSONResponse:
+    """Return the LIVE CV board JSON for a game.
+
+    Same dict shape as /api/cv_board (api/_cv_board.build_board) but with
+    board.live filled (is_live, scores, period, clock, win_prob_home_live,
+    snapshot_age_sec) and each box_score player's .live actuals + proj_final
+    when a data/live/<gid>_*.json snapshot exists. Pregame (no snapshot) returns
+    is_live=false and is otherwise untouched. Degrades to 503 if _cv_live is
+    unavailable (mirrors /api/cv_board).
+    """
+    try:
+        from api._cv_live import live_board  # noqa: PLC0415
+        board = live_board(date, game_id)
+        return JSONResponse(content=board)
+    except Exception as _exc:
+        import logging
+        logging.getLogger(__name__).warning("cv_live_api error: %s", _exc)
+        return JSONResponse(
+            status_code=503,
+            content={"error": "live board unavailable", "detail": str(_exc)},
+        )
+
+
+@router.get("/cv", tags=["cv"])
+@router.get("/cv_simple", tags=["cv"])
+async def cv_simple_page(
+    request: Request,
+    date: str = Query(default="2026-06-10", description="Game date YYYY-MM-DD"),
+) -> Response:
+    """Render the CV simple page.
+
+    Passes the full board dict as 'board' to the template AND embeds it as
+    a JSON <script id='cv-board'> blob so the front-end JS can bootstrap
+    without a second round-trip.
+    """
+    try:
+        from api._cv_board import build_board as _build_board
+        board = _build_board(date)
+    except Exception as _exc:
+        import logging
+        logging.getLogger(__name__).warning("cv_simple_page board error: %s", _exc)
+        board = {}
+
+    try:
+        import json as _json
+        board_json = _json.dumps(board, default=str)
+        return _TEMPLATES.TemplateResponse(
+            "cv_simple.html",
+            {"request": request, "board": board, "board_json": board_json},
+        )
+    except Exception as _exc:
+        import logging
+        logging.getLogger(__name__).warning("cv_simple_page template error: %s", _exc)
+        # Graceful fallback: return a minimal stub page so boot is never broken
+        import json as _json
+        _board_json = _json.dumps(board, default=str)
+        _stub = (
+            "<!doctype html><html><head><title>CourtVision</title></head><body>"
+            f"<script id='cv-board' type='application/json'>{_board_json}</script>"
+            "<p>Template cv_simple.html not yet deployed.</p>"
+            "</body></html>"
+        )
+        return HTMLResponse(content=_stub)
+# ===========================================================================
+# END Owner B routes
+
+# ===========================================================================
+# INTEL NARRATIVE — Owner INTEL routes (appended; do not edit above this line)
+# ===========================================================================
+
+@router.get("/api/cv_intel", tags=["cv"])
+async def cv_intel_api(
+    request: Request,
+    date: str = Query(default="2026-06-10", description="Game date YYYY-MM-DD"),
+    game_id: str = Query(default="0042500404", description="NBA game id"),
+) -> JSONResponse:
+    """Return the Intelligence LLM narrative for the given game date.
+
+    Builds a grounded read from model numbers: win-prob, projected score,
+    who may pop off (blocks/DD/longshots), and a forward-looking note.
+    Uses Claude haiku-4-5 when ANTHROPIC_API_KEY is set; degrades to a
+    deterministic rule-based narrative otherwise.  Cached 30s.
+
+    Projection only — no edge claimed, no betting advice.
+    Playoffs have no proven edge.
+    """
+    try:
+        from api._cv_intel import cv_intel as _cv_intel  # noqa: PLC0415
+        result = _cv_intel(date=date, game_id=game_id)
+        return JSONResponse(content=result)
+    except Exception as _exc:
+        import logging
+        logging.getLogger(__name__).warning("cv_intel_api error: %s", _exc)
+        return JSONResponse(
+            status_code=503,
+            content={"error": "intel unavailable", "detail": str(_exc)},
+        )
+# ===========================================================================
+# END Owner INTEL routes
+# ===========================================================================

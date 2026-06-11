@@ -46,6 +46,76 @@ BONUS_FOULS: int = 5           # team fouls in period that trigger bonus
 STAT_COLS: Tuple[str, ...] = ("pts", "reb", "ast", "fg3m", "stl", "blk", "tov")
 STAT_IDX: Dict[str, int] = {s: i for i, s in enumerate(STAT_COLS)}
 
+
+# ---------------------------------------------------------------------------
+# Clock parsing (P3.1 — fills the from_snapshot clock TODO).
+# Kept consistent with game_state_events._elapsed: reg periods 720s, OT 300s.
+# ---------------------------------------------------------------------------
+
+def _parse_clock_remaining_sec(clock: Any) -> Optional[float]:
+    """Parse a clock value into seconds-remaining-in-the-current-period, or None.
+
+    Accepts: numeric seconds (int/float); ``"MM:SS"`` / ``"M:SS"`` strings (the live
+    snapshot form); ISO-8601 ``"PT07M24.00S"`` (the CDN feed form). Returns ``None``
+    for an absent / empty / unparseable value so the caller can fall back to tip-off
+    defaults (this is what keeps a clock-less snapshot byte-identical to pre-P3.1).
+    """
+    if clock is None:
+        return None
+    if isinstance(clock, (int, float)):
+        return max(0.0, float(clock))
+    s = str(clock).strip()
+    if not s:
+        return None
+    su = s.upper()
+    if su.startswith("PT"):  # ISO-8601 duration, e.g. PT07M24.00S
+        import re
+        m = re.match(r"PT(?:(\d+)M)?(?:([\d.]+)S)?$", su)
+        if not m or (m.group(1) is None and m.group(2) is None):
+            return None
+        mins = float(m.group(1)) if m.group(1) else 0.0
+        secs = float(m.group(2)) if m.group(2) else 0.0
+        return mins * 60.0 + secs
+    if ":" in s:  # MM:SS
+        parts = s.split(":")
+        try:
+            return float(parts[0]) * 60.0 + float(parts[1])
+        except (ValueError, IndexError):
+            return None
+    try:  # bare numeric string
+        return max(0.0, float(s))
+    except ValueError:
+        return None
+
+
+def _clock_fields(snap: Dict[str, Any], period: int) -> Tuple[int, float, float, float]:
+    """Return ``(clock_s, game_elapsed_sec, game_remaining_sec, remaining_frac)``.
+
+    Precedence: explicit ``game_elapsed_sec`` / ``game_remaining_sec`` (round-trip from
+    ``to_snapshot``) > parsed ``clock_remaining_sec`` / ``clock`` > tip-off defaults
+    ``(0, 0.0, REG_GAME_LEN_SEC, 1.0)``. The tip-off default branch preserves the exact
+    pre-P3.1 behaviour for any snapshot that carries no clock (existing tests + leak gate).
+    """
+    if snap.get("game_remaining_sec") is not None or snap.get("game_elapsed_sec") is not None:
+        elapsed = float(snap.get("game_elapsed_sec", 0.0) or 0.0)
+        rem_raw = snap.get("game_remaining_sec")
+        remaining = float(rem_raw) if rem_raw is not None else max(0.0, REG_GAME_LEN_SEC - elapsed)
+        clock_s = int(round(float(snap.get("clock_remaining_sec", 0) or 0)))
+        return clock_s, elapsed, remaining, min(1.0, max(0.0, remaining / REG_GAME_LEN_SEC))
+
+    raw = snap.get("clock_remaining_sec")
+    if raw is None:
+        raw = snap.get("clock")
+    cr = _parse_clock_remaining_sec(raw)
+    if cr is None:
+        return 0, 0.0, float(REG_GAME_LEN_SEC), 1.0
+    if period <= 4:
+        elapsed = max(0.0, (period - 1) * 720.0 + (720.0 - cr))
+    else:
+        elapsed = max(0.0, 2880.0 + (period - 5) * 300.0 + (300.0 - cr))
+    remaining = max(0.0, REG_GAME_LEN_SEC - elapsed)
+    return int(round(cr)), elapsed, remaining, min(1.0, max(0.0, remaining / REG_GAME_LEN_SEC))
+
 # ---------------------------------------------------------------------------
 # PlayerSuff — per-player accumulated sufficient statistics
 # ---------------------------------------------------------------------------
@@ -220,11 +290,9 @@ class GameState:
         home_score: int = int(snap.get("home_score", 0) or 0)
         away_score: int = int(snap.get("away_score", 0) or 0)
 
-        # TODO(P3.1): replace placeholder clock logic with real parser.
-        clock_s: int = 0
-        game_elapsed_sec: float = 0.0
-        game_remaining_sec: float = float(REG_GAME_LEN_SEC)
-        remaining_frac: float = 1.0
+        # P3.1: real clock fields (no-op tip-off defaults when the snapshot carries no clock,
+        # which preserves the leak-gate / existing-test behaviour exactly).
+        clock_s, game_elapsed_sec, game_remaining_sec, remaining_frac = _clock_fields(snap, period)
 
         score_margin: int = home_score - away_score
 

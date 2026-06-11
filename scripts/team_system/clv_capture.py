@@ -15,6 +15,13 @@ already cached (so the structure is testable now). DISCIPLINE: capture only -- i
   python scripts/team_system/clv_capture.py --open-close --market player_assists
 """
 from __future__ import annotations
+# Eager pyarrow.dataset import (P1-9): preload before other heavy natives to
+# avoid a Windows DLL import-order access violation when pd.read_parquet()
+# triggers the lazy pyarrow.dataset import mid-session.
+try:
+    import pyarrow.dataset  # noqa: F401
+except ImportError:
+    pass
 import argparse, glob, json, os
 import pandas as pd
 

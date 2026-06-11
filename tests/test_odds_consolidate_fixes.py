@@ -8,7 +8,10 @@ Bug 3 (MEDIUM): Freshest-wins merge must inherit HTTP row's non-empty selection 
     deeplink URLs from the inherited IDs.
 
 Bug 10 (LOW): Book quotes whose captured_at is older than _MAX_PREGAME_QUOTE_AGE_SEC
-    (6 h) must be dropped; quotes with a recent captured_at must be kept.
+    (24 h) are dropped while ANY fresh quote survives. Round 1b graceful-stale
+    fallback: if the age cap would empty a date that HAD raw rows, the freshest
+    stale quote per (prop, book) is RE-INCLUDED instead — tagged lines_stale=True
+    with captured_at preserved — so a stale slate beats an empty slate.
 """
 from __future__ import annotations
 
@@ -290,24 +293,37 @@ class TestBug3SelectionIdInheritance:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Bug 10 — Quotes older than _MAX_PREGAME_QUOTE_AGE_SEC must be dropped
+# Bug 10 — Quotes older than _MAX_PREGAME_QUOTE_AGE_SEC are dropped when fresh
+# quotes exist; an ALL-stale date re-includes the freshest stale quotes, tagged
+# lines_stale=True (Round 1b graceful-stale fallback — stale slate > empty slate)
 # ══════════════════════════════════════════════════════════════════════════════
 
 class TestBug10StaleQuoteDrop:
 
     def test_stale_quote_dropped(self, lines_dir):
-        """A book quote with captured_at 30 h ago is dropped from consolidate()."""
+        """Round 1b: an ALL-stale date is NOT emptied — the freshest stale quote
+        is re-included via the graceful fallback, tagged lines_stale=True, with
+        captured_at preserved untouched (drives the downstream stale pill)."""
         import api._courtvision_odds as _odds
 
+        stale_ts = _ts_utc(30)
         _write_csv(
             lines_dir / f"{DATE}_dk.csv",
-            [_base_row(book="dk", over_price=-110, captured_at=_ts_utc(30))],
+            [_base_row(book="dk", over_price=-110, captured_at=stale_ts)],
         )
 
         result = _odds.consolidate(DATE)
-        all_book_keys = {b["book"] for p in result for b in p["books"]}
-        assert "dk" not in all_book_keys, (
-            "Stale quote (30h old) must be dropped; dk should not appear"
+        dk_books = [b for p in result for b in p["books"] if b["book"] == "dk"]
+        assert dk_books, (
+            "All-stale slate must re-include the stale quote (graceful "
+            "fallback), not return an empty slate"
+        )
+        # captured_at must be preserved untouched so freshest_book_age_min
+        # still reports the true ~30 h age downstream.
+        assert dk_books[0]["captured_at"] == stale_ts
+        # Every prop served by the fallback carries the lines_stale flag.
+        assert all(p.get("lines_stale") is True for p in result), (
+            "Props served by the stale fallback must be tagged lines_stale=True"
         )
 
     def test_fresh_quote_kept(self, lines_dir):
@@ -341,6 +357,11 @@ class TestBug10StaleQuoteDrop:
         all_book_keys = {b["book"] for p in result for b in p["books"]}
         assert "fd" in all_book_keys, "Fresh FD quote (1h) must survive"
         assert "dk" not in all_book_keys, "Stale DK quote (30h) must be dropped"
+        # The graceful fallback never fires when a fresh quote survived, so
+        # nothing on this slate may carry the lines_stale tag.
+        assert not any(p.get("lines_stale") for p in result), (
+            "lines_stale must not be set when fresh quotes survived the cap"
+        )
 
     def test_unparseable_captured_at_not_dropped(self, lines_dir):
         """A quote with an unparseable captured_at is kept (safe fallback — do not drop)."""

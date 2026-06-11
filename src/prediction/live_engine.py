@@ -1235,6 +1235,22 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # Byte-identical when OFF: the gate is the very first check.
     rows = _apply_ingame_vac_ast(snap, rows)
 
+    # CV_INGAME_STATE (P3.1/P3.2): the consolidated Bayesian in-game player update
+    # (src/ingame/live_state_hook.apply_ingame_state -> GameState + bayes_player_update).
+    # Replaces the 4-5 endQ3 correction heads with ONE parametric posterior whose DEFAULT
+    # trust curve is IDENTITY -> trust_w==0 -> posterior == prior -> every row is left
+    # UNTOUCHED -> byte-identical to the OFF path. The hook only re-prices once a
+    # trust-curve json is GATED on RMSE+bias (scripts/ingame/ingame_rmsebias_harness.py).
+    # Default-OFF (flag unset) = pure no-op. Never breaks the hot path (the helper is
+    # internally wrapped). Placed BEFORE the deterministic guards so final-freeze / foul-out
+    # still have the final word on a frozen box.
+    if os.environ.get("CV_INGAME_STATE"):
+        try:
+            from src.ingame.live_state_hook import apply_ingame_state
+            rows = apply_ingame_state(snap, rows)
+        except Exception:
+            pass  # never break the hot path
+
     # ── DETERMINISTIC END-STATE GUARDS (applied LAST, so they are the final word
     #    on the SERVED projected_final regardless of which head — base cycle-88 or
     #    the routed/v2 overlay (_apply_unified_routed) — produced it). Both are
@@ -1268,6 +1284,20 @@ def project_from_snapshot(snap: dict, *, period: Optional[int] = None) -> List[D
     # midQ3), biasing every fouled-out prop toward the OVER. The snapshot carries
     # per-player ``pf`` (the live poller emits it), so this is a pure box clamp.
     rows = _apply_foulout_cap(snap, rows)
+
+    # CV_INGAME_UNIVERSAL_WP (P3.4): the projected-final win-prob INTERFACE
+    # (src/ingame/live_state_hook.apply_universal_winprob -> universal_winprob). Computed from
+    # the PROJECTED final margin (sum of final pts projections, never the raw live margin),
+    # using the FINAL post-guard projections here at the tail of the pipeline. Routes into the
+    # served home_win_prob_inplay ONLY when eligible (Q4+ AND coverage_class==mc_full AND a
+    # projection exists); otherwise FAILS CLOSED to the existing inplay/sim win-prob stack.
+    # Default-OFF (flag unset) = pure no-op (byte-identical). Never breaks the hot path.
+    if os.environ.get("CV_INGAME_UNIVERSAL_WP"):
+        try:
+            from src.ingame.live_state_hook import apply_universal_winprob
+            rows = apply_universal_winprob(snap, rows)
+        except Exception:
+            pass  # never break the hot path
 
     return rows
 

@@ -121,6 +121,11 @@
   .bt-player,.bt-prop,.bt-odds,.bt-edge{font-size:11px;}
   .gd-matchup{font-size:18px;}
 }
+/* ── phone: 1-col intel grid + h-scrollable bet table ──────────── */
+@media(max-width:480px){
+  .intel-grid{grid-template-columns:1fr!important;}
+  .bet-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+}
 </style>
 
 <a href="/" class="back-link">← All Games</a>

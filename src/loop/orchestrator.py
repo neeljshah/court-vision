@@ -156,6 +156,7 @@ class Orchestrator:
                 hyps = self._mine_hypotheses(result)
                 result.hypotheses = hyps
                 self._run_signals_arm(hyps, result)
+                self._run_discovery_arm(result)   # ADDITIVE + flag-gated (CV_LOOP_DISCOVERY)
             if arm in ("intel", "both"):
                 self._run_intel_arm(result)
             # Multiple-comparisons guard: recompute BH-FDR across the whole ledger.
@@ -287,6 +288,48 @@ class Orchestrator:
                                  device=self.device, dry_run=self.dry_run)
         if getattr(wr, "ok", False):
             result.shipped.append(signal.name)
+
+    # ---- ARM A+: deterministic LLM-FREE feature discovery (the inexhaustible proposer) ----
+    def _run_discovery_arm(self, result: IterationResult) -> None:
+        """Enumerate feature transforms -> cheap-screen -> the EXISTING honest gate -> ledger.
+
+        This is the closed-loop proposer that lets the loop keep improving WITHOUT an LLM once the
+        hand-written seed hypotheses are exhausted: ``src.loop.discovery`` deterministically enumerates
+        transforms over the leak-safe pergame matrix and the honest gate (walk-forward + null-shuffle +
+        ablation + FDR) decides. ADDITIVE + flag-gated (``CV_LOOP_DISCOVERY``); when the flag is unset this
+        returns immediately and the loop behaves exactly as before. Discovered verdicts are recorded to the
+        main ledger (FDR bookkeeping) + a discovered-signals ledger; a SHIP is recorded as validated-ready
+        but NOT auto-grafted into the served model (the graft stays an explicit, reviewed step). Never raises.
+        """
+        if not os.environ.get("CV_LOOP_DISCOVERY"):
+            return
+        try:
+            from . import discovery as _discovery
+        except Exception as exc:  # pragma: no cover
+            result.errors.append(f"discovery import: {exc!r}")
+            return
+        targets = [t.strip() for t in
+                   os.environ.get("CV_LOOP_DISCOVERY_TARGETS", "pts").split(",") if t.strip()]
+        top_k = int(os.environ.get("CV_LOOP_DISCOVERY_TOPK", "8") or "8")
+        date = _dt.datetime.utcnow().date().isoformat()
+        seen = self._safe(_discovery.load_discovered_families, result, "load_discovered") or set()
+        for tgt in targets:
+            try:
+                results = _discovery.discover(tgt, top_k=top_k, device=self.device, seen_families=seen)
+            except Exception as exc:
+                result.errors.append(f"discover {tgt}: {exc!r}")
+                continue
+            for dr in results:
+                seen.add(dr.spec.family_key())
+                verdict = dr.gate.verdict
+                result.verdicts[dr.spec.name] = verdict
+                self._safe(lambda dr=dr: _discovery.record_discovered(dr, date=date),
+                           result, f"record_discovered {dr.spec.name}")
+                if verdict != Verdict.DEFER:
+                    self._safe(lambda dr=dr: _ledger.record_signal(dr.gate, target=dr.target),
+                               result, f"ledger {dr.spec.name}")
+                if verdict == Verdict.SHIP:
+                    result.shipped.append(dr.spec.name)
 
     # ---- ARM B: intelligence -------------------------------------------------
     def _run_intel_arm(self, result: IterationResult) -> None:

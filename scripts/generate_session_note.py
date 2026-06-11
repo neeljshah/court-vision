@@ -118,7 +118,7 @@ def parse_coordination_log(path: Path) -> List[Dict[str, Any]]:
     if not path.exists():
         return []
     entries: List[Dict[str, Any]] = []
-    raw_lines = path.read_text(encoding="utf-8").splitlines()
+    raw_lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     buffer: List[str] = []
     for line in raw_lines:
         stripped = line.rstrip()

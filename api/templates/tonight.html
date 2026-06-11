@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Tonight · CourtVision{% endblock %}
 {% block subtitle %}Tonight · {{ slate.date }}{% endblock %}
-{% block og_title %}CourtVision · {{ slate.date }} · {{ slate.summary.n_bets }} edges{% endblock %}
-{% block og_desc %}{{ slate.summary.n_bets }} ranked NBA prop bets · avg EV {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}% · model-graded reasoning per pick.{% endblock %}
+{% block og_title %}{% if is_playoff %}CourtVision · {{ slate.date }} · {{ slate.summary.n_bets }} projections (paper only · no proven playoff edge){% else %}CourtVision · {{ slate.date }} · {{ slate.summary.n_bets }} edges{% endif %}{% endblock %}
+{% block og_desc %}{% if is_playoff %}{{ slate.summary.n_bets }} ranked NBA prop projections · avg model–market gap {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}% · research only, no proven playoff edge.{% else %}{{ slate.summary.n_bets }} ranked NBA prop bets · avg EV {{ '%+.1f'|format(slate.summary.avg_ev_pct) }}% · model-graded reasoning per pick.{% endif %}{% endblock %}
 {% block nav_tonight %}active{% endblock %}
 
 {% block content %}
@@ -50,11 +50,23 @@
   body.cv-live-mode #liveBetsGrid {
     gap: 6px !important;
   }
+  /* ── Box-score table responsive compaction ──────────────────────────────── */
+  @media(max-width:768px){
+    .bx-table { font-size: 11px; }
+    .bx-table th { font-size: 9px; padding: 3px 4px; }
+    .bx-table td { padding: 3px 4px; font-size: 10px; }
+    .bx-table td:first-child { white-space: normal; word-break: break-word; }
+  }
+  @media(max-width:480px){
+    .bx-table { font-size: 10px; }
+    .bx-table th { font-size: 8px; padding: 2px 3px; }
+    .bx-table td { padding: 2px 3px; }
+  }
 </style>
 <section class="mb-3 md:mb-4">
   <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
     <h1 class="text-xl md:text-2xl font-semibold" style="color:var(--cv-text)">
-      {% if matchup_label %}{{ matchup_label }}{% else %}Tonight's edges{% endif %}
+      {% if matchup_label %}{{ matchup_label }}{% elif is_playoff %}Tonight's projections — no proven playoff edge — research only{% else %}Tonight's edges{% endif %}
     </h1>
     <span class="text-xs md:text-sm" style="color:var(--cv-muted)">{{ slate.date }}</span>
     {% if matchup_label %}
@@ -162,7 +174,7 @@
       <span id="wpHomeLabel">home</span>
     </div>
   </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
     {% for side_key in ['away','home'] %}
       {% set t = box_score[side_key] %}
       {% if t and t.players %}
@@ -179,7 +191,7 @@
           </span>
         </div>
         <div style="overflow-x:auto;">
-          <table style="width:100%;font-size:12px;border-collapse:collapse;font-family:'SF Mono',ui-monospace,monospace">
+          <table class="bx-table" style="width:100%;font-size:12px;border-collapse:collapse;font-family:'SF Mono',ui-monospace,monospace">
             <thead>
               <tr style="color:var(--cv-subtle);text-align:right">
                 <th style="text-align:left;padding:5px 6px 5px 0;font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:0.05em">Player</th>
@@ -192,7 +204,7 @@
                 <td style="text-align:left;padding:5px 6px 5px 0;color:var(--cv-text);white-space:nowrap;font-family:inherit;font-size:12px">{{ p.player_name }}</td>
                 {% for s in box_score.stats %}
                   <td class="bx" data-stat="{{ s }}" style="padding:5px 6px;text-align:right;color:var(--cv-text);font-size:11px">
-                    <span class="bx-pre">{% if p[s] is not none %}{{ '%g'|format(p[s]) }}{% else %}—{% endif %}</span>
+                    <span class="bx-pre">{% if p[s] is not none %}{{ '%.1f'|format(p[s]) }}{% else %}—{% endif %}</span>
                     <span class="bx-cur" style="display:none;color:#34d399;font-weight:700"></span>
                     <span class="bx-proj" style="display:none;color:var(--cv-accent);font-size:9px"></span>
                   </td>
@@ -205,7 +217,7 @@
                 <td style="text-align:left;padding:8px 6px 8px 0;font-weight:600;color:var(--cv-text);font-size:12px">Total</td>
                 {% for s in box_score.stats %}
                   <td class="bx-total" data-stat="{{ s }}" data-team="{{ t.abbr }}" style="padding:8px 7px;text-align:right;font-weight:600;color:var(--cv-text);font-size:12px">
-                    {{ '%g'|format(t.totals[s]) if t.totals[s] is not none else '—' }}
+                    {{ '%.1f'|format(t.totals[s]) if t.totals[s] is not none else '—' }}
                   </td>
                 {% endfor %}
               </tr>
@@ -308,12 +320,21 @@
   </div>
 {% else %}
   {# ── Tier grouping: bets ranked by EV across the whole slate, then bucketed by tier ── #}
+  {% if is_playoff %}
+  {% set tiers = [
+    {'key':'S','label':'S-Tier','desc':'Top projections — model–market gap ≥ 15% (paper only · no proven playoff edge)','color':'#fbbf24','bg':'rgba(251,191,36,0.10)','border':'rgba(251,191,36,0.35)'},
+    {'key':'A','label':'A-Tier','desc':'Notable projections — model–market gap 8–15% (paper only · no proven playoff edge)','color':'#22c55e','bg':'rgba(34,197,94,0.08)','border':'rgba(34,197,94,0.30)'},
+    {'key':'B','label':'B-Tier','desc':'Marginal model–market gap 3–8% — research only','color':'#94a3b8','bg':'rgba(148,163,184,0.06)','border':'rgba(148,163,184,0.25)'},
+    {'key':'C','label':'C-Tier','desc':'Thin model–market gap < 3% — research only','color':'#475569','bg':'rgba(71,85,105,0.06)','border':'rgba(71,85,105,0.25)'}
+  ] %}
+  {% else %}
   {% set tiers = [
     {'key':'S','label':'S-Tier','desc':'Strongest edges — EV ≥ 15%','color':'#fbbf24','bg':'rgba(251,191,36,0.10)','border':'rgba(251,191,36,0.35)'},
     {'key':'A','label':'A-Tier','desc':'Solid edges — EV 8–15%','color':'#22c55e','bg':'rgba(34,197,94,0.08)','border':'rgba(34,197,94,0.30)'},
     {'key':'B','label':'B-Tier','desc':'Marginal edges — EV 3–8%','color':'#94a3b8','bg':'rgba(148,163,184,0.06)','border':'rgba(148,163,184,0.25)'},
     {'key':'C','label':'C-Tier','desc':'Thin edges — EV < 3%','color':'#475569','bg':'rgba(71,85,105,0.06)','border':'rgba(71,85,105,0.25)'}
   ] %}
+  {% endif %}
   {% set bucketed = {'S':[], 'A':[], 'B':[], 'C':[]} %}
   {% for bet in slate.bets %}
     {% if bet.ev_pct is not none %}
