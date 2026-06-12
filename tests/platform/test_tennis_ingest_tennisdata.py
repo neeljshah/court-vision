@@ -52,6 +52,7 @@ from domains.tennis.name_aliases import (
     normalize_td,
     normalize_sackmann,
     normalize_name,
+    candidate_keys,
     ALIASES,
     _strip_accents,
 )
@@ -510,3 +511,212 @@ class TestAliasPath:
         total_accounted = len(joined) + len(unjoined)
         completed = td[td["Comment"].fillna("Completed").str.lower() == "completed"]
         assert total_accounted == len(completed)
+
+
+# ===========================================================================
+# Tests: candidate_keys — middle-name + compound-surname regression
+# ===========================================================================
+
+class TestCandidateKeys:
+    """Regression tests for the multi-candidate key resolution."""
+
+    # ---- Sackmann source ----
+
+    def test_middle_name_etcheverry(self):
+        """"Tomas Martin Etcheverry" → must include etcheverry_t (last-token key)."""
+        keys = candidate_keys("Tomas Martin Etcheverry", "sackmann")
+        assert "etcheverry_t" in keys, f"Expected etcheverry_t in {keys}"
+
+    def test_middle_name_struff(self):
+        """"Jan Lennard Struff" → must include struff_j."""
+        keys = candidate_keys("Jan Lennard Struff", "sackmann")
+        assert "struff_j" in keys, f"Expected struff_j in {keys}"
+
+    def test_middle_name_huesler(self):
+        """"Marc Andrea Huesler" → must include huesler_m."""
+        keys = candidate_keys("Marc Andrea Huesler", "sackmann")
+        assert "huesler_m" in keys, f"Expected huesler_m in {keys}"
+
+    def test_compound_surname_auger_aliassime(self):
+        """"Felix Auger Aliassime" → must include a key with augeraliassime."""
+        keys = candidate_keys("Felix Auger Aliassime", "sackmann")
+        auger_keys = {k for k in keys if "auger" in k}
+        assert auger_keys, f"Expected at least one auger* key in {keys}"
+
+    def test_simple_name_still_works(self):
+        """"Novak Djokovic" → must include djokovic_n."""
+        keys = candidate_keys("Novak Djokovic", "sackmann")
+        assert "djokovic_n" in keys, f"Expected djokovic_n in {keys}"
+
+    def test_de_minaur_sackmann(self):
+        """"Alex De Minaur" → particle-join: must include deminaur_a."""
+        keys = candidate_keys("Alex De Minaur", "sackmann")
+        assert "deminaur_a" in keys, f"Expected deminaur_a in {keys}"
+
+    # ---- tennis-data source ----
+
+    def test_td_basic(self):
+        """"Etcheverry T." → must include etcheverry_t."""
+        keys = candidate_keys("Etcheverry T.", "td")
+        assert "etcheverry_t" in keys, f"Expected etcheverry_t in {keys}"
+
+    def test_td_hyphenated_auger(self):
+        """"Auger-Aliassime F." → must include augeraliassime_f."""
+        keys = candidate_keys("Auger-Aliassime F.", "td")
+        auger_keys = {k for k in keys if "auger" in k}
+        assert auger_keys, f"Expected at least one auger* key in {keys}"
+
+    def test_td_deminaur_joined(self):
+        """"Deminaur A." (tennis-data joined form) → must include deminaur_a."""
+        keys = candidate_keys("Deminaur A.", "td")
+        assert "deminaur_a" in keys, f"Expected deminaur_a in {keys}"
+
+    def test_invalid_source(self):
+        with pytest.raises(ValueError):
+            candidate_keys("Some Name", "unknown")
+
+    def test_empty_name_returns_empty_key(self):
+        keys = candidate_keys("", "sackmann")
+        assert "" in keys
+
+
+# ===========================================================================
+# Tests: middle-name join regression (synthetic end-to-end)
+# ===========================================================================
+
+def _make_middle_name_fixtures() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Synthetic Sackmann + td DataFrames for middle-name / compound-surname join."""
+    base_date = dt.date(2024, 1, 15)
+
+    matches = pd.DataFrame([
+        # Middle-name cases (Sackmann stores full name with middle name)
+        dict(
+            event_id="20240115-atp-T001-100001-100002-001",
+            date=base_date,
+            tour="atp", tourney_id="T001", tourney_name="TestOpen",
+            surface="Hard", best_of=3, round="R64", match_num=1,
+            p1_id=100001, p2_id=100002,
+            p1_name="Tomas Martin Etcheverry",  # middle name
+            p2_name="Jan Lennard Struff",        # middle name
+            p1_rank=30.0, p2_rank=50.0,
+            winner=1, score="6-3 6-4", retirement=False, minutes=90.0,
+        ),
+        dict(
+            event_id="20240115-atp-T001-100003-100004-002",
+            date=base_date,
+            tour="atp", tourney_id="T001", tourney_name="TestOpen",
+            surface="Hard", best_of=3, round="R64", match_num=2,
+            p1_id=100003, p2_id=100004,
+            p1_name="Marc Andrea Huesler",       # middle name
+            p2_name="Chak Lam Coleman Wong",     # 4-token: last = Wong
+            p1_rank=60.0, p2_rank=80.0,
+            winner=1, score="6-2 6-1", retirement=False, minutes=70.0,
+        ),
+        # Compound-surname case — must still join correctly
+        dict(
+            event_id="20240115-atp-T001-100005-100006-003",
+            date=base_date,
+            tour="atp", tourney_id="T001", tourney_name="TestOpen",
+            surface="Hard", best_of=3, round="R64", match_num=3,
+            p1_id=100005, p2_id=100006,
+            p1_name="Felix Auger Aliassime",     # compound surname
+            p2_name="Alex De Minaur",             # particle surname
+            p1_rank=10.0, p2_rank=12.0,
+            winner=2, score="4-6 3-6", retirement=False, minutes=80.0,
+        ),
+    ])
+
+    # tennis-data rows using the "Surname I." format (no middle names)
+    td_rows = pd.DataFrame([
+        dict(
+            Date=base_date,
+            Tournament="TestOpen", Surface="Hard", Round="1st Round",
+            **{"Best of": 3},
+            Winner="Etcheverry T.", Loser="Struff J.",
+            WRank=30, LRank=50, Comment="Completed",
+            B365W=1.50, B365L=2.60, PSW=1.52, PSL=2.65,
+            MaxW=1.55, MaxL=2.70, AvgW=1.51, AvgL=2.62,
+        ),
+        dict(
+            Date=base_date,
+            Tournament="TestOpen", Surface="Hard", Round="1st Round",
+            **{"Best of": 3},
+            Winner="Huesler M.", Loser="Wong C.",
+            WRank=60, LRank=80, Comment="Completed",
+            B365W=1.60, B365L=2.30, PSW=1.62, PSL=2.35,
+            MaxW=1.65, MaxL=2.40, AvgW=1.61, AvgL=2.32,
+        ),
+        dict(
+            Date=base_date,
+            Tournament="TestOpen", Surface="Hard", Round="1st Round",
+            **{"Best of": 3},
+            Winner="De Minaur A.", Loser="Auger-Aliassime F.",
+            WRank=12, LRank=10, Comment="Completed",
+            B365W=1.80, B365L=2.00, PSW=1.82, PSL=2.05,
+            MaxW=1.85, MaxL=2.10, AvgW=1.81, AvgL=2.02,
+        ),
+    ])
+    td_rows["_tour"] = "atp"
+    td_rows["_year"] = 2024
+    return matches, td_rows
+
+
+class TestMiddleNameJoin:
+    """Ensure middle-name mismatches join correctly end-to-end."""
+
+    def test_all_middle_name_rows_join(self):
+        """All 3 synthetic rows (2 middle-name + 1 compound-surname) must join."""
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        assert len(result.joined_df) == 3, (
+            f"Expected 3 joined rows, got {len(result.joined_df)}; "
+            f"unjoined={len(result.unjoined_df)}"
+        )
+        assert len(result.unjoined_df) == 0
+
+    def test_middle_name_etcheverry_joins(self):
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        joined_eids = set(result.joined_df["event_id"].tolist())
+        assert "20240115-atp-T001-100001-100002-001" in joined_eids
+
+    def test_middle_name_huesler_wong_joins(self):
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        joined_eids = set(result.joined_df["event_id"].tolist())
+        assert "20240115-atp-T001-100003-100004-002" in joined_eids
+
+    def test_compound_surname_auger_joins(self):
+        """Felix Auger Aliassime (Sackmann) vs "Auger-Aliassime F." (td) must join."""
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        joined_eids = set(result.joined_df["event_id"].tolist())
+        assert "20240115-atp-T001-100005-100006-003" in joined_eids
+
+    def test_price_orientation_preserved_in_middle_name_row(self):
+        """winner=1 (Etcheverry) → b365_p1 == B365W (1.50)."""
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        row = result.joined_df[
+            result.joined_df["event_id"] == "20240115-atp-T001-100001-100002-001"
+        ]
+        assert not row.empty
+        assert abs(float(row.iloc[0]["b365_p1"]) - 1.50) < 0.01, (
+            f"b365_p1 should be 1.50 (winner=1 → W-price), got {row.iloc[0]['b365_p1']}"
+        )
+
+    def test_compound_winner2_orientation_preserved(self):
+        """winner=2 (De Minaur = p2) → b365_p1 == B365L (2.00, loser-side price)."""
+        matches, td = _make_middle_name_fixtures()
+        result = join_odds(td, matches)
+        row = result.joined_df[
+            result.joined_df["event_id"] == "20240115-atp-T001-100005-100006-003"
+        ]
+        assert not row.empty
+        # p2 (De Minaur) won; td Winner="De Minaur A." with B365W=1.80
+        # But Sackmann p1=Felix(100005) < p2=Alex(100006)?
+        # p1_id=100005 < p2_id=100006 so p1=Felix, p2=De Minaur; winner=2 → De Minaur won
+        # td Winner=De Minaur → B365W=1.80 belongs to winner(De Minaur=p2) → b365_p2=1.80, b365_p1=B365L=2.00
+        assert abs(float(row.iloc[0]["b365_p1"]) - 2.00) < 0.01, (
+            f"winner=2: b365_p1 should be 2.00 (B365L), got {row.iloc[0]['b365_p1']}"
+        )
