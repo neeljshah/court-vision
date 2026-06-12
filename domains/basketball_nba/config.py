@@ -137,6 +137,8 @@ __all__ = [
     "NBA_GAME_STATE",
     "NBA_COURT",
     "NBA_SPEED",
+    "NBA_SPORT_CONTEXT",
+    "SPORT_CONTEXT",
 ]
 
 # ---------------------------------------------------------------------------
@@ -247,16 +249,8 @@ NBA_GAME_STATE: GameStateConfig = GameStateConfig(
 
 # ---------------------------------------------------------------------------
 # NBA court configuration — P0-D-013
-# ---------------------------------------------------------------------------
-# Source-of-truth literals:
-#   surface_w/h  ← space_control.py:17-18 (94.0/47*47=94, 50.0/25*25=50 ft)
-#   goal_x_left  ← unified_pipeline.py:401  _BASKET_L = (0.045, 0.5)
-#   goal_x_right ← unified_pipeline.py:402  _BASKET_R = (0.955, 0.5)
-#   rectified_px ← unified_pipeline.py:1062  940×500
-#   fps_native   ← unified_pipeline.py:99   30.0 (fallback default)
-#   three_pt_dist← unified_pipeline.py:3264 23.75 ft
-#   GRID_W/H     ← space_control.py:15-16   47, 25
-# NOTE: unified_pipeline.py is cv2/torch-HEAVY; court constants are AST-extracted.
+# Source-of-truth: space_control.py:17-18 (94×50 ft), unified_pipeline.py
+# (basket/rectify/fps/3pt literals). cv2/torch heavy — constants AST-extracted.
 # ---------------------------------------------------------------------------
 
 NBA_COURT: CourtConfig = CourtConfig(
@@ -278,12 +272,8 @@ NBA_COURT: CourtConfig = CourtConfig(
 
 # ---------------------------------------------------------------------------
 # NBA speed configuration — P0-D-013
-# ---------------------------------------------------------------------------
-# Source-of-truth literals:
-#   video_fps          ← unified_pipeline.py:99  cap.get(cv2.CAP_PROP_FPS) or 30.0
-#   drive_min (ft/s)   ← unified_pipeline.py speed tier (10 ft/s)
-#   cut_min (ft/s)     ← event_detector.py:18  _DRIBBLE_MAX_VEL = 14.0 ft/s
-#   screen_dist_ft     ← space_control.py:21  BASE_REACH_FT = 6.0 ft
+# Source-of-truth: unified_pipeline.py (fps/drive_min), event_detector.py:18
+# (_DRIBBLE_MAX_VEL=14), space_control.py:21 (BASE_REACH_FT=6).
 # ---------------------------------------------------------------------------
 
 NBA_SPEED: SpeedConfig = SpeedConfig(
@@ -294,3 +284,37 @@ NBA_SPEED: SpeedConfig = SpeedConfig(
     },
     screen_dist_ft=6.0,
 )
+
+# ---------------------------------------------------------------------------
+# NBA SportContext assembly — P0-D-017
+# Adapter imports are deferred to here (not module top) — all three adapters
+# are offline-safe at instantiation.  Verbose atlas lives in atlas.py.
+# ---------------------------------------------------------------------------
+from pathlib import Path  # noqa: E402
+from kernel.config.context import SportContext  # noqa: E402
+from kernel.config.registry import register_sport  # noqa: E402
+from .atlas import NBA_ATLAS  # noqa: E402
+from .entity_registry import NBAEntityRegistry  # noqa: E402
+from .league_client import NBALeagueClient  # noqa: E402
+from .pbp_mapper import NBAPBPEventMapper  # noqa: E402
+
+NBA_SPORT_CONTEXT: SportContext = SportContext(
+    stats=NBA_STAT_REGISTRY,
+    clock=NBA_CLOCK,
+    roster=NBA_ROSTER,
+    game_state=NBA_GAME_STATE,
+    court=NBA_COURT,
+    speed=NBA_SPEED,
+    pbp_mapper=NBAPBPEventMapper(),
+    league_client=NBALeagueClient(),
+    entities=NBAEntityRegistry(),
+    source_tiers={"cdn_livedata": 4, "stats_api": 3, "bbref": 2, "broadcast_cv": 1},
+    atlas_schema=NBA_ATLAS,
+    artifact_root=Path("data"),
+)
+
+#: ``load_sport("basketball_nba")`` discovers this attribute by name.
+SPORT_CONTEXT: SportContext = NBA_SPORT_CONTEXT
+
+# Idempotent — setdefault in registry; re-importing never errors.
+register_sport(NBA_SPORT_CONTEXT)
