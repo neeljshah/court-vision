@@ -290,3 +290,307 @@ def test_run_pytest_no_timeout_args_when_unavailable(monkeypatch):
     monkeypatch.setattr(gates, "_PYTEST_TIMEOUT_AVAILABLE", False)
     gates.run_pytest(targets=["tests/platform/test_harness_gates.py"], timeout=10)
     assert "--timeout=300" not in captured["cmd"] and "--timeout-method=thread" not in captured["cmd"]
+
+
+# ---------------------------------------------------------------------------
+# 11. P0-H-004 — hermeticity_gate unit tests
+# ---------------------------------------------------------------------------
+
+def test_hermeticity_gate_pass_when_no_diff():
+    """Identical before/after → PASS."""
+    snap = {" M src/foo.py", "?? tests/tmp.txt"}
+    result = gates.hermeticity_gate(snap, snap.copy(), "wave")
+    assert result["gate"] == "HERMETICITY"
+    assert result["status"] == "PASS"
+
+
+def test_hermeticity_gate_fail_when_file_added():
+    """New porcelain entry after pytest → FAIL and file named in offending."""
+    before = {" M src/foo.py"}
+    after = {" M src/foo.py", " M src/bar.py"}
+    result = gates.hermeticity_gate(before, after, "task")
+    assert result["status"] == "FAIL"
+    assert result["gate"] == "HERMETICITY"
+    assert any("src/bar.py" in entry for entry in result["offending"])
+
+
+def test_hermeticity_gate_fail_names_all_offending():
+    """All mutated paths appear in the offending list."""
+    before: set = set()
+    after = {" M src/alpha.py", " M src/beta.py"}
+    result = gates.hermeticity_gate(before, after, "wave")
+    assert result["status"] == "FAIL"
+    assert len(result["offending"]) == 2
+
+
+def test_hermeticity_gate_fail_when_file_removed():
+    """Porcelain entry disappearing (e.g. staged/restored) counts as a mutation."""
+    before = {" M src/foo.py", " M src/bar.py"}
+    after = {" M src/foo.py"}
+    result = gates.hermeticity_gate(before, after, "task")
+    assert result["status"] == "FAIL"
+    assert any("src/bar.py" in e for e in result["offending"])
+
+
+def test_hermeticity_gate_empty_snapshots_pass():
+    """Both snapshots empty (clean tree both sides) → PASS."""
+    result = gates.hermeticity_gate(set(), set(), "wave")
+    assert result["status"] == "PASS"
+
+
+def test_hermeticity_gate_allowlist_exempts_entry(monkeypatch):
+    """An entry in HERMETICITY_ALLOWLIST is not counted as an offending mutation."""
+    exempt_line = " M scripts/generated_output.py"
+    monkeypatch.setattr(gates, "HERMETICITY_ALLOWLIST",
+                        frozenset([exempt_line]))
+    before: set = set()
+    after = {exempt_line}
+    result = gates.hermeticity_gate(before, after, "wave")
+    assert result["status"] == "PASS"
+
+
+def test_hermeticity_gate_non_allowlisted_still_fails(monkeypatch):
+    """Allowlist only covers the listed entry; other mutations still FAIL."""
+    exempt_line = " M scripts/generated_output.py"
+    monkeypatch.setattr(gates, "HERMETICITY_ALLOWLIST",
+                        frozenset([exempt_line]))
+    before: set = set()
+    after = {exempt_line, " M src/real_change.py"}
+    result = gates.hermeticity_gate(before, after, "wave")
+    assert result["status"] == "FAIL"
+    assert any("src/real_change.py" in e for e in result["offending"])
+
+
+def test_hermeticity_gate_fail_appends_ledger(monkeypatch, tmp_path):
+    """On FAIL, hermeticity_gate appends an entry to the harness ledger."""
+    import json
+
+    fake_ledger = tmp_path / "phase_ledger.jsonl"
+    monkeypatch.setattr(gates.harness_state, "LEDGER", fake_ledger)
+
+    before: set = set()
+    after = {" M src/tainted.py"}
+    result = gates.hermeticity_gate(before, after, "task")
+    assert result["status"] == "FAIL"
+    assert fake_ledger.exists()
+    lines = [json.loads(l) for l in fake_ledger.read_text().splitlines() if l.strip()]
+    assert len(lines) == 1
+    assert lines[0]["event"] == "hermeticity_fail"
+    assert lines[0]["tier"] == "task"
+    assert any("src/tainted.py" in p for p in lines[0]["offending"])
+
+
+def test_hermeticity_gate_pass_does_not_write_ledger(monkeypatch, tmp_path):
+    """On PASS, hermeticity_gate must not write to the ledger."""
+    fake_ledger = tmp_path / "phase_ledger.jsonl"
+    monkeypatch.setattr(gates.harness_state, "LEDGER", fake_ledger)
+    snap = {" M src/foo.py"}
+    gates.hermeticity_gate(snap, snap.copy(), "wave")
+    assert not fake_ledger.exists()
+
+
+# ---------------------------------------------------------------------------
+# 12. P0-H-004 — HERMETICITY wired into _scoped_g1 (mutation detection)
+# ---------------------------------------------------------------------------
+
+def test_scoped_g1_hermeticity_red_on_mutation(monkeypatch):
+    """Criterion 1: mutating a tracked file mid-gate turns HERMETICITY red + names the file.
+
+    Strategy: mock _git_porcelain to return a different set the second time it's
+    called (simulating a file appearing dirty after pytest writes to it), and mock
+    run_pytest to succeed fast.  Verify the returned gate list contains a
+    HERMETICITY FAIL entry that names the mutated file.
+    """
+    mutated_line = " M src/kernel/some_tracked_file.py"
+    call_count = {"n": 0}
+
+    def _fake_porcelain() -> set:
+        call_count["n"] += 1
+        # Before pytest: clean; after pytest: one file mutated.
+        if call_count["n"] == 1:
+            return set()
+        return {mutated_line}
+
+    monkeypatch.setattr(gates, "_git_porcelain", _fake_porcelain)
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 1, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    # Use a tiny synthetic file list; _scoped_g1 also needs select_tests to pick targets.
+    # Patch select_tests so it returns exactly one synthetic test file.
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+
+    results = gates._scoped_g1(["src/kernel/some_tracked_file.py"], tier="wave")
+
+    assert isinstance(results, list) and len(results) == 2
+    gate_names = {r["gate"] for r in results}
+    assert "G1" in gate_names and "HERMETICITY" in gate_names
+
+    herm = next(r for r in results if r["gate"] == "HERMETICITY")
+    assert herm["status"] == "FAIL", f"Expected HERMETICITY FAIL, got: {herm}"
+    assert any("src/kernel/some_tracked_file.py" in entry for entry in herm["offending"]), (
+        f"Mutated file not named in offending: {herm['offending']}"
+    )
+
+
+def test_scoped_g1_hermeticity_pass_no_mutation(monkeypatch):
+    """Criterion 2: three consecutive gate runs with no mutations all return HERMETICITY PASS."""
+    # Porcelain returns the same set every call (no drift).
+    stable_snap = {" M some/pre_existing_dirty.py"}
+    monkeypatch.setattr(gates, "_git_porcelain", lambda: set(stable_snap))
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 2, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+
+    # Run 3 consecutive times — all must be HERMETICITY PASS.
+    for i in range(3):
+        results = gates._scoped_g1(["src/sim/basketball_sim.py"], tier="wave")
+        herm = next(r for r in results if r["gate"] == "HERMETICITY")
+        assert herm["status"] == "PASS", (
+            f"Run {i + 1}/3: expected HERMETICITY PASS, got FAIL. offending={herm.get('offending')}"
+        )
+
+
+def test_scoped_g1_returns_list_of_two_gate_dicts(monkeypatch):
+    """_scoped_g1 always returns exactly [G1-dict, HERMETICITY-dict]."""
+    monkeypatch.setattr(gates, "_git_porcelain", lambda: set())
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 1, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+
+    results = gates._scoped_g1(["src/foo.py"], tier="task")
+    assert isinstance(results, list)
+    assert len(results) == 2
+    assert results[0]["gate"] == "G1"
+    assert results[1]["gate"] == "HERMETICITY"
+
+
+def test_scoped_g1_skip_returns_two_skip_dicts(monkeypatch):
+    """When G1 is skipped (select_tests unavailable), both dicts are SKIP."""
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", False)
+    results = gates._scoped_g1(["src/foo.py"], tier="wave")
+    assert isinstance(results, list) and len(results) == 2
+    assert all(r["status"] == "SKIP" for r in results)
+    assert results[0]["gate"] == "G1"
+    assert results[1]["gate"] == "HERMETICITY"
+
+
+# ---------------------------------------------------------------------------
+# 13. P0-H-004 — HERMETICITY appears in run_tier gates list
+# ---------------------------------------------------------------------------
+
+def test_run_tier_task_includes_hermeticity_on_success(monkeypatch):
+    """task tier: HERMETICITY gate appears in the gates list after a clean run."""
+    monkeypatch.setattr(gates, "_git_porcelain", lambda: set())
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 1, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+    monkeypatch.setattr(gates, "_script_exists", lambda rel: False)
+
+    result = gates.run_tier("task", task_files=["src/sim/basketball_sim.py"])
+    gate_names = [g["gate"] for g in result["gates"]]
+    assert "HERMETICITY" in gate_names
+
+
+def test_run_tier_wave_includes_hermeticity_on_success(monkeypatch):
+    """wave tier: HERMETICITY gate appears in the gates list after a clean run."""
+    monkeypatch.setattr(gates, "_git_porcelain", lambda: set())
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 1, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+    monkeypatch.setattr(gates, "_script_exists", lambda rel: False)
+
+    result = gates.run_tier("wave", task_files=["src/sim/basketball_sim.py"])
+    gate_names = [g["gate"] for g in result["gates"]]
+    assert "HERMETICITY" in gate_names
+
+
+def test_run_tier_task_hermeticity_fail_makes_verdict_fail(monkeypatch):
+    """task tier: a HERMETICITY FAIL propagates to overall FAIL verdict."""
+    call_count = {"n": 0}
+
+    def _dirty_after() -> set:
+        call_count["n"] += 1
+        return set() if call_count["n"] == 1 else {" M src/dirty.py"}
+
+    monkeypatch.setattr(gates, "_git_porcelain", _dirty_after)
+    monkeypatch.setattr(gates, "run_pytest", lambda targets=None, timeout=1800: {
+        "ran": True, "timed_out": False, "passed": 1, "failed": 0,
+        "skipped": 0, "errors": 0, "rc": 0, "elapsed_s": 0.01,
+    })
+    import types
+    fake_st = types.SimpleNamespace(
+        select=lambda files, repo_root=None: {
+            "tests": ["tests/platform/test_harness_gates.py"],
+            "sentinel": None,
+            "reason": "synthetic",
+            "rules_fired": [],
+        }
+    )
+    monkeypatch.setattr(gates, "_select_tests", fake_st)
+    monkeypatch.setattr(gates, "_SELECT_AVAILABLE", True)
+    monkeypatch.setattr(gates, "_script_exists", lambda rel: False)
+
+    result = gates.run_tier("task", task_files=["src/sim/basketball_sim.py"])
+    assert result["verdict"] == "FAIL"
+    herm = next(g for g in result["gates"] if g["gate"] == "HERMETICITY")
+    assert herm["status"] == "FAIL"
+    assert any("src/dirty.py" in e for e in herm["offending"])
