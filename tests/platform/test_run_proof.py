@@ -16,7 +16,6 @@ import pytest
 from scripts.platform.proof_tennis.proof_metrics import (
     brier, clv_sign_invariants, ece, isotonic_calibrate, reliability_slope,
 )
-import pandas as pd
 from domains.tennis.adapter import TennisAdapter
 from domains.tennis.signals import FatigueRestSignal, H2HResidualSignal, SurfaceTransitionSignal
 from src.loop.gate import FeatureBundle, evaluate
@@ -220,3 +219,76 @@ class TestF5Compliance:
         import_src = self._import_lines(inspect.getsource(m))
         for f in self._FORBIDDEN:
             assert f not in import_src, f"F5 violation: '{f}' in domains/tennis/signals.py"
+
+
+# ---------------------------------------------------------------------------
+# V4: paper portfolio walk-forward tests
+# ---------------------------------------------------------------------------
+
+class TestV4PaperPortfolio:
+    """V4: paper book disclaimer, drawdown gate injection, kelly/clamp exercised."""
+
+    # Edge-claim denylist: these strings must NOT appear in the paper_book output
+    _EDGE_DENYLIST = ["proven edge", "ROI", "profitable", "+EV", "beat the market"]
+
+    def test_run_v4_produces_paper_book_with_disclaimer(self, synthetic_corpus, tmp_path):
+        from scripts.platform.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
+        matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
+        odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
+        adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
+        paper_dir = tmp_path / "paper_book"
+        result = run_v4(adapter, paper_book_dir=paper_dir)
+
+        assert isinstance(result, dict)
+        assert "ok" in result
+        assert "detail" in result
+        # disclaimer must appear in detail
+        detail = result["detail"]
+        assert "disclaimer" in detail
+        assert _V4_DISCLAIMER in detail["disclaimer"]
+        # paper book file must exist and contain disclaimer
+        book_path = paper_dir / "paper_book.json"
+        assert book_path.exists(), "paper_book.json not written"
+        import json as _json
+        book = _json.loads(book_path.read_text(encoding="utf-8"))
+        assert "disclaimer" in book
+        assert _V4_DISCLAIMER in book["disclaimer"]
+
+    def test_drawdown_injection_fires(self, synthetic_corpus, tmp_path):
+        """check_drawdown_ok must return False on a >15% losing streak."""
+        from src.prediction.betting_portfolio import check_drawdown_ok
+        # Direct unit test: 20% loss must exceed 15% threshold
+        assert not check_drawdown_ok(1000.0, 800.0), (
+            "check_drawdown_ok should return False when bankroll drops 20%"
+        )
+        # V4 must record drawdown_inject_fired=True
+        from scripts.platform.proof_tennis.proof_runner import run_v4
+        matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
+        odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
+        adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
+        result = run_v4(adapter, paper_book_dir=tmp_path / "pb2")
+        assert result["detail"].get("drawdown_inject_fired") is True
+
+    def test_kelly_and_clamp_exercised(self):
+        """kelly/clamp decision-kernel seam: smoke test."""
+        from src.prediction.betting_portfolio import KELLY_FRACTION, clamp_kelly_pct
+        # KELLY_FRACTION must be a positive float
+        assert isinstance(KELLY_FRACTION, float) and KELLY_FRACTION > 0
+        # clamp_kelly_pct: negative → 0, large → capped, None → None
+        assert clamp_kelly_pct(-0.5) == 0.0
+        assert clamp_kelly_pct(999.0) == pytest.approx(0.25, abs=1e-6)
+        assert clamp_kelly_pct(None) is None
+
+    def test_no_edge_claim_strings_in_output(self, synthetic_corpus, tmp_path):
+        """Denylist: no edge/ROI claim strings in paper book JSON."""
+        from scripts.platform.proof_tennis.proof_runner import run_v4
+        matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
+        odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
+        adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
+        paper_dir = tmp_path / "pb3"
+        run_v4(adapter, paper_book_dir=paper_dir)
+        book_path = paper_dir / "paper_book.json"
+        if book_path.exists():
+            text = book_path.read_text(encoding="utf-8").lower()
+            for bad in self._EDGE_DENYLIST:
+                assert bad.lower() not in text, f"Edge claim '{bad}' found in paper_book.json"
