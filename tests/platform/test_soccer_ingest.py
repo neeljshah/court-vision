@@ -553,3 +553,84 @@ def test_malformed_date_row_dropped_no_crash() -> None:
     assert len(o) == 3, f"Expected 3 odds rows, got {len(o)}"
     assert "orphan" not in " ".join(o["event_id"].tolist()).lower()
     assert "ghost" not in " ".join(o["event_id"].tolist()).lower()
+
+
+# ---------------------------------------------------------------------------
+# 15. Regression: mixed date formats across files must all parse (FIX-FORWARD)
+# ---------------------------------------------------------------------------
+
+def test_mixed_date_formats_across_files_all_parse() -> None:
+    """Two files with different date formats in the same season must both survive.
+
+    football-data.co.uk uses dd/mm/yyyy in some files (e.g. E0 1516) and
+    dd/mm/yy in others (e.g. D1 1516).  Parsing AFTER concat with a single
+    pd.to_datetime call infers one format and coerces the other to NaT, silently
+    dropping ~6,000 matches.  Parsing PER-FILE (before concat) fixes this.
+    """
+    import datetime as _dt
+
+    # Frame A: Premier League 2015 — 4-digit year dates (dd/mm/yyyy)
+    frame_a = pd.DataFrame({
+        "Div":      ["E0",          "E0"],
+        "Date":     ["08/08/2015",  "15/08/2015"],
+        "HomeTeam": ["Arsenal",     "Chelsea"],
+        "AwayTeam": ["West Ham",    "Swansea"],
+        "FTHG":     [2.0,           1.0],
+        "FTAG":     [0.0,           2.0],
+        "FTR":      ["H",           "A"],
+        "B365>2.5": [1.80,          1.90],
+        "B365<2.5": [2.00,          1.95],
+        "B365C>2.5":[1.82,          1.88],
+        "B365C<2.5":[1.98,          1.97],
+    })
+
+    # Frame B: Bundesliga 2015 — 2-digit year dates (dd/mm/yy)
+    frame_b = pd.DataFrame({
+        "Div":      ["D1",          "D1"],
+        "Date":     ["14/08/15",    "22/08/15"],
+        "HomeTeam": ["Bayern",      "Dortmund"],
+        "AwayTeam": ["Hamburg",     "Schalke"],
+        "FTHG":     [3.0,           1.0],
+        "FTAG":     [1.0,           1.0],
+        "FTR":      ["H",           "D"],
+        "B365>2.5": [1.75,          1.85],
+        "B365<2.5": [2.10,          2.05],
+        "B365C>2.5":[1.77,          1.87],
+        "B365C<2.5":[2.08,          2.03],
+    })
+
+    frames = [("E0", 2015, frame_a), ("D1", 2015, frame_b)]
+
+    # --- build_matches: all 4 rows must survive (no NaT drops) ---
+    m = build_matches(frames)
+    assert len(m) == 4, (
+        f"Expected 4 rows (2 per file, 0 NaT drops), got {len(m)}. "
+        "Mixed-format date parsing across files is silently dropping rows."
+    )
+
+    # Correct calendar dates for 4-digit-year file (frame A)
+    assert _dt.date(2015, 8, 8) in m["date"].dt.date.tolist(), \
+        "08/08/2015 (4-digit year) did not parse to 2015-08-08"
+    assert _dt.date(2015, 8, 15) in m["date"].dt.date.tolist(), \
+        "15/08/2015 (4-digit year) did not parse to 2015-08-15"
+
+    # Correct calendar dates for 2-digit-year file (frame B)
+    assert _dt.date(2015, 8, 14) in m["date"].dt.date.tolist(), \
+        "14/08/15 (2-digit year) did not parse to 2015-08-14"
+    assert _dt.date(2015, 8, 22) in m["date"].dt.date.tolist(), \
+        "22/08/15 (2-digit year) did not parse to 2015-08-22"
+
+    # Spot-check a known event_id from frame A
+    assert "20150808-E0-arsenal-west_ham" in m["event_id"].tolist(), \
+        "event_id for Arsenal v West Ham (08/08/2015) not found or malformed"
+
+    # Spot-check a known event_id from frame B
+    assert "20150814-D1-bayern-hamburg" in m["event_id"].tolist(), \
+        "event_id for Bayern v Hamburg (14/08/15) not found or malformed"
+
+    # --- build_odds: all 4 rows must survive ---
+    o = build_odds(frames)
+    assert len(o) == 4, (
+        f"Expected 4 odds rows (0 NaT drops), got {len(o)}. "
+        "Mixed-format date parsing across files is silently dropping rows."
+    )

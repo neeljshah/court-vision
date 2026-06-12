@@ -149,11 +149,12 @@ def build_matches(frames: Iterable[FrameTuple]) -> pd.DataFrame:
     """
     parts: List[pd.DataFrame] = []
     for div, season_yr, raw in frames:
-        df = raw.copy(); df["_div"] = str(div); df["_season"] = int(season_yr); parts.append(df)
+        df = raw.copy(); df["_div"] = str(div); df["_season"] = int(season_yr)
+        df["date"] = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce")
+        parts.append(df)
     if not parts:
         return pd.DataFrame(columns=list(MATCHES_COLS))
     combined = pd.concat(parts, ignore_index=True)
-    combined["date"] = pd.to_datetime(combined["Date"], dayfirst=True, errors="coerce")
     combined = combined.dropna(subset=["date"]).copy()
     n_before = len(combined)
     combined = combined.dropna(subset=["FTHG", "FTAG"]).copy()
@@ -186,11 +187,12 @@ def build_odds(frames: Iterable[FrameTuple]) -> pd.DataFrame:
     """
     parts: List[pd.DataFrame] = []
     for div, _, raw in frames:
-        df = raw.copy(); df["_div"] = str(div); parts.append(df)
+        df = raw.copy(); df["_div"] = str(div)
+        df["date"] = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce")
+        parts.append(df)
     if not parts:
         return pd.DataFrame(columns=list(ODDS_COLS))
     combined = pd.concat(parts, ignore_index=True)
-    combined["date"] = pd.to_datetime(combined["Date"], dayfirst=True, errors="coerce")
     combined = combined.dropna(subset=["date"]).copy()
     combined["home_team"] = combined["HomeTeam"].astype(str)
     combined["away_team"] = combined["AwayTeam"].astype(str)
