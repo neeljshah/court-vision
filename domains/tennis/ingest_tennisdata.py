@@ -45,7 +45,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from domains.tennis.name_aliases import normalize_td, normalize_sackmann, ALIASES
+from domains.tennis.name_aliases import normalize_td, normalize_sackmann, ALIASES, candidate_keys
 
 
 # ---------------------------------------------------------------------------
@@ -180,13 +180,19 @@ def load_raw_season_files(
 # ---------------------------------------------------------------------------
 
 def _add_norm_keys(df: pd.DataFrame) -> pd.DataFrame:
-    """Add _norm_winner and _norm_loser columns (alias-resolved canonical keys)."""
+    """Add _norm_winner/_norm_loser (primary key) and _cands_winner/_cands_loser (candidate sets)."""
     df = df.copy()
     df["_norm_winner"] = df["Winner"].fillna("").apply(
         lambda n: ALIASES.get(normalize_td(n), normalize_td(n))
     )
     df["_norm_loser"] = df["Loser"].fillna("").apply(
         lambda n: ALIASES.get(normalize_td(n), normalize_td(n))
+    )
+    df["_cands_winner"] = df["Winner"].fillna("").apply(
+        lambda n: candidate_keys(n, "td") if n else {""}
+    )
+    df["_cands_loser"] = df["Loser"].fillna("").apply(
+        lambda n: candidate_keys(n, "td") if n else {""}
     )
     return df
 
@@ -196,13 +202,19 @@ def _add_norm_keys(df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def _add_match_norm_keys(matches: pd.DataFrame) -> pd.DataFrame:
-    """Add _norm_p1 and _norm_p2 (Sackmann canonical keys) to matches frame."""
+    """Add _norm_p1/_norm_p2 (primary key) and _cands_p1/_cands_p2 (candidate sets)."""
     matches = matches.copy()
     matches["_norm_p1"] = matches["p1_name"].fillna("").apply(
         lambda n: ALIASES.get(normalize_sackmann(n), normalize_sackmann(n))
     )
     matches["_norm_p2"] = matches["p2_name"].fillna("").apply(
         lambda n: ALIASES.get(normalize_sackmann(n), normalize_sackmann(n))
+    )
+    matches["_cands_p1"] = matches["p1_name"].fillna("").apply(
+        lambda n: candidate_keys(n, "sackmann") if n else {""}
+    )
+    matches["_cands_p2"] = matches["p2_name"].fillna("").apply(
+        lambda n: candidate_keys(n, "sackmann") if n else {""}
     )
     return matches
 
@@ -261,23 +273,47 @@ def join_odds(
     joined_rows: list[dict] = []
     unjoined_rows: list[pd.Series] = []
 
-    # Convert matches to a structure we can search quickly
-    # Index on (tour, norm_pair_frozenset) for fast candidate lookup
-    # norm_pair = frozenset of (_norm_p1, _norm_p2)
+    # Build a multi-candidate index on (tour, frozenset-of-any-candidate-key-pair).
+    # For each Sackmann match, enumerate the CARTESIAN product of its two players'
+    # candidate-key sets and register the match under each frozenset pair.
     from collections import defaultdict
     match_index: dict[tuple[str, frozenset], list[pd.Series]] = defaultdict(list)
     for _, m in matches_df.iterrows():
-        key = (str(m.get("tour", "")), frozenset([m["_norm_p1"], m["_norm_p2"]]))
-        match_index[key].append(m)
+        tour_key = str(m.get("tour", ""))
+        cands_p1: set = m.get("_cands_p1") or {m["_norm_p1"]}
+        cands_p2: set = m.get("_cands_p2") or {m["_norm_p2"]}
+        # Also include the primary (single) norm key as a fallback
+        cands_p1 = cands_p1 | {m["_norm_p1"]}
+        cands_p2 = cands_p2 | {m["_norm_p2"]}
+        seen_pairs: set = set()
+        for k1 in cands_p1:
+            for k2 in cands_p2:
+                pair = frozenset([k1, k2])
+                if pair not in seen_pairs:
+                    match_index[(tour_key, pair)].append(m)
+                    seen_pairs.add(pair)
 
     for _, td_row in completed_df.iterrows():
         td_date = td_row.get("_date")
         tour = str(td_row.get("_tour", ""))
-        nw = td_row["_norm_winner"]
-        nl = td_row["_norm_loser"]
-        pair_key = frozenset([nw, nl])
 
-        candidates = match_index.get((tour, pair_key), [])
+        # Build candidate key sets for both sides of the td row
+        cands_w: set = td_row.get("_cands_winner") or {td_row["_norm_winner"]}
+        cands_l: set = td_row.get("_cands_loser") or {td_row["_norm_loser"]}
+        cands_w = cands_w | {td_row["_norm_winner"]}
+        cands_l = cands_l | {td_row["_norm_loser"]}
+
+        # Collect all matching Sackmann candidates (deduplicated by event_id)
+        seen_eids: set = set()
+        candidates: list[pd.Series] = []
+        for kw in cands_w:
+            for kl in cands_l:
+                pair_key = frozenset([kw, kl])
+                for m in match_index.get((tour, pair_key), []):
+                    eid = m.get("event_id")
+                    if eid not in seen_eids:
+                        candidates.append(m)
+                        seen_eids.add(eid)
 
         # Filter by date window
         if td_date is not None:
