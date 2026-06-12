@@ -499,3 +499,57 @@ class TestForbiddenImports:
                 assert not node.module.startswith("src."), f"Forbidden: from {node.module}"
                 assert not node.module.startswith("domains.nba"), f"F5: from {node.module}"
                 assert not node.module.startswith("domains.basketball_nba"), f"F5: from {node.module}"
+
+
+# ---------------------------------------------------------------------------
+# 14. Regression: malformed/blank Date rows must not crash (NaT strftime bug)
+# ---------------------------------------------------------------------------
+
+def test_malformed_date_row_dropped_no_crash() -> None:
+    """Rows with unparseable Date values (blank, garbage) must be silently dropped.
+
+    Before the fix, these rows yielded NaT after pd.to_datetime(..., errors='coerce')
+    and then crashed with ``ValueError: NaTType does not support strftime`` when
+    _make_event_id called ``f"{date:%Y%m%d}-..."``.  After the fix both build_matches
+    and build_odds must complete without error and the bad row must be absent from
+    the output.
+    """
+    import numpy as np
+
+    # Build a small in-memory raw DataFrame with the football-data column set.
+    # 3 valid rows + 1 row with a garbage Date (but otherwise-valid FTHG/FTAG
+    # so it would pass the FTHG/FTAG filter and reach _make_event_id).
+    raw = pd.DataFrame({
+        "Div":      ["E0",          "E0",          "E0",          "E0"],
+        "Date":     ["15/08/2023",  "22/08/2023",  "29/08/2023",  ""],
+        "HomeTeam": ["Arsenal",     "Chelsea",     "Tottenham",   "Orphan"],
+        "AwayTeam": ["Brentford",   "Fulham",      "Brighton",    "Ghost"],
+        "FTHG":     [2.0,           1.0,           0.0,           3.0],
+        "FTAG":     [1.0,           1.0,           2.0,           1.0],
+        "FTR":      ["H",           "D",           "A",           "H"],
+        # Minimal odds columns — enough that build_odds finds a price for valid rows
+        "B365>2.5": [1.80,          1.90,          1.75,          1.85],
+        "B365<2.5": [2.00,          1.95,          2.10,          2.05],
+        "B365C>2.5":[1.82,          1.88,          1.77,          1.87],
+        "B365C<2.5":[1.98,          1.97,          2.08,          2.03],
+        # Leave Pinnacle/Avg absent — build_odds handles missing cols gracefully
+    })
+
+    frames = [("E0", 2023, raw)]
+
+    # --- build_matches must not raise, and bad row must be gone ---
+    m = build_matches(frames)
+    assert len(m) == 3, f"Expected 3 valid rows, got {len(m)}"
+    assert "Orphan" not in m["home_team"].values
+    assert "Ghost" not in m["away_team"].values
+    # Valid rows survive with correct event_id format
+    for eid in m["event_id"]:
+        assert eid[:8].isdigit(), f"Bad event_id format: {eid}"
+        assert "-E0-" in eid
+
+    # --- build_odds must not raise, and bad row must be gone ---
+    o = build_odds(frames)
+    # All 3 valid rows have B365 prices → should appear in odds output
+    assert len(o) == 3, f"Expected 3 odds rows, got {len(o)}"
+    assert "orphan" not in " ".join(o["event_id"].tolist()).lower()
+    assert "ghost" not in " ".join(o["event_id"].tolist()).lower()
