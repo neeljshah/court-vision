@@ -12,7 +12,16 @@ from typing import List, Optional
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(ROOT / "scripts" / "platform"))
 import harness_state  # noqa: E402
+
+# Lazy import of select_tests — absent during bootstrap before select_tests.py is written.
+try:
+    import select_tests as _select_tests  # noqa: E402
+    _SELECT_AVAILABLE = True
+except ImportError:
+    _select_tests = None  # type: ignore[assignment]
+    _SELECT_AVAILABLE = False
 
 # ---------------------------------------------------------------------------
 # Protected-file registry (§6.4)
@@ -214,6 +223,53 @@ def _verdict(gates: List[dict]) -> str:
     return "PARTIAL" if (statuses & {"SKIP", "UNAVAILABLE"}) else "PASS"
 
 
+def _scoped_g1(files: List[str], tier: str = "wave") -> dict:
+    """Run G1 over the blast-radius test selection for *files*.
+
+    Wave tier: replaces the old full-suite g1(); full-suite G1 is PHASE-only.
+    Task tier: additional targeted pytest (EXECUTION_HARNESS §6.1).
+    Returns a gate dict with keys: gate, status, why, selection, elapsed_s.
+    """
+    if not _SELECT_AVAILABLE:
+        return _skip("G1", "select_tests unavailable — install scripts/platform/select_tests.py")
+
+    try:
+        sel = _select_tests.select(files, repo_root=ROOT)
+    except Exception as e:  # noqa: BLE001
+        return _skip("G1", f"select_tests.select() raised: {e}")
+
+    if sel.get("sentinel") == "ALL":
+        return _skip("G1", f"selection too broad → phase tier | {sel.get('reason', '')}")
+
+    targets = sel.get("tests") or []
+    if not targets:
+        return _skip("G1", "no tests selected by blast-radius selector")
+
+    # Resolve targets relative to ROOT
+    abs_targets = [str(ROOT / t) for t in targets]
+    t0 = time.monotonic()
+    res = run_pytest(targets=abs_targets)
+    elapsed = time.monotonic() - t0
+
+    if res.get("timed_out"):
+        return {"gate": "G1", "status": "FAIL",
+                "why": f"scoped pytest timed out after {res.get('elapsed_s', 0):.1f}s",
+                "selection": targets, "elapsed_s": elapsed, "timed_out": True}
+    if not res.get("ran"):
+        return _skip("G1", f"scoped pytest failed to run: {res.get('error')}")
+
+    ok = res["failed"] == 0 and res["errors"] == 0
+    return {
+        "gate": "G1",
+        "status": "PASS" if ok else "FAIL",
+        "why": (f"scoped: {len(targets)} files, {res['passed']}p {res['failed']}f {res['errors']}e"
+                f" in {elapsed:.1f}s"),
+        "selection": targets,
+        "elapsed_s": elapsed,
+        "counts": {k: res[k] for k in ("passed", "failed", "skipped", "errors")},
+    }
+
+
 def run_tier(tier: str, task_files: Optional[List[str]] = None,
              phase: Optional[str] = None) -> dict:
     """Orchestrate gates for *tier* (task/wave/phase). Returns {tier, verdict, gates}."""
@@ -233,14 +289,13 @@ def run_tier(tier: str, task_files: Optional[List[str]] = None,
                              for f in files)
         gs.append(import_contract() if kernel_touched
                   else _skip("IC", "no kernel/ files in task scope"))
+        # EXECUTION_HARNESS §6.1: targeted pytest for blast-radius files at task tier.
+        gs.append(_scoped_g1(files, tier="task"))
 
     elif tier == "wave":
         # Wave must NEVER run the full test suite (G1 full-suite run is PHASE-only).
-        # Absent baseline → SKIP; baseline capture belongs to P0-H-005.
-        if not PYTEST_BASELINE.exists():
-            gs.append(_skip("G1", "baseline capture is P0-H-005"))
-        else:
-            gs.append(g1())
+        # Scoped G1: select tests in blast radius; if too broad → SKIP with reason.
+        gs.append(_scoped_g1(task_files or [], tier="wave"))
         gs += [g5(), g4(), import_contract()]
 
     elif tier == "phase":
