@@ -130,4 +130,167 @@ NBA_STAT_REGISTRY: SportStatRegistry = SportStatRegistry(
     minutes_equiv="minutes",
 )
 
-__all__ = ["NBA_STAT_REGISTRY"]
+__all__ = [
+    "NBA_STAT_REGISTRY",
+    "NBA_CLOCK",
+    "NBA_ROSTER",
+    "NBA_GAME_STATE",
+    "NBA_COURT",
+    "NBA_SPEED",
+]
+
+# ---------------------------------------------------------------------------
+# NBA clock configuration — P0-D-013
+# ---------------------------------------------------------------------------
+# Source-of-truth literals (verbatim, never inferred):
+#   period_len_sec  ← src/sim/live_game_simulator.py:58  REG_PERIOD_SEC = 720
+#   ot_len_sec      ← src/sim/live_game_simulator.py:59  OT_PERIOD_SEC = 300
+#   play_clock_sec  ← src/tracking/possession_classifier.py:50  SHOT_CLOCK_MAX = 24.0
+#   penalty_threshold ← src/sim/possession_model.py:106  BONUS_FOULS = 5
+#   regulation_sec() == 4 × 720 = 2880 (asserted by conformance test)
+# ---------------------------------------------------------------------------
+from kernel.config.clock import GameClockConfig
+from kernel.config.court import CourtConfig
+from kernel.config.game_state import GameStateConfig
+from kernel.config.roster import PositionSchema, RosterConfig
+from kernel.config.speed import SpeedConfig
+
+NBA_CLOCK: GameClockConfig = GameClockConfig(
+    n_periods=4,
+    period_len_sec=720,
+    ot_len_sec=300,
+    untimed=False,
+    play_clock_sec=24,
+    penalty_threshold=5,
+    max_ot_periods=None,  # NBA plays until decided (unlimited OT)
+)
+
+# ---------------------------------------------------------------------------
+# NBA roster configuration — P0-D-013
+# ---------------------------------------------------------------------------
+# Source-of-truth literals:
+#   on_field_count  ← src/sim/live_game_simulator.py:61  PLAYERS_ON_COURT = 5
+#   foul_out_limit  ← src/prediction/foul_trouble_predictor.py:37  _FOUL_OUT_LIMIT = 6
+#   reach_ft        ← src/analytics/space_control.py:21  BASE_REACH_FT = 6.0
+#   roster_size=15, season_length_games=82 — NBA rules (no named constant in src/)
+#   positions — NBA standard (no named tuple constant in src/)
+# ---------------------------------------------------------------------------
+
+_NBA_POSITION_SCHEMA: PositionSchema = PositionSchema(
+    positions=("PG", "SG", "SF", "PF", "C"),
+    archetypes={
+        "guard": ("PG", "SG"),
+        "forward": ("SF", "PF"),
+        "center": ("C",),
+    },
+)
+
+NBA_ROSTER: RosterConfig = RosterConfig(
+    on_field_count=5,
+    roster_size=15,
+    season_length_games=82,
+    positions=_NBA_POSITION_SCHEMA,
+    substitution_model="free",
+    foul_out_limit=6,
+    reach_ft=6.0,
+)
+
+# ---------------------------------------------------------------------------
+# NBA game-state configuration — P0-D-013
+# ---------------------------------------------------------------------------
+# Primary values (canonical per-sport threshold):
+#   blowout_margin          = 15.0  game_models.py:100 (training threshold)
+#   clutch_margin           =  6.0  live_game_simulator.py:279 (wider of two)
+#   clutch_remaining_sec    = 360.0 live_game_simulator.py:279 (sec<=360)
+#   garbage_margin          = 18.0  garbage_time_detector.py:157 (live detect)
+#   competitive_margin      = 12.0  upper bound "~5-12 pts competitive" (no named const)
+#   final_margin_sigma      = 13.5  universal_winprob.py:28  SIGMA_FULL_DEFAULT
+#   winprob_promotion_period=  4    universal_winprob.py:33  MIN_PERIOD_FOR_UNIVERSAL
+#
+# legacy_overrides — DISAGREEMENTS verbatim (never unified; see NBA_LITERALS.md §9):
+#   D-1: blowout — game_models training=15 vs garbage_time_detector live=18
+#         vs live_game_simulator live=18
+#   D-2: clutch margin — live_game_simulator=6 vs game_clock_sim=5
+#         clutch_remaining_sec — live_game_simulator=360 vs game_clock_sim=300
+# ---------------------------------------------------------------------------
+
+NBA_GAME_STATE: GameStateConfig = GameStateConfig(
+    blowout_margin=15.0,
+    clutch_margin=6.0,
+    clutch_remaining_sec=360.0,
+    garbage_margin=18.0,
+    competitive_margin=12.0,
+    final_margin_sigma=13.5,
+    winprob_promotion_period=4,
+    legacy_overrides={
+        # --- D-1: blowout disagreements ---
+        # game_models.py:100 — training/prediction label threshold
+        "game_models.blowout_margin": 15.0,
+        # garbage_time_detector.py:35 — training-mode blowout threshold
+        "garbage_time_detector.blowout_margin_training": 15.0,
+        # garbage_time_detector.py:157 — live detect_blowout threshold
+        "garbage_time_detector.blowout_margin": 18.0,
+        # live_game_simulator.py:185 — blowout+sec_remaining<=480 check
+        "live_game_simulator.blowout_margin": 18.0,
+        # --- D-2: clutch margin disagreements ---
+        # live_game_simulator.py:279 — margin<=6 AND sec<=360 AND period>=4
+        "live_game_simulator.clutch_margin": 6.0,
+        # game_clock_sim.py:171 — margin<=5 AND period>=4 AND clock<300
+        "game_clock_sim.clutch_margin": 5.0,
+        # --- D-2: clutch remaining-seconds disagreements ---
+        # live_game_simulator.py:279 — sec<=360 (6 minutes)
+        "live_game_simulator.clutch_remaining_sec": 360.0,
+        # game_clock_sim.py:171 — clock<300 (5 minutes)
+        "game_clock_sim.clutch_remaining_sec": 300.0,
+    },
+)
+
+# ---------------------------------------------------------------------------
+# NBA court configuration — P0-D-013
+# ---------------------------------------------------------------------------
+# Source-of-truth literals:
+#   surface_w/h  ← space_control.py:17-18 (94.0/47*47=94, 50.0/25*25=50 ft)
+#   goal_x_left  ← unified_pipeline.py:401  _BASKET_L = (0.045, 0.5)
+#   goal_x_right ← unified_pipeline.py:402  _BASKET_R = (0.955, 0.5)
+#   rectified_px ← unified_pipeline.py:1062  940×500
+#   fps_native   ← unified_pipeline.py:99   30.0 (fallback default)
+#   three_pt_dist← unified_pipeline.py:3264 23.75 ft
+#   GRID_W/H     ← space_control.py:15-16   47, 25
+# NOTE: unified_pipeline.py is cv2/torch-HEAVY; court constants are AST-extracted.
+# ---------------------------------------------------------------------------
+
+NBA_COURT: CourtConfig = CourtConfig(
+    surface_w=94.0,
+    surface_h=50.0,
+    unit="ft",
+    goal_x_left=0.045,
+    goal_x_right=0.955,
+    goal_y=0.5,
+    key_zones={},       # zone polygons deferred to P0-D-014
+    rectified_px=(940, 500),
+    fps_native=30.0,
+    speed_tiers={
+        "drive_min": 10.0,   # ft/s — drive to basket (unified_pipeline speed tier)
+        "cut_min":   14.0,   # ft/s — off-ball cut (_DRIBBLE_MAX_VEL, event_detector.py:18)
+    },
+    three_pt_dist=23.75,
+)
+
+# ---------------------------------------------------------------------------
+# NBA speed configuration — P0-D-013
+# ---------------------------------------------------------------------------
+# Source-of-truth literals:
+#   video_fps          ← unified_pipeline.py:99  cap.get(cv2.CAP_PROP_FPS) or 30.0
+#   drive_min (ft/s)   ← unified_pipeline.py speed tier (10 ft/s)
+#   cut_min (ft/s)     ← event_detector.py:18  _DRIBBLE_MAX_VEL = 14.0 ft/s
+#   screen_dist_ft     ← space_control.py:21  BASE_REACH_FT = 6.0 ft
+# ---------------------------------------------------------------------------
+
+NBA_SPEED: SpeedConfig = SpeedConfig(
+    video_fps=30.0,
+    thresholds_ft_s={
+        "drive_min": 10.0,
+        "cut_min":   14.0,
+    },
+    screen_dist_ft=6.0,
+)
