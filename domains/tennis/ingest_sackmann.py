@@ -124,12 +124,12 @@ def fetch_raw(
         base = _BASE_ATP if tour == "atp" else _BASE_WTA
         pfile = raw / f"sackmann/{tour}_players.csv"
         pfile.parent.mkdir(parents=True, exist_ok=True)
-        entries.append(_fetch_url(f"{base}/tennis_{tour}_players.csv", pfile))
+        entries.append(_fetch_url(f"{base}/{tour}_players.csv", pfile))
         time.sleep(_POLITENESS)
         for yr in years:
             mfile = raw / f"sackmann/{tour}_matches_{yr}.csv"
             mfile.parent.mkdir(parents=True, exist_ok=True)
-            murl = f"{base}/tennis_{tour}_matches_{yr}.csv"
+            murl = f"{base}/{tour}_matches_{yr}.csv"
             if mfile.exists() and mfile.stat().st_size > 0 and not force and yr != current_year:
                 entries.append({"url": murl, "file": str(mfile), "status": "cached"})
                 continue
