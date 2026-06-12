@@ -292,3 +292,62 @@ class TestV4PaperPortfolio:
             text = book_path.read_text(encoding="utf-8").lower()
             for bad in self._EDGE_DENYLIST:
                 assert bad.lower() not in text, f"Edge claim '{bad}' found in paper_book.json"
+
+    def test_run_v4_nan_corpus_no_crash(self, tmp_path):
+        """Regression: NaN raw_elo and NaN market line must not crash run_v4."""
+        import datetime as dt
+        from scripts.platform.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
+
+        rng = np.random.default_rng(77)
+        n = 60
+        players = list(range(2001, 2007))
+        years = rng.choice([2020, 2021, 2022, 2023], size=n, replace=True)
+        months = rng.integers(1, 12, size=n)
+        days = rng.integers(1, 28, size=n)
+        dates = [dt.date(int(y), int(m), int(d)).isoformat()
+                 for y, m, d in zip(years, months, days)]
+        p1_ids = rng.choice(players, size=n, replace=True)
+        p2_ids = np.array([rng.choice([p for p in players if p != p1]) for p1 in p1_ids])
+        event_ids = [f"nan-{i}" for i in range(n)]
+
+        # Inject NaN into p1_elo_prob for ~20% of rows (debut players)
+        elo_probs = rng.uniform(0.35, 0.65, n).astype(object)
+        nan_elo_idx = rng.choice(n, size=n // 5, replace=False)
+        for idx in nan_elo_idx:
+            elo_probs[idx] = float("nan")
+
+        matches_df = pd.DataFrame({
+            "event_id": event_ids, "date": dates, "tourney_id": ["t1"] * n,
+            "p1_id": p1_ids.astype(int), "p2_id": p2_ids.astype(int),
+            "winner": rng.choice([1, 2], size=n).astype(int),
+            "surface": rng.choice(["Hard", "Clay"], size=n),
+            "best_of": [3] * n, "tourney_level": ["A"] * n, "round": ["R32"] * n,
+            "match_num": list(range(1, n + 1)), "score": ["6-4 6-3"] * n, "tour": ["atp"] * n,
+            "p1_elo_prob": elo_probs,
+        })
+
+        # Inject NaN into ps_p1 (no odds available) for ~15% of rows
+        raw_a = rng.uniform(1.5, 3.5, n)
+        raw_b = rng.uniform(1.5, 3.5, n)
+        nan_odds_idx = rng.choice(n, size=n // 7, replace=False)
+        raw_a[nan_odds_idx] = float("nan")
+
+        odds_df = pd.DataFrame({
+            "event_id": event_ids,
+            "ps_p1": np.round(raw_a, 2), "ps_p2": np.round(raw_b, 2),
+            "b365_p1": np.round(raw_a * 0.98, 2), "b365_p2": np.round(raw_b * 0.98, 2),
+        })
+
+        adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
+        paper_dir = tmp_path / "nan_paper"
+        result = run_v4(adapter, paper_book_dir=paper_dir)
+
+        assert isinstance(result, dict), "run_v4 must return a dict"
+        detail = result.get("detail", {})
+        assert "disclaimer" in detail, "disclaimer must be present in detail"
+        assert _V4_DISCLAIMER in detail["disclaimer"], "disclaimer text must match"
+        n_skipped = detail.get("n_skipped_nan", -1)
+        assert n_skipped >= 0, f"n_skipped_nan must be reported; got {n_skipped}"
+        assert n_skipped > 0, (
+            f"Expected >0 skipped NaN rows (injected NaN elo + NaN odds); got {n_skipped}"
+        )
