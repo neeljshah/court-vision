@@ -16,25 +16,15 @@ import pandas as pd
 
 from src.loop.gate import FeatureBundle, evaluate
 from src.loop.signal import GateResult, Hypothesis, Signal, Verdict
-
 from domains.tennis.adapter import TennisAdapter
 from domains.tennis.signals import FatigueRestSignal, H2HResidualSignal, SurfaceTransitionSignal
-
 from scripts.platform.proof_tennis.proof_metrics import (
-    brier,
-    clv_sign_invariants,
-    ece,
-    isotonic_calibrate,
-    reliability_slope,
+    brier, clv_sign_invariants, ece, isotonic_calibrate, reliability_slope,
 )
-
-# Decision-kernel seam (sport-agnostic) — F5 OK
-from src.prediction.betting_portfolio import (
-    KELLY_FRACTION,
-    clamp_kelly_pct,
-    check_drawdown_ok,
+from src.prediction.betting_portfolio import (  # decision-kernel seam — F5 OK
+    KELLY_FRACTION, clamp_kelly_pct, check_drawdown_ok,
 )
-from src.prediction.bet_grades import letter_grade  # private/gitignored — import OK
+from src.prediction.bet_grades import letter_grade
 
 logger = logging.getLogger(__name__)
 _TRAIN_SEASONS = list(range(2018, 2023))
@@ -209,14 +199,10 @@ def run_v3(adapter: TennisAdapter) -> Dict[str, Any]:
     return {"ok": all(r["passed_expected"] for r in verdict_rows), "verdicts": verdict_rows}
 
 # --- V4: Paper portfolio walk-forward (ARTIFACT-DISCLAIMED) ---
-_V4_DISCLAIMER = (
-    "paper P&L is a market-follow artifact, not realized edge; "
-    "no real money; markets efficient"
-)
+_V4_DISCLAIMER = "paper P&L is a market-follow artifact, not realized edge; no real money; markets efficient"
 
 def run_v4(adapter: TennisAdapter, paper_book_dir: Optional[Path] = None) -> Dict[str, Any]:
     """V4: paper Kelly walk-forward exercising the sport-agnostic decision kernel."""
-    # Synthetic drawdown injection — always run first (independent of corpus)
     inject_fired = not check_drawdown_ok(1000.0, 800.0)  # 20% loss > 15% threshold
 
     results: Dict[str, Any] = {"ok": False, "note": "", "detail": {}}
@@ -243,12 +229,16 @@ def run_v4(adapter: TennisAdapter, paper_book_dir: Optional[Path] = None) -> Dic
                                    "disclaimer": _V4_DISCLAIMER}})
         return results
 
-    train_p, train_y = train_bundle.signal_col, train_bundle.target
-    joined = _filter_seasons(matches, eval_years).merge(
-        odds, on="event_id", how="inner"
-    )
+    train_p_raw, train_y_raw = train_bundle.signal_col, train_bundle.target
+    _fin = np.isfinite(train_p_raw) & np.isfinite(train_y_raw)
+    train_p, train_y = train_p_raw[_fin], train_y_raw[_fin]
+    _n_finite_train = int(_fin.sum())
+    _iso_ready = _n_finite_train >= 10
+
+    joined = _filter_seasons(matches, eval_years).merge(odds, on="event_id", how="inner")
     bankroll = bankroll_start = 1000.0
     bets_log: List[Dict[str, Any]] = []
+    n_skipped_nan = 0
     for _, row in joined.iterrows():
         try:
             pp1, pp2 = float(row["ps_p1"]), float(row["ps_p2"])
@@ -257,10 +247,19 @@ def run_v4(adapter: TennisAdapter, paper_book_dir: Optional[Path] = None) -> Dic
         except (TypeError, ValueError, KeyError):
             continue
         imp_p1 = (1.0 / pp1) / (1.0 / pp1 + 1.0 / pp2)
-        raw_elo = float(row.get("p1_elo_prob", imp_p1))
-        cal_p = float(np.clip(
-            isotonic_calibrate(train_p, train_y, np.array([raw_elo]))[0], 0.01, 0.99
-        ))
+        try:
+            raw_elo = float(row.get("p1_elo_prob", imp_p1))
+        except (TypeError, ValueError):
+            raw_elo = float("nan")
+        if not np.isfinite(raw_elo) or not np.isfinite(imp_p1):
+            n_skipped_nan += 1
+            continue
+        if _iso_ready:
+            cal_p = float(np.clip(
+                isotonic_calibrate(train_p, train_y, np.array([raw_elo]))[0], 0.01, 0.99
+            ))
+        else:
+            cal_p = float(np.clip(raw_elo, 0.01, 0.99))
         b = pp1 - 1.0
         edge = cal_p - imp_p1
         kelly_clamped = clamp_kelly_pct(
@@ -283,6 +282,7 @@ def run_v4(adapter: TennisAdapter, paper_book_dir: Optional[Path] = None) -> Dic
     paper_roi = round(paper_pnl / bankroll_start * 100, 2) if n_bets > 0 else 0.0
     detail = {"n_bets": n_bets, "kelly_fraction_used": KELLY_FRACTION,
               "risk_gate_fired": False, "drawdown_inject_fired": inject_fired,
+              "n_skipped_nan": n_skipped_nan, "n_finite_train": _n_finite_train,
               "paper_pnl_units": paper_pnl, "paper_return_pct": paper_roi,
               "disclaimer": _V4_DISCLAIMER}
 
