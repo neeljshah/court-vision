@@ -154,6 +154,7 @@ def build_matches(frames: Iterable[FrameTuple]) -> pd.DataFrame:
         return pd.DataFrame(columns=list(MATCHES_COLS))
     combined = pd.concat(parts, ignore_index=True)
     combined["date"] = pd.to_datetime(combined["Date"], dayfirst=True, errors="coerce")
+    combined = combined.dropna(subset=["date"]).copy()
     n_before = len(combined)
     combined = combined.dropna(subset=["FTHG", "FTAG"]).copy()
     if (n_dropped := n_before - len(combined)):
@@ -190,6 +191,7 @@ def build_odds(frames: Iterable[FrameTuple]) -> pd.DataFrame:
         return pd.DataFrame(columns=list(ODDS_COLS))
     combined = pd.concat(parts, ignore_index=True)
     combined["date"] = pd.to_datetime(combined["Date"], dayfirst=True, errors="coerce")
+    combined = combined.dropna(subset=["date"]).copy()
     combined["home_team"] = combined["HomeTeam"].astype(str)
     combined["away_team"] = combined["AwayTeam"].astype(str)
     combined["div"] = combined["_div"].astype(str)
