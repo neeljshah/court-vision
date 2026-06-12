@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-from _gate_surfaces import (
+from gate_surface_catalog import (
     ADHOC_FLAGS,
     PREEXISTING_FLAGS,
     VERDICT_LABEL,
