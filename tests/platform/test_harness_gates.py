@@ -65,12 +65,24 @@ def test_run_tier_task_protected_file_gate_details():
 # 3. run_tier("task") — non-protected kernel file → PASS or PARTIAL
 # ---------------------------------------------------------------------------
 
-def test_run_tier_task_kernel_file_not_fail():
+_CANNED_SCOPED_G1_PASS = [
+    {"gate": "G1", "status": "PASS",
+     "why": "scoped: 1 files, 1p 0f 0e in 0.0s", "selection": [], "elapsed_s": 0.01,
+     "counts": {"passed": 1, "failed": 0, "skipped": 0, "errors": 0}},
+    {"gate": "HERMETICITY", "status": "PASS", "tier": "task"},
+]
+
+
+def test_run_tier_task_kernel_file_not_fail(monkeypatch):
+    monkeypatch.setattr(gates, "_scoped_g1",
+                        lambda files, tier="task": list(_CANNED_SCOPED_G1_PASS))
     result = gates.run_tier("task", task_files=["kernel/x.py"])
     assert result["verdict"] in {"PASS", "PARTIAL"}
 
 
-def test_run_tier_task_kernel_file_ic_skips_when_absent():
+def test_run_tier_task_kernel_file_ic_skips_when_absent(monkeypatch):
+    monkeypatch.setattr(gates, "_scoped_g1",
+                        lambda files, tier="task": list(_CANNED_SCOPED_G1_PASS))
     result = gates.run_tier("task", task_files=["kernel/x.py"])
     statuses = {g["gate"]: g["status"] for g in result["gates"]}
     assert statuses.get("PROTECTED_SCAN") == "PASS"
@@ -105,7 +117,9 @@ def test_run_tier_phase_structure(monkeypatch, tmp_path):
 # 5. Structural checks
 # ---------------------------------------------------------------------------
 
-def test_run_tier_task_returns_tier_field():
+def test_run_tier_task_returns_tier_field(monkeypatch):
+    monkeypatch.setattr(gates, "_scoped_g1",
+                        lambda files, tier="task": list(_CANNED_SCOPED_G1_PASS))
     assert gates.run_tier("task", task_files=[])["tier"] == "task"
 
 
@@ -217,9 +231,21 @@ def test_g1_timeout_with_baseline_is_fail(monkeypatch, tmp_path):
 # 9. Wave tier — baseline absent → G1 SKIP with P0-H-005 reason (no full suite run)
 # ---------------------------------------------------------------------------
 
+_CANNED_SCOPED_G1_SKIP_H005 = [
+    {"gate": "G1", "status": "SKIP",
+     "why": "P0-H-005: baseline absent — scoped G1 runs only after P0-B-001 (pytest baseline) exists"},
+    {"gate": "HERMETICITY", "status": "SKIP",
+     "why": "G1 skipped — P0-H-005: baseline absent"},
+]
+
+
 def test_wave_tier_baseline_absent_g1_skips(monkeypatch, tmp_path):
     monkeypatch.setattr(gates, "PYTEST_BASELINE", tmp_path / "no_baseline.txt")
     monkeypatch.setattr(gates, "_script_exists", lambda rel: False)
+    # Hermetic: mock _scoped_g1 so no real subprocess is spawned.
+    # The canned result simulates the expected P0-H-005 skip reason.
+    monkeypatch.setattr(gates, "_scoped_g1",
+                        lambda *a, **kw: list(_CANNED_SCOPED_G1_SKIP_H005))
     monkeypatch.setattr(gates, "run_pytest", lambda *a, **kw: (_ for _ in ()).throw(
         AssertionError("run_pytest must NOT be called at wave tier when baseline absent")))
     result = gates.run_tier("wave")
@@ -233,6 +259,9 @@ def test_wave_tier_baseline_absent_g1_skips(monkeypatch, tmp_path):
 def test_wave_tier_baseline_absent_verdict_not_fail(monkeypatch, tmp_path):
     monkeypatch.setattr(gates, "PYTEST_BASELINE", tmp_path / "no_baseline.txt")
     monkeypatch.setattr(gates, "_script_exists", lambda rel: False)
+    # Hermetic: mock _scoped_g1 so no real subprocess is spawned.
+    monkeypatch.setattr(gates, "_scoped_g1",
+                        lambda *a, **kw: list(_CANNED_SCOPED_G1_SKIP_H005))
     monkeypatch.setattr(gates, "run_pytest", lambda *a, **kw: (_ for _ in ()).throw(
         AssertionError("run_pytest must NOT be called at wave tier when baseline absent")))
     assert gates.run_tier("wave")["verdict"] != "FAIL"
