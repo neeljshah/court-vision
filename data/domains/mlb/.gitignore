@@ -1,0 +1,7 @@
+# Local leak-guard: ALL MLB domain data (raw downloads, parquets, odds) stays
+# private/untracked. Avoids touching the human-gated root .gitignore (P0-A-001).
+# Price-bearing (odds-derived) artifacts + sportsbookreviewsonline.com source data
+# -> nothing here goes public. This nested guard is INDEPENDENT of the root
+# .gitignore so it remains effective whether or not P0-A-001 has been committed.
+*
+!.gitignore
