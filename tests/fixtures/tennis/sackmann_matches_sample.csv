@@ -1,0 +1,17 @@
+tourney_id,tourney_name,surface,draw_size,tourney_level,tourney_date,match_num,winner_id,winner_name,winner_hand,winner_ht,winner_ioc,winner_age,winner_rank,winner_rank_points,loser_id,loser_name,loser_hand,loser_ht,loser_ioc,loser_age,loser_rank,loser_rank_points,score,best_of,round,minutes,w_ace,w_df,w_svpt,w_1stIn,w_1stWon,w_2ndWon,w_SvGms,w_bpSaved,w_bpFaced,l_ace,l_df,l_svpt,l_1stIn,l_1stWon,l_2ndWon,l_SvGms,l_bpSaved,l_bpFaced
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,1,900001,Alpha A,R,185,USA,28.5,5,4200,900002,Beta B,L,190,GBR,30.1,12,2100,6-3 6-4,3,R64,75,10,2,65,40,30,18,8,4,6,4,2,60,35,25,15,8,3,5
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,2,900003,Gamma C,R,180,FRA,25.0,8,3500,900004,Delta D,R,188,ESP,27.3,20,1500,6-4 3-6 7-5,3,R64,110,8,3,70,42,32,20,9,5,7,6,3,72,44,28,17,9,4,6
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,3,900005,Epsilon E,R,183,AUS,31.2,3,6000,900006,Zeta F,L,177,GER,29.4,15,1900,6-2 6-1,3,R64,58,12,1,55,38,28,15,7,2,3,8,3,50,28,18,12,7,1,3
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,4,900007,Eta G,R,192,SRB,26.8,1,9000,900008,Theta H,R,186,RUS,24.5,30,900,6-3 6-4 6-2,5,QF,95,15,2,80,55,42,25,10,6,8,4,3,75,45,30,18,10,4,7
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,5,900002,Beta B,L,190,GBR,30.1,12,2100,900003,Gamma C,R,180,FRA,25.0,8,3500,6-4 6-3,3,R32,82,9,3,68,43,31,19,8,3,5,6,4,65,38,26,16,8,2,4
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,6,900001,Alpha A,R,185,USA,28.5,5,4200,900005,Epsilon E,R,183,AUS,31.2,3,6000,7-6 6-7 7-5,3,SF,150,11,4,90,58,46,28,12,8,10,8,5,92,56,38,22,12,6,9
+2024-wimbledon,Wimbledon,Grass,128,G,20240701,7,900001,Alpha A,R,185,USA,28.5,5,4200,900007,Eta G,R,192,SRB,26.8,1,9000,6-3 6-4 6-2,5,F,100,13,2,85,58,44,26,11,5,7,7,4,82,50,34,20,11,3,6
+2024-roland-garros,Roland Garros,Clay,128,G,20240527,1,900009,Iota I,R,181,ARG,29.0,10,2800,900010,Kappa J,R,184,ITA,26.5,18,1700,6-3 6-4,3,R64,88,5,4,72,44,30,18,9,4,6,7,5,68,39,25,15,9,3,5
+2024-roland-garros,Roland Garros,Clay,128,G,20240527,2,900011,Lambda K,R,179,CZE,27.3,6,3900,900009,Iota I,R,181,ARG,29.0,10,2800,4-6 7-5 6-3 6-4,3,R32,155,7,5,88,52,36,22,12,6,9,6,6,90,54,32,19,12,4,7
+2024-roland-garros,Roland Garros,Clay,128,G,20240527,3,900012,Mu L,L,188,SUI,32.1,2,7500,900013,Nu M,R,185,USA,28.8,25,1200,6-3 7-5 RET,3,QF,68,8,2,60,40,30,15,8,2,3,5,3,55,32,22,13,7,2,4
+2024-roland-garros,Roland Garros,Clay,128,G,20240527,4,900014,Xi N,R,182,ESP,24.6,40,700,900015,Omicron O,R,176,CHI,30.5,50,600,W/O,3,R128,,,,,,,,,,,,,,,,,,,
+2024-australian-open,Australian Open,,128,G,20240115,1,900016,Pi P,R,187,SRB,36.5,1,9000,900017,Rho Q,R,183,RUS,25.3,4,5000,6-3 6-4 6-2,5,R64,95,14,2,82,55,42,25,10,4,7,6,3,78,48,32,19,10,3,6
+2024-australian-open,Australian Open,,128,G,20240115,2,900016,Pi P,R,187,SRB,36.5,1,9000,900011,Lambda K,R,179,CZE,27.3,6,3900,6-4 6-3 7-5,5,SF,125,12,3,88,58,44,28,12,5,8,8,4,85,52,35,21,12,4,8
+2024-australian-open,Australian Open,,128,G,20240115,3,900012,Mu L,L,188,SUI,32.1,2,7500,900016,Pi P,R,187,SRB,36.5,1,9000,6-4 6-3 6-2,5,F,105,15,2,90,60,46,28,12,4,7,8,5,88,54,36,22,12,3,6
+2024-wta-wimbledon,Wimbledon,Grass,128,G,20240701,1,900018,Sigma R,R,172,USA,26.5,3,6200,900019,Tau S,L,175,POL,28.3,9,3100,6-3 6-4,3,R64,72,8,2,60,38,28,16,8,3,5,5,3,58,35,24,14,8,2,4
+2024-wta-wimbledon,Wimbledon,Grass,128,G,20240701,2,900020,Upsilon T,R,170,ROU,31.0,5,4800,900018,Sigma R,R,172,USA,26.5,3,6200,6-4 7-5,3,SF,88,7,3,65,40,30,18,9,4,6,6,4,62,37,27,16,9,3,5
