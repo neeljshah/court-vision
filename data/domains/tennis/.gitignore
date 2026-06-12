@@ -1,0 +1,5 @@
+# Local leak-guard: ALL tennis domain data (raw downloads, parquets, odds) stays
+# private/untracked. Avoids touching the human-gated root .gitignore (P0-A-001).
+# CC BY-NC-SA source data + price-bearing odds -> nothing here goes public.
+*
+!.gitignore
