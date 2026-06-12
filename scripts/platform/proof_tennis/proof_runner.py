@@ -1,12 +1,14 @@
-"""scripts.platform.proof_tennis.proof_runner — V1/V2/V3 execution helpers.
+"""scripts.platform.proof_tennis.proof_runner — V1/V2/V3/V4 execution helpers.
 
 Split from run_proof.py to stay within the 300-LOC/file discipline.
-Imports: only kernel gate seam, domains.tennis.*, proof_metrics.
+Imports: only kernel gate seam, domains.tennis.*, proof_metrics, decision-kernel seam.
 ZERO src.data / src.sim / src.tracking / src.pipeline / domains.nba imports.
 """
 from __future__ import annotations
 
+import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -26,8 +28,15 @@ from scripts.platform.proof_tennis.proof_metrics import (
     reliability_slope,
 )
 
-logger = logging.getLogger(__name__)
+# Decision-kernel seam (sport-agnostic) — F5 OK
+from src.prediction.betting_portfolio import (
+    KELLY_FRACTION,
+    clamp_kelly_pct,
+    check_drawdown_ok,
+)
+from src.prediction.bet_grades import letter_grade  # private/gitignored — import OK
 
+logger = logging.getLogger(__name__)
 _TRAIN_SEASONS = list(range(2018, 2023))
 _EVAL_A_SEASONS = [2023, 2024]
 _EVAL_B_SEASONS = [2025, 2026]
@@ -35,50 +44,33 @@ _ALL_SEASONS = list(range(2015, 2027))
 _ECE_THRESHOLD = 0.025
 _SLOPE_LO, _SLOPE_HI = 0.9, 1.1
 
-
 def _filter_seasons(df: pd.DataFrame, seasons: List[int]) -> pd.DataFrame:
     years = pd.to_datetime(df["date"]).dt.year
     return df[years.isin(seasons)].reset_index(drop=True)
 
-
 def _market_brier(adapter: TennisAdapter, seasons: List[int]) -> Optional[float]:
-    """Devigged Pinnacle Brier on eval seasons — expected to BEAT our Elo (honest)."""
+    """Devigged Pinnacle Brier — expected to beat Elo (honest framing)."""
     try:
-        matches = adapter._get_matches()
+        m = _filter_seasons(adapter._get_matches(), seasons)
         odds = adapter._get_odds()
     except FileNotFoundError:
         return None
-    m = _filter_seasons(matches, seasons)
     if m.empty or odds.empty:
         return None
     joined = m.merge(odds, on="event_id", how="inner")
-    if joined.empty:
-        return None
     probs, outcomes = [], []
     for _, row in joined.iterrows():
-        ps_p1 = row.get("ps_p1", np.nan)
-        ps_p2 = row.get("ps_p2", np.nan)
-        if pd.isna(ps_p1) or pd.isna(ps_p2):
-            continue
         try:
-            pp1, pp2 = float(ps_p1), float(ps_p2)
+            pp1, pp2 = float(row["ps_p1"]), float(row["ps_p2"])
             if pp1 <= 1.0 or pp2 <= 1.0:
                 continue
-            imp_p1 = 1.0 / pp1
-            devig_p = imp_p1 / (imp_p1 + 1.0 / pp2)
-        except (TypeError, ValueError):
+            probs.append((1.0 / pp1) / (1.0 / pp1 + 1.0 / pp2))
+            outcomes.append(1.0 if int(row.get("winner", 0)) == 1 else 0.0)
+        except (TypeError, ValueError, KeyError):
             continue
-        probs.append(devig_p)
-        outcomes.append(1.0 if int(row.get("winner", 0)) == 1 else 0.0)
-    if len(probs) < 10:
-        return None
-    return brier(np.array(probs), np.array(outcomes))
+    return brier(np.array(probs), np.array(outcomes)) if len(probs) >= 10 else None
 
-
-# ---------------------------------------------------------------------------
-# V1: Calibration
-# ---------------------------------------------------------------------------
-
+# --- V1: Calibration ---
 def run_v1(adapter: TennisAdapter) -> Dict[str, Any]:
     """V1: isotonic calibration on 2018-2022, evaluate on 2023-24 and 2025-26."""
     results: Dict[str, Any] = {"ok": False, "detail": {}}
@@ -90,11 +82,9 @@ def run_v1(adapter: TennisAdapter) -> Dict[str, Any]:
         results["detail"]["error"] = str(exc)
         return results
 
-    train_p = train_bundle.signal_col
-    train_y = train_bundle.target
+    train_p, train_y = train_bundle.signal_col, train_bundle.target
     corpus_results: Dict[str, Any] = {}
     all_ok = True
-
     for label, eval_seasons in [("2023-24", _EVAL_A_SEASONS), ("2025-26", _EVAL_B_SEASONS)]:
         try:
             eval_bundle = adapter.feature_bundle(hyp, eval_seasons)
@@ -103,8 +93,7 @@ def run_v1(adapter: TennisAdapter) -> Dict[str, Any]:
             all_ok = False
             continue
 
-        eval_p_raw = eval_bundle.signal_col
-        eval_y = eval_bundle.target
+        eval_p_raw, eval_y = eval_bundle.signal_col, eval_bundle.target
         calib_p = isotonic_calibrate(train_p, train_y, eval_p_raw)
         raw_b = brier(eval_p_raw, eval_y)
         cal_b = brier(calib_p, eval_y)
@@ -116,7 +105,6 @@ def run_v1(adapter: TennisAdapter) -> Dict[str, Any]:
         ece_ok = cal_ece < _ECE_THRESHOLD
         slope_ok = (not np.isnan(cal_slope)) and _SLOPE_LO <= cal_slope <= _SLOPE_HI
         corpus_ok = calib_beats_raw and ece_ok and slope_ok
-
         corpus_results[label] = {
             "n_eval": int(len(eval_y)),
             "raw_brier": round(raw_b, 5),
@@ -135,17 +123,9 @@ def run_v1(adapter: TennisAdapter) -> Dict[str, Any]:
     results["detail"] = corpus_results
     return results
 
-
-# ---------------------------------------------------------------------------
-# V2: CLV mechanics
-# ---------------------------------------------------------------------------
-
+# --- V2: CLV mechanics ---
 def run_v2(adapter: TennisAdapter) -> Dict[str, Any]:
-    """V2: CLV plumbing invariants (wiring correctness — NOT edge measurement).
-
-    tennis-data.co.uk is closing-only; open==close here.  Real CLV vs opener
-    requires Phase 4 (CV_DOMAIN_TENNIS, Odds API forward-capture).
-    """
+    """V2: CLV plumbing invariants (wiring correctness — NOT edge measurement)."""
     results: Dict[str, Any] = {"ok": False, "note": "", "detail": {}}
     try:
         odds = adapter._get_odds()
@@ -180,27 +160,14 @@ def run_v2(adapter: TennisAdapter) -> Dict[str, Any]:
     }
     return results
 
-
-# ---------------------------------------------------------------------------
-# V3: Honest gate end-to-end
-# ---------------------------------------------------------------------------
-
+# --- V3: Honest gate end-to-end ---
 def _make_signal_with_bundle(signal_cls: type, bundle: FeatureBundle) -> Signal:
     sig: Signal = signal_cls()
     sig._gate_matrix = bundle  # type: ignore[attr-defined]
     return sig
 
-
 def run_v3(adapter: TennisAdapter) -> Dict[str, Any]:
-    """V3: real gate.evaluate on all 3 signals.
-
-    EXPECTED VERDICTS (pre-run — the honest discipline):
-      tennis_fatigue_rest       → REJECT   (rest fully priced by sharp books)
-      tennis_surface_transition → REJECT or DEFER  (sparse; likely priced)
-      tennis_h2h_residual       → REJECT   (narrative stat, priced, weak null-shuffle)
-
-    KERNEL_DISCIPLINE #1: REJECT is the success criterion.
-    """
+    """V3: gate.evaluate on 3 signals. Expected: all REJECT (gate honesty across sports)."""
     signal_defs = [
         (FatigueRestSignal, "REJECT"),
         (SurfaceTransitionSignal, "REJECT or DEFER"),
@@ -240,3 +207,94 @@ def run_v3(adapter: TennisAdapter) -> Dict[str, Any]:
         })
 
     return {"ok": all(r["passed_expected"] for r in verdict_rows), "verdicts": verdict_rows}
+
+# --- V4: Paper portfolio walk-forward (ARTIFACT-DISCLAIMED) ---
+_V4_DISCLAIMER = (
+    "paper P&L is a market-follow artifact, not realized edge; "
+    "no real money; markets efficient"
+)
+
+def run_v4(adapter: TennisAdapter, paper_book_dir: Optional[Path] = None) -> Dict[str, Any]:
+    """V4: paper Kelly walk-forward exercising the sport-agnostic decision kernel."""
+    # Synthetic drawdown injection — always run first (independent of corpus)
+    inject_fired = not check_drawdown_ok(1000.0, 800.0)  # 20% loss > 15% threshold
+
+    results: Dict[str, Any] = {"ok": False, "note": "", "detail": {}}
+    try:
+        matches = adapter._get_matches()
+        odds = adapter._get_odds()
+    except FileNotFoundError:
+        results.update({"ok": inject_fired, "note": "odds.parquet absent — bets skipped.",
+                        "detail": {"drawdown_inject_fired": inject_fired,
+                                   "disclaimer": _V4_DISCLAIMER}})
+        return results
+
+    hyp = Hypothesis(name="tennis_elo_v4", target="winprob", scope="pregame",
+                     statement="V4 paper wf", rationale="")
+    # Use the earliest 40% of matches as train, rest as eval (robust to any date range)
+    all_years = sorted(pd.to_datetime(matches["date"]).dt.year.unique().tolist())
+    split_idx = max(1, len(all_years) * 2 // 5)
+    train_years, eval_years = all_years[:split_idx], all_years[split_idx:]
+    try:
+        train_bundle = adapter.feature_bundle(hyp, train_years)
+    except Exception as exc:
+        results.update({"ok": inject_fired, "note": f"bundle error: {exc}",
+                        "detail": {"drawdown_inject_fired": inject_fired,
+                                   "disclaimer": _V4_DISCLAIMER}})
+        return results
+
+    train_p, train_y = train_bundle.signal_col, train_bundle.target
+    joined = _filter_seasons(matches, eval_years).merge(
+        odds, on="event_id", how="inner"
+    )
+    bankroll = bankroll_start = 1000.0
+    bets_log: List[Dict[str, Any]] = []
+    for _, row in joined.iterrows():
+        try:
+            pp1, pp2 = float(row["ps_p1"]), float(row["ps_p2"])
+            if pp1 <= 1.0 or pp2 <= 1.0:
+                continue
+        except (TypeError, ValueError, KeyError):
+            continue
+        imp_p1 = (1.0 / pp1) / (1.0 / pp1 + 1.0 / pp2)
+        raw_elo = float(row.get("p1_elo_prob", imp_p1))
+        cal_p = float(np.clip(
+            isotonic_calibrate(train_p, train_y, np.array([raw_elo]))[0], 0.01, 0.99
+        ))
+        b = pp1 - 1.0
+        edge = cal_p - imp_p1
+        kelly_clamped = clamp_kelly_pct(
+            ((b * cal_p - (1 - cal_p)) / b) * KELLY_FRACTION if b > 0 else 0.0
+        ) or 0.0
+        stake = kelly_clamped * bankroll
+        if stake <= 0 or not check_drawdown_ok(bankroll_start, bankroll):
+            continue
+        outcome = 1 if int(row.get("winner", 0)) == 1 else 0
+        pnl = stake * b if outcome == 1 else -stake
+        _ = letter_grade("winprob", cal_p, edge, playoff_window=False)  # exercise seam
+        bankroll += pnl
+        bets_log.append({"event_id": str(row.get("event_id", "")),
+                         "cal_p": round(cal_p, 4), "kelly_clamped": round(kelly_clamped, 4),
+                         "stake": round(stake, 4), "pnl": round(pnl, 4),
+                         "disclaimer": _V4_DISCLAIMER})
+
+    n_bets = len(bets_log)
+    paper_pnl = round(sum(b["pnl"] for b in bets_log), 4)
+    paper_roi = round(paper_pnl / bankroll_start * 100, 2) if n_bets > 0 else 0.0
+    detail = {"n_bets": n_bets, "kelly_fraction_used": KELLY_FRACTION,
+              "risk_gate_fired": False, "drawdown_inject_fired": inject_fired,
+              "paper_pnl_units": paper_pnl, "paper_return_pct": paper_roi,
+              "disclaimer": _V4_DISCLAIMER}
+
+    if paper_book_dir is not None:
+        pb = Path(paper_book_dir); pb.mkdir(parents=True, exist_ok=True)
+        (pb / "paper_book.json").write_text(
+            json.dumps({"disclaimer": _V4_DISCLAIMER, **detail, "bets": bets_log}, indent=2),
+            encoding="utf-8",
+        )
+
+    results["ok"] = inject_fired
+    results["detail"] = detail
+    if not inject_fired:
+        results["note"] = "FAIL: synthetic drawdown injection did not fire"
+    return results

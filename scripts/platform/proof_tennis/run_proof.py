@@ -1,7 +1,8 @@
 """scripts.platform.proof_tennis.run_proof — CLI entry point for the tennis proof.
 
-Orchestrates V1 (calibration), V2 (CLV mechanics), V3 (honest gate) by delegating
-execution to proof_runner.py and writing a Markdown report.
+Orchestrates V1 (calibration), V2 (CLV mechanics), V3 (honest gate), V4 (paper
+portfolio walk-forward) by delegating execution to proof_runner.py and writing
+a Markdown report.
 
 EXPECTED VERDICTS (written before any gate run — the honest discipline):
   tennis_fatigue_rest       → REJECT  (rest/fatigue fully priced by sharp books)
@@ -22,11 +23,11 @@ PRIVATE: report is price-bearing; default path .planning/platform/proof_tennis/
 PROOF_RESULT.md is gitignored.
 """
 from __future__ import annotations
+import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3]))
 
 import argparse
 import datetime as dt
 import logging
-import sys
 import textwrap
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -34,7 +35,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from domains.tennis.adapter import TennisAdapter
-from scripts.platform.proof_tennis.proof_runner import run_v1, run_v2, run_v3
+from scripts.platform.proof_tennis.proof_runner import run_v1, run_v2, run_v3, run_v4
 
 logger = logging.getLogger(__name__)
 
@@ -131,10 +132,30 @@ def _fmt_v3(v3: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def write_report(report_path: Path, v1: Dict, v2: Dict, v3: Dict, run_ts: str) -> None:
+def _fmt_v4(v4: Dict[str, Any]) -> str:
+    lines = [
+        "## V4 — Paper Portfolio Walk-Forward (ARTIFACT-DISCLAIMED)", "",
+        "> **DISCLAIMER:** paper P&L is a market-follow artifact, not realized edge; "
+        "no real money; markets efficient.", "",
+    ]
+    if v4.get("note"):
+        lines += [f"NOTE: {v4['note']}", ""]
+    d = v4.get("detail", {})
+    for k in ("n_bets", "kelly_fraction_used", "risk_gate_fired", "drawdown_inject_fired",
+              "paper_pnl_units", "paper_return_pct"):
+        if k in d:
+            lines.append(f"  {k}: {d[k]}")
+    lines += ["", f"**V4 overall: {'PASS' if v4['ok'] else 'FAIL'}**"]
+    return "\n".join(lines)
+
+
+def write_report(report_path: Path, v1: Dict, v2: Dict, v3: Dict, run_ts: str,
+                 v4: Optional[Dict] = None) -> None:
     """Write PROOF_RESULT.md."""
     report_path.parent.mkdir(parents=True, exist_ok=True)
-    overall = "PASS" if (v1["ok"] and v2["ok"] and v3["ok"]) else "PARTIAL/FAIL"
+    overall = "PASS" if (v1["ok"] and v2["ok"] and v3["ok"]
+                         and (v4 is None or v4["ok"])) else "PARTIAL/FAIL"
+    v4_section = f"\n\n---\n\n{_fmt_v4(v4)}" if v4 is not None else ""
     body = textwrap.dedent(f"""\
         # Tennis Second-Domain Proof — Results
 
@@ -154,7 +175,7 @@ def write_report(report_path: Path, v1: Dict, v2: Dict, v3: Dict, run_ts: str) -
 
         ---
 
-        {_fmt_v3(v3)}
+        {_fmt_v3(v3)}{v4_section}
 
         ---
 
@@ -184,10 +205,12 @@ def write_report(report_path: Path, v1: Dict, v2: Dict, v3: Dict, run_ts: str) -
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Tennis second-domain proof runner (V1/V2/V3)."
+        description="Tennis second-domain proof runner (V1/V2/V3/V4)."
     )
     parser.add_argument("--corpus", default="data/domains/tennis")
     parser.add_argument("--report", default=None)
+    parser.add_argument("--paper-book-dir", default=None,
+                        help="Dir for V4 paper P&L output (default: data/domains/tennis/paper_book)")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args(argv)
 
@@ -211,6 +234,11 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         return 2
 
+    paper_book_dir = (
+        Path(args.paper_book_dir) if args.paper_book_dir
+        else repo_root / "data" / "domains" / "tennis" / "paper_book"
+    )
+
     run_ts = dt.datetime.utcnow().isoformat(timespec="seconds") + "Z"
     print(f"[run_proof] Starting proof at {run_ts}")
 
@@ -228,12 +256,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"    {r['signal']}: expected={r['expected']} actual={r['actual']}")
     print(f"  V3 ok={v3['ok']}")
 
+    print("[run_proof] V4: Paper portfolio walk-forward...")
+    v4 = run_v4(adapter, paper_book_dir=paper_book_dir)
+    print(f"  V4 ok={v4['ok']}")
+
     report_path = (
         Path(args.report) if args.report else (repo_root / _DEFAULT_REPORT)
     )
-    write_report(report_path, v1, v2, v3, run_ts)
+    write_report(report_path, v1, v2, v3, run_ts, v4=v4)
 
-    overall_ok = v1["ok"] and v2["ok"] and v3["ok"]
+    overall_ok = v1["ok"] and v2["ok"] and v3["ok"] and v4["ok"]
     print(f"[run_proof] Overall: {'PASS' if overall_ok else 'PARTIAL/FAIL'}")
     return 0 if overall_ok else 1
 
