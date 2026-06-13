@@ -1,4 +1,4 @@
-"""tests.platform.test_atlas_build_all — Tests for the multi-sport atlas driver.
+"""tests.platform.test_atlas_build_all — Tests for the multi-sport atlas driver (core).
 
 Verifies:
 1. build_all.main(["--sport","all","--out",...]) writes _Hub.md.
@@ -8,6 +8,8 @@ Verifies:
 5. write_hub is idempotent.
 6. Tournaments/ built for tennis; Seasons/ built for soccer/mlb/nba.
 All output goes to tmp_path — no file is written to the committed tree.
+
+--full flag tests live in test_atlas_build_all_full.py.
 """
 from __future__ import annotations
 
