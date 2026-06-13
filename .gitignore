@@ -380,6 +380,7 @@ scripts/team_system/gate_def_supp.py
 data/domains/*/forward_lines/
 data/domains/*/paper_book/
 data/domains/*/clv/
+data/domains/*/odds_snapshots/
 # -- planning/platform master plan (internal strategy — never public) ----------
 .planning/platform/
 # -- internal maintainer / strategy docs (name the private repo; private-only) --
