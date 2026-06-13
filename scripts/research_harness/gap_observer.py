@@ -113,6 +113,7 @@ def rank_gaps(
     findings: Optional[List[object]] = None,
     belief_store: Optional[object] = None,
     top_n: Optional[int] = None,
+    min_score: float = 0.0,
 ) -> List[RankedGap]:
     """Rank research gaps by scientific thoroughness (coverage × uncertainty).
 
@@ -122,6 +123,9 @@ def rank_gaps(
     findings           : list of ResearchFinding from Ledger.all_findings().
     belief_store       : BeliefStore instance (None → use prior CI widths).
     top_n              : if given, return only the top N results.
+    min_score          : entries with score < min_score are excluded (default
+                         0.0 = include all).  Set to 1e-9 to filter zero-score
+                         entries (fully-tested+rejected) that pollute top-N.
 
     Returns sorted list of RankedGap, descending score.
     Honest: expected outcome of testing any gap is REJECT.
@@ -180,6 +184,10 @@ def rank_gaps(
             rationale=rationale,
             what_would_settle_it=_DEFER_WHAT if has_def else _DEFAULT_WHAT,
         ))
+
+    # Filter out zero/below-threshold entries (e.g. fully-tested+rejected sport
+    # where coverage_gap==0 and settled_discount==0.20 collapses to score==0.0).
+    results = [r for r in results if r.score >= min_score]
 
     results.sort(key=lambda g: (-g.score, g.sport, g.family))
     for i, g in enumerate(results):

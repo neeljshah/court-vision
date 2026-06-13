@@ -26,13 +26,12 @@ _MIN_OBS_THRESHOLD: float = 3.0
 _DEFAULT_HALF_LIFE: float = 180.0
 _VERDICT_WEIGHT: Dict[str, Tuple[float, float]] = {
     "SHIP": (1.0, 0.0), "REJECT": (0.0, 1.0), "DEFER": (0.1, 0.1),
+    "VARIANCE_ONLY": (0.5, 0.0),  # partial-SHIP: alpha+=0.5*w, beta unchanged
 }
 FamilyKey = Tuple[str, str]
 
 
-def _beta_mean(a: float, b: float) -> float:
-    return a / (a + b)
-
+def _beta_mean(a: float, b: float) -> float: return a / (a + b)
 def _log_beta(a: float, b: float) -> float:
     return math.lgamma(a) + math.lgamma(b) - math.lgamma(a + b)
 
@@ -119,19 +118,12 @@ class BeliefStore:
     min_obs_threshold: below this effective-obs pooling kicks in. reference_date: "today".
     """
 
-    def __init__(
-        self,
-        half_life_days: float = _DEFAULT_HALF_LIFE,
-        prior_alpha: float = _PRIOR_ALPHA,
-        prior_beta: float = _PRIOR_BETA,
-        min_obs_threshold: float = _MIN_OBS_THRESHOLD,
-        reference_date: Optional[str] = None,
-    ) -> None:
-        self._half_life = half_life_days
-        self._a0 = prior_alpha
-        self._b0 = prior_beta
-        self._min_obs = min_obs_threshold
-        self._ref_date = reference_date
+    def __init__(self, half_life_days: float = _DEFAULT_HALF_LIFE,
+                 prior_alpha: float = _PRIOR_ALPHA, prior_beta: float = _PRIOR_BETA,
+                 min_obs_threshold: float = _MIN_OBS_THRESHOLD,
+                 reference_date: Optional[str] = None) -> None:
+        self._half_life = half_life_days; self._a0 = prior_alpha; self._b0 = prior_beta
+        self._min_obs = min_obs_threshold; self._ref_date = reference_date
         self._beliefs: Dict[FamilyKey, FamilyBelief] = {}
 
     def _today(self) -> datetime:
@@ -221,6 +213,17 @@ class BeliefStore:
 
     def all_beliefs(self) -> List[FamilyBelief]:
         return list(self._beliefs.values())
+
+    def calibration_summary(self) -> Dict:
+        """Reliability surface {observed_ship_rate, mean_posterior, n, is_overconfident}.
+        No edge claimed.  alpha>prior+0.3 → SHIP-like; overconfident if gap>0.05."""
+        bb = list(self._beliefs.values()); n = len(bb)
+        if n == 0:
+            pm = _beta_mean(self._a0, self._b0)
+            return {"observed_ship_rate": 0.0, "mean_posterior": pm, "n": 0, "is_overconfident": pm > 0.0}
+        mp = sum(b.posterior_mean for b in bb) / n
+        osr = sum(1 for b in bb if b.alpha > self._a0 + 0.3) / n
+        return {"observed_ship_rate": osr, "mean_posterior": mp, "n": n, "is_overconfident": (mp - osr) > 0.05}
 
     def to_dict(self) -> Dict:
         return {

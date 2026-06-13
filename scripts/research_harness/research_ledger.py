@@ -28,7 +28,7 @@ VAULT_SPORTS = ROOT / "vault" / "Sports"
 # Schema
 # ---------------------------------------------------------------------------
 
-VALID_VERDICTS = {"REJECT", "DEFER", "SHIP"}
+VALID_VERDICTS = {"REJECT", "DEFER", "SHIP", "VARIANCE_ONLY"}
 
 
 @dataclass
