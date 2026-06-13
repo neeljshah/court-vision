@@ -158,7 +158,7 @@ def _feature_bundle_impl(
     # Build rest-days feature: days since each player's last match
     wf = _add_rest_days(wf)
 
-    # Try to join odds
+    # Try to join odds — vectorized: one left-merge before the loop (O(N+M) vs O(N*M))
     try:
         odds_df = adapter._get_odds()
         has_odds = True
@@ -166,6 +166,20 @@ def _feature_bundle_impl(
         logger.debug("odds.parquet missing; lines/closing will be None")
         has_odds = False
         odds_df = pd.DataFrame()
+
+    # Pre-merge odds: keep only the columns _devig_prob reads + event_id.
+    # drop_duplicates(keep="first") replicates the original .iloc[0] behaviour.
+    # Selecting only needed cols avoids any column-name collisions with wf.
+    _ODDS_COLS = ["event_id", "ps_p1", "ps_p2", "b365_p1", "b365_p2"]
+    if has_odds and not odds_df.empty:
+        _odds_sel = odds_df[[c for c in _ODDS_COLS if c in odds_df.columns]].copy()
+        _odds_sel = _odds_sel.drop_duplicates("event_id", keep="first")
+        wf = wf.merge(_odds_sel, on="event_id", how="left")
+    else:
+        # Ensure columns exist (all NaN) so row access below is uniform
+        for _c in _ODDS_COLS[1:]:
+            if _c not in wf.columns:
+                wf[_c] = np.nan
 
     rows_base: List[List[float]] = []
     rows_signal: List[float] = []
@@ -191,14 +205,9 @@ def _feature_bundle_impl(
         # Signal column = win_prob_p1 from blended Elo (the hypothesis value)
         signal_val = float(row.get("win_prob_p1", 0.5))
 
-        # Odds lookup
-        line_val, close_val = np.nan, np.nan
-        if has_odds and "event_id" in row and pd.notna(row.get("event_id")):
-            odds_row = odds_df[odds_df["event_id"] == row["event_id"]]
-            if not odds_row.empty:
-                or_ = odds_row.iloc[0]
-                line_val = _devig_prob(or_, kind="open")
-                close_val = _devig_prob(or_, kind="close")
+        # Odds lookup — merged columns already on this row (NaN when no match)
+        line_val = _devig_prob(row, kind="open")
+        close_val = _devig_prob(row, kind="close")
 
         rows_base.append(base_row)
         rows_signal.append(signal_val)

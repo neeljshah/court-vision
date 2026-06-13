@@ -202,6 +202,20 @@ class SoccerAdapter:
             has_odds = False
             odds_df = pd.DataFrame()
 
+        # Pre-merge odds: one left-merge before the loop (O(N+M) vs O(N*M)).
+        # Only select the columns _devig_over reads to avoid name collisions.
+        # drop_duplicates(keep="first") replicates the original .iloc[0] behaviour.
+        _ODDS_COLS = ["event_id", "ou_open_over", "ou_open_under",
+                      "ou_close_over", "ou_close_under"]
+        if has_odds and not odds_df.empty:
+            _odds_sel = odds_df[[c for c in _ODDS_COLS if c in odds_df.columns]].copy()
+            _odds_sel = _odds_sel.drop_duplicates("event_id", keep="first")
+            wf = wf.merge(_odds_sel, on="event_id", how="left")
+        else:
+            for _c in _ODDS_COLS[1:]:
+                if _c not in wf.columns:
+                    wf[_c] = np.nan
+
         rows_base: List[List[float]] = []
         rows_signal: List[float] = []
         rows_target: List[float] = []
@@ -213,13 +227,9 @@ class SoccerAdapter:
             tgt_raw = row.get("target_over25", np.nan)
             if pd.isna(tgt_raw):
                 continue
-            line_val = close_val = np.nan
-            if has_odds and pd.notna(row.get("event_id")):
-                or_rows = odds_df[odds_df["event_id"] == row["event_id"]]
-                if not or_rows.empty:
-                    or_ = or_rows.iloc[0]
-                    line_val = _devig_over(or_.get("ou_open_over"), or_.get("ou_open_under"))
-                    close_val = _devig_over(or_.get("ou_close_over"), or_.get("ou_close_under"))
+            # Odds columns already merged onto row (NaN when no match)
+            line_val = _devig_over(row.get("ou_open_over"), row.get("ou_open_under"))
+            close_val = _devig_over(row.get("ou_close_over"), row.get("ou_close_under"))
             rows_base.append([float(row["lam_home"]), float(row["lam_away"]),
                                float(row["lam_total"]),
                                float(row.get("rest_days_home", 15.0)),
