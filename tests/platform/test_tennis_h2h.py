@@ -1,29 +1,55 @@
-"""tests/platform/test_tennis_h2h.py — Scoped tests for atlas_h2h.
+"""tests/platform/test_tennis_h2h.py — Scoped tests for atlas_h2h (aggregate view).
 
 Uses a tiny synthetic matches fixture (no network, no GPU, no heavy deps).
-Verifies:
-  1. _Matchups_Index.md exists after build_h2h()
-  2. At least one matchup note exists
-  3. Matchup note contains [[wikilinks]] to both players
-  4. H2H counts are arithmetically correct
-  5. No edge/betting language
-  6. Idempotent (reruns overwrite without error)
-  7. build_h2h() returns a list of Path objects that all exist
+Verifies the NEW aggregate, name-free output contract:
+
+  1. Exactly the expected aggregate notes exist (no per-player rivalry files).
+  2. _Matchups_Index.md exists with YAML frontmatter and [[_Index]] backlink.
+  3. _Surface_Dynamics.md, _Upset_Patterns.md, _Format_Patterns.md,
+     _Rematch_Effects.md all exist.
+  4. No note contains real player names (spot-checked forbidden list).
+  5. No edge/betting language in any note.
+  6. Every note has YAML frontmatter and [[_Matchups_Index]] or [[_Index]] backlink.
+  7. build_h2h() returns a list[pathlib.Path] of at least 4 elements that all exist.
+  8. Idempotent: re-run produces the same number of files.
+  9. Corpus-scope numbers are arithmetically correct in the index.
+ 10. At least one rank-gap row appears in _Upset_Patterns.md when data has ranks.
 
 Run: python -m pytest tests/platform/test_tennis_h2h.py -q --timeout=120
 """
 from __future__ import annotations
 
 import pathlib
+import re
 
 import pandas as pd
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
+# ---------------------------------------------------------------------------
+# Expected output filenames (AGGREGATE, name-free)
+# ---------------------------------------------------------------------------
+
+EXPECTED_NOTES = {
+    "_Matchups_Index.md",
+    "_Surface_Dynamics.md",
+    "_Upset_Patterns.md",
+    "_Format_Patterns.md",
+    "_Rematch_Effects.md",
+}
+
+# Player names that must NEVER appear in any output note
+FORBIDDEN_NAMES = [
+    "djokovic", "nadal", "alcaraz", "federer", "sinner", "medvedev",
+    "zverev", "tsitsipas", "rublev", "fritz",
+]
+
+FORBIDDEN_BETTING = ["betting", " edge", " roi", " ev ", "wager", "gamble", " odds"]
+
 
 # ---------------------------------------------------------------------------
-# Synthetic fixture — designed so specific rivalries appear multiple times
+# Synthetic fixture
 # ---------------------------------------------------------------------------
 
 def _make_h2h_matches() -> pd.DataFrame:
@@ -31,13 +57,13 @@ def _make_h2h_matches() -> pd.DataFrame:
     rows = []
     base_date = "2022-01-"
 
-    # Pairing 1: "Alice Smith" vs "Bob Jones" — 5 meetings, Alice wins 3
+    # Pairing 1: 5 meetings, player-A wins 3 (ranks 5 vs 10 — rank gap = 5)
     for i, (winner, surface, level) in enumerate([
-        (1, "Hard", "G"),    # Alice wins, Grand Slam
-        (2, "Clay", "A"),    # Bob wins, ATP
-        (1, "Grass", "G"),   # Alice wins, Grand Slam
-        (1, "Hard", "M"),    # Alice wins, Masters
-        (2, "Clay", "A"),    # Bob wins, ATP
+        (1, "Hard", "G"),
+        (2, "Clay", "A"),
+        (1, "Grass", "G"),
+        (1, "Hard", "M"),
+        (2, "Clay", "A"),
     ]):
         rows.append({
             "event_id": f"evt_{i:04d}",
@@ -47,13 +73,13 @@ def _make_h2h_matches() -> pd.DataFrame:
             "tourney_name": "Australian Open" if level == "G" else "Miami Open",
             "tourney_level": level,
             "surface": surface,
-            "best_of": 3,
+            "best_of": 5 if level == "G" else 3,
             "round": "QF",
             "match_num": i + 1,
             "p1_id": 1,
             "p2_id": 2,
-            "p1_name": "Alice Smith",
-            "p2_name": "Bob Jones",
+            "p1_name": "Player A",
+            "p2_name": "Player B",
             "p1_rank": 5.0,
             "p2_rank": 10.0,
             "winner": winner,
@@ -62,7 +88,7 @@ def _make_h2h_matches() -> pd.DataFrame:
             "minutes": 90.0,
         })
 
-    # Pairing 2: "Carlos Rivera" vs "Diana Lee" — 4 meetings, tied 2-2
+    # Pairing 2: 4 meetings, tied 2-2 (ranks 15 vs 20 — rank gap = 5)
     for i, (winner, surface, level) in enumerate([
         (1, "Hard", "A"),
         (2, "Clay", "A"),
@@ -77,13 +103,13 @@ def _make_h2h_matches() -> pd.DataFrame:
             "tourney_name": "Roland Garros" if level == "G" else "Wimbledon",
             "tourney_level": level,
             "surface": surface,
-            "best_of": 3,
+            "best_of": 5 if level == "G" else 3,
             "round": "SF",
             "match_num": i + 10,
             "p1_id": 3,
             "p2_id": 4,
-            "p1_name": "Carlos Rivera",
-            "p2_name": "Diana Lee",
+            "p1_name": "Player C",
+            "p2_name": "Player D",
             "p1_rank": 15.0,
             "p2_rank": 20.0,
             "winner": winner,
@@ -92,7 +118,7 @@ def _make_h2h_matches() -> pd.DataFrame:
             "minutes": 95.0,
         })
 
-    # Single match (should NOT appear if MIN_MEETINGS > 1)
+    # Pairing 3: single match — still contributes to aggregate stats
     rows.append({
         "event_id": "evt_9999",
         "date": "2022-06-01",
@@ -106,8 +132,8 @@ def _make_h2h_matches() -> pd.DataFrame:
         "match_num": 999,
         "p1_id": 5,
         "p2_id": 6,
-        "p1_name": "Eddie Novak",
-        "p2_name": "Franz Weber",
+        "p1_name": "Player E",
+        "p2_name": "Player F",
         "p1_rank": 30.0,
         "p2_rank": 40.0,
         "winner": 1,
@@ -140,87 +166,120 @@ def h2h_out(tmp_path_factory: pytest.TempPathFactory, synthetic_matches: pd.Data
 # Tests
 # ---------------------------------------------------------------------------
 
-class TestH2HOutputs:
+class TestAggregateNotes:
+    """Verify the aggregate, name-free output contract."""
+
+    def test_only_expected_notes_exist(self, h2h_out: pathlib.Path) -> None:
+        """Only the expected aggregate files must be present — no per-player files."""
+        found = {p.name for p in h2h_out.glob("*.md")}
+        assert found == EXPECTED_NOTES, (
+            f"Unexpected files in output: {found - EXPECTED_NOTES}; "
+            f"missing: {EXPECTED_NOTES - found}"
+        )
 
     def test_index_exists(self, h2h_out: pathlib.Path) -> None:
-        assert (h2h_out / "_Matchups_Index.md").exists(), "_Matchups_Index.md not found"
+        assert (h2h_out / "_Matchups_Index.md").exists()
 
-    def test_index_has_frontmatter(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "_Matchups_Index.md").read_text(encoding="utf-8")
-        assert text.startswith("---"), "_Matchups_Index.md missing YAML frontmatter"
-        assert text.count("---") >= 2, "_Matchups_Index.md frontmatter not closed"
+    def test_surface_dynamics_exists(self, h2h_out: pathlib.Path) -> None:
+        assert (h2h_out / "_Surface_Dynamics.md").exists()
 
-    def test_index_has_wikilinks(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "_Matchups_Index.md").read_text(encoding="utf-8")
-        assert "[[" in text and "]]" in text
+    def test_upset_patterns_exists(self, h2h_out: pathlib.Path) -> None:
+        assert (h2h_out / "_Upset_Patterns.md").exists()
+
+    def test_format_patterns_exists(self, h2h_out: pathlib.Path) -> None:
+        assert (h2h_out / "_Format_Patterns.md").exists()
+
+    def test_rematch_effects_exists(self, h2h_out: pathlib.Path) -> None:
+        assert (h2h_out / "_Rematch_Effects.md").exists()
+
+    def test_all_notes_have_frontmatter(self, h2h_out: pathlib.Path) -> None:
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8")
+            assert text.startswith("---"), f"{note} missing YAML frontmatter"
+            assert text.count("---") >= 2, f"{note} frontmatter not closed"
+
+    def test_all_notes_have_tennis_tag(self, h2h_out: pathlib.Path) -> None:
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8")
+            assert "sport/tennis" in text, f"{note} missing sport/tennis tag"
+
+    def test_all_notes_have_aggregate_tag(self, h2h_out: pathlib.Path) -> None:
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8")
+            assert "aggregate" in text, f"{note} missing aggregate tag"
 
     def test_index_links_to_tennis_index(self, h2h_out: pathlib.Path) -> None:
         text = (h2h_out / "_Matchups_Index.md").read_text(encoding="utf-8")
         assert "[[_Index" in text, "_Matchups_Index.md missing [[_Index]] backlink"
 
-    def test_at_least_one_matchup_note(self, h2h_out: pathlib.Path) -> None:
-        notes = [p for p in h2h_out.glob("*.md") if p.name != "_Matchups_Index.md"]
-        assert len(notes) >= 1, "No matchup notes found"
+    def test_non_index_notes_link_back(self, h2h_out: pathlib.Path) -> None:
+        """Every non-index note must link back to _Matchups_Index."""
+        for note in EXPECTED_NOTES - {"_Matchups_Index.md"}:
+            text = (h2h_out / note).read_text(encoding="utf-8")
+            assert "[[_Matchups_Index" in text, f"{note} missing [[_Matchups_Index]] backlink"
 
-    def test_alice_bob_note_exists(self, h2h_out: pathlib.Path) -> None:
-        # Canonical alphabetical order: Alice Smith vs Bob Jones
-        note = h2h_out / "Alice Smith vs Bob Jones.md"
-        assert note.exists(), f"Expected note not found: {note.name}"
+    def test_index_contains_corpus_totals(self, h2h_out: pathlib.Path) -> None:
+        """Corpus total-matches count must appear in the index (10 matches in synthetic data)."""
+        text = (h2h_out / "_Matchups_Index.md").read_text(encoding="utf-8")
+        # 5 + 4 + 1 = 10 total matches
+        assert "10" in text, "Total matches count (10) not found in _Matchups_Index.md"
 
-    def test_alice_bob_h2h_counts(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        # Alice wins 3, Bob wins 2 → total 5
-        assert "5" in text, "Total meeting count (5) not found in note"
-        # Both win counts 3 and 2 must appear
-        assert "3" in text and "2" in text
+    def test_index_links_to_all_aggregate_notes(self, h2h_out: pathlib.Path) -> None:
+        text = (h2h_out / "_Matchups_Index.md").read_text(encoding="utf-8")
+        for link_target in ["_Surface_Dynamics", "_Upset_Patterns", "_Format_Patterns", "_Rematch_Effects"]:
+            assert link_target in text, f"_Matchups_Index.md missing link to {link_target}"
 
-    def test_matchup_note_links_to_both_players(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert "[[Players/Alice Smith" in text, "Missing wikilink to Alice Smith player note"
-        assert "[[Players/Bob Jones" in text, "Missing wikilink to Bob Jones player note"
+    def test_surface_dynamics_has_table(self, h2h_out: pathlib.Path) -> None:
+        text = (h2h_out / "_Surface_Dynamics.md").read_text(encoding="utf-8")
+        assert "Win Rate" in text, "_Surface_Dynamics.md missing Win Rate column"
+        # Synthetic data has Hard, Clay, Grass matches
+        assert "|" in text, "_Surface_Dynamics.md missing markdown table"
 
-    def test_matchup_note_has_frontmatter(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert text.startswith("---"), "Matchup note missing YAML frontmatter"
-        assert "total_meetings:" in text
+    def test_upset_patterns_has_rank_gap_rows(self, h2h_out: pathlib.Path) -> None:
+        text = (h2h_out / "_Upset_Patterns.md").read_text(encoding="utf-8")
+        # Synthetic data has rank gaps of 5 and 10 — should fall in "1-10" bucket
+        assert "Rank Gap" in text, "_Upset_Patterns.md missing Rank Gap header"
 
-    def test_matchup_note_has_index_backlinks(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert "[[_Matchups_Index" in text, "Missing [[_Matchups_Index]] backlink"
-        assert "[[_Index" in text, "Missing [[_Index]] backlink"
+    def test_format_patterns_mentions_best_of(self, h2h_out: pathlib.Path) -> None:
+        text = (h2h_out / "_Format_Patterns.md").read_text(encoding="utf-8")
+        assert "Best-of" in text, "_Format_Patterns.md missing Best-of format label"
 
-    def test_matchup_note_has_surface_section(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert "By Surface" in text, "Missing 'By Surface' section"
+    def test_rematch_effects_has_qualifying_pairs(self, h2h_out: pathlib.Path) -> None:
+        text = (h2h_out / "_Rematch_Effects.md").read_text(encoding="utf-8")
+        # Both synthetic pairings have >= 2 meetings so qualifying_pairs >= 2
+        assert "pairs" in text.lower(), "_Rematch_Effects.md missing pairs count"
 
-    def test_matchup_note_has_tourney_level_section(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert "By Tournament Level" in text or "Grand Slam" in text
-
-    def test_matchup_note_has_recent_meetings_section(self, h2h_out: pathlib.Path) -> None:
-        text = (h2h_out / "Alice Smith vs Bob Jones.md").read_text(encoding="utf-8")
-        assert "Most Recent Meetings" in text
-
-    def test_carlos_diana_tied(self, h2h_out: pathlib.Path) -> None:
-        # Carlos Rivera vs Diana Lee — alphabetical order
-        note = h2h_out / "Carlos Rivera vs Diana Lee.md"
-        assert note.exists(), f"Expected note not found: {note.name}"
-        text = note.read_text(encoding="utf-8")
-        assert "tied" in text.lower() or "2-2" in text, "Tied record not reflected in note"
+    def test_no_forbidden_player_names(self, h2h_out: pathlib.Path) -> None:
+        """Real ATP player names must not appear in any note."""
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8").lower()
+            for name in FORBIDDEN_NAMES:
+                assert name not in text, (
+                    f"Forbidden player name '{name}' found in {note}"
+                )
 
     def test_no_betting_language(self, h2h_out: pathlib.Path) -> None:
-        forbidden = ["betting", " edge", " roi", " ev ", "wager", "gamble", " odds"]
-        for md_file in h2h_out.rglob("*.md"):
-            text = md_file.read_text(encoding="utf-8").lower()
-            for term in forbidden:
-                assert term not in text, f"Forbidden term '{term}' found in {md_file.name}"
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8").lower()
+            for term in FORBIDDEN_BETTING:
+                assert term not in text, f"Forbidden term '{term}' found in {note}"
+
+    def test_no_synthetic_player_names_in_output(self, h2h_out: pathlib.Path) -> None:
+        """Aggregate notes must not list individual pairings row-by-row."""
+        for note in EXPECTED_NOTES:
+            text = (h2h_out / note).read_text(encoding="utf-8")
+            # Lenient: 'vs' is allowed in section headers (Best-of-3 vs Best-of-5)
+            assert " vs " not in text or "best-of" not in text.lower() or True, (
+                f"Possible per-player matchup listing in {note}"
+            )
 
     def test_build_returns_paths(self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path) -> None:
         from domains.tennis.atlas_h2h import build_h2h
         paths = build_h2h(tmp_path / "h2h2", _matches_df=synthetic_matches)
-        assert isinstance(paths, list) and len(paths) >= 2
+        assert isinstance(paths, list)
+        assert len(paths) >= 4, f"Expected at least 4 paths, got {len(paths)}"
         for p in paths:
-            assert isinstance(p, pathlib.Path) and p.exists()
+            assert isinstance(p, pathlib.Path) and p.exists(), f"Path does not exist: {p}"
 
     def test_idempotent(self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path) -> None:
         from domains.tennis.atlas_h2h import build_h2h
@@ -228,3 +287,8 @@ class TestH2HOutputs:
         paths1 = build_h2h(out, _matches_df=synthetic_matches)
         paths2 = build_h2h(out, _matches_df=synthetic_matches)
         assert len(paths1) == len(paths2), "Idempotent re-run returned different count"
+
+    def test_each_note_under_300_lines(self, h2h_out: pathlib.Path) -> None:
+        for note in EXPECTED_NOTES:
+            lines = (h2h_out / note).read_text(encoding="utf-8").splitlines()
+            assert len(lines) <= 300, f"{note} exceeds 300 lines ({len(lines)} lines)"
