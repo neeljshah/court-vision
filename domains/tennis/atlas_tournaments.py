@@ -17,6 +17,7 @@ from typing import Optional
 import pandas as pd
 
 from domains.tennis.atlas_tournaments_render import render_all_tournaments
+from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -40,9 +41,6 @@ LEVEL_ORDER: list[str] = ["G", "F", "M", "A", "B", "D", "C", "S"]
 # Surfaces where specialisation is most pronounced (used for archetype label)
 _SPECIALIST_SURFACES: frozenset[str] = frozenset({"Clay", "Grass"})
 
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
-
 # Canonical tournament name map: variant → canonical.
 # Fixes case/spelling inconsistencies in source data that would otherwise emit
 # two separate notes (and a dangling wikilink) for the same event.
@@ -59,11 +57,6 @@ def _canonicalize_names(df: pd.DataFrame) -> pd.DataFrame:
         lambda n: _TOURNEY_NAME_CANON.get(n, n) if isinstance(n, str) else n
     )
     return df
-
-
-def _slug(name: str) -> str:
-    """Return a filesystem-safe slug."""
-    return _SPACE_RE.sub("_", _SLUG_RE.sub("", name).strip())
 
 
 # ---------------------------------------------------------------------------

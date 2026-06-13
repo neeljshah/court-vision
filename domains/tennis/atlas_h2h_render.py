@@ -18,24 +18,13 @@ from __future__ import annotations
 import pathlib
 from typing import Dict, List
 
+# _frontmatter and _write live in atlas_h2h_render2 (avoids circular import:
+# this module imports render_rematch_effects from render2 at the bottom, so
+# render2 must not import from here).
+from domains.tennis.atlas_h2h_render2 import _frontmatter, _write  # noqa: F401
+
 # Duplicated from atlas_h2h so this module is self-contained (no circular import).
 PRIMARY_SURFACES: tuple[str, ...] = ("Hard", "Clay", "Grass")
-
-
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
-
-def _frontmatter(tags: List[str]) -> List[str]:
-    """Return standard YAML frontmatter lines."""
-    tag_lines = [f"  - {t}" for t in tags]
-    return ["---", "tags:"] + tag_lines + ["---"]
-
-
-def _write(path: pathlib.Path, lines: List[str]) -> pathlib.Path:
-    """Write lines as UTF-8 text, always ending with a newline."""
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return path
 
 
 # ---------------------------------------------------------------------------

@@ -9,17 +9,9 @@ distribution, upset tendency) describing events and venues — not champions.
 from __future__ import annotations
 
 import pathlib
-import re
 from typing import Optional
 
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
-
-
-def _slug(name: str) -> str:
-    """Return a filesystem-safe slug (spaces → underscores, strip specials)."""
-    s = _SLUG_RE.sub("", name).strip()
-    return _SPACE_RE.sub("_", s)
+from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 
 def _pct_bar(pct: float, width: int = 10) -> str:
