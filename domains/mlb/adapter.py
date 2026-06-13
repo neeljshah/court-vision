@@ -185,6 +185,20 @@ class MLBAdapter:
             has_odds = False
             odds_df = pd.DataFrame()
 
+        # Pre-merge odds: one left-merge before the loop (O(N+M) vs O(N*M)).
+        # Only select the columns _devig2_home reads to avoid name collisions.
+        # drop_duplicates(keep="first") replicates the original .iloc[0] behaviour.
+        _ODDS_COLS = ["event_id", "dec_open_home", "dec_open_away",
+                      "dec_close_home", "dec_close_away"]
+        if has_odds and not odds_df.empty:
+            _odds_sel = odds_df[[c for c in _ODDS_COLS if c in odds_df.columns]].copy()
+            _odds_sel = _odds_sel.drop_duplicates("event_id", keep="first")
+            wf = wf.merge(_odds_sel, on="event_id", how="left")
+        else:
+            for _c in _ODDS_COLS[1:]:
+                if _c not in wf.columns:
+                    wf[_c] = np.nan
+
         rows_base: List[List[float]] = []
         rows_sig: List[float] = []
         rows_tgt: List[float] = []
@@ -196,13 +210,9 @@ class MLBAdapter:
             tgt = row.get("target_home_win", np.nan)
             if pd.isna(tgt):
                 continue
-            lv = cv = np.nan
-            if has_odds and pd.notna(row.get("event_id")):
-                or_rows = odds_df[odds_df["event_id"] == row["event_id"]]
-                if not or_rows.empty:
-                    or_ = or_rows.iloc[0]
-                    lv = _devig2_home(or_.get("dec_open_home"), or_.get("dec_open_away"))
-                    cv = _devig2_home(or_.get("dec_close_home"), or_.get("dec_close_away"))
+            # Odds columns already merged onto row (NaN when no match)
+            lv = _devig2_home(row.get("dec_open_home"), row.get("dec_open_away"))
+            cv = _devig2_home(row.get("dec_close_home"), row.get("dec_close_away"))
             rows_base.append([float(row["elo_home"]), float(row["elo_away"]),
                                float(row["elo_diff_hfa"]),
                                float(row.get("rest_days_home", 5.0)),
