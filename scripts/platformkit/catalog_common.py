@@ -32,6 +32,37 @@ from src.loop.signal import GateResult
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# _benjamini_hochberg — inline BH (pure, no ledger I/O).
+# Why inline: src.loop.ledger.apply_fdr rewrites a JSONL file and expects
+# dicts with "id" keys; we operate on in-memory verdict rows with no file.
+# Algorithm is identical to ledger.apply_fdr (Benjamini-Hochberg 1995).
+# ---------------------------------------------------------------------------
+
+def _benjamini_hochberg(
+    p_values: List[Optional[float]],
+    q: float = 0.10,
+) -> Tuple[List[Optional[bool]], Optional[float]]:
+    """BH FDR correction over a parallel list of p-values (None = untestable row).
+
+    Returns (passes, bh_threshold): passes[i] is True/False for testable rows,
+    None for rows with p_value=None.  bh_threshold is (max_rank/m)*q or None.
+    """
+    testable = [i for i, p in enumerate(p_values) if p is not None]
+    m = len(testable)
+    passes: List[Optional[bool]] = [None] * len(p_values)
+    if m == 0:
+        return passes, None
+    ordered = sorted(testable, key=lambda i: float(p_values[i]))  # type: ignore[arg-type]
+    max_k = 0
+    for k0, orig in enumerate(ordered):
+        if float(p_values[orig]) <= ((k0 + 1) / m) * q:  # type: ignore[arg-type]
+            max_k = k0 + 1
+    bh_thr: Optional[float] = (max_k / m) * q if max_k else None
+    for k0, orig in enumerate(ordered):
+        passes[orig] = (k0 + 1) <= max_k
+    return passes, bh_thr
+
+# ---------------------------------------------------------------------------
 # derive_bundle — swap signal_col; preserve target/base/dates/lines/closing
 # ---------------------------------------------------------------------------
 
@@ -157,6 +188,22 @@ def run_catalog_common(
             "ablation_pass": r.ablation_pass, "null_pass": r.null_pass,
             "calibration_ok": r.calibration_ok, "clv": r.clv, "p_value": r.p_value,
         })
+
+    # --- cross-catalog BH FDR correction (RIGOR-fdr-wired) ---
+    # Per-signal p-values from the gate are independent single tests at alpha~0.10.
+    # With m=8-16 signals per catalog, ~1 false positive is expected by chance.
+    # Apply Benjamini-Hochberg across ALL signals in this catalog run so that
+    # fdr_bh_pass=True only when a signal survives the joint multiple-testing threshold.
+    # This TIGHTENS rigor: it can only turn SHIP→artifact-flagged, never REJECT→pass.
+    _p_vals: List[Optional[float]] = [
+        r.get("p_value") if r.get("actual_verdict") not in ("BUNDLE_ERROR", "GATE_ERROR")
+        else None
+        for r in rows
+    ]
+    _bh_passes, _bh_threshold = _benjamini_hochberg(_p_vals, q=0.10)
+    for row, bh_pass in zip(rows, _bh_passes):
+        row["fdr_bh_pass"] = bh_pass
+        row["fdr_bh_threshold"] = _bh_threshold
 
     ok: bool = all(r["passed_expected"] for r in rows)
     if out_path is not None:
