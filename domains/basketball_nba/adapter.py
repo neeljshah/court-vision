@@ -202,7 +202,7 @@ class NBAAdapter:
             signal_col=np.array(rows_sig, dtype=float),
             target=np.array(rows_tgt, dtype=float),
             dates=rows_dates,
-            lines=la if not np.all(np.isnan(la)) else None,
+            lines=None,  # no true opener; gate falls back to non-blocking CLV
             closing=la if not np.all(np.isnan(la)) else None,
         )
 

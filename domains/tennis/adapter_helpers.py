@@ -205,8 +205,10 @@ def _feature_bundle_impl(
         # Signal column = win_prob_p1 from blended Elo (the hypothesis value)
         signal_val = float(row.get("win_prob_p1", 0.5))
 
-        # Odds lookup — merged columns already on this row (NaN when no match)
-        line_val = _devig_prob(row, kind="open")
+        # Odds lookup — merged columns already on this row (NaN when no match).
+        # _devig_prob ignores `kind` (tennis-data.co.uk has closing only); set
+        # line_val=NaN so lines=None in the bundle → gate falls back to non-blocking CLV.
+        line_val = float("nan")  # no true opener available
         close_val = _devig_prob(row, kind="close")
 
         rows_base.append(base_row)
