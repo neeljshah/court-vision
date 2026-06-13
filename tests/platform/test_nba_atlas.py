@@ -165,6 +165,49 @@ def test_team_note_has_frontmatter_and_wikilink(tmp_path: pathlib.Path) -> None:
         assert "sport/nba" in text, f"{note.name}: missing sport/nba tag"
 
 
+def test_team_notes_contain_no_player_names(tmp_path: pathlib.Path) -> None:
+    """Team notes must NOT contain any of the fixture player display names.
+
+    The synthetic fixture uses "Alice Star", "Bob Guard", "Carol Center" — none
+    of these strings may appear anywhere in any team note after the roster section
+    was replaced by archetype composition.
+    """
+    base = _make_base_df()
+    adv = _make_adv_df()
+    fake_data = tmp_path / "fake_data"
+
+    build_atlas(tmp_path / "out", fake_data, _base_df=base, _adv_df=adv)
+
+    fixture_names = ["Alice Star", "Bob Guard", "Carol Center", "Alice", "Bob", "Carol"]
+    team_dir = tmp_path / "out" / "Teams"
+    for note in team_dir.glob("*.md"):
+        text = note.read_text(encoding="utf-8")
+        for name in fixture_names:
+            assert name not in text, (
+                f"{note.name} contains player name '{name}' — team notes must be name-free"
+            )
+
+
+def test_team_notes_have_archetype_composition_section(tmp_path: pathlib.Path) -> None:
+    """Team notes must contain an 'Archetype Composition' section header."""
+    base = _make_base_df()
+    adv = _make_adv_df()
+    fake_data = tmp_path / "fake_data"
+
+    build_atlas(tmp_path / "out", fake_data, _base_df=base, _adv_df=adv)
+
+    team_dir = tmp_path / "out" / "Teams"
+    for note in team_dir.glob("*.md"):
+        text = note.read_text(encoding="utf-8")
+        assert "## Archetype Composition" in text, (
+            f"{note.name}: missing '## Archetype Composition' section"
+        )
+        # Section must NOT use the old "Roster (Top Players by Usage)" heading
+        assert "Roster (Top Players by Usage)" not in text, (
+            f"{note.name}: old 'Roster' heading still present — must be removed"
+        )
+
+
 def test_idempotent(tmp_path: pathlib.Path) -> None:
     """Running build_atlas twice produces the same file count."""
     base = _make_base_df()

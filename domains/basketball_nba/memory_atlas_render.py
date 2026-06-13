@@ -1,5 +1,9 @@
 """domains.basketball_nba.memory_atlas_render — Obsidian note rendering for NBA atlas.
 
+Team notes use name-free archetype composition (e.g. "2 High-Usage Creators,
+3 Low-Usage Connectors") instead of individual player lists.  Player-name keys
+are stripped from JSON section data before rendering.
+
 F5-clean: stdlib + pandas only.  No src.* / kernel.* / edge language.
 """
 from __future__ import annotations
@@ -47,14 +51,50 @@ def _parse_json_col(raw: Any) -> dict:
         except (json.JSONDecodeError, TypeError): return {}
     return {}
 
+_NAME_KEYS: frozenset[str] = frozenset({
+    # Keys whose values are player display names or name lists
+    "player_name", "lineup_names", "display_name", "name", "player_names",
+    # Lineup synergy: combo_5man is a list of dicts each containing a "lineup"
+    # key whose value is a list of abbreviated player names — drop the whole field
+    "combo_5man",
+    # Within each lineup-synergy dict the "lineup" key holds abbreviated names
+    "lineup",
+    # Rotation-patterns: starters/closing_lineup contain lineup_names (already
+    # covered above), but belt-and-suspenders in case the key itself is raw
+    "lineup_name",
+})
+
+
+def _strip_names(obj: object) -> object:
+    """Recursively remove name-bearing keys from dicts/lists.
+
+    Removes any key whose name is in ``_NAME_KEYS`` from dict nodes.
+    Passes numeric, boolean, and non-name string values through unchanged.
+    """
+    if isinstance(obj, dict):
+        return {k: _strip_names(v) for k, v in obj.items() if k not in _NAME_KEYS}
+    if isinstance(obj, list):
+        return [_strip_names(item) for item in obj]
+    return obj
+
+
 def _render_section(section_name: str, data: dict) -> str:
-    """Render section dict as markdown; skip DEFER notes and _-prefixed keys."""
+    """Render section dict as markdown; skip DEFER notes and _-prefixed keys.
+
+    Player-name bearing keys are stripped from all nested JSON structures
+    before rendering so no individual names appear in team notes.
+    """
     lines: list[str] = [f"### {section_name.replace('_', ' ').title()}"]
     for k, v in data.items():
         if k.startswith("_"): continue
+        if k in _NAME_KEYS: continue  # skip name-bearing top-level keys
         if isinstance(v, dict):
+            v = _strip_names(v)
             if "DEFER" in str(v.get("_note", "")): continue
             if v.get("value") is not None: lines.append(f"- **{k}**: {_fmt(v['value'])}")
+        elif isinstance(v, list):
+            v = _strip_names(v)
+            lines.append(f"- **{k}**: {v}")
         elif isinstance(v, (int, float)): lines.append(f"- **{k}**: {_fmt(v)}")
         elif v is not None: lines.append(f"- **{k}**: {v}")
     return "" if len(lines) == 1 else "\n".join(lines) + "\n"
@@ -147,19 +187,38 @@ def render_team(
     out_dir: pathlib.Path,
     tricode: str,
     team_section_rows: dict[str, pd.Series],
-    top_players: list[str],
+    team_archetype_composition: list[tuple[int, str]],
     team_adv: Optional[pd.Series],
 ) -> pathlib.Path:
+    """Render one team note.  No individual player names are included.
+
+    Parameters
+    ----------
+    out_dir:
+        Root atlas directory; note is written to out_dir/Teams/<tricode>.md.
+    tricode:
+        Three-letter team abbreviation.
+    team_section_rows:
+        Dict of section_name -> parquet row for this team.
+    team_archetype_composition:
+        List of (count, archetype_label) pairs, sorted descending by count.
+        Emitted as a name-free "Archetype Composition" section.
+    team_adv:
+        Season-average advanced-stats row, or None if unavailable.
+    """
     division = TEAM_DIV.get(tricode, "Unknown")
     conf = TEAM_CONF.get(tricode, "Unknown")
     lines = [
         "---", f"tricode: {tricode}", f'division: "{division}"', f'conference: "{conf}"',
         "tags:", "  - sport/nba", "  - atlas/team", "---", "",
         f"# {tricode}", "", f"[[_Index]] | {conf} · {division}", "",
-        "## Roster (Top Players by Usage)", "",
+        "## Archetype Composition", "",
     ]
-    # Player-level notes are no longer emitted; list names as plain text
-    lines.extend(f"- {n}" for n in top_players)
+    if team_archetype_composition:
+        for count, label in team_archetype_composition:
+            lines.append(f"- {count} {label}")
+    else:
+        lines.append("_No composition data available._")
     lines.append("")
     if team_adv is not None:
         lines += ["## Team Stats (Season Average)", ""]
@@ -183,12 +242,13 @@ def render_all(
     player_sections: dict[int, dict[str, pd.Series]],
     team_sections: dict[str, dict[str, pd.Series]],
     team_adv_by_tricode: dict[str, pd.Series],
-    team_roster: dict[str, list[str]],
+    team_archetype_composition: dict[str, list[tuple[int, str]]],
 ) -> list[pathlib.Path]:
     """Render all notes and return written paths.
 
-    Player notes are NO LONGER emitted (replaced by archetype notes).
-    Only _Index and Teams/<tricode>.md are written here.
+    Player notes are NOT emitted (replaced by archetype notes via
+    ``memory_atlas_archetypes.build_archetypes``).  Only _Index.md and
+    Teams/<tricode>.md are written here, with no individual player names.
     """
     written: list[pathlib.Path] = []
     teams = sorted(team_sections.keys())
@@ -197,6 +257,7 @@ def render_all(
     for tricode in teams:
         written.append(render_team(
             out_dir, tricode, team_sections.get(tricode, {}),
-            team_roster.get(tricode, []), team_adv_by_tricode.get(tricode),
+            team_archetype_composition.get(tricode, []),
+            team_adv_by_tricode.get(tricode),
         ))
     return written

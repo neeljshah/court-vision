@@ -13,8 +13,10 @@ Emitted note layout::
 
     out_dir/
         _Index.md                         corpus hub, top-20 usage table
-        Players/<Name>.md                 top ~150 players by usage rate
-        Teams/<Tricode>.md                all 30 NBA teams
+        Teams/<Tricode>.md                all 30 NBA teams (no player names)
+
+Team notes contain archetype composition counts (e.g. "2 High-Usage Creators,
+3 Low-Usage Connectors") rather than individual player names.
 
 F5-clean: imports only stdlib, numpy, pandas, and domains.basketball_nba.*.
 No src.* / kernel.* / other-domain imports.
@@ -22,12 +24,19 @@ No edge / betting language anywhere.
 """
 from __future__ import annotations
 
-import glob
 import pathlib
-import re
 from typing import Optional
 
 import pandas as pd
+
+from domains.basketball_nba.memory_atlas_data import (
+    _load_player_base,
+    _load_usage_stats,
+    _load_adv_stats_by_player,
+    _load_player_sections,
+    _load_team_sections,
+    _load_team_adv,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -41,141 +50,71 @@ DEFAULT_OUT: pathlib.Path = _REPO_ROOT / "vault" / "Sports" / "Basketball_NBA"
 TOP_N_PLAYERS: int = 150       # max player notes emitted
 MIN_GAMES_PLAYER: int = 10     # skip players with fewer game appearances
 
-_PLAYER_CACHE_GLOB = "atlas_player_*.parquet"
-_TEAM_CACHE_GLOB = "atlas_team_*.parquet"
-
-_SECTION_RE = re.compile(r"atlas_(?:player|team)_(.+)\.parquet$")
-
-
-def _section_name(fpath: str) -> str:
-    m = _SECTION_RE.search(fpath.replace("\\", "/"))
-    return m.group(1) if m else pathlib.Path(fpath).stem
-
 
 # ---------------------------------------------------------------------------
-# Data loading
+# Archetype composition helper
 # ---------------------------------------------------------------------------
 
-def _load_player_base(data_dir: pathlib.Path) -> pd.DataFrame:
-    """Return merged player base table: positions + latest team + adv stats summary."""
-    pos = pd.read_parquet(data_dir / "player_positions.parquet")
-    pos = pos[["player_id", "display_name", "position"]].copy()
-
-    # Player -> latest team from player_pf
-    pf = pd.read_parquet(data_dir / "player_pf.parquet")
-    pf["game_date"] = pd.to_datetime(pf["game_date"])
-    latest_team = (
-        pf.sort_values("game_date")
-        .groupby("player_id")["team_abbreviation"]
-        .last()
-        .reset_index()
-        .rename(columns={"team_abbreviation": "team"})
-    )
-    base = pos.merge(latest_team, on="player_id", how="left")
-    return base
-
-
-def _load_usage_stats(data_dir: pathlib.Path, base_pids: set) -> pd.DataFrame:
-    """Load usage_role cache for usage_rate, minutes_pg, pie_mean, on_off_net_diff."""
-    path = data_dir / "cache" / "atlas_player_usage_role.parquet"
-    if not path.exists():
-        return pd.DataFrame(columns=["player_id"])
-    df = pd.read_parquet(path)
-    cols = ["player_id", "usage_rate", "minutes_pg", "pie_mean",
-            "on_off_net_diff", "n_games", "creator_role"]
-    present = [c for c in cols if c in df.columns]
-    return df[present].copy()
-
-
-def _load_adv_stats_by_player(
-    data_dir: pathlib.Path,
-    pids: list[int],
-    *,
-    _df: Optional[pd.DataFrame] = None,
-) -> dict[int, pd.Series]:
-    """Return dict pid -> most-recent game row from player_adv_stats."""
-    if _df is not None:
-        adv = _df.copy()
-    else:
-        adv = pd.read_parquet(data_dir / "player_adv_stats.parquet")
-    adv["game_date"] = pd.to_datetime(adv["game_date"])
-    adv = adv[adv["player_id"].isin(pids)]
-    latest = adv.sort_values("game_date").groupby("player_id").last()
-    return {int(pid): row for pid, row in latest.iterrows()}
-
-
-def _load_player_sections(
-    data_dir: pathlib.Path,
-    pids: set,
-) -> dict[int, dict[str, pd.Series]]:
-    """Load all atlas_player_*.parquet and index by player_id."""
-    cache_dir = data_dir / "cache"
-    pattern = str(cache_dir / _PLAYER_CACHE_GLOB)
-    result: dict[int, dict[str, pd.Series]] = {}
-
-    for fpath in sorted(glob.glob(pattern)):
-        section = _section_name(fpath)
-        try:
-            df = pd.read_parquet(fpath)
-        except Exception:
-            continue
-        if "player_id" not in df.columns:
-            continue
-        df = df[df["player_id"].isin(pids)]
-        df = df.set_index("player_id")
-        for pid, row in df.iterrows():
-            pid_int = int(pid)
-            result.setdefault(pid_int, {})[section] = row
-
-    return result
-
-
-def _load_team_sections(data_dir: pathlib.Path) -> dict[str, dict[str, pd.Series]]:
-    """Load all atlas_team_*.parquet and index by team_tricode."""
-    cache_dir = data_dir / "cache"
-    pattern = str(cache_dir / _TEAM_CACHE_GLOB)
-    result: dict[str, dict[str, pd.Series]] = {}
-
-    for fpath in sorted(glob.glob(pattern)):
-        section = _section_name(fpath)
-        try:
-            df = pd.read_parquet(fpath)
-        except Exception:
-            continue
-        if "team_tricode" not in df.columns:
-            continue
-        df = df.set_index("team_tricode")
-        for tricode, row in df.iterrows():
-            result.setdefault(str(tricode), {})[section] = row
-
-    return result
-
-
-def _load_team_adv(data_dir: pathlib.Path) -> dict[str, pd.Series]:
-    """Return dict tricode -> season-average advanced stats row."""
-    path = data_dir / "team_advanced_stats.parquet"
-    if not path.exists():
-        return {}
-    df = pd.read_parquet(path)
-    numeric = [c for c in df.columns if c not in ("game_id", "game_date", "team_tricode")]
-    agg = df.groupby("team_tricode")[numeric].mean()
-    return {str(tc): row for tc, row in agg.iterrows()}
-
-
-def _build_team_roster(
+def _build_team_archetype_composition(
     players_df: pd.DataFrame,
     adv_by_player: dict[int, pd.Series],
-) -> dict[str, list[str]]:
-    """Return dict tricode -> sorted list of display_names (top 10 by usage rate)."""
-    roster: dict[str, list[tuple[float, str]]] = {}
+) -> dict[str, list[tuple[int, str]]]:
+    """Return dict tricode -> archetype composition as (count, label) pairs.
+
+    Each player is classified into one of the 10 archetypes defined in
+    ``domains.basketball_nba.memory_atlas_archetypes`` using only team-
+    aggregate per-player statistics already present in *players_df*.  No
+    player names are stored or returned.
+
+    Parameters
+    ----------
+    players_df:
+        Merged player base table (player_id, team, usage_rate, …).
+    adv_by_player:
+        Dict of pid -> most-recent advanced-stats row (may be empty).
+
+    Returns
+    -------
+    dict[str, list[tuple[int, str]]]
+        ``{tricode: [(count, archetype_label), …]}`` sorted descending by count,
+        ties broken alphabetically.  Only archetypes with count >= 1 are included.
+    """
+    from collections import Counter
+
+    try:
+        from domains.basketball_nba.memory_atlas_archetypes import _classify
+    except ImportError:
+        # Graceful degradation: return empty composition if module unavailable
+        return {}
+
+    team_archetype_counts: dict[str, Counter] = {}
     for _, r in players_df.iterrows():
         team = str(r.get("team", "—"))
-        name = str(r.get("display_name", ""))
-        usg = float(r.get("usage_rate", 0.0) or 0.0)
-        roster.setdefault(team, []).append((usg, name))
+        pid = int(r.get("player_id", 0))
+
+        # Build a stat row compatible with _classify
+        adv = adv_by_player.get(pid)
+        stat_row = pd.Series(
+            {
+                "usage": float(r.get("usage_rate", 0.0) or 0.0),
+                "ts": float(adv.get("trueshootingpercentage", 0.0) if adv is not None else 0.0),
+                "efg": float(adv.get("effectivefieldgoalpercentage", 0.0) if adv is not None else 0.0),
+                "ast_pct": float(adv.get("assistpercentage", 0.0) if adv is not None else 0.0),
+                "def_rtg": float(adv.get("defensiverating", 999.0) if adv is not None else 999.0),
+                "reb_pct": float(adv.get("reboundpercentage", 0.0) if adv is not None else 0.0),
+                "minutes_avg": float(r.get("minutes_pg", 0.0) or 0.0),
+                "position": str(r.get("position", "") or ""),
+            }
+        )
+        arch_label = _classify(stat_row)
+        team_archetype_counts.setdefault(team, Counter())[arch_label] += 1
+
     return {
-        t: [n for _, n in sorted(players, reverse=True)[:10]]
-        for t, players in roster.items()
+        t: sorted(
+            [(cnt, lbl) for lbl, cnt in ctr.items() if cnt >= 1],
+            key=lambda x: (-x[0], x[1]),
+        )
+        for t, ctr in team_archetype_counts.items()
     }
 
 
@@ -269,8 +208,8 @@ def build_atlas(
     for team in base["team"].dropna().unique():
         team_sections.setdefault(str(team), {})
 
-    # --- Team roster map (top players per team by usage) ---
-    team_roster = _build_team_roster(base, adv_by_player)
+    # --- Team archetype composition (name-free counts per team) ---
+    team_archetype_composition = _build_team_archetype_composition(base, adv_by_player)
 
     return render_all(
         out_dir=out_dir,
@@ -279,5 +218,5 @@ def build_atlas(
         player_sections=player_sections,
         team_sections=team_sections,
         team_adv_by_tricode=team_adv_by_tricode,
-        team_roster=team_roster,
+        team_archetype_composition=team_archetype_composition,
     )
