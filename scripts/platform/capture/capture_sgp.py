@@ -33,14 +33,27 @@ import datetime
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 _THIS_DIR = Path(__file__).resolve().parent
 if str(_THIS_DIR) not in sys.path:
     sys.path.insert(0, str(_THIS_DIR))
 
-from ledger_schema import record_key, validate  # noqa: E402
-from ledger_writer import append, read_all  # noqa: E402
+from ledger_schema import record_key  # noqa: E402
+from ledger_writer import append  # noqa: E402
+
+# Re-export helpers so all existing import paths keep working.
+from capture_sgp_builder import (  # noqa: E402
+    classify_kind,
+    make_sgp_market_tag,
+    _build_sgp_rows,
+    _load_seen_keys,
+    _now_ts,
+)
+from capture_sgp_client import (  # noqa: E402
+    SgpOddsAPIClient,
+    _DryRunSgpStubClient,
+)
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -60,238 +73,6 @@ _SGP_PROBE_COMBOS: Tuple[Tuple[str, ...], ...] = (
     ("player_threes", "player_points"),
     ("spreads", "totals"),
 )
-
-_CLOSE_MIN = 5   # minutes before tip → "close"
-_MOVE_MIN  = 60  # minutes before tip → "move"
-
-
-# ---------------------------------------------------------------------------
-# SGP market tag helper
-# ---------------------------------------------------------------------------
-
-def make_sgp_market_tag(legs: Tuple[str, ...]) -> str:
-    """Return the canonical ledger market tag for an SGP combo.
-
-    Args:
-        legs: Ordered sequence of Odds API market key strings.
-
-    Returns:
-        String of the form ``sgp:<leg1>+<leg2>[+...]``.
-    """
-    if not legs:
-        raise ValueError("SGP market tag requires at least one leg.")
-    return "sgp:" + "+".join(legs)
-
-
-# ---------------------------------------------------------------------------
-# Kind classification (mirrors capture_nba.classify_kind)
-# ---------------------------------------------------------------------------
-
-def classify_kind(
-    event_id: str,
-    market: str,
-    book: str,
-    side: str,
-    seen: Set[Tuple],
-    commence_time: Optional[str],
-    now_utc: Optional[datetime.datetime] = None,
-) -> str:
-    """Return ``open`` / ``move`` / ``close`` for a snapshot row.
-
-    First-seen → ``open``.  Already open → time-window determines
-    ``move`` (T-60) or ``close`` (T-5).
-
-    Args:
-        event_id: Odds API event identifier.
-        market: Ledger market string (e.g. ``sgp:player_points+player_rebounds``).
-        book: Bookmaker key.
-        side: Outcome side string.
-        seen: Set of already-written record_key tuples.
-        commence_time: ISO-8601 UTC commence time string, or ``None``/empty.
-        now_utc: Injected current time for deterministic classification.
-
-    Returns:
-        One of ``"open"``, ``"move"``, ``"close"``.
-    """
-    open_key = (_SPORT, event_id, market, book, side, "open")
-    if open_key not in seen:
-        return "open"
-    if commence_time and commence_time.strip():
-        now = now_utc or datetime.datetime.now(datetime.timezone.utc)
-        try:
-            tip_str = (commence_time.rstrip("Z") + "+00:00"
-                       if commence_time.endswith("Z") else commence_time)
-            tip = datetime.datetime.fromisoformat(tip_str)
-            mins = (tip - now).total_seconds() / 60.0
-            if mins <= _CLOSE_MIN:
-                return "close"
-            if mins <= _MOVE_MIN:
-                return "move"
-        except (ValueError, OverflowError):
-            pass
-    return "open"
-
-
-# ---------------------------------------------------------------------------
-# Odds API client (injectable)
-# ---------------------------------------------------------------------------
-
-class SgpOddsAPIClient:
-    """Live Odds API client for SGP market probes.
-
-    Replaced by stub in tests / dry-run.  Each call hits the event-level
-    odds endpoint with a multi-market query string — the API returns
-    bookmakers that price all requested legs jointly (SGP / correlated).
-    If the API does not support the combo it returns an empty bookmakers
-    list; that is a valid zero-row outcome.
-    """
-
-    def fetch_events(self) -> List[Dict[str, Any]]:
-        """Return the list of upcoming NBA events (id + commence_time only)."""
-        import requests  # deferred: keeps module importable offline
-        r = requests.get(
-            "https://api.the-odds-api.com/v4/sports/basketball_nba/events/",
-            params={"apiKey": os.environ.get(_ODDS_API_KEY_ENV, "")},
-            timeout=20,
-        )
-        r.raise_for_status()
-        return r.json()
-
-    def fetch_sgp_bookmakers(
-        self, event_id: str, legs: Tuple[str, ...]
-    ) -> List[Dict[str, Any]]:
-        """Probe one SGP combo on one event.
-
-        Args:
-            event_id: Odds API event identifier.
-            legs: Ordered tuple of market keys forming the SGP combo.
-
-        Returns:
-            Bookmakers list (may be empty if API does not expose this combo).
-        """
-        import requests
-        r = requests.get(
-            f"https://api.the-odds-api.com/v4/sports/basketball_nba/events/{event_id}/odds",
-            params={
-                "apiKey": os.environ.get(_ODDS_API_KEY_ENV, ""),
-                "regions": "us",
-                "markets": ",".join(legs),
-                "oddsFormat": "american",
-            },
-            timeout=20,
-        )
-        r.raise_for_status()
-        return r.json().get("bookmakers", [])
-
-
-# ---------------------------------------------------------------------------
-# Row builder
-# ---------------------------------------------------------------------------
-
-def _now_ts() -> str:
-    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _build_sgp_rows(
-    event_id: str,
-    commence: str,
-    legs: Tuple[str, ...],
-    bookmakers: List[Dict[str, Any]],
-    ts: str,
-    seen: Set[Tuple],
-    now_utc: Optional[datetime.datetime] = None,
-) -> Iterator[dict]:
-    """Yield validated ledger rows from one SGP combo response.
-
-    An SGP row's ``side`` encodes the outcome label plus player (if any)
-    and line point so it is fully self-describing:
-    ``<direction>:<description>:<point>`` or ``<name>`` for non-player legs.
-
-    Args:
-        event_id: Odds API event identifier.
-        commence: ISO-8601 UTC commence time string.
-        legs: Tuple of market keys forming the SGP combo.
-        bookmakers: Bookmakers list from the API response.
-        ts: ISO-8601 UTC observation timestamp string.
-        seen: Set of already-written record_key tuples (mutated in-place).
-        now_utc: Injected current time for kind classification.
-
-    Yields:
-        Validated ledger record dicts.
-    """
-    market_tag = make_sgp_market_tag(legs)
-    for bm in bookmakers:
-        book = bm.get("key", "").strip()
-        if not book:
-            continue
-        for mkt_obj in bm.get("markets", []):
-            for out in mkt_obj.get("outcomes", []):
-                name = (out.get("name") or "").strip().lower()
-                description = (out.get("description") or "").strip()
-                price = out.get("price")
-                point = out.get("point")
-                if price is None or not name:
-                    continue
-                # Build a self-describing side string.
-                if description and point is not None:
-                    side = f"{name}:{description}:{point}"
-                elif description:
-                    side = f"{name}:{description}"
-                elif point is not None:
-                    side = f"{name}:{point}"
-                else:
-                    side = name
-                kind = classify_kind(
-                    event_id, market_tag, book, side, seen, commence, now_utc
-                )
-                rec = dict(
-                    sport=_SPORT,
-                    event_id=event_id,
-                    market=market_tag,
-                    book=book,
-                    price=float(price),
-                    side=side,
-                    kind=kind,
-                    ts_utc_observed=ts,
-                    source=_SOURCE,
-                )
-                try:
-                    validate(rec)
-                    yield rec
-                except ValueError:
-                    pass
-
-
-# ---------------------------------------------------------------------------
-# Seen-keys loader
-# ---------------------------------------------------------------------------
-
-def _load_seen_keys(ledger_root: Optional[Path]) -> Set[Tuple]:
-    """Load all existing record keys from the ledger (SGP sport dir only).
-
-    Args:
-        ledger_root: Ledger root directory override, or ``None`` for default.
-
-    Returns:
-        Set of ``(sport, event_id, market, book, side, kind)`` tuples.
-    """
-    from ledger_writer import _DEFAULT_ROOT as _dr  # noqa: PLC0415
-    root = ledger_root if ledger_root is not None else _dr
-    sport_dir = Path(root) / _SPORT
-    seen: Set[Tuple] = set()
-    if not sport_dir.exists():
-        return seen
-    for jf in sport_dir.glob("*.jsonl"):
-        try:
-            for row in read_all(_SPORT, jf.stem, root):
-                k = record_key(row)
-                # Only load SGP-tagged rows to avoid false positives from
-                # mainline rows sharing the same (event, book, side, kind).
-                if row.get("market", "").startswith("sgp:"):
-                    seen.add(k)
-        except Exception:
-            pass
-    return seen
 
 
 # ---------------------------------------------------------------------------
@@ -342,7 +123,7 @@ def run_capture(
         events_found=0, sgp_rows_written=0, rows_skipped_duplicate=0,
         rows_failed_validation=0, sgp_api_errors=0, zero_rows=False,
     )
-    seen = _load_seen_keys(ledger_root)
+    seen: Set[Tuple] = _load_seen_keys(ledger_root)
 
     try:
         events: List[Dict[str, Any]] = _client.fetch_events()
@@ -383,81 +164,6 @@ def run_capture(
         print("[capture_sgp] No SGP pricing found on this slate — zero rows is a valid outcome.")
 
     return stats
-
-
-# ---------------------------------------------------------------------------
-# Dry-run stub client
-# ---------------------------------------------------------------------------
-
-class _DryRunSgpStubClient:
-    """Offline stub — returns synthetic SGP data; zero network calls.
-
-    Simulates a book (FanDuel) that exposes correlated pricing on the
-    player_points+player_rebounds combo only.  All other combos return
-    an empty bookmakers list (mirrors real API behaviour).
-    """
-
-    _SGP_SUPPORTED_LEGS: Tuple[str, ...] = ("player_points", "player_rebounds")
-
-    def fetch_events(self) -> List[Dict[str, Any]]:
-        """Return one synthetic NBA event."""
-        return [
-            {
-                "id": "dry_sgp_evt_001",
-                "home_team": "New York Knicks",
-                "away_team": "San Antonio Spurs",
-                "commence_time": "2030-01-15T02:00:00Z",
-            }
-        ]
-
-    def fetch_sgp_bookmakers(
-        self, event_id: str, legs: Tuple[str, ...]
-    ) -> List[Dict[str, Any]]:
-        """Return bookmakers only for the supported SGP combo; empty otherwise."""
-        if set(legs) == set(self._SGP_SUPPORTED_LEGS):
-            return [
-                {
-                    "key": "fanduel",
-                    "markets": [
-                        {
-                            "key": "player_points",
-                            "outcomes": [
-                                {
-                                    "name": "Over",
-                                    "description": "Jalen Brunson",
-                                    "price": -120,
-                                    "point": 27.5,
-                                },
-                                {
-                                    "name": "Under",
-                                    "description": "Jalen Brunson",
-                                    "price": 100,
-                                    "point": 27.5,
-                                },
-                            ],
-                        },
-                        {
-                            "key": "player_rebounds",
-                            "outcomes": [
-                                {
-                                    "name": "Over",
-                                    "description": "Karl-Anthony Towns",
-                                    "price": -115,
-                                    "point": 9.5,
-                                },
-                                {
-                                    "name": "Under",
-                                    "description": "Karl-Anthony Towns",
-                                    "price": -105,
-                                    "point": 9.5,
-                                },
-                            ],
-                        },
-                    ],
-                }
-            ]
-        # All other combos — API returns no pricing.
-        return []
 
 
 # ---------------------------------------------------------------------------
