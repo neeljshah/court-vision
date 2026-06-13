@@ -2,6 +2,9 @@
 
 Companion to atlas_tournaments.py (LOC split).
 F5-clean: stdlib + pandas only.  No edge / betting language.
+No individual player names appear in any rendered output.
+Tournament notes are name-free style-profiles (surface, level, archetype
+distribution, upset tendency) describing events and venues — not champions.
 """
 from __future__ import annotations
 
@@ -9,20 +12,20 @@ import pathlib
 import re
 from typing import Optional
 
-import pandas as pd
-
 _SLUG_RE = re.compile(r"[^\w\s-]")
 _SPACE_RE = re.compile(r"[\s]+")
 
 
 def _slug(name: str) -> str:
+    """Return a filesystem-safe slug (spaces → underscores, strip specials)."""
     s = _SLUG_RE.sub("", name).strip()
     return _SPACE_RE.sub("_", s)
 
 
-def _player_link(name: str) -> str:
-    """Return a wikilink resolving to the Players/ note for *name*."""
-    return f"[[../Players/{name}|{name}]]"
+def _pct_bar(pct: float, width: int = 10) -> str:
+    """Return a simple ASCII bar representing a percentage (0–100)."""
+    filled = round(pct / 100 * width)
+    return "█" * filled + "░" * (width - filled)
 
 
 # ---------------------------------------------------------------------------
@@ -30,62 +33,75 @@ def _player_link(name: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _render_tournament(info: dict, out_dir: pathlib.Path) -> pathlib.Path:
-    """Emit <Tournament Name>.md in *out_dir* and return the path."""
+    """Emit <Tournament Name>.md in *out_dir* and return the path.
+
+    Content is a name-free style-profile: surface, level, corpus statistics,
+    winner-archetype distribution, and upset tendency.  No individual player
+    names or champion tables appear in the output.
+    """
     name: str = info["name"]
     level: str = info["level"]
     level_label: str = info["level_label"]
     surface: str = info["surface"]
     editions: int = info["editions"]
+    editions_with_final: int = info["editions_with_final"]
+    completion_rate: float = info["completion_rate"]
     span: str = info["span"]
     best_of: int = info["best_of"]
-    champions_by_year: dict[int, str] = info["champions_by_year"]
-    title_counts: dict[str, int] = info["title_counts"]
-    recent_finals: list[dict] = info["recent_finals"]
+    style_profile: dict = info["style_profile"]
     total_matches: int = info["total_matches"]
 
-    # Champions table: sorted by year descending
-    champ_rows: list[str] = []
-    for yr in sorted(champions_by_year.keys(), reverse=True):
-        player = champions_by_year[yr]
-        champ_rows.append(f"| {yr} | {_player_link(player)} |")
+    specialist_pct: float = style_profile.get("specialist_pct", 0.0)
+    allcourt_pct: float = style_profile.get("allcourt_pct", 0.0)
+    unknown_pct: float = style_profile.get("unknown_pct", 100.0)
+    n_classified: int = style_profile.get("n_classified", 0)
+    upset_rate: Optional[float] = style_profile.get("upset_rate")
 
-    champ_table = (
-        "\n".join(champ_rows)
-        if champ_rows
-        else "| — | No final found in corpus |"
-    )
+    # Archetype distribution section
+    if n_classified > 0:
+        archetype_lines = [
+            "| Archetype | Share | Visual |",
+            "|---|---|---|",
+            f"| Surface-specialist | {specialist_pct:.0f}% | {_pct_bar(specialist_pct)} |",
+            f"| All-court | {allcourt_pct:.0f}% | {_pct_bar(allcourt_pct)} |",
+        ]
+        if unknown_pct > 0.0:
+            archetype_lines.append(
+                f"| Unclassified | {unknown_pct:.0f}% | {_pct_bar(unknown_pct)} |"
+            )
+        archetype_note = (
+            f"Based on {n_classified} edition{'s' if n_classified != 1 else ''} "
+            f"with an identifiable finalist archetype (corpus window only)."
+        )
+        archetype_section = "\n".join(archetype_lines) + f"\n\n> {archetype_note}"
+    else:
+        archetype_section = (
+            "*Archetype distribution unavailable — no finals with identifiable "
+            "finalists in corpus.*"
+        )
 
-    # Most titles
-    titles_lines: list[str] = []
-    for player, count in sorted(title_counts.items(), key=lambda kv: -kv[1])[:5]:
-        titles_lines.append(f"- {_player_link(player)}: {count} title{'s' if count != 1 else ''}")
-    titles_section = (
-        "\n".join(titles_lines) if titles_lines else "- No champion data in corpus"
-    )
+    # Upset-tendency section
+    if upset_rate is not None:
+        upset_pct = round(upset_rate * 100, 1)
+        upset_desc = (
+            "high" if upset_pct >= 35
+            else "moderate" if upset_pct >= 20
+            else "low"
+        )
+        upset_section = (
+            f"- **Final upset rate:** {upset_pct:.1f}% ({upset_desc}) — "
+            f"fraction of finals won by the lower-ranked finalist (rank at match time)."
+        )
+    else:
+        upset_section = (
+            "- **Final upset rate:** not available (rank data absent from corpus)."
+        )
 
-    # Recent finals
-    final_lines: list[str] = []
-    for f in recent_finals:
-        yr = f["year"]
-        p1, p2 = f["p1"], f["p2"]
-        winner_code = f["winner"]
-        score = f.get("score", "")
-        if winner_code == "1":
-            result = f"{_player_link(p1)} def. {_player_link(p2)}"
-        elif winner_code == "2":
-            result = f"{_player_link(p2)} def. {_player_link(p1)}"
-        else:
-            result = f"{_player_link(p1)} vs {_player_link(p2)}"
-        score_str = f" ({score})" if score and score != "nan" else ""
-        final_lines.append(f"- **{yr}**: {result}{score_str}")
-    finals_section = (
-        "\n".join(final_lines) if final_lines else "- No finals data in corpus"
-    )
-
-    # Honest-data note
-    data_note = (
-        "Champions listed only where a 'F' (final) round match appears in the corpus. "
-        "Years without a recorded final are absent from the table."
+    # Completion note
+    completion_note = (
+        f"Finals recorded for {editions_with_final} of {editions} editions "
+        f"({completion_rate:.0f}% completion). "
+        "Editions without a recorded 'F' round match are excluded from archetype counts."
     )
 
     lines = [
@@ -114,21 +130,21 @@ def _render_tournament(info: dict, out_dir: pathlib.Path) -> pathlib.Path:
         f"- **Typical format:** Best of {best_of}",
         f"- **Total corpus matches:** {total_matches}",
         "",
-        "## Champions by Year",
-        f"> {data_note}",
+        "## Winner Archetype Distribution",
         "",
-        "| Year | Champion |",
-        "|---|---|",
-        champ_table,
+        "> Classification is corpus-internal and name-free: a finalist who reached "
+        "finals exclusively on one surface type is labelled *surface-specialist*; "
+        "one who reached finals on multiple surfaces is labelled *all-court*.",
         "",
-        "## Most Titles at This Event",
-        "*(corpus window only)*",
+        archetype_section,
         "",
-        titles_section,
+        "## Upset Tendency",
         "",
-        "## Recent Finals",
+        upset_section,
         "",
-        finals_section,
+        "## Data Notes",
+        "",
+        f"> {completion_note}",
         "",
         "---",
         f"#sport/tennis #tournament #level/{level.lower()}",
@@ -164,9 +180,9 @@ def _render_index(
 
     section_lines: list[str] = []
     levels_seen = set(by_level.keys())
-    ordered_levels = [l for l in level_order if l in levels_seen]
+    ordered_levels = [lv for lv in level_order if lv in levels_seen]
     # Append any unlisted levels at the end
-    ordered_levels += sorted(l for l in levels_seen if l not in ordered_levels)
+    ordered_levels += sorted(lv for lv in levels_seen if lv not in ordered_levels)
 
     for lvl in ordered_levels:
         label = level_labels.get(lvl, lvl)
@@ -197,7 +213,8 @@ def _render_index(
         "",
         "[[../_Index|← Tennis Index]]",
         "",
-        f"Tournament notes with ≥ 3 editions in the corpus ({total_tournaments} qualifying).",
+        f"Tournament style-profile notes with ≥ 3 editions in the corpus ({total_tournaments} qualifying).",
+        "Notes describe surface, level, and winner-archetype distribution — no individual names.",
         "",
         "## Tournaments by Level",
         "",
