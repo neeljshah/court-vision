@@ -1,21 +1,8 @@
 """scripts.platformkit.frontend.board — multi-sport board builder.
 
-build_board(sport, repo_root) -> list[dict]  — per-game rows for one sport.
-build_all_board()             -> dict[str, list[dict]]  — all sports.
-to_json(board, out_path)      — write JSON to disk.
-
-HONEST_NOTE (module-level constant):
-    Markets are efficient — NO model edge is claimed anywhere in this module.
-    The only value exposed is line-shopping / devig / CLV, explicitly labeled.
-
-Calibration tags per sport (from proof results):
-    basketball_nba : 'calibrated'  (Elo Brier < null; market beats model)
-    mlb_sbro       : 'calibrated'  (two-corpus proof; market beats model)
-    soccer_fd      : 'calibrated'  (Poisson ECE < 0.025)
-    tennis_atp     : 'calibrated'  (blended Elo; market beats model)
-
-F5 compliance: imports ONLY stdlib, numpy, pandas, domains.*, src.loop.gate.
-               No src.data / src.sim / src.tracking / src.pipeline.
+HONEST: Markets efficient — NO model edge claimed.  Value = line-shopping/CLV.
+Window: last_n_days | max_rows_per_sport (default 200) | future_only.
+Line-shop EV: multi-book (>=2 entries) → best_line/fair_decimal-1, NOT model edge.
 """
 from __future__ import annotations
 
@@ -23,6 +10,7 @@ import inspect
 import json
 import logging
 import math
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -33,19 +21,11 @@ from src.loop.signal import Hypothesis
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# HONEST framing — module-level constant (tested in test_board.py)
-# ---------------------------------------------------------------------------
-
 HONEST_NOTE = (
     "Calibrated predictions + best available market lines. "
     "Markets are efficient — NO model edge is claimed. "
     "Value shown = line-shopping / devig / CLV only."
 )
-
-# ---------------------------------------------------------------------------
-# Sport registry: sport_id -> (primary_parquet, adapter_class_path, calib_tag)
-# ---------------------------------------------------------------------------
 
 _SPORT_REGISTRY: Dict[str, Dict[str, str]] = {
     "basketball_nba": {
@@ -78,7 +58,6 @@ _SPORT_REGISTRY: Dict[str, Dict[str, str]] = {
     },
 }
 
-# Minimal hypothesis used only to satisfy the feature_bundle() signature.
 _BOARD_HYP = Hypothesis(
     name="board_display",
     target="winprob",
@@ -90,154 +69,182 @@ LINE_SHOP_NOTE = (
     "Real multi-book line-shopping requires a live feed. "
     "On-disk corpus provides one historical book only."
 )
+LINE_SHOP_EV_LABEL = (
+    "+EV from LINE-SHOPPING vs devigged fair — NOT a model edge. "
+    "Value from picking the best book across the books list."
+)
 
-
-# ---------------------------------------------------------------------------
-# Internal helpers
-# ---------------------------------------------------------------------------
 
 def _load_adapter(sport_id: str, repo_root: Path) -> Optional[Any]:
-    """Import and instantiate the adapter for sport_id.  Returns None if corpus absent."""
     reg = _SPORT_REGISTRY.get(sport_id)
     if reg is None:
-        logger.warning("Unknown sport_id %r — skipping.", sport_id)
         return None
-
     corpus_dir = repo_root / reg["corpus_dir"]
     primary = corpus_dir / reg["primary_parquet"]
     if not primary.exists():
-        logger.info("Corpus absent for %s (%s) — skipping.", sport_id, primary)
         return None
-
     try:
         primary_df = pd.read_parquet(primary)
     except Exception as exc:
-        logger.error("Failed to read %s for %s: %s", primary, sport_id, exc)
+        logger.error("Failed to read %s: %s", primary, exc)
         return None
-
     odds_df: Optional[pd.DataFrame] = None
     odds_path = corpus_dir / "odds.parquet"
     if odds_path.exists():
         try:
             odds_df = pd.read_parquet(odds_path)
-        except Exception as exc:
-            logger.warning("odds.parquet unreadable for %s: %s", sport_id, exc)
-
+        except Exception:
+            pass
     import importlib
     mod = importlib.import_module(reg["adapter_module"])
     cls = getattr(mod, reg["adapter_class"])
-
-    # All adapters accept either (games_df=...) or (matches_df=...) depending on sport.
     primary_key = "games_df" if reg["primary_parquet"] == "games.parquet" else "matches_df"
     kwargs: Dict[str, Any] = {primary_key: primary_df}
     if odds_df is not None:
         kwargs["odds_df"] = odds_df
     return cls(**kwargs)
 
-
 def _safe_float(v: Any) -> Optional[float]:
-    """Return float in [0,1] or None."""
     try:
         f = float(v)
         return f if math.isfinite(f) else None
     except (TypeError, ValueError):
         return None
 
+def _compute_line_shop_ev(
+    books: List[Dict[str, Any]],
+    market_fair_prob: Optional[float],
+) -> tuple:
+    """Return (best_book, best_line, line_shop_ev, note).  Needs >=2 valid books."""
+    valid = [
+        b for b in books
+        if isinstance(b, dict) and "book" in b and "decimal_odds" in b
+        and b["decimal_odds"] is not None
+    ]
+    if len(valid) < 2:
+        return None, None, None, LINE_SHOP_NOTE
+    best = max(valid, key=lambda b: float(b["decimal_odds"]))
+    best_book: str = str(best["book"])
+    best_decimal: float = float(best["decimal_odds"])
+    line_shop_ev: Optional[float] = None
+    if market_fair_prob is not None and market_fair_prob > 0:
+        fair_decimal = 1.0 / market_fair_prob
+        line_shop_ev = round(best_decimal / fair_decimal - 1, 6)
+    return best_book, best_decimal, line_shop_ev, LINE_SHOP_EV_LABEL
+
 
 def _bundle_to_rows(sport_id: str, bundle: Any, calib_tag: str) -> List[Dict[str, Any]]:
-    """Convert a FeatureBundle into board rows.
-
-    Each row corresponds to one game. We zip dates, signal_col, and the
-    best available market line (closing preferred over lines, NaN→None).
-    home/away are not guaranteed in all sport bundles; we derive them from
-    dates index position and leave them as None when unavailable at this layer
-    (the board is primarily prob/line-shopping focused).
-    """
+    """Convert a FeatureBundle into board rows (one per game)."""
     sig = np.asarray(bundle.signal_col, dtype=float)
-    tgt = np.asarray(bundle.target, dtype=float)
     dates = list(bundle.dates)
     n = len(dates)
-
-    # Best market fair prob: prefer closing, fall back to lines, else NaN array.
     if bundle.closing is not None:
         market_arr = np.asarray(bundle.closing, dtype=float)
     elif bundle.lines is not None:
         market_arr = np.asarray(bundle.lines, dtype=float)
     else:
         market_arr = np.full(n, float("nan"))
-
+    per_game_books: Optional[List[Any]] = getattr(bundle, "books", None)
     rows: List[Dict[str, Any]] = []
     for i in range(n):
         model_prob = _safe_float(sig[i])
         market_prob = _safe_float(market_arr[i]) if i < len(market_arr) else None
-
         edge_diag: Optional[float] = None
         if model_prob is not None and market_prob is not None:
             edge_diag = round(model_prob - market_prob, 4)
-
+        game_books = (
+            per_game_books[i]
+            if per_game_books is not None and i < len(per_game_books)
+            else None
+        )
+        if game_books and len(game_books) >= 2:
+            best_book, best_line, line_shop_ev, shop_note = _compute_line_shop_ev(
+                game_books, market_prob
+            )
+        else:
+            best_book, best_line, line_shop_ev, shop_note = None, None, None, LINE_SHOP_NOTE
         rows.append({
             "sport": sport_id,
             "date": dates[i],
-            "home": None,   # per-sport enrichment requires the raw corpus; omitted here
-            "away": None,   # same; the board consumer can join on date+sport
+            "home": None,
+            "away": None,
             "model_prob": round(model_prob, 4) if model_prob is not None else None,
             "market_fair_prob": round(market_prob, 4) if market_prob is not None else None,
-            # DIAGNOSTIC only — not a bet signal; markets are efficient
             "edge_vs_market": {
                 "value": edge_diag,
                 "label": "DIAGNOSTIC — not a bet signal; markets are efficient",
             },
-            "best_book": None,   # single historical book; live feed required
-            "best_line": None,   # same
-            "line_shop_note": LINE_SHOP_NOTE,
-            "clv_placeholder": None,   # CLV requires live prices + settlement
+            "best_book": best_book,
+            "best_line": best_line,
+            "line_shop_ev": line_shop_ev,
+            "line_shop_note": shop_note,
+            "clv_placeholder": None,
             "calibration_tag": calib_tag,
             "honest_note": HONEST_NOTE,
         })
     return rows
 
 
-# ---------------------------------------------------------------------------
-# Public API
-# ---------------------------------------------------------------------------
+def _apply_window(
+    rows: List[Dict[str, Any]],
+    last_n_days: Optional[int],
+    max_rows_per_sport: Optional[int],
+    future_only: bool,
+) -> List[Dict[str, Any]]:
+    """Apply window/filter logic to rows for one sport.
+
+    Priority: future_only > last_n_days > max_rows_per_sport > no filter.
+    future_only uses corpus_max_date as "now" (corpora are historical).
+    """
+    if not rows:
+        return rows
+    date_strs = [str(r.get("date", "")) for r in rows]
+    corpus_max_date = max((d for d in date_strs if d), default="")
+    if future_only:
+        return [r for r, d in zip(rows, date_strs) if d > corpus_max_date]
+    if last_n_days is not None:
+        try:
+            cutoff_dt = datetime.strptime(corpus_max_date, "%Y-%m-%d") - timedelta(days=last_n_days)
+            cutoff = cutoff_dt.strftime("%Y-%m-%d")
+        except (ValueError, TypeError):
+            cutoff = ""
+        return [r for r, d in zip(rows, date_strs) if d >= cutoff]
+    if max_rows_per_sport is not None:
+        indexed = sorted(enumerate(rows), key=lambda t: date_strs[t[0]], reverse=True)
+        top_n = indexed[:max_rows_per_sport]
+        top_n_asc = sorted(top_n, key=lambda t: date_strs[t[0]])
+        return [r for _, r in top_n_asc]
+    return rows
+
 
 def build_board(
     sport: str,
     repo_root: Optional[Path] = None,
+    *,
+    last_n_days: Optional[int] = None,
+    max_rows_per_sport: Optional[int] = 200,
+    future_only: bool = False,
 ) -> List[Dict[str, Any]]:
-    """Build display rows for one sport.  Returns [] if corpus absent (graceful).
+    """Build display rows for one sport.  Returns [] if corpus absent.
 
-    Parameters
-    ----------
-    sport:
-        One of the SPORT_IDs in _SPORT_REGISTRY (e.g. 'basketball_nba').
-    repo_root:
-        Repo root path.  Defaults to three parents above this file.
+    last_n_days: keep rows >= corpus_max_date - N days (priority over max_rows).
+    max_rows_per_sport: keep most-recent N rows (default 200). Pass None to disable.
+    future_only: keep rows > corpus_max_date (highest priority; 0 rows on historical).
     """
     root = repo_root or Path(__file__).resolve().parents[3]
     reg = _SPORT_REGISTRY.get(sport)
     if reg is None:
         logger.warning("build_board: unknown sport %r", sport)
         return []
-
     adapter = _load_adapter(sport, root)
     if adapter is None:
         return []
-
     try:
-        # Some adapters (soccer, tennis) require 'seasons' as a mandatory
-        # positional arg.  Passing [] means "no filter = all seasons".
-        # Others (mlb, basketball_nba) accept it as Optional[Sequence].
         sig = inspect.signature(adapter.feature_bundle)
-        # Bound method: params[0]='hypothesis', params[1]='seasons' (if present).
-        # seasons_required = True when 'seasons' has no default value.
-        if "seasons" in sig.parameters:
-            seasons_required = (
-                sig.parameters["seasons"].default is inspect.Parameter.empty
-            )
-        else:
-            seasons_required = False
-
+        seasons_required = (
+            "seasons" in sig.parameters
+            and sig.parameters["seasons"].default is inspect.Parameter.empty
+        )
         bundle = (
             adapter.feature_bundle(_BOARD_HYP, [])
             if seasons_required
@@ -246,14 +253,28 @@ def build_board(
     except Exception as exc:
         logger.error("feature_bundle failed for %s: %s", sport, exc)
         return []
+    rows = _bundle_to_rows(sport, bundle, reg["calibration_tag"])
+    return _apply_window(rows, last_n_days, max_rows_per_sport, future_only)
 
-    return _bundle_to_rows(sport, bundle, reg["calibration_tag"])
 
-
-def build_all_board(repo_root: Optional[Path] = None) -> Dict[str, List[Dict[str, Any]]]:
-    """Build rows for every sport; skips sports whose corpus is absent."""
+def build_all_board(
+    repo_root: Optional[Path] = None,
+    *,
+    last_n_days: Optional[int] = None,
+    max_rows_per_sport: Optional[int] = 200,
+    future_only: bool = False,
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Build rows for every sport; skips absent corpora."""
     root = repo_root or Path(__file__).resolve().parents[3]
-    return {sport: build_board(sport, root) for sport in _SPORT_REGISTRY}
+    return {
+        sport: build_board(
+            sport, root,
+            last_n_days=last_n_days,
+            max_rows_per_sport=max_rows_per_sport,
+            future_only=future_only,
+        )
+        for sport in _SPORT_REGISTRY
+    }
 
 
 def to_json(board: Dict[str, List[Dict[str, Any]]], out_path: Path) -> None:
@@ -264,22 +285,15 @@ def to_json(board: Dict[str, List[Dict[str, Any]]], out_path: Path) -> None:
     logger.info("Board written to %s", out_path)
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
 if __name__ == "__main__":
     import sys
-
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     repo = Path(__file__).resolve().parents[3]
     board = build_all_board(repo)
     print(f"\n{HONEST_NOTE}\n")
     for sport_id, rows in board.items():
         if rows:
-            print(f"  {sport_id}: {len(rows)} rows  "
-                  f"(model_prob range [{min(r['model_prob'] for r in rows if r['model_prob']):.3f}"
-                  f" – {max(r['model_prob'] for r in rows if r['model_prob']):.3f}])")
+            print(f"  {sport_id}: {len(rows)} rows")
         else:
             print(f"  {sport_id}: corpus absent — skipped")
     sys.exit(0)
