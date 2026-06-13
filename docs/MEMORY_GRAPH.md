@@ -68,6 +68,9 @@ These live directly in `vault/Sports/` rather than inside a sport subfolder.
 | `_Archetype_Taxonomy.md`  | Cross-sport archetype grouping under 7 sport-blind themes  | `archetype_taxonomy.build_taxonomy()`   |
 | `_Intelligence_Overview.md` | Synthesis: coverage + themes + edge readout + tactical dims | `intelligence_overview.build_intelligence_overview()` |
 | `_Graph_Health.md`        | Dangling-link audit (intentional vs fixable), GRAPH-INTEGRITY verdict | `graph_health.build_graph_health()` |
+| `_World_Model.md`         | Cross-sport platform knowledge synthesis (playstyle + archetype landscape) | `world_model.build_world_model()` |
+| `_Base_Rates.md`          | Cross-sport unconditional outcome base rates from real corpora (descriptive only) | `base_rates.build_base_rates()` |
+| `_Calibration_Segments.md` | Per-sport reliability diagnostics: probability decile bins + per-season ECE | `calibration_segments.build_calibration_segments()` |
 
 ---
 
@@ -88,9 +91,10 @@ python scripts/platformkit/atlas/build_all.py --sport all --full
 3. With `--full`, runs the `_EXTRA_GENS` table (StyleMatchups, StyleTrends,
    Scouting, SchemeTransitions, HomeEnvironment, Trends).
 4. Writes `vault/Sports/_Hub.md`.
-5. With `--full`, runs the five `_META_GENS` in order: `build_graph_report`,
+5. With `--full`, runs the eight `_META_GENS` in order: `build_graph_report`,
    `build_signals_hub`, `build_taxonomy`, `build_intelligence_overview`,
-   `build_graph_health`.
+   `build_graph_health`, `build_world_model`, `build_base_rates`,
+   `build_calibration_segments`.
 
 **Single-sport rebuild:**
 
@@ -118,6 +122,9 @@ scripts/platformkit/atlas/          # cross-sport drivers + meta generators
     archetype_taxonomy.py        # build_taxonomy()
     intelligence_overview.py     # build_intelligence_overview()
     graph_health.py              # build_graph_health()
+    world_model.py               # build_world_model()
+    base_rates.py                # build_base_rates()
+    calibration_segments.py      # build_calibration_segments()
 
 domains/<sport>/                 # per-sport adapter modules
     atlas.py                     # build_atlas() — entry point called by build_all
@@ -231,6 +238,9 @@ vault/Sports/
     _Archetype_Taxonomy.md
     _Intelligence_Overview.md
     _Graph_Health.md
+    _World_Model.md
+    _Base_Rates.md
+    _Calibration_Segments.md
     Tennis/
         _Index.md
         Surfaces/{Hard,Clay,Grass}.md

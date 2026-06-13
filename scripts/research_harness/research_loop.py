@@ -27,7 +27,7 @@ _HARNESS = Path(__file__).resolve().parent
 if str(_HARNESS) not in sys.path:
     sys.path.insert(0, str(_HARNESS))
 
-from research_ledger import Ledger, ResearchFinding, VAULT_SPORTS, ingest_all_catalogs  # noqa: E402
+from research_ledger import Ledger, ResearchFinding, VAULT_SPORTS  # noqa: E402
 from research_writeup import render_writeup  # noqa: E402
 from hypothesis_enumerator import compute_all_coverage, format_summary  # noqa: E402
 from research_digest import format_digest  # noqa: E402

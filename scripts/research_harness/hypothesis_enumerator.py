@@ -43,6 +43,7 @@ MLB_BASE_COLS: Tuple[str, ...] = (
     "rest_days_home", "rest_days_away", "h2h_rate",
 )
 
+# NBA excluded: no FeatureBundle adapter/signal_catalog; NBA uses a separate gate path.
 SPORT_BASE_COLS: Dict[str, Tuple[str, ...]] = {
     "tennis": TENNIS_BASE_COLS,
     "soccer": SOCCER_BASE_COLS,
