@@ -28,8 +28,15 @@ def _team_link(team: str) -> str:
 
 
 def _season_link(display: str, season: object) -> str:
-    """Emit a [[wikilink]] to a season note."""
-    target = _slug(f"{display} {season}")
+    """Emit a [[wikilink]] to a season note.
+
+    The season note filename is ``{_slug(display)} {season}.md`` (slug applied to
+    the display name only; the year is appended with a literal space).  The link
+    target must therefore be ``"{_slug(display)} {season}"`` — not a fully-slugged
+    concatenation of the two, which would replace the space before the year with
+    an underscore and dangle.
+    """
+    target = f"{_slug(display)} {season}"
     return f"[[{target}|{display} {season}]]"
 
 

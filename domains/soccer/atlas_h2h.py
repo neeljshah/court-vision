@@ -201,7 +201,7 @@ def _render_index(fixture_stats: List[Dict], n_corpus: int) -> str:
             f"| {_pct(st['over25'], st['n'])} |"
         )
     L += ["", "## Team Links", "",
-          "Each fixture note links back to both team notes in [[Teams/]].", "",
+          "Each fixture note links back to both team notes in the Teams/ folder.", "",
           "#sport/soccer #matchup"]
     return "\n".join(L) + "\n"
 
