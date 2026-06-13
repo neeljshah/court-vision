@@ -43,6 +43,7 @@ _ADAPTER_REGISTRY: Dict[str, Tuple[str, str]] = {
     "tennis": ("domains.tennis.adapter", "TennisAdapter"),
     "soccer": ("domains.soccer.adapter", "SoccerAdapter"),
     "mlb":    ("domains.mlb.adapter",    "MLBAdapter"),
+    "nba":    ("domains.basketball_nba.adapter", "NBAAdapter"),
 }
 
 

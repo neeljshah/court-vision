@@ -271,7 +271,7 @@ def test_real_corpus_no_edge_claim_language(sport: str) -> None:
 
 def test_run_all_sports() -> None:
     results = run_all_sports()
-    assert len(results) == 3
+    assert len(results) == len(_ADAPTER_REGISTRY)
     for r in results:
         assert isinstance(r.sport, str) and r.sport
         assert r.verdict in {"PASS", "WARN", "FAIL", "SKIP"}

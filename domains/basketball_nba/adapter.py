@@ -88,15 +88,12 @@ class NBAAdapter:
     def market_snapshot(
         self, event: object, kind: Literal["open", "close"]
     ) -> Optional[object]:
-        """Returns None when odds row absent or prices invalid."""
-        try:
-            odds = self._get_odds()
-        except FileNotFoundError:
-            return None
-        gid = event.get("event_id", "") if isinstance(event, dict) else getattr(event, "event_id", "")  # type: ignore[union-attr]
-        hits = odds[odds["home_ml"].notna() & (odds.index == odds.index)] if not hasattr(odds, "iloc") else pd.DataFrame()
-        # simple join: NBA odds keyed by date+home_team+away_team, not game_id
-        return None  # market_snapshot: no game_id key in odds; CLV joined in feature_bundle
+        """Always returns None: NBA odds are date+team keyed, not game_id keyed.
+
+        There is no per-event open/close snapshot to return here; closing-line
+        CLV is joined by (date, home_team, away_team) inside feature_bundle().
+        """
+        return None
 
     def outcome(self, event: object) -> Optional[object]:
         """Settled Outcome dict: winner='a' (home wins) or 'b' (away wins)."""

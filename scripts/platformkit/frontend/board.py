@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
+from scripts.platformkit.frontend.recal_board import recalibrated_board_rows
 from src.loop.signal import Hypothesis
 
 logger = logging.getLogger(__name__)
@@ -134,8 +135,8 @@ def _compute_line_shop_ev(
 
 
 def _bundle_to_rows(sport_id: str, bundle: Any, calib_tag: str) -> List[Dict[str, Any]]:
-    """Convert a FeatureBundle into board rows (one per game)."""
-    sig = np.asarray(bundle.signal_col, dtype=float)
+    """Convert a FeatureBundle into board rows (one per game).  calibration != edge."""
+    sig, dyn_tag = recalibrated_board_rows(sport_id, bundle)  # leak-free recal; tag is dynamic
     dates = list(bundle.dates)
     n = len(dates)
     if bundle.closing is not None:
@@ -179,7 +180,7 @@ def _bundle_to_rows(sport_id: str, bundle: Any, calib_tag: str) -> List[Dict[str
             "line_shop_ev": line_shop_ev,
             "line_shop_note": shop_note,
             "clv_placeholder": None,
-            "calibration_tag": calib_tag,
+            "calibration_tag": dyn_tag,
             "honest_note": HONEST_NOTE,
         })
     return rows

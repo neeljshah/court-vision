@@ -13,7 +13,7 @@ IMPORTS: stdlib + numpy + sklearn + kernel.validation.proof_metrics.ece (lazy).
   NO src.*, NO domains.*.  Adapter loading is lazy in measure_sport_recal().
 
 CLI: python scripts/platformkit/recalibration.py
-  Prints per-sport raw vs recal ECE for tennis + mlb + soccer.
+  Prints per-sport raw vs recal ECE for tennis + mlb + soccer + nba.
   Reports honestly; near-zero or negative delta = expected for well-calibrated models.
 """
 from __future__ import annotations
@@ -41,6 +41,7 @@ _ADAPTER_REGISTRY: Dict[str, Tuple[str, str]] = {
     "tennis": ("domains.tennis.adapter", "TennisAdapter"),
     "mlb":    ("domains.mlb.adapter",    "MLBAdapter"),
     "soccer": ("domains.soccer.adapter", "SoccerAdapter"),
+    "nba":    ("domains.basketball_nba.adapter", "NBAAdapter"),
 }
 
 
@@ -53,6 +54,7 @@ def walk_forward_recalibrate(
     raw_probs: Sequence[float],
     outcomes: Sequence[float],
     min_history: int = _MIN_HISTORY_DEFAULT,
+    refit_every: int = 1,
 ) -> np.ndarray:
     """Strictly leak-free expanding-window isotonic recalibration.
 
@@ -62,7 +64,10 @@ def walk_forward_recalibrate(
     window; invalid query points pass through.  All-finite inputs are
     bit-identical to the unguarded version.
 
-    Returns np.ndarray of shape (N,) clipped to [0, 1].
+    ``refit_every`` (default 1) refits only every K events, reusing the most
+    recent model (fit strictly BEFORE its refit point <= i, so leak-free for any
+    K).  K=1 is bit-identical to per-row refit; large corpora pass K>1 -> O(n/K)
+    fits (board path: ~55min -> seconds).  Returns (N,) clipped to [0,1].
     CALIBRATION != EDGE.  See CALIBRATION_NOTE.
     """
     p = np.asarray(raw_probs, dtype=float)
@@ -72,29 +77,27 @@ def walk_forward_recalibrate(
         raise ValueError(
             f"raw_probs and outcomes must have equal length ({n} vs {len(y)})"
         )
+    step = max(1, int(refit_every))
 
     calibrated = np.empty(n, dtype=float)
     ir = IsotonicRegression(out_of_bounds="clip")
-
+    have_model = False
+    next_fit = min_history  # refit when i >= next_fit
     for i in range(n):
         if i < min_history:
             calibrated[i] = float(p[i])
-        else:
-            # Guard: drop any pair where raw_prob or outcome is NaN/inf so
-            # IsotonicRegression never receives invalid data.  For all-finite
-            # inputs this mask is all-True and behaviour is bit-identical.
+            continue
+        if i >= next_fit:
+            # Drop NaN/inf pairs (all-finite -> all-True mask -> bit-identical).
             valid_window = np.isfinite(p[:i]) & np.isfinite(y[:i])
             if valid_window.any():
                 ir.fit(p[:i][valid_window], y[:i][valid_window])
-                # If the query point itself is invalid, pass it through as-is
-                # (np.clip below will keep it in [0,1] if finite, or leave NaN).
-                if np.isfinite(p[i]):
-                    calibrated[i] = float(ir.transform([p[i]])[0])
-                else:
-                    calibrated[i] = float(p[i])
-            else:
-                # No valid history yet — pass through raw.
-                calibrated[i] = float(p[i])
+                have_model = True
+            next_fit = i + step
+        if have_model and np.isfinite(p[i]):
+            calibrated[i] = float(ir.transform([p[i]])[0])
+        else:  # no valid model yet, or invalid query point -> pass through raw
+            calibrated[i] = float(p[i])
 
     return np.clip(calibrated, 0.0, 1.0)
 
@@ -203,7 +206,7 @@ def measure_sport_recal(
     Parameters
     ----------
     sport : str
-        One of 'tennis', 'mlb', 'soccer'.
+        One of 'tennis', 'mlb', 'soccer', 'nba'.
     min_history, bins : forwarded to measure_recal.
 
     Returns
