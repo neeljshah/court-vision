@@ -30,6 +30,7 @@ if str(_HARNESS) not in sys.path:
 from research_ledger import Ledger, ResearchFinding, VAULT_SPORTS, ingest_all_catalogs  # noqa: E402
 from research_writeup import render_writeup  # noqa: E402
 from hypothesis_enumerator import compute_all_coverage, format_summary  # noqa: E402
+from research_digest import format_digest  # noqa: E402
 
 # BeliefStore imported gracefully — loop works without it.
 _BELIEF_STORE_AVAILABLE: bool = False
@@ -229,13 +230,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--dry-run", action="store_true",
                    help="Print what would be written without touching files")
     p.add_argument("--quiet", action="store_true", help="Suppress progress output")
+    p.add_argument("--digest", action="store_true",
+                   help="Print a concise honest health summary after the run")
     return p
 
 
 def main(argv: Optional[List[str]] = None) -> None:
     """CLI entry point."""
     args = _build_parser().parse_args(argv)
-    run_research_loop(
+    result = run_research_loop(
         ledger_path=Path(args.ledger) if args.ledger else None,
         vault_root=Path(args.vault) if args.vault else None,
         out_md=Path(args.out) if args.out else None,
@@ -243,6 +246,8 @@ def main(argv: Optional[List[str]] = None) -> None:
         dry_run=args.dry_run,
         verbose=not args.quiet,
     )
+    if args.digest:
+        print(format_digest(result))
 
 
 if __name__ == "__main__":
