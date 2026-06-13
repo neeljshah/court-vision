@@ -24,6 +24,7 @@ from typing import Dict, List
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import _SCHEMES, _classify
 
 # ---------------------------------------------------------------------------
@@ -193,14 +194,11 @@ def build_style_trends(
 
     # Overview note
     overview_path = out_dir / "_Style_Trends_Overview.md"
-    overview_path.write_text(render_overview(records, generated, n_corpus),
-                              encoding="utf-8")
-    written.append(overview_path)
+    written.append(write_note(overview_path, render_overview(records, generated, n_corpus)))
 
     # Per-season snapshot notes
     for r in records:
         note_path = out_dir / f"{r['season']}_scheme_snapshot.md"
-        note_path.write_text(render_season_snapshot(r, generated), encoding="utf-8")
-        written.append(note_path)
+        written.append(write_note(note_path, render_season_snapshot(r, generated)))
 
     return written

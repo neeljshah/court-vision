@@ -15,12 +15,12 @@ Idempotent: re-running overwrites notes with identical content.
 from __future__ import annotations
 
 import pathlib
-import re
 from typing import Dict, List, Tuple
 
 import pandas as pd
 
 from domains.soccer.config import LEAGUES
+from scripts.platform.atlas.obsidian_emit import slug as _slug, write_note
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -41,12 +41,6 @@ _RELEGATION_SLOTS: int = 3
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _slug(name: str) -> str:
-    """Filesystem-safe slug matching atlas.py convention."""
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
 
 
 def _league_display(div: str) -> str:
@@ -198,13 +192,11 @@ def build_seasons(
         )
         fname = f"{_slug(display)} {season}.md"
         note_path = out_dir / fname
-        note_path.write_text(note_text, encoding="utf-8")
-        written.append(note_path)
+        written.append(write_note(note_path, note_text))
 
     # Write index last
     idx_text = render_seasons_index(season_records)
     idx_path = out_dir / "_Seasons_Index.md"
-    idx_path.write_text(idx_text, encoding="utf-8")
-    written.append(idx_path)
+    written.append(write_note(idx_path, idx_text))
 
     return written

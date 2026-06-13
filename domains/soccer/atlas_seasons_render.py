@@ -8,18 +8,14 @@ All output is descriptive scouting intelligence; no betting/edge language.
 from __future__ import annotations
 
 import datetime
-import re
 from typing import Dict, List
+
+from scripts.platform.atlas.obsidian_emit import slug as _slug
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _slug(name: str) -> str:
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
 
 
 def _team_link(team: str) -> str:

@@ -14,13 +14,13 @@ from __future__ import annotations
 
 import datetime
 import pathlib
-import re
 from collections import Counter
 from typing import Dict, List, Tuple
 
 import pandas as pd
 
 from domains.soccer.config import LEAGUES
+from scripts.platform.atlas.obsidian_emit import slug as _slug, write_note
 
 _DEFAULT_CORPUS: pathlib.Path = (
     pathlib.Path(__file__).resolve().parents[2] / "data" / "domains" / "soccer"
@@ -30,12 +30,6 @@ _RECENT_N: int = 8
 
 
 # --- helpers -----------------------------------------------------------------
-
-def _slug(name: str) -> str:
-    """Filesystem-safe slug matching atlas.py._slug exactly."""
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
-
 
 def _team_link(team: str) -> str:
     return f"[[Teams/{_slug(team)}|{team}]]"
@@ -240,12 +234,10 @@ def build_h2h(
     written: List[pathlib.Path] = []
 
     idx_path = out_dir / "_Matchups_Index.md"
-    idx_path.write_text(_render_index(fixture_stats, len(df)), encoding="utf-8")
-    written.append(idx_path)
+    written.append(write_note(idx_path, _render_index(fixture_stats, len(df))))
 
     for st in fixture_stats:
         p = out_dir / f"{st['team_a']} vs {st['team_b']}.md"
-        p.write_text(_render_fixture(st), encoding="utf-8")
-        written.append(p)
+        written.append(write_note(p, _render_fixture(st)))
 
     return written

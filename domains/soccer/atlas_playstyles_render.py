@@ -8,23 +8,17 @@ No edge/betting language; all stats corpus-derived.
 """
 from __future__ import annotations
 
-import re
 from typing import Dict, List
 
 import pandas as pd
 
 from domains.soccer.atlas_playstyles import SchemeSpec, _SCHEMES
+from scripts.platform.atlas.obsidian_emit import slug as _slug
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _slug(name: str) -> str:
-    """Filesystem-safe slug matching atlas.py convention."""
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
 
 
 def _pct(v: float) -> str:
