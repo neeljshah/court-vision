@@ -50,7 +50,7 @@ from scripts.platformkit.recalibration import (  # noqa: E402
 # Public constants
 # ---------------------------------------------------------------------------
 
-SPORTS: List[str] = ["tennis", "mlb", "soccer"]
+SPORTS: List[str] = ["tennis", "mlb", "soccer", "nba"]
 
 HONESTY_FOOTER: str = (
     "recalibration improves reliability only; "
