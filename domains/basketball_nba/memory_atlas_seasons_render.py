@@ -3,39 +3,20 @@ the NBA season atlas (memory_atlas_seasons.py).
 
 F5-clean: stdlib + pandas only.  No src.* / kernel.* / edge language.
 Idempotent helpers; all state is passed as arguments.
+No individual player names are emitted — team-level and league-level data only.
 
 Public API
 ----------
-render_season_note(season, season_df, players_df) -> str
+render_season_note(season, season_df, archetype_mix) -> str
 render_index(seasons) -> str
 write_note(path, text) -> None
 """
 from __future__ import annotations
 
 import pathlib
-import re
-from typing import Any
+from typing import Any, Dict, List
 
 import pandas as pd
-
-# ---------------------------------------------------------------------------
-# Constants (mirrored from memory_atlas_seasons for rendering)
-# ---------------------------------------------------------------------------
-
-_MIN_VORP: float = 1.0
-_TOP_PLAYERS: int = 8
-
-# ---------------------------------------------------------------------------
-# Slug helper (mirrors memory_atlas_render._slug)
-# ---------------------------------------------------------------------------
-
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
-
-
-def _slug(name: str) -> str:
-    return _SPACE_RE.sub("_", _SLUG_RE.sub("", name).strip())
-
 
 # ---------------------------------------------------------------------------
 # Formatting helpers
@@ -53,7 +34,7 @@ def _fmt(v: Any, d: int = 1) -> str:
 # ---------------------------------------------------------------------------
 
 def render_efficiency_context(season_df: pd.DataFrame, season: str) -> str:
-    """Render league-wide efficiency context summary."""
+    """Render league-wide efficiency context summary (no player names)."""
     if season_df.empty:
         return ""
 
@@ -83,7 +64,7 @@ def render_team_table(season_df: pd.DataFrame) -> str:
     df["net_rtg"] = (df["off_rtg"] - df["def_rtg"]).round(1)
     df = df.sort_values("net_rtg", ascending=False).reset_index(drop=True)
 
-    lines: list[str] = [
+    lines: List[str] = [
         "## Team Ratings (season average, sorted by Net Rtg)",
         "",
         "| Rank | Team | Off Rtg | Def Rtg | Net Rtg | Pace | eFG% | TS% |",
@@ -101,47 +82,95 @@ def render_team_table(season_df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
-def render_player_leaders(players_df: pd.DataFrame, season: str) -> str:
-    """Render top players by BPM (VORP-filtered) with wikilinks."""
-    sub = players_df[players_df["season"] == season].copy()
-    if sub.empty:
+def render_league_stat_distributions(season_df: pd.DataFrame) -> str:
+    """Render league-wide stat distribution summary (median, top-quartile) across teams.
+
+    No individual player names — aggregate distribution only.
+    """
+    if season_df.empty:
         return ""
 
-    if "vorp" in sub.columns:
-        sub = sub[sub["vorp"] >= _MIN_VORP]
-
-    if sub.empty:
-        return ""
-
-    sub = sub.nlargest(_TOP_PLAYERS, "bpm" if "bpm" in sub.columns else sub.columns[0])
-
-    lines: list[str] = [
-        "## Player Leaders (BPM, min VORP ≥ 1.0)",
+    lines: List[str] = [
+        "## League Stat Distributions (team-level)",
         "",
-        "| Rank | Player | Team | BPM | VORP | PER | TS% | USG% |",
-        "|------|--------|------|-----|------|-----|-----|------|",
     ]
-    for rank, (_, row) in enumerate(sub.iterrows(), 1):
-        name = str(row["player_name"])
-        slug = _slug(name)
-        link = f"[[Players/{slug}|{name}]]"
-        team = str(row.get("team", "—"))
-        team_link = f"[[Teams/{team}|{team}]]" if team != "—" else "—"
+
+    stat_meta = [
+        ("net_rtg",  "Net Rtg",  1),
+        ("off_rtg",  "Off Rtg",  1),
+        ("def_rtg",  "Def Rtg",  1),
+        ("pace",     "Pace",     1),
+        ("efg_pct",  "eFG%",     3),
+        ("ts_pct",   "TS%",      3),
+    ]
+
+    df = season_df.copy()
+    if "net_rtg" not in df.columns and "off_rtg" in df.columns and "def_rtg" in df.columns:
+        df["net_rtg"] = (df["off_rtg"] - df["def_rtg"]).round(3)
+
+    lines.append("| Stat | Median | Top-Quartile (≥ P75) |")
+    lines.append("|------|--------|----------------------|")
+
+    for col, label, decimals in stat_meta:
+        if col not in df.columns:
+            continue
+        series = df[col].dropna()
+        if series.empty:
+            continue
+        median_val = series.median()
+        p75_val = series.quantile(0.75)
         lines.append(
-            f"| {rank} | {link} | {team_link} |"
-            f" {_fmt(row.get('bpm'), 1)} | {_fmt(row.get('vorp'), 1)} |"
-            f" {_fmt(row.get('per'), 1)} | {_fmt(row.get('ts_pct'), 3)} |"
-            f" {_fmt(row.get('usg_pct'), 1)} |"
+            f"| {label} | {_fmt(median_val, decimals)} | {_fmt(p75_val, decimals)} |"
         )
+
+    return "\n".join(lines)
+
+
+def render_archetype_mix(archetype_mix: Dict[str, int], season: str) -> str:
+    """Render counts of players per archetype for this season (no names).
+
+    Parameters
+    ----------
+    archetype_mix:
+        Mapping of archetype label -> player count for this season.
+    season:
+        Season label used in the header.
+    """
+    if not archetype_mix:
+        return ""
+
+    total = sum(archetype_mix.values())
+    if total == 0:
+        return ""
+
+    lines: List[str] = [
+        "## Archetype Mix (player counts, no names)",
+        "",
+        "| Archetype | Count | Share |",
+        "|-----------|-------|-------|",
+    ]
+    for label, count in sorted(archetype_mix.items(), key=lambda x: -x[1]):
+        share = f"{100 * count / total:.1f}%" if total > 0 else "—"
+        lines.append(f"| {label} | {count} | {share} |")
+
+    lines.append(f"\n_Total classified: {total}_")
     return "\n".join(lines)
 
 
 def render_season_note(
     season: str,
     season_df: pd.DataFrame,
-    players_df: pd.DataFrame,
+    archetype_mix: Dict[str, int],
 ) -> str:
-    """Return the full Markdown text for a single season note."""
+    """Return the full Markdown text for a single season note.
+
+    No individual player names are included. Contains:
+      - YAML frontmatter
+      - League context (averages across teams)
+      - Team ratings table (teams OK)
+      - League stat distributions (median/top-quartile)
+      - Archetype mix (counts only, no names)
+    """
     frontmatter = (
         "---\n"
         f'season: "{season}"\n'
@@ -153,23 +182,24 @@ def render_season_note(
     header = (
         f"# NBA Season {season}\n\n"
         f"[[_Seasons_Index]] | [[_Index]]\n\n"
-        f"Data source: `data/team_advanced_stats.parquet` "
-        f"+ `data/cache/bbref_advanced_extended.parquet`\n"
+        f"Data source: `data/team_advanced_stats.parquet`\n"
     )
 
-    sections: list[str] = [
+    sections: List[str] = [
         frontmatter,
         header,
         render_efficiency_context(season_df, season),
         "",
         render_team_table(season_df),
         "",
-        render_player_leaders(players_df, season),
+        render_league_stat_distributions(season_df),
+        "",
+        render_archetype_mix(archetype_mix, season),
     ]
     return "\n".join(s for s in sections if s is not None)
 
 
-def render_index(seasons: list[str]) -> str:
+def render_index(seasons: List[str]) -> str:
     """Return Markdown for the _Seasons_Index hub note."""
     frontmatter = (
         "---\n"
@@ -179,11 +209,11 @@ def render_index(seasons: list[str]) -> str:
         "  - atlas/index\n"
         "---\n"
     )
-    lines: list[str] = [
+    lines: List[str] = [
         frontmatter,
         "# NBA Seasons Index\n",
         "[[_Index]]\n",
-        "Season notes with league-wide team ratings and player leaders.\n",
+        "Season notes with league-wide team ratings and stat distributions (no individual names).\n",
         "## Seasons\n",
     ]
     for season in sorted(seasons):
