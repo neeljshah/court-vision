@@ -1,17 +1,11 @@
-"""scripts.platform.atlas.build_all — Multi-sport atlas build driver.
+"""scripts.platform.atlas.build_all — Multi-sport atlas + H2H build driver.
 
-CLI::
+Usage: python scripts/platform/atlas/build_all.py [--sport tennis|soccer|mlb|nba|all] [--out vault/Sports]
 
-    python scripts/platform/atlas/build_all.py [--sport tennis|soccer|mlb|all]
-                                               [--out vault/Sports]
-
-For each requested sport this driver imports ``domains.<sport>.atlas.build_atlas``
-lazily (try/except ImportError) and calls it.  If the module is absent the sport
-is skipped with a log warning and the driver continues.  The hub note
-``<out_dir>/_Hub.md`` is always written (or overwritten).
-
-Discipline: Py3.9, from __future__ import annotations, type hints, no edge
-language, 300 LOC ceiling.
+Per sport: imports ``domains.<sport>.atlas.build_atlas`` (graceful-skip on ImportError),
+then tries ``domains.<domain>.atlas_h2h.build_h2h`` for Matchups/ notes (graceful-skip
+when absent — e.g. NBA).  Always writes ``<out_dir>/_Hub.md``.
+Discipline: Py3.9, from __future__ import annotations, type hints, no edge language, 300 LOC ceiling.
 """
 from __future__ import annotations
 
@@ -58,21 +52,8 @@ _ALIASES: Dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Hub note writer
 # ---------------------------------------------------------------------------
-
 def write_hub(out_dir: Path, built_sports: List[Tuple[str, str, int]]) -> Path:
-    """Write (or overwrite) ``<out_dir>/_Hub.md``, the memory-graph root.
-
-    Parameters
-    ----------
-    out_dir:
-        Directory that will contain ``_Hub.md`` (and sport sub-folders).
-    built_sports:
-        ``(sport_id, display_name, note_count)`` for successfully built sports.
-
-    Returns
-    -------
-    Path to the written hub note.
-    """
+    """Write (or overwrite) ``<out_dir>/_Hub.md``.  Returns the hub path."""
     out_dir.mkdir(parents=True, exist_ok=True)
     hub_path = out_dir / "_Hub.md"
     today = date.today().isoformat()
@@ -142,7 +123,6 @@ in the main vault rather than `vault/Sports/Basketball_NBA/`.
 # ---------------------------------------------------------------------------
 # Per-sport build helpers
 # ---------------------------------------------------------------------------
-
 def _load_build_fn(adapter_module: str):  # type: ignore[return]
     """Import *adapter_module* and return its ``build_atlas`` callable or None."""
     try:
@@ -159,6 +139,42 @@ def _load_build_fn(adapter_module: str):  # type: ignore[return]
     return fn
 
 
+def _derive_domain(adapter_module: str) -> str:
+    """Return domain name from adapter_module (``"domains.tennis.atlas"`` → ``"tennis"``).."""
+    parts = adapter_module.split(".")
+    return parts[1] if len(parts) >= 2 and parts[0] == "domains" else parts[0]
+
+
+def _try_build_h2h(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+    """Import ``domains.<domain>.atlas_h2h`` and call ``build_h2h`` if present.
+
+    Returns note count written, or 0 (graceful-skip on ImportError or any exception).
+    """
+    try:
+        mod = importlib.import_module(f"domains.{domain}.atlas_h2h")
+    except ImportError:
+        log.debug("No atlas_h2h for domain %r — skipping H2H step.", domain)
+        return 0
+    h2h_fn = getattr(mod, "build_h2h", None)
+    if h2h_fn is None:
+        log.debug("domains.%s.atlas_h2h has no build_h2h — skipping.", domain)
+        return 0
+    try:
+        matchups_dir = sport_out / "Matchups"
+        matchups_dir.mkdir(parents=True, exist_ok=True)
+        sig = inspect.signature(h2h_fn)
+        if "corpus_dir" in sig.parameters:
+            notes: List[Path] = h2h_fn(matchups_dir, corpus_dir=corpus_dir)
+        else:
+            notes = h2h_fn(matchups_dir)
+        count = len(notes) if notes is not None else 0
+        log.info("  H2H (%s): %d matchup note(s) in %s", domain, count, matchups_dir)
+        return count
+    except Exception as exc:  # noqa: BLE001
+        log.warning("  build_h2h for %r raised %s: %s — skipping H2H.", domain, type(exc).__name__, exc)
+        return 0
+
+
 def build_sport(
     sport_id: str,
     display_name: str,
@@ -166,9 +182,9 @@ def build_sport(
     corpus_hint: str,
     out_dir: Path,
 ) -> Optional[int]:
-    """Build atlas for one sport.
+    """Build atlas (and H2H notes if available) for one sport.
 
-    Returns note count or None when the module is absent / raises.
+    Returns total note count or None when the atlas module is absent / raises.
     """
     log.info("Building atlas: %s (%s) …", display_name, sport_id)
     build_fn = _load_build_fn(adapter_module)
@@ -197,14 +213,16 @@ def build_sport(
         return None
 
     count = len(notes) if notes is not None else 0
-    log.info("  %s: %d note(s) written to %s", display_name, count, sport_out)
-    return count
+    log.info("  %s: %d atlas note(s) written to %s", display_name, count, sport_out)
+
+    domain = _derive_domain(adapter_module)
+    h2h_count = _try_build_h2h(domain, sport_out, corpus_dir)
+    return count + h2h_count
 
 
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
-
 def main(argv: Optional[List[str]] = None) -> int:
     """Build atlases and write hub.  Returns 0 on success (graceful-skip counts as success)."""
     parser = argparse.ArgumentParser(
