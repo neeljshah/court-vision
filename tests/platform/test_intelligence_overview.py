@@ -30,10 +30,10 @@ def _make_graph_stats(base: pathlib.Path) -> None:
         | Total notes | **42** |
         | Total [[wikilinks]] | 300 |
         ## Per-Sport Note Counts
-        | Sport | Total | Archetypes | Matchups | Playstyles | Teams |
-        | --- | --- | --- | --- | --- | --- |
-        | FakeSport | 20 | 3 | 10 | 4 | 3 |
-        | OtherSport | 22 | 0 | 15 | 5 | 2 |
+        | Sport | Total | Archetypes | Matchups | Playstyles | Style_matchups | Scheme_transitions | Home_environment | Scouting | Teams |
+        | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+        | FakeSport | 20 | 3 | 10 | 4 | 7 | 0 | 0 | 0 | 3 |
+        | OtherSport | 22 | 0 | 15 | 5 | 0 | 3 | 2 | 5 | 2 |
         ## Graph Composition
         | Type | Notes |
         |------|-------|
@@ -99,8 +99,24 @@ def _make_sport_dirs(base: pathlib.Path) -> None:
         | [[Archetypes/HighScorer|High Scorer]] | 12 |
         | [[Archetypes/Balanced|Balanced]] | 5 |
     """)
-    # OtherSport: just a directory, no playstyle index (graceful-skip)
-    (base / "OtherSport").mkdir(parents=True, exist_ok=True)
+    # FakeSport: Style_Matchups index (for section-e)
+    _write(base / "FakeSport" / "Style_Matchups" / "_Style_Matchups_Index.md", """\
+        ---
+        sport: fakesport
+        ---
+        # FakeSport Style Matchups
+        ## Key Findings
+        - **Best matchup:** HighScorer vs Balanced (7 notes)
+    """)
+    # OtherSport: Scouting index with key findings
+    _write(base / "OtherSport" / "Scouting" / "_Scouting_Index.md", """\
+        ---
+        sport: othersport
+        ---
+        # OtherSport Scouting Briefs
+        ## Key Findings
+        - **Most common:** defender scouting (5 notes)
+    """)
 
 
 @pytest.fixture()
@@ -181,6 +197,49 @@ class TestSections:
         text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
         for link in ("[[_GraphStats]]", "[[_Signals_Hub]]", "[[_Archetype_Taxonomy]]"):
             assert link in text
+
+
+class TestTacticalDimensions:
+    def test_section_e_present(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        assert "Tactical Intelligence Dimensions" in text
+
+    def test_style_matchups_count_present(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        # FakeSport has 7 style_matchups; OtherSport has 0 → shown as —
+        assert "7" in text
+        assert "—" in text
+
+    def test_scouting_count_present(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        # OtherSport has 5 scouting notes
+        assert "5" in text
+
+    def test_headline_findings_present(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        assert "Headline Findings" in text
+        assert "Style_Matchups" in text
+        assert "Scouting" in text
+
+    def test_headline_content_from_index(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        # Headline extracted from FakeSport style_matchups index
+        assert "HighScorer vs Balanced" in text or "Best matchup" in text
+
+    def test_scheme_transitions_absent_shown_as_dash(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        # FakeSport has 0 scheme_transitions
+        assert "—" in text
+
+    def test_no_edge_language_in_tactical(self, full_vault: pathlib.Path) -> None:
+        text = build_intelligence_overview(full_vault).read_text(encoding="utf-8")
+        for phrase in ("betting edge", "proven edge", "+18.38%"):
+            assert phrase not in text
+
+    def test_tactical_missing_meta_graceful(self, minimal_vault: pathlib.Path) -> None:
+        # minimal_vault has no _GraphStats → tactical section shows unavailable
+        text = build_intelligence_overview(minimal_vault).read_text(encoding="utf-8")
+        assert "Tactical Intelligence Dimensions" in text
 
 
 class TestGracefulSkip:
