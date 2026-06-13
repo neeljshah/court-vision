@@ -21,6 +21,8 @@ import time
 from collections import Counter
 from typing import Dict, List, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 # Subfolder name → display label  (lowercase key → display string)
 # Includes the three new types: Archetypes, Playstyles, Signals.
 _KNOWN_TYPES: Dict[str, str] = {
@@ -289,8 +291,7 @@ def build_graph_report(
     ]
 
     out_path = vault_sports_dir / _OUT_FILENAME
-    out_path.write_text("\n".join(L) + "\n", encoding="utf-8")
-    return out_path
+    return write_note(out_path, "\n".join(L) + "\n")
 
 
 if __name__ == "__main__":

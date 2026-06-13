@@ -17,6 +17,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 _CATALOG_REL  = pathlib.Path("Signals") / "_Catalog.md"
 _OUT_FILENAME  = "_Signals_Hub.md"
 _TABLE_ROW_RE  = re.compile(r"^\s*\|(.+)\|\s*$")
@@ -232,8 +234,7 @@ def build_signals_hub(
     ]
 
     out_path = vault_sports_dir / _OUT_FILENAME
-    out_path.write_text("\n".join(L) + "\n", encoding="utf-8")
-    return out_path
+    return write_note(out_path, "\n".join(L) + "\n")
 
 
 if __name__ == "__main__":
