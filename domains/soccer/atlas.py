@@ -14,13 +14,13 @@ All statistics are corpus-derived — no fabricated numbers, no edge language.
 from __future__ import annotations
 
 import pathlib
-import re
 from collections import Counter
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 
 from domains.soccer.config import LEAGUES  # div → display name
+from scripts.platform.atlas.obsidian_emit import slug as _slug, write_note
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -55,12 +55,6 @@ def _load_matches(corpus_dir: pathlib.Path) -> pd.DataFrame:
 
 def _league_display(div: str) -> str:
     return LEAGUES.get(div, div)
-
-
-def _slug(name: str) -> str:
-    """Filesystem-safe slug for Obsidian note filenames."""
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
 
 
 # ---------------------------------------------------------------------------
@@ -204,19 +198,16 @@ def build_atlas(
 
     # Index
     idx = out_dir / "_Index.md"
-    idx.write_text(render_index(df, league_rows, team_stats_list[:20]), encoding="utf-8")
-    written.append(idx)
+    written.append(write_note(idx, render_index(df, league_rows, team_stats_list[:20])))
 
     # Team notes
     for s in team_stats_list:
         p = out_dir / "Teams" / f"{_slug(s['team'])}.md"
-        p.write_text(render_team(s), encoding="utf-8")
-        written.append(p)
+        written.append(write_note(p, render_team(s)))
 
     # League notes
     for ls in league_rows:
         p = out_dir / "Leagues" / f"{_slug(ls['display'])}.md"
-        p.write_text(render_league(ls, team_slugs), encoding="utf-8")
-        written.append(p)
+        written.append(write_note(p, render_league(ls, team_slugs)))
 
     return written

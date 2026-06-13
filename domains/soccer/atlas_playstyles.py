@@ -23,12 +23,12 @@ from __future__ import annotations
 
 import datetime
 import pathlib
-import re
 from typing import Dict, List, NamedTuple
 
 import pandas as pd
 
 from domains.soccer.config import LEAGUES  # noqa: F401  (F5 in-domain import check)
+from scripts.platform.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -268,19 +268,17 @@ def build_playstyles(
     written: List[pathlib.Path] = []
 
     idx_path = out_dir / "_Playstyles_Index.md"
-    idx_path.write_text(
+    written.append(write_note(
+        idx_path,
         render_playstyles_index(scheme_map, n_corpus, n_teams_total, generated),
-        encoding="utf-8",
-    )
-    written.append(idx_path)
+    ))
 
     for spec in _SCHEMES:
         teams = scheme_map.get(spec.key, [])
         note_path = out_dir / f"{spec.key}.md"
-        note_path.write_text(
+        written.append(write_note(
+            note_path,
             render_scheme_note(spec, teams, team_stats, generated),
-            encoding="utf-8",
-        )
-        written.append(note_path)
+        ))
 
     return written

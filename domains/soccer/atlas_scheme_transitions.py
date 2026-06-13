@@ -27,6 +27,7 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import _SCHEMES, _classify
 from domains.soccer.atlas_style_trends import _team_stats_for_slice
 
@@ -214,35 +215,30 @@ def build_scheme_transitions(
 
     # Index
     idx_path = out_dir / "_Scheme_Transitions_Index.md"
-    idx_path.write_text(
-        render_index(sticky, notable, n_corpus, n_transitions, n_seasons,
-                     seasons, generated),
-        encoding="utf-8",
-    )
-    written.append(idx_path)
+    written.append(write_note(
+        idx_path,
+        render_index(sticky, notable, n_corpus, n_transitions, n_seasons, seasons, generated),
+    ))
 
     # Transition matrix
     mat_path = out_dir / "Transition_Matrix.md"
-    mat_path.write_text(
+    written.append(write_note(
+        mat_path,
         render_transition_matrix(counts, probs, n_transitions, generated),
-        encoding="utf-8",
-    )
-    written.append(mat_path)
+    ))
 
     # Stickiness
     stick_path = out_dir / "Stickiness.md"
-    stick_path.write_text(
+    written.append(write_note(
+        stick_path,
         render_stickiness(sticky, n_transitions, generated),
-        encoding="utf-8",
-    )
-    written.append(stick_path)
+    ))
 
     # Notable transitions
     notable_path = out_dir / "Notable_Transitions.md"
-    notable_path.write_text(
+    written.append(write_note(
+        notable_path,
         render_notable_transitions(notable, counts, probs, generated),
-        encoding="utf-8",
-    )
-    written.append(notable_path)
+    ))
 
     return written

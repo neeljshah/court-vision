@@ -26,6 +26,7 @@ from typing import Dict, List, NamedTuple, Tuple
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import (
     _SCHEMES,
     _classify,
@@ -175,16 +176,11 @@ def build_style_matchups(
     written: List[pathlib.Path] = []
 
     idx_path = out_dir / "_Style_Matchups_Index.md"
-    idx_path.write_text(
-        render_index(noted_pairs, len(df), generated),
-        encoding="utf-8",
-    )
-    written.append(idx_path)
+    written.append(write_note(idx_path, render_index(noted_pairs, len(df), generated)))
 
     for ps in noted_pairs:
         stem = f"{ps.home_scheme}_vs_{ps.away_scheme}"
         note_path = out_dir / f"{stem}.md"
-        note_path.write_text(render_pair_note(ps, generated), encoding="utf-8")
-        written.append(note_path)
+        written.append(write_note(note_path, render_pair_note(ps, generated)))
 
     return written

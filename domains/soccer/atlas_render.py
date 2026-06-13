@@ -8,10 +8,11 @@ All output is descriptive scouting intelligence; no betting/edge language.
 from __future__ import annotations
 
 import datetime
-import re
 from typing import Dict, List
 
 import pandas as pd
+
+from scripts.platform.atlas.obsidian_emit import slug as _slug
 
 
 # ---------------------------------------------------------------------------
@@ -21,11 +22,6 @@ import pandas as pd
 
 def _pct(v: float) -> str:
     return f"{v * 100:.1f}%"
-
-
-def _slug(name: str) -> str:
-    s = re.sub(r"[^\w\s\-]", "", name)
-    return re.sub(r"\s+", "_", s.strip())
 
 
 def _league_link(display: str) -> str:

@@ -23,6 +23,7 @@ import pathlib
 import re
 from typing import Dict, List, Optional, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import _SCHEMES
 from domains.soccer.atlas_scouting_render import render_brief, render_index
 
@@ -276,8 +277,7 @@ def build_scouting(
         )
 
         out_path = out_dir / pair_path.name
-        out_path.write_text(brief_body, encoding="utf-8")
-        written.append(out_path)
+        written.append(write_note(out_path, brief_body))
 
         def _fmt(v: object) -> str:
             try:

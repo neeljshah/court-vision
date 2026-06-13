@@ -9,6 +9,8 @@ from __future__ import annotations
 import pathlib
 from typing import Dict, List, Optional, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 
 def _pct(raw: object) -> str:
     """Format a float (0–1) or percent string as 'XX.X%'."""
@@ -214,5 +216,4 @@ def render_index(
         "#sport/soccer #scouting #atlas/index\n"
     )
     path = out_dir / "_Scouting_Index.md"
-    path.write_text(body, encoding="utf-8")
-    return path
+    return write_note(path, body)
