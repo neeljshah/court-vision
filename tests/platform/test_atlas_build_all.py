@@ -27,6 +27,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 from scripts.platform.atlas.build_all import (
     _SPORT_MANIFEST,
+    _derive_domain,
     main,
     write_hub,
 )
@@ -55,13 +56,46 @@ def _stub_build_atlas(note_count: int = 3):
     return _build
 
 
+def _stub_build_h2h(note_count: int = 2):
+    """Return a stub ``build_h2h`` that creates *note_count* placeholder Matchups notes."""
+
+    def _build(out_dir: Path, corpus_dir: Path = Path("data")) -> List[Path]:
+        out_dir.mkdir(parents=True, exist_ok=True)
+        written: List[Path] = []
+        for i in range(note_count):
+            p = out_dir / f"stub_h2h_{i}.md"
+            p.write_text(f"# H2H stub {i}\n", encoding="utf-8")
+            written.append(p)
+        return written
+
+    return _build
+
+
+# Sports that have a real atlas_h2h (all except basketball_nba)
+_H2H_DOMAINS = {"tennis", "soccer", "mlb"}
+
+
 def _patch_all_adapters(note_count: int = 2):
-    """Context manager: patch every adapter module to expose a stub build_atlas."""
+    """Context manager: patch every adapter module and its atlas_h2h sibling.
+
+    For domains that have a real ``atlas_h2h`` (tennis, soccer, mlb) the stub
+    module is also injected under ``domains.<domain>.atlas_h2h``.  The NBA
+    domain is intentionally left without an ``atlas_h2h`` stub so the
+    graceful-skip path is exercised every time.
+    """
     patches = {}
     for sid, display_name, adapter_module, _ in _SPORT_MANIFEST:
         stub_mod = types.ModuleType(adapter_module)
         stub_mod.build_atlas = _stub_build_atlas(note_count)  # type: ignore[attr-defined]
         patches[adapter_module] = stub_mod
+
+        domain = _derive_domain(adapter_module)
+        if domain in _H2H_DOMAINS:
+            h2h_mod_name = f"domains.{domain}.atlas_h2h"
+            h2h_mod = types.ModuleType(h2h_mod_name)
+            h2h_mod.build_h2h = _stub_build_h2h(2)  # type: ignore[attr-defined]
+            patches[h2h_mod_name] = h2h_mod
+
     return mock.patch.dict("sys.modules", patches)
 
 
@@ -224,3 +258,56 @@ def test_unknown_sport_arg_returns_error(tmp_path: Path) -> None:
     out_dir = tmp_path / "Sports"
     exit_code = main(["--sport", "cricket", "--out", str(out_dir)])
     assert exit_code == 1, f"Expected exit 1 for unknown sport, got {exit_code}"
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — build_h2h is called for H2H-capable sports; NBA is skipped cleanly
+# ---------------------------------------------------------------------------
+
+
+def test_h2h_notes_built_for_capable_sports(tmp_path: Path) -> None:
+    """build_h2h stubs must produce Matchups/ notes for tennis/soccer/mlb.
+
+    Basketball_NBA has no atlas_h2h — its Matchups/ directory must NOT be
+    created (graceful-skip), and the overall exit code must still be 0.
+    """
+    out_dir = tmp_path / "Sports"
+    with _patch_all_adapters(note_count=2):
+        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+
+    assert exit_code == 0, f"Expected exit code 0, got {exit_code}"
+
+    # Sports with H2H support → Matchups/ directory must contain stub notes
+    h2h_sport_dirs = {
+        "Tennis": out_dir / "Tennis" / "Matchups",
+        "Soccer": out_dir / "Soccer" / "Matchups",
+        "MLB":    out_dir / "MLB" / "Matchups",
+    }
+    for sport_name, matchups_dir in h2h_sport_dirs.items():
+        assert matchups_dir.exists(), (
+            f"{sport_name}: expected Matchups/ dir at {matchups_dir}"
+        )
+        md_files = list(matchups_dir.glob("*.md"))
+        assert md_files, (
+            f"{sport_name}: Matchups/ dir exists but contains no .md notes"
+        )
+
+    # NBA has no atlas_h2h — its Matchups/ must not have been created
+    nba_matchups = out_dir / "Basketball_NBA" / "Matchups"
+    assert not nba_matchups.exists(), (
+        f"Basketball_NBA should NOT have a Matchups/ dir (no atlas_h2h), "
+        f"but found {nba_matchups}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — _derive_domain correctly extracts domain from adapter_module
+# ---------------------------------------------------------------------------
+
+
+def test_derive_domain_extracts_correctly() -> None:
+    """_derive_domain must strip the 'domains.' prefix and the trailing module name."""
+    assert _derive_domain("domains.tennis.atlas") == "tennis"
+    assert _derive_domain("domains.soccer.atlas") == "soccer"
+    assert _derive_domain("domains.mlb.atlas") == "mlb"
+    assert _derive_domain("domains.basketball_nba.memory_atlas") == "basketball_nba"
