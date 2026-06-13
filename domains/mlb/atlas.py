@@ -13,7 +13,8 @@ All numbers are derived from the real data — no fabricated stats.
 No betting/edge language: descriptive scouting intelligence only.
 
 Import contract (F5-clean): stdlib + pathlib + pandas + numpy +
-domains.mlb.config + domains.mlb.ratings only.
+domains.mlb.config + domains.mlb.ratings +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -31,6 +32,7 @@ from domains.mlb.atlas_render import (
     render_league,
     render_team,
 )
+from scripts.platform.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths
@@ -219,7 +221,7 @@ def build_atlas(
             top_teams=top_teams,
             seasons=seasons,
         )
-        path.write_text(content, encoding="utf-8")
+        write_note(path, content)
         written.append(path)
 
     # --- Team notes ---
@@ -240,7 +242,7 @@ def build_atlas(
             elo=elo,
             rivals=rivals,
         )
-        path.write_text(content, encoding="utf-8")
+        write_note(path, content)
         written.append(path)
 
     # --- Index note ---
@@ -258,7 +260,7 @@ def build_atlas(
         top_teams=top_by_win_pct,
         league_stats=league_stats,
     )
-    index_path.write_text(content, encoding="utf-8")
+    write_note(index_path, content)
     written.append(index_path)
 
     return written

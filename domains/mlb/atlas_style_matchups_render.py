@@ -4,12 +4,14 @@ MLB style-vs-style matchup matrix notes.
 Pure rendering functions: each accepts structured data and returns a string.
 No I/O, no pandas — the orchestrator (atlas_style_matchups.py) handles that.
 
-Import contract (F5-clean): stdlib only.
+Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------
@@ -31,19 +33,6 @@ def _ff(v: float, d: int = 2) -> str:
 
 def _wl(name: str) -> str:
     return f"[[{name}]]"
-
-
-def _fm(**kwargs: Any) -> str:
-    lines = ["---"]
-    for k, v in kwargs.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -86,20 +75,20 @@ def render_pair_note(
         Human label, e.g. ``2010-2021``.
     """
     title = f"{home_name} (home) vs {away_name} (away)"
-    fm = _fm(
-        sport="mlb",
-        matchup_type="style_vs_style",
-        home_style=home_slug,
-        away_style=away_slug,
-        corpus_span=corpus_span,
-        game_count=n,
-        tags=[
+    fm = _fm_dict({
+        "sport": "mlb",
+        "matchup_type": "style_vs_style",
+        "home_style": home_slug,
+        "away_style": away_slug,
+        "corpus_span": corpus_span,
+        "game_count": n,
+        "tags": [
             "sport/mlb",
             "style-matchup",
             f"home/{home_slug}",
             f"away/{away_slug}",
         ],
-    )
+    })
 
     thresh_label = f"{int(high_total_thresh)}" if high_total_thresh == int(high_total_thresh) else f"{high_total_thresh}"
 
@@ -167,13 +156,13 @@ def render_style_matchups_index(
     min_games:
         Minimum game threshold used to qualify a pair.
     """
-    fm = _fm(
-        sport="mlb",
-        matchup_type="style_vs_style",
-        corpus_span=corpus_span,
-        pair_count=n_pairs,
-        tags=["sport/mlb", "style-matchup", "index"],
-    )
+    fm = _fm_dict({
+        "sport": "mlb",
+        "matchup_type": "style_vs_style",
+        "corpus_span": corpus_span,
+        "pair_count": n_pairs,
+        "tags": ["sport/mlb", "style-matchup", "index"],
+    })
 
     table_rows = [
         "| Home Style | Away Style | Games | Home-Win% | Avg Total | High-Score% |",

@@ -2,12 +2,15 @@
 
 Internal module; do not import directly — use atlas_scouting.build_scouting().
 
-F5-clean: stdlib only.  No edge/betting language.  No individual player names.
+F5-clean: stdlib + scripts.platform.atlas.obsidian_emit only.
+No edge/betting language.  No individual player names.
 """
 from __future__ import annotations
 
 import pathlib
 from typing import Dict, List, Optional, Tuple
+
+from scripts.platform.atlas.obsidian_emit import write_note as _write_note
 
 
 # ---------------------------------------------------------------------------
@@ -225,5 +228,5 @@ def render_index(
         "#sport/mlb #scouting #atlas/index\n"
     )
     path = out_dir / "_Scouting_Index.md"
-    path.write_text(body, encoding="utf-8")
+    _write_note(path, body)
     return path

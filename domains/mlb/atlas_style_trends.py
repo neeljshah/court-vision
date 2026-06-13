@@ -14,7 +14,8 @@ Public API: build_style_trends(out_dir, corpus_dir) -> list[Path]
 
 No individual player names.  No betting/edge language.  Real data only.
 
-Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* only.
+Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -25,6 +26,7 @@ import pandas as pd
 
 from domains.mlb.atlas_playstyles import _ARCHETYPES  # reuse classifiers
 from domains.mlb.atlas_style_trends_render import render_overview, render_season_note
+from scripts.platform.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths
@@ -192,7 +194,7 @@ def build_style_trends(
         min_season_games=_MIN_SEASON_GAMES,
     )
     overview_path = out_dir / "_Style_Trends_Overview.md"
-    overview_path.write_text(overview_content, encoding="utf-8")
+    write_note(overview_path, overview_content)
     written.append(overview_path)
 
     # --- Per-season notes ---
@@ -218,7 +220,7 @@ def build_style_trends(
             min_season_games=_MIN_SEASON_GAMES,
         )
         note_path = out_dir / f"style_trends_{season}.md"
-        note_path.write_text(content, encoding="utf-8")
+        write_note(note_path, content)
         written.append(note_path)
 
     return written

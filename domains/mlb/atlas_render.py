@@ -3,12 +3,14 @@
 Pure rendering functions: each takes structured data and returns a string.
 No I/O, no pandas reads — the atlas.py orchestrator handles that.
 
-Import contract (F5-clean): stdlib only.
+Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _frontmatter_dict
 
 
 def _fmt_pct(v: float, decimals: int = 1) -> str:
@@ -30,20 +32,6 @@ def _wikilink(name: str) -> str:
     return f"[[{name}]]"
 
 
-def _frontmatter(**kwargs: Any) -> str:
-    """Render YAML frontmatter block."""
-    lines = ["---"]
-    for k, v in kwargs.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
-
-
 def render_league(
     *,
     league: str,
@@ -56,13 +44,13 @@ def render_league(
 ) -> str:
     """Render a League note for AL or NL."""
     season_span = f"{min(seasons)}–{max(seasons)}" if seasons else "n/a"
-    fm = _frontmatter(
-        league=league,
-        sport="mlb",
-        corpus_span=season_span,
-        n_games=n_games,
-        tags=[f"sport/mlb", f"league/{league.lower()}"],
-    )
+    fm = _frontmatter_dict({
+        "league": league,
+        "sport": "mlb",
+        "corpus_span": season_span,
+        "n_games": n_games,
+        "tags": [f"sport/mlb", f"league/{league.lower()}"],
+    })
     rival_league = "NL" if league == "AL" else "AL"
 
     top_links = ", ".join(_wikilink(f"Teams/{t}") for t in top_teams)
@@ -112,14 +100,14 @@ def render_team(
     else:
         season_span = "n/a"
 
-    fm = _frontmatter(
-        team=team,
-        league=league,
-        sport="mlb",
-        corpus_span=season_span,
-        elo=f"{elo:.1f}",
-        tags=[f"sport/mlb", f"league/{league.lower()}", f"team/{team.lower()}"],
-    )
+    fm = _frontmatter_dict({
+        "team": team,
+        "league": league,
+        "sport": "mlb",
+        "corpus_span": season_span,
+        "elo": f"{elo:.1f}",
+        "tags": [f"sport/mlb", f"league/{league.lower()}", f"team/{team.lower()}"],
+    })
 
     games = int(stats["games"]) if not _is_nan(stats["games"]) else 0
     wins = int(stats["wins"]) if not _is_nan(stats["wins"]) else 0
@@ -200,13 +188,13 @@ def render_index(
     n_al = int((team_stats["league"] == "AL").sum())
     n_nl = int((team_stats["league"] == "NL").sum())
 
-    fm = _frontmatter(
-        sport="mlb",
-        corpus_span=season_span,
-        n_games=n_games,
-        n_teams=n_teams,
-        tags=["sport/mlb", "index"],
-    )
+    fm = _frontmatter_dict({
+        "sport": "mlb",
+        "corpus_span": season_span,
+        "n_games": n_games,
+        "n_teams": n_teams,
+        "tags": ["sport/mlb", "index"],
+    })
 
     # Top teams table
     top_rows: List[str] = []

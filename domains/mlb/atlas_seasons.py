@@ -13,7 +13,8 @@ All numbers are derived from real corpus data — no fabricated stats.
 No betting/edge language: descriptive standings only.
 Records are honest corpus regular-season counts (no playoff data).
 
-Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* only.
+Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ import pandas as pd
 
 from domains.mlb.config import resolve_league
 from domains.mlb.atlas_seasons_render import render_season, render_seasons_index
+from scripts.platform.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths
@@ -196,7 +198,7 @@ def build_seasons(
             al_best=al_best_team,
         )
         path = out_dir / f"{season}.md"
-        path.write_text(content, encoding="utf-8")
+        write_note(path, content)
         written.append(path)
 
         season_summaries.append(dict(
@@ -214,7 +216,7 @@ def build_seasons(
         season_summaries=season_summaries,
     )
     index_path = out_dir / "_Seasons_Index.md"
-    index_path.write_text(index_content, encoding="utf-8")
+    write_note(index_path, index_content)
     written.append(index_path)
 
     return written
