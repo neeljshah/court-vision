@@ -159,3 +159,17 @@ def test_fixture_has_frontmatter_and_tags(tmp_path):
     text = fx[0].read_text(encoding="utf-8")
     assert _has_frontmatter(text)
     assert _has_tag(text)
+
+
+def test_index_no_folder_wikilink(tmp_path):
+    """_Matchups_Index.md must not contain bare [[Teams/]] folder links.
+
+    Regression for a dangling-link bug where the index prose contained
+    ``[[Teams/]]`` (a folder ref Obsidian cannot resolve to a note).
+    """
+    out = tmp_path / "out"
+    build_h2h(out, _make_corpus(tmp_path))
+    text = (out / "_Matchups_Index.md").read_text(encoding="utf-8")
+    assert "[[Teams/]]" not in text, (
+        "_Matchups_Index.md still contains dangling [[Teams/]] folder link"
+    )
