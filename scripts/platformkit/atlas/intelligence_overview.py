@@ -247,7 +247,7 @@ def build_intelligence_overview(vault_sports_dir: Optional[pathlib.Path] = None)
     total_notes, total_links = "unknown", "unknown"
     if stats_text:
         mn = re.search(r"Total notes\s*\|\s*\*\*(\d[\d,]*)\*\*", stats_text)
-        ml = re.search(r"Total \[\[wikilinks\]\]\s*\|\s*(\d[\d,]*)", stats_text)
+        ml = re.search(r"Total (?:\[\[)?wikilinks(?:\]\])?\s*\|\s*\*?(\d[\d,]*)\*?", stats_text)
         if mn: total_notes = mn.group(1)
         if ml: total_links = ml.group(1)
     sport_trends = [(sd.name, _sport_trend(sd.name, sd)) for sd in sport_dirs]

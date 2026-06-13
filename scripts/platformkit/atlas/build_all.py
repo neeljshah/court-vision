@@ -26,50 +26,15 @@ if str(_REPO_ROOT) not in sys.path:
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 log = logging.getLogger(__name__)
 
-# (sport_id, display_name, adapter_module, corpus_hint)
-_SPORT_MANIFEST: List[Tuple[str, str, str, str]] = [
-    ("tennis_atp",     "Tennis",         "domains.tennis.atlas",               "data/domains/tennis"),
-    ("soccer_fd",      "Soccer",         "domains.soccer.atlas",               "data/domains/soccer"),
-    ("mlb_sbro",       "MLB",            "domains.mlb.atlas",                  "data/domains/mlb"),
-    ("basketball_nba", "Basketball_NBA", "domains.basketball_nba.memory_atlas", "data"),
-]
-_ALIASES: Dict[str, str] = {
-    "tennis": "tennis_atp", "tennis_atp": "tennis_atp",
-    "soccer": "soccer_fd",  "soccer_fd":  "soccer_fd",
-    "mlb":    "mlb_sbro",   "mlb_sbro":   "mlb_sbro",
-    "nba": "basketball_nba", "basketball": "basketball_nba",
-    "basketball_nba": "basketball_nba", "all": "all",
-}
-
-# Per-sport extra generators (--full only): (domain, module_suffix, fn_name, subdir, corpus_kwarg)
-_EXTRA_GENS: List[Tuple[str, str, str, str, str]] = [
-    ("tennis",         "atlas_style_matchups",     "build_style_matchups",    "StyleMatchups",     "corpus_dir"),
-    ("tennis",         "atlas_style_trends",        "build_style_trends",      "StyleTrends",       "corpus_dir"),
-    ("tennis",         "atlas_scouting",            "build_scouting",          "Scouting",          "vault_tennis_dir"),
-    ("soccer",         "atlas_style_matchups",     "build_style_matchups",    "StyleMatchups",     "corpus_dir"),
-    ("soccer",         "atlas_style_trends",        "build_style_trends",      "StyleTrends",       "corpus_dir"),
-    ("soccer",         "atlas_scheme_transitions",  "build_scheme_transitions","SchemeTransitions",  "corpus_dir"),
-    ("soccer",         "atlas_scouting",            "build_scouting",          "Scouting",          "corpus_dir"),
-    ("mlb",            "atlas_style_matchups",     "build_style_matchups",    "StyleMatchups",     "corpus_dir"),
-    ("mlb",            "atlas_style_trends",        "build_style_trends",      "StyleTrends",       "corpus_dir"),
-    ("mlb",            "atlas_home_environment",    "build_home_environment",  "HomeEnvironment",   "corpus_dir"),
-    ("mlb",            "atlas_scouting",            "build_scouting",          "Scouting",          "corpus_dir"),
-    ("basketball_nba", "memory_atlas_trends",       "build_trends",            "Trends",            "data_dir"),
-    ("basketball_nba", "atlas_scouting",            "build_scouting",          "Scouting",          "corpus_dir"),
-]
-# Cross-sport META generators (--full, run after all sports): (module_suffix, fn_name)
-_META_GENS: List[Tuple[str, str]] = [
-    ("graph_report", "build_graph_report"), ("signals_hub", "build_signals_hub"),
-    ("archetype_taxonomy", "build_taxonomy"), ("intelligence_overview", "build_intelligence_overview"),
-    ("graph_health", "build_graph_health"), ("world_model", "build_world_model"), ("base_rates", "build_base_rates"), ("calibration_segments", "build_calibration_segments"),
-]
-# --with-catalogs: (loader_mod, cat_mod, joint_mod, joint_fn, seasons, display, corpus_hint)
-# joint_fn: tennis/soccer="run_joint_catalog"; mlb joint module uses "run_catalog".
-_CAT: List[Tuple[str, str, str, str, List[int], str, str]] = [  # noqa: E501
-    ("scripts.platformkit.proof_tennis.run_proof", "domains.tennis.signal_catalog", "domains.tennis.signal_catalog_joint", "run_joint_catalog", list(range(2015, 2027)), "Tennis", "data/domains/tennis"),  # noqa: E501
-    ("scripts.platformkit.proof_soccer.run_proof", "domains.soccer.signal_catalog", "domains.soccer.signal_catalog_joint", "run_joint_catalog", list(range(2015, 2026)), "Soccer", "data/domains/soccer"),  # noqa: E501
-    ("scripts.platformkit.proof_mlb.run_proof", "domains.mlb.signal_catalog", "domains.mlb.signal_catalog_joint", "run_catalog", list(range(2010, 2022)), "MLB", "data/domains/mlb"),  # noqa: E501
-]
+# Static manifest tables live in hub_data.py (keeps this file ≤ 300 LOC).
+from scripts.platformkit.atlas.hub_data import (  # noqa: E402
+    SPORT_MANIFEST as _SPORT_MANIFEST,
+    ALIASES as _ALIASES,
+    EXTRA_GENS as _EXTRA_GENS,
+    META_GENS as _META_GENS,
+    META_NOTE_LINKS as _META_NOTE_LINKS,
+    CAT as _CAT,
+)
 
 
 def write_hub(out_dir: Path, built_sports: List[Tuple[str, str, int]]) -> Path:
@@ -87,6 +52,7 @@ def write_hub(out_dir: Path, built_sports: List[Tuple[str, str, int]]) -> Path:
     today, table = date.today().isoformat(), "\n".join(rows)
     nba = ("- [[Home]] — platform home note\n- [[Intelligence/_Scout_Index]] — NBA scout index\n"
            "- [[MOC-CV]] · [[MOC-Models]] · [[MOC-Betting]] · [[MOC-Strategy]]")
+    meta_links = "\n".join(f"- [[{n}]]" for n in _META_NOTE_LINKS)
     hub_path = out_dir / "_Hub.md"
     hub_path.write_text(
         f"---\ntags: [sport, memory-graph, hub, index]\nupdated: {today}\n---\n"
@@ -96,7 +62,11 @@ def write_hub(out_dir: Path, built_sports: List[Tuple[str, str, int]]) -> Path:
         "Each sport has its own folder under `vault/Sports/<Sport>/` with an `_Index` entry point.\n\n---\n\n"
         f"## Sport Index\n\n| Sport | Corpus | Index |\n|-------|--------|-------|\n{table}\n\n---\n\n"
         "## NBA Intelligence Vault (existing)\n\nNBA artifacts live in `vault/` not `vault/Sports/`.\n\n"
-        f"{nba}\n\n---\n\n#sport #memory-graph #hub #index\n\n"
+        f"{nba}\n\n---\n\n"
+        "## Meta-Graph Notes\n\n"
+        "Cross-sport synthesis notes that back-link to this hub.\n\n"
+        f"{meta_links}\n\n---\n\n"
+        "#sport #memory-graph #hub #index\n\n"
         f"*Generated {today} by `scripts/platformkit/atlas/build_all.py`*\n", encoding="utf-8")
     return hub_path
 
