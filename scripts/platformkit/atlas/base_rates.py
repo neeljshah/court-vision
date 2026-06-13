@@ -115,7 +115,11 @@ def _compute(wf: object, target_col: str, group_col: str) -> Tuple[int, float, L
             sub_col = sub[target_col].dropna()
             if len(sub_col) == 0:
                 continue
-            groups.append((str(int(grp)), len(sub_col), float(sub_col.mean())))
+            try:
+                label = str(int(grp))           # numeric season (e.g. 2024)
+            except (TypeError, ValueError):
+                label = str(grp)                  # string season (e.g. "2022-23" for NBA)
+            groups.append((label, len(sub_col), float(sub_col.mean())))
     groups.sort(key=lambda x: x[0])
     return n_total, overall, groups
 
