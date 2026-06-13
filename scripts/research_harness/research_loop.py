@@ -1,25 +1,16 @@
 """scripts.research_harness.research_loop — End-to-end offline research pipeline.
 
-Wires hypothesis_enumerator -> research_ledger -> research_writeup into a
-single DETERMINISTIC, OFFLINE run that consumes EXISTING catalog verdicts
-(never runs the live gate).
+Wires hypothesis_enumerator -> research_ledger -> belief_store -> research_writeup.
+Consumes EXISTING catalog verdicts (never runs the live gate).
 
-Flow
-----
-1. enumerate_candidates (hypothesis_enumerator) — build the bounded candidate
-   space for every sport.
-2. ingest_all_catalogs (research_ledger) — parse existing _Catalog*.md verdict
-   reports from vault/Sports/<Sport>/Signals/; graceful no-op when absent.
-3. Ledger.append (dedup/idempotent) — each finding is recorded once.
-4. render_writeup (research_writeup) — emit a consolidated markdown note.
-5. Emit a short coverage + verdict summary to stdout.
+Flow: enumerate -> ingest catalogs -> update ledger -> update BeliefStore
+      (persist beliefs.json) -> render markdown writeup -> emit summary.
 
 No edge is claimed.  REJECT verdicts are first-class findings.
+P(ship) posteriors are historical ship-rate priors, NOT edge claims.
 
-Usage (CLI):
-    python -m scripts.research_harness.research_loop
-    python -m scripts.research_harness.research_loop --vault /path/to/vault
-    python -m scripts.research_harness.research_loop --dry-run
+Usage:
+    python -m scripts.research_harness.research_loop [--vault PATH] [--dry-run]
 """
 from __future__ import annotations
 
@@ -36,27 +27,24 @@ _HARNESS = Path(__file__).resolve().parent
 if str(_HARNESS) not in sys.path:
     sys.path.insert(0, str(_HARNESS))
 
-from research_ledger import (  # noqa: E402
-    Ledger,
-    ResearchFinding,
-    VAULT_SPORTS,
-    ingest_all_catalogs,
-)
+from research_ledger import Ledger, ResearchFinding, VAULT_SPORTS, ingest_all_catalogs  # noqa: E402
 from research_writeup import render_writeup  # noqa: E402
-
-# Hypothesis enumerator lives one directory up in scripts/research_harness
 from hypothesis_enumerator import compute_all_coverage, format_summary  # noqa: E402
+
+# BeliefStore imported gracefully — loop works without it.
+_BELIEF_STORE_AVAILABLE: bool = False
+try:
+    from belief_store import BeliefStore  # noqa: E402
+    _BELIEF_STORE_AVAILABLE = True
+except Exception:  # pragma: no cover
+    BeliefStore = None  # type: ignore[assignment,misc]
 
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
 _DEFAULT_LEDGER = _ROOT / "data" / "research" / "findings.jsonl"
 _DEFAULT_OUT_MD = _ROOT / "vault" / "Sports" / "_Research_Findings.md"
-
-_WHAT_DEFAULT = (
-    "A second independent corpus (different seasons / books / exchanges) showing "
-    "consistent positive CLV above vig, with FDR-corrected p < 0.05."
-)
+_DEFAULT_BELIEFS = _ROOT / "data" / "research" / "beliefs.json"
 
 # ---------------------------------------------------------------------------
 # Core orchestration
@@ -67,92 +55,78 @@ def run_research_loop(
     ledger_path: Optional[Path] = None,
     vault_root: Optional[Path] = None,
     out_md: Optional[Path] = None,
+    beliefs_path: Optional[Path] = None,
     dry_run: bool = False,
     verbose: bool = True,
 ) -> Dict:
     """Run the end-to-end offline research pipeline.
 
-    Parameters
-    ----------
-    ledger_path : Path, optional
-        Path to the findings JSONL ledger.  Defaults to
-        data/research/findings.jsonl relative to repo root.
-    vault_root : Path, optional
-        Root of the Sports vault directory (vault/Sports).  Defaults to the
-        value set in research_ledger.VAULT_SPORTS.
-    out_md : Path, optional
-        Destination for the consolidated markdown research note.
-        Defaults to vault/Sports/_Research_Findings.md.
-    dry_run : bool
-        When True, nothing is written to disk (ledger or markdown file).
-    verbose : bool
-        Print progress lines to stdout.
-
-    Returns
-    -------
-    dict with keys:
-        "n_ingested"    : int  — new findings appended this run
-        "n_total"       : int  — total findings in ledger after run
-        "out_md"        : Path — path of written markdown note (or None)
-        "coverage_summary" : str — plain-text coverage table
-        "verdict_summary"  : dict — {REJECT/DEFER/SHIP counts}
-        "skipped_no_data"  : bool — True when no catalog reports were found
+    Returns a dict with keys: n_ingested, n_total, out_md, coverage_summary,
+    verdict_summary, skipped_no_data, beliefs_path, belief_summary.
+    belief_summary is {sport -> {family -> posterior_mean}} or {}.
     """
-    # Resolve paths
     resolved_ledger = Path(ledger_path) if ledger_path else _DEFAULT_LEDGER
     resolved_out_md = Path(out_md) if out_md else _DEFAULT_OUT_MD
-    resolved_vault_sports = Path(vault_root) if vault_root else VAULT_SPORTS
+    resolved_vault = Path(vault_root) if vault_root else VAULT_SPORTS
+    resolved_beliefs = Path(beliefs_path) if beliefs_path else _DEFAULT_BELIEFS
 
     def _log(msg: str) -> None:
         if verbose:
             print(msg)
 
-    # ------------------------------------------------------------------
-    # Step 1 — Enumerate candidate hypothesis space (fast, offline)
-    # ------------------------------------------------------------------
+    # 1 — Enumerate candidate hypothesis space
     _log("[research_loop] Step 1: enumerating hypothesis candidates …")
-    coverage_results = compute_all_coverage()
-    coverage_summary = format_summary(coverage_results)
+    coverage_summary = format_summary(compute_all_coverage())
 
-    # ------------------------------------------------------------------
-    # Step 2 — Open / create ledger
-    # ------------------------------------------------------------------
+    # 2 — Open / create ledger
     _log(f"[research_loop] Step 2: opening ledger at {resolved_ledger}")
     ledger = Ledger(path=resolved_ledger)
     n_before = ledger.summarize()["total"]
 
-    # ------------------------------------------------------------------
-    # Step 3 — Ingest existing catalog verdict reports (offline, no gate)
-    # ------------------------------------------------------------------
-    _log(
-        f"[research_loop] Step 3: ingesting catalog reports from "
-        f"{resolved_vault_sports} …"
-    )
+    # 3 — Ingest existing catalog verdict reports (offline, no gate)
+    _log(f"[research_loop] Step 3: ingesting catalog reports from {resolved_vault} …")
     skipped_no_data = False
-    n_ingested = 0
-    if not resolved_vault_sports.exists():
-        _log(
-            "  vault/Sports directory not found — no source verdicts to ingest "
-            "(graceful no-op; this is expected on a clean clone)."
-        )
+    if not resolved_vault.exists():
+        _log("  vault/Sports not found — no verdicts to ingest (graceful no-op).")
         skipped_no_data = True
     else:
-        # Use ingest_all_catalogs but with our potentially-overridden vault path.
-        # ingest_all_catalogs uses the module-level VAULT_SPORTS; we replicate
-        # its logic so we can honor a custom vault_root.
-        n_ingested = _ingest_from_vault(resolved_vault_sports, ledger, dry_run, _log)
+        n_ingested = _ingest_from_vault(resolved_vault, ledger, dry_run, _log)
         if n_ingested == 0 and ledger.summarize()["total"] == n_before:
-            _log("  No new findings found — ledger already up to date.")
+            _log("  No new findings — ledger already up to date.")
             skipped_no_data = True
 
-    # ------------------------------------------------------------------
-    # Step 4 — Render consolidated markdown note
-    # ------------------------------------------------------------------
-    _log("[research_loop] Step 4: rendering research note …")
-    md_content = render_writeup(
-        ledger,
-        generated_by="research_loop.py",
-    )
+    # 4 — Build / update BeliefStore from ledger; persist to JSON
+    belief_store = None
+    belief_summary: Dict = {}
+    written_beliefs_path: Optional[Path] = None
+
+    if _BELIEF_STORE_AVAILABLE and BeliefStore is not None:
+        _log("[research_loop] Step 4: updating belief store …")
+        try:
+            belief_store = BeliefStore()
+            belief_store.update_from_ledger(ledger)
+            for bel in belief_store.all_beliefs():
+                belief_summary.setdefault(bel.sport, {})[bel.family] = round(
+                    bel.posterior_mean, 4
+                )
+            if not dry_run:
+                written_beliefs_path = belief_store.save(resolved_beliefs)
+                _log(f"  Beliefs written: {written_beliefs_path}")
+            else:
+                _log(
+                    f"  [dry-run] would write {resolved_beliefs} "
+                    f"({len(belief_store.all_beliefs())} family beliefs)"
+                )
+        except Exception as exc:  # pragma: no cover
+            _log(f"  [belief_store] WARNING: update failed ({exc}); skipping.")
+            belief_store = None
+    else:
+        _log("[research_loop] Step 4: belief_store unavailable — skipping.")
+
+    # 5 — Render consolidated markdown note
+    _log("[research_loop] Step 5: rendering research note …")
+    md_content = render_writeup(ledger, generated_by="research_loop.py",
+                                belief_store=belief_store)
     if not dry_run:
         resolved_out_md.parent.mkdir(parents=True, exist_ok=True)
         resolved_out_md.write_text(md_content, encoding="utf-8")
@@ -160,12 +134,9 @@ def run_research_loop(
     else:
         _log(f"  [dry-run] would write {resolved_out_md} ({len(md_content)} chars)")
 
-    # ------------------------------------------------------------------
-    # Step 5 — Emit summary
-    # ------------------------------------------------------------------
+    # 6 — Emit summary
     n_after = ledger.summarize()["total"]
     verdict_counts = ledger.summarize()["by_verdict"]
-
     _log("\n" + coverage_summary)
     _log(
         f"\n[research_loop] Done. "
@@ -180,20 +151,13 @@ def run_research_loop(
         "coverage_summary": coverage_summary,
         "verdict_summary": verdict_counts,
         "skipped_no_data": skipped_no_data,
+        "beliefs_path": written_beliefs_path,
+        "belief_summary": belief_summary,
     }
 
 
-def _ingest_from_vault(
-    vault_sports: Path,
-    ledger: Ledger,
-    dry_run: bool,
-    log_fn,
-) -> int:
-    """Walk vault_sports/<Sport>/Signals/_Catalog*.md and ingest each file.
-
-    This mirrors research_ledger.ingest_all_catalogs but respects a caller-
-    supplied vault path rather than the module-level constant.
-    """
+def _ingest_from_vault(vault_sports: Path, ledger: Ledger, dry_run: bool, log_fn) -> int:
+    """Walk vault_sports/<Sport>/Signals/_Catalog*.md and ingest each file."""
     from research_ledger import ingest_catalog  # local import to avoid circular
 
     total = 0
@@ -206,10 +170,7 @@ def _ingest_from_vault(
         sport_id = sport_dir.name.lower().replace(" ", "_")
         for catalog in sorted(sig_dir.glob("_Catalog*.md")):
             n = ingest_catalog(catalog, sport_id, ledger, dry_run=dry_run)
-            log_fn(
-                f"  {catalog}: {n} rows "
-                f"{'(dry-run)' if dry_run else 'appended'}"
-            )
+            log_fn(f"  {catalog}: {n} rows {'(dry-run)' if dry_run else 'appended'}")
             total += n
     return total
 
@@ -223,39 +184,21 @@ def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog="research_loop",
         description=(
-            "Offline research pipeline: enumerate hypotheses -> ingest existing "
-            "catalog verdicts -> update ledger -> render research note. "
-            "No edge is claimed; REJECT verdicts are first-class findings."
+            "Offline research pipeline: enumerate -> ingest catalog verdicts -> "
+            "update ledger + beliefs -> render note. No edge is claimed."
         ),
     )
-    p.add_argument(
-        "--ledger",
-        metavar="PATH",
-        default=None,
-        help="Path to findings.jsonl (default: data/research/findings.jsonl)",
-    )
-    p.add_argument(
-        "--vault",
-        metavar="PATH",
-        default=None,
-        help="vault/Sports root directory (default: vault/Sports inside repo)",
-    )
-    p.add_argument(
-        "--out",
-        metavar="PATH",
-        default=None,
-        help="Output markdown path (default: vault/Sports/_Research_Findings.md)",
-    )
-    p.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print what would be written without touching any files",
-    )
-    p.add_argument(
-        "--quiet",
-        action="store_true",
-        help="Suppress progress output",
-    )
+    p.add_argument("--ledger", metavar="PATH", default=None,
+                   help="Path to findings.jsonl")
+    p.add_argument("--vault", metavar="PATH", default=None,
+                   help="vault/Sports root directory")
+    p.add_argument("--out", metavar="PATH", default=None,
+                   help="Output markdown path")
+    p.add_argument("--beliefs", metavar="PATH", default=None,
+                   help="Output beliefs.json path")
+    p.add_argument("--dry-run", action="store_true",
+                   help="Print what would be written without touching files")
+    p.add_argument("--quiet", action="store_true", help="Suppress progress output")
     return p
 
 
@@ -266,6 +209,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         ledger_path=Path(args.ledger) if args.ledger else None,
         vault_root=Path(args.vault) if args.vault else None,
         out_md=Path(args.out) if args.out else None,
+        beliefs_path=Path(args.beliefs) if args.beliefs else None,
         dry_run=args.dry_run,
         verbose=not args.quiet,
     )

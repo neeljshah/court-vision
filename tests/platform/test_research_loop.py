@@ -71,10 +71,6 @@ _EDGE_WORDS = (
     "positive edge", "betting edge", "proven edge",
 )
 
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
-
 
 def test_loop_produces_expected_findings(tmp_path: Path) -> None:
     """With synthetic catalog files the ledger must contain exactly the parsed rows."""
@@ -289,3 +285,10 @@ def test_result_contains_verdict_summary(tmp_path: Path) -> None:
     # From synthetic fixture: 2 REJECT (tennis) + 1 REJECT (soccer) + 1 DEFER
     assert vs["REJECT"] >= 3
     assert vs["DEFER"] >= 1
+
+
+# ---------------------------------------------------------------------------
+# BeliefStore integration tests
+# ---------------------------------------------------------------------------
+
+
