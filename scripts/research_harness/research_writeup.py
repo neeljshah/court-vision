@@ -61,6 +61,7 @@ def render_writeup(
     source: Union[Ledger, List[ResearchFinding]],
     title: Optional[str] = None,
     generated_by: str = "research_writeup.py",
+    belief_store: Optional[object] = None,
 ) -> str:
     """Render research findings as a markdown document.
 
@@ -69,6 +70,10 @@ def render_writeup(
     source        : a Ledger instance or a plain list of ResearchFinding objects
     title         : optional custom title (replaces default header title line)
     generated_by  : attribution string in the footer
+    belief_store  : optional BeliefStore instance; when supplied, each family
+                    row also shows its posterior ship-rate mean + 95% CI.
+                    When None (default), existing behaviour is unchanged.
+                    P(ship) is a historical ship-rate prior, NOT an edge claim.
 
     Returns
     -------
@@ -132,6 +137,19 @@ def render_writeup(
                 lines.append(f"### [{verdict_label}] `{f.family}`\n")
                 lines.append(f"**Hypothesis:** {f.hypothesis}\n")
                 lines.append(f"**Verdict:** {f.verdict}  |  **Dated:** {f.dated}\n")
+
+                # Posterior ship-rate (only when a BeliefStore is provided)
+                if belief_store is not None:
+                    try:
+                        pm = belief_store.posterior_mean(f.sport, f.family)
+                        lo, hi = belief_store.credible_interval(f.sport, f.family)
+                        lines.append(
+                            f"**P(ship) posterior:** {pm:.3f}  "
+                            f"95% CI [{lo:.3f}, {hi:.3f}]  "
+                            f"*(historical ship-rate prior — no edge claimed)*\n"
+                        )
+                    except Exception:
+                        pass  # never let a belief lookup break the writeup
 
                 # Evidence block
                 if f.evidence:
