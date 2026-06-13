@@ -148,7 +148,9 @@ def test_sport_filter_selects_one_sport(tmp_path: Path) -> None:
         stub_modules[adapter_module] = mod
 
     with mock.patch.dict("sys.modules", stub_modules):
-        exit_code = main(["--sport", "tennis", "--out", str(out_dir)])
+        # --with-named exercises the base (named) atlas path (gated off by the
+        # person-free default); this test verifies sport FILTERING on that path.
+        exit_code = main(["--sport", "tennis", "--out", str(out_dir), "--with-named"])
 
     assert exit_code == 0
     assert called == ["Tennis"], f"Expected only Tennis; got {called}"
@@ -201,10 +203,14 @@ def test_unknown_sport_arg_returns_error(tmp_path: Path) -> None:
 
 
 def test_h2h_notes_built_for_capable_sports(tmp_path: Path) -> None:
-    """build_h2h stubs produce Matchups/ for tennis/soccer/mlb; NBA skipped."""
+    """build_h2h stubs produce Matchups/ for tennis/soccer/mlb; NBA skipped.
+
+    Matchups are a NAMED family (gated off by the person-free default), so this
+    capability test runs the opt-in --with-named path.
+    """
     out_dir = tmp_path / "Sports"
     with _patch_all_adapters(note_count=2):
-        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+        exit_code = main(["--sport", "all", "--out", str(out_dir), "--with-named"])
     assert exit_code == 0
     for sport_name, sub in [
         ("Tennis", out_dir / "Tennis" / "Matchups"),
@@ -250,10 +256,14 @@ def test_playstyles_and_archetypes_built(tmp_path: Path) -> None:
 
 
 def test_tournaments_built_for_tennis_only(tmp_path: Path) -> None:
-    """Tournaments/ built for tennis; no other sport gets a Tournaments/ directory."""
+    """Tournaments/ built for tennis; no other sport gets a Tournaments/ directory.
+
+    Tournaments are a NAMED family (person-free default gates them off); this
+    capability test runs the opt-in --with-named path.
+    """
     out_dir = tmp_path / "Sports"
     with _patch_all_adapters(note_count=2):
-        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+        exit_code = main(["--sport", "all", "--out", str(out_dir), "--with-named"])
     assert exit_code == 0
     tennis_trn = out_dir / "Tennis" / "Tournaments"
     assert tennis_trn.exists(), f"Tennis: Tournaments/ missing at {tennis_trn}"
@@ -264,10 +274,14 @@ def test_tournaments_built_for_tennis_only(tmp_path: Path) -> None:
 
 
 def test_seasons_built_for_soccer_mlb_nba(tmp_path: Path) -> None:
-    """Seasons/ built for soccer, mlb, and basketball_nba; tennis has no Seasons/."""
+    """Seasons/ built for soccer, mlb, and basketball_nba; tennis has no Seasons/.
+
+    Seasons are a NAMED family (person-free default gates them off); this
+    capability test runs the opt-in --with-named path.
+    """
     out_dir = tmp_path / "Sports"
     with _patch_all_adapters(note_count=2):
-        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+        exit_code = main(["--sport", "all", "--out", str(out_dir), "--with-named"])
     assert exit_code == 0
     for sport_name in ("Soccer", "MLB", "Basketball_NBA"):
         sea = out_dir / sport_name / "Seasons"

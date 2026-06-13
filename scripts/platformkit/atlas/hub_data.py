@@ -9,6 +9,70 @@ from __future__ import annotations
 
 from typing import Dict, List, Tuple
 
+# ---------------------------------------------------------------------------
+# PERSON-FREE discipline (the platform's binding invariant)
+# ---------------------------------------------------------------------------
+# The platform's contribution to the Obsidian graph must carry NO specific
+# names or matchups — only person-free ARCHETYPE families (playstyles, style
+# matchups, style trends, scheme transitions, home environment) plus the
+# cross-sport meta/hub.  PERSON_FREE gates OFF the NAMED-entity generators
+# (named team/player atlas → Teams, head-to-head → Matchups, named seasons →
+# Seasons, named tournaments → Tournaments, per-entity Scouting).  This is a
+# GATE, not a deletion: set PERSON_FREE = False to restore the full build.
+PERSON_FREE: bool = True
+
+# Logical keys for every generator build_all can run, partitioned by whether
+# the notes they emit name specific entities (NAMED) or are archetype/meta
+# families (PERSON_FREE).  Keys are stable identifiers used by the selection
+# helper + tests; they are NOT module names.
+#
+# NAMED (person/entity-bearing) — gated OFF when PERSON_FREE is True:
+#   "base_atlas"  → per-sport build_atlas → Teams/ (named teams/players)
+#   "h2h"         → atlas_h2h → Matchups/ (named entity-vs-entity)
+#   "tournaments" → atlas_tournaments → Tournaments/ (named tournaments)
+#   "seasons"     → atlas_seasons → Seasons/ (named seasons)
+#   "scouting"    → atlas_scouting → Scouting/ (per-named-entity reports, --full)
+NAMED_GENERATORS: List[str] = [
+    "base_atlas", "h2h", "tournaments", "seasons", "scouting",
+]
+
+# PERSON_FREE (archetype + environment) — ALWAYS run:
+#   "playstyles"         → Playstyles/Archetypes (style clusters, no names)
+#   "style_matchups"     → StyleMatchups/ (archetype-vs-archetype)
+#   "style_trends"       → StyleTrends/ (archetype trends)
+#   "scheme_transitions" → SchemeTransitions/ (soccer schemes)
+#   "home_environment"   → HomeEnvironment/ (MLB park env)
+#   "trends"             → Trends/ (NBA league trends, no names)
+PERSON_FREE_GENERATORS: List[str] = [
+    "playstyles", "style_matchups", "style_trends",
+    "scheme_transitions", "home_environment", "trends",
+]
+
+# Map each EXTRA_GENS subdir → its logical generator key (so _build_extras can
+# honor PERSON_FREE without hardcoding subdir strings in build_all).
+EXTRA_SUBDIR_KEY: Dict[str, str] = {
+    "StyleMatchups": "style_matchups",
+    "StyleTrends": "style_trends",
+    "SchemeTransitions": "scheme_transitions",
+    "HomeEnvironment": "home_environment",
+    "Trends": "trends",
+    "Scouting": "scouting",
+}
+
+
+def selected_generators(person_free: bool) -> List[str]:
+    """Pure helper: which generator keys run for the given person_free mode.
+
+    person_free=True  → only PERSON_FREE_GENERATORS (named ones gated off).
+    person_free=False → every generator (NAMED + PERSON_FREE), legacy build.
+
+    Tested directly by tests/platform/test_atlas_person_free.py WITHOUT running
+    any generation.  build_all imports this so the gate has a single source.
+    """
+    if person_free:
+        return list(PERSON_FREE_GENERATORS)
+    return list(NAMED_GENERATORS) + list(PERSON_FREE_GENERATORS)
+
 # (sport_id, display_name, adapter_module, corpus_hint)
 SPORT_MANIFEST: List[Tuple[str, str, str, str]] = [
     ("tennis_atp",     "Tennis",         "domains.tennis.atlas",               "data/domains/tennis"),

@@ -1,11 +1,11 @@
 """scripts.platformkit.atlas.build_all — Multi-sport atlas build driver.
 
-Usage: python scripts/platformkit/atlas/build_all.py [--sport SPORT] [--out DIR] [--full]
-  --full           runs per-sport extras (StyleMatchups, StyleTrends, Scouting, …) and
-                   cross-sport META generators (GraphReport, SignalsHub, …).
-  --with-catalogs  runs signal_catalog + signal_catalog_joint for tennis/soccer/mlb
-                   (NBA has no catalog).  SLOW — each sport hits the real gate.
-Discipline: Py3.9, from __future__ import annotations, type hints, ≤300 LOC.
+Usage: build_all.py [--sport SPORT] [--out DIR] [--full] [--with-catalogs] [--with-named]
+  --full          per-sport extras (StyleMatchups/StyleTrends/…) + cross-sport META.
+  --with-catalogs signal_catalog + signal_catalog_joint for tennis/soccer/mlb (SLOW).
+  --with-named    restore NAMED generators (Teams/Matchups/Seasons/Tournaments/Scouting).
+PERSON-FREE by default (hub_data.PERSON_FREE): NAMED generators gated OFF — the platform
+emits only archetype/style families, no specific names/matchups.  Py3.9, ≤300 LOC.
 """
 from __future__ import annotations
 
@@ -34,6 +34,9 @@ from scripts.platformkit.atlas.hub_data import (  # noqa: E402
     META_GENS as _META_GENS,
     META_NOTE_LINKS as _META_NOTE_LINKS,
     CAT as _CAT,
+    PERSON_FREE as _PERSON_FREE,
+    EXTRA_SUBDIR_KEY as _EXTRA_SUBDIR_KEY,
+    selected_generators as _selected_generators,
 )
 
 
@@ -127,10 +130,18 @@ def _try_build_seasons(d: str, so: Path, cd: Path) -> int:
     return _try_build_optional(f"domains.{d}.atlas_seasons", "build_seasons", "Seasons", so, cd) if d in {"soccer", "mlb"} else 0
 
 
-def _build_extras(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+def _build_extras(domain: str, sport_out: Path, corpus_dir: Path, allowed: set) -> int:
+    """Run --full per-sport extras whose generator key is in `allowed`.
+
+    PERSON-FREE discipline: `allowed` comes from selected_generators(); when
+    person_free is True it excludes "scouting" (per-named-entity reports), so
+    only the archetype/environment extras (StyleMatchups/StyleTrends/
+    SchemeTransitions/HomeEnvironment/Trends) run.
+    """
     total = 0
     for (gd, ms, fn, sub, kw) in _EXTRA_GENS:
         if gd != domain: continue
+        if _EXTRA_SUBDIR_KEY.get(sub) not in allowed: continue  # gate NAMED extras
         ad = sport_out if kw not in ("corpus_dir", "data_dir") else corpus_dir
         total += _try_build_optional(f"domains.{domain}.{ms}", fn, sub, sport_out, ad, kw)
     return total
@@ -186,28 +197,42 @@ def _run_catalogs(out_dir: Path) -> List[str]:
 def build_sport(
     sport_id: str, display_name: str, adapter_module: str,
     corpus_hint: str, out_dir: Path, full: bool = False,
+    person_free: bool = _PERSON_FREE,
 ) -> Optional[int]:
-    """Build atlas + H2H + Playstyles + Tournaments + Seasons (+ extras if full) for one sport."""
-    log.info("Building atlas: %s (%s) …", display_name, sport_id)
-    build_fn = _load_build_fn(adapter_module)
-    if build_fn is None:
-        log.warning("  Skipping %s — module %s not importable.", display_name, adapter_module); return None
+    """Build the person-free archetype families (+ named ones when person_free=False).
+
+    PERSON-FREE discipline (default): only Playstyles/Archetypes + the --full
+    style/environment extras run.  The NAMED generators — base atlas (Teams),
+    H2H (Matchups), Tournaments, Seasons, Scouting — are GATED OFF so the
+    platform contributes no specific names/matchups to the Obsidian graph.
+    Set person_free=False (CLI --with-named) to restore the full build.
+    """
+    log.info("Building atlas: %s (%s) [person_free=%s] …", display_name, sport_id, person_free)
+    allowed = set(_selected_generators(person_free))
     sport_out = out_dir / display_name
     sport_out.mkdir(parents=True, exist_ok=True)
     corpus_dir = _REPO_ROOT / corpus_hint
-    try:
-        sig = inspect.signature(build_fn)
-        notes: List[Path] = build_fn(sport_out, corpus_dir=corpus_dir) if "corpus_dir" in sig.parameters else build_fn(sport_out)
-    except Exception as exc:  # noqa: BLE001
-        log.warning("  build_atlas for %s raised %s: %s — skipping.", display_name, type(exc).__name__, exc); return None
-    count = len(notes) if notes is not None else 0
-    log.info("  %s: %d atlas note(s) written to %s", display_name, count, sport_out)
     domain = _derive_domain(adapter_module)
-    total = (count + _try_build_h2h(domain, sport_out, corpus_dir)
-             + _try_build_playstyles(domain, sport_out, corpus_dir)
-             + _try_build_tournaments(domain, sport_out, corpus_dir)
-             + _try_build_seasons(domain, sport_out, corpus_dir))
-    if full: total += _build_extras(domain, sport_out, corpus_dir)
+
+    # base_atlas → Teams/ is NAMED; only run + count it when allowed.
+    count = 0
+    if "base_atlas" in allowed:
+        build_fn = _load_build_fn(adapter_module)
+        if build_fn is None:
+            log.warning("  Skipping %s — module %s not importable.", display_name, adapter_module); return None
+        try:
+            sig = inspect.signature(build_fn)
+            notes: List[Path] = build_fn(sport_out, corpus_dir=corpus_dir) if "corpus_dir" in sig.parameters else build_fn(sport_out)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("  build_atlas for %s raised %s: %s — skipping.", display_name, type(exc).__name__, exc); return None
+        count = len(notes) if notes is not None else 0
+        log.info("  %s: %d atlas note(s) written to %s", display_name, count, sport_out)
+
+    total = count + _try_build_playstyles(domain, sport_out, corpus_dir)  # PERSON-FREE: always
+    for key, fn in (("h2h", _try_build_h2h), ("tournaments", _try_build_tournaments),
+                    ("seasons", _try_build_seasons)):  # NAMED — gated by PERSON_FREE
+        if key in allowed: total += fn(domain, sport_out, corpus_dir)
+    if full: total += _build_extras(domain, sport_out, corpus_dir, allowed)
     return total
 
 
@@ -220,9 +245,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--full", action="store_true", help="Also run per-sport extras + META generators.")
     parser.add_argument("--with-catalogs", action="store_true",
                         help="Run signal_catalog + signal_catalog_joint per sport (SLOW — hits real gate).")
+    parser.add_argument("--with-named", action="store_true",
+                        help="Restore NAMED generators (Teams/Matchups/Seasons/Tournaments/Scouting); "
+                             "default is PERSON-FREE (archetype/style families only).")
     args = parser.parse_args(argv)
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    if args.verbose: logging.getLogger().setLevel(logging.DEBUG)
+    # PERSON-FREE discipline: default-on (module flag); --with-named opts back in.
+    person_free = _PERSON_FREE and not args.with_named
     resolved = _ALIASES.get(args.sport.lower())
     if resolved is None:
         log.error("Unknown --sport %r.  Valid: %s", args.sport, sorted(_ALIASES)); return 1
@@ -232,7 +261,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         log.error("No manifest entry for %r.", resolved); return 1
     built: List[Tuple[str, str, int]] = []
     for sport_id, display_name, adapter_module, corpus_hint in targets:
-        count = build_sport(sport_id, display_name, adapter_module, corpus_hint, out_dir, full=args.full)
+        count = build_sport(sport_id, display_name, adapter_module, corpus_hint, out_dir,
+                            full=args.full, person_free=person_free)
         if count is not None:
             built.append((sport_id, display_name, count))
     hub_path = write_hub(out_dir, built)
