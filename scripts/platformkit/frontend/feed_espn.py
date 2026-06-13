@@ -1,0 +1,235 @@
+"""scripts.platformkit.frontend.feed_espn — FREE live odds feed from ESPN.
+
+HONEST (binding): markets are efficient — NO model edge is ever claimed.  ESPN's
+free public API returns ~1 book per game (currently DraftKings), so this feed
+powers the LIVE board + CLV + freshness/line-movement (the #1 honest money lane),
+NOT cross-book arbitrage (which needs >=2 books quoting the same outcome).  The
+feed iterates every provider/source so multi-book arb lights up AUTOMATICALLY the
+moment a 2nd source (or a paid key) is wired in — no rewrite needed.
+
+Two ESPN shapes are consumed (both probed live):
+  * site scoreboard:  site.api.espn.com/.../{path}/scoreboard
+  * per-event core:   sports.core.api.espn.com/v2/.../events/{eid}/.../odds
+moneyLine is AMERICAN; spread/overUnder are floats.  Some games have empty odds
+(skipped + counted).  NEVER raises on a bad event/HTTP error -> log + continue.
+
+NO network at import time or in tests: http_get is an INJECTABLE callable; the
+default _http_json (urllib) is used only in production when nothing is injected.
+"""
+from __future__ import annotations
+
+import json
+import logging
+import os
+import urllib.request
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+from scripts.platformkit.frontend.feed import (
+    GameOdds,
+    OddsFeed,
+    Quote,
+    american_to_decimal,
+    _mk_game_id,
+)
+from scripts.platformkit.frontend.board import _safe_float
+
+logger = logging.getLogger(__name__)
+
+_SITE_BASE = "https://site.api.espn.com/apis/site/v2/sports/{path}/scoreboard"
+_CORE_BASE = (
+    "https://sports.core.api.espn.com/v2/sports/{sportcore}/leagues/{league}"
+    "/events/{eid}/competitions/{eid}/odds"
+)
+_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+)
+_TIMEOUT = 12
+
+# ESPN supplies spread/total LINES but NOT their prices. We assume the -110
+# market-standard price (decimal 1.9091) for those two sides so the line shows
+# on the board.  HONEST: this is an ASSUMED price, not a quoted one — only the
+# h2h (moneyLine) prices are real.  A real spread/total price needs a feed that
+# quotes it (a paid book API), at which point line-shop on those markets is valid.
+_ASSUMED_PRICE_DECIMAL = 1.9091
+
+# platform sport_id -> [(site_path, sportcore, league), ...]
+_SPORT_PATHS: Dict[str, List[Tuple[str, str, str]]] = {
+    "basketball_nba": [("basketball/nba", "basketball", "nba")],
+    "mlb_sbro": [("baseball/mlb", "baseball", "mlb")],
+    "soccer_fd": [
+        ("soccer/eng.1", "soccer", "eng.1"),
+        ("soccer/esp.1", "soccer", "esp.1"),
+        ("soccer/ita.1", "soccer", "ita.1"),
+        ("soccer/ger.1", "soccer", "ger.1"),
+        ("soccer/fra.1", "soccer", "fra.1"),
+    ],
+    "tennis_atp": [],  # ESPN tennis has no reliable betting odds -> [] gracefully
+}
+
+ESPN_NOTE = (
+    "Free ESPN public odds (~1 book/game, currently DraftKings). "
+    "h2h prices are real (moneyLine); spread/total prices are the ASSUMED -110 "
+    "standard (ESPN gives lines only). Powers live board + CLV + freshness; "
+    "cross-book arbitrage needs >=2 books quoting real prices."
+)
+
+
+def _http_json(url: str) -> Dict[str, Any]:
+    """Default network getter (urllib + browser UA + timeout).  PRODUCTION only.
+
+    Never used in tests — http_get is injected there.  Returns {} on any error.
+    """
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+        with urllib.request.urlopen(req, timeout=_TIMEOUT) as resp:  # nosec - GET only
+            return json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:  # pragma: no cover - network guard
+        logger.warning("ESPN GET failed %s: %s", url, exc)
+        return {}
+
+
+class EspnFreeFeed(OddsFeed):
+    """Live free multi-source feed normalizing ESPN scoreboard + core odds."""
+
+    name = "espn_free"
+    note = ESPN_NOTE
+
+    def __init__(
+        self,
+        http_get: Optional[Callable[[str], Dict[str, Any]]] = None,
+        fetch_core: bool = True,
+    ) -> None:
+        self._http_get = http_get if http_get is not None else _http_json
+        self.fetch_core = fetch_core
+        self.skipped_no_odds = 0  # count of events with no parseable odds
+
+    def is_live(self) -> bool:
+        return True
+
+    def fetch(self, sport: str, *, date: Optional[str] = None) -> List[GameOdds]:
+        """Return normalized GameOdds for a sport (optionally one YYYY-MM-DD)."""
+        self.skipped_no_odds = 0
+        routes = _SPORT_PATHS.get(sport, [])
+        games: List[GameOdds] = []
+        for site_path, sportcore, league in routes:
+            try:
+                payload = self._http_get(_SITE_BASE.format(path=site_path))
+            except Exception as exc:  # never crash on a bad route
+                logger.warning("scoreboard fetch failed %s: %s", site_path, exc)
+                continue
+            for ev in (payload or {}).get("events", []) or []:
+                try:
+                    g = self._parse_event(ev, sport, sportcore, league)
+                except Exception as exc:  # per-event guard
+                    logger.warning("event parse failed: %s", exc)
+                    continue
+                if g is None:
+                    continue
+                if date is not None and not (g.commence_time or "").startswith(date):
+                    continue
+                games.append(g)
+        return games
+
+    def _parse_event(
+        self, ev: Dict[str, Any], sport: str, sportcore: str, league: str
+    ) -> Optional[GameOdds]:
+        """One ESPN scoreboard event (+core odds) -> GameOdds, or None if no odds."""
+        comps = ev.get("competitions") or []
+        if not comps:
+            return None
+        comp = comps[0]
+        home, away = self._teams(comp)
+        if home is None or away is None:
+            return None
+        commence = ev.get("date")
+        eid = ev.get("id")
+        odds_items: List[Dict[str, Any]] = list(comp.get("odds") or [])
+        if self.fetch_core and eid is not None:
+            odds_items.extend(self._core_odds(eid, sportcore, league))
+        quotes: List[Quote] = []
+        seen: set = set()
+        for item in odds_items:
+            for q in self._provider_quotes(item):
+                key = (q.book, q.market, q.side)
+                if key in seen:
+                    continue
+                seen.add(key)
+                quotes.append(q)
+        if not quotes:
+            self.skipped_no_odds += 1
+            return None
+        date = str(commence)[:10] if commence else None
+        ct = str(commence) if commence else None
+        return GameOdds(
+            _mk_game_id(sport, date, away, home), sport, home, away, ct, quotes, self.name
+        )
+
+    def _core_odds(self, eid: Any, sportcore: str, league: str) -> List[Dict[str, Any]]:
+        """Fetch the per-event core odds items (more books when available)."""
+        url = _CORE_BASE.format(sportcore=sportcore, league=league, eid=eid)
+        try:
+            payload = self._http_get(url)
+        except Exception as exc:  # core endpoint is best-effort
+            logger.warning("core odds fetch failed %s: %s", eid, exc)
+            return []
+        return list((payload or {}).get("items", []) or [])
+
+    @staticmethod
+    def _teams(comp: Dict[str, Any]) -> Tuple[Optional[str], Optional[str]]:
+        home = away = None
+        for c in comp.get("competitors") or []:
+            team = c.get("team") or {}
+            name = team.get("displayName") or team.get("abbreviation")
+            if name is None:
+                continue
+            if c.get("homeAway") == "home":
+                home = str(name)
+            elif c.get("homeAway") == "away":
+                away = str(name)
+        return home, away
+
+    @staticmethod
+    def _provider_quotes(item: Dict[str, Any]) -> List[Quote]:
+        """One provider odds dict -> Quotes for h2h/spreads/totals (skip None fields)."""
+        if not isinstance(item, dict):
+            return []
+        provider = item.get("provider") or {}
+        book = str(provider.get("name") or "unknown").strip().lower()
+        quotes: List[Quote] = []
+        home_ml = american_to_decimal((item.get("homeTeamOdds") or {}).get("moneyLine"))
+        away_ml = american_to_decimal((item.get("awayTeamOdds") or {}).get("moneyLine"))
+        if home_ml is not None:
+            quotes.append(Quote(book, "h2h", "home", home_ml))
+        if away_ml is not None:
+            quotes.append(Quote(book, "h2h", "away", away_ml))
+        spread = _safe_float(item.get("spread"))
+        if spread is not None:  # ASSUMED -110 price (ESPN gives line, not price)
+            quotes.append(Quote(book, "spreads", "home", _ASSUMED_PRICE_DECIMAL, line=spread))
+            quotes.append(Quote(book, "spreads", "away", _ASSUMED_PRICE_DECIMAL, line=-spread))
+        total = _safe_float(item.get("overUnder"))
+        if total is not None:  # ASSUMED -110 price (ESPN gives line, not price)
+            quotes.append(Quote(book, "totals", "over", _ASSUMED_PRICE_DECIMAL, line=total))
+            quotes.append(Quote(book, "totals", "under", _ASSUMED_PRICE_DECIMAL, line=total))
+        return quotes
+
+
+def get_feed_auto(repo_root: Optional[Path] = None, *, force_stub: bool = False) -> OddsFeed:
+    """Default feed selector: paid key -> TheOddsApiFeed; else free live ESPN.
+
+    Order: ODDS_API_KEY/THE_ODDS_API_KEY -> TheOddsApiFeed (multi-book) ; else
+    EspnFreeFeed (free live, ~1 book) ; force_stub -> on-disk StubFeed.  The app
+    lights up FREE by default — no paid key required.
+    """
+    if force_stub:
+        from scripts.platformkit.frontend.feed import StubFeed
+        return StubFeed(repo_root, mode="parquet")
+    key = os.environ.get("ODDS_API_KEY") or os.environ.get("THE_ODDS_API_KEY")
+    if key:
+        from scripts.platformkit.frontend.feed import TheOddsApiFeed
+        return TheOddsApiFeed(api_key=key)
+    return EspnFreeFeed()
+
+
+__all__ = ["EspnFreeFeed", "get_feed_auto", "ESPN_NOTE", "_SPORT_PATHS"]
