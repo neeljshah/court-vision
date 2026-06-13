@@ -130,7 +130,7 @@ def render_index(out_dir: pathlib.Path, players_df: pd.DataFrame, teams: list[st
     lines = [
         "---", "tags:", "  - sport/nba", "  - atlas/index", "---", "",
         "# NBA Intelligence Atlas — Index", "",
-        "[[_Hub]] | [[Basketball_NBA]]", "",
+        "[[_Hub]]", "",
         f"**Players indexed:** {len(players_df)}  |  **Teams:** {len(teams)}  |  "
         "**Sources:** player_adv_stats.parquet · player_positions.parquet · "
         "player_pf.parquet · team_advanced_stats.parquet · data/cache/atlas_*.parquet",
