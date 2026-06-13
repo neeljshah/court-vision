@@ -202,7 +202,7 @@ def build_graph_report(
         "|--------|-------|",
         f"| Total notes | **{grand_total}** |",
         f"| Sports covered | {len(sport_dirs)} |",
-        f"| Total [[wikilinks]] | {grand_links} |",
+        f"| Total wikilinks | {grand_links} |",
         f"| Dangling links (total) | {grand_dangling} |",
         f"| PERSON-FREE check | **{person_free_badge}** |", "",
     ]
