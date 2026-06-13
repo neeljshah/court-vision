@@ -22,6 +22,7 @@ import time
 from collections import Counter
 from typing import Dict, FrozenSet, List, Set, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
 _WIKILINK_RE = re.compile(r"\[\[([^\]|#\n]+)")
 
 # High-confidence person-bearing patterns only — no fuzzy surname matching.
@@ -290,8 +291,7 @@ def build_graph_health(
     ]
 
     out_path = vault_sports_dir / _OUT_FILENAME
-    out_path.write_text("\n".join(L) + "\n", encoding="utf-8")
-    return out_path
+    return write_note(out_path, "\n".join(L) + "\n")
 
 
 if __name__ == "__main__":

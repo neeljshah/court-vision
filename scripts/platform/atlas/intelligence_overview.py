@@ -12,6 +12,7 @@ import re
 import time
 from typing import Dict, List, Optional, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
 _OUT_FILENAME = "_Intelligence_Overview.md"
 _TABLE_ROW_RE = re.compile(r"^\s*\|(.+)\|\s*$")
 _WIKILINK_RE  = re.compile(r"\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]")
@@ -291,8 +292,7 @@ def build_intelligence_overview(vault_sports_dir: Optional[pathlib.Path] = None)
           "", "_PRIVATE research. No edge claimed._"]
 
     out_path = vault_sports_dir / _OUT_FILENAME
-    out_path.write_text("\n".join(L) + "\n", encoding="utf-8")
-    return out_path
+    return write_note(out_path, "\n".join(L) + "\n")
 
 
 if __name__ == "__main__":

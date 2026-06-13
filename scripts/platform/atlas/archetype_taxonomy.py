@@ -20,6 +20,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 # ---------------------------------------------------------------------------
 # Theme table: (id, display_name, shared_idea, match_keywords)
 # A note matches a theme when ANY keyword appears in slug+description+tags.
@@ -201,8 +203,7 @@ def build_taxonomy(vault_sports_dir: Optional[pathlib.Path] = None) -> pathlib.P
 
     content = _render(themes_data, sports)
     out = vault_sports_dir / _OUT_FILENAME
-    out.write_text(content, encoding="utf-8")
-    return out
+    return write_note(out, content)
 
 
 if __name__ == "__main__":
