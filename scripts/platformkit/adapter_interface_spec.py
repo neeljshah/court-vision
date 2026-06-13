@@ -67,6 +67,7 @@ ADAPTER_REGISTRY = {
     "tennis": ("domains.tennis.adapter", "TennisAdapter"),
     "soccer": ("domains.soccer.adapter", "SoccerAdapter"),
     "mlb": ("domains.mlb.adapter", "MLBAdapter"),
+    "basketball_nba": ("domains.basketball_nba.adapter", "NBAAdapter"),
 }
 
 # ---------------------------------------------------------------------------
