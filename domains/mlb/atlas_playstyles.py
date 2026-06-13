@@ -19,7 +19,11 @@ from typing import Any, Dict, List, Tuple
 
 import pandas as pd
 
-from domains.mlb.atlas_playstyles_render import render_archetype, render_playstyles_index
+from domains.mlb.atlas_playstyles_render import (
+    render_archetype,
+    render_playstyles_index,
+    render_unclassified_stub,
+)
 
 # ---------------------------------------------------------------------------
 # Default paths
@@ -243,6 +247,14 @@ def build_playstyles(
                 "description_short": name + " identity",
             }
         )
+
+    # --- unclassified stub (target for [[Playstyles/unclassified]] links) ---
+    unclassified_path = out_dir / "unclassified.md"
+    unclassified_path.write_text(
+        render_unclassified_stub(corpus_span=corpus_span),
+        encoding="utf-8",
+    )
+    written.append(unclassified_path)
 
     # --- _Playstyles_Index ---
     all_classified = sorted(
