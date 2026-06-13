@@ -22,6 +22,7 @@ from domains.tennis.atlas_playstyle_specs import (
     GRASS_SPECIALIST_DELTA, HARD_SPECIALIST_DELTA,
     HEIGHT_BIG_SERVER, MIN_MATCHES, MIN_SURFACE_MATCHES,
 )
+from scripts.platform.atlas.obsidian_emit import write_note as _write
 
 DEFAULT_CORPUS: pathlib.Path = (
     pathlib.Path(__file__).resolve().parents[2] / "data" / "domains" / "tennis"
@@ -197,12 +198,6 @@ def _trend_summary(rows: List[Tuple[int, Dict[str, int], int]]) -> str:
     delta, slug = deltas[0]
     return (f"Largest shift {fy}–{ly}: **{_SLUG_LABEL.get(slug, slug)}** share is "
             f"{'rising' if delta > 0 else 'falling'} ({delta:+.1f} pp).")
-
-
-def _write(path: pathlib.Path, body: str) -> pathlib.Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(body, encoding="utf-8")
-    return path
 
 
 _KEY = ("> Column key: Clay=Clay Specialist · BigSrv=Fast-Court Big Server · "
