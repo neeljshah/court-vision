@@ -263,3 +263,35 @@ class TestTournamentOutputs:
             assert len(lines) <= 300, (
                 f"{md_file.name} has {len(lines)} lines (limit 300)"
             )
+
+    def test_canonical_name_dedup_no_dangling_links(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        """Case-variant names must collapse to one canonical note; index links resolve."""
+        import re as _re
+        from domains.tennis.atlas_tournaments import build_tournaments
+
+        def _row(name, level, surface, yr):
+            return {"tourney_name": name, "tourney_level": level, "surface": surface,
+                    "date": f"{yr}-06-01", "year": yr, "round": "F", "winner": "1",
+                    "p1_id": 1, "p1_name": "P1", "p2_id": 2, "p2_name": "P2", "best_of": 5}
+
+        records = (
+            [_row("US Open", "G", "Hard", y) for y in range(2015, 2020)] +
+            [_row("Us Open", "G", "Hard", y) for y in range(2020, 2023)] +
+            [_row("Rio de Janeiro", "B", "Clay", y) for y in [2015, 2016, 2017]] +
+            [_row("Rio De Janeiro", "B", "Clay", y) for y in [2023, 2024, 2025]]
+        )
+        out = tmp_path / "canon"
+        build_tournaments(out, min_editions=3, _matches_df=pd.DataFrame(records))
+        stems = {f.stem for f in out.glob("*.md")}
+
+        assert "US Open" in stems and "Us Open" not in stems
+        assert "Rio de Janeiro" in stems and "Rio De Janeiro" not in stems
+
+        idx = (out / "_Tournaments_Index.md").read_text(encoding="utf-8")
+        pat = _re.compile(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]")
+        for m in pat.finditer(idx):
+            stem = m.group(1).strip().split("/")[-1]
+            if not stem.startswith("..") and not stem.startswith("_"):
+                assert stem in stems, f"Dangling [[{m.group(1)}]] in index"

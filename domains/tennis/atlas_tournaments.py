@@ -43,6 +43,23 @@ _SPECIALIST_SURFACES: frozenset[str] = frozenset({"Clay", "Grass"})
 _SLUG_RE = re.compile(r"[^\w\s-]")
 _SPACE_RE = re.compile(r"[\s]+")
 
+# Canonical tournament name map: variant → canonical.
+# Fixes case/spelling inconsistencies in source data that would otherwise emit
+# two separate notes (and a dangling wikilink) for the same event.
+_TOURNEY_NAME_CANON: dict[str, str] = {
+    "Us Open":        "US Open",       # source data mixed-case for 2020-2025
+    "Rio De Janeiro": "Rio de Janeiro", # source data title-case for 2023-2024
+}
+
+
+def _canonicalize_names(df: pd.DataFrame) -> pd.DataFrame:
+    """Map known tourney_name variants to their canonical form (in place copy)."""
+    df = df.copy()
+    df["tourney_name"] = df["tourney_name"].map(
+        lambda n: _TOURNEY_NAME_CANON.get(n, n) if isinstance(n, str) else n
+    )
+    return df
+
 
 def _slug(name: str) -> str:
     """Return a filesystem-safe slug."""
@@ -61,6 +78,7 @@ def _load_matches(corpus_dir: pathlib.Path) -> pd.DataFrame:
         if col not in df.columns:
             df[col] = None
     df["date"] = df["date"].astype(str)
+    df = _canonicalize_names(df)
 
     def _year(d: str) -> Optional[int]:
         m = re.match(r"(\d{4})", str(d))
@@ -207,7 +225,7 @@ def build_tournaments(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if _matches_df is not None:
-        matches = _matches_df.copy()
+        matches = _canonicalize_names(_matches_df)
         if "year" not in matches.columns:
             matches["date"] = matches["date"].astype(str)
             matches["year"] = matches["date"].str.extract(r"^(\d{4})")[0].apply(
