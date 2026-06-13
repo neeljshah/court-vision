@@ -3,12 +3,14 @@
 Pure rendering functions: each takes structured data and returns a Markdown string.
 No I/O, no pandas — atlas_seasons.py handles orchestration.
 
-Import contract (F5-clean): stdlib only.
+Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List, Tuple
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------
@@ -37,19 +39,6 @@ def _sign(v: float) -> str:
 
 def _wikilink(name: str) -> str:
     return f"[[{name}]]"
-
-
-def _frontmatter(**kwargs: Any) -> str:
-    lines = ["---"]
-    for k, v in kwargs.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -83,12 +72,12 @@ def render_season(
     nl_best / al_best:
         Team code with the best regular-season record per league.
     """
-    fm = _frontmatter(
-        season=season,
-        sport="mlb",
-        corpus_games=total_games,
-        tags=["sport/mlb", "season", f"season/{season}"],
-    )
+    fm = _fm_dict({
+        "season": season,
+        "sport": "mlb",
+        "corpus_games": total_games,
+        "tags": ["sport/mlb", "season", f"season/{season}"],
+    })
 
     def _standings_table(rows: List[StandingRow]) -> List[str]:
         lines = [
@@ -162,12 +151,12 @@ def render_seasons_index(
           al_best (str), al_best_wp (float).
     """
     span = f"{min(seasons)}–{max(seasons)}" if seasons else "n/a"
-    fm = _frontmatter(
-        sport="mlb",
-        corpus_span=span,
-        n_seasons=len(seasons),
-        tags=["sport/mlb", "season", "index"],
-    )
+    fm = _fm_dict({
+        "sport": "mlb",
+        "corpus_span": span,
+        "n_seasons": len(seasons),
+        "tags": ["sport/mlb", "season", "index"],
+    })
 
     table_rows: List[str] = []
     for s in season_summaries:

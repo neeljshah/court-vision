@@ -4,12 +4,14 @@ playstyle-archetype atlas notes.
 Pure rendering functions: each accepts structured data and returns a string.
 No I/O, no pandas — the orchestrator (atlas_playstyles.py) handles all that.
 
-Import contract (F5-clean): stdlib only.
+Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List, Optional
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------
@@ -33,20 +35,6 @@ def _ff(v: float, d: int = 2) -> str:
 def _wl(name: str) -> str:
     """Return an Obsidian [[wikilink]]."""
     return f"[[{name}]]"
-
-
-def _fm(**kwargs: Any) -> str:
-    """Render YAML frontmatter block."""
-    lines = ["---"]
-    for k, v in kwargs.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -83,13 +71,13 @@ def render_archetype(
     corpus_span:
         Human label, e.g. ``2010–2021``.
     """
-    fm = _fm(
-        archetype=archetype_slug,
-        sport="mlb",
-        corpus_span=corpus_span,
-        team_count=len(teams),
-        tags=["sport/mlb", "playstyle", f"archetype/{archetype_slug}"],
-    )
+    fm = _fm_dict({
+        "archetype": archetype_slug,
+        "sport": "mlb",
+        "corpus_span": corpus_span,
+        "team_count": len(teams),
+        "tags": ["sport/mlb", "playstyle", f"archetype/{archetype_slug}"],
+    })
 
     sig_rows = [f"| {k} | {v} |" for k, v in signature.items()]
 
@@ -165,12 +153,12 @@ def render_playstyles_index(
     n_teams_classified:
         Total distinct teams assigned to at least one archetype.
     """
-    fm = _fm(
-        sport="mlb",
-        corpus_span=corpus_span,
-        n_archetypes=len(archetypes),
-        tags=["sport/mlb", "playstyle", "index"],
-    )
+    fm = _fm_dict({
+        "sport": "mlb",
+        "corpus_span": corpus_span,
+        "n_archetypes": len(archetypes),
+        "tags": ["sport/mlb", "playstyle", "index"],
+    })
 
     arch_rows: List[str] = []
     for a in archetypes:
@@ -214,12 +202,12 @@ def render_unclassified_stub(*, corpus_span: str) -> str:
     This provides a valid link target for [[Playstyles/unclassified]] wikilinks
     emitted by style-matchup notes when corpus teams have no primary archetype.
     """
-    fm = _fm(
-        archetype="unclassified",
-        sport="mlb",
-        corpus_span=corpus_span,
-        tags=["sport/mlb", "playstyle", "archetype/unclassified"],
-    )
+    fm = _fm_dict({
+        "archetype": "unclassified",
+        "sport": "mlb",
+        "corpus_span": corpus_span,
+        "tags": ["sport/mlb", "playstyle", "archetype/unclassified"],
+    })
     lines = [
         fm,
         "",

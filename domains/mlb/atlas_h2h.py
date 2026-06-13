@@ -12,7 +12,8 @@ Public API::
 All numbers are derived from the real data — no fabricated stats.
 No betting/edge language: descriptive scouting intelligence only.
 
-Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* only.
+Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -23,6 +24,7 @@ from typing import Any, Dict, List, Tuple
 import pandas as pd
 
 from domains.mlb.config import LEAGUE_MAP, resolve_league
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _DEFAULT_CORPUS = _REPO_ROOT / "data" / "domains" / "mlb"
@@ -43,19 +45,6 @@ def _ff(v: float, d: int = 2) -> str:
 
 def _wl(name: str) -> str:
     return f"[[{name}]]"
-
-
-def _fm(**kw: Any) -> str:
-    lines = ["---"]
-    for k, v in kw.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 def _safe_league(team: str, season: int) -> str:
@@ -146,8 +135,8 @@ def _render_matchup(
     sparse = "\n> *Sparse split (fewer than 5 games — treat with caution).*\n" if (ahg < 5 or bhg < 5) else ""
 
     lines = [
-        _fm(team_a=ta, team_b=tb, league_a=al, league_b=bl,
-            scope=scope, total_games=s["total_games"], tags=tags),
+        _fm_dict({"team_a": ta, "team_b": tb, "league_a": al, "league_b": bl,
+                  "scope": scope, "total_games": s["total_games"], "tags": tags}),
         "", f"# {ta} vs {tb}", "",
         f"{_wl(f'Teams/{ta}')} | {_wl(f'Teams/{tb}')} | {_wl('Matchups/_Matchups_Index')}",
         "", f"**Scope:** {scope}", "",
@@ -188,7 +177,7 @@ def _render_matchup(
 
 def _render_index(pairs: pd.DataFrame, stats: Dict[Tuple[str, str], Dict[str, Any]], top_n: int) -> str:
     header = [
-        _fm(sport="mlb", note_type="matchup_index", top_n=top_n, tags=["sport/mlb", "matchup"]),
+        _fm_dict({"sport": "mlb", "note_type": "matchup_index", "top_n": top_n, "tags": ["sport/mlb", "matchup"]}),
         "", "# MLB Head-to-Head Matchup Index", "", f"up:: {_wl('_Index')}", "",
         f"Top {min(top_n, len(stats))} matchups by total games (real corpus 2010-2021, {len(pairs):,} total games).",
         "", "| Matchup | Team A | Team B | Games | A-W — B-W | A Win % |",
@@ -256,14 +245,14 @@ def build_h2h(
     written: List[pathlib.Path] = []
     for (ta, tb), s in sorted_stats:
         path = out_dir / f"{ta} vs {tb}.md"
-        path.write_text(_render_matchup(
+        write_note(path, _render_matchup(
             ta, tb, s,
             season_by_pair.get((ta, tb), []),
             recent_by_pair.get((ta, tb), []),
-        ), encoding="utf-8")
+        ))
         written.append(path)
 
     index_path = out_dir / "_Matchups_Index.md"
-    index_path.write_text(_render_index(pairs, dict(sorted_stats), top_n), encoding="utf-8")
+    write_note(index_path, _render_index(pairs, dict(sorted_stats), top_n))
     written.append(index_path)
     return written

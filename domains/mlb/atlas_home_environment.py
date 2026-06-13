@@ -9,7 +9,8 @@ Public API::
     from domains.mlb.atlas_home_environment import build_home_environment
     paths = build_home_environment(out_dir, corpus_dir=Path("data/domains/mlb"))
 
-Import contract (F5-clean): stdlib + pathlib + pandas + numpy only.
+Import contract (F5-clean): stdlib + pathlib + pandas + numpy +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -19,6 +20,8 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np  # noqa: F401 (available for callers)
 import pandas as pd
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _DEFAULT_CORPUS = _REPO_ROOT / "data" / "domains" / "mlb"
@@ -39,18 +42,6 @@ def _pct(v: float, d: int = 1) -> str:
 
 def _sign(v: float) -> str:
     return "n/a" if (v is None or (isinstance(v, float) and math.isnan(v))) else (f"+{v:.2f}" if v >= 0 else f"{v:.2f}")
-
-def _fm(**kw: Any) -> str:
-    lines = ["---"]
-    for k, v in kw.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------
@@ -129,11 +120,11 @@ def _tier(rpg: float) -> str:
 
 def _render_ranked_note(rows: pd.DataFrame, season_span: str) -> str:
     lines = [
-        _fm(
-            sport="mlb", note_type="home_environment", season_span=season_span,
-            teams=len(rows), disclaimer="roster+park proxy — not a pure park factor",
-            tags=["sport/mlb", "home-environment", "run-environment"],
-        ),
+        _fm_dict({
+            "sport": "mlb", "note_type": "home_environment", "season_span": season_span,
+            "teams": len(rows), "disclaimer": "roster+park proxy — not a pure park factor",
+            "tags": ["sport/mlb", "home-environment", "run-environment"],
+        }),
         "",
         "# MLB Home Run-Environment Rankings",
         "",
@@ -206,8 +197,8 @@ def _render_ranked_note(rows: pd.DataFrame, season_span: str) -> str:
 
 def _render_index(n_teams: int, season_span: str) -> str:
     lines = [
-        _fm(sport="mlb", note_type="home_environment_index",
-            season_span=season_span, tags=["sport/mlb", "home-environment"]),
+        _fm_dict({"sport": "mlb", "note_type": "home_environment_index",
+                  "season_span": season_span, "tags": ["sport/mlb", "home-environment"]}),
         "",
         "# Home_Environment — Index",
         "",
@@ -248,12 +239,12 @@ def build_home_environment(
 
     # Ranked note
     ranked_path = out_dir / "MLB_Home_Environment_Rankings.md"
-    ranked_path.write_text(_render_ranked_note(rows, season_span), encoding="utf-8")
+    write_note(ranked_path, _render_ranked_note(rows, season_span))
     written.append(ranked_path)
 
     # Index note
     index_path = out_dir / "_Home_Environment_Index.md"
-    index_path.write_text(_render_index(len(rows), season_span), encoding="utf-8")
+    write_note(index_path, _render_index(len(rows), season_span))
     written.append(index_path)
 
     return written

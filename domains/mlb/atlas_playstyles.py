@@ -10,7 +10,8 @@ Public API: build_playstyles(out_dir, corpus_dir) -> list[Path]
 Contender · High-Variance Offense · Low-Scoring Grinder · Run-Deficit.
 Teams may appear in multiple archetypes.  Real data only; no betting language.
 
-Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* only.
+Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
+scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -24,6 +25,7 @@ from domains.mlb.atlas_playstyles_render import (
     render_playstyles_index,
     render_unclassified_stub,
 )
+from scripts.platform.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths
@@ -236,7 +238,7 @@ def build_playstyles(
             corpus_span=corpus_span,
         )
         note_path = out_dir / f"{slug}.md"
-        note_path.write_text(content, encoding="utf-8")
+        write_note(note_path, content)
         written.append(note_path)
 
         archetypes_meta.append(
@@ -250,10 +252,7 @@ def build_playstyles(
 
     # --- unclassified stub (target for [[Playstyles/unclassified]] links) ---
     unclassified_path = out_dir / "unclassified.md"
-    unclassified_path.write_text(
-        render_unclassified_stub(corpus_span=corpus_span),
-        encoding="utf-8",
-    )
+    write_note(unclassified_path, render_unclassified_stub(corpus_span=corpus_span))
     written.append(unclassified_path)
 
     # --- _Playstyles_Index ---
@@ -266,7 +265,7 @@ def build_playstyles(
         n_teams_classified=len(all_classified),
     )
     index_path = out_dir / "_Playstyles_Index.md"
-    index_path.write_text(index_content, encoding="utf-8")
+    write_note(index_path, index_content)
     written.append(index_path)
 
     return written

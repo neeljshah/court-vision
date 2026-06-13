@@ -3,12 +3,14 @@
 Pure rendering functions: accept structured data, return strings.
 No I/O, no pandas — the orchestrator (atlas_style_trends.py) handles all that.
 
-Import contract (F5-clean): stdlib only.
+Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List
+
+from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------
@@ -26,19 +28,6 @@ def _pct(v: float, d: int = 1) -> str:
     if v is None or (isinstance(v, float) and math.isnan(v)):
         return "n/a"
     return f"{v * 100:.{d}f}%"
-
-
-def _fm(**kwargs: Any) -> str:
-    lines = ["---"]
-    for k, v in kwargs.items():
-        if isinstance(v, list):
-            lines.append(f"{k}:")
-            for item in v:
-                lines.append(f"  - {item}")
-        else:
-            lines.append(f"{k}: {v}")
-    lines.append("---")
-    return "\n".join(lines)
 
 
 def _trend_arrow(series: List[float]) -> str:
@@ -79,12 +68,12 @@ def render_overview(
     archetype_short:   slug -> short display name
     min_season_games:  minimum games threshold used during classification
     """
-    fm = _fm(
-        sport="mlb",
-        corpus_span=corpus_span,
-        note_type="style_trends_overview",
-        tags=["sport/mlb", "trends", "run-environment"],
-    )
+    fm = _fm_dict({
+        "sport": "mlb",
+        "corpus_span": corpus_span,
+        "note_type": "style_trends_overview",
+        "tags": ["sport/mlb", "trends", "run-environment"],
+    })
 
     # Environment table
     env_hdr = "| Season | RPG | High-Score% | Home-Win% | 1-Run% | Games |"
@@ -200,13 +189,13 @@ def render_season_note(
     min_season_games: int,
 ) -> str:
     """Render style_trends_<season>.md."""
-    fm = _fm(
-        sport="mlb",
-        season=season,
-        corpus_span=corpus_span,
-        note_type="style_trends_season",
-        tags=["sport/mlb", "trends", f"season/{season}"],
-    )
+    fm = _fm_dict({
+        "sport": "mlb",
+        "season": season,
+        "corpus_span": corpus_span,
+        "note_type": "style_trends_season",
+        "tags": ["sport/mlb", "trends", f"season/{season}"],
+    })
 
     style_rows = [
         f"| {archetype_names[slug]} | {_ff(style_pcts[slug], 1)}% |"
