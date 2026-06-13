@@ -3,11 +3,13 @@
 Uses a tiny synthetic matches fixture (no network, no GPU, no heavy deps).
 Verifies:
   1. _Index.md exists after build_atlas()
-  2. At least one player note exists in Players/
+  2. NO Players/ directory is emitted (player notes removed)
   3. Notes contain valid [[wikilinks]] and YAML frontmatter
   4. No exceptions raised
   5. Surface notes exist for Hard, Clay, Grass
-  6. Player note has expected stat fields
+  6. _Index references Playstyles/_Playstyles_Index
+  7. Surface notes do not contain individual player names
+  8. No betting/edge language in any note
 
 Run: python -m pytest tests/platform/test_tennis_atlas.py -q --timeout=120
 """
@@ -102,11 +104,19 @@ class TestAtlasOutputs:
     def test_index_exists(self, atlas_out: pathlib.Path) -> None:
         assert (atlas_out / "_Index.md").exists(), "_Index.md not found"
 
-    def test_player_notes_exist(self, atlas_out: pathlib.Path) -> None:
+    def test_no_players_dir(self, atlas_out: pathlib.Path) -> None:
+        """Players/ directory must NOT be emitted — individual player notes removed."""
         players_dir = atlas_out / "Players"
-        assert players_dir.is_dir(), "Players/ directory not created"
-        notes = list(players_dir.glob("*.md"))
-        assert len(notes) >= 1, f"Expected at least 1 player note, got {len(notes)}"
+        assert not players_dir.is_dir(), (
+            f"Players/ directory should not exist; found {list(players_dir.glob('*.md'))}"
+        )
+
+    def test_playstyles_index_referenced_in_index(self, atlas_out: pathlib.Path) -> None:
+        """_Index.md must link to the Playstyles index."""
+        text = (atlas_out / "_Index.md").read_text(encoding="utf-8")
+        assert "Playstyles/_Playstyles_Index" in text, (
+            "_Index.md does not reference [[Playstyles/_Playstyles_Index]]"
+        )
 
     def test_surface_notes_exist(self, atlas_out: pathlib.Path) -> None:
         for surf in ("Hard", "Clay", "Grass"):
@@ -122,26 +132,6 @@ class TestAtlasOutputs:
         assert text.startswith("---"), "_Index.md does not start with YAML frontmatter"
         assert text.count("---") >= 2, "_Index.md frontmatter not closed"
 
-    def test_player_note_has_frontmatter(self, atlas_out: pathlib.Path) -> None:
-        notes = list((atlas_out / "Players").glob("*.md"))
-        assert notes, "No player notes to check"
-        text = notes[0].read_text(encoding="utf-8")
-        assert text.startswith("---"), "Player note does not start with YAML frontmatter"
-        assert "player_id:" in text, "Player note missing player_id in frontmatter"
-        assert "current_elo:" in text, "Player note missing current_elo in frontmatter"
-
-    def test_player_note_has_wikilinks(self, atlas_out: pathlib.Path) -> None:
-        notes = list((atlas_out / "Players").glob("*.md"))
-        assert notes, "No player notes to check"
-        text = notes[0].read_text(encoding="utf-8")
-        assert "[[_Index" in text, "Player note missing [[_Index]] backlink"
-
-    def test_player_note_has_surface_section(self, atlas_out: pathlib.Path) -> None:
-        notes = list((atlas_out / "Players").glob("*.md"))
-        assert notes, "No player notes to check"
-        text = notes[0].read_text(encoding="utf-8")
-        assert "Surface Splits" in text, "Player note missing Surface Splits section"
-
     def test_surface_note_has_frontmatter(self, atlas_out: pathlib.Path) -> None:
         path = atlas_out / "Surfaces" / "Hard.md"
         text = path.read_text(encoding="utf-8")
@@ -153,13 +143,24 @@ class TestAtlasOutputs:
         text = path.read_text(encoding="utf-8")
         assert "[[_Index" in text, "Surface note missing [[_Index]] backlink"
 
+    def test_surface_notes_no_player_links(self, atlas_out: pathlib.Path) -> None:
+        """Surface notes must not contain [[Players/...]] wikilinks."""
+        for surf in ("Hard", "Clay", "Grass"):
+            text = (atlas_out / "Surfaces" / f"{surf}.md").read_text(encoding="utf-8")
+            assert "[[Players/" not in text, (
+                f"Surface note {surf}.md contains individual [[Players/...]] link"
+            )
+
     def test_no_betting_language(self, atlas_out: pathlib.Path) -> None:
-        """Notes must not contain edge/betting language."""
-        forbidden = ["betting", "edge", "ROI", "EV", "wager", "gamble", "odds"]
+        """Notes must not contain edge/betting language (whole-word match)."""
+        import re
+        # Use whole-word boundaries to avoid false positives like "level" containing "EV"
+        forbidden = ["betting", "edge", "roi", "wager", "gamble", "odds"]
         for md_file in atlas_out.rglob("*.md"):
             text = md_file.read_text(encoding="utf-8").lower()
             for term in forbidden:
-                assert term.lower() not in text, (
+                pattern = r"\b" + re.escape(term) + r"\b"
+                assert not re.search(pattern, text), (
                     f"Forbidden term '{term}' found in {md_file.name}"
                 )
 
@@ -171,7 +172,8 @@ class TestAtlasOutputs:
 
         paths = build_atlas(tmp_path / "atlas2", _matches_df=synthetic_matches)
         assert isinstance(paths, list), "build_atlas did not return a list"
-        assert len(paths) >= 4, f"Expected at least 4 notes (index+3 surfaces+players), got {len(paths)}"
+        # Now: index + 3 surfaces = 4 minimum (no player notes)
+        assert len(paths) >= 4, f"Expected at least 4 notes (index+3 surfaces), got {len(paths)}"
         for p in paths:
             assert isinstance(p, pathlib.Path), f"Non-Path in returned list: {p!r}"
             assert p.exists(), f"Returned path does not exist: {p}"

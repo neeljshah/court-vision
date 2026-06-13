@@ -1,6 +1,8 @@
 """domains.tennis.atlas_render — Obsidian note rendering for the tennis atlas.
 
 Companion to atlas.py (LOC split).  Markdown rendering only.
+Player-level notes are no longer emitted; the per-player table in _Index has
+been replaced by a link to [[Playstyles/_Playstyles_Index]].
 F5-clean: stdlib + pandas only.  No edge/betting language.
 """
 from __future__ import annotations
@@ -50,14 +52,15 @@ def _render_surface(
     else:
         top_surf = pd.DataFrame()
 
-    table_rows_list: list[str] = []
-    for _, row in top_surf.iterrows():
-        nm = str(row["name"])
-        elo_val = _opt_elo(row.get(elo_col))
-        sm = int(row.get(surf_col, 0) or 0)
-        sw = _opt_pct(row.get(f"{surface.lower()}_win_pct"))
-        table_rows_list.append(f"| [[Players/{nm}|{nm}]] | {elo_val} | {sm} | {sw} |")
-    table_rows = "\n".join(table_rows_list) if table_rows_list else "| — | — | — | — |"
+    # Aggregate surface stats (no individual names — archetype-level intelligence only)
+    n_qualifiers = len(top_surf)
+    if not top_surf.empty and elo_col in top_surf.columns:
+        median_elo = round(float(top_surf[elo_col].dropna().median()), 1)
+        median_wr_col = f"{surface.lower()}_win_pct"
+        median_wr = _opt_pct(top_surf[median_wr_col].dropna().median() if median_wr_col in top_surf.columns else None)
+    else:
+        median_elo = None
+        median_wr = "n/a"
 
     lines = [
 "---",
@@ -75,13 +78,15 @@ f"# {surface} — Tennis Surface Profile",
 "",
 "## Corpus Overview",
 f"- **Matches on {surface}:** {surf_matches:,} ({surf_pct}% of corpus)",
+f"- **Players with ≥10 {surface} matches:** {n_qualifiers}",
+f"- **Median {surface} Elo (top qualifiers):** {median_elo if median_elo is not None else 'n/a'}",
+f"- **Median {surface} win-rate:** {median_wr}",
 "",
-f"## Top Players by {surface} Elo",
-f"*(minimum 10 {surface} matches in corpus)*",
-"",
-f"| Player | {surface} Elo | {surface} Matches | {surface} Win% |",
-"|---|---|---|---|",
-table_rows,
+"## Player Intelligence",
+(
+    f"Individual player notes are not emitted.  "
+    f"See [[Playstyles/_Playstyles_Index]] for archetype-level {surface} intelligence."
+),
 "",
 f"#sport/tennis #surface/{surface.lower()}",
     ]
@@ -209,21 +214,12 @@ def _render_index(
     else:
         top_elo = pd.DataFrame()
 
-    elo_rows: list[str] = []
-    for rank_i, (_, row) in enumerate(top_elo.iterrows(), start=1):
-        nm = str(row["name"])
-        ev = _opt_elo(row.get("elo"))
-        tot = int(row.get("total_matches", 0))
-        wp = _opt_pct(row.get("win_pct"))
-        pk = row.get("peak_rank")
-        pk_str = str(int(pk)) if pd.notna(pk) and pk is not None else "n/a"
-        elo_rows.append(f"| {rank_i} | [[Players/{nm}|{nm}]] | {ev} | {tot} | {wp} | {pk_str} |")
-    elo_table = "\n".join(elo_rows) if elo_rows else "| — | — | — | — | — | — |"
-
-    player_links = " · ".join(
-        f"[[Players/{str(r['name'])}|{r['name']}]]"
-        for _, r in stats.head(150).iterrows()
-    ) if not stats.empty else ""
+    # Aggregate Elo table (no player names — archetype-level aggregates only)
+    n_with_elo = len(top_elo)
+    elo_summary = (
+        f"Top-{top_n} by Elo: {n_with_elo} players qualify; "
+        f"see [[Playstyles/_Playstyles_Index]] for archetype-level breakdowns."
+    )
 
     lines = [
 "---",
@@ -250,15 +246,12 @@ f"- **Corpus span:** {date_min} → {date_max}",
 "## Surface Breakdown",
 surf_section,
 "",
-f"## Top {top_n} Players by Elo",
-"*(Final corpus Elo — blended overall + surface ratings)*",
+"## Player Intelligence",
+"Individual player notes are not emitted.  Intelligence is organised by playstyle archetype.",
 "",
-"| Rank | Player | Elo | Matches | Win% | Peak Rank |",
-"|---|---|---|---|---|---|",
-elo_table,
+elo_summary,
 "",
-"## Player Notes",
-player_links,
+"→ **[[Playstyles/_Playstyles_Index|Playstyle Archetypes Index]]**",
 "",
 "## Surface Notes",
 "[[Surfaces/Hard|Hard]] \xb7 [[Surfaces/Clay|Clay]] \xb7 [[Surfaces/Grass|Grass]]",
@@ -282,16 +275,15 @@ def render_all(
     matches: pd.DataFrame,
     players: pd.DataFrame,
 ) -> list[pathlib.Path]:
-    """Render all notes; return written paths."""
+    """Render all notes; return written paths.
+
+    Player-level notes are intentionally not emitted.  The atlas now links
+    to [[Playstyles/_Playstyles_Index]] for per-archetype intelligence.
+    """
     written: list[pathlib.Path] = []
 
     for surf in PRIMARY_SURFACES:
         written.append(_render_surface(surf, stats, matches, out_dir))
-
-    top_players = stats.head(150) if not stats.empty else stats
-    for _, row in top_players.iterrows():
-        if int(row.get("total_matches", 0)) >= 10:
-            written.append(_render_player(row, out_dir))
 
     written.append(_render_index(stats, matches, out_dir))
     return written
