@@ -61,7 +61,9 @@ _FRONTIERS: List[Tuple[str, str]] = [
 ]
 
 _TOTAL_NOTES_RE = re.compile(r"Total notes\s*\|\s*\*\*(\d[\d,]*)\*\*")
-_TOTAL_LINKS_RE = re.compile(r"Total \[\[wikilinks\]\]\s*\|\s*(\d[\d,]*)")
+# graph_report.py writes "Total wikilinks | <n>" (plain, no markup).
+# Accept both plain and the legacy [[wikilinks]] form for backward compat.
+_TOTAL_LINKS_RE = re.compile(r"Total (?:\[\[)?wikilinks(?:\]\])?\s*\|\s*\*?(\d[\d,]*)\*?")
 _REJECT_RE      = re.compile(r"Total REJECT\s*\|\s*(\d+)")
 _CANDIDATES_RE  = re.compile(r"Total candidates tested\s*\|\s*\*\*(\d+)\*\*")
 

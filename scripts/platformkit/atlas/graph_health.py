@@ -154,8 +154,7 @@ def build_graph_health(
     total_resolvable = total_links - total_dangling
 
     person_count = len(person_notes)
-    person_free_ok = person_count == 0
-    person_verdict = "PASS" if person_free_ok else f"FAIL ({person_count} person-bearing notes)"
+    person_verdict = "PASS" if person_count == 0 else f"FAIL ({person_count} person-bearing notes)"
 
     graph_integrity_verdict = "PASS" if n_fixable == 0 else f"FAIL ({n_fixable} fixable dangling)"
 
@@ -163,6 +162,7 @@ def build_graph_health(
     sports_sorted = sorted(k for k in sport_counts if k != "_root") + (
         ["_root"] if "_root" in sport_counts else []
     )
+    n_sports = len(sports_sorted) - (1 if "_root" in sport_counts else 0)  # exclude meta pseudo-sport
 
     L: List[str] = [
         "---", "tags: [graph-health, meta]",
@@ -179,7 +179,7 @@ def build_graph_health(
         "| Metric | Value |",
         "|--------|-------|",
         f"| Total notes | **{total_notes}** |",
-        f"| Sports covered | {len(sports_sorted)} |",
+        f"| Sports covered | {n_sports} |",
         f"| Total wikilinks | {total_links} |",
         f"| Resolvable links | {total_resolvable} |",
         f"| Dangling links (instances) | {total_dangling} |",
