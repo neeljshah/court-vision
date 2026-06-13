@@ -44,11 +44,16 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
+# Ensure the repo root is importable so the fully-qualified sibling import below
+# resolves even under a bare `python scripts/platform/check_import_contract.py`
+# invocation (no PYTHONPATH). Harmless when already on sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
 # ---------------------------------------------------------------------------
 # Re-export everything from the scan helper so importers of this module get
 # the full public surface regardless of where names physically live.
 # ---------------------------------------------------------------------------
-from scripts.platform.check_import_contract_scan import (  # noqa: F401
+from scripts.platform.check_import_contract_scan import (  # noqa: E402,F401
     Violation,
     _KERNEL_ALLOWLIST,
     _KERNEL_BANNED_TOPS,
