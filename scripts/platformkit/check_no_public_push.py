@@ -105,7 +105,7 @@ def check_push_allowed(
             "cannot confirm all phases are done — refusing push to public origin "
             "as a safety default.",
         )
-    except (json.JSONDecodeError, KeyError, TypeError) as exc:
+    except (json.JSONDecodeError, KeyError, TypeError, AttributeError, ValueError) as exc:
         return (
             False,
             f"BLOCKED: failed to parse {state_path}: {exc}; "

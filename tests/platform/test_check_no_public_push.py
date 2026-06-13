@@ -165,18 +165,16 @@ class TestCheckPushAllowed:
 
     def test_json_wrong_type_safe_fail(self, tmp_path):
         # JSON is valid but the top-level value is a list, not a dict.
-        # BUG: check_push_allowed only catches (JSONDecodeError, KeyError, TypeError)
-        # but NOT AttributeError.  When state=[1,2,3], _load_open_phases calls
-        # state.get() which raises AttributeError — this propagates UNCAUGHT.
-        # The crash is still fail-safe (push never proceeds), but the guard
-        # should return (False, "BLOCKED...") cleanly instead of crashing.
-        # This test documents the known gap: the guard crashes rather than
-        # returning the documented BLOCKED tuple.
+        # _load_open_phases calls state.get() → AttributeError on a list.
+        # check_push_allowed now catches AttributeError (and ValueError) and
+        # returns a clean (False, "BLOCKED...") tuple — no exception propagates.
         p = tmp_path / "state.json"
         p.write_text("[1, 2, 3]", encoding="utf-8")
-        with pytest.raises(AttributeError):
-            # BUG: should return (False, "BLOCKED...") but instead raises.
-            check_push_allowed("origin", "", p)
+        allowed, reason = check_push_allowed("origin", "", p)
+        assert allowed is False, (
+            "SAFETY VIOLATION: push guard failed OPEN on non-dict JSON state"
+        )
+        assert "BLOCKED" in reason
 
     # Case 6 — public-remote URL detection via known fragment
     def test_url_based_public_detection_blocked(self, tmp_path):
@@ -196,10 +194,8 @@ class TestCheckPushAllowed:
         assert allowed is True
 
     # Explicit fail-safe meta-test: enumerate error classes and confirm blocking.
-    # NOTE: the guard catches (JSONDecodeError, KeyError, TypeError).
-    # AttributeError (e.g. None.get() from JSON "null") is NOT caught — those
-    # cases raise rather than returning (False, "BLOCKED...").  A raise is still
-    # fail-safe (push never proceeds), but it is a known gap in the guard.
+    # The guard catches (JSONDecodeError, KeyError, TypeError, AttributeError,
+    # ValueError) — all parse/shape errors return (False, "BLOCKED...") cleanly.
     @pytest.mark.parametrize("bad_content", [
         "",           # empty file → JSONDecodeError (caught → BLOCKED tuple)
         '{"phases": []}',  # phases is a list, not dict → AttributeError on .items()

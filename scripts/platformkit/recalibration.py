@@ -56,29 +56,13 @@ def walk_forward_recalibrate(
 ) -> np.ndarray:
     """Strictly leak-free expanding-window isotonic recalibration.
 
-    For each event i:
-      - If i < min_history: pass through raw_probs[i] unchanged.
-      - Else: fit IsotonicRegression on (raw_probs[:i], outcomes[:i]) — events
-        STRICTLY before i — then transform raw_probs[i].
+    For each event i, if i < min_history pass through raw; else fit
+    IsotonicRegression on (raw_probs[:i], outcomes[:i]) — strictly before i —
+    and transform raw_probs[i].  NaN/inf entries are dropped from the fit
+    window; invalid query points pass through.  All-finite inputs are
+    bit-identical to the unguarded version.
 
-    Parameters
-    ----------
-    raw_probs : sequence of float
-        Raw model probabilities in [0, 1], length N, in chronological order.
-    outcomes : sequence of float
-        Binary outcomes {0, 1}, length N, aligned to raw_probs.
-    min_history : int
-        Minimum preceding events before calibration is applied (default 50).
-
-    Returns
-    -------
-    np.ndarray of shape (N,)
-        Calibrated probabilities clipped to [0, 1].  Aligned index-for-index.
-
-    Notes
-    -----
-    Strictly leak-free: the IsotonicRegression for event i sees ONLY events
-    0 … i-1.  It never sees outcome i or any future outcome.
+    Returns np.ndarray of shape (N,) clipped to [0, 1].
     CALIBRATION != EDGE.  See CALIBRATION_NOTE.
     """
     p = np.asarray(raw_probs, dtype=float)
@@ -96,8 +80,21 @@ def walk_forward_recalibrate(
         if i < min_history:
             calibrated[i] = float(p[i])
         else:
-            ir.fit(p[:i], y[:i])
-            calibrated[i] = float(ir.transform([p[i]])[0])
+            # Guard: drop any pair where raw_prob or outcome is NaN/inf so
+            # IsotonicRegression never receives invalid data.  For all-finite
+            # inputs this mask is all-True and behaviour is bit-identical.
+            valid_window = np.isfinite(p[:i]) & np.isfinite(y[:i])
+            if valid_window.any():
+                ir.fit(p[:i][valid_window], y[:i][valid_window])
+                # If the query point itself is invalid, pass it through as-is
+                # (np.clip below will keep it in [0,1] if finite, or leave NaN).
+                if np.isfinite(p[i]):
+                    calibrated[i] = float(ir.transform([p[i]])[0])
+                else:
+                    calibrated[i] = float(p[i])
+            else:
+                # No valid history yet — pass through raw.
+                calibrated[i] = float(p[i])
 
     return np.clip(calibrated, 0.0, 1.0)
 
