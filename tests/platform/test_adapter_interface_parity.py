@@ -221,26 +221,18 @@ def test_sport_ids_are_distinct() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Documented divergence: MLB has an extra league_filter param
+# Strict parity: all adapters must have identical feature_bundle positional params
+# (league_filter is keyword-only on MLBAdapter, so it no longer widens the positional
+# prefix — this test now passes without xfail)
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    reason=(
-        "KNOWN DIVERGENCE: MLBAdapter.feature_bundle has an extra optional "
-        "'league_filter' param absent from TennisAdapter and SoccerAdapter. "
-        "This is a real interface divergence — the shared 2-param prefix "
-        "(hypothesis, seasons) is still maintained; the extra param is "
-        "backward-compatible (keyword-only optional). Reported to Opus."
-    ),
-    strict=False,
-)
 def test_all_adapters_have_identical_feature_bundle_signature() -> None:
     """Strict parity: every adapter's feature_bundle positional params are identical.
 
-    This test is xfail because MLBAdapter has an extra ``league_filter`` param.
-    The shared *prefix* (hypothesis, seasons) is enforced by the non-xfail tests;
-    this test documents the strict-parity gap honestly.
+    MLBAdapter.feature_bundle has ``league_filter`` as a KEYWORD-ONLY param (after ``*``),
+    so it does not appear in the positional-param list.  All three adapters now share
+    exactly the same positional prefix: (hypothesis, seasons).
     """
     adapter_pairs = _available_adapter_classes()
     if len(adapter_pairs) < 2:

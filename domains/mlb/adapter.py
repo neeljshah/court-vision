@@ -159,6 +159,7 @@ class MLBAdapter:
         self,
         hypothesis: Hypothesis,
         seasons: Optional[Sequence[int]] = None,
+        *,
         league_filter: Optional[str] = None,
     ) -> FeatureBundle:
         """Gate-valid FeatureBundle.
