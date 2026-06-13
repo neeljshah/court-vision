@@ -23,6 +23,7 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.platform.atlas.build_all import (
+    _CAT,
     _EXTRA_GENS,
     _META_GENS,
     _SPORT_MANIFEST,
@@ -218,3 +219,70 @@ def test_full_flag_default_off_behavior_unchanged(tmp_path: Path) -> None:
 
     assert exit_code == 0
     assert extra_called == [], f"Extra generators must NOT run without --full; got {extra_called}"
+
+
+# ---------------------------------------------------------------------------
+# --with-catalogs flag tests
+# ---------------------------------------------------------------------------
+
+def _make_catalog_patches(cat_called: List[str], adapter_ok: bool = True) -> dict:
+    """Stub all _CAT loader + catalog + joint modules.  Also stubs base adapters."""
+    patches: dict = {}
+    for _sid, _name, adapter_module, _ in _SPORT_MANIFEST:
+        mod = types.ModuleType(adapter_module)
+        mod.build_atlas = _make_stub_builder("stub", 1, index=True)  # type: ignore
+        patches[adapter_module] = mod
+    sentinel = object() if adapter_ok else None
+    for (loader_mod, cat_mod, joint_mod, joint_fn, _, display, _) in _CAT:
+        lmod = types.ModuleType(loader_mod)
+        lmod._load_adapter = lambda _cd, s=sentinel: s  # type: ignore
+        patches[loader_mod] = lmod
+        cmod = types.ModuleType(cat_mod)
+        def _rc(_a, _s, out_path=None, dn=display) -> None:
+            cat_called.append(f"{dn}:run_catalog")
+            if out_path: out_path.parent.mkdir(parents=True, exist_ok=True); out_path.write_text(f"# {dn}\n", encoding="utf-8")
+        cmod.run_catalog = _rc  # type: ignore
+        patches[cat_mod] = cmod
+        jmod = types.ModuleType(joint_mod)
+        def _rj(_a, _s, out_path=None, dn=display, jfn=joint_fn) -> None:
+            cat_called.append(f"{dn}:{jfn}")
+            if out_path: out_path.parent.mkdir(parents=True, exist_ok=True); out_path.write_text(f"# {dn} j\n", encoding="utf-8")
+        setattr(jmod, joint_fn, _rj)
+        patches[joint_mod] = jmod
+    return patches
+
+
+def test_with_catalogs_runs_catalog_functions(tmp_path: Path) -> None:
+    """--with-catalogs must call run_catalog + run_joint_catalog for tennis/soccer/mlb."""
+    out_dir = tmp_path / "Sports"
+    cat_called: List[str] = []
+    with mock.patch.dict("sys.modules", _make_catalog_patches(cat_called, adapter_ok=True)):
+        exit_code = main(["--sport", "all", "--out", str(out_dir), "--with-catalogs"])
+    assert exit_code == 0, f"Expected exit 0 with --with-catalogs, got {exit_code}"
+    assert len(cat_called) == 6, f"Expected 6 catalog calls (3 sports × 2), got: {cat_called}"
+    assert {c.split(":")[0] for c in cat_called} == {"Tennis", "Soccer", "MLB"}
+    for display in ("Tennis", "Soccer", "MLB"):
+        assert (out_dir / display / "Signals" / "_Catalog.md").exists(), f"{display}/_Catalog.md missing"
+        assert (out_dir / display / "Signals" / "_Catalog_Joint.md").exists(), f"{display}/_Catalog_Joint.md missing"
+    assert (out_dir / "_Hub.md").exists()
+
+
+def test_with_catalogs_default_off(tmp_path: Path) -> None:
+    """Without --with-catalogs the catalog functions must NOT be called."""
+    out_dir = tmp_path / "Sports"
+    cat_called: List[str] = []
+    with mock.patch.dict("sys.modules", _make_catalog_patches(cat_called, adapter_ok=True)):
+        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+    assert exit_code == 0
+    assert cat_called == [], f"Catalogs must NOT run without --with-catalogs; got: {cat_called}"
+
+
+def test_with_catalogs_skips_absent_corpus(tmp_path: Path) -> None:
+    """--with-catalogs exits 0 and skips gracefully when _load_adapter returns None."""
+    out_dir = tmp_path / "Sports"
+    cat_called: List[str] = []
+    with mock.patch.dict("sys.modules", _make_catalog_patches(cat_called, adapter_ok=False)):
+        exit_code = main(["--sport", "all", "--out", str(out_dir), "--with-catalogs"])
+    assert exit_code == 0, f"Expected exit 0 on absent corpus, got {exit_code}"
+    assert cat_called == [], f"run_catalog must not be called when adapter is None; got: {cat_called}"
+    assert (out_dir / "_Hub.md").exists()
