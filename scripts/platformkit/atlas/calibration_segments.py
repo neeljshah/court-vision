@@ -5,6 +5,10 @@ probability decile (predicted vs observed + n) and per-season ECE.
 Honest: calibration is a RELIABILITY diagnostic only — well-calibrated != profitable.
 Soccer O/U miscalibration surfaced honestly. Person-free; no edge claimed.
 F5-clean: stdlib + numpy + pandas; domain adapters imported lazily.
+
+DRY note: ECE computation delegates to kernel.validation.proof_metrics.ece and
+reliability bins delegate to scripts.platformkit.calibration_conformance._reliability_bins
+(shared implementations — no local reimplementation).
 """
 from __future__ import annotations
 
@@ -13,6 +17,10 @@ import pathlib
 import time
 from typing import List, Optional, Tuple
 
+from kernel.validation.proof_metrics import ece as _kernel_ece
+from scripts.platformkit.calibration_conformance import (
+    _reliability_bins as _cc_reliability_bins,
+)
 from scripts.platformkit.atlas.obsidian_emit import frontmatter, md_table, write_note
 
 _OUT_FILENAME = "_Calibration_Segments.md"
@@ -50,32 +58,21 @@ def _load_bundle(repo_root: pathlib.Path, adapter_module: str, adapter_class: st
 
 
 # ---------------------------------------------------------------------------
-# Calibration math
+# Calibration math — delegates to shared implementations (DRY)
 # ---------------------------------------------------------------------------
 
 def _reliability_bins(probs: object, outcomes: object) -> List[Tuple[float, float, float, float, int]]:
-    """Return (lo, hi, mean_pred, mean_obs, n) for N_BINS equal-width bins."""
+    """Return (lo, hi, mean_pred, mean_obs, n) for N_BINS equal-width bins.
+
+    Delegates to scripts.platformkit.calibration_conformance._reliability_bins;
+    converts BinResult dataclasses to the internal tuple format used by renderers.
+    """
     import numpy as np
     p, o = np.asarray(probs, float), np.asarray(outcomes, float)
-    edges = np.linspace(0.0, 1.0, N_BINS + 1)
-    result = []
-    for i in range(N_BINS):
-        lo, hi = float(edges[i]), float(edges[i + 1])
-        mask = (p >= lo) & (p <= hi) if i == N_BINS - 1 else (p >= lo) & (p < hi)
-        n_b = int(mask.sum())
-        mp = float(p[mask].mean()) if n_b else float("nan")
-        mo = float(o[mask].mean()) if n_b else float("nan")
-        result.append((lo, hi, mp, mo, n_b))
-    return result
-
-
-def _ece_from_bins(bins: List[Tuple[float, float, float, float, int]]) -> float:
-    """ECE = frequency-weighted mean |pred - obs| across non-empty bins."""
-    total = sum(b[4] for b in bins)
-    if not total:
-        return float("nan")
-    return sum((b[4] / total) * abs(b[3] - b[2]) for b in bins
-               if b[4] > 0 and not math.isnan(b[2]) and not math.isnan(b[3]))
+    return [
+        (b.bin_lo, b.bin_hi, b.mean_pred, b.mean_obs, b.n)
+        for b in _cc_reliability_bins(p, o, N_BINS)
+    ]
 
 
 def _segment_ece(probs: object, outcomes: object,
@@ -90,7 +87,8 @@ def _segment_ece(probs: object, outcomes: object,
         n_s = int(mask.sum())
         if n_s < 5:
             continue
-        ece = _ece_from_bins(_reliability_bins(p[mask], o[mask]))
+        # Delegate ECE to kernel — avoids redundant per-bin round-trip
+        ece = _kernel_ece(p[mask], o[mask], bins=N_BINS)
         if not math.isnan(ece):
             segs.append((yr, n_s, ece))
     return segs
@@ -208,7 +206,7 @@ def build_calibration_segments(vault_sports_dir: Optional[pathlib.Path] = None) 
             dates_raw = list(getattr(bundle, "dates", None) or [])
             valid_dates = [str(dates_raw[i]) for i in range(len(raw_p)) if valid[i]]
             bins = _reliability_bins(probs, outcomes)
-            overall_ece = _ece_from_bins(bins)
+            overall_ece = _kernel_ece(probs, outcomes, bins=N_BINS)
             segs = _segment_ece(probs, outcomes, valid_dates) if valid_dates else []
         except Exception:  # noqa: BLE001
             skipped.append(display)
