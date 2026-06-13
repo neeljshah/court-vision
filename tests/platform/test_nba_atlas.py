@@ -79,7 +79,7 @@ def _make_adv_df() -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def test_build_atlas_creates_expected_files(tmp_path: pathlib.Path) -> None:
-    """build_atlas emits _Index + player notes + team notes without errors."""
+    """build_atlas emits _Index + team notes (no player notes) without errors."""
     base = _make_base_df()
     adv = _make_adv_df()
 
@@ -96,11 +96,39 @@ def test_build_atlas_creates_expected_files(tmp_path: pathlib.Path) -> None:
     paths = {p.name for p in written}
     assert "_Index.md" in paths, "Missing _Index.md"
 
-    player_notes = [p for p in written if "Players" in str(p)]
-    assert len(player_notes) >= 1, "No player notes emitted"
-
     team_notes = [p for p in written if "Teams" in str(p)]
     assert len(team_notes) >= 1, "No team notes emitted"
+
+
+def test_no_players_directory(tmp_path: pathlib.Path) -> None:
+    """Players/ directory must NOT be created — player notes are retired."""
+    base = _make_base_df()
+    adv = _make_adv_df()
+    fake_data = tmp_path / "fake_data"
+
+    build_atlas(tmp_path / "out", fake_data, _base_df=base, _adv_df=adv)
+
+    players_dir = tmp_path / "out" / "Players"
+    assert not players_dir.exists(), (
+        f"Players/ directory should not exist but was created at {players_dir}"
+    )
+
+
+def test_index_references_archetypes(tmp_path: pathlib.Path) -> None:
+    """_Index.md must reference the Archetypes/_Archetypes_Index wikilink."""
+    base = _make_base_df()
+    adv = _make_adv_df()
+    fake_data = tmp_path / "fake_data"
+
+    build_atlas(tmp_path / "out", fake_data, _base_df=base, _adv_df=adv)
+
+    index_text = (tmp_path / "out" / "_Index.md").read_text(encoding="utf-8")
+    assert "Archetypes" in index_text, "_Index.md should reference Archetypes"
+    links = _WIKILINK_RE.findall(index_text)
+    archetype_links = [l for l in links if "Archetype" in l]
+    assert len(archetype_links) >= 1, (
+        f"_Index.md should have at least one Archetypes wikilink; found: {links}"
+    )
 
 
 def test_index_has_wikilinks_and_tags(tmp_path: pathlib.Path) -> None:
@@ -115,26 +143,6 @@ def test_index_has_wikilinks_and_tags(tmp_path: pathlib.Path) -> None:
     links = _WIKILINK_RE.findall(index)
     assert len(links) >= 2, f"Expected ≥2 wikilinks, found {len(links)}: {links}"
     assert _TAG_RE.search(index), "Missing #sport/nba tag in _Index.md"
-
-
-def test_player_note_has_frontmatter_and_wikilink(tmp_path: pathlib.Path) -> None:
-    """Each player note must have YAML frontmatter and at least one [[wikilink]]."""
-    base = _make_base_df()
-    adv = _make_adv_df()
-    fake_data = tmp_path / "fake_data"
-
-    build_atlas(tmp_path / "out", fake_data, _base_df=base, _adv_df=adv)
-
-    player_dir = tmp_path / "out" / "Players"
-    notes = list(player_dir.glob("*.md"))
-    assert len(notes) >= 1
-
-    for note in notes:
-        text = note.read_text(encoding="utf-8")
-        assert _FRONTMATTER_RE.search(text), f"{note.name}: missing YAML frontmatter"
-        links = _WIKILINK_RE.findall(text)
-        assert len(links) >= 1, f"{note.name}: missing [[wikilinks]]"
-        assert "sport/nba" in text, f"{note.name}: missing sport/nba tag"
 
 
 def test_team_note_has_frontmatter_and_wikilink(tmp_path: pathlib.Path) -> None:
