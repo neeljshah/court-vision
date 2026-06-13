@@ -158,7 +158,7 @@ def test_missing_sport_module_skipped_gracefully(tmp_path: Path) -> None:
     absent = [
         "domains.soccer.atlas",
         "domains.mlb.atlas",
-        "domains.basketball_nba.atlas",
+        "domains.basketball_nba.memory_atlas",
     ]
     cleaned = {k: v for k, v in sys.modules.items() if k not in absent}
 

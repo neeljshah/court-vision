@@ -42,7 +42,7 @@ _SPORT_MANIFEST: List[Tuple[str, str, str, str]] = [
     ("tennis_atp",    "Tennis",         "domains.tennis.atlas",         "data/domains/tennis"),
     ("soccer_fd",     "Soccer",         "domains.soccer.atlas",          "data/domains/soccer"),
     ("mlb_sbro",      "MLB",            "domains.mlb.atlas",             "data/domains/mlb"),
-    ("basketball_nba","Basketball_NBA", "domains.basketball_nba.atlas",  "data/domains/basketball_nba"),
+    ("basketball_nba","Basketball_NBA", "domains.basketball_nba.memory_atlas", "data"),
 ]
 
 # CLI aliases (lower-case) → sport_id
