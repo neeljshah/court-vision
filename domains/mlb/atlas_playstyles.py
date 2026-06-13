@@ -11,7 +11,7 @@ Contender · High-Variance Offense · Low-Scoring Grinder · Run-Deficit.
 Teams may appear in multiple archetypes.  Real data only; no betting language.
 
 Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ from domains.mlb.atlas_playstyles_render import (
     render_playstyles_index,
     render_unclassified_stub,
 )
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths

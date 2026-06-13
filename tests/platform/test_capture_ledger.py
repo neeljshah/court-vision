@@ -14,11 +14,11 @@ from pathlib import Path
 import pytest
 
 # ---------------------------------------------------------------------------
-# Path wiring — import from scripts/platform/capture without installing.
+# Path wiring — import from scripts/platformkit/capture without installing.
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]
-CAPTURE_DIR = ROOT / "scripts" / "platform" / "capture"
+CAPTURE_DIR = ROOT / "scripts" / "platformkit" / "capture"
 sys.path.insert(0, str(CAPTURE_DIR))
 
 import ledger_schema as schema  # noqa: E402

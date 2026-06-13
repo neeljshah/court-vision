@@ -17,7 +17,7 @@ from typing import Optional
 import pandas as pd
 
 from domains.tennis.atlas_tournaments_render import render_all_tournaments
-from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Constants

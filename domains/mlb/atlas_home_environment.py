@@ -10,7 +10,7 @@ Public API::
     paths = build_home_environment(out_dir, corpus_dir=Path("data/domains/mlb"))
 
 Import contract (F5-clean): stdlib + pathlib + pandas + numpy +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Tuple
 import numpy as np  # noqa: F401 (available for callers)
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
+from scripts.platformkit.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _DEFAULT_CORPUS = _REPO_ROOT / "data" / "domains" / "mlb"

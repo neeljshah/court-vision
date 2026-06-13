@@ -6,7 +6,7 @@ one Scouting brief per style pair.  Does NOT recompute from corpus.
 Public API:
     build_scouting(out_dir, vault_mlb_dir=<repo>/vault/Sports/MLB) -> list[Path]
 
-F5-clean: stdlib + scripts.platform.atlas.obsidian_emit only.  No pandas, no numpy.
+F5-clean: stdlib + scripts.platformkit.atlas.obsidian_emit only.  No pandas, no numpy.
 Rendering delegated to atlas_scouting_render (same package, stdlib-only).
 """
 from __future__ import annotations
@@ -16,7 +16,7 @@ import re
 from typing import Dict, List, Optional, Tuple
 
 from domains.mlb.atlas_scouting_render import render_brief, render_index
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 _DEFAULT_VAULT: pathlib.Path = (
     pathlib.Path(__file__).resolve().parents[2] / "vault" / "Sports" / "MLB"

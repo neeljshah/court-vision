@@ -9,7 +9,7 @@ import pathlib
 
 import pytest
 
-from scripts.platform.atlas.graph_report import build_graph_report
+from scripts.platformkit.atlas.graph_report import build_graph_report
 
 
 # ---------------------------------------------------------------------------

@@ -18,7 +18,7 @@ from typing import Any, Dict, Optional, Sequence, Tuple
 import numpy as np
 from src.loop.gate import FeatureBundle, evaluate  # noqa: F401 — AST-scanned by tests
 from src.loop.signal import AsOfContext, Hypothesis, Signal, SignalValue
-from scripts.platform.catalog_common import (
+from scripts.platformkit.catalog_common import (
     derive_bundle as _derive_bundle_impl,
     run_catalog_common,
     write_catalog_report as _write_report_impl,

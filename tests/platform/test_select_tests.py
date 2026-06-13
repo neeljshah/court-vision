@@ -1,4 +1,4 @@
-"""test_select_tests.py — Unit tests for scripts/platform/select_tests.py.
+"""test_select_tests.py — Unit tests for scripts/platformkit/select_tests.py.
 
 Covers all 6 rules:
   1. Changed test file selects itself.
@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts" / "platform"))
+sys.path.insert(0, str(ROOT / "scripts" / "platformkit"))
 
 import select_tests  # noqa: E402
 
@@ -46,7 +46,7 @@ def _make_repo(tmp_path: Path) -> Path:
     (tests / "test_other.py").write_text("def test_other(): pass\n")
 
     # scripts dir (for rule 4)
-    scripts = tmp_path / "scripts" / "platform"
+    scripts = tmp_path / "scripts" / "platformkit"
     scripts.mkdir(parents=True)
     (scripts / "my_script.py").write_text("# does stuff\n")
 
@@ -54,7 +54,7 @@ def _make_repo(tmp_path: Path) -> Path:
     (tests / "test_my_script.py").write_text(
         "import subprocess\n"
         "def test_runs():\n"
-        "    subprocess.run(['python', 'scripts/platform/my_script.py'])\n"
+        "    subprocess.run(['python', 'scripts/platformkit/my_script.py'])\n"
     )
 
     return tmp_path
@@ -148,7 +148,7 @@ def test_rule4_grep_fallback_for_script(tmp_path):
     """A test referencing a script path via subprocess string should be selected."""
     repo = _make_repo(tmp_path)
     result = select_tests.select(
-        ["scripts/platform/my_script.py"],
+        ["scripts/platformkit/my_script.py"],
         repo_root=repo,
     )
     tests_norm = [t.replace("\\", "/") for t in result["tests"]]
@@ -231,16 +231,16 @@ def test_rule6_sentinel_none_when_few(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# Integration: W002-like file set (scripts/platform/capture/ledger_*.py)
+# Integration: W002-like file set (scripts/platformkit/capture/ledger_*.py)
 # ---------------------------------------------------------------------------
 
 def test_w002_like_ledger_selection():
-    """W002 changed scripts/platform/capture/ledger_*.py.
+    """W002 changed scripts/platformkit/capture/ledger_*.py.
     Selection must: include tests/platform/, NOT select the entire test tree.
     """
     changed = [
-        "scripts/platform/capture/ledger_schema.py",
-        "scripts/platform/capture/ledger_writer.py",
+        "scripts/platformkit/capture/ledger_schema.py",
+        "scripts/platformkit/capture/ledger_writer.py",
     ]
     result = select_tests.select(changed, repo_root=ROOT)
 

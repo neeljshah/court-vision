@@ -23,7 +23,7 @@ import pathlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import _SCHEMES
 from domains.soccer.atlas_scouting_render import render_brief, render_index
 

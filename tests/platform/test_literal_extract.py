@@ -1,7 +1,7 @@
 """
 tests/platform/test_literal_extract.py
 
-Hermetic, offline tests for scripts/platform/literal_extract.py.
+Hermetic, offline tests for scripts/platformkit/literal_extract.py.
 
 Each test writes a synthetic source file to tmp_path so no real project
 module is ever imported or executed.
@@ -14,8 +14,8 @@ from pathlib import Path
 
 import pytest
 
-# Make the scripts/platform package importable without installing it
-_SCRIPTS_PLATFORM = Path(__file__).parent.parent.parent / "scripts" / "platform"
+# Make the scripts/platformkit package importable without installing it
+_SCRIPTS_PLATFORM = Path(__file__).parent.parent.parent / "scripts" / "platformkit"
 if str(_SCRIPTS_PLATFORM) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_PLATFORM))
 

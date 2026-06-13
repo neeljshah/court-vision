@@ -12,7 +12,7 @@ from typing import FrozenSet, List, Optional, Set
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(ROOT / "scripts" / "platform"))
+sys.path.insert(0, str(ROOT / "scripts" / "platformkit"))
 import harness_state  # noqa: E402
 
 # Lazy import of select_tests — absent during bootstrap before select_tests.py is written.
@@ -44,10 +44,10 @@ _PREFIXES = [p for p in PROTECTED if p.endswith("/")]
 
 PYTEST_BASELINE = ROOT / ".planning" / "platform" / "baselines" / "pytest_baseline.txt"
 _SCRIPTS = {
-    "G2": "scripts/platform/fixture_slate_hash.py",
+    "G2": "scripts/platformkit/fixture_slate_hash.py",
     "G4": "tests/platform/test_api_boot.py",
-    "G5": "scripts/platform/check_shims.py",
-    "IC": "scripts/platform/check_import_contract.py",
+    "G5": "scripts/platformkit/check_shims.py",
+    "IC": "scripts/platformkit/check_import_contract.py",
 }
 
 # ---------------------------------------------------------------------------
@@ -320,7 +320,7 @@ def _scoped_g1(files: List[str], tier: str = "wave") -> List[dict]:
 
     if not _SELECT_AVAILABLE:
         return _skip_both(
-            "select_tests unavailable — install scripts/platform/select_tests.py"
+            "select_tests unavailable — install scripts/platformkit/select_tests.py"
         )
 
     try:

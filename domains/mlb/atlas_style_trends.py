@@ -15,7 +15,7 @@ Public API: build_style_trends(out_dir, corpus_dir) -> list[Path]
 No individual player names.  No betting/edge language.  Real data only.
 
 Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ import pandas as pd
 
 from domains.mlb.atlas_playstyles import _ARCHETYPES  # reuse classifiers
 from domains.mlb.atlas_style_trends_render import render_overview, render_season_note
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths

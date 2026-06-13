@@ -24,7 +24,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 from domains.soccer.atlas_playstyles import _SCHEMES, _classify
 
 # ---------------------------------------------------------------------------

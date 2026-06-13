@@ -8,7 +8,7 @@ Emits Obsidian Markdown into vault/Sports/MLB/Style_Matchups/.
 Public API: build_style_matchups(out_dir, corpus_dir) -> list[Path]
 
 Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 No individual player names. No edge/betting language.
 """
 from __future__ import annotations
@@ -28,7 +28,7 @@ from domains.mlb.atlas_style_matchups_render import (
     render_pair_note,
     render_style_matchups_index,
 )
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths

@@ -17,7 +17,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 
-from scripts.platform.atlas.graph_health import _is_person_bearing
+from scripts.platformkit.atlas.graph_health import _is_person_bearing
 
 _WIKILINK_RE = re.compile(r"\[\[([^\]|#\n]+)")
 

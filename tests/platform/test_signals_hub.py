@@ -11,7 +11,7 @@ import textwrap
 
 import pytest
 
-from scripts.platform.atlas.signals_hub import build_signals_hub
+from scripts.platformkit.atlas.signals_hub import build_signals_hub
 
 # ---------------------------------------------------------------------------
 # Helpers

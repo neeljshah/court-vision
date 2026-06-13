@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from scripts.platform.proof_tennis.proof_metrics import (
+from scripts.platformkit.proof_tennis.proof_metrics import (
     brier, clv_sign_invariants, ece, isotonic_calibrate, reliability_slope,
 )
 from domains.tennis.adapter import TennisAdapter
@@ -184,11 +184,11 @@ class TestV3GateSynthetic:
 
 class TestMissingCorpus:
     def test_load_adapter_none(self, tmp_path):
-        from scripts.platform.proof_tennis.run_proof import _load_adapter
+        from scripts.platformkit.proof_tennis.run_proof import _load_adapter
         assert _load_adapter(tmp_path / "nonexistent") is None
 
     def test_main_exits_code_2(self, tmp_path):
-        from scripts.platform.proof_tennis.run_proof import main
+        from scripts.platformkit.proof_tennis.run_proof import main
         rc = main(["--corpus", str(tmp_path / "nonexistent"),
                    "--report", str(tmp_path / "report.md")])
         assert rc == 2
@@ -232,7 +232,7 @@ class TestV4PaperPortfolio:
     _EDGE_DENYLIST = ["proven edge", "ROI", "profitable", "+EV", "beat the market"]
 
     def test_run_v4_produces_paper_book_with_disclaimer(self, synthetic_corpus, tmp_path):
-        from scripts.platform.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
+        from scripts.platformkit.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
         matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
         odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
         adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
@@ -262,7 +262,7 @@ class TestV4PaperPortfolio:
             "check_drawdown_ok should return False when bankroll drops 20%"
         )
         # V4 must record drawdown_inject_fired=True
-        from scripts.platform.proof_tennis.proof_runner import run_v4
+        from scripts.platformkit.proof_tennis.proof_runner import run_v4
         matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
         odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
         adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
@@ -281,7 +281,7 @@ class TestV4PaperPortfolio:
 
     def test_no_edge_claim_strings_in_output(self, synthetic_corpus, tmp_path):
         """Denylist: no edge/ROI claim strings in paper book JSON."""
-        from scripts.platform.proof_tennis.proof_runner import run_v4
+        from scripts.platformkit.proof_tennis.proof_runner import run_v4
         matches_df = pd.read_parquet(synthetic_corpus / "matches.parquet")
         odds_df = pd.read_parquet(synthetic_corpus / "odds.parquet")
         adapter = TennisAdapter(matches_df=matches_df, odds_df=odds_df)
@@ -296,7 +296,7 @@ class TestV4PaperPortfolio:
     def test_run_v4_nan_corpus_no_crash(self, tmp_path):
         """Regression: NaN raw_elo and NaN market line must not crash run_v4."""
         import datetime as dt
-        from scripts.platform.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
+        from scripts.platformkit.proof_tennis.proof_runner import run_v4, _V4_DISCLAIMER
 
         rng = np.random.default_rng(77)
         n = 60

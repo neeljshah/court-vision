@@ -1,4 +1,4 @@
-"""test_hygiene_lint.py — Acceptance tests for scripts/platform/hygiene_lint.py.
+"""test_hygiene_lint.py — Acceptance tests for scripts/platformkit/hygiene_lint.py.
 
 Python 3.9 compatible.  No network required.  Runs in < 30 s.
 
@@ -30,7 +30,7 @@ import pytest
 # Import the module under test
 # ---------------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts" / "platform"))
+sys.path.insert(0, str(ROOT / "scripts" / "platformkit"))
 
 from hygiene_lint import (  # noqa: E402
     LintHit,

@@ -26,7 +26,7 @@ import importlib, sys, os
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.platform.proof_tennis.kernel_manifest import (  # noqa: E402
+from scripts.platformkit.proof_tennis.kernel_manifest import (  # noqa: E402
     KERNEL_FILES,
     _FLAGLINE_FILE,
     _ALLOWED_FLAG_NAME,
@@ -197,7 +197,7 @@ class TestAllowedFlaglineDelta:
 
     def test_flagline_delta_allowed_with_flag(self, tmp_path: Path) -> None:
         """Adding only CV_DOMAIN_TENNIS block to flags.py passes when --allow-flagline."""
-        from scripts.platform.proof_tennis.kernel_manifest import (
+        from scripts.platformkit.proof_tennis.kernel_manifest import (
             _is_flagline_delta_allowed,
             _sha256_file,
         )
@@ -215,7 +215,7 @@ class TestAllowedFlaglineDelta:
 
     def test_flagline_delta_rejected_for_other_change(self, tmp_path: Path) -> None:
         """Changing a different line in flags.py is NOT allowed even with --allow-flagline."""
-        from scripts.platform.proof_tennis.kernel_manifest import (
+        from scripts.platformkit.proof_tennis.kernel_manifest import (
             _is_flagline_delta_allowed,
             _sha256_file,
         )
@@ -234,7 +234,7 @@ class TestAllowedFlaglineDelta:
 
     def test_identical_content_returns_true(self, tmp_path: Path) -> None:
         """If file is byte-identical the function returns True (trivially allowed)."""
-        from scripts.platform.proof_tennis.kernel_manifest import (
+        from scripts.platformkit.proof_tennis.kernel_manifest import (
             _is_flagline_delta_allowed,
             _sha256_file,
         )

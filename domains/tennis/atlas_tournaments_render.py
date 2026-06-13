@@ -11,7 +11,7 @@ from __future__ import annotations
 import pathlib
 from typing import Optional
 
-from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 
 def _pct_bar(pct: float, width: int = 10) -> str:

@@ -14,7 +14,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 from domains.basketball_nba.memory_atlas_archetypes import ARCHETYPES
 from domains.basketball_nba.memory_atlas_seasons import (
     _load_player_archetype_stats,

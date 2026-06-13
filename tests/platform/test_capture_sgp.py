@@ -1,4 +1,4 @@
-"""test_capture_sgp.py — Offline unit tests for scripts/platform/capture/capture_sgp.py.
+"""test_capture_sgp.py — Offline unit tests for scripts/platformkit/capture/capture_sgp.py.
 
 All tests run without network access.  A stub client replaces SgpOddsAPIClient.
 All disk writes go to pytest's ``tmp_path`` — real data/lines/ is never touched.
@@ -18,7 +18,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]
-CAPTURE_DIR = ROOT / "scripts" / "platform" / "capture"
+CAPTURE_DIR = ROOT / "scripts" / "platformkit" / "capture"
 sys.path.insert(0, str(CAPTURE_DIR))
 
 import ledger_schema as schema  # noqa: E402

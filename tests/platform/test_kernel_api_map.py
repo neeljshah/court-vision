@@ -15,7 +15,7 @@ import pytest
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.platform.kernel_api_map import (
+from scripts.platformkit.kernel_api_map import (
     build_api_map,
     diff_maps,
     main,

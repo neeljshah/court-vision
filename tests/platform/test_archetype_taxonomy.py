@@ -24,7 +24,7 @@ import textwrap
 
 import pytest
 
-from scripts.platform.atlas.archetype_taxonomy import build_taxonomy
+from scripts.platformkit.atlas.archetype_taxonomy import build_taxonomy
 
 _WIKILINK_RE = re.compile(r"\[\[.+?\]\]")
 _FRONTMATTER_RE = re.compile(r"^---\s*\n(.+?)\n---", re.DOTALL)

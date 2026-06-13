@@ -21,9 +21,9 @@ import numpy as np
 import pytest
 
 from kernel.validation import proof_metrics as K
-from scripts.platform.proof_tennis import proof_metrics as T
-from scripts.platform.proof_soccer import proof_metrics as S
-from scripts.platform.proof_mlb import proof_metrics as M
+from scripts.platformkit.proof_tennis import proof_metrics as T
+from scripts.platformkit.proof_soccer import proof_metrics as S
+from scripts.platformkit.proof_mlb import proof_metrics as M
 
 
 # ---------------------------------------------------------------------------

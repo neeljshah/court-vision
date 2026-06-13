@@ -22,7 +22,7 @@ import pathlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 from domains.basketball_nba.memory_atlas_scouting_render import render_profile, render_index
 
 # ---------------------------------------------------------------------------

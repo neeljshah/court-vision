@@ -2,7 +2,7 @@
 
 Internal module; do not import directly — use atlas_scouting.build_scouting().
 
-F5-clean: stdlib + scripts.platform.atlas.obsidian_emit only.
+F5-clean: stdlib + scripts.platformkit.atlas.obsidian_emit only.
 No edge/betting language.  No individual player names.
 """
 from __future__ import annotations
@@ -10,7 +10,7 @@ from __future__ import annotations
 import pathlib
 from typing import Dict, List, Optional, Tuple
 
-from scripts.platform.atlas.obsidian_emit import write_note as _write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note as _write_note
 
 
 # ---------------------------------------------------------------------------

@@ -25,7 +25,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]
-CAPTURE_DIR = ROOT / "scripts" / "platform" / "capture"
+CAPTURE_DIR = ROOT / "scripts" / "platformkit" / "capture"
 sys.path.insert(0, str(CAPTURE_DIR))
 
 import ledger_writer as _writer  # noqa: E402
