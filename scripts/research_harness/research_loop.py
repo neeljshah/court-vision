@@ -39,6 +39,14 @@ try:
 except Exception:  # pragma: no cover
     BeliefStore = None  # type: ignore[assignment,misc]
 
+# gap_observer imported gracefully — loop works without it.
+_GAP_OBSERVER_AVAILABLE: bool = False
+try:
+    from gap_observer import rank_gaps  # noqa: E402
+    _GAP_OBSERVER_AVAILABLE = True
+except Exception:  # pragma: no cover
+    rank_gaps = None  # type: ignore[assignment]
+
 # ---------------------------------------------------------------------------
 # Defaults
 # ---------------------------------------------------------------------------
@@ -58,12 +66,14 @@ def run_research_loop(
     beliefs_path: Optional[Path] = None,
     dry_run: bool = False,
     verbose: bool = True,
+    top_gaps_n: int = 5,
 ) -> Dict:
     """Run the end-to-end offline research pipeline.
 
     Returns a dict with keys: n_ingested, n_total, out_md, coverage_summary,
-    verdict_summary, skipped_no_data, beliefs_path, belief_summary.
+    verdict_summary, skipped_no_data, beliefs_path, belief_summary, top_gaps.
     belief_summary is {sport -> {family -> posterior_mean}} or {}.
+    top_gaps is a list of RankedGap (search-completeness ranking, not edge claims).
     """
     resolved_ledger = Path(ledger_path) if ledger_path else _DEFAULT_LEDGER
     resolved_out_md = Path(out_md) if out_md else _DEFAULT_OUT_MD
@@ -123,10 +133,29 @@ def run_research_loop(
     else:
         _log("[research_loop] Step 4: belief_store unavailable — skipping.")
 
-    # 5 — Render consolidated markdown note
-    _log("[research_loop] Step 5: rendering research note …")
+    # 5 — Compute top research gaps (search-completeness, not edge claims)
+    top_gaps: List = []
+    if _GAP_OBSERVER_AVAILABLE and rank_gaps is not None:
+        _log("[research_loop] Step 5: computing research gaps via gap_observer …")
+        try:
+            enumerator_results = compute_all_coverage()
+            top_gaps = rank_gaps(
+                enumerator_results=enumerator_results,
+                findings=ledger.all_findings(),
+                belief_store=belief_store,
+                top_n=top_gaps_n,
+            )
+            _log(f"  top_gaps computed: {len(top_gaps)} gaps ranked.")
+        except Exception as exc:  # pragma: no cover
+            _log(f"  [gap_observer] WARNING: rank_gaps failed ({exc}); skipping.")
+    else:
+        _log("[research_loop] Step 5: gap_observer unavailable — skipping.")
+
+    # 6 — Render consolidated markdown note
+    _log("[research_loop] Step 6: rendering research note …")
     md_content = render_writeup(ledger, generated_by="research_loop.py",
-                                belief_store=belief_store)
+                                belief_store=belief_store,
+                                gaps=top_gaps if top_gaps else None)
     if not dry_run:
         resolved_out_md.parent.mkdir(parents=True, exist_ok=True)
         resolved_out_md.write_text(md_content, encoding="utf-8")
@@ -134,7 +163,7 @@ def run_research_loop(
     else:
         _log(f"  [dry-run] would write {resolved_out_md} ({len(md_content)} chars)")
 
-    # 6 — Emit summary
+    # 7 — Emit summary
     n_after = ledger.summarize()["total"]
     verdict_counts = ledger.summarize()["by_verdict"]
     _log("\n" + coverage_summary)
@@ -153,6 +182,7 @@ def run_research_loop(
         "skipped_no_data": skipped_no_data,
         "beliefs_path": written_beliefs_path,
         "belief_summary": belief_summary,
+        "top_gaps": top_gaps,
     }
 
 
