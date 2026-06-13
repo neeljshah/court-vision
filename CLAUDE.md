@@ -31,11 +31,21 @@ Read these files in order, nothing else, before doing anything else:
 >
 > ⚠️ **Local-only paths** (gitignored — absent from a fresh clone): `docs/CLAUDE-state.md`, `.planning/`, `vault/`, `.claude/commands/`, `ROADMAP.md`, `docs/research/`, `docs/strategy/` (internal strategy/ops, kept private). Skip "Vault Auto-Maintenance", the "bot go" command files, and any `.planning/`/`ROADMAP.md` reference when working from a clean clone.
 
-### "bot go" — autonomous workday loop
-When the user's message is `bot go` (or `go` / `start` alone), read `.claude/commands/start-day.md` and execute it.
-`bot stop` → `python scripts/bot_guards/stop_bot.py`.
-Routing: **Opus** orchestrates, plans, reviews · **Sonnet** writes code (subagents) · Explore/Haiku search.
-Loop spec: `.claude/commands/workday-loop.md`.
+### "go" / "start working" — AUTONOMOUS NEVER-STOP PLATFORM BUILD (default)
+When the user's message is `go` / `start` / `start working` (or `bot go` / `bot go platform` /
+`/build-platform`), read `.claude/commands/build-platform.md` and execute it. This is the
+**never-stop** builder: Opus orchestrates·reviews·gates · **Fable makes every decision the user
+would make** (the loop never waits on a human — human-gates/`review:human`/for-review are all
+Fable-adjudicated) · a **2–3× parallel Sonnet fleet** writes code · Explore/Haiku search. It builds
+the kernel/adapter platform + NBA-completeness from `.planning/platform/` and **keeps building for
+days** — self-continues every wake, ending ONLY on `bot stop` or `program_complete`. First run
+bootstraps its own scripts (H0). `bot stop` (`python scripts/bot_guards/stop_bot.py`) brakes it
+cleanly. ABSOLUTE invariants it never violates even unattended: never pushes to public `origin`
+(private/local only), never writes `data/registry/`, never flips a flag ON, never claims an edge.
+
+### "bot go workday" — legacy CV/pipeline workday loop
+When the user's message is explicitly `bot go workday`, read `.claude/commands/start-day.md`
+(loop spec `.claude/commands/workday-loop.md`).
 
 ### Task → Files
 | Task | Load only |
