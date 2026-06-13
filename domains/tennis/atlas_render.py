@@ -8,14 +8,12 @@ F5-clean: stdlib + pandas only.  No edge/betting language.
 from __future__ import annotations
 
 import pathlib
-import re
 
 import pandas as pd
 
-PRIMARY_SURFACES: tuple[str, ...] = ("Hard", "Clay", "Grass")
+from scripts.platform.atlas.obsidian_emit import write_note
 
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
+PRIMARY_SURFACES: tuple[str, ...] = ("Hard", "Clay", "Grass")
 
 
 def _opt_pct(val: object) -> str:
@@ -91,11 +89,8 @@ f"- **Median {surface} win-rate:** {median_wr}",
 f"#sport/tennis #surface/{surface.lower()}",
     ]
 
-    surf_dir = out_dir / "Surfaces"
-    surf_dir.mkdir(parents=True, exist_ok=True)
-    path = surf_dir / f"{surface}.md"
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return path
+    path = out_dir / "Surfaces" / f"{surface}.md"
+    return write_note(path, "\n".join(lines) + "\n")
 
 
 # ---------------------------------------------------------------------------
@@ -178,11 +173,8 @@ f"`{recent_display}`",
 "#sport/tennis #player",
     ]
 
-    players_dir = out_dir / "Players"
-    players_dir.mkdir(parents=True, exist_ok=True)
-    path = players_dir / f"{name}.md"
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return path
+    path = out_dir / "Players" / f"{name}.md"
+    return write_note(path, "\n".join(lines) + "\n")
 
 
 # ---------------------------------------------------------------------------
@@ -261,8 +253,7 @@ elo_summary,
     ]
 
     path = out_dir / "_Index.md"
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return path
+    return write_note(path, "\n".join(lines) + "\n")
 
 
 # ---------------------------------------------------------------------------
