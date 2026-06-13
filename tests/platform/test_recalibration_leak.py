@@ -173,27 +173,15 @@ def test_output_bounds_extreme_probs():
 # (5) NaN / inf INPUTS
 # ---------------------------------------------------------------------------
 
-# FINDING: walk_forward_recalibrate does NOT guard NaN/inf in raw_probs.
-# np.asarray converts, then IsotonicRegression.fit(p[:i], y[:i]) where p[:i]
-# contains NaN causes sklearn to raise or produce NaN output.
-# The wrapper measure_recal() filters NaN before calling, but the core function
-# itself is unguarded.  We mark these xfail(strict=False) so a real gap is
-# reported but the suite is not blocked if sklearn happens to handle it.
+# The core walk_forward_recalibrate now guards NaN/inf: invalid entries are
+# dropped from the fit window, and invalid query points are passed through.
+# These were xfail; they are now real PASS assertions.
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "FINDING: walk_forward_recalibrate does not guard NaN in raw_probs. "
-        "IsotonicRegression.fit receives NaN-contaminated X once i > NaN index. "
-        "The wrapper measure_recal() filters NaN before calling, but the core "
-        "function is unguarded. Real finding — not a fake pass."
-    ),
-)
 def test_nan_in_raw_probs_does_not_crash():
-    """NaN in raw_probs should not crash; output at non-NaN indices should be finite."""
+    """NaN in raw_probs must not crash; output at non-NaN indices must be finite."""
     raw_with_nan = _RAW.copy()
-    raw_with_nan[55] = float("nan")  # past warmup, will poison future IR fits
+    raw_with_nan[55] = float("nan")  # past warmup, was poisoning future IR fits
 
     cal = walk_forward_recalibrate(raw_with_nan, _OUT, min_history=_MIN_H)
 
@@ -203,40 +191,33 @@ def test_nan_in_raw_probs_does_not_crash():
     )
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "FINDING: walk_forward_recalibrate does not guard inf in raw_probs. "
-        "IsotonicRegression.fit with inf in X has undefined behavior. "
-        "Real finding — not a fake pass."
-    ),
-)
 def test_inf_in_raw_probs_does_not_crash():
-    """inf in raw_probs should not crash; all outputs should stay finite."""
+    """inf in raw_probs must not crash; all finite-input outputs must stay finite."""
     raw_with_inf = _RAW.copy()
     raw_with_inf[60] = float("inf")
 
     cal = walk_forward_recalibrate(raw_with_inf, _OUT, min_history=_MIN_H)
 
-    assert np.all(np.isfinite(cal)), (
-        f"Inf input produced non-finite calibrated output: "
-        f"{cal[~np.isfinite(cal)]}"
+    # The inf entry itself passes through (clipped to 1.0); all others finite.
+    finite_mask = np.isfinite(raw_with_inf)
+    assert np.all(np.isfinite(cal[finite_mask])), (
+        f"Finite-input positions produced non-finite calibrated output: "
+        f"{cal[finite_mask][~np.isfinite(cal[finite_mask])]}"
+    )
+    assert np.all(cal >= 0.0) and np.all(cal <= 1.0), (
+        f"Output out of [0, 1]: min={cal.min():.6f}, max={cal.max():.6f}"
     )
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "FINDING: walk_forward_recalibrate does not guard NaN in outcomes. "
-        "IsotonicRegression.fit raises ValueError('Input y contains NaN.') "
-        "once the NaN-contaminated outcome enters the fit window. "
-        "Real gap — not a fake pass."
-    ),
-)
 def test_nan_in_outcomes_does_not_crash():
-    """NaN in outcomes should not crash the function."""
+    """NaN in outcomes must not crash the function; output must stay bounded."""
     out_with_nan = _OUT.copy()
     out_with_nan[55] = float("nan")
 
     cal = walk_forward_recalibrate(_RAW, out_with_nan, min_history=_MIN_H)
-    _ = cal  # consume; NaN propagation in output is acceptable if noted
+
+    # Output is a valid array (no exception); all values in [0, 1].
+    assert cal is not None
+    assert np.all(cal >= 0.0) and np.all(cal <= 1.0), (
+        f"Output out of [0, 1] with NaN outcome: min={cal.min():.6f}, max={cal.max():.6f}"
+    )

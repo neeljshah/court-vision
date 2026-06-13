@@ -91,9 +91,21 @@ def walk_forward_calibrate(
             # Not enough history — pass through raw
             calibrated[i] = float(p[i])
         else:
-            # Fit on strictly-before window, transform event i
-            ir.fit(p[:i], y[:i])
-            calibrated[i] = float(ir.transform([p[i]])[0])
+            # Guard: drop pairs where raw_prob or outcome is NaN/inf so
+            # IsotonicRegression never receives invalid data.  For all-finite
+            # inputs the mask is all-True and behaviour is bit-identical.
+            valid_window = np.isfinite(p[:i]) & np.isfinite(y[:i])
+            if valid_window.any():
+                ir.fit(p[:i][valid_window], y[:i][valid_window])
+                # If the query point itself is invalid, pass it through as-is
+                # (np.clip below keeps finite values in [0,1], leaves NaN alone).
+                if np.isfinite(p[i]):
+                    calibrated[i] = float(ir.transform([p[i]])[0])
+                else:
+                    calibrated[i] = float(p[i])
+            else:
+                # No valid history yet — pass through raw.
+                calibrated[i] = float(p[i])
 
     return np.clip(calibrated, 0.0, 1.0)
 
