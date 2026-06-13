@@ -14,7 +14,7 @@ import re
 
 import pytest
 
-from scripts.platform.atlas.graph_health import _is_intentional, build_graph_health
+from scripts.platformkit.atlas.graph_health import _is_intentional, build_graph_health
 
 
 # -- helpers ------------------------------------------------------------------

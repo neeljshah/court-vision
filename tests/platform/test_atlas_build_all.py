@@ -25,7 +25,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.platform.atlas.build_all import (
+from scripts.platformkit.atlas.build_all import (
     _SPORT_MANIFEST,
     _derive_domain,
     main,

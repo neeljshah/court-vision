@@ -32,7 +32,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]
-_OBS_DIR = ROOT / "scripts" / "platform" / "obs"
+_OBS_DIR = ROOT / "scripts" / "platformkit" / "obs"
 if str(_OBS_DIR) not in sys.path:
     sys.path.insert(0, str(_OBS_DIR))
 if str(ROOT) not in sys.path:

@@ -1,4 +1,4 @@
-"""test_slo.py — Acceptance tests for scripts/platform/obs/slo.py.
+"""test_slo.py — Acceptance tests for scripts/platformkit/obs/slo.py.
 
 Verification criteria
 ---------------------
@@ -20,9 +20,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-# Make slo.py importable directly (scripts/platform/obs on sys.path)
+# Make slo.py importable directly (scripts/platformkit/obs on sys.path)
 ROOT = Path(__file__).resolve().parents[2]
-_OBS_DIR = ROOT / "scripts" / "platform" / "obs"
+_OBS_DIR = ROOT / "scripts" / "platformkit" / "obs"
 if str(_OBS_DIR) not in sys.path:
     sys.path.insert(0, str(_OBS_DIR))
 

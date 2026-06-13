@@ -4,14 +4,14 @@ MLB style-vs-style matchup matrix notes.
 Pure rendering functions: each accepts structured data and returns a string.
 No I/O, no pandas — the orchestrator (atlas_style_matchups.py) handles that.
 
-Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
+Import contract (F5-clean): stdlib + scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List
 
-from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
+from scripts.platformkit.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------

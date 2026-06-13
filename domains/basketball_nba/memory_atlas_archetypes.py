@@ -17,7 +17,7 @@ from typing import Optional
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = _REPO_ROOT / "data"

@@ -22,10 +22,10 @@ _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.platform.atlas.build_all import (
+from scripts.platformkit.atlas.build_all import (
     _EXTRA_GENS, _META_GENS, _SPORT_MANIFEST, _derive_domain, main,
 )
-from scripts.platform.atlas.graph_health import build_graph_health
+from scripts.platformkit.atlas.graph_health import build_graph_health
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ def _build_full_patches(out_dir: pathlib.Path):
         setattr(patches[full_mod], fn_name, _stub_extra)
 
     for meta_mod, meta_fn in _META_GENS:
-        full_meta = f"scripts.platform.atlas.{meta_mod}"
+        full_meta = f"scripts.platformkit.atlas.{meta_mod}"
         m = types.ModuleType(full_meta)
         meta_out = out_dir / f"_{meta_mod}.md"
 

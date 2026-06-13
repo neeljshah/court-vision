@@ -22,7 +22,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from scripts.platform.atlas.build_all import (
+from scripts.platformkit.atlas.build_all import (
     _CAT,
     _EXTRA_GENS,
     _META_GENS,
@@ -111,7 +111,7 @@ def _patch_full_adapters(tmp_out: Path):
     # META generators from _META_GENS
     meta_called: List[str] = []
     for (meta_mod, meta_fn) in _META_GENS:
-        full_meta = f"scripts.platform.atlas.{meta_mod}"
+        full_meta = f"scripts.platformkit.atlas.{meta_mod}"
         m = types.ModuleType(full_meta)
         captured_fn = meta_fn
         meta_out = tmp_out / f"_{meta_mod}.md"
@@ -176,7 +176,7 @@ def test_full_flag_skips_absent_extras_gracefully(tmp_path: Path) -> None:
 
     # Stub meta generators minimally
     for meta_mod, meta_fn in _META_GENS:
-        full_meta = f"scripts.platform.atlas.{meta_mod}"
+        full_meta = f"scripts.platformkit.atlas.{meta_mod}"
         m = types.ModuleType(full_meta)
         meta_out = out_dir / f"_{meta_mod}.md"
         def _meta_stub(vault_sports_dir: Path = out_dir, p=meta_out) -> Path:

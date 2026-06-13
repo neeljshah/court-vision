@@ -33,7 +33,7 @@ import numpy as np
 import pandas as pd
 
 from domains.tennis.elo_core import BASE_RATING, replay
-from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Constants

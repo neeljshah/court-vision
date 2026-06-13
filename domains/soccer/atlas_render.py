@@ -12,7 +12,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import slug as _slug
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug
 
 
 # ---------------------------------------------------------------------------

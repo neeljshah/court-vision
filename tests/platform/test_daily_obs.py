@@ -1,4 +1,4 @@
-"""test_daily_obs.py — Acceptance tests for scripts/platform/obs/daily_obs.py.
+"""test_daily_obs.py — Acceptance tests for scripts/platformkit/obs/daily_obs.py.
 
 Verification criteria
 ---------------------
@@ -33,7 +33,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[2]
-_OBS_DIR = ROOT / "scripts" / "platform" / "obs"
+_OBS_DIR = ROOT / "scripts" / "platformkit" / "obs"
 if str(_OBS_DIR) not in sys.path:
     sys.path.insert(0, str(_OBS_DIR))
 
@@ -41,7 +41,7 @@ if str(_OBS_DIR) not in sys.path:
 # Import the module under test
 # ---------------------------------------------------------------------------
 
-# daily_obs lives under scripts/platform/obs; import via file path so the
+# daily_obs lives under scripts/platformkit/obs; import via file path so the
 # test does not depend on package __init__ wiring.
 import importlib.util  # noqa: E402
 

@@ -14,7 +14,7 @@ from typing import Any, Optional
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import slug as _slug_fn, write_note
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug_fn, write_note
 
 NBA_DIVISIONS: dict[str, list[str]] = {
     "Atlantic": ["BOS", "BKN", "NYK", "PHI", "TOR"], "Central": ["CHI", "CLE", "DET", "IND", "MIL"],

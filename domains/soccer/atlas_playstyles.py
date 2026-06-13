@@ -28,7 +28,7 @@ from typing import Dict, List, NamedTuple
 import pandas as pd
 
 from domains.soccer.config import LEAGUES  # noqa: F401  (F5 in-domain import check)
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Constants

@@ -35,10 +35,10 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from domains.soccer.adapter import SoccerAdapter
-from scripts.platform.proof_soccer.proof_runner import (
+from scripts.platformkit.proof_soccer.proof_runner import (
     run_v1, run_v2, run_v3, run_v4,
 )
-from scripts.platform.proof_soccer.run_proof import main, write_report
+from scripts.platformkit.proof_soccer.run_proof import main, write_report
 
 
 # ---------------------------------------------------------------------------
@@ -271,8 +271,8 @@ _FORBIDDEN_MODULES = [
 ]
 
 _SOURCE_FILES = [
-    _REPO / "scripts" / "platform" / "proof_soccer" / "proof_runner.py",
-    _REPO / "scripts" / "platform" / "proof_soccer" / "run_proof.py",
+    _REPO / "scripts" / "platformkit" / "proof_soccer" / "proof_runner.py",
+    _REPO / "scripts" / "platformkit" / "proof_soccer" / "run_proof.py",
 ]
 
 

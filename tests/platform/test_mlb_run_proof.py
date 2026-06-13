@@ -25,8 +25,8 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from domains.mlb.adapter import MLBAdapter
-from scripts.platform.proof_mlb.proof_runner import run_v1, run_v2, run_v3, run_v4
-from scripts.platform.proof_mlb.run_proof import main, write_report
+from scripts.platformkit.proof_mlb.proof_runner import run_v1, run_v2, run_v3, run_v4
+from scripts.platformkit.proof_mlb.run_proof import main, write_report
 
 # ---------------------------------------------------------------------------
 # Synthetic corpus
@@ -192,8 +192,8 @@ def test_report_disclaimer_and_falsifiers(adapter: MLBAdapter) -> None:
 _FORBIDDEN = ["domains.tennis", "domains.soccer", "domains.nba", "domains.basketball_nba",
               "src.data", "src.sim", "src.tracking", "src.pipeline"]
 _SOURCES = [
-    _REPO / "scripts" / "platform" / "proof_mlb" / "proof_runner.py",
-    _REPO / "scripts" / "platform" / "proof_mlb" / "run_proof.py",
+    _REPO / "scripts" / "platformkit" / "proof_mlb" / "proof_runner.py",
+    _REPO / "scripts" / "platformkit" / "proof_mlb" / "run_proof.py",
 ]
 
 

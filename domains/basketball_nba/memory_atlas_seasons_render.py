@@ -18,7 +18,7 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Formatting helpers

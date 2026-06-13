@@ -1,4 +1,4 @@
-"""Tests for scripts/platform/proof_common/spec.py — ProofSpec contract."""
+"""Tests for scripts/platformkit/proof_common/spec.py — ProofSpec contract."""
 from __future__ import annotations
 
 import dataclasses
@@ -12,10 +12,10 @@ import pytest
 
 # ---------------------------------------------------------------------------
 # Ensure the repo root is importable so proof_common can be found via the
-# scripts/platform path on sys.path.
+# scripts/platformkit path on sys.path.
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_PLATFORM = REPO_ROOT / "scripts" / "platform"
+SCRIPTS_PLATFORM = REPO_ROOT / "scripts" / "platformkit"
 if str(SCRIPTS_PLATFORM) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_PLATFORM))
 

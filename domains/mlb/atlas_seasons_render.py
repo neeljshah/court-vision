@@ -3,14 +3,14 @@
 Pure rendering functions: each takes structured data and returns a Markdown string.
 No I/O, no pandas — atlas_seasons.py handles orchestration.
 
-Import contract (F5-clean): stdlib + scripts.platform.atlas.obsidian_emit only.
+Import contract (F5-clean): stdlib + scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
 import math
 from typing import Any, Dict, List, Tuple
 
-from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict
+from scripts.platformkit.atlas.obsidian_emit import frontmatter as _fm_dict
 
 
 # ---------------------------------------------------------------------------

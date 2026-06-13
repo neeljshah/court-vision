@@ -11,7 +11,7 @@ import pathlib
 
 import pytest
 
-from scripts.platform.atlas.obsidian_emit import (
+from scripts.platformkit.atlas.obsidian_emit import (
     frontmatter,
     md_table,
     slug,
@@ -204,7 +204,7 @@ def test_obsidian_emit_import_contract() -> None:
 
     src = (
         pathlib.Path(__file__).resolve().parents[2]
-        / "scripts" / "platform" / "atlas" / "obsidian_emit.py"
+        / "scripts" / "platformkit" / "atlas" / "obsidian_emit.py"
     )
     tree = ast.parse(src.read_text(encoding="utf-8"))
     banned = {"src", "kernel", "domains", "nba_api", "api", "numpy", "pandas",

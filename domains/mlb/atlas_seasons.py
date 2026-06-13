@@ -14,7 +14,7 @@ No betting/edge language: descriptive standings only.
 Records are honest corpus regular-season counts (no playoff data).
 
 Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ import pandas as pd
 
 from domains.mlb.config import resolve_league
 from domains.mlb.atlas_seasons_render import render_season, render_seasons_index
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths

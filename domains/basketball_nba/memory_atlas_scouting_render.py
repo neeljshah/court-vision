@@ -16,7 +16,7 @@ from __future__ import annotations
 import pathlib
 from typing import Dict, List, Optional, Tuple
 
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 
 # ---------------------------------------------------------------------------

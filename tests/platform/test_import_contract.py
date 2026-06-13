@@ -21,7 +21,7 @@ from typing import List
 
 import pytest
 
-from scripts.platform.check_import_contract import Violation, check
+from scripts.platformkit.check_import_contract import Violation, check
 
 
 # ---------------------------------------------------------------------------

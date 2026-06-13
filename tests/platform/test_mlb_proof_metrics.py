@@ -1,4 +1,4 @@
-"""Known-value tests for scripts.platform.proof_mlb.proof_metrics.
+"""Known-value tests for scripts.platformkit.proof_mlb.proof_metrics.
 
 All tests use only stdlib + numpy.  No src.*, domains.*, torch, or FastAPI.
 """
@@ -9,7 +9,7 @@ import math
 import numpy as np
 import pytest
 
-from scripts.platform.proof_mlb.proof_metrics import (
+from scripts.platformkit.proof_mlb.proof_metrics import (
     _devig2,
     brier,
     clv_sign_invariants,

@@ -13,7 +13,7 @@ All numbers are derived from the real data — no fabricated stats.
 No betting/edge language: descriptive scouting intelligence only.
 
 Import contract (F5-clean): stdlib + pathlib + pandas + domains.mlb.* +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Tuple
 import pandas as pd
 
 from domains.mlb.config import LEAGUE_MAP, resolve_league
-from scripts.platform.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
+from scripts.platformkit.atlas.obsidian_emit import frontmatter as _fm_dict, write_note
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 _DEFAULT_CORPUS = _REPO_ROOT / "data" / "domains" / "mlb"

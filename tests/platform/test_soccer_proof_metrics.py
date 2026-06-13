@@ -1,4 +1,4 @@
-"""Tests for scripts.platform.proof_soccer.proof_metrics (soccer O/U-2.5 proof).
+"""Tests for scripts.platformkit.proof_soccer.proof_metrics (soccer O/U-2.5 proof).
 
 Known-value tests — all pure functions, no src.* or domains.* imports needed.
 """
@@ -9,7 +9,7 @@ import math
 import numpy as np
 import pytest
 
-from scripts.platform.proof_soccer.proof_metrics import (
+from scripts.platformkit.proof_soccer.proof_metrics import (
     _devig2,
     brier,
     clv_sign_invariants,

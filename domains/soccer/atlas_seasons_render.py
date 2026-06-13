@@ -10,7 +10,7 @@ from __future__ import annotations
 import datetime
 from typing import Dict, List
 
-from scripts.platform.atlas.obsidian_emit import slug as _slug
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug
 
 
 # ---------------------------------------------------------------------------

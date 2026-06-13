@@ -1,4 +1,4 @@
-"""test_check_shims.py — Acceptance tests for scripts/platform/check_shims.py.
+"""test_check_shims.py — Acceptance tests for scripts/platformkit/check_shims.py.
 
 Test matrix
 -----------
@@ -28,7 +28,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts" / "platform"))
+sys.path.insert(0, str(ROOT / "scripts" / "platformkit"))
 
 from check_shims import (  # noqa: E402
     ShimResult, PickleResult,

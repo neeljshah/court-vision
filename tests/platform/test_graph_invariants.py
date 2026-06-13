@@ -16,7 +16,7 @@ import pathlib
 
 import pytest
 
-from scripts.platform.atlas.graph_health import (
+from scripts.platformkit.atlas.graph_health import (
     _is_intentional,
     _is_person_bearing,
     _scan_vault,

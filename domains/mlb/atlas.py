@@ -14,7 +14,7 @@ No betting/edge language: descriptive scouting intelligence only.
 
 Import contract (F5-clean): stdlib + pathlib + pandas + numpy +
 domains.mlb.config + domains.mlb.ratings +
-scripts.platform.atlas.obsidian_emit only.
+scripts.platformkit.atlas.obsidian_emit only.
 """
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ from domains.mlb.atlas_render import (
     render_league,
     render_team,
 )
-from scripts.platform.atlas.obsidian_emit import write_note
+from scripts.platformkit.atlas.obsidian_emit import write_note
 
 # ---------------------------------------------------------------------------
 # Default paths

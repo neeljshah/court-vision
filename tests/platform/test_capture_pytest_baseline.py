@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from scripts.platform.capture_pytest_baseline import (
+from scripts.platformkit.capture_pytest_baseline import (
     g1_compare,
     load_baseline,
     parse_durations,

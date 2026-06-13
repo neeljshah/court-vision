@@ -76,7 +76,7 @@ These live directly in `vault/Sports/` rather than inside a sport subfolder.
 One command rebuilds the entire graph from the committed corpora:
 
 ```bash
-python scripts/platform/atlas/build_all.py --sport all --full
+python scripts/platformkit/atlas/build_all.py --sport all --full
 ```
 
 **What it does, in order:**
@@ -95,8 +95,8 @@ python scripts/platform/atlas/build_all.py --sport all --full
 **Single-sport rebuild:**
 
 ```bash
-python scripts/platform/atlas/build_all.py --sport tennis --full
-python scripts/platform/atlas/build_all.py --sport nba
+python scripts/platformkit/atlas/build_all.py --sport tennis --full
+python scripts/platformkit/atlas/build_all.py --sport nba
 ```
 
 Valid `--sport` values: `tennis`, `soccer`, `mlb`, `nba`, `basketball_nba`, `all`.
@@ -110,7 +110,7 @@ All builders are idempotent: rerunning overwrites with identical content.
 ## Code Layout
 
 ```
-scripts/platform/atlas/          # cross-sport drivers + meta generators
+scripts/platformkit/atlas/          # cross-sport drivers + meta generators
     build_all.py                 # main entry; _SPORT_MANIFEST, _EXTRA_GENS, _META_GENS
     obsidian_emit.py             # shared primitives: slug(), frontmatter(), write_note(), md_table()
     graph_report.py              # build_graph_report()
@@ -212,7 +212,7 @@ and cross-season holdout before any edge claim is permitted.
 ## Adding a Fifth Sport
 
 1. Create `domains/<sport>/` with a `build_atlas(out_dir, corpus_dir)` function.
-2. Add a row to `_SPORT_MANIFEST` in `scripts/platform/atlas/build_all.py`.
+2. Add a row to `_SPORT_MANIFEST` in `scripts/platformkit/atlas/build_all.py`.
 3. Optionally add `_EXTRA_GENS` rows for the optional builders you implement.
 4. Ensure all emitted notes pass `test_generators_person_free` and
    `test_graph_invariants`.
@@ -275,6 +275,6 @@ vault/Sports/
 ---
 
 *Auto-maintained by the platform build. Re-run
-`python scripts/platform/atlas/build_all.py --sport all --full`
+`python scripts/platformkit/atlas/build_all.py --sport all --full`
 to refresh the vault. This doc describes the generators; the vault output is
 gitignored and local-only.*

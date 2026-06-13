@@ -10,7 +10,7 @@ import textwrap
 
 import pytest
 
-from scripts.platform.atlas.intelligence_overview import build_intelligence_overview
+from scripts.platformkit.atlas.intelligence_overview import build_intelligence_overview
 
 
 def _write(path: pathlib.Path, content: str) -> None:

@@ -27,7 +27,7 @@ from kernel.config.game_state import GameStateConfig
 from kernel.config.roster import PositionSchema, RosterConfig
 from kernel.config.stats import SportStatRegistry, StatSpec
 from kernel.testing.fixtures import make_toyball_context
-from scripts.platform.validate_adapter import (
+from scripts.platformkit.validate_adapter import (
     Status,
     print_scorecard,
     validate_context,

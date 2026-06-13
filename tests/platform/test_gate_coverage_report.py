@@ -18,7 +18,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "scripts" / "platform"))
+sys.path.insert(0, str(ROOT / "scripts" / "platformkit"))
 
 from gate_coverage_report import (  # noqa: E402
     _parse_flags_from_source,

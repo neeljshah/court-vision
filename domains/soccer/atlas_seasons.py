@@ -20,7 +20,7 @@ from typing import Dict, List, Tuple
 import pandas as pd
 
 from domains.soccer.config import LEAGUES
-from scripts.platform.atlas.obsidian_emit import slug as _slug, write_note
+from scripts.platformkit.atlas.obsidian_emit import slug as _slug, write_note
 
 # ---------------------------------------------------------------------------
 # Constants

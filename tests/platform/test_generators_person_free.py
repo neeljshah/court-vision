@@ -29,7 +29,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # Person-free checker — reuse the CONSERVATIVE patterns from graph_health.py
 # ---------------------------------------------------------------------------
-from scripts.platform.atlas.graph_health import _is_person_bearing
+from scripts.platformkit.atlas.graph_health import _is_person_bearing
 
 _WIKILINK_RE = re.compile(r"\[\[([^\]|#\n]+)")
 
@@ -193,14 +193,14 @@ class TestNBAMemoryAtlas:
 
 
 class TestSignalsHub:
-    """build_signals_hub — scripts.platform.atlas.signals_hub.
+    """build_signals_hub — scripts.platformkit.atlas.signals_hub.
 
     Driven with a synthetic vault/Sports dir containing one sport with a
     minimal _Catalog.md verdict table.  No person-bearing content in input.
     """
 
     def test_person_free_and_well_formed(self, tmp_path: pathlib.Path) -> None:
-        from scripts.platform.atlas.signals_hub import build_signals_hub
+        from scripts.platformkit.atlas.signals_hub import build_signals_hub
 
         # Build a minimal vault/Sports/<Sport>/Signals/_Catalog.md
         sports_dir = tmp_path / "Sports"
@@ -225,13 +225,13 @@ class TestSignalsHub:
 
 
 class TestArchetypeTaxonomy:
-    """build_taxonomy — scripts.platform.atlas.archetype_taxonomy.
+    """build_taxonomy — scripts.platformkit.atlas.archetype_taxonomy.
 
     Driven with a synthetic vault/Sports dir with two archetype notes.
     """
 
     def test_person_free_and_well_formed(self, tmp_path: pathlib.Path) -> None:
-        from scripts.platform.atlas.archetype_taxonomy import build_taxonomy
+        from scripts.platformkit.atlas.archetype_taxonomy import build_taxonomy
 
         sports_dir = tmp_path / "Sports"
         # Two minimal archetype notes (no person-bearing content)
@@ -256,14 +256,14 @@ class TestArchetypeTaxonomy:
 
 
 class TestIntelligenceOverview:
-    """build_intelligence_overview — scripts.platform.atlas.intelligence_overview.
+    """build_intelligence_overview — scripts.platformkit.atlas.intelligence_overview.
 
     Driven with an empty (but valid) vault/Sports dir.  All optional source
     notes are absent; the generator must still write a valid, person-free note.
     """
 
     def test_person_free_and_well_formed(self, tmp_path: pathlib.Path) -> None:
-        from scripts.platform.atlas.intelligence_overview import build_intelligence_overview
+        from scripts.platformkit.atlas.intelligence_overview import build_intelligence_overview
 
         sports_dir = tmp_path / "Sports"
         sports_dir.mkdir(parents=True)

@@ -22,7 +22,7 @@ from domains.tennis.atlas_playstyle_specs import (
     GRASS_SPECIALIST_DELTA, HARD_SPECIALIST_DELTA,
     HEIGHT_BIG_SERVER, MIN_MATCHES, MIN_SURFACE_MATCHES,
 )
-from scripts.platform.atlas.obsidian_emit import write_note as _write
+from scripts.platformkit.atlas.obsidian_emit import write_note as _write
 
 DEFAULT_CORPUS: pathlib.Path = (
     pathlib.Path(__file__).resolve().parents[2] / "data" / "domains" / "tennis"
