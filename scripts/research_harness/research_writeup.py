@@ -62,6 +62,7 @@ def render_writeup(
     title: Optional[str] = None,
     generated_by: str = "research_writeup.py",
     belief_store: Optional[object] = None,
+    gaps: Optional[List] = None,
 ) -> str:
     """Render research findings as a markdown document.
 
@@ -74,6 +75,11 @@ def render_writeup(
                     row also shows its posterior ship-rate mean + 95% CI.
                     When None (default), existing behaviour is unchanged.
                     P(ship) is a historical ship-rate prior, NOT an edge claim.
+    gaps          : optional list of RankedGap from gap_observer.rank_gaps.
+                    When supplied, a "Highest-Value Next Questions" section is
+                    appended.  When None (default), the section is omitted and
+                    existing behaviour is unchanged.  UNTESTED != opportunity;
+                    ranking reflects search completeness, not expected profit.
 
     Returns
     -------
@@ -115,7 +121,6 @@ def render_writeup(
 
     if not findings:
         lines.append("*No findings recorded yet.*\n")
-        return "\n".join(lines)
 
     # Per-sport sections
     for sport in sorted(by_sport):
@@ -163,6 +168,36 @@ def render_writeup(
                 lines.append(
                     f"**What would change my mind:** {f.what_would_change_my_mind}\n"
                 )
+
+    # Highest-Value Next Questions (search completeness only, never edge claims)
+    if gaps:
+        lines.append("---\n")
+        lines.append("## Highest-Value Next Questions (search-completeness, not edges)\n")
+        lines.append(
+            "> **Honest framing:** expected outcome of testing any gap is **REJECT** — "
+            "markets are efficient and every tested family in this codebase rejects.  "
+            "**UNTESTED != opportunity.**  Ranking = scientific thoroughness "
+            "(coverage breadth × posterior uncertainty), NOT expected profit.  "
+            "No edge is claimed.\n"
+        )
+        for g in gaps:
+            sport = getattr(g, "sport", "?")
+            family = getattr(g, "family", "?")
+            score = getattr(g, "score", 0.0)
+            rationale = getattr(g, "rationale", "")
+            what = getattr(g, "what_would_settle_it", "")
+            verdicts = getattr(g, "verdict_history", [])
+            verdict_str = ", ".join(verdicts) if verdicts else "(none — UNTESTED)"
+            lines.append(
+                f"### Rank #{getattr(g, 'rank', '?')}  [{sport}]  `{family}`\n"
+            )
+            lines.append(f"**Score:** {score:.4f}  |  **Verdicts so far:** {verdict_str}\n")
+            lines.append(f"**Rationale:** {rationale}\n")
+            lines.append(f"**To settle it:** {what}\n")
+        lines.append(
+            "> *Completing these gaps improves search completeness, not profit.  "
+            "Markets are efficient; UNTESTED != opportunity.*\n"
+        )
 
     # Footer
     lines.append("---")
