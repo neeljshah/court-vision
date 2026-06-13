@@ -61,7 +61,7 @@ _EXTRA_GENS: List[Tuple[str, str, str, str, str]] = [
 _META_GENS: List[Tuple[str, str]] = [
     ("graph_report", "build_graph_report"), ("signals_hub", "build_signals_hub"),
     ("archetype_taxonomy", "build_taxonomy"), ("intelligence_overview", "build_intelligence_overview"),
-    ("graph_health", "build_graph_health"),
+    ("graph_health", "build_graph_health"), ("world_model", "build_world_model"),
 ]
 # --with-catalogs: (loader_mod, cat_mod, joint_mod, joint_fn, seasons, display, corpus_hint)
 # joint_fn: tennis/soccer="run_joint_catalog"; mlb joint module uses "run_catalog".
