@@ -142,10 +142,15 @@ def _archetype_note(arch: dict, population: int, typical_pos: str) -> str:
     )
 
 
+def _label_to_slug(label: str) -> str:
+    """Convert display label to filesystem slug (spaces→_, hyphens→_)."""
+    return label.replace(" ", "_").replace("-", "_")
+
+
 def _index_note(counts: list[tuple[str, int]]) -> str:
     total = sum(c for _, c in counts)
     rows = "\n".join(
-        f"| [[{lb}|{lb}]] | {ct} | {100 * ct / total:.1f}% |"
+        f"| [[{_label_to_slug(lb)}|{lb}]] | {ct} | {100 * ct / total:.1f}% |"
         for lb, ct in sorted(counts, key=lambda x: -x[1])
     )
     return (
