@@ -6,6 +6,7 @@ Verifies:
 3. --sport filter selects only the requested sport.
 4. A missing sport module is skipped gracefully (no crash, exit 0).
 5. write_hub is idempotent.
+6. Tournaments/ built for tennis; Seasons/ built for soccer/mlb/nba.
 All output goes to tmp_path — no file is written to the committed tree.
 """
 from __future__ import annotations
@@ -36,6 +37,9 @@ from scripts.platform.atlas.build_all import (
 _H2H_DOMAINS = {"tennis", "soccer", "mlb"}
 _PLAYSTYLE_DOMAINS = {"tennis", "soccer", "mlb"}
 _ARCHETYPE_DOMAIN = "basketball_nba"
+_TOURNAMENT_DOMAINS = {"tennis"}
+_SEASONS_DOMAINS = {"soccer", "mlb"}
+_SEASONS_NBA_DOMAIN = "basketball_nba"
 
 
 def _make_stub_builder(prefix: str, note_count: int = 2, index: bool = False):
@@ -54,7 +58,7 @@ def _make_stub_builder(prefix: str, note_count: int = 2, index: bool = False):
 
 
 def _patch_all_adapters(note_count: int = 2):
-    """Patch every adapter + h2h/playstyle/archetype sibling into sys.modules."""
+    """Patch every adapter + h2h/playstyle/archetype/tournament/seasons sibling into sys.modules."""
     patches = {}
     for _sid, _name, adapter_module, _ in _SPORT_MANIFEST:
         mod = types.ModuleType(adapter_module)
@@ -78,6 +82,23 @@ def _patch_all_adapters(note_count: int = 2):
             arc_mod = types.ModuleType(arc_name)
             arc_mod.build_archetypes = _make_stub_builder("arc", 2)  # type: ignore
             patches[arc_name] = arc_mod
+
+        if domain in _TOURNAMENT_DOMAINS:
+            trn_name = f"domains.{domain}.atlas_tournaments"
+            trn_mod = types.ModuleType(trn_name)
+            trn_mod.build_tournaments = _make_stub_builder("trn", 2)  # type: ignore
+            patches[trn_name] = trn_mod
+
+        if domain in _SEASONS_DOMAINS:
+            sea_name = f"domains.{domain}.atlas_seasons"
+            sea_mod = types.ModuleType(sea_name)
+            sea_mod.build_seasons = _make_stub_builder("sea", 2)  # type: ignore
+            patches[sea_name] = sea_mod
+        elif domain == _SEASONS_NBA_DOMAIN:
+            sea_name = f"domains.{domain}.memory_atlas_seasons"
+            sea_mod = types.ModuleType(sea_name)
+            sea_mod.build_seasons = _make_stub_builder("sea", 2)  # type: ignore
+            patches[sea_name] = sea_mod
 
     return mock.patch.dict("sys.modules", patches)
 
@@ -224,3 +245,31 @@ def test_playstyles_and_archetypes_built(tmp_path: Path) -> None:
     assert list(nba_arc.glob("*.md")), "Basketball_NBA: Archetypes/ has no .md notes"
     nba_ps = out_dir / "Basketball_NBA" / "Playstyles"
     assert not nba_ps.exists(), f"Basketball_NBA should NOT have Playstyles/: {nba_ps}"
+
+
+def test_tournaments_built_for_tennis_only(tmp_path: Path) -> None:
+    """Tournaments/ built for tennis; no other sport gets a Tournaments/ directory."""
+    out_dir = tmp_path / "Sports"
+    with _patch_all_adapters(note_count=2):
+        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+    assert exit_code == 0
+    tennis_trn = out_dir / "Tennis" / "Tournaments"
+    assert tennis_trn.exists(), f"Tennis: Tournaments/ missing at {tennis_trn}"
+    assert list(tennis_trn.glob("*.md")), "Tennis: Tournaments/ has no .md notes"
+    for sport_name in ("Soccer", "MLB", "Basketball_NBA"):
+        no_trn = out_dir / sport_name / "Tournaments"
+        assert not no_trn.exists(), f"{sport_name} should NOT have Tournaments/: {no_trn}"
+
+
+def test_seasons_built_for_soccer_mlb_nba(tmp_path: Path) -> None:
+    """Seasons/ built for soccer, mlb, and basketball_nba; tennis has no Seasons/."""
+    out_dir = tmp_path / "Sports"
+    with _patch_all_adapters(note_count=2):
+        exit_code = main(["--sport", "all", "--out", str(out_dir)])
+    assert exit_code == 0
+    for sport_name in ("Soccer", "MLB", "Basketball_NBA"):
+        sea = out_dir / sport_name / "Seasons"
+        assert sea.exists(), f"{sport_name}: Seasons/ missing at {sea}"
+        assert list(sea.glob("*.md")), f"{sport_name}: Seasons/ has no .md notes"
+    tennis_sea = out_dir / "Tennis" / "Seasons"
+    assert not tennis_sea.exists(), f"Tennis should NOT have Seasons/: {tennis_sea}"

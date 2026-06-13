@@ -1,10 +1,9 @@
-"""scripts.platform.atlas.build_all — Multi-sport atlas + H2H + Playstyles/Archetypes driver.
+"""scripts.platform.atlas.build_all — Multi-sport atlas build driver.
 
 Usage: python scripts/platform/atlas/build_all.py [--sport tennis|soccer|mlb|nba|all] [--out vault/Sports]
 
-Per sport: (1) build_atlas, (2) build_h2h → Matchups/, (3) build_playstyles → Playstyles/
-or build_archetypes → Archetypes/ (basketball_nba).  All steps graceful-skip on
-ImportError/exception.  Always writes ``<out_dir>/_Hub.md``.
+Per sport: build_atlas → H2H (Matchups/) → Playstyles/Archetypes → Tournaments (tennis) → Seasons
+(soccer/mlb/nba).  All steps graceful-skip on ImportError/exception.  Always writes _Hub.md.
 Discipline: Py3.9, from __future__ import annotations, type hints, no edge language, 300 LOC ceiling.
 """
 from __future__ import annotations
@@ -120,56 +119,75 @@ def _call_optional(fn, out_dir: Path, corpus_dir: Path, corpus_kwarg: str) -> in
     return len(notes) if notes is not None else 0
 
 
-def _try_build_h2h(domain: str, sport_out: Path, corpus_dir: Path) -> int:
-    """Try ``domains.<domain>.atlas_h2h.build_h2h`` → Matchups/.  Returns note count or 0."""
+def _try_build_optional(
+    module_path: str,
+    fn_name: str,
+    subdir: str,
+    sport_out: Path,
+    corpus_dir: Path,
+    corpus_kwarg: str = "corpus_dir",
+) -> int:
+    """Import module_path, call fn_name → sport_out/subdir (sig-probed kwarg).  Returns 0 on any failure."""
     try:
-        mod = importlib.import_module(f"domains.{domain}.atlas_h2h")
+        mod = importlib.import_module(module_path)
     except ImportError:
-        log.debug("No atlas_h2h for domain %r — skipping H2H.", domain)
-        return 0
-    fn = getattr(mod, "build_h2h", None)
-    if fn is None:
-        return 0
-    try:
-        count = _call_optional(fn, sport_out / "Matchups", corpus_dir, "corpus_dir")
-        log.info("  H2H (%s): %d matchup note(s)", domain, count)
-        return count
-    except Exception as exc:  # noqa: BLE001
-        log.warning("  build_h2h for %r raised %s: %s — skipping H2H.", domain, type(exc).__name__, exc)
-        return 0
-
-
-def _try_build_playstyles(domain: str, sport_out: Path, corpus_dir: Path) -> int:
-    """Try playstyle/archetype generator for *domain*.
-
-    tennis/soccer/mlb → ``atlas_playstyles.build_playstyles`` → Playstyles/.
-    basketball_nba    → ``memory_atlas_archetypes.build_archetypes`` → Archetypes/
-                        (uses ``data_dir=`` kwarg, not ``corpus_dir=``).
-    Returns note count or 0 (graceful-skip on ImportError / exception).
-    """
-    if domain == "basketball_nba":
-        mod_name, fn_name, sub_label, kwarg = (
-            f"domains.{domain}.memory_atlas_archetypes", "build_archetypes", "Archetypes", "data_dir"
-        )
-    else:
-        mod_name, fn_name, sub_label, kwarg = (
-            f"domains.{domain}.atlas_playstyles", "build_playstyles", "Playstyles", "corpus_dir"
-        )
-    try:
-        mod = importlib.import_module(mod_name)
-    except ImportError:
-        log.debug("No %s for domain %r — skipping %s.", fn_name, domain, sub_label)
+        log.debug("No %s — skipping %s.", module_path, subdir)
         return 0
     fn = getattr(mod, fn_name, None)
     if fn is None:
         return 0
     try:
-        count = _call_optional(fn, sport_out / sub_label, corpus_dir, kwarg)
-        log.info("  %s (%s): %d note(s)", sub_label, domain, count)
+        count = _call_optional(fn, sport_out / subdir, corpus_dir, corpus_kwarg)
+        log.info("  %s (%s): %d note(s)", subdir, module_path.rsplit(".", 1)[-1], count)
         return count
     except Exception as exc:  # noqa: BLE001
-        log.warning("  %s for %r raised %s: %s — skipping %s.", fn_name, domain, type(exc).__name__, exc, sub_label)
+        log.warning("  %s.%s raised %s: %s — skipping %s.", module_path, fn_name, type(exc).__name__, exc, subdir)
         return 0
+
+
+def _try_build_h2h(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+    """Try ``domains.<domain>.atlas_h2h.build_h2h`` → Matchups/.  Returns note count or 0."""
+    return _try_build_optional(
+        f"domains.{domain}.atlas_h2h", "build_h2h", "Matchups", sport_out, corpus_dir
+    )
+
+
+def _try_build_playstyles(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+    """atlas_playstyles → Playstyles/ (tennis/soccer/mlb) or memory_atlas_archetypes → Archetypes/ (nba)."""
+    if domain == "basketball_nba":
+        return _try_build_optional(
+            f"domains.{domain}.memory_atlas_archetypes", "build_archetypes",
+            "Archetypes", sport_out, corpus_dir, "data_dir",
+        )
+    return _try_build_optional(
+        f"domains.{domain}.atlas_playstyles", "build_playstyles",
+        "Playstyles", sport_out, corpus_dir,
+    )
+
+
+def _try_build_tournaments(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+    """atlas_tournaments → Tournaments/ (tennis only).  Returns 0 for all other domains."""
+    if domain != "tennis":
+        return 0
+    return _try_build_optional(
+        f"domains.{domain}.atlas_tournaments", "build_tournaments",
+        "Tournaments", sport_out, corpus_dir,
+    )
+
+
+def _try_build_seasons(domain: str, sport_out: Path, corpus_dir: Path) -> int:
+    """atlas_seasons/memory_atlas_seasons → Seasons/ (soccer/mlb/nba).  Returns 0 otherwise."""
+    if domain == "basketball_nba":
+        return _try_build_optional(
+            f"domains.{domain}.memory_atlas_seasons", "build_seasons",
+            "Seasons", sport_out, corpus_dir, "data_dir",
+        )
+    if domain in {"soccer", "mlb"}:
+        return _try_build_optional(
+            f"domains.{domain}.atlas_seasons", "build_seasons",
+            "Seasons", sport_out, corpus_dir,
+        )
+    return 0
 
 
 def build_sport(
@@ -179,7 +197,10 @@ def build_sport(
     corpus_hint: str,
     out_dir: Path,
 ) -> Optional[int]:
-    """Build atlas + H2H + Playstyles/Archetypes for one sport.  Returns total note count or None."""
+    """Build atlas + H2H + Playstyles/Archetypes + Tournaments + Seasons for one sport.
+
+    Returns total note count or None when the adapter module is absent.
+    """
     log.info("Building atlas: %s (%s) …", display_name, sport_id)
     build_fn = _load_build_fn(adapter_module)
     if build_fn is None:
@@ -205,7 +226,14 @@ def build_sport(
     log.info("  %s: %d atlas note(s) written to %s", display_name, count, sport_out)
 
     domain = _derive_domain(adapter_module)
-    return count + _try_build_h2h(domain, sport_out, corpus_dir) + _try_build_playstyles(domain, sport_out, corpus_dir)
+    total = (
+        count
+        + _try_build_h2h(domain, sport_out, corpus_dir)
+        + _try_build_playstyles(domain, sport_out, corpus_dir)
+        + _try_build_tournaments(domain, sport_out, corpus_dir)
+        + _try_build_seasons(domain, sport_out, corpus_dir)
+    )
+    return total
 
 
 # ---------------------------------------------------------------------------
