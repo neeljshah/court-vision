@@ -18,6 +18,7 @@ from scripts.platformkit.atlas.obsidian_emit import frontmatter, write_note
 _OUT_FILENAME = "_Base_Rates.md"
 
 # (sport_id, display, market_shape, target_description, loader_module, target_col, date_col)
+# NBA excluded: no FeatureBundle adapter/signal_catalog; NBA uses a separate gate path.
 _SPORT_SPECS: List[Tuple[str, str, str, str, str, str, str]] = [
     ("tennis_atp", "Tennis (ATP)", "Head-to-head ML — binary win/loss",
      "P(listed player-1 wins the match)", "domains.tennis.elo", "winner", "date"),

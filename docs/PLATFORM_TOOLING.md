@@ -29,6 +29,7 @@ and expose CLIs; no module starts a live gate run autonomously.
 | `belief_store.py` | Beta-Binomial ship-rate priors per signal family. Prior Beta(1,9) — mean ≈ 10%, reflecting market efficiency. Sparse families pool to sport aggregate then global. | `python -m scripts.research_harness.belief_store [--ledger PATH] [--save]` | Posteriors are historical ship-rate estimates, not edge claims. REJECT families increase beta weight, not alpha. |
 | `gap_observer.py` | Ranks research gaps by coverage / information-gain score. Score = coverage_gap_weight × prior_uncertainty × data_penalty × settled_discount. | `python -m scripts.research_harness.gap_observer [--top N] [--ledger PATH]` | Prints honest preamble: "UNTESTED != opportunity. Ranking = scientific thoroughness only." REJECT families remain listed but rank below unvisited candidates. |
 | `research_loop.py` | End-to-end offline pipeline: enumerate → ingest catalogs → update ledger → update BeliefStore → render markdown writeup → emit summary. Consumes existing catalog verdicts; never runs the live gate. | `python -m scripts.research_harness.research_loop [--vault PATH] [--dry-run]` | Wires the four upstream modules; exits with a summary that includes REJECT counts. No gate invocation; no edge claim possible. |
+| `research_digest.py` | Concise honest health summary of a completed research loop run. Accepts the result dict from `run_research_loop()` and prints a one-screen status card (finding counts, verdict tally, belief posteriors, top gaps). | `research_loop.py --digest` (flag activates `format_digest(result)` after the run) | Output explicitly labels posteriors as historical ship-rate priors, not edge claims. Never omits REJECT counts. |
 
 ---
 
@@ -52,6 +53,10 @@ explicitly noted.
 ---
 
 ## Verification
+
+The table below lists the CORE robustness invariants. The full test surface is
+`tests/platform/` (~130 files); run one file at a time to avoid pyarrow
+contamination and machine freeze under high memory load.
 
 Run each file **individually** — do not combine into a single `pytest tests/`
 invocation. Combined runs can trigger pyarrow contamination and machine

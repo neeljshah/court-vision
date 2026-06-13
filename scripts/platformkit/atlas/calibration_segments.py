@@ -19,6 +19,7 @@ _OUT_FILENAME = "_Calibration_Segments.md"
 N_BINS: int = 10
 
 # (sport_id, display, adapter_module, adapter_class, group_col)
+# NBA excluded: no FeatureBundle adapter/signal_catalog; NBA uses a separate gate path.
 _SPORT_SPECS: List[Tuple[str, str, str, str, str]] = [
     ("tennis_atp", "Tennis (ATP)", "domains.tennis.adapter", "TennisAdapter", "year"),
     ("soccer_fd",  "Soccer (O/U 2.5)", "domains.soccer.adapter", "SoccerAdapter", "season"),
