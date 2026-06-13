@@ -27,13 +27,13 @@ Sackmann data is CC BY-NC-SA — private research use only.
 from __future__ import annotations
 
 import pathlib
-import re
 from typing import Optional
 
 import numpy as np
 import pandas as pd
 
 from domains.tennis.elo_core import BASE_RATING, replay
+from scripts.platform.atlas.obsidian_emit import slug as _slug  # noqa: F401
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -50,16 +50,6 @@ TOP_N_PLAYERS: int = 150          # max player notes emitted
 TOP_N_INDEX: int = 20             # rows in the index Elo table
 MIN_MATCHES_PLAYER: int = 10      # skip players with fewer matches (sparse stats)
 PRIMARY_SURFACES: tuple[str, ...] = ("Hard", "Clay", "Grass")
-
-# Slugify helper (safe filename characters)
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
-
-
-def _slug(name: str) -> str:
-    """Return a filesystem-safe slug from a display name."""
-    s = _SLUG_RE.sub("", name).strip()
-    return _SPACE_RE.sub("_", s)
 
 
 # ---------------------------------------------------------------------------
