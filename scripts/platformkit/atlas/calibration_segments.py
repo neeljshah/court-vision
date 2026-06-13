@@ -32,6 +32,7 @@ _SPORT_SPECS: List[Tuple[str, str, str, str, str]] = [
     ("tennis_atp", "Tennis (ATP)", "domains.tennis.adapter", "TennisAdapter", "year"),
     ("soccer_fd",  "Soccer (O/U 2.5)", "domains.soccer.adapter", "SoccerAdapter", "season"),
     ("mlb_sbro",   "MLB (Home ML)",    "domains.mlb.adapter",    "MLBAdapter",    "season"),
+    ("nba_espn",   "NBA (Home ML)",    "domains.basketball_nba.adapter", "NBAAdapter", "season"),
 ]
 
 _SOCCER_NOTE = (

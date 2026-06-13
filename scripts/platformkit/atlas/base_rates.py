@@ -26,10 +26,12 @@ _SPORT_SPECS: List[Tuple[str, str, str, str, str, str, str]] = [
      "P(match total goals >= 3, i.e. Over 2.5)", "domains.soccer.ratings", "target_over25", "date"),
     ("mlb_sbro", "MLB (SBRO archive)", "Home/away ML — binary home-win",
      "P(home team wins the game)", "domains.mlb.ratings", "target_home_win", "date"),
+    ("nba_espn", "NBA (ESPN ML)", "Home/away ML — binary home-win",
+     "P(home team wins the game)", "domains.basketball_nba.ratings", "home_win", "date"),
 ]
 
-# Per-sport group-by column (year for tennis; season for soccer/mlb)
-_GROUPBY_COL: Dict[str, str] = {"tennis_atp": "year", "soccer_fd": "season", "mlb_sbro": "season"}
+# Per-sport group-by column (year for tennis; season for the others)
+_GROUPBY_COL: Dict[str, str] = {"tennis_atp": "year", "soccer_fd": "season", "mlb_sbro": "season", "nba_espn": "season"}
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +81,19 @@ def _load_mlb(repo_root: pathlib.Path) -> Optional[object]:
         return None
 
 
-_LOADERS = {"tennis_atp": _load_tennis, "soccer_fd": _load_soccer, "mlb_sbro": _load_mlb}
+def _load_nba(repo_root: pathlib.Path) -> Optional[object]:
+    """Return the NBA games frame (carries home_win + season) for base-rate compute, or None."""
+    try:
+        import pandas as pd  # type: ignore[import]
+        df = pd.read_parquet(repo_root / "data" / "domains" / "basketball_nba" / "games.parquet")
+        wf = df.copy()
+        wf["home_win"] = wf["home_win"].astype(float)
+        return wf
+    except Exception:  # noqa: BLE001
+        return None
+
+
+_LOADERS = {"tennis_atp": _load_tennis, "soccer_fd": _load_soccer, "mlb_sbro": _load_mlb, "nba_espn": _load_nba}
 
 
 # ---------------------------------------------------------------------------
