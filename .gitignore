@@ -373,11 +373,20 @@ docs/CV_SELLABILITY_SCORECARD.md
 src/prediction/bet_grades.py
 scripts/team_system/llm_signal_proposer.py
 scripts/team_system/gate_def_supp.py
+# -- multi-sport domain price-bearing capture (P0-A-001): forward lines, paper
+#    book, and per-domain CLV ledgers. Dirs are created when domains/<sport>/
+#    adapters go live; ignoring them now keeps price-bearing data OFF the public
+#    repo from the first write (both manual `git add -A` and the autonomous loop).
+data/domains/*/forward_lines/
+data/domains/*/paper_book/
+data/domains/*/clv/
 # -- planning/platform master plan (internal strategy — never public) ----------
 .planning/platform/
 # -- internal maintainer / strategy docs (name the private repo; private-only) --
 START_HERE.md
 RESTORE.md
+CONTROL.md
+control/
 
 # =============================================================================
 # 2026-06-11 SHOWCASE-PUSH HYGIENE — scratch + betting-output dumps stay LOCAL.
