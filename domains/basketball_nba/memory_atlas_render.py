@@ -87,7 +87,6 @@ def _render_sections(rows: dict[str, pd.Series], skip_key: str) -> list[str]:
 # ---------------------------------------------------------------------------
 
 def render_index(out_dir: pathlib.Path, players_df: pd.DataFrame, teams: list[str], top_n: int = 20) -> pathlib.Path:
-    top = players_df.head(top_n)
     lines = [
         "---", "tags:", "  - sport/nba", "  - atlas/index", "---", "",
         "# NBA Intelligence Atlas — Index", "",
@@ -95,19 +94,13 @@ def render_index(out_dir: pathlib.Path, players_df: pd.DataFrame, teams: list[st
         f"**Players indexed:** {len(players_df)}  |  **Teams:** {len(teams)}  |  "
         "**Sources:** player_adv_stats.parquet · player_positions.parquet · "
         "player_pf.parquet · team_advanced_stats.parquet · data/cache/atlas_*.parquet",
-        "", "## Top Players by Usage Rate", "",
-        "| Player | Team | Usage% | MPG | PIE | Net Rtg On/Off |",
-        "|--------|------|--------|-----|-----|----------------|",
+        "",
+        "## Playstyle Archetypes", "",
+        "Player intelligence is organised by playstyle archetype rather than individual notes.",
+        "See [[Archetypes/_Archetypes_Index]] for the full population breakdown.",
+        "",
     ]
-    for _, r in top.iterrows():
-        name = r.get("display_name", str(r["player_id"]))
-        team = r.get("team", "—")
-        lines.append(
-            f"| [[Players/{_slug(name)}|{name}]] | [[Teams/{team}|{team}]] | "
-            f"{_fmt(r.get('usage_rate'), 3)} | {_fmt(r.get('minutes_pg'))} | "
-            f"{_fmt(r.get('pie_mean'), 3)} | {_fmt(r.get('on_off_net_diff'))} |"
-        )
-    lines += ["", "## Teams", ""]
+    lines += ["## Teams", ""]
     for div, div_teams in NBA_DIVISIONS.items():
         conf = "East" if div in _EAST else "West"
         present = [t for t in div_teams if t in teams]
@@ -165,7 +158,8 @@ def render_team(
         f"# {tricode}", "", f"[[_Index]] | {conf} · {division}", "",
         "## Roster (Top Players by Usage)", "",
     ]
-    lines.extend(f"- [[Players/{_slug(n)}|{n}]]" for n in top_players)
+    # Player-level notes are no longer emitted; list names as plain text
+    lines.extend(f"- {n}" for n in top_players)
     lines.append("")
     if team_adv is not None:
         lines += ["## Team Stats (Season Average)", ""]
@@ -191,17 +185,15 @@ def render_all(
     team_adv_by_tricode: dict[str, pd.Series],
     team_roster: dict[str, list[str]],
 ) -> list[pathlib.Path]:
-    """Render all notes and return written paths."""
+    """Render all notes and return written paths.
+
+    Player notes are NO LONGER emitted (replaced by archetype notes).
+    Only _Index and Teams/<tricode>.md are written here.
+    """
     written: list[pathlib.Path] = []
     teams = sorted(team_sections.keys())
     written.append(render_index(out_dir, players_df, teams))
-    for _, r in players_df.iterrows():
-        pid = int(r["player_id"])
-        written.append(render_player(
-            out_dir, pid, str(r.get("display_name", str(pid))),
-            str(r.get("team", "—")), str(r.get("position", "—")),
-            adv_by_player.get(pid), player_sections.get(pid, {}),
-        ))
+    # Player notes intentionally omitted — see memory_atlas_archetypes.build_archetypes
     for tricode in teams:
         written.append(render_team(
             out_dir, tricode, team_sections.get(tricode, {}),
