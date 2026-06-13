@@ -3,10 +3,11 @@
 Uses a tiny synthetic matches fixture (no network, no GPU, no heavy deps).
 Verifies:
   1. _Tournaments_Index.md exists after build_tournaments()
-  2. At least one tournament note exists with correct champion [[link]]
+  2. At least one tournament note exists with correct style-profile content
   3. Notes contain valid frontmatter + [[wikilinks]]
   4. No betting/edge language
-  5. Idempotent re-runs
+  5. No individual player names (name-free constraint)
+  6. Idempotent re-runs
 
 Run: python -m pytest tests/platform/test_tennis_tournaments.py -q --timeout=120
 """
@@ -18,46 +19,53 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
+# Names that must NOT appear anywhere in rendered output (name-free discipline).
+# Kept as a module-level constant so the grep-equivalent is easy to audit.
+_FORBIDDEN_NAMES: list[str] = [
+    "Djokovic", "Federer", "Nadal", "Alcaraz", "Medvedev", "Murray",
+    "Wawrinka", "Sinner", "Novak", "Roger", "Rafael", "Carlos", "Daniil",
+    "Andy",
+]
+
 
 # ---------------------------------------------------------------------------
 # Synthetic fixture
 # ---------------------------------------------------------------------------
 
 def _make_matches() -> pd.DataFrame:
-    """Minimal synthetic match DataFrame with finals across multiple years."""
-    rows = []
-    # Wimbledon: 4 editions (2019-2022) each with a final
-    # Australian Open: 3 editions (2020-2022) each with a final
-    # Small event: only 2 editions (should NOT appear in output with min_editions=3)
+    """Minimal synthetic match DataFrame with finals across multiple years.
+
+    Player names appear in the fixture only to mirror the real corpus format;
+    they must NOT propagate into the rendered Markdown output.
+    """
     tournaments = [
         # (tourney_name, level, surface, year, round, p1_id, p1_name, p2_id, p2_name, winner)
-        ("Wimbledon", "G", "Grass", 2019, "R32",  1, "Novak Djokovic", 2, "Roger Federer", "1"),
-        ("Wimbledon", "G", "Grass", 2019, "SF",   1, "Novak Djokovic", 3, "Rafael Nadal",  "1"),
-        ("Wimbledon", "G", "Grass", 2019, "F",    1, "Novak Djokovic", 2, "Roger Federer", "1"),  # Djokovic wins 2019
-        ("Wimbledon", "G", "Grass", 2020, "R32",  2, "Roger Federer",  4, "Andy Murray",   "2"),
-        ("Wimbledon", "G", "Grass", 2020, "F",    2, "Roger Federer",  3, "Rafael Nadal",  "2"),  # Nadal wins 2020
-        ("Wimbledon", "G", "Grass", 2021, "QF",   1, "Novak Djokovic", 5, "Daniil Medvedev","1"),
-        ("Wimbledon", "G", "Grass", 2021, "F",    1, "Novak Djokovic", 2, "Roger Federer", "1"),  # Djokovic wins 2021
-        ("Wimbledon", "G", "Grass", 2022, "SF",   6, "Carlos Alcaraz",  1, "Novak Djokovic","1"),
-        ("Wimbledon", "G", "Grass", 2022, "F",    6, "Carlos Alcaraz",  3, "Rafael Nadal",  "1"),  # Alcaraz wins 2022
+        # Wimbledon: 4 editions (2019-2022), grass — surface-specialist venue
+        ("Wimbledon", "G", "Grass", 2019, "R32",  1, "Player_A", 2, "Player_B", "1"),
+        ("Wimbledon", "G", "Grass", 2019, "SF",   1, "Player_A", 3, "Player_C", "1"),
+        ("Wimbledon", "G", "Grass", 2019, "F",    1, "Player_A", 2, "Player_B", "1"),
+        ("Wimbledon", "G", "Grass", 2020, "R32",  2, "Player_B", 4, "Player_D", "2"),
+        ("Wimbledon", "G", "Grass", 2020, "F",    2, "Player_B", 3, "Player_C", "2"),
+        ("Wimbledon", "G", "Grass", 2021, "QF",   1, "Player_A", 5, "Player_E", "1"),
+        ("Wimbledon", "G", "Grass", 2021, "F",    1, "Player_A", 2, "Player_B", "1"),
+        ("Wimbledon", "G", "Grass", 2022, "SF",   6, "Player_F", 1, "Player_A", "1"),
+        ("Wimbledon", "G", "Grass", 2022, "F",    6, "Player_F", 3, "Player_C", "1"),
 
-        ("Australian Open", "G", "Hard", 2020, "QF",  1, "Novak Djokovic", 5, "Daniil Medvedev","1"),
-        ("Australian Open", "G", "Hard", 2020, "F",   1, "Novak Djokovic", 3, "Rafael Nadal",   "1"),  # Djokovic 2020
-        ("Australian Open", "G", "Hard", 2021, "R16", 5, "Daniil Medvedev",4, "Andy Murray",    "1"),
-        ("Australian Open", "G", "Hard", 2021, "F",   5, "Daniil Medvedev",3, "Rafael Nadal",   "1"),  # Medvedev 2021
-        ("Australian Open", "G", "Hard", 2022, "SF",  1, "Novak Djokovic", 6, "Carlos Alcaraz", "1"),
-        ("Australian Open", "G", "Hard", 2022, "F",   1, "Novak Djokovic", 5, "Daniil Medvedev","1"),  # Djokovic 2022
+        # Australian Open: 3 editions (2020-2022), hard court — mixed archetype venue
+        ("Australian Open", "G", "Hard", 2020, "QF",  1, "Player_A", 5, "Player_E", "1"),
+        ("Australian Open", "G", "Hard", 2020, "F",   1, "Player_A", 3, "Player_C", "1"),
+        ("Australian Open", "G", "Hard", 2021, "R16", 5, "Player_E", 4, "Player_D", "1"),
+        ("Australian Open", "G", "Hard", 2021, "F",   5, "Player_E", 3, "Player_C", "1"),
+        ("Australian Open", "G", "Hard", 2022, "SF",  1, "Player_A", 6, "Player_F", "1"),
+        ("Australian Open", "G", "Hard", 2022, "F",   1, "Player_A", 5, "Player_E", "1"),
 
         # Small event — only 2 editions, should be filtered out
-        ("Small Challenger", "C", "Clay", 2021, "F",  3, "Rafael Nadal",   4, "Andy Murray",    "1"),
-        ("Small Challenger", "C", "Clay", 2022, "QF", 3, "Rafael Nadal",   5, "Daniil Medvedev","1"),
+        ("Small Challenger", "C", "Clay", 2021, "F",  3, "Player_C", 4, "Player_D", "1"),
+        ("Small Challenger", "C", "Clay", 2022, "QF", 3, "Player_C", 5, "Player_E", "1"),
     ]
 
     records = []
-    for i, row in enumerate(rows if rows else []):
-        records.append(row)
-
-    for i, t in enumerate(tournaments):
+    for t in tournaments:
         tname, level, surface, year, rnd, p1id, p1name, p2id, p2name, winner = t
         records.append({
             "tourney_name": tname,
@@ -134,24 +142,6 @@ class TestTournamentOutputs:
         """Tournament with fewer than min_editions editions must not get a note."""
         assert not (tournaments_out / "Small Challenger.md").exists()
 
-    def test_wimbledon_champion_wikilink(self, tournaments_out: pathlib.Path) -> None:
-        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
-        # Djokovic won 2019 + 2021 → must appear as a champion link
-        assert "Novak Djokovic" in text, "Djokovic not found in Wimbledon note"
-        assert "[[../Players/Novak Djokovic" in text, "Champion [[wikilink]] missing"
-
-    def test_wimbledon_correct_champion_year(self, tournaments_out: pathlib.Path) -> None:
-        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
-        # Alcaraz won 2022 final
-        assert "Carlos Alcaraz" in text
-        assert "2022" in text
-
-    def test_wimbledon_most_titles(self, tournaments_out: pathlib.Path) -> None:
-        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
-        # Djokovic has 2 Wimbledon titles in synthetic data
-        assert "Novak Djokovic" in text
-        assert "2 title" in text
-
     def test_tournament_note_frontmatter(self, tournaments_out: pathlib.Path) -> None:
         text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
         assert text.startswith("---")
@@ -165,17 +155,80 @@ class TestTournamentOutputs:
         assert "[[_Tournaments_Index" in text
         assert "[[../_Index" in text
 
-    def test_returns_paths_list(self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path) -> None:
+    def test_wimbledon_surface_correct(self, tournaments_out: pathlib.Path) -> None:
+        """Surface must be present and correct in the note."""
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "Grass" in text, "Wimbledon note missing surface 'Grass'"
+
+    def test_wimbledon_level_correct(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "Grand Slam" in text, "Wimbledon note missing level 'Grand Slam'"
+
+    def test_wimbledon_editions_count(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        # 4 editions in synthetic fixture
+        assert "4" in text, "Wimbledon note should reference 4 editions"
+
+    def test_wimbledon_has_archetype_section(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "Winner Archetype Distribution" in text, (
+            "Wimbledon note missing 'Winner Archetype Distribution' section"
+        )
+
+    def test_wimbledon_archetype_table_has_percentages(
+        self, tournaments_out: pathlib.Path
+    ) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        # Must have at least one percentage value in the archetype table
+        assert "%" in text, "Archetype section must contain percentage values"
+
+    def test_wimbledon_archetype_labels(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "surface-specialist" in text.lower() or "all-court" in text.lower(), (
+            "Archetype table must contain 'surface-specialist' or 'all-court' labels"
+        )
+
+    def test_wimbledon_no_champion_table(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "Champions by Year" not in text, (
+            "Champion-by-year table must be absent (name-free discipline)"
+        )
+        assert "Most Titles" not in text, (
+            "Most Titles section must be absent (name-free discipline)"
+        )
+
+    def test_wimbledon_no_player_wikilinks(self, tournaments_out: pathlib.Path) -> None:
+        text = (tournaments_out / "Wimbledon.md").read_text(encoding="utf-8")
+        assert "[[../Players/" not in text, (
+            "Player wikilinks must not appear in tournament notes (name-free discipline)"
+        )
+
+    def test_no_real_player_names_in_any_note(self, tournaments_out: pathlib.Path) -> None:
+        """The _FORBIDDEN_NAMES list must not appear in any rendered note."""
+        for md_file in tournaments_out.glob("*.md"):
+            text = md_file.read_text(encoding="utf-8")
+            for name in _FORBIDDEN_NAMES:
+                assert name not in text, (
+                    f"Forbidden player name '{name}' found in {md_file.name}"
+                )
+
+    def test_returns_paths_list(
+        self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path
+    ) -> None:
         from domains.tennis.atlas_tournaments import build_tournaments
 
         paths = build_tournaments(tmp_path / "t2", min_editions=3, _matches_df=synthetic_matches)
         assert isinstance(paths, list)
-        assert len(paths) >= 2, f"Expected at least index + 1 tournament note, got {len(paths)}"
+        assert len(paths) >= 2, (
+            f"Expected at least index + 1 tournament note, got {len(paths)}"
+        )
         for p in paths:
             assert isinstance(p, pathlib.Path)
             assert p.exists(), f"Returned path does not exist: {p}"
 
-    def test_idempotent(self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path) -> None:
+    def test_idempotent(
+        self, synthetic_matches: pd.DataFrame, tmp_path: pathlib.Path
+    ) -> None:
         from domains.tennis.atlas_tournaments import build_tournaments
 
         out = tmp_path / "idem"
@@ -188,7 +241,9 @@ class TestTournamentOutputs:
         for md_file in tournaments_out.glob("*.md"):
             text = md_file.read_text(encoding="utf-8").lower()
             for term in forbidden:
-                assert term not in text, f"Forbidden term '{term}' in {md_file.name}"
+                assert term not in text, (
+                    f"Forbidden term '{term}' in {md_file.name}"
+                )
 
     def test_empty_corpus_no_exception(self, tmp_path: pathlib.Path) -> None:
         from domains.tennis.atlas_tournaments import build_tournaments
@@ -200,3 +255,11 @@ class TestTournamentOutputs:
         )
         paths = build_tournaments(tmp_path / "empty", min_editions=3, _matches_df=empty)
         assert isinstance(paths, list)
+
+    def test_note_line_count_within_limit(self, tournaments_out: pathlib.Path) -> None:
+        """Each note must be ≤ 300 lines (CLAUDE.md discipline)."""
+        for md_file in tournaments_out.glob("*.md"):
+            lines = md_file.read_text(encoding="utf-8").splitlines()
+            assert len(lines) <= 300, (
+                f"{md_file.name} has {len(lines)} lines (limit 300)"
+            )

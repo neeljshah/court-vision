@@ -1,18 +1,11 @@
 """domains.tennis.atlas_tournaments — Obsidian tournament-intelligence atlas.
 
-Adds a Tournaments dimension to the tennis graph:  per-tournament notes with
-champion history, surface, editions, and finals detail, linked back to existing
-player notes so [[wikilinks]] resolve across the graph.
+Emits name-free style-profile notes (surface, level, winner-archetype
+distribution, upset tendency) for each qualifying tournament.  No individual
+player names appear in output.
 
-Public API
-----------
-build_tournaments(out_dir, corpus_dir, min_editions) -> list[pathlib.Path]
-    Emit Tournaments/_Tournaments_Index.md + one note per qualifying tournament.
-    Idempotent (reruns overwrite).
-
-F5-clean: stdlib + pandas only.  No src.* / kernel.* / other-domain imports.
-No edge / betting language anywhere.
-
+Public API: build_tournaments(out_dir, corpus_dir, min_editions) -> list[Path]
+F5-clean: stdlib + pandas only.  No edge / betting language.
 Sackmann data is CC BY-NC-SA — private research use only.
 """
 from __future__ import annotations
@@ -37,29 +30,23 @@ DEFAULT_OUT: pathlib.Path = (
     / "vault" / "Sports" / "Tennis" / "Tournaments"
 )
 
-# ATP level codes → human-readable label (Sackmann convention)
 LEVEL_LABELS: dict[str, str] = {
-    "G": "Grand Slam",
-    "M": "Masters 1000",
-    "A": "ATP 500",
-    "B": "ATP 250",
-    "D": "Davis Cup",
-    "F": "Tour Finals",
-    "C": "Challenger",
-    "S": "Satellite / ITF",
+    "G": "Grand Slam", "M": "Masters 1000", "A": "ATP 500", "B": "ATP 250",
+    "D": "Davis Cup",  "F": "Tour Finals",  "C": "Challenger", "S": "Satellite / ITF",
 }
 
-# Canonical level ordering for the index (most prestigious first)
 LEVEL_ORDER: list[str] = ["G", "F", "M", "A", "B", "D", "C", "S"]
+
+# Surfaces where specialisation is most pronounced (used for archetype label)
+_SPECIALIST_SURFACES: frozenset[str] = frozenset({"Clay", "Grass"})
 
 _SLUG_RE = re.compile(r"[^\w\s-]")
 _SPACE_RE = re.compile(r"[\s]+")
 
 
 def _slug(name: str) -> str:
-    """Return a filesystem-safe slug (spaces → underscores, strip specials)."""
-    s = _SLUG_RE.sub("", name).strip()
-    return _SPACE_RE.sub("_", s)
+    """Return a filesystem-safe slug."""
+    return _SPACE_RE.sub("_", _SLUG_RE.sub("", name).strip())
 
 
 # ---------------------------------------------------------------------------
@@ -68,18 +55,13 @@ def _slug(name: str) -> str:
 
 def _load_matches(corpus_dir: pathlib.Path) -> pd.DataFrame:
     """Load matches.parquet and normalise key columns."""
-    df = pd.read_parquet(corpus_dir / "matches.parquet")
-    df = df.copy()
-
-    # Ensure required columns exist with safe defaults
+    df = pd.read_parquet(corpus_dir / "matches.parquet").copy()
     for col in ("tourney_name", "tourney_level", "surface", "round", "winner",
-                 "p1_name", "p2_name", "date"):
+                "p1_name", "p2_name", "date"):
         if col not in df.columns:
             df[col] = None
-
     df["date"] = df["date"].astype(str)
 
-    # Extract year from date string (YYYY-MM-DD or YYYYMMDD or similar)
     def _year(d: str) -> Optional[int]:
         m = re.match(r"(\d{4})", str(d))
         return int(m.group(1)) if m else None
@@ -89,88 +71,94 @@ def _load_matches(corpus_dir: pathlib.Path) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Style-profile helpers
+# ---------------------------------------------------------------------------
+
+def _finalist_archetype(finalist_id: str, all_finals: pd.DataFrame) -> str:
+    """Return 'surface-specialist' or 'all-court' (corpus-internal, name-free).
+
+    A finalist who reached finals exclusively on one specialist surface is
+    labelled 'surface-specialist'; one seen on multiple surfaces is 'all-court'.
+    """
+    fid = str(finalist_id).strip()
+    if not fid or fid == "nan":
+        return "all-court"
+    mask = (all_finals["p1_id"].astype(str) == fid) | (
+        all_finals["p2_id"].astype(str) == fid
+    )
+    surfaces = set(all_finals.loc[mask, "surface"].dropna().unique())
+    return "surface-specialist" if (len(surfaces) == 1 and bool(surfaces & _SPECIALIST_SURFACES)) else "all-court"
+
+
+def _compute_style_profile(finals: pd.DataFrame, all_finals: pd.DataFrame) -> dict:
+    """Return name-free style metrics: archetype distribution + upset rate."""
+    _empty = {"specialist_pct": 0.0, "allcourt_pct": 0.0, "unknown_pct": 100.0,
+               "n_classified": 0, "upset_rate": None}
+    if finals.empty:
+        return _empty
+
+    specialist = allcourt = unknown = 0
+    for _, frow in finals.iterrows():
+        code = str(frow.get("winner", "")).strip()
+        if code == "1":
+            wid = str(frow.get("p1_id", "")).strip()
+        elif code == "2":
+            wid = str(frow.get("p2_id", "")).strip()
+        else:
+            unknown += 1
+            continue
+        if _finalist_archetype(wid, all_finals) == "surface-specialist":
+            specialist += 1
+        else:
+            allcourt += 1
+
+    total = specialist + allcourt + unknown
+    if total == 0:
+        return _empty
+
+    upset_rate: Optional[float] = None
+    if "winner_rank" in finals.columns and "loser_rank" in finals.columns:
+        ranked = finals[finals["winner_rank"].notna() & finals["loser_rank"].notna()]
+        if not ranked.empty:
+            upset_rate = round(float((ranked["winner_rank"] > ranked["loser_rank"]).sum()) / len(ranked), 3)
+
+    return {
+        "specialist_pct": round(100.0 * specialist / total, 1),
+        "allcourt_pct":   round(100.0 * allcourt   / total, 1),
+        "unknown_pct":    round(100.0 * unknown     / total, 1),
+        "n_classified":   specialist + allcourt,
+        "upset_rate":     upset_rate,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Tournament-level aggregation
 # ---------------------------------------------------------------------------
 
-def _compute_tournament_stats(
-    matches: pd.DataFrame,
-    min_editions: int,
-) -> dict[str, dict]:
-    """Return a dict keyed by tourney_name with aggregated stats.
-
-    Only tournaments with ≥ min_editions distinct years are included.
-    """
+def _compute_tournament_stats(matches: pd.DataFrame, min_editions: int) -> dict[str, dict]:
+    """Aggregate per-tournament stats; no individual names in output."""
     if matches.empty:
         return {}
 
+    all_finals = matches[matches["round"] == "F"].copy()
     results: dict[str, dict] = {}
 
-    grouped = matches.groupby("tourney_name", sort=False)
-
-    for tname, tdf in grouped:
+    for tname, tdf in matches.groupby("tourney_name", sort=False):
         tname = str(tname)
-
-        # Edition = distinct calendar year
-        years_present = sorted(
-            {int(y) for y in tdf["year"].dropna().unique()},
-        )
-        n_editions = len(years_present)
-        if n_editions < min_editions:
+        years_present = sorted({int(y) for y in tdf["year"].dropna().unique()})
+        if len(years_present) < min_editions:
             continue
 
-        # Level: most-common value across rows
-        level_series = tdf["tourney_level"].dropna()
-        level: str = str(level_series.mode().iloc[0]) if not level_series.empty else "?"
+        level_s = tdf["tourney_level"].dropna()
+        level = str(level_s.mode().iloc[0]) if not level_s.empty else "?"
+        surf_s = tdf["surface"].dropna()
+        surface = str(surf_s.mode().iloc[0]) if not surf_s.empty else "Unknown"
+        bo_s = tdf["best_of"].dropna() if "best_of" in tdf.columns else pd.Series(dtype=float)
+        best_of = int(bo_s.mode().iloc[0]) if not bo_s.empty else 3
 
-        # Surface: most-common non-null surface
-        surf_series = tdf["surface"].dropna()
-        surface: str = str(surf_series.mode().iloc[0]) if not surf_series.empty else "Unknown"
-
-        # Best-of: most common
-        bo_series = tdf["best_of"].dropna() if "best_of" in tdf.columns else pd.Series(dtype=float)
-        best_of: int = int(bo_series.mode().iloc[0]) if not bo_series.empty else 3
-
-        # Finals rows (round == 'F')
         finals = tdf[tdf["round"] == "F"].copy()
-
-        # Champions: per year, the winner of the final
-        champions_by_year: dict[int, str] = {}
-        for _, frow in finals.iterrows():
-            yr = frow["year"]
-            if yr is None or pd.isna(yr):
-                continue
-            yr = int(yr)
-            winner_code = str(frow.get("winner", "")).strip()
-            p1_name = str(frow.get("p1_name", "")).strip()
-            p2_name = str(frow.get("p2_name", "")).strip()
-            if winner_code == "1" and p1_name:
-                champions_by_year[yr] = p1_name
-            elif winner_code == "2" and p2_name:
-                champions_by_year[yr] = p2_name
-
-        # Count titles per player
-        from collections import Counter
-        title_counts: Counter[str] = Counter(champions_by_year.values())
-
-        # Recent finals (last 5 editions with a final)
-        recent_finals_rows: list[dict] = []
-        if not finals.empty:
-            finals_sorted = finals[finals["year"].notna()].sort_values(
-                "year", ascending=False
-            )
-            for _, frow in finals_sorted.head(5).iterrows():
-                yr = frow["year"]
-                if yr is None or pd.isna(yr):
-                    continue
-                recent_finals_rows.append(
-                    {
-                        "year": int(yr),
-                        "p1": str(frow.get("p1_name", "?")),
-                        "p2": str(frow.get("p2_name", "?")),
-                        "winner": str(frow.get("winner", "")),
-                        "score": str(frow.get("score", "")) if "score" in frow.index else "",
-                    }
-                )
+        editions_with_final = int(finals["year"].dropna().nunique())
+        n_editions = len(years_present)
 
         results[tname] = {
             "name": tname,
@@ -178,12 +166,12 @@ def _compute_tournament_stats(
             "level_label": LEVEL_LABELS.get(level, level),
             "surface": surface,
             "editions": n_editions,
+            "editions_with_final": editions_with_final,
+            "completion_rate": round(100.0 * editions_with_final / n_editions, 1) if n_editions else 0.0,
             "span": f"{min(years_present)}–{max(years_present)}" if years_present else "n/a",
             "years": years_present,
             "best_of": best_of,
-            "champions_by_year": champions_by_year,
-            "title_counts": dict(title_counts.most_common()),
-            "recent_finals": recent_finals_rows,
+            "style_profile": _compute_style_profile(finals, all_finals),
             "total_matches": len(tdf),
         }
 
@@ -201,21 +189,14 @@ def build_tournaments(
     *,
     _matches_df: Optional[pd.DataFrame] = None,
 ) -> list[pathlib.Path]:
-    """Generate Obsidian tournament notes and return written paths.
+    """Generate name-free Obsidian tournament style-profile notes.
 
     Parameters
     ----------
-    out_dir:
-        Directory where notes are emitted (e.g. vault/Sports/Tennis/Tournaments/).
-        Created if it does not exist.  Idempotent — reruns overwrite.
-    corpus_dir:
-        Directory containing matches.parquet.
-        Defaults to data/domains/tennis/ relative to repo root.
-    min_editions:
-        Minimum distinct calendar years a tournament must appear in to get a note.
-    _matches_df:
-        Optional DataFrame override — used by tests to inject a synthetic fixture
-        without touching disk.
+    out_dir:        Directory where notes are emitted.  Idempotent (reruns overwrite).
+    corpus_dir:     Directory containing matches.parquet.
+    min_editions:   Minimum distinct calendar years required for a note.
+    _matches_df:    Optional DataFrame override for tests (no disk access).
 
     Returns
     -------
@@ -227,7 +208,6 @@ def build_tournaments(
 
     if _matches_df is not None:
         matches = _matches_df.copy()
-        # Ensure year column
         if "year" not in matches.columns:
             matches["date"] = matches["date"].astype(str)
             matches["year"] = matches["date"].str.extract(r"^(\d{4})")[0].apply(
@@ -236,11 +216,9 @@ def build_tournaments(
     else:
         matches = _load_matches(corpus_dir)
 
-    tournament_stats = _compute_tournament_stats(matches, min_editions)
-
     return render_all_tournaments(
         out_dir=out_dir,
-        tournament_stats=tournament_stats,
+        tournament_stats=_compute_tournament_stats(matches, min_editions),
         level_order=LEVEL_ORDER,
         level_labels=LEVEL_LABELS,
     )
