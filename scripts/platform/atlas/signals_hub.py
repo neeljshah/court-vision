@@ -1,8 +1,9 @@
 """signals_hub.py — Cross-sport signal-discovery hub aggregator.
 
-Scans vault/Sports/<Sport>/Signals/_Catalog.md, parses each verdict table,
-and writes vault/Sports/_Signals_Hub.md.  Sports missing a catalog are
-silently skipped (graceful-skip for in-flight sibling agents).
+Scans vault/Sports/<Sport>/Signals/_Catalog.md (base candidates) AND
+_Catalog_Joint.md (joint/interaction candidates) per sport, parses each
+verdict table, and writes vault/Sports/_Signals_Hub.md.  Sports missing
+a catalog are silently skipped (graceful-skip for in-flight sibling agents).
 
     from scripts.platform.atlas.signals_hub import build_signals_hub
     out = build_signals_hub()       # default repo vault/Sports path
@@ -19,9 +20,10 @@ from typing import Dict, List, Optional
 
 from scripts.platform.atlas.obsidian_emit import write_note
 
-_CATALOG_REL  = pathlib.Path("Signals") / "_Catalog.md"
-_OUT_FILENAME  = "_Signals_Hub.md"
-_TABLE_ROW_RE  = re.compile(r"^\s*\|(.+)\|\s*$")
+_CATALOG_REL       = pathlib.Path("Signals") / "_Catalog.md"
+_CATALOG_JOINT_REL = pathlib.Path("Signals") / "_Catalog_Joint.md"
+_OUT_FILENAME      = "_Signals_Hub.md"
+_TABLE_ROW_RE      = re.compile(r"^\s*\|(.+)\|\s*$")
 
 
 @dataclass
@@ -29,6 +31,8 @@ class SportSignalStats:
     sport: str
     catalog_path: pathlib.Path
     candidates: int = 0
+    base_candidates: int = 0
+    joint_candidates: int = 0
     reject: int = 0
     defer: int = 0
     variance_only: int = 0
@@ -37,13 +41,14 @@ class SportSignalStats:
 
 
 def _parse_catalog(catalog_path: pathlib.Path) -> Optional[SportSignalStats]:
-    """Parse a _Catalog.md verdict table.  Returns None on unrecoverable error."""
+    """Parse a single _Catalog.md or _Catalog_Joint.md verdict table.
+    Returns None on unrecoverable error or if no rows found."""
     try:
         text = catalog_path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return None
 
-    sport = catalog_path.parts[-3]  # …/<Sport>/Signals/_Catalog.md
+    sport = catalog_path.parts[-3]  # …/<Sport>/Signals/_Catalog*.md
     stats = SportSignalStats(sport=sport, catalog_path=catalog_path)
     in_section = saw_header = False
     signal_col_idx = actual_col_idx = -1
@@ -95,13 +100,55 @@ def _parse_catalog(catalog_path: pathlib.Path) -> Optional[SportSignalStats]:
     return stats if stats.candidates > 0 or saw_header else None
 
 
+def _parse_sport(sport_dir: pathlib.Path) -> Optional[SportSignalStats]:
+    """Parse both _Catalog.md and _Catalog_Joint.md for a sport dir.
+
+    Returns a merged SportSignalStats if at least one catalog file exists and
+    contains rows.  Gracefully skips whichever file is absent.
+    """
+    base_path  = sport_dir / _CATALOG_REL
+    joint_path = sport_dir / _CATALOG_JOINT_REL
+
+    base_stats  = _parse_catalog(base_path)  if base_path.is_file()  else None
+    joint_stats = _parse_catalog(joint_path) if joint_path.is_file() else None
+
+    if base_stats is None and joint_stats is None:
+        return None
+
+    sport = sport_dir.name
+    merged = SportSignalStats(
+        sport=sport,
+        catalog_path=base_path if base_path.is_file() else joint_path,
+    )
+    if base_stats is not None:
+        merged.base_candidates = base_stats.candidates
+        merged.candidates      += base_stats.candidates
+        merged.reject          += base_stats.reject
+        merged.defer           += base_stats.defer
+        merged.variance_only   += base_stats.variance_only
+        merged.ship            += base_stats.ship
+        merged.signals         += base_stats.signals
+    if joint_stats is not None:
+        merged.joint_candidates = joint_stats.candidates
+        merged.candidates       += joint_stats.candidates
+        merged.reject           += joint_stats.reject
+        merged.defer            += joint_stats.defer
+        merged.variance_only    += joint_stats.variance_only
+        merged.ship             += joint_stats.ship
+        merged.signals          += joint_stats.signals
+
+    return merged if merged.candidates > 0 else None
+
+
 def build_signals_hub(
     vault_sports_dir: Optional[pathlib.Path] = None,
 ) -> pathlib.Path:
     """Scan vault_sports_dir for per-sport signal catalogs and write
     vault/Sports/_Signals_Hub.md.  Returns the path of the written file.
 
-    Sports whose catalog is absent are silently skipped (graceful-skip).
+    Both _Catalog.md (base signals) and _Catalog_Joint.md (joint/interaction
+    signals) are scanned per sport and aggregated.  Sports missing both files
+    are silently skipped (graceful-skip).
     """
     if vault_sports_dir is None:
         repo_root = pathlib.Path(__file__).resolve().parents[3]
@@ -117,21 +164,20 @@ def build_signals_hub(
     sport_stats: List[SportSignalStats] = []
     ships_present = False
     for sd in sport_dirs:
-        catalog = sd / _CATALOG_REL
-        if not catalog.is_file():
-            continue  # graceful-skip: catalog not yet written
-        parsed = _parse_catalog(catalog)
+        parsed = _parse_sport(sd)
         if parsed is None:
             continue
         sport_stats.append(parsed)
         if parsed.ship > 0:
             ships_present = True
 
-    grand_candidates  = sum(s.candidates     for s in sport_stats)
-    grand_reject      = sum(s.reject         for s in sport_stats)
-    grand_defer       = sum(s.defer          for s in sport_stats)
-    grand_variance_only = sum(s.variance_only for s in sport_stats)
-    grand_ship        = sum(s.ship           for s in sport_stats)
+    grand_candidates    = sum(s.candidates     for s in sport_stats)
+    grand_base          = sum(s.base_candidates  for s in sport_stats)
+    grand_joint         = sum(s.joint_candidates for s in sport_stats)
+    grand_reject        = sum(s.reject           for s in sport_stats)
+    grand_defer         = sum(s.defer            for s in sport_stats)
+    grand_variance_only = sum(s.variance_only    for s in sport_stats)
+    grand_ship          = sum(s.ship             for s in sport_stats)
 
     L: List[str] = []
     L += [
@@ -147,7 +193,8 @@ def build_signals_hub(
         "",
         "> **Honest framing:** Systematic signal-discovery across all sports via the REAL",
         "> leak-free gate. Candidate signals are pure transforms of proof-validated leak-free",
-        "> features. EXPECTED and OBSERVED verdicts are REJECT/DEFER — markets are efficient.",
+        "> features (base signals) and ≥2-column algebraic interactions (joint signals).",
+        "> EXPECTED and OBSERVED verdicts are REJECT/DEFER — markets are efficient.",
         "> NO edge is claimed; the REJECT is the honest success criterion.",
         "",
         "> Auto-generated by `scripts/platform/atlas/signals_hub.py` — do not hand-edit.",
@@ -180,6 +227,8 @@ def build_signals_hub(
         "|--------|-------|",
         f"| Sports with catalogs | **{len(sport_stats)}** |",
         f"| Total candidates tested | **{grand_candidates}** |",
+        f"| — Base (single-feature) | {grand_base} |",
+        f"| — Joint (interaction) | {grand_joint} |",
         f"| Total REJECT | {grand_reject} |",
         f"| Total DEFER | {grand_defer} |",
         f"| Total VARIANCE_ONLY | {grand_variance_only} |",
@@ -190,8 +239,8 @@ def build_signals_hub(
     L += [
         "## Per-Sport Signal Counts",
         "",
-        "| Sport | #Candidates | #REJECT | #DEFER | #VARIANCE_ONLY | #SHIP | Catalog |",
-        "|-------|------------|---------|--------|----------------|-------|---------|",
+        "| Sport | #Base | #Joint | #Total | #REJECT | #DEFER | #VARIANCE_ONLY | #SHIP | Catalog |",
+        "|-------|-------|--------|--------|---------|--------|----------------|-------|---------|",
     ]
 
     def _ship_cell(n: int) -> str:
@@ -199,12 +248,14 @@ def build_signals_hub(
 
     for s in sport_stats:
         L.append(
-            f"| {s.sport} | {s.candidates} | {s.reject} | {s.defer}"
+            f"| {s.sport} | {s.base_candidates} | {s.joint_candidates}"
+            f" | {s.candidates} | {s.reject} | {s.defer}"
             f" | {s.variance_only} | {_ship_cell(s.ship)}"
             f" | [[{s.sport}/Signals/_Catalog]] |"
         )
     L += [
-        f"| **TOTAL** | **{grand_candidates}** | **{grand_reject}** | **{grand_defer}**"
+        f"| **TOTAL** | **{grand_base}** | **{grand_joint}**"
+        f" | **{grand_candidates}** | **{grand_reject}** | **{grand_defer}**"
         f" | **{grand_variance_only}** | {_ship_cell(grand_ship)} | — |",
         "",
     ]
@@ -219,7 +270,9 @@ def build_signals_hub(
     L += ["---", "", "## Catalog Links", ""]
     if sport_stats:
         for s in sport_stats:
-            L.append(f"- [[{s.sport}/Signals/_Catalog]] — {s.sport} signal catalog")
+            L.append(f"- [[{s.sport}/Signals/_Catalog]] — {s.sport} base signal catalog")
+            if s.joint_candidates > 0:
+                L.append(f"- [[{s.sport}/Signals/_Catalog_Joint]] — {s.sport} joint/interaction signal catalog")
     else:
         L.append("_No catalogs present yet._")
 
@@ -228,7 +281,8 @@ def build_signals_hub(
         "---",
         "",
         f"*Generated {time.strftime('%Y-%m-%d %H:%M:%S')} · "
-        f"{len(sport_stats)} sport(s) · {grand_candidates} candidate(s)*",
+        f"{len(sport_stats)} sport(s) · {grand_candidates} candidate(s) "
+        f"({grand_base} base + {grand_joint} joint)*",
         "",
         "_PRIVATE research. No edge claimed. REJECT = honest success._",
     ]
