@@ -168,17 +168,22 @@ def replay(matches: pd.DataFrame, until: Optional[dt.date] = None) -> GoalsState
 
         # --- UPDATE EW rates (snapshot is implicit — caller of _lambdas reads
         #     the state before this block runs) ---
-        state.gf_ew[home] += ALPHA * (fthg - state.gf_ew[home])
-        state.ga_ew[home] += ALPHA * (ftag - state.ga_ew[home])
-        state.gf_ew[away] += ALPHA * (ftag - state.gf_ew[away])
-        state.ga_ew[away] += ALPHA * (fthg - state.ga_ew[away])
+        # Guard: skip the EW update when either score is non-finite (NaN/inf).
+        # The PRE-MATCH snapshot (computed BEFORE this block) is still emitted
+        # for the NaN row — it is prior-based and always finite.  Skipping keeps
+        # subsequent rows uncontaminated.  Finite inputs are unaffected (no-op).
+        if math.isfinite(fthg) and math.isfinite(ftag):
+            state.gf_ew[home] += ALPHA * (fthg - state.gf_ew[home])
+            state.ga_ew[home] += ALPHA * (ftag - state.ga_ew[home])
+            state.gf_ew[away] += ALPHA * (ftag - state.gf_ew[away])
+            state.ga_ew[away] += ALPHA * (fthg - state.ga_ew[away])
 
-        state.counts[home] = state.counts.get(home, 0) + 1
-        state.counts[away] = state.counts.get(away, 0) + 1
+            state.counts[home] = state.counts.get(home, 0) + 1
+            state.counts[away] = state.counts.get(away, 0) + 1
 
-        # EW-update league means
-        state.league_mu_home += ALPHA * (fthg - state.league_mu_home)
-        state.league_mu_away += ALPHA * (ftag - state.league_mu_away)
+            # EW-update league means
+            state.league_mu_home += ALPHA * (fthg - state.league_mu_home)
+            state.league_mu_away += ALPHA * (ftag - state.league_mu_away)
 
         state.last_date = row_date
         state.n_processed += 1
@@ -248,16 +253,20 @@ def walk_forward_goals(matches_df: pd.DataFrame) -> pd.DataFrame:
         p_overs.append(_p_over(lam_t))
 
         # ---- UPDATE EW RATES (post-match) ----
-        state.gf_ew[home] += ALPHA * (fthg - state.gf_ew[home])
-        state.ga_ew[home] += ALPHA * (ftag - state.ga_ew[home])
-        state.gf_ew[away] += ALPHA * (ftag - state.gf_ew[away])
-        state.ga_ew[away] += ALPHA * (fthg - state.ga_ew[away])
+        # Guard: skip update when either score is non-finite (NaN/inf) so that
+        # poison from a missing result does NOT propagate to later rows.
+        # The snapshot already recorded above is prior-based and always finite.
+        if math.isfinite(fthg) and math.isfinite(ftag):
+            state.gf_ew[home] += ALPHA * (fthg - state.gf_ew[home])
+            state.ga_ew[home] += ALPHA * (ftag - state.ga_ew[home])
+            state.gf_ew[away] += ALPHA * (ftag - state.gf_ew[away])
+            state.ga_ew[away] += ALPHA * (fthg - state.ga_ew[away])
 
-        state.counts[home] = state.counts.get(home, 0) + 1
-        state.counts[away] = state.counts.get(away, 0) + 1
+            state.counts[home] = state.counts.get(home, 0) + 1
+            state.counts[away] = state.counts.get(away, 0) + 1
 
-        state.league_mu_home += ALPHA * (fthg - state.league_mu_home)
-        state.league_mu_away += ALPHA * (ftag - state.league_mu_away)
+            state.league_mu_home += ALPHA * (fthg - state.league_mu_home)
+            state.league_mu_away += ALPHA * (ftag - state.league_mu_away)
 
         state.last_date = row_date
         state.n_processed += 1
