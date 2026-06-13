@@ -7,9 +7,10 @@ candidates are ALREADY TESTED in the signal catalogs vs UNTESTED.
 PURPOSE: systematic coverage tracking.  NO edge claims.  Quantifies search breadth.
 
 Base columns sourced from catalog CONTRACT doc-strings:
-  tennis : domains/tennis/signal_catalog.py   (cols 0-4)
-  soccer : domains/soccer/signal_catalog.py   (cols 0-4)
-  mlb    : domains/mlb/signal_catalog.py      (cols 0-5)
+  tennis         : domains/tennis/signal_catalog.py          (cols 0-4)
+  soccer         : domains/soccer/signal_catalog.py          (cols 0-4)
+  mlb            : domains/mlb/signal_catalog.py             (cols 0-5)
+  basketball_nba : domains/basketball_nba/signal_catalog.py  (cols 0-7)
 
 Candidate space (deterministic, finite):
   Single-col transforms: identity, sign, abs, square, threshold_bucket
@@ -42,12 +43,19 @@ MLB_BASE_COLS: Tuple[str, ...] = (
     "elo_home", "elo_away", "elo_diff_hfa",
     "rest_days_home", "rest_days_away", "h2h_rate",
 )
+#: Source: domains/basketball_nba/signal_catalog.py
+NBA_BASE_COLS: Tuple[str, ...] = (
+    "elo_home", "elo_away", "elo_diff_hfa",
+    "rest_days_home", "rest_days_away",
+    "home_b2b", "away_b2b", "rolling_win10_home",
+)
 
-# NBA excluded: no FeatureBundle adapter/signal_catalog; NBA uses a separate gate path.
+# NBA included: domains/basketball_nba/ adapter + signal_catalog(s) built this wave.
 SPORT_BASE_COLS: Dict[str, Tuple[str, ...]] = {
     "tennis": TENNIS_BASE_COLS,
     "soccer": SOCCER_BASE_COLS,
     "mlb": MLB_BASE_COLS,
+    "basketball_nba": NBA_BASE_COLS,
 }
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -64,6 +72,10 @@ SPORT_CATALOG_PATHS: Dict[str, List[Path]] = {
     "mlb": [
         _REPO_ROOT / "domains" / "mlb" / "signal_catalog.py",
         _REPO_ROOT / "domains" / "mlb" / "signal_catalog_joint.py",
+    ],
+    "basketball_nba": [
+        _REPO_ROOT / "domains" / "basketball_nba" / "signal_catalog.py",
+        _REPO_ROOT / "domains" / "basketball_nba" / "signal_catalog_joint.py",
     ],
 }
 

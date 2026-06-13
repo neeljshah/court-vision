@@ -16,6 +16,7 @@ from typing import Dict, List
 import pytest
 
 from scripts.research_harness.hypothesis_enumerator import (
+    NBA_BASE_COLS,
     SINGLE_TRANSFORMS,
     PAIRWISE_JOINTS,
     SPORT_BASE_COLS,
@@ -218,6 +219,68 @@ def test_candidate_names_are_unique() -> None:
     for sport, cols in SPORT_BASE_COLS.items():
         names = [c.name for c in enumerate_candidates(sport, cols)]
         assert len(names) == len(set(names)), f"{sport}: duplicate candidate names"
+
+
+# ---------------------------------------------------------------------------
+# NBA-specific tests — basketball_nba now included with 8 base cols
+# ---------------------------------------------------------------------------
+
+
+def test_nba_in_sport_base_cols() -> None:
+    """basketball_nba must appear in SPORT_BASE_COLS with the 8 contracted base cols."""
+    assert "basketball_nba" in SPORT_BASE_COLS
+    assert set(SPORT_BASE_COLS["basketball_nba"]) == set(NBA_BASE_COLS)
+    assert len(NBA_BASE_COLS) == 8
+
+
+def test_nba_enumeration_returns_candidates() -> None:
+    """compute_coverage('basketball_nba') must enumerate candidates for all 8 base cols."""
+    r = compute_coverage("basketball_nba")
+    assert r.n_enumerated > 0, "basketball_nba: zero candidates enumerated"
+    # Exact count: 8 cols * 5 single + C(8,2)*4 joint = 40 + 112 = 152
+    expected = _theoretical_max(len(NBA_BASE_COLS))
+    assert r.n_enumerated == expected, (
+        f"basketball_nba: expected {expected} candidates, got {r.n_enumerated}"
+    )
+
+
+def test_nba_every_base_col_in_candidates() -> None:
+    """Every NBA base column must appear in at least one enumerated candidate."""
+    candidates = enumerate_candidates("basketball_nba", NBA_BASE_COLS)
+    covered = {col for c in candidates for col in c.cols}
+    for col in NBA_BASE_COLS:
+        assert col in covered, f"basketball_nba: base col '{col}' missing from candidates"
+
+
+def test_nba_coverage_graceful_missing_catalog() -> None:
+    """compute_coverage('basketball_nba') must not raise even if catalog files are absent."""
+    r = compute_coverage("basketball_nba")
+    # tested_names may be empty (catalog being built); that is fine
+    assert isinstance(r.tested_names, list)
+    assert r.n_tested >= 0
+    assert r.n_tested <= r.n_enumerated
+
+
+def test_nba_determinism() -> None:
+    """Two calls to compute_coverage('basketball_nba') must produce identical results."""
+    r1 = compute_coverage("basketball_nba")
+    r2 = compute_coverage("basketball_nba")
+    assert [c.name for c in r1.candidates] == [c.name for c in r2.candidates]
+    assert r1.tested_set == r2.tested_set
+
+
+def test_existing_three_sports_unchanged() -> None:
+    """tennis, soccer, and mlb must still enumerate exactly as before."""
+    expected_counts = {
+        "tennis": _theoretical_max(5),   # 5 cols → 5*5 + C(5,2)*4 = 25 + 40 = 65
+        "soccer": _theoretical_max(5),   # 5 cols → 65
+        "mlb": _theoretical_max(6),      # 6 cols → 6*5 + C(6,2)*4 = 30 + 60 = 90
+    }
+    for sport, expected in expected_counts.items():
+        r = compute_coverage(sport)
+        assert r.n_enumerated == expected, (
+            f"{sport}: expected {expected} candidates after NBA addition, got {r.n_enumerated}"
+        )
 
 
 # ---------------------------------------------------------------------------
