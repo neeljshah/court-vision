@@ -17,6 +17,8 @@ from typing import Optional
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = _REPO_ROOT / "data"
 MIN_GAMES = 10
@@ -121,8 +123,7 @@ def _build_stats(data_dir: pathlib.Path) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def _write(path: pathlib.Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    write_note(path, text)
 
 
 def _archetype_note(arch: dict, population: int, typical_pos: str) -> str:

@@ -18,6 +18,8 @@ from typing import Any, Dict, List
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
+
 # ---------------------------------------------------------------------------
 # Formatting helpers
 # ---------------------------------------------------------------------------
@@ -221,7 +223,9 @@ def render_index(seasons: List[str]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def write_note(path: pathlib.Path, text: str) -> None:
-    """Write text to path, creating parent directories as needed."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+# write_note re-exported from obsidian_emit for callers that import it from here
+__all__ = [
+    "render_efficiency_context", "render_team_table",
+    "render_league_stat_distributions", "render_archetype_mix",
+    "render_season_note", "render_index", "write_note",
+]

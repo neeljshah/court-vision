@@ -14,6 +14,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
+from scripts.platform.atlas.obsidian_emit import write_note
 from domains.basketball_nba.memory_atlas_archetypes import ARCHETYPES
 from domains.basketball_nba.memory_atlas_seasons import (
     _load_player_archetype_stats,
@@ -196,8 +197,7 @@ def _render_season_archetypes(season: str, mix: Dict[str, int], prev_mix: Option
 # ---------------------------------------------------------------------------
 
 def _write(path: pathlib.Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    write_note(path, text)
 
 
 def build_trends(
