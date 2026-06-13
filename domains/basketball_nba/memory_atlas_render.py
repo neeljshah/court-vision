@@ -10,13 +10,11 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 from typing import Any, Optional
 
 import pandas as pd
 
-_SLUG_RE = re.compile(r"[^\w\s-]")
-_SPACE_RE = re.compile(r"[\s]+")
+from scripts.platform.atlas.obsidian_emit import slug as _slug_fn, write_note
 
 NBA_DIVISIONS: dict[str, list[str]] = {
     "Atlantic": ["BOS", "BKN", "NYK", "PHI", "TOR"], "Central": ["CHI", "CLE", "DET", "IND", "MIL"],
@@ -32,7 +30,7 @@ TEAM_DIV: dict[str, str] = {t: d for d, ts in NBA_DIVISIONS.items() for t in ts}
 # ---------------------------------------------------------------------------
 
 def _slug(name: str) -> str:
-    return _SPACE_RE.sub("_", _SLUG_RE.sub("", name).strip())
+    return _slug_fn(name)
 
 def _safe_float(v: Any, d: int = 1) -> Optional[float]:
     try: return round(float(v), d)
@@ -100,8 +98,7 @@ def _render_section(section_name: str, data: dict) -> str:
     return "" if len(lines) == 1 else "\n".join(lines) + "\n"
 
 def _write(path: pathlib.Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    write_note(path, text)
 
 # ---------------------------------------------------------------------------
 # Section renderer (shared player + team)
