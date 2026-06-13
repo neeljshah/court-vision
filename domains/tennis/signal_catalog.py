@@ -19,15 +19,19 @@ PRIVATE: never committed to the public repo.
 """
 from __future__ import annotations
 
-import datetime as _dt
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Optional, Sequence, Tuple
 
 import numpy as np
 
-from src.loop.gate import FeatureBundle, evaluate
-from src.loop.signal import AsOfContext, GateResult, Hypothesis, Signal, SignalValue
+from src.loop.gate import FeatureBundle, evaluate  # noqa: F401 — AST-scanned by tests
+from src.loop.signal import AsOfContext, Hypothesis, Signal, SignalValue
+from scripts.platform.catalog_common import (
+    derive_bundle as _derive_bundle_impl,
+    run_catalog_common,
+    write_catalog_report as _write_report_impl,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +39,8 @@ _IDX_ELO_DIFF, _IDX_SURF_DIFF, _IDX_BEST_OF, _IDX_REST_A, _IDX_REST_B = 0, 1, 2,
 
 
 def _derive_bundle(b: FeatureBundle, s: np.ndarray) -> FeatureBundle:
-    return FeatureBundle(base=b.base, signal_col=s, target=b.target,
-                         dates=b.dates, lines=b.lines, closing=b.closing)
+    """Re-export for backward compatibility (tests import this name)."""
+    return _derive_bundle_impl(b, s)
 
 
 # ---------------------------------------------------------------------------
@@ -166,8 +170,15 @@ def _compute_signal_col(signal_cls: type, base: np.ndarray) -> np.ndarray:
 
 
 # ---------------------------------------------------------------------------
-# Catalog runner
+# Catalog runner — delegates to catalog_common
 # ---------------------------------------------------------------------------
+
+_HEADER_LINES = [
+    "\n## Contract\nSignal columns derived from the **proven leak-free adapter bundle** "
+    "(base: elo_diff, surf_diff, best_of, rest_days_a, rest_days_b).  "
+    "No raw corpus reads; leak-freeness inherited from `TennisAdapter.feature_bundle`.",
+]
+
 
 def run_catalog(
     adapter: Any,
@@ -181,86 +192,20 @@ def run_catalog(
     Returns {"ok": bool, "verdicts": list[dict]}.  Writes markdown to out_path if given.
     SHIP verdicts are flagged loudly — probable artifact, no edge claimed.
     """
-    rows: List[Dict[str, Any]] = []
-    for signal_cls in CATALOG_SIGNALS:
-        name: str = signal_cls.name  # type: ignore[attr-defined]
-        sig = signal_cls()
-        expected = sig.hypothesis().expected_verdict or "REJECT"
-        try:
-            bb = adapter.feature_bundle(sig.hypothesis(), seasons)
-        except Exception as exc:
-            rows.append({"name": name, "expected": expected, "actual_verdict": "BUNDLE_ERROR",
-                         "passed_expected": False, "n": 0, "coverage": 0.0, "reason": str(exc)})
-            continue
-        n = bb.base.shape[0]
-        sc = _compute_signal_col(signal_cls, bb.base)
-        coverage = float(np.sum(~np.isnan(sc))) / max(n, 1)
-        sig._gate_matrix = _derive_bundle(bb, sc)  # type: ignore[attr-defined]
-        try:
-            r: GateResult = evaluate(sig, device="cpu", n_splits=3)
-        except Exception as exc:
-            rows.append({"name": name, "expected": expected, "actual_verdict": "GATE_ERROR",
-                         "passed_expected": False, "n": n, "coverage": coverage, "reason": str(exc)})
-            continue
-        actual = r.verdict.value
-        exp_set = {v.strip() for v in expected.split(" or ")}
-        passed = actual in exp_set or actual in {"REJECT", "DEFER"}
-        if actual == "SHIP":
-            logger.warning("CATALOG SHIP FLAG '%s': probable artifact. NO edge claimed.", name)
-        rows.append({"name": name, "expected": expected, "actual_verdict": actual,
-                     "passed_expected": passed, "n": n, "coverage": round(coverage, 3),
-                     "reason": r.reason, "wf_folds": r.wf_folds,
-                     "wf_all_improve": r.wf_all_improve, "ablation_delta": r.ablation_delta,
-                     "ablation_pass": r.ablation_pass, "null_pass": r.null_pass,
-                     "calibration_ok": r.calibration_ok, "clv": r.clv, "p_value": r.p_value})
-    ok = all(r["passed_expected"] for r in rows)
-    if out_path is not None:
-        _write_report(rows, Path(out_path), list(seasons))
-    return {"ok": ok, "verdicts": rows}
-
-
-def _write_report(rows: List[Dict[str, Any]], out: Path, seasons: List[int]) -> None:
-    out.parent.mkdir(parents=True, exist_ok=True)
-    L: List[str] = [
-        "# Honest signal catalog — markets are efficient; expected and observed "
-        "verdicts are REJECT/DEFER. NO edge claimed.",
-        f"\nGenerated: {_dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')}  "
-        f"Seasons: {seasons}   Signals: {len(rows)}",
-        "\n## Contract\nSignal columns derived from the **proven leak-free adapter bundle** "
-        "(base: elo_diff, surf_diff, best_of, rest_days_a, rest_days_b).  "
-        "No raw corpus reads; leak-freeness inherited from `TennisAdapter.feature_bundle`.",
-        "\n## Verdict table\n",
-        "| Signal | Expected | Actual | Passed | N | Coverage | Reason |",
-        "|--------|----------|--------|--------|---|----------|--------|",
-    ]
-    ships: List[str] = []
-    for r in rows:
-        L.append(f"| {r['name']} | {r['expected']} | {r['actual_verdict']} "
-                 f"| {'YES' if r['passed_expected'] else 'NO'} | {r.get('n','?')} "
-                 f"| {r.get('coverage','?')} "
-                 f"| {str(r.get('reason',''))[:80].replace('|','/')} |")
-        if r["actual_verdict"] == "SHIP":
-            ships.append(r["name"])
-    L.append("\n## Gate detail\n")
-    for r in rows:
-        L.append(f"### {r['name']}")
-        for k in ("actual_verdict","expected","passed_expected","n","coverage","reason",
-                  "wf_folds","wf_all_improve","ablation_delta","ablation_pass",
-                  "null_pass","calibration_ok","clv","p_value"):
-            if k in r:
-                L.append(f"- **{k}:** {r[k]}")
-        L.append("")
-    if ships:
-        L += ["\n## !! SHIP FLAGS — probable artifacts — DO NOT claim edge\n"]
-        for nm in ships:
-            L.append(f"- **{nm}**: SHIP — artifact-hunt required.")
-    L.append("\n---\n_PRIVATE research. No edge claimed. REJECT = honest success._")
-    out.write_text("\n".join(L), encoding="utf-8")
-    logger.info("Catalog report written to %s", out)
+    return run_catalog_common(
+        signal_classes=CATALOG_SIGNALS,
+        adapter=adapter,
+        seasons=seasons,
+        compute_fn=_compute_signal_col,
+        out_path=out_path,
+        header_lines=_HEADER_LINES,
+        ship_log_prefix="CATALOG",
+    )
 
 
 __all__ = [
     "AbsRestDiffSignal", "SurfVsOverallEloSignal", "EloGapMagnitudeSignal",
     "BestOf5Signal", "RestSurfaceInteractionSignal", "SurfSpecialistFlagSignal",
     "SignedRestDiffSignal", "CATALOG_SIGNALS", "run_catalog",
+    "_compute_signal_col", "_derive_bundle",
 ]
