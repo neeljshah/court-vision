@@ -175,7 +175,7 @@ def render_playstyles_index(
     arch_rows: List[str] = []
     for a in archetypes:
         arch_rows.append(
-            f"| {_wl(a['slug'])} | {a['team_count']} | {a['description_short']} |"
+            f"| {_wl('Playstyles/' + a['slug'])} | {a['team_count']} | {a['description_short']} |"
         )
 
     lines = [
@@ -199,5 +199,41 @@ def render_playstyles_index(
         f"{len(archetypes)} archetypes from the {corpus_span} corpus.*",
         "",
         "#sport/mlb #playstyle #index",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Unclassified stub note
+# ---------------------------------------------------------------------------
+
+
+def render_unclassified_stub(*, corpus_span: str) -> str:
+    """Render a stub note for franchises not assigned to any named archetype.
+
+    This provides a valid link target for [[Playstyles/unclassified]] wikilinks
+    emitted by style-matchup notes when corpus teams have no primary archetype.
+    """
+    fm = _fm(
+        archetype="unclassified",
+        sport="mlb",
+        corpus_span=corpus_span,
+        tags=["sport/mlb", "playstyle", "archetype/unclassified"],
+    )
+    lines = [
+        fm,
+        "",
+        "# Playstyle: Unclassified",
+        "",
+        f"up:: {_wl('Playstyles/_Playstyles_Index')} | {_wl('_Index')}",
+        "",
+        "## Style Description",
+        "",
+        "Franchises that do not meet the threshold criteria for any of the six "
+        f"named archetypes in the {corpus_span} corpus. Their run-scoring / "
+        "run-prevention profile is transitional or near the boundary of multiple "
+        "identities.",
+        "",
+        "#sport/mlb #playstyle #archetype/unclassified",
     ]
     return "\n".join(lines) + "\n"

@@ -184,16 +184,34 @@ def test_high_rs_team_in_power_archetype(
 def test_index_links_all_archetypes(
     tmp_path: pathlib.Path, synthetic_corpus: pathlib.Path
 ) -> None:
-    """_Playstyles_Index.md links back to each archetype slug."""
+    """_Playstyles_Index.md links back to each named archetype slug (not unclassified)."""
     out = tmp_path / "out"
     result = build_playstyles(out, corpus_dir=synthetic_corpus)
     index_text = (out / "_Playstyles_Index.md").read_text(encoding="utf-8")
-    arch_notes = [p for p in result if p.name != "_Playstyles_Index.md"]
+    # Exclude the index itself and the unclassified stub (it is a catch-all,
+    # not a named archetype, so it does not appear in the index table).
+    _SKIP = {"_Playstyles_Index", "unclassified"}
+    arch_notes = [p for p in result if p.stem not in _SKIP]
     for p in arch_notes:
         slug = p.stem  # e.g. "power_run_scoring"
         assert slug in index_text, (
             f"Index should reference archetype slug '{slug}'"
         )
+
+
+def test_unclassified_stub_written(
+    tmp_path: pathlib.Path, synthetic_corpus: pathlib.Path
+) -> None:
+    """unclassified.md stub is written so [[Playstyles/unclassified]] resolves."""
+    out = tmp_path / "out"
+    build_playstyles(out, corpus_dir=synthetic_corpus)
+    stub = out / "unclassified.md"
+    assert stub.exists(), "unclassified.md stub should be written"
+    text = stub.read_text(encoding="utf-8")
+    assert "---" in text, "unclassified.md should have YAML frontmatter"
+    assert "[[Playstyles/_Playstyles_Index]]" in text, (
+        "unclassified.md should link up to _Playstyles_Index"
+    )
 
 
 def test_no_exception_on_minimal_valid_corpus(tmp_path: pathlib.Path) -> None:
