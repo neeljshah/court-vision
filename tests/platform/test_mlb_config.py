@@ -405,3 +405,50 @@ class TestGitignore:
         assert content_lines == ["*", "!.gitignore"], (
             f"Expected content lines ['*', '!.gitignore']; got {content_lines}"
         )
+
+
+# ---------------------------------------------------------------------------
+# 7. Real-corpus codes — regression + newly-added legacy/variant codes
+# ---------------------------------------------------------------------------
+
+
+def test_resolve_league_real_corpus_codes() -> None:
+    """All 34 SBR codes observed in the real 2010-2021 corpus must resolve.
+
+    Three codes were missing before M-A-002 (FIX-FORWARD):
+      LOS  — LA Dodgers legacy code (pre-LAD / 2020 variant)
+      SFG  — San Francisco Giants 2020-season variant of SFO
+      BRS  — Boston Red Sox 2020-season variant of BOS
+
+    Also asserts regression correctness for a representative sample of the
+    31 pre-existing codes that already resolved.
+    """
+    from domains.mlb.config import resolve_league
+
+    # --- newly-added codes (the M-A-002 fix) ---
+    assert resolve_league("LOS", 2010) == "NL", "LOS should be NL (Dodgers legacy)"
+    assert resolve_league("SFG", 2020) == "NL", "SFG should be NL (Giants 2020 variant)"
+    assert resolve_league("BRS", 2020) == "AL", "BRS should be AL (Red Sox 2020 variant)"
+
+    # --- regression: representative pre-existing codes ---
+    assert resolve_league("LAD", 2016) == "NL", "LAD should be NL"
+    assert resolve_league("BOS", 2020) == "AL", "BOS should be AL"
+
+    # --- full observed-code set (all 34 codes must not raise) ---
+    # HOU uses season=2015 so the AL branch is hit (AL from 2013 onward).
+    all_observed = [
+        ("ARI", 2015), ("ATL", 2015), ("BAL", 2015), ("BOS", 2015),
+        ("BRS", 2020), ("CHC", 2015), ("CIN", 2015), ("CLE", 2015),
+        ("COL", 2015), ("CUB", 2015), ("CWS", 2015), ("DET", 2015),
+        ("HOU", 2015), ("KAN", 2015), ("LAA", 2015), ("LAD", 2015),
+        ("LOS", 2010), ("MIA", 2015), ("MIL", 2015), ("MIN", 2015),
+        ("NYM", 2015), ("NYY", 2015), ("OAK", 2015), ("PHI", 2015),
+        ("PIT", 2015), ("SDG", 2015), ("SEA", 2015), ("SFG", 2020),
+        ("SFO", 2015), ("STL", 2015), ("TAM", 2015), ("TEX", 2015),
+        ("TOR", 2015), ("WAS", 2015),
+    ]
+    for team, season in all_observed:
+        result = resolve_league(team, season)
+        assert result in ("AL", "NL"), (
+            f"resolve_league({team!r}, {season}) returned unexpected value: {result!r}"
+        )

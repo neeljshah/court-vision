@@ -88,11 +88,14 @@ LEAGUE_MAP: Dict[str, str] = {
     "COL": "NL", "LAD": "NL", "MIA": "NL", "FLA": "NL", "MIL": "NL",
     "NYM": "NL", "PHI": "NL", "PIT": "NL", "SDG": "NL", "SFO": "NL",
     "SF":  "NL", "STL": "NL", "WAS": "NL",
+    "LOS": "NL",  # LA Dodgers legacy code (pre-LAD / 2020 variant)
+    "SFG": "NL",  # San Francisco Giants 2020-season variant of SFO
     # AL
     "BAL": "AL", "BOS": "AL", "CWS": "AL", "CHW": "AL", "CLE": "AL",
     "DET": "AL", "KAN": "AL", "LAA": "AL", "ANA": "AL", "MIN": "AL",
     "NYY": "AL", "OAK": "AL", "SEA": "AL", "TAM": "AL", "TEX": "AL",
     "TOR": "AL",
+    "BRS": "AL",  # Boston Red Sox 2020-season variant of BOS
     # HOU handled by override (moved NL->AL in 2013)
 }
 
