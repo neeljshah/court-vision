@@ -96,22 +96,36 @@ def run_catalog_common(
     extra_kw: Dict[str, Any] = extra_bundle_kwargs or {}
     rows: List[Dict[str, Any]] = []
 
+    # --- bundle acquisition (ONCE; all signals share seasons + extra_kw) ---
+    # All signals in a catalog use the same seasons and extra_bundle_kwargs;
+    # only signal_col differs (derived per-signal via compute_fn + derive_bundle).
+    # We use the first signal's hypothesis solely to satisfy the adapter interface.
+    if not signal_classes:
+        return {"ok": True, "verdicts": []}
+
+    _first_sig = signal_classes[0]()
+    _base_bundle: Optional[FeatureBundle] = None
+    _bundle_error: Optional[str] = None
+    try:
+        _base_bundle = adapter.feature_bundle(_first_sig.hypothesis(),
+                                              seasons=seasons, **extra_kw)
+    except Exception as exc:  # noqa: BLE001
+        _bundle_error = str(exc)
+
     for signal_cls in signal_classes:
         name: str = signal_cls.name  # type: ignore[attr-defined]
         sig = signal_cls()
         expected: str = sig.hypothesis().expected_verdict or "REJECT"
 
-        # --- bundle acquisition ---
-        try:
-            bb: FeatureBundle = adapter.feature_bundle(sig.hypothesis(),
-                                                        seasons=seasons, **extra_kw)
-        except Exception as exc:  # noqa: BLE001
+        # --- reuse the shared base bundle ---
+        if _bundle_error is not None:
             rows.append({"name": name, "expected": expected,
                          "actual_verdict": "BUNDLE_ERROR",
                          "passed_expected": False, "n": 0, "coverage": 0.0,
-                         "reason": str(exc)})
+                         "reason": _bundle_error})
             continue
 
+        bb: FeatureBundle = _base_bundle  # type: ignore[assignment]
         n: int = bb.base.shape[0]
         sc: np.ndarray = compute_fn(signal_cls, bb.base)
         coverage: float = float(np.sum(~np.isnan(sc))) / max(n, 1)
