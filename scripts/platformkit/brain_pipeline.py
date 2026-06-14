@@ -60,6 +60,17 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_scoreboard", {})["platform_scoreboard"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # green-cell coverage map (light filesystem walk; accurate after the artifacts above)
+    try:
+        from scripts.platformkit.brain_coverage import (  # noqa: PLC0415
+            build_coverage, write_artifact as cov_write,
+        )
+        cov = build_coverage(organized_root)
+        if cov.get("n_sports", 0) > 0:
+            cov_write(cov, organized_root=organized_root)
+            models.setdefault("_coverage", {})["coverage_map"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
