@@ -39,10 +39,13 @@ def test_pipeline_runs_all_three_stages(tmp_path):
     rep = run_pipeline(vault_dir=src, out_dir=out)
 
     # combined report shape
-    assert set(rep["stages"]) == {"organize", "digest", "export", "models"}
+    assert set(rep["stages"]) == {"organize", "digest", "export", "models", "audit"}
     # with_models defaults OFF -> no real-data model stages run (keeps test hermetic)
     assert rep["stages"]["models"] == {}
     assert rep["summary"]["model_artifacts"] == {}
+    # final self-policing gate: the generated tree carries no un-caveated edge claim
+    assert rep["summary"]["edge_clean"] is True
+    assert rep["summary"]["edge_flagged"] == 0
     assert "summary" in rep and "note" in rep
     assert "edge" not in rep["note"].lower() or "not a betting edge" in rep["note"].lower()
 
