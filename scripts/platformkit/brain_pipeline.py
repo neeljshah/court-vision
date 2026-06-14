@@ -115,6 +115,16 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_coverage", {})["coverage_map"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # provenance-tagged VALIDATED leak-free improvements (static historical record;
+    # per-sport + index; calibration/accuracy only, NOT a market edge; no edge claimed).
+    try:
+        from scripts.platformkit.brain_validated import build_validated  # noqa: PLC0415
+        val = build_validated(organized_root=organized_root, write=True)
+        n_total = val.get("_index", {}).get("n_total", 0)
+        if n_total > 0:
+            models.setdefault("_validated", {})["validated_improvements"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
