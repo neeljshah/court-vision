@@ -48,3 +48,13 @@ def test_planted_violation_is_flagged(tmp_path):
 def test_missing_root(tmp_path):
     rep = audit_tree(tmp_path / "does_not_exist")
     assert rep["clean"] is True and rep["n_files"] == 0 and "error" in rep
+
+
+def test_negated_edge_tokens_are_not_claims():
+    from scripts.platformkit.brain_audit import scan_text
+    # explicit denials -> NOT flagged (the W87 self-catch case)
+    assert scan_text("None of this beats the market — it is calibration only.") == []
+    assert scan_text("The model never beats the market close.") == []
+    assert scan_text("This is not guaranteed.") == []
+    # genuine un-negated claims STILL flagged
+    assert scan_text("This play is guaranteed, +12% ROI, beats the market.")
