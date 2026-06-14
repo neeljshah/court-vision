@@ -8,10 +8,13 @@ wiped+rebuilt):
     build_digests()  -> per-sport + cross-sport transfer digests
     export_reads()   -> per-sport intelligence reads as browsable memory
 
+After the build it computes self-policing GATES (person_free, graph_clean, edge_clean) and
+surfaces them in the summary. ``--strict`` makes the rebuild exit NONZERO if any gate fails.
+
 Honest framing: an intelligence MAP, not a betting edge; markets efficient;
 calibration is not edge. No number is emitted here.
 
-CLI: ``python -m scripts.platformkit.brain_pipeline [--json]``
+CLI: ``python -m scripts.platformkit.brain_pipeline [--json] [--with-models] [--strict]``
 """
 from __future__ import annotations
 
@@ -28,6 +31,30 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.platformkit.vault_organize_multi import organize_all  # noqa: E402
 from scripts.platformkit.brain_digest import build_digests  # noqa: E402
 from scripts.platformkit.brain_export import export_reads  # noqa: E402
+
+
+def compute_gates(organized_root: Path) -> Dict:
+    """Self-policing verification gates over the freshly built organized tree.
+
+    person_free : no specific player/team names survive (vault_person_free_lint).
+    graph_clean : zero player NODES and zero match NODES (graph_cleanliness).
+    Both are computed defensively — a checker failure reports the gate as False, never
+    crashes the rebuild. An intelligence MAP; markets efficient; calibration is not edge.
+    """
+    person_free = graph_clean = False
+    try:
+        from scripts.platformkit.vault_person_free_lint import lint_vault  # noqa: PLC0415
+        person_free = bool(lint_vault(organized_root).get("person_free", False))
+    except Exception:  # noqa: BLE001
+        person_free = False
+    try:
+        from scripts.platformkit.graph_cleanliness import scan_vault  # noqa: PLC0415
+        rep = scan_vault(organized_root)
+        graph_clean = (rep.get("player_nodes", 1) == 0
+                       and rep.get("match_nodes", 1) == 0)
+    except Exception:  # noqa: BLE001
+        graph_clean = False
+    return {"person_free": person_free, "graph_clean": graph_clean}
 
 
 def _run_model_stages(organized_root: Path) -> Dict:
@@ -125,6 +152,15 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_validated", {})["validated_improvements"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # cross-section "Related" links (another agent's module). Densifies the graph by
+    # wiring concept notes to related concept notes; person-free. Skipped if not present.
+    try:
+        from scripts.platformkit.brain_crosslinks import build_crosslinks  # noqa: PLC0415
+        cl = build_crosslinks(organized_root, write=True)   # mandated signature
+        if cl and cl.get("n_linked", 0) > 0:
+            models.setdefault("_crosslinks", {})["related_sections"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
@@ -145,6 +181,7 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     # Final self-policing gate: no artifact may make an un-caveated betting edge claim.
     from scripts.platformkit.brain_audit import audit_tree  # noqa: PLC0415
     audit = audit_tree(organized_root)
+    gates = compute_gates(organized_root)
 
     per_sport = organize.get("per_sport", {})
     summary = {
@@ -157,6 +194,8 @@ def run_pipeline(vault_dir: Optional[Path] = None,
         "model_artifacts": {sp: sorted(v) for sp, v in models.items()},
         "edge_clean": audit.get("clean"),
         "edge_flagged": audit.get("n_flagged"),
+        "person_free": gates["person_free"],
+        "graph_clean": gates["graph_clean"],
     }
     return {
         "organized_root": str(organized_root),
@@ -168,18 +207,25 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     }
 
 
+def _gates_pass(summary: Dict) -> bool:
+    """True only if ALL three self-policing gates hold (person/graph/edge clean)."""
+    return bool(summary.get("person_free") and summary.get("graph_clean")
+                and summary.get("edge_clean"))
+
+
 def _main(argv: Optional[List[str]] = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if "--help" in argv or "-h" in argv:
         print(__doc__)
         return 0
+    strict = "--strict" in argv
     vault_arg = next((a for a in argv if not a.startswith("-")), None)
     rep = run_pipeline(vault_dir=Path(vault_arg) if vault_arg else None,
                        with_models="--with-models" in argv)
+    s = rep["summary"]
     if "--json" in argv:
         print(json.dumps(rep, indent=2, default=str))
-        return 0
-    s = rep["summary"]
+        return 0 if (not strict or _gates_pass(s)) else 1
     print(f"organized_root : {rep['organized_root']}")
     print(f"sports         : {', '.join(s['sports'])}")
     print(f"teams / players: {s['teams_total']} / {s['players_total']}")
@@ -189,7 +235,11 @@ def _main(argv: Optional[List[str]] = None) -> int:
     if s.get("model_artifacts"):
         print(f"model artifacts: {s['model_artifacts']}")
     print(f"edge-clean     : {s.get('edge_clean')} (flagged={s.get('edge_flagged')})")
+    print(f"person-free    : {s.get('person_free')}   graph-clean: {s.get('graph_clean')}")
     print(f"note           : {rep['note']}")
+    if strict and not _gates_pass(s):
+        print("STRICT GATE FAIL: person_free / graph_clean / edge_clean not all True.")
+        return 1
     return 0
 
 

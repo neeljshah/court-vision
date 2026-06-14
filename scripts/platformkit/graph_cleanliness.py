@@ -48,6 +48,10 @@ _CONCEPT_TOKENS = frozenset((
     "active closeouts drop switch matrix effects scheme effects "
     "winton winston salem beach carolina paris roland garros queens queen new york "
     "los cabos york club "
+    # generated Driver/Mechanism concept slugs (two-lowercase-word combos)
+    "free throws swing bullpen late comeback red card ht collapse territorial "
+    "control broke bp conversion edge margin structure tiebreak weight lead "
+    "result stability finishing surface serve hold "
 ).split())
 
 # Known team tricodes / full-names that appear in team vs team matchup lines.
@@ -63,6 +67,20 @@ _KNOWN_TEAM_TRICODES = frozenset((
     "barca realmadrid atletico juventus milan inter "
     "bayernmunich dortmund leverkusen"
 ).split())
+
+# Generated concept directories: files here are person-free CONCEPT notes by
+# construction (Driver/Mechanism/Archetype/Scheme slugs, _Index hubs, Trends/
+# Reference). Their two-lowercase-word stems must NOT be read as player filenames.
+_CONCEPT_DIRS = frozenset((
+    "drivers", "mechanisms", "archetypes", "schemes",
+    "trends", "reference", "_index",
+))
+
+
+def _under_concept_dir(rel: str) -> bool:
+    """True if a vault-relative path lives under any generated concept directory."""
+    return any(p.lower() in _CONCEPT_DIRS for p in rel.split("/")[:-1])
+
 
 # Date-like patterns in filenames: YYYY-MM-DD or YYYYMMDD
 _DATE_FILENAME_RE = re.compile(r"\d{4}[-_]\d{2}[-_]\d{2}")
@@ -152,9 +170,15 @@ def scan_file(path: Path, root: Path) -> List[Violation]:
 
     violations: List[Violation] = []
     stem = path.stem
+    in_concept_dir = _under_concept_dir(rel)
 
     # --- filename checks ---
-    if _is_player_filename(stem):
+    # The id-prefix form (2544_lebron) is unambiguous and always flags. The
+    # two-lowercase-word heuristic is exempted under generated concept dirs, whose
+    # slugs (free_throws, tiebreak_swing, ...) are Driver/Mechanism notes, not names.
+    if _PLAYER_ID_FILENAME_RE.match(stem):
+        violations.append(Violation(rel, "player_node", stem))
+    elif not in_concept_dir and _is_player_filename(stem):
         violations.append(Violation(rel, "player_node", stem))
     if _is_match_filename(stem):
         violations.append(Violation(rel, "match_node", stem))

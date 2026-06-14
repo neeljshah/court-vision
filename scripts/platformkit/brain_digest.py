@@ -1,16 +1,10 @@
-"""brain_digest.py — Dense aggregate digest generator for vault/_Organized.
+"""brain_digest.py — Dense MOC digest generator for vault/_Organized.
 
-ORDERING NOTE: brain_digest runs AFTER vault_organize_multi (the organizer
-wipes+rebuilds _Organized, so digests are regenerated each pipeline run):
-    organize_all() -> build_digests()
-
-Emits (1) a per-sport _Digest.md with archetype taxonomy table + scheme/trend
-titles; (2) a cross-sport _Index/_Cross_Sport_Digest.md with analogue mapping.
-
-Honest framing: intelligence map only; markets efficient; calibration is not a
-market advantage.  No win-prob figures, house lines, or return-on-investment
-numbers are written to digest notes — only counts, titles, qualitative sigs.
-
+Emits (1) per-sport _Digest.md — MOC with [[wikilinks]] to _WhatWins,
+_Mechanisms, _Archetypes_Index, each archetype/driver/mechanism/scheme/trend
+note, and _Index/_Brain hubs; (2) _Index/_Cross_Sport_Digest.md with analogue
+mapping where each archetype and _WhatWins is a resolving wikilink.
+Honest: intelligence map only; markets efficient; no ROI numbers.
 CLI: ``python -m scripts.platformkit.brain_digest [--json]``
 """
 from __future__ import annotations
@@ -31,20 +25,13 @@ _BANNER = (
     "only counts, titles, and qualitative signatures."
 )
 
-# ---------------------------------------------------------------------------
-# shape keyword map: two generic shapes; rest = "other"
-# ---------------------------------------------------------------------------
 _SHAPE_KW: Dict[str, List[str]] = {
-    "primary": [
-        "high_usage", "high-usage", "creator", "server", "power", "scoring",
-        "attacking", "high-scoring", "slam", "grand", "high_variance", "dominant",
-        "two-way",
-    ],
-    "grinder": [
-        "defensive", "anchor", "grinder", "prevention", "low-block", "lowblock",
-        "counterpuncher", "clay", "pitching", "draw-prone", "balanced", "baseliner",
-        "journeyman",
-    ],
+    "primary": ["high_usage", "high-usage", "creator", "server", "power", "scoring",
+                "attacking", "high-scoring", "slam", "grand", "high_variance",
+                "dominant", "two-way"],
+    "grinder": ["defensive", "anchor", "grinder", "prevention", "low-block",
+                "lowblock", "counterpuncher", "clay", "pitching", "draw-prone",
+                "balanced", "baseliner", "journeyman"],
 }
 _CANONICAL: Dict[str, Dict[str, str]] = {
     "primary": {"NBA": "High-Usage Creator", "Tennis": "Fast-Court Big Server",
@@ -61,17 +48,11 @@ def _shape(title: str) -> str:
             return s
     return "other"
 
-
-# ---------------------------------------------------------------------------
-# helpers
-# ---------------------------------------------------------------------------
-
 def _read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return ""
-
 
 def _h1(text: str) -> str:
     for line in text.splitlines():
@@ -79,7 +60,6 @@ def _h1(text: str) -> str:
         if s.startswith("# "):
             return s[2:].strip()
     return ""
-
 
 def _sig(text: str) -> str:
     pairs: List[Tuple[str, str]] = []
@@ -97,145 +77,173 @@ def _sig(text: str) -> str:
             return s[:100]
     return "—"
 
-
 def _md_files(d: Path) -> List[Path]:
     if not d.is_dir():
         return []
     return sorted(p for p in d.iterdir()
-                  if p.is_file() and p.suffix == ".md"
-                  and not p.name.startswith("_"))
-
+                  if p.is_file() and p.suffix == ".md" and not p.name.startswith("_"))
 
 def _count_teams(d: Path) -> int:
     if not d.is_dir():
         return 0
     subs = [p for p in d.iterdir() if p.is_dir()]
-    if subs:
-        return len(subs)
-    return len([p for p in d.iterdir()
-                if p.is_file() and p.suffix == ".md" and not p.name.startswith("_")])
-
+    return len(subs) if subs else len(_md_files(d))
 
 def _arch_records(arch_dir: Path) -> List[Dict[str, object]]:
     recs = []
     for p in _md_files(arch_dir):
         txt = _read(p)
         title = _h1(txt) or p.stem.replace("_", " ")
-        recs.append({"title": title, "sig": _sig(txt),
+        recs.append({"title": title, "stem": p.stem, "sig": _sig(txt),
                      "size": len(txt.encode()), "shape": _shape(title)})
     recs.sort(key=lambda r: -r["size"])  # type: ignore[return-value]
     for i, r in enumerate(recs, 1):
         r["rank"] = i
     return recs
 
+def _linked_titles(d: Path) -> List[str]:
+    out = []
+    for p in _md_files(d):
+        title = _h1(_read(p)) or p.stem.replace("_", " ")
+        out.append(f"[[{p.stem}|{title}]]")
+    return out
 
-# ---------------------------------------------------------------------------
-# per-sport digest
-# ---------------------------------------------------------------------------
+def _hub(path: Path, link: str, fallback: str = "_(no hub)_") -> str:
+    return link if path.exists() else fallback
 
-def _sport_digest(sport: str, sdir: Path) -> Tuple[str, Dict[str, object], List[Dict[str, object]]]:
+
+def _sport_digest(
+    sport: str, sdir: Path
+) -> Tuple[str, Dict[str, object], List[Dict[str, object]]]:
     arcs = _arch_records(sdir / "Archetypes")
-    scheme_t = [_h1(_read(p)) or p.stem.replace("_", " ")
-                for p in _md_files(sdir / "Schemes")]
-    trend_t = [_h1(_read(p)) or p.stem.replace("_", " ")
-               for p in _md_files(sdir / "Trends")]
+    driver_lnks = _linked_titles(sdir / "Drivers")
+    mech_lnks = _linked_titles(sdir / "Mechanisms")
+    scheme_lnks = _linked_titles(sdir / "Schemes")
+    trend_lnks = _linked_titles(sdir / "Trends")
     n_teams = _count_teams(sdir / "Teams")
 
-    ls: List[str] = ["---", "tags: [organized, digest]", "---", "",
-                     f"# {sport} — Dense Intelligence Digest", "", _BANNER, "",
-                     "## Counts", "",
-                     f"- **Teams / entities tracked:** {n_teams}",
-                     f"- **Archetypes:** {len(arcs)}",
-                     f"- **Schemes / tactical notes:** {len(scheme_t)}",
-                     f"- **Trend notes:** {len(trend_t)}", "",
-                     "## Archetype Taxonomy", "",
-                     "Prevalence proxy = note byte-size rank "
-                     "(1 = largest / most documented).", "",
-                     "| Rank | Title | Shape | Stat Signature (first 3 fields) |",
-                     "|------|-------|-------|----------------------------------|"]
-    for r in arcs:
-        ls.append(f"| {r['rank']} | {r['title']} | {r['shape']} | {r['sig']} |")
-    ls.append("")
-    if scheme_t:
-        ls += ["## Schemes / Tactics", ""] + [f"- {t}" for t in scheme_t] + [""]
-    if trend_t:
-        ls += ["## Trend Notes", ""] + [f"- {t}" for t in trend_t] + [""]
-    ls += ["## Honest Verdict", "",
-           f"This digest maps {sport} archetype/scheme/trend knowledge. "
-           "Intelligence reference only — no market advantage claimed. "
-           "Model-family and calibration choices transfer; market lines do not.", ""]
+    ww = _hub(sdir / "_WhatWins.md", "[[_WhatWins]]")
+    mh = _hub(sdir / "Mechanisms" / "_Mechanisms.md", "[[_Mechanisms]]")
+    ai = _hub(sdir / "Archetypes" / "_Archetypes_Index.md", "[[_Archetypes_Index]]")
+    si = _hub(sdir / "_Index.md", "[[_Index]]")
 
-    info: Dict[str, object] = {"teams": n_teams, "archetypes": len(arcs),
-                               "schemes": len(scheme_t), "trends": len(trend_t)}
+    ls: List[str] = [
+        "---", "tags: [organized, digest, moc]", "---", "",
+        f"# {sport} — Intelligence MOC Digest", "", _BANNER, "",
+        "## Hub Links", "",
+        f"- **What Wins:** {ww}",
+        f"- **Mechanisms Hub:** {mh}",
+        f"- **Archetypes Index:** {ai}",
+        f"- **Sport Index:** {si}",
+        "- **Cross-Sport Brain:** [[_Brain]]", "",
+        "## Counts", "",
+        f"- **Teams / entities tracked:** {n_teams}",
+        f"- **Archetypes:** {len(arcs)}",
+        f"- **Drivers:** {len(driver_lnks)}",
+        f"- **Mechanisms:** {len(mech_lnks)}",
+        f"- **Schemes / tactical notes:** {len(scheme_lnks)}",
+        f"- **Trend notes:** {len(trend_lnks)}", "",
+        "## Archetype Taxonomy", "",
+        "Prevalence proxy = note byte-size rank (1 = largest / most documented). "
+        "Each archetype name links to its vault note.", "",
+        "| Rank | Archetype | Shape | Stat Signature (first 3 fields) |",
+        "|------|-----------|-------|----------------------------------|",
+    ]
+    for r in arcs:
+        ls.append(f"| {r['rank']} | [[{r['stem']}|{r['title']}]] | {r['shape']} | {r['sig']} |")
+    ls.append("")
+    if driver_lnks:
+        ls += ["## Drivers", ""] + [f"- {lnk}" for lnk in driver_lnks] + [""]
+    if mech_lnks:
+        ls += ["## Mechanisms", ""] + [f"- {lnk}" for lnk in mech_lnks] + [""]
+    if scheme_lnks:
+        ls += ["## Schemes / Tactics", ""] + [f"- {lnk}" for lnk in scheme_lnks] + [""]
+    if trend_lnks:
+        ls += ["## Trend Notes", ""] + [f"- {lnk}" for lnk in trend_lnks] + [""]
+    ls += [
+        "## Honest Verdict", "",
+        f"This digest maps {sport} archetype/scheme/trend knowledge. "
+        "Intelligence reference only — no market advantage claimed. "
+        "Model-family and calibration choices transfer; market lines do not.", "",
+    ]
+    info: Dict[str, object] = {
+        "teams": n_teams, "archetypes": len(arcs),
+        "drivers": len(driver_lnks), "mechanisms": len(mech_lnks),
+        "schemes": len(scheme_lnks), "trends": len(trend_lnks),
+    }
     return "\n".join(ls), info, arcs  # type: ignore[return-value]
 
 
-# ---------------------------------------------------------------------------
-# cross-sport digest
-# ---------------------------------------------------------------------------
-
-def _cross_digest(per_sport: Dict[str, Dict[str, object]],
-                  arch_map: Dict[str, List[Dict[str, object]]]) -> str:
+def _cross_digest(
+    per_sport: Dict[str, Dict[str, object]],
+    arch_map: Dict[str, List[Dict[str, object]]],
+) -> str:
     sports = sorted(per_sport.keys())
     ls: List[str] = [
-        "---", "tags: [organized, digest, cross-sport]", "---", "",
+        "---", "tags: [organized, digest, cross-sport, moc]", "---", "",
         "# Cross-Sport Archetype Transfer Digest", "", _BANNER, "",
-        "> **Transfer scope:** What transfers is *model-family* and "
-        "*calibration approach* — not outcome distributions, market prices, or "
-        "market-advantage claims. Analogue shapes reveal where the same statistical "
-        "reasoning applies but each sport's base rates differ.", "",
-        "## Analogue Map by Generic Shape", "",
-        "Each row = one generic shape; columns show archetypes matched to that shape.", "",
+        "> **Transfer scope:** Model-family and calibration approach only — not "
+        "outcome distributions, market prices, or market-advantage claims. "
+        "Analogue shapes reveal where the same statistical reasoning applies "
+        "but each sport's base rates differ.", "",
+        "## Sport Hubs", "",
+    ]
+    for sp in sports:
+        ls.append(f"- **{sp}:** [[{sp}/_WhatWins|{sp} — What Wins]] · "
+                  f"[[{sp}/_Index|{sp} Index]] · "
+                  f"[[{sp}/Archetypes/_Archetypes_Index|{sp} Archetypes]]")
+    ls += [
+        "", "## Analogue Map by Generic Shape", "",
+        "Each row = one generic shape; columns show archetypes matched to that shape. "
+        "Names link to vault notes.", "",
         "| " + " | ".join(["Shape"] + sports) + " |",
         "|" + "|".join(["---"] * (len(sports) + 1)) + "|",
     ]
     for sh in ("primary", "grinder", "other"):
         row = [sh.capitalize()]
         for sp in sports:
-            matched = [str(r["title"]) for r in arch_map.get(sp, [])
-                       if r.get("shape") == sh]
+            matched = [r for r in arch_map.get(sp, []) if r.get("shape") == sh]
             if matched:
-                row.append("; ".join(matched[:3]))
+                row.append("; ".join(f"[[{r['stem']}|{r['title']}]]"
+                                     for r in matched[:3]))
             else:
                 c = _CANONICAL.get(sh, {}).get(sp, "—")
                 row.append(f"(canonical: {c})" if c != "—" else "—")
         ls.append("| " + " | ".join(row) + " |")
     ls.append("")
-
     ls += ["## Per-Sport Archetype Inventory", ""]
     for sp in sports:
         info = per_sport[sp]
-        ls += [f"### {sp}", "",
-               f"Teams: {info.get('teams','?')} | Archetypes: {info.get('archetypes','?')} | "
-               f"Schemes: {info.get('schemes','?')} | Trends: {info.get('trends','?')}", ""]
+        ls += [
+            f"### {sp} — [[{sp}/_WhatWins|What Wins]] · [[{sp}/_Index|Index]]", "",
+            (f"Teams: {info.get('teams','?')} | Archetypes: {info.get('archetypes','?')} | "
+             f"Drivers: {info.get('drivers','?')} | Mechanisms: {info.get('mechanisms','?')} | "
+             f"Schemes: {info.get('schemes','?')} | Trends: {info.get('trends','?')}"), "",
+        ]
         arcs = arch_map.get(sp, [])
         if arcs:
-            ls += ["| Title | Shape | Stat Signature |",
-                   "|-------|-------|----------------|"]
+            ls += ["| Archetype | Shape | Stat Signature |",
+                   "|-----------|-------|----------------|"]
             for r in arcs:
-                ls.append(f"| {r['title']} | {r['shape']} | {r['sig']} |")
+                ls.append(f"| [[{r['stem']}|{r['title']}]] | {r['shape']} | {r['sig']} |")
         else:
             ls.append("*(no archetypes found)*")
         ls.append("")
-
-    ls += ["## Transfer Note (Honest)", "",
-           "Cross-sport analogues transfer **what-works** at the modelling layer:\n"
-           "- High-volume primary roles → similar usage-skew, Poisson/NegBinom fits.\n"
-           "- Grinder / prevention roles → low-event, defensive-stat anchored models.\n"
-           "- Surface/environment effects are sport-specific and do NOT transfer.\n"
-           "No win-prob figures, house lines, or return-on-investment numbers here.", ""]
+    ls += [
+        "## Transfer Note (Honest)", "",
+        "Cross-sport analogues transfer **what-works** at the modelling layer:\n"
+        "- High-volume primary roles → similar usage-skew, Poisson/NegBinom fits.\n"
+        "- Grinder / prevention roles → low-event, defensive-stat anchored models.\n"
+        "- Surface/environment effects are sport-specific and do NOT transfer.\n"
+        "No win-prob figures, house lines, or return-on-investment numbers here.", "",
+    ]
     return "\n".join(ls)
 
 
-# ---------------------------------------------------------------------------
-# public API
-# ---------------------------------------------------------------------------
-
-def build_digests(organized_root: Optional[Path] = None,
-                  write: bool = True) -> Dict[str, object]:
-    """Build dense per-sport and cross-sport digest notes.
-
-    Returns dict: {organized_root, per_sport, cross_sport_path, n_written}.
+def build_digests(
+    organized_root: Optional[Path] = None, write: bool = True
+) -> Dict[str, object]:
+    """Build dense MOC digests. Returns {organized_root, per_sport, cross_sport_path, n_written}.
     Run AFTER vault_organize_multi.organize_all().
     """
     root = Path(organized_root) if organized_root else _REPO_ROOT / "vault" / "_Organized"
@@ -243,12 +251,10 @@ def build_digests(organized_root: Optional[Path] = None,
         return {"organized_root": str(root), "per_sport": {},
                 "cross_sport_path": None, "n_written": 0,
                 "error": f"not found: {root}"}
-
     per_info: Dict[str, Dict[str, object]] = {}
     arch_map: Dict[str, List[Dict[str, object]]] = {}
     dpaths: Dict[str, Optional[Path]] = {}
     n = 0
-
     for sdir in sorted(root.iterdir()):
         if not sdir.is_dir() or sdir.name.startswith("_"):
             continue
@@ -261,14 +267,12 @@ def build_digests(organized_root: Optional[Path] = None,
             dp.write_text(text, encoding="utf-8")
             n += 1
         dpaths[sport] = dp if write else None
-
     idx = root / "_Index"
     cross_path = idx / "_Cross_Sport_Digest.md"
     if write:
         idx.mkdir(parents=True, exist_ok=True)
         cross_path.write_text(_cross_digest(per_info, arch_map), encoding="utf-8")
         n += 1
-
     return {
         "organized_root": str(root),
         "per_sport": {sp: {**info, "digest_path": str(dpaths.get(sp))}
@@ -277,10 +281,6 @@ def build_digests(organized_root: Optional[Path] = None,
         "n_written": n,
     }
 
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 def _cli() -> None:
     as_json = "--json" in sys.argv[1:]

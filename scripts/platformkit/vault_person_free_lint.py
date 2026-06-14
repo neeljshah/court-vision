@@ -1,20 +1,13 @@
-"""vault_person_free_lint.py — Person-free linter + size inventory for the Obsidian vault.
+"""vault_person_free_lint.py — Person-free linter + size inventory for the vault.
 
-The vault is a graph of PLAYSTYLES / ARCHETYPES — never people. This tool MEASURES
-two things so we can drive the graph to the highest level and verify shrink:
-
-  1. SIZE/SHAPE — file counts + bytes total and per top-level subdir.
-  2. PERSON LEAKS — specific player/person names or "X vs Y" matchups that violate
-     the person-free rule.
-
-Pure stdlib (os, re, pathlib, json, dataclasses). No pandas / src / kernel imports.
+The vault is a graph of PLAYSTYLES / ARCHETYPES — never people. Measures (1) SIZE/
+SHAPE: file/byte counts per subdir; (2) PERSON LEAKS: specific player names or
+"X vs Y" matchups violating the person-free rule. Pure stdlib (no pandas/src/kernel).
 
 Leak KINDS (regex over .md content + filenames, conservative re: archetype words):
-  - ``named_title``    : a ``# First Last`` Title-Case two-word heading not in the
-                         archetype/scheme allowlist.
-  - ``named_filename`` : ``<digits>_<word>_<word>.md`` (player-id_first_last) OR a
-                         ``First vs Last`` / ``AAA vs BBB`` matchup in the filename.
-  - ``matchup_vs``     : ``<Word> vs <Word>`` or ``<TEAM>@<TEAM>`` in content/filename.
+  - ``named_title``    : a ``# First Last`` heading not in the archetype allowlist.
+  - ``named_filename`` : ``<digits>_<word>_<word>.md`` or a matchup in the filename.
+  - ``matchup_vs``     : ``<Word> vs <Word>`` / ``<TEAM>@<TEAM>`` (concept pairs OK).
 
 Usage: ``python -m scripts.platformkit.vault_person_free_lint [vault_dir]``
 Default vault_dir = repo_root/vault.
@@ -29,7 +22,6 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 # === Configuration ===
-
 # Cap on the reported leaks list (inventory totals are always exact).
 _MAX_LEAKS = 200
 
@@ -58,14 +50,20 @@ _ALLOWLIST_TOKENS = frozenset(t.lower() for t in (
     "Coverage Archetype Playstyle Matchup Matchups Catalog Trends Environment "
     "Transitions Scheme Schemes Profile Index Overview Summary Report Health "
     "Model Big Guard Forward Wing Center Roll Iso Post Heavy Court Break Level "
-    "Usage Two Off Ball"
+    "Usage Two Off Ball "
+    # archetype/scheme concept words in generated titles + comparisons
+    "Bench Contributor Specialist Role Player Defensive Offensive Attacking "
+    "Spacing Scoring Block Low High Floor Drop Switch Zone Man Help Run "
+    "Prevention Poisson Dominant Versatile Balanced Contender Routine Variance "
+    "Finishing Territorial Control Late Comeback Tiebreak Surface Serve Hold "
+    "Bullpen Inning Pace Rebounding Turnovers Shooting Margin Structure"
 ).split())
 
 # Team tricodes for "TEAM @ TEAM" / "TEAM vs TEAM" matchup detection.
 _TEAM_RE = r"[A-Z]{2,4}"
+_TEAM_RE_FULL = re.compile(r"^[A-Z]{2,4}$")  # full team-code token guard
 
 # === Compiled patterns ===
-
 # "# First Last" heading: exactly two Title-Case words (allow apostrophes/hyphens).
 _NAMED_TITLE_RE = re.compile(
     r"^#\s+([A-Z][a-z]+(?:['’-][A-Za-z]+)?)\s+([A-Z][a-z]+(?:['’-][A-Za-z]+)?)\s*$"
@@ -82,7 +80,6 @@ _MATCHUP_AT_RE = re.compile(rf"\b{_TEAM_RE}\s*@\s*{_TEAM_RE}\b")
 
 
 # === Data type ===
-
 @dataclass(frozen=True)
 class Leak:
     """A single person-free violation."""
@@ -96,7 +93,6 @@ class Leak:
 
 
 # === Helpers ===
-
 def _read_safe(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8", errors="replace")
@@ -117,26 +113,41 @@ def _top_dir(rel: str) -> str:
     return parts[0] if len(parts) > 1 else "."
 
 
+def _word_is_concept(word: str) -> bool:
+    """True if a word (or any hyphen/apostrophe sub-token) is an allowlist concept,
+    e.g. 'Floor-Spacing' -> ['floor','spacing']."""
+    if word.lower() in _ALLOWLIST_TOKENS:
+        return True
+    return any(p in _ALLOWLIST_TOKENS
+               for p in re.split(r"[-’'.]", word.lower()) if p)
+
+
 def _is_allowlisted_title(w1: str, w2: str) -> bool:
     """True if a two-word Title-Case heading is a known archetype/scheme concept."""
     joined = f"{w1} {w2}".lower()
     if joined in _ALLOWLIST_PHRASES:
         return True
-    return w1.lower() in _ALLOWLIST_TOKENS or w2.lower() in _ALLOWLIST_TOKENS
+    return _word_is_concept(w1) or _word_is_concept(w2)
 
 
 def _vs_pair_is_allowlisted(a: str, b: str) -> bool:
-    """Suppress benign 'X vs Y' phrases (e.g. 'accuracy vs edge', 'MAE vs RMSE')."""
-    # Lowercase common-noun comparisons are not person/team matchups.
+    """Suppress benign 'X vs Y' concept comparisons (e.g. 'accuracy vs edge',
+    'Drop vs Switch', 'over-dispersed vs Poisson') while still flagging real
+    proper-noun team/person matchups ('Lakers vs Celtics', 'LAL vs BOS').
+    """
+    # Lowercase/hyphenated common-noun comparisons are not person/team matchups.
     if a[:1].islower() and b[:1].islower():
         return True
-    if a.lower() in _ALLOWLIST_TOKENS or b.lower() in _ALLOWLIST_TOKENS:
+    # A hyphenated side (e.g. 'over-dispersed', 'Run-scoring') is a concept phrase.
+    if ("-" in a or "-" in b) and not (_TEAM_RE_FULL.match(a) and _TEAM_RE_FULL.match(b)):
+        return True
+    # Either side a known archetype/scheme/comparison concept word.
+    if _word_is_concept(a) or _word_is_concept(b):
         return True
     return False
 
 
 # === Inventory ===
-
 def inventory_only(vault_dir) -> Dict:
     """Size/count inventory of every .md file under *vault_dir*.
 
@@ -177,7 +188,6 @@ def inventory_only(vault_dir) -> Dict:
 
 
 # === Leak detection ===
-
 def _scan_filename(rel: str, stem: str) -> List[Leak]:
     leaks: List[Leak] = []
     if _NAMED_FILENAME_RE.search(stem):
@@ -212,7 +222,6 @@ def _scan_file(path: Path, rel: str) -> List[Leak]:
 
 
 # === Top-level report ===
-
 def lint_vault(vault_dir) -> Dict:
     """Inventory + person-free lint of *vault_dir*. Returns the full report dict."""
     root = Path(vault_dir)
@@ -243,7 +252,6 @@ def lint_vault(vault_dir) -> Dict:
 
 
 # === CLI ===
-
 def _fmt_bytes(n: int) -> str:
     for unit in ("B", "KB", "MB", "GB"):
         if n < 1024 or unit == "GB":
