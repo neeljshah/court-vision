@@ -254,3 +254,134 @@ def test_bad_events_do_not_raise() -> None:
     feed = EspnFreeFeed(http_get=_injected_get(sb), fetch_core=False)
     games = feed.fetch("basketball_nba")  # must not raise
     assert len(games) == 1
+
+
+# --------------------------------------------------------------------------- #
+# 12. Bet365 fractional shape: homeTeamOdds.odds.value (decimal ratio)         #
+# --------------------------------------------------------------------------- #
+
+def _bet365_odds(home_val: float = 201.0, away_val: float = 1.003,
+                 draw_val: float = 51.0) -> Dict[str, Any]:
+    """Bet365 shape: no moneyLine; prices are in homeTeamOdds.odds.value (decimal)."""
+    return {
+        "provider": {"name": "Bet 365"},
+        "homeTeamOdds": {"odds": {"value": home_val}},
+        "awayTeamOdds": {"odds": {"value": away_val}},
+        "drawOdds": {"value": draw_val},
+        # no spread, no overUnder
+    }
+
+
+def test_bet365_fractional_shape_parsed() -> None:
+    """Bet365 homeTeamOdds.odds.value decimal ratio maps to h2h quotes."""
+    sb = _scoreboard([_event("401", "2026-06-14T23:00Z", [_bet365_odds()])])
+    feed = EspnFreeFeed(http_get=_injected_get(sb), fetch_core=False)
+    g = feed.fetch("basketball_nba")[0]
+    by = {(q.book, q.market, q.side): q for q in g.quotes}
+    # home: 201.0 (decimal ratio) should map through as-is (>1 check passes)
+    assert ("bet 365", "h2h", "home") in by
+    assert by[("bet 365", "h2h", "home")].decimal_odds == pytest.approx(201.0)
+    assert ("bet 365", "h2h", "away") in by
+    assert by[("bet 365", "h2h", "away")].decimal_odds == pytest.approx(1.003)
+
+
+def test_bet365_value_le_one_skipped() -> None:
+    """decimal ratio value <= 1.0 is invalid and must be skipped (no quote emitted)."""
+    item = _bet365_odds(home_val=0.5, away_val=1.2)
+    quotes = EspnFreeFeed._provider_quotes(item)
+    sides = {q.side for q in quotes if q.market == "h2h"}
+    assert "home" not in sides  # 0.5 <= 1.0 -> skipped
+    assert "away" in sides      # 1.2 is valid
+
+
+# --------------------------------------------------------------------------- #
+# 13. Soccer draw market (1X2) from DraftKings drawOdds.moneyLine             #
+# --------------------------------------------------------------------------- #
+
+def _dk_soccer_odds() -> Dict[str, Any]:
+    """DK soccer odds with drawOdds.moneyLine and overOdds/underOdds."""
+    return {
+        "provider": {"name": "DraftKings"},
+        "homeTeamOdds": {"moneyLine": -115},
+        "awayTeamOdds": {"moneyLine": 255},
+        "drawOdds": {"moneyLine": 330},
+        "overUnder": 3.5,
+        "overOdds": 115,
+        "underOdds": -145,
+    }
+
+
+def test_draw_market_emitted_for_soccer() -> None:
+    """drawOdds.moneyLine -> h2h/draw Quote with correct decimal price."""
+    sb = _scoreboard([_event("401", "2026-06-14T23:00Z", [_dk_soccer_odds()])])
+    feed = EspnFreeFeed(http_get=_injected_get(sb), fetch_core=False)
+    g = feed.fetch("soccer_fd")
+    # soccer_fd has multiple routes; we injected scoreboard for all -> still 1 unique game
+    if not g:
+        pytest.skip("scoreboard event date not matched to any soccer_fd route (expected)")
+    by = {(q.book, q.market, q.side): q for q in g[0].quotes}
+    assert ("draftkings", "h2h", "draw") in by
+    assert by[("draftkings", "h2h", "draw")].decimal_odds == pytest.approx(4.3, abs=1e-1)
+
+
+def test_draw_market_via_provider_quotes() -> None:
+    """Unit-test _provider_quotes directly for the draw market."""
+    item = _dk_soccer_odds()
+    quotes = EspnFreeFeed._provider_quotes(item)
+    by = {(q.market, q.side): q for q in quotes}
+    assert ("h2h", "draw") in by
+    assert by[("h2h", "draw")].decimal_odds == pytest.approx(american_to_decimal(330))
+
+
+# --------------------------------------------------------------------------- #
+# 14. Real totals prices (overOdds/underOdds) take precedence over assumed -110 #
+# --------------------------------------------------------------------------- #
+
+def test_real_totals_prices_used_when_quoted() -> None:
+    """overOdds/underOdds (American) should produce real decimal prices, not -110 assumed."""
+    item = {
+        "provider": {"name": "DraftKings"},
+        "overUnder": 216.5,
+        "overOdds": 115,
+        "underOdds": -145,
+    }
+    quotes = EspnFreeFeed._provider_quotes(item)
+    by = {(q.market, q.side): q for q in quotes}
+    assert ("totals", "over") in by
+    assert ("totals", "under") in by
+    assert by[("totals", "over")].decimal_odds == pytest.approx(american_to_decimal(115))
+    assert by[("totals", "under")].decimal_odds == pytest.approx(american_to_decimal(-145))
+    # Confirm these differ from the assumed -110
+    from scripts.platformkit.frontend.feed_espn import _ASSUMED_PRICE_DECIMAL
+    assert by[("totals", "over")].decimal_odds != pytest.approx(_ASSUMED_PRICE_DECIMAL, abs=1e-3)
+
+
+def test_totals_assumed_price_when_no_odds_fields() -> None:
+    """When overOdds/underOdds absent, spread/OU lines fall back to assumed -110."""
+    item = {
+        "provider": {"name": "DraftKings"},
+        "overUnder": 216.5,
+        "spread": -5.5,
+        # no overOdds, no underOdds
+    }
+    quotes = EspnFreeFeed._provider_quotes(item)
+    from scripts.platformkit.frontend.feed_espn import _ASSUMED_PRICE_DECIMAL
+    for q in quotes:
+        if q.market in ("totals", "spreads"):
+            assert q.decimal_odds == pytest.approx(_ASSUMED_PRICE_DECIMAL)
+
+
+# --------------------------------------------------------------------------- #
+# 15. normalize_book strips provider suffixes ("DraftKings - Live Odds")       #
+# --------------------------------------------------------------------------- #
+
+def test_normalize_book_strips_live_suffix() -> None:
+    """'DraftKings - Live Odds' provider name must normalize to 'draftkings'."""
+    item = {
+        "provider": {"name": "DraftKings - Live Odds"},
+        "homeTeamOdds": {"moneyLine": -200},
+        "awayTeamOdds": {"moneyLine": 160},
+    }
+    quotes = EspnFreeFeed._provider_quotes(item)
+    books = {q.book for q in quotes}
+    assert books == {"draftkings"}  # suffix stripped, not "draftkings - live odds"

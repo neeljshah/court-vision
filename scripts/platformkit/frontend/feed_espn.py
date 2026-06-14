@@ -1,20 +1,13 @@
 """scripts.platformkit.frontend.feed_espn — FREE live odds feed from ESPN.
 
-HONEST (binding): markets are efficient — NO model edge is ever claimed.  ESPN's
-free public API returns ~1 book per game (currently DraftKings), so this feed
-powers the LIVE board + CLV + freshness/line-movement (the #1 honest money lane),
-NOT cross-book arbitrage (which needs >=2 books quoting the same outcome).  The
-feed iterates every provider/source so multi-book arb lights up AUTOMATICALLY the
-moment a 2nd source (or a paid key) is wired in — no rewrite needed.
-
-Two ESPN shapes are consumed (both probed live):
-  * site scoreboard:  site.api.espn.com/.../{path}/scoreboard
-  * per-event core:   sports.core.api.espn.com/v2/.../events/{eid}/.../odds
-moneyLine is AMERICAN; spread/overUnder are floats.  Some games have empty odds
-(skipped + counted).  NEVER raises on a bad event/HTTP error -> log + continue.
-
-NO network at import time or in tests: http_get is an INJECTABLE callable; the
-default _http_json (urllib) is used only in production when nothing is injected.
+HONEST (binding): markets are efficient — NO model edge is ever claimed.
+Two ESPN shapes consumed: site scoreboard (site.api.espn.com/.../{path}/scoreboard)
++ per-event core (sports.core.api.espn.com/v2/.../events/{eid}/.../odds).
+Iterates EVERY provider/book per event; multi-book line-shop/CLV lights up
+automatically when >=2 books quote the same outcome.
+Two provider shapes handled: DraftKings (American moneyLine) and Bet365
+(homeTeamOdds.odds.value decimal ratio). Soccer 1X2 draw included.
+NO network at import time/in tests: http_get is INJECTABLE.
 """
 from __future__ import annotations
 
@@ -30,6 +23,7 @@ from scripts.platformkit.frontend.feed import (
     OddsFeed,
     Quote,
     american_to_decimal,
+    normalize_book,
     _mk_game_id,
 )
 from scripts.platformkit.frontend.board import _safe_float
@@ -191,27 +185,77 @@ class EspnFreeFeed(OddsFeed):
         return home, away
 
     @staticmethod
+    def _team_decimal(side_dict: Dict[str, Any]) -> Optional[float]:
+        """Decimal h2h price from homeTeamOdds/awayTeamOdds (two ESPN shapes).
+
+        Shape A (DraftKings): side_dict["moneyLine"] -> American -> decimal.
+        Shape B (Bet365): side_dict["odds"]["value"] -> decimal ratio (>1).
+        """
+        dec = american_to_decimal(side_dict.get("moneyLine"))
+        if dec is not None:
+            return dec
+        raw = _safe_float((side_dict.get("odds") or {}).get("value"))
+        return raw if (raw is not None and raw > 1.0) else None
+
+    @staticmethod
+    def _draw_decimal(item: Dict[str, Any]) -> Optional[float]:
+        """Decimal draw price for soccer 1X2.  DK: American; Bet365: decimal ratio."""
+        draw = item.get("drawOdds") or {}
+        if not isinstance(draw, dict):
+            return None
+        dec = american_to_decimal(draw.get("moneyLine"))
+        if dec is not None:
+            return dec
+        raw = _safe_float(draw.get("value"))
+        return raw if (raw is not None and raw > 1.0) else None
+
+    @staticmethod
     def _provider_quotes(item: Dict[str, Any]) -> List[Quote]:
-        """One provider odds dict -> Quotes for h2h/spreads/totals (skip None fields)."""
+        """One provider dict -> Quotes (h2h / draw / spreads / totals).
+
+        Handles DraftKings shape (American moneyLine, overOdds/underOdds, drawOdds)
+        and Bet365 shape (homeTeamOdds.odds.value decimal, drawOdds.value).
+        HONEST: spread/overUnder are LINES not prices (_ASSUMED_PRICE_DECIMAL).
+        overOdds/underOdds ARE real prices when quoted by the provider.
+        """
         if not isinstance(item, dict):
             return []
         provider = item.get("provider") or {}
-        book = str(provider.get("name") or "unknown").strip().lower()
+        book = normalize_book(provider.get("name"))
         quotes: List[Quote] = []
-        home_ml = american_to_decimal((item.get("homeTeamOdds") or {}).get("moneyLine"))
-        away_ml = american_to_decimal((item.get("awayTeamOdds") or {}).get("moneyLine"))
-        if home_ml is not None:
-            quotes.append(Quote(book, "h2h", "home", home_ml))
-        if away_ml is not None:
-            quotes.append(Quote(book, "h2h", "away", away_ml))
+
+        hto = item.get("homeTeamOdds") or {}
+        ato = item.get("awayTeamOdds") or {}
+
+        home_dec = EspnFreeFeed._team_decimal(hto)
+        away_dec = EspnFreeFeed._team_decimal(ato)
+        draw_dec = EspnFreeFeed._draw_decimal(item)
+
+        if home_dec is not None:
+            quotes.append(Quote(book, "h2h", "home", home_dec))
+        if away_dec is not None:
+            quotes.append(Quote(book, "h2h", "away", away_dec))
+        # 1X2 draw market (soccer): only emit when a genuine draw price exists
+        if draw_dec is not None:
+            quotes.append(Quote(book, "h2h", "draw", draw_dec))
+
         spread = _safe_float(item.get("spread"))
         if spread is not None:  # ASSUMED -110 price (ESPN gives line, not price)
             quotes.append(Quote(book, "spreads", "home", _ASSUMED_PRICE_DECIMAL, line=spread))
             quotes.append(Quote(book, "spreads", "away", _ASSUMED_PRICE_DECIMAL, line=-spread))
+
         total = _safe_float(item.get("overUnder"))
-        if total is not None:  # ASSUMED -110 price (ESPN gives line, not price)
-            quotes.append(Quote(book, "totals", "over", _ASSUMED_PRICE_DECIMAL, line=total))
-            quotes.append(Quote(book, "totals", "under", _ASSUMED_PRICE_DECIMAL, line=total))
+        if total is not None:
+            # Use real overOdds/underOdds when the provider quotes them (American);
+            # else fall back to the ASSUMED -110.  HONEST: fallback is NOT a quoted price.
+            over_price = american_to_decimal(item.get("overOdds"))
+            under_price = american_to_decimal(item.get("underOdds"))
+            quotes.append(Quote(book, "totals", "over",
+                                over_price if over_price is not None else _ASSUMED_PRICE_DECIMAL,
+                                line=total))
+            quotes.append(Quote(book, "totals", "under",
+                                under_price if under_price is not None else _ASSUMED_PRICE_DECIMAL,
+                                line=total))
         return quotes
 
 
