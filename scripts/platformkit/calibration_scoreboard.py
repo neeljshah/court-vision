@@ -26,8 +26,9 @@ _ARTIFACT_PATH = _REPO_ROOT / "vault" / "_Organized" / "_Index" / "_Calibration_
 
 HONEST_BANNER = (
     "> **CALIBRATION METRIC — NOT A MARKET EDGE.**  "
-    "Improved Brier / ECE does NOT imply beating the closing line or positive EV.  "
-    "Markets are efficient.  NO ROI / beats-the-market / guaranteed-edge claim is made here."
+    "Lower Brier / ECE means better-calibrated probabilities, NOT a market edge; "
+    "no edge is claimed.  These numbers do not imply beating closing lines or positive EV.  "
+    "Markets are efficient."
 )
 
 # Re-export for test imports (tests import SOCCER_SAMPLE_CAP from this module)

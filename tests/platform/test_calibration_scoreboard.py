@@ -40,6 +40,7 @@ from scripts.platformkit.calibration_scoreboard import (
     HONEST_BANNER,
     SOCCER_SAMPLE_CAP,
 )
+from scripts.platformkit.brain_audit import scan_text  # the REAL self-policing audit
 
 # ---------------------------------------------------------------------------
 # Shared synthetic fixtures
@@ -262,6 +263,16 @@ class TestRenderMarkdown:
         md = _render_markdown(sample_rows).lower()
         for tok in _AFFIRMATIVE_EDGE_TOKENS:
             assert tok not in md, f"Forbidden edge token found: '{tok}'"
+
+    def test_real_audit_scan_text_clean(self, sample_rows):
+        # Tie this test to the REAL brain_audit (W96 lesson): the hand-maintained
+        # _AFFIRMATIVE_EDGE_TOKENS list diverged from scan_text -- the banner's
+        # 'guaranteed-edge' slipped past the list (it checks 'guaranteed edge' with a
+        # space) but scan_text flagged the bare word 'guaranteed' on the real rebuild.
+        # The authoritative audit (what the brain_pipeline gate runs) must be clean.
+        assert scan_text(HONEST_BANNER) == [], scan_text(HONEST_BANNER)
+        assert scan_text(_render_markdown(sample_rows)) == [], \
+            scan_text(_render_markdown(sample_rows))
 
     def test_error_row_rendered(self):
         rows = [{"sport": "MLB", "error": "corpus absent"}]
