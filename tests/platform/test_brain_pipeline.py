@@ -49,9 +49,10 @@ def test_pipeline_runs_all_three_stages(tmp_path):
     assert "summary" in rep and "note" in rep
     assert "edge" not in rep["note"].lower() or "not a betting edge" in rep["note"].lower()
 
-    # organize stage produced the tree
+    # organize stage produced the tree — person-free by default: _Identity, not _Team
     assert Path(rep["organized_root"]).is_dir()
-    assert (out / "NBA" / "Teams" / "PHX" / "_Team.md").is_file()
+    assert (out / "NBA" / "Teams" / "PHX" / "_Identity.md").is_file()
+    assert not (out / "NBA" / "Teams" / "PHX" / "_Team.md").exists()
 
     # digest + export stages wrote files
     assert rep["summary"]["digests_written"] >= 1
@@ -59,7 +60,7 @@ def test_pipeline_runs_all_three_stages(tmp_path):
     assert (out / "NBA" / "_Read.md").is_file()
 
 
-def test_pipeline_drops_matchups_and_counts_players(tmp_path):
+def test_pipeline_drops_matchups_and_is_person_free(tmp_path):
     src = tmp_path / "vault"
     _make_source_vault(src)
     out = tmp_path / "out"
@@ -69,8 +70,13 @@ def test_pipeline_drops_matchups_and_counts_players(tmp_path):
     assert not list(out.rglob("*vs*.md"))
     assert not list(out.rglob("Matchups/*"))
 
-    # both players counted, nested under their team
-    assert rep["summary"]["players_total"] >= 2
+    # person-free default: NO per-player notes emitted; player count is zero
+    assert rep["summary"]["players_total"] == 0
     nba_team_dir = out / "NBA" / "Teams" / "PHX"
-    player_notes = [p for p in nba_team_dir.glob("*.md") if p.name != "_Team.md"]
-    assert len(player_notes) == 2
+    player_notes = [p for p in nba_team_dir.glob("*.md") if not p.name.startswith("_")]
+    assert player_notes == [], f"Player notes leaked: {player_notes}"
+    # the only team file is the person-free identity hub, and it names no players
+    identity = (nba_team_dir / "_Identity.md").read_text(encoding="utf-8")
+    assert "booker" not in identity.lower() and "durant" not in identity.lower()
+    # team hub still tracked in the digest counts (subdir present)
+    assert rep["summary"]["teams_total"] >= 1
