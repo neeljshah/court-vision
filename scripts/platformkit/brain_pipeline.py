@@ -95,6 +95,15 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_mechanisms", {})["mechanisms"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # data-driven PERSON-FREE archetype clustering (computed from leak-free as-of
+    # features: MLB pitcher roles, team styles). Deterministic; person-free; audit-clean.
+    try:
+        from scripts.platformkit.brain_archetypes import build_archetypes  # noqa: PLC0415
+        arch = build_archetypes(vault_organized_dir=organized_root)
+        if arch:
+            models.setdefault("_archetypes", {})["computed"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # green-cell coverage map (light filesystem walk; accurate after the artifacts above)
     try:
         from scripts.platformkit.brain_coverage import (  # noqa: PLC0415
