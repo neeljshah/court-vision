@@ -1,18 +1,23 @@
 """tests/platform/test_vault_organize_multi.py — unit tests for vault_organize_multi.
 
-Builds a tiny synthetic fixture vault in tmp_path, runs organize_all(), and asserts:
+Builds a tiny synthetic fixture vault in tmp_path, runs organize_all(), and asserts
+the PERSON-FREE default plus the legacy ``with_named`` escape hatch:
   1. No matchup notes in output (no path contains "Matchups" or " vs ").
-  2. Duplicate player collapsed to ONE canonical (richest) note under its team.
-  3. Each team hub (_Team.md) folds the source team-note text.
+  2. Default = person-free: NO per-player .md files anywhere in the output tree.
+  3. Each team gets a person-free ``_Identity.md`` (style signature / scheme tags /
+     archetype distribution) with NO roster table and NO named players.
   4. _Index/_Brain.md exists and names the sports present.
   5. Per-sport _Index.md exists.
   6. Person-free intel categories are copied for each sport present.
+  7. The ``with_named=True`` escape hatch restores legacy per-player notes + _Team.md
+     and collapses duplicate player ids to ONE canonical (richest) note.
 
 Pure stdlib only; no pandas/pyarrow at module top (pytest contamination guard).
 """
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -24,6 +29,9 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.platformkit.vault_organize_multi import organize_all  # noqa: E402
+
+# player-id_first_last.md filename (a person leak we must NOT emit by default)
+NAMED_FILENAME_RE = re.compile(r"^\d{3,}_[a-z]+_[a-z]+", re.IGNORECASE)
 
 
 # --------------------------------------------------------------------------- #
@@ -163,39 +171,65 @@ def test_no_matchup_notes_in_output(run_result):
     assert violations == [], f"Matchup notes leaked into output: {violations}"
 
 
-def test_duplicate_player_collapsed(run_result):
-    """The duplicate player id 1234 should produce exactly ONE canonical note."""
+def test_person_free_default_no_player_notes(run_result):
+    """Default run must be PERSON-FREE: no per-player .md files anywhere in output."""
     out, report = run_result
-    nba_teams = out / "NBA" / "Teams"
-    player_files = list(nba_teams.rglob("*.md"))
-    # find files for id 1234
-    id1234 = [f for f in player_files if f.stem.startswith("1234_")]
-    assert len(id1234) == 1, f"Expected 1 canonical note for id 1234, got {len(id1234)}: {id1234}"
-    # the richer note (more content) should be kept
-    assert "1234_alice_smith" in id1234[0].stem, (
-        f"Expected richer note '1234_alice_smith', got '{id1234[0].stem}'"
-    )
-    # also verify dupes count in report
+    # the player-id_first_last filename pattern (e.g. 1234_alice_smith.md) must NOT appear
+    player_files = [
+        p.relative_to(out).as_posix()
+        for p in out.rglob("*.md")
+        if NAMED_FILENAME_RE.match(p.stem)
+    ]
+    assert player_files == [], f"Player notes leaked into person-free output: {player_files}"
+    # report should reflect zero emitted players and flag person-free
+    assert report["per_sport"]["NBA"]["n_players"] == 0
+    assert report["with_named"] is False
+    assert report["person_free"] is True
+    # dedup still happens internally (records are parsed for the distribution)
     assert report["per_sport"]["NBA"]["duplicates_collapsed"] >= 1
 
 
-def test_team_hub_contains_source_text(run_result):
-    """_Team.md for GSW must fold in the source team note content."""
-    out, _ = run_result
-    hub = out / "NBA" / "Teams" / "GSW" / "_Team.md"
-    assert hub.exists(), f"_Team.md not found at {hub}"
-    content = hub.read_text(encoding="utf-8")
-    assert "Great defense" in content, (
-        "Source team note text not folded into _Team.md"
-    )
+def test_with_named_escape_hatch_restores_players(tmp_path_factory):
+    """with_named=True restores legacy per-player notes; dupe id collapses to richest."""
+    vault = tmp_path_factory.mktemp("vault_named")
+    out = tmp_path_factory.mktemp("out_named")
+    _build_fixture(vault)
+    report = organize_all(vault_dir=vault, out_dir=out, with_named=True)
+    assert report["with_named"] is True
+    nba_teams = out / "NBA" / "Teams"
+    id1234 = [f for f in nba_teams.rglob("*.md") if f.stem.startswith("1234_")]
+    assert len(id1234) == 1, f"Expected 1 canonical note for id 1234, got {id1234}"
+    assert "1234_alice_smith" in id1234[0].stem  # richest note kept
+    assert report["per_sport"]["NBA"]["duplicates_collapsed"] >= 1
+    assert report["per_sport"]["NBA"]["n_players"] >= 2
+    # legacy roster hub is emitted (not _Identity)
+    assert (nba_teams / "GSW" / "_Team.md").exists()
+    assert not (nba_teams / "GSW" / "_Identity.md").exists()
 
 
-def test_team_hub_contains_roster(run_result):
-    """_Team.md for GSW must list the canonical player."""
+def test_identity_hub_is_person_free(run_result):
+    """Default GSW hub is _Identity.md (NOT _Team.md) and is person-free."""
     out, _ = run_result
-    hub = out / "NBA" / "Teams" / "GSW" / "_Team.md"
-    content = hub.read_text(encoding="utf-8")
-    assert "1234_alice_smith" in content, "Canonical player not listed in team hub"
+    team_dir = out / "NBA" / "Teams" / "GSW"
+    identity = team_dir / "_Identity.md"
+    assert identity.exists(), f"_Identity.md not found at {identity}"
+    assert not (team_dir / "_Team.md").exists(), "Legacy _Team.md emitted by default"
+    content = identity.read_text(encoding="utf-8")
+    # NO named player, NO roster table, NO 'X vs Y' matchup, NO raw source prose
+    assert "alice" not in content.lower(), "Named player leaked into _Identity.md"
+    assert "1234_" not in content, "Player-id stem leaked into _Identity.md"
+    assert "| Player |" not in content, "Roster table leaked into _Identity.md"
+    assert " vs " not in content, "Matchup line leaked into _Identity.md"
+    assert "Great defense" not in content, "Raw source prose folded into _Identity.md"
+
+
+def test_identity_hub_carries_style_intelligence(run_result):
+    """_Identity.md must carry person-free style intelligence (archetype distribution)."""
+    out, _ = run_result
+    content = (out / "NBA" / "Teams" / "GSW" / "_Identity.md").read_text(encoding="utf-8")
+    # the archetype label (a concept, not a person) IS expected
+    assert "Floor Spacer" in content, "Archetype distribution missing from _Identity.md"
+    assert "Style Identity" in content, "_Identity.md header missing"
 
 
 def test_brain_exists_and_names_sports(run_result):
