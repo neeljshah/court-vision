@@ -25,10 +25,12 @@ _PROVENANCE_MODULES = [
     "scripts.platformkit.brain_critic.critique_finding",
     "scripts.platformkit.pipeline_integration.assemble_read",
 ]
-_QUERY_TEMPLATES = [
-    "{sport} archetype playstyle style",
-    "{sport} scheme coverage defense",
-    "{sport} trend momentum pattern",
+# (query template, kind) — the kind filter guarantees each bucket retrieves notes
+# of that kind even when keyword overlap is low (brain_query path-sorts score ties).
+_QUERY_SPECS = [
+    ("{sport} archetype playstyle style", "archetype"),
+    ("{sport} scheme coverage defense tactic", "scheme"),
+    ("{sport} trend season pattern", "trend"),
 ]
 _SAFE_TEMPLATE = (
     "Brain scout for {sport}: style landscape reflects {n_archetypes} archetype(s) "
@@ -120,9 +122,9 @@ def build_sport_read(
         rp = root if isinstance(root, Path) else (Path(root) if root else None)
         seen: set = set()
         hits: list = []
-        for tmpl in _QUERY_TEMPLATES:
-            for h in brain_query(tmpl.format(sport=sport_lower),
-                                 sport=sport_lower, root=rp, top_k=top_k):
+        for tmpl, knd in _QUERY_SPECS:
+            for h in brain_query(tmpl.format(sport=sport_lower), sport=sport_lower,
+                                 kind=knd, root=rp, top_k=top_k):
                 if h.path not in seen:
                     seen.add(h.path); hits.append(h)
         scout = _classify_hits(hits)
