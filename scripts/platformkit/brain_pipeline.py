@@ -66,6 +66,9 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     digest = build_digests(organized_root=organized_root, write=True)
     export = export_reads(organized_root=organized_root, write=True)
     models = _run_model_stages(organized_root) if with_models else {}
+    # Final self-policing gate: no artifact may make an un-caveated betting edge claim.
+    from scripts.platformkit.brain_audit import audit_tree  # noqa: PLC0415
+    audit = audit_tree(organized_root)
 
     per_sport = organize.get("per_sport", {})
     summary = {
@@ -76,12 +79,14 @@ def run_pipeline(vault_dir: Optional[Path] = None,
         "digests_written": digest.get("n_written"),
         "reads_written": export.get("n_written"),
         "model_artifacts": {sp: sorted(v) for sp, v in models.items()},
+        "edge_clean": audit.get("clean"),
+        "edge_flagged": audit.get("n_flagged"),
     }
     return {
         "organized_root": str(organized_root),
         "summary": summary,
         "stages": {"organize": organize, "digest": digest, "export": export,
-                   "models": models},
+                   "models": models, "audit": audit},
         "note": ("intelligence MAP, not a betting edge; markets efficient; "
                  "calibration is not edge"),
     }
@@ -107,6 +112,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
     print(f"reads written  : {s['reads_written']}")
     if s.get("model_artifacts"):
         print(f"model artifacts: {s['model_artifacts']}")
+    print(f"edge-clean     : {s.get('edge_clean')} (flagged={s.get('edge_flagged')})")
     print(f"note           : {rep['note']}")
     return 0
 
