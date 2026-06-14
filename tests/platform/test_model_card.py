@@ -53,3 +53,16 @@ def test_write_card(tmp_path):
 def test_error_sport_handled():
     card = build_card("nba", min_history=500, loader=lambda s: (_make_games(50), None, None))
     assert "error" in card and write_card("nba", card) is None
+
+
+def test_parse_card_metrics_roundtrip(tmp_path):
+    from scripts.platformkit.model_card import parse_card_metrics
+    games = _make_games()
+    card = build_card("nba", min_history=150, loader=_loader(games))
+    write_card("nba", card, organized_root=tmp_path)
+    m = parse_card_metrics("nba", organized_root=tmp_path)
+    assert m is not None
+    assert set(m) == {"brier", "logloss", "ece", "calibrator"}
+    assert 0.0 <= m["brier"] <= 1.0
+    # absent card -> None (graceful)
+    assert parse_card_metrics("mlb", organized_root=tmp_path) is None
