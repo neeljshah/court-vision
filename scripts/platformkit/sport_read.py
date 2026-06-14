@@ -116,9 +116,12 @@ def build_sport_read(
     All numbers come only from surface; no un-gated pick key exists.
     """
     sport_lower = sport.lower()
+    competence: Optional[Dict[str, Any]] = None
     # SCOUT
     try:
-        from scripts.platformkit.brain_query import brain_query, prior_verdicts  # noqa: PLC0415
+        from scripts.platformkit.brain_query import (  # noqa: PLC0415
+            brain_query, prior_verdicts, _resolve_root,
+        )
         rp = root if isinstance(root, Path) else (Path(root) if root else None)
         seen: set = set()
         hits: list = []
@@ -129,6 +132,8 @@ def build_sport_read(
                     seen.add(h.path); hits.append(h)
         scout = _classify_hits(hits)
         priors = prior_verdicts(sport=sport_lower, root=rp)
+        from scripts.platformkit.model_card import parse_card_metrics  # noqa: PLC0415
+        competence = parse_card_metrics(sport_lower, _resolve_root(rp))
     except Exception:  # noqa: BLE001
         scout = {"archetypes": [], "schemes": [], "trends": []}
         priors = dict(_DEFAULT_PRIORS)
@@ -162,6 +167,7 @@ def build_sport_read(
         "banner": _HONEST_BANNER,
         "scout": scout,
         "priors": priors,
+        "competence": competence,
         "surface": surface,
         "narrative": narrative,
         "critique": {"passes": crit.passes, "edge_claim_detected": crit.edge_claim_detected,
@@ -205,6 +211,15 @@ def render_markdown(read: Dict[str, Any]) -> str:
     if priors.get("note"):
         L.append(f"- Note: _{priors['note']}_")
     L.append("")
+
+    comp = read.get("competence")
+    if comp:
+        L += [
+            "### Model Competence _(validated OOS — knows what it knows)_",
+            f"- Calibrated rating: Brier **{comp['brier']}** · logloss {comp['logloss']} · "
+            f"ECE **{comp['ece']}** (calibrator: {comp.get('calibrator')})",
+            "- A calibration metric, NOT a market edge.", "",
+        ]
 
     surface = read.get("surface")
     if surface is not None:

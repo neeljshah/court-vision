@@ -27,6 +27,27 @@ _NOTE = ("Every number is a calibration/accuracy metric (Brier/log-loss/ECE), NE
          "market edge. ACCURACY/CALIBRATION != EDGE; neither model beats the close.")
 
 
+def parse_card_metrics(sport_key: str, organized_root: Optional[Path] = None) -> Optional[Dict]:
+    """Parse calibrated-Elo OOS metrics from a written _Model_Card.md (or None).
+
+    Lets other layers (e.g. sport_read) ground a read in VALIDATED model competence
+    without recomputing. Pure read — originates no number.
+    """
+    import re  # noqa: PLC0415
+    root = Path(organized_root) if organized_root else (_REPO_ROOT / "vault" / "_Organized")
+    p = root / _ORG_DIR.get(sport_key, sport_key.upper()) / "_Model_Card.md"
+    try:
+        txt = p.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    m = re.search(r"calibrated Elo \| ([\d.]+) \| ([\d.]+) \| ([\d.]+)", txt)
+    if not m:
+        return None
+    c = re.search(r"chosen calibrator = \*\*(\w+)\*\*", txt)
+    return {"brier": float(m.group(1)), "logloss": float(m.group(2)),
+            "ece": float(m.group(3)), "calibrator": c.group(1) if c else None}
+
+
 def _row(tag: str, m: Optional[Dict]) -> Optional[str]:
     """A table row, or None when the metric is absent (None is dropped; '' stays
     as an intentional blank-line separator)."""
