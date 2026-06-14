@@ -30,9 +30,32 @@ from scripts.platformkit.brain_digest import build_digests  # noqa: E402
 from scripts.platformkit.brain_export import export_reads  # noqa: E402
 
 
+def _run_model_stages(organized_root: Path) -> Dict:
+    """Optional real-data stages: write per-sport model cards + EB base rates.
+
+    These read the REAL per-sport corpora (their own loaders), so they only make
+    sense on the live vault — hence default-OFF (``with_models``) to keep the
+    hermetic fixture pipeline test clean. Errors per sport are skipped honestly.
+    """
+    from scripts.platformkit.model_card import build_card, write_card  # noqa: PLC0415
+    from scripts.platformkit.eb_base_rates import (  # noqa: PLC0415
+        build_for_sport, write_artifact,
+    )
+    models: Dict[str, Dict] = {}
+    for sp in ("nba", "mlb", "tennis"):
+        card = build_card(sp)
+        if "error" not in card and write_card(sp, card, organized_root=organized_root):
+            models.setdefault(sp, {})["model_card"] = "written"
+        rep = build_for_sport(sp)
+        if "error" not in rep and write_artifact(sp, rep, organized_root=organized_root):
+            models.setdefault(sp, {})["base_rates"] = "written"
+    return models
+
+
 def run_pipeline(vault_dir: Optional[Path] = None,
-                 out_dir: Optional[Path] = None) -> Dict:
-    """Run organize -> digest -> export against *vault_dir*.
+                 out_dir: Optional[Path] = None,
+                 with_models: bool = False) -> Dict:
+    """Run organize -> digest -> export (-> model cards + base rates if with_models).
 
     Returns a combined report dict with the three stage reports plus a compact
     summary.  Stages run in dependency order; digest/export read the freshly
@@ -42,6 +65,7 @@ def run_pipeline(vault_dir: Optional[Path] = None,
     organized_root = Path(organize["out_dir"])
     digest = build_digests(organized_root=organized_root, write=True)
     export = export_reads(organized_root=organized_root, write=True)
+    models = _run_model_stages(organized_root) if with_models else {}
 
     per_sport = organize.get("per_sport", {})
     summary = {
@@ -51,11 +75,13 @@ def run_pipeline(vault_dir: Optional[Path] = None,
         "matchup_vs_leaks_out": organize.get("after", {}).get("matchup_vs_leaks"),
         "digests_written": digest.get("n_written"),
         "reads_written": export.get("n_written"),
+        "model_artifacts": {sp: sorted(v) for sp, v in models.items()},
     }
     return {
         "organized_root": str(organized_root),
         "summary": summary,
-        "stages": {"organize": organize, "digest": digest, "export": export},
+        "stages": {"organize": organize, "digest": digest, "export": export,
+                   "models": models},
         "note": ("intelligence MAP, not a betting edge; markets efficient; "
                  "calibration is not edge"),
     }
@@ -67,7 +93,8 @@ def _main(argv: Optional[List[str]] = None) -> int:
         print(__doc__)
         return 0
     vault_arg = next((a for a in argv if not a.startswith("-")), None)
-    rep = run_pipeline(vault_dir=Path(vault_arg) if vault_arg else None)
+    rep = run_pipeline(vault_dir=Path(vault_arg) if vault_arg else None,
+                       with_models="--with-models" in argv)
     if "--json" in argv:
         print(json.dumps(rep, indent=2, default=str))
         return 0
@@ -78,6 +105,8 @@ def _main(argv: Optional[List[str]] = None) -> int:
     print(f"matchup leaks  : {s['matchup_vs_leaks_out']} (inline prose only; 0 matchup files)")
     print(f"digests written: {s['digests_written']}")
     print(f"reads written  : {s['reads_written']}")
+    if s.get("model_artifacts"):
+        print(f"model artifacts: {s['model_artifacts']}")
     print(f"note           : {rep['note']}")
     return 0
 
