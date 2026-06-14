@@ -76,7 +76,8 @@ def render_markdown(rep: Dict) -> str:
     lines += [
         "\n**Honest reading:** the SAME object is competitive with each sport's "
         "hand-tuned model — the unification abstraction is real. Where it trails "
-        "(MLB: pitcher-blind), that gap is honest. None of this beats the market.",
+        "(MLB: pitcher-blind), that gap is honest. None of this beats the market — "
+        "calibration is not edge; no edge is claimed.",
     ]
     return "\n".join(lines) + "\n"
 

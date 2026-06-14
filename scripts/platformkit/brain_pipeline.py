@@ -49,6 +49,17 @@ def _run_model_stages(organized_root: Path) -> Dict:
         rep = build_for_sport(sp)
         if "error" not in rep and write_artifact(sp, rep, organized_root=organized_root):
             models.setdefault(sp, {})["base_rates"] = "written"
+    # top-level cross-sport scoreboard (one rating object, all 4 sports)
+    try:
+        from scripts.platformkit.platform_scoreboard import (  # noqa: PLC0415
+            build_scoreboard, write_artifact as sb_write,
+        )
+        sb = build_scoreboard()
+        if sb.get("n_sports", 0) > 0:
+            sb_write(sb, organized_root=organized_root)
+            models.setdefault("_scoreboard", {})["platform_scoreboard"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 
