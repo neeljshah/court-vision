@@ -33,6 +33,7 @@ from scripts.platformkit.frontend.board import (
 )
 from scripts.platformkit.frontend.board_html import render_board_html
 from scripts.platformkit.frontend.feed import OddsFeed, get_feed
+from scripts.platformkit.frontend.intel_panel import attach_intel_routes
 
 APP_BANNER = (
     "Honest multi-sport board. Markets are efficient — NO model edge claimed. "
@@ -57,6 +58,7 @@ _INDEX_HTML = (
     "<li><a href='/board.html'>/board.html</a> — rendered board</li>"
     "<li><a href='/api/board'>/api/board</a> — full board JSON</li>"
     "<li><a href='/api/feed/status'>/api/feed/status</a> — feed status</li>"
+    "<li><a href='/api/intel'>/api/intel</a> — per-sport intelligence panels (brain)</li>"
     "<li><a href='/healthz'>/healthz</a> — health</li>"
     "</ul></body></html>"
 )
@@ -144,6 +146,11 @@ def create_app(
             "status": "dormant",
             "note": "needs live multi-book feed (forward CLV requires real captured prices)",
         }
+
+    # Per-sport intelligence panels (organized brain + reads). Understanding +
+    # provenance only — NEVER an un-gated number. /api/intel, /api/intel/{sport},
+    # /intel/{sport}.html
+    attach_intel_routes(app)
 
     return app
 
