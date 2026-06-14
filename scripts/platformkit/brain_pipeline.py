@@ -74,6 +74,18 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_calibration", {})["calibration_scoreboard"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # per-sport "what wins & why" driver taxonomy from the DESCRIPTIVE post-mortems
+    # (aggregate knowledge, NOT a per-game signal). Reads real per-sport postmortem
+    # parquets -> default-OFF path; missing parquet is skipped honestly. Audit-clean.
+    try:
+        from scripts.platformkit.brain_drivers import build_drivers  # noqa: PLC0415
+        drv = build_drivers(organized_root=organized_root, write=True)
+        built = [sp for sp, v in drv.items()
+                 if not sp.startswith("_") and isinstance(v, dict) and "skipped" not in v]
+        if built:
+            models.setdefault("_drivers", {})["what_wins"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     # green-cell coverage map (light filesystem walk; accurate after the artifacts above)
     try:
         from scripts.platformkit.brain_coverage import (  # noqa: PLC0415
