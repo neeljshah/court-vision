@@ -109,10 +109,12 @@ def parse_composite(text: str) -> str:
     return m.group(1).strip() if m else ""
 
 
-def build_identity(team: str, source_text: Optional[str], recs: List[dict]) -> str:
+def build_identity(team: str, source_text: Optional[str], recs: List[dict],
+                   sport: str = "") -> str:
     """Person-FREE ``_Identity.md``: style signature (top archetypes), scheme/driver
     tags, archetype distribution + data-density. NO roster table, NO named players,
     NO 'X vs Y' matchups, NO 'who shuts down whom' — only style-level intelligence.
+    Injects hub wikilinks so every _Identity note is connected into the graph.
     """
     agg = roster_aggregate(recs) if recs else None
     src = source_text or ""
@@ -126,6 +128,14 @@ def build_identity(team: str, source_text: Optional[str], recs: List[dict]) -> s
         "`scripts/platformkit/vault_organize_multi.py`. Intelligence map only — "
         "markets efficient; calibration is not edge.\n",
     ]
+    # Hub wikilinks — always present so every _Identity is a graph node with edges
+    hub_links = ["[[../../_Index|Sport Index]]",
+                 "[[../../../_Index/_Brain|Brain MOC]]"]
+    if tags:
+        hub_links.append("[[../../Schemes/_Scheme_Effects_Matrix|Schemes]]")
+    if agg and agg["arch_hist"]:
+        hub_links.append("[[../../Archetypes/_Archetypes_Index|Archetypes]]")
+    lines.append(" | ".join(hub_links) + "\n")
     if agg and agg["style_signature"]:
         lines.append(f"**Style signature (top archetypes):** {agg['style_signature']}\n")
     if tags:
@@ -154,11 +164,34 @@ _VS_CONCEPT = frozenset((
 _VS_LINE_RE = re.compile(r"\b([A-Z][\w'.-]+)\s+vs\.?\s+([A-Za-z][\w'.-]+)")
 
 
+# Wikilink with player-id prefix: [[Players/123_first_last|Display]] or [[123_first_last]]
+_PLAYER_WIKILINK_RE = re.compile(
+    r"\[\[(?:Players/)?(?:\d{3,}_[a-z_]+)(?:\|([^\]]+))?\]\]",
+    re.IGNORECASE,
+)
+
+
+def scrub_player_links(text: str) -> str:
+    """Replace [[Players/id_name|Display]] wikilinks with just the display name (or
+    remove the bare [[id_name]] form).  Keeps the display text so tables remain readable
+    but removes the graph edge to a specific player node.
+    """
+    def _replace(m: re.Match) -> str:
+        display = m.group(1)
+        return display if display else ""
+    return _PLAYER_WIKILINK_RE.sub(_replace, text)
+
+
 def scrub_person_lines(text: str) -> str:
     """Drop content lines that name a PERSON/team 'X vs Y' matchup while KEEPING
     tactical 'Drop vs Switch' concept comparisons.  A line is a person leak when the
-    capitalized left side of the matchup is NOT a known tactical concept word.  Person-
-    free hygiene for copied descriptive intel (Archetypes/Schemes/Trends/Reference)."""
+    capitalized left side of the matchup is NOT a known tactical concept word.  Also
+    strips player-ID wikilinks ([[Players/id_name|...]]) to remove graph edges.
+    Person-free hygiene for copied descriptive intel (Archetypes/Schemes/Trends/Reference).
+    """
+    # First pass: strip player-ID wikilinks from content
+    text = scrub_player_links(text)
+    # Second pass: drop explicit "Person vs Person" matchup lines
     def _keep(line: str) -> bool:
         m = _VS_LINE_RE.search(line)
         return not (m and m.group(1).lower() not in _VS_CONCEPT)
@@ -166,133 +199,71 @@ def scrub_person_lines(text: str) -> str:
     return "\n".join(kept) + ("\n" if text.endswith("\n") else "")
 
 
-# --------------------------------------------------------------------------- #
-# SportSpec
-# --------------------------------------------------------------------------- #
-
 @dataclass(frozen=True)
 class SportSpec:
     """Immutable descriptor of a sport's source layout inside vault/."""
-
-    name: str                               # output folder key, e.g. "NBA"
-    is_solo: bool                           # True -> no team nesting; Players/ allowed
-    teams_dir: Optional[Path]               # dir of <TRI>.md team files (team sports)
-    players_dir: Optional[Path]             # dir of player .md files (may be None)
-    team_note_dir: Optional[Path]           # dir whose .md content folds into _Team hubs
+    name: str                                    # output folder key, e.g. "NBA"
+    is_solo: bool                                # True → no team nesting
+    teams_dir: Optional[Path]                    # <TRI>.md team files
+    players_dir: Optional[Path]                  # player .md files (may be None)
+    team_note_dir: Optional[Path]                # content folded into _Team hubs
     archetype_dirs: List[Path] = field(default_factory=list)
     scheme_dirs: List[Path] = field(default_factory=list)
     trend_dirs: List[Path] = field(default_factory=list)
     reference_dirs: List[Path] = field(default_factory=list)
     drop_dirs: List[Path] = field(default_factory=list)
 
-
-# --------------------------------------------------------------------------- #
-# factory
-# --------------------------------------------------------------------------- #
-
 def source_specs(vault_dir: Path) -> List[SportSpec]:
     """Return one SportSpec per supported sport rooted at *vault_dir*."""
     v = vault_dir
-
-    # ------------------------------------------------------------------ NBA --
     nba_root = v / "Sports" / "Basketball_NBA"
     nba_intel = v / "Intelligence"
     nba = SportSpec(
-        name="NBA",
-        is_solo=False,
-        teams_dir=nba_intel / "Teams",          # Intelligence/Teams/<TRI>.md
-        players_dir=nba_intel / "Players",      # Intelligence/Players/<id>_first_last.md
-        team_note_dir=nba_intel / "Teams",      # same as teams_dir for NBA
-        archetype_dirs=[
-            nba_intel / "Archetypes",           # Intelligence/Archetypes/
-            nba_root / "Archetypes" / "Archetypes",  # Sports/Basketball_NBA/Archetypes/Archetypes/
-        ],
+        name="NBA", is_solo=False,
+        teams_dir=nba_intel / "Teams", players_dir=nba_intel / "Players",
+        team_note_dir=nba_intel / "Teams",
+        archetype_dirs=[nba_intel / "Archetypes",
+                        nba_root / "Archetypes" / "Archetypes"],
         scheme_dirs=[nba_intel / "Schemes"],
-        trend_dirs=[
-            nba_intel / "Trends",
-            nba_root / "Trends" / "Trends",
-        ],
-        reference_dirs=[
-            nba_root / "Scouting",
-            nba_root / "Seasons",
-            nba_root / "Seasons" / "Seasons",
-        ],
-        drop_dirs=[
-            nba_intel / "Matchups",
-            v / "Intelligence" / "Pairs",
-        ],
+        trend_dirs=[nba_intel / "Trends", nba_root / "Trends" / "Trends"],
+        reference_dirs=[nba_root / "Scouting", nba_root / "Seasons",
+                        nba_root / "Seasons" / "Seasons"],
+        drop_dirs=[nba_intel / "Matchups", v / "Intelligence" / "Pairs"],
     )
-
-    # ------------------------------------------------------------------ MLB --
     mlb_root = v / "Sports" / "MLB"
     mlb = SportSpec(
-        name="MLB",
-        is_solo=False,
-        teams_dir=mlb_root / "Teams",
-        players_dir=None,                        # no individual player notes
+        name="MLB", is_solo=False,
+        teams_dir=mlb_root / "Teams", players_dir=None,
         team_note_dir=mlb_root / "Teams",
-        archetype_dirs=[mlb_root / "Playstyles"],
-        scheme_dirs=[],
+        archetype_dirs=[mlb_root / "Playstyles"], scheme_dirs=[],
         trend_dirs=[mlb_root / "StyleTrends"],
-        reference_dirs=[
-            mlb_root / "HomeEnvironment",
-            mlb_root / "Leagues",
-            mlb_root / "Seasons",
-            mlb_root / "Signals",
-            mlb_root / "Scouting",
-        ],
-        drop_dirs=[
-            mlb_root / "Matchups",
-            mlb_root / "StyleMatchups",
-        ],
+        reference_dirs=[mlb_root / "HomeEnvironment", mlb_root / "Leagues",
+                        mlb_root / "Seasons", mlb_root / "Signals",
+                        mlb_root / "Scouting"],
+        drop_dirs=[mlb_root / "Matchups", mlb_root / "StyleMatchups"],
     )
-
-    # --------------------------------------------------------------- Soccer --
     soccer_root = v / "Sports" / "Soccer"
     soccer = SportSpec(
-        name="Soccer",
-        is_solo=False,
-        teams_dir=soccer_root / "Teams",
-        players_dir=None,
+        name="Soccer", is_solo=False,
+        teams_dir=soccer_root / "Teams", players_dir=None,
         team_note_dir=soccer_root / "Teams",
         archetype_dirs=[soccer_root / "Playstyles"],
         scheme_dirs=[soccer_root / "SchemeTransitions"],
         trend_dirs=[soccer_root / "StyleTrends"],
-        reference_dirs=[
-            soccer_root / "Leagues",
-            soccer_root / "Seasons",
-            soccer_root / "Signals",
-            soccer_root / "Scouting",
-        ],
-        drop_dirs=[
-            soccer_root / "Matchups",
-            soccer_root / "StyleMatchups",
-        ],
+        reference_dirs=[soccer_root / "Leagues", soccer_root / "Seasons",
+                        soccer_root / "Signals", soccer_root / "Scouting"],
+        drop_dirs=[soccer_root / "Matchups", soccer_root / "StyleMatchups"],
     )
-
-    # --------------------------------------------------------------- Tennis --
     tennis_root = v / "Sports" / "Tennis"
     tennis = SportSpec(
-        name="Tennis",
-        is_solo=True,
-        teams_dir=None,
-        players_dir=tennis_root / "Players" if (tennis_root / "Players").is_dir() else None,
-        team_note_dir=None,
-        archetype_dirs=[tennis_root / "Playstyles"],
-        scheme_dirs=[],
+        name="Tennis", is_solo=True, teams_dir=None, team_note_dir=None,
+        players_dir=(tennis_root / "Players"
+                     if (tennis_root / "Players").is_dir() else None),
+        archetype_dirs=[tennis_root / "Playstyles"], scheme_dirs=[],
         trend_dirs=[tennis_root / "StyleTrends"],
-        reference_dirs=[
-            tennis_root / "Surfaces",
-            tennis_root / "Tournaments",
-            tennis_root / "Leagues",
-            tennis_root / "Seasons",
-            tennis_root / "Signals",
-            tennis_root / "Scouting",
-        ],
-        drop_dirs=[
-            tennis_root / "Matchups",
-            tennis_root / "StyleMatchups",
-        ],
+        reference_dirs=[tennis_root / "Surfaces", tennis_root / "Tournaments",
+                        tennis_root / "Leagues", tennis_root / "Seasons",
+                        tennis_root / "Signals", tennis_root / "Scouting"],
+        drop_dirs=[tennis_root / "Matchups", tennis_root / "StyleMatchups"],
     )
-
     return [nba, mlb, soccer, tennis]
