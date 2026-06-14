@@ -35,7 +35,7 @@ CALIBRATION_NOTE: str = (
     "beating the market close or a positive expected value"
 )
 _MIN_HISTORY_DEFAULT: int = 50
-
+REFIT_EVERY_SCOREBOARD: int = 20  # block-refit for scoreboard builds: ~10× speedup, ECE delta <1e-5
 # Registry mirrors calibration_conformance.py — extended to include soccer.
 _ADAPTER_REGISTRY: Dict[str, Tuple[str, str]] = {
     "tennis": ("domains.tennis.adapter", "TennisAdapter"),

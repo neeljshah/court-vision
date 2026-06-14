@@ -52,7 +52,7 @@ def _run_nba() -> SportMetrics:
     target = _np.asarray(bundle.target, dtype=float)
     signal_col = _np.asarray(bundle.signal_col, dtype=float)
 
-    baseline_p = walk_forward_recalibrate(signal_col, target)
+    baseline_p = walk_forward_recalibrate(signal_col, target, refit_every=20)
     improved_p = fit_winprob(base, target, signal_col)
 
     return {

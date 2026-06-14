@@ -116,7 +116,7 @@ def score_sport(
                  else np.full(len(target), float("nan"))
 
     # Walk-forward recalibration (leak-free)
-    model_recal = walk_forward_recalibrate(model_raw, target)
+    model_recal = walk_forward_recalibrate(model_raw, target, refit_every=20)
 
     close_mask = np.isfinite(closing)
     n_close = int(close_mask.sum())
