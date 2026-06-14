@@ -33,6 +33,7 @@ from scripts.platformkit.vault_sources import (    # noqa: E402
     SportSpec,
     source_specs,
     parse_archetype_from_body,
+    roster_aggregate,
 )
 
 _UNASSIGNED = "_Unassigned"
@@ -44,12 +45,9 @@ _UNASSIGNED = "_Unassigned"
 
 def _build_team_hub(team: str, source_text: Optional[str],
                     recs: List[dict]) -> str:
-    """Dense _Team.md: source note content + optional archetype roster histogram."""
-    arch_hist: Dict[str, int] = {}
-    for r in recs:
-        arch = r.get("archetype", "") or "Unknown"
-        arch_hist[arch] = arch_hist.get(arch, 0) + 1
-
+    """Dense _Team.md: style signature + source note + roster table (player|archetype|
+    position|usage) + archetype-share and position distributions."""
+    agg = roster_aggregate(recs) if recs else None
     lines = [
         "---\ntags: [organized, team, hub]\n---",
         f"# {team} — Team Hub\n",
@@ -57,22 +55,26 @@ def _build_team_hub(team: str, source_text: Optional[str],
         "`scripts/platformkit/vault_organize_multi.py`. "
         "Intelligence map only — markets efficient; calibration is not edge.\n",
     ]
+    if agg and agg["style_signature"]:
+        lines.append(f"**Team style signature:** {agg['style_signature']}\n")
 
     if source_text:
-        lines.append("## Source Intelligence\n")
-        lines.append(source_text.strip())
-        lines.append("")
+        lines += ["## Source Intelligence\n", source_text.strip(), ""]
 
-    if recs:
-        lines.append(f"\n## Roster ({len(recs)} canonical player(s))\n")
-        for r in sorted(recs, key=lambda x: x["stem"]):
-            arch = r.get("archetype", "") or ""
-            suffix = f" — {arch}" if arch else ""
-            lines.append(f"- [[{r['stem']}]]{suffix}")
-        if arch_hist:
-            lines.append("\n### Archetype Histogram\n")
-            for arch, cnt in sorted(arch_hist.items(), key=lambda kv: (-kv[1], kv[0])):
-                lines.append(f"| {arch} | {cnt} |")
+    if agg:
+        n = agg["n"]
+        lines.append(f"\n## Roster ({n} canonical player(s))\n")
+        lines += ["| Player | Archetype | Position | Usage |", "|---|---|---|---|"]
+        for row in sorted(agg["rows"], key=lambda x: x["stem"]):
+            lines.append(f"| [[{row['stem']}]] | {row['archetype']} | "
+                         f"{row['position']} | {row['usage']} |")
+        lines.append("\n### Archetype Distribution\n")
+        lines += ["| Archetype | Count | Share |", "|---|---|---|"]
+        for arch, cnt in sorted(agg["arch_hist"].items(), key=lambda kv: (-kv[1], kv[0])):
+            lines.append(f"| {arch} | {cnt} | {cnt * 100 // n}% |")
+        lines.append("\n### Position Distribution\n")
+        for pos, cnt in sorted(agg["pos_hist"].items(), key=lambda kv: (-kv[1], kv[0])):
+            lines.append(f"- {pos}: {cnt}")
 
     return "\n".join(lines) + "\n"
 

@@ -25,7 +25,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 # --------------------------------------------------------------------------- #
 # helpers used by vault_organize_multi (tiny, sport-generic parsers)
@@ -34,6 +34,8 @@ from typing import List, Optional
 _PLAYER_ID_RE = re.compile(r"^(\d{3,})_")
 _TEAM_LINE_RE = re.compile(r"^\*\*Team:\*\*\s*\[\[([A-Za-z0-9_]+)\]\]")
 _ARCH_RE = re.compile(r"\*\*Archetype:\*\*\s*([^·*\n]+)")
+_POS_RE = re.compile(r"\*\*Position:?\*\*\s*([A-Za-z/ -]+)")
+_USAGE_RE = re.compile(r"\*\*Usage rate:?\*\*\s*([\d.]+%?)")
 
 
 def parse_player_id(stem: str) -> Optional[str]:
@@ -55,6 +57,40 @@ def parse_archetype_from_body(text: str) -> str:
     """Best-effort archetype label ('' if absent) — used for team-hub roster histograms."""
     m = _ARCH_RE.search(text)
     return m.group(1).strip() if m else ""
+
+
+def parse_position(text: str) -> str:
+    """Player position from ``- **Position:** Guard`` body line ('' if absent)."""
+    m = _POS_RE.search(text)
+    return m.group(1).strip() if m else ""
+
+
+def parse_usage(text: str) -> str:
+    """Player usage rate from ``- **Usage rate:** 15.9%`` ('' if absent)."""
+    m = _USAGE_RE.search(text)
+    return m.group(1).strip() if m else ""
+
+
+def roster_aggregate(recs: List[dict]) -> Dict:
+    """Aggregate a team's player records (each with archetype + full text) into
+    archetype/position distributions, roster rows, and a top-3 style signature.
+    """
+    arch_hist: Dict[str, int] = {}
+    pos_hist: Dict[str, int] = {}
+    rows: List[Dict[str, str]] = []
+    for r in recs:
+        arch = r.get("archetype", "") or "Unknown"
+        arch_hist[arch] = arch_hist.get(arch, 0) + 1
+        txt = r.get("text", "")
+        pos = parse_position(txt) or "—"
+        pos_hist[pos] = pos_hist.get(pos, 0) + 1
+        rows.append({"stem": r.get("stem", ""), "archetype": arch,
+                     "position": pos, "usage": parse_usage(txt) or "—"})
+    n = max(len(recs), 1)
+    top = sorted(arch_hist.items(), key=lambda kv: (-kv[1], kv[0]))[:3]
+    sig = ", ".join(f"{a} ({c * 100 // n}%)" for a, c in top)
+    return {"n": len(recs), "arch_hist": arch_hist, "pos_hist": pos_hist,
+            "rows": rows, "style_signature": sig}
 
 
 # --------------------------------------------------------------------------- #
