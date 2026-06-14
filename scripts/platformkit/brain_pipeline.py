@@ -161,6 +161,17 @@ def _run_model_stages(organized_root: Path) -> Dict:
             models.setdefault("_crosslinks", {})["related_sections"] = "written"
     except Exception:  # noqa: BLE001
         pass
+    # PERSON-FREE cross-sport TRANSFER map: drivers/mechanisms -> generic SHAPES,
+    # surfacing which model-family/calibration/distribution-shape lesson transfers
+    # across sports. Pure filesystem+string ops; complementary to the archetype
+    # _Cross_Sport_Digest; intelligence map only, no edge claimed.
+    try:
+        from scripts.platformkit.brain_transfer import build_transfer  # noqa: PLC0415
+        tr = build_transfer(organized_root, write=True)
+        if tr.get("n_links", 0) > 0:
+            models.setdefault("_transfer", {})["cross_sport"] = "written"
+    except Exception:  # noqa: BLE001
+        pass
     return models
 
 

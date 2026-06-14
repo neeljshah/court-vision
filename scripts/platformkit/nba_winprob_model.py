@@ -156,7 +156,7 @@ def main() -> None:
 
     # Walk-forward recal (existing solo-Elo)
     from scripts.platformkit.recalibration import walk_forward_recalibrate
-    model_recal = walk_forward_recalibrate(signal_col, target)
+    model_recal = walk_forward_recalibrate(signal_col, target, refit_every=20)
 
     # Multi-feature walk-forward
     print("Fitting multi-feature walk-forward model …")
