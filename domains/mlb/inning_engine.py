@@ -1,14 +1,11 @@
 """domains.mlb.inning_engine — Leak-free runs-scoring engine for MLB.
 
-Turns pre-game Poisson run-rate lambdas into a full joint runs matrix and prices
-every key market: moneyline, run-line ±1.5, totals O/U 6.5–10.5, and F5 approx.
-
-HONEST: WIN = coherent RL/totals/F5 surface the Elo scalar cannot emit. Moneyline
-calibration ~parity with Elo expected. NO edge claimed; gate decides.
-
-Model: independent Poisson outer product (standard v1 for baseball run totals).
-F5 approx: full-game lambdas scaled by 5/9. Tie redistribution (extra innings): P(tie)
-split 50/50. INVARIANTS: never edit src/ or kernel/; imports read-only; <=300 LOC.
+Poisson run-rate lambdas → joint runs matrix → ML/RL/totals/F5 markets.
+HONEST: WIN = coherent RL/totals/F5 surface Elo can't emit. NO edge claimed.
+Elo-anchor (default OFF): anchor_lambdas_to_winprob tilts the lambda ratio to
+match target P(home win) while preserving lambda SUM (totals/RL stay coherent).
+build_engine_forecast(anchor_to_elo=True) wires this per-game; False=original.
+INVARIANTS: never edit src/kernel; imports read-only; <=300 LOC.
 """
 from __future__ import annotations
 
@@ -112,6 +109,46 @@ def markets_from_matrix(
     return out
 
 
+def anchor_lambdas_to_winprob(
+    lam_home: float,
+    lam_away: float,
+    target_p_home: float,
+    *,
+    max_iter: int = 40,
+) -> Tuple[float, float]:
+    """Tilt the lambda RATIO so runs_matrix ML == target_p_home; SUM preserved.
+
+    Tilt t: lam_home'=S*t/(1+t), lam_away'=S/(1+t), S=lam_home+lam_away.
+    Bisect on t (geometric midpoints) until ml_home == target within ~1e-9.
+    """
+    if not (0.0 < target_p_home < 1.0):
+        raise ValueError(f"target_p_home must be in (0,1); got {target_p_home}")
+    if lam_home <= 0 or lam_away <= 0:
+        raise ValueError(f"lambdas must be positive; got {lam_home}, {lam_away}")
+
+    S = lam_home + lam_away  # SUM preserved throughout
+
+    def _ml(t: float) -> float:
+        lh = max(S * t / (1.0 + t), 1e-6)
+        la = max(S / (1.0 + t), 1e-6)
+        return markets_from_matrix(runs_matrix(lh, la))["ml_home"]
+
+    t0 = lam_home / lam_away
+    if abs(_ml(t0) - target_p_home) < 1e-9:  # fast no-op path
+        return lam_home, lam_away
+
+    lo, hi = 1e-6, 1e6
+    for _ in range(max_iter):
+        mid = math.sqrt(lo * hi)  # geometric bisect on positive ratio
+        if _ml(mid) < target_p_home:
+            lo = mid
+        else:
+            hi = mid
+
+    t_star = math.sqrt(lo * hi)
+    return max(S * t_star / (1.0 + t_star), 1e-6), max(S / (1.0 + t_star), 1e-6)
+
+
 class RunRateState:
     """EW team run-rate state (off+def), updated AFTER each pre-game snapshot.
 
@@ -163,12 +200,16 @@ def build_engine_forecast(
     *,
     repo_root: Optional[Path] = None,
     games_path: Optional[str] = None,
+    anchor_to_elo: bool = False,
 ) -> Dict:
     """Walk-forward over the MLB corpus; score engine vs Elo-baseline moneyline.
 
     Returns: n, baseline/engine {brier,ece,log_loss}, dBrier, dECE, note,
     sample_surface (full market dict for the last game).
     Engine WIN: coherent RL/totals/F5. ML calibration ~parity; NO edge claimed.
+
+    anchor_to_elo=True: tilt lambdas per-game so ml_home==Elo p_home (SUM preserved).
+    False (default): original behaviour exactly. HONEST: parity ML; NO edge claimed.
     """
     import pandas as pd
     from scripts.platformkit.scoreboard import score_forecaster
@@ -217,6 +258,11 @@ def build_engine_forecast(
 
     for _, row in valid.iterrows():
         lh, la = float(row["lam_home"]), float(row["lam_away"])
+        if anchor_to_elo:
+            target_p = float(row["p_home_elo"])
+            # Clamp target to valid open range (avoid degenerate matrices)
+            target_p = max(0.01, min(0.99, target_p))
+            lh, la = anchor_lambdas_to_winprob(lh, la, target_p)
         P = runs_matrix(lh, la)
         mkts = markets_from_matrix(P, f5_lam_home=lh * _F5_SCALE, f5_lam_away=la * _F5_SCALE)
         engine_probs.append(mkts["ml_home"])
@@ -232,15 +278,23 @@ def build_engine_forecast(
         )
         last_surface["_date"] = str(last_row.get("date", "?"))
 
+    if anchor_to_elo:
+        note = (
+            "HONEST: anchor_to_elo=True — ML == Elo p_home (parity); "
+            "RL/totals/F5 from sum-preserved run-rate matrix. NO edge claimed; gate decides."
+        )
+    else:
+        note = (
+            "HONEST: engine WIN = coherent RL/totals/F5 surface (Elo can't price these). "
+            "ML calibration ~parity with Elo. NO edge claimed; gate decides."
+        )
     return {
         "n": base_s["n"],
         "baseline": {k: base_s[k] for k in ("brier", "ece", "log_loss")},
         "engine":   {k: eng_s[k]  for k in ("brier", "ece", "log_loss")},
         "dBrier": eng_s["brier"] - base_s["brier"],
         "dECE":   eng_s["ece"]   - base_s["ece"],
-        "note": (
-            "HONEST: engine WIN = coherent RL/totals/F5 surface (Elo can't price these). "
-            "ML calibration ~parity with Elo. NO edge claimed; gate decides."
-        ),
+        "anchor_to_elo": anchor_to_elo,
+        "note": note,
         "sample_surface": last_surface,
     }
